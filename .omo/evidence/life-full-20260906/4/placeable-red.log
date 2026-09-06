@@ -1,0 +1,72 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/lifeRecoveryPersistence.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2
+
+ ❯ test/lifeRecoveryPersistence.test.ts (28 tests | 1 failed) 2492ms
+   ✓ lossless life persistence > keeps compatible shipping and unfinished legacy maker behavior 199ms
+   ✓ lossless life persistence > keeps contribution2 and recovers only excess3 after requirement5 becomes2 115ms
+   ✓ lossless life persistence > retains removed completed bundle tombstones and dormant unlock rights without refunds 87ms
+   ✓ lossless life persistence > moves disabled shipping before writer filtering without paying inventory 70ms
+   ✓ lossless life persistence > moves removed shipping before writer filtering without paying inventory 62ms
+   ✓ lossless life persistence > moves ineligible shipping before writer filtering without paying inventory 93ms
+   ✓ lossless life persistence > cancels removed frozen makers at original minute 29 through apply 88ms
+   ✓ lossless life persistence > cancels removed frozen makers at original minute 30 through apply 56ms
+   ✓ lossless life persistence > rejects corrupt recovery at read and direct apply without touching source bytes 68ms
+   ✓ lossless life persistence > returns failed autosave on reconciliation failure, preserving prior disk and current live action 80ms
+   ✓ lossless life persistence > rolls back the whole day when reconciliation fails 52ms
+   ✓ adversarial life codec boundaries > preserves opaque legacy owners through the parser without guessing payouts 66ms
+   ✓ adversarial life codec boundaries > uses original maker clock on changed day start at minute 29 57ms
+   ✓ adversarial life codec boundaries > uses original maker clock on changed day start at minute 30 52ms
+   ✓ adversarial life codec boundaries > synchronizes compatible makers only on apply, not snapshot creation 38ms
+   ✓ adversarial life codec boundaries > restores plots before spatial placement, retains raw removed species and rejected placement 74ms
+   ✓ adversarial life codec boundaries > keeps valid paid placements and their detached receipts through read and apply 53ms
+   ✓ adversarial life codec boundaries > preserves stale generated forage raw rather than paying a guessed harvest 46ms
+   ✓ adversarial life codec boundaries > rejects a duplicate raw JSON claim key instead of silently keeping its last owner 47ms
+   ✓ adversarial life codec boundaries > rejects invalid owned quantity -1 without truncation 48ms
+   ✓ adversarial life codec boundaries > rejects invalid owned quantity 1.5 without truncation 55ms
+   ✓ adversarial life codec boundaries > rejects invalid owned quantity 9007199254740992 without truncation 54ms
+   ✓ adversarial life codec boundaries > refuses all conversions on claim exhaustion without moving a prefix  678ms
+   ✓ adversarial life codec boundaries > rejects oversized unknown originals at the parser, preserving the disk slot 38ms
+   ✓ adversarial life codec boundaries > rolls back recovery, inventory, date and receipts when a later energy stage fails 62ms
+   ✓ adversarial life codec boundaries > keeps a successful claim action in memory when subsequent autosave hits quota 54ms
+   × source definition churn > preserves legacy placeables whose explicit item definition disappeared 46ms
+     → expected { 'map_blank_start:2,2': { …(5) } } to deeply equal {}
+   ✓ source definition churn > does not auto-pay unknown claims when definitions return 50ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/lifeRecoveryPersistence.test.ts > source definition churn > preserves legacy placeables whose explicit item definition disappeared
+AssertionError: expected { 'map_blank_start:2,2': { …(5) } } to deeply equal {}
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- {}[39m
+[31m+ {[39m
+[31m+   "map_blank_start:2,2": {[39m
+[31m+     "id": "rock",[39m
+[31m+     "kind": "rock",[39m
+[31m+     "mapId": "map_blank_start",[39m
+[31m+     "x": 2,[39m
+[31m+     "y": 2,[39m
+[31m+   },[39m
+[31m+ }[39m
+
+ ❯ test/lifeRecoveryPersistence.test.ts:300:33
+    298|     session.placeables = { [sourceId]: original };
+    299|     const restored = roundtrip(project, session);
+    300|     expect(restored.placeables).toEqual({});
+       |                                 ^
+    301|     expect(restored.lifeRecovery?.claims["recovery:1"]).toMatchObject(…
+    302|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 27 passed (28)
+   Start at  09:01:15
+   Duration  10.14s (transform 4.27s, setup 0ms, collect 6.59s, tests 2.49s, environment 0ms, prepare 376ms)

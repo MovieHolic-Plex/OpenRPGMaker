@@ -1,0 +1,13 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/lifeQaObservability.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2
+
+ ✓ test/lifeQaObservability.test.ts (7 tests) 421ms
+
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Start at  10:25:18
+   Duration  11.53s (transform 7.01s, setup 0ms, collect 10.35s, tests 421ms, environment 0ms, prepare 248ms)

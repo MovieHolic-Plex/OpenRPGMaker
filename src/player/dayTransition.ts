@@ -1,3 +1,4 @@
+import { LifeReconciliationError, reconcileLifeState } from "@/project/lifeRecovery";
 import { restoreEnergy, type EnergyChangeResult } from "@/project/energy";
 import {
   advanceGameTime,
@@ -20,7 +21,7 @@ import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import { weatherToRuntimeString } from "@/player/weather/weatherModel";
 import { advanceSeasonalForage, type ForageAdvanceResult } from "@/project/seasonalForage";
 
-export const DAY_TRANSITION_STAGES = ["shipping", "calendar", "dailyWeather", "rainWatering", "farm", "forage", "energy", "makers", "animals"] as const;
+export const DAY_TRANSITION_STAGES = ["recovery", "shipping", "calendar", "dailyWeather", "rainWatering", "farm", "forage", "energy", "makers", "animals"] as const;
 export type DayTransitionStage = (typeof DAY_TRANSITION_STAGES)[number];
 
 export type DayTransitionReceipt = {
@@ -40,8 +41,10 @@ export type DayTransitionResult =
   | { readonly ok: true; readonly receipt: DayTransitionReceipt }
   | {
       readonly ok: false;
-      readonly reason: "disabled" | "missing-time" | "stale-day-key" | "already-transitioned" | "shipping" | "forage" | "energy" | "makers" | "animals";
+      readonly reason: "disabled" | "missing-time" | "stale-day-key" | "already-transitioned" | "recovery" | "shipping" | "forage" | "energy" | "makers" | "animals";
       readonly stage?: DayTransitionStage;
+      readonly sourceKind?: string;
+      readonly sourceId?: string;
     };
 
 export type AdvanceTimeAcrossDayBoundariesResult =
@@ -99,7 +102,12 @@ export function transitionToNextDay(
     return { ok: false, reason: "stale-day-key" };
   }
 
-  const draft = structuredClone(session);
+  let draft: PlaySession;
+  try { draft = reconcileLifeState(project, session); }
+  catch (error) {
+    if (!(error instanceof LifeReconciliationError)) throw error;
+    return { ok: false, reason: "recovery", stage: "recovery", sourceKind: error.sourceKind, sourceId: error.sourceId };
+  }
   const shipping = settleShipping(project, draft, normalizedSource);
   if (!shipping.ok && shipping.reason !== "disabled" && shipping.reason !== "already-settled") {
     return { ok: false, reason: "shipping", stage: "shipping" };

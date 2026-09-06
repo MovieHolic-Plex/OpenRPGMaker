@@ -1,0 +1,132 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/storePersistenceProof.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p1-20260906
+
+ ❯ test/storePersistenceProof.test.ts (12 tests | 12 failed) 43914ms
+   × accepted revision persistence proof > verifies the accepted content through actual save/read transport and reuses its clean-flush receipt 15050ms
+     → Test timed out in 15000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+   × accepted revision persistence proof > does not verify a failed read 8707ms
+     → f.store.verifyPersistedRevision is not a function
+   × accepted revision persistence proof > does not verify a missing read 1672ms
+     → f.store.verifyPersistedRevision is not a function
+   × accepted revision persistence proof > does not verify a disabled read 2946ms
+     → f.store.verifyPersistedRevision is not a function
+   × accepted revision persistence proof > does not verify a cancelled read 2743ms
+     → f.store.verifyPersistedRevision is not a function
+   × accepted revision persistence proof > rejects wrong target even when current_sha256 is unchanged 1865ms
+     → f.store.verifyPersistedRevision is not a function
+   × accepted revision persistence proof > rejects wrong content even when current_sha256 is unchanged 1610ms
+     → f.store.verifyPersistedRevision is not a function
+   × accepted revision persistence proof > keeps a failed proof retryable for the same accepted revision 2030ms
+     → f.store.verifyPersistedRevision is not a function
+   × accepted revision persistence proof > preserves newer local edits during the read and does not attach old proof to them 1707ms
+     → f.store.verifyPersistedRevision is not a function
+   × accepted revision persistence proof > pins the original target across a configuration change during read 2302ms
+     → f.store.verifyPersistedRevision is not a function
+   × accepted revision persistence proof > does not verify when cancelled while the read is in flight 1653ms
+     → f.store.verifyPersistedRevision is not a function
+   × accepted revision persistence proof > does not verify when disabled while the read is in flight 1617ms
+     → f.store.verifyPersistedRevision is not a function
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 12 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/storePersistenceProof.test.ts > accepted revision persistence proof > verifies the accepted content through actual save/read transport and reuses its clean-flush receipt
+Error: Test timed out in 15000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ test/storePersistenceProof.test.ts:71:3
+     69|   });
+     70| 
+     71|   it("verifies the accepted content through actual save/read transport…
+       |   ^
+     72|     const f = await fixture();
+     73|     expect(f.receipt).toMatchObject({ projectId, mutationGeneration: 1…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/12]⎯
+
+ FAIL  test/storePersistenceProof.test.ts > accepted revision persistence proof > does not verify a failed read
+ FAIL  test/storePersistenceProof.test.ts > accepted revision persistence proof > does not verify a missing read
+ FAIL  test/storePersistenceProof.test.ts > accepted revision persistence proof > does not verify a disabled read
+ FAIL  test/storePersistenceProof.test.ts > accepted revision persistence proof > does not verify a cancelled read
+TypeError: f.store.verifyPersistedRevision is not a function
+ ❯ test/storePersistenceProof.test.ts:97:33
+     95|     if (failure === "disabled") f.store._setPersistenceStateForTest({ …
+     96|     if (failure === "cancelled") controller.abort();
+     97|     const proof = await f.store.verifyPersistedRevision(f.receipt, { s…
+       |                                 ^
+     98|     expect(proof.kind).toBe(failure === "missing" ? "failed" : failure…
+     99|     expect(f.store.getCurrent().meta.title).toBe("accepted-fixture");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/12]⎯
+
+ FAIL  test/storePersistenceProof.test.ts > accepted revision persistence proof > rejects wrong target even when current_sha256 is unchanged
+ FAIL  test/storePersistenceProof.test.ts > accepted revision persistence proof > rejects wrong content even when current_sha256 is unchanged
+TypeError: f.store.verifyPersistedRevision is not a function
+ ❯ test/storePersistenceProof.test.ts:108:26
+    106|     else different.current_json.meta.title = "other-content";
+    107|     f.setRead(async () => Response.json([different]));
+    108|     expect(await f.store.verifyPersistedRevision(f.receipt)).toMatchOb…
+       |                          ^
+    109|   });
+    110| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/12]⎯
+
+ FAIL  test/storePersistenceProof.test.ts > accepted revision persistence proof > keeps a failed proof retryable for the same accepted revision
+TypeError: f.store.verifyPersistedRevision is not a function
+ ❯ test/storePersistenceProof.test.ts:115:27
+    113|     let reads = 0;
+    114|     f.setRead(async () => ++reads === 1 ? new Response("unavailable", …
+    115|     expect((await f.store.verifyPersistedRevision(f.receipt)).kind).to…
+       |                           ^
+    116|     expect(await f.store.verifyPersistedRevision(f.receipt)).toMatchOb…
+    117|     expect(reads).toBe(2);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/12]⎯
+
+ FAIL  test/storePersistenceProof.test.ts > accepted revision persistence proof > preserves newer local edits during the read and does not attach old proof to them
+TypeError: f.store.verifyPersistedRevision is not a function
+ ❯ test/storePersistenceProof.test.ts:126:29
+    124|     const reply = deferred<Response>();
+    125|     f.setRead(() => { started.resolve(); return reply.promise; });
+    126|     const reading = f.store.verifyPersistedRevision(f.receipt);
+       |                             ^
+    127|     await started.promise;
+    128|     f.store.update((draft) => { draft.meta.title = "newer-local-edit";…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/12]⎯
+
+ FAIL  test/storePersistenceProof.test.ts > accepted revision persistence proof > pins the original target across a configuration change during read
+TypeError: f.store.verifyPersistedRevision is not a function
+ ❯ test/storePersistenceProof.test.ts:143:29
+    141|     const reply = deferred<Response>();
+    142|     f.setRead(() => { started.resolve(); return reply.promise; });
+    143|     const reading = f.store.verifyPersistedRevision(f.receipt);
+       |                             ^
+    144|     await started.promise;
+    145|     vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "new-target");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/12]⎯
+
+ FAIL  test/storePersistenceProof.test.ts > accepted revision persistence proof > does not verify when cancelled while the read is in flight
+ FAIL  test/storePersistenceProof.test.ts > accepted revision persistence proof > does not verify when disabled while the read is in flight
+TypeError: f.store.verifyPersistedRevision is not a function
+ ❯ test/storePersistenceProof.test.ts:158:29
+    156|     const controller = new AbortController();
+    157|     f.setRead(() => { started.resolve(); return reply.promise; });
+    158|     const reading = f.store.verifyPersistedRevision(f.receipt, { signa…
+       |                             ^
+    159|     await started.promise;
+    160|     if (failure === "cancelled") controller.abort();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/12]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  12 failed (12)
+   Start at  17:54:55
+   Duration  46.12s (transform 12.96s, setup 0ms, collect 290ms, tests 43.91s, environment 0ms, prepare 389ms)
+

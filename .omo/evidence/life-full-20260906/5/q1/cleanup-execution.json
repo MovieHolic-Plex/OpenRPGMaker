@@ -1,0 +1,15 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p2",
+  "head": "62c70a3093f6a891f209cc9c3d02a6140dccffed",
+  "tree": "e6fb5e9a92ad4c570420e4755880d78d532c7d68",
+  "diffSha256": "1b10b539d385f52def550443a44266526e1cbc6863177c3bc3344bb8f10583a8",
+  "command": [
+    "node",
+    ".omo/evidence/life-full-20260906/5/q1/cleanup.mjs"
+  ],
+  "started": "2026-09-06T02:55:52.403Z",
+  "exit": 0,
+  "signal": null,
+  "output": "{\"head\":\"62c70a3093f6a891f209cc9c3d02a6140dccffed\",\"tree\":\"e6fb5e9a92ad4c570420e4755880d78d532c7d68\",\"port\":{\"port\":44517,\"code\":\"ECONNREFUSED\"},\"removed\":[\"dist\",\".omo/evidence/life-full-20260906/5/q1/browser-cache\"],\"preservedPriorFiles\":320,\"browser\":{\"browserClosed\":true,\"contextsClosed\":true,\"serverClosed\":true,\"remoteWrites\":0},\"task\":\"st_01a07495\",\"sharedLockRemoved\":false,\"sharedNodeModulesTouched\":false,\"remoteWrites\":0}\n",
+  "sha256": "496f394eb68b185d7930dd9bf05fcfaf0cfe6e6fb52db86044d94727a595f8d3"
+}

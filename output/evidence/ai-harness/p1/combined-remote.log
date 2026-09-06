@@ -1,0 +1,41 @@
+7:51:28 PM [vite] (client) Re-optimizing dependencies because vite config has changed
+[edit-activity] (라벨 없음: project)
+[project-commits] 저장 baseline 이 없어 실제 diff 를 못 낸다 — 시스템 변경으로 기록한다 { summary: '변경 저장: 시스템' }
+[edit-activity] (라벨 없음: project)
+{
+  "pass": true,
+  "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+  "report": "/home/main/z-project/rpg-zzu-ai-harness-p1-20260906/output/evidence/ai-harness/p1/combined-remote.json",
+  "cleanup": {
+    "localTimersCleared": true,
+    "deferredSettled": true,
+    "ownership": {
+      "absentBeforeRun": true,
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "ownerTitle": "QA persistence proof 9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "observed": {
+        "project_id": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+        "title": "QA persistence proof 9136d6ba-6e46-43f1-88c7-e9f0fe5875c3"
+      }
+    },
+    "remote": {
+      "kind": "deleted-and-absence-verified",
+      "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+      "commitIds": [
+        "8eb04b2e-b389-4732-b948-f66c6f0530f9"
+      ]
+    },
+    "viteClosed": true,
+    "listenerStarted": false,
+    "globalsRestored": true,
+    "activeTransports": 0,
+    "pendingProofs": 0
+  },
+  "receipt": {
+    "revisionId": "c8507f4e-f19f-4842-bb48-b62f90b351cb",
+    "projectId": "qa-ai-proof-9136d6ba-6e46-43f1-88c7-e9f0fe5875c3",
+    "mutationGeneration": 1,
+    "contentIdentity": "b44812d4a41c4601efc8ef3525e289831dc130832bd2ff24a9e31a8883996414",
+    "sha256": "14cfd749a5bee0f084b845af6e4b38ade0913bba702e901d3fc6ef11bf44cd11"
+  }
+}

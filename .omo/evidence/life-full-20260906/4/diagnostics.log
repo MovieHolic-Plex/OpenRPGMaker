@@ -1,0 +1,14 @@
+{"file":"src/player/autosave.ts","diagnostics":[]}
+{"file":"src/player/dayTransition.ts","diagnostics":[]}
+{"file":"src/player/saveSlots.ts","diagnostics":[]}
+{"file":"src/project/lifeRecovery.ts","diagnostics":[]}
+{"file":"src/project/p1FoundationRecords.ts","diagnostics":[]}
+{"file":"src/project/spatialPlacementRestore.ts","diagnostics":[]}
+{"file":"test/p0DayTransitionSceneFailure.test.ts","diagnostics":[]}
+{"file":"test/p0RuntimeIntegration.test.ts","diagnostics":[]}
+{"file":"test/p0SessionPersistence.test.ts","diagnostics":[]}
+{"file":"test/p1DayTransitionIntegration.test.ts","diagnostics":[]}
+{"file":"test/p2DayTransition.test.ts","diagnostics":[]}
+{"file":"test/p2SpatialPersistence.test.ts","diagnostics":[]}
+{"file":"test/lifeRecoveryPersistence.test.ts","diagnostics":[]}
+{"files":13,"diagnostics":0}

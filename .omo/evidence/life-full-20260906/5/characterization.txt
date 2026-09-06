@@ -1,0 +1,77 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/lifeQaObservability.test.ts test/runtimeQaInstrumentationBoundary.test.ts test/actionDebounceFootprint.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2
+
+ ✓ test/runtimeQaInstrumentationBoundary.test.ts (3 tests) 22ms
+ ❯ test/lifeQaObservability.test.ts (2 tests | 1 failed) 233ms
+   × life QA baseline characterization > real action spends one energy to till, then rejects without changing session 158ms
+     → expected false to be true // Object.is equality
+   ✓ life QA baseline characterization > an uninstrumented overlay starts without a mirror 73ms
+ ❯ test/actionDebounceFootprint.test.ts (5 tests | 2 failed) 769ms
+   ✓ 조사 연타 디바운스는 이벤트 단위다 > 몸 안에서 방향만 바꿔도 같은 이벤트는 다시 발동하지 않는다 196ms
+   ✓ 조사 연타 디바운스는 이벤트 단위다 > 서로 다른 이벤트로 방향을 바꾸면 각각 발동한다 124ms
+   ✓ 조사 연타 디바운스는 이벤트 단위다 > 1x1 이벤트를 같은 방향으로 연타하면 한 번만 발동한다 — 항등 127ms
+   × __oprnDebug 스냅샷이 두 사각을 실어 보낸다 > 3x3 + passRows 1 이면 몸 사각과 통행 사각이 다르게 실린다 178ms
+     → Cannot read properties of undefined (reading 'registry')
+   × __oprnDebug 스냅샷이 두 사각을 실어 보낸다 > 발자국 저작이 없으면 두 사각이 앵커 한 칸으로 같다 — 항등 141ms
+     → Cannot read properties of undefined (reading 'registry')
+
+ Test Files  2 failed | 1 passed (3)
+      Tests  3 failed | 7 passed (10)
+   Start at  10:12:40
+   Duration  14.72s (transform 10.78s, setup 0ms, collect 36.02s, tests 1.02s, environment 3ms, prepare 714ms)
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/actionDebounceFootprint.test.ts > __oprnDebug 스냅샷이 두 사각을 실어 보낸다 > 3x3 + passRows 1 이면 몸 사각과 통행 사각이 다르게 실린다
+TypeError: Cannot read properties of undefined (reading 'registry')
+ ❯ syncCutsceneHudVisibility src/player/playSceneMapRuntime.ts:655:27
+    653|   readonly session: PlaySceneContext["session"];
+    654| }): void {
+    655|   const host = scene.game.registry.get("dialogueHost");
+       |                           ^
+    656|   if (!isCutsceneHudHost(host)) return;
+    657|   host.classList.toggle(CUTSCENE_HUD_HIDDEN_CLASS, isCutsceneHudHidden…
+ ❯ syncRuntimeState src/player/playSceneMapRuntime.ts:563:3
+ ❯ captureScene test/actionDebounceFootprint.test.ts:139:5
+ ❯ test/actionDebounceFootprint.test.ts:145:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  test/actionDebounceFootprint.test.ts > __oprnDebug 스냅샷이 두 사각을 실어 보낸다 > 발자국 저작이 없으면 두 사각이 앵커 한 칸으로 같다 — 항등
+TypeError: Cannot read properties of undefined (reading 'registry')
+ ❯ syncCutsceneHudVisibility src/player/playSceneMapRuntime.ts:655:27
+    653|   readonly session: PlaySceneContext["session"];
+    654| }): void {
+    655|   const host = scene.game.registry.get("dialogueHost");
+       |                           ^
+    656|   if (!isCutsceneHudHost(host)) return;
+    657|   host.classList.toggle(CUTSCENE_HUD_HIDDEN_CLASS, isCutsceneHudHidden…
+ ❯ syncRuntimeState src/player/playSceneMapRuntime.ts:563:3
+ ❯ captureScene test/actionDebounceFootprint.test.ts:139:5
+ ❯ test/actionDebounceFootprint.test.ts:158:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  test/lifeQaObservability.test.ts > life QA baseline characterization > real action spends one energy to till, then rejects without changing session
+AssertionError: expected false to be true // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+ ❯ test/lifeQaObservability.test.ts:32:33
+     30|   it("real action spends one energy to till, then rejects without chan…
+     31|     const { scene, session } = fixture();
+     32|     expect(handleAction(scene)).toBe(true);
+       |                                 ^
+     33|     expect(session.farmPlots?.[scene.map.id]?.["2,3"]).toMatchObject({…
+     34|     expect(session.energy).toBe(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯

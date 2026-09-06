@@ -1,0 +1,7 @@
+--- a/src/project/store.ts
++++ b/src/project/store.ts
+@@ -864,1 +864,1 @@
+-      return { kind: "verified", receipt, isCurrent: this.isPersistenceReceiptCurrent(receipt) }; // QA false-verified transport mutation
++      return { kind: "failed", receipt, message: error instanceof Error ? error.message : String(error) };
+
+patching file src/project/store.ts

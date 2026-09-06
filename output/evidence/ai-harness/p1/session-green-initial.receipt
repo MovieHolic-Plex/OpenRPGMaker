@@ -1,0 +1,2 @@
+command=npm test -- test/aiRunEndProof.test.ts test/aiAssistantSession.test.ts test/aiMilestoneTurnAccounting.test.ts test/aiAssistantTurnCleanup.test.ts
+exit=unavailable (tool deadline terminated process at 240s)

@@ -238,7 +238,8 @@ describe("AudioEngine 재생 컨트롤", () => {
   });
 
   it("QA 관찰 훅으로 현재 적용값을 브라우저에서 읽을 수 있다", () => {
-    const engine = newEngine();
+    const engine = new AudioEngine({ qaInstrumentation: true });
+    engine.unlock();
     engine.setVolume("bgm", 0.5);
     engine.setPlaybackRate(1.1);
     engine.setPan(-0.25);
@@ -253,5 +254,7 @@ describe("AudioEngine 재생 컨트롤", () => {
     const hook = (window as unknown as { __oprnAudioState?: () => typeof snapshot }).__oprnAudioState;
     expect(typeof hook).toBe("function");
     expect(hook?.().playbackRate).toBeCloseTo(1.1, 5);
+    engine.stopAll();
+    engine.setQaInstrumentation(false);
   });
 });

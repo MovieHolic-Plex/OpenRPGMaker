@@ -1,0 +1,36 @@
+{
+  "sourceCommit": "38f08e13f2c020b78870e17a97a1db8d0bcc6b63",
+  "method": "Decoded every Base64 entry; recomputed SHA256, byte count, and Git SHA1 of blob-header plus raw bytes; compared with git ls-tree -l sourceCommit.",
+  "entries": [
+    {
+      "path": ".omo/evidence/life-full-20260906/40/GREEN.log",
+      "bytes": 16983,
+      "originalGitBlob": "594bba7a1cec9cb129c31595c39df92da88e9cd1",
+      "exact": true
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/40/RED.log",
+      "bytes": 32733,
+      "originalGitBlob": "61d66e2f6f0e14fa973a95633c4c83c3e367ecff",
+      "exact": true
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/40/build.log",
+      "bytes": 18691,
+      "originalGitBlob": "6237de23caff595f8d938ee1502ab1cceff0b4f9",
+      "exact": true
+    }
+  ],
+  "commands": [
+    {
+      "command": "git diff --cached --check",
+      "exit": 0
+    },
+    {
+      "command": "git diff --check b7f68fe2",
+      "exit": 0
+    }
+  ],
+  "sourceBehaviorChanged": false,
+  "rawWarningsAndFailuresPreserved": true
+}

@@ -1,0 +1,259 @@
+{
+  "sourceHead": "d84001e88b5e0b7f8ff3074de0ec5f6cdbcbf41e",
+  "sourceTree": "7b9fd7d4cbc04e99f3f7a2ed9005e8eb91ea3345",
+  "sourceWorktree": "/home/main/z-project/rpg-zzu-life-full-p2-corrected-review",
+  "approval": "Scoped Phase2 only; full-project regression status remains unknown.",
+  "entries": [
+    {
+      "path": ".omo/evidence/life-full-20260906/phase2-corrected/PHASE2-REVIEW.md",
+      "bytes": 25283,
+      "sha256": "ba84890d6d10537811f6b76045a3e09f1a150c5cf678c317b2205da27bf0a848",
+      "storage": ".omo/evidence/life-full-20260906/phase2-corrected/PHASE2-REVIEW.md",
+      "encoding": "utf8-file"
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/phase2-corrected/REVIEW-INPUT.md",
+      "bytes": 5207,
+      "sha256": "98dc4a3aa73713bd90d8a39e9348bfc76aca8327cf1f786053af39e23c78958b",
+      "storage": ".omo/evidence/life-full-20260906/phase2-corrected/REVIEW-INPUT.md",
+      "encoding": "utf8-file"
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/phase2-corrected/REVIEW-READY.json",
+      "bytes": 2622,
+      "sha256": "5495df8e0257d4df68202e6355caff0c253a8c3975c9c81331674499af2b9084",
+      "storage": ".omo/evidence/life-full-20260906/phase2-corrected/REVIEW-READY.json",
+      "encoding": "utf8-file"
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/phase2-corrected/build.json",
+      "bytes": 19380,
+      "sha256": "dd5d8e67353b76a32815d353d05279d31966910818710d00ecc315b127a49ceb",
+      "storage": ".omo/evidence/life-full-20260906/phase2-corrected/build.json",
+      "encoding": "utf8-file"
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/phase2-corrected/diagnostics.json",
+      "bytes": 4192,
+      "sha256": "f505c25bb758d48587466fc5a156f3f3b4d7618c6281e1be407b243f09cff3b8",
+      "storage": ".omo/evidence/life-full-20260906/phase2-corrected/diagnostics.json",
+      "encoding": "utf8-file"
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/phase2-corrected/diagnostics.mjs",
+      "bytes": 1347,
+      "sha256": "7ea883b0c44a1b92a89ac116aeeae3636bebd6bef8314f24d9c378576fe006b6",
+      "storage": ".omo/evidence/life-full-20260906/phase2-corrected/diagnostics.mjs",
+      "encoding": "utf8-file"
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/phase2-corrected/full-gate-limit.json",
+      "bytes": 1086,
+      "sha256": "9fe2e1d6c11775ab6d6e810e512bfb0d010c69d827c04ad14d110da2b48eba17",
+      "storage": ".omo/evidence/life-full-20260906/phase2-corrected/full-gate-limit.json",
+      "encoding": "utf8-file"
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/phase2-corrected/gate-trace/1-end.json",
+      "bytes": 258,
+      "sha256": "cd4bd86e682c70713de23d8fb84cec79dcf731e3ef5e8d0d37fbdbe908150ffc",
+      "storage": ".omo/evidence/life-full-20260906/phase2-corrected/gate-trace/1-end.json",
+      "encoding": "utf8-file"
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/phase2-corrected/gate-trace/1-start.json",
+      "bytes": 153,
+      "sha256": "506b1d1a4021e1da88663028c21986b992638561c127a8b3bd5c795923423faf",
+      "storage": ".omo/evidence/life-full-20260906/phase2-corrected/gate-trace/1-start.json",
+      "encoding": "utf8-file"
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/phase2-corrected/gate-trace/2-start.json",
+      "bytes": 308,
+      "sha256": "2c45ce42e09bd3a112270ab2c8a2591da4a4b8956fcfcd0f68fcdda856b0b619",
+      "storage": ".omo/evidence/life-full-20260906/phase2-corrected/gate-trace/2-start.json",
+      "encoding": "utf8-file"
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/phase2-corrected/gate-trace/execution.json",
+      "bytes": 887,
+      "sha256": "6b1a05bc41a70bf8ba1e073a208e8c5e12dc7b912e740c16b92f61d638919dd7",
+      "storage": ".omo/evidence/life-full-20260906/phase2-corrected/gate-trace/execution.json",
+      "encoding": "utf8-file"
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/phase2-corrected/gate-trace/run.mjs",
+      "bytes": 1603,
+      "sha256": "fa013c267d97e6f216492c0eb8d692ec9c5a1224446705c3019c1802c3fef293",
+      "storage": ".omo/evidence/life-full-20260906/phase2-corrected/gate-trace/run.mjs",
+      "encoding": "utf8-file"
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/phase2-corrected/gate-trace/trace.mjs",
+      "bytes": 1155,
+      "sha256": "ca6cb2e0bc6736214ffe4603d0e858237a615300d2c509c54af9d4dca34c5f02",
+      "storage": ".omo/evidence/life-full-20260906/phase2-corrected/gate-trace/trace.mjs",
+      "encoding": "utf8-file"
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/phase2-corrected/gates.json",
+      "bytes": 668,
+      "sha256": "3efbb93c106c6c589bf93dc7a504a0d71a67c6485419a633cb2dd03dcb695a51",
+      "storage": ".omo/evidence/life-full-20260906/phase2-corrected/gates.json",
+      "encoding": "utf8-file"
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/phase2-corrected/index.json",
+      "bytes": 682,
+      "sha256": "6716955cbfece8283d0b840771bcec7368ef3dbe5b477466c66d11037a3dbec7",
+      "storage": ".omo/evidence/life-full-20260906/phase2-corrected/index.json",
+      "encoding": "utf8-file"
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/phase2-corrected/remaining-axes.mjs",
+      "bytes": 1380,
+      "sha256": "d9453192093e62c14c0889ac86751bb42dc3ae94f9957093a0870ec26db50452",
+      "storage": ".omo/evidence/life-full-20260906/phase2-corrected/remaining-axes.mjs",
+      "encoding": "utf8-file"
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/phase2-corrected/remaining-css.json",
+      "bytes": 2221,
+      "sha256": "97ee02ce5863fdc2568330745dfaa83ee3c9a94c39823b51aa1ab43102626951",
+      "storage": ".omo/evidence/life-full-20260906/phase2-corrected/remaining-css.json",
+      "encoding": "utf8-file"
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/phase2-corrected/remaining-surface.json",
+      "bytes": 30656,
+      "sha256": "b6484265b9f57d825bb0da851c5bbe50c9a47437ce54a7e3c0f711437cbabdbc",
+      "storage": ".omo/evidence/life-full-20260906/phase2-corrected/remaining-surface.json",
+      "encoding": "utf8-file"
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/phase2-corrected/reviewer-st_01a07628/cleanup.json",
+      "bytes": 431,
+      "sha256": "c2b3c1cd991682d06977eeef539193291a064cdd4c9ba2b87e6ebed1f6d7e518",
+      "storage": ".omo/evidence/life-full-20260906/phase2-corrected/reviewer-st_01a07628/cleanup.json",
+      "encoding": "utf8-file"
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/phase2-corrected/reviewer-st_01a07628/cross-owner-corrected-execution.json",
+      "bytes": 1663,
+      "sha256": "14c1e347b908b0ecef8ac9d10480fd30e9b5fc7775c0c537f12c7978c16cd6cd",
+      "storage": ".omo/evidence/life-full-20260906/phase2-corrected/reviewer-st_01a07628/cross-owner-corrected-execution.json",
+      "encoding": "utf8-file"
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/phase2-corrected/reviewer-st_01a07628/cross-owner-execution.json",
+      "bytes": 12115,
+      "sha256": "23794ce85cddfc4f4c474f598347856da847ec27eed435095227f4539f8e3333",
+      "storage": ".omo/evidence/life-full-20260906/phase2-corrected/reviewer-st_01a07628/cross-owner-execution.json",
+      "encoding": "utf8-file"
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/phase2-corrected/reviewer-st_01a07628/cross-owner-first-execution.json",
+      "bytes": 12115,
+      "sha256": "23794ce85cddfc4f4c474f598347856da847ec27eed435095227f4539f8e3333",
+      "storage": ".omo/evidence/life-full-20260906/phase2-corrected/reviewer-st_01a07628/cross-owner-first-execution.json",
+      "encoding": "utf8-file"
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/phase2-corrected/reviewer-st_01a07628/cross-owner-first.mjs",
+      "bytes": 6466,
+      "sha256": "5853384904dfe852d1b64e00d7d45caebae9c2dd481f79b748caa97658f1c9c2",
+      "storage": ".omo/evidence/life-full-20260906/phase2-corrected/reviewer-st_01a07628/cross-owner-first.mjs",
+      "encoding": "utf8-file"
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/phase2-corrected/reviewer-st_01a07628/cross-owner-probe.mjs",
+      "bytes": 7126,
+      "sha256": "9680b59f0489e87fdb51d1d9f38349ccb1661cc720198eaae3d629728d8830a1",
+      "storage": ".omo/evidence/life-full-20260906/phase2-corrected/reviewer-st_01a07628/cross-owner-probe.mjs",
+      "encoding": "utf8-file"
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/phase2-corrected/reviewer-st_01a07628/current-gate-validation.json",
+      "bytes": 50914,
+      "sha256": "60978ac881c2a5c48b8914fc6a3f61a03598f40bea012f6d658ec2039596b5d0",
+      "storage": ".omo/evidence/life-full-20260906/phase2-corrected/reviewer-st_01a07628/current-gate-validation.json",
+      "encoding": "utf8-file"
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/phase2-corrected/reviewer-st_01a07628/decoded-archives.json",
+      "bytes": 9061,
+      "sha256": "81ea3959bcd27ddf0948e569f675f82ff2f39547cd53118a1853ebec2b686f6f",
+      "storage": ".omo/evidence/life-full-20260906/phase2-corrected/reviewer-st_01a07628/decoded-archives.json",
+      "encoding": "utf8-file"
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/phase2-corrected/reviewer-st_01a07628/evidence-validation.json",
+      "bytes": 6879,
+      "sha256": "d647f7a5c49948fef9a67db95916bcb81b5fe3c0b37e73869d154d2c50b5719a",
+      "storage": ".omo/evidence/life-full-20260906/phase2-corrected/reviewer-st_01a07628/evidence-validation.json",
+      "encoding": "utf8-file"
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/phase2-corrected/reviewer-st_01a07628/historical-comparison.json",
+      "bytes": 7259,
+      "sha256": "85271b963a1242610421deeb9edcf2aca52a632e798e1a6f39ea64130d4b7456",
+      "storage": ".omo/evidence/life-full-20260906/phase2-corrected/reviewer-st_01a07628/historical-comparison.json",
+      "encoding": "utf8-file"
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/phase2-corrected/reviewer-st_01a07628/initial-identity.json",
+      "bytes": 212,
+      "sha256": "2fe10221088c873c5eb72894eb5fa463e8fd1687df32d11ea49dec1c7028eb6f",
+      "storage": ".omo/evidence/life-full-20260906/phase2-corrected/reviewer-st_01a07628/initial-identity.json",
+      "encoding": "utf8-file"
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/phase2-corrected/reviewer-st_01a07628/monitor.json",
+      "bytes": 126,
+      "sha256": "14a7b5ed0fe366493ba1218ff78fab5442a5d91b2ead5fd277b7abf686b1be96",
+      "storage": ".omo/evidence/life-full-20260906/phase2-corrected/reviewer-st_01a07628/monitor.json",
+      "encoding": "utf8-file"
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/phase2-corrected/reviewer-st_01a07628/monitor.log",
+      "bytes": 27,
+      "sha256": "4e163769198904b0f8d21760253430736a537b56f596f2603dc268e346df7af6",
+      "storage": ".omo/evidence/life-full-20260906/phase2-corrected/raw-auxiliary-archive.json",
+      "encoding": "base64-entry"
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/phase2-corrected/reviewer-st_01a07628/ready-event.json",
+      "bytes": 220,
+      "sha256": "8cd9e7f7f1313b6f6bb470ef095e918eb9ea40b6179a41a877631a557eb337c9",
+      "storage": ".omo/evidence/life-full-20260906/phase2-corrected/reviewer-st_01a07628/ready-event.json",
+      "encoding": "utf8-file"
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/phase2-corrected/reviewer-st_01a07628/surface-comparison-validation.json",
+      "bytes": 1760,
+      "sha256": "fec1ef231674ff6ae5163ab22252b22bdfba4a0f583f979a65039a97cf9c686c",
+      "storage": ".omo/evidence/life-full-20260906/phase2-corrected/reviewer-st_01a07628/surface-comparison-validation.json",
+      "encoding": "utf8-file"
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/phase2-corrected/run.mjs",
+      "bytes": 2083,
+      "sha256": "5dabfb080cad4a86ae9087b40cb8d03d31bea5865053f476a188330b2c4e0583",
+      "storage": ".omo/evidence/life-full-20260906/phase2-corrected/run.mjs",
+      "encoding": "utf8-file"
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/phase2-corrected/surface-comparison.json",
+      "bytes": 15401,
+      "sha256": "a8dc68e24f6a95f5e4fb2a278d1ea786932d7096f3eb63f05b6cbcb098994290",
+      "storage": ".omo/evidence/life-full-20260906/phase2-corrected/surface-comparison.json",
+      "encoding": "utf8-file"
+    }
+  ],
+  "initialRejection": {
+    "path": ".omo/evidence/life-full-20260906/PHASE2-REVIEW-initial.md",
+    "bytes": 23592,
+    "sha256": "33702c47846bdb076bf0c2d04e83095952d0e394339d36782f2b9cfd3fbab82d"
+  },
+  "configuredSecretLiteralHits": 0
+}

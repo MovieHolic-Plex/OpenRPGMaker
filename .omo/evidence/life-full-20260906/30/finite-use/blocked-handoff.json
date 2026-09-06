@@ -1,0 +1,27 @@
+{
+  "label": "blocked-handoff",
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p2-life-full-record-keys",
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "60s",
+    "bash",
+    "-c",
+    "git status --short && git branch --show-current && git rev-parse HEAD HEAD^{tree} && git diff --check && git diff --cached --exit-code && git diff --name-only && git diff --exit-code HEAD -- src/player/saveSlots.ts src/project/session.ts src/project/lifeStateReconciliation.ts openwiki .vite-cache package.json && git diff --exit-code HEAD -- .omo/evidence/life-full-20260906/30 \":(exclude).omo/evidence/life-full-20260906/30/SUMMARY.md\" && git diff --stat"
+  ],
+  "started": "2026-09-06T04:26:30.458Z",
+  "finished": "2026-09-06T04:26:30.659Z",
+  "base": "f86474547028cddf795c8e431b2195b7edccd201",
+  "head": "7c19e5edc5849e800db81b4af0c3f26504401bc1",
+  "headTree": "7c013a59633197ca8031b856e9b1dcd79dba5bff",
+  "codeTree": "0f21f55ba6a2060a834b165f806fb89bf04d233c",
+  "stdout": " M .omo/evidence/life-full-20260906/30/SUMMARY.md\n M src/project/itemTransitions.ts\n M test/lifeRecoveryRecordKeys.test.ts\nagent/life-full-record-keys\n7c19e5edc5849e800db81b4af0c3f26504401bc1\n7c013a59633197ca8031b856e9b1dcd79dba5bff\n.omo/evidence/life-full-20260906/30/SUMMARY.md\nsrc/project/itemTransitions.ts\ntest/lifeRecoveryRecordKeys.test.ts\n .omo/evidence/life-full-20260906/30/SUMMARY.md |  8 +++\n src/project/itemTransitions.ts                 |  4 +-\n test/lifeRecoveryRecordKeys.test.ts            | 81 ++++++++++++++++++++++++++\n 3 files changed, 91 insertions(+), 2 deletions(-)\n",
+  "stderr": "",
+  "exit": 0,
+  "signal": null
+}

@@ -1,0 +1,29 @@
+{
+  "head": "4e2d1762264533a5826c48686648093c3fe69ebd",
+  "tree": "234c0e9c391276f082efb61e2abff2e0a8d7e634",
+  "protectedHashes": {
+    "4/VERIFY.md": "766f31c0a0a11033e31d20c57303f8cfa951450af20088ad0694af2c3b68b494",
+    "5/VERIFY.md": "58e4fb3abe153835b92c599b706823476c1c3811bcfb427a73effb4b5f279b7e",
+    "5-supervisor/attempt1-execution.json": "d4aa30974669d959a38f8f411ae62c21513b74f87eb7ec03c87be5bfa0ada321",
+    "5-supervisor/browser-attempt2.json": "7f2feca0d9b0965690479d99b1f242f618fe03ff885f601bada279ecef381c75"
+  },
+  "productAndProtectedInputsUnchanged": true,
+  "assertionsPreserved": 17,
+  "testsPreserved": 4,
+  "coverageNotRun": 51,
+  "portsRefused": [
+    42457,
+    37003
+  ],
+  "removed": [
+    ".omo/evidence/life-full-20260906/5/correction/project.json"
+  ],
+  "alreadyAbsent": [
+    "dist",
+    ".omo/evidence/life-full-20260906/5/correction/browser-cache",
+    ".omo/evidence/life-full-20260906/5/correction/harness-cache",
+    ".omo/evidence/life-full-20260906/5/correction/module-cache"
+  ],
+  "remoteWrites": 0,
+  "dependenciesInstalled": 0
+}

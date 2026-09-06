@@ -1,0 +1,112 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/lifeRecovery.test.ts test/p0Makers.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2
+
+ ✓ test/p0Makers.test.ts (8 tests) 3119ms
+   ✓ P0 timed makers > uses a monotonic absolute game-minute clock across a season/day boundary  563ms
+   ✓ P0 timed makers > preserves a processing timer through the shared save snapshot path  322ms
+   ✓ P0 timed makers > rejects invalid absolute minute NaN before consuming inputs  303ms
+   ✓ P0 timed makers > rejects invalid absolute minute -1 before consuming inputs  349ms
+   ✓ P0 timed makers > rejects invalid absolute minute 1.5 before consuming inputs  347ms
+   ✓ P0 timed makers > rejects missing inventory, busy instances, and invalid definitions atomically  717ms
+ ❯ test/lifeRecovery.test.ts (52 tests | 2 failed) 5999ms
+   ✓ life transaction evidence > freezes spent inputs, promised outputs, duration and calendar when starting  580ms
+   ✓ life transaction evidence > pays the original promise when the definition changes during a new job 266ms
+   ✓ life transaction evidence > retains current-definition payout for legacy jobs without a contract  316ms
+   ✓ life transaction evidence > rejects malformed new contracts at the existing save validation seam 6ms
+   ✓ life transaction evidence > exposes a bounded recovery-state validator at the save boundary 1ms
+   ✓ bounded recovery ownership > moves three items source to claim to inventory exactly once and never rewinds sequence  341ms
+   ✓ bounded recovery ownership > keeps independent source kinds distinct even when source IDs match 182ms
+   ✓ bounded recovery ownership > rejects full destination inventory without paying or consuming any claim field 174ms
+   ✓ bounded recovery ownership > rolls back all payout side effects when collection metadata is invalid 80ms
+   ✓ bounded recovery ownership > keeps unknown item evidence until an explicit receipt after the item returns 223ms
+   ✓ bounded recovery ownership > rejects invalid source count 0 without loss 239ms
+   ✓ bounded recovery ownership > rejects invalid source count -1 without loss 114ms
+   ✓ bounded recovery ownership > rejects invalid source count 1.5 without loss 54ms
+   ✓ bounded recovery ownership > rejects invalid source count NaN without loss 105ms
+   ✓ bounded recovery ownership > rejects invalid source count Infinity without loss 110ms
+   ✓ bounded recovery ownership > rejects invalid source count 9007199254740992 without loss 53ms
+   ✓ bounded recovery ownership > accepts claim 4096 then refuses claim 4097 without removing its owner or sequence  571ms
+   ✓ bounded recovery ownership > splits large proven quantities into capped claims without losing a unit 78ms
+   ✓ bounded recovery ownership > rejects a multi-claim split in advance when only one slot remains  436ms
+   ✓ bounded recovery ownership > splits 65 distinct items into 64 plus 1 and preserves unknown source JSON 48ms
+   ✓ bounded recovery ownership > rejects sequence exhaustion without deleting the source 104ms
+   ✓ bounded recovery ownership > never refunds completed bundle tombstones 66ms
+   ✓ bounded recovery ownership > does not treat inherited record names as owned sources or claims 50ms
+   ✓ recovery save boundary schema > accepts exactly 4096 claims and rejects excess without trimming input 86ms
+   ✓ recovery save boundary schema > rejects unsafe sequence 0 3ms
+   ✓ recovery save boundary schema > rejects unsafe sequence -1 2ms
+   ✓ recovery save boundary schema > rejects unsafe sequence 1.5 0ms
+   ✓ recovery save boundary schema > rejects unsafe sequence NaN 0ms
+   ✓ recovery save boundary schema > rejects unsafe sequence Infinity 0ms
+   ✓ recovery save boundary schema > rejects unsafe sequence 9007199254740992 0ms
+   ✓ recovery save boundary schema > rejects invalid stored count 0 0ms
+   ✓ recovery save boundary schema > rejects invalid stored count -1 0ms
+   ✓ recovery save boundary schema > rejects invalid stored count 1.5 0ms
+   ✓ recovery save boundary schema > rejects invalid stored count NaN 0ms
+   ✓ recovery save boundary schema > rejects invalid stored count Infinity 0ms
+   ✓ recovery save boundary schema > rejects invalid stored count 10000000 0ms
+   ✓ recovery save boundary schema > rejects duplicate IDs, stale sequence, mismatched keys, duplicate items and excessive distinct items 1ms
+   ✓ recovery save boundary schema > measures exact UTF-8 raw JSON bytes, including quotes and multibyte characters 2ms
+   ✓ recovery save boundary schema > accepts exactly 8 MiB total and rejects one extra byte without normalizing input 294ms
+   ✓ recovery save boundary schema > rejects non-JSON evidence including cycles, sparse arrays, NaN, undefined and accessors 1ms
+   ✓ maker contract ownership and resume > cancels at minute 39 to the frozen input or output, not the edited definition 65ms
+   ✓ maker contract ownership and resume > cancels at minute 40 to the frozen input or output, not the edited definition 77ms
+   ✓ maker contract ownership and resume > retains unproven legacy jobs verbatim without guessing a refund 101ms
+   ✓ maker contract ownership and resume > keeps a new contract detached from authored arrays and through the actual save/apply seam 241ms
+   ✓ maker contract ownership and resume > uses the changed definition only for the next job 158ms
+   ✓ maker contract ownership and resume > preserves a ready maker and its contract on overflow or missing promised item 179ms
+   × adversarial source conversion > rejects malformed maker evidence rather than refunding a different valid side 82ms
+     → expected true to be false // Object.is equality
+   × adversarial source conversion > validates a large JSON array without overflowing the call stack 41ms
+     → Maximum call stack size exceeded
+   ✓ adversarial source conversion > preserves spatial raw evidence without guessing a historic construction cost 53ms
+   ✓ adversarial source conversion > rejects raw JSON above 64 KiB before removing the source 49ms
+   ✓ adversarial source conversion > rejects total recovery overflow without removing the owner or advancing sequence 260ms
+   ✓ adversarial source conversion > rejects malformed persisted claims before any inventory payout 45ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/lifeRecovery.test.ts > adversarial source conversion > rejects malformed maker evidence rather than refunding a different valid side
+AssertionError: expected true to be false // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+ ❯ test/lifeRecovery.test.ts:329:147
+    327|         timeBasis: { dayStartHour: 5, dayEndHour: 27, daysPerSeason: 4…
+    328|     const before = structuredClone(session);
+    329|     expect(moveLifeRecoverySource(project, session, { sourceKind: "mak…
+       |                                                                                                                                                   ^
+    330|     expect(session).toEqual(before);
+    331|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  test/lifeRecovery.test.ts > adversarial source conversion > validates a large JSON array without overflowing the call stack
+RangeError: Maximum call stack size exceeded
+ ❯ isLifeRecoveryJson src/project/lifeRecovery.ts:40:15
+     38|     if (Array.isArray(entry)) {
+     39|       if (Object.keys(entry).length !== entry.length) return false;
+     40|       pending.push(...entry);
+       |               ^
+     41|     } else {
+     42|       const prototype = Object.getPrototypeOf(entry);
+ ❯ test/lifeRecovery.test.ts:333:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  2 failed | 58 passed (60)
+   Start at  08:06:20
+   Duration  31.19s (transform 19.70s, setup 0ms, collect 46.26s, tests 9.12s, environment 1ms, prepare 1.11s)
+
+
+EXIT=1

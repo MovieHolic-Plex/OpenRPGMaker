@@ -1,0 +1,114 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/audioQaInstrumentation.test.ts test/audioEnginePlaybackControls.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p2
+
+ ✓ test/audioEnginePlaybackControls.test.ts (11 tests) 26ms
+ ❯ test/audioQaInstrumentation.test.ts (5 tests | 4 failed) 56ms
+   × real AudioEngine QA capability > keeps playback and public state with qaInstrumentation=undefined 37ms
+     → expected true to be false // Object.is equality
+     → expected true to be false // Object.is equality
+     → expected true to be false // Object.is equality
+   × real AudioEngine QA capability > keeps playback and public state with qaInstrumentation=false 10ms
+     → expected true to be false // Object.is equality
+     → expected true to be false // Object.is equality
+     → expected true to be false // Object.is equality
+   ✓ real AudioEngine QA capability > keeps playback and public state with qaInstrumentation=true 2ms
+   × real AudioEngine QA capability > revokes only observation, keeps playback, and starts a fresh observation lifetime 2ms
+     → engine.setQaInstrumentation is not a function
+   × real AudioEngine QA capability > does not delete a hook or observation array it no longer owns 1ms
+     → engine.setQaInstrumentation is not a function
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  4 failed | 12 passed (16)
+   Start at  11:43:00
+   Duration  3.05s (transform 948ms, setup 0ms, collect 1.91s, tests 82ms, environment 1.03s, prepare 400ms)
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/audioQaInstrumentation.test.ts > real AudioEngine QA capability > keeps playback and public state with qaInstrumentation=undefined
+ FAIL  test/audioQaInstrumentation.test.ts > real AudioEngine QA capability > keeps playback and public state with qaInstrumentation=false
+AssertionError: expected true to be false // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+ ❯ test/audioQaInstrumentation.test.ts:30:64
+     28|       engines.push(engine);
+     29|       if (qaInstrumentation !== true) {
+     30|         expect.soft(Object.hasOwn(window, "__oprnAudioState")).toBe(fa…
+       |                                                                ^
+     31|         expect.soft(Object.hasOwn(window, "__oprnAudioObserved")).toBe…
+     32|       }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  test/audioQaInstrumentation.test.ts > real AudioEngine QA capability > keeps playback and public state with qaInstrumentation=undefined
+ FAIL  test/audioQaInstrumentation.test.ts > real AudioEngine QA capability > keeps playback and public state with qaInstrumentation=false
+AssertionError: expected true to be false // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+ ❯ test/audioQaInstrumentation.test.ts:60:64
+     58|         expect(engine.getVolume("bgm")).toBe(0.3);
+     59|       } else {
+     60|         expect.soft(Object.hasOwn(window, "__oprnAudioState")).toBe(fa…
+       |                                                                ^
+     61|         expect.soft(Object.hasOwn(window, "__oprnAudioObserved")).toBe…
+     62|       }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  test/audioQaInstrumentation.test.ts > real AudioEngine QA capability > keeps playback and public state with qaInstrumentation=undefined
+ FAIL  test/audioQaInstrumentation.test.ts > real AudioEngine QA capability > keeps playback and public state with qaInstrumentation=false
+AssertionError: expected true to be false // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+ ❯ test/audioQaInstrumentation.test.ts:61:67
+     59|       } else {
+     60|         expect.soft(Object.hasOwn(window, "__oprnAudioState")).toBe(fa…
+     61|         expect.soft(Object.hasOwn(window, "__oprnAudioObserved")).toBe…
+       |                                                                   ^
+     62|       }
+     63|       engine.stopAll();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  test/audioQaInstrumentation.test.ts > real AudioEngine QA capability > revokes only observation, keeps playback, and starts a fresh observation lifetime
+TypeError: engine.setQaInstrumentation is not a function
+ ❯ test/audioQaInstrumentation.test.ts:76:12
+     74|     const audio = document.querySelector("audio");
+     75|     const observed = qaWindow.__oprnAudioObserved;
+     76|     engine.setQaInstrumentation(true);
+       |            ^
+     77|     expect(qaWindow.__oprnAudioObserved).toBe(observed);
+     78|     engine.setQaInstrumentation(false);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  test/audioQaInstrumentation.test.ts > real AudioEngine QA capability > does not delete a hook or observation array it no longer owns
+TypeError: engine.setQaInstrumentation is not a function
+ ❯ test/audioQaInstrumentation.test.ts:107:12
+    105|     qaWindow.__oprnAudioState = replacementState;
+    106|     qaWindow.__oprnAudioObserved = replacementObserved;
+    107|     engine.setQaInstrumentation(false);
+       |            ^
+    108|     expect(qaWindow.__oprnAudioState).toBe(replacementState);
+    109|     expect(qaWindow.__oprnAudioObserved).toBe(replacementObserved);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯

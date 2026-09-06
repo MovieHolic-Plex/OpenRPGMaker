@@ -1,0 +1,17 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p2",
+  "head": "b7b02d97ad6cb3b493bd60691ec61970e8a0e37e",
+  "tree": "63ea1d26f87d4a82d9ff925071582abdae01b354",
+  "command": [
+    "npm",
+    "run",
+    "openwiki:index",
+    "--",
+    "--check"
+  ],
+  "started": "2026-09-06T01:28:33.122Z",
+  "exit": 0,
+  "signal": null,
+  "output": "\n> rpg-zzu@0.1.0 openwiki:index\n> node scripts/openwiki-index.mjs --check\n\nopenwiki/INDEX.md 최신.\n",
+  "sha256": "3f2805fa72c4dc3a0ea9a97a5f20db40593b9faba6ed867b8703ff05fac259b5"
+}

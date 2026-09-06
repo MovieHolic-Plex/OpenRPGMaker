@@ -71,12 +71,57 @@ export async function startPlayerQaServer(opts = {}) {
   };
 }
 
+/** Subscribe on this scene's host before real input; a rejected action still completes.
+ * No temporary window globals, polling, or arbitrary settling delay. */
+export async function performObservedAction(page, trigger, timeoutMs = 10_000) {
+  const pending = await page.evaluateHandle((timeout) => {
+    const mirror = document.querySelector('[data-testid="runtime-state-json"]');
+    const host = mirror?.parentElement;
+    const debug = window.__oprnDebug;
+    if (!host || !debug) throw new Error("QA action observation requires an instrumented scene");
+    const sequence = (debug.readState().actionReceipt?.sequence ?? 0) + 1;
+    let cancel;
+    const promise = new Promise((resolveReceipt) => {
+      const finish = (value) => {
+        clearTimeout(deadline);
+        host.removeEventListener("oprn:action", observed);
+        resolveReceipt(value);
+      };
+      const observed = (event) => {
+        if (event.detail.sequence !== sequence) return;
+        finish({ receipt: event.detail, state: debug.readState(), mirror: JSON.parse(mirror.textContent) });
+      };
+      const deadline = setTimeout(() => finish({ error: `Missing scene action receipt ${sequence}` }), timeout);
+      cancel = () => finish({ error: "Action observation cancelled" });
+      host.addEventListener("oprn:action", observed);
+    });
+    return { promise, cancel: () => cancel() };
+  }, timeoutMs);
+  try {
+    await trigger();
+    const result = await pending.evaluate((entry) => entry.promise);
+    if (result.error) throw new Error(result.error);
+    return result;
+  } finally {
+    await pending.evaluate((entry) => entry.cancel());
+    await pending.dispose();
+  }
+}
+
 async function requireHooks(page) {
-  await page.waitForFunction(
-    () => typeof window.__oprnDebug === "object" && window.__oprnDebug !== null,
-    undefined,
-    { timeout: 120_000 },
-  );
+  await page.evaluate(() => new Promise((resolve, reject) => {
+    const finish = () => { observer.disconnect(); clearTimeout(deadline); };
+    const check = () => {
+      if (window.__oprnDebug && document.querySelector('[data-testid="runtime-state-json"]')) {
+        finish(); resolve();
+      }
+    };
+    const observer = new MutationObserver(check);
+    const deadline = setTimeout(() => { finish(); reject(new Error("QA scene did not become ready")); }, 120_000);
+    // PlayScene installs hooks before the ready callback removes the boot overlay.
+    observer.observe(document.documentElement, { childList: true, subtree: true });
+    check();
+  }));
 }
 
 /** testid 존재 판정. `attr`/`value` 를 주면 "그 속성값을 가진 요소가 있다" 로 좁힌다 —
@@ -209,6 +254,12 @@ async function applyOp(page, op, runState) {
       await page.evaluate((dir) => window.__oprnInput.face(dir), op.dir);
       return;
     case "action":
+      if (op.observe === true) {
+        await performObservedAction(page, () => page.evaluate(() => window.__oprnInput.action()), op.timeoutMs);
+      } else {
+        await page.evaluate(() => window.__oprnInput.action());
+      }
+      return;
     case "attack":
     case "skill":
       await page.evaluate((kind) => window.__oprnInput[kind](), op.kind);
@@ -385,6 +436,8 @@ async function readObserved(page, { auditBattleTextNodes = false, watchedEventId
           y: full.y,
           gold: full.gold,
           battleResult: full.battleResult ?? null,
+          ...Object.fromEntries(["farmPlots", "energy", "makerInstances", "farmAnimals", "farmBuildingPlacements", "lifeRecovery", "actionReceipt"]
+            .filter((key) => full[key] !== undefined).map((key) => [key, full[key]])),
         }
       : null;
     const sprite = window.__oprnPlayerSprite ? window.__oprnPlayerSprite() : null;

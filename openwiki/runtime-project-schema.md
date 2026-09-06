@@ -1,5 +1,45 @@
 # Runtime Project Schema & Persistence
 
+## P1 accepted-save receipts and read-only proof (2026-09-06)
+
+`ProjectFlushResult` keeps its existing variants; `saved` optionally includes a
+`ProjectPersistenceReceipt`. A clean flush after load may return `saved` without
+a receipt, which isn't proof. After an accepted save, a clean current flush
+returns the same receipt without another write.
+
+The frozen, in-memory receipt contains `revisionId`, `projectId`,
+`mutationGeneration`, `contentIdentity` and optional `sha256`. Identity is SHA-256
+of the existing `serializeForComparison(projectWithoutEventDrafts(...))`
+normalization, derived from `result.project ?? submittedProject`, not live
+`getCurrent()` after an await. Accepted merged content can differ from the live
+editor. The optional wire/server hash alone doesn't establish content equality.
+If accepted content can't normalize, saving logs the error and returns no receipt.
+
+`store.verifyPersistedRevision(receipt, { signal? })` accepts the exact
+store-issued object. A private WeakMap holds its captured Supabase configuration;
+copied or reconstructed tokens fail. `loadProjectForPersistenceProof` reuses the
+normalized/hybrid loader with observed `project_id` and cancellation, without
+commit-tip hydration. It performs a remote read, not `reloadFromRemote()`: no
+live-project replacement, dirty reset, draft change, URL change, or store event.
+Manual reload retains its separate contract.
+
+Results are `verified` with `isCurrent`, `mismatch` with `reason: target | content`,
+`disabled`, `cancelled`, or `failed` with a message. Missing rows and read errors
+fail. Each verifier call makes a fresh attempt, so a failed receipt can retry.
+`isPersistenceReceiptCurrent(receipt)` checks loaded/enabled state, the latest
+receipt reference, mutation generation and captured target configuration. A
+matching historical read may return `verified` with `isCurrent:false`; consumers
+mustn't promote newer live state from that result and must recheck currentness
+when consuming it after an await. Neither save responses nor proof reads replace
+newer local edits.
+
+Sources: [store types and methods](../src/project/store.ts) and
+[proof loader](../src/project/supabaseProjectSync.ts). The
+[session contract](editor-ai-panel.md) describes completion/retry and optional
+apply-commit correlation. [P1 evidence](../output/evidence/ai-harness/p1/README.md)
+records real editor and isolated Supabase proof. This adds no schema migration,
+durable receipt recovery, cross-device guarantee, or P2-P5 implementation.
+
 ## Opening and game-over cinematic settings (2026-09-06)
 
 `SystemRecords.opening?: CinematicSequence` and `gameOver?: GameOverSettings` are additive, opt-in project-v4 authoring records. No schema bump, server migration, or default/demo content is needed. `src/project/cinematicSettings.ts` owns the mutable authored types and pure normalization; all four types are re-exported through `@/project/types`:
@@ -24,6 +64,16 @@ The duration contract for playback consumers is: zero means keyboard advance for
 ## New-project save/reload verification (2026-09-05)
 
 `store.loadNewRemoteProjectTransactionally` compares draft-free projects with `serializeForComparison`, not raw wire bytes. The comparison runs both sides through the project loader's normalization and recursively sorts object keys; arrays and authored non-default values remain significant. New blank/preset seeds contain the default `system.titleScreen.titleGraphic = { mode: "text", x: 32, y: 62 }`, which normalization omits, and the farm preset gains `system.timeSystem.forceSleep = false` on load. PostgreSQL JSONB also changes object-key order. These representation differences must not reject a successful save/reload. Wire serialization and SHA-256 persistence remain unchanged; actual mismatches still reject before adopting the new project or changing drafts, config, or URL. `test/transactionalNewRemoteProject.test.ts` exercises all five presets plus blank creation through real save/load functions with a JSONB-like transport, and rejects changed titles, map tiles, and array order.
+
+## Independent game Save5 boundary (2026-09-06)
+
+Project `SCHEMA_VERSION` remains 4 (`Project.version`); runtime `SaveSnapshot.schemaVersion` now uses independent `SAVE_SCHEMA_VERSION=5` in `src/player/saveSlots.ts`, even without optional life state. The current reader accepts Save4 and Save5, upgrades Save4 in memory, and explicitly rejects Save3 and future versions. Historical save-v3 statements below do not describe current reader support. `test/fixtures/life-full/saveSlots.phase1.ts` is the byte-identical complete phase1 module from `87de73785d1c309bbbe975636414f70bbc73a4b9`; its real old parser rejects new writer output at the schema comparison. Its unchanged validation imports remain shared; this is a frozen reader, not a whole old application binary.
+
+Manual keys are `oprn:save-slot:v5:1..3` and autosave is `oprn:save-slot:v5:auto`. An export namespace substitutes for `oprn` unchanged. Each reader consults the matching old key only when the new key is absent (`null`), never when it is empty, malformed, or unsupported. Reading/migration performs no writes. Writing touches only the new key; no backup copy or deletion is needed because the original bytes stay at the old key. Failed quota writes preserve the old bytes, previous new slot, and live session. Equipment parsing and the missing-custom-slot load blocker are unchanged. Tests: `test/lifeSaveVersion.test.ts`, `autosave.test.ts`, `customEquipmentSlots.test.ts`.
+
+## Life ownership in Save5 (2026-09-06)
+
+Optional `session.lifeRecovery` now crosses writer, manual/auto Storage, parser and apply unchanged after bounded validation. Shared pure life reconciliation runs before known-content filters; incompatible sources are moved to claims or preserved as unpayable original JSON, never silently deleted. Completion/reward tombstones and region/recipe IDs retain dormant rights. Claim quantities/counts, monotonic sequence, 64 KiB raw UTF-8 and 8 MiB total limits are reject-without-trimming boundaries. Duplicate JSON object keys are rejected by both disk readers. Existing Save4 migration and v5 key isolation remain unchanged. Source removal plus claim creation and explicit receipt plus inventory transfer are separate atomic draft transactions. See `runtime-sessions.md` for restoration order, cancellation clocks and task boundaries; regression `test/lifeRecoveryPersistence.test.ts` executes the actual codec.
 
 ## Project-authored equipment slots (2026-09-05)
 

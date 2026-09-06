@@ -1,0 +1,2317 @@
+{
+  "numTotalTestSuites": 63,
+  "numPassedTestSuites": 26,
+  "numFailedTestSuites": 37,
+  "numPendingTestSuites": 0,
+  "numTotalTests": 183,
+  "numPassedTests": 159,
+  "numFailedTests": 24,
+  "numPendingTests": 0,
+  "numTodoTests": 0,
+  "snapshot": {
+    "added": 0,
+    "failure": false,
+    "filesAdded": 0,
+    "filesRemoved": 0,
+    "filesRemovedList": [],
+    "filesUnmatched": 0,
+    "filesUpdated": 0,
+    "matched": 0,
+    "total": 0,
+    "unchecked": 0,
+    "uncheckedKeysByFile": [],
+    "unmatched": 0,
+    "updated": 0,
+    "didUpdate": false
+  },
+  "startTime": 1788660742814,
+  "success": false,
+  "testResults": [
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "AI \ub3c4\uad6c \ub77c\uc774\ube0c \ud65c\ub3d9 \ud589"
+          ],
+          "fullName": "AI \ub3c4\uad6c \ub77c\uc774\ube0c \ud65c\ub3d9 \ud589 \ucd5c\uc18c \ud45c\uc2dc \uc2dc\uac04 \ub3d9\uc548 \ub77c\uc774\ube0c \ud589\uc744 \uc720\uc9c0\ud55c \ub4a4 \uc608\uc57d \ucf5c\ubc31\uc5d0\uc11c \uc644\ub8cc \ud589\uc73c\ub85c \ubc14\uafbc\ub2e4",
+          "status": "passed",
+          "title": "\ucd5c\uc18c \ud45c\uc2dc \uc2dc\uac04 \ub3d9\uc548 \ub77c\uc774\ube0c \ud589\uc744 \uc720\uc9c0\ud55c \ub4a4 \uc608\uc57d \ucf5c\ubc31\uc5d0\uc11c \uc644\ub8cc \ud589\uc73c\ub85c \ubc14\uafbc\ub2e4",
+          "duration": 417.06339299999945,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AI \ub3c4\uad6c \ub77c\uc774\ube0c \ud65c\ub3d9 \ud589"
+          ],
+          "fullName": "AI \ub3c4\uad6c \ub77c\uc774\ube0c \ud65c\ub3d9 \ud589 \uc131\uacf5\ud55c \uc870\ud68c \ub3c4\uad6c\ub294 \uc644\ub8cc \ud589\uc744 \ub0a8\uae30\uc9c0 \uc54a\uace0 \ud134 \uc885\ub8cc \uc2dc \uce94\ubc84\uc2a4 \uce69 \uc0c1\ud0dc\ub3c4 \uc9c0\uc6b4\ub2e4",
+          "status": "failed",
+          "title": "\uc131\uacf5\ud55c \uc870\ud68c \ub3c4\uad6c\ub294 \uc644\ub8cc \ud589\uc744 \ub0a8\uae30\uc9c0 \uc54a\uace0 \ud134 \uc885\ub8cc \uc2dc \uce94\ubc84\uc2a4 \uce69 \uc0c1\ud0dc\ub3c4 \uc9c0\uc6b4\ub2e4",
+          "duration": 680.2708280000006,
+          "failureMessages": [
+            "AssertionError: expected \"spy\" to be called 1 times, but got 0 times\n    at /home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/aiActivityLiveRow.test.ts:220:20\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+          ],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AI \ub3c4\uad6c \ub77c\uc774\ube0c \ud65c\ub3d9 \ud589"
+          ],
+          "fullName": "AI \ub3c4\uad6c \ub77c\uc774\ube0c \ud65c\ub3d9 \ud589 \ub2e4\uc74c \ub3c4\uad6c \uc2dc\uc791\uc740 \uc774\uc804 \uc608\uc57d\uc744 \uba3c\uc800 \ud655\uc815\ud558\uace0 \ud134 \uc885\ub8cc\ub294 \ub9c8\uc9c0\ub9c9 \uc608\uc57d\uae4c\uc9c0 \ube44\uc6b4\ub2e4",
+          "status": "failed",
+          "title": "\ub2e4\uc74c \ub3c4\uad6c \uc2dc\uc791\uc740 \uc774\uc804 \uc608\uc57d\uc744 \uba3c\uc800 \ud655\uc815\ud558\uace0 \ud134 \uc885\ub8cc\ub294 \ub9c8\uc9c0\ub9c9 \uc608\uc57d\uae4c\uc9c0 \ube44\uc6b4\ub2e4",
+          "duration": 427.5022969999991,
+          "failureMessages": [
+            "AssertionError: expected \"spy\" to be called 1 times, but got 0 times\n    at /home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/aiActivityLiveRow.test.ts:292:20\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+          ],
+          "meta": {}
+        }
+      ],
+      "startTime": 1788660792786,
+      "endTime": 1788660794316.5022,
+      "status": "failed",
+      "message": "",
+      "name": "/home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/aiActivityLiveRow.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "\uae00\uc790 \ud06c\uae30 3\ub2e8 (V3C \u2460)"
+          ],
+          "fullName": "\uae00\uc790 \ud06c\uae30 3\ub2e8 (V3C \u2460) \uae30\ubcf8\uac12\uc740 '\ubcf4\ud1b5'\uc774\uace0 \uc800\uc7a5\ud558\uba74 localStorage(oprn:ai-font-size)\uc5d0 \uc601\uc18d\ub41c\ub2e4 \u2014 \ubb34\ud6a8\uac12\uc740 \ubcf4\ud1b5\uc73c\ub85c \ubc29\uc5b4",
+          "status": "passed",
+          "title": "\uae30\ubcf8\uac12\uc740 '\ubcf4\ud1b5'\uc774\uace0 \uc800\uc7a5\ud558\uba74 localStorage(oprn:ai-font-size)\uc5d0 \uc601\uc18d\ub41c\ub2e4 \u2014 \ubb34\ud6a8\uac12\uc740 \ubcf4\ud1b5\uc73c\ub85c \ubc29\uc5b4",
+          "duration": 193.79859399999987,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "\uae00\uc790 \ud06c\uae30 3\ub2e8 (V3C \u2460)"
+          ],
+          "fullName": "\uae00\uc790 \ud06c\uae30 3\ub2e8 (V3C \u2460) \uc124\uc815\uc758 \uae00\uc790 \ud06c\uae30 select(ai-font-size)\ub97c \ubc14\uafb8\uba74 \uc989\uc2dc \ud328\ub110\uc5d0 \ubc18\uc601\u00b7\uc601\uc18d\ub418\uace0, \uc7ac\ubd80\ud305 \uc2dc \ub2e4\uc2dc \uc801\uc6a9\ub41c\ub2e4",
+          "status": "passed",
+          "title": "\uc124\uc815\uc758 \uae00\uc790 \ud06c\uae30 select(ai-font-size)\ub97c \ubc14\uafb8\uba74 \uc989\uc2dc \ud328\ub110\uc5d0 \ubc18\uc601\u00b7\uc601\uc18d\ub418\uace0, \uc7ac\ubd80\ud305 \uc2dc \ub2e4\uc2dc \uc801\uc6a9\ub41c\ub2e4",
+          "duration": 360.2749699999986,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "\uae00\uc790 \ud06c\uae30 3\ub2e8 (V3C \u2460)"
+          ],
+          "fullName": "\uae00\uc790 \ud06c\uae30 3\ub2e8 (V3C \u2460) applyAiFontSize\ub294 data \uc18d\uc131\uacfc CSS \ubcc0\uc218(--ai-font-scale)\ub97c \ud568\uaed8 \uc124\uc815\ud55c\ub2e4",
+          "status": "passed",
+          "title": "applyAiFontSize\ub294 data \uc18d\uc131\uacfc CSS \ubcc0\uc218(--ai-font-scale)\ub97c \ud568\uaed8 \uc124\uc815\ud55c\ub2e4",
+          "duration": 141.95890299999883,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "\uae00\uc790 \ud06c\uae30 3\ub2e8 (V3C \u2460)"
+          ],
+          "fullName": "\uae00\uc790 \ud06c\uae30 3\ub2e8 (V3C \u2460) \uae30\ub85d \uc90c \uc2a4\ud14c\ud37c\ub294 \uc5c6\ub2e4 \u2014 Ctrl+\ud720\uc774 \uae00\uc790 \ud06c\uae30\ub97c \ubc14\uafb8\uace0 \uc601\uc18d\ud55c\ub2e4",
+          "status": "passed",
+          "title": "\uae30\ub85d \uc90c \uc2a4\ud14c\ud37c\ub294 \uc5c6\ub2e4 \u2014 Ctrl+\ud720\uc774 \uae00\uc790 \ud06c\uae30\ub97c \ubc14\uafb8\uace0 \uc601\uc18d\ud55c\ub2e4",
+          "duration": 193.883636999999,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "\ub3c4\uad6c \ud638\ucd9c \uc0c1\uc138 \uc544\ucf54\ub514\uc5b8 (V3C \u2462)"
+          ],
+          "fullName": "\ub3c4\uad6c \ud638\ucd9c \uc0c1\uc138 \uc544\ucf54\ub514\uc5b8 (V3C \u2462) \uc131\uacf5 \ub77c\uc778\uc740 \ud55c \uc904 \uc694\uc57d\ub9cc \ubcf4\uc5ec JSON \uc778\uc790/\uacb0\uacfc \uc6d0\ubb38 \ub178\uc774\uc988\ub97c \uc228\uae34\ub2e4",
+          "status": "passed",
+          "title": "\uc131\uacf5 \ub77c\uc778\uc740 \ud55c \uc904 \uc694\uc57d\ub9cc \ubcf4\uc5ec JSON \uc778\uc790/\uacb0\uacfc \uc6d0\ubb38 \ub178\uc774\uc988\ub97c \uc228\uae34\ub2e4",
+          "duration": 247.37554999999702,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "\ub3c4\uad6c \ud638\ucd9c \uc0c1\uc138 \uc544\ucf54\ub514\uc5b8 (V3C \u2462)"
+          ],
+          "fullName": "\ub3c4\uad6c \ud638\ucd9c \uc0c1\uc138 \uc544\ucf54\ub514\uc5b8 (V3C \u2462) \uc2e4\ud328 \ub77c\uc778\uc740 \uae30\uc874 testid\ub97c \uc720\uc9c0\ud558\uba74\uc11c \uc544\ucf54\ub514\uc5b8 \uc548\uc5d0 \uc624\ub958 \uc6d0\ubb38(summary/issues)\uc744 \uadf8\ub300\ub85c \ub2f4\ub294\ub2e4",
+          "status": "passed",
+          "title": "\uc2e4\ud328 \ub77c\uc778\uc740 \uae30\uc874 testid\ub97c \uc720\uc9c0\ud558\uba74\uc11c \uc544\ucf54\ub514\uc5b8 \uc548\uc5d0 \uc624\ub958 \uc6d0\ubb38(summary/issues)\uc744 \uadf8\ub300\ub85c \ub2f4\ub294\ub2e4",
+          "duration": 288.155144999997,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "\ub3c4\uad6c \ud638\ucd9c \uc0c1\uc138 \uc544\ucf54\ub514\uc5b8 (V3C \u2462)"
+          ],
+          "fullName": "\ub3c4\uad6c \ud638\ucd9c \uc0c1\uc138 \uc544\ucf54\ub514\uc5b8 (V3C \u2462) \ubcf5\uc6d0\ub41c \ub300\ud654\uc758 \ub3c4\uad6c \ub85c\uadf8\ub294 \ud55c \uc904 \uc694\uc57d\uc73c\ub85c \ub0a8\uace0 JSON \uc0c1\uc138\ub294 \uc228\uae34\ub2e4",
+          "status": "passed",
+          "title": "\ubcf5\uc6d0\ub41c \ub300\ud654\uc758 \ub3c4\uad6c \ub85c\uadf8\ub294 \ud55c \uc904 \uc694\uc57d\uc73c\ub85c \ub0a8\uace0 JSON \uc0c1\uc138\ub294 \uc228\uae34\ub2e4",
+          "duration": 463.79846800000087,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "\ubcd1\ud569 \ucd94\ub860 \uc6d0\ubb38 \uc804\uccb4 \uc5f4\ub78c (V3C \u2461)"
+          ],
+          "fullName": "\ubcd1\ud569 \ucd94\ub860 \uc6d0\ubb38 \uc804\uccb4 \uc5f4\ub78c (V3C \u2461) \ub3c4\uad6c \uc0ac\uc774 \ucd94\ub860\uc774 \ud55c \ube14\ub85d\uc73c\ub85c \ubcd1\ud569\ub3fc\ub3c4 \uac01 \ucd94\ub860\uc758 \uc6d0\ubb38 \uc804\uccb4\uac00 \uc544\uc774\ud15c\uc73c\ub85c \ub0a8\uace0 \ud1a0\uae00\uc740 \ud69f\uc218\ub97c \ud45c\uc2dc\ud55c\ub2e4",
+          "status": "failed",
+          "title": "\ub3c4\uad6c \uc0ac\uc774 \ucd94\ub860\uc774 \ud55c \ube14\ub85d\uc73c\ub85c \ubcd1\ud569\ub3fc\ub3c4 \uac01 \ucd94\ub860\uc758 \uc6d0\ubb38 \uc804\uccb4\uac00 \uc544\uc774\ud15c\uc73c\ub85c \ub0a8\uace0 \ud1a0\uae00\uc740 \ud69f\uc218\ub97c \ud45c\uc2dc\ud55c\ub2e4",
+          "duration": 628.2436320000052,
+          "failureMessages": [
+            "AssertionError: expected null to be truthy\n    at /home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/aiChatObservability.test.ts:216:26\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+          ],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "\uc2e4\uc2dc\uac04 \uace0\uc2a4\ud2b8 \ud504\ub9ac\ubdf0 \uc5f0\uacb0"
+          ],
+          "fullName": "\uc2e4\uc2dc\uac04 \uace0\uc2a4\ud2b8 \ud504\ub9ac\ubdf0 \uc5f0\uacb0 \ucc44\ud305 \ud134\uc758 \uc131\uacf5\ud55c \uc4f0\uae30 tool_call \ub4a4 \uc138\uc158 draft diff \uace0\uc2a4\ud2b8\ub97c \ubc1c\ud589\ud55c\ub2e4",
+          "status": "failed",
+          "title": "\ucc44\ud305 \ud134\uc758 \uc131\uacf5\ud55c \uc4f0\uae30 tool_call \ub4a4 \uc138\uc158 draft diff \uace0\uc2a4\ud2b8\ub97c \ubc1c\ud589\ud55c\ub2e4",
+          "duration": 686.8294400000013,
+          "failureMessages": [
+            "AssertionError: expected [] to deeply equal ArrayContaining{\u2026}\n    at /home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/aiChatObservability.test.ts:303:22\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+          ],
+          "meta": {}
+        }
+      ],
+      "startTime": 1788660781168,
+      "endTime": 1788660784374.8293,
+      "status": "failed",
+      "message": "",
+      "name": "/home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/aiChatObservability.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "transport failure paints recovery CTA and keeps Send mounted"
+          ],
+          "fullName": "transport failure paints recovery CTA and keeps Send mounted refused fetch: is-turn-running cleared, system error bubble + ai-error-open-settings, ai-send stays disabled with ai-abort visible",
+          "status": "failed",
+          "title": "refused fetch: is-turn-running cleared, system error bubble + ai-error-open-settings, ai-send stays disabled with ai-abort visible",
+          "duration": 687.9258120000004,
+          "failureMessages": [
+            "AssertionError: expected null to be truthy\n    at /home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/aiChatPanelTransportError.test.ts:68:59\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+          ],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "transport failure paints recovery CTA and keeps Send mounted"
+          ],
+          "fullName": "transport failure paints recovery CTA and keeps Send mounted 401 also mounts settings opener",
+          "status": "passed",
+          "title": "401 also mounts settings opener",
+          "duration": 546.6564120000003,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1788660832007,
+      "endTime": 1788660833241.6565,
+      "status": "failed",
+      "message": "",
+      "name": "/home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/aiChatPanelTransportError.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "\uc120\ud0dd \uce69 \ud574\uc81c\uc640 \ud134 \uc2a4\ucf54\ud504"
+          ],
+          "fullName": "\uc120\ud0dd \uce69 \ud574\uc81c\uc640 \ud134 \uc2a4\ucf54\ud504 \u00d7 \ub85c \ud574\uc81c\ud55c \ub4a4 \ubcf4\ub0b4\uba74 \uc138\uc158 \uc2a4\ucf54\ud504\uac00 null \uc774\uace0 \uc601\uc5ed \uc2e4\ud589\ubd80\ub97c \ud0c0\uc9c0 \uc54a\ub294\ub2e4",
+          "status": "passed",
+          "title": "\u00d7 \ub85c \ud574\uc81c\ud55c \ub4a4 \ubcf4\ub0b4\uba74 \uc138\uc158 \uc2a4\ucf54\ud504\uac00 null \uc774\uace0 \uc601\uc5ed \uc2e4\ud589\ubd80\ub97c \ud0c0\uc9c0 \uc54a\ub294\ub2e4",
+          "duration": 945.1786629999997,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "\uc120\ud0dd \uce69 \ud574\uc81c\uc640 \ud134 \uc2a4\ucf54\ud504"
+          ],
+          "fullName": "\uc120\ud0dd \uce69 \ud574\uc81c\uc640 \ud134 \uc2a4\ucf54\ud504 \uce69\uc774 \uc0b4\uc544 \uc788\uc73c\uba74 \uc601\uc5ed \uc2e4\ud589\ubd80\ub85c \uac04\ub2e4(\ub300\uc870\uad70)",
+          "status": "passed",
+          "title": "\uce69\uc774 \uc0b4\uc544 \uc788\uc73c\uba74 \uc601\uc5ed \uc2e4\ud589\ubd80\ub85c \uac04\ub2e4(\ub300\uc870\uad70)",
+          "duration": 315.7019909999999,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "\ub300\uae30 \uc0c1\ud0dc\uc5d0\uc11c\ub3c4 \uc120\ud0dd \uce69\uc740 \ubcf4\uc778\ub2e4"
+          ],
+          "fullName": "\ub300\uae30 \uc0c1\ud0dc\uc5d0\uc11c\ub3c4 \uc120\ud0dd \uce69\uc740 \ubcf4\uc778\ub2e4 \uc120\ud0dd \uce69\uc774 \ubd99\uc73c\uba74 \uce69 \ud638\uc2a4\ud2b8\uc5d0 has-selection-scope \uac00 \uc11c\uace0, \ud574\uc81c\ud558\uba74 \ub0b4\ub824\uac04\ub2e4",
+          "status": "passed",
+          "title": "\uc120\ud0dd \uce69\uc774 \ubd99\uc73c\uba74 \uce69 \ud638\uc2a4\ud2b8\uc5d0 has-selection-scope \uac00 \uc11c\uace0, \ud574\uc81c\ud558\uba74 \ub0b4\ub824\uac04\ub2e4",
+          "duration": 375.53952500000014,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "\ub300\uae30 \uc0c1\ud0dc\uc5d0\uc11c\ub3c4 \uc120\ud0dd \uce69\uc740 \ubcf4\uc778\ub2e4"
+          ],
+          "fullName": "\ub300\uae30 \uc0c1\ud0dc\uc5d0\uc11c\ub3c4 \uc120\ud0dd \uce69\uc740 \ubcf4\uc778\ub2e4 idle \ud328\ub110\uc5d0\uc11c has-selection-scope \uce69 \ud638\uc2a4\ud2b8\uc758 \uc0ac\uc6a9 display \ub294 none \uc774 \uc544\ub2c8\ub2e4",
+          "status": "failed",
+          "title": "idle \ud328\ub110\uc5d0\uc11c has-selection-scope \uce69 \ud638\uc2a4\ud2b8\uc758 \uc0ac\uc6a9 display \ub294 none \uc774 \uc544\ub2c8\ub2e4",
+          "duration": 230.77006400000027,
+          "failureMessages": [
+            "AssertionError: expected 'block' to be 'none' // Object.is equality\n    at /home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/aiSelectionChipScope.test.ts:133:54\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runFiles (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1787:3)"
+          ],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "\ucef4\ud3ec\uc800 \ud78c\ud2b8\ub294 \uc228\uc744 \ub54c \uc790\ub9ac\ub97c \ube44\uc6b4\ub2e4"
+          ],
+          "fullName": "\ucef4\ud3ec\uc800 \ud78c\ud2b8\ub294 \uc228\uc744 \ub54c \uc790\ub9ac\ub97c \ube44\uc6b4\ub2e4 \uc785\ub825 \ud3ec\ucee4\uc2a4\uac00 \uc5c6\uc744 \ub54c \ud78c\ud2b8\uc758 \uc0ac\uc6a9 display \ub294 none \uc774\ub2e4(visibility:hidden \uc740 156px \ub97c \uba39\uc5c8\ub2e4)",
+          "status": "failed",
+          "title": "\uc785\ub825 \ud3ec\ucee4\uc2a4\uac00 \uc5c6\uc744 \ub54c \ud78c\ud2b8\uc758 \uc0ac\uc6a9 display \ub294 none \uc774\ub2e4(visibility:hidden \uc740 156px \ub97c \uba39\uc5c8\ub2e4)",
+          "duration": 203.53228599999966,
+          "failureMessages": [
+            "Error: ENOENT: no such file or directory, open '/home/main/z-project/rpg-zzu-life-full-p2-gate-current/src/styles/database/tabs-b-assistant-panel/14-assistant-ux-repair.css'\n    at readFileSync (node:fs:440:20)\n    at /home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/aiSelectionChipScope.test.ts:143:17\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+          ],
+          "meta": {}
+        }
+      ],
+      "startTime": 1788660810540,
+      "endTime": 1788660812626.5322,
+      "status": "failed",
+      "message": "",
+      "name": "/home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/aiSelectionChipScope.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "database item inspector form"
+          ],
+          "fullName": "database item inspector form summarizes a finite-use party medicine from live item fields",
+          "status": "passed",
+          "title": "summarizes a finite-use party medicine from live item fields",
+          "duration": 209.419753999995,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database item inspector form"
+          ],
+          "fullName": "database item inspector form resolves a special item's triggered skill name",
+          "status": "passed",
+          "title": "resolves a special item's triggered skill name",
+          "duration": 209.91890400000557,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database item inspector form"
+          ],
+          "fullName": "database item inspector form does not present special item actor and class ids as runtime restrictions",
+          "status": "passed",
+          "title": "does not present special item actor and class ids as runtime restrictions",
+          "duration": 111.34591699999874,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database item inspector form"
+          ],
+          "fullName": "database item inspector form keeps an always item battle-usable when the legacy menu-only flag is also set",
+          "status": "passed",
+          "title": "keeps an always item battle-usable when the legacy menu-only flag is also set",
+          "duration": 178.5132220000014,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database item inspector form"
+          ],
+          "fullName": "database item inspector form renders the effect story and refreshes it in place after recovery edits",
+          "status": "passed",
+          "title": "renders the effect story and refreshes it in place after recovery edits",
+          "duration": 320.47535600000265,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database item inspector form"
+          ],
+          "fullName": "database item inspector form renders the inspector header with 96px icon, name edit (db-field-name), and type tag",
+          "status": "passed",
+          "title": "renders the inspector header with 96px icon, name edit (db-field-name), and type tag",
+          "duration": 392.5459209999972,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database item inspector form"
+          ],
+          "fullName": "database item inspector form HP/MP recovery % slider/stepper writes clamped step-5 values to the store",
+          "status": "passed",
+          "title": "HP/MP recovery % slider/stepper writes clamped step-5 values to the store",
+          "duration": 742.2954639999953,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database item inspector form"
+          ],
+          "fullName": "database item inspector form keeps the base percent testid on the field wrapper while inputs use -slider/-stepper",
+          "status": "passed",
+          "title": "keeps the base percent testid on the field wrapper while inputs use -slider/-stepper",
+          "duration": 122.98969499999657,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database item inspector form"
+          ],
+          "fullName": "database item inspector form segmented scope radio rewrites the stored ItemScope enum",
+          "status": "passed",
+          "title": "segmented scope radio rewrites the stored ItemScope enum",
+          "duration": 493.745640000001,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database item inspector form"
+          ],
+          "fullName": "database item inspector form avatar chip toggles an actor id in usableActorIds and keeps class checkboxes",
+          "status": "passed",
+          "title": "avatar chip toggles an actor id in usableActorIds and keeps class checkboxes",
+          "duration": 497.25194100000226,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database item inspector form"
+          ],
+          "fullName": "database item inspector form occasion selection synchronizes menu and battle flags",
+          "status": "passed",
+          "title": "occasion selection synchronizes menu and battle flags",
+          "duration": 654.8886570000031,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database item inspector form"
+          ],
+          "fullName": "database item inspector form switch items use the same occasion authority",
+          "status": "passed",
+          "title": "switch items use the same occasion authority",
+          "duration": 502.13671199999953,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database item inspector form"
+          ],
+          "fullName": "database item inspector form type change calls updateItemType + full rerender and swaps type panels",
+          "status": "passed",
+          "title": "type change calls updateItemType + full rerender and swaps type panels",
+          "duration": 461.8501679999972,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database item inspector form"
+          ],
+          "fullName": "database item inspector form draws one scope control for usable items and none for ordinary goods",
+          "status": "passed",
+          "title": "draws one scope control for usable items and none for ordinary goods",
+          "duration": 338.85456200000044,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database item inspector form"
+          ],
+          "fullName": "database item inspector form renders one shared usable card placed under the limits section",
+          "status": "passed",
+          "title": "renders one shared usable card placed under the limits section",
+          "duration": 336.83535100000154,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database item inspector form"
+          ],
+          "fullName": "database item inspector form orders workbench cards as summary \u2192 definition \u2192 effect \u2192 limits",
+          "status": "passed",
+          "title": "orders workbench cards as summary \u2192 definition \u2192 effect \u2192 limits",
+          "duration": 180.6122649999961,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database item inspector form"
+          ],
+          "fullName": "database item inspector form authors item state effects through add, edit and delete rows",
+          "status": "passed",
+          "title": "authors item state effects through add, edit and delete rows",
+          "duration": 987.7955779999975,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database item inspector form"
+          ],
+          "fullName": "database item inspector form assigns and clears the battle animation played when the item is used",
+          "status": "passed",
+          "title": "assigns and clears the battle animation played when the item is used",
+          "duration": 448.0375950000016,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database item inspector form"
+          ],
+          "fullName": "database item inspector form authors the monster care profile and removes it when set to none",
+          "status": "passed",
+          "title": "authors the monster care profile and removes it when set to none",
+          "duration": 778.9801860000007,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database item inspector form"
+          ],
+          "fullName": "database item inspector form round-trips edited state effects, animation and care profile through project persistence",
+          "status": "passed",
+          "title": "round-trips edited state effects, animation and care profile through project persistence",
+          "duration": 864.628687999997,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database item inspector form"
+          ],
+          "fullName": "database item inspector form narrates inflicted states with their chance and names the battle animation",
+          "status": "passed",
+          "title": "narrates inflicted states with their chance and names the battle animation",
+          "duration": 114.75234700000146,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database item inspector form"
+          ],
+          "fullName": "database item inspector form omits the chance when an inflicted state always lands",
+          "status": "passed",
+          "title": "omits the chance when an inflicted state always lands",
+          "duration": 104.5806900000025,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database item inspector form"
+          ],
+          "fullName": "database item inspector form keeps price and consumption in basics, without unrelated farming options on medicine",
+          "status": "passed",
+          "title": "keeps price and consumption in basics, without unrelated farming options on medicine",
+          "duration": 189.28075199999876,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database item inspector form"
+          ],
+          "fullName": "database item inspector form weapon type shows an equipment-tab door instead of the legacy equipment form",
+          "status": "failed",
+          "title": "weapon type shows an equipment-tab door instead of the legacy equipment form",
+          "duration": 326.2176550000004,
+          "failureMessages": [
+            "AssertionError: expected '\u2694\ucc29\uc6a9 \uc7a5\ube44\ub294 \ubcc4\ub3c4 \ud56d\ubaa9\uc73c\ub85c \ub9cc\ub4ed\ub2c8\ub2e4\uc774 \ud56d\ubaa9\uc740 \uc774\uc804 \ud615\uc2dd\uc758 \ube44\ucc29\uc6a9 \u2026' to contain '\uc7a5\ube44 \ud0ed'\n    at /home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/databaseItemInspector.test.ts:486:75\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+          ],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database item inspector form"
+          ],
+          "fullName": "database item inspector form legacy weapon item keeps its price but has no scope/capture editors",
+          "status": "passed",
+          "title": "legacy weapon item keeps its price but has no scope/capture editors",
+          "duration": 470.86267300000327,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database item inspector form"
+          ],
+          "fullName": "database item inspector form farm tool dropdown offers every canonical FARM_TOOLS value with Korean labels",
+          "status": "passed",
+          "title": "farm tool dropdown offers every canonical FARM_TOOLS value with Korean labels",
+          "duration": 420.5279129999981,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1788660778181,
+      "endTime": 1788660788642.5278,
+      "status": "failed",
+      "message": "",
+      "name": "/home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/databaseItemInspector.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "database modal dirty session"
+          ],
+          "fullName": "database modal dirty session tracks a clean modal snapshot until database edits change project state",
+          "status": "passed",
+          "title": "tracks a clean modal snapshot until database edits change project state",
+          "duration": 662.929619,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database modal dirty session"
+          ],
+          "fullName": "database modal dirty session restores the modal-open snapshot when dirty edits are discarded",
+          "status": "passed",
+          "title": "restores the modal-open snapshot when dirty edits are discarded",
+          "duration": 892.6997120000001,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database modal dirty session"
+          ],
+          "fullName": "database modal dirty session marks applied edits clean so later cancel attempts can close without a prompt",
+          "status": "passed",
+          "title": "marks applied edits clean so later cancel attempts can close without a prompt",
+          "duration": 733.83266,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database modal dirty session"
+          ],
+          "fullName": "database modal dirty session rewinds undo history to the session-open depth on discard so discarded edits cannot be revived with Ctrl+Z",
+          "status": "passed",
+          "title": "rewinds undo history to the session-open depth on discard so discarded edits cannot be revived with Ctrl+Z",
+          "duration": 743.9422670000004,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database modal dirty session"
+          ],
+          "fullName": "database modal dirty session discards a session-only edit even when the undo stack was already saturated at MAX_HISTORY before the session opened",
+          "status": "passed",
+          "title": "discards a session-only edit even when the undo stack was already saturated at MAX_HISTORY before the session opened",
+          "duration": 23509.258957,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1788660820874,
+      "endTime": 1788660847417.259,
+      "status": "passed",
+      "message": "",
+      "name": "/home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/databaseModalDirtySession.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "database navigation by editor mode"
+          ],
+          "fullName": "database navigation by editor mode groups the rail by category in beginner mode too \u2014 no all-data disclosure",
+          "status": "passed",
+          "title": "groups the rail by category in beginner mode too \u2014 no all-data disclosure",
+          "duration": 336.45446699999957,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database navigation by editor mode"
+          ],
+          "fullName": "database navigation by editor mode keeps grouped navigation with explicit monster and life domains in standard mode",
+          "status": "passed",
+          "title": "keeps grouped navigation with explicit monster and life domains in standard mode",
+          "duration": 150.63799400000062,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database navigation by editor mode"
+          ],
+          "fullName": "database navigation by editor mode \uadf8\ub8f9 \ud5e4\ub354\uac00 \uc548\uc5d0 \ub4e0 \ud0ed \uc774\ub984\uacfc \ub808\ucf54\ub4dc \ud569\uacc4\ub97c \uc54c\ub824\uc900\ub2e4 \u2014 \ub77c\ubca8 \ud14d\uc2a4\ud2b8\ub294 \uadf8\ub300\ub85c",
+          "status": "failed",
+          "title": "\uadf8\ub8f9 \ud5e4\ub354\uac00 \uc548\uc5d0 \ub4e0 \ud0ed \uc774\ub984\uacfc \ub808\ucf54\ub4dc \ud569\uacc4\ub97c \uc54c\ub824\uc900\ub2e4 \u2014 \ub77c\ubca8 \ud14d\uc2a4\ud2b8\ub294 \uadf8\ub300\ub85c",
+          "duration": 166.4439169999996,
+          "failureMessages": [
+            "AssertionError: expected '\ub9f5' to be '\uc138\uacc4' // Object.is equality\n    at /home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/databaseNavMode.test.ts:80:69\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+          ],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database navigation by editor mode"
+          ],
+          "fullName": "database navigation by editor mode shows the full expert surface without an all-data disclosure",
+          "status": "passed",
+          "title": "shows the full expert surface without an all-data disclosure",
+          "duration": 205.510577,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1788660822169,
+      "endTime": 1788660823028.5105,
+      "status": "failed",
+      "message": "",
+      "name": "/home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/databaseNavMode.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "database overview dashboard"
+          ],
+          "fullName": "database overview dashboard renders stat chips immediately with counts from the project data",
+          "status": "passed",
+          "title": "renders stat chips immediately with counts from the project data",
+          "duration": 26605.554699,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database overview dashboard"
+          ],
+          "fullName": "database overview dashboard lazy compute: charts container is empty before idle callback, populated after flush",
+          "status": "passed",
+          "title": "lazy compute: charts container is empty before idle callback, populated after flush",
+          "duration": 3900.273012000005,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database overview dashboard"
+          ],
+          "fullName": "database overview dashboard curve chart renders two non-empty SVG paths with gridlines and Lv1..Lv50 labels",
+          "status": "passed",
+          "title": "curve chart renders two non-empty SVG paths with gridlines and Lv1..Lv50 labels",
+          "duration": 2318.2202839999954,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database overview dashboard"
+          ],
+          "fullName": "database overview dashboard scatter chart draws one circle per enemy with a <title> tooltip and boss styling",
+          "status": "passed",
+          "title": "scatter chart draws one circle per enemy with a <title> tooltip and boss styling",
+          "duration": 3209.902256000001,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database overview dashboard"
+          ],
+          "fullName": "database overview dashboard renders issue cards matching the detector output with jump buttons",
+          "status": "passed",
+          "title": "renders issue cards matching the detector output with jump buttons",
+          "duration": 3437.9379740000004,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database overview dashboard"
+          ],
+          "fullName": "database overview dashboard jump button switches to the target tab via switchDatabaseActiveTab (G006)",
+          "status": "passed",
+          "title": "jump button switches to the target tab via switchDatabaseActiveTab (G006)",
+          "duration": 3137.5537630000035,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database overview dashboard"
+          ],
+          "fullName": "database overview dashboard attack-stagnation jump opens the classes tab, not skills",
+          "status": "passed",
+          "title": "attack-stagnation jump opens the classes tab, not skills",
+          "duration": 3188.1812219999993,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database overview dashboard"
+          ],
+          "fullName": "database overview dashboard curve section shows a visible HP/attack legend",
+          "status": "passed",
+          "title": "curve section shows a visible HP/attack legend",
+          "duration": 3412.581076000002,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database overview dashboard"
+          ],
+          "fullName": "database overview dashboard AI \ubd84\uc11d button dispatches the modal's database-ai-toggle click (aria-expanded)",
+          "status": "passed",
+          "title": "AI \ubd84\uc11d button dispatches the modal's database-ai-toggle click (aria-expanded)",
+          "duration": 2671.113167999996,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database overview dashboard"
+          ],
+          "fullName": "database overview dashboard clean project shows empty-state cards instead of blank canvases",
+          "status": "passed",
+          "title": "clean project shows empty-state cards instead of blank canvases",
+          "duration": 3165.408295000001,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database overview dashboard"
+          ],
+          "fullName": "database overview dashboard empty project renders empty states without NaN paths",
+          "status": "passed",
+          "title": "empty project renders empty states without NaN paths",
+          "duration": 2990.827123999996,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1788660751512,
+      "endTime": 1788660809550.8271,
+      "status": "passed",
+      "message": "",
+      "name": "/home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/databaseOverviewDashboard.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "database overview tab shell"
+          ],
+          "fullName": "database overview tab shell summarizes the authored game across world, story, cast, systems, and readiness",
+          "status": "passed",
+          "title": "summarizes the authored game across world, story, cast, systems, and readiness",
+          "duration": 6262.923043,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database overview tab shell"
+          ],
+          "fullName": "database overview tab shell renders stat chips for all 9 collections with counts from the project data",
+          "status": "passed",
+          "title": "renders stat chips for all 9 collections with counts from the project data",
+          "duration": 3262.7592919999997,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database overview tab shell"
+          ],
+          "fullName": "database overview tab shell empty project renders chips with 0 counts without crashing",
+          "status": "passed",
+          "title": "empty project renders chips with 0 counts without crashing",
+          "duration": 3028.777339,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database overview tab shell"
+          ],
+          "fullName": "database overview tab shell default open tab after modal open is the stored last tab, NOT overview unless stored",
+          "status": "passed",
+          "title": "default open tab after modal open is the stored last tab, NOT overview unless stored",
+          "duration": 2851.211545,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database overview tab shell"
+          ],
+          "fullName": "database overview tab shell persists across hard reload: stored 'overview' lands on the overview tab",
+          "status": "passed",
+          "title": "persists across hard reload: stored 'overview' lands on the overview tab",
+          "duration": 2995.0354020000013,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database overview tab shell"
+          ],
+          "fullName": "database overview tab shell setDatabaseActiveTab('overview') + renderDatabasePanel renders the overview tab",
+          "status": "passed",
+          "title": "setDatabaseActiveTab('overview') + renderDatabasePanel renders the overview tab",
+          "duration": 2864.0189830000018,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database overview tab shell"
+          ],
+          "fullName": "database overview tab shell stat chips are buttons that switch to the matching tab (G006)",
+          "status": "passed",
+          "title": "stat chips are buttons that switch to the matching tab (G006)",
+          "duration": 2305.8241610000005,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database overview tab shell"
+          ],
+          "fullName": "database overview tab shell databaseTabLabel resolves the overview label for the AI footer",
+          "status": "passed",
+          "title": "databaseTabLabel resolves the overview label for the AI footer",
+          "duration": 2505.7259159999994,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1788660792858,
+      "endTime": 1788660818935.7258,
+      "status": "passed",
+      "message": "",
+      "name": "/home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/databaseOverviewTab.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "database radio custom guard"
+          ],
+          "fullName": "database radio custom guard \uae30\uc900\uc120\uc774 DB radio \ucee4\uc2a4\ud140 \uc6d0 \uaddc\uce59\uc744 \uac00\uc9c4\ub2e4",
+          "status": "passed",
+          "title": "\uae30\uc900\uc120\uc774 DB radio \ucee4\uc2a4\ud140 \uc6d0 \uaddc\uce59\uc744 \uac00\uc9c4\ub2e4",
+          "duration": 12.874482,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database radio custom guard"
+          ],
+          "fullName": "database radio custom guard \uae30\uc900\uc120 \ubc16\uc758 \uc9c1\uc811 radio \uaddc\uce59\uc774 \uc5c6\ub2e4",
+          "status": "passed",
+          "title": "\uae30\uc900\uc120 \ubc16\uc758 \uc9c1\uc811 radio \uaddc\uce59\uc774 \uc5c6\ub2e4",
+          "duration": 304.52437100000003,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database radio custom guard"
+          ],
+          "fullName": "database radio custom guard radio \uc81c\uc678 \uc5c6\ub294 bare input \uacb0\ud569\uc774 \uc5c6\ub2e4",
+          "status": "failed",
+          "title": "radio \uc81c\uc678 \uc5c6\ub294 bare input \uacb0\ud569\uc774 \uc5c6\ub2e4",
+          "duration": 278.837525,
+          "failureMessages": [
+            "AssertionError: bare input \uacb0\ud569\uc774 radio \uae4c\uc9c0 \ud568\uaed8 \uce60\ud55c\ub2e4: expected [ Array(1) ] to deeply equal []\n    at /home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/databaseRadioCustomGuard.test.ts:214:57\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+          ],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database radio custom guard"
+          ],
+          "fullName": "database radio custom guard radio \uaddc\uce59\uc5d0 \ud558\ub4dc\ucf54\ub529 \uc0c9\uc774 \uc5c6\ub2e4",
+          "status": "passed",
+          "title": "radio \uaddc\uce59\uc5d0 \ud558\ub4dc\ucf54\ub529 \uc0c9\uc774 \uc5c6\ub2e4",
+          "duration": 238.49233000000004,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1788660790283,
+      "endTime": 1788660791118.4924,
+      "status": "failed",
+      "message": "",
+      "name": "/home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/databaseRadioCustomGuard.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "database sidebar keyboard navigation"
+          ],
+          "fullName": "database sidebar keyboard navigation pins Tab focus order: sidebar DOM order = overview entry + TAB_GROUPS order",
+          "status": "failed",
+          "title": "pins Tab focus order: sidebar DOM order = overview entry + TAB_GROUPS order",
+          "duration": 216.61589400000048,
+          "failureMessages": [
+            "AssertionError: expected [ 'db-tab-overview', \u2026(38) ] to deeply equal [ 'db-tab-overview', \u2026(38) ]\n    at /home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/databaseSidebarKeyboard.test.ts:122:60\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+          ],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database sidebar keyboard navigation"
+          ],
+          "fullName": "database sidebar keyboard navigation activates the focused tab through the click handler on Enter (keydown path inert)",
+          "status": "passed",
+          "title": "activates the focused tab through the click handler on Enter (keydown path inert)",
+          "duration": 174.71878599999945,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database sidebar keyboard navigation"
+          ],
+          "fullName": "database sidebar keyboard navigation activates the focused tab on Space via the click handler, one active tab at a time",
+          "status": "passed",
+          "title": "activates the focused tab on Space via the click handler, one active tab at a time",
+          "duration": 229.65623099999993,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database sidebar keyboard navigation"
+          ],
+          "fullName": "database sidebar keyboard navigation keeps every sidebar tab reachable in sequence when walked with Tab-style focus",
+          "status": "failed",
+          "title": "keeps every sidebar tab reachable in sequence when walked with Tab-style focus",
+          "duration": 139.53509600000052,
+          "failureMessages": [
+            "AssertionError: expected [ 'db-tab-overview', \u2026(38) ] to deeply equal [ 'db-tab-overview', \u2026(38) ]\n    at /home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/databaseSidebarKeyboard.test.ts:195:60\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+          ],
+          "meta": {}
+        }
+      ],
+      "startTime": 1788660815486,
+      "endTime": 1788660816246.5352,
+      "status": "failed",
+      "message": "",
+      "name": "/home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/databaseSidebarKeyboard.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "database sidebar navigation"
+          ],
+          "fullName": "database sidebar navigation renders the nav as a .db-tabs sidebar with honest group headers in order",
+          "status": "passed",
+          "title": "renders the nav as a .db-tabs sidebar with honest group headers in order",
+          "duration": 321.05623900000046,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database sidebar navigation"
+          ],
+          "fullName": "database sidebar navigation keeps all registered tab testids, including the unified inventory catalog",
+          "status": "failed",
+          "title": "keeps all registered tab testids, including the unified inventory catalog",
+          "duration": 154.8282589999999,
+          "failureMessages": [
+            "AssertionError: expected 39 to be 37 // Object.is equality\n    at /home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/databaseSidebarNav.test.ts:132:28\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+          ],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database sidebar navigation"
+          ],
+          "fullName": "database sidebar navigation uses domain-specific labels for monster, farming, and resident authoring",
+          "status": "passed",
+          "title": "uses domain-specific labels for monster, farming, and resident authoring",
+          "duration": 185.17104899999958,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database sidebar navigation"
+          ],
+          "fullName": "database sidebar navigation counts only authored keyword rules, not builtin override rows",
+          "status": "passed",
+          "title": "counts only authored keyword rules, not builtin override rows",
+          "duration": 274.6645099999996,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database sidebar navigation"
+          ],
+          "fullName": "database sidebar navigation shows the aggregate life-record count and opens its structured workspace",
+          "status": "passed",
+          "title": "shows the aggregate life-record count and opens its structured workspace",
+          "duration": 269.3695910000006,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database sidebar navigation"
+          ],
+          "fullName": "database sidebar navigation toggles .active on the clicked tab and clears the previous one",
+          "status": "passed",
+          "title": "toggles .active on the clicked tab and clears the previous one",
+          "duration": 159.84801100000004,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database sidebar navigation"
+          ],
+          "fullName": "database sidebar navigation persists the clicked tab to localStorage under the unchanged key",
+          "status": "passed",
+          "title": "persists the clicked tab to localStorage under the unchanged key",
+          "duration": 137.33774099999937,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1788660801464,
+      "endTime": 1788660802966.3376,
+      "status": "failed",
+      "message": "",
+      "name": "/home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/databaseSidebarNav.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "database tab icons"
+          ],
+          "fullName": "database tab icons covers every rail tab, overview included",
+          "status": "failed",
+          "title": "covers every rail tab, overview included",
+          "duration": 152.72177499999998,
+          "failureMessages": [
+            "AssertionError: expected 39 to be 38 // Object.is equality\n    at /home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/databaseTabIcons.test.ts:67:30\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+          ],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database tab icons"
+          ],
+          "fullName": "database tab icons builds each icon to the house SVG spec with drawable children",
+          "status": "passed",
+          "title": "builds each icon to the house SVG spec with drawable children",
+          "duration": 229.57138699999996,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database tab icons"
+          ],
+          "fullName": "database tab icons hardcodes no colors \u2014 stroke follows currentColor so themes and the collapsed rail work",
+          "status": "passed",
+          "title": "hardcodes no colors \u2014 stroke follows currentColor so themes and the collapsed rail work",
+          "duration": 130.4972600000001,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database tab icons"
+          ],
+          "fullName": "database tab icons uses no emoji or pictographic glyphs",
+          "status": "passed",
+          "title": "uses no emoji or pictographic glyphs",
+          "duration": 168.9488369999999,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database tab icons"
+          ],
+          "fullName": "database tab icons keeps icon ownership out of CSS \u2014 no content glyphs, no data-short fallback",
+          "status": "passed",
+          "title": "keeps icon ownership out of CSS \u2014 no content glyphs, no data-short fallback",
+          "duration": 221.78915000000052,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "database tab icons"
+          ],
+          "fullName": "database tab icons renders the icon as the first child while the label owns textContent",
+          "status": "failed",
+          "title": "renders the icon as the first child while the label owns textContent",
+          "duration": 144.13736900000004,
+          "failureMessages": [
+            "AssertionError: expected 39 to be 38 // Object.is equality\n    at /home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/databaseTabIcons.test.ts:128:28\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+          ],
+          "meta": {}
+        }
+      ],
+      "startTime": 1788660815639,
+      "endTime": 1788660816687.1375,
+      "status": "failed",
+      "message": "",
+      "name": "/home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/databaseTabIcons.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "debugSession \u2014 \ub7f0\ud0c0\uc784 \ub514\ubc84\uadf8 \uc870\uc791"
+          ],
+          "fullName": "debugSession \u2014 \ub7f0\ud0c0\uc784 \ub514\ubc84\uadf8 \uc870\uc791 applyDebugOp\uac00 \uc2a4\uc704\uce58/\ubcc0\uc218/\uc544\uc774\ud15c/\uace8\ub4dc/\ud154\ub808\ud3ec\ud2b8\ub97c \ubc18\uc601\ud55c\ub2e4",
+          "status": "passed",
+          "title": "applyDebugOp\uac00 \uc2a4\uc704\uce58/\ubcc0\uc218/\uc544\uc774\ud15c/\uace8\ub4dc/\ud154\ub808\ud3ec\ud2b8\ub97c \ubc18\uc601\ud55c\ub2e4",
+          "duration": 1577.156602,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "debugSession \u2014 \ub7f0\ud0c0\uc784 \ub514\ubc84\uadf8 \uc870\uc791"
+          ],
+          "fullName": "debugSession \u2014 \ub7f0\ud0c0\uc784 \ub514\ubc84\uadf8 \uc870\uc791 applyStatePreset\uac00 \uc9c0\uc815 \ud0a4\ub9cc \ubd80\ubd84 \uc801\uc6a9\ud55c\ub2e4",
+          "status": "passed",
+          "title": "applyStatePreset\uac00 \uc9c0\uc815 \ud0a4\ub9cc \ubd80\ubd84 \uc801\uc6a9\ud55c\ub2e4",
+          "duration": 147.92303800000036,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "debugSession \u2014 \ub7f0\ud0c0\uc784 \ub514\ubc84\uadf8 \uc870\uc791"
+          ],
+          "fullName": "debugSession \u2014 \ub7f0\ud0c0\uc784 \ub514\ubc84\uadf8 \uc870\uc791 testHerePreset\uac00 \uc2dc\uc791 \uc88c\ud45c \uc624\ubc84\ub77c\uc774\ub4dc \ud504\ub9ac\uc14b\uc744 \ub9cc\ub4e0\ub2e4",
+          "status": "passed",
+          "title": "testHerePreset\uac00 \uc2dc\uc791 \uc88c\ud45c \uc624\ubc84\ub77c\uc774\ub4dc \ud504\ub9ac\uc14b\uc744 \ub9cc\ub4e0\ub2e4",
+          "duration": 185.29400299999998,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "debugSession \u2014 \ub7f0\ud0c0\uc784 \ub514\ubc84\uadf8 \uc870\uc791"
+          ],
+          "fullName": "debugSession \u2014 \ub7f0\ud0c0\uc784 \ub514\ubc84\uadf8 \uc870\uc791 PlayScene \ud14c\uc2a4\ud2b8 \ud6c5\uc740 \uc138\uc158 \uad50\uccb4 \ud6c4 \ub77c\uc774\ube0c \uc138\uc158\uc744 \uc77d\uace0 \uc4f4\ub2e4",
+          "status": "passed",
+          "title": "PlayScene \ud14c\uc2a4\ud2b8 \ud6c5\uc740 \uc138\uc158 \uad50\uccb4 \ud6c4 \ub77c\uc774\ube0c \uc138\uc158\uc744 \uc77d\uace0 \uc4f4\ub2e4",
+          "duration": 152.51628000000028,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1788660823761,
+      "endTime": 1788660825827.5164,
+      "status": "passed",
+      "message": "",
+      "name": "/home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/debugSession.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "mounted project E2E bridge"
+          ],
+          "fullName": "mounted project E2E bridge installs exactly four frozen methods and returns detached recursively frozen snapshots",
+          "status": "passed",
+          "title": "installs exactly four frozen methods and returns detached recursively frozen snapshots",
+          "duration": 3038.9498759999997,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "mounted project E2E bridge"
+          ],
+          "fullName": "mounted project E2E bridge denies missing/wrong capability before invoking either remote store method",
+          "status": "passed",
+          "title": "denies missing/wrong capability before invoking either remote store method",
+          "duration": 1668.707074,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "mounted project E2E bridge"
+          ],
+          "fullName": "mounted project E2E bridge maps authorized initialization and reload to the mounted singleton with exact proof",
+          "status": "passed",
+          "title": "maps authorized initialization and reload to the mounted singleton with exact proof",
+          "duration": 2827.0095520000004,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "mounted project E2E bridge"
+          ],
+          "fullName": "mounted project E2E bridge cleanup removes only the bridge and remount consumes no stale capability",
+          "status": "passed",
+          "title": "cleanup removes only the bridge and remount consumes no stale capability",
+          "duration": 2046.4543949999988,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "mounted project E2E bridge"
+          ],
+          "fullName": "mounted project E2E bridge does not install without WebDriver",
+          "status": "passed",
+          "title": "does not install without WebDriver",
+          "duration": 1358.2596620000004,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1788660814379,
+      "endTime": 1788660825318.2598,
+      "status": "passed",
+      "message": "",
+      "name": "/home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/editorProjectE2EBridge.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "M2 \uba85\ub839 \ud3fc \ud45c\uba74 \uc2a4\ub0c5\uc0f7"
+          ],
+          "fullName": "M2 \uba85\ub839 \ud3fc \ud45c\uba74 \uc2a4\ub0c5\uc0f7 \uce74\ud0c8\ub85c\uadf8 \uc804\ub7c9\uc774 \uc608\uc678 \uc5c6\uc774 \ub80c\ub354\ub41c\ub2e4",
+          "status": "passed",
+          "title": "\uce74\ud0c8\ub85c\uadf8 \uc804\ub7c9\uc774 \uc608\uc678 \uc5c6\uc774 \ub80c\ub354\ub41c\ub2e4",
+          "duration": 4.05764199999976,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "M2 \uba85\ub839 \ud3fc \ud45c\uba74 \uc2a4\ub0c5\uc0f7"
+          ],
+          "fullName": "M2 \uba85\ub839 \ud3fc \ud45c\uba74 \uc2a4\ub0c5\uc0f7 \uc2a4\ub0c5\uc0f7 = \uce74\ud0c8\ub85c\uadf8 \uc804\ub7c9 \u2212 \ube48 \uaecd\ub370\uae30 \ubcc4\uce6d",
+          "status": "passed",
+          "title": "\uc2a4\ub0c5\uc0f7 = \uce74\ud0c8\ub85c\uadf8 \uc804\ub7c9 \u2212 \ube48 \uaecd\ub370\uae30 \ubcc4\uce6d",
+          "duration": 1.7974269999976968,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "M2 \uba85\ub839 \ud3fc \ud45c\uba74 \uc2a4\ub0c5\uc0f7"
+          ],
+          "fullName": "M2 \uba85\ub839 \ud3fc \ud45c\uba74 \uc2a4\ub0c5\uc0f7 \ube48 \uaecd\ub370\uae30 \uc81c\uc678 \ubaa9\ub85d\uc774 \uc815\ubcf8\uacfc \uc815\ud655\ud788 \uc77c\uce58\ud55c\ub2e4",
+          "status": "passed",
+          "title": "\ube48 \uaecd\ub370\uae30 \uc81c\uc678 \ubaa9\ub85d\uc774 \uc815\ubcf8\uacfc \uc815\ud655\ud788 \uc77c\uce58\ud55c\ub2e4",
+          "duration": 0.3539570000029926,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "M2 \uba85\ub839 \ud3fc \ud45c\uba74 \uc2a4\ub0c5\uc0f7"
+          ],
+          "fullName": "M2 \uba85\ub839 \ud3fc \ud45c\uba74 \uc2a4\ub0c5\uc0f7 existing \uc774\uba74\uc11c \uc804\uc6a9 \ud3fc\uc744 \uac16\ub294 \ud56d\ubaa9\uc740 \ubc18\ub4dc\uc2dc \uc2a4\ub0c5\uc0f7\uc5d0 \uc788\ub2e4",
+          "status": "passed",
+          "title": "existing \uc774\uba74\uc11c \uc804\uc6a9 \ud3fc\uc744 \uac16\ub294 \ud56d\ubaa9\uc740 \ubc18\ub4dc\uc2dc \uc2a4\ub0c5\uc0f7\uc5d0 \uc788\ub2e4",
+          "duration": 0.4490989999976591,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "M2 \uba85\ub839 \ud3fc \ud45c\uba74 \uc2a4\ub0c5\uc0f7"
+          ],
+          "fullName": "M2 \uba85\ub839 \ud3fc \ud45c\uba74 \uc2a4\ub0c5\uc0f7 \uce74\ud0c8\ub85c\uadf8 \uaddc\ubaa8\uac00 \uace0\uc815 \uc218\uce58\uc640 \uc77c\uce58\ud55c\ub2e4",
+          "status": "passed",
+          "title": "\uce74\ud0c8\ub85c\uadf8 \uaddc\ubaa8\uac00 \uace0\uc815 \uc218\uce58\uc640 \uc77c\uce58\ud55c\ub2e4",
+          "duration": 0.5735719999975117,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "M2 \uba85\ub839 \ud3fc \ud45c\uba74 \uc2a4\ub0c5\uc0f7"
+          ],
+          "fullName": "M2 \uba85\ub839 \ud3fc \ud45c\uba74 \uc2a4\ub0c5\uc0f7 \ubcc4\uce6d \u2192 kind \ub300\uc751\uc774 \uc815\ubcf8\uacfc \uc815\ud655\ud788 \uc77c\uce58\ud55c\ub2e4",
+          "status": "passed",
+          "title": "\ubcc4\uce6d \u2192 kind \ub300\uc751\uc774 \uc815\ubcf8\uacfc \uc815\ud655\ud788 \uc77c\uce58\ud55c\ub2e4",
+          "duration": 0.5460409999977855,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "M2 \uba85\ub839 \ud3fc \ud45c\uba74 \uc2a4\ub0c5\uc0f7"
+          ],
+          "fullName": "M2 \uba85\ub839 \ud3fc \ud45c\uba74 \uc2a4\ub0c5\uc0f7 \ubaa8\ub4e0 \ubcc4\uce6d\uc758 existingKind \uac00 COMMAND_KINDS \uc5d0 \uc2e4\uc7ac\ud55c\ub2e4",
+          "status": "passed",
+          "title": "\ubaa8\ub4e0 \ubcc4\uce6d\uc758 existingKind \uac00 COMMAND_KINDS \uc5d0 \uc2e4\uc7ac\ud55c\ub2e4",
+          "duration": 0.3178970000008121,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "M2 \uba85\ub839 \ud3fc \ud45c\uba74 \uc2a4\ub0c5\uc0f7"
+          ],
+          "fullName": "M2 \uba85\ub839 \ud3fc \ud45c\uba74 \uc2a4\ub0c5\uc0f7 \ubaa8\ub4e0 \ubcc4\uce6d \ub300\uc0c1 kind \uac00 \uc2e4\uc81c\ub85c \ub80c\ub354\ub418\ub294 \ud3fc\uc744 \uac16\ub294\ub2e4",
+          "status": "passed",
+          "title": "\ubaa8\ub4e0 \ubcc4\uce6d \ub300\uc0c1 kind \uac00 \uc2e4\uc81c\ub85c \ub80c\ub354\ub418\ub294 \ud3fc\uc744 \uac16\ub294\ub2e4",
+          "duration": 5436.3741679999985,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "M2 \uba85\ub839 \ud3fc \ud45c\uba74 \uc2a4\ub0c5\uc0f7"
+          ],
+          "fullName": "M2 \uba85\ub839 \ud3fc \ud45c\uba74 \uc2a4\ub0c5\uc0f7 \ud544\ub4dc\uac00 \uc788\ub294 M2 \ud56d\ubaa9\uc740 \ubc18\ub4dc\uc2dc \ucee8\ud2b8\ub864\uc744 \ub0b8\ub2e4 (control 0 \u27f9 fields 0)",
+          "status": "passed",
+          "title": "\ud544\ub4dc\uac00 \uc788\ub294 M2 \ud56d\ubaa9\uc740 \ubc18\ub4dc\uc2dc \ucee8\ud2b8\ub864\uc744 \ub0b8\ub2e4 (control 0 \u27f9 fields 0)",
+          "duration": 0.5304309999992256,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "M2 \uba85\ub839 \ud3fc \ud45c\uba74 \uc2a4\ub0c5\uc0f7"
+          ],
+          "fullName": "M2 \uba85\ub839 \ud3fc \ud45c\uba74 \uc2a4\ub0c5\uc0f7 \ud544\ub4dc\uac00 \uc5c6\ub294\ub370 \ucee8\ud2b8\ub864\uc744 \ub0b4\ub294 \ud56d\ubaa9\uc740 \uc190\uc218 \uc791\uc131 \ud3fc \ubaa9\ub85d\uacfc \uc815\ud655\ud788 \uac19\ub2e4 (fields 0 \u27f9 control 0)",
+          "status": "passed",
+          "title": "\ud544\ub4dc\uac00 \uc5c6\ub294\ub370 \ucee8\ud2b8\ub864\uc744 \ub0b4\ub294 \ud56d\ubaa9\uc740 \uc190\uc218 \uc791\uc131 \ud3fc \ubaa9\ub85d\uacfc \uc815\ud655\ud788 \uac19\ub2e4 (fields 0 \u27f9 control 0)",
+          "duration": 0.47544900000139023,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "M2 \uba85\ub839 \ud3fc \ud45c\uba74 \uc2a4\ub0c5\uc0f7"
+          ],
+          "fullName": "M2 \uba85\ub839 \ud3fc \ud45c\uba74 \uc2a4\ub0c5\uc0f7 \uae30\uc900\uc120\uacfc \uc77c\uce58\ud55c\ub2e4",
+          "status": "failed",
+          "title": "\uae30\uc900\uc120\uacfc \uc77c\uce58\ud55c\ub2e4",
+          "duration": 29.239928999999393,
+          "failureMessages": [
+            "AssertionError: [M2(commandId)] \ud45c\uba74\uc774 \uae30\uc900\uc120\uacfc \ub2e4\ub974\ub2e4 (2\uac74)\n  m2-025-change-actor-faceset: testid \uc2e0\uaddc 2\uc885 [change-actor-faceset-ai-queue, change-actor-faceset-ai-queue-list] | \ud0dc\uadf8 \uac1c\uc218 [div 132\u2192134, p 3\u21924] | \ud074\ub798\uc2a4 \uc2e0\uaddc 4\uac1c [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list]\n  m2-069-change-parallax-back: testid \uc2e0\uaddc 2\uc885 [change-parallax-back-ai-queue, change-parallax-back-ai-queue-list] | \ud0dc\uadf8 \uac1c\uc218 [div 15\u219217, p 4\u21925] | \ud074\ub798\uc2a4 \uc2e0\uaddc 4\uac1c [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list]: expected [ \u2026(2) ] to deeply equal []\n    at assertSurfaceGate (/home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/surfaceGateSupport.ts:280:5)\n    at /home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/eventEditorM2Surface.baseline.test.ts:188:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+          ],
+          "meta": {}
+        }
+      ],
+      "startTime": 1788660856752,
+      "endTime": 1788660862227.24,
+      "status": "failed",
+      "message": "",
+      "name": "/home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/eventEditorM2Surface.baseline.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "\ud3ec\ud138(\ud53c\ucee4/\ubaa8\ub2ec) \ud45c\uba74 \uc2a4\ub0c5\uc0f7"
+          ],
+          "fullName": "\ud3ec\ud138(\ud53c\ucee4/\ubaa8\ub2ec) \ud45c\uba74 \uc2a4\ub0c5\uc0f7 \ubaa8\ub4e0 \ud3ec\ud138\uc774 \uc608\uc678 \uc5c6\uc774 \uc5f4\ub9b0\ub2e4",
+          "status": "passed",
+          "title": "\ubaa8\ub4e0 \ud3ec\ud138\uc774 \uc608\uc678 \uc5c6\uc774 \uc5f4\ub9b0\ub2e4",
+          "duration": 4.208105999998224,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "\ud3ec\ud138(\ud53c\ucee4/\ubaa8\ub2ec) \ud45c\uba74 \uc2a4\ub0c5\uc0f7"
+          ],
+          "fullName": "\ud3ec\ud138(\ud53c\ucee4/\ubaa8\ub2ec) \ud45c\uba74 \uc2a4\ub0c5\uc0f7 \ud56d\ubaa9 \uc9d1\ud569\uc774 \ud3ec\ud138 \uc815\uc758\uc640 \uc77c\uce58\ud55c\ub2e4",
+          "status": "passed",
+          "title": "\ud56d\ubaa9 \uc9d1\ud569\uc774 \ud3ec\ud138 \uc815\uc758\uc640 \uc77c\uce58\ud55c\ub2e4",
+          "duration": 0.6040429999993648,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "\ud3ec\ud138(\ud53c\ucee4/\ubaa8\ub2ec) \ud45c\uba74 \uc2a4\ub0c5\uc0f7"
+          ],
+          "fullName": "\ud3ec\ud138(\ud53c\ucee4/\ubaa8\ub2ec) \ud45c\uba74 \uc2a4\ub0c5\uc0f7 \ubaa8\ub4e0 \ud3ec\ud138\uc774 body \uc5d0 \uc2e4\uc81c\ub85c \ubb34\uc5b8\uac00\ub97c \ub80c\ub354\ud55c\ub2e4 (testid \u2265 1, root \u2265 1)",
+          "status": "passed",
+          "title": "\ubaa8\ub4e0 \ud3ec\ud138\uc774 body \uc5d0 \uc2e4\uc81c\ub85c \ubb34\uc5b8\uac00\ub97c \ub80c\ub354\ud55c\ub2e4 (testid \u2265 1, root \u2265 1)",
+          "duration": 0.5418820000013511,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "\ud3ec\ud138(\ud53c\ucee4/\ubaa8\ub2ec) \ud45c\uba74 \uc2a4\ub0c5\uc0f7"
+          ],
+          "fullName": "\ud3ec\ud138(\ud53c\ucee4/\ubaa8\ub2ec) \ud45c\uba74 \uc2a4\ub0c5\uc0f7 \uc758\ub3c4\uc801\uc73c\ub85c \uc81c\uc678\ud55c \ud3ec\ud138 \uc218\uac00 \uace0\uc815 \uc218\uce58\uc640 \uac19\ub2e4",
+          "status": "passed",
+          "title": "\uc758\ub3c4\uc801\uc73c\ub85c \uc81c\uc678\ud55c \ud3ec\ud138 \uc218\uac00 \uace0\uc815 \uc218\uce58\uc640 \uac19\ub2e4",
+          "duration": 1.0181200000006356,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "\ud3ec\ud138(\ud53c\ucee4/\ubaa8\ub2ec) \ud45c\uba74 \uc2a4\ub0c5\uc0f7"
+          ],
+          "fullName": "\ud3ec\ud138(\ud53c\ucee4/\ubaa8\ub2ec) \ud45c\uba74 \uc2a4\ub0c5\uc0f7 \uc990\uaca8\ucc3e\uae30\u00b7\ucd5c\uadfc \uc0c1\ud0dc\uc5d0 \uc4f0\ub294 \uace0\uc815 commandId \uac00 \ud53d\ucee4\uc5d0 \uc2e4\uc7ac\ud55c\ub2e4",
+          "status": "passed",
+          "title": "\uc990\uaca8\ucc3e\uae30\u00b7\ucd5c\uadfc \uc0c1\ud0dc\uc5d0 \uc4f0\ub294 \uace0\uc815 commandId \uac00 \ud53d\ucee4\uc5d0 \uc2e4\uc7ac\ud55c\ub2e4",
+          "duration": 1.2878960000016377,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "\ud3ec\ud138(\ud53c\ucee4/\ubaa8\ub2ec) \ud45c\uba74 \uc2a4\ub0c5\uc0f7"
+          ],
+          "fullName": "\ud3ec\ud138(\ud53c\ucee4/\ubaa8\ub2ec) \ud45c\uba74 \uc2a4\ub0c5\uc0f7 \uc990\uaca8\ucc3e\uae30 \uc0c1\ud0dc\uac00 \uc2e4\uc81c\ub85c \uc990\uaca8\ucc3e\uae30 \uc139\uc158\uc744 \ub80c\ub354\ud55c\ub2e4",
+          "status": "passed",
+          "title": "\uc990\uaca8\ucc3e\uae30 \uc0c1\ud0dc\uac00 \uc2e4\uc81c\ub85c \uc990\uaca8\ucc3e\uae30 \uc139\uc158\uc744 \ub80c\ub354\ud55c\ub2e4",
+          "duration": 2.4884410000013304,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "\ud3ec\ud138(\ud53c\ucee4/\ubaa8\ub2ec) \ud45c\uba74 \uc2a4\ub0c5\uc0f7"
+          ],
+          "fullName": "\ud3ec\ud138(\ud53c\ucee4/\ubaa8\ub2ec) \ud45c\uba74 \uc2a4\ub0c5\uc0f7 \uac80\uc0c9 \uc0c1\ud0dc\uac00 \uac80\uc0c9 \uacb0\uacfc \ud45c\uba74\uc744 \ub80c\ub354\ud55c\ub2e4",
+          "status": "passed",
+          "title": "\uac80\uc0c9 \uc0c1\ud0dc\uac00 \uac80\uc0c9 \uacb0\uacfc \ud45c\uba74\uc744 \ub80c\ub354\ud55c\ub2e4",
+          "duration": 0.7142149999999674,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "\ud3ec\ud138(\ud53c\ucee4/\ubaa8\ub2ec) \ud45c\uba74 \uc2a4\ub0c5\uc0f7"
+          ],
+          "fullName": "\ud3ec\ud138(\ud53c\ucee4/\ubaa8\ub2ec) \ud45c\uba74 \uc2a4\ub0c5\uc0f7 \uac80\uc0c9 \uacb0\uacfc\uc5d0\ub9cc \ub098\uc624\ub294 \uc815\ubcf4 \ud589(\uc120\ud0dd \ubd88\uac00) \ud45c\uba74\uc774 \ucd95\uc5d0 \uc7a1\ud78c\ub2e4",
+          "status": "passed",
+          "title": "\uac80\uc0c9 \uacb0\uacfc\uc5d0\ub9cc \ub098\uc624\ub294 \uc815\ubcf4 \ud589(\uc120\ud0dd \ubd88\uac00) \ud45c\uba74\uc774 \ucd95\uc5d0 \uc7a1\ud78c\ub2e4",
+          "duration": 0.3718169999992824,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "\ud3ec\ud138(\ud53c\ucee4/\ubaa8\ub2ec) \ud45c\uba74 \uc2a4\ub0c5\uc0f7"
+          ],
+          "fullName": "\ud3ec\ud138(\ud53c\ucee4/\ubaa8\ub2ec) \ud45c\uba74 \uc2a4\ub0c5\uc0f7 \ub808\ucf54\ub4dc \ud53c\ucee4\uc758 \ub9f5 \uc2a4\ucf54\ud504 \uc139\uc158 \ud5e4\ub529\uc774 \ucd95\uc5d0 \uc7a1\ud78c\ub2e4",
+          "status": "passed",
+          "title": "\ub808\ucf54\ub4dc \ud53c\ucee4\uc758 \ub9f5 \uc2a4\ucf54\ud504 \uc139\uc158 \ud5e4\ub529\uc774 \ucd95\uc5d0 \uc7a1\ud78c\ub2e4",
+          "duration": 0.464099000000715,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "\ud3ec\ud138(\ud53c\ucee4/\ubaa8\ub2ec) \ud45c\uba74 \uc2a4\ub0c5\uc0f7"
+          ],
+          "fullName": "\ud3ec\ud138(\ud53c\ucee4/\ubaa8\ub2ec) \ud45c\uba74 \uc2a4\ub0c5\uc0f7 \uc774 \ucd95\uc774 \ub450 \uc0ac\uac01 CSS \uc2dc\ud2b8\uc758 \ud074\ub798\uc2a4\ub97c \ub80c\ub354\ub85c \uc99d\uba85\ud55c\ub2e4",
+          "status": "passed",
+          "title": "\uc774 \ucd95\uc774 \ub450 \uc0ac\uac01 CSS \uc2dc\ud2b8\uc758 \ud074\ub798\uc2a4\ub97c \ub80c\ub354\ub85c \uc99d\uba85\ud55c\ub2e4",
+          "duration": 1.5106400000004214,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "\ud3ec\ud138(\ud53c\ucee4/\ubaa8\ub2ec) \ud45c\uba74 \uc2a4\ub0c5\uc0f7"
+          ],
+          "fullName": "\ud3ec\ud138(\ud53c\ucee4/\ubaa8\ub2ec) \ud45c\uba74 \uc2a4\ub0c5\uc0f7 \uc218\ud655 \uc21c\uc11c\ub97c \ub4a4\uc9d1\uc5b4\ub3c4 \uacb0\uacfc\uac00 \uac19\ub2e4 (document.body / localStorage \uc815\ub9ac \ub204\uc218 \uc5c6\uc74c)",
+          "status": "passed",
+          "title": "\uc218\ud655 \uc21c\uc11c\ub97c \ub4a4\uc9d1\uc5b4\ub3c4 \uacb0\uacfc\uac00 \uac19\ub2e4 (document.body / localStorage \uc815\ub9ac \ub204\uc218 \uc5c6\uc74c)",
+          "duration": 2296.9962209999976,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "\ud3ec\ud138(\ud53c\ucee4/\ubaa8\ub2ec) \ud45c\uba74 \uc2a4\ub0c5\uc0f7"
+          ],
+          "fullName": "\ud3ec\ud138(\ud53c\ucee4/\ubaa8\ub2ec) \ud45c\uba74 \uc2a4\ub0c5\uc0f7 \ub798\ud37c div \ub97c \ub354 \uc50c\uc6cc\ub3c4 \ucee8\ud2b8\ub864 stableKey \uac00 \ubcc0\ud558\uc9c0 \uc54a\ub294\ub2e4",
+          "status": "passed",
+          "title": "\ub798\ud37c div \ub97c \ub354 \uc50c\uc6cc\ub3c4 \ucee8\ud2b8\ub864 stableKey \uac00 \ubcc0\ud558\uc9c0 \uc54a\ub294\ub2e4",
+          "duration": 10.26321100000132,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "\ud3ec\ud138(\ud53c\ucee4/\ubaa8\ub2ec) \ud45c\uba74 \uc2a4\ub0c5\uc0f7"
+          ],
+          "fullName": "\ud3ec\ud138(\ud53c\ucee4/\ubaa8\ub2ec) \ud45c\uba74 \uc2a4\ub0c5\uc0f7 diff \uac00 \ud569\uc131 \ubcc0\uc774 4\uc885\uc744 \ubaa8\ub450 \ubcf4\uace0\ud55c\ub2e4",
+          "status": "passed",
+          "title": "diff \uac00 \ud569\uc131 \ubcc0\uc774 4\uc885\uc744 \ubaa8\ub450 \ubcf4\uace0\ud55c\ub2e4",
+          "duration": 6.276139000001422,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "\ud3ec\ud138(\ud53c\ucee4/\ubaa8\ub2ec) \ud45c\uba74 \uc2a4\ub0c5\uc0f7"
+          ],
+          "fullName": "\ud3ec\ud138(\ud53c\ucee4/\ubaa8\ub2ec) \ud45c\uba74 \uc2a4\ub0c5\uc0f7 \ubcc0\uc774\uac00 \uc5c6\uc73c\uba74 diff \ub294 \uc870\uc6a9\ud558\ub2e4",
+          "status": "passed",
+          "title": "\ubcc0\uc774\uac00 \uc5c6\uc73c\uba74 diff \ub294 \uc870\uc6a9\ud558\ub2e4",
+          "duration": 10.645737999999255,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "\ud3ec\ud138(\ud53c\ucee4/\ubaa8\ub2ec) \ud45c\uba74 \uc2a4\ub0c5\uc0f7"
+          ],
+          "fullName": "\ud3ec\ud138(\ud53c\ucee4/\ubaa8\ub2ec) \ud45c\uba74 \uc2a4\ub0c5\uc0f7 \uae30\uc900\uc120\uacfc \uc77c\uce58\ud55c\ub2e4",
+          "status": "failed",
+          "title": "\uae30\uc900\uc120\uacfc \uc77c\uce58\ud55c\ub2e4",
+          "duration": 39.5886900000005,
+          "failureMessages": [
+            "AssertionError: [\ud3ec\ud138(\ud53c\ucee4/\ubaa8\ub2ec)] \ud45c\uba74\uc774 \uae30\uc900\uc120\uacfc \ub2e4\ub974\ub2e4 (2\uac74)\n  commandPickerTab3: \ud0dc\uadf8 circle 18\u219216, div 60\u219259, path 102\u2192101, span 125\u2192124, svg 101\u2192100\n  npcGraphic: testid \uc2e0\uaddc 5\uc885: npc-charset-label-input, npc-charset-tags-input, npc-charset-teach, npc-charset-teach-save, npc-charset-teach-status | \ud074\ub798\uc2a4 \uc2e0\uaddc 3\uc885: npc-charset-teach, npc-charset-teach-heading, npc-charset-teach-status | \ucee8\ud2b8\ub864 \uc2e0\uaddc 3\uac1c: npc-charset-label-input, npc-charset-tags-input, npc-charset-teach-save | \ub77c\ubca8 \uc18c\uc2e4 1\uc885: \uce90\ub9ad\ud130 \uc2ac\ub86f # | \ud0dc\uadf8 button 32\u219233, div 15\u219216, input 8\u219210, p 0\u21922 | testidCount 46\u219251 | controlCount 40\u219243 | classCount 34\u219237: expected [ \u2026(2) ] to deeply equal []\n    at assertSurfaceGate (/home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/surfaceGateSupport.ts:280:5)\n    at /home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/eventEditorPortalSurface.baseline.test.ts:284:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+          ],
+          "meta": {}
+        }
+      ],
+      "startTime": 1788660846453,
+      "endTime": 1788660848835.5886,
+      "status": "failed",
+      "message": "",
+      "name": "/home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/eventEditorPortalSurface.baseline.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "forest density is structured-only"
+          ],
+          "fullName": "forest density is structured-only \uc0ac\uc6a9\uc790 \ubb38\uc7a5\uc774 \uc544\ub2c8\ub77c enum \uc778\uc790\ub9cc \uc77d\ub294\ub2e4",
+          "status": "passed",
+          "title": "\uc0ac\uc6a9\uc790 \ubb38\uc7a5\uc774 \uc544\ub2c8\ub77c enum \uc778\uc790\ub9cc \uc77d\ub294\ub2e4",
+          "duration": 6.2931290000015,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "forest density is structured-only"
+          ],
+          "fullName": "forest density is structured-only \uae30\ubcf8\uac12\uc740 dense \u2014 \ub3c4\uad6c \uc778\uc790\ub97c \uc0dd\ub7b5\ud55c \uad70\ub77d \uc2dc\uacf5\uc758 fallback",
+          "status": "passed",
+          "title": "\uae30\ubcf8\uac12\uc740 dense \u2014 \ub3c4\uad6c \uc778\uc790\ub97c \uc0dd\ub7b5\ud55c \uad70\ub77d \uc2dc\uacf5\uc758 fallback",
+          "duration": 0.5915719999975408,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "forest density is structured-only"
+          ],
+          "fullName": "forest density is structured-only \uc218\uc885\uc740 \ud574\uc11d\ub41c \uadf8\ub8f9 id\u00b7\uc815\ud655 \ub77c\ubca8\ub85c\ub9cc \uac00\ub978\ub2e4",
+          "status": "passed",
+          "title": "\uc218\uc885\uc740 \ud574\uc11d\ub41c \uadf8\ub8f9 id\u00b7\uc815\ud655 \ub77c\ubca8\ub85c\ub9cc \uac00\ub978\ub2e4",
+          "duration": 2.290087000001222,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "forestPlacementPlan"
+          ],
+          "fullName": "forestPlacementPlan \uc61b \ucea1(\uba74\uc801/28, \ucd5c\ub300 10\uadf8\ub8e8)\uc744 \ub118\uc5b4 \uba74\uc801\uc5d0 \ube44\ub840\ud574 \uadf8\ub8e8 \uc218\ub97c \ub0b8\ub2e4",
+          "status": "passed",
+          "title": "\uc61b \ucea1(\uba74\uc801/28, \ucd5c\ub300 10\uadf8\ub8e8)\uc744 \ub118\uc5b4 \uba74\uc801\uc5d0 \ube44\ub840\ud574 \uadf8\ub8e8 \uc218\ub97c \ub0b8\ub2e4",
+          "duration": 0.8280870000016876,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "forestPlacementPlan"
+          ],
+          "fullName": "forestPlacementPlan dense\u00b7impassable \uc740 \uc120\ud615 packer(packing dense)\ub85c, \ub0ae\uc740 \ubc00\ub3c4\ub294 \uc790\uc5f0 \uc0b0\ud3ec\ub85c \ub098\uac04\ub2e4",
+          "status": "passed",
+          "title": "dense\u00b7impassable \uc740 \uc120\ud615 packer(packing dense)\ub85c, \ub0ae\uc740 \ubc00\ub3c4\ub294 \uc790\uc5f0 \uc0b0\ud3ec\ub85c \ub098\uac04\ub2e4",
+          "duration": 0.9097389999988081,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "forestPlacementPlan"
+          ],
+          "fullName": "forestPlacementPlan share \ub85c \uce68\uc5fd\uc218\u00b7\ud65c\uc5fd\uc218 \ud328\uc2a4\uac00 \ucee4\ubc84\ub9ac\uc9c0\ub97c \ub098\ub220 \uac16\ub294\ub2e4",
+          "status": "passed",
+          "title": "share \ub85c \uce68\uc5fd\uc218\u00b7\ud65c\uc5fd\uc218 \ud328\uc2a4\uac00 \ucee4\ubc84\ub9ac\uc9c0\ub97c \ub098\ub220 \uac16\ub294\ub2e4",
+          "duration": 4.508332000001246,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "outside-enterable forest cells"
+          ],
+          "fullName": "outside-enterable forest cells \ubc14\uae65 \ud55c \uacb9\uc774 solid \ub364\ubd88\ub85c \ub2eb\ud78c 4\u00d74 \uc601\uc5ed\uc740 \uc9c4\uc785 \uac00\ub2a5\ud55c \uce78\uc774 0\uc774\ub2e4",
+          "status": "passed",
+          "title": "\ubc14\uae65 \ud55c \uacb9\uc774 solid \ub364\ubd88\ub85c \ub2eb\ud78c 4\u00d74 \uc601\uc5ed\uc740 \uc9c4\uc785 \uac00\ub2a5\ud55c \uce78\uc774 0\uc774\ub2e4",
+          "duration": 860.5412710000019,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "plant_tree_clusters"
+          ],
+          "fullName": "plant_tree_clusters \uae30\ubcf8(dense)\uc774 \uc120\uc5b8\ud55c \ucee4\ubc84\ub9ac\uc9c0\uc5d0 \ub2ff\uace0 \uadf8 \uc9c0\ub300\ub97c \uc2e4\uc81c\ub85c \ub9c9\ub294\ub2e4",
+          "status": "failed",
+          "title": "\uae30\ubcf8(dense)\uc774 \uc120\uc5b8\ud55c \ucee4\ubc84\ub9ac\uc9c0\uc5d0 \ub2ff\uace0 \uadf8 \uc9c0\ub300\ub97c \uc2e4\uc81c\ub85c \ub9c9\ub294\ub2e4",
+          "duration": 1332.1728250000015,
+          "failureMessages": [
+            "AssertionError: \uc601\uc5ed\uc758 30% \uac00 \uc544\uc9c1 \uac78\uc5b4\uc11c \ud1b5\uacfc\ub41c\ub2e4: expected 0.3003472222222222 to be less than 0.3\n    at /home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/forestDensity.test.ts:227:8\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+          ],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "plant_tree_clusters"
+          ],
+          "fullName": "plant_tree_clusters \uae30\ubcf8(dense)\uc758 \ube48\ud2c8\uc740 \ub4f1\uac04\uaca9 \uaca9\uc790\uac00 \uc544\ub2c8\ub77c seeded \uccad\uc0c9\uc7a1\uc74c\uc73c\ub85c \ud769\uc5b4\uc9c4\ub2e4",
+          "status": "passed",
+          "title": "\uae30\ubcf8(dense)\uc758 \ube48\ud2c8\uc740 \ub4f1\uac04\uaca9 \uaca9\uc790\uac00 \uc544\ub2c8\ub77c seeded \uccad\uc0c9\uc7a1\uc74c\uc73c\ub85c \ud769\uc5b4\uc9c4\ub2e4",
+          "duration": 1152.383539999999,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "plant_tree_clusters"
+          ],
+          "fullName": "plant_tree_clusters \uae30\ubcf8(dense)\uc774 100\u00d7100 \uc5d0\uc11c\ub3c4 \uc120\ud615 \uc2dc\uac04\uc5d0 \ub05d\ub09c\ub2e4",
+          "status": "passed",
+          "title": "\uae30\ubcf8(dense)\uc774 100\u00d7100 \uc5d0\uc11c\ub3c4 \uc120\ud615 \uc2dc\uac04\uc5d0 \ub05d\ub09c\ub2e4",
+          "duration": 565.5956179999994,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "plant_tree_clusters"
+          ],
+          "fullName": "plant_tree_clusters impassable \uc740 \uc601\uc5ed\uc744 \uc2e4\uc81c\ub85c \uc9c0\ub098\uac08 \uc218 \uc5c6\uac8c \ub9cc\ub4e0\ub2e4",
+          "status": "passed",
+          "title": "impassable \uc740 \uc601\uc5ed\uc744 \uc2e4\uc81c\ub85c \uc9c0\ub098\uac08 \uc218 \uc5c6\uac8c \ub9cc\ub4e0\ub2e4",
+          "duration": 319.1040759999996,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "plant_tree_clusters"
+          ],
+          "fullName": "plant_tree_clusters \ucee4\ubc84\ub9ac\uc9c0 \uc2e4\uce21\uc744 \uc694\uc57d\uc5d0 \uc801\uc5b4 \uc0ac\uc6a9\uc790\uac00 \ubc00\ub3c4\ub97c \ud655\uc778\ud560 \uc218 \uc788\ub2e4",
+          "status": "passed",
+          "title": "\ucee4\ubc84\ub9ac\uc9c0 \uc2e4\uce21\uc744 \uc694\uc57d\uc5d0 \uc801\uc5b4 \uc0ac\uc6a9\uc790\uac00 \ubc00\ub3c4\ub97c \ud655\uc778\ud560 \uc218 \uc788\ub2e4",
+          "duration": 319.7860809999984,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "place_props density \u2014 \ubaa8\ub378\uc774 \uc2e4\uc81c\ub85c \ub2ff\ub294 \ub77c\uc774\ube0c \ud234"
+          ],
+          "fullName": "place_props density \u2014 \ubaa8\ub378\uc774 \uc2e4\uc81c\ub85c \ub2ff\ub294 \ub77c\uc774\ube0c \ud234 \uce68\uc5fd\uc218 density=dense \uac00 count \uc5c6\uc774\ub3c4 \uc232\uc744 \ub9cc\ub4e0\ub2e4",
+          "status": "passed",
+          "title": "\uce68\uc5fd\uc218 density=dense \uac00 count \uc5c6\uc774\ub3c4 \uc232\uc744 \ub9cc\ub4e0\ub2e4",
+          "duration": 310.59899399999995,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "place_props density \u2014 \ubaa8\ub378\uc774 \uc2e4\uc81c\ub85c \ub2ff\ub294 \ub77c\uc774\ube0c \ud234"
+          ],
+          "fullName": "place_props density \u2014 \ubaa8\ub378\uc774 \uc2e4\uc81c\ub85c \ub2ff\ub294 \ub77c\uc774\ube0c \ud234 \ud65c\uc5fd\uc218 density=dense \uac00 count \uc5c6\uc774\ub3c4 \uc232\uc744 \ub9cc\ub4e0\ub2e4",
+          "status": "failed",
+          "title": "\ud65c\uc5fd\uc218 density=dense \uac00 count \uc5c6\uc774\ub3c4 \uc232\uc744 \ub9cc\ub4e0\ub2e4",
+          "duration": 361.2537880000018,
+          "failureMessages": [
+            "AssertionError: expected 0.3003472222222222 to be less than 0.3\n    at /home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/forestDensity.test.ts:298:47\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:863:59\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+          ],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "place_props density \u2014 \ubaa8\ub378\uc774 \uc2e4\uc81c\ub85c \ub2ff\ub294 \ub77c\uc774\ube0c \ud234"
+          ],
+          "fullName": "place_props density \u2014 \ubaa8\ub378\uc774 \uc2e4\uc81c\ub85c \ub2ff\ub294 \ub77c\uc774\ube0c \ud234 \uce68\uc5fd\uc218 density=sparse \uac00 \uc120\uc5b8 \ucee4\ubc84\ub9ac\uc9c0\uc640 \uc2e4\uce21 \ud5c8\uc6a9 \uc624\ucc28 \uc548\uc5d0 \ub4e0\ub2e4",
+          "status": "passed",
+          "title": "\uce68\uc5fd\uc218 density=sparse \uac00 \uc120\uc5b8 \ucee4\ubc84\ub9ac\uc9c0\uc640 \uc2e4\uce21 \ud5c8\uc6a9 \uc624\ucc28 \uc548\uc5d0 \ub4e0\ub2e4",
+          "duration": 2211.1558369999984,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "place_props density \u2014 \ubaa8\ub378\uc774 \uc2e4\uc81c\ub85c \ub2ff\ub294 \ub77c\uc774\ube0c \ud234"
+          ],
+          "fullName": "place_props density \u2014 \ubaa8\ub378\uc774 \uc2e4\uc81c\ub85c \ub2ff\ub294 \ub77c\uc774\ube0c \ud234 \uce68\uc5fd\uc218 density=normal \uac00 \uc120\uc5b8 \ucee4\ubc84\ub9ac\uc9c0\uc640 \uc2e4\uce21 \ud5c8\uc6a9 \uc624\ucc28 \uc548\uc5d0 \ub4e0\ub2e4",
+          "status": "passed",
+          "title": "\uce68\uc5fd\uc218 density=normal \uac00 \uc120\uc5b8 \ucee4\ubc84\ub9ac\uc9c0\uc640 \uc2e4\uce21 \ud5c8\uc6a9 \uc624\ucc28 \uc548\uc5d0 \ub4e0\ub2e4",
+          "duration": 4257.352274000001,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "place_props density \u2014 \ubaa8\ub378\uc774 \uc2e4\uc81c\ub85c \ub2ff\ub294 \ub77c\uc774\ube0c \ud234"
+          ],
+          "fullName": "place_props density \u2014 \ubaa8\ub378\uc774 \uc2e4\uc81c\ub85c \ub2ff\ub294 \ub77c\uc774\ube0c \ud234 \uce68\uc5fd\uc218 density=dense \uac00 \uc120\uc5b8 \ucee4\ubc84\ub9ac\uc9c0\uc640 \uc2e4\uce21 \ud5c8\uc6a9 \uc624\ucc28 \uc548\uc5d0 \ub4e0\ub2e4",
+          "status": "passed",
+          "title": "\uce68\uc5fd\uc218 density=dense \uac00 \uc120\uc5b8 \ucee4\ubc84\ub9ac\uc9c0\uc640 \uc2e4\uce21 \ud5c8\uc6a9 \uc624\ucc28 \uc548\uc5d0 \ub4e0\ub2e4",
+          "duration": 323.8755450000026,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "place_props density \u2014 \ubaa8\ub378\uc774 \uc2e4\uc81c\ub85c \ub2ff\ub294 \ub77c\uc774\ube0c \ud234"
+          ],
+          "fullName": "place_props density \u2014 \ubaa8\ub378\uc774 \uc2e4\uc81c\ub85c \ub2ff\ub294 \ub77c\uc774\ube0c \ud234 \uce68\uc5fd\uc218 density=impassable \uac00 \uc120\uc5b8 \ucee4\ubc84\ub9ac\uc9c0\uc640 \uc2e4\uce21 \ud5c8\uc6a9 \uc624\ucc28 \uc548\uc5d0 \ub4e0\ub2e4",
+          "status": "passed",
+          "title": "\uce68\uc5fd\uc218 density=impassable \uac00 \uc120\uc5b8 \ucee4\ubc84\ub9ac\uc9c0\uc640 \uc2e4\uce21 \ud5c8\uc6a9 \uc624\ucc28 \uc548\uc5d0 \ub4e0\ub2e4",
+          "duration": 330.1110219999973,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "place_props density \u2014 \ubaa8\ub378\uc774 \uc2e4\uc81c\ub85c \ub2ff\ub294 \ub77c\uc774\ube0c \ud234"
+          ],
+          "fullName": "place_props density \u2014 \ubaa8\ub378\uc774 \uc2e4\uc81c\ub85c \ub2ff\ub294 \ub77c\uc774\ube0c \ud234 \ud65c\uc5fd\uc218 density=sparse \uac00 \uc120\uc5b8 \ucee4\ubc84\ub9ac\uc9c0\uc640 \uc2e4\uce21 \ud5c8\uc6a9 \uc624\ucc28 \uc548\uc5d0 \ub4e0\ub2e4",
+          "status": "passed",
+          "title": "\ud65c\uc5fd\uc218 density=sparse \uac00 \uc120\uc5b8 \ucee4\ubc84\ub9ac\uc9c0\uc640 \uc2e4\uce21 \ud5c8\uc6a9 \uc624\ucc28 \uc548\uc5d0 \ub4e0\ub2e4",
+          "duration": 503.20595299999695,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "place_props density \u2014 \ubaa8\ub378\uc774 \uc2e4\uc81c\ub85c \ub2ff\ub294 \ub77c\uc774\ube0c \ud234"
+          ],
+          "fullName": "place_props density \u2014 \ubaa8\ub378\uc774 \uc2e4\uc81c\ub85c \ub2ff\ub294 \ub77c\uc774\ube0c \ud234 \ud65c\uc5fd\uc218 density=normal \uac00 \uc120\uc5b8 \ucee4\ubc84\ub9ac\uc9c0\uc640 \uc2e4\uce21 \ud5c8\uc6a9 \uc624\ucc28 \uc548\uc5d0 \ub4e0\ub2e4",
+          "status": "passed",
+          "title": "\ud65c\uc5fd\uc218 density=normal \uac00 \uc120\uc5b8 \ucee4\ubc84\ub9ac\uc9c0\uc640 \uc2e4\uce21 \ud5c8\uc6a9 \uc624\ucc28 \uc548\uc5d0 \ub4e0\ub2e4",
+          "duration": 1622.8688479999983,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "place_props density \u2014 \ubaa8\ub378\uc774 \uc2e4\uc81c\ub85c \ub2ff\ub294 \ub77c\uc774\ube0c \ud234"
+          ],
+          "fullName": "place_props density \u2014 \ubaa8\ub378\uc774 \uc2e4\uc81c\ub85c \ub2ff\ub294 \ub77c\uc774\ube0c \ud234 \ud65c\uc5fd\uc218 density=dense \uac00 \uc120\uc5b8 \ucee4\ubc84\ub9ac\uc9c0\uc640 \uc2e4\uce21 \ud5c8\uc6a9 \uc624\ucc28 \uc548\uc5d0 \ub4e0\ub2e4",
+          "status": "passed",
+          "title": "\ud65c\uc5fd\uc218 density=dense \uac00 \uc120\uc5b8 \ucee4\ubc84\ub9ac\uc9c0\uc640 \uc2e4\uce21 \ud5c8\uc6a9 \uc624\ucc28 \uc548\uc5d0 \ub4e0\ub2e4",
+          "duration": 241.92756799999916,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "place_props density \u2014 \ubaa8\ub378\uc774 \uc2e4\uc81c\ub85c \ub2ff\ub294 \ub77c\uc774\ube0c \ud234"
+          ],
+          "fullName": "place_props density \u2014 \ubaa8\ub378\uc774 \uc2e4\uc81c\ub85c \ub2ff\ub294 \ub77c\uc774\ube0c \ud234 \ud65c\uc5fd\uc218 density=impassable \uac00 \uc120\uc5b8 \ucee4\ubc84\ub9ac\uc9c0\uc640 \uc2e4\uce21 \ud5c8\uc6a9 \uc624\ucc28 \uc548\uc5d0 \ub4e0\ub2e4",
+          "status": "passed",
+          "title": "\ud65c\uc5fd\uc218 density=impassable \uac00 \uc120\uc5b8 \ucee4\ubc84\ub9ac\uc9c0\uc640 \uc2e4\uce21 \ud5c8\uc6a9 \uc624\ucc28 \uc548\uc5d0 \ub4e0\ub2e4",
+          "duration": 285.9698800000042,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "place_props density \u2014 \ubaa8\ub378\uc774 \uc2e4\uc81c\ub85c \ub2ff\ub294 \ub77c\uc774\ube0c \ud234"
+          ],
+          "fullName": "place_props density \u2014 \ubaa8\ub378\uc774 \uc2e4\uc81c\ub85c \ub2ff\ub294 \ub77c\uc774\ube0c \ud234 density \ub294 \ub098\ubb34 \uc7ac\ub8cc \uc804\uc6a9\uc774\uace0 count \ub294 \uc5ec\uc804\ud788 \uc9c1\uc811 \uc904 \uc218 \uc788\ub2e4",
+          "status": "passed",
+          "title": "density \ub294 \ub098\ubb34 \uc7ac\ub8cc \uc804\uc6a9\uc774\uace0 count \ub294 \uc5ec\uc804\ud788 \uc9c1\uc811 \uc904 \uc218 \uc788\ub2e4",
+          "duration": 524.4343479999952,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "author_village \u2014 \ubaa8\ub378\uc774 \uc2e4\uc81c\ub85c \uc9c0\ub098\ub294 \ub9c8\uc744 \ud30c\uc0ac\ub4dc"
+          ],
+          "fullName": "author_village \u2014 \ubaa8\ub378\uc774 \uc2e4\uc81c\ub85c \uc9c0\ub098\ub294 \ub9c8\uc744 \ud30c\uc0ac\ub4dc \u300c\uc6b8\ucc3d\ud55c \uc232 \ub9c8\uc744\u300d\uc758 \uc232 \ubc34\ub4dc\uac00 \ub450\uaecd\uace0 \uac70\uc758 \ud1b5\ud589 \ubd88\uac00\ub2e4",
+          "status": "passed",
+          "title": "\u300c\uc6b8\ucc3d\ud55c \uc232 \ub9c8\uc744\u300d\uc758 \uc232 \ubc34\ub4dc\uac00 \ub450\uaecd\uace0 \uac70\uc758 \ud1b5\ud589 \ubd88\uac00\ub2e4",
+          "duration": 3148.344796999998,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "author_village \u2014 \ubaa8\ub378\uc774 \uc2e4\uc81c\ub85c \uc9c0\ub098\ub294 \ub9c8\uc744 \ud30c\uc0ac\ub4dc"
+          ],
+          "fullName": "author_village \u2014 \ubaa8\ub378\uc774 \uc2e4\uc81c\ub85c \uc9c0\ub098\ub294 \ub9c8\uc744 \ud30c\uc0ac\ub4dc \ud14c\ub9c8 \ubb38\uc7a5\ub9cc\uc73c\ub85c\ub294 \ubc00\ub3c4\ub97c \uc62c\ub9ac\uc9c0 \uc54a\ub294\ub2e4 \u2014 forestDensity enum\uc774 \ud544\uc694\ud558\ub2e4",
+          "status": "passed",
+          "title": "\ud14c\ub9c8 \ubb38\uc7a5\ub9cc\uc73c\ub85c\ub294 \ubc00\ub3c4\ub97c \uc62c\ub9ac\uc9c0 \uc54a\ub294\ub2e4 \u2014 forestDensity enum\uc774 \ud544\uc694\ud558\ub2e4",
+          "duration": 2702.3540749999956,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1788660768163,
+      "endTime": 1788660789563.354,
+      "status": "failed",
+      "message": "",
+      "name": "/home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/forestDensity.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "Scarloxy Gen1 authored content"
+          ],
+          "fullName": "Scarloxy Gen1 authored content authors all 15 R/B types with their physical/special damage classes",
+          "status": "passed",
+          "title": "authors all 15 R/B types with their physical/special damage classes",
+          "duration": 153.67751599999997,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Scarloxy Gen1 authored content"
+          ],
+          "fullName": "Scarloxy Gen1 authored content authors the R/B matchup table including immunities and the Ghost/Psychic bug",
+          "status": "passed",
+          "title": "authors the R/B matchup table including immunities and the Ghost/Psychic bug",
+          "duration": 73.087986,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Scarloxy Gen1 authored content"
+          ],
+          "fullName": "Scarloxy Gen1 authored content authors persistent major statuses, finite PP, a Poke Ball, and trainer semantics",
+          "status": "failed",
+          "title": "authors persistent major statuses, finite PP, a Poke Ball, and trainer semantics",
+          "duration": 86.12595299999998,
+          "failureMessages": [
+            "TypeError: actual value must be number or bigint, received \"undefined\"\n    at assertTypes (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/utils/dist/helpers.js:25:9)\n    at Proxy.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/expect/dist/index.js:1210:3)\n    at Proxy.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/expect/dist/index.js:1029:14)\n    at Proxy.methodWrapper (file:///home/main/z-project/rpg-zzu/node_modules/chai/index.js:1686:25)\n    at /home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/gen1DemoContent.test.ts:55:84\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)"
+          ],
+          "meta": {}
+        }
+      ],
+      "startTime": 1788660827658,
+      "endTime": 1788660827971.126,
+      "status": "failed",
+      "message": "",
+      "name": "/home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/gen1DemoContent.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "Escape \uacc4\uce35 \uac8c\uc774\ud2b8"
+          ],
+          "fullName": "Escape \uacc4\uce35 \uac8c\uc774\ud2b8 body \uc5d0 \uc624\ubc84\ub808\uc774\ub97c \ubd99\uc774\ub294 \ud30c\uc77c\uc740 modalStack \uc5d0 \ucc38\uc5ec\ud558\uac70\ub098 \uc774\uc720\uc640 \ud568\uaed8 \uba74\uc81c\ub41c\ub2e4",
+          "status": "failed",
+          "title": "body \uc5d0 \uc624\ubc84\ub808\uc774\ub97c \ubd99\uc774\ub294 \ud30c\uc77c\uc740 modalStack \uc5d0 \ucc38\uc5ec\ud558\uac70\ub098 \uc774\uc720\uc640 \ud568\uaed8 \uba74\uc81c\ub41c\ub2e4",
+          "duration": 158.48855400000002,
+          "failureMessages": [
+            "AssertionError: body \uc5d0 \ub744\uc6b4 \uc0c8 \uc624\ubc84\ub808\uc774\uac00 Escape \uacc4\uce35\uc5d0 \ucc38\uc5ec\ud558\uc9c0 \uc54a\ub294\ub2e4. registerModal/unregisterModal \uc744 \uc9dd\uc9c0\uc5b4 \uc4f0\uac70\ub098, \uc815\ub9d0 \uacc4\uce35\uc774 \uc544\ub2c8\uba74 EXEMPT \uc5d0 \uc774\uc720\ub97c \uc801\uc5b4\ub77c.: expected [ 'panels/newProjectDialog.ts' ] to deeply equal []\n    at /home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/modalEscapeLayerGate.test.ts:90:7\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+          ],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Escape \uacc4\uce35 \uac8c\uc774\ud2b8"
+          ],
+          "fullName": "Escape \uacc4\uce35 \uac8c\uc774\ud2b8 \uba74\uc81c \ubaa9\ub85d\uc5d0 \uc8fd\uc740 \ud56d\ubaa9\uc774 \ub0a8\uc9c0 \uc54a\ub294\ub2e4",
+          "status": "passed",
+          "title": "\uba74\uc81c \ubaa9\ub85d\uc5d0 \uc8fd\uc740 \ud56d\ubaa9\uc774 \ub0a8\uc9c0 \uc54a\ub294\ub2e4",
+          "duration": 88.44090899999992,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Escape \uacc4\uce35 \uac8c\uc774\ud2b8"
+          ],
+          "fullName": "Escape \uacc4\uce35 \uac8c\uc774\ud2b8 \uc774\ubc88\uc5d0 \uace0\uce5c \ud45c\uba74\ub4e4\uc740 \uba74\uc81c\uac00 \uc544\ub2c8\ub77c \uc2e4\uc81c\ub85c \ub4f1\ub85d\ud55c\ub2e4",
+          "status": "failed",
+          "title": "\uc774\ubc88\uc5d0 \uace0\uce5c \ud45c\uba74\ub4e4\uc740 \uba74\uc81c\uac00 \uc544\ub2c8\ub77c \uc2e4\uc81c\ub85c \ub4f1\ub85d\ud55c\ub2e4",
+          "duration": 5.141415999999936,
+          "failureMessages": [
+            "AssertionError: \ud68c\uadc0: \uc774 \ud45c\uba74\ub4e4\uc740 modalStack \uc5d0 \ub4f1\ub85d\ub418\uc5b4 \uc788\uc5b4\uc57c \ud55c\ub2e4: expected [ 'panels/worldPanel.ts' ] to deeply equal []\n    at /home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/modalEscapeLayerGate.test.ts:124:60\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+          ],
+          "meta": {}
+        }
+      ],
+      "startTime": 1788660816836,
+      "endTime": 1788660817088.1414,
+      "status": "failed",
+      "message": "",
+      "name": "/home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/modalEscapeLayerGate.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "\uc774\ub3d9 \uacbd\ub85c \ud314\ub808\ud2b8 persistence"
+          ],
+          "fullName": "\uc774\ub3d9 \uacbd\ub85c \ud314\ub808\ud2b8 persistence BREAK: \u300c\ud6a8\uacfc\uc74c \uc7ac\uc0dd\u300d \uae30\ubcf8\uac12\uc774 \uc2e4\uc7ac\ud558\ub294 \ub9ac\uc18c\uc2a4\ub2e4 \u2014 \uc5c6\ub294 id \uba74 \uc774\ubca4\ud2b8 \uc800\uc7a5\uc774 \ud1b5\uc9f8\ub85c \ub9c9\ud78c\ub2e4",
+          "status": "passed",
+          "title": "BREAK: \u300c\ud6a8\uacfc\uc74c \uc7ac\uc0dd\u300d \uae30\ubcf8\uac12\uc774 \uc2e4\uc7ac\ud558\ub294 \ub9ac\uc18c\uc2a4\ub2e4 \u2014 \uc5c6\ub294 id \uba74 \uc774\ubca4\ud2b8 \uc800\uc7a5\uc774 \ud1b5\uc9f8\ub85c \ub9c9\ud78c\ub2e4",
+          "duration": 154.86167100000011,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "\uc774\ub3d9 \uacbd\ub85c \ud314\ub808\ud2b8 persistence"
+          ],
+          "fullName": "\uc774\ub3d9 \uacbd\ub85c \ud314\ub808\ud2b8 persistence BREAK: \ud314\ub808\ud2b8\uc758 \ubaa8\ub4e0 \uba85\ub839\uc774 \ud558\ub098\uc529 serialize\u2192deserialize \ub97c \ud1b5\uacfc\ud55c\ub2e4",
+          "status": "passed",
+          "title": "BREAK: \ud314\ub808\ud2b8\uc758 \ubaa8\ub4e0 \uba85\ub839\uc774 \ud558\ub098\uc529 serialize\u2192deserialize \ub97c \ud1b5\uacfc\ud55c\ub2e4",
+          "duration": 9077.439855,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "\uc774\ub3d9 \uacbd\ub85c \ud314\ub808\ud2b8 persistence"
+          ],
+          "fullName": "\uc774\ub3d9 \uacbd\ub85c \ud314\ub808\ud2b8 persistence BREAK: \ud314\ub808\ud2b8\ub97c \ud1b5\uc9f8\ub85c \ub2f4\uc740 \uacbd\ub85c\ub3c4 \uc655\ubcf5\ud55c\ub2e4 \u2014 44 \uac1c\ub97c \ud55c \uc774\ubca4\ud2b8\uc5d0 \ub2e4 \ub123\ub294 e2e \uc2a4\uc715\uacfc \uac19\uc740 \ubaa8\uc591",
+          "status": "passed",
+          "title": "BREAK: \ud314\ub808\ud2b8\ub97c \ud1b5\uc9f8\ub85c \ub2f4\uc740 \uacbd\ub85c\ub3c4 \uc655\ubcf5\ud55c\ub2e4 \u2014 44 \uac1c\ub97c \ud55c \uc774\ubca4\ud2b8\uc5d0 \ub2e4 \ub123\ub294 e2e \uc2a4\uc715\uacfc \uac19\uc740 \ubaa8\uc591",
+          "duration": 194.47129000000132,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1788660824608,
+      "endTime": 1788660834036.4712,
+      "status": "passed",
+      "message": "",
+      "name": "/home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/moveRouteCatalogPersistence.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "canonical project persistence has no local DB fallback"
+          ],
+          "fullName": "canonical project persistence has no local DB fallback does not keep old local DB implementation files",
+          "status": "passed",
+          "title": "does not keep old local DB implementation files",
+          "duration": 4.551603,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "canonical project persistence has no local DB fallback"
+          ],
+          "fullName": "canonical project persistence has no local DB fallback does not reference IndexedDB SQLite or local JSON fallback in runtime source",
+          "status": "failed",
+          "title": "does not reference IndexedDB SQLite or local JSON fallback in runtime source",
+          "duration": 209.473479,
+          "failureMessages": [
+            "AssertionError: expected [ Array(1) ] to deeply equal []\n    at /home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/noLocalProjectDb.test.ts:59:23\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+          ],
+          "meta": {}
+        }
+      ],
+      "startTime": 1788660828467,
+      "endTime": 1788660828681.4734,
+      "status": "failed",
+      "message": "",
+      "name": "/home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/noLocalProjectDb.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "\ubd81\uc5ec\ub123\uae30 \ubbf8\ub9ac\ubcf4\uae30 \ubaa8\ub4dc"
+          ],
+          "fullName": "\ubd81\uc5ec\ub123\uae30 \ubbf8\ub9ac\ubcf4\uae30 \ubaa8\ub4dc \ubcf5\uc0ac \ud6c4 enterPastePreview \u2192 confirmPastePreview\ub85c \uc2e4\uc81c \ubd99\uc5ec\ub123\uae30",
+          "status": "passed",
+          "title": "\ubcf5\uc0ac \ud6c4 enterPastePreview \u2192 confirmPastePreview\ub85c \uc2e4\uc81c \ubd99\uc5ec\ub123\uae30",
+          "duration": 2658.093634,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "\ubd81\uc5ec\ub123\uae30 \ubbf8\ub9ac\ubcf4\uae30 \ubaa8\ub4dc"
+          ],
+          "fullName": "\ubd81\uc5ec\ub123\uae30 \ubbf8\ub9ac\ubcf4\uae30 \ubaa8\ub4dc cancelPastePreview\ub85c \ubbf8\ub9ac\ubcf4\uae30 \ucde8\uc18c \u2014 \ub9f5 \ubcc0\ud654 \uc5c6\uc74c",
+          "status": "passed",
+          "title": "cancelPastePreview\ub85c \ubbf8\ub9ac\ubcf4\uae30 \ucde8\uc18c \u2014 \ub9f5 \ubcc0\ud654 \uc5c6\uc74c",
+          "duration": 952.62529,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "\ubd81\uc5ec\ub123\uae30 \ubbf8\ub9ac\ubcf4\uae30 \ubaa8\ub4dc"
+          ],
+          "fullName": "\ubd81\uc5ec\ub123\uae30 \ubbf8\ub9ac\ubcf4\uae30 \ubaa8\ub4dc \ud074\ub9bd\ubcf4\ub4dc \uc5c6\uc774 enterPastePreview \u2192 false + \uc548\ub0b4 \ud1a0\uc2a4\ud2b8",
+          "status": "passed",
+          "title": "\ud074\ub9bd\ubcf4\ub4dc \uc5c6\uc774 enterPastePreview \u2192 false + \uc548\ub0b4 \ud1a0\uc2a4\ud2b8",
+          "duration": 1301.6465609999996,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "\ubd81\uc5ec\ub123\uae30 \ubbf8\ub9ac\ubcf4\uae30 \ubaa8\ub4dc"
+          ],
+          "fullName": "\ubd81\uc5ec\ub123\uae30 \ubbf8\ub9ac\ubcf4\uae30 \ubaa8\ub4dc movePastePreview\ub85c \uc704\uce58 \uac31\uc2e0",
+          "status": "passed",
+          "title": "movePastePreview\ub85c \uc704\uce58 \uac31\uc2e0",
+          "duration": 1137.1305160000002,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "\ubd81\uc5ec\ub123\uae30 \ubbf8\ub9ac\ubcf4\uae30 \ubaa8\ub4dc"
+          ],
+          "fullName": "\ubd81\uc5ec\ub123\uae30 \ubbf8\ub9ac\ubcf4\uae30 \ubaa8\ub4dc movePastePreview\uac00 \ub9f5 \uacbd\uacc4\ub97c \ubc97\uc5b4\ub098\uc9c0 \uc54a\uac8c \ud074\ub7a8\ud504",
+          "status": "passed",
+          "title": "movePastePreview\uac00 \ub9f5 \uacbd\uacc4\ub97c \ubc97\uc5b4\ub098\uc9c0 \uc54a\uac8c \ud074\ub7a8\ud504",
+          "duration": 1365.7149740000004,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "clearSelection / clearSelectionRegion"
+          ],
+          "fullName": "clearSelection / clearSelectionRegion clearSelection\uc774 selection\uacfc pastePreview\ub97c \ubaa8\ub450 \ud574\uc81c",
+          "status": "passed",
+          "title": "clearSelection\uc774 selection\uacfc pastePreview\ub97c \ubaa8\ub450 \ud574\uc81c",
+          "duration": 1091.739079,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "clearSelection / clearSelectionRegion"
+          ],
+          "fullName": "clearSelection / clearSelectionRegion clearSelectionRegion\uc774 \uc120\ud0dd \uc601\uc5ed\uc744 \ube48 \uce78\uc73c\ub85c",
+          "status": "passed",
+          "title": "clearSelectionRegion\uc774 \uc120\ud0dd \uc601\uc5ed\uc744 \ube48 \uce78\uc73c\ub85c",
+          "duration": 1506.1955389999985,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "clearSelection / clearSelectionRegion"
+          ],
+          "fullName": "clearSelection / clearSelectionRegion clearSelectionRegion \ud1a0\uc2a4\ud2b8\uc5d0 '\uc9c0\uc6b0\uae30' \ud3ec\ud568",
+          "status": "passed",
+          "title": "clearSelectionRegion \ud1a0\uc2a4\ud2b8\uc5d0 '\uc9c0\uc6b0\uae30' \ud3ec\ud568",
+          "duration": 1164.7070319999984,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "copySelection \ud53c\ub4dc\ubc31 \uac1c\uc120"
+          ],
+          "fullName": "copySelection \ud53c\ub4dc\ubc31 \uac1c\uc120 \ubcf5\uc0ac \ud1a0\uc2a4\ud2b8\uc5d0 \ud06c\uae30 \uc815\ubcf4 \ud3ec\ud568",
+          "status": "passed",
+          "title": "\ubcf5\uc0ac \ud1a0\uc2a4\ud2b8\uc5d0 \ud06c\uae30 \uc815\ubcf4 \ud3ec\ud568",
+          "duration": 1103.3041569999987,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "renderSelectionActionChips \u2014 \ubcf5\uc0ac/\ubd99\uc5ec\ub123\uae30/\uc9c0\uc6b0\uae30/\ud574\uc81c \ubc84\ud2bc"
+          ],
+          "fullName": "renderSelectionActionChips \u2014 \ubcf5\uc0ac/\ubd99\uc5ec\ub123\uae30/\uc9c0\uc6b0\uae30/\ud574\uc81c \ubc84\ud2bc AI \uc791\uc5c5\uc774 \uccab \ubc84\ud2bc\uc774\uace0, \ud06c\uae30 \ud14d\uc2a4\ud2b8\ub294 \ubc14\uc5d0 \uc5c6\ub2e4",
+          "status": "passed",
+          "title": "AI \uc791\uc5c5\uc774 \uccab \ubc84\ud2bc\uc774\uace0, \ud06c\uae30 \ud14d\uc2a4\ud2b8\ub294 \ubc14\uc5d0 \uc5c6\ub2e4",
+          "duration": 2999.0992719999995,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "renderSelectionActionChips \u2014 \ubcf5\uc0ac/\ubd99\uc5ec\ub123\uae30/\uc9c0\uc6b0\uae30/\ud574\uc81c \ubc84\ud2bc"
+          ],
+          "fullName": "renderSelectionActionChips \u2014 \ubcf5\uc0ac/\ubd99\uc5ec\ub123\uae30/\uc9c0\uc6b0\uae30/\ud574\uc81c \ubc84\ud2bc \ud074\ub9bd\ubcf4\ub4dc\uac00 \uc788\uc73c\uba74 \ubd99\uc5ec\ub123\uae30 \ubc84\ud2bc\uc774 \ub098\ud0c0\ub09c\ub2e4",
+          "status": "passed",
+          "title": "\ud074\ub9bd\ubcf4\ub4dc\uac00 \uc788\uc73c\uba74 \ubd99\uc5ec\ub123\uae30 \ubc84\ud2bc\uc774 \ub098\ud0c0\ub09c\ub2e4",
+          "duration": 1671.833063,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "renderSelectionActionChips \u2014 \ubcf5\uc0ac/\ubd99\uc5ec\ub123\uae30/\uc9c0\uc6b0\uae30/\ud574\uc81c \ubc84\ud2bc"
+          ],
+          "fullName": "renderSelectionActionChips \u2014 \ubcf5\uc0ac/\ubd99\uc5ec\ub123\uae30/\uc9c0\uc6b0\uae30/\ud574\uc81c \ubc84\ud2bc \ud074\ub9bd\ubcf4\ub4dc\uac00 \uc5c6\uc73c\uba74 \ubd99\uc5ec\ub123\uae30 \ubc84\ud2bc\uc774 \uc5c6\ub2e4",
+          "status": "passed",
+          "title": "\ud074\ub9bd\ubcf4\ub4dc\uac00 \uc5c6\uc73c\uba74 \ubd99\uc5ec\ub123\uae30 \ubc84\ud2bc\uc774 \uc5c6\ub2e4",
+          "duration": 1558.6264159999992,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1788660790951,
+      "endTime": 1788660809462.6265,
+      "status": "passed",
+      "message": "",
+      "name": "/home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/regionSelectionPastePreview.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "A-2 \uac8c\uc774\ud2b8 \u2014 \uc5ed\ud560 \uc774\ub984 \ube44\uad50 \uc794\uc5ec"
+          ],
+          "fullName": "A-2 \uac8c\uc774\ud2b8 \u2014 \uc5ed\ud560 \uc774\ub984 \ube44\uad50 \uc794\uc5ec \ud5c8\uc6a9 \ubaa9\ub85d \ubc16\uc5d0\uc11c \ud0c0\uc77c \uc5ed\ud560 \uc774\ub984\uc744 \uc9c1\uc811 \ube44\uad50\ud558\uc9c0 \uc54a\ub294\ub2e4",
+          "status": "failed",
+          "title": "\ud5c8\uc6a9 \ubaa9\ub85d \ubc16\uc5d0\uc11c \ud0c0\uc77c \uc5ed\ud560 \uc774\ub984\uc744 \uc9c1\uc811 \ube44\uad50\ud558\uc9c0 \uc54a\ub294\ub2e4",
+          "duration": 858.047975,
+          "failureMessages": [
+            "AssertionError: expected [ \u2026(2) ] to deeply equal []\n    at /home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/roleNameComparisonGate.test.ts:154:23\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+          ],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "A-2 \uac8c\uc774\ud2b8 \u2014 \uc5ed\ud560 \uc774\ub984 \ube44\uad50 \uc794\uc5ec"
+          ],
+          "fullName": "A-2 \uac8c\uc774\ud2b8 \u2014 \uc5ed\ud560 \uc774\ub984 \ube44\uad50 \uc794\uc5ec \ud5c8\uc6a9 \ubaa9\ub85d \uc548\uc5d0\uc11c\ub3c4 \ube44\uad50\uac00 \ub298\uc5b4\ub098\uc9c0 \uc54a\ub294\ub2e4",
+          "status": "passed",
+          "title": "\ud5c8\uc6a9 \ubaa9\ub85d \uc548\uc5d0\uc11c\ub3c4 \ube44\uad50\uac00 \ub298\uc5b4\ub098\uc9c0 \uc54a\ub294\ub2e4",
+          "duration": 32.97934499999997,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "A-2 \uac8c\uc774\ud2b8 \u2014 \uc5ed\ud560 \uc774\ub984 \ube44\uad50 \uc794\uc5ec"
+          ],
+          "fullName": "A-2 \uac8c\uc774\ud2b8 \u2014 \uc5ed\ud560 \uc774\ub984 \ube44\uad50 \uc794\uc5ec \ud5c8\uc6a9 \ubaa9\ub85d\uc5d0 \uc8fd\uc740 \ud56d\ubaa9\uc774 \uc5c6\ub2e4",
+          "status": "passed",
+          "title": "\ud5c8\uc6a9 \ubaa9\ub85d\uc5d0 \uc8fd\uc740 \ud56d\ubaa9\uc774 \uc5c6\ub2e4",
+          "duration": 13.151768000000175,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1788660789352,
+      "endTime": 1788660790257.1519,
+      "status": "failed",
+      "message": "",
+      "name": "/home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/roleNameComparisonGate.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "UXC D01 \ud504\ub85c\uc81d\ud2b8 \ub85c\ub4dc \uc2e4\ud328 \ud3f4\ubc31"
+          ],
+          "fullName": "UXC D01 \ud504\ub85c\uc81d\ud2b8 \ub85c\ub4dc \uc2e4\ud328 \ud3f4\ubc31 \uc624\ub958 \uc6d0\ubb38\uc744 \uc228\uae30\uace0 \uc548\uc804\ud55c \ubcf5\uad6c \ubc29\ubc95\uacfc \uc608\uc81c/\uc0c8 \ud504\ub85c\uc81d\ud2b8 CTA\ub97c \uc81c\uacf5\ud55c\ub2e4",
+          "status": "passed",
+          "title": "\uc624\ub958 \uc6d0\ubb38\uc744 \uc228\uae30\uace0 \uc548\uc804\ud55c \ubcf5\uad6c \ubc29\ubc95\uacfc \uc608\uc81c/\uc0c8 \ud504\ub85c\uc81d\ud2b8 CTA\ub97c \uc81c\uacf5\ud55c\ub2e4",
+          "duration": 2431.14605,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "UXC D01 \ud504\ub85c\uc81d\ud2b8 \ub85c\ub4dc \uc2e4\ud328 \ud3f4\ubc31"
+          ],
+          "fullName": "UXC D01 \ud504\ub85c\uc81d\ud2b8 \ub85c\ub4dc \uc2e4\ud328 \ud3f4\ubc31 \uc608\uc81c \ud504\ub85c\uc81d\ud2b8 \ud3f4\ubc31\uc740 \uc800\uc7a5\ubcf8\uc744 \ud3d0\uae30\ud558\uc9c0 \uc54a\uace0 \uba54\ubaa8\ub9ac \ud504\ub85c\uc81d\ud2b8\ub85c \ubd80\ud305\ud55c\ub2e4",
+          "status": "passed",
+          "title": "\uc608\uc81c \ud504\ub85c\uc81d\ud2b8 \ud3f4\ubc31\uc740 \uc800\uc7a5\ubcf8\uc744 \ud3d0\uae30\ud558\uc9c0 \uc54a\uace0 \uba54\ubaa8\ub9ac \ud504\ub85c\uc81d\ud2b8\ub85c \ubd80\ud305\ud55c\ub2e4",
+          "duration": 1572.4573049999995,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "UXC D01 \ud504\ub85c\uc81d\ud2b8 \ub85c\ub4dc \uc2e4\ud328 \ud3f4\ubc31"
+          ],
+          "fullName": "UXC D01 \ud504\ub85c\uc81d\ud2b8 \ub85c\ub4dc \uc2e4\ud328 \ud3f4\ubc31 \uc0c8 \ud504\ub85c\uc81d\ud2b8 \ud3f4\ubc31\ub3c4 \uae30\uc874 \uc800\uc7a5\ubcf8\uc744 \ud3d0\uae30\ud558\uc9c0 \uc54a\ub294\ub2e4",
+          "status": "passed",
+          "title": "\uc0c8 \ud504\ub85c\uc81d\ud2b8 \ud3f4\ubc31\ub3c4 \uae30\uc874 \uc800\uc7a5\ubcf8\uc744 \ud3d0\uae30\ud558\uc9c0 \uc54a\ub294\ub2e4",
+          "duration": 1385.5819689999998,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1788660817475,
+      "endTime": 1788660822864.582,
+      "status": "passed",
+      "message": "",
+      "name": "/home/main/z-project/rpg-zzu-life-full-p2-gate-current/test/uxcLoadFailure.test.ts"
+    }
+  ]
+}

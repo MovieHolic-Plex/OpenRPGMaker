@@ -1,0 +1,15 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p2",
+  "head": "b7b02d97ad6cb3b493bd60691ec61970e8a0e37e",
+  "tree": "63ea1d26f87d4a82d9ff925071582abdae01b354",
+  "command": [
+    "npm",
+    "run",
+    "typecheck:app"
+  ],
+  "started": "2026-09-06T01:28:33.102Z",
+  "exit": 0,
+  "signal": null,
+  "output": "\n> rpg-zzu@0.1.0 typecheck:app\n> tsc --noEmit -p tsconfig.app.json\n\n",
+  "sha256": "9e2e881b46f10347e10261b098fd6171273d8f45b9a5d52fc81a8473a713bdfe"
+}

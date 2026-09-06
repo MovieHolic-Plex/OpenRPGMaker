@@ -1,0 +1,11 @@
+{
+  "head": "34c279bb6a481b18bf428fb985bc4fa4916d1e29",
+  "archive": "final-full-vitest.json",
+  "exactBytes": true,
+  "bytes": 4979081,
+  "sha256": "171352124d85b283ca04a9544e48826bf2f1f80c7272b1cb02089a3d524d34ef",
+  "total": 13669,
+  "passed": 13488,
+  "failed": 166,
+  "pending": 15
+}

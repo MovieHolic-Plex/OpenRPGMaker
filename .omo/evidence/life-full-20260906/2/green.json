@@ -1,0 +1,9 @@
+{
+  "id": "green",
+  "command": "npm test -- test/lifeSaveVersion.test.ts test/autosave.test.ts test/p0SessionPersistence.test.ts test/p1SessionPersistence.test.ts test/p2SessionPersistence.test.ts",
+  "actualExit": 0,
+  "log": "green.txt",
+  "passed": 50,
+  "failed": 0,
+  "files": 5
+}

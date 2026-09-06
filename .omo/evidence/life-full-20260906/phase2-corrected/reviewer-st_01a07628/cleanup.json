@@ -1,0 +1,10 @@
+{
+  "reviewerRuntimeResourcesRemaining": 0,
+  "monitorExited": true,
+  "ssrCacheAbsent": true,
+  "trackedWorktreeAndIndexUnchanged": true,
+  "indexSha256": "863fad758bb3a33d0b5dc4b77548ed883856584cf07cadf726e3fc180df2b211",
+  "head": "d84001e88b5e0b7f8ff3074de0ec5f6cdbcbf41e",
+  "tree": "7b9fd7d4cbc04e99f3f7a2ed9005e8eb91ea3345",
+  "parentResources": "not touched; parent retains responsibility for dist/cache/frozen worktree"
+}

@@ -1,0 +1,26 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p2-corrected-review",
+  "head": "d84001e88b5e0b7f8ff3074de0ec5f6cdbcbf41e",
+  "tree": "7b9fd7d4cbc04e99f3f7a2ed9005e8eb91ea3345",
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "120s",
+    "npm",
+    "run",
+    "openwiki:index",
+    "--",
+    "--check"
+  ],
+  "started": "2026-09-06T09:16:48.004Z",
+  "finished": "2026-09-06T09:16:49.456Z",
+  "exit": 0,
+  "signal": null,
+  "stdout": "\n> rpg-zzu@0.1.0 openwiki:index\n> node scripts/openwiki-index.mjs --check\n\nopenwiki/INDEX.md 최신.\n",
+  "stderr": ""
+}

@@ -1,0 +1,12 @@
+{"file":"playtest-driver3.cjs","cleanup":"for (let i = 1; i <= 3; i++) localStorage.removeItem(\"oprn:save-slot:\" + i);","remainingOwned":["oprn:save-slot:v5:1","oprn:save-slot:v5:2","oprn:save-slot:v5:3"],"preserved":true}
+{"file":"playtest-driver4.cjs","cleanup":"for (let i = 1; i <= 3; i++) localStorage.removeItem(\"oprn:save-slot:\" + i);","remainingOwned":["oprn:save-slot:v5:1","oprn:save-slot:v5:2","oprn:save-slot:v5:3"],"preserved":true}
+{"file":"playtest-driver5.cjs","cleanup":"for (let i = 1; i <= 3; i++) localStorage.removeItem(\"oprn:save-slot:\" + i);","remainingOwned":["oprn:save-slot:v5:1","oprn:save-slot:v5:2","oprn:save-slot:v5:3"],"preserved":true}
+{"file":"playtest-driver6.cjs","cleanup":"for (let i = 1; i <= 3; i++) localStorage.removeItem(\"oprn:save-slot:\" + i);","remainingOwned":["oprn:save-slot:v5:1","oprn:save-slot:v5:2","oprn:save-slot:v5:3"],"preserved":true}
+{"file":"capture-fullscreen-scale.cjs","cleanup":"for (let i = 1; i <= 3; i++) localStorage.removeItem(\"oprn:save-slot:\" + i);","remainingOwned":["oprn:save-slot:v5:1","oprn:save-slot:v5:2","oprn:save-slot:v5:3"],"preserved":true}
+{"file":"playtest-driver4.cjs","observer":"() => !!localStorage.getItem(\"oprn:save-slot:1\")","observed":false,"key":"oprn:save-slot:v5:1","schemaVersion":5}
+{"file":"playtest-driver4.cjs","mutation":"([m, px, py, sw]) => {\n      const raw = JSON.parse(localStorage.getItem(\"oprn:save-slot:1\"));\n      const sess = raw.session ?? raw.snapshot?.session ?? raw;\n      sess.currentMapId = m; sess.x = px; sess.y = py;\n      for (const [k, v] of Object.entries(sw)) sess.switches[k] = v;\n      localStorage.setItem(\"oprn:save-slot:1\", JSON.stringify(raw));\n    }","currentPosition":["map_blank_start",10,8],"legacyPreserved":false}
+{"file":"playtest-driver6.cjs","observer":"() => !!localStorage.getItem(\"oprn:save-slot:1\")","observed":false,"key":"oprn:save-slot:v5:1","schemaVersion":5}
+{"file":"playtest-driver6.cjs","mutation":"([mm, px, py]) => {\n      const raw = JSON.parse(localStorage.getItem(\"oprn:save-slot:1\"));\n      raw.session.currentMapId = mm; raw.session.x = px; raw.session.y = py;\n      localStorage.setItem(\"oprn:save-slot:1\", JSON.stringify(raw));\n    }","currentPosition":["map_blank_start",10,8],"legacyPreserved":false}
+    186|     console.log(JSON.stringify({ file, cleanup, remainingOwned: owned.…
+    195|       const observed = await runCurrent(file, storage);
+    197|       expect(observed).toBe(true);

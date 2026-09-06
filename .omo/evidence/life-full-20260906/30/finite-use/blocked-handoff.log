@@ -1,0 +1,13 @@
+ M .omo/evidence/life-full-20260906/30/SUMMARY.md
+ M src/project/itemTransitions.ts
+ M test/lifeRecoveryRecordKeys.test.ts
+agent/life-full-record-keys
+7c19e5edc5849e800db81b4af0c3f26504401bc1
+7c013a59633197ca8031b856e9b1dcd79dba5bff
+.omo/evidence/life-full-20260906/30/SUMMARY.md
+src/project/itemTransitions.ts
+test/lifeRecoveryRecordKeys.test.ts
+ .omo/evidence/life-full-20260906/30/SUMMARY.md |  8 +++
+ src/project/itemTransitions.ts                 |  4 +-
+ test/lifeRecoveryRecordKeys.test.ts            | 81 ++++++++++++++++++++++++++
+ 3 files changed, 91 insertions(+), 2 deletions(-)

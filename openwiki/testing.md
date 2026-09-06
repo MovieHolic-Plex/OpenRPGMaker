@@ -26,6 +26,30 @@ The narrow macOS workflow uses Node 24 and no live DB secrets. Actions are disab
 producer host is Linux: neither the workflow file nor Linux Bash tests prove macOS/Finder QA.
 Actual Mac execution or explicit reviewer acceptance of that gap remains a merge prerequisite.
 
+## Life QA observation and action receipts (2026-09-06)
+
+- `npm test -- test/lifeQaObservability.test.ts` characterizes real till/rejection behavior and tests detached life snapshots, optional absence, per-scene receipts and instrumentation-off behavior. Observation is not save reconciliation or gameplay mutation.
+- For a synchronous field action, use `performObservedAction(page, () => page.keyboard.press("z"))` from `scripts/lib/runtimeQaRun.mjs`. It arms the exact scene-host `oprn:action` listener **before** input and returns `{receipt, state, mirror}` after the action's mirror sync, even when the game state did not change. The bounded timeout/cancel path removes the listener and disposes its JS handle. No extra browser global is installed. State and receipt reads are detached copies.
+- Existing runtime scenarios may opt into the same contract with `{kind:"action", observe:true}` instead of an action followed by a settling sleep. The manifest includes existing life owners and the receipt when present. Hook readiness uses the boot/mirror DOM mutation signal, not a polling interval. Other scenario waits are unchanged; no pre-existing life scenario was rewritten or credited with a journey it did not run.
+- Receipts describe synchronous input dispatch and actual farm attempt results. Event/chest dispatch must still await that surface's own DOM completion; `handled:true` is not an asynchronous completion receipt. Future fishing, linked housing, regrowth and ledger integrations are not claimed by this foundation.
+- Task5 reproducible public-module and shipped-player proof scripts are under `.omo/evidence/life-full-20260906/5/`; `public-probe.mjs` generates the minimal local contract fixture, `browser-proof.mjs` drives actual keyboard input with QA off/on, and `harness-proof.mjs` exercises the dedicated runtime runner's observed action op. No editor play, remote authored content or injected successful outcomes are used. Full 51-feature coverage remains not-run until the later journeys.
+
+### Task5 validation correction (2026-09-06)
+
+Run heavyweight suites, builds and browser proofs serially. The original title-readiness failures did not retain enough diagnostics to establish a cause; a later passing replay is not a root-cause diagnosis. `5/correction/browser-proof.mjs` under the task5 evidence directory retains per-context startup milestones, page/console/HTTP/request failures and pending requests/DOM on failure. It keeps the same 120-second DOM deadlines, arms canvas-plus-loading-overlay-removal before Enter, and uses a real visible menu to prove normal omitted-flag player readiness without QA hooks. No network bypass, polling or settling sleep is added.
+
+`test/debugSession.test.ts` uses static imports for collection and synchronous operation tests. The former first-test `load()` charged every import (including unused-in-that-test scene hooks) to its 15-second operation deadline. Measured hooks loading dominated the actual fixture/operations; the new `runtimeDom` dependency also expanded the hooks' local static graph from 81 to 276 modules through the editor store. This correction separates setup from operations; it does **not** claim to reduce that graph or make imports faster. Timing evidence retains collection/import costs and all four tests/17 assertions. Do not raise timeouts, prewarm caches, or hide the two unrelated actionDebounce registry-fixture failures.
+
+Generate `openwiki/INDEX.md` **after staging the final evidence-inclusive file set**: its basename checks consume `git ls-files`, so a pre-staging check can pass while the committed index is stale. Check it again against the final committed tracked set.
+
+### Task5 Q1 audio boundary correction (2026-09-06)
+
+`test/audioQaInstrumentation.test.ts` constructs the real AudioEngine with omitted/false/true capabilities, exercises queue unlock and real media-element control/stop paths (only browser play/pause are stubbed in happy-dom), and checks publication, detached state, resource recording and ownership-safe revocation. `test/playerAudioQaLifecycle.test.ts` keeps the real shell/audio singleton and exported store shim to cover enabled-to-omitted/false replacement and teardown. Existing playback assertions remain; the QA-specific control test and editor audio-dialog browser probe explicitly opt in.
+
+`.omo/evidence/life-full-20260906/5/q1/browser-proof.mjs` extends the prior real keyboard proof to omitted/false/true boots. Its known-owner enumeration adds both audio QA globals, plus actor/media hooks, without removing any prior name; it also records **all** own `__oprn*` properties to expose unknown owners without misclassifying legitimate boot/juice diagnostics. Native media `playing`/`error` listeners are armed before player construction, DOM readiness before Enter/Escape, and scene receipt listeners before each actual z. The proof retains the prior acceptance/rejection, mirror and detached-read assertions, compares QA audio state to the public API, verifies requested start BGM, and revokes globals via real shell teardown. Native `playing`, unpaused state and readyState establish browser playback/decode evidence, not a claim about audible speaker output. No result injection, fixed sleeps, polling, timing retries, cache warmups or increased deadlines.
+
+Use `flock --timeout 900 /tmp/rpg-zzu-life-full-qa-01a0727b.lock` for serial heavyweight validation under this execution. Q1 receipts preserve the original failures and supervisor/VERIFY files; the two unrelated registry-fixture errors still run and remain failures, not a changed baseline. Re-generate INDEX only after final evidence-inclusive staging and check the committed tree.
+
 ## 기존 실패 비교는 진단 내용까지 확인한다 (2026-09-05)
 
 같은 main의 실패 파일·테스트 이름·중복 횟수가 같아도 회귀가 없다는 충분한 증거는 아니다.

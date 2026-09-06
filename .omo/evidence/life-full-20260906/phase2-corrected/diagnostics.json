@@ -1,0 +1,23 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p2-corrected-review",
+  "head": "d84001e88b5e0b7f8ff3074de0ec5f6cdbcbf41e",
+  "tree": "7b9fd7d4cbc04e99f3f7a2ed9005e8eb91ea3345",
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "300s",
+    "node",
+    "/home/main/z-project/rpg-zzu-life-full-p2-corrected-review/.omo/evidence/life-full-20260906/phase2-corrected/diagnostics.mjs"
+  ],
+  "started": "2026-09-06T09:11:49.771Z",
+  "finished": "2026-09-06T09:12:33.918Z",
+  "exit": 0,
+  "signal": null,
+  "stdout": "{\"path\":\"src/player/audio/audioEngine.ts\",\"diagnostics\":[]}\n{\"path\":\"src/player/audio/index.ts\",\"diagnostics\":[]}\n{\"path\":\"src/player/autosave.ts\",\"diagnostics\":[]}\n{\"path\":\"src/player/dayTransition.ts\",\"diagnostics\":[]}\n{\"path\":\"src/player/playSceneMapRuntime.ts\",\"diagnostics\":[]}\n{\"path\":\"src/player/playSceneMovement.ts\",\"diagnostics\":[]}\n{\"path\":\"src/player/playSceneTestHooks.ts\",\"diagnostics\":[]}\n{\"path\":\"src/player/player.ts\",\"diagnostics\":[]}\n{\"path\":\"src/player/playerStatusMenuController.ts\",\"diagnostics\":[]}\n{\"path\":\"src/player/runtimeDom.ts\",\"diagnostics\":[]}\n{\"path\":\"src/player/saveSlotValidation.ts\",\"diagnostics\":[]}\n{\"path\":\"src/player/saveSlots.ts\",\"diagnostics\":[]}\n{\"path\":\"src/project/itemTransitions.ts\",\"diagnostics\":[]}\n{\"path\":\"src/project/lifeRecovery.ts\",\"diagnostics\":[]}\n{\"path\":\"src/project/lifeStateReconciliation.ts\",\"diagnostics\":[]}\n{\"path\":\"src/project/makers.ts\",\"diagnostics\":[]}\n{\"path\":\"src/project/p1FoundationRecords.ts\",\"diagnostics\":[]}\n{\"path\":\"src/project/session.ts\",\"diagnostics\":[]}\n{\"path\":\"src/project/spatialPlacementRestore.ts\",\"diagnostics\":[]}\n{\"path\":\"src/testing/sceneTestRunner.ts\",\"diagnostics\":[]}\n{\"path\":\"test/audioEnginePlaybackControls.test.ts\",\"diagnostics\":[]}\n{\"path\":\"test/audioQaInstrumentation.test.ts\",\"diagnostics\":[]}\n{\"path\":\"test/autosave.test.ts\",\"diagnostics\":[]}\n{\"path\":\"test/debugSession.test.ts\",\"diagnostics\":[]}\n{\"path\":\"test/e2e/_quest-playthrough.spec.ts\",\"diagnostics\":[]}\n{\"path\":\"test/e2e/oprn-audio-test-dialog.spec.ts\",\"diagnostics\":[]}\n{\"path\":\"test/e2e/oprn-learn-skill-cert.spec.ts\",\"diagnostics\":[]}\n{\"path\":\"test/e2e/oprn-menu-keyboard-tour.spec.ts\",\"diagnostics\":[]}\n{\"path\":\"test/e2e/oprnPlayerStatusMenuHelpers.ts\",\"diagnostics\":[]}\n{\"path\":\"test/e2e/saveWriteSignal.ts\",\"diagnostics\":[]}\n{\"path\":\"test/fixtures/life-full/qaObservability.ts\",\"diagnostics\":[]}\n{\"path\":\"test/fixtures/life-full/saveSlots.phase1.ts\",\"diagnostics\":[]}\n{\"path\":\"test/lifePlayerSaveFailures.test.ts\",\"diagnostics\":[]}\n{\"path\":\"test/lifeQaObservability.test.ts\",\"diagnostics\":[]}\n{\"path\":\"test/lifeRecovery.test.ts\",\"diagnostics\":[]}\n{\"path\":\"test/lifeRecoveryPersistence.test.ts\",\"diagnostics\":[]}\n{\"path\":\"test/lifeRecoveryRecordKeys.test.ts\",\"diagnostics\":[]}\n{\"path\":\"test/lifeSaveConsumers.test.ts\",\"diagnostics\":[]}\n{\"path\":\"test/lifeSaveVersion.test.ts\",\"diagnostics\":[]}\n{\"path\":\"test/p0DayTransitionSceneFailure.test.ts\",\"diagnostics\":[]}\n{\"path\":\"test/p0RuntimeIntegration.test.ts\",\"diagnostics\":[]}\n{\"path\":\"test/p0SessionPersistence.test.ts\",\"diagnostics\":[]}\n{\"path\":\"test/p1DayTransitionIntegration.test.ts\",\"diagnostics\":[]}\n{\"path\":\"test/p1FoundationSchema.test.ts\",\"diagnostics\":[]}\n{\"path\":\"test/p2DayTransition.test.ts\",\"diagnostics\":[]}\n{\"path\":\"test/p2SpatialPersistence.test.ts\",\"diagnostics\":[]}\n{\"path\":\"test/playBootRecovery.test.ts\",\"diagnostics\":[]}\n{\"path\":\"test/playerAudioQaLifecycle.test.ts\",\"diagnostics\":[]}\n{\"path\":\"test/playerKeydownSessionGuard.test.ts\",\"diagnostics\":[]}\n{\"path\":\"test/playerOpenSaveMenu.test.ts\",\"diagnostics\":[]}\n{\"path\":\"test/playerRunControls.test.ts\",\"diagnostics\":[]}\n{\"path\":\"test/runtime/status-menu-adversarial.spec.ts\",\"diagnostics\":[]}\n",
+  "stderr": ""
+}

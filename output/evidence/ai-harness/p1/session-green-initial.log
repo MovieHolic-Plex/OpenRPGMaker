@@ -1,0 +1,46 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiRunEndProof.test.ts test/aiAssistantSession.test.ts test/aiMilestoneTurnAccounting.test.ts test/aiAssistantTurnCleanup.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p1-20260906
+
+ ✓ test/aiAssistantTurnCleanup.test.ts (14 tests) 11472ms
+   ✓ assistant owner-turn presentation cleanup > retires visible planning on final without changing retained data  2508ms
+   ✓ assistant owner-turn presentation cleanup > retires visible planning on error without changing retained data  1445ms
+   ✓ assistant owner-turn presentation cleanup > retires visible planning on aborted without changing retained data  1547ms
+   ✓ assistant owner-turn presentation cleanup > retires visible planning on throw without changing retained data  471ms
+   ✓ assistant owner-turn presentation cleanup > retires visible planning on abort-throw without changing retained data  506ms
+   ✓ assistant owner-turn presentation cleanup > clears the owner ghost on final when no region approval owns it  594ms
+   ✓ assistant owner-turn presentation cleanup > clears the owner ghost on error when no region approval owns it  685ms
+   ✓ assistant owner-turn presentation cleanup > clears the owner ghost on aborted when no region approval owns it  1244ms
+   ✓ assistant owner-turn presentation cleanup > clears the owner ghost on throw when no region approval owns it  539ms
+   ✓ assistant owner-turn presentation cleanup > clears the owner ghost on abort-throw when no region approval owns it  401ms
+   ✓ assistant owner-turn presentation cleanup > retires after an applied proposal without altering outcome accounting  334ms
+   ✓ assistant owner-turn presentation cleanup > retires after an rejected proposal without altering outcome accounting  383ms
+   ✓ assistant owner-turn presentation cleanup > retires unseen automatic spec expansion before a follow-up turn can sync it  402ms
+   ✓ assistant owner-turn presentation cleanup > an orphaned completion cannot retire its replacement turn's blueprint  403ms
+ ✓ test/aiMilestoneTurnAccounting.test.ts (3 tests) 28958ms
+   ✓ 마일스톤 턴 정산 > 한 항목이 실행 한도로 나뉘어도 앞선 성공과 미적용 제안을 이어서 완료한다  5435ms
+   ✓ 마일스톤 턴 정산 > 마일스톤 쓰기는 자동 계속(false) 후에도 정산에 남는다  13726ms
+   ✓ 마일스톤 턴 정산 > 마일스톤 쓰기는 자동 계속(true) 후에도 정산에 남는다  9796ms
+ ❯ test/aiRunEndProof.test.ts (12 tests | 4 failed) 172939ms
+   × AssistantSession accepted-revision proof > does not claim verified after a failed proof read through actual session completion 60158ms
+     → Test timed out in 60000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+   × AssistantSession accepted-revision proof > retries failed proof for the same plan/revision, deduplicates success, and reproves a changed revision 11376ms
+     → Cannot access 'TOOL_BY_NAME' before initialization
+   × AssistantSession accepted-revision proof > does not promote cancelled during the read or replace editor state 15088ms
+     → Test timed out in 15000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+   × AssistantSession accepted-revision proof > does not promote disabled during the read or replace editor state 16324ms
+     → Test timed out in 15000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+   ✓ AssistantSession accepted-revision proof > does not promote target during the read or replace editor state  7122ms
+   ✓ AssistantSession accepted-revision proof > does not promote content during the read or replace editor state  7783ms
+   ✓ AssistantSession accepted-revision proof > does not promote local-edit during the read or replace editor state  9811ms
+   ✓ AssistantSession accepted-revision proof > uses the real apply commit, not a newest remote commit read  11609ms
+   ✓ AssistantSession accepted-revision proof > project proof can succeed when the separate commit log fails  7802ms
+   ✓ AssistantSession accepted-revision proof > proves a normal no-plan apply through the reusable path without replaying the tool  14537ms
+   ✓ AssistantSession accepted-revision proof > does not correlate a later human edit with an in-flight apply commit  9395ms
+   ✓ AssistantSession accepted-revision proof > a clean saved response without an accepted receipt cannot become proof  1930ms

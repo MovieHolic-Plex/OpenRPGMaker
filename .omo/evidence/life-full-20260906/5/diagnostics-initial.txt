@@ -1,0 +1,8 @@
+{"file":"src/player/runtimeDom.ts","diagnostics":[]}
+{"file":"src/player/playSceneMovement.ts","diagnostics":[]}
+{"file":"src/player/playSceneMapRuntime.ts","diagnostics":[]}
+{"file":"src/player/playSceneTestHooks.ts","diagnostics":[]}
+{"file":"src/testing/sceneTestRunner.ts","diagnostics":[]}
+{"file":"test/lifeQaObservability.test.ts","diagnostics":[{"code":2322,"category":"Error","line":49,"message":"Type '{ instanceId: string; speciesId: string; buildingId: string; friendship: number; productionProgress: number; readyProductCount: number; }' is not assignable to type 'FarmAnimalState'.\n  Property 'name' is missing in type '{ instanceId: string; speciesId: string; buildingId: string; friendship: number; productionProgress: number; readyProductCount: number; }' but required in type 'FarmAnimalStartInstance'."}]}
+{"file":"test/fixtures/life-full/qaObservability.ts","diagnostics":[]}
+{"files":7,"diagnostics":1}

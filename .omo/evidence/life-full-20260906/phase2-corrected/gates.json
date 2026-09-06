@@ -1,0 +1,27 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p2-corrected-review",
+  "head": "d84001e88b5e0b7f8ff3074de0ec5f6cdbcbf41e",
+  "tree": "7b9fd7d4cbc04e99f3f7a2ed9005e8eb91ea3345",
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "1200s",
+    "npm",
+    "run",
+    "gates",
+    "--",
+    "--json"
+  ],
+  "started": "2026-09-06T09:16:49.463Z",
+  "finished": "2026-09-06T09:36:49.562Z",
+  "exit": 124,
+  "signal": null,
+  "stdout": "\n> rpg-zzu@0.1.0 gates\n> node scripts/verify-gates.mjs --json\n\n",
+  "stderr": "",
+  "vitestReportPresent": false
+}

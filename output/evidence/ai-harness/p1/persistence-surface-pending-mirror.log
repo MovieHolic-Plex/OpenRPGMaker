@@ -1,0 +1,53 @@
+[project-commits] 저장 baseline 이 없어 실제 diff 를 못 낸다 — 시스템 변경으로 기록한다 { summary: '변경 저장: 시스템' }
+{
+  "pass": true,
+  "receipt": {
+    "revisionId": "68000f3b-01ca-4383-9370-96cda4c9f51b",
+    "projectId": "p1-surface-fixture",
+    "mutationGeneration": 1,
+    "contentIdentity": "dac30007d07d7b580bff02002d857b7fbae02371d7ca9d2a5af8d28e514a2ee3",
+    "sha256": "f7340bde371aaf12a5e246e7b152126b565c2c2cb2bd1836a9b1259abf741b3b"
+  },
+  "steps": [
+    {
+      "mode": "matched",
+      "kind": "verified",
+      "isCurrent": true
+    },
+    {
+      "mode": "content",
+      "kind": "mismatch",
+      "reason": "content"
+    },
+    {
+      "mode": "target",
+      "kind": "mismatch",
+      "reason": "target"
+    },
+    {
+      "mode": "failed",
+      "kind": "failed"
+    },
+    {
+      "mode": "matched",
+      "kind": "verified",
+      "isCurrent": true
+    },
+    {
+      "mode": "local-edit-during-read",
+      "kind": "verified",
+      "isCurrent": false,
+      "title": "newer-surface-edit",
+      "dirty": true
+    }
+  ],
+  "cleanup": {
+    "viteClosed": true,
+    "transportRestored": true,
+    "autosaveCleared": true,
+    "deferredSettled": true,
+    "remoteFixturesCreated": 0,
+    "listenerStarted": false
+  }
+}
+[edit-activity] 디스크 미러 실패 (/__oprn/edit-activity: Failed to parse URL from /__oprn/edit-activity) — output/edit-activity/ 가 갱신되지 않는다.
