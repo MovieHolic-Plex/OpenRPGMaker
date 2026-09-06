@@ -1,0 +1,1 @@
+QA_PORT=37025 EVIDENCE_DIR=output/evidence/ai-harness/p2/blocked-ask-resume-red-01 xvfb-run -a node scripts/qa/ai-harness-contracts.mjs --scenario required-skip

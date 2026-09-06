@@ -33,6 +33,13 @@ export function p2Scenarios(fixture) {
       { id: 'user-withdrawal', intent: contractIntent, rounds: skipped([measured, unmet]),
         expected: outcome('blocked', 'incomplete', 'no-change'), requiredIds: [measured.id, unmet.id], skipped: 2,
         withdrawId: unmet.id },
+      { id: 'blocked-ask-resume', askThenResume: true,
+        intent: { ...contractIntent, tools: ['resize_map', 'get_project_summary'],
+          acceptance: [{ ...unmet, id: 'blocked-resume-event' }],
+          layers: [{ title: 'Blocked task', items: [{ id: 'blocked-resume-work', title: 'Blocked task',
+            instruction: 'Resize then satisfy the required event', successTools: ['resize_map'] }] }] },
+        rounds: Array.from({ length: 4 }, () => [call('resize_map', { mapId, width: 0, height })]),
+        expected: outcome('blocked', 'incomplete', 'no-change') },
     ],
     matrix: [
       { id: 'query-no-change', intent: { ...baseIntent, mode: 'question', tools: ['get_project_summary'] },

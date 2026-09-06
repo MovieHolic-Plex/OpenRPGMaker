@@ -38,7 +38,7 @@ export function p2Observations(harness) {
       return {
         getterAvailable, ...(getterAvailable ? { getter: qa.session.getRunOutcome() } : {}),
         harness: qa.session.getHarnessSnapshot(), bridgeHarness: window.__oprnAiBridge.harness(), bridgeResult: qa.bridgeResult,
-        result: qa.result, acceptance: qa.session.getAcceptanceSnapshot(), activity: qa.activity,
+        result: qa.result, turnOptions: qa.turnOptions, acceptance: qa.session.getAcceptanceSnapshot(), activity: qa.activity,
         ui: outcomeNodes.map(node => ({ execution: node.dataset.execution, goal: node.dataset.goal, delivery: node.dataset.delivery })),
         events: qa.events, proof: qa.session.getRunEndProof(),
         live: { title: live.system.titleScreen?.title, mapId: map.id, width: map.width, height: map.height, events: map.events,

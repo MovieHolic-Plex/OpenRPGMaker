@@ -1,5 +1,7 @@
 # P2 real-surface contracts: old-source RED
 
+Follow-up: [actual user resume after Ask](qa-user-actions-red.md) adds a fifth required-skip lifecycle case and records real premature reactivation plus the missing existing continue control. The original execution records below remain unchanged.
+
 The executable `required-skip` and `outcome-matrix` scenarios are delivered. The final owned-port sequence produced **P1 GREEN (exit 0), required-skip RED (exit 1), and outcome-matrix RED (exit 1)**. These REDs follow actual editor execution; no missing outcome was replaced by a fake value. P2 implementation/GREEN remains integration-owned.
 
 ## Scope and source binding

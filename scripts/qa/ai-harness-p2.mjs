@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { p2Scenarios } from './ai-harness-p2-scenarios.mjs';
 import { p2Observations } from './ai-harness-p2-observe.mjs';
+import { runBlockedAskResume } from './ai-harness-p2-resume.mjs';
 
 export function createP2Contracts(harness) {
   const { page, report, record, deferred, bounded, projectId } = harness;
@@ -10,6 +11,10 @@ export function createP2Contracts(harness) {
   async function respond(body) {
     assert.ok(current, 'LLM request must belong to an armed case');
     if (!body.tools?.length) return { role: 'assistant', content: JSON.stringify(current.intent) };
+    if (held?.beforeTools && !held.used) {
+      held.used = true; held.arrived.resolve();
+      await bounded(held.release.promise, 'user lifecycle tools request');
+    }
     const calls = current.rounds[round++];
     if (!calls) {
       if (held && !held.used) {
@@ -131,6 +136,10 @@ export function createP2Contracts(harness) {
       });
       observations.check(`${spec.id}: UI reflects user withdrawal`, () => assert.equal(withdrawn.ui[0]?.goal, 'satisfied'));
     }
+    if (spec.askThenResume) await runBlockedAskResume({ ...harness, observations }, {
+      setScript: next => { current = next; round = 0; },
+      holdBeforeTools: () => { held = { arrived: deferred(), release: deferred(), used: false, beforeTools: true }; return held; },
+    }, observed);
     record('p2-case-executed', { case: spec.id });
   }
   async function run(scenario) {

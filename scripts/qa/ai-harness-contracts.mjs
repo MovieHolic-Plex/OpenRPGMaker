@@ -246,7 +246,7 @@ try {
   report.sourceHashes = Object.fromEntries(await Promise.all(['src/ai/assistantSession.ts', 'src/ai/workPlan.ts', 'src/ai/assistantAcceptanceLedger.ts', 'src/project/store.ts',
     'src/editor/panels/aiTurnRunner.ts', 'src/editor/aiAssistantBridge.ts', 'src/ai/activityLog.ts', 'src/ai/runRecap.ts',
     'scripts/qa/ai-harness-contracts.mjs', 'scripts/qa/ai-harness-browser.mjs', 'scripts/qa/ai-harness-proof-failure.mjs',
-    'scripts/qa/ai-harness-cleanup.mjs', 'scripts/qa/ai-harness-p2.mjs', 'scripts/qa/ai-harness-p2-scenarios.mjs', 'scripts/qa/ai-harness-p2-observe.mjs'].map(async path => [path, hash(await readFile(resolve(root, path)))])));
+    'scripts/qa/ai-harness-cleanup.mjs', 'scripts/qa/ai-harness-p2.mjs', 'scripts/qa/ai-harness-p2-scenarios.mjs', 'scripts/qa/ai-harness-p2-observe.mjs', 'scripts/qa/ai-harness-p2-resume.mjs'].map(async path => [path, hash(await readFile(resolve(root, path)))])));
   await writeFile(`${out}/server.log`, serverLog.replaceAll(config?.anonKey || '\0', '[REDACTED]'));
   await writeFile(`${out}/actions.json`, JSON.stringify(report, null, 2) + '\n');
   record('cleanup', report.cleanup);

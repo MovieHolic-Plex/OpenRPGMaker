@@ -30,6 +30,7 @@ export async function installBrowserProbe(page, fixture) {
     };
     sessionModule.AssistantSession.prototype.sendUserMessage = async function(text, onEvent = () => {}, signal, options) {
       if (qa.session !== this) { qa.sessionCount++; qa.session = this; }
+      qa.turnOptions = structuredClone(options);
       const result = await original.call(this, text, observe(onEvent), signal, options);
       // Keep the actual returned object: ordinary apply settles it after send resolves.
       qa.result = result; return result;
