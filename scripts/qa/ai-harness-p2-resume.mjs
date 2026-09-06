@@ -61,5 +61,7 @@ export async function runBlockedAskResume(harness, transport, initial) {
   resumeGate.release.resolve();
   await page.evaluate(() => qa.activityDone);
   const terminal = await observations.capture('blocked-user-resume-settled');
+  observations.agreement({ id: 'blocked-user-resume', tool: 'get_project_summary',
+    expected: { execution: 'blocked', goal: 'incomplete', delivery: 'no-change' } }, terminal);
   observations.check('blocked-resume: unfinished content is not manufactured', () => assert.equal(terminal.live.events.length, 0));
 }

@@ -122,6 +122,26 @@ export interface AiTurnRunner {
 }
 
 export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
+  const offerContinuation = (): void => {
+    const existingRow = deps.surface.log.querySelector("[data-testid=ai-continue-run]")?.parentElement;
+    if (existingRow) {
+      existingRow.remove();
+      existingRow.classList.remove("is-prior-turn");
+      deps.surface.log.append(existingRow);
+      return;
+    }
+    const continueRow = el("div", { class: "ai-retry-row" });
+    const continueBtn = el("button", {
+      class: "ai-assistant-action",
+      text: "계속",
+      attrs: { type: "button" },
+      dataset: { testid: "ai-continue-run" },
+      on: { click: () => { void deps.surface.sendText("계속"); } },
+    });
+    continueRow.append(continueBtn);
+    deps.surface.log.append(continueRow);
+    deps.surface.log.scrollTop = deps.surface.log.scrollHeight;
+  };
   const executeTurn = async (
     session: AssistantSession,
     requestText: string,
@@ -388,21 +408,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
           deps.workPlanSurfaceState.budget = budget;
           deps.refreshWorkPlanSurface();
         }
-        if (event.text.includes("예산 소진") || event.text.includes("agent_run_budget_exhausted")) {
-          if (!deps.surface.log.querySelector("[data-testid=ai-continue-run]")) {
-            const continueRow = el("div", { class: "ai-retry-row" });
-            const continueBtn = el("button", {
-              class: "ai-assistant-action",
-              text: "계속",
-              attrs: { type: "button" },
-              dataset: { testid: "ai-continue-run" },
-              on: { click: () => { void deps.surface.sendText("계속"); } },
-            });
-            continueRow.append(continueBtn);
-            deps.surface.log.append(continueRow);
-            deps.surface.log.scrollTop = deps.surface.log.scrollHeight;
-          }
-        }
+        if (event.text.includes("예산 소진") || event.text.includes("agent_run_budget_exhausted")) offerContinuation();
         if (shouldShowStatusInChat(event.text)) deps.surface.appendBubble("system", event.text);
       } else if (event.type === "work_plan") {
         const s = event.plan;
@@ -666,6 +672,10 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
           : turnCatchError || turnFailed ? "error" : turnResult?.stoppedReason ?? "error";
       }
       deps.settleWorkPlanTurn();
+      const blockedWork = turnResult?.workPlan?.layers.some(layer => layer.items.some(item => item.status === "blocked"));
+      const retainedContinuation = turnResult?.runOutcome?.goal === "incomplete"
+        && deps.surface.log.querySelector("[data-testid=ai-continue-run]") !== null;
+      if (turnResult?.runOutcome?.execution === "blocked" || blockedWork || retainedContinuation) offerContinuation();
       // An aborted owner cannot publish live events, but its backend terminal snapshot
       // is authoritative. The ownsTurn(true) guard above still rejects retired owners.
       if (receivedAcceptance) deps.showAcceptance(session.getAcceptanceSnapshot());

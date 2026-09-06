@@ -1,6 +1,8 @@
 # P2 backend outcome integration
 
-**Follow-up:** [Owned fixture I/O drainage and actual Ask/resume handoff](integration-fixture-drain.md) supersedes the original immediate-cleanup claim below. The corrected fixture consumers and P1 proof contracts pass **35/35 tests**, and a fresh complete build passes. The unchanged required-skip browser scenario confirms blocked state survives real Ask; missing Continue/withdrawal controls and the Continue handler's Ask-to-Do transition remain explicit UI-lane work. Production source is unchanged.
+**Latest follow-up:** [Real blocked-work Continue availability](integration-blocked-control.md) completes the integration-owned runner split: the existing control is visible and actually clicked after Ask, including after native history folding. **524/524 scoped tests and a fresh complete build pass.** The strengthened real browser terminal contract remains RED because the Panel click still sends Ask instead of Do; the UI lane must fix that user boundary and obtain blocked/incomplete/no-change after the resumed unfinished run. No synthetic control or test-only goalAction shortcut is used.
+
+**Earlier follow-up:** [Owned fixture I/O drainage](integration-fixture-drain.md), committed as `bd836d57a`, corrected cleanup before globals restoration and passed **35/35 affected/P1 tests** plus build. Its then-missing Continue control is superseded by the latest runner fix.
 
 Integrated the producer contracts through the actual session, ordinary/milestone apply, P1 proof, bridge, activity serialization and recap paths. Final scoped verification is **586/586 tests in 15 files, exit 0**, and the complete build is **exit 0**. The unchanged actual browser/API matrix passes **all 138 non-UI checks** across ten real cases. Its overall exit remains **1 solely for the ten missing UI outcome hooks**, which are explicitly owned by the next node. No assertions were removed or weakened to call that full scenario GREEN.
 
@@ -40,9 +42,10 @@ Exit 0, no conflict or merge. Ordered mapping:
 | 8 | `8f82a11b9df297c3d0ab396a44b316423f0ae395` | `0ef465d1419561a7f137f2c4636fedfb06eb8bd6` | Actual user resume/Ask follow-up |
 | 9 | own | `f4ae6118e5e44fe8f3d29727fb6fd15f1a75cd66` | Verified backend implementation and direct tests |
 | 10 | own | `761ed517b188729130e26dad57196aa4218b19ab` | Original report and raw integration evidence |
-| 11 | own | follow-up task handoff SHA | Fixture writer drainage, regression and actual Ask/resume handoff |
+| 11 | own | `bd836d57ae238405f9388dd346a35ca8371df242` | Fixture writer drainage, regression and actual Ask/resume handoff |
+| 12 | own | latest task handoff SHA | Blocked-work Continue availability, native history retention and resumed terminal contract |
 
-Final terminal producer heads still equal the two named terminal SHAs. `git diff 7f42772c9 HEAD -- src/ai/runOutcome.ts test/aiRunOutcome.test.ts`, `git diff 8f82a11b9 HEAD -- scripts/qa`, and the diff against `d6a38018c` for the canonical acceptance types/ledger/tool-verification authority were empty. All imported commits and own commits retain mandatory omo attribution. No push, merge, rebase, nested agent or shared-main worktree edit occurred.
+At the original integration handoff, terminal producer heads still equaled the two named terminal SHAs. `git diff 7f42772c9 HEAD -- src/ai/runOutcome.ts test/aiRunOutcome.test.ts`, `git diff 8f82a11b9 HEAD -- scripts/qa`, and the diff against `d6a38018c` for the canonical acceptance types/ledger/tool-verification authority were empty. The latest follow-up intentionally adds only two terminal-agreement assertion lines to the imported resume helper; it does not rewrite producer evidence or weaken its contract. All imported commits and own commits retain mandatory omo attribution. No push, merge, rebase, nested agent or shared-main worktree edit occurred.
 
 ## Backend contract and ownership map
 
