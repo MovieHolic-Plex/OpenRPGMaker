@@ -39,6 +39,8 @@ import {
   formatScopeNote,
   isContinuationText,
   type IntentDeclaration,
+  type NpcRewardRequirement,
+  type NpcRewardRequirements,
 } from "@/ai/intentDeclaration";
 import { buildIntentFacts, declareIntentCached, type IntentDeclarer } from "@/ai/intentDeclarationClient";
 import type { ComposerMode } from "@/ai/composerMode";
@@ -175,6 +177,8 @@ import {
   createdMapIdFrom,
   verifyAuthoredBossPhases,
   verifyAuthoredQuestsPlayable,
+  verifyNpcRewardsPlayable,
+  type WorkItemOutcomeVerdict,
   verifyCreatedMapsAuthored,
   verifyTargetMapChanged,
   type BattlePhaseSimulation,
@@ -866,6 +870,9 @@ export class AssistantSession {
   /** 이번 턴의 사용자 발화만(가이드·footer 없음) — 툴 이름 언급·능력 승격·의도 선언의 입력. */
   private currentTurnInstruction = "";
   private adventureRequirements: AdventureRequirements | undefined;
+  private npcRewardRequirements: NpcRewardRequirements | undefined;
+  /** Only declared NPC event state, so DB/terrain items do not inherit NPC acceptance. */
+  private readonly npcRewardItemBaseline = new Map<NpcRewardRequirement, string>();
   private adventureRepairAttempts = 0;
   private readonly adventureInspectedMaps = new Map<string, Set<number>>();
   private readonly adventureIconRecords = new Map<string, { collection: "items" | "equipment"; id: string }>();
@@ -1556,10 +1563,12 @@ export class AssistantSession {
     this.turnIntent = intent;
     if (!this.turnIsDriverContinue && intent.source !== "continuation") {
       this.adventureRequirements = intent.adventure;
+      this.npcRewardRequirements = intent.npcRewards === undefined ? undefined : structuredClone(intent.npcRewards);
       this.adventureRepairAttempts = 0;
       this.adventureInspectedMaps.clear();
       this.adventureIconRecords.clear();
     }
+    if (this.turnComposerMode === "ask") this.npcRewardRequirements = undefined;
     if (!this.turnIsDriverContinue && intent.source !== "continuation") {
       this.readEvidence.begin(intent.readBeforeWrite);
       this.verificationEvidence.clear();
@@ -1685,9 +1694,9 @@ export class AssistantSession {
   /** 질문 모드는 선언을 「질문·단일 단계」로 고정한다. 다른 모드는 선언 그대로. */
   private applyComposerModeToIntent(intent: IntentDeclaration): IntentDeclaration {
     if (this.turnComposerMode !== "ask") return intent;
-    if (intent.mode === "question" && !intent.needsPlan) return intent;
+    if (intent.mode === "question" && !intent.needsPlan && !intent.npcRewards) return intent;
     this.pushAudit({ kind: "status", text: `composer:ask 선언 mode=${intent.mode}→question needsPlan=${intent.needsPlan}→false` });
-    return { ...intent, mode: "question", needsPlan: false };
+    return { ...intent, mode: "question", needsPlan: false, npcRewards: undefined };
   }
 
   /** 계획 모드: 계획 카드를 내고 실행 없이 턴을 끝낸다. 「계속」이 다음 턴에서 resume 으로 실행한다. */
@@ -1791,6 +1800,7 @@ export class AssistantSession {
           + (m.id === targetMapId ? " ← 현재 열린 맵(기본 작업 대상)" : ""),
         ),
       ...(targetMapId ? [`## Target map\n${targetMapId}`] : []),
+      this.npcRewardNote() ?? "",
     ].join("\n");
 
     let raw = "";
@@ -1984,13 +1994,13 @@ export class AssistantSession {
 
   /** 막힌 항목으로 턴을 끝낼 때 사용자에게 보내는 문장 — 무엇이 막혔고 무엇을 하면 되는지. */
   private blockedTurnText(blocked: WorkItem, modelText = ""): string {
-    return [
+    return this.npcRewardFinalText([
       modelText.trim(),
       `**${blocked.title}** 에서 막혔습니다 — ${blocked.note ?? ""}`.trim(),
       "무엇을 바꿔야 할지 알려 주시면 그 지점부터 다시 진행합니다. 이 단계를 빼려면 「건너뛰기」 라고 보내세요.",
     ]
       .filter((part) => part.length > 0)
-      .join("\n\n");
+      .join("\n\n"));
   }
 
   /** Ralph: re-inject current item when generator tries to exit early. */
@@ -2109,6 +2119,10 @@ export class AssistantSession {
       if (!id) return { ok: false, summary: "완료할 항목 id가 없습니다." };
       const note = typeof args.note === "string" ? args.note : undefined;
       this.syncSuccessfulToolsToCurrentWorkItem();
+      // completeWorkItemById's already-done shortcut must not bypass changed rewards.
+      const item = findWorkItemById(this.workPlan, id);
+      const rewards: WorkItemOutcomeVerdict = item ? this.npcRewardOutcome(item) : { ok: true };
+      if (!rewards.ok) return { ok: false, summary: rewards.reason, issues: [{ severity: "error", code: "npc-reward-incomplete", message: rewards.reason }] };
       const result = completeWorkItemById(this.workPlan, id, note, {
         successfulTools: [...this.turnSuccessfulTools],
         outcomeGate: this.outcomeGate(),
@@ -2146,6 +2160,8 @@ export class AssistantSession {
       const id = typeof args.itemId === "string" && args.itemId.trim() ? args.itemId.trim() : this.workPlan.currentItemId;
       if (!id) return { ok: false, summary: "건너뛸 항목 id가 없습니다." };
       const note = typeof args.note === "string" ? args.note : undefined;
+      const rewards: WorkItemOutcomeVerdict = this.finishesWorkPlan(id) ? this.npcRewardOutcome() : { ok: true };
+      if (!rewards.ok) return { ok: false, summary: rewards.reason, issues: [{ severity: "error", code: "npc-reward-incomplete", message: rewards.reason }] };
       const skipped = skipWorkItemById(this.workPlan, id, note);
       if (!skipped) return { ok: false, summary: `항목을 찾지 못했습니다: ${id}` };
       const next = getCurrentWorkItem(this.workPlan);
@@ -2173,6 +2189,13 @@ export class AssistantSession {
     this.turnItemBattleSimulations.clear();
     this.turnItemQuestIds.clear();
     this.turnItemPlacedNpcIds.clear();
+    this.npcRewardItemBaseline.clear();
+    if (this.npcRewardRequirements && !("invalidReason" in this.npcRewardRequirements)) {
+      const project = this.getProposedProject();
+      for (const requirement of this.npcRewardRequirements) {
+        this.npcRewardItemBaseline.set(requirement, npcRewardTargetSnapshot(project, requirement));
+      }
+    }
     this.lastOutcomeBlockedKey = null;
     this.successfulToolsWorkItemId = this.workPlan?.currentItemId ?? null;
   }
@@ -2186,7 +2209,7 @@ export class AssistantSession {
    *    새 맵을 만들어 시공하면 successTools 이름 매칭은 전부 통과하고 대상 맵은 그대로 남았다).
    */
   private outcomeGate(): WorkItemOutcomeGate {
-    return () => {
+    return (item) => {
       const project = this.getProposedProject();
       const maps = verifyCreatedMapsAuthored(project, this.turnItemCreatedMapIds);
       if (!maps.ok) return maps;
@@ -2205,8 +2228,42 @@ export class AssistantSession {
       if (!phases.ok) return phases;
       const quests = verifyAuthoredQuestsPlayable(project, this.turnItemQuestIds);
       if (!quests.ok) return quests;
+      const rewards = this.npcRewardOutcome(item);
+      if (!rewards.ok) return rewards;
       return verifyPlacedNpcsHaveStatePages(project, this.turnItemPlacedNpcIds);
     };
+  }
+
+  private finishesWorkPlan(itemId: string): boolean {
+    return this.workPlan?.layers.every((layer) => layer.items.every((item) =>
+      item.id === itemId || item.status === "done" || item.status === "skipped")) ?? false;
+  }
+
+  private npcRewardOutcome(item?: WorkItem): WorkItemOutcomeVerdict {
+    const required = this.npcRewardRequirements;
+    if (required === undefined || this.turnComposerMode === "ask" || this.lastTurnPlanOnly) return { ok: true };
+    const project = this.getProposedProject();
+    if (!item || this.finishesWorkPlan(item.id)) return verifyNpcRewardsPlayable(project, required);
+    if ("invalidReason" in required) return { ok: true }; // No resolvable item target; whole-goal closure still fails.
+    const changed = required.filter((requirement) =>
+      this.npcRewardItemBaseline.get(requirement) !== npcRewardTargetSnapshot(project, requirement));
+    return verifyNpcRewardsPlayable(project, changed.length ? changed : undefined);
+  }
+
+  private npcRewardNote(): string | null {
+    return this.npcRewardRequirements === undefined ? null : formatIntentNote({
+      ...emptyIntentDeclaration(), source: "llm", npcRewards: this.npcRewardRequirements,
+    });
+  }
+
+  private npcRewardFinalText(text: string): string {
+    const rewards = this.npcRewardOutcome();
+    return rewards.ok ? text : `NPC 보상이 아직 미완성입니다.\n- ${rewards.reason}`;
+  }
+
+  private completionProblems(): string[] {
+    const rewards = this.npcRewardOutcome();
+    return [...this.adventureProblems(), ...(rewards.ok ? [] : [rewards.reason])];
   }
 
   private adventureProblems(): string[] {
@@ -2631,9 +2688,9 @@ export class AssistantSession {
     auditFrom: number,
     onEvent: (event: SessionEvent) => void,
   ): TurnResult {
-    const adventureProblems = this.adventureProblems();
+    const adventureProblems = this.completionProblems();
     if (adventureProblems.length) {
-      result = { ...result, assistantText: `모험 구성이 아직 미완성입니다.\n${adventureProblems.map(p => `- ${p}`).join("\n")}` };
+      result = { ...result, assistantText: `요청한 구성이 아직 미완성입니다.\n${adventureProblems.map(p => `- ${p}`).join("\n")}` };
       onEvent({ type: "assistant_message", content: result.assistantText });
     }
     const verificationProblems = this.verificationEvidence.problems();
@@ -3384,6 +3441,9 @@ export class AssistantSession {
       // 사라진 공급자(CPEN)의 검증 상한이라 창 1M 짜리 모델의 기억까지 잘라냈다.
       // 원본(this.messages)은 감사/하네스용으로 유지된다.
       const requestMessages = compactMessagesForRequest(this.messages, resolveRequestCharBudget(this.config));
+      // Captured obligations are request state, not disposable orchestration history.
+      const rewardNote = this.npcRewardNote();
+      if (rewardNote) requestMessages.push({ role: "user", content: rewardNote });
       try {
         result = await this.chatWithTransientRetry(
           this.phaseConfig(phase),
@@ -3428,12 +3488,12 @@ export class AssistantSession {
 
       // Goal-level contract survives plan replacement and applies to both final paths.
       if ((phase === "review" || !(assistantMsg.tool_calls?.length)) && !this.milestoneApplyFailed) {
-        const problems = this.adventureProblems();
+        const problems = this.completionProblems();
         if (problems.length && this.adventureRepairAttempts < 4) {
           this.adventureRepairAttempts += 1;
           phase = "execute";
           this.emitPhase(onEvent, "execute");
-          this.pushOrchestrationMessage(`모험 완료 검사 미통과 (${this.adventureRepairAttempts}/4). 완료라고 보고하지 말고 누락을 실제 도구로 보완하세요. 기존 산출물을 다시 만들지 마세요.\n${problems.join("\n")}\n${ADVENTURE_AUTHORING_GUIDE}`);
+          this.pushOrchestrationMessage(`요청 완료 검사 미통과 (${this.adventureRepairAttempts}/4). 완료라고 보고하지 말고 누락을 실제 도구로 보완하세요. 기존 산출물을 다시 만들지 마세요.\n${problems.join("\n")}\n${this.adventureRequirements ? ADVENTURE_AUTHORING_GUIDE : ""}`);
           continue;
         }
       }
@@ -3452,7 +3512,7 @@ export class AssistantSession {
         // 레이어 검증(자문): 지적을 감사에 남기되 최종화를 막지 않는다.
         await this.sweepFinishedLayers(onEvent);
         await this.authorPendingNpcCast(onEvent, signal, proposedByKey, turnTheme || this.activeSpec?.title || "");
-        assistantText = sanitizeAssistantText(stripReviewCompletePrefix(reviewText));
+        assistantText = this.npcRewardFinalText(sanitizeAssistantText(stripReviewCompletePrefix(reviewText)));
         onEvent({ type: "assistant_message", content: assistantText });
         this.pushAudit({ kind: "status", text: `턴 종료(final) — 제안 ${proposedByKey.size}건 · 출력 토큰 ~${spentOutputTokens}` });
         return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "final" };
@@ -3572,7 +3632,7 @@ export class AssistantSession {
         // 레이어 검증(자문): 최종 응답 전에 1회 돌려 지적을 근거로 남긴다. 런은 멈추지 않는다.
         await this.sweepFinishedLayers(onEvent);
         // 최종 응답.
-        assistantText = finalText;
+        assistantText = this.npcRewardFinalText(finalText);
         onEvent({ type: "assistant_message", content: assistantText });
         this.pushAudit({ kind: "status", text: `턴 종료(final) — 제안 ${proposedByKey.size}건 · 출력 토큰 ~${spentOutputTokens}` });
         return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "final" };
@@ -3921,6 +3981,16 @@ export class AssistantSession {
       stoppedReason: "max-tool-calls",
     };
   }
+}
+
+/** Event-state comparison only: never derives reward expectations from event commands. */
+function npcRewardTargetSnapshot(project: Project, requirement: NpcRewardRequirement): string {
+  const { target } = requirement;
+  return JSON.stringify(Object.values(project.maps)
+    .filter((map) => target.mapId === undefined || target.mapId === map.id)
+    .flatMap((map) => map.events
+      .filter((event) => target.eventId !== undefined ? event.id === target.eventId : (event.name ?? event.pages?.[0]?.name) === target.eventName)
+      .map((event) => [map.id, event])));
 }
 
 interface EventTargetKey {

@@ -39,6 +39,35 @@ function reply(content: string): ChatResult {
 afterEach(() => resetIntentDeclarationCache());
 
 describe("createLlmIntentDeclarer", () => {
+  it("carries request reward contracts through the actual JSON consumer and cache without final commands", async () => {
+    const npcRewards = [{
+      target: { eventName: "Mira", mapId: "map_start" },
+      grants: [{ kind: "monster", name: "Leafling", count: 1 }, { kind: "item", name: "Potion", count: 2 }],
+      oneTime: true, choices: [0],
+    }];
+    let calls = 0;
+    const declarer = createLlmIntentDeclarer({
+      getConfig: () => CONFIG,
+      chat: async () => {
+        calls++;
+        return reply(JSON.stringify({ mode: "modify", npcRewards }));
+      },
+    });
+    const facts = { ...FACTS, userText: "Make Mira offer Leafling and two potions once, using the first choice." };
+    const first = await declareIntentCached(declarer, facts);
+    const continued = await declareIntentCached(declarer, facts);
+    expect(first.intent.npcRewards).toEqual(npcRewards);
+    expect(continued.intent.npcRewards).toEqual(npcRewards);
+    expect(calls).toBe(1);
+    const invalid = createLlmIntentDeclarer({
+      getConfig: () => CONFIG,
+      chat: async () => reply(JSON.stringify({ mode: "modify", npcRewards: [{ target: { eventName: "Mira" }, grants: [] }] })),
+    });
+    const outcome = await invalid(facts);
+    expect(outcome.intent.source).toBe("llm");
+    expect(outcome.intent.npcRewards).toHaveProperty("invalidReason");
+  });
+
   it("lite 모델·json_object·낮은 온도로 한 번 부르고 선언을 돌려준다", async () => {
     const requests: { config: AiConfig; req: ChatRequest }[] = [];
     const declarer = createLlmIntentDeclarer({
