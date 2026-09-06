@@ -1,0 +1,24 @@
+{
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "120s",
+    "npm",
+    "run",
+    "openwiki:index",
+    "--",
+    "--check"
+  ],
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-housing-receipts",
+  "head": "b8f7b00e38c4d18badb2d8ea5211d03daf6384f0",
+  "sourceHash": "f7fb8f6793aa1350bccae6f78b71aad79f14cd8bb4c642568a4add71db95f86d",
+  "exit": 1,
+  "signal": null,
+  "stdout": "\n> rpg-zzu@0.1.0 openwiki:index\n> node scripts/openwiki-index.mjs --check\n\n",
+  "stderr": "openwiki/INDEX.md 가 낡았다. `npm run openwiki:index` 를 돌려라.\n"
+}

@@ -1,0 +1,19 @@
+{
+  "head": "0acaa19b96e4c87684c64bbb9b53307f56064974",
+  "sourceHash": "188fd3a41f6ee54671bdc6ab5df3fdb4061a49ed5f11976c01dfe9f32c4326eb",
+  "result": {
+    "ok": false,
+    "reason": "invalid"
+  },
+  "claimsBefore": 4096,
+  "claimsAfter": 4096,
+  "goldBefore": 90,
+  "goldAfter": 90,
+  "placementStillPresent": true,
+  "housingAfter": "home",
+  "sessionUnchanged": true,
+  "cleanup": {
+    "serverClosed": true,
+    "cacheRemoved": true
+  }
+}

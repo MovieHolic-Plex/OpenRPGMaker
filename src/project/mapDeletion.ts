@@ -146,6 +146,13 @@ export function applyMapDeletion(draft: Project, mapId: MapId): void {
       .map((building) => building.id),
   );
   const removedFarmAnimalEventIds = new Set(draft.maps[mapId].events.map((event) => event.id));
+  const removedHousingIds = new Set((draft.session.farmBuildingPlacements ?? [])
+    .filter((placement) => placement.mapId === mapId).map((placement) => placement.instanceId));
+  if (draft.session.farmAnimals) draft.session.farmAnimals = draft.session.farmAnimals.map((animal) => {
+    if (!animal.housingPlacementId || !removedHousingIds.has(animal.housingPlacementId)) return animal;
+    const { housingPlacementId: _removed, ...unassigned } = animal;
+    return unassigned;
+  });
   delete draft.maps[mapId];
 
   if (draft.session.farmBuildingPlacements) {

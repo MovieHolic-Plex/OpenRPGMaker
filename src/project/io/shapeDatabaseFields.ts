@@ -486,6 +486,10 @@ function validateFarmBuildingTypes(value: unknown): void {
     assert(levels.length > 0 && levels.length <= SPATIAL_LEVEL_LIMIT,
       `${label}.levels must contain 1 to ${SPATIAL_LEVEL_LIMIT} levels.`);
     let previousCapacity = 0;
+    if (record.animalHousing !== undefined) {
+      const housing = requireRecord(`${label}.animalHousing`, record.animalHousing);
+      validateUniqueStringArray(`${label}.animalHousing.allowedSpeciesIds`, housing.allowedSpeciesIds, SPATIAL_DEFINITION_LIMIT);
+    }
     for (const [levelIndex, levelRaw] of levels.entries()) {
       const levelLabel = `${label}.levels[${levelIndex}]`;
       const level = requireRecord(levelLabel, levelRaw);
@@ -495,6 +499,9 @@ function validateFarmBuildingTypes(value: unknown): void {
       assertSafeIntegerInRange(`${levelLabel}.capacity`, level.capacity, 1, SPATIAL_CAPACITY_MAX);
       assert((level.capacity as number) >= previousCapacity, `${levelLabel}.capacity must not decrease.`);
       previousCapacity = level.capacity as number;
+      if (record.animalHousing !== undefined || level.animalCapacity !== undefined) {
+        assertSafeIntegerInRange(`${levelLabel}.animalCapacity`, level.animalCapacity, 0, SPATIAL_CAPACITY_MAX);
+      }
       if (level.cost !== undefined) validateSpatialCost(`${levelLabel}.cost`, level.cost);
       requireNonBlankString(`${levelLabel}.graphicResourceId`, level.graphicResourceId);
       if (level.orientationGraphicResourceIds !== undefined) {
@@ -664,6 +671,10 @@ function validateFarmAnimalStarts(value: unknown): void {
     requireNonBlankString(`${label}.name`, animal.name);
     if (animal.eventId !== undefined) requireNonBlankString(`${label}.eventId`, animal.eventId);
     if (animal.buildingId !== undefined) requireNonBlankString(`${label}.buildingId`, animal.buildingId);
+    if (animal.housingPlacementId !== undefined) {
+      requireNonBlankString(`${label}.housingPlacementId`, animal.housingPlacementId);
+      assert(animal.buildingId === undefined, `${label} cannot specify both buildingId and housingPlacementId.`);
+    }
   }
 }
 

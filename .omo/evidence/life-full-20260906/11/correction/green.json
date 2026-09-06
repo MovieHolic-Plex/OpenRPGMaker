@@ -1,0 +1,25 @@
+{
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "180s",
+    "npm",
+    "test",
+    "--",
+    "test/linkedAnimalHousing.test.ts",
+    "--config",
+    ".omo/evidence/life-full-20260906/11/correction/vitest.config.ts"
+  ],
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-housing",
+  "head": "0acaa19b96e4c87684c64bbb9b53307f56064974",
+  "sourceHash": "e580b07d9b353cc79c13ea18725d13d1c06f56f178715ebe83a18d0bfd297bc0",
+  "exit": 0,
+  "signal": null,
+  "stdout": "\n> rpg-zzu@0.1.0 test\n> node scripts/run-vitest.mjs run --configLoader bundle test/linkedAnimalHousing.test.ts --config .omo/evidence/life-full-20260906/11/correction/vitest.config.ts\n\n\n RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-housing\n\n ✓ test/linkedAnimalHousing.test.ts (20 tests) 9010ms\n   ✓ linked animal housing > characterizes legacy independent home care, reassignment receipts and production  516ms\n   ✓ linked animal housing > keeps two instance capacities independent, upgrades 2 to 5 and moves the same home with its receipts  313ms\n   ✓ linked animal housing > roundtrips authored Project4 homes and rejects dual references, missing capacity and unknown species  2577ms\n   ✓ linked animal housing > selects shrink survivors by code point, not locale or UTF-16, and retains special record keys  417ms\n   ✓ linked animal housing > voluntary demolition at 4096 recovery claims preserves the whole herd and refunds nothing  2653ms\n\n Test Files  1 passed (1)\n      Tests  20 passed (20)\n   Start at  04:24:25\n   Duration  25.76s (transform 9.12s, setup 0ms, collect 14.83s, tests 9.01s, environment 0ms, prepare 710ms)\n\n",
+  "stderr": ""
+}

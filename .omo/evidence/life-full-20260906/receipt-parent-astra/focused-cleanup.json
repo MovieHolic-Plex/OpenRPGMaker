@@ -1,0 +1,15 @@
+{
+  "scratchAbsent": true,
+  "identity": {
+    "head": "0e2af2591f33bab3e1f56f1847e499a1cce0681f",
+    "sourceHashes": {
+      "src/project/lifeRecovery.ts": "1c1a8e26ab196755601793b52d97f4cf79581ada83732216e1fe3118d035c601",
+      "src/project/spatialPlacementTransactions.ts": "f7fb8f6793aa1350bccae6f78b71aad79f14cd8bb4c642568a4add71db95f86d",
+      "test/spatialPaymentReceipts.test.ts": "f90b5dbdc6839fbdea93e17e6709d184d003de3ee2dbaa706c7eaaba0c70fc15",
+      "openwiki/runtime-project-schema.md": "164f05202396075c6eac8a69af746d5634b5db7cc3a3d421878571abc08e6e3c"
+    },
+    "trackedStatus": ""
+  },
+  "sourceUnchanged": true,
+  "sharedCleanup": false
+}

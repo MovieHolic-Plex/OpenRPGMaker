@@ -1,0 +1,106 @@
+[rpg-zzu] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] QWENCLOUD_API_KEY 가 없어 /api/qwen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] CPENROUTER_API_KEY 가 없어 /api/cpen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+Export "openRecordPickerPanel" of module "src/editor/panels/eventEditor/recordPickerPanel.ts" was reexported through module "src/editor/panels/eventEditor/recordPickerDialog.ts" while both modules are dependencies of each other and will end up in different chunks by current Rollup settings. This scenario is not well supported at the moment as it will produce a circular dependency between chunks and will likely lead to broken execution order.
+Either change the import in "src/editor/panels/databaseEnemyActionDialog.ts" to point directly to the exporting module or reconfigure "output.manualChunks" to ensure these modules end up in the same chunk.
+[plugin vite:reporter] 
+(!) /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/player/playSceneInterpreter.ts is dynamically imported by /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/player/PlayScene.ts but also statically imported by /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/player/PlayScene.ts, /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/player/playSceneMapRuntime.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter] 
+(!) /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/editor/editorUiMode.ts is dynamically imported by /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/app/mode.ts but also statically imported by /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/editor/coachMarks.ts, /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/editor/commandRegistry.ts, /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/editor/panels/aiAgentBrief.ts, /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/editor/panels/aiChatPanel.ts, /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/editor/panels/aiConversationLog.ts, /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/editor/panels/aiProposalCard.ts, /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/editor/panels/basicLeftRail.ts, /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/editor/panels/database.ts, /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/editor/panels/editor.ts, /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/editor/panels/editorZoomToolbar.ts, /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/editor/panels/menu.ts, /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/editor/panels/tilePalette.ts, /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/editor/panels/workspaceBar.ts, /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/editor/workspace/workspaceStore.ts, /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/main.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter] 
+(!) /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/project/devProjectPersistence.ts is dynamically imported by /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/app/mode.ts but also statically imported by /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/editor/panels/editor.ts, /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/project/store.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter] 
+(!) /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/player/audio/index.ts is dynamically imported by /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/app/mode.ts but also statically imported by /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/editor/panels/audioTestDialog.ts, /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/editor/panels/databaseResourcePickerDialog.ts, /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/editor/panels/databaseSystemView.ts, /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/editor/panels/eventEditor/commandBodyAdvanced.ts, /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/player/PlayScene.ts, /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/player/battleAudio.ts, /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/player/characterHopRuntime.ts, /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/player/mapBgm.ts, /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/player/playSceneActionCombat.ts, /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/player/playSceneBattle.ts, /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/player/playSceneInterpreter.ts, /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/player/playSceneMapAnimations.ts, /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/player/playSceneSchedulers.ts, /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/player/player.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter] 
+(!) /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/player/player.ts is dynamically imported by /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/app/mode.ts, /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/app/mode.ts but also statically imported by /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/editor/panels/testPlayModal.ts, dynamic import will not move module into another chunk.
+
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+
+/assets/fonts/neodgm.woff2 referenced in /assets/fonts/neodgm.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/fonts/Galmuri9.woff2 referenced in /assets/fonts/Galmuri9.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/fonts/Galmuri11.woff2 referenced in /assets/fonts/Galmuri11.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/fonts/Galmuri11-Bold.woff2 referenced in /assets/fonts/Galmuri11-Bold.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/ui/windowskin-warm.png referenced in /assets/ui/windowskin-warm.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/generated/battle-reference-forest.png referenced in /generated/battle-reference-forest.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-sword.png referenced in /assets/generated/starter/battle-icon-sword.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-fire.png referenced in /assets/generated/starter/battle-icon-fire.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-shield.png referenced in /assets/generated/starter/battle-icon-shield.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-cross.png referenced in /assets/generated/starter/battle-icon-cross.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-bag.png referenced in /assets/generated/starter/battle-icon-bag.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-boot.png referenced in /assets/generated/starter/battle-icon-boot.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-exp.png referenced in /assets/generated/starter/battle-icon-exp.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-gold.png referenced in /assets/generated/starter/battle-icon-gold.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-shard.png referenced in /assets/generated/starter/battle-icon-shard.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-world.png referenced in /assets/generated/starter/battle-icon-world.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-next.png referenced in /assets/generated/starter/battle-icon-next.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+[plugin vite:reporter] 
+(!) /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/player/playSceneInterpreter.ts is dynamically imported by /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/player/PlayScene.ts but also statically imported by /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/player/PlayScene.ts, /home/main/z-project/rpg-zzu-life-full-receipts-parent-astra/src/player/playSceneMapRuntime.ts, dynamic import will not move module into another chunk.
+
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+
+/assets/fonts/neodgm.woff2 referenced in /assets/fonts/neodgm.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/fonts/Galmuri9.woff2 referenced in /assets/fonts/Galmuri9.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/fonts/Galmuri11.woff2 referenced in /assets/fonts/Galmuri11.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/fonts/Galmuri11-Bold.woff2 referenced in /assets/fonts/Galmuri11-Bold.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/ui/windowskin-warm.png referenced in /assets/ui/windowskin-warm.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/generated/battle-reference-forest.png referenced in /generated/battle-reference-forest.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-sword.png referenced in /assets/generated/starter/battle-icon-sword.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-fire.png referenced in /assets/generated/starter/battle-icon-fire.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-shield.png referenced in /assets/generated/starter/battle-icon-shield.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-cross.png referenced in /assets/generated/starter/battle-icon-cross.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-bag.png referenced in /assets/generated/starter/battle-icon-bag.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-boot.png referenced in /assets/generated/starter/battle-icon-boot.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-exp.png referenced in /assets/generated/starter/battle-icon-exp.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-gold.png referenced in /assets/generated/starter/battle-icon-gold.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-shard.png referenced in /assets/generated/starter/battle-icon-shard.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-world.png referenced in /assets/generated/starter/battle-icon-world.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-next.png referenced in /assets/generated/starter/battle-icon-next.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.

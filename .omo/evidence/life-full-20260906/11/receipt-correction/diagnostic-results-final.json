@@ -1,0 +1,10 @@
+{
+  "files": [
+    "src/project/spatialPlacementTransactions.ts",
+    "src/project/lifeRecovery.ts",
+    "test/spatialPaymentReceipts.test.ts"
+  ],
+  "lsp": "Each changed TS file: No diagnostics found (tool calls before build)",
+  "count": 0,
+  "diagnostics": ""
+}

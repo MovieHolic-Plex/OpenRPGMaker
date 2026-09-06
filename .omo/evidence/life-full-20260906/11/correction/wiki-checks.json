@@ -1,0 +1,34 @@
+[
+  {
+    "command": [
+      "npm",
+      "run",
+      "openwiki:index",
+      "--",
+      "--check"
+    ],
+    "exit": 0,
+    "stdout": "\n> rpg-zzu@0.1.0 openwiki:index\n> node scripts/openwiki-index.mjs --check\n\nopenwiki/INDEX.md 최신.\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "npm",
+      "run",
+      "openwiki:verify"
+    ],
+    "exit": 0,
+    "stdout": "\n> rpg-zzu@0.1.0 openwiki:verify\n> node scripts/verify-openwiki-editor-wiki.mjs\n\n{\n  \"ok\": true,\n  \"agentEntry\": {\n    \"file\": \"AGENTS.md\",\n    \"exists\": true,\n    \"missingTerms\": []\n  },\n  \"requiredPages\": [\n    {\n      \"file\": \"PROJECT_WIKI.md\",\n      \"exists\": true,\n      \"bytes\": 9917,\n      \"hasHeading\": true,\n      \"missingTerms\": [],\n      \"hasSecret\": false\n    },\n    {\n      \"file\": \"ai-workflow.md\",\n      \"exists\": true,\n      \"bytes\": 19744,\n      \"hasHeading\": true,\n      \"missingTerms\": [],\n      \"hasSecret\": false\n    },\n    {\n      \"file\": \"quickstart.md\",\n      \"exists\": true,\n      \"bytes\": 12010,\n      \"hasHeading\": true,\n      \"missingTerms\": [],\n      \"hasSecret\": false\n    },\n    {\n      \"file\": \"architecture.md\",\n      \"exists\": true,\n      \"bytes\": 9810,\n      \"hasHeading\": true,\n      \"missingTerms\": [],\n      \"hasSecret\": false\n    },\n    {\n      \"file\": \"editor-workflows.md\",\n      \"exists\": true,\n      \"bytes\": 2361,\n      \"hasHeading\": true,\n      \"missingTerms\": [],\n      \"hasSecret\": false\n    },\n    {\n      \"file\": \"runtime-and-data.md\",\n      \"exists\": true,\n      \"bytes\": 2945,\n      \"hasHeading\": true,\n      \"missingTerms\": [],\n      \"hasSecret\": false\n    },\n    {\n      \"file\": \"testing.md\",\n      \"exists\": true,\n      \"bytes\": 120349,\n      \"hasHeading\": true,\n      \"missingTerms\": [],\n      \"hasSecret\": false\n    },\n    {\n      \"file\": \"cpen-openwiki.md\",\n      \"exists\": true,\n      \"bytes\": 1511,\n      \"hasHeading\": true,\n      \"missingTerms\": [],\n      \"hasSecret\": false\n    }\n  ],\n  \"allWikiFiles\": [\n    \"INDEX.md\",\n    \"PROJECT_WIKI.md\",\n    \"agent-tile-benchmark.md\",\n    \"agent-worktrees.md\",\n    \"ai-context-compaction.md\",\n    \"ai-tools-deprecation-roadmap.md\",\n    \"ai-workflow.md\",\n    \"architecture.md\",\n    \"autotiles.md\",\n    \"battler-idle-playbook.md\",\n    \"bgm-catalog.md\",\n    \"castle-map.md\",\n    \"community-site.md\",\n    \"cpen-openwiki.md\",\n    \"editor-ai-panel.md\",\n    \"editor-ai-tools.md\",\n    \"editor-database.md\",\n    \"editor-event-authoring.md\",\n    \"editor-event-command-fixes.md\",\n    \"editor-event-commands.md\",\n    \"editor-genre-packs.md\",\n    \"editor-interior-room-harness.md\",\n    \"editor-observability.md\",\n    \"editor-pre-edit-routing.md\",\n    \"editor-storage-chest.md\",\n    \"editor-validation.md\",\n    \"editor-workflows-misc.md\",\n    \"editor-workflows.md\",\n    \"growth-trees.md\",\n    \"horror-authoring.md\",\n    \"interior-tile-benchmark.md\",\n    \"large-village-generation.md\",\n    \"night-monster.md\",\n    \"quickstart.md\",\n    \"runtime-action-combat.md\",\n    \"runtime-and-data.md\",\n    \"runtime-battle.md\",\n    \"runtime-m2-flow-controls.md\",\n    \"runtime-pre-edit-routing.md\",\n    \"runtime-project-schema.md\",\n    \"runtime-sessions.md\",\n    \"se-catalog.md\",\n    \"stardew-core-elements-research.md\",\n    \"state-system.md\",\n    \"testing.md\",\n    \"town-tile-benchmark.md\",\n    \"village-design.md\",\n    \"world-generation-rules.md\"\n  ],\n  \"failures\": []\n}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  }
+]

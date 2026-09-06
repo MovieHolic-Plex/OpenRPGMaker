@@ -1,0 +1,7 @@
+{
+  "command": "npm test -- test/linkedAnimalHousing.test.ts",
+  "head": "966f414c07729e7d9474c568cbaf19a94d2bc740",
+  "exit": 1,
+  "stdout": "\n> rpg-zzu@0.1.0 test\n> node scripts/run-vitest.mjs run --configLoader bundle test/linkedAnimalHousing.test.ts\n\n\n RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-housing\n\n",
+  "stderr": "No test files found, exiting with code 1\n\nfilter: test/linkedAnimalHousing.test.ts\ninclude: test/**/*.test.ts\nexclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*, test/lakeVillageRebuildFinal.test.ts, test/**/*.bun.test.ts\n\n"
+}

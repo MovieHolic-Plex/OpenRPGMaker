@@ -70,12 +70,19 @@ export function normalizeFarmBuildingTypes(value: unknown): FarmBuildingTypeReco
     if (!id || seen.has(id)) continue;
     const levels = normalizeBuildingLevels(raw.levels);
     if (levels.length === 0) continue;
+    if (raw.animalHousing !== undefined && (!isRecord(raw.animalHousing)
+      || !Array.isArray(raw.animalHousing.allowedSpeciesIds)
+      || raw.animalHousing.allowedSpeciesIds.some((id) => typeof id !== "string" || !id.trim() || id !== id.trim())
+      || new Set(raw.animalHousing.allowedSpeciesIds).size !== raw.animalHousing.allowedSpeciesIds.length
+      || raw.animalHousing.allowedSpeciesIds.length > SPATIAL_DEFINITION_LIMIT
+      || levels.some((level) => level.animalCapacity === undefined))) throw new Error("Invalid animalHousing definition");
     seen.add(id);
     const allowedMapIds = uniqueIds(raw.allowedMapIds, SPATIAL_DEFINITION_LIMIT);
     result.push({
       id,
       name: cleanText(raw.name) ?? id,
       levels,
+      ...(isRecord(raw.animalHousing) ? { animalHousing: { allowedSpeciesIds: [...raw.animalHousing.allowedSpeciesIds as string[]] } } : {}),
       ...(allowedMapIds.length > 0 ? { allowedMapIds } : {}),
     });
   }
@@ -134,11 +141,14 @@ function normalizeBuildingLevels(value: unknown): FarmBuildingLevelDefinition[] 
     const graphicResourceId = cleanId(raw.graphicResourceId);
     if (!graphicResourceId) break;
     const cost = normalizeCost(raw.cost);
+    if (raw.animalCapacity !== undefined && (!Number.isSafeInteger(raw.animalCapacity)
+      || (raw.animalCapacity as number) < 0 || (raw.animalCapacity as number) > SPATIAL_CAPACITY_MAX)) throw new Error("Invalid animalCapacity");
     result.push({
       level: result.length + 1,
       ...(cleanText(raw.name) ? { name: cleanText(raw.name) } : {}),
       footprint: normalizeFootprint(raw.footprint),
       capacity: clampSafeInteger(raw.capacity, 1, SPATIAL_CAPACITY_MAX),
+      ...(raw.animalCapacity !== undefined ? { animalCapacity: raw.animalCapacity as number } : {}),
       ...(cost ? { cost } : {}),
       graphicResourceId,
       ...normalizeOrientationGraphics(raw.orientationGraphicResourceIds),

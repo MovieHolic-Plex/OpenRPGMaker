@@ -1,0 +1,36 @@
+{
+  "root": "/home/main/z-project/rpg-zzu-life-full-housing-receipts",
+  "base": "b8f7b00e38c4d18badb2d8ea5211d03daf6384f0",
+  "branch": "agent/life-full-housing-receipts",
+  "sourceHashes": {
+    "src/project/lifeRecovery.ts": "1c1a8e26ab196755601793b52d97f4cf79581ada83732216e1fe3118d035c601",
+    "src/project/spatialPlacementTransactions.ts": "f7fb8f6793aa1350bccae6f78b71aad79f14cd8bb4c642568a4add71db95f86d",
+    "test/spatialPaymentReceipts.test.ts": "f90b5dbdc6839fbdea93e17e6709d184d003de3ee2dbaa706c7eaaba0c70fc15",
+    "openwiki/runtime-project-schema.md": "164f05202396075c6eac8a69af746d5634b5db7cc3a3d421878571abc08e6e3c"
+  },
+  "parentProvenanceUnchanged": {
+    "payment-capacity-probe.mjs": "b9dfedbbedebb3da0d836ace827f45cc6ae30162f3aec8e3e7970e6ef394b599",
+    "payment-capacity-red.json": "462c5c1325647dfcd512cfca157150e5b8ff597c5a12b06984026a9d5e84f553"
+  },
+  "buildArtifacts": {
+    "dist/export-player/player-manifest.json": "5f6e14fac9dad20c69a773577428c43449f34af169ef79b95dd15a14bc491ae2",
+    "dist/export-player/player.js": "7ba17e081d0ef6dfb3b17134cad18a6840a3ffa94dab21e388470ba0a8159718",
+    "dist/standalone-player/standalone.js": "d7fc5591e00ef13b2cb521d10c922057c6d8d8fce6d8c13429720da8e0879f3d"
+  },
+  "cleanup": {
+    "port39921Released": true,
+    "distRemoved": true,
+    "ownedTmpfsRemoved": true,
+    "ownedCacheAndConfigTempRemoved": true,
+    "native": {
+      "contextClosed": true,
+      "browserClosed": true,
+      "serverClosed": true,
+      "ownedCacheRemoved": "/dev/shm/st_01a0786a-receipt-qa/native-cache",
+      "fixtureNotShipped": true
+    },
+    "nativeStorageKeyRemoved": true,
+    "sharedCleanup": false
+  },
+  "sourceDiff": " openwiki/runtime-project-schema.md          |  2 +-\n src/project/lifeRecovery.ts                 | 11 ++++++++---\n src/project/spatialPlacementTransactions.ts |  5 ++++-\n 3 files changed, 13 insertions(+), 5 deletions(-)\n"
+}

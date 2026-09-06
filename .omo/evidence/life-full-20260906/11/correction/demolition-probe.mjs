@@ -1,0 +1,37 @@
+import assert from 'node:assert/strict';
+import {createServer} from 'vite';
+import {writeFile,readFile,rm} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+import {execFileSync} from 'node:child_process';
+import {dirname,join} from 'node:path';
+const output=process.argv[2],root=process.cwd(),cache=join(dirname(output),'demolition-cache');
+const source=join(root,'src/project/spatialPlacementTransactions.ts');
+const hash=async()=>createHash('sha256').update(await readFile(source)).digest('hex');
+const beforeHash=await hash();
+const report={head:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),sourceHash:beforeHash};
+const server=await createServer({root,configFile:false,envFile:false,cacheDir:cache,resolve:{alias:{'@':join(root,'src')}},optimizeDeps:{noDiscovery:true,include:[]},server:{middlewareMode:true,watch:null,hmr:false},appType:'custom'});
+try{
+ const {animalProject,feedItemId}=await server.ssrLoadModule('/test/fixtures/p1FarmAnimals.ts');
+ const {startSession}=await server.ssrLoadModule('/src/project/session.ts');
+ const {placeFarmBuilding,removeFarmBuilding}=await server.ssrLoadModule('/src/project/spatialPlacementTransactions.ts');
+ const {assignFarmAnimalToHousingPlacement}=await server.ssrLoadModule('/src/project/farmAnimals.ts');
+ const project=animalProject(),feed=feedItemId(project);
+ project.session.gold=100;project.session.inventory[feed]=10;
+ project.session.farmAnimals=[{instanceId:'a',speciesId:'chicken',name:'A'}];
+ project.database.farmBuildingTypes=[{id:'shed',name:'Shed',animalHousing:{allowedSpeciesIds:['chicken']},levels:[{level:1,footprint:{width:1,height:1},capacity:99,animalCapacity:2,cost:{gold:10,items:[{itemId:feed,count:2}]},graphicResourceId:'easyrpg-picture-cloud'}]}];
+ const session=startSession(project,11);
+ assert.deepEqual(placeFarmBuilding(project,session,{instanceId:'home',typeId:'shed',mapId:project.startMapId,x:5,y:5,orientation:'down'}),{ok:true});
+ assert.equal(assignFarmAnimalToHousingPlacement(project,session,'a','home').ok,true);
+ session.lifeRecovery={nextSequence:4097,claims:Object.fromEntries(Array.from({length:4096},(_,i)=>{const id='recovery:'+(i+1);return[id,{id,sourceKind:'shippingQueue',sourceId:'old',reason:'removed',items:[{itemId:feed,count:1}]}];}))};
+ const before=structuredClone(session);
+ const result=removeFarmBuilding(session,'home');
+ Object.assign(report,{result,claimsBefore:Object.keys(before.lifeRecovery.claims).length,claimsAfter:Object.keys(session.lifeRecovery.claims).length,goldBefore:before.gold,goldAfter:session.gold,placementStillPresent:!!session.farmBuildingPlacements.home,housingAfter:session.farmAnimals.a.housingPlacementId,sessionUnchanged:JSON.stringify(before)===JSON.stringify(session)});
+ assert.equal(await hash(),beforeHash,'Source moved during probe');
+ assert.equal(result.ok,true,'Voluntary no-refund demolition must not depend on recovery capacity');
+ assert.equal(session.farmBuildingPlacements.home,undefined);
+ assert.equal(session.farmAnimals.a.housingPlacementId,undefined);
+ assert.deepEqual(session.lifeRecovery,before.lifeRecovery);
+ assert.equal(session.gold,before.gold);
+ assert.deepEqual(session.inventory,before.inventory);
+ report.pass=true;
+}finally{await server.close();await rm(cache,{recursive:true,force:true});report.cleanup={serverClosed:true,cacheRemoved:true};await writeFile(output,JSON.stringify(report,null,2)+'\n',{flag:'wx'});console.log(JSON.stringify(report));}

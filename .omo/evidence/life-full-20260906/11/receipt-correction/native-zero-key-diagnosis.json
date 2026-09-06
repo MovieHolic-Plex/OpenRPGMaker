@@ -1,0 +1,10 @@
+{
+  "harnessFailure": "Expected before.inventory[id]+1 when the before stack was exhausted and its zero-valued key correctly absent. undefined+1 is NaN. Actual preceding lifecycle raw Save5 proves omitted paid-0, cumulative receipt65 and repeated paid-0 count2.",
+  "fix": "Use canonical absent inventory =>0 for conservation arithmetic only. No product/assertion removal/deadline/result changes.",
+  "observedPriorHasPaid0": false,
+  "priorActiveCumulativeRows": 65,
+  "priorRepeatedFirst": {
+    "itemId": "receipt-paid-0",
+    "count": 2
+  }
+}

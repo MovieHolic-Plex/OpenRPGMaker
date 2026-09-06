@@ -1,0 +1,10 @@
+{
+  "files": [
+    "src/project/spatialPlacementTransactions.ts",
+    "src/project/lifeRecovery.ts",
+    "test/spatialPaymentReceipts.test.ts"
+  ],
+  "lsp": "Each changed TS file: No diagnostics found (tool calls before build)",
+  "count": 1,
+  "diagnostics": "\u001b[96mtest/spatialPaymentReceipts.test.ts\u001b[0m:\u001b[93m179\u001b[0m:\u001b[93m56\u001b[0m - \u001b[91merror\u001b[0m\u001b[90m TS2540: \u001b[0mCannot assign to 'cost' because it is a read-only property.\n\n\u001b[7m179\u001b[0m     project.database.farmBuildingTypes![0]!.levels[1]!.cost = cost;\n\u001b[7m   \u001b[0m \u001b[91m                                                       ~~~~\u001b[0m\n"
+}

@@ -1,0 +1,22 @@
+{
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "180s",
+    "npm",
+    "run",
+    "typecheck:app"
+  ],
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-housing",
+  "head": "0acaa19b96e4c87684c64bbb9b53307f56064974",
+  "sourceHash": "e580b07d9b353cc79c13ea18725d13d1c06f56f178715ebe83a18d0bfd297bc0",
+  "exit": 0,
+  "signal": null,
+  "stdout": "\n> rpg-zzu@0.1.0 typecheck:app\n> tsc --noEmit -p tsconfig.app.json\n\n",
+  "stderr": ""
+}
