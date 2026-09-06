@@ -1,0 +1,84 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/assistantVerificationEvidence.test.ts --maxWorkers 1 --minWorkers 1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p2-event-contract-20260906
+
+ ❯ test/assistantVerificationEvidence.test.ts (20 tests | 6 failed) 10953ms
+   × 필수 검증의 실행 성공과 통과는 별도 계약 > run_lint ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다 904ms
+     → expected { type: 'run_recap', recap: { …(10) } } to match object { type: 'assistant_message', …(1) }
+(11 matching properties omitted from actual)
+   × 필수 검증의 실행 성공과 통과는 별도 계약 > check_reachability ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다 765ms
+     → expected { type: 'run_recap', recap: { …(10) } } to match object { type: 'assistant_message', …(1) }
+(11 matching properties omitted from actual)
+   × 필수 검증의 실행 성공과 통과는 별도 계약 > verify_quest ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다 701ms
+     → expected { type: 'run_recap', recap: { …(10) } } to match object { type: 'assistant_message', …(1) }
+(11 matching properties omitted from actual)
+   × 필수 검증의 실행 성공과 통과는 별도 계약 > play_walkthrough ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다 577ms
+     → expected { type: 'run_recap', recap: { …(10) } } to match object { type: 'assistant_message', …(1) }
+(11 matching properties omitted from actual)
+   × 필수 검증의 실행 성공과 통과는 별도 계약 > run_scene_test ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다 665ms
+     → expected { type: 'run_recap', recap: { …(10) } } to match object { type: 'assistant_message', …(1) }
+(11 matching properties omitted from actual)
+   × 필수 검증의 실행 성공과 통과는 별도 계약 > evaluate_game_quality ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다 725ms
+     → expected { type: 'run_recap', recap: { …(10) } } to match object { type: 'assistant_message', …(1) }
+(11 matching properties omitted from actual)
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > run_lint 실제 실행 결과도 ok:true를 유지한다 142ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 같은 검사 재실패는 앞선 성공을 제거하고, 이후 실제 재통과는 복구한다  621ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 쓰기 이후에는 이전 검증 성공으로 완료할 수 없고 다시 검사해야 한다  595ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 재검사 없는 쓰기는 최종 보고에서도 검증 통과로 남지 않는다  614ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 실행되지 않은 잘못된 인자는 고친 호출로 복구할 수 있다  597ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > warning-only lint는 통과하며 거부된 쓰기는 성공 근거를 무효화하지 않는다  625ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 레이어의 선재 lint 오류는 자문을 유지하면서 최종 응답에 보고한다  358ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 레이어 자동 통과는 재검증 의무를 만들지 않고 명시 검사만 유지한다 (explicit=false)  890ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 레이어 자동 통과는 재검증 의무를 만들지 않고 명시 검사만 유지한다 (explicit=true)  1156ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 다음 항목은 자기 대상의 검증으로 완료하며 이전 항목의 stale 검사는 최종 보고에 보존한다  633ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 실패한 walkthrough 실행은 레이어의 성공 시나리오로 기록하지 않는다  382ms
+   ✓ 검증 근거의 대상과 변경 수명 > 실제 advisory 실패는 보고하며 같은 대상의 자동 재통과로 해소한다 1ms
+   ✓ 검증 근거의 대상과 변경 수명 > 다른 대상의 성공은 실패를 덮지 않으며, 인자 키 순서가 달라도 같은 대상을 재검증한다 1ms
+   ✓ 검증 근거의 대상과 변경 수명 > 새 프로젝트 변경 뒤 모든 검사 대상은 stale이며 각 대상을 재검사해야 한다 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/assistantVerificationEvidence.test.ts > 필수 검증의 실행 성공과 통과는 별도 계약 > run_lint ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다
+ FAIL  test/assistantVerificationEvidence.test.ts > 필수 검증의 실행 성공과 통과는 별도 계약 > check_reachability ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다
+ FAIL  test/assistantVerificationEvidence.test.ts > 필수 검증의 실행 성공과 통과는 별도 계약 > verify_quest ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다
+ FAIL  test/assistantVerificationEvidence.test.ts > 필수 검증의 실행 성공과 통과는 별도 계약 > play_walkthrough ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다
+ FAIL  test/assistantVerificationEvidence.test.ts > 필수 검증의 실행 성공과 통과는 별도 계약 > run_scene_test ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다
+ FAIL  test/assistantVerificationEvidence.test.ts > 필수 검증의 실행 성공과 통과는 별도 계약 > evaluate_game_quality ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다
+AssertionError: expected { type: 'run_recap', recap: { …(10) } } to match object { type: 'assistant_message', …(1) }
+(11 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "content": "작업과 검증을 모두 완료했습니다.[39m
+[32m-[39m
+[32m- **확인 1** 에서 막혔습니다 — 항목 '확인 1' 완료 조건 미충족: 필수 successTools 중 run_lint 성공 기록이 없습니다. 누락된 툴을 성공시키거나, 항목 전제가 틀렸다면(예: 사용자가 기존 맵 수정을 요청했는데 항목이 신축을 요구) set_work_plan으로 계획을 고치거나 skip_work_item으로 건너뛰세요.[39m
+[32m-[39m
+[32m- 무엇을 바꿔야 할지 알려 주시면 그 지점부터 다시 진행합니다. 이 단계를 빼려면 「건너뛰기」 라고 보내세요.[39m
+[32m-[39m
+[32m- 검증이 아직 통과되지 않았습니다.[39m
+[32m- - run_lint: lint 오류 14건",[39m
+[32m-   "type": "assistant_message",[39m
+[31m+   "type": "run_recap",[39m
+[2m  }[22m
+
+ ❯ test/assistantVerificationEvidence.test.ts:69:27
+     67|     expect(result.assistantText).toContain("검증이 아직 통과되지 않았습니다");
+     68|     expect(result.assistantText).toContain(name);
+     69|     expect(events.at(-2)).toMatchObject({ type: "assistant_message", c…
+       |                           ^
+     70|   }, 30000);
+     71| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  6 failed | 14 passed (20)
+   Start at  07:19:13
+   Duration  28.19s (transform 11.83s, setup 0ms, collect 16.58s, tests 10.95s, environment 4ms, prepare 125ms)
+
