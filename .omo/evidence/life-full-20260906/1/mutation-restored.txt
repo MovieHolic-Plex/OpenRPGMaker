@@ -1,0 +1,2 @@
+test/p0ProjectSchema.test.ts: OK
+test/p2SpatialEditorAuthoring.test.ts: OK

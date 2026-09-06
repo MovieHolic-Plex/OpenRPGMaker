@@ -3,7 +3,7 @@ import {
   getDatabaseActiveTab,
   renderDatabasePanel,
   setDatabaseActiveTab,
-  TILESET_FOLDER_TAB_IDS,
+  switchDatabaseActiveTab,
 } from "@/editor/panels/database";
 import { INTERIOR_ROOM_TILESET_ID } from "@/editor/interiorRoomPipeline";
 import { getTilesetMetadataEditMode } from "@/editor/panels/tilesetMetadataEditor";
@@ -48,43 +48,28 @@ function renderHost(): FakeElement {
   return host;
 }
 
-describe("세계 → 타일셋 중간 카테고리", () => {
-  it("폴더와 여섯 자식 탭이 레일에 있다", () => {
+describe("Map primary workspaces and preserved legacy renderers", () => {
+  it("mounts the primary workspaces without a folder", () => {
     const host = renderHost();
-    expect(host.querySelector("[data-testid='db-tileset-folder']")?.textContent).toContain("타일셋");
-    expect(host.querySelector("[data-testid='db-tab-tilesets']")?.textContent).toContain("통행");
-    expect(host.querySelector("[data-testid='db-tab-tileset-autotile']")?.textContent).toContain("오토타일");
-    expect(host.querySelector("[data-testid='db-tab-tileset-unlabeled']")?.textContent).toContain("미분류");
-    expect(host.querySelector("[data-testid='db-tab-structure-kits']")?.textContent).toContain("구조물");
-    expect(host.querySelector("[data-testid='db-tab-tileset-spaces']")?.textContent).toContain("공간 종류");
-    expect(host.querySelector("[data-testid='db-tab-scratch-concepts']")?.textContent).toContain("개념 꾸러미");
-    expect(TILESET_FOLDER_TAB_IDS).toEqual([
-      "tilesets",
-      "tilesetAutotile",
-      "tilesetUnlabeled",
-      "structureKits",
-      "tilesetSpaces",
-      "scratchConcepts",
-    ]);
+    expect(host.querySelector("[data-testid='db-tileset-folder']")).toBeNull();
+    expect(host.querySelector("[data-testid='db-tab-tilesets']")).not.toBeNull();
+    expect(host.querySelector("[data-testid='db-tab-scratch-concepts']")).not.toBeNull();
   });
 
-  it("자식 탭은 folder-child 로 들여쓴다", () => {
+  it("primary entries are not indented folder children", () => {
     const host = renderHost();
     for (const testid of [
       "db-tab-tilesets",
-      "db-tab-tileset-autotile",
-      "db-tab-tileset-unlabeled",
-      "db-tab-structure-kits",
-      "db-tab-tileset-spaces",
       "db-tab-scratch-concepts",
     ]) {
-      expect(host.querySelector(`[data-testid='${testid}']`)?.dataset.folderChild).toBe("1");
+      expect(host.querySelector(`[data-testid='${testid}']`)?.dataset.folderChild).toBeUndefined();
     }
   });
 
   it("공간 종류를 누르면 전용 워크스페이스가 열린다", () => {
     const host = renderHost();
-    host.querySelector("[data-testid='db-tab-tileset-spaces']")!.click();
+    switchDatabaseActiveTab("scratchConcepts", host as unknown as HTMLElement);
+    host.querySelector("[data-testid='db-context-tilesetSpaces']")!.click();
     expect(getDatabaseActiveTab()).toBe("tilesetSpaces");
     expect(host.querySelector("[data-testid='tileset-spaces-workspace']")).not.toBeNull();
     expect(host.querySelector("[data-testid='structure-kit-new']")).toBeNull();
@@ -93,22 +78,22 @@ describe("세계 → 타일셋 중간 카테고리", () => {
 
   it("오토타일 설정은 타일셋 워크스페이스를 autotile 모드로 연다", () => {
     const host = renderHost();
-    host.querySelector("[data-testid='db-tab-tileset-autotile']")!.click();
+    switchDatabaseActiveTab("tilesetAutotile", host as unknown as HTMLElement);
     expect(getDatabaseActiveTab()).toBe("tilesetAutotile");
     expect(getTilesetMetadataEditMode()).toBe("autotile");
   });
 
-  it("폴더 버튼은 .db-tab 이 아니다 — 키보드 순서 계약은 자식 탭만 센다", () => {
+  it("context return buttons do not add primary keyboard rail entries", () => {
     const host = renderHost();
-    const folder = host.querySelector("[data-testid='db-tileset-folder']");
-    expect(folder).not.toBeNull();
-    expect(folder!.classList.contains("db-tab")).toBe(false);
-    expect(folder!.classList.contains("db-tab-folder")).toBe(true);
+    const back = host.querySelector("[data-testid='db-context-back']");
+    expect(back).not.toBeNull();
+    expect(back!.classList.contains("db-tab")).toBe(false);
+    expect(back!.tagName).toBe("BUTTON");
   });
 
   it("공간 종류 면의 제목은 「공간 종류」다", () => {
     const host = renderHost();
-    host.querySelector("[data-testid='db-tab-tileset-spaces']")!.click();
+    switchDatabaseActiveTab("tilesetSpaces", host as unknown as HTMLElement);
     expect(host.querySelector("[data-testid='tileset-spaces-heading']")?.textContent).toBe("공간 종류");
     expect(host.querySelector("[data-testid='structure-kit-heading']")).toBeNull();
   });
@@ -116,7 +101,7 @@ describe("세계 → 타일셋 중간 카테고리", () => {
   it("통행에서 고른 칩셋이 구조물 앨범에도 이어진다", () => {
     setSelectedTileset(INTERIOR_ROOM_TILESET_ID);
     const host = renderHost();
-    host.querySelector("[data-testid='db-tab-structure-kits']")!.click();
+    switchDatabaseActiveTab("structureKits", host as unknown as HTMLElement);
     expect(getSelectedTilesetId()).toBe(INTERIOR_ROOM_TILESET_ID);
     expect(
       host.querySelector(`[data-testid='structure-kit-tileset-${INTERIOR_ROOM_TILESET_ID}']`)?.classList.contains("active"),

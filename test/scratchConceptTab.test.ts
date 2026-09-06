@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { INTERIOR_ROOM_TILESET_ID, seedDefaultInteriorCatalog } from "@/editor/interiorRoomPipeline";
 import { TAB_GROUPS } from "@/editor/panels/database";
@@ -44,12 +44,14 @@ function renderOnTileset(tilesetId: string): FakeElement {
   editorState.set({ currentMapId: mapId });
   const host = new FakeElement("div");
   renderScratchConceptTab(host as unknown as HTMLElement, () => {});
-  host.querySelector(`[data-testid='scratch-concept-tileset-${tilesetId}']`)!.click();
+  const select = host.querySelector("[data-testid='scratch-concept-tileset-select']")!;
+  select.value = tilesetId;
+  select.dispatchEvent(new Event("change"));
   return host;
 }
 
 describe("scratchConceptTab 레일", () => {
-  it("맵 그룹 타일셋 폴더에 개념 꾸러미 탭이 있다 — 임시 그룹은 졸업", () => {
+  it("맵 그룹의 주 진입점에 개념 꾸러미가 있다 — 임시 그룹은 졸업", () => {
     expect(TAB_GROUPS.some((group) => group.slug === "scratch")).toBe(false);
     const world = TAB_GROUPS.find((group) => group.slug === "world");
     expect(world?.tabs).toContain("scratchConcepts");
@@ -64,6 +66,37 @@ describe("scratchConceptTab 레일", () => {
 });
 
 describe("scratchConceptTab 실내 시드", () => {
+  it("selecting a corridor replaces the bedroom inspector with a thing in that place", () => {
+    const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
+    host.querySelector("[data-testid='scratch-concept-thing-dorm_bed_a']")!.click();
+    host.querySelector("[data-testid='scratch-concept-place-corridor']")!.click();
+    const bundle = store.getCurrent().tilesets[INTERIOR_ROOM_TILESET_ID]!.scratchConceptBundles![0]!;
+    const expected = bundle.things.find((thing) => thing.placeIds.includes("corridor"))!;
+    expect(host.querySelector("[data-testid='scratch-concept-thing-graphic']")?.value).toBe(expected.objectId);
+    expect(host.querySelector("[data-testid='scratch-concept-thing-dorm_bed_a']")!.classList.contains("active")).toBe(false);
+  });
+
+  it("a thing chip selects its containing place", () => {
+    const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
+    host.querySelector("[data-testid='scratch-concept-place-corridor']")!
+      .querySelector("[data-testid='scratch-concept-thing-upper_stair']")!.click();
+    expect(host.querySelector("[data-testid='scratch-concept-place-corridor']")!.classList.contains("active")).toBe(true);
+    expect(host.querySelector("[data-testid='scratch-concept-thing-graphic']")?.value).toBe("stairs_horizontal");
+  });
+
+  it("an empty selected place has no unrelated thing inspector", () => {
+    const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
+    host.querySelector("[data-testid='scratch-concept-place-add']")!.click();
+    expect(host.querySelector("[data-testid='scratch-concept-thing-graphic']")).toBeNull();
+  });
+
+  it("makes facilities the illustrated choices instead of mounting a tileset column", () => {
+    const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
+    expect(host.querySelector("[data-testid='scratch-concept-rail']")).toBeNull();
+    expect(host.querySelector("[data-testid='scratch-concept-tileset-select']")?.value).toBe(INTERIOR_ROOM_TILESET_ID);
+    expect(host.querySelector("[data-testid='scratch-concept-facility-inn']")?.querySelector("canvas")).not.toBeNull();
+  });
+
   it("마을 칩셋은 여관을 기본으로 얹지 않는다", () => {
     const host = renderOnTileset(DEFAULT_TILESET_ID);
     expect(host.querySelector("[data-testid='scratch-concept-empty']")).not.toBeNull();
@@ -430,6 +463,46 @@ describe("scratchConceptTab 물건 그림 칠하기", () => {
       if (kitsSnapshot) tileset.structureKits = structuredClone(kitsSnapshot);
       else delete tileset.structureKits;
     });
+  });
+
+  it("painting an unselected place's thing returns to that occurrence after real editor save/undo/close", async () => {
+    const host = renderOnTileset(tilesetId);
+    const dialogs = await import("@/editor/panels/structureKitEditorDialog");
+    const original = dialogs.openStructureKitEditor;
+    let signalOpened!: () => void;
+    let timeout!: ReturnType<typeof setTimeout>;
+    const opened = new Promise<void>((resolve, reject) => {
+      signalOpened = resolve;
+      timeout = setTimeout(() => reject(new Error("Graphic editor did not open")), 2000);
+    });
+    // Observe the exact lazy-import boundary while retaining the real editor.
+    const spy = vi.spyOn(dialogs, "openStructureKitEditor").mockImplementation((...args) => {
+      original(...args);
+      signalOpened();
+    });
+    try {
+      host.querySelector("[data-testid='scratch-concept-thing-paint-upper_stair']")!.click();
+      await opened;
+      const afterCopy = store.getCurrent().tilesets[tilesetId]!;
+      const thing = afterCopy.scratchConceptBundles!.find((bundle) => bundle.id === "inn")!.things.find((entry) => entry.id === "upper_stair")!;
+      const kit = afterCopy.structureKits!.find((entry) => entry.id === thing.objectId)!;
+      const width = document.querySelector("[data-testid='structure-kit-editor-width']") as unknown as FakeElement;
+      expect(width).not.toBeNull();
+      width.value = String(kit.width + 1);
+      width.dispatchEvent(new Event("change"));
+      expect(store.getCurrent().tilesets[tilesetId]!.structureKits!.find((entry) => entry.id === kit.id)!.width).toBe(kit.width + 1);
+      (document.querySelector("[data-testid='structure-kit-editor-undo']") as unknown as FakeElement).click();
+      expect(store.getCurrent().tilesets[tilesetId]!.structureKits!.find((entry) => entry.id === kit.id)!.width).toBe(kit.width);
+      (document.querySelector("[data-testid='structure-kit-editor-close']") as unknown as FakeElement).click();
+      expect(document.querySelector("[data-testid='structure-kit-editor']")).toBeNull();
+      expect(host.querySelector("[data-testid='scratch-concept-place-corridor']")!.classList.contains("active")).toBe(true);
+      expect(host.querySelector("[data-testid='scratch-concept-thing-upper_stair']")!.classList.contains("active")).toBe(true);
+      expect(host.querySelector("[data-testid='scratch-concept-thing-graphic']")?.value).toBe(kit.id);
+    } finally {
+      clearTimeout(timeout);
+      spy.mockRestore();
+      (document.querySelector("[data-testid='structure-kit-editor-close']") as unknown as FakeElement | null)?.click();
+    }
   });
 
   it("그려진 물건 칩마다 칠하기 버튼이 있다", () => {

@@ -18,7 +18,7 @@ test("concept layout, zone, membership and seed painting remain editable", async
   const tab = page.getByTestId("db-tab-scratch-concepts");
   if (!(await tab.isVisible())) await page.getByTestId("db-tab-group-world").click();
   await tab.click();
-  await page.getByTestId("scratch-concept-tileset-easyrpg_chipset_interior").click();
+  await page.getByTestId("scratch-concept-tileset-select").selectOption("easyrpg_chipset_interior");
   const layout = page.getByTestId("scratch-concept-facility-layout");
   await layout.selectOption("double-row");
   await expect(layout).toHaveValue("double-row");

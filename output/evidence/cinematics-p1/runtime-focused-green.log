@@ -1,0 +1,45 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/cinematicSettings.test.ts test/cinematicSequence.test.ts test/playerCinematics.test.ts test/checkpointEndingRuntime.test.ts test/titleScreen.test.ts test/titleScreenMenuLabels.test.ts test/titleScreenMusic.test.ts test/battleDefeatOutcome.test.ts test/playerRunControls.test.ts test/playBootRecovery.test.ts test/playerOpenSaveMenu.test.ts test/generatedAssetResourceResolver.test.ts test/playerInputCss.test.ts test/runtimeDomTitleGuard.test.ts test/runtimeQaGate.test.ts test/runtimeQaReport.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-wish-cinematics-p1
+
+ ✓ test/runtimeQaReport.test.ts (18 tests) 17ms
+ ✓ test/runtimeQaGate.test.ts (52 tests) 23ms
+ ✓ test/playerInputCss.test.ts (2 tests) 120ms
+ ✓ test/runtimeDomTitleGuard.test.ts (4 tests) 192ms
+ ✓ test/titleScreenMusic.test.ts (3 tests) 123ms
+ ✓ test/generatedAssetResourceResolver.test.ts (12 tests) 236ms
+ ✓ test/titleScreenMenuLabels.test.ts (6 tests) 6ms
+ ✓ test/cinematicSequence.test.ts (23 tests) 1022ms
+ ✓ test/titleScreen.test.ts (22 tests) 690ms
+ ✓ test/playerOpenSaveMenu.test.ts (4 tests) 847ms
+   ✓ event-opened save menu in the shipping player shell > shows slots immediately and saves, navigates and backs out through the keyboard  318ms
+ ✓ test/battleDefeatOutcome.test.ts (4 tests) 414ms
+ ✓ test/playerRunControls.test.ts (7 tests) 1029ms
+ ✓ test/playerCinematics.test.ts (9 tests) 1074ms
+ ✓ test/checkpointEndingRuntime.test.ts (5 tests) 779ms
+   ✓ checkpointSave / killPlayer / triggerEnding > define_ending은 같은 조건 집합의 낮은 priority 엔딩을 warning으로 보고한다  553ms
+ ✓ test/playBootRecovery.test.ts (11 tests) 3877ms
+   ✓ test play boot recovery > shows the thrown boot reason in the recovery panel  533ms
+   ✓ test play boot recovery > reloads once when PlayScene's hashed chunk fails to fetch  481ms
+   ✓ test play boot recovery > shows a recovery panel when waiting for PlayScene times out  309ms
+   ✓ test play boot recovery > starts a fresh boot attempt when retry is clicked  385ms
+   ✓ test play boot recovery > boots the repaired project and reports a dangling start-map repair  336ms
+   ✓ test play boot recovery > does not let a stale failed run paint a recovery panel over a newer run  362ms
+   ✓ test play boot recovery > refuses to boot Phaser and names the blocker when the project has no maps  303ms
+   ✓ test play boot recovery > suppresses autonomous movement and auto-run events when safe mode is chosen  441ms
+ ✓ test/cinematicSettings.test.ts (109 tests) 8854ms
+   ✓ cinematic persistence > leaves legacy absence absent through normalization and repeated roundtrips  430ms
+   ✓ cinematic persistence > retains disabled authored scenes, exact text, labels and media without mutating input  460ms
+   ✓ cinematic web export > collects media referenced only by disabled opening scenes  532ms
+   ✓ cinematic web export > collects media referenced only by disabled gameOver scenes  463ms
+   ✓ cinematic web export > exports video/mp4, animated image, voice and background bytes with correct filenames  484ms
+   ✓ cinematic web export > exports video/webm, animated image, voice and background bytes with correct filenames  371ms
+   ✓ cinematic web export > exports video/ogg, animated image, voice and background bytes with correct filenames  416ms
+
+ Test Files  16 passed (16)
+      Tests  291 passed (291)
+   Start at  15:24:38
+   Duration  15.65s (transform 21.57s, setup 0ms, collect 84.53s, tests 19.30s, environment 1.86s, prepare 3.21s)

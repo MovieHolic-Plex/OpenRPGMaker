@@ -15,10 +15,7 @@ export type SwitchConditionParams = PageConditionContext & {
   readonly testPrefix: string;
 };
 
-export type AdvancedConditionEntry = {
-  readonly index: number;
-  readonly condition: EventPageCondition;
-};
+export { advancedConditionEntries, type AdvancedConditionEntry } from "./pageConditionLayout";
 
 export type SimpleConditionKind = "actor" | "item" | "variable" | "timePhase" | "season" | "npcActivity" | "friendshipAtLeast" | "relationshipAtLeast";
 
@@ -168,89 +165,6 @@ export function toggleSelfSwitchCondition(
   updateEventPage(context.mapId, context.eventId, context.page.id, { conditions: next });
 }
 
-export function advancedConditionEntries(page: EventPage): AdvancedConditionEntry[] {
-  const seen = { switch: 0, variable: 0, item: 0, actor: 0, timePhase: 0, season: 0, npcActivity: 0, friendshipAtLeast: 0, relationshipAtLeast: 0, selfSwitch: 0, timer1: 0, timer2: 0 };
-  const entries: AdvancedConditionEntry[] = [];
-  page.conditions.forEach((condition, index) => {
-    if (condition.kind === "switch") {
-      seen.switch += 1;
-      if (seen.switch > 2) entries.push({ index, condition });
-      return;
-    }
-    if (condition.kind === "variable") {
-      seen.variable += 1;
-      if (seen.variable > 1) entries.push({ index, condition });
-      return;
-    }
-    if (condition.kind === "item") {
-      seen.item += 1;
-      if (seen.item > 1) entries.push({ index, condition });
-      return;
-    }
-    if (condition.kind === "actor") {
-      seen.actor += 1;
-      if (seen.actor > 1) entries.push({ index, condition });
-      return;
-    }
-    if (condition.kind === "timePhase") {
-      seen.timePhase += 1;
-      if (seen.timePhase > 1) entries.push({ index, condition });
-      return;
-    }
-    if (condition.kind === "season") {
-      seen.season += 1;
-      if (seen.season > 1) entries.push({ index, condition });
-      return;
-    }
-    if (condition.kind === "npcActivity") {
-      seen.npcActivity += 1;
-      if (seen.npcActivity > 1) entries.push({ index, condition });
-      return;
-    }
-    if (condition.kind === "relationshipAtLeast") {
-      seen.relationshipAtLeast += 1;
-      if (seen.relationshipAtLeast > 1) entries.push({ index, condition });
-      return;
-    }
-    if (condition.kind === "friendshipAtLeast") {
-      seen.friendshipAtLeast += 1;
-      if (seen.friendshipAtLeast > 1) entries.push({ index, condition });
-      return;
-    }
-    if (condition.kind === "timer") {
-      if (condition.timerId === "timer1") {
-        seen.timer1 += 1;
-        if (seen.timer1 > 1) entries.push({ index, condition });
-        return;
-      }
-      seen.timer2 += 1;
-      if (seen.timer2 > 1) entries.push({ index, condition });
-      return;
-    }
-    if (condition.kind === "selfSwitch") {
-      seen.selfSwitch += 1;
-      if (seen.selfSwitch > 1) entries.push({ index, condition });
-      return;
-    }
-    // 소지금은 간단 행이 없으므로 전부 고급 목록에 표시 — 누락 시 편집 불가.
-    if (condition.kind === "gold") {
-      entries.push({ index, condition });
-      return;
-    }
-    // 간단 행이 없는 kind 는 전부 고급 목록에 노출한다 — 누락 시 화면에서 통째로 사라진다.
-    // battleResult 는 고급에서 편집 가능, all/any/not 은 읽기 전용 요약 + 삭제.
-    if (
-      condition.kind === "run" ||
-      condition.kind === "battleResult" ||
-      condition.kind === "all" ||
-      condition.kind === "any" ||
-      condition.kind === "not"
-    ) {
-      entries.push({ index, condition });
-    }
-  });
-  return entries;
-}
 
 export function appendCondition(context: PageConditionContext, condition: EventPageCondition): void {
   updateEventPage(context.mapId, context.eventId, context.page.id, {

@@ -1,14 +1,10 @@
-import {
-  supportsChipsetQuarterComposition,
-  tilesetImageUrl,
-} from "@/editor/tilesetImage";
+import { supportsChipsetQuarterComposition } from "@/editor/tilesetImage";
+import { loadTilesetImage, type TilesetCanvasImage } from "@/editor/mapTileDraw";
 import { chipsetQuarterComposition } from "@/project/defaults/terrainQuarterAutotile";
 import { tileStackAt } from "@/project/mapOverlayTiles";
 import type { GameMap, TilesetDef } from "@/project/types";
 
 const PREVIEW_SCALE = 2;
-
-const tilesetImagePromises = new Map<string, Promise<HTMLImageElement>>();
 
 export async function renderTempMapImage(map: GameMap, tileset: TilesetDef): Promise<string> {
   const image = await loadTilesetImage(tileset);
@@ -46,7 +42,7 @@ export async function renderTilesetAtlasImage(tileset: TilesetDef): Promise<stri
 
 function drawStackLayer(
   context: CanvasRenderingContext2D,
-  image: HTMLImageElement,
+  image: TilesetCanvasImage,
   layer: "lower" | "upper",
   map: GameMap,
   tileset: TilesetDef,
@@ -58,7 +54,7 @@ function drawStackLayer(
 
 function drawLayer(
   context: CanvasRenderingContext2D,
-  image: HTMLImageElement,
+  image: TilesetCanvasImage,
   tiles: readonly number[],
   map: GameMap,
   tileset: TilesetDef,
@@ -85,7 +81,7 @@ function drawLayer(
 
 function drawTile(
   context: CanvasRenderingContext2D,
-  image: HTMLImageElement,
+  image: TilesetCanvasImage,
   tile: number,
   index: number,
   map: GameMap,
@@ -102,7 +98,7 @@ function drawTile(
 
 function drawTilePart(
   context: CanvasRenderingContext2D,
-  image: HTMLImageElement,
+  image: TilesetCanvasImage,
   tile: number,
   index: number,
   map: GameMap,
@@ -117,18 +113,4 @@ function drawTilePart(
   const targetX = (index % map.width) * drawSize + offsetX * PREVIEW_SCALE;
   const targetY = Math.floor(index / map.width) * drawSize + offsetY * PREVIEW_SCALE;
   context.drawImage(image, sourceX, sourceY, tileSize / 2, tileSize / 2, targetX, targetY, drawSize / 2, drawSize / 2);
-}
-
-function loadTilesetImage(tileset: TilesetDef): Promise<HTMLImageElement> {
-  const url = tilesetImageUrl(tileset);
-  const existing = tilesetImagePromises.get(url);
-  if (existing) return existing;
-  const promise = new Promise<HTMLImageElement>((resolve, reject) => {
-    const image = new Image();
-    image.onload = () => resolve(image);
-    image.onerror = () => reject(new Error("타일셋 이미지를 읽지 못했습니다."));
-    image.src = url;
-  });
-  tilesetImagePromises.set(url, promise);
-  return promise;
 }

@@ -1,0 +1,61 @@
+✖ command cancellation forwards SIGTERM and reaps the owned child (173.32649ms)
+✖ private mode remains exactly 0600 under a restrictive inherited umask (58.981092ms)
+✖ origin-only validation does not accept URL-normalized paths or empty credential syntax (6.65701ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 0
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 627.602146
+
+✖ failing tests:
+
+test at test/macLauncher.test.mjs:152:1
+✖ command cancellation forwards SIGTERM and reaps the owned child (173.32649ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  null !== 1
+
+      at TestContext.<anonymous> (file:///home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/test/macLauncher.test.mjs:169:12)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: null,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/setupLocal.test.mjs:204:1
+✖ private mode remains exactly 0600 under a restrictive inherited umask (58.981092ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  0 !== 384
+
+      at TestContext.<anonymous> (file:///home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/test/setupLocal.test.mjs:210:10)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 384,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/setupLocal.test.mjs:213:1
+✖ origin-only validation does not accept URL-normalized paths or empty credential syntax (6.65701ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (file:///home/main/.herdr/worktrees/rpg-zzu/wish-mac-mac-onboarding-p1/test/setupLocal.test.mjs:216:12)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: { code: 'INVALID_URL' },
+    operator: 'throws',
+    diff: 'simple'
+  }

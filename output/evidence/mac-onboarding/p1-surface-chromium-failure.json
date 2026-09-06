@@ -1,0 +1,46 @@
+{
+  "host": "linux",
+  "projectId": "rpg-zzu-house-template-gallery",
+  "readOnlyBridge": true,
+  "forwarded": [
+    {
+      "method": "GET",
+      "table": "/rest/v1/projects",
+      "status": 200,
+      "projectFilter": "eq.rpg-zzu-house-template-gallery",
+      "select": "project_id"
+    }
+  ],
+  "blockedWrites": [],
+  "browserErrors": [],
+  "failedRequests": [
+    {
+      "path": "/src/editor/editorState.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/eventActions.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/eventPages.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/panels/eventEditor/modal.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/store.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    }
+  ],
+  "launcherUrl": "http://127.0.0.1:9999/?project=rpg-zzu-house-template-gallery",
+  "http": {
+    "index": 200,
+    "authProviders": 200,
+    "providersResponseKind": "object"
+  },
+  "result": "FAIL",
+  "failure": "Browser state subscription timed out"
+}

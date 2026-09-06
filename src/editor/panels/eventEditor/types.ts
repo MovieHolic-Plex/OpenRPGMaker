@@ -16,6 +16,11 @@ export type CommandEditContext = {
 };
 
 export type CommandListActions = {
+  readonly undo?: () => void;
+  readonly redo?: () => void;
+  /** Batch edits are a single host transaction, never one snapshot per row. */
+  readonly deleteCommands?: (paths: readonly (readonly number[])[]) => void;
+  readonly insertCommands?: (path: readonly number[], commands: readonly Command[]) => void;
   readonly addCommand: (containerPath: readonly number[], command: Command) => void;
   readonly insertCommand: (path: readonly number[], command: Command) => void;
   readonly replaceCommand: (path: readonly number[], command: Command) => void;

@@ -42,6 +42,18 @@ function crumbText(): string {
 }
 
 describe("데이터베이스 모달 헤더 — 현재 위치 브레드크럼", () => {
+  it("keeps the primary and nested Map ancestors in the real modal breadcrumb", () => {
+    openDatabaseModal("worldGen");
+    const crumb = document.querySelector<HTMLElement>("[data-testid='database-modal-crumb']")!;
+    const parts = Array.from(crumb.querySelectorAll<HTMLElement>(".database-modal-crumb-tab"));
+    expect(parts.map((part) => part.dataset.tab)).toEqual(["scratchConcepts", "villages", "worldGen"]);
+    expect(parts.map((part) => part.textContent)).toEqual(["scratchConcepts", "villages", "worldGen"].map((tab) => databaseTabLabel(tab as "scratchConcepts" | "villages" | "worldGen")));
+    setDatabaseActiveTab("terrain");
+    expect(Array.from(crumb.querySelectorAll<HTMLElement>(".database-modal-crumb-tab")).map((part) => part.dataset.tab)).toEqual(["tilesets", "terrain"]);
+    setDatabaseActiveTab("tilesetAutotile");
+    expect(Array.from(crumb.querySelectorAll<HTMLElement>(".database-modal-crumb-tab")).map((part) => part.dataset.tab)).toEqual(["tilesets"]);
+  });
+
   it("열 때 활성 탭의 그룹 › 탭 을 적는다", () => {
     openDatabaseModal("skills");
     expect(crumbText()).toBe(`${databaseTabGroupLabel("skills")}›${databaseTabLabel("skills")}`.replace(/\s+/g, ""));

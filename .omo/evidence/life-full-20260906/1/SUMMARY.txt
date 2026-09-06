@@ -1,0 +1,62 @@
+Task1: life normalization/count test-contract repair (not a life runtime implementation)
+Task: st_01a07370
+Worktree: /home/main/z-project/rpg-zzu-life-full-p1
+Branch: agent/life-full-p1; no upstream configured; no network Git operation.
+Base: 1aff8c3f13df42e92f73723a2799bc671ec8bee0
+Evidence root: /home/main/z-project/rpg-zzu-life-full-p1/.omo/evidence/life-full-20260906/1
+Environment: Node v24.11.1; npm; local node_modules symlink present.
+Configured DEV_SERVER_PORT=9841; no server started on this or any HTTP port.
+Monitor tool unavailable in child; bounded bash commands used with actual exit capture.
+
+ROOT CAUSE
+Initial exact four-file command: 19 passed / 4 failed, exit 1 (red.txt).
+Three string failures share one intentional normalization:
+$.system.titleScreen.titleGraphic {mode:"text",x:32,y:62} -> absent.
+Wire byte counts: 2291858 -> 2291813 (45 bytes); no other JSON path/value/order drift.
+N(P)=deserialize(serialize(P)); N(P) -> N(N(P)) has no difference.
+Existing titleScreenSettingsNormalize tests pin both constructor seed and loader omission.
+Therefore no default/normalizer production edit is justified.
+Legacy fixture omits just that known seed explicitly, never by normalizing the fixture.
+Full-wire equality remains in all three legacy tests, plus second-load equality.
+Separate new characterization pins exact first-load omission, original-input immutability,
+and authored resource-bearing text/graphic/both title preservation.
+Count 0 attribute omission is the existing shared UI contract, not a broken spatial feature.
+New coverage exercises 0 -> 1 -> deletion-confirmation -> 0 -> undo 1 -> redo 0.
+Deletion-confirmation timing is fixed via fake Date/timers, not polling or sleeps.
+An intermediate new-test failure from missing the confirmation click is preserved in
+count-confirmation-red.txt, then corrected to perform the actual two-click action.
+
+REGRESSION DETECTION PROOF
+Test-only vi.mock wrappers preserved real parser/history calls, then deliberately inverted
+title omission/preservation or immediately reversed a successful undo.
+Command: npm test -- test/p0ProjectSchema.test.ts test/p2SpatialEditorAuthoring.test.ts -t "omits only the redundant|preserves authored|omits the zero badge"
+mutation-red.txt: all 5 targeted characterizations failed at intended value assertions,
+exit 1; 10 unrelated tests excluded only by this mutation command's name filter.
+Both wrappers removed with apply_patch. mutation-restored.txt proves pre/post SHA equality.
+No mutation is shipped. Production src diff is empty.
+
+FINAL CHECKS
+npm test -- test/p0ProjectSchema.test.ts test/p1FoundationSchema.test.ts test/p2ProjectSchema.test.ts test/p2SpatialEditorAuthoring.test.ts
+green.txt: one restored-tree run, 4 files / 28 passed / zero failed or skipped; exit 0.
+npm test -- test/titleScreenSettingsNormalize.test.ts test/titleScreenMusic.test.ts test/titleScreenMenuLabels.test.ts
+title-regression.txt: 3 files / 25 passed; exit 0.
+npm run typecheck:app: exit 0 (typecheck.txt).
+npm run build:app: exit 0 (build.txt); Vite chunk-size warning retained, not suppressed.
+LSP initially returned no diagnostics on all five touched TS files; final spatial-test
+refresh repeatedly timed out at 3000ms. Direct TypeScript language-service syntactic and
+semantic diagnostics on all five final files: zero, exit 0 (diagnostics.txt).
+An initial local diagnostic adapter invocation failed because useCaseSensitiveFileNames
+must be a function; fixed adapter only, original error retained in diagnostics-adapter-error.txt.
+node .omo/evidence/life-full-20260906/1/manual-qa.mjs: exit 0 (manual-qa.txt).
+Real public IO imports verify exact first/second load, 18 optional absences, malformed
+energy/weather/fishing rejection, source immutability, and parsed coverage IDs.
+coverage.json: exact 51 feature IDs plus F01..F13; all not-run, no fabricated PASS/evidence.
+npm run openwiki:verify and npm run openwiki:index -- --check: exit 0 (wiki.txt).
+git diff --check: exit 0. Full suite/full build/gates/browser journeys remain parent-owned.
+
+EVIDENCE RETENTION
+Full raw initial red.txt is 13,758,529 bytes and retained locally, not added to Git.
+SHA256 red.txt: 2349da5e3fc53149144458c52ce9b58ada6e1c64cca7ff8b5a9adec34f10111a
+SHA256 final green.txt: b28fc9e3d2f9290b5687e7ba0b54e301ffe88b433bc79d871f98782df97708dc
+All command logs live under the evidence root; bounded receipts and runnable public probe
+travel with the commit. Cleanup receipt: cleanup.txt. No adjacent product issue fixed.

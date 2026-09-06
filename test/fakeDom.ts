@@ -39,6 +39,10 @@ export class FakeNode {
     return globalThis.document;
   }
 
+  get isConnected(): boolean {
+    return globalThis.document?.body.contains(this as unknown as Node) ?? false;
+  }
+
   get parentElement(): FakeElement | null {
     return this.parentNode instanceof FakeElement ? this.parentNode : null;
   }
@@ -532,6 +536,11 @@ function matchesSelector(element: FakeElement, selector: string): boolean {
   const testId = simpleSelector.match(/^\[data-testid=['"]?([^'"\]]+)['"]?\]$/u)?.[1];
   if (testId) return element.dataset.testid === testId;
   // data-* 속성 선택자 (camelCase dataset 키로 매핑).
+  const dataPresence = simpleSelector.match(/^\[data-([a-z0-9-]+)\]$/iu)?.[1];
+  if (dataPresence) {
+    const key = dataPresence.replace(/-([a-z])/gu, (_, ch: string) => ch.toUpperCase());
+    return key in element.dataset || `data-${dataPresence}` in element.attrs;
+  }
   const dataAttr = simpleSelector.match(/^\[data-([a-z0-9-]+)=['"]?([^'"\]]*)['"]?\]$/iu);
   if (dataAttr) {
     const rawKey = dataAttr[1] ?? "";

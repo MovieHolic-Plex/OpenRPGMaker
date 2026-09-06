@@ -12,6 +12,7 @@ import { normalizeDatabaseRecords, normalizeSystemRecords } from "@/project/data
 import { createBlankProject } from "@/project/defaults";
 import { deserialize, serialize } from "@/project/io";
 import { startSession } from "@/project/session";
+import { createLegacyLifeProject } from "./fixtures/life-full/legacyProject";
 
 class MemoryStorage implements Storage {
   private readonly values = new Map<string, string>();
@@ -123,7 +124,7 @@ describe("P1 weather and farm-animal authored schema", () => {
 
   it("keeps legacy projects byte-stable without optional P1 authored fields", () => {
     // Break caught: a schema normalizer invents empty weather/animal fields in legacy JSON.
-    const project = createBlankProject();
+    const project = createLegacyLifeProject();
     const before = serialize(project);
     const loaded = deserialize(before) as unknown as {
       system: MutableUnknown;
@@ -136,6 +137,7 @@ describe("P1 weather and farm-animal authored schema", () => {
     expect(loaded.database.farmAnimalSpecies).toBeUndefined();
     expect(loaded.session.farmAnimals).toBeUndefined();
     expect(serialize(loaded as never)).toBe(before);
+    expect(serialize(deserialize(serialize(loaded as never)))).toBe(before);
   });
 
   it("rejects unknown weather kinds, unsafe numbers, duplicate ids, and oversized arrays", () => {

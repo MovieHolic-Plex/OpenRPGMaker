@@ -596,7 +596,7 @@ describe("always-true / always-false condition traps", () => {
 
     expect(issue.severity).toBe("warning");
     expect(issue.pageId).toBe("page-1");
-    expect(issue.field).toEqual({ testId: "event-condition-gold-amount" });
+    expect(issue.field).toEqual({ testId: "event-page-advanced-condition-gold-amount-0" });
     expect(result.canCommit).toBe(true);
   });
 

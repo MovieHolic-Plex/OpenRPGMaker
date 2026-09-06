@@ -404,41 +404,41 @@
 
 /* ---- tab row — labeled, count badge, icon+label ----------------------- */
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-folder {
-  align-items: center;
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: 8px;
-  color: var(--db-studio-text-1, #0F172A);
-  cursor: pointer;
+/* Context actions belong to the active Map workspace, never a second rail. */
+.database-modal-backdrop .db-body.db-shared-workspace:has(> .db-map-content) {
+  display: flex;
+  flex-direction: column;
+}
+
+.database-modal-backdrop .db-map-context-nav {
   display: flex;
   flex: 0 0 auto;
-  font: 700 13px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  flex-wrap: wrap;
+  align-items: center;
   gap: 8px;
-  height: 32px;
-  justify-content: flex-start;
-  margin: 4px 0 0;
-  padding: 0 8px;
-  text-align: left;
-  width: 100%;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border-default);
+  background: var(--bg-raised);
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-folder.open {
-  background: var(--db-studio-accent-muted, rgba(74, 87, 214, 0.12));
-  color: var(--db-studio-accent, #4A57D6);
+.database-modal-backdrop .db-map-context-nav .btn {
+  white-space: normal;
+  min-height: 32px;
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-folder > .db-tab-icon {
-  color: inherit;
-  flex: 0 0 auto;
-  height: 18px;
-  width: 18px;
+.database-modal-backdrop .db-map-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
 }
 
-.database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab[data-folder-child] {
-  padding-left: 24px !important;
-  height: 32px !important;
-  font: 500 12.5px/1.4 var(--font-ui) !important;
+.database-modal-backdrop .db-map-content > .tileset-db-workspace,
+.database-modal-backdrop .db-map-content > .oprn-tileset-workspace {
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab {

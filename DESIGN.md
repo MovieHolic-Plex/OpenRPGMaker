@@ -127,6 +127,29 @@ The system is a Vite + TypeScript + Phaser browser app: DOM panels and controls 
 
 ## 2. Color
 
+### Concept-first Map authoring — phase 1 (2026-09-05)
+
+- Database **맵** has two primary destinations: **개념 꾸러미** (`scratchConcepts`) and
+  **타일셋** (`tilesets`). There is no tileset folder or hidden legacy rail. **공용 이벤트**
+  belongs to System. All original tab IDs remain routable and searchable, including retired names.
+- Context actions sit above the workspace: concepts → **부품 보관함**, **기존 방 규칙**,
+  **기존 마을 설계**; villages → **공통 생성 기본값**; tilesets → **지형 효과**.
+  Children have a parent return button, retain shared tileset/concept selection, highlight their
+  primary root, and include their ancestors in the modal breadcrumb.
+- Concepts use a compact tileset selector, illustrated facility choices from referenced artwork,
+  place cards, and a thing inspector. Place selection only inspects things in that place. Selecting
+  or painting a thing selects its containing place; graphic-editor close returns to that selection.
+  References, saves, local graphic history, and catalog-copy behavior remain intact.
+- Tilesets have one internal navigation: **통행·지형 / 자동 연결 / 타일 설명**. Existing modes
+  and the unlabeled filter remain. Legacy autotile/unlabeled jumps open matching modes but highlight
+  the tileset primary. Child return retains the mode instead of restoring stale DOM. Other Database
+  tab caches and animation playback intent are unchanged.
+- Existing CSS owners and cool-white tokens govern the layout. Actions wrap; on narrow desktop
+  containers the concept inspector follows the places instead of squeezing them. Target widths:
+  1024, 1280, 1440px. No dependency, schema, migration, or authored-content changes.
+  `structureKits`, `interiorRoomKinds`, `scratchConceptBundles`, terrains and villages coexist;
+  room migration and village composition remain future phases, not shipped capabilities.
+
 ### Active editor shell — cool white studio
 
 There is **one shipped editor shell theme**: cool white + slate + indigo `#4A57D6` in `src/styles/tokens.css`. Ladder: `canvas/inset #EEF1F4 < base/surface #F7F8F8 < raised/overlay #FFFFFF`. Text `#0F172A/#475569/#64748B`. Legacy `--gold` is an indigo alias. `color-scheme: light`. No theme toggle.
@@ -486,6 +509,23 @@ The float assistant is **one glass instrument**, `div.ai-deck` inside the transp
 - Deletion is disabled for bundled defaults and confirm-gated for uploaded assets referenced by maps/events.
 - The Resource Manager modal follows the classic RM2K3 resource window composition: left category list, center resource list, right command/format/preview rail, and bottom close/help controls.
 - Resource Manager clone metrics live as local `--rm-resource-*` CSS variables on `.resource-modal-window`; use those variables for pane widths, row height, command button height, preview height, and footer button width rather than scattering one-off dimensions.
+
+### Cinematic playback (2026-09-06)
+
+- Shared opening/game-over playback uses the existing logical play stage, native
+  image/video/text elements and runtime typography, never editor Studio chrome.
+  Black letterboxing preserves image/video aspect ratios; narration is 14 logical
+  pixels/1.5 with 8px padding and an 80% black caption backing. Keyboard hints are
+  9px/1.5; the fullscreen overlay has 16px inset content and 8px gaps.
+- Authored image motion is transform/opacity only: fade 0..1, pan -3%..3% at
+  1.1 scale, zoom 1..1.12. Duration comes from the authored scene (8s for a manual
+  scene), plays once and holds its last frame. Reduced motion removes all three.
+  These are authored slideshow motions, not interface spring transitions.
+- States are ready/loading/playing/blocked/error. Blocked media exposes R retry
+  and confirm continuation; missing/broken media still permits continuation in
+  an unskippable sequence. There are no pointer controls or native title tooltips.
+- Game-over labels retain the current terminal cursor menu and system graphic;
+  the optional authored background fills the stage beneath it at 65% opacity.
 
 ### Play presentation
 

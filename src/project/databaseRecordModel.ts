@@ -52,6 +52,7 @@ import {
 import type { ActorExperienceCurve, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemCareProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, LifeSkillRecord, MonsterCareConfig, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, StateRecord, SystemRecords, TitleBackgroundLayer, TitleIntroSettings, TitleParticleSettings, TitleScreenGraphic, TitleScreenMenuVisibility, TitleScreenSettings, TitleScreenSounds, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
 import { normalizePlayResolution } from "@/project/playResolution";
 import { normalizeWorldGenRulesForStorage } from "@/project/worldGenRules";
+import { normalizeCinematicSequence, normalizeGameOverSettings } from "@/project/cinematicSettings";
 
 export { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 
@@ -229,6 +230,8 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
       return monsterCare ? { monsterCare } : {};
     })(),
     titleScreen: normalizeTitleScreenSettings(system.titleScreen, titleResourceId),
+    ...(system.opening !== undefined ? { opening: normalizeCinematicSequence(system.opening) } : {}),
+    ...(system.gameOver !== undefined ? { gameOver: normalizeGameOverSettings(system.gameOver) } : {}),
   };
 }
 

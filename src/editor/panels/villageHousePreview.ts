@@ -297,7 +297,7 @@ async function renderStage(
   if (pixelWidth <= 0 || pixelHeight <= 0) return undefined;
 
   const image = await loadTilesetImage(tileset);
-  if (!image.complete || image.naturalWidth === 0) return undefined;
+  if ("complete" in image && (!image.complete || image.naturalWidth === 0)) return undefined;
 
   const full = document.createElement("canvas");
   full.width = pixelWidth;

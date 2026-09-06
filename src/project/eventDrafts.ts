@@ -1,3 +1,4 @@
+import { commitEventDraftAuthoredWrites, eventDraftAuthoredDiff } from "./eventDraftAuthored";
 import type { GameEvent, GameMap, MapId, PersistedGameEvent, Project } from "@/project/types";
 
 export type EventDiffKind = "created" | "updated";
@@ -108,6 +109,7 @@ export function commitEventDraft(project: Project, mapId: MapId, eventId: string
   const event = project.maps[mapId]?.events.find((item) => item.id === eventId);
   if (!event?.draft) return null;
   const diff = eventDraftDiff(mapId, event);
+  commitEventDraftAuthoredWrites(project, event);
   delete event.draft;
   return diff;
 }
@@ -138,6 +140,7 @@ export function discardEventDraft(project: Project, mapId: MapId, eventId: strin
 export function eventDraftHasUserChanges(project: Project, mapId: MapId, eventId: string): boolean {
   const event = project.maps[mapId]?.events.find((item) => item.id === eventId);
   if (!event?.draft) return false;
+  if (eventDraftAuthoredDiff(event).length > 0) return true;
   const baseline = event.draft.original;
   if (!baseline) return event.draft.kind === "new" ? true : false;
   return diffValues(baseline, eventWithoutDraft(event), "event").length > 0;
@@ -157,7 +160,7 @@ export function eventDraftDiff(mapId: MapId, event: GameEvent): EventDiff | null
       mapId,
       eventId: event.id,
       kind: "created",
-      changes: [{ path: "event", before: undefined, after }],
+      changes: [{ path: "event", before: undefined, after }, ...eventDraftAuthoredDiff(event)],
     };
   }
   const before = draft.original;
@@ -166,7 +169,7 @@ export function eventDraftDiff(mapId: MapId, event: GameEvent): EventDiff | null
     mapId,
     eventId: event.id,
     kind: "updated",
-    changes: diffValues(before, after, "event"),
+    changes: [...diffValues(before, after, "event"), ...eventDraftAuthoredDiff(event)],
   };
 }
 

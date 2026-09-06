@@ -1,0 +1,38 @@
+Final after restoring both test-only mutations; SHA-256 matches pre-mutation tests.
+command: npm test -- test/p0ProjectSchema.test.ts test/p1FoundationSchema.test.ts test/p2ProjectSchema.test.ts test/p2SpatialEditorAuthoring.test.ts
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/p0ProjectSchema.test.ts test/p1FoundationSchema.test.ts test/p2ProjectSchema.test.ts test/p2SpatialEditorAuthoring.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p1
+
+ ✓ test/p2ProjectSchema.test.ts (4 tests) 1926ms
+   ✓ P2 authored foundation schema > round-trips fishing, forage, collection, museum, and fish definitions  460ms
+   ✓ P2 authored foundation schema > keeps legacy projects byte-stable without P2 fields  567ms
+   ✓ P2 authored foundation schema > rejects duplicate ids and unsafe authored geometry at the wire boundary  740ms
+ ✓ test/p1FoundationSchema.test.ts (9 tests) 4827ms
+   ✓ P1 weather and farm-animal authored schema > round-trips authored weather, species, homes, and project-start animals  567ms
+   ✓ P1 weather and farm-animal authored schema > keeps legacy projects byte-stable without optional P1 authored fields  761ms
+   ✓ P1 weather and farm-animal authored schema > rejects unknown weather kinds, unsafe numbers, duplicate ids, and oversized arrays  3052ms
+ ✓ test/p0ProjectSchema.test.ts (11 tests) 5906ms
+   ✓ P0 authored system records > round-trips optional energy, shipping, bundle/unlock, and maker definitions  410ms
+   ✓ P0 authored system records > keeps old projects free of newly invented optional fields and byte-stable  814ms
+   ✓ P0 authored system records > omits only the redundant text-only title seed on the first load  1454ms
+   ✓ P0 authored system records > preserves authored text title graphics across repeated loads  729ms
+   ✓ P0 authored system records > preserves authored graphic title graphics across repeated loads  686ms
+   ✓ P0 authored system records > preserves authored both title graphics across repeated loads  497ms
+   ✓ P0 authored system records > rejects duplicate P0 definition ids at the wire boundary and reference lint boundary  659ms
+ ✓ test/p2SpatialEditorAuthoring.test.ts (4 tests) 7941ms
+   ✓ P2 spatial editor authoring > exposes a discoverable life tab with a product asset and honest aggregate count  1348ms
+   ✓ P2 spatial editor authoring > omits the zero badge after deletion and restores counts through undo and redo  2120ms
+   ✓ P2 spatial editor authoring > creates structured building/decor definitions and independent authored placements  1394ms
+   ✓ P2 spatial editor authoring > edits footprint, capacity, level upgrades, placement orientation, and blocks referenced type deletion  3068ms
+
+ Test Files  4 passed (4)
+      Tests  28 passed (28)
+   Start at  06:35:42
+   Duration  50.81s (transform 34.18s, setup 0ms, collect 71.54s, tests 20.60s, environment 1ms, prepare 1.83s)
+
+
+exit code: 0
