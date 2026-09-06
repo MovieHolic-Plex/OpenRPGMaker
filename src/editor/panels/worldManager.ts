@@ -90,6 +90,8 @@ export type WorldEditDraft = {
   locked: boolean;
   relations: WorldRelation[];
   isNew: boolean;
+  /** Snapshot of the document opened by this editor, not a project-wide revision. */
+  baseEntity?: string;
 };
 
 export type WorldLintSummary = {
@@ -220,6 +222,10 @@ export function saveDraft(state: WorldPanelState, _world: ProjectWorld): void {
   if (!draft) return;
   if (!draft.isNew) {
     const stored = world.entities.find((entry) => entry.id === normalizeWorldEntityId(draft.id));
+    if (!stored || (draft.baseEntity !== undefined && JSON.stringify(stored) !== draft.baseEntity)) {
+      state.editError = "이 문서가 다른 작업에서 변경되거나 삭제되었습니다. 초안을 보관한 뒤 문서를 다시 열어주세요.";
+      return;
+    }
     if (stored?.locked === true && draft.locked) {
       state.editError = "잠긴 카드는 잠금을 푼 뒤에 편집할 수 있습니다.";
       return;
@@ -326,6 +332,7 @@ export function draftFromEntity(entity: WorldEntity, relations: readonly WorldRe
     locked: entity.locked === true,
     relations: [...relations],
     isNew: false,
+    baseEntity: JSON.stringify(entity),
   };
 }
 
