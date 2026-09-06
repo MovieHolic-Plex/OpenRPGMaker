@@ -1,0 +1,15 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/dialogueImageUrls.test.ts test/dialogue.test.ts test/exportBattleAssetUrls.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-dialogue-face-url-0907
+
+ ✓ test/dialogueImageUrls.test.ts (18 tests) 96ms
+ ✓ test/exportBattleAssetUrls.test.ts (6 tests) 215ms
+ ✓ test/dialogue.test.ts (19 tests) 1315ms
+
+ Test Files  3 passed (3)
+      Tests  43 passed (43)
+   Start at  00:24:28
+   Duration  9.47s (transform 5.16s, setup 0ms, collect 15.03s, tests 1.63s, environment 571ms, prepare 279ms)
