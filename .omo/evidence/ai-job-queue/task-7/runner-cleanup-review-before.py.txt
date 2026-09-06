@@ -1,0 +1,272 @@
+"""Linux-owned Task7 process runner; command and teardown outcomes are independent."""
+import asyncio
+import ctypes
+import json
+import os
+from pathlib import Path
+import shutil
+import signal
+import socket
+import sys
+import tempfile
+import urllib.error
+import urllib.request
+import uuid
+from datetime import datetime, timezone
+
+
+def now():
+    return datetime.now(timezone.utc).isoformat()
+
+
+def save(path, value):
+    pending = path.with_suffix('.json.tmp')
+    pending.write_text(json.dumps(value, indent=2) + '\n')
+    pending.replace(path)
+
+
+def descendants():
+    parents, started = {}, {}
+    for path in Path('/proc').glob('[0-9]*/stat'):
+        try:
+            fields = path.read_text().rsplit(')', 1)[1].split()
+            pid = int(path.parent.name)
+            parents[pid], started[pid] = int(fields[1]), fields[19]
+        except FileNotFoundError:
+            continue  # Process exited during this ownership snapshot.
+    owned = {os.getpid()}
+    while True:
+        children = {pid for pid, parent in parents.items() if parent in owned}
+        if children <= owned:
+            return {pid: started[pid] for pid in sorted(owned - {os.getpid()})}
+        owned |= children
+
+
+async def signal_owned(sig, timeout, receipt):
+    # A subreaper also owns orphaned/detached grandchildren (e.g. managed Chromium).
+    # Verify start identity after opening pidfds, then signal/wait through those
+    # handles; PID reuse cannot turn a discovered child into an unrelated target.
+    loop = asyncio.get_running_loop()
+    handles = []
+    for pid, started in descendants().items():
+        try:
+            fd = os.pidfd_open(pid)
+        except ProcessLookupError:
+            continue
+        try:
+            same_process = Path(f'/proc/{pid}/stat').read_text().rsplit(')', 1)[1].split()[19] == started
+        except FileNotFoundError:
+            same_process = False
+        if not same_process:
+            os.close(fd)
+            continue
+        exited = loop.create_future()
+        def notify(future=exited):
+            if not future.done():
+                future.set_result(None)
+        loop.add_reader(fd, notify)
+        handles.append((pid, fd, exited))
+    if not handles:
+        return
+    if sig is not None:
+        receipt['escalations'].append({'signal': sig.name, 'pids': [pid for pid, _, _ in handles]})
+    try:
+        if sig is not None:
+            for _, fd, _ in handles:
+                try:
+                    signal.pidfd_send_signal(fd, sig)
+                except ProcessLookupError:
+                    continue
+        await asyncio.wait_for(asyncio.gather(*(event for _, _, event in handles)), timeout)
+    except TimeoutError:
+        receipt['cleanupErrors'].append(f'{sig.name if sig else "Natural"} owned-tree exit deadline exceeded')
+    finally:
+        for _, fd, _ in handles:
+            loop.remove_reader(fd)
+            os.close(fd)
+
+
+def port_free(port):
+    with socket.socket() as sock:
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        try:
+            sock.bind(('127.0.0.1', port))
+            return True
+        except OSError:
+            return False
+
+
+async def run(label, command):
+    evidence = Path('.omo/evidence/ai-job-queue/task-7').resolve()
+    port = int(os.environ.get('TASK7_PORT', '19841'))
+    deadline = float(os.environ.get('TASK7_SHUTDOWN_TIMEOUT', '180'))
+    escalation = float(os.environ.get('TASK7_ESCALATION_TIMEOUT', '10'))
+    run_id = str(uuid.uuid4())
+    receipt_path = evidence / f'{label}-cleanup.json'
+    fixture_path = evidence / f'{label}-{run_id}-fixture-cleanup.json'
+    temporary = tempfile.mkdtemp(prefix='task7-editor-', dir='/dev/shm')
+    receipt = dict(runId=run_id, label=label, startedAt=now(), status='running', command=command,
+                   commandExit=None, runnerError=None, serverPid=None, serverExit=None,
+                   shutdownHttp=None, graceful=False, temporary=temporary, removed=False,
+                   fixture=None, cleanupErrors=[], escalations=[], remainingPids=[], port=port, portFree=None)
+    save(receipt_path, receipt)  # Invalidate an earlier label's success BEFORE starting anything.
+    env = dict(os.environ, TMPDIR='/dev/shm', DEV_SERVER_PORT=str(port), E2E_RETRIES='0',
+               TASK7_RUN_ID=run_id, TASK7_TEMPORARY=temporary, TASK7_CLEANUP_PATH=str(fixture_path))
+    server = workload = reader = server_exit = None
+    ready = asyncio.get_running_loop().create_future()
+    loop = asyncio.get_running_loop()
+    interrupted = loop.create_future()
+    for sig in (signal.SIGINT, signal.SIGTERM):
+        loop.add_signal_handler(sig, lambda s=sig: interrupted.done() or interrupted.set_result(s.name))
+
+    def reap_adopted():
+        managed = {child.pid for child in (server, workload) if child is not None}
+        for pid in descendants():
+            if pid not in managed:
+                try:
+                    os.waitpid(pid, os.WNOHANG)
+                except ChildProcessError:
+                    continue  # Still owned by its living parent, not yet adopted.
+
+    async def guarded(task, timeout):
+        done, _ = await asyncio.wait([task, interrupted], timeout=timeout, return_when=asyncio.FIRST_COMPLETED)
+        if interrupted in done:
+            raise RuntimeError(f'Runner interrupted: {interrupted.result()}')
+        if task not in done:
+            raise TimeoutError(f'Process stage deadline exceeded ({timeout}s)')
+        return task.result()
+
+    try:
+        # Fail closed if the requested port belongs to someone else; never send it shutdown.
+        if not port_free(port):
+            raise RuntimeError(f'Port {port} is not free; no existing listener was touched')
+        with (evidence / f'{label}-server.log').open('w') as log:
+            server = await asyncio.create_subprocess_exec('node', str(evidence / 'editor-fixture-server.mjs'),
+                stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT, env=env, start_new_session=True)
+            receipt['serverPid'] = server.pid
+            save(receipt_path, receipt)
+            async def drain():
+                async for line in server.stdout:
+                    text = line.decode(errors='replace')
+                    log.write(text)
+                    log.flush()
+                    if text.strip() == 'TASK7_EDITOR_READY' and not ready.done():
+                        ready.set_result(True)
+                if not ready.done():
+                    ready.set_result(False)
+            reader = asyncio.create_task(drain())
+            server_exit = asyncio.create_task(server.wait())
+            try:
+                if not await guarded(ready, float(os.environ.get('TASK7_READY_TIMEOUT', '60'))):
+                    raise RuntimeError('Fixture exited before readiness')
+                with (evidence / f'{label}.log').open('w') as output:
+                    workload = await asyncio.create_subprocess_exec(*command, stdout=output,
+                        stderr=asyncio.subprocess.STDOUT, env=env, start_new_session=True)
+                    command_exit = asyncio.create_task(workload.wait())
+                    receipt['commandExit'] = await guarded(command_exit, float(os.environ.get('TASK7_COMMAND_TIMEOUT', '2000')))
+                print('COMMAND', command, 'EXIT', receipt['commandExit'], flush=True)
+            finally:
+                if ready.done() and not ready.cancelled() and ready.result() is True and server.returncode is None:
+                    def shutdown():
+                        request = urllib.request.Request(f'http://127.0.0.1:{port}/__task7/shutdown', data=b'{}', headers={'Content-Type': 'application/json'})
+                        try:
+                            with urllib.request.urlopen(request, timeout=min(30, deadline)) as response:
+                                return response.status
+                        except urllib.error.HTTPError as error:
+                            error.close()
+                            return error.code
+                    try:
+                        receipt['shutdownHttp'] = await asyncio.to_thread(shutdown)
+                        print('SHUTDOWN', receipt['shutdownHttp'], flush=True)
+                        if receipt['shutdownHttp'] != 200:
+                            raise RuntimeError(f"Shutdown HTTP {receipt['shutdownHttp']}")
+                        await asyncio.wait_for(asyncio.shield(server_exit), deadline)
+                    except Exception as error:
+                        receipt['cleanupErrors'].append(f'Graceful shutdown failed: {type(error).__name__}: {error}')
+                elif server.returncode is not None:
+                    receipt['cleanupErrors'].append('Fixture exited before owned HTTP shutdown')
+                # A normal parent exit can briefly leave adopted workers finishing naturally.
+                # Subscribe to their actual exits; do not mistake zombies for leaked workers.
+                if server.returncode is not None:
+                    await signal_owned(None, escalation, receipt)
+                reap_adopted()
+                # Cleanup remains inside the log lifetime, including failure/escalation output.
+                if descendants():
+                    if not receipt['cleanupErrors']:
+                        receipt['cleanupErrors'].append('Owned processes remained after graceful shutdown')
+                    await signal_owned(signal.SIGTERM, escalation, receipt)
+                    # Reap asyncio-managed direct children before adopted grandchildren.
+                    if server.returncode is not None:
+                        await server_exit
+                    if workload and workload.returncode is not None:
+                        await workload.wait()
+                    reap_adopted()
+                    if descendants():
+                        await signal_owned(signal.SIGKILL, escalation, receipt)
+                if server.returncode is not None:
+                    await server_exit
+                if workload and workload.returncode is not None:
+                    await workload.wait()
+                await asyncio.wait_for(asyncio.shield(reader), escalation)
+    except Exception as error:
+        receipt['runnerError'] = f'{type(error).__name__}: {error}'
+    finally:
+        reap_adopted()
+        # Also cover launch/log/reader failures outside the normal close path.
+        if descendants():
+            receipt['cleanupErrors'].append('Emergency owned-tree cleanup after runner failure')
+            await signal_owned(signal.SIGKILL, escalation, receipt)
+            for child in (server, workload):
+                if child is not None:
+                    try:
+                        await asyncio.wait_for(child.wait(), escalation)
+                    except TimeoutError:
+                        receipt['cleanupErrors'].append(f'Owned process {child.pid} did not finish')
+            reap_adopted()
+        receipt['remainingPids'] = list(descendants())
+        receipt['serverExit'] = server.returncode if server else None
+        if workload is not None:
+            receipt['commandExit'] = workload.returncode
+        try:
+            fixture = json.loads(fixture_path.read_text())
+            if fixture.get('runId') != run_id or fixture.get('temporary') != temporary:
+                raise ValueError('Fixture receipt identity mismatch')
+            receipt['fixture'] = fixture
+            if not (fixture.get('serviceClosed') and fixture.get('serverClosed') and fixture.get('removed')
+                    and fixture.get('activeBrowsers') == 0 and not fixture.get('cleanupErrors')):
+                receipt['cleanupErrors'].append('Fixture cleanup was incomplete; see fixture receipt')
+        except (OSError, ValueError) as error:
+            receipt['cleanupErrors'].append(f'Fresh fixture receipt unavailable: {error}')
+        try:
+            if receipt['remainingPids']:
+                raise RuntimeError('Owned processes remain; retaining their temporary directory')
+            if Path(temporary).exists():
+                shutil.rmtree(temporary)
+            receipt['removed'] = not Path(temporary).exists()
+        except Exception as error:
+            receipt['cleanupErrors'].append(f'Temporary cleanup failed: {error}')
+        receipt['portFree'] = port_free(port)
+        if not receipt['portFree']:
+            receipt['cleanupErrors'].append('Port is occupied after cleanup; listener was not killed by port')
+        receipt['graceful'] = receipt['shutdownHttp'] == 200 and receipt['serverExit'] == 0 and not receipt['cleanupErrors']
+        receipt['status'] = 'complete'
+        receipt['finishedAt'] = now()
+        receipt['exitCode'] = (receipt['commandExit'] or 0) if receipt['graceful'] and not receipt['runnerError'] else (receipt['commandExit'] or 1)
+        if receipt['exitCode'] < 0:
+            receipt['exitCode'] = 128 - receipt['exitCode']
+        save(receipt_path, receipt)
+        print('CLEANUP', json.dumps(receipt), flush=True)
+        for sig in (signal.SIGINT, signal.SIGTERM):
+            loop.remove_signal_handler(sig)
+    return receipt['exitCode']
+
+
+if __name__ == '__main__':
+    label, *command = sys.argv[1:]
+    if not command or Path(label).name != label:
+        raise SystemExit('usage: run-owned.py LABEL COMMAND [ARG ...]')
+    # Linux PR_SET_CHILD_SUBREAPER: orphaned owned workers cannot escape receipt/reaping.
+    libc = ctypes.CDLL(None, use_errno=True)
+    if libc.prctl(36, 1, 0, 0, 0) != 0:
+        raise OSError(ctypes.get_errno(), 'Cannot register owned child cleanup')
+    sys.exit(asyncio.run(run(label, command)))

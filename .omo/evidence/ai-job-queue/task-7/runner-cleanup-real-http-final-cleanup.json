@@ -1,0 +1,39 @@
+{
+  "runId": "9bee6fe5-d75b-41db-9996-2c5baadf31be",
+  "label": "runner-cleanup-real-http-final",
+  "startedAt": "2026-09-06T23:01:21.898155+00:00",
+  "status": "complete",
+  "command": [
+    "node",
+    ".omo/evidence/ai-job-queue/task-7/runner-http-workload.mjs"
+  ],
+  "commandExit": 0,
+  "runnerError": null,
+  "serverPid": 860963,
+  "serverExit": 0,
+  "shutdownHttp": 200,
+  "graceful": true,
+  "temporary": "/dev/shm/task7-editor-x6b4ybjn",
+  "removed": true,
+  "fixture": {
+    "runId": "9bee6fe5-d75b-41db-9996-2c5baadf31be",
+    "temporary": "/dev/shm/task7-editor-x6b4ybjn",
+    "removed": true,
+    "serviceClosed": true,
+    "serverClosed": true,
+    "cleanupErrors": [],
+    "stage": "complete",
+    "providerCalls": 0,
+    "externalPaidCalls": 0,
+    "errors": [],
+    "activeBrowsers": 0,
+    "browserEvents": []
+  },
+  "cleanupErrors": [],
+  "escalations": [],
+  "remainingPids": [],
+  "port": 19841,
+  "portFree": true,
+  "finishedAt": "2026-09-06T23:01:26.836138+00:00",
+  "exitCode": 0
+}

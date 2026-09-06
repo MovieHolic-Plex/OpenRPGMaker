@@ -1,0 +1,56 @@
+{
+  "case": "mixed-exit",
+  "commandExit": 0,
+  "wrapperExit": 1,
+  "outerDeadline": false,
+  "parentExitObserved": true,
+  "testPort": 32955,
+  "remainingBeforeTestCleanup": [],
+  "tempBeforeTestCleanup": false,
+  "receipt": {
+    "runId": "e70935dd-e0a0-4a9f-8e84-ff799a7013f5",
+    "label": "probe",
+    "startedAt": "2026-09-06T23:27:51.415210+00:00",
+    "status": "complete",
+    "command": [
+      "python3",
+      "-c",
+      "import os,socket; from pathlib import Path; s=socket.socket(socket.AF_UNIX); s.settimeout(5); s.connect(os.environ['PROBE_CONTROL']); s.sendall(Path('probe-owned.json').read_bytes()+b'\\n'); response=s.makefile('rb'); assert response.readline()==b'ARMED\\n'; response.close(); s.close()"
+    ],
+    "commandExit": 0,
+    "runnerError": null,
+    "serverPid": 1138032,
+    "serverExit": 0,
+    "shutdownHttp": 200,
+    "graceful": false,
+    "temporary": "/dev/shm/task7-editor-q1_o0lve",
+    "removed": true,
+    "fixture": null,
+    "cleanupErrors": [
+      "Graceful shutdown failed: TimeoutError: ",
+      "SIGTERM owned-tree exit deadline exceeded",
+      "Fresh fixture receipt unavailable: [Errno 2] No such file or directory: '/dev/shm/task7-runner-test-hzsjhaxw/.omo/evidence/ai-job-queue/task-7/probe-e70935dd-e0a0-4a9f-8e84-ff799a7013f5-fixture-cleanup.json'"
+    ],
+    "escalations": [
+      {
+        "signal": "SIGTERM",
+        "pids": [
+          1138032,
+          1138057
+        ]
+      },
+      {
+        "signal": "SIGKILL",
+        "pids": [
+          1138057
+        ]
+      }
+    ],
+    "remainingPids": [],
+    "port": 32955,
+    "portFree": true,
+    "finishedAt": "2026-09-06T23:27:54.036087+00:00",
+    "exitCode": 1
+  },
+  "output": "COMMAND ['python3', '-c', \"import os,socket; from pathlib import Path; s=socket.socket(socket.AF_UNIX); s.settimeout(5); s.connect(os.environ['PROBE_CONTROL']); s.sendall(Path('probe-owned.json').read_bytes()+b'\\\\n'); response=s.makefile('rb'); assert response.readline()==b'ARMED\\\\n'; response.close(); s.close()\"] EXIT 0\nSHUTDOWN 200\nCLEANUP {\"runId\": \"e70935dd-e0a0-4a9f-8e84-ff799a7013f5\", \"label\": \"probe\", \"startedAt\": \"2026-09-06T23:27:51.415210+00:00\", \"status\": \"complete\", \"command\": [\"python3\", \"-c\", \"import os,socket; from pathlib import Path; s=socket.socket(socket.AF_UNIX); s.settimeout(5); s.connect(os.environ['PROBE_CONTROL']); s.sendall(Path('probe-owned.json').read_bytes()+b'\\\\n'); response=s.makefile('rb'); assert response.readline()==b'ARMED\\\\n'; response.close(); s.close()\"], \"commandExit\": 0, \"runnerError\": null, \"serverPid\": 1138032, \"serverExit\": 0, \"shutdownHttp\": 200, \"graceful\": false, \"temporary\": \"/dev/shm/task7-editor-q1_o0lve\", \"removed\": true, \"fixture\": null, \"cleanupErrors\": [\"Graceful shutdown failed: TimeoutError: \", \"SIGTERM owned-tree exit deadline exceeded\", \"Fresh fixture receipt unavailable: [Errno 2] No such file or directory: '/dev/shm/task7-runner-test-hzsjhaxw/.omo/evidence/ai-job-queue/task-7/probe-e70935dd-e0a0-4a9f-8e84-ff799a7013f5-fixture-cleanup.json'\"], \"escalations\": [{\"signal\": \"SIGTERM\", \"pids\": [1138032, 1138057]}, {\"signal\": \"SIGKILL\", \"pids\": [1138057]}], \"remainingPids\": [], \"port\": 32955, \"portFree\": true, \"finishedAt\": \"2026-09-06T23:27:54.036087+00:00\", \"exitCode\": 1}\n"
+}

@@ -1,0 +1,14 @@
+{
+  "runId": "9bee6fe5-d75b-41db-9996-2c5baadf31be",
+  "temporary": "/dev/shm/task7-editor-x6b4ybjn",
+  "removed": true,
+  "serviceClosed": true,
+  "serverClosed": true,
+  "cleanupErrors": [],
+  "stage": "complete",
+  "providerCalls": 0,
+  "externalPaidCalls": 0,
+  "errors": [],
+  "activeBrowsers": 0,
+  "browserEvents": []
+}

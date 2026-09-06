@@ -1,0 +1,34 @@
+import subprocess, os, urllib.request, threading, sys
+from pathlib import Path
+p = Path('.omo/evidence/ai-job-queue/task-7')
+label, *command = sys.argv[1:]
+env = dict(os.environ, TMPDIR='/dev/shm', DEV_SERVER_PORT='19841', E2E_RETRIES='0')
+with (p/'editor-server.log').open('w') as log:
+    server = subprocess.Popen(['node',str(p/'editor-fixture-server.mjs')], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, env=env)
+    thread = None
+    try:
+        for line in server.stdout:
+            log.write(line); log.flush()
+            if 'TASK7_EDITOR_READY' in line: break
+        else: raise RuntimeError('server exited before ready')
+        def drain():
+            for line in server.stdout: log.write(line); log.flush()
+        thread = threading.Thread(target=drain); thread.start()
+        with (p/(label+'.log')).open('w') as output:
+            result = subprocess.run(command, stdout=output, stderr=subprocess.STDOUT, env=env, timeout=2000)
+        print('COMMAND', command, 'EXIT', result.returncode)
+    finally:
+        if server.poll() is None:
+            try:
+                req = urllib.request.Request('http://127.0.0.1:19841/__task7/shutdown',data=b'{}',headers={'Content-Type':'application/json'})
+                print('SHUTDOWN', urllib.request.urlopen(req,timeout=30).status)
+                server.wait(timeout=180)
+            finally:
+                if server.poll() is None: server.terminate(); server.wait(timeout=180)
+        if thread: thread.join()
+        print('SERVER_EXIT', server.returncode)
+print((p/(label+'.log')).read_text())
+print((p/'editor-server.log').read_text()[-20000:])
+(p/(label+'-server.log')).write_text((p/'editor-server.log').read_text())
+(p/(label+'-cleanup.json')).write_text((p/'browser-cleanup.json').read_text())
+sys.exit(result.returncode)

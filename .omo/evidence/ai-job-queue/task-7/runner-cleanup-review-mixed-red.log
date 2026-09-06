@@ -1,0 +1,32 @@
+test_exited_parent_with_term_resistant_descendant_holding_output (__main__.RunnerCleanup.test_exited_parent_with_term_resistant_descendant_holding_output) ... {"case": "mixed-exit", "commandExit": 0, "wrapperExit": -9, "outerDeadline": true, "parentExitObserved": true, "testPort": 32781, "remainingBeforeTestCleanup": [1083045], "tempBeforeTestCleanup": true, "receipt": {"runId": "b34bb120-28f5-4eaf-a702-fefef2aeba2a", "label": "probe", "startedAt": "2026-09-06T23:22:59.024223+00:00", "status": "running", "command": ["python3", "-c", "import os,socket; from pathlib import Path; s=socket.socket(socket.AF_UNIX); s.settimeout(5); s.connect(os.environ['PROBE_CONTROL']); s.sendall(Path('probe-owned.json').read_bytes()+b'\\n'); assert s.recv(1024)==b'ARMED\\n'; s.close()"], "commandExit": null, "runnerError": null, "serverPid": 1083037, "serverExit": null, "shutdownHttp": null, "graceful": false, "temporary": "/dev/shm/task7-editor-7ra6i7s6", "removed": false, "fixture": null, "cleanupErrors": [], "escalations": [], "remainingPids": [], "port": 32781, "portFree": null}, "output": "COMMAND ['python3', '-c', \"import os,socket; from pathlib import Path; s=socket.socket(socket.AF_UNIX); s.settimeout(5); s.connect(os.environ['PROBE_CONTROL']); s.sendall(Path('probe-owned.json').read_bytes()+b'\\\\n'); assert s.recv(1024)==b'ARMED\\\\n'; s.close()\"] EXIT 0\nSHUTDOWN 200\n"}
+FAIL
+
+======================================================================
+FAIL: test_exited_parent_with_term_resistant_descendant_holding_output (__main__.RunnerCleanup.test_exited_parent_with_term_resistant_descendant_holding_output)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/unittest/async_case.py", line 90, in _callTestMethod
+    if self._callMaybeAsync(method) is not None:
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/unittest/async_case.py", line 112, in _callMaybeAsync
+    return self._asyncioRunner.run(
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 687, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/home/main/.herdr/worktrees/rpg-zzu/worktree-silver-harbor-d2a7/.omo/evidence/ai-job-queue/task-7/test_runner_cleanup.py", line 207, in test_exited_parent_with_term_resistant_descendant_holding_output
+    code, receipt = await self.run_case('mixed-exit')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/main/.herdr/worktrees/rpg-zzu/worktree-silver-harbor-d2a7/.omo/evidence/ai-job-queue/task-7/test_runner_cleanup.py", line 161, in run_case
+    self.assertFalse(timed_out, output.decode())
+AssertionError: True is not false : COMMAND ['python3', '-c', "import os,socket; from pathlib import Path; s=socket.socket(socket.AF_UNIX); s.settimeout(5); s.connect(os.environ['PROBE_CONTROL']); s.sendall(Path('probe-owned.json').read_bytes()+b'\\n'); assert s.recv(1024)==b'ARMED\\n'; s.close()"] EXIT 0
+SHUTDOWN 200
+
+
+----------------------------------------------------------------------
+Ran 1 test in 9.249s
+
+FAILED (failures=1)
