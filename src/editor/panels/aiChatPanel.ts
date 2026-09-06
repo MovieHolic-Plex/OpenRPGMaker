@@ -93,7 +93,7 @@ import { toolIconKey } from "./aiToolLabels";
 import { renderPreferenceMemorySettings } from "./aiPreferenceMemorySettings";
 import { createCollapsedUndoButton, createDirectorRestoreButton, setRestoreButtonState } from "./aiDirectorChrome";
 import { getEditorUiMode } from "@/editor/editorUiMode";
-import { openAiSettingsModal, type AiSettingsExtraSection } from "./aiSettingsModal";
+import { openAiSettingsModal, registerAiSettingsPanel, type AiSettingsExtraSection } from "./aiSettingsModal";
 import { getTool } from "@/editor/tools/toolRegistry";
 import {
   formatComposerPlaceholder,
@@ -470,21 +470,22 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 저장 시 진행 중 세션 config도 즉시 갱신한다.
   // 설정 모달에 실리는 패널 소유 절(대기 화면 3분기 — 제안서 D6). 데크 조립 뒤 채운다.
   let settingsExtraSections: readonly AiSettingsExtraSection[] = [];
+  const unregisterSettingsPanel = registerAiSettingsPanel(() => ({
+    fontRoot: panel,
+    onSaved: (config) => {
+      controller.session?.updateConfig(config);
+      composerShell.setModelLabel(modelChipLabel());
+      composerShell.syncEffort(
+        isAutonomyLevel(config.autonomyLevel) ? config.autonomyLevel : "balanced",
+        config.reasoningEffort ?? "low",
+      );
+    },
+    extraSections: settingsExtraSections,
+  }));
   const openAiSettings = (focusTarget: "first" | "apiKey" = "first"): void => {
-    openAiSettingsModal({
-      focusTarget,
-      fontRoot: panel,
-      onSaved: (config) => {
-        controller.session?.updateConfig(config);
-        composerShell.setModelLabel(modelChipLabel());
-        composerShell.syncEffort(
-          isAutonomyLevel(config.autonomyLevel) ? config.autonomyLevel : "balanced",
-          config.reasoningEffort ?? "low",
-        );
-      },
-      onFontSizeChange: (size) => applyPanelFontSize(size),
-      extraSections: settingsExtraSections,
-    });
+    // The menu item is hidden before its action runs; restore to its visible opener instead.
+    if (commandMenu.contains(document.activeElement)) composerShell.menuToggle.focus();
+    openAiSettingsModal({ focusTarget });
   };
 
   // 시작 화면(빈 대화) — 첫 콘텐츠가 붙는 순간 제거된다.
@@ -2971,6 +2972,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   activeAiChatPanelCleanup = () => {
     if (disposed) return;
     disposed = true;
+    unregisterSettingsPanel();
     persistConversation();
 
     const turnController = activeAbortController;
