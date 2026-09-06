@@ -1,0 +1,22 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-field-verify",
+  "headBefore": "bbaf9464cad3768da057ef9909338b5cfb25aa8c",
+  "headAfter": "bbaf9464cad3768da057ef9909338b5cfb25aa8c",
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "300s",
+    "npm",
+    "run",
+    "typecheck:app"
+  ],
+  "start": "2026-09-06T15:22:25.388Z",
+  "end": "2026-09-06T15:23:06.179Z",
+  "exit": 0,
+  "signal": null
+}

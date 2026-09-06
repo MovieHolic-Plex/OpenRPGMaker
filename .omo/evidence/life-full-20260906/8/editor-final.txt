@@ -1,0 +1,22 @@
+[rpg-zzu] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] QWENCLOUD_API_KEY 가 없어 /api/qwen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] CPENROUTER_API_KEY 가 없어 /api/cpen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+page.evaluate: DOM signal timeout: [data-testid="database-modal"]
+window.task8Dom/</timer<@debugger eval code:11:70
+setTimeout handler*window.task8Dom/<@debugger eval code:11:31
+window.task8Dom@debugger eval code:4:37
+@debugger eval code line 303 > eval:1:38
+evaluate@debugger eval code:305:16
+@debugger eval code:1:44
+@debugger eval code:1:62
+
+    at /home/main/z-project/rpg-zzu-life-full-tools/.omo/evidence/life-full-20260906/8/editor.mjs:56:14 {
+  log: [],
+  name: 'Error'
+}
+
+Node.js v24.11.1

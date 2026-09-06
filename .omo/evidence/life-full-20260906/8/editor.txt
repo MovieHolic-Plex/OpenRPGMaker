@@ -1,0 +1,18 @@
+[rpg-zzu] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] QWENCLOUD_API_KEY 가 없어 /api/qwen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] CPENROUTER_API_KEY 가 없어 /api/cpen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+locator.focus: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for getByTestId('db-tab-life-crafting')[22m
+
+    at keyClick (/home/main/z-project/rpg-zzu-life-full-tools/.omo/evidence/life-full-20260906/8/editor.mjs:51:63)
+    at /home/main/z-project/rpg-zzu-life-full-tools/.omo/evidence/life-full-20260906/8/editor.mjs:56:9 {
+  log: [ "  - waiting for getByTestId('db-tab-life-crafting')" ],
+  name: 'TimeoutError'
+}
+
+Node.js v24.11.1

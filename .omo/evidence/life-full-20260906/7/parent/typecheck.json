@@ -1,0 +1,23 @@
+{
+  "head": "9cb85be84746d84789497a1d4297d0c8416d86c8",
+  "tree": "08a922637d08260640b58bdaafca46eb90a5652d",
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "300s",
+    "npm",
+    "run",
+    "typecheck:app"
+  ],
+  "started": "2026-09-06T12:36:41.298Z",
+  "finished": "2026-09-06T12:38:05.394Z",
+  "exit": 0,
+  "signal": null,
+  "stdout": "\n> rpg-zzu@0.1.0 typecheck:app\n> tsc --noEmit -p tsconfig.app.json\n\n",
+  "stderr": ""
+}

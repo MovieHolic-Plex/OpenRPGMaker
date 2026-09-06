@@ -1,0 +1,25 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/toolActionAuthoringParity.test.ts test/databaseLifeCraftingView.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-tools
+
+ ✓ test/databaseLifeCraftingView.test.ts (12 tests) 23502ms
+   ✓ database life skill and crafting view > authors a life skill and level reward, then undo restores the prior record  4529ms
+   ✓ database life skill and crafting view > authors a recipe with ingredient and output item references  2475ms
+   ✓ database life skill and crafting view > authors upgrade, sell-price, and tool-action records through their detail forms  1859ms
+   ✓ database life skill and crafting view > rejects duplicate record ids and chooses an unused sell-price item  3522ms
+   ✓ database life skill and crafting view > blocks deletion while event commands reference the selected life records  318ms
+   ✓ database life skill and crafting view > authors recipe unlock requirements and tool capability fields  1313ms
+   ✓ database life skill and crafting view > clamps authored tool capability axes to the runtime-safe 9x9 limit  988ms
+   ✓ database life skill and crafting view > creates energy and shipping settings and preserves disabled shipping values  1851ms
+   ✓ database life skill and crafting view > authors world unlock, bundle rewards, and maker processing without raw JSON  3387ms
+   ✓ database life skill and crafting view > rejects duplicate package ids, guards reward targets, and records undo  2129ms
+   ✓ database life skill and crafting view > blocks renaming referenced skill, recipe, upgrade, and world-unlock ids  906ms
+
+ Test Files  1 passed (1)
+      Tests  12 passed (12)
+   Start at  21:55:57
+   Duration  50.87s (transform 16.95s, setup 0ms, collect 23.59s, tests 23.50s, environment 0ms, prepare 1.50s)
+

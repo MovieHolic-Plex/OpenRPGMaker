@@ -57,14 +57,23 @@ describe("sidebar brush and source gestures", () => {
   });
   it.each(["beginner", "standard", "expert"] as const)("F4 exposes unique live brush controls in %s without More", mode => {
     resetEditorUiModeForTests(mode);
-    editorState.set({ brushSize: 4, paintShape: "rect", layer: "upper" });
-    for (const size of [1, 2, 3, 4]) expect(host.querySelectorAll(`[data-testid="brush-size-${size}"]`)).toHaveLength(1);
-    expect(node("brush-size-4").getAttribute("aria-pressed")).toBe("true");
-    expect(node("tile-brush-state").dataset).toMatchObject({ shape: "rect", layer: "upper" });
-    node("brush-size-2").click();
+    editorState.set({ brushSize: 4, paintShape: "pen", layer: "upper" });
+    if (mode === "beginner") {
+      for (const size of [1, 2, 3, 4]) expect(host.querySelectorAll(`[data-testid="brush-size-${size}"]`)).toHaveLength(1);
+      expect(node("brush-size-4").getAttribute("aria-pressed")).toBe("true");
+      node("brush-size-2").click();
+    } else {
+      const select = node("brush-size-select");
+      if (!(select instanceof HTMLSelectElement)) throw new Error("Missing brush selector");
+      expect(select.value).toBe("4");
+      expect(Array.from(select.options, option => option.value)).toEqual(["1", "2", "3", "4"]);
+      select.value = "2";
+      select.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+    expect(node("tile-brush-state").dataset).toMatchObject({ shape: "pen", layer: "upper" });
     expect(editorState.get().brushSize).toBe(2);
     get("oprn-tool-overflow")?.click();
-    expect(host.querySelectorAll('[data-testid="brush-size-2"]')).toHaveLength(1);
+    expect(host.querySelectorAll(`[data-testid="${mode === 'beginner' ? 'brush-size-2' : 'brush-size-select'}"]`)).toHaveLength(1);
   });
   it("beginner Paint clears a previous stamp and shape through the tool reset", () => {
     editorState.set({ paintShape: "round", activePaletteStamp: { width: 2, height: 1, source: { startTile: 0, endTile: 1 }, cells: [] } });

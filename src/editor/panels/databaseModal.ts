@@ -84,6 +84,7 @@ function writeCrumb(crumb: HTMLElement, tab: DatabaseTab): void {
 
 type ActiveDatabaseModalHandle = {
   readonly navigate: (tab: DatabaseTab) => void;
+  readonly onClose: Set<() => void>;
   readonly close: () => void;
   readonly requestClose: (attempt: EditorModalCloseAttempt) => void;
 };
@@ -106,13 +107,14 @@ export function requestDatabaseModalClose(reason: EditorModalCloseAttempt | "bat
   activeModal.requestClose(reason);
 }
 
-export function openDatabaseModal(initialTab?: DatabaseTab): void {
+export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly onClose: () => void }): void {
   // 맵 도구 레일을 가리키는 온보드 코치마크가 body 최상위에 매달려 모달 위를 덮어
   // 목록 제목과 탭 검색을 가리는 사고가 있었다 — 모달이 열리면 화면을 모달에게 넘긴다.
   // 본 것으로 기록하지는 않는다(welcome intent 와 같은 정책).
   dismissCoachMarks();
   // Reuse the open session for cross-tab links; rebuilding it would discard staged cards.
   if (activeModal && document.querySelector("[data-testid='database-modal']")) {
+    if (options) activeModal.onClose.add(options.onClose);
     if (initialTab) activeModal.navigate(initialTab);
     return;
   }
@@ -303,7 +305,9 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
     }
     scheduleModalRefresh();
   });
+  const onClose = new Set(options ? [options.onClose] : []);
   const close = (): void => {
+    if (modalClosed) return;
     modalClosed = true;
     if (graceFlushTimer !== null) clearTimeout(graceFlushTimer);
     unsubscribeCodex();
@@ -321,6 +325,8 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
       ? Array.from(document.querySelectorAll<HTMLElement>("[data-testid]")).find(node => node.dataset.testid === openerTestId)
       : undefined;
     if (returnTarget?.isConnected) returnTarget.focus();
+    for (const callback of onClose) callback();
+    onClose.clear();
   };
   const hideDirtyPrompt = (): void => dirtyPrompt.replaceChildren();
   const saveAndMarkClean = async (): Promise<boolean> => {
@@ -368,7 +374,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
     close,
   });
 
-  activeModal = { close, requestClose: controller.requestClose, navigate: (tab) => switchDatabaseActiveTab(tab, body) };
+  activeModal = { close, onClose, requestClose: controller.requestClose, navigate: (tab) => switchDatabaseActiveTab(tab, body) };
   controller.bindCloseButton(closeButton);
   // 도크 모드에서는 최대화·드래그를 비활성, 바깥 클릭 닫기도 끈다(맵 조작이 곧 바깥 클릭).
   maximizeButton.addEventListener("click", () => {

@@ -1,0 +1,25 @@
+{
+  "task": 10,
+  "status": "confirmed",
+  "worktree": "/home/main/z-project/rpg-zzu-life-full-field-input",
+  "branch": "agent/life-full-field-input",
+  "baseHead": "fb0588d9383f2b3c85a421bfe706a56e8c40742b",
+  "port": 35433,
+  "required": [
+    {
+      "task": 8,
+      "commit": "98b099f8d73a3d36be96fef17746f48fe5f027fe",
+      "verify": ".omo/evidence/life-full-20260906/8/VERIFY.md"
+    },
+    {
+      "task": 9,
+      "commit": "27db0af0021fb49414723b64141a0e1c568b8069",
+      "verify": ".omo/evidence/life-full-20260906/9/VERIFY.md"
+    }
+  ],
+  "alsoVerified": [
+    6,
+    7
+  ],
+  "note": "Prepared before dispatch. Do not wait or create a watcher; implement the real input/catch/forage work. Earlier waiting node did no implementation."
+}

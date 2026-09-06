@@ -13,6 +13,8 @@ import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { TILE_SIZE } from "@/assets/bundled";
 import { characterDepth, characterSpriteX, characterSpriteY } from "@/player/characterDepth";
 import { resolveEventSpriteTexture } from "@/player/eventSpriteResources";
+import { resolveForageAt } from "@/project/seasonalForage";
+import type { GameTime } from "@/project/gameTime";
 import type { PlaceableObjectState } from "@/project/placeables";
 import { isSpatialFootprint, orientedFootprint } from "@/project/spatialPlacements";
 import { store } from "@/project/store";
@@ -28,10 +30,12 @@ type OverlayGameObject = {
 type PlaceableOverlayScene = {
   readonly map: { readonly id: string; readonly width?: number; readonly height?: number };
   readonly session: {
+    readonly gameTime?: GameTime;
     readonly placeables?: Record<string, PlaceableObjectState>;
     readonly farmBuildingPlacements?: Record<string, FarmBuildingPlacement>;
     readonly homeDecorationPlacements?: Record<string, HomeDecorationPlacement>;
   };
+  readonly missingResources?: Set<string>;
   readonly tileLayer: { add(object: unknown): unknown };
   readonly add: {
     sprite?: (x: number, y: number, texture: string, frame?: string | number) => OverlayGameObject;
@@ -48,10 +52,17 @@ export function renderPlaceableOverlays(scene: PlaceableOverlayScene): void {
   if (typeof scene.add.sprite !== "function") return;
   const project = store.getCurrent();
   renderSpatialPlacements(scene, project);
+  syncForageWarnings(scene);
   for (const placeable of Object.values(scene.session.placeables ?? {})) {
     if (placeable.mapId !== scene.map.id) continue;
     if (isOutsideMap(scene.map, placeable.x, placeable.y)) continue;
-    const charset = PLACEABLE_CHARSET[placeable.kind];
+    const generated = Boolean(placeable.forageSpawn);
+    if (generated) {
+      const target = resolveForageAt(project, scene.session, placeable.mapId, placeable.x, placeable.y);
+      if (!target.ok && (target.reason === "expired" || target.reason === "disabled")) continue;
+    }
+    // Forage entries have no authored graphic field: use a bundled pickup marker.
+    const charset = PLACEABLE_CHARSET[generated ? "gem" : placeable.kind];
     if (!charset) continue;
     const frame = charsetFrameIndex({ characterIndex: charset.characterIndex, direction: "down", pattern: 1 });
     const resolved = resolveEventSpriteTexture(project, charset.texture, frame);
@@ -66,6 +77,18 @@ export function renderPlaceableOverlays(scene: PlaceableOverlayScene): void {
     sprite.setOrigin?.(0.5, 1);
     sprite.setDepth?.(characterDepth("same", worldY));
     scene.tileLayer.add(sprite);
+  }
+}
+
+/** Event-only rebuilds clear the shared warning set, but keep the tile overlays. */
+export function syncForageWarnings(scene: Pick<PlaceableOverlayScene, "map" | "session" | "missingResources">): void {
+  const project = store.getCurrent();
+  for (const object of Object.values(scene.session.placeables ?? {})) {
+    if (!object.forageSpawn || object.mapId !== scene.map.id || isOutsideMap(scene.map, object.x, object.y)) continue;
+    const target = resolveForageAt(project, scene.session, object.mapId, object.x, object.y);
+    if (!target.ok && (target.reason === "stale" || target.reason === "missing")) {
+      scene.missingResources?.add(`forage:${object.forageSpawn.areaId}/${object.forageSpawn.entryId}`);
+    }
   }
 }
 

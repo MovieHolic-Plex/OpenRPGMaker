@@ -1,0 +1,34 @@
+[
+  {
+    "outsidePointerToolAndLayer": true
+  },
+  {
+    "mapSearchSwitchEscape": true,
+    "mapId": "map_house_interior_30_map_village_30_100x100_1"
+  },
+  {
+    "brushSize": 4,
+    "shape": "round",
+    "eventContext": true
+  },
+  {
+    "categoryFilters": true,
+    "searchClearFocus": true,
+    "connectionState": true
+  },
+  {
+    "assistPreservesSheet": 544,
+    "kitPreservesSheet": 544,
+    "stampCells": 2
+  },
+  {
+    "inspectionPinsAcrossModesAndReload": true,
+    "expertTreeCollapseResize": true
+  },
+  {
+    "actualCanvasPaintUndo": true
+  },
+  {
+    "beginnerSelectionAndLayers": true
+  }
+]

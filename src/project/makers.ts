@@ -131,6 +131,20 @@ export function advanceMakers(project: Project, session: PlaySession, absoluteMi
   return { ok: true, readyInstanceIds };
 }
 
+/** Synchronize a reconciled draft; callers commit the clock and makers together. */
+export function syncMakersToGameTime(project: Project, session: PlaySession): MakerAdvanceResult {
+  if (!project.system.makers?.length) return { ok: false, reason: "disabled" };
+  if (!session.gameTime) return { ok: false, reason: "invalid-time" };
+  let absoluteMinute: number;
+  try {
+    absoluteMinute = absoluteGameMinutes(session.gameTime, project.system.timeSystem);
+  } catch (error) {
+    if (!(error instanceof RangeError)) throw error;
+    return { ok: false, reason: "invalid-time" };
+  }
+  return advanceMakers(project, session, absoluteMinute);
+}
+
 export function collectMaker(project: Project, session: PlaySession, instanceId: string): MakerCollectResult {
   const instance = session.makerInstances?.[instanceId];
   if (!instance) return { ok: false, reason: "missing-instance", instanceId };

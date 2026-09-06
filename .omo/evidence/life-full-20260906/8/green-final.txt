@@ -1,0 +1,72 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/toolActionAuthoringParity.test.ts test/databaseLifeCraftingView.test.ts test/farmingRuntime.test.ts test/stardewAuthoringTools.test.ts test/p0ToolCapability.test.ts test/cropRegrowthContract.test.ts test/lifeSkillDisabledHarvest.test.ts test/serializeCompact.test.ts test/p0ProjectSchema.test.ts test/toolsLifeEconomy.test.ts test/p0SessionPersistence.test.ts test/p2SessionPersistence.test.ts test/p2LifeRuntime.test.ts test/lifeAuthoringReferences.test.ts test/makerClockIntegration.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-tools
+
+ ✓ test/p0ToolCapability.test.ts (2 tests) 264ms
+ ✓ test/p2LifeRuntime.test.ts (8 tests) 671ms
+ ✓ test/p2SessionPersistence.test.ts (4 tests) 730ms
+   ✓ P2 session persistence > round-trips collection, museum receipts, forage cursor/placeables, and fishing RNG  516ms
+ ✓ test/p0SessionPersistence.test.ts (9 tests) 1321ms
+   ✓ P0 save snapshot regression > preserves life skills and shop economy through writer, parser, and apply  365ms
+ ✓ test/lifeSkillDisabledHarvest.test.ts (49 tests) 3090ms
+   ✓ crop automatic harvest XP > keeps the real reward when skillSystem is disabled  391ms
+ ✓ test/serializeCompact.test.ts (2 tests) 806ms
+   ✓ project serialize wire format > uses compact JSON for canonical serialize (no pretty indent)  376ms
+   ✓ project serialize wire format > keeps pretty serialize for human package dumps  428ms
+ ✓ test/toolActionAuthoringParity.test.ts (44 tests) 4721ms
+   ✓ authored tool authority > does not merge defaults into an existing one-row table on load  450ms
+   ✓ authored tool authority > preserves explicit false through serialization and tills outside the region  592ms
+ ✓ test/p0ProjectSchema.test.ts (11 tests) 4746ms
+   ✓ P0 authored system records > round-trips optional energy, shipping, bundle/unlock, and maker definitions  433ms
+   ✓ P0 authored system records > keeps old projects free of newly invented optional fields and byte-stable  651ms
+   ✓ P0 authored system records > omits only the redundant text-only title seed on the first load  804ms
+   ✓ P0 authored system records > preserves authored text title graphics across repeated loads  528ms
+   ✓ P0 authored system records > preserves authored graphic title graphics across repeated loads  447ms
+   ✓ P0 authored system records > preserves authored both title graphics across repeated loads  407ms
+   ✓ P0 authored system records > rejects duplicate P0 definition ids at the wire boundary and reference lint boundary  862ms
+ ✓ test/lifeAuthoringReferences.test.ts (6 tests) 2323ms
+   ✓ life authoring reference integrity > reports every switch, recipe, and item reference exposed by the structured forms  845ms
+   ✓ life authoring reference integrity > reports duplicate sell-price item keys and tool-action ids  425ms
+   ✓ life authoring reference integrity > preserves the complete structured P0 package shape through serialization  372ms
+ ✓ test/farmingRuntime.test.ts (29 tests) 4504ms
+   ✓ Phase 10b 농사 런타임 > 괭이질, 심기, 물주기, 성장, 수확 상태 머신을 처리한다  849ms
+   ✓ 손 슬롯 의도 계약 > 다 자란 작물은 씨앗·괭이·물뿌리개 어느 것을 들어도 수확된다  366ms
+ ✓ test/cropRegrowthContract.test.ts (30 tests) 3944ms
+   ✓ exact crop regrowth contract > zero yield with inventory undefined > treats zero yield as a successful harvest (regrow=0)  402ms
+   ✓ exact crop regrowth contract > zero yield with inventory undefined > treats zero yield as a successful harvest (regrow=10)  385ms
+ ✓ test/makerClockIntegration.test.ts (28 tests) 5592ms
+   ✓ maker game-clock integration > executes actual updateGameTime at minute 29 then 30, including split fixed frames  458ms
+   ✓ maker game-clock integration > rolls back an entire authored multi-day command when its second hook fails  322ms
+   ✓ maker game-clock integration > discards a ready draft and recovery prefix when capacity refuses set-time  1118ms
+ ✓ test/stardewAuthoringTools.test.ts (18 tests) 3909ms
+   ✓ P5 make_villager friendship wizard > writes characterId, optional talkFriendship, and unlock pages  869ms
+   ✓ P5 make_villager friendship wizard > 같은 characterId 재요청은 새 id를 받아도 기존 주민을 재사용하고 대사를 보존한다  1170ms
+ ✓ test/toolsLifeEconomy.test.ts (15 tests) 3997ms
+   ✓ upsert_craft_recipe → system.craftRecipes > writes and then updates the recipe by id  619ms
+   ✓ delete_craft_recipe → system.craftRecipes > removes exactly the requested recipe  324ms
+   ✓ upsert_item_upgrade → system.itemUpgrades > writes the upgrade row with tool capability  362ms
+   ✓ set_sell_prices → system.sellPrices > upserts entries and removes by removeItemIds  480ms
+   ✓ configure_life_economy → energy/shipping/bundles/worldUnlocks/makers > writes only the sections passed and preserves the others  989ms
+ ✓ test/databaseLifeCraftingView.test.ts (14 tests) 25241ms
+   ✓ database life skill and crafting view > materializes real defaults only on first custom-table creation, as one undoable edit  1647ms
+   ✓ database life skill and crafting view > appends to existing tables without merging and preserves false through editing and load  1421ms
+   ✓ database life skill and crafting view > authors a life skill and level reward, then undo restores the prior record  2118ms
+   ✓ database life skill and crafting view > authors a recipe with ingredient and output item references  1888ms
+   ✓ database life skill and crafting view > authors upgrade, sell-price, and tool-action records through their detail forms  3225ms
+   ✓ database life skill and crafting view > rejects duplicate record ids and chooses an unused sell-price item  2143ms
+   ✓ database life skill and crafting view > blocks deletion while event commands reference the selected life records  408ms
+   ✓ database life skill and crafting view > authors recipe unlock requirements and tool capability fields  1599ms
+   ✓ database life skill and crafting view > clamps authored tool capability axes to the runtime-safe 9x9 limit  1092ms
+   ✓ database life skill and crafting view > creates energy and shipping settings and preserves disabled shipping values  2218ms
+   ✓ database life skill and crafting view > authors world unlock, bundle rewards, and maker processing without raw JSON  5207ms
+   ✓ database life skill and crafting view > rejects duplicate package ids, guards reward targets, and records undo  1519ms
+   ✓ database life skill and crafting view > blocks renaming referenced skill, recipe, upgrade, and world-unlock ids  626ms
+
+ Test Files  15 passed (15)
+      Tests  269 passed (269)
+   Start at  22:11:22
+   Duration  52.40s (transform 83.19s, setup 0ms, collect 381.41s, tests 65.86s, environment 2.95s, prepare 6.72s)
+

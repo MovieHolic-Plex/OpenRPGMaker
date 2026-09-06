@@ -1,5 +1,40 @@
 # Editor Validation Expectations
 
+## AI blocked-event relocation recovery (2026-09-06)
+
+- `projectLint` now distinguishes known characters from interaction objects. A character's
+  passage footprint must be passable (`event-character-impassable`, warning); a fixed
+  wall-mounted door/sign still uses the existing body-or-neighbor accessibility rule.
+  Character evidence is social identity, schedule, movement/pushability, or the bundled
+  RTP people/actor/animal/monster sheets. A sprite alone is not character evidence:
+  object sheets and unknown fixed custom sprites are not blindly relocated.
+- Blocked-character, sealed-event, steppable-event and footprint diagnostics include
+  `eventId` and `relocation: { eventId, searchRadius: 3, candidates }`. Each candidate
+  is `{ name: "move_event", args: { mapId, eventId, x, y } }`. Candidates preserve the
+  full passage footprint, avoid other event bodies and the player start, and require
+  an open neighboring approach. On the start map (or an explicit lint reachability
+  check), they are constrained to the entry's tile-reachable component. Explicit
+  `run_lint({reachability})` failures at event anchors receive the same recovery data.
+- These are bounded static suggestions, not proof of a runtime playthrough. Tile BFS
+  retains the existing event-ignoring semantics; conditional pages, scheduled destinations
+  and connectivity through other maps are not simulated. Maps without an entry only
+  receive local candidates. No safe candidate means an empty array, not fabricated
+  coordinates or permission to carve a completed building.
+- `commitChangeset` already runs lint after **every** write, so terrain edits that strand
+  existing NPCs now return recovery evidence through the normal tool result. `run_lint`
+  also returns relocation issues at the result level. `AssistantSession` preserves this
+  payload for the model and escalates `move_event` into the next tool set. The shared
+  context guidance requires considering relocation alongside terrain/path repair.
+- Diagnostics never move entities themselves or add a new completion/apply gate. The
+  assistant chooses whether to invoke a real `move_event`; that tool now classifies
+  existing characters correctly rather than always treating them as wall objects.
+  Proposal/approval, undo and completed-house write protection remain on the existing
+  execution path. Moving retains IDs, pages, commands and unrelated events/tiles.
+- Regression: `test/aiBlockedEventRelocation.test.ts` exercises the real assistant
+  tool-response seam after a terrain edit, both choosing and declining relocation,
+  plus wall-object preservation, sealed objects, no-candidate reporting, explicit
+  reachability and protected-house preservation. No prompt-prose assertions.
+
 ## AI 타일 후검증 (2026-09-05)
 
 - `verifyPostTilePlacement`(`src/project/lint/postTileVerify.ts`)는 AI가 타일을 깐 뒤를 본다. `build_roof`는 지붕이 **그 집 벽 연결 성분**을 덮었는지(`post-roof-incomplete`), `place_props`/`scatter_object`는 나무 요청인데 하층식생만 깔렸거나 나무 타일이 0이면(`post-tree-only-undergrowth` / `post-tree-missing`) warning 한다. 커밋 게이트는 막지 않는다. 고아 밑동·수관 보정은 기존 `repairTreePairs`가 맡는다.

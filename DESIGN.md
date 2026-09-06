@@ -1,5 +1,29 @@
 # RPG ZZU Design System
 
+## Event editor window controls (2026-09-06)
+
+- The titlebar ends with three native circular 32px buttons: minimize,
+  maximize/restore and close. Existing SVG icons, cream surfaces, `--text-1/2`,
+  `--border-default`, `--accent-muted`, `--danger` and `--focus-outline` own
+  default, hover, pressed and keyboard-focus states. Use 4px gaps, 16px icons;
+  maximized state has persistent accent fill and aria-pressed. No new motion.
+- Minimize is not Cancel: retain mounted fields, pending input, page/command
+  selection, scroll and geometry, including maximized state. Release the modal
+  stack, focus trap, backdrop and body-open flag. A bottom-center named restore
+  chip (`이벤트 편집 계속` plus event name) remains keyboard reachable, using
+  13px UI type, 32px minimum height, 8/12px padding and existing raised surface.
+  Restore returns to the retained editor control and caret.
+- Same-event reopen restores this window; switching events still asks before
+  discarding changes. Deletion, project replacement and teardown end ownership.
+  Save/Apply/Cancel, drag/resize, double-click and Alt+Enter stay intact.
+  Header/footer remain fixed around the existing bounded scrolling body.
+  Normal geometry is centered, up to 1440px wide and 820px tall, with 32px
+  horizontal/24px vertical preferred insets and 16px viewport bounds. Full view
+  uses the existing 6px inset and restores the prior dimensions/translation.
+- Personas: map-and-event author switching contexts, keyboard/IME author with
+  pending input, dirty-draft author. Desktop acceptance: 1024x768, 1280x800,
+  1440x900. Lead owns fresh browser geometry and independent visual approval.
+
 ## Action combat identity and controls (2026-09-07)
 
 - Keep the existing 320x240 logical play stage, keyboard-only input and runtime
@@ -14,6 +38,58 @@
 - A supplied new-project name replaces only an absent/default player title.
   An intentionally different authored title is preserved. This does not rename
   maps on load or replace authored title artwork.
+
+## Focused Standard / Expert sidebar (2026-09-07)
+
+- Preserve the cream shell, `el`/native controls, shared SVG icons and beginner
+  workflow. Standard is a single task surface, not a shortened Expert tree:
+  current map / map settings, common layers, primary tools, contextual options,
+  search with one category select, growing tile sheet, compact selected tile,
+  then labelled utilities. Expert keeps its resizable/collapsible map dock.
+- Standard current-map switcher opens the shared searchable map explorer without
+  reserving height. Expert's same-location switcher reveals its dock (or opens
+  the explorer if the dock was disabled). No map operations are reimplemented.
+- Paint/erase/fill/select are primary; Expert adds eyedropper. Other tools and
+  clipboard actions use `도구`. Rect/ellipse are choices in a labelled shape
+  selector, direct in Expert and in Tools in Standard. Brush size is one native
+  1–4 select only for freehand paint/erase, never fill/select/event/stamps/shapes.
+- Layers keep the same location in both modes and Event replaces the tile body;
+  no duplicate Event tool, irrelevant tile search or brush options. Connection
+  state remains visible while painting. Selected-tile reveal/property actions
+  sit near the bottom; tileset changes belong to map settings.
+- One `검사·기록` menu owns inspector/audit/history with a visible issue badge.
+  Expert can pin/unpin each inspection action; preferences are mode-local and
+  persisted, with each command appearing once. Ctrl+K remains a discovery path.
+- Named spatial reference: StyleGallery
+  [scroll-body-shell](https://github.com/changeroa/StyleGallery/blob/main/patterns/viewport-shell/scroll-body-shell.md).
+  The tile sheet owns tile scrolling; auxiliary map/assist/kit surfaces have
+  bounded overlay bodies instead of consuming the sheet's height. Fixed chrome
+  follows DOM reading order. No new motion beyond existing token transitions;
+  native selects and focusable anchored panels supersede animated menu examples.
+- Geometry: existing 300/320px Standard/Expert rails, 32px primary controls,
+  24px utility minimum, 4/8px gaps, `--radius-s/m`, `--font-ui`, 12/13px UI,
+  `--bg-raised/inset`, `--text-1/2`, `--accent`, `--border-default` and
+  `--focus-outline`. Preserve at least 520px canvas at 1024x768/1280x800/1440x900;
+  Standard sheet target is at least 60% of sidebar at 1440x900. No toolbar reel.
+- Personas: daily painter, expert mapper, keyboard-only author. Menus expose
+  names/state, support Escape and opener restoration, dismiss on outside input,
+  and never auto-open on boot or mode return. Focus and search caret survive
+  rerenders. No new onboarding, dependency, project schema or remote mutation.
+- Parent owns independent visual critique, ultrabrain review/approval and merge.
+  Browser evidence, measurements and unresolved debt are recorded with this
+  deliverable; no Lighthouse score or image-based approval is inferred from DOM.
+
+### Sidebar ownership repairs (R1)
+
+- Actual map context menus participate in the shared keyboard layer stack and
+  use `--z-popover-high` above the map explorer. Child pointer actions retain the
+  explorer; Escape closes one layer and restores the map row before the opener.
+- Mode cleanup removes the live auxiliary surface regardless of subscriber order;
+  editor/dock teardown clears its ownership and listeners. No implicit reopen.
+- Expert current-map reveal goes through the map-list renderer, expanding the
+  dock and ancestor path before focusing the current row. Inspection commands
+  activate the Tiles host through workspace state before opening the same pinned
+  or unpinned inspection surface. No new default controls or onboarding.
 
 ## In-game shop trade counter (2026-09-06)
 
@@ -90,15 +166,22 @@ existing purse emblem; actual party faces remain explicitly labelled as party.
 ## Walk encounters from a rectangle (2026-09-06)
 
 - Primary action: `걸을 때 적 만나기`. Use the existing left-drag selection tool,
-  then the visible selection chip. Explanation: `포켓몬 풀숲처럼, 이 안에서 걷다
-  보면 전투가 시작됩니다.` No tile painting, new schema, or runtime overlay.
-- Native modal-stack worksheet: named enemy artwork/checkbox search, selected
-  count, frequency presets, then `완료`. Reuse subdialog, `btn`, thumbnail and
-  labelled native controls; advanced weights/conditions use `details`.
+  then the visible selection chip. Explanation: `포켓몬 풀숲처럼, 걷다 보면 선택한
+  그룹 중 하나와 전투합니다.` No tile painting, new schema, or runtime overlay.
+- Group-first modal worksheet: compact selected-group rows show authored names,
+  composition thumbnails/counts (including hidden members), weight and live relative
+  share. `+ 그룹 추가` opens a separate searchable existing-group picker with
+  selected, empty and no-results states. No individual-enemy selection or troop
+  generation. Each row owns its conditions disclosure, edit and remove actions.
+  Reuse subdialog, `btn`, thumbnails and labelled native controls. Weight typing
+  updates only share outputs, preserving input focus. Shares describe the current
+  worksheet, not actual eligibility among overlapping/conditional rules.
   Personas: first-time author, existing-table author, keyboard-only author.
 - Studio tokens (`--bg-raised`, `--bg-inset`, `--text-1/2`, `--accent`,
   `--border-soft`), --font-ui 13px/1.5, help 12px/1.5, 32px minimum controls,
-  4/8/12/16/24 spacing, 6px controls and 8px groups. No decorative motion.
+  4/8/12/16/24 spacing and shared 6px radius. Row titles are 14px; numeric
+  tracks use 64px weight / 72px share, 32px thumbnails, tabular figures. Picker
+  width is at most 560px with a 320px list cap. No decorative motion.
   Width at most 760px; bounded scrolling body, fixed action footer. Desktop
   acceptance 1024x768, 1280x800, 1440x900; controls wrap rather than shrink.
 - Canvas has a persistent labelled region-list button and translucent indigo
@@ -111,8 +194,12 @@ existing purse emblem; actual party faces remain explicitly labelled as party.
   keep-everywhere or replace-with-regions choice. Other table entries survive.
 - Fields are local drafts. Cancel/Escape write nothing. Apply validates bounds,
   references, conditions, locks, project identity and encounter-state freshness,
-  then records one project snapshot and one labelled store mutation including
-  generated troops. Delete removes rules, not tiles/troops. Empty catalog/search,
+  then records one map-only snapshot and one labelled map mutation. Authored
+  groups, including previously generated groups and duplicate condition variants,
+  are never merged, migrated or deleted. Group editing opens the existing database
+  then reveals the selected troop; closing it restores the same in-memory draft.
+  Missing groups stay visible and block save, with replace/remove recovery. Empty
+  databases offer direct group editing. Delete removes rules, not tiles/troops. Empty picker/search,
   invalid input, stale state and lock errors have visible recovery text.
   No fake loading. Real browser review is supervisor-owned.
 
@@ -625,6 +712,35 @@ The float assistant is **one glass instrument**, `div.ai-deck` inside the transp
 - **Zoom**: integer steps only: `1, 2, 3, 4, 6, 8` (`EDITOR_ZOOM_LEVELS`). One canvas stepper (`−` / current / `+`) plus a menu of `editor-zoom-*` marks. The classic toolbar no longer duplicates `1x 2x 4x 8x`. Beginner docks the stepper in `--editor-canvas-chrome-top`. Standard/expert keep map-save/build behind the ⋯ gate.
 
 ### Database & resource modals
+
+#### Event page Preview contract (2026-09-06)
+
+- Page Preview fits the actual remaining command-column row, including the
+  disclaimer, transport, heading, padding and collapsed context. Ordinary dialogue
+  and speaker must be fully visible at scroll origin at 1024x768, 1280x800 and
+  1440x900, also with the contextual inspector. No viewport-height stage cap or
+  automatic scroll-to-bottom. Standalone command previews retain 4:3 and message
+  top/center/bottom positioning; only page framing fills its parent.
+- Long content uses a named, keyboard-focusable scroll region. Step changes reset
+  its scroll origin. Choice rows remain display-only; a decorative SVG arrow has
+  its own column and complete labels wrap (CJK, Latin tokens and newlines).
+- Transport labels are 13px, supporting text at least 12px, buttons at least 30px
+  high. Natural-width controls wrap as whole units; a tabular, non-wrapping counter
+  reserves seven characters. This is scoped to Preview, not global `.btn.small`.
+- Previous/Next are native-disabled at boundaries. Restart stops and returns to
+  step one (disabled only when already idle there). Play at the final multi-step
+  frame explicitly replays from the start; arrival at the end stops immediately.
+  Single-step pages disable all transport, and empty pages omit it. Manual movement,
+  view/page replacement and modal removal stop playback; view re-entry preserves
+  the remembered/clamped nested step, never implicitly replays.
+- Enabled transport retains focus. If activation disables the focused control,
+  use Next, then Previous, then Play as the deterministic enabled fallback. View
+  replacement restores selected-tab focus only when focus was inside that group.
+- A two-line context summary opens a native keyboard/pointer disclosure with a
+  bounded, separately scrollable full caption/branch/skipped context. One persistent
+  polite atomic status announces current/total, command kind and a bounded branch
+  excerpt, never full dialogue/choice bodies. It updates with the visible counter.
+  Simulation semantics and Preview-to-Flow exact command paths stay unchanged.
 
 - **Topbar actions**: Resources (소재) opens `resourceModal`; Database (DB) opens `databaseModal`. They are the canonical editor paths for asset and database work.
 - Map properties and Event editing are not dock tabs: event editing lives in the left palette when the event layer is active and opens as a modal; map properties are edited via the map tree context menu / database.

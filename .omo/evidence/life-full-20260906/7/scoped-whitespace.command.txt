@@ -1,0 +1,1 @@
+git diff --cached --check -- src/player/farming.ts src/player/playSceneFarming.ts src/player/saveSlotValidation.ts src/project/session.ts test/cropRegrowthContract.test.ts .omo/evidence/life-full-20260906/7/SUMMARY.md .omo/evidence/life-full-20260906/7/*.mjs .omo/evidence/life-full-20260906/7/*.json

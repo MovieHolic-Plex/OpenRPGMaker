@@ -50,6 +50,7 @@ const EXPECTED_TABS = [
   "db-tab-system",
   "db-tab-opening",
   "db-tab-game-over",
+  "db-tab-character-graphics",
   "db-tab-terms",
   "db-tab-switches",
   "db-tab-variables",
@@ -124,10 +125,10 @@ describe("database sidebar navigation", () => {
     const panelRoot = renderPanelHost();
     const buttons = panelRoot.querySelectorAll(".db-tab");
     expect(buttons.length).toBe(EXPECTED_TABS.length);
-    expect(EXPECTED_TABS.length).toBe(34);
+    expect(EXPECTED_TABS.length).toBe(35);
     expect(buttons.map((button) => button.dataset.testid)).toEqual(EXPECTED_TABS);
     // 중복 없음 — 등장 순서 자체가 기대 순서와 일치하면 중복이 섞일 수 없다(배열 비교).
-    expect(new Set(EXPECTED_TABS).size).toBe(34);
+    expect(new Set(EXPECTED_TABS).size).toBe(35);
     for (const button of buttons) {
       expect(button.tagName).toBe("BUTTON");
       const label = (button.textContent ?? "").trim();
