@@ -117,6 +117,7 @@ import {
   type ChatRequest,
   type ChatResult,
   type ContentPart,
+  type ImageUrlPart,
   type OpenAiToolSchema,
   type ToolCall,
 } from "./llmClient";
@@ -3447,6 +3448,8 @@ export class AssistantSession {
     const autonomyCap = this.autonomy()?.budgetCap;
     const roundCap = autonomyCap === undefined ? this.config.maxToolCalls : Math.min(this.config.maxToolCalls, autonomyCap);
     let spentOutputTokens = 0;
+    // Turn-local: a failed/dropped request cannot revive these captures on a later turn.
+    let pendingImages: { parts: ImageUrlPart[]; receipts: AcceptanceImageReceipt[] } | null = null;
 
     for (let round = 0; round < roundCap; round += 1) {
       if (signal?.aborted) {
@@ -3540,6 +3543,22 @@ export class AssistantSession {
         this.lastTurnFailed = true; // 수동 재시도(retryLastTurn) 허용 상태로 표시.
         this.pushAudit({ kind: "status", text: `턴 중단(error): ${error} · 출력 토큰 ~${spentOutputTokens}` });
         return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "error", error };
+      }
+      if (pendingImages) {
+        const delivered = new Set(result.imageDelivery?.flatMap(({ messageIndex, partIndex }) => {
+          const content = requestMessages[messageIndex]?.content;
+          return Array.isArray(content) && content[partIndex]?.type === "image_url" ? [content[partIndex]] : [];
+        }));
+        if (!signal?.aborted && pendingImages.parts.every(part => delivered.has(part))) {
+          this.imageEvidence.current(this.ctx.project);
+          this.imageEvidence.deliver(pendingImages.receipts);
+        } else {
+          const text = "Image delivery was not acknowledged; render and send the map again before review_acceptance.";
+          this.pushAudit({ kind: "status", text: `acceptance:image-delivery-failed ${text}` });
+          onEvent({ type: "status", text });
+          this.pushOrchestrationMessage(text);
+        }
+        pendingImages = null;
       }
       spentOutputTokens += result.usage?.completion_tokens ?? estimateOutputTokens(result.message);
       // 문자↔토큰 보정 관측(usage 없으면 조용히 스킵). review 단계 요청에는 tools가 없다.
@@ -3982,7 +4001,7 @@ export class AssistantSession {
           parts.push({ type: "image_url", image_url: { url: image.dataUrl } });
         }
         this.messages.push({ role: "user", content: parts });
-        this.imageEvidence.deliver(acceptanceImages);
+        pendingImages = { parts: parts.filter(part => part.type === "image_url"), receipts: acceptanceImages };
       }
 
       if (orchestrated && startsWriteThisRound && !executionStarted) {

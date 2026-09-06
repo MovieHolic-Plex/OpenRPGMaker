@@ -7,6 +7,8 @@
 import { complete } from "@oh-my-pi/pi-ai";
 import { getBundledModel, getBundledModels } from "@oh-my-pi/pi-catalog";
 import { getOhMyPiProvider } from "../../src/ai/ohMyPiProviders.ts";
+import type { ImageDelivery } from "../../src/ai/imageDelivery.ts";
+import { convertUserContent, hasImagePart, ImageTransportError } from "./ohMyPiUserContent.ts";
 
 function testStub(): boolean {
   return process.env.RPG_ZZU_OH_MY_PI_TEST_STUB === "1";
@@ -39,20 +41,40 @@ function toolArgumentsOf(value: unknown): Record<string, unknown> {
   }
 }
 
-function openaiToContext(provider: string, body: Record<string, unknown>) {
+function openaiToContext(provider: string, body: Record<string, unknown>, supportsImages: boolean) {
   const messages = Array.isArray(body.messages) ? body.messages : [];
   const systemPrompt: string[] = [];
   const converted: unknown[] = [];
-  for (const raw of messages) {
+  const imageDelivery: ImageDelivery[] = [];
+  for (const [messageIndex, raw] of messages.entries()) {
     if (!raw || typeof raw !== "object") continue;
     const msg = raw as { role?: string; content?: unknown; tool_call_id?: string; name?: string; tool_calls?: unknown };
+    if (msg.role !== "user" && hasImagePart(msg.content)) {
+      throw new ImageTransportError("unsupported-image-role", `messages[${messageIndex}]: image parts require the user role`);
+    }
     if (msg.role === "system") {
       const text = textOf(msg.content);
       if (text) systemPrompt.push(text);
       continue;
     }
     if (msg.role === "user") {
-      converted.push({ role: "user", content: [{ type: "text", text: textOf(msg.content) }], timestamp: Date.now() });
+      const content = convertUserContent(msg.content, supportsImages);
+      content.forEach((part, partIndex) => {
+        if (part.type === "image") imageDelivery.push({ messageIndex, partIndex });
+      });
+      if (provider === "openai-codex" && content.some(part => part.type === "image")) {
+        // Codex's SDK groups text before images within a message. End each segment
+        // at its image so labels and trailing text retain their original ordering.
+        let start = 0;
+        content.forEach((part, index) => {
+          if (part.type !== "image") return;
+          converted.push({ role: "user", content: content.slice(start, index + 1), timestamp: Date.now() });
+          start = index + 1;
+        });
+        if (start < content.length) converted.push({ role: "user", content: content.slice(start), timestamp: Date.now() });
+      } else {
+        converted.push({ role: "user", content, timestamp: Date.now() });
+      }
       continue;
     }
     if (msg.role === "assistant") {
@@ -104,7 +126,7 @@ function openaiToContext(provider: string, body: Record<string, unknown>) {
         };
       })
     : undefined;
-  return { systemPrompt, messages: converted as never[], tools };
+  return { context: { systemPrompt, messages: converted as never[], tools }, imageDelivery };
 }
 
 function resolveModel(provider: string, modelId: string) {
@@ -125,8 +147,8 @@ function assistantToOpenAI(message: {
   stopReason?: string;
   model?: string;
 }) {
-  if (message.errorMessage) {
-    const err = new Error(message.errorMessage) as Error & { status?: number };
+  if (message.errorMessage || message.stopReason === "error" || message.stopReason === "aborted") {
+    const err = new Error(message.errorMessage ?? `Provider completion ${message.stopReason}`) as Error & { status?: number };
     err.status = message.errorStatus || 500;
     throw err;
   }
@@ -181,6 +203,7 @@ export async function completeProvider(
     (err as Error & { status?: number }).status = 400;
     throw err;
   }
+  const { context, imageDelivery } = openaiToContext(provider, body, model.input.includes("image"));
   if (testStub()) {
     return {
       stream: false,
@@ -198,10 +221,10 @@ export async function completeProvider(
     };
   }
   const apiKey = options?.apiKey;
-  const context = openaiToContext(provider, body);
   const message = await complete(model as never, context as never, {
     ...(apiKey ? { apiKey } : {}),
     fetch: options?.fetch,
   } as never);
-  return { stream: false, completion: assistantToOpenAI(message) };
+  const completion = assistantToOpenAI(message);
+  return { stream: false, completion: { ...completion, image_delivery: imageDelivery } };
 }

@@ -71,6 +71,22 @@ applied; draft images never verify the old applied map. Normal finalization and 
 execution-budget exits use this same currentness. Image verification remains separate
 from structural adventure checks and is not game-completion/playthrough proof.
 
+R11 transport: frontend insertion is not delivery. The companion emits
+`image_delivery: [{messageIndex, partIndex}]` only after successful provider
+completion; `llmClient` parses it atomically. The session matches acknowledgements
+against the actual post-compaction request's image parts before crediting its
+turn-local pending receipts. Missing/partial acknowledgements, errors, aborts and
+compacted-away images cannot revive on a later response, continuation or retry;
+render again to establish new evidence. Existing delivered-current receipts retain
+the R2 lifecycle above. The adapter accepts inline base64 PNG/JPEG/GIF/WebP only,
+checks canonical encoding, MIME signatures and resolved-model image capability,
+and rejects unsupported roles/parts/URLs visibly. Pixel decoding remains the
+provider's responsibility. Codex receives consecutive image-terminated user
+segments because its SDK otherwise moves all labels before all images. Default
+`gemini-3.7-flash`, tiered and fallback-low alias paths retain image capability.
+Wire/session regressions: `test/ohMyPiImageTransport.bun.test.ts` and
+`test/assistantImageTransport.test.ts`; no live credentials are needed.
+
 `AssistantSession` consults acceptance at final-response and autonomous-continuation
 boundaries even when the execution plan is finished. Existing bounded repair
 limits remain; unmet promises produce an incomplete result and blocked note.

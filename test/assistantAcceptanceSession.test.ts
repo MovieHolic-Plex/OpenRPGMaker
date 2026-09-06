@@ -22,7 +22,7 @@ import { fixedDeclarer } from "./intentFixture";
 
 type Call = { readonly name: string; readonly args: Record<string, unknown> };
 const work = { goal: "Authored map contract", layers: [{ title: "Edit", items: [{ id: "work", title: "Edit map", instruction: "Rename the map" }] }] };
-function script(rounds: readonly (readonly Call[])[]) {
+function script(rounds: readonly (readonly Call[])[], acknowledgeImages = true) {
   const project = createBlankProject();
   const events: SessionEvent[] = [];
   let calls = 0;
@@ -30,10 +30,12 @@ function script(rounds: readonly (readonly Call[])[]) {
     config: { ...defaultAiConfig(), agentMode: "chat", model: "test", liteModel: "test", apiKey: "test", maxToolCalls: 12 },
     declareIntent: fixedDeclarer({ mode: "modify", targetMapId: project.startMapId }),
     renderImages: async () => [{ label: "Rendered map", dataUrl: "data:image/png;base64,AA==" }],
-    chat: async (): Promise<ChatResult> => {
+    chat: async (_config, request): Promise<ChatResult> => {
+      const imageDelivery = acknowledgeImages ? request.messages.flatMap((message, messageIndex) => Array.isArray(message.content)
+        ? message.content.flatMap((part, partIndex) => part.type === "image_url" ? [{ messageIndex, partIndex }] : []) : []) : undefined;
       const batch = rounds[calls++];
-      return batch ? { message: { role: "assistant", content: null, tool_calls: batch.map((call, i) => ({ id: `c${calls}_${i}`, type: "function", function: { name: call.name, arguments: JSON.stringify(call.args) } })) }, finishReason: "tool_calls" }
-        : { message: { role: "assistant", content: "SCRIPTED_SUCCESS" }, finishReason: "stop" };
+      return batch ? { imageDelivery, message: { role: "assistant", content: null, tool_calls: batch.map((call, i) => ({ id: `c${calls}_${i}`, type: "function", function: { name: call.name, arguments: JSON.stringify(call.args) } })) }, finishReason: "tool_calls" }
+        : { imageDelivery, message: { role: "assistant", content: "SCRIPTED_SUCCESS" }, finishReason: "stop" };
     },
   });
   return { session, events, project, run: (autonomous = false) => session.sendUserMessage("Edit the authored map", event => events.push(event), undefined, { autonomous }), calls: () => calls };
@@ -44,6 +46,17 @@ function snapshot(session: AssistantSession): unknown {
 const target = { mapId: createBlankProject().startMapId };
 
 describe("acceptance controls actual session termination", () => {
+  it("does not credit frontend insertion without a provider delivery acknowledgement", async () => {
+    const fixture = script([
+      [{ name: "set_work_plan", args: { ...work, acceptance: [{ id: "image", title: "Review", criteria: [{ kind: "imageReviewed", target }] }] } }, { name: "skip_work_item", args: {} }],
+      [{ name: "show_map_region", args: { mapId: target.mapId, x: 0, y: 0, w: 20, h: 15 } }],
+      [{ name: "review_acceptance", args: { itemId: "image", verdict: "pass", note: "Unacknowledged image" } }],
+    ], false);
+    await fixture.run();
+    expect(fixture.events.find(event => event.type === "tool_call" && event.name === "review_acceptance")).toMatchObject({ result: { ok: false } });
+    expect(fixture.session.getAcceptanceSnapshot()?.status).toBe("blocked");
+  });
+
   it("does not schedule run-end persistence proof for a completed plan with unmet acceptance", async () => {
     const fixture = script([[{ name: "set_work_plan", args: { ...work, acceptance: [
       { id: "size", title: "Required size", criteria: [{ kind: "mapDimensions", target, width: 99, height: 99 }] },
