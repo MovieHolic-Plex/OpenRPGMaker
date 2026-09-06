@@ -485,11 +485,16 @@ and assistant suggestion-row/chip descriptions above. Glass, opacity and icon st
   auto-expanded shapes cannot reappear on the next turn. `BuildSpec`, audit and applied-call
   accounting are not cleared or falsely completed. An orphan cannot clean a replacement turn.
 - Ghost cleanup returns the shared preview surface to `getPendingRegionApply()` when present:
-  restore that draft's project diff and draft-map provider. Never discard, apply or settle an
-  unrelated region approval as part of chat cleanup.
+  install that draft's map provider before publishing its project diff. Preview subscribers
+  synchronously compose and cache tile neighborhoods, so reversing these calls uses stale terrain.
+  Same-project new chat/history restore preserves the independent region. An actual project
+  identity change synchronously discards the outgoing region before asynchronous history lookup;
+  a new project's draft registered during that lookup survives later adoption.
 - `settleWorkPlanTurn` removes the live checklist/feed and closes its live book; session plan
   and audit history survive. Inactive plans do not remount through refresh or studio entry.
-  Continuation can display the retained unfinished plan during its next active turn.
+  Every accepted `executeTurn`, including manual retry, initializes live plan ownership from
+  the retained plan and original run options. When removal takes the focused book/checklist,
+  focus returns to the composer; another control or error dialog keeps its focus.
 - Composer focus/idle/new-chat and studio briefing no longer produce director/example promotions.
   Explicit `[선택지]` content remains in live and restored transcript text, without promoted
   quick-reply buttons; pending-question engagement is still tracked. Retry, settings, tool
@@ -498,6 +503,9 @@ and assistant suggestion-row/chip descriptions above. Glass, opacity and icon st
   automatic expansion and orphan protection), `aiAutonomousRunSurface`, `aiPanelChrome`,
   `aiStudioShell`, `aiConversationLog`, `aiTurnAppliedAccounting`. Async tests await the exact
   held-state/terminal signal, never fixed sleeps or arbitrary microtask counts.
+- Review regressions: `aiRegionPreviewHandoff`, `aiRegionChatBoundary`,
+  `aiRetryWorkPlanLifecycle`, `aiWorkPlanTerminalFocus`. Real-editor coverage:
+  `test/e2e/assistant-clean-glass.spec.ts` and `test/e2e/ai-composer-mode.spec.ts`.
 - `agentBlueprintTurnEnd` retains actual-write assertions with updated retirement expectations
   and event-driven completion. Its existing SSE response fixture is incompatible with the
   default non-streaming provider request; lead reproduced 6 failures / 1 pass on unchanged
