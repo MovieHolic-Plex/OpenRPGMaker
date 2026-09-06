@@ -42,15 +42,17 @@ Focused validation from the repository root:
 npm test -- --run test/communityReleaseArchive.test.ts test/communityPlayRoute.test.ts
 cd community-site
 ./node_modules/.bin/tsc --noEmit --incremental false
-# Compile the community app for the production-HTTP test; supply a private DB URL.
-./node_modules/.bin/next build --webpack
 cd ..
-npx tsx --test test/communityReleaseIntegration.test.mjs
+npm run test:node -- communityReleaseIntegration
+# The discovered file also runs directly with plain Node:
+node --test test/communityReleaseIntegration.test.mjs
 ```
 
-The integration command requires PostgreSQL 16 binaries (`COMMUNITY_TEST_PG_BIN` may override `/usr/lib/postgresql/16/bin`) and installed Chrome. It starts its own socket-only cluster, applies 0001-0006, awaits PostgreSQL/Next readiness events (no sleeps), and exercises actual production UploadForm/Next routes with narrow fixtures. Screenshots at 375/768/1280px are written to the OS temporary directory as `community-release-upload-<width>.png`. No shared DB, authored game content or persistent QA URL is used.
+The integration command requires Node 24, installed root/community dependencies (`npm ci` in both directories), PostgreSQL 16 binaries (`COMMUNITY_TEST_PG_BIN` may override `/usr/lib/postgresql/16/bin`) and installed Chrome. It performs no dependency installation and does not use tsx or Node TypeScript stripping. Installed esbuild bundles the test's real TypeScript imports; `scripts/lib/releaseTestWorkspace.mjs` copies explicit source inputs into a unique temporary repository and runs the installed Next webpack production build there, including TypeScript checking. It asserts `.next` is absent before building and never consumes or changes the checkout's `.next`, environment files or runtime archive. Only installed `node_modules` are shared read-only; QA build workers are limited to two.
 
-The normal integrated release gate remains root `npm run build:community`; a direct Next build is app compilation, not proof of that gate. A snapshot worktree without producer outputs fails `prebuild` with `built-manifest-invalid`; Turbopack also rejects a root `node_modules` symlink pointing outside its inferred filesystem root. The webpack command above supports that isolated-worktree QA without weakening either gate.
+It starts its own socket-only PostgreSQL cluster, applies 0001-0006, awaits PostgreSQL/Next readiness events (no sleeps), and preserves the full production UploadForm/Next route coverage with narrow fixtures. Each run prints a unique `oprn-release-evidence-*` temporary directory containing `next-build.log` and `upload-{375,768,1280}.png`; concurrent checkouts cannot overwrite it. Build/DB/source scratch state is removed afterward; evidence remains for inspection. No shared DB, authored game content or persistent QA URL is used. The ordinary unfiltered `npm run test:node` discovers and executes this same self-contained test, without prerequisite build artifacts.
+
+The normal integrated release gate remains root `npm run build:community`; the test's isolated Next build is app compilation, not proof of that gate. A snapshot worktree without producer outputs fails `prebuild` with `built-manifest-invalid`; Turbopack also rejects a root `node_modules` symlink pointing outside its inferred filesystem root. The test uses webpack for this isolated app build without changing either production gate.
 
 Manual producer integration: retain the producer runtime under the operator trust root, export a web ZIP, publish through `/en/upload` or `/ko/upload`, open the listing and its qualified play URL, and compare the downloaded ZIP digest with the upload. Deploy a different current editor/runtime and repeat the old URL/download. Its project/runtime/assets must be unchanged. Also test another listing with the wrong release id and an existing legacy source record.
 

@@ -6,12 +6,7 @@ import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { createRequire } from "node:module";
-import { createGameRelease, createRuntimeManifest, jsonBytes } from "../src/project/gameRelease.ts";
-import { writeStoredZip } from "../src/project/packageZip.ts";
-import { createReleaseUploadHandler, readBoundedJson } from "../community-site/lib/releaseUpload.ts";
-import { createReleaseLoader, insertReleaseListing } from "../community-site/lib/releaseStore.ts";
-import { createReleasePlayHandler, createReleaseDownloadHandler } from "../community-site/lib/releaseRoutes.ts";
-import { validateReleaseArchive } from "../community-site/lib/releaseArchive.ts";
+import { prepareReleaseTestWorkspace } from "../community-site/scripts/lib/releaseTestWorkspace.mjs";
 
 const require = createRequire(new URL("../community-site/package.json", import.meta.url));
 const { Pool } = require("pg");
@@ -19,6 +14,11 @@ const { chromium } = createRequire(new URL("../package.json", import.meta.url))(
 const root = new URL("../", import.meta.url);
 const pgBin = process.env.COMMUNITY_TEST_PG_BIN ?? "/usr/lib/postgresql/16/bin";
 let directory;
+let evidenceDirectory;
+let isolatedSite;
+let createGameRelease, createRuntimeManifest, jsonBytes, writeStoredZip;
+let createReleaseUploadHandler, readBoundedJson, createReleaseLoader, insertReleaseListing;
+let createReleasePlayHandler, createReleaseDownloadHandler, validateReleaseArchive;
 let postgres;
 let pool;
 let fixture;
@@ -29,6 +29,8 @@ const originalArchiveRoot = process.env.COMMUNITY_RUNTIME_ARCHIVE_ROOT;
 
 before(async () => {
   directory = await mkdtemp(path.join(tmpdir(), "oprn-release-"));
+  evidenceDirectory = await mkdtemp(path.join(tmpdir(), "oprn-release-evidence-"));
+  console.log(`Community release evidence: ${evidenceDirectory}`);
   execFileSync(path.join(pgBin, "initdb"), ["-D", path.join(directory, "db"), "-A", "trust", "-U", "release_test", "--no-locale", "--encoding=UTF8"], { stdio: "pipe" });
   postgres = spawn(path.join(pgBin, "postgres"), ["-D", path.join(directory, "db"), "-k", directory, "-c", "listen_addresses=", "-c", "fsync=off"], { stdio: ["ignore", "ignore", "pipe"] });
   await new Promise((resolve, reject) => {
@@ -53,6 +55,12 @@ before(async () => {
   for (const file of ["0001_openrpg_community.sql", "0002_lock_down_writes.sql", "0003_board.sql", "0004_community_upgrade.sql", "0005_report_privacy.sql", "0006_immutable_game_releases.sql"]) {
     await pool.query(await readFile(new URL(`community-site/db/${file}`, root), "utf8"));
   }
+  const workspace = await prepareReleaseTestWorkspace({ directory, evidenceDirectory,
+    databaseUrl: `postgresql://release_test@localhost/postgres?host=${encodeURIComponent(directory)}` });
+  isolatedSite = workspace.site;
+  ({ createGameRelease, createRuntimeManifest, jsonBytes, writeStoredZip,
+    createReleaseUploadHandler, readBoundedJson, createReleaseLoader, insertReleaseListing,
+    createReleasePlayHandler, createReleaseDownloadHandler, validateReleaseArchive } = workspace.api);
   const runtime = [
     { name: "web/player.html", bytes: Buffer.from('<!doctype html><script type="module" src="./player.js"></script>') },
     { name: "web/player.js", bytes: Buffer.from('document.body.dataset.release = "retained-v1";') },
@@ -70,7 +78,7 @@ before(async () => {
   await mkdir(path.join(process.env.COMMUNITY_RUNTIME_ARCHIVE_ROOT, trusted.runtimeTarget), { recursive: true });
   await writeFile(path.join(process.env.COMMUNITY_RUNTIME_ARCHIVE_ROOT, trusted.runtimeTarget, "runtime.json"), jsonBytes(trusted));
   publish = createReleaseUploadHandler({ pool });
-}, { timeout: 30_000 });
+}, { timeout: 360_000 });
 
 after(async () => {
   if (originalArchiveRoot === undefined) delete process.env.COMMUNITY_RUNTIME_ARCHIVE_ROOT;
@@ -262,7 +270,7 @@ test("upload concurrency is bounded while trust validation is in flight", { time
 
 test("production UploadForm publishes a release and real Next routes play/download it unchanged", { timeout: 60_000 }, async () => {
   const server = spawn(process.execPath, [require.resolve("next/dist/bin/next"), "start", "--hostname", "127.0.0.1", "--port", "0"], {
-    cwd: new URL("community-site/", root),
+    cwd: isolatedSite,
     env: { ...process.env, COMMUNITY_DATABASE_URL: `postgresql://release_test@localhost/postgres?host=${encodeURIComponent(directory)}` },
     stdio: ["ignore", "pipe", "pipe"],
   });
@@ -311,7 +319,7 @@ test("production UploadForm publishes a release and real Next routes play/downlo
     for (const width of [375, 768, 1280]) {
       await page.setViewportSize({ width, height: 900 });
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true);
-      await page.screenshot({ path: path.join(tmpdir(), `community-release-upload-${width}.png`), fullPage: true });
+      await page.screenshot({ path: path.join(evidenceDirectory, `upload-${width}.png`), fullPage: true });
     }
     await page.goto(`${origin}/en/games/${uploaded.slug}`);
     assert.equal(await page.locator(".hero-actions a.btn").nth(1).getAttribute("href"), `/api/games/${uploaded.slug}/releases/${uploaded.releaseId}/download`);
