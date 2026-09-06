@@ -1,3 +1,36 @@
+## Editor audio entry-point follow-up (st_01a07495, 2026-09-06)
+
+The parent-requested real editor spec was executed once at commit `f86474547028cddf795c8e431b2195b7edccd201`, tree `8386dd1efe4338f705d6a7accdbdefaa3b0beb6a`. **Exit1: 3 passed, 1 failed, 0 skipped, 0 retries/flaky.** This is not a green full-spec claim. No production/test changes or additional commit were made for this verification-only follow-up. Evidence is `5/q1/editor-followup/`; the prior correction record remains verbatim below.
+
+Parent terminal coordination: the parent reports its independent26-test run and native monitor exit0 at the same f8647454 revision. This child inspected `5/q1-supervisor/browser.json` (SHA256 `d8ca14fe2040d586791679ba6f2890f434722f9c3373c53fb4241c9378325869`): oktrue at port33943, native BGM playing/unpaused/readyState4 in omitted/false/true modes, no off QA globals, matching on public/QA state, and owned audio publications/elements removed on teardown. Its cleanup records browser/context/server closure and cache removal; final false/true request arrays retain teardown BGM ERR_ABORTED entries. These are parent-owned receipts, not a new child execution or a replacement for the preserved editor failure. No supervisor evidence is edited or staged by this follow-up.
+
+Exact outer command, cwd `/home/main/z-project/rpg-zzu-life-full-p2`:
+
+```sh
+flock --timeout 900 /tmp/rpg-zzu-life-full-qa-01a0727b.lock env DEV_SERVER_PORT=41331 DEV_SERVER_NO_TLS=1 E2E_FREEZE_DEV_SERVER=1 E2E_RETRIES=0 node .omo/evidence/life-full-20260906/5/q1/editor-followup/run.mjs
+```
+
+The executor created a fresh strict-port Vite server using this worktree's actual `vite.config.ts`, asserted resolved `hmr:false` and `watch:null`, and owned it directly (PID1672941) at **http://127.0.0.1:41331**. No existing/shared server was reused. Its dedicated Playwright config inherits the committed config, disables only automatic server creation (the executor owns the fresh server), and changes report/output paths plus retries0. It does not replace tests, change assertions, raise any deadline, inject a mock singleton or warm a cache. Exact child command (PID1673248):
+
+```sh
+npm run test:e2e -- --config .omo/evidence/life-full-20260906/5/q1/editor-followup/playwright.config.ts test/e2e/oprn-audio-test-dialog.spec.ts --project=chromium --workers=1 --retries=0
+```
+
+The actual editor import/opt-in and dialog integration succeeded in the first three cases:
+- Dialog layout/play/stop/close: passed,17141ms.
+- **Real sliders and public QA/media state: passed,12955ms.** The hook observed volume1/rate1/pan0 before actual slider input, then volume0.4/rate1.35/pan-0.4/fade4000; real media volume0.4/rate1.35 matched. A disconnected default singleton would not satisfy the original before/after assertions. This verifies the affected six-line helper through the actual editor dialog, rather than syntax/unit assumptions.
+- Filtering/MIDI rows: passed,12792ms.
+
+The fourth Escape case failed in pre-existing `openAudioDialog` setup at `test/e2e/oprn-audio-test-dialog.spec.ts:41`, **before the new import at44-48 or any Escape input**. The original60000ms `edit-canvas` expectation expired (case duration63272ms). Its retained trace shows101 browser console `net::ERR_NETWORK_CHANGED` errors and101 failed(-1) local module requests, including `src/editor/panels/chromaKey.ts`, `src/editor/tools/v3/rmTypeExpander.ts` and `src/project/tileRoles.ts`; all101 failed responses carry that network failure. No runtime `evaluateExpression` call reached the new helper in the failed case. This matches the host-network abort class already documented in the unchanged root Playwright config. The exact host interface event is unproven, and no baseline replay was used to label a timing failure fixed. The spec remains exit1; the Escape assertion was unexecuted because editor loading aborted, not a demonstrated product Escape failure. No retry, browser substitution, timeout increase, baseline change or unrelated editor fix followed.
+
+`execution.json` records exact HEAD/tree/argv/PIDs/freeze/cwd/timestamps/real exit/signal/cleanup; `raw-artifacts.json` preserves exact child stdout/stderr (SHA256 `30b56f10cf75cbb703f39b9ea2868cf50419c4e2e07fa701cd64437a5b720abf`), with whitespace-normalized presentation in `execution.txt`. `report.json` retains all4 actual results. `trace-diagnosis.json` extracts errors and completed fixture/worker-cleanup steps; the original failure trace, error context, failure screenshot and successful dialog screenshot remain under `results/`. The visual contents are not adjudicated by this image-incapable model.
+
+Cleanup completed in finally: owned Vite server closed, port41331 returned ECONNREFUSED, isolated non-symlink/untracked `editor-followup/vite-cache` removed; owner/test PIDs are gone and trace worker/browser fixture teardown completed. All10482 previously tracked files hashed unchanged through execution. `git diff --exit-code HEAD -- src test scripts package.json package-lock.json` exited0. Existing correction/VERIFY/supervisor files are not overwritten; only this summary receives a new section. Fresh-project test setup follows the existing local-only project path; no remote authoring/write was requested or added.
+
+All authored follow-up files and this summary were added with `apply_patch`. `raw-artifacts.json` preserves the exact original execution-log/error-context text and SHA256; their readable text copies only trim trailing whitespace/EOF for the staged diff check. JSON, screenshots and trace remain original; no failure is removed. A first diff for the no-newline error-context file failed to parse (exit2); the corrected unified diff includes the no-newline marker. Neither this evidence-formatting failure nor the earlier add-file failure reran a test. A first hand-counted add-file patch failed with `unexpected end of file`, and its consequent syntax check exited1 because the runner file had not been created. This was corrected before any server/test launch, with no runtime resource created or behavioral test retried. The created runner's actual syntax check exited0; LSP reports no diagnostics on its Playwright config. `editor-followup/final-checks.json` records INDEX generation/check and diff checks after the final evidence-inclusive file set was staged. Evidence-only staging is left for the parent; HEAD is not advanced.
+
+---
+
 # Task5 Q1 correction - gate real audio QA owners
 
 ## Outcome and revision binding (st_01a07495)
