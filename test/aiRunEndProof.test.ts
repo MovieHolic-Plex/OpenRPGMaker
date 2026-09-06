@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Project } from "@/project/types";
 import type { ChatResult } from "@/ai/llmClient";
 import { fixedDeclarer } from "./intentFixture";
-import { AssistantSession } from "@/ai/assistantSession";
+import { AssistantSession, type RunEndProofState } from "@/ai/assistantSession";
 import { store } from "@/project/store";
 import { createBlankProject } from "@/project/defaults";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
@@ -88,6 +88,57 @@ describe("AssistantSession accepted-revision proof", () => {
   });
   afterEach(() => {
     vi.clearAllTimers(); vi.useRealTimers(); vi.restoreAllMocks(); vi.unstubAllGlobals(); vi.unstubAllEnvs();
+  });
+
+  it("projects initialized proof events and rechecks freshness after the final status subscriber", async () => {
+    const f = await fixture();
+    expect(f.session.getRunEndProof()).toBeNull();
+    expect(f.session.getHarnessSnapshot().runEndProof).toBeNull();
+    const states: RunEndProofState[] = [];
+    const result = await f.session.proveAppliedRevision((event) => {
+      if (event.type === "persistence_proof") {
+        expect(f.session.getRunEndProof()).toEqual(event.state);
+        states.push(event.state);
+      } else if (event.type === "status" && states.at(-1)?.status === "succeeded") {
+        f.store.update((draft) => { draft.meta.title = "subscriber-edit"; });
+      }
+    });
+    expect(states.map(({ status, verified }) => ({ status, verified }))).toEqual([
+      { status: "attempted", verified: false },
+      { status: "attempted", verified: false },
+      { status: "succeeded", verified: true },
+    ]);
+    expect(result).toMatchObject({ status: "succeeded", verified: false });
+    expect(f.session.getRunEndProof()).toEqual(result);
+    expect(f.session.getHarnessSnapshot().runEndProof).toEqual(result);
+    expect(f.store.getCurrent().meta.title).toBe("subscriber-edit");
+  });
+
+  it.each(["edit", "cancel"] as const)("rechecks %s from a synchronous proof subscriber", async (action) => {
+    const f = await fixture();
+    const controller = new AbortController();
+    const result = await f.session.proveAppliedRevision((event) => {
+      if (event.type !== "persistence_proof" || event.state.status !== "succeeded") return;
+      if (action === "cancel") controller.abort();
+      else f.store.update((draft) => { draft.meta.title = "proof-subscriber-edit"; });
+    }, controller.signal);
+    expect(result).toMatchObject({ status: "failed", verified: false, reason: action === "cancel" ? "cancelled" : "stale" });
+    expect(f.session.getRunEndProof()).toEqual(result);
+    expect(f.savedAudits()).toHaveLength(0);
+  });
+
+  it("returns the latest emitted state when a status subscriber starts a cancelled proof", async () => {
+    const f = await fixture();
+    const controller = new AbortController();
+    controller.abort();
+    let nested: Promise<RunEndProofState> | undefined;
+    const result = await f.session.proveAppliedRevision((event) => {
+      if (event.type === "status") nested = f.session.proveAppliedRevision(() => {}, controller.signal);
+    });
+    expect(nested).toBeDefined();
+    expect(await nested).toMatchObject({ status: "failed", verified: false, reason: "cancelled" });
+    expect(result).toEqual(await nested);
+    expect(f.session.getRunEndProof()).toEqual(result);
   });
 
   it("does not claim verified after a failed proof read through actual session completion", async () => {
