@@ -1,5 +1,11 @@
 import type { GameEvent, MapId, Project } from "@/project/types";
-import { supabaseProjectConfig } from "@/project/supabaseProjectConfig";
+import type { LoadedProjectIdentity } from "./loadedProjectIdentity";
+import { randomUuid } from "@/util/id";
+let projectNamespace = `ephemeral:${randomUuid()}`;
+export function setEventDraftVaultProjectIdentity(identity: LoadedProjectIdentity): void {
+  if (persistTimer) persistEventDraftVaultNow(persistTimerProjectId ?? projectNamespace);
+  projectNamespace = JSON.stringify([identity.backend, identity.projectId]);
+}
 
 export type EventDraftVaultEntry = {
   readonly mapId: MapId;
@@ -228,10 +234,17 @@ export function scheduleEventDraftVaultPersist(projectId = resolveVaultProjectId
   if (!browserLocalStorage()) return;
   if (persistTimer) clearTimeout(persistTimer);
   persistTimerProjectId = projectId;
+  const entries = listEventDraftVaultEntries();
   persistTimer = setTimeout(() => {
     persistTimer = null;
     persistTimerProjectId = null;
-    persistEventDraftVaultNow(projectId);
+    const storage = browserLocalStorage();
+    if (storage) {
+      try {
+        if (entries.length) storage.setItem(eventDraftVaultStorageKey(projectId), JSON.stringify({ version: 1, savedAt: Date.now(), entries }));
+        else storage.removeItem(eventDraftVaultStorageKey(projectId));
+      } catch (error) { console.warn("[eventDraftVault] scheduled persist failed:", error); }
+    }
   }, PERSIST_DELAY_MS);
 }
 
@@ -262,5 +275,5 @@ export function _resetEventDraftVaultForTest(): void {
 }
 
 function resolveVaultProjectId(): string {
-  return supabaseProjectConfig()?.projectId ?? "local";
+  return projectNamespace;
 }

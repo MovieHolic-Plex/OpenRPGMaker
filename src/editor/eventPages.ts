@@ -12,7 +12,7 @@ import {
 } from "@/editor/eventCommandPaths";
 import { commandKindLabel } from "@/editor/panels/eventEditor/options";
 import { recordCommandToolbarChange } from "@/editor/panels/eventEditor/commandToolbarHistory";
-import { store, type ProjectChangeDescriptor } from "@/project/store";
+import { store, type ProjectChangeDescriptor, type ProjectChangeAnnotation } from "@/project/store";
 import type { Command, EventPage, GameEvent, MapId, Trigger } from "@/project/types";
 import { genId } from "@/util/id";
 
@@ -458,7 +458,8 @@ export function replaceEventPageCommands(
   mapId: MapId,
   eventId: string,
   pageId: string,
-  commands: readonly Command[]
+  commands: readonly Command[],
+  change?: ProjectChangeAnnotation,
 ): void {
   store.update((project) => {
     const page = project.maps[mapId]?.events
@@ -467,7 +468,7 @@ export function replaceEventPageCommands(
     if (!page) return;
     page.commands = commands.map((command) => structuredClone(command));
   // 커맨드 툴바의 되돌리기/다시하기와 여러 줄 붙여넣기가 같이 쓰는 경로다 — 개수로 규모를 남긴다.
-  }, pageChange(mapId, eventId, `커맨드 목록 교체: ${commands.length}개`));
+  }, { ...pageChange(mapId, eventId, `커맨드 목록 교체: ${commands.length}개`), ...change });
 }
 
 // [P2] 크로스 컨테이너 이동: sourcePath 명령을 targetContainerPath 리스트의 toIndex 로.

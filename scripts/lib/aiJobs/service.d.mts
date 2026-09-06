@@ -4,5 +4,6 @@ import type { AiJobsHttpHandler } from './http.mjs';
 export function aiJobsDirectory(root?: string): string;
 export function openAiJobsService(options: AiJobsRuntime & {
   readonly directory: string;
+  readonly configuredBackend?: string | null;
   readonly origins: readonly string[] | (() => readonly string[]);
 }): Promise<{ readonly repository: AiJobsRepository; readonly scheduler: AiJobsScheduler; readonly handler: AiJobsHttpHandler; close(): Promise<void> }>;

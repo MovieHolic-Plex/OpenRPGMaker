@@ -66,6 +66,14 @@
   - The trusted Vite factory supplies its actual `cacheDir`. Worker transport permits only that optimizer directory in addition to existing static paths, not arbitrary neighboring files. Static GET resets may retry once; paid provider retry rules are unchanged. Route-handler failures are raced back into the owning job rather than escaping and killing Node.
   - `.omo/evidence/ai-job-queue/task-4-runtime/proof.mjs` exercises all six families and seven tileset variants through real HTTP/Chromium with a controlled paid-provider wire. It records generated artifacts, untouched input and separate awaiting-review/unsaved state; it is not evidence that the later editor inbox/application UI exists.
 
+- Delayed job application:
+  - `src/editor/aiJobs/applyJobResult.ts` owns application and save-only retry. It reads immutable results, checks the full loaded backend/project identity and replacement epoch, and validates merged proposals before the synchronous mutation boundary. Generation never runs again during application.
+  - `src/ai/jobs/resultPatch.ts` merges keyed records/resources/maps; overlapping edits, creation collisions and unknown broad read dependencies reject. Unrelated live event drafts survive. Reviewed command jobs bind to a live owner, draft UUID and command revision, not the current selection.
+  - Browser Web Locks and durable `oprn-ai-job-applications-v1` receipts prevent duplicate application across tabs. A prepared record without a durable applied receipt is outcome-unknown, never permission to replay. Canonically unchanged output records `noChanges: true` without a store mutation or undo.
+  - Applied artifacts contain the exact synchronous application snapshot, not later editor state. Their receipt/result/hash binding is required for applied-after reports. Draft artifacts are not confirmed project data. Save-only recovery requires an explicit detached reload with matching normalized hash; applied is not saved.
+  - `src/project/loadedProjectIdentity.ts` derives identity from the effective loaded connection. Local cache envelopes retain UUIDs across reload and use a different UUID for new/import/reset. Cache migration and writes lock and retain the captured slot, even if the page URL changes while waiting. Fresh/blank sessions remain intentionally ephemeral.
+  - Focused tests: `test/aiJobApplication.test.ts`, `test/aiJobIdentity.test.ts`, `test/aiJobsHttp.test.mjs`. `node test/aiJobApplication.browser.mjs` exercises actual two-tab locks/IndexedDB, no-op receipts and existing command confirmation/undo without paid calls or user-project writes.
+
 - `src/battle` boundary:
   - `src/battle/runtime.ts` is the battle state machine and should be treated as the core battle boundary.
   - It builds battlers and events from project data, advances turns, resolves commands/results, and returns battle snapshots/results.

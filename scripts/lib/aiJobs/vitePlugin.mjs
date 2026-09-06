@@ -1,4 +1,5 @@
 import { once } from 'node:events';
+import { createHash } from 'node:crypto';
 import { aiJobsDirectory, openAiJobsService } from './service.mjs';
 
 /** Task 3 injects its managed browser executor here; never fall back to page-owned work. */
@@ -17,7 +18,12 @@ export function aiJobsPlugin(runtime = {}) {
       signal.throwIfAborted();
       return execution.executeJob(input, host, signal);
     });
-    const service = await openAiJobsService({ directory: aiJobsDirectory(server.config.root), origins, ...execution, executeJob });
+    const proxy = (preview ? server.config.preview.proxy : server.config.server.proxy)?.['/supabase'];
+    const target = typeof proxy === 'object' ? proxy.target : null;
+    const normalizedTarget = target ? new URL(String(target)) : null;
+    if (normalizedTarget) { normalizedTarget.username = ''; normalizedTarget.password = ''; normalizedTarget.search = ''; normalizedTarget.hash = ''; }
+    const configuredBackend = normalizedTarget ? `supabase-proxy:${createHash('sha256').update(normalizedTarget.href.replace(/\/+$/, '') + ':rpg_zzu').digest('hex')}` : null;
+    const service = await openAiJobsService({ configuredBackend, directory: aiJobsDirectory(server.config.root), origins, ...execution, executeJob });
     services.add(service);
     server.middlewares.use(service.handler);
     // Preview does not run Rollup closeBundle. Await durable shutdown BEFORE closing

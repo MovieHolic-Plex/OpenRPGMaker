@@ -5,6 +5,7 @@ import { installEventEditorCustomSelects } from "./customSelect";
 
 type EventSubdialogOptions = {
   readonly title: string;
+  readonly onClose?: () => void;
   readonly subtitle?: string;
   readonly testId: string;
   // full = 상점처럼 표가 넓은 특수 명령용 전체화면. narrow/wide 는 기존 폭 고정 창.
@@ -42,6 +43,7 @@ export function openEventSubdialog(options: EventSubdialogOptions): void {
   const body = el("div", { class: "event-subdialog-body" });
   let disposeCustomSelects = (): void => undefined;
   const close = registerModal(backdrop, () => {
+    options.onClose?.();
     disposeCustomSelects();
     backdrop.remove();
     if (returnFocus && document.body.contains(returnFocus) && returnFocus.getAttribute("disabled") === null) {

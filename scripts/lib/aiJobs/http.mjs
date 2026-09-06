@@ -1,4 +1,4 @@
-import { randomBytes, timingSafeEqual } from 'node:crypto';
+import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
 import { canonicalJson, keys, object, requireValue } from './validation.mjs';
 import { AiJobsServiceError, conflict, rejectSecrets } from './providerOperations.mjs';
 export { rejectSecrets } from './providerOperations.mjs';
@@ -26,7 +26,7 @@ async function readJson(req, maxBodyBytes) {
 }
 
 /** Connect-compatible real Node HTTP handler. No CORS, remote fetch, or browser execution path. */
-export function createAiJobsHttpHandler({ repository, scheduler, origins, maxBodyBytes = 32 * 1024 * 1024, onError = console.error }) {
+export function createAiJobsHttpHandler({ repository, scheduler, origins, maxBodyBytes = 32 * 1024 * 1024, onError = console.error, configuredBackend = null }) {
   const session = randomBytes(32).toString('hex');
   const csrfToken = randomBytes(32).toString('hex');
   const streams = new Set();
@@ -58,6 +58,7 @@ export function createAiJobsHttpHandler({ repository, scheduler, origins, maxBod
       refs.push(...result.artifacts);
       if (result.generatedSnapshot) refs.push(result.generatedSnapshot);
     }
+    if (job.applicationEvidence?.artifact?.ref) refs.push(job.applicationEvidence.artifact.ref);
     if (job.reportRef) {
       refs.push(job.reportRef);
       // Renderers explicitly list immutable report assets; never recurse arbitrary JSON/URLs.
@@ -95,7 +96,7 @@ export function createAiJobsHttpHandler({ repository, scheduler, origins, maxBod
       if (parts.length === 0) return json(res, 200, { jobs: repository.snapshot().jobs, ...scheduler.status() });
       if (parts[0] === 'session' && parts.length === 1) {
         res.setHeader('Set-Cookie', `${COOKIE}=${session}; Path=${ROOT}; HttpOnly; SameSite=Strict${req.socket.encrypted ? '; Secure' : ''}`);
-        return json(res, 200, { csrfToken, ...scheduler.status() });
+        return json(res, 200, { csrfToken, configuredBackend, ...scheduler.status() });
       }
       if (parts[0] === 'events' && parts.length === 1) return events(req, res, url);
       if (parts[0] === 'inbox' && parts.length === 1) return json(res, 200, { inbox: repository.snapshot().inbox });
@@ -147,7 +148,8 @@ export function createAiJobsHttpHandler({ repository, scheduler, origins, maxBod
       }
       if (parts.length === 3 && parts[1] === 'application') {
         if (parts[2] === 'prepare') {
-          keys(body, ['claimId', 'project', 'resultSha256', 'baselineSha256']);
+          keys(body, ['claimId', 'project', 'resultSha256', 'baselineSha256', ...('receiptId' in body ? ['receiptId'] : [])]);
+          requireValue(body.receiptId === undefined || typeof body.receiptId === 'string' && body.receiptId.length > 0, 'Invalid prepared receipt ID');
           requireValue(typeof body.claimId === 'string' && body.claimId.length > 0 && body.claimId.length <= 256, 'Application claim ID required');
           const input = await repository.readJson(scheduler.getJob(id).inputRef);
           await scheduler.change(draft => {
@@ -162,6 +164,24 @@ export function createAiJobsHttpHandler({ repository, scheduler, origins, maxBod
           });
           return json(res, 200, { job: scheduler.getJob(id) });
         }
+        if (parts[2] === 'artifact') {
+          keys(body, ['claimId', 'receiptId', 'project', 'resultSha256', 'snapshotSha256', 'serialized']);
+          requireValue(typeof body.serialized === 'string' && createHash('sha256').update(body.serialized).digest('hex') === body.snapshotSha256, 'Applied artifact hash mismatch');
+          requireValue(typeof body.receiptId === 'string' && body.receiptId.length > 0, 'Receipt ID required');
+          const ref = await repository.putBlob(Buffer.from(body.serialized), 'application/json');
+          await scheduler.change(draft => {
+            const job = draft.jobs.find(j => j.id === id);
+            const claim = job.applicationEvidence?.claim;
+            if (!claim || claim.claimId !== body.claimId || claim.receiptId !== body.receiptId || canonicalJson(job.project) !== canonicalJson(body.project) || job.resultRef?.sha256 !== body.resultSha256) conflict('APPLICATION_IDENTITY_MISMATCH', 'Artifact does not match prepared application');
+            const artifact = { receiptId: body.receiptId, resultSha256: body.resultSha256, ref };
+            const previous = job.applicationEvidence.artifact;
+            if (previous && canonicalJson(previous) !== canonicalJson(artifact)) conflict('APPLICATION_ARTIFACT_CONFLICT', 'Applied artifact is immutable');
+            const receipt = job.applicationEvidence.receipt;
+            if (receipt && (receipt.application !== 'applied' || receipt.evidence.appliedSnapshotSha256 !== ref.sha256)) conflict('APPLICATION_RECEIPT_CONFLICT', 'Artifact does not match immutable receipt');
+            job.applicationEvidence.artifact = artifact;
+          });
+          return json(res, 200, { artifact: ref });
+        }
         if (parts[2] === 'evidence') {
           keys(body, ['claimId', 'receiptId', 'project', 'resultSha256', 'application', 'save', 'evidence', 'saveEvidence']);
           requireValue(typeof body.receiptId === 'string' && body.receiptId.length > 0 && object(body.evidence) && ['applied', 'conflict', 'outcome-unknown'].includes(body.application) && ['unsaved', 'saved', 'failed', 'unknown'].includes(body.save), 'Invalid application evidence');
@@ -172,6 +192,9 @@ export function createAiJobsHttpHandler({ repository, scheduler, origins, maxBod
             const job = draft.jobs.find(j => j.id === id);
             const claim = job.applicationEvidence?.claim;
             if (!claim || claim.claimId !== body.claimId || canonicalJson(body.project) !== canonicalJson(job.project) || body.resultSha256 !== job.resultRef?.sha256) conflict('APPLICATION_IDENTITY_MISMATCH', 'Evidence does not match the application claim');
+            const artifact = job.applicationEvidence.artifact;
+            if (claim.receiptId !== undefined && claim.receiptId !== body.receiptId) conflict('APPLICATION_IDENTITY_MISMATCH', 'Receipt ID differs from preparation');
+            if (body.evidence.appliedArtifact && (!artifact || artifact.receiptId !== body.receiptId || canonicalJson(artifact.ref) !== canonicalJson(body.evidence.appliedArtifact) || artifact.ref.sha256 !== body.evidence.appliedSnapshotSha256)) conflict('APPLICATION_ARTIFACT_MISMATCH', 'Applied artifact does not match receipt hash');
             const previous = job.applicationEvidence.receipt;
             if (previous) {
               if (canonicalJson(previous) === canonicalJson(body)) return;
@@ -179,7 +202,7 @@ export function createAiJobsHttpHandler({ repository, scheduler, origins, maxBod
             }
             if (!['applying', 'outcome-unknown'].includes(job.application)) conflict('APPLICATION_NOT_READY', 'No unresolved application claim');
             job.application = body.application; job.save = body.save;
-            job.applicationEvidence = { claim, receipt: body };
+            job.applicationEvidence = { claim, receipt: body, ...(artifact ? { artifact } : {}) };
             job.saveEvidence = { updates: [{ saveAttemptId: 'initial', save: body.save, evidence: body.saveEvidence }] };
           });
           return json(res, 200, { job: scheduler.getJob(id) });

@@ -20,6 +20,17 @@ export type ApplyAiReviewResult =
 
 export function applyAiReviewProposals(input: ApplyAiReviewInput): ApplyAiReviewResult {
   const current = store.getCurrent().tilesets[input.tilesetId];
+  if (!current) return { kind: "stale" };
+  const next = structuredClone(current);
+  const result = materializeAiReviewProposals(next, input);
+  if (result.kind === "stale" || result.appliedIds.length === 0) return result;
+  recordProjectSnapshot("AI tileset knowledge review");
+  store.update(project => { project.tilesets[input.tilesetId] = next; });
+  return result;
+}
+
+/** Pure application of reviewed artifact facts onto a detached tileset. */
+export function materializeAiReviewProposals(current: TilesetDef, input: ApplyAiReviewInput): ApplyAiReviewResult {
   if (!current || tilesetKnowledgeFingerprint(current) !== input.state.fingerprint) return { kind: "stale" };
   const selectedIds = new Set(input.proposalIds ?? []);
   const candidates = input.state.proposals
@@ -51,19 +62,14 @@ export function applyAiReviewProposals(input: ApplyAiReviewInput): ApplyAiReview
   const appliedSet = new Set(appliedIds);
   const skippedIds = candidates.filter((proposal) => !appliedSet.has(proposal.id)).map((proposal) => proposal.id);
   if (compiled.length === 0) return { appliedIds, kind: "applied", skippedIds };
-  recordProjectSnapshot("AI tileset knowledge review");
-  store.update((project) => {
-    const tileset = project.tilesets[input.tilesetId];
-    if (!tileset) return;
-    for (const entry of compiled) {
-      persistTilesetKnowledge(tileset, {
+  for (const entry of compiled) {
+      persistTilesetKnowledge(current, {
         compiled: entry.compiled,
         description: entry.proposal.description,
         placementRules: entry.proposal.placementRules,
         template: entry.proposal.template,
       });
-    }
-  });
+  }
   return { appliedIds, kind: "applied", skippedIds };
 }
 

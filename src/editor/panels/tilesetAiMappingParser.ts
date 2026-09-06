@@ -59,14 +59,14 @@ type AiMappingResult = {
 const VALID_GROUP_ROLES = new Set<TileGroupRole>(["building", "castle", "fence", "roof", "terrain", "water", "wall", "prop"]);
 const VALID_GROUP_LAYERS = new Set<TileGroupLayer>(["event", "lower", "mixed", "upper"]);
 
-export function applyAiMappingAnswer(tileset: TilesetDef, tiles: readonly number[], answer: string): void {
+export function applyAiMappingAnswer(tileset: TilesetDef, tiles: readonly number[], answer: string, groupId: (index: number) => string = index => `ai-${Date.now()}-${index}`): void {
   const selectedTiles = new Set(tiles);
   const mapping = parseAiMappingResult(answer, selectedTiles, tileset);
-  if (mapping) applyStructuredMapping(tileset, mapping, selectedTiles);
+  if (mapping) applyStructuredMapping(tileset, mapping, selectedTiles, groupId);
   else applyFallbackMapping(tileset, tiles, answer);
 }
 
-function applyStructuredMapping(tileset: TilesetDef, mapping: AiMappingResult, selectedTiles: ReadonlySet<number>): void {
+function applyStructuredMapping(tileset: TilesetDef, mapping: AiMappingResult, selectedTiles: ReadonlySet<number>, groupId: (index: number) => string): void {
   for (const block of mapping.tiles) {
     if (!selectedTiles.has(block.tile)) continue;
     const fallback = resolveTilesetTileContext(tileset, block.tile);
@@ -93,7 +93,7 @@ function applyStructuredMapping(tileset: TilesetDef, mapping: AiMappingResult, s
     tileset.tileGroups = [
       ...(tileset.tileGroups ?? []).filter((group) => !group.id.startsWith("ai-")),
       ...groups.map((group, index) => ({
-        id: `ai-${Date.now()}-${index}`,
+        id: groupId(index),
         name: group.name,
         role: group.role,
         defaultLayer: constrainedGroupLayer(tileset, group),

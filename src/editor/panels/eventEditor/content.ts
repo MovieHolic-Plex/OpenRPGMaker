@@ -1,3 +1,4 @@
+import { registerDraftOwner } from "@/editor/aiJobs/draftOwners";
 import { editorState } from "@/editor/editorState";
 import { eventCommandBranches } from "@/editor/eventCommandBranches";
 import {
@@ -163,7 +164,15 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   const selectionKey = `${mapId}:${ev.id}:${activePage.id}`;
   beginCommandSelectionScope(selectionKey);
   const commandHistory = pageCommandHistory(mapId, ev.id, activePage.id);
-  const actions = commandHistory.wrapActions(pageCommandActions(mapId, ev.id, activePage.id));
+  const owner = { kind: "map-event" as const, mapId, eventId: ev.id, pageId: activePage.id };
+  const actions = { ...commandHistory.wrapActions(pageCommandActions(mapId, ev.id, activePage.id)), jobOwner: owner };
+  const draftId = ev.draft?.id;
+  if (draftId) registerDraftOwner({
+    draftId, owner, project: store.getLoadedProjectIdentity(), epoch: store.getProjectEpoch(),
+    isOpen: () => section.isConnected && store.getCurrent().maps[mapId]?.events.find(e => e.id === eventId)?.draft?.id === draftId,
+    readCommands: () => activePageCommands(mapId, eventId, activePage.id),
+    replaceAll: commands => commandHistory.replaceAll(commands, { origin: "ai", label: "AI job command review", reason: "Reviewed delayed AI result" }),
+  });
   const settingsColumn = el("div", { class: "event-editor-settings-column" });
   const commandsColumn = el("div", { class: "event-editor-commands-column" });
   const columnResizer = el("div", {
@@ -239,6 +248,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     if (!cmd) return;
     openEventCommandEditDialog({
       initial: cmd,
+      owner: actions.jobOwner,
       lockKind: true,
       onApply: (edited) => actions.replaceCommand(path, edited),
     });
@@ -274,7 +284,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       onAddToBranch: (containerPath) => openCommandPickerForActions(actions, containerPath),
       // 빈 이벤트 CTA: 말하기 / 장소 옮기기 / 상점 열기는 피커를 거치지 않고 바로 편집면으로.
       onQuickStart: (kind) => {
-        openNewEventCommandDialog(newCommand(kind), (command) => actions.addCommand([], command));
+        openNewEventCommandDialog(newCommand(kind), (command) => actions.addCommand([], command), actions.jobOwner);
       },
       selectedPath: selectedCommandPath(),
     });
@@ -909,7 +919,7 @@ function pageCommandHistory(mapId: MapId, eventId: string, pageId: string): Comm
   return createCommandToolbarHistory({
     key: `${mapId}:${eventId}:${pageId}`,
     readCommands: () => activePageCommands(mapId, eventId, pageId),
-    replaceCommands: commands => replaceEventPageCommands(mapId, eventId, pageId, commands),
+    replaceCommands: (commands, change) => replaceEventPageCommands(mapId, eventId, pageId, commands, change),
   });
 }
 
@@ -1016,7 +1026,7 @@ function renderEmptyCommandLine(
                 toast(result.unavailableReason, "error");
                 return;
               }
-              openNewEventCommandDialog(result.command, (command) => actions.addCommand([], command));
+              openNewEventCommandDialog(result.command, (command) => actions.addCommand([], command), actions.jobOwner);
             },
           },
         })),
@@ -1038,7 +1048,7 @@ function openCommandPickerForActions(
     onSelect: (command) => {
       openNewEventCommandDialog(command, (editedCommand) => {
         actions.addCommand(containerPath, editedCommand);
-      });
+      }, actions.jobOwner);
     },
   });
 }
@@ -1052,7 +1062,7 @@ export function openActiveEventCommandPicker(mapId: MapId, eventId: string): boo
     onSelect: (command) => {
       openNewEventCommandDialog(command, (editedCommand) => {
         addEventPageCommand(mapId, eventId, pageId, editedCommand);
-      });
+      }, { kind: "map-event", mapId, eventId, pageId });
     },
   });
   return true;

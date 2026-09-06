@@ -1,3 +1,4 @@
+import { randomUuid } from "@/util/id";
 import { commitEventDraftAuthoredWrites, eventDraftAuthoredDiff } from "./eventDraftAuthored";
 import type { GameEvent, GameMap, MapId, PersistedGameEvent, Project } from "@/project/types";
 
@@ -101,7 +102,7 @@ export function beginEventEditDraft(project: Project, mapId: MapId, eventId: str
   const event = project.maps[mapId]?.events.find((item) => item.id === eventId);
   if (!event || event.draft?.kind === "new") return false;
   if (event.draft?.kind === "edit") return true;
-  event.draft = { kind: "edit", original: eventWithoutDraft(event) };
+  event.draft = { id: randomUuid(), kind: "edit", original: eventWithoutDraft(event) };
   return true;
 }
 

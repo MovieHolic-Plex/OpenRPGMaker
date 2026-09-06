@@ -1,4 +1,5 @@
 import { resolveCommandAtPath, resolveCommandListAtPath } from "@/editor/eventCommandPaths";
+import type { ProjectChangeAnnotation } from "@/project/store";
 import type { Command } from "@/project/types";
 import { copyEventCommandsToClipboard } from "./commandClipboard";
 import { authoredCommandPaths, clearCommandInspector, isCommandSelected, notifyCommandSelectionChanged, selectedCommandPaths, selectedCommandRoots } from "./commandInspector";
@@ -7,7 +8,7 @@ import type { CommandListActions } from "./types";
 type CommandToolbarHistoryOptions = {
   readonly key: string;
   readonly readCommands: () => Command[];
-  readonly replaceCommands: (commands: Command[]) => void;
+  readonly replaceCommands: (commands: Command[], change?: ProjectChangeAnnotation) => void;
 };
 
 type CommandHistory = {
@@ -25,7 +26,7 @@ export type CommandToolbarHistory = {
    * 편집용. 예전 AI 삽입은 명령 개수만큼 insertCommand 를 불러 스냅샷이 그만큼 쌓였고,
    * "되돌리려면 ↶" 안내와 달리 8개를 넣으면 ↶ 를 8번 눌러야 했다.
    */
-  readonly replaceAll: (commands: readonly Command[]) => void;
+  readonly replaceAll: (commands: readonly Command[], change?: ProjectChangeAnnotation) => void;
   readonly undo: () => void;
   readonly redo: () => void;
   readonly canUndo: () => boolean;
@@ -111,8 +112,8 @@ export function createCommandToolbarHistory(options: CommandToolbarHistoryOption
       if (actions.deleteCommands) actions.deleteCommands(paths);
       else change(() => paths.reverse().forEach(selected => actions.deleteCommand(selected)));
     },
-    replaceAll: (commands) => {
-      change(() => options.replaceCommands(structuredClone([...commands])));
+    replaceAll: (commands, annotation) => {
+      change(() => options.replaceCommands(structuredClone([...commands]), annotation));
     },
     undo: () => restorePrevious(options, history()),
     redo: () => restoreNext(options, history()),

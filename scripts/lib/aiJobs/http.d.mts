@@ -11,5 +11,6 @@ export function createAiJobsHttpHandler(options: {
   readonly scheduler: AiJobsScheduler;
   readonly origins: readonly string[] | (() => readonly string[]);
   readonly maxBodyBytes?: number;
+  readonly configuredBackend?: string | null;
   readonly onError?: (error: unknown) => void;
 }): AiJobsHttpHandler;

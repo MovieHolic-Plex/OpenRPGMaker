@@ -1,3 +1,4 @@
+import { randomUuid } from "@/util/id";
 import { stageEventDraftAuthoredWrite } from "@/project/eventDraftAuthored";
 import { editorState } from "@/editor/editorState";
 import { createDefaultGameEvent } from "@/editor/eventActions";
@@ -34,7 +35,7 @@ export function createEventDraft(
       if (!map || x < 0 || y < 0 || x >= map.width || y >= map.height) return;
       const event = createDefaultGameEvent(x, y, trigger);
       // original = 생성 직후 스냅샷: "손댔는가" 판정 기준(eventDraftHasUserChanges).
-      event.draft = { kind: "new", original: eventWithoutDraft(event) };
+      event.draft = { id: randomUuid(), kind: "new", original: eventWithoutDraft(event) };
       map.events.push(event);
       newId = event.id;
       selectedPageId = event.pages?.[event.pages.length - 1]?.id ?? null;

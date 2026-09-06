@@ -498,6 +498,7 @@ function selectCommandLine(item: HTMLElement): void {
 function openCommandEditModal(cmd: Command, path: number[], actions: CommandListActions, previewFace?: ActiveFace): void {
   openEventCommandEditDialog({
     initial: cmd,
+    owner: actions.jobOwner,
     lockKind: true,
     previewFace,
     onApply: (edited) => actions.replaceCommand(path, edited),

@@ -1,3 +1,7 @@
+import { randomUuid } from "@/util/id";
+import { store } from "@/project/store";
+import { registerDraftOwner, type LiveDraftOwner } from "@/editor/aiJobs/draftOwners";
+import type { ImageEventOwner } from "@/ai/jobs/imagePayload";
 import { newCommand } from "@/editor/eventActions";
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { isContainerInsideCommand, moveCommandBetweenLists, resolveRootCommandBranchList } from "@/editor/eventCommandPaths";
@@ -13,6 +17,7 @@ import type { CommandListActions } from "./types";
 type EventCommandEditDialogRequest = {
   readonly title?: string;
   readonly initial: Command;
+  readonly owner?: ImageEventOwner;
   readonly onApply: (command: Command) => void;
   // 명령 추가/편집 모두 종류 select 를 잠근다(분기 유실·내부 kind 노출 방지).
   readonly lockKind?: boolean;
@@ -25,16 +30,26 @@ export function commandDialogWidth(command: Command): "narrow" | "wide" | "full"
   return command.kind === "shop" ? "full" : "wide";
 }
 
-export function openEventCommandEditDialog(request: EventCommandEditDialogRequest): void {
+export function openEventCommandEditDialog(request: EventCommandEditDialogRequest): LiveDraftOwner | null {
   let stagedCommand = structuredClone(request.initial);
+  let open = true;
+  let refresh = (): void => undefined;
+  const owner: LiveDraftOwner | null = request.owner ? {
+    draftId: randomUuid(), owner: request.owner, project: store.getLoadedProjectIdentity(), epoch: store.getProjectEpoch(),
+    isOpen: () => open,
+    readCommands: () => [stagedCommand],
+    replaceAll: commands => { stagedCommand = structuredClone(commands[0]); refresh(); },
+  } : null;
+  const release = owner ? registerDraftOwner(owner) : () => undefined;
   openEventSubdialog({
     title: request.title ?? commandEditTitle(stagedCommand),
+    onClose: () => { open = false; release(); },
     testId: "event-command-edit-dialog",
     width: commandDialogWidth(stagedCommand),
     render: (body, close) => {
       const editor = el("div", {
         class: "event-command-edit-dialog",
-        dataset: { testid: "event-command-edit-form" },
+        dataset: { testid: "event-command-edit-form", ...(owner ? { draftId: owner.draftId } : {}) },
       });
       const formHost = el("div", { class: "event-command-edit-body" });
       const previewHost = el("div", {
@@ -66,10 +81,13 @@ export function openEventCommandEditDialog(request: EventCommandEditDialogReques
           lockKind: request.lockKind ?? true,
           previewFace: request.previewFace,
           getCurrentCommand: () => stagedCommand,
+          ...(owner ? { jobDraft: owner } : {}),
         }, stagedCommand));
         renderPreview();
       };
+      refresh = renderEditor;
       const actions: CommandListActions = {
+        jobOwner: request.owner,
         addCommand: (containerPath, command) => {
           const list = commandContainer(stagedCommand, containerPath);
           if (!list) return;
@@ -192,6 +210,7 @@ export function openEventCommandEditDialog(request: EventCommandEditDialogReques
       }
     },
   });
+  return owner;
 }
 
 function createShopPreviewFooterToggle(editor: HTMLElement): HTMLElement {
@@ -222,9 +241,10 @@ function commandContainer(rootCommand: Command, containerPath: readonly number[]
   return resolveRootCommandBranchList(rootCommand, containerPath, { missingBranches: "create" });
 }
 
-export function openNewEventCommandDialog(command: Command, onApply: (command: Command) => void): void {
+export function openNewEventCommandDialog(command: Command, onApply: (command: Command) => void, owner?: ImageEventOwner): void {
   openEventCommandEditDialog({
     initial: command,
+    owner,
     title: commandEditTitle(command),
     lockKind: true,
     onApply,

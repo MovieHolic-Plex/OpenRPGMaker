@@ -261,6 +261,7 @@ function commandArea(record: TroopRecord, page: BattleEventPageRecord | undefine
   const host = el("div", { class: "cmd-list", dataset: { testid: "db-troop-event-command-list" } });
   renderDatabaseCommandListEditor(host, {
     commands: page.commands,
+    jobOwner: { kind: "troop", troopId: record.id, pageId: page.id },
     rerender,
     runtimeSupport: battleEventCommandRuntimeSupport,
     pickerContext: "troop",

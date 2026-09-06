@@ -1,0 +1,143 @@
+{
+  "identity": {
+    "backend": "local",
+    "projectId": "396e7092-2b82-4bd4-9bf5-fac80a954031"
+  },
+  "jobId": "6aabfa61-fd83-4b74-841f-cd1d017b34dc",
+  "unchangedJob": "005bc2a9-ac7b-4dda-a090-79173a4682e8",
+  "unchanged": {
+    "outcome": {
+      "application": "applied",
+      "save": "unsaved",
+      "receiptId": "45cb1e1e-46af-4269-b2aa-88a0c1db11d6",
+      "reason": "no-changes"
+    },
+    "mutations": 0,
+    "history": 0
+  },
+  "draftJob": "d332cbdf-e710-42fb-833f-67aa2ae43838",
+  "outcomes": [
+    {
+      "application": "applied",
+      "save": "unsaved",
+      "receiptId": "45f3307b-fb0d-4e4a-a3c0-5ad51828090c"
+    },
+    {
+      "application": "applied",
+      "save": "unsaved",
+      "receiptId": "45f3307b-fb0d-4e4a-a3c0-5ad51828090c"
+    }
+  ],
+  "draftOutcome": {
+    "application": "applied",
+    "save": "unsaved",
+    "receiptId": "8a198092-7bb5-49f4-9195-4d40693dcbab"
+  },
+  "histories": [
+    0,
+    1
+  ],
+  "durableEnvelopeId": "396e7092-2b82-4bd4-9bf5-fac80a954031",
+  "receipts": [
+    {
+      "jobId": "6aabfa61-fd83-4b74-841f-cd1d017b34dc",
+      "application": "applied",
+      "save": "unsaved",
+      "evidence": {
+        "appliedSnapshotSha256": "73289c0a43e63fcf0863c7f6c69c74e3573b730b5930c937207724518df929f6",
+        "appliedArtifact": {
+          "sha256": "73289c0a43e63fcf0863c7f6c69c74e3573b730b5930c937207724518df929f6",
+          "byteLength": 2450983,
+          "mediaType": "application/json"
+        },
+        "beforeSnapshotSha256": "1706f9c60d94436b9f903329822d42665fa70d16e378650e1376e8afc307bd69",
+        "noChanges": false,
+        "hashScheme": "project-canonical-json-no-event-drafts-v1",
+        "scope": "project"
+      },
+      "artifact": {
+        "receiptId": "45f3307b-fb0d-4e4a-a3c0-5ad51828090c",
+        "resultSha256": "5668180444f5630a8f6ff67fc518b9396450d39cc1c381cd45d90bd463eb8bc7",
+        "ref": {
+          "sha256": "73289c0a43e63fcf0863c7f6c69c74e3573b730b5930c937207724518df929f6",
+          "byteLength": 2450983,
+          "mediaType": "application/json"
+        }
+      }
+    },
+    {
+      "jobId": "005bc2a9-ac7b-4dda-a090-79173a4682e8",
+      "application": "applied",
+      "save": "unsaved",
+      "evidence": {
+        "appliedSnapshotSha256": "73289c0a43e63fcf0863c7f6c69c74e3573b730b5930c937207724518df929f6",
+        "appliedArtifact": {
+          "sha256": "73289c0a43e63fcf0863c7f6c69c74e3573b730b5930c937207724518df929f6",
+          "byteLength": 2450983,
+          "mediaType": "application/json"
+        },
+        "beforeSnapshotSha256": "73289c0a43e63fcf0863c7f6c69c74e3573b730b5930c937207724518df929f6",
+        "noChanges": true,
+        "hashScheme": "project-canonical-json-no-event-drafts-v1",
+        "scope": "project"
+      },
+      "artifact": {
+        "receiptId": "45cb1e1e-46af-4269-b2aa-88a0c1db11d6",
+        "resultSha256": "636e70d69a91c6a8b12e23d350aab9a7d38f0e370a4626af703794fa83c4f661",
+        "ref": {
+          "sha256": "73289c0a43e63fcf0863c7f6c69c74e3573b730b5930c937207724518df929f6",
+          "byteLength": 2450983,
+          "mediaType": "application/json"
+        }
+      }
+    },
+    {
+      "jobId": "d332cbdf-e710-42fb-833f-67aa2ae43838",
+      "application": "applied",
+      "save": "unsaved",
+      "evidence": {
+        "appliedSnapshotSha256": "d025831bd8b178a17140983bf4b770f7c13c73e562d19ab982f235379a6491cc",
+        "appliedArtifact": {
+          "sha256": "d025831bd8b178a17140983bf4b770f7c13c73e562d19ab982f235379a6491cc",
+          "byteLength": 269,
+          "mediaType": "application/json"
+        },
+        "beforeSnapshotSha256": "fafff1e8640b95da5d3cce9aeab3c15a0bb8cfe1c66394583ad101f81b9b97c5",
+        "noChanges": false,
+        "hashScheme": "command-draft-canonical-json-v1",
+        "scope": "draft"
+      },
+      "artifact": {
+        "receiptId": "8a198092-7bb5-49f4-9195-4d40693dcbab",
+        "resultSha256": "02f83154e8bb59f6b72fd01c20e41f61bbeb510c64df846ae69e4a1e8a6aa934",
+        "ref": {
+          "sha256": "d025831bd8b178a17140983bf4b770f7c13c73e562d19ab982f235379a6491cc",
+          "byteLength": 269,
+          "mediaType": "application/json"
+        }
+      }
+    }
+  ],
+  "records": [
+    {
+      "jobId": "6aabfa61-fd83-4b74-841f-cd1d017b34dc",
+      "phase": "applied",
+      "receiptId": "45f3307b-fb0d-4e4a-a3c0-5ad51828090c",
+      "hasRecoverySnapshots": true
+    },
+    {
+      "jobId": "005bc2a9-ac7b-4dda-a090-79173a4682e8",
+      "phase": "applied",
+      "receiptId": "45cb1e1e-46af-4269-b2aa-88a0c1db11d6",
+      "hasRecoverySnapshots": true
+    },
+    {
+      "jobId": "d332cbdf-e710-42fb-833f-67aa2ae43838",
+      "phase": "applied",
+      "receiptId": "8a198092-7bb5-49f4-9195-4d40693dcbab",
+      "hasRecoverySnapshots": true
+    }
+  ],
+  "paidCalls": 0,
+  "remoteProjectWrites": 0
+}

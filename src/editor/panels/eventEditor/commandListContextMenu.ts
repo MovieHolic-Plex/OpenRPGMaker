@@ -285,7 +285,7 @@ function insertCommentCommand(request: CommandShortcutRequest): void {
   const command = newM2Command("m2-088-comment");
   openNewEventCommandDialog(command, (edited) => {
     request.actions.insertCommand(request.path, edited);
-  });
+  }, request.actions.jobOwner);
 }
 
 function openInsertPicker(request: CommandShortcutRequest, closeMenu: () => void): void {
@@ -296,7 +296,7 @@ function openInsertPicker(request: CommandShortcutRequest, closeMenu: () => void
     onSelect: (command) => {
       openNewEventCommandDialog(command, (editedCommand) => {
         request.actions.insertCommand(request.path, editedCommand);
-      });
+      }, request.actions.jobOwner);
     },
   });
 }

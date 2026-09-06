@@ -1,6 +1,7 @@
 import type { Command } from "@/project/types";
 
 export type CommandEditContext = {
+  readonly jobDraft?: import("@/editor/aiJobs/draftOwners").LiveDraftOwner;
   readonly path: number[];
   readonly actions: CommandListActions;
   /** 이 명령 앞에서 활성화된 얼굴. 문장 표시의 인라인 게임 미리보기에 사용한다. */
@@ -16,6 +17,7 @@ export type CommandEditContext = {
 };
 
 export type CommandListActions = {
+  readonly jobOwner?: import("@/ai/jobs/imagePayload").ImageEventOwner;
   readonly undo?: () => void;
   readonly redo?: () => void;
   /** Batch edits are a single host transaction, never one snapshot per row. */

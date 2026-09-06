@@ -20,6 +20,7 @@ export interface EventCommandsJobPayload {
     authMode: "chatgpt";
     providerId?: "google-antigravity" | "openai-codex";
   };
+  draftBinding?: { draftId: string; draftRevision: string; owner: import("./imagePayload").ImageEventOwner };
   baseCommands: Command[];
   selection: number[] | null;
   selectionLabel?: string;
@@ -73,7 +74,7 @@ export function parseEventCommands(value: unknown): Command[] {
   return commands;
 }
 export function parseEventCommandsPayload(value: unknown): EventCommandsJobPayload {
-  const p = shape(value, ["prompt", "config", "baseCommands", "selection", "selectionLabel", "preferenceMemorySection", "projectScopeKey"]);
+  const p = shape(value, ["prompt", "config", "draftBinding", "baseCommands", "selection", "selectionLabel", "preferenceMemorySection", "projectScopeKey"]);
   const c = shape(p.config, ["authMode", "providerId", "model", "liteModel", "maxTokens", "maxToolCalls", "reasoningEffort"]);
   const selection = p.selection === null ? null : requireArray("selection", p.selection).map((value, index) => {
     const n = requireNumber("selection index", value);
@@ -90,6 +91,7 @@ export function parseEventCommandsPayload(value: unknown): EventCommandsJobPaylo
       maxTokens: positive("maxTokens", c.maxTokens), maxToolCalls: positive("maxToolCalls", c.maxToolCalls),
       reasoningEffort: c.reasoningEffort === undefined ? undefined : enumValue(c.reasoningEffort, ["off", "low", "medium", "high"]),
     },
+    ...(p.draftBinding === undefined ? {} : { draftBinding: parseEventDraftBinding(p.draftBinding) }),
     baseCommands: parseEventCommands(p.baseCommands), selection,
     selectionLabel: optionalString(p.selectionLabel), preferenceMemorySection: requireString("preferenceMemorySection", p.preferenceMemorySection),
     projectScopeKey: optionalString(p.projectScopeKey),
@@ -136,4 +138,14 @@ export function parseEventCommandsRef(value: unknown): BlobRef {
   assert(/^[a-f0-9]{64}$/.test(sha256) && Number.isSafeInteger(byteLength) && byteLength >= 0, "Invalid event commands blob reference");
   assert(r.mediaType === "application/json", "Event commands artifacts must be JSON");
   return { sha256, byteLength, mediaType: "application/json" };
+}
+
+function parseEventDraftBinding(value: unknown): NonNullable<EventCommandsJobPayload["draftBinding"]> {
+  const b = shape(value, ["draftId", "draftRevision", "owner"]);
+  const draftId = text("draftId", b.draftId), draftRevision = text("draftRevision", b.draftRevision);
+  assert(/^[a-f0-9]{64}$/.test(draftRevision), "Invalid draft revision");
+  const o = requireRecord("draft owner", b.owner);
+  if (o.kind === "map-event") return { draftId, draftRevision, owner: { kind: o.kind, mapId: text("mapId", o.mapId), eventId: text("eventId", o.eventId), pageId: text("pageId", o.pageId) } };
+  assert(o.kind === "common-event", "Invalid event commands owner");
+  return { draftId, draftRevision, owner: { kind: o.kind, commonEventId: text("commonEventId", o.commonEventId) } };
 }

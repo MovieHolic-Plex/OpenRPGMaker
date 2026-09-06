@@ -11,6 +11,7 @@ import { clearCommandInspector, selectedCommandRoots } from "./eventEditor/comma
 
 export type DatabaseCommandArrayAdapter = {
   readonly commands: Command[];
+  readonly jobOwner?: import("@/ai/jobs/imagePayload").ImageEventOwner;
   readonly replaceCommands: (commands: Command[]) => void;
   readonly rerender?: () => void;
   readonly runtimeSupport?: (command: Command) => CommandRuntimeSupport;
@@ -36,6 +37,7 @@ export function createDatabaseCommandListActions(adapter: DatabaseCommandArrayAd
   const commandList = (commands: Command[], containerPath: readonly number[]): Command[] | null =>
     resolveCommandListAtPath(commands, containerPath, { missingBranches: "create" });
   return {
+    jobOwner: adapter.jobOwner,
     deleteCommands: paths => edit(commands => {
       for (const path of selectedCommandRoots(paths).reverse()) {
         const list = commandList(commands, path.slice(0, -1));
@@ -129,7 +131,7 @@ function renderEmptyCommandLine(actions: CommandListActions, pickerContext?: M2R
       onSelect: (command) => {
         openNewEventCommandDialog(command, (editedCommand) => {
           actions.addCommand([], editedCommand);
-        });
+        }, actions.jobOwner);
       },
     });
   };

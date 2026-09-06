@@ -225,3 +225,29 @@ test('save-only retry moves applied+failed to applied+saved for the same receipt
   assert.equal((await f.post(`/${job.id}/application/save-evidence`, { ...saved, receiptId: 'foreign-receipt' })).status, 409);
   assert.equal((await f.post(`/${job.id}/application/save-evidence`, { ...saved, project: { backend: 'local', projectId: 'foreign' } })).status, 409);
 });
+
+
+test('application snapshot upload is immutable, receipt-bound and visible only in its job manifest', { timeout: 10000 }, async t => {
+  const f = await httpFixture(t, { executeJob: async (input, host) => resultFor(input, host) });
+  const done = waitFor(f.scheduler, event => event.states.generation === 'succeeded');
+  const admitted = await (await f.post('', submission(), { 'Idempotency-Key': 'applied-artifact' })).json();
+  await done;
+  const { job } = await (await f.request(`/${admitted.job.id}`)).json();
+  const input = await f.repository.readJson(job.inputRef);
+  const claim = { claimId: 'claim-art', receiptId: 'receipt-art', project: job.project, resultSha256: job.resultRef.sha256, baselineSha256: input.projectSnapshot.sha256 };
+  const prepared = await f.post(`/${job.id}/application/prepare`, claim);
+  assert.equal(prepared.status, 200);
+  const serialized = '{"maps":[],"version":1}';
+  const { createHash } = await import('node:crypto');
+  const snapshotSha256 = createHash('sha256').update(serialized).digest('hex');
+  const body = { claimId: claim.claimId, receiptId: claim.receiptId, project: job.project, resultSha256: claim.resultSha256, snapshotSha256, serialized };
+  const uploaded = await f.post(`/${job.id}/application/artifact`, body);
+  assert.equal(uploaded.status, 200);
+  const { artifact } = await uploaded.json();
+  assert.equal(artifact.sha256, snapshotSha256);
+  assert.deepEqual(await (await f.post(`/${job.id}/application/artifact`, body)).json(), { artifact });
+  assert.equal((await f.post(`/${job.id}/application/artifact`, { ...body, serialized: '{}' })).status, 400);
+  const detail = await (await f.request(`/${job.id}`)).json();
+  assert(detail.manifest.some(ref => ref.sha256 === snapshotSha256));
+  assert.equal(await (await f.request(`/${job.id}/artifacts/${snapshotSha256}`)).text(), serialized);
+});

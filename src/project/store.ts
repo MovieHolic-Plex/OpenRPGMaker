@@ -8,7 +8,7 @@ import { repairInteriorTransparentPropLayers } from "./defaults/interiorTranspar
 import { ensureScarloxyPokemonInteriors } from "./defaults/scarloxyPokemonInteriors";
 import { ensureDefaultDatabaseIconResources } from "./defaults/defaultDatabaseIconResources";
 import { ensureBundledBattleAnimations } from "./defaults/defaultDatabase";
-import { isSaveSkippedLocation, loadDevProjectOverride, saveDevProjectOverride } from "./devProjectPersistence";
+import { isSaveSkippedLocation, loadLocalProjectEnvelope, persistLocalProjectEnvelope } from "./devProjectPersistence";
 import {
   loadProjectFromSupabase,
   saveProjectMapPatchToSupabase,
@@ -18,6 +18,7 @@ import {
 import { projectWithoutEventDrafts } from "./eventDrafts";
 import { serialize, serializeForComparison } from "./io";
 import {
+  setEventDraftVaultProjectIdentity,
   applyEventDraftVault,
   clearEventDraftVault,
   loadEventDraftVaultFromLocalStorage,
@@ -43,6 +44,8 @@ import { recordManualProjectCommitAfterSave, resetManualProjectCommitBaseline } 
 import { repairMapTreeOrphans } from "@/project/mapTree";
 import { sha256HexText } from "@/util/sha256";
 import { randomUuid } from "@/util/id";
+import { resolveBrowserSupabaseUrl } from "./supabaseProxyPath";
+import { connectionProjectIdentity, sameProjectIdentity, type LoadedProjectIdentity } from "./loadedProjectIdentity";
 import { createLogger } from "@/util/logger";
 import {
   recordEditActivity,
@@ -225,6 +228,11 @@ class ProjectStore {
   private readOnlyProjectSnapshot: Project | null = null;
   private loadedRemoteProjectId: string | null = null;
   private localProjectSessionId = randomUuid();
+  private loadedConnection: SupabaseProjectConfig | null = null;
+  private loadedIdentity: LoadedProjectIdentity = { backend: "local", projectId: this.localProjectSessionId };
+  private projectEpoch = 0;
+  private localIdentityDurable = false;
+  private applicationAvailabilityListeners = new Set<() => void>();
 
 
   constructor() {
@@ -243,8 +251,10 @@ class ProjectStore {
     try {
       const devShowcaseProject = devProjectFactory?.() ?? null;
       if (devShowcaseProject) {
-        this.adoptProject(loadDevProjectOverride() ?? devShowcaseProject, { restoreVault: true });
-        this.beginLocalProjectSession();
+        const envelope = await loadLocalProjectEnvelope(devShowcaseProject);
+        this.beginLocalProjectSession(envelope.localProjectId);
+        this.localIdentityDurable = envelope.durable;
+        this.adoptProject(envelope.project, { restoreVault: true });
         this.remotePersistenceEnabled = false;
         this.remotePersistenceDisabledReason = "dev-showcase";
       } else {
@@ -255,17 +265,18 @@ class ProjectStore {
           this.persistedBaseline = null;
           throw new DbConnectionRequiredError("온라인 저장 설정이 필요합니다.");
         } else {
-          const project = await loadProjectFromSupabase();
+          const connection = await this.prepareConnection();
+          const project = await loadProjectFromSupabase(connection.config);
+          const effective = await this.prepareConnection();
+          if (!sameProjectIdentity(connection.identity, effective.identity)) throw new Error("Connection changed during load");
           if (!project) {
             this.remotePersistenceEnabled = true;
             this.remotePersistenceDisabledReason = null;
             this.persistedBaseline = null;
             throw new DbConnectionRequiredError("선택한 작업을 찾지 못했습니다.");
           }
+          this.adoptConnection(connection);
           this.adoptProject(project, { restoreVault: true });
-          const loadedProjectId = supabaseProjectConfig()?.projectId;
-          if (loadedProjectId) this.loadedRemoteProjectId = loadedProjectId;
-          else this.beginLocalProjectSession();
           this.remotePersistenceEnabled = true;
           this.remotePersistenceDisabledReason = null;
           this.persistedBaseline = structuredClone(projectWithoutEventDrafts(this.current));
@@ -300,8 +311,8 @@ class ProjectStore {
   // 깨진 원격/로컬 프로젝트를 덮어쓰지 않도록 원격 저장은 끈 채 시작한다 —
   // 사용자는 이후 DB 연결 설정에서 명시적으로 다시 연결/저장할 수 있다.
   async loadFallbackProject(project: Project): Promise<void> {
-    this.adoptProject(project, { restoreVault: true });
     this.beginLocalProjectSession();
+    this.adoptProject(project, { restoreVault: false });
     this.remotePersistenceEnabled = false;
     this.remotePersistenceDisabledReason = "load-failed";
     this.persistedBaseline = null;
@@ -331,10 +342,14 @@ class ProjectStore {
       options.projectId?.trim()
       || (configured ? `oprn-${randomUuid().replace(/-/g, "").slice(0, 10)}` : null);
 
+    const effectiveConfig = supabaseProjectConfig();
+    const connection = configured && projectId && effectiveConfig ? await this.prepareConnection({ ...effectiveConfig, projectId }, false) : null;
     // Full project switch — drop previous event drafts and copied pages; new world starts clean.
     clearEventDraftVault();
     clearCopiedEventPage();
     persistEventDraftVaultNow();
+    if (connection) this.adoptConnection(connection);
+    else this.beginLocalProjectSession();
     this.adoptProject(project, { restoreVault: false });
     this.persistedBaseline = null;
     this.loaded = true;
@@ -397,6 +412,7 @@ class ProjectStore {
 
     const projectId = options.projectId?.trim() || dependencies.createProjectId();
     const targetConfig: SupabaseProjectConfig = { ...baseConfig, projectId };
+    const targetConnection = await this.prepareConnection(targetConfig, false);
     const candidate = structuredClone(project);
     const title = options.title?.trim();
     if (title) candidate.meta = { ...candidate.meta, title };
@@ -453,6 +469,8 @@ class ProjectStore {
       dirtySinceLastPersist: this.dirtySinceLastPersist,
       loaded: this.loaded,
       loadedRemoteProjectId: this.loadedRemoteProjectId,
+      loadedIdentity: this.loadedIdentity,
+      loadedConnection: this.loadedConnection,
       mutationGeneration: this.mutationGeneration,
       persistedBaseline: this.persistedBaseline,
       remotePersistenceDisabledReason: this.remotePersistenceDisabledReason,
@@ -480,6 +498,7 @@ class ProjectStore {
     try {
       clearEventDraftVault();
       clearCopiedEventPage();
+      this.adoptConnection(targetConnection);
       this.adoptProject(structuredClone(reloaded), { restoreVault: false });
       this.persistedBaseline = structuredClone(projectWithoutEventDrafts(reloaded));
       this.loaded = true;
@@ -497,6 +516,9 @@ class ProjectStore {
       this.persistedBaseline = localSnapshot.persistedBaseline;
       this.loaded = localSnapshot.loaded;
       this.loadedRemoteProjectId = localSnapshot.loadedRemoteProjectId;
+      this.loadedIdentity = localSnapshot.loadedIdentity;
+      this.loadedConnection = localSnapshot.loadedConnection;
+      setEventDraftVaultProjectIdentity(this.loadedIdentity);
       this.remotePersistenceEnabled = localSnapshot.remotePersistenceEnabled;
       this.remotePersistenceDisabledReason = localSnapshot.remotePersistenceDisabledReason;
       this.dirtySinceLastPersist = localSnapshot.dirtySinceLastPersist;
@@ -558,11 +580,44 @@ class ProjectStore {
   _setPersistenceStateForTest(state: { loaded: boolean; remotePersistenceEnabled?: boolean; disabledReason?: DbPersistenceDisabledReason | null }): void {
     this.loaded = state.loaded;
     if (state.remotePersistenceEnabled !== undefined) this.remotePersistenceEnabled = state.remotePersistenceEnabled;
+    if (state.remotePersistenceEnabled === true && !this.loadedConnection) this.loadedConnection = supabaseProjectConfig();
     if (state.disabledReason !== undefined) this.remotePersistenceDisabledReason = state.disabledReason;
   }
 
   getCurrent(): Project {
     return this.readOnlyProjectSnapshot ?? this.current;
+  }
+
+  getLoadedProjectIdentity(): LoadedProjectIdentity { return { ...this.loadedIdentity }; }
+  getProjectEpoch(): number { return this.projectEpoch; }
+  hasReadOnlyProjectSnapshot(): boolean { return this.readOnlyProjectSnapshot !== null; }
+  hasDurableLocalIdentity(): boolean { return this.localIdentityDurable; }
+  getLoadedConnection(): SupabaseProjectConfig | null { return this.loadedConnection ? { ...this.loadedConnection } : null; }
+  subscribeApplicationAvailability(listener: () => void): () => void {
+    this.applicationAvailabilityListeners.add(listener);
+    return () => this.applicationAvailabilityListeners.delete(listener);
+  }
+  async assertEffectiveConnection(identity = this.loadedIdentity): Promise<void> {
+    if (!sameProjectIdentity(identity, this.loadedIdentity)) throw new Error("Loaded project changed");
+    if (identity.backend === "local") return;
+    const config = supabaseProjectConfig();
+    if (!config || !sameProjectIdentity(identity, await connectionProjectIdentity(config))) throw new Error("Effective backend changed");
+    const current = supabaseProjectConfig();
+    if (!current || current.url !== config.url || current.projectId !== config.projectId) throw new Error("Connection changed during preparation");
+  }
+  private async prepareConnection(config = supabaseProjectConfig(), checkSelection = true): Promise<{ config: SupabaseProjectConfig; identity: LoadedProjectIdentity }> {
+    if (!config) throw new Error("Connection unavailable");
+    const captured = { ...config, url: resolveBrowserSupabaseUrl(config.url, { pageProtocol: typeof window === "undefined" ? undefined : window.location?.protocol }) };
+    const identity = await connectionProjectIdentity(captured);
+    const current = supabaseProjectConfig();
+    if (checkSelection && (!current || current.url !== captured.url || current.projectId !== captured.projectId)) throw new Error("Connection changed during load");
+    return { config: captured, identity };
+  }
+  private adoptConnection(connection: { config: SupabaseProjectConfig; identity: LoadedProjectIdentity }): void {
+    this.loadedConnection = connection.config;
+    this.loadedIdentity = connection.identity;
+    this.loadedRemoteProjectId = connection.identity.projectId;
+    setEventDraftVaultProjectIdentity(this.loadedIdentity);
   }
 
   getProjectIdentity(): ProjectIdentity {
@@ -580,11 +635,13 @@ class ProjectStore {
     const previous = this.readOnlyProjectSnapshot;
     const snapshot = structuredClone(project);
     this.readOnlyProjectSnapshot = snapshot;
+    for (const listener of this.applicationAvailabilityListeners) listener();
     let released = false;
     return () => {
       if (released) return;
       released = true;
       if (this.readOnlyProjectSnapshot === snapshot) this.readOnlyProjectSnapshot = previous;
+      for (const listener of this.applicationAvailabilityListeners) listener();
     };
   }
 
@@ -625,9 +682,16 @@ class ProjectStore {
     const status = dbPersistenceStatus({ disabledReason: null });
     if (status.kind !== "ready") return { kind: "not-configured" };
     try {
-      const project = await loadProjectFromSupabase();
+      const connection = await this.prepareConnection();
+      const project = await loadProjectFromSupabase(connection.config);
+      const effective = await this.prepareConnection();
+      if (!sameProjectIdentity(connection.identity, effective.identity)) throw new Error("Connection changed during load");
       if (project) {
-        this.current = preserveEventDraftsOnProject(project, this.current);
+        const sameLoadedProject = sameProjectIdentity(this.loadedIdentity, connection.identity);
+        this.adoptConnection(connection);
+        this.projectEpoch += 1;
+        if (sameLoadedProject) this.current = preserveEventDraftsOnProject(project, this.current);
+        else this.adoptProject(project, { restoreVault: true });
         clearCopiedEventPage();
         syncEventDraftVaultFromProject(this.current);
         this.remotePersistenceEnabled = true;
@@ -671,11 +735,18 @@ class ProjectStore {
       return { kind: "cancelled", projectId };
     }
     try {
-      const project = await loadProjectFromSupabase();
+      const connection = await this.prepareConnection();
+      const project = await loadProjectFromSupabase(connection.config);
+      const effective = await this.prepareConnection();
+      if (!sameProjectIdentity(connection.identity, effective.identity)) throw new Error("Connection changed during load");
       if (!project) {
         return { kind: "failed", message: "DB에서 프로젝트를 찾을 수 없습니다.", projectId };
       }
-      this.current = preserveEventDraftsOnProject(project, this.current);
+      const sameLoadedProject = sameProjectIdentity(this.loadedIdentity, connection.identity);
+      this.adoptConnection(connection);
+      this.projectEpoch += 1;
+      if (sameLoadedProject) this.current = preserveEventDraftsOnProject(project, this.current);
+      else this.adoptProject(project, { restoreVault: true });
       syncEventDraftVaultFromProject(this.current);
       this.remotePersistenceEnabled = true;
       this.remotePersistenceDisabledReason = null;
@@ -722,11 +793,11 @@ class ProjectStore {
    */
   replace(
     project: Project,
-    options: { readonly preserveEventDrafts?: boolean; readonly change?: ProjectChangeAnnotation } = {},
+    options: { readonly preserveEventDrafts?: boolean; readonly change?: ProjectChangeAnnotation; readonly onApplied?: (project: Project) => void } = {},
   ): void {
     ensureSwitchVariableSlots(project);
     removeLegacySpriteReferences(project);
-    if (options.change?.projectSwitch === true) clearCopiedEventPage();
+    if (options.change?.projectSwitch === true) { clearCopiedEventPage(); this.projectEpoch += 1; }
     // Default: keep open event editor drafts across undo/AI/accept/remote merges.
     // Pass preserveEventDrafts:false only for intentional full project switches
     // (new project / import / sample load) via replaceProject().
@@ -737,19 +808,22 @@ class ProjectStore {
       this.current = preserveEventDraftsOnProject(project, this.current);
       syncEventDraftVaultFromProject(this.current);
     }
+    options.onApplied?.(structuredClone(this.current));
     this.markLocalMutation({ scope: "project", ...(options.change ?? {}) });
     this.emit({ scope: "project", ...(options.change ?? {}) });
     this.scheduleAutoSave();
   }
 
   /** Full project switch (new/import/sample). Drops event-draft vault for the previous project. */
-  replaceProject(project: Project, change?: ProjectChangeAnnotation): void {
+  replaceProject(project: Project, change?: ProjectChangeAnnotation, onApplied?: (project: Project) => void): void {
+    this.projectEpoch += 1;
     clearEventDraftVault();
     clearCopiedEventPage();
     persistEventDraftVaultNow();
     if (this.loadedRemoteProjectId === null) this.beginLocalProjectSession();
     this.replace(project, {
       preserveEventDrafts: false,
+      onApplied,
       change: { label: "프로젝트 교체", projectSwitch: true, ...(change ?? {}) },
     });
   }
@@ -830,6 +904,7 @@ class ProjectStore {
     clearCopiedEventPage();
     persistEventDraftVaultNow();
     this.current = createBlankProject();
+    this.projectEpoch += 1;
     if (this.loadedRemoteProjectId === null) this.beginLocalProjectSession();
     this.markLocalMutation({ scope: "project", label: "전체 초기화" });
     this.emit({ scope: "project" });
@@ -896,9 +971,13 @@ class ProjectStore {
     }
   }
 
-  private beginLocalProjectSession(): void {
+  private beginLocalProjectSession(id = randomUuid()): void {
     this.loadedRemoteProjectId = null;
-    this.localProjectSessionId = randomUuid();
+    this.loadedConnection = null;
+    this.localProjectSessionId = id;
+    this.loadedIdentity = { backend: "local", projectId: id };
+    this.localIdentityDurable = false;
+    setEventDraftVaultProjectIdentity(this.loadedIdentity);
   }
 
   subscribe(listener: Listener): () => void {
@@ -1047,11 +1126,12 @@ class ProjectStore {
   }
 
   private async saveCurrentWithAutoSaveState(): Promise<ProjectFlushResult> {
+    const epochAtRun = this.projectEpoch;
     // Coalesce concurrent flush calls onto one network round-trip, then re-run
     // if the user painted more tiles while that round-trip was in flight.
     if (this.persistInFlight) {
       const inFlightResult = await this.persistInFlight;
-      if (this.dirtySinceLastPersist && this.loaded && this.remotePersistenceEnabled) {
+      if (this.projectEpoch === epochAtRun && this.dirtySinceLastPersist && this.loaded && this.remotePersistenceEnabled) {
         return await this.saveCurrentWithAutoSaveState();
       }
       return inFlightResult;
@@ -1064,7 +1144,8 @@ class ProjectStore {
         // the full autosave debounce (tiles stay local; DB just lags one hop).
         let result = await this.persistCurrent();
         while (
-          this.dirtySinceLastPersist
+          this.projectEpoch === epochAtRun
+          && this.dirtySinceLastPersist
           && this.loaded
           && this.remotePersistenceEnabled
           && result.kind === "saved"
@@ -1101,8 +1182,10 @@ class ProjectStore {
     if (!this.remotePersistenceEnabled) {
       if (this.remotePersistenceDisabledReason === "dev-showcase") {
         // fresh/blank 위치에서는 기록이 스킵되므로(false 반환) dirty를 유지한다(결함 ⑧·⑩).
-        if (saveDevProjectOverride(projectWithoutEventDrafts(this.current))) {
-          this.dirtySinceLastPersist = false;
+        const localGeneration = this.mutationGeneration;
+        if (await persistLocalProjectEnvelope(projectWithoutEventDrafts(this.current), this.localProjectSessionId)) {
+          if (localGeneration === this.mutationGeneration) this.dirtySinceLastPersist = false;
+          this.localIdentityDurable = true;
         }
         return { kind: "saved-local" };
       }
@@ -1110,6 +1193,8 @@ class ProjectStore {
     }
     // Snapshot local state at submit time. Paint during await must win over the response.
     const generationAtSubmit = this.mutationGeneration;
+    const epochAtSubmit = this.projectEpoch;
+    const identityAtSubmit = this.loadedIdentity;
     const submittedProject = projectWithoutEventDrafts(this.current);
     // 커밋 로그가 쓸 diff baseline — **이 저장 직전에 서버가 갖고 있던 내용**이다.
     // 아래에서 `this.persistedBaseline` 을 저장 결과로 갈아치우므로 여기서 잡아두지 않으면
@@ -1117,11 +1202,15 @@ class ProjectStore {
     // normalizeCurrentProject 가 persistInFlight 코얼레싱 밖에서 persistCurrent 를 직접
     // 부르는 경로가 있어서다 — RTT 중에 이 필드가 다른 저장에 의해 바뀔 수 있다.
     const commitBaseline = this.persistedBaseline;
+    const config = this.loadedConnection;
+    if (!config) throw new Error("Loaded connection unavailable");
+    await this.assertEffectiveConnection();
     const result = commitBaseline
-      ? await saveProjectMapPatchToSupabase({ project: submittedProject, baseProject: commitBaseline })
-      : await saveProjectToSupabase(submittedProject);
+      ? await saveProjectMapPatchToSupabase({ project: submittedProject, baseProject: commitBaseline }, config)
+      : await saveProjectToSupabase(submittedProject, config);
     if (result.kind === "not-configured") return result;
     if (result.kind === "conflict") return result;
+    if (this.projectEpoch !== epochAtSubmit || !sameProjectIdentity(identityAtSubmit, this.loadedIdentity)) return result;
     const savedProject = result.project ?? submittedProject;
     // Baseline tracks what the server accepted — not what the editor is showing.
     this.persistedBaseline = structuredClone(projectWithoutEventDrafts(savedProject));
@@ -1146,6 +1235,7 @@ class ProjectStore {
    * for the current DB project id.
    */
   private adoptProject(project: Project, options: { readonly restoreVault: boolean }): void {
+    this.projectEpoch += 1;
     clearEventDraftVault();
     clearCopiedEventPage();
     if (options.restoreVault) {

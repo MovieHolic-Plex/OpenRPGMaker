@@ -281,6 +281,7 @@ function commonEventEditor(commonEvent: CommonEvent, index: number, rerender: ()
   const commands = el("div", { class: "cmd-list", dataset: { testid: "db-common-event-command-list" } });
   renderDatabaseCommandListEditor(commands, {
     commands: commonEvent.commands,
+    jobOwner: { kind: "common-event", commonEventId: commonEvent.id },
     rerender,
     // 공통 이벤트 명령 배지는 common 컨텍스트 판정을 쓴다.
     runtimeSupport: (command) => commandRuntimeSupport(command, "common"),

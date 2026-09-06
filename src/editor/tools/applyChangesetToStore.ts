@@ -196,6 +196,8 @@ export function applyToolSequenceToStore(
 
 export interface ApplyProposedProjectOptions {
   readonly source: "agent" | "agent-milestone";
+  /** Runs synchronously at store mutation, before subscribers or commit-log awaits. */
+  readonly onApplied?: (snapshot: Project) => void;
   /** 에이전트 신원 이름. 기본: loadAiConfig().model(카드 현행 동작과 동일). */
   readonly agentName?: string;
   readonly summary: string;
@@ -268,8 +270,10 @@ export async function applyProposedProject(
     options.toolNames,
     options.reason ?? `AI 적용: ${options.summary}`,
   );
-  if (options.resetProject === true) store.replaceProject(proposed, { ...change, projectSwitch: false });
-  else store.replace(proposed, { change });
+  let applied = structuredClone(proposed);
+  const capture = (snapshot: Project): void => { applied = snapshot; options.onApplied?.(snapshot); };
+  if (options.resetProject === true) store.replaceProject(proposed, { ...change, projectSwitch: false }, capture);
+  else store.replace(proposed, { change, onApplied: capture });
   focusAcceptedAgentChanges(before, proposed);
   const commitInput: CommitLogInput = {
     project: proposed,
@@ -294,5 +298,5 @@ export async function applyProposedProject(
     };
   }
   resetManualProjectCommitBaseline(proposed);
-  return { ok: true, commit: commitRow, applied: store.getCurrent() };
+  return { ok: true, commit: commitRow, applied };
 }

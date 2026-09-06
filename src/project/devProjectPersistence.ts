@@ -1,5 +1,6 @@
 import { deserialize, serialize } from "./io";
 import type { Project } from "./types";
+import { randomUuid } from "@/util/id";
 
 const DEV_PROJECT_STORAGE_PREFIX = "oprn:dev-project:";
 
@@ -45,11 +46,15 @@ export function discardDevProjectOverride(): void {
 
 // 반환값: 실제로 기록했는가 — fresh/blank 위치(저장 스킵 모드)에서는 false.
 // store가 미저장 변경 추적(결함 ⑧)에 사용한다.
-export function saveDevProjectOverride(project: Project): boolean {
+export function saveDevProjectOverride(project: Project, localProjectId = randomUuid()): boolean {
   if (isFreshProjectLocation()) return false;
   const key = devProjectStorageKey();
   if (!key) return false;
-  window.localStorage.setItem(key, serialize(project));
+  return writeLocalProjectEnvelope(key, project, localProjectId);
+}
+
+function writeLocalProjectEnvelope(key: string, project: Project, localProjectId: string): boolean {
+  window.localStorage.setItem(key, JSON.stringify({ version: 1, localProjectId, project: JSON.parse(serialize(project)) }));
   return true;
 }
 
@@ -57,7 +62,8 @@ function loadStoredProject(key: string | null): Project | null {
   if (!key) return null;
   const raw = window.localStorage.getItem(key);
   if (!raw) return null;
-  return deserialize(raw);
+  const parsed = JSON.parse(raw);
+  return deserialize(JSON.stringify(parsed.localProjectId ? parsed.project : parsed));
 }
 
 function devProjectStorageKey(): string | null {
@@ -81,4 +87,26 @@ function isFreshProjectLocation(): boolean {
 // 저장이 완전히 스킵되는 위치인가(blankProject/freshProject) — 배너(결함 ⑩) 노출 판단.
 export function isSaveSkippedLocation(): boolean {
   return isFreshProjectLocation();
+}
+
+export interface LocalProjectEnvelope { readonly localProjectId: string; readonly project: Project; readonly durable: boolean }
+/** Cache creation/migration is serialized across tabs; legacy IDs are never inferred from content. */
+export async function loadLocalProjectEnvelope(fallback: Project): Promise<LocalProjectEnvelope> {
+  const key = isFreshProjectLocation() ? null : devProjectStorageKey();
+  if (!key) return { project: fallback, localProjectId: randomUuid(), durable: false };
+  if (!globalThis.navigator?.locks) throw new Error("Local project identity requires Web Locks");
+  return navigator.locks.request(`project-cache:${key}`, () => {
+    const raw = window.localStorage.getItem(key);
+    const parsed = raw ? JSON.parse(raw) : null;
+    const project = raw ? deserialize(JSON.stringify(parsed.localProjectId ? parsed.project : parsed)) : fallback;
+    const localProjectId = typeof parsed?.localProjectId === "string" ? parsed.localProjectId : randomUuid();
+    writeLocalProjectEnvelope(key, project, localProjectId);
+    return { project, localProjectId, durable: true };
+  });
+}
+export async function persistLocalProjectEnvelope(project: Project, localProjectId: string): Promise<boolean> {
+  const key = isFreshProjectLocation() ? null : devProjectStorageKey();
+  if (!key) return false;
+  if (!globalThis.navigator?.locks) throw new Error("Local project identity requires Web Locks");
+  return navigator.locks.request(`project-cache:${key}`, () => writeLocalProjectEnvelope(key, project, localProjectId));
 }
