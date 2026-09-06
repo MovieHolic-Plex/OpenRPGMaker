@@ -160,9 +160,41 @@ try {
   assert.equal(new Set(repeated.growth.skillTrees.flatMap(t => [t.id, ...t.nodes.map(n => n.id)])).size, 30);
   assert.equal((await snapshot()).history, before.history + 2);
   assert.deepEqual(repeated.growth.skillTrees.slice(0, 5), imported);
+  // Ordinary Classes editing must preserve growth gates authored by either studio.
+  if (!await page.getByTestId('db-tab-classes').isVisible()) await page.getByTestId('db-tab-group-party').click();
+  await clickState('db-tab-classes', () => Boolean(document.querySelector('[data-testid="db-classes-bm88-workbench"]')));
+  const rootName = repeated.database.classes.find(c => c.id === rootClass).name;
+  await armDomState(page, id => Boolean(document.querySelector(`[data-testid="db-record-row-${id}"], [data-testid="db-record-card-${id}"]`)), rootClass);
+  await page.getByTestId('database-modal').locator('.db-search input[type="search"]').fill(rootName);
+  await finishDomState(page);
+  const row = page.getByTestId(`db-record-row-${rootClass}`);
+  await (await row.count() ? row : page.getByTestId(`db-record-card-${rootClass}`)).click();
+  const originalGate = repeated.database.classes.find(c => c.id === rootClass).promotions[0].requires;
+  await page.getByTestId('db-field-class-promotion-level').fill('6');
+  await page.getByTestId('db-field-class-promotion-level').press('Tab');
+  const classForm = await page.evaluate(async rootClass => {
+    const { store } = await import('/src/project/store.ts');
+    const { serialize, deserialize } = await import('/src/project/io.ts');
+    const { startSession } = await import('/src/project/session.ts');
+    const { changeActorClass, promoteActor } = await import('/src/project/sessionClass.ts');
+    const loaded = deserialize(serialize(store.getCurrent()));
+    const klass = loaded.database.classes.find(c => c.id === rootClass);
+    const actor = loaded.database.actors[0];
+    const session = startSession(loaded);
+    changeActorClass(session, loaded, actor.id, rootClass);
+    session.actorLevels[actor.id] = 6;
+    const result = promoteActor(session, loaded, actor.id, klass.promotions[0].toClassId);
+    return { requires: JSON.parse(JSON.stringify(klass.promotions[0].requires)), result };
+  }, rootClass);
+  assert.deepEqual(classForm.requires, { ...originalGate, level: 6 });
+  assert.equal(classForm.result.ok, false, 'A legacy form edit must not admit an untrained actor');
+  assert.equal(classForm.result.reason, 'requirements-not-met');
+  const classFormShot = `${out}/class-form-preserved-gates.png`;
+  await page.screenshot({ path: classFormShot }); screenshots.push(classFormShot);
+  await writeFile(`${out}/class-form-proof.json`, JSON.stringify(classForm, null, 2));
   assert.equal(errors.length, 0, errors.join('\n'));
   assert.equal(remoteWrites.length, 0, JSON.stringify(remoteWrites));
-  await writeFile(`${out}/report.json`, JSON.stringify({ base, errors, remoteWrites, measurements, images, screenshots, checks: ['default-nodes-both-tabs', 'native-node-size', 'no-overlap', 'loaded-art', 'detached-no-dirty-history', 'cross-tree-portal', 'focus-zoom-escape', 'single-apply-undo', 'same-import-cross-tab', 'explicit-actor-route', 'repeated-independent-imports'] }, null, 2));
+  await writeFile(`${out}/report.json`, JSON.stringify({ base, errors, remoteWrites, measurements, images, screenshots, checks: ['default-nodes-both-tabs', 'native-node-size', 'no-overlap', 'loaded-art', 'detached-no-dirty-history', 'cross-tree-portal', 'focus-zoom-escape', 'single-apply-undo', 'same-import-cross-tab', 'explicit-actor-route', 'repeated-independent-imports', 'native-class-edit-preserves-growth-gates'] }, null, 2));
   console.log(`Connected growth editor QA passed: ${out}/report.json`);
 } catch (error) {
   if (page) await writeFile(`${out}/failure-body.txt`, await page.locator('body').innerText());

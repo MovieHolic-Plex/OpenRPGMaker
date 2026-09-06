@@ -22,6 +22,11 @@ const input = resolve('.omo/evidence/growth-integrated/browser-presets/applied-b
 const project = deserialize(await readFile(input, 'utf8'));
 const root = project.database.classes.find(c => c.id.startsWith('bundle-vanguard-') && c.promotions?.length === 2);
 assert.ok(root, 'Input must contain the bundle applied by real editor QA');
+const classFormProof = JSON.parse(await readFile(resolve('.omo/evidence/growth-integrated/browser-presets/class-form-proof.json'), 'utf8'));
+assert.equal(classFormProof.requires.level, 6);
+assert.ok(root.promotions?.[0]);
+root.promotions[0].requires.level = 6;
+assert.deepEqual(JSON.parse(JSON.stringify(root.promotions[0].requires)), classFormProof.requires, 'Persist the exact gate edited through the ordinary Classes form');
 const firstActor = project.database.actors[0];
 assert.ok(firstActor, 'QA actor required');
 const beforeActor = { id: firstActor.id, classId: firstActor.classId, initialLevel: firstActor.initialLevel };
@@ -63,6 +68,7 @@ const proof = {
   sha256: saved.kind === 'saved' ? saved.sha256 : undefined,
   reloaded: true,
   growthEqual: true,
+  legacyClassFormGatesPreserved: true,
   classCount: classIds.length,
   treeCount: loaded.growth?.skillTrees.length,
   source: input,
