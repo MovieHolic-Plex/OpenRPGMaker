@@ -6,7 +6,8 @@
 //     여기서 빠지면 곡이 안 들리는 게 아니라 프로젝트 로드 자체가 assert 로 실패한다.
 //  3) CDN 미설정 환경에서도 기본 프로젝트는 소리가 난다(스타터 곡이 레포에 있다).
 import { describe, expect, it } from "vitest";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { resolve } from "node:path";
 import {
   BGM_CATALOG,
@@ -39,6 +40,52 @@ function localPathFor(resourceId: string): string {
   expect(url).not.toBeNull();
   return decodeURIComponent(url!.replace(/^\//, ""));
 }
+
+describe("BGM release manifest", () => {
+  const manifest = JSON.parse(readFileSync(resolve("assets/bgm-release-v1.json"), "utf8")) as {
+    schemaVersion: number; version: number; repo: string; tag: string; count: number;
+    totalBytes: number; license: string;
+    archive: { fileName: string; bytes: number; sha256: string };
+    tracks: { id: string; fileName: string; bytes: number; sha256: string }[];
+  };
+
+  it("pins the complete sorted catalog with real digests and runtime filenames", () => {
+    expect(manifest.schemaVersion).toBe(1);
+    expect(manifest.version).toBe(1);
+    expect(manifest.repo).toBe("MovieHolic-Plex/rpg-zzu");
+    expect(manifest.tag).toBe("bgm-v1");
+    expect(manifest.license).toBe(BGM_CATALOG_LICENSE);
+    expect(manifest.count).toBe(BGM_CATALOG_TRACK_COUNT);
+    expect(manifest.tracks.map((track) => track.id)).toEqual(BGM_CATALOG.map((track) => track.id).sort());
+    expect(new Set(manifest.tracks.map((track) => track.fileName)).size).toBe(manifest.count);
+    let upstreamHashes = 0;
+    for (const track of manifest.tracks) {
+      const catalog = findBgmTrack(track.id)!;
+      expect(track.fileName).toBe(findBgmRuntimeEntry(track.id)!.fileName);
+      expect(track.bytes).toBe(catalog.bytes);
+      expect(track.sha256).toMatch(/^[a-f0-9]{64}$/);
+      if (/^[a-f0-9]{64}$/.test(catalog.sha256)) {
+        expect(track.sha256).toBe(catalog.sha256);
+        upstreamHashes++;
+      }
+    }
+    expect(upstreamHashes).toBe(221);
+    expect(manifest.totalBytes).toBe(1303934164);
+    expect(manifest.totalBytes).toBe(manifest.tracks.reduce((sum, track) => sum + track.bytes, 0));
+    expect(manifest.archive.fileName).toBe("rpg-zzu-bgm-v1.tar");
+    expect(manifest.archive.sha256).toMatch(/^[a-f0-9]{64}$/);
+    expect(manifest.archive.bytes).toBe(manifest.tracks.reduce((sum, track) => sum + 512 + Math.ceil(track.bytes / 512) * 512, 1024));
+  });
+
+  it("matches the committed starter bytes, not just their paths", () => {
+    for (const id of BGM_STARTER_TRACK_IDS) {
+      const track = manifest.tracks.find((entry) => entry.id === id)!;
+      const data = readFileSync(resolve("public", localPathFor(id)));
+      expect(data.length).toBe(track.bytes);
+      expect(createHash("sha256").update(data).digest("hex")).toBe(track.sha256);
+    }
+  });
+});
 
 describe("CC0 BGM 카탈로그", () => {
   it("281곡이 실려 있고 런타임/메타데이터 목록이 일치한다", () => {
