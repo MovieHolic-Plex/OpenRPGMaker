@@ -1,6 +1,6 @@
 {
-  "base": "49067218aebf889d98c2dc05be08231787483427",
-  "revision": "1aba4675632749dca3300247c3862ab971973c8f",
+  "base": "5384e607b6d4495b6c1fde998fe49901550653af",
+  "revision": "d8d7a1df2884501f6d03373f3097111ff173639e",
   "definitions": {
     "functionalDeclarations": "PostCSS declaration nodes including custom properties; excludes comments. Selector narrowing is recorded as replacement, not automatically counted as net deletion.",
     "ownershipMetric": "Explicit shared-role chrome declarations/contributor files, not a claim of full computed cascade equivalence."
@@ -49,9 +49,15 @@
       "after": 61
     },
     {
+      "file": "src/styles/database/assistant-sticky-checklist.css",
+      "classification": "non-DB or mixed external consumer: retained",
+      "before": 141,
+      "after": 141
+    },
+    {
       "file": "src/styles/database/battle-studio.css",
       "classification": "domain composition",
-      "before": 403,
+      "before": 402,
       "after": 402
     },
     {
@@ -219,8 +225,8 @@
     {
       "file": "src/styles/database/growth-tree.css",
       "classification": "domain composition",
-      "before": 388,
-      "after": 388
+      "before": 421,
+      "after": 421
     },
     {
       "file": "src/styles/database/light-theme.css",
@@ -231,7 +237,7 @@
     {
       "file": "src/styles/database/modern-controls.css",
       "classification": "shared chrome",
-      "before": 295,
+      "before": 236,
       "after": 231
     },
     {
@@ -363,7 +369,7 @@
     {
       "file": "src/styles/database/studio-v2.css",
       "classification": "shared chrome",
-      "before": 819,
+      "before": 841,
       "after": 844
     },
     {
@@ -720,6 +726,11 @@
     {
       "from": "src/styles/database/tabs-b-assistant-panel.css",
       "to": "src/styles/database/assistant-command-bar.css",
+      "kind": "CSS import"
+    },
+    {
+      "from": "src/styles/database/tabs-b-assistant-panel.css",
+      "to": "src/styles/database/assistant-sticky-checklist.css",
       "kind": "CSS import"
     },
     {
@@ -1244,15 +1255,14 @@
     }
   },
   "metrics": {
-    "before": 21910,
-    "after": 21687,
-    "netRemoved": 223,
-    "removedOrReplaced": 721,
+    "before": 22046,
+    "after": 21861,
+    "netRemoved": 185,
+    "removedOrReplaced": 641,
     "explicitRolesBefore": {
       "stepper": {
-        "declarations": 53,
+        "declarations": 35,
         "contributorFiles": [
-          "src/styles/database/modern-controls.css",
           "src/styles/database/studio-v2.css",
           "src/styles/database/system-studio.css"
         ]
@@ -1822,170 +1832,8 @@
     },
     {
       "removed": {
-        "file": "src/styles/database/animation-editor.css",
-        "line": 160,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-animation-panel :is(input[type=\"text\"], input[type=\"number\"], select)",
-        "property": "background-color",
-        "value": "var(--db-studio-surface)",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "controls",
-        "contract": "ordinary text chrome, excluding native variants and stepper interiors",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 792,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]):where(:not(.db-number-stepper input)),\n.database-modal-backdrop .database-modal-window .database-modal-body textarea",
-            "property": "background-color",
-            "value": "var(--db-studio-surface)",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/animation-editor.css",
-        "line": 161,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-animation-panel :is(input[type=\"text\"], input[type=\"number\"], select)",
-        "property": "border",
-        "value": "1px solid var(--db-studio-border-default)",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "controls",
-        "contract": "ordinary text chrome, excluding native variants and stepper interiors",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 793,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]):where(:not(.db-number-stepper input)),\n.database-modal-backdrop .database-modal-window .database-modal-body textarea",
-            "property": "border",
-            "value": "1px solid var(--db-studio-border-default)",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/animation-editor.css",
-        "line": 162,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-animation-panel :is(input[type=\"text\"], input[type=\"number\"], select)",
-        "property": "border-radius",
-        "value": "8px",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "controls",
-        "contract": "ordinary text chrome, excluding native variants and stepper interiors",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 794,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]):where(:not(.db-number-stepper input)),\n.database-modal-backdrop .database-modal-window .database-modal-body textarea",
-            "property": "border-radius",
-            "value": "var(--db2-radius-control)",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/animation-editor.css",
-        "line": 163,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-animation-panel :is(input[type=\"text\"], input[type=\"number\"], select)",
-        "property": "color",
-        "value": "var(--db-studio-text-1)",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "controls",
-        "contract": "ordinary text chrome, excluding native variants and stepper interiors",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 797,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]):where(:not(.db-number-stepper input)),\n.database-modal-backdrop .database-modal-window .database-modal-body textarea",
-            "property": "color",
-            "value": "var(--db-studio-text-1)",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/animation-editor.css",
-        "line": 164,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-animation-panel :is(input[type=\"text\"], input[type=\"number\"], select)",
-        "property": "min-height",
-        "value": "32px",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "controls",
-        "contract": "ordinary text chrome, excluding native variants and stepper interiors",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 799,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]):where(:not(.db-number-stepper input)),\n.database-modal-backdrop .database-modal-window .database-modal-body textarea",
-            "property": "min-height",
-            "value": "var(--db2-control-h)",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
         "file": "src/styles/database/battle-studio.css",
-        "line": 25,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-battle-studio-surface",
-        "property": "overflow",
-        "value": "visible",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "scroll",
-        "contract": "animation authoring scroller replaces battle-surface visible overflow",
-        "declarations": [
-          {
-            "file": "src/styles/database/animation-editor.css",
-            "line": 8,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .animation-detail-form",
-            "property": "overflow",
-            "value": "auto",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/battle-studio.css",
-        "line": 45,
+        "line": 44,
         "context": "",
         "selector": ".database-modal-backdrop .database-modal-window .db-battle-studio-title-block h3",
         "property": "font",
@@ -2010,7 +1858,7 @@
     {
       "removed": {
         "file": "src/styles/database/battle-studio.css",
-        "line": 54,
+        "line": 53,
         "context": "",
         "selector": ".database-modal-backdrop .database-modal-window .db-battle-studio-sub",
         "property": "font",
@@ -2035,7 +1883,7 @@
     {
       "removed": {
         "file": "src/styles/database/battle-studio.css",
-        "line": 76,
+        "line": 75,
         "context": "",
         "selector": ".database-modal-backdrop .database-modal-window .db-battle-studio-nav-button",
         "property": "font",
@@ -2060,7 +1908,7 @@
     {
       "removed": {
         "file": "src/styles/database/battle-studio.css",
-        "line": 106,
+        "line": 105,
         "context": "",
         "selector": ".database-modal-backdrop .database-modal-window .db-studio-section-header strong",
         "property": "font",
@@ -2085,7 +1933,7 @@
     {
       "removed": {
         "file": "src/styles/database/battle-studio.css",
-        "line": 111,
+        "line": 110,
         "context": "",
         "selector": ".database-modal-backdrop .database-modal-window .db-studio-section-header span",
         "property": "font",
@@ -2110,7 +1958,7 @@
     {
       "removed": {
         "file": "src/styles/database/battle-studio.css",
-        "line": 146,
+        "line": 145,
         "context": "",
         "selector": ".database-modal-backdrop .database-modal-window .db-studio-live-chip",
         "property": "font",
@@ -2135,7 +1983,7 @@
     {
       "removed": {
         "file": "src/styles/database/battle-studio.css",
-        "line": 230,
+        "line": 229,
         "context": "",
         "selector": ".database-modal-backdrop .database-modal-window .db-terrain-preset-copy strong",
         "property": "font",
@@ -2160,7 +2008,7 @@
     {
       "removed": {
         "file": "src/styles/database/battle-studio.css",
-        "line": 231,
+        "line": 230,
         "context": "",
         "selector": ".database-modal-backdrop .database-modal-window .db-terrain-preset-copy small",
         "property": "font",
@@ -2185,7 +2033,7 @@
     {
       "removed": {
         "file": "src/styles/database/battle-studio.css",
-        "line": 254,
+        "line": 253,
         "context": "",
         "selector": ".database-modal-backdrop .database-modal-window .db-terrain-stage-overlay strong,\n.database-modal-backdrop .database-modal-window .db-battle-screen-stage-meta strong,\n.database-modal-backdrop .database-modal-window .db-command-preview-copy strong",
         "property": "font",
@@ -2210,7 +2058,7 @@
     {
       "removed": {
         "file": "src/styles/database/battle-studio.css",
-        "line": 261,
+        "line": 260,
         "context": "",
         "selector": ".database-modal-backdrop .database-modal-window .db-terrain-stage-overlay small,\n.database-modal-backdrop .database-modal-window .db-battle-screen-stage-meta small",
         "property": "font",
@@ -2235,7 +2083,7 @@
     {
       "removed": {
         "file": "src/styles/database/battle-studio.css",
-        "line": 311,
+        "line": 310,
         "context": "",
         "selector": ".database-modal-backdrop .database-modal-window .db-terrain-record .db-readonly-row span:first-child",
         "property": "font",
@@ -2260,7 +2108,7 @@
     {
       "removed": {
         "file": "src/styles/database/battle-studio.css",
-        "line": 319,
+        "line": 318,
         "context": "",
         "selector": ".database-modal-backdrop .database-modal-window .db-terrain-record :is(input:not([type=\"radio\"]), select)",
         "property": "font",
@@ -2285,7 +2133,7 @@
     {
       "removed": {
         "file": "src/styles/database/battle-studio.css",
-        "line": 390,
+        "line": 389,
         "context": "",
         "selector": ".database-modal-backdrop .database-modal-window .db-battle-screen-party-markers span",
         "property": "font",
@@ -2310,7 +2158,7 @@
     {
       "removed": {
         "file": "src/styles/database/battle-studio.css",
-        "line": 439,
+        "line": 438,
         "context": "",
         "selector": ".database-modal-backdrop .database-modal-window .db-battle-screen-troop-card strong",
         "property": "font",
@@ -2335,7 +2183,7 @@
     {
       "removed": {
         "file": "src/styles/database/battle-studio.css",
-        "line": 440,
+        "line": 439,
         "context": "",
         "selector": ".database-modal-backdrop .database-modal-window .db-battle-screen-troop-card small",
         "property": "font",
@@ -2360,7 +2208,7 @@
     {
       "removed": {
         "file": "src/styles/database/battle-studio.css",
-        "line": 466,
+        "line": 465,
         "context": "",
         "selector": ".database-modal-backdrop .database-modal-window .db-command-preview-menu button",
         "property": "font",
@@ -2385,7 +2233,7 @@
     {
       "removed": {
         "file": "src/styles/database/battle-studio.css",
-        "line": 485,
+        "line": 484,
         "context": "",
         "selector": ".database-modal-backdrop .database-modal-window .db-battle-command-inspector p",
         "property": "font",
@@ -2410,7 +2258,7 @@
     {
       "removed": {
         "file": "src/styles/database/battle-studio.css",
-        "line": 494,
+        "line": 493,
         "context": "",
         "selector": ".database-modal-backdrop .database-modal-window .db-studio-secondary-action",
         "property": "font",
@@ -2435,7 +2283,7 @@
     {
       "removed": {
         "file": "src/styles/database/battle-studio.css",
-        "line": 514,
+        "line": 513,
         "context": "",
         "selector": ".database-modal-backdrop .database-modal-window .db-command-kind-legend span",
         "property": "font",
@@ -2460,7 +2308,7 @@
     {
       "removed": {
         "file": "src/styles/database/battle-studio.css",
-        "line": 551,
+        "line": 550,
         "context": "",
         "selector": ".database-modal-backdrop .database-modal-window .db-command-card-index",
         "property": "font",
@@ -2485,7 +2333,7 @@
     {
       "removed": {
         "file": "src/styles/database/battle-studio.css",
-        "line": 556,
+        "line": 555,
         "context": "",
         "selector": ".database-modal-backdrop .database-modal-window .db-battle-command-card > header strong",
         "property": "font",
@@ -2510,7 +2358,7 @@
     {
       "removed": {
         "file": "src/styles/database/battle-studio.css",
-        "line": 567,
+        "line": 566,
         "context": "",
         "selector": ".database-modal-backdrop .database-modal-window .db-command-card-kind",
         "property": "font",
@@ -2535,7 +2383,7 @@
     {
       "removed": {
         "file": "src/styles/database/battle-studio.css",
-        "line": 581,
+        "line": 580,
         "context": "",
         "selector": ".database-modal-backdrop .database-modal-window .db-battle-command-card .db-readonly-row span:first-child",
         "property": "font",
@@ -2560,7 +2408,7 @@
     {
       "removed": {
         "file": "src/styles/database/battle-studio.css",
-        "line": 590,
+        "line": 589,
         "context": "",
         "selector": ".database-modal-backdrop .database-modal-window .db-battle-command-card :is(input:not([type=\"radio\"]), select)",
         "property": "font",
@@ -2585,7 +2433,7 @@
     {
       "removed": {
         "file": "src/styles/database/battle-studio.css",
-        "line": 621,
+        "line": 620,
         "context": "",
         "selector": ".database-modal-backdrop .database-modal-window .db-studio-summary-metric small",
         "property": "font",
@@ -2610,7 +2458,7 @@
     {
       "removed": {
         "file": "src/styles/database/battle-studio.css",
-        "line": 626,
+        "line": 625,
         "context": "",
         "selector": ".database-modal-backdrop .database-modal-window .db-studio-summary-metric strong",
         "property": "font",
@@ -2635,7 +2483,7 @@
     {
       "removed": {
         "file": "src/styles/database/battle-studio.css",
-        "line": 637,
+        "line": 636,
         "context": "",
         "selector": ".database-modal-backdrop .database-modal-window .db-studio-empty",
         "property": "font",
@@ -7931,1731 +7779,6 @@
             }
           ]
         }
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 103,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper",
-        "property": "align-items",
-        "value": "stretch",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepper",
-        "contract": "one 32px numeric border box",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 870,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper",
-            "property": "align-items",
-            "value": "stretch",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 104,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper",
-        "property": "background",
-        "value": "var(--db-studio-surface)",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepper",
-        "contract": "one 32px numeric border box",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 871,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper",
-            "property": "background",
-            "value": "var(--db-studio-surface)",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 105,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper",
-        "property": "border",
-        "value": "1px solid var(--db-studio-border-default)",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepper",
-        "contract": "one 32px numeric border box",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 872,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper",
-            "property": "border",
-            "value": "1px solid var(--db-studio-border-default)",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 106,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper",
-        "property": "border-radius",
-        "value": "6px",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepper",
-        "contract": "one 32px numeric border box",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 873,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper",
-            "property": "border-radius",
-            "value": "var(--db2-radius-control)",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 107,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper",
-        "property": "box-sizing",
-        "value": "border-box",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepper",
-        "contract": "one 32px numeric border box",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 874,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper",
-            "property": "box-sizing",
-            "value": "border-box",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 109,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper",
-        "property": "container-type",
-        "value": "inline-size",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepper",
-        "contract": "one 32px numeric border box",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 875,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper",
-            "property": "container-type",
-            "value": "inline-size",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 110,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper",
-        "property": "display",
-        "value": "inline-flex",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepper",
-        "contract": "one 32px numeric border box",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 876,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper",
-            "property": "display",
-            "value": "inline-flex",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 111,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper",
-        "property": "min-height",
-        "value": "30px",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepper",
-        "contract": "one 32px numeric border box",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 878,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper",
-            "property": "min-height",
-            "value": "var(--db2-control-h)",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 112,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper",
-        "property": "min-width",
-        "value": "0",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepper",
-        "contract": "one 32px numeric border box",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 879,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper",
-            "property": "min-width",
-            "value": "0",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 113,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper",
-        "property": "overflow",
-        "value": "hidden",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepper",
-        "contract": "one 32px numeric border box",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 880,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper",
-            "property": "overflow",
-            "value": "hidden",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 114,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper",
-        "property": "width",
-        "value": "100%",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepper",
-        "contract": "one 32px numeric border box",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 882,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper",
-            "property": "width",
-            "value": "100%",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 118,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper > input[type=\"number\"]",
-        "property": "background",
-        "value": "var(--db-studio-surface)",
-        "important": false
-      },
-      "replacement": {
-        "kind": "longhand-and-initial-values",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 905,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper > input[type=\"number\"]",
-            "property": "background-color",
-            "value": "transparent",
-            "important": false
-          }
-        ],
-        "initialValues": {
-          "background-image": "none",
-          "background-position": "0% 0%",
-          "background-size": "auto",
-          "background-repeat": "repeat",
-          "background-origin": "padding-box",
-          "background-clip": "border-box",
-          "background-attachment": "scroll"
-        },
-        "reason": "The interior now owns only its transparent background color; the other formerly reset background longhands keep their initial values."
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 119,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper > input[type=\"number\"]",
-        "property": "border",
-        "value": "0",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperInput",
-        "contract": "borderless numeric interior",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 906,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper > input[type=\"number\"]",
-            "property": "border",
-            "value": "0",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 120,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper > input[type=\"number\"]",
-        "property": "border-radius",
-        "value": "0",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperInput",
-        "contract": "borderless numeric interior",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 907,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper > input[type=\"number\"]",
-            "property": "border-radius",
-            "value": "0",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 121,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper > input[type=\"number\"]",
-        "property": "box-sizing",
-        "value": "border-box",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperInput",
-        "contract": "borderless numeric interior",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 909,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper > input[type=\"number\"]",
-            "property": "box-sizing",
-            "value": "border-box",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 122,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper > input[type=\"number\"]",
-        "property": "color",
-        "value": "var(--db-studio-text-1)",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperInput",
-        "contract": "borderless numeric interior",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 910,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper > input[type=\"number\"]",
-            "property": "color",
-            "value": "var(--db-studio-text-1)",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 123,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper > input[type=\"number\"]",
-        "property": "flex",
-        "value": "1 1 auto",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperInput",
-        "contract": "borderless numeric interior",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 914,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper > input[type=\"number\"]",
-            "property": "flex",
-            "value": "1 1 auto",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 124,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper > input[type=\"number\"]",
-        "property": "font",
-        "value": "inherit",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperInput",
-        "contract": "borderless numeric interior",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 911,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper > input[type=\"number\"]",
-            "property": "font",
-            "value": "400 13px/1.35 var(--font-ui)",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 125,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper > input[type=\"number\"]",
-        "property": "min-height",
-        "value": "28px",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperInput",
-        "contract": "borderless numeric interior",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 915,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper > input[type=\"number\"]",
-            "property": "min-height",
-            "value": "0",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 126,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper > input[type=\"number\"]",
-        "property": "min-width",
-        "value": "0",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperInput",
-        "contract": "borderless numeric interior",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 916,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper > input[type=\"number\"]",
-            "property": "min-width",
-            "value": "0",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 127,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper > input[type=\"number\"]",
-        "property": "outline",
-        "value": "0",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperInput",
-        "contract": "borderless numeric interior",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 912,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper > input[type=\"number\"]",
-            "property": "outline",
-            "value": "0",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 128,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper > input[type=\"number\"]",
-        "property": "padding",
-        "value": "3px 8px",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperInput",
-        "contract": "borderless numeric interior",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 913,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper > input[type=\"number\"]",
-            "property": "padding",
-            "value": "0 8px",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 129,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper > input[type=\"number\"]",
-        "property": "text-align",
-        "value": "center",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperInput",
-        "contract": "borderless numeric interior",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 917,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper > input[type=\"number\"]",
-            "property": "text-align",
-            "value": "center",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 130,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper > input[type=\"number\"]",
-        "property": "width",
-        "value": "100%",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperInput",
-        "contract": "borderless numeric interior",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 918,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper > input[type=\"number\"]",
-            "property": "width",
-            "value": "auto",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 134,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper:focus-within",
-        "property": "border-color",
-        "value": "var(--db-studio-accent)",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepper",
-        "contract": "single composite focus ring",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 899,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper:focus-within",
-            "property": "border-color",
-            "value": "var(--db-studio-accent)",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 135,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper:focus-within",
-        "property": "box-shadow",
-        "value": "0 0 0 2px var(--db-studio-accent-soft)",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepper",
-        "contract": "single composite focus ring",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 900,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper:focus-within",
-            "property": "box-shadow",
-            "value": "0 0 0 3px var(--db2-accent-ring)",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 142,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper.is-disabled",
-        "property": "background-color",
-        "value": "var(--db-studio-inset)",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepper",
-        "contract": "one 32px numeric border box",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 871,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper",
-            "property": "background",
-            "value": "var(--db-studio-surface)",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 143,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper.is-disabled",
-        "property": "border-style",
-        "value": "dashed",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepper",
-        "contract": "one 32px numeric border box",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 872,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper",
-            "property": "border",
-            "value": "1px solid var(--db-studio-border-default)",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 147,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper.is-disabled > input[type=\"number\"]",
-        "property": "background-color",
-        "value": "transparent",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperInput",
-        "contract": "borderless numeric interior",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 905,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper > input[type=\"number\"]",
-            "property": "background-color",
-            "value": "transparent",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 148,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper.is-disabled > input[type=\"number\"]",
-        "property": "color",
-        "value": "var(--db-studio-text-2)",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperInput",
-        "contract": "disabled numeric interior",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 894,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper.is-disabled > input[type=\"number\"]",
-            "property": "color",
-            "value": "var(--db-studio-text-2)",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 149,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper.is-disabled > input[type=\"number\"]",
-        "property": "cursor",
-        "value": "not-allowed",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperInput",
-        "contract": "disabled numeric interior",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 895,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper.is-disabled > input[type=\"number\"]",
-            "property": "cursor",
-            "value": "not-allowed",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 156,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window input:disabled,\n.database-modal-backdrop .database-modal-window select:disabled",
-        "property": "background-color",
-        "value": "var(--db-studio-inset)",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "controls",
-        "contract": "ordinary text chrome, excluding native variants and stepper interiors",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 792,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]):where(:not(.db-number-stepper input)),\n.database-modal-backdrop .database-modal-window .database-modal-body textarea",
-            "property": "background-color",
-            "value": "var(--db-studio-surface)",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 157,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window input:disabled,\n.database-modal-backdrop .database-modal-window select:disabled",
-        "property": "border-style",
-        "value": "dashed",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "controls",
-        "contract": "ordinary text chrome, excluding native variants and stepper interiors",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 793,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]):where(:not(.db-number-stepper input)),\n.database-modal-backdrop .database-modal-window .database-modal-body textarea",
-            "property": "border",
-            "value": "1px solid var(--db-studio-border-default)",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 158,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window input:disabled,\n.database-modal-backdrop .database-modal-window select:disabled",
-        "property": "color",
-        "value": "var(--db-studio-text-2)",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "controls",
-        "contract": "ordinary text chrome, excluding native variants and stepper interiors",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 797,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]):where(:not(.db-number-stepper input)),\n.database-modal-backdrop .database-modal-window .database-modal-body textarea",
-            "property": "color",
-            "value": "var(--db-studio-text-1)",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 159,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window input:disabled,\n.database-modal-backdrop .database-modal-window select:disabled",
-        "property": "cursor",
-        "value": "not-allowed",
-        "important": false
-      },
-      "replacement": {
-        "kind": "scope-split",
-        "retained": {
-          "declarations": [
-            {
-              "file": "src/styles/database/modern-controls.css",
-              "line": 59,
-              "context": "",
-              "selector": ".database-modal-backdrop .database-modal-window select:disabled",
-              "property": "cursor",
-              "value": "default",
-              "important": false
-            }
-          ]
-        },
-        "removedConsumers": {
-          "selector": ".database-modal-backdrop .database-modal-window input:disabled",
-          "value": "auto",
-          "reason": "The redundant broad not-allowed cursor is removed; bare native inputs keep their initial cursor and disabled semantics. Composite disabled input cursor remains explicitly owned in Studio.",
-          "declarations": [
-            {
-              "file": "src/styles/database/studio-v2.css",
-              "line": 895,
-              "context": "",
-              "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper.is-disabled > input[type=\"number\"]",
-              "property": "cursor",
-              "value": "not-allowed",
-              "important": false
-            }
-          ]
-        }
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 163,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper-button",
-        "property": "align-items",
-        "value": "center",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperButton",
-        "contract": "native increment/decrement button chrome",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 933,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper-button",
-            "property": "align-items",
-            "value": "center",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 164,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper-button",
-        "property": "background",
-        "value": "var(--db-studio-inset)",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperButton",
-        "contract": "native increment/decrement button chrome",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 934,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper-button",
-            "property": "background",
-            "value": "var(--db-studio-inset)",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 165,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper-button",
-        "property": "border",
-        "value": "0",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperButton",
-        "contract": "native increment/decrement button chrome",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 935,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper-button",
-            "property": "border",
-            "value": "0",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 166,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper-button",
-        "property": "color",
-        "value": "var(--db-studio-text-2)",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperButton",
-        "contract": "native increment/decrement button chrome",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 936,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper-button",
-            "property": "color",
-            "value": "var(--db-studio-text-2)",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 167,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper-button",
-        "property": "cursor",
-        "value": "pointer",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperButton",
-        "contract": "native increment/decrement button chrome",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 937,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper-button",
-            "property": "cursor",
-            "value": "pointer",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 168,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper-button",
-        "property": "display",
-        "value": "inline-flex",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperButton",
-        "contract": "native increment/decrement button chrome",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 938,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper-button",
-            "property": "display",
-            "value": "inline-flex",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 169,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper-button",
-        "property": "flex",
-        "value": "0 0 30px",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperButton",
-        "contract": "native increment/decrement button chrome",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 940,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper-button",
-            "property": "flex",
-            "value": "0 0 28px",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 170,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper-button",
-        "property": "justify-content",
-        "value": "center",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperButton",
-        "contract": "native increment/decrement button chrome",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 943,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper-button",
-            "property": "justify-content",
-            "value": "center",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 171,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper-button",
-        "property": "margin",
-        "value": "0",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperButton",
-        "contract": "native increment/decrement button chrome",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 941,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper-button",
-            "property": "margin",
-            "value": "0",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 172,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper-button",
-        "property": "min-height",
-        "value": "28px",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperButton",
-        "contract": "native increment/decrement button chrome",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 942,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper-button",
-            "property": "min-height",
-            "value": "0",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 173,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper-button",
-        "property": "padding",
-        "value": "0",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperButton",
-        "contract": "native increment/decrement button chrome",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 945,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper-button",
-            "property": "padding",
-            "value": "0",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 174,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper-button",
-        "property": "width",
-        "value": "30px",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperButton",
-        "contract": "native increment/decrement button chrome",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 946,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper-button",
-            "property": "width",
-            "value": "28px",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 178,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper-dec",
-        "property": "border-right",
-        "value": "1px solid var(--db-studio-border-default)",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperButton",
-        "contract": "native increment/decrement button chrome",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 935,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper-button",
-            "property": "border",
-            "value": "0",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 182,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper-inc",
-        "property": "border-left",
-        "value": "1px solid var(--db-studio-border-default)",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperButton",
-        "contract": "native increment/decrement button chrome",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 935,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper-button",
-            "property": "border",
-            "value": "0",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 186,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper-button:hover:not(:disabled)",
-        "property": "background",
-        "value": "var(--db-studio-accent-soft)",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperButton",
-        "contract": "native increment/decrement button chrome",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 934,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper-button",
-            "property": "background",
-            "value": "var(--db-studio-inset)",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 187,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper-button:hover:not(:disabled)",
-        "property": "color",
-        "value": "var(--db-studio-accent)",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperButton",
-        "contract": "native increment/decrement button chrome",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 936,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper-button",
-            "property": "color",
-            "value": "var(--db-studio-text-2)",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 191,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper-button:active:not(:disabled)",
-        "property": "background",
-        "value": "var(--db-studio-accent-border)",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperButton",
-        "contract": "native increment/decrement button chrome",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 934,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper-button",
-            "property": "background",
-            "value": "var(--db-studio-inset)",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 192,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper-button:active:not(:disabled)",
-        "property": "color",
-        "value": "var(--db-studio-accent-active)",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperButton",
-        "contract": "native increment/decrement button chrome",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 936,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper-button",
-            "property": "color",
-            "value": "var(--db-studio-text-2)",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 196,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper-button:focus-visible",
-        "property": "outline",
-        "value": "2px solid var(--db-studio-accent)",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperButton",
-        "contract": "step button keyboard focus",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 977,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper-button:focus-visible",
-            "property": "outline",
-            "value": "2px solid var(--db-studio-accent)",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 197,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper-button:focus-visible",
-        "property": "outline-offset",
-        "value": "-2px",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperButton",
-        "contract": "step button keyboard focus",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 978,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper-button:focus-visible",
-            "property": "outline-offset",
-            "value": "-2px",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 201,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper-button:disabled",
-        "property": "color",
-        "value": "var(--db-studio-text-3)",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperButton",
-        "contract": "native increment/decrement button chrome",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 936,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper-button",
-            "property": "color",
-            "value": "var(--db-studio-text-2)",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 202,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper-button:disabled",
-        "property": "cursor",
-        "value": "default",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperButton",
-        "contract": "native increment/decrement button chrome",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 937,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper-button",
-            "property": "cursor",
-            "value": "pointer",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 203,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper-button:disabled",
-        "property": "opacity",
-        "value": "0.55",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperButton",
-        "contract": "disabled step button",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 984,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper-button:disabled",
-            "property": "opacity",
-            "value": "0.5",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 207,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper-icon",
-        "property": "display",
-        "value": "block",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperIcon",
-        "contract": "stepper icon geometry and inert pointer behavior",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 988,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper-icon",
-            "property": "display",
-            "value": "block",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 208,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper-icon",
-        "property": "height",
-        "value": "14px",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperIcon",
-        "contract": "stepper icon geometry and inert pointer behavior",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 990,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper-icon",
-            "property": "height",
-            "value": "14px",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 209,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper-icon",
-        "property": "pointer-events",
-        "value": "none",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperIcon",
-        "contract": "stepper icon geometry and inert pointer behavior",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 989,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper-icon",
-            "property": "pointer-events",
-            "value": "none",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 210,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper-icon",
-        "property": "width",
-        "value": "14px",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperIcon",
-        "contract": "stepper icon geometry and inert pointer behavior",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 991,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper-icon",
-            "property": "width",
-            "value": "14px",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/modern-controls.css",
-        "line": 232,
-        "context": "@container (max-width: 120px)",
-        "selector": ".database-modal-backdrop .database-modal-window .db-number-stepper-button",
-        "property": "display",
-        "value": "none",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperButton",
-        "contract": "native increment/decrement button chrome",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 938,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper-button",
-            "property": "display",
-            "value": "inline-flex",
-            "important": false
-          }
-        ]
       }
     },
     {
@@ -15936,15 +14059,13 @@
         "file": "src/styles/database/studio-v2.css",
         "line": 768,
         "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]),\n.database-modal-backdrop .database-modal-window .database-modal-body textarea",
+        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]):not(.db-number-stepper input),\n.database-modal-backdrop .database-modal-window .database-modal-body textarea",
         "property": "background-color",
         "value": "var(--db-studio-surface)",
         "important": false
       },
       "replacement": {
-        "kind": "designated-property-owner",
-        "role": "controls",
-        "contract": "ordinary text chrome, excluding native variants and stepper interiors",
+        "kind": "specificity-adjusted",
         "declarations": [
           {
             "file": "src/styles/database/studio-v2.css",
@@ -15963,15 +14084,13 @@
         "file": "src/styles/database/studio-v2.css",
         "line": 769,
         "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]),\n.database-modal-backdrop .database-modal-window .database-modal-body textarea",
+        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]):not(.db-number-stepper input),\n.database-modal-backdrop .database-modal-window .database-modal-body textarea",
         "property": "border",
         "value": "1px solid var(--db-studio-border-default)",
         "important": false
       },
       "replacement": {
-        "kind": "designated-property-owner",
-        "role": "controls",
-        "contract": "ordinary text chrome, excluding native variants and stepper interiors",
+        "kind": "specificity-adjusted",
         "declarations": [
           {
             "file": "src/styles/database/studio-v2.css",
@@ -15990,15 +14109,13 @@
         "file": "src/styles/database/studio-v2.css",
         "line": 770,
         "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]),\n.database-modal-backdrop .database-modal-window .database-modal-body textarea",
+        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]):not(.db-number-stepper input),\n.database-modal-backdrop .database-modal-window .database-modal-body textarea",
         "property": "border-radius",
         "value": "var(--db2-radius-control)",
         "important": false
       },
       "replacement": {
-        "kind": "designated-property-owner",
-        "role": "controls",
-        "contract": "ordinary text chrome, excluding native variants and stepper interiors",
+        "kind": "specificity-adjusted",
         "declarations": [
           {
             "file": "src/styles/database/studio-v2.css",
@@ -16017,15 +14134,13 @@
         "file": "src/styles/database/studio-v2.css",
         "line": 771,
         "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]),\n.database-modal-backdrop .database-modal-window .database-modal-body textarea",
+        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]):not(.db-number-stepper input),\n.database-modal-backdrop .database-modal-window .database-modal-body textarea",
         "property": "box-shadow",
         "value": "none",
         "important": false
       },
       "replacement": {
-        "kind": "designated-property-owner",
-        "role": "controls",
-        "contract": "ordinary text chrome, excluding native variants and stepper interiors",
+        "kind": "specificity-adjusted",
         "declarations": [
           {
             "file": "src/styles/database/studio-v2.css",
@@ -16044,15 +14159,13 @@
         "file": "src/styles/database/studio-v2.css",
         "line": 772,
         "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]),\n.database-modal-backdrop .database-modal-window .database-modal-body textarea",
+        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]):not(.db-number-stepper input),\n.database-modal-backdrop .database-modal-window .database-modal-body textarea",
         "property": "box-sizing",
         "value": "border-box",
         "important": false
       },
       "replacement": {
-        "kind": "designated-property-owner",
-        "role": "controls",
-        "contract": "ordinary text chrome, excluding native variants and stepper interiors",
+        "kind": "specificity-adjusted",
         "declarations": [
           {
             "file": "src/styles/database/studio-v2.css",
@@ -16071,15 +14184,13 @@
         "file": "src/styles/database/studio-v2.css",
         "line": 773,
         "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]),\n.database-modal-backdrop .database-modal-window .database-modal-body textarea",
+        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]):not(.db-number-stepper input),\n.database-modal-backdrop .database-modal-window .database-modal-body textarea",
         "property": "color",
         "value": "var(--db-studio-text-1)",
         "important": false
       },
       "replacement": {
-        "kind": "designated-property-owner",
-        "role": "controls",
-        "contract": "ordinary text chrome, excluding native variants and stepper interiors",
+        "kind": "specificity-adjusted",
         "declarations": [
           {
             "file": "src/styles/database/studio-v2.css",
@@ -16098,15 +14209,13 @@
         "file": "src/styles/database/studio-v2.css",
         "line": 774,
         "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]),\n.database-modal-backdrop .database-modal-window .database-modal-body textarea",
+        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]):not(.db-number-stepper input),\n.database-modal-backdrop .database-modal-window .database-modal-body textarea",
         "property": "font",
         "value": "400 13px/1.35 var(--font-ui)",
         "important": false
       },
       "replacement": {
-        "kind": "designated-property-owner",
-        "role": "controls",
-        "contract": "ordinary text chrome, excluding native variants and stepper interiors",
+        "kind": "specificity-adjusted",
         "declarations": [
           {
             "file": "src/styles/database/studio-v2.css",
@@ -16125,15 +14234,13 @@
         "file": "src/styles/database/studio-v2.css",
         "line": 775,
         "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]),\n.database-modal-backdrop .database-modal-window .database-modal-body textarea",
+        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]):not(.db-number-stepper input),\n.database-modal-backdrop .database-modal-window .database-modal-body textarea",
         "property": "min-height",
         "value": "var(--db2-control-h)",
         "important": false
       },
       "replacement": {
-        "kind": "designated-property-owner",
-        "role": "controls",
-        "contract": "ordinary text chrome, excluding native variants and stepper interiors",
+        "kind": "specificity-adjusted",
         "declarations": [
           {
             "file": "src/styles/database/studio-v2.css",
@@ -16152,15 +14259,13 @@
         "file": "src/styles/database/studio-v2.css",
         "line": 776,
         "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]),\n.database-modal-backdrop .database-modal-window .database-modal-body textarea",
+        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]):not(.db-number-stepper input),\n.database-modal-backdrop .database-modal-window .database-modal-body textarea",
         "property": "padding",
         "value": "0 10px",
         "important": false
       },
       "replacement": {
-        "kind": "designated-property-owner",
-        "role": "controls",
-        "contract": "ordinary text chrome, excluding native variants and stepper interiors",
+        "kind": "specificity-adjusted",
         "declarations": [
           {
             "file": "src/styles/database/studio-v2.css",
@@ -16179,15 +14284,13 @@
         "file": "src/styles/database/studio-v2.css",
         "line": 777,
         "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]),\n.database-modal-backdrop .database-modal-window .database-modal-body textarea",
+        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]):not(.db-number-stepper input),\n.database-modal-backdrop .database-modal-window .database-modal-body textarea",
         "property": "transition",
         "value": "border-color 120ms ease, box-shadow 120ms ease",
         "important": false
       },
       "replacement": {
-        "kind": "designated-property-owner",
-        "role": "controls",
-        "contract": "ordinary text chrome, excluding native variants and stepper interiors",
+        "kind": "specificity-adjusted",
         "declarations": [
           {
             "file": "src/styles/database/studio-v2.css",
@@ -16206,23 +14309,21 @@
         "file": "src/styles/database/studio-v2.css",
         "line": 804,
         "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body :is(input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]), select, textarea):hover:not(:disabled):not(:focus-visible)",
+        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body :is(input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]):not(.db-number-stepper input), select, textarea):hover:not(:disabled):not(:focus-visible)",
         "property": "border-color",
         "value": "var(--db-studio-border-strong)",
         "important": false
       },
       "replacement": {
-        "kind": "designated-property-owner",
-        "role": "controls",
-        "contract": "ordinary text chrome, excluding native variants and stepper interiors",
+        "kind": "specificity-adjusted",
         "declarations": [
           {
             "file": "src/styles/database/studio-v2.css",
-            "line": 793,
+            "line": 828,
             "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]):where(:not(.db-number-stepper input)),\n.database-modal-backdrop .database-modal-window .database-modal-body textarea",
-            "property": "border",
-            "value": "1px solid var(--db-studio-border-default)",
+            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body :is(input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]):where(:not(.db-number-stepper input)), select, textarea):hover:not(:disabled):not(:focus-visible)",
+            "property": "border-color",
+            "value": "var(--db-studio-border-strong)",
             "important": false
           }
         ]
@@ -16233,23 +14334,21 @@
         "file": "src/styles/database/studio-v2.css",
         "line": 808,
         "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body :is(input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]), select, textarea):focus-visible",
+        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body :is(input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]):not(.db-number-stepper input), select, textarea):focus-visible",
         "property": "border-color",
         "value": "var(--db-studio-accent)",
         "important": false
       },
       "replacement": {
-        "kind": "designated-property-owner",
-        "role": "controls",
-        "contract": "ordinary text chrome, excluding native variants and stepper interiors",
+        "kind": "specificity-adjusted",
         "declarations": [
           {
             "file": "src/styles/database/studio-v2.css",
-            "line": 793,
+            "line": 832,
             "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]):where(:not(.db-number-stepper input)),\n.database-modal-backdrop .database-modal-window .database-modal-body textarea",
-            "property": "border",
-            "value": "1px solid var(--db-studio-border-default)",
+            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body :is(input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]):where(:not(.db-number-stepper input)), select, textarea):focus-visible",
+            "property": "border-color",
+            "value": "var(--db-studio-accent)",
             "important": false
           }
         ]
@@ -16260,23 +14359,21 @@
         "file": "src/styles/database/studio-v2.css",
         "line": 809,
         "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body :is(input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]), select, textarea):focus-visible",
+        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body :is(input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]):not(.db-number-stepper input), select, textarea):focus-visible",
         "property": "box-shadow",
         "value": "0 0 0 3px var(--db2-accent-ring)",
         "important": false
       },
       "replacement": {
-        "kind": "designated-property-owner",
-        "role": "controls",
-        "contract": "ordinary text chrome, excluding native variants and stepper interiors",
+        "kind": "specificity-adjusted",
         "declarations": [
           {
             "file": "src/styles/database/studio-v2.css",
-            "line": 795,
+            "line": 833,
             "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]):where(:not(.db-number-stepper input)),\n.database-modal-backdrop .database-modal-window .database-modal-body textarea",
+            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body :is(input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]):where(:not(.db-number-stepper input)), select, textarea):focus-visible",
             "property": "box-shadow",
-            "value": "none",
+            "value": "0 0 0 3px var(--db2-accent-ring)",
             "important": false
           }
         ]
@@ -16287,15 +14384,13 @@
         "file": "src/styles/database/studio-v2.css",
         "line": 810,
         "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body :is(input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]), select, textarea):focus-visible",
+        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body :is(input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]):not(.db-number-stepper input), select, textarea):focus-visible",
         "property": "outline",
         "value": "none",
         "important": false
       },
       "replacement": {
-        "kind": "designated-property-owner",
-        "role": "controls",
-        "contract": "ordinary control focus",
+        "kind": "specificity-adjusted",
         "declarations": [
           {
             "file": "src/styles/database/studio-v2.css",
@@ -16314,23 +14409,21 @@
         "file": "src/styles/database/studio-v2.css",
         "line": 814,
         "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body :is(input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]), select, textarea):disabled",
+        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body :is(input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]):not(.db-number-stepper input), select, textarea):disabled",
         "property": "background-color",
         "value": "var(--db-studio-inset)",
         "important": false
       },
       "replacement": {
-        "kind": "designated-property-owner",
-        "role": "controls",
-        "contract": "ordinary text chrome, excluding native variants and stepper interiors",
+        "kind": "specificity-adjusted",
         "declarations": [
           {
             "file": "src/styles/database/studio-v2.css",
-            "line": 792,
+            "line": 838,
             "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]):where(:not(.db-number-stepper input)),\n.database-modal-backdrop .database-modal-window .database-modal-body textarea",
+            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body :is(input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]):where(:not(.db-number-stepper input)), select, textarea):disabled",
             "property": "background-color",
-            "value": "var(--db-studio-surface)",
+            "value": "var(--db-studio-inset)",
             "important": false
           }
         ]
@@ -16341,23 +14434,21 @@
         "file": "src/styles/database/studio-v2.css",
         "line": 815,
         "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body :is(input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]), select, textarea):disabled",
+        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body :is(input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]):not(.db-number-stepper input), select, textarea):disabled",
         "property": "border-style",
         "value": "solid",
         "important": false
       },
       "replacement": {
-        "kind": "designated-property-owner",
-        "role": "controls",
-        "contract": "ordinary text chrome, excluding native variants and stepper interiors",
+        "kind": "specificity-adjusted",
         "declarations": [
           {
             "file": "src/styles/database/studio-v2.css",
-            "line": 793,
+            "line": 839,
             "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]):where(:not(.db-number-stepper input)),\n.database-modal-backdrop .database-modal-window .database-modal-body textarea",
-            "property": "border",
-            "value": "1px solid var(--db-studio-border-default)",
+            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body :is(input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]):where(:not(.db-number-stepper input)), select, textarea):disabled",
+            "property": "border-style",
+            "value": "solid",
             "important": false
           }
         ]
@@ -16368,23 +14459,21 @@
         "file": "src/styles/database/studio-v2.css",
         "line": 816,
         "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body :is(input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]), select, textarea):disabled",
+        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body :is(input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]):not(.db-number-stepper input), select, textarea):disabled",
         "property": "color",
         "value": "var(--db-studio-text-3)",
         "important": false
       },
       "replacement": {
-        "kind": "designated-property-owner",
-        "role": "controls",
-        "contract": "ordinary text chrome, excluding native variants and stepper interiors",
+        "kind": "specificity-adjusted",
         "declarations": [
           {
             "file": "src/styles/database/studio-v2.css",
-            "line": 797,
+            "line": 840,
             "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]):where(:not(.db-number-stepper input)),\n.database-modal-backdrop .database-modal-window .database-modal-body textarea",
+            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body :is(input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not([type=\"file\"]):where(:not(.db-number-stepper input)), select, textarea):disabled",
             "property": "color",
-            "value": "var(--db-studio-text-1)",
+            "value": "var(--db-studio-text-3)",
             "important": false
           }
         ]
@@ -16393,306 +14482,9 @@
     {
       "removed": {
         "file": "src/styles/database/studio-v2.css",
-        "line": 864,
+        "line": 1023,
         "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper input",
-        "property": "appearance",
-        "value": "textfield",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperInput",
-        "contract": "borderless numeric interior",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 904,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper > input[type=\"number\"]",
-            "property": "appearance",
-            "value": "textfield",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/studio-v2.css",
-        "line": 865,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper input",
-        "property": "background-color",
-        "value": "transparent",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperInput",
-        "contract": "borderless numeric interior",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 905,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper > input[type=\"number\"]",
-            "property": "background-color",
-            "value": "transparent",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/studio-v2.css",
-        "line": 866,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper input",
-        "property": "border",
-        "value": "0",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperInput",
-        "contract": "borderless numeric interior",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 906,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper > input[type=\"number\"]",
-            "property": "border",
-            "value": "0",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/studio-v2.css",
-        "line": 867,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper input",
-        "property": "border-radius",
-        "value": "0",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperInput",
-        "contract": "borderless numeric interior",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 907,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper > input[type=\"number\"]",
-            "property": "border-radius",
-            "value": "0",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/studio-v2.css",
-        "line": 868,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper input",
-        "property": "box-shadow",
-        "value": "none",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperInput",
-        "contract": "borderless numeric interior",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 908,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper > input[type=\"number\"]",
-            "property": "box-shadow",
-            "value": "none",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/studio-v2.css",
-        "line": 869,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper input",
-        "property": "flex",
-        "value": "1 1 auto",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperInput",
-        "contract": "borderless numeric interior",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 914,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper > input[type=\"number\"]",
-            "property": "flex",
-            "value": "1 1 auto",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/studio-v2.css",
-        "line": 870,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper input",
-        "property": "min-height",
-        "value": "0",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperInput",
-        "contract": "borderless numeric interior",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 915,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper > input[type=\"number\"]",
-            "property": "min-height",
-            "value": "0",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/studio-v2.css",
-        "line": 871,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper input",
-        "property": "min-width",
-        "value": "0",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperInput",
-        "contract": "borderless numeric interior",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 916,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper > input[type=\"number\"]",
-            "property": "min-width",
-            "value": "0",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/studio-v2.css",
-        "line": 872,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper input",
-        "property": "text-align",
-        "value": "center",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperInput",
-        "contract": "borderless numeric interior",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 917,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper > input[type=\"number\"]",
-            "property": "text-align",
-            "value": "center",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/studio-v2.css",
-        "line": 873,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper input",
-        "property": "width",
-        "value": "auto",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperInput",
-        "contract": "borderless numeric interior",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 918,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper > input[type=\"number\"]",
-            "property": "width",
-            "value": "auto",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/studio-v2.css",
-        "line": 877,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper input:focus-visible",
-        "property": "box-shadow",
-        "value": "none",
-        "important": false
-      },
-      "replacement": {
-        "kind": "designated-property-owner",
-        "role": "stepperInput",
-        "contract": "borderless numeric interior",
-        "declarations": [
-          {
-            "file": "src/styles/database/studio-v2.css",
-            "line": 908,
-            "context": "",
-            "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper > input[type=\"number\"]",
-            "property": "box-shadow",
-            "value": "none",
-            "important": false
-          }
-        ]
-      }
-    },
-    {
-      "removed": {
-        "file": "src/styles/database/studio-v2.css",
-        "line": 986,
-        "context": "",
-        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body :is(.db-ws-card, fieldset, .db-panel, .db-advanced-panel) .db-number-stepper,\n.database-modal-backdrop .database-modal-window .database-modal-body :is(.db-ws-card, fieldset, .db-panel, .db-advanced-panel) :is(input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]), select, textarea)",
+        "selector": ".database-modal-backdrop .database-modal-window .database-modal-body :is(.db-ws-card, fieldset, .db-panel, .db-advanced-panel) .db-number-stepper,\n.database-modal-backdrop .database-modal-window .database-modal-body :is(.db-ws-card, fieldset, .db-panel, .db-advanced-panel) :is(input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"]):not(.db-number-stepper input), select, textarea)",
         "property": "background-color",
         "value": "var(--db-studio-surface)",
         "important": false
@@ -16717,7 +14509,7 @@
     {
       "removed": {
         "file": "src/styles/database/studio-v2.css",
-        "line": 991,
+        "line": 1028,
         "context": "",
         "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-section-tab",
         "property": "font",
@@ -16744,7 +14536,7 @@
     {
       "removed": {
         "file": "src/styles/database/studio-v2.css",
-        "line": 992,
+        "line": 1029,
         "context": "",
         "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-section-tab",
         "property": "min-height",
@@ -16771,7 +14563,7 @@
     {
       "removed": {
         "file": "src/styles/database/studio-v2.css",
-        "line": 996,
+        "line": 1033,
         "context": "",
         "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .db-ws-section-tabs",
         "property": "gap",
@@ -16798,7 +14590,7 @@
     {
       "removed": {
         "file": "src/styles/database/studio-v2.css",
-        "line": 1140,
+        "line": 1177,
         "context": "",
         "selector": ".database-modal-backdrop .database-modal-window .database-modal-body :is(\n  .db-enemy-stat-grid,\n  .db-enemy-reward-grid,\n  .db-item-grid,\n  .db-state-runtime-panel,\n  .db-terrain-quick-row\n) .db-field > span:first-child",
         "property": "font-size",
@@ -16825,7 +14617,7 @@
     {
       "removed": {
         "file": "src/styles/database/studio-v2.css",
-        "line": 1630,
+        "line": 1667,
         "context": "",
         "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .oprn-record-actors .actor-section-tab.active",
         "property": "background",
@@ -16852,7 +14644,7 @@
     {
       "removed": {
         "file": "src/styles/database/studio-v2.css",
-        "line": 1634,
+        "line": 1671,
         "context": "",
         "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .oprn-record-actors .actor-section-tab:focus-visible",
         "property": "outline",
@@ -16879,7 +14671,7 @@
     {
       "removed": {
         "file": "src/styles/database/studio-v2.css",
-        "line": 1635,
+        "line": 1672,
         "context": "",
         "selector": ".database-modal-backdrop .database-modal-window .database-modal-body .oprn-record-actors .actor-section-tab:focus-visible",
         "property": "outline-offset",
