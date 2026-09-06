@@ -342,7 +342,7 @@ describe("EasyRPG theme metadata packs", () => {
     expect(uploaded.tileGroups).toBeUndefined();
   });
 
-  it("replaces only pack-owned groups and preserves unrelated groups", () => {
+  it("preserves existing group records and IDs, including ambiguous bundled prefix records", () => {
     const tileset = createBlankProject().tilesets.easyrpg_chipset_dungeon;
     tileset.tileGroups = [
       ...(tileset.tileGroups ?? []),
@@ -356,7 +356,7 @@ describe("EasyRPG theme metadata packs", () => {
     applyEasyRpgThemeMetadataPacks(tileset);
 
     expect(tileset.tileGroups?.some((group) => group.id === "user-custom-group")).toBe(true);
-    expect(tileset.tileGroups?.some((group) => group.id === `${DUNGEON_HARNESS_PREFIX}old`)).toBe(false);
+    expect(tileset.tileGroups?.some((group) => group.id === `${DUNGEON_HARNESS_PREFIX}old`)).toBe(true);
     expect(tileset.tileGroups?.some((group) => group.id === `${DUNGEON_HARNESS_PREFIX}floor`)).toBe(true);
     expect(tileset.tileGroups?.some((group) => group.id === `${DUNGEON_HARNESS_PREFIX}user-collision`)).toBe(true);
     expect(tileset.tileGroups?.some((group) => group.name === "User Floor Collision")).toBe(true);

@@ -1,5 +1,30 @@
 # Runtime Project Schema & Persistence
 
+## Truthful migrated-load state (2026-09-07)
+
+`store.normalizeCurrentProject` compares raw project structure before and after
+normalization (`structuralJson`: object-key order only; arrays and every field stay
+significant). Helper `changed` flags remain diagnostic hints, not evidence that a
+revision needs saving: transient pack rewrites can return to the same structure.
+This comparison does not deserialize, change canonical hashing, or exclude content.
+
+Real normalization changes set dirty and advance mutation generation before they can
+be persisted. Initial load schedules migration autosave only after `loaded=true`;
+reload/reconnect capture the remote baseline before normalization and defer saving
+through the ordinary autosave/flush path. None clears a migrated revision as clean.
+Failure keeps it dirty; edits during migration persistence trigger the existing
+local-first catch-up save. Coalescing is scoped to content lineage, so a replacement
+migration can save independently of an older held save. Historical responses cannot
+clear a replacement flight, dirty state, receipt or autosave status.
+
+Interior group composition and strict cabinet-kit migration are described in
+[the room harness page](editor-interior-room-harness.md). Placed map layers without
+per-cell provenance are preserved, including deliberate lower-layer props. No schema
+bump is needed. Existing accepted-save receipts/proof and `serializeForComparison`
+remain unchanged; graphical/both title graphics and nondefault authored content are
+still identity-significant. Tests: `interiorLoadConsistency.test.ts`,
+`storePersistenceLineage.test.ts`, and the existing persistence-proof tests.
+
 ## P1 accepted-save receipts and read-only proof (2026-09-06)
 
 `ProjectFlushResult` keeps its existing variants; `saved` optionally includes a
