@@ -14,6 +14,7 @@ import type { RoadStyle } from "../villagePlan";
 import {
   clamp,
   coordKey,
+  environmentalRoadAt,
   MAX_ROAD_WIDTH,
   ROAD_TILES,
   type BuiltHouse,
@@ -746,10 +747,7 @@ export function ensureSingleRoadComponent(
   preferAvoid = new Set([...preferAvoid, ...houseBlocked]);
   const body = roadBodyTile(pathStyle);
   const key = (x: number, y: number) => `${x},${y}`;
-  const isRoad = (x: number, y: number): boolean => {
-    if (!inMapBounds(map, x, y)) return false;
-    return ROAD_TILES.has(map.lowerTiles[y * map.width + x] ?? TILE.EMPTY);
-  };
+  const isRoad = environmentalRoadAt(map);
   const walkableWith = (mask: ReadonlySet<string>) => (x: number, y: number): boolean => {
     if (x < area.x || y < area.y || x >= area.x + area.w || y >= area.y + area.h) return false;
     if (mask.has(key(x, y))) return false;

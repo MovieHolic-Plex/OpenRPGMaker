@@ -6,6 +6,9 @@
 // (easyrpg_chipset_combined_town, 30열×16행) 전용 좌표다. 다른 타일셋에서는 전부 깨진다 —
 // build_village가 시공 전에 타일셋을 검사해 거부한다(builder.ts).
 
+import { protectedHouseCells } from "../houseProtection";
+import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
+import { TILE } from "@/project/defaults/constants";
 import type { FootprintWing, HouseKitId } from "@/editor/houseKit";
 import { MIXABLE_HOUSE_KIT_IDS } from "@/editor/houseKit";
 import type { HouseInteriorProgram } from "@/editor/houseInteriors";
@@ -109,6 +112,19 @@ export const ROAD_TILES = new Set<number>([
   ...DEFAULT_SAND_AUTOTILE_GROUP.memberTileIds,
   ...DEFAULT_COBBLE_AUTOTILE_GROUP.memberTileIds,
 ]);
+/** External network membership, not a tile-value test: accepted houses/stamps own both layers. */
+export function environmentalRoadAt(map: GameMap): (x: number, y: number) => boolean {
+  const owned = new Set(protectedHouseCells(map).map(({ x, y }) => y * map.width + x));
+  return (x, y) => {
+    if (x < 0 || y < 0 || x >= map.width || y >= map.height) return false;
+    const index = y * map.width + x;
+    if (owned.has(index)) return false;
+    const lower = map.lowerTiles[index] ?? TILE.EMPTY;
+    // Planks connect roads over water, but a roof deck is not an environmental bridge.
+    return ROAD_TILES.has(lower) || (map.upperTiles[index] === 199 && isWaterChipsetTile(lower));
+  };
+}
+
 export const DEFAULT_ROAD_STYLE: RoadStyle = "sand";
 // 랜덤 믹스 대상 킷만 — aframe-stone은 지오메트리 종속이라 템플릿이 강제할 때만 쓴다.
 export const HOUSE_KITS: readonly HouseKitId[] = MIXABLE_HOUSE_KIT_IDS;

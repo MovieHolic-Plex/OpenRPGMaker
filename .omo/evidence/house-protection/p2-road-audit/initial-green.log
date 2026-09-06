@@ -1,0 +1,18 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/villageOwnedRoadClassification.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-house-protection-p2-road-audit
+
+ ✓ test/villageOwnedRoadClassification.test.ts (7 tests) 14047ms
+   ✓ village environmental road ownership > accepts the exact public village when existing ownership is control  4074ms
+   ✓ village environmental road ownership > accepts the exact public village when existing ownership is human-deck-edit  3642ms
+   ✓ village environmental road ownership > accepts the exact public village when existing ownership is human-stamp  2822ms
+   ✓ village environmental road ownership > does not construct an external spur to a road-valued human stamp  352ms
+   ✓ village environmental road ownership > keeps the real facade gate closed when a disconnected external island remains  2703ms
+
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Start at  10:52:42
+   Duration  33.58s (transform 13.16s, setup 0ms, collect 18.66s, tests 14.05s, environment 0ms, prepare 154ms)
