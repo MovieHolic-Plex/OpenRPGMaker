@@ -1,0 +1,5 @@
+{"path":"src/player/farming.ts","diagnostics":[]}
+{"path":"src/player/playSceneFarming.ts","diagnostics":[]}
+{"path":"src/player/saveSlotValidation.ts","diagnostics":[]}
+{"path":"src/project/session.ts","diagnostics":[]}
+{"path":"test/cropRegrowthContract.test.ts","diagnostics":[]}

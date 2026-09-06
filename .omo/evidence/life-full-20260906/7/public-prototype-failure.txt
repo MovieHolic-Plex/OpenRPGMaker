@@ -1,0 +1,26 @@
+(node:54725) ExperimentalWarning: Web Storage is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+{"viteClosed":true,"httpListenerStarted":false,"nativeStorageCleared":true}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
++ actual - expected
+
++ [Object: null prototype] {
+- {
+    can: 1,
+    hoe: 1
+  }
+
+    at file:///home/main/z-project/rpg-zzu-life-full-crop-regrowth/.omo/evidence/life-full-20260906/7/public-probe.mjs:65:12 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: [Object: null prototype] { hoe: 1, can: 1 },
+  expected: { hoe: 1, can: 1 },
+  operator: 'deepStrictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.11.1

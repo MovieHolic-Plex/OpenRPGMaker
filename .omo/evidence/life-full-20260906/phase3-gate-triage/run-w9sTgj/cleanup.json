@@ -1,0 +1,29 @@
+{
+  "started": "2026-09-06T17:36:15.866Z",
+  "deletedPrivateScratch": [
+    "/home/main/z-project/rpg-zzu-life-full-p3/.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/cache",
+    "/home/main/z-project/rpg-zzu-life-full-p3/.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/tmp",
+    "/home/main/z-project/rpg-zzu-life-full-p3/.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/cache",
+    "/home/main/z-project/rpg-zzu-life-full-p3/.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/tmp"
+  ],
+  "errors": [],
+  "baseWorktreeRetainedLocked": true,
+  "current": {
+    "head": "b4395f929ec6a386f9aa274531efd8722ffc8252",
+    "tree": "f876bbd0894daae0450d569a5adceb980d6de212",
+    "status": "",
+    "productFiles": 7340,
+    "productSha256": "452cddcdbd2d35e8c00442dabfa9c102a3269ad22173ac44ad3f77a6de098a31",
+    "untracked": []
+  },
+  "base": {
+    "head": "e33c93afbd1b0d8824f273c62d234d66c8802323",
+    "tree": "bb854c6938045c387d94ddd7f69aec02acb50868",
+    "status": "",
+    "productFiles": 7334,
+    "productSha256": "c3309e5c3c9c0780aac7f7848a685901501648496688bd22b7a425417f208e89",
+    "untracked": []
+  },
+  "inheritedLockDescriptorClosedAt": "2026-09-06T17:36:20.263Z",
+  "lockRelease": "Outer flock releases its remaining descriptor when this process exits"
+}

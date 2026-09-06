@@ -1,0 +1,16 @@
+{
+  "sourceSha256": "5c80ae0b3e413b0fac294c4ab50c821c07a4b14f3d804046465263399189e09d",
+  "nativeSourceMatches": true,
+  "nativeFinal": {
+    "browserClosed": true,
+    "contextsClosed": true,
+    "serverClosed": true,
+    "ownedCacheRemoved": "/home/main/z-project/rpg-zzu-life-full-field-input/.omo/evidence/life-full-20260906/10/date-fix/native-neutral/player-cache"
+  },
+  "allOwnedCachesAbsent": true,
+  "distAbsent": true,
+  "port35433Closed": true,
+  "preExistingViteCachePreserved": true,
+  "remoteWrites": [],
+  "priorCleanupReceipt": "source-cleanup.json"
+}

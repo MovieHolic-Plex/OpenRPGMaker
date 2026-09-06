@@ -1,0 +1,13 @@
+import { spawnSync } from "node:child_process";
+import { writeFileSync } from "node:fs";
+const [name, ...command] = process.argv.slice(2);
+if (!name || !command.length) throw new Error("usage: check.mjs name command args...");
+const out = ".omo/evidence/life-full-20260906/8";
+const budget = name === "build" ? 600 : 300;
+const args = ["--timeout", "900", "/tmp/rpg-zzu-life-full-qa-01a0727b.lock", "timeout", `${budget}s`, ...command];
+const head = spawnSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" });
+const result = spawnSync("flock", args, { encoding: "utf8", maxBuffer: 32 * 1024 * 1024 });
+writeFileSync(`${out}/${name}.txt`, `${result.stdout ?? ""}${result.stderr ?? ""}`);
+writeFileSync(`${out}/${name}.json`, JSON.stringify({ command: ["flock", ...args], cwd: process.cwd(), head: head.stdout.trim(), status: result.status, signal: result.signal, error: result.error?.message }, null, 2) + "\n");
+console.log(`${name}: exit ${result.status}`);
+process.exitCode = result.status ?? 1;

@@ -1,0 +1,404 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/cropRegrowthContract.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-crop-regrowth
+
+ ❯ test/cropRegrowthContract.test.ts (23 tests | 23 failed) 2938ms
+   × exact crop regrowth contract > treats zero yield as a successful harvest (regrow=0) 418ms
+     → expected { kind: 'ignored', x: 4, y: 5, …(1) } to match object { kind: 'harvested', count: +0, …(2) }
+(3 matching properties omitted from actual)
+   × exact crop regrowth contract > treats zero yield as a successful harvest (regrow=10) 311ms
+     → expected { kind: 'ignored', x: 4, y: 5, …(1) } to match object { kind: 'harvested', count: +0, …(2) }
+(3 matching properties omitted from actual)
+   × exact crop regrowth contract > requires ten qualifying ticks after a two-day crop's harvest, including every displayed stage 168ms
+     → expected { tilled: true, watered: false, …(5) } to match object { regrowDaysRemaining: 10, …(2) }
+(8 matching properties omitted from actual)
+   × exact crop regrowth contract > preserves remaining seven through actual Storage write/read/apply and resumes on the seventh tick 252ms
+     → expected 'harvested' to be 'watered' // Object.is equality
+   × exact crop regrowth contract > does not grow on dry days or duplicate date synchronization 306ms
+     → expected { tilled: true, watered: false, …(5) } to match object { regrowDaysRemaining: 10 }
+(10 matching properties omitted from actual)
+   × exact crop regrowth contract > preserves countdown when watered crops die out of season and never revives dead crops 247ms
+     → expected { tilled: true, watered: false, …(5) } to match object { dead: true, watered: false, …(1) }
+(8 matching properties omitted from actual)
+   × exact crop regrowth contract > does not initialize or reset the countdown after capacity refusal 151ms
+     → expected 'harvested' to be 'watered' // Object.is equality
+   × exact crop regrowth contract > does not initialize or reset the countdown after energy refusal 84ms
+     → expected 'harvested' to be 'watered' // Object.is equality
+   × exact crop regrowth contract > does not initialize or reset the countdown after xp refusal 81ms
+     → expected 'harvested' to be 'watered' // Object.is equality
+   × exact crop regrowth contract > keeps authored regrow 1 without limiting it to initial growth 64ms
+     → expected { tilled: true, watered: false, …(5) } to match object { regrowDaysRemaining: 1 }
+(10 matching properties omitted from actual)
+   × exact crop regrowth contract > keeps authored regrow 10 without limiting it to initial growth 61ms
+     → expected { tilled: true, watered: false, …(5) } to match object { regrowDaysRemaining: 10 }
+(10 matching properties omitted from actual)
+   × exact crop regrowth contract > keeps authored regrow 10000 without limiting it to initial growth 95ms
+     → expected { tilled: true, watered: false, …(5) } to match object { regrowDaysRemaining: 10000 }
+(10 matching properties omitted from actual)
+   × exact crop regrowth contract > does not infer harvest history in an old plot, including after Storage reload 93ms
+     → expected { tilled: true, watered: false, …(5) } to match object { regrowDaysRemaining: 10 }
+(10 matching properties omitted from actual)
+   × exact crop regrowth contract > uses remaining 0 rather than stale initial growth/stage for readiness and graphics 51ms
+     → expected false to be true // Object.is equality
+   × exact crop regrowth contract > uses remaining 1 rather than stale initial growth/stage for readiness and graphics 54ms
+     → expected true to be false // Object.is equality
+   × exact crop regrowth contract > uses remaining 7 rather than stale initial growth/stage for readiness and graphics 52ms
+     → expected true to be false // Object.is equality
+   × exact crop regrowth contract > rejects malformed countdown -1 without rewriting Storage 57ms
+     → expected true to be false // Object.is equality
+   × exact crop regrowth contract > rejects malformed countdown 1.5 without rewriting Storage 185ms
+     → expected true to be false // Object.is equality
+   × exact crop regrowth contract > rejects malformed countdown NaN without rewriting Storage 44ms
+     → expected true to be false // Object.is equality
+   × exact crop regrowth contract > rejects malformed countdown Infinity without rewriting Storage 44ms
+     → expected true to be false // Object.is equality
+   × exact crop regrowth contract > rejects malformed countdown 9007199254740992 without rewriting Storage 34ms
+     → expected true to be false // Object.is equality
+   × exact crop regrowth contract > rejects malformed countdown 7 without rewriting Storage 39ms
+     → expected true to be false // Object.is equality
+   × exact crop regrowth contract > rejects malformed countdown null without rewriting Storage 40ms
+     → expected true to be false // Object.is equality
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 23 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/cropRegrowthContract.test.ts > exact crop regrowth contract > treats zero yield as a successful harvest (regrow=0)
+ FAIL  test/cropRegrowthContract.test.ts > exact crop regrowth contract > treats zero yield as a successful harvest (regrow=10)
+AssertionError: expected { kind: 'ignored', x: 4, y: 5, …(1) } to match object { kind: 'harvested', count: +0, …(2) }
+(3 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "count": 0,[39m
+[32m-   "energySpent": 1,[39m
+[32m-   "kind": "harvested",[39m
+[32m-   "xpAwarded": {},[39m
+[31m+   "kind": "ignored",[39m
+[2m  }[22m
+
+ ❯ test/cropRegrowthContract.test.ts:72:30
+     70|     f.session.inventory[f.crop.harvestItemId] = ITEM_QUANTITY_MAX;
+     71|     const before = structuredClone(f.session);
+     72|     expect(f.act("harvest")).toMatchObject({ kind: "harvested", count:…
+       |                              ^
+     73|     expect(f.session.inventory).toEqual(before.inventory);
+     74|     expect(f.session.collections).toEqual(before.collections);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/23]⎯
+
+ FAIL  test/cropRegrowthContract.test.ts > exact crop regrowth contract > requires ten qualifying ticks after a two-day crop's harvest, including every displayed stage
+AssertionError: expected { tilled: true, watered: false, …(5) } to match object { regrowDaysRemaining: 10, …(2) }
+(8 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "growthDays": 0,[22m
+[32m-   "regrowDaysRemaining": 10,[39m
+[2m    "stage": 0,[22m
+[2m  }[22m
+
+ ❯ test/cropRegrowthContract.test.ts:87:22
+     85|     expect(f.plot()).not.toHaveProperty("regrowDaysRemaining");
+     86|     expect(f.act("harvest")).toMatchObject({ kind: "harvested", count:…
+     87|     expect(f.plot()).toMatchObject({ regrowDaysRemaining: 10, stage: 0…
+       |                      ^
+     88|     for (let tick = 1; tick <= 10; tick += 1) {
+     89|       const before = structuredClone(f.session);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/23]⎯
+
+ FAIL  test/cropRegrowthContract.test.ts > exact crop regrowth contract > preserves remaining seven through actual Storage write/read/apply and resumes on the seventh tick
+AssertionError: expected 'harvested' to be 'watered' // Object.is equality
+
+Expected: [32m"[7mwater[27med"[39m
+Received: [31m"[7mharvest[27med"[39m
+
+ ❯ Object.waterDay test/cropRegrowthContract.test.ts:39:54
+     37|     expect(transitionToNextDay(project, session, calendarDayKey(sessio…
+     38|   };
+     39|   const waterDay = () => { expect(act("water").kind).toBe("watered"); …
+       |                                                      ^
+     40|   expect(act().kind).toBe("tilled");
+     41|   expect(act().kind).toBe("planted");
+ ❯ test/cropRegrowthContract.test.ts:104:47
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/23]⎯
+
+ FAIL  test/cropRegrowthContract.test.ts > exact crop regrowth contract > does not grow on dry days or duplicate date synchronization
+AssertionError: expected { tilled: true, watered: false, …(5) } to match object { regrowDaysRemaining: 10 }
+(10 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "regrowDaysRemaining": 10,[39m
+[31m+   "cropId": "crop_potato",[39m
+[31m+   "dead": false,[39m
+[31m+   "growthDays": 0,[39m
+[31m+   "plantedDay": {[39m
+[31m+     "day": 1,[39m
+[31m+     "season": "spring",[39m
+[31m+     "year": 1,[39m
+[31m+   },[39m
+[31m+   "stage": 0,[39m
+[31m+   "tilled": true,[39m
+[31m+   "watered": false,[39m
+[2m  }[22m
+
+ ❯ test/cropRegrowthContract.test.ts:125:22
+    123|   it("does not grow on dry days or duplicate date synchronization", ()…
+    124|     const f = fixture(); mature(f); f.act("harvest"); f.nextDay();
+    125|     expect(f.plot()).toMatchObject({ regrowDaysRemaining: 10 });
+       |                      ^
+    126|     expect(f.act("water").kind).toBe("watered");
+    127|     const before = structuredClone(f.session);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/23]⎯
+
+ FAIL  test/cropRegrowthContract.test.ts > exact crop regrowth contract > preserves countdown when watered crops die out of season and never revives dead crops
+AssertionError: expected { tilled: true, watered: false, …(5) } to match object { dead: true, watered: false, …(1) }
+(8 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "dead": true,[22m
+[32m-   "regrowDaysRemaining": 10,[39m
+[2m    "watered": false,[22m
+[2m  }[22m
+
+ ❯ test/cropRegrowthContract.test.ts:137:22
+    135|     const f = fixture(); mature(f); f.act("harvest"); f.act("water");
+    136|     advanceFarmPlotsForDay(f.project, f.session, 1, "summer");
+    137|     expect(f.plot()).toMatchObject({ dead: true, watered: false, regro…
+       |                      ^
+    138|     const before = structuredClone(f.session);
+    139|     expect(f.act("harvest")).toMatchObject({ kind: "ignored", reason: …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/23]⎯
+
+ FAIL  test/cropRegrowthContract.test.ts > exact crop regrowth contract > does not initialize or reset the countdown after capacity refusal
+ FAIL  test/cropRegrowthContract.test.ts > exact crop regrowth contract > does not initialize or reset the countdown after energy refusal
+ FAIL  test/cropRegrowthContract.test.ts > exact crop regrowth contract > does not initialize or reset the countdown after xp refusal
+AssertionError: expected 'harvested' to be 'watered' // Object.is equality
+
+Expected: [32m"[7mwater[27med"[39m
+Received: [31m"[7mharvest[27med"[39m
+
+ ❯ Object.waterDay test/cropRegrowthContract.test.ts:39:54
+     37|     expect(transitionToNextDay(project, session, calendarDayKey(sessio…
+     38|   };
+     39|   const waterDay = () => { expect(act("water").kind).toBe("watered"); …
+       |                                                      ^
+     40|   expect(act().kind).toBe("tilled");
+     41|   expect(act().kind).toBe("planted");
+ ❯ test/cropRegrowthContract.test.ts:155:52
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/23]⎯
+
+ FAIL  test/cropRegrowthContract.test.ts > exact crop regrowth contract > keeps authored regrow 1 without limiting it to initial growth
+AssertionError: expected { tilled: true, watered: false, …(5) } to match object { regrowDaysRemaining: 1 }
+(10 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "regrowDaysRemaining": 1,[39m
+[31m+   "cropId": "crop_potato",[39m
+[31m+   "dead": false,[39m
+[31m+   "growthDays": 1,[39m
+[31m+   "plantedDay": {[39m
+[31m+     "day": 1,[39m
+[31m+     "season": "spring",[39m
+[31m+     "year": 1,[39m
+[31m+   },[39m
+[31m+   "stage": 1,[39m
+[31m+   "tilled": true,[39m
+[31m+   "watered": false,[39m
+[2m  }[22m
+
+ ❯ test/cropRegrowthContract.test.ts:176:22
+    174|   it.each([1, 10, 10000])("keeps authored regrow %i without limiting i…
+    175|     const f = fixture(1, days); mature(f); f.act("harvest");
+    176|     expect(f.plot()).toMatchObject({ regrowDaysRemaining: days });
+       |                      ^
+    177|     f.waterDay();
+    178|     expect(f.plot()).toMatchObject({ regrowDaysRemaining: days - 1 });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/23]⎯
+
+ FAIL  test/cropRegrowthContract.test.ts > exact crop regrowth contract > keeps authored regrow 10 without limiting it to initial growth
+AssertionError: expected { tilled: true, watered: false, …(5) } to match object { regrowDaysRemaining: 10 }
+(10 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "regrowDaysRemaining": 10,[39m
+[31m+   "cropId": "crop_potato",[39m
+[31m+   "dead": false,[39m
+[31m+   "growthDays": 0,[39m
+[31m+   "plantedDay": {[39m
+[31m+     "day": 1,[39m
+[31m+     "season": "spring",[39m
+[31m+     "year": 1,[39m
+[31m+   },[39m
+[31m+   "stage": 0,[39m
+[31m+   "tilled": true,[39m
+[31m+   "watered": false,[39m
+[2m  }[22m
+
+ ❯ test/cropRegrowthContract.test.ts:176:22
+    174|   it.each([1, 10, 10000])("keeps authored regrow %i without limiting i…
+    175|     const f = fixture(1, days); mature(f); f.act("harvest");
+    176|     expect(f.plot()).toMatchObject({ regrowDaysRemaining: days });
+       |                      ^
+    177|     f.waterDay();
+    178|     expect(f.plot()).toMatchObject({ regrowDaysRemaining: days - 1 });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/23]⎯
+
+ FAIL  test/cropRegrowthContract.test.ts > exact crop regrowth contract > keeps authored regrow 10000 without limiting it to initial growth
+AssertionError: expected { tilled: true, watered: false, …(5) } to match object { regrowDaysRemaining: 10000 }
+(10 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "regrowDaysRemaining": 10000,[39m
+[31m+   "cropId": "crop_potato",[39m
+[31m+   "dead": false,[39m
+[31m+   "growthDays": 0,[39m
+[31m+   "plantedDay": {[39m
+[31m+     "day": 1,[39m
+[31m+     "season": "spring",[39m
+[31m+     "year": 1,[39m
+[31m+   },[39m
+[31m+   "stage": 0,[39m
+[31m+   "tilled": true,[39m
+[31m+   "watered": false,[39m
+[2m  }[22m
+
+ ❯ test/cropRegrowthContract.test.ts:176:22
+    174|   it.each([1, 10, 10000])("keeps authored regrow %i without limiting i…
+    175|     const f = fixture(1, days); mature(f); f.act("harvest");
+    176|     expect(f.plot()).toMatchObject({ regrowDaysRemaining: days });
+       |                      ^
+    177|     f.waterDay();
+    178|     expect(f.plot()).toMatchObject({ regrowDaysRemaining: days - 1 });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/23]⎯
+
+ FAIL  test/cropRegrowthContract.test.ts > exact crop regrowth contract > does not infer harvest history in an old plot, including after Storage reload
+AssertionError: expected { tilled: true, watered: false, …(5) } to match object { regrowDaysRemaining: 10 }
+(10 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "regrowDaysRemaining": 10,[39m
+[31m+   "cropId": "crop_potato",[39m
+[31m+   "dead": false,[39m
+[31m+   "growthDays": 0,[39m
+[31m+   "plantedDay": {[39m
+[31m+     "day": 1,[39m
+[31m+     "season": "spring",[39m
+[31m+     "year": 1,[39m
+[31m+   },[39m
+[31m+   "stage": 0,[39m
+[31m+   "tilled": true,[39m
+[31m+   "watered": false,[39m
+[2m  }[22m
+
+ ❯ test/cropRegrowthContract.test.ts:193:22
+    191|     expect(f.plot()).not.toHaveProperty("regrowDaysRemaining");
+    192|     f.act("harvest");
+    193|     expect(f.plot()).toMatchObject({ regrowDaysRemaining: 10 });
+       |                      ^
+    194|   });
+    195| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/23]⎯
+
+ FAIL  test/cropRegrowthContract.test.ts > exact crop regrowth contract > uses remaining 0 rather than stale initial growth/stage for readiness and graphics
+AssertionError: expected false to be true // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+ ❯ test/cropRegrowthContract.test.ts:200:40
+    198|     const plot = { ...f.plot(), stage: remaining > 0 ? 2 : 0, growthDa…
+    199|       regrowDaysRemaining: remaining };
+    200|     expect(cropReady(f.project, plot)).toBe(remaining === 0);
+       |                                        ^
+    201|     expect(spriteFrame(f.crop, plot)).toBe(remaining === 0 ? 1 : 0);
+    202|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/23]⎯
+
+ FAIL  test/cropRegrowthContract.test.ts > exact crop regrowth contract > uses remaining 1 rather than stale initial growth/stage for readiness and graphics
+ FAIL  test/cropRegrowthContract.test.ts > exact crop regrowth contract > uses remaining 7 rather than stale initial growth/stage for readiness and graphics
+AssertionError: expected true to be false // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+ ❯ test/cropRegrowthContract.test.ts:200:40
+    198|     const plot = { ...f.plot(), stage: remaining > 0 ? 2 : 0, growthDa…
+    199|       regrowDaysRemaining: remaining };
+    200|     expect(cropReady(f.project, plot)).toBe(remaining === 0);
+       |                                        ^
+    201|     expect(spriteFrame(f.crop, plot)).toBe(remaining === 0 ? 1 : 0);
+    202|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/23]⎯
+
+ FAIL  test/cropRegrowthContract.test.ts > exact crop regrowth contract > rejects malformed countdown -1 without rewriting Storage
+ FAIL  test/cropRegrowthContract.test.ts > exact crop regrowth contract > rejects malformed countdown 1.5 without rewriting Storage
+ FAIL  test/cropRegrowthContract.test.ts > exact crop regrowth contract > rejects malformed countdown NaN without rewriting Storage
+ FAIL  test/cropRegrowthContract.test.ts > exact crop regrowth contract > rejects malformed countdown Infinity without rewriting Storage
+ FAIL  test/cropRegrowthContract.test.ts > exact crop regrowth contract > rejects malformed countdown 9007199254740992 without rewriting Storage
+ FAIL  test/cropRegrowthContract.test.ts > exact crop regrowth contract > rejects malformed countdown 7 without rewriting Storage
+ FAIL  test/cropRegrowthContract.test.ts > exact crop regrowth contract > rejects malformed countdown null without rewriting Storage
+AssertionError: expected true to be false // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+ ❯ test/cropRegrowthContract.test.ts:208:38
+    206|     const snapshot = createSaveSnapshot(f.project, f.session);
+    207|     const plots = { [f.map.id]: { "4,5": { ...f.plot(), regrowDaysRema…
+    208|     expect(isFarmPlotsRecord(plots)).toBe(false);
+       |                                      ^
+    209|     const raw = JSON.stringify({ ...snapshot, session: { ...snapshot.s…
+    210|     localStorage.setItem(saveSlotKey(1), raw);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/23]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  23 failed (23)
+   Start at  21:00:23
+   Duration  22.32s (transform 12.10s, setup 0ms, collect 17.25s, tests 2.94s, environment 865ms, prepare 319ms)
+
