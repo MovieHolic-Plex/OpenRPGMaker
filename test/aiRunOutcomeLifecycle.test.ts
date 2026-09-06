@@ -1,6 +1,6 @@
 import { afterEach, expect, it, vi } from "vitest";
 import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
-import { applyFixture } from "./runOutcomeApplyFixture";
+import { applyFixture, drainOutcomeFixtures } from "./runOutcomeApplyFixture";
 import { store } from "@/project/store";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { resetIntentDeclarationCache } from "@/ai/intentDeclarationClient";
@@ -10,11 +10,14 @@ import { AssistantSession } from "@/ai/assistantSession";
 import { createBlankProject } from "@/project/defaults";
 import { fixedDeclarer } from "./intentFixture";
 
-afterEach(() => {
-  unregisterAiAssistantBridge();
-  store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
-  resetMapEditHistory(); resetIntentDeclarationCache();
-  vi.clearAllTimers(); vi.useRealTimers(); vi.restoreAllMocks(); vi.unstubAllGlobals(); vi.unstubAllEnvs();
+afterEach(async () => {
+  try { await drainOutcomeFixtures(); }
+  finally {
+    unregisterAiAssistantBridge();
+    store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
+    resetMapEditHistory(); resetIntentDeclarationCache();
+    vi.clearAllTimers(); vi.useRealTimers(); vi.restoreAllMocks(); vi.unstubAllGlobals(); vi.unstubAllEnvs();
+  }
 });
 
 it.each(["tools", "tokens"] as const)("projects budget exhaustion when the %s limit ends execution", async (budget) => {

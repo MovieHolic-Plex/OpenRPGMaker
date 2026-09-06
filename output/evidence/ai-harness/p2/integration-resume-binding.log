@@ -1,0 +1,34 @@
+{
+  "sourceHashesVerified": 16,
+  "backendChecksPassed": 81,
+  "uiHookFailures": 6,
+  "userActionFailures": [
+    {
+      "scenario": "user-withdrawal",
+      "message": "user-withdrawal: genuine user withdrawal control exists\n\n0 !== 1\n"
+    },
+    {
+      "scenario": "blocked-ask-resume",
+      "message": "blocked-resume: existing user continue control is available after ask\n\n0 !== 1\n"
+    }
+  ],
+  "cleanup": {
+    "absentBeforeRun": true,
+    "pageListenersAndTimersClosed": true,
+    "browserClosed": true,
+    "serverClosed": true,
+    "cacheRemoved": true,
+    "portReleased": true,
+    "remote": {
+      "projectId": "qa-ai-surface-7e2c02af-7b39-4dcc-ac41-dbb9c1764ce0",
+      "kind": "deleted-and-absence-verified",
+      "commitIds": [
+        "d5858dd9-609f-4c81-ba94-5f38f751d313"
+      ]
+    },
+    "remoteDeletedAndAbsent": true,
+    "reusedListener": false,
+    "activeRoutes": 0
+  }
+}
+Configured key-value scan passed.

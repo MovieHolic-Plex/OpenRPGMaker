@@ -1,15 +1,18 @@
 import { afterEach, expect, it, vi } from "vitest";
 import type { TurnResult } from "@/ai/assistantSession";
-import { applyFixture } from "./runOutcomeApplyFixture";
+import { applyFixture, drainOutcomeFixtures } from "./runOutcomeApplyFixture";
 import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
 import { store } from "@/project/store";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { resetIntentDeclarationCache } from "@/ai/intentDeclarationClient";
 
-afterEach(() => {
-  store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
-  resetMapEditHistory(); resetIntentDeclarationCache();
-  vi.clearAllTimers(); vi.useRealTimers(); vi.restoreAllMocks(); vi.unstubAllGlobals(); vi.unstubAllEnvs();
+afterEach(async () => {
+  try { await drainOutcomeFixtures(); }
+  finally {
+    store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
+    resetMapEditHistory(); resetIntentDeclarationCache();
+    vi.clearAllTimers(); vi.useRealTimers(); vi.restoreAllMocks(); vi.unstubAllGlobals(); vi.unstubAllEnvs();
+  }
 });
 
 it("does not settle a newer query when an old run's proof is cancelled", async () => {

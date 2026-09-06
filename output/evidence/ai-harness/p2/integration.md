@@ -1,5 +1,7 @@
 # P2 backend outcome integration
 
+**Follow-up:** [Owned fixture I/O drainage and actual Ask/resume handoff](integration-fixture-drain.md) supersedes the original immediate-cleanup claim below. The corrected fixture consumers and P1 proof contracts pass **35/35 tests**, and a fresh complete build passes. The unchanged required-skip browser scenario confirms blocked state survives real Ask; missing Continue/withdrawal controls and the Continue handler's Ask-to-Do transition remain explicit UI-lane work. Production source is unchanged.
+
 Integrated the producer contracts through the actual session, ordinary/milestone apply, P1 proof, bridge, activity serialization and recap paths. Final scoped verification is **586/586 tests in 15 files, exit 0**, and the complete build is **exit 0**. The unchanged actual browser/API matrix passes **all 138 non-UI checks** across ten real cases. Its overall exit remains **1 solely for the ten missing UI outcome hooks**, which are explicitly owned by the next node. No assertions were removed or weakened to call that full scenario GREEN.
 
 ## Scope and committed identity
@@ -10,8 +12,8 @@ Integrated the producer contracts through the actual session, ordinary/milestone
 - Read full phase contract, requirements producer handoff, outcome and QA handoffs, AGENTS, OpenWiki quickstart/INDEX/PROJECT_WIKI, focused AI acceptance/workflow, editor routing and observability guidance before source edits. Read TypeScript/logging/refactor references. Project-specific npm/Vitest/native transport/custom-parser constraints took precedence over generic skill defaults.
 - **Verified implementation commit:** `f4ae6118e5e44fe8f3d29727fb6fd15f1a75cd66` (`feat(ai): settle shared run outcomes through apply and publication`).
 - Implementation tree `361db44a8b5ded766c9f83ae5e166e9839fbdec5`; `src` subtree `08297f34362bd6aae3b83f7943ab3cd811d98938`; `test` subtree `771efdeadcd0dfc850bb9ec61fc5551780095cb5`.
-- Final tests, complete build and final actual API execution all ran against the exact source/test bytes committed there. No source/test edit followed those executions. The final API report's pre-commit HEAD is correctly retained rather than rewritten; its 16 source/harness hashes all match the implementation commit, verified in [integration-api-binding.log](integration-api-binding.log).
-- This report/evidence commit follows the implementation commit and contains only `output/evidence/ai-harness/p2/integration*`. Its own final SHA is in the task handoff because a commit cannot embed its own SHA.
+- Final tests, complete build and final actual API execution all ran against the exact source/test bytes committed there. No source/test edit followed those executions before the implementation commit; the later test-only drainage correction is linked above. The final API report's pre-commit HEAD is correctly retained rather than rewritten; its 16 source/harness hashes all match the implementation commit, verified in [integration-api-binding.log](integration-api-binding.log).
+- Original report/evidence commit: `761ed517b188729130e26dad57196aa4218b19ab`, following the implementation commit and containing only `output/evidence/ai-harness/p2/integration*`. The later test-only follow-up commit is listed in the task handoff.
 
 ## Ordered inherited/imported/own commits
 
@@ -37,7 +39,8 @@ Exit 0, no conflict or merge. Ordered mapping:
 | 7 | `0d623b5dd224ef28564c8d98cfcdcb54c55a1589` | `51a74685b611b071ae9c23a889b7a3462b2e345e` | Preserved old-source RED evidence |
 | 8 | `8f82a11b9df297c3d0ab396a44b316423f0ae395` | `0ef465d1419561a7f137f2c4636fedfb06eb8bd6` | Actual user resume/Ask follow-up |
 | 9 | own | `f4ae6118e5e44fe8f3d29727fb6fd15f1a75cd66` | Verified backend implementation and direct tests |
-| 10 | own | task handoff SHA | This report and raw integration evidence |
+| 10 | own | `761ed517b188729130e26dad57196aa4218b19ab` | Original report and raw integration evidence |
+| 11 | own | follow-up task handoff SHA | Fixture writer drainage, regression and actual Ask/resume handoff |
 
 Final terminal producer heads still equal the two named terminal SHAs. `git diff 7f42772c9 HEAD -- src/ai/runOutcome.ts test/aiRunOutcome.test.ts`, `git diff 8f82a11b9 HEAD -- scripts/qa`, and the diff against `d6a38018c` for the canonical acceptance types/ledger/tool-verification authority were empty. All imported commits and own commits retain mandatory omo attribution. No push, merge, rebase, nested agent or shared-main worktree edit occurred.
 
