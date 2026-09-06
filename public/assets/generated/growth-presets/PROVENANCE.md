@@ -32,7 +32,8 @@ not be inferred from a filename or this processing step.
 - Ranger: `b57567d61b1bde85d10c970e405e1d916aac7fed` introduced six individual
   rear-view figures. Repository recipe: `scripts/asset-gen/gen-hero-back-grok.mjs`,
   `HEROES`/`backViewPrompt` in `scripts/asset-gen/battlerPrompt.mjs`, and
-  `spriteProcess.mjs`. The hero-06 descriptor is an archer with longbow/quiver.
+  `spriteProcess.mjs`. The hero-04 descriptor is a green-clothed scout carrying
+  a short recurve bow and hunting dagger.
   The script documents Grok generation using the shipped idle frame as reference;
   the original invocation record/raw response was not recovered or rerun here.
 
@@ -46,7 +47,7 @@ The source commit is the latest pixel-changing commit identified above.
 | `bravely-backdrop.png` | 1254x1254 | 2648544 | `01b5d5e388e8920c9a6f59abbde60be4dfeb071621bfa4db57c508615c761464` |
 | `sprites/party-warrior-back.png` | 747x1138 | 518024 | `ce7fe9cf28c1fa7db1d9dfa1bbff1a74e0febc4c3e879ff9d16c94b00601fc2c` |
 | `sprites/party-mage-back.png` | 469x886 | 401368 | `a93a5990b92ea633cbe77344ab00e0603d2b7210053cae9b48899f78efbb96ae` |
-| `sprites/hero-06-back.png` | 712x712 | 289909 | `42194cf926e6d06178499c59d29fd564ba3ec2c4e9568e3c857d318ea056a5f0` |
+| `sprites/hero-04-back.png` | 712x712 | 341842 | `a4efac9950118a3a183bc8cde556f94b8af99aaf01bfaf6cd84b5e524583a96b` |
 
 ## Reproduction
 
@@ -73,8 +74,12 @@ The figure rectangles fit wholly in the central 16:9 crop band y=54..629.
 | --- | --- | --- | --- | --- | --- |
 | `vanguard.png` | goldensun / party-warrior-back | 8,8,731,1122 | 353,118,319,490 | 989208 | `342985355ab3712899a3045962aefe6352682b3ecbd8cf4fc88635c1ddb35c77` |
 | `arcane.png` | chrono / party-mage-back | 8,8,453,870 | 385,118,255,490 | 1157832 | `39fe5ae74ab29c76105d980bcbfb979a3428cd6d1a69feea237ffcf5fe54a3fe` |
-| `ranger.png` | bravely / hero-06-back | 93,5,526,703 | 329,118,367,490 | 1116189 | `0ef85813a1809f7ffbe9918bc2b975adab54df9b42fbd3f25f14465ef7334505` |
+| `ranger.png` | bravely / hero-04-back | 56,5,601,703 | 303,118,419,490 | 1141713 | `684ff227d9f994c3c18105aa44bd5a483a9634e10736b57c706ac70a3639aeb7` |
 
-All outputs are real, fully opaque 1024x683 RGB PNGs. This worker cannot inspect
-images visually: final role readability, natural grounding, landscape coherence,
-and absence of source-baked text/watermarks require lead image-capable QA.
+All outputs are real, fully opaque 1024x683 RGB PNGs. Per the lead's report,
+image-capable QA `st_01a0741c` passed vanguard/arcane but found white/magenta
+square remnants in the original hero-06 ranger. Ranger therefore uses the
+parent-confirmed green archer hero-04 instead; no color deletion, erosion,
+blur, or source-art edits were added. Approved vanguard/arcane bytes are unchanged.
+This worker cannot inspect images visually; the replacement ranger requires
+the same reviewer's re-read for artifact removal and subject clarity.

@@ -16,7 +16,7 @@ assert(process.argv.slice(2).every((arg) => arg === '--verify'), 'Only --verify 
 const covers = [
   { role: 'vanguard', backdrop: 'goldensun-backdrop.png', figure: 'party-warrior-back.png' },
   { role: 'arcane', backdrop: 'chrono-backdrop.png', figure: 'party-mage-back.png' },
-  { role: 'ranger', backdrop: 'bravely-backdrop.png', figure: 'hero-06-back.png' },
+  { role: 'ranger', backdrop: 'bravely-backdrop.png', figure: 'hero-04-back.png' },
 ];
 
 /** @param {Buffer} bytes */
