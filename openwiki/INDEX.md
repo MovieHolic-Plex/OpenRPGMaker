@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **48쪽 / 1718KB / 약 489,682 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **48쪽 / 1723KB / 약 490,899 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -21,9 +21,9 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-event-authoring.md` | 119KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 564 | ~34,648 |
 | `openwiki/editor-pre-edit-routing.md` | 73KB | 55KB ⚠상한 초과 — 절을 더 쪼개라 | 220 | ~20,713 |
 | `openwiki/runtime-battle.md` | 122KB | 31KB | 372 | ~34,911 |
-| `openwiki/runtime-project-schema.md` | 69KB | 42KB | 263 | ~18,613 |
+| `openwiki/runtime-project-schema.md` | 70KB | 44KB | 267 | ~19,061 |
 | `openwiki/runtime-sessions.md` | 66KB | 46KB | 236 | ~17,731 |
-| `openwiki/testing.md` | 115KB | 45KB | 792 | ~32,460 |
+| `openwiki/testing.md` | 117KB | 46KB | 796 | ~32,940 |
 
 ## 한국어 산문이 깨진 페이지
 
@@ -448,16 +448,17 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L85` Event editor aggregate gate (2026-07-30)
 - `L94` P2 spatial integrity (2026-08-25)
 
-### `openwiki/editor-workflows-misc.md` — 45KB · 199줄 · ~12,703 토큰
+### `openwiki/editor-workflows-misc.md` — 47KB · 205줄 · ~12,992 토큰
 
 - `L7` Other Editor Workflows
   - `L9` 걸을 때 적 만나기 — rectangle authoring (2026-09-06)
-  - `L65` Genre-neutral authoring launcher and journey (2026-08-24)
-- `L115` 편집기 z 층 밴드와 토스트 (2026-08-30, PR #308)
-- `L144` 초보 맵 사이드바 «목록 | 상세» 2단 탐색기 (2026-08-30, PR #311)
-- `L166` 커스텀 셀렉트는 열릴 때 modalStack 층이 된다 (2026-08-30)
-- `L180` 맵 설정 가독성·편집 연속성 (2026-09-05)
-- `L190` 왼쪽 사이드바 3모드 적대적 리뷰 (2026-09-05)
+  - `L64` Game export delivery (2026-09-06)
+  - `L71` Genre-neutral authoring launcher and journey (2026-08-24)
+- `L121` 편집기 z 층 밴드와 토스트 (2026-08-30, PR #308)
+- `L150` 초보 맵 사이드바 «목록 | 상세» 2단 탐색기 (2026-08-30, PR #311)
+- `L172` 커스텀 셀렉트는 열릴 때 modalStack 층이 된다 (2026-08-30)
+- `L186` 맵 설정 가독성·편집 연속성 (2026-09-05)
+- `L196` 왼쪽 사이드바 3모드 적대적 리뷰 (2026-09-05)
 
 ### `openwiki/editor-workflows.md` — 2KB · 28줄 · ~586 토큰
 
@@ -613,7 +614,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L164` 가구 밀기 애니메이션 (2026-09-05)
 - `L173` Recovered head emotes (2026-09-05)
 
-### `openwiki/runtime-project-schema.md` — 69KB · 263줄 · ~18,613 토큰 · 통째읽기 잘림
+### `openwiki/runtime-project-schema.md` — 70KB · 267줄 · ~19,061 토큰 · 통째읽기 잘림
 
 - `L3` Opening and game-over cinematic settings (2026-09-06)
 - `L20` 적 전투 이미지 크기 (2026-09-06)
@@ -625,19 +626,19 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L57` 통행 컴포넌트 색인의 계약 (2026-08-30, PR #286)
 - `L65` 세계 법칙의 명시적 부재 (2026-09-05)
 - `L69` Project schema & persistence
-- `L136` Variable arithmetic & loop runtime (2026-08-07)
-- `L140` Canonical event-draft projection (2026-07-30)
-- `L146` P2 general buildings and home decorations (2026-08-25)
-- `L153` 이벤트 초안 보관함: 명시적 저장은 자기가 대체한 디바운스를 취소한다 (2026-08-29)
-- `L171` Boot normalizers must not create dangling references (2026-08-30)
-- `L197` `.oprn` 은 단일 파일 게임 컨테이너다 — 편집기와 플레이어 양쪽이 읽는다 (2026-08-30)
-- `L231` 성장 트리 선택 확장 (2026-09-05)
-- `L237` 마을 설계서 (2026-09-05)
-- `L243` 공포 게임 제작 기능 (2026-09-05)
-  - `L247` 저장된 대사 별칭과 맵 오버레이 (2026-09-05)
-- `L251` NPC 표시 이름 (2026-09-05)
-- `L256` 연결 실내 도면의 영속성 (2026-09-05)
-- `L260` 개념 장소 형상 (2026-09-05)
+- `L140` Variable arithmetic & loop runtime (2026-08-07)
+- `L144` Canonical event-draft projection (2026-07-30)
+- `L150` P2 general buildings and home decorations (2026-08-25)
+- `L157` 이벤트 초안 보관함: 명시적 저장은 자기가 대체한 디바운스를 취소한다 (2026-08-29)
+- `L175` Boot normalizers must not create dangling references (2026-08-30)
+- `L201` `.oprn` 은 단일 파일 게임 컨테이너다 — 편집기와 플레이어 양쪽이 읽는다 (2026-08-30)
+- `L235` 성장 트리 선택 확장 (2026-09-05)
+- `L241` 마을 설계서 (2026-09-05)
+- `L247` 공포 게임 제작 기능 (2026-09-05)
+  - `L251` 저장된 대사 별칭과 맵 오버레이 (2026-09-05)
+- `L255` NPC 표시 이름 (2026-09-05)
+- `L260` 연결 실내 도면의 영속성 (2026-09-05)
+- `L264` 개념 장소 형상 (2026-09-05)
 
 ### `openwiki/runtime-sessions.md` — 66KB · 236줄 · ~17,731 토큰 · 통째읽기 잘림
 
@@ -702,7 +703,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L110` Files to inspect before editing
 - `L122` Related pages
 
-### `openwiki/testing.md` — 115KB · 792줄 · ~32,460 토큰 · 통째읽기 잘림
+### `openwiki/testing.md` — 117KB · 796줄 · ~32,940 토큰 · 통째읽기 잘림
 
 - `L1` Mac onboarding Phase 1 contracts (2026-09-06)
 - `L29` 기존 실패 비교는 진단 내용까지 확인한다 (2026-09-05)
@@ -724,25 +725,25 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L293` 타이밍에 취약한 e2e 가 빨간불이면 그 스펙이 단정하는 속성을 직접 재라 (실측 2026-08-30)
   - `L316` 소스를 grep 하는 테스트는 이름만 봐서는 회귀를 못 가른다 (실측)
 - `L324` Agent validation rule
-- `L428` Event-editor trust-loop validation (2026-07-30)
-- `L433` 얼굴 바꾸기(changeFace) 폼 시각 계약 (2026-08-28 실측)
-- `L452` P2 spatial focused gate (2026-08-25)
-- `L461` 대화창 연출 focused gate (2026-08-30)
-- `L535` 워크트리 e2e 는 dev 서버가 조용히 안 뜬다 (2026-08-27 실측)
-  - `L548` `locator.click()` 은 잘림 버그를 구조적으로 못 잡는다 (2026-08-29 실측)
-  - `L560` 스크롤이 생겼다고 다 닿는 건 아니다 — 가운데 정렬 넘침 (2026-08-30 실측)
-  - `L568` 미정의 커스텀 프로퍼티는 콘솔에 아무 말도 남기지 않는다 (2026-08-30 실측)
-  - `L575` `ERR_NETWORK_CHANGED` 는 HMR 말고 호스트 인터페이스 때문에도 터진다 (2026-08-28 실측)
-- `L597` 런타임(게임) 전용 비전 QA 하네스 (2026-08-28)
-  - `L599` 메뉴 적대적 플레이 회귀 (2026-09-05)
-- `L719` sceneTestRunner 의 자율 이동 관측 공백 (2026-08-27)
-- `L726` fakeDom 은 프로덕션이 쓰는 브라우저 전역을 빠짐없이 준다 (2026-08-29)
-- `L747` bugfix-sweep 실제 표면 하네스 (2026-08-29)
-- `L760` 마을 설계서 (2026-09-05)
-- `L765` 공포 제작 개정 QA와 개발 서버 전송 (2026-09-05)
-- `L775` 상점 진열 중심 편집 검증 (2026-09-05)
-- `L783` 실제 DB로 나가는 전체 검사 요청 (2026-09-05 실측)
-- `L789` 실내 조립·형상 검증 (2026-09-05)
+- `L432` Event-editor trust-loop validation (2026-07-30)
+- `L437` 얼굴 바꾸기(changeFace) 폼 시각 계약 (2026-08-28 실측)
+- `L456` P2 spatial focused gate (2026-08-25)
+- `L465` 대화창 연출 focused gate (2026-08-30)
+- `L539` 워크트리 e2e 는 dev 서버가 조용히 안 뜬다 (2026-08-27 실측)
+  - `L552` `locator.click()` 은 잘림 버그를 구조적으로 못 잡는다 (2026-08-29 실측)
+  - `L564` 스크롤이 생겼다고 다 닿는 건 아니다 — 가운데 정렬 넘침 (2026-08-30 실측)
+  - `L572` 미정의 커스텀 프로퍼티는 콘솔에 아무 말도 남기지 않는다 (2026-08-30 실측)
+  - `L579` `ERR_NETWORK_CHANGED` 는 HMR 말고 호스트 인터페이스 때문에도 터진다 (2026-08-28 실측)
+- `L601` 런타임(게임) 전용 비전 QA 하네스 (2026-08-28)
+  - `L603` 메뉴 적대적 플레이 회귀 (2026-09-05)
+- `L723` sceneTestRunner 의 자율 이동 관측 공백 (2026-08-27)
+- `L730` fakeDom 은 프로덕션이 쓰는 브라우저 전역을 빠짐없이 준다 (2026-08-29)
+- `L751` bugfix-sweep 실제 표면 하네스 (2026-08-29)
+- `L764` 마을 설계서 (2026-09-05)
+- `L769` 공포 제작 개정 QA와 개발 서버 전송 (2026-09-05)
+- `L779` 상점 진열 중심 편집 검증 (2026-09-05)
+- `L787` 실제 DB로 나가는 전체 검사 요청 (2026-09-05 실측)
+- `L793` 실내 조립·형상 검증 (2026-09-05)
 
 ### `openwiki/town-tile-benchmark.md` — 10KB · 153줄 · ~3,010 토큰
 

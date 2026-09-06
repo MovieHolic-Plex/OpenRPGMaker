@@ -1,4 +1,5 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { withInlineAsset } from "@/assets/inlineAssetStore";
 import type { StepResult } from "@/player/interpreter";
 import { isConfirmKey, CONFIRM_KEY_LABEL } from "@/player/keyBindings";
 import { dialogueHost } from "@/player/playSceneDom";
@@ -35,7 +36,7 @@ export function resolveMovieResourceUrl(
   const resolved = resolveAssetResourceUrl(resourceId, { project });
   if (resolved) return resolved;
   const fileName = MOVIE_FILE_EXTENSION.test(resourceId) ? resourceId : `${resourceId}.mp4`;
-  return `/assets/movies/${encodeURIComponent(fileName)}`;
+  return withInlineAsset(`/assets/movies/${encodeURIComponent(fileName)}`);
 }
 
 export function playMovieOverlay(scene: PlaySceneContext, step: PlayMovieStep): Promise<void> {

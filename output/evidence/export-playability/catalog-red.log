@@ -1,0 +1,15 @@
+# Diagnostic excerpt; assertion dumps omitted.
+> node scripts/run-vitest.mjs run --configLoader bundle test/webExportCatalogAudio.test.ts
+ ❯ test/webExportCatalogAudio.test.ts (3 tests | 3 failed) 3097ms
+     → expected [ { kind: 'public', …(3) }, …(724) ] to deep equally contain { kind: 'public', …(3) }
+     → expected [ …(725) ] to include 'https://music.example.test/rpg-zzu/bg…'
+     → expected { …(725) } to match object { …(1) }
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  test/webExportCatalogAudio.test.ts > catalog audio export > packages the played CDN track at the player's local fallback path
+AssertionError: expected [ { kind: 'public', …(3) }, …(724) ] to deep equally contain { kind: 'public', …(3) }
+ FAIL  test/webExportCatalogAudio.test.ts > catalog audio export > fetches the exact CDN URL and stores the returned bytes in the ZIP entries
+AssertionError: expected [ …(725) ] to include 'https://music.example.test/rpg-zzu/bg…'
+ FAIL  test/webExportCatalogAudio.test.ts > catalog audio export > embeds CDN music bytes under the offline player's canonical asset key
+AssertionError: expected { …(725) } to match object { …(1) }
+ Test Files  1 failed (1)
+      Tests  3 failed (3)

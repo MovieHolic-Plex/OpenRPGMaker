@@ -1,0 +1,69 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/devPlayerBundles.test.ts test/standaloneExport.test.ts test/standaloneHtml.test.ts test/standaloneCli.test.ts test/webExport.test.ts test/webExportRuntimeAssets.test.ts test/webExportZipPruning.test.ts test/cinematicSettings.test.ts test/cinematicSequence.test.ts test/playerCinematics.test.ts
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-silver-stone-6077-export-delivery-6077
+
+ ✓ test/standaloneHtml.test.ts (8 tests) 67ms
+ ✓ test/devPlayerBundles.test.ts (1 test) 184ms
+ ✓ test/standaloneCli.test.ts (1 test) 12114ms
+   ✓ CLI rejects missing project media without writing an HTML artifact  12106ms
+ ✓ test/webExportRuntimeAssets.test.ts (10 tests) 2506ms
+   ✓ web export runtime assets — 영웅 전투 시트 고해상도 짝 > 기본 프로젝트(액터가 생성 영웅 시트를 쓴다)는 시트·idle 스트립을 싣는다  622ms
+   ✓ web export runtime assets > plans no life-ledger art in the collected export asset list  444ms
+ ✓ test/webExportZipPruning.test.ts (4 tests) 4118ms
+   ✓ web export zip pruning > 배포물이 내줬어도 이 프로젝트가 안 쓰는 기능의 아트는 뺀다  1735ms
+   ✓ web export zip pruning > 조건부 그룹 전체를 빼되 나머지는 남긴다  875ms
+   ✓ web export zip pruning > 앱이 모르는 런타임 에셋은 계획에 없어도 그대로 싣는다  806ms
+   ✓ web export zip pruning > 계획했는데 배포물에 없는 에셋은 여전히 받아온다  698ms
+ ✓ test/cinematicSequence.test.ts (47 tests) 5652ms
+   ✓ shared sequence playback > leaves the host unchanged for absent, disabled or empty settings  847ms
+ ✓ test/standaloneExport.test.ts (13 tests) 9983ms
+   ✓ standalone html export > 에셋을 data URL 로 문서에 싣고 파일명을 제목에서 만든다  1242ms
+   ✓ standalone html export > rejects missing required .png instead of returning a download  1564ms
+   ✓ standalone html export > rejects missing required .woff2 instead of returning a download  597ms
+   ✓ standalone html export > rejects editor HTML returned with status 200 for standalone.js  1157ms
+   ✓ standalone html export > rejects editor HTML returned with status 200 for standalone.css  817ms
+   ✓ standalone html export > rejects editor HTML returned with status 200 for .png  584ms
+   ✓ standalone html export > rejects editor HTML returned with status 200 for .woff2  490ms
+   ✓ standalone html export > rejects a text/html response even without an HTML opening tag  864ms
+   ✓ standalone html export > rejects empty standalone.js  411ms
+   ✓ standalone html export > rejects empty standalone.css  416ms
+   ✓ standalone html export > rejects empty .png  429ms
+   ✓ standalone html export > CSS 가 요구하는 폰트를 에셋 클로저 밖에서도 채운다  695ms
+   ✓ standalone html export > 번들 재료를 못 받으면 실패를 숨기지 않는다  715ms
+ ✓ test/playerCinematics.test.ts (9 tests) 3481ms
+   ✓ opening at the real player shell seam > defers New Game boot until opening completes without input fallthrough  1129ms
+   ✓ opening at the real player shell seam > bypasses opening for loaded  609ms
+   ✓ opening at the real player shell seam > bypasses opening for test-here  434ms
+   ✓ opening at the real player shell seam > bypasses opening for selected-event  450ms
+ ✓ test/cinematicSettings.test.ts (109 tests) 21143ms
+   ✓ cinematic persistence > leaves legacy absence absent through normalization and repeated roundtrips  1165ms
+   ✓ cinematic persistence > retains disabled authored scenes, exact text, labels and media without mutating input  1272ms
+   ✓ cinematic persistence > cleans IDs deterministically while retaining scene order and authored text  734ms
+   ✓ cinematic persistence > preserves optional/empty game-over settings {"title":""}  348ms
+   ✓ cinematic persistence > preserves optional/empty game-over settings {"sequence":{"enabled":true,"skippable":true,"scenes":[]}}  326ms
+   ✓ opening strict wire validation > rejects duplicate IDs including trim collisions  1094ms
+   ✓ opening strict wire validation > rejects missing image references even in disabled content  484ms
+   ✓ opening strict wire validation > rejects missing voice references even in disabled content  584ms
+   ✓ gameOver strict wire validation > rejects malformed scene: numeric voice before normalization  449ms
+   ✓ gameOver strict wire validation > rejects malformed scene: video with motion before normalization  584ms
+   ✓ gameOver strict wire validation > rejects malformed scene: unknown field before normalization  467ms
+   ✓ gameOver strict wire validation > rejects duplicate IDs including trim collisions  603ms
+   ✓ gameOver strict wire validation > rejects missing image references even in disabled content  449ms
+   ✓ cinematic web export > collects media referenced only by disabled opening scenes  845ms
+   ✓ cinematic web export > collects media referenced only by disabled gameOver scenes  698ms
+   ✓ cinematic web export > exports video/mp4, animated image, voice and background bytes with correct filenames  779ms
+   ✓ cinematic web export > exports video/webm, animated image, voice and background bytes with correct filenames  911ms
+   ✓ cinematic web export > exports video/ogg, animated image, voice and background bytes with correct filenames  544ms
+ ✓ test/webExport.test.ts (4 tests) 3787ms
+   ✓ web player export > 직렬화 프로젝트는 shape 왕복을 통과하고 사용 중인 업로드 에셋만 보존한다  1199ms
+   ✓ web player export > 에셋 수집은 사용 중인 업로드 파일만 assets/uploaded에 넣는다  1059ms
+   ✓ web player export > 검증된 배포 manifest가 없으면 불완전 ZIP을 만들지 않는다  703ms
+   ✓ web player export > export_game 툴은 헤드리스 요약과 shape 검증 결과를 반환한다  820ms
+
+ Test Files  10 passed (10)
+      Tests  206 passed (206)
+   Start at  18:10:40
+   Duration  44.41s (transform 58.86s, setup 0ms, collect 176.56s, tests 63.03s, environment 1.78s, prepare 3.75s)

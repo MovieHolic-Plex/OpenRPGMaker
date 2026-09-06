@@ -1,0 +1,22 @@
+# Diagnostic excerpt; assertion dumps omitted.
+> node scripts/run-vitest.mjs run --configLoader bundle test/webExportBattleDependencies.test.ts test/playerManifestContract.test.ts
+ ❯ test/playerManifestContract.test.ts (41 tests | 1 failed) 7168ms
+   ✓ player deployment manifest > returns a value-free actionable error for a failed dependency read 29ms
+     → assets/generated/battle-skins/sprites/hero-01-back.png: expected null to deeply equal Uint8Array[ 112, 114, 111, 106, …(-32) ]
+ ❯ test/webExportBattleDependencies.test.ts (5 tests | 4 failed) 4732ms
+     → expected [ …(10) ] to deeply equal []
+     → expected [ …(10) ] to deeply equal []
+     → expected [ { kind: 'public', …(3) }, …(713) ] to deep equally contain ObjectContaining{…}
+     → assets/generated/battle-skins/sprites/hero-01-back.png: expected undefined to be 'data:image/png;base64,L2Fzc2V0cy9nZW5…' // Object.is equality
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  test/playerManifestContract.test.ts > player deployment manifest > writes the exact verified deployment closure and project payload into the ZIP
+AssertionError: assets/generated/battle-skins/sprites/hero-01-back.png: expected null to deeply equal Uint8Array[ 112, 114, 111, 106, …(-32) ]
+ FAIL  test/webExportBattleDependencies.test.ts > export runtime-selected party battle dependencies > ships the static and idle URLs actually rendered by rm2000
+ FAIL  test/webExportBattleDependencies.test.ts > export runtime-selected party battle dependencies > ships the static and idle URLs actually rendered by pokemon
+AssertionError: expected [ …(10) ] to deeply equal []
+ FAIL  test/webExportBattleDependencies.test.ts > export runtime-selected party battle dependencies > keeps a runtime-selected uploaded back sprite through preparation
+AssertionError: expected [ { kind: 'public', …(3) }, …(713) ] to deep equally contain ObjectContaining{…}
+ FAIL  test/webExportBattleDependencies.test.ts > export runtime-selected party battle dependencies > embeds actual party render dependencies in the standalone asset table
+AssertionError: assets/generated/battle-skins/sprites/hero-01-back.png: expected undefined to be 'data:image/png;base64,L2Fzc2V0cy9nZW5…' // Object.is equality
+ Test Files  2 failed (2)
+      Tests  5 failed | 41 passed (46)

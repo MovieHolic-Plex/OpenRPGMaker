@@ -1,0 +1,41 @@
+✔ portable Unicode casefold tables pin offline version and authoritative provenance (10.213408ms)
+✔ Unicode 15 tables fail closed during module initialization when a stream is malformed (135.433747ms)
+✔ Unicode 15 implementation does not delegate normalization or casing to the host runtime (6.283092ms)
+✔ collectFileRecords is recursively sorted, normalized, and deterministic (31.774258ms)
+✔ portable Unicode casefold rejects sharp-s path collisions (1.126181ms)
+✔ portable Unicode casefold rejects Greek final sigma path collisions (0.414008ms)
+✔ portable Unicode casefold rejects compatibility ligature path collisions (5.748972ms)
+✔ portable Unicode casefold rejects NFC composition path collisions (1.927978ms)
+✔ Unicode 15 keeps post-version Cyrillic U+1C89 drift paths distinct (0.798476ms)
+✔ Unicode 15 keeps post-version Garay U+10D50 drift paths distinct (0.51074ms)
+✔ source digest changes when one copied source input becomes dirty (23.722682ms)
+✔ explicit inventory covers source modules, CSS, build inputs, and runtime assets (0.560141ms)
+✔ explicit inventory declares both root dependency manifests as files (0.440749ms)
+✔ source digest changes when copied package.json mutates (28.908443ms)
+✔ source digest changes when copied package-lock.json mutates (19.123153ms)
+✔ explicit inventory contains only existing inputs of the declared kind (9.987373ms)
+✔ exact-set comparison accepts an identical tree (16.475981ms)
+✔ exact-set comparison reports missing and extra paths (28.504285ms)
+✔ exact-set comparison reports same-size artifact tampering (12.386532ms)
+✔ manifest verification reports artifact tampering without mutating the tree (14.928381ms)
+✔ path normalization rejects traversal and absolute contract paths (0.629652ms)
+✔ manifest parser rejects schema and sentinel mismatches (10.512595ms)
+✔ manifest parser rejects malformed ordering and misleading digests (9.586957ms)
+✔ manifest verification reports stale source inputs (18.681723ms)
+✔ secret-shaped findings expose only path, rule, and category (16.849178ms)
+✔ failed secret scan preserves a prior valid manifest with no temp residue (55.771655ms)
+✔ atomic manifest replacement preserves the valid prior file on serialize failure (31.28208ms)
+✔ atomic manifest replacement preserves the valid prior file on open failure (43.177121ms)
+✔ atomic manifest replacement preserves the valid prior file on write failure (29.359072ms)
+✔ atomic manifest replacement preserves the valid prior file on fsync failure (61.256872ms)
+✔ atomic manifest replacement preserves the valid prior file on close failure (32.848669ms)
+✔ atomic manifest replacement preserves the valid prior file on rename failure (74.123664ms)
+✔ atomic manifest replacement preserves the valid prior file on remove cleanup failure (25.18953ms)
+ℹ tests 33
+ℹ suites 0
+ℹ pass 33
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1116.964458

@@ -1,0 +1,59 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/exportAssetResolution.test.ts test/webExportCatalogAudio.test.ts test/webExportBattleDependencies.test.ts test/standaloneExport.test.ts test/standaloneHtml.test.ts test/playerManifestContract.test.ts test/devPlayerBundles.test.ts test/standaloneCli.test.ts test/webExportUsagePruning.test.ts
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-silver-stone-6077
+
+ ✓ test/standaloneHtml.test.ts (8 tests) 49ms
+ ✓ test/devPlayerBundles.test.ts (1 test) 147ms
+ ✓ test/standaloneCli.test.ts (1 test) 16514ms
+   ✓ CLI rejects missing project media without writing an HTML artifact  16508ms
+ ✓ test/webExportUsagePruning.test.ts (5 tests) 4751ms
+   ✓ web export usage pruning > ships exactly the tracks the project plays plus the ones the player hardcodes  1817ms
+   ✓ web export usage pruning > does not ship the file behind a catalog row that nothing references  595ms
+   ✓ web export usage pruning > starts shipping a catalog track once the project points at it  1199ms
+   ✓ web export usage pruning > leaves the image catalog alone while pruning the audio catalog  629ms
+   ✓ web export usage pruning > still prunes uploaded assets by static reference  503ms
+ ✓ test/playerManifestContract.test.ts (41 tests) 7034ms
+   ✓ player deployment manifest > rejects a deployment path that case-collides with generated project.json  1699ms
+   ✓ player deployment manifest > rejects case-colliding generated uploaded-asset paths  1489ms
+   ✓ player deployment manifest > rejects a full-casefold collision across deployment and generated ZIP entries  1551ms
+   ✓ player deployment manifest > writes the exact verified deployment closure and project payload into the ZIP  2104ms
+ ✓ test/webExportCatalogAudio.test.ts (5 tests) 7904ms
+   ✓ catalog audio export > rejects empty asset bytes instead of writing a broken ZIP  2374ms
+   ✓ catalog audio export > rejects HTML fallback asset bytes instead of writing a broken ZIP  1811ms
+   ✓ catalog audio export > packages the played CDN track at the player's local fallback path  907ms
+   ✓ catalog audio export > fetches the exact CDN URL and stores the returned bytes in the ZIP entries  952ms
+   ✓ catalog audio export > embeds CDN music bytes under the offline player's canonical asset key  1857ms
+ ✓ test/exportAssetResolution.test.ts (4 tests) 10293ms
+   ✓ exported player asset resolution > keeps editor resource paths unchanged without export boot  515ms
+   ✓ exported player asset resolution > uses the exported game directory for title, audio, generated sprites and warmup  5062ms
+   ✓ exported player asset resolution > resolves minimap tilesets and movie fallbacks through the game directory  2734ms
+   ✓ exported player asset resolution > prefers embedded assets and leaves external URLs and fragments alone  1974ms
+ ✓ test/webExportBattleDependencies.test.ts (6 tests) 8083ms
+   ✓ export runtime-selected party battle dependencies > ships the static and idle URLs actually rendered by rm2000  1572ms
+   ✓ export runtime-selected party battle dependencies > ships the static and idle URLs actually rendered by pokemon  2631ms
+   ✓ export runtime-selected party battle dependencies > does not derive back sprites for a front-facing skin or custom battlers  1001ms
+   ✓ export runtime-selected party battle dependencies > preserves hero idle pruning when actors no longer use generated sheets  545ms
+   ✓ export runtime-selected party battle dependencies > keeps a runtime-selected uploaded back sprite through preparation  1180ms
+   ✓ export runtime-selected party battle dependencies > embeds actual party render dependencies in the standalone asset table  1139ms
+ ✓ test/standaloneExport.test.ts (13 tests) 16600ms
+   ✓ standalone html export > 에셋을 data URL 로 문서에 싣고 파일명을 제목에서 만든다  3350ms
+   ✓ standalone html export > rejects missing required .png instead of returning a download  2633ms
+   ✓ standalone html export > rejects missing required .woff2 instead of returning a download  1504ms
+   ✓ standalone html export > rejects editor HTML returned with status 200 for standalone.js  2242ms
+   ✓ standalone html export > rejects editor HTML returned with status 200 for standalone.css  754ms
+   ✓ standalone html export > rejects editor HTML returned with status 200 for .png  561ms
+   ✓ standalone html export > rejects editor HTML returned with status 200 for .woff2  736ms
+   ✓ standalone html export > rejects a text/html response even without an HTML opening tag  1114ms
+   ✓ standalone html export > rejects empty standalone.js  941ms
+   ✓ standalone html export > rejects empty standalone.css  1035ms
+   ✓ standalone html export > rejects empty .png  515ms
+   ✓ standalone html export > CSS 가 요구하는 폰트를 에셋 클로저 밖에서도 채운다  586ms
+   ✓ standalone html export > 번들 재료를 못 받으면 실패를 숨기지 않는다  625ms
+
+ Test Files  9 passed (9)
+      Tests  84 passed (84)
+   Start at  18:22:11
+   Duration  49.68s (transform 49.17s, setup 0ms, collect 178.69s, tests 71.37s, environment 2.20s, prepare 6.57s)
