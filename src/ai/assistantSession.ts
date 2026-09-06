@@ -4043,8 +4043,10 @@ export class AssistantSession {
             const npcId = placedNpcIdFrom(name, toolResult.data, args);
             if (npcId) this.turnItemPlacedNpcIds.add(npcId);
           }
-          if (name === "find_tools") {
-            const discovered = discoveredToolNames(toolResult);
+          const relocationAvailable = toolResult.issues?.some(issue => issue.relocation !== undefined) === true;
+          if (name === "find_tools" || relocationAvailable) {
+            const discovered = [...(name === "find_tools" ? discoveredToolNames(toolResult) : []),
+              ...(relocationAvailable ? ["move_event"] : [])];
             const next = [...this.turnEscalatedToolNames];
             for (const toolName of discovered) {
               const existing = next.indexOf(toolName);
@@ -4548,7 +4550,9 @@ function toolResultForModel(result: ToolResult): Record<string, unknown> {
     summary: result.summary,
     diff: result.diff,
     // issues가 있으면 원인을 읽고 인자를 고쳐 재시도하라는 신호.
-    issues: result.issues?.map((issue) => ({ severity: issue.severity, code: issue.code, message: issue.message })),
+    issues: result.issues?.map((issue) => ({ severity: issue.severity, code: issue.code, message: issue.message,
+      ...(issue.relocation ? { mapId: issue.mapId, eventId: issue.eventId, x: issue.x, y: issue.y, relocation: issue.relocation } : {}),
+    })),
     ...(result.warnings && result.warnings.length > 0 ? { warnings: result.warnings } : {}),
     data: compactToolDataForModel(result.data),
   };

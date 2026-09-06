@@ -39,6 +39,7 @@ import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import { inBounds, isPassable } from "../collision";
 import { eventBodyRect, eventCoversPoint, eventPassageRect, overlappingEventPairs } from "../eventFootprintQuery";
 import { rectCells } from "../footprint";
+import { eventRelocationCandidates, eventRequiresPassableTile, type EventRelocation } from "../eventPlacementRecovery";
 import { playerPassageRect, resolvePlayerBody } from "../playerFootprint";
 import { deserialize, serialize } from "../io";
 import { collectProjectReferenceIssues } from "../io/references";
@@ -58,6 +59,8 @@ export interface LintIssue {
   readonly severity: LintSeverity;
   readonly code: string;
   readonly mapId?: string;
+  readonly eventId?: string;
+  readonly relocation?: EventRelocation;
   readonly x?: number;
   readonly y?: number;
   readonly message: string;
@@ -295,6 +298,8 @@ function checkPlayerTouchTilePassability(project: Project, issues: LintIssue[]):
         severity: "warning",
         code: "playerTouch-impassable",
         mapId: map.id,
+        eventId: event.id,
+        relocation: eventRelocationCandidates(project, map, event),
         x: event.x,
         y: event.y,
         message:
@@ -315,6 +320,16 @@ function checkEventUnreachable(project: Project, issues: LintIssue[]): void {
     for (const event of map.events) {
       // 몸 사각 전 칸과 그 칸들의 4방향 이웃을 본다. 1x1 이면 앵커 + 4방 이웃이라 예전과 같다.
       const body = rectCells(eventBodyRect(event));
+      if (eventRequiresPassableTile(event)
+        && rectCells(eventPassageRect(event)).some(cell => !isPassable(project, map, cell.x, cell.y))) {
+        issues.push({
+          severity: "warning", code: "event-character-impassable", mapId: map.id, eventId: event.id,
+          x: event.x, y: event.y,
+          message: `캐릭터 ${event.id}가 통행 불가 타일 위에 있습니다. 지형이나 충돌을 바꾸기 전에 move_event로 위치 이동을 검토하세요.`,
+          relocation: eventRelocationCandidates(project, map, event),
+        });
+        continue;
+      }
       if (body.some((cell) => isPassable(project, map, cell.x, cell.y))) continue;
       const neighbourPassable = body
         .flatMap((cell) => [
@@ -329,6 +344,8 @@ function checkEventUnreachable(project: Project, issues: LintIssue[]): void {
         severity: "warning",
         code: "event-unreachable",
         mapId: map.id,
+        eventId: event.id,
+        relocation: eventRelocationCandidates(project, map, event),
         x: event.x,
         y: event.y,
         message:
@@ -398,6 +415,8 @@ function checkEventFootprintPassability(project: Project, issues: LintIssue[]): 
         severity: "warning",
         code: "event-footprint-impassable",
         mapId: map.id,
+        eventId: event.id,
+        relocation: eventRelocationCandidates(project, map, event),
         x: event.x,
         y: event.y,
         message:
@@ -647,7 +666,9 @@ function checkReachabilitySpecs(
     }
     const result = checkReachability(project, spec.mapId, spec.from, spec.targets);
     for (const point of result.unreachable) {
+      const event = map.events.find(entry => entry.x === point.x && entry.y === point.y);
       issues.push({
+        ...(event ? { eventId: event.id, relocation: eventRelocationCandidates(project, map, event, spec.from) } : {}),
         severity: "error",
         code: "reachability",
         mapId: spec.mapId,
