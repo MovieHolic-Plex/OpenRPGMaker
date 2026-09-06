@@ -1,18 +1,10 @@
-// 자연어 능력 요청 승격 (2026-08-27 실측).
-// 실측 케이스(스크립트로 레지스트리 실데이터에서 고름): "타이틀 화면 바꿔줘"
-//   computeActiveToolDomains → core|map|system, toOpenAiTools(undefined,{domains}) 40개 노출.
-//   그 40개에 set_title_screen 이 없다(도메인 슬라이스에서 탈락). 사용자가 정확한 레지스트리
-//   이름을 타이핑하지 않았으므로 mentionedToolSchemas 도 승격하지 않는다 → 모델은 "그 기능이
-//   없습니다"로 답한다. 이 리졸버가 같은 라운드에서 set_title_screen 스키마를 얹어야 한다.
 import { describe, expect, it } from "vitest";
 import { computeActiveToolDomains } from "@/editor/assistantToolMode";
 import { toOpenAiTools, activeTools, allTools } from "@/editor/tools";
 import {
   ESCALATION_DENYLIST,
   MAX_CAPABILITY_ESCALATED_TOOLS,
-  MAX_TURN_TOOL_SCHEMAS,
   capabilityEscalationSchemas,
-  clampTurnToolSchemas,
 } from "@/ai/capabilityEscalation";
 import { mentionedToolSchemas } from "@/ai/planToolExposure";
 
@@ -29,7 +21,7 @@ function names(schemas: readonly { readonly function: { readonly name: string } 
 }
 
 describe("자연어 능력 승격 리졸버", () => {
-  it("도메인 40 슬라이스에서 빠진 능력 툴을 같은 라운드에 되살린다", () => {
+  it("finds tools outside an explicitly scoped caller catalog", () => {
     const exposed = domainExposedNames(TITLE_REQUEST);
     // 케이스 전제: 도메인 슬라이스에도, 정확한 이름 언급 승격에도 없다.
     expect(exposed.has("set_title_screen")).toBe(false);
@@ -63,19 +55,14 @@ describe("자연어 능력 승격 리졸버", () => {
     }
   });
 
-  it("승격은 최대 6개이고, 조립된 목록은 128 이하로 클램프된다", () => {
+  it("bounds optional search suggestions without truncating the native catalog", () => {
     for (const text of [TITLE_REQUEST, "속성 상성표 설정하고 세이브 시작 지점도 바꾸고 장비랑 직업도 추가해줘"]) {
       expect(capabilityEscalationSchemas(text, new Set()).length).toBeLessThanOrEqual(MAX_CAPABILITY_ESCALATED_TOOLS);
     }
-
-    const all = toOpenAiTools(activeTools(), {});
-    expect(all.length).toBeGreaterThan(MAX_TURN_TOOL_SCHEMAS);
-    const escalated = new Set(all.slice(0, 6).map((tool) => tool.function.name));
-    const clamped = clampTurnToolSchemas(all, escalated);
-    expect(clamped.length).toBe(MAX_TURN_TOOL_SCHEMAS);
-    // 승격 후보가 먼저 떨어진다 — 확정 툴은 승격 추측 때문에 밀리지 않는다.
-    for (const name of escalated) expect(names(clamped)).not.toContain(name);
-    expect(clampTurnToolSchemas(all.slice(0, 10), escalated)).toEqual(all.slice(0, 10));
+    const all = toOpenAiTools(activeTools());
+    expect(all.length).toBeGreaterThan(128);
+    expect(names(all)).toEqual(activeTools().map((tool) => tool.name));
+    expect(capabilityEscalationSchemas(TITLE_REQUEST, new Set(names(all)))).toEqual([]);
   });
 
   // 되돌릴 수 없는 폐기 툴은 어휘가 아무리 맞아도 자동으로 얹히지 않는다.

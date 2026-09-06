@@ -35,7 +35,11 @@ import { worldCanonPromptSection } from "./worldCanonContext";
 import { projectWikiContext } from "./projectWikiContext";
 import { AGENT_UX_POLICY_LINES } from "./promptPolicies";
 import { EVENT_PAGE_SEMANTICS_BLOCK } from "./eventPageSemantics";
-import { buildToolCapabilityIndex } from "./toolCapabilityIndex";
+import { buildTaskRecipes, buildToolCapabilityIndex } from "./toolCapabilityIndex";
+import type { AiConfig, ChatMessage, OpenAiToolSchema } from "./llmClient";
+import { DEFAULT_COMPACTION_SETTINGS, estimateContextTokens } from "./contextCompaction";
+import { compactMessagesForRequest, resolveRequestCharBudget } from "./messageBudget";
+import { originalContextWindow, type OriginalContextStore } from "./originalContext";
 import {
   formatViewportContextBlock,
   mapRegionForContext,
@@ -652,6 +656,30 @@ function ruleText(rule: ClusterRuleHint): string {
   return `${kindLabel(rule.kind)} 규칙 ${rule.id}`;
 }
 
+/** Budget the actual writer model, complete native schemas, conversation and originals together.
+ * Original evidence is appended after history compaction, never prose-sliced. The legacy
+ * working-window cap governs history, not how much original data a large model can see.
+ */
+export function buildGroundedRequest(
+  messages: readonly ChatMessage[], tools: readonly OpenAiToolSchema[],
+  config: Pick<AiConfig, "model" | "baseUrl"> & Partial<Pick<AiConfig, "authMode" | "providerId">>, original: OriginalContextStore,
+): { messages: ChatMessage[]; includedIds: string[]; budget: { windowTokens: number; toolsTokens: number; reserveTokens: number; inputTokens: number } } {
+  const windowTokens = originalContextWindow(config);
+  const reserveTokens = DEFAULT_COMPACTION_SETTINGS.reserveTokens;
+  const toolsTokens = tools.length ? estimateContextTokens([{ role: "system", content: JSON.stringify(tools) }]) : 0;
+  const historyChars = Math.max(0, Math.min(resolveRequestCharBudget(config), windowTokens * 4) - (toolsTokens + reserveTokens) * 4);
+  const request = compactMessagesForRequest(messages, historyChars);
+  const remaining = windowTokens - reserveTokens - toolsTokens - estimateContextTokens(request);
+  const grounding = original.message(remaining);
+  request.push(grounding.message);
+  const inputTokens = estimateContextTokens(request) + toolsTokens;
+  if (inputTokens + reserveTokens > windowTokens) {
+    throw new Error("original-context-window-exceeded: conversation and full tool schemas exceed the model window; no capability was removed");
+  }
+  return { messages: request, includedIds: grounding.includedIds,
+    budget: { windowTokens, toolsTokens, reserveTokens, inputTokens } };
+}
+
 // 시스템 프롬프트 전체 조립. 예산 초과 섹션은 잘라내고 조회 안내로 대체.
 export function buildSystemPrompt(project: Project, options: ContextOptions = {}): string {
   // 툴 능력 색인은 예산 슬라이싱 밖의 고정 버지다. 아래 조립·잘라내기는 색인을 모르는 상태로 진행되고
@@ -734,7 +762,7 @@ function withWorldCanon(assembled: string, canon: Project["worldCanon"]): string
 function withFixedBlocks(assembled: string, preferenceMemorySection?: string): string {
   const index = buildToolCapabilityIndex();
   const memory = preferenceMemorySection?.trim() ?? "";
-  const fixed = [index, EVENT_PAGE_SEMANTICS_BLOCK, ...(memory ? [memory] : [])].join("\n\n");
+  const fixed = [index, buildTaskRecipes(), EVENT_PAGE_SEMANTICS_BLOCK, ...(memory ? [memory] : [])].join("\n\n");
   if (assembled.startsWith(INTRO)) {
     return `${INTRO}\n\n${fixed}${assembled.slice(INTRO.length)}`;
   }
