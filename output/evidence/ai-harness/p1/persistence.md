@@ -214,8 +214,8 @@ baseline evidence was changed by this node. Build outputs are local generated
 artifacts, not committed authored data. Upstream baseline-document commit
 `0a6f546d` was preserved. No merge, push, or other-phase implementation occurred.
 
-`persistence-artifacts.sha256` inventories the retained persistence evidence and
-source/test hashes. Source/test diff whitespace validation passed.
+`persistence-artifacts.sha256` inventories the original `dea2a917` evidence and
+source/test hashes; the review follow-up has its own manifest below. Source/test diff whitespace validation passed.
 `git diff --cached --check` returned 2 solely for raw command-output trailing
 whitespace/final blank lines; `persistence-diff-check.log/.receipt` retains that
 output. Raw logs are deliberately preserved byte-for-byte, not reformatted to
@@ -228,3 +228,53 @@ proof behavior and build/typecheck are GREEN; the full related suite has six
 reproduced pre-existing failures. This closes only the persistence implementation
 node and supplies the next session node's API contract, not P1 browser/remote
 release approval.
+
+
+## Read-only review follow-up
+
+The review arrived after the original `dea2a917` increment was committed. This
+follow-up changes only the focused persistence test and evidence, not production
+code or the original RED artifacts. No P2/P4 work or history rewrite is included.
+
+- The fixture already used `Project` for `current_json` and explicitly required
+  `saved.kind === "saved"` and `saved.receipt`; the former broad `any` record and
+  receipt cast were absent from the committed version.
+- Replaced the remaining `resolve!` with `Promise.withResolvers<T>()`, removed
+  the start-map non-null assertion with an explicit fixture guard, and removed
+  the row cast. The typed submitted-row getter also requires a captured row.
+  Receipt validation now occurs before waiting for the background commit signal,
+  so a failed save cannot leave that fixture waiting for a nonexistent commit.
+- A TypeScript AST scan found zero AnyKeyword, NonNullExpression or definite-
+  assignment variable assertions in `test/storePersistenceProof.test.ts`.
+- The clean-flush test now asserts reference identity with `toBe`: the receipt
+  object itself, not merely equal fields, survives clean flush. Production
+  `store.ts:879-885` returns `lastPersistenceReceipt` when generation and fixed
+  target are still current. No network save or new revision id is minted. The
+  private target WeakMap therefore remains usable by the returned receipt.
+- Added direct parity with `loadProjectFromSupabase`: both loaders return the
+  same normalized project including a nonempty `maps.map_json` overlay. A changed
+  overlay must yield content mismatch even though `projects.current_json` still
+  matches the accepted save. A separate maps GET 503 case must fail proof.
+  `loadProjectForPersistenceProof` already calls the same
+  `loadProjectSnapshotFromSupabase` with overlay enabled by default; no convenient
+  projects-only loader or new normalization was introduced.
+
+Validation (one related-suite run):
+
+```sh
+npm test -- test/storePersistenceProof.test.ts test/storePersistence.test.ts test/supabaseProjectSync.test.ts --testTimeout 60000
+npm run typecheck:app
+```
+
+`persistence-review-tests.log/.receipt`: exit 1, **52 passed / six failed**.
+All **18 proof tests** and **29 sync tests** passed. The six legacy store failures
+are the same test names already documented above; the background-fetch count in
+the missing-project test was three in this run versus four in the original
+baseline. It still fails the expected count of one. No failing test was skipped,
+deleted or modified by this follow-up.
+
+`persistence-review-typecheck.log/.receipt`: exit 0. Changed-test LSP diagnostics:
+none. No new build/browser/live-remote run is claimed for this test-only change.
+Original RED logs and receipts were compared byte-for-byte against `dea2a917` and
+remain unchanged. `persistence-review-artifacts.sha256` records current test,
+report and follow-up logs separately from the original historical manifest.

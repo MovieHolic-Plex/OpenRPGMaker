@@ -6,14 +6,13 @@ const projectId = "p1-proof-fixture";
 type Row = { project_id: string; current_json: Project; current_sha256: string };
 
 function deferred<T>() {
-  let resolve!: (value: T) => void;
-  const promise = new Promise<T>((done) => { resolve = done; });
-  return { promise, resolve };
+  return Promise.withResolvers<T>();
 }
 
 async function fixture() {
-  let row: Row;
+  let row: Row | undefined;
   let readResponse: (() => Promise<Response>) | undefined;
+  let mapReadResponse: (() => Promise<Response>) | undefined;
   let committed = deferred<void>();
   const calls: { url: URL; method: string }[] = [];
   const fetchSpy = vi.fn<typeof fetch>(async (input, init) => {
@@ -22,12 +21,13 @@ async function fixture() {
     calls.push({ url, method });
     if (url.pathname === "/rest/v1/projects") {
       if (method === "POST" || method === "PATCH") {
-        row = JSON.parse(String(init?.body)) as Row;
+        row = JSON.parse(String(init?.body));
         return Response.json(method === "PATCH" ? [row] : []);
       }
       if (readResponse) return readResponse();
       return Response.json(row ? [row] : []);
     }
+    if (url.pathname === "/rest/v1/maps" && method === "GET" && mapReadResponse) return mapReadResponse();
     if (url.pathname === "/rest/v1/project_changes") committed.resolve();
     if (url.pathname === "/rest/v1/maps" || url.pathname === "/rest/v1/tilesets"
       || url.pathname === "/rest/v1/project_commits" || url.pathname === "/rest/v1/project_changes") {
@@ -42,16 +42,20 @@ async function fixture() {
   const flush = async () => {
     committed = deferred<void>(); // Subscribe to the exact background commit before saving.
     const saved = await store.flush();
-    await committed.promise;
     if (saved.kind !== "saved" || !saved.receipt) throw new Error("No accepted-save receipt");
+    await committed.promise;
     return saved.receipt;
   };
   // This is the actual public API; no substituted verifier or reload-result adapter.
   const receipt = await flush();
   return {
     store, receipt, calls, fetchSpy, flush,
-    row: () => row,
+    row: () => {
+      if (!row) throw new Error("No submitted project row");
+      return row;
+    },
     setRead: (response: () => Promise<Response>) => { readResponse = response; },
+    setMapRead: (response: () => Promise<Response>) => { mapReadResponse = response; },
   };
 }
 
@@ -89,7 +93,9 @@ describe("accepted revision persistence proof", () => {
       expect(proof).toMatchObject({ kind: "verified", receipt: f.receipt, isCurrent: true });
       expect(f.store.getCurrent()).toBe(live);
       expect(changes).not.toHaveBeenCalled();
-      expect(await f.store.flush()).toMatchObject({ kind: "saved", receipt: f.receipt });
+      const clean = await f.store.flush();
+      if (clean.kind !== "saved") throw new Error("Clean flush was not saved");
+      expect(clean.receipt).toBe(f.receipt);
       expect(f.calls.filter((call) => call.method === "GET" && call.url.pathname === "/rest/v1/projects")).toHaveLength(1);
       expect(f.calls.at(-1)?.method).toBe("GET");
     } finally { unsubscribe(); }
@@ -106,10 +112,38 @@ describe("accepted revision persistence proof", () => {
     expect(await f.store.verifyPersistedRevision(f.receipt)).toMatchObject({ kind: "verified", isCurrent: true });
   });
 
+  it("uses the ordinary normalized remote load and map-overlay contract", async () => {
+    const f = await fixture();
+    const { loadProjectFromSupabase, loadProjectForPersistenceProof } = await import("@/project/supabaseProjectSync");
+    const currentJson = f.row().current_json;
+    const startMap = currentJson.maps[currentJson.startMapId];
+    if (!startMap) throw new Error("Fixture start map is missing");
+    const overlay = { ...structuredClone(startMap), name: "map-table-overlay" };
+    f.setMapRead(async () => Response.json([{ map_id: overlay.id, map_json: overlay }]));
+    const config = { projectId, url: "http://p1-transport.invalid", anonKey: "test-anon-key" };
+    const [ordinary, proofRead] = await Promise.all([
+      loadProjectFromSupabase(config),
+      loadProjectForPersistenceProof(config),
+    ]);
+    expect(proofRead?.project).toEqual(ordinary);
+    expect(proofRead?.project.maps[overlay.id]?.name).toBe(overlay.name);
+    expect(currentJson.maps[overlay.id]?.name).not.toBe(overlay.name);
+    // The projects row still matches the receipt: only the map-table overlay differs.
+    expect(await f.store.verifyPersistedRevision(f.receipt)).toMatchObject({ kind: "mismatch", reason: "content" });
+  });
+
+  it("does not verify a matching projects row when the ordinary map read fails", async () => {
+    const f = await fixture();
+    f.setMapRead(async () => new Response("unavailable", { status: 503 }));
+    expect((await f.store.verifyPersistedRevision(f.receipt)).kind).toBe("failed");
+  });
+
   it("binds the receipt to the accepted merged project, not the unmerged live store", async () => {
     const f = await fixture();
     const remote = f.row().current_json;
-    const map = structuredClone(remote.maps[remote.startMapId]!);
+    const startMap = remote.maps[remote.startMapId];
+    if (!startMap) throw new Error("Fixture start map is missing");
+    const map = structuredClone(startMap);
     map.id = "remote-added-map";
     remote.maps[map.id] = map;
     remote.mapTree.children.push({ mapId: map.id, children: [] });
