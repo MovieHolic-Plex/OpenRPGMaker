@@ -6,7 +6,7 @@ import { renderEventLayer } from "@/player/playSceneMapRuntime";
 import { renderPlaceableOverlays } from "@/player/playScenePlaceables";
 import { transitionToNextDay } from "@/player/dayTransition";
 import { attemptFishingCatch } from "@/project/fishing";
-import { collectForageAt } from "@/project/seasonalForage";
+import { advanceSeasonalForage, collectForageAt, resolveForageAt } from "@/project/seasonalForage";
 import { ensureChest, placeableKey } from "@/project/placeables";
 import { startSession } from "@/project/session";
 import * as sessionModule from "@/project/session";
@@ -240,5 +240,89 @@ describe("generated forage rendering", () => {
     f.forage.areas[0].entries = [{ id: "berry", itemId: "item_berry", weight: 1 }];
     f.session.gameTime = { year: 1, season: "spring", day: 4, hour: 6, minute: 0 };
     sprite.mockClear(); renderPlaceableOverlays(scene); expect(sprite).not.toHaveBeenCalled();
+  });
+});
+
+
+describe.each([1, Number.MAX_SAFE_INTEGER])("forage accepted calendar year %s", year => {
+  it.each([
+    { spawnedDay: 1, liveDay: 1, lifetime: 1, expired: false },
+    { spawnedDay: 1, liveDay: 2, lifetime: 1, expired: true },
+    { spawnedDay: 1, liveDay: 3, lifetime: 1, expired: true },
+    { spawnedDay: 1, liveDay: 2, lifetime: 2, expired: false },
+    { spawnedDay: 1, liveDay: 3, lifetime: 2, expired: true },
+    { spawnedDay: 3, liveDay: 1, lifetime: 2, expired: true },
+  ])("checks spawn $spawnedDay -> live $liveDay, lifetime $lifetime without rounded ages", ({ spawnedDay, liveDay, lifetime, expired }) => {
+    const f = fixture(); f.forage.areas[0].despawnAfterDays = lifetime;
+    f.session.gameTime = { year, season: "spring", day: spawnedDay, hour: 6, minute: 0 };
+    expect(advanceSeasonalForage(f.project, f.session, f.session.gameTime)).toMatchObject({ ok: true, spawned: 1 });
+    f.session.gameTime = { ...f.session.gameTime, day: liveDay };
+    const before = structuredClone(f.session), owners = f.session.placeables, rng = f.session.rng;
+    const expected = expired ? { ok: false, reason: "expired" } : { ok: true, itemId: "item_berry" };
+    expect(resolveForageAt(f.project, f.session, f.map.id, 2, 3)).toEqual(expected);
+    expect(f.session).toEqual(before);
+    const direct = structuredClone(f.session);
+    expect(collectForageAt(f.project, direct, f.map.id, 2, 3)).toEqual(expected);
+    if (expired) {
+      expect(direct).toEqual(before);
+      refuse(f);
+      expect(f.session.placeables).toBe(owners); expect(f.session.rng).toBe(rng);
+      const sprite = vi.fn(() => ({ setOrigin: vi.fn(), setDepth: vi.fn() }));
+      renderPlaceableOverlays({ ...f.scene, add: { sprite }, tileLayer: { add: vi.fn() } });
+      expect(sprite).not.toHaveBeenCalled(); expect(f.session).toEqual(before);
+    } else {
+      expect(handleAction(f.scene)).toBe(true);
+      expect(f.session).toEqual(direct);
+      expect(f.session.inventory.item_berry).toBe(1);
+      expect(f.session.placeables?.[placeableKey(f.map.id, 2, 3)]).toBeUndefined();
+      expect(f.session.rng).toEqual(before.rng);
+    }
+  });
+
+  it("advances adjacent days, expires owners and refuses duplicate/backward cursors atomically", () => {
+    const f = fixture(); f.forage.areas[0].despawnAfterDays = 1;
+    f.session.gameTime = { year, season: "spring", day: 1, hour: 6, minute: 0 };
+    expect(advanceSeasonalForage(f.project, f.session, f.session.gameTime)).toMatchObject({ ok: true, spawned: 1 });
+    f.forage.areas[0].dailySpawnCount = 0;
+    f.session.gameTime = { ...f.session.gameTime, day: 2 };
+    const rng = structuredClone(f.session.rng);
+    expect(advanceSeasonalForage(f.project, f.session, f.session.gameTime)).toMatchObject({ ok: true, removed: 1, spawned: 0 });
+    expect(f.session.placeables).toEqual({}); expect(f.session.rng).toEqual(rng);
+    const before = structuredClone(f.session);
+    expect(advanceSeasonalForage(f.project, f.session, f.session.gameTime)).toEqual({ ok: false, reason: "already-advanced" });
+    expect(advanceSeasonalForage(f.project, f.session, { ...f.session.gameTime, day: 1 })).toEqual({ ok: false, reason: "stale-day" });
+    expect(f.session).toEqual(before);
+    f.session.forageLastAdvancedDayKey = "invalid";
+    const invalid = structuredClone(f.session);
+    expect(advanceSeasonalForage(f.project, f.session, { ...f.session.gameTime, day: 3 })).toEqual({ ok: false, reason: "stale-day" });
+    expect(f.session).toEqual(invalid);
+  });
+
+  it("keeps exact three-day spawn cadence on the absolute calendar", () => {
+    const f = fixture(); const area = f.forage.areas[0];
+    f.project.system.seasonalForage = { ...f.forage, areas: [{ ...area, spawnEveryDays: 3, despawnAfterDays: 1 }] };
+    const spawned: number[] = [], rng = structuredClone(f.session.rng);
+    for (let day = 1; day <= 7; day++) {
+      const date = { year, season: "spring" as const, day, hour: 6, minute: 0 };
+      const result = advanceSeasonalForage(f.project, f.session, date);
+      expect(result.ok).toBe(true);
+      if (result.ok && result.spawned) spawned.push(day);
+    }
+    // Both tested years have (year - 1) divisible by 3; no unsafe arithmetic in the oracle.
+    expect(spawned).toEqual([1, 4, 7]); expect(f.session.rng).toEqual(rng);
+  });
+});
+
+describe("forage extreme year boundaries", () => {
+  it.each([28, 99])("orders year/season transitions with %s days per season", daysPerSeason => {
+    const f = fixture(); const year = Number.MAX_SAFE_INTEGER;
+    f.project.system.timeSystem = { enabled: true, daysPerSeason };
+    f.session.gameTime = { year: year - 1, season: "winter", day: daysPerSeason, hour: 6, minute: 0 };
+    expect(advanceSeasonalForage(f.project, f.session, f.session.gameTime)).toMatchObject({ ok: true, spawned: 1 });
+    f.session.gameTime = { year, season: "spring", day: 1, hour: 6, minute: 0 };
+    expect(advanceSeasonalForage(f.project, f.session, f.session.gameTime)).toMatchObject({ ok: true, removed: 1, spawned: 1 });
+    const before = structuredClone(f.session);
+    expect(advanceSeasonalForage(f.project, f.session, { ...f.session.gameTime, year: year - 1, season: "winter", day: daysPerSeason })).toEqual({ ok: false, reason: "stale-day" });
+    expect(f.session).toEqual(before);
   });
 });

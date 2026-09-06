@@ -21,8 +21,10 @@ export function advanceSeasonalForage(project: Project, session: PlaySession, da
   if (!validDate(project, date)) return { ok: false, reason: "invalid-date" };
   const dayKey = calendarDayKey(date);
   if (session.forageLastAdvancedDayKey === dayKey) return { ok: false, reason: "already-advanced" };
-  if (session.forageLastAdvancedDayKey && dayOrdinal(project, session.forageLastAdvancedDayKey) >= dayOrdinal(project, dayKey)) {
-    return { ok: false, reason: "stale-day" };
+  const ordinal = dayOrdinal(project, date);
+  if (session.forageLastAdvancedDayKey) {
+    const previous = parseDayKey(project, session.forageLastAdvancedDayKey);
+    if (!previous || dayOrdinal(project, previous) >= ordinal) return { ok: false, reason: "stale-day" };
   }
   if (config.areas.some((area) => !validArea(project, area))) return { ok: false, reason: "invalid-state" };
   const draft = structuredClone(session);
@@ -34,13 +36,13 @@ export function advanceSeasonalForage(project: Project, session: PlaySession, da
     const entry = area?.entries.find((candidate) => candidate.id === placeable.forageSpawn!.entryId);
     const spawned = parseDayKey(project, placeable.forageSpawn.spawnedDayKey);
     const expired = !spawned || date.season !== spawned.season
-      || dayOrdinal(project, dayKey) - dayOrdinal(project, placeable.forageSpawn.spawnedDayKey) >= (area?.despawnAfterDays ?? 0);
+      || ordinal - dayOrdinal(project, spawned) >= (area?.despawnAfterDays ?? 0);
     if (!area || !entry || expired) { delete draft.placeables[key]; removed += 1; }
   }
   let spawned = 0;
   for (const area of [...config.areas].sort((a, b) => a.id.localeCompare(b.id))) {
     const interval = area.spawnEveryDays ?? 1;
-    if ((dayOrdinal(project, dayKey) - 1) % interval !== 0) continue;
+    if ((ordinal - 1n) % BigInt(interval) !== 0n) continue;
     const active = Object.values(draft.placeables).filter((entry) => entry.forageSpawn?.areaId === area.id).length;
     let remaining = Math.min(area.dailySpawnCount, Math.max(0, area.maxActive - active));
     const candidates: Array<{ x: number; y: number; score: number }> = [];
@@ -97,8 +99,8 @@ export function resolveForageAt(project: Project, session: Pick<PlaySession, "pl
   }
   const date = session.gameTime;
   if (!spawned || !date || !validDate(project, date)) return { ok: false, reason: "stale" };
-  const age = dayOrdinal(project, calendarDayKey(date)) - dayOrdinal(project, object.forageSpawn.spawnedDayKey);
-  if (age < 0 || date.season !== spawned.season || age >= area.despawnAfterDays) return { ok: false, reason: "expired" };
+  const age = dayOrdinal(project, date) - dayOrdinal(project, spawned);
+  if (age < 0n || date.season !== spawned.season || age >= area.despawnAfterDays) return { ok: false, reason: "expired" };
   return { ok: true, itemId };
 }
 
@@ -152,10 +154,11 @@ function parseDayKey(project: Project, value: string): { year: number; season: (
   return Number.isSafeInteger(year) && year > 0 && Number.isSafeInteger(day)
     && day > 0 && day <= daysPerSeasonOf(project) ? { year, season, day } : undefined;
 }
-function dayOrdinal(project: Project, value: string): number {
-  const date = parseDayKey(project, value); if (!date) return Number.POSITIVE_INFINITY;
-  const length = daysPerSeasonOf(project);
-  return ((date.year - 1) * 4 + SEASONS.indexOf(date.season)) * length + date.day;
+/** Valid safe-integer years can have unsafe absolute day numbers. Keep arithmetic exact,
+ * including cadence and cursor ordering; bigint never enters persisted session state. */
+function dayOrdinal(project: Project, date: Pick<GameTime, "year" | "season" | "day">): bigint {
+  const length = BigInt(daysPerSeasonOf(project));
+  return ((BigInt(date.year) - 1n) * 4n + BigInt(SEASONS.indexOf(date.season))) * length + BigInt(date.day);
 }
 function pointInArea(area: ForageAreaDefinition, x: number, y: number): boolean {
   return x >= area.area.x && y >= area.area.y && x < area.area.x + area.area.w && y < area.area.y + area.area.h;

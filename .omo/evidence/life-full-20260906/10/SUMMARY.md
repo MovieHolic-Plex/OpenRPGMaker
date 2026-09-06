@@ -1,6 +1,12 @@
 # Task10 - real fishing and generated-forage confirmation
 
-Status: scoped implementation complete; parent verification/integration remains separate.
+Status: scoped implementation complete after the parent's accepted-date overflow correction; parent verification/integration remains separate.
+
+## Current correction evidence
+
+The parent correctly found that the original Number ordinal arithmetic could grant expired forage at year9007199254740991. This was an in-scope task10 bug, not a baseline exception. It is corrected and reverified in [date-fix/SUMMARY.md](date-fix/SUMMARY.md): 45 focused tests pass; the identical parent public probe now refuses both normal/extreme expired items without mutation; native player, diagnostics, typecheck and build pass on the corrected source. The wider suite has 283 passes and only the two previously documented unrelated snapshot-harness failures.
+
+The remaining sections below retain the initial implementation's source identity and evidence as history; use `date-fix/source-cleanup.json` and `date-fix/execution.json` for the corrected source and final verification.
 
 ## Source identity and scope
 
