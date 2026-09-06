@@ -1,0 +1,37 @@
+{
+  "source": "0e2af2591f33bab3e1f56f1847e499a1cce0681f",
+  "integration": "3da1d560b9e491a973f8791f2698a69b556ea00f",
+  "coreFiles": [
+    "src/player/saveSlotSpatialValidation.ts",
+    "src/project/animalHousing.ts",
+    "src/project/farmAnimals.ts",
+    "src/project/io/references.ts",
+    "src/project/io/shapeDatabaseFields.ts",
+    "src/project/lifeRecovery.ts",
+    "src/project/lifeStateReconciliation.ts",
+    "src/project/mapDeletion.ts",
+    "src/project/p1FoundationRecords.ts",
+    "src/project/session.ts",
+    "src/project/spatialPlacementTransactions.ts",
+    "src/project/spatialPlacements.ts",
+    "src/project/types/database.ts",
+    "src/project/types/project.ts",
+    "test/linkedAnimalHousing.test.ts",
+    "test/spatialPaymentReceipts.test.ts"
+  ],
+  "sourceMatch": true,
+  "indexCheck": 0,
+  "wikiCheck": 0,
+  "parentArtifacts": 33,
+  "parentTests": 242,
+  "archiveHead": "e318cf19592394dec1501597dc155faaa5a74f70",
+  "cleanup": {
+    "removed": "/home/main/z-project/rpg-zzu-life-full-receipts-parent-astra",
+    "exit": 0,
+    "allEvidenceArchived": true
+  },
+  "separateVisualTasks": [
+    45,
+    46
+  ]
+}
