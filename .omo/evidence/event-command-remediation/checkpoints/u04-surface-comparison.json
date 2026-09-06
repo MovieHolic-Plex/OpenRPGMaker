@@ -1,0 +1,103 @@
+{
+  "command": "npm run gates -- --only surface",
+  "before": {
+    "commit": "5c117f0ef993a6cca4bf916dbafe7b361c929be7",
+    "worktree": "/home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906-event-remediation-u12",
+    "exitCode": 1,
+    "passed": 104,
+    "failed": 9,
+    "failedFiles": 6,
+    "failedAssertions": [
+      "test/eventEditorCommitProbe.baseline.test.ts :: no-commit 래칫 > 무커밋 컨트롤 집합이 허용 목록과 정확히 일치한다",
+      "test/eventEditorCommitProbe.baseline.test.ts :: 이벤트 편집기 커밋 프로브 축 > (1) 컨트롤 조작 → 저장 커맨드 스냅샷이 기준선과 같다",
+      "test/eventEditorConditionSurface.baseline.test.ts :: 이벤트에디터 조건/열거값 표면 스냅샷 > 기각한 열거값 후보는 여전히 폼이 갈리지 않는다",
+      "test/eventEditorConditionSurface.baseline.test.ts :: 이벤트에디터 조건/열거값 표면 스냅샷 > 기준선과 일치한다",
+      "test/eventEditorFormSurface.baseline.test.ts :: 이벤트에디터 폼 표면 스냅샷 > 기준선과 일치한다",
+      "test/eventEditorInteractionSurface.baseline.test.ts :: 이벤트에디터 상호작용 후 폼 표면 스냅샷 > 기준선과 일치한다",
+      "test/eventEditorInteractionSurface.baseline.test.ts :: 이벤트에디터 상호작용 후 폼 표면 스냅샷 > 반응하던 컨트롤이 no-change 로 퇴화하지 않는다",
+      "test/eventEditorM2Surface.baseline.test.ts :: M2 명령 폼 표면 스냅샷 > 기준선과 일치한다",
+      "test/eventEditorPortalSurface.baseline.test.ts :: 포털(피커/모달) 표면 스냅샷 > 기준선과 일치한다"
+    ]
+  },
+  "after": {
+    "commit": "64135c2fa",
+    "worktree": "/home/main/.herdr/worktrees/rpg-zzu/worktree-brave-valley-f078-event-remediation-0906",
+    "exitCode": 1,
+    "passed": 104,
+    "failed": 9,
+    "failedFiles": 6,
+    "failedAssertions": [
+      "test/eventEditorCommitProbe.baseline.test.ts :: no-commit 래칫 > 무커밋 컨트롤 집합이 허용 목록과 정확히 일치한다",
+      "test/eventEditorCommitProbe.baseline.test.ts :: 이벤트 편집기 커밋 프로브 축 > (1) 컨트롤 조작 → 저장 커맨드 스냅샷이 기준선과 같다",
+      "test/eventEditorConditionSurface.baseline.test.ts :: 이벤트에디터 조건/열거값 표면 스냅샷 > 기각한 열거값 후보는 여전히 폼이 갈리지 않는다",
+      "test/eventEditorConditionSurface.baseline.test.ts :: 이벤트에디터 조건/열거값 표면 스냅샷 > 기준선과 일치한다",
+      "test/eventEditorFormSurface.baseline.test.ts :: 이벤트에디터 폼 표면 스냅샷 > 기준선과 일치한다",
+      "test/eventEditorInteractionSurface.baseline.test.ts :: 이벤트에디터 상호작용 후 폼 표면 스냅샷 > 기준선과 일치한다",
+      "test/eventEditorInteractionSurface.baseline.test.ts :: 이벤트에디터 상호작용 후 폼 표면 스냅샷 > 반응하던 컨트롤이 no-change 로 퇴화하지 않는다",
+      "test/eventEditorM2Surface.baseline.test.ts :: M2 명령 폼 표면 스냅샷 > 기준선과 일치한다",
+      "test/eventEditorPortalSurface.baseline.test.ts :: 포털(피커/모달) 표면 스냅샷 > 기준선과 일치한다"
+    ]
+  },
+  "sameFailedAssertionIds": true,
+  "noCommitControls": {
+    "before": [
+      "changeFace :: event-command-face-ai-prompt",
+      "showPicture :: show-picture-ai-prompt"
+    ],
+    "after": [
+      "changeFace :: event-command-face-ai-prompt",
+      "showPicture :: show-picture-ai-prompt"
+    ]
+  },
+  "mediaDifferences": {
+    "before": {
+      "failures": [
+        "    ❯ test/eventEditorCommitProbe.baseline.test.ts (13 tests | 2 failed) 137ms",
+        "    ❯ test/eventEditorPortalSurface.baseline.test.ts (15 tests | 1 failed) 3334ms",
+        "    ❯ test/eventEditorConditionSurface.baseline.test.ts (11 tests | 2 failed) 668ms",
+        "    ❯ test/eventEditorFormSurface.baseline.test.ts (7 tests | 1 failed) 2135ms",
+        "    ❯ test/eventEditorM2Surface.baseline.test.ts (11 tests | 1 failed) 6691ms",
+        "    ❯ test/eventEditorInteractionSurface.baseline.test.ts (7 tests | 2 failed) 100ms"
+      ],
+      "noCommitAdditions": [
+        "changeFace :: event-command-face-ai-prompt",
+        "showPicture :: show-picture-ai-prompt"
+      ],
+      "media": [
+        "     showPicture: 컨트롤 신규 show-picture-ai-prompt: expected [ …(5) ] to deeply equal []",
+        "     showPicture: testid 신규 4종 [show-picture-ai-generate, show-picture-ai-prompt, show-picture-ai-queue, show-picture-ai-queue-list] | 태그 개수 [button 6→7, div 27→32, input 8→9, p 3→4] | 컨트롤 신규 2개 [show-picture-ai-generate, show-picture-ai-prompt] | 라벨 신규 1개 [AI로 만들기] | 클래스 신규 4개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list]: expected [ …(7) ] to deeply equal []",
+        "     showPicture: 조작후 클래스 신규 4개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list] | 초기표면: testid 신규 2종 [show-picture-ai-queue, show-picture-ai-queue-list] | 태그 개수 [div 31→33, p 3→4] | 클래스 신규 4개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list]: expected [ …(7) ] to deeply equal []",
+        "     showPicture: 컨트롤 신규 show-picture-ai-prompt: expected [ …(5) ] to deeply equal []"
+      ]
+    },
+    "after": {
+      "failures": [
+        "    ❯ test/eventEditorCommitProbe.baseline.test.ts (13 tests | 2 failed) 173ms",
+        "    ❯ test/eventEditorPortalSurface.baseline.test.ts (15 tests | 1 failed) 2888ms",
+        "    ❯ test/eventEditorConditionSurface.baseline.test.ts (11 tests | 2 failed) 1259ms",
+        "    ❯ test/eventEditorFormSurface.baseline.test.ts (7 tests | 1 failed) 4360ms",
+        "    ❯ test/eventEditorM2Surface.baseline.test.ts (11 tests | 1 failed) 7438ms",
+        "    ❯ test/eventEditorInteractionSurface.baseline.test.ts (7 tests | 2 failed) 145ms"
+      ],
+      "noCommitAdditions": [
+        "changeFace :: event-command-face-ai-prompt",
+        "showPicture :: show-picture-ai-prompt"
+      ],
+      "media": [
+        "     showPicture: 컨트롤 신규 show-picture-ai-prompt | 컨트롤 신규 show-picture-wait-select",
+        "     playMovie: 값 변경 play-movie-wait-select: replaceCommand {\"kind\":\"playMovie\",\"resourceId\":\"res1\",\"skippable\":true} → replaceCommand {\"kind\":\"playMovie\",\"resourceId\":\"res1\",\"skippable\":true,\"wait\":false} | 값 변경 play-movie-skippable-select: replaceCommand {\"kind\":\"playMovie\",\"resourceId\":\"res1\",\"wait\":true} → replaceCommand {\"kind\":\"playMovie\",\"resourceId\":\"res1\",\"skippable\":false,\"wait\":true}: expected [ …(6) ] to deeply equal []",
+        "     showPicture: testid 신규 7종 [show-picture-ai-generate, show-picture-ai-prompt, show-picture-ai-queue, show-picture-ai-queue-list, show-picture-wait-select, show-picture-wait-select-segment-false, show-picture-wait-select-segment-true] | 태그 개수 [option 등장(2), select 등장(1), button 6→9, div 27→34, input 8→9, p 3→4, span 2→3] | 컨트롤 신규 5개 [show-picture-ai-generate, show-picture-ai-prompt, show-picture-wait-select, show-picture-wait-select-segment-false, show-picture-wait-select-segment-true] | select 신규 1개 [show-picture-wait-select] | 라벨 신규 3개 [AI로 만들기, 아니오, 예] | 클래스 신규 8개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list, rich-native-select, rich-segment, rich-segment-group, selected]: expected [ …(7) ] to deeply equal []",
+        "     showPicture: 프로브 신규 1개 [show-picture-wait-select] | 조작후 클래스 신규 8개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list, rich-native-select, rich-segment, rich-segment-group, selected] | 프로브 수 9→10 | 초기표면: testid 신규 5종 [show-picture-ai-queue, show-picture-ai-queue-list, show-picture-wait-select, show-picture-wait-select-segment-false, show-picture-wait-select-segment-true] | 태그 개수 [option 등장(2), select 등장(1), button 7→9, div 31→35, p 3→4, span 2→3] | 컨트롤 신규 3개 [show-picture-wait-select, show-picture-wait-select-segment-false, show-picture-wait-select-segment-true] | select 신규 1개 [show-picture-wait-select] | 라벨 신규 2개 [아니오, 예] | 클래스 신규 8개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list, rich-native-select, rich-segment, rich-segment-group, selected]: expected [ …(7) ] to deeply equal []",
+        "     showPicture: 컨트롤 신규 show-picture-ai-prompt | 컨트롤 신규 show-picture-wait-select",
+        "     playMovie: 값 변경 play-movie-wait-select: replaceCommand {\"kind\":\"playMovie\",\"resourceId\":\"res1\",\"skippable\":true} → replaceCommand {\"kind\":\"playMovie\",\"resourceId\":\"res1\",\"skippable\":true,\"wait\":false} | 값 변경 play-movie-skippable-select: replaceCommand {\"kind\":\"playMovie\",\"resourceId\":\"res1\",\"wait\":true} → replaceCommand {\"kind\":\"playMovie\",\"resourceId\":\"res1\",\"skippable\":false,\"wait\":true}: expected [ …(6) ] to deeply equal []"
+      ]
+    }
+  },
+  "interpretation": [
+    "The comparison base already includes U01/U02/U03; these are pre-U04 failures, not proof that all nine predate remediation.",
+    "U04 adds the Show Picture wait selector and makes false movie flags explicit. These machine-consumed snapshot changes need narrow reconciliation against independently verified behavior.",
+    "The AI prompt no-commit controls are identical before and after U04. No new dead commit control was observed.",
+    "No baseline, floor, allowlist or test expectation was rewritten. Final per-command snapshot and behavioral-gate review remains open."
+  ],
+  "evidenceLimitation": "Captured monitor logs contain the complete nine-test summary but not every detailed failure stack."
+}
