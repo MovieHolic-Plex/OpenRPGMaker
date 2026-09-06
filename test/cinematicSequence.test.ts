@@ -83,6 +83,70 @@ describe("shared sequence playback", () => {
       root().click(); expect(root().dataset.sceneId).toBe("text");
     } finally { document.removeEventListener("keydown", bubble); }
   });
+  it.each([text, image, video])("scrolls overflowing $kind narration synchronously without advancing or leaking keys", async scene => {
+    start([{ ...scene, narration: Array.from({ length: 40 }, (_, i) => `line ${i}`).join("\n") }, text], true);
+    const narration = root().querySelector<HTMLElement>(".cinematic-narration");
+    if (!narration) throw new Error("Missing narration");
+    // happy-dom has no layout or scroll clamping; model only the browser geometry boundary.
+    let top = 0;
+    Object.defineProperties(narration, {
+      clientHeight: { value: 100 }, scrollHeight: { value: 400 },
+      scrollTop: { get: () => top, set: (value: number) => { top = Math.max(0, Math.min(300, value)); } },
+    });
+    const fallthrough = vi.fn(); document.addEventListener("keydown", fallthrough);
+    try {
+      for (const [value, repeat, expected] of [
+        ["ArrowDown", false, 24], ["ArrowDown", true, 48], ["ArrowUp", true, 24],
+        ["PageDown", false, 114], ["PageDown", true, 204], ["PageUp", true, 114],
+        ["End", false, 300], ["ArrowDown", true, 300], ["PageDown", false, 300],
+        ["Home", false, 0], ["ArrowUp", true, 0], ["PageUp", false, 0],
+      ] as const) {
+        expect(key(value, repeat).defaultPrevented).toBe(true);
+        expect(narration.scrollTop).toBe(expected);
+        expect(root().dataset.sceneKind).toBe(scene.kind);
+      }
+      const composing = new KeyboardEvent("keydown", { key: "PageDown", isComposing: true, bubbles: true, cancelable: true });
+      narration.dispatchEvent(composing);
+      expect(composing.defaultPrevented).toBe(true);
+      expect(narration.scrollTop).toBe(0);
+      key("Enter", true); key("Escape", true);
+      expect(root().dataset.sceneKind).toBe(scene.kind);
+      key("Enter");
+      expect(root().dataset.sceneId).toBe(text.id);
+      expect(root().querySelector<HTMLElement>(".cinematic-narration")?.scrollTop).toBe(0);
+      key("Escape");
+      expect(await playback.done).toBe("skipped");
+      expect(fallthrough).not.toHaveBeenCalled();
+      expect(key("PageDown").defaultPrevented).toBe(false);
+    } finally { document.removeEventListener("keydown", fallthrough); }
+  });
+  it("shows the scrolling hint only for measured overflow and disconnects on scene cleanup", async () => {
+    let height = 100;
+    vi.spyOn(HTMLElement.prototype, "clientHeight", "get").mockReturnValue(100);
+    vi.spyOn(HTMLElement.prototype, "scrollHeight", "get").mockImplementation(() => height);
+    const observers: { notify: () => void; observe: ReturnType<typeof vi.fn>; disconnect: ReturnType<typeof vi.fn> }[] = [];
+    vi.spyOn(window, "ResizeObserver").mockImplementation(callback => {
+      const observer = { observe: vi.fn(), unobserve: vi.fn(), disconnect: vi.fn() };
+      observers.push({ ...observer, notify: () => callback([], observer) });
+      return observer;
+    });
+    start([text, image]);
+    const hint = root().querySelector<HTMLElement>('[data-testid="cinematic-scroll-hint"]');
+    expect(hint).not.toBeNull();
+    expect(hint?.hidden).toBe(true);
+    expect(observers[0].observe).toHaveBeenCalledWith(root().querySelector(".cinematic-narration"));
+    height = 400; observers[0].notify();
+    expect(hint?.hidden).toBe(false);
+    height = 100; observers[0].notify();
+    expect(hint?.hidden).toBe(true);
+    height = 400; key("Enter");
+    expect(observers[0].disconnect).toHaveBeenCalled();
+    expect(root().querySelector<HTMLElement>('[data-testid="cinematic-scroll-hint"]')?.hidden).toBe(false);
+    expect(vi.getTimerCount()).toBe(0);
+    controller.abort();
+    expect(await playback.done).toBe("aborted");
+    expect(observers[1].disconnect).toHaveBeenCalled();
+  });
   it("skips only when authored and removes its key listener on completion", async () => {
     start([text], true); key("Escape"); expect(await playback.done).toBe("skipped");
     expect(key("Enter").defaultPrevented).toBe(false);

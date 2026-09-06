@@ -12,8 +12,14 @@
   are idempotent; detached hosts also abort via a MutationObserver.
 - Confirm is Z/Enter/Space (not the legacy field E alias); Escape skips only an
   authored skippable sequence. Window capture consumes the whole key event before
-  title/menu/Phaser handlers and ignores OS repeat/IME actions. Pointer interaction
-  cannot advance. Text is native textContent. Image motion is transform/opacity
+  title/menu/Phaser handlers and ignores repeated confirm/skip/retry and IME actions.
+  ArrowUp/Down scroll narration by 24 logical pixels; PageUp/Down scroll 90% of its
+  visible height, and Home/End reach either end. Scrolling accepts OS repeat and
+  assigns scrollTop synchronously (browser-clamped), never advancing or falling
+  through to gameplay. A scrolling hint appears only for measured overflow;
+  a scene-owned ResizeObserver updates it on layout changes and disconnects on
+  cleanup, without polling or extra timers. Pointer interaction cannot advance.
+  Text is native textContent. Image motion is transform/opacity
   only and has both JS and CSS reduced-motion paths; GIF/WebP use native images.
 - Image/text duration 0 waits for confirm. Positive duration advances exactly
   once, including after media errors. Video `ended` advances naturally; positive

@@ -33,6 +33,7 @@ export function playCinematicSequence(options: {
   let settled = false;
   let cleanScene = (): void => undefined;
   let retryMedia = (): void => undefined;
+  let scrollNarration = (_key: string): boolean => false;
   let canContinueVideo = false;
   let resolveDone: (result: CinematicCompletion) => void = () => undefined;
   const done = new Promise<CinematicCompletion>(resolve => { resolveDone = resolve; });
@@ -64,8 +65,9 @@ export function playCinematicSequence(options: {
     // Capture before Phaser/document/title/menu handlers, including on the final press.
     event.preventDefault();
     event.stopImmediatePropagation();
-    if (event.repeat || event.isComposing) return;
+    if (event.isComposing) return;
     const key = normalizeKey(event.key);
+    if (scrollNarration(key) || event.repeat) return;
     if (key === "escape" && sequence.skippable) finish("skipped");
     else if (key === "r") retryMedia();
     else if (isCinematicAdvanceKey(key) && (sequence.scenes[index].kind !== "video" || canContinueVideo)) next();
@@ -92,6 +94,7 @@ export function playCinematicSequence(options: {
     cleanScene = () => {
       alive = false;
       releaseMedia();
+      resizeObserver.disconnect();
       clearTimeout(advanceTimer);
     };
     root.replaceChildren();
@@ -101,6 +104,26 @@ export function playCinematicSequence(options: {
     root.style.setProperty("--cinematic-motion-ms", `${scene.durationMs || 8000}ms`);
     const narration = el("div", { class: "cinematic-narration", text: scene.narration });
     const hint = el("div", { class: "cinematic-hint", text: (scene.kind === "video" ? "동영상 재생" : "Z/Enter/Space 계속") + (sequence.skippable ? " · Esc 건너뛰기" : "") });
+    const scrollHint = el("span", { text: " · ↑↓/PgUp/PgDn 스크롤", dataset: { testid: "cinematic-scroll-hint" } });
+    scrollHint.hidden = true;
+    hint.append(scrollHint);
+    const updateScrollHint = (): void => {
+      scrollHint.hidden = narration.scrollHeight <= narration.clientHeight;
+    };
+    const resizeObserver = new ResizeObserver(updateScrollHint);
+    scrollNarration = key => {
+      // Stage-logical pixels; synchronous assignment lets the browser clamp at both ends.
+      switch (key) {
+        case "arrowup": narration.scrollTop -= 24; break;
+        case "arrowdown": narration.scrollTop += 24; break;
+        case "pageup": narration.scrollTop -= narration.clientHeight * 0.9; break;
+        case "pagedown": narration.scrollTop += narration.clientHeight * 0.9; break;
+        case "home": narration.scrollTop = 0; break;
+        case "end": narration.scrollTop = narration.scrollHeight; break;
+        default: return false;
+      }
+      return true;
+    };
     const status = el("div", { class: "cinematic-status", dataset: { testid: "cinematic-status" } });
     status.setAttribute("role", "status");
     const fail = (state: "blocked" | "error"): void => {
@@ -170,6 +193,8 @@ export function playCinematicSequence(options: {
       }
     }
     root.append(narration, status, hint);
+    updateScrollHint();
+    resizeObserver.observe(narration);
     if (scene.narrationAudioResourceId && mediaActive) {
       const audio = el("audio", {});
       root.append(audio);
