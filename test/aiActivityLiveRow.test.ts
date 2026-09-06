@@ -1,5 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
+import { clearConversations } from "@/ai/conversationStore";
+import { resetIntentDeclarationCache } from "@/ai/intentDeclarationClient";
 import { requestAiSelectionContext } from "@/editor/aiSelectionContext";
 import { getAgentGhostPreviewState } from "@/editor/agentGhostPreview";
 import { editorState } from "@/editor/editorState";
@@ -12,6 +14,7 @@ import {
 import type { RegionTaskOptions, RegionTaskResult } from "@/editor/regionTask/runRegionTask";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
+import { sendAiTurn } from "./aiTurnHarness";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
 
 let restoreDom: (() => void) | null = null;
@@ -80,18 +83,26 @@ function successfulRegionResult(changedCells: number): RegionTaskResult {
   };
 }
 
-async function flushAsync(): Promise<void> {
-  for (let index = 0; index < 20; index += 1) await Promise.resolve();
-}
-
-beforeEach(() => {
+beforeEach(async () => {
   vi.stubEnv("VITE_LLM_API_URL", "");
   vi.stubEnv("VITE_LLM_API_KEY", "");
   store.replace(createBlankProject());
+  store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
   editorState.set({ currentMapId: null, selection: null });
   restoreDom = installFakeDom();
   installFakeLocalStorage();
   storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), apiKey: "sk-test" }));
+  await clearConversations();
+  resetIntentDeclarationCache();
+  // Selection routing calls the real intent client before runRegion. Stub only
+  // the wire response, not the router or the panel lifecycle being asserted.
+  vi.stubGlobal("fetch", vi.fn(async (input: unknown) => {
+    const url = typeof input === "string" ? input : String((input as { url?: unknown })?.url ?? input);
+    if (!url.includes("/chat/completions")) return Response.json({});
+    return Response.json({ choices: [{ message: { role: "assistant", content: JSON.stringify({
+      mode: "modify", space: "outdoor", useSelection: true, needsPlan: false,
+    }) }, finish_reason: "stop" }] });
+  }));
 });
 
 afterEach(() => {
@@ -103,6 +114,7 @@ afterEach(() => {
   Reflect.deleteProperty(globalThis, "localStorage");
   vi.restoreAllMocks();
   vi.unstubAllEnvs();
+  vi.unstubAllGlobals();
 });
 
 describe("AI 도구 라이브 활동 행", () => {
@@ -126,7 +138,7 @@ describe("AI 도구 라이브 활동 행", () => {
       }
     };
     const runner = vi.fn(async (options: RegionTaskOptions): Promise<RegionTaskResult> => {
-      options.onEvent?.({ type: "tool_started", name: "paint_road", index: 1 });
+      options.onEvent?.({ type: "tool_started", name: "paint_road", args: { mapId }, index: 1 });
 
       assertInsideRunner(() => {
         liveRow = findByTestId(panel, "ai-activity-live");
@@ -177,8 +189,7 @@ describe("AI 도구 라이브 활동 행", () => {
     requestAiSelectionContext(editorState.get().selection);
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
     input.value = "선택 영역에 길을 그려줘";
-    findByTestId(panel, "ai-send")?.click();
-    await flushAsync();
+    await sendAiTurn(panel);
 
     expect(runner).toHaveBeenCalledTimes(1);
     if (runnerAssertionFailure) throw runnerAssertionFailure;
@@ -193,8 +204,9 @@ describe("AI 도구 라이브 활동 행", () => {
     let panel: FakeElement;
     let sawRunningTool = false;
     const runner = vi.fn(async (options: RegionTaskOptions): Promise<RegionTaskResult> => {
-      options.onEvent?.({ type: "tool_started", name: "get_map_region", index: 1 });
-      sawRunningTool = getAgentGhostPreviewState().runningToolName === "get_map_region";
+      options.onEvent?.({ type: "tool_started", name: "get_map_region", args: { mapId }, index: 1 });
+      sawRunningTool = getAgentGhostPreviewState().runningToolName === "get_map_region"
+        && getAgentGhostPreviewState().runningToolMapId === mapId;
       options.onEvent?.({
         type: "tool_call",
         name: "get_map_region",
@@ -214,14 +226,17 @@ describe("AI 도구 라이브 활동 행", () => {
     requestAiSelectionContext(editorState.get().selection);
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
     input.value = "이 영역 크기를 알려줘";
-    findByTestId(panel, "ai-send")?.click();
-    await flushAsync();
+    await sendAiTurn(panel);
 
     expect(runner).toHaveBeenCalledTimes(1);
     expect(sawRunningTool).toBe(true);
+    // The panel catches runner errors. Re-await its real promise so an assertion
+    // thrown inside the runner cannot be converted into a passing error turn.
+    await expect(runner.mock.results[0]?.value).resolves.toMatchObject({ ok: true, applied: false, proposedCalls: 0 });
     expect(panel.querySelectorAll("[data-testid=ai-tool-entry]")).toHaveLength(0);
     expect(findByTestId(panel, "ai-tool-activity-toggle")?.textContent).toContain("조회 1");
     expect(getAgentGhostPreviewState().runningToolName).toBe("");
+    expect(getAgentGhostPreviewState().runningToolMapId).toBeNull();
     expect(findByTestId(panel, "ai-ghost-phase-chip")).toBeNull();
   });
 
@@ -243,7 +258,7 @@ describe("AI 도구 라이브 활동 행", () => {
       }
     };
     const runner = vi.fn(async (options: RegionTaskOptions): Promise<RegionTaskResult> => {
-      options.onEvent?.({ type: "tool_started", name: "paint_road", index: 1 });
+      options.onEvent?.({ type: "tool_started", name: "paint_road", args: { mapId }, index: 1 });
       options.onEvent?.({
         type: "tool_call",
         name: "paint_road",
@@ -255,7 +270,7 @@ describe("AI 도구 라이브 활동 행", () => {
         expect(findByTestId(panel, "ai-activity-live")?.textContent).toContain("길을 그리는 중");
       });
 
-      options.onEvent?.({ type: "tool_started", name: "place_npc", index: 2 });
+      options.onEvent?.({ type: "tool_started", name: "place_npc", args: { mapId }, index: 2 });
       assertInsideRunner(() => {
         const entries = panel.querySelectorAll("[data-testid=ai-tool-entry]");
         expect(entries).toHaveLength(1);
@@ -286,8 +301,7 @@ describe("AI 도구 라이브 활동 행", () => {
     requestAiSelectionContext(editorState.get().selection);
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
     input.value = "길을 그리고 NPC를 배치해줘";
-    findByTestId(panel, "ai-send")?.click();
-    await flushAsync();
+    await sendAiTurn(panel);
 
     expect(runner).toHaveBeenCalledTimes(1);
     if (runnerAssertionFailure) throw runnerAssertionFailure;
