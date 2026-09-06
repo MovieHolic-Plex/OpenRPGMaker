@@ -1,3 +1,6 @@
+import { missingAcceptance, type AcceptanceSnapshot, type AcceptancePromise } from "./assistantAcceptance";
+import { AssistantAcceptanceLedger, type AcceptanceImageReceipt } from "./assistantAcceptanceLedger";
+import { ACCEPTANCE_SCHEMA, ACCEPTANCE_TOOLS } from "./assistantAcceptanceTools";
 import { adventureToolNames, adventureCompletionProblems, ADVENTURE_AUTHORING_GUIDE, type AdventureRequirements } from "./adventureCompletion";
 // ai/assistantSession.ts
 // 어시스턴트 세션: user msg → LLM → tool_calls → runTool(dryRun 누적) → tool 메시지 → … → 최종 응답.
@@ -233,6 +236,7 @@ export type SessionEvent =
   | { type: "phase"; value: "plan" | "execute" | "review" }
   | { type: "status"; text: string }
   | { type: "work_plan"; plan: WorkPlan }
+  | { type: "acceptance"; snapshot: AcceptanceSnapshot | null }
   // ── 마일스톤 자동 적용(todo 4) ─────────────────────────────────────
   // 자율 런에서 작업 항목 완료가 안전 검사를 통과해 스토어에 자동 적용됐다.
   | { type: "milestone_applied"; title: string; toolCount: number; commitId: string | null }
@@ -627,7 +631,7 @@ export const AGENT_RUN_MAX_TOTAL_STEPS = 48;
  * the pre-turn planner also authors the first plan without tools.
  */
 /** 세션 전용 쓰기 툴(레지스트리 밖) — 질문 모드에서 함께 뺀다. */
-const SESSION_WRITE_TOOL_NAMES: ReadonlySet<string> = new Set(["set_build_spec", "set_work_plan", "complete_work_item", "skip_work_item"]);
+const SESSION_WRITE_TOOL_NAMES: ReadonlySet<string> = new Set(["set_build_spec", "set_work_plan", "complete_work_item", "skip_work_item", "repair_acceptance", "review_acceptance"]);
 
 /** 프로젝트를 바꾸는 툴인가 — 레지스트리 mode:"write" 또는 세션 전용 쓰기 툴. */
 export function isWriteToolName(name: string): boolean {
@@ -662,6 +666,7 @@ export const WORK_PLAN_TOOLS: readonly OpenAiToolSchema[] = [
         type: "object",
         properties: {
           goal: { type: "string", description: "전체 목표" },
+          acceptance: ACCEPTANCE_SCHEMA,
           plannerNote: { type: "string", description: "전략 메모(선택)" },
           layers: {
             type: "array",
@@ -950,6 +955,10 @@ export class AssistantSession {
   private usageTotals: SessionUsageTotals = EMPTY_SESSION_USAGE;
   /** 어려운 요청용 다층 To-do — 턴을 넘나들며 유지. */
   private workPlan: WorkPlan | null = null;
+  private acceptance: AssistantAcceptanceLedger | null = null;
+  private acceptanceAppliedProject: Project | null = null;
+  private acceptanceRepairAttempts = 0;
+  private acceptanceSequence = 0;
   /** 이번 사용자 메시지 안에서 자동으로 진행한 추가 단계 수. */
   private workPlanAutoStepsThisUserMessage = 0;
   /**
@@ -1142,6 +1151,7 @@ export class AssistantSession {
     // 기준이 바뀌면 이전 제안은 전부 적용됐거나 버려진 것이다. 제자리 clear — runTurnLoop 가 잡아 둔
     // 참조(proposedByKey)를 보존한다(마일스톤 경로와 같은 이유).
     this.turnProposals.clear();
+    this.refreshAcceptance(project);
   }
 
   /**
@@ -1173,6 +1183,69 @@ export class AssistantSession {
   clearWorkPlan(): void {
     this.workPlan = null;
   }
+
+  getAcceptanceSnapshot(): AcceptanceSnapshot | null {
+    return this.acceptance?.getSnapshot() ?? null;
+  }
+
+  /** Applied-state refresh for store changes/undo, including after completion. */
+  refreshAcceptance(project: Project, onEvent?: (event: SessionEvent) => void): void {
+    if (!this.acceptance) return;
+    this.acceptanceAppliedProject = structuredClone(project);
+    this.publishAcceptance(onEvent);
+  }
+
+  private publishAcceptance(onEvent?: (event: SessionEvent) => void): void {
+    if (!this.acceptance || !this.acceptanceAppliedProject) return;
+    const snapshot = this.acceptance.evaluate(this.acceptanceAppliedProject,
+      this.turnProposals.size > 0 ? this.ctx.project : this.acceptanceAppliedProject);
+    onEvent?.({ type: "acceptance", snapshot });
+  }
+
+  private spatialAcceptanceRequired(): boolean {
+    const intent = this.turnIntent;
+    if (this.turnComposerMode === "ask" || intent?.mode === "question") return false;
+    if (intent && (intent.mode === "create" || intent.mode === "modify")
+      && (intent.space !== "none" || intent.targetMapId !== null)) return true;
+    const names = [...(intent?.tools ?? []), ...(this.workPlan?.layers.flatMap(layer => layer.items.flatMap(item => item.successTools ?? [])) ?? [])];
+    return names.some(name => this.isSpatialAcceptanceTool(name));
+  }
+
+  private isSpatialAcceptanceTool(name: string): boolean {
+    const tool = getTool(name);
+    return tool?.mode === "write" && (tool.domains?.includes("map") === true || SPATIAL_BUILD_TOOLS.has(name) || TILE_WRITE_TOOLS.has(name));
+  }
+
+  private adoptAcceptance(promises: readonly AcceptancePromise[] | undefined, onEvent?: (event: SessionEvent) => void): void {
+    if (!promises && (this.acceptance || !this.spatialAcceptanceRequired())) return;
+    const goal = this.acceptance?.goal ?? this.workPlan?.goal ?? this.currentTurnInstruction;
+    if (!this.acceptance) {
+      this.acceptance = new AssistantAcceptanceLedger(`acceptance-${++this.acceptanceSequence}`, goal, this.baselineProject);
+      this.acceptanceAppliedProject = structuredClone(this.baselineProject);
+    }
+    this.acceptance.adopt(promises ?? missingAcceptance(goal));
+    this.publishAcceptance(onEvent);
+  }
+
+  private acceptanceOpen(): boolean {
+    return this.acceptance !== null && this.acceptance.getSnapshot().status !== "verified";
+  }
+
+  private acceptanceIncompleteText(): string {
+    const snapshot = this.getAcceptanceSnapshot();
+    return `완료 검증이 아직 미완성입니다.\n${snapshot?.items.filter(item => item.status !== "verified")
+      .map(item => `- ${item.title}: ${item.reason ?? "unverified"}\n${item.evidence.filter(e => !e.passed).map(e => `  ${e.expected} → ${e.observed}`).join("\n")}`).join("\n") ?? ""}`;
+  }
+
+  private applyAcceptanceTool(name: string, args: Record<string, unknown>): ToolResult {
+    const allowed = name === "repair_acceptance" ? ["itemId", "criteria"] : ["itemId", "note", "verdict"];
+    const ok = !Object.keys(args).some(key => !allowed.includes(key)) && Boolean(this.acceptance &&
+      (name === "repair_acceptance" ? this.acceptance.repair(args.itemId, args.criteria)
+        : this.acceptance.review(args.itemId, args.note, this.ctx.project, args.verdict)));
+    this.publishAcceptance();
+    return { ok, summary: ok ? "Acceptance evidence updated" : "Acceptance unchanged: repair only missing criteria; review requires delivered current image coverage", data: { acceptance: this.getAcceptanceSnapshot() } };
+  }
+
 
   // set_build_spec 처리: 검증 통과 시 활성화(턴 간 유지), 실패 시 사유를 되돌려 재제출 유도.
   // 프로젝트를 바꾸지 않으므로 diff가 없고 제안(changeset)에도 포함되지 않는다.
@@ -1467,8 +1540,10 @@ export class AssistantSession {
       this.pushAudit({ kind: "status", text: "agent_run:stopped-apply-failed — 마일스톤 적용 실패로 현재 자율 실행을 멈춥니다 (프로젝트 저장소 변경 없음)" });
       return false;
     }
+    if (this.acceptanceOpen() && this.acceptanceRepairAttempts >= MAX_RALPH_ATTEMPTS_PER_ITEM) return false;
+    const acceptanceOpen = this.acceptanceOpen();
     const volumeOpen = this.volumeUnmetNow();
-    if ((!this.workPlan || isWorkPlanComplete(this.workPlan)) && !volumeOpen) return false;
+    if ((!this.workPlan || isWorkPlanComplete(this.workPlan)) && !volumeOpen && !acceptanceOpen) return false;
     if (this.autoRunSteps >= AGENT_RUN_MAX_TOTAL_STEPS) {
       this.pushAudit({
         kind: "status",
@@ -1494,7 +1569,7 @@ export class AssistantSession {
     }
     // 계획이 끝났거나 없어도 볼륨 막대가 비면 코드가 다음 턴을 연다. 사용자 「계속」이 아니다.
     if (volumeOpen && assistantTextLooksLikeQuestion(assistantText)) return false;
-    return volumeOpen;
+    return volumeOpen || acceptanceOpen;
   }
 
   /** 드라이버의 질문 판별용 원문 — 계획 게시판 접미어(행 끝 정규식 오염)를 제거한 최종 응답. */
@@ -1561,6 +1636,17 @@ export class AssistantSession {
     // 질문 모드는 사용자가 직접 고른 사실이라 선언의 create/modify 를 덮어쓴다 — 안 그러면 플래너·쓰기 기대가 문장 판정으로 돈다.
     const intent = this.applyComposerModeToIntent(await this.declareTurnIntent(instruction, onEvent, signal));
     this.turnIntent = intent;
+    if (!this.turnIsDriverContinue) {
+      this.acceptanceRepairAttempts = 0;
+      if (intent.resetsContext && intent.source !== "continuation") {
+        this.acceptance = null;
+        this.acceptanceAppliedProject = null;
+        onEvent({ type: "acceptance", snapshot: null });
+      } else {
+        this.acceptance?.resume();
+        this.publishAcceptance(onEvent);
+      }
+    }
     if (!this.turnIsDriverContinue && intent.source !== "continuation") {
       this.adventureRequirements = intent.adventure;
       this.npcRewardRequirements = intent.npcRewards === undefined ? undefined : structuredClone(intent.npcRewards);
@@ -1734,7 +1820,7 @@ export class AssistantSession {
     signal?: AbortSignal,
   ): Promise<IntentDeclaration> {
     if (!instruction) return emptyIntentDeclaration();
-    const hasActivePlan = Boolean(this.workPlan && !isWorkPlanComplete(this.workPlan));
+    const hasActivePlan = Boolean(this.workPlan && !isWorkPlanComplete(this.workPlan)) || this.acceptanceOpen();
     const scope = this.turnScope;
     const selection = scope
       ? { mapId: scope.mapId, x: scope.region.x, y: scope.region.y, width: scope.region.width, height: scope.region.height }
@@ -1893,6 +1979,7 @@ export class AssistantSession {
     // 수정 요청이면 대상 맵 id 를 계획에 박아 매 스프린트 재주입한다 — footer 가 없는
     // 자율 계속 턴에도 대상이 남아야 한다(진단 근본원인 14).
     this.workPlan = workPlanFromOrchestratorDecision(decision, new Date(), this.planTargetMapId(text));
+    this.adoptAcceptance(this.workPlan.acceptance, onEvent);
     this.resetWorkItemEvidence();
     this.lastMilestoneCompletionItemId = null;
     this.planAuthoredThisTurn = true;
@@ -1914,6 +2001,7 @@ export class AssistantSession {
   /** 플래너가 계획을 내지 못했을 때(오류·해석 실패·계획 모드의 direct) 코드가 최소 계획을 세운다. */
   private adoptFallbackWorkPlan(text: string, onEvent: (event: SessionEvent) => void, statusText: string): void {
     this.workPlan = buildDefaultWorkPlan(text, new Date(), { modifies: this.turnIntent?.mode === "modify" });
+    this.adoptAcceptance(this.workPlan.acceptance, onEvent);
     this.resetWorkItemEvidence();
     this.lastMilestoneCompletionItemId = null;
     this.planAuthoredThisTurn = true;
@@ -2095,6 +2183,7 @@ export class AssistantSession {
         };
       }
       this.workPlan = plan;
+      this.adoptAcceptance(plan.acceptance);
       // 새 계획 — 항목 id 는 위치 기반("L1-1")이라 이전 계획과 겹칠 수 있다. 중복 완료 방지 추적을 초기화한다.
       this.lastMilestoneCompletionItemId = null;
       this.resetWorkItemEvidence();
@@ -2117,7 +2206,7 @@ export class AssistantSession {
       return {
         ok: true,
         summary: formatWorkPlanUserVisible(this.workPlan).slice(0, 500),
-        data: { plan: structuredClone(this.workPlan), progress: summarizeWorkPlan(this.workPlan) },
+        data: { plan: structuredClone(this.workPlan), progress: summarizeWorkPlan(this.workPlan), acceptance: this.getAcceptanceSnapshot() },
       };
     }
     if (!this.workPlan) {
@@ -2467,6 +2556,7 @@ export class AssistantSession {
     this.turnAppliedMilestoneCalls.push(...calls);
     this.turnProposals.clear();
     this.rebaseProject(applied.applied);
+    this.publishAcceptance(onEvent);
   }
 
   /** 툴 실행 직전 신호를 알린다(1-based 서수). 실행 로직은 건드리지 않는다. */
@@ -2596,7 +2686,7 @@ export class AssistantSession {
     const plan = this.workPlan;
     if (!plan || !this.milestoneAutoApply) return;
     if (this.milestoneApplyFailed) return;
-    if (!isWorkPlanComplete(plan)) return;
+    if (!isWorkPlanComplete(plan) || this.acceptanceOpen()) return;
     if (this.runEndProofPlanId === plan.id) return;
     this.runEndProofPlanId = plan.id;
     if (!store.isRemotePersistenceEnabled()) {
@@ -2700,6 +2790,13 @@ export class AssistantSession {
     auditFrom: number,
     onEvent: (event: SessionEvent) => void,
   ): TurnResult {
+    this.publishAcceptance(onEvent);
+    if (this.acceptanceOpen() && !this.lastTurnPlanOnly && this.turnComposerMode !== "ask") {
+      this.acceptance?.stop();
+      this.publishAcceptance(onEvent);
+      result = { ...result, assistantText: this.acceptanceIncompleteText() };
+      onEvent({ type: "assistant_message", content: result.assistantText });
+    }
     const adventureProblems = this.completionProblems();
     if (adventureProblems.length) {
       result = { ...result, assistantText: `요청한 구성이 아직 미완성입니다.\n${adventureProblems.map(p => `- ${p}`).join("\n")}` };
@@ -3411,6 +3508,7 @@ export class AssistantSession {
           ...discoveryEscalated,
           SET_BUILD_SPEC_TOOL,
           ...(planToolsOn ? WORK_PLAN_TOOLS : []),
+          ...(this.acceptance ? ACCEPTANCE_TOOLS : []),
         ].map((tool) => [tool.function.name, tool] as const),
       );
       const requiredNames = new Set(requiredByName.keys());
@@ -3497,6 +3595,32 @@ export class AssistantSession {
         text: messageText ?? "",
         toolCalls: assistantMsg.tool_calls?.map((tc) => ({ name: tc.function.name, args: tc.function.arguments })),
       });
+
+      // Common final-success boundary: plan completion is never goal verification.
+      if (phase === "review" || !(assistantMsg.tool_calls?.length)) {
+        this.adoptAcceptance(undefined, onEvent);
+        if (this.acceptance && this.milestoneAutoApply && this.turnProposals.size > 0 && !this.milestoneApplyFailed
+          && (!this.workPlan || isWorkPlanComplete(this.workPlan))) {
+          await this.maybeAutoApplyMilestone({ id: `${this.acceptance.id}:${this.turnToolStartedCount}`, title: this.acceptance.goal,
+            instruction: "Apply acceptance progress", status: "done" }, onEvent);
+        }
+        this.publishAcceptance(onEvent);
+        if (this.acceptanceOpen() && this.turnComposerMode !== "ask") {
+          if (!this.milestoneApplyFailed && this.acceptanceRepairAttempts < MAX_RALPH_ATTEMPTS_PER_ITEM
+            && spentOutputTokens < this.config.maxTokens) {
+            this.acceptanceRepairAttempts += 1;
+            phase = "execute";
+            this.emitPhase(onEvent, "execute");
+            this.pushOrchestrationMessage(`Acceptance repair ${this.acceptanceRepairAttempts}/${MAX_RALPH_ATTEMPTS_PER_ITEM}. Do not claim success, skip, shrink or recreate completed content. Repair missing criteria with repair_acceptance; satisfy original promises with real tools; explicitly review delivered images with review_acceptance. Drafts are not applied verification.\n${JSON.stringify(this.getAcceptanceSnapshot())}`);
+            continue;
+          }
+          this.acceptance?.stop();
+          this.publishAcceptance(onEvent);
+          assistantText = this.acceptanceIncompleteText();
+          onEvent({ type: "assistant_message", content: assistantText });
+          return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "final" };
+        }
+      }
 
       // Goal-level contract survives plan replacement and applies to both final paths.
       if ((phase === "review" || !(assistantMsg.tool_calls?.length)) && !this.milestoneApplyFailed) {
@@ -3653,6 +3777,7 @@ export class AssistantSession {
       const startsWriteThisRound = toolCalls.some((call) => getTool(call.function.name)?.mode === "write");
       // 이번 라운드에 렌더된 비전 이미지(있으면 툴 메시지 뒤에 user 메시지로 주입).
       const roundImages: RenderedToolImage[] = [];
+      const acceptanceImages: AcceptanceImageReceipt[] = [];
       // Capture before any complete/skip/set tools mutate the cursor.
       const workItemIdAtRoundStart = this.workPlan?.currentItemId ?? null;
       // 이 응답 안의 읽기가 실패하면 이후 쓰기는 다음 모델 응답까지 보류한다.
@@ -3715,6 +3840,9 @@ export class AssistantSession {
             toolResult = deferredToolResult("record-dependency-failed", `${name}: ${recordDependency.kind} ${recordDependency.id} 생성이 실패하여 실행을 보류했습니다. 생성·조회 후 다시 호출하세요.`);
           } else if (this.repeatedToolFailureStall(toolRetryTarget(name, args))) {
             toolResult = deferredToolResult("tool-retry-exhausted", `${name}: 같은 대상의 실패 상한에 도달하여 실행을 보류했습니다. 사용자 지시가 필요합니다.`);
+          } else if (name === "repair_acceptance" || name === "review_acceptance") {
+            toolResult = this.applyAcceptanceTool(name, args);
+            this.publishAcceptance(onEvent);
           } else if (name === "set_build_spec") {
             toolResult = this.applyBuildSpec(args);
           } else if (
@@ -3726,6 +3854,7 @@ export class AssistantSession {
             toolResult = this.applyWorkPlanTool(name, args);
             if (toolResult.ok) {
               this.emitWorkPlan(onEvent);
+              this.publishAcceptance(onEvent);
               if (name === "set_work_plan" && this.workPlan) {
                 executionStarted = true;
                 phase = "execute";
@@ -3742,6 +3871,9 @@ export class AssistantSession {
               }
             }
           } else {
+            if (!this.acceptance && this.isSpatialAcceptanceTool(name)) {
+              this.adoptAcceptance(missingAcceptance(this.currentTurnInstruction), onEvent);
+            }
             const readGate = tool?.mode === "write" ? this.readEvidence.beforeWrite(this.ctx.project, name, args) : null;
             const dedupeKey = writeDedupeKey(name, args);
             const cached = dedupeKey ? this.turnWriteDedupe.get(dedupeKey) : undefined;
@@ -3871,14 +4003,18 @@ export class AssistantSession {
             this.upsertProposal(proposedByKey, proposal);
           }
 
+          this.publishAcceptance(onEvent);
           respond(toolResult);
 
           // 비전(BUG C): '보여줘' 계열 툴이면 이미지를 렌더해 모아둔다. 렌더 실패는 무시(텍스트로 진행).
           if (this.renderImages && VISION_TOOLS.has(name) && toolResult.ok && toolResult.data !== undefined) {
             try {
-              roundImages.push(...(await this.renderImages(this.ctx.project, name, toolResult.data)));
-            } catch {
-              /* 렌더 실패는 치명적이지 않다 */
+              const receipt = name === "show_map_region" ? this.acceptance?.captureImage(this.ctx.project, toolResult.data) : null;
+              const images = await this.renderImages(this.ctx.project, name, toolResult.data);
+              roundImages.push(...images);
+              if (images.length > 0 && receipt) acceptanceImages.push(receipt);
+            } catch (cause) {
+              this.pushAudit({ kind: "status", text: `acceptance:image-render-failed ${cause instanceof Error ? cause.message : String(cause)}` });
             }
           }
         } catch (cause) {
@@ -3909,6 +4045,7 @@ export class AssistantSession {
           parts.push({ type: "image_url", image_url: { url: image.dataUrl } });
         }
         this.messages.push({ role: "user", content: parts });
+        this.acceptance?.deliverImages(acceptanceImages);
       }
 
       if (orchestrated && startsWriteThisRound && !executionStarted) {

@@ -1,6 +1,7 @@
 import type { Project } from '@/project/types';
 import { GROWTH_PARAMETERS, type GrowthDefinition, type GrowthProgress } from './types';
 import { wouldCreateCycle } from './graph';
+import { assertNodeRequirements, nodeRequirementIssues, promotionExtensionIssues, qualifiedNodeId } from './requirements';
 const object = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
 const integer = (v: unknown, min: number, max = 999999): v is number => typeof v === 'number' && Number.isInteger(v) && v >= min && v <= max;
 /** Optional v4 extension: reject invalid structure instead of silently losing authored data. */
@@ -21,6 +22,7 @@ export function assertGrowthShape(value: unknown): asserts value is GrowthDefini
     treeIds.add(t.id);
     check(typeof t.name === 'string' && typeof t.description === 'string', '트리 이름과 설명이 필요합니다.');
     check(Array.isArray(t.classIds) && t.classIds.every(id => typeof id === 'string'), '직업 연결 형식이 올바르지 않습니다.');
+    check(t.inheritOnPromotion === undefined || typeof t.inheritOnPromotion === 'boolean', '승급 계승 설정이 올바르지 않습니다.');
     check(typeof t.allowReset === 'boolean' && Array.isArray(t.nodes), '노드 목록과 초기화 설정이 필요합니다.');
     const nodeIds = new Set<string>();
     for (const n of t.nodes) {
@@ -29,6 +31,7 @@ export function assertGrowthShape(value: unknown): asserts value is GrowthDefini
       check(typeof n.name === 'string' && typeof n.description === 'string' && position(n), '노드 이름·설명·좌표가 올바르지 않습니다.');
       check(integer(n.cost, 1, 9999) && integer(n.maxRank, 1, 99) && integer(n.level, 1, 99), '비용·등급·레벨 범위를 확인하세요.');
       check(Array.isArray(n.prerequisites) && n.prerequisites.every(id => typeof id === 'string'), '선행 노드 목록이 올바르지 않습니다.');
+      assertNodeRequirements(n.requiredNodes);
       check(object(n.effect), '노드 효과가 필요합니다.');
       check(n.effect.kind === 'skill'
         ? typeof n.effect.skillId === 'string' && n.maxRank === 1
@@ -38,16 +41,19 @@ export function assertGrowthShape(value: unknown): asserts value is GrowthDefini
 }
 export function growthIssues(project: Project): string[] {
   const g = project.growth;
-  if (!g) return [];
-  const issues: string[] = [];
+  const issues: string[] = project.database.classes.flatMap(c => (c.promotions ?? []).flatMap(p => promotionExtensionIssues(project, p.requires).map(issue => `${c.name}: ${issue}`)));
+  if (!g) return issues;
+  const edges = g.skillTrees.flatMap(t => t.nodes.flatMap(n => [
+    ...n.prerequisites.map(id => ({ treeId: t.id, nodeId: id, rank: 1 })), ...(n.requiredNodes ?? []),
+  ].map(r => ({ from: qualifiedNodeId(r.treeId, r.nodeId), to: qualifiedNodeId(t.id, n.id) }))));
   if (g.bonusVariableId && !project.variables.some(v => v.id === g.bonusVariableId)) issues.push('성장 포인트 보너스 변수가 없습니다.');
   for (const t of g.skillTrees) {
     for (const id of t.classIds) if (!project.database.classes.some(c => c.id === id)) issues.push(`${t.name}: 연결된 직업이 없습니다 (${id}).`);
-    const edges = t.nodes.flatMap(n => n.prerequisites.map(from => ({ from, to: n.id })));
     for (const n of t.nodes) {
       if (n.effect.kind === 'skill' && !project.database.skills.some(s => s.id === (n.effect as {skillId: string}).skillId)) issues.push(`${t.name} / ${n.name}: 스킬을 선택하세요.`);
       for (const id of n.prerequisites) if (!t.nodes.some(p => p.id === id)) issues.push(`${t.name} / ${n.name}: 선행 노드가 없습니다.`);
-      if (edges.some(e => e.to === n.id && wouldCreateCycle(edges.filter(other => other !== e), e.from, e.to))) issues.push(`${t.name} / ${n.name}: 순환 연결이 있습니다.`);
+      issues.push(...nodeRequirementIssues(project, n.requiredNodes ?? []).map(issue => `${t.name} / ${n.name}: ${issue}`));
+      if (edges.some(e => e.to === qualifiedNodeId(t.id, n.id) && wouldCreateCycle(edges.filter(other => other !== e), e.from, e.to))) issues.push(`${t.name} / ${n.name}: 순환 연결이 있습니다.`);
     }
   }
   return [...new Set(issues)];

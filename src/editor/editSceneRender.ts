@@ -7,6 +7,7 @@ import { planEditorCameraCenter, viewportCenterWorld } from "@/editor/cameraStab
 import { tilePassability } from "@/project/collision";
 import { tileStackAt, topTileInStack } from "@/project/mapOverlayTiles";
 import { store, type ProjectChangeCell } from "@/project/store";
+import { renderWalkEncounterOverlay } from "@/editor/walkEncounterOverlay";
 import type { GameMap, MapId } from "@/project/types";
 export { editorEventMarkerTexture, eventMarkerTileScale, renderEventLayerClickFeedback } from "@/editor/editSceneEventMarkers";
 
@@ -58,6 +59,7 @@ export function renderEditScene(context: EditSceneRenderContext): EditSceneRende
   if (context.resetCamera) applyCameraView(context.scene, map, context.preserveCameraLookAt === true);
   const tileObjectsUpdated = renderTiles(context, map, mapOnlyCapture);
   if (mapOnlyCapture) return { tileObjectsUpdated };
+  renderWalkEncounterOverlay(context.scene, context.overlayLayer, map);
   if (state.tool === "collision") renderCollisionOverlay(context, map);
   if (state.showGrid) renderGrid(context.gridGraphics, map, state.layer);
   renderStartPosition(context);

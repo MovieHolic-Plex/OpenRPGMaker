@@ -180,10 +180,21 @@ describe("stable target retry budgets through AssistantSession", () => {
     expect(first.recap?.ralphContinues).toBe(0);
     expectResponses(session);
 
-    rounds.push([badNpc(0)], [badNpc(1)], [badNpc(2)], [correctedNpc(1), readMap]);
+    expect(session.getAcceptanceSnapshot()).toMatchObject({ status: "blocked", items: [{ id: "acceptance-contract", evidence: [] }] });
+    // Repair the missing spatial contract in the successful correction batch.
+    // Target only this NPC's cell, so unrelated writes cannot satisfy the promise.
+    const criteria = [{ kind: "targetChange", target: { mapId: "m1" }, region: { x: 2, y: 2, w: 1, h: 1 } }];
+    rounds.push([badNpc(0)], [badNpc(1)], [badNpc(2)], [correctedNpc(1), readMap,
+      call("repair_acceptance", { itemId: "acceptance-contract", criteria }),
+    ]);
     const second = await session.sendUserMessage("같은 주민 명령을 다시 고쳐줘", collect, undefined, { autonomous: true });
     expect(second.workPlan?.layers[0].items[0].status).toBe("done");
     expect(state.batches).toBe(8);
+    expect(events.find((event) => event.name === "repair_acceptance")?.result).toMatchObject({ ok: true, data: { acceptance: { status: "verifying", items: [{ evidence: [{ passed: false }] }] } } });
+    expect(session.getAcceptanceSnapshot()).toMatchObject({ status: "verified", items: [{ id: "acceptance-contract", evidence: [{ expected: JSON.stringify(criteria[0]), passed: true }] }] });
+    expect(second.proposedCalls).toEqual([]);
+    expect(second.appliedCalls?.map((entry) => entry.name)).toEqual(["place_npc"]);
+    expect(events.filter((event) => event.name === "place_npc" && event.args.id === "npc_target").map((event) => event.result.ok)).toEqual([false, false, false, false, false, false, false, true]);
     expect(events.filter((event) => event.name === "place_npc" && event.args.id === "npc_target").at(-1)?.result.ok).toBe(true);
     expectResponses(session);
   });

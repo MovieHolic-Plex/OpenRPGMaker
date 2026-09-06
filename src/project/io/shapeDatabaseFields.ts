@@ -25,6 +25,7 @@ import {
   isSpatialOrientation,
 } from "@/project/spatialPlacements";
 import { GOLD_MAX } from "@/project/economyValues";
+import { CINEMATIC_DURATION_MAX_MS, CINEMATIC_SCENE_LIMIT } from "@/project/cinematicSettings";
 import { assert, requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
 import { validateFootprintPair } from "./shapeEventFields";
 
@@ -80,6 +81,8 @@ export function validateDatabase(value: unknown): void {
 export function validateSystem(value: unknown): void {
   const system = requireRecord("system", value);
   requireArray("system.startActorIds", system.startActorIds);
+  if (system.opening !== undefined) validateCinematicSequence("system.opening", system.opening);
+  if (system.gameOver !== undefined) validateGameOverSettings(system.gameOver);
   if (system.battleCommandCss !== undefined) requireString("system.battleCommandCss", system.battleCommandCss);
   // 주인공 몸 크기는 이벤트 페이지와 **같은 경계**로 막는다(2차 §9). 한쪽만 검증하면
   // `playerFootprint: {width: -5}` 가 로드를 통과하고 런타임 정규화만이 마지막 방어선이 된다.
@@ -144,6 +147,52 @@ export function validateSystem(value: unknown): void {
     requireArray("system.typeChart.types", chart.types);
     requireRecord("system.typeChart.multipliers", chart.multipliers);
   }
+}
+
+function validateCinematicSequence(label: string, value: unknown): void {
+  const sequence = requireRecord(label, value);
+  requireOnlyFields(label, sequence, ["enabled", "skippable", "scenes"]);
+  requireBoolean(`${label}.enabled`, sequence.enabled);
+  requireBoolean(`${label}.skippable`, sequence.skippable);
+  const scenes = requireArray(`${label}.scenes`, sequence.scenes);
+  assert(scenes.length <= CINEMATIC_SCENE_LIMIT, `${label}.scenes must contain at most ${CINEMATIC_SCENE_LIMIT} scenes.`);
+  const ids = new Set<string>();
+  for (const [index, raw] of scenes.entries()) {
+    const sceneLabel = `${label}.scenes[${index}]`;
+    const scene = requireRecord(sceneLabel, raw);
+    const id = requireNonBlankString(`${sceneLabel}.id`, scene.id);
+    assert(!ids.has(id), `${sceneLabel}.id is duplicated: ${id}`);
+    ids.add(id);
+    const kind = requireString(`${sceneLabel}.kind`, scene.kind);
+    assert(kind === "text" || kind === "image" || kind === "video", `${sceneLabel}.kind is invalid.`);
+    requireOnlyFields(sceneLabel, scene, [
+      "id", "kind", "narration", "narrationAudioResourceId", "durationMs",
+      ...(kind !== "text" ? ["resourceId"] : []),
+      ...(kind === "image" ? ["motion"] : []),
+    ]);
+    requireString(`${sceneLabel}.narration`, scene.narration);
+    assertSafeIntegerInRange(`${sceneLabel}.durationMs`, scene.durationMs, 0, CINEMATIC_DURATION_MAX_MS);
+    if (scene.narrationAudioResourceId !== undefined) requireNonBlankString(`${sceneLabel}.narrationAudioResourceId`, scene.narrationAudioResourceId);
+    if (kind !== "text") requireNonBlankString(`${sceneLabel}.resourceId`, scene.resourceId);
+    if (kind === "image") {
+      assert(scene.motion === "none" || scene.motion === "fade" || scene.motion === "pan" || scene.motion === "zoom", `${sceneLabel}.motion is invalid.`);
+    }
+  }
+}
+
+function validateGameOverSettings(value: unknown): void {
+  const label = "system.gameOver";
+  const settings = requireRecord(label, value);
+  requireOnlyFields(label, settings, ["sequence", "title", "message", "retryLabel", "titleLabel", "backgroundResourceId"]);
+  if (settings.sequence !== undefined) validateCinematicSequence(`${label}.sequence`, settings.sequence);
+  for (const key of ["title", "message", "retryLabel", "titleLabel"]) {
+    if (settings[key] !== undefined) requireString(`${label}.${key}`, settings[key]);
+  }
+  if (settings.backgroundResourceId !== undefined) requireNonBlankString(`${label}.backgroundResourceId`, settings.backgroundResourceId);
+}
+
+function requireOnlyFields(label: string, value: Record<string, unknown>, fields: readonly string[]): void {
+  for (const key of Object.keys(value)) assert(fields.includes(key), `${label}.${key} is not a supported field.`);
 }
 
 function validateFishSpecies(value: unknown): void {

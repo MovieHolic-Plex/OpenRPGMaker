@@ -21,6 +21,7 @@ import { proposalCompletenessWarnings } from "@/ai/proposalCompleteness";
 import type { AssistantSession, ProposedCall, SessionEvent, TurnResult } from "@/ai/assistantSession";
 import type { ProposalApplyOutcome } from "@/editor/panels/aiProposalCard";
 import type { WorkPlan } from "@/ai/workPlan";
+import type { AcceptanceSnapshot } from "@/ai/assistantAcceptance";
 import type { BuildSpec } from "@/ai/buildSpec";
 import type { AiDocument } from "@/project/types";
 import {
@@ -90,6 +91,7 @@ export interface AiTurnRunnerDeps {
   readonly refreshWorkPlanSurface: () => void;
   /** work_plan 이벤트 — 항목 체크가 바뀔 때마다 목록을 다시 그린다. */
   readonly showWorkPlan: (plan: WorkPlan) => void;
+  readonly showAcceptance: (snapshot: AcceptanceSnapshot | null) => void;
   /** tool_started — 진행 중 항목 아래 「지금 하는 일」 한 줄. */
   readonly noteWorkPlanActivity: (label: string) => void;
   readonly appendMilestoneFeedLine: (kind: "applied" | "apply-failed", title: string, detail: string) => void;
@@ -239,8 +241,14 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
         /* 기록 실패가 턴을 막지 않는다 */
       });
     };
+    let receivedAcceptance = false;
     const onEvent = (event: SessionEvent): void => {
       if (!ownsTurn()) return;
+      if (event.type === "acceptance") {
+        receivedAcceptance = true;
+        deps.showAcceptance(event.snapshot);
+        return;
+      }
       if (event.type === "phase") {
         deps.surface.runningPhaseStatus = phaseStatusText(event.value);
         if (deps.surface.runningProgress) deps.surface.refreshRunningStatus(true);
@@ -651,6 +659,9 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
           : turnCatchError || turnFailed ? "error" : turnResult?.stoppedReason ?? "error";
       }
       deps.settleWorkPlanTurn();
+      // An aborted owner cannot publish live events, but its backend terminal snapshot
+      // is authoritative. The ownsTurn(true) guard above still rejects retired owners.
+      if (receivedAcceptance) deps.showAcceptance(session.getAcceptanceSnapshot());
       // 접힌 채로 턴이 끝나면 레일 점으로 알린다(초록=완료, 빨강=오류 — 펼치는 순간 소거).
       if (deps.surface.collapsed) deps.surface.panel.classList.add(turnFailed ? "is-turn-error" : "is-turn-attention");
       deps.surface.persistConversation({ id: turnConversationId, scope: turnConversationScope, entries: turnEntries }); // 시작 당시 대화 범위로 저장한다.

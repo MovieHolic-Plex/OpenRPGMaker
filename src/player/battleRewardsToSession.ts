@@ -4,7 +4,7 @@ import { computeActorLevelUp, type BattleLevelUpResult } from "@/battle/battleLe
 import { expForRewardActor, rewardActorIds } from "@/battle/rewardPolicy";
 import { changeGold, type PlaySession } from "@/project/session";
 import { setRelationshipState } from "@/project/relationshipState";
-import { changeActorClass } from "@/project/sessionClass";
+import { refreshGrowthVitals } from '@/project/growth/vitals';
 import { applyMonsterExperienceAndEvolution } from "@/project/monsterCollection";
 import type { Project } from "@/project/types";
 import { transitionItemStates } from "@/project/itemTransitions";
@@ -35,14 +35,22 @@ export function applyBattleRewardsToSession(
   // RM2K3 관례: 승리/도주와 패배 분기 복귀 모두 전투 중 변경된 상태를 유지한다.
   // canLose=false 패배는 게임 오버 경로이므로 라이브 세션에 되돌려 쓰지 않는다.
   if (outcome.result === "victory" || outcome.result === "escape" || (outcome.result === "defeat" && outcome.canLose === true)) {
-    // 전직(promoteActor) write-back 은 바이탈 write-back 보다 먼저 — changeActorClass 가
-    // 세션 바이탈 최대치를 새 클래스 곡선으로 갱신해야 아래 전투 HP/MP 클램프가 새 최대치를 쓴다.
-    applyBattleClassOverridesToSession(session, project, outcome.eventState);
+    // Transfer class, lineage and permanent skills before vitals. Never replay
+    // arbitrary reclass: it would erase the earned promotion chain.
+    applyBattleClassOverridesToSession(session, outcome.eventState);
     applyBattleVitalsToSession(session, outcome.actors ?? []);
     // 파티 몬스터가 싸운 경우, 전투 종료 HP를 인스턴스에 되돌려쓴다(경험치 가산보다 먼저).
     applyBattleMonsterVitalsToSession(session, outcome.actors ?? []);
     applyBattleStatesToSession(session, outcome.actors ?? []);
     applyBattleEventStateToSession(session, outcome.eventState);
+    // Derived maxima follow final levels/class/growth, never stale battler maxima.
+    // Restore battle damage first, then clamp without healing (before reward level-ups).
+    const growthActorIds = new Set([
+      ...Object.keys(outcome.eventState?.actorLevels ?? {}),
+      ...Object.keys(outcome.eventState?.classOverrides ?? {}),
+      ...Object.keys(outcome.eventState?.growthProgress ?? {}),
+    ]);
+    for (const actorId of growthActorIds) refreshGrowthVitals(project, session, actorId);
   }
   if (outcome.result !== "victory") return [];
   const earnedExp = Math.max(0, Math.trunc(outcome.rewards.exp));
@@ -115,19 +123,17 @@ function applyBattleStatesToSession(session: PlaySession, actors: readonly Battl
   }
 }
 
-// 전투 중 promoteActor 가 갱신한 직업 오버라이드를 세션에 반영한다(Step 3d 2026-08-20).
-// 시드값과 같은 항목은 건너뛰고, 바뀐 액터만 맵 경로와 동일한 changeActorClass 로 적용해
-// 세션 classOverrides/클래스 스킬 학습/바이탈 클램프를 한 번에 맞춘다.
+// Transfer authoritative battle state, never replay reclass: a promotion cycle may
+// end at the same class while earning lineage and permanent skills in between.
 function applyBattleClassOverridesToSession(
   session: PlaySession,
-  project: Project,
   eventState: BattleEventStateSnapshot | undefined
 ): void {
-  if (!eventState?.classOverrides) return;
-  for (const [actorId, classId] of Object.entries(eventState.classOverrides)) {
-    if (session.classOverrides?.[actorId] === classId) continue;
-    changeActorClass(session, project, actorId, classId);
-  }
+  if (!eventState) return;
+  if (eventState.classOverrides) session.classOverrides = { ...eventState.classOverrides };
+  if (eventState.promotionLineage !== undefined) session.promotionLineage = structuredClone(eventState.promotionLineage);
+  if (eventState.growthProgress !== undefined) session.growthProgress = structuredClone(eventState.growthProgress);
+  if (eventState.actorSkillIds) session.actorSkillIds = Object.fromEntries(Object.entries(eventState.actorSkillIds).map(([id, skills]) => [id, [...skills]]));
 }
 
 // 전투 이벤트 상태(아이템 소모, 전투 이벤트가 바꾼 스위치/변수/골드/파티/스킬)를 세션에 되돌려 쓴다.
@@ -197,9 +203,10 @@ function applyBattleVitalsToSession(session: PlaySession, actors: readonly Battl
     const vitals = session.actorVitals[actor.recordId];
     if (!vitals) continue;
     session.actorVitals[actor.recordId] = {
-      ...vitals,
-      hp: Math.max(0, Math.min(vitals.maxHp, actor.hp)),
-      mp: Math.max(0, Math.min(vitals.maxMp, actor.mp)),
+      maxHp: actor.maxHp,
+      maxMp: actor.maxMp,
+      hp: Math.max(0, Math.min(actor.maxHp, actor.hp)),
+      mp: Math.max(0, Math.min(actor.maxMp, actor.mp)),
     };
   }
 }

@@ -17,6 +17,7 @@ import type {
 import type { Command, Condition, EventPageGraphic, WeatherKind } from "./events";
 import type { Season, TimePhase, TimeSystemConfig } from "../gameTime";
 import type { GenrePackId } from "../genrePackId";
+import type { CinematicSequence, GameOverSettings } from "../cinematicSettings";
 
 export interface ActorRecord {
   id: ActorId;
@@ -102,6 +103,9 @@ export interface ClassPromotion {
 }
 
 export interface ClassPromotionRequirement {
+  requiredSkillIds?: SkillId[];
+  requiredNodes?: import('../growth/types').NodeRankRequirement[];
+  requiredTreePoints?: { treeId: string; points: number }[];
   level?: number;
   switchId?: string;
   itemId?: ItemId;
@@ -1094,6 +1098,10 @@ export interface SystemRecords {
   activeSlots?: number;
   rewardPolicy?: RewardPolicy;
   titleScreen?: TitleScreenSettings;
+  /** Opt-in pre-map new-game sequence. Disabled sequences retain their authored content. */
+  opening?: CinematicSequence;
+  /** Optional game-over sequence and terminal-menu presentation. */
+  gameOver?: GameOverSettings;
   monsterCollection?: boolean;
   // 전투를 몬스터 파티로 진행(옵션 A). monsterCollection(포획 게이트)과 별개 축이다.
   monsterBattleParty?: boolean;

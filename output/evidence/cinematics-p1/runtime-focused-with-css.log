@@ -1,0 +1,78 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/cinematicSettings.test.ts test/cinematicSequence.test.ts test/playerCinematics.test.ts test/checkpointEndingRuntime.test.ts test/titleScreen.test.ts test/titleScreenMenuLabels.test.ts test/titleScreenMusic.test.ts test/battleDefeatOutcome.test.ts test/playerRunControls.test.ts test/playBootRecovery.test.ts test/playerOpenSaveMenu.test.ts test/generatedAssetResourceResolver.test.ts test/playerInputCss.test.ts test/runtimeDomTitleGuard.test.ts test/runtimeQaGate.test.ts test/runtimeQaReport.test.ts test/playerRuntimeCss.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-wish-cinematics-p1
+
+ ✓ test/runtimeQaReport.test.ts (18 tests) 20ms
+ ✓ test/runtimeQaGate.test.ts (52 tests) 25ms
+ ✓ test/playerInputCss.test.ts (2 tests) 141ms
+ ✓ test/runtimeDomTitleGuard.test.ts (4 tests) 247ms
+ ✓ test/titleScreenMusic.test.ts (3 tests) 113ms
+ ✓ test/generatedAssetResourceResolver.test.ts (12 tests) 292ms
+ ✓ test/cinematicSequence.test.ts (23 tests) 1694ms
+ ✓ test/titleScreenMenuLabels.test.ts (6 tests) 7ms
+ ✓ test/titleScreen.test.ts (22 tests) 1171ms
+   ✓ title screen > renders the redesigned editorial title composition instead of legacy window chrome  373ms
+ ❯ test/playerRuntimeCss.test.ts (6 tests | 1 failed) 10110ms
+   ✓ exported player runtime CSS > keeps the existing shared runtime selector families in emitted bytes 6ms
+   ✓ exported player runtime CSS > emits the complete player-owned runtime closure without editor CSS 15ms
+   ✓ exported player runtime CSS > inverse-scales every missing-resource length in emitted bytes 2ms
+   ✓ exported player runtime CSS > uses one ordered runtime module list from both CSS entrypoints 9ms
+   × exported player runtime CSS > detects an omitted required import in a disposable built entry 870ms
+     → expected true to be false // Object.is equality
+   ✓ exported player runtime CSS > detects an omitted edge-dock status-menu module in a disposable built entry  536ms
+ ✓ test/playerOpenSaveMenu.test.ts (4 tests) 1047ms
+   ✓ event-opened save menu in the shipping player shell > shows slots immediately and saves, navigates and backs out through the keyboard  355ms
+ ✓ test/playerCinematics.test.ts (9 tests) 1212ms
+ ✓ test/playerRunControls.test.ts (7 tests) 1349ms
+ ✓ test/battleDefeatOutcome.test.ts (4 tests) 538ms
+ ✓ test/checkpointEndingRuntime.test.ts (5 tests) 893ms
+   ✓ checkpointSave / killPlayer / triggerEnding > define_ending은 같은 조건 집합의 낮은 priority 엔딩을 warning으로 보고한다  560ms
+ ✓ test/playBootRecovery.test.ts (11 tests) 4817ms
+   ✓ test play boot recovery > shows the thrown boot reason in the recovery panel  537ms
+   ✓ test play boot recovery > reloads once when PlayScene's hashed chunk fails to fetch  481ms
+   ✓ test play boot recovery > shows a reload action after a stale-chunk reload already happened  360ms
+   ✓ test play boot recovery > shows a recovery panel when waiting for PlayScene times out  434ms
+   ✓ test play boot recovery > starts a fresh boot attempt when retry is clicked  504ms
+   ✓ test play boot recovery > boots the repaired project and reports a dangling start-map repair  399ms
+   ✓ test play boot recovery > exposes an idempotent repaired-project snapshot in the export store  408ms
+   ✓ test play boot recovery > does not let a stale failed run paint a recovery panel over a newer run  517ms
+   ✓ test play boot recovery > refuses to boot Phaser and names the blocker when the project has no maps  412ms
+   ✓ test play boot recovery > suppresses autonomous movement and auto-run events when safe mode is chosen  617ms
+ ✓ test/cinematicSettings.test.ts (109 tests) 10444ms
+   ✓ cinematic persistence > leaves legacy absence absent through normalization and repeated roundtrips  812ms
+   ✓ cinematic persistence > retains disabled authored scenes, exact text, labels and media without mutating input  490ms
+   ✓ cinematic web export > collects media referenced only by disabled opening scenes  536ms
+   ✓ cinematic web export > collects media referenced only by disabled gameOver scenes  591ms
+   ✓ cinematic web export > exports video/mp4, animated image, voice and background bytes with correct filenames  575ms
+   ✓ cinematic web export > exports video/webm, animated image, voice and background bytes with correct filenames  498ms
+   ✓ cinematic web export > exports video/ogg, animated image, voice and background bytes with correct filenames  510ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/playerRuntimeCss.test.ts > exported player runtime CSS > detects an omitted required import in a disposable built entry
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ test/playerRuntimeCss.test.ts:169:55
+    167|
+    168|     // Then: the omission is visible in bytes while adjacent transitio…
+    169|     expect(hasCssSelector(fixtureCss, ".action-hud")).toBe(false);
+       |                                                       ^
+    170|     expect(hasCssSelector(fixtureCss, ".battle-transition-overlay")).t…
+    171|   }, PLAYER_BUILD_TIMEOUT_MS);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 16 passed (17)
+      Tests  1 failed | 296 passed (297)
+   Start at  15:15:50
+   Duration  19.61s (transform 30.75s, setup 0ms, collect 112.22s, tests 34.12s, environment 1.65s, prepare 3.50s)

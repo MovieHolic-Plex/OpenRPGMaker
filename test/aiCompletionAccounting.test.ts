@@ -33,13 +33,13 @@ function final(text = "완료했습니다."): ChatResult {
   return { message: { role: "assistant", content: text }, finishReason: "stop" };
 }
 
-function scriptedChat(steps: ChatResult[]) {
+function scriptedChat(steps: (ChatResult | (() => ChatResult))[]) {
   let index = 0;
-  return async (): Promise<ChatResult> => {
+  return vi.fn(async (): Promise<ChatResult> => {
     const step = steps[index++];
     if (!step) throw new Error("scripted chat exhausted");
-    return step;
-  };
+    return typeof step === "function" ? step() : step;
+  });
 }
 
 function paint(x: number, y: number, id: string): ChatResult {
@@ -58,7 +58,11 @@ describe("completion accounting through real assistant sessions", () => {
     store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
     store.replace(project);
     resetMapEditHistory();
-    const plan = { goal: "지형 두 구역 칠하기", layers: [{ title: "지형", items: [
+    const acceptance = [[3, 3], [12, 12]].map(([x, y], index) => ({
+      id: `region-${index}`, title: `Paint region ${index}`,
+      criteria: [{ kind: "targetChange", target: { mapId: "m1" }, region: { x, y, w: 3, h: 3 } }],
+    }));
+    const plan = { goal: "지형 두 구역 칠하기", acceptance, layers: [{ title: "지형", items: [
       { title: "첫 구역", instruction: "첫 구역 칠하기", successTools: ["paint_tiles"] },
       { title: "둘째 구역", instruction: "둘째 구역 칠하기", successTools: ["paint_tiles"] },
     ] }] };
@@ -79,6 +83,8 @@ describe("completion accounting through real assistant sessions", () => {
 
     expect(session.getWorkPlan()?.layers[0].items.map((item) => item.status)).toEqual(["done", "done"]);
     expect(result.stoppedReason).toBe("final");
+    expect(session.getAcceptanceSnapshot()).toMatchObject({ status: "verified", items: acceptance.map(({ id }) => ({ id, status: "verified", evidence: [{ passed: true }] })) });
+    expect(events.filter((event) => event.type === "acceptance").some((event) => event.snapshot?.items[0]?.status === "verified" && event.snapshot.items[1]?.status === "working")).toBe(true);
     expect(events.filter((event) => event.type === "milestone_applied").map((event) => event.toolCount)).toEqual([1, 1]);
     expect(result.proposedCalls).toEqual([]);
     expect(result.appliedCalls?.map((call) => call.args.from)).toEqual([{ x: 3, y: 3 }, { x: 12, y: 12 }]);
@@ -101,15 +107,27 @@ describe("completion accounting through real assistant sessions", () => {
         if (!fillRegion) throw new Error("fill_region must be registered");
         vi.spyOn(fillRegion, "run").mockImplementationOnce(() => { throw new Error("injected tool failure"); });
       }
+      const criteria = [{ kind: "targetChange", target: { mapId: "m1" }, region: retryRect }];
+      // These turns intentionally retain drafts. Supply the real spatial contract,
+      // then answer the initial final request and all three bounded repair nudges.
+      // No model response can turn an unapplied draft into verified acceptance.
+      const pendingFinal = (status: "verifying" | "working") => () => {
+        expect(session.getAcceptanceSnapshot()).toMatchObject({ status, items: [{
+          id: "acceptance-contract", status, evidence: [{ expected: JSON.stringify(criteria[0]), passed: false }],
+        }] });
+        return final("DRAFT_AWAITING_APPLICATION");
+      };
       const steps = [
         ...(scope === "active" ? [toolCall("set_build_spec", SPEC, "spec")] : []),
         toolCall("fill_region", { mapId: "m1", rect, material: "모래", shape: failure === "invalid-args" ? "invalid-shape" : "rect" }, "failed"),
         toolCall("fill_region", { mapId: "m1", rect: retryRect, material: "모래", shape: "rect" }, "retry"),
-        final(),
+        toolCall("repair_acceptance", { itemId: "acceptance-contract", criteria }, "repair"),
+        ...Array.from({ length: 4 }, () => pendingFinal("verifying")),
         toolCall("paint_tiles", { mapId: "m1", from: { x: rect.x, y: rect.y }, to: { x: rect.x, y: rect.y }, mode: "rect", layer: "lower", tile: 240 }, "next-turn"),
-        final(),
+        ...Array.from({ length: 4 }, () => pendingFinal(scope === "active" ? "verifying" : "working")),
       ];
-      const session = new AssistantSession(project, { config: CONFIG, chat: scriptedChat(steps) });
+      const chat = scriptedChat(steps);
+      const session = new AssistantSession(project, { config: CONFIG, chat });
       const events: ToolEvent[] = [];
       let specAfterFailure: unknown;
       let mapAfterFailure: unknown;
@@ -129,6 +147,10 @@ describe("completion accounting through real assistant sessions", () => {
       expect(fills[0].result.issues?.some((issue) => issue.code === "spec-gate-auto-expand")).toBe(false);
       expect(fills[1].result.issues ?? []).toContainEqual(expect.objectContaining({ code: "spec-gate-auto-expand" }));
       expect(result.stoppedReason).toBe("final");
+      expect(chat).toHaveBeenCalledTimes(scope === "active" ? 8 : 7);
+      expect(events.find((event) => event.name === "repair_acceptance")?.result.ok).toBe(true);
+      expect(session.getAcceptanceSnapshot()).toMatchObject({ status: "blocked", items: [{ id: "acceptance-contract", status: "blocked", evidence: [{ passed: false }] }] });
+      expect(result.appliedCalls ?? []).toEqual([]);
       expect(result.proposedCalls.map((call) => call.name)).toEqual(["fill_region"]);
       expect(session.getProposedProject().maps.m1.lowerTiles).not.toEqual(project.maps.m1.lowerTiles);
       if (scope === "active") {
@@ -138,7 +160,12 @@ describe("completion accounting through real assistant sessions", () => {
       }
 
       const nextEvents: ToolEvent[] = [];
-      await session.sendUserMessage("다음 칸 칠해줘", (event) => { if (event.type === "tool_call") nextEvents.push(event); });
+      const next = await session.sendUserMessage("다음 칸 칠해줘", (event) => { if (event.type === "tool_call") nextEvents.push(event); });
+      expect(next.stoppedReason).toBe("final");
+      expect(chat).toHaveBeenCalledTimes(steps.length);
+      expect(session.getAcceptanceSnapshot()).toMatchObject({ status: "blocked", items: [{ id: "acceptance-contract", evidence: [{ passed: false }] }] });
+      expect(next.appliedCalls ?? []).toEqual([]);
+      expect(next.proposedCalls.map((call) => call.name)).toEqual(scope === "active" ? ["paint_tiles"] : []);
       expect(nextEvents.map((event) => event.result.ok)).toEqual([scope === "active"]);
       expect(nextEvents[0].result.issues?.some((issue) => issue.code === "spec-gate-auto-expand") ?? false).toBe(false);
       if (scope === "implicit") expect(nextEvents[0].result.issues).toContainEqual(expect.objectContaining({ code: "spec-gate" }));

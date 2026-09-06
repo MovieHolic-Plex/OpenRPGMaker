@@ -6,6 +6,16 @@ Read this before editing editor-facing behavior. Identifies which workflow owns 
 
 ## Pre-edit routing
 
+### Automatic usage guides disabled (2026-09-06)
+
+- Editor rendering and post-welcome boot paths no longer automatically invoke
+  beginner coach marks or the standard-mode usage card. Do not restore these
+  calls when changing mode/boot orchestration.
+- First-visit mode selection, project selection/creation and ordinary Help stay
+  available. No storage flag is prefilled to pretend that the user saw a guide.
+- `test/e2e/no-auto-guides.spec.ts` checks fresh beginner/standard sessions,
+  usable paint/erase controls, mode switching and untouched guide-seen keys.
+
 ### Sidebar mode workflow (2026-09-06; supersedes older 72px/tile-flyout notes below)
 
 - `basicLeftRail.ts` now owns a **288px persistent beginner palette**: labeled tools, direct layers, visible `oprn-tool-undo`, selected tile and search, then the shared scrolling grid. `basic-rail-toggle-tiles` focuses the grid; it is not a visibility toggle. Tile activation preserves the sheet and uses the existing authored-layer/paint/pen/stamp-reset rules. Event mode replaces the tile body with its explanation/creation CTA; returning to a tile layer restores it.

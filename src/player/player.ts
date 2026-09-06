@@ -1,3 +1,4 @@
+import { playCinematicSequence } from "@/player/cinematicSequence";
 import { openEventMenu } from "@/player/playerEventMenus";
 import type Phaser from "phaser";
 import { startPlayGame, destroyGame } from "@/app/mode";
@@ -139,6 +140,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   teardownShell?.();
   clearChildren(main);
 
+  let openingController: AbortController | null = null;
+  let titleConfirmTimer: ReturnType<typeof setTimeout> | undefined;
   let game: Phaser.Game | null = null;
   let startRun = 0;
   let playStartedAt = 0;
@@ -175,6 +178,10 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   main.append(layout);
 
   const stopGame = (): void => {
+    openingController?.abort();
+    openingController = null;
+    clearTimeout(titleConfirmTimer);
+    titleConfirmTimer = undefined;
     startRun += 1;
     loadDetach?.();
     loadDetach = null;
@@ -235,6 +242,32 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   };
 
   const startGame = (request: PlayBootRequest = {}): void => {
+    if (!shellActive) return;
+    stopGame();
+    const opening = store.getCurrent().system.opening;
+    const bypass = request.session || options.startOverride || options.initialEventTestId || request.eventTestId;
+    if (!bypass && opening?.enabled && opening.scenes.length > 0) {
+      stopTitleBgm();
+      clearChildren(layout);
+      const surface = createPlaySurface(resolvePlayResolution(store.getCurrent().system), surfaceScaleMode);
+      playStage = surface.stage;
+      cleanupPlaySurface = surface.cleanup;
+      layout.append(surface.viewport);
+      surface.sync();
+      const controller = new AbortController();
+      openingController = controller;
+      const playback = playCinematicSequence({ host: surface.stage, project: store.getCurrent(), sequence: opening, signal: controller.signal });
+      void playback.done.then(result => {
+        if (result === "aborted" || !shellActive || openingController !== controller) return;
+        openingController = null;
+        bootRun(request);
+      });
+      return;
+    }
+    bootRun(request);
+  };
+
+  const bootRun = (request: PlayBootRequest): void => {
     stopGame();
     // 새 플레이 런은 이전 런의 오토세이브 디바운스 기준 시각을 물려받지 않는다.
     resetAutosaveDebounce();
@@ -782,7 +815,9 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     titleConfirming = true;
     emitTitleJuice("title-confirm");
     stopTitleBgm();
-    window.setTimeout(() => {
+    titleConfirmTimer = setTimeout(() => {
+      titleConfirmTimer = undefined;
+      if (!shellActive) return;
       titleConfirming = false;
       callback();
     }, TITLE_CONFIRM_JUICE_MS);
