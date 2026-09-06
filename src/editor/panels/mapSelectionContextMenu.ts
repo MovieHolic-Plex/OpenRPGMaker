@@ -3,6 +3,7 @@
 import type { MapContextMenuItem } from "@/editor/panels/mapContextMenu";
 import { openRegionTaskModal, type RegionTaskModalOptions } from "@/editor/panels/regionTaskModal";
 import type { MapId } from "@/project/types";
+import { openWalkEncounterForSelection } from "@/editor/panels/walkEncounterModal";
 
 export interface RegionSelection {
   readonly mapId: MapId;
@@ -24,6 +25,11 @@ export function regionTaskMenuItems(
   openModal: ModalOpener = openRegionTaskModal,
 ): MapContextMenuItem[] {
   return [
+    {
+      action: () => openWalkEncounterForSelection(selection), icon: "rectangle",
+      id: "region-walk-encounter", label: "걸을 때 적 만나기",
+      testId: "region-walk-encounter-menu-item",
+    },
     {
       action: () =>
         openModal({

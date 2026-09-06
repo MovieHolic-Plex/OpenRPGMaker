@@ -36,6 +36,64 @@ existing purse emblem; actual party faces remain explicitly labelled as party.
   with reduced-motion support. Validate through shipping `player.html`, not the
   editor shell; supervisor owns final screenshots and visual acceptance.
 
+## Database CSS ownership (2026-09-06)
+
+- `studio-v2.css` owns shared DB shell spacing, ordinary 12.5px captions,
+  32px controls, cards, list rows and shared CRUD chrome. Domain sheets own
+  composition, not another copy of these roles. `sidebar.css` owns rail geometry;
+  `workspace-modern.css` owns the shared section navigation primitive.
+- A shared number stepper is one 32px border box, 8px radius, with a single
+  outer hover/focus treatment. The inner input has no border, radius or shadow.
+  Its 28px side buttons collapse at the existing 120px container threshold.
+  Native input/change timing, labels, bounds and disabled behavior remain intact.
+- Equivalent section tabs use the workspace underline grammar (34px, 13px/600).
+  Add/Duplicate/Delete share 32px, 12.5px/600 targets: neutral add/duplicate,
+  danger-text delete; explicit primary submit actions remain filled.
+- `animation-editor.css` owns animation authoring scroll and preview-first
+  composition, with stage height at least 280px. Classes/Troops detail forms
+  each own their main vertical scroll; useful inner lists/tables remain scrollable.
+- World document 36px controls, System 32–36px targets, the 36px actor portrait,
+  tileset art geometry and runtime/project-font previews are retained variants.
+  UI fonts resolve through role tokens, including component-loaded shorthand.
+
+## Weighted outcome worksheet (2026-09-06)
+
+- `m2-211-weighted-branch` uses a task-first `확률로 결과 뽑기` form; the catalog retains `가중 분기` for discovery. Outcomes precede the destination variable. Each repeated row composes a labelled name, direct percent input, single-accent proportional meter, and `저장값` number. No instructional card, duplicated legend, raw table or automatic action-branch promise.
+- Editing one percent redistributes the remaining chance proportionally among other rows; if all other rows are zero, split the remainder equally. A compact `나머지 자동 조정` label makes that behavior explicit. One remaining outcome stays at 100%. Add assigns an equal share to the new row while retaining existing relative chances; remove renormalizes remaining rows. Named zero-percent rows persist and remain editable after Confirm/reopen, but have no stored result value because runtime ignores them. Removing the last positive row is disabled rather than enabling zero-chance rows. Authored all-zero tables remain unchanged and visibly block Confirm until a chance is set; a lone zero row can be repaired to 100%.
+- Native labelled controls, existing `databasePicker` and `editorIcons`, existing draft update path. Inputs remain mounted while typing; composition commits only when complete. Add focuses the new name, delete focuses the nearest remaining name. Invalid percentages show a local 0–100% error and leave persisted values unchanged. A Weighted Branch-only Confirm guard keeps the modal open and focuses the invalid control; other command forms are unaffected. The empty variable trigger is an explicit selection action; no variable is auto-picked.
+- Existing cream-form tokens only: `--bg-raised/inset`, `--text-1/2`, `--accent`, `--border-default`, `--danger`, `--focus-outline`; `--font-ui/mono`, 12px metadata, 13px controls, 14px names; `--space-1/2/3/4/6`, `--radius-s`, 32px minimum targets. Row meter is 4px, result-value chip uses the 4px inner radius. Fluid name track and wrapping destination retain the existing modal scroll owner, no new nested scroller or motion.
+- Persistence remains `table` + `resultVariableId`. Open and variable-only edits preserve authored table bytes. Name edits preserve numeric precision; storage-safe names replace equals with fullwidth equals and line breaks with spaces. Numeric parsing mirrors the runtime's first numeric field, including blank names/extra separators. Tiny positive percentages use significant digits rather than integer rounding; near-100% counterparts retain enough decimals to avoid false certainty (100% only within floating-point epsilon).
+- Personas: first-time author, keyboard/IME author, existing-project author. No extra theme, runtime change or dependency. Lead owns full build/gates and browser accessibility/geometry acceptance at 1024/1280/1440; unit DOM tests alone are not visual approval.
+
+## Walk encounters from a rectangle (2026-09-06)
+
+- Primary action: `걸을 때 적 만나기`. Use the existing left-drag selection tool,
+  then the visible selection chip. Explanation: `포켓몬 풀숲처럼, 이 안에서 걷다
+  보면 전투가 시작됩니다.` No tile painting, new schema, or runtime overlay.
+- Native modal-stack worksheet: named enemy artwork/checkbox search, selected
+  count, frequency presets, then `완료`. Reuse subdialog, `btn`, thumbnail and
+  labelled native controls; advanced weights/conditions use `details`.
+  Personas: first-time author, existing-table author, keyboard-only author.
+- Studio tokens (`--bg-raised`, `--bg-inset`, `--text-1/2`, `--accent`,
+  `--border-soft`), --font-ui 13px/1.5, help 12px/1.5, 32px minimum controls,
+  4/8/12/16/24 spacing, 6px controls and 8px groups. No decorative motion.
+  Width at most 760px; bounded scrolling body, fixed action footer. Desktop
+  acceptance 1024x768, 1280x800, 1440x900; controls wrap rather than shrink.
+- Canvas has a persistent labelled region-list button and translucent indigo
+  rectangle outlines; list entries identify coordinates and enemy names. Edit,
+  delete, reuse last settings and replace bounds from a fresh selection are
+  explicit actions. Identical rectangles form one editable group; overlaps mix
+  eligible entries according to relative weights, never an exclusive layer.
+- Frequency is map-wide. Preserve a positive rate until explicitly changed;
+  zero defaults to normal. Existing legacy encounters require an explicit
+  keep-everywhere or replace-with-regions choice. Other table entries survive.
+- Fields are local drafts. Cancel/Escape write nothing. Apply validates bounds,
+  references, conditions, locks, project identity and encounter-state freshness,
+  then records one project snapshot and one labelled store mutation including
+  generated troops. Delete removes rules, not tiles/troops. Empty catalog/search,
+  invalid input, stale state and lock errors have visible recovery text.
+  No fake loading. Real browser review is supervisor-owned.
+
 ## System settings workspace (2026-09-06)
 
 Database > System is a settings worksheet in the existing cool-white, slate and
