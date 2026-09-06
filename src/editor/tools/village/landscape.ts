@@ -110,7 +110,7 @@ export function dressVillageLandscape(map: GameMap, args: VillageLandscapeArgs):
 
   // ── 조경 금지 마스크: 집 footprint(용마루 포함) ∪ 스탠드오프 ∪ 문앞 front±2 ∪ 광장+1 ∪ 이벤트 ──
   const forbidden = new Set<string>();
-  for (const key of houseBlockedCells(houses)) forbidden.add(key);
+  for (const key of houseBlockedCells(houses, map)) forbidden.add(key);
   for (const key of houseStandoffCells(houses)) forbidden.add(key);
   for (const house of houses) {
     for (let dy = -DOOR_FRONT_CLEARANCE; dy <= DOOR_FRONT_CLEARANCE; dy += 1) {
@@ -314,7 +314,7 @@ export function dressVillageLandscape(map: GameMap, args: VillageLandscapeArgs):
         // 건너편에 수로가 2칸 이상 이어질 때만 — 다리 뒤가 막히면 횡단하지 않는다.
         const span: Cell[] = [];
         let by = yy;
-        while (by < y1 && span.length < BRIDGE_MAX_SPAN && ROAD_TILES.has(lowerAt(sx, by))) {
+        while (by < y1 && span.length < BRIDGE_MAX_SPAN && !forbidden.has(coordKey(sx, by)) && ROAD_TILES.has(lowerAt(sx, by))) {
           span.push([sx, by]);
           by += 1;
         }
@@ -486,7 +486,7 @@ export function dressVillageLandscape(map: GameMap, args: VillageLandscapeArgs):
         const tryPillar = (px: number, py: number): boolean => {
           if (!inArea(px, py) || !inArea(px, py - 1)) return false;
           if (lowerAt(px, py) !== TILE.GRASS || upperAt(px, py) !== TILE.EMPTY) return false;
-          if (upperAt(px, py - 1) !== TILE.EMPTY || forbidden.has(coordKey(px, py))) return false;
+          if (upperAt(px, py - 1) !== TILE.EMPTY || forbidden.has(coordKey(px, py)) || forbidden.has(coordKey(px, py - 1))) return false;
           map.upperTiles[(py - 1) * W + px] = PILLAR_TOP_TILE;
           map.upperTiles[py * W + px] = PILLAR_BOTTOM_TILE;
           return true;

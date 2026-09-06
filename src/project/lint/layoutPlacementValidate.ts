@@ -69,10 +69,11 @@ export function layoutValidationBlocking(issues: readonly LintIssue[]): readonly
  * "스캐터 시점엔 잔디였는데 나중에 물/벽이 깔려 게이트에 걸리는" 순서 결함을 청소한다.
  * 규칙 소스는 검증기와 동일(TREE_TILE_IDS·isLakeAutotileTile·isPassable).
  */
-export function scrubPlacementConflicts(project: Project, map: GameMap): { propsOnWater: number; treesOnImpassable: number } {
+export function scrubPlacementConflicts(project: Project, map: GameMap, canWrite: (index: number) => boolean = () => true): { propsOnWater: number; treesOnImpassable: number } {
   let propsOnWater = 0;
   let treesOnImpassable = 0;
   for (let index = 0; index < map.lowerTiles.length; index += 1) {
+    if (!canWrite(index)) continue;
     const lower = map.lowerTiles[index];
     const upper = map.upperTiles[index];
     if (upper === TILE.EMPTY || upper < 0) continue;

@@ -2,7 +2,9 @@
 // 마을 소품 레이어 — 마당 꾸밈, 길 옆 벤치, 우물, 깃발, 바위 노두, 활엽수 군락, place_props 위임.
 
 import { COBBLE_TILE } from "@/project/defaults/chipsetMapping";
-import { shapeCobbleAround } from "@/project/defaults/cobbleAutotile";
+import { shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
+import { DEFAULT_COBBLE_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
+import { protectedHouseCells } from "../houseProtection";
 import { TILE } from "@/project/defaults/constants";
 import type { GameMap, Project } from "@/project/types";
 import { mulberry32, type Rng } from "@/util/rng";
@@ -64,6 +66,7 @@ function placeYardCluster(
   front: Point,
   rng: Rng,
 ): number {
+  const blocked = new Set(protectedHouseCells(map).map(({ x, y }) => coordKey(x, y)));
   const tiles = kinds
     .map((kind) => CLUSTER_PROP_TILES[kind])
     .filter((tile): tile is number => typeof tile === "number")
@@ -71,6 +74,7 @@ function placeYardCluster(
   if (tiles.length < 2) return 0;
   const freeGrass = (x: number, y: number): boolean =>
     inMapBounds(map, x, y)
+    && !blocked.has(coordKey(x, y))
     // 문 앞(transfer 목적지)과 게이트 3칸은 절대 막지 않는다.
     && !(y === front.y && Math.abs(x - front.x) <= 1)
     && (map.lowerTiles[y * map.width + x] ?? TILE.EMPTY) === TILE.GRASS
@@ -102,7 +106,7 @@ function placeYardCluster(
  */
 function placeFlowerRings(map: GameMap, houses: readonly BuiltHouse[], seed: number, area: Rect): number {
   const rng = mulberry32((seed ^ 0x85ebca6b) >>> 0);
-  const blocked = houseBlockedCells(houses);
+  const blocked = houseBlockedCells(houses, map);
   const freeGrass = (x: number, y: number): boolean =>
     inMapBounds(map, x, y)
     && pointInRect({ x, y }, area)
@@ -148,7 +152,7 @@ export function placeStoneToppings(
 ): number {
   const rng = mulberry32((seed ^ 0x51ed2701) >>> 0);
   // 문 앞(transfer 목적지)과 그 옆 게이트 칸은 절대 막지 않는다.
-  const protectedCells = new Set<string>();
+  const protectedCells = houseBlockedCells(houses, map);
   for (const house of houses) {
     for (let dx = -1; dx <= 1; dx += 1) protectedCells.add(coordKey(house.front.x + dx, house.front.y));
   }
@@ -185,6 +189,7 @@ export function placeVillageDecor(
   intent: VillageIntent,
   warnings: string[]
 ): number {
+  const blocked = houseBlockedCells(houses, map);
   let placed = 0;
   const pool = YARD_STYLE_POOLS[intent.yardStyle];
   for (let i = 0; i < houses.length; i += 1) {
@@ -237,9 +242,6 @@ export function placeVillageDecor(
     warnings.push("요청한 fountain(분수) 타일은 combined_town에서 사용할 수 없어 well(우물 382)로 대체했다.");
   }
   placed += placeVillageWell(map, plaza, houses, area);
-  // 화려한 깃발 — 중요한 집 문 양옆 벽면 (208/209).
-  placed += placeEntranceBanners(map, houses);
-  placed += placeShopSigns(map, houses, plaza);
 
   const plazaInner = {
     x: plaza.rect.x + 1,
@@ -259,6 +261,8 @@ export function placeVillageDecor(
       const topIndex = (plazaInner.y + 1) * map.width + sx;
       const bottomIndex = (plazaInner.y + 2) * map.width + sx;
       const bothFree = plazaInner.h >= 4
+        && !blocked.has(coordKey(sx, plazaInner.y + 1))
+        && !blocked.has(coordKey(sx, plazaInner.y + 2))
         && (map.upperTiles[topIndex] ?? TILE.EMPTY) === TILE.EMPTY
         && (map.upperTiles[bottomIndex] ?? TILE.EMPTY) === TILE.EMPTY
         && (map.lowerTiles[topIndex] ?? TILE.EMPTY) === TILE.GRASS
@@ -341,7 +345,7 @@ function placeVillageWell(
   houses: readonly BuiltHouse[],
   area: Rect,
 ): number {
-  const blocked = houseBlockedCells(houses);
+  const blocked = houseBlockedCells(houses, map);
   // 우물은 광장의 앵커(리서치: marketplace = well) — 광장 내부 중앙 자리를 최우선으로.
   const centerCandidates = [
     { x: plaza.centerX, y: plaza.centerRow },
@@ -350,7 +354,7 @@ function placeVillageWell(
     { x: plaza.centerX, y: plaza.centerRow - 1 },
   ];
   for (const cell of centerCandidates) {
-    if (!inMapBounds(map, cell.x, cell.y) || !pointInRect(cell, area)) continue;
+    if (!inMapBounds(map, cell.x, cell.y) || !pointInRect(cell, area) || blocked.has(coordKey(cell.x, cell.y))) continue;
     const index = cell.y * map.width + cell.x;
     if ((map.lowerTiles[index] ?? TILE.EMPTY) !== TILE.GRASS) continue;
     if ((map.upperTiles[index] ?? TILE.EMPTY) !== TILE.EMPTY) continue;
@@ -386,7 +390,12 @@ function placeVillageWell(
  * 무기점 방패(472)·잡화점 물약(473) 번갈아, 광장 게이트를 향한 쪽 우선.
  * 도로 위 장식 금지 룰에 따라 잔디 칸만 쓰고, 실패 시 반대편 → 문 옆 벽면 폴백.
  */
+export function finishVillageHouseDecor(map: GameMap, houses: readonly BuiltHouse[], plaza: Plaza): number {
+  return placeEntranceBanners(map, houses) + placeShopSigns(map, houses, plaza);
+}
+
 function placeShopSigns(map: GameMap, houses: readonly BuiltHouse[], plaza: Plaza): number {
+  const blocked = new Set(protectedHouseCells(map).map(({ x, y }) => coordKey(x, y)));
   const gate = { x: plaza.centerX, y: plaza.rect.y + plaza.rect.h };
   const shops = houses
     .filter((house) => house.program === "shop" || house.program === "inn")
@@ -406,7 +415,7 @@ function placeShopSigns(map: GameMap, houses: readonly BuiltHouse[], plaza: Plaz
       ? [bbox.x + bbox.w, bbox.x - 1]
       : [bbox.x - 1, bbox.x + bbox.w];
     const tryPlace = (x: number, y: number, requireGrass: boolean): boolean => {
-      if (!inMapBounds(map, x, y)) return false;
+      if (!inMapBounds(map, x, y) || blocked.has(coordKey(x, y))) return false;
       const cellIndex = y * map.width + x;
       if ((map.upperTiles[cellIndex] ?? TILE.EMPTY) !== TILE.EMPTY) return false;
       if (requireGrass && (map.lowerTiles[cellIndex] ?? TILE.EMPTY) !== TILE.GRASS) return false;
@@ -463,7 +472,7 @@ export function placeStoneRestSpots(
   houses: readonly BuiltHouse[],
   seed: number,
 ): number {
-  const blocked = houseBlockedCells(houses);
+  const blocked = houseBlockedCells(houses, map);
   const rng = mulberry32((seed ^ 0x3c6ef372) >>> 0);
   const freeGrass = (x: number, y: number): boolean =>
     inMapBounds(map, x, y)
@@ -498,7 +507,7 @@ export function placeStoneRestSpots(
         placed += 1;
       }
     }
-    shapeCobbleAround(map, patchCells);
+    shapeAutotileGroupAround(map, DEFAULT_COBBLE_AUTOTILE_GROUP, patchCells, (x, y) => !blocked.has(coordKey(x, y)));
     // 세로 2칸(상단/하단)이 패치 안에 들어가는 열을 골라 세운다 — h=2라 항상 성립.
     const px = x0 + Math.floor(rng() * w);
     const topIndex = y0 * map.width + px;
@@ -525,7 +534,7 @@ function placeBenchesAlongRoads(
   houses: readonly BuiltHouse[],
   seed: number,
 ): number {
-  const blocked = houseBlockedCells(houses);
+  const blocked = houseBlockedCells(houses, map);
   const isRoad = (x: number, y: number): boolean =>
     inMapBounds(map, x, y) && ROAD_TILES.has(map.lowerTiles[y * map.width + x] ?? TILE.EMPTY);
   const freeGrass = (x: number, y: number): boolean =>
@@ -592,7 +601,7 @@ function placeBroadleafGroves(
   target: number,
 ): number {
   const rng = mulberry32((seed ^ 0xb7e15162) >>> 0);
-  const blocked = houseBlockedCells(houses);
+  const blocked = houseBlockedCells(houses, map);
   const candidates: Point[] = [];
   for (let y = area.y + 1; y < area.y + area.h - 2; y += 1) {
     for (let x = area.x + 1; x < area.x + area.w - 2; x += 1) {

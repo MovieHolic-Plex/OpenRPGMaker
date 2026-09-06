@@ -1,0 +1,68 @@
+[
+  {
+    "baseline": ".omo/evidence/house-protection/p2/baseline-related.log",
+    "candidate": ".omo/evidence/house-protection/p2/related.log",
+    "identicalAssertions": true,
+    "failures": [
+      {
+        "test": "test/authorHouseFacade.test.ts > author_house canonical facade > blocks 'invalid wing' atomically with a selected route",
+        "assertionSha256": "e8f2a3770944f52d07c129662c8ed72350616d099d4d285b54af76b6334cd671"
+      },
+      {
+        "test": "test/authorHouseFacade.test.ts > author_house canonical facade > builds one exterior-only house with exact target and change evidence",
+        "assertionSha256": "f44dcdbcd853b60594b20e3d1c7cf87f82aa825e8b849a2f8a9f61e9163afd87"
+      },
+      {
+        "test": "test/authorHouseFacade.test.ts > author_house canonical facade > keeps a domain clearance warning in the shared construction outcome",
+        "assertionSha256": "f44dcdbcd853b60594b20e3d1c7cf87f82aa825e8b849a2f8a9f61e9163afd87"
+      },
+      {
+        "test": "test/authorHouseFacade.test.ts > author_house canonical facade > rolls back a zero-placement yard shortfall",
+        "assertionSha256": "46212e5f948e291f7ed7fcbb1ff5bb9360da290353dd4c459d98bbe6ae9e5c24"
+      },
+      {
+        "test": "test/houseLotTools.test.ts > yard decor materials are buildable > builds a lot whose yard uses the sign tag",
+        "assertionSha256": "ee9d4c646e3667e2535455330e884c474744aaf2a2bab3674ac226ecdfffacef"
+      },
+      {
+        "test": "test/houseLotTools.test.ts > yard decor materials are buildable > resolves every yard tag to a concrete material",
+        "assertionSha256": "b325b050826234660f4bd5582464389c9252da338488539d98391fa24555ce30"
+      }
+    ]
+  },
+  {
+    "baseline": ".omo/evidence/house-protection/p2-forest/baseline-related.log",
+    "candidate": ".omo/evidence/house-protection/p2/producer-related.log",
+    "identicalAssertions": true,
+    "failures": [
+      {
+        "test": "test/clusterRulePlacement.test.ts > hard cluster rule placement > paint_tiles가 침엽수 하단(290) 단독 칠하기를 상단(260) 동반 배치로 보정한다",
+        "assertionSha256": "7c33a2b1ae300ad7f8b13b9449fc45ca124cdcc00dc898e785325892e82cdf55"
+      },
+      {
+        "test": "test/clusterRulePlacement.test.ts > hard cluster rule placement > paint_tiles가 활엽수 하단 좌측(292)에서 2x2 전체를 원자 배치한다",
+        "assertionSha256": "94bf9278ae0069a9b8e14d55e5d2e80803d4dcd14fa1543479a5855fd64b5cee"
+      },
+      {
+        "test": "test/clusterRulePlacement.test.ts > hard cluster rule placement > scatter_object가 침엽수를 1x2 원자 풋프린트로 배치하고 summary에 동반 타일을 표시한다",
+        "assertionSha256": "13509fa960b5f1334bdde36b2490d8363d4e3a9e31eb5b05ed4d9948aab86811"
+      },
+      {
+        "test": "test/clusterRulePlacement.test.ts > hard cluster rule placement > scatter_object가 활엽수를 source_rect 기반 2x2 원자 풋프린트로 배치한다",
+        "assertionSha256": "7e1e9136c7f882fba0dd1eaab3ce29c40738ea3dd1f0f2e5ce359e08448d5143"
+      },
+      {
+        "test": "test/clusterRulePlacement.test.ts > hard cluster rule placement > 동반 타일 위치에 같은 타일이 이미 있으면 재배치를 허용한다(멱등)",
+        "assertionSha256": "3a51e0154de3a59680ba98675f2acb76d74975daf3d56835d0561020e43611b9"
+      },
+      {
+        "test": "test/forestDensity.test.ts > place_props density — 모델이 실제로 닿는 라이브 툴 > 활엽수 density=dense 가 count 없이도 숲을 만든다",
+        "assertionSha256": "196e82638cca44b018d1ce1efa0369039e0feffa9c15e9fdadf1f72ae5a4b7f2"
+      },
+      {
+        "test": "test/forestDensity.test.ts > plant_tree_clusters > 기본(dense)이 선언한 커버리지에 닿고 그 지대를 실제로 막는다",
+        "assertionSha256": "1e10e32f518172f629854fbcdd9f6dbba54b1112d7f45762efaa4288fefd1e6b"
+      }
+    ]
+  }
+]

@@ -2,10 +2,10 @@
 // 길 시공 — 광장 루프·간선, 집 진입 스퍼, 성분 재연결, 긴 직선 분절, 도로 하드 마스크.
 
 import { COBBLE_TILE, DIRT_ROAD_TILE, SAND_TILE } from "@/project/defaults/chipsetMapping";
-import { shapeCobbleAround } from "@/project/defaults/cobbleAutotile";
+import { shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
+import { DEFAULT_COBBLE_AUTOTILE_GROUP, DEFAULT_ROAD_AUTOTILE_GROUP, DEFAULT_SAND_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
+import { assertHouseProtection, captureHouseProtection, protectedHouseCells } from "../houseProtection";
 import { TILE } from "@/project/defaults/constants";
-import { shapeRoadAround } from "@/project/defaults/roadAutotile";
-import { shapeSandAround } from "@/project/defaults/sandAutotile";
 import type { GameMap, Project } from "@/project/types";
 import { mulberry32 } from "@/util/rng";
 import { inMapBounds, lineCells } from "../mapHelpers";
@@ -135,9 +135,9 @@ function roadBodyTile(style: RoadStyle): number {
 /** 스타일별 오토타일 성형. */
 function shapeRoadStyle(map: GameMap, style: RoadStyle, cells: readonly Point[]): void {
   if (cells.length === 0) return;
-  if (style === "dirt") shapeRoadAround(map, cells);
-  else if (style === "stone") shapeCobbleAround(map, cells);
-  else shapeSandAround(map, cells);
+  const blocked = new Set(protectedHouseCells(map).map(({ x, y }) => coordKey(x, y)));
+  const group = style === "dirt" ? DEFAULT_ROAD_AUTOTILE_GROUP : style === "stone" ? DEFAULT_COBBLE_AUTOTILE_GROUP : DEFAULT_SAND_AUTOTILE_GROUP;
+  shapeAutotileGroupAround(map, group, cells, (x, y) => !blocked.has(coordKey(x, y)));
 }
 
 /**
@@ -176,6 +176,9 @@ export function paintVillageRoadsChecked(args: {
   readonly retryReport?: { readonly report: RoadRetryReport | undefined };
 }): number {
   const { draft, map, plaza, area, houses, intent, seed, warnings, hardBlocked, throughBlocked, forbidden, boulevard, retryReport } = args;
+  const sealed = captureHouseProtection(draft);
+  const assertSealed = (): void => assertHouseProtection(sealed, draft, []);
+  const owned = new Set(protectedHouseCells(map).map(({ x, y }) => y * map.width + x));
   const MAX_RETRY = 100;
   const baseLower = [...map.lowerTiles];
   const baseUpper = [...map.upperTiles];
@@ -190,19 +193,28 @@ export function paintVillageRoadsChecked(args: {
     if (boulevard) {
       // 대로 먼저(spine-first) — 밴드는 집 배치 전에 예약돼 있어 구멍이 없다.
       paintRoadCellsAvoidingHouses(map, runIntent.pathStyle, boulevardBand, hardBlocked);
+      assertSealed();
     }
     paintPlazaAndAvenue(draft, map, plaza, area, runIntent, runSeed, warnings, throughBlocked, boulevard, seed);
+    assertSealed();
     connectHousesToRoads(draft, map, area, plaza, houses, runIntent, runSeed, warnings, hardBlocked);
+    assertSealed();
     ensureSingleRoadComponent(map, area, hardBlocked, runIntent.pathStyle, throughBlocked);
+    assertSealed();
     breakLongStraightRuns(map, area, hardBlocked, runIntent.pathStyle, houses, boulevardProtected);
+    assertSealed();
     pruneDeadEndStubs(map, area, houses, runIntent.pathStyle, boulevardProtected, plaza);
+    assertSealed();
     // 마감 2패스(2026-07-17): 분절·가지치기·밀집 스퍼가 남긴 고아 조각을 재연결 시도 후,
     // 그래도 남은 문 없는 소형 고아(<20칸)는 소거한다 — "길 성분 1" 감사 보증.
     ensureSingleRoadComponent(map, area, hardBlocked, runIntent.pathStyle, throughBlocked);
+    assertSealed();
     eraseOrphanRoadFragments(map, area, houses, runIntent.pathStyle);
+    assertSealed();
   };
   const restore = (): void => {
     for (let i = 0; i < baseLower.length; i += 1) {
+      if (owned.has(i)) continue;
       map.lowerTiles[i] = baseLower[i]!;
       map.upperTiles[i] = baseUpper[i]!;
     }
@@ -479,7 +491,7 @@ export function breakLongStraightRuns(
     inMapBounds(map, x, y) && (map.lowerTiles[y * map.width + x] ?? TILE.EMPTY) === TILE.GRASS
     && (map.upperTiles[y * map.width + x] ?? TILE.EMPTY) === TILE.EMPTY;
   // 문 앞 게이트 보호: front 행의 door.x±1은 제거 금지. 대로 칸도 제거 금지(protectedExtra).
-  const protectedCells = new Set<string>(protectedExtra);
+  const protectedCells = new Set([...protectedExtra, ...protectedHouseCells(map).map(({ x, y }) => coordKey(x, y))]);
   for (const house of houses) {
     for (let dx = -1; dx <= 1; dx += 1) protectedCells.add(coordKey(house.front.x + dx, house.front.y));
   }
@@ -491,10 +503,10 @@ export function breakLongStraightRuns(
       const jogCross = fixed + side;
       const removeCells = [cellOf(c, fixed), cellOf(c + 1, fixed)];
       const addCells = [cellOf(c - 1, jogCross), cellOf(c, jogCross), cellOf(c + 1, jogCross), cellOf(c + 2, jogCross)];
-      if (removeCells.some((cell) => protectedCells.has(coordKey(cell.x, cell.y)))) continue;
+      if (removeCells.some((cell) => protectedCells.has(coordKey(cell.x, cell.y)) || hardBlocked.has(coordKey(cell.x, cell.y)))) continue;
       if (!addCells.every((cell) =>
         cell.x > area.x && cell.y > area.y && cell.x < area.x + area.w - 1 && cell.y < area.y + area.h - 1
-        && !hardBlocked.has(coordKey(cell.x, cell.y))
+        && !hardBlocked.has(coordKey(cell.x, cell.y)) && !protectedCells.has(coordKey(cell.x, cell.y))
         && (isGrass(cell.x, cell.y) || isRoad(cell.x, cell.y)))) continue;
       for (const cell of addCells) {
         map.lowerTiles[cell.y * map.width + cell.x] = body;
@@ -561,6 +573,7 @@ export function plazaDeckBlockedCells(plaza: Plaza, intent: VillageIntent): Set<
  * 짧은 진입로를 깐다. 광장 rect는 도로 마스크로 봉쇄돼 있으므로 이 함수가 유일한 통로다.
  */
 export function paintPlazaGatePath(map: GameMap, plaza: Plaza, pathStyle: RoadStyle): void {
+  const protectedCells = new Set(protectedHouseCells(map).map(({ x, y }) => coordKey(x, y)));
   const rect = plaza.rect;
   const innerX = rect.x + 1;
   const innerW = Math.max(1, rect.w - 2);
@@ -568,7 +581,7 @@ export function paintPlazaGatePath(map: GameMap, plaza: Plaza, pathStyle: RoadSt
   const painted: Point[] = [];
   for (let y = rect.y + rect.h - 1; y <= rect.y + rect.h; y += 1) {
     for (let x = gateC - 1; x <= gateC + 1; x += 1) {
-      if (!inMapBounds(map, x, y)) continue;
+      if (!inMapBounds(map, x, y) || protectedCells.has(coordKey(x, y))) continue;
       const index = y * map.width + x;
       if ((map.lowerTiles[index] ?? TILE.EMPTY) !== TILE.GRASS) continue;
       if ((map.upperTiles[index] ?? TILE.EMPTY) !== TILE.EMPTY) continue;
@@ -614,6 +627,7 @@ export function eraseOrphanRoadFragments(
     }
   }
   if (components.length <= 1) return;
+  const protectedCells = new Set(protectedHouseCells(map).map(({ x, y }) => coordKey(x, y)));
   const fronts = new Set(houses.map((house) => coordKey(house.front.x, house.front.y)));
   const touchesFront = (cells: readonly Point[]): boolean =>
     cells.some((cell) =>
@@ -622,7 +636,8 @@ export function eraseOrphanRoadFragments(
   const largest = components.reduce((best, cells) => (cells.length > best.length ? cells : best), components[0]!);
   const changed: Point[] = [];
   for (const cells of components) {
-    if (cells === largest || cells.length >= 20 || touchesFront(cells)) continue;
+    if (cells === largest || cells.length >= 20 || touchesFront(cells)
+      || cells.some(({ x, y }) => protectedCells.has(coordKey(x, y)))) continue;
     for (const cell of cells) {
       map.lowerTiles[cell.y * map.width + cell.x] = TILE.GRASS;
       for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
@@ -646,7 +661,7 @@ export function pruneDeadEndStubs(
   protectedExtra: ReadonlySet<string>,
   plaza: Plaza,
 ): void {
-  const protectedCells = new Set<string>(protectedExtra);
+  const protectedCells = new Set([...protectedExtra, ...protectedHouseCells(map).map(({ x, y }) => coordKey(x, y))]);
   for (const house of houses) {
     for (let dy = 0; dy <= 1; dy += 1) {
       for (let dx = -1; dx <= 1; dx += 1) protectedCells.add(coordKey(house.front.x + dx, house.front.y + dy));
@@ -693,10 +708,11 @@ function paintRoadCellsAvoidingHouses(
 ): void {
   const painted: Point[] = [];
   const seen = new Set<string>();
+  const protectedCells = new Set(protectedHouseCells(map).map(({ x, y }) => coordKey(x, y)));
   const body = roadBodyTile(pathStyle);
   const paintCell = (x: number, y: number): boolean => {
     const key = coordKey(x, y);
-    if (seen.has(key) || !inMapBounds(map, x, y) || houseBlocked.has(key)) return false;
+    if (seen.has(key) || !inMapBounds(map, x, y) || houseBlocked.has(key) || protectedCells.has(key)) return false;
     seen.add(key);
     map.lowerTiles[y * map.width + x] = body;
     map.upperTiles[y * map.width + x] = TILE.EMPTY;
@@ -726,6 +742,8 @@ export function ensureSingleRoadComponent(
   pathStyle: RoadStyle,
   preferAvoid: ReadonlySet<string> = houseBlocked,
 ): void {
+  houseBlocked = new Set([...houseBlocked, ...protectedHouseCells(map).map(({ x, y }) => coordKey(x, y))]);
+  preferAvoid = new Set([...preferAvoid, ...houseBlocked]);
   const body = roadBodyTile(pathStyle);
   const key = (x: number, y: number) => `${x},${y}`;
   const isRoad = (x: number, y: number): boolean => {

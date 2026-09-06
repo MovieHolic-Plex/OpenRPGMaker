@@ -55,10 +55,9 @@ removing/shrinking/moving away/reclassifying recorded protection are rejected.
 Descriptive labels, notes, and tags may change when protection is preserved.
 New overlapping house geometry is rejected even when tile IDs are identical;
 pre-existing overlaps are tolerated only while their overlap does not expand.
-Village final layout registration retains earlier house regions and allocates
-unique IDs. **Village internal early sealing and proactive terrain/road/prop
-avoidance are Phase 2**: a Phase 1 transaction may reject unsafe generation
-instead of silently restoring or accepting damaged houses.
+Village registration retains every earlier layout region and allocates unique
+IDs. Phase 2 now seals village houses internally before environmental work;
+see the construction contract below. The Phase 1 final guard remains unchanged.
 
 Cluster approval (`clusterAiModal.ts`, including palette range classification) uses
 `applyProposedProject` against the live store, not direct snapshot/replacement.
@@ -74,6 +73,45 @@ Focused contracts: `test/houseProtection.test.ts`, `test/toolHouseProtection.tes
 `test/assistantMapPreservationGuard.test.ts`, `test/constructionToolsV3.test.ts`.
 The session matrix covers accepted, same-turn, same-session, and newly created
 maps against selection, `confirmDestroy`, and both `overExisting` values.
+
+## Completed-house construction protection - Phase 2 (2026-09-06)
+
+`village/builder.ts` finishes doors, ridge/roof/deck, banners, shop signs, and
+linked interiors before publishing house regions. It captures exact layer/stack
+snapshots once, locally to that builder invocation. Roads, yard fences, terrain,
+environmental decor, landscape, placement cleanup, NPC placement, and snow ground
+are checked against those same values after each stage. Road sub-stages also
+check before retry rollback. No post-environment door/ridge restoration remains;
+a damaged stage fails the whole tool with `protected-house-write`.
+
+Village seals do not accumulate in the standalone producer's project WeakMap.
+A discarded pipeline attempt discards its local snapshots; the accepted attempt
+still passes the unchanged transaction guard after global tree repair. The
+accepted start cell is excluded from new candidates so facade start restoration
+cannot reopen a sealed house. Existing metadata houses and human stamp bounds
+exclude new candidates and direct road/plaza/decor/landscape/snow writes, including
+autotile neighbors. Roof-deck metadata also records custom deck templates through
+the existing `roof-deck` tag. Only the existing bbox/ridge/recorded ladder geometry
+is owned, not the whole yard. Exact counts, connected-road checks and explicit
+capacity failure keep their existing contracts.
+
+`fill_region` skips metadata-owned cells before passage previews, lower/upper
+painting, `clearUpper`, and neighbor autotile writes. The fill-only structure-role
+fallback checks both layers without creating ownership metadata. `filled` counts
+permitted paint candidates; `mutatedCells` counts distinct final changed cells
+(including unprotected reshaped neighbors); `skipped.structure` counts protected
+requested candidates once. All-protected fills truthfully report zero change.
+
+`forestComposition.ts` preflights floor tone/litter, bushes, gap closure, edge
+feathering, undergrowth, full puddle candidates, and autotile neighbors. Tree
+placement rejects the whole footprint. The supported ungrouped tree-base path
+also excludes the repair canopy one row north before placing its trunk. Useful
+work outside houses still succeeds. No force option, schema, lock UI, raw-wall
+completion inference, human-brush restriction, or final-guard exemption was added.
+
+Primary regressions: `houseProtectionFill`, `houseProtectionForest`,
+`houseProtectionLifecycle`, and `villageHouseProtection`. Runnable integrated
+50x50/100x100 evidence: `.omo/evidence/house-protection/p2/exercise.mts`.
 
 ## 퀘스트 입력과 완주 증거 계약 (2026-09-05)
 
