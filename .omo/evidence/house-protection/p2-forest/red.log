@@ -1,0 +1,515 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/houseProtectionForest.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-house-protection-p2-forest
+
+ ❯ test/houseProtectionForest.test.ts (15 tests | 13 failed) 2199ms
+   × direct forest composition writers > preflights litter writes and still changes unowned cells 162ms
+     → expected [ 'upperTiles[64]', 'upperTiles[92]' ] to deeply equal []
+   × direct forest composition writers > preflights tone writes and still changes unowned cells 207ms
+     → expected [ 'lowerTiles[62]', …(8) ] to deeply equal []
+   × direct forest composition writers > preflights closure writes and still changes unowned cells 115ms
+     → expected [ 'upperTiles[94]', …(14) ] to deeply equal []
+   × direct forest composition writers > preflights feather writes and still changes unowned cells 161ms
+     → expected [ 'upperTiles[63]', …(2) ] to deeply equal []
+   × direct forest composition writers > preflights undergrowth writes and still changes unowned cells 121ms
+     → expected [ 'lowerTiles[152]', …(23) ] to deeply equal []
+   × direct forest composition writers > rejects an entire puddle footprint touching a house and uses the other clearing 200ms
+     → expected [ Array(2) ] to deeply equal []
+   × direct forest composition writers > protects 4-neighbor autotile writes outside the requested area 145ms
+     → expected [ 'lowerTiles[244]', …(3) ] to deeply equal []
+   × direct forest composition writers > protects 8-neighbor autotile writes outside the requested area 133ms
+     → expected [ 'lowerTiles[244]', …(5) ] to deeply equal []
+   × forest placement and final transaction guard > protects single-tile bush placement before writing, while placing bushes outside 55ms
+     → expected [ 'upperTiles[62]', …(7) ] to deeply equal []
+   ✓ forest placement and final transaction guard > keeps whole conifer-tree candidates away from protected canopy cells even with avoidProtected=false 63ms
+   ✓ forest placement and final transaction guard > keeps whole broadleaf-tree candidates away from protected canopy cells even with avoidProtected=false 47ms
+   × forest placement and final transaction guard > preserves ridge, empty/passable cells, deck attachment, human stamps and stacks in real dense composition 140ms
+     → expected [ 'upperTiles[64]', …(66) ] to deeply equal []
+   × forest placement and final transaction guard > preserves ridge, empty/passable cells, deck attachment, human stamps and stacks in real impassable composition 119ms
+     → expected [ 'upperTiles[64]', …(61) ] to deeply equal []
+   × forest placement and final transaction guard > commits dense forest through place_props after save/load, keeping the unchanged final guard 263ms
+     → [{"severity":"error","code":"protected-house-write","mapId":"map_blank_start","x":4,"y":2,"message":"완성된 집의 보호 영역은 AI가 변경할 수 없습니다. 집 밖에서 작업하세요. 직접 편집은 가능합니다."}]: expected false to be true // Object.is equality
+   × forest placement and final transaction guard > commits impassable forest through place_props after save/load, keeping the unchanged final guard 265ms
+     → [{"severity":"error","code":"protected-house-write","mapId":"map_blank_start","x":3,"y":2,"message":"완성된 집의 보호 영역은 AI가 변경할 수 없습니다. 집 밖에서 작업하세요. 직접 편집은 가능합니다."}]: expected false to be true // Object.is equality
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 13 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/houseProtectionForest.test.ts > direct forest composition writers > preflights litter writes and still changes unowned cells
+AssertionError: expected [ 'upperTiles[64]', 'upperTiles[92]' ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "upperTiles[64]",
++   "upperTiles[92]",
++ ]
+
+ ❯ expectPreserved test/houseProtectionForest.test.ts:70:18
+     68|
+     69| function expectPreserved(project: Project, before: ReturnType<typeof c…
+     70|   expect(writes).toEqual([]);
+       |                  ^
+     71|   expect(captureHouseProtection(project)).toEqual(before);
+     72|   expect(() => assertHouseProtection(before, project, [])).not.toThrow…
+ ❯ test/houseProtectionForest.test.ts:114:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/13]⎯
+
+ FAIL  test/houseProtectionForest.test.ts > direct forest composition writers > preflights tone writes and still changes unowned cells
+AssertionError: expected [ 'lowerTiles[62]', …(8) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "lowerTiles[62]",
++   "lowerTiles[93]",
++   "lowerTiles[94]",
++   "lowerTiles[123]",
++   "lowerTiles[124]",
++   "lowerTiles[153]",
++   "lowerTiles[154]",
++   "lowerTiles[183]",
++   "lowerTiles[184]",
++ ]
+
+ ❯ expectPreserved test/houseProtectionForest.test.ts:70:18
+     68|
+     69| function expectPreserved(project: Project, before: ReturnType<typeof c…
+     70|   expect(writes).toEqual([]);
+       |                  ^
+     71|   expect(captureHouseProtection(project)).toEqual(before);
+     72|   expect(() => assertHouseProtection(before, project, [])).not.toThrow…
+ ❯ test/houseProtectionForest.test.ts:114:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/13]⎯
+
+ FAIL  test/houseProtectionForest.test.ts > direct forest composition writers > preflights closure writes and still changes unowned cells
+AssertionError: expected [ 'upperTiles[94]', …(14) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "upperTiles[94]",
++   "upperTiles[93]",
++   "upperTiles[123]",
++   "upperTiles[153]",
++   "upperTiles[124]",
++   "upperTiles[154]",
++   "upperTiles[152]",
++   "upperTiles[122]",
++   "upperTiles[92]",
++   "upperTiles[184]",
++   "upperTiles[64]",
++   "upperTiles[183]",
++   "upperTiles[63]",
++   "upperTiles[182]",
++   "upperTiles[62]",
++ ]
+
+ ❯ expectPreserved test/houseProtectionForest.test.ts:70:18
+     68|
+     69| function expectPreserved(project: Project, before: ReturnType<typeof c…
+     70|   expect(writes).toEqual([]);
+       |                  ^
+     71|   expect(captureHouseProtection(project)).toEqual(before);
+     72|   expect(() => assertHouseProtection(before, project, [])).not.toThrow…
+ ❯ test/houseProtectionForest.test.ts:114:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/13]⎯
+
+ FAIL  test/houseProtectionForest.test.ts > direct forest composition writers > preflights feather writes and still changes unowned cells
+AssertionError: expected [ 'upperTiles[63]', …(2) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "upperTiles[63]",
++   "upperTiles[92]",
++   "upperTiles[183]",
++ ]
+
+ ❯ expectPreserved test/houseProtectionForest.test.ts:70:18
+     68|
+     69| function expectPreserved(project: Project, before: ReturnType<typeof c…
+     70|   expect(writes).toEqual([]);
+       |                  ^
+     71|   expect(captureHouseProtection(project)).toEqual(before);
+     72|   expect(() => assertHouseProtection(before, project, [])).not.toThrow…
+ ❯ test/houseProtectionForest.test.ts:114:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/13]⎯
+
+ FAIL  test/houseProtectionForest.test.ts > direct forest composition writers > preflights undergrowth writes and still changes unowned cells
+AssertionError: expected [ 'lowerTiles[152]', …(23) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "lowerTiles[152]",
++   "lowerTiles[153]",
++   "lowerTiles[154]",
++   "lowerTiles[182]",
++   "lowerTiles[183]",
++   "lowerTiles[184]",
++   "lowerTiles[212]",
++   "lowerTiles[213]",
++   "lowerTiles[214]",
++   "lowerTiles[242]",
++   "lowerTiles[243]",
++   "lowerTiles[244]",
++   "lowerTiles[152]",
++   "lowerTiles[182]",
++   "lowerTiles[153]",
++   "lowerTiles[183]",
++   "lowerTiles[154]",
++   "lowerTiles[184]",
++   "lowerTiles[212]",
++   "lowerTiles[213]",
++   "lowerTiles[214]",
++   "lowerTiles[242]",
++   "lowerTiles[243]",
++   "lowerTiles[244]",
++ ]
+
+ ❯ expectPreserved test/houseProtectionForest.test.ts:70:18
+     68|
+     69| function expectPreserved(project: Project, before: ReturnType<typeof c…
+     70|   expect(writes).toEqual([]);
+       |                  ^
+     71|   expect(captureHouseProtection(project)).toEqual(before);
+     72|   expect(() => assertHouseProtection(before, project, [])).not.toThrow…
+ ❯ test/houseProtectionForest.test.ts:114:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/13]⎯
+
+ FAIL  test/houseProtectionForest.test.ts > direct forest composition writers > rejects an entire puddle footprint touching a house and uses the other clearing
+AssertionError: expected [ Array(2) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "lowerTiles[496]",
++   "upperTiles[496]",
++ ]
+
+ ❯ expectPreserved test/houseProtectionForest.test.ts:70:18
+     68|
+     69| function expectPreserved(project: Project, before: ReturnType<typeof c…
+     70|   expect(writes).toEqual([]);
+       |                  ^
+     71|   expect(captureHouseProtection(project)).toEqual(before);
+     72|   expect(() => assertHouseProtection(before, project, [])).not.toThrow…
+ ❯ test/houseProtectionForest.test.ts:145:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/13]⎯
+
+ FAIL  test/houseProtectionForest.test.ts > direct forest composition writers > protects 4-neighbor autotile writes outside the requested area
+AssertionError: expected [ 'lowerTiles[244]', …(3) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "lowerTiles[244]",
++   "lowerTiles[274]",
++   "lowerTiles[304]",
++   "lowerTiles[334]",
++ ]
+
+ ❯ expectPreserved test/houseProtectionForest.test.ts:70:18
+     68|
+     69| function expectPreserved(project: Project, before: ReturnType<typeof c…
+     70|   expect(writes).toEqual([]);
+       |                  ^
+     71|   expect(captureHouseProtection(project)).toEqual(before);
+     72|   expect(() => assertHouseProtection(before, project, [])).not.toThrow…
+ ❯ test/houseProtectionForest.test.ts:173:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/13]⎯
+
+ FAIL  test/houseProtectionForest.test.ts > direct forest composition writers > protects 8-neighbor autotile writes outside the requested area
+AssertionError: expected [ 'lowerTiles[244]', …(5) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "lowerTiles[244]",
++   "lowerTiles[274]",
++   "lowerTiles[214]",
++   "lowerTiles[304]",
++   "lowerTiles[334]",
++   "lowerTiles[364]",
++ ]
+
+ ❯ expectPreserved test/houseProtectionForest.test.ts:70:18
+     68|
+     69| function expectPreserved(project: Project, before: ReturnType<typeof c…
+     70|   expect(writes).toEqual([]);
+       |                  ^
+     71|   expect(captureHouseProtection(project)).toEqual(before);
+     72|   expect(() => assertHouseProtection(before, project, [])).not.toThrow…
+ ❯ test/houseProtectionForest.test.ts:173:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/13]⎯
+
+ FAIL  test/houseProtectionForest.test.ts > forest placement and final transaction guard > protects single-tile bush placement before writing, while placing bushes outside
+AssertionError: expected [ 'upperTiles[62]', …(7) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "upperTiles[62]",
++   "upperTiles[63]",
++   "upperTiles[64]",
++   "upperTiles[65]",
++   "upperTiles[92]",
++   "upperTiles[93]",
++   "upperTiles[94]",
++   "upperTiles[95]",
++ ]
+
+ ❯ expectPreserved test/houseProtectionForest.test.ts:70:18
+     68|
+     69| function expectPreserved(project: Project, before: ReturnType<typeof c…
+     70|   expect(writes).toEqual([]);
+       |                  ^
+     71|   expect(captureHouseProtection(project)).toEqual(before);
+     72|   expect(() => assertHouseProtection(before, project, [])).not.toThrow…
+ ❯ test/houseProtectionForest.test.ts:186:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/13]⎯
+
+ FAIL  test/houseProtectionForest.test.ts > forest placement and final transaction guard > preserves ridge, empty/passable cells, deck attachment, human stamps and stacks in real dense composition
+AssertionError: expected [ 'upperTiles[64]', …(66) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "upperTiles[64]",
++   "upperTiles[65]",
++   "upperTiles[66]",
++   "upperTiles[67]",
++   "upperTiles[68]",
++   "upperTiles[69]",
++   "upperTiles[93]",
++   "upperTiles[94]",
++   "upperTiles[95]",
++   "upperTiles[96]",
++   "upperTiles[97]",
++   "upperTiles[98]",
++   "upperTiles[99]",
++   "upperTiles[123]",
++   "upperTiles[125]",
++   "upperTiles[126]",
++   "upperTiles[127]",
++   "upperTiles[128]",
++   "upperTiles[129]",
++   "upperTiles[153]",
++   "upperTiles[155]",
++   "upperTiles[156]",
++   "upperTiles[157]",
++   "upperTiles[158]",
++   "upperTiles[159]",
++   "upperTiles[183]",
++   "upperTiles[184]",
++   "upperTiles[185]",
++   "upperTiles[186]",
++   "upperTiles[187]",
++   "upperTiles[188]",
++   "upperTiles[189]",
++   "upperTiles[213]",
++   "upperTiles[214]",
++   "upperTiles[215]",
++   "upperTiles[216]",
++   "upperTiles[217]",
++   "upperTiles[218]",
++   "upperTiles[219]",
++   "upperTiles[243]",
++   "upperTiles[244]",
++   "upperTiles[245]",
++   "upperTiles[246]",
++   "upperTiles[247]",
++   "upperTiles[248]",
++   "upperTiles[249]",
++   "upperTiles[273]",
++   "upperTiles[274]",
++   "upperTiles[275]",
++   "upperTiles[276]",
++   "upperTiles[277]",
++   "upperTiles[278]",
++   "upperTiles[279]",
++   "upperTiles[465]",
++   "upperTiles[466]",
++   "upperTiles[467]",
++   "upperTiles[495]",
++   "upperTiles[496]",
++   "upperTiles[497]",
++   "upperTiles[525]",
++   "upperTiles[526]",
++   "upperTiles[527]",
++   "upperTiles[63]",
++   "upperTiles[65]",
++   "upperTiles[67]",
++   "upperTiles[69]",
++   "upperTiles[67]",
++ ]
+
+ ❯ expectPreserved test/houseProtectionForest.test.ts:70:18
+     68|
+     69| function expectPreserved(project: Project, before: ReturnType<typeof c…
+     70|   expect(writes).toEqual([]);
+       |                  ^
+     71|   expect(captureHouseProtection(project)).toEqual(before);
+     72|   expect(() => assertHouseProtection(before, project, [])).not.toThrow…
+ ❯ test/houseProtectionForest.test.ts:227:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/13]⎯
+
+ FAIL  test/houseProtectionForest.test.ts > forest placement and final transaction guard > preserves ridge, empty/passable cells, deck attachment, human stamps and stacks in real impassable composition
+AssertionError: expected [ 'upperTiles[64]', …(61) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "upperTiles[64]",
++   "upperTiles[65]",
++   "upperTiles[66]",
++   "upperTiles[67]",
++   "upperTiles[68]",
++   "upperTiles[69]",
++   "upperTiles[93]",
++   "upperTiles[94]",
++   "upperTiles[95]",
++   "upperTiles[96]",
++   "upperTiles[97]",
++   "upperTiles[98]",
++   "upperTiles[99]",
++   "upperTiles[123]",
++   "upperTiles[125]",
++   "upperTiles[126]",
++   "upperTiles[127]",
++   "upperTiles[128]",
++   "upperTiles[129]",
++   "upperTiles[153]",
++   "upperTiles[155]",
++   "upperTiles[156]",
++   "upperTiles[157]",
++   "upperTiles[158]",
++   "upperTiles[159]",
++   "upperTiles[183]",
++   "upperTiles[184]",
++   "upperTiles[185]",
++   "upperTiles[186]",
++   "upperTiles[187]",
++   "upperTiles[188]",
++   "upperTiles[189]",
++   "upperTiles[213]",
++   "upperTiles[214]",
++   "upperTiles[215]",
++   "upperTiles[216]",
++   "upperTiles[217]",
++   "upperTiles[218]",
++   "upperTiles[219]",
++   "upperTiles[243]",
++   "upperTiles[244]",
++   "upperTiles[245]",
++   "upperTiles[246]",
++   "upperTiles[247]",
++   "upperTiles[248]",
++   "upperTiles[249]",
++   "upperTiles[273]",
++   "upperTiles[274]",
++   "upperTiles[275]",
++   "upperTiles[276]",
++   "upperTiles[277]",
++   "upperTiles[278]",
++   "upperTiles[279]",
++   "upperTiles[465]",
++   "upperTiles[466]",
++   "upperTiles[467]",
++   "upperTiles[495]",
++   "upperTiles[496]",
++   "upperTiles[497]",
++   "upperTiles[525]",
++   "upperTiles[526]",
++   "upperTiles[527]",
++ ]
+
+ ❯ expectPreserved test/houseProtectionForest.test.ts:70:18
+     68|
+     69| function expectPreserved(project: Project, before: ReturnType<typeof c…
+     70|   expect(writes).toEqual([]);
+       |                  ^
+     71|   expect(captureHouseProtection(project)).toEqual(before);
+     72|   expect(() => assertHouseProtection(before, project, [])).not.toThrow…
+ ❯ test/houseProtectionForest.test.ts:227:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/13]⎯
+
+ FAIL  test/houseProtectionForest.test.ts > forest placement and final transaction guard > commits dense forest through place_props after save/load, keeping the unchanged final guard
+AssertionError: [{"severity":"error","code":"protected-house-write","mapId":"map_blank_start","x":4,"y":2,"message":"완성된 집의 보호 영역은 AI가 변경할 수 없습니다. 집 밖에서 작업하세요. 직접 편집은 가능합니다."}]: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ test/houseProtectionForest.test.ts:241:54
+    239|     const before = captureHouseProtection(ctx.project);
+    240|     const result = runTool(ctx, "place_props", { mapId: ctx.project.st…
+    241|     expect(result.ok, JSON.stringify(result.issues)).toBe(true);
+       |                                                      ^
+    242|     expect(captureHouseProtection(ctx.project)).toEqual(before);
+    243|     expect((result.data as { placed: number }).placed).toBeGreaterThan…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/13]⎯
+
+ FAIL  test/houseProtectionForest.test.ts > forest placement and final transaction guard > commits impassable forest through place_props after save/load, keeping the unchanged final guard
+AssertionError: [{"severity":"error","code":"protected-house-write","mapId":"map_blank_start","x":3,"y":2,"message":"완성된 집의 보호 영역은 AI가 변경할 수 없습니다. 집 밖에서 작업하세요. 직접 편집은 가능합니다."}]: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ test/houseProtectionForest.test.ts:241:54
+    239|     const before = captureHouseProtection(ctx.project);
+    240|     const result = runTool(ctx, "place_props", { mapId: ctx.project.st…
+    241|     expect(result.ok, JSON.stringify(result.issues)).toBe(true);
+       |                                                      ^
+    242|     expect(captureHouseProtection(ctx.project)).toEqual(before);
+    243|     expect((result.data as { placed: number }).placed).toBeGreaterThan…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/13]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  13 failed | 2 passed (15)
+   Start at  09:09:03
+   Duration  20.16s (transform 11.79s, setup 0ms, collect 16.53s, tests 2.20s, environment 12ms, prepare 281ms)

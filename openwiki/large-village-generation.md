@@ -15,7 +15,7 @@
 **타일을 먼저 막 깔지 않는다.**  
 먼저 사각형(bbox)으로 “여기 집, 여기 시장”을 정하고, 그다음에 실제로 찍는다.
 
-> AI 경로 메모 (2026-09-04): 위 순서는 100×100 bbox 하네스 전용이다. AI `author_village` / `build_village`는 다르다. 지금은 스케치 후보(`sketchHouseSites`)를 먼저 뽑고 집을 찍은 뒤 길을 잇는다. 즉 sketch sites → houses → roads다.
+> AI 경로 메모 (2026-09-04): 위 순서는 100×100 bbox 하네스 전용이다. AI `author_village` / `build_village`는 다르다. 지금은 스케치 후보(`sketchHouseSites`)를 먼저 뽑고 집을 찍은 뒤 길을 잇는다. Phase 2 순서는 sketch sites → houses/house-owned finishing → metadata + local snapshots → roads다.
 >
 > AI `build_village` 대로 (2026-09-05): 72칸 이상 맵의 자연형 골격은 이제 곡선이다. 명시적인 `street-grid`는 직선 밴드를 유지한다. `villageBoulevardPath`가 시드 고정 경유점을 잡고, 집 예약과 길 칠하기는 `boulevardCells` 한 칸 함수를 같이 쓴다.
 
@@ -34,11 +34,41 @@ placed over house lower tile 76, with trunk 290 at `(28,9)` erasing fence 409.
 Placement cleanup removed the invalid canopy but left the trunk, and the runner
 recreated the canopy after the completed-house snapshot. The fix rejects that
 whole candidate before painting; it does not restore house tiles or change the
-runner invariant. Village registration remains at its existing completion boundary.
+runner invariant. Phase 2 moves village registration before roads and environmental work.
 
 Coverage: `villageTreePlacement.test.ts` checks both scatter packers and valid
 forest overlap; `villageProducerProtection.test.ts` compares completion snapshots
 with accepted output for ordinary and 100x100 snow villages through toolRunner.
+
+## Phase 2 construction boundary (2026-09-06)
+
+- Finish house doors/roof/deck/banners/signs and linked interiors, register once,
+  then keep immutable invocation-local snapshots across roads, fences, terrain,
+  decor, landscape, cleanup, NPCs, and snow. Validate after each stage, including
+  road retry sub-stages, before any restoration can hide damage.
+- House-owned shop signs use empty upper cells over actual kit walls inside the
+  sealed bbox. Door cells and existing windows, banners and ladders are retained;
+  no free wall means no sign, not an unprotected yard placement or later repair.
+- External-road component repair, audit and door proximity share
+  `environmentalRoadAt`. Road-valued tiles owned by houses/decks/human stamps are
+  preserved without becoming street components. Genuine external disconnection
+  still fails the unchanged connectivity gate.
+- All existing layout regions survive registration with unique IDs. Existing
+  houses/human stamp geometry excludes candidates and environmental writers;
+  the accepted start cannot become a new house. The full bbox/ridge and recorded
+  deck ladder are protected, not the yard. A retry does not retain discarded
+  attempt snapshots in project-wide state.
+- Fill skips owned lower/upper/stack cells and neighbor reshaping, reports
+  `skipped.structure` and final `mutatedCells`, and retains both-layer role fallback.
+  Forest preflights direct floor/bush/feather/puddle/undergrowth writes and entire
+  tree footprints, including an ungrouped trunk's later repair canopy.
+- The Phase 1 atomic invariant, exact/best-effort count rules, road connectivity,
+  live/region/cluster application guards and human editing remain unchanged.
+- `houseProtectionLifecycle` proves real-stage corruption rejection, six kits,
+  multiwing/deck/linked doors, snow, reload and discarded retries.
+  `villageHouseProtection` observes direct writes (restoration cannot satisfy it).
+  `.omo/evidence/house-protection/p2/exercise.mts` runs real `author_house` → reload
+  → `author_village` → reload → fill/forest → rejected erase on 50x50 and 100x100.
 
 ## 관련 파일
 

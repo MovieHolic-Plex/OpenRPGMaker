@@ -2,6 +2,7 @@
 // 집 필지 울타리 — 둘레 정본 문법 시공, 모서리 강등, 울타리 존재/개수 검사.
 
 import { HOUSE_KITS as HOUSE_KIT_DEFS } from "@/editor/houseKit";
+import { protectedHouseCells } from "../houseProtection";
 import { TILE } from "@/project/defaults/constants";
 import type { GameMap } from "@/project/types";
 import {
@@ -41,7 +42,9 @@ function placeLotFence(map: GameMap, house: BuiltHouse, houseIndex: number, seed
   const lastX = lot.x + lot.w - 1;
   const lastY = lot.y + lot.h - 1;
   const hash = Math.abs(Math.imul(seed + 31, 1103515245) ^ Math.imul(houseIndex + 7, 12345));
+  const protectedCells = new Set(protectedHouseCells(map).map(({ x, y }) => y * map.width + x));
   const setFence = (x: number, y: number, tile: number): boolean => {
+    if (protectedCells.has(y * map.width + x)) return false;
     if (!pointInMap(map, { x, y }) || (area && !pointInRect({ x, y }, area))) return false;
     if (ROAD_TILES.has(map.lowerTiles[y * map.width + x] ?? TILE.EMPTY)) return false;
     // 이미 뭔가 얹힌 칸(용마루·나무·소품)은 덮지 않는다 — 울타리가 지붕 장식을 지우던 회귀 방지.
@@ -144,7 +147,9 @@ const HOUSE_LOWER_TILES = (() => {
 function placeEstatePerimeterFence(map: GameMap, house: BuiltHouse, lot: Rect, area?: Rect): void {
   const lastX = lot.x + lot.w - 1;
   const lastY = lot.y + lot.h - 1;
+  const protectedCells = new Set(protectedHouseCells(map).map(({ x, y }) => y * map.width + x));
   const setFence = (x: number, y: number, tile: number): boolean => {
+    if (protectedCells.has(y * map.width + x)) return false;
     if (!pointInMap(map, { x, y }) || (area && !pointInRect({ x, y }, area))) return false;
     if (ROAD_TILES.has(map.lowerTiles[y * map.width + x] ?? TILE.EMPTY)) return false;
     if ((map.upperTiles[y * map.width + x] ?? TILE.EMPTY) !== TILE.EMPTY) return false;
@@ -187,9 +192,10 @@ function placeEstatePerimeterFence(map: GameMap, house: BuiltHouse, lot: Rect, a
 /** 세로 기둥과 못 이어진 모서리를 좌/우 끝 조각으로 강등 + 고아 기둥 정리. */
 function demoteCornerToEnd(map: GameMap, x: number, y: number, cornerTile: number, endTile: number): void {
   const index = y * map.width + x;
-  if (map.upperTiles[index] === cornerTile) map.upperTiles[index] = endTile;
+  const protectedCells = new Set(protectedHouseCells(map).map(({ x, y }) => y * map.width + x));
+  if (!protectedCells.has(index) && map.upperTiles[index] === cornerTile) map.upperTiles[index] = endTile;
   const midIndex = (y - 1) * map.width + x;
-  if (map.upperTiles[midIndex] === FENCE_SIDE_RAIL) map.upperTiles[midIndex] = TILE.EMPTY;
+  if (!protectedCells.has(midIndex) && map.upperTiles[midIndex] === FENCE_SIDE_RAIL) map.upperTiles[midIndex] = TILE.EMPTY;
 }
 
 export function houseHasFence(map: GameMap, house: BuiltHouse): boolean {

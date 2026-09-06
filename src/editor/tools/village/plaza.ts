@@ -6,6 +6,7 @@ import { TILE } from "@/project/defaults/constants";
 import type { GameMap } from "@/project/types";
 import type { Rng } from "@/util/rng";
 import { inMapBounds } from "../mapHelpers";
+import { protectedHouseCells } from "../houseProtection";
 import type { PlazaLayout } from "../villagePlan";
 import {
   clamp,
@@ -70,6 +71,7 @@ export function villagePlaza(
 }
 
 export function paintMarketDeck(map: GameMap, rect: Rect): void {
+  const protectedCells = new Set(protectedHouseCells(map).map(({ x, y }) => y * map.width + x));
   for (let y = rect.y; y < rect.y + rect.h; y += 1) {
     for (let x = rect.x; x < rect.x + rect.w; x += 1) {
       let tile: number = WOOD_FLOOR_PASSABILITY.body;
@@ -78,6 +80,7 @@ export function paintMarketDeck(map: GameMap, rect: Rect): void {
       else if (y === rect.y) tile = WOOD_FLOOR_PASSABILITY.edgeNorth;
       else if (y === rect.y + rect.h - 1) tile = WOOD_FLOOR_PASSABILITY.edgeSouth;
       const index = y * map.width + x;
+      if (protectedCells.has(index)) continue;
       map.lowerTiles[index] = tile;
       map.upperTiles[index] = TILE.EMPTY;
     }
@@ -89,11 +92,13 @@ export function paintMarketDeck(map: GameMap, rect: Rect): void {
  * (사용자 문법: 꽃잎으로 바닥을 채우고 덤불로 볼륨을 준다.) 잔디+빈 upper 칸에만.
  */
 export function paintFlowerField(map: GameMap, rect: Rect, rng: Rng): number {
+  const protectedCells = new Set(protectedHouseCells(map).map(({ x, y }) => y * map.width + x));
   let placed = 0;
   for (let y = rect.y; y < rect.y + rect.h; y += 1) {
     for (let x = rect.x; x < rect.x + rect.w; x += 1) {
       if (!inMapBounds(map, x, y)) continue;
       const index = y * map.width + x;
+      if (protectedCells.has(index)) continue;
       if ((map.lowerTiles[index] ?? TILE.EMPTY) !== TILE.GRASS) continue;
       if ((map.upperTiles[index] ?? TILE.EMPTY) !== TILE.EMPTY) continue;
       const roll = rng();
@@ -112,6 +117,7 @@ export function paintFlowerField(map: GameMap, rect: Rect, rng: Rng): number {
  * 게이트 양끝은 끝 조각(439/409)으로 마감한다. 잔디·빈 upper 칸에만 친다.
  */
 export function paintPlazaFence(map: GameMap, rect: Rect): number {
+  const protectedCells = new Set(protectedHouseCells(map).map(({ x, y }) => y * map.width + x));
   if (rect.w < 5 || rect.h < 3) return 0;
   const x1 = rect.x + rect.w - 1;
   const y1 = rect.y + rect.h - 1;
@@ -135,6 +141,7 @@ export function paintPlazaFence(map: GameMap, rect: Rect): number {
   for (const [tile, x, y] of cells) {
     if (!inMapBounds(map, x, y)) continue;
     const index = y * map.width + x;
+    if (protectedCells.has(index)) continue;
     if ((map.lowerTiles[index] ?? TILE.EMPTY) !== TILE.GRASS) continue;
     if ((map.upperTiles[index] ?? TILE.EMPTY) !== TILE.EMPTY) continue;
     map.upperTiles[index] = tile;
@@ -144,6 +151,7 @@ export function paintPlazaFence(map: GameMap, rect: Rect): number {
 }
 
 export function placeMarketDeckProps(map: GameMap, area: Rect): number {
+  const protectedCells = new Set(protectedHouseCells(map).map(({ x, y }) => y * map.width + x));
   const placements: readonly (Point & { readonly tile: number })[] = [
     { x: area.x, y: area.y, tile: 234 },
     { x: area.x + 1, y: area.y, tile: 235 },
@@ -159,6 +167,7 @@ export function placeMarketDeckProps(map: GameMap, area: Rect): number {
   for (const placement of placements) {
     if (!pointInMap(map, placement)) continue;
     const index = placement.y * map.width + placement.x;
+    if (protectedCells.has(index)) continue;
     if (map.upperTiles[index] !== TILE.EMPTY) continue;
     map.upperTiles[index] = placement.tile;
     placed += 1;

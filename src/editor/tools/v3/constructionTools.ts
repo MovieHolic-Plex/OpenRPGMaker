@@ -18,6 +18,7 @@ import {
 } from "@/project/tileVocabulary";
 import type { AutotileGroup, GameMap, Project, TileGroupMetadata, TilesetDef } from "@/project/types";
 import { forestCompositionApplies, measureForestArea, plantForestComposition } from "../forestComposition";
+import { protectedHouseCells } from "../houseProtection";
 import {
   forestPackingFor,
   forestPlacementPlan,
@@ -306,18 +307,16 @@ function structureGroupNameForTile(tileset: TilesetDef, tile: number): string | 
   return null;
 }
 
-function splitStructureCells(
-  tileset: TilesetDef,
-  map: GameMap,
+function splitProtectedFillCells(
   cells: readonly Point[],
+  reasonFor: (cell: Point) => string | null,
 ): { cells: Point[]; skipped: ProtectedCell[] } {
   const kept: Point[] = [];
   const skipped: ProtectedCell[] = [];
   for (const cell of cells) {
-    const lower = map.lowerTiles[cell.y * map.width + cell.x];
-    const structure = lower >= 0 ? structureGroupNameForTile(tileset, lower) : null;
-    if (structure === null) kept.push(cell);
-    else skipped.push({ ...cell, reason: `구조물(${structure})` });
+    const reason = reasonFor(cell);
+    if (reason === null) kept.push(cell);
+    else skipped.push({ ...cell, reason });
   }
   return { cells: kept, skipped };
 }
@@ -895,7 +894,15 @@ const fillRegion: ToolDefinition = {
       );
     }
     // 채우기는 면만 바꾼다 — 벽·지붕·건물 칸은 건너뛰고, 통행 불가 재료는 이벤트 칸도 건너뛴다.
-    const structure = splitStructureCells(tileset, map, allCells);
+    const houses = new Set(protectedHouseCells(map).map(pointKey));
+    const protectedReason = (cell: Point): string | null => {
+      if (houses.has(pointKey(cell))) return "완성된 집";
+      const index = cell.y * map.width + cell.x;
+      const structure = structureGroupNameForTile(tileset, map.lowerTiles[index])
+        ?? structureGroupNameForTile(tileset, map.upperTiles[index]);
+      return structure === null ? null : `구조물(${structure})`;
+    };
+    const structure = splitProtectedFillCells(allCells, protectedReason);
     const blocksPassage = layer === "lower" && tileBlocksPassage(tileset, body);
     // 상위 소품 처리 기본값은 재료가 정한다 — 물 위 소품은 배치 검증이 error 로 잡으니 비우고,
     // 모래·잔디 위 나무는 남긴다(「나무는 그대로 두고」). 인자가 있으면 그것을 따른다.
@@ -911,12 +918,18 @@ const fillRegion: ToolDefinition = {
     };
     const filtered = filterPassageProtectedCells(draft, map, events.cells, paintCell);
     const exit = blocksPassage ? reserveStartExit(draft, map, filtered.cells) : { cells: filtered.cells, corridor: [] as Point[] };
+    const lowerBefore = map.lowerTiles.slice();
+    const upperBefore = map.upperTiles.slice();
     let upperCleared = 0;
     for (const cell of exit.cells) {
       if (clearUpper && layer === "lower" && map.upperTiles[cell.y * map.width + cell.x] !== TILE.EMPTY) upperCleared += 1;
       paintCell(cell);
     }
-    const reshaped = layer === "lower" && autotile ? resolveAutotile(autotile, exit.cells, map) : 0;
+    const reshaped = layer === "lower" && autotile
+      ? resolveAutotile(autotile, exit.cells, map, (x, y) => protectedReason({ x, y }) === null) : 0;
+    const mutatedCells = lowerBefore.reduce((count, lower, index) => count + Number(
+      lower !== map.lowerTiles[index] || upperBefore[index] !== map.upperTiles[index],
+    ), 0);
     const skippedAll = [...structure.skipped, ...events.skipped, ...filtered.skipped];
     const shapeNote = shape === "rect" ? "" : ` shape=${shape}`;
     const gapNote = gapCells > 0 ? ` (벽 틈 메움 ${gapCells}칸)` : "";
@@ -930,10 +943,11 @@ const fillRegion: ToolDefinition = {
         : []),
     ];
     return withSoftConfirm({
-      summary: `${map.name} (${rect.x},${rect.y}) ${rect.w}×${rect.h}${shapeNote}을 '${group.name}'로 채움 — ${exit.cells.length}/${maskCells.length}칸${gapNote}, 오토타일 재계산 ${reshaped}칸${skipNote}${upperNote}${exitNote}.`,
+      summary: `${map.name} (${rect.x},${rect.y}) ${rect.w}×${rect.h}${shapeNote}을 '${group.name}'로 ${mutatedCells > 0 ? "채움" : "변경 없음"} — ${exit.cells.length}/${maskCells.length}칸${gapNote}, 실제 변경 ${mutatedCells}칸, 오토타일 재계산 ${reshaped}칸${skipNote}${upperNote}${exitNote}.`,
       ...(warnings.length > 0 ? { warnings } : {}),
       data: {
         filled: exit.cells.length,
+        mutatedCells,
         requested: allCells.length,
         bboxCells: bboxCells.length,
         maskCells: maskCells.length,

@@ -1,0 +1,15 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/houseProtectionForest.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-house-protection-p2-forest
+
+ ✓ test/houseProtectionForest.test.ts (15 tests) 3325ms
+   ✓ forest placement and final transaction guard > commits dense forest through place_props after save/load, keeping the unchanged final guard  911ms
+   ✓ forest placement and final transaction guard > commits impassable forest through place_props after save/load, keeping the unchanged final guard  703ms
+
+ Test Files  1 passed (1)
+      Tests  15 passed (15)
+   Start at  09:11:26
+   Duration  21.69s (transform 11.99s, setup 0ms, collect 16.78s, tests 3.32s, environment 0ms, prepare 256ms)
