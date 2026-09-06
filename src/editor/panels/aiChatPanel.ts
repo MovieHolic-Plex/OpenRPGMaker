@@ -40,6 +40,7 @@ import { openHarnessModal } from "@/editor/panels/aiHarnessModal";
 import { COMMAND_PALETTE_OPEN_EVENT, openCommandPalette } from "./commandPalette";
 import { filterToolCategories, openToolBrowserModal } from "@/editor/panels/toolBrowserModal";
 import { runRegionTask, type RegionTaskOptions, type RegionTaskResult } from "@/editor/regionTask/runRegionTask";
+import { getPendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
 import { formatMaterialLabelHint } from "@/ai/turnGuide";
 import { createLlmIntentDeclarer } from "@/ai/intentDeclarationClient";
 import type { SessionTurnScope } from "@/ai/assistantSession";
@@ -760,8 +761,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     proposalApi.lastAppliedProposalMessage = value;
   };
 
-  const restoreConversationRecord = (record: ConversationRecord, source: "auto" | "manual"): void => {
-    dropSession(controller);
+  const restoreConversationRecord = (record: ConversationRecord, source: "auto" | "manual" | "project-switch"): void => {
+    dropSession(controller, source === "project-switch" ? null : getPendingRegionApply());
     clearWorkPlanSurface(); // 대화 전환 — 다른 대화의 할 일 목록이 남으면 안 된다(스테일 상태 방지).
     // 화면만 복원하면 사용자는 이어졌다고 믿고 모델은 아무것도 모른다 — 다음 세션에 기록 요약을
     // 함께 밀어 넣어 "이어가기"를 모델 쪽에서도 참으로 만든다.
@@ -777,7 +778,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     for (const entry of record.entries) renderConversationEntry(entry);
     const lastAssistant = [...record.entries].reverse().find((entry) => entry.kind === "assistant" && entry.text.trim());
     if (lastAssistant?.kind === "assistant") renderQuickReplies(lastAssistant.text);
-    setStatus(source === "auto" ? "대화 복원됨" : "이전 대화");
+    setStatus(source === "manual" ? "이전 대화" : "대화 복원됨");
     // 복원된 대화는 로그에 들어가지만 syncGlassIdle 이 다시 돌지 않으면 패널이 is-glass-idle 로
     // 남아 .ai-glass-log 가 display:none 이라 사용자에게 보이지 않는다(실보 2026-08-27).
     syncGlassIdle();
@@ -834,7 +835,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     endTurnProgress();
     refreshAbortButton();
     persistConversation();
-    dropSession(controller);
+    dropSession(controller, reason === "manual" ? getPendingRegionApply() : null);
     clearWorkPlanSurface(); // 새 대화 — 이전 대화의 할 일 목록/예산/피드를 버린다.
     // 새 대화는 정말로 빈 대화다 — 복원/되감기가 예약해 둔 기록 주입이 남아 있으면 버린다.
     pendingPriorTranscript = null;
@@ -898,7 +899,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (disposed || generation !== adoptGeneration) return;
     const hadConversation = resetConversationState("project-switch", resumed);
     if (resumed) {
-      restoreConversationRecord(resumed, "auto");
+      restoreConversationRecord(resumed, "project-switch");
       // 부팅 지연 로드에서도 매번 뜨면 소음이다 — 정말 다른 대화를 밀어냈을 때만 알린다.
       if (hadConversation) toast("프로젝트를 바꿔 그 프로젝트의 이전 대화를 이어갑니다.", "ok");
       return;

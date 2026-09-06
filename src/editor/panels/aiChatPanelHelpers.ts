@@ -18,7 +18,8 @@ import { loadAiConfig } from "@/ai/llmClient";
 import type { AiConfig } from "@/ai/llmClient";
 import { editorState } from "@/editor/editorState";
 import { clearAgentBlueprint } from "@/editor/agentBlueprint";
-import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
+import { clearAgentGhostPreview, replaceAgentGhostPreviewFromProjectDiff, setAgentGhostDraftMapProvider } from "@/editor/agentGhostPreview";
+import type { PendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
 import { getTool } from "@/editor/tools";
 import { showConfirm } from "@/editor/ui/modal";
 export { showConfirm };
@@ -225,10 +226,15 @@ export function exportCombinedAudit(controller: ChatController): string | null {
 }
 
 // 세션을 버리기 전에 감사 항목을 회수한다.
-export function dropSession(controller: ChatController): void {
+export function dropSession(controller: ChatController, pendingRegion: PendingRegionApply | null = null): void {
   if (controller.session) controller.auditHistory.push(...controller.session.getAuditEntries());
   controller.session = null;
   clearAgentGhostPreview();
+  // The caller owns the project boundary. Only a surviving independent region gets the surface back.
+  setAgentGhostDraftMapProvider(pendingRegion ? (mapId) => pendingRegion.clippedProject.maps[mapId] : null);
+  if (pendingRegion) {
+    replaceAgentGhostPreviewFromProjectDiff(pendingRegion.baseProject, pendingRegion.clippedProject);
+  }
   // 세션이 사라지면 그 세션의 밑그림(BuildSpec)도 사라진다 — 청사진의 수명은 스펙에 매여 있고
   // 새 대화·대화 복원·프로젝트 전환이 모두 이 함수를 지나간다.
   clearAgentBlueprint();
