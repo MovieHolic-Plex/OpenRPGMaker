@@ -223,6 +223,12 @@ HP/MP는 하향 제한만 하며 회복하지 않는다. 기존 레벨업 회복
 
 ## 검증
 
+- `growth-connected-studio.mjs`는 전용 포트뿐 아니라 `VITE_CACHE_DIR`도 자신의
+  증거 디렉터리 아래로 격리하고 `E2E_FREEZE_DEV_SERVER=1`로 실행한다. 공유
+  `node_modules/.vite` 재최적화 때문에 다른 워크트리의 QA 기동이 멈추는 것을 피한다.
+- `test/databaseClassPromotionRequirements.test.ts`: 기존 직업 폼의 레거시 입력이
+  현재 성장 조건을 보존하며, 변수 선택 전 임계값 입력과 변수 삭제/재선택도
+  화면의 임계값을 함께 저장한다. 직렬화·실제 승급 판정 및 브라우저 QA로 검증한다.
 - `test/growthConnectedPresets.test.ts`: 연결/반복 적용의 모든 참조, 0 예산/기존 기록 보존,
   wire roundtrip, 실제 runtime 투자/승급으로 세 역할의 두 가지 경로 도달 가능성.
 - `test/growthConnectedStudio.test.ts`: 기본 노드, 꽉 찬 목적지에서도 분리 preview,
