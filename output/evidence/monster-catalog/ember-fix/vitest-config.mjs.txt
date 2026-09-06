@@ -1,0 +1,2 @@
+import base from '/home/main/z-project/rpg-zzu-monster-catalog-0907/vitest.config.ts';
+export default { ...base, envDir: '/tmp/st_01a078fc', cacheDir: '/dev/shm/st_01a078fc/current-vite-cache', test: { ...base.test, cache: false, setupFiles: ['/tmp/st_01a078fc/current-trace.ts'] } };

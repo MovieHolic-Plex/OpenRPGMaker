@@ -1,0 +1,31 @@
+{
+  "command": [
+    "node",
+    "scripts/run-vitest.mjs",
+    "run",
+    "test/emberQuestToolReplay.test.ts",
+    "--configLoader",
+    "runner",
+    "--config",
+    "/tmp/st_01a078fc/current.config.mjs",
+    "--no-cache",
+    "--maxWorkers",
+    "1",
+    "--reporter=json",
+    "--reporter=/tmp/st_01a078fc/exact-errors-reporter.mjs",
+    "--outputFile=/tmp/st_01a078fc/ember-current-green.json"
+  ],
+  "cwd": "/home/main/z-project/rpg-zzu-monster-catalog-0907",
+  "environment": {
+    "PATH": "/home/main/.omo/agent/bin:/home/main/.npm-global/lib/node_modules/omo-ai/plugin/runtime/agent-toolkit:/home/main/.npm-global/lib/node_modules/omo-ai/node_modules/.bin:/home/main/.opencode/bin:/home/main/.bun/bin:/home/main/.local/bin:/home/main/bin:/home/main/.grok/bin:/home/main/.bun/bin:/home/main/.deno/bin:/home/main/.bun/bin:/home/main/.local/bin:/home/main/google-cloud-sdk/bin:/home/main/.bun/bin:/home/main/.local/bin:/home/main/.npm-global/bin:/home/main/.npm-global/bin:/home/main/.local/bin:/home/main/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/main/.maestro/bin",
+    "HOME": "/dev/shm/st_01a078fc/home",
+    "TMPDIR": "/dev/shm/st_01a078fc/tmp",
+    "TMP": "/dev/shm/st_01a078fc/tmp",
+    "TEMP": "/dev/shm/st_01a078fc/tmp",
+    "NODE_OPTIONS": "--import=/tmp/st_01a078fc/no-network.mjs",
+    "DIAG_SUITE_ERRORS": "/tmp/st_01a078fc/ember-current-green-exact-errors.json",
+    "REPLAY_TRACE": "/tmp/st_01a078fc/ember-current-green-trace.json"
+  },
+  "exit": 0,
+  "seconds": 20.61101307393983
+}

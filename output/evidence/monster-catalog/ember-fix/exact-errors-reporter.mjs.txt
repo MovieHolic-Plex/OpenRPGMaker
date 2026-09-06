@@ -1,0 +1,12 @@
+import { writeFileSync } from 'node:fs';
+export default class ExactErrorsReporter {
+  onFinished(files, errors) {
+    const rows = [];
+    const visit = (task, file, ancestors = []) => {
+      if (task.result?.errors?.length) rows.push({ file, task: task.name, ancestors, type: task.type, errors: task.result.errors.map(e => ({ name: e.name, message: e.message, stack: e.stack, actual: e.actual, expected: e.expected })) });
+      for (const child of task.tasks ?? []) visit(child, file, [...ancestors, task.name]);
+    };
+    for (const file of files ?? []) visit(file, file.filepath);
+    writeFileSync(process.env.DIAG_SUITE_ERRORS, JSON.stringify({ tasks: rows, errors }, null, 2));
+  }
+}
