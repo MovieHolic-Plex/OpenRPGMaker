@@ -272,6 +272,8 @@ export function syncBattleParty(party: HTMLElement, snapshot: BattleSnapshot, pr
   for (const actor of snapshot.actors) {
     const row = party.querySelector<HTMLElement>(`.battle-actor-status[data-record-id="${actor.recordId}"]`);
     if (!row) continue;
+    const level = row.querySelector(".battle-actor-level .battle-vital-value");
+    if (level && actor.level !== undefined) level.textContent = ` ${actor.level}`;
     const presented = presentedState(actor, presentation);
     const hp = row.querySelector(".battle-actor-hp");
     if (hp) setVitalNode(hp, "hp", presented.hp, actor.maxHp);

@@ -38,7 +38,7 @@ export function applyBattleRewardsToSession(
     // 전직(promoteActor) write-back 은 바이탈 write-back 보다 먼저 — changeActorClass 가
     // 세션 바이탈 최대치를 새 클래스 곡선으로 갱신해야 아래 전투 HP/MP 클램프가 새 최대치를 쓴다.
     applyBattleClassOverridesToSession(session, project, outcome.eventState);
-    applyBattleVitalsToSession(session, outcome.actors ?? []);
+    applyBattleVitalsToSession(session, outcome.actors ?? [], outcome.eventState);
     // 파티 몬스터가 싸운 경우, 전투 종료 HP를 인스턴스에 되돌려쓴다(경험치 가산보다 먼저).
     applyBattleMonsterVitalsToSession(session, outcome.actors ?? []);
     applyBattleStatesToSession(session, outcome.actors ?? []);
@@ -161,6 +161,10 @@ function applyBattleEventStateToSession(session: PlaySession, eventState: Battle
       setRelationshipState(session, key, state);
     }
   }
+  for (const [key, value] of Object.entries(eventState.friendship ?? {})) {
+    session.friendship ??= {};
+    session.friendship[key] = value;
+  }
   // 전투 중 changeEquipment 오버레이 write-back(Step 3d): 시드가 세션 사본이라 액터 단위
   // 병합이 idempotent 하다. 장비 전이의 인벤토리 증감은 아래 inventory 덮어쓰기에 포함된다.
   if (eventState.actorEquipment) {
@@ -192,14 +196,24 @@ function applyBattleEventStateToSession(session: PlaySession, eventState: Battle
 }
 
 // 전투 종료 시점의 아군 HP/MP를 세션 바이탈에 되돌려 쓴다(레벨업 가산 이전에 수행).
-function applyBattleVitalsToSession(session: PlaySession, actors: readonly BattleBattlerSnapshot[]): void {
+function applyBattleVitalsToSession(
+  session: PlaySession,
+  actors: readonly BattleBattlerSnapshot[],
+  eventState: BattleEventStateSnapshot | undefined
+): void {
   for (const actor of actors) {
     const vitals = session.actorVitals[actor.recordId];
     if (!vitals) continue;
+    const level = eventState?.actorLevels?.[actor.recordId];
+    const levelChanged = level !== undefined && level !== (session.actorLevels[actor.recordId] ?? 1);
+    const maxHp = levelChanged ? actor.maxHp : vitals.maxHp;
+    const maxMp = levelChanged ? actor.maxMp : vitals.maxMp;
     session.actorVitals[actor.recordId] = {
       ...vitals,
-      hp: Math.max(0, Math.min(vitals.maxHp, actor.hp)),
-      mp: Math.max(0, Math.min(vitals.maxMp, actor.mp)),
+      maxHp,
+      maxMp,
+      hp: Math.max(0, Math.min(maxHp, actor.hp)),
+      mp: Math.max(0, Math.min(maxMp, actor.mp)),
     };
   }
 }

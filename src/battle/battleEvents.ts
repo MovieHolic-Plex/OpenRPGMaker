@@ -43,6 +43,7 @@ export type BattleEventRuntimeState = {
   readonly gameTime?: GameTime;
   readonly npcActivities?: Record<string, string>;
   readonly friendship?: Record<string, number>;
+  friendshipWrites?: Record<string, number>;
   readonly relationships?: Record<string, RelationshipState>;
   // 전투가 실제로 쓴 관계 키만 모은다. 스냅숏에 지도 전체를 실으면 전투 중 맵에서 지운
   // 관계를 write-back 이 되살린다(setRelationshipState 는 single 을 삭제로 처리한다).
@@ -265,6 +266,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       actorExperience: { ...(options.state.actorExperience ?? {}) },
       actorLevels: { ...(options.state.actorLevels ?? {}) },
       actorBattleCommands: { ...(options.state.actorBattleCommands ?? {}) },
+      friendship: { ...(options.state.friendshipWrites ?? {}) },
       relationships: { ...(options.state.relationshipWrites ?? {}) },
       flags: { ...(options.state.flags ?? {}) },
       timers: { ...(options.state.timers ?? {}) },
@@ -550,6 +552,8 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
           return false;
         }
         options.state.friendship[npcKey] = clampFriendship((options.state.friendship[npcKey] ?? 0) + command.delta);
+        options.state.friendshipWrites ??= {};
+        options.state.friendshipWrites[npcKey] = options.state.friendship[npcKey];
         return false;
       }
       case "setRelationship": {
@@ -615,8 +619,11 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         options.state.actorLevels ??= {};
         for (const actor of resolveActorTargets(command.actorId)) {
           const id = actor.recordId;
-          const current = options.state.actorLevels[id] ?? 1;
-          options.state.actorLevels[id] = Math.max(1, Math.min(99, applyVitalOperation(current, command.op, command.amount)));
+          const current = options.state.actorLevels[id] ?? actor.level ?? 1;
+          const level = Math.max(1, Math.min(99, applyVitalOperation(current, command.op, command.amount)));
+          options.state.actorLevels[id] = level;
+          actor.level = level;
+          options.refreshActorDerivedStats?.(actor);
         }
         logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `changeLevel ${command.actorId}` });
         return false;

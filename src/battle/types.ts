@@ -395,6 +395,8 @@ export interface BattleEventStateSnapshot {
   readonly actorExperience?: Readonly<Record<string, number>>;
   readonly actorLevels?: Readonly<Record<string, number>>;
   readonly actorBattleCommands?: Readonly<Record<string, readonly string[]>>;
+  /** Only friendship keys written by this battle, not its entire input snapshot. */
+  readonly friendship?: Readonly<Record<string, number>>;
   // 이산 관계 상태(setRelationship) — applyBattleRewardsToSession 이 세션 relationships 로 되돌려 쓴다.
   readonly relationships?: Readonly<Record<string, RelationshipState>>;
   // 레거시 호환 플래그(setFlag) — applyBattleRewardsToSession 이 세션 flags 로 되돌려 쓴다.

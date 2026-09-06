@@ -1,5 +1,23 @@
 # Runtime Battle Behavior
 
+## Event friendship and live level changes (2026-09-06)
+
+`changeFriendship` snapshots only keys written by the battle, following the
+relationship write-set contract. Returning victory, escape and permitted defeat
+merge those keys into the captured session; nonreturning defeat does not.
+Unrelated session friendship updates are preserved.
+
+`changeLevel` updates the existing mutable battler and calls the existing derived
+stat refresher. Current HP/MP, equipment and gauge are retained, with vitals
+clamped when maxima decrease. The party HUD updates its existing level node.
+When the returned event level differs from the session level, the reward bridge
+copies the battler maxima before clamping current vitals and writing the level.
+
+Contracts: `battleEventRepairState.test.ts`, `battleEventRepairHud.test.ts`.
+Shipping-player QA: `node scripts/qa-event-command-repairs.mjs --scenario battle-state`.
+The VX Ace skin intentionally hides maximum-vital text; screenshots show the
+level/current vitals, while DOM/session observations verify the maxima.
+
 ## Battle-event continuation and cancellation (2026-09-06)
 
 Battle execution remains synchronous between input boundaries. `battleEvents.ts`

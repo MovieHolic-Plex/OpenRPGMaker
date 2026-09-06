@@ -14,9 +14,9 @@ if (scenario === "battle-flow") {
 } else {
 const phaseIndex = args.indexOf("--phase");
 const phase = phaseIndex >= 0 ? args[phaseIndex + 1] : "surface";
-assert(["map-effects", "audio-layers"].includes(scenario), "Choose an implemented repair scenario");
+assert(["map-effects", "audio-layers", "battle-state"].includes(scenario), "Choose an implemented repair scenario");
 assert(["red", "green", "surface"].includes(phase), "Unknown evidence phase");
-const out = join(root, `output/evidence/event-command-repairs/${scenario === "audio-layers" ? "audio" : "map"}`, phase);
+const out = join(root, `output/evidence/event-command-repairs/${scenario === "audio-layers" ? "audio" : scenario === "battle-state" ? "battle-state" : "map"}`, phase);
 await mkdir(out, { recursive: true });
 const report = {
   scenario, phase, head: execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim(),
@@ -35,7 +35,7 @@ async function observe(expression, action, timeout = 20_000) {
       let settled = false;
       let timer;
       const observer = new MutationObserver(check);
-      const mediaEvents = ["playing", "ended", "volumechange", "timeupdate", "pause"];
+      const mediaEvents = ["playing", "ended", "volumechange", "timeupdate", "pause", "animationend", "transitionend"];
       for (const event of mediaEvents) document.addEventListener(event, check, true);
       function finish(pass) {
         if (settled) return;
@@ -134,6 +134,53 @@ async function runAudioScenario() {
   await shot("restored-input");
 }
 
+async function readPartyHud(label) {
+  const hud = await page.evaluate(() => {
+    const row = document.querySelector('.battle-actor-status[data-record-id="actor_hero"]');
+    return {
+      level: Number(row?.querySelector('.battle-actor-level .battle-vital-value')?.textContent),
+      hp: Number(row?.querySelector('.battle-actor-hp .battle-vital-value')?.textContent),
+      maxHp: Number(row?.querySelector('.battle-actor-hp .battle-vital-max')?.textContent?.replace('/', '')),
+      text: row?.textContent,
+    };
+  });
+  report.observations.push({ label, hud });
+  return hud;
+}
+
+async function runStateScenario() {
+  await marker("STATE START");
+  await observe('!!document.querySelector(\'[data-testid="actor-command-defend"][data-battle-command-cursor="true"]:not(:disabled)\')', "Enter", 60_000);
+  const before = await readPartyHud("level before event");
+  assert.equal(before.level, 7);
+  assert.equal(before.maxHp, 700);
+  assert(before.hp > 0 && before.hp <= 300);
+  await shot("01-level-before");
+  await observe('document.querySelector(\'.battle-actor-status[data-record-id="actor_hero"] .battle-actor-level .battle-vital-value\')?.textContent.trim() === "11" && !!document.querySelector(\'[data-testid="actor-command-defend"]:not(:disabled)\')', "Enter", 30_000);
+  const after = await readPartyHud("level after event");
+  assert.equal(after.level, 11);
+  assert.equal(after.maxHp, 1100);
+  assert(after.hp > 0 && after.hp <= 300);
+  await shot("02-level-after");
+  await observe('!!document.querySelector(\'[data-testid="actor-command-attack"][data-battle-command-cursor="true"]:not(:disabled)\')', "ArrowDown");
+  await observe('["targetSelect", "resolved"].includes(document.querySelector(\'[data-testid="battle-scene"]\')?.dataset.battlePhase)', "Enter");
+  const resultReady = '(() => { const panel = document.querySelector(\'[data-testid="battle-result-panel"]\'); const battle = document.querySelector(\'[data-testid="battle-scene"]\'); return panel && !panel.hidden && Number(getComputedStyle(panel).opacity) >= 0.9 && battle?.dataset.battleSequenceBusy === "false"; })()';
+  const targetSelection = await page.evaluate(() => document.querySelector('[data-testid="battle-scene"]')?.dataset.battlePhase === "targetSelect");
+  await observe(resultReady, targetSelection ? "Enter" : undefined, 30_000);
+  await shot("03-state-result");
+  await marker("STATE RETURNED");
+  const returned = await snapshot("returned session");
+  const friendship = await page.evaluate(() => window.__oprnDebug.readState().friendship);
+  assert.equal(friendship.qa_npc, 56);
+  assert.equal(returned.state.actorLevels.actor_hero, 11);
+  assert.equal(returned.state.actorVitals.actor_hero.maxHp, 1100);
+  assert(returned.state.actorVitals.actor_hero.hp > 0 && returned.state.actorVitals.actor_hero.hp <= 300);
+  report.observations.push({ label: "returned friendship", friendship });
+  await shot("04-state-returned");
+  await observe('!document.querySelector(\'[data-testid="dialogue-box"]\') && window.__oprnDebug.readState().switches.state_repair_done === true', "Enter");
+  await observe('window.__oprnDebug.readState().x === 4', "ArrowRight");
+}
+
 try {
   server = await startPlayerQaServer();
   report.url = server.url;
@@ -152,14 +199,30 @@ try {
   await page.route("**/__repair-bootstrap", route => route.fulfill({
     contentType: "text/html", body: '<!doctype html><html><body><div id="app"></div></body></html>',
   }));
-  await page.route(url => url.origin === server.url && !url.pathname.startsWith("/__repair"),
-    async route => route.fulfill({ response: await route.fetch() }));
+  await page.route(url => url.origin === server.url && !url.pathname.startsWith("/__repair"), async route => {
+    try {
+      const method = route.request().method();
+      await route.fulfill({ response: await route.fetch({ maxRetries: method === "GET" || method === "HEAD" ? 1 : 0 }) });
+    } catch (error) {
+      if (page.isClosed()) return;
+      report.errors.push(`Local asset transport: ${error instanceof Error ? error.message : String(error)}`);
+      try {
+        await route.abort();
+      } catch (abortError) {
+        if (!page.isClosed()) report.errors.push(`Abort request: ${abortError instanceof Error ? abortError.message : String(abortError)}`);
+      }
+    }
+  });
   await page.routeWebSocket(url => url.host === new URL(server.url).host, () => {});
   await page.goto(`${server.url}/__repair-bootstrap`);
   const project = await page.evaluate(async scenario => {
     if (scenario === "audio-layers") {
       const { audioCommandRepairsProject } = await import("/test/fixtures/eventCommandAudioRepairs.ts");
       return audioCommandRepairsProject();
+    }
+    if (scenario === "battle-state") {
+      const { battleEventStateRepairsProject } = await import("/test/fixtures/battleEventStateRepairs.ts");
+      return battleEventStateRepairsProject();
     }
     const { mapCommandRepairsProject } = await import("/test/fixtures/eventCommandRepairs.ts");
     return mapCommandRepairsProject();
@@ -184,6 +247,8 @@ try {
   await observe('!!document.querySelector(\'[data-testid="title-screen"]\')', undefined, 120_000);
   if (scenario === "audio-layers") {
     await runAudioScenario();
+  } else if (scenario === "battle-state") {
+    await runStateScenario();
   } else {
   await marker("REPAIR START");
   await marker("LOCATION COMPLETE");

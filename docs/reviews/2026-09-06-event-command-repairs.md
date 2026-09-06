@@ -73,3 +73,21 @@ Start with `battle-flow-stable/SUMMARY.md`, `summary.json` and `cleanup.json`.
 An earlier run stopped after 15 passing cases because a local asset GET reset the connection; that attempt is retained and is not accepted as a complete run. Transparent local request forwarding now handles connection-reset retries for idempotent asset reads only; scenario failures are never retried or hidden.
 
 The gauge force-escape result screenshot initially preceded its entrance animation. The capture now awaits actual visibility, and the focused `battle-flow-visible` run confirms the visible result and confirmation control.
+
+## Battle friendship, level and HUD
+
+- RED: the expanded state suite had seven failures and one nonreturning-defeat control. The existing-row HUD test separately observed level 7 instead of 11.
+- Supervisor GREEN: all 43 state/HUD/reward/relationship/active-slot tests passed after integration. Changed-file diagnostics, app typecheck and player build passed.
+- Real player: Guard triggered level 7 to 11 and maximum HP 700 to 1100 without healing current HP 300 or MP 20. After forced escape, the session retained level 11, maximum HP 1100 and friendship 56 instead of its initial 37. Field keyboard movement resumed.
+- Screenshots visibly show level 7 then 11 and current HP 300. Maximum HP is verified through actual DOM/session state: the existing VX Ace skin intentionally hides the denominator.
+- The friendship write-set preserves unrelated concurrent session keys; permitted defeat/victory/escape return changes, while nonreturning defeat does not.
+- Browser/server cleanup receipts are true; the run reported no runtime errors.
+
+```bash
+npm test -- test/battleEventRepairState.test.ts test/battleEventRepairHud.test.ts \
+  test/battleRewardsToSession.test.ts test/relationshipBattleWriteBack.test.ts \
+  test/battleActiveSlotsEvents.test.ts --maxWorkers=1
+node scripts/qa-event-command-repairs.mjs --scenario battle-state --phase green
+```
+
+Evidence: `output/evidence/event-command-repairs/battle-state/{red,green}/`.
