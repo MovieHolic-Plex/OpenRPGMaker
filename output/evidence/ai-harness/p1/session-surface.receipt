@@ -1,0 +1,2 @@
+command=node output/evidence/ai-harness/p1/session-surface.mjs
+exit=0

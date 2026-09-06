@@ -119,6 +119,7 @@ describe("assistant owner-turn presentation cleanup", () => {
   it.each(["applied", "rejected"] as const)("retires after an %s proposal without altering outcome accounting", async (outcome) => {
     const h = setup();
     h.deps.applyProposal.mockResolvedValue(outcome);
+    const proof = vi.spyOn(h.session, "proveAppliedRevision");
     const result: TurnResult = {
       assistantText: "answer", stoppedReason: "final",
       proposedCalls: [{ name: "set_title_screen", args: { title: "title" }, destructive: false, summary: "title", result: { ok: true, summary: "title" } }],
@@ -126,6 +127,8 @@ describe("assistant owner-turn presentation cleanup", () => {
     await h.runner.executeTurn(h.session, "title", async () => result, { composerMode: "ask" });
     expect(getAgentBlueprintState().entries).toHaveLength(0);
     expect(h.deps.applyProposal).toHaveBeenCalledWith(result.proposedCalls, expect.anything());
+    expect(proof).toHaveBeenCalledTimes(outcome === "applied" ? 1 : 0);
+    if (outcome === "applied") expect(proof).toHaveBeenCalledWith(expect.any(Function), expect.any(AbortSignal));
     expect(observed.activity).toHaveBeenLastCalledWith(expect.objectContaining({ result: expect.objectContaining({ appliedCalls: outcome === "applied" ? 1 : 0 }) }));
   });
 

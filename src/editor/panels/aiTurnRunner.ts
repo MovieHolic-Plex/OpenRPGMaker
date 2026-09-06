@@ -521,7 +521,11 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
         }
         const applied = outcome === "applied";
         if (!applied && deps.workPlanSurfaceState) deps.workPlanSurfaceState.stoppedReason = "apply-failed";
-        if (applied) appliedWriteCount += result.proposedCalls.length;
+        if (applied) {
+          appliedWriteCount += result.proposedCalls.length;
+          await session.proveAppliedRevision(onEvent, abortController.signal);
+          if (!ownsTurn(true)) return;
+        }
         // 적용 결과가 나온 다음에 청사진을 정산한다 — 배치 검증·커밋 게이트가 거부하면
         // (applied === false) 저장소는 그대로이므로 done 은 거짓이다.
         settleBlueprintForTurnEnd(applied ? result.proposedCalls : null);

@@ -1,0 +1,2 @@
+command=npm test -- test/aiRunEndProof.test.ts -t retryLastTurn
+exit=1

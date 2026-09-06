@@ -1,0 +1,2 @@
+command=npm run build
+exit=unavailable (tool deadline terminated process at 240s)
