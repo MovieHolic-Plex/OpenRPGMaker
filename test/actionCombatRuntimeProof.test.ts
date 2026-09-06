@@ -216,4 +216,3 @@ describe("action dispatcher observations", () => {
     expect(observations.find(entry => entry.outcome === "enemy-defeat")).toMatchObject({ before: 1, after: 0 });
   });
 });
-

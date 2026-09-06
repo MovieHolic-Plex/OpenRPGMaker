@@ -3,7 +3,8 @@ import {
   openDatabaseResourcePickerDialog,
 } from "@/editor/panels/databaseResourcePickerDialog";
 import { getAudioEngine, playAudioCommand, stopAudioCommand } from "@/player/audio";
-import { resolveAudioSource } from "@/player/audio/audioResources";
+import { listAudioResources } from "@/assets/audioResourceCatalog";
+import { audioDescriptionView, audioPlayback } from "@/editor/panels/audioResourcePresentation";
 import { store } from "@/project/store";
 import { applyCharsetLabelOverrides, charsetSemanticsForTexture } from "@/assets/charsetSemantics";
 import { charsetFollowerGraphic } from "@/project/followers";
@@ -1354,7 +1355,6 @@ function skillSubtitle(record: { readonly mpCost: { readonly flat: number }; rea
 }
 
 function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind: "playAudio" }>): HTMLElement {
-  const project = store.getCurrent();
   getAudioEngine().installUnlockListeners();
 
   let channel: "bgm" | "se" = cmd.loop ? "bgm" : "se";
@@ -1399,8 +1399,10 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
   };
 
   const refreshMeta = (): void => {
-    const url = resolveAudioSource(resourceId, project);
-    const playable = isBrowserPlayableAudioUrl(url);
+    const project = store.getCurrent();
+    const { url, playable } = audioPlayback(resourceId, project);
+    const resource = listAudioResources("music", project).find(entry => entry.id === resourceId)
+      ?? listAudioResources("sound", project).find(entry => entry.id === resourceId);
     const label = currentOptionLabel(list) || resourceId || "(선택 없음)";
     meta.replaceChildren(
       el("div", { class: "play-audio-meta-name", text: label }),
@@ -1413,7 +1415,8 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
             : url?.toLowerCase().endsWith(".mid")
               ? "이 형식은 미리 들을 수 없습니다"
               : "미리 듣기 불가",
-      })
+      }),
+      audioDescriptionView(resource),
     );
     status.textContent = "대기 중";
   };
@@ -1434,8 +1437,9 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
             click: () => {
               channel = option.value;
               // Prefer a sensible default when switching channel with empty/wrong-kind id.
-              if (!resourceId || !catalogFor(channel, project).some((entry) => entry.id === resourceId)) {
-                resourceId = catalogFor(channel, project)[0]?.id ?? "";
+              const catalog = catalogFor(channel, store.getCurrent());
+              if (!resourceId || !catalog.some((entry) => entry.id === resourceId)) {
+                resourceId = catalog[0]?.id ?? "";
               }
               rebuildChannelButtons();
               refreshChannelCopy();
@@ -1449,6 +1453,7 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
   };
 
   const fillList = (): void => {
+    const project = store.getCurrent();
     const query = search.value.trim().toLowerCase();
     const fullCatalog = catalogFor(channel, project);
     const catalog = fullCatalog.filter((entry) => {
@@ -1465,7 +1470,7 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
       list.append(el("option", { text: currentAudioLabel(resourceId, project), attrs: { value: resourceId } }));
     }
     for (const entry of catalog) {
-      const mark = entry.playable ? "" : " · MIDI 비재생";
+      const mark = entry.playable ? "" : entry.midi ? " · MIDI 비재생" : " · 미리 듣기 불가";
       list.append(
         el("option", {
           text: `${entry.name}${mark}`,
@@ -1485,7 +1490,10 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
     resourceId = list.value.trim();
     apply();
   });
-  search.addEventListener("input", () => fillList());
+  search.addEventListener("input", () => {
+    fillList();
+    refreshMeta();
+  });
 
   const playBtn = el("button", {
     class: "btn primary",
@@ -1499,9 +1507,9 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
           status.textContent = "리소스를 먼저 선택하세요";
           return;
         }
-        const url = resolveAudioSource(resourceId, store.getCurrent());
-        if (!isBrowserPlayableAudioUrl(url)) {
-          status.textContent = url?.toLowerCase().endsWith(".mid")
+        const { playable, midi } = audioPlayback(resourceId, store.getCurrent());
+        if (!playable) {
+          status.textContent = midi
             ? "MIDI는 웹에서 재생되지 않습니다. CC0 Field Loop 등 WAV를 고르세요."
             : "이 리소스는 재생할 수 없습니다";
           return;
@@ -1583,20 +1591,15 @@ type AudioCatalogEntry = {
   readonly id: string;
   readonly name: string;
   readonly playable: boolean;
+  readonly midi: boolean;
   readonly searchTerms?: readonly string[];
 };
 
 function catalogFor(channel: "bgm" | "se", project: Project): readonly AudioCatalogEntry[] {
   return listDatabaseResourceOptions(channel === "bgm" ? "music" : "sound", project).map((entry) => ({
     ...entry,
-    playable: isBrowserPlayableAudioUrl(resolveAudioSource(entry.id, project)),
+    ...audioPlayback(entry.id, project),
   }));
-}
-
-function isBrowserPlayableAudioUrl(url: string | null): boolean {
-  if (!url) return false;
-  const lower = url.toLowerCase();
-  return lower.endsWith(".wav") || lower.endsWith(".ogg") || lower.endsWith(".mp3") || lower.endsWith(".m4a") || lower.startsWith("data:audio/");
 }
 
 function currentOptionLabel(select: HTMLSelectElement): string {

@@ -45,7 +45,22 @@ export class ToolVerificationEvidence {
         if (check.name === name && check.executionFailed) this.checks.delete(key);
       }
     }
-    const key = stableKey([name, args]);
+    let identity = args;
+    if (name === "run_scene_test" && Array.isArray(args.steps)) {
+      const steps = args.steps.filter((step): step is Record<string, unknown> =>
+        step !== null && typeof step === "object" && !Array.isArray(step));
+      const interactions = steps.filter((step) => step.kind === "interact");
+      if (steps.length === args.steps.length && steps.some((step) => step.kind === "expect")
+        && interactions.length > 0 && interactions.every((step) => typeof step.eventId === "string")) {
+        // A navigation correction is the same check only when explicit NPC targets,
+        // assertions, choices and reward checkpoints remain unchanged.
+        identity = { ...args, steps: steps
+          .filter((step) => !["face", "move", "walk"].includes(String(step.kind))
+            && !(step.kind === "set" && Object.keys(step).every((key) => ["kind", "x", "y"].includes(key))))
+          .map((step) => step.kind === "interact" ? { kind: step.kind, eventId: step.eventId } : step) };
+      }
+    }
+    const key = stableKey([name, identity]);
     const explicit = source === "explicit" || this.requiredTools.has(name) || this.checks.get(key)?.explicit === true;
     // A clean automatic check resolves its own prior finding but never creates
     // a new required check after later writes. Preserve explicit check history.

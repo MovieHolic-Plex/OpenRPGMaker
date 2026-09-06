@@ -8,11 +8,6 @@ import {
   type ProposedCall,
   type SessionEvent,
 } from "@/ai/assistantSession";
-import type { BuildSpec } from "@/ai/buildSpec";
-import {
-  proposalHasChangedMap,
-  requestLikelyExpectsChange,
-} from "@/ai/proposalCompleteness";
 import { isAssistantEndpointReady, type AssistantConnectionReadiness } from "@/ai/assistantEndpoint";
 import { loadAiConfig } from "@/ai/llmClient";
 import type { AiConfig } from "@/ai/llmClient";
@@ -176,19 +171,6 @@ export function attachCompletenessWarnings(calls: readonly ProposedCall[], warni
   for (const warning of warnings) {
     if (!diff.warnings.includes(warning)) diff.warnings.push(warning);
   }
-}
-
-export function completenessSpecForProposal(
-  confirmedThisTurn: BuildSpec | null,
-  activeAtTurnStart: BuildSpec | null,
-  calls: readonly ProposedCall[],
-  requestText: string
-): BuildSpec | null {
-  if (confirmedThisTurn) return calls.length > 0 || requestLikelyExpectsChange(requestText) ? confirmedThisTurn : null;
-  if (!activeAtTurnStart) return null;
-  if (proposalHasChangedMap(calls, activeAtTurnStart.mapId)) return activeAtTurnStart;
-  if (calls.length === 0 && requestLikelyExpectsChange(requestText)) return activeAtTurnStart;
-  return null;
 }
 
 // UI 상태 배지 전이 기록(결함 ⑬) — 적용 실패 같은 멈춤을 export 로그로 진단한다.

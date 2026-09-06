@@ -8,6 +8,12 @@ import {
   type FacesetSheetSplitPlan,
 } from "@/assets/facesetSheetSlicing";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
+import {
+  AUDIO_DESCRIPTION_TOOLS,
+  audioDescriptionsForTool,
+  parseAudioResourceRef,
+  resetAudioDescriptionOnProject,
+} from "./audioDescriptionTools";
 
 export type FacesetUploadDecision =
   | { readonly accept: true }
@@ -109,6 +115,7 @@ const upsertResource: ToolDefinition = {
           kind: { type: "string", enum: [...RESOURCE_KINDS] },
           mimeType: { type: "string" },
           dataUrl: { type: "string" },
+          description: { type: "string", description: "music/sound 전용 설명. 생략하면 기존 설명 보존, 빈 문자열은 비우기." },
         },
         required: ["id", "name", "kind"],
         additionalProperties: false,
@@ -127,6 +134,13 @@ const upsertResource: ToolDefinition = {
     const name = typeof record.name === "string" ? record.name.trim() : "";
     if (!id || !name) throw new ToolError("resource.id와 resource.name이 필요합니다.", { code: "invalid-args" });
     const kind = parseKind(record.kind);
+    const descriptionUpdate = Object.hasOwn(record, "description")
+      ? audioDescriptionsForTool(
+        draft.audioDescriptions,
+        parseAudioResourceRef(kind, record.id),
+        record.description,
+      )
+      : undefined;
     const existing = draft.assets.uploaded[id];
     const dataUrl = typeof record.dataUrl === "string" && record.dataUrl.trim()
       ? record.dataUrl
@@ -151,6 +165,7 @@ const upsertResource: ToolDefinition = {
       meta: existing?.meta ?? {},
     };
     draft.assets.uploaded[id] = asset;
+    if (descriptionUpdate !== undefined) draft.audioDescriptions = descriptionUpdate;
     return { summary: `리소스 ${name}`, data: { resource: { id: asset.id, name: asset.name, kind: asset.kind } } };
   },
 };
@@ -168,12 +183,21 @@ const deleteResource: ToolDefinition = {
   run(draft, args): ToolExecResult {
     const resourceId = typeof args.resourceId === "string" ? args.resourceId.trim() : "";
     if (!resourceId) throw new ToolError("resourceId가 필요합니다.", { code: "invalid-args" });
-    if (!draft.assets.uploaded[resourceId]) {
+    const asset = draft.assets.uploaded[resourceId];
+    if (!asset) {
       throw new ToolError(`없는 리소스입니다: ${resourceId}`, { code: "resource-not-found" });
     }
     delete draft.assets.uploaded[resourceId];
+    if (asset.kind === "music" || asset.kind === "sound") {
+      draft.resourceProfiles = draft.resourceProfiles.filter(profile => profile.assetId !== resourceId);
+      resetAudioDescriptionOnProject(draft, { kind: asset.kind, resourceId });
+    }
     return { summary: `리소스 삭제 ${resourceId}`, data: { resourceId } };
   },
 };
 
-export const RESOURCE_TOOLS: readonly ToolDefinition[] = [upsertResource, deleteResource];
+export const RESOURCE_TOOLS: readonly ToolDefinition[] = [
+  ...AUDIO_DESCRIPTION_TOOLS,
+  upsertResource,
+  deleteResource,
+];

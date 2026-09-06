@@ -1,7 +1,27 @@
 # Action RPG authoring correction verification
 
-Baseline: `58105616b`. The investigation and final authoring used the actual
+Initial baseline: `58105616b`; final integration includes main `b9dec50fb`.
+The investigation and final authoring used the actual
 in-editor AI, not scripted model responses. Existing combat was not rebuilt.
+
+## Current-main integration
+
+Main advanced while the final review was running. The local merge preserves both
+action proof and the newer NPC reward, per-map specification, navigation-repair
+and dependent-call contracts.
+
+The integration first exposed 17 failing cases. Strict scene preflight was
+extended for the newly supported reward checkpoints, targeted interactions and
+delta assertions; ordinary NPC errors retain their correction examples. Valid
+flat `set{x,y}` input also exposed an unwanted synthesized `to` field, fixed at
+the shared coordinate-normalization boundary.
+
+The final combined run passed **359 tests across 32 files**, and the full build
+passed again. The actual browser AI executed `run_action_combat_test` on the
+merged code and passed in one call, without project changes or page errors.
+The compiled-player CLI still observed all 50 outcomes; host
+`ERR_NETWORK_CHANGED` asset warnings in that rerun are retained in its logs and
+are not represented as an aesthetic pass. See `post-merge-validation.json`.
 
 ## Verified result
 

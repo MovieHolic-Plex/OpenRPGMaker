@@ -19,6 +19,32 @@ export type IntentMode = "create" | "modify" | "question" | "other";
 export type IntentSpace = "interior" | "outdoor" | "both" | "none" | "unclear";
 export type IntentSource = "llm" | "fallback" | "continuation" | "empty";
 
+export type NpcRewardTarget = (
+  | { readonly eventId: string; readonly eventName?: never }
+  | { readonly eventName: string; readonly eventId?: never }
+) & { readonly mapId?: string };
+
+export type NpcRewardGrant = (
+  | { readonly id: string; readonly name?: never }
+  | { readonly name: string; readonly id?: never }
+) & {
+  readonly kind: "item" | "monster";
+  /** Exact positive delta when specified; otherwise any positive delta. */
+  readonly count?: number;
+};
+
+export interface NpcRewardRequirement {
+  readonly target: NpcRewardTarget;
+  readonly grants: readonly NpcRewardGrant[];
+  readonly oneTime?: boolean;
+  /** Zero-based choices for the first and second interaction, respectively. */
+  readonly choices?: readonly number[];
+  readonly repeatChoices?: readonly number[];
+}
+
+/** Invalid declarations stay opted in, rather than disappearing into a neutral fallback. */
+export type NpcRewardRequirements = readonly NpcRewardRequirement[] | { readonly invalidReason: string };
+
 export interface IntentDeclaration {
   /** 새로 만든다 / 있는 것을 고친다·지운다·옮긴다 / 질문·조회 / 그 외(인사·진행 지시·판단 불가). */
   readonly mode: IntentMode;
@@ -50,6 +76,9 @@ export interface IntentDeclaration {
   readonly actionCombat?: { readonly targets: readonly AcceptanceTarget[] };
   /** Only explicit state-dependent NPC behavior imposes a multipage outcome gate. */
   readonly statefulNpcs?: boolean;
+
+  /** Only explicit create/modify NPC reward requests; never inferred from authored commands. */
+  readonly npcRewards?: NpcRewardRequirements;
   readonly summary: string;
   readonly source: IntentSource;
 }
@@ -102,6 +131,8 @@ Fields:
 - "adventure": 시작 마을·던전 탐험·파티 모험을 구성하라는 전체 모험 저작 요청이면 {"village":true,"dungeon":true,"party":true,"battle":true}. 각 항목은 요청한 것만 true. 단순 NPC 추가/질문/DB 시드만/입구 표지판만 요청은 생략한다. 모험 JRPG 장르 프리셋 + 파티·던전 탐험 + 시작 마을·기본 전투 적은 네 항목 모두 true다.
 - "actionCombat": 실제 필드 액션 전투(공격 적중·처치·피격·회피·스태미나·원거리 적·보상)의 작동을 요구하면 {"targets":[{"mapId":"기존 실제 ID"} 또는 {"newMapName":"새로 만들 정확한 맵 이름"}]}로 필수 검증 대상을 선언한다. 턴제 전투, 장르 질문, 액션을 제외한 요청은 생략한다. 단어가 아니라 요청한 행동으로 판단한다. 이 선언은 계획 교체나 acceptance 수리로 지울 수 없는 완료 조건이다.
 - "statefulNpcs": 사용자가 상태에 따라 달라지는 NPC 행동/대사를 명시했을 때만 true. 보통의 한 페이지 안내 NPC, 인사, 상점이라는 이유로 true를 만들지 않는다.
+
+- "npcRewards": ONLY for explicit create/modify requests to make an NPC grant items or collected monsters. Omit for ordinary dialogue/NPCs, questions, and reward removal requests. Array example: [{"target":{"eventId":"known_event_id"},"grants":[{"kind":"item","id":"known_item_id","count":2}],"oneTime":true}]. Grant kind may also be "monster". When an ID is unknown, replace target eventId with eventName, or grant id with name. Each reference must contain exactly ONE of those keys, never both; omit unused keys rather than writing null. Optional mapId belongs inside target. Preserve every requested grant. count is a positive integer for an explicit amount; omit count for an unspecified positive amount. oneTime=true ONLY when requested. Choices are zero-based and only declared when requested; repeatChoices describes the second interaction, normally omitted. Use IDs only when known, otherwise exact names (must resolve uniquely at completion); do not invent IDs or substitute actors/changeParty for collected monsters. If the requested target/reward cannot be identified, include an incomplete requirement so completion remains blocked, not an omitted contract. These expectations come from the REQUEST, never the eventual event commands, and must not be weakened to pass completion.
 - "summary": 요청을 한 문장으로.
 
 Rules:
@@ -174,6 +205,44 @@ function readStringList(value: unknown, max: number): string[] {
   return out;
 }
 
+/** Parse this boundary separately so malformed reward fields cannot disable acceptance. */
+export function parseNpcRewardRequirements(raw: unknown): NpcRewardRequirements {
+  const invalid = (detail: string): NpcRewardRequirements => ({ invalidReason: `npcRewards: ${detail}` });
+  const text = (value: unknown): value is string => typeof value === "string" && value.trim().length > 0;
+  if (!Array.isArray(raw) || raw.length === 0) return invalid("a non-empty requirement array is required");
+  const requirements: NpcRewardRequirement[] = [];
+  for (const entry of raw) {
+    if (!isRecord(entry) || !isRecord(entry.target)) return invalid("target is required");
+    const target = entry.target;
+    if (target.mapId !== undefined && !text(target.mapId)) return invalid("mapId must be non-empty");
+    const map = typeof target.mapId === "string" ? { mapId: target.mapId } : {};
+    let reference: NpcRewardTarget;
+    if (text(target.eventId) && target.eventName === undefined) reference = { eventId: target.eventId, ...map };
+    else if (text(target.eventName) && target.eventId === undefined) reference = { eventName: target.eventName, ...map };
+    else return invalid("target needs exactly one eventId or exact eventName");
+    if (!Array.isArray(entry.grants) || entry.grants.length === 0) return invalid("grants are required");
+    const grants: NpcRewardGrant[] = [];
+    for (const grant of entry.grants) {
+      if (!isRecord(grant) || (grant.kind !== "item" && grant.kind !== "monster")) return invalid("grant kind must be item or monster");
+      if (grant.count !== undefined && (typeof grant.count !== "number" || !Number.isSafeInteger(grant.count) || grant.count <= 0)) return invalid("count must be a positive integer");
+      const count = typeof grant.count === "number" ? { count: grant.count } : {};
+      if (text(grant.id) && grant.name === undefined) grants.push({ kind: grant.kind, id: grant.id, ...count });
+      else if (text(grant.name) && grant.id === undefined) grants.push({ kind: grant.kind, name: grant.name, ...count });
+      else return invalid("grant needs exactly one id or exact name");
+    }
+    if (entry.oneTime !== undefined && typeof entry.oneTime !== "boolean") return invalid("oneTime must be boolean");
+    const choices: { choices?: number[]; repeatChoices?: number[] } = {};
+    for (const key of ["choices", "repeatChoices"] as const) {
+      if (entry[key] === undefined) continue;
+      const indices = entry[key];
+      if (!Array.isArray(indices) || !indices.every((index): index is number => typeof index === "number" && Number.isSafeInteger(index) && index >= 0)) return invalid(`${key} must contain non-negative integer indices`);
+      choices[key] = [...indices];
+    }
+    requirements.push({ target: reference, grants, ...choices, ...(typeof entry.oneTime === "boolean" ? { oneTime: entry.oneTime } : {}) });
+  }
+  return requirements;
+}
+
 /**
  * 모델 응답을 검증해 선언으로 옮긴다. 모르는 툴 이름·맵 id 는 버리고, enum 밖 값은 실패로 돌려
  * 호출자가 폴백을 쓰게 한다. 관대하게 읽되 스키마 밖 값을 코드로 흘리지 않는다.
@@ -229,6 +298,8 @@ export function parseIntentDeclaration(raw: string, facts: IntentFacts): IntentP
           ["actors", "classes", "skills", "items", "equipment", "enemies", "troops", "states", "battleAnimations", "switches", "variables", "commonEvents", "quests", "maps", "elements", "monsterSpecies", "lifeSkills", "farmAnimalSpecies", "crops"].includes(name)),
         references: parsed.readBeforeWrite.references === true,
       } } : {}),
+      ...("npcRewards" in parsed && (mode === "create" || mode === "modify")
+        ? { npcRewards: parseNpcRewardRequirements(parsed.npcRewards) } : {}),
       ...(isRecord(parsed.adventure) && (mode === "create" || mode === "modify") ? { adventure: { village: parsed.adventure.village === true, dungeon: parsed.adventure.dungeon === true, party: parsed.adventure.party === true, battle: parsed.adventure.battle === true } } : {}),
       ...(actionCombat ? { actionCombat } : {}),
       ...(authoring && parsed.statefulNpcs === true ? { statefulNpcs: true } : {}),
@@ -387,6 +458,10 @@ export function formatIntentNote(intent: IntentDeclaration, options: { readonly 
   if (intent.adventure) lines.push(ADVENTURE_AUTHORING_GUIDE);
   if (intent.actionCombat) lines.push(`[액션 완료 계약] 대상 ${JSON.stringify(intent.actionCombat.targets)}의 필드 전투를 run_action_combat_test로 검증하라. wait/스폰 장면 검사와 턴제 시뮬은 액션 증거가 아니며 계획 교체·수리로 이 의무를 지울 수 없다.`);
   if (intent.statefulNpcs) lines.push("[NPC 완료 계약] 명시적으로 요청된 상태별 NPC 행동을 구현하라. 일반 안내 NPC까지 다중 페이지로 확대하지 않는다.");
+
+  if (intent.npcRewards) {
+    lines.push(`[NPC reward contract] ${JSON.stringify(intent.npcRewards)} — preserve these request expectations. Verify real interaction inventory/owned-monster deltas; text, switches and changeParty are not grants. For oneTime, interact again in the SAME session with runtime page re-selection and prove zero additional rewards. Do not remove grants or weaken this contract to complete. give_starter_monsters can author a guarded starter choice event.`);
+  }
   if (intent.readBeforeWrite) {
     lines.push(`[조회 선행 계약] 첫 쓰기 전에 ${intent.readBeforeWrite.project ? "get_project_summary와 대상 get_map_region, find_events, " : ""}${intent.readBeforeWrite.collections.map((name) => `get_database_records(collection:"${name}")`).join(", ")}를 성공시켜 반환값을 읽어라. 기존 DB 수정은 include:"full", ids:[실제 ID]로 원본을 확인한다. 새 레코드도 참조 전에 다시 조회한다. 조회 실패와 같은 응답의 쓰기는 실행되지 않는다.`);
   }

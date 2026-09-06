@@ -1,5 +1,41 @@
 # Editor AI Panel & Tools
 
+## Multi-map construction specifications (2026-09-06)
+
+`AssistantSession` owns one `Map<mapId, {spec, turnIndex}>`; `getActiveSpec()`
+remains the most recently confirmed/expanded compatibility view and
+`getActiveSpec(mapId)` reads one explicit map contract. Successful writes expand
+only their target map, after the runner succeeds. Invalid submissions, rejected
+writes and throws do not evict or expand any other map. Implicit selection and
+its expansion remain turn-local. Historical carryover snapshots and one-warning
+tracking are keyed by map, not by the last displayed blueprint.
+
+`getCompletionSpecs(calls)` is shared by session auto-completion/review and
+`aiTurnRunner`. For each changed map it selects current explicit spec, then
+current implicit selection, then historical carryover, then eligible active spec.
+It consumes applied plus pending calls for accounting, never for reapplication.
+`proposalCompletenessWarnings({buildSpecs, calls})` evaluates all selected specs,
+qualifies missing assets by map ID, and runs generic heuristics only once. The
+legacy `buildSpec` input remains supported. The panel no longer maintains its
+own confirmed-spec completeness cache. Blueprint display remains a latest-spec
+compatibility surface, not another construction-contract owner.
+
+Successful map removals prune contracts before an ID can be reused. A successful
+`reset_project` clears all contracts (including reused start-map IDs and future
+plans); failed removal/reset does not. Ordinary rebases retain surviving maps and
+never-created `plannedMap` contracts. Resetting goal acceptance does not reset
+construction specifications. The NPC fallback selects all current-turn specs,
+not historical NPC plans or only the latest map.
+
+Same-layer terrain/road overlap is allowed only with explicit `buildOrder` that
+places `terrain` before `road`. Missing/reversed order and terrain/house overlap
+remain invalid. This does not authorize overwriting existing structures, water,
+or completed houses: all existing protection gates still run.
+
+Regression: `assistantMultiMapSpec`, `aiTurnAppliedAccounting`,
+`aiCompletionAccounting`, `assistantMapPreservationGuard`, `aiSpecGateHardening`.
+Evidence: `.omo/evidence/assistant-audit-pr/maps/`.
+
 ## Plan authoring has no small-plan quota (2026-09-06)
 
 `workPlan.ts` no longer recommends 8 todos, 4 items for a village, fixed layer
@@ -396,7 +432,7 @@ AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, 
 
 - Accepted AI changesets also run `src/editor/agentFocus.ts`: the editor selects the map with the largest visible map/event change and emits a transient `.agent-focus-highlight` overlay for changed cells or bounds. Keep this on AI acceptance paths only; manual paint/updateMap flows should not request the highlight.
 
-- AI spatial build calls are gated by `src/ai/buildSpec.ts` through `AssistantSession`: `set_build_spec` validates the outline, then spatial write tools use that outline as the starting contract. Empty-space overruns auto-expand the active BuildSpec and pass with `spec-gate-auto-expand` warnings; expansion into existing built cells is still blocked. `build_house_kit` wings are compared as individual rectangles plus the actual door-front footprint rather than one merged bounding box. Clear assets may overlap later placement assets when `buildOrder` puts `clear` first, but placement-vs-placement overlap remains an error. Destructive clear/overExisting/confirmDestroy structure-protection checks still come from actual map contents and must not be softened.
+- AI spatial build calls are gated by `src/ai/buildSpec.ts` through `AssistantSession`: `set_build_spec` validates the outline, then spatial write tools use that outline as the starting contract. Empty-space overruns auto-expand the active BuildSpec and pass with `spec-gate-auto-expand` warnings; expansion into existing built cells is still blocked. `build_house_kit` wings are compared as individual rectangles plus the actual door-front footprint rather than one merged bounding box. Clear assets may overlap later placement assets when `buildOrder` puts `clear` first, and an explicit terrain-before-road order permits a road overlay on terrain. Other placement-vs-placement overlap remains an error. Destructive clear/overExisting/confirmDestroy structure-protection checks still come from actual map contents and must not be softened.
 - **밑그림 게이트 강화 — 스코프와 보호를 갈라 세운다 (2026-09-03 적대적 리뷰):** 코드 프로브 20건과 실제 조수 턴 2회(`/tmp/blueprint-shots`, 회귀 테스트 `test/aiSpecGateHardening.test.ts`·`test/agentBlueprintHardening.test.ts`)로 밑그림이 「구간 격리」라는 서술과 다르게 동작함을 확인해 고쳤다. (1) **좌표 정규화**: `set_build_spec` 은 runTool 정규화를 안 거치므로 모델이 `"2"` 문자열을 보내면 검증기는 받아주고 세션은 원본을 저장했다 — 게이트의 `x + w` 가 `"24"` 문자열 결합이 되어 밑그림 밖 벽 16칸을 `clear_region` 이 지웠다. `normalizeBuildSpec` 이 저장 직전에 정수로 굳힌다. (2) **기존 내용 보호는 제출 시점이 아니라 호출 시점, 밑그림 안팎 불문**: `protectedCellsInRegions(baseline, regions, assets, tileset)` 가 **기준선 맵**(`baselineProject`, 사용자 맵)에 있던 지어진 칸 중 에셋 선언(`clear`+`confirmDestroy`, 배치 에셋의 `overExisting`)이 덮지 않은 칸을 세고, 하나라도 있으면 차단한다. 이 세션이 초안에 그린 것은 기준선에 없으므로 다시 손댈 수 있다(재작업 허용). 종전에는 밑그림 안에 지은 집을 같은 턴 `clear` 가 무검사로 지웠고, 확정 뒤 사용자가 판 호수를 다음 턴 채우기가 덮었다. (3) **게이트 대상**: `SPATIAL_BUILD_TOOLS` 에서 레지스트리에 없는 tile_* 4종을 뺐고, 살아 있는 v3 프리미티브 7종(`tile_erase`·`place_props`·`build_wall`·`lay_path`·`place_door`·`place_window`·`build_roof`)을 `TILE_WRITE_TOOLS` 로 묶어 **밑그림 없이도 실행되되(soft-allow 유지) 기존 내용 보호는 받게** 했다 — 프롬프트가 정리용으로 권하는 `tile_erase` 가 절벽 능선 6칸을 무검사로 지운 실측이 근거다. `affectedRegions` 가 `area`·`at`·`wallRect` 를 읽고, `paint_tiles mode=fill` 은 맵 전체를 영향 영역으로 본다. (4) **지어진 칸 판정은 잔디 리터럴이 아니다**: 타일셋 그룹 역할 `terrain` 이고 통행 가능한 하위 타일이 바닥(`groundProfileFor`). 잔디(240)만 바닥이던 시절 얼음 대평원(눈 67·바닥 70)은 62×62=3844칸 전부 구조물이라 실제 턴에서 `author_house`·`author_village`·`paint_road`·`fill_region` 이 「기존 구조물 N칸」으로 5회 차단됐고 모델은 통과하려고 28×22 `clear`+`confirmDestroy` 를 선언했다. 길(흙길 오토타일도 terrain)은 이제 바닥이라 길 옆 집이 `overExisting` 을 요구받지 않는다. 최외곽 링은 전부 WALL 인 생성 테두리일 때만 제외한다(사용자가 가장자리에 세운 벽은 보호). (5) **교차 규칙**: 타일을 쓰지 않는 `npc`·`event`·`transfer` 는 길·집과 겹쳐도 교차 오류가 아니다. (6) **암묵 스펙은 프로덕션에서 죽어 있었다**: `implicitSpecFromContext` 의 `$` 앵커 정규식이 패널 footer(재료 힌트가 맵과 선택 사이)와 영역 작업 footer(힌트가 뒤)를 모두 놓쳤다 — `contextFooter.parseContextFooter` 가 항목 단위로 읽고(맵 이름의 ` · `·괄호 허용), `sendUserMessage opts.scope` 도 암묵 스펙이 된다. 암묵 스펙의 자동 확장은 `turnImplicitSpec` 에만 쓰고 `activeSpec` 으로 승격하지 않는다(승격되면 다음 턴부터 그 맵의 게이트가 밑그림 없이 열렸다). (7) **질문 턴**: 밑그림 NPC 자동 배치(`buildSpecNpcAssetsDirectly`)는 변경을 기대하는 턴이고 모델이 되묻지 않았을 때만 — 「이 위치로 진행할까요?」 뒤에 승인 카드 없이 NPC 가 맵에 들어갔다. **청사진 쪽**(`agentBlueprint.ts`·`agentBlueprintRenderer.ts`): 재제출로 에셋 id·사각형이 바뀌면 같은 종류가 새 칸을 절반 넘게 덮을 때 진행을 물려받고 정산 대상(`turnAdvanced`)도 넘긴다(다 지은 집이 planned 파랑으로 영구 잔류하던 run1 실측); 진행 귀속에 덮인 비율 하한 0.02 를 둬 집 호출의 문 앞 1칸이 맵 전체 `clear` 칸을 building 으로 올리지 않는다; 라벨은 좁은 칸(3칸 미만)·41개 이상은 순번만, 같은 자리에서 시작하는 라벨은 줄을 내려 쌓고(`blueprintLabelLayout`), 제도선 아래 어두운 halo 를 깔아 얼음 배경(대비 1.5:1)에서도 보이며, `shape` circle/ellipse 는 타원으로 그린다. 남긴 것: `fill_region` 이 벽까지 메우며 rect 밖 몇 칸을 쓰는 것(빈 틈이라 보호 무관), 모든 쓰기 커밋의 「수관 보완 3칸」이 요청 영역 밖 상위 타일을 심는 것(게이트 밖).
 
 - **실행 한도 중단도 적용 원장을 정산한다 (2026-09-05):** 마일스톤은 `turnProposals`를 비우므로 미적용 제안 0건이 변경 0건을 뜻하지 않는다. `truncatedTurnText`는 두 예산 종료 경로에서 `turnAppliedMilestoneCalls.length`를 받아 **이미 적용한 변경**과 **아직 적용 전인 제안**을 따로 안내한다. 미적용은 승인 대기를 뜻하지 않으므로 수락/승인 문구를 쓰지 않는다. `aiTurnRunner`는 마일스톤 이벤트와 반환 원장을 중복 없이 세고, 종료 시 실제 적용에 성공한 제안만 더해 활동 로그 `result.appliedCalls`와 성향 기록 `changed`에 반영한다. 원장은 재적용하지 않으며, `noteNoChanges`와 변경 0건 오류 알림도 원장을 확인한다. 합성 `driverContinue`의 의도 선언 입력은 「계속」을 유지하지만 `currentTurnInstruction`/`currentTurnRequestText`는 사용자의 원래 요청을 유지해 검수가 「계속」만 보는 일을 막는다. 다음 실제 사용자 요청에서 둘을 새로 설정한다. 회귀: `test/aiAppliedBudgetStop.test.ts`, `test/aiTurnAppliedAccounting.test.ts`, `test/aiMilestoneTurnAccounting.test.ts`.
@@ -458,7 +494,7 @@ AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, 
 - Proposal assembly squashes event movement trial runs before display. Repeated `move_event` calls for the same target keep all tool/audit events, but `proposedCalls` retains only the final move; if a newly created event (`place_npc`/similar event base call) is immediately moved, the creation proposal is rewritten to the final event coordinates instead of showing separate move rows.
 - The proposal completeness lint no longer warns about unrecorded worldview (removed 2026-08-28 with the rest of the worldview AI wiring; see `openwiki/editor-pre-edit-routing.md`). `worldEntitiesAdded/Modified` stays in `ChangeSummary` and in the card summary vocabulary, but no tool writes it now — a nonzero count means the wiring came back.
 - Accepted AI changesets also run `src/editor/agentFocus.ts`: the editor selects the map with the largest visible map/event change and emits a transient `.agent-focus-highlight` overlay for changed cells or bounds. Keep this on AI acceptance paths only; manual paint/updateMap flows should not request the highlight.
-- AI spatial build calls are gated by `src/ai/buildSpec.ts` through `AssistantSession`: `set_build_spec` validates the outline, then spatial write tools use that outline as the starting contract. Empty-space overruns auto-expand the active BuildSpec and pass with `spec-gate-auto-expand` warnings; expansion into existing built cells is still blocked. `build_house_kit` wings are compared as individual rectangles plus the actual door-front footprint rather than one merged bounding box. Clear assets may overlap later placement assets when `buildOrder` puts `clear` first, but placement-vs-placement overlap remains an error. Destructive clear/overExisting/confirmDestroy structure-protection checks still come from actual map contents and must not be softened.
+- AI spatial build calls are gated by `src/ai/buildSpec.ts` through `AssistantSession`: `set_build_spec` validates the outline, then spatial write tools use that outline as the starting contract. Empty-space overruns auto-expand the active BuildSpec and pass with `spec-gate-auto-expand` warnings; expansion into existing built cells is still blocked. `build_house_kit` wings are compared as individual rectangles plus the actual door-front footprint rather than one merged bounding box. Clear assets may overlap later placement assets when `buildOrder` puts `clear` first, and an explicit terrain-before-road order permits a road overlay on terrain. Other placement-vs-placement overlap remains an error. Destructive clear/overExisting/confirmDestroy structure-protection checks still come from actual map contents and must not be softened.
 - Tile v3 vocabulary proposals live in `src/editor/tools/v3/vocabularyTools.ts`. For an existing `groupId`, agents should send only the group id; if a partial or mismatched `tileIds` list is included for a group that already has usable pattern grammar or harness tile definitions, the tool preserves the existing tile set and returns a warning. Mixed `items` proposals are item-granular: valid cards still appear while invalid items are reported in `ToolResult.issues`.
 
 - **조수 카메라는 사용자 제스처 중에 끼어들지 않는다 (2026-08-29):** `editorCameraFocus.ts` 는 목표 계산(`planCameraFocus`, `onlyIfOffscreen` 이면 화면 밖일 때만 움직인다)과 **양보 판정**(`shouldDeferCameraFocus(PointerGestureState)`)을 순수 함수로 들고 있고, `EditScene.panCameraToTile` 은 `pointerGestureState()` 로 다섯 가지를 먹인다: 페인트 스트로크(`isPainting`), 손 팬(`cameraPanController.active()`), 도형·선택·이벤트 드래그(`dragOperationHandler.busy()`), 우클릭 영역 제스처(`rightRegionGesture`), 붙여넣기 미리보기(`editorState.pastePreview`). `isPainting` + 팬만 보던 이전 판정은 **모든 드래그를 놓쳤다** — `pointerdown` 은 `beginDragOperation` 이 true 를 주면 `isPainting` 을 세우기 전에 반환하고 `beginRightRegionGesture` 는 오히려 false 로 내리므로, 드래그 중에 조수 팬이 끼어들면 `commitShapeDrag`/`commitEventMoveDrag` 가 팬 거리만큼 밀린 타일을 커밋한다(조용한 저작 데이터 손상). `DragOperationHandler.busy()` 는 `active()` 와 달리 아직 문턱을 못 넘은 `eventDragCandidate` 까지 센다. 프로그램 팬의 뒷정리는 마지막 프레임에만 한다 — `camera.pan(x,y,duration,ease,force,cb)` 의 6번째 인자는 onComplete 가 아니라 **onUpdate** 라서 `progress === 1` 로 걸러야 300ms 동안 매 프레임 DOM 마커를 지웠다 다시 만들지 않는다. Tests: `test/editSceneCameraFocus.test.ts`, `test/agentFocus.test.ts`, `test/eventListCameraFocus.test.ts`.
@@ -573,10 +609,12 @@ AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, 
 
 - **진행이 멈춘 항목은 사람에게 넘긴다 — 무한 재주입 금지 (2026-09-03):** 실측 결함: 빈 맵에서 `fill_region` 이 스펙 게이트에 막히자 Ralph 가 **같은 항목을 173/256번** 재주입했다. 사용자에게는 `Ralph 연속 실행 (173/256)` 한 줄만 보이고 런은 끝나지 않았다. 계약 넷을 넣었다.
   - **항목별 연속 시도 상한** `MAX_RALPH_ATTEMPTS_PER_ITEM = 3` (`src/ai/workPlan.ts`). Ralph 는 모델이 **나가려 할 때만** 도므로, 같은 항목에서 3번 연속 헛되이 나가려 했다는 것은 「모델은 끝났다고 믿고 하네스는 아니라고 한다」는 교착이다. 4번째에 `blockStalledWorkItem`(`assistantSession.ts`)이 항목을 `blocked` 로 표시하고(사유는 마지막 자동완료 차단 사유 = 산출물 게이트·완성도 경고·스펙 게이트) 턴을 **끝낸다** — 감사 `ralph:stalled item=… attempts=3/3`. 응답은 무엇이 막혔고 무엇을 하면 되는지 말한다(「건너뛰기」 안내 포함).
-  - **연속 판정이다 — 누적이 아니다.** `recordSuccessfulTool` 은 그 항목에서 쓰기가 성공하면 시도 수를 0으로 되돌린다. 여러 턴에 걸쳐 정상 진행하는 큰 항목은 막히지 않는다(드라이버 예산 48턴 테스트가 이 성질에 의존한다).
+  - **Ralph는 연속 판정이다 — 누적이 아니다.** `recordSuccessfulTool` 은 그 항목에서 쓰기가 성공하면 Ralph 시도 수를 0으로 되돌린다. 여러 턴에 걸쳐 정상 진행하는 큰 항목은 막히지 않는다(드라이버 예산 48턴 테스트가 이 성질에 의존한다).
   - **막힌 항목에서는 아무도 밀지 않는다.** `shouldRalphContinue` 가 `blocked` 를 보면 false → 툴 루프 재주입도, 드라이버 자동 계속도 멈춘다. `currentItemId` 는 막힌 항목에 **그대로 남는다**(다음 항목으로 조용히 넘어가면 같은 전제 위에서 또 실패한다).
   - **되살리는 것은 사용자다.** 사용자의 다음 메시지(직접 친 「계속」 포함)가 `reactivateBlockedWorkItems` 로 막힌 항목을 `pending` 으로 돌리고 시도 수를 리셋한다(감사 `work-item:reactivated N건`). 드라이버의 합성 「계속」은 `SessionTurnOptions.driverContinue` 로 구분돼 이 리셋을 받지 못한다 — 그래야 런이 실제로 멈춘다.
-  - **두 번째 교착 모양: 같은 실패의 반복.** Ralph 는 「모델이 나가려 한다」를 신호로 쓰는데, 같은 쓰기 툴을 **같은 이유로 계속 실패**하는 모델은 나가려 하지 않으므로 그 신호가 오지 않는다(e2e 실측: 스펙 게이트에 막힌 `fill_region` 을 대본이 주는 대로 30번 반복했고 Ralph 는 한 번도 안 돌았다). `MAX_REPEATED_TOOL_FAILURES_PER_ITEM = 4` — 항목별로 `${툴}::${실패 요약}` 이 연속 4번 같으면 같은 출구로 나간다(감사 `tool-failure:stalled`). 성공한 쓰기 하나가 카운터를 지운다.
+  - **두 번째 교착 모양: 같은 실패의 반복.** Ralph 는 「모델이 나가려 한다」를 신호로 쓰는데, 같은 쓰기 툴을 **같은 이유로 계속 실패**하는 모델은 나가려 하지 않으므로 그 신호가 오지 않는다(e2e 실측: 스펙 게이트에 막힌 `fill_region` 을 대본이 주는 대로 30번 반복했고 Ralph 는 한 번도 안 돌았다). `MAX_REPEATED_TOOL_FAILURES_PER_ITEM = 4` — 2026-09-06부터 항목/툴/대상(mapId + 명시 id, 없으면 name)/오류 issue code별로 누적한다. 요약·잘못 쓴 명령 이름·페이지 경로는 키가 아니므로 `changeItems`→`item`→`gainItem`으로 바꿔도 상한을 피하지 못한다. 다른 대상의 성공은 실패 횟수를 지우지 않는다. 같은 대상의 성공은 해당 대상만 초기화하고, 실제 사용자 메시지는 전체 재시도 예산을 초기화한다. 합성 계속은 예산을 보존한다. 같은 응답 안에서도 상한 이후 대상 호출은 실행하지 않고, 응답을 모두 짝지은 뒤 항목을 blocked로 끝낸다(감사 `tool-failure:stalled`).
+  - **종속 호출 보류(2026-09-06):** 응답 배치마다 실패한 밑그림의 mapId를 기록해 그 맵의 후속 공간 쓰기만 보류한다(이전 활성 밑그림이 있어도 동일). 다른 맵/읽기/비종속 쓰기는 계속하고, 같은 배치 또는 다음 배치의 성공한 밑그림 재제출은 시공을 다시 연다. 실패한 DB 생성은 `ToolReadEvidence`와 같은 6종 item/enemy/troop/actor/skill/equipment의 명시 ID 참조만 연결한다. 문장으로 의존성을 추측하거나 DAG를 만들지 않는다. 기존 조회 계약은 그대로라 생성 성공도 조회 근거가 아니고, 읽기 실패 뒤 같은 응답의 쓰기 전체를 보류하는 규칙도 유지한다.
+  - **보류는 실행 실패가 아니다:** 툴 응답은 `ok:false`, `data:{code:"tool-deferred",executed:false,reason}`이고 issue code는 `build-spec-dependency-failed` / `record-dependency-failed` / `read-dependency-failed` / `read-before-write-required` / `tool-retry-exhausted`다. 성공 도구/제안/실제 실행 실패 통계에 넣지 않는다. 단, 모델이 필요한 조회를 하지 않고 같은 대상을 다시 요청한 `read-before-write-required`는 교정 가능한 거절 시도로 재시도 예산을 소비한다. 실패한 선행 호출 뒤 같은 배치의 종속 보류(`*-dependency-failed`)는 종속 대상의 독립 예산을 소비하지 않는다. 감사의 `deferred`·`issueCodes`와 recap의 `deferredToolCalls`(직렬화 `toolDeferred`)로 구분하며 `toolFailures`는 보류를 제외한다. 원래 toolCalls는 요청된 호출 수를 유지한다. 회귀: `test/assistantDependencyRetry.test.ts`, 기존 `test/aiWorkItemStall.test.ts`, `test/assistantReadContract.test.ts`.
   - **UI**: `renderWorkPlanChecklist` 가 `data-blocked="true"` 를 세우고 앞줄이 `막힘 — <항목>` 을 먼저 말하며(빨강), 막힌 항목 아래에 사유 줄(`ai-work-item-blocked-note`)이 붙는다.
   - Tests: `test/aiWorkItemStall.test.ts`(Ralph 교착→blocked·반복 실패→blocked·드라이버 정지·사용자 되살림·쓰기 리셋·이름 어긋난 완료), `test/workPlan.test.ts`, `test/aiChatLeanUi.test.ts`(막힘 렌더), `test/e2e/ai-composer-mode.spec.ts` 「지시 모드(교착)」. 증거: `verify-shots/ai-composer-mode/do-mode-blocked-item.png`.
 - **명시 완료는 툴 이름이 아니라 산출물로 판정할 수 있다 (2026-09-03):** `successTools` 이름 매칭은 대리 지표다 — 플래너가 `fill_region` 을 적고 모델이 `paint_tiles` 로 같은 일을 하면 이름 매칭은 영원히 통과하지 못하고 항목이 굳는다. 이제 `canCompleteWorkItem(..., { allowWriteEvidenceFallback: true })` 는 「성공한 쓰기 툴 1개 이상 + 산출물 게이트 통과」를 근거로 완료를 인정하고 감사에 `work-item:complete-by-write-evidence <누락 툴>` 을 남긴다. **자동** 완료(`advanceWorkPlanFromTools`)는 종전대로 엄격하다 — 이 우회는 모델이 `complete_work_item` 을 **명시 호출**한 경로에만 열린다. 실제 검사는 산출물 게이트(맵이 채워졌나·대상 맵이 바뀌었나·퀘스트가 완주되나)가 계속 맡는다.
@@ -607,6 +645,18 @@ AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, 
 ## 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
 
 `TurnResult.appliedCalls`는 같은 사용자 목표에서 이미 저장한 마일스톤 호출이며, `proposedCalls`와 함께 완료 집계에만 사용한다. 재적용에는 `proposedCalls`만 사용한다. 드라이버의 합성 계속은 원장을 보존하고 새 사용자 메시지만 초기화한다. recap·질문 모드·맵별 밑그림 표시를 유지하며 수동 재시도에도 원래 composer 옵션을 전달한다. 질문 중 미완료 계획은 자동 재개하지 않는다. 계약: `aiMilestoneTurnAccounting`, `aiAskPendingPlan`, `aiComposerModeSession`.
+
+완료 회계 보강(2026-09-06): `autoCompleteGate`의 밑그림 완성도 검사는 최종 검수와 동일하게 `turnWriteLedger(applied + pending)`를 사용한다. 첫 마일스톤 적용이 pending을 비워도 다음 항목은 이미 칠한 영역을 미이행으로 다시 요구하지 않는다. 적용 루프는 계속 pending만 소비하므로 앞선 쓰기를 재적용하지 않는다.
+
+공간 게이트는 확장을 준비만 하고, `runTool`이 `ok:true`를 반환한 뒤 `commitExpansion`으로 반영한다. 인자 거절·맵 밖 좌표·실행 예외는 밑그림에 유령 `auto:*` 에셋을 남기지 않는다. 성공한 확장의 경고는 유지되며, 명시 스펙은 턴 간 유지하고 선택 영역 암묵 스펙은 해당 턴에만 유지한다. 회귀: `test/aiCompletionAccounting.test.ts`는 실제 세션·툴 실행·마일스톤 저장소 적용과 실패 후 재시도/다음 턴 수명을 검사한다.
+
+## 배치 의존성과 완료 멱등성 (2026-09-06)
+
+같은 응답에서 밑그림이 거절되면 그 맵의 공간 도구뿐 아니라 `place_props` 등 타일 쓰기도 보류한다. 다른 맵과 독립 조회는 계속 실행하고, 실패한 밑그림이 없는 평상시 v3 도구의 자유 배치 계약은 유지한다.
+
+교정되지 않은 쓰기 실패가 남은 배치의 `complete_work_item`은 `work-dependency-failed`로 보류된다. 같은 대상의 성공한 교정은 이 보류를 해소한다. 이미 성공·검증한 상태를 바꾸지 못한 거절된 재시도는 같은 배치의 기존 성공 근거를 지우지 않는다.
+
+모든 항목이 실제 `done`이고 보상·모험·검수 근거도 충족되었다면, itemId 없는 재완료는 `alreadyComplete:true`로 확인만 하고 마일스톤을 재적용하지 않는다. 없는 계획, 알 수 없는 명시 ID, 건너뛴 항목, 미통과 검수는 이 경로로 통과할 수 없다. 회귀: `assistantBatchCompletion`, `assistantDependencyRetry`, `assistantVerificationEvidence`.
 
 ## 모험 완료와 실제 적용 횟수 (2026-09-05)
 

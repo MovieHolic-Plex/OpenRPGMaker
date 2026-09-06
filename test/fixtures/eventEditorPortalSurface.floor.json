@@ -1,24 +1,24 @@
 {
  "commandPicker": {
-  "testidCount": 90,
+  "testidCount": 88,
   "controlCount": 82,
   "classCount": 27,
   "rootCount": 1
  },
  "commandPickerTab2": {
-  "testidCount": 62,
+  "testidCount": 61,
   "controlCount": 53,
   "classCount": 33,
   "rootCount": 1
  },
  "commandPickerTab3": {
-  "testidCount": 117,
+  "testidCount": 112,
   "controlCount": 94,
   "classCount": 27,
   "rootCount": 1
  },
  "commandPickerTab4": {
-  "testidCount": 82,
+  "testidCount": 80,
   "controlCount": 60,
   "classCount": 27,
   "rootCount": 1
@@ -42,13 +42,13 @@
   "rootCount": 1
  },
  "commandPickerFavorites": {
-  "testidCount": 100,
+  "testidCount": 98,
   "controlCount": 90,
   "classCount": 31,
   "rootCount": 1
  },
  "commandPickerGrid": {
-  "testidCount": 90,
+  "testidCount": 88,
   "controlCount": 82,
   "classCount": 28,
   "rootCount": 1

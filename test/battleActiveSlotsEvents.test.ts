@@ -273,6 +273,10 @@ describe("battle active slots, switching, and battle events", () => {
     });
 
     runtime.performActorCommand({ kind: "attack", targetEnemyId: "enemy-1" });
+    expect(runtime.snapshot().phase).toBe("eventChoice");
+    const request = runtime.snapshot().eventChoice;
+    if (!request) throw new Error("missing battle event choice");
+    expect(runtime.resumeEventChoice(request.id, 0)).toBe(true);
     runtime.performActorCommand({ kind: "defend" });
 
     const snapshot = runtime.snapshot();

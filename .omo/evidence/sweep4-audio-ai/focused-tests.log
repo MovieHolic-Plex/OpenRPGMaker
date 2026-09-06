@@ -1,0 +1,328 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/audioDescriptionCommandSurfaces.test.ts test/audioDescriptionConcurrentPersistence.test.ts test/audioDescriptionDiff.test.ts test/audioDescriptionEditor.test.ts test/audioDescriptionExport.test.ts test/audioDescriptionLifecycle.test.ts test/audioDescriptionPersistence.test.ts test/audioDescriptionPickerSurfaces.test.ts test/audioDescriptionPrompt.test.ts test/audioDescriptionPromptTransport.test.ts test/audioDescriptionResourceLifecycle.test.ts test/audioDescriptionSessionPrompt.test.ts test/audioDescriptionToolExposure.test.ts test/audioDescriptionToolStore.test.ts test/audioDescriptionTools.test.ts test/audioDescriptions.test.ts test/audioResourceCatalog.test.ts test/audioResourceSearchContract.test.ts test/audioResourceToolPagination.test.ts test/storePersistenceLineage.test.ts test/storePersistenceProof.test.ts test/aiRunEndProof.test.ts test/aiApplyCommitCorrelation.test.ts test/assistantMultiMapSpec.test.ts test/assistantBatchCompletion.test.ts test/assistantDependencyRetry.test.ts test/aiCompletionAccounting.test.ts test/aiTurnAppliedAccounting.test.ts test/assistantAcceptance.test.ts test/assistantAcceptancePromiseBaseline.test.ts test/assistantAcceptanceRequestBaseline.test.ts test/assistantAcceptanceSession.test.ts test/assistantVerificationEvidence.test.ts test/assistantImageEvidence.test.ts test/npcAuditRepair.test.ts test/npcCommandContract.test.ts test/npcRewardAcceptance.test.ts test/npcRewardSession.test.ts test/placeNpcMalformedPage.test.ts test/sceneVerificationRepair.test.ts test/runtimeQaGate.test.ts test/runtimeQaInstrumentationBoundary.test.ts test/runtimeQaAudioContract.test.ts test/workPlanSize.test.ts test/workPlan.test.ts test/workItemOutcome.test.ts test/workItemOutcomeTargetMap.test.ts test/projectPackage.test.ts test/webExportUsagePruning.test.ts test/cc0AudioPlayback.test.ts test/playerRuntimeAudioIds.test.ts --maxWorkers=2 --testTimeout=60000
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-sweep4-audio-ai
+
+ ✓ test/assistantDependencyRetry.test.ts (12 tests) 40665ms
+   ✓ batch prerequisites through AssistantSession > defers failed-map writes without poisoning successTools or retries (old spec=false)  3220ms
+   ✓ batch prerequisites through AssistantSession > defers failed-map writes without poisoning successTools or retries (old spec=true)  2380ms
+   ✓ batch prerequisites through AssistantSession > a corrected spec resumes spatial execution (later batch=false)  2320ms
+   ✓ batch prerequisites through AssistantSession > a corrected spec resumes spatial execution (later batch=true)  2571ms
+   ✓ batch prerequisites through AssistantSession > failed record creation defers only ID dependents, then creation/read/correction succeeds (read contract=false)  3128ms
+   ✓ batch prerequisites through AssistantSession > failed record creation defers only ID dependents, then creation/read/correction succeeds (read contract=true)  2650ms
+   ✓ batch prerequisites through AssistantSession > keeps the failed-read whole-batch contract and excludes deferred writes from the failure budget  2026ms
+   ✓ stable target retry budgets through AssistantSession > bounds fresh-batch lookup refusals without claiming they executed  1961ms
+   ✓ stable target retry budgets through AssistantSession > does not charge downstream same-batch refusals against their independent retry target  2831ms
+   ✓ stable target retry budgets through AssistantSession > bounds spelling and page-path variations despite unrelated writes and synthetic continuations, then rearms for a real user  10573ms
+   ✓ stable target retry budgets through AssistantSession > successful correction resets that target's accumulated failures  3814ms
+   ✓ stable target retry budgets through AssistantSession > does not execute attempts beyond the bound even within one model batch  3187ms
+ ✓ test/aiCompletionAccounting.test.ts (8 tests) 17976ms
+   ✓ completion accounting through real assistant sessions > auto-completes a later spatial milestone using applied plus pending writes without reapplying the first  4591ms
+   ✓ completion accounting through real assistant sessions > active spec expansion > does not retain a invalid-args write; a successful retry expands and keeps the correct lifetime  1980ms
+   ✓ completion accounting through real assistant sessions > active spec expansion > does not retain a out-of-bounds write; a successful retry expands and keeps the correct lifetime  2088ms
+   ✓ completion accounting through real assistant sessions > active spec expansion > does not retain a throwing-tool write; a successful retry expands and keeps the correct lifetime  2090ms
+   ✓ completion accounting through real assistant sessions > implicit spec expansion > does not retain a invalid-args write; a successful retry expands and keeps the correct lifetime  1884ms
+   ✓ completion accounting through real assistant sessions > implicit spec expansion > does not retain a out-of-bounds write; a successful retry expands and keeps the correct lifetime  1861ms
+   ✓ completion accounting through real assistant sessions > implicit spec expansion > does not retain a throwing-tool write; a successful retry expands and keeps the correct lifetime  2236ms
+   ✓ completion accounting through real assistant sessions > does not commit expansion when the runner itself throws, and preserves the failed tool response  1245ms
+ ✓ test/audioDescriptionPrompt.test.ts (26 tests) 3338ms
+   ✓ music event prompt descriptions > selects an upload when only its full description matches beyond the excerpt  302ms
+ ✓ test/audioDescriptionPromptTransport.test.ts (3 tests) 1065ms
+   ✓ event audio request transport > sends the new effective description when the next request follows an accepted edit  596ms
+ ✓ test/audioDescriptionConcurrentPersistence.test.ts (22 tests) 129635ms
+   ✓ audio description concurrent persistence > keeps replacement project descriptions 'missing' while an old save completes  9598ms
+   ✓ audio description concurrent persistence > keeps replacement project descriptions 'cleared' while an old save completes  6044ms
+   ✓ audio description concurrent persistence > keeps replacement project descriptions 'authored' while an old save completes  5690ms
+   ✓ audio description concurrent persistence > cancels transport waits when already aborted is false  354ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'unchanged local key'  5811ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'remote clear'  5032ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'remote reset'  7399ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'remote addition to an absent field'  9429ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'different keys in one kind'  4609ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'same raw ID in different kinds'  5358ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'same-key local edit wins'  5631ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'same-key local clear wins'  4828ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'same-key local reset wins'  6003ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'own raw IDs and exact stored whitespa…'  3983ms
+   ✓ audio description concurrent persistence > preserves 'remote edit' through consecutive map saves without recording a user edit  6929ms
+   ✓ audio description concurrent persistence > preserves 'remote clear' through consecutive map saves without recording a user edit  9079ms
+   ✓ audio description concurrent persistence > preserves 'remote reset' through consecutive map saves without recording a user edit  8375ms
+   ✓ audio description concurrent persistence > keeps fresh map edits and a fresh description 'set' when a response arrives late  6348ms
+   ✓ audio description concurrent persistence > keeps fresh map edits and a fresh description 'clear' when a response arrives late  7231ms
+   ✓ audio description concurrent persistence > keeps fresh map edits and a fresh description 'reset' when a response arrives late  8185ms
+   ✓ audio description concurrent persistence > retains the baseline and fresh local input when a deferred write fails  3511ms
+ ✓ test/npcRewardSession.test.ts (19 tests) 23549ms
+   ✓ NPC reward request lifetime in AssistantSession > does not dispatch authoring or planner calls for an unrepairable reward declaration  462ms
+   ✓ NPC reward request lifetime in AssistantSession > direct 'text' NPC, contract opt-out=false  1812ms
+   ✓ NPC reward request lifetime in AssistantSession > direct 'once' NPC, contract opt-out=false  1205ms
+   ✓ NPC reward request lifetime in AssistantSession > direct 'repeat' NPC, contract opt-out=false  1392ms
+   ✓ NPC reward request lifetime in AssistantSession > direct 'text' NPC, contract opt-out=true  771ms
+   ✓ NPC reward request lifetime in AssistantSession > does not finalize unresolved or invalid obligations {"required":[]}  333ms
+   ✓ NPC reward request lifetime in AssistantSession > does not finalize unresolved or invalid obligations {"required":{"invalidReason":"npcRewards: invalid grant"}}  377ms
+   ✓ NPC reward request lifetime in AssistantSession > does not finalize unresolved or invalid obligations {"required":[{"target":{"eventId":"missing_npc"},"grants":[{"kind":"item","id":"item_potion","count":1}]}]}  983ms
+   ✓ NPC reward request lifetime in AssistantSession > uses bounded repair to correct the real NPC rather than weaken the request  1454ms
+   ✓ NPC reward request lifetime in AssistantSession > allows an earlier DB item but refuses final explicit completion and skip with missing rewards  2585ms
+   ✓ NPC reward request lifetime in AssistantSession > gates a non-final item that actually authors the declared NPC  1727ms
+   ✓ NPC reward request lifetime in AssistantSession > cannot erase the obligation by replanning into an unrelated skipped plan  1903ms
+   ✓ NPC reward request lifetime in AssistantSession > rechecks a previously completed NPC after its grants are removed  1690ms
+   ✓ NPC reward request lifetime in AssistantSession > completes an actual one-time NPC plan and accepts idempotent explicit completion  1348ms
+   ✓ NPC reward request lifetime in AssistantSession > preserves the obligation through plan-only confirmation and the actual planner replan  1167ms
+   ✓ NPC reward request lifetime in AssistantSession > retains the captured requirement and context on retryLastTurn  1274ms
+   ✓ NPC reward request lifetime in AssistantSession > preserves the request across the real autonomous synthetic continuation  803ms
+   ✓ NPC reward request lifetime in AssistantSession > clears old obligations for new-request  927ms
+   ✓ NPC reward request lifetime in AssistantSession > clears old obligations for ask  1334ms
+ ✓ test/aiRunEndProof.test.ts (29 tests) 80230ms
+   ✓ AssistantSession accepted-revision proof > projects initialized proof events and rechecks freshness after the final status subscriber  3344ms
+   ✓ AssistantSession accepted-revision proof > rechecks edit from a synchronous proof subscriber  2864ms
+   ✓ AssistantSession accepted-revision proof > rechecks cancel from a synchronous proof subscriber  2513ms
+   ✓ AssistantSession accepted-revision proof > does not publish success after a proof subscriber starts a cancelled proof  2078ms
+   ✓ AssistantSession accepted-revision proof > returns the latest emitted state when a status subscriber starts a cancelled proof  2282ms
+   ✓ AssistantSession accepted-revision proof > preserves cancellation superseding the initial callback  414ms
+   ✓ AssistantSession accepted-revision proof > preserves cancellation superseding the receipt callback  1393ms
+   ✓ AssistantSession accepted-revision proof > preserves cancellation superseding the failure callback  1453ms
+   ✓ AssistantSession accepted-revision proof > preserves cancellation superseding the success-throw callback  2174ms
+   ✓ AssistantSession accepted-revision proof > does not resume publication after a pending flush is superseded  1186ms
+   ✓ AssistantSession accepted-revision proof > keeps newer 'cancelled' proof when an overlapping read ends 'verified'  2043ms
+   ✓ AssistantSession accepted-revision proof > keeps newer 'cancelled' proof when an overlapping read ends 'mismatch'  2791ms
+   ✓ AssistantSession accepted-revision proof > keeps newer 'succeeded' proof when an overlapping read ends 'verified'  3850ms
+   ✓ AssistantSession accepted-revision proof > keeps newer 'succeeded' proof when an overlapping read ends 'mismatch'  3602ms
+   ✓ AssistantSession accepted-revision proof > keeps newer 'succeeded' proof when an overlapping read ends 'cancelled'  2795ms
+   ✓ AssistantSession accepted-revision proof > does not claim verified after a failed proof read through actual session completion  2935ms
+   ✓ AssistantSession accepted-revision proof > retries failed proof for the same plan/revision, deduplicates success, and reproves a changed revision  5718ms
+   ✓ AssistantSession accepted-revision proof > does not promote cancelled during the read or replace editor state  3472ms
+   ✓ AssistantSession accepted-revision proof > does not promote disabled during the read or replace editor state  3335ms
+   ✓ AssistantSession accepted-revision proof > does not promote target during the read or replace editor state  2949ms
+   ✓ AssistantSession accepted-revision proof > does not promote content during the read or replace editor state  3095ms
+   ✓ AssistantSession accepted-revision proof > does not promote local-edit during the read or replace editor state  3166ms
+   ✓ AssistantSession accepted-revision proof > uses the real apply commit, not a newest remote commit read  2754ms
+   ✓ AssistantSession accepted-revision proof > project proof can succeed when the separate commit log fails  3692ms
+   ✓ AssistantSession accepted-revision proof > proves a normal no-plan apply through the reusable path without replaying the tool  2867ms
+   ✓ AssistantSession accepted-revision proof > does not correlate a later human edit with an in-flight apply commit  3706ms
+   ✓ AssistantSession accepted-revision proof > retryLastTurn retries failed proof without replaying the LLM or applied tools  3496ms
+   ✓ AssistantSession accepted-revision proof > retryLastTurn proves already applied milestones after a recovered LLM failure  3907ms
+   ✓ AssistantSession accepted-revision proof > a clean saved response without an accepted receipt cannot become proof  352ms
+ ✓ test/audioDescriptionExport.test.ts (30 tests) 24762ms
+   ✓ audio descriptions at export boundaries > strips editor metadata without mutating the source when exporting undefined  1203ms
+   ✓ audio descriptions at export boundaries > strips editor metadata without mutating the source when exporting {}  952ms
+   ✓ audio descriptions at export boundaries > strips editor metadata without mutating the source when exporting {"music":{},"sound":{}}  1056ms
+   ✓ audio descriptions at export boundaries > strips editor metadata without mutating the source when exporting {"music":{"orphan":""},"sound":{"orphan":"AUDIO_EXPORT_VALUE"}}  714ms
+   ✓ audio descriptions at export boundaries > strips editor metadata without mutating the source when exporting {"music":{"cc0-bgm-rtp-fld-003":"AUDIO_EXPORT_OVERRIDE","orphan_music":" \tAUDIO_EXPORT_ORPHAN\n ","terrainTemplates":""},"sound":{"cc0-sound-ui-confirm":"","orphan_sound":"AUDIO_EXPORT_SOUND","__proto__":"AUDIO_EXPORT_OWN_KEY"}}  872ms
+   ✓ audio descriptions at export boundaries > retains exact states in an editor package when packaging undefined  1050ms
+   ✓ audio descriptions at export boundaries > retains exact states in an editor package when packaging {}  1337ms
+   ✓ audio descriptions at export boundaries > retains exact states in an editor package when packaging {"music":{},"sound":{}}  1039ms
+   ✓ audio descriptions at export boundaries > retains exact states in an editor package when packaging {"music":{"orphan":""},"sound":{"orphan":"AUDIO_EXPORT_VALUE"}}  817ms
+   ✓ audio descriptions at export boundaries > retains exact states in an editor package when packaging {"music":{"cc0-bgm-rtp-fld-003":"AUDIO_EXPORT_OVERRIDE","orphan_music":" \tAUDIO_EXPORT_ORPHAN\n ","terrainTemplates":""},"sound":{"cc0-sound-ui-confirm":"","orphan_sound":"AUDIO_EXPORT_SOUND","__proto__":"AUDIO_EXPORT_OWN_KEY"}}  1109ms
+   ✓ audio descriptions at export boundaries > does not treat descriptions as upload usage when metadata is key-only  786ms
+   ✓ audio descriptions at export boundaries > does not treat descriptions as upload usage when metadata is value-reference  734ms
+   ✓ audio descriptions at export boundaries > retains a real upload reference when its description is cleared  461ms
+   ✓ audio descriptions at export boundaries > rejects malformed metadata when importing an editor package: null  754ms
+   ✓ audio descriptions at export boundaries > rejects malformed metadata when importing an editor package: %j  1021ms
+   ✓ audio descriptions at export boundaries > rejects malformed metadata when importing an editor package: 7  788ms
+   ✓ audio descriptions at export boundaries > rejects malformed metadata when importing an editor package: {"music":null}  601ms
+   ✓ audio descriptions at export boundaries > rejects malformed metadata when importing an editor package: {"sound":[]}  719ms
+   ✓ audio descriptions at export boundaries > rejects malformed metadata when importing an editor package: {"bgm":{}}  775ms
+   ✓ audio descriptions at export boundaries > rejects malformed metadata when importing an editor package: {"music":{"orphan":7}}  797ms
+   ✓ audio descriptions at export boundaries > rejects malformed metadata when importing an editor package: {"sound":{"orphan":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}}  872ms
+   ✓ audio descriptions at export boundaries > discards irrelevant malformed metadata when exporting playable data: null  944ms
+   ✓ audio descriptions at export boundaries > discards irrelevant malformed metadata when exporting playable data: %j  745ms
+   ✓ audio descriptions at export boundaries > discards irrelevant malformed metadata when exporting playable data: 7  749ms
+   ✓ audio descriptions at export boundaries > discards irrelevant malformed metadata when exporting playable data: {"music":null}  612ms
+   ✓ audio descriptions at export boundaries > discards irrelevant malformed metadata when exporting playable data: {"sound":[]}  630ms
+   ✓ audio descriptions at export boundaries > discards irrelevant malformed metadata when exporting playable data: {"bgm":{}}  695ms
+   ✓ audio descriptions at export boundaries > discards irrelevant malformed metadata when exporting playable data: {"music":{"orphan":7}}  835ms
+   ✓ audio descriptions at export boundaries > discards irrelevant malformed metadata when exporting playable data: {"sound":{"orphan":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}}  811ms
+ ✓ test/aiApplyCommitCorrelation.test.ts (6 tests) 20849ms
+   ✓ actual apply commit correlation (resetProject=false) > proves synchronous-subscriber content without donating commit identity  3967ms
+   ✓ actual apply commit correlation (resetProject=false) > proves healthy content without donating commit identity  2714ms
+   ✓ actual apply commit correlation (resetProject=false) > proves async-commit-edit content without donating commit identity  3726ms
+   ✓ actual apply commit correlation (resetProject=true) > proves synchronous-subscriber content without donating commit identity  3351ms
+   ✓ actual apply commit correlation (resetProject=true) > proves healthy content without donating commit identity  2875ms
+   ✓ actual apply commit correlation (resetProject=true) > proves async-commit-edit content without donating commit identity  4214ms
+ ✓ test/npcRewardAcceptance.test.ts (43 tests) 4085ms
+   ✓ request-declared NPC rewards > accepts exact item and monster grants once without mutating the project  465ms
+ ✓ test/storePersistenceProof.test.ts (18 tests) 32316ms
+   ✓ accepted revision persistence proof > verifies the accepted content through actual save/read transport and reuses its clean-flush receipt  1885ms
+   ✓ accepted revision persistence proof > compares normalized values rather than JSONB object-key order  1275ms
+   ✓ accepted revision persistence proof > uses the ordinary normalized remote load and map-overlay contract  1369ms
+   ✓ accepted revision persistence proof > does not verify a matching projects row when the ordinary map read fails  910ms
+   ✓ accepted revision persistence proof > binds the receipt to the accepted merged project, not the unmerged live store  2442ms
+   ✓ accepted revision persistence proof > keeps open event drafts local and out of accepted content identity  6759ms
+   ✓ accepted revision persistence proof > rejects a copied token without issuing a read  1430ms
+   ✓ accepted revision persistence proof > does not verify a failed read  990ms
+   ✓ accepted revision persistence proof > does not verify a missing read  1452ms
+   ✓ accepted revision persistence proof > does not verify a disabled read  1129ms
+   ✓ accepted revision persistence proof > does not verify a cancelled read  844ms
+   ✓ accepted revision persistence proof > rejects wrong target even when current_sha256 is unchanged  2763ms
+   ✓ accepted revision persistence proof > rejects wrong content even when current_sha256 is unchanged  2258ms
+   ✓ accepted revision persistence proof > keeps a failed proof retryable for the same accepted revision  1515ms
+   ✓ accepted revision persistence proof > preserves newer local edits during the read and does not attach old proof to them  1772ms
+   ✓ accepted revision persistence proof > pins the original target across a configuration change during read  1133ms
+   ✓ accepted revision persistence proof > does not verify when cancelled while the read is in flight  1512ms
+   ✓ accepted revision persistence proof > does not verify when disabled while the read is in flight  871ms
+ ✓ test/assistantAcceptanceSession.test.ts (12 tests) 10223ms
+   ✓ acceptance controls actual session termination > does not schedule run-end persistence proof for a completed plan with unmet acceptance  679ms
+   ✓ acceptance controls actual session termination > does not turn a review without an explicit passing verdict into completion  1126ms
+   ✓ acceptance controls actual session termination > withdraws an earlier pass when a later explicit review fails  997ms
+   ✓ acceptance controls actual session termination > continues then blocks insufficient dimensions and quantity even after skip completes the plan  563ms
+   ✓ acceptance controls actual session termination > retains original denominator when skip and set_work_plan try to shrink promises  737ms
+   ✓ acceptance controls actual session termination > invalidates an attributed image review after a subsequent real map write  1263ms
+   ✓ applied acceptance lifecycle through real tools > repairs exact dimensions after plan completion and invalidates on applied undo  2097ms
+   ✓ applied acceptance lifecycle through real tools > blocks and retains the ledger when aborted while the next model response is held  590ms
+   ✓ applied acceptance lifecycle through real tools > never credits a review authored in the same response as the image request  926ms
+   ✓ applied acceptance lifecycle through real tools > requires visible contract repair for a spatial plan missing criteria  700ms
+   ✓ applied acceptance lifecycle through real tools > keeps legacy nonspatial and read-only requests free of fabricated map promises  342ms
+ ✓ test/workPlan.test.ts (40 tests) 90ms
+ ✓ test/assistantVerificationEvidence.test.ts (20 tests) 15792ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > run_lint ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  1731ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > check_reachability ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  878ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > verify_quest ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  815ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > play_walkthrough ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  829ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > run_scene_test ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  786ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > evaluate_game_quality ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  661ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 같은 검사 재실패는 앞선 성공을 제거하고, 이후 실제 재통과는 복구한다  990ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 쓰기 이후에는 이전 검증 성공으로 완료할 수 없고 다시 검사해야 한다  711ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 재검사 없는 쓰기는 최종 보고에서도 검증 통과로 남지 않는다  692ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 실행되지 않은 잘못된 인자는 고친 호출로 복구할 수 있다  619ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > warning-only lint는 통과하며 거부된 쓰기는 성공 근거를 무효화하지 않는다  677ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 레이어의 선재 lint 오류는 자문을 유지하면서 최종 응답에 보고한다  493ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 레이어 자동 통과는 재검증 의무를 만들지 않고 명시 검사만 유지한다 (explicit=false)  995ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 레이어 자동 통과는 재검증 의무를 만들지 않고 명시 검사만 유지한다 (explicit=true)  2116ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 다음 항목은 자기 대상의 검증으로 완료하며 이전 항목의 stale 검사는 최종 보고에 보존한다  2066ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 실패한 walkthrough 실행은 레이어의 성공 시나리오로 기록하지 않는다  481ms
+ ✓ test/audioDescriptionPersistence.test.ts (37 tests) 10619ms
+   ✓ audio description serialization > preserves absent overrides when loading legacy v1  461ms
+   ✓ audio description serialization > preserves absent overrides when loading legacy v2  607ms
+   ✓ audio description serialization > preserves absent overrides when loading legacy v4  784ms
+   ✓ audio description serialization > preserves serialized legacy fields when loading a blank project  995ms
+   ✓ authored audio description round trips > preserves raw audio IDs matching retired field names when using function serialize(project) {
+  return JSON.stringify(project, projectJsonReplacer(project));
+}  333ms
+   ✓ authored audio description round trips > preserves raw audio IDs matching retired field names when using function serializePretty(project) {
+  return JSON.stringify(project, projectJsonReplacer(project), 2);
+}  453ms
+   ✓ authored audio description round trips > preserves exact stored strings and orphan IDs when round-tripping with function serialize(project) {
+  return JSON.stringify(project, projectJsonReplacer(project));
+}  567ms
+   ✓ authored audio description round trips > preserves exact stored strings and orphan IDs when round-tripping with function serializePretty(project) {
+  return JSON.stringify(project, projectJsonReplacer(project), 2);
+}  358ms
+   ✓ authored audio description round trips > preserves a new written state when round-tripping ""  452ms
+   ✓ authored audio description round trips > preserves a new written state when round-tripping "  AUDIO_DESC_QA_20260906  "  321ms
+   ✓ audio description recovery snapshots > preserves description states when restoring a backup into an editor package: undefined  1560ms
+   ✓ audio description recovery snapshots > preserves description states when restoring a backup into an editor package: {"music":{"orphan":" \tBACKUP_VALUE\n ","cleared":"","__proto__":"OWN_ID"},"sound":{"orphan":"SOUND_VALUE","terrainTemplates":""}}  1236ms
+ ✓ test/assistantMultiMapSpec.test.ts (18 tests) 37126ms
+   ✓ map-owned construction contracts through AssistantSession > retains A after B, including a continued turn=false  2154ms
+   ✓ map-owned construction contracts through AssistantSession > retains A after B, including a continued turn=true  2096ms
+   ✓ map-owned construction contracts through AssistantSession > isolates failed updates, keeps both historical warnings, and selects both changed maps  2302ms
+   ✓ map-owned construction contracts through AssistantSession > commits only successful map-local expansion after invalid-args  1476ms
+   ✓ map-owned construction contracts through AssistantSession > commits only successful map-local expansion after throwing-runner  1963ms
+   ✓ map-owned construction contracts through AssistantSession > expires implicit A selection without evicting explicit B  1723ms
+   ✓ map-owned construction contracts through AssistantSession > uses per-map completeness precedence and does not merge identical asset IDs  5272ms
+   ✓ map-owned construction contracts through AssistantSession > preserves future planned maps through rebase and checks their own dimensions after B  3151ms
+   ✓ map-owned construction contracts through AssistantSession > prunes a successful removal before ID reuse, not failed removal or surviving maps  5223ms
+   ✓ map-owned construction contracts through AssistantSession > prunes external rebase deletions while preserving surviving and never-created maps  3456ms
+   ✓ map-owned construction contracts through AssistantSession > builds pending NPC assets from every current map, never historical specs  1831ms
+   ✓ map-owned construction contracts through AssistantSession > clears every spec on successful reset, including reused start ID and future plans  2266ms
+   ✓ ordered terrain background and road overlay > executes the terrain then road batch with no dependency deferral  3992ms
+ ✓ test/placeNpcMalformedPage.test.ts (14 tests) 8983ms
+   ✓ place_npc SimplePage malformed input normalization > normalizes a missing command kind from the command alias  923ms
+   ✓ place_npc SimplePage malformed input normalization > normalizes an object command kind from kind.command  995ms
+   ✓ place_npc SimplePage malformed input normalization > wraps a single conditions object into an array  622ms
+   ✓ place_npc SimplePage malformed input normalization > normalizes null conditions to an empty array  775ms
+   ✓ place_npc SimplePage malformed input normalization > normalizes empty object conditions {} to an empty array  329ms
+   ✓ place_npc SimplePage malformed input normalization > normalizes conditions kind none to an empty array  581ms
+   ✓ place_npc SimplePage malformed input normalization > normalizes LLM self-switch id aliases and boolean strings in conditions and choice commands  841ms
+   ✓ place_npc SimplePage malformed input normalization > registers missing global switches referenced by nested choice commands  676ms
+   ✓ place_npc SimplePage malformed input normalization > updates an explicit event id in place without treating itself as an occupied cell  584ms
+   ✓ place_npc SimplePage malformed input normalization > moves a transfer endpoint to a nearby usable cell when the requested doorway has no landing  1291ms
+   ✓ place_npc SimplePage malformed input normalization > live 2026-08-25: changeGold without op defaults to += so quest reward pages persist  634ms
+   ✓ place_npc SimplePage malformed input normalization > live 2026-08-25: 촌장 선택지 setSwitch 페이지는 그대로 배치된다  389ms
+ ✓ test/assistantAcceptance.test.ts (23 tests) 5395ms
+   ✓ acceptance evaluator > keeps a malformed item visible and permits repair only before criteria become valid  996ms
+   ✓ acceptance evaluator > measures exact scoped dimensions/counts, not unrelated maps or events  580ms
+   ✓ acceptance evaluator > detects scoped tile-stack changes and does not claim drafts are applied  953ms
+   ✓ acceptance evaluator > binds new-map names only to unique newly authored IDs and never guesses/rebinds  561ms
+   ✓ image-reviewed evidence > requires delivered coverage followed by attributed review and invalidates after undo  313ms
+   ✓ malformed acceptance boundary > retains valid original promises when a malformed sibling requires repair  427ms
+   ✓ does not count inherited map properties as authored maps  511ms
+ ✓ test/aiTurnAppliedAccounting.test.ts (16 tests) 16551ms
+   ✓ panel map completeness selection > uses the real session's plural selection instead of the most recent spec  4192ms
+   ✓ running-tool event target forwarding > uses event target {"mapId":"a"} rather than the viewed map in chat  428ms
+   ✓ running-tool event target forwarding > forwards the tool target instead of the viewed map or selected region map  537ms
+   ✓ 턴 표면의 이미 적용된 쓰기 정산 > displays placement warnings only for requested additions: 방금 실제 플레이에서 황동 열쇠를 얻은 뒤 북쪽 출구가 "열었다"라는 대사만 하고 끝났어. 열쇠는 여전히 1개이고 엔딩이 나오지 않아. 이 문제를 고쳐 줘. 먼저 현재 두 맵과 출구/촌장/상자 이벤트의 실제 명령을 읽어라. 이미 만든 집, 길, 나무, 두 맵의 크기, 왕복 이동, 상자, 촌장과 안내 표지판 문구 「우물은 북쪽, 지하실은 동쪽」은 보존해야 해. 수정 범위는 북쪽 출구의 열쇠 1개 소비 및 엔딩 실행, 마을 이름을 "마을"로 바꾸는 것뿐이야. 참고로 화면은 "완료 기준 검증 완료 2/2, 맵 시각 리뷰 완료"인데 답변은 "모험 구성이 아직 미완성, 두 맵 시각 확인 누락"이라고 해. 앞의 초록 체크를 근거로 이미 완성됐다고 판단하지 말고 실제 데이터를 근거로 모순을 설명해. 끝난 뒤 두 맵을 실제 그림으로 확인하고 미검증은 미검증이라고 말해.  1783ms
+   ✓ 턴 표면의 이미 적용된 쓰기 정산 > displays placement warnings only for requested additions: 기존 나무 10개는 보존하고 꽃 3개 추가해줘  1026ms
+   ✓ 턴 표면의 이미 적용된 쓰기 정산 > displays placement warnings only for requested additions: 나무 10개 배치해줘  729ms
+   ✓ 턴 표면의 이미 적용된 쓰기 정산 > displays placement warnings only for requested additions: 이름을 바꿔줘
+[컨텍스트] 현재 맵: 나무 10개 추가해줘 (map_blank_start)  536ms
+   ✓ 턴 표면의 이미 적용된 쓰기 정산 > max-tool-calls 이후 원장만 남아도 변경 없음으로 기록하지 않는다  595ms
+   ✓ 턴 표면의 이미 적용된 쓰기 정산 > token-budget 이후 원장만 남아도 변경 없음으로 기록하지 않는다  985ms
+   ✓ 턴 표면의 이미 적용된 쓰기 정산 > error 이후 원장만 남아도 변경 없음으로 기록하지 않는다  2106ms
+   ✓ 턴 표면의 이미 적용된 쓰기 정산 > 적용이 거부된 제안은 실제 변경으로 세지 않는다  1343ms
+   ✓ 턴 표면의 이미 적용된 쓰기 정산 > 원장과 종료 시 적용한 제안을 모두 세되 원장은 다시 적용하지 않는다  761ms
+   ✓ 턴 표면의 이미 적용된 쓰기 정산 > 제안 호스트를 직접 호출해도 적용된 턴에는 변경 없음 알림을 만들지 않는다  1096ms
+ ✓ test/npcAuditRepair.test.ts (26 tests) 12241ms
+   ✓ audited NPC repairs through the real runner > entry170: requires pages but supplies the original dialogue as a usable pages correction  1029ms
+   ✓ audited NPC repairs through the real runner > entry174: rejects the unknown M2 id and offers native text preserving all lines  810ms
+   ✓ audited NPC repairs through the real runner > entry196: replaces the actual singleton condition field without dropping either page  599ms
+   ✓ audited NPC repairs through the real runner > keeps explicit self-switch value=true and sibling array conditions  448ms
+   ✓ audited NPC repairs through the real runner > keeps explicit self-switch value=false and sibling array conditions  393ms
+   ✓ audited NPC repairs through the real runner > preserves canonical pages and condition arrays without repairs  380ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not invent pages for dialogue undefined  480ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not invent pages for dialogue {"text":42}  322ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not invent pages for dialogue {"text":""}  387ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not invent pages for dialogue {"text":"Keep","when":{"selfSwitch":"A"}}  540ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not invent pages for dialogue {"text":"Keep","choices":["Yes","No"]}  526ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not guess a command correction for {"commandId":"m2-999-unknown","fields":{"lines":["Keep"]}}  304ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not guess a command correction for {"commandId":"m2-101-show-text","fields":{"lines":["Keep",42]}}  810ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not guess a command correction for {"commandId":"m2-101-show-text","fields":{"lines":["Keep"],"speaker":"Other"}}  1026ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not guess a command correction for {"commandId":"m2-101-show-text","fields":{"lines":["Keep"]},"body":"Conflicting"}  349ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not drop malformed or extra conditions {"selfSwitch":1}  335ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not drop malformed or extra conditions {"selfSwitch":"A","value":"false"}  497ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not drop malformed or extra conditions {"selfSwitch":"A","switchId":"also_required"}  395ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not drop malformed or extra conditions {"selfSwitch":"A","variableId":"v1","value":3}  535ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not drop malformed or extra conditions {"selfSwitch":"A","kind":"unknown"}  532ms
+ ✓ test/projectPackage.test.ts (3 tests) 5430ms
+   ✓ project package > writes the canonical .oprn package when a project is exported  1728ms
+   ✓ project package > reads a legacy .rpgzzu package when its bytes use the supported package format  1553ms
+   ✓ project package > reloads an editor-normalized package without changing boot-critical project data  2137ms
+ ✓ test/audioResourceCatalog.test.ts (17 tests) 469ms
+ ✓ test/assistantAcceptanceRequestBaseline.test.ts (6 tests) 41908ms
+   ✓ per-request acceptance baselines > preserves a map created in A while B changes another map  10606ms
+   ✓ per-request acceptance baselines > does not credit A's change toward a newly accepted B change promise  4869ms
+   ✓ per-request acceptance baselines > late adoption cannot baseline away B's earlier write (applied=false)  13551ms
+   ✓ per-request acceptance baselines > late adoption cannot baseline away B's earlier write (applied=true)  4929ms
+   ✓ per-request acceptance baselines > retains B's pre-write baseline across budget-driven synthetic continuation  3542ms
+   ✓ per-request acceptance baselines > retains B's baseline when a manual continuation repairs and replans after application  4410ms
+ ✓ test/runtimeQaInstrumentationBoundary.test.ts (4 tests) 439ms
+   ✓ QA instrumentation boundary > reports only requested reward counts from the installed runtime hook  385ms
+ ✓ test/assistantBatchCompletion.test.ts (8 tests) 28073ms
+   ✓ audit batch dependency and completion lifecycle > defers same-map spec-free props after a rejected spec but allows another map  10227ms
+   ✓ audit batch dependency and completion lifecycle > defers premature completion, then accepts correction of the failed write in the same batch  2898ms
+   ✓ audit batch dependency and completion lifecycle > acknowledges an already completed plan without an item ID or another application  3238ms
+   ✓ audit batch dependency and completion lifecycle > does not acknowledge a missing plan  1107ms
+   ✓ audit batch dependency and completion lifecycle > does not acknowledge an explicitly unknown item  2337ms
+   ✓ audit batch dependency and completion lifecycle > does not acknowledge skipped work as already completed  842ms
+   ✓ audit batch dependency and completion lifecycle > does not bypass open acceptance when every work item is done  4940ms
+   ✓ audit batch dependency and completion lifecycle > does not acknowledge completion after a later explicit verification failure  2479ms
+ ✓ test/assistantAcceptancePromiseBaseline.test.ts (13 tests) 4438ms
+   ✓ immutable baselines for newly adopted promises > detects protected 'lower tile' changes in B  565ms
+   ✓ immutable baselines for newly adopted promises > detects protected 'removed sparse stack' changes in B  752ms
+   ✓ immutable baselines for newly adopted promises > detects protected 'event commands' changes in B  596ms
+   ✓ immutable baselines for newly adopted promises > keeps first criteria and baselines through duplicate IDs, repair and later adoption  348ms
+   ✓ immutable baselines for newly adopted promises > cannot resolve an older ambiguous name using a later promise's narrower baseline  540ms
+ ✓ test/audioDescriptionTools.test.ts (20 tests) 12421ms
+   ✓ audio description tools > returns the complete music description when an override exists  735ms
+   ✓ audio description tools > returns the complete sound description when an override exists  531ms
+   ✓ audio description tools > stores normalized input when set receives ""  1342ms
+   ✓ audio description tools > stores normalized input when set receives "  sentinel\nsecond line  "  778ms
+   ✓ audio description tools > stores normalized input when set receives "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"  594ms
+   ✓ audio description tools > restores inheritance when reset removes an explicit clear  350ms
+   ✓ audio description tools > reports no change when resetting an inherited description  405ms
+   ✓ audio description tools > rejects invalid identities without mutation when calling get_audio_resource  3041ms
+   ✓ audio description tools > rejects invalid identities without mutation when calling set_audio_description  2154ms
+   ✓ audio description tools > rejects invalid action input without mutation when given {"action":"reset"}  302ms
+   ✓ audio description tools > rejects invalid action input without mutation when given {"action":"clear","description":""}  339ms
+ ✓ test/audioResourceSearchContract.test.ts (14 tests) 2239ms
+   ✓ effective audio description search > uses the new project when the AI context switches projects  321ms

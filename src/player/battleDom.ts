@@ -6,6 +6,7 @@ import type {
   TargetedActorCommand,
 } from "@/battle/runtime";
 import { concreteTargetCommand } from "@/battle/runtime";
+import type { BattleEventChoiceSnapshot } from "@/battle/types";
 import { targetScopeForCommand } from "@/battle/battleTargetResolver";
 import type { BattleAnimationPlayback } from "@/player/battleAnimationDom";
 import { syncBattleAnimationLayer } from "@/player/battleAnimationDom";
@@ -45,6 +46,9 @@ export interface BattleDomOptions {
   readonly runtime: BattleRuntime;
   readonly onResult: (result: BattleResult, snapshot: BattleSnapshot) => void;
   readonly introHold?: boolean;
+  readonly showEventChoices?: (request: BattleEventChoiceSnapshot, signal: AbortSignal) => Promise<number>;
+  readonly onDestroy?: () => void;
+  readonly onError?: (error: unknown) => void;
 }
 
 export interface BattleDomController {
@@ -110,6 +114,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   const stageScale = bindBattleStageScale(options.host, root);
 
   const initialSnapshot = options.runtime.snapshot();
+  let destroyed = false;
+  let choiceController: AbortController | undefined;
   let resultSent = false;
   let submenu: BattleCommandSubmenu = null;
   let targetReturnSubmenu: BattleCommandSubmenu = null;
@@ -216,6 +222,34 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   };
 
   const sequencer = createBattleSequencer(options.runtime, {
+    onEventChoice(request) {
+      if (!options.showEventChoices) {
+        console.warn("[battle] event choice requires an input host", request.id);
+        return;
+      }
+      const showChoices = options.showEventChoices;
+      const input = new AbortController();
+      choiceController = input;
+      void Promise.resolve().then(() => {
+        if (destroyed || input.signal.aborted) return;
+        return showChoices(request, input.signal);
+      }).then(index => {
+        if (index === undefined || destroyed || input.signal.aborted || options.runtime.snapshot().eventChoice?.id !== request.id) return;
+        choiceController = undefined;
+        const before = options.runtime.snapshot();
+        if (!options.runtime.resumeEventChoice(request.id, index)) throw new Error("Invalid battle event choice response");
+        presentation = createPresentationLedger(before);
+        sequencer.runAfterEventChoice(before, options.runtime.snapshot());
+      }).catch(error => {
+        if (input.signal.aborted || destroyed) return;
+        try {
+          if (options.onError) options.onError(error);
+          else queueMicrotask(() => { throw error; });
+        } finally {
+          controller.destroy();
+        }
+      });
+    },
     onCaptureCinematic(targetId, success) {
       return playCaptureCinematic(field, targetId, success);
     },
@@ -347,6 +381,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   // 직접 확정해도 이중 발화가 없다.
 
   function onKeydown(event: KeyboardEvent): void {
+    if (destroyed || options.runtime.snapshot().eventChoice || event.isComposing) return;
+    if (event.repeat && (isBattleConfirmKey(event) || isBattleCancelKey(event))) { event.preventDefault(); return; }
     // 첫 사용자 입력에서 오디오 컨텍스트를 깨운다(autoplay 정책).
     unlockBattleSfx();
     const snapshot = options.runtime.snapshot();
@@ -447,6 +483,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   // 속도를 토글한다. Shift+A(대문자)·Shift+Z 같은 조합에서는 토글되지 않는다(결함 2).
   function onWindowKeyup(event: KeyboardEvent): void {
     if (event.key !== "Shift") return;
+    if (options.runtime.snapshot().eventChoice) { shiftHeld = false; shiftCombined = false; return; }
     // 텍스트 입력 중에는 토글하지 않는다. 연출 중에는 허용한다 — 배속은 재생을
     // 보면서 조절하는 컨트롤이다(코덱스 리뷰 C6).
     if (shiftHeld && !shiftCombined && root.isConnected && !isTextInputTarget(event.target)) {
@@ -664,6 +701,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   });
 
   function syncView(): void {
+    if (destroyed) return;
     const snapshot = options.runtime.snapshot();
     const showingResult = Boolean(snapshot.result) && directorState.step === "result";
     if (showingResult) {
@@ -715,6 +753,11 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   }
 
   function rebuildCommandPanelIfNeeded(snapshot: BattleSnapshot): void {
+    if (snapshot.eventChoice) {
+      commandHost.replaceChildren();
+      commandPanelSignature = "";
+      return;
+    }
     const actor = snapshot.actors.find((entry) => entry.recordId === snapshot.activeActorId);
     const submenuId = submenu?.kind === "skill" ? submenu.command.id : submenu?.kind ?? "none";
     const inventorySignature = Object.entries(snapshot.eventState.inventory)
@@ -939,7 +982,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     options.runtime.tick(BATTLE_TICK_MS);
     const after = options.runtime.snapshot();
     const timelineKey = `${before.timeline.length}:${after.timeline.length}`;
-    if (after.timeline.length > before.timeline.length && timelineKey !== lastEnemyActionKey) {
+    if ((after.timeline.length > before.timeline.length && timelineKey !== lastEnemyActionKey) || after.eventChoice || after.result) {
       lastEnemyActionKey = timelineKey;
       presentation = createPresentationLedger(before);
       sequencer.runAfterEnemyAdvance(before, after);
@@ -948,13 +991,14 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     syncView();
   }, BATTLE_TICK_MS);
 
-  let destroyed = false;
   const controller: BattleDomController = {
     root,
     destroy(): void {
       // 멱등 — 여러 경로(onResult, teardown, 재마운트)에서 중복 호출돼도 안전해야 한다.
       if (destroyed) return;
       destroyed = true;
+      choiceController?.abort();
+      options.runtime.cancel();
       window.clearInterval(tickInterval);
       window.removeEventListener("keydown", onWindowKeydown);
       window.removeEventListener("keyup", onWindowKeyup);
@@ -962,9 +1006,13 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       activeAnimation?.destroy();
       stageScale.cleanup();
       root.remove();
-      activeBattleControllers.delete(options.host);
+      if (activeBattleControllers.get(options.host) === controller) activeBattleControllers.delete(options.host);
+      options.onDestroy?.();
     },
   };
   activeBattleControllers.set(options.host, controller);
+  if (options.introHold === false && (initialSnapshot.eventChoice || initialSnapshot.result)) {
+    sequencer.runAfterEnemyAdvance(initialSnapshot, initialSnapshot);
+  }
   return controller;
 }

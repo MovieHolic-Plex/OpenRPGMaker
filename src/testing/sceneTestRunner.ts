@@ -1,6 +1,6 @@
 import { buildLifeRuntimeSnapshot, type LifeRuntimeSnapshot } from "@/player/runtimeDom";
 import { canMove, isPassable } from "@/project/collision";
-import { createBattleRuntime, type BattleResult } from "@/battle/runtime";
+import { BattleEventInputRequiredError, createBattleRuntime, type BattleResult } from "@/battle/runtime";
 import { resolveEventPage } from "@/project/io";
 import { checkReachability } from "@/project/lint/reachability";
 import {
@@ -102,7 +102,8 @@ export type SceneStep =
     }
   | { kind: "move"; dir: Dir; to?: never }
   | { kind: "move"; dir?: never; to: { x: number; y: number } }
-  | { kind: "interact" }
+  | { kind: "interact"; eventId?: string }
+  | { kind: "snapshotRewards" }
   | { kind: "gift"; eventId?: string; itemId: string }
   | { kind: "choose"; index: number }
   | { kind: "retryCheckpoint" }
@@ -141,6 +142,10 @@ export type SceneExpectStep = {
   timePhase?: TimePhase;
   cropStageAt?: { x: number; y: number; stage: number; mapId?: string };
   inventoryCount?: { itemId: string; count: number } | Record<string, number>;
+  /** Deltas from scene start or the latest snapshotRewards step. */
+  inventoryDelta?: Record<string, number | { atLeast: number }>;
+  ownedMonsterDelta?: Record<string, number | { atLeast: number }>;
+  interactionComplete?: boolean;
   friendshipAtLeast?: { npcKey: string; value: number } | Record<string, number>;
   shopStock?: { eventId: string; itemIds: readonly string[]; prices?: Record<string, number>; mapId?: string };
 };
@@ -180,6 +185,9 @@ export interface SceneTestResult {
     readonly switchesOn: readonly string[];
     readonly variables: Record<string, number>;
     readonly inventory: Record<string, number>;
+    readonly ownedMonsterCounts: Record<string, number>;
+    readonly monsterParty: readonly string[];
+    readonly monsterBox: readonly string[];
     readonly friendship: Record<string, number>;
     readonly playTimeSeconds: number;
     readonly gameTime?: GameTime;
@@ -191,7 +199,7 @@ export interface SceneTestResult {
 
 type PumpStop =
   | { stop: "done" }
-  | { stop: "choices" }
+  | { stop: "choices"; choiceCount: number }
   | { stop: "animation" }
   | { stop: "failed"; reason: string };
 
@@ -233,8 +241,21 @@ interface RunnerState {
   /** Runner-observable transcript of message text bodies shown so far. */
   readonly messages: string[];
   gameOver: boolean;
-  held: { interp: Interpreter; mode: "choices" | "animation"; currentEventId?: string } | null;
+  held: ({ interp: Interpreter; currentEventId?: string } & (
+    { mode: "choices"; choiceCount: number } | { mode: "animation" }
+  )) | null;
   runtimeFailure: string | null;
+  rewardBaseline: { inventory: Record<string, number>; monsters: Record<string, number> };
+}
+
+/** Ownership is party + box membership, resolved through instances (not actor party). */
+function ownedMonsterCounts(session: PlaySession): Record<string, number> {
+  const counts: Record<string, number> = {};
+  for (const id of new Set([...session.monsterParty, ...session.monsterBox])) {
+    const instance = session.monsterInstances[id];
+    if (instance) counts[instance.speciesId] = (counts[instance.speciesId] ?? 0) + 1;
+  }
+  return counts;
 }
 
 type SceneFieldCheck = (value: unknown) => boolean;
@@ -256,6 +277,9 @@ function sceneShape(value: unknown, fields: Readonly<Record<string, SceneFieldCh
 const scenePoint: SceneFieldCheck = value => sceneShape(value, { x: sceneCount, y: sceneCount }, ["x", "y"]);
 const sceneVariableValues: SceneFieldCheck = value => sceneNumbers(value)
   || sceneShape(value, { variableId: sceneText, value: sceneNumber }, ["variableId", "value"]);
+const sceneRewardDeltas: SceneFieldCheck = value => sceneRecord(value)
+  && Object.values(value).every(delta => sceneNumber(delta)
+    || sceneShape(delta, { atLeast: sceneNumber }, ["atLeast"]));
 const sceneExpectFields: Readonly<Record<keyof Omit<SceneExpectStep, "kind">, SceneFieldCheck>> = {
   playerAt: value => sceneShape(value, { x: sceneCount, y: sceneCount, mapId: sceneText }, ["x", "y"]),
   switchOn: sceneStringOrList, switchOff: sceneStringOrList,
@@ -278,6 +302,8 @@ const sceneExpectFields: Readonly<Record<keyof Omit<SceneExpectStep, "kind">, Sc
   timePhase: isTimePhase,
   cropStageAt: value => sceneShape(value, { x: sceneCount, y: sceneCount, stage: sceneCount, mapId: sceneText }, ["x", "y", "stage"]),
   inventoryCount: value => sceneNumbers(value) || sceneShape(value, { itemId: sceneText, count: sceneCount }, ["itemId", "count"]),
+  inventoryDelta: sceneRewardDeltas, ownedMonsterDelta: sceneRewardDeltas,
+  interactionComplete: sceneBoolean,
   friendshipAtLeast: value => sceneNumbers(value) || sceneShape(value, { npcKey: sceneText, value: sceneNumber }, ["npcKey", "value"]),
   shopStock: value => sceneShape(value, { eventId: sceneText, itemIds: sceneStrings, prices: sceneNumbers, mapId: sceneText }, ["eventId", "itemIds"]),
 };
@@ -297,7 +323,8 @@ function isSceneStep(value: unknown): value is SceneStep {
       switches: entry => sceneStrings(entry) || (sceneRecord(entry) && Object.values(entry).every(sceneBoolean)),
       variables: sceneNumbers, inventory: sceneNumbers, gold: sceneNumber, manualHint: sceneText,
     });
-    case "interact": case "retryCheckpoint": return shape({});
+    case "interact": return shape({ eventId: sceneText });
+    case "snapshotRewards": case "retryCheckpoint": return shape({});
     case "gift": return shape({ eventId: sceneText, itemId: sceneText }, ["itemId"]);
     case "choose": return shape({ index: sceneCount }, ["index"]);
     case "advanceDays": return shape({ days: sceneCount }, ["days"]);
@@ -354,6 +381,7 @@ export function runSceneTest(project: Project, input: SceneTestInput): SceneTest
     gameOver: false,
     held: null,
     runtimeFailure: null,
+    rewardBaseline: { inventory: { ...session.inventory }, monsters: ownedMonsterCounts(session) },
   };
   initializeFieldSpawnsForRunner(state);
   syncFollowCamera(state);
@@ -394,7 +422,11 @@ function runStep(state: RunnerState, step: SceneStep): string | null {
     case "walk":
       return runWalkStep(state, step);
     case "interact":
-      return runInteractStep(state);
+      return runInteractStep(state, step.eventId);
+    case "snapshotRewards":
+      state.rewardBaseline = { inventory: { ...state.session.inventory }, monsters: ownedMonsterCounts(state.session) };
+      state.log.push(`reward baseline ${JSON.stringify(state.rewardBaseline)}`);
+      return null;
     case "gift":
       return runGiftStep(state, step);
     case "choose":
@@ -620,7 +652,7 @@ function findGiftEventOverlapping(
   return events.find((view) => view.trigger.kind === "action" && rectsOverlap(view.bodyRect, pointRect(x, y)));
 }
 
-function runInteractStep(state: RunnerState): string | null {
+function runInteractStep(state: RunnerState, expectedEventId?: string): string | null {
   if (state.gameOver) return "게임 오버 중에는 이벤트를 조사할 수 없습니다.";
   const map = currentMap(state);
   if (!map) return `현재 맵 없음: ${state.session.currentMapId}`;
@@ -634,16 +666,24 @@ function runInteractStep(state: RunnerState): string | null {
     state.session.y + delta.y,
     "action"
   );
-  if (front) return runEventView(state, front);
+  if (front) {
+    if (expectedEventId !== undefined && front.event.id !== expectedEventId) return `Interaction target: expected ${expectedEventId}, actual ${front.event.id}`;
+    return runEventView(state, front);
+  }
   const farmFront = interactWithFarmPlot(state.project, state.session, map, state.session.x + delta.x, state.session.y + delta.y);
   if (farmFront.kind !== "ignored") {
+    if (expectedEventId !== undefined) return `Interaction target: expected ${expectedEventId}, actual farm plot`;
     state.log.push(`farm ${farmFront.kind}: ${map.id} (${farmFront.x},${farmFront.y})${farmFront.cropId ? ` ${farmFront.cropId}` : ""}`);
     return null;
   }
   const underfoot = findRuntimeEventAtInMap(state.project, map, state.session, state.eventPositions, state.session.x, state.session.y, "action");
-  if (underfoot) return runEventView(state, underfoot);
+  if (underfoot) {
+    if (expectedEventId !== undefined && underfoot.event.id !== expectedEventId) return `Interaction target: expected ${expectedEventId}, actual ${underfoot.event.id}`;
+    return runEventView(state, underfoot);
+  }
   const farmUnderfoot = interactWithFarmPlot(state.project, state.session, map, state.session.x, state.session.y);
   if (farmUnderfoot.kind !== "ignored") {
+    if (expectedEventId !== undefined) return `Interaction target: expected ${expectedEventId}, actual farm plot`;
     state.log.push(`farm ${farmUnderfoot.kind}: ${map.id} (${farmUnderfoot.x},${farmUnderfoot.y})${farmUnderfoot.cropId ? ` ${farmUnderfoot.cropId}` : ""}`);
     return null;
   }
@@ -671,6 +711,7 @@ function runRetryCheckpointStep(state: RunnerState): string | null {
 
 function runChooseStep(state: RunnerState, index: number): string | null {
   if (!state.held || state.held.mode !== "choices") return "choose를 처리할 대기 중 선택지가 없습니다.";
+  if (!Number.isInteger(index) || index < -1 || index >= state.held.choiceCount) return `Choice index ${index} is out of range (${state.held.choiceCount} options).`;
   const interp = state.held.interp;
   const stop = pump(state, interp, interp.resume(index));
   refreshRoguelikeRoomForRunner(state);
@@ -701,7 +742,9 @@ function updateHeldInterpreter(
   currentEventId: string | undefined
 ): void {
   if (stop.stop === "choices" || stop.stop === "animation") {
-    state.held = { interp, mode: stop.stop, currentEventId };
+    state.held = stop.stop === "choices"
+      ? { interp, mode: "choices", currentEventId, choiceCount: stop.choiceCount }
+      : { interp, mode: "animation", currentEventId };
     return;
   }
   if (currentEventId) releaseCutsceneControlForOwner(state.session, currentEventId);
@@ -720,7 +763,7 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
       case "openLoadMenu":
         return { stop: "failed", reason: `${step.kind}: 출하 플레이어 하네스로 검증해야 하는 명령` };
       case "choices":
-        return { stop: "choices" };
+        return { stop: "choices", choiceCount: step.options.length };
       case "text":
         state.messages.push(step.body);
         step = interp.resume(undefined);
@@ -830,6 +873,12 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
         if (step.wait) {
           return { stop: "animation" };
         }
+        step = interp.resume(undefined);
+        break;
+      case "relocateEvents":
+        for (const eventId of step.eventIds) state.chasers.delete(eventId);
+        refreshChasers(state);
+        syncFollowCamera(state);
         step = interp.resume(undefined);
         break;
       case "spawnEvent":
@@ -1301,6 +1350,20 @@ function cameraSessionState(
 }
 
 function runExpectStep(state: RunnerState, step: SceneExpectStep): string | null {
+  if (step.interactionComplete !== undefined && (state.held === null) !== step.interactionComplete) {
+    return "Interaction completion does not match expectation.";
+  }
+  for (const [kind, expected, current, baseline] of [
+    ["inventory", step.inventoryDelta, state.session.inventory, state.rewardBaseline.inventory],
+    ["ownedMonsters", step.ownedMonsterDelta, ownedMonsterCounts(state.session), state.rewardBaseline.monsters],
+  ] as const) {
+    for (const [id, count] of Object.entries(expected ?? {})) {
+      const delta = (current[id] ?? 0) - (baseline[id] ?? 0);
+      const matches = typeof count === "number" ? delta === count : delta >= count.atLeast;
+      state.log.push(`reward delta ${kind} ${id}: baseline=${baseline[id] ?? 0}, current=${current[id] ?? 0}, delta=${delta}`);
+      if (!matches) return `${kind} ${id}: expected delta ${JSON.stringify(count)}, actual ${delta}`;
+    }
+  }
   if (step.mapId !== undefined && state.session.currentMapId !== step.mapId) {
     return `현재 맵: 기대 ${step.mapId}, 실제 ${state.session.currentMapId}`;
   }
@@ -1829,6 +1892,7 @@ function runHeadlessBattle(
   });
   for (let guard = 0; guard < 8000; guard += 1) {
     const snapshot = runtime.snapshot();
+    if (snapshot.eventChoice) throw new BattleEventInputRequiredError(snapshot.eventChoice);
     if (snapshot.result) break;
     if (snapshot.phase === "actorCommand") {
       const enemy = snapshot.enemies.find((entry) => !entry.defeated && entry.hp > 0);
@@ -1839,6 +1903,7 @@ function runHeadlessBattle(
     }
   }
   const final = runtime.snapshot();
+  if (final.eventChoice) throw new BattleEventInputRequiredError(final.eventChoice);
   const result = final.result ?? "defeat";
   applyBattleRewardsToSession(state.session, {
     result,
@@ -1927,7 +1992,10 @@ function advanceChasers(state: RunnerState, deltaMs: number): void {
       pathfind: view.movement.pathfind,
     });
     if (decision.kind === "move") {
-      state.eventPositions[eventId] = { x: decision.x, y: decision.y, direction: decision.dir };
+      const position = { x: decision.x, y: decision.y, direction: decision.dir };
+      const location = state.session.eventLocations[eventId];
+      if (location?.mapId === map.id) state.session.eventLocations[eventId] = { ...location, ...position };
+      state.eventPositions[eventId] = position;
     } else if (decision.kind === "touch" && view.trigger.kind === "eventTouch") {
       state.runtimeFailure = runEventView(state, view);
       if (state.runtimeFailure) return;
@@ -1983,6 +2051,9 @@ function result(
       switchesOn: Object.entries(session.switches).filter(([, value]) => value).map(([key]) => key),
       variables: { ...session.variables },
       inventory: { ...session.inventory },
+      ownedMonsterCounts: ownedMonsterCounts(session),
+      monsterParty: [...session.monsterParty],
+      monsterBox: [...session.monsterBox],
       friendship: { ...(session.friendship ?? {}) },
       playTimeSeconds: session.playTimeSeconds,
       gameTime: session.gameTime,

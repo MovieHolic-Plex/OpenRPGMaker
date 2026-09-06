@@ -92,6 +92,8 @@ function flattenCoordinateWrapper(properties: Record<string, JsonSchema>, args: 
 }
 
 function wrapFlatCoordinates(properties: Record<string, JsonSchema>, args: Record<string, unknown>): void {
+  // Declared flat coordinates already have an owner (for example a scene set step).
+  if (properties.x !== undefined && properties.y !== undefined) return;
   const coordinateFields = Object.entries(properties).filter(([, childSchema]) => isCoordinateObjectSchema(childSchema));
   if (coordinateFields.length !== 1) return;
 
@@ -217,6 +219,8 @@ function matchesSingleType(value: unknown, type: JsonSchemaType): boolean {
 }
 
 function matchesType(value: unknown, type: JsonSchema["type"]): boolean {
+  // type 생략은 JSON Schema의 무제약 값이다(커맨드/조건의 variant별 value 등).
+  if (type === undefined) return true;
   const schemaTypes = Array.isArray(type) ? type : [type];
   return schemaTypes.some((entry) => matchesSingleType(value, entry));
 }

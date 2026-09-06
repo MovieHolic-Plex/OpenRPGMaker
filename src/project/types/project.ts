@@ -1,6 +1,7 @@
 import type {
   AssetSet,
   ActorId,
+  AudioDescriptionOverrides,
   CharacterFootprint,
   Dir,
   FlagName,
@@ -531,6 +532,8 @@ export interface Project {
   // 사용자가 에디터에서 고친 캐릭터 칩 라벨. 번들 CHARSET_SEMANTICS 위에 덮어
   // 검색·AI 질의·피커 표시가 전부 이 값을 우선으로 읽는다. optional이라 마이그레이션 불필요.
   charsetLabels?: CharsetLabelOverride[];
+  /** Project-authored audio overrides only; catalog defaults are never stored here. */
+  audioDescriptions?: AudioDescriptionOverrides;
   mapTree: MapTreeNode;
   startMapId: MapId;
   startPos: { x: number; y: number };
@@ -615,6 +618,8 @@ export interface ChangeSummary {
   tilesChanged: number;
   /** 이름·크기·타일셋·BGM 등 타일/이벤트 외 맵 속성이 바뀐 기존 맵 수. */
   mapPropertiesChanged?: number;
+  /** 설명 override 상태가 바뀐 오디오 kind/raw ID 키 수. 구 저장본의 부재는 0. */
+  audioDescriptionsChanged?: number;
   eventsAdded: number;
   eventsModified: number;
   eventsRemoved: number;

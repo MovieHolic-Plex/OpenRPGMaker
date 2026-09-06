@@ -96,7 +96,7 @@ export function advanceResume(
     frame.pc += 1;
   } else {
     frame.pc += 1;
-    if (pending === "transfer") return "done";
+    if (pending === "transfer" && !state.continueAfterTransfer) return "done";
   }
   return "continue";
 }
