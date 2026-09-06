@@ -10,7 +10,10 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function freshGame(browser) {
   const page = await (await browser.newContext({ viewport: { width: 1720, height: 960 } })).newPage();
-  await page.addInitScript(([k, v]) => { localStorage.setItem(k, v); for (let i = 1; i <= 3; i++) localStorage.removeItem("oprn:save-slot:" + i); }, [DEV_KEY, PROJECT_JSON]);
+  await page.addInitScript(([k, v]) => { localStorage.setItem(k, v); for (let i = 1; i <= 3; i++) {
+      localStorage.removeItem("oprn:save-slot:v5:" + i);
+      localStorage.removeItem("oprn:save-slot:" + i);
+    } }, [DEV_KEY, PROJECT_JSON]);
   await page.goto(URL, { waitUntil: "domcontentloaded" });
   await page.waitForSelector('[data-testid="mode-play"]', { timeout: 30000 });
   await sleep(1200);
@@ -52,16 +55,35 @@ function makeHelpers(page) {
     await key("Escape", 1, 900);
     if (!(await clickMenuText("저장"))) console.log("NO SAVE BUTTON");
     await sleep(700);
-    if (!(await clickTestId("save-slot-1"))) await key("Enter", 1, 900);
-    await sleep(800);
-    const okSave = await page.evaluate(() => !!localStorage.getItem("oprn:save-slot:1"));
+    await page.evaluate(async () => {
+      const { armSaveWriteSignal } = await import("/test/e2e/saveWriteSignal.ts");
+      const { saveSlotKey } = await import("/src/player/saveSlots.ts");
+      armSaveWriteSignal(saveSlotKey(1));
+    });
+    try {
+      if (!(await clickTestId("save-slot-1"))) await page.keyboard.press("Enter");
+      const outcome = await page.evaluate(() => window.__saveWriteSignal.completion);
+      if (outcome !== "written") throw new Error(`Save write failed: ${outcome}`);
+    } finally {
+      await page.evaluate(() => window.__saveWriteSignal.dispose());
+    }
+    const okSave = await page.evaluate(async () => {
+      const { readSaveSlot, saveSlotKey } = await import("/src/player/saveSlots.ts");
+      const text = localStorage.getItem(saveSlotKey(1));
+      let snapshot;
+      try { snapshot = JSON.parse(text ?? "null"); } catch { return false; }
+      return snapshot?.schemaVersion === 5 && readSaveSlot(localStorage, 1).kind === "present";
+    });
     if (!okSave) { console.log("SAVE FAILED"); return false; }
-    await page.evaluate(([m, px, py, sw]) => {
-      const raw = JSON.parse(localStorage.getItem("oprn:save-slot:1"));
-      const sess = raw.session ?? raw.snapshot?.session ?? raw;
+    await page.evaluate(async ([m, px, py, sw]) => {
+      const { readSaveSlot, saveSlotKey } = await import("/src/player/saveSlots.ts");
+      const key = saveSlotKey(1);
+      const raw = JSON.parse(localStorage.getItem(key) ?? "null");
+      if (raw?.schemaVersion !== 5 || readSaveSlot(localStorage, 1).kind !== "present") throw new Error("Current save slot is missing or invalid");
+      const sess = raw.session;
       sess.currentMapId = m; sess.x = px; sess.y = py;
       for (const [k, v] of Object.entries(sw)) sess.switches[k] = v;
-      localStorage.setItem("oprn:save-slot:1", JSON.stringify(raw));
+      localStorage.setItem(key, JSON.stringify(raw));
     }, [mapId, x, y, switches]);
     await key("Escape", 1, 700);
     if (!(await clickMenuText("로드"))) { await key("Escape", 1, 600); await clickMenuText("로드"); }

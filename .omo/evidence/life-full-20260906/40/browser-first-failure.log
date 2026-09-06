@@ -1,0 +1,13 @@
+CLEANUP: private context/browser/server closed
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+page.evaluate: TypeError: Cannot read properties of null (reading 'addEventListener')
+    at eval (eval at evaluate (:303:30), <anonymous>:7:36)
+    at async <anonymous>:329:30
+    at /home/main/z-project/rpg-zzu-life-full-save-consumers-final/.omo/evidence/life-full-20260906/40/browser-probe.mjs:50:14 {
+  log: []
+}
+
+Node.js v24.11.1

@@ -1,0 +1,156 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/lifeSaveConsumers.test.ts test/lifeSaveVersion.test.ts test/playerOpenSaveMenu.test.ts --maxWorkers=1 --no-file-parallelism --silent=false
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-save-consumers-final
+
+stdout | test/playerOpenSaveMenu.test.ts > event-opened save menu in the shipping player shell > signals the exact Save5 write from the real save entry point without a delay
+[play-boot] [play-boot] stage=engine ok map=map_blank_start startPlayGame
+
+stdout | test/playerOpenSaveMenu.test.ts > event-opened save menu in the shipping player shell > signals the exact Save5 write from the real save entry point without a delay
+[play-boot] [play-boot] stage=refresh ok map=map_blank_start refreshRuntimeSurfaces
+[play-boot] [play-boot] stage=ready ok map=map_blank_start boot complete
+
+stdout | test/playerOpenSaveMenu.test.ts > event-opened save menu in the shipping player shell > ignores other keys and sessionStorage, then times out and restores instrumentation
+[play-boot] [play-boot] stage=engine ok map=map_blank_start startPlayGame
+
+stdout | test/playerOpenSaveMenu.test.ts > event-opened save menu in the shipping player shell > ignores other keys and sessionStorage, then times out and restores instrumentation
+[play-boot] [play-boot] stage=refresh ok map=map_blank_start refreshRuntimeSurfaces
+[play-boot] [play-boot] stage=ready ok map=map_blank_start boot complete
+
+stdout | test/playerOpenSaveMenu.test.ts > event-opened save menu in the shipping player shell > does not report a failed write as complete and disposes a cancelled observation
+[play-boot] [play-boot] stage=engine ok map=map_blank_start startPlayGame
+
+stdout | test/playerOpenSaveMenu.test.ts > event-opened save menu in the shipping player shell > does not report a failed write as complete and disposes a cancelled observation
+[play-boot] [play-boot] stage=refresh ok map=map_blank_start refreshRuntimeSurfaces
+[play-boot] [play-boot] stage=ready ok map=map_blank_start boot complete
+
+stderr | test/playerOpenSaveMenu.test.ts > event-opened save menu in the shipping player shell > does not report a failed write as complete and disposes a cancelled observation
+[save] failed to write save slot: DOMException [QuotaExceededError]: full
+    at Proxy.<anonymous> [90m(/home/main/z-project/rpg-zzu-life-full-save-consumers-final/[39mtest/playerOpenSaveMenu.test.ts:132:13[90m)[39m
+    at Proxy.mockCall (file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/spy[24m/dist/index.js:96:15)
+    at Proxy.setItem (file:///home/main/z-project/rpg-zzu/node_modules/[4mtinyspy[24m/dist/index.js:47:80)
+    at Proxy.value [90m(/home/main/z-project/rpg-zzu-life-full-save-consumers-final/[39mtest/e2e/saveWriteSignal.ts:29:18[90m)[39m
+    at saveToSlot [90m(/home/main/z-project/rpg-zzu-life-full-save-consumers-final/[39msrc/player/saveSlots.ts:422:13[90m)[39m
+    at Object.saveSlot [as onSaveSlot] [90m(/home/main/z-project/rpg-zzu-life-full-save-consumers-final/[39msrc/player/playerStatusMenuController.ts:334:21[90m)[39m
+    at Object.onActivate [90m(/home/main/z-project/rpg-zzu-life-full-save-consumers-final/[39msrc/player/playerStatusMenuDetails.ts:354:87[90m)[39m
+    at HTMLButtonElement.click [90m(/home/main/z-project/rpg-zzu-life-full-save-consumers-final/[39msrc/player/playerStatusMenuDetailRenderer.ts:174:66[90m)[39m
+    at HTMLButtonElement.#callDispatchEventListeners (file:///home/main/z-project/rpg-zzu/node_modules/[4mhappy-dom[24m/src/event/EventTarget.ts:305:42)
+    at HTMLButtonElement.dispatchEvent (file:///home/main/z-project/rpg-zzu/node_modules/[4mhappy-dom[24m/src/event/EventTarget.ts:142:35)
+
+stdout | test/playerOpenSaveMenu.test.ts > event-opened save menu in the shipping player shell > shows slots immediately and saves, navigates and backs out through the keyboard
+[play-boot] [play-boot] stage=engine ok map=map_blank_start startPlayGame
+
+stdout | test/playerOpenSaveMenu.test.ts > event-opened save menu in the shipping player shell > shows slots immediately and saves, navigates and backs out through the keyboard
+[play-boot] [play-boot] stage=refresh ok map=map_blank_start refreshRuntimeSurfaces
+[play-boot] [play-boot] stage=ready ok map=map_blank_start boot complete
+
+stdout | test/playerOpenSaveMenu.test.ts > event-opened save menu in the shipping player shell > keeps overwrite confirmation cancellable and resets it on direct re-entry
+[play-boot] [play-boot] stage=engine ok map=map_blank_start startPlayGame
+
+stdout | test/playerOpenSaveMenu.test.ts > event-opened save menu in the shipping player shell > keeps overwrite confirmation cancellable and resets it on direct re-entry
+[play-boot] [play-boot] stage=refresh ok map=map_blank_start refreshRuntimeSurfaces
+[play-boot] [play-boot] stage=ready ok map=map_blank_start boot complete
+
+stdout | test/playerOpenSaveMenu.test.ts > event-opened save menu in the shipping player shell > preserves the map save restriction on direct entry
+[play-boot] [play-boot] stage=engine ok map=map_blank_start startPlayGame
+
+stdout | test/playerOpenSaveMenu.test.ts > event-opened save menu in the shipping player shell > preserves the map save restriction on direct entry
+[play-boot] [play-boot] stage=refresh ok map=map_blank_start refreshRuntimeSurfaces
+[play-boot] [play-boot] stage=ready ok map=map_blank_start boot complete
+
+stdout | test/playerOpenSaveMenu.test.ts > event-opened save menu in the shipping player shell > preserves the session save restriction on direct entry
+[play-boot] [play-boot] stage=engine ok map=map_blank_start startPlayGame
+
+stdout | test/playerOpenSaveMenu.test.ts > event-opened save menu in the shipping player shell > preserves the session save restriction on direct entry
+[play-boot] [play-boot] stage=refresh ok map=map_blank_start refreshRuntimeSurfaces
+[play-boot] [play-boot] stage=ready ok map=map_blank_start boot complete
+
+ ✓ test/playerOpenSaveMenu.test.ts (7 tests) 1895ms
+   ✓ event-opened save menu in the shipping player shell > signals the exact Save5 write from the real save entry point without a delay  345ms
+   ✓ event-opened save menu in the shipping player shell > shows slots immediately and saves, navigates and backs out through the keyboard  316ms
+   ✓ event-opened save menu in the shipping player shell > keeps overwrite confirmation cancellable and resets it on direct re-entry  343ms
+stderr | test/lifeSaveVersion.test.ts > Save5 version and original ownership boundary > preserves legacy bytes, previous new slot and live progress on quota (existing new=false)
+[save] failed to write save slot: DOMException [QuotaExceededError]: full
+[90m    at new DOMException (node:internal/per_context/domexception:76:18)[39m
+    at MemoryStorage.<anonymous> [90m(/home/main/z-project/rpg-zzu-life-full-save-consumers-final/[39mtest/lifeSaveVersion.test.ts:132:67[90m)[39m
+    at MemoryStorage.mockCall (file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/spy[24m/dist/index.js:96:15)
+    at MemoryStorage.setItem (file:///home/main/z-project/rpg-zzu/node_modules/[4mtinyspy[24m/dist/index.js:47:80)
+    at Module.saveToSlot [90m(/home/main/z-project/rpg-zzu-life-full-save-consumers-final/[39msrc/player/saveSlots.ts:422:13[90m)[39m
+    at [90m/home/main/z-project/rpg-zzu-life-full-save-consumers-final/[39mtest/lifeSaveVersion.test.ts:134:18
+    at file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:863:59
+    at file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:155:11
+    at file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:26
+    at file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1897:20
+[autosave] failed to write autosave (ignored): DOMException [QuotaExceededError]: full
+[90m    at new DOMException (node:internal/per_context/domexception:76:18)[39m
+    at MemoryStorage.<anonymous> [90m(/home/main/z-project/rpg-zzu-life-full-save-consumers-final/[39mtest/lifeSaveVersion.test.ts:132:67[90m)[39m
+    at MemoryStorage.mockCall (file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/spy[24m/dist/index.js:96:15)
+    at MemoryStorage.setItem (file:///home/main/z-project/rpg-zzu/node_modules/[4mtinyspy[24m/dist/index.js:47:80)
+    at writeAutosave [90m(/home/main/z-project/rpg-zzu-life-full-save-consumers-final/[39msrc/player/saveSlots.ts:263:11[90m)[39m
+    at performAutosave [90m(/home/main/z-project/rpg-zzu-life-full-save-consumers-final/[39msrc/player/autosave.ts:65:5[90m)[39m
+    at [90m/home/main/z-project/rpg-zzu-life-full-save-consumers-final/[39mtest/lifeSaveVersion.test.ts:135:12
+    at file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:863:59
+    at file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:155:11
+    at file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:26
+
+stderr | test/lifeSaveVersion.test.ts > Save5 version and original ownership boundary > preserves legacy bytes, previous new slot and live progress on quota (existing new=true)
+[save] failed to write save slot: DOMException [QuotaExceededError]: full
+[90m    at new DOMException (node:internal/per_context/domexception:76:18)[39m
+    at MemoryStorage.<anonymous> [90m(/home/main/z-project/rpg-zzu-life-full-save-consumers-final/[39mtest/lifeSaveVersion.test.ts:132:67[90m)[39m
+    at MemoryStorage.mockCall (file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/spy[24m/dist/index.js:96:15)
+    at MemoryStorage.setItem (file:///home/main/z-project/rpg-zzu/node_modules/[4mtinyspy[24m/dist/index.js:47:80)
+    at Module.saveToSlot [90m(/home/main/z-project/rpg-zzu-life-full-save-consumers-final/[39msrc/player/saveSlots.ts:422:13[90m)[39m
+    at [90m/home/main/z-project/rpg-zzu-life-full-save-consumers-final/[39mtest/lifeSaveVersion.test.ts:134:18
+    at file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:863:59
+    at file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:155:11
+    at file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:26
+    at file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1897:20
+[autosave] failed to write autosave (ignored): DOMException [QuotaExceededError]: full
+[90m    at new DOMException (node:internal/per_context/domexception:76:18)[39m
+    at MemoryStorage.<anonymous> [90m(/home/main/z-project/rpg-zzu-life-full-save-consumers-final/[39mtest/lifeSaveVersion.test.ts:132:67[90m)[39m
+    at MemoryStorage.mockCall (file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/spy[24m/dist/index.js:96:15)
+    at MemoryStorage.setItem (file:///home/main/z-project/rpg-zzu/node_modules/[4mtinyspy[24m/dist/index.js:47:80)
+    at writeAutosave [90m(/home/main/z-project/rpg-zzu-life-full-save-consumers-final/[39msrc/player/saveSlots.ts:263:11[90m)[39m
+    at performAutosave [90m(/home/main/z-project/rpg-zzu-life-full-save-consumers-final/[39msrc/player/autosave.ts:65:5[90m)[39m
+    at [90m/home/main/z-project/rpg-zzu-life-full-save-consumers-final/[39mtest/lifeSaveVersion.test.ts:135:12
+    at file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:863:59
+    at file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:155:11
+    at file:///home/main/z-project/rpg-zzu/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:26
+
+ ✓ test/lifeSaveVersion.test.ts (18 tests) 1044ms
+stdout | test/lifeSaveConsumers.test.ts > remaining actual Save5 consumers (task40) > playtest-driver3.cjs removes only owned manual families
+{"file":"playtest-driver3.cjs","cleanup":"for (let i = 1; i <= 3; i++) {\n      localStorage.removeItem(\"oprn:save-slot:v5:\" + i);\n      localStorage.removeItem(\"oprn:save-slot:\" + i);\n    }","remainingOwned":[],"preserved":true}
+
+stdout | test/lifeSaveConsumers.test.ts > remaining actual Save5 consumers (task40) > playtest-driver4.cjs removes only owned manual families
+{"file":"playtest-driver4.cjs","cleanup":"for (let i = 1; i <= 3; i++) {\n      localStorage.removeItem(\"oprn:save-slot:v5:\" + i);\n      localStorage.removeItem(\"oprn:save-slot:\" + i);\n    }","remainingOwned":[],"preserved":true}
+
+stdout | test/lifeSaveConsumers.test.ts > remaining actual Save5 consumers (task40) > playtest-driver5.cjs removes only owned manual families
+{"file":"playtest-driver5.cjs","cleanup":"for (let i = 1; i <= 3; i++) {\n      localStorage.removeItem(\"oprn:save-slot:v5:\" + i);\n      localStorage.removeItem(\"oprn:save-slot:\" + i);\n    }","remainingOwned":[],"preserved":true}
+
+stdout | test/lifeSaveConsumers.test.ts > remaining actual Save5 consumers (task40) > playtest-driver6.cjs removes only owned manual families
+{"file":"playtest-driver6.cjs","cleanup":"for (let i = 1; i <= 3; i++) {\n      localStorage.removeItem(\"oprn:save-slot:v5:\" + i);\n      localStorage.removeItem(\"oprn:save-slot:\" + i);\n    }","remainingOwned":[],"preserved":true}
+
+stdout | test/lifeSaveConsumers.test.ts > remaining actual Save5 consumers (task40) > capture-fullscreen-scale.cjs removes only owned manual families
+{"file":"capture-fullscreen-scale.cjs","cleanup":"for (let i = 1; i <= 3; i++) {\n      localStorage.removeItem(\"oprn:save-slot:v5:\" + i);\n      localStorage.removeItem(\"oprn:save-slot:\" + i);\n    }","remainingOwned":[],"preserved":true}
+
+stdout | test/lifeSaveConsumers.test.ts > remaining actual Save5 consumers (task40) > playtest-driver4.cjs > observes the real default writer without legacy bytes
+{"file":"playtest-driver4.cjs","observer":"async () => {\n      const { readSaveSlot, saveSlotKey } = await import(\"/src/player/saveSlots.ts\");\n      const text = localStorage.getItem(saveSlotKey(1));\n      let snapshot;\n      try { snapshot = JSON.parse(text ?? \"null\"); } catch { return false; }\n      return snapshot?.schemaVersion === 5 && readSaveSlot(localStorage, 1).kind === \"present\";\n    }","observed":true,"key":"oprn:save-slot:v5:1","schemaVersion":5}
+
+stdout | test/lifeSaveConsumers.test.ts > remaining actual Save5 consumers (task40) > playtest-driver4.cjs > mutates the exact current owner preferred by the reader, preserving legacy and other namespaces
+{"file":"playtest-driver4.cjs","mutation":"async ([m, px, py, sw]) => {\n      const { readSaveSlot, saveSlotKey } = await import(\"/src/player/saveSlots.ts\");\n      const key = saveSlotKey(1);\n      const raw = JSON.parse(localStorage.getItem(key) ?? \"null\");\n      if (raw?.schemaVersion !== 5 || readSaveSlot(localStorage, 1).kind !== \"present\") throw new Error(\"Current save slot is missing or invalid\");\n      const sess = raw.session;\n      sess.currentMapId = m; sess.x = px; sess.y = py;\n      for (const [k, v] of Object.entries(sw)) sess.switches[k] = v;\n      localStorage.setItem(key, JSON.stringify(raw));\n    }","currentPosition":["map_warp",7,9],"legacyPreserved":true}
+
+stdout | test/lifeSaveConsumers.test.ts > remaining actual Save5 consumers (task40) > playtest-driver6.cjs > observes the real default writer without legacy bytes
+{"file":"playtest-driver6.cjs","observer":"async () => {\n      const { readSaveSlot, saveSlotKey } = await import(\"/src/player/saveSlots.ts\");\n      const text = localStorage.getItem(saveSlotKey(1));\n      let snapshot;\n      try { snapshot = JSON.parse(text ?? \"null\"); } catch { return false; }\n      return snapshot?.schemaVersion === 5 && readSaveSlot(localStorage, 1).kind === \"present\";\n    }","observed":true,"key":"oprn:save-slot:v5:1","schemaVersion":5}
+
+stdout | test/lifeSaveConsumers.test.ts > remaining actual Save5 consumers (task40) > playtest-driver6.cjs > mutates the exact current owner preferred by the reader, preserving legacy and other namespaces
+{"file":"playtest-driver6.cjs","mutation":"async ([mm, px, py]) => {\n      const { readSaveSlot, saveSlotKey } = await import(\"/src/player/saveSlots.ts\");\n      const key = saveSlotKey(1);\n      const raw = JSON.parse(localStorage.getItem(key) ?? \"null\");\n      if (raw?.schemaVersion !== 5 || readSaveSlot(localStorage, 1).kind !== \"present\") throw new Error(\"Current save slot is missing or invalid\");\n      raw.session.currentMapId = mm; raw.session.x = px; raw.session.y = py;\n      localStorage.setItem(key, JSON.stringify(raw));\n    }","currentPosition":["map_warp",7,9],"legacyPreserved":true}
+
+ ✓ test/lifeSaveConsumers.test.ts (46 tests) 3827ms
+
+ Test Files  3 passed (3)
+      Tests  71 passed (71)
+   Start at  16:32:29
+   Duration  24.23s (transform 9.55s, setup 0ms, collect 15.50s, tests 6.77s, environment 559ms, prepare 331ms)
+
