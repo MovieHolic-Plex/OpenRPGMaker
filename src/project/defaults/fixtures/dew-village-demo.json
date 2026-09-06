@@ -66925,8 +66925,8 @@
         "id": "species_leafling",
         "name": "리프링",
         "graphic": {
-          "monsterResourceId": "easyrpg-monster-hornet",
-          "graphicHue": 90,
+          "monsterResourceId": "generated-enemy-leafling-01",
+          "graphicHue": 0,
           "transparent": false,
           "flying": false
         },
@@ -66957,8 +66957,8 @@
         "id": "species_sparkit",
         "name": "스파킷",
         "graphic": {
-          "monsterResourceId": "generated-enemy-bat-01",
-          "graphicHue": 30,
+          "monsterResourceId": "generated-enemy-sparkit-fire",
+          "graphicHue": 0,
           "transparent": false,
           "flying": false
         },
@@ -66989,8 +66989,8 @@
         "id": "species_aqualing",
         "name": "아쿠아링",
         "graphic": {
-          "monsterResourceId": "generated-enemy-slime-01",
-          "graphicHue": 190,
+          "monsterResourceId": "generated-enemy-aqualing-01",
+          "graphicHue": 0,
           "transparent": false,
           "flying": false
         },
@@ -67066,8 +67066,8 @@
         "id": "species_king_slime",
         "name": "킹슬라임",
         "graphic": {
-          "monsterResourceId": "generated-enemy-slime-01",
-          "graphicHue": 45,
+          "monsterResourceId": "generated-enemy-king-slime-01",
+          "graphicHue": 0,
           "transparent": false,
           "flying": false
         },

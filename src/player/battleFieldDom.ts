@@ -1,4 +1,5 @@
 import type { BattleActionBeat } from "@/player/battleActionBeats";
+import { fitBattleEnemy } from "@/player/battleEnemyFit";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import {
   battlerIdleAnimation,
@@ -365,6 +366,8 @@ function syncEnemyGroup(field: HTMLElement, snapshot: BattleSnapshot, presentati
     }
     if (!node) continue;
     syncEnemyNode(node, enemy, snapshot, presentation);
+    const position = fitBattleEnemy(field, node, positions[index]);
+    positionBattleNode(node, position.x, position.y);
   }
 }
 
@@ -663,7 +666,10 @@ function enemyButton(
     enemyNode.classList.add("battle-target-selected");
   }
   // 각 적 레코드의 고유 몬스터 이미지를 우선 사용. 없으면 스킨 공용 스프라이트로 대체.
-  const resourceId = monsterResourceId(enemy.recordId);
+  const record = store.getCurrent().database.enemies.find((entry) => entry.id === enemy.recordId);
+  const resourceId = record?.monsterResourceId;
+  // 이미지 치수만 배율 적용: 노드의 이동/피격 transform과 이미지의 숨쉬기 scale은 그대로 둔다.
+  enemyNode.style.setProperty("--battle-enemy-scale", String((record?.battleScalePercent ?? 100) / 100));
   const perEnemyUrl = resourceId ? resolveAssetResourceUrl(resourceId, { project: store.getCurrent() }) : null;
   const skinUrl = skinEnemySpriteUrl();
   const url = perEnemyUrl ?? skinUrl;
@@ -1232,10 +1238,6 @@ const BATTLE_SHEET_ROWS = 8;
 
 function isGeneratedBattleActor(resourceId: string): boolean {
   return resourceId.startsWith("generated-actor-") && resourceId.endsWith("-battle");
-}
-
-function monsterResourceId(recordId: string): string | undefined {
-  return store.getCurrent().database.enemies.find((enemy) => enemy.id === recordId)?.monsterResourceId;
 }
 
 function monsterSpeciesResourceId(speciesId: string): string | undefined {
