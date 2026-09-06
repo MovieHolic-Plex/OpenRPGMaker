@@ -17,7 +17,7 @@ export interface AcceptanceImageReceipt {
 /** Session-owned ledger. Plans never own or replace its promises/baselines. */
 export class AssistantAcceptanceLedger {
   private readonly baseline: Project;
-  private readonly promises = new Map<string, AcceptancePromise>();
+  private readonly promises = new Map<string, AcceptancePromise & { readonly baseline: Project }>();
   private readonly bindings = new Map<string, string>();
   private delivered: AcceptanceImageReceipt[] = [];
   private readonly reviews = new Map<string, {
@@ -33,9 +33,13 @@ export class AssistantAcceptanceLedger {
     this.snapshot = Object.freeze({ id, goal, status: "pending", items: Object.freeze([]) });
   }
 
-  adopt(promises: readonly AcceptancePromise[]): void {
-    for (const promise of promises) {
-      if (!this.promises.has(promise.id)) this.promises.set(promise.id, structuredClone(promise));
+  /** requestBaseline must precede this request's writes, even for late adoption. */
+  adopt(promises: readonly AcceptancePromise[], requestBaseline = this.baseline): void {
+    const additions = promises.filter(promise => !this.promises.has(promise.id));
+    if (additions.length === 0) return;
+    const baseline = structuredClone(requestBaseline);
+    for (const promise of additions) {
+      if (!this.promises.has(promise.id)) this.promises.set(promise.id, { ...structuredClone(promise), baseline });
     }
   }
 
@@ -52,11 +56,14 @@ export class AssistantAcceptanceLedger {
   getSnapshot(): AcceptanceSnapshot { return this.snapshot; }
 
   private bind(project: Project): void {
+    const attempted = new Set<string>();
     for (const promise of this.promises.values()) {
       for (const criterion of promise.criteria ?? []) {
         for (const target of criterionTargets(criterion)) {
-          if (!("newMapName" in target) || this.bindings.has(target.newMapName)) continue;
-          const matches = Object.values(project.maps).filter(map => !this.baseline.maps[map.id] && map.name === target.newMapName);
+          if (!("newMapName" in target) || this.bindings.has(target.newMapName) || attempted.has(target.newMapName)) continue;
+          // A later promise's baseline cannot resolve an earlier ambiguous name.
+          attempted.add(target.newMapName);
+          const matches = Object.values(project.maps).filter(map => !promise.baseline.maps[map.id] && map.name === target.newMapName);
           if (matches.length === 1 && matches[0]) this.bindings.set(target.newMapName, matches[0].id);
         }
       }
@@ -112,7 +119,7 @@ export class AssistantAcceptanceLedger {
       const review = this.reviews.get(promise.id);
       const evidence = promise.criteria.map(criterion => {
         const result = evaluateAcceptanceCriterion(criterion, {
-          project: applied, baseline: this.baseline, bindings: this.bindings,
+          project: applied, baseline: promise.baseline, bindings: this.bindings,
           reviewed: (map, region) => review?.passed === true
             && coveredByImages(this.currentReceipts(review.receipts, applied), map, region),
         });

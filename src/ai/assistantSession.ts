@@ -959,6 +959,7 @@ export class AssistantSession {
   /** 어려운 요청용 다층 To-do — 턴을 넘나들며 유지. */
   private workPlan: WorkPlan | null = null;
   private acceptance: AssistantAcceptanceLedger | null = null;
+  private acceptanceRequestBaseline: Project;
   private acceptanceAppliedProject: Project | null = null;
   private acceptanceRepairAttempts = 0;
   private acceptanceSequence = 0;
@@ -1034,6 +1035,7 @@ export class AssistantSession {
     this.declareIntent = options.declareIntent ?? null;
     this.baselineProject = structuredClone(project);
     this.ctx = { project: cloneDetachedDraft(project) };
+    this.acceptanceRequestBaseline = structuredClone(project);
     // 토큰 보정: 명시 budgetChars가 없으면 실측 usage 관측(localStorage — 없으면 빈 목록)으로
     // 문자 예산을 재척도한다. 관측이 없으면 DEFAULT_BUDGET_CHARS 그대로(현행 동작).
     this.appliedBudgetChars = this.contextOptions.budgetChars
@@ -1223,10 +1225,10 @@ export class AssistantSession {
     if (!promises && (this.acceptance || !this.spatialAcceptanceRequired())) return;
     const goal = this.acceptance?.goal ?? this.workPlan?.goal ?? this.currentTurnInstruction;
     if (!this.acceptance) {
-      this.acceptance = new AssistantAcceptanceLedger(`acceptance-${++this.acceptanceSequence}`, goal, this.baselineProject);
+      this.acceptance = new AssistantAcceptanceLedger(`acceptance-${++this.acceptanceSequence}`, goal, this.acceptanceRequestBaseline);
       this.acceptanceAppliedProject = structuredClone(this.baselineProject);
     }
-    this.acceptance.adopt(promises ?? missingAcceptance(goal));
+    this.acceptance.adopt(promises ?? missingAcceptance(goal), this.acceptanceRequestBaseline);
     this.publishAcceptance(onEvent);
   }
 
@@ -1636,6 +1638,10 @@ export class AssistantSession {
     // 질문 모드는 사용자가 직접 고른 사실이라 선언의 create/modify 를 덮어쓴다 — 안 그러면 플래너·쓰기 기대가 문장 판정으로 돈다.
     const intent = this.applyComposerModeToIntent(await this.declareTurnIntent(instruction, onEvent, signal));
     this.turnIntent = intent;
+    if (!this.turnIsDriverContinue && intent.source !== "continuation") {
+      // Capture before planning/tools; milestone rebases and late adoption must not move it.
+      this.acceptanceRequestBaseline = structuredClone(this.baselineProject);
+    }
     if (!this.turnIsDriverContinue) {
       this.acceptanceRepairAttempts = 0;
       if (intent.resetsContext && intent.source !== "continuation") {

@@ -26,11 +26,17 @@ restores those contracts without changing browser checklist ownership.
 immutable snapshots. Planner decisions and `set_work_plan` accept
 `acceptance: [{ id, title, criteria }]`. Replanning, completing, skipping or clearing
 execution steps cannot erase existing promises or weaken valid criteria.
-`repair_acceptance` repairs only missing/malformed criteria.
+`repair_acceptance` repairs only missing/malformed criteria. Each newly adopted
+promise captures its request's pre-write applied snapshot, not the conversation's
+initial project or the draft at adoption time. The session captures that snapshot
+before planning/tools; milestone rebases, repairs, duplicate IDs, replans and
+manual/synthetic continuations cannot move it. New requests may add promises
+against newer applied content without replacing earlier promises or baselines.
 
 Checks inspect actual scoped map dimensions, map/event counts, original target
 changes, protected map/region content, conservative static reachability and
-explicit image review. New-map names bind once to a unique new ID. Static route
+explicit image review. New-map names bind once to a unique new ID relative to the
+first promise for that name; later baselines cannot resolve its ambiguity. Static route
 checks do not claim conditional transfer or runtime playthrough support.
 Image checks require successfully rendered and delivered `show_map_region`
 coverage (actual clipped bounds, exact union), then a later explicit
