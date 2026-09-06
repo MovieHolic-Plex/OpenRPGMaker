@@ -1,6 +1,6 @@
 import type { StatusMenuDetail, StatusMenuDetailOptions, StatusMenuDetailEntry } from './playerStatusMenuDetailTypes';
-import { activeSkillTrees, growthPoints, nodeRank, skillNodeBlocker } from '@/project/growth/runtime';
-import { effectiveActorClassId, promotionRequirementsMet } from '@/project/sessionClass';
+import { activeSkillTrees, growthPoints, nodeRank, skillNodeBlocker, skillTreeResetBlocker } from '@/project/growth/runtime';
+import { effectiveActorClassId, promotionRequirementBlocker } from '@/project/sessionClass';
 import { GROWTH_PARAMETER_LABELS } from '@/project/growth/types';
 import { classGrowthArt, nodeGrowthArt, treeGrowthArt } from '@/assets/growthTreeArt';
 export type GrowthMenuTab = 'skills' | 'tree' | 'promotion';
@@ -19,7 +19,8 @@ export function createGrowthMenu(o: StatusMenuDetailOptions): StatusMenuDetail {
       const target = p.database.classes.find(c => c.id === path.toClassId);
       if (!target) continue;
       const conditions = [path.requires.level ? `레벨 ${path.requires.level}` : '', path.requires.itemId ? `${p.database.items.find(i => i.id === path.requires.itemId)?.name ?? path.requires.itemId} 1개 소비` : '', path.requires.switchId ? `${p.switches.find(v => v.id === path.requires.switchId)?.name ?? path.requires.switchId} 켜짐` : '', path.requires.variableId ? `${p.variables.find(v => v.id === path.requires.variableId)?.name ?? path.requires.variableId} ≥ ${path.requires.atLeast ?? 1}` : ''].filter(Boolean).join(' · ');
-      entries.push({ icon: { resourceId: classGrowthArt(p, target), alt: target.name, testId: `growth-menu-art-class-${target.id}` }, label: `${klass?.name} → ${target.name}`, value: '승급', description: conditions || '조건 없이 승급할 수 있습니다.', disabled: !promotionRequirementsMet(s, actorId, path.requires), testId: `growth-menu-promote-${target.id}`, onActivate: () => o.onGrowthMutation?.({ kind: 'promote', actorId, classId: target.id }) });
+      const blocker = promotionRequirementBlocker(s, actorId, path.requires, p);
+      entries.push({ icon: { resourceId: classGrowthArt(p, target), alt: target.name, testId: `growth-menu-art-class-${target.id}` }, label: `${klass?.name} → ${target.name}`, value: '승급', description: blocker ?? (conditions || '승급 조건을 모두 만족합니다.'), disabled: Boolean(blocker), testId: `growth-menu-promote-${target.id}`, onActivate: () => o.onGrowthMutation?.({ kind: 'promote', actorId, classId: target.id }) });
     }
     return { title: `직업 승급: ${actor?.name ?? ''}`, tabs: growthMenuTabs(o), entries, emptyLabel: '이 직업에서 이어지는 승급 경로가 없습니다.' };
   }
@@ -33,7 +34,8 @@ export function createGrowthMenu(o: StatusMenuDetailOptions): StatusMenuDetail {
   }
   // Investments in a previous class must still be refundable after changing class.
   for (const tree of p.growth?.skillTrees ?? []) {
-    if (tree.allowReset && Object.keys(s.growthProgress?.[actorId]?.[tree.id] ?? {}).length) entries.push({ icon: { resourceId: treeGrowthArt(p, tree), alt: tree.name, testId: `growth-menu-art-reset-${tree.id}` }, label: `${tree.name} 초기화`, value: '포인트 환급', description: '이 트리에 사용한 포인트를 모두 환급합니다.', testId: `growth-menu-reset-${tree.id}`, onActivate: () => o.onGrowthMutation?.({ kind: 'reset', actorId, treeId: tree.id }) });
+    const blocker = skillTreeResetBlocker(p, s, actorId, tree.id);
+    if (tree.allowReset && Object.keys(s.growthProgress?.[actorId]?.[tree.id] ?? {}).length) entries.push({ icon: { resourceId: treeGrowthArt(p, tree), alt: tree.name, testId: `growth-menu-art-reset-${tree.id}` }, label: `${tree.name} 초기화`, value: '포인트 환급', description: blocker ?? '이 트리에 사용한 포인트를 모두 환급합니다.', disabled: Boolean(blocker), testId: `growth-menu-reset-${tree.id}`, onActivate: () => o.onGrowthMutation?.({ kind: 'reset', actorId, treeId: tree.id }) });
   }
   return { title: `스킬 트리 · ${points.available} P`, tabs: growthMenuTabs(o), entries, emptyLabel: '현재 직업에서 사용할 수 있는 스킬 트리가 없습니다.' };
 }

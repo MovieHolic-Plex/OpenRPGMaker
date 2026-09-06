@@ -103,6 +103,9 @@ export interface ClassPromotion {
 }
 
 export interface ClassPromotionRequirement {
+  requiredSkillIds?: SkillId[];
+  requiredNodes?: import('../growth/types').NodeRankRequirement[];
+  requiredTreePoints?: { treeId: string; points: number }[];
   level?: number;
   switchId?: string;
   itemId?: ItemId;
