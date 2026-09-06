@@ -1,0 +1,487 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-tools",
+  "port": 35209,
+  "browser": "firefox",
+  "nativeEditor": true,
+  "nativePlayer": false,
+  "remoteWrites": [],
+  "errors": [],
+  "actions": [
+    {
+      "label": "keyboard add",
+      "rules": [
+        {
+          "id": "tool_action_764abbe6-eeb3-4e23-9eff-5c5f462ffcd7",
+          "farmTool": "hoe",
+          "action": "till"
+        },
+        {
+          "id": "legacy-hoe-till",
+          "farmTool": "hoe",
+          "requiresFarmable": true,
+          "action": "till"
+        },
+        {
+          "id": "legacy-can-water",
+          "farmTool": "wateringCan",
+          "requiresFarmable": true,
+          "action": "water"
+        },
+        {
+          "id": "legacy-axe-chop",
+          "farmTool": "axe",
+          "requiresFarmable": false,
+          "targetPlaceableKind": "tree",
+          "action": "chop"
+        },
+        {
+          "id": "legacy-pick-mine",
+          "farmTool": "pickaxe",
+          "requiresFarmable": false,
+          "targetPlaceableKind": "rock",
+          "action": "mine"
+        }
+      ]
+    },
+    {
+      "label": "Ctrl+Z first-table creation",
+      "rules": null
+    },
+    {
+      "label": "Ctrl+Y first-table creation",
+      "rules": [
+        {
+          "id": "tool_action_764abbe6-eeb3-4e23-9eff-5c5f462ffcd7",
+          "farmTool": "hoe",
+          "action": "till"
+        },
+        {
+          "id": "legacy-hoe-till",
+          "farmTool": "hoe",
+          "requiresFarmable": true,
+          "action": "till"
+        },
+        {
+          "id": "legacy-can-water",
+          "farmTool": "wateringCan",
+          "requiresFarmable": true,
+          "action": "water"
+        },
+        {
+          "id": "legacy-axe-chop",
+          "farmTool": "axe",
+          "requiresFarmable": false,
+          "targetPlaceableKind": "tree",
+          "action": "chop"
+        },
+        {
+          "id": "legacy-pick-mine",
+          "farmTool": "pickaxe",
+          "requiresFarmable": false,
+          "targetPlaceableKind": "rock",
+          "action": "mine"
+        }
+      ]
+    },
+    {
+      "label": "Space unchecks effective default",
+      "rules": [
+        {
+          "id": "tool_action_764abbe6-eeb3-4e23-9eff-5c5f462ffcd7",
+          "farmTool": "hoe",
+          "action": "till",
+          "requiresFarmable": false
+        },
+        {
+          "id": "legacy-hoe-till",
+          "farmTool": "hoe",
+          "requiresFarmable": true,
+          "action": "till"
+        },
+        {
+          "id": "legacy-can-water",
+          "farmTool": "wateringCan",
+          "requiresFarmable": true,
+          "action": "water"
+        },
+        {
+          "id": "legacy-axe-chop",
+          "farmTool": "axe",
+          "requiresFarmable": false,
+          "targetPlaceableKind": "tree",
+          "action": "chop"
+        },
+        {
+          "id": "legacy-pick-mine",
+          "farmTool": "pickaxe",
+          "requiresFarmable": false,
+          "targetPlaceableKind": "rock",
+          "action": "mine"
+        }
+      ]
+    },
+    {
+      "label": "Ctrl+Z checkbox",
+      "rules": [
+        {
+          "id": "tool_action_764abbe6-eeb3-4e23-9eff-5c5f462ffcd7",
+          "farmTool": "hoe",
+          "action": "till"
+        },
+        {
+          "id": "legacy-hoe-till",
+          "farmTool": "hoe",
+          "requiresFarmable": true,
+          "action": "till"
+        },
+        {
+          "id": "legacy-can-water",
+          "farmTool": "wateringCan",
+          "requiresFarmable": true,
+          "action": "water"
+        },
+        {
+          "id": "legacy-axe-chop",
+          "farmTool": "axe",
+          "requiresFarmable": false,
+          "targetPlaceableKind": "tree",
+          "action": "chop"
+        },
+        {
+          "id": "legacy-pick-mine",
+          "farmTool": "pickaxe",
+          "requiresFarmable": false,
+          "targetPlaceableKind": "rock",
+          "action": "mine"
+        }
+      ]
+    },
+    {
+      "label": "Ctrl+Y checkbox",
+      "rules": [
+        {
+          "id": "tool_action_764abbe6-eeb3-4e23-9eff-5c5f462ffcd7",
+          "farmTool": "hoe",
+          "action": "till",
+          "requiresFarmable": false
+        },
+        {
+          "id": "legacy-hoe-till",
+          "farmTool": "hoe",
+          "requiresFarmable": true,
+          "action": "till"
+        },
+        {
+          "id": "legacy-can-water",
+          "farmTool": "wateringCan",
+          "requiresFarmable": true,
+          "action": "water"
+        },
+        {
+          "id": "legacy-axe-chop",
+          "farmTool": "axe",
+          "requiresFarmable": false,
+          "targetPlaceableKind": "tree",
+          "action": "chop"
+        },
+        {
+          "id": "legacy-pick-mine",
+          "farmTool": "pickaxe",
+          "requiresFarmable": false,
+          "targetPlaceableKind": "rock",
+          "action": "mine"
+        }
+      ]
+    },
+    {
+      "label": "keyboard action End selects harvest",
+      "rules": [
+        {
+          "id": "tool_action_764abbe6-eeb3-4e23-9eff-5c5f462ffcd7",
+          "farmTool": "hoe",
+          "action": "harvest",
+          "requiresFarmable": false
+        },
+        {
+          "id": "legacy-hoe-till",
+          "farmTool": "hoe",
+          "requiresFarmable": true,
+          "action": "till"
+        },
+        {
+          "id": "legacy-can-water",
+          "farmTool": "wateringCan",
+          "requiresFarmable": true,
+          "action": "water"
+        },
+        {
+          "id": "legacy-axe-chop",
+          "farmTool": "axe",
+          "requiresFarmable": false,
+          "targetPlaceableKind": "tree",
+          "action": "chop"
+        },
+        {
+          "id": "legacy-pick-mine",
+          "farmTool": "pickaxe",
+          "requiresFarmable": false,
+          "targetPlaceableKind": "rock",
+          "action": "mine"
+        }
+      ]
+    },
+    {
+      "label": "keyboard add to existing table",
+      "rules": [
+        {
+          "id": "tool_action_764abbe6-eeb3-4e23-9eff-5c5f462ffcd7",
+          "farmTool": "hoe",
+          "action": "harvest",
+          "requiresFarmable": false
+        },
+        {
+          "id": "legacy-hoe-till",
+          "farmTool": "hoe",
+          "requiresFarmable": true,
+          "action": "till"
+        },
+        {
+          "id": "legacy-can-water",
+          "farmTool": "wateringCan",
+          "requiresFarmable": true,
+          "action": "water"
+        },
+        {
+          "id": "legacy-axe-chop",
+          "farmTool": "axe",
+          "requiresFarmable": false,
+          "targetPlaceableKind": "tree",
+          "action": "chop"
+        },
+        {
+          "id": "legacy-pick-mine",
+          "farmTool": "pickaxe",
+          "requiresFarmable": false,
+          "targetPlaceableKind": "rock",
+          "action": "mine"
+        },
+        {
+          "id": "tool_action_77bb2904-b6a4-4a55-ad54-939e2bfd1038",
+          "farmTool": "hoe",
+          "action": "till"
+        }
+      ]
+    }
+  ],
+  "console": [
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "warning",
+      "text": "[JavaScript Warning: \"unreachable code after return statement\" {file: \"http://127.0.0.1:35209/src/editor/eventMarkerUx.ts\" line: 325}]"
+    },
+    {
+      "type": "info",
+      "text": "[error-trap] 전역 오류 트랩 설치 완료"
+    },
+    {
+      "type": "info",
+      "text": "[edit-activity] 프로젝트 정규화 (1종) · [bundledTilesets] · (system) Array"
+    },
+    {
+      "type": "error",
+      "text": "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]"
+    },
+    {
+      "type": "error",
+      "text": "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]"
+    },
+    {
+      "type": "warning",
+      "text": "[JavaScript Warning: \"Failed to create WebGL context: WebGL creation failed: \n* WebglAllowWindowsNativeGl:false restricts context creation on this system. ()\n* Exhausted GL driver options. (FEATURE_FAILURE_WEBGL_EXHAUSTED_DRIVERS)\" {file: \"http://127.0.0.1:35209/@fs/home/main/z-project/rpg-zzu/node_modules/phaser/dist/phaser.min.js\" line: 1}]"
+    },
+    {
+      "type": "warning",
+      "text": "[JavaScript Warning: \"Failed to create WebGL context: WebGL creation failed: \n* WebglAllowWindowsNativeGl:false restricts context creation on this system. ()\n* Exhausted GL driver options. (FEATURE_FAILURE_WEBGL_EXHAUSTED_DRIVERS)\" {file: \"http://127.0.0.1:35209/@fs/home/main/z-project/rpg-zzu/node_modules/phaser/dist/phaser.min.js\" line: 1}]"
+    },
+    {
+      "type": "log",
+      "text": "         Phaser v3.90.0 (Canvas | Web Audio)   https://phaser.io/v390"
+    },
+    {
+      "type": "info",
+      "text": "[edit-activity] (라벨 없음: database) · toolActions"
+    },
+    {
+      "type": "error",
+      "text": "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 JSHandle@object"
+    },
+    {
+      "type": "error",
+      "text": "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]"
+    },
+    {
+      "type": "error",
+      "text": "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]"
+    },
+    {
+      "type": "info",
+      "text": "[edit-activity] (라벨 없음: project)"
+    },
+    {
+      "type": "error",
+      "text": "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 JSHandle@object"
+    },
+    {
+      "type": "info",
+      "text": "[edit-activity] (라벨 없음: project)"
+    },
+    {
+      "type": "error",
+      "text": "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 JSHandle@object"
+    },
+    {
+      "type": "info",
+      "text": "[edit-activity] (라벨 없음: database) · toolActions"
+    },
+    {
+      "type": "error",
+      "text": "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 JSHandle@object"
+    },
+    {
+      "type": "info",
+      "text": "[edit-activity] (라벨 없음: project)"
+    },
+    {
+      "type": "error",
+      "text": "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 JSHandle@object"
+    },
+    {
+      "type": "info",
+      "text": "[edit-activity] (라벨 없음: project)"
+    },
+    {
+      "type": "error",
+      "text": "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 JSHandle@object"
+    },
+    {
+      "type": "info",
+      "text": "[edit-activity] (라벨 없음: database) · toolActions"
+    },
+    {
+      "type": "error",
+      "text": "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 JSHandle@object"
+    },
+    {
+      "type": "info",
+      "text": "[edit-activity] (라벨 없음: project)"
+    },
+    {
+      "type": "error",
+      "text": "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 JSHandle@object"
+    },
+    {
+      "type": "info",
+      "text": "[edit-activity] (라벨 없음: database) · toolActions"
+    },
+    {
+      "type": "error",
+      "text": "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 JSHandle@object"
+    },
+    {
+      "type": "error",
+      "text": "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]"
+    },
+    {
+      "type": "error",
+      "text": "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]"
+    }
+  ],
+  "requestFailures": [
+    {
+      "url": "http://127.0.0.1:17831/v1/browser/hello",
+      "error": {
+        "errorText": "NS_ERROR_DOM_BAD_URI"
+      }
+    },
+    {
+      "url": "http://127.0.0.1:17831/v1/browser/hello",
+      "error": {
+        "errorText": "NS_ERROR_DOM_BAD_URI"
+      }
+    },
+    {
+      "url": "http://127.0.0.1:17831/v1/browser/hello",
+      "error": {
+        "errorText": "NS_ERROR_DOM_BAD_URI"
+      }
+    }
+  ],
+  "initial": {
+    "remote": false,
+    "rules": null
+  },
+  "controls": {
+    "text": "조건\n아이템을 지정하면 도구 종류보다 우선합니다. 둘 다 비우면 씨앗·소비재를 제외한 모든 농사 도구에 적용됩니다. 같은 행동은 위쪽의 일치하는 규칙부터 적용합니다.\nID\n아이템\n도구 종류",
+    "rect": {
+      "x": 517,
+      "y": 200.8333282470703,
+      "width": 478,
+      "height": 178.08334350585938,
+      "top": 200.8333282470703,
+      "right": 995,
+      "bottom": 378.9166717529297,
+      "left": 517
+    }
+  },
+  "roundtrip": {
+    "version": 4,
+    "rules": [
+      {
+        "id": "tool_action_764abbe6-eeb3-4e23-9eff-5c5f462ffcd7",
+        "farmTool": "hoe",
+        "action": "harvest",
+        "requiresFarmable": false
+      },
+      {
+        "id": "legacy-hoe-till",
+        "farmTool": "hoe",
+        "requiresFarmable": true,
+        "action": "till"
+      },
+      {
+        "id": "legacy-can-water",
+        "farmTool": "wateringCan",
+        "requiresFarmable": true,
+        "action": "water"
+      },
+      {
+        "id": "legacy-axe-chop",
+        "farmTool": "axe",
+        "requiresFarmable": false,
+        "targetPlaceableKind": "tree",
+        "action": "chop"
+      },
+      {
+        "id": "legacy-pick-mine",
+        "farmTool": "pickaxe",
+        "requiresFarmable": false,
+        "targetPlaceableKind": "rock",
+        "action": "mine"
+      }
+    ],
+    "stable": true
+  },
+  "pass": true,
+  "cleanup": {
+    "browserClosed": true,
+    "serverClosed": true,
+    "ownedCacheRemoved": "/home/main/z-project/rpg-zzu-life-full-tools/.vite-cache/task8-editor"
+  }
+}

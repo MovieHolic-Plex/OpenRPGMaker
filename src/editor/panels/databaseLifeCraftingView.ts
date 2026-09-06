@@ -14,7 +14,7 @@ import {
 } from "@/editor/panels/databaseWorkspace";
 import type { CraftIngredient, CraftRecipe } from "@/project/craftRecipes";
 import { store } from "@/project/store";
-import type { ToolActionRule, ToolWorldAction } from "@/project/toolActions";
+import { toolActionRulesOf, toolRuleRequiresFarmable, type ToolActionRule, type ToolWorldAction } from "@/project/toolActions";
 import type {
   BundleDefinition,
   BundleRewardDefinition,
@@ -436,7 +436,7 @@ function recordInspector(section: RecordSection, record: LifeRecord, index: numb
       case "recipes": return recipeCards(record as CraftRecipe, index, rerender);
       case "upgrades": return upgradeCards(record as ItemUpgradeRule, index, rerender);
       case "sellPrices": return sellPriceCards(record as SellPriceEntry, index);
-      case "toolActions": return toolActionCards(record as ToolActionRule, index);
+      case "toolActions": return toolActionCards(record as ToolActionRule, index, rerender);
       case "worldUnlocks": return worldUnlockCards(record as WorldUnlockDefinition, index);
       case "bundles": return bundleCards(record as BundleDefinition, index, rerender);
       case "makers": return makerCards(record as MakerDefinition, index, rerender);
@@ -591,11 +591,11 @@ function sellPriceCards(record: SellPriceEntry, index: number): readonly HTMLEle
   ];
 }
 
-function toolActionCards(record: ToolActionRule, index: number): readonly HTMLElement[] {
+function toolActionCards(record: ToolActionRule, index: number, rerender: () => void): readonly HTMLElement[] {
   return [
     sectionCard({
       title: "조건",
-      hint: "둘 다 비우면 모든 도구에 적용됩니다.",
+      hint: "아이템을 지정하면 도구 종류보다 우선합니다. 둘 다 비우면 씨앗·소비재를 제외한 모든 농사 도구에 적용됩니다. 같은 행동은 위쪽의 일치하는 규칙부터 적용합니다.",
       children: [
         textControl("ID", "db-life-tool-id", record.id, (value) => updateUniqueId("toolActions", index, value, record.id)),
         selectControl("아이템", "db-life-tool-item", record.itemId ?? "", idOptions(store.getCurrent().database.items, "아이템 조건 없음"), (value) => updateToolAction(index, { itemId: value || undefined })),
@@ -607,8 +607,11 @@ function toolActionCards(record: ToolActionRule, index: number): readonly HTMLEl
       title: "행동",
       hint: "조건이 맞을 때 맵에서 실제로 일어나는 작업입니다.",
       children: [
-        selectControl("행동", "db-life-tool-action", record.action, TOOL_ACTION_LABELS as readonly (readonly [string, string])[], (value) => updateToolAction(index, { action: value as ToolWorldAction })),
-        checkboxControl("경작 가능 구역 필요", "db-life-tool-requires-farmable", record.requiresFarmable === true, (checked) => updateToolAction(index, { requiresFarmable: checked || undefined })),
+        selectControl("행동", "db-life-tool-action", record.action, TOOL_ACTION_LABELS as readonly (readonly [string, string])[], (value) => {
+          updateToolAction(index, { action: value as ToolWorldAction });
+          rerender();
+        }),
+        checkboxControl("경작 가능 구역 필요", "db-life-tool-requires-farmable", toolRuleRequiresFarmable(record), (checked) => updateToolAction(index, { requiresFarmable: checked })),
         textControl("대상 오브젝트 종류", "db-life-tool-target-kind", record.targetPlaceableKind ?? "", (value) => updateToolAction(index, { targetPlaceableKind: value.trim() || undefined })),
       ],
       testid: "db-life-tool-action-card",
@@ -1007,11 +1010,14 @@ function addRecord(section: RecordSection, rerender: () => void): void {
         selectedIndex.sellPrices = draft.system.sellPrices.length;
         draft.system.sellPrices.push({ itemId, price: 0 });
         break;
-      case "toolActions":
-        draft.system.toolActions ??= [];
-        selectedIndex.toolActions = draft.system.toolActions.length;
-        draft.system.toolActions.push({ id: genId("tool_action"), farmTool: "hoe", itemId, action: "till" });
+      case "toolActions": {
+        const firstCustomTable = !draft.system.toolActions?.length;
+        const rules = toolActionRulesOf(draft).map((rule) => ({ ...rule }));
+        const added: ToolActionRule = { id: genId("tool_action"), farmTool: "hoe", action: "till" };
+        selectedIndex.toolActions = firstCustomTable ? 0 : rules.length;
+        draft.system.toolActions = firstCustomTable ? [added, ...rules] : [...rules, added];
         break;
+      }
       case "worldUnlocks":
         draft.system.worldUnlocks ??= [];
         selectedIndex.worldUnlocks = draft.system.worldUnlocks.length;

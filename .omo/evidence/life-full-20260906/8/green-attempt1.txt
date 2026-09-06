@@ -1,0 +1,177 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/toolActionAuthoringParity.test.ts test/databaseLifeCraftingView.test.ts test/farmingRuntime.test.ts test/stardewAuthoringTools.test.ts test/p0ToolCapability.test.ts test/cropRegrowthContract.test.ts test/lifeSkillDisabledHarvest.test.ts test/serializeCompact.test.ts test/p0ProjectSchema.test.ts test/toolsLifeEconomy.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-tools
+
+ ✓ test/p0ToolCapability.test.ts (2 tests) 473ms
+   ✓ P0 upgraded tool capabilities > resolves the upgraded item area and energy multiplier after replacement  354ms
+ ✓ test/serializeCompact.test.ts (2 tests) 1593ms
+   ✓ project serialize wire format > uses compact JSON for canonical serialize (no pretty indent)  1090ms
+   ✓ project serialize wire format > keeps pretty serialize for human package dumps  500ms
+ ✓ test/lifeSkillDisabledHarvest.test.ts (49 tests) 7127ms
+   ✓ crop automatic harvest XP > keeps the real reward when skillSystem is disabled  614ms
+   ✓ crop automatic harvest XP > keeps the real reward when skillSystem is enabled  358ms
+   ✓ crop automatic harvest XP > rolls back the entire active transaction for an invalid switch reward  420ms
+ ✓ test/p0ProjectSchema.test.ts (11 tests) 8548ms
+   ✓ P0 authored system records > round-trips optional energy, shipping, bundle/unlock, and maker definitions  2525ms
+   ✓ P0 authored system records > keeps old projects free of newly invented optional fields and byte-stable  2146ms
+   ✓ P0 authored system records > omits only the redundant text-only title seed on the first load  888ms
+   ✓ P0 authored system records > preserves authored text title graphics across repeated loads  366ms
+   ✓ P0 authored system records > preserves authored graphic title graphics across repeated loads  334ms
+   ✓ P0 authored system records > preserves authored both title graphics across repeated loads  519ms
+   ✓ P0 authored system records > rejects malformed P0 package shapes before normalization  323ms
+   ✓ P0 authored system records > rejects duplicate P0 definition ids at the wire boundary and reference lint boundary  912ms
+ ❯ test/toolActionAuthoringParity.test.ts (31 tests | 7 failed) 9358ms
+   ✓ authored tool authority > keeps all four real defaults for absent and empty tables  1035ms
+   ✓ authored tool authority > does not merge defaults into an existing one-row table on load  2191ms
+   × authored tool authority > matches a conditionless rule with a valid hoe 353ms
+     → expected undefined to match object { itemId: 'tool', …(2) }
+   × authored tool authority > matches a conditionless rule with a valid wateringCan 179ms
+     → expected undefined to match object { itemId: 'tool', …(2) }
+   × authored tool authority > matches a conditionless rule with a valid axe 239ms
+     → expected undefined to match object { itemId: 'tool', …(2) }
+   × authored tool authority > matches a conditionless rule with a valid pickaxe 253ms
+     → expected undefined to match object { itemId: 'tool', …(2) }
+   ✓ authored tool authority > does not treat item_potato_seed as any farm tool or fall through an occupied hand 296ms
+   ✓ authored tool authority > does not treat item_potion as any farm tool or fall through an occupied hand  366ms
+   ✓ authored tool authority > does not treat missing as any farm tool or fall through an occupied hand 89ms
+   ✓ authored tool authority > resolves any tool from inventory when hand is empty 55ms
+   ✓ authored tool authority > honors itemId over a contradictory kind, without reordering rows 68ms
+   × authored tool authority > preserves explicit false through serialization and tills outside the region 350ms
+     → expected 'ignored' to be 'tilled' // Object.is equality
+   ✓ authored tool authority > refuses till outside the region when requiresFarmable is undefined 276ms
+   ✓ authored tool authority > refuses till outside the region when requiresFarmable is true 224ms
+   × authored tool authority > lets the authored water action override the held hoe's legacy intent 143ms
+     → expected 'ignored' to be 'watered' // Object.is equality
+   ✓ authored tool authority > refuses mature crop harvest with item_hoe when the authored rule requires a can 173ms
+   ✓ authored tool authority > refuses mature crop harvest with item_potato_seed when the authored rule requires a can 222ms
+   × authored tool authority > harvests with a matching authored rule outside the region 274ms
+     → expected 'ignored' to be 'harvested' // Object.is equality
+   ✓ authored tool authority > keeps legacy mature harvesting with a seed when no harvest rule exists 299ms
+   ✓ authored tool authority > does not allow seeds to plant outside farmable regions via a false tool rule 181ms
+   ✓ authored tool authority > refuses invalid origin -1,5 even for a wide unrestricted tool 249ms
+   ✓ authored tool authority > refuses invalid origin 4,-1 even for a wide unrestricted tool 142ms
+   ✓ authored tool authority > refuses invalid origin 999,5 even for a wide unrestricted tool 45ms
+   ✓ authored tool authority > refuses invalid origin 4,999 even for a wide unrestricted tool 150ms
+   ✓ authored tool authority > refuses invalid origin 4.5,5 even for a wide unrestricted tool 249ms
+   ✓ authored tool authority > refuses invalid origin NaN,5 even for a wide unrestricted tool 298ms
+   ✓ authored tool authority > does not let false bypass wall occupancy or terrain 233ms
+   ✓ authored tool authority > does not let false bypass chest occupancy or terrain 199ms
+   ✓ authored tool authority > does not let false bypass placeable occupancy or terrain 164ms
+   ✓ authored tool authority > does not let false bypass building occupancy or terrain 117ms
+   ✓ authored tool authority > does not let false bypass decoration occupancy or terrain 186ms
+ ✓ test/farmingRuntime.test.ts (29 tests) 2258ms
+ ✓ test/cropRegrowthContract.test.ts (30 tests) 4029ms
+   ✓ exact crop regrowth contract > zero yield with inventory undefined > treats zero yield as a successful harvest (regrow=0)  338ms
+   ✓ exact crop regrowth contract > requires ten qualifying ticks after a two-day crop's harvest, including every displayed stage  302ms
+ ✓ test/stardewAuthoringTools.test.ts (18 tests) 3193ms
+   ✓ P1 tool action table > defaults to legacy hoe/can rules when system.toolActions absent  404ms
+   ✓ P1 tool action table > respects authored toolActions override  316ms
+   ✓ P5 make_villager friendship wizard > writes characterId, optional talkFriendship, and unlock pages  310ms
+   ✓ P5 make_villager friendship wizard > 같은 characterId 재요청은 새 id를 받아도 기존 주민을 재사용하고 대사를 보존한다  753ms
+ ✓ test/toolsLifeEconomy.test.ts (15 tests) 6043ms
+   ✓ upsert_craft_recipe → system.craftRecipes > writes and then updates the recipe by id  1771ms
+   ✓ delete_craft_recipe → system.craftRecipes > removes exactly the requested recipe  453ms
+   ✓ upsert_item_upgrade → system.itemUpgrades > writes the upgrade row with tool capability  314ms
+   ✓ set_sell_prices → system.sellPrices > upserts entries and removes by removeItemIds  434ms
+   ✓ upsert_tool_action → system.toolActions > writes the rule row  381ms
+   ✓ configure_life_economy → energy/shipping/bundles/worldUnlocks/makers > writes only the sections passed and preserves the others  1375ms
+   ✓ configure_life_economy → energy/shipping/bundles/worldUnlocks/makers > rejects an unknown switchId and names valid switch ids  302ms
+ ✓ test/databaseLifeCraftingView.test.ts (14 tests) 23109ms
+   ✓ database life skill and crafting view > materializes real defaults only on first custom-table creation, as one undoable edit  1229ms
+   ✓ database life skill and crafting view > appends to existing tables without merging and preserves false through editing and load  1121ms
+   ✓ database life skill and crafting view > authors a life skill and level reward, then undo restores the prior record  2206ms
+   ✓ database life skill and crafting view > authors a recipe with ingredient and output item references  846ms
+   ✓ database life skill and crafting view > authors upgrade, sell-price, and tool-action records through their detail forms  2660ms
+   ✓ database life skill and crafting view > rejects duplicate record ids and chooses an unused sell-price item  3173ms
+   ✓ database life skill and crafting view > blocks deletion while event commands reference the selected life records  459ms
+   ✓ database life skill and crafting view > authors recipe unlock requirements and tool capability fields  2764ms
+   ✓ database life skill and crafting view > clamps authored tool capability axes to the runtime-safe 9x9 limit  830ms
+   ✓ database life skill and crafting view > creates energy and shipping settings and preserves disabled shipping values  1390ms
+   ✓ database life skill and crafting view > authors world unlock, bundle rewards, and maker processing without raw JSON  5272ms
+   ✓ database life skill and crafting view > rejects duplicate package ids, guards reward targets, and records undo  906ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/toolActionAuthoringParity.test.ts > authored tool authority > matches a conditionless rule with a valid hoe
+ FAIL  test/toolActionAuthoringParity.test.ts > authored tool authority > matches a conditionless rule with a valid wateringCan
+ FAIL  test/toolActionAuthoringParity.test.ts > authored tool authority > matches a conditionless rule with a valid axe
+ FAIL  test/toolActionAuthoringParity.test.ts > authored tool authority > matches a conditionless rule with a valid pickaxe
+AssertionError: expected undefined to match object { itemId: 'tool', …(2) }
+
+[32m- Expected:[39m 
+{
+  "farmTool": "hoe",
+  "itemId": "tool",
+  "ruleId": "any",
+}
+
+[31m+ Received:[39m 
+undefined
+
+ ❯ test/toolActionAuthoringParity.test.ts:48:71
+     46|     session.equippedToolItemId = "tool";
+     47|     project.system.toolActions = [{ id: "any", action: "fish" }];
+     48|     expect(resolveToolUseOnTile(project, session, map, 4, 5, "fish")).…
+       |                                                                       ^
+     49|   });
+     50| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  test/toolActionAuthoringParity.test.ts > authored tool authority > preserves explicit false through serialization and tills outside the region
+AssertionError: expected 'ignored' to be 'tilled' // Object.is equality
+
+Expected: [32m"[7mtill[27med"[39m
+Received: [31m"[7mignor[27med"[39m
+
+ ❯ test/toolActionAuthoringParity.test.ts:84:69
+     82|     const restored = deserialize(serialize(project));
+     83|     expect(restored.system.toolActions?.[0]?.requiresFarmable).toBe(fa…
+     84|     expect(interactWithFarmPlot(restored, session, map, 1, 1).kind).to…
+       |                                                                     ^
+     85|   });
+     86| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  test/toolActionAuthoringParity.test.ts > authored tool authority > lets the authored water action override the held hoe's legacy intent
+AssertionError: expected 'ignored' to be 'watered' // Object.is equality
+
+Expected: [32m"[7mwate[27mred"[39m
+Received: [31m"[7migno[27mred"[39m
+
+ ❯ test/toolActionAuthoringParity.test.ts:99:105
+     97|     project.system.toolActions = [{ id: "water-hoe", action: "water", …
+     98|     session.farmPlots = { [map.id]: { "1,1": { tilled: true, watered: …
+     99|     expect(interactWithFarmPlot(project, session, map, 1, 1, farmInten…
+       |                                                                                                         ^
+    100|   });
+    101| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+ FAIL  test/toolActionAuthoringParity.test.ts > authored tool authority > harvests with a matching authored rule outside the region
+AssertionError: expected 'ignored' to be 'harvested' // Object.is equality
+
+Expected: [32m"[7mharvest[27med"[39m
+Received: [31m"[7mignor[27med"[39m
+
+ ❯ test/toolActionAuthoringParity.test.ts:116:105
+    114|     project.system.toolActions = [{ id: "harvest-hoe", action: "harves…
+    115|     session.farmPlots = { [map.id]: { "1,1": { tilled: true, watered: …
+    116|     expect(interactWithFarmPlot(project, session, map, 1, 1, farmInten…
+       |                                                                                                         ^
+    117|     expect(session.inventory.item_potato).toBe(1);
+    118|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯
+
+
+ Test Files  1 failed | 9 passed (10)
+      Tests  7 failed | 194 passed (201)
+   Start at  22:03:06
+   Duration  55.40s (transform 73.77s, setup 0ms, collect 299.57s, tests 65.73s, environment 921ms, prepare 6.38s)
+
