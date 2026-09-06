@@ -66,6 +66,42 @@ it.each(["persist", "migrate"])("keeps a queued cache %s bound to its captured s
   expect(f.data.get(newKey)).toBe(untouched);
   expect(JSON.parse(f.data.get(oldKey)!)).toMatchObject({ version: 1, localProjectId: expect.any(String) });
 });
+it("does not mark a replacement durable when a late local save completes", async () => {
+  const f = browser("?devProject=old");
+  setDevProjectFactory(createBlankProject);
+  await store.load();
+  const oldIdentity = store.getLoadedProjectIdentity();
+  const key = "oprn:dev-project:editor.invalid/?devProject=old";
+  let enter!: () => void;
+  let release!: () => void;
+  const entered = new Promise<void>(resolve => { enter = resolve; });
+  const released = new Promise<void>(resolve => { release = resolve; });
+  const held = navigator.locks.request(`project-cache:${key}`, async () => {
+    enter();
+    await released;
+  });
+  await entered;
+  try {
+    store.update(project => { project.meta.title = "Old pending save"; });
+    const pending = store.flush();
+    f.window.history.replaceState(null, "", "?freshProject=1");
+    const replacement = createBlankProject();
+    replacement.meta.title = "New ephemeral project";
+    store.replaceProject(replacement);
+    const newIdentity = store.getLoadedProjectIdentity();
+    const beforeRelease = store.hasDurableLocalIdentity();
+    release();
+    await held;
+    await pending;
+    expect(newIdentity).not.toEqual(oldIdentity);
+    expect(beforeRelease).toBe(false);
+    expect(JSON.parse(f.data.get(key) ?? "null")).toMatchObject({
+      localProjectId: oldIdentity.projectId, project: { meta: { title: "Old pending save" } },
+    });
+    expect(store.getCurrent().meta.title).toBe("New ephemeral project");
+    expect(store.hasDurableLocalIdentity()).toBe(false);
+  } finally { release(); await held; }
+}, 30000);
 it.each(["?freshProject=1", "?devProject=1&blankProject=1"])("does not restore intentionally temporary boot %s", async search => {
   const f = browser(search);
   const a = await loadLocalProjectEnvelope(createBlankProject());

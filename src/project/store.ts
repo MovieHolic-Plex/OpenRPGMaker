@@ -1183,7 +1183,9 @@ class ProjectStore {
       if (this.remotePersistenceDisabledReason === "dev-showcase") {
         // fresh/blank 위치에서는 기록이 스킵되므로(false 반환) dirty를 유지한다(결함 ⑧·⑩).
         const localGeneration = this.mutationGeneration;
-        if (await persistLocalProjectEnvelope(projectWithoutEventDrafts(this.current), this.localProjectSessionId)) {
+        const localEpoch = this.projectEpoch;
+        if (await persistLocalProjectEnvelope(projectWithoutEventDrafts(this.current), this.localProjectSessionId)
+          && localEpoch === this.projectEpoch) {
           if (localGeneration === this.mutationGeneration) this.dirtySinceLastPersist = false;
           this.localIdentityDurable = true;
         }
