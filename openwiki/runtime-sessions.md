@@ -26,8 +26,16 @@
   duration is its maximum. Video and narration pause, lose their sources and
   call load() on advance, skip, error, abort or teardown. Old media events and
   late play() rejections cannot affect a later scene. Blocked autoplay exposes
-  R retry and confirm continuation; missing/broken/stalled video has a usable
-  continuation even when the sequence is unskippable (load watchdog: 10 seconds).
+  R retry and confirm continuation. Initial video loading and each R retry show
+  continuation and arm a fresh 10-second load deadline, cancelled by successful
+  playback or cleanup. Native `waiting`/unbuffered `stalled` events expose immediate
+  confirm continuation without releasing media; `playing` clears that status and
+  disables video continuation again. Buffered `stalled` alone does not unlock
+  healthy playback. There is no post-start playback-duration cap: only an authored
+  positive duration limits healthy video. Initial/retry waiting retains its load
+  deadline; repeated waiting events never extend it. Missing/broken video remains
+  continuable even when unskippable. Stall RED/GREEN and fault-injected exported
+  player evidence: `output/evidence/cinematics-stall.md`.
 - `player.ts` runs opening before preflight/map boot for title New Game, normal
   autoStartRun and fresh restart. Loaded sessions, startOverride/test-here and
   selected-event tests bypass it. stopGame cancels opening, and its controller

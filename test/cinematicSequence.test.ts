@@ -1,5 +1,5 @@
 /** @vitest-environment happy-dom */
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { playCinematicSequence, type CinematicPlayback } from "@/player/cinematicSequence";
 import { createBlankProject } from "@/project/defaults";
 import type { CinematicScene, CinematicSequence, Project } from "@/project/types";
@@ -14,6 +14,13 @@ let playback: CinematicPlayback;
 const play = vi.fn<() => Promise<void>>();
 const pause = vi.fn();
 const load = vi.fn();
+// happy-dom omits native media ready-state constants; preserve that browser boundary.
+const futureDataDescriptor = Object.getOwnPropertyDescriptor(HTMLMediaElement, "HAVE_FUTURE_DATA");
+beforeAll(() => { Object.defineProperty(HTMLMediaElement, "HAVE_FUTURE_DATA", { value: 3, configurable: true }); });
+afterAll(() => {
+  if (futureDataDescriptor) Object.defineProperty(HTMLMediaElement, "HAVE_FUTURE_DATA", futureDataDescriptor);
+  else Reflect.deleteProperty(HTMLMediaElement, "HAVE_FUTURE_DATA");
+});
 function start(scenes: CinematicScene[], skippable = false): CinematicPlayback {
   playback = playCinematicSequence({ host, project, sequence: { enabled: true, skippable, scenes }, signal: controller.signal });
   return playback;
@@ -225,6 +232,168 @@ describe("shared sequence playback", () => {
     start([video]); await vi.advanceTimersByTimeAsync(10_000);
     expect(root().dataset.mediaState).toBe("error");
     key("Enter"); expect(await playback.done).toBe("completed");
+  });
+  it.each([
+    ["waiting", "Enter"], ["waiting", "z"], ["waiting", " "],
+    ["stalled", "Enter"], ["stalled", "z"], ["stalled", " "],
+  ])("recovers an unskippable post-start %s with a distinct %s press", async (event, advance) => {
+    start([video, text]);
+    const movie = media("video");
+    movie.dispatchEvent(new Event("playing"));
+    await vi.advanceTimersByTimeAsync(10_000); // Exhaust the original initial-load watchdog.
+    movie.dispatchEvent(new Event(event));
+    const fallthrough = vi.fn(); document.addEventListener("keydown", fallthrough);
+    try {
+      key("Escape"); key(advance, true);
+      expect(root().dataset.sceneId).toBe("video");
+      expect(key(advance).defaultPrevented).toBe(true);
+      expect(root().dataset.sceneId).toBe("text");
+      expect(fallthrough).not.toHaveBeenCalled();
+      expect(movie.getAttribute("src")).toBeNull();
+      expect(pause).toHaveBeenCalledTimes(1);
+      expect(load).toHaveBeenCalledTimes(1);
+      for (const late of ["playing", "waiting", "stalled", "error", "ended"]) movie.dispatchEvent(new Event(late));
+      expect(root().dataset.sceneId).toBe("text");
+      expect(root().dataset.mediaState).toBe("ready");
+      expect(vi.getTimerCount()).toBe(0);
+    } finally { document.removeEventListener("keydown", fallthrough); }
+  });
+  it("keeps a pending retry visibly continuable after the original watchdog expires", async () => {
+    play.mockRejectedValueOnce(new DOMException("blocked", "NotAllowedError"));
+    start([video]);
+    await vi.advanceTimersByTimeAsync(10_000);
+    play.mockReturnValueOnce(new Promise<void>(() => undefined));
+    key("r");
+    expect(root().dataset.mediaState).toBe("loading");
+    expect(root().querySelector('[role="status"]')?.textContent?.trim().length).toBeGreaterThan(0);
+    key(" "); expect(await playback.done).toBe("completed");
+    expect(vi.getTimerCount()).toBe(0);
+  });
+  it("rearms the retry deadline and ignores late success and events after expiry", async () => {
+    play.mockRejectedValueOnce(new DOMException("blocked", "NotAllowedError"));
+    start([video]);
+    const movie = media("video");
+    await vi.advanceTimersByTimeAsync(10_000);
+    let resolvePlay = (): void => undefined;
+    play.mockReturnValueOnce(new Promise<void>(resolve => { resolvePlay = resolve; }));
+    key("r");
+    await vi.advanceTimersByTimeAsync(9_999);
+    expect(root().dataset.mediaState).toBe("loading");
+    await vi.advanceTimersByTimeAsync(1);
+    expect(root().dataset.mediaState).toBe("error");
+    expect(movie.getAttribute("src")).toBeNull();
+    expect(vi.getTimerCount()).toBe(0);
+    resolvePlay(); await Promise.resolve();
+    for (const late of ["playing", "waiting", "stalled", "ended"]) movie.dispatchEvent(new Event(late));
+    expect(root().dataset.mediaState).toBe("error");
+    key("z"); expect(await playback.done).toBe("completed");
+  });
+  it("resumes waiting video without a healthy-playback cap or confirm bypass", async () => {
+    let resolvePlay = (): void => undefined;
+    play.mockReturnValueOnce(new Promise<void>(resolve => { resolvePlay = resolve; }));
+    start([video]);
+    const movie = media("video");
+    movie.dispatchEvent(new Event("playing"));
+    movie.dispatchEvent(new Event("waiting"));
+    expect(root().dataset.mediaState).toBe("waiting");
+    expect(root().querySelector('[role="status"]')?.textContent?.trim().length).toBeGreaterThan(0);
+    resolvePlay(); await Promise.resolve();
+    expect(root().dataset.mediaState).toBe("waiting");
+    expect(movie.getAttribute("src")).not.toBeNull();
+    expect(pause).not.toHaveBeenCalled();
+    movie.dispatchEvent(new Event("playing"));
+    expect(root().dataset.mediaState).toBe("playing");
+    expect(root().querySelector('[role="status"]')?.textContent).toBe("");
+    expect(vi.getTimerCount()).toBe(0);
+    for (const advance of ["Enter", "z", " ", "Escape"]) key(advance);
+    expect(root().dataset.sceneId).toBe("video");
+    movie.dispatchEvent(new Event("ended"));
+    expect(await playback.done).toBe("completed");
+  });
+  it("does not unlock healthy buffered playback on a network stalled event", async () => {
+    start([video]);
+    const movie = media("video");
+    vi.spyOn(movie, "readyState", "get").mockReturnValue(HTMLMediaElement.HAVE_FUTURE_DATA);
+    movie.dispatchEvent(new Event("playing"));
+    movie.dispatchEvent(new Event("stalled"));
+    for (const advance of ["Enter", "z", " "]) key(advance);
+    expect(root().dataset.mediaState).toBe("playing");
+    expect(vi.getTimerCount()).toBe(0);
+    movie.dispatchEvent(new Event("ended"));
+    expect(await playback.done).toBe("completed");
+  });
+  it("lets an authored Escape skip a waiting video and releases both media tracks", async () => {
+    start([{ ...video, narrationAudioResourceId: "voice" }], true);
+    const movie = media("video"); const voice = media("audio");
+    movie.dispatchEvent(new Event("playing")); movie.dispatchEvent(new Event("waiting"));
+    key("Escape"); expect(await playback.done).toBe("skipped");
+    expect(movie.getAttribute("src")).toBeNull(); expect(voice.getAttribute("src")).toBeNull();
+    expect(pause).toHaveBeenCalledTimes(2); expect(load).toHaveBeenCalledTimes(2);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+  it("does not postpone a retry deadline on repeated waiting events", async () => {
+    play.mockRejectedValueOnce(new DOMException("blocked", "NotAllowedError"));
+    start([video]); await vi.advanceTimersByTimeAsync(10_000);
+    play.mockReturnValueOnce(new Promise<void>(() => undefined));
+    key("r"); media("video").dispatchEvent(new Event("waiting"));
+    await vi.advanceTimersByTimeAsync(9_999);
+    media("video").dispatchEvent(new Event("stalled"));
+    expect(root().dataset.mediaState).toBe("waiting");
+    await vi.advanceTimersByTimeAsync(1);
+    expect(root().dataset.mediaState).toBe("error");
+    key("Enter"); expect(await playback.done).toBe("completed");
+  });
+  it("cancels the rearmed deadline when retry playback resumes", async () => {
+    play.mockRejectedValueOnce(new DOMException("blocked", "NotAllowedError"));
+    start([video]); await vi.advanceTimersByTimeAsync(10_000);
+    play.mockReturnValueOnce(new Promise<void>(() => undefined));
+    key("r"); expect(vi.getTimerCount()).toBe(1);
+    media("video").dispatchEvent(new Event("playing"));
+    expect(vi.getTimerCount()).toBe(0);
+    key("Enter"); expect(root().dataset.mediaState).toBe("playing");
+  });
+  it.each(["waiting", "stalled"])("retains the authored maximum after post-start %s", async event => {
+    start([{ ...video, durationMs: 100 }, text]);
+    media("video").dispatchEvent(new Event("playing"));
+    media("video").dispatchEvent(new Event(event));
+    await vi.advanceTimersByTimeAsync(100);
+    expect(root().dataset.sceneId).toBe("text");
+    expect(vi.getTimerCount()).toBe(0);
+  });
+  it("does not let waiting events hide blocked autoplay retry", async () => {
+    play.mockRejectedValueOnce(new DOMException("blocked", "NotAllowedError"));
+    start([video]); await Promise.resolve();
+    media("video").dispatchEvent(new Event("waiting"));
+    media("video").dispatchEvent(new Event("stalled"));
+    expect(root().dataset.mediaState).toBe("blocked");
+    key("r"); await Promise.resolve();
+    expect(play).toHaveBeenCalledTimes(2);
+    expect(root().dataset.mediaState).toBe("playing");
+  });
+  it("retains the initial load deadline through native waiting", async () => {
+    play.mockReturnValueOnce(new Promise<void>(() => undefined));
+    start([video]); media("video").dispatchEvent(new Event("waiting"));
+    await vi.advanceTimersByTimeAsync(10_000);
+    expect(root().dataset.mediaState).toBe("error");
+    key("Enter"); expect(await playback.done).toBe("completed");
+  });
+  it.each(["abort", "skip", "detach"] as const)("cleans a pending retry on %s", async action => {
+    play.mockRejectedValueOnce(new DOMException("blocked", "NotAllowedError"));
+    start([video], true); await vi.advanceTimersByTimeAsync(10_000);
+    let rejectPlay = (_error: Error): void => undefined;
+    play.mockReturnValueOnce(new Promise<void>((_resolve, reject) => { rejectPlay = reject; }));
+    key("r");
+    const movie = media("video");
+    if (action === "abort") controller.abort();
+    else if (action === "skip") key("Escape");
+    else host.remove();
+    expect(await playback.done).toBe(action === "skip" ? "skipped" : "aborted");
+    rejectPlay(new Error("late")); await Promise.resolve();
+    for (const late of ["playing", "waiting", "stalled", "error", "ended"]) movie.dispatchEvent(new Event(late));
+    expect(movie.getAttribute("src")).toBeNull();
+    expect(pause).toHaveBeenCalledTimes(1); expect(load).toHaveBeenCalledTimes(1);
+    expect(host.children).toHaveLength(0); expect(vi.getTimerCount()).toBe(0);
+    expect(key("Enter").defaultPrevented).toBe(false);
   });
   it.each(["abort", "teardown"] as const)("cleans media, timers and listeners on %s", async kind => {
     start([{ ...video, narrationAudioResourceId: "voice", durationMs: 200 }]);

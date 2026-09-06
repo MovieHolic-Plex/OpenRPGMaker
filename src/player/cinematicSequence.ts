@@ -135,6 +135,15 @@ export function playCinematicSequence(options: {
         : "미디어를 재생할 수 없습니다. Z/Enter/Space 계속";
       if (state === "error") releaseMedia();
     };
+    const beginLoading = (): void => {
+      root.dataset.mediaState = "loading";
+      canContinueVideo = true;
+      status.textContent = "미디어 불러오는 중 · Z/Enter/Space 계속";
+      clearTimeout(loadTimer);
+      loadTimer = setTimeout(() => {
+        if (root.dataset.mediaState === "loading" || root.dataset.mediaState === "waiting") fail("error");
+      }, 10_000);
+    };
     const play = (item: HTMLMediaElement): void => {
       // Browser media is an external boundary: rejection must become a usable UI state.
       void item.play().then(() => {
@@ -142,13 +151,13 @@ export function playCinematicSequence(options: {
         if (scene.kind === "video" && !(item instanceof HTMLVideoElement)) return;
         root.dataset.mediaState = scene.kind === "video" ? "playing" : "ready";
         canContinueVideo = false;
+        clearTimeout(loadTimer);
         status.textContent = "";
       }, () => fail("blocked"));
     };
     retryMedia = () => {
       if (!alive || root.dataset.mediaState !== "blocked") return;
-      status.textContent = "";
-      root.dataset.mediaState = "loading";
+      beginLoading();
       for (const item of media) play(item);
     };
     const addMedia = (item: HTMLMediaElement, resourceId: string): void => {
@@ -180,15 +189,22 @@ export function playCinematicSequence(options: {
           if (root.dataset.mediaState === "blocked") return;
           root.dataset.mediaState = "playing";
           canContinueVideo = false;
+          clearTimeout(loadTimer);
           status.textContent = "";
         }, { signal: lifetime.signal });
-        root.dataset.mediaState = "loading";
-        status.textContent = "동영상 불러오는 중 · Z/Enter/Space 계속";
+        const waiting = (event: Event): void => {
+          if (root.dataset.mediaState === "blocked") return;
+          // Fetching can stall while buffered video is still playing normally.
+          if (event.type === "stalled" && video.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA) return;
+          root.dataset.mediaState = "waiting";
+          canContinueVideo = true;
+          status.textContent = "동영상 재생 대기 중 · Z/Enter/Space 계속";
+        };
+        video.addEventListener("waiting", waiting, { signal: lifetime.signal });
+        video.addEventListener("stalled", waiting, { signal: lifetime.signal });
+        beginLoading();
         root.append(video);
         addMedia(video, scene.resourceId);
-        if (mediaActive) loadTimer = setTimeout(() => {
-          if (root.dataset.mediaState === "loading") fail("error");
-        }, 10_000);
         break;
       }
     }
