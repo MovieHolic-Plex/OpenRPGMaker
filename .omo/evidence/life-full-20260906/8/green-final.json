@@ -1,0 +1,32 @@
+{
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "300s",
+    "npm",
+    "test",
+    "--",
+    "test/toolActionAuthoringParity.test.ts",
+    "test/databaseLifeCraftingView.test.ts",
+    "test/farmingRuntime.test.ts",
+    "test/stardewAuthoringTools.test.ts",
+    "test/p0ToolCapability.test.ts",
+    "test/cropRegrowthContract.test.ts",
+    "test/lifeSkillDisabledHarvest.test.ts",
+    "test/serializeCompact.test.ts",
+    "test/p0ProjectSchema.test.ts",
+    "test/toolsLifeEconomy.test.ts",
+    "test/p0SessionPersistence.test.ts",
+    "test/p2SessionPersistence.test.ts",
+    "test/p2LifeRuntime.test.ts",
+    "test/lifeAuthoringReferences.test.ts",
+    "test/makerClockIntegration.test.ts"
+  ],
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-tools",
+  "head": "675a3b2fd0952143ec8887b1b204789ec0dfe035",
+  "status": 0,
+  "signal": null
+}

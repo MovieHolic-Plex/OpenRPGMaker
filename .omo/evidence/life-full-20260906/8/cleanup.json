@@ -1,0 +1,43 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-tools",
+  "command": "Node fs.rmSync on exact task-owned paths, after git ls-files guard",
+  "removed": [
+    {
+      "path": "dist",
+      "present": true,
+      "files": 1981,
+      "bytes": 244569348
+    },
+    {
+      "path": ".vite-cache/task8-editor",
+      "present": false,
+      "files": 0,
+      "bytes": 0
+    },
+    {
+      "path": ".vite-cache/task8-public",
+      "present": false,
+      "files": 0,
+      "bytes": 0
+    },
+    {
+      "path": ".vite-cache/task8-build",
+      "present": false,
+      "files": 0,
+      "bytes": 0
+    },
+    {
+      "path": "output/edit-activity",
+      "present": true,
+      "files": 3,
+      "bytes": 4799
+    }
+  ],
+  "preserved": [
+    ".vite-cache/deps",
+    "node_modules symlink",
+    "shared caches",
+    ".env.local"
+  ],
+  "port35209Listening": false
+}
