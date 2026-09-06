@@ -1,0 +1,148 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/sidebarFocusR1.test.ts --maxWorkers=1 --minWorkers=1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-sidebar-focus-modes
+
+ ❯ test/sidebarFocusR1.test.ts (4 tests | 4 failed) 5102ms
+   × sidebar R1 real renderer ownership > removes the mounted open surface when the renderer subscribed before its lifecycle 2718ms
+     → expected <section …(7)>…(2)</section> to be null
+   × sidebar R1 real renderer ownership > routes one Escape to the actual map context menu and then restores the map row 1477ms
+     → expected null not to be null
+   × sidebar R1 real renderer ownership > keeps the map explorer attached while its body-mounted Rename action handles a pointer 493ms
+     → expected null not to be null
+   × sidebar R1 real renderer ownership > reveals the real Expert dock through its renderer rather than only changing collapse state 412ms
+     → expected 'false' to be 'true' // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/sidebarFocusR1.test.ts > sidebar R1 real renderer ownership > removes the mounted open surface when the renderer subscribed before its lifecycle
+AssertionError: expected <section …(7)>…(2)</section> to be null
+
+[32m- Expected:[39m
+null
+
+[31m+ Received:[39m
+<section
+  aria-label="도구"
+  aria-modal="false"
+  class="sidebar-surface sidebar-surface-tools oprn-toolbar-dropdown"
+  data-focus-fallback-anchor="sidebar-tools-menu"
+  data-sidebar-surface="tools"
+  data-testid="sidebar-tools-surface"
+  role="dialog"
+>
+  <header
+    class="sidebar-surface-heading"
+  >
+    <strong>
+      도구
+    </strong>
+    <button
+      aria-label="도구 닫기"
+      class="btn"
+      data-testid="sidebar-tools-close"
+      type="button"
+    >
+      닫기
+    </button>
+  </header>
+  <div
+    class="sidebar-surface-body"
+  >
+    <div
+      class="sidebar-tool-options"
+      data-testid="tool-grid"
+    >
+      <button
+        aria-pressed="false"
+        class="oprn-option-item"
+        data-testid="tool-pan"
+        title="화면 밀기 (4)"
+        type="button"
+      >
+        화면 밀기 (4)
+      </button>
+      <button
+        aria-pressed="false"
+        class="oprn-option-item"
+        data-testid="tool-collision"
+        title="통행 표시 (6)"
+        type="button"
+      >
+        통행 표시 (6)
+      </button>
+      <button
+        class="oprn-option-item"
+        data-testid="copy-button"
+        type="button"
+      >
+        복사 (선택 영역)
+      </button>
+      <button
+        class="oprn-option-item"
+        data-testid="paste-button"
+        type="button"
+      >
+        붙여넣기
+      </button>
+    </div>
+  </div>
+</section>
+
+ ❯ test/sidebarFocusR1.test.ts:49:58
+     47|     get('sidebar-tools-menu').click();
+     48|     setEditorUiMode('expert', null);
+     49|     expect(host.querySelector('[data-sidebar-surface]')).toBeNull();
+       |                                                          ^
+     50|     expect(get('sidebar-tools-menu').getAttribute('aria-expanded')).to…
+     51|     get('sidebar-tools-menu').click(); escape();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  test/sidebarFocusR1.test.ts > sidebar R1 real renderer ownership > routes one Escape to the actual map context menu and then restores the map row
+AssertionError: expected null not to be null
+ ❯ test/sidebarFocusR1.test.ts:64:75
+     62|     escape();
+     63|     expect(document.querySelector(`[data-testid="map-context-menu-${id…
+     64|     expect(host.querySelector('[data-testid="sidebar-map-surface"]')).…
+       |                                                                           ^
+     65|     expect(document.activeElement).toBe(get(`map-tree-node-${id}`));
+     66|     escape();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  test/sidebarFocusR1.test.ts > sidebar R1 real renderer ownership > keeps the map explorer attached while its body-mounted Rename action handles a pointer
+AssertionError: expected null not to be null
+ ❯ test/sidebarFocusR1.test.ts:77:72
+     75|     rename.dispatchEvent(new PointerEvent('pointerdown', { bubbles: tr…
+     76|     rename.click();
+     77|     expect(host.querySelector(`[data-testid="map-rename-${id}"]`)).not…
+       |                                                                        ^
+     78|     expect(document.activeElement).toBe(get(`map-rename-${id}`));
+     79|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  test/sidebarFocusR1.test.ts > sidebar R1 real renderer ownership > reveals the real Expert dock through its renderer rather than only changing collapse state
+AssertionError: expected 'false' to be 'true' // Object.is equality
+
+Expected: [32m"[7mtru[27me"[39m
+Received: [31m"[7mfals[27me"[39m
+
+ ❯ test/sidebarFocusR1.test.ts:87:74
+     85|     expect(get('map-tree-section-toggle').getAttribute('aria-expanded'…
+     86|     get('sidebar-map-switcher').click();
+     87|     expect(get('map-tree-section-toggle').getAttribute('aria-expanded'…
+       |                                                                          ^
+     88|     expect(dock.querySelector('.is-section-collapsed')).toBeNull();
+     89|     expect(document.activeElement).toBe(get(`map-tree-node-${store.get…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed (4)
+   Start at  04:06:53
+   Duration  49.33s (transform 28.25s, setup 0ms, collect 41.39s, tests 5.10s, environment 1.01s, prepare 394ms)

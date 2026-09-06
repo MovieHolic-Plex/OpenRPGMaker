@@ -1,0 +1,158 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/sidebarFocusR1.test.ts test/sidebarFocusModes.test.ts test/sidebarModeWorkflow.test.ts test/sidebarBrushUi.test.ts test/tileToolbarOverflowReach.test.ts test/tileToolbarOverflowDismiss.test.ts test/tileToolbarToolAffordance.test.ts test/tileToolbarMapModeClickWiring.test.ts test/tileToolbarAria.test.ts test/sidebarKeyboardNav.test.ts test/editorMenuSidebarIa.test.ts test/editorUiMode.test.ts test/leftDockPanels.test.ts test/tilePaletteChip.test.ts test/inspectorBadges.test.ts test/mapList.test.ts test/mapPanelSection.test.ts test/editorLayoutPersist.test.ts test/tileToolbarMapModeParity.test.ts test/tileBrushState.test.ts test/tilePaletteGridRoving.test.ts test/commandRegistry.test.ts --maxWorkers=2 --minWorkers=1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-sidebar-focus-modes
+
+ ✓ test/leftDockPanels.test.ts (9 tests) 88412ms
+   ✓ 좌측 도크 구성은 워크스페이스 레이아웃을 따른다 > Standard mounts its task host without changing a saved Expert maps-only layout  40781ms
+   ✓ 좌측 도크 구성은 워크스페이스 레이아웃을 따른다 > 맵 패널을 닫으면 맵 호스트가 좌측 도크에서 사라진다  9565ms
+   ✓ 좌측 도크 구성은 워크스페이스 레이아웃을 따른다 > 좌측 도크가 비어도 호스트가 최소 하나는 남는다 (.left-panel 은 비지 않는다)  6959ms
+   ✓ 좌측 도크 구성은 워크스페이스 레이아웃을 따른다 > 초보 모드는 레이아웃이 타일을 숨기라 해도 타일 호스트를 고정한다  5534ms
+   ✓ 좌측 도크 구성은 워크스페이스 레이아웃을 따른다 > 초보 레일의 --editor-left-safe 는 실제 레일 폭에서 파생한다  7298ms
+   ✓ 패널 메뉴는 실제로 되는 선택지만 제시한다 > 호스트가 없는 zone 으로 옮기는 칩을 만들지 않는다  369ms
+   ✓ 패널 메뉴는 실제로 되는 선택지만 제시한다 > 오른쪽 도크 호스트가 있으면 그 zone 칩을 제시한다  620ms
+   ✓ 패널 메뉴는 실제로 되는 선택지만 제시한다 > 초보 모드에서는 레일 플라이아웃만 제공하고 렌더되지 않는 도크 토글은 어디에도 내놓지 않는다  16983ms
+   ✓ 패널 메뉴는 실제로 되는 선택지만 제시한다 > 전문가 모드에서는 이 메뉴가 패널 토글의 유일한 집이다  300ms
+ ✓ test/editorLayoutPersist.test.ts (7 tests) 146418ms
+   ✓ 에디터 레이아웃 크기 저장 > 리사이저 mouseup 시 크기를 저장하고 모듈 재로드 후 복원한다 (접힘 상태·도크는 저장하지 않는다)  48676ms
+   ✓ 에디터 레이아웃 크기 저장 > 좁은 뷰포트에서도 좌측 사이드바를 접어 숨기지 않는다  7947ms
+   ✓ 에디터 레이아웃 크기 저장 > 저장된 크기를 기존 범위로 clamp해서 복원하고 잘못된 JSON은 기본값으로 무시한다  12657ms
+   ✓ 에디터 레이아웃 크기 저장 > 맵 트리 높이는 기본이 자동이고, 리사이저를 끌면 수동으로 저장되며 더블클릭이 자동으로 되돌린다  9356ms
+   ✓ 에디터 레이아웃 크기 저장 > 자동 플래그가 없는 옛 저장본은 높이가 기본값이면 자동, 다른 값이면 수동으로 읽는다  29458ms
+   ✓ 에디터 레이아웃 크기 저장 > 저장된 조수 대기 화면을 복원한다  26573ms
+   ✓ 맵 잠금 상태바 > 다른 세션이 잠근 맵이면 가져오기 버튼으로 takeover를 호출한다  11749ms
+ ✓ test/commandRegistry.test.ts (13 tests) 5340ms
+   ✓ commandRegistry > 도구 명령 실행이 editorState를 바꾼다  641ms
+   ✓ commandRegistry > 이벤트 레이어에서 브러시 도구 명령 실행 시 하위 레이어로 탈출한다  860ms
+   ✓ commandRegistry > 편집 모드 명령이 모드를 바꾸고 도크 구성은 건드리지 않는다  544ms
+   ✓ commandRegistry > 공통 저작 작업 네 개가 명령 팔레트에도 정확히 한 번 등록된다  443ms
+   ✓ commandRegistry > Standard offers all inspection commands but not ineffective dock toggles  740ms
+   ✓ commandRegistry > 도움말: 단축키 명령이 등록되어 '단축키' 검색으로 찾을 수 있다  384ms
+   ✓ commandRegistry > matchEditorCommands는 라벨/키워드 포함 매칭, 빈 질의는 전체  451ms
+ ✓ test/mapList.test.ts (16 tests) 8128ms
+   ✓ map tree panel > renders compact map organization controls  527ms
+   ✓ map tree panel > 초보 플라이아웃 변종에는 도크 섹션 토글이 없다(접을 도크가 없다)  609ms
+   ✓ map tree panel > 헤더 제목과 개수를 별도 span으로 렌더한다(맵 N 합침 회귀 방지)  811ms
+   ✓ map tree panel > selects map on click (programmatic HTMLElement.click)  892ms
+   ✓ map tree panel > keeps drag on the handle so the row itself is not draggable  1466ms
+   ✓ map tree panel > filters the tree to matching names and their ancestors  1044ms
+   ✓ map tree panel > 맵이 8개 이상이면 토글 없이 필터가 처음부터 펼쳐진다  691ms
+   ✓ map tree panel > 분류 폴더를 고르면 상세 칸이 빈 칸이 아니라 이유를 적는다  562ms
+ ✓ test/editorMenuSidebarIa.test.ts (18 tests) 7930ms
+   ✓ 좌측 사이드바 ↔ 상단 메뉴 정보구조 > beginner: 상단 영역이 사이드바 소유 액션을 중복 노출하지 않는다  368ms
+   ✓ 좌측 사이드바 ↔ 상단 메뉴 정보구조 > standard: 상단 영역이 사이드바 소유 액션을 중복 노출하지 않는다  352ms
+   ✓ 좌측 사이드바 ↔ 상단 메뉴 정보구조 > expert: 상단 영역이 사이드바 소유 액션을 중복 노출하지 않는다  416ms
+   ✓ 좌측 사이드바 ↔ 상단 메뉴 정보구조 > standard: 편집 모드를 패널 메뉴에서 고를 수 있다  484ms
+   ✓ 좌측 사이드바 ↔ 상단 메뉴 정보구조 > expert: 편집 모드를 패널 메뉴에서 고를 수 있다  613ms
+   ✓ 좌측 사이드바 ↔ 상단 메뉴 정보구조 > beginner: 음악·찾기를 도구 메뉴에서 연다  407ms
+   ✓ 좌측 사이드바 ↔ 상단 메뉴 정보구조 > expert: 자료집·소재는 톱바 버튼이 집이고 도구 메뉴에는 없다  333ms
+   ✓ 좌측 사이드바 ↔ 상단 메뉴 정보구조 > beginner: 자료집·소재는 도구 메뉴가 담고 톱바 버튼은 없다  698ms
+   ✓ 좌측 사이드바 ↔ 상단 메뉴 정보구조 > standard: 현재 맵 다음에 공통 레이어와 도구를 둔다  1129ms
+   ✓ 좌측 사이드바 ↔ 상단 메뉴 정보구조 > expert: 현재 맵 다음에 공통 레이어와 도구를 둔다  1198ms
+ ✓ test/sidebarKeyboardNav.test.ts (6 tests) 9312ms
+   ✓ Sidebar Keyboard Navigation & Focus Survival Integration > Standard mode (renderTilePalette) > maintains focus on the same tool button across re-renders when activated  2099ms
+   ✓ Sidebar Keyboard Navigation & Focus Survival Integration > Standard mode (renderTilePalette) > has roving tabindex (1 tab stop in toolbar) and moves focus via arrow keys  2141ms
+   ✓ Sidebar Keyboard Navigation & Focus Survival Integration > Beginner mode (renderBasicLeftRail) > maintains focus on the same tool button across re-renders in basic rail  1717ms
+   ✓ Sidebar Keyboard Navigation & Focus Survival Integration > Beginner mode (renderBasicLeftRail) > keeps one tab stop per tool/layer/panel/brush group and navigates brush sizes  1608ms
+   ✓ Sidebar Keyboard Navigation & Focus Survival Integration > Beginner mode (renderBasicLeftRail) > 도구 그룹은 role=toolbar, 레이어·패널 그룹은 라벨 있는 group 이다  788ms
+   ✓ Sidebar Keyboard Navigation & Focus Survival Integration > Beginner mode (renderBasicLeftRail) > 도구 그룹에서 ArrowDown 은 다음 도구로 포커스를 이동한다  920ms
+ ✓ test/tilePaletteGridRoving.test.ts (6 tests) 8168ms
+   ✓ tile palette grid roving tabindex > exposes exactly one tab stop across the whole grid  3397ms
+   ✓ tile palette grid roving tabindex > ArrowRight moves focus one column along the row  1873ms
+   ✓ tile palette grid roving tabindex > ArrowDown moves focus one full row down, ArrowUp comes back  917ms
+   ✓ tile palette grid roving tabindex > Home/End jump to the first and last cell of the grid  524ms
+   ✓ tile palette grid roving tabindex > Enter on the focused cell selects that tile  626ms
+   ✓ tile palette grid roving tabindex > keeps the pointer selection path and per-cell testids intact  829ms
+ ✓ test/tilePaletteChip.test.ts (2 tests) 3963ms
+   ✓ 타일 팔레트 선택 칩 > 타일셋 이름은 버튼이고, 누르면 현재 맵의 맵 설정을 타일 그림판에 초점을 두고 연다  2160ms
+   ✓ 타일 팔레트 선택 칩 > 선택 타일 이름도 버튼이다 — 칩에서 눌리지 않는 글자를 남기지 않는다  1801ms
+ ✓ test/inspectorBadges.test.ts (4 tests) 3159ms
+   ✓ 인스펙터 옆 규칙 감사/작업 기록 배지 > 규칙 감사와 작업 기록 카운트를 상태에서 계산한다  943ms
+   ✓ 인스펙터 옆 규칙 감사/작업 기록 배지 > 카운트가 있으면 토글에 숫자 배지를 렌더하고 0이면 숨긴다  856ms
+   ✓ 인스펙터 옆 규칙 감사/작업 기록 배지 > 토글을 열면 드롭다운에 규칙 감사와 작업 기록 패널 내용을 넣는다  651ms
+   ✓ 인스펙터 옆 규칙 감사/작업 기록 배지 > 하나를 열면 다른 드롭다운은 닫힌다  707ms
+ ✓ test/editorUiMode.test.ts (9 tests) 89ms
+ ✓ test/mapPanelSection.test.ts (2 tests) 51ms
+ ✓ test/sidebarFocusModes.test.ts (12 tests) 24857ms
+   ✓ focused standard and expert sidebar > opens a real map tree from the current map without reserving a standard dock  1495ms
+   ✓ focused standard and expert sidebar > changes the actual brush through one select and hides it for inapplicable tools  1515ms
+   ✓ focused standard and expert sidebar > uses the event layer as the single event entry with no tile controls on its surface  885ms
+   ✓ focused standard and expert sidebar > returns focus from map search Escape without changing the selected map  481ms
+   ✓ focused standard and expert sidebar > selects rect from Standard Tools and keeps the shape when closing  1079ms
+   ✓ focused standard and expert sidebar > selects round from Standard Tools and keeps the shape when closing  1735ms
+   ✓ focused standard and expert sidebar > filters real tiles through the native category selector without changing the picked tile  1324ms
+   ✓ focused standard and expert sidebar > persists expert inspection pins without exposing or resetting them in Standard  5581ms
+   ✓ focused standard and expert sidebar > opens inspection through the command registry and restores the menu trigger on Escape  1286ms
+   ✓ focused standard and expert sidebar > does not reopen auxiliary work when returning to a mode  3190ms
+   ✓ focused standard and expert sidebar > keeps an outside pointer target mounted so the same click can activate it  3251ms
+   ✓ focused standard and expert sidebar > keeps a map surface behind a child modal and lets Escape close only the child  3025ms
+ ✓ test/sidebarFocusR1.test.ts (11 tests) 28700ms
+   ✓ sidebar R1 real renderer ownership > removes the mounted open surface when the renderer subscribed before its lifecycle  5947ms
+   ✓ sidebar R1 real renderer ownership > routes one Escape to the actual map context menu and then restores the map row  1904ms
+   ✓ sidebar R1 real renderer ownership > keeps the map explorer attached while its body-mounted Rename action handles a pointer  1242ms
+   ✓ sidebar R1 real renderer ownership > reveals the real Expert dock through its renderer rather than only changing collapse state  1272ms
+   ✓ sidebar R1 real renderer ownership > does not commit a cancelled Rename when removing its focused input emits blur  2038ms
+   ✓ sidebar R1 real renderer ownership > activates the real dock registry for inspector with pinned=false  2668ms
+   ✓ sidebar R1 real renderer ownership > activates the real dock registry for ruleAudit with pinned=false  3854ms
+   ✓ sidebar R1 real renderer ownership > activates the real dock registry for history with pinned=false  1983ms
+   ✓ sidebar R1 real renderer ownership > activates the real dock registry for inspector with pinned=true  3764ms
+   ✓ sidebar R1 real renderer ownership > activates the real dock registry for ruleAudit with pinned=true  2914ms
+   ✓ sidebar R1 real renderer ownership > activates the real dock registry for history with pinned=true  1111ms
+ ✓ test/sidebarBrushUi.test.ts (14 tests) 16023ms
+   ✓ sidebar brush and source gestures > F4 exposes unique live brush controls in beginner without More  1218ms
+   ✓ sidebar brush and source gestures > F4 exposes unique live brush controls in standard without More  3196ms
+   ✓ sidebar brush and source gestures > F4 exposes unique live brush controls in expert without More  3229ms
+   ✓ sidebar brush and source gestures > beginner Paint clears a previous stamp and shape through the tool reset  989ms
+   ✓ sidebar brush and source gestures > F7 reports zero true matches and restores search focus on reset  430ms
+   ✓ sidebar brush and source gestures > C8a resolves a mounted beginner atlas drag once, with source geometry and cell layers  1380ms
+   ✓ sidebar brush and source gestures > C8a resolves a mounted standard atlas drag once, with source geometry and cell layers  1688ms
+   ✓ sidebar brush and source gestures > C8a abandons an atlas gesture on pointercancel  429ms
+   ✓ sidebar brush and source gestures > C8a abandons an atlas gesture on scroll  345ms
+   ✓ sidebar brush and source gestures > C8a ignores another pointer release and cancels an outside release  816ms
+   ✓ sidebar brush and source gestures > C8a detached gestures cannot activate a replacement sheet  947ms
+   ✓ sidebar brush and source gestures > C8a one-cell release selects once while keyboard and assistive click still work  921ms
+ ✓ test/sidebarModeWorkflow.test.ts (11 tests) 21860ms
+   ✓ mode-specific sidebar painting workflow > mounts the beginner tile workflow without opening or pinning a flyout  1410ms
+   ✓ mode-specific sidebar painting workflow > keeps the selected cell focused and the sheet mounted after beginner tile activation  904ms
+   ✓ mode-specific sidebar painting workflow > preserves custom atlas cells and routes selection to the authored layer in the persistent panel  1654ms
+   ✓ mode-specific sidebar painting workflow > restores the persistent picker after leaving the event layer  672ms
+   ✓ mode-specific sidebar painting workflow > keeps map flyout Escape focus return without dismissing the persistent picker  2601ms
+   ✓ mode-specific sidebar painting workflow > provides visible beginner undo wired to actual map history and its change event  1576ms
+   ✓ mode-specific sidebar painting workflow > keeps standard daily tools direct and advanced actions reachable once through More  2853ms
+   ✓ mode-specific sidebar painting workflow > pins expert oprn-tool-inspector for direct access and returns Escape focus to its own trigger  3114ms
+   ✓ mode-specific sidebar painting workflow > pins expert toolbar-toggle-ruleAudit for direct access and returns Escape focus to its own trigger  3437ms
+   ✓ mode-specific sidebar painting workflow > pins expert toolbar-toggle-history for direct access and returns Escape focus to its own trigger  2710ms
+   ✓ mode-specific sidebar painting workflow > preserves selected tile and tool across mode changes while remounting the beginner picker  912ms
+ ✓ test/tileToolbarMapModeClickWiring.test.ts (3 tests) 9301ms
+   ✓ 렌더된 표준 도구막대의 맵 모드 클릭 배선 > 장면 놓기 버튼 클릭은 tool 과 layer 를 함께 이벤트로 바꾼다  5781ms
+   ✓ 렌더된 표준 도구막대의 맵 모드 클릭 배선 > 통행 표시 버튼 클릭은 이벤트 레이어에서 바닥으로 탈출시킨다  1722ms
+   ✓ 렌더된 표준 도구막대의 맵 모드 클릭 배선 > 버튼 클릭이 무장된 팔레트 스탬프와 선택 영역까지 정리한다  1796ms
+ ✓ test/tileBrushState.test.ts (18 tests) 5777ms
+   ✓ brush selection routes > preserves mixed-layer source cells instead of repairing them as bundled trees  777ms
+   ✓ brush selection routes > preserves redo after a no-op shape rect click  584ms
+   ✓ brush selection routes > preserves redo after a no-op shape round click  1024ms
+   ✓ brush selection routes > B switches a stamp back to the plain pen brush  409ms
+   ✓ brush selection routes > 1 switches a stamp back to the plain pen brush  335ms
+   ✓ brush hover footprints > previews exactly size 4 for paint, erase and upper blank brushes, including clipped edges  776ms
+ ✓ test/tileToolbarOverflowDismiss.test.ts (5 tests) 7601ms
+   ✓ 도구막대 오버플로 닫기 > Escape 로 닫고 포커스를 ⋯ 트리거로 되돌린다  2668ms
+   ✓ 도구막대 오버플로 닫기 > 입력 중 Escape 는 가로채지 않는다 (초보 레일과 동일한 가드)  799ms
+   ✓ 도구막대 오버플로 닫기 > 바깥 pointerdown 은 닫고, 드롭다운·트리거 안의 pointerdown 은 유지한다  529ms
+   ✓ 도구막대 오버플로 닫기 > 인스펙터·규칙·기록 패널이 열려 있어도 Escape 로 전부 닫는다  991ms
+   ✓ 도구막대 오버플로 닫기 > 문서 리스너는 렌더마다 쌓이지 않는다  2612ms
+ ✓ test/tileToolbarOverflowReach.test.ts (3 tests) 6117ms
+   ✓ 도구막대 오버플로 도달성 > 스크롤되는 도구들은 내부 컨테이너에, ⋯ 는 그 형제로 남는다  2186ms
+   ✓ 도구막대 오버플로 도달성 > 열린 드롭다운은 잘리는 스크롤 컨테이너의 자손이 아니다  3164ms
+   ✓ 도구막대 오버플로 도달성 > 도구막대 행은 더 이상 가로 스크롤 띠가 아니고, 내부 컨테이너가 스크롤을 맡는다  755ms
+ ✓ test/tileToolbarToolAffordance.test.ts (3 tests) 603ms
+   ✓ 도구막대 표기 > 도구마다 hotkeys.ts 의 단축키를 툴팁에 적는다  377ms
+ ✓ test/tileToolbarAria.test.ts (2 tests) 1365ms
+   ✓ 표준/전문가 사이드바 접근성 > 규칙 위반 배지가 있으면 오버플로 토글 접근명에 그 의미와 개수를 넣는다  1167ms
+ ✓ test/tileToolbarMapModeParity.test.ts (7 tests) 36ms
+
+ Test Files  22 passed (22)
+      Tests  181 passed (181)
+   Start at  04:25:32
+   Duration  489.73s (transform 114.44s, setup 0ms, collect 509.67s, tests 403.21s, environment 21.35s, prepare 11.23s)

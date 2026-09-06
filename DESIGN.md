@@ -79,6 +79,18 @@
   Browser evidence, measurements and unresolved debt are recorded with this
   deliverable; no Lighthouse score or image-based approval is inferred from DOM.
 
+### Sidebar ownership repairs (R1)
+
+- Actual map context menus participate in the shared keyboard layer stack and
+  use `--z-popover-high` above the map explorer. Child pointer actions retain the
+  explorer; Escape closes one layer and restores the map row before the opener.
+- Mode cleanup removes the live auxiliary surface regardless of subscriber order;
+  editor/dock teardown clears its ownership and listeners. No implicit reopen.
+- Expert current-map reveal goes through the map-list renderer, expanding the
+  dock and ancestor path before focusing the current row. Inspection commands
+  activate the Tiles host through workspace state before opening the same pinned
+  or unpinned inspection surface. No new default controls or onboarding.
+
 ## In-game shop trade counter (2026-09-06)
 
 Runtime only: this is not the shop-command editor. `runtime/shop.css` owns a
