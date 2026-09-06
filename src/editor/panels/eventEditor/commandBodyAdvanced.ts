@@ -437,7 +437,7 @@ function addFollowerBody(
   const commit = () => {
     const actorId = actor.value.trim();
     const followerName = name.value.trim();
-    const graphicEnabled = useGraphic.checked || Boolean(cmd.graphic);
+    const graphicEnabled = useGraphic.checked;
     const selectedDirection = (["down", "left", "right", "up"] as const).find((value) => value === direction.value)
       ?? cmd.graphic?.direction
       ?? "down";
@@ -447,7 +447,8 @@ function addFollowerBody(
       ...(followerName ? { name: followerName } : {}),
       ...(graphicEnabled ? {
         graphic: {
-          ...(graphicId.value.trim() ? { sprite: { type: graphicType.value === "uploaded" ? "uploaded" : "bundled", id: graphicId.value.trim() } } : {}),
+          ...cmd.graphic,
+          sprite: graphicId.value.trim() ? { type: graphicType.value === "uploaded" ? "uploaded" : "bundled", id: graphicId.value.trim() } : undefined,
           direction: selectedDirection,
           pattern: graphicType.value === "uploaded"
             ? Math.max(0, Math.trunc(Number(rawFrame.value) || 0))
@@ -511,16 +512,28 @@ function removeFollowerBody(
   const commit = () => {
     const followerName = name.value.trim();
     context.actions.replaceCommand(context.path,
-      mode.value === "all" || !followerName
+      mode.value === "all"
         ? { kind: "removeFollower", all: true }
         : { kind: "removeFollower", name: followerName }
     );
   };
   mode.addEventListener("change", commit);
   name.addEventListener("change", commit);
+  name.addEventListener("input", () => name.setCustomValidity(""));
+  mode.addEventListener("change", () => name.setCustomValidity(""));
   return el("div", {
     class: "rich-command-form cream-command-form",
-    dataset: { testid: "remove-follower-editor" },
+    dataset: { testid: "remove-follower-editor", commandFormValidity: "" },
+    on: {
+      "event-command-validate": (event) => {
+        if (mode.value !== "all" && !name.value.trim()) {
+          event.preventDefault();
+          name.setCustomValidity("제거할 동료의 이름을 입력하세요.");
+          name.reportValidity();
+          name.focus();
+        }
+      },
+    },
     children: [inlineField("어떻게", mode), inlineField("이름", name)],
   });
 }

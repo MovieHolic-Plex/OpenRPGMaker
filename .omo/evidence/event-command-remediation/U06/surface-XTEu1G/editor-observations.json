@@ -1,0 +1,679 @@
+{
+  "traces": [
+    {
+      "index": 0,
+      "value": "",
+      "rejected": {
+        "status": "success",
+        "before": [
+          {
+            "value": true
+          }
+        ],
+        "after": [
+          {
+            "value": true
+          }
+        ],
+        "event": {
+          "type": "focus",
+          "selector": "[data-testid=\"event-command-remove-follower-name\"]"
+        },
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      }
+    },
+    {
+      "index": 0,
+      "value": "   ",
+      "rejected": {
+        "status": "success",
+        "before": [
+          {
+            "value": true
+          }
+        ],
+        "after": [
+          {
+            "value": true
+          }
+        ],
+        "event": {
+          "type": "focus",
+          "selector": "[data-testid=\"event-command-remove-follower-name\"]"
+        },
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      }
+    },
+    {
+      "index": 0,
+      "confirmed": {
+        "status": "success",
+        "before": [
+          {
+            "value": {
+              "kind": "removeFollower",
+              "name": "Alice"
+            }
+          }
+        ],
+        "after": [
+          {
+            "value": {
+              "kind": "removeFollower",
+              "name": "Bob"
+            }
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "saved": {
+        "kind": "removeFollower",
+        "name": "Bob"
+      },
+      "geometry": [
+        {
+          "width": 1024,
+          "height": 768,
+          "overflow": false,
+          "actions": [
+            {
+              "x": 725,
+              "y": 539.4500122070312,
+              "right": 801,
+              "bottom": 571.4500122070312,
+              "width": 76,
+              "height": 32
+            },
+            {
+              "x": 809,
+              "y": 539.4500122070312,
+              "right": 885,
+              "bottom": 571.4500122070312,
+              "width": 76,
+              "height": 32
+            }
+          ],
+          "focused": "event-command-remove-follower-name"
+        },
+        {
+          "width": 1280,
+          "height": 800,
+          "overflow": false,
+          "actions": [
+            {
+              "x": 853,
+              "y": 555.4500122070312,
+              "right": 929,
+              "bottom": 587.4500122070312,
+              "width": 76,
+              "height": 32
+            },
+            {
+              "x": 937,
+              "y": 555.4500122070312,
+              "right": 1013,
+              "bottom": 587.4500122070312,
+              "width": 76,
+              "height": 32
+            }
+          ],
+          "focused": "event-command-remove-follower-name"
+        },
+        {
+          "width": 1440,
+          "height": 900,
+          "overflow": false,
+          "actions": [
+            {
+              "x": 933,
+              "y": 605.4500122070312,
+              "right": 1009,
+              "bottom": 637.4500122070312,
+              "width": 76,
+              "height": 32
+            },
+            {
+              "x": 1017,
+              "y": 605.4500122070312,
+              "right": 1093,
+              "bottom": 637.4500122070312,
+              "width": 76,
+              "height": 32
+            }
+          ],
+          "focused": "event-command-remove-follower-name"
+        }
+      ],
+      "canceled": true
+    },
+    {
+      "index": 1,
+      "confirmed": {
+        "status": "success",
+        "before": [
+          {
+            "value": {
+              "kind": "removeFollower",
+              "name": "Bob"
+            }
+          }
+        ],
+        "after": [
+          {
+            "value": {
+              "kind": "removeFollower",
+              "all": true
+            }
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "saved": {
+        "kind": "removeFollower",
+        "all": true
+      },
+      "geometry": [
+        {
+          "width": 1024,
+          "height": 768,
+          "overflow": false,
+          "actions": [
+            {
+              "x": 725,
+              "y": 539.4500122070312,
+              "right": 801,
+              "bottom": 571.4500122070312,
+              "width": 76,
+              "height": 32
+            },
+            {
+              "x": 809,
+              "y": 539.4500122070312,
+              "right": 885,
+              "bottom": 571.4500122070312,
+              "width": 76,
+              "height": 32
+            }
+          ],
+          "focused": "event-command-remove-follower-name"
+        },
+        {
+          "width": 1280,
+          "height": 800,
+          "overflow": false,
+          "actions": [
+            {
+              "x": 853,
+              "y": 555.4500122070312,
+              "right": 929,
+              "bottom": 587.4500122070312,
+              "width": 76,
+              "height": 32
+            },
+            {
+              "x": 937,
+              "y": 555.4500122070312,
+              "right": 1013,
+              "bottom": 587.4500122070312,
+              "width": 76,
+              "height": 32
+            }
+          ],
+          "focused": "event-command-remove-follower-name"
+        },
+        {
+          "width": 1440,
+          "height": 900,
+          "overflow": false,
+          "actions": [
+            {
+              "x": 933,
+              "y": 605.4500122070312,
+              "right": 1009,
+              "bottom": 637.4500122070312,
+              "width": 76,
+              "height": 32
+            },
+            {
+              "x": 1017,
+              "y": 605.4500122070312,
+              "right": 1093,
+              "bottom": 637.4500122070312,
+              "width": 76,
+              "height": 32
+            }
+          ],
+          "focused": "event-command-remove-follower-name"
+        }
+      ],
+      "canceled": true
+    },
+    {
+      "index": 2,
+      "confirmed": {
+        "status": "success",
+        "before": [
+          {
+            "value": {
+              "kind": "addFollower",
+              "actorId": "actor_hero",
+              "name": "Hero",
+              "graphic": {
+                "sprite": {
+                  "type": "uploaded",
+                  "id": "charsetB"
+                },
+                "direction": "left",
+                "pattern": 2,
+                "transparent": false
+              }
+            }
+          }
+        ],
+        "after": [
+          {
+            "value": {
+              "kind": "addFollower",
+              "actorId": "actor_hero",
+              "name": "Hero"
+            }
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "saved": {
+        "kind": "addFollower",
+        "actorId": "actor_hero",
+        "name": "Hero"
+      },
+      "geometry": [
+        {
+          "width": 1024,
+          "height": 768,
+          "overflow": false,
+          "actions": [
+            {
+              "x": 725,
+              "y": 539.4500122070312,
+              "right": 801,
+              "bottom": 571.4500122070312,
+              "width": 76,
+              "height": 32
+            },
+            {
+              "x": 809,
+              "y": 539.4500122070312,
+              "right": 885,
+              "bottom": 571.4500122070312,
+              "width": 76,
+              "height": 32
+            }
+          ],
+          "focused": "event-command-add-follower-name"
+        },
+        {
+          "width": 1280,
+          "height": 800,
+          "overflow": false,
+          "actions": [
+            {
+              "x": 853,
+              "y": 555.4500122070312,
+              "right": 929,
+              "bottom": 587.4500122070312,
+              "width": 76,
+              "height": 32
+            },
+            {
+              "x": 937,
+              "y": 555.4500122070312,
+              "right": 1013,
+              "bottom": 587.4500122070312,
+              "width": 76,
+              "height": 32
+            }
+          ],
+          "focused": "event-command-add-follower-name"
+        },
+        {
+          "width": 1440,
+          "height": 900,
+          "overflow": false,
+          "actions": [
+            {
+              "x": 933,
+              "y": 605.4500122070312,
+              "right": 1009,
+              "bottom": 637.4500122070312,
+              "width": 76,
+              "height": 32
+            },
+            {
+              "x": 1017,
+              "y": 605.4500122070312,
+              "right": 1093,
+              "bottom": 637.4500122070312,
+              "width": 76,
+              "height": 32
+            }
+          ],
+          "focused": "event-command-add-follower-name"
+        }
+      ],
+      "canceled": true
+    },
+    {
+      "index": 3,
+      "confirmed": {
+        "status": "success",
+        "before": [
+          {
+            "value": {
+              "kind": "addFollower",
+              "actorId": "actor_hero",
+              "name": "Hero",
+              "graphic": {
+                "sprite": {
+                  "type": "uploaded",
+                  "id": "charsetB"
+                },
+                "direction": "left",
+                "pattern": 2,
+                "transparent": false,
+                "scale": 2
+              }
+            }
+          }
+        ],
+        "after": [
+          {
+            "value": {
+              "kind": "addFollower",
+              "actorId": "actor_hero",
+              "name": "Hero renamed",
+              "graphic": {
+                "sprite": {
+                  "type": "uploaded",
+                  "id": "charsetB"
+                },
+                "direction": "up",
+                "pattern": 1,
+                "transparent": false,
+                "scale": 2
+              }
+            }
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "saved": {
+        "kind": "addFollower",
+        "actorId": "actor_hero",
+        "name": "Hero renamed",
+        "graphic": {
+          "sprite": {
+            "type": "uploaded",
+            "id": "charsetB"
+          },
+          "direction": "up",
+          "pattern": 1,
+          "transparent": false,
+          "scale": 2
+        }
+      },
+      "geometry": [
+        {
+          "width": 1024,
+          "height": 768,
+          "overflow": false,
+          "actions": [
+            {
+              "x": 725,
+              "y": 569.5,
+              "right": 801,
+              "bottom": 601.5,
+              "width": 76,
+              "height": 32
+            },
+            {
+              "x": 809,
+              "y": 569.5,
+              "right": 885,
+              "bottom": 601.5,
+              "width": 76,
+              "height": 32
+            }
+          ],
+          "focused": "event-command-add-follower-name"
+        },
+        {
+          "width": 1280,
+          "height": 800,
+          "overflow": false,
+          "actions": [
+            {
+              "x": 853,
+              "y": 585.5,
+              "right": 929,
+              "bottom": 617.5,
+              "width": 76,
+              "height": 32
+            },
+            {
+              "x": 937,
+              "y": 585.5,
+              "right": 1013,
+              "bottom": 617.5,
+              "width": 76,
+              "height": 32
+            }
+          ],
+          "focused": "event-command-add-follower-name"
+        },
+        {
+          "width": 1440,
+          "height": 900,
+          "overflow": false,
+          "actions": [
+            {
+              "x": 933,
+              "y": 635.5,
+              "right": 1009,
+              "bottom": 667.5,
+              "width": 76,
+              "height": 32
+            },
+            {
+              "x": 1017,
+              "y": 635.5,
+              "right": 1093,
+              "bottom": 667.5,
+              "width": 76,
+              "height": 32
+            }
+          ],
+          "focused": "event-command-add-follower-name"
+        }
+      ],
+      "canceled": true
+    },
+    {
+      "index": 4,
+      "confirmed": {
+        "status": "success",
+        "before": [
+          {
+            "value": {
+              "kind": "addFollower",
+              "name": "Mascot",
+              "graphic": {
+                "sprite": {
+                  "type": "uploaded",
+                  "id": "charsetB"
+                },
+                "direction": "left",
+                "pattern": 2,
+                "transparent": false
+              }
+            }
+          }
+        ],
+        "after": [
+          {
+            "value": {
+              "kind": "addFollower",
+              "name": "Mascot",
+              "graphic": {
+                "sprite": {
+                  "type": "uploaded",
+                  "id": "charsetB"
+                },
+                "direction": "left",
+                "pattern": 2,
+                "transparent": false
+              }
+            }
+          }
+        ],
+        "event": null,
+        "cleanup": {
+          "observer": true,
+          "timer": true,
+          "event": true,
+          "pagehide": true,
+          "abort": true
+        }
+      },
+      "saved": {
+        "kind": "addFollower",
+        "name": "Mascot",
+        "graphic": {
+          "sprite": {
+            "type": "uploaded",
+            "id": "charsetB"
+          },
+          "direction": "left",
+          "pattern": 2,
+          "transparent": false
+        }
+      },
+      "geometry": [
+        {
+          "width": 1024,
+          "height": 768,
+          "overflow": false,
+          "actions": [
+            {
+              "x": 725,
+              "y": 569.5,
+              "right": 801,
+              "bottom": 601.5,
+              "width": 76,
+              "height": 32
+            },
+            {
+              "x": 809,
+              "y": 569.5,
+              "right": 885,
+              "bottom": 601.5,
+              "width": 76,
+              "height": 32
+            }
+          ],
+          "focused": "event-command-add-follower-name"
+        },
+        {
+          "width": 1280,
+          "height": 800,
+          "overflow": false,
+          "actions": [
+            {
+              "x": 853,
+              "y": 585.5,
+              "right": 929,
+              "bottom": 617.5,
+              "width": 76,
+              "height": 32
+            },
+            {
+              "x": 937,
+              "y": 585.5,
+              "right": 1013,
+              "bottom": 617.5,
+              "width": 76,
+              "height": 32
+            }
+          ],
+          "focused": "event-command-add-follower-name"
+        },
+        {
+          "width": 1440,
+          "height": 900,
+          "overflow": false,
+          "actions": [
+            {
+              "x": 933,
+              "y": 635.5,
+              "right": 1009,
+              "bottom": 667.5,
+              "width": 76,
+              "height": 32
+            },
+            {
+              "x": 1017,
+              "y": 635.5,
+              "right": 1093,
+              "bottom": 667.5,
+              "width": 76,
+              "height": 32
+            }
+          ],
+          "focused": "event-command-add-follower-name"
+        }
+      ],
+      "canceled": true
+    }
+  ],
+  "exportImport": true,
+  "remoteWrites": []
+}

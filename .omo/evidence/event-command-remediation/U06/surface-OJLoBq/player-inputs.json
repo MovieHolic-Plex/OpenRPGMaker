@@ -1,0 +1,138 @@
+{
+  "editorFile": ".omo/evidence/event-command-remediation/U06/surface-OJLoBq/editor-exported.json",
+  "commands": [
+    {
+      "kind": "removeFollower",
+      "name": "Bob"
+    },
+    {
+      "kind": "removeFollower",
+      "all": true
+    },
+    {
+      "kind": "addFollower",
+      "actorId": "actor_hero",
+      "name": "Hero"
+    },
+    {
+      "kind": "addFollower",
+      "actorId": "actor_hero",
+      "name": "Hero renamed",
+      "graphic": {
+        "sprite": {
+          "type": "uploaded",
+          "id": "charsetB"
+        },
+        "direction": "up",
+        "pattern": 1,
+        "transparent": false,
+        "scale": 2
+      }
+    },
+    {
+      "kind": "addFollower",
+      "name": "Mascot",
+      "graphic": {
+        "sprite": {
+          "type": "uploaded",
+          "id": "charsetB"
+        },
+        "direction": "left",
+        "pattern": 2,
+        "transparent": false
+      }
+    }
+  ],
+  "program": [
+    {
+      "kind": "addFollower",
+      "actorId": "actor_hero",
+      "name": "Alice"
+    },
+    {
+      "kind": "addFollower",
+      "actorId": "actor_u06_bob",
+      "name": "Bob"
+    },
+    {
+      "kind": "giveMonster",
+      "speciesId": "species_wild_slime",
+      "level": 3,
+      "nickname": "M"
+    },
+    {
+      "kind": "text",
+      "body": "READY"
+    },
+    {
+      "kind": "removeFollower",
+      "name": "Bob"
+    },
+    {
+      "kind": "text",
+      "body": "NAMED"
+    },
+    {
+      "kind": "removeFollower",
+      "all": true
+    },
+    {
+      "kind": "text",
+      "body": "ALL"
+    },
+    {
+      "kind": "addFollower",
+      "actorId": "actor_hero",
+      "name": "Hero"
+    },
+    {
+      "kind": "text",
+      "body": "DEFAULT"
+    },
+    {
+      "kind": "removeFollower",
+      "all": true
+    },
+    {
+      "kind": "addFollower",
+      "name": "Mascot",
+      "graphic": {
+        "sprite": {
+          "type": "uploaded",
+          "id": "charsetB"
+        },
+        "direction": "left",
+        "pattern": 2,
+        "transparent": false
+      }
+    },
+    {
+      "kind": "text",
+      "body": "CUSTOM"
+    },
+    {
+      "kind": "removeFollower",
+      "all": true
+    },
+    {
+      "kind": "addFollower",
+      "actorId": "actor_hero",
+      "name": "Hero renamed",
+      "graphic": {
+        "sprite": {
+          "type": "uploaded",
+          "id": "charsetB"
+        },
+        "direction": "up",
+        "pattern": 1,
+        "transparent": false,
+        "scale": 2
+      }
+    },
+    {
+      "kind": "text",
+      "body": "RESTORED"
+    }
+  ],
+  "note": "Actor IDs execute default appearance. The graphic-only Mascot executes custom uploaded appearance. Exact entire monster follower is retained at every barrier; monsterParty/monsterInstances are separately covered by U06 integration tests."
+}

@@ -1,0 +1,34 @@
+{
+  "unit": "U06",
+  "sourceCommit": "dbd3b26f7340270ed83fe40533b8ee818b3578e1",
+  "integratedAfter": "e2b38f0003bb51fe9842faec82d8b40820917190",
+  "focused": {
+    "passed": 237,
+    "failed": 0,
+    "composition": ["U05", "U06", "prior integrated units"],
+    "report": "../checkpoints/u05-u06-integration.json"
+  },
+  "editor": {
+    "roundtrips": 5,
+    "actualExportImport": true,
+    "report": "surface-OJLoBq/editor-observations.json"
+  },
+  "player": {
+    "beats": 7,
+    "errors": [],
+    "failures": [],
+    "manifest": "surface-OJLoBq/player/manifest.json",
+    "negative": "surface-OJLoBq/player-negative.json"
+  },
+  "staticChecks": {
+    "productionLspErrors": 0,
+    "typecheckAppExit": 0,
+    "buildAppExit": 0
+  },
+  "cleanup": {
+    "editor": "surface-OJLoBq/editor-cleanup.json",
+    "player": "surface-OJLoBq/player-cleanup.json",
+    "portReuse": "Port 36599 was later used by a bun process in worktree-silver-forest-f81f. That unrelated process was not stopped."
+  },
+  "visual": "Three viewport geometry checks passed and screenshots are retained locally. The available model omits image pixels; no pixel-level visual verdict is claimed."
+}

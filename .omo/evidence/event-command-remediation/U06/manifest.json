@@ -1,0 +1,105 @@
+{
+  "unit": "U06",
+  "findings": [
+    "G5-F3",
+    "G5-F5"
+  ],
+  "sourceBase": "5c117f0ef993a6cca4bf916dbafe7b361c929be7",
+  "branch": "agent/event-remediation-u06",
+  "productionSymbols": [
+    "addFollowerBody",
+    "removeFollowerBody"
+  ],
+  "integrationOrder": [
+    "U05",
+    "U06"
+  ],
+  "red": {
+    "original": {
+      "total": 10,
+      "failed": 3,
+      "passed": 7
+    },
+    "refreshed": {
+      "total": 10,
+      "failed": 3,
+      "passed": 7
+    },
+    "preservation": {
+      "total": 11,
+      "failed": 4,
+      "passed": 7
+    }
+  },
+  "green": {
+    "total": 52,
+    "failed": 0,
+    "passed": 52,
+    "files": 5,
+    "u06": 11
+  },
+  "editor": {
+    "rows": 5,
+    "invalidNames": [
+      "",
+      "   "
+    ],
+    "actualExportImport": true,
+    "cancel": true,
+    "browser": "Firefox"
+  },
+  "player": {
+    "surface": "player.html",
+    "beats": 7,
+    "errors": 0,
+    "negative": true
+  },
+  "viewports": [
+    "1024x768",
+    "1280x800",
+    "1440x900"
+  ],
+  "visualLimitation": "Reader omitted images; no pixel verdict",
+  "evidence": "surface-XTEu1G",
+  "failedSurfaceAttempt": "surface-O4pKpZ",
+  "preserved": [
+    "all seven original positive cases",
+    "actor/name",
+    "inactive graphic direction/frame/id",
+    "graphic.scale",
+    "Cancel and reopened values",
+    "actor-default runtime precedence",
+    "monster follower identity",
+    "monsterParty and monsterInstances (integration tests)"
+  ],
+  "untouched": [
+    "imports",
+    "learnSkillBody",
+    "commandEditDialog",
+    "H0 harness",
+    "runtime production",
+    "shared wiki/plan/snapshots"
+  ],
+  "sources": [
+    {
+      "path": "src/editor/panels/eventEditor/commandBodyAdvanced.ts",
+      "sha256": "b3529280f4f9f12b895c2d2b762fc32b5ef04894e4509107e730dea4bf83fa2a"
+    },
+    {
+      "path": "test/eventCommandRemediation/U06.test.ts",
+      "sha256": "5d7adb1711b4ff33013f4aa1e65b7e293f213adeeea76c43e44b66d400b14509"
+    },
+    {
+      "path": "test/eventCommandRemediation/U06.fixture.ts",
+      "sha256": "912400b34586ef4e679fc7e8ab9d114d8cf7fd1cc14ffd39ec57b975779d60ee"
+    },
+    {
+      "path": "test/e2e/event-command-remediation-U06.spec.ts",
+      "sha256": "ca66dae01391a5f0360cbe8e06a6fa3d9315a807a583fb3540e283583e5b4ea4"
+    },
+    {
+      "path": "scripts/qa/runtime/event-command-remediation-u06.scenario.mjs",
+      "sha256": "592b6bcb4685b80e17d03995e56ff0ada48494e7185def6408a24dc22cd2cbfa"
+    }
+  ]
+}

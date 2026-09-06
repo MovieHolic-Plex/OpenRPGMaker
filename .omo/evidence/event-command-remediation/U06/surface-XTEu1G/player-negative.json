@@ -1,0 +1,22 @@
+{
+  "status": "timeout",
+  "before": [
+    {
+      "value": "Hero renamed"
+    }
+  ],
+  "after": [
+    {
+      "value": "Hero renamed"
+    }
+  ],
+  "event": null,
+  "cleanup": {
+    "observer": true,
+    "timer": true,
+    "event": true,
+    "pagehide": true,
+    "abort": true
+  },
+  "error": "eventCommand observation timed out"
+}

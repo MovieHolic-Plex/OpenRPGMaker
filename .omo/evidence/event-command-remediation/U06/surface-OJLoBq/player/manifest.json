@@ -1,0 +1,1039 @@
+{
+  "scenarioId": "event-command-remediation-u06",
+  "projectPath": ".omo/evidence/event-command-remediation/U06/surface-OJLoBq/tmp-player-3ocxQ3/runtime-project.json",
+  "seed": 1,
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "errors": [],
+  "beats": [
+    {
+      "index": 0,
+      "id": "boot",
+      "shot": null,
+      "failures": [],
+      "eventCommands": [
+        {
+          "op": {
+            "kind": "eventCommand",
+            "trigger": {
+              "kind": "key",
+              "key": "Enter"
+            },
+            "observe": [
+              {
+                "source": "state",
+                "path": [
+                  "player"
+                ],
+                "equals": {
+                  "x": 2,
+                  "y": 3
+                }
+              },
+              {
+                "source": "state",
+                "path": [
+                  "followers"
+                ],
+                "equals": []
+              }
+            ],
+            "timeoutMs": 120000
+          },
+          "status": "success",
+          "before": [
+            {
+              "missing": true
+            },
+            {
+              "missing": true
+            }
+          ],
+          "after": [
+            {
+              "value": {
+                "x": 2,
+                "y": 3
+              }
+            },
+            {
+              "value": []
+            }
+          ],
+          "event": null,
+          "cleanup": {
+            "observer": true,
+            "timer": true,
+            "event": true,
+            "pagehide": true,
+            "abort": true
+          }
+        }
+      ],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 2,
+        "y": 3,
+        "gold": 0,
+        "battleResult": null
+      }
+    },
+    {
+      "index": 1,
+      "id": "ready",
+      "shot": "02-ready.png",
+      "failures": [],
+      "eventCommands": [
+        {
+          "op": {
+            "kind": "eventCommand",
+            "trigger": {
+              "kind": "key",
+              "key": "z"
+            },
+            "observe": [
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"dialogue-box\"].page-ready",
+                "read": "present",
+                "equals": true
+              },
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"dialogue-box\"] .body",
+                "read": "text",
+                "equals": "READY"
+              },
+              {
+                "source": "state",
+                "path": [
+                  "followers"
+                ],
+                "equals": [
+                  {
+                    "id": "actor:actor_hero",
+                    "eventId": "actor_hero",
+                    "name": "Alice",
+                    "kind": "actor",
+                    "graphic": {
+                      "sprite": {
+                        "type": "bundled",
+                        "id": "tex_easyrpg_charset_actor1"
+                      },
+                      "direction": "down",
+                      "pattern": 25
+                    }
+                  },
+                  {
+                    "id": "actor:actor_u06_bob",
+                    "eventId": "actor_u06_bob",
+                    "name": "Bob",
+                    "kind": "actor",
+                    "graphic": {
+                      "sprite": {
+                        "type": "bundled",
+                        "id": "tex_easyrpg_charset_actor1"
+                      },
+                      "direction": "down",
+                      "pattern": 25
+                    }
+                  },
+                  {
+                    "id": "monster:monster_1",
+                    "name": "M",
+                    "kind": "monster",
+                    "monsterInstanceId": "monster_1",
+                    "graphic": {
+                      "sprite": {
+                        "type": "bundled",
+                        "id": "tex_easyrpg_charset_monster1"
+                      },
+                      "direction": "down",
+                      "pattern": 25
+                    }
+                  }
+                ]
+              }
+            ],
+            "timeoutMs": 15000
+          },
+          "status": "success",
+          "before": [
+            {
+              "value": false
+            },
+            {
+              "missing": true
+            },
+            {
+              "value": []
+            }
+          ],
+          "after": [
+            {
+              "value": true
+            },
+            {
+              "value": "READY"
+            },
+            {
+              "value": [
+                {
+                  "id": "actor:actor_hero",
+                  "eventId": "actor_hero",
+                  "graphic": {
+                    "sprite": {
+                      "type": "bundled",
+                      "id": "tex_easyrpg_charset_actor1"
+                    },
+                    "direction": "down",
+                    "pattern": 25
+                  },
+                  "name": "Alice",
+                  "kind": "actor"
+                },
+                {
+                  "id": "actor:actor_u06_bob",
+                  "eventId": "actor_u06_bob",
+                  "graphic": {
+                    "sprite": {
+                      "type": "bundled",
+                      "id": "tex_easyrpg_charset_actor1"
+                    },
+                    "direction": "down",
+                    "pattern": 25
+                  },
+                  "name": "Bob",
+                  "kind": "actor"
+                },
+                {
+                  "id": "monster:monster_1",
+                  "name": "M",
+                  "graphic": {
+                    "sprite": {
+                      "type": "bundled",
+                      "id": "tex_easyrpg_charset_monster1"
+                    },
+                    "direction": "down",
+                    "pattern": 25
+                  },
+                  "kind": "monster",
+                  "monsterInstanceId": "monster_1"
+                }
+              ]
+            }
+          ],
+          "event": null,
+          "cleanup": {
+            "observer": true,
+            "timer": true,
+            "event": true,
+            "pagehide": true,
+            "abort": true
+          }
+        }
+      ],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 2,
+        "y": 3,
+        "gold": 0,
+        "battleResult": null
+      }
+    },
+    {
+      "index": 2,
+      "id": "named-removal",
+      "shot": "03-named-removal.png",
+      "failures": [],
+      "eventCommands": [
+        {
+          "op": {
+            "kind": "eventCommand",
+            "trigger": {
+              "kind": "key",
+              "key": "z"
+            },
+            "observe": [
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"dialogue-box\"].page-ready",
+                "read": "present",
+                "equals": true
+              },
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"dialogue-box\"] .body",
+                "read": "text",
+                "equals": "NAMED"
+              },
+              {
+                "source": "state",
+                "path": [
+                  "followers"
+                ],
+                "equals": [
+                  {
+                    "id": "actor:actor_hero",
+                    "eventId": "actor_hero",
+                    "name": "Alice",
+                    "kind": "actor",
+                    "graphic": {
+                      "sprite": {
+                        "type": "bundled",
+                        "id": "tex_easyrpg_charset_actor1"
+                      },
+                      "direction": "down",
+                      "pattern": 25
+                    }
+                  },
+                  {
+                    "id": "monster:monster_1",
+                    "name": "M",
+                    "kind": "monster",
+                    "monsterInstanceId": "monster_1",
+                    "graphic": {
+                      "sprite": {
+                        "type": "bundled",
+                        "id": "tex_easyrpg_charset_monster1"
+                      },
+                      "direction": "down",
+                      "pattern": 25
+                    }
+                  }
+                ]
+              }
+            ],
+            "timeoutMs": 15000
+          },
+          "status": "success",
+          "before": [
+            {
+              "value": true
+            },
+            {
+              "value": "READY"
+            },
+            {
+              "value": [
+                {
+                  "id": "actor:actor_hero",
+                  "eventId": "actor_hero",
+                  "graphic": {
+                    "sprite": {
+                      "type": "bundled",
+                      "id": "tex_easyrpg_charset_actor1"
+                    },
+                    "direction": "down",
+                    "pattern": 25
+                  },
+                  "name": "Alice",
+                  "kind": "actor"
+                },
+                {
+                  "id": "actor:actor_u06_bob",
+                  "eventId": "actor_u06_bob",
+                  "graphic": {
+                    "sprite": {
+                      "type": "bundled",
+                      "id": "tex_easyrpg_charset_actor1"
+                    },
+                    "direction": "down",
+                    "pattern": 25
+                  },
+                  "name": "Bob",
+                  "kind": "actor"
+                },
+                {
+                  "id": "monster:monster_1",
+                  "name": "M",
+                  "graphic": {
+                    "sprite": {
+                      "type": "bundled",
+                      "id": "tex_easyrpg_charset_monster1"
+                    },
+                    "direction": "down",
+                    "pattern": 25
+                  },
+                  "kind": "monster",
+                  "monsterInstanceId": "monster_1"
+                }
+              ]
+            }
+          ],
+          "after": [
+            {
+              "value": true
+            },
+            {
+              "value": "NAMED"
+            },
+            {
+              "value": [
+                {
+                  "id": "actor:actor_hero",
+                  "eventId": "actor_hero",
+                  "graphic": {
+                    "sprite": {
+                      "type": "bundled",
+                      "id": "tex_easyrpg_charset_actor1"
+                    },
+                    "direction": "down",
+                    "pattern": 25
+                  },
+                  "name": "Alice",
+                  "kind": "actor"
+                },
+                {
+                  "id": "monster:monster_1",
+                  "name": "M",
+                  "graphic": {
+                    "sprite": {
+                      "type": "bundled",
+                      "id": "tex_easyrpg_charset_monster1"
+                    },
+                    "direction": "down",
+                    "pattern": 25
+                  },
+                  "kind": "monster",
+                  "monsterInstanceId": "monster_1"
+                }
+              ]
+            }
+          ],
+          "event": null,
+          "cleanup": {
+            "observer": true,
+            "timer": true,
+            "event": true,
+            "pagehide": true,
+            "abort": true
+          }
+        }
+      ],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 2,
+        "y": 3,
+        "gold": 0,
+        "battleResult": null
+      }
+    },
+    {
+      "index": 3,
+      "id": "explicit-all",
+      "shot": "04-explicit-all.png",
+      "failures": [],
+      "eventCommands": [
+        {
+          "op": {
+            "kind": "eventCommand",
+            "trigger": {
+              "kind": "key",
+              "key": "z"
+            },
+            "observe": [
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"dialogue-box\"].page-ready",
+                "read": "present",
+                "equals": true
+              },
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"dialogue-box\"] .body",
+                "read": "text",
+                "equals": "ALL"
+              },
+              {
+                "source": "state",
+                "path": [
+                  "followers"
+                ],
+                "equals": [
+                  {
+                    "id": "monster:monster_1",
+                    "name": "M",
+                    "kind": "monster",
+                    "monsterInstanceId": "monster_1",
+                    "graphic": {
+                      "sprite": {
+                        "type": "bundled",
+                        "id": "tex_easyrpg_charset_monster1"
+                      },
+                      "direction": "down",
+                      "pattern": 25
+                    }
+                  }
+                ]
+              }
+            ],
+            "timeoutMs": 15000
+          },
+          "status": "success",
+          "before": [
+            {
+              "value": true
+            },
+            {
+              "value": "NAMED"
+            },
+            {
+              "value": [
+                {
+                  "id": "actor:actor_hero",
+                  "eventId": "actor_hero",
+                  "graphic": {
+                    "sprite": {
+                      "type": "bundled",
+                      "id": "tex_easyrpg_charset_actor1"
+                    },
+                    "direction": "down",
+                    "pattern": 25
+                  },
+                  "name": "Alice",
+                  "kind": "actor"
+                },
+                {
+                  "id": "monster:monster_1",
+                  "name": "M",
+                  "graphic": {
+                    "sprite": {
+                      "type": "bundled",
+                      "id": "tex_easyrpg_charset_monster1"
+                    },
+                    "direction": "down",
+                    "pattern": 25
+                  },
+                  "kind": "monster",
+                  "monsterInstanceId": "monster_1"
+                }
+              ]
+            }
+          ],
+          "after": [
+            {
+              "value": true
+            },
+            {
+              "value": "ALL"
+            },
+            {
+              "value": [
+                {
+                  "id": "monster:monster_1",
+                  "name": "M",
+                  "graphic": {
+                    "sprite": {
+                      "type": "bundled",
+                      "id": "tex_easyrpg_charset_monster1"
+                    },
+                    "direction": "down",
+                    "pattern": 25
+                  },
+                  "kind": "monster",
+                  "monsterInstanceId": "monster_1"
+                }
+              ]
+            }
+          ],
+          "event": null,
+          "cleanup": {
+            "observer": true,
+            "timer": true,
+            "event": true,
+            "pagehide": true,
+            "abort": true
+          }
+        }
+      ],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 2,
+        "y": 3,
+        "gold": 0,
+        "battleResult": null
+      }
+    },
+    {
+      "index": 4,
+      "id": "graphic-off-actor-default",
+      "shot": "05-graphic-off-actor-default.png",
+      "failures": [],
+      "eventCommands": [
+        {
+          "op": {
+            "kind": "eventCommand",
+            "trigger": {
+              "kind": "key",
+              "key": "z"
+            },
+            "observe": [
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"dialogue-box\"].page-ready",
+                "read": "present",
+                "equals": true
+              },
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"dialogue-box\"] .body",
+                "read": "text",
+                "equals": "DEFAULT"
+              },
+              {
+                "source": "state",
+                "path": [
+                  "followers"
+                ],
+                "equals": [
+                  {
+                    "id": "actor:actor_hero",
+                    "eventId": "actor_hero",
+                    "name": "Hero",
+                    "kind": "actor",
+                    "graphic": {
+                      "sprite": {
+                        "type": "bundled",
+                        "id": "tex_easyrpg_charset_actor1"
+                      },
+                      "direction": "down",
+                      "pattern": 25
+                    }
+                  },
+                  {
+                    "id": "monster:monster_1",
+                    "name": "M",
+                    "kind": "monster",
+                    "monsterInstanceId": "monster_1",
+                    "graphic": {
+                      "sprite": {
+                        "type": "bundled",
+                        "id": "tex_easyrpg_charset_monster1"
+                      },
+                      "direction": "down",
+                      "pattern": 25
+                    }
+                  }
+                ]
+              }
+            ],
+            "timeoutMs": 15000
+          },
+          "status": "success",
+          "before": [
+            {
+              "value": true
+            },
+            {
+              "value": "ALL"
+            },
+            {
+              "value": [
+                {
+                  "id": "monster:monster_1",
+                  "name": "M",
+                  "graphic": {
+                    "sprite": {
+                      "type": "bundled",
+                      "id": "tex_easyrpg_charset_monster1"
+                    },
+                    "direction": "down",
+                    "pattern": 25
+                  },
+                  "kind": "monster",
+                  "monsterInstanceId": "monster_1"
+                }
+              ]
+            }
+          ],
+          "after": [
+            {
+              "value": true
+            },
+            {
+              "value": "DEFAULT"
+            },
+            {
+              "value": [
+                {
+                  "id": "actor:actor_hero",
+                  "eventId": "actor_hero",
+                  "graphic": {
+                    "sprite": {
+                      "type": "bundled",
+                      "id": "tex_easyrpg_charset_actor1"
+                    },
+                    "direction": "down",
+                    "pattern": 25
+                  },
+                  "name": "Hero",
+                  "kind": "actor"
+                },
+                {
+                  "id": "monster:monster_1",
+                  "name": "M",
+                  "graphic": {
+                    "sprite": {
+                      "type": "bundled",
+                      "id": "tex_easyrpg_charset_monster1"
+                    },
+                    "direction": "down",
+                    "pattern": 25
+                  },
+                  "kind": "monster",
+                  "monsterInstanceId": "monster_1"
+                }
+              ]
+            }
+          ],
+          "event": null,
+          "cleanup": {
+            "observer": true,
+            "timer": true,
+            "event": true,
+            "pagehide": true,
+            "abort": true
+          }
+        }
+      ],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 2,
+        "y": 3,
+        "gold": 0,
+        "battleResult": null
+      }
+    },
+    {
+      "index": 5,
+      "id": "graphic-only",
+      "shot": "06-graphic-only.png",
+      "failures": [],
+      "eventCommands": [
+        {
+          "op": {
+            "kind": "eventCommand",
+            "trigger": {
+              "kind": "key",
+              "key": "z"
+            },
+            "observe": [
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"dialogue-box\"].page-ready",
+                "read": "present",
+                "equals": true
+              },
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"dialogue-box\"] .body",
+                "read": "text",
+                "equals": "CUSTOM"
+              },
+              {
+                "source": "state",
+                "path": [
+                  "followers"
+                ],
+                "equals": [
+                  {
+                    "id": "mascot:Mascot",
+                    "name": "Mascot",
+                    "kind": "actor",
+                    "graphic": {
+                      "sprite": {
+                        "type": "uploaded",
+                        "id": "charsetB"
+                      },
+                      "direction": "left",
+                      "pattern": 2,
+                      "transparent": false
+                    }
+                  },
+                  {
+                    "id": "monster:monster_1",
+                    "name": "M",
+                    "kind": "monster",
+                    "monsterInstanceId": "monster_1",
+                    "graphic": {
+                      "sprite": {
+                        "type": "bundled",
+                        "id": "tex_easyrpg_charset_monster1"
+                      },
+                      "direction": "down",
+                      "pattern": 25
+                    }
+                  }
+                ]
+              }
+            ],
+            "timeoutMs": 15000
+          },
+          "status": "success",
+          "before": [
+            {
+              "value": true
+            },
+            {
+              "value": "DEFAULT"
+            },
+            {
+              "value": [
+                {
+                  "id": "actor:actor_hero",
+                  "eventId": "actor_hero",
+                  "graphic": {
+                    "sprite": {
+                      "type": "bundled",
+                      "id": "tex_easyrpg_charset_actor1"
+                    },
+                    "direction": "down",
+                    "pattern": 25
+                  },
+                  "name": "Hero",
+                  "kind": "actor"
+                },
+                {
+                  "id": "monster:monster_1",
+                  "name": "M",
+                  "graphic": {
+                    "sprite": {
+                      "type": "bundled",
+                      "id": "tex_easyrpg_charset_monster1"
+                    },
+                    "direction": "down",
+                    "pattern": 25
+                  },
+                  "kind": "monster",
+                  "monsterInstanceId": "monster_1"
+                }
+              ]
+            }
+          ],
+          "after": [
+            {
+              "value": true
+            },
+            {
+              "value": "CUSTOM"
+            },
+            {
+              "value": [
+                {
+                  "id": "mascot:Mascot",
+                  "graphic": {
+                    "sprite": {
+                      "type": "uploaded",
+                      "id": "charsetB"
+                    },
+                    "direction": "left",
+                    "pattern": 2,
+                    "transparent": false
+                  },
+                  "name": "Mascot",
+                  "kind": "actor"
+                },
+                {
+                  "id": "monster:monster_1",
+                  "name": "M",
+                  "graphic": {
+                    "sprite": {
+                      "type": "bundled",
+                      "id": "tex_easyrpg_charset_monster1"
+                    },
+                    "direction": "down",
+                    "pattern": 25
+                  },
+                  "kind": "monster",
+                  "monsterInstanceId": "monster_1"
+                }
+              ]
+            }
+          ],
+          "event": null,
+          "cleanup": {
+            "observer": true,
+            "timer": true,
+            "event": true,
+            "pagehide": true,
+            "abort": true
+          }
+        }
+      ],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 2,
+        "y": 3,
+        "gold": 0,
+        "battleResult": null
+      }
+    },
+    {
+      "index": 6,
+      "id": "restored-draft-actor-default",
+      "shot": "07-restored-draft-actor-default.png",
+      "failures": [],
+      "eventCommands": [
+        {
+          "op": {
+            "kind": "eventCommand",
+            "trigger": {
+              "kind": "key",
+              "key": "z"
+            },
+            "observe": [
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"dialogue-box\"].page-ready",
+                "read": "present",
+                "equals": true
+              },
+              {
+                "source": "dom",
+                "selector": "[data-testid=\"dialogue-box\"] .body",
+                "read": "text",
+                "equals": "RESTORED"
+              },
+              {
+                "source": "state",
+                "path": [
+                  "followers"
+                ],
+                "equals": [
+                  {
+                    "id": "actor:actor_hero",
+                    "eventId": "actor_hero",
+                    "name": "Hero renamed",
+                    "kind": "actor",
+                    "graphic": {
+                      "sprite": {
+                        "type": "bundled",
+                        "id": "tex_easyrpg_charset_actor1"
+                      },
+                      "direction": "down",
+                      "pattern": 25
+                    }
+                  },
+                  {
+                    "id": "monster:monster_1",
+                    "name": "M",
+                    "kind": "monster",
+                    "monsterInstanceId": "monster_1",
+                    "graphic": {
+                      "sprite": {
+                        "type": "bundled",
+                        "id": "tex_easyrpg_charset_monster1"
+                      },
+                      "direction": "down",
+                      "pattern": 25
+                    }
+                  }
+                ]
+              }
+            ],
+            "timeoutMs": 15000
+          },
+          "status": "success",
+          "before": [
+            {
+              "value": true
+            },
+            {
+              "value": "CUSTOM"
+            },
+            {
+              "value": [
+                {
+                  "id": "mascot:Mascot",
+                  "graphic": {
+                    "sprite": {
+                      "type": "uploaded",
+                      "id": "charsetB"
+                    },
+                    "direction": "left",
+                    "pattern": 2,
+                    "transparent": false
+                  },
+                  "name": "Mascot",
+                  "kind": "actor"
+                },
+                {
+                  "id": "monster:monster_1",
+                  "name": "M",
+                  "graphic": {
+                    "sprite": {
+                      "type": "bundled",
+                      "id": "tex_easyrpg_charset_monster1"
+                    },
+                    "direction": "down",
+                    "pattern": 25
+                  },
+                  "kind": "monster",
+                  "monsterInstanceId": "monster_1"
+                }
+              ]
+            }
+          ],
+          "after": [
+            {
+              "value": true
+            },
+            {
+              "value": "RESTORED"
+            },
+            {
+              "value": [
+                {
+                  "id": "actor:actor_hero",
+                  "eventId": "actor_hero",
+                  "graphic": {
+                    "sprite": {
+                      "type": "bundled",
+                      "id": "tex_easyrpg_charset_actor1"
+                    },
+                    "direction": "down",
+                    "pattern": 25
+                  },
+                  "name": "Hero renamed",
+                  "kind": "actor"
+                },
+                {
+                  "id": "monster:monster_1",
+                  "name": "M",
+                  "graphic": {
+                    "sprite": {
+                      "type": "bundled",
+                      "id": "tex_easyrpg_charset_monster1"
+                    },
+                    "direction": "down",
+                    "pattern": 25
+                  },
+                  "kind": "monster",
+                  "monsterInstanceId": "monster_1"
+                }
+              ]
+            }
+          ],
+          "event": null,
+          "cleanup": {
+            "observer": true,
+            "timer": true,
+            "event": true,
+            "pagehide": true,
+            "abort": true
+          }
+        }
+      ],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 2,
+        "y": 3,
+        "gold": 0,
+        "battleResult": null
+      }
+    }
+  ]
+}

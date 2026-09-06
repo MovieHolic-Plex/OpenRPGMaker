@@ -61,3 +61,10 @@ Hostile-review fixes for event command forms: fork/loop rerender, setSwitch valu
 - Change Parameters and Damage Processing honor explicit numeric source even when an inactive variable ID remains. State editing preserves missing IDs and the existing set/toggle operations; unresolved or empty-catalog selection cannot Confirm.
 - Actor identity forms, EXP and Learn Skill distinguish explicit party mode from an incomplete individual selection. Invalid individual edits remain local rather than silently saving an all-party target. Existing legacy empty-party execution remains supported.
 - Coverage: `test/eventCommandRemediation/U05.test.ts`, adjacent actor/EXP/staged-form tests, `test/e2e/event-command-remediation-U05.spec.ts`, and `scripts/qa/runtime/event-command-remediation-u05.scenario.mjs`. Map/common/troop save paths, real file import, live record creation and next-actor battle-menu checks are separate acceptance paths.
+
+## Follower removal and graphic intent (2026-09-06, U06)
+
+- `removeFollowerBody` emits `all: true` only for explicit all mode. Empty or whitespace-only individual names remain incomplete; the existing form-validation event blocks Confirm and focuses the name. Typing or changing mode clears native validity feedback. Explicit all retains the existing actor-only removal behavior and preserves monster state.
+- The live custom-graphic checkbox is the enable authority. Off removes the saved `graphic`; mounted inactive controls retain edits through off/name-edit/on. Graphic edits preserve unrelated fields such as `scale`, while clearing the sprite ID removes that reference. Cancel does not persist the draft.
+- Runtime appearance is unchanged: an actor ID resolves its actor-default graphic, while a graphic-only follower uses its custom graphic. This change does not implement actor custom overrides.
+- Coverage: `test/eventCommandRemediation/U06.test.ts`, `test/e2e/event-command-remediation-U06.spec.ts`, and `scripts/qa/runtime/event-command-remediation-u06.scenario.mjs`. The editor checks actual `.oprn` export/import, and the dedicated player checks exact follower identities with a wrong-target discriminator.
