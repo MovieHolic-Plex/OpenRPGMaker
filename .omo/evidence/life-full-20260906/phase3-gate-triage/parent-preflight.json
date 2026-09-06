@@ -1,0 +1,46 @@
+{
+  "reviewed": "run.mjs,manifest.json,selection.json,reporter-contract.json,README.md,base-worktree-receipt.json,historical-observations.json",
+  "files": 113,
+  "cases": 1251,
+  "originalFailures": 219,
+  "selectionMatchesFullFailedFileSet": true,
+  "sandboxProbe": {
+    "command": [
+      "bwrap",
+      "--die-with-parent",
+      "--unshare-user",
+      "--unshare-pid",
+      "--unshare-net",
+      "--unshare-ipc",
+      "--ro-bind",
+      "/",
+      "/",
+      "--proc",
+      "/proc",
+      "--dev",
+      "/dev",
+      "--",
+      "/usr/bin/true"
+    ],
+    "stdout": "",
+    "stderr": "",
+    "exit": 0
+  },
+  "syntax": {
+    "stdout": "",
+    "stderr": "",
+    "exit": 0
+  },
+  "baseIdentity": {
+    "stdout": "e33c93afbd1b0d8824f273c62d234d66c8802323\nbb854c6938045c387d94ddd7f69aec02acb50868\n",
+    "stderr": "",
+    "exit": 0
+  },
+  "baseStatus": {
+    "stdout": "",
+    "stderr": "",
+    "exit": 0
+  },
+  "limits": "This probe verifies namespace availability, not all mounts. Pair uses one worker, empty private caches and blocked network; environment-sensitive outcomes require explicit classification.",
+  "reviewedAt": "2026-09-06T17:02:17.060Z"
+}

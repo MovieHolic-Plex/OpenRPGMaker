@@ -4,6 +4,7 @@ export const GENRE_PACK_IDS = [
   "horror-chase",
   "story-cutscene",
   "farm-life",
+  "action-rpg",
 ] as const;
 
 export type GenrePackId = (typeof GENRE_PACK_IDS)[number];

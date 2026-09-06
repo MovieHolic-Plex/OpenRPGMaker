@@ -1,0 +1,25 @@
+{
+  "base": "b9dec50fb6159e8be220b42eb59e526808b92b97",
+  "tests": {
+    "files": 32,
+    "total": 359,
+    "passed": 359,
+    "failed": 0
+  },
+  "build": "exit 0",
+  "ai": {
+    "model": "gemini-3.7-flash",
+    "tools": [
+      {
+        "name": "run_action_combat_test",
+        "ok": true,
+        "summary": "실제 액션 전투 검증 통과"
+      }
+    ],
+    "pageErrors": [],
+    "projectId": "oprn-6d2d581f84"
+  },
+  "runtime": "50 actual observations; CLI asset ERR_NETWORK_CHANGED warnings retained; no aesthetic approval",
+  "css": "same 267 -> 268 baseline failure",
+  "surface": "same six failures; 109 passed"
+}

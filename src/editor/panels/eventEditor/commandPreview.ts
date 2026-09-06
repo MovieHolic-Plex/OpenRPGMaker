@@ -1,4 +1,5 @@
 import { el } from "@/util/dom";
+import { renderEditorIcon } from "./editorIcons";
 import { store } from "@/project/store";
 import { shopGreetingText } from "@/project/shopMessages";
 import { resolveTerms } from "@/project/terms";
@@ -546,7 +547,10 @@ function choicesMock(cmd: Extract<Command, { kind: "choices" }>): HTMLElement {
   const list = el("div", { class: "ecp-choice-list" });
   const options = cmd.options.filter((option) => option.text.trim().length > 0);
   options.forEach((option, index) =>
-    list.append(el("div", { class: "ecp-choice", text: `▶ ${option.text.trim() || `선택지 ${index + 1}`}` }))
+    list.append(el("div", { class: "ecp-choice", children: [
+      renderEditorIcon("arrowRight"),
+      el("span", { class: "ecp-choice-label", text: option.text || `선택지 ${index + 1}` }),
+    ] }))
   );
   if (options.length === 0) list.append(el("div", { class: "ecp-choice empty", text: "선택지 없음" }));
   win.append(list);

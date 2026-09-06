@@ -1,0 +1,49 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/sidebarFocusR1.test.ts test/sidebarFocusModes.test.ts test/mapList.test.ts test/commandRegistry.test.ts --maxWorkers=2 --minWorkers=1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-sidebar-focus-modes
+
+ ✓ test/sidebarFocusR1.test.ts (11 tests) 34063ms
+   ✓ sidebar R1 real renderer ownership > removes the mounted open surface when the renderer subscribed before its lifecycle  8197ms
+   ✓ sidebar R1 real renderer ownership > routes one Escape to the actual map context menu and then restores the map row  1793ms
+   ✓ sidebar R1 real renderer ownership > keeps the map explorer attached while its body-mounted Rename action handles a pointer  3331ms
+   ✓ sidebar R1 real renderer ownership > reveals the real Expert dock through its renderer rather than only changing collapse state  2963ms
+   ✓ sidebar R1 real renderer ownership > does not commit a cancelled Rename when removing its focused input emits blur  3283ms
+   ✓ sidebar R1 real renderer ownership > activates the real dock registry for inspector with pinned=false  2312ms
+   ✓ sidebar R1 real renderer ownership > activates the real dock registry for ruleAudit with pinned=false  2672ms
+   ✓ sidebar R1 real renderer ownership > activates the real dock registry for history with pinned=false  2831ms
+   ✓ sidebar R1 real renderer ownership > activates the real dock registry for inspector with pinned=true  2106ms
+   ✓ sidebar R1 real renderer ownership > activates the real dock registry for ruleAudit with pinned=true  2659ms
+   ✓ sidebar R1 real renderer ownership > activates the real dock registry for history with pinned=true  1885ms
+ ✓ test/sidebarFocusModes.test.ts (12 tests) 39059ms
+   ✓ focused standard and expert sidebar > opens a real map tree from the current map without reserving a standard dock  12079ms
+   ✓ focused standard and expert sidebar > changes the actual brush through one select and hides it for inapplicable tools  7016ms
+   ✓ focused standard and expert sidebar > uses the event layer as the single event entry with no tile controls on its surface  1620ms
+   ✓ focused standard and expert sidebar > returns focus from map search Escape without changing the selected map  993ms
+   ✓ focused standard and expert sidebar > selects rect from Standard Tools and keeps the shape when closing  2279ms
+   ✓ focused standard and expert sidebar > selects round from Standard Tools and keeps the shape when closing  1991ms
+   ✓ focused standard and expert sidebar > filters real tiles through the native category selector without changing the picked tile  2247ms
+   ✓ focused standard and expert sidebar > persists expert inspection pins without exposing or resetting them in Standard  3642ms
+   ✓ focused standard and expert sidebar > opens inspection through the command registry and restores the menu trigger on Escape  617ms
+   ✓ focused standard and expert sidebar > does not reopen auxiliary work when returning to a mode  1506ms
+   ✓ focused standard and expert sidebar > keeps an outside pointer target mounted so the same click can activate it  3531ms
+   ✓ focused standard and expert sidebar > keeps a map surface behind a child modal and lets Escape close only the child  1507ms
+ ✓ test/mapList.test.ts (16 tests) 8558ms
+   ✓ map tree panel > renders compact map organization controls  1803ms
+   ✓ map tree panel > 헤더의 주 동작 「새 맵」만 글자 라벨과 강조 톤을 달고 맨 오른쫽에 선다  581ms
+   ✓ map tree panel > 헤더 제목과 개수를 별도 span으로 렌더한다(맵 N 합침 회귀 방지)  883ms
+   ✓ map tree panel > selects map on click (programmatic HTMLElement.click)  629ms
+   ✓ map tree panel > filters the tree to matching names and their ancestors  480ms
+   ✓ map tree panel > 맵이 8개 이상이면 토글 없이 필터가 처음부터 펼쳐진다  583ms
+   ✓ map tree panel > 맵이 하나뿐이면 삭제 버튼이 이유를 달고 비활성이다  705ms
+   ✓ map tree panel > 분류 폴더를 고르면 상세 칸이 빈 칸이 아니라 이유를 적는다  917ms
+ ✓ test/commandRegistry.test.ts (13 tests) 3095ms
+   ✓ commandRegistry > 도움말: 단축키 명령이 등록되어 '단축키' 검색으로 찾을 수 있다  508ms
+   ✓ commandRegistry > matchEditorCommands는 라벨/키워드 포함 매칭, 빈 질의는 전체  636ms
+
+ Test Files  4 passed (4)
+      Tests  52 passed (52)
+   Start at  04:39:30
+   Duration  395.22s (transform 236.92s, setup 0ms, collect 551.14s, tests 84.78s, environment 2.74s, prepare 2.70s)

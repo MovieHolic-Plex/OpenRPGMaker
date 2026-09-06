@@ -34,6 +34,7 @@ import { installEditorToolHook } from "@/editor/editorToolHook";
 import { cleanupProjectE2EBridge } from "@/editor/editorToolHook";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { renderAiChatPanel, teardownAiChatPanel } from "@/editor/panels/aiChatPanel";
+import { closeSidebarSurface, teardownSidebarSurfaces } from '@/editor/panels/sidebarSurface';
 import { refreshAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
 import { showConfirm } from "@/editor/ui/modal";
 import { renderCanvasToolbar } from "@/editor/panels/editorZoomToolbar";
@@ -256,6 +257,7 @@ function leftDockPanels(): readonly PanelId[] {
   return resolveLeftDockPanels({
     left: getWorkspaceLayout().docks.left,
     paletteRail: getEditorChrome().paletteRail,
+    mapTree: getEditorChrome().mapTree,
   });
 }
 
@@ -269,6 +271,7 @@ function leftDockPanels(): readonly PanelId[] {
  * 걸려 있어서다(그 게이트를 도크 구성으로 합치는 일은 다음 라운드).
  */
 function mountLeftDock(container: HTMLElement): void {
+  closeSidebarSurface();
   leftDock = mountDock({
     container,
     zone: "left",
@@ -395,6 +398,7 @@ export function applyEditorUiModeLayout(): void {
 }
 
 export function teardownEditor(): void {
+  teardownSidebarSurfaces();
   teardownAiChatPanel();
   registerAiBootIntentTarget(null);
   clearPendingAiBootIntent();

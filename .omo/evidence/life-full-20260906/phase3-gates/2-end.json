@@ -1,0 +1,19 @@
+{
+  "id": 2,
+  "command": "node",
+  "args": [
+    "scripts/run-vitest.mjs",
+    "run",
+    "--configLoader",
+    "bundle",
+    "--reporter=json",
+    "--outputFile",
+    "/home/main/z-project/rpg-zzu-life-full-p3/.omo/gates-vitest-report.json"
+  ],
+  "started": "2026-09-06T16:19:25.682Z",
+  "finished": "2026-09-06T16:37:59.011Z",
+  "exit": 1,
+  "signal": null,
+  "stdout": "JSON report written to /home/main/z-project/rpg-zzu-life-full-p3/.omo/gates-vitest-report.json\n",
+  "stderr": ""
+}

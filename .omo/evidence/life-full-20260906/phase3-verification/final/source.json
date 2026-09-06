@@ -1,0 +1,156 @@
+{
+  "head": "bbaf9464cad3768da057ef9909338b5cfb25aa8c",
+  "tree": "c62153444c0e05855be01628c534c4e0f9f15bbe",
+  "files": [
+    {
+      "path": "src/editor/panels/databaseLifeCraftingView.ts",
+      "sha256": "6f6704a0876f3f8232ce9d4acaaf47a85dfb3795252a14ec19c8f05b93a869a8",
+      "blob": "70bb209e28458edd9cdee0bbc971c999ecd77e9d",
+      "equalsProducer": true
+    },
+    {
+      "path": "src/player/dayTransition.ts",
+      "sha256": "595a765884396c7f2d45fefc5002c5a4444cfbc125c8f8fb306a51eb76b7c354",
+      "blob": "4f3d251423bcd3e7d8bac47fc17d957e2195dfa1",
+      "equalsProducer": true
+    },
+    {
+      "path": "src/player/farming.ts",
+      "sha256": "5222e17999fb0a1da9fa1594c265f3eb4dac40ab5a63594cb94d599963be4d67",
+      "blob": "cc746850e48a51984bba6eae16a6a406af39897b",
+      "equalsProducer": true
+    },
+    {
+      "path": "src/player/lifeFieldInteraction.ts",
+      "sha256": "f48fc3db0c6a3cf03b36014276a00e9526a7daebc103ffd43d9482d4cb53402e",
+      "blob": "a709eb721ae19d9cd9b4bccb27e62cd1713b04cd",
+      "equalsProducer": true
+    },
+    {
+      "path": "src/player/playSceneFarming.ts",
+      "sha256": "abe194b52cc830249d86f504829daeae2697ed0e6421429baec726032bae365c",
+      "blob": "1209e9572cba0060bde426a93be308b51119cc18",
+      "equalsProducer": true
+    },
+    {
+      "path": "src/player/playSceneMapRuntime.ts",
+      "sha256": "091e7afd5488bb48e2ce18271dae2e43db8d66936c1582bd0f916db4ad8ab19a",
+      "blob": "b1dc540e34e759405133265e22fbe0ada655ca48",
+      "equalsProducer": true
+    },
+    {
+      "path": "src/player/playSceneMovement.ts",
+      "sha256": "4c3e5cfcaa9f452b99793c02c82b469a31d3c372ef6ed2b333c6ae6892ea1456",
+      "blob": "eda466f1a3deace9cdaee2640177118098d0cd21",
+      "equalsProducer": true
+    },
+    {
+      "path": "src/player/playScenePlaceables.ts",
+      "sha256": "11a981a999299fb08d424e22c241a452dd5bfb23c22eade40994ba18a3613844",
+      "blob": "840a302fab8499e675af0d2520e0fd2e5e55b2a0",
+      "equalsProducer": true
+    },
+    {
+      "path": "src/player/playSceneTime.ts",
+      "sha256": "9538b029df4af485e13c0f5dc0a47da7c22baaa11f76747cd433464331839bfc",
+      "blob": "fb0ed2602e743829f4c1681f24e288ed63b3d259",
+      "equalsProducer": true
+    },
+    {
+      "path": "src/player/saveSlotValidation.ts",
+      "sha256": "8d1be3036cb2c19911486c90a956a4392fd8e337a7060b3c94d53c08327a8a10",
+      "blob": "e5a279a47796f7c494128efe5b83d8026eb9adbe",
+      "equalsProducer": true
+    },
+    {
+      "path": "src/player/saveSlots.ts",
+      "sha256": "2dac3eb6c6f5ef90a2cce5bdcd3c9cf79c7e587eb7262916cb82a01ace39a98b",
+      "blob": "e21ba906fe3ce4b02971bc742a5567ea96f75ef2",
+      "equalsProducer": true
+    },
+    {
+      "path": "src/project/fishing.ts",
+      "sha256": "3f4e2d1460152d8fe2e9d42ef89eac5342e317ea99daf08b839945e5f499e57d",
+      "blob": "f9384789682acf8a6c3c6ffdc229dd910b8690c6",
+      "equalsProducer": true
+    },
+    {
+      "path": "src/project/makers.ts",
+      "sha256": "0519cdf5e116f7355f7e0d6876a11bd3fd585be38a21868e47ee7adcaa4e74b9",
+      "blob": "49b19d0e9194f649bf571e6c8d39b434b729e877",
+      "equalsProducer": true
+    },
+    {
+      "path": "src/project/seasonalForage.ts",
+      "sha256": "5c80ae0b3e413b0fac294c4ab50c821c07a4b14f3d804046465263399189e09d",
+      "blob": "2a8c6e06871e47474abb88b663c1688c0bb63ce6",
+      "equalsProducer": true
+    },
+    {
+      "path": "src/project/session.ts",
+      "sha256": "21a61e54c9b64dcfe3b4ad1c12990d3095f661cd08bbf1f8aee592eed8f7d376",
+      "blob": "4ff793cda487d45279127762c8a6f0dd3245587b",
+      "equalsProducer": true
+    },
+    {
+      "path": "src/project/toolActions.ts",
+      "sha256": "84c58386207251da43c50a65024cce3fed4b2ca94ed0e6c1ce5ab490a5ad1b32",
+      "blob": "696a92aa2c62df3fa856cae972863e8686a863d3",
+      "equalsProducer": true
+    },
+    {
+      "path": "src/testing/sceneTestRunner.ts",
+      "sha256": "eff165adcb7549d1970f76ce5bca4ab16ebcdac3bc30e95f69aad5fb19081074",
+      "blob": "18b7f742fb6c4dcd848bc367568e93e08b0a616b",
+      "equalsProducer": true
+    },
+    {
+      "path": "test/cropRegrowthContract.test.ts",
+      "sha256": "f46ccd2e73ce92030889d3bb7b45f9540cc1361640d15d79e7021debd3f964c3",
+      "blob": "f2cc26d6fb083de208e24ade052d5c8a367be575",
+      "equalsProducer": true
+    },
+    {
+      "path": "test/databaseLifeCraftingView.test.ts",
+      "sha256": "57178b07c6a69c038e05073aee1372bdadc5c07329b87544a8070fd83b2ec0c8",
+      "blob": "35c065ce6c483aa4a4a9c7ef5eaadb542c83c92e",
+      "equalsProducer": true
+    },
+    {
+      "path": "test/lifeFieldInteraction.test.ts",
+      "sha256": "92a75ef32f97df963f5f0d264bb1f7993c6d6290b2d8244fa98f3126b77dcf78",
+      "blob": "fc04de1adfe1d26ac132bca073c9929f5191a41e",
+      "equalsProducer": true
+    },
+    {
+      "path": "test/lifeSkillDisabledHarvest.test.ts",
+      "sha256": "a41133217e49a640bad0c97095be8a2c2105d8e412142306a98bf66a7927debc",
+      "blob": "50e6e3875761f4549a858bfad08bb4152cd7ab28",
+      "equalsProducer": true
+    },
+    {
+      "path": "test/makerClockIntegration.test.ts",
+      "sha256": "7a65e6d7d5ef5874769324ef08361e061043bbd0f922cb4bba3de2f9ea3ce7cc",
+      "blob": "27d6533e91353aea14859a1119ecb791f852e77d",
+      "equalsProducer": true
+    },
+    {
+      "path": "test/p0RuntimeIntegration.test.ts",
+      "sha256": "0f2f422ce4352b564d4d43ef11cef4df824e4c908b9bc816cc5de347706c16cf",
+      "blob": "a0625759e8650a5ccbe4b09912752238d8343236",
+      "equalsProducer": true
+    },
+    {
+      "path": "test/p2LifeRuntime.test.ts",
+      "sha256": "996d25518864ea1c37861c6c870d4856ebe625df548f236c991bb79a5514474a",
+      "blob": "87f26cd6c0d2fed32f6e1f1aea69ed720754ecf6",
+      "equalsProducer": true
+    },
+    {
+      "path": "test/toolActionAuthoringParity.test.ts",
+      "sha256": "864518fd845440aa532a35cf6f6d98eb29e62c77781574d9b4825ead4be23974",
+      "blob": "6b2480787335a8458930b4d980a6ce4c3bd8b421",
+      "equalsProducer": true
+    }
+  ]
+}

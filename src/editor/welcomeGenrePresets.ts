@@ -7,12 +7,14 @@ import {
   type NarrativeHorrorGenre,
 } from "@/ai/narrativeHorrorWorkPlan";
 import type { GenrePackId } from "@/project/genrePackId";
+import { buildActionArenaAuthoringGuide } from "@/ai/actionArenaAuthoring";
 import {
   createGenreBlankProjectSystemPresetPlan,
   type GenreBlankProjectSystemPresetPlan,
 } from "@/editor/genrePacks";
 
 export type WelcomeGenrePresetId =
+  | "action-rpg"
   | "monster-collect"
   | "partner-raise"
   | "farm-life"
@@ -67,6 +69,15 @@ export const WELCOME_GENRE_CHECKLIST_LINES = [
 ] as const;
 
 export const WELCOME_GENRE_PRESETS: readonly WelcomeGenrePreset[] = [
+  {
+    id: "action-rpg",
+    packId: "action-rpg",
+    systemPresetRecipeId: "action-system",
+    label: "2D 액션 RPG",
+    tone: "타일 맵에서 실시간 공격·회피·가드 중심. 기존 맵과 DB를 읽고 작은 전투 공간에서 먼저 실제 전투를 검증한다.",
+    thumb: "/assets/generated/welcome/slide-04.png",
+    blurb: "필드 공격 · 회피 · 가드",
+  },
   {
     id: "monster-collect",
     packId: "monster-collect",
@@ -174,6 +185,14 @@ function requiredTemplateBlock(genre: NarrativeHorrorGenre | undefined): string[
 
 /** Build the auto-send user message for a genre chip. */
 export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset): string {
+  if (preset.packId === "action-rpg") {
+    return [
+      `장르 프리셋: ${preset.label}`,
+      `톤: ${preset.tone}`,
+      buildActionArenaAuthoringGuide(),
+      "한국어로 진행하고, 도구로 실제 2D 액션 전투 공간을 저작하세요.",
+    ].join("\n\n");
+  }
   const checklist = WELCOME_GENRE_CHECKLIST_LINES.map((line, index) => `${index + 1}. ${line}`).join("\n");
   return [
     `장르 프리셋: ${preset.label}`,
@@ -187,16 +206,15 @@ export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset): strin
   ].join("\n");
 }
 
-/** Free-text path: same checklist, user intent replaces fixed tone. */
+/** Free text keeps the user's scope; structured intent selects a recipe later. */
 export function buildWelcomeFreeTextPrompt(userIntent: string): string {
   const intent = userIntent.trim();
-  const checklist = WELCOME_GENRE_CHECKLIST_LINES.map((line, index) => `${index + 1}. ${line}`).join("\n");
   const genre = detectNarrativeHorrorGenre(intent);
   return [
     `사용자 의도: ${intent}`,
     "",
-    "위 의도에 맞는 장르 스타터를 다음 체크리스트대로 실제 편집 툴로 만드세요. 설명만 하고 끝내지 마세요.",
-    checklist,
+    "지금 열려 있는 프로젝트에 이어서 작업한다 — 기존 맵·이벤트·DB 를 먼저 읽고 거기에 얹는다.",
+    "사용자가 요청한 범위만 실제 편집 툴로 작성하세요. 구조화된 의도에 맞는 저작 순서를 따르고, 요청하지 않은 NPC·아이템·퀘스트·상점·보스·보상·페이지 수를 할당하지 마세요.",
     ...requiredTemplateBlock(genre ?? undefined),
     "",
     "한국어로 진행하고, 도구로 맵·이벤트·DB를 실제로 구성하세요.",
@@ -273,6 +291,7 @@ const WELCOME_HIDDEN_POSTER_ORDER: readonly WelcomeGenrePresetId[] = [
   "school-horror",
   "farm-life",
   "partner-raise",
+  "action-rpg",
 ] as const;
 
 /** Featured first so pack anchors land on the visible posters whenever possible. */

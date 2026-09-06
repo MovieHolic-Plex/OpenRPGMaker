@@ -11,6 +11,7 @@ import { renderTopbar } from "@/editor/panels/menu";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
+import { emptyWikiResponse, isWikiExtraction } from "./wikiTransportFixture";
 
 function deferred<T>() {
   let resolve!: (value: T) => void;
@@ -80,6 +81,7 @@ it("New Project preset waits for project creation AND conversation adoption befo
   vi.stubGlobal("fetch", vi.fn(async (_url: unknown, init?: RequestInit) => {
     const body = JSON.parse(String(init?.body ?? "{}"));
     if (!Array.isArray(body.messages)) return new Response("{}");
+    if (isWikiExtraction(body.messages)) return emptyWikiResponse();
     if (!body.response_format) {
       modelRequests.push(body);
       requested.resolve({ body, signal: init!.signal! });

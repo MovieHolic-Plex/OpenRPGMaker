@@ -1,0 +1,33 @@
+{
+  "head": "bbaf9464cad3768da057ef9909338b5cfb25aa8c",
+  "tree": "c62153444c0e05855be01628c534c4e0f9f15bbe",
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "300s",
+    "npm",
+    "test",
+    "--",
+    "test/lifeSkillDisabledHarvest.test.ts",
+    "test/cropRegrowthContract.test.ts",
+    "test/toolActionAuthoringParity.test.ts",
+    "test/makerClockIntegration.test.ts",
+    "test/lifeFieldInteraction.test.ts",
+    "test/databaseLifeCraftingView.test.ts",
+    "test/playSceneFarmFeedback.test.ts",
+    "test/playScenePlaceableOverlay.test.ts",
+    "test/npcActionFacing.test.ts",
+    "test/seasonalForage.test.ts"
+  ],
+  "started": "2026-09-06T15:42:50.833Z",
+  "finished": "2026-09-06T15:43:24.275Z",
+  "exit": 0,
+  "signal": null,
+  "stdout": "\n> rpg-zzu@0.1.0 test\n> node scripts/run-vitest.mjs run --configLoader bundle test/lifeSkillDisabledHarvest.test.ts test/cropRegrowthContract.test.ts test/toolActionAuthoringParity.test.ts test/makerClockIntegration.test.ts test/lifeFieldInteraction.test.ts test/databaseLifeCraftingView.test.ts test/playSceneFarmFeedback.test.ts test/playScenePlaceableOverlay.test.ts test/npcActionFacing.test.ts test/seasonalForage.test.ts\n\n\n RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-field-input\n\n ✓ test/seasonalForage.test.ts (4 tests) 211ms\n ✓ test/lifeSkillDisabledHarvest.test.ts (49 tests) 2366ms\n ✓ test/playScenePlaceableOverlay.test.ts (5 tests) 546ms\n ✓ test/toolActionAuthoringParity.test.ts (44 tests) 2729ms\n ✓ test/cropRegrowthContract.test.ts (30 tests) 2160ms\n ✓ test/playSceneFarmFeedback.test.ts (5 tests) 591ms\n ✓ test/makerClockIntegration.test.ts (28 tests) 2816ms\n   ✓ maker game-clock integration > discards a ready draft and recovery prefix when capacity refuses set-time  329ms\n ✓ test/npcActionFacing.test.ts (9 tests) 1561ms\n ✓ test/lifeFieldInteraction.test.ts (45 tests) 3122ms\n ✓ test/databaseLifeCraftingView.test.ts (14 tests) 15140ms\n   ✓ database life skill and crafting view > materializes real defaults only on first custom-table creation, as one undoable edit  830ms\n   ✓ database life skill and crafting view > appends to existing tables without merging and preserves false through editing and load  710ms\n   ✓ database life skill and crafting view > authors a life skill and level reward, then undo restores the prior record  1265ms\n   ✓ database life skill and crafting view > authors a recipe with ingredient and output item references  794ms\n   ✓ database life skill and crafting view > authors upgrade, sell-price, and tool-action records through their detail forms  1892ms\n   ✓ database life skill and crafting view > rejects duplicate record ids and chooses an unused sell-price item  1861ms\n   ✓ database life skill and crafting view > authors recipe unlock requirements and tool capability fields  1706ms\n   ✓ database life skill and crafting view > clamps authored tool capability axes to the runtime-safe 9x9 limit  695ms\n   ✓ database life skill and crafting view > creates energy and shipping settings and preserves disabled shipping values  1166ms\n   ✓ database life skill and crafting view > authors world unlock, bundle rewards, and maker processing without raw JSON  3051ms\n   ✓ database life skill and crafting view > rejects duplicate package ids, guards reward targets, and records undo  635ms\n\n Test Files  10 passed (10)\n      Tests  233 passed (233)\n   Start at  00:42:51\n   Duration  32.21s (transform 39.37s, setup 0ms, collect 149.52s, tests 31.24s, environment 3.87s, prepare 3.81s)\n\n",
+  "stderr": ""
+}

@@ -1,0 +1,24 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-maker-clock",
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "300s",
+    "npm",
+    "test",
+    "--",
+    "test/makerClockIntegration.test.ts"
+  ],
+  "started": "2026-09-06T10:51:16.235Z",
+  "finished": "2026-09-06T10:51:26.376Z",
+  "head": "e33c93afbd1b0d8824f273c62d234d66c8802323",
+  "headTree": "bb854c6938045c387d94ddd7f69aec02acb50868",
+  "diff": "",
+  "exit": 1,
+  "signal": null
+}

@@ -1,0 +1,97 @@
+{
+  "snapshot": "final handoff; remaining cases are unverified",
+  "driverExit": 1,
+  "driverError": "page.goto: Target page, context or browser has been closed",
+  "completed": [
+    {
+      "name": "context-menu-pointer",
+      "status": "PASS",
+      "observed": [
+        {
+          "width": 1440,
+          "height": 900,
+          "geometry": {
+            "sheet": 544,
+            "sidebar": 851,
+            "ratio": 0.6392479435957696,
+            "canvas": 1134,
+            "toolbarScroll": false
+          },
+          "renameHit": {
+            "inside": true,
+            "menuZ": "1200",
+            "surfaceZ": "90"
+          },
+          "cancelAndCommit": true
+        },
+        {
+          "width": 1280,
+          "height": 800,
+          "geometry": {
+            "sheet": 444,
+            "sidebar": 751,
+            "ratio": 0.5912117177097204,
+            "canvas": 974,
+            "toolbarScroll": false
+          },
+          "renameHit": {
+            "inside": true,
+            "menuZ": "1200",
+            "surfaceZ": "90"
+          },
+          "cancelAndCommit": true
+        },
+        {
+          "width": 1024,
+          "height": 768,
+          "geometry": {
+            "sheet": 412,
+            "sidebar": 719,
+            "ratio": 0.5730180806675939,
+            "canvas": 718,
+            "toolbarScroll": false
+          },
+          "renameHit": {
+            "inside": true,
+            "menuZ": "1200",
+            "surfaceZ": "90"
+          },
+          "cancelAndCommit": true
+        }
+      ]
+    },
+    {
+      "name": "context-menu-keyboard",
+      "status": "PASS",
+      "observed": [
+        {
+          "width": 1440,
+          "height": 900,
+          "keyboardRename": true,
+          "layeredEscape": true
+        },
+        {
+          "width": 1280,
+          "height": 800,
+          "keyboardRename": true,
+          "layeredEscape": true
+        },
+        {
+          "width": 1024,
+          "height": 768,
+          "keyboardRename": true,
+          "layeredEscape": true
+        }
+      ]
+    },
+    {
+      "name": "mode-lifecycle-beginner",
+      "status": "PASS",
+      "observed": {
+        "initial": "beginner",
+        "toolsAndAssist": true,
+        "teardownRemount": true
+      }
+    }
+  ]
+}

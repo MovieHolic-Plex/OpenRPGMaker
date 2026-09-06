@@ -66,7 +66,7 @@ const BEGINNER_CHROME: EditorChromeVisibility = {
 };
 
 const STANDARD_CHROME: EditorChromeVisibility = {
-  mapTree: true,
+  mapTree: false,
   toolStrip: false,
   canvasChromeDense: true,
   helpMenu: true,

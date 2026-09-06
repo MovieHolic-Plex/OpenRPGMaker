@@ -27,7 +27,7 @@ import { store } from "@/project/store";
 import { toast } from "@/util/toast";
 import type { MapId, MapTreeNode, Project } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
-import { isMapPanelCollapsed, toggleMapPanelCollapsed } from "@/editor/workspace/mapPanelSection";
+import { isMapPanelCollapsed, setMapPanelCollapsed, toggleMapPanelCollapsed } from "@/editor/workspace/mapPanelSection";
 
 type RenderNodeContext = {
   readonly activeId: string;
@@ -61,7 +61,7 @@ type MapActionContext = {
   readonly mapName: string;
 };
 
-export type MapListVariant = "panel" | "basic";
+export type MapListVariant = "panel" | "basic" | "switcher";
 
 const COLLAPSED_STORAGE_KEY = "oprn:map-tree-collapsed";
 const collapsedMapIds = loadCollapsedMapIds();
@@ -94,7 +94,7 @@ export function renderMapList(container: HTMLElement, options?: { readonly varia
   }
   if (mapFilterQuery.trim()) expandMatchingAncestors(project.mapTree, mapFilterQuery);
 
-  const isBasic = currentMapListVariant === "basic";
+  const isBasic = currentMapListVariant !== "panel";
   const mapCount = Object.keys(project.maps).length;
   const visibleIds = visibleMapIds(project.mapTree, mapFilterQuery, mapFilterFacet);
   const section = el("div", {
@@ -287,7 +287,7 @@ function hasActiveMapFilter(): boolean {
  *  오인하지 않도록 한다. `makeFilterField`와 헤더 토글의 `aria-expanded`가 같은 판단을
  *  공유해야 두 곳이 어긋나지 않는다. */
 function isFilterExpanded(mapCount: number): boolean {
-  return hasActiveMapFilter() || filterExpandedByUser || mapCount >= FILTER_AUTO_EXPAND_MAPS;
+  return currentMapListVariant === "switcher" || hasActiveMapFilter() || filterExpandedByUser || mapCount >= FILTER_AUTO_EXPAND_MAPS;
 }
 
 /** 토글을 눌러도 상태가 안 바뀌는 경우엔 아예 그리지 않는다 — 질의/패싯이 활성이거나
@@ -295,7 +295,7 @@ function isFilterExpanded(mapCount: number): boolean {
  *  결과가 그대로라, 눌러도 아무 일 없는 죽은 버튼이 된다(행 접기 화살표가 disabled 표시 없이
  *  죽어 있던 것과 같은 결함 형태 — 이번엔 아예 렌더하지 않는 쪽으로 막는다). */
 function canToggleMapFilter(mapCount: number): boolean {
-  return !hasActiveMapFilter() && mapCount < FILTER_AUTO_EXPAND_MAPS;
+  return currentMapListVariant !== "switcher" && !hasActiveMapFilter() && mapCount < FILTER_AUTO_EXPAND_MAPS;
 }
 
 /** 전문가 헤더 토글과 초보 플라이아웃 토글이 공유하는 동작. 마크업(치장된
@@ -378,7 +378,7 @@ function renderNode(spec: RenderNodeSpec): void {
     mapId: node.mapId,
     mapName: mapTreeNodeLabel(node, project.maps),
   };
-  const isBasicRow = currentMapListVariant === "basic";
+  const isBasicRow = currentMapListVariant !== "panel";
   const isActive = node.mapId === context.activeId;
   const isMulti = selectedMapIds.has(node.mapId);
   const item = el("div", {
@@ -832,7 +832,10 @@ function beginRename(mapId: MapId): void {
 }
 
 function renameField(mapId: MapId, currentName: string): HTMLInputElement {
+  let settled = false;
   const commit = (value: string): void => {
+    if (settled) return;
+    settled = true;
     const next = value.trim();
     renamingMapId = null;
     if (next && next !== currentName) renameMap(mapId, next);
@@ -854,6 +857,9 @@ function renameField(mapId: MapId, currentName: string): HTMLInputElement {
         }
         if (event.key === "Escape") {
           event.preventDefault();
+          // Removing the focused input can synchronously emit blur. Cancellation
+          // settles this draft before teardown, so blur cannot commit it.
+          settled = true;
           renamingMapId = null;
           rerenderMapList();
           focusMapRow(mapId);
@@ -964,6 +970,16 @@ function rerenderMapList(): void {
   }
 }
 
+/** Reveal in the existing dock owner, including its markup, filters and branches. */
+export function revealMapInDock(mapId: MapId): void {
+  setMapPanelCollapsed(false);
+  mapFilterQuery = '';
+  mapFilterFacet = 'all';
+  expandPathToMap(store.getCurrent().mapTree, mapId);
+  rerenderMapList();
+  focusMapRow(mapId);
+}
+
 function duplicateAndSelect(mapId: MapId): void {
   const id = duplicateMap(mapId);
   if (!id) return;
@@ -1005,12 +1021,12 @@ function openMapActions(context: MapActionContext, point: MapContextMenuPoint): 
     selectedMapIds.add(context.mapId);
     lastClickedMapId = context.mapId;
   }
-  globalThis.setTimeout?.(() => focusMapRow(context.mapId), 0);
   openMapContextMenu({
     items: mapContextMenuItems(context),
     mapId: context.mapId,
     mapName: context.mapName,
     point,
+    restoreFocus: () => focusMapRow(context.mapId),
   });
 }
 

@@ -1,0 +1,22 @@
+{
+  "head": "bbaf9464cad3768da057ef9909338b5cfb25aa8c",
+  "tree": "c62153444c0e05855be01628c534c4e0f9f15bbe",
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "300s",
+    "node",
+    "/home/main/z-project/rpg-zzu-life-full-field-input/.omo/evidence/life-full-20260906/10/parent/integration-check/clock.mjs"
+  ],
+  "started": "2026-09-06T15:47:20.222Z",
+  "finished": "2026-09-06T15:47:36.969Z",
+  "exit": 0,
+  "signal": null,
+  "stdout": "{\"surface\":\"Actual public clock/maker/save authorities and actual ledger DOM renderer in Happy DOM; not native player.html gameplay\",\"mocks\":[\"camera render completion endpoint\",\"scene refresh/sync endpoints\"],\"paths\":[{\"path\":\"natural\",\"beginning\":{\"minute\":0,\"hour\":6,\"day\":1,\"season\":\"spring\",\"year\":1},\"ending\":{\"minute\":30,\"hour\":6,\"day\":1,\"season\":\"spring\",\"year\":1},\"promised\":{\"inputs\":[{\"itemId\":\"clock_input\",\"count\":3}],\"outputs\":[{\"itemId\":\"clock_output\",\"count\":2},{\"itemId\":\"clock_bonus\",\"count\":1}],\"durationMinutes\":30,\"timeBasis\":{\"dayStartHour\":6,\"dayEndHour\":26,\"daysPerSeason\":40}},\"readyBeforeCollection\":true,\"output\":2,\"bonus\":1,\"fullInventoryAtomic\":true,\"duplicateAtomic\":true,\"ledgerStart\":true,\"ledgerCollection\":true},{\"path\":\"command\",\"beginning\":{\"minute\":0,\"hour\":6,\"day\":1,\"season\":\"spring\",\"year\":1},\"ending\":{\"minute\":30,\"hour\":6,\"day\":1,\"season\":\"spring\",\"year\":1},\"promised\":{\"inputs\":[{\"itemId\":\"clock_input\",\"count\":3}],\"outputs\":[{\"itemId\":\"clock_output\",\"count\":2},{\"itemId\":\"clock_bonus\",\"count\":1}],\"durationMinutes\":30,\"timeBasis\":{\"dayStartHour\":6,\"dayEndHour\":26,\"daysPerSeason\":40}},\"readyBeforeCollection\":true,\"output\":2,\"bonus\":1,\"fullInventoryAtomic\":true,\"duplicateAtomic\":true,\"ledgerStart\":true,\"ledgerCollection\":true},{\"path\":\"set-time\",\"beginning\":{\"minute\":0,\"hour\":6,\"day\":1,\"season\":\"spring\",\"year\":1},\"ending\":{\"minute\":0,\"hour\":6,\"day\":1,\"season\":\"spring\",\"year\":1},\"promised\":{\"inputs\":[{\"itemId\":\"clock_input\",\"count\":3}],\"outputs\":[{\"itemId\":\"clock_output\",\"count\":2},{\"itemId\":\"clock_bonus\",\"count\":1}],\"durationMinutes\":30,\"timeBasis\":{\"dayStartHour\":6,\"dayEndHour\":26,\"daysPerSeason\":40}},\"readyBeforeCollection\":true,\"output\":2,\"bonus\":1,\"fullInventoryAtomic\":true,\"duplicateAtomic\":true,\"ledgerStart\":true,\"ledgerCollection\":true},{\"path\":\"sleep\",\"beginning\":{\"year\":1,\"season\":\"winter\",\"day\":40,\"hour\":25,\"minute\":30},\"ending\":{\"minute\":0,\"hour\":6,\"day\":1,\"season\":\"spring\",\"year\":2},\"promised\":{\"inputs\":[{\"itemId\":\"clock_input\",\"count\":3}],\"outputs\":[{\"itemId\":\"clock_output\",\"count\":2},{\"itemId\":\"clock_bonus\",\"count\":1}],\"durationMinutes\":30,\"timeBasis\":{\"dayStartHour\":6,\"dayEndHour\":26,\"daysPerSeason\":40}},\"readyBeforeCollection\":true,\"output\":2,\"bonus\":1,\"fullInventoryAtomic\":true,\"duplicateAtomic\":true,\"ledgerStart\":true,\"ledgerCollection\":true},{\"path\":\"load\",\"beginning\":{\"minute\":0,\"hour\":6,\"day\":1,\"season\":\"spring\",\"year\":1},\"ending\":{\"minute\":30,\"hour\":6,\"day\":1,\"season\":\"spring\",\"year\":1},\"promised\":{\"inputs\":[{\"itemId\":\"clock_input\",\"count\":3}],\"outputs\":[{\"itemId\":\"clock_output\",\"count\":2},{\"itemId\":\"clock_bonus\",\"count\":1}],\"durationMinutes\":30,\"timeBasis\":{\"dayStartHour\":6,\"dayEndHour\":26,\"daysPerSeason\":40}},\"readyBeforeCollection\":true,\"output\":2,\"bonus\":1,\"fullInventoryAtomic\":true,\"duplicateAtomic\":true,\"ledgerStart\":true,\"ledgerCollection\":false}],\"runner\":{\"realRunSceneTest\":true,\"time\":{\"minute\":30,\"hour\":6,\"day\":1,\"season\":\"spring\",\"year\":1},\"makerJobJourney\":false},\"ok\":true,\"cleanup\":{\"storageCleared\":true,\"windowClosed\":true,\"middlewareServerClosed\":true,\"listenerCreated\":false,\"remoteWrites\":0}}\n",
+  "stderr": ""
+}

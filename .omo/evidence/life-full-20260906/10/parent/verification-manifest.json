@@ -1,0 +1,110 @@
+{
+  "head": "bbaf9464cad3768da057ef9909338b5cfb25aa8c",
+  "tree": "c62153444c0e05855be01628c534c4e0f9f15bbe",
+  "sourceFiles": [
+    {
+      "path": "src/player/lifeFieldInteraction.ts",
+      "bytes": 2259,
+      "sha256": "f48fc3db0c6a3cf03b36014276a00e9526a7daebc103ffd43d9482d4cb53402e"
+    },
+    {
+      "path": "src/player/playSceneMapRuntime.ts",
+      "bytes": 32714,
+      "sha256": "091e7afd5488bb48e2ce18271dae2e43db8d66936c1582bd0f916db4ad8ab19a"
+    },
+    {
+      "path": "src/player/playSceneMovement.ts",
+      "bytes": 38808,
+      "sha256": "4c3e5cfcaa9f452b99793c02c82b469a31d3c372ef6ed2b333c6ae6892ea1456"
+    },
+    {
+      "path": "src/player/playScenePlaceables.ts",
+      "bytes": 7543,
+      "sha256": "11a981a999299fb08d424e22c241a452dd5bfb23c22eade40994ba18a3613844"
+    },
+    {
+      "path": "src/project/fishing.ts",
+      "bytes": 6201,
+      "sha256": "3f4e2d1460152d8fe2e9d42ef89eac5342e317ea99daf08b839945e5f499e57d"
+    },
+    {
+      "path": "src/project/seasonalForage.ts",
+      "bytes": 10503,
+      "sha256": "5c80ae0b3e413b0fac294c4ab50c821c07a4b14f3d804046465263399189e09d"
+    },
+    {
+      "path": "src/testing/sceneTestRunner.ts",
+      "bytes": 80804,
+      "sha256": "eff165adcb7549d1970f76ce5bca4ab16ebcdac3bc30e95f69aad5fb19081074"
+    },
+    {
+      "path": "test/lifeFieldInteraction.test.ts",
+      "bytes": 19679,
+      "sha256": "92a75ef32f97df963f5f0d264bb1f7993c6d6290b2d8244fa98f3126b77dcf78"
+    },
+    {
+      "path": "test/p2LifeRuntime.test.ts",
+      "bytes": 7925,
+      "sha256": "996d25518864ea1c37861c6c870d4856ebe625df548f236c991bb79a5514474a"
+    }
+  ],
+  "receipts": [
+    {
+      "path": "related.json",
+      "bytes": 6119,
+      "sha256": "1fd327264ff17793ecaf16e28c66c791a2c83d9dd68f9b60135766f2ddb3ec32"
+    },
+    {
+      "path": "native.json",
+      "bytes": 560,
+      "sha256": "30dfb317a36013c4e879c49d31042729108f4fda7896a521536c3da5ef01cf3c"
+    },
+    {
+      "path": "pixels.json",
+      "bytes": 560,
+      "sha256": "929572547a08717ce17ba3f9b45051e6e7aae88b2909d28d02fcef1bd6e3a702"
+    },
+    {
+      "path": "typecheck.json",
+      "bytes": 551,
+      "sha256": "d18f57935c2e6c3f01cd19f344c9649d0e0785ec5379fa31ab4e67fc079668a3"
+    },
+    {
+      "path": "build.json",
+      "bytes": 18916,
+      "sha256": "cb797d579a07ee7676e368b86d5dd743343c0c7d72e32eb82e5ea2e13f7bbb41"
+    },
+    {
+      "path": "native/player.json",
+      "bytes": 62685,
+      "sha256": "c120ae216e85ffdc1f21b097a456439b0946769dbdbd5cccdf03d7f137f07b56"
+    },
+    {
+      "path": "native/pixels.json",
+      "bytes": 287,
+      "sha256": "8f2984197071f30589482da5a33c2969f43709ccdf310ce0ed7c8259a852b4c7"
+    }
+  ],
+  "results": {
+    "related": {
+      "passed": 283,
+      "failed": 2,
+      "exit": 1,
+      "classification": "Verified inherited snapshot harness failures only"
+    },
+    "native": {
+      "scenarios": 3,
+      "inputs": 5,
+      "exit": 0
+    },
+    "pixels": {
+      "changed": 3408,
+      "exit": 0
+    },
+    "typecheck": 0,
+    "build": 0
+  },
+  "sourceWorktreeClean": true,
+  "independentVerifierPending": true,
+  "fullGoalComplete": false
+}

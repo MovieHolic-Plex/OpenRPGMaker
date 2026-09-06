@@ -1,0 +1,1 @@
+flock --timeout 900 /tmp/rpg-zzu-life-full-qa-01a0727b.lock timeout --signal=TERM --kill-after=15s 300s npm test -- test/lifeSkillDisabledHarvest.test.ts test/p0LifeSkillProgress.test.ts test/p2LifeRuntime.test.ts test/p2HostileAudit.test.ts test/farmingRuntime.test.ts test/seasonalForage.test.ts test/p0RuntimeIntegration.test.ts --maxWorkers=2 --no-file-parallelism

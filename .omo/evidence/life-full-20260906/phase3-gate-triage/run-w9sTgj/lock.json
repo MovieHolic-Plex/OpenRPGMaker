@@ -1,0 +1,25 @@
+{
+  "path": "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+  "outerCommand": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "/usr/local/bin/node",
+    "/home/main/z-project/rpg-zzu-life-full-p3/.omo/evidence/life-full-20260906/phase3-gate-triage/run.mjs"
+  ],
+  "verifyCommand": [
+    "flock",
+    "--nonblock",
+    "3"
+  ],
+  "inheritedFd": 3,
+  "kernelLocks": [
+    "145: FLOCK  ADVISORY  WRITE 176581 08:02:627263 0 EOF"
+  ],
+  "at": "2026-09-06T17:02:25.064Z",
+  "exit": 0,
+  "signal": null,
+  "stdout": "",
+  "stderr": ""
+}

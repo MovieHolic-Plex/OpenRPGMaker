@@ -6,17 +6,29 @@ Map/event search, audio test, help modal, themed dungeons, resource manager, vil
 
 ## Other Editor Workflows
 
+### New-project name and player title (2026-09-07)
+
+`store.loadNewRemoteProject` and `store.loadNewRemoteProjectTransactionally`
+apply an explicit project name to both `meta.title` and an absent/default
+`system.titleScreen.title`. A deliberately different player title is preserved;
+existing projects are not renamed on load. The transactional path names its
+cloned candidate before saving, so remote verification covers the player title
+without mutating the caller's seed. Regression tests:
+`loadNewRemoteProject.test.ts`, `transactionalNewRemoteProject.test.ts`.
+
 ### 걸을 때 적 만나기 — rectangle authoring (2026-09-06)
 
 - Select with the sidebar's **선택** tool and left-drag, then click the visible
   **걸을 때 적 만나기** selection chip. Right-drag/context entry is also available,
   but right-click knowledge is not required. The always-visible canvas button
   with the same label opens the region list and offers **맵에서 범위 선택하기**.
-- Choose one or more named enemy thumbnails (search keeps selection), choose
-  **드물게 / 보통 / 자주**, then **완료**. Each encounter picks one selected enemy;
-  a safe, plain single-enemy troop is reused or generated automatically. Existing
-  multi-enemy/scripted groups are available under advanced settings. No AI call.
-- Advanced settings expose each entry's relative weight, named switch, variable
+- The worksheet contains selected **groups**, not individual monsters. **+ 그룹 추가**
+  opens a searchable existing-group picker (name, ID or composition). Rows show
+  group name, member thumbnails/counts, direct weight and live normalized relative
+  share. Authored `members` take precedence over legacy `enemyIds`; hidden members
+  are included and labelled. Already-selected groups cannot be added again; legacy
+  duplicate condition variants remain separate rows. No troop generation or AI call.
+- Each row has its own **출현 조건** disclosure exposing named switch, variable
   threshold, party's highest level range, time phase and season. These remain the
   existing `encounterTable[].conditions.region` rectangles, not a new schema.
   Time/season conditions require game-time configuration. Overlapping rectangles
@@ -38,13 +50,22 @@ Map/event search, audio test, help modal, themed dungeons, resource manager, vil
   Identical rectangles are one group; a move onto an existing identical rectangle
   is rejected rather than silently merging groups. Delete requires a second click
   and removes only those rules, never tiles or shared/generated troops.
-- On another selection, **마지막 설정 가져오기** copies enemies/weights/conditions
+- On another selection, **마지막 설정 가져오기** copies group IDs/weights/conditions
   from the last successful save in this project session; destination-map frequency
   is retained. This memory is not persisted and resets on project switching.
-- Owner: `src/editor/walkEncounterAuthoring.ts` validates before one project snapshot and one
-  labelled `store.update`; project-level history includes generated troops.
+- Owner: `src/editor/walkEncounterAuthoring.ts` validates before one map-only snapshot and one
+  labelled map-scoped `store.update`. It never mutates `database.troops`, including
+  old automatically generated troops. Undo does not revert unrelated group edits.
   `src/editor/panels/walkEncounterModal.ts` / `src/editor/panels/walkEncounterOptions.ts`
   own local drafts and native subdialog-stack/focus/Escape. Cancel is mutation-free.
+  Weight input updates only output nodes, preserving focus/caret. Relative shares
+  describe the current worksheet, not actual conditional/overlapping eligibility.
+  Missing groups stay visible and block save; replace/remove is explicit.
+  Group edit opens the existing Troops database, then reveals the chosen record
+  (first-open session reset requires this order). A narrow `openDatabaseModal`
+  onClose callback restores the same in-memory draft; initial and apply-time stale
+  validation blocks project/map/settings changes. The encounter modal is closed
+  while DB owns Escape. Empty databases offer direct group editor entry.
   `src/editor/hotkeys.ts` prevents
   editor shortcuts/project undo from leaking into these draft dialogs.
   Project identity, map, map dimensions, encounter table/rate/legacy list, references
@@ -55,7 +76,7 @@ Map/event search, audio test, help modal, themed dungeons, resource manager, vil
   `DEV_SERVER_PORT=<supervisor-port> E2E_RETRIES=0 npx playwright test
   test/e2e/walk-encounter-authoring.spec.ts` (1024/1280/1440, blank local project,
   no remote content writes). It subscribes before selection/mutation triggers and
-  captures basic/advanced forms. On Linux Firefox hosts that abort the large dev
+  captures worksheet/picker/per-row condition forms. On Linux Firefox hosts that abort the large dev
   CSS module, `WALK_QA_ROUTE_CSS=1` transports that unmodified response through
   Playwright's request client. Controls are hit-tested and clicked with real
   pointer coordinates; no forced clicks or fixed sleeps. Supervisor owns

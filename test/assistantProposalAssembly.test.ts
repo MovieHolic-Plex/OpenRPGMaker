@@ -6,6 +6,7 @@ import type { ToolContext, ToolResult } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
 import { TILE } from "@/project/defaults/constants";
 import type { ChatResult } from "@/ai/llmClient";
+import { fixedDeclarer } from "./intentFixture";
 
 const CONFIG = {
   authMode: "apiKey" as const,
@@ -197,8 +198,15 @@ describe("assistant WorkPlan evidence isolation", () => {
     };
     const session = new AssistantSession(createBlankProject(), {
       config: CONFIG,
-      chat: scriptedChat([finalMsg(JSON.stringify({ action: "replan", ...planArgs, goal: "다른 맵 작업" }))]),
+      declareIntent: fixedDeclarer(),
+      chat: scriptedChat([
+        finalMsg("Context prepared."),
+        finalMsg(JSON.stringify({ action: "replan", ...planArgs, goal: "다른 맵 작업" })),
+      ]),
     });
+    // Capture real original context before exercising the planner seam. Prime old
+    // evidence afterwards so only planner adoption, not request setup, can clear it.
+    await session.sendUserMessage("Prepare the current project context.");
     const probe = session as unknown as {
       applyWorkPlanTool(name: string, args: Record<string, unknown>): ToolResult;
       turnSuccessfulTools: Set<string>;

@@ -15,7 +15,7 @@ afterEach(() => vi.restoreAllMocks());
 beforeEach(() => {
   store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
   const project = createBlankProject();
-  project.database.troops = [];
+  project.database.troops = [{ id: "troop_walk_existing", name: "Authored group", enemyIds: [project.database.enemies[0]!.id], autoAlign: true, battleEventPages: [] }];
   delete project.system.initialTroopId;
   project.system.actionCombat = { enabled: false };
   const map = project.maps[project.startMapId]!;
@@ -30,13 +30,13 @@ beforeEach(() => {
 function readyDraft(x = 2): WalkEncounterDraft {
   const project = store.getCurrent();
   const draft = beginWalkEncounter(project.startMapId, { x, y: 3, w: 4, h: 5 });
-  draft.choices.push({ kind: "enemy", id: project.database.enemies[0]!.id, weight: 1, conditions: {} });
+  draft.choices.push({ id: project.database.troops[0]!.id, weight: 1, conditions: {} });
   return draft;
 }
 
 function currentMap() { return store.getCurrent().maps[store.getCurrent().startMapId]!; }
 
-it("does not make troops or history until apply; writes a single annotated mutation", () => {
+it("never changes authored troops and records history only at apply; writes a single annotated mutation", () => {
   const before = structuredClone(store.getCurrent());
   const changes: unknown[] = [];
   const unsubscribe = store.subscribe((_project, change) => changes.push(change));
@@ -47,8 +47,9 @@ it("does not make troops or history until apply; writes a single annotated mutat
   expect(changes).toEqual([]);
   expect(applyWalkEncounter(draft).ok).toBe(true);
   unsubscribe();
+  expect(store.getCurrent().database.troops).toEqual(before.database.troops);
   expect(changes).toHaveLength(1);
-  expect(changes[0]).toMatchObject({ scope: "project", label: expect.any(String) });
+  expect(changes[0]).toMatchObject({ scope: "map", mapId: draft.mapId, label: expect.any(String) });
 });
 
 it("saves/reloads runtime-eligible rules and never falls back outside a region", () => {
@@ -154,22 +155,20 @@ it("uses all authored conditions in the actual runtime", () => {
   session.gameTime = { ...session.gameTime, hour: 23, season: "spring" }; expect(eligible()).toEqual([]);
 });
 
-it("multi-selects enemies with relative weights without reusing a scripted/trainer troop", () => {
+it("uses authored scripted groups directly without changing any group", () => {
   const draft = readyDraft();
-  const secondEnemy = store.getCurrent().database.enemies[1]!;
   store.update((project) => {
-    project.database.troops.push({ id: "trainer", name: "Trainer", enemyIds: [draft.choices[0]!.id], autoAlign: true, trainerBattle: true, battleEventPages: [] });
+    project.database.troops.push({ id: "trainer", name: "Trainer", enemyIds: [project.database.enemies[1]!.id], autoAlign: true, trainerBattle: true, battleEventPages: [] });
   });
-  draft.choices.push({ kind: "enemy", id: secondEnemy.id, weight: 3, conditions: {} });
+  const before = structuredClone(store.getCurrent().database.troops);
+  draft.choices.push({ id: "trainer", weight: 3, conditions: {} });
   expect(applyWalkEncounter(draft).ok).toBe(true);
   const table = currentMap().encounterTable!;
-  expect(table).toHaveLength(2);
-  expect(table[0]!.troopId).not.toBe("trainer");
-  expect(store.getCurrent().database.troops).toHaveLength(3);
+  expect(table.map((row) => row.troopId)).toEqual(["troop_walk_existing", "trainer"]);
+  expect(store.getCurrent().database.troops).toEqual(before);
   const session = startSession(store.getCurrent(), 42);
   expect(pickEncounterTroopForMap(currentMap(), session, { x: 2, y: 3 }, () => 0.2)).toBe(table[0]!.troopId);
-  expect(pickEncounterTroopForMap(currentMap(), session, { x: 2, y: 3 }, () => 0.5)).toBe(table[1]!.troopId);
-  expect(walkEncounterRegions(currentMap())).toHaveLength(1);
+  expect(pickEncounterTroopForMap(currentMap(), session, { x: 2, y: 3 }, () => 0.5)).toBe("trainer");
 });
 
 it("rechecks map locks for save and delete without creating a history entry", () => {
@@ -234,14 +233,16 @@ it("rejects another active map and real-time combat rather than silently creatin
   expect(getMapEditHistoryState().canUndo).toBe(false);
 });
 
-it("creates effective rectangular rules and a troop in one undoable save", () => {
+it("retains authored group IDs through apply, load, undo and redo", () => {
   const before = structuredClone(store.getCurrent());
   const mapId = before.startMapId;
-  const enemy = before.database.enemies[0]!;
+  const troop = before.database.troops[0]!;
   const draft = beginWalkEncounter(mapId, { x: 2, y: 3, w: 4, h: 5 });
-  draft.choices.push({ kind: "enemy", id: enemy.id, weight: 1, conditions: {} });
+  draft.choices.push({ id: troop.id, weight: 1, conditions: {} });
   expect(applyWalkEncounter(draft)).toEqual({ ok: true });
   const saved = structuredClone(store.getCurrent());
+  expect(saved.database.troops).toEqual(before.database.troops);
+  expect(deserialize(serialize(saved)).maps[mapId]!.encounterTable?.[0]?.troopId).toBe(troop.id);
   expect(saved.maps[mapId]!.encounterRate).toBeGreaterThan(0);
   expect(saved.database.troops).toHaveLength(1);
   expect(saved.maps[mapId]!.encounterTable).toEqual([{
@@ -252,4 +253,23 @@ it("creates effective rectangular rules and a troop in one undoable save", () =>
   expect(store.getCurrent()).toEqual(before);
   expect(redoMapEdit()).toBe(true);
   expect(store.getCurrent()).toEqual(saved);
+});
+
+
+it("preserves legacy duplicate group condition variants without merging", () => {
+  const draft = readyDraft();
+  draft.choices.push({ ...structuredClone(draft.choices[0]!), weight: 4, conditions: { timePhase: "night" } });
+  expect(applyWalkEncounter(draft).ok).toBe(true);
+  const edit = beginWalkEncounter(draft.mapId, draft.region, true);
+  expect(edit.choices).toEqual(draft.choices);
+  expect(applyWalkEncounter(edit).ok).toBe(true);
+  expect(currentMap().encounterTable).toHaveLength(2);
+});
+
+it("map-only undo preserves database edits made after encounter save", () => {
+  expect(applyWalkEncounter(readyDraft()).ok).toBe(true);
+  store.update((project) => { project.database.troops[0]!.name = "Edited later"; });
+  expect(undoMapEdit()).toBe(true);
+  expect(currentMap().encounterTable).toBeUndefined();
+  expect(store.getCurrent().database.troops[0]!.name).toBe("Edited later");
 });

@@ -1,0 +1,63 @@
+{
+  "sourceHead": "43817f4a32610fc5f833354d0e20cf1487e50355",
+  "method": "Decode all8Base64 entries and compare exact byte length/SHA256 plus recomputed Git blob SHA1 with source git ls-tree records.",
+  "entries": [
+    {
+      "path": ".omo/evidence/life-full-20260906/6/build.txt",
+      "bytes": 18201,
+      "sha256": "4945880a34b061fd973b5945ab6222147f25d7ce0cba96d34a35b32cadeb0d72",
+      "originalGitBlob": "8747fa29746c4b17c4756b5837e44adfaab4cee8",
+      "exact": true
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/6/corrected-red.txt",
+      "bytes": 11930,
+      "sha256": "0dc31724070373f5d8069dfb61b8b884dd69c7033b6945a7419869df1ee40b5e",
+      "originalGitBlob": "adcf7da1e4f94b9bafc246d8ad5626479bc1b8d2",
+      "exact": true
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/6/final-build.txt",
+      "bytes": 18201,
+      "sha256": "dcdad4e5de79e940ccafad900130224a500252b5e8be8ad54d26a36fa621d652",
+      "originalGitBlob": "d92260fdfbaae5bd0f17cf4d6b007a7d55eedcac",
+      "exact": true
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/6/final-typecheck.txt",
+      "bytes": 68,
+      "sha256": "9e2e881b46f10347e10261b098fd6171273d8f45b9a5d52fc81a8473a713bdfe",
+      "originalGitBlob": "84e36f4a2d1b2dcf9c1099a6fa5a160da701b235",
+      "exact": true
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/6/green.txt",
+      "bytes": 958,
+      "sha256": "2fe4277b598e78c15700fd4c0bb6535f704daeaae6fcd684502e8481917573a7",
+      "originalGitBlob": "35daeb4b8ac334524d7f6abf86768a39992dc147",
+      "exact": true
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/6/red.txt",
+      "bytes": 16117,
+      "sha256": "12a05719b4f36306154cb5658eebdd053f7c3946a640203b3261a5bf600f4b74",
+      "originalGitBlob": "b9ae70988a412ad15ec49268969b93c3c996185e",
+      "exact": true
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/6/scoped-partial.txt",
+      "bytes": 8403,
+      "sha256": "5a70a8ff003f75e56b545e9953f91d737d30d2ff69e090d45b3eb9087fac1250",
+      "originalGitBlob": "3044e70fdac893b9a259a72992a86f1b1c009baa",
+      "exact": true
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/6/typecheck.txt",
+      "bytes": 68,
+      "sha256": "9e2e881b46f10347e10261b098fd6171273d8f45b9a5d52fc81a8473a713bdfe",
+      "originalGitBlob": "84e36f4a2d1b2dcf9c1099a6fa5a160da701b235",
+      "exact": true
+    }
+  ],
+  "sourceBehaviorChanged": false
+}

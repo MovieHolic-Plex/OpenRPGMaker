@@ -1,0 +1,519 @@
+{
+  "implementationSha": "6e4a4e45c9d82dec905d2ce629d1fd7f1ab4e621",
+  "baseSha": "b9dec50fb",
+  "tests": {
+    "files": 21,
+    "passed": 170,
+    "exit": 0,
+    "log": "verified-focused-tests.log"
+  },
+  "typecheck": {
+    "command": "npm run typecheck:app",
+    "exit": 0
+  },
+  "browser": {
+    "url": "http://127.0.0.1:9898/?freshProject=1",
+    "engine": "Chromium via Playwright with Node GET relay",
+    "exit": 0,
+    "remotePersistence": false,
+    "imageInputAvailable": false,
+    "measurements": [
+      {
+        "mode": "standard",
+        "width": 1440,
+        "height": 900,
+        "sidebar": {
+          "x": 0,
+          "y": 49,
+          "width": 300,
+          "height": 851,
+          "top": 49,
+          "right": 300,
+          "bottom": 900,
+          "left": 0
+        },
+        "sheet": {
+          "x": 11,
+          "y": 268,
+          "width": 267,
+          "height": 544,
+          "top": 268,
+          "right": 278,
+          "bottom": 812,
+          "left": 11
+        },
+        "sheetRatio": 0.6392479435957696,
+        "canvas": {
+          "x": 306,
+          "y": 49,
+          "width": 1134,
+          "height": 851,
+          "top": 49,
+          "right": 1440,
+          "bottom": 900,
+          "left": 306
+        },
+        "layers": {
+          "x": 11,
+          "y": 102,
+          "width": 267,
+          "height": 30,
+          "top": 102,
+          "right": 278,
+          "bottom": 132,
+          "left": 11
+        },
+        "toolbarScroll": false,
+        "mainToolbarScroll": false,
+        "clippedControls": [],
+        "pageOverflow": false
+      },
+      {
+        "mode": "standard",
+        "width": 1280,
+        "height": 800,
+        "sidebar": {
+          "x": 0,
+          "y": 49,
+          "width": 300,
+          "height": 751,
+          "top": 49,
+          "right": 300,
+          "bottom": 800,
+          "left": 0
+        },
+        "sheet": {
+          "x": 11,
+          "y": 268,
+          "width": 267,
+          "height": 444,
+          "top": 268,
+          "right": 278,
+          "bottom": 712,
+          "left": 11
+        },
+        "sheetRatio": 0.5912117177097204,
+        "canvas": {
+          "x": 306,
+          "y": 49,
+          "width": 974,
+          "height": 751,
+          "top": 49,
+          "right": 1280,
+          "bottom": 800,
+          "left": 306
+        },
+        "layers": {
+          "x": 11,
+          "y": 102,
+          "width": 267,
+          "height": 30,
+          "top": 102,
+          "right": 278,
+          "bottom": 132,
+          "left": 11
+        },
+        "toolbarScroll": false,
+        "mainToolbarScroll": false,
+        "clippedControls": [],
+        "pageOverflow": false
+      },
+      {
+        "mode": "standard",
+        "width": 1024,
+        "height": 768,
+        "sidebar": {
+          "x": 0,
+          "y": 49,
+          "width": 300,
+          "height": 719,
+          "top": 49,
+          "right": 300,
+          "bottom": 768,
+          "left": 0
+        },
+        "sheet": {
+          "x": 11,
+          "y": 268,
+          "width": 267,
+          "height": 412,
+          "top": 268,
+          "right": 278,
+          "bottom": 680,
+          "left": 11
+        },
+        "sheetRatio": 0.5730180806675939,
+        "canvas": {
+          "x": 306,
+          "y": 49,
+          "width": 718,
+          "height": 719,
+          "top": 49,
+          "right": 1024,
+          "bottom": 768,
+          "left": 306
+        },
+        "layers": {
+          "x": 11,
+          "y": 102,
+          "width": 267,
+          "height": 30,
+          "top": 102,
+          "right": 278,
+          "bottom": 132,
+          "left": 11
+        },
+        "toolbarScroll": false,
+        "mainToolbarScroll": false,
+        "clippedControls": [],
+        "pageOverflow": false
+      },
+      {
+        "mode": "expert",
+        "width": 1440,
+        "height": 900,
+        "sidebar": {
+          "x": 0,
+          "y": 49,
+          "width": 320,
+          "height": 851,
+          "top": 49,
+          "right": 320,
+          "bottom": 900,
+          "left": 0
+        },
+        "sheet": {
+          "x": 11,
+          "y": 268,
+          "width": 287,
+          "height": 280,
+          "top": 268,
+          "right": 298,
+          "bottom": 548,
+          "left": 11
+        },
+        "sheetRatio": 0.3290246768507638,
+        "canvas": {
+          "x": 326,
+          "y": 49,
+          "width": 1114,
+          "height": 851,
+          "top": 49,
+          "right": 1440,
+          "bottom": 900,
+          "left": 326
+        },
+        "layers": {
+          "x": 11,
+          "y": 102,
+          "width": 287,
+          "height": 30,
+          "top": 102,
+          "right": 298,
+          "bottom": 132,
+          "left": 11
+        },
+        "toolbarScroll": false,
+        "mainToolbarScroll": false,
+        "clippedControls": [],
+        "pageOverflow": false
+      },
+      {
+        "mode": "expert",
+        "width": 1280,
+        "height": 800,
+        "sidebar": {
+          "x": 0,
+          "y": 49,
+          "width": 320,
+          "height": 751,
+          "top": 49,
+          "right": 320,
+          "bottom": 800,
+          "left": 0
+        },
+        "sheet": {
+          "x": 11,
+          "y": 268,
+          "width": 287,
+          "height": 200,
+          "top": 268,
+          "right": 298,
+          "bottom": 468,
+          "left": 11
+        },
+        "sheetRatio": 0.2663115845539281,
+        "canvas": {
+          "x": 326,
+          "y": 49,
+          "width": 954,
+          "height": 751,
+          "top": 49,
+          "right": 1280,
+          "bottom": 800,
+          "left": 326
+        },
+        "layers": {
+          "x": 11,
+          "y": 102,
+          "width": 287,
+          "height": 30,
+          "top": 102,
+          "right": 298,
+          "bottom": 132,
+          "left": 11
+        },
+        "toolbarScroll": false,
+        "mainToolbarScroll": false,
+        "clippedControls": [],
+        "pageOverflow": false
+      },
+      {
+        "mode": "expert",
+        "width": 1024,
+        "height": 768,
+        "sidebar": {
+          "x": 0,
+          "y": 49,
+          "width": 320,
+          "height": 719,
+          "top": 49,
+          "right": 320,
+          "bottom": 768,
+          "left": 0
+        },
+        "sheet": {
+          "x": 11,
+          "y": 268,
+          "width": 287,
+          "height": 185,
+          "top": 268,
+          "right": 298,
+          "bottom": 453,
+          "left": 11
+        },
+        "sheetRatio": 0.2573018080667594,
+        "canvas": {
+          "x": 326,
+          "y": 49,
+          "width": 698,
+          "height": 719,
+          "top": 49,
+          "right": 1024,
+          "bottom": 768,
+          "left": 326
+        },
+        "layers": {
+          "x": 11,
+          "y": 102,
+          "width": 287,
+          "height": 30,
+          "top": 102,
+          "right": 298,
+          "bottom": 132,
+          "left": 11
+        },
+        "toolbarScroll": false,
+        "mainToolbarScroll": false,
+        "clippedControls": [],
+        "pageOverflow": false
+      },
+      {
+        "mode": "beginner",
+        "width": 1440,
+        "height": 900,
+        "sidebar": {
+          "x": 0,
+          "y": 49,
+          "width": 288,
+          "height": 851,
+          "top": 49,
+          "right": 288,
+          "bottom": 900,
+          "left": 0
+        },
+        "sheet": {
+          "x": 9,
+          "y": 369.984375,
+          "width": 272,
+          "height": 522.015625,
+          "top": 369.984375,
+          "right": 281,
+          "bottom": 892,
+          "left": 9
+        },
+        "sheetRatio": 0.6134143654524089,
+        "canvas": {
+          "x": 288,
+          "y": 49,
+          "width": 1152,
+          "height": 851,
+          "top": 49,
+          "right": 1440,
+          "bottom": 900,
+          "left": 288
+        },
+        "layers": {
+          "x": 9,
+          "y": 143,
+          "width": 272,
+          "height": 32,
+          "top": 143,
+          "right": 281,
+          "bottom": 175,
+          "left": 9
+        },
+        "toolbarScroll": false,
+        "mainToolbarScroll": false,
+        "clippedControls": [],
+        "pageOverflow": false
+      },
+      {
+        "mode": "beginner",
+        "width": 1280,
+        "height": 800,
+        "sidebar": {
+          "x": 0,
+          "y": 49,
+          "width": 288,
+          "height": 751,
+          "top": 49,
+          "right": 288,
+          "bottom": 800,
+          "left": 0
+        },
+        "sheet": {
+          "x": 9,
+          "y": 369.984375,
+          "width": 272,
+          "height": 422.015625,
+          "top": 369.984375,
+          "right": 281,
+          "bottom": 792,
+          "left": 9
+        },
+        "sheetRatio": 0.5619382490013316,
+        "canvas": {
+          "x": 288,
+          "y": 49,
+          "width": 992,
+          "height": 751,
+          "top": 49,
+          "right": 1280,
+          "bottom": 800,
+          "left": 288
+        },
+        "layers": {
+          "x": 9,
+          "y": 143,
+          "width": 272,
+          "height": 32,
+          "top": 143,
+          "right": 281,
+          "bottom": 175,
+          "left": 9
+        },
+        "toolbarScroll": false,
+        "mainToolbarScroll": false,
+        "clippedControls": [],
+        "pageOverflow": false
+      },
+      {
+        "mode": "beginner",
+        "width": 1024,
+        "height": 768,
+        "sidebar": {
+          "x": 0,
+          "y": 49,
+          "width": 288,
+          "height": 719,
+          "top": 49,
+          "right": 288,
+          "bottom": 768,
+          "left": 0
+        },
+        "sheet": {
+          "x": 9,
+          "y": 369.984375,
+          "width": 272,
+          "height": 390.015625,
+          "top": 369.984375,
+          "right": 281,
+          "bottom": 760,
+          "left": 9
+        },
+        "sheetRatio": 0.542441759388039,
+        "canvas": {
+          "x": 288,
+          "y": 49,
+          "width": 736,
+          "height": 719,
+          "top": 49,
+          "right": 1024,
+          "bottom": 768,
+          "left": 288
+        },
+        "layers": {
+          "x": 9,
+          "y": 143,
+          "width": 272,
+          "height": 32,
+          "top": 143,
+          "right": 281,
+          "bottom": 175,
+          "left": 9
+        },
+        "toolbarScroll": false,
+        "mainToolbarScroll": false,
+        "clippedControls": [],
+        "pageOverflow": false
+      }
+    ],
+    "interactions": [
+      {
+        "outsidePointerToolAndLayer": true
+      },
+      {
+        "mapSearchSwitchEscape": true,
+        "mapId": "map_house_interior_30_map_village_30_100x100_1"
+      },
+      {
+        "brushSize": 4,
+        "shape": "round",
+        "eventContext": true
+      },
+      {
+        "categoryFilters": true,
+        "searchClearFocus": true,
+        "connectionState": true
+      },
+      {
+        "assistPreservesSheet": 544,
+        "kitPreservesSheet": 544,
+        "stampCells": 2
+      },
+      {
+        "inspectionPinsAcrossModesAndReload": true,
+        "expertTreeCollapseResize": true
+      },
+      {
+        "actualCanvasPaintUndo": true
+      },
+      {
+        "beginnerSelectionAndLayers": true
+      }
+    ],
+    "consoleNotes": [
+      "Unavailable dev HMR websocket and local companion",
+      "Aborted local edit-activity mirroring",
+      "Local-only autosave disabled notices"
+    ]
+  },
+  "parentOwned": [
+    "full gates",
+    "build",
+    "independent manual QA",
+    "ultrabrain review and approval",
+    "PR and merge"
+  ]
+}

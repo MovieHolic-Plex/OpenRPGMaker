@@ -44,6 +44,10 @@ const setActionCombat: ToolDefinition = {
       playerIframesMs: { type: "integer" },
       swingCooldownMs: { type: "integer" },
       swingDamageBonus: { type: "integer" },
+      dodgeStaminaCost: { type: "integer" },
+      dodgeIframesMs: { type: "integer" },
+      guardDamageReductionPercent: { type: "integer" },
+      guardStaminaDrainPerSec: { type: "integer" },
       hearts: { type: "boolean" },
       stamina: { type: "boolean" },
       enemyHpBars: enemyHpBarsSchema,
@@ -51,6 +55,7 @@ const setActionCombat: ToolDefinition = {
     required: ["enabled"],
   },
   run(draft, args): ToolExecResult {
+    const map = typeof args.mapId === "string" && args.mapId.length > 0 ? requireMap(draft, args.mapId) : undefined;
     const existing: Partial<import("@/project/types").SystemActionCombat> = draft.system.actionCombat ?? {};
     const hud = {
       ...(existing.hud ?? {}),
@@ -64,12 +69,15 @@ const setActionCombat: ToolDefinition = {
       ...(args.playerIframesMs !== undefined ? { playerIframesMs: args.playerIframesMs as number } : {}),
       ...(args.swingCooldownMs !== undefined ? { swingCooldownMs: args.swingCooldownMs as number } : {}),
       ...(args.swingDamageBonus !== undefined ? { swingDamageBonus: args.swingDamageBonus as number } : {}),
+      ...(typeof args.dodgeStaminaCost === "number" ? { dodgeStaminaCost: args.dodgeStaminaCost } : {}),
+      ...(typeof args.dodgeIframesMs === "number" ? { dodgeIframesMs: args.dodgeIframesMs } : {}),
+      ...(typeof args.guardDamageReductionPercent === "number" ? { guardDamageReductionPercent: args.guardDamageReductionPercent } : {}),
+      ...(typeof args.guardStaminaDrainPerSec === "number" ? { guardStaminaDrainPerSec: args.guardStaminaDrainPerSec } : {}),
       ...(Object.keys(hud).length > 0 ? { hud } : {}),
     });
     draft.system.actionCombat = normalized;
     let mapNote = "";
-    if (typeof args.mapId === "string" && args.mapId.length > 0) {
-      const map = requireMap(draft, args.mapId);
+    if (map) {
       map.actionCombat = args.enabled === true;
       mapNote = `, 맵 '${map.name}' 액션 전투 ${map.actionCombat ? "옵트인" : "옵트아웃"}`;
     }
@@ -80,7 +88,7 @@ const setActionCombat: ToolDefinition = {
   },
 };
 
-function upsertActionEnemy(
+function prepareActionEnemy(
   draft: Project,
   args: Record<string, unknown>,
   warnings: string[],
@@ -91,12 +99,13 @@ function upsertActionEnemy(
   const existing = draft.database.enemies.find((entry) => entry.id === enemyId);
   const factionId = typeof args.factionId === "string" && args.factionId.length > 0 ? args.factionId : undefined;
   if (existing) {
-    existing.actionProfile = profile;
-    if (factionId !== undefined) existing.factionId = factionId;
-    if (args.monsterResourceId !== undefined) existing.monsterResourceId = args.monsterResourceId as string;
-    if (args.transparent !== undefined) existing.transparent = args.transparent as boolean;
-    ensureMonsterGraphic(draft, existing, existing, "monsterResourceId", warnings);
-    return { enemy: existing, outcome: "modified" };
+    const enemy = structuredClone(existing);
+    enemy.actionProfile = profile;
+    if (factionId !== undefined) enemy.factionId = factionId;
+    if (args.monsterResourceId !== undefined) enemy.monsterResourceId = args.monsterResourceId as string;
+    if (args.transparent !== undefined) enemy.transparent = args.transparent as boolean;
+    ensureMonsterGraphic(draft, enemy, enemy, "monsterResourceId", warnings);
+    return { enemy, outcome: "modified" };
   }
   if (typeof args.name !== "string" || args.name.length === 0) {
     throw new ToolError(`적 '${enemyId}'가 없습니다. 새로 만들려면 name이 필요합니다(기존 적 수정은 enemyId만).`, { code: "enemy-not-found" });
@@ -119,13 +128,12 @@ function upsertActionEnemy(
   enemy.actionProfile = profile;
   if (factionId !== undefined) enemy.factionId = factionId;
   ensureMonsterGraphic(draft, enemy, enemy, "monsterResourceId", warnings);
-  draft.database.enemies.push(enemy);
   return { enemy, outcome: "added" };
 }
 
 const makeActionEnemy: ToolDefinition = {
   name: "make_action_enemy",
-  description: "실시간 액션 전투용 적을 만든다. 적 레코드에 actionProfile(접촉/선딜 공격)을 설정하고, spawn이 있으면 해당 맵에 추격 필드 스폰을 추가한다. 맵은 set_action_combat으로 옵트인되어 있어야 실시간으로 싸운다.",
+  description: "실시간 액션 전투용 적을 만든다. 먼저 적을 만들고 upsert_troop으로 그 적의 트룹을 만든 뒤 spawn을 지정한다. spawn.id가 있으면 같은 스폰을 갱신하고 없으면 추가한다. 리소스·맵·트룹 검증 실패 시 아무것도 바꾸지 않는다. 맵은 set_action_combat으로 옵트인되어 있어야 실시간으로 싸운다.",
   mode: "write",
   domains: ["database", "map"],
   parameters: {
@@ -147,6 +155,7 @@ const makeActionEnemy: ToolDefinition = {
       spawn: {
         type: "object",
         properties: {
+          id: { type: "string", minLength: 1, description: "같은 맵에서 재시도할 때 갱신할 스폰 ID. 생략하면 새 스폰을 추가한다." },
           mapId: { type: "string" },
           troopId: { type: "string" },
           area: {
@@ -167,7 +176,7 @@ const makeActionEnemy: ToolDefinition = {
   },
   run(draft, args): ToolExecResult {
     const warnings: string[] = [];
-    const { enemy, outcome } = upsertActionEnemy(draft, args, warnings);
+    const { enemy, outcome } = prepareActionEnemy(draft, args, warnings);
     const notes: string[] = [`적 '${enemy.name}' ${outcome === "added" ? "추가" : "수정"}(actionProfile)`];
     const spawn = args.spawn as Record<string, unknown> | undefined;
     if (spawn) {
@@ -185,8 +194,15 @@ const makeActionEnemy: ToolDefinition = {
       if (area.x < 0 || area.y < 0 || area.w < 1 || area.h < 1 || area.x + area.w > map.width || area.y + area.h > map.height) {
         throw new ToolError(`area가 맵 범위를 벗어납니다 (맵 ${map.width}x${map.height}).`, { code: "area-out-of-bounds" });
       }
+      const existingSpawn = typeof spawn.id === "string" ? map.fieldSpawns?.find((entry) => entry.id === spawn.id) : undefined;
+      let spawnId = typeof spawn.id === "string" ? spawn.id : `spawn_${enemy.id}_${map.fieldSpawns?.length ?? 0}`;
+      if (spawn.id === undefined) {
+        let suffix = map.fieldSpawns?.length ?? 0;
+        while (map.fieldSpawns?.some((entry) => entry.id === spawnId)) spawnId = `spawn_${enemy.id}_${++suffix}`;
+      }
       const def: FieldSpawnDef = {
-        id: `spawn_${enemy.id}_${map.fieldSpawns?.length ?? 0}`,
+        ...existingSpawn,
+        id: spawnId,
         troopId,
         area,
         ...(spawn.maxAlive !== undefined ? { maxAlive: Math.max(1, Math.trunc(spawn.maxAlive as number)) } : {}),
@@ -195,10 +211,15 @@ const makeActionEnemy: ToolDefinition = {
         ...(typeof spawn.factionId === "string" && spawn.factionId.length > 0 ? { factionId: spawn.factionId } : {}),
         ...(spawn.graphic !== undefined ? { graphic: structuredClone(spawn.graphic) as FieldSpawnDef["graphic"] } : {}),
       };
-      map.fieldSpawns = [...(map.fieldSpawns ?? []), def];
-      notes.push(`맵 '${map.name}'에 스폰 ${def.id} 추가`);
+      map.fieldSpawns = existingSpawn
+        ? (map.fieldSpawns ?? []).map((entry) => entry.id === def.id ? def : entry)
+        : [...(map.fieldSpawns ?? []), def];
+      notes.push(`맵 '${map.name}'에 스폰 ${def.id} ${existingSpawn ? "수정" : "추가"}`);
       if (map.actionCombat !== true) notes.push("주의: 이 맵은 아직 액션 옵트인이 아닙니다 — set_action_combat { enabled:true, mapId } 필요");
     }
+    const enemyIndex = draft.database.enemies.findIndex((entry) => entry.id === enemy.id);
+    if (enemyIndex >= 0) draft.database.enemies[enemyIndex] = enemy;
+    else draft.database.enemies.push(enemy);
     return {
       summary: notes.join(" / "),
       data: { enemyId: enemy.id, actionProfile: enemy.actionProfile ?? null },

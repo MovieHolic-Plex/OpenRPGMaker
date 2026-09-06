@@ -56,7 +56,7 @@ try {
   page.on("request", request => {
     if (request.method() !== "POST" || !request.url().includes("/v1/chat/completions")) return;
     const body = request.postDataJSON();
-    log({ type: "model-request", model: body.model, hasTools: Boolean(body.tools?.length), hasPreciseTilePainting: Boolean(body.tools?.some(tool => tool.function?.name === "paint_tiles")), reasoning: body.reasoning, thinking: body.thinking });
+    log({ type: "model-request", model: body.model, toolCount: body.tools?.length ?? 0, hasTools: Boolean(body.tools?.length), hasPreciseTilePainting: Boolean(body.tools?.some(tool => tool.function?.name === "paint_tiles")), reasoning: body.reasoning, thinking: body.thinking });
   });
   // Only static GET transport is relayed. Auth, model and DB responses remain real.
   await page.route(`${origin}/**`, async route => {
