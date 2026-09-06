@@ -1,5 +1,13 @@
 # Editor AI Tools & Vocabulary
 
+## Flower-yard material in house lots (2026-09-07)
+
+The high-level `author_house` lots path translates `yard:"flowers"` to the
+canonical bundled material label `꽃/자연 소품`. The former bare `꽃` did not resolve
+in the shipped catalog and caused the entire construction to fail. This does not
+ignore yard shortfalls or bypass structure protection. The actual producer path
+is covered by `test/houseLotFlowerMaterial.test.ts`.
+
 ## Completed-house transaction protection - Phase 1 (2026-09-05)
 
 `src/editor/tools/houseProtection.ts` is the shared completed-house ownership rule.
