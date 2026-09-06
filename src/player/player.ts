@@ -1,3 +1,4 @@
+import { LifeReconciliationError } from "@/project/lifeRecovery";
 import { openEventMenu } from "@/player/playerEventMenus";
 import type Phaser from "phaser";
 import { startPlayGame, destroyGame } from "@/app/mode";
@@ -488,7 +489,14 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       renderLoad(fromTitle, `${slot}번 저장 칸을 불러올 수 없습니다 — ${blocker}`);
       return;
     }
-    const restored = applySaveSnapshot(store.getCurrent(), result.snapshot);
+    let restored: PlaySession;
+    try {
+      restored = applySaveSnapshot(store.getCurrent(), result.snapshot);
+    } catch (error) {
+      if (!(error instanceof LifeReconciliationError)) throw error;
+      renderLoad(fromTitle, `${slot}번 저장 칸을 불러올 수 없습니다`);
+      return;
+    }
     if (fromTitle || !game) {
       startGame({ session: restored });
       return;
@@ -510,7 +518,14 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       renderLoad(fromTitle, `자동 저장을 불러올 수 없습니다 — ${blocker}`);
       return;
     }
-    const restored = applySaveSnapshot(store.getCurrent(), result.snapshot);
+    let restored: PlaySession;
+    try {
+      restored = applySaveSnapshot(store.getCurrent(), result.snapshot);
+    } catch (error) {
+      if (!(error instanceof LifeReconciliationError)) throw error;
+      renderLoad(fromTitle, "자동 저장을 불러올 수 없습니다");
+      return;
+    }
     if (fromTitle || !game) {
       startGame({ session: restored });
       return;
