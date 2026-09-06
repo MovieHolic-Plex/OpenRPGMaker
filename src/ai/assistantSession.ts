@@ -1,4 +1,5 @@
-import { missingAcceptance, type AcceptanceSnapshot, type AcceptancePromise } from "./assistantAcceptance";
+import { missingAcceptance, type AcceptanceSnapshot, type AcceptancePromise, type AcceptanceSource, type RequirementWithdrawalAction } from "./assistantAcceptance";
+import { acceptanceFingerprint } from "./assistantAcceptanceEvaluation";
 import { AssistantAcceptanceLedger } from "./assistantAcceptanceLedger";
 import { AssistantImageEvidence, coveredByImages, type AcceptanceImageReceipt } from "./assistantImageEvidence";
 import { ACCEPTANCE_SCHEMA, ACCEPTANCE_TOOLS } from "./assistantAcceptanceTools";
@@ -675,6 +676,7 @@ export const WORK_PLAN_TOOLS: readonly OpenAiToolSchema[] = [
         properties: {
           goal: { type: "string", description: "전체 목표" },
           acceptance: ACCEPTANCE_SCHEMA,
+          requirements: ACCEPTANCE_SCHEMA,
           plannerNote: { type: "string", description: "전략 메모(선택)" },
           layers: {
             type: "array",
@@ -695,6 +697,7 @@ export const WORK_PLAN_TOOLS: readonly OpenAiToolSchema[] = [
                       title: { type: "string", description: "항목 제목" },
                       instruction: { type: "string", description: "실행 모델이 그대로 수행할 구체 지시" },
                       doneWhen: { type: "string", description: "완료 판정 기준(선택)" },
+                      requirementIds: { type: "array", items: { type: "string" } },
                       successTools: {
                         type: "array",
                         description: "이 항목의 성공을 증명하는 툴 이름(선택)",
@@ -763,6 +766,8 @@ export interface SessionTurnScope {
 }
 
 export interface SessionTurnOptions {
+  /** Explicit host user action, never inferred from model source/reset claims. */
+  readonly goalAction?: "resume" | "new-goal";
   readonly autonomous?: boolean;
   /** 사용자 발화 원문. text 에 footer 가 붙어 올 때 의도 선언·툴 언급 스캔은 이것만 본다. */
   readonly instruction?: string;
@@ -961,6 +966,8 @@ export class AssistantSession {
   private workPlan: WorkPlan | null = null;
   private acceptance: AssistantAcceptanceLedger | null = null;
   private acceptanceRequestBaseline: Project;
+  private acceptanceRequestSource: AcceptanceSource = { requestId: "request-0", text: "", scope: null };
+  private readonly acceptanceHistory: AcceptanceSnapshot[] = [];
   private acceptanceAppliedProject: Project | null = null;
   private acceptanceRepairAttempts = 0;
   private acceptanceSequence = 0;
@@ -1194,10 +1201,24 @@ export class AssistantSession {
     return this.acceptance?.getSnapshot() ?? null;
   }
 
+  getAcceptanceHistory(): readonly AcceptanceSnapshot[] {
+    return Object.freeze([...this.acceptanceHistory]);
+  }
+
+  /** UI/bridge user action only; deliberately absent from all LLM tool schemas. */
+  withdrawRequirement(action: RequirementWithdrawalAction, onEvent?: (event: SessionEvent) => void): boolean {
+    const accepted = this.acceptance?.withdraw(action) === true;
+    if (accepted) this.publishAcceptance(onEvent);
+    return accepted;
+  }
+
   /** Applied-state refresh for store changes/undo, including after completion. */
   refreshAcceptance(project: Project, onEvent?: (event: SessionEvent) => void): void {
     this.imageEvidence.current(project);
-    if (!this.acceptance) return;
+    // A verdict may precede declaration; late adoption must not revive pre-edit proof.
+    if (acceptanceFingerprint(this.acceptanceAppliedProject ?? this.acceptanceRequestBaseline) !== acceptanceFingerprint(project)) {
+      this.verificationEvidence.invalidateAfterWrite();
+    }
     this.acceptanceAppliedProject = structuredClone(project);
     this.publishAcceptance(onEvent);
   }
@@ -1206,7 +1227,7 @@ export class AssistantSession {
     this.imageEvidence.current(this.ctx.project);
     if (!this.acceptance || !this.acceptanceAppliedProject) return;
     const snapshot = this.acceptance.evaluate(this.acceptanceAppliedProject,
-      this.turnProposals.size > 0 ? this.ctx.project : this.acceptanceAppliedProject);
+      this.turnProposals.size > 0 ? this.ctx.project : this.acceptanceAppliedProject, this.verificationEvidence);
     onEvent?.({ type: "acceptance", snapshot });
   }
 
@@ -1224,6 +1245,12 @@ export class AssistantSession {
     return tool?.mode === "write" && (tool.domains?.includes("map") === true || SPATIAL_BUILD_TOOLS.has(name) || TILE_WRITE_TOOLS.has(name));
   }
 
+  private adoptPlanAcceptance(onEvent?: (event: SessionEvent) => void): void {
+    const plan = this.workPlan;
+    this.adoptAcceptance(plan?.acceptance || plan?.requirements
+      ? [...(plan.acceptance ?? []), ...(plan.requirements ?? [])] : undefined, onEvent);
+  }
+
   private adoptAcceptance(promises: readonly AcceptancePromise[] | undefined, onEvent?: (event: SessionEvent) => void): void {
     if (!promises && (this.acceptance || !this.spatialAcceptanceRequired())) return;
     const goal = this.acceptance?.goal ?? this.workPlan?.goal ?? this.currentTurnInstruction;
@@ -1231,7 +1258,7 @@ export class AssistantSession {
       this.acceptance = new AssistantAcceptanceLedger(`acceptance-${++this.acceptanceSequence}`, goal, this.acceptanceRequestBaseline, this.imageEvidence);
       this.acceptanceAppliedProject = structuredClone(this.baselineProject);
     }
-    this.acceptance.adopt(promises ?? missingAcceptance(goal), this.acceptanceRequestBaseline);
+    this.acceptance.adopt(promises ?? missingAcceptance(goal), this.acceptanceRequestBaseline, this.acceptanceRequestSource);
     this.publishAcceptance(onEvent);
   }
 
@@ -1241,7 +1268,7 @@ export class AssistantSession {
 
   private acceptanceIncompleteText(): string {
     const snapshot = this.getAcceptanceSnapshot();
-    return `완료 검증이 아직 미완성입니다.\n${snapshot?.items.filter(item => item.status !== "verified")
+    return `완료 검증이 아직 미완성입니다.\n${snapshot?.items.filter(item => item.required !== false && !item.withdrawal && item.status !== "verified")
       .map(item => `- ${item.title}: ${item.reason ?? "unverified"}\n${item.evidence.filter(e => !e.passed).map(e => `  ${e.expected} → ${e.observed}`).join("\n")}`).join("\n") ?? ""}`;
   }
 
@@ -1491,6 +1518,7 @@ export class AssistantSession {
     const usageBefore = this.usageTotals;
     const auditFrom = this.audit.length;
     const turnOptions: SessionTurnOptions = {
+      ...(opts?.goalAction ? { goalAction: opts.goalAction } : {}),
       ...(opts?.instruction !== undefined ? { instruction: opts.instruction } : {}),
       scope: opts?.scope ?? null,
       composerMode: opts?.composerMode ?? "do",
@@ -1501,7 +1529,7 @@ export class AssistantSession {
     }
     const first = await this.executeUserTurn(text, onEvent, signal, turnOptions);
     // 계획 모드의 계획만 세운 턴은 사용자 확인을 기다린다 — 드라이버가 「계속」을 대신 보내버리면 멈춘 의미가 없다.
-    if (this.lastTurnPlanOnly || turnOptions.composerMode === "ask") return this.finishRunRecap(first, startedAt, usageBefore, auditFrom, onEvent);
+    if (this.lastTurnPlanOnly || this.turnComposerMode === "ask") return this.finishRunRecap(first, startedAt, usageBefore, auditFrom, onEvent);
     const last = await this.runAutonomousDriver(first, onEvent, signal, turnOptions);
     return this.finishRunRecap(last, startedAt, usageBefore, auditFrom, onEvent);
   }
@@ -1621,50 +1649,55 @@ export class AssistantSession {
     this.lastTurnPlanOnly = false;
     this.turnIsDriverContinue = options.driverContinue === true;
     this.skipPlannerRoundOnly = false;
-    // 사람이 다시 말을 걸었다 = 재시도 신호. 막힌 항목을 되살리고 항목별 Ralph 시도 수를 0으로 돌린다.
-    // 드라이버의 합성 「계속」은 이 리셋을 받지 못한다 — 그래야 막힌 항목에서 런이 실제로 멈춘다.
-    if (!this.turnIsDriverContinue) {
+    // 의도 선언: 모델이 한 번 읽어 구조화한다(수정/생성·실내/야외·시설·되묻기·계획·툴). 코드는 이 선언만
+    // 소비한다. 선언자가 없거나 실패하면 중립 폴백 — 되묻지 않고, 툴은 UI 도메인·핀·이름 언급·승격만.
+    // 질문 모드는 사용자가 직접 고른 사실이라 선언의 create/modify 를 덮어쓴다 — 안 그러면 플래너·쓰기 기대가 문장 판정으로 돈다.
+    const intent = this.applyComposerModeToIntent(await this.declareTurnIntent(instruction, onEvent, signal));
+    this.turnIntent = intent;
+    if (intent.mode === "question" && this.turnComposerMode === "do") this.turnComposerMode = "ask";
+    const question = this.turnComposerMode === "ask";
+    const userAction = !this.turnIsDriverContinue && !question;
+    const startsGoal = userAction && options.goalAction === "new-goal";
+    const resumesGoal = userAction && (options.goalAction === "resume" || isContinuationText(instruction));
+    const newRequest = userAction && !resumesGoal && intent.source !== "continuation";
+    if (startsGoal) {
+      this.publishAcceptance();
+      const previous = this.getAcceptanceSnapshot();
+      if (previous) this.acceptanceHistory.push(previous);
+      this.imageEvidence.clear();
+      this.acceptance = null;
+      this.acceptanceAppliedProject = null;
+      this.workPlan = null;
+      this.verificationEvidence.clear();
+      onEvent({ type: "acceptance", snapshot: null });
+    }
+    if (newRequest || startsGoal) {
+      // Capture before planning/tools; continuations and questions retain this request's baseline.
+      this.acceptanceRequestBaseline = structuredClone(this.baselineProject);
+      this.acceptanceRequestSource = { requestId: `request-${this.currentTurnIndex + 1}`, text,
+        scope: this.turnScope ? structuredClone(this.turnScope) : null };
+    }
+    if (resumesGoal || startsGoal) {
       this.ralphAttemptsByItemId.clear();
       this.lastBlockReasonByItemId.clear();
       this.repeatedToolFailures.clear();
-      if (this.workPlan) {
+      this.acceptanceRepairAttempts = 0;
+      this.adventureRepairAttempts = 0;
+      this.acceptance?.resume();
+      if (resumesGoal && this.workPlan) {
         const revived = reactivateBlockedWorkItems(this.workPlan);
         if (revived > 0) {
           this.pushAudit({ kind: "status", text: `work-item:reactivated ${revived}건 — 사용자 메시지로 재시도` });
           this.emitWorkPlan(onEvent);
         }
       }
+      this.publishAcceptance(onEvent);
     }
-
-    // 의도 선언: 모델이 한 번 읽어 구조화한다(수정/생성·실내/야외·시설·되묻기·계획·툴). 코드는 이 선언만
-    // 소비한다. 선언자가 없거나 실패하면 중립 폴백 — 되묻지 않고, 툴은 UI 도메인·핀·이름 언급·승격만.
-    // 질문 모드는 사용자가 직접 고른 사실이라 선언의 create/modify 를 덮어쓴다 — 안 그러면 플래너·쓰기 기대가 문장 판정으로 돈다.
-    const intent = this.applyComposerModeToIntent(await this.declareTurnIntent(instruction, onEvent, signal));
-    this.turnIntent = intent;
-    if (!this.turnIsDriverContinue && intent.source !== "continuation") {
-      // Capture before planning/tools; milestone rebases and late adoption must not move it.
-      this.acceptanceRequestBaseline = structuredClone(this.baselineProject);
-    }
-    if (!this.turnIsDriverContinue) {
-      this.acceptanceRepairAttempts = 0;
-      if (intent.resetsContext && intent.source !== "continuation") {
-        this.imageEvidence.clear();
-        this.acceptance = null;
-        this.acceptanceAppliedProject = null;
-        onEvent({ type: "acceptance", snapshot: null });
-      } else {
-        this.acceptance?.resume();
-        this.publishAcceptance(onEvent);
-      }
-    }
-    if (!this.turnIsDriverContinue && intent.source !== "continuation") {
+    if (newRequest || startsGoal) {
       this.adventureRequirements = intent.adventure;
       this.adventureRepairAttempts = 0;
       this.adventureIconRecords.clear();
-    }
-    if (!this.turnIsDriverContinue && intent.source !== "continuation") {
       this.readEvidence.begin(intent.readBeforeWrite);
-      this.verificationEvidence.clear();
     }
     beginAssistantToolDomainTurn(intent);
     this.currentTurnToolDomains = computeActiveToolDomains(intent);
@@ -1680,7 +1713,7 @@ export class AssistantSession {
     this.carryoverWarningAdded = false;
     this.specRejections = 0;
     this.lastRejectedSpecFingerprint = null;
-    const continuesGoal = this.turnIsDriverContinue || intent.source === "continuation";
+    const continuesGoal = !startsGoal && (question || resumesGoal || this.turnIsDriverContinue || intent.source === "continuation");
     // A tool budget splits execution, not the work item. Keep unapplied calls and
     // artifact evidence until that item completes (or a different goal starts).
     if (!continuesGoal) this.turnProposals = new Map();
@@ -1693,7 +1726,7 @@ export class AssistantSession {
     if (!continuesGoal) this.resetWorkItemEvidence();
     this.syncSuccessfulToolsToCurrentWorkItem();
     // 볼륨 막대는 플래너가 계획과 함께 선언한 것만 남는다. 이어가기(계속)는 유지, 새 요청은 풀어 준다.
-    this.releaseVolumeContractForNewRequest(intent);
+    if (!question && !resumesGoal) this.releaseVolumeContractForNewRequest(intent);
     this.volumeContinueUsed = 0;
     this.eventBaseProposalKeys = new Map();
     this.skipPlannerThisTurn = false;
@@ -1973,7 +2006,7 @@ export class AssistantSession {
     // 수정 요청이면 대상 맵 id 를 계획에 박아 매 스프린트 재주입한다 — footer 가 없는
     // 자율 계속 턴에도 대상이 남아야 한다(진단 근본원인 14).
     this.workPlan = workPlanFromOrchestratorDecision(decision, new Date(), this.planTargetMapId(text));
-    this.adoptAcceptance(this.workPlan.acceptance, onEvent);
+    this.adoptPlanAcceptance(onEvent);
     this.resetWorkItemEvidence();
     this.lastMilestoneCompletionItemId = null;
     this.planAuthoredThisTurn = true;
@@ -1995,7 +2028,7 @@ export class AssistantSession {
   /** 플래너가 계획을 내지 못했을 때(오류·해석 실패·계획 모드의 direct) 코드가 최소 계획을 세운다. */
   private adoptFallbackWorkPlan(text: string, onEvent: (event: SessionEvent) => void, statusText: string): void {
     this.workPlan = buildDefaultWorkPlan(text, new Date(), { modifies: this.turnIntent?.mode === "modify" });
-    this.adoptAcceptance(this.workPlan.acceptance, onEvent);
+    this.adoptPlanAcceptance(onEvent);
     this.resetWorkItemEvidence();
     this.lastMilestoneCompletionItemId = null;
     this.planAuthoredThisTurn = true;
@@ -2172,7 +2205,7 @@ export class AssistantSession {
         };
       }
       this.workPlan = plan;
-      this.adoptAcceptance(plan.acceptance);
+      this.adoptPlanAcceptance();
       // 새 계획 — 항목 id 는 위치 기반("L1-1")이라 이전 계획과 겹칠 수 있다. 중복 완료 방지 추적을 초기화한다.
       this.lastMilestoneCompletionItemId = null;
       this.resetWorkItemEvidence();

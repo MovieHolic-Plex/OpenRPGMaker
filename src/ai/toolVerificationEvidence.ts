@@ -9,7 +9,7 @@ function stableKey(value: unknown): string {
 
 /** Scoped by the session to a work item or goal, including continuations. */
 export class ToolVerificationEvidence {
-  private readonly checks = new Map<string, { name: string; verdict: Verdict; stale: boolean; executionFailed: boolean; explicit: boolean }>();
+  private readonly checks = new Map<string, { name: string; verdict: Verdict; stale: boolean; executionFailed: boolean; explicit: boolean; explicitPass: boolean }>();
 
   clear(): void {
     this.checks.clear();
@@ -26,11 +26,15 @@ export class ToolVerificationEvidence {
       }
     }
     const key = stableKey([name, args]);
-    const explicit = source === "explicit" || this.checks.get(key)?.explicit === true;
+    const previous = this.checks.get(key);
+    const explicit = source === "explicit" || previous?.explicit === true;
+    const explicitPass = result.ok === true && verdict.pass && (source === "explicit"
+      || (previous?.explicitPass === true && !previous.stale));
     // A clean automatic check resolves its own prior finding but never creates
     // a new required check after later writes. Preserve explicit check history.
     if (source === "advisory" && verdict.pass && !explicit) this.checks.delete(key);
-    else this.checks.set(key, { name, verdict, stale: false, executionFailed: result.ok !== true, explicit });
+    else this.checks.set(key, { name, verdict, stale: false, executionFailed: result.ok !== true, explicit,
+      explicitPass });
     return verdict;
   }
 
@@ -43,6 +47,12 @@ export class ToolVerificationEvidence {
   passed(name: string): boolean {
     const checks = [...this.checks.values()].filter((check) => check.name === name);
     return checks.length > 0 && checks.every((check) => check.verdict.pass && !check.stale);
+  }
+
+  /** Exact invocation only; advisory rechecks cannot renew canonical proof. */
+  passedScope(name: string, args: Readonly<Record<string, unknown>>): boolean {
+    const check = this.checks.get(stableKey([name, args]));
+    return check?.explicitPass === true && !check.stale && check.verdict.pass;
   }
 
   problems(): readonly string[] {

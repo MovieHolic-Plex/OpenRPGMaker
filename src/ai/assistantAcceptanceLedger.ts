@@ -1,19 +1,24 @@
 import type { Project } from "@/project/types";
 import {
   parseAcceptanceCriteria,
-  type AcceptancePromise, type AcceptanceSnapshot, type AcceptanceItemSnapshot,
+  type AcceptancePromise, type AcceptanceSnapshot, type AcceptanceItemSnapshot, type AcceptanceSource, type RequirementWithdrawalAction,
 } from "./assistantAcceptance";
 import {
   acceptanceFingerprint, criterionTargets, evaluateAcceptanceCriterion, resolveAcceptanceMap,
 } from "./assistantAcceptanceEvaluation";
 
 import { AssistantImageEvidence, coveredByImages, type AcceptanceImageReceipt } from "./assistantImageEvidence";
+import type { ToolVerificationEvidence } from "./toolVerificationEvidence";
 export type { AcceptanceImageReceipt } from "./assistantImageEvidence";
 
 /** Session-owned ledger. Plans never own or replace its promises/baselines. */
 export class AssistantAcceptanceLedger {
   private readonly baseline: Project;
-  private readonly promises = new Map<string, AcceptancePromise & { readonly baseline: Project }>();
+  private readonly promises = new Map<string, AcceptancePromise & {
+    readonly baseline: Project;
+    readonly source: AcceptanceSource;
+    readonly withdrawal?: RequirementWithdrawalAction & { readonly source: "user" };
+  }>();
   private readonly bindings = new Map<string, string>();
   private readonly reviews = new Map<string, {
     readonly receipts: readonly AcceptanceImageReceipt[];
@@ -29,12 +34,18 @@ export class AssistantAcceptanceLedger {
   }
 
   /** requestBaseline must precede this request's writes, even for late adoption. */
-  adopt(promises: readonly AcceptancePromise[], requestBaseline = this.baseline): void {
+  adopt(promises: readonly AcceptancePromise[], requestBaseline = this.baseline,
+    source: AcceptanceSource = { requestId: this.id, text: this.goal, scope: null }): void {
     const additions = promises.filter(promise => !this.promises.has(promise.id));
     if (additions.length === 0) return;
     const baseline = structuredClone(requestBaseline);
+    const provenance = Object.freeze({ requestId: source.requestId, text: source.text,
+      scope: source.scope ? Object.freeze({ mapId: source.scope.mapId, region: Object.freeze({ ...source.scope.region }) }) : null });
     for (const promise of additions) {
-      if (!this.promises.has(promise.id)) this.promises.set(promise.id, { ...structuredClone(promise), baseline });
+      if (!this.promises.has(promise.id)) this.promises.set(promise.id, {
+        id: promise.id, title: promise.title, criteria: structuredClone(promise.criteria),
+        required: promise.required !== false, baseline, source: provenance,
+      });
     }
   }
 
@@ -43,6 +54,15 @@ export class AssistantAcceptanceLedger {
     const parsed = parseAcceptanceCriteria(criteria);
     if (!promise || promise.criteria !== null || !parsed) return false;
     this.promises.set(promise.id, { ...promise, criteria: parsed });
+    return true;
+  }
+
+  /** Host-only scope action. Never dispatched from an assistant tool. */
+  withdraw(action: RequirementWithdrawalAction): boolean {
+    const promise = this.promises.get(action.requirementId);
+    if (action.acceptanceId !== this.id || !promise || promise.withdrawal || !action.reason.trim()) return false;
+    const withdrawal = Object.freeze({ acceptanceId: this.id, requirementId: promise.id, reason: action.reason.trim(), source: "user" as const });
+    this.promises.set(promise.id, { ...promise, withdrawal });
     return true;
   }
 
@@ -96,7 +116,7 @@ export class AssistantAcceptanceLedger {
     return covered;
   }
 
-  evaluate(applied: Project, draft = applied): AcceptanceSnapshot {
+  evaluate(applied: Project, draft = applied, verification?: ToolVerificationEvidence): AcceptanceSnapshot {
     this.bind(draft);
     this.images.current(draft);
     for (const [id, review] of this.reviews) {
@@ -105,11 +125,13 @@ export class AssistantAcceptanceLedger {
       else this.reviews.set(id, { ...review, receipts });
     }
     const items: AcceptanceItemSnapshot[] = [...this.promises.values()].map(promise => {
-      if (!promise.criteria) return Object.freeze({ id: promise.id, title: promise.title, status: "blocked", reason: "Missing or malformed criteria: repair_acceptance required", evidence: Object.freeze([]) });
+      const metadata = { required: promise.required !== false, source: promise.source,
+        ...(promise.withdrawal ? { withdrawal: promise.withdrawal } : {}) };
+      if (!promise.criteria) return Object.freeze({ ...metadata, id: promise.id, title: promise.title, status: "blocked", reason: "Missing or malformed criteria: repair_acceptance required", evidence: Object.freeze([]) });
       const review = this.reviews.get(promise.id);
       const evidence = promise.criteria.map(criterion => {
         const result = evaluateAcceptanceCriterion(criterion, {
-          project: applied, baseline: promise.baseline, bindings: this.bindings,
+          project: applied, baseline: promise.baseline, bindings: this.bindings, verification,
           reviewed: (map, region) => review?.passed === true
             && coveredByImages(this.currentReceipts(review.receipts, applied), map, region),
         });
@@ -120,7 +142,8 @@ export class AssistantAcceptanceLedger {
         });
       });
       const maps = promise.criteria.flatMap(criterion => criterionTargets(criterion));
-      const unapplied = maps.some(target => {
+      const unapplied = (promise.criteria.some(criterion => criterion.kind === "toolVerdict")
+        && acceptanceFingerprint(applied) !== acceptanceFingerprint(draft)) || maps.some(target => {
         const before = resolveAcceptanceMap(applied, target, this.bindings), after = resolveAcceptanceMap(draft, target, this.bindings);
         return acceptanceFingerprint(before) !== acceptanceFingerprint(after);
       });
@@ -131,14 +154,15 @@ export class AssistantAcceptanceLedger {
       const passed = evidence.every(entry => entry.passed) && !unapplied;
       const status = passed ? "verified" : this.stopped ? "blocked" : unapplied ? "verifying" : "working";
       return Object.freeze({
-        id: promise.id, title: promise.title, status, evidence: Object.freeze(evidence),
+        ...metadata, id: promise.id, title: promise.title, status, evidence: Object.freeze(evidence),
         ...(!passed ? { reason: unapplied ? "Draft is not yet applied" : this.stopped ? "Acceptance incomplete; execution stopped" : "Acceptance checks remain open" } : {}),
         ...(map ? { mapId: map.id } : {}), ...(region ? { region: Object.freeze({ ...region }) } : {}),
       });
     });
-    const status = items.length > 0 && items.every(item => item.status === "verified") ? "verified"
-      : items.some(item => item.status === "blocked") ? "blocked"
-      : items.some(item => item.status === "verifying") ? "verifying" : "working";
+    const required = items.filter(item => item.required !== false && !item.withdrawal);
+    const status = items.length > 0 && required.every(item => item.status === "verified") ? "verified"
+      : required.some(item => item.status === "blocked") ? "blocked"
+      : required.some(item => item.status === "verifying") ? "verifying" : "working";
     this.snapshot = Object.freeze({ id: this.id, goal: this.goal, status, items: Object.freeze(items) });
     return this.snapshot;
   }

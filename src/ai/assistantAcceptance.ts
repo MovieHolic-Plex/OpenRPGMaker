@@ -1,4 +1,5 @@
 import type { Point } from "@/project/lint/reachability";
+import { VERIFICATION_TOOL_NAMES } from "./agentVerification";
 
 export type AcceptanceStatus = "pending" | "working" | "verifying" | "verified" | "blocked";
 export interface AcceptanceSnapshot {
@@ -7,7 +8,23 @@ export interface AcceptanceSnapshot {
   readonly status: AcceptanceStatus;
   readonly items: readonly AcceptanceItemSnapshot[];
 }
+export interface AcceptanceSource {
+  readonly requestId: string;
+  readonly text: string;
+  readonly scope: {
+    readonly mapId: string;
+    readonly region: { readonly x: number; readonly y: number; readonly width: number; readonly height: number };
+  } | null;
+}
+export interface RequirementWithdrawalAction {
+  readonly acceptanceId: string;
+  readonly requirementId: string;
+  readonly reason: string;
+}
 export interface AcceptanceItemSnapshot {
+  readonly required?: boolean;
+  readonly source?: AcceptanceSource;
+  readonly withdrawal?: RequirementWithdrawalAction & { readonly source: "user" };
   readonly id: string;
   readonly title: string;
   readonly status: AcceptanceStatus;
@@ -20,12 +37,14 @@ export interface AcceptanceRegion { readonly x: number; readonly y: number; read
 export type AcceptanceTarget = { readonly mapId: string } | { readonly newMapName: string };
 type ScopedTarget = { readonly target: AcceptanceTarget; readonly region?: AcceptanceRegion };
 export type AcceptanceCriterion =
+  | { readonly kind: "toolVerdict"; readonly tool: string; readonly args: Readonly<Record<string, unknown>> }
   | { readonly kind: "mapDimensions"; readonly target: AcceptanceTarget; readonly width: number; readonly height: number }
   | { readonly kind: "mapCount"; readonly targets: readonly AcceptanceTarget[]; readonly count: number }
   | (ScopedTarget & { readonly kind: "eventCount"; readonly count: number })
   | (ScopedTarget & { readonly kind: "targetChange" | "preserve" | "imageReviewed" })
   | { readonly kind: "reachability"; readonly target: AcceptanceTarget; readonly from: Point; readonly to: readonly Point[] };
 export interface AcceptancePromise {
+  readonly required?: boolean;
   readonly id: string;
   readonly title: string;
   /** null means the entire criterion array failed parsing; repair is required. */
@@ -58,10 +77,14 @@ function criterion(value: unknown): AcceptanceCriterion | null {
     mapDimensions: ["kind", "target", "width", "height"], mapCount: ["kind", "targets", "count"],
     eventCount: ["kind", "target", "region", "count"], targetChange: ["kind", "target", "region"],
     preserve: ["kind", "target", "region"], imageReviewed: ["kind", "target", "region"],
-    reachability: ["kind", "target", "from", "to"],
+    reachability: ["kind", "target", "from", "to"], toolVerdict: ["kind", "tool", "args"],
   };
   const allowed = typeof value.kind === "string" && Object.hasOwn(keys, value.kind) ? keys[value.kind] : undefined;
   if (!allowed || Object.keys(value).some(key => !allowed.includes(key))) return null;
+  if (value.kind === "toolVerdict") {
+    return text(value.tool) && VERIFICATION_TOOL_NAMES.has(value.tool) && acceptanceRecord(value.args)
+      ? { kind: "toolVerdict", tool: value.tool, args: structuredClone(value.args) } : null;
+  }
   if (value.kind === "mapCount") {
     if (!Array.isArray(value.targets) || value.targets.length === 0 || !integer(value.count)) return null;
     const targets = value.targets.map(target);
@@ -108,7 +131,9 @@ export function parseAcceptance(value: unknown): readonly AcceptancePromise[] | 
       continue;
     }
     ids.add(entry.id);
-    promises.push({ id: entry.id, title: entry.title, criteria: parseAcceptanceCriteria(entry.criteria) });
+    const validRequired = entry.required === undefined || typeof entry.required === "boolean";
+    const criteria = validRequired ? parseAcceptanceCriteria(entry.criteria) : null;
+    promises.push({ id: entry.id, title: entry.title, required: criteria === null || entry.required !== false, criteria });
   }
   if (needsRepair) {
     let id = "acceptance-contract";
