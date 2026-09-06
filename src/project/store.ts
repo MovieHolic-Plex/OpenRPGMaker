@@ -7,7 +7,7 @@ import { hasPendingFacesetSheetRepair, repairUploadedFacesetSheets } from "@/ass
 import { repairInteriorTransparentPropLayers } from "./defaults/interiorTransparentPropLayerRepair";
 import { ensureScarloxyPokemonInteriors } from "./defaults/scarloxyPokemonInteriors";
 import { ensureDefaultDatabaseIconResources } from "./defaults/defaultDatabaseIconResources";
-import { ensureBundledBattleAnimations } from "./defaults/defaultDatabase";
+import { defaultTitleScreenSettings, ensureBundledBattleAnimations } from "./defaults/defaultDatabase";
 import { isSaveSkippedLocation, loadDevProjectOverride, saveDevProjectOverride } from "./devProjectPersistence";
 import {
   loadProjectFromSupabase,
@@ -17,6 +17,7 @@ import {
   type SupabaseSaveResult,
 } from "./supabaseProjectSync";
 import { projectWithoutEventDrafts } from "./eventDrafts";
+import { applyAudioDescriptionDelta } from "./audioDescriptions";
 import { serialize, serializeForComparison } from "./io";
 import {
   applyEventDraftVault,
@@ -343,7 +344,7 @@ class ProjectStore {
   ): Promise<LoadNewRemoteProjectResult> {
     const title = options.title?.trim();
     if (title) {
-      project.meta = { ...project.meta, title };
+      nameNewProject(project, title);
     }
 
     const draft = supabaseProjectConfigDraft();
@@ -420,7 +421,7 @@ class ProjectStore {
     const targetConfig: SupabaseProjectConfig = { ...baseConfig, projectId };
     const candidate = structuredClone(project);
     const title = options.title?.trim();
-    if (title) candidate.meta = { ...candidate.meta, title };
+    if (title) nameNewProject(candidate, title);
     const generationAfterFlush = this.mutationGeneration;
 
     let saved: SupabaseSaveResult;
@@ -756,6 +757,11 @@ class ProjectStore {
   ): Project {
     ensureSwitchVariableSlots(project);
     removeLegacySpriteReferences(project);
+    if (options.preserveEventDrafts === false || options.change?.projectSwitch === true) {
+      this.contentLineage += 1;
+      this.lastPersistenceReceipt = null;
+      this.persistedBaseline = null;
+    }
     if (options.change?.projectSwitch === true) clearCopiedEventPage();
     // Default: keep open event editor drafts across undo/AI/accept/remote merges.
     // Pass preserveEventDrafts:false only for intentional full project switches
@@ -907,6 +913,9 @@ class ProjectStore {
     clearEventDraftVault();
     clearCopiedEventPage();
     persistEventDraftVaultNow();
+    this.contentLineage += 1;
+    this.lastPersistenceReceipt = null;
+    this.persistedBaseline = null;
     this.current = createBlankProject();
     if (this.loadedRemoteProjectId === null) this.beginLocalProjectSession();
     this.markLocalMutation({ scope: "project", label: "전체 초기화" });
@@ -1205,12 +1214,12 @@ class ProjectStore {
     if (result.kind === "not-configured") return result;
     if (result.kind === "conflict") return result;
     const savedProject = result.project ?? submittedProject;
-    // Baseline tracks what the server accepted — not what the editor is showing.
-    this.persistedBaseline = structuredClone(projectWithoutEventDrafts(savedProject));
+    // Keep accepted content detached even if a replacement arrives during receipt hashing.
+    const acceptedBaseline = structuredClone(projectWithoutEventDrafts(savedProject));
     let receipt: ProjectPersistenceReceipt | undefined;
     try {
       // Capture accepted content before the hash await; never derive it from live getCurrent().
-      const acceptedContent = serializeForComparison(this.persistedBaseline);
+      const acceptedContent = serializeForComparison(acceptedBaseline);
       receipt = Object.freeze({
         revisionId: randomUuid(),
         projectId: target.projectId,
@@ -1223,10 +1232,28 @@ class ProjectStore {
       // Intermediate projects may save but cannot supply normalized proof. Preserve flush compatibility.
       log.warn("Accepted project could not produce a persistence receipt", error);
     }
-    // A save from before load/reload/adoption remains historical, never current authority.
-    // In particular, do not overwrite a receipt already issued for the replacement lineage.
-    if (this.contentLineage === lineageAtSubmit) this.lastPersistenceReceipt = receipt ?? null;
-    // Local-first: never replace live maps/project with the save response.
+    recordManualProjectCommitAfterSave(savedProject, commitBaseline);
+    // Historical saves retain proof, but cannot adopt a baseline, metadata or dirty state
+    // into a replacement project (including a replacement during the hash await).
+    if (this.contentLineage !== lineageAtSubmit) return receipt ? { ...result, receipt } : result;
+    this.persistedBaseline = acceptedBaseline;
+    this.lastPersistenceReceipt = receipt ?? null;
+    const audioDescriptions = applyAudioDescriptionDelta(
+      submittedProject.audioDescriptions,
+      this.current.audioDescriptions,
+      savedProject.audioDescriptions,
+    );
+    if (JSON.stringify(audioDescriptions) !== JSON.stringify(this.current.audioDescriptions)) {
+      const reconciledProject = { ...this.current };
+      if (audioDescriptions === undefined) delete reconciledProject.audioDescriptions;
+      else reconciledProject.audioDescriptions = structuredClone(audioDescriptions);
+      this.current = reconciledProject;
+      // Synchronization is observable, but is not a new authored mutation.
+      this.emit({ scope: "project", origin: "system", projectSwitch: false });
+    }
+    // A synchronization subscriber may itself replace the project.
+    if (this.contentLineage !== lineageAtSubmit) return receipt ? { ...result, receipt } : result;
+    // Local-first: never replace live maps with the save response.
     // Doing so rewound brush strokes that landed during the network RTT
     // (user symptom: painted tiles pop back / cancel after a moment).
     if (this.mutationGeneration === generationAtSubmit) {
@@ -1237,7 +1264,6 @@ class ProjectStore {
       // Do not arm the 4s autosave debounce here — that left a "saved" gap.
       this.dirtySinceLastPersist = true;
     }
-    recordManualProjectCommitAfterSave(savedProject, commitBaseline);
     this.refreshSupabaseResourceCache();
     return receipt ? { ...result, receipt } : result;
   }
@@ -1338,6 +1364,14 @@ class ProjectStore {
 }
 
 export const store = new ProjectStore();
+
+function nameNewProject(project: Project, title: string): void {
+  const playerTitle = project.system.titleScreen?.title?.trim();
+  if (!playerTitle || playerTitle === defaultTitleScreenSettings().title) {
+    project.system.titleScreen = { ...(project.system.titleScreen ?? defaultTitleScreenSettings()), title };
+  }
+  project.meta = { ...project.meta, title };
+}
 
 function browserHref(): string | null {
   if (typeof window === "undefined") return null;

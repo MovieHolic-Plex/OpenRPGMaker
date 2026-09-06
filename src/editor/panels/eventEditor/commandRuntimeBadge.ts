@@ -1,9 +1,8 @@
-import { runtimeSupportBadge, type CommandRuntimeSupport } from "@/project/eventCommands/runtimeSupport";
+import type { CommandRuntimeSupportDescriptor } from "@/project/eventCommands/runtimeSupport";
 import { el } from "@/util/dom";
 
-export function renderRuntimeSupportBadge(support: CommandRuntimeSupport, testId: string): HTMLElement | null {
-  const badge = runtimeSupportBadge(support);
-  if (!badge) return null;
+export function renderRuntimeSupportBadge(badge: CommandRuntimeSupportDescriptor, testId: string): HTMLElement | null {
+  if (badge.support === "runtime-full") return null;
   return el("span", {
     class: `command-runtime-badge ${badge.support}`,
     text: badge.icon,
@@ -11,6 +10,14 @@ export function renderRuntimeSupportBadge(support: CommandRuntimeSupport, testId
       title: badge.tooltip,
       "aria-label": badge.label,
     },
-    dataset: { testid: testId, runtimeSupport: badge.support },
+    dataset: {
+      testid: testId,
+      runtimeSupport: badge.support,
+      runtimeReason: badge.reasonCode,
+      ...(badge.alternative ? {
+        runtimeAlternative: badge.alternative.kind,
+        runtimeAlternativeLoop: String(badge.alternative.loop),
+      } : {}),
+    },
   });
 }

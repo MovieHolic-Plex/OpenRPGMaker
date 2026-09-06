@@ -20,6 +20,7 @@ import { INVESTIGATION_TOOLS } from "./investigationTools";
 import { NARRATIVE_HORROR_TEMPLATE_TOOLS } from "./narrativeHorrorTemplateTools";
 import { LIGHTING_TOOLS } from "./lightingTools";
 import { ACTION_TOOLS } from "./actionTools";
+import { PROJECT_WIKI_TOOLS } from "./projectWikiTools";
 import { MAP_TOOLS } from "./mapTools";
 import { MONSTER_SYSTEM_TOOLS } from "./monsterSystemTools";
 import { PALETTE_PRESET_TOOLS } from "./palettePresetTools";
@@ -151,6 +152,7 @@ function withDomain(tools: readonly ToolDefinition[], domain: ToolDomain): reado
 // 레지스트리 순서: canonical construction → 정공법(v3) → 활성 맵/이벤트… → 레거시(deprecated) 엔진 호환.
 export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   FIND_TOOLS,
+  ...PROJECT_WIKI_TOOLS,
   ...PROJECT_TOOLS,
   ...withDomain(VOCABULARY_TOOLS_V3, "tile"),
   AUTHOR_HOUSE_TOOL,
@@ -257,7 +259,10 @@ const MAX_EXPOSED_TOOLS = 40;
 // deprecated를 먼저 걸러내므로 핀해도 노출되지 않고, "보장됐다"는 착각만 남는다.
 // 재발 방지는 test/toolRegistry.test.ts 의 "핀된 툴은 deprecated가 아니다" 가드가 담당한다.
 export const PINNED_TOOLS_BY_DOMAIN: ReadonlyMap<ToolDomain, ReadonlySet<string>> = new Map([
-  ["system", new Set(["reset_project", "configure_time_system", "evaluate_game_quality"])],
+  ["system", new Set([
+    "reset_project", "configure_time_system", "evaluate_game_quality",
+    "get_audio_resource", "set_audio_description",
+  ])],
   ["tile", new Set([
     "author_house", // 집·여관 외장 canonical facade (build_house_kit/lots의 대체 툴)
     "author_village",

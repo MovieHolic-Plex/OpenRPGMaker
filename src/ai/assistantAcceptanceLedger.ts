@@ -1,7 +1,9 @@
 import type { Project } from "@/project/types";
+import { isVerifiedActionCombatProof, type ActionCombatProofReceipt } from "@/testing/actionCombatProof";
 import {
   ACCEPTANCE_EXAMPLES, parseAcceptanceCriteriaResult,
   type AcceptancePromise, type AcceptanceSnapshot, type AcceptanceItemSnapshot, type AcceptanceIssue, type AcceptanceCriterion,
+  acceptanceRecord, type AcceptanceTarget,
 } from "./assistantAcceptance";
 import {
   acceptanceFingerprint, criterionTargets, evaluateAcceptanceCriterion, resolveAcceptanceMap,
@@ -20,6 +22,8 @@ export interface AcceptanceToolResult {
 export class AssistantAcceptanceLedger {
   private readonly baseline: Project;
   private readonly promises = new Map<string, AcceptancePromise & { readonly baseline: Project }>();
+  private readonly actionRequirements = new Map<string, AcceptancePromise & { readonly baseline: Project }>();
+  private readonly actionProofs = new Map<string, ActionCombatProofReceipt>();
   private readonly bindings = new Map<string, string>();
   private readonly reviews = new Map<string, {
     readonly receipts: readonly AcceptanceImageReceipt[];
@@ -45,6 +49,30 @@ export class AssistantAcceptanceLedger {
       this.promises.set(promise.id, { ...structuredClone(promise), baseline,
         ...(issues.length ? { criteria: null, issues } : {}) });
     }
+  }
+
+  /** Intent-owned obligations are outside planner IDs and cannot be repaired away. */
+  requireActionCombat(targets: readonly AcceptanceTarget[], requestBaseline = this.baseline): void {
+    for (const target of targets) {
+      const id = `action-combat:${acceptanceFingerprint(target)}`;
+      if (!this.actionRequirements.has(id)) this.actionRequirements.set(id, {
+        id, title: "Action combat", criteria: [{ kind: "actionCombat", target: structuredClone(target) }],
+        baseline: structuredClone(requestBaseline),
+      });
+    }
+  }
+
+  /** The async dispatcher supplies the requested map even for failed/aborted runs. */
+  captureActionProof(receipt: unknown, project: Project, requestedMapId?: string): boolean {
+    const mapId = requestedMapId ?? (acceptanceRecord(receipt) && typeof receipt.mapId === "string" ? receipt.mapId : undefined);
+    if (!mapId) {
+      this.actionProofs.clear();
+      return false;
+    }
+    this.actionProofs.delete(mapId);
+    if (!isVerifiedActionCombatProof(receipt, project, mapId)) return false;
+    this.actionProofs.set(mapId, receipt);
+    return true;
   }
 
   repair(itemId: unknown, criteria: unknown): AcceptanceToolResult {
@@ -86,7 +114,7 @@ export class AssistantAcceptanceLedger {
 
   private bind(project: Project): void {
     const attempted = new Set<string>();
-    for (const promise of this.promises.values()) {
+    for (const promise of [...this.promises.values(), ...this.actionRequirements.values()]) {
       for (const criterion of promise.criteria ?? []) {
         for (const target of criterionTargets(criterion)) {
           if (!("newMapName" in target) || this.bindings.has(target.newMapName) || attempted.has(target.newMapName)) continue;
@@ -145,15 +173,19 @@ export class AssistantAcceptanceLedger {
     return { ok: true, code: "reviewed", issues: [] };
   }
 
-  evaluate(applied: Project, draft = applied): AcceptanceSnapshot {
+  evaluate(applied: Project, draft = applied, blockingProblems: readonly string[] = []): AcceptanceSnapshot {
     this.bind(draft);
+    // Retirement is permanent: an edit followed by undo cannot revive old proof.
+    for (const [mapId, receipt] of this.actionProofs) {
+      if (!isVerifiedActionCombatProof(receipt, draft, mapId)) this.actionProofs.delete(mapId);
+    }
     this.images.current(draft);
     for (const [id, review] of this.reviews) {
       const receipts = this.currentReceipts(review.receipts, draft);
       if (receipts.length === 0) this.reviews.delete(id);
       else this.reviews.set(id, { ...review, receipts });
     }
-    const items: AcceptanceItemSnapshot[] = [...this.promises.values()].map(promise => {
+    const items: AcceptanceItemSnapshot[] = [...this.promises.values(), ...this.actionRequirements.values()].map(promise => {
       if (!promise.criteria) return Object.freeze({ id: promise.id, title: promise.title, status: "blocked", reason: "Missing or malformed criteria: repair_acceptance required",
         issues: Object.freeze((promise.issues ?? parseAcceptanceCriteriaResult(undefined).issues).map(issue => Object.freeze({ ...issue, example: ACCEPTANCE_EXAMPLES[issue.example.kind] }))), evidence: Object.freeze([]) });
       const review = this.reviews.get(promise.id);
@@ -162,6 +194,7 @@ export class AssistantAcceptanceLedger {
           project: applied, baseline: promise.baseline, bindings: this.bindings,
           reviewed: (map, region) => review?.passed === true
             && coveredByImages(this.currentReceipts(review.receipts, applied), map, region),
+          actionProven: map => isVerifiedActionCombatProof(this.actionProofs.get(map.id), applied, map.id),
         });
         return Object.freeze({
           ...result,
@@ -189,6 +222,13 @@ export class AssistantAcceptanceLedger {
         ...(map ? { mapId: map.id } : {}), ...(region ? { region: Object.freeze({ ...region }) } : {}),
       });
     });
+    if (blockingProblems.length > 0) items.push(Object.freeze({
+      id: "required-verification", title: "Required verification", status: "blocked",
+      reason: blockingProblems.join("; "),
+      evidence: Object.freeze(blockingProblems.map(observed => Object.freeze({
+        expected: "Every required check passes against current content", observed, passed: false,
+      }))),
+    }));
     const status = items.length > 0 && items.every(item => item.status === "verified") ? "verified"
       : items.some(item => item.status === "blocked") ? "blocked"
       : items.some(item => item.status === "verifying") ? "verifying" : "working";

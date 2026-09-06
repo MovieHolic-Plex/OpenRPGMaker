@@ -99,15 +99,46 @@ VITE_BGM_CDN_BASE=https://cheapcdn.sgp1.cdn.digitaloceanspaces.com
   keeps a hidden text input on the original `map-bgm-resource` testid, so existing e2e paths still
   work.
 - **Resource picker (`kind: "music"`)** lists the catalog first, then the older CC0 five, then
-  EasyRPG. Options carry `searchTerms` (category, emotions, instruments, English title, track code,
-  creative brief) which the picker's search box matches but does not display — that is what lets
-  "던전", "비 오는 실내", or `RTP-BTL-002` all find a track. Preview playback works in the dialog.
+  EasyRPG, registered generated resources, project profiles and uploads. Search uses the effective
+  project description alongside names, IDs and independent tags. The selected resource displays
+  its description and source; preview playback remains available.
 - **`searchResources("bgm", query)`** exposes the same catalog to AI tools (`list_resources`).
   Labels are `title — category (m:ss)`.
 - **Default project**: map BGM, battle BGM, and title BGM all point at starter catalog tracks
   (`defaultSystem()`, `defaultTitleScreenSettings()`). `legacyAudioRepair.ts` also repairs
   unplayable `.mid` references to the starter tracks — it must only ever target starter ids,
   because a CDN-only replacement would leave CDN-less environments silent again.
+
+## Project audio descriptions
+
+`src/assets/audioResourceCatalog.ts` owns the shared editor metadata view through
+`listAudioResources(kind, project)`. Each entry has a raw `id`, `kind`, `name`, `tags`,
+`description` and `descriptionSource`. Built-ins come first, followed by registered generated
+resources, profiles and uploads. Entries are deduplicated by kind/raw ID; an upload's explicit
+kind and name take precedence over its matching profile.
+
+- BGM defaults reuse `BGM_CATALOG[].brief` unchanged, with source `catalog-brief`. These are
+  creative briefs, not listening reports. Don't edit generated `src/assets/bgmCatalog.ts`
+  to store project prose.
+- `Project.audioDescriptions.music[rawId]` overrides the brief. No key means inherit; `""`
+  means intentionally empty, with source `project`; reset removes the key. Even a value equal
+  to the current brief remains an explicit override.
+- Other source values are `metadata-derived` and `missing`. Generated/uploaded entries without
+  trusted description data start empty; their filenames aren't invented listening evidence.
+- Search uses the effective description, not a hidden copy of an overridden or cleared brief.
+  Independent catalog tags remain searchable. Reading the catalog doesn't backfill projects,
+  register orphan IDs or make legacy MIDI playable.
+
+The Resource Manager, shared music picker, audio test dialog, normal/M2 event audio forms,
+command previews, AI resource search and event prompt projection share this metadata contract.
+See `openwiki/editor-workflows-misc.md` for surface ownership and
+`openwiki/editor-ai-tools.md` for tool pagination and prompt limits.
+`test/audioResourceCatalog.test.ts` and `test/audioResourceSearchContract.test.ts` cover the
+shared catalog and effective-description search.
+
+This feature doesn't change asset bytes, codecs, URLs, licenses, resource IDs or automatic
+scene BGM selection. Keep metadata out of the player dependency graph; runtime playback
+continues to use `src/assets/bgmCatalogRuntime.ts`.
 
 ## Traps
 

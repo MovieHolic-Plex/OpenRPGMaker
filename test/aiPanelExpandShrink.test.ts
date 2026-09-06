@@ -25,6 +25,10 @@ const assistantMock = vi.hoisted(() => {
       return null;
     }
 
+    getCompletionSpecs(): [] {
+      return [];
+    }
+
 
     // 패널은 턴마다 미완료 계획을 이어받으려 세션의 계획을 읽는다 — 더블은 계획 없음.
 

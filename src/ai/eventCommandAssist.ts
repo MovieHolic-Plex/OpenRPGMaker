@@ -29,6 +29,7 @@ import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { validateCommandArray } from "@/project/io/shapeCommandFields";
 import type { Command, EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import { resolveSurfaceAiConfig } from "./assistantEndpoint";
+import { eventAudioPromptSection } from "./eventAudioPrompt";
 import {
   EVENT_RESOURCE_SLOT_LABELS,
   eventResourceIdSet,
@@ -42,6 +43,7 @@ import { findWorldCanonAbsenceHits, worldCanonPromptSection } from "./worldCanon
 export interface EventAssistContext {
   readonly project: Project;
   readonly mapId: string;
+  readonly requestText?: string;
   readonly event?: GameEvent;
   readonly page?: EventPage;
   // 현재 커맨드 리스트에서 선택된 경로. 선택 **여부**만 쓴다 — 경로 배열 자체는
@@ -166,9 +168,13 @@ function mapReferenceLabel(project: Project, mapId: string, map: GameMap): strin
  * 리소스 id 는 **종류별로** 싣는다. 한 덩어리로 실으면 상한 40개가 칩셋·아이콘으로
  * 차버리고 얼굴·소리·그림 id 는 하나도 보이지 않는다(직전 구현이 그랬다: 1851개 중 앞
  * 40개가 전부 tex_* / cc0-jetrel-*). 지금 노출된 kind 가 쓰는 종류만 실어 프롬프트 예산을
- * 지키고, 각 절은 refSection 이 MAX_REF_ENTRIES 로 같이 자른다.
+ * 지킨다. 오디오는 요청별 후보를 선별하고, 나머지는 refSection으로 자른다.
  */
-function resourceSlotSection(project: Project, kinds: readonly Command["kind"][]): string {
+function resourceSlotSection(
+  project: Project,
+  kinds: readonly Command["kind"][],
+  requestText: string,
+): string {
   const slots: EventResourceSlot[] = [];
   for (const kind of kinds) {
     if (!isResourceBoundKind(kind)) continue;
@@ -188,12 +194,24 @@ function resourceSlotSection(project: Project, kinds: readonly Command["kind"][]
   return [
     "## 리소스 id (종류가 다른 리소스를 섞어 쓰면 반려된다)",
     ...usage,
-    ...slots.map((slot) =>
-      refSection(
-        `${EVENT_RESOURCE_SLOT_LABELS[slot]} id`,
-        listEventResourceOptions(slot, project).map((option) => ({ id: option.id, name: option.name })),
-      ),
-    ),
+    ...slots.map((slot) => {
+      switch (slot) {
+        case "music":
+        case "sound":
+          return eventAudioPromptSection(slot, project, requestText);
+        case "faceset":
+        case "picture":
+        case "movie":
+          return refSection(
+            `${EVENT_RESOURCE_SLOT_LABELS[slot]} id`,
+            listEventResourceOptions(slot, project).map((option) => ({ id: option.id, name: option.name })),
+          );
+        default: {
+          const unexpected: never = slot;
+          throw new TypeError(`Unexpected event resource slot: ${unexpected}`);
+        }
+      }
+    }),
   ].join("\n");
 }
 
@@ -319,7 +337,7 @@ export function buildEventAssistPrompt(context: EventAssistContext): string {
   const canonSection = worldCanonPromptSection(project.worldCanon);
   if (canonSection) sections.push(canonSection);
   sections.push(existingCommandsSection(page, scope));
-  sections.push(resourceSlotSection(project, kinds));
+  sections.push(resourceSlotSection(project, kinds, context.requestText ?? ""));
   sections.push(outputContractSection(scope));
 
   return sections.join("\n\n");
@@ -621,7 +639,7 @@ export async function runEventCommandAssist(options: {
       // (author_house·configure_time_system 등)은 이 채널에 아예 없다.
       content: composeSystemPrompt({
         surface: "event-command",
-        body: buildEventAssistPrompt(context),
+        body: buildEventAssistPrompt({ ...context, requestText: prompt }),
         includeMemory: true,
         ...(options.projectScopeKey ? { projectScopeKey: options.projectScopeKey } : {}),
       }),

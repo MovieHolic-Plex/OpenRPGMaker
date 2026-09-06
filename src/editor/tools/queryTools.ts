@@ -408,20 +408,48 @@ const listResources: ToolDefinition = {
   parameters: {
     type: "object",
     properties: {
-      kind: { type: "string", enum: RESOURCE_KINDS as unknown as string[] },
+      kind: { type: "string", enum: RESOURCE_KINDS },
       query: { type: "string" },
+      offset: { type: "integer", minimum: 0, description: "시작 위치(기본 0)" },
+      limit: { type: "integer", minimum: 1, maximum: 50, description: "반환 개수(기본 20, 최대 50)" },
     },
     required: ["kind", "query"],
   },
   run(project, args): ToolExecResult {
-    const kind = args.kind as ResourceSearchKind;
-    if (!RESOURCE_KINDS.includes(kind)) throw new ToolError(`알 수 없는 리소스 종류: ${kind}`, { code: "invalid-kind" });
+    const kind = RESOURCE_KINDS.find(entry => entry === args.kind);
+    if (!kind) throw new ToolError(`알 수 없는 리소스 종류: ${String(args.kind)}`, { code: "invalid-kind" });
+    if (typeof args.query !== "string") {
+      throw new ToolError("query는 문자열이어야 합니다.", { code: "invalid-args" });
+    }
+    const offset = args.offset === undefined ? 0 : args.offset;
+    const limit = args.limit === undefined ? 20 : args.limit;
+    // The shared schema runner checks integer types, but not numeric bounds.
+    if (typeof offset !== "number" || !Number.isSafeInteger(offset) || offset < 0) {
+      throw new ToolError("offset은 0 이상의 정수여야 합니다.", { code: "invalid-args" });
+    }
+    if (typeof limit !== "number" || !Number.isInteger(limit) || limit < 1 || limit > 50) {
+      throw new ToolError("limit은 1~50의 정수여야 합니다.", { code: "invalid-args" });
+    }
     // 타일 검색은 프로젝트에 기록된 사용자 메타데이터(맵 인터뷰 결과)를 겹쳐 검색한다.
-    const matches = searchResources(kind, args.query as string, {
+    const all = searchResources(kind, args.query, {
       tileset: project.tilesets[DEFAULT_TILESET_ID],
       charsetLabels: project.charsetLabels,
-    }).slice(0, 20);
-    return { summary: `리소스 ${matches.length}개 검색됨("${args.query}", ${kind})`, data: { matches } };
+      audioProject: project,
+    });
+    const matches = all.slice(offset, offset + limit).map(match =>
+      match.description === undefined
+        ? match
+        : {
+          ...match,
+          description: match.description.slice(0, 240),
+          descriptionTruncated: match.description.length > 240,
+        },
+    );
+    const nextOffset = offset + matches.length < all.length ? offset + matches.length : null;
+    return {
+      summary: `리소스 ${matches.length}개 검색됨("${args.query}", ${kind})`,
+      data: { matches, total: all.length, nextOffset },
+    };
   },
 };
 

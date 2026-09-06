@@ -1,0 +1,40 @@
+status: exited_1 exit_code: 1
+
+                                                                                     FAIL  test/eventEditorPortalSurface
+.baseline.test.ts > 포털(피커/모달) 표면 스냅샷 > 기준선과 일치한다
+                                                                      AssertionError: [포털(피커/모달)] 표면이 기준선과
+다르다 (2건)
+                 commandPickerTab3: 태그 circle 18→16, div 60→59, path 102→101, span 125→124, svg 101→100
+                                                                                                              npcGraphic
+: testid 신규 5종: npc-charset-label-input, npc-charset-tags-input, npc-charset-teach, npc-charset-teach-save, npc-chars
+et-teach-status | 클래스 신규 3종: npc-charset-teach, npc-charset-teach-heading, npc-charset-teach-status | 컨트롤 신규
+3개: npc-charset-label-input, npc-charset-tags-input, npc-charset-teach-save | 라벨 소실 1종: 캐릭터 슬롯 # | 태그 butto
+n 32→33, div 15→16, input 8→10, p 0→2 | testidCount 46→51 | controlCount 40→43 | classCount 34→37: expected [ …(2) ] to
+deeply equal []
+
+                     - Expected
+                                  + Received
+
+                                                  - []
+                                                         + [
+                                                               +   "commandPickerTab3: 태그 circle 18→16, div 60→59, pat
+h 102→101, span 125→124, svg 101→100",
+                                         +   "npcGraphic: testid 신규 5종: npc-charset-label-input, npc-charset-tags-inp
+ut, npc-charset-teach, npc-charset-teach-save, npc-charset-teach-status | 클래스 신규 3종: npc-charset-teach, npc-charse
+t-teach-heading, npc-charset-teach-status | 컨트롤 신규 3개: npc-charset-label-input, npc-charset-tags-input, npc-charse
+t-teach-save | 라벨 소실 1종: 캐릭터 슬롯 # | 태그 button 32→33, div 15→16, input 8→10, p 0→2 | testidCount 46→51 | cont
+rolCount 40→43 | classCount 34→37",
+                                      + ]
+
+                                                ❯ assertSurfaceGate test/surfaceGateSupport.ts:280:5
+                                                                                                           278|     repo
+rt,
+          279|     labelWith(`[${axis}] 표면이 기준선과 다르다 (${report.length}건)`, report)
+                                                                                                    280|   ).toEqual([])
+;
+           |     ^
+                         281| }
+                                      282|
+                                               ❯ test/eventEditorPortalSurface.baseline.test.ts:284:5
+                                                                                                     SCOPED_GATE_EXITS c
+ss=1 surface=1

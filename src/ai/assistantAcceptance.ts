@@ -25,6 +25,7 @@ export type AcceptanceCriterion =
   | { readonly kind: "mapCount"; readonly targets: readonly AcceptanceTarget[]; readonly count: number }
   | (ScopedTarget & { readonly kind: "eventCount"; readonly count: number })
   | (ScopedTarget & { readonly kind: "targetChange" | "preserve" | "imageReviewed" })
+  | { readonly kind: "actionCombat"; readonly target: AcceptanceTarget }
   | { readonly kind: "reachability"; readonly target: AcceptanceTarget; readonly from: Point; readonly to: readonly Point[] };
 export interface AcceptancePromise {
   readonly id: string;
@@ -53,6 +54,7 @@ export const ACCEPTANCE_EXAMPLES: Readonly<Record<AcceptanceCriterion["kind"], A
   targetChange: Object.freeze({ kind: "targetChange", target: exampleTarget }),
   preserve: Object.freeze({ kind: "preserve", target: exampleTarget }),
   imageReviewed: Object.freeze({ kind: "imageReviewed", target: exampleTarget }),
+  actionCombat: Object.freeze({ kind: "actionCombat", target: exampleTarget }),
   reachability: Object.freeze({ kind: "reachability", target: exampleTarget, from: examplePoint, to: Object.freeze([Object.freeze({ x: 1, y: 0 })]) }),
 });
 export interface AcceptanceParseResult {
@@ -70,6 +72,12 @@ function target(value: unknown): AcceptanceTarget | null {
   if (text(value.mapId) && Object.keys(value).length === 1) return { mapId: value.mapId };
   if (text(value.newMapName) && Object.keys(value).length === 1) return { newMapName: value.newMapName };
   return null;
+}
+export function parseActionCombatRequirements(value: unknown): { readonly targets: readonly AcceptanceTarget[] } | null {
+  if (!acceptanceRecord(value) || Object.keys(value).some(key => key !== "targets")
+    || !Array.isArray(value.targets) || value.targets.length === 0) return null;
+  const targets = value.targets.map(target);
+  return targets.every((entry): entry is AcceptanceTarget => entry !== null) ? { targets } : null;
 }
 function point(value: unknown): Point | null {
   return acceptanceRecord(value) && integer(value.x) && integer(value.y) ? { x: value.x, y: value.y } : null;
@@ -100,6 +108,7 @@ function criterion(value: unknown, index: number, issues: AcceptanceIssue[]): Ac
     eventCount: ["kind", "target", "region", "count"], targetChange: ["kind", "target", "region"],
     preserve: ["kind", "target", "region"], imageReviewed: ["kind", "target", "region"],
     reachability: ["kind", "target", "from", "to"],
+    actionCombat: ["kind", "target"],
   };
   const allowed = typeof value.kind === "string" && Object.hasOwn(keys, value.kind) ? keys[value.kind] : undefined;
   if (!allowed) return invalid("kind", Object.keys(ACCEPTANCE_EXAMPLES).join(" | "));
@@ -118,6 +127,7 @@ function criterion(value: unknown, index: number, issues: AcceptanceIssue[]): Ac
   if (region === null) return invalid("region", "{x,y,w,h}: nonnegative integer origin, positive integer size");
   const scope = { target: parsedTarget, ...(region ? { region } : {}) };
   switch (value.kind) {
+    case "actionCombat": return { kind: value.kind, target: parsedTarget };
     case "mapDimensions":
       if (!integer(value.width) || value.width === 0) return invalid("width", "positive safe integer");
       if (!integer(value.height) || value.height === 0) return invalid("height", "positive safe integer");

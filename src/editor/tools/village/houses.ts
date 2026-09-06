@@ -2,6 +2,7 @@
 // 집 배치·스탬프 — 후보 슬롯 생성, 키트 시공, 보호 마스크(footprint/스탠드오프), 문·용마루 복구.
 
 import { ALL_HOUSE_KIT_IDS, HOUSE_KITS as HOUSE_KIT_DEFS, stampFootprintHouseKit, type HouseKitId, type HouseKitWindowsOption } from "@/editor/houseKit";
+import { stampHouseDoorBackground } from "@/editor/houseInteriors";
 import { TILE } from "@/project/defaults/constants";
 import type { GameMap } from "@/project/types";
 import type { Rng } from "@/util/rng";
@@ -262,8 +263,10 @@ export function buildHouses(
       if (paintDoorTiles) {
         map.lowerTiles[topIndex] = DOOR_TOP_TILE;
         map.lowerTiles[bottomIndex] = DOOR_BOTTOM_TILE;
+      } else {
+        stampHouseDoorBackground(map, doorAt);
       }
-      // 도장 직후 값이 정본 — 이벤트 문이면 킷 벽 타일, 타일 문이면 116/146.
+      // 후처리 복원값 — 이벤트 문이면 359 두 칸, 타일 문이면 116/146.
       const doorTiles = {
         top: map.lowerTiles[topIndex] ?? DOOR_TOP_TILE,
         bottom: map.lowerTiles[bottomIndex] ?? DOOR_BOTTOM_TILE,

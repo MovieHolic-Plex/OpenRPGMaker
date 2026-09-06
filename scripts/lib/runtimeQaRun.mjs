@@ -1,3 +1,5 @@
+import assert from "node:assert/strict";
+import { runAudioAction } from "./runtimeQaAudio.mjs";
 // 런타임 QA 하네스 — 부수효과 담당(vite 서버 · 브라우저 구동 · 디스크 쓰기).
 // 순수 판정 로직은 ./runtimeQa.mjs 에 있고 여기서 소비만 한다.
 // 설계: docs/superpowers/specs/2026-08-28-runtime-vision-qa-design.md
@@ -196,6 +198,12 @@ async function applyOp(page, op, runState) {
     case "cinematic": {
       const { cinematicQaOp } = await import("./runtimeQaCinematics.mjs");
       await cinematicQaOp(page, op);
+      return;
+    }
+    case "audioAction": {
+      const evidence = await runAudioAction(page, op);
+      runState.audio.push(evidence);
+      assert.equal(evidence.error, null, JSON.stringify(evidence));
       return;
     }
     case "waitForEmote":
@@ -423,10 +431,13 @@ function readBattlerGeometryInPage() {
  *   보므로 display:none 안의 노드도 통과한다 — 실제로 전투 적 HP 목록(.battle-enemy-list-panel)이
  *   숨겨진 스킨에서 `battle-enemy-list-hp-*` 를 단정하면 화면에 없는 숫자를 증거로 삼게 된다.
  */
-async function readObserved(page, { auditBattleTextNodes = false, watchedEventIds = [], watchedTestids = [] } = {}) {
+async function readObserved(page, {
+  auditBattleTextNodes = false, watchedEventIds = [], watchedTestids = [],
+  watchedItemIds = [], watchedSpeciesIds = [],
+} = {}) {
   const base = await page.evaluate((watched) => {
     const debug = window.__oprnDebug;
-    const full = debug ? debug.readState() : null;
+    const full = typeof debug?.readState === "function" ? debug.readState() : null;
     // 매니페스트에는 압축 상태만 남긴다 — switches/inventory 전량은 노이즈이고
     // 이 하네스의 목적(컨텍스트 절약)에 역행한다.
     const state = full
@@ -440,6 +451,22 @@ async function readObserved(page, { auditBattleTextNodes = false, watchedEventId
             .filter((key) => full[key] !== undefined).map((key) => [key, full[key]])),
         }
       : null;
+    // Count only named rewards. Unavailable collections are not evidence of zero ownership.
+    if (state && watched.itemIds.length > 0) {
+      state.inventoryCounts = full.inventory == null ? null : Object.fromEntries(
+        watched.itemIds.map((id) => [id, full.inventory[id] ?? 0]),
+      );
+    }
+    if (state && watched.speciesIds.length > 0) {
+      state.ownedMonsterCounts = null;
+      if (full.monsterInstances != null && Array.isArray(full.monsterParty) && Array.isArray(full.monsterBox)) {
+        const ownedIds = new Set([...full.monsterParty, ...full.monsterBox]);
+        state.ownedMonsterCounts = Object.fromEntries(watched.speciesIds.map((speciesId) => [
+          speciesId,
+          [...ownedIds].filter((id) => full.monsterInstances[id]?.speciesId === speciesId).length,
+        ]));
+      }
+    }
     const sprite = window.__oprnPlayerSprite ? window.__oprnPlayerSprite() : null;
     const characters = window.__oprnCharacterSprites ? window.__oprnCharacterSprites() : null;
     return {
@@ -505,7 +532,7 @@ async function readObserved(page, { auditBattleTextNodes = false, watchedEventId
       audioObserved: Array.isArray(window.__oprnAudioObserved) ? [...window.__oprnAudioObserved] : null,
       battlers: window.__oprnReadBattlerGeometry ? window.__oprnReadBattlerGeometry() : null,
     };
-  }, { eventIds: watchedEventIds, testids: watchedTestids });
+  }, { eventIds: watchedEventIds, testids: watchedTestids, itemIds: watchedItemIds, speciesIds: watchedSpeciesIds });
   if (!auditBattleTextNodes) return base;
   // 전투 글자 계측은 요청한 비트에서만 돌린다 — 모든 비트에서 트리 전체를 훑을 이유가 없다.
   const battleText = await page.evaluate(auditBattleText, {
@@ -657,6 +684,7 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
   // op 들 사이에 살아 있는 런 상태(그림자 픽셀 측정용 표본 프레임).
   const runState = {};
   for (const [index, beat] of scenario.beats.entries()) {
+    runState.audio = [];
     // op 이 던져도 런을 죽이지 않는다. 던진 사유를 그 비트의 실패로 기록하고
     // 계속 진행해야 리포트·샷이 남는다 — 초기 구현은 raw 스택만 남기고 죽어서
     // 정작 진단할 증거가 하나도 없었다(실측).
@@ -678,6 +706,8 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
       auditBattleTextNodes: Boolean(beat.expect?.battleTextClean),
       watchedEventIds,
       watchedTestids,
+      watchedItemIds: Object.keys(beat.expect?.inventoryCounts ?? {}),
+      watchedSpeciesIds: Object.keys(beat.expect?.ownedMonsterCounts ?? {}),
     });
     const failures = [...opFailures, ...evaluateExpect(beat.expect ?? {}, observed)];
     let shot = null;
@@ -722,6 +752,8 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
       failures,
       shadowInk: shadowInk ?? undefined,
       state: observed.state,
+      actions: beat.ops,
+      ...(runState.audio.length > 0 ? { audio: runState.audio } : {}),
       // 배치 근거는 리포트에 남긴다 — PNG 를 열지 않고도 수치로 판정할 수 있어야 한다.
       battlers: observed.battlers ?? undefined,
       ...((beat.expect?.emoteCountAtLeast != null || beat.expect?.emoteFrames || beat.expect?.emoteTargets)

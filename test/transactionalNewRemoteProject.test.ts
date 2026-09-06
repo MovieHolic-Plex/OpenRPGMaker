@@ -234,6 +234,32 @@ describe("transactional new remote project switch", () => {
     expect(location.search).toContain("project=oprn-new-target");
   });
 
+  it.each([undefined, "The Sword's Promise"])("saves the requested default title without replacing custom title %s", async (customTitle) => {
+    const { candidate, store } = await setup();
+    if (customTitle) {
+      if (!candidate.system.titleScreen) throw new Error("Expected starter title settings");
+      candidate.system.titleScreen.title = customTitle;
+    }
+    const original = structuredClone(candidate);
+    let remote: Project | null = null;
+    const dependencies: TransactionDependencies = {
+      createProjectId: () => "oprn-new-target",
+      saveTarget: async (project) => {
+        remote = structuredClone(project);
+        return { kind: "saved", project };
+      },
+      reloadTarget: async () => remote,
+    };
+
+    await store.loadNewRemoteProjectTransactionally(candidate, { title: "Sword arena" }, dependencies);
+
+    expect(remote).toMatchObject({
+      meta: { title: "Sword arena" },
+      system: { titleScreen: { title: customTitle ?? "Sword arena" } },
+    });
+    expect(candidate).toEqual(original);
+  });
+
   it.each(["title", "tile", "array-order"] as const)("rejects an actual %s mismatch after a JSONB roundtrip without changing local state", async (difference) => {
     const { before, candidate, getDraft, location, storage, store } = await setup();
     const transport = useJsonbTransport();

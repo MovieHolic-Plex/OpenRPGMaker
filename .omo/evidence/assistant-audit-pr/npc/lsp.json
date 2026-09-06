@@ -1,0 +1,26 @@
+{
+  "tool": "functions.lsp_diagnostics",
+  "severity": "all",
+  "results": [
+    {
+      "filePath": "/home/main/.herdr/worktrees/rpg-zzu/worktree-rapid-harbor-7ca6-audit-npc/src/editor/tools/eventCompile.ts",
+      "result": "No diagnostics found"
+    },
+    {
+      "filePath": "/home/main/.herdr/worktrees/rpg-zzu/worktree-rapid-harbor-7ca6-audit-npc/src/editor/tools/eventTools.ts",
+      "result": "No diagnostics found"
+    },
+    {
+      "filePath": "/home/main/.herdr/worktrees/rpg-zzu/worktree-rapid-harbor-7ca6-audit-npc/src/editor/tools/toolRunner.ts",
+      "result": "No diagnostics found"
+    },
+    {
+      "filePath": "/home/main/.herdr/worktrees/rpg-zzu/worktree-rapid-harbor-7ca6-audit-npc/src/editor/tools/types.ts",
+      "result": "No diagnostics found"
+    },
+    {
+      "filePath": "/home/main/.herdr/worktrees/rpg-zzu/worktree-rapid-harbor-7ca6-audit-npc/test/npcAuditRepair.test.ts",
+      "result": "No diagnostics found"
+    }
+  ]
+}

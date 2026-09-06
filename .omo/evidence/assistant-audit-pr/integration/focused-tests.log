@@ -1,0 +1,64 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/assistantAcceptanceSession.test.ts test/npcRewardSession.test.ts test/assistantDependencyRetry.test.ts test/aiCompletionAccounting.test.ts --pool=threads --maxWorkers=2 --testTimeout=60000
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-rapid-harbor-7ca6
+
+ ✓ test/aiCompletionAccounting.test.ts (8 tests) 25995ms
+   ✓ completion accounting through real assistant sessions > auto-completes a later spatial milestone using applied plus pending writes without reapplying the first  7971ms
+   ✓ completion accounting through real assistant sessions > active spec expansion > does not retain a invalid-args write; a successful retry expands and keeps the correct lifetime  3375ms
+   ✓ completion accounting through real assistant sessions > active spec expansion > does not retain a out-of-bounds write; a successful retry expands and keeps the correct lifetime  3149ms
+   ✓ completion accounting through real assistant sessions > active spec expansion > does not retain a throwing-tool write; a successful retry expands and keeps the correct lifetime  3169ms
+   ✓ completion accounting through real assistant sessions > implicit spec expansion > does not retain a invalid-args write; a successful retry expands and keeps the correct lifetime  2830ms
+   ✓ completion accounting through real assistant sessions > implicit spec expansion > does not retain a out-of-bounds write; a successful retry expands and keeps the correct lifetime  1613ms
+   ✓ completion accounting through real assistant sessions > implicit spec expansion > does not retain a throwing-tool write; a successful retry expands and keeps the correct lifetime  2147ms
+   ✓ completion accounting through real assistant sessions > does not commit expansion when the runner itself throws, and preserves the failed tool response  1733ms
+ ✓ test/assistantDependencyRetry.test.ts (12 tests) 51755ms
+   ✓ batch prerequisites through AssistantSession > defers failed-map writes without poisoning successTools or retries (old spec=false)  5768ms
+   ✓ batch prerequisites through AssistantSession > defers failed-map writes without poisoning successTools or retries (old spec=true)  4744ms
+   ✓ batch prerequisites through AssistantSession > a corrected spec resumes spatial execution (later batch=false)  3005ms
+   ✓ batch prerequisites through AssistantSession > a corrected spec resumes spatial execution (later batch=true)  2960ms
+   ✓ batch prerequisites through AssistantSession > failed record creation defers only ID dependents, then creation/read/correction succeeds (read contract=false)  4531ms
+   ✓ batch prerequisites through AssistantSession > failed record creation defers only ID dependents, then creation/read/correction succeeds (read contract=true)  4625ms
+   ✓ batch prerequisites through AssistantSession > keeps the failed-read whole-batch contract and excludes deferred writes from the failure budget  2192ms
+   ✓ stable target retry budgets through AssistantSession > bounds fresh-batch lookup refusals without claiming they executed  3301ms
+   ✓ stable target retry budgets through AssistantSession > does not charge downstream same-batch refusals against their independent retry target  4705ms
+   ✓ stable target retry budgets through AssistantSession > bounds spelling and page-path variations despite unrelated writes and synthetic continuations, then rearms for a real user  7844ms
+   ✓ stable target retry budgets through AssistantSession > successful correction resets that target's accumulated failures  3287ms
+   ✓ stable target retry budgets through AssistantSession > does not execute attempts beyond the bound even within one model batch  4788ms
+ ✓ test/npcRewardSession.test.ts (19 tests) 39536ms
+   ✓ NPC reward request lifetime in AssistantSession > does not dispatch authoring or planner calls for an unrepairable reward declaration  1142ms
+   ✓ NPC reward request lifetime in AssistantSession > direct 'text' NPC, contract opt-out=false  2589ms
+   ✓ NPC reward request lifetime in AssistantSession > direct 'once' NPC, contract opt-out=false  1404ms
+   ✓ NPC reward request lifetime in AssistantSession > direct 'repeat' NPC, contract opt-out=false  1629ms
+   ✓ NPC reward request lifetime in AssistantSession > direct 'text' NPC, contract opt-out=true  1037ms
+   ✓ NPC reward request lifetime in AssistantSession > does not finalize unresolved or invalid obligations {"required":[]}  364ms
+   ✓ NPC reward request lifetime in AssistantSession > does not finalize unresolved or invalid obligations {"required":[{"target":{"eventId":"missing_npc"},"grants":[{"kind":"item","id":"item_potion","count":1}]}]}  1373ms
+   ✓ NPC reward request lifetime in AssistantSession > uses bounded repair to correct the real NPC rather than weaken the request  3582ms
+   ✓ NPC reward request lifetime in AssistantSession > allows an earlier DB item but refuses final explicit completion and skip with missing rewards  4601ms
+   ✓ NPC reward request lifetime in AssistantSession > gates a non-final item that actually authors the declared NPC  3650ms
+   ✓ NPC reward request lifetime in AssistantSession > cannot erase the obligation by replanning into an unrelated skipped plan  3070ms
+   ✓ NPC reward request lifetime in AssistantSession > rechecks a previously completed NPC after its grants are removed  3495ms
+   ✓ NPC reward request lifetime in AssistantSession > completes an actual one-time NPC plan and accepts idempotent explicit completion  2396ms
+   ✓ NPC reward request lifetime in AssistantSession > preserves the obligation through plan-only confirmation and the actual planner replan  1957ms
+   ✓ NPC reward request lifetime in AssistantSession > retains the captured requirement and context on retryLastTurn  2906ms
+   ✓ NPC reward request lifetime in AssistantSession > preserves the request across the real autonomous synthetic continuation  803ms
+   ✓ NPC reward request lifetime in AssistantSession > clears old obligations for new-request  1845ms
+   ✓ NPC reward request lifetime in AssistantSession > clears old obligations for ask  1517ms
+ ✓ test/assistantAcceptanceSession.test.ts (11 tests) 15110ms
+   ✓ session acceptance ownership > exposes the session-owned acceptance snapshot independently of WorkPlan  353ms
+   ✓ acceptance controls actual session termination > does not turn a review without an explicit passing verdict into completion  2334ms
+   ✓ acceptance controls actual session termination > withdraws an earlier pass when a later explicit review fails  1021ms
+   ✓ acceptance controls actual session termination > continues then blocks insufficient dimensions and quantity even after skip completes the plan  890ms
+   ✓ acceptance controls actual session termination > retains original denominator when skip and set_work_plan try to shrink promises  894ms
+   ✓ acceptance controls actual session termination > invalidates an attributed image review after a subsequent real map write  2585ms
+   ✓ applied acceptance lifecycle through real tools > repairs exact dimensions after plan completion and invalidates on applied undo  4335ms
+   ✓ applied acceptance lifecycle through real tools > blocks and retains the ledger when aborted while the next model response is held  977ms
+   ✓ applied acceptance lifecycle through real tools > never credits a review authored in the same response as the image request  979ms
+   ✓ applied acceptance lifecycle through real tools > requires visible contract repair for a spatial plan missing criteria  530ms
+
+ Test Files  4 passed (4)
+      Tests  50 passed (50)
+   Start at  21:03:16
+   Duration  109.22s (transform 26.52s, setup 0ms, collect 79.78s, tests 132.40s, environment 1ms, prepare 1.88s)

@@ -1,5 +1,17 @@
 # Runtime Battle Behavior
 
+## Supported action authoring (2026-09-07)
+
+2D tile action combat remains supported alongside turn-based combat; the old
+deprecation warning and editor label were removed. `action-rpg` is authoring
+metadata, not a runtime branch. Its preset enables `system.actionCombat` only,
+and each intended map still requires `actionCombat: true`. The canonical
+controls text comes from `player/keyBindings.ts` (`ACTION_CONTROL_BINDINGS`,
+`ACTION_CONTROLS_GUIDE`) and the action guide NPC uses that same copy.
+Enemy/graphic/troop/spawn prerequisites are validated before mutation, and
+explicit spawn IDs make retries idempotent. Dodge and guard knobs exposed by
+the tool use the existing config normalizer. None of this adds a combat engine.
+
 ## 적별 전투 표시 크기 (2026-09-06)
 
 `battleFieldDom.enemyButton`은 해당 적의 `battleScalePercent ?? 100`을 100으로 나눈 값을 노드의 `--battle-enemy-scale`에 넣는다. RM 정면/측면은 `_rm2000.css`의 glass 공용 이미지 크기(다수 160×180, 단독 200×240), 몬스터 대치는 `_battlers.css`의 Pokemon 이미지 크기(148×148)에 곱한다. 부모 이동/피격 `transform`, 이미지 숨쉬기 `scale`, 사망/포획 애니메이션은 변경하지 않는다. 이름·HP 글자 크기와 맵 외형은 배율 대상이 아니다. 기본 100% 이하의 치수·진형은 그대로 둔다. 100% 초과는 `battleEnemyFit.ts`가 필드 논리 크기에서 좌우 16px·상단 32px·하단 24px를 뺀 영역에 이미지를 균일 축소하고 발 앵커를 보정한다. 저장된 요청 백분율은 그대로이고 `--battle-enemy-fit`만 표현용으로 추가한다. 세 스킨의 `--battle-enemy-base-width/height`가 기본 치수의 단일 원천이다. 이미지 width/height에만 요청 배율×fit을 곱하며 이름·HP는 축소하지 않는다. 이웃 배틀러와의 겹침 방지는 별도 진형 작업이다.
@@ -9,6 +21,68 @@
 `test/battleEnemyFit.test.ts`는 실제 `mountBattleScene`/runtime 경로에 측정된 논리 레이아웃만 주입해 175% clipping RED, 세 스킨 100% 보존·300% containment, 125% 정확 배율, hit/HP 안정성, 필드 폭 변경 후 재계산, destroy 후 타이머 정리를 검증한다.
 
 회귀는 `test/enemyBattleScale.test.ts`: 실제 정규화된 프로젝트→전투 엔진→DOM, Gen1의 선두 적 단독 표시, hit/idle 동기화 후 크기 유지, 출하 CSS 치수 선언을 검사한다. happy-dom은 calc 곱셈/`:where` 특정도를 정확히 계산하지 못하므로 CSS는 PostCSS로 선언을 검사하고, 실제 캐스케이드·사각형·동작 검증은 별도 `player.html` 런타임 QA에서 한다.
+
+## Event friendship and live level changes (2026-09-06)
+
+`changeFriendship` snapshots only keys written by the battle, following the
+relationship write-set contract. Returning victory, escape and permitted defeat
+merge those keys into the captured session; nonreturning defeat does not.
+Unrelated session friendship updates are preserved.
+
+`changeLevel` updates the existing mutable battler and calls the existing derived
+stat refresher. Current HP/MP, equipment and gauge are retained, with vitals
+clamped when maxima decrease. The party HUD updates its existing level node.
+The reward bridge copies battler vitals before writing the final event level,
+class, and growth state, then refreshes derived maxima without healing. Promotion
+lineage and permanent skills transfer as authoritative state, never replayed reclass.
+
+Contracts: `battleEventRepairState.test.ts`, `battleEventRepairHud.test.ts`.
+Shipping-player QA: `node scripts/qa-event-command-repairs.mjs --scenario battle-state`.
+The VX Ace skin intentionally hides maximum-vital text; screenshots show the
+level/current vitals, while DOM/session observations verify the maxima.
+
+## Battle-event continuation and cancellation (2026-09-06)
+
+Battle execution remains synchronous between input boundaries. `battleEvents.ts`
+retains the page scan and per-call frame stacks for native/M2 common calls and
+M2 troop-page calls. A choice exposes `snapshot.eventChoice` and phase
+`eventChoice`; only `resumeEventChoice(request.id, index)` runs a branch. Invalid,
+stale, duplicate, or disposed responses do nothing. `-1` selects an authored
+cancel branch only; mapped-option cancellation is resolved by the dialogue UI.
+No browser/input host means no implicit first option. Empty saved choices log
+unsupported and continue without inventing a branch.
+
+`gameOver`, `killPlayer`, M2 abort and forced escape short-circuit all event
+callers and remaining pages. The first terminal wins. Gauge resumes only its
+post-action epilogue; strict retains its already-sorted queue, extra-action
+count, RNG decisions, and round timeline boundary. A terminal completes only
+the executed strict prefix. Existing wait/text/inputWait semantics are unchanged.
+
+The sequencer drains preceding timeline facts before requesting input, remains
+busy while choices are open, and consumes only appended facts after resumption.
+`playSceneBattle` supplies the existing stage `DialogueUI.showChoices` host;
+battle keyboard/AUTO/skip handlers yield ownership. Choice signals, hide, and
+replacement remove listeners and settle cancellation rather than selecting the
+cancel branch. Result presentation is never overwritten by event diagnostics.
+
+`BattleRuntime.cancel()` disposes execution without an outcome. Player-side
+`playBattle` returns `null` on cancellation, not defeat/escape. `PlayScene` owns
+its abort controller before lazy import and aborts on shutdown, destruction,
+and session replacement. DOM destruction also settles the pending battle;
+transition destruction settles its waits. State/rewards/autosave commit once,
+after cancellable exit/reveal completes, to the captured session only.
+
+Synchronous balance/scene/walkthrough simulations throw/report
+`BATTLE_EVENT_INPUT_REQUIRED` instead of exhausting ticks and fabricating defeat.
+They do not provide an automatic choice policy. Simulation project-mode flags
+are restored in `finally`.
+
+Contracts: `battleEventRepairFlow`, `battleEventChoiceHost`,
+`playSceneBattleCancellation`, and `battleEventSimulationInput` tests, plus the
+existing strict/sequencer/active-slot/wait/defeat suites. DOM tests use real
+runtime/sequencer/dialogue and a controlled clock; they are not evidence of
+shipping-player browser QA. That acceptance check uses `player.html` and the
+export-store shim, never the editor shell.
 
 ## 전투 명령 custom CSS (2026-09-05)
 
@@ -51,14 +125,15 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
 
 ## 지원 전투 시스템은 둘뿐이다 (2026-08-28)
 
-- 지원: **정면 턴제(RM식)** (`system.battleModel` 미설정 또는 `"rm2k3"` + 배틀 스킨 `rm2000`, 둘 다 기본값) 과 **포켓몬식** (`system.battleModel: "gen1"` + 배틀 스킨 `pokemon`). 새 프로젝트는 이 둘 중 하나로만 저작한다.
-- **스킨 id 개명 (2026-09-03): 정면 스킨 `rm2003` → `rm2000`.** 옛 이름은 2003 이었지만 구도는 아군이 필드에 서지 않는 정면(2000식) 전투였다. 같은 구도의 deprecated `rm2000`(감청 창) 은 이 하나로 흡수해 등록 스킨은 12 → 11 종. `resolveSkinId("rm2003") === "rm2000"`, `"classic"` 도 같다 — 저장 프로젝트는 그대로 뜬다. CSS 파일은 `_rm2000.css` 하나(옛 `_rm2003.css` 재작성 + 옛 `_rm2000.css` 삭제). 사용자 노출 라벨에는 `RM2000/RM2003` 을 쓰지 않는다(`test/detsukuruBrandStrings.test.ts`) — 드롭다운 라벨은 「유리 창 · 정면 필드」.
+- 지원 규칙은 **RM식 턴제** (`system.battleModel` 미설정 또는 `"rm2k3"`, 기본값)와 **포켓몬식** (`"gen1"`)이다. 표시 방식은 **정면** (`rm2000`, 기본값), **측면** (`rm2003`), **몬스터 대치** (`pokemon`) 세 가지다. 규칙 모델과 표시 스킨은 별개다.
+- 기본 `rm2000`은 적만 필드에 세우고 아군은 이름·HP·MP 상태창으로 표시한다(`partyFacing: "hidden"`, `showAllySprites: false`). 2026-09-03 연출 추가 때 들어간 뒷모습 파티를 2026-09-06 사용자 요청으로 복구했다. 미설정·`classic`·명시적 `rm2000` 모두 같은 경로다. 측면 `rm2003`의 아군 전투 시트와 `pokemon`의 후면 스프라이트는 유지한다. 회귀: `test/battleFieldAllySprite.test.ts`; 출하 화면: `npm run qa:runtime -- --scenario battle-frontview`.
+- **스킨 id 이력 (2026-09-03):** 기존 정면 스킨 `rm2003`을 `rm2000`으로 개명한 뒤, 같은 날 `rm2003`을 별도 측면 스킨으로 되살렸다. 현재 `resolveSkinId("rm2003") === "rm2003"`이며 옛 별칭 `classic`만 `rm2000`으로 간다. 등록 스킨은 12종이다. 두 스킨은 `_rm2000.css`의 유리 HUD를 `family: "glass"`로 공유하고 측면 배치는 `_rm2003.css`가 담당한다. 사용자 노출 라벨은 「유리 창 · 정면 필드」와 「유리 창 · 측면 필드」이며 타사 제품명은 쓰지 않는다(`test/detsukuruBrandStrings.test.ts`).
 - 지원 종료(deprecated) 스킨 9종: `octopath`, `chrono`, `bravely`, `dragonquest`, `ff`, `mother`, `goldensun`, `mv`, `vxace`. 실시간 액션 전투 플러그인(`system.actionCombat`) 도 같이 지원 종료다 (`openwiki/runtime-action-combat.md`).
 - 지원 종료의 뜻은 좁다. 저장된 프로젝트는 그대로 돈다.
-  - 레지스트리는 여전히 지원 종료 스킨 9종을 들고 있다. 삭제도, 조용한 remap 도 없다(2026-09-03 의 `rm2003 → rm2000` 개명만 예외 — 위 항목).
+  - 레지스트리는 여전히 지원 종료 스킨 9종을 들고 있다. 삭제도, 조용한 remap도 없다.
   - `resolveSkinId` 는 저장된 지원 종료 id 를 다른 id 로 바꾸지 않는다 (`resolveSkinId("octopath") === "octopath"`).
   - 스킨별 CSS(`src/styles/runtime/battle-skins/`) 와 배경(backdrop) 은 그대로 남긴다. 지우지 말 것.
-  - 줄어드는 것은 **새 저작 노출뿐이다.** 자료집 → 시스템의 스킨 드롭다운은 활성 2종만 나열하고, 프로젝트가 이미 저장해 둔 지원 종료 id 가 있으면 그 항목 하나만 `(지원 종료)` 라벨로 덧붙여 선택을 보존한다.
+  - 줄어드는 것은 **새 저작 노출뿐이다.** 자료집 → 시스템의 스킨 드롭다운은 활성 3종만 나열하고, 프로젝트가 이미 저장해 둔 지원 종료 id가 있으면 그 항목 하나만 `(지원 종료)` 라벨로 덧붙여 선택을 보존한다.
 - 코드 권위자: `src/battle/skins/registry.ts` (`ACTIVE_BATTLE_SKIN_IDS` / `listActiveBattleSkinIds()` / `isDeprecatedBattleSkin()`), 저작 표면은 `src/editor/panels/databaseSystemView.ts`, 계약 테스트는 `test/battleSystemDeprecation.test.ts`.
 
 ## Roguelike run boundary (2026-08-24)

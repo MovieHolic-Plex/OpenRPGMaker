@@ -1,0 +1,5 @@
+status: completed exit_code: 0
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/npcAuditRepair.test.ts test/npcCommandContract.test.ts test/placeNpcMalformedPage.test.ts --pool=threads --maxWorkers=2 --testTimeout=60000
+ Test Files  3 passed (3)
+      Tests  62 passed (62)

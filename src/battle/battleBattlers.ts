@@ -51,6 +51,7 @@ export interface MutableBattler {
   readonly recordId: ActorId | EnemyId;
   // 전투 중 전직(promoteActor)이 클래스를 갱신할 수 있어 mutable.
   classId?: string;
+  // Event level changes update the existing battler before refreshing derived stats.
   level?: number;
   readonly faceResourceId?: string;
   readonly battleCharacterResourceId?: string;

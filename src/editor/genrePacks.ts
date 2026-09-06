@@ -2,6 +2,7 @@ import { inBounds, isPassable } from "@/project/collision";
 import { createBlankProject } from "@/project/defaults";
 import { applyGenrePreset } from "@/project/genrePresets";
 import { GENRE_PACK_IDS, type GenrePackId } from "@/project/genrePackId";
+import { isActionCombatMap } from "@/project/actionCombat";
 import { collectProjectReferenceIssues } from "@/project/io/references";
 import { projectLint } from "@/project/lint/projectLint";
 import { computeReachableCells, isAdjacentOrOn } from "@/project/lint/reachability";
@@ -26,6 +27,9 @@ export type GenrePackRequirementKind =
   | "project-reference-integrity"
   | "system-time"
   | "system-gifts"
+  | "system-action-combat"
+  | "action-map"
+  | "action-spawn"
   | "system-monster-collection";
 
 export type GenrePackRequirement = {
@@ -100,6 +104,22 @@ function definePack(options: {
 }
 
 const PACKS: Readonly<Record<GenrePackId, GenrePackDefinition>> = {
+  "action-rpg": definePack({
+    id: "action-rpg",
+    recipes: [recipe({
+      id: "action-system",
+      title: "2D 액션 RPG 시스템 프리셋",
+      appliesSystemFields: ["system.genre", "system.actionCombat"],
+    })],
+    vocabulary: { actor: "fighter", enemy: "field enemy", map: "arena", event: "interaction" },
+    requirements: [
+      { id: "action-system", kind: "system-action-combat", runtimeCapability: "action-combat" },
+      { id: "action-map", kind: "action-map", runtimeCapability: "action-combat" },
+      { id: "action-spawn", kind: "action-spawn", runtimeCapability: "field-spawns" },
+      { id: "lint-errors", kind: "project-lint-errors", runtimeCapability: "project-lint" },
+      { id: "reference-integrity", kind: "project-reference-integrity", runtimeCapability: "reference-validation" },
+    ],
+  }),
   "adventure-jrpg": definePack({
     id: "adventure-jrpg",
     recipes: [recipe({
@@ -380,6 +400,14 @@ function requirementConfigured(project: Project, kind: GenrePackRequirementKind)
     case "project-reference-integrity": return collectProjectReferenceIssues(project).length === 0;
     case "system-time": return project.system.timeSystem?.enabled === true;
     case "system-gifts": return project.system.giftSystem === true;
+    case "system-action-combat": return project.system.actionCombat?.enabled === true;
+    case "action-map": return Object.values(project.maps).some((map) => isActionCombatMap(project, map));
+    case "action-spawn": return Object.values(project.maps).some((map) => isActionCombatMap(project, map)
+      && (map.fieldSpawns ?? []).some((spawn) => {
+        const troop = project.database.troops.find((entry) => entry.id === spawn.troopId);
+        const enemyId = troop?.members?.[0]?.enemyId ?? troop?.enemyIds[0];
+        return project.database.enemies.some((enemy) => enemy.id === enemyId && enemy.actionProfile !== undefined);
+      }));
     case "system-monster-collection": return project.system.monsterCollection === true;
   }
 }

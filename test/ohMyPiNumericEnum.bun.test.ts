@@ -1,6 +1,8 @@
 import { describe, expect, test } from "bun:test";
 import { completeProvider } from "../scripts/lib/ohMyPiPiAiRuntime.ts";
 import { allTools, toOpenAiTools } from "../src/editor/tools/toolRegistry.ts";
+import { WORK_PLAN_TOOLS } from "../src/ai/assistantSession.ts";
+import { ACCEPTANCE_TOOLS } from "../src/ai/assistantAcceptanceTools.ts";
 import capturedTools from "./fixtures/oh-my-pi/round4-tools.json";
 import { offlineFetch } from "./helpers/offlineFetch.ts";
 
@@ -47,9 +49,7 @@ type Wire = {
   };
 };
 const sparse = toOpenAiTools(allTools().filter(tool => tool.name === "upsert_autotile_group"));
-const corpus = [...capturedTools, ...allTools().filter(tool => !capturedTools.some(captured => captured.function.name === tool.name)).map(tool => ({
-  type: "function", function: { name: tool.name, description: tool.description, parameters: tool.parameters },
-}))];
+const corpus = [...toOpenAiTools(allTools()), ...WORK_PLAN_TOOLS, ...ACCEPTANCE_TOOLS];
 
 describe("numeric tool enums at the real Antigravity SDK wire boundary", () => {
   test("the captured set and full live registry cover all five numeric leaves", () => {
@@ -108,7 +108,14 @@ describe("numeric tool enums at the real Antigravity SDK wire boundary", () => {
             expect(node.enum).toEqual(schema.enum!.map(String));
           }
         }
-        expect(declarations[0].parameters.properties!.kind.enum).toEqual(["single", "lots"]);
+        expect(declarations.find(tool => tool.name === "author_house")!.parameters.properties!.kind.enum).toEqual(["single", "lots"]);
+        if (label === "full-corpus") {
+          const criteria = declarations.find(tool => tool.name === "repair_acceptance")!.parameters.properties!.criteria.items!;
+          expect(criteria.properties!.kind.enum).toContain("actionCombat");
+          expect(Object.keys(criteria.properties!.target.properties!)).toEqual(["mapId", "newMapName"]);
+          expect(declarations.find(tool => tool.name === "run_action_combat_test")!.parameters.properties!.mapId).toBeDefined();
+          expect(declarations.find(tool => tool.name === "run_scene_test")!.parameters.properties!.steps.items!.properties!.inventoryDelta).toBeDefined();
+        }
         expect(wire.request.contents).toEqual([{ role: "user", parts: [
           { text: "READY" }, { inlineData: { mimeType: "image/png", data: png } },
         ] }]);

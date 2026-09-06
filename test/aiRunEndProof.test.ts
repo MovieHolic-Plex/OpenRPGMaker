@@ -3,6 +3,7 @@ import { clearTimeout as clearDeadline, setTimeout as setDeadline } from "node:t
 import type { Project } from "@/project/types";
 import type { ChatResult } from "@/ai/llmClient";
 import { fixedDeclarer } from "./intentFixture";
+import { resetIntentDeclarationCache } from "@/ai/intentDeclarationClient";
 import { AssistantSession, type RunEndProofState } from "@/ai/assistantSession";
 import { store } from "@/project/store";
 import { createBlankProject } from "@/project/defaults";
@@ -94,6 +95,7 @@ async function fixture(withPlan = true) {
 
 describe("AssistantSession accepted-revision proof", () => {
   beforeEach(() => {
+    resetIntentDeclarationCache();
     vi.useFakeTimers(); // Disable unrelated autosave; no timer advancement synchronizes the test.
     vi.stubEnv("VITE_SUPABASE_USE_PROXY", "0");
     vi.stubEnv("VITE_SUPABASE_URL", "http://p1-session.invalid");
@@ -105,6 +107,7 @@ describe("AssistantSession accepted-revision proof", () => {
     });
   });
   afterEach(() => {
+    resetIntentDeclarationCache();
     vi.clearAllTimers(); vi.useRealTimers(); vi.restoreAllMocks(); vi.unstubAllGlobals(); vi.unstubAllEnvs();
   });
 
@@ -381,8 +384,10 @@ describe("AssistantSession accepted-revision proof", () => {
   it("retryLastTurn retries failed proof without replaying the LLM or applied tools", async () => {
     const f = await fixture();
     f.setRead(async () => new Response("unavailable", { status: 503 }));
-    await f.run();
+    expect((await f.run()).stoppedReason).toBe("final");
+    expect(f.session.getRunEndProof()).toMatchObject({ status: "failed", verified: false, reason: "failed" });
     const receipt = f.session.getRunEndProof()?.receipt;
+    expect(receipt?.projectId).toBe(projectId);
     const chats = f.chatCalls();
     f.setRead(async () => Response.json([f.row()]));
     await f.session.retryLastTurn();

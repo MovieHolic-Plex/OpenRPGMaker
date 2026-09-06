@@ -103,7 +103,7 @@ describe("spatial milestone completion evidence", () => {
       { id: "first", title: "First group", instruction: "NPC 2명 배치해 줘", successTools: ["place_npc"], mapTargets: [project.startMapId] },
       { id: "later", title: "Later group", instruction: "NPC 3명 추가해 줘", successTools: ["place_npc"], mapTargets: [project.startMapId] },
     ] }] });
-    if (spatialSpec) session["activeSpec"] = { mapId: project.startMapId, assets: [{ id: "npcs", kind: "npc", x: 1, y: 7, w: 10, h: 3 }] };
+    if (spatialSpec) session["rememberSpec"]({ mapId: project.startMapId, assets: [{ id: "npcs", kind: "npc", x: 1, y: 7, w: 10, h: 3 }] });
     const place = (id: string, x: number) => {
       const args = { mapId: project.startMapId, id, name: id, x, y: 8, graphic: { transparent: true }, pages: [{ lines: ["Hello"] }] };
       const result = runTool(session["ctx"], "place_npc", args);
@@ -134,7 +134,7 @@ describe("spatial milestone completion evidence", () => {
     const project = createBlankProject();
     const session = new AssistantSession(project);
     session["turnViewSpec"] = { mapId: project.startMapId, assets: [{ id: "pond", kind: "terrain", ...rect }] };
-    session["activeSpec"] = { mapId: project.startMapId, assets: [{ id: "ground", kind: "terrain", x: 0, y: 0, w: 20, h: 15 }] };
+    session["rememberSpec"]({ mapId: project.startMapId, assets: [{ id: "ground", kind: "terrain", x: 0, y: 0, w: 20, h: 15 }] });
     session["workPlan"] = workPlanFromSetToolArgs({ goal: "Ground then pond", layers: [{ title: "Terrain", items: [
       { id: "ground", title: "Ground", instruction: "Fill the map ground", successTools: ["fill_region"] },
       { id: "pond", title: "Pond", instruction: "Place a pond in the top right of the viewport", successTools: ["fill_region"] },

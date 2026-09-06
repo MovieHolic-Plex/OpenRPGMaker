@@ -109,7 +109,7 @@ describe("current final artifact assessment", () => {
     expect(checks[0]).toMatchObject({ result: { ok: true, data: { coverage: { endings: { defined: 0 } } } } });
     expect(checks.at(-1)).toMatchObject({ result: { ok: true, issues: expect.arrayContaining([expect.objectContaining({ code: "ending-uninvoked" })]), data: { coverage: { endings: { uninvokedIds: ["ending_escape"] } } } } });
     expect(result.stoppedReason).toBe(stop);
-    expect(result.completionAssessment?.acceptance?.items).toMatchObject([{ id: "maps", status: "blocked", issues: [{ field: "criteria[0].targets" }] }, { id: "kept", status: "verified" }]);
+    expect(result.completionAssessment?.acceptance?.items).toMatchObject([{ id: "maps", status: "blocked", issues: [{ field: "criteria[0].targets" }] }, { id: "kept", status: "verified" }, { id: "required-verification", status: "blocked" }]);
     expect(result.completionAssessment?.adventure).toEqual(f.session["adventureProblems"]());
     expect(result.completionAssessment?.adventure).toHaveLength(3);
     expect(result.completionAssessment?.verification.length).toBeGreaterThan(0);
@@ -131,10 +131,13 @@ describe("current final artifact assessment", () => {
     const result = await f.run(true);
     // Then all categories were exposed before the model chose a repair tool.
     expect(f.assessmentsAtResponse[3]).toMatchObject({ type: "completion_assessment", assessment: {
-      acceptance: { items: [{ id: "maps", status: "blocked" }, { id: "kept", status: "verified" }] },
+      acceptance: { items: [{ id: "maps", status: "blocked" }, { id: "kept", status: "verified" }, { id: "required-verification", status: "blocked" }] },
       adventure: expect.arrayContaining([expect.any(String)]), verification: expect.arrayContaining([expect.any(String)]),
     } });
-    expect(result.completionAssessment?.acceptance?.items.map(item => item.status)).toEqual([repair === "acceptance" ? "verified" : "blocked", "verified"]);
+    expect(result.completionAssessment?.acceptance?.items.map(item => [item.id, item.status])).toEqual([
+      ["maps", repair === "acceptance" ? "verified" : "blocked"], ["kept", "verified"],
+      ...(repair === "acceptance" ? [["required-verification", "blocked"]] : []),
+    ]);
     expect(result.completionAssessment?.adventure).toHaveLength(3);
     const lastQuality = f.events.filter(event => event.type === "tool_call" && event.name === "evaluate_game_quality").at(-1);
     expect(lastQuality).toMatchObject({ result: { data: { coverage: { endings: { uninvokedIds: repair === "ending" ? [] : ["ending_escape"] } } } } });

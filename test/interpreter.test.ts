@@ -965,7 +965,7 @@ describe("M2 generic map runtime executor", () => {
     expect(session.m2Runtime?.dialogue).toEqual([{ speaker: "미나", portraitId: "face_mina", emotion: "happy", body: "숲으로 가자.", autoAdvance: false }]);
     expect(session.m2Runtime?.audio).toMatchObject({ ambient: { resourceId: "forest_wind", volume: 65, fadeMs: 500 } });
     expect(texts).toContain("숲으로 가자.");
-    expect(session.audio?.ambient).toEqual({ resourceId: "forest_wind", loop: true });
+    expect(session.audio?.ambient).toEqual({ resourceId: "forest_wind", loop: true, volume: 65, fadeInMs: 500 });
     expect([0, 1]).toContain(session.variables.loot_roll);
     expect(session.m2Runtime?.cutscene).toMatchObject({ lockPlayer: true });
     expect(session.m2Runtime?.checkpoints).toEqual([{ slotId: "auto", label: "숲 입구", restoreOnGameOver: true }]);

@@ -56,6 +56,7 @@ import { analyzeRegionSurroundings } from "./regionSurroundings";
 // regionPolish)를 깨지 않도록 여기서 재수출한다. 도구 규칙 가이드는 없다 — 규칙은 툴 설명에 있다.
 import { formatMaterialLabelHint } from "@/ai/turnGuide";
 import { createLlmIntentDeclarer } from "@/ai/intentDeclarationClient";
+import { createProjectWikiCoordinator } from "@/editor/projectWikiCoordinator";
 
 export { formatMaterialLabelHint };
 import { getPendingRegionApply, setPendingRegionApply, type PendingRegionApply } from "./pendingRegionApply";
@@ -252,6 +253,9 @@ export function applyRegionProjectWithHistory(project: Project, label: string, m
   // single undo entry as one failure-atomic operation so a throwing store listener cannot
   // strand authored state or leave an orphan history snapshot.
   const before = structuredClone(store.getCurrent());
+  const appliedProject = { ...project };
+  if (before.world) appliedProject.world = structuredClone(before.world);
+  else delete appliedProject.world;
   const historyMarker = getMapEditHistoryMarker();
   let replaceStarted = false;
   try {
@@ -259,7 +263,7 @@ export function applyRegionProjectWithHistory(project: Project, label: string, m
     replaceStarted = true;
     // 행위 로그에 AI 소행으로 남긴다. 라벨/origin 이 없으면 영역 작업 전량이
     // `(라벨 없음)` + `origin: "human"` 으로 떨어져 사람 손편집과 구분되지 않는다.
-    store.replace(project, { change: { label: `AI 영역 작업: ${label}`, origin: "ai" } });
+    store.replace(appliedProject, { change: { label: `AI 영역 작업: ${label}`, origin: "ai" } });
   } catch (cause) {
     let rollbackFailure: unknown;
     if (replaceStarted) {
@@ -299,6 +303,7 @@ const defaultDeps: RegionTaskDeps = {
   createSession: (project, mapId) => {
     return new AssistantSession(project, {
       config: resolveSurfaceAiConfig("region"),
+      prepareProjectWiki: createProjectWikiCoordinator({ getConfig: () => resolveSurfaceAiConfig("region") }).prepare,
       declareIntent: createLlmIntentDeclarer(),
       contextOptions: {
         currentMapId: mapId,

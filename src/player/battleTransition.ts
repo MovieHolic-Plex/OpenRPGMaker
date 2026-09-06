@@ -52,16 +52,27 @@ export function createBattleTransition(
   schedule: (callback: () => void, delayMs: number) => number = (callback, delayMs) => window.setTimeout(callback, delayMs)
 ): BattleTransition {
   const overlay = battleTransitionOverlayNode();
-  const timers = new Set<number>();
+  const timers = new Map<number, () => void>();
+  let destroyed = false;
   let lastPhase: BattleTransitionPhase | undefined;
   host.append(overlay);
 
-  const wait = (ms: number): Promise<void> =>
-    new Promise((resolve) => {
-      timers.add(schedule(() => resolve(), ms));
+  const wait = (ms: number): Promise<void> => {
+    if (destroyed) return Promise.resolve();
+    return new Promise((resolve) => {
+      let timer: number | undefined;
+      let fired = false;
+      timer = schedule(() => {
+        fired = true;
+        if (timer !== undefined) timers.delete(timer);
+        resolve();
+      }, ms);
+      if (!fired) timers.set(timer, resolve);
     });
+  };
 
   const setPhase = (phase: BattleTransitionPhase): void => {
+    if (destroyed) return;
     lastPhase = phase;
     overlay.dataset.battleTransitionPhase = phase;
   };
@@ -84,7 +95,8 @@ export function createBattleTransition(
       await wait(BATTLE_TRANSITION_EXIT_MS);
     },
     destroy() {
-      for (const timer of timers) window.clearTimeout(timer);
+      destroyed = true;
+      for (const [timer, resolve] of timers) { window.clearTimeout(timer); resolve(); }
       timers.clear();
       overlay.remove();
     },

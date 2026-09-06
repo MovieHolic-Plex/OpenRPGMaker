@@ -25,6 +25,10 @@ const assistantMock = vi.hoisted(() => {
     getActiveSpec(): null {
       return null;
     }
+
+    getCompletionSpecs(): [] {
+      return [];
+    }
     getWorkPlan(): null {
       return null;
     }

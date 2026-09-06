@@ -37,7 +37,7 @@ export const RECT_SCHEMA: JsonSchema = {
 };
 
 /**
- * 이벤트 커맨드/조건 — `kind` 로 분기하는 넓은 유니온이다. 전 variant 를 나열하면 스키마가 수백 줄이
+ * 이벤트 커맨드 — 조건은 CONDITION_SCHEMA로 분리한다. `kind` 로 분기하는 넓은 유니온이다. 전 variant 를 나열하면 스키마가 수백 줄이
  * 되고 노출 토큰이 폭증하므로 `kind` 와 최빈 필드만 선언한다. 값 검증은 커맨드 컴파일러가 한다.
  */
 const COMMAND_LEAF_SCHEMA: JsonSchema = {
@@ -56,7 +56,7 @@ const COMMAND_LEAF_SCHEMA: JsonSchema = {
     value: {
       description: 'setSwitch: boolean 또는 "toggle" 또는 {kind:"var",id}. setVariable: number 또는 {kind:"var",id}. setSelfSwitch/setFlag: boolean. changeFactionStance: number.',
     },
-    op: { type: "string", enum: ["=", "+=", "-=", "*=", "/="], description: "changeItem/changeGold: =|+=|-=. setVariable: =|+=|-=|*=|/=." },
+    op: { type: "string", enum: ["=", "+=", "-=", "*=", "/="], description: "changeItem/changeGold: =|+=|-=. setVariable: =|+=|-=|*=|/=. 아이템 지급은 changeItem + itemId + op:+= + amount." },
     endingId: { type: "string", description: "triggerEnding 대상 ending ID. 생략하면 조건에 맞는 엔딩을 선택." },
     id: { type: "string" },
     mapId: { type: "string" },
@@ -64,10 +64,12 @@ const COMMAND_LEAF_SCHEMA: JsonSchema = {
     y: { type: "integer" },
     amount: { type: "integer" },
     itemId: { type: "string" },
+    speciesId: { type: "string", description: "giveMonster: 조회한 monsterSpecies ID" },
+    level: { type: "integer", description: "giveMonster: 지급할 몬스터의 레벨" },
     switchId: { type: "string" },
     variableId: { type: "string" },
     label: { type: "string" },
-    key: { type: "string", description: "selfSwitch 키 A|B|C|D" },
+    key: { type: "string", description: "setSelfSwitch 키 A|B|C|D" },
     delta: { type: "integer", description: "changeFriendship 변화량" },
     speaker: { type: "string" },
     body: { type: "string", description: "text 대사 본문" },
@@ -168,7 +170,7 @@ export const CONDITION_SCHEMA: JsonSchema = {
   description:
     "kind=switch → switchId + value(boolean). kind=variable → variableId + op + value(number). " +
     'kind=item → itemId + present(boolean), 예: {kind:"item",itemId:"조회한 ID",present:true}. ' +
-    "kind=all|any → conditions[]. kind=not → condition.",
+    "kind=all|any → conditions[]. kind=not → condition. kind=selfSwitch → key + value(boolean).",
   properties: {
     kind: {
       type: "string",

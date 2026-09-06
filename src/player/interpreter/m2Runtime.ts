@@ -3,11 +3,12 @@ import { showPictureState } from "@/project/session";
 import { ACTOR_PARAMETER_KEYS } from "@/project/actorModel";
 import { changeActorClass } from "@/project/sessionClass";
 import type { ActorParameterKey, M2CommandFields, Project } from "@/project/types";
-import type { M2RuntimeState, PlaySessionLike, RuntimePictureState } from "@/project/sessionRuntimeTypes"
+import type { M2RuntimeState, PlaySessionLike, RuntimeEventLocation, RuntimePictureState } from "@/project/sessionRuntimeTypes"
 import { executeModernCommand } from "./m2ModernRuntime";
 import { fieldBoolean, fieldNumber, fieldString } from "./m2RuntimeFields";
 import { terrainTagAt } from "@/project/terrainAt";
-import { runtimeEventViewsForMap, type RuntimeEventPositions } from "@/project/runtimeEventState";
+import { runtimeEventViewById, runtimeEventViewsForMap, type RuntimeEventPositions } from "@/project/runtimeEventState";
+import { normalizeWeatherParams, parseWeather, weatherToRuntimeString } from "@/player/weather/weatherModel";
 import { ensureM2Runtime } from "./m2RuntimeState";
 
 type M2RuntimeCommand = {
@@ -87,7 +88,11 @@ function executeByTitle(
     return;
   }
   if (title === "Set Weather Effects") {
-    runtime.screen.weather = fieldString(fields, "value", "none");
+    const value = fieldString(fields, "value", "none");
+    runtime.screen.weather = fields.intensity === undefined ? value : weatherToRuntimeString(normalizeWeatherParams({
+      kind: parseWeather(value).kind,
+      intensity: fieldNumber(fields, "intensity", 0.5),
+    }));
     return;
   }
   if (title === "Memorize Current BGM") {
@@ -128,18 +133,8 @@ function executeByTitle(
     };
     return;
   }
-  if (title === "Set Event Location") {
-    recordMapOrEventState(runtime, title, fields);
-    return;
-  }
-  if (title === "Swap Event Location") {
-    const eventA = fieldString(fields, "eventA", fieldString(fields, "target", ""));
-    const eventB = fieldString(
-      fields,
-      "eventB",
-      fieldString(fields, "value", fieldString(fields, "mapId", ""))
-    );
-    runtime.events["_swap"] = { mapId: "", x: 0, y: 0, value: `${eventA}<->${eventB}` };
+  if (title === "Set Event Location" || title === "Swap Event Location") {
+    relocateM2Events(session, title, fields, context);
     return;
   }
   if (title === "Get Terrain ID" || title === "Get Event ID") {
@@ -173,7 +168,7 @@ function executeByTitle(
     return;
   }
   if (title === "Change Parallax Back") {
-    runtime.map["parallax_override"] = { mapId: "", x: 0, y: 0, value: fieldString(fields, "value", "") };
+    runtime.map["parallax_override"] = { mapId: "", x: 0, y: 0, value: commandResourceId(fields) };
     return;
   }
   if (title === "Set Encounter Rate") {
@@ -224,12 +219,11 @@ function executeByTitle(
     runtime.system[`vehicle_graphic_${vehicle}`] = fieldString(fields, "value", "");
     return;
   }
-  if (title === "Change System BGM") {
-    runtime.system["system_bgm"] = fieldString(fields, "value", "");
-    return;
-  }
-  if (title === "Change System SE") {
-    runtime.system["system_se"] = fieldString(fields, "value", "");
+  if (title === "Change System BGM" || title === "Change System SE") {
+    const key = title === "Change System BGM" ? "system_bgm" : "system_se";
+    // Configuration metadata only: no system-cue slot is specified by this command.
+    runtime.system[key] = commandResourceId(fields);
+    if (fields.volume !== undefined) runtime.system[`${key}_volume`] = fieldNumber(fields, "volume", 100);
     return;
   }
   if (title === "Change System Graphic") {
@@ -507,6 +501,60 @@ function recordGetter(session: PlaySessionLike, runtime: M2RuntimeState, title: 
   runtime.map[slugKey(title)] = { target: fieldString(fields, "target", "") };
 }
 
+function commandResourceId(fields: M2CommandFields): string {
+  return fieldString(fields, fields.resourceId === undefined ? "value" : "resourceId", "");
+}
+
+/** Commit positions before returning the affected IDs for host movement cancellation. */
+export function relocateM2Events(
+  session: PlaySessionLike,
+  title: "Set Event Location" | "Swap Event Location",
+  fields: M2CommandFields,
+  context: { readonly project?: Project; readonly eventPositions?: RuntimeEventPositions }
+): string[] {
+  const runtime = ensureM2Runtime(session);
+  const eventA = fieldString(fields, title === "Set Event Location" || fields.eventA === undefined ? "target" : "eventA", "");
+  const eventB = title === "Swap Event Location"
+    ? fieldString(fields, fields.eventB !== undefined ? "eventB" : fields.value !== undefined ? "value" : "mapId", "") : "";
+  if (title === "Set Event Location") recordMapOrEventState(runtime, title, fields);
+  else runtime.events._swap = { mapId: "", x: 0, y: 0, value: `${eventA}<->${eventB}` };
+
+  const project = context.project;
+  if (!project) return [];
+  const positions = context.eventPositions ?? {};
+  const currentLocation = (eventId: string): RuntimeEventLocation | undefined => {
+    for (const map of Object.values(project.maps)) {
+      const view = runtimeEventViewById(project, map, session, map.id === session.currentMapId ? positions : {}, eventId);
+      if (view) return { mapId: map.id, x: view.x, y: view.y, direction: view.direction };
+    }
+    return undefined;
+  };
+  const writeLocation = (eventId: string, location: RuntimeEventLocation): void => {
+    session.eventLocations ??= {};
+    session.eventLocations[eventId] = location;
+    if (session.spawnedEvents?.[eventId]) {
+      session.spawnedEvents[eventId] = { ...session.spawnedEvents[eventId], ...location };
+    }
+    if (location.mapId === session.currentMapId) {
+      positions[eventId] = { x: location.x, y: location.y, direction: location.direction };
+    } else delete positions[eventId];
+  };
+  const a = currentLocation(eventA);
+  if (!a) return [];
+  if (title === "Set Event Location") {
+    const mapId = fieldString(fields, "mapId", session.currentMapId) || session.currentMapId;
+    if (!project.maps[mapId]) return [];
+    writeLocation(eventA, { mapId, x: fieldNumber(fields, "x", 0), y: fieldNumber(fields, "y", 0), direction: a.direction });
+    return [eventA];
+  }
+  // Snapshot both sides before either write; swapping positions does not swap facing.
+  const b = currentLocation(eventB);
+  if (!b || eventA === eventB) return [];
+  writeLocation(eventA, { ...b, direction: a.direction });
+  writeLocation(eventB, { ...a, direction: b.direction });
+  return [eventA, eventB];
+}
+
 function recordMapOrEventState(runtime: M2RuntimeState, title: string, fields: M2CommandFields): void {
   const target = fieldString(fields, "target", title.includes("Event") ? "event" : "map");
   const state = {
@@ -516,7 +564,7 @@ function recordMapOrEventState(runtime: M2RuntimeState, title: string, fields: M
     value: fieldString(fields, "value", ""),
   };
   if (title.includes("Event")) {
-    runtime.events[target] = state;
+    runtime.events[target] = { ...runtime.events[target], ...state };
     return;
   }
   runtime.map[slugKey(title)] = state;
