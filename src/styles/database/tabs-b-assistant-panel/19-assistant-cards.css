@@ -297,6 +297,15 @@
   font-weight: 600;
 }
 
+.ai-run-outcome {
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  border-top: var(--stroke-1) solid var(--border-subtle);
+  color: var(--ai-deck-secondary, var(--text-2));
+  font: var(--font-size-sm)/1.5 var(--font-ui);
+  overflow-wrap: anywhere;
+}
+
 /* ── 2. 자율 런 체크리스트(계획 카드 언어) ───────────────────────
    DOM(aiChatRenderers.renderWorkPlanChecklist): .ai-autonomous-checklist > .ai-run-whisper + .ai-run-details. */
 .ai-deck .ai-autonomous-checklist {

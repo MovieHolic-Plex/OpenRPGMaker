@@ -1,4 +1,4 @@
-import type { AcceptanceSnapshot, AcceptanceItemSnapshot } from "@/ai/assistantAcceptance";
+import type { AcceptanceSnapshot, AcceptanceItemSnapshot, RequirementWithdrawalAction } from "@/ai/assistantAcceptance";
 import { focusEditorRegion } from "@/editor/editorReferenceNavigation";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
@@ -8,13 +8,35 @@ const STATUS = {
   pending: "대기", working: "작업 중", verifying: "검증 중", verified: "검증 완료", blocked: "진행 막힘",
 } as const;
 
-function createItem() {
+interface ChecklistActions {
+  readonly onWithdraw?: (action: RequirementWithdrawalAction) => boolean;
+}
+
+function createItem(onWithdraw: ((requirementId: string) => boolean) | undefined) {
   let item: AcceptanceItemSnapshot | null = null;
+  let busy = false;
   const mark = el("span", { class: "ai-sticky-mark", attrs: { "aria-hidden": "true" }, children: [deckIcon("check")] });
   mark.querySelector("path")?.setAttribute("pathLength", "1");
   const title = el("span", { class: "ai-sticky-item-title" });
   const status = el("span", { class: "ai-sticky-item-status" });
   const summary = el("summary", { children: [mark, title, status] });
+  const actionStatus = el("p", { class: "ai-sticky-reason", attrs: { role: "status" }, dataset: { testid: "ai-requirement-action-status" } });
+  actionStatus.hidden = true;
+  const withdraw = onWithdraw ? el("button", {
+    class: "ai-sticky-navigate ai-sticky-withdraw", attrs: { type: "button" },
+    dataset: { testid: "ai-requirement-withdraw" }, text: "이 요구 제외",
+    on: { click: (event) => {
+      event.stopPropagation();
+      if (!item || busy || item.withdrawal || item.status === "verified") return;
+      actionStatus.hidden = onWithdraw(item.id);
+      if (!actionStatus.hidden) {
+        actionStatus.textContent = "제외하지 못했습니다. 현재 요구를 확인해 주세요.";
+        root.open = true;
+      }
+    } },
+  }) : null;
+  if (withdraw) summary.append(withdraw);
+  const source = el("p", { class: "ai-sticky-reason" });
   const reason = el("p", { class: "ai-sticky-reason" });
   const evidence = el("div", { class: "ai-sticky-evidence", dataset: { testid: "ai-sticky-evidence" } });
   const navigate = el("button", {
@@ -26,16 +48,29 @@ function createItem() {
       focusEditorRegion({ mapId: map.id, ...(item.region ?? { x: 0, y: 0, w: map.width, h: map.height }) }, { highlight: true });
     } },
   });
-  const detail = el("div", { class: "ai-sticky-item-detail", children: [reason, evidence, navigate] });
+  const detail = el("div", { class: "ai-sticky-item-detail", children: [source, reason, evidence, actionStatus, navigate] });
   const root = el("details", { class: "ai-sticky-item", dataset: { testid: "ai-sticky-item" }, children: [summary, detail] });
-  return { root, update(next: AcceptanceItemSnapshot) {
+  function syncAction() {
+    if (!withdraw || !item) return;
+    withdraw.dataset.requirementId = item.id;
+    withdraw.hidden = item.status === "verified" && !item.withdrawal;
+    withdraw.disabled = busy || !!item.withdrawal;
+    withdraw.textContent = item.withdrawal ? "사용자가 제외함" : "이 요구 제외";
+    withdraw.setAttribute("aria-label", `${item.title} · ${withdraw.textContent}`);
+    if ((withdraw.disabled || withdraw.hidden) && document.activeElement === withdraw) summary.focus();
+  }
+  return { root, setBusy(value: boolean) { busy = value; syncAction(); }, update(next: AcceptanceItemSnapshot) {
     item = next;
     root.dataset.itemId = next.id;
     root.dataset.status = next.status;
     title.textContent = next.title;
-    status.textContent = STATUS[next.status];
-    reason.textContent = next.reason ?? "";
-    reason.hidden = !next.reason;
+    status.textContent = `${next.required === false ? "선택 · " : ""}${STATUS[next.status]}`;
+    root.dataset.withdrawn = String(!!next.withdrawal);
+    source.textContent = next.source ? `원래 요청: ${next.source.text}` : "";
+    source.hidden = !next.source;
+    reason.textContent = next.withdrawal ? `사용자 제외: ${next.withdrawal.reason}` : next.reason ?? "";
+    reason.hidden = !reason.textContent;
+    syncAction();
     evidence.replaceChildren(...next.evidence.map((entry) => el("dl", {
       dataset: { passed: String(entry.passed) },
       children: [el("dt", { text: "기대" }), el("dd", { text: entry.expected }),
@@ -49,9 +84,14 @@ function createItem() {
   } };
 }
 
-/** Read-only projection. The panel owns mount/clear; the backend owns every status. */
-export function createAiStickyChecklist() {
+/** The panel owns user actions and mount/clear; the backend owns every status. */
+export function createAiStickyChecklist(actions: ChecklistActions = {}) {
   let snapshot: AcceptanceSnapshot | null = null;
+  let busy = false;
+  const withdraw = actions.onWithdraw ? (requirementId: string): boolean => {
+    if (!snapshot || disposed || busy) return false;
+    return actions.onWithdraw?.({ acceptanceId: snapshot.id, requirementId, reason: "사용자가 완료 범위에서 이 요구를 제외함" }) ?? false;
+  } : undefined;
   let manualExpanded: boolean | null = null;
   let activityText = "";
   let disposed = false;
@@ -129,13 +169,14 @@ export function createAiStickyChecklist() {
         row.root.remove(); rows.delete(id);
       }
       next.items.forEach((item, index) => {
-        const row = rows.get(item.id) ?? createItem();
-        rows.set(item.id, row); row.update(item);
+        const row = rows.get(item.id) ?? createItem(withdraw);
+        rows.set(item.id, row); row.setBusy(busy); row.update(item);
         if (list.children[index] !== row.root) list.insertBefore(row.root, list.children[index] ?? null);
       });
       if (!root.isConnected) document.body.append(root);
       syncActivity(); syncExpanded(); measureTop();
     },
+    setBusy(value: boolean) { busy = value; for (const row of rows.values()) row.setBusy(value); },
     setActivity(text: string) { activityText = text; syncActivity(); },
     dispose() {
       disposed = true; snapshot = null; rows.clear(); root.remove();

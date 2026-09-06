@@ -872,6 +872,36 @@ Disclose excluded factors in one concise note: defense, skill power, type chart/
 - CSS has a deliberately small vocabulary: `.menu`, `.command`, `.label`, `.command:focus-visible`, `.command:disabled`. Only visual properties are accepted; no URLs, external resources, arbitrary selectors, at-rules, positioning or scripts. Valid edits preview immediately. Invalid drafts keep the last valid preview and disable Apply with a visible error.
 - Apply makes one undoable project change. Revert restores the saved text; reset removes the override. A preset is only a draft until Apply. Scoped runtime styles are mounted and removed with each command panel; they never target editor chrome or other game windows.
 
+## P2 authoritative AI outcome and user scope action (2026-09-06)
+
+- Reuse the existing deck and sticky-note primitives, font, semantic colors and
+  spacing. A compact wrapping status line between transcript and composer names
+  response execution, canonical goal assessment and delivery separately. It uses
+  12px metadata, text-2, space-2/3 padding and the existing hairline border; no
+  new theme, animation, asset, dependency or scroll owner.
+- `ai-run-outcome` exposes backend `data-execution`, `data-goal`, `data-delivery`
+  verbatim. Response final means `응답 종료`, never goal completion. No outcome
+  exists before a session projection; new turns/conversation boundaries clear
+  old presentation. Finalization and live store refresh read the session getter.
+- A scoped `이 요구 제외` native action in each unverified requirement summary
+  calls only the host user-withdrawal API. It carries `ai-requirement-withdraw`
+  and `data-requirement-id`, retaining original source and failed evidence.
+  The action itself records the reason that the user excluded this requirement
+  from completion scope. Source text and user withdrawal reason remain in the
+  existing evidence disclosure; exclusion is not verification.
+- Busy actions are disabled; rejection is a local polite status, not silent
+  success. Withdrawn actions stay disabled and labelled as user exclusions.
+  Existing keyed details, manual collapse, map navigation and sticky count stay
+  intact. Native focus returns to the summary when its focused action disables.
+- The existing Continue button explicitly selects Do through the real composer
+  before sending the resume token; ordinary Ask/Plan sends keep their modes.
+- Personas: Korean-first author distinguishing response from result, keyboard
+  author withdrawing one named requirement, existing-project author retaining
+  acceptance history and undo. Supported desktop sizes remain 1024/1280/1440.
+  No mobile-editor promise or broad performance audit. Independent visual and
+  final full-gate approval remain supervisor-owned; image-view limits must be
+  disclosed with actual browser evidence.
+
 ## AI acceptance sticky note (2026-09-06)
 
 - A read-only session note lives outside the chat deck, aligned to the measured
