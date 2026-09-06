@@ -1,6 +1,7 @@
 import { getTool, runTool } from "@/editor/tools";
 import type { ToolResult } from "@/editor/tools";
 import type { Project } from "@/project/types";
+import { startStateOf } from "@/project/session";
 import type { IntentDeclaration, IntentSelectionFact } from "./intentDeclaration";
 import type { ChatMessage, OpenAiToolSchema } from "./llmClient";
 import { estimateContextTokens, resolveContextWindow } from "./contextCompaction";
@@ -108,10 +109,17 @@ export function extractOriginalContext(project: Project, options: OriginalContex
   add("/project", { version: project.version, meta: project.meta, startMapId: project.startMapId,
     startPos: project.startPos, mapTree: project.mapTree, flags: project.flags });
   addRead("/summary", "get_project_summary", {});
-  const map = project.maps[mapId];
-  if (!map) missing.push({ kind: "map", id: mapId });
+  const includedMaps = new Set<string>();
+  const includedTilesets = new Set<string>();
   // Complete events precede bulky tile arrays. A selection prioritizes, never slices, a page tree.
-  if (map) {
+  const addMap = (mapId: string): void => {
+    if (includedMaps.has(mapId)) return;
+    includedMaps.add(mapId);
+    const map = project.maps[mapId];
+    if (!map) {
+      missing.push({ kind: "map", id: mapId });
+      return;
+    }
     const { events, lowerTiles, upperTiles, lowerTileStacks, upperTileStacks, ...metadata } = map;
     add(path("maps", mapId), metadata);
     addRead(path("maps", mapId, "region"), "get_map_region", {
@@ -128,12 +136,17 @@ export function extractOriginalContext(project: Project, options: OriginalContex
       lowerTiles, upperTiles, lowerTileStacks, upperTileStacks });
     const tileset = project.tilesets[map.tilesetId];
     if (tileset) {
+      if (includedTilesets.has(tileset.id)) return;
+      includedTilesets.add(tileset.id);
       // Deliberately select authored tile knowledge, not resource transport locations.
       add(path("tilesets", tileset.id), { id: tileset.id, name: tileset.name, tileMeta: tileset.tileMeta,
         tileGroups: tileset.tileGroups, palettePresets: tileset.palettePresets, structureKits: tileset.structureKits });
     } else missing.push({ kind: "tileset", id: map.tilesetId });
-  }
+  };
+  addMap(mapId);
   add("/system", project.system);
+  add("/session", startStateOf(project));
+  add("/testPresets", project.testPresets);
   add("/storyFlags", project.storyFlags);
   add("/worldCanon", project.worldCanon);
   add("/mapConnections", project.mapConnections);
@@ -177,7 +190,9 @@ export function extractOriginalContext(project: Project, options: OriginalContex
   const byId = new Map<string, typeof candidates>();
   for (const candidate of candidates) byId.set(candidate.id, [...(byId.get(candidate.id) ?? []), candidate]);
   const selected = new Set<string>();
-  const queue: unknown[] = entries.map(entry => entry.value);
+  // Only authored start roots expand maps; summary/mapTree are navigation, not map relevance.
+  const queue: unknown[] = [startStateOf(project), project.testPresets];
+  const followedMaps = new Set<string>();
   const include = (candidate: typeof candidates[number]): void => {
     if (selected.has(candidate.entryId)) return;
     selected.add(candidate.entryId);
@@ -186,13 +201,23 @@ export function extractOriginalContext(project: Project, options: OriginalContex
       addRead(candidate.entryId, "get_database_records", { collection: candidate.collection, ids: [candidate.id], include: "full" });
     } else add(candidate.entryId, candidate.value);
   };
-  for (const candidate of candidates) if (candidate.collection && (broadDatabase || requiredCollections.has(candidate.collection))) include(candidate);
-  const visit = (value: unknown): void => {
-    if (typeof value === "string") for (const candidate of byId.get(value) ?? []) include(candidate);
-    else if (Array.isArray(value)) value.forEach(visit);
-    else if (object(value)) for (const [key, child] of Object.entries(value)) { visit(key); visit(child); }
+  const visit = (value: unknown, followMaps: boolean): void => {
+    if (typeof value === "string") {
+      for (const candidate of byId.get(value) ?? []) include(candidate);
+      const referencedMap = project.maps[value];
+      if (followMaps && referencedMap && !followedMaps.has(value)) {
+        followedMaps.add(value);
+        addMap(value);
+        queue.push(referencedMap);
+      }
+    } else if (Array.isArray(value)) for (const child of value) visit(child, followMaps);
+    else if (object(value)) for (const [key, child] of Object.entries(value)) { visit(key, followMaps); visit(child, followMaps); }
   };
-  for (let i = 0; i < queue.length; i++) visit(queue[i]);
+  for (let i = 0; i < queue.length; i++) visit(queue[i], true);
+  queue.length = 0;
+  for (const entry of entries) queue.push(entry.value);
+  for (const candidate of candidates) if (candidate.collection && (broadDatabase || requiredCollections.has(candidate.collection))) include(candidate);
+  for (let i = 0; i < queue.length; i++) visit(queue[i], false);
   return structuredClone({ snapshotId: options.snapshotId, target: { mapId, selection }, entries, missing });
 }
 

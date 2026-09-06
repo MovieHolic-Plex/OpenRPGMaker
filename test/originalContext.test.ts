@@ -7,6 +7,7 @@ import { ToolReadEvidence } from "@/ai/toolReadEvidence";
 import { TASK_RECIPES } from "@/ai/toolCapabilityIndex";
 import { createEmptyToolProject, getTool, runTool, toOpenAiTools } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
+import { startSession } from "@/project/session";
 import type { ChatMessage } from "@/ai/llmClient";
 import { declaredIntent } from "./intentFixture";
 
@@ -33,7 +34,8 @@ describe("original authored-state extraction", () => {
     const item = { ...project.database.items[0]!, id: "item_grounded", name: "Original item", price: 47 };
     const isolated = { ...item, id: "item_unrelated", name: "Unrelated" };
     project.database.items.push(item, isolated, { ...item, id: "item_transitive" });
-    Object.assign(project.session, { privateRuntimeToken: "RUNTIME_SECRET_SENTINEL" });
+    const runtime = startSession(project, 5);
+    runtime.inventory.RUNTIME_SECRET_SENTINEL = 913579;
     Object.assign(project, { credentials: "ROOT_SECRET_SENTINEL" });
     const selection = { mapId: target.id, x: 0, y: 0, width: 3, height: 3 };
     const context = extractOriginalContext(project, { ...options, currentMapId: start.id, selection,
@@ -70,6 +72,115 @@ describe("original authored-state extraction", () => {
     const entry = context.entries.find(entry => entry.id === "/database/items")!;
     expect(entry.value).toMatchObject({ records: [], total: 0, nextOffset: null });
     expect(entry.reads[0]?.result.ok).toBe(true);
+  });
+});
+
+describe("authored start-state originals", () => {
+  function fixture() {
+    const project = createBlankProject();
+    const start = project.maps[project.startMapId];
+    const item = project.database.items[0];
+    const actor = project.database.actors[0];
+    const actorClass = project.database.classes[0];
+    if (!start || !item || !actor || !actorClass) throw new Error("Blank project fixture is incomplete");
+    project.database.items.push({ ...item, id: "item_seed_only", price: 83471 },
+      { ...item, id: "item_preset_only", price: 83472 }, { ...item, id: "item_map_only", price: 83473 });
+    project.database.classes.push({ ...actorClass, id: "class_seed_only" });
+    project.database.actors.push({ ...actor, id: "actor_seed_only", classId: "class_seed_only" });
+    project.switches.push({ id: "sw_seed_only", name: "Seed switch" });
+    project.variables.push({ id: "var_preset_only", name: "Preset variable" });
+    project.maps["preset/start"] = { ...structuredClone(start), id: "preset/start", events: [
+      { id: "preset_event", x: 1, y: 1, trigger: { kind: "action" }, commands: [
+        { kind: "callCommonEvent", commonEventId: "common_seed_only" },
+      ] },
+    ] };
+    project.commonEvents.push({ id: "common_seed_only", name: "Seed link", trigger: "none", commands: [
+      { kind: "transfer", mapId: "map_transitive", x: 1, y: 1 },
+    ] });
+    project.maps.map_transitive = { ...structuredClone(start), id: "map_transitive", events: [
+      { id: "transitive_event", x: 1, y: 1, trigger: { kind: "action" }, commands: [
+        { kind: "changeItem", itemId: "item_map_only", op: "+=", amount: 1 },
+        { kind: "transfer", mapId: "preset/start", x: 1, y: 1 },
+      ] },
+    ] };
+    project.maps.map_seed_farm = { ...structuredClone(start), id: "map_seed_farm" };
+    project.maps.map_unrelated = { ...structuredClone(start), id: "map_unrelated" };
+    project.mapTree.children.push({ mapId: "map_unrelated", children: [] });
+    project.session.gold = 472319;
+    project.session.inventory = { item_seed_only: 17 };
+    project.session.partyActorIds = ["actor_seed_only"];
+    project.session.switches = { sw_seed_only: true };
+    project.session.homeDecorationPlacements = [{ instanceId: "seed_home", typeId: "home_type",
+      mapId: "map_seed_farm", x: 2, y: 3, orientation: "down" }];
+    project.testPresets = [{ id: "preset_r5_unique", name: "Preset R5", gold: 583421,
+      inventory: { item_preset_only: 23 }, variables: { var_preset_only: 71 },
+      startMapId: "preset/start", startPos: { x: 2, y: 3 } }];
+    return project;
+  }
+
+  it("includes complete authored seed and presets rather than reporting zero omissions for absent state", () => {
+    const project = fixture();
+    const expectedSeed = structuredClone(project.session);
+    const expectedPresets = structuredClone(project.testPresets);
+    const runtime = startSession(project, 5);
+    runtime.gold = 913579;
+    runtime.inventory.RUNTIME_SECRET_SENTINEL = 1;
+    runtime.partyActorIds = ["RUNTIME_ACTOR_SENTINEL"];
+    Object.assign(project, { credentials: "ROOT_SECRET_SENTINEL" });
+    const context = extractOriginalContext(project, { ...options,
+      intent: declaredIntent({ tools: ["set_session_start", "upsert_test_preset"] }) });
+    project.session.gold = 1;
+    project.testPresets = [];
+    const envelope = parsed(new OriginalContextStore(context).message(1_000_000).message);
+    expect(envelope.entries).toContainEqual({ entryId: "/session", value: expectedSeed });
+    expect(envelope.entries).toContainEqual({ entryId: "/testPresets", value: expectedPresets });
+    expect(envelope.omitted.count).toBe(0);
+    expect(envelope.missing).toEqual([]);
+    expect(JSON.stringify(envelope)).not.toContain("SENTINEL");
+    expect(JSON.stringify(envelope)).not.toContain('"gold":913579');
+  });
+
+  it("follows seed and preset keys, actor classes and map/common-event cycles without selecting the map index", () => {
+    const project = fixture();
+    const context = extractOriginalContext(project, { ...options,
+      intent: declaredIntent({ tools: ["get_event"] }) });
+    const ids = context.entries.map(entry => entry.id);
+    for (const id of ["/database/items/item_seed_only", "/database/items/item_preset_only", "/database/items/item_map_only",
+      "/database/actors/actor_seed_only", "/database/classes/class_seed_only", "/database/switches/sw_seed_only",
+      "/database/variables/var_preset_only", "/database/commonEvents/common_seed_only",
+      "/maps/preset~1start/events/preset_event", "/maps/map_transitive/events/transitive_event", "/maps/map_seed_farm/tiles"]) {
+      expect(ids.filter(entryId => entryId === id), id).toHaveLength(1);
+    }
+    expect(ids.some(id => id.startsWith("/maps/map_unrelated"))).toBe(false);
+    expect(context.entries.find(entry => entry.id === "/maps/map_transitive/tiles")?.value)
+      .toMatchObject({ lowerTiles: project.maps.map_transitive?.lowerTiles, upperTiles: project.maps.map_transitive?.upperTiles });
+  });
+
+  it("lists and reconstructs oversized authored seed and presets through exact original pages", () => {
+    const project = fixture();
+    project.session.inventory = { ...project.session.inventory,
+      ...Object.fromEntries(Array.from({ length: 8000 }, (_, i) => [`item_large_${i}`, i + 1])) };
+    for (const preset of project.testPresets ?? []) preset.name = "preset_r5_payload_".repeat(4000);
+    const store = new OriginalContextStore(extractOriginalContext(project, options));
+    const narrow = store.message(500);
+    const ids = store.context.entries.map(entry => entry.id);
+    expect(parsed(narrow.message).omitted.count).toBe(ids.length - narrow.includedIds.length);
+    for (const [entryId, expected] of [["/session", project.session], ["/testPresets", project.testPresets]] as const) {
+      expect(narrow.includedIds).not.toContain(entryId);
+      expect(ids).toContain(entryId);
+      expect(store.read({ ...options, action: "list", offset: ids.indexOf(entryId), limit: 1 }).data)
+        .toMatchObject({ entries: [{ entryId }] });
+      let offset: number | null = 0;
+      let text = "";
+      while (offset !== null) {
+        const result = store.read({ ...options, action: "read", entryId, offset, limit: 24000 });
+        expect(result.ok).toBe(true);
+        const data = result.data as { text: string; nextOffset: number | null };
+        text += data.text;
+        offset = data.nextOffset;
+      }
+      expect(JSON.parse(text)).toEqual(expected);
+    }
   });
 });
 

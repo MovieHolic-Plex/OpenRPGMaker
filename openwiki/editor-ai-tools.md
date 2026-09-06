@@ -18,6 +18,14 @@ common-event cycles; declared database/battle/system and quest/world tasks broad
 authored context. Runtime session, credentials/configuration and asset transport blobs are
 outside this projection. Existing resource tools remain the resource lookup surface.
 
+The authored `ProjectStartState` (`startStateOf(project)`, serialized as `project.session`)
+and authored `project.testPresets` are complete `/session` and `/testPresets` entries,
+not live `PlaySession` data. Both use the same whole-entry budget and exact paging route.
+Their keys/values seed the reference closure, including inventory IDs, party actors/classes,
+flag definitions and referenced maps/events/common-event cycles. Referenced maps reuse the
+target-map projection; maps and shared tilesets appear once. Summary/map-tree navigation
+does not expand unrelated maps. Runtime-exclusion tests mutate a separate `startSession` result.
+
 `buildGroundedRequest` appends JSON `originalContext` after history compaction, so the
 first writer sees its original values even with `budgetChars: 1`. It accounts for complete
 native schemas, history, originals and the existing 16,384-token response reserve against
