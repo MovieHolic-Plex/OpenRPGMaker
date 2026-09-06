@@ -113,14 +113,15 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
 
 ## 지원 전투 시스템은 둘뿐이다 (2026-08-28)
 
-- 지원: **정면 턴제(RM식)** (`system.battleModel` 미설정 또는 `"rm2k3"` + 배틀 스킨 `rm2000`, 둘 다 기본값) 과 **포켓몬식** (`system.battleModel: "gen1"` + 배틀 스킨 `pokemon`). 새 프로젝트는 이 둘 중 하나로만 저작한다.
-- **스킨 id 개명 (2026-09-03): 정면 스킨 `rm2003` → `rm2000`.** 옛 이름은 2003 이었지만 구도는 아군이 필드에 서지 않는 정면(2000식) 전투였다. 같은 구도의 deprecated `rm2000`(감청 창) 은 이 하나로 흡수해 등록 스킨은 12 → 11 종. `resolveSkinId("rm2003") === "rm2000"`, `"classic"` 도 같다 — 저장 프로젝트는 그대로 뜬다. CSS 파일은 `_rm2000.css` 하나(옛 `_rm2003.css` 재작성 + 옛 `_rm2000.css` 삭제). 사용자 노출 라벨에는 `RM2000/RM2003` 을 쓰지 않는다(`test/detsukuruBrandStrings.test.ts`) — 드롭다운 라벨은 「유리 창 · 정면 필드」.
+- 지원 규칙은 **RM식 턴제** (`system.battleModel` 미설정 또는 `"rm2k3"`, 기본값)와 **포켓몬식** (`"gen1"`)이다. 표시 방식은 **정면** (`rm2000`, 기본값), **측면** (`rm2003`), **몬스터 대치** (`pokemon`) 세 가지다. 규칙 모델과 표시 스킨은 별개다.
+- 기본 `rm2000`은 적만 필드에 세우고 아군은 이름·HP·MP 상태창으로 표시한다(`partyFacing: "hidden"`, `showAllySprites: false`). 2026-09-03 연출 추가 때 들어간 뒷모습 파티를 2026-09-06 사용자 요청으로 복구했다. 미설정·`classic`·명시적 `rm2000` 모두 같은 경로다. 측면 `rm2003`의 아군 전투 시트와 `pokemon`의 후면 스프라이트는 유지한다. 회귀: `test/battleFieldAllySprite.test.ts`; 출하 화면: `npm run qa:runtime -- --scenario battle-frontview`.
+- **스킨 id 이력 (2026-09-03):** 기존 정면 스킨 `rm2003`을 `rm2000`으로 개명한 뒤, 같은 날 `rm2003`을 별도 측면 스킨으로 되살렸다. 현재 `resolveSkinId("rm2003") === "rm2003"`이며 옛 별칭 `classic`만 `rm2000`으로 간다. 등록 스킨은 12종이다. 두 스킨은 `_rm2000.css`의 유리 HUD를 `family: "glass"`로 공유하고 측면 배치는 `_rm2003.css`가 담당한다. 사용자 노출 라벨은 「유리 창 · 정면 필드」와 「유리 창 · 측면 필드」이며 타사 제품명은 쓰지 않는다(`test/detsukuruBrandStrings.test.ts`).
 - 지원 종료(deprecated) 스킨 9종: `octopath`, `chrono`, `bravely`, `dragonquest`, `ff`, `mother`, `goldensun`, `mv`, `vxace`. 실시간 액션 전투 플러그인(`system.actionCombat`) 도 같이 지원 종료다 (`openwiki/runtime-action-combat.md`).
 - 지원 종료의 뜻은 좁다. 저장된 프로젝트는 그대로 돈다.
-  - 레지스트리는 여전히 지원 종료 스킨 9종을 들고 있다. 삭제도, 조용한 remap 도 없다(2026-09-03 의 `rm2003 → rm2000` 개명만 예외 — 위 항목).
+  - 레지스트리는 여전히 지원 종료 스킨 9종을 들고 있다. 삭제도, 조용한 remap도 없다.
   - `resolveSkinId` 는 저장된 지원 종료 id 를 다른 id 로 바꾸지 않는다 (`resolveSkinId("octopath") === "octopath"`).
   - 스킨별 CSS(`src/styles/runtime/battle-skins/`) 와 배경(backdrop) 은 그대로 남긴다. 지우지 말 것.
-  - 줄어드는 것은 **새 저작 노출뿐이다.** 자료집 → 시스템의 스킨 드롭다운은 활성 2종만 나열하고, 프로젝트가 이미 저장해 둔 지원 종료 id 가 있으면 그 항목 하나만 `(지원 종료)` 라벨로 덧붙여 선택을 보존한다.
+  - 줄어드는 것은 **새 저작 노출뿐이다.** 자료집 → 시스템의 스킨 드롭다운은 활성 3종만 나열하고, 프로젝트가 이미 저장해 둔 지원 종료 id가 있으면 그 항목 하나만 `(지원 종료)` 라벨로 덧붙여 선택을 보존한다.
 - 코드 권위자: `src/battle/skins/registry.ts` (`ACTIVE_BATTLE_SKIN_IDS` / `listActiveBattleSkinIds()` / `isDeprecatedBattleSkin()`), 저작 표면은 `src/editor/panels/databaseSystemView.ts`, 계약 테스트는 `test/battleSystemDeprecation.test.ts`.
 
 ## Roguelike run boundary (2026-08-24)
