@@ -3062,3 +3062,117 @@ footer {
   clip-path: inset(50%);
   white-space: nowrap;
 }
+
+/* Window controls: normal geometry is distinct from the existing full-view mode. */
+.event-editor-modal-backdrop.event-editor-modal-backdrop:not(.is-fullscreen) {
+  background: var(--bg-scrim);
+  padding: var(--space-4);
+}
+.event-editor-modal-backdrop > .event-editor-modal-window:not(.is-fullscreen) {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-modal);
+  height: min(820px, calc(100dvh - 48px));
+  inset: auto;
+  max-height: calc(100dvh - 32px);
+  max-width: calc(100vw - 32px);
+  place-self: center;
+  width: min(1440px, calc(100vw - 64px));
+}
+.event-editor-modal-backdrop[hidden] {
+  display: none;
+}
+.event-editor-modal-window .event-editor-modal-header > .header-actions {
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+.event-editor-modal-window .event-editor-modal-header > .meta {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.event-editor-modal-window .event-editor-modal-header .event-name {
+  flex: 0 1 240px;
+  min-width: 80px;
+}
+.event-editor-modal-window .event-editor-modal-header {
+  cursor: grab;
+}
+.event-editor-modal-window .event-editor-modal-header .event-editor-window-controls {
+  display: flex;
+  flex: 0 0 auto;
+  gap: var(--space-1);
+  margin-left: var(--space-2);
+}
+.event-editor-modal-window .event-editor-modal-header .event-editor-window-controls .event-editor-window-control {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-default);
+  border-radius: 50%;
+  color: var(--text-2);
+  cursor: pointer;
+  flex: 0 0 32px;
+  height: 32px;
+  min-height: 32px;
+  min-width: 32px;
+  width: 32px;
+}
+.event-editor-window-controls .ee-icon,
+.event-editor-window-restore .ee-icon {
+  flex: 0 0 16px;
+  height: 16px;
+  width: 16px;
+}
+.event-editor-modal-window .event-editor-modal-header .event-editor-window-controls .event-editor-window-control:hover {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+.event-editor-modal-window .event-editor-modal-header .event-editor-window-controls .event-editor-window-control:active,
+.event-editor-modal-window .event-editor-modal-header .event-editor-window-controls .event-editor-window-control[aria-pressed="true"] {
+  background: var(--accent-muted);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.event-editor-modal-window .event-editor-modal-header .event-editor-window-controls .event-editor-modal-close:hover,
+.event-editor-modal-window .event-editor-modal-header .event-editor-window-controls .event-editor-modal-close:active {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: var(--on-accent);
+}
+.event-editor-modal-window .event-editor-modal-header .event-editor-window-control:focus-visible,
+.event-editor-window-restore:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: 2px;
+}
+.event-editor-window-restore {
+  align-items: center;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-pill);
+  bottom: var(--space-4);
+  box-shadow: var(--shadow-pop);
+  color: var(--text-1);
+  cursor: pointer;
+  display: flex;
+  font: 600 13px/1.5 var(--font-ui);
+  gap: var(--space-2);
+  left: 50%;
+  max-width: min(480px, calc(100vw - 32px));
+  min-height: 32px;
+  padding: var(--space-2) var(--space-3);
+  position: fixed;
+  transform: translateX(-50%);
+  z-index: 999;
+}
+.event-editor-window-restore > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.event-editor-window-restore:hover {
+  background: var(--bg-hover);
+}
+.event-editor-window-restore:active {
+  background: var(--accent-muted);
+  border-color: var(--accent);
+}

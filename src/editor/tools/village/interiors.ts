@@ -1,7 +1,7 @@
 // editor/tools/village/interiors.ts
 // 집 실내 — 내부 맵 생성·등록, 문 이벤트 연결, 맵 트리 배선.
 
-import { createHouseDoorEvent, createHouseDoorStepEvent, createHouseInteriorMap, registerInteriorMaps } from "@/editor/houseInteriors";
+import { createHouseDoorEvent, createHouseDoorStepEvent, createHouseInteriorMap, registerInteriorMaps, stampHouseDoorBackground } from "@/editor/houseInteriors";
 import { HOUSE_TEMPLATE_DEFS } from "@/project/defaults/houseTemplateCatalog";
 import { appendToTree } from "@/project/mapTree";
 import type { GameEvent, GameMap, MapId, MapTreeNode, Project } from "@/project/types";
@@ -78,6 +78,7 @@ export function createVillageHouseInteriors(
       appendTreeChildOnce(draft.mapTree, floor.mapId, parentFloorId);
       parentFloorId = floor.mapId;
     }
+    stampHouseDoorBackground(map, house.doorAt);
     upsertEvent(map.events, createHouseDoorEvent({
       eventId: doorEventId,
       x: house.doorAt.x,

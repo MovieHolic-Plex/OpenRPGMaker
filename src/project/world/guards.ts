@@ -1,5 +1,7 @@
 import { ProjectFormatError } from "../io/errors";
 import {
+  WIKI_KINDS, WIKI_BASES, WIKI_SOURCE_KINDS, WIKI_COMBAT_MODES,
+  type WikiSource, type WorldWikiMetadata,
   WORLD_ENTITY_TYPES,
   WORLD_REF_KINDS,
   WORLD_RELATION_KINDS,
@@ -38,6 +40,22 @@ export function normalizeWorld(value: unknown, label = "world"): ProjectWorld {
     entityIds.add(entity.id);
   }
 
+  const sourceRecords = new Map<string, WikiSource>();
+  for (const entity of entities) {
+    for (const source of entity.wiki?.sources ?? []) {
+      const previous = sourceRecords.get(source.id);
+      assert(!previous || JSON.stringify(previous) === JSON.stringify(source), `Conflicting wiki source: ${source.id}`);
+      sourceRecords.set(source.id, source);
+    }
+    for (const id of entity.wiki?.supersedes ?? []) {
+      const previous = entities.find((candidate) => candidate.id === id);
+      assert(previous !== undefined && id !== entity.id, `Invalid wiki supersedes: ${id}`);
+      assert(previous.wiki !== undefined, `Cannot supersede legacy entity: ${id}`);
+      assert(entity.wiki?.basis === "explicit" || previous.wiki.basis !== "explicit", `Cannot supersede explicit wiki: ${id}`);
+      assert(Math.max(...(entity.wiki?.sources ?? []).map((source) => source.at)) > Math.max(...previous.wiki.sources.map((source) => source.at)), `Stale wiki supersedes: ${id}`);
+    }
+  }
+
   const relations = requireArray(`${label}.relations`, world.relations).map((entry, index) =>
     normalizeWorldRelation(`${label}.relations[${index}]`, entry, entityIds)
   );
@@ -68,6 +86,7 @@ function normalizeWorldEntity(label: string, value: unknown): WorldEntity {
     ...(tags === undefined ? {} : { tags }),
     ...(refs === undefined ? {} : { refs }),
     origin,
+    ...(record.wiki === undefined ? {} : { wiki: normalizeWikiMetadata(record.wiki) }),
     ...(record.locked === undefined ? {} : { locked: requireBoolean(`${label}.locked`, record.locked) }),
   };
 }
@@ -138,4 +157,34 @@ export function isWorldRefKind(value: string): value is WorldRefKind {
 
 export function isWorldRelationKind(value: string): value is WorldRelationKind {
   return (WORLD_RELATION_KINDS as readonly string[]).includes(value);
+}
+
+export function createWikiSource(value: unknown): WikiSource {
+  const record = requireRecord("wiki source", value);
+  const id = requireString("wiki source.id", record.id);
+  const text = requireString("wiki source.text", record.text);
+  assert(id.trim().length > 0 && text.trim().length > 0, "Wiki source id/text must not be empty");
+  assert(typeof record.at === "number" && Number.isFinite(record.at) && record.at >= 0, "Wiki source.at must be a nonnegative finite number");
+  return { id, kind: requireEnum("wiki source.kind", record.kind, WIKI_SOURCE_KINDS), text, at: record.at };
+}
+
+export function normalizeWikiMetadata(value: unknown): WorldWikiMetadata {
+  const record = requireRecord("wiki", value);
+  const kind = requireEnum("wiki.kind", record.kind, WIKI_KINDS);
+  const basis = requireEnum("wiki.basis", record.basis, WIKI_BASES);
+  const sources = requireArray("wiki.sources", record.sources).map(createWikiSource);
+  assert(sources.length > 0 && new Set(sources.map((source) => source.id)).size === sources.length, "Wiki needs unique sources");
+  assert(basis !== "explicit" || sources.every((source) => source.kind !== "application"), "Explicit wiki needs user/manual sources");
+  assert(basis !== "observed" || sources.every((source) => source.kind === "application"), "Observed wiki needs application sources");
+  assert(kind !== "progress" || basis === "observed", "Progress wiki must be observed");
+  const topic = record.topic === undefined ? undefined : requireString("wiki.topic", record.topic).trim();
+  assert(topic === undefined || topic.length > 0, "Wiki topic must not be empty");
+  const combatMode = record.combatMode === undefined ? undefined : requireEnum("wiki.combatMode", record.combatMode, WIKI_COMBAT_MODES);
+  assert(combatMode === undefined || kind === "declaration", "Combat mode must be a declaration");
+  return {
+    kind, basis, sources,
+    ...(topic === undefined ? {} : { topic }),
+    ...(combatMode === undefined ? {} : { combatMode }),
+    ...(record.supersedes === undefined ? {} : { supersedes: requireArray("wiki.supersedes", record.supersedes).map((id) => normalizeWorldId("wiki.supersedes", id)) }),
+  };
 }

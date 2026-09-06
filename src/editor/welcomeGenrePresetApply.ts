@@ -19,6 +19,7 @@ import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { worldCanonHasContent, type WorldCanon, type WorldCanonTone } from "@/project/world/canon";
 
 const CANON_TONES: Record<WelcomeGenrePresetId, readonly WorldCanonTone[]> = {
+  "action-rpg": ["hopeful", "mythic"],
   "monster-collect": ["hopeful", "fairytale"],
   "partner-raise": ["hopeful", "slice"],
   "farm-life": ["slice", "hopeful"],

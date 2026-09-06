@@ -92,6 +92,8 @@ function flattenCoordinateWrapper(properties: Record<string, JsonSchema>, args: 
 }
 
 function wrapFlatCoordinates(properties: Record<string, JsonSchema>, args: Record<string, unknown>): void {
+  // Declared flat coordinates already have an owner (for example a scene set step).
+  if (properties.x !== undefined && properties.y !== undefined) return;
   const coordinateFields = Object.entries(properties).filter(([, childSchema]) => isCoordinateObjectSchema(childSchema));
   if (coordinateFields.length !== 1) return;
 

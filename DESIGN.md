@@ -1,5 +1,44 @@
 # RPG ZZU Design System
 
+## Event editor window controls (2026-09-06)
+
+- The titlebar ends with three native circular 32px buttons: minimize,
+  maximize/restore and close. Existing SVG icons, cream surfaces, `--text-1/2`,
+  `--border-default`, `--accent-muted`, `--danger` and `--focus-outline` own
+  default, hover, pressed and keyboard-focus states. Use 4px gaps, 16px icons;
+  maximized state has persistent accent fill and aria-pressed. No new motion.
+- Minimize is not Cancel: retain mounted fields, pending input, page/command
+  selection, scroll and geometry, including maximized state. Release the modal
+  stack, focus trap, backdrop and body-open flag. A bottom-center named restore
+  chip (`이벤트 편집 계속` plus event name) remains keyboard reachable, using
+  13px UI type, 32px minimum height, 8/12px padding and existing raised surface.
+  Restore returns to the retained editor control and caret.
+- Same-event reopen restores this window; switching events still asks before
+  discarding changes. Deletion, project replacement and teardown end ownership.
+  Save/Apply/Cancel, drag/resize, double-click and Alt+Enter stay intact.
+  Header/footer remain fixed around the existing bounded scrolling body.
+  Normal geometry is centered, up to 1440px wide and 820px tall, with 32px
+  horizontal/24px vertical preferred insets and 16px viewport bounds. Full view
+  uses the existing 6px inset and restores the prior dimensions/translation.
+- Personas: map-and-event author switching contexts, keyboard/IME author with
+  pending input, dirty-draft author. Desktop acceptance: 1024x768, 1280x800,
+  1440x900. Lead owns fresh browser geometry and independent visual approval.
+
+## Action combat identity and controls (2026-09-07)
+
+- Keep the existing 320x240 logical play stage, keyboard-only input and runtime
+  window tokens. The action HUD gains the equipped weapon name and binding-derived
+  attack/dodge guidance; it does not gain an interactive panel or a new overlay.
+- Reuse `--runtime-ui-font`, `--runtime-font-size-9`, `--runtime-window-text`,
+  `--runtime-window-shadow` and `--space-*`. Guidance wraps within the stage and
+  remains non-interactive; menus and dialogue continue to hide the action HUD.
+- The farming hand chip is hidden on action maps without a farmable area. Mixed
+  action/farming maps keep it explicitly labelled as farming, separate from the
+  weapon. Non-action hand-slot behavior is unchanged.
+- A supplied new-project name replaces only an absent/default player title.
+  An intentionally different authored title is preserved. This does not rename
+  maps on load or replace authored title artwork.
+
 ## In-game shop trade counter (2026-09-06)
 
 Runtime only: this is not the shop-command editor. `runtime/shop.css` owns a

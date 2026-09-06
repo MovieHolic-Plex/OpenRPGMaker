@@ -1,5 +1,17 @@
 # Runtime Battle Behavior
 
+## Supported action authoring (2026-09-07)
+
+2D tile action combat remains supported alongside turn-based combat; the old
+deprecation warning and editor label were removed. `action-rpg` is authoring
+metadata, not a runtime branch. Its preset enables `system.actionCombat` only,
+and each intended map still requires `actionCombat: true`. The canonical
+controls text comes from `player/keyBindings.ts` (`ACTION_CONTROL_BINDINGS`,
+`ACTION_CONTROLS_GUIDE`) and the action guide NPC uses that same copy.
+Enemy/graphic/troop/spawn prerequisites are validated before mutation, and
+explicit spawn IDs make retries idempotent. Dodge and guard knobs exposed by
+the tool use the existing config normalizer. None of this adds a combat engine.
+
 ## 적별 전투 표시 크기 (2026-09-06)
 
 `battleFieldDom.enemyButton`은 해당 적의 `battleScalePercent ?? 100`을 100으로 나눈 값을 노드의 `--battle-enemy-scale`에 넣는다. RM 정면/측면은 `_rm2000.css`의 glass 공용 이미지 크기(다수 160×180, 단독 200×240), 몬스터 대치는 `_battlers.css`의 Pokemon 이미지 크기(148×148)에 곱한다. 부모 이동/피격 `transform`, 이미지 숨쉬기 `scale`, 사망/포획 애니메이션은 변경하지 않는다. 이름·HP 글자 크기와 맵 외형은 배율 대상이 아니다. 기본 100% 이하의 치수·진형은 그대로 둔다. 100% 초과는 `battleEnemyFit.ts`가 필드 논리 크기에서 좌우 16px·상단 32px·하단 24px를 뺀 영역에 이미지를 균일 축소하고 발 앵커를 보정한다. 저장된 요청 백분율은 그대로이고 `--battle-enemy-fit`만 표현용으로 추가한다. 세 스킨의 `--battle-enemy-base-width/height`가 기본 치수의 단일 원천이다. 이미지 width/height에만 요청 배율×fit을 곱하며 이름·HP는 축소하지 않는다. 이웃 배틀러와의 겹침 방지는 별도 진형 작업이다.
