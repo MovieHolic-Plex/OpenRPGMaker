@@ -1,0 +1,73 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle --maxWorkers=2 test/aiTilesetJob.test.ts test/tilesetAiNativeAnalysis.test.ts test/tilesetAiNativeReviewModel.test.ts test/tilesetAiConversationSession.test.ts test/tilesetAiCpenClient.test.ts test/tilesetAiMetadataNormalizer.test.ts test/tilesetAiMappingRules.test.ts test/tilesetAiSetupMapping.test.ts test/structureKitEditorDialog.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-aiq-tileset-silver
+
+ ✓ test/structureKitEditorDialog.test.ts (45 tests) 16034ms
+   ✓ replaceStructureKit > 같은 id 의 킷을 통째로 갈아끼운다  918ms
+   ✓ replaceStructureKit > 없는 id 면 아무것도 하지 않는다  863ms
+   ✓ openStructureKitEditor > 다이얼로그를 열고 래스터·팔레트·크기 입력을 그린다  575ms
+   ✓ openStructureKitEditor > 캔버스에 pointerdown 핸들러가 실제로 붙어 있다  424ms
+   ✓ openStructureKitEditor > 팔레트에서 타일을 고르고 칸을 누르면 store 에 반영된다  369ms
+   ✓ openStructureKitEditor > 되돌리기 뒤 AI 메타를 수락하면 다시하기가 그것을 지우지 않는다  455ms
+   ✓ 편집기 크기 조절 > 줄여서 부위가 잘리면 개수를 보고한다  501ms
+   ✓ 편집기 부위 편집 > 부위 도구로 캔버스를 누르고 떼면 부위가 생긴다  374ms
+   ✓ 편집기 부위 편집 > 부위 행의 ✕ 로 지우고, ✎ 로 종류 팝오버를 연다  346ms
+   ✓ AI 메타 탭 > 수락하면 폼 값이 저장되고 origin 이 user 가 된다  585ms
+   ✓ AI 메타 탭 — 반복·분류 > 반복을 '미지정'으로 되돌리면 repeatability 키 자체가 사라진다  392ms
+   ✓ AI 메타 탭 — 수정할 수 있는 축이 화면에 있다 > 고친 값이 수락 뒤 store 에 남는다  358ms
+   ✓ AI 메타 탭 — 수정할 수 있는 축이 화면에 있다 > 증분 축과 반복 값이 함께 있으면 축을 우선하고 반복 값도 보존한다  742ms
+   ✓ AI 메타 탭 — 수정할 수 있는 축이 화면에 있다 > 비운 목록 칸은 키 자체를 지운다  409ms
+   ✓ 칸 힌트 도구 > 도구를 잡고 칸을 누르면 가로 → 세로 → 양방향 → 없음 순으로 돈다  1433ms
+   ✓ 칸 힌트 도구 > 힌트를 붙이면 목록에 축과 설명 칸이 생기고, 설명이 store 에 남는다  564ms
+   ✓ 칸 힌트 도구 > 삭제 버튼이 그 칸의 힌트만 지운다  317ms
+   ✓ 칸 힌트 도구 > 힌트가 없을 때는 블록을 접고 도구를 잡으면 안내를 보인다  461ms
+   ✓ 편집기 팔레트 안정성 > 타일을 골라도 팔레트 노드를 다시 만들지 않는다  482ms
+   ✓ 편집기 팔레트 안정성 > 칠하면 그 타일이 사용 표식을 얻는다  436ms
+ ✓ test/tilesetAiConversationSession.test.ts (1 test) 574ms
+   ✓ conversational tileset AI session > asks, carries the answer into reanalysis, stages the refreshed group, then applies explicitly  567ms
+ ✓ test/tilesetAiNativeAnalysis.test.ts (2 tests) 239ms
+ ✓ test/tilesetAiMappingRules.test.ts (9 tests) 114ms
+ ✓ test/tilesetAiSetupMapping.test.ts (3 tests) 58ms
+ ✓ test/tilesetAiCpenClient.test.ts (8 tests) 91ms
+ ✓ test/tilesetAiNativeReviewModel.test.ts (4 tests) 32ms
+ ✓ test/tilesetAiMetadataNormalizer.test.ts (4 tests) 31ms
+ ✓ test/aiTilesetJob.test.ts (36 tests) 87822ms
+   ✓ isolated real session import graph > has no runtime editor/store/persistence boot edges  6698ms
+   ✓ tileset worker isolation > src/ai/jobs/executors/tilesetJob.ts has no editor boot dependencies  5037ms
+   ✓ captured tileset analysis jobs > holds the real knowledge analyzer at the durable vision boundary, then returns immutable review choices  1870ms
+   ✓ captured tileset analysis jobs > runs proposal orchestration with locked edits, captured temp-map image and user answers  803ms
+   ✓ captured tileset analysis jobs > runs question follow-up over captured review, preserving accepted/skipped choices and IDs  2301ms
+   ✓ captured tileset analysis jobs > binds a queued question to its predecessor while permitting captured review choices  1978ms
+   ✓ captured tileset analysis jobs > preserves deterministic structure condition IDs across a failed completion checkpoint  1181ms
+   ✓ captured tileset analysis jobs > retains invalid mapping output without false success or repeated spend: not JSON  820ms
+   ✓ captured tileset analysis jobs > retains invalid mapping output without false success or repeated spend: {}  1363ms
+   ✓ captured tileset analysis jobs > retains invalid mapping output without false success or repeated spend: {"tiles":"malformed"}  661ms
+   ✓ captured tileset analysis jobs > retains invalid mapping output without false success or repeated spend: {"previewMaps":[{"width":2,"height":2,"lowerTiles":[1]}],"tiles":[{"tile":4}]}  813ms
+   ✓ captured tileset analysis jobs > never upgrades a length-truncated response to success on retry  1605ms
+   ✓ captured tileset analysis jobs > rejects malformed captured input before spend: {"config":{"authMode":"apiKey","providerId":"openai-codex","model":"gpt-5.4","liteModel":"gpt-5.4-mini","maxToolCalls":12,"maxTokens":8192,"agentMode":"chat"}}  809ms
+   ✓ captured tileset analysis jobs > rejects malformed captured input before spend: {"config":{"authMode":"chatgpt","providerId":"openai-codex","model":"gpt-5.4","liteModel":"gpt-5.4-mini","maxToolCalls":12,"maxTokens":8192,"agentMode":"chat","apiKey":"not-allowed"}}  782ms
+   ✓ captured tileset analysis jobs > rejects malformed captured input before spend: {"tilesetId":"missing"}  943ms
+   ✓ captured tileset analysis jobs > rejects malformed captured input before spend: {"operation":"unknown"}  509ms
+   ✓ captured tileset analysis jobs > rejects malformed projects, stale reviews, checkpoints and refs before spend  1396ms
+   ✓ captured tileset analysis jobs > does not retry or change providers after an uncertain provider failure  605ms
+   ✓ real isolated cluster session operations > executes 'cluster-edit' through actual tools, with retry-stable IDs and no application  8320ms
+   ✓ real isolated cluster session operations > executes 'range-classify' through actual tools, with retry-stable IDs and no application  6315ms
+   ✓ real isolated cluster session operations > executes 'unclassified-analysis' through actual tools, with retry-stable IDs and no application  8274ms
+   ✓ cluster vision stages > executes range suggestion and actual sample rendering, retains image refs, and replays without a renderer  5510ms
+   ✓ cluster vision stages > retains budget-limited cluster output as partial, not success  3354ms
+   ✓ canonical filesystem proposal retry > completed knowledge-analysis retries after repository reopen with identical immutable output  3772ms
+   ✓ canonical filesystem proposal retry > completed proposal-draft retries after repository reopen with identical immutable output  3349ms
+   ✓ canonical filesystem proposal retry > completed question-followup retries after repository reopen with identical immutable output  3556ms
+   ✓ canonical filesystem proposal retry > completed structure-kit-metadata retries after repository reopen with identical immutable output  4280ms
+   ✓ canonical filesystem proposal retry > knowledge-analysis resumes a failed proposal checkpoint from one paid raw response  2570ms
+   ✓ canonical filesystem proposal retry > proposal-draft resumes a failed proposal checkpoint from one paid raw response  2086ms
+   ✓ canonical filesystem proposal retry > question-followup resumes a failed proposal checkpoint from one paid raw response  3452ms
+   ✓ canonical filesystem proposal retry > structure-kit-metadata resumes a failed proposal checkpoint from one paid raw response  2059ms
+
+ Test Files  9 passed (9)
+      Tests  112 passed (112)
+   Start at  21:09:22
+   Duration  120.77s (transform 29.11s, setup 0ms, collect 63.55s, tests 104.99s, environment 6ms, prepare 2.24s)

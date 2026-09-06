@@ -1,0 +1,100 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiTilesetJob.test.ts test/tilesetAiNativeAnalysis.test.ts test/tilesetAiNativeReviewModel.test.ts test/tilesetAiConversationSession.test.ts test/tilesetAiCpenClient.test.ts test/tilesetAiMetadataNormalizer.test.ts test/tilesetAiMappingRules.test.ts test/tilesetAiSetupMapping.test.ts test/structureKitEditorDialog.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-aiq-tileset-silver
+
+ ✓ test/tilesetAiNativeReviewModel.test.ts (4 tests) 36ms
+ ✓ test/tilesetAiMetadataNormalizer.test.ts (4 tests) 35ms
+ ✓ test/tilesetAiCpenClient.test.ts (8 tests) 246ms
+ ✓ test/tilesetAiNativeAnalysis.test.ts (2 tests) 1023ms
+   ✓ AI-native whole tileset analysis > sends the whole image and returns detached typed proposals  638ms
+   ✓ AI-native whole tileset analysis > preserves human knowledge and reports malformed proposals as partial  382ms
+ ✓ test/tilesetAiSetupMapping.test.ts (3 tests) 272ms
+ ✓ test/tilesetAiMappingRules.test.ts (9 tests) 349ms
+ ✓ test/tilesetAiConversationSession.test.ts (1 test) 1763ms
+   ✓ conversational tileset AI session > asks, carries the answer into reanalysis, stages the refreshed group, then applies explicitly  1761ms
+ ✓ test/structureKitEditorDialog.test.ts (45 tests) 24965ms
+   ✓ replaceStructureKit > 같은 id 의 킷을 통째로 갈아끼운다  1293ms
+   ✓ replaceStructureKit > 없는 id 면 아무것도 하지 않는다  1566ms
+   ✓ openStructureKitEditor > 다이얼로그를 열고 래스터·팔레트·크기 입력을 그린다  2076ms
+   ✓ openStructureKitEditor > 캔버스에 pointerdown 핸들러가 실제로 붙어 있다  886ms
+   ✓ openStructureKitEditor > 팔레트에서 타일을 고르고 칸을 누르면 store 에 반영된다  821ms
+   ✓ openStructureKitEditor > 되돌리기 뒤 AI 메타를 수락하면 다시하기가 그것을 지우지 않는다  476ms
+   ✓ 편집기 크기 조절 > 폭을 늘리면 store 의 킷이 넓어진다  471ms
+   ✓ 편집기 크기 조절 > 줄여서 부위가 잘리면 개수를 보고한다  647ms
+   ✓ 편집기 부위 편집 > 부위 행의 ✕ 로 지우고, ✎ 로 종류 팝오버를 연다  439ms
+   ✓ AI 메타 탭 > 탭을 열면 폼이 나오고 초안은 자동 저장되지 않는다  825ms
+   ✓ AI 메타 탭 > 연결 상태가 확인되면 미연결은 초안 요청을 막고 연결됨은 통과시킨다  469ms
+   ✓ AI 메타 탭 > 수락하면 폼 값이 저장되고 origin 이 user 가 된다  825ms
+   ✓ AI 메타 탭 — 반복·분류 > 반복에서 '한 채 완결'을 고르고 수락하면 repeatability 가 fixed 로 저장된다  892ms
+   ✓ AI 메타 탭 — 반복·분류 > 반복을 '미지정'으로 되돌리면 repeatability 키 자체가 사라진다  426ms
+   ✓ AI 메타 탭 — 반복·분류 > 분류에서 역할을 고르고 수락하면 role 이 저장된다  312ms
+   ✓ importStructureKits > origin 을 자동으로 user 로 올리지 않는다  452ms
+   ✓ AI 메타 초안 파싱 — 새 어휘 > 초안 프롬프트가 새 필드를 실제로 요구한다  657ms
+   ✓ AI 메타 탭 — 수정할 수 있는 축이 화면에 있다 > 증분 축·레이어·태그·테마 칸이 모두 있다  764ms
+   ✓ AI 메타 탭 — 수정할 수 있는 축이 화면에 있다 > 고친 값이 수락 뒤 store 에 남는다  347ms
+   ✓ AI 메타 탭 — 수정할 수 있는 축이 화면에 있다 > 증분 축을 골랐다 미지정으로 돌려도 기존 반복 값을 보존한다  447ms
+   ✓ AI 메타 탭 — 수정할 수 있는 축이 화면에 있다 > 증분 축과 반복 값이 함께 있으면 축을 우선하고 반복 값도 보존한다  347ms
+   ✓ 칸 힌트 도구 > 도구를 잡고 칸을 누르면 가로 → 세로 → 양방향 → 없음 순으로 돈다  1366ms
+   ✓ 칸 힌트 도구 > 힌트를 붙이면 목록에 축과 설명 칸이 생기고, 설명이 store 에 남는다  1011ms
+   ✓ 편집기 팔레트 안정성 > 타일을 골라도 팔레트 노드를 다시 만들지 않는다  317ms
+   ✓ 편집기 팔레트 안정성 > 도구·분류를 바꿔도 팔레트와 검색창 노드가 그대로다  353ms
+   ✓ 편집기 팔레트 안정성 > 이 구조물이 쓰는 타일에 사용 표식이 붙는다  389ms
+   ✓ 편집기 팔레트 안정성 > [안 쓴 타일만] 을 켜면 쓰인 타일이 숨고, 지금 잡은 붓은 남는다  1079ms
+   ✓ 편집기 팔레트 안정성 > 칠하면 그 타일이 사용 표식을 얻는다  1896ms
+ ✓ test/aiTilesetJob.test.ts (36 tests) 98933ms
+   ✓ isolated real session import graph > has no runtime editor/store/persistence boot edges  10355ms
+   ✓ tileset worker isolation > src/editor/tilesetAiNativeAnalysis.ts has no editor boot dependencies  372ms
+   ✓ tileset worker isolation > src/ai/jobs/executors/tilesetJob.ts has no editor boot dependencies  6197ms
+   ✓ captured tileset analysis jobs > holds the real knowledge analyzer at the durable vision boundary, then returns immutable review choices  1988ms
+   ✓ captured tileset analysis jobs > runs proposal orchestration with locked edits, captured temp-map image and user answers  607ms
+   ✓ captured tileset analysis jobs > runs question follow-up over captured review, preserving accepted/skipped choices and IDs  2013ms
+   ✓ captured tileset analysis jobs > binds a queued question to its predecessor while permitting captured review choices  1330ms
+   ✓ captured tileset analysis jobs > preserves deterministic structure condition IDs across a failed completion checkpoint  2643ms
+   ✓ captured tileset analysis jobs > retains invalid mapping output without false success or repeated spend: not JSON  1003ms
+   ✓ captured tileset analysis jobs > retains invalid mapping output without false success or repeated spend: {}  596ms
+   ✓ captured tileset analysis jobs > retains invalid mapping output without false success or repeated spend: {"tiles":"malformed"}  1669ms
+   ✓ captured tileset analysis jobs > retains invalid mapping output without false success or repeated spend: {"previewMaps":[{"width":2,"height":2,"lowerTiles":[1]}],"tiles":[{"tile":4}]}  938ms
+   ✓ captured tileset analysis jobs > never upgrades a length-truncated response to success on retry  1500ms
+   ✓ captured tileset analysis jobs > rejects malformed captured input before spend: {"config":{"authMode":"apiKey","providerId":"openai-codex","model":"gpt-5.4","liteModel":"gpt-5.4-mini","maxToolCalls":12,"maxTokens":8192,"agentMode":"chat"}}  420ms
+   ✓ captured tileset analysis jobs > rejects malformed captured input before spend: {"config":{"authMode":"chatgpt","providerId":"openai-codex","model":"gpt-5.4","liteModel":"gpt-5.4-mini","maxToolCalls":12,"maxTokens":8192,"agentMode":"chat","apiKey":"not-allowed"}}  961ms
+   ✓ captured tileset analysis jobs > rejects malformed captured input before spend: {"tilesetId":"missing"}  1155ms
+   ✓ captured tileset analysis jobs > rejects malformed captured input before spend: {"operation":"unknown"}  396ms
+   ✓ captured tileset analysis jobs > rejects malformed projects, stale reviews, checkpoints and refs before spend  1754ms
+   ✓ captured tileset analysis jobs > does not retry or change providers after an uncertain provider failure  1867ms
+   ✓ real isolated cluster session operations > executes 'cluster-edit' through actual tools, with retry-stable IDs and no application  9326ms
+   ✓ real isolated cluster session operations > executes 'range-classify' through actual tools, with retry-stable IDs and no application  7742ms
+   ✓ real isolated cluster session operations > executes 'unclassified-analysis' through actual tools, with retry-stable IDs and no application  7341ms
+   ✓ cluster vision stages > executes range suggestion and actual sample rendering, retains image refs, and replays without a renderer  5668ms
+   ✓ cluster vision stages > retains budget-limited cluster output as partial, not success  3819ms
+   ✓ render-only snapshots and parser boundaries > draws the actual atlas helper over a supplied image without reading store  419ms
+   ✓ canonical filesystem proposal retry > completed knowledge-analysis retries after repository reopen with identical immutable output  3758ms
+   ✓ canonical filesystem proposal retry > completed proposal-draft retries after repository reopen with identical immutable output  3238ms
+   ✓ canonical filesystem proposal retry > completed question-followup retries after repository reopen with identical immutable output  5327ms
+   ✓ canonical filesystem proposal retry > completed structure-kit-metadata retries after repository reopen with identical immutable output  3806ms
+   ✓ canonical filesystem proposal retry > knowledge-analysis resumes a failed proposal checkpoint from one paid raw response  3274ms
+   ✓ canonical filesystem proposal retry > proposal-draft resumes a failed proposal checkpoint from one paid raw response  2250ms
+   ✓ canonical filesystem proposal retry > question-followup resumes a failed proposal checkpoint from one paid raw response  2610ms
+   ✓ canonical filesystem proposal retry > structure-kit-metadata resumes a failed proposal checkpoint from one paid raw response  2368ms
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+
+Vitest caught 1 unhandled error during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+
+⎯⎯⎯⎯⎯⎯ Unhandled Error ⎯⎯⎯⎯⎯⎯⎯
+Error: [vitest-worker]: Timeout calling "onTaskUpdate"
+ ❯ Object.onTimeoutError ../rpg-zzu/node_modules/vitest/dist/chunks/rpc.-pEldfrD.js:53:10
+ ❯ Timeout._onTimeout ../rpg-zzu/node_modules/vitest/dist/chunks/index.B521nVV-.js:59:62
+ ❯ listOnTimeout node:internal/timers:605:17
+ ❯ processTimers node:internal/timers:541:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+
+ Test Files  9 passed (9)
+      Tests  112 passed (112)
+     Errors  1 error
+   Start at  21:05:27
+   Duration  148.02s (transform 49.12s, setup 0ms, collect 179.08s, tests 127.62s, environment 35ms, prepare 4.97s)

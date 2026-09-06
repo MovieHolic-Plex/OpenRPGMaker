@@ -1,0 +1,98 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiTilesetJob.test.ts -t canonical filesystem proposal retry
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-aiq-tileset-silver
+
+ ❯ test/aiTilesetJob.test.ts (36 tests | 8 failed | 28 skipped) 22473ms
+   ↓ isolated real session import graph > has no runtime editor/store/persistence boot edges
+   ↓ tileset worker isolation > src/editor/tilesetAiNativeAnalysis.ts has no editor boot dependencies
+   ↓ tileset worker isolation > src/editor/tilesetAiSnapshotImage.ts has no editor boot dependencies
+   ↓ tileset worker isolation > src/ai/jobs/executors/tilesetJob.ts has no editor boot dependencies
+   ↓ tileset worker isolation > has an exhaustive operation discriminator
+   ↓ captured tileset analysis jobs > holds the real knowledge analyzer at the durable vision boundary, then returns immutable review choices
+   ↓ captured tileset analysis jobs > runs proposal orchestration with locked edits, captured temp-map image and user answers
+   ↓ captured tileset analysis jobs > runs question follow-up over captured review, preserving accepted/skipped choices and IDs
+   ↓ captured tileset analysis jobs > binds a queued question to its predecessor while permitting captured review choices
+   ↓ captured tileset analysis jobs > preserves deterministic structure condition IDs across a failed completion checkpoint
+   ↓ captured tileset analysis jobs > retains invalid mapping output without false success or repeated spend: not JSON
+   ↓ captured tileset analysis jobs > retains invalid mapping output without false success or repeated spend: {}
+   ↓ captured tileset analysis jobs > retains invalid mapping output without false success or repeated spend: {"tiles":"malformed"}
+   ↓ captured tileset analysis jobs > retains invalid mapping output without false success or repeated spend: {"previewMaps":[{"width":2,"height":2,"lowerTiles":[1]}],"tiles":[{"tile":4}]}
+   ↓ captured tileset analysis jobs > never upgrades a length-truncated response to success on retry
+   ↓ captured tileset analysis jobs > rejects malformed captured input before spend: {"config":{"authMode":"apiKey","providerId":"openai-codex","model":"gpt-5.4","liteModel":"gpt-5.4-mini","maxToolCalls":12,"maxTokens":8192,"agentMode":"chat"}}
+   ↓ captured tileset analysis jobs > rejects malformed captured input before spend: {"config":{"authMode":"chatgpt","providerId":"openai-codex","model":"gpt-5.4","liteModel":"gpt-5.4-mini","maxToolCalls":12,"maxTokens":8192,"agentMode":"chat","apiKey":"not-allowed"}}
+   ↓ captured tileset analysis jobs > rejects malformed captured input before spend: {"tilesetId":"missing"}
+   ↓ captured tileset analysis jobs > rejects malformed captured input before spend: {"operation":"unknown"}
+   ↓ captured tileset analysis jobs > rejects malformed projects, stale reviews, checkpoints and refs before spend
+   ↓ captured tileset analysis jobs > does not retry or change providers after an uncertain provider failure
+   ↓ real isolated cluster session operations > executes 'cluster-edit' through actual tools, with retry-stable IDs and no application
+   ↓ real isolated cluster session operations > executes 'range-classify' through actual tools, with retry-stable IDs and no application
+   ↓ real isolated cluster session operations > executes 'unclassified-analysis' through actual tools, with retry-stable IDs and no application
+   ↓ cluster vision stages > executes range suggestion and actual sample rendering, retains image refs, and replays without a renderer
+   ↓ cluster vision stages > retains budget-limited cluster output as partial, not success
+   ↓ render-only snapshots and parser boundaries > draws the actual atlas helper over a supplied image without reading store
+   ↓ render-only snapshots and parser boundaries > validates mapping machine fields rather than trusting a parsed object
+   × canonical filesystem proposal retry > completed knowledge-analysis retries after repository reopen with identical immutable output 2125ms
+     → Checkpoint proposal does not match its raw response
+   × canonical filesystem proposal retry > completed proposal-draft retries after repository reopen with identical immutable output 2810ms
+     → Checkpoint proposal does not match its raw response
+   × canonical filesystem proposal retry > completed question-followup retries after repository reopen with identical immutable output 1770ms
+     → Checkpoint proposal does not match its raw response
+   × canonical filesystem proposal retry > completed structure-kit-metadata retries after repository reopen with identical immutable output 3470ms
+     → Checkpoint proposal does not match its raw response
+   × canonical filesystem proposal retry > knowledge-analysis resumes a failed proposal checkpoint from one paid raw response 3143ms
+     → Checkpoint proposal does not match its raw response
+   × canonical filesystem proposal retry > proposal-draft resumes a failed proposal checkpoint from one paid raw response 4467ms
+     → Checkpoint proposal does not match its raw response
+   × canonical filesystem proposal retry > question-followup resumes a failed proposal checkpoint from one paid raw response 2542ms
+     → Checkpoint proposal does not match its raw response
+   × canonical filesystem proposal retry > structure-kit-metadata resumes a failed proposal checkpoint from one paid raw response 2141ms
+     → Checkpoint proposal does not match its raw response
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiTilesetJob.test.ts > canonical filesystem proposal retry > completed knowledge-analysis retries after repository reopen with identical immutable output
+ FAIL  test/aiTilesetJob.test.ts > canonical filesystem proposal retry > completed proposal-draft retries after repository reopen with identical immutable output
+ FAIL  test/aiTilesetJob.test.ts > canonical filesystem proposal retry > completed question-followup retries after repository reopen with identical immutable output
+ FAIL  test/aiTilesetJob.test.ts > canonical filesystem proposal retry > completed structure-kit-metadata retries after repository reopen with identical immutable output
+ProjectFormatError: Checkpoint proposal does not match its raw response
+ ❯ assert src/project/io/guards.ts:67:25
+     65|
+     66| export function assert(condition: boolean, message: string): asserts c…
+     67|   if (!condition) throw new ProjectFormatError(message);
+       |                         ^
+     68| }
+     69|
+ ❯ executeTilesetJob src/ai/jobs/executors/tilesetJob.ts:124:20
+ ❯ test/aiTilesetJob.test.ts:429:22
+ ❯ withDiskFixture test/aiTilesetJob.test.ts:157:5
+ ❯ test/aiTilesetJob.test.ts:420:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  test/aiTilesetJob.test.ts > canonical filesystem proposal retry > knowledge-analysis resumes a failed proposal checkpoint from one paid raw response
+ FAIL  test/aiTilesetJob.test.ts > canonical filesystem proposal retry > proposal-draft resumes a failed proposal checkpoint from one paid raw response
+ FAIL  test/aiTilesetJob.test.ts > canonical filesystem proposal retry > question-followup resumes a failed proposal checkpoint from one paid raw response
+ FAIL  test/aiTilesetJob.test.ts > canonical filesystem proposal retry > structure-kit-metadata resumes a failed proposal checkpoint from one paid raw response
+ProjectFormatError: Checkpoint proposal does not match its raw response
+ ❯ assert src/project/io/guards.ts:67:25
+     65|
+     66| export function assert(condition: boolean, message: string): asserts c…
+     67|   if (!condition) throw new ProjectFormatError(message);
+       |                         ^
+     68| }
+     69|
+ ❯ executeTilesetJob src/ai/jobs/executors/tilesetJob.ts:124:20
+ ❯ test/aiTilesetJob.test.ts:481:22
+ ❯ withDiskFixture test/aiTilesetJob.test.ts:157:5
+ ❯ test/aiTilesetJob.test.ts:460:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  8 failed | 28 skipped (36)
+   Start at  21:03:25
+   Duration  60.39s (transform 23.48s, setup 0ms, collect 36.32s, tests 22.47s, environment 1ms, prepare 373ms)

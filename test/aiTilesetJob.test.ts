@@ -1,11 +1,17 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createHash } from "node:crypto";
+import { MessageChannel } from "node:worker_threads";
+import { mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { openAiJobsRepository } from "../scripts/lib/aiJobs/repository.mjs";
+import { analyzeCapturedTilesetReview } from "@/editor/tilesetAiQuestionAnalysis";
 import { runtimeGraph } from "./aiJobWorkerIsolation.test";
 import { executeTilesetJob, TILESET_JOB_OPERATIONS } from "@/ai/jobs/executors/tilesetJob";
-import { parseTilesetReview } from "@/ai/jobs/tilesetPayload";
+import { parseTilesetReview, tilesetBlobRef } from "@/ai/jobs/tilesetPayload";
 import { jsonObject, jsonValue, parseProject } from "@/ai/jobs/checkpointState";
 import { createBlankProject } from "@/project/defaults";
-import { requireArray, requireRecord } from "@/project/io/guards";
+import { assert, requireArray, requireRecord, requireString } from "@/project/io/guards";
 import { renderTilesetAtlasSnapshotImage } from "@/editor/tilesetAiSnapshotImage";
 import { parseAiMappingResult } from "@/editor/tilesetAiPure/tilesetAiProposalParsing";
 import { resetIntentDeclarationCache } from "@/ai/intentDeclarationClient";
@@ -30,6 +36,18 @@ function tool(name: string, args: JsonObject): JsonObject {
 function knowledge(proposals: JsonValue[] = [{ template: "desk", tileIds: [4, 5], name: "Desk", confidence: 0.7 }]): JsonObject {
   return wire(JSON.stringify({ summary: "Knowledge", proposals }));
 }
+async function acknowledgeStorageWrite(): Promise<void> {
+  const { port1, port2 } = new MessageChannel();
+  let timeout: ReturnType<typeof setTimeout> | undefined;
+  try {
+    await new Promise<void>((resolve, reject) => {
+      timeout = setTimeout(() => reject(new Error("Storage acknowledgement not received")), 10000);
+      port1.once("message", () => resolve());
+      port1.once("messageerror", reject);
+      port2.postMessage(null);
+    });
+  } finally { clearTimeout(timeout); port1.close(); port2.close(); }
+}
 async function fixture(payload: JsonObject = { operation: "knowledge-analysis", feedback: [] }) {
   const seed = createBlankProject();
   const tileset = Object.values(seed.tilesets)[0]!;
@@ -45,7 +63,11 @@ async function fixture(payload: JsonObject = { operation: "knowledge-analysis", 
     jobId: "tileset-job", attemptId: "attempt-1", dependencies: [],
     async putBlob(bytes, mediaType) {
       const sha256 = createHash("sha256").update(bytes).digest("hex");
-      blobs.set(sha256, bytes.slice()); return { sha256, byteLength: bytes.length, mediaType };
+      blobs.set(sha256, bytes.slice());
+      // Actual host persistence is acknowledged across an asynchronous boundary.
+      // Preserve that boundary instead of starving worker/reporting IPC with microtasks.
+      await acknowledgeStorageWrite();
+      return { sha256, byteLength: bytes.length, mediaType };
     },
     async readBlob(ref) { const bytes = blobs.get(ref.sha256); if (!bytes) throw new Error("Missing artifact"); return bytes.slice(); },
     async putJson(value) { return host.putBlob(new TextEncoder().encode(JSON.stringify(value)), "application/json"); },
@@ -76,6 +98,87 @@ async function fixture(payload: JsonObject = { operation: "knowledge-analysis", 
     target: { tilesetId: tileset.id }, mode: "review", dependsOn: [], payload: { config, context, tilesetId: tileset.id, atlas: jsonValue(image), ...payload } };
   return { host, input, project, tileset: project.tilesets[tileset.id]!, image, requests, responses, checkpoint: () => checkpoint, ledger };
 }
+type DiskOperation = "knowledge-analysis" | "proposal-draft" | "question-followup" | "structure-kit-metadata";
+const diskOperations: readonly DiskOperation[] = ["knowledge-analysis", "proposal-draft", "question-followup", "structure-kit-metadata"];
+
+/** Real canonical blob writes, checkpoint transactions, and repository reopen; only paid wire is deferred to the host fixture. */
+async function withDiskFixture(operation: DiskOperation, run: (f: {
+  input: AiJobInput & { family: "tileset" };
+  host: AiJobHost;
+  provider: ReturnType<typeof vi.fn<AiJobHost["providerOperation"]>>;
+  reopen: () => Promise<void>;
+}) => Promise<void>): Promise<void> {
+  const directory = await mkdtemp(join(tmpdir(), "rpg-tileset-canonical-"));
+  let repository: Awaited<ReturnType<typeof openAiJobsRepository>> | undefined;
+  try {
+    repository = await openAiJobsRepository({ directory });
+    const current = () => { assert(repository !== undefined, "Repository not open"); return repository; };
+    const f = await fixture();
+    const image = await current().putBlob(png, "image/png");
+    const projectSnapshot = await current().putJson(jsonValue(f.project));
+    const project = parseProject(await current().readJson(projectSnapshot));
+    let payload: JsonObject = { config, context, tilesetId: f.tileset.id, operation, atlas: jsonValue(image), feedback: [] };
+    if (operation === "proposal-draft") {
+      payload = { ...payload, selectedTiles: [4, 5], setupChoice: { intent: "objectDetail", repeatability: "noRepeat", scope: "rules", structure: "single" },
+        snapshot: { image: jsonValue(image), summary: "captured map" }, lockedAnswer: "" };
+      f.responses.push(wire(JSON.stringify({ tiles: [{ tile: 4, label: "First" }, { tile: 5, label: "Second" }] })));
+    } else if (operation === "structure-kit-metadata") {
+      payload = { ...payload, kitId: "kit-1" };
+      f.responses.push(wire(JSON.stringify({ description: "Structure", tags: ["first", "second"], placement: [{ zone: "againstWall", facing: "north", strength: "hard" }] })));
+    } else {
+      if (operation === "question-followup") {
+        // Captured previous foreground review, derived from the same canonical project baseline.
+        const { review } = await analyzeCapturedTilesetReview(project.tilesets[f.tileset.id]!, {
+          requestId: "captured-review", feedback: [], imageDataUrl: "", request: async () => JSON.stringify({ proposals: [{ template: "desk", tileIds: [4, 5], name: "Desk", confidence: 0.7 }] }),
+        });
+        payload = { ...payload, review: jsonValue(review), proposalId: review.proposals[0]!.id, answer: "upper", turns: [] };
+      }
+      f.responses.push(knowledge());
+    }
+    const input: AiJobInput & { family: "tileset" } = { ...f.input, projectSnapshot, artwork: [image], payload };
+    const { job } = await current().admit({ idempotencyKey: "canonical-tileset", input });
+    let sequence = 0, attemptId = "";
+    const startAttempt = async () => {
+      attemptId = `disk-attempt-${++sequence}`;
+      await current().transaction(draft => {
+        const record = draft.jobs.find(j => j.id === job.id); assert(record !== undefined, "Missing job");
+        record.generation = "running"; record.activeAttemptId = attemptId;
+        draft.attempts.push({ id: attemptId, jobId: job.id, stage: "generation", status: "running", startedAt: job.createdAt, finishedAt: null, error: null });
+      });
+    };
+    await startAttempt();
+    const provider = vi.fn(f.host.providerOperation);
+    const host: AiJobHost = {
+      jobId: job.id, get attemptId() { return attemptId; }, dependencies: [],
+      putBlob: (bytes, mediaType) => current().putBlob(bytes, mediaType), readBlob: ref => current().readBlob(ref),
+      putJson: value => current().putJson(value), readJson: ref => current().readJson(ref), providerOperation: provider,
+      async loadCheckpoint() {
+        const ref = current().snapshot().jobs.find(j => j.id === job.id)?.checkpointRef;
+        if (!ref) return null;
+        const c = requireRecord("disk checkpoint", await current().readJson(ref));
+        assert(c.version === 1, "Unsupported checkpoint");
+        return { version: 1, jobId: requireString("jobId", c.jobId), attemptId: requireString("attemptId", c.attemptId), inputSha256: requireString("inputSha256", c.inputSha256),
+          stageKey: requireString("stageKey", c.stageKey), state: jsonObject(c.state), artifacts: requireArray("artifacts", c.artifacts).map(value => {
+            const ref = requireRecord("artifact", value); return tilesetBlobRef(ref, ref.mediaType !== "application/json");
+          }) };
+      },
+      async saveCheckpoint(checkpoint) {
+        const ref = await current().putJson(jsonValue({ ...checkpoint, version: 1, jobId: job.id, attemptId, inputSha256: job.inputRef.sha256 }));
+        await current().transaction(draft => {
+          const record = draft.jobs.find(j => j.id === job.id); assert(record !== undefined, "Missing job"); record.checkpointRef = ref;
+        });
+        return ref;
+      },
+    };
+    const storedInput = requireRecord("disk input", await current().readJson(job.inputRef));
+    await run({ input: { ...input, payload: jsonObject(storedInput.payload) }, host, provider, reopen: async () => {
+      await current().close(); repository = await openAiJobsRepository({ directory }); await startAttempt();
+    } });
+  } finally {
+    try { await repository?.close(); } finally { await rm(directory, { recursive: true, force: true }); }
+  }
+}
+
 beforeEach(() => resetIntentDeclarationCache());
 
 describe("tileset worker isolation", () => {
@@ -327,4 +430,74 @@ describe("render-only snapshots and parser boundaries", () => {
     expect(parseAiMappingResult('{"groups":[{"patternGrammar":{"kind":"unknown"}}]}')).toBeNull();
     expect(parseAiMappingResult('{"tiles":[{"tile":4,"label":"ok"}]}')).toMatchObject({ tiles: [{ tile: 4 }] });
   });
+});
+
+describe("canonical filesystem proposal retry", () => {
+  it.each(diskOperations)("completed %s retries after repository reopen with identical immutable output", async operation => {
+    await withDiskFixture(operation, async f => {
+      const first = await executeTilesetJob(f.input, f.host);
+      const ref = tilesetBlobRef(first.payload.proposalRef);
+      const { proposalRef: _ref, ...output } = first.payload;
+      const stored = await f.host.readJson(ref);
+      expect(stored).toEqual(output);
+      // Prove this host exercises canonical disk ordering, unlike the original in-memory host.
+      expect(JSON.stringify(stored)).not.toBe(JSON.stringify(output));
+      await f.reopen();
+      const replay = await executeTilesetJob(f.input, f.host);
+      expect(replay.payload).toEqual(first.payload);
+      expect(replay.artifacts).toEqual(first.artifacts);
+      expect(replay.generatedSnapshot).toBeNull();
+      expect(f.provider).toHaveBeenCalledTimes(1);
+
+      // Retain exact semantic checks: changed fields, extra fields, missing fields,
+      // and array order are NOT equivalent to the proposal regenerated from raw text.
+      const saved = jsonObject(stored);
+      const { persistence: _persistence, ...missingField } = saved;
+      let reordered: JsonObject;
+      if (operation === "proposal-draft") {
+        const mapping = jsonObject(saved.mapping); reordered = { ...saved, mapping: { ...mapping, tiles: [...requireArray("tiles", mapping.tiles)].reverse().map(jsonValue) } };
+      } else if (operation === "structure-kit-metadata") {
+        const metadata = jsonObject(saved.metadata); reordered = { ...saved, metadata: { ...metadata, tags: [...requireArray("tags", metadata.tags)].reverse().map(jsonValue) } };
+      } else if (operation === "question-followup") reordered = { ...saved, turns: [...requireArray("turns", saved.turns)].reverse().map(jsonValue) };
+      else {
+        const review = jsonObject(saved.review), proposals = requireArray("proposals", review.proposals).map(jsonObject), proposal = proposals[0]!;
+        reordered = { ...saved, review: { ...review, proposals: [{ ...proposal, quickReplies: [...requireArray("quickReplies", proposal.quickReplies)].reverse().map(jsonValue) }, ...proposals.slice(1)] } };
+      }
+      const checkpoint = await f.host.loadCheckpoint(); assert(checkpoint !== null, "Completed checkpoint missing");
+      for (const altered of [{ ...saved, tilesetId: "different" }, { ...saved, unexpected: null }, missingField, reordered]) {
+        const alteredRef = await f.host.putJson(altered);
+        await f.host.saveCheckpoint({ ...checkpoint, state: { ...checkpoint.state, proposalRef: jsonValue(alteredRef) }, artifacts: [...checkpoint.artifacts, alteredRef] });
+        await expect(executeTilesetJob(f.input, f.host)).rejects.toThrow("Checkpoint proposal does not match its raw response");
+      }
+      expect(f.provider).toHaveBeenCalledTimes(1);
+    });
+  }, 30000);
+
+  it.each(diskOperations)("%s resumes a failed proposal checkpoint from one paid raw response", async operation => {
+    await withDiskFixture(operation, async f => {
+      const save = f.host.saveCheckpoint;
+      let attemptedProposal: JsonValue | undefined;
+      f.host.saveCheckpoint = async checkpoint => {
+        if (checkpoint.stageKey.endsWith("/completed")) {
+          attemptedProposal = checkpoint.state.proposalRef;
+          throw new Error("proposal checkpoint interrupted");
+        }
+        return save(checkpoint);
+      };
+      await expect(executeTilesetJob(f.input, f.host)).rejects.toThrow("proposal checkpoint interrupted");
+      const responseCheckpoint = await f.host.loadCheckpoint();
+      expect(responseCheckpoint?.stageKey).toBe(`tileset/${operation}/response`);
+      expect(responseCheckpoint?.state.rawRef).toBeDefined();
+      expect(responseCheckpoint?.state.proposalRef).toBeUndefined();
+      f.host.saveCheckpoint = save;
+      await f.reopen();
+      const resumed = await executeTilesetJob(f.input, f.host);
+      expect(resumed.payload.proposalRef).toEqual(attemptedProposal);
+      expect(f.provider).toHaveBeenCalledTimes(1);
+      await f.reopen();
+      const replay = await executeTilesetJob(f.input, f.host);
+      expect(replay.payload).toEqual(resumed.payload); expect(replay.artifacts).toEqual(resumed.artifacts);
+      expect(f.provider).toHaveBeenCalledTimes(1);
+    });
+  }, 30000);
 });

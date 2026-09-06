@@ -3,8 +3,19 @@
 Implemented on `agent/aiq-tileset-silver` in
 `/home/main/z-project/rpg-zzu-aiq-tileset-silver`, based on
 `9647fac2670b7fe9bd12768a529f74ab34bd25be`.
-The implementation commit is the commit containing this handoff; its SHA is
-returned in the task result (avoids a self-referential commit hash).
+Initial implementation commit: `b7296218af5bea48c70e81be1e4480000c9738f3`.
+
+## Supervisor correction: canonical persisted proposal replay
+
+A subsequent **new fix commit**, not an amendment, corrects non-cluster completed
+proposal comparison. See `CANONICAL-RETRY-FIX.md` for the filesystem RED, rejected
+RPC-error run, exact final commands and cleanup. Post-fix proof is **112 tests /
+9 files, exit 0, no unhandled errors**, plus application typecheck exit 0 and
+clean diagnostics on the two changed files. Earlier 104-test results below are
+historical baseline evidence, not acceptance of this correction.
+
+The public API and checkpoint/result schemas are unchanged. The fix is confined
+to `tilesetJob.ts`, its owned tests and evidence; no shared source was edited.
 
 ## Integration API
 
@@ -188,7 +199,8 @@ Stages are `tileset/<operation>/request`, `/response`, `/completed`. Raw JSON is
 `{text,finishReason}` and is checkpointed before parsing/postprocessing.
 Invalid output/truncation survives failure; retries reuse it without paying
 again or upgrading truncation to success. A completed retry regenerates the
-pure typed proposal from saved raw text, validates equality to its saved JSON,
+pure typed proposal from saved raw text, validates the host-produced canonical
+content identity (hash, length and media type) against its saved proposal ref,
 and returns the same immutable ref. Failed completion checkpoints can rerun
 pure parsing/ID derivation without repeating the provider stage.
 
@@ -215,13 +227,13 @@ canonicalizes embedded tool JSON for both first dispatch and replay. Supervisor
 may apply the same correction to the shared assistant bridge/parser; this lane
 did not edit either. See `replay-diagnosis.log` for the exact mismatch.
 
-## Verification and limitations
+## Original implementation verification and limitations (historical baseline)
 
 `COMMANDS.md` records exact validator commands and exits.
 
 - Behavioral RED before product changes: native analysis runtime graph reached
   Cpen panel, connection-status panel, temp-map panel and `project/store.ts`.
-- Final focused GREEN: **104 tests / 9 files**, including **28 adapter/graph
+- Original lane focused run: **104 tests / 9 files**, including **28 adapter/graph
   tests**. Real helpers, isolated session tools, range suggestion and sample
   renderer execute. Host-provider/renderer events are explicitly deferred;
   tests use no sleeps or polling and no real provider/remote writes.

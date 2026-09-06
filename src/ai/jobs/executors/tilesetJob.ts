@@ -121,8 +121,12 @@ export async function executeTilesetJob(input: AiJobInput & { family: "tileset" 
     }
   }
   const output = jsonObject(jsonValue({ ...proposal, tilesetId: tileset.id, completion: "complete", persistence: "not-applicable", checkpoint: "private-proposal" }));
-  if (proposalRef) assert(JSON.stringify(await host.readJson(proposalRef)) === JSON.stringify(output), "Checkpoint proposal does not match its raw response");
-  else { proposalRef = await host.putJson(output); await flush("completed"); }
+  // The repository canonicalizes object keys. Compare its immutable content identity,
+  // not insertion order after readJson; all fields and array order still participate.
+  const outputRef = await host.putJson(output);
+  if (proposalRef) assert(outputRef.sha256 === proposalRef.sha256 && outputRef.byteLength === proposalRef.byteLength
+    && outputRef.mediaType === proposalRef.mediaType, "Checkpoint proposal does not match its raw response");
+  else { proposalRef = outputRef; await flush("completed"); }
   return { version: 1, family: "tileset", jobId: host.jobId, attemptId: host.attemptId, project: input.project, baseSnapshot: input.projectSnapshot,
     generatedSnapshot: null, artifacts: artifacts(), payload: { ...output, proposalRef: jsonObject(jsonValue(proposalRef)) } };
 }
