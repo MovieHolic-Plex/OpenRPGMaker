@@ -37,7 +37,7 @@ export const RECT_SCHEMA: JsonSchema = {
 };
 
 /**
- * 이벤트 커맨드/조건 — `kind` 로 분기하는 넓은 유니온이다. 전 variant 를 나열하면 스키마가 수백 줄이
+ * 이벤트 커맨드 — 조건은 CONDITION_SCHEMA로 분리한다. `kind` 로 분기하는 넓은 유니온이다. 전 variant 를 나열하면 스키마가 수백 줄이
  * 되고 노출 토큰이 폭증하므로 `kind` 와 최빈 필드만 선언한다. 값 검증은 커맨드 컴파일러가 한다.
  */
 export const COMMAND_SCHEMA: JsonSchema = {
@@ -45,9 +45,11 @@ export const COMMAND_SCHEMA: JsonSchema = {
   properties: {
     // kind 를 자유 문자열로 두면 모델이 존재하지 않는 kind 를 만들어 보낸다(2026-08-23 실측:
     // pages[0].choices[0].commands[0].kind 가 unknown 으로 거부). 단일 진실 소스 enum 을 노출한다.
-    kind: { type: "string", enum: [...COMMAND_KINDS, ...CONDITION_KINDS] },
+    kind: { type: "string", enum: [...COMMAND_KINDS] },
     text: { type: "string" },
-    value: { type: "string" },
+    // 필드는 노출하되 단일 타입으로 유니온 값을 막지 않는다. variant 검증은 shape 검증기가 한다.
+    value: { description: 'setSelfSwitch/setFlag: boolean. setSwitch: boolean | "toggle" | {kind:"var",id}. setVariable: number | {kind:"var",id}. changeFactionStance: number.' },
+    op: { type: "string", enum: ["=", "+=", "-=", "*=", "/="], description: "changeItem/changeGold: =|+=|-=. setVariable: =|+=|-=|*=|/=. 아이템 지급은 changeItem + itemId + op:+= + amount." },
     id: { type: "string" },
     mapId: { type: "string" },
     x: { type: "integer" },
@@ -57,7 +59,7 @@ export const COMMAND_SCHEMA: JsonSchema = {
     switchId: { type: "string" },
     variableId: { type: "string" },
     label: { type: "string" },
-    key: { type: "string", description: "selfSwitch 키 A|B|C|D" },
+    key: { type: "string", description: "setSelfSwitch 키 A|B|C|D" },
     delta: { type: "integer", description: "changeFriendship 변화량" },
     speaker: { type: "string" },
     body: { type: "string", description: "text 대사 본문" },
@@ -126,15 +128,14 @@ export const CUTSCENE_BEAT_SCHEMA: JsonSchema = {
 
 /**
  * `Condition` (project/types/events) — 리프 + all/any/not 복합까지 17 variant.
- * `kind` 와 식별 필드만 선언하고 variant 전용 값(`value` 는 boolean|number 로 타입이 갈린다)은
- * `additionalProperties` 로 넘긴다. 단일 `type` 만 허용되는 스키마에서 boolean|number 는 표현 불가다.
+ * `value` 는 boolean|number 이므로 필드를 선언하되 type 제약은 생략한다.
+ * oneOf/anyOf/type 배열 없이 모델이 값을 쓸 수 있게 하고 실제 검증은 condition shape에 위임한다.
  */
 export const CONDITION_SCHEMA: JsonSchema = {
   type: "object",
   description:
     "kind=switch → switchId + value(boolean). kind=variable → variableId + op + value(number). " +
-    "kind=all|any → conditions[]. kind=not → condition. value 는 kind 에 따라 boolean/number 로 갈린다 " +
-    "(스키마가 단일 type 만 허용하므로 properties 에는 선언하지 않는다).",
+    "kind=all|any → conditions[]. kind=not → condition. kind=selfSwitch → key + value(boolean).",
   properties: {
     kind: {
       type: "string",
@@ -142,6 +143,7 @@ export const CONDITION_SCHEMA: JsonSchema = {
       // 단일 진실 소스는 commandKindRegistry.CONDITION_KINDS 다.
       enum: [...CONDITION_KINDS],
     },
+    value: { description: "switch/selfSwitch: boolean. variable/friendshipAtLeast: number." },
     state: { type: "string", enum: [...RELATIONSHIP_STATES] },
     switchId: { type: "string" },
     variableId: { type: "string" },

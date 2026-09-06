@@ -294,7 +294,21 @@ function normalizeCommand(raw: unknown, path: string, warnings: string[] | undef
   }
   const kind = resolveCommandKind(requestedKind);
   if (!kind) {
-    throw simplePageFieldError(`${path}.kind`, "known command kind string", requestedKind);
+    const error = simplePageFieldError(`${path}.kind`, "known command kind string", requestedKind);
+    // 교정 예시일 뿐 alias가 아니다: 조건 item을 실행 명령으로 자동 변환하지 않는다.
+    if (requestedKind === "item" || requestedKind === "changeItems" || requestedKind === "gainItem") {
+      const example = {
+        kind: "changeItem",
+        itemId: typeof command.itemId === "string" ? command.itemId : "ITEM_ID_FROM_get_database_records",
+        op: "+=",
+        amount: typeof command.amount === "number" && Number.isFinite(command.amount) ? command.amount : 1,
+      } satisfies Command;
+      throw new ToolError(
+        `${error.message}\nrepair: ${JSON.stringify({ path, example })}\nitemId는 get_database_records로 조회한 실제 ID를 사용하세요.`,
+        { code: error.code },
+      );
+    }
+    throw error;
   }
   if (kind !== requestedKind) {
     warnings?.push(`SimplePage 정규화: ${path}.kind "${requestedKind}" 를 "${kind}" 로 해석했습니다.`);
