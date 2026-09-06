@@ -24,6 +24,7 @@ import { AI_UI_ACTIONS } from "@/ai/uiEventTypes";
 import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { el } from "@/util/dom";
 import { createPendingWorkTracker } from "@/util/pendingWork";
+import { deckIcon } from "./aiDeckIcons";
 
 let openBackdrop: HTMLElement | null = null;
 // 목록 갱신·열기·삭제는 IndexedDB 를 기다린다. 테스트·하네스는 이걸로 «목록이 그려졌다» 를 기다린다.
@@ -162,7 +163,7 @@ export function openAiConversationHistoryModal(options: {
         });
         const deleteButton = el("button", {
           class: "ai-history-delete",
-          text: "✕",
+          children: [deckIcon("x", { size: 15 })],
           attrs: { type: "button", title: "이 기록을 지웁니다", "aria-label": `${row.title} 기록 삭제` },
           dataset: { testid: "ai-history-delete" },
           on: {
@@ -193,7 +194,7 @@ export function openAiConversationHistoryModal(options: {
 
   const closeButton = el("button", {
     class: "database-modal-close",
-    text: "×",
+    children: [deckIcon("x")],
     attrs: { type: "button", "aria-label": "대화 기록 닫기" },
     dataset: { testid: "ai-history-close" },
   });

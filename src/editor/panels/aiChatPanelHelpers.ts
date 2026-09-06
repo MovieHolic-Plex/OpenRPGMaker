@@ -266,7 +266,7 @@ export function renderEmptyProposalNotice(lines: readonly string[], onDismiss: (
       el("div", {
         class: "ai-proposal-lines",
         children: [
-          el("div", { class: "ai-proposal-title", text: "⚠ 변경 없음 — 이유를 확인하세요" }),
+          el("div", { class: "ai-proposal-title", text: "변경 없음 — 이유를 확인하세요" }),
           ...(lines.length > 0
             ? [el("div", {
                 class: "ai-proposal-lines",

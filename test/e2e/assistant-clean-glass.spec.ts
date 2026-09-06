@@ -4,6 +4,45 @@ import path from "node:path";
 import { Agent, get } from "node:http";
 
 const EVIDENCE = path.resolve("output/evidence/assistant-clean-glass/phase-1");
+
+// Phase 2 uses the same real editor boot; no fake keyboard/range implementation.
+test("background opacity: native keyboard, immediate application and reload", async ({ page }) => {
+  test.setTimeout(180_000);
+  await boot(page);
+  const root = page.locator(".ai-chat-panel");
+  const deck = page.locator(".ai-deck");
+  await page.getByTestId("topbar-ai-settings").click();
+  const slider = page.getByRole("slider", { name: "배경 농도", exact: true });
+  await expect(slider).toHaveValue("82");
+  await slider.focus();
+  await slider.press("ArrowRight");
+  await expect(slider).toHaveValue("83");
+  await expect(page.getByTestId("ai-background-opacity-value")).toHaveText("83%");
+  expect(await root.evaluate((node) => node.style.getPropertyValue("--ai-background-opacity"))).toBe("83%");
+  expect(await deck.evaluate((node) => getComputedStyle(node).opacity)).toBe("1");
+  for (const [key, value] of [["Home", "78"], ["End", "100"], ["ArrowLeft", "99"]]) {
+    await slider.press(key!);
+    await expect(slider).toHaveValue(value!);
+    expect(await page.evaluate(() => localStorage.getItem("oprn:ai-background-opacity"))).toBe(value);
+  }
+  await page.getByTestId("ai-settings-close").click();
+  await page.getByTestId("ai-collapse").click();
+  const pill = page.getByTestId("ai-collapsed-restore");
+  await expect(pill).toBeVisible();
+  const before = await pill.evaluate((node) => ({ background: getComputedStyle(node).backgroundColor, opacity: getComputedStyle(node).opacity }));
+  expect(before.opacity).toBe("1");
+  await page.reload({ waitUntil: "commit" });
+  await expect(pill).toBeVisible({ timeout: 60_000 });
+  expect(await root.evaluate((node) => node.style.getPropertyValue("--ai-background-opacity"))).toBe("99%");
+  expect(await pill.evaluate((node) => getComputedStyle(node).backgroundColor)).toBe(before.background);
+  await page.getByTestId("topbar-ai-settings").click();
+  await expect(slider).toHaveValue("99");
+  await slider.press("Home");
+  expect(await pill.evaluate((node) => getComputedStyle(node).backgroundColor)).not.toBe(before.background);
+  const evidence = path.resolve("output/evidence/assistant-clean-glass/phase-2");
+  mkdirSync(evidence, { recursive: true });
+  await page.screenshot({ path: path.join(evidence, "keyboard-opacity-settings.png") });
+});
 const VIEWPORTS = [{ width: 1024, height: 768 }, { width: 1280, height: 800 }, { width: 1440, height: 900 }];
 const PROMOTIONS = '.ai-quick-reply-chip, .ai-composer-chip, .ai-suggest-row, .ai-authoring-example-chip, .ai-start-visual-gallery, [data-testid="ai-studio-suggest"]';
 const LIVE_PLAN = '[data-testid="ai-work-plan-checklist"], [data-testid="ai-plan-book"], [data-testid="ai-autonomous-feed"]';

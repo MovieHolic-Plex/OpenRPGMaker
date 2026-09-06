@@ -72,8 +72,8 @@ describe("조수 데크 CSS 계약", () => {
     ]) {
       expect(css, selector).toContain(selector);
     }
-    // 유리 알파는 .78 하한 위(90%) 이고 saturate 는 1.08 을 넘지 않는다.
-    expect(css).toContain("color-mix(in srgb, var(--bg-raised) 90%, transparent)");
+    // The existing glass owner consumes the background preference, never element opacity.
+    expect(css).toContain("color-mix(in srgb, var(--bg-raised) var(--ai-background-opacity, 82%), transparent)");
     expect(css.match(/saturate\(([\d.]+)\)/gu)?.every((m) => Number(m.slice(9, -1)) <= 1.08)).toBe(true);
     // @> 글리프는 화면에서 걷는다(DOM 계약은 aiConversationLog 테스트가 지킨다).
     expect(css).toMatch(/\.ai-chat-log \.ai-command-prefix\s*\{\s*display:\s*none;/u);

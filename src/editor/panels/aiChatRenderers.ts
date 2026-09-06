@@ -66,8 +66,8 @@ export function formatToolActivityLine(name: string, result: ToolResult): string
 }
 
 export function reasoningToggleText(count: number, collapsed: boolean): string {
-  const label = count > 1 ? `💭 추론 ${count}회` : "💭 추론";
-  return collapsed ? `${label} 보기 ▸` : `${label} ▾`;
+  const label = count > 1 ? `추론 ${count}회` : "추론";
+  return collapsed ? `${label} 보기` : `${label} 접기`;
 }
 
 // ── 자율 실행 런 표면(todo 6) ────────────────────────────────────────────────
@@ -173,7 +173,7 @@ export function renderWorkPlanChecklist(
       el("span", {
         class: "ai-autonomous-chip",
         dataset: { testid: "ai-autonomous-chip" },
-        text: budget ? (active ? "⚡ 자율 실행 중" : "⚡ 자율 실행") : "할 일 목록",
+        text: budget ? (active ? "자율 실행 중" : "자율 실행") : "할 일 목록",
       }),
       ...(budget
         ? [

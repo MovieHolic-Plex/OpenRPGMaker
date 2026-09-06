@@ -324,7 +324,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
             class: "ai-chat-bubble ai-chat-system ai-build-spec-summary",
             dataset: { testid: "ai-build-spec-summary" },
             children: [
-              el("summary", { text: `📐 밑그림 확정 — ${title} · 에셋 ${spec.assets.length}개` }),
+              el("summary", { text: `밑그림 확정 — ${title} · 에셋 ${spec.assets.length}개` }),
               el("pre", {
                 class: "ai-build-spec-detail",
                 text: detailLines.length > 0 ? detailLines.join("\n") : "(영역 상세 없음)",

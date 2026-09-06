@@ -11,7 +11,7 @@
            └ div.ai-command-bar > (.ai-composer-suggest[흐름] · 팝오버들 · .ai-composer)
 
    규칙:
-   - 색은 tokens.css 변수만(hex 0). !important 0. 유리는 --bg-raised 90% + blur 20 · saturate 1.08
+   - 색은 tokens.css 변수만(hex 0). !important 0. 유리는 --bg-raised 78–100%(기본 82%) + blur 20 · saturate 1.08
      (saturate 1.4 는 잔디 위에서 패널을 초록으로 물들여 대비를 4.22:1 로 떨어뜨렸다 — 2026-08-28 실측).
    - 유리 위 보조 글자는 --text-2. --text-3 은 순백 위에서도 4.75:1 뿐이라 반투명 위에서 AA 미달.
    - 팝오버는 닫히면 hidden. 투명 전면 레이어 금지(2026-08-19 히트테스트 P0).
@@ -23,7 +23,7 @@
   --ai-deck-open-width: 760px;
   --ai-deck-radius: 20px;
   --ai-deck-log-max: min(660px, 62vh);
-  --ai-deck-glass: color-mix(in srgb, var(--bg-raised) 90%, transparent);
+  --ai-deck-glass: color-mix(in srgb, var(--bg-raised) var(--ai-background-opacity, 82%), transparent);
   --ai-deck-shadow:
     0 28px 64px -28px color-mix(in srgb, var(--text-1) 38%, transparent),
     0 2px 8px color-mix(in srgb, var(--text-1) 6%, transparent),
@@ -350,6 +350,61 @@
   padding: 14px 16px 6px;
   scrollbar-color: var(--border-strong) transparent;
   scrollbar-width: thin;
+  scrollbar-gutter: stable;
+}
+
+.ai-deck .ai-chat-log:hover,
+.ai-deck .ai-chat-log:focus-within {
+  scrollbar-color: var(--text-2) transparent;
+}
+
+.ai-deck .ai-chat-log:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: calc(-1 * var(--stroke-2));
+}
+
+.ai-deck .ai-chat-log::-webkit-scrollbar {
+  width: var(--space-2);
+}
+
+.ai-deck .ai-chat-log::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.ai-deck .ai-chat-log::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: var(--radius-pill);
+}
+
+.ai-deck .ai-chat-log:hover::-webkit-scrollbar-thumb,
+.ai-deck .ai-chat-log:focus-within::-webkit-scrollbar-thumb {
+  background: var(--text-2);
+}
+
+/* Existing settings display section, never another row on the deck. */
+.ai-settings-window .ai-background-opacity-control {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+}
+
+.ai-settings-window .ai-background-opacity-range {
+  accent-color: var(--accent);
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+}
+
+.ai-settings-window .ai-background-opacity-range:focus-visible {
+  border-radius: var(--radius-s);
+  outline: var(--focus-outline);
+  outline-offset: var(--stroke-2);
+}
+
+.ai-settings-window .ai-background-opacity-control output {
+  color: var(--text-1);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 /* ── 4. 대화 행 — 사용자 우측 말풍선, 조수 좌측 산문, 시스템은 메타 ──
@@ -1254,8 +1309,8 @@
 /* ── 8. 접힘 알약 ─────────────────────────────────────────────── */
 .ai-chat-panel.chat-dock-float.is-collapsed > .ai-collapsed-restore {
   align-items: center;
-  backdrop-filter: blur(16px) saturate(1.08);
-  -webkit-backdrop-filter: blur(16px) saturate(1.08);
+  backdrop-filter: blur(20px) saturate(1.08);
+  -webkit-backdrop-filter: blur(20px) saturate(1.08);
   background: var(--ai-deck-glass);
   border: 0;
   border-radius: 999px;
