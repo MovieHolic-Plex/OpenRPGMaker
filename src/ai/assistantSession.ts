@@ -990,6 +990,8 @@ export class AssistantSession {
   private acceptanceRepairAttempts = 0;
   private resultReview: ResultReview | null = null;
   private approvedReviewIdentity: string | null = null;
+  /** Approval belongs to this loop attempt, never to a replaceable UI signal. */
+  private reviewTurn: { readonly signal: AbortSignal | undefined } | null = null;
   private reviewRevision = 0;
   private reviewDraftTransform?: (project: Project) => Project;
   private reviewAttempts = 0;
@@ -1200,7 +1202,11 @@ export class AssistantSession {
   }
 
   isDraftReviewApproved(project = this.ctx.project): boolean {
-    return this.draftBaselineCurrent && !this.activeTurnSignal?.aborted && this.resultReview?.status === "approved"
+    // R1 live-base latch AND R3 loop-owner/original-signal guard: a stale base
+    // voids approval even with a live owner, and a retired attempt voids it even
+    // with a current base. Both identities retire together.
+    return this.draftBaselineCurrent && this.reviewTurn !== null && !this.reviewTurn.signal?.aborted
+      && this.resultReview?.status === "approved"
       && this.approvedReviewIdentity === JSON.stringify(project);
   }
 
@@ -3015,7 +3021,7 @@ export class AssistantSession {
   // 이미 누적된 제안(turnProposals)과 대화 문맥은 그대로 유지된다.
   async retryLastTurn(onEvent: (event: SessionEvent) => void = () => {}, signal?: AbortSignal): Promise<TurnResult> {
     this.activeTurnSignal = signal;
-    if (!this.lastTurnFailed) {
+    if (!this.lastTurnFailed && !(this.turnProposals.size > 0 && !this.isDraftReviewApproved())) {
       if (this.runEndProof?.status === "failed" && this.turnProposals.size === 0
         && this.turnComposerMode !== "ask" && !this.lastTurnPlanOnly) {
         await this.proveAppliedRevision(onEvent, signal);
@@ -3624,6 +3630,9 @@ export class AssistantSession {
     let revision = this.reviewRevision;
     this.approvedReviewIdentity = null;
     this.approvedAuthoredIdentity = null;
+    const owner = this.reviewTurn;
+    const outputAtStart = this.estimatedOutputTotal;
+    let candidate: { identity: string; acceptance: AcceptanceSnapshot | null } | null = null;
     let review: ResultReview;
     try {
       if (signal?.aborted) throw new Error("independent-review-cancelled");
@@ -3696,16 +3705,28 @@ export class AssistantSession {
       if (!this.draftBaselineCurrent || baseline !== this.draftBaseline) throw new Error("independent-review-stale-baseline: regenerate from the current project before review");
       review = parseIndependentReview(response, revision, requiredProblems);
       if (review.status === "approved") {
-        this.approvedReviewIdentity = identity;
-        this.approvedAuthoredIdentity = authoredIdentity(this.ctx.project);
-        for (const item of draftAcceptance?.items ?? []) this.acceptance?.review(item.id, review.summary, this.ctx.project, "pass");
+        // Deferred to the post-callback admission below: publishing the verdict
+        // is not authority until owner/cancellation/budget checks pass. Both
+        // identities admit together there so the authored alternative cannot
+        // revive a retired approval.
+        candidate = { identity, acceptance: draftAcceptance };
       }
     } catch (cause) {
       review = { status: "error", revision, findings: [], summary: cause instanceof Error ? cause.message : String(cause) };
     }
+    if (owner !== this.reviewTurn) return { status: "error", revision, findings: [], summary: "independent-review-superseded" };
     this.resultReview = review;
     this.pushAudit({ kind: "status", text: `independent-review ${JSON.stringify(review)}` });
     onEvent({ type: "result_review", review });
+    // The event may cancel, replace the draft, or start another attempt. Publishing
+    // the verdict is not authority to apply until those boundaries and budget pass.
+    if (candidate && owner === this.reviewTurn && !signal?.aborted
+      && this.estimatedOutputTotal - outputAtStart < remainingTokens
+      && candidate.identity === JSON.stringify(this.ctx.project)) {
+      this.approvedReviewIdentity = candidate.identity;
+      this.approvedAuthoredIdentity = authoredIdentity(this.ctx.project);
+      for (const item of candidate.acceptance?.items ?? []) this.acceptance?.review(item.id, review.summary, this.ctx.project, "pass");
+    }
     return review;
   }
 
@@ -3770,6 +3791,27 @@ export class AssistantSession {
   }
 
   private async runTurnLoop(onEvent: (event: SessionEvent) => void, signal?: AbortSignal): Promise<TurnResult> {
+    const owner = { signal };
+    this.reviewTurn = owner;
+    this.approvedReviewIdentity = null;
+    this.approvedAuthoredIdentity = null;
+    let completed = false;
+    try {
+      const result = await this.executeTurnLoop(onEvent, signal);
+      completed = result.stoppedReason === "final" && !signal?.aborted && !this.milestoneApplyFailed;
+      return result;
+    } finally {
+      // Includes thrown subscribers/tool errors, not just returned stop reasons.
+      // An older attempt must not retire a newer attempt's review authority.
+      if (!completed && this.reviewTurn === owner) {
+        this.approvedReviewIdentity = null;
+        this.approvedAuthoredIdentity = null;
+        this.reviewTurn = null;
+      }
+    }
+  }
+
+  private async executeTurnLoop(onEvent: (event: SessionEvent) => void, signal?: AbortSignal): Promise<TurnResult> {
     this.lastTurnFailed = false;
     // WorkPlan 툴(set/get_work_plan, complete/skip_work_item)은 **계획을 실제로 쓰는 턴에만**
     // 붙인다. 예전에는 무조건 붙어서, 오케스트레이션이 꺼진 기본 설정(감독=실행 모델 동일)에서

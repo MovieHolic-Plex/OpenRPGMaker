@@ -66,6 +66,24 @@ Regression seams: `aiToolDiscoveryEscalation`, `toolExposureQuota`, `toolDomainS
 The transport fixture crosses counts 40/41, 127/128/129 and 198/207 using the installed
 adapters and verifies names, descriptions, nested schemas and explicit upstream errors.
 
+## Review approval lifetime (R3, 2026-09-06)
+
+`AssistantSession.runTurnLoop` owns each attempt's original abort signal and wraps
+the writer/review execution. Non-final stops, cancellation, failed milestone apply
+and thrown execution/subscriber errors retire that attempt's approval permanently.
+Replacing the UI's active signal cannot revive a completed approval whose original
+signal was aborted. `result_review` publishes the independent verdict, not immediate
+apply authority: admission follows the callback, current-candidate/owner checks and
+the existing output budget check. Review evidence and audit entries remain retained.
+
+`retryLastTurn` re-enters the existing writer/review loop when unapplied, unapproved
+draft calls remain, even without a provider error. It preserves the draft and original
+request; application requires a fresh current review. `canRetryLastTurn` retains its
+provider-error meaning. Already-applied persistence-proof retries still avoid writer,
+reviewer and edit replay. Regression: `assistantReviewApprovalLifecycle` drives real
+session, direct proposal host, autonomous apply, undo and local save/read proof paths;
+`assistantIndependentReview` retains held late-approval and budget/error cases.
+
 ## Audio description tools and event candidates
 
 Audio identity is `{ kind: "music" | "sound", resourceId: rawId }`. Search-result prefixes
