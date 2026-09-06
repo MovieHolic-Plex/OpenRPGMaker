@@ -2898,14 +2898,18 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         // ignore focus failures in headless tests
       }
     },
-    send: (text: string) => {
+    send: async (text: string) => {
+      // Project creation emits before IndexedDB conversation adoption finishes. Its reset
+      // must complete before the preset enters the composer or starts a turn.
+      await whenAiChatPanelSettled();
+      if (disposed) return;
       input.value = text;
       try {
         input.focus();
       } catch {
         /* headless */
       }
-      void sendText(text);
+      await sendText(text);
     },
   });
   // 부팅 복원 — 이 프로젝트 범위의 최신 대화를 이어받는다. 전역 최신 하나만 집어 스코프를 대조하는
