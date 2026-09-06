@@ -10,7 +10,6 @@ import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import type { AiDocument } from "@/project/types";
-import { stripQuickReplyLine } from "@/ai/interviewPrompt";
 import { formatRunRecapPlayerLine, parseRunRecapPayload } from "@/ai/runRecap";
 import { renderAssistantAnswer } from "./aiAnswerLinkRender";
 import { el } from "@/util/dom";
@@ -179,9 +178,7 @@ export function appendConversationBubble(options: {
     ],
   });
   // 어시스턴트/시스템 줄은 마크다운, 사용자·툴은 원문. 빈 텍스트는 스트리밍 자리표시자.
-  const displayText = options.role === "assistant" || options.role === "system"
-    ? stripQuickReplyLine(options.text)
-    : options.text;
+  const displayText = options.text;
   if (displayText && (options.role === "assistant" || options.role === "system")) body.replaceChildren(renderAssistantAnswer(displayText));
   else if (displayText) body.textContent = displayText;
   options.log.append(row);
@@ -368,7 +365,7 @@ export function createConversationLogHost(options: {
     }
     if (entry.kind === "assistant" && entry.text.trim()) {
       closeToolActivity();
-      appendBubble("assistant", stripQuickReplyLine(entry.text), entry.at);
+      appendBubble("assistant", entry.text, entry.at);
       return;
     }
     if (entry.kind === "status" && entry.text.startsWith("run-recap ")) {

@@ -46,6 +46,7 @@ function setup() {
     const bubble = document.createElement("div"); bubble.textContent = text; log.append(bubble); return bubble;
   });
   const session = {
+    getWorkPlan: () => null,
     getActiveSpec: () => null, getAuditEntries: () => [], getProposedProject: () => store.getCurrent(),
   } as unknown as AssistantSession;
   const controller = { session, auditHistory: [] };
@@ -58,6 +59,7 @@ function setup() {
   } as unknown as AiRunSurface;
   const deps = {
     surface, applyingProposal: false, projectIdentityId: "test", workPlanSurfaceState: null,
+    beginWorkPlanTurn: vi.fn(),
     applyProposal: vi.fn<AiTurnRunnerDeps["applyProposal"]>(async () => "applied"), noteNoChanges: vi.fn(), settleWorkPlanTurn: vi.fn(),
     refreshWorkPlanSurface: vi.fn(), showWorkPlan: vi.fn(), noteWorkPlanActivity: vi.fn(), appendMilestoneFeedLine: vi.fn(),
     appendTileThumbs: vi.fn(), appendTileGrid: vi.fn(), appendAiDocument: vi.fn(), hasPendingQuestion: () => false,

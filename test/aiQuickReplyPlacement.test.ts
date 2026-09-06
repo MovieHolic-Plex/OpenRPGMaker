@@ -5,7 +5,7 @@
 // 쓰이고 있었다. 프리픽스 칸은 반대로 358px 까지 벌어져 있었다.
 //
 // 원인: `.ai-command-row` 은 `grid-template-columns: auto minmax(0, 1fr)` 두 칸 그리드인데,
-// `renderQuickReplies` 가 칩 상자를 **본문의 형제로** 그 줄 안에 꽂는다(`lastAssistant.after`).
+// 과거 `renderQuickReplies` 가 칩 상자를 **본문의 형제로** 그 줄 안에 꽂았다.
 // 배치 규칙이 없으면 칩이 1열(프리픽스 칸)로 자동 배치되고, 칩 폭이 그 칸을 벌려 본문 칸
 // (`minmax(0, 1fr)`)이 0 으로 눌린다. 같은 줄에 꽂히는 `.ai-command-attachment` 는 예전부터
 // `grid-column: 2` 를 갖고 있었다 — 칩만 짝을 안 달고 들어온 것이다.
@@ -15,10 +15,22 @@
 // E2E 는 test/e2e/ai-panel-reachability.spec.ts 의 "본문 눌림" 판정이 같은 계약을 지킨다.
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { conversationScopeKey, saveConversation } from "@/ai/conversationStore";
+import { renderAiChatPanel, teardownAiChatPanel, whenAiChatPanelSettled } from "@/editor/panels/aiChatPanel";
+import { createBlankProject } from "@/project/defaults";
+import { store } from "@/project/store";
+import { findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
 
 const BUBBLES_CSS = "src/styles/database/tabs-b-assistant-panel/04-chat-bubbles-proposals.css";
-const PANEL_TS = "src/editor/panels/aiChatPanel.ts";
+let restoreDom: (() => void) | null = null;
+
+afterEach(() => {
+  teardownAiChatPanel();
+  restoreDom?.();
+  restoreDom = null;
+  vi.unstubAllGlobals();
+});
 
 function read(relativePath: string): string {
   return readFileSync(path.resolve(process.cwd(), relativePath), "utf-8");
@@ -51,7 +63,37 @@ describe("커맨드 줄 안에 꽂히는 상자는 그리드 배치를 명시한
     expect(body).toMatch(/min-width:\s*0/u);
   });
 
-  it("칩은 여전히 마지막 답변 줄 안에 꽂힌다 — 줄 밖으로 옮기면 위 규칙이 아니라 DOM 이 계약이다", () => {
-    expect(read(PANEL_TS)).toMatch(/lastAssistant\.after\(chipsHost\)/u);
+  it("복원된 선택지는 답변에 남고 칩으로 승격되지 않는다", async () => {
+    // Break: restoring choices strips transcript content or inserts quick-reply buttons.
+    store.replace(createBlankProject());
+    restoreDom = installFakeDom();
+    const storage = new Map<string, string>();
+    vi.stubGlobal("localStorage", {
+      getItem: (key: string) => storage.get(key) ?? null,
+      setItem: (key: string, value: string) => void storage.set(key, String(value)),
+      removeItem: (key: string) => void storage.delete(key),
+      clear: () => storage.clear(),
+    });
+    const answer = "[선택지] 지붕 | 돌담 | 화단";
+    await saveConversation({
+      id: "conv_choices_placement",
+      title: "choices",
+      model: "m",
+      savedAt: 100,
+      projectContextKey: conversationScopeKey(store.getProjectIdentity(), store.getCurrent()),
+      entries: [{ kind: "assistant", text: answer }],
+    });
+
+    const panel = renderWithFakeDom(() => renderAiChatPanel());
+    await whenAiChatPanelSettled();
+
+    const log = findByTestId(panel, "ai-chat-log");
+    if (!log) throw new Error("log missing");
+    const reply = findByTestId(log, "ai-command-row-assistant");
+    expect(reply?.textContent).toBe(answer);
+    expect(reply?.querySelectorAll("button")).toHaveLength(0);
+    expect(findByTestId(panel, "ai-quick-replies")).toBeNull();
+    expect(findByTestId(panel, "ai-input")).toBeTruthy();
+    expect(findByTestId(panel, "ai-send")).toBeTruthy();
   });
 });
