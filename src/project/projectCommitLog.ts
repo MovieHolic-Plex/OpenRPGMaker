@@ -184,6 +184,7 @@ export function summaryForDiff(diff: ChangeSummary): string {
   const parts = [
     diff.tilesChanged > 0 ? `타일 ${diff.tilesChanged}` : null,
     (diff.mapPropertiesChanged ?? 0) > 0 ? `맵 설정 ${diff.mapPropertiesChanged}` : null,
+    (diff.audioDescriptionsChanged ?? 0) > 0 ? `오디오 설명 ${diff.audioDescriptionsChanged}` : null,
     diff.eventsAdded > 0 ? `이벤트 추가 ${diff.eventsAdded}` : null,
     diff.eventsModified > 0 ? `이벤트 수정 ${diff.eventsModified}` : null,
     diff.eventsRemoved > 0 ? `이벤트 삭제 ${diff.eventsRemoved}` : null,
@@ -209,6 +210,7 @@ export function combineDiffs(diffs: readonly (ChangeSummary | undefined)[]): Cha
     if (!diff) return combined;
     combined.tilesChanged += diff.tilesChanged;
     combined.mapPropertiesChanged = (combined.mapPropertiesChanged ?? 0) + (diff.mapPropertiesChanged ?? 0);
+    combined.audioDescriptionsChanged = (combined.audioDescriptionsChanged ?? 0) + (diff.audioDescriptionsChanged ?? 0);
     combined.eventsAdded += diff.eventsAdded;
     combined.eventsModified += diff.eventsModified;
     combined.eventsRemoved += diff.eventsRemoved;
@@ -252,6 +254,7 @@ function emptyDiffSummary(): ChangeSummary {
   return {
     tilesChanged: 0,
     mapPropertiesChanged: 0,
+    audioDescriptionsChanged: 0,
     eventsAdded: 0,
     eventsModified: 0,
     eventsRemoved: 0,

@@ -618,6 +618,8 @@ export interface ChangeSummary {
   tilesChanged: number;
   /** 이름·크기·타일셋·BGM 등 타일/이벤트 외 맵 속성이 바뀐 기존 맵 수. */
   mapPropertiesChanged?: number;
+  /** 설명 override 상태가 바뀐 오디오 kind/raw ID 키 수. 구 저장본의 부재는 0. */
+  audioDescriptionsChanged?: number;
   eventsAdded: number;
   eventsModified: number;
   eventsRemoved: number;
