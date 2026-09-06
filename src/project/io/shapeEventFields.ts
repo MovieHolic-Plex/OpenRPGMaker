@@ -265,6 +265,7 @@ function validateTileStacks(label: string, value: unknown, cellCount: number): v
 function validateEventShape(label: string, value: unknown): void {
   const event = requireRecord(label, value);
   requireString(`${label}.id`, event.id);
+  if (event.placementRole !== undefined) assert(event.placementRole === "npc", `${label}.placementRole가 잘못되었습니다.`);
   requireNumber(`${label}.x`, event.x);
   requireNumber(`${label}.y`, event.y);
   validateTrigger(`${label}.trigger`, event.trigger);
