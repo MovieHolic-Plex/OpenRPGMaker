@@ -16,7 +16,7 @@ import {
   type SupabaseSaveResult,
 } from "./supabaseProjectSync";
 import { projectWithoutEventDrafts } from "./eventDrafts";
-import { serialize } from "./io";
+import { serialize, serializeForComparison } from "./io";
 import {
   applyEventDraftVault,
   clearEventDraftVault,
@@ -435,7 +435,7 @@ class ProjectStore {
     }
 
     const expected = projectWithoutEventDrafts(saved.project ?? candidate);
-    if (serialize(expected) !== serialize(projectWithoutEventDrafts(reloaded))) {
+    if (serializeForComparison(expected) !== serializeForComparison(projectWithoutEventDrafts(reloaded))) {
       throw new NewRemoteProjectTransactionError(
         "verify",
         "새 Supabase 프로젝트의 저장본과 재로드 결과가 일치하지 않습니다.",
