@@ -13,6 +13,62 @@ Map/event search, audio test, help modal, themed dungeons, resource manager, vil
 - `/export-player/` and `/standalone-player/` requests are handled before SPA fallback. Build failure or an absent file returns an error rather than editor HTML or stale output. The existing menu catches rejected exports before `downloadBlob`; required media failures are no longer an informational warning after a broken HTML download.
 - Browser acceptance must begin with these menu buttons and play the downloaded files outside the editor server. See `npm run qa:export` in `openwiki/testing.md`; normal Test Play is a separate adjacent-surface regression.
 
+### 걸을 때 적 만나기 — rectangle authoring (2026-09-06)
+
+- Select with the sidebar's **선택** tool and left-drag, then click the visible
+  **걸을 때 적 만나기** selection chip. Right-drag/context entry is also available,
+  but right-click knowledge is not required. The always-visible canvas button
+  with the same label opens the region list and offers **맵에서 범위 선택하기**.
+- Choose one or more named enemy thumbnails (search keeps selection), choose
+  **드물게 / 보통 / 자주**, then **완료**. Each encounter picks one selected enemy;
+  a safe, plain single-enemy troop is reused or generated automatically. Existing
+  multi-enemy/scripted groups are available under advanced settings. No AI call.
+- Advanced settings expose each entry's relative weight, named switch, variable
+  threshold, party's highest level range, time phase and season. These remain the
+  existing `encounterTable[].conditions.region` rectangles, not a new schema.
+  Time/season conditions require game-time configuration. Overlapping rectangles
+  and unconditional table rows mix by eligible relative weight.
+- Frequency is **map-wide**, 10/30/60 respectively, not a per-area probability or
+  an exact step count. Existing positive rates are retained by default; zero is
+  lifted to normal when saved. Terrain can modify the effective rate. Real-time
+  action-combat maps reject this flow, because that runtime does not start random
+  turn-based encounters. Tiles must be walkable; this feature does not paint grass.
+- First conversion from legacy `troopIds` requires an explicit decision:
+  **맵 전체 출현도 유지** copies the existing list to unconditional table entries
+  (including duplicate weighting); **기존 전체 출현 대신 선택한 범위만** clears the
+  old list. Undo restores it. Existing tables and other rectangles are preserved.
+  On imported tables with dormant `troopIds`, deleting the last table region
+  explicitly warns/asks about restoring the old map-wide encounters.
+- Indigo outlines are editor-only and excluded from map-only capture. Open the
+  canvas region list for **편집 · 삭제**. To replace bounds, make a fresh selection,
+  reopen the list, and choose **현재 선택으로 범위 바꾸기**, then confirm in the form.
+  Identical rectangles are one group; a move onto an existing identical rectangle
+  is rejected rather than silently merging groups. Delete requires a second click
+  and removes only those rules, never tiles or shared/generated troops.
+- On another selection, **마지막 설정 가져오기** copies enemies/weights/conditions
+  from the last successful save in this project session; destination-map frequency
+  is retained. This memory is not persisted and resets on project switching.
+- Owner: `src/editor/walkEncounterAuthoring.ts` validates before one project snapshot and one
+  labelled `store.update`; project-level history includes generated troops.
+  `src/editor/panels/walkEncounterModal.ts` / `src/editor/panels/walkEncounterOptions.ts`
+  own local drafts and native subdialog-stack/focus/Escape. Cancel is mutation-free.
+  `src/editor/hotkeys.ts` prevents
+  editor shortcuts/project undo from leaking into these draft dialogs.
+  Project identity, map, map dimensions, encounter table/rate/legacy list, references
+  and locks are rechecked on apply. Unrelated tile/name/database edits are retained;
+  changed encounter settings require closing/reopening, not a stale overwrite.
+- Coverage: `test/walkEncounterAuthoring.test.ts` and `test/walkEncounterModal.test.ts` cover
+  real store/history/load/runtime eligibility and DOM actions. Browser scenario:
+  `DEV_SERVER_PORT=<supervisor-port> E2E_RETRIES=0 npx playwright test
+  test/e2e/walk-encounter-authoring.spec.ts` (1024/1280/1440, blank local project,
+  no remote content writes). It subscribes before selection/mutation triggers and
+  captures basic/advanced forms. On Linux Firefox hosts that abort the large dev
+  CSS module, `WALK_QA_ROUTE_CSS=1` transports that unmodified response through
+  Playwright's request client. Controls are hit-tested and clicked with real
+  pointer coordinates; no forced clicks or fixed sleeps. Supervisor owns
+  execution and visual acceptance.
+
+
 ### Genre-neutral authoring launcher and journey (2026-08-24)
 
 - The topbar's four front actions (`Map | Event | Data | Test`) and the matching Ctrl+K commands share `runAuthoringTask` in `src/editor/authoringTasks.ts`. Map selects the real tile drawer/layer, Event selects the real event drawer/layer, Data opens `openDatabaseModal`, and Test dispatches the established `oprn:test-play-window` request. These actions do not require AI.

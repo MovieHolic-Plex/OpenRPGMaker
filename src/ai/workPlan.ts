@@ -27,6 +27,8 @@ import {
 } from "./narrativeHorrorWorkPlan";
 import { QUICK_REPLY_MARKER } from "@/ai/interviewPrompt";
 import { allTools, getTool } from "@/editor/tools/toolRegistry";
+import { parseAcceptance, type AcceptancePromise } from "./assistantAcceptance";
+import { ACCEPTANCE_PLANNER_GUIDE } from "./assistantAcceptanceTools";
 export type WorkItemStatus = "pending" | "in_progress" | "done" | "skipped" | "blocked";
 
 export interface WorkItem {
@@ -54,6 +56,7 @@ export interface WorkLayer {
 }
 
 export interface WorkPlan {
+  readonly acceptance?: readonly AcceptancePromise[];
   readonly id: string;
   readonly goal: string;
   readonly createdAt: string;
@@ -107,6 +110,7 @@ export type OrchestratorDecision =
        * 「마을=맵 1·NPC 3·상점 1」 막대를 씌우던 경로는 없다(2026-09-03 감사: 「이 마을에 상인 하나 추가」 폭주).
        */
       readonly volume?: PlannerVolumeBar;
+      readonly acceptance?: readonly AcceptancePromise[];
       readonly layers: readonly {
         readonly id?: string;
         readonly title: string;
@@ -151,6 +155,7 @@ Harness contract:
 15. For a full adventure JRPG stage request, include actual village buildings, a connected explorable dungeon with a return transfer, a reachable encounter, a real start party or changeParty join, and final full-map show_map_region inspection. A sign saying dungeon and an NPC talking about joining do not implement these. Seed-only database requests are exempt. Use upsert_equipment for equippable weapons and queried iconResourceId for items.
 16. For a party adventure, inspect the current party and supplies, make an accessible village-to-dungeon route, and inspect every affected map with show_map_region. A solid grass rectangle or a small decorated viewport does not complete a dungeon or whole-map stage. Preserve existing content while improving it. Separate visual inspection from authoring so premature tool-name completion cannot omit it.
 ${NARRATIVE_HORROR_PLANNER_RULE}
+${ACCEPTANCE_PLANNER_GUIDE}
 
 JSON schema:
 {
@@ -284,12 +289,23 @@ export function parseOrchestratorDecision(raw: string): OrchestratorParseResult 
     return { decision: null, error: `모든 layer 가 형식 오류입니다(${rejected.join(", ")}). 필요한 형식: {title, items:[{title, instruction}]}` };
   }
   const volume = parsePlannerVolume(parsed.volume);
+  let acceptance = parseAcceptance(parsed.acceptance);
+  if (acceptance) {
+    try {
+      JSON.parse(jsonText);
+    } catch (cause) {
+      if (!(cause instanceof SyntaxError)) throw cause;
+      // Truncation repair can recover a plan, never a partial acceptance array.
+      acceptance = acceptance.map(promise => ({ ...promise, criteria: null }));
+    }
+  }
   return {
     decision: {
       action,
       goal,
       ...(typeof parsed.plannerNote === "string" ? { plannerNote: parsed.plannerNote } : {}),
       ...(volume ? { volume } : {}),
+      ...(acceptance ? { acceptance } : {}),
       layers,
     },
   };
@@ -377,6 +393,7 @@ export function workPlanFromOrchestratorDecision(
 ): WorkPlan {
   return createWorkPlanFromLayers({
     goal: decision.goal,
+    acceptance: decision.acceptance,
     plannerNote: decision.plannerNote,
     layers: decision.layers,
     targetMapId,
@@ -394,6 +411,7 @@ export function workPlanFromSetToolArgs(args: Record<string, unknown>, now = new
   if (layers.length === 0) return null;
   return createWorkPlanFromLayers({
     goal,
+    acceptance: parseAcceptance(args.acceptance),
     plannerNote: typeof args.plannerNote === "string" ? args.plannerNote : undefined,
     layers,
     now,
@@ -401,6 +419,7 @@ export function workPlanFromSetToolArgs(args: Record<string, unknown>, now = new
 }
 
 function createWorkPlanFromLayers(input: {
+  acceptance?: readonly AcceptancePromise[];
   goal: string;
   plannerNote?: string;
   layers: readonly {
@@ -434,6 +453,7 @@ function createWorkPlanFromLayers(input: {
   const plan: WorkPlan = {
     id: `wp_${input.now.getTime().toString(36)}`,
     goal: input.goal.slice(0, 500),
+    ...(input.acceptance ? { acceptance: input.acceptance } : {}),
     createdAt: input.now.toISOString(),
     layers,
     currentLayerIndex: 0,

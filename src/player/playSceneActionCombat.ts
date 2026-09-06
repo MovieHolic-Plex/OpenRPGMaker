@@ -1,4 +1,4 @@
-import { growthEffects } from "@/project/growth/runtime";
+import { actorOwnedSkillIds } from "@/project/growth/runtime";
 import { store } from "@/project/store";
 import { projectFontStack } from "@/project/fontRegistry";
 import { DEFAULT_ATTACK_COOLDOWN_MS, DEFAULT_PROJECTILE_SPEED_TILES_PER_SEC, isActionCombatMap, resolveActionCombatConfig } from "@/project/actionCombat";
@@ -37,7 +37,7 @@ import { playAudioCommand } from "@/player/audio";
 import { resolveFieldSpawnVictory, syncFieldSpawnEventsIntoMap } from "@/player/fieldSpawns";
 import { recordFieldSpawnKill } from "@/player/playSceneFieldSpawns";
 import { syncActorVitals } from "@/project/sessionVitals";
-import { normalizeActorRecord, parameterValueAtLevel } from "@/project/actorModel";
+import { normalizeActorRecord } from "@/project/actorModel";
 import { nextSessionRandom } from "@/project/session";
 // 데미지 숫자·파티클·텔레그래프·스윙 아크는 **타일 중앙**(characterSpriteX)이 맞다 —
 // 캐릭터 그림이 아니라 칸을 가리키는 표식이다. 적 스프라이트를 다시 놓는
@@ -55,9 +55,9 @@ import { inBounds, isPassable } from "@/project/collision";
 import { moveRuntimeEventPosition } from "@/project/runtimeEventState"
 import { monsterTypesForRecord, typeChartMultiplierForTypes } from "@/battle/typeChart";
 import { applyActorLevelUp } from "@/player/battleRewardsToSession";
-import { learnedSkillIds } from "@/battle/battleBattlers";
+import { actorDerivedStats } from "@/battle/battleBattlers";
 import { battleSkillMpCost } from "@/battle/battleSkillUse";
-import { effectiveActorClassId, hasActorClassOverride } from "@/project/sessionClass";
+import { effectiveActorClassId } from "@/project/sessionClass";
 import { effectiveActorEquipment } from "@/project/equipmentRules";
 import { transitionItemState } from "@/project/itemTransitions";
 import type { Dir, EnemyActionAttack, EnemyRecord, FootprintRect, Project } from "@/project/types";
@@ -636,12 +636,7 @@ export function tryActionSkillCast(scene: PlaySceneContext): void {
 function leadLearnedSkillIds(scene: PlaySceneContext, project: Project, leadId: string): readonly string[] {
   const actor = project.database.actors.find((entry) => entry.id === leadId);
   if (!actor) return [];
-  const normalized = normalizeActorRecord(actor);
-  const level = scene.session.actorLevels?.[leadId] ?? normalized.initialLevel;
-  const classOverrides = scene.session.classOverrides;
-  const effectiveClass = effectiveActorClassId(project, { classOverrides }, leadId);
-  const usesOverride = hasActorClassOverride({ classOverrides: classOverrides ? { ...classOverrides } : undefined }, leadId);
-  return learnedSkillIds(project, normalized, level, scene.session.actorSkillIds?.[leadId], effectiveClass, usesOverride, scene.session.growthProgress);
+  return actorOwnedSkillIds(project, scene.session, leadId);
 }
 
 // 배운 스킬 → 액션 슬롯 재해석. 슬롯이 줄어들어 활성 인덱스가 범위를 벗어나면 0 번으로 스냅된다.
@@ -825,11 +820,14 @@ function leadActorSwingProfile(scene: PlaySceneContext): LeadSwingProfile | null
   const weaponId = effectiveActorEquipment(project, actor, scene.session.actorEquipment?.[actor.id], effectiveActorClassId(project, scene.session, actor.id)).weapon;
   const weapon = project.database.equipment.find((entry) => entry.id === weaponId);
   const profile = weapon?.actionWeapon;
-  const weaponAttack = weapon?.statBonuses?.attack ?? 0;
-  const growth = growthEffects(project, scene.session, actor.id).bonuses;
+  const stats = actorDerivedStats(project, normalized, {
+    level, classOverrides: scene.session.classOverrides, promotionLineage: scene.session.promotionLineage,
+    growthProgress: scene.session.growthProgress, paramBonuses: scene.session.actorParamBonuses?.[actor.id],
+    equipment: effectiveActorEquipment(project, actor, scene.session.actorEquipment?.[actor.id], effectiveActorClassId(project, scene.session, actor.id)),
+  });
   return {
-    attack: parameterValueAtLevel(normalized.parameterCurves.attack, level) + weaponAttack + growth.attack,
-    defense: parameterValueAtLevel(normalized.parameterCurves.defense, level) + growth.defense,
+    attack: stats.attack,
+    defense: stats.defense,
     range: profile?.swingRange ?? config?.swingRange ?? 1,
     cooldownMs: profile?.swingCooldownMs ?? config?.swingCooldownMs ?? 350,
     damageBonus: (config?.swingDamageBonus ?? 0) + (profile?.swingDamageBonus ?? 0),

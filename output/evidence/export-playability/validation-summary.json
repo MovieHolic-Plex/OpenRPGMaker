@@ -252,5 +252,51 @@
       "pass": true
     }
   ],
-  "editorTransport": "api-forward"
+  "editorTransport": "api-forward",
+  "mergedValidation": {
+    "baseCommit": "5384e607",
+    "appAndQaTypes": "passed",
+    "focusedTestsPassed": 80,
+    "fullBuild": "passed",
+    "gameplay": [
+      {
+        "kind": "editor-downloads",
+        "pass": true
+      },
+      {
+        "kind": "root",
+        "pass": true
+      },
+      {
+        "kind": "nested",
+        "pass": true
+      },
+      {
+        "kind": "html",
+        "pass": true
+      },
+      {
+        "kind": "**/standalone-player/standalone.js",
+        "pass": true
+      },
+      {
+        "kind": "**/assets/generated/battle-skins/sprites/hero-01-back.png",
+        "pass": true
+      },
+      {
+        "kind": "editor-test-play",
+        "pass": true
+      }
+    ],
+    "css": {
+      "budget": "upstream file-count violation",
+      "limit": 267,
+      "upstreamFiles": 268,
+      "featureFiles": 268,
+      "addedCssFiles": 0,
+      "graph": "passed",
+      "liveClasses": "passed"
+    },
+    "fullRepositorySuiteRepeated": false
+  }
 }

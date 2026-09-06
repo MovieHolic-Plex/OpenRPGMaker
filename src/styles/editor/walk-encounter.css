@@ -1,0 +1,61 @@
+.event-subdialog-window.wide:has(.walk-encounter-shell),
+.event-subdialog-window.wide:has(.walk-encounter-list) {
+  width: min(760px, calc(100vw - 48px));
+  max-height: calc(100vh - 48px);
+}
+.event-subdialog-body.walk-encounter-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0;
+}
+.walk-encounter-content, .walk-encounter-list {
+  overflow-y: auto;
+  min-height: 0;
+  padding: var(--space-4);
+  color: var(--text-1);
+  font: 13px/1.5 var(--font-ui);
+}
+.walk-encounter-content > * + *, .walk-encounter-list > * + * { margin-top: var(--space-3); }
+.walk-encounter-field { display: flex; flex-direction: column; gap: var(--space-1); min-width: 0; }
+.walk-encounter-field :is(input, select) {
+  width: 100%; min-width: 0; min-height: 32px;
+  background: var(--bg-raised); color: var(--text-1);
+  border: 1px solid var(--border-soft); border-radius: 6px; padding: var(--space-1) var(--space-2);
+  font: inherit;
+}
+.walk-encounter-help { color: var(--text-2); font-size: 12px; line-height: 1.5; }
+.walk-encounter-catalog {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-2);
+  max-height: 240px; overflow-y: auto;
+}
+.walk-encounter-enemy {
+  display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2);
+  border: 1px solid var(--border-soft); border-radius: 8px;
+  background: var(--bg-raised); cursor: pointer; overflow-wrap: anywhere;
+}
+.walk-encounter-enemy:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.walk-encounter-enemy input { flex: 0 0 auto; accent-color: var(--accent); }
+.walk-encounter-enemy .db-list-thumb { flex: 0 0 auto; }
+.walk-encounter-selected, .walk-encounter-actions { display: flex; flex-wrap: wrap; align-items: end; gap: var(--space-2); }
+.walk-encounter-selected span { background: var(--bg-inset); padding: var(--space-1) var(--space-2); border-radius: 6px; }
+.walk-encounter-options-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); }
+.walk-encounter-advanced summary { cursor: pointer; min-height: 32px; padding-block: var(--space-2); }
+.walk-encounter-rule, .walk-encounter-list-row { border: 1px solid var(--border-soft); border-radius: 8px; padding: var(--space-3); margin-top: var(--space-3); min-width: 0; }
+.walk-encounter-rule > .btn { margin-top: var(--space-2); }
+.walk-encounter-list-row { display: flex; flex-direction: column; gap: var(--space-2); overflow-wrap: anywhere; }
+.walk-encounter-footer {
+  display: flex; flex: 0 0 auto; flex-wrap: wrap; justify-content: flex-end; gap: var(--space-2);
+  padding: var(--space-3) var(--space-4); border-top: 1px solid var(--border-soft); background: var(--bg-raised);
+}
+.walk-encounter-error { flex: 0 0 auto; color: var(--danger); padding: var(--space-2) var(--space-4); margin: 0; font-size: 13px; }
+.walk-encounter-error:empty { display: none; }
+:is(.walk-encounter-shell, .walk-encounter-list) .btn, .canvas-toolbar .walk-encounter-list-button { min-height: 32px; white-space: normal; }
+:is(.walk-encounter-shell, .walk-encounter-list) :is(button, input, select, summary):focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.selection-action-chips:has([data-testid="selection-chip-walk-encounter"]) {
+  flex-wrap: wrap; border-radius: 8px;
+}
+@media (max-width: 600px) {
+  .walk-encounter-options-grid, .walk-encounter-catalog { grid-template-columns: minmax(0, 1fr); }
+}

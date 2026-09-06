@@ -1,7 +1,13 @@
 # Export playability verification
 
-Tested implementation base: `d1d5e7e9`. Production repairs are committed through
-`da3bc7c8`; this directory also records the final QA and test-fixture changes.
+Initial implementation base: `d1d5e7e9`. Production repairs are committed through
+`da3bc7c8`. PR conflict resolution then integrated main `5384e607`, preserving
+both wiki sections and regenerating the index; no code conflict required editing.
+App/QA types, 80 related tests, the full product build and the complete gameplay
+matrix passed again on that integrated tree.
+The integrated CSS graph/live gates passed. Its CSS file-count gate reports
+268 files against a 267-file limit; `origin/main` also contains exactly 268 CSS
+files and this PR adds none. That upstream budget failure is not suppressed.
 No authored game content or Supabase rows were changed.
 
 ## Result
@@ -10,8 +16,9 @@ The actual editor menu produced both downloads. The downloaded ZIP passed the
 gameplay loop at an origin root and under `/games/demo/` without a root-asset
 fallback. The downloaded HTML passed through `file://` with HTTP blocked.
 
-`gameplay-green.json` contains the action log, media observations, saved/loaded
-state, negative-export results, and cleanup receipts.
+`gameplay-merged.json` is the final integrated-tree action log, media observations,
+saved/loaded state, negative-export results and cleanup receipts.
+`gameplay-green.json` preserves the earlier repair-only acceptance run.
 
 | Criterion | Root ZIP | Nested ZIP | File HTML |
 | --- | --- | --- | --- |
@@ -54,7 +61,7 @@ fixture through the real file chooser. It does not teleport, inject quest flags,
 force battle outcomes, or call save/load internals.
 
 Screenshots remain at:
-`/tmp/rpg-export-implementation-20260906/qa-approved/`.
+`/tmp/rpg-export-implementation-20260906/qa-merged/`.
 They are not represented as an aesthetic review; behavior and image/font
 decoding are established by browser state and action evidence.
 
@@ -82,7 +89,10 @@ before fonts became Vite-managed assets.
 
 ## Whole-repository failures
 
-The whole repository is **not reported green**.
+The whole repository is **not reported green**. The exhaustive comparison below
+was performed on the original repair base; it was not repeated in full after the
+upstream integration. The integrated tree received the focused and real-surface
+checks listed above.
 
 The first `npm run gates` exceeded its deadline. A four-worker full test run
 produced a report covering 1614 files: 14,457 passed, 177 failed, and 15 existing

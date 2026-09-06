@@ -590,22 +590,24 @@ function promotionRow(
   const itemId = recordSelect(promotion.requires.itemId ?? "", project.database.items, index === 0 ? "db-picker-class-promotion-item" : undefined);
   const variableId = recordSelect(promotion.requires.variableId ?? "", storyFlagRecords("variable"), index === 0 ? "db-picker-class-promotion-variable" : undefined);
   const atLeast = numberInput(promotion.requires.atLeast, "이상", index === 0 ? "db-field-class-promotion-at-least" : undefined);
-  const apply = (): void => {
+  const apply = (input: HTMLInputElement | HTMLSelectElement): void => {
+    const current = currentClass(record).promotions?.[index];
     savePromotion(record, index, {
-      toClassId: toClass.value,
+      toClassId: !current || input === toClass ? toClass.value : current.toClassId,
       requires: {
-        level: optionalNumber(level),
-        switchId: switchId.value || undefined,
-        itemId: itemId.value || undefined,
-        variableId: variableId.value || undefined,
-        atLeast: optionalNumber(atLeast),
+        ...(current?.requires ?? promotion.requires),
+        ...(!current || input === level ? { level: optionalNumber(level) } : {}),
+        ...(!current || input === switchId ? { switchId: switchId.value || undefined } : {}),
+        ...(!current || input === itemId ? { itemId: itemId.value || undefined } : {}),
+        ...(!current || input === variableId ? { variableId: variableId.value || undefined } : {}),
+        ...(!current || input === variableId || input === atLeast ? { atLeast: optionalNumber(atLeast) } : {}),
       },
     });
     onSummaryChanged();
   };
   for (const input of [toClass, level, switchId, itemId, variableId, atLeast]) {
-    input.addEventListener("change", apply);
-    input.addEventListener("input", apply);
+    input.addEventListener("change", () => apply(input));
+    input.addEventListener("input", () => apply(input));
   }
   const remove = el("button", {
     class: "db-class-set-button",

@@ -66,7 +66,7 @@ function setup() {
   const deps: AiTurnRunnerDeps = {
     surface, applyingProposal: false, projectIdentityId: "region-handoff", workPlanSurfaceState: null,
     applyProposal: vi.fn(async () => "applied"), noteNoChanges: vi.fn(), beginWorkPlanTurn: vi.fn(),
-    settleWorkPlanTurn: vi.fn(), refreshWorkPlanSurface: vi.fn(), showWorkPlan: vi.fn(),
+    settleWorkPlanTurn: vi.fn(), refreshWorkPlanSurface: vi.fn(), showWorkPlan: vi.fn(), showAcceptance: vi.fn(),
     noteWorkPlanActivity: vi.fn(), appendMilestoneFeedLine: vi.fn(), appendTileThumbs: vi.fn(), appendTileGrid: vi.fn(),
     appendAiDocument: vi.fn(), hasPendingQuestion: () => false, openAiSettings: vi.fn(),
     renderQuickReplies: vi.fn(), refreshContextMeter: vi.fn(),

@@ -20,14 +20,14 @@ for (const mode of ['promotion', 'skill'] as const) {
     };
     click('growth-presets-open');
     const presets = GROWTH_PRESETS.filter(p => p.kind === mode);
-    expect(host.querySelectorAll('.growth-preset-card')).toHaveLength(3);
+    expect(host.querySelectorAll('.growth-preset-card')).toHaveLength(presets.length + GROWTH_PRESETS.filter(p => p.kind === 'bundle').length);
     for (const preset of presets) click(`growth-preset-${preset.id}`);
     expect(store.getCurrent()).toEqual(before);
     expect(update).not.toHaveBeenCalled();
     expect(getMapEditHistoryEntries()).toHaveLength(0);
     click('growth-presets-cancel');
     expect(store.getCurrent()).toEqual(before);
-    click('growth-presets-open'); click('growth-preset-apply');
+    click('growth-presets-open'); click(`growth-preset-${mode}-vanguard`); click('growth-preset-apply');
     expect(update).toHaveBeenCalledTimes(1);
     expect(update.mock.calls[0]?.[1]?.label).toBeTruthy();
     expect(getMapEditHistoryEntries()).toHaveLength(1);
@@ -43,9 +43,9 @@ it('repeated apply appends independent graphs and survives a studio remount with
   const host = document.createElement('div'); document.body.append(host);
   const click = (id: string) => host.querySelector<HTMLButtonElement>(`[data-testid="${id}"]`)?.click();
   renderGrowthTreeTab(host, 'skill');
-  click('growth-presets-open'); click('growth-preset-apply');
+  click('growth-presets-open'); click('growth-preset-skill-vanguard'); click('growth-preset-apply');
   const first = structuredClone(store.getCurrent().growth?.skillTrees[0]);
-  click('growth-presets-open'); click('growth-preset-apply');
+  click('growth-presets-open'); click('growth-preset-skill-vanguard'); click('growth-preset-apply');
   expect(store.getCurrent().growth?.skillTrees).toHaveLength(2);
   expect(store.getCurrent().growth?.skillTrees[0]).toEqual(first);
   expect(getMapEditHistoryEntries()).toHaveLength(2);

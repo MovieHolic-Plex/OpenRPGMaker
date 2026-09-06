@@ -1,6 +1,7 @@
 import { registerModal } from "@/editor/ui/modalStack";
 
 const SKIP_SELECT_CLASSES = [
+  "walk-encounter-native-select",
   "rich-native-select",
   "shop-processing-native-select",
   "record-browser-hidden-select",

@@ -71,11 +71,11 @@ function caretIcon(direction: "left" | "right"): SVGSVGElement {
 
 /* ────────────────────────── 상단 바 ────────────────────────── */
 
-/** 상인 얼굴 + 가게 문구. 모던 상점의 정체성은 이 헤더에서 나온다. */
-export function shopBrandBlock(scene: PlaySceneContext, title: string, subtitle: string): HTMLElement {
+/** 가게 문구 + 거래 문장. 파티 얼굴을 상인 초상으로 사용하지 않는다. */
+export function shopBrandBlock(_scene: PlaySceneContext, title: string, subtitle: string): HTMLElement {
   const wrap = el("div", { class: "runtime-shop-brand" });
   wrap.append(
-    merchantAvatar(scene),
+    merchantAvatar(),
     el("div", {
       class: "runtime-shop-brand-copy",
       children: [
@@ -91,15 +91,9 @@ export function shopBrandBlock(scene: PlaySceneContext, title: string, subtitle:
   return wrap;
 }
 
-function merchantAvatar(scene: PlaySceneContext): HTMLElement {
+function merchantAvatar(): HTMLElement {
   const avatar = el("div", { class: "runtime-shop-merchant-avatar", attrs: { "aria-hidden": "true" } });
-  const project = store.getCurrent();
-  const actorId = scene.session.partyActorIds?.[0];
-  const record = project.database.actors.find((entry) => entry.id === actorId);
-  const resourceId = record ? record.faceResourceId ?? defaultActorFaceResourceId(record) : undefined;
-  const url = resourceId ? resolveAssetResourceUrl(resourceId, { project }) : undefined;
-  if (url) avatar.style.backgroundImage = `url("${url}")`;
-  else avatar.append(purseIcon());
+  avatar.append(purseIcon());
   return avatar;
 }
 

@@ -1,0 +1,1222 @@
+{
+  "results": [
+    {
+      "kind": "editor-downloads",
+      "pass": true
+    },
+    {
+      "kind": "root",
+      "actions": [
+        {
+          "key": "ArrowUp",
+          "from": [
+            14,
+            18
+          ],
+          "to": [
+            14,
+            17
+          ]
+        },
+        {
+          "key": "ArrowUp",
+          "from": [
+            14,
+            17
+          ],
+          "to": [
+            14,
+            16
+          ]
+        },
+        {
+          "key": "Enter",
+          "dialogue": "소금 장수는 방파제 안개를 봤고, 돛 수선공은 창고 문을 살폈어요. 이제 등대를\n다시 켤 시간입니다.하루▼"
+        },
+        {
+          "key": "Enter",
+          "dialogue": "부두 아이가 들은 두 번의 종소리는 경고예요. 렌즈 조각 두 개를 찾아 등대\n꼭대기로 가져가야 해요.하루▼"
+        },
+        {
+          "key": "Enter",
+          "dialogue": "등대 복구를 시작할까요?지금 시작한다항구를 더 둘러본다"
+        },
+        {
+          "key": "Enter",
+          "dialogue": "좋아요. 소금 장수는 방파제 바람을, 돛 수선공은 창고 열쇠를 알고 있어요.하루▼"
+        },
+        {
+          "key": "ArrowRight",
+          "from": [
+            14,
+            16
+          ],
+          "to": [
+            15,
+            16
+          ]
+        },
+        {
+          "key": "ArrowRight",
+          "from": [
+            15,
+            16
+          ],
+          "to": [
+            16,
+            16
+          ]
+        },
+        {
+          "key": "ArrowRight",
+          "from": [
+            16,
+            16
+          ],
+          "to": [
+            17,
+            16
+          ]
+        },
+        {
+          "key": "ArrowRight",
+          "from": [
+            17,
+            16
+          ],
+          "to": [
+            18,
+            16
+          ]
+        },
+        {
+          "key": "ArrowRight",
+          "from": [
+            18,
+            16
+          ],
+          "to": [
+            19,
+            16
+          ]
+        },
+        {
+          "key": "ArrowUp",
+          "from": [
+            19,
+            16
+          ],
+          "to": [
+            19,
+            15
+          ]
+        },
+        {
+          "key": "ArrowUp",
+          "from": [
+            19,
+            15
+          ],
+          "to": [
+            19,
+            14
+          ]
+        },
+        {
+          "key": "Enter",
+          "dialogue": "돛 수선공이 창고는 위험하다고 했고, 소금 장수는 방파제를 조심하랬어요.\n짧게 손을 풀어 볼까요?수습▼"
+        },
+        {
+          "battle": ">주인공은 무엇을 할까?"
+        },
+        {
+          "battle": ">승리경험치 12 / 골드 10 / 아이템 1"
+        },
+        {
+          "key": "Enter",
+          "dialogue": "좋아요. 부두 아이가 기다리니 물약 하나를 챙기고 방파제나 창고로 가면\n됩니다.수습▼"
+        },
+        {
+          "key": "ArrowDown",
+          "from": [
+            19,
+            14
+          ],
+          "to": [
+            19,
+            15
+          ]
+        },
+        {
+          "key": "ArrowDown",
+          "from": [
+            19,
+            15
+          ],
+          "to": [
+            19,
+            16
+          ]
+        },
+        {
+          "key": "ArrowDown",
+          "from": [
+            19,
+            16
+          ],
+          "to": [
+            19,
+            17
+          ]
+        },
+        {
+          "key": "ArrowDown",
+          "from": [
+            19,
+            17
+          ],
+          "to": [
+            19,
+            18
+          ]
+        },
+        {
+          "key": "ArrowDown",
+          "from": [
+            19,
+            18
+          ],
+          "to": [
+            19,
+            19
+          ]
+        },
+        {
+          "key": "ArrowDown",
+          "from": [
+            19,
+            19
+          ],
+          "to": [
+            19,
+            20
+          ]
+        },
+        {
+          "key": "ArrowDown",
+          "from": [
+            19,
+            20
+          ],
+          "to": [
+            19,
+            21
+          ]
+        },
+        {
+          "key": "ArrowDown",
+          "from": [
+            19,
+            21
+          ],
+          "to": [
+            19,
+            22
+          ]
+        },
+        {
+          "key": "ArrowDown",
+          "from": [
+            19,
+            22
+          ],
+          "to": [
+            19,
+            23
+          ]
+        },
+        {
+          "key": "ArrowDown",
+          "from": [
+            19,
+            23
+          ],
+          "to": [
+            19,
+            24
+          ]
+        },
+        {
+          "key": "ArrowLeft",
+          "from": [
+            19,
+            24
+          ],
+          "to": [
+            18,
+            24
+          ]
+        },
+        {
+          "key": "ArrowLeft",
+          "from": [
+            18,
+            24
+          ],
+          "to": [
+            17,
+            24
+          ]
+        },
+        {
+          "key": "ArrowLeft",
+          "from": [
+            17,
+            24
+          ],
+          "to": [
+            16,
+            24
+          ]
+        },
+        {
+          "key": "ArrowLeft",
+          "from": [
+            16,
+            24
+          ],
+          "to": [
+            15,
+            24
+          ]
+        },
+        {
+          "key": "ArrowLeft",
+          "from": [
+            15,
+            24
+          ],
+          "to": [
+            14,
+            24
+          ]
+        },
+        {
+          "key": "ArrowDown",
+          "from": [
+            14,
+            3
+          ],
+          "to": [
+            14,
+            4
+          ]
+        },
+        {
+          "key": "ArrowRight",
+          "from": [
+            14,
+            4
+          ],
+          "to": [
+            15,
+            4
+          ]
+        }
+      ],
+      "failures": [],
+      "errors": [],
+      "titleImage": {
+        "width": 320,
+        "height": 240
+      },
+      "fonts": [
+        {
+          "font": "16px \"NeoDunggeunmo\"",
+          "loaded": true
+        },
+        {
+          "font": "16px \"Galmuri9\"",
+          "loaded": true
+        },
+        {
+          "font": "16px \"Galmuri11\"",
+          "loaded": true
+        },
+        {
+          "font": "700 16px \"Galmuri11\"",
+          "loaded": true
+        }
+      ],
+      "bgmDecodedAndPlaying": true,
+      "validatedMediaUrls": [
+        "http://127.0.0.1:37839/assets/cc0/audio/bgm/field-of-dreams.mp3"
+      ],
+      "partyImages": [
+        {
+          "id": "battle-actor-actor_hero",
+          "width": 712
+        },
+        {
+          "id": "battle-actor-actor_guardian",
+          "width": 712
+        },
+        {
+          "id": "battle-actor-actor_mage",
+          "width": 712
+        },
+        {
+          "id": "battle-actor-actor_scout",
+          "width": 712
+        }
+      ],
+      "saved": {
+        "map": "map_moonwell_forest",
+        "x": 14,
+        "y": 4,
+        "gold": 10,
+        "inventory": {
+          "item_potion": 2
+        },
+        "quest": true
+      },
+      "loaded": {
+        "map": "map_moonwell_forest",
+        "x": 14,
+        "y": 4,
+        "gold": 10,
+        "inventory": {
+          "item_potion": 2
+        },
+        "quest": true
+      },
+      "cancelledMedia": [
+        {
+          "url": "http://127.0.0.1:37839/assets/cc0/audio/bgm/field-of-dreams.mp3",
+          "type": "media",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "pass": true
+    },
+    {
+      "kind": "nested",
+      "actions": [
+        {
+          "key": "ArrowUp",
+          "from": [
+            14,
+            18
+          ],
+          "to": [
+            14,
+            17
+          ]
+        },
+        {
+          "key": "ArrowUp",
+          "from": [
+            14,
+            17
+          ],
+          "to": [
+            14,
+            16
+          ]
+        },
+        {
+          "key": "Enter",
+          "dialogue": "소금 장수는 방파제 안개를 봤고, 돛 수선공은 창고 문을 살폈어요. 이제 등대를\n다시 켤 시간입니다.하루▼"
+        },
+        {
+          "key": "Enter",
+          "dialogue": "부두 아이가 들은 두 번의 종소리는 경고예요. 렌즈 조각 두 개를 찾아 등대\n꼭대기로 가져가야 해요.하루▼"
+        },
+        {
+          "key": "Enter",
+          "dialogue": "등대 복구를 시작할까요?지금 시작한다항구를 더 둘러본다"
+        },
+        {
+          "key": "Enter",
+          "dialogue": "좋아요. 소금 장수는 방파제 바람을, 돛 수선공은 창고 열쇠를 알고 있어요.하루▼"
+        },
+        {
+          "key": "ArrowRight",
+          "from": [
+            14,
+            16
+          ],
+          "to": [
+            15,
+            16
+          ]
+        },
+        {
+          "key": "ArrowRight",
+          "from": [
+            15,
+            16
+          ],
+          "to": [
+            16,
+            16
+          ]
+        },
+        {
+          "key": "ArrowRight",
+          "from": [
+            16,
+            16
+          ],
+          "to": [
+            17,
+            16
+          ]
+        },
+        {
+          "key": "ArrowRight",
+          "from": [
+            17,
+            16
+          ],
+          "to": [
+            18,
+            16
+          ]
+        },
+        {
+          "key": "ArrowRight",
+          "from": [
+            18,
+            16
+          ],
+          "to": [
+            19,
+            16
+          ]
+        },
+        {
+          "key": "ArrowUp",
+          "from": [
+            19,
+            16
+          ],
+          "to": [
+            19,
+            15
+          ]
+        },
+        {
+          "key": "ArrowUp",
+          "from": [
+            19,
+            15
+          ],
+          "to": [
+            19,
+            14
+          ]
+        },
+        {
+          "key": "Enter",
+          "dialogue": "돛 수선공이 창고는 위험하다고 했고, 소금 장수는 방파제를 조심하랬어요.\n짧게 손을 풀어 볼까요?수습▼"
+        },
+        {
+          "battle": ">주인공은 무엇을 할까?"
+        },
+        {
+          "battle": ">승리경험치 12 / 골드 10 / 아이템 0"
+        },
+        {
+          "key": "Enter",
+          "dialogue": "좋아요. 부두 아이가 기다리니 물약 하나를 챙기고 방파제나 창고로 가면\n됩니다.수습▼"
+        },
+        {
+          "key": "ArrowDown",
+          "from": [
+            19,
+            14
+          ],
+          "to": [
+            19,
+            15
+          ]
+        },
+        {
+          "key": "ArrowDown",
+          "from": [
+            19,
+            15
+          ],
+          "to": [
+            19,
+            16
+          ]
+        },
+        {
+          "key": "ArrowDown",
+          "from": [
+            19,
+            16
+          ],
+          "to": [
+            19,
+            17
+          ]
+        },
+        {
+          "key": "ArrowDown",
+          "from": [
+            19,
+            17
+          ],
+          "to": [
+            19,
+            18
+          ]
+        },
+        {
+          "key": "ArrowDown",
+          "from": [
+            19,
+            18
+          ],
+          "to": [
+            19,
+            19
+          ]
+        },
+        {
+          "key": "ArrowDown",
+          "from": [
+            19,
+            19
+          ],
+          "to": [
+            19,
+            20
+          ]
+        },
+        {
+          "key": "ArrowDown",
+          "from": [
+            19,
+            20
+          ],
+          "to": [
+            19,
+            21
+          ]
+        },
+        {
+          "key": "ArrowDown",
+          "from": [
+            19,
+            21
+          ],
+          "to": [
+            19,
+            22
+          ]
+        },
+        {
+          "key": "ArrowDown",
+          "from": [
+            19,
+            22
+          ],
+          "to": [
+            19,
+            23
+          ]
+        },
+        {
+          "key": "ArrowDown",
+          "from": [
+            19,
+            23
+          ],
+          "to": [
+            19,
+            24
+          ]
+        },
+        {
+          "key": "ArrowLeft",
+          "from": [
+            19,
+            24
+          ],
+          "to": [
+            18,
+            24
+          ]
+        },
+        {
+          "key": "ArrowLeft",
+          "from": [
+            18,
+            24
+          ],
+          "to": [
+            17,
+            24
+          ]
+        },
+        {
+          "key": "ArrowLeft",
+          "from": [
+            17,
+            24
+          ],
+          "to": [
+            16,
+            24
+          ]
+        },
+        {
+          "key": "ArrowLeft",
+          "from": [
+            16,
+            24
+          ],
+          "to": [
+            15,
+            24
+          ]
+        },
+        {
+          "key": "ArrowLeft",
+          "from": [
+            15,
+            24
+          ],
+          "to": [
+            14,
+            24
+          ]
+        },
+        {
+          "key": "ArrowDown",
+          "from": [
+            14,
+            3
+          ],
+          "to": [
+            14,
+            4
+          ]
+        },
+        {
+          "key": "ArrowRight",
+          "from": [
+            14,
+            4
+          ],
+          "to": [
+            15,
+            4
+          ]
+        }
+      ],
+      "failures": [],
+      "errors": [],
+      "titleImage": {
+        "width": 320,
+        "height": 240
+      },
+      "fonts": [
+        {
+          "font": "16px \"NeoDunggeunmo\"",
+          "loaded": true
+        },
+        {
+          "font": "16px \"Galmuri9\"",
+          "loaded": true
+        },
+        {
+          "font": "16px \"Galmuri11\"",
+          "loaded": true
+        },
+        {
+          "font": "700 16px \"Galmuri11\"",
+          "loaded": true
+        }
+      ],
+      "bgmDecodedAndPlaying": true,
+      "validatedMediaUrls": [
+        "http://127.0.0.1:40225/games/demo/assets/cc0/audio/bgm/field-of-dreams.mp3"
+      ],
+      "partyImages": [
+        {
+          "id": "battle-actor-actor_hero",
+          "width": 712
+        },
+        {
+          "id": "battle-actor-actor_guardian",
+          "width": 712
+        },
+        {
+          "id": "battle-actor-actor_mage",
+          "width": 712
+        },
+        {
+          "id": "battle-actor-actor_scout",
+          "width": 712
+        }
+      ],
+      "saved": {
+        "map": "map_moonwell_forest",
+        "x": 14,
+        "y": 4,
+        "gold": 10,
+        "inventory": {
+          "item_potion": 1
+        },
+        "quest": true
+      },
+      "loaded": {
+        "map": "map_moonwell_forest",
+        "x": 14,
+        "y": 4,
+        "gold": 10,
+        "inventory": {
+          "item_potion": 1
+        },
+        "quest": true
+      },
+      "cancelledMedia": [
+        {
+          "url": "http://127.0.0.1:40225/games/demo/assets/cc0/audio/bgm/field-of-dreams.mp3",
+          "type": "media",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "pass": true
+    },
+    {
+      "kind": "html",
+      "actions": [
+        {
+          "key": "ArrowUp",
+          "from": [
+            14,
+            18
+          ],
+          "to": [
+            14,
+            17
+          ]
+        },
+        {
+          "key": "ArrowUp",
+          "from": [
+            14,
+            17
+          ],
+          "to": [
+            14,
+            16
+          ]
+        },
+        {
+          "key": "Enter",
+          "dialogue": "소금 장수는 방파제 안개를 봤고, 돛 수선공은 창고 문을 살폈어요. 이제 등대를\n다시 켤 시간입니다.하루▼"
+        },
+        {
+          "key": "Enter",
+          "dialogue": "부두 아이가 들은 두 번의 종소리는 경고예요. 렌즈 조각 두 개를 찾아 등대\n꼭대기로 가져가야 해요.하루▼"
+        },
+        {
+          "key": "Enter",
+          "dialogue": "등대 복구를 시작할까요?지금 시작한다항구를 더 둘러본다"
+        },
+        {
+          "key": "Enter",
+          "dialogue": "좋아요. 소금 장수는 방파제 바람을, 돛 수선공은 창고 열쇠를 알고 있어요.하루▼"
+        },
+        {
+          "key": "ArrowRight",
+          "from": [
+            14,
+            16
+          ],
+          "to": [
+            15,
+            16
+          ]
+        },
+        {
+          "key": "ArrowRight",
+          "from": [
+            15,
+            16
+          ],
+          "to": [
+            16,
+            16
+          ]
+        },
+        {
+          "key": "ArrowRight",
+          "from": [
+            16,
+            16
+          ],
+          "to": [
+            17,
+            16
+          ]
+        },
+        {
+          "key": "ArrowRight",
+          "from": [
+            17,
+            16
+          ],
+          "to": [
+            18,
+            16
+          ]
+        },
+        {
+          "key": "ArrowRight",
+          "from": [
+            18,
+            16
+          ],
+          "to": [
+            19,
+            16
+          ]
+        },
+        {
+          "key": "ArrowUp",
+          "from": [
+            19,
+            16
+          ],
+          "to": [
+            19,
+            15
+          ]
+        },
+        {
+          "key": "ArrowUp",
+          "from": [
+            19,
+            15
+          ],
+          "to": [
+            19,
+            14
+          ]
+        },
+        {
+          "key": "Enter",
+          "dialogue": "돛 수선공이 창고는 위험하다고 했고, 소금 장수는 방파제를 조심하랬어요.\n짧게 손을 풀어 볼까요?수습▼"
+        },
+        {
+          "battle": ">주인공은 무엇을 할까?"
+        },
+        {
+          "battle": ">승리경험치 12 / 골드 10 / 아이템 1"
+        },
+        {
+          "key": "Enter",
+          "dialogue": "좋아요. 부두 아이가 기다리니 물약 하나를 챙기고 방파제나 창고로 가면\n됩니다.수습▼"
+        },
+        {
+          "key": "ArrowDown",
+          "from": [
+            19,
+            14
+          ],
+          "to": [
+            19,
+            15
+          ]
+        },
+        {
+          "key": "ArrowDown",
+          "from": [
+            19,
+            15
+          ],
+          "to": [
+            19,
+            16
+          ]
+        },
+        {
+          "key": "ArrowDown",
+          "from": [
+            19,
+            16
+          ],
+          "to": [
+            19,
+            17
+          ]
+        },
+        {
+          "key": "ArrowDown",
+          "from": [
+            19,
+            17
+          ],
+          "to": [
+            19,
+            18
+          ]
+        },
+        {
+          "key": "ArrowDown",
+          "from": [
+            19,
+            18
+          ],
+          "to": [
+            19,
+            19
+          ]
+        },
+        {
+          "key": "ArrowDown",
+          "from": [
+            19,
+            19
+          ],
+          "to": [
+            19,
+            20
+          ]
+        },
+        {
+          "key": "ArrowDown",
+          "from": [
+            19,
+            20
+          ],
+          "to": [
+            19,
+            21
+          ]
+        },
+        {
+          "key": "ArrowDown",
+          "from": [
+            19,
+            21
+          ],
+          "to": [
+            19,
+            22
+          ]
+        },
+        {
+          "key": "ArrowDown",
+          "from": [
+            19,
+            22
+          ],
+          "to": [
+            19,
+            23
+          ]
+        },
+        {
+          "key": "ArrowDown",
+          "from": [
+            19,
+            23
+          ],
+          "to": [
+            19,
+            24
+          ]
+        },
+        {
+          "key": "ArrowLeft",
+          "from": [
+            19,
+            24
+          ],
+          "to": [
+            18,
+            24
+          ]
+        },
+        {
+          "key": "ArrowLeft",
+          "from": [
+            18,
+            24
+          ],
+          "to": [
+            17,
+            24
+          ]
+        },
+        {
+          "key": "ArrowLeft",
+          "from": [
+            17,
+            24
+          ],
+          "to": [
+            16,
+            24
+          ]
+        },
+        {
+          "key": "ArrowLeft",
+          "from": [
+            16,
+            24
+          ],
+          "to": [
+            15,
+            24
+          ]
+        },
+        {
+          "key": "ArrowLeft",
+          "from": [
+            15,
+            24
+          ],
+          "to": [
+            14,
+            24
+          ]
+        },
+        {
+          "key": "ArrowDown",
+          "from": [
+            14,
+            3
+          ],
+          "to": [
+            14,
+            4
+          ]
+        },
+        {
+          "key": "ArrowRight",
+          "from": [
+            14,
+            4
+          ],
+          "to": [
+            15,
+            4
+          ]
+        }
+      ],
+      "failures": [],
+      "errors": [],
+      "titleImage": {
+        "width": 320,
+        "height": 240
+      },
+      "fonts": [
+        {
+          "font": "16px \"NeoDunggeunmo\"",
+          "loaded": true
+        },
+        {
+          "font": "16px \"Galmuri9\"",
+          "loaded": true
+        },
+        {
+          "font": "16px \"Galmuri11\"",
+          "loaded": true
+        },
+        {
+          "font": "700 16px \"Galmuri11\"",
+          "loaded": true
+        }
+      ],
+      "bgmDecodedAndPlaying": true,
+      "validatedMediaUrls": [],
+      "partyImages": [
+        {
+          "id": "battle-actor-actor_hero",
+          "width": 712
+        },
+        {
+          "id": "battle-actor-actor_guardian",
+          "width": 712
+        },
+        {
+          "id": "battle-actor-actor_mage",
+          "width": 712
+        },
+        {
+          "id": "battle-actor-actor_scout",
+          "width": 712
+        }
+      ],
+      "saved": {
+        "map": "map_moonwell_forest",
+        "x": 14,
+        "y": 4,
+        "gold": 10,
+        "inventory": {
+          "item_potion": 2
+        },
+        "quest": true
+      },
+      "loaded": {
+        "map": "map_moonwell_forest",
+        "x": 14,
+        "y": 4,
+        "gold": 10,
+        "inventory": {
+          "item_potion": 2
+        },
+        "quest": true
+      },
+      "cancelledMedia": [],
+      "pass": true
+    },
+    {
+      "pattern": "**/standalone-player/standalone.js",
+      "status": 200,
+      "message": "실행형 HTML 내보내기 실패: 실행형 HTML 재료를 못 받았습니다: /standalone-player/standalone.js (플레이어 재료 대신 HTML 응답을 받았습니다)",
+      "downloaded": false,
+      "pass": true
+    },
+    {
+      "pattern": "**/assets/generated/battle-skins/sprites/hero-01-back.png",
+      "status": 404,
+      "message": "실행형 HTML 내보내기 실패: 실행형 HTML 재료를 못 받았습니다: /assets/generated/battle-skins/sprites/hero-01-back.png (HTTP 404)",
+      "downloaded": false,
+      "pass": true
+    },
+    {
+      "kind": "editor-test-play",
+      "pass": true,
+      "movement": {
+        "before": {
+          "map": "map_lantern_village",
+          "x": 14,
+          "y": 18
+        },
+        "after": {
+          "map": "map_lantern_village",
+          "x": 14,
+          "y": 17
+        }
+      }
+    }
+  ],
+  "cleanup": [
+    "root: context and static server closed",
+    "nested: context and static server closed",
+    "html: context and static server closed",
+    "editor context, browser, and temporary downloads removed"
+  ],
+  "editorTransport": "api-forward"
+}

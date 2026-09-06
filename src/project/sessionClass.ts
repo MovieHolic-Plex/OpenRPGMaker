@@ -1,11 +1,15 @@
+import { actorOwnedSkillIds, permanentActorSkillIds, nodeRequirementsBlocker, treeSpentPoints } from '@/project/growth/runtime';
+import { effectiveActorClassId, effectivePromotionLineage } from '@/project/growth/lineage';
+export { effectiveActorClassId } from '@/project/growth/lineage';
 import { refreshGrowthVitals } from "@/project/growth/vitals";
-import { clampLevel, parameterValueAtLevel } from "@/project/actorModel";
+import { clampLevel } from "@/project/actorModel";
 import type { ActorId, ActorParameterKey, ClassId, ClassPromotion, ClassPromotionRequirement, Project, SkillId } from "@/project/types";
 import type { ActorVitals } from "@/project/sessionVitals";
 import { transitionItemState } from "@/project/itemTransitions";
 
 export interface ClassOverrideSession {
   growthProgress?: import("@/project/growth/types").GrowthProgress;
+  promotionLineage?: import("@/project/growth/types").PromotionLineage;
   classOverrides?: Record<string, string>;
   actorLevels?: Record<string, number>;
   actorSkillIds?: Record<string, SkillId[]>;
@@ -20,16 +24,6 @@ export interface ClassOverrideSession {
 export type ClassChangeResult =
   | { readonly ok: true; readonly actorId: ActorId; readonly classId: ClassId }
   | { readonly ok: false; readonly actorId: ActorId; readonly reason: string };
-
-export function effectiveActorClassId(
-  project: Project,
-  session: Pick<ClassOverrideSession, "classOverrides"> | undefined,
-  actorId: ActorId
-): ClassId | undefined {
-  const override = session?.classOverrides?.[actorId];
-  if (override && project.database.classes.some((record) => record.id === override)) return override;
-  return project.database.actors.find((record) => record.id === actorId)?.classId;
-}
 
 export function hasActorClassOverride(
   session: Pick<ClassOverrideSession, "classOverrides"> | undefined,
@@ -47,11 +41,9 @@ export function changeActorClass(
   if (!project.database.actors.some((record) => record.id === actorId)) return { ok: false, actorId, reason: "actor-not-found" };
   const klass = project.database.classes.find((record) => record.id === classId);
   if (!klass) return { ok: false, actorId, reason: "class-not-found" };
-  session.classOverrides ??= {};
-  session.classOverrides[actorId] = classId;
-  learnClassSkillsUpToLevel(session, project, actorId, classId);
-  if (project.growth) refreshGrowthVitals(project, session, actorId);
-  else clampActorVitalsToEffectiveClass(session, project, actorId);
+  const source = effectiveActorClassId(project, session, actorId);
+  const lineage = source === classId ? effectivePromotionLineage(project, session, actorId) : [classId];
+  applyClassChange(session, project, actorId, classId, lineage);
   return { ok: true, actorId, classId };
 }
 
@@ -67,7 +59,7 @@ export function promoteActor(
   const currentClass = project.database.classes.find((record) => record.id === currentClassId);
   if (!currentClass) return { ok: false, actorId, reason: "class-not-found" };
   const candidates = (currentClass.promotions ?? []).filter((promotion) => !toClassId || promotion.toClassId === toClassId);
-  const promotion = candidates.find((entry) => promotionRequirementsMet(session, actorId, entry.requires));
+  const promotion = candidates.find((entry) => promotionRequirementsMet(session, actorId, entry.requires, project));
   if (!promotion) return { ok: false, actorId, reason: toClassId ? "requirements-not-met" : "promotion-not-available" };
   if (!project.database.classes.some((record) => record.id === promotion.toClassId)) {
     return { ok: false, actorId, reason: "class-not-found" };
@@ -75,24 +67,50 @@ export function promoteActor(
   const itemTransition = promotion.requires.itemId
     ? transitionItemState(session, project.database.items, { kind: "remove", itemId: promotion.requires.itemId, amount: 1 })
     : undefined;
-  const result = changeActorClass(session, project, actorId, promotion.toClassId);
-  if (result.ok && itemTransition) {
+  const lineage = [...new Set([...effectivePromotionLineage(project, session, actorId), currentClass.id, promotion.toClassId])];
+  applyClassChange(session, project, actorId, promotion.toClassId, lineage);
+  if (itemTransition) {
     session.inventory = itemTransition.inventory;
     session.itemUseCharges = itemTransition.itemUseCharges;
   }
-  return result;
+  return { ok: true, actorId, classId: promotion.toClassId };
+}
+
+function applyClassChange(session: ClassOverrideSession, project: Project, actorId: ActorId, classId: ClassId, lineage: ClassId[]): void {
+  session.actorSkillIds ??= {};
+  session.actorSkillIds[actorId] = permanentActorSkillIds(project, session, actorId);
+  session.classOverrides ??= {};
+  session.classOverrides[actorId] = classId;
+  session.promotionLineage ??= {};
+  session.promotionLineage[actorId] = lineage;
+  learnClassSkillsUpToLevel(session, project, actorId, classId);
+  refreshGrowthVitals(project, session, actorId);
 }
 
 export function promotionRequirementsMet(
-  session: Pick<ClassOverrideSession, "actorLevels" | "switches" | "variables" | "inventory">,
+  session: PromotionSession,
   actorId: ActorId,
-  requires: ClassPromotionRequirement
+  requires: ClassPromotionRequirement,
+  project?: Project
 ): boolean {
-  if (requires.level !== undefined && (session.actorLevels?.[actorId] ?? 1) < requires.level) return false;
-  if (requires.switchId && session.switches[requires.switchId] !== true) return false;
-  if (requires.itemId && (session.inventory[requires.itemId] ?? 0) <= 0) return false;
-  if (requires.variableId && (session.variables[requires.variableId] ?? 0) < (requires.atLeast ?? 1)) return false;
-  return true;
+  return promotionRequirementBlocker(session, actorId, requires, project) === undefined;
+}
+type PromotionSession = Pick<ClassOverrideSession, 'actorLevels' | 'switches' | 'variables' | 'inventory' | 'classOverrides' | 'promotionLineage' | 'growthProgress' | 'actorSkillIds'>;
+export function promotionRequirementBlocker(session: PromotionSession, actorId: ActorId, requires: ClassPromotionRequirement, project?: Project): string | undefined {
+  if (requires.level !== undefined && (session.actorLevels?.[actorId] ?? project?.database.actors.find(a => a.id === actorId)?.initialLevel ?? 1) < requires.level) return `레벨 ${requires.level}이 필요합니다.`;
+  if (requires.switchId && session.switches[requires.switchId] !== true) return `스위치 ${requires.switchId}가 켜져야 합니다.`;
+  if (requires.itemId && (session.inventory[requires.itemId] ?? 0) <= 0) return `아이템 ${requires.itemId} 1개가 필요합니다.`;
+  if (requires.variableId && (session.variables[requires.variableId] ?? 0) < (requires.atLeast ?? 1)) return `변수 ${requires.variableId}: ${requires.atLeast ?? 1} 이상이 필요합니다.`;
+  if (!project) return requires.requiredSkillIds?.length || requires.requiredNodes?.length || requires.requiredTreePoints?.length ? '성장 조건을 확인할 프로젝트가 필요합니다.' : undefined;
+  const owned = actorOwnedSkillIds(project, session, actorId);
+  const missingSkill = requires.requiredSkillIds?.find(id => !owned.includes(id));
+  if (missingSkill) return `스킬 ${project.database.skills.find(s => s.id === missingSkill)?.name ?? missingSkill}이 필요합니다.`;
+  const nodeBlocker = nodeRequirementsBlocker(project, session, actorId, requires.requiredNodes ?? []);
+  if (nodeBlocker) return nodeBlocker;
+  for (const requirement of requires.requiredTreePoints ?? []) {
+    if (treeSpentPoints(project, session, actorId, requirement.treeId) < requirement.points) return `${project.growth?.skillTrees.find(t => t.id === requirement.treeId)?.name ?? requirement.treeId}: ${requirement.points} 포인트 투자가 필요합니다.`;
+  }
+  return undefined;
 }
 
 export function classLearnedSkillIdsUpToLevel(project: Project, classId: ClassId, level: number): SkillId[] {
@@ -120,36 +138,4 @@ function learnClassSkillsUpToLevel(session: ClassOverrideSession, project: Proje
   for (const skillId of classLearnedSkillIdsUpToLevel(project, classId, level)) known.add(skillId);
   session.actorSkillIds ??= {};
   session.actorSkillIds[actorId] = [...known];
-}
-
-function clampActorVitalsToEffectiveClass(session: ClassOverrideSession, project: Project, actorId: ActorId): void {
-  const vitals = session.actorVitals[actorId];
-  const level = clampLevel(session.actorLevels?.[actorId] ?? project.database.actors.find((record) => record.id === actorId)?.initialLevel ?? 1);
-  const nextMax = classVitalsAtLevel(project, session, actorId, level);
-  if (!nextMax) return;
-  if (!vitals) {
-    session.actorVitals[actorId] = { hp: nextMax.maxHp, mp: nextMax.maxMp, maxHp: nextMax.maxHp, maxMp: nextMax.maxMp };
-    return;
-  }
-  session.actorVitals[actorId] = {
-    maxHp: nextMax.maxHp,
-    maxMp: nextMax.maxMp,
-    hp: Math.max(0, Math.min(vitals.hp, nextMax.maxHp)),
-    mp: Math.max(0, Math.min(vitals.mp, nextMax.maxMp)),
-  };
-}
-
-function classVitalsAtLevel(
-  project: Project,
-  session: Pick<ClassOverrideSession, "classOverrides" | "actorParamBonuses">,
-  actorId: ActorId,
-  level: number
-): { readonly maxHp: number; readonly maxMp: number } | null {
-  const classId = effectiveActorClassId(project, session, actorId);
-  const klass = project.database.classes.find((record) => record.id === classId);
-  if (!klass) return null;
-  const bonuses = session.actorParamBonuses?.[actorId];
-  const maxHp = Math.max(1, parameterValueAtLevel(klass.parameterCurves.maxHp, clampLevel(level)) + Math.trunc(bonuses?.maxHp ?? 0));
-  const maxMp = Math.max(0, parameterValueAtLevel(klass.parameterCurves.maxMp, clampLevel(level)) + Math.trunc(bonuses?.maxMp ?? 0));
-  return { maxHp, maxMp };
 }
