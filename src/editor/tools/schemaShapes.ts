@@ -221,7 +221,12 @@ export const NATIVE_EVENT_PAGE_SCHEMA: JsonSchema = {
           required: ["id", "type"],
         },
         direction: { type: "string", enum: ["down", "left", "right", "up"] },
-        pattern: { type: "integer" },
+        pattern: {
+          type: "integer",
+          description: "스프라이트 시트의 프레임 번호이며 characterIndex(캐릭터 슬롯)가 아니다. " +
+            "charset 슬롯 0~7의 아래방향 정지 프레임은 25,28,31,34,73,76,79,82. " +
+            "list_resources(kind:'charset') / list_npc_graphics 결과의 nativeGraphic을 graphic에 그대로 사용하라.",
+        },
         transparent: { type: "boolean" },
         scale: { type: "number" },
       },

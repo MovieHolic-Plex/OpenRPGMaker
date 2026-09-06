@@ -4,7 +4,7 @@
 import { BGM_CATALOG, bgmTrackLabel } from "@/assets/bgmCatalog";
 import { applyCharsetLabelOverrides, CHARSET_SEMANTICS } from "@/assets/charsetSemantics";
 import { builtinGeneratedResourceIds } from "@/assets/generatedAssetResourceResolver";
-import { EASYRPG_BACKDROP_ASSETS, EASYRPG_MUSIC_ASSETS, EASYRPG_RTP_ASSETS, EASYRPG_SOUND_ASSETS } from "@/assets/easyrpgRtp";
+import { charsetFrameIndex, EASYRPG_BACKDROP_ASSETS, EASYRPG_MUSIC_ASSETS, EASYRPG_RTP_ASSETS, EASYRPG_SOUND_ASSETS } from "@/assets/easyrpgRtp";
 import { koreanMonsterTags } from "@/assets/monsterResourceSemantics";
 import { GENERATED_ASSET_PLAN } from "@/assets/oprnGeneratedAssetPlan";
 import { SCARLOXY_BACKDROP_ASSETS, SCARLOXY_MONSTER_ASSETS } from "@/assets/scarloxyPack";
@@ -29,7 +29,7 @@ import {
   SHIP_TEXTURE_KEY,
   WORLD_TEXTURE_KEY,
 } from "@/project/tilesetHarness";
-import type { CharsetLabelOverride, TilesetDef } from "@/project/types";
+import type { CharsetLabelOverride, EventPageGraphic, TilesetDef } from "@/project/types";
 
 export type ResourceSearchKind = "backdrop" | "bgm" | "charset" | "monster" | "se" | "tile";
 
@@ -45,9 +45,10 @@ export interface ResourceSearchResult {
   readonly label: string;
   readonly tags: readonly string[];
   readonly score: number;
+  readonly nativeGraphic?: EventPageGraphic;
 }
 
-type ResourceCandidate = Pick<ResourceSearchResult, "id" | "label" | "tags">;
+type ResourceCandidate = Pick<ResourceSearchResult, "id" | "label" | "tags" | "nativeGraphic">;
 
 export function searchResources(kind: ResourceSearchKind, query: string, options: ResourceSearchOptions = {}): ResourceSearchResult[] {
   const trimmed = query.trim();
@@ -239,10 +240,15 @@ function candidatesForKind(kind: ResourceSearchKind, options: ResourceSearchOpti
     case "tile":
       return tileCandidates(options.tileset);
     case "charset":
-      return applyCharsetLabelOverrides(CHARSET_SEMANTICS, options.charsetLabels).map((entry) => ({
+      return applyCharsetLabelOverrides(CHARSET_SEMANTICS, options.charsetLabels).map((entry): ResourceCandidate => ({
         id: `charset:${entry.textureKey}:${entry.characterIndex}`,
         label: entry.label,
         tags: [...entry.tags, ...charsetDerivedTags(entry.textureKey)],
+        nativeGraphic: {
+          sprite: { type: "bundled", id: entry.textureKey },
+          direction: "down",
+          pattern: charsetFrameIndex({ characterIndex: entry.characterIndex, direction: "down", pattern: 1 }),
+        },
       }));
     case "monster":
       return monsterCandidates();

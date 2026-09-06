@@ -4,6 +4,7 @@
 // 읽기 툴은 project를 변형하지 않는다(runner가 read 모드로 처리).
 
 import { queryNpcGraphics } from "@/assets/charsetQuery";
+import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { searchResources, type ResourceSearchKind } from "@/assets/resourceSearch";
 import { isPassable } from "@/project/collision";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
@@ -389,6 +390,11 @@ const listNpcGraphics: ToolDefinition = {
       gender: match.entry.gender,
       age: match.entry.age,
       tags: match.entry.tags,
+      nativeGraphic: {
+        sprite: { type: "bundled", id: match.entry.textureKey },
+        direction: "down",
+        pattern: charsetFrameIndex({ characterIndex: match.entry.characterIndex, direction: "down", pattern: 1 }),
+      },
     }));
     const label = query && query.trim().length > 0 ? `"${query}"` : "기본";
     return { summary: `NPC 그래픽 ${matches.length}개 조회(${label})`, data: { matches } };

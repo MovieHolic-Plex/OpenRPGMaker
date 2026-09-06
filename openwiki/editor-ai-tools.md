@@ -365,6 +365,14 @@ author_village와 buildVillageDomain이 DB 설계서의 고정값·집 수 범�
 회귀: `test/aiNativePageContract.test.ts`는 실제 round2 출구 입력 거부, 예시 재호출, 직렬화 후 선택·열쇠 1개 차감·
 기록된 epilogue·`returnToTitle`, 취소 무효과, 생략 페이지 보존과 고수준 컴파일을 검증한다. 실브라우저 완주/원격 재로드는 별도 게이트다.
 
+2026-09-07 R14: `list_resources(kind:"charset")`와 `list_npc_graphics`는 기존 필드·사용자 라벨/태그를
+유지하면서 `nativeGraphic:{sprite:{type:"bundled",id},direction:"down",pattern}`을 추가한다.
+이 객체를 `upsert_event.event.pages[n].graphic`에 그대로 넣는다. `pattern`은 characterIndex가 아니라
+시트 프레임이며, 기존 `charsetFrameIndex`로 계산한 슬롯 0~7의 아래방향 정지 프레임은
+25,28,31,34,73,76,79,82다. 작은 pattern 값도 슬롯으로 재해석하지 않는다. 고수준 SimplePage 컴파일과
+카탈로그 라벨은 바꾸지 않는다. `test/nativeGraphicDiscovery.test.ts`는 두 조회 → 네이티브 업서트 →
+직렬화/재로드 → 실제 `renderTiles`의 sprite 생성 인자를 독립 프레임 표와 대조한다(8슬롯·두 행·네 방향).
+
 ## 보물상자는 노출된 수면을 거부한다 (2026-09-05)
 
 `place_chest`는 요청 좌표와 자동 착지 결과를 모두 검사한다. 물 판정은 현재 타일셋의
