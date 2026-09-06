@@ -106,8 +106,22 @@ without mutating the caller's seed. Regression tests:
   standalone SDK against the same sources, copies one file at a time and rehashes
   the staged inventory before atomic installation. A duplicate digest verifies
   the existing bytes rather than replacing them. `default.json` alone is mutable.
-  Dev prepares this archive when publication requests the installed target;
-  selected-target GETs never build or substitute the default.
+  Dev reuses the retained default only after verifying both SDKs, all archived
+  bytes, current repository source inputs and the complete mutable public directory
+  (including files outside the SDK source inventory). A matching default requires
+  no build, copy or pointer write. Missing/stale/corrupt defaults trigger a build;
+  a failed build returns an error, not the stale default. Each request flight is
+  revalidated because operator archive writes are deliberately unwatched.
+  The response contains the target actually verified, without rereading the mutable
+  pointer after verification. Selected-target GETs never build or substitute it.
+- `devPlayerBundlesPlugin.config` excludes the entire `.runtime-archive` directory,
+  staging directories and retained descendants before Vite creates its watcher.
+  Ignoring only the plugin's revision counter is insufficient: archived HTML writes
+  otherwise trigger Vite full reloads and discard the live publishing modal/draft.
+  Existing ignore rules and an explicit `watch: null` are preserved. Regression:
+  `test/devRuntimeArchive.test.ts` runs a real Vite server and actual SDK/archive
+  fixtures, checks watcher exclusion plus ordinary HTML reload delivery, verifies
+  builder-free reuse, and rejects changed sources/public bytes/digests/pointers.
 - Identity-bearing ZIP exports contain exact prepared project bytes, SDK,
   executable closure and assets plus `release.json`. Its canonical body digest
   excludes the manifest itself. The entire selected runtime's required inventory
