@@ -1,5 +1,51 @@
 # RPG ZZU Design System
 
+## System settings workspace (2026-09-06)
+
+Database > System is a settings worksheet in the existing cool-white, slate and
+indigo Studio, not a dashboard. Shared modal header, rail, footer and save stay
+unchanged. Vanilla DOM, databaseControls, databaseWorkspace sections and resource
+pickers remain the component system; no dependencies or theme are added.
+
+- Ten native navigation buttons occupy a fixed single-line horizontal reel.
+  Container/button classes are distinct; selected is aria-current, focus indigo.
+  All sections stay mounted and inactive sections hidden. Navigation is history-free.
+- `.db-system-sections` owns vertical scrolling in the bounded form; only the
+  type matrix owns horizontal content scrolling. Structural references:
+  [scroll-body-shell](https://github.com/changeroa/StyleGallery/blob/main/patterns/viewport-shell/scroll-body-shell.md)
+  and [reel](https://github.com/changeroa/StyleGallery/blob/main/patterns/in-line-grouping/reel.md).
+- Controls: --font-ui, 13px/1.5, 32–36px targets; help 12px/1.5; headings 18px/1.5.
+  Aligned label/help/control rows, 6px controls, 8px sections, 4/8/12/16/24px spaces.
+  Chrome uses existing --db-studio-* tokens. No gradients, glyph icons or lifts.
+  Rows stack below 600px available content width, never by shrinking text.
+- Overview is a searchable index for all nine editing destinations with authored
+  summaries, no-results/reset, subordinate progress links and play-test. Optional
+  initial troop and day-end event are not warnings. Title summary includes resume
+  and explains its runtime autosave condition rather than claiming a live preview.
+- Party uses four numbered face/selector rows and explicit empty slots. Removal
+  compacts the roster while preserving order/session sync. Display has presets,
+  bounded pixel dimensions, ratio frame and actual map/tile analysis. Fonts pair
+  each selector with Korean/Latin/numeric specimens and keep the default reset.
+- Resources show named assets, choose/change/clear and real empty/failure states;
+  legacy title linkage is explained. Startup groups battle/audio/rewards and
+  explains automatic active slots at zero. Features retain legacy action-combat
+  details, support-ended context, monster care and linked data counts.
+- Time reports the configured day, not a live clock. Disabling sets enabled:false
+  and preserves authored configuration (normalizer supports it); this deliberately
+  fixes the audit's destructive off/on reset. Undo remains available.
+- Type-chart direct entry has a visible action and F2 on each editable cell,
+  Escape and focus restoration. Cycling, diagonal and 0–4 semantics stay intact.
+- Title composition plus display/menu/audio/effects preserve every field/hook.
+  Coordinates remain proportional to legacy 320×240. Resume is previewed under
+  an explicit autosave-available assumption. Layer parallax remains preserved.
+  Text typing updates derived preview nodes without replacing the focused input;
+  structural edits restore focus/scroll where the control survives.
+- Accessibility: native labels, explicit disabled reasons, readable Korean and
+  keyboard-complete actions. Personas: new author, dense-data author, keyboard
+  author. Verify Firefox at 1440×900/1024×768 and populated/empty/edit/undo/reopen.
+  Chromium fails ERR_NETWORK_CHANGED here; no Lighthouse score or pixel visual
+  approval is claimed. Independent visual review is owned by the supervisor.
+
 ## Monster role clarity (Phase 1)
 
 - Visible tabs are `전투 몬스터` (`enemies`) and `포획·성장 종족` (`monsterSpecies`); IDs and testids remain stable.

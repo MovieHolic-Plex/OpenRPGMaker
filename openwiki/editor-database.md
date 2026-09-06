@@ -15,6 +15,67 @@
 
 # Editor Database
 
+## System settings workspace (2026-09-06)
+
+`databaseSystemView.ts` and `databaseSystemStudio.ts` own all ten mounted System
+sections: overview, party, display, font, resources, startup, optin, time,
+typechart and title. This contract supersedes the older nine-section/card-grid
+notes below. The shared Database header/rail/footer/save path is unchanged.
+
+- Section navigation is a nonshrinking horizontal reel. `.db-system-section-nav`
+  belongs only to the container; buttons use `.db-system-section-button` and
+  `aria-current`. `.db-system-sections` owns vertical scrolling; matrix content
+  alone owns horizontal scrolling. `requestSystemSection` and host dataset state
+  remain the navigation boundary; switching sections never creates history.
+- Overview indexes every editing destination, with authored summaries and a
+  searchable no-results/reset state. Progress state links are subordinate. Title
+  summary and workbench both call `listTitleMenuOptions` with an explicit
+  autosave-available preview context: resume is configured, not always available
+  in a real runtime. Optional initial troop/day-end event are not warnings.
+- Party is four numbered face/selector rows. Clearing a slot compacts the roster
+  in existing order and synchronizes `session.partyActorIds`. Fonts keep registry
+  IDs/default omission and pair each selector with its role specimen. Display
+  keeps custom resolution, bounds and real partial-tile/small-map diagnostics.
+- System-local resource presentation wraps the shared picker, shows catalog
+  names and explicit clear/change controls, and preserves historic ID testids.
+  Legacy title-resource changes still update the title background; background
+  override changes do not delete `system.titleResourceId`.
+- Action combat remains a support-ended legacy feature. Enabling applies the
+  requested boolean after the stored config, and disabling preserves all details.
+  Supported RM and Gen1 rule choices are distinct from the battle skin selector.
+- Time disable now stores `enabled:false` rather than deleting its config. This
+  intentionally fixes the audit's silent 31-day-to-28-day reset. The normalizer
+  preserves disabled calendars; `resolveTimeSystem` returns undefined while off.
+  The summary reports the configured day, not a running clock.
+- Matrix clicks retain multiplier cycling and disabled diagonals. A visible
+  direct-entry action and F2 open the same labelled 0–4 entry group; Enter applies,
+  Escape cancels and restores focus. Clearing types still requires confirmation.
+- Title keeps display/menu/audio/effects and all layer/parallax/audio hooks.
+  Explicit `undefined` patches clear logo/sound keys; omitted patch keys preserve
+  them. Coordinates remain legacy 320×240 proportions at any authored resolution.
+  Nonstructural typing updates preview output without replacing the focused field;
+  native numeric typing commits on change while shared steppers commit immediately.
+- Each System numeric binding supplies a canonical-value reader. After a commit,
+  the same input and its steppers reflect domain normalization and default
+  omission; intermediate native digits remain untouched. Action/care fields reuse
+  their existing project normalizers rather than inventing editor-only bounds.
+- Title value refresh updates the live stage's ratio and proportional positions.
+  Effect refresh and Replay share a stage controller that replaces only the
+  stage, never Play/Stop/Replay controls. Replacing the whole preview during blur
+  would swallow the pending pointer click. Do not infer refresh kind from the
+  transient `document.activeElement`, which can be BODY during native change.
+- CSS ownership is consolidated in `system-studio.css`. Only conflicting System
+  declarations were removed from older sheets; outer modal/global controls and
+  runtime preview styling remain shared. Responsive rows use available pane width.
+- Regression coverage: `databaseSystemModern`, `databaseSystemSections`,
+  `databaseSystemView`, `databaseSystemStudio`, related font/resolution/title tests,
+  and `test/e2e/system-studio-visual.spec.ts`,
+  `system-interaction-regressions.spec.ts`, `system-round2-regressions.spec.ts`.
+  Evidence lives under
+  `.omo/evidence/system-modern/`; frozen BEFORE is never overwritten. Firefox
+  supplies real geometry/interactions/screenshots; no pixel visual approval or
+  Lighthouse score is inferred on this host. Final gates and review are supervisor-owned.
+
 ## Graphic 칩 사용자 교정 29건 (2026-09-05)
 
 - 정본은 `src/project/defaults/chipsetLabelCorrections.ts`. 사용자 교정 보고서
