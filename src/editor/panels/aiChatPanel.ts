@@ -58,6 +58,7 @@ import {
   type ProposedCall,
 } from "@/ai/assistantSession";
 import { isWorkPlanComplete, type WorkPlan } from "@/ai/workPlan";
+import { createAiStickyChecklist } from "./aiStickyChecklist";
 import { renderToolImages } from "@/ai/toolImageRenderer";
 import { getEditorMapViewport } from "@/editor/editorMapViewport";
 import {
@@ -301,6 +302,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     parseAssistantTemperature(options.getAssistantTemperature?.() ?? editorState.get().assistantTemperature);
   let refreshTemperatureChrome: () => void = () => {};
   const controller: ChatController = { session: null, auditHistory: [], statusTimeline: [] };
+  const stickyChecklist = createAiStickyChecklist();
   let disposed = false;
   const initialProjectIdentity = store.getProjectIdentity();
   const currentProjectContextKey = conversationScopeKey(initialProjectIdentity, store.getCurrent());
@@ -1205,6 +1207,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
   /** 대화 경계 — 목록을 완전히 걷는다(새 대화·전환·되감기·해제). */
   const clearWorkPlanSurface = (): void => {
+    stickyChecklist.update(null);
     workPlanSurfaceState = null;
     workPlanActivity = "";
     closeWorkPlanBook();
@@ -1234,6 +1237,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
   /** End live chrome, retaining plan/budget state for history and continuation. */
   const settleWorkPlanTurn = (): void => {
+    stickyChecklist.setActivity("");
     const focused = document.activeElement;
     const restoreComposerFocus = workPlanSurface?.contains(focused)
       || document.querySelector("[data-testid='ai-plan-book-overlay']")?.contains(focused);
@@ -1581,7 +1585,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     settleWorkPlanTurn: () => settleWorkPlanTurn(),
     refreshWorkPlanSurface: () => refreshWorkPlanSurface(),
     showWorkPlan: (plan) => showWorkPlan(plan),
-    noteWorkPlanActivity: (label) => noteWorkPlanActivity(label),
+    showAcceptance: (snapshot) => stickyChecklist.update(snapshot),
+    noteWorkPlanActivity: (label) => { noteWorkPlanActivity(label); stickyChecklist.setActivity(label); },
     appendMilestoneFeedLine: (kind, title, detail) => appendMilestoneFeedLine(kind, title, detail),
     appendTileThumbs: (tilesetId, tiles) => appendTileThumbs(tilesetId, tiles),
     appendTileGrid: (data) => appendTileGrid(data),
@@ -1797,7 +1802,19 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 프로젝트가 바뀌었으면(새 프로젝트 생성·다른 작업 열기·로엄 복원) 대화를 새로 시작한다 —
     // 이전 프로젝트의 계획·제안·맵 좌표는 새 프로젝트에서 전부 무의미하거나 해롭다.
     const identity = store.getProjectIdentity();
-    if (identity.id === projectIdentityId) return;
+    if (identity.id === projectIdentityId) {
+      const session = controller.session;
+      const owner = activeAbortController;
+      if (session && stickyChecklist.root.isConnected && !disposed && !owner?.signal.aborted) {
+        session.refreshAcceptance(store.getCurrent(), (event) => {
+          if (!disposed && controller.session === session && activeAbortController === owner
+            && !owner?.signal.aborted && event.type === "acceptance") stickyChecklist.update(event.snapshot);
+        });
+        stickyChecklist.update(session.getAcceptanceSnapshot());
+      }
+      return;
+    }
+    stickyChecklist.update(null);
     if (applyingProposal) {
       projectIdentityId = identity.id;
       return;
@@ -2945,6 +2962,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     turnBusy = false;
     pendingSends.length = 0;
     clearWorkPlanSurface(); // 패널 해제 — 할 일 목록 정리.
+    stickyChecklist.dispose();
     endTurnProgress();
     clearAutoCollapseTimer();
     resizeChrome.dispose();

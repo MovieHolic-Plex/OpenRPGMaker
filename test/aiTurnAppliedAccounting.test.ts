@@ -59,7 +59,7 @@ function setup() {
   } as unknown as AiRunSurface;
   const deps = {
     surface, applyingProposal: false, projectIdentityId: "test", workPlanSurfaceState: null,
-    beginWorkPlanTurn: vi.fn(),
+    beginWorkPlanTurn: vi.fn(), showAcceptance: vi.fn(),
     applyProposal: vi.fn<AiTurnRunnerDeps["applyProposal"]>(async () => "applied"), noteNoChanges: vi.fn(), settleWorkPlanTurn: vi.fn(),
     refreshWorkPlanSurface: vi.fn(), showWorkPlan: vi.fn(), noteWorkPlanActivity: vi.fn(), appendMilestoneFeedLine: vi.fn(),
     appendTileThumbs: vi.fn(), appendTileGrid: vi.fn(), appendAiDocument: vi.fn(), hasPendingQuestion: () => false,
