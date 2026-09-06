@@ -60,6 +60,15 @@ remain supervisor-owned, separate from the focused integration evidence.
 
 Use the lightest command that proves the change.
 
+## Map-owned overlays: actual AI-turn browser regression (2026-09-05)
+
+- Run `xvfb-run -a node scripts/qa/map-owned-ai-turns.mjs` from the checkout root. It owns a verified-free `127.0.0.1:19846` Vite listener (`DEV_SERVER_NO_TLS=1 E2E_FREEZE_DEV_SERVER=1`, strict port), headed Firefox, and separate disposable browser profiles for completion and abort. It refuses a reused listener. Set `QA_PORT` to a different free port when another worktree is using the default; the probe, server, and browser all use that port. `EVIDENCE_DIR` selects the output directory; the default is `output/evidence/map-owned-overlays/phase2/green`.
+- This is the real composer -> session -> tool loop -> proposal/store apply path, unlike the phase-1 overlay-setter probe. Only local `/v1/chat/completions` responses are scripted, routed by `body.tools`; all other non-read requests are blocked. `blankProject=1`, disabled remote persistence, and imported-store identity are asserted. No live model credentials or remote saves are needed.
+- Promise-held responses bracket actual `set_build_spec` and two `clear_region` calls. Subscribe before clicking/sending/releasing: session tool events, ghost/store subscriptions, map selection, Phaser `postrender`, and the send button's `disabled` attribute (the exact `turnBusy` projection). Do not wait on a checklist for lookup completion: question turns may have none. No sleeps or polling.
+- Checks include A -> B -> A with a real draft, another A-targeted tool delivered while viewing B, B's renderer layers/chip and map bytes, successful apply retirement with one intentionally unbuilt entry, same-session lookup non-revival, and abort reverting speculative `done/building` entries to `planned` with zero applied changes. Every rendered B frame and every store change is also observed.
+- Existing `focusAcceptedAgentChanges` moves the view to A at successful apply. The regression records that behavior and explicitly reopens B to check the final state; it does **not** claim completion preserves B selection. Autonomous milestone apply is not covered (`agentMode: "chat"` is explicit).
+- Mutation proof and exact GREEN/RED commands: `output/evidence/map-owned-overlays/phase2/BROWSER.md`. Screenshots are captured evidence; DOM/Phaser assertions are not a claim of subjective visual review.
+
 ## Editor e2e boot-overlay determinism (2026-08-31)
 
 - When a spec needs deterministic access to editor chrome, follow `test/e2e/tileset-ai-native-review.spec.ts`: after navigation wait for `edit-canvas`, click `login-guest` if visible and assert `login-modal` is gone, click `standard-welcome-start` if visible and assert `standard-welcome-card` is gone, then click `coach-mark-skip` if visible and assert no `[data-testid^="coach-mark-"]` remains.

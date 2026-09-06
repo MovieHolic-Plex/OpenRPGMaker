@@ -1,4 +1,7 @@
 import { store } from '@/project/store';
+import { classGrowthArt, nodeGrowthArt, treeGrowthArt } from '@/assets/growthTreeArt';
+import { resolveAssetResourceUrl } from '@/assets/generatedAssetResourceResolver';
+import { growthArt } from './art';
 import type { Project, ClassPromotionRequirement } from '@/project/types';
 import { emptyGrowth, GROWTH_PARAMETERS, GROWTH_PARAMETER_LABELS, type SkillTree, type SkillTreeNode } from '@/project/growth/types';
 import { arrangeTree, promotionEdges, wouldCreateCycle } from '@/project/growth/graph';
@@ -54,11 +57,11 @@ export function renderGrowthTreeTab(host: HTMLElement, mode: Mode): void {
     const edges = mode === 'promotion' ? promotionEdges(p) : tree?.nodes.flatMap(n => n.prerequisites.map(from => ({ from, to: n.id }))) ?? [];
     const auto = arrangeTree(ids, edges);
     const nodes: GraphNode[] = mode === 'promotion' ? p.database.classes.map(c => ({
-      id: c.id, name: c.name, subtitle: `${c.learnedSkills.length} 스킬 · ${c.promotions?.length ?? 0} 승급 경로`, badge: c.name.slice(0, 1),
+      id: c.id, name: c.name, iconUrl: resolveAssetResourceUrl(classGrowthArt(p, c), { project: p }) ?? undefined, subtitle: `${c.learnedSkills.length} 스킬 · ${c.promotions?.length ?? 0} 승급 경로`, badge: c.name.slice(0, 1),
       ...(g.classPositions[c.id] ?? auto[c.id]!), invalid: edges.some(e => e.to === c.id && wouldCreateCycle(edges.filter(x => x !== e), e.from, e.to)),
     })) : (tree?.nodes ?? []).map(n => {
       const skill = n.effect.kind === 'skill' ? p.database.skills.find(s => s.id === (n.effect as { skillId: string }).skillId) : undefined;
-      return { ...n, badge: n.effect.kind === 'parameter' ? '+' : '✧', subtitle: state.preview ? `${nodeRank(state.simulation, state.previewActor ?? '', tree!.id, n.id)} / ${n.maxRank} 습득 · ${n.cost} P` : `${n.cost} P · Lv.${n.level} · ${n.effect.kind === 'skill' ? '스킬' : GROWTH_PARAMETER_LABELS[n.effect.parameter]}`,
+      return { ...n, iconUrl: resolveAssetResourceUrl(nodeGrowthArt(p, n), { project: p }) ?? undefined, badge: n.effect.kind === 'parameter' ? '+' : '✧', subtitle: state.preview ? `${nodeRank(state.simulation, state.previewActor ?? '', tree!.id, n.id)} / ${n.maxRank} 습득 · ${n.cost} P` : `${n.cost} P · Lv.${n.level} · ${n.effect.kind === 'skill' ? '스킬' : GROWTH_PARAMETER_LABELS[n.effect.parameter]}`,
         invalid: n.effect.kind === 'skill' && !skill,
       };
     });
@@ -111,10 +114,10 @@ export function renderGrowthTreeTab(host: HTMLElement, mode: Mode): void {
       el('div', { class: 'growth-catalog-heading', children: [el('h3', { text: mode === 'promotion' ? '직업 목록' : '스킬 트리 목록' }), el('span', { text: String(records.length) })] }),
       textInput('검색', 'growth-search', state.search, v => { state.search = v; draw(); }),
       ...(mode === 'skill' ? [button('+ 새 트리', 'growth-add-tree', addTree, true)] : []),
-      el('div', { class: 'growth-catalog-list', children: items.map((r, i) => {
+      el('div', { class: 'growth-catalog-list', children: items.map(r => {
         const b = button('', `growth-list-${r.id}`, () => { if (mode === 'promotion') selectNode(r.id); else { state.treeId = r.id; state.selected = undefined; state.connecting = undefined; draw(); } });
         b.className = `growth-catalog-item${r.id === (mode === 'promotion' ? state.selected : tree?.id) ? ' is-active' : ''}`;
-        b.append(el('span', { class: 'growth-catalog-number', text: String(i + 1).padStart(2, '0') }), el('span', { children: [el('strong', { text: r.name }), el('small', { text: 'nodes' in r ? `${r.nodes.length} 노드 · ${r.classIds.length ? `${r.classIds.length} 직업` : '공용'}` : '직업 계보 보기' })] }));
+        b.append(growthArt(resolveAssetResourceUrl('nodes' in r ? treeGrowthArt(p, r) : classGrowthArt(p, r), { project: p }), r.name.slice(0, 1), 'growth-catalog-art'), el('span', { children: [el('strong', { text: r.name }), el('small', { text: 'nodes' in r ? `${r.nodes.length} 노드 · ${r.classIds.length ? `${r.classIds.length} 직업` : '공용'}` : '직업 계보 보기' })] }));
         return b;
       }) }),
       ...(mode === 'skill' ? [section('포인트 규칙', [numberInput('시작 포인트', 'growth-initial-points', p.growth?.initialPoints ?? 0, v => commit('시작 성장 포인트 변경', actual => { actual.growth ??= emptyGrowth(); actual.growth.initialPoints = v; })), numberInput('레벨당 포인트', 'growth-level-points', p.growth?.pointsPerLevel ?? 1, v => commit('레벨 성장 포인트 변경', actual => { actual.growth ??= emptyGrowth(); actual.growth.pointsPerLevel = v; }), 0, 1000), selectInput('이벤트 보너스 변수', 'growth-bonus-variable', p.growth?.bonusVariableId ?? '', [{ id: '', name: '사용 안 함' }, ...p.variables], v => commit('성장 보너스 변수 연결', actual => { actual.growth ??= emptyGrowth(); actual.growth.bonusVariableId = v || undefined; })), note('변수 값만큼 각 주인공에게 추가 포인트가 주어집니다.')])] : [note('현재 직업 데이터에서 가져온 계보입니다. 승급 조건은 기존 이벤트에도 바로 적용됩니다.')]),
@@ -124,7 +127,7 @@ export function renderGrowthTreeTab(host: HTMLElement, mode: Mode): void {
     const c = p.database.classes.find(c => c.id === state.selected);
     if (!c) return [note('데이터베이스에서 직업을 추가하세요.')];
     const outgoing = c.promotions ?? [];
-    return [inspectorTitle('선택한 직업', c.name), section('이 직업의 스킬 트리', [
+    return [inspectorTitle('선택한 직업', c.name, classGrowthArt(p, c)), section('이 직업의 스킬 트리', [
       ...((p.growth?.skillTrees ?? []).filter(t => t.classIds.includes(c.id) || !t.classIds.length).map(t => note(`${t.name} · ${t.classIds.length ? '직업 전용' : '공용'}`))),
       ...(!p.growth?.skillTrees.length ? [note('스킬 트리 탭에서 성장 트리를 만들고 직업을 연결하세요.')] : []),
     ]), section('승급 경로', [
@@ -149,14 +152,14 @@ export function renderGrowthTreeTab(host: HTMLElement, mode: Mode): void {
   const skillInspector = (p: Project, tree?: SkillTree): HTMLElement[] => {
     if (!tree) return [inspectorTitle('시작하기', '나만의 성장 설계'), note('새 트리를 만들면 공용 성장 트리로 시작합니다. 직업을 지정하면 해당 직업에서만 활성화됩니다.'), button('+ 새 트리', 'growth-empty-add-tree', addTree, true)];
     const node = tree.nodes.find(n => n.id === state.selected);
-    const result = [inspectorTitle('트리 설정', tree.name), section('기본 정보', [
+    const result = [inspectorTitle('트리 설정', tree.name, treeGrowthArt(p, tree)), section('기본 정보', [
       textInput('트리 이름', 'growth-tree-name', tree.name, name => mutateTree('스킬 트리 이름 변경', t => { t.name = name.trim() || '새 스킬 트리'; })),
       textInput('설명', 'growth-tree-description', tree.description, description => mutateTree('스킬 트리 설명 변경', t => { t.description = description; }), true),
       checkInput('포인트 초기화 허용', 'growth-tree-reset', tree.allowReset, v => mutateTree('스킬 초기화 설정', t => { t.allowReset = v; })),
       note('직업을 선택하지 않으면 모든 직업에서 사용하는 공용 트리입니다.'),
       ...p.database.classes.map(c => checkInput(c.name, `growth-tree-class-${c.id}`, tree.classIds.includes(c.id), checked => mutateTree('스킬 트리 직업 연결', t => { t.classIds = checked ? [...new Set([...t.classIds, c.id])] : t.classIds.filter(id => id !== c.id); }))),
     ])];
-    if (node) result.unshift(inspectorTitle('선택한 노드', node.name), section('노드 설정', [
+    if (node) result.unshift(inspectorTitle('선택한 노드', node.name, nodeGrowthArt(p, node)), section('노드 설정', [
       textInput('노드 이름', 'growth-node-name', node.name, name => mutateNode('성장 노드 이름 변경', n => { n.name = name.trim() || '새 노드'; })),
       textInput('노드 설명', 'growth-node-description', node.description, description => mutateNode('성장 노드 설명 변경', n => { n.description = description; }), true),
       ...(node.effect.kind === 'skill' ? [selectInput('습득할 스킬', 'growth-node-skill', node.effect.skillId, p.database.skills, skillId => mutateNode('성장 스킬 연결', n => { n.effect = { kind: 'skill', skillId }; }))] : [
@@ -201,4 +204,4 @@ export function renderGrowthTreeTab(host: HTMLElement, mode: Mode): void {
   draw();
 }
 function metric(label: string, value: number): HTMLElement { return el('div', { class: 'growth-metric', children: [el('strong', { class: 'growth-metric-value', text: String(value).padStart(2, '0') }), el('span', { text: label })] }); }
-function inspectorTitle(label: string, name: string): HTMLElement { return el('div', { class: 'growth-inspector-title', children: [el('small', { text: label }), el('h3', { text: name })] }); }
+function inspectorTitle(label: string, name: string, resourceId?: string): HTMLElement { return el('div', { class: 'growth-inspector-title', children: [...(resourceId ? [growthArt(resolveAssetResourceUrl(resourceId), name.slice(0, 1), 'growth-inspector-art')] : []), el('small', { text: label }), el('h3', { text: name })] }); }

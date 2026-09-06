@@ -9,7 +9,8 @@ import { openActionContextMenu, openActionDialog } from "@/editor/panels/databas
 import { aiImageGenerateField } from "@/editor/panels/aiImageGenerateField";
 import { openGraphicDialog } from "@/editor/panels/databaseEnemyGraphicDialog";
 import { setSelectedMonsterSpeciesId } from "@/editor/panels/databaseMonsterSpeciesView";
-import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
+import { monsterSpeciesForEnemy, normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
+import { showConfirm } from "@/editor/ui/modal";
 import {
   DEFAULT_ENEMY_FACTION_ID,
   PLAYER_FACTION_ID,
@@ -94,8 +95,8 @@ export function renderEnemyRecordForm(form: HTMLElement, record: EnemyRecord, re
   const studio = renderEnemyStudio(record, [
     { id: "basic", label: "기본", cards: [
       enemyCard("기본 정보", "name", identityFields(record, hero.setTitle, rerender)),
-      enemyCard("능력치", "stats", [el("div", { class: "db-enemy-stat-grid", children: statFields(record) })]),
-      enemyCard("종족", "species", speciesFields(record, rerender), { hint: "포획해 키우는 몬스터의 원본" }),
+      enemyCard("능력치", "stats", [el("div", { class: "db-enemy-stat-grid", children: statFields(record) })], { hint: "전투에 그대로 쓰는 고정값입니다. 종족 성장값과 별개입니다." }),
+      enemyCard("포획·성장 종족", "species", speciesFields(record, rerender), { hint: "포획·성장 정보를 연결합니다. 능력치·외형은 자동 상속되지 않습니다." }),
     ] },
     { id: "appearance", label: "외형", cards: [
       enemyCard("그래픽", "graphic", graphicFields(record, rerender)),
@@ -132,21 +133,20 @@ export function renderEnemyRecordForm(form: HTMLElement, record: EnemyRecord, re
  */
 function enemyHero(record: EnemyRecord): { readonly node: HTMLElement; readonly setTitle: (name: string) => void } {
   const live = currentEnemy(record);
-  const species = live.speciesId
-    ? store.getCurrent().database.monsterSpecies?.find((entry) => entry.id === live.speciesId)
-    : undefined;
+  const species = monsterSpeciesForEnemy(store.getCurrent(), live);
   const factionTable = resolveFactionTable(store.getCurrent().factions);
   const tags = [
     `Lv ${live.level ?? 1}`,
-    species ? `종족 ${species.name}` : "종족 미설정",
+    species ? `종족 ${species.name}${live.speciesId ? "" : " · 같은 ID 호환 연결"}` : live.speciesId ? `종족 ${live.speciesId} · 존재하지 않음` : "종족 미설정",
     `행동 ${live.actions.length}개`,
     enemyFactionHeroTag(factionTable, live.factionId),
     ...(live.flying ? ["비행"] : []),
     ...(live.transparent ? ["투명"] : []),
   ];
   const node = detailHero({
-    eyebrow: "몬스터",
+    eyebrow: "전투 몬스터",
     title: live.name || "(이름 없음)",
+    subtitle: "출현 전투의 고정 능력치·행동·보상을 설정합니다.",
     tags,
     testid: "db-enemy-hero",
   });
@@ -418,52 +418,57 @@ function speciesFields(record: EnemyRecord, rerender: () => void): HTMLElement[]
   const speciesList = project.database.monsterSpecies ?? [];
   const current = currentEnemy(record);
   const speciesId = current.speciesId ?? "";
-  const fields: HTMLElement[] = [
-    selectField("포획 종족", "db-picker-enemy-species", speciesId, speciesList, (nextId) => {
-      updateDatabaseRecord("enemies", record.id, { speciesId: emptyToUndefined(nextId) });
-      // 종족 선택 변경 시 warn/error/mismatch 칩이 즉시 반영되도록 폼을 다시 그린다.
-      rerender();
-    }),
-  ];
+  const species = monsterSpeciesForEnemy(project, current);
+  const fallback = monsterSpeciesForEnemy(project, { ...current, speciesId: undefined });
+  const picker = el("select", { dataset: { testid: "db-picker-enemy-species" } });
+  picker.append(el("option", {
+    attrs: { value: "" },
+    text: fallback ? `미지정 · ${fallback.name} (같은 ID 호환 연결)` : "(없음)",
+  }));
+  if (speciesId && !species) {
+    picker.append(el("option", {
+      attrs: { value: speciesId, disabled: "" },
+      text: `${speciesId} · 존재하지 않는 종족`,
+    }));
+  }
+  for (const entry of speciesList) picker.append(el("option", { attrs: { value: entry.id }, text: entry.name }));
+  picker.value = speciesId;
+  picker.addEventListener("change", () => {
+    updateDatabaseRecord("enemies", record.id, { speciesId: emptyToUndefined(picker.value) });
+    rerender();
+  });
+  const fields: HTMLElement[] = [field("포획 종족", picker)];
 
-  // 프로젝트에 종족 카탈로그가 있는데 포획 종족이 비어 있으면 경고.
-  if (!speciesId && speciesList.length > 0 && project.system.monsterCollection === true) {
+  if (!speciesId && !species && speciesList.length > 0 && project.system.monsterCollection === true) {
     fields.push(speciesStatusChip("warn", "db-enemy-species-unset-warn", "포획 종족 미설정"));
   }
-
-  if (speciesId) {
-    const species = speciesList.find((entry) => entry.id === speciesId);
-    if (!species) {
-      fields.push(speciesStatusChip("error", "db-enemy-species-missing-error", "존재하지 않는 종족"));
-    } else if ((current.monsterResourceId ?? "") !== (species.graphic.monsterResourceId ?? "")) {
-      // 그래픽 불일치 정보 + 종족 그래픽을 적으로 복사하는 버튼.
-      fields.push(
-        el("div", {
-          class: "db-enemy-species-mismatch-row",
-          children: [
-            speciesStatusChip("info", "db-enemy-species-graphic-mismatch", "그래픽이 종족과 다름"),
-            el("button", {
-              class: "db-ws-btn db-ws-btn-ghost",
-              text: "그래픽 복사",
-              attrs: { type: "button" },
-              dataset: { testid: "db-enemy-species-copy-graphic" },
-              on: {
-                click: () => {
-                  copySpeciesGraphicToEnemy(record);
-                  rerender();
-                },
-              },
-            }),
-          ],
-        })
-      );
-    }
+  if (speciesId && !species) {
+    fields.push(speciesStatusChip("error", "db-enemy-species-missing-error", "존재하지 않는 종족"));
   }
-
-  if (speciesId) {
-    const species = speciesList.find((entry) => entry.id === speciesId);
-    if (species) fields.push(capturePreviewLine(species.captureRate, "db-enemy-capture-preview"));
+  if (species && !speciesId) {
+    fields.push(speciesStatusChip("info", "db-enemy-species-legacy", `${species.name} · 같은 ID 호환 연결 (저장된 종족 ID 없음)`));
   }
+  if (species && (
+    (current.monsterResourceId ?? "") !== (species.graphic.monsterResourceId ?? "")
+    || current.graphicHue !== species.graphic.graphicHue
+    || current.transparent !== species.graphic.transparent
+    || current.flying !== species.graphic.flying
+  )) {
+    fields.push(el("div", {
+      class: "db-enemy-species-mismatch-row",
+      children: [
+        speciesStatusChip("info", "db-enemy-species-graphic-mismatch", "그래픽이 종족과 다름"),
+        el("button", {
+          class: "db-ws-btn db-ws-btn-ghost",
+          text: "종족 외형을 이 몬스터로 복사",
+          attrs: { type: "button", title: "종족의 리소스·색조·투명·비행을 이 몬스터에 한 번 복사합니다. 능력치는 바뀌지 않습니다." },
+          dataset: { testid: "db-enemy-species-copy-graphic" },
+          on: { click: () => { copySpeciesGraphicToEnemy(record); rerender(); } },
+        }),
+      ],
+    }));
+  }
+  if (species) fields.push(capturePreviewLine(species.captureRate, "db-enemy-capture-preview"));
 
   // G006: append open/create species actions (panel structure owned by G002).
   fields.push(...speciesNavActions(record, rerender));
@@ -472,22 +477,26 @@ function speciesFields(record: EnemyRecord, rerender: () => void): HTMLElement[]
 
 function speciesNavActions(record: EnemyRecord, rerender: () => void): HTMLElement[] {
   const current = currentEnemy(record);
-  const speciesId = current.speciesId;
+  const species = monsterSpeciesForEnemy(store.getCurrent(), current);
   const actions: HTMLElement[] = [];
 
-  if (speciesId) {
+  if (species) {
     actions.push(
       el("button", {
         class: "db-ws-btn db-ws-btn-ghost",
-        text: "종족 열기",
+        text: "연결된 종족 열기",
         attrs: { type: "button" },
         dataset: { testid: "db-enemy-open-species" },
         on: {
           click: (event) => {
+            const project = store.getCurrent();
+            const target = monsterSpeciesForEnemy(project, project.database.enemies.find((entry) => entry.id === record.id));
+            if (!target) return;
+            const speciesId = target.id;
             const panelRoot = databasePanelRootFrom(event.currentTarget as HTMLElement | null);
             setSelectedMonsterSpeciesId(speciesId);
             if (!panelRoot) {
-              toast(`종족 탭에서 ${speciesId}를 선택하세요`, "ok");
+              toast(`포획·성장 종족 탭에서 ${speciesId}를 선택하세요`, "ok");
               return;
             }
             switchDatabaseActiveTab("monsterSpecies", panelRoot);
@@ -500,15 +509,15 @@ function speciesNavActions(record: EnemyRecord, rerender: () => void): HTMLEleme
   actions.push(
     el("button", {
       class: "db-ws-btn db-ws-btn-ghost",
-      text: "종족 생성",
-      attrs: { type: "button" },
+      text: species ? "새 종족으로 연결 교체" : "이 몬스터로 종족 만들기",
+      attrs: { type: "button", title: species ? "기존 종족은 보존하고, 이 몬스터로 새 종족을 만들어 연결을 교체합니다." : "이 몬스터의 이름·외형·능력치를 새 종족으로 한 번 복사하고 연결합니다." },
       dataset: { testid: "db-enemy-create-species" },
       on: {
-        click: (event) => {
+        click: async (event) => {
           const panelRoot = databasePanelRootFrom(event.currentTarget as HTMLElement | null);
-          createSpeciesFromEnemy(record.id, panelRoot);
-          // Form may still be mounted when panelRoot is missing (toast-only path).
-          if (!panelRoot) rerender();
+          const created = await createSpeciesFromEnemy(record.id, panelRoot);
+          // Cancellation must preserve the modal's restored opener, not remount it.
+          if (created && !panelRoot) rerender();
         },
       },
     })
@@ -520,45 +529,78 @@ function speciesNavActions(record: EnemyRecord, rerender: () => void): HTMLEleme
       dataset: { testid: "db-enemy-species-nav-actions" },
       children: actions,
     }),
+    el("small", {
+      class: "db-ws-card-hint",
+      text: "생성: 이 몬스터의 이름·외형·능력치 → 새 종족의 이름·외형·종족값으로 한 번 복사. 같은 레벨의 전투 수치는 달라질 수 있습니다.",
+    }),
+    ...(species ? [el("small", { class: "db-ws-card-hint", text: "연결 교체 시 기존 종족은 남습니다. 외형 복사는 종족 → 이 몬스터의 리소스·색조·투명·비행만 바꿉니다." })] : []),
   ];
 }
 
 // Single undo unit: snapshot → seed species → append + set enemy.speciesId → select + switch tab.
-function createSpeciesFromEnemy(enemyId: string, panelRoot: HTMLElement | null): void {
-  const enemy = store.getCurrent().database.enemies.find((entry) => entry.id === enemyId);
-  if (!enemy) return;
+async function createSpeciesFromEnemy(enemyId: string, panelRoot: HTMLElement | null): Promise<boolean> {
+  const initial = store.getCurrent();
+  let enemy = initial.database.enemies.find((entry) => entry.id === enemyId);
+  if (!enemy) return false;
+  const linked = monsterSpeciesForEnemy(initial, enemy);
+  if (linked) {
+    const storedId = enemy.speciesId;
+    const identity = store.getProjectIdentity();
+    let switched = false;
+    const unsubscribe = store.subscribe((_project, change) => { switched ||= change.projectSwitch === true; });
+    let confirmed: boolean;
+    try {
+      confirmed = await showConfirm({
+        title: "연결 종족 교체",
+        message: `현재 '${linked.name}' 종족과 연결되어 있습니다. 기존 종족은 남기고 새 종족을 만들어 이 몬스터의 연결을 교체할까요? 능력치는 종족값으로 한 번 복사하며, 같은 레벨의 전투 능력치를 보장하지 않습니다.`,
+        confirmLabel: "새 종족으로 교체",
+        danger: true,
+      });
+    } finally { unsubscribe(); }
+    if (!confirmed) return false;
+    const project = store.getCurrent();
+    const liveIdentity = store.getProjectIdentity();
+    enemy = project.database.enemies.find((entry) => entry.id === enemyId);
+    if (switched || identity.kind !== liveIdentity.kind || identity.id !== liveIdentity.id
+      || !enemy || enemy.speciesId !== storedId || monsterSpeciesForEnemy(project, enemy)?.id !== linked.id) {
+      toast("몬스터 또는 종족 연결이 변경되어 생성하지 않았습니다. 현재 연결을 확인하고 다시 시도하세요.", "error");
+      return false;
+    }
+  }
 
+  const source = enemy;
   const id = genId("species");
-  recordProjectSnapshot();
+  recordProjectSnapshot("몬스터에서 종족 생성 및 연결");
   store.update(
     (project) => {
       project.database.monsterSpecies ??= [];
       project.database.monsterSpecies.push(
         normalizeMonsterSpeciesRecord({
           id,
-          name: enemy.name,
+          name: source.name,
           graphic: {
-            monsterResourceId: enemy.monsterResourceId,
-            graphicHue: enemy.graphicHue,
-            transparent: enemy.transparent,
-            flying: enemy.flying,
+            monsterResourceId: source.monsterResourceId,
+            graphicHue: source.graphicHue,
+            transparent: source.transparent,
+            flying: source.flying,
           },
-          baseStats: { ...enemy.stats },
+          baseStats: { ...source.stats },
           types: [],
         })
       );
       const target = project.database.enemies.find((entry) => entry.id === enemyId);
       if (target) target.speciesId = id;
     },
-    { scope: "database", collection: "monsterSpecies" }
+    { scope: "database", collection: "monsterSpecies", label: "몬스터에서 종족 생성 및 연결" }
   );
 
   setSelectedMonsterSpeciesId(id);
   if (!panelRoot) {
-    toast(`종족 탭에서 ${id}를 선택하세요`, "ok");
-    return;
+    toast(`포획·성장 종족 탭에서 ${id}를 선택하세요`, "ok");
+    return true;
   }
   switchDatabaseActiveTab("monsterSpecies", panelRoot);
+  return true;
 }
 
 function databasePanelRootFrom(node: HTMLElement | null): HTMLElement | null {
@@ -574,10 +616,9 @@ function databasePanelRootFrom(node: HTMLElement | null): HTMLElement | null {
 }
 
 function copySpeciesGraphicToEnemy(record: EnemyRecord): void {
-  const enemy = currentEnemy(record);
-  const speciesId = enemy.speciesId;
-  if (!speciesId) return;
-  const species = store.getCurrent().database.monsterSpecies?.find((entry) => entry.id === speciesId);
+  const project = store.getCurrent();
+  const enemy = project.database.enemies.find((entry) => entry.id === record.id);
+  const species = monsterSpeciesForEnemy(project, enemy);
   if (!species) return;
   const graphic = species.graphic;
   updateDatabaseRecord("enemies", record.id, {
