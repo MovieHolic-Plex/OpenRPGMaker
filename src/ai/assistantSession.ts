@@ -1,5 +1,6 @@
 import { missingAcceptance, type AcceptanceSnapshot, type AcceptancePromise } from "./assistantAcceptance";
-import { AssistantAcceptanceLedger, type AcceptanceImageReceipt } from "./assistantAcceptanceLedger";
+import { AssistantAcceptanceLedger } from "./assistantAcceptanceLedger";
+import { AssistantImageEvidence, coveredByImages, type AcceptanceImageReceipt } from "./assistantImageEvidence";
 import { ACCEPTANCE_SCHEMA, ACCEPTANCE_TOOLS } from "./assistantAcceptanceTools";
 import { adventureToolNames, adventureCompletionProblems, ADVENTURE_AUTHORING_GUIDE, type AdventureRequirements } from "./adventureCompletion";
 // ai/assistantSession.ts
@@ -882,7 +883,7 @@ export class AssistantSession {
   private currentTurnInstruction = "";
   private adventureRequirements: AdventureRequirements | undefined;
   private adventureRepairAttempts = 0;
-  private readonly adventureInspectedMaps = new Map<string, Set<number>>();
+  private readonly imageEvidence = new AssistantImageEvidence();
   private readonly adventureIconRecords = new Map<string, { collection: "items" | "equipment"; id: string }>();
   /** 이번 턴의 의도 선언. 턴 시작에 한 번 정해지고 라우팅(되묻기·플래너·툴 노출·대상 맵)이 이것만 읽는다. */
   private turnIntent: IntentDeclaration | null = null;
@@ -959,6 +960,7 @@ export class AssistantSession {
   /** 어려운 요청용 다층 To-do — 턴을 넘나들며 유지. */
   private workPlan: WorkPlan | null = null;
   private acceptance: AssistantAcceptanceLedger | null = null;
+  private acceptanceRequestBaseline: Project;
   private acceptanceAppliedProject: Project | null = null;
   private acceptanceRepairAttempts = 0;
   private acceptanceSequence = 0;
@@ -1034,6 +1036,7 @@ export class AssistantSession {
     this.declareIntent = options.declareIntent ?? null;
     this.baselineProject = structuredClone(project);
     this.ctx = { project: cloneDetachedDraft(project) };
+    this.acceptanceRequestBaseline = structuredClone(project);
     // 토큰 보정: 명시 budgetChars가 없으면 실측 usage 관측(localStorage — 없으면 빈 목록)으로
     // 문자 예산을 재척도한다. 관측이 없으면 DEFAULT_BUDGET_CHARS 그대로(현행 동작).
     this.appliedBudgetChars = this.contextOptions.budgetChars
@@ -1193,12 +1196,14 @@ export class AssistantSession {
 
   /** Applied-state refresh for store changes/undo, including after completion. */
   refreshAcceptance(project: Project, onEvent?: (event: SessionEvent) => void): void {
+    this.imageEvidence.current(project);
     if (!this.acceptance) return;
     this.acceptanceAppliedProject = structuredClone(project);
     this.publishAcceptance(onEvent);
   }
 
   private publishAcceptance(onEvent?: (event: SessionEvent) => void): void {
+    this.imageEvidence.current(this.ctx.project);
     if (!this.acceptance || !this.acceptanceAppliedProject) return;
     const snapshot = this.acceptance.evaluate(this.acceptanceAppliedProject,
       this.turnProposals.size > 0 ? this.ctx.project : this.acceptanceAppliedProject);
@@ -1223,10 +1228,10 @@ export class AssistantSession {
     if (!promises && (this.acceptance || !this.spatialAcceptanceRequired())) return;
     const goal = this.acceptance?.goal ?? this.workPlan?.goal ?? this.currentTurnInstruction;
     if (!this.acceptance) {
-      this.acceptance = new AssistantAcceptanceLedger(`acceptance-${++this.acceptanceSequence}`, goal, this.baselineProject);
+      this.acceptance = new AssistantAcceptanceLedger(`acceptance-${++this.acceptanceSequence}`, goal, this.acceptanceRequestBaseline, this.imageEvidence);
       this.acceptanceAppliedProject = structuredClone(this.baselineProject);
     }
-    this.acceptance.adopt(promises ?? missingAcceptance(goal));
+    this.acceptance.adopt(promises ?? missingAcceptance(goal), this.acceptanceRequestBaseline);
     this.publishAcceptance(onEvent);
   }
 
@@ -1636,9 +1641,14 @@ export class AssistantSession {
     // 질문 모드는 사용자가 직접 고른 사실이라 선언의 create/modify 를 덮어쓴다 — 안 그러면 플래너·쓰기 기대가 문장 판정으로 돈다.
     const intent = this.applyComposerModeToIntent(await this.declareTurnIntent(instruction, onEvent, signal));
     this.turnIntent = intent;
+    if (!this.turnIsDriverContinue && intent.source !== "continuation") {
+      // Capture before planning/tools; milestone rebases and late adoption must not move it.
+      this.acceptanceRequestBaseline = structuredClone(this.baselineProject);
+    }
     if (!this.turnIsDriverContinue) {
       this.acceptanceRepairAttempts = 0;
       if (intent.resetsContext && intent.source !== "continuation") {
+        this.imageEvidence.clear();
         this.acceptance = null;
         this.acceptanceAppliedProject = null;
         onEvent({ type: "acceptance", snapshot: null });
@@ -1650,7 +1660,6 @@ export class AssistantSession {
     if (!this.turnIsDriverContinue && intent.source !== "continuation") {
       this.adventureRequirements = intent.adventure;
       this.adventureRepairAttempts = 0;
-      this.adventureInspectedMaps.clear();
       this.adventureIconRecords.clear();
     }
     if (!this.turnIsDriverContinue && intent.source !== "continuation") {
@@ -2305,18 +2314,14 @@ export class AssistantSession {
       const item = project.database[collection].find(i => i.id === id);
       if (item && !item.iconResourceId) problems.push(`${collection} ${id}에 그림이 없습니다. list_resources로 그림을 조회하고 ${collection === "equipment" ? "upsert_equipment" : "upsert_item"}의 iconResourceId를 지정하세요.`);
     }
-    const unseen = Object.values(project.maps).filter(m => (this.adventureInspectedMaps.get(m.id)?.size ?? 0) < m.width * m.height);
-    for (const map of unseen) {
-      const coverage = this.adventureInspectedMaps.get(map.id);
+    const receipts = this.imageEvidence.current(project);
+    for (const map of Object.values(project.maps)) {
       const regions: string[] = [];
       for (let y = 0; y < map.height; y += 24) for (let x = 0; x < map.width; x += 24) {
         const w = Math.min(24, map.width - x), h = Math.min(24, map.height - y);
-        let missing = false;
-        for (let dy = 0; dy < h && !missing; dy++) for (let dx = 0; dx < w; dx++) {
-          if (!coverage?.has((y + dy) * map.width + x + dx)) { missing = true; break; }
-        }
-        if (missing) regions.push(JSON.stringify({ mapId: map.id, x, y, w, h }));
+        if (!coveredByImages(receipts, map, { x, y, w, h })) regions.push(JSON.stringify({ mapId: map.id, x, y, w, h }));
       }
+      if (regions.length === 0) continue;
       problems.push(`마지막 변경 후 맵 ${map.id}의 시각 확인 누락 영역입니다. 각각 show_map_region으로 조회하세요: ${regions.join("; ")}`);
     }
     return problems;
@@ -2324,8 +2329,8 @@ export class AssistantSession {
 
   private recordSuccessfulTool(name: string): void {
     this.syncSuccessfulToolsToCurrentWorkItem();
+    this.imageEvidence.current(this.ctx.project);
     if (getTool(name)?.mode === "write") {
-      this.adventureInspectedMaps.clear();
       this.verificationEvidence.invalidateAfterWrite();
       this.workItemVerificationEvidence.invalidateAfterWrite();
       for (const previous of this.turnSuccessfulTools) {
@@ -2346,17 +2351,6 @@ export class AssistantSession {
   /** Keep transport/execution ok intact; only actual passing checks satisfy successTools. */
   private recordToolResult(name: string, args: Record<string, unknown>, result: ToolResult, countAsSuccess = true): void {
     this.syncSuccessfulToolsToCurrentWorkItem();
-    if (name === "show_map_region" && result.ok && result.data && typeof result.data === "object") {
-      const region = result.data as { mapId?: string; x?: number; y?: number; w?: number; h?: number };
-      const map = region.mapId ? this.getProposedProject().maps[region.mapId] : undefined;
-      if (map && [region.x, region.y, region.w, region.h].every(v => typeof v === "number" && Number.isInteger(v))) {
-        const cells = this.adventureInspectedMaps.get(map.id) ?? new Set<number>();
-        for (let y = Math.max(0, region.y!); y < Math.min(map.height, region.y! + region.h!); y++) {
-          for (let x = Math.max(0, region.x!); x < Math.min(map.width, region.x! + region.w!); x++) cells.add(y * map.width + x);
-        }
-        this.adventureInspectedMaps.set(map.id, cells);
-      }
-    }
     if (result.ok) for (const [tool, field, collection] of [["upsert_item", "item", "items"], ["upsert_equipment", "equipment", "equipment"]] as const) {
       const record = args[field] as { id?: unknown } | undefined;
       if (name === tool && record && typeof record.id === "string") this.adventureIconRecords.set(`${collection}/${record.id}`, { collection, id: record.id });
@@ -3942,7 +3936,7 @@ export class AssistantSession {
           // 비전(BUG C): '보여줘' 계열 툴이면 이미지를 렌더해 모아둔다. 렌더 실패는 무시(텍스트로 진행).
           if (this.renderImages && VISION_TOOLS.has(name) && toolResult.ok && toolResult.data !== undefined) {
             try {
-              const receipt = name === "show_map_region" ? this.acceptance?.captureImage(this.ctx.project, toolResult.data) : null;
+              const receipt = name === "show_map_region" ? this.imageEvidence.capture(this.ctx.project, toolResult.data) : null;
               const images = await this.renderImages(this.ctx.project, name, toolResult.data);
               roundImages.push(...images);
               if (images.length > 0 && receipt) acceptanceImages.push(receipt);
@@ -3978,7 +3972,7 @@ export class AssistantSession {
           parts.push({ type: "image_url", image_url: { url: image.dataUrl } });
         }
         this.messages.push({ role: "user", content: parts });
-        this.acceptance?.deliverImages(acceptanceImages);
+        this.imageEvidence.deliver(acceptanceImages);
       }
 
       if (orchestrated && startsWriteThisRound && !executionStarted) {

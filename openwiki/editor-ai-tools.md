@@ -232,7 +232,11 @@ Soft-confirm vocabulary, region task routing, AI visual polish, dock modes, tool
 
 ## Project-wide quality evaluation
 
-`evaluate_game_quality` is read-only. It combines project, world, and tileset-palette lint with structural coverage across legacy event commands, event pages, common events, troop battle pages, and every nested command branch. It also reports quest/battle/ending/content counts, story-flag reads and writes, and optional caller-supplied walkthrough results. Only objective `projectLint` errors block its verdict; world/palette findings and walkthrough failures remain explicit evidence. It never emits a numeric score and cannot measure fun, originality, emotional impact, pacing quality, or preferred difficulty.
+`evaluate_game_quality` is read-only. It combines project lint and tileset-palette findings with structural coverage across legacy event commands, event pages, common events, troop battle pages, and every nested command branch. It also reports quest/battle/ending/content counts, story-flag reads and writes, and optional caller-supplied walkthrough results. Objective project errors, unauthored secondary maps, and uninvoked ending definitions block its verdict; palette findings and caller-supplied walkthrough results remain explicit evidence. It never emits a numeric score and cannot measure fun, originality, emotional impact, pacing quality, or preferred difficulty.
+
+**Ending invocation (2026-09-06):** `define_ending` stores a definition, not an automatic switch listener. An event must execute `triggerEnding`: a named `endingId` selects that definition directly, while an omitted id selects the highest-priority definition whose conditions match. Completion assessment reports `ending-uninvoked` errors and `coverage.endings.uninvokedIds` for definitions without a named or condition-selected invocation. It traverses nested branches/common events/troop pages but ignores obsolete root commands when event pages exist. Presence is only a structural lower bound: it does not establish branch reachability, satisfiable conditions, epilogue presentation or actual completion. Games without ending definitions (including native `ending` commands and open-ended games) acquire no new requirement.
+
+This check lives in `qualityEvaluation.ts`, not `projectLint` or the write gate: defining an ending before wiring it remains valid. Never make `setSwitch` run endings automatically. The existing `define_ending` guidance calls for an explicit terminal command and, for item-consuming exits, a higher-priority completed-switch page that prevents same-run relock/repeated consumption. Regression: `test/aiEndingCompletionRegression.test.ts` exercises real tools, serialization, page selection, interpreter execution and the machine verdict consumer; historical broken content still does not end. Parent-owned real AI generation and exported-player walking remain required for game-completion proof.
 
 **필수 검증 완료 근거 (2026-09-05):** `ToolResult.ok`는 검사가 실행됐다는 뜻이다. `AssistantSession`은 `parseToolVerdict`를 재사용해 `run_lint`의 `data.counts.errors`/오류 issues, `check_reachability`의 `data.reachable:false`, 퀘스트·워크스루·장면 검사의 `data.ok:false`, 품질 평가의 `data.verdict.blocked`를 판정한 뒤에만 `successTools`에 기록한다. 오류 상세가 잘려도 lint 오류 개수는 유효하다. 경고만 있는 lint는 통과한다. 실패 재실행은 이전 성공을 제거하고, 프로젝트 쓰기 성공은 기존 검증 근거를 모두 stale로 만든다. 실행되지 않은 잘못된 인자/전송 실패는 같은 도구의 고친 호출로 복구할 수 있지만 실제 음성 판정은 해당 대상을 재검사해야 한다. 같은 항목의 이어가기에서는 근거를 유지하되, 도구명+인자별로 관리하므로 다른 맵/시나리오의 성공으로 실패를 덮을 수 없다. 다음 항목의 완료에는 그 항목의 검사만 필요하며, 이전 항목의 실패/stale 기록은 목표 전체 최종 보고에 보존한다. `src/ai/toolVerificationEvidence.ts`가 이 수명을 소유한다. 최종 응답은 남은 실패와 변경 후 재검증 필요를 표시한다. 레이어 자동 검증은 종전처럼 **1회 자문**이며 선재 오류로 런을 중단하거나 필수 도구 성공을 대신 적립하지 않는다. 자동 자문 통과만 있었던 검사는 후속 쓰기로 재검증 의무가 생기지 않는다(첫 레이어 quality 통과 → 다음 레이어 쓰기 → 마지막 레이어 lint만 재실행하는 정상 경로). 자문에서 발견한 실제 실패는 보고하되 동일 대상의 재통과로 해소하며, 모델이 명시 호출한 검사의 stale 경고는 자동 통과 이력이 있어도 보존한다. Tests: `test/agentVerification.test.ts`, `test/assistantVerificationEvidence.test.ts`.
 
@@ -330,6 +334,16 @@ author_village와 buildVillageDomain이 DB 설계서의 고정값·집 수 범�
 명령은 trigger와 같은 객체의 `commands`에 둔다. 검사는 입력 patch를 병합·정규화하기 전에 수행한다.
 실제 JRPG 재실행에서 잘못 중첩된 transfer를 도구가 무시하고 빈 commands로 저장해 던전 귀환이 사라졌기 때문이다.
 `test/toolsMapManagement.test.ts`는 두 잘못된 위치를 모두 거부하고 기존 귀환 이벤트가 그대로 남는지 검증한다.
+
+2026-09-06 R5: `schemaShapes.ts`의 실행 명령 enum은 `COMMAND_KINDS`만 노출한다.
+아이템 차감은 `{kind:"changeItem",itemId,op:"-=",amount:1}`, 스위치 대입은
+`{kind:"setSwitch",switchId,value:true}`, 아이템 조건은 `{kind:"item",itemId,present:true}`,
+엔딩 호출은 `{kind:"triggerEnding",endingId}`(ID 생략 시 조건 선택)다. `op`/`endingId`/`present`를
+선언하며 `find_tools`도 같은 등록 스키마를 반환한다. 다형 `value`는 거짓 `type:"string"` 대신
+타입 제약 없이 필드를 노출하고 kind별 boolean/number/"toggle"/변수 피연산자를 설명한다.
+이는 provider의 union type 및 oneOf/anyOf 금지를 유지하기 위한 경계 표현이며, 실제 타입·필수 값은
+기존 컴파일러/shape 검증기가 검사한다. `test/aiCommandSchemaContract.test.ts`는 컴파일·직렬화 보존,
+잘못된 명령/누락 조건 값의 원자적 거부, 참조 조회 선행을 검증한다. 실모델 복구·플레이 증명은 별도다.
 
 ## 보물상자는 노출된 수면을 거부한다 (2026-09-05)
 

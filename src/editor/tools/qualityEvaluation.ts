@@ -38,7 +38,7 @@ function emptyMapIssues(project: Project): LintIssue[] {
 
 const evaluateGameQuality: ToolDefinition = {
   name: "evaluate_game_quality",
-  description: "프로젝트 전체의 객관적 무결성과 콘텐츠/분기/퀘스트/전투/엔딩/스토리 플래그 커버리지를 읽기 전용으로 평가한다. 주관적 점수는 만들지 않는다.",
+  description: "프로젝트 전체의 객관적 무결성과 콘텐츠/분기/퀘스트/전투/엔딩/스토리 플래그 커버리지를 읽기 전용으로 평가한다. 엔딩 호출 누락은 차단한다. 정적 하한 검사이며 실제 완주 증거가 아니고, 주관적 점수는 만들지 않는다.",
   mode: "read",
   parameters: {
     type: "object",
@@ -63,11 +63,33 @@ const evaluateGameQuality: ToolDefinition = {
     };
     const ownerSeen = new Set<string>();
     const kinds: Record<string, number> = {};
-    visitProjectCommands(project, ({ command, owner, branch }) => {
+    const namedEndingIds = new Set<string>();
+    let hasConditionSelectedEnding = false;
+    visitProjectCommands(project, ({ command, owner, branch, location }) => {
       kinds[command.kind] = (kinds[command.kind] ?? 0) + 1;
       ownerSeen.add(owner);
       if (branch) nestedBranches[branch] += 1;
+      if (command.kind !== "triggerEnding") return;
+      // Runtime pages replace legacy root commands; stale roots are not wiring.
+      if (location.kind === "legacyEvent" && project.maps[location.mapId].events.some(
+        event => event.id === location.eventId && (event.pages?.length ?? 0) > 0,
+      )) return;
+      if (command.endingId) namedEndingIds.add(command.endingId);
+      else hasConditionSelectedEnding = true;
     });
+    // Completion-only: intermediate define_ending writes must remain valid.
+    // Presence is a lower bound, not proof that conditions/branches are reachable.
+    const uninvokedEndings = (project.endings ?? []).filter(ending =>
+      !hasConditionSelectedEnding && !namedEndingIds.has(ending.id),
+    );
+    objectiveIssues.push(...uninvokedEndings.map(ending => ({
+      severity: "error" as const,
+      code: "ending-uninvoked",
+      message: `엔딩 '${ending.name}'(${ending.id})을 실행하는 triggerEnding 명령이 없습니다. ` +
+        `define_ending과 setSwitch는 엔딩을 실행하지 않습니다. 도달 가능한 이벤트 commands에 ` +
+        JSON.stringify({ kind: "triggerEnding", endingId: ending.id }) +
+        ' 또는 조건 선택용 {"kind":"triggerEnding"}을 연결한 뒤 실제 완주를 검증하세요.',
+    })));
     for (const owner of ownerSeen) commandOwners[owner as CommandOwnerKind] = 1;
     const usage = buildStoryFlagUsageIndex(project);
     const objectiveErrorCount = objectiveIssues.filter((issue) => issue.severity === "error").length;
@@ -86,7 +108,7 @@ const evaluateGameQuality: ToolDefinition = {
         branches: { choices: kinds.choices ?? 0, forks: kinds.fork ?? 0, loops: kinds.loop ?? 0 },
         quests: { defined: project.quests?.length ?? 0 },
         battles: { commands: kinds.battleProcessing ?? 0, troops: project.database.troops.length },
-        endings: { defined: project.endings?.length ?? 0, triggers: kinds.triggerEnding ?? 0 },
+        endings: { defined: project.endings?.length ?? 0, triggers: kinds.triggerEnding ?? 0, uninvokedIds: uninvokedEndings.map(ending => ending.id) },
       },
       storyFlags: {
         declared: (project.storyFlags ?? []).filter((flag) => flag.retired !== true).length,
