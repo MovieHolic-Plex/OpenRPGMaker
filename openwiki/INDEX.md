@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **48쪽 / 1674KB / 약 477,336 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **48쪽 / 1690KB / 약 481,349 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -20,9 +20,9 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-database.md` | 234KB | 54KB ⚠상한 초과 — 절을 더 쪼개라 | 1138 | ~67,421 |
 | `openwiki/editor-event-authoring.md` | 119KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 564 | ~34,648 |
 | `openwiki/editor-pre-edit-routing.md` | 73KB | 55KB ⚠상한 초과 — 절을 더 쪼개라 | 220 | ~20,713 |
-| `openwiki/runtime-battle.md` | 119KB | 31KB | 362 | ~34,124 |
-| `openwiki/runtime-project-schema.md` | 64KB | 42KB | 242 | ~17,503 |
-| `openwiki/runtime-sessions.md` | 60KB | 45KB | 168 | ~16,122 |
+| `openwiki/runtime-battle.md` | 123KB | 31KB | 423 | ~35,049 |
+| `openwiki/runtime-project-schema.md` | 68KB | 42KB | 259 | ~18,365 |
+| `openwiki/runtime-sessions.md` | 65KB | 45KB | 235 | ~17,372 |
 | `openwiki/testing.md` | 115KB | 45KB | 792 | ~32,460 |
 
 ## 한국어 산문이 깨진 페이지
@@ -67,7 +67,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/night-monster.md` | 1 | `verify-shots/runtime-qa/night-monster/SUMMARY.md` |
 | `openwiki/runtime-battle.md` | 4 | `hero-03-battle-idle.png`, `raw.png`, `reference.png`, `starter/hires/hero-0N-battle.png` |
 | `openwiki/runtime-pre-edit-routing.md` | 1 | `verify-shots/runtime-qa/emote/SUMMARY.md` |
-| `openwiki/runtime-project-schema.md` | 2 | `.json`, `project.json` |
+| `openwiki/runtime-project-schema.md` | 3 | `.json`, `.png`, `project.json` |
 | `openwiki/runtime-sessions.md` | 1 | `output/evidence/stardew/stardew-supabase.json` |
 | `openwiki/se-catalog.md` | 8 | `.mjs`, `audio-features.json`, `audition.html`, `cross-check.json`, `dist/se-staging/audition.html`, `inventory.json`, `labels.json`, `placed.json` |
 | `openwiki/testing.md` | 12 | `../dialogue.css`, `browser-play-start.png`, `browser-title.png`, `event-editor.command-preview/07-identifiable-previews.css`, `output/evidence/concept-expansion/README.md`, `output/evidence/concept-v2/validation.json`, `output/evidence/horror-mystery-prototype/browser-qa.json`, `supabase-proof-first-save.json`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/dialogue-nameplate-clears-body.spec.ts`, `verify-shots/runtime-qa/esc-menu/SUMMARY.md`, `verify-shots/runtime-qa/status-menu-adversarial/SUMMARY.md` |
@@ -365,15 +365,15 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L30` Show Picture preview opacity unit (2026-08-29)
 - `L35` 조명 백분율 입력 복구 (2026-09-05)
 
-### `openwiki/editor-event-commands.md` — 44KB · 117줄 · ~11,906 토큰 · 깨진 줄 6
+### `openwiki/editor-event-commands.md` — 45KB · 119줄 · ~12,246 토큰 · 깨진 줄 6
 
 - `L7` 상점: 진열 상품과 상품 상세 중심 편집 (2026-09-05)
 - `L18` Roguelike run control (2026-08-24)
 - `L58` 얼굴 상자(faceset-crop-box) 페인트 계약 (2026-08-28)
 - `L89` Staged edit, history, and nested drag invariants (2026-07-30)
 - `L96` Command picker, validation, and preview trust (2026-07-30)
-- `L103` 회상 스틸과 AI 그림 (2026-09-03)
-- `L114` Recovered native emote command (2026-09-05)
+- `L105` 회상 스틸과 AI 그림 (2026-09-03)
+- `L116` Recovered native emote command (2026-09-05)
 
 ### `openwiki/editor-genre-packs.md` — 7KB · 42줄 · ~1,837 토큰
 
@@ -567,33 +567,37 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L15` Quick routing
 - `L24` For AI agents
 
-### `openwiki/runtime-battle.md` — 119KB · 362줄 · ~34,124 토큰 · 통째읽기 잘림
+### `openwiki/runtime-battle.md` — 123KB · 423줄 · ~35,049 토큰 · 통째읽기 잘림
 
-- `L3` 전투 명령 custom CSS (2026-09-05)
-- `L7` 빈 페이지와 실행 빈도 계약 (2026-09-05)
-  - `L24` 체공 배율 채널과 착지 눌림 (2026-08-30, PR #297)
-- `L42` 지원 전투 시스템은 둘뿐이다 (2026-08-28)
-- `L54` Roguelike run boundary (2026-08-24)
-- `L59` Battle rules & runtime
-  - `L74` 전투 화면 표현 · 전환 · 타임라인 · 연출 타이밍
-  - `L99` 커맨드/대상 메뉴 기하와 글자 가시성 계약
-  - `L115` 스킨 CSS 캐스케이드와 저작 가능 스킨
-  - `L119` Gen 1(포켓몬식) 규칙 모델
-  - `L127` 플레이 모드 런타임 (이 절에 섞여 있는 비전투 항목)
-  - `L146` 전투 흐름 · 몬스터 수집 · 트룹 이벤트 · 보상
-- `L183` Starter hero battle sheets (2026-08-29)
-- `L204` Per-actor back battlers (2026-08-29)
-- `L222` Battle input and visibility P0 contract (2026-07-30)
-- `L233` 배틀러 idle 애니메이션 (2026-08-30)
-- `L359` 필드 아이템 상태 부여 복구 (2026-09-05)
+- `L3` Event friendship and live level changes (2026-09-06)
+- `L21` Battle-event continuation and cancellation (2026-09-06)
+- `L64` 전투 명령 custom CSS (2026-09-05)
+- `L68` 빈 페이지와 실행 빈도 계약 (2026-09-05)
+  - `L85` 체공 배율 채널과 착지 눌림 (2026-08-30, PR #297)
+- `L103` 지원 전투 시스템은 둘뿐이다 (2026-08-28)
+- `L115` Roguelike run boundary (2026-08-24)
+- `L120` Battle rules & runtime
+  - `L135` 전투 화면 표현 · 전환 · 타임라인 · 연출 타이밍
+  - `L160` 커맨드/대상 메뉴 기하와 글자 가시성 계약
+  - `L176` 스킨 CSS 캐스케이드와 저작 가능 스킨
+  - `L180` Gen 1(포켓몬식) 규칙 모델
+  - `L188` 플레이 모드 런타임 (이 절에 섞여 있는 비전투 항목)
+  - `L207` 전투 흐름 · 몬스터 수집 · 트룹 이벤트 · 보상
+- `L244` Starter hero battle sheets (2026-08-29)
+- `L265` Per-actor back battlers (2026-08-29)
+- `L283` Battle input and visibility P0 contract (2026-07-30)
+- `L294` 배틀러 idle 애니메이션 (2026-08-30)
+- `L420` 필드 아이템 상태 부여 복구 (2026-09-05)
 
-### `openwiki/runtime-m2-flow-controls.md` — 17KB · 64줄 · ~4,431 토큰
+### `openwiki/runtime-m2-flow-controls.md` — 19KB · 78줄 · ~5,067 토큰
 
-- `L5` M2 Runtime Flow Controls
-- `L35` Storage chest authoring
-- `L41` Page 3 location/vehicle compatibility (2026-07-30)
-- `L45` 저장된 M2 명령 실행 연결 복구 (2026-09-05)
-  - `L58` 이동 중 경로 재지정 — 2026-09-05 브라우저 적대적 QA
+- `L5` Map-effect repair boundary (2026-09-06)
+- `L12` Sound Layer audio controls (2026-09-06)
+- `L19` M2 Runtime Flow Controls
+- `L49` Storage chest authoring
+- `L55` Page 3 location/vehicle compatibility (2026-07-30)
+- `L59` 저장된 M2 명령 실행 연결 복구 (2026-09-05)
+  - `L72` 이동 중 경로 재지정 — 2026-09-05 브라우저 적대적 QA
 
 ### `openwiki/runtime-pre-edit-routing.md` — 31KB · 178줄 · ~8,954 토큰
 
@@ -602,43 +606,45 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L164` 가구 밀기 애니메이션 (2026-09-05)
 - `L173` Recovered head emotes (2026-09-05)
 
-### `openwiki/runtime-project-schema.md` — 64KB · 242줄 · ~17,503 토큰 · 통째읽기 잘림
+### `openwiki/runtime-project-schema.md` — 68KB · 259줄 · ~18,365 토큰 · 통째읽기 잘림
 
-- `L3` New-project save/reload verification (2026-09-05)
-- `L7` Project-authored equipment slots (2026-09-05)
-- `L15` 전투 명령 CSS (2026-09-05)
-- `L19` 기본 카탈로그 삭제 보존 (2026-09-05)
-- `L23` 전투 페이지 중복 ID 복구와 슬롯 참조 (2026-09-05)
-- `L36` 통행 컴포넌트 색인의 계약 (2026-08-30, PR #286)
-- `L44` 세계 법칙의 명시적 부재 (2026-09-05)
-- `L48` Project schema & persistence
-- `L115` Variable arithmetic & loop runtime (2026-08-07)
-- `L119` Canonical event-draft projection (2026-07-30)
-- `L125` P2 general buildings and home decorations (2026-08-25)
-- `L132` 이벤트 초안 보관함: 명시적 저장은 자기가 대체한 디바운스를 취소한다 (2026-08-29)
-- `L150` Boot normalizers must not create dangling references (2026-08-30)
-- `L176` `.oprn` 은 단일 파일 게임 컨테이너다 — 편집기와 플레이어 양쪽이 읽는다 (2026-08-30)
-- `L210` 성장 트리 선택 확장 (2026-09-05)
-- `L216` 마을 설계서 (2026-09-05)
-- `L222` 공포 게임 제작 기능 (2026-09-05)
-  - `L226` 저장된 대사 별칭과 맵 오버레이 (2026-09-05)
-- `L230` NPC 표시 이름 (2026-09-05)
-- `L235` 연결 실내 도면의 영속성 (2026-09-05)
-- `L239` 개념 장소 형상 (2026-09-05)
+- `L3` Opening and game-over cinematic settings (2026-09-06)
+- `L20` New-project save/reload verification (2026-09-05)
+- `L24` Project-authored equipment slots (2026-09-05)
+- `L32` 전투 명령 CSS (2026-09-05)
+- `L36` 기본 카탈로그 삭제 보존 (2026-09-05)
+- `L40` 전투 페이지 중복 ID 복구와 슬롯 참조 (2026-09-05)
+- `L53` 통행 컴포넌트 색인의 계약 (2026-08-30, PR #286)
+- `L61` 세계 법칙의 명시적 부재 (2026-09-05)
+- `L65` Project schema & persistence
+- `L132` Variable arithmetic & loop runtime (2026-08-07)
+- `L136` Canonical event-draft projection (2026-07-30)
+- `L142` P2 general buildings and home decorations (2026-08-25)
+- `L149` 이벤트 초안 보관함: 명시적 저장은 자기가 대체한 디바운스를 취소한다 (2026-08-29)
+- `L167` Boot normalizers must not create dangling references (2026-08-30)
+- `L193` `.oprn` 은 단일 파일 게임 컨테이너다 — 편집기와 플레이어 양쪽이 읽는다 (2026-08-30)
+- `L227` 성장 트리 선택 확장 (2026-09-05)
+- `L233` 마을 설계서 (2026-09-05)
+- `L239` 공포 게임 제작 기능 (2026-09-05)
+  - `L243` 저장된 대사 별칭과 맵 오버레이 (2026-09-05)
+- `L247` NPC 표시 이름 (2026-09-05)
+- `L252` 연결 실내 도면의 영속성 (2026-09-05)
+- `L256` 개념 장소 형상 (2026-09-05)
 
-### `openwiki/runtime-sessions.md` — 60KB · 168줄 · ~16,122 토큰 · 통째읽기 잘림
+### `openwiki/runtime-sessions.md` — 65KB · 235줄 · ~17,372 토큰 · 통째읽기 잘림
 
-- `L1` Esc 메뉴 작업 프레임 (2026-09-05)
-- `L31` 아이템 종류 전환과 실행 효과 (2026-09-05)
-- `L42` Roguelike run kernel and field rooms (Phase 0–3, 2026-08-24)
-- `L52` P1 daily-weather transition authority (2026-08-25)
-- `L61` Session state & life-sim
-- `L134` Editorial title screen (2026-08-26)
-- `L140` playerTouch trigger contract (2026-08-20)
-- `L144` Selected-event runtime sandbox (2026-07-30)
-- `L150` P2 spatial runtime and saves (2026-08-25)
-- `L158` 공포 게임 제작 기능 (2026-09-05)
-  - `L162` 메뉴 PR 통합 검증 (2026-09-05)
+- `L1` Opening and game-over cinematics (2026-09-06)
+- `L68` Esc 메뉴 작업 프레임 (2026-09-05)
+- `L98` 아이템 종류 전환과 실행 효과 (2026-09-05)
+- `L109` Roguelike run kernel and field rooms (Phase 0–3, 2026-08-24)
+- `L119` P1 daily-weather transition authority (2026-08-25)
+- `L128` Session state & life-sim
+- `L201` Editorial title screen (2026-08-26)
+- `L207` playerTouch trigger contract (2026-08-20)
+- `L211` Selected-event runtime sandbox (2026-07-30)
+- `L217` P2 spatial runtime and saves (2026-08-25)
+- `L225` 공포 게임 제작 기능 (2026-09-05)
+  - `L229` 메뉴 PR 통합 검증 (2026-09-05)
 
 ### `openwiki/se-catalog.md` — 13KB · 228줄 · ~3,423 토큰
 

@@ -109,3 +109,66 @@ node scripts/qa-event-command-repairs.mjs --scenario editor-support --phase gree
 ```
 
 Evidence: `output/evidence/event-command-repairs/editor/{red,green,mutation,types}/`.
+
+## Final integration and baseline comparison
+
+The supervisor reran all physical scenarios on the integrated production code:
+map effects, sound layers, battle state and all 20 battle-flow cases passed.
+Their `surface/` and `battle-flow-final/` reports contain closed browser/server
+receipts; every battle context has zero remaining pages and observers.
+
+Both complete gates used the same environment and eight workers:
+
+```bash
+VITEST_MAX_THREADS=8 VITEST_MIN_THREADS=1 \
+VITEST_MAX_FORKS=8 VITEST_MIN_FORKS=1 npm run gates
+```
+
+| Complete run | Tests | Passed | Failed | Existing skipped | Test files |
+|---|---:|---:|---:|---:|---:|
+| Clean base `d1d5e7e9` | 14,622 | 14,440 | 167 | 15 | 1,609 |
+| Integrated `df8e3734` | 14,912 | 14,739 | 158 | 15 | 1,624 |
+
+Both commands exited 1: this is **not** a claim of a universally green repository.
+Comparison by file and full test identity found zero newly failing assertions and
+no failures in changed/new tests. Eight resolved failures belong to the repaired
+contracts/fixtures; one unrelated interior-pipeline pass difference is not credited
+to this change. App typecheck and CSS gates passed in both runs. Full
+`npm run build` also passed app, player and standalone outputs.
+
+The portal snapshot additionally noticed the intentional removal of twelve
+obsolete support badges. Its expected badge IDs/spans/labels and six badge-sensitive
+test-ID floors were migrated surgically. Interactive control/root/class floors,
+all control signatures, comparison helpers and unrelated snapshots were preserved.
+Nine immutable pre-feature control digests now independently prevent a command
+from being removed or substituted. Omitting a real command made that new test fail;
+the production file was then restored byte-for-byte.
+
+After this test-only migration, the supervisor ran 118 portal/support tests:
+117 passed and one retained the same two pre-existing portal differences
+(Tab 3 non-badge icon markup and the NPC picker). The final nine-axis surface gate
+still exits 1 on the same six baseline assertions involving AI queue/species/NPC
+surfaces; no badge-induced floor violation remains. Those unrelated expectations
+were not silently approved or tests disabled.
+
+Initial two-worker full runs exceeded their 30-minute deadlines under shared
+machine load and are not accepted evidence. The completed eight-worker runs used
+60-minute limits. JSON LSP was unavailable because Biome is not installed; JSON
+parsing and structural-preservation checks were used without adding a dependency.
+
+Machine evidence is in `.omo/evidence/event-command-repairs/acceptance.json`.
+Detailed failure comparisons and the exact compressed baseline report are under
+`output/evidence/event-command-repairs/gates/`. The latter is gzip/base64;
+its decoded JSON SHA256 is
+`f18431881e7b30a1a31fa4f94693f04860b76695f00d0c1a54a16c11b8e5a43d`.
+Worker source archives were preserved before all four temporary implementation/
+baseline worktrees were removed without force. All owned QA/gate processes ended.
+
+### Remote integration boundary
+
+While this work ran, `origin/main` advanced from the tested base to
+`c26f7398d0e731da3204b5070b4760c9de33e710`, changing 1,294 files. A merge preview
+at `df8e3734` found conflicts in battle/audio code and the battle wiki.
+No newer-main merge or rebase was performed. The PR discloses this integration
+requirement rather than presenting the tested branch as already merged with
+the newer main.
