@@ -1,0 +1,19 @@
+{
+  "command": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "300s",
+    "node",
+    ".omo/evidence/life-full-20260906/phase3-verification/tools/player.mjs"
+  ],
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-tools-verify",
+  "head": "e0a5e8a67c48c739fc2b9e16eb48abc2ee85f854",
+  "start": "2026-09-06T13:49:04.891Z",
+  "end": "2026-09-06T13:49:04.987Z",
+  "exit": 1,
+  "signal": null,
+  "log": ".omo/evidence/life-full-20260906/phase3-verification/tools/player.log"
+}

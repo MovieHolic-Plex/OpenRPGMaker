@@ -1,0 +1,5 @@
+{"path":"src/project/toolActions.ts","diagnostics":[]}
+{"path":"src/editor/panels/databaseLifeCraftingView.ts","diagnostics":[]}
+{"path":"src/player/farming.ts","diagnostics":[]}
+{"path":"test/toolActionAuthoringParity.test.ts","diagnostics":[]}
+{"path":"test/databaseLifeCraftingView.test.ts","diagnostics":[]}
