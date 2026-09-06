@@ -59,6 +59,48 @@ for (const viewport of [{ width: 1024, height: 768 }, { width: 1440, height: 900
       await prepareAudioEditor(page);
     });
 
+    test("edits SE descriptions with matching search and AI detail", async ({ page }, info) => {
+      const openSound = async (): Promise<void> => {
+        await page.getByTestId("toolbar-resource-manager").click();
+        await page.getByTestId("resource-category-list")
+          .getByRole("option", { name: "효과음 (SE)", exact: true }).click();
+      };
+      await openSound();
+      const id = await page.locator('[data-testid="audio-resource-row"][aria-pressed="true"]')
+        .getAttribute("data-resource-id");
+      if (!id) throw new Error("No sound resource selected");
+      const description = "AUDIO_DESC_QA_20260906";
+      await page.getByTestId("audio-description-input").fill(description);
+      await storeAction(page, () => page.getByTestId("audio-description-save").click());
+      await page.getByTestId("resource-modal-close").click();
+      await openSound();
+      expect(await page.getByTestId("audio-description-input").inputValue()).toBe(description);
+      await page.getByTestId("audio-description-search").fill(description);
+      expect(await page.getByTestId("audio-resource-row").count()).toBe(1);
+      const detail = await page.evaluate(async id => {
+        const storePath = "/src/project/store.ts";
+        const toolsPath = "/src/editor/tools/index.ts";
+        const { store }: typeof import("../../src/project/store") = await import(storePath);
+        const { runTool }: typeof import("../../src/editor/tools") = await import(toolsPath);
+        return runTool({ project: store.getCurrent() }, "get_audio_resource", {
+          kind: "sound", resourceId: id,
+        });
+      }, id);
+      expect(detail).toMatchObject({
+        ok: true,
+        data: { resource: { id, description, descriptionSource: "project" } },
+      });
+      expect(await page.getByTestId("audio-description-save").evaluate(button => {
+        const pane = button.closest("aside");
+        if (!pane) throw new Error("Missing audio detail pane");
+        const bounds = button.getBoundingClientRect();
+        const parent = pane.getBoundingClientRect();
+        return bounds.top >= parent.top && bounds.bottom <= parent.bottom
+          && document.documentElement.scrollWidth <= innerWidth;
+      })).toBe(true);
+      await page.screenshot({ path: info.outputPath("se-description-parity.png") });
+    });
+
     test("edits, reopens, clears, resets and undoes through the resource manager", async ({ page }, info) => {
       // Given:
       await openMusic(page);
