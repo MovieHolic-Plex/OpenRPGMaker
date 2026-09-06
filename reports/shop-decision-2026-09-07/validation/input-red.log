@@ -1,0 +1,260 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/shopDecisionInput.test.ts
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-clear-harbor-3da2
+
+ ❯ test/shopDecisionInput.test.ts (14 tests | 13 failed) 3254ms
+   × mounted shop decision focus and comparison > cycles exact stock focus groups in both directions without trading 283ms
+     → expected 'shop-scene' to be 'shop-buy-candidate' // Object.is equality
+   × mounted shop decision focus and comparison > moves mode/category focus without committing until confirm and never buys 268ms
+     → expected 'shop-scene' to be 'shop-tab-sell' // Object.is equality
+   × mounted shop decision focus and comparison > confirms only rows/transaction buttons with "e"; ignores repeats 348ms
+     → expected 20 to be 100 // Object.is equality
+   × mounted shop decision focus and comparison > confirms only rows/transaction buttons with "z"; ignores repeats 172ms
+     → expected 20 to be 100 // Object.is equality
+   × mounted shop decision focus and comparison > confirms only rows/transaction buttons with "Enter"; ignores repeats 304ms
+     → expected 20 to be 100 // Object.is equality
+   × mounted shop decision focus and comparison > confirms only rows/transaction buttons with " "; ignores repeats 356ms
+     → expected 20 to be 100 // Object.is equality
+   × mounted shop decision focus and comparison > moves actual row focus, preserves horizontal quantity and updates balance 336ms
+     → expected undefined to be '60' // Object.is equality
+   × mounted shop decision focus and comparison > renders four truthful downgrade totals, +0, displacement and effect data without mutation 138ms
+     → expected null not to be null
+   × mounted shop decision focus and comparison > exposes all six actors, immediate dual-wield slots, scroll ring and exact opener restoration 138ms
+     → expected null not to be null
+   × mounted shop decision focus and comparison > shows blocked current totals without fabricated next, and same-equipment status 147ms
+     → expected null not to be null
+   × mounted shop decision focus and comparison > supports custom slots and unavailable non-equipment/legacy/no-party states 127ms
+     → expected null not to be null
+   × mounted shop decision focus and comparison > retains real selection after last-copy sale, skips absent groups and empty-list confirm 407ms
+     → expected <button type="button" …(8)>…(4)</button> to be null
+   × mounted shop decision focus and comparison > aborts old stock/detail listeners on rerender and close without document-wide capture 130ms
+     → expected null not to be null
+   ✓ mounted shop decision focus and comparison > closes the real empty-stock notice 96ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 13 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/shopDecisionInput.test.ts > mounted shop decision focus and comparison > cycles exact stock focus groups in both directions without trading
+AssertionError: expected 'shop-scene' to be 'shop-buy-candidate' // Object.is equality
+
+Expected: [32m"shop-[7mbuy-candidat[27me"[39m
+Received: [31m"shop-[7mscen[27me"[39m
+
+ ❯ test/shopDecisionInput.test.ts:106:25
+    104|   it("cycles exact stock focus groups in both directions without tradi…
+    105|     await stock(s => {
+    106|       expect(s.focus()).toBe("shop-buy-candidate");
+       |                         ^
+    107|       const snapshot = structuredClone(s.session);
+    108|       const ring = ["shop-tab-buy", "shop-category-all", "shop-detail-…
+ ❯ stock test/shopDecisionInput.test.ts:88:25
+ ❯ test/shopDecisionInput.test.ts:105:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/13]⎯
+
+ FAIL  test/shopDecisionInput.test.ts > mounted shop decision focus and comparison > moves mode/category focus without committing until confirm and never buys
+AssertionError: expected 'shop-scene' to be 'shop-tab-sell' // Object.is equality
+
+Expected: [32m"shop-[7mtab-sell[27m"[39m
+Received: [31m"shop-[7mscene[27m"[39m
+
+ ❯ test/shopDecisionInput.test.ts:119:25
+    117|     await stock(s => {
+    118|       s.key("Tab"); s.key("ArrowRight");
+    119|       expect(s.focus()).toBe("shop-tab-sell");
+       |                         ^
+    120|       expect(s.get("shop-buy-candidate")).not.toBeNull();
+    121|       s.key("Enter");
+ ❯ stock test/shopDecisionInput.test.ts:88:25
+ ❯ test/shopDecisionInput.test.ts:117:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/13]⎯
+
+ FAIL  test/shopDecisionInput.test.ts > mounted shop decision focus and comparison > confirms only rows/transaction buttons with "e"; ignores repeats
+ FAIL  test/shopDecisionInput.test.ts > mounted shop decision focus and comparison > confirms only rows/transaction buttons with "z"; ignores repeats
+ FAIL  test/shopDecisionInput.test.ts > mounted shop decision focus and comparison > confirms only rows/transaction buttons with "Enter"; ignores repeats
+ FAIL  test/shopDecisionInput.test.ts > mounted shop decision focus and comparison > confirms only rows/transaction buttons with " "; ignores repeats
+AssertionError: expected 20 to be 100 // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 100[39m
+[31m+ 20[39m
+
+ ❯ test/shopDecisionInput.test.ts:141:30
+    139|       expect(s.session.gold).toBe(100);
+    140|       s.get("shop-quantity-input")?.focus(); s.key(alias);
+    141|       expect(s.session.gold).toBe(100);
+       |                              ^
+    142|       s.key("Tab"); expect(s.focus()).toBe("shop-confirm"); s.key(alia…
+    143|       expect(s.session.gold).toBe(20);
+ ❯ stock test/shopDecisionInput.test.ts:88:25
+ ❯ test/shopDecisionInput.test.ts:135:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/13]⎯
+
+ FAIL  test/shopDecisionInput.test.ts > mounted shop decision focus and comparison > moves actual row focus, preserves horizontal quantity and updates balance
+AssertionError: expected undefined to be '60' // Object.is equality
+
+[32m- Expected:[39m
+"60"
+
+[31m+ Received:[39m
+undefined
+
+ ❯ test/shopDecisionInput.test.ts:152:60
+    150|   it("moves actual row focus, preserves horizontal quantity and update…
+    151|     await stock(s => {
+    152|       expect(s.get("shop-balance-after")?.dataset.balance).toBe("60");
+       |                                                            ^
+    153|       s.key("ArrowRight"); expect(s.get("shop-balance-after")?.dataset…
+    154|       s.key("ArrowDown"); expect(s.focus()).toBe("shop-buy-old");
+ ❯ stock test/shopDecisionInput.test.ts:88:25
+ ❯ test/shopDecisionInput.test.ts:151:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/13]⎯
+
+ FAIL  test/shopDecisionInput.test.ts > mounted shop decision focus and comparison > renders four truthful downgrade totals, +0, displacement and effect data without mutation
+AssertionError: expected null not to be null
+ ❯ openDetail test/shopDecisionInput.test.ts:92:22
+     90| function openDetail(s: Mounted) {
+     91|   const opener = s.get("shop-detail-open");
+     92|   expect(opener).not.toBeNull();
+       |                      ^
+     93|   opener?.focus();
+     94|   s.key("Enter");
+ ❯ test/shopDecisionInput.test.ts:163:22
+ ❯ stock test/shopDecisionInput.test.ts:88:25
+ ❯ test/shopDecisionInput.test.ts:161:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/13]⎯
+
+ FAIL  test/shopDecisionInput.test.ts > mounted shop decision focus and comparison > exposes all six actors, immediate dual-wield slots, scroll ring and exact opener restoration
+AssertionError: expected null not to be null
+ ❯ openDetail test/shopDecisionInput.test.ts:92:22
+     90| function openDetail(s: Mounted) {
+     91|   const opener = s.get("shop-detail-open");
+     92|   expect(opener).not.toBeNull();
+       |                      ^
+     93|   opener?.focus();
+     94|   s.key("Enter");
+ ❯ test/shopDecisionInput.test.ts:180:22
+ ❯ stock test/shopDecisionInput.test.ts:88:25
+ ❯ test/shopDecisionInput.test.ts:179:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/13]⎯
+
+ FAIL  test/shopDecisionInput.test.ts > mounted shop decision focus and comparison > shows blocked current totals without fabricated next, and same-equipment status
+AssertionError: expected null not to be null
+ ❯ openDetail test/shopDecisionInput.test.ts:92:22
+     90| function openDetail(s: Mounted) {
+     91|   const opener = s.get("shop-detail-open");
+     92|   expect(opener).not.toBeNull();
+       |                      ^
+     93|   opener?.focus();
+     94|   s.key("Enter");
+ ❯ test/shopDecisionInput.test.ts:208:7
+ ❯ stock test/shopDecisionInput.test.ts:88:25
+ ❯ test/shopDecisionInput.test.ts:207:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/13]⎯
+
+ FAIL  test/shopDecisionInput.test.ts > mounted shop decision focus and comparison > supports custom slots and unavailable non-equipment/legacy/no-party states
+AssertionError: expected null not to be null
+ ❯ openDetail test/shopDecisionInput.test.ts:92:22
+     90| function openDetail(s: Mounted) {
+     91|   const opener = s.get("shop-detail-open");
+     92|   expect(opener).not.toBeNull();
+       |                      ^
+     93|   opener?.focus();
+     94|   s.key("Enter");
+ ❯ test/shopDecisionInput.test.ts:222:24
+ ❯ stock test/shopDecisionInput.test.ts:88:25
+ ❯ test/shopDecisionInput.test.ts:222:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/13]⎯
+
+ FAIL  test/shopDecisionInput.test.ts > mounted shop decision focus and comparison > retains real selection after last-copy sale, skips absent groups and empty-list confirm
+AssertionError: expected <button type="button" …(8)>…(4)</button> to be null
+
+[32m- Expected:[39m
+null
+
+[31m+ Received:[39m
+<button
+  aria-label="후보 검 · 20G · 보유 1개"
+  class="runtime-shop-item-row"
+  data-category="equipment"
+  data-max-qty="1"
+  data-testid="shop-sell-candidate"
+  data-unit-price="20"
+  role="listitem"
+  type="button"
+>
+  <span
+    class="runtime-shop-item-icon runtime-shop-item-icon-fallback"
+    data-testid="shop-item-icon-candidate"
+  >
+    후
+  </span>
+  <span
+    class="runtime-shop-item-main"
+  >
+    <span
+      class="runtime-shop-item-name"
+    >
+      후보 검
+    </span>
+    <span
+      class="runtime-shop-item-type"
+    >
+      무기
+    </span>
+  </span>
+  <span
+    class="runtime-shop-item-owned"
+    data-testid="shop-owned-candidate"
+  >
+    x1
+  </span>
+  <span
+    class="runtime-shop-item-price"
+    data-testid="shop-price-candidate"
+  >
+    20G
+  </span>
+</button>
+
+ ❯ stock.shopType test/shopDecisionInput.test.ts:243:44
+    241|     await stock(s => {
+    242|       s.key("Enter");
+    243|       expect(s.get("shop-sell-candidate")).toBeNull();
+       |                                            ^
+    244|       expect(s.focus()).toBe("shop-sell-old");
+    245|       expect(s.get("shop-balance-after")?.dataset.balance).toBe("140");
+ ❯ stock test/shopDecisionInput.test.ts:88:25
+ ❯ test/shopDecisionInput.test.ts:241:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/13]⎯
+
+ FAIL  test/shopDecisionInput.test.ts > mounted shop decision focus and comparison > aborts old stock/detail listeners on rerender and close without document-wide capture
+AssertionError: expected null not to be null
+ ❯ openDetail test/shopDecisionInput.test.ts:92:22
+     90| function openDetail(s: Mounted) {
+     91|   const opener = s.get("shop-detail-open");
+     92|   expect(opener).not.toBeNull();
+       |                      ^
+     93|   opener?.focus();
+     94|   s.key("Enter");
+ ❯ test/shopDecisionInput.test.ts:261:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/13]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  13 failed | 1 passed (14)
+   Start at  05:16:37
+   Duration  19.96s (transform 9.79s, setup 0ms, collect 14.81s, tests 3.25s, environment 460ms, prepare 312ms)

@@ -181,7 +181,8 @@ describe("상점 수량 입력", () => {
 
 describe("상점 사이드 패널", () => {
   it("파티 칸이 에디터 밝은 회색 빈 박스가 아니다", () => {
-    const overlay = render();
+    const actorIds = createBlankProject().database.actors.slice(0, 2).map(actor => actor.id);
+    const overlay = render({ scene: scene({ partyActorIds: actorIds }) });
     const sprites = overlay.querySelectorAll<HTMLElement>(".runtime-shop-party-sprite");
     expect(sprites.length).toBe(2);
     for (const sprite of sprites) {

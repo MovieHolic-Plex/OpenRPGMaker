@@ -39,12 +39,12 @@
   An intentionally different authored title is preserved. This does not rename
   maps on load or replace authored title artwork.
 
-## In-game shop trade counter (2026-09-06)
+## In-game shop trade counter (2026-09-07)
 
 Runtime only: this is not the shop-command editor. `runtime/shop.css` owns a
-single inset glass counter, with a single-column stock list and a generous
-selected-item display. The existing DOM slots, authored item resources, currency,
-quantity, affordability and keyboard/gamepad controller remain authoritative.
+single inset glass counter, with a single-column stock list and a comparison-led
+selected-item display. Existing DOM/data contracts, authored item resources,
+currency, quantity, affordability and keyboard controller remain authoritative.
 No merchant artwork is inferred from the player's party: the brand uses the
 existing purse emblem; actual party faces remain explicitly labelled as party.
 
@@ -58,7 +58,7 @@ existing purse emblem; actual party faces remain explicitly labelled as party.
   24 item heading, 32 entry heading; compact 10/12/14/16. Font remains the authored
   `--runtime-ui-font`. Numeric values use tabular figures.
 - Local size tokens: stock art 48px (compact 32px, minimum viewport 24px),
-  display art 224px (compact 96px, minimum viewport identity strip 24px), party
+  display art 112px (compact 96px, minimum viewport identity strip 24px), party
   art 32px, control 32px (minimum viewport 24px); display column 38%. The display uses
   recessed glass, category light and a fine inset frame, not additional cards.
 - Buying/selling has a persistent explicit label even for one-mode shops. Price
@@ -66,11 +66,41 @@ existing purse emblem; actual party faces remain explicitly labelled as party.
   Unaffordable items retain readable art/text and selectable rows; lock and price
   color express the restriction. Selected rows use a solid leading rule and ring,
   never movement, hover or pointer-only cues.
-- Overlay stays outside `.play-stage` scale. At 1280x960 the display and inventory
-  share the counter. At 640x480 they remain side by side with compact art. At
-  320x240 the display becomes a compact identity/description strip; secondary
-  party and equipment stats give way to stock, wallet, quantity and controls.
-  List scrolling remains controller-owned; no multi-column item navigation.
+- Comparison primitives: `.runtime-shop-comparison-summary` is one ledger, not
+  a card grid. Actor/slot heading and named current equipment precede four aligned
+  label / current-to-next / signed-delta rows, including +0. Blocked previews keep
+  current-only values and their reason; unavailable previews invent no values.
+  Stock puts the ledger before descriptive prose. Gains/losses retain signed
+  numbers and named effect section headings as well as gain/loss token colors.
+- `.runtime-shop-comparison` is a bounded glass preview shell, not a trade dialog.
+  `.runtime-shop-detail-scroll` owns all vertical detail scrolling: item identity,
+  preview-only explanation, wrapping actor and custom-slot button clusters,
+  stats, restrictions, named displaced equipment and gained/lost/changed effects.
+  The close button and key guidance stay outside that scroller. Shell padding and
+  gaps use 16/12px, compact 8px. Detail body stays at least 12px at 320x240.
+  Section hairlines and 8px ledger rhythm replace nested cards. No ledger text is
+  truncated. Native actor/slot pressed state uses accent fill/border; actual focus
+  uses a separate 2px text-color outline, also on the scroll region. Six actors and
+  long authored names wrap, with focused controls scrolled into view by input code.
+- Overlay stays outside `.play-stage` scale. At 1024x768 and 640x480 the display
+  stays beside stock. At 320x240 it is an identity/description strip; the complete
+  comparison is deferred to the always-reachable detail opener, never deleted from
+  detail. Short viewports use this same compact-stock policy. Wallet, quantity,
+  total, projected balance/shortage and detail/confirm/cancel remain in the footer.
+  Stock hints reduce to the focus-group hint at minimum size; detail hints wrap in
+  two compact rows and retain all scroll/return keys. Selected stock keeps mandatory
+  scroll snap through resize. Explicit hidden state and menu/haggle layouts remain.
+- Keyboard purchase-decision contract: Tab/Shift+Tab traverses stock item, mode,
+  category, detail, quantity, confirm, cancel (absent groups skipped); detail uses
+  actor, slot, scroll, close. Held arrows navigate/scroll; repeated confirm/cancel
+  is inert. Quantity confirm never trades. Detail has no trade action; Escape
+  restores opener focus. Arrows/PageUp/PageDown/Home/End expose the full ledger.
+- Personas and acceptance constraints: keyboard shopper comparing a downgrade,
+  six-member party with custom slots, restricted/no-party shopper, and small-screen
+  player. Signs and text must explain changes without color; actual focus must not
+  be confused with selected equipment. Static gates cannot prove focus geometry,
+  contrast or viewport fit: lead shipping-player QA owns those checks at all three
+  target sizes. No visual acceptance or accessibility debt waiver is implied.
 - No new motion lifetime: existing entry fade and transaction feedback remain,
   with reduced-motion support. Validate through shipping `player.html`, not the
   editor shell; supervisor owns final screenshots and visual acceptance.
