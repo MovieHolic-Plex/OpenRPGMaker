@@ -1,0 +1,115 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiBlockedContinue.test.ts test/aiToolCallSessionProtocol.test.ts test/assistantSessionIntent.test.ts test/aiRequiredQuestionDispatch.test.ts test/aiRequiredOutcomes.test.ts test/aiContinueUserAction.test.ts test/aiRunOutcomeLifecycle.test.ts test/aiOutcomeContinuationDelivery.test.ts test/aiComposerModeSession.test.ts test/aiAskPendingPlan.test.ts --maxWorkers 1 --minWorkers 1 --reporter default --reporter json --outputFile output/evidence/ai-harness/p2/contract-compat-fix/final-vitest.json
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p2-event-contract-20260906
+
+ ❯ test/assistantSessionIntent.test.ts (15 tests | 1 failed) 6623ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 선언이 질문을 냈으면 chat 모드는 모델을 부르지 않고 그 질문으로 턴을 끝낸다  909ms
+   × 의도 선언이 세션 라우팅을 정한다 > auto 모드는 같은 선언에도 멈추지 않고 진행한다(F-05) 431ms
+     → expected '완료 검증이 아직 미완성입니다.\n- 집 하나 만들어줘: Missi…' to be '야외 집으로 진행합니다.' // Object.is equality
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 선언자가 없으면 폴백 선언이다 — 되묻지 않고, 계획 여부는 플래너(direct)에게 넘긴다  539ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 질문 선언은 플래너를 건너뛰고, 계획 필요 선언은 플래너를 돈다  377ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 플래너의 direct 는 존중한다 — 「마을」이라도 코드가 계획을 강제하지 않는다  415ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 플래너가 volume 을 선언한 계획만 막대를 세우고, 막대 미달로 끝내면 재주입한다  719ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > volume 없는 계획은 막대가 없다  403ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 선언한 툴은 도메인 상한과 무관하게 이번 라운드 스키마에 실린다 202ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 지시 모드의 툴 이름 언급은 사용자 발화에서만 읽고 footer 는 보지 않는다 (explicit instruction=false) 223ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 지시 모드의 툴 이름 언급은 사용자 발화에서만 읽고 footer 는 보지 않는다 (explicit instruction=true) 216ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > ask 는 언급·선언된 쓰기도 노출하거나 실행하지 않고 조회는 허용한다  334ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > question 는 언급·선언된 쓰기도 노출하거나 실행하지 않고 조회는 허용한다  334ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 선택 영역은 사실로 붙고 선언에 따라 경계 또는 참고용 노트가 된다  495ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 수정 선언은 계획의 대상 맵을 현재 맵으로 고정하고, 생성 선언은 고정하지 않는다  788ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 「계속」은 모델을 부르지 않고 진행 중 계획을 이어간다(continuation) 236ms
+ ✓ test/aiRequiredOutcomes.test.ts (39 tests) 12975ms
+   ✓ canonical requirements > keeps required skipped obligations when a replan tries to weaken them  485ms
+   ✓ canonical requirements > allows optional skipped work without labeling it verified  408ms
+   ✓ canonical requirements > fails closed for malformed declarations null  410ms
+   ✓ canonical requirements > fails closed for malformed declarations %j  465ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":[{"kind":"mapDimensions","target":{"mapId":"map_blank_start"},"width":99,"height":99}],"required":"false"}  348ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":[{"kind":"invented","passed":true}]}  382ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":null,"required":false}  374ms
+   ✓ canonical requirements > assesses existing explicit acceptance without requiring the new field  398ms
+   ✓ canonical requirements > retains an unlinked required obligation when replan drops links=false  354ms
+   ✓ canonical requirements > retains an unlinked required obligation when replan drops links=true  358ms
+   ✓ canonical requirements > binds original text and scope at the host boundary despite fabricated source and withdrawal  357ms
+   ✓ canonical requirements > retains only the original user utterance through replan with instruction override=false  404ms
+   ✓ canonical requirements > retains only the original user utterance through replan with instruction override=true  444ms
+   ✓ canonical requirements > withdraws only the named current requirement through the user-only API  370ms
+   ✓ canonical requirements > keeps sibling obligations when the user withdraws just one  380ms
+   ✓ canonical requirements > rejects model tool withdrawal even with fabricated user provenance  386ms
+   ✓ canonical requirements > rejects stale goal withdrawal actions  345ms
+   ✓ canonical requirements > does not erase old obligations on a model resetsContext claim  428ms
+   ✓ canonical requirements > archives an incomplete goal when the user explicitly starts a new goal  454ms
+   ✓ exact scoped verdict authority > does not verify an unapplied draft from a passing scoped verdict  316ms
+   ✓ exact scoped verdict authority > retires scoped verdicts after applied content changes even if later undone  832ms
+   ✓ exact scoped verdict authority > rejects pre-declaration evidence after an external rebase  770ms
+   ✓ exact scoped verdict authority > credits a real scoped tool response through the session dispatcher  367ms
+   ✓ question-safe continuation > preserves repeated failure counters while answering a question  549ms
+   ✓ question-safe continuation > retains goal evidence and repair counters during ask  386ms
+ ✓ test/aiOutcomeContinuationDelivery.test.ts (7 tests) 5395ms
+   ✓ preserves delivery ownership for 'continue' with verified=false  817ms
+   ✓ preserves delivery ownership for 'continue' with verified=true  785ms
+   ✓ preserves delivery ownership for 'proof-retry' with verified=false  756ms
+   ✓ preserves delivery ownership for 'query' with verified=true  759ms
+   ✓ preserves delivery ownership for 'ask' with verified=true  723ms
+   ✓ distinguishes continue after a failed milestone proof  819ms
+   ✓ distinguishes query after a failed milestone proof  734ms
+ ✓ test/aiRequiredQuestionDispatch.test.ts (4 tests) 2744ms
+   ✓ question dispatch preserves blocked goal ownership > ask preserves blocked state when tools attempt mutation=false  764ms
+   ✓ question dispatch preserves blocked goal ownership > ask preserves blocked state when tools attempt mutation=true  622ms
+   ✓ question dispatch preserves blocked goal ownership > question preserves blocked state when tools attempt mutation=false  673ms
+   ✓ question dispatch preserves blocked goal ownership > question preserves blocked state when tools attempt mutation=true  682ms
+ ✓ test/aiComposerModeSession.test.ts (6 tests) 2325ms
+   ✓ 컴포저 모드 — 질문(ask) > 쓰기 툴 스키마를 모델에 노출하지 않는다 (읽기 툴은 남는다)  350ms
+   ✓ 컴포저 모드 — 질문(ask) > 모델이 쓰기 툴을 불러도 거부하고 프로젝트 초안은 불변이다  528ms
+   ✓ 컴포저 모드 — 계획(plan) > 계획 뒤 「계속」은 툴 루프를 돌려 실행한다  631ms
+   ✓ 컴포저 모드 — 지시(do) > 기본/지시 모드는 쓰기 툴을 그대로 노출한다  300ms
+ ✓ test/aiRunOutcomeLifecycle.test.ts (6 tests) 2157ms
+   ✓ projects budget exhaustion when the tools limit ends execution  403ms
+   ✓ retains both applied milestones and pending calls when a later transport fails  693ms
+   ✓ routes an explicit user withdrawal to the sole session authority  421ms
+ ✓ test/aiBlockedContinue.test.ts (4 tests) 2590ms
+   ✓ offers the real Continue control when required work blocks without a budget stop  725ms
+   ✓ keeps one Continue control when a question follows blocked work  533ms
+   ✓ does not publish a Continue control when the blocked owner is retired  544ms
+   ✓ publishes the resumed unfinished result instead of the preceding question outcome  785ms
+ ✓ test/aiToolCallSessionProtocol.test.ts (2 tests) 831ms
+   ✓ 툴 인자 JSON 파싱 실패 > 잘린 JSON 은 잘렸다고 알린다 — 인자 누락으로 위장하지 않는다  336ms
+   ✓ 툴 루프 예외 > 예외가 나도 그 호출의 tool 응답이 남아 세션이 오염되지 않는다  493ms
+ ✓ test/aiAskPendingPlan.test.ts (1 test) 329ms
+   ✓ 질문 중 미완료 계획 보존 > 답변 뒤 계획을 재개하거나 자동 계속하지 않는다  326ms
+ ✓ test/aiContinueUserAction.test.ts (1 test) 1402ms
+   ✓ the real Continue control updates both the panel send mode and composer presentation after Ask  1401ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/assistantSessionIntent.test.ts > 의도 선언이 세션 라우팅을 정한다 > auto 모드는 같은 선언에도 멈추지 않고 진행한다(F-05)
+AssertionError: expected '완료 검증이 아직 미완성입니다.\n- 집 하나 만들어줘: Missi…' to be '야외 집으로 진행합니다.' // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 야외 집으로 진행합니다.[39m
+[31m+ 완료 검증이 아직 미완성입니다.[39m
+[31m+ - 집 하나 만들어줘: Missing or malformed criteria: repair_acceptance required[39m
+[31m+[39m
+
+ ❯ test/assistantSessionIntent.test.ts:114:34
+    112|     const result = await session.sendUserMessage("집 하나 만들어줘", () => {}…
+    113|     expect(seen.length).toBeGreaterThan(0);
+    114|     expect(result.assistantText).toBe("야외 집으로 진행합니다.");
+       |                                  ^
+    115|     expect(statuses(session).some((text) => text.startsWith("의도 확인 건너뜀…
+    116|   }, 30000);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 9 passed (10)
+      Tests  1 failed | 84 passed (85)
+   Start at  07:59:13
+   Duration  91.10s (transform 25.37s, setup 0ms, collect 49.50s, tests 37.37s, environment 288ms, prepare 857ms)
+
+JSON report written to /home/main/z-project/rpg-zzu-ai-harness-p2-event-contract-20260906/output/evidence/ai-harness/p2/contract-compat-fix/final-vitest.json
