@@ -1,0 +1,16 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiDeckCss.test.ts test/aiBackgroundOpacity.test.ts test/aiDeckIcons.test.ts test/aiAssistantUxP0P2.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-assistant-glass-p2-contrast
+
+ ✓ test/aiDeckCss.test.ts (6 tests) 13ms
+ ✓ test/aiDeckIcons.test.ts (3 tests) 9ms
+ ✓ test/aiBackgroundOpacity.test.ts (25 tests) 33ms
+ ✓ test/aiAssistantUxP0P2.test.ts (3 tests) 505ms
+
+ Test Files  4 passed (4)
+      Tests  37 passed (37)
+   Start at  11:56:39
+   Duration  20.77s (transform 14.93s, setup 0ms, collect 20.31s, tests 560ms, environment 1ms, prepare 509ms)

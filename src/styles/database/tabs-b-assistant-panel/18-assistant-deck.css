@@ -450,6 +450,12 @@
   padding-right: 8px;
 }
 
+/* User-bubble + control tints need stronger quiet ink, never a faded enabled action. */
+.ai-deck .ai-turn-rewind:not(:disabled) {
+  color: color-mix(in srgb, var(--text-2) 60%, var(--text-1));
+  opacity: 1;
+}
+
 .ai-chat-log .ai-command-row[data-role="system"],
 .ai-chat-log .ai-command-row[data-role="tool"] {
   color: var(--ai-deck-secondary, var(--text-2));

@@ -1,0 +1,9 @@
+82% rest: opacity=1, minimum=4.623178324919509, pass=true
+82% hover: opacity=1, minimum=4.287284053604205, pass=false
+82% focus: opacity=1, minimum=4.623178324919509, pass=true
+78% rest: opacity=1, minimum=4.206204967343359, pass=false
+78% hover: opacity=1, minimum=3.9065405269209235, pass=false
+78% focus: opacity=1, minimum=4.206204967343359, pass=false
+100% rest: opacity=1, minimum=6.822669020337846, pass=true
+100% hover: opacity=1, minimum=6.2932410005478, pass=true
+100% focus: opacity=1, minimum=6.822669020337846, pass=true

@@ -4,6 +4,54 @@ Base: `f7ae885184c981c243222a93e527157143ca5fe9`.
 Worktree: `/home/main/z-project/rpg-zzu-assistant-glass-p2-contrast`.
 Owned server: `http://127.0.0.1:9912` (stopped after verification).
 
+## QA follow-up: enabled turn rewind
+
+The main QA matrix exposed an action that history-restored fixtures do not
+create: `attachRewindAffordance` only attaches the button to a newly submitted
+user turn. The earlier 208-label proof therefore did not cover this control.
+This follow-up adds only `.ai-deck .ai-turn-rewind:not(:disabled)` in the
+existing owner: opacity 1 and `color-mix(in srgb, var(--text-2) 60%, var(--text-1))`.
+The 05 stylesheet, disabled behavior, background tints and action wiring are
+unchanged. The stronger quiet mix is needed for the nested 12% accent user
+bubble plus 4%/8%/12% control tint; the bare-glass secondary mix alone was
+insufficient (`rewind-secondary-red.json`). No new token was added.
+
+Command: `node output/evidence/p2-contrast/rewind.mjs green`.
+The real composer/session submits a deterministic no-write model response,
+awaits its exact terminal receipt (`stoppedReason: final`, `appliedCalls: 0`),
+and exercises the actual enabled rewind. No reconstructed control is used.
+
+| Density | Original rest opacity / exact minimum | Fixed rest | Fixed hover | Fixed keyboard focus | Fixed pointer-down |
+| --- | --- | ---: | ---: | ---: | ---: |
+| 78 | 0.45 / 2.4511681841193007 | 5.3321591559696015 | 4.9522778848183755 | 5.3321591559696015 | 4.590545139502109 |
+| 82 | 0.45 / 2.511592018315496 | 5.860751633905676 | 5.43494220993867 | 5.860751633905676 | 5.029679355473859 |
+| 100 | 0.45 / 2.743567053106191 | 8.64902147360687 | 7.977871473769046 | 8.64902147360687 | 7.340269222131937 |
+
+`rewind-green.json`: **12 states / 60 comparisons / 0 failures**. Foreground is
+`color(srgb 0.190588 0.236078 0.312941)`, effective opacity is 1 in every state,
+and range remains 78..100 / step 1 / default 82. Comparisons use actual computed
+foregrounds and recursively composite complete element-opacity groups against
+black/white bounds and three real screenshot backdrop samples. Exact CSS alpha
+is retained (not decoded through an 8-bit canvas), explaining the small numeric
+difference from QA's rounded-alpha report. Screenshots corroborate the control;
+glyph anti-alias pixels are never used as foreground colors.
+
+After measurement the enabled action is actually clicked: it restores the
+original instruction and removes the subsequent assistant response. This
+confirms it was neither hidden nor disabled to satisfy contrast. Main QA's
+separate table-renderer gap is outside this correction and was not changed.
+
+Follow-up validation: **37/37 tests** in aiDeckCss, aiBackgroundOpacity,
+aiDeckIcons and aiAssistantUxP0P2; CSS budget/graph/live-class gates and
+`build:app` pass (`rewind-tests.log`, `rewind-css-gates.log`, `rewind-build.log`).
+`node --check rewind.mjs` passes. Script LSP initially returned no diagnostics;
+a later fresh request hit the tool's 3-second limit. CSS LSP remains unavailable
+because Biome is not installed. No production TypeScript was changed.
+`rewind-red.json` / `rewind-red.log` preserve the true original failure;
+`rewind-secondary-red.json` preserves the insufficient first foreground mix.
+The original contrast/glyph commit is `1f75385ae1ffd2fb414d21643dc6aa73b5a5800a`;
+this follow-up is an incremental commit on that verified base.
+
 ## Delivered change
 
 Only `18-assistant-deck.css` changes production styling. The local
