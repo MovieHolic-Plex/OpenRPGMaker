@@ -23,6 +23,30 @@ export type CommandRuntimeSupportBadge = {
 export type M2PersistedBehaviorClass = keyof typeof M2_PERSISTED_BEHAVIOR_IDS;
 export type M2RuntimeContext = "map" | "common" | "troop";
 
+type CommandRuntimeTarget =
+  | { readonly kind: Exclude<Command["kind"], "m2Command"> }
+  | Pick<Extract<Command, { kind: "m2Command" }>, "kind" | "commandId">;
+
+export type CommandRuntimeSupportReason =
+  | "editor-only"
+  | "context-unspecified"
+  | "not-executed-in-context"
+  | "battle-message-only"
+  | "battle-presentation-metadata-only"
+  | "input-not-awaited"
+  | "non-sequential-battle-wait"
+  | "system-audio-metadata-only"
+  | "legacy-alias-not-equivalent"
+  | "battle-context-required"
+  | "coverage-unverified";
+
+export type CommandRuntimeSupportDescriptor =
+  | { readonly support: "runtime-full" }
+  | (CommandRuntimeSupportBadge & {
+      readonly reasonCode: CommandRuntimeSupportReason;
+      readonly alternative?: { readonly kind: "playAudio"; readonly loop: boolean };
+    });
+
 export type M2RuntimeClassification = {
   readonly commandId: string;
   readonly behaviorClass: M2PersistedBehaviorClass;
@@ -61,13 +85,81 @@ const NATIVE_SUPPORT_TO_RUNTIME_SUPPORT: Readonly<Record<CommandSupport, Command
   editorOnly: "editor-only",
 };
 
-export function commandRuntimeSupport(command: Command, context?: M2RuntimeContext): CommandRuntimeSupport {
+export function commandRuntimeSupport(command: CommandRuntimeTarget, context?: M2RuntimeContext): CommandRuntimeSupport {
   if (command.kind !== "m2Command") return nativeCommandRuntimeSupport(command.kind, context);
   return m2CommandRuntimeSupport(command.commandId, context);
 }
 
 export function battleEventCommandRuntimeSupport(command: Command): CommandRuntimeSupport {
   return commandRuntimeSupport(command, "troop");
+}
+
+/** Shared picker/list explanation. Grades remain owned by the existing guarantees. */
+export function commandRuntimeSupportDescriptor(
+  command: CommandRuntimeTarget,
+  context?: M2RuntimeContext
+): CommandRuntimeSupportDescriptor {
+  const support = commandRuntimeSupport(command, context);
+  if (support === "runtime-full") return { support };
+  const limited = (
+    reasonCode: CommandRuntimeSupportReason,
+    label: string,
+    tooltip: string
+  ): CommandRuntimeSupportDescriptor => ({ support, reasonCode, label, tooltip, icon: support === "editor-only" ? "!" : "△" });
+  if (support === "editor-only") {
+    return limited("editor-only", "에디터 전용", "이 명령은 런타임에서 실행되지 않습니다. 편집용 기록으로 보관됩니다.");
+  }
+  if (!context) {
+    return limited("context-unspecified", "실행 맥락 확인 필요", "맵·공통 이벤트·전투 중 어느 곳에서 실행할지 지정되지 않았습니다. 실행 맥락별 지원을 확인하세요.");
+  }
+  if (context === "troop") {
+    switch (command.kind) {
+      case "text":
+        return limited("battle-message-only", "전투 메시지 표시", "화자와 문장은 전투 메시지에 표시됩니다. 맵 대화창의 문장별 입력 대기·순차 표시와 연출 설정은 적용되지 않습니다.");
+      case "changeFace":
+      case "displayTextSettings":
+        return limited("battle-presentation-metadata-only", "표시 설정 기록만", "전투에서는 얼굴·문장 표시 설정을 로그에만 기록합니다. 얼굴 그림이나 대화창 위치·형식은 바뀌지 않습니다. 해당 연출은 맵·공통 이벤트에서 사용하세요.");
+      case "inputWait":
+        return limited("input-not-awaited", "입력을 기다리지 않음", "전투에서는 입력 대기 명령을 로그에만 기록하고 다음 명령을 실행합니다. 입력을 기다려 진행하려면 맵·공통 이벤트에서 사용하세요.");
+      case "wait":
+        return limited("non-sequential-battle-wait", "전투 연출 지연만", "전투 진행 또는 연출 타임라인에 지연을 반영하지만, 같은 이벤트의 다음 명령 실행은 멈추지 않습니다. 명령 사이의 순차 대기는 맵·공통 이벤트에서 사용하세요.");
+      // Audited unsupported branches in battleEvents.ts. This is explanation
+      // coverage, not an additional support/eligibility registry.
+      case "m2Command":
+      case "transfer": case "moveEvent": case "setEventGraphicPattern": case "changeTile":
+      case "changeFactionStance": case "battleProcessing": case "showPicture": case "erasePicture":
+      case "shop": case "inn": case "ending": case "returnToTitle": case "inputNumber":
+      case "enterHeroName": case "callMapEvent": case "cutsceneControl": case "checkpointSave":
+      case "triggerEnding": case "setLighting": case "addLight": case "removeLight":
+      case "showEmote": case "setWeather": case "addFollower": case "removeFollower":
+      case "giveMonster": case "evolveMonster": case "openChest": case "advanceTime":
+      case "setTime": case "sleepUntilMorning": case "craftRecipe": case "applyItemUpgrade":
+      case "equipTool": case "changeLifeSkillExp": case "moveMonster": case "openSaveMenu":
+      case "spawnFieldEnemy": case "despawnFieldEnemy": case "advanceCropGrowth": case "runControl":
+      case "playMovie":
+        return limited("not-executed-in-context", "전투에서 실행 안 됨", "이 명령의 효과는 전투 이벤트에서 실행되지 않습니다. 맵·공통 이벤트에서 사용할 때의 지원 범위를 확인하세요.");
+    }
+  }
+  if (command.kind === "m2Command") {
+    if (command.commandId === "m2-027-change-system-bgm" || command.commandId === "m2-028-change-system-se") {
+      const loop = command.commandId === "m2-027-change-system-bgm";
+      return {
+        support,
+        reasonCode: "system-audio-metadata-only",
+        icon: "△",
+        label: "시스템 소리 설정 기록만",
+        tooltip: `시스템 소리 설정은 메타데이터로만 기록되며, 이 명령으로 소리가 재생되거나 재생 볼륨이 적용되지는 않습니다. 실제 소리는 ${loop ? "BGM 재생(반복)" : "SE 재생(한 번)"}을 사용하세요. 채널·볼륨·페이드는 사운드 레이어에서 지정할 수 있습니다.`,
+        alternative: { kind: "playAudio", loop },
+      };
+    }
+    if (includesId(M2_TROOP_FULL_IDS, command.commandId)) {
+      return limited("battle-context-required", "전투 실행 맥락 필요", "전투 상태를 다루는 명령입니다. 맵·공통 이벤트에는 실행 중인 전투가 없어 해당 전투 효과가 적용되지 않습니다.");
+    }
+    if (behaviorClassFor(command.commandId) === "nativeAlias") {
+      return limited("legacy-alias-not-equivalent", "레거시 명령 확인 필요", "저장된 M2 레거시 형식은 명령 선택창이 만드는 기본 명령과 실행 경로가 다릅니다. 같은 효과를 보장하지 않으므로, 선택창에서 해당 명령을 다시 추가하고 설정을 확인하세요.");
+    }
+  }
+  return limited("coverage-unverified", "지원 범위 미검증", "이 실행 맥락에서 모든 설정과 실제 효과까지 검증되지는 않았습니다. 특정 효과가 없다는 뜻은 아니며, 테스트 플레이로 필요한 동작을 확인하세요.");
 }
 
 export function nativeCommandRuntimeSupport(

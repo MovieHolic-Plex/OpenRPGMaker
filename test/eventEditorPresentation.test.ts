@@ -10,7 +10,6 @@ import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
 import type { Command, EventPage, EventPageGraphic } from "@/project/types";
-import { commandRuntimeSupport } from "@/project/eventCommands/runtimeSupport";
 import { FakeElement, findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
 
 describe("event editor presentation", () => {
@@ -256,7 +255,7 @@ describe("event editor presentation", () => {
           moveCommandTo: () => undefined,
           replaceCommand: () => undefined,
         },
-        { runtimeSupport: (command) => commandRuntimeSupport(command, "map") }
+        { pickerContext: "map" }
       );
       return node;
     });

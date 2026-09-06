@@ -110,6 +110,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   declare playerSprite: PlayerSpriteResource;
   declare input_: Input;
   declare session: PlaySession;
+  battleAbortController?: AbortController;
   declare map: GameMap;
   inputEnabled = true;
   running = false;
@@ -454,10 +455,22 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     this.showRuntimeOverlay("battle-scene", troopId || "battle");
   }
 
-  playBattle(step: Extract<StepResult, { kind: "battleProcessing" }>): Promise<BattleResult> {
+  playBattle(step: Extract<StepResult, { kind: "battleProcessing" }>, isCurrent?: () => boolean): Promise<BattleResult | null> {
+    this.battleAbortController?.abort();
+    const controller = new AbortController();
+    this.battleAbortController = controller;
+    const abort = (): void => controller.abort();
+    this.events.once("shutdown", abort);
+    this.events.once("destroy", abort);
+    const session = this.session;
     const startedAt = performance.now();
     return import("@/player/playSceneBattle").then(({ playBattle }) => {
-      return playBattle(this, step, startedAt);
+      if (controller.signal.aborted || this.session !== session || isCurrent?.() === false) return null;
+      return playBattle(this, step, startedAt, isCurrent);
+    }).finally(() => {
+      this.events.off("shutdown", abort);
+      this.events.off("destroy", abort);
+      if (this.battleAbortController === controller) this.battleAbortController = undefined;
     });
   }
 
@@ -533,6 +546,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   }
 
   applySession(session: PlaySession): void {
+    this.battleAbortController?.abort();
     this.session = structuredClone(session);
     // Loading replaces the old event run; its pending menu must not own the new session.
     this.running = false;

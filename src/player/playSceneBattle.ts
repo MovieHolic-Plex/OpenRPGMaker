@@ -4,11 +4,11 @@ import type { StepResult } from "@/player/interpreter";
 import { exitBattleAudio, enterBattleAudio } from "@/player/battleAudio";
 import { playAudioCommand, stopAudioCommand } from "@/player/audio";
 import { mountBattleScene, type BattleDomController } from "@/player/battleDom";
-import { createSkinBattleTransition } from "@/player/battleTransition";
+import { createSkinBattleTransition, type BattleTransition } from "@/player/battleTransition";
 import { resolveSkinId, getBattleSkin } from "@/battle/skins/registry";
 import { applyBattleRewardsToSession } from "@/player/battleRewardsToSession";
 import { maybeAutosave } from "@/player/autosave";
-import { dialogueHost } from "@/player/playSceneDom";
+import { dialogueHost, dialogueUi } from "@/player/playSceneDom";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { store } from "@/project/store";
 import { markBattleEntry } from "@/app/perfMetrics";
@@ -39,13 +39,25 @@ export function showBattleScene(scene: PlaySceneContext, troopId: string): void 
   scene.showRuntimeOverlay("battle-scene", troopId || "battle");
 }
 
+type BattleHostScene = Pick<PlaySceneContext, "session" | "tileY" | "battleAbortController">
+  & Parameters<typeof dialogueHost>[0]
+  & Partial<Pick<PlaySceneContext, "events">>
+  & { readonly map: Pick<PlaySceneContext["map"], "height"> };
+
 export function playBattle(
-  scene: PlaySceneContext,
+  scene: BattleHostScene,
   step: Extract<StepResult, { kind: "battleProcessing" }>,
-  startedAt: number
-): Promise<BattleResult> {
+  startedAt: number,
+  isCurrent: () => boolean = () => true
+): Promise<BattleResult | null> {
+  const signal = scene.battleAbortController?.signal;
+  if (signal?.aborted || !isCurrent()) return Promise.resolve(null);
   const host = dialogueHost(scene);
-  if (!host) return Promise.resolve("defeat");
+  if (!host) return Promise.reject(new Error("Battle dialogue host missing"));
+  const session = scene.session, map = scene.map;
+  let settled = false, shutdown = false;
+  const owns = (): boolean => !shutdown && !signal?.aborted && scene.session === session && scene.map === map && isCurrent();
+  const current = (): boolean => !settled && owns();
   const project = store.getCurrent();
   // canonical/legacy 선택자를 한 번만 해석하고 같은 파티를 모든 전투 소비자에게 넘긴다.
   const { requested: usePartyMonsters, partyMonsters, monsterPartyMode } = resolveMonsterBattleParty(project, scene.session);
@@ -110,7 +122,8 @@ export function playBattle(
     // Terrain at the player's tile feeds battle backdrop when troop has no preview.
     captureLocation: { mapId: scene.session.currentMapId, x: scene.session.x, y: scene.session.y },
     onMonsterCaptured: (capture) => {
-      giveMonster(project, scene.session, {
+      if (!current()) return;
+      giveMonster(project, session, {
         speciesId: capture.speciesId,
         level: capture.level,
         caughtAt: capture.caughtAt,
@@ -122,48 +135,102 @@ export function playBattle(
         skillPp: capture.skillPp,
       });
     },
-    rng: () => nextSessionRandom(scene.session, "battle"),
+    rng: () => current() ? nextSessionRandom(session, "battle") : 0.5,
     playAudio: (resourceId, loop) => {
+      if (!current()) return;
       playAudioCommand({ resourceId, loop }, project);
-      scene.session.audio.bgm = { resourceId, loop };
+      session.audio.bgm = { resourceId, loop };
     },
     stopAudio: () => {
+      if (!current()) return;
       stopAudioCommand();
-      scene.session.audio.bgm = undefined;
+      session.audio.bgm = undefined;
     },
   });
-  return new Promise<BattleResult>((resolve) => {
+  return new Promise<BattleResult | null>((resolve, reject) => {
     let battleScene: BattleDomController | undefined;
-    let settled = false;
-    const entrySkin = getBattleSkin(resolveSkinId(store.getCurrent().system.battleUiStyle));
+    let exitTransition: BattleTransition | undefined;
+    let exiting = false;
+    let closingDom = false;
+    const entrySkin = getBattleSkin(resolveSkinId(project.system.battleUiStyle));
     const entryTransition = createSkinBattleTransition(host, entrySkin.transition);
-    void entryTransition.cover().then(() => {
+    const cleanup = (): void => {
+      signal?.removeEventListener("abort", abort);
+      scene.events?.off("shutdown", onShutdown);
+      scene.events?.off("destroy", onShutdown);
+      scene.events?.off("update", checkOwner);
+      runtime.cancel();
+      entryTransition.destroy();
+      exitTransition?.destroy();
+      battleScene?.destroy();
+      battleScene = undefined;
+    };
+    const onShutdown = (): void => { shutdown = true; abort(); };
+    const checkOwner = (): void => { if (!current()) abort(); };
+    const abort = (): void => {
       if (settled) return;
+      settled = true;
+      cleanup();
+      // A session load/shutdown owns its new audio. Only a live host removal
+      // without session cancellation restores this battle's field audio.
+      if (owns()) exitBattleAudio(project, session, savedAudio);
+      resolve(null);
+    };
+    const fail = (error: unknown): void => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      if (owns()) exitBattleAudio(project, session, savedAudio);
+      reject(error);
+    };
+    signal?.addEventListener("abort", abort, { once: true });
+    scene.events?.once("shutdown", onShutdown);
+    scene.events?.once("destroy", onShutdown);
+    scene.events?.on("update", checkOwner);
+    void entryTransition.cover().then(() => {
+      if (!current()) { abort(); return; }
       battleScene = mountBattleScene({
-        host,
-        runtime,
-        onResult: (result, snapshot) => {
-          if (settled) return;
-          settled = true;
-          const exitTransition = createSkinBattleTransition(host, entrySkin.transition);
-          void exitTransition.exit().then(() => {
-            exitBattleAudio(project, scene.session, savedAudio);
-            applyBattleRewardsToSession(
-              scene.session,
-              { result, canLose: snapshot.canLose, rewards: snapshot.rewards, actors: [...snapshot.actors, ...snapshot.reserveActors], eventState: snapshot.eventState, participatingActorIds: snapshot.participatingActorIds, monsterPartyMode },
-              project
-            );
-            // 오토세이브 훅(PlayScene 경로 전용): 승리 보상이 세션에 반영된 직후.
-            // sceneTestRunner/walkthroughRunner 는 applyBattleRewardsToSession 을 직접 부르므로
-            // 헤드리스 테스트가 localStorage 를 오염시키지 않는다.
-            if (result === "victory") maybeAutosave(project, scene.session, "battleVictory");
-            battleScene?.destroy();
-            void exitTransition.reveal().then(() => resolve(result));
+        host, runtime,
+        showEventChoices: (request, inputSignal) => {
+          if (!current()) { abort(); return Promise.reject(new DOMException("Battle cancelled", "AbortError")); }
+          const dialogue = dialogueUi(scene);
+          if (!dialogue) return Promise.reject(new Error("Battle choice input host missing"));
+          const eventState = runtime.snapshot().eventState;
+          return dialogue.showChoices({
+            prompt: request.prompt, options: request.options.map(option => ({ ...option })),
+            cancelBehavior: request.cancelBehavior, signal: inputSignal,
+            settings: session.messageWindowSettings, playerTileY: scene.tileY, mapHeight: scene.map.height,
+            textContext: { project, session: { variables: eventState.variables, gold: eventState.gold, actorNames: session.actorNames } },
           });
+        },
+        onDestroy: () => { if (!closingDom) abort(); },
+        onError: fail,
+        onResult: (result, snapshot) => {
+          if (!current()) { abort(); return; }
+          if (exiting) return;
+          exiting = true;
+          const transition = createSkinBattleTransition(host, entrySkin.transition);
+          exitTransition = transition;
+          void transition.exit().then(async () => {
+            if (!current()) { abort(); return; }
+            closingDom = true;
+            battleScene?.destroy();
+            battleScene = undefined;
+            await transition.reveal();
+            if (!current()) { abort(); return; }
+            // Commit once, after all cancellable presentation has completed.
+            exitBattleAudio(project, session, savedAudio);
+            applyBattleRewardsToSession(session,
+              { result, canLose: snapshot.canLose, rewards: snapshot.rewards, actors: [...snapshot.actors, ...snapshot.reserveActors], eventState: snapshot.eventState, participatingActorIds: snapshot.participatingActorIds, monsterPartyMode }, project);
+            if (result === "victory") maybeAutosave(project, session, "battleVictory");
+            settled = true;
+            cleanup();
+            resolve(result);
+          }).catch(fail);
         },
       });
       markBattleEntry(startedAt);
-      void entryTransition.reveal();
-    });
+      return entryTransition.reveal();
+    }).catch(fail);
   });
 }

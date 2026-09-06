@@ -1,6 +1,5 @@
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { renderDatabaseCommandListEditor } from "@/editor/panels/databaseCommandListAdapter";
-import { battleEventCommandRuntimeSupport } from "@/project/eventCommands/runtimeSupport";
 import { selectField, selectLiteral, textField } from "@/editor/panels/databaseControls";
 import { checkboxField } from "@/editor/panels/databaseEnemyRecordSupport";
 import { battleEventCommandControls } from "@/editor/panels/databaseTroopBattleEventCommands";
@@ -262,7 +261,6 @@ function commandArea(record: TroopRecord, page: BattleEventPageRecord | undefine
   renderDatabaseCommandListEditor(host, {
     commands: page.commands,
     rerender,
-    runtimeSupport: battleEventCommandRuntimeSupport,
     pickerContext: "troop",
     replaceCommands: (commands: Command[]) => updateTroopBattleEventPage(record, page, { commands }),
   });

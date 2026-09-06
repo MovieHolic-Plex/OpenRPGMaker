@@ -25,7 +25,7 @@ export const RM2000_PARTY_SLOTS: Readonly<Record<number, readonly number[]>> = {
 export const BATTLER_PLACEMENTS: Record<BattleSkinId, SkinBattlerPlacement> = {
   pokemon: { partyFacing: "back", partyMax: 1, partyScale: 1.25, enemy: (i, n) => (n <= 1 ? { x: 245, y: 92 } : { x: 250 - i * 58, y: 100 - (i % 2) * 14 }), party: () => ({ x: 84, y: 152 }) },
   rm2000: {
-    partyFacing: "back",
+    partyFacing: "hidden",
     enemy: (i, n) => ({
       x: Math.round(160 + (i - (n - 1) / 2) * 70),
       y: n <= 1 ? 124 : 104 + (i % 2) * 8,

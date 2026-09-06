@@ -27,6 +27,7 @@ export type ParallelProcess = {
   waitMs: number;
   started: boolean;
   pendingTimeTransition?: Promise<boolean>;
+  pendingBattle?: import("./scheduledBattle").PendingScheduledBattle;
   stopped?: boolean;
 };
 
@@ -57,6 +58,9 @@ export type AutonomousMover = {
    * 액션 전투 상태기가 매 프레임 심는다. 있으면 추겁 경로가 이 칸을 목표로 삼는다.
    */
   chaseTarget?: { readonly x: number; readonly y: number } | undefined;
+  /** Cache identity only; persisted search targets live in session.horror. */
+  pursuitTargetKey?: string;
+  chasePathBlocked?: boolean;
   chaseRepathTimerMs?: number;
   chasePath?: { readonly x: number; readonly y: number }[];
   chaseActive?: boolean;
@@ -149,6 +153,7 @@ export interface PlaySceneContext extends Phaser.Scene {
   playerSprite: PlayerSpriteResource;
   input_: Input;
   session: PlaySession;
+  battleAbortController?: AbortController;
   map: GameMap;
   inputEnabled: boolean;
   running: boolean;
@@ -254,7 +259,7 @@ export interface PlaySceneContext extends Phaser.Scene {
     battleFlow?: "gauge" | "strict";
     // 전투를 기동한 맵 이벤트 id(트룹 배틀 이벤트 selfSwitch 소유 이벤트). 인카운터/스폰은 없음.
     ownerEventId?: string;
-  }): Promise<"victory" | "defeat" | "escape">;
+  }, isCurrent?: () => boolean): Promise<"victory" | "defeat" | "escape" | null>;
   showBattleScene(troopId: string): void;
   showRuntimeOverlay(testId: string, text: string): void;
   clearRuntimeOverlay(testId: string): void;

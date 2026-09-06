@@ -167,6 +167,10 @@ function applyBattleEventStateToSession(session: PlaySession, eventState: Battle
       setRelationshipState(session, key, state);
     }
   }
+  for (const [key, value] of Object.entries(eventState.friendship ?? {})) {
+    session.friendship ??= {};
+    session.friendship[key] = value;
+  }
   // 전투 중 changeEquipment 오버레이 write-back(Step 3d): 시드가 세션 사본이라 액터 단위
   // 병합이 idempotent 하다. 장비 전이의 인벤토리 증감은 아래 inventory 덮어쓰기에 포함된다.
   if (eventState.actorEquipment) {
@@ -198,7 +202,10 @@ function applyBattleEventStateToSession(session: PlaySession, eventState: Battle
 }
 
 // 전투 종료 시점의 아군 HP/MP를 세션 바이탈에 되돌려 쓴다(레벨업 가산 이전에 수행).
-function applyBattleVitalsToSession(session: PlaySession, actors: readonly BattleBattlerSnapshot[]): void {
+function applyBattleVitalsToSession(
+  session: PlaySession,
+  actors: readonly BattleBattlerSnapshot[]
+): void {
   for (const actor of actors) {
     const vitals = session.actorVitals[actor.recordId];
     if (!vitals) continue;

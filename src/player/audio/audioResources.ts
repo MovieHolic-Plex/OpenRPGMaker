@@ -10,7 +10,7 @@ import type { Project } from "@/project/types";
 const AUDIO_RESOURCE_KINDS: ReadonlySet<string> = new Set(["music", "sound"]);
 
 // 루프 채널(교체 시 크로스페이드, 세이브 복원 시 재개 대상).
-const LOOPING_CHANNELS: ReadonlySet<AudioChannel> = new Set<AudioChannel>(["bgm", "bgs"]);
+const LOOPING_CHANNELS: ReadonlySet<AudioChannel> = new Set<AudioChannel>(["bgm", "bgs", "ambient"]);
 
 export type AudioVolumeGroup = "bgm" | "se";
 

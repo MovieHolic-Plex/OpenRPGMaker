@@ -561,3 +561,13 @@ friendshipAtLeast/battleResult/run)을 틀리게 확신했고, 특히 거의 모
 ## 공포 게임 제작 기능 (2026-09-05)
 
 이벤트 「움직임과 속도」에 연결 방 추격, 밀 수 있는 가구, 은신처 설정을 추가했다. 데이터·런타임·저작·검증 계약은 [horror-authoring.md](horror-authoring.md) 참조.
+
+
+### NPC 발견·추격 저작 (2026-09-06)
+
+`pageNpcBehavior.ts`는 정지 페이지에도 발견 이벤트를 제공하고, 추격에는 명시적 시야를 제공한다.
+`pageHorror.ts`의 tracking은 마지막 목격 수색/현재 위치 추적이며 생략값은 마지막 목격이다.
+새 chase 선택만 기본 정책을 저작한다. 기존 chase를 열기/취소하거나 빈도를 수정하는 것으로
+숨은 기본 정책을 추가하지 않는다. `normalizeEventPage`는 선택 sight를 보존한다.
+모든 입력은 기존 `updateEventPage` 드래프트/감사 경로를 사용한다. 발견 대기는 ms, 문 대기는 초다.
+필드·런타임·저장 계약과 테스트는 [horror-authoring.md](horror-authoring.md)의 NPC 발견 절을 따른다.
