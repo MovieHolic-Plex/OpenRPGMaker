@@ -1,0 +1,112 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle --maxWorkers=1 --no-file-parallelism test/aiJobPanels.test.ts -t old failed report|matching durable receipt|newest-first DOM|held image
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-silver-harbor-d2a7
+
+ ❯ test/aiJobPanels.test.ts (16 tests | 4 failed | 12 skipped) 401ms
+   ↓ mounts one persistent job launcher across topbar rebuilds
+   ↓ handles named replay, deduplicates durable outcomes, and never lets initial fetch overwrite live detail
+   ↓ server read acknowledgement is deduplicated across concurrent opens and stale inbox fetches
+   ↓ retains queue input, row identity, selection and scroll on background events; close never cancels
+   ↓ requires explicit retry consent and nested Escape only closes that confirmation
+   ↓ opens immutable media without application/provider writes, retains revision on update and revokes owned URLs
+   ↓ keeps authoritative already-read inbox records read when historical outcomes replay later
+   ↓ rejects older list completion after newer detail with no SSE and identical timestamps
+   ↓ rejects older list completion after newer list with no SSE and identical timestamps
+   ↓ notifies eligibility on actual loaded identity/epoch replacement but not ordinary paint
+   ↓ retries transient auto input reads on explicit reconnect without generation replay
+   ↓ retries transient auto input reads on native reconnect without generation replay
+   × does not pair an old failed report with a successful retry's review/apply controls 320ms
+     → expected false to be true // Object.is equality
+   × reconciles local unsaved outcome only with the matching durable receipt including cross-client save 4ms
+     → expected 'unsaved' to be 'saved' // Object.is equality
+   × places newly admitted rows in newest-first DOM order without replacing focused existing rows 21ms
+     → expected [ 'job-one', 'newest' ] to deeply equal [ 'newest', 'job-one' ]
+   × mounts the selected object's complete inventory before a held image and defers offscreen media 52ms
+     → expected  to have a length of 300 but got +0
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiJobPanels.test.ts > does not pair an old failed report with a successful retry's review/apply controls
+AssertionError: expected false to be true // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+ ❯ test/aiJobPanels.test.ts:189:92
+    187|   const opener = document.createElement("button"); document.body.appen…
+    188|   const panel = await openJobReport("job-one", opener, f.client);
+    189|   expect(panel.querySelector<HTMLButtonElement>('[data-testid="ai-job-…
+       |                                                                                            ^
+    190|   expect(panel.querySelector('[data-testid="ai-job-review"]')).toBeNul…
+    191| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  test/aiJobPanels.test.ts > reconciles local unsaved outcome only with the matching durable receipt including cross-client save
+AssertionError: expected 'unsaved' to be 'saved' // Object.is equality
+
+Expected: [32m"saved"[39m
+Received: [31m"[7mun[27msaved"[39m
+
+ ❯ test/aiJobPanels.test.ts:198:88
+    196|   f.setJob(saved); await f.client.refresh(); expect(f.client.outcomes.…
+    197|   f.setJob({ ...saved, applicationEvidence: { receipt: { receiptId: "o…
+    198|   expect(f.client.outcomes.get("job-one")?.save ?? f.client.jobs.get("…
+       |                                                                                        ^
+    199|   expect(f.client.outcomes.get("job-one")?.evidencePending).not.toBe(t…
+    200| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  test/aiJobPanels.test.ts > places newly admitted rows in newest-first DOM order without replacing focused existing rows
+AssertionError: expected [ 'job-one', 'newest' ] to deeply equal [ 'newest', 'job-one' ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[32m-   "newest",[39m
+[2m    "job-one",[22m
+[31m+   "newest",[39m
+[2m  ][22m
+
+ ❯ test/aiJobPanels.test.ts:206:79
+    204|   const old = list.firstElementChild!; const button = old.querySelecto…
+    205|   f.setJob({ ...job("newest"), createdAt: 2 }); await f.client.refresh…
+    206|   expect([...list.children].map(item => (item as HTMLElement).dataset.…
+       |                                                                               ^
+    207|   expect(old.isConnected).toBe(true); expect(document.activeElement).t…
+    208| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  test/aiJobPanels.test.ts > mounts the selected object's complete inventory before a held image and defers offscreen media
+AssertionError: expected  to have a length of 300 but got +0
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 300[39m
+[31m+ 0[39m
+
+ ❯ test/aiJobPanels.test.ts:220:60
+    218|   await requested.promise;
+    219|   try {
+    220|     expect(document.querySelectorAll('[data-preview-id]')).toHaveLengt…
+       |                                                            ^
+    221|     expect(document.querySelector('.ai-jobs-object')).not.toBeNull();
+    222|     expect(f.paths.filter(path => path === "/job-one")).toHaveLength(1…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed | 12 skipped (16)
+   Start at  02:39:16
+   Duration  28.77s (transform 22.80s, setup 0ms, collect 27.32s, tests 401ms, environment 483ms, prepare 119ms)

@@ -1,0 +1,4 @@
+src/editor/panels/eventEditor/customSelect.ts(362,5): error TS2322: Type 'Timeout' is not assignable to type 'number'.
+src/editor/panels/eventEditor/showAnimationPlayback.ts(138,5): error TS2322: Type 'number' is not assignable to type 'Timeout'.
+
+EXIT=2

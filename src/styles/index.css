@@ -24,6 +24,7 @@
 @import "./editor/inline-assist.css";
 @import "./editor/ghost-phase-chip.css";
 @import "./editor/ai-activity-live.css";
+@import "./editor/ai-jobs.css";
 @import "./runtime/playerRuntime.css";
 @import "./database/actors.css";
 @import "./database/enemies.css";

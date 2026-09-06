@@ -1,0 +1,41 @@
+[WebServer] [rpg-zzu] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[WebServer] [rpg-zzu] QWENCLOUD_API_KEY 가 없어 /api/qwen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[WebServer] [rpg-zzu] CPENROUTER_API_KEY 가 없어 /api/cpen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+
+Running 1 test using 1 worker
+
+  ✘  1 [chromium] › test/e2e/ai-job-inbox.spec.ts:3:1 › real editor exposes the durable inbox without blocking editing (19.3s)
+
+
+  1) [chromium] › test/e2e/ai-job-inbox.spec.ts:3:1 › real editor exposes the durable inbox without blocking editing
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 1
+    Received: 0
+
+      4 |   await page.goto('/?blankProject=1');
+      5 |   await expect(page.getByTestId('oprn-menu-bar')).toBeVisible();
+    > 6 |   expect(await page.getByTestId('ai-jobs-open').count()).toBe(1);
+        |                                                          ^
+      7 |   await page.getByTestId('ai-jobs-open').click();
+      8 |   await expect(page.getByTestId('ai-jobs-list')).toBeVisible();
+      9 |   await page.keyboard.press('Escape');
+        at /home/main/.herdr/worktrees/rpg-zzu/worktree-silver-harbor-d2a7/test/e2e/ai-job-inbox.spec.ts:6:58
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/ai-job-inbox-real-editor-e-f7839-ox-without-blocking-editing-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/ai-job-inbox-real-editor-e-f7839-ox-without-blocking-editing-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/ai-job-inbox-real-editor-e-f7839-ox-without-blocking-editing-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/ai-job-inbox-real-editor-e-f7839-ox-without-blocking-editing-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › test/e2e/ai-job-inbox.spec.ts:3:1 › real editor exposes the durable inbox without blocking editing

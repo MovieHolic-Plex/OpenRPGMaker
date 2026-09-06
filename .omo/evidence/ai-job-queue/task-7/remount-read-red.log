@@ -1,0 +1,75 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle --maxWorkers=1 --no-file-parallelism test/aiJobPanels.test.ts -t replacement launcher|before the initial snapshot
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-silver-harbor-d2a7
+
+ ❯ test/aiJobPanels.test.ts (20 tests | 2 failed | 18 skipped) 182ms
+   ↓ mounts one persistent job launcher across topbar rebuilds
+   ↓ handles named replay, deduplicates durable outcomes, and never lets initial fetch overwrite live detail
+   ↓ server read acknowledgement is deduplicated across concurrent opens and stale inbox fetches
+   ↓ retains queue input, row identity, selection and scroll on background events; close never cancels
+   ↓ requires explicit retry consent and nested Escape only closes that confirmation
+   ↓ opens immutable media without application/provider writes, retains revision on update and revokes owned URLs
+   ↓ keeps authoritative already-read inbox records read when historical outcomes replay later
+   ↓ rejects older list completion after newer detail with no SSE and identical timestamps
+   ↓ rejects older list completion after newer list with no SSE and identical timestamps
+   ↓ notifies eligibility on actual loaded identity/epoch replacement but not ordinary paint
+   ↓ retries transient auto input reads on explicit reconnect without generation replay
+   ↓ retries transient auto input reads on native reconnect without generation replay
+   ↓ does not pair an old failed report with a successful retry's review/apply controls
+   ↓ reconciles local unsaved outcome only with the matching durable receipt including cross-client save
+   ↓ places newly admitted rows in newest-first DOM order without replacing focused existing rows
+   ↓ mounts the selected object's complete inventory before a held image and defers offscreen media
+   ↓ passes local event exclusion choices through real HTTP/Task5 draft application and save-only retry
+   ↓ passes only selected immutable native tileset proposal IDs through real Task5 without a live analysis handler
+   × rebinds an open queue to the replacement launcher without a close-and-reopen click 154ms
+     → expected 'false' to be 'true' // Object.is equality
+   × reads the authoritative inbox before acknowledging a report opened before the initial snapshot 21ms
+     → expected [] to deeply equal [ '/inbox/7/read' ]
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiJobPanels.test.ts > rebinds an open queue to the replacement launcher without a close-and-reopen click
+AssertionError: expected 'false' to be 'true' // Object.is equality
+
+Expected: [32m"[7mtru[27me"[39m
+Received: [31m"[7mfals[27me"[39m
+
+ ❯ test/aiJobPanels.test.ts:319:56
+    317|   first.dispose(); first.element.remove();
+    318|   const second = mountJobLauncher(f.client); document.body.append(seco…
+    319|   expect(second.element.getAttribute("aria-expanded")).toBe("true");
+       |                                                        ^
+    320|   second.element.dispatchEvent(new PointerEvent("pointerdown", { bubbl…
+    321|   expect(document.querySelector('[data-testid="ai-jobs-queue"]')).toBe…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  test/aiJobPanels.test.ts > reads the authoritative inbox before acknowledging a report opened before the initial snapshot
+AssertionError: expected [] to deeply equal [ '/inbox/7/read' ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [[39m
+[32m-   "/inbox/7/read",[39m
+[32m- ][39m
+[31m+ [][39m
+
+ ❯ test/aiJobPanels.test.ts:326:43
+    324|   const f = fixture(); f.setInbox([{ eventSeq: 7, jobId: "job-one", cr…
+    325|   expect(f.client.inbox.size).toBe(0); await f.client.markRead("job-on…
+    326|   expect(f.writes.map(item => item.path)).toEqual(["/inbox/7/read"]); …
+       |                                           ^
+    327| });
+    328|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 18 skipped (20)
+   Start at  03:48:36
+   Duration  64.60s (transform 50.51s, setup 0ms, collect 62.33s, tests 182ms, environment 830ms, prepare 251ms)

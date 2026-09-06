@@ -1,0 +1,17 @@
+FOCUSED_BEGIN 2026-09-07T07:28:22+09:00
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle --maxWorkers=1 --no-file-parallelism --testTimeout=60000 test/aiJobPanels.test.ts test/aiJobApplication.test.ts
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-silver-harbor-d2a7
+
+ ✓ test/aiJobPanels.test.ts (22 tests) 8543ms
+ ✓ test/aiJobApplication.test.ts (25 tests) 127795ms
+
+ Test Files  2 passed (2)
+      Tests  47 passed (47)
+   Start at  07:28:23
+   Duration  167.34s
+
+FOCUSED_EXIT=0
+FOCUSED_END 2026-09-07T07:31:11+09:00

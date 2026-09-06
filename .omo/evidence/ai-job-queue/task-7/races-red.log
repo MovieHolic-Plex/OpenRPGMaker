@@ -1,0 +1,113 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle --maxWorkers=1 --no-file-parallelism test/aiJobPanels.test.ts -t authoritative already-read|older list|actual loaded|transient auto
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-silver-harbor-d2a7
+
+ ❯ test/aiJobPanels.test.ts (12 tests | 6 failed | 6 skipped) 5946ms
+   ↓ mounts one persistent job launcher across topbar rebuilds
+   ↓ handles named replay, deduplicates durable outcomes, and never lets initial fetch overwrite live detail
+   ↓ server read acknowledgement is deduplicated across concurrent opens and stale inbox fetches
+   ↓ retains queue input, row identity, selection and scroll on background events; close never cancels
+   ↓ requires explicit retry consent and nested Escape only closes that confirmation
+   ↓ opens immutable media without application/provider writes, retains revision on update and revokes owned URLs
+   × keeps authoritative already-read inbox records read when historical outcomes replay later 46ms
+     → expected 1 to be +0 // Object.is equality
+   × rejects older list completion after newer detail with no SSE and identical timestamps 5ms
+     → expected 'queued' to be 'succeeded' // Object.is equality
+   × rejects older list completion after newer list with no SSE and identical timestamps 2ms
+     → expected 'queued' to be 'succeeded' // Object.is equality
+   × notifies eligibility on actual loaded identity/epoch replacement but not ordinary paint 431ms
+     → expected +0 to be 1 // Object.is equality
+   × retries transient auto input reads on explicit reconnect without generation replay 227ms
+     → expected 1 to be greater than 1
+   × retries transient auto input reads on native reconnect without generation replay 5212ms
+     → Expected exact client state not observed
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiJobPanels.test.ts > keeps authoritative already-read inbox records read when historical outcomes replay later
+AssertionError: expected 1 to be +0 // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 0[39m
+[31m+ 1[39m
+
+ ❯ test/aiJobPanels.test.ts:142:56
+    140|   const f = fixture(); f.setInbox([{ eventSeq: 1, jobId: "job-one", cr…
+    141|   await f.client.connect(); expect(f.client.unread).toBe(0);
+    142|   f.sources[0].send(event(1)); expect(f.client.unread).toBe(0);
+       |                                                        ^
+    143|   expect(f.client.inbox.get(1)?.readAt).toBe(8);
+    144| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  test/aiJobPanels.test.ts > rejects older list completion after newer detail with no SSE and identical timestamps
+ FAIL  test/aiJobPanels.test.ts > rejects older list completion after newer list with no SSE and identical timestamps
+AssertionError: expected 'queued' to be 'succeeded' // Object.is equality
+
+Expected: [32m"[7msucceed[27med"[39m
+Received: [31m"[7mqueu[27med"[39m
+
+ ❯ test/aiJobPanels.test.ts:152:52
+    150|   expect(f.client.jobs.get("job-one")?.generation).toBe("succeeded");
+    151|   old.resolve(Response.json({ jobs: [job()] })); await pending;
+    152|   expect(f.client.jobs.get("job-one")?.generation).toBe("succeeded");
+       |                                                    ^
+    153| });
+    154| it("notifies eligibility on actual loaded identity/epoch replacement b…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  test/aiJobPanels.test.ts > notifies eligibility on actual loaded identity/epoch replacement but not ordinary paint
+AssertionError: expected +0 to be 1 // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 0[39m
+
+ ❯ test/aiJobPanels.test.ts:159:63
+    157|   let updates = 0; const off = f.client.subscribe(() => updates++);
+    158|   store.updateMap(store.getCurrent().startMapId, map => { map.name = "…
+    159|   store.replaceProject(createBlankProject()); expect(updates).toBe(1);…
+       |                                                               ^
+    160| });
+    161| it.each(["explicit", "native"])("retries transient auto input reads on…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  test/aiJobPanels.test.ts > retries transient auto input reads on explicit reconnect without generation replay
+AssertionError: expected 1 to be greater than 1
+ ❯ test/aiJobPanels.test.ts:172:56
+    170|   if (recovery === "explicit") await f.client.connect();
+    171|   else { const refreshed = signal(f.client, () => f.paths.filter(item …
+    172|   expect(f.paths.filter(item => item === path).length).toBeGreaterThan…
+       |                                                        ^
+    173|   expect(f.writes).toHaveLength(0);
+    174| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  test/aiJobPanels.test.ts > retries transient auto input reads on native reconnect without generation replay
+Error: Expected exact client state not observed
+ ❯ Timeout.<anonymous> test/aiJobPanels.test.ts:20:49
+     18| function signal(client: JobClient, predicate: () => boolean): Promise<…
+     19|   const done = deferred<void>(); const off = client.subscribe(() => { …
+     20|   const deadline = setTimeout(() => done.reject(new Error("Expected ex…
+       |                                                 ^
+     21|   return done.promise.finally(() => { clearTimeout(deadline); off(); }…
+     22| }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  6 failed | 6 skipped (12)
+   Start at  02:29:49
+   Duration  43.47s (transform 29.30s, setup 0ms, collect 36.21s, tests 5.95s, environment 588ms, prepare 141ms)

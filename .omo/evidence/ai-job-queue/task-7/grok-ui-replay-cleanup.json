@@ -1,0 +1,336 @@
+{
+  "runId": "e2170edb-0513-4ed9-a8b1-f94cd4355c57",
+  "label": "grok-ui-replay",
+  "startedAt": "2026-09-06T23:11:50.783655+00:00",
+  "status": "complete",
+  "command": [
+    "node",
+    ".omo/evidence/ai-job-queue/task-7/grok-ui-replay-workload.mjs"
+  ],
+  "commandExit": 0,
+  "runnerError": null,
+  "serverPid": 968596,
+  "serverExit": 0,
+  "shutdownHttp": 200,
+  "graceful": true,
+  "temporary": "/dev/shm/task7-editor-9zej7i0s",
+  "removed": true,
+  "fixture": {
+    "runId": "e2170edb-0513-4ed9-a8b1-f94cd4355c57",
+    "temporary": "/dev/shm/task7-editor-9zej7i0s",
+    "removed": true,
+    "serviceClosed": true,
+    "serverClosed": true,
+    "cleanupErrors": [],
+    "stage": "complete",
+    "providerCalls": 4,
+    "externalPaidCalls": 0,
+    "errors": [],
+    "activeBrowsers": 0,
+    "browserEvents": [
+      {
+        "event": "launched",
+        "at": 1788736340463
+      },
+      {
+        "event": "closed",
+        "at": 1788736347337
+      },
+      {
+        "event": "launched",
+        "at": 1788736347835
+      },
+      {
+        "event": "closed",
+        "at": 1788736356475
+      },
+      {
+        "event": "launched",
+        "at": 1788736357234
+      },
+      {
+        "event": "closed",
+        "at": 1788736360475
+      },
+      {
+        "event": "launched",
+        "at": 1788736361278
+      },
+      {
+        "event": "closed",
+        "at": 1788736363667
+      },
+      {
+        "event": "launched",
+        "at": 1788736364770
+      },
+      {
+        "event": "closed",
+        "at": 1788736367125
+      },
+      {
+        "event": "launched",
+        "at": 1788736368035
+      },
+      {
+        "event": "closed",
+        "at": 1788736370617
+      },
+      {
+        "event": "launched",
+        "at": 1788736371586
+      },
+      {
+        "event": "closed",
+        "at": 1788736373984
+      },
+      {
+        "event": "launched",
+        "at": 1788736375329
+      },
+      {
+        "event": "closed",
+        "at": 1788736378129
+      },
+      {
+        "event": "launched",
+        "at": 1788736379750
+      },
+      {
+        "event": "closed",
+        "at": 1788736385585
+      },
+      {
+        "event": "launched",
+        "at": 1788736387481
+      },
+      {
+        "event": "closed",
+        "at": 1788736393449
+      },
+      {
+        "event": "launched",
+        "at": 1788736395250
+      },
+      {
+        "event": "closed",
+        "at": 1788736398781
+      },
+      {
+        "event": "launched",
+        "at": 1788736399634
+      },
+      {
+        "event": "closed",
+        "at": 1788736402546
+      },
+      {
+        "event": "launched",
+        "at": 1788736403575
+      },
+      {
+        "event": "closed",
+        "at": 1788736406730
+      },
+      {
+        "event": "launched",
+        "at": 1788736407797
+      },
+      {
+        "event": "closed",
+        "at": 1788736410940
+      },
+      {
+        "event": "launched",
+        "at": 1788736412132
+      },
+      {
+        "event": "closed",
+        "at": 1788736415058
+      },
+      {
+        "event": "launched",
+        "at": 1788736416207
+      },
+      {
+        "event": "closed",
+        "at": 1788736419099
+      },
+      {
+        "event": "launched",
+        "at": 1788736420136
+      },
+      {
+        "event": "closed",
+        "at": 1788736422971
+      },
+      {
+        "event": "launched",
+        "at": 1788736424018
+      },
+      {
+        "event": "closed",
+        "at": 1788736426665
+      },
+      {
+        "event": "launched",
+        "at": 1788736427748
+      },
+      {
+        "event": "closed",
+        "at": 1788736431065
+      },
+      {
+        "event": "launched",
+        "at": 1788736432240
+      },
+      {
+        "event": "closed",
+        "at": 1788736435097
+      },
+      {
+        "event": "launched",
+        "at": 1788736436766
+      },
+      {
+        "event": "closed",
+        "at": 1788736440082
+      },
+      {
+        "event": "launched",
+        "at": 1788736442051
+      },
+      {
+        "event": "closed",
+        "at": 1788736445297
+      },
+      {
+        "event": "launched",
+        "at": 1788736447882
+      },
+      {
+        "event": "closed",
+        "at": 1788736451112
+      },
+      {
+        "event": "launched",
+        "at": 1788736619359
+      },
+      {
+        "event": "closed",
+        "at": 1788736628180
+      },
+      {
+        "event": "launched",
+        "at": 1788736628957
+      },
+      {
+        "event": "closed",
+        "at": 1788736634680
+      },
+      {
+        "event": "launched",
+        "at": 1788736661785
+      },
+      {
+        "event": "closed",
+        "at": 1788736671247
+      },
+      {
+        "event": "launched",
+        "at": 1788736673189
+      },
+      {
+        "event": "closed",
+        "at": 1788736679869
+      },
+      {
+        "event": "launched",
+        "at": 1788736681155
+      },
+      {
+        "event": "closed",
+        "at": 1788736688877
+      },
+      {
+        "event": "launched",
+        "at": 1788736691688
+      },
+      {
+        "event": "closed",
+        "at": 1788736701840
+      },
+      {
+        "event": "launched",
+        "at": 1788736708862
+      },
+      {
+        "event": "closed",
+        "at": 1788736718499
+      },
+      {
+        "event": "launched",
+        "at": 1788736720301
+      },
+      {
+        "event": "closed",
+        "at": 1788736731276
+      },
+      {
+        "event": "launched",
+        "at": 1788736732282
+      },
+      {
+        "event": "closed",
+        "at": 1788736734403
+      },
+      {
+        "event": "launched",
+        "at": 1788736735767
+      },
+      {
+        "event": "closed",
+        "at": 1788736737949
+      },
+      {
+        "event": "launched",
+        "at": 1788736739667
+      },
+      {
+        "event": "closed",
+        "at": 1788736748691
+      },
+      {
+        "event": "launched",
+        "at": 1788736749857
+      },
+      {
+        "event": "closed",
+        "at": 1788736755831
+      },
+      {
+        "event": "launched",
+        "at": 1788736762554
+      },
+      {
+        "event": "closed",
+        "at": 1788736770322
+      },
+      {
+        "event": "launched",
+        "at": 1788736775705
+      },
+      {
+        "event": "closed",
+        "at": 1788736784018
+      }
+    ]
+  },
+  "cleanupErrors": [],
+  "escalations": [],
+  "remainingPids": [],
+  "port": 19841,
+  "portFree": true,
+  "finishedAt": "2026-09-06T23:19:55.048177+00:00",
+  "exitCode": 0
+}

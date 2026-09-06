@@ -1,0 +1,6 @@
+{
+  "extends": "../../../../tsconfig.json",
+  "include": ["../../../../test/aiJobPanels.test.ts", "../../../../test/e2e/ai-job-inbox.spec.ts", "../../../../src/vite-env.d.ts"],
+  "exclude": ["../../../../node_modules", "../../../../dist"],
+  "compilerOptions": { "noEmit": true }
+}

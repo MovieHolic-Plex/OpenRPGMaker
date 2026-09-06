@@ -1,0 +1,14 @@
+{
+  "actions": [
+    "real editor canvas and launcher mounted",
+    "queue input and online fonts ready",
+    "browser offline event observed",
+    "actual offline compositor screenshot captured",
+    "online recovery event observed",
+    "real HTTP admission, provider boundary held, submitting tab closed, server completion, reopened report, server read ack, reduced motion keyboard",
+    "native named SSE reconnect sent durable Last-Event-ID without after query; no admission or provider dispatch on replay",
+    "opted-in auto mode applied without report opening; save-only retry reports no remote proof and no generation",
+    "real cancellation; explicit duplicate-spend retry consent; stale checkpoint review disabled until refreshed; explicit guarded apply through report control"
+  ],
+  "browserErrors": []
+}

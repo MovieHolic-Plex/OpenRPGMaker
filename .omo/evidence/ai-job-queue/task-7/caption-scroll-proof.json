@@ -1,0 +1,172 @@
+{
+  "viewport": [
+    1280,
+    800
+  ],
+  "origin": "http://127.0.0.1:19841",
+  "actions": [
+    "real editor canvas and launcher mounted",
+    "client refreshed against seeded jobs",
+    "opened tileset report e184dae6-adb5-434e-996a-df6d69a157d0",
+    "tileset caption reachable=true scrollTop 0 -> 11",
+    "opened native-tileset report 008aedf2-3ec8-4469-8244-57b4f8214b7e",
+    "native-tileset caption reachable=true scrollTop 0 -> 11"
+  ],
+  "cases": {
+    "tileset": {
+      "id": "e184dae6-adb5-434e-996a-df6d69a157d0",
+      "before": {
+        "captionText": "전체 타일 그림판 · 32 × 16",
+        "scrollTop": 0,
+        "caption": {
+          "top": 711,
+          "bottom": 729,
+          "left": 289,
+          "right": 1231,
+          "width": 942,
+          "height": 18
+        },
+        "body": {
+          "top": 150,
+          "bottom": 718,
+          "left": 265,
+          "right": 1255,
+          "width": 990,
+          "height": 568
+        },
+        "footer": {
+          "top": 718,
+          "bottom": 775,
+          "left": 25,
+          "right": 1255,
+          "width": 1230,
+          "height": 57
+        },
+        "withinBody": false,
+        "aboveFooter": false,
+        "hitOk": false,
+        "hitTag": "FOOTER",
+        "hitTestid": "ai-job-report",
+        "reachable": false
+      },
+      "after": {
+        "captionText": "전체 타일 그림판 · 32 × 16",
+        "scrollTop": 11,
+        "caption": {
+          "top": 700,
+          "bottom": 718,
+          "left": 289,
+          "right": 1231,
+          "width": 942,
+          "height": 18
+        },
+        "body": {
+          "top": 150,
+          "bottom": 718,
+          "left": 265,
+          "right": 1255,
+          "width": 990,
+          "height": 568
+        },
+        "footer": {
+          "top": 718,
+          "bottom": 775,
+          "left": 25,
+          "right": 1255,
+          "width": 1230,
+          "height": 57
+        },
+        "withinBody": true,
+        "aboveFooter": true,
+        "hitOk": true,
+        "hitTag": "FIGCAPTION",
+        "hitTestid": "ai-job-media",
+        "reachable": true
+      },
+      "pass": true,
+      "screenshots": {
+        "before": "/home/main/.herdr/worktrees/rpg-zzu/worktree-silver-harbor-d2a7/.omo/evidence/ai-job-queue/task-7/caption-tileset-1280-before.png",
+        "after": "/home/main/.herdr/worktrees/rpg-zzu/worktree-silver-harbor-d2a7/.omo/evidence/ai-job-queue/task-7/caption-tileset-1280-after.png"
+      }
+    },
+    "native-tileset": {
+      "id": "008aedf2-3ec8-4469-8244-57b4f8214b7e",
+      "before": {
+        "captionText": "전체 타일 그림판 · 32 × 16",
+        "scrollTop": 0,
+        "caption": {
+          "top": 711,
+          "bottom": 729,
+          "left": 289,
+          "right": 1231,
+          "width": 942,
+          "height": 18
+        },
+        "body": {
+          "top": 150,
+          "bottom": 718,
+          "left": 265,
+          "right": 1255,
+          "width": 990,
+          "height": 568
+        },
+        "footer": {
+          "top": 718,
+          "bottom": 775,
+          "left": 25,
+          "right": 1255,
+          "width": 1230,
+          "height": 57
+        },
+        "withinBody": false,
+        "aboveFooter": false,
+        "hitOk": false,
+        "hitTag": "FOOTER",
+        "hitTestid": "ai-job-report",
+        "reachable": false
+      },
+      "after": {
+        "captionText": "전체 타일 그림판 · 32 × 16",
+        "scrollTop": 11,
+        "caption": {
+          "top": 700,
+          "bottom": 718,
+          "left": 289,
+          "right": 1231,
+          "width": 942,
+          "height": 18
+        },
+        "body": {
+          "top": 150,
+          "bottom": 718,
+          "left": 265,
+          "right": 1255,
+          "width": 990,
+          "height": 568
+        },
+        "footer": {
+          "top": 718,
+          "bottom": 775,
+          "left": 25,
+          "right": 1255,
+          "width": 1230,
+          "height": 57
+        },
+        "withinBody": true,
+        "aboveFooter": true,
+        "hitOk": true,
+        "hitTag": "FIGCAPTION",
+        "hitTestid": "ai-job-media",
+        "reachable": true
+      },
+      "pass": true,
+      "screenshots": {
+        "before": "/home/main/.herdr/worktrees/rpg-zzu/worktree-silver-harbor-d2a7/.omo/evidence/ai-job-queue/task-7/caption-native-tileset-1280-before.png",
+        "after": "/home/main/.herdr/worktrees/rpg-zzu/worktree-silver-harbor-d2a7/.omo/evidence/ai-job-queue/task-7/caption-native-tileset-1280-after.png"
+      }
+    }
+  },
+  "verdict": "PASS",
+  "error": null,
+  "pageErrors": []
+}

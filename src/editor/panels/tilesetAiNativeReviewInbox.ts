@@ -18,6 +18,23 @@ import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import type { TilesetDef } from "@/project/types";
 import { el } from "@/util/dom";
 
+/** Immutable report presentation. No live session, image lookup, answer or apply handler. */
+export function renderCapturedTilesetProposal(
+  proposal: TilesetAiReviewProposal,
+  selected: boolean,
+  onSelect: (selected: boolean) => void,
+): HTMLElement {
+  const choice = el("input", { attrs: { type: "checkbox", "aria-label": proposal.name }, dataset: { proposalId: proposal.id } });
+  choice.checked = selected;
+  choice.addEventListener("change", () => onSelect(choice.checked));
+  return el("article", { class: "ai-jobs-review-proposal", children: [
+    el("label", { children: [choice, el("strong", { text: proposal.name }), el("span", { text: `${Math.round(proposal.confidence * 100)}%` })] }),
+    el("p", { text: proposal.description || templateLabel(proposal) }),
+    el("p", { text: `타일 ${proposal.tileIds.join(", ")} · ${templateLabel(proposal)}` }),
+    el("details", { children: [el("summary", { text: "판단 근거" }), el("p", { text: proposal.evidence })] }),
+  ] });
+}
+
 export function renderTilesetAiReviewInbox(tileset: TilesetDef, rerender: () => void): HTMLElement {
   const state = activateTilesetAiReview(tileset);
   const buckets = aiReviewBuckets(state);

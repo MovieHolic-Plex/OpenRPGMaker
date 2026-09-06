@@ -1,0 +1,697 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle --maxWorkers=1 --no-file-parallelism test/aiJobPanels.test.ts -t persistent job launcher|old failed report
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-silver-harbor-d2a7
+
+ ❯ test/aiJobPanels.test.ts (18 tests | 2 failed | 16 skipped) 1077ms
+   × mounts one persistent job launcher across topbar rebuilds 477ms
+     → expected <body …(2)><div>…(1)</div></body> to be <button …(5)>…(3)</button> // Object.is equality
+   ↓ handles named replay, deduplicates durable outcomes, and never lets initial fetch overwrite live detail
+   ↓ server read acknowledgement is deduplicated across concurrent opens and stale inbox fetches
+   ↓ retains queue input, row identity, selection and scroll on background events; close never cancels
+   ↓ requires explicit retry consent and nested Escape only closes that confirmation
+   ↓ opens immutable media without application/provider writes, retains revision on update and revokes owned URLs
+   ↓ keeps authoritative already-read inbox records read when historical outcomes replay later
+   ↓ rejects older list completion after newer detail with no SSE and identical timestamps
+   ↓ rejects older list completion after newer list with no SSE and identical timestamps
+   ↓ notifies eligibility on actual loaded identity/epoch replacement but not ordinary paint
+   ↓ retries transient auto input reads on explicit reconnect without generation replay
+   ↓ retries transient auto input reads on native reconnect without generation replay
+   × does not pair an old failed report with a successful retry's review/apply controls 596ms
+     → expected false to be true // Object.is equality
+   ↓ reconciles local unsaved outcome only with the matching durable receipt including cross-client save
+   ↓ places newly admitted rows in newest-first DOM order without replacing focused existing rows
+   ↓ mounts the selected object's complete inventory before a held image and defers offscreen media
+   ↓ passes local event exclusion choices through real HTTP/Task5 draft application and save-only retry
+   ↓ passes only selected immutable native tileset proposal IDs through real Task5 without a live analysis handler
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiJobPanels.test.ts > mounts one persistent job launcher across topbar rebuilds
+AssertionError: expected <body …(2)><div>…(1)</div></body> to be <button …(5)>…(3)</button> // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -1,6 +1,440 @@[39m
+[31m+ <body[39m
+[31m+   class="editor-ui-beginner"[39m
+[31m+   data-editor-ui-mode="beginner"[39m
+[31m+ >[39m
+[31m+   <div>[39m
+[31m+     <div[39m
+[31m+       class="oprn-menu-bar editor-studio-menubar studio-bar"[39m
+[31m+       data-editor-ui-mode="beginner"[39m
+[31m+       data-testid="oprn-menu-bar"[39m
+[31m+     >[39m
+[31m+       <div[39m
+[31m+         class="studio-bar-lead"[39m
+[31m+         data-testid="studio-bar-lead"[39m
+[31m+       >[39m
+[31m+         <div[39m
+[31m+           class="editor-product-brand"[39m
+[31m+           data-testid="editor-product-brand"[39m
+[31m+           title="OPRN Studio"[39m
+[31m+         >[39m
+[31m+           <span[39m
+[31m+             aria-hidden="true"[39m
+[31m+             class="editor-product-brand-mark"[39m
+[31m+           >[39m
+[31m+             ✦[39m
+[31m+           </span>[39m
+[31m+           <span[39m
+[31m+             class="editor-product-brand-text"[39m
+[31m+           >[39m
+[31m+             OPRN Studio[39m
+[31m+           </span>[39m
+[31m+         </div>[39m
+[31m+         <button[39m
+[31m+           aria-expanded="false"[39m
+[31m+           aria-haspopup="menu"[39m
+[31m+           class="oprn-menu-item studio-project-button"[39m
+[31m+           data-testid="menu-project"[39m
+[31m+           title="프로젝트 — 새 프로젝트"[39m
+[31m+           type="button"[39m
+[31m+         >[39m
+[31m+           <span[39m
+[31m+             class="oprn-menu-item-label"[39m
+[31m+           >[39m
+[31m+             새 프로젝트[39m
+[31m+           </span>[39m
+[31m+           <span[39m
+[31m+             aria-hidden="true"[39m
+[31m+             class="oprn-menu-item-chevron"[39m
+[31m+           >[39m
+[31m+             <svg[39m
+[31m+               aria-hidden="true"[39m
+[31m+               fill="none"[39m
+[31m+               focusable="false"[39m
+[31m+               stroke="currentColor"[39m
+[31m+               stroke-linecap="round"[39m
+[31m+               stroke-linejoin="round"[39m
+[31m+               stroke-width="1.8"[39m
+[31m+               viewBox="0 0 22 22"[39m
+[31m+             >[39m
+[31m+               <path[39m
+[31m+                 d="M6.5 9l4.5 4.5L15.5 9"[39m
+[31m+               />[39m
+[31m+             </svg>[39m
+[31m+           </span>[39m
+[31m+         </button>[39m
+[31m+         <button[39m
+[31m+           aria-keyshortcuts="Control+S"[39m
+[31m+           aria-label="프로젝트 저장 (Ctrl+S)"[39m
+[31m+           class="studio-icon-button studio-save-button"[39m
+[31m+           data-autosave-kind="idle"[39m
+[31m+           data-testid="toolbar-save"[39m
+[31m+           title="프로젝트 저장 (Ctrl+S)"[39m
+[31m+           type="button"[39m
+[31m+         >[39m
+[31m+           <svg[39m
+[31m+             aria-hidden="true"[39m
+[31m+             fill="none"[39m
+[31m+             focusable="false"[39m
+[31m+             stroke="currentColor"[39m
+[31m+             stroke-linecap="round"[39m
+[31m+             stroke-linejoin="round"[39m
+[31m+             stroke-width="1.8"[39m
+[31m+             viewBox="0 0 22 22"[39m
+[31m+           >[39m
+[31m+             <path[39m
+[31m+               d="M4 4.5A1.5 1.5 0 0 1 5.5 3H15l4 4v10.5a1.5 1.5 0 0 1-1.5 1.5h-12A1.5 1.5 0 0 1 4 17.5z"[39m
+[31m+             />[39m
+[31m+             <path[39m
+[31m+               d="M7 3v5h8V3"[39m
+[31m+             />[39m
+[31m+             <rect[39m
+[31m+               height="5"[39m
+[31m+               width="8"[39m
+[31m+               x="7"[39m
+[31m+               y="13"[39m
+[31m+             />[39m
+[31m+           </svg>[39m
+[31m+           <span[39m
+[31m+             aria-hidden="true"[39m
+[31m+             class="studio-save-dot"[39m
+[31m+           />[39m
+[31m+           <span[39m
+[31m+             class="visually-hidden"[39m
+[31m+             data-testid="toolbar-save-autosave"[39m
+[31m+           >[39m
+[31m+             변경 없음[39m
+[31m+           </span>[39m
+[31m+         </button>[39m
+[31m+         <div[39m
+[31m+           aria-live="polite"[39m
+[31m+           class="topbar-save-status"[39m
+[31m+           data-autosave-kind="idle"[39m
+[31m+           data-testid="topbar-save-status"[39m
+[31m+           hidden=""[39m
+[31m+           role="status"[39m
+[31m+           style="display: none; align-items: center;"[39m
+[31m+         />[39m
+[31m+         <button[39m
+[31m+           aria-expanded="false"[39m
+[31m+           aria-haspopup="menu"[39m
+[31m+           class="oprn-menu-item"[39m
+[31m+           data-testid="menu-tools"[39m
+[31m+           type="button"[39m
+[31m+         >[39m
+[31m+           <span[39m
+[31m+             class="oprn-menu-item-label"[39m
+[31m+           >[39m
+[31m+             도구[39m
+[31m+           </span>[39m
+[31m+           <span[39m
+[31m+             aria-hidden="true"[39m
+[31m+             class="oprn-menu-item-chevron"[39m
+[31m+           >[39m
+[31m+             <svg[39m
+[31m+               aria-hidden="true"[39m
+[31m+               fill="none"[39m
+[31m+               focusable="false"[39m
+[31m+               stroke="currentColor"[39m
+[31m+               stroke-linecap="round"[39m
+[31m+               stroke-linejoin="round"[39m
+[31m+               stroke-width="1.8"[39m
+[31m+               viewBox="0 0 22 22"[39m
+[31m+             >[39m
+[31m+               <path[39m
+[31m+                 d="M6.5 9l4.5 4.5L15.5 9"[39m
+[31m+               />[39m
+[31m+             </svg>[39m
+[31m+           </span>[39m
+[31m+         </button>[39m
+[31m+       </div>[39m
+[31m+       <div[39m
+[31m+         class="studio-bar-center"[39m
+[31m+       >[39m
+[31m+         <button[39m
+[31m+           aria-keyshortcuts="Control+K"[39m
+[31m+           aria-label="명령 팔레트 열기 (Ctrl+K)"[39m
+[31m+           class="oprn-menu-item workspace-command-chip studio-command-center"[39m
+[31m+           data-testid="workspace-command-palette-button"[39m
+[31m+           title="명령 팔레트 — 명령 실행 · 맵 이동 (Ctrl+K)"[39m
+[31m+           type="button"[39m
+[31m+         >[39m
+[31m+           <span[39m
+[31m+             aria-hidden="true"[39m
+[31m+             class="workspace-command-chip-icon"[39m
+[31m+           >[39m
+[31m+             <svg[39m
+[31m+               aria-hidden="true"[39m
+[31m+               fill="none"[39m
+[31m+               focusable="false"[39m
+[31m+               stroke="currentColor"[39m
+[31m+               stroke-linecap="round"[39m
+[31m+               stroke-linejoin="round"[39m
+[31m+               stroke-width="1.8"[39m
+[31m+               viewBox="0 0 22 22"[39m
+[31m+             >[39m
+[31m+               <circle[39m
+[31m+                 cx="10"[39m
+[31m+                 cy="10"[39m
+[31m+                 r="5.5"[39m
+[31m+               />[39m
+[31m+               <path[39m
+[31m+                 d="M14 14l4.5 4.5"[39m
+[31m+               />[39m
+[31m+             </svg>[39m
+[31m+           </span>[39m
+[31m+           <span[39m
+[31m+             aria-hidden="true"[39m
+[31m+             class="workspace-command-chip-label"[39m
+[31m+           >[39m
+[31m+             명령 · 맵 이동[39m
+[31m+           </span>[39m
+[31m+           <span[39m
+[31m+             aria-hidden="true"[39m
+[31m+             class="workspace-command-chip-key"[39m
+[31m+           >[39m
+[31m+             Ctrl K[39m
+[31m+           </span>[39m
+[31m+         </button>[39m
+[31m+       </div>[39m
+[31m+       <div[39m
+[31m+         class="editor-topbar-trailing"[39m
+[31m+         data-testid="editor-topbar-trailing"[39m
+[31m+       >[39m
+[31m+         <div[39m
+[31m+           aria-label="실행"[39m
+[31m+           class="studio-run-group"[39m
+[31m+           data-testid="studio-run-group"[39m
+[31m+           role="group"[39m
+[31m+         >[39m
+[31m+           <div[39m
+[31m+             class="topbar-test-play-wrap"[39m
+[31m+             data-testid="topbar-test-play"[39m
+[31m+           >[39m
+[31m+             <button[39m
+[31m+               aria-label="테스트 실행"[39m
+[31m+               class="topbar-test-play"[39m
+[31m+               data-testid="mode-play"[39m
+[31m+               title="테스트 실행"[39m
+[31m+               type="button"[39m
+[31m+             >[39m
+[31m+               <span[39m
+[31m+                 aria-hidden="true"[39m
+[31m+                 class="topbar-test-play-glyph"[39m
+[31m+               >[39m
+[31m+                 ▶[39m
+[31m+               </span>[39m
+[31m+               <span[39m
+[31m+                 class="topbar-test-play-label"[39m
+[31m+               >[39m
+[31m+                 테스트[39m
+[31m+               </span>[39m
+[31m+             </button>[39m
+[31m+           </div>[39m
+[31m+           <button[39m
+[31m+             aria-label="랜덤 전투 테스트"[39m
+[31m+             class="team-history-button is-icon-only quick-battle-test-button studio-icon-button"[39m
+[31m+             data-testid="topbar-battle-test"[39m
+[31m+             title="랜덤 전투 테스트 — 적 그룹을 뽑아 즉시 전투"[39m
+[31m+             type="button"[39m
+[31m+           >[39m
+[31m+             <svg[39m
+[31m+               aria-hidden="true"[39m
+[31m+               fill="none"[39m
+[31m+               focusable="false"[39m
+[31m+               stroke="currentColor"[39m
+[31m+               stroke-linecap="round"[39m
+[31m+               stroke-linejoin="round"[39m
+[31m+               stroke-width="1.8"[39m
+[31m+               viewBox="0 0 22 22"[39m
+[31m+             >[39m
+[31m+               <path[39m
+[31m+                 d="M18.5 3.5L3.5 18.5"[39m
+[31m+               />[39m
+[31m+               <path[39m
+[31m+                 d="M3.5 3.5l15 15"[39m
+[31m+               />[39m
+[31m+               <path[39m
+[31m+                 d="M15 3h4v4"[39m
+[31m+               />[39m
+[31m+               <path[39m
+[31m+                 d="M3 7V3h4"[39m
+[31m+               />[39m
+[31m+             </svg>[39m
+[31m+           </button>[39m
+[31m+         </div>[39m
+[31m+         <button[39m
+[31m+           aria-label="AI 스튜디오"[39m
+[31m+           aria-pressed="false"[39m
+[31m+           class="topbar-ai-studio"[39m
+[31m+           data-testid="topbar-ai-studio"[39m
+[31m+           title="AI 스튜디오 — 장면 모니터와 조수"[39m
+[31m+           type="button"[39m
+[31m+         >[39m
+[31m+           스튜디오[39m
+[31m+         </button>[39m
+[31m+         <button[39m
+[31m+           aria-expanded="false"[39m
+[31m+           aria-haspopup="menu"[39m
+[31m+           aria-label="보기 — 편집 모드"[39m
+[31m+           class="oprn-menu-item workspace-panels-button"[39m
+[31m+           data-testid="workspace-panels-button"[39m
+[31m+           title="보기 — 편집 모드"[39m
+[31m+           type="button"[39m
+[31m+         >[39m
+[31m+           <span[39m
+[31m+             aria-hidden="true"[39m
+[31m+             class="workspace-panels-icon"[39m
+[31m+           >[39m
+[31m+             <svg[39m
+[31m+               aria-hidden="true"[39m
+[31m+               fill="none"[39m
+[31m+               focusable="false"[39m
+[31m+               stroke="currentColor"[39m
+[31m+               stroke-linecap="round"[39m
+[31m+               stroke-linejoin="round"[39m
+[31m+               stroke-width="1.8"[39m
+[31m+               viewBox="0 0 22 22"[39m
+[31m+             >[39m
+[31m+               <rect[39m
+[31m+                 height="13"[39m
+[31m+                 rx="1.5"[39m
+[31m+                 width="15"[39m
+[31m+                 x="3.5"[39m
+[31m+                 y="4.5"[39m
+[31m+               />[39m
+[31m+               <path[39m
+[31m+                 d="M9 4.5v13"[39m
+[31m+               />[39m
+[31m+               <path[39m
+[31m+                 d="M3.5 12H9"[39m
+[31m+               />[39m
+[31m+             </svg>[39m
+[31m+           </span>[39m
+[31m+           <span[39m
+[31m+             class="workspace-panels-label"[39m
+[31m+           >[39m
+[31m+             보기[39m
+[31m+           </span>[39m
+[31m+           <span[39m
+[31m+             aria-hidden="true"[39m
+[31m+             class="oprn-menu-item-chevron"[39m
+[31m+           >[39m
+[31m+             <svg[39m
+[31m+               aria-hidden="true"[39m
+[31m+               fill="none"[39m
+[31m+               focusable="false"[39m
+[31m+               stroke="currentColor"[39m
+[31m+               stroke-linecap="round"[39m
+[31m+               stroke-linejoin="round"[39m
+[31m+               stroke-width="1.8"[39m
+[31m+               viewBox="0 0 22 22"[39m
+[31m+             >[39m
+[31m+               <path[39m
+[31m+                 d="M6.5 9l4.5 4.5L15.5 9"[39m
+[31m+               />[39m
+[31m+             </svg>[39m
+[31m+           </span>[39m
+[31m+         </button>[39m
+[31m+         <div[39m
+[31m+           aria-label="보기 — 편집 모드"[39m
+[31m+           class="oprn-menu-popup workspace-panels-menu"[39m
+[31m+           data-testid="workspace-panels-menu"[39m
+[31m+           hidden=""[39m
+[31m+           role="menu"[39m
+[31m+         >[39m
+[31m+           <div[39m
+[31m+             class="workspace-menu-group"[39m
+[31m+           >[39m
+[31m+             편집 모드[39m
+[31m+           </div>[39m
+[31m+           <button[39m
+[31m+             aria-checked="true"[39m
+[31m+             class="oprn-menu-command workspace-ui-mode-item is-active"[39m
+[31m+             data-editor-ui-mode="beginner"[39m
+[31m+             data-testid="workspace-ui-mode-beginner"[39m
+[31m+             role="menuitemradio"[39m
+[31m+             title="초보 — 이름 붙은 큰 도구 레일 · 첫 사용 안내"[39m
+[31m+             type="button"[39m
+[31m+           >[39m
+[31m+             <span[39m
+[31m+               aria-hidden="true"[39m
+[31m+               class="workspace-ui-mode-radio"[39m
+[31m+             />[39m
+[31m+             <span[39m
+[31m+               class="workspace-ui-mode-text"[39m
+[31m+             >[39m
+[31m+               <span[39m
+[31m+                 class="workspace-ui-mode-label"[39m
+[31m+               >[39m
+[31m+                 초보[39m
+[31m+               </span>[39m
+[31m+               <span[39m
+[31m+                 class="workspace-ui-mode-hint"[39m
+[31m+               >[39m
+[31m+                 이름 붙은 큰 도구 레일 · 첫 사용 안내[39m
+[31m+               </span>[39m
+[31m+             </span>[39m
+[31m+           </button>[39m
+[31m+           <button[39m
+[31m+             aria-checked="false"[39m
+[31m+             class="oprn-menu-command workspace-ui-mode-item"[39m
+[31m+             data-editor-ui-mode="standard"[39m
+[31m+             data-testid="workspace-ui-mode-standard"[39m
+[31m+             role="menuitemradio"[39m
+[31m+             title="표준 — 타일 팔레트와 맵 트리 · 쉬운 용어"[39m
+[31m+             type="button"[39m
+[31m+           >[39m
+[31m+             <span[39m
+[31m+               aria-hidden="true"[39m
+[31m+               class="workspace-ui-mode-radio"[39m
+[31m+             />[39m
+[31m+             <span[39m
+[31m+               class="workspace-ui-mode-text"[39m
+[31m+             >[39m
+[31m+               <span[39m
+[31m+                 class="workspace-ui-mode-label"[39m
+[31m+               >[39m
+[31m+                 표준[39m
+[31m+               </span>[39m
+[31m+               <span[39m
+[31m+                 class="workspace-ui-mode-hint"[39m
+[31m+               >[39m
+[31m+                 타일 팔레트와 맵 트리 · 쉬운 용어[39m
+[31m+               </span>[39m
+[31m+             </span>[39m
+[31m+           </button>[39m
+[2m            <button[22m
+[31m+             aria-checked="false"[39m
+[31m+             class="oprn-menu-command workspace-ui-mode-item"[39m
+[31m+             data-editor-ui-mode="expert"[39m
+[31m+             data-testid="workspace-ui-mode-expert"[39m
+[31m+             role="menuitemradio"[39m
+[31m+             title="전문가 — 촘촘한 배치 · 기술 용어 · 도구 창 1클릭 · 배율 6단"[39m
+[31m+             type="button"[39m
+[31m+           >[39m
+[31m+             <span[39m
+[31m+               aria-hidden="true"[39m
+[31m+               class="workspace-ui-mode-radio"[39m
+[31m+             />[39m
+[31m+             <span[39m
+[31m+               class="workspace-ui-mode-text"[39m
+[31m+             >[39m
+[31m+               <span[39m
+[31m+                 class="workspace-ui-mode-label"[39m
+[31m+               >[39m
+[31m+                 전문가[39m
+[31m+               </span>[39m
+[31m+               <span[39m
+[31m+                 class="workspace-ui-mode-hint"[39m
+[31m+               >[39m
+[31m+                 촘촘한 배치 · 기술 용어 · 도구 창 1클릭 · 배율 6단[39m
+[31m+               </span>[39m
+[31m+             </span>[39m
+[31m+           </button>[39m
+[31m+         </div>[39m
+[31m+         <button[39m
+[2m            aria-controls="ai-jobs-queue"[22m
+[2m            aria-expanded="false"[22m
+[2m            class="btn ai-jobs-launcher"[22m
+[2m            data-testid="ai-jobs-open"[22m
+[2m            type="button"[22m
+[33m@@ -22,5 +456,183 @@[39m
+[2m              data-testid="ai-jobs-unread"[22m
+[2m            >[22m
+[2m              안 읽음 0[22m
+[2m            </span>[22m
+[2m          </button>[22m
+[31m+         <div[39m
+[31m+           class="studio-icon-cluster"[39m
+[31m+           data-testid="studio-icon-cluster"[39m
+[31m+         >[39m
+[31m+           <button[39m
+[31m+             aria-expanded="false"[39m
+[31m+             aria-haspopup="menu"[39m
+[31m+             aria-label="도움말"[39m
+[31m+             class="oprn-menu-item studio-icon-button"[39m
+[31m+             data-testid="menu-help"[39m
+[31m+             title="도움말"[39m
+[31m+             type="button"[39m
+[31m+           >[39m
+[31m+             <svg[39m
+[31m+               aria-hidden="true"[39m
+[31m+               fill="none"[39m
+[31m+               focusable="false"[39m
+[31m+               stroke="currentColor"[39m
+[31m+               stroke-linecap="round"[39m
+[31m+               stroke-linejoin="round"[39m
+[31m+               stroke-width="1.8"[39m
+[31m+               viewBox="0 0 22 22"[39m
+[31m+             >[39m
+[31m+               <circle[39m
+[31m+                 cx="11"[39m
+[31m+                 cy="11"[39m
+[31m+                 r="7.5"[39m
+[31m+               />[39m
+[31m+               <path[39m
+[31m+                 d="M8.6 8.6a2.4 2.4 0 1 1 3.4 2.2c-.7.4-1 .9-1 1.6"[39m
+[31m+               />[39m
+[31m+               <circle[39m
+[31m+                 cx="11"[39m
+[31m+                 cy="15.3"[39m
+[31m+                 fill="currentColor"[39m
+[31m+                 r="0.9"[39m
+[31m+               />[39m
+[31m+             </svg>[39m
+[31m+             <span[39m
+[31m+               class="visually-hidden"[39m
+[31m+             >[39m
+[31m+               도움말[39m
+[31m+             </span>[39m
+[31m+           </button>[39m
+[31m+           <button[39m
+[31m+             aria-expanded="false"[39m
+[31m+             aria-haspopup="dialog"[39m
+[31m+             aria-label="커밋 히스토리"[39m
+[31m+             class="team-history-button is-icon-only"[39m
+[31m+             data-testid="commit-history-toggle"[39m
+[31m+             title="커밋 히스토리"[39m
+[31m+             type="button"[39m
+[31m+           >[39m
+[31m+             <svg[39m
+[31m+               aria-hidden="true"[39m
+[31m+               class="team-topbar-icon"[39m
+[31m+               fill="none"[39m
+[31m+               focusable="false"[39m
+[31m+               stroke="currentColor"[39m
+[31m+               stroke-linecap="round"[39m
+[31m+               stroke-linejoin="round"[39m
+[31m+               stroke-width="1.8"[39m
+[31m+               viewBox="0 0 22 22"[39m
+[31m+             >[39m
+[31m+               <path[39m
+[31m+                 d="M11 5v6l4 2"[39m
+[31m+               />[39m
+[31m+               <path[39m
+[31m+                 d="M11 19a8 8 0 1 0-7.1-4.2"[39m
+[31m+               />[39m
+[31m+               <path[39m
+[31m+                 d="M4 14.5l.6-3.2 2.9 1.5"[39m
+[31m+               />[39m
+[31m+             </svg>[39m
+[31m+           </button>[39m
+[31m+           <button[39m
+[31m+             aria-expanded="false"[39m
+[31m+             aria-haspopup="menu"[39m
+[31m+             aria-label="편집 신원 — 게스트 세션 d9c8"[39m
+[31m+             class="team-identity-button is-icon-only"[39m
+[31m+             data-testid="topbar-identity"[39m
+[31m+             title="편집 신원 — 게스트 세션 d9c8"[39m
+[31m+             type="button"[39m
+[31m+           >[39m
+[31m+             <svg[39m
+[31m+               aria-hidden="true"[39m
+[31m+               class="team-topbar-icon"[39m
+[31m+               fill="none"[39m
+[31m+               focusable="false"[39m
+[31m+               stroke="currentColor"[39m
+[31m+               stroke-linecap="round"[39m
+[31m+               stroke-linejoin="round"[39m
+[31m+               stroke-width="1.8"[39m
+[31m+               viewBox="0 0 22 22"[39m
+[31m+             >[39m
+[31m+               <path[39m
+[31m+                 d="M11 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"[39m
+[31m+               />[39m
+[31m+               <path[39m
+[31m+                 d="M5 18.5c1.4-2.6 3.5-4 6-4s4.6 1.4 6 4"[39m
+[31m+               />[39m
+[31m+             </svg>[39m
+[31m+             <span[39m
+[31m+               class="team-identity-label is-visually-hidden"[39m
+[31m+               data-testid="topbar-identity-label"[39m
+[31m+             >[39m
+[31m+               게스트 세션 d9c8[39m
+[31m+             </span>[39m
+[31m+           </button>[39m
+[31m+           <button[39m
+[31m+             aria-label="AI 설정 열기"[39m
+[31m+             class="studio-icon-button topbar-ai-settings-button"[39m
+[31m+             data-testid="topbar-ai-settings"[39m
+[31m+             title="AI 설정"[39m
+[31m+             type="button"[39m
+[31m+           >[39m
+[31m+             <svg[39m
+[31m+               aria-hidden="true"[39m
+[31m+               fill="none"[39m
+[31m+               focusable="false"[39m
+[31m+               stroke="currentColor"[39m
+[31m+               stroke-linecap="round"[39m
+[31m+               stroke-linejoin="round"[39m
+[31m+               stroke-width="1.8"[39m
+[31m+               viewBox="0 0 22 22"[39m
+[31m+             >[39m
+[31m+               <circle[39m
+[31m+                 cx="11"[39m
+[31m+                 cy="11"[39m
+[31m+                 r="2.6"[39m
+[31m+               />[39m
+[31m+               <path[39m
+[31m+                 d="M11 3.2l1.3 2.2 2.5-.5.7 2.5 2.4 1-1 2.4 1.6 2-2 1.6-.1 2.6-2.5.3-1.5 2.1-2.4-1.1-2.4 1.1-1.5-2.1-2.5-.3-.1-2.6-2-1.6 1.6-2-1-2.4 2.4-1 .7-2.5 2.5.5z"[39m
+[31m+               />[39m
+[31m+             </svg>[39m
+[31m+             <span[39m
+[31m+               class="visually-hidden"[39m
+[31m+             >[39m
+[31m+               AI 설정[39m
+[31m+             </span>[39m
+[31m+           </button>[39m
+[31m+           <button[39m
+[31m+             aria-label="전체화면 전환"[39m
+[31m+             aria-pressed="false"[39m
+[31m+             class="studio-icon-button oprn-window-control"[39m
+[31m+             data-testid="window-fullscreen"[39m
+[31m+             title="전체화면 전환"[39m
+[31m+             type="button"[39m
+[31m+           >[39m
+[31m+             <svg[39m
+[31m+               aria-hidden="true"[39m
+[31m+               fill="none"[39m
+[31m+               focusable="false"[39m
+[31m+               stroke="currentColor"[39m
+[31m+               stroke-linecap="round"[39m
+[31m+               stroke-linejoin="round"[39m
+[31m+               stroke-width="1.8"[39m
+[31m+               viewBox="0 0 22 22"[39m
+[31m+             >[39m
+[31m+               <path[39m
+[31m+                 d="M13 4h5v5"[39m
+[31m+               />[39m
+[31m+               <path[39m
+[31m+                 d="M18 4l-5.5 5.5"[39m
+[31m+               />[39m
+[31m+               <path[39m
+[31m+                 d="M9 18H4v-5"[39m
+[31m+               />[39m
+[31m+               <path[39m
+[31m+                 d="M4 18l5.5-5.5"[39m
+[31m+               />[39m
+[31m+             </svg>[39m
+[31m+           </button>[39m
+[31m+         </div>[39m
+[31m+       </div>[39m
+[31m+     </div>[39m
+[31m+   </div>[39m
+[31m+ </body>[39m
+
+ ❯ test/aiJobPanels.test.ts:76:34
+     74|   expect(topbar.querySelectorAll('[data-testid="ai-jobs-open"]')).toHa…
+     75|   const singleton = getJobClient(); topbar.querySelector<HTMLButtonEle…
+     76|   expect(document.activeElement).toBe(topbar.querySelector('[data-test…
+       |                                  ^
+     77|   expect(getJobClient()).toBe(singleton);
+     78|   expect(topbar.querySelectorAll('[data-testid="ai-jobs-open"]')).toHa…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  test/aiJobPanels.test.ts > does not pair an old failed report with a successful retry's review/apply controls
+AssertionError: expected false to be true // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+ ❯ test/aiJobPanels.test.ts:206:48
+    204|   const keyboard = new KeyboardEvent("keydown", { key: "F5", bubbles: …
+    205|   const button = panel.querySelector("button")!; button.dispatchEvent(…
+    206|   expect(shouldIgnoreEditorShortcut(keyboard)).toBe(true);
+       |                                                ^
+    207|   expect(historyHotkeyOwnedByPanel()).toBe(true);
+    208| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 16 skipped (18)
+   Start at  03:23:37
+   Duration  62.20s (transform 47.55s, setup 0ms, collect 58.85s, tests 1.08s, environment 741ms, prepare 311ms)

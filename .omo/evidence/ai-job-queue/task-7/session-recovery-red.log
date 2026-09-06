@@ -1,0 +1,58 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle --maxWorkers=1 --no-file-parallelism test/aiJobPanels.test.ts -t session handshake fails once
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-silver-harbor-d2a7
+
+ ❯ test/aiJobPanels.test.ts (22 tests | 1 failed | 21 skipped) 133ms
+   ↓ mounts one persistent job launcher across topbar rebuilds
+   ↓ handles named replay, deduplicates durable outcomes, and never lets initial fetch overwrite live detail
+   ↓ server read acknowledgement is deduplicated across concurrent opens and stale inbox fetches
+   ↓ retains queue input, row identity, selection and scroll on background events; close never cancels
+   ↓ requires explicit retry consent and nested Escape only closes that confirmation
+   ↓ opens immutable media without application/provider writes, retains revision on update and revokes owned URLs
+   ↓ keeps authoritative already-read inbox records read when historical outcomes replay later
+   ↓ rejects older list completion after newer detail with no SSE and identical timestamps
+   ↓ rejects older list completion after newer list with no SSE and identical timestamps
+   ↓ notifies eligibility on actual loaded identity/epoch replacement but not ordinary paint
+   ↓ retries transient auto input reads on explicit reconnect without generation replay
+   ↓ retries transient auto input reads on native reconnect without generation replay
+   ↓ does not pair an old failed report with a successful retry's review/apply controls
+   ↓ reconciles local unsaved outcome only with the matching durable receipt including cross-client save
+   ↓ places newly admitted rows in newest-first DOM order without replacing focused existing rows
+   ↓ mounts the selected object's complete inventory before a held image and defers offscreen media
+   ↓ passes local event exclusion choices through real HTTP/Task5 draft application and save-only retry
+   ↓ passes only selected immutable native tileset proposal IDs through real Task5 without a live analysis handler
+   ↓ rebinds an open queue to the replacement launcher without a close-and-reopen click
+   ↓ reads the authoritative inbox before acknowledging a report opened before the initial snapshot
+   ↓ reacts to browser offline/online signals even when a quiet SSE socket has not errored
+   × keeps native SSE recovery available when the online session handshake fails once 130ms
+     → expected [] to have a length of 1 but got +0
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiJobPanels.test.ts > keeps native SSE recovery available when the online session handshake fails once
+AssertionError: expected [] to have a length of 1 but got +0
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 0[39m
+
+ ❯ test/aiJobPanels.test.ts:341:21
+    339|   const f = fixture(); f.handlers.set("/session", async () => { throw …
+    340|   await f.client.connect(); expect(f.client.connection).toBe("offline"…
+    341|   expect(f.sources).toHaveLength(1);
+       |                     ^
+    342|   f.handlers.delete("/session"); const recovered = signal(f.client, ()…
+    343|   f.sources[0].dispatchEvent(new Event("open")); await recovered;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 21 skipped (22)
+   Start at  05:24:57
+   Duration  89.80s (transform 70.73s, setup 0ms, collect 87.63s, tests 133ms, environment 622ms, prepare 192ms)

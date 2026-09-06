@@ -1,0 +1,13 @@
+
+Running 3 tests using 1 worker
+
+  ✓  1 [chromium] › test/e2e/ai-job-inbox.spec.ts:60:1 › real editor exposes the durable inbox without blocking editing (11.5s)
+  ✓  2 [chromium] › test/e2e/ai-job-inbox.spec.ts:73:1 › full real editor inbox/report viewport and state matrix (4.5m)
+  ✓  3 [chromium] › test/e2e/ai-job-inbox.spec.ts:184:1 › real reconnect, browser-close completion, auto application, cancel/retry and save-only controls (3.0m)
+
+  Slow test file: [chromium] › test/e2e/ai-job-inbox.spec.ts (7.7m)
+  Consider running tests from slow files in parallel. See: https://playwright.dev/docs/test-parallel
+  3 passed (7.7m)
+E2E_EXIT 0
+{"captionProbe":"PASS","actions":["real editor canvas and launcher mounted","client refreshed against seeded jobs","opened tileset report e184dae6-adb5-434e-996a-df6d69a157d0","tileset caption reachable=true scrollTop 0 -> 11","opened native-tileset report 008aedf2-3ec8-4469-8244-57b4f8214b7e","native-tileset caption reachable=true scrollTop 0 -> 11"],"error":null,"cases":{"tileset":{"pass":true,"scrollTop":11,"reachable":true,"captionText":"전체 타일 그림판 · 32 × 16"},"native-tileset":{"pass":true,"scrollTop":11,"reachable":true,"captionText":"전체 타일 그림판 · 32 × 16"}}}
+CAPTION_PROBE_EXIT 0

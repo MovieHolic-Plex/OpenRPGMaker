@@ -1,0 +1,84 @@
+/* Durable workbench. Geometry/type extensions are documented in DESIGN.md. */
+.ai-jobs, .ai-jobs-launcher {
+  --jobs-control: 32px;
+  --jobs-type-control: 13px;
+  --jobs-type-body: 14px;
+  --jobs-type-heading: 18px;
+  --jobs-leading: 1.5;
+  --jobs-queue-width: 384px;
+  --jobs-report-width: 1280px;
+  --jobs-rail-width: 240px;
+  --jobs-summary-lines: 2;
+  font-family: var(--font-ui);
+  color: var(--text-1);
+}
+.ai-jobs *, .ai-jobs *::before, .ai-jobs *::after { box-sizing: border-box; min-width: 0; }
+.ai-jobs { font-size: var(--jobs-type-body); line-height: var(--jobs-leading); }
+.ai-jobs h2, .ai-jobs h3, .ai-jobs h4, .ai-jobs p, .ai-jobs figure { margin: 0; }
+.ai-jobs h2 { font-size: var(--jobs-type-heading); }
+.ai-jobs h3, .ai-jobs h4 { font-size: var(--jobs-type-body); }
+.ai-jobs .btn, .ai-jobs input, .ai-jobs select, .ai-jobs-launcher.btn {
+  min-height: var(--jobs-control);
+  font: var(--jobs-type-control)/var(--jobs-leading) var(--font-ui);
+  border: var(--stroke-1) solid var(--border-default);
+  border-radius: var(--radius-s);
+  background: var(--bg-raised);
+  color: var(--text-1);
+  padding: var(--space-1) var(--space-2);
+}
+.ai-jobs button, .ai-jobs summary { cursor: pointer; }
+.ai-jobs button:disabled { cursor: default; color: var(--text-2); background: var(--bg-inset); }
+.ai-jobs :focus-visible, .ai-jobs-launcher:focus-visible { outline: var(--focus-outline); outline-offset: var(--stroke-2); }
+.ai-jobs [hidden] { display: none; }
+.ai-jobs-launcher.btn { display: inline-flex; align-items: center; gap: var(--space-1); flex-shrink: 0; white-space: nowrap; }
+.ai-jobs-launcher span:not(:first-child) { font-size: var(--font-size-sm); color: var(--text-2); }
+.ai-jobs-launcher span[data-active="true"] { color: var(--accent); background: var(--accent-muted); border-radius: var(--radius-s); }
+.ai-jobs-header, .ai-jobs-actions { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-2); padding: var(--space-3); flex: 0 0 auto; }
+.ai-jobs-header { justify-content: space-between; border-bottom: var(--stroke-1) solid var(--border-default); }
+.ai-jobs-header h2 { flex: 1; overflow-wrap: anywhere; }
+.ai-jobs-actions { border-top: var(--stroke-1) solid var(--border-default); }
+.ai-jobs-queue { position: fixed; z-index: var(--z-popover-high); display: flex; flex-direction: column; width: min(var(--jobs-queue-width), calc(100vw - var(--space-4))); background: var(--bg-raised); border: var(--stroke-1) solid var(--border-default); border-radius: var(--radius-m); box-shadow: var(--shadow-pop); overflow: hidden; }
+.ai-jobs-controls { padding: var(--space-3); display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-2); }
+.ai-jobs-controls p { grid-column: 1 / -1; }
+.ai-jobs-list { overflow-y: auto; min-height: 0; overscroll-behavior: contain; }
+.ai-jobs-row { padding: var(--space-3); border-top: var(--stroke-1) solid var(--border-default); display: grid; gap: var(--space-2); }
+.ai-jobs-row[data-unread="true"] { border-left: var(--space-1) solid var(--accent); }
+.ai-jobs-row .ai-jobs-row-title { text-align: left; overflow-wrap: anywhere; white-space: normal; height: auto; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: var(--jobs-summary-lines); overflow: hidden; }
+.ai-jobs-row .ai-jobs-actions { padding: 0; border: 0; }
+.ai-jobs-meta { color: var(--text-2); font-size: var(--font-size-sm); overflow-wrap: anywhere; }
+.ai-jobs-error { color: var(--danger); overflow-wrap: anywhere; }
+.ai-jobs-error:empty { display: none; }
+.ai-jobs-empty { padding: var(--space-5); display: grid; gap: var(--space-3); }
+.ai-jobs-backdrop { position: fixed; inset: 0; background: var(--bg-scrim); z-index: var(--z-proposal); display: grid; place-items: center; padding: var(--space-5); }
+.ai-jobs-report { width: min(var(--jobs-report-width), 100%); height: calc(100dvh - var(--space-5) * 2); min-height: 0; display: flex; flex-direction: column; overflow: hidden; border: var(--stroke-1) solid var(--border-default); border-radius: var(--radius-l); background: var(--bg-raised); box-shadow: var(--shadow-modal); }
+.ai-jobs-states { padding: var(--space-2) var(--space-3); background: var(--bg-inset); font-size: var(--font-size-sm); overflow-wrap: anywhere; }
+.ai-jobs-report-status { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-3); }
+.ai-jobs-report-status p { flex: 1 1 100%; }
+.ai-jobs-report-status p:empty { display: none; }
+.ai-jobs-workspace { display: grid; grid-template-columns: var(--jobs-rail-width) minmax(0, 1fr); flex: 1; min-height: 0; overflow: hidden; }
+.ai-jobs-objects { overflow-y: auto; min-height: 0; padding: var(--space-3); background: var(--bg-base); border-right: var(--stroke-1) solid var(--border-default); display: flex; flex-direction: column; gap: var(--space-2); }
+.ai-jobs-objects button { white-space: normal; overflow-wrap: anywhere; text-align: left; flex-shrink: 0; }
+.ai-jobs-objects button[aria-current="true"] { background: var(--accent-muted); border-color: var(--accent); }
+.ai-jobs-report-body { min-height: 0; overflow-y: auto; overflow-x: hidden; padding: var(--space-4); overscroll-behavior: contain; }
+.ai-jobs-object, .ai-jobs-summary, .ai-jobs-review { display: grid; gap: var(--space-4); padding-bottom: var(--space-5); }
+.ai-jobs-media { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--jobs-rail-width)), 1fr)); gap: var(--space-3); align-items: start; }
+.ai-jobs-phase { display: grid; gap: var(--space-2); }
+.ai-jobs-media figure { padding: var(--space-2); background: var(--bg-inset); border-radius: var(--radius-s); overflow-wrap: anywhere; }
+.ai-jobs-media img { display: block; width: 100%; height: auto; object-fit: contain; }
+.ai-jobs-media [data-media-role="map"] img, .ai-jobs-media [data-media-role="crop"] img, .ai-jobs-media [data-media-role="atlas"] img { image-rendering: pixelated; }
+.ai-jobs-media figcaption { font-size: var(--font-size-sm); color: var(--text-2); }
+.ai-jobs details { border-top: var(--stroke-1) solid var(--border-default); padding-top: var(--space-3); }
+.ai-jobs summary { min-height: var(--jobs-control); }
+.ai-jobs-facts { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 3fr); gap: var(--space-2); margin: 0; overflow-wrap: anywhere; }
+.ai-jobs-facts dt { color: var(--text-2); }
+.ai-jobs-facts dd { margin: 0; }
+.ai-jobs-prose { white-space: pre-wrap; overflow-wrap: anywhere; }
+.ai-jobs-review-proposal { display: grid; gap: var(--space-2); padding: var(--space-3); border: var(--stroke-1) solid var(--border-default); border-radius: var(--radius-s); }
+.ai-jobs-review-proposal label { display: flex; align-items: center; gap: var(--space-2); }
+.ai-jobs-review .cmd-item { overflow-wrap: anywhere; }
+@media (max-width: 1100px) {
+  .ai-jobs-workspace { grid-template-columns: minmax(0, 1fr); }
+  .ai-jobs-workspace[data-pane="detail"] .ai-jobs-objects { display: none; }
+  .ai-jobs-workspace[data-pane="list"] .ai-jobs-report-body { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .ai-jobs *, .ai-jobs-launcher { transition: none; animation: none; } }

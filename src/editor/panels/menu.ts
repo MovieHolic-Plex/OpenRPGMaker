@@ -1,4 +1,5 @@
 import { getMode, toggleMode } from "@/app/mode";
+import { mountJobLauncher } from "@/editor/aiJobs/jobInbox";
 import { PRODUCT_TAGLINE } from "@/brand";
 import { showConfirm } from "@/editor/ui/modal";
 import { createNewProjectSeed } from "@/editor/genrePacks";
@@ -93,12 +94,14 @@ let disposeSaveStatus: (() => void) | null = null;
 let paintSaveDot: ((state: AutoSaveState) => void) | null = null;
 let disposeStudioButton: (() => void) | null = null;
 let disposeFullscreenButton: (() => void) | null = null;
+let disposeJobLauncher: (() => void) | null = null;
 let lastLoggedAutoSaveKind: AutoSaveState["kind"] | null = null;
 // 실패 에피소드가 진행 중인가. error 로 켜지고 saved/idle 로 꺼진다 — 재시도 중(saving)에도
 // 칩을 붙잡아 두는 데 쓴다. 톱바가 다시 그려져도 에피소드는 이어져야 하므로 모듈 상태다.
 let saveFailureEpisode = false;
 
 export function renderTopbar(topbar: HTMLElement): void {
+  const restoreJobsFocus = document.activeElement === topbar.querySelector('[data-testid="ai-jobs-open"]');
   for (const dispose of disposeToolbarOverflows) dispose();
   disposeToolbarOverflows = [];
   disposeSaveStatus?.();
@@ -108,6 +111,8 @@ export function renderTopbar(topbar: HTMLElement): void {
   disposeStudioButton = null;
   disposeFullscreenButton?.();
   disposeFullscreenButton = null;
+  disposeJobLauncher?.();
+  disposeJobLauncher = null;
   while (topbar.firstChild) topbar.removeChild(topbar.firstChild);
   const mode = getMode();
   const uiMode = getEditorUiMode();
@@ -152,6 +157,9 @@ export function renderTopbar(topbar: HTMLElement): void {
   }
   const [panelsButton, panelsMenu] = renderWorkspaceBar();
   trailing.append(panelsButton, panelsMenu);
+  const jobs = mountJobLauncher();
+  trailing.append(jobs.element);
+  disposeJobLauncher = jobs.dispose;
   const cluster = el("div", { class: "studio-icon-cluster", dataset: { testid: "studio-icon-cluster" } });
   if (chrome.helpMenu) {
     cluster.append(renderMenu("help", "도움말", menuCommands("help", topbar), { icon: "help", className: "studio-icon-button" }));
@@ -163,6 +171,7 @@ export function renderTopbar(topbar: HTMLElement): void {
   menuBar.append(trailing);
 
   topbar.append(menuBar);
+  if (restoreJobsFocus) jobs.element.focus({ preventScroll: true });
   // 플레이 모드(편집기 안에서 게임이 도는 상태)에서만 「편집으로 돌아가기」 줄을 하나 더 둔다.
   // 편집 모드의 클래식 툴바 행은 2026-09-03 에 걷었다 — 15개 중 14개가 메뉴 항목의 복제였다.
   if (mode !== "edit") {

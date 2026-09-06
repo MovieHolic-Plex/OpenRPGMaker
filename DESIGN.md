@@ -1,5 +1,37 @@
 # RPG ZZU Design System
 
+## Durable AI jobs workbench (2026-09-06)
+
+The persistent `AI 작업` launcher, nonmodal inbox and explicitly opened report use
+vanilla `el`, native `.btn` controls, the existing SVG vocabulary and modal stack.
+Current `tokens.css` cool-white/indigo values win over historical cream prose.
+No new brand, fonts, icon package or decorative artwork is introduced.
+
+- Colors: bg-base/raised/inset/scrim, text-1/2, accent/muted, border-default,
+  success/warning/danger. Corners radius-s/m/l, shadow-pop/modal and focus-outline.
+- Spacing uses space-1..6 (4/8/12/16/24/32px). Scoped workbench geometry tokens:
+  queue 384px, report 1280px, rail 240px, viewport gutter 24px; control 32px.
+  Scoped type tokens: metadata 12px, controls 13px, body 14px, headings 18px,
+  line-height 1.5. Request summaries use a scoped two-line clamp token; the full
+  captured request remains in the report disclosure and accessible button label.
+  Existing font-ui and font-mono remain authoritative.
+- Launcher labels running and unread separately in every editor mode. The inbox
+  has a fixed heading/filter and one scrolling list, no scrim or focus trap.
+- Report heading/actions stay fixed. Object list and detail own independent
+  scrolls; at 1024px the object list is an explicit alternate view. Artwork,
+  aligned map phases, authored flows and tile crops precede structured evidence.
+  Every affected object is discoverable. Unknown usage is never rendered as zero.
+- Generation, report revision, application and save remain separate. Old pixels
+  stay mounted during refresh until explicit revision adoption. Report viewing,
+  filtering and acknowledgement never submit paid work or authorize application.
+- Updates retain row/input identity, focus, selection and scrolling. Native review
+  choices are local to job/result identity. Escape closes only the top surface;
+  closing restores an attached opener or the current launcher. Reduced motion
+  uses no animation. Offline failures retain readable content and user input.
+- Acceptance: actual editor at 1024x768, 1280x800, 1440x900; no document overflow,
+  keyboard and nested confirmation, media identity and object-URL cleanup.
+
+
 ## System settings workspace (2026-09-06)
 
 Database > System is a settings worksheet in the existing cool-white, slate and

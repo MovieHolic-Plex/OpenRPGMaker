@@ -1,5 +1,65 @@
 # Editor AI Panel & Tools
 
+## Durable AI 작업함 / immutable reports (2026-09-06, Task7)
+
+- `src/editor/aiJobs/jobClient.ts` owns one editor-lifetime client. Production
+  callers use `getJobClient()`, never a view-owned executor or repeated clients.
+  `menu.ts` mounts `mountJobLauncher()` in every editor mode and disposes only
+  the launcher subscription on rebuild. Running and unread are separate labels;
+  unread updates announce politely without opening a report or stealing focus.
+- `JobClient.admit(request, idempotencyKey)` is the reusable Task8 admission API.
+  `request.input` is the version/family/full project identity/target/mode/payload/
+  dependsOn envelope, `projectSnapshot` is captured JSON, and `artwork` contains
+  `{mediaType, base64}` bytes. The server creates durable refs. Keep the same key
+  when recovering an uncertain admission acknowledgement; never auto-regenerate.
+  Callers retain request input until admission succeeds. No legacy submission
+  entry point is migrated by Task7; that inventory belongs to Task8.
+- Named `admitted`, `updated`, `outcome`, `inbox-read` SSE is deduplicated by durable
+  sequence. The URL has no `after` query to override native reconnect's newer
+  Last-Event-ID. Request order and per-job event versions fence stale list/detail
+  responses, including same-millisecond updates. Authoritative read state is
+  monotonic across late historical replay. No polling timer is introduced.
+- The nonmodal queue has persistent search/filter controls, newest-first keyed
+  rows and independent scrolling. Closing never cancels. Cancel and generation
+  retry require explicit confirmation; uncertainty consent names possible repeat
+  cost. Report-only retry calls the report stage, not generation.
+- `jobReportPanel.ts` reads the immutable `job.reportRef` revision and its manifest.
+  It groups every section by object and phase, displays pinned media before full
+  technical evidence, and preserves the open revision during server refresh.
+  Selected/visible media load first through IntersectionObserver; one manifest
+  and per-asset verified-byte/object-URL cache belong to the mounted revision.
+  URLs are revoked on object/revision replacement and close. Live project imagery
+  is never a report fallback. Generation, report, application, save and unknown
+  usage are separate. Preview readiness is not generation or gameplay proof.
+- Review is enabled only when the displayed successful report's result hash equals
+  the current immutable result. Event exclusions and tileset proposal IDs stay
+  local to job/result identity in `jobReviewControls.ts`. The controlled
+  `renderCapturedTilesetProposal()` seam has no live-session/paid handlers.
+  **Never open `openTilesetAiWorkspace` to review a report:** that legacy opener
+  starts paid analysis. Only `applyJobResult` applies reviewed results; only
+  `retryJobSave` retries saving. Draft application still needs native editor
+  confirmation and is not a remotely saved project.
+- Explicitly opted-in auto assistant/database/canonical-image results reconcile
+  independently of report mounting. Loaded identity/epoch/read-only changes are
+  observed narrowly; ordinary paint does not retrigger application. Transport
+  recovery retries pending reads, not generation or settled conflicts/unknown
+  application. Matching durable receipt evidence supersedes stale local unsaved
+  outcomes, including another tab's save confirmation.
+- Other-project reports remain readable with disabled apply and an explicit
+  project-picker action. There is no silent project switch or overwrite shortcut.
+  Report Escape uses modalStack, native confirms nest above it, and focus restores
+  to an attached opener or replacement launcher. `hotkeys.ts` excludes the report
+  from editor tool/history shortcuts. Queue does not trap editor focus.
+- Visual owner: existing DESIGN.md extension and `styles/editor/ai-jobs.css`,
+  current cool-white/indigo tokens, vanilla DOM/native controls and existing fonts.
+  Evidence/tests: `test/aiJobPanels.test.ts`, `test/e2e/ai-job-inbox.spec.ts`, and
+  `.omo/evidence/ai-job-queue/task-7/`. Real-editor fixtures use only owned port
+  19841, temporary job storage and a controlled external provider boundary;
+  fixture state screenshots are not proof of Task8 submission migration or remote
+  project saves. Configured models cannot inspect image attachments, so aesthetic
+  approval remains unverified even when pixel/layout/keyboard assertions pass.
+
+
 ## 브라우저 포커스와 도구 실행 대기 (2026-09-05)
 
 - 도구 실행 직전의 `AssistantSession.yieldForUi` → `src/ai/yieldToUi.ts`가 이벤트 루프를 양보한다. 포커스가 있는 보이는 문서는 rAF를 기다려 라이브 행·고스트가 그려질 틈을 준다. `document.visibilityState === "hidden"` 또는 `document.hasFocus() === false`이면 `MessageChannel` 태스크로 양보한다. `Promise.resolve()`만 쓰면 입력·중단 이벤트가 굶으므로 대체하지 않는다.
