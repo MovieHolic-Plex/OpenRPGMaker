@@ -14,13 +14,19 @@ tool call, malformed/inconsistent JSON, stale revision,
 truncated response or transport error stops without approval.
 
 `AssistantSession` reviews every completed write batch, including direct/lite
-and autonomous work. No-write questions and ask turns do not invoke it. The
+and autonomous work. No-write questions and ask turns do not invoke it. Authoring
+turns with zero successful writes still run the existing acceptance/completion
+checks: bounded repair attempts end in an error, never a success publication, if
+those requirements remain unmet. The
 supervisor receives the original request, complete original/current projections
 from `originalContext.ts`, actual changed values, tool results, draft acceptance
 and available executable/image evidence. Duplicate read-credit receipts are not
 sent twice. Oversized complete evidence is an explicit window error, not a
-truncated review. Runtime session/asset transport changes that lack a reviewable
-projection are explicitly blocked; their omission never earns approval.
+truncated review. Asset transport changes that lack a reviewable projection are
+explicitly blocked; their omission never earns approval. `Project.session` is the
+authored `ProjectStartState` seed (`startStateOf(project)`), not a live `PlaySession`.
+Its party, inventory, gold, flags and farm starts are reviewed as exact before/after
+values, alongside authored test presets. No live scene session is read.
 
 Verdicts echo `revision` and contain `verdict`, `summary` and structured findings
 (`id`, `target`, `problem`, `requestedChange`, `validation`). Findings go back to
@@ -47,6 +53,10 @@ path. `aiTurnRunner`, the direct proposal host, cluster acceptance and region
 application reject unapproved/error/budget/cancelled drafts, even when successful
 writes remain in the proposal ledger. Evaluation retains draft measurements and
 review evidence, but an unapproved solver result cannot pass the task.
+The real proposal-host and autonomous apply boundaries call `rebaseProject` after
+successful application; clean pre-turn store sync does the same. Rejecting a later
+draft and starting an unrelated request therefore restores the latest applied
+baseline, not the initial conversation project. Both paths have regression tests.
 
 Region clipping and seam preparation run through `setReviewDraftTransform` before
 review. Repairs and rerenders see that prepared draft. Later clipping, partial

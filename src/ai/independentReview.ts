@@ -29,8 +29,9 @@ export interface ReviewInput {
   readonly images: readonly { label: string; dataUrl: string }[];
 }
 
-// Transport assets and runtime session are not authored review inputs. Changes to
-// these fields are explicitly declared, never silently credited as inspected.
+// Project.session is the authored ProjectStartState seed, not a live PlaySession
+// (project/types/project.ts and startStateOf). Review it exactly like other authored
+// values. Only asset transport is omitted explicitly; no runtime session is read.
 export function reviewChanges(before: Project, after: Project): ReviewInput["changes"] {
   const left = before as unknown as Record<string, unknown>;
   const right = after as unknown as Record<string, unknown>;
@@ -53,9 +54,9 @@ export function reviewChanges(before: Project, after: Project): ReviewInput["cha
       }
       return changes;
     }
-    const omitted = key === "session" || key === "assets";
-    return [{ path: `/${key}`, before: omitted ? { omitted: "runtime-or-asset-transport" } : left[key] ?? null,
-      after: omitted ? { omitted: "runtime-or-asset-transport" } : right[key] ?? null }];
+    const omitted = key === "assets";
+    return [{ path: `/${key}`, before: omitted ? { omitted: "asset-transport" } : left[key] ?? null,
+      after: omitted ? { omitted: "asset-transport" } : right[key] ?? null }];
   });
 }
 

@@ -320,3 +320,49 @@ describe("evaluation evidence integration", () => {
     expect(result.audit).toBeDefined();
   });
 });
+
+
+describe("no-write authoring and authored start-state review", () => {
+  it.each(["acceptance", "completion"])("blocks a no-write authoring result with unmet %s requirements before publishing success", async requirement => {
+    const project = createBlankProject();
+    const events: SessionEvent[] = [];
+    let writerCalls = 0, reviewCalls = 0;
+    const session = new AssistantSession(project, {
+      config: { ...defaultAiConfig(), agentMode: "chat", maxToolCalls: 10 },
+      declareIntent: fixedDeclarer(requirement === "acceptance" ? { mode: "create", targetMapId: project.startMapId }
+        : { mode: "create", adventure: { village: false, dungeon: false, party: false, battle: true } }),
+      chat: async (_config, request) => {
+        if (payload(request)?.kind === "independent-review") reviewCalls++;
+        else writerCalls++;
+        return text("UNSUPPORTED_AUTHORING_SUCCESS");
+      },
+    });
+    const result = await session.sendUserMessage("Author the requested content", event => events.push(event));
+    expect(result.proposedCalls).toEqual([]);
+    expect(result.stoppedReason).toBe("error");
+    expect(writerCalls).toBeGreaterThan(1);
+    expect(writerCalls).toBeLessThanOrEqual(4);
+    expect(reviewCalls).toBe(0);
+    expect(events.filter(event => event.type === "assistant_message").map(event => event.type === "assistant_message" && event.content))
+      .not.toContain("UNSUPPORTED_AUTHORING_SUCCESS");
+    expect(session.getProposedProject()).toEqual(project);
+  });
+  it("reviews authored start-state party, inventory and gold as actual data", async () => {
+    const project = createBlankProject();
+    const actorId = project.database.actors[0]!.id;
+    const f = fixture({ rounds: [
+      call("get_database_records", { collection: "actors", ids: [actorId], include: "full" }),
+      call("get_database_records", { collection: "items", ids: ["item_potion"], include: "full" }),
+      call("set_session_start", { partyActorIds: [actorId], inventory: { item_potion: 3 }, gold: 654 }),
+      call("upsert_test_preset", { preset: { id: "review_start", name: "Starting inventory", inventory: { item_potion: 5 }, gold: 321 } }),
+    ] });
+    const result = await f.session.sendUserMessage("Set authored starting party, inventory and gold");
+    expect(result.review?.status, result.error).toBe("approved");
+    expect(payload(f.reviewRequests[0]!).changes).toContainEqual({ path: "/session", before: f.project.session,
+      after: f.session.getProposedProject().session });
+    expect(f.session.getProposedProject().session).toMatchObject({ partyActorIds: [actorId], inventory: { item_potion: 3 }, gold: 654 });
+    expect(payload(f.reviewRequests[0]!).changes).toContainEqual(expect.objectContaining({ path: "/testPresets",
+      after: expect.arrayContaining([expect.objectContaining({ id: "review_start", inventory: { item_potion: 5 }, gold: 321 })]) }));
+    expect(f.project.session.gold).not.toBe(654);
+  });
+});

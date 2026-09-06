@@ -9,6 +9,8 @@ import { createProposalHost } from "@/editor/panels/aiProposalCard";
 import type { AiRunSurface } from "@/editor/panels/aiRunSurface";
 import { createBlankProject } from "@/project/defaults";
 import { proposalCompletenessWarnings } from "@/ai/proposalCompleteness";
+import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
+import { approvedReviewResponse } from "./independentReviewFixture";
 import { approvedReview } from "./independentReviewFixture";
 import { fixedDeclarer } from "./intentFixture";
 import { runTool } from "@/editor/tools/toolRunner";
@@ -248,5 +250,51 @@ describe("independent review application boundary", () => {
     const before = store.getCurrent();
     expect(await host.applyProposal([titleCall("Unapproved")])).toBe("rejected");
     expect(store.getCurrent()).toBe(before);
+  });
+});
+
+
+describe("applied baseline across rejected and unrelated requests", () => {
+  it.each([false, true])("preserves earlier applied work through the real apply/sync boundary (autonomous=%s)", async autonomous => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response(null, { status: 201 }));
+    const project = store.getCurrent();
+    let turn = 0, writerRound = 0;
+    const session = new AssistantSession(project, {
+      config: { ...defaultAiConfig(), agentMode: "chat", maxToolCalls: 12 },
+      declareIntent: fixedDeclarer({ mode: "modify" }),
+      yieldToUi: async () => {},
+      chat: async (_config, request): Promise<ChatResult> => {
+        const review = approvedReviewResponse(request);
+        if (review) return turn === 1 ? { message: { role: "assistant", content: "Malformed review" }, finishReason: "stop" } : review;
+        if (writerRound++ > 0) return { message: { role: "assistant", content: "Writer finished" }, finishReason: "stop" };
+        if (turn === 2) expect(session.getProposedProject().system.titleScreen?.title).toBe("Kept approved title");
+        const args = turn === 0 ? { title: "Kept approved title" } : turn === 1 ? { title: "Rejected title" }
+          : { showInputHint: !session.getProposedProject().system.titleScreen?.showInputHint };
+        return { message: { role: "assistant", content: null, tool_calls: [{ id: `turn-${turn}`, type: "function", function: {
+          name: "set_title_screen", arguments: JSON.stringify(args) } }] }, finishReason: "tool_calls" };
+      },
+    });
+    const h = setup(session);
+    const host = createProposalHost({ proposalNoticeHost: document.createElement("div"), controller: h.deps.surface.controller,
+      appendBubble: h.appendBubble, setStatus: vi.fn() });
+    const first = await session.sendUserMessage("Set the title", () => {}, undefined, { autonomous });
+    expect(first.review?.status).toBe("approved");
+    if (!autonomous) expect(await host.applyProposal(first.proposedCalls)).toBe("applied");
+    expect(store.getCurrent().system.titleScreen?.title).toBe("Kept approved title");
+    expect(session.baselineProject).toEqual(store.getCurrent());
+    expect(session.syncBaselineFromStoreIfClean(store.getCurrent())).toBe(true);
+    turn = 1; writerRound = 0;
+    const rejected = await session.sendUserMessage("Replace the title", () => {}, undefined, { autonomous });
+    expect(rejected.stoppedReason).toBe("error");
+    expect(session.getProposedProject().system.titleScreen?.title).toBe("Rejected title");
+    expect(session.baselineProject.system.titleScreen?.title).toBe("Kept approved title");
+    expect(session.syncBaselineFromStoreIfClean(store.getCurrent())).toBe(false);
+    turn = 2; writerRound = 0;
+    const unrelated = await session.sendUserMessage("Change only the input hint", () => {}, undefined, { autonomous });
+    expect(unrelated.review?.status).toBe("approved");
+    if (!autonomous) expect(await host.applyProposal(unrelated.proposedCalls)).toBe("applied");
+    expect(store.getCurrent().system.titleScreen?.title).toBe("Kept approved title");
+    expect(session.baselineProject).toEqual(store.getCurrent());
+    expect(session.getProposedProject()).toEqual(store.getCurrent());
   });
 });

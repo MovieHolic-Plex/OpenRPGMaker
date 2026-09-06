@@ -3536,8 +3536,8 @@ export class AssistantSession {
         if (VERIFICATION_TOOL_NAMES.has(name) && !this.verificationEvidence.passed(name)) requiredProblems.push(`${name}: declared verification must pass on the current revision`);
       }
       const changes = reviewChanges(this.reviewBaseline, this.ctx.project);
-      for (const change of changes) if (change.path === "/session" || change.path === "/assets") {
-        requiredProblems.push(`${change.path}: runtime/asset transport changed without reviewable original evidence`);
+      for (const change of changes) if (change.path === "/assets") {
+        requiredProblems.push(`${change.path}: asset transport changed without reviewable original evidence`);
       }
       const mapIds = new Set([this.originalContext!.context.target.mapId,
         ...Object.keys(this.reviewBaseline.maps), ...Object.keys(this.ctx.project.maps)].filter(id =>
@@ -3750,15 +3750,19 @@ export class AssistantSession {
         // Before the first project write, retain the existing bounded acceptance
         // repair path. There is no result for an independent reviewer yet.
         this.adoptAcceptance(undefined, onEvent);
-        if (proposedByKey.size === 0 && this.acceptanceOpen() && this.turnComposerMode !== "ask") {
+        const noWriteProblems = proposedByKey.size === 0 ? this.completionProblems() : [];
+        if (proposedByKey.size === 0 && this.turnComposerMode !== "ask" && this.turnIntent?.mode !== "question"
+          && (this.acceptanceOpen() || noWriteProblems.length > 0)) {
           if (this.acceptanceRepairAttempts < MAX_RALPH_ATTEMPTS_PER_ITEM && spentOutputTokens < this.config.maxTokens) {
             this.acceptanceRepairAttempts += 1;
-            this.pushOrchestrationMessage(`Repair the original acceptance requirements with actual tools.\n${JSON.stringify(this.getAcceptanceSnapshot())}`);
+            this.pushOrchestrationMessage(`Repair the original acceptance and completion requirements with actual tools.\n${JSON.stringify({ acceptance: this.getAcceptanceSnapshot(), completionProblems: noWriteProblems })}`);
             continue;
           }
           this.acceptance?.stop();
           this.publishAcceptance(onEvent);
-          return { assistantText: this.acceptanceIncompleteText(), proposedCalls: [], stoppedReason: "final" };
+          const error = this.acceptanceOpen() ? this.acceptanceIncompleteText()
+            : `요청한 구성이 아직 미완성입니다.\n${noWriteProblems.map(problem => `- ${problem}`).join("\n")}`;
+          return { assistantText: error, error, proposedCalls: [], stoppedReason: "error" };
         }
         // Ralph loop: incomplete WorkPlan → re-inject current item; do not early-exit.
         // 단, 현재 턴의 마일스톤 적용이 실패했으면 저장소와 draft가 어긋난 채 다음 항목을

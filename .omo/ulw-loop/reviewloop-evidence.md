@@ -140,9 +140,66 @@ The lead may delegate them in isolated integration trees; this component did not
 silently bypass review to keep old mocks green.
 
 Explicit implementation limits: whole evidence must fit the supervisor window;
-asset-transport/runtime-session changes without a reviewable projection fail closed;
+asset-transport changes without a reviewable projection fail closed; authored starting
+state is reviewable (corrected in the follow-up below);
 manual partial/schedule/reroll changes to an approved region require another reviewed
 request instead of reusing approval. Final INDEX regeneration, full repository gates,
 external ultrabrain/deep repairs, final UI/provider QA and merge remain lead-owned.
 No authored games, live DB writes, privileged remote verification, push, PR or merge
 were performed by this component.
+
+
+## Lead follow-up: no-write closure, applied baseline and authored start state
+
+Follow-up base: `5cab5e2c1ea16bf32af376e1c3591d949c4a1daf`. Overall regression
+reference remains original `b9dec50fb6159e8be220b42eb59e526808b92b97`, not merely
+the immediately preceding component commit. No merge or broad legacy sweep.
+
+- Reproduced two no-write authoring defects: unmet acceptance returned `final`,
+  and completion-only requirements could publish writer success before recap
+  correction. The no-tool boundary now checks both existing requirement sources,
+  uses the existing bounded repair allowance, then returns error without publishing
+  the unsupported success text. Questions still do not invoke independent review.
+- Baseline concern was checked through real production paths and already passed:
+  ordinary proposal-host application and autonomous milestone application refresh
+  baselineProject via rebaseProject. After approved/applied turn A, rejected turn B,
+  failed clean-sync while B remains pending, and unrelated approved/applied turn C,
+  A's title remains intact in the store, baseline and draft. No redundant production
+  baseline change was made. Tests also assert clean-sync after A succeeds.
+- Corrected the blanket /session rejection. ProjectSession/ProjectStartState is
+  explicitly the editor-authored new-game seed (project/types/project.ts); the real
+  runtime PlaySession is separate (project/session.ts). Review changes now include
+  the exact authored /session before/after values. Actual set_session_start and
+  upsert_test_preset tools pass review for party/inventory/gold/preset changes.
+  A separate startSession test mutates live runtime gold and proves review inputs
+  still contain only the authored starting gold. Asset transport omission remains
+  explicit and fail-closed. Earlier runtime-session-limit wording in this historical
+  evidence is superseded by this correction.
+
+Red command:
+
+```sh
+npm test -- test/assistantIndependentReview.test.ts test/aiTurnAppliedAccounting.test.ts --pool=threads --maxWorkers=1 --testTimeout=60000 -t 'no-write authoring|authored start-state|applied baseline across'
+```
+
+Exit 1, 3 failed / 2 passed (48 unrelated tests excluded by the command filter).
+Both no-write cases returned final instead of error; authored session was permanently
+changes_requested. Both real apply/baseline cases passed before production edits.
+Log: `/tmp/reviewloop-followup-red.log`.
+
+Final unfiltered focused green:
+
+```sh
+npm test -- test/independentReview.test.ts test/assistantIndependentReview.test.ts test/assistantAcceptanceSession.test.ts test/assistantVisualEvidenceSession.test.ts test/aiTurnAppliedAccounting.test.ts test/regionTaskRun.test.ts --pool=threads --maxWorkers=1 --testTimeout=60000
+npm run typecheck:app
+git diff --check
+```
+
+- Exit 0, 6 files / 129 tests passed in one complete run, no skipped tests or
+  unhandled errors. `/tmp/reviewloop-followup-green.log`.
+- App typecheck exit 0. `/tmp/reviewloop-followup-types.log`.
+- LSP diagnostics on all five changed TS files before typecheck: none.
+- No currently failing focused case or production type error remains. Build and
+  live/final-tree QA remain lead-owned, as requested; no additional build wave.
+- No live DB write: real local apply paths ran with remote persistence disabled and
+  external fetch stubbed. No authored game content, push, PR, merge or unrelated edits.

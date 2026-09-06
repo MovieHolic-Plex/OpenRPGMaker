@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { buildIndependentReviewRequest, parseIndependentReview, reviewChanges, type ReviewInput } from "@/ai/independentReview";
 import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
 import { ToolVerificationEvidence } from "@/ai/toolVerificationEvidence";
+import { startSession } from "@/project/session";
 import { createBlankProject } from "@/project/defaults";
 
 const approved = { revision: 7, verdict: "approved", summary: "Inspected", findings: [] };
@@ -87,4 +88,15 @@ describe("whole-response provider JSON fences", () => {
     result.message.tool_calls = [{ id: "bad", type: "function", function: { name: "reset_project", arguments: "{}" } }];
     expect(() => parseIndependentReview(result, 7, [])).toThrow("independent-review-tool-call-rejected");
   });
+});
+
+
+it("reviews the authored starting seed without reading later runtime state", () => {
+  const before = createBlankProject(), after = structuredClone(before);
+  after.session.gold = 654;
+  const runtime = startSession(after);
+  runtime.gold = 9999;
+  expect(reviewChanges(before, after)).toEqual([{ path: "/session", before: before.session, after: after.session }]);
+  expect(after.session.gold).toBe(654);
+  expect(JSON.stringify(reviewChanges(before, after))).not.toContain('"gold":9999');
 });
