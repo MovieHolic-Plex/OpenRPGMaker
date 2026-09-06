@@ -280,6 +280,22 @@ id 슬롯은 남긴다**(`def.name = ""`). id 가 지워지지 않으므로 `com
 
 ## Action controls guide (2026-09-07)
 
+2D tile action combat is supported; 3D open worlds remain outside the engine.
+`actionArenaAuthoring.ts` selects its recipe only for a structured creation
+declaration with nonempty `actionCombat.targets` and no clarification. The
+selector never parses user keywords. `buildActionArenaAuthoringGuide` is consumed
+by the action welcome preset and the lead's context integration. It reads
+existing maps/events/resources/party/enemies/troops before minimal terrain/start,
+names the map and game, orders enemy before troop before spawn, and makes one
+controls guide. Each target must pass `run_action_combat_test({mapId})` before
+decorations; the async acceptance/runtime lane owns that tool's receipt.
+`run_scene_test`, spawn counts and turn-based `simulate_battle` cannot substitute
+for action proof. Unrequested quests, shops, bosses, rewards and multi-page
+quotas are not part of this recipe. Existing arena modifications remain focused
+repairs with retained acceptance targets, not a new-arena starter.
+Free-text welcome handoff also preserves the requested scope rather than adding
+the generic preset's NPC/item quotas before structured intent classification.
+
 `make_action_enemy` prepares the enemy and validates its graphic, target map,
 troop membership and spawn area before committing either record. `spawn.id`
 upserts within the target map; omission appends a fresh ID. `set_action_combat`

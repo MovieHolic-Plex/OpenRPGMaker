@@ -46,7 +46,7 @@ describe("새 프로젝트 씨앗", () => {
 });
 
 describe("새 프로젝트 다이얼로그", () => {
-  it("여섯 선택지(이름 입력 포함 빈 프로젝트 + 다섯 팩)가 보인다", async () => {
+  it("빈 프로젝트와 모든 공식 팩 선택지가 보인다", async () => {
     const pending = showNewProjectDialog({ defaultValue: "달빛 항구" });
     const host = document.querySelector("[data-testid='new-project-dialog']");
     expect(host).not.toBeNull();
@@ -54,7 +54,7 @@ describe("새 프로젝트 다이얼로그", () => {
     const radios = Array.from(
       document.querySelectorAll(`[data-testid^='new-project-genre-option-']`),
     );
-    expect(radios).toHaveLength(6);
+    expect(radios).toHaveLength(GENRE_PACK_IDS.length + 1);
     expect(newProjectGenreOptionTestId(null)).toBe("new-project-genre-option-blank");
     document.querySelector<HTMLButtonElement>("[data-testid='new-project-cancel']")?.click();
     await expect(pending).resolves.toBeNull();
