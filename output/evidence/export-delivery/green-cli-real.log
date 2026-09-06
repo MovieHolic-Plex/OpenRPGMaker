@@ -1,0 +1,54 @@
+
+> rpg-zzu@0.1.0 build:standalone:bundle
+> vite build --config vite.standalone.config.ts --configLoader runner
+
+vite v6.4.3 building for production...
+transforming...
+
+/assets/fonts/neodgm.woff2 referenced in /assets/fonts/neodgm.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/fonts/Galmuri9.woff2 referenced in /assets/fonts/Galmuri9.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/fonts/Galmuri11.woff2 referenced in /assets/fonts/Galmuri11.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/fonts/Galmuri11-Bold.woff2 referenced in /assets/fonts/Galmuri11-Bold.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/ui/windowskin-warm.png referenced in /assets/ui/windowskin-warm.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/generated/battle-reference-forest.png referenced in /generated/battle-reference-forest.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-sword.png referenced in /assets/generated/starter/battle-icon-sword.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-fire.png referenced in /assets/generated/starter/battle-icon-fire.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-shield.png referenced in /assets/generated/starter/battle-icon-shield.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-cross.png referenced in /assets/generated/starter/battle-icon-cross.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-bag.png referenced in /assets/generated/starter/battle-icon-bag.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-boot.png referenced in /assets/generated/starter/battle-icon-boot.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-exp.png referenced in /assets/generated/starter/battle-icon-exp.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-gold.png referenced in /assets/generated/starter/battle-icon-gold.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-shard.png referenced in /assets/generated/starter/battle-icon-shard.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-world.png referenced in /assets/generated/starter/battle-icon-world.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/assets/generated/starter/battle-icon-next.png referenced in /assets/generated/starter/battle-icon-next.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+✓ 544 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/standalone-player/standalone.css    291.50 kB │ gzip:  46.40 kB
+dist/standalone-player/standalone.js   3,535.96 kB │ gzip: 874.08 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 46.39s
+파일      : output/evidence/export-delivery/cli-real.html
+크기      : 65.85 MB
+  에셋    : 715개

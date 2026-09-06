@@ -1,7 +1,7 @@
 import { createBlankProject } from "@/project/defaults";
 import { createStandaloneHtmlExport } from "@/project/standaloneExport";
 import { STANDALONE_ASSETS_NODE_ID, STANDALONE_PROJECT_NODE_ID } from "@/project/standaloneHtml";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 const encoder = new TextEncoder();
 
@@ -39,19 +39,38 @@ describe("standalone html export", () => {
     expect(html).toContain("data:image/png;base64,");
   });
 
-  // 재료를 못 구했으면 조용히 빠뜨리지 말고 세어서 알려야 한다 — 그림 없는 게임이 나가면
-  // 사용자는 원인을 모른다.
-  it("못 구한 에셋을 삼키지 않고 보고한다", async () => {
-    // Given
-    const project = createBlankProject();
-    const { fetchBytes } = stubFetchBytes({ missing: (path) => path.endsWith(".png") });
+  afterEach(() => vi.unstubAllGlobals());
 
-    // When
-    const result = await createStandaloneHtmlExport(project, { fetchBytes });
+  it.each([".png", ".woff2"])("rejects missing required %s instead of returning a download", async (extension) => {
+    const { fetchBytes } = stubFetchBytes({ missing: (path) => path.endsWith(extension) });
+    await expect(createStandaloneHtmlExport(createBlankProject(), { fetchBytes }))
+      .rejects.toThrow(extension);
+  });
 
-    // Then
-    expect(result.summary.missingAssets.length).toBeGreaterThan(0);
-    expect(result.summary.missingAssets.some((path) => path.endsWith(".png"))).toBe(true);
+  it.each(["standalone.js", "standalone.css", ".png", ".woff2"])(
+    "rejects editor HTML returned with status 200 for %s", async (suffix) => {
+      const { fetchBytes } = stubFetchBytes();
+      vi.stubGlobal("fetch", async (path: string) => new Response(
+        path.endsWith(suffix) ? "<!doctype html><html><body>editor</body></html>" : await fetchBytes(path),
+        { status: 200, headers: { "Content-Type": "application/octet-stream" } },
+      ));
+      await expect(createStandaloneHtmlExport(createBlankProject())).rejects.toThrow(suffix);
+    },
+  );
+
+  it("rejects a text/html response even without an HTML opening tag", async () => {
+    const { fetchBytes } = stubFetchBytes();
+    vi.stubGlobal("fetch", async (path: string) => new Response(await fetchBytes(path), {
+      headers: { "Content-Type": path.endsWith("standalone.js") ? "text/html; charset=utf-8" : "application/octet-stream" },
+    }));
+    await expect(createStandaloneHtmlExport(createBlankProject())).rejects.toThrow("standalone.js");
+  });
+
+  it.each(["standalone.js", "standalone.css", ".png"])("rejects empty %s", async (suffix) => {
+    const { fetchBytes } = stubFetchBytes();
+    await expect(createStandaloneHtmlExport(createBlankProject(), {
+      fetchBytes: (path) => path.endsWith(suffix) ? Promise.resolve(new Uint8Array()) : fetchBytes(path),
+    })).rejects.toThrow(suffix);
   });
 
   it("CSS 가 요구하는 폰트를 에셋 클로저 밖에서도 채운다", async () => {

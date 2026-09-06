@@ -43,6 +43,9 @@ const MIME_BY_EXTENSION: Readonly<Record<string, string>> = {
   mp3: "audio/mpeg",
   ogg: "audio/ogg",
   wav: "audio/wav",
+  mp4: "video/mp4",
+  webm: "video/webm",
+  ogv: "video/ogg",
   woff2: "font/woff2",
   woff: "font/woff",
   ttf: "font/ttf",
@@ -52,22 +55,32 @@ export async function createStandaloneHtmlExport(
   project: Project,
   options: StandaloneExportOptions = {},
 ): Promise<StandaloneExportResult> {
-  const fetchBytes = options.fetchBytes ?? defaultFetchBytes;
+  const source = options.fetchBytes ?? defaultFetchBytes;
+  const fetchBytes: StandaloneFetchBytes = async (path) => {
+    let bytes: Uint8Array;
+    try { bytes = await source(path); }
+    catch (error) {
+      throw new Error(`실행형 HTML 재료를 못 받았습니다: ${path} (${error instanceof Error ? error.message : String(error)})`);
+    }
+    // A 200 SPA fallback is not a player bundle or media, even with a misleading MIME.
+    const prefix = decodeText(bytes.subarray(0, 512)).trimStart();
+    if (bytes.length === 0 || /^(?:<!doctype\s+html\b|<(?:html|head|body)\b)/i.test(prefix)) {
+      throw new Error(`실행형 HTML 재료가 비어 있거나 HTML 입니다: ${path}`);
+    }
+    return bytes;
+  };
   const bundleBase = options.bundleBase ?? STANDALONE_BUNDLE_BASE;
   const prepared = prepareWebExport(project);
 
   const inlineAssets: Record<string, string> = {};
-  const missingAssets: string[] = [];
   for (const asset of prepared.assets) {
     // 업로드 에셋은 이미 project.json 안에 data URL 로 들어 있다.
     if (asset.kind === "uploaded") continue;
-    const dataUrl = await loadDataUrl(asset.sourcePath, fetchBytes);
-    if (dataUrl === null) { missingAssets.push(asset.sourcePath); continue; }
-    inlineAssets[asset.zipPath] = dataUrl;
+    inlineAssets[asset.zipPath] = await loadDataUrl(asset.sourcePath, fetchBytes);
   }
 
   const script = decodeText(await fetchBytes(`${bundleBase}standalone.js`));
-  const { css, missing } = await inlineCssAssetUrls(
+  const { css } = await inlineCssAssetUrls(
     decodeText(await fetchBytes(`${bundleBase}standalone.css`)),
     inlineAssets,
     (path) => loadDataUrl(path, fetchBytes),
@@ -80,18 +93,14 @@ export async function createStandaloneHtmlExport(
     fileName: standaloneHtmlFileName(title),
     summary: {
       assetCount: Object.keys(inlineAssets).length,
-      missingAssets: [...missingAssets, ...missing],
+      missingAssets: [],
       htmlBytes: html.length,
     },
   };
 }
 
-async function loadDataUrl(path: string, fetchBytes: StandaloneFetchBytes): Promise<string | null> {
-  try {
-    return `data:${mimeOf(path)};base64,${base64Of(await fetchBytes(`/${path.replace(/^\//, "")}`))}`;
-  } catch {
-    return null;
-  }
+async function loadDataUrl(path: string, fetchBytes: StandaloneFetchBytes): Promise<string> {
+  return `data:${mimeOf(path)};base64,${base64Of(await fetchBytes(`/${path.replace(/^\//, "")}`))}`;
 }
 
 function mimeOf(path: string): string {
@@ -117,6 +126,9 @@ function decodeText(bytes: Uint8Array): string {
 
 async function defaultFetchBytes(path: string): Promise<Uint8Array> {
   const response = await fetch(path);
-  if (!response.ok) throw new Error(`실행형 HTML 재료를 못 받았습니다: ${path} (${response.status})`);
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  if (response.headers.get("content-type")?.toLowerCase().includes("text/html")) {
+    throw new Error("플레이어 재료 대신 HTML 응답을 받았습니다");
+  }
   return new Uint8Array(await response.arrayBuffer());
 }

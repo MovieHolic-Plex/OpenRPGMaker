@@ -92,6 +92,14 @@ describe("standalone html", () => {
     expect(result.missing).toEqual(["assets/missing.png"]);
   });
 
+  it("keeps local SVG filter fragments without requesting an asset", async () => {
+    const css = 'a{filter:url(#battle-flash-tint)}b{filter:url("#battle-flash-tint")}';
+    const asked: string[] = [];
+    const result = await inlineCssAssetUrls(css, {}, async (path) => { asked.push(path); return null; });
+    expect(asked).toEqual([]);
+    expect(result).toEqual({ css, missing: [] });
+  });
+
   it("경로 키를 한 가지로 맞춘다", () => {
     // Given
     const variants = ["/assets/a.png", "assets/a.png", "./assets/a.png", "assets/a.png?v=2"];

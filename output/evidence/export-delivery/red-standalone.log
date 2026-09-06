@@ -1,0 +1,860 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/standaloneExport.test.ts test/standaloneHtml.test.ts
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-silver-stone-6077-export-delivery-6077
+
+ ❯ test/standaloneHtml.test.ts (8 tests | 1 failed) 86ms
+   ✓ standalone html > 프로젝트와 에셋을 문서 안 노드로 싣는다 7ms
+   ✓ standalone html > 프로젝트 JSON 의 </script> 가 문서를 끊지 않는다 1ms
+   ✓ standalone html > 제목의 태그 문자를 이스케이프한다 0ms
+   ✓ standalone html > CSS 의 url() 을 data URL 로 바꾸고, 표에 없으면 한 번 더 구한다 2ms
+   ✓ standalone html > 못 구한 url 은 원본을 남기고 목록으로 보고한다 0ms
+   × standalone html > keeps local SVG filter fragments without requesting an asset 66ms
+     → expected [ '#battle-flash-tint' ] to deeply equal []
+   ✓ standalone html > 경로 키를 한 가지로 맞춘다 4ms
+   ✓ standalone html > 파일명에 윈도우 금지문자를 남기지 않는다 2ms
+ ❯ test/standaloneExport.test.ts (13 tests | 10 failed) 14823ms
+   ✓ standalone html export > 에셋을 data URL 로 문서에 싣고 파일명을 제목에서 만든다  2659ms
+   × standalone html export > rejects missing required .png instead of returning a download 1062ms
+     → promise resolved "{ …(3) }" instead of rejecting
+   × standalone html export > rejects missing required .woff2 instead of returning a download 1111ms
+     → promise resolved "{ …(3) }" instead of rejecting
+   × standalone html export > rejects editor HTML returned with status 200 for standalone.js 883ms
+     → promise resolved "{ …(3) }" instead of rejecting
+   × standalone html export > rejects editor HTML returned with status 200 for standalone.css 837ms
+     → promise resolved "{ …(3) }" instead of rejecting
+   × standalone html export > rejects editor HTML returned with status 200 for .png 1448ms
+     → promise resolved "{ …(3) }" instead of rejecting
+   × standalone html export > rejects editor HTML returned with status 200 for .woff2 563ms
+     → promise resolved "{ …(3) }" instead of rejecting
+   × standalone html export > rejects a text/html response even without an HTML opening tag 909ms
+     → promise resolved "{ …(3) }" instead of rejecting
+   × standalone html export > rejects empty standalone.js 1414ms
+     → promise resolved "{ …(3) }" instead of rejecting
+   × standalone html export > rejects empty standalone.css 1011ms
+     → promise resolved "{ …(3) }" instead of rejecting
+   × standalone html export > rejects empty .png 1144ms
+     → promise resolved "{ …(3) }" instead of rejecting
+   ✓ standalone html export > CSS 가 요구하는 폰트를 에셋 클로저 밖에서도 채운다  1272ms
+   ✓ standalone html export > 번들 재료를 못 받으면 실패를 숨기지 않는다  503ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 11 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/standaloneExport.test.ts > standalone html export > rejects missing required .png instead of returning a download
+ FAIL  test/standaloneExport.test.ts > standalone html export > rejects missing required .woff2 instead of returning a download
+AssertionError: promise resolved "{ …(3) }" instead of rejecting
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- Error {[39m
+[32m-   "message": "rejected promise",[39m
+[31m+ {[39m
+[31m+   "blob": Blob {[39m
+[31m+     Symbol(kHandle): Blob {},[39m
+[31m+     Symbol(kLength): 2455446,[39m
+[31m+     Symbol(kType): "text/html;charset=utf-8",[39m
+[31m+   },[39m
+[31m+   "fileName": "새-프로젝트.html",[39m
+[31m+   "summary": {[39m
+[31m+     "assetCount": 60,[39m
+[31m+     "htmlBytes": 2179715,[39m
+[31m+     "missingAssets": [[39m
+[31m+       "assets/cc0/jetrel/icons/ale.png",[39m
+[31m+       "assets/cc0/jetrel/icons/antidote-green.png",[39m
+[31m+       "assets/cc0/jetrel/icons/antidote-plus.png",[39m
+[31m+       "assets/cc0/jetrel/icons/apple.png",[39m
+[31m+       "assets/cc0/jetrel/icons/arrow-bundle.png",[39m
+[31m+       "assets/cc0/jetrel/icons/badge.png",[39m
+[31m+       "assets/cc0/jetrel/icons/bandages.png",[39m
+[31m+       "assets/cc0/jetrel/icons/battery.png",[39m
+[31m+       "assets/cc0/jetrel/icons/bell.png",[39m
+[31m+       "assets/cc0/jetrel/icons/bomb.png",[39m
+[31m+       "assets/cc0/jetrel/icons/bone.png",[39m
+[31m+       "assets/cc0/jetrel/icons/book-magic.png",[39m
+[31m+       "assets/cc0/jetrel/icons/book-sword.png",[39m
+[31m+       "assets/cc0/jetrel/icons/boots.png",[39m
+[31m+       "assets/cc0/jetrel/icons/bread.png",[39m
+[31m+       "assets/cc0/jetrel/icons/bronze-sword.png",[39m
+[31m+       "assets/cc0/jetrel/icons/bullet.png",[39m
+[31m+       "assets/cc0/jetrel/icons/camera.png",[39m
+[31m+       "assets/cc0/jetrel/icons/candle.png",[39m
+[31m+       "assets/cc0/jetrel/icons/candy.png",[39m
+[31m+       "assets/cc0/jetrel/icons/capture-orb.png",[39m
+[31m+       "assets/cc0/jetrel/icons/cheese.png",[39m
+[31m+       "assets/cc0/jetrel/icons/claw.png",[39m
+[31m+       "assets/cc0/jetrel/icons/cloak.png",[39m
+[31m+       "assets/cc0/jetrel/icons/clock.png",[39m
+[31m+       "assets/cc0/jetrel/icons/coal.png",[39m
+[31m+       "assets/cc0/jetrel/icons/coffee.png",[39m
+[31m+       "assets/cc0/jetrel/icons/coin-pouch.png",[39m
+[31m+       "assets/cc0/jetrel/icons/compass.png",[39m
+[31m+       "assets/cc0/jetrel/icons/cookie.png",[39m
+[31m+       "assets/cc0/jetrel/icons/corn.png",[39m
+[31m+       "assets/cc0/jetrel/icons/crystal.png",[39m
+[31m+       "assets/cc0/jetrel/icons/earth-ore.png",[39m
+[31m+       "assets/cc0/jetrel/icons/egg.png",[39m
+[31m+       "assets/cc0/jetrel/icons/elixir.png",[39m
+[31m+       "assets/cc0/jetrel/icons/ether-blue.png",[39m
+[31m+       "assets/cc0/jetrel/icons/eye-drops.png",[39m
+[31m+       "assets/cc0/jetrel/icons/fang.png",[39m
+[31m+       "assets/cc0/jetrel/icons/fire-bomb.png",[39m
+[31m+       "assets/cc0/jetrel/icons/fish.png",[39m
+[31m+       "assets/cc0/jetrel/icons/fishing-rod.png",[39m
+[31m+       "assets/cc0/jetrel/icons/flute.png",[39m
+[31m+       "assets/cc0/jetrel/icons/focus-charm.png",[39m
+[31m+       "assets/cc0/jetrel/icons/focus-ring.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gear.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gem-emerald.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gem-ruby.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gem-sapphire.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-amulet-moon.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-amulet-sun.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-antidote-leaf.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-armor-chain.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-armor-leather.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-armor-mythril.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-armor-plate.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-axe-battle.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-axe-great.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-badge-guard.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-bandage-roll.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-belt-champion.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-boomerang-wood.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-boots-leather.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-boots-swift.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-bow-long.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-bow-short.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-brooch-rose.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-capture-sphere.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-charm-luck.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-claw-beast.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-cloak-shadow.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-crossbow-hand.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-dagger-scout.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-earring-jade.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-echo-bell.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-elixir-gold.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-ether-grand.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-ether-vial.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-eyedrops.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-fang-beast.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-feather-raven.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-fire-bomb.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-gem-emerald.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-gem-ruby.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-gem-sapphire.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-gloves-iron.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-gun-flint.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-halberd-guard.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-hammer-war.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-hat-traveler.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-hat-witch.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-helm-horned.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-helm-iron.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-helm-leather.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-herb-bundle.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-holy-water.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-honey-jar.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-ice-shard.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-ingot-gold.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-katana-east.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-key-gold.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-key-rusty.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-lamp-oil.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-letter-sealed.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-mace-heavy.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-map-scroll.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-mask-fox.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-milk-bottle.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-mushroom-cave.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-net-trap.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-orb-mana.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-ore-copper.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-ore-iron.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-ore-mythril.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-panacea-jar.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-pelt-wolf.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-phoenix-ash.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-plank-oak.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-poison-flask.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-potion-large.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-potion-small.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-rapier-noble.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-revive-feather.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-ring-power.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-ring-silver.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-robe-cloth.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-robe-mage.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-scale-dragon.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-scythe-reaper.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-shield-iron.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-shield-mirror.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-shield-tower.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-shield-wood.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-shuriken.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-slime-jelly.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-smoke-ball.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-spear-iron.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-staff-crystal.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-staff-oak.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-sword-bronze.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-sword-flame.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-sword-frost.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-sword-iron.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-sword-steel.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-thread-silk.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-throwing-knife.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-thunder-rod.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-wand-spark.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen-whip-leather.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-alchemist-seal.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-bridge-relay.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-courage-tea.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-dragonbone-clasp.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-firepepper-seed.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-five-spark-core.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-frost-vial.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-frostglass-shard.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-gale-fan.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-golem-core.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-growth-feed.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-guard-seed.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-haste-seed.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-life-dew.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-might-seed.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-monster-feast.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-monster-kibble.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-moon-relay.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-moonbean-seed.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-moonsilver-wire.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-nerve-tonic.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-observatory-gear.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-paralysis-coil.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-party-cleanse.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-party-elixir.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-party-ether.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-party-potion.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-purifying-serum.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-quake-stone.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-rattle-ball.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-rope-toy.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-seal-relay.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-shadow-dust.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-shadow-resin.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-sluice-key.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-stargrain-seed.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-stone-salve.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-storm-sailcloth.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-sun-relay.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-swift-incense.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-training-frisbee.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-triple-aegis.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-turnip-seed.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-twin-dose-kit.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-venom-ampoule.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-voice-lozenge.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-war-draught.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gen2-wisdom-seed.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gloves.png",[39m
+[31m+       "assets/cc0/jetrel/icons/gold-bar.png",[39m
+[31m+       "assets/cc0/jetrel/icons/herb-blue.png",[39m
+[31m+       "assets/cc0/jetrel/icons/herb-green.png",[39m
+[31m+       "assets/cc0/jetrel/icons/hi-potion.png",[39m
+[31m+       "assets/cc0/jetrel/icons/hide.png",[39m
+[31m+       "assets/cc0/jetrel/icons/hoe.png",[39m
+[31m+       "assets/cc0/jetrel/icons/holy-water.png",[39m
+[31m+       "assets/cc0/jetrel/icons/honey.png",[39m
+[31m+       "assets/cc0/jetrel/icons/ice-shard.png",[39m
+[31m+       "assets/cc0/jetrel/icons/ink.png",[39m
+[31m+       "assets/cc0/jetrel/icons/iron-ore.png",[39m
+[31m+       "assets/cc0/jetrel/icons/iron-shield.png",[39m
+[31m+       "assets/cc0/jetrel/icons/iron-sword.png",[39m
+[31m+       "assets/cc0/jetrel/icons/lantern.png",[39m
+[31m+       "assets/cc0/jetrel/icons/leather-armor.png",[39m
+[31m+       "assets/cc0/jetrel/icons/leather-patch.png",[39m
+[31m+       "assets/cc0/jetrel/icons/letter.png",[39m
+[31m+       "assets/cc0/jetrel/icons/lucky-charm.png",[39m
+[31m+       "assets/cc0/jetrel/icons/mage-hat.png",[39m
+[31m+       "assets/cc0/jetrel/icons/mage-staff.png",[39m
+[31m+       "assets/cc0/jetrel/icons/mana-tea.png",[39m
+[31m+       "assets/cc0/jetrel/icons/map.png",[39m
+[31m+       "assets/cc0/jetrel/icons/meat.png",[39m
+[31m+       "assets/cc0/jetrel/icons/medal.png",[39m
+[31m+       "assets/cc0/jetrel/icons/milk.png",[39m
+[31m+       "assets/cc0/jetrel/icons/mirror.png",[39m
+[31m+       "assets/cc0/jetrel/icons/mushroom.png",[39m
+[31m+       "assets/cc0/jetrel/icons/mystic-cloth.png",[39m
+[31m+       "assets/cc0/jetrel/icons/mystic-robe.png",[39m
+[31m+       "assets/cc0/jetrel/icons/necklace.png",[39m
+[31m+       "assets/cc0/jetrel/icons/net.png",[39m
+[31m+       "assets/cc0/jetrel/icons/notebook.png",[39m
+[31m+       "assets/cc0/jetrel/icons/oak-shield.png",[39m
+[31m+       "assets/cc0/jetrel/icons/oil.png",[39m
+[31m+       "assets/cc0/jetrel/icons/old-key-scroll.png",[39m
+[31m+       "assets/cc0/jetrel/icons/old-key.png",[39m
+[31m+       "assets/cc0/jetrel/icons/panacea.png",[39m
+[31m+       "assets/cc0/jetrel/icons/pass.png",[39m
+[31m+       "assets/cc0/jetrel/icons/pearl.png",[39m
+[31m+       "assets/cc0/jetrel/icons/phoenix-down.png",[39m
+[31m+       "assets/cc0/jetrel/icons/pickaxe.png",[39m
+[31m+       "assets/cc0/jetrel/icons/poison-dart.png",[39m
+[31m+       "assets/cc0/jetrel/icons/poison-vial.png",[39m
+[31m+       "assets/cc0/jetrel/icons/potato.png",[39m
+[31m+       "assets/cc0/jetrel/icons/potion-red.png",[39m
+[31m+       "assets/cc0/jetrel/icons/quill.png",[39m
+[31m+       "assets/cc0/jetrel/icons/radio.png",[39m
+[31m+       "assets/cc0/jetrel/icons/repair-kit.png",[39m
+[31m+       "assets/cc0/jetrel/icons/rice-ball.png",[39m
+[31m+       "assets/cc0/jetrel/icons/ring.png",[39m
+[31m+       "assets/cc0/jetrel/icons/rope.png",[39m
+[31m+       "assets/cc0/jetrel/icons/scale.png",[39m
+[31m+       "assets/cc0/jetrel/icons/scout-dagger.png",[39m
+[31m+       "assets/cc0/jetrel/icons/screw.png",[39m
+[31m+       "assets/cc0/jetrel/icons/scroll.png",[39m
+[31m+       "assets/cc0/jetrel/icons/seed-bag.png",[39m
+[31m+       "assets/cc0/jetrel/icons/shell.png",[39m
+[31m+       "assets/cc0/jetrel/icons/skill-book.png",[39m
+[31m+       "assets/cc0/jetrel/icons/sleeping-powder.png",[39m
+[31m+       "assets/cc0/jetrel/icons/smelling-salts.png",[39m
+[31m+       "assets/cc0/jetrel/icons/smoke-bomb.png",[39m
+[31m+       "assets/cc0/jetrel/icons/soap.png",[39m
+[31m+       "assets/cc0/jetrel/icons/soup.png",[39m
+[31m+       "assets/cc0/jetrel/icons/stamina-drink.png",[39m
+[31m+       "assets/cc0/jetrel/icons/steel-armor.png",[39m
+[31m+       "assets/cc0/jetrel/icons/steel-sword.png",[39m
+[31m+       "assets/cc0/jetrel/icons/stew.png",[39m
+[31m+       "assets/cc0/jetrel/icons/strawberry.png",[39m
+[31m+       "assets/cc0/jetrel/icons/talisman.png",[39m
+[31m+       "assets/cc0/jetrel/icons/tea.png",[39m
+[31m+       "assets/cc0/jetrel/icons/throwing-knife.png",[39m
+[31m+       "assets/cc0/jetrel/icons/thunder-stone.png",[39m
+[31m+       "assets/cc0/jetrel/icons/ticket.png",[39m
+[31m+       "assets/cc0/jetrel/icons/tomato.png",[39m
+[31m+       "assets/cc0/jetrel/icons/torch.png",[39m
+[31m+       "assets/cc0/jetrel/icons/traveler-badge.png",[39m
+[31m+       "assets/cc0/jetrel/icons/traveler-hat.png",[39m
+[31m+       "assets/cc0/jetrel/icons/trophy.png",[39m
+[31m+       "assets/cc0/jetrel/icons/wake-herb.png",[39m
+[31m+       "assets/cc0/jetrel/icons/warp-scroll.png",[39m
+[31m+       "assets/cc0/jetrel/icons/water-flask.png",[39m
+[31m+       "assets/cc0/jetrel/icons/watering-can.png",[39m
+[31m+       "assets/cc0/jetrel/icons/wind-feather.png",[39m
+[31m+       "assets/cc0/jetrel/icons/wine.png",[39m
+[31m+       "assets/cc0/jetrel/icons/wood.png",[39m
+[31m+       "assets/dialogue-frame.png",[39m
+[31m+       "assets/easyrpg-chipset-combined-town-transparent.png",[39m
+[31m+       "assets/easyrpg-chipset-dungeon-transparent.png",[39m
+[31m+       "assets/easyrpg-chipset-exterior.png",[39m
+[31m+       "assets/easyrpg-chipset-interior-transparent.png",[39m
+[31m+       "assets/easyrpg-chipset-retro-dungeon-transparent.png",[39m
+[31m+       "assets/easyrpg-chipset-retro-exterior-transparent.png",[39m
+[31m+       "assets/easyrpg-chipset-retro-house-transparent.png",[39m
+[31m+       "assets/easyrpg-chipset-retro-world-transparent.png",[39m
+[31m+       "assets/easyrpg-chipset-ship-transparent.png",[39m
+[31m+       "assets/easyrpg-chipset-world-transparent.png",[39m
+[31m+       "assets/easyrpg/backdrop/Cosmos1.png",[39m
+[31m+       "assets/easyrpg/backdrop/Dawn1.png",[39m
+[31m+       "assets/easyrpg/backdrop/Dawn2.png",[39m
+[31m+       "assets/easyrpg/backdrop/Dimension Rift.png",[39m
+[31m+       "assets/easyrpg/backdrop/Night Sky1.png",[39m
+[31m+       "assets/easyrpg/backdrop/Night Sky2.png",[39m
+[31m+       "assets/easyrpg/backdrop/Planet1.png",[39m
+[31m+       "assets/easyrpg/backdrop/Planet2.png",[39m
+[31m+       "assets/easyrpg/backdrop/Planet3.png",[39m
+[31m+       "assets/easyrpg/backdrop/Sky1.png",[39m
+[31m+       "assets/easyrpg/backdrop/Sky2.png",[39m
+[31m+       "assets/easyrpg/backdrop/Sunset1.png",[39m
+[31m+       "assets/easyrpg/backdrop/Sunset2.png",[39m
+[31m+       "assets/easyrpg/battle-weapon/Weapon.png",[39m
+[31m+       "assets/easyrpg/battle/Arrow.png",[39m
+[31m+       "assets/easyrpg/battle/Blow.png",[39m
+[31m+       "assets/easyrpg/battle/Sword1.png",[39m
+[31m+       "assets/easyrpg/charset/Actor1.png",[39m
+[31m+       "assets/easyrpg/charset/Actor2.png",[39m
+[31m+       "assets/easyrpg/charset/Actor3.png",[39m
+[31m+       "assets/easyrpg/charset/Actor4.png",[39m
+[31m+       "assets/easyrpg/charset/Animal.png",[39m
+[31m+       "assets/easyrpg/charset/Monster1.png",[39m
+[31m+       "assets/easyrpg/charset/Monster2.png",[39m
+[31m+       "assets/easyrpg/charset/Monster3.png",[39m
+[31m+       "assets/easyrpg/charset/Object1.png",[39m
+[31m+       "assets/easyrpg/charset/Object2.png",[39m
+[31m+       "assets/easyrpg/charset/People1.png",[39m
+[31m+       "assets/easyrpg/charset/People2.png",[39m
+[31m+       "assets/easyrpg/charset/People3.png",[39m
+[31m+       "assets/easyrpg/charset/People4.png",[39m
+[31m+       "assets/easyrpg/charset/People5.png",[39m
+[31m+       "assets/easyrpg/charset/Template.png",[39m
+[31m+       "assets/easyrpg/charset/Vehicles.png",[39m
+[31m+       "assets/easyrpg/chipset/Dungeon.png",[39m
+[31m+       "assets/easyrpg/chipset/Exterior.png",[39m
+[31m+       "assets/easyrpg/chipset/Interior.png",[39m
+[31m+       "assets/easyrpg/chipset/retro_Dungeon.png",[39m
+[31m+       "assets/easyrpg/chipset/retro_Exterior.png",[39m
+[31m+       "assets/easyrpg/chipset/retro_World.png",[39m
+[31m+       "assets/easyrpg/chipset/Ship.png",[39m
+[31m+       "assets/easyrpg/chipset/World.png",[39m
+[31m+       "assets/easyrpg/faceset/Actor1/00.png",[39m
+[31m+       "assets/easyrpg/faceset/Actor1/01.png",[39m
+[31m+       "assets/easyrpg/faceset/Actor1/02.png",[39m
+[31m+       "assets/easyrpg/faceset/Actor1/03.png",[39m
+[31m+       "assets/easyrpg/faceset/Actor1/04.png",[39m
+[31m+       "assets/easyrpg/faceset/Actor1/05.png",[39m
+[31m+       "assets/easyrpg/faceset/Actor1/06.png",[39m
+[31m+       "assets/easyrpg/faceset/Actor1/07.png",[39m
+[31m+       "assets/easyrpg/faceset/Actor1/08.png",[39m
+[31m+       "assets/easyrpg/faceset/Actor1/09.png",[39m
+[31m+       "assets/easyrpg/faceset/Actor1/10.png",[39m
+[31m+       "assets/easyrpg/faceset/Actor1/11.png",[39m
+[31m+       "assets/easyrpg/faceset/Actor1/12.png",[39m
+[31m+       "assets/easyrpg/faceset/Actor1/13.png",[39m
+[31m+       "assets/easyrpg/faceset/Actor1/14.png",[39m
+[31m+       "assets/easyrpg/faceset/Actor1/15.png",[39m
+[31m+       "assets/easyrpg/faceset/Actor2/00.png",[39m
+[31m+       "assets/easyrpg/faceset/Actor2/01.png",[39m
+[31m+       "assets/easyrpg/faceset/Actor2/02.png",[39m
+[31m+       "assets/easyrpg/faceset/Actor2/03.png",[39m
+[31m+       "assets/easyrpg/faceset/Actor2/04.png",[39m
+[31m+       "assets/easyrpg/faceset/Actor2/05.png",[39m
+[31m+       "assets/easyrpg/faceset/Actor2/06.png",[39m
+[31m+       "assets/easyrpg/faceset/Actor2/07.png",[39m
+[31m+       "assets/easyrpg/faceset/Actor2/08.png",[39m
+[31m+       "assets/easyrpg/faceset/Actor2/09.png",[39m
+[31m+       "assets/easyrpg/faceset/Actor2/10.png",[39m
+[31m+       "assets/easyrpg/faceset/Actor2/11.png",[39m
+[31m+       "assets/easyrpg/faceset/Actor2/12.png",[39m
+[31m+       "assets/easyrpg/faceset/Actor2/13.png",[39m
+[31m+       "assets/easyrpg/faceset/Actor2/14.png",[39m
+[31m+       "assets/easyrpg/faceset/Actor2/15.png",[39m
+[31m+       "assets/easyrpg/faceset/Monster/00.png",[39m
+[31m+       "assets/easyrpg/faceset/Monster/01.png",[39m
+[31m+       "assets/easyrpg/faceset/Monster/02.png",[39m
+[31m+       "assets/easyrpg/faceset/Monster/03.png",[39m
+[31m+       "assets/easyrpg/faceset/Monster/04.png",[39m
+[31m+       "assets/easyrpg/faceset/Monster/05.png",[39m
+[31m+       "assets/easyrpg/faceset/Monster/06.png",[39m
+[31m+       "assets/easyrpg/faceset/Monster/07.png",[39m
+[31m+       "assets/easyrpg/faceset/Monster/08.png",[39m
+[31m+       "assets/easyrpg/faceset/Monster/09.png",[39m
+[31m+       "assets/easyrpg/faceset/Monster/10.png",[39m
+[31m+       "assets/easyrpg/faceset/Monster/11.png",[39m
+[31m+       "assets/easyrpg/faceset/Monster/12.png",[39m
+[31m+       "assets/easyrpg/faceset/Monster/13.png",[39m
+[31m+       "assets/easyrpg/faceset/Monster/14.png",[39m
+[31m+       "assets/easyrpg/faceset/Monster/15.png",[39m
+[31m+       "assets/easyrpg/faceset/People1/00.png",[39m
+[31m+       "assets/easyrpg/faceset/People1/01.png",[39m
+[31m+       "assets/easyrpg/faceset/People1/02.png",[39m
+[31m+       "assets/easyrpg/faceset/People1/03.png",[39m
+[31m+       "assets/easyrpg/faceset/People1/04.png",[39m
+[31m+       "assets/easyrpg/faceset/People1/05.png",[39m
+[31m+       "assets/easyrpg/faceset/People1/06.png",[39m
+[31m+       "assets/easyrpg/faceset/People1/07.png",[39m
+[31m+       "assets/easyrpg/faceset/People1/08.png",[39m
+[31m+       "assets/easyrpg/faceset/People1/09.png",[39m
+[31m+       "assets/easyrpg/faceset/People1/10.png",[39m
+[31m+       "assets/easyrpg/faceset/People1/11.png",[39m
+[31m+       "assets/easyrpg/faceset/People1/12.png",[39m
+[31m+       "assets/easyrpg/faceset/People1/13.png",[39m
+[31m+       "assets/easyrpg/faceset/People1/14.png",[39m
+[31m+       "assets/easyrpg/faceset/People1/15.png",[39m
+[31m+       "assets/easyrpg/faceset/People2/00.png",[39m
+[31m+       "assets/easyrpg/faceset/People2/01.png",[39m
+[31m+       "assets/easyrpg/faceset/People2/02.png",[39m
+[31m+       "assets/easyrpg/faceset/People2/03.png",[39m
+[31m+       "assets/easyrpg/faceset/People2/04.png",[39m
+[31m+       "assets/easyrpg/faceset/People2/05.png",[39m
+[31m+       "assets/easyrpg/faceset/People2/06.png",[39m
+[31m+       "assets/easyrpg/faceset/People2/07.png",[39m
+[31m+       "assets/easyrpg/faceset/People2/08.png",[39m
+[31m+       "assets/easyrpg/faceset/People2/09.png",[39m
+[31m+       "assets/easyrpg/faceset/People2/10.png",[39m
+[31m+       "assets/easyrpg/faceset/People2/11.png",[39m
+[31m+       "assets/easyrpg/faceset/People2/12.png",[39m
+[31m+       "assets/easyrpg/faceset/People2/13.png",[39m
+[31m+       "assets/easyrpg/faceset/People2/14.png",[39m
+[31m+       "assets/easyrpg/faceset/People2/15.png",[39m
+[31m+       "assets/easyrpg/game-over/Game Over.png",[39m
+[31m+       "assets/easyrpg/monster/Hornet.png",[39m
+[31m+       "assets/easyrpg/picture/Cloud.png",[39m
+[31m+       "assets/easyrpg/system/Royal.png",[39m
+[31m+       "assets/easyrpg/system/System.png",[39m
+[31m+       "assets/easyrpg/system/SystemA.png",[39m
+[31m+       "assets/easyrpg/system/SystemB.png",[39m
+[31m+       "assets/easyrpg/system/SystemC.png",[39m
+[31m+       "assets/easyrpg/system2/System2A.png",[39m
+[31m+       "assets/easyrpg/system2/System2B.png",[39m
+[31m+       "assets/easyrpg/system2/System2C.png",[39m
+[31m+       "assets/easyrpg/title/Title1.png",[39m
+[31m+       "assets/easyrpg/title/Title2.png",[39m
+[31m+       "assets/easyrpg/title/Title3.png",[39m
+[31m+       "assets/easyrpg/title/Title4.png",[39m
+[31m+       "assets/farming/animals/chicken.png",[39m
+[31m+       "assets/farming/animals/cow.png",[39m
+[31m+       "assets/generated-emotes.png",[39m
+[31m+       "assets/generated/effects/effect-arcane-nova.png",[39m
+[31m+       "assets/generated/effects/effect-bite-crunch.png",[39m
+[31m+       "assets/generated/effects/effect-blind-veil.png",[39m
+[31m+       "assets/generated/effects/effect-capture-seal.png",[39m
+[31m+       "assets/generated/effects/effect-claw-rake.png",[39m
+[31m+       "assets/generated/effects/effect-cleanse-sparkle.png",[39m
+[31m+       "assets/generated/effects/effect-confusion-spiral.png",[39m
+[31m+       "assets/generated/effects/effect-critical-burst.png",[39m
+[31m+       "assets/generated/effects/effect-drain-orbs.png",[39m
+[31m+       "assets/generated/effects/effect-earth-spike.png",[39m
+[31m+       "assets/generated/effects/effect-fire-burst.png",[39m
+[31m+       "assets/generated/effects/effect-guard-barrier.png",[39m
+[31m+       "assets/generated/effects/effect-heal-bloom.png",[39m
+[31m+       "assets/generated/effects/effect-holy-beam.png",[39m
+[31m+       "assets/generated/effects/effect-ice-shatter.png",[39m
+[31m+       "assets/generated/effects/effect-leaf-volley.png",[39m
+[31m+       "assets/generated/effects/effect-meteor-fall.png",[39m
+[31m+       "assets/generated/effects/effect-paralysis-bind.png",[39m
+[31m+       "assets/generated/effects/effect-poison-mist.png",[39m
+[31m+       "assets/generated/effects/effect-power-aura.png",[39m
+[31m+       "assets/generated/effects/effect-projectile-shot.png",[39m
+[31m+       "assets/generated/effects/effect-psychic-wave.png",[39m
+[31m+       "assets/generated/effects/effect-revive-rise.png",[39m
+[31m+       "assets/generated/effects/effect-shadow-pulse.png",[39m
+[31m+       "assets/generated/effects/effect-silence-lock.png",[39m
+[31m+       "assets/generated/effects/effect-slash-steel.png",[39m
+[31m+       "assets/generated/effects/effect-sleep-dust.png",[39m
+[31m+       "assets/generated/effects/effect-smoke-vanish.png",[39m
+[31m+       "assets/generated/effects/effect-sonic-wave.png",[39m
+[31m+       "assets/generated/effects/effect-summon-portal.png",[39m
+[31m+       "assets/generated/effects/effect-tackle-impact.png",[39m
+[31m+       "assets/generated/effects/effect-thunder-strike.png",[39m
+[31m+       "assets/generated/effects/effect-water-column.png",[39m
+[31m+       "assets/generated/effects/effect-wind-slice.png",[39m
+[31m+       "assets/generated/starter/battle-icon-bag.png",[39m
+[31m+       "assets/generated/starter/battle-icon-boot.png",[39m
+[31m+       "assets/generated/starter/battle-icon-cross.png",[39m
+[31m+       "assets/generated/starter/battle-icon-exp.png",[39m
+[31m+       "assets/generated/starter/battle-icon-fire.png",[39m
+[31m+       "assets/generated/starter/battle-icon-gold.png",[39m
+[31m+       "assets/generated/starter/battle-icon-next.png",[39m
+[31m+       "assets/generated/starter/battle-icon-shard.png",[39m
+[31m+       "assets/generated/starter/battle-icon-shield.png",[39m
+[31m+       "assets/generated/starter/battle-icon-sword.png",[39m
+[31m+       "assets/generated/starter/battle-icon-world.png",[39m
+[31m+       "assets/generated/starter/hero-01-battle.png",[39m
+[31m+       "assets/generated/starter/hero-01-face/00.png",[39m
+[31m+       "assets/generated/starter/hero-01-face/01.png",[39m
+[31m+       "assets/generated/starter/hero-01-face/02.png",[39m
+[31m+       "assets/generated/starter/hero-01-face/03.png",[39m
+[31m+       "assets/generated/starter/hero-01-face/04.png",[39m
+[31m+       "assets/generated/starter/hero-01-face/05.png",[39m
+[31m+       "assets/generated/starter/hero-01-face/06.png",[39m
+[31m+       "assets/generated/starter/hero-01-face/07.png",[39m
+[31m+       "assets/generated/starter/hero-01-face/08.png",[39m
+[31m+       "assets/generated/starter/hero-01-face/09.png",[39m
+[31m+       "assets/generated/starter/hero-01-face/10.png",[39m
+[31m+       "assets/generated/starter/hero-01-face/11.png",[39m
+[31m+       "assets/generated/starter/hero-01-face/12.png",[39m
+[31m+       "assets/generated/starter/hero-01-face/13.png",[39m
+[31m+       "assets/generated/starter/hero-01-face/14.png",[39m
+[31m+       "assets/generated/starter/hero-01-face/15.png",[39m
+[31m+       "assets/generated/starter/hero-02-battle.png",[39m
+[31m+       "assets/generated/starter/hero-02-face/00.png",[39m
+[31m+       "assets/generated/starter/hero-02-face/01.png",[39m
+[31m+       "assets/generated/starter/hero-02-face/02.png",[39m
+[31m+       "assets/generated/starter/hero-02-face/03.png",[39m
+[31m+       "assets/generated/starter/hero-02-face/04.png",[39m
+[31m+       "assets/generated/starter/hero-02-face/05.png",[39m
+[31m+       "assets/generated/starter/hero-02-face/06.png",[39m
+[31m+       "assets/generated/starter/hero-02-face/07.png",[39m
+[31m+       "assets/generated/starter/hero-02-face/08.png",[39m
+[31m+       "assets/generated/starter/hero-02-face/09.png",[39m
+[31m+       "assets/generated/starter/hero-02-face/10.png",[39m
+[31m+       "assets/generated/starter/hero-02-face/11.png",[39m
+[31m+       "assets/generated/starter/hero-02-face/12.png",[39m
+[31m+       "assets/generated/starter/hero-02-face/13.png",[39m
+[31m+       "assets/generated/starter/hero-02-face/14.png",[39m
+[31m+       "assets/generated/starter/hero-02-face/15.png",[39m
+[31m+       "assets/generated/starter/hero-03-battle.png",[39m
+[31m+       "assets/generated/starter/hero-04-battle.png",[39m
+[31m+       "assets/generated/starter/hero-05-battle.png",[39m
+[31m+       "assets/generated/starter/hero-06-battle.png",[39m
+[31m+       "assets/generated/starter/hires/hero-01-battle.png",[39m
+[31m+       "assets/generated/starter/hires/hero-02-battle.png",[39m
+[31m+       "assets/generated/starter/hires/hero-03-battle.png",[39m
+[31m+       "assets/generated/starter/hires/hero-04-battle.png",[39m
+[31m+       "assets/generated/starter/hires/hero-05-battle.png",[39m
+[31m+       "assets/generated/starter/hires/hero-06-battle.png",[39m
+[31m+       "assets/generated/starter/hires/idle/hero-01-battle.png",[39m
+[31m+       "assets/generated/starter/hires/idle/hero-02-battle.png",[39m
+[31m+       "assets/generated/starter/hires/idle/hero-03-battle.png",[39m
+[31m+       "assets/generated/starter/hires/idle/hero-04-battle.png",[39m
+[31m+       "assets/generated/starter/hires/idle/hero-05-battle.png",[39m
+[31m+       "assets/generated/starter/hires/idle/hero-06-battle.png",[39m
+[31m+       "assets/generated/starter/idle/hero-01-battle.png",[39m
+[31m+       "assets/generated/starter/idle/hero-02-battle.png",[39m
+[31m+       "assets/generated/starter/idle/hero-03-battle.png",[39m
+[31m+       "assets/generated/starter/idle/hero-04-battle.png",[39m
+[31m+       "assets/generated/starter/idle/hero-05-battle.png",[39m
+[31m+       "assets/generated/starter/idle/hero-06-battle.png",[39m
+[31m+       "assets/generated/starter/monster-angel-fallen.png",[39m
+[31m+       "assets/generated/starter/monster-ant-soldier.png",[39m
+[31m+       "assets/generated/starter/monster-ape-stone.png",[39m
+[31m+       "assets/generated/starter/monster-armor-living.png",[39m
+[31m+       "assets/generated/starter/monster-bandit-mask.png",[39m
+[31m+       "assets/generated/starter/monster-banshee-wail.png",[39m
+[31m+       "assets/generated/starter/monster-bat-01.png",[39m
+[31m+       "assets/generated/starter/monster-bat-cave.png",[39m
+[31m+       "assets/generated/starter/monster-bat-vampire.png",[39m
+[31m+       "assets/generated/starter/monster-bear-brown.png",[39m
+[31m+       "assets/generated/starter/monster-bee-giant.png",[39m
+[31m+       "assets/generated/starter/monster-beetle-horn.png",[39m
+[31m+       "assets/generated/starter/monster-behemoth-horn.png",[39m
+[31m+       "assets/generated/starter/monster-bird-hawk.png",[39m
+[31m+       "assets/generated/starter/monster-boar-tusk.png",[39m
+[31m+       "assets/generated/starter/monster-bonepile-crawler.png",[39m
+[31m+       "assets/generated/starter/monster-cat-shadow.png",[39m
+[31m+       "assets/generated/starter/monster-centaur-plains.png",[39m
+[31m+       "assets/generated/starter/monster-centipede-fire.png",[39m
+[31m+       "assets/generated/starter/monster-crab-rock.png",[39m
+[31m+       "assets/generated/starter/monster-deer-forest.png",[39m
+[31m+       "assets/generated/starter/monster-demon-lord.png",[39m
+[31m+       "assets/generated/starter/monster-dragon-01.png",[39m
+[31m+       "assets/generated/starter/monster-dragon-blue.png",[39m
+[31m+       "assets/generated/starter/monster-dragon-bone.png",[39m
+[31m+       "assets/generated/starter/monster-dragon-red.png",[39m
+[31m+       "assets/generated/starter/monster-dragon-whelp.png",[39m
+[31m+       "assets/generated/starter/monster-eel-electric.png",[39m
+[31m+       "assets/generated/starter/monster-eye-floating.png",[39m
+[31m+       "assets/generated/starter/monster-fish-piranha.png",[39m
+[31m+       "assets/generated/starter/monster-gargoyle-stone.png",[39m
+[31m+       "assets/generated/starter/monster-ghost-pale.png",[39m
+[31m+       "assets/generated/starter/monster-ghoul-grave.png",[39m
+[31m+       "assets/generated/starter/monster-goat-mountain.png",[39m
+[31m+       "assets/generated/starter/monster-goblin-brute.png",[39m
+[31m+       "assets/generated/starter/monster-goblin-scout.png",[39m
+[31m+       "assets/generated/starter/monster-golem-01.png",[39m
+[31m+       "assets/generated/starter/monster-golem-clay.png",[39m
+[31m+       "assets/generated/starter/monster-golem-crystal.png",[39m
+[31m+       "assets/generated/starter/monster-golem-iron.png",[39m
+[31m+       "assets/generated/starter/monster-golem-stone.png",[39m
+[31m+       "assets/generated/starter/monster-griffin-sky.png",[39m
+[31m+       "assets/generated/starter/monster-harpy-cliff.png",[39m
+[31m+       "assets/generated/starter/monster-hound-hell.png",[39m
+[31m+       "assets/generated/starter/monster-hydra-three.png",[39m
+[31m+       "assets/generated/starter/monster-imp-mischief.png",[39m
+[31m+       "assets/generated/starter/monster-knight-fallen.png",[39m
+[31m+       "assets/generated/starter/monster-kobold-digger.png",[39m
+[31m+       "assets/generated/starter/monster-lich-frost.png",[39m
+[31m+       "assets/generated/starter/monster-lizardman-spear.png",[39m
+[31m+       "assets/generated/starter/monster-mage-rogue.png",[39m
+[31m+       "assets/generated/starter/monster-mantis-blade.png",[39m
+[31m+       "assets/generated/starter/monster-mimic-chest.png",[39m
+[31m+       "assets/generated/starter/monster-minotaur-maze.png",[39m
+[31m+       "assets/generated/starter/monster-moth-dust.png",[39m
+[31m+       "assets/generated/starter/monster-mummy-bandage.png",[39m
+[31m+       "assets/generated/starter/monster-ogre-club.png",[39m
+[31m+       "assets/generated/starter/monster-ooze-acid.png",[39m
+[31m+       "assets/generated/starter/monster-ooze-black.png",[39m
+[31m+       "assets/generated/starter/monster-orc-shaman.png",[39m
+[31m+       "assets/generated/starter/monster-orc-warrior.png",[39m
+[31m+       "assets/generated/starter/monster-phoenix-rebirth.png",[39m
+[31m+       "assets/generated/starter/monster-plant-carnivore.png",[39m
+[31m+       "assets/generated/starter/monster-puppet-string.png",[39m
+[31m+       "assets/generated/starter/monster-rat-giant.png",[39m
+[31m+       "assets/generated/starter/monster-revenant-vengeful.png",[39m
+[31m+       "assets/generated/starter/monster-roc-giant.png",[39m
+[31m+       "assets/generated/starter/monster-salamander-flame.png",[39m
+[31m+       "assets/generated/starter/monster-scarecrow-field.png",[39m
+[31m+       "assets/generated/starter/monster-scorpion-sand.png",[39m
+[31m+       "assets/generated/starter/monster-shark-land.png",[39m
+[31m+       "assets/generated/starter/monster-skeleton-01.png",[39m
+[31m+       "assets/generated/starter/monster-skeleton-archer.png",[39m
+[31m+       "assets/generated/starter/monster-skeleton-bone.png",[39m
+[31m+       "assets/generated/starter/monster-skeleton-knight.png",[39m
+[31m+       "assets/generated/starter/monster-slime-01.png",[39m
+[31m+       "assets/generated/starter/monster-slime-blue.png",[39m
+[31m+       "assets/generated/starter/monster-slime-cube.png",[39m
+[31m+       "assets/generated/starter/monster-slime-green.png",[39m
+[31m+       "assets/generated/starter/monster-slime-king.png",[39m
+[31m+       "assets/generated/starter/monster-slime-metal.png",[39m
+[31m+       "assets/generated/starter/monster-slime-red.png",[39m
+[31m+       "assets/generated/starter/monster-snake-viper.png",[39m
+[31m+       "assets/generated/starter/monster-spider-cave.png",[39m
+[31m+       "assets/generated/starter/monster-spider-widow.png",[39m
+[31m+       "assets/generated/starter/monster-spirit-dark.png",[39m
+[31m+       "assets/generated/starter/monster-spirit-earth.png",[39m
+[31m+       "assets/generated/starter/monster-spirit-fire.png",[39m
+[31m+       "assets/generated/starter/monster-spirit-light.png",[39m
+[31m+       "assets/generated/starter/monster-spirit-water.png",[39m
+[31m+       "assets/generated/starter/monster-spirit-wind.png",[39m
+[31m+       "assets/generated/starter/monster-squid-deep.png",[39m
+[31m+       "assets/generated/starter/monster-sword-flying.png",[39m
+[31m+       "assets/generated/starter/monster-sylph-air.png",[39m
+[31m+       "assets/generated/starter/monster-tiger-saber.png",[39m
+[31m+       "assets/generated/starter/monster-totem-cursed.png",[39m
+[31m+       "assets/generated/starter/monster-troll-cave.png",[39m
+[31m+       "assets/generated/starter/monster-undine-sea.png",[39m
+[31m+       "assets/generated/starter/monster-wisp-blue.png",[39m
+[31m+       "assets/generated/starter/monster-wolf-dire.png",[39m
+[31m+       "assets/generated/starter/monster-wolf-grey.png",[39m
+[31m+       "assets/generated/starter/monster-worm-sand.png",[39m
+[31m+       "assets/generated/starter/monster-wraith-dark.png",[39m
+[31m+       "assets/generated/starter/monster-wyvern-cliff.png",[39m
+[31m+       "assets/generated/starter/monster-zombie-rot.png",[39m
+[31m+       "assets/generated/title/oprn-title-field.png",[39m
+[31m+       "assets/modern-exteriors/modern-city-atlas.png",[39m
+[31m+       "assets/scarloxy/scarloxy-battle-anim-explosion.png",[39m
+[31m+       "assets/scarloxy/scarloxy-battle-anim-fire.png",[39m
+[31m+       "assets/scarloxy/scarloxy-battle-anim-green.png",[39m
+[31m+       "assets/scarloxy/scarloxy-battle-anim-ice.png",[39m
+[31m+       "assets/scarloxy/scarloxy-battle-anim-scratch.png",[39m
+[31m+       "assets/scarloxy/scarloxy-battle-anim-splash.png",[39m
+[31m+       "assets/scarloxy/scarloxy-charset-people1.png",[39m
+[31m+       "assets/scarloxy/scarloxy-charset-people2.png",[39m
+[31m+       "assets/scarloxy/scarloxy-chipset-grassland.png",[39m
+[31m+       "assets/scarloxy/scarloxy-chipset-indoor.png",[39m
+[31m+       "assets/scarloxy/scarloxy-chipset-wilds.png",[39m
+[31m+       "assets/ui/windowskin-default.png",[39m
+[31m+       "assets/ui/windowskin-warm.png",[39m
+[31m+       "generated/battle-reference-forest.png",[39m
+[31m+     ],[39m
+[31m+   },[39m
+[2m  }[22m
+
+ ❯ test/standaloneExport.test.ts:46:82
+     44|   it.each([".png", ".woff2"])("rejects missing required %s instead of …
+     45|     const { fetchBytes } = stubFetchBytes({ missing: (path) => path.en…
+     46|     await expect(createStandaloneHtmlExport(createBlankProject(), { fe…
+       |                                                                                  ^
+     47|       .rejects.toThrow(extension);
+     48|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/11]⎯
+
+ FAIL  test/standaloneExport.test.ts > standalone html export > rejects editor HTML returned with status 200 for standalone.js
+ FAIL  test/standaloneExport.test.ts > standalone html export > rejects editor HTML returned with status 200 for standalone.css
+ FAIL  test/standaloneExport.test.ts > standalone html export > rejects editor HTML returned with status 200 for .png
+ FAIL  test/standaloneExport.test.ts > standalone html export > rejects editor HTML returned with status 200 for .woff2
+AssertionError: promise resolved "{ …(3) }" instead of rejecting
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- Error {[39m
+[32m-   "message": "rejected promise",[39m
+[31m+ {[39m
+[31m+   "blob": Blob {[39m
+[31m+     Symbol(kHandle): Blob {},[39m
+[31m+     Symbol(kLength): 2503574,[39m
+[31m+     Symbol(kType): "text/html;charset=utf-8",[39m
+[31m+   },[39m
+[31m+   "fileName": "새-프로젝트.html",[39m
+[31m+   "summary": {[39m
+[31m+     "assetCount": 715,[39m
+[31m+     "htmlBytes": 2227843,[39m
+[31m+     "missingAssets": [],[39m
+[31m+   },[39m
+[2m  }[22m
+
+ ❯ test/standaloneExport.test.ts:57:68
+     55|         { status: 200, headers: { "Content-Type": "application/octet-s…
+     56|       ));
+     57|       await expect(createStandaloneHtmlExport(createBlankProject())).r…
+       |                                                                    ^
+     58|     },
+     59|   );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/11]⎯
+
+ FAIL  test/standaloneExport.test.ts > standalone html export > rejects a text/html response even without an HTML opening tag
+AssertionError: promise resolved "{ …(3) }" instead of rejecting
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- Error {[39m
+[32m-   "message": "rejected promise",[39m
+[31m+ {[39m
+[31m+   "blob": Blob {[39m
+[31m+     Symbol(kHandle): Blob {},[39m
+[31m+     Symbol(kLength): 2503537,[39m
+[31m+     Symbol(kType): "text/html;charset=utf-8",[39m
+[31m+   },[39m
+[31m+   "fileName": "새-프로젝트.html",[39m
+[31m+   "summary": {[39m
+[31m+     "assetCount": 715,[39m
+[31m+     "htmlBytes": 2227806,[39m
+[31m+     "missingAssets": [],[39m
+[31m+   },[39m
+[2m  }[22m
+
+ ❯ test/standaloneExport.test.ts:66:66
+     64|       headers: { "Content-Type": path.endsWith("standalone.js") ? "tex…
+     65|     }));
+     66|     await expect(createStandaloneHtmlExport(createBlankProject())).rej…
+       |                                                                  ^
+     67|   });
+     68|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/11]⎯
+
+ FAIL  test/standaloneExport.test.ts > standalone html export > rejects empty standalone.js
+ FAIL  test/standaloneExport.test.ts > standalone html export > rejects empty standalone.css
+ FAIL  test/standaloneExport.test.ts > standalone html export > rejects empty .png
+AssertionError: promise resolved "{ …(3) }" instead of rejecting
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- Error {[39m
+[32m-   "message": "rejected promise",[39m
+[31m+ {[39m
+[31m+   "blob": Blob {[39m
+[31m+     Symbol(kHandle): Blob {},[39m
+[31m+     Symbol(kLength): 2503527,[39m
+[31m+     Symbol(kType): "text/html;charset=utf-8",[39m
+[31m+   },[39m
+[31m+   "fileName": "새-프로젝트.html",[39m
+[31m+   "summary": {[39m
+[31m+     "assetCount": 715,[39m
+[31m+     "htmlBytes": 2227796,[39m
+[31m+     "missingAssets": [],[39m
+[31m+   },[39m
+[2m  }[22m
+
+ ❯ test/standaloneExport.test.ts:73:7
+     71|     await expect(createStandaloneHtmlExport(createBlankProject(), {
+     72|       fetchBytes: (path) => path.endsWith(suffix) ? Promise.resolve(ne…
+     73|     })).rejects.toThrow(suffix);
+       |       ^
+     74|   });
+     75|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/11]⎯
+
+ FAIL  test/standaloneHtml.test.ts > standalone html > keeps local SVG filter fragments without requesting an asset
+AssertionError: expected [ '#battle-flash-tint' ] to deeply equal []
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   "#battle-flash-tint",[39m
+[31m+ ][39m
+
+ ❯ test/standaloneHtml.test.ts:99:19
+     97|     const asked: string[] = [];
+     98|     const result = await inlineCssAssetUrls(css, {}, async (path) => {…
+     99|     expect(asked).toEqual([]);
+       |                   ^
+    100|     expect(result).toEqual({ css, missing: [] });
+    101|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/11]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  11 failed | 10 passed (21)
+   Start at  17:50:38
+   Duration  31.81s (transform 11.08s, setup 0ms, collect 15.49s, tests 14.91s, environment 0ms, prepare 918ms)
