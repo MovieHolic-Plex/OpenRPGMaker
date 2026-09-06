@@ -379,18 +379,61 @@ function renderWikiPane(
         children: [
           el("div", { class: "world-document-content", children: [
             ...(issues.length ? [renderIssueList(issues, [])] : []),
+            ...renderWikiProvenance(entity, world),
             renderMarkdownBody(entity.body ?? ""),
           ] }),
           worldDocumentProperties([
             renderTagList(entity.tags ?? []),
             renderRelationChips(relations, world, entity.id, state, refresh),
             renderRefJumps(entity.refs ?? [], project),
-            el("p", { class: "world-muted", text: "NPC 대사 AI는 이름과 요약만 참고합니다. 본문과 관계는 전달하지 않습니다." }),
+            wikiRetrievalHint(),
           ], state.propertiesOpen, (open) => { state.propertiesOpen = open; }),
         ],
       }),
     ],
   });
+}
+
+function wikiRetrievalHint(): HTMLElement {
+  return el("p", { class: "world-muted", text: "제작 조수는 현재 요청과 관련된 위키 문서만 제한된 분량으로 참고합니다. 본문·연결·출처가 포함될 수 있으며, 대체된 지침은 현재 지침으로 사용하지 않습니다." });
+}
+
+function renderWikiProvenance(entity: WorldEntity, world: ProjectWorld): HTMLElement[] {
+  const wiki = entity.wiki;
+  if (!wiki) return [];
+  const basis = { explicit: "명시한 내용", inferred: "추론한 내용", observed: "적용 결과로 확인" }[wiki.basis];
+  const kind = { declaration: "제작 선언", knowledge: "프로젝트 지식", progress: "진행 기록" }[wiki.kind];
+  const successors = world.entities.filter((entry) => entry.wiki?.supersedes?.includes(entity.id));
+  return [el("section", {
+    class: "world-edit-section",
+    dataset: { testid: "world-wiki-provenance", basis: wiki.basis, kind: wiki.kind, superseded: String(successors.length > 0) },
+    children: [
+      el("p", { class: "world-muted", text: `${kind} · ${basis}` }),
+      el("p", { class: "world-muted", text: successors.length
+        ? `대체된 문서 · 현재 지침으로 사용하지 않음: ${successors.map((entry) => `${entry.name} (${entry.id})`).join(", ")}`
+        : "대체되지 않은 문서" }),
+      ...(wiki.supersedes?.length ? [el("p", { class: "world-muted", text: `이 문서가 대체한 기록: ${wiki.supersedes.join(", ")}` })] : []),
+      el("details", {
+        class: "world-browser-tools",
+        dataset: { testid: "world-wiki-sources" },
+        children: [
+          el("summary", { text: `출처 ${wiki.sources.length}개` }),
+          ...wiki.sources.map((source, index) => el("div", {
+            class: "world-edit-section",
+            dataset: { testid: `world-wiki-source-${index}`, sourceId: source.id, sourceKind: source.kind },
+            children: [
+              el("strong", { text: `${{ user: "사용자 발언", application: "실제 적용", manual: "수동 편집" }[source.kind]} · ${source.id}` }),
+              el("p", { class: "world-muted", text: new Date(source.at).toLocaleString("ko-KR") }),
+              el("p", { text: source.text.length > 320 ? `${source.text.slice(0, 320)}…` : source.text }),
+              ...(source.text.length > 320 ? [el("details", { children: [
+                el("summary", { text: "전체 출처 보기" }), el("p", { text: source.text }),
+              ] })] : []),
+            ],
+          })),
+        ],
+      }),
+    ],
+  })];
 }
 
 function renderEditPane(state: WorldPanelState, world: ProjectWorld, project: Project, refresh: () => void): HTMLElement {
@@ -508,6 +551,12 @@ function renderEditPane(state: WorldPanelState, world: ProjectWorld, project: Pr
             nameInput,
             field("한 줄 요약", summaryInput),
             field("본문", bodyInput),
+            ...(world.entities.find((entry) => entry.id === draft.id)?.wiki ? [el("p", {
+              class: "world-muted",
+              text: world.entities.find((entry) => entry.id === draft.id)?.wiki?.sources.some((source) => source.kind === "application")
+                ? "실제 적용 기록은 그대로 보존됩니다. 편집 완료 시 별도의 수동 지식 메모로 저장하며, 새 적용 증거로 취급하지 않습니다."
+                : "수동 저장은 출처 이력에 추가됩니다. 제목·요약·본문을 바꾸면 기존 자동 전투 방식 지정은 해제됩니다.",
+            })] : []),
           ] }),
           worldDocumentProperties([
             field("종류", typeSelect),
@@ -515,7 +564,7 @@ function renderEditPane(state: WorldPanelState, world: ProjectWorld, project: Pr
             labelWithControl("편집 잠금", lockedInput),
             renderRefEditor(draft, project, syncDraft, refresh),
             renderRelationEditor(draft, world, syncDraft, refresh),
-            el("p", { class: "world-muted", text: "NPC 대사 AI는 이름과 요약만 참고합니다. 본문과 관계는 전달하지 않습니다." }),
+            wikiRetrievalHint(),
           ], state.propertiesOpen, (open) => { state.propertiesOpen = open; }),
         ],
       }),

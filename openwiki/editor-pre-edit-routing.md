@@ -4,6 +4,16 @@
 
 Read this before editing editor-facing behavior. Identifies which workflow owns a request and lists agent cautions.
 
+## Exterior door backing
+
+AI house and village authoring places lower-layer tile 359 at `(x, y-1)` and
+`(x, y)` before creating the exterior door event at `(x, y)`. The shared
+`stampHouseDoorBackground` clears upper tiles and tile stacks in those two cells;
+neighboring walls and the approach/return cell `(x, y+1)` remain separate.
+Village door restoration must retain the captured 359/359 pair. Interior exits
+and explicitly event-free decorative tile doors keep their existing behavior.
+Regression coverage: `test/exteriorDoorBackground.test.ts`.
+
 ## Tile brush reliability (2026-09-06)
 
 - `TilePaintEngine.brushStrokePoints` is shared with hover rendering and produces
@@ -28,6 +38,11 @@ Read this before editing editor-facing behavior. Identifies which workflow owns 
   `test/tileBrushState.test.ts`, `test/structureKitBrushConditions.test.ts`.
   Real browser proof is `scripts/qa/sidebar-brush.mjs`; its fixture is local-only
   and requires disabled remote persistence.
+
+**2026-09-07 project wiki:** read [project-wiki.md](project-wiki.md) before changing
+world-document AI integration. The former blanket exclusion is superseded by
+awaited editor-owned wiki checkpoints, sourced relevant retrieval and combat
+authoring. Generic world CRUD and blanket lint/digests remain excluded.
 
 ## Pre-edit routing
 
@@ -75,6 +90,20 @@ Read this before editing editor-facing behavior. Identifies which workflow owns 
   search, pin storage, command access, focus), retained `sidebarModeWorkflow`,
   `sidebarBrushUi`, map/dock, toolbar and keyboard suites. Presentation assertions
   follow moved controls without removing actual state/reset/undo coverage.
+- R1 ownership repairs: the actual `mapContextMenu` registers with `modalStack`
+  and uses `--z-popover-high`, so body-mounted child actions retain the explorer
+  and Escape returns to the originating row. Its old deferred row-focus job is
+  removed: it stole focus from keyboard menu navigation. Surface mode cleanup
+  calls real teardown, even if editor rendering subscribed first; dock remount
+  closes ownership and editor teardown detaches surface listeners.
+- `revealMapInDock` owns collapse markup, ancestor expansion/filter reset and
+  current-row focus. Inspection command dispatch first activates a missing Tiles
+  host through workspace state, then `openSidebarInspection` opens/focuses the same pinned/unpinned
+  surface. Tests: `sidebarFocusR1.test.ts` plus real-browser
+  `scripts/qa/sidebar-focus-r1.mjs` (Beginner/Standard-first Ctrl+K, actual context
+  menus, persisted collapse, and all three inspections from maps-only reload).
+- Rename settles Enter/Escape before removing its focused input: the resulting
+  blur cannot commit a cancelled draft or repeat a completed edit.
 
 ### Automatic usage guides disabled (2026-09-06)
 

@@ -9,6 +9,7 @@ import { loadAiConfig } from "@/ai/llmClient";
 import { currentAgentEditorIdentity, currentHumanEditorIdentity } from "@/project/editorIdentity";
 import { combineDiffs, recordProjectCommit, recordProjectCommitFireAndForget, resetManualProjectCommitBaseline, summaryForDiff, type CommitLogInput, type CommitRow } from "@/project/projectCommitLog";
 import { store } from "@/project/store";
+import { createProjectWikiCoordinator } from "@/editor/projectWikiCoordinator";
 import type { ChangeSummary, Project } from "@/project/types";
 import { commitChangeset, summarizeChanges } from "./changeset";
 import { runTool } from "./toolRunner";
@@ -211,7 +212,7 @@ export interface ApplyProposedProjectOptions {
 }
 
 export type ApplyProposedProjectResult =
-  | { readonly ok: true; readonly commit: CommitRow; readonly applied: Project; readonly commitProject?: Project }
+  | { readonly ok: true; readonly commit: CommitRow; readonly applied: Project; readonly commitProject?: Project; readonly wikiWarning?: string }
   | {
     readonly ok: false;
     readonly reason: "commit-rejected";
@@ -237,16 +238,24 @@ export async function applyProposedProject(
   options: ApplyProposedProjectOptions,
 ): Promise<ApplyProposedProjectResult> {
   const before = store.getCurrent();
+  const wikiProjectIdentity = JSON.stringify(store.getProjectIdentity());
+  // Wiki checkpoints and human codex edits own world documents independently of
+  // detached authoring previews. A title/map proposal must not restore an old wiki.
+  const appliedProject = { ...proposed };
+  if (!options.resetProject) {
+    if (before.world) appliedProject.world = structuredClone(before.world);
+    else delete appliedProject.world;
+  }
   // A detached preview may predate human edits or newly accepted houses.
   // Capture the live baseline at application, before any history or store writes.
   try {
-    assertHouseProtection(captureHouseProtection(before), proposed, []);
+    assertHouseProtection(captureHouseProtection(before), appliedProject, []);
   } catch (error) {
     if (!(error instanceof ToolError)) throw error;
     const issue = error.mapId ? `[${error.mapId}] ${error.message}` : error.message;
     return { ok: false, reason: "commit-rejected", issue, issues: [issue] };
   }
-  const commit = commitChangeset(proposed, before);
+  const commit = commitChangeset(appliedProject, before);
   if (!commit.ok) {
     const blocking = commit.blocking.map((entry) =>
       entry.mapId ? `[${entry.mapId}] ${entry.message}` : entry.message);
@@ -260,7 +269,7 @@ export async function applyProposedProject(
   recordProjectSnapshot(options.snapshotLabel, options.snapshotMapId);
   // diff 를 replace **전에** 계산한다 — 행위 로그 라벨이 이 시점에 확정돼야 하고,
   // summarizeChanges 는 before(교체 전 스토어)를 필요로 한다.
-  const diff = options.diff ?? summarizeChanges(before, proposed);
+  const diff = options.diff ?? summarizeChanges(before, appliedProject);
   const change = applyAnnotation(
     "ai",
     `${options.source === "agent-milestone" ? "AI 마일스톤" : "AI 제안"} 적용: ${options.summary}`,
@@ -271,11 +280,11 @@ export async function applyProposedProject(
   // Correlate at the mutation boundary: synchronous subscribers and the awaited
   // commit can both leave a later edit in the live store before this apply returns.
   const commitProject = options.resetProject === true
-    ? store.replaceProject(proposed, { ...change, projectSwitch: false })
-    : store.replace(proposed, { change });
-  focusAcceptedAgentChanges(before, proposed);
+    ? store.replaceProject(appliedProject, { ...change, projectSwitch: false })
+    : store.replace(appliedProject, { change });
+  focusAcceptedAgentChanges(before, appliedProject);
   const commitInput: CommitLogInput = {
-    project: proposed,
+    project: appliedProject,
     identity: currentAgentEditorIdentity(options.agentName ?? loadAiConfig().model),
     reviewStatus: options.reviewStatus ?? "approved",
     summary: options.summary,
@@ -296,6 +305,17 @@ export async function applyProposedProject(
       recordedAt: new Date().toISOString(),
     };
   }
-  resetManualProjectCommitBaseline(proposed);
-  return { ok: true, commit: commitRow, applied: store.getCurrent(), commitProject };
+  resetManualProjectCommitBaseline(appliedProject);
+  let wikiWarning: string | undefined;
+  if (JSON.stringify(store.getProjectIdentity()) !== wikiProjectIdentity) {
+    return { ok: true, commit: commitRow, applied: store.getCurrent(), commitProject, wikiWarning: "프로젝트가 바뀌어 이전 작업의 위키 진행 기록을 갱신하지 않았습니다." };
+  }
+  if (appliedProject.world?.entities.some((entity) => entity.wiki)) {
+    try {
+      await createProjectWikiCoordinator().observe(options.summary, options.toolNames);
+    } catch (cause) {
+      wikiWarning = cause instanceof Error ? cause.message : String(cause);
+    }
+  }
+  return { ok: true, commit: commitRow, applied: store.getCurrent(), commitProject, ...(wikiWarning ? { wikiWarning } : {}) };
 }

@@ -277,7 +277,11 @@ export function openSidebarInspection(id: InspectionCommand): void {
   document.dispatchEvent(new CustomEvent(SIDEBAR_SURFACE_OPEN, { detail: 'inspection' }));
   openMenu = id;
   latestRerender?.();
-  document.querySelector<HTMLElement>('.oprn-toolbar-dropdown button, .oprn-toolbar-dropdown input')?.focus();
+  const panel = openAnchor?.menu;
+  if (!panel) return;
+  panel.tabIndex = -1;
+  const control = panel.querySelector<HTMLElement>('button:not(:disabled), input:not(:disabled)');
+  (control ?? panel).focus();
 }
 
 /**

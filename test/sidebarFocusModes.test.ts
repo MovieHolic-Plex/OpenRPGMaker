@@ -1,18 +1,19 @@
 /** @vitest-environment happy-dom */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { editorState } from '@/editor/editorState';
-import { chromeForMode, resetEditorUiModeForTests, setEditorUiMode } from '@/editor/editorUiMode';
+import { chromeForMode, resetEditorUiModeForTests, setEditorUiMode, subscribeEditorUiMode } from '@/editor/editorUiMode';
 import { renderTilePalette } from '@/editor/panels/tilePalette';
 import { resetTileToolbarMenusForTests } from '@/editor/panels/tileToolbarMenus';
 import { createBlankProject } from '@/project/defaults';
 import { store } from '@/project/store';
 import { resetInspectionPinsForTests, SIDEBAR_PINS_KEY } from '@/editor/panels/sidebarInspectionPins';
 import { listEditorCommands } from '@/editor/commandRegistry';
-import { registerModal, resetModalStackForTest } from '@/editor/ui/modalStack';
+import { resetModalStackForTest } from '@/editor/ui/modalStack';
 
 describe('focused standard and expert sidebar', () => {
   let host: HTMLElement;
   let unsubscribe: () => void;
+  let unsubscribeMode: () => void;
   const find = (id: string) => host.querySelector<HTMLElement>(`[data-testid="${id}"]`);
   beforeEach(() => {
     vi.useFakeTimers();
@@ -26,11 +27,13 @@ describe('focused standard and expert sidebar', () => {
     host = document.createElement('div');
     host.dataset.testid = 'left-palette-root';
     document.body.append(host);
+    unsubscribeMode = subscribeEditorUiMode(() => renderTilePalette(host));
     renderTilePalette(host);
     unsubscribe = editorState.subscribe(() => renderTilePalette(host));
   });
   afterEach(() => {
     unsubscribe();
+    unsubscribeMode();
     resetTileToolbarMenusForTests();
     host.remove();
     vi.clearAllTimers();
@@ -102,18 +105,15 @@ describe('focused standard and expert sidebar', () => {
   });
   it('persists expert inspection pins without exposing or resetting them in Standard', () => {
     setEditorUiMode('expert', null);
-    renderTilePalette(host);
     find('oprn-tool-overflow')?.click();
     find('sidebar-pin-history')?.click();
     expect(JSON.parse(localStorage.getItem(SIDEBAR_PINS_KEY + 'expert') ?? '[]')).toEqual(['history']);
     expect(find('toolbar-toggle-history')?.closest('[data-testid="toolbar-overflow-dropdown"]')).toBeNull();
     expect(host.querySelectorAll('[data-testid="toolbar-toggle-history"]')).toHaveLength(1);
     setEditorUiMode('standard', null);
-    renderTilePalette(host);
     expect(find('toolbar-toggle-history')).toBeNull();
     resetInspectionPinsForTests();
     setEditorUiMode('expert', null);
-    renderTilePalette(host);
     expect(find('toolbar-toggle-history')).not.toBeNull();
     find('oprn-tool-overflow')?.click();
     find('sidebar-pin-history')?.click();
@@ -134,9 +134,7 @@ describe('focused standard and expert sidebar', () => {
     find('palette-brush-assist-toggle')?.click();
     expect(find('sidebar-assist-surface')).not.toBeNull();
     setEditorUiMode('expert', null);
-    renderTilePalette(host);
     setEditorUiMode('standard', null);
-    renderTilePalette(host);
     expect(find('sidebar-assist-surface')).toBeNull();
   });
   it('keeps an outside pointer target mounted so the same click can activate it', () => {
@@ -154,9 +152,12 @@ describe('focused standard and expert sidebar', () => {
   });
   it('keeps a map surface behind a child modal and lets Escape close only the child', () => {
     find('sidebar-map-switcher')?.click();
-    const modal = document.createElement('div');
-    document.body.append(modal);
-    registerModal(modal, () => modal.remove());
+    const properties = find('map-inspector-action-properties');
+    if (!properties) throw new Error('Missing map settings action');
+    properties.focus();
+    properties.click();
+    const modal = document.querySelector<HTMLElement>(`[data-testid="map-properties-modal-${store.getCurrent().startMapId}"]`);
+    if (!modal) throw new Error('Actual map settings dialog did not open');
     modal.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
     expect(find('sidebar-map-surface')).not.toBeNull();
     modal.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));

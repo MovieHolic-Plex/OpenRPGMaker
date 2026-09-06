@@ -1,0 +1,73 @@
+{
+  "origin": "http://127.0.0.1:42005",
+  "entry": "/?blankProject=1",
+  "delivery": "Built product after latest-main integration",
+  "sharedModule": "/assets/main-BLhLAwp1.js",
+  "networkIsolation": "Model and Supabase HTTP responses intercepted",
+  "narration": {
+    "input": "author_world_bridge 도구로 다리를 만들어줘",
+    "observedLiveText": "월드를 구성하는 중",
+    "screenshot": "integrated-narration.png",
+    "pass": true
+  },
+  "reasoning": {
+    "input": "요약해줘",
+    "items": ["reasoning-first-sentinel", "reasoning-second-sentinel"],
+    "screenshot": "integrated-reasoning.png",
+    "pass": true
+  },
+  "ghost": {
+    "input": "create_map으로 새 맵 하나 만들어줘",
+    "event": {
+      "mapId": "map_ai_seven_final",
+      "toolName": "live_project_diff",
+      "bounds": {"x": 0, "y": 0, "width": 6, "height": 5}
+    },
+    "afterTerminal": {"mapExists": true, "previewCount": 0},
+    "screenshot": "integrated-ghost.png",
+    "pass": true
+  },
+  "transport": {
+    "input": "연결 확인",
+    "mainModelResponse": "connectionrefused",
+    "runningAfterTerminal": false,
+    "settingsVisible": true,
+    "retryVisible": true,
+    "settingsClickOpenedModal": true,
+    "emptyInputAfterFailure": true,
+    "sendEnabledWithFreshInput": true,
+    "screenshot": "integrated-transport.png",
+    "pass": true
+  },
+  "selection": {
+    "input": {"x": 1, "y": 1, "width": 3, "height": 3},
+    "visible": {"display": "flex", "scoped": true, "width": 185.375, "height": 32},
+    "afterClear": {"scoped": false, "selectionChip": false},
+    "screenshot": "integrated-selection.png",
+    "pass": true
+  },
+  "hint": {
+    "focused": {"hintNodes": 0, "rowHeight": 36},
+    "blurred": {"hintNodes": 0, "rowHeight": 36},
+    "inputTooltipRetained": true,
+    "screenshot": "integrated-hint.png",
+    "pass": true
+  },
+  "history": {
+    "input": "대화 보존 확인",
+    "backend": "Native Chromium IndexedDB",
+    "markerRecordBeforeReload": "conv_cd044161-60d1-40c4-9eae-795a112ca80f",
+    "markerRecordAfterReload": "conv_cd044161-60d1-40c4-9eae-795a112ca80f",
+    "allFiveRecordIdsRetained": true,
+    "markerVisibleAfterReload": true,
+    "screenshot": "integrated-history.png",
+    "pass": true
+  },
+  "pageErrors": [],
+  "cleanup": {
+    "browserClosed": true,
+    "devServerKilled": true,
+    "staticServerStopped": true,
+    "ports38959And42005HaveNoListener": true
+  }
+}

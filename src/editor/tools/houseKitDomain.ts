@@ -123,8 +123,8 @@ export function buildHouseKit(draft: Project, input: BuildHouseKitInput): BuildH
   let interiorData: HouseKitInteriorData | undefined;
   if (input.door && result.doorAt) {
     const { x, y } = result.doorAt;
-    // 문 외형은 Object1 문 이벤트 스프라이트가 담당한다 — 이벤트를 만드는 시공에서는
-    // 문 타일(116/146)을 깔지 않는다. 깔면 타일 문 + 이벤트 문이 겹쳐 두 겹으로 보인다.
+    // 이벤트 문은 upsertHouseDoorEvents가 359 배경 두 칸과 Object1 스프라이트를 배치한다.
+    // 이벤트 없는 타일 문만 기존 116/146 외형을 사용한다.
     const doorEventPlanned = input.interior && input.doorEvent;
     if (!doorEventPlanned) {
       map.lowerTiles[(y - 1) * map.width + x] = DOOR_TOP_TILE;

@@ -21,6 +21,9 @@ export function applyGenrePreset(project: Project, id: GenrePresetId): void {
   const { system } = project;
   system.genre = id;
   switch (id) {
+    case "action-rpg":
+      system.actionCombat = { ...system.actionCombat, enabled: true };
+      break;
     case "monster-collect":
       system.monsterCollection = true;
       system.monsterBattleParty = true;

@@ -1,12 +1,12 @@
 #!/usr/bin/env node
-// CSS 예산 래칫 — 다섯 개 건강 지표는 **내려가거나 그대로**일 수만 있고, 절대 올라갈 수 없다.
+// CSS 예산 래칫 — 네 개 품질 지표의 증가를 막는다. 파일 수는 판정에 쓰지 않는 참고 지표다.
 //
 // 왜 필요한가 (실측):
 //  1. TOKENS.md §4.1 "하드코딩 hex/rgba 색 금지" 에는 테스트가 없었다. 문서가 생긴
 //     7e5f7ba6(2026-07-06) 593건 → 2026-08-28 1,940건, **3.27배**로 불었다.
 //     `git grep -ohE '#[0-9a-fA-F]{3,8}\b' <ref> -- 'src/styles/*.css' | wc -l` 로 재현된다.
 //     규칙 문서만 있고 기계 가드가 없으면 규칙이 아니라 희망사항이다.
-//  2. 그래서 §4.1 을 포함한 다섯 지표를 여기서 기계로 고정한다. 이 게이트의 헤드라인은
+//  2. 그래서 §4.1 을 포함한 네 품질 지표를 여기서 기계로 고정한다. 이 게이트의 헤드라인은
 //     hexLiterals 다 — 3.27배로 되돌아간 바로 그 규칙이기 때문이다.
 //
 // 이 파일의 초판(a742f105)은 위 1번에 §4.7("font-family 리터럴 금지"는 테스트가 있어
@@ -45,7 +45,7 @@ const METRICS = [
   ["important", "!important 선언"],
   ["undefinedVars", "정의 없는 커스텀 프로퍼티"],
   ["globalRootFiles", "전역 :root 블록을 가진 파일"],
-  ["cssFileCount", "CSS 파일 수"],
+  ["cssFileCount", "CSS 파일 수 (참고·판정 제외)"],
 ];
 
 const args = process.argv.slice(2);
@@ -221,8 +221,8 @@ function collect() {
     ...EXTRA_CSS_FILES.map((file) => join(ROOT, file)).filter((file) => existsSync(file)),
   ];
 
-  // 파일 수 래칫은 src/styles 트리에만 건다. EXTRA_CSS_FILES 는 이 스크립트에 박힌
-  // 고정 목록이라 새 파일이 끼어들 수 없고, 세면 §"247개" 라는 합의된 수치와 어긋난다.
+  // 이전 보고서와 같은 src/styles 범위로 파일 수를 집계한다.
+  // 파일 분리·통합 자체는 품질 개선이나 회귀가 아니므로 판정에는 사용하지 않는다.
   const budgetedFileList = cssFiles
     .map(rel)
     .filter((path) => CSS_ROOTS.some((dir) => path.startsWith(`${dir}/`)))
@@ -306,7 +306,6 @@ function offenders(metric, report, baseline) {
   if (metric === "important") return grew(report.details.importantByFile, baseline.details?.importantByFile);
   if (metric === "globalRootFiles")
     return added(report.details.globalRootFileList, baseline.details?.globalRootFileList);
-  if (metric === "cssFileCount") return added(report.details.cssFileList, baseline.details?.cssFileList);
   if (metric === "undefinedVars") {
     return added(report.details.undefinedVarList, baseline.details?.undefinedVarList).map(
       (name) => `${name} (사용: ${(report.details.undefinedVarUsage[name] ?? []).join(", ") || "?"})`
@@ -348,6 +347,7 @@ if (!baseline) {
 const regressions = [];
 const improvements = [];
 for (const [key] of METRICS) {
+  if (key === "cssFileCount") continue;
   const before = baseline.metrics?.[key] ?? 0;
   const after = report.metrics[key];
   if (after > before) regressions.push({ metric: key, before, after, delta: after - before, offenders: offenders(key, report, baseline) });
