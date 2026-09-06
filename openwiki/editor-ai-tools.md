@@ -1,5 +1,16 @@
 # Editor AI Tools & Vocabulary
 
+## House-site tree clearance before ownership (2026-09-07)
+
+`author_house` checks all requested lots before stamping or sealing any house.
+Canopy/trunk tiles in the completed-house footprint, including the north ridge
+and gaps between wings, return `house-tree-clearance-required` with coordinates.
+Clear the entire tree atom explicitly before construction or choose another site.
+The producer does not erase beyond its requested footprint or bypass completed
+house protection. Unrelated trees/errors outside the requested sites do not block
+construction. Real facade and `runTool` atomicity, batch, clear-then-build and
+ownership controls are in `test/authorHouseTreeClearance.test.ts`.
+
 ## Flower-yard material in house lots (2026-09-07)
 
 The high-level `author_house` lots path translates `yard:"flowers"` to the
