@@ -9,7 +9,7 @@ import { deserialize, serialize } from "@/project/io";
 import { readStoredZipEntry, readStoredZipEntryNames } from "@/project/packageZip";
 import { parseReleaseManifest, releaseManifestFromZip, verifyGameRelease } from "@/project/gameRelease";
 import { readTrustedRuntime, RUNTIME_ARCHIVE_FOLDER } from "./lib/runtimeArchive";
-import { exerciseExport, installExportObservations, verifyEditorTestPlay } from "./lib/exportPlayability.mjs";
+import { exerciseExport, installExportObservations, rejectBadExport, requiredRuntimePngPattern, verifyEditorTestPlay } from "./lib/exportPlayability.mjs";
 
 function arg(name: string, fallback: string): string {
   const index = process.argv.indexOf(`--${name}`);
@@ -73,27 +73,6 @@ async function download(page: Page, id: string, name: string): Promise<string> {
   assert.equal(await result.failure(), null);
   console.log(`QA download ${name}: saved`);
   return target;
-}
-
-async function rejectBadExport(page: Page, pattern: string, body: string, status: number) {
-  let downloaded = false;
-  const onDownload = () => { downloaded = true; };
-  page.on("download", onDownload);
-  await page.route(pattern, (route) => route.fulfill({ status, contentType: "text/html", body }));
-  if (await page.getByTestId("toast").count()) {
-    await page.getByTestId("toast").evaluate((node) => node.setAttribute("data-qa-previous-toast", "true"));
-  }
-  try {
-    await menu(page, "menu-project-export-standalone");
-    const error = page.locator('[data-testid="toast"].error:not([data-qa-previous-toast])');
-    await error.waitFor({ state: "visible", timeout: 180000 });
-    const message = await error.textContent();
-    assert.equal(downloaded, false, `Invalid export downloaded: ${pattern}`);
-    return { pattern, status, message, downloaded, pass: true };
-  } finally {
-    page.off("download", onDownload);
-    await page.unroute(pattern);
-  }
 }
 
 const browser = await chromium.launch({ args: ["--no-sandbox"] });
@@ -164,14 +143,20 @@ try {
   results.push({ kind: "editor-downloads", pass: true });
 
   const zip = new Uint8Array(await readFile(zipPath));
+  let missingImagePattern: string;
   if (publicationMode) {
     const manifest = await parseReleaseManifest(releaseManifestFromZip(zip));
     const trusted = await readTrustedRuntime(resolve(RUNTIME_ARCHIVE_FOLDER), manifest.publication.runtimeTarget);
     await verifyGameRelease(zip, trusted);
+    missingImagePattern = requiredRuntimePngPattern(trusted);
     await writeFile(join(outDir, "release.json"), JSON.stringify(manifest, null, 2));
     await writeFile(join(outDir, "game.zip"), zip);
     await writeFile(join(outDir, "game.html"), await readFile(htmlPath));
     results.push({ kind: "release-integrity", releaseId: manifest.releaseId, runtimeTarget: trusted.runtimeTarget, pass: true });
+  } else {
+    const png = readStoredZipEntryNames(zip).find((name) => name.endsWith(".png"));
+    assert.ok(png, "The exported project must include a PNG for export rejection QA");
+    missingImagePattern = `**/${png}`;
   }
   for (const [kind, prefix] of [["root", "/"], ["nested", "/games/demo/"], ["html", null]] as const) {
     console.log(`QA ${kind}: actual gameplay and save/load`);
@@ -195,7 +180,7 @@ try {
   }
 
   results.push(await rejectBadExport(page, publicationMode ? "**/runtime-archive/*/standalone/standalone.js" : "**/standalone-player/standalone.js", "<!doctype html><html>Wrong bundle</html>", 200));
-  results.push(await rejectBadExport(page, publicationMode ? "**/runtime-archive/*/public/assets/generated/battle-skins/sprites/hero-01-back.png" : "**/assets/generated/battle-skins/sprites/hero-01-back.png", "Missing required image", 404));
+  results.push(await rejectBadExport(page, missingImagePattern, "Missing required image", 404));
   await page.screenshot({ path: join(outDir, "rejected-export.png") });
 
   await page.getByTestId("mode-play").click();
