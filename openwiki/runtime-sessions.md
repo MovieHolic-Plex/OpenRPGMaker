@@ -41,7 +41,7 @@
   takes precedence over the configured default, including explicit empty text.
   Retry remains conditional on hasCheckpoint. Without a sequence/background the
   legacy immediate panel and underlying-map presentation remain intact.
-- `runtime/cinematics.css` is imported by the shared `playerRuntime.css` closure
+- `runtime/playSurface.css` owns cinematic presentation in the shared `playerRuntime.css` closure
   (exported player and editor). Uploaded video MIME resolution uses the existing
   generatedAssetResourceResolver; no movie-command fallback behavior changed.
 - Proof: `cinematicSequence`, `playerCinematics`, `cinematicSettings` and the

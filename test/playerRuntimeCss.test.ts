@@ -55,7 +55,6 @@ const RUNTIME_IMPORTS = [
   "../database/tabs-b-status-menu-main.css",
   "./statusMenuEdgeDock.css",
   "./playLoading.css",
-  "./cinematics.css",
   "./actionHud.css",
   "./timer.css",
   "./touchpad.css",
