@@ -280,6 +280,16 @@ id 슬롯은 남긴다**(`def.name = ""`). id 가 지워지지 않으므로 `com
 
 ## Action controls guide (2026-09-07)
 
+`make_action_enemy` prepares the enemy and validates its graphic, target map,
+troop membership and spawn area before committing either record. `spawn.id`
+upserts within the target map; omission appends a fresh ID. `set_action_combat`
+validates its map before enabling the system and exposes the existing
+`dodgeStaminaCost`, `dodgeIframesMs`, `guardDamageReductionPercent` and
+`guardStaminaDrainPerSec` normalizers. Read resources first, create the enemy,
+then `upsert_troop({troop:{id,name,enemyIds:[enemyId]}})`, then attach its spawn.
+`test/actionAuthoringPrerequisites.test.ts` covers both direct-draft atomic
+failure and the real runner's successful dependency order.
+
 `place_npc` accepts `guide: "action-controls"` instead of authored `pages` for one
 controls page only. `src/player/keyBindings.ts` exports `ACTION_CONTROL_BINDINGS`
 (`id`, normalized `keys`, `label`) and `ACTION_CONTROLS_GUIDE`; the generated text
