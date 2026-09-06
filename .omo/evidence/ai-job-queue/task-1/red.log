@@ -1,0 +1,25 @@
+✖ failed metadata persistence admits no job and emits no success or inbox (24.109715ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 264.604727
+
+✖ failing tests:
+
+test at test/aiJobsRepository.test.mjs:33:1
+✖ failed metadata persistence admits no job and emits no success or inbox (24.109715ms)
+  AssertionError [ERR_ASSERTION]: Missing expected rejection.
+      at async TestContext.<anonymous> (file:///home/main/.herdr/worktrees/rpg-zzu/worktree-silver-harbor-d2a7/test/aiJobsRepository.test.mjs:44:3)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: { code: 'PERSISTENCE_FAILED' },
+    operator: 'rejects',
+    diff: 'simple'
+  }

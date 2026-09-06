@@ -1,0 +1,32 @@
+✔ failed metadata persistence admits no job and emits no success or inbox (101.896628ms)
+✔ all six families, immutable input/artwork blobs and exact identities survive reload (356.303338ms)
+✔ concurrent duplicate keys create one job; canonical key ordering is equivalent; changed identity conflicts (132.909887ms)
+✔ one snapshot atomically commits result, attempt, provider response, event and deduplicated inbox (351.197158ms)
+✔ failed metadata writeFile preserves the complete previous outcome snapshot (344.865343ms)
+✔ failed metadata sync preserves the complete previous outcome snapshot (192.764571ms)
+✔ failed metadata rename preserves the complete previous outcome snapshot (147.909451ms)
+✔ admission remains unacknowledged and invisible until metadata directory sync completes (117.308321ms)
+✔ post-rename sync failure is outcome-unknown, never acknowledged; writer is fenced until reopen (132.302805ms)
+✔ failed blob sync and missing referenced input prevent admission (128.386409ms)
+✔ lossy/non-plain serializable values and invalid envelopes are rejected without admission (96.795559ms)
+✔ transactions cannot erase retained jobs, rewrite identity, or invent a saved/successful state (359.588262ms)
+✔ mismatched result identity is rejected and input/artifact hashes detect disk corruption (220.457534ms)
+✔ on-disk malformed-json fails loudly without resetting or retaining a writer lock (70.744987ms)
+✔ on-disk checksum fails loudly without resetting or retaining a writer lock (170.556795ms)
+✔ on-disk invalid-record fails loudly without resetting or retaining a writer lock (243.527017ms)
+✔ on-disk missing-metadata fails loudly without resetting or retaining a writer lock (150.450992ms)
+✔ on-disk missing-input fails loudly without resetting or retaining a writer lock (170.852551ms)
+✔ exclusive ownership rejects a second process without damaging the first writer (285.817627ms)
+✔ crashed running jobs recover as interrupted, dispatched operations unknown, and paid responses retained (537.80043ms)
+✔ uncertain missing-owner fails closed and preserves metadata (89.999845ms)
+✔ uncertain malformed-owner fails closed and preserves metadata (121.119525ms)
+✔ uncertain foreign-owner fails closed and preserves metadata (104.809607ms)
+✔ uncertain abandoned-guard fails closed and preserves metadata (52.313355ms)
+ℹ tests 24
+ℹ suites 0
+ℹ pass 24
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4951.60634
