@@ -20,6 +20,38 @@ export function contains(region: AcceptanceRegion, point: { readonly x: number; 
 export function validRegion(map: GameMap, region: AcceptanceRegion): boolean {
   return inBounds(map, region.x, region.y) && inBounds(map, region.x + region.w - 1, region.y + region.h - 1);
 }
+
+/** A requested image review cannot exclude cells this request actually changed. */
+export function acceptanceReviewRegion(map: GameMap, before: GameMap | undefined, requested?: AcceptanceRegion): AcceptanceRegion {
+  const full = { x: 0, y: 0, w: map.width, h: map.height };
+  if (!requested) return full;
+  if (!validRegion(map, requested)) return requested;
+  if (!before || before.width !== map.width || before.height !== map.height
+    || before.tilesetId !== map.tilesetId || before.tileSize !== map.tileSize) return full;
+  let left = requested.x, top = requested.y, right = left + requested.w, bottom = top + requested.h;
+  const include = (x: number, y: number): void => {
+    if (!inBounds(map, x, y)) return;
+    left = Math.min(left, x); top = Math.min(top, y);
+    right = Math.max(right, x + 1); bottom = Math.max(bottom, y + 1);
+  };
+  for (let i = 0; i < map.width * map.height; i += 1) {
+    if (map.lowerTiles[i] !== before.lowerTiles[i] || map.upperTiles[i] !== before.upperTiles[i]
+      || acceptanceFingerprint(map.lowerTileStacks?.[i] ?? []) !== acceptanceFingerprint(before.lowerTileStacks?.[i] ?? [])
+      || acceptanceFingerprint(map.upperTileStacks?.[i] ?? []) !== acceptanceFingerprint(before.upperTileStacks?.[i] ?? [])) {
+      include(i % map.width, Math.floor(i / map.width));
+    }
+  }
+  const oldEvents = new Map(before.events.map(event => [event.id, event]));
+  const newEvents = new Map(map.events.map(event => [event.id, event]));
+  for (const id of new Set([...oldEvents.keys(), ...newEvents.keys()])) {
+    const oldEvent = oldEvents.get(id), newEvent = newEvents.get(id);
+    if (acceptanceFingerprint(oldEvent) === acceptanceFingerprint(newEvent)) continue;
+    if (oldEvent) include(oldEvent.x, oldEvent.y);
+    if (newEvent) include(newEvent.x, newEvent.y);
+  }
+  return { x: left, y: top, w: right - left, h: bottom - top };
+}
+
 export function scopedMapContent(map: GameMap, region?: AcceptanceRegion): unknown {
   if (!region) return map;
   const cells = [];
@@ -72,8 +104,13 @@ export function evaluateAcceptanceCriterion(criterion: AcceptanceCriterion, inpu
       return { expected, observed: passed ? "All targets reachable with conservative event blockers" : "Route blocked, out of bounds, or conditional movement unsupported", passed };
     }
     case "imageReviewed": {
-      const passed = input.reviewed(map, region ?? { x: 0, y: 0, w: map.width, h: map.height });
-      return { expected, observed: passed ? "Delivered image coverage explicitly reviewed for current content" : "Current image coverage and attributed review required", passed };
+      const requiredRegion = acceptanceReviewRegion(map, input.baseline.maps[map.id], region);
+      const passed = input.reviewed(map, requiredRegion);
+      return {
+        expected: JSON.stringify({ ...criterion, region: requiredRegion }),
+        observed: passed ? "Delivered image coverage explicitly reviewed for current content" : "Current image coverage and attributed review required",
+        passed,
+      };
     }
     default: return assertNever(criterion);
   }

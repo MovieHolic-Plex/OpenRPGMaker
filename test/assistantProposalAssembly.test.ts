@@ -8,6 +8,7 @@ import { TILE } from "@/project/defaults/constants";
 import type { ChatResult } from "@/ai/llmClient";
 
 const CONFIG = {
+  authMode: "apiKey" as const,
   baseUrl: "x",
   model: "stub-model",
   liteModel: "stub-model",
@@ -189,22 +190,26 @@ describe("assistant proposal assembly move_event squash", () => {
 
 
 describe("assistant WorkPlan evidence isolation", () => {
-  it("clears successful-tool evidence when set_work_plan replaces a same-id item", () => {
-    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat: scriptedChat([]) });
+  it("clears successful-tool evidence when the main planner adopts a new goal with a same-id item", async () => {
+    const planArgs = {
+      goal: "타일 작업",
+      layers: [{ title: "L", items: [{ title: "A", instruction: "paint", successTools: ["paint_tiles"] }] }],
+    };
+    const session = new AssistantSession(createBlankProject(), {
+      config: CONFIG,
+      chat: scriptedChat([finalMsg(JSON.stringify({ action: "replan", ...planArgs, goal: "다른 맵 작업" }))]),
+    });
     const probe = session as unknown as {
       applyWorkPlanTool(name: string, args: Record<string, unknown>): ToolResult;
       turnSuccessfulTools: Set<string>;
       successfulToolsWorkItemId: string | null;
     };
-    const planArgs = {
-      goal: "타일 작업",
-      layers: [{ title: "L", items: [{ title: "A", instruction: "paint", successTools: ["paint_tiles"] }] }],
-    };
 
     expect(probe.applyWorkPlanTool("set_work_plan", planArgs).ok).toBe(true);
     probe.turnSuccessfulTools.add("paint_tiles");
     probe.successfulToolsWorkItemId = "L1-1";
-    expect(probe.applyWorkPlanTool("set_work_plan", planArgs).ok).toBe(true);
+    await session["runOrchestratorPlanner"]("다른 맵 작업", () => {});
+    expect(session.getWorkPlan()?.goal).toBe("다른 맵 작업");
 
     const completed = probe.applyWorkPlanTool("complete_work_item", { itemId: "L1-1" });
     expect(completed.ok).toBe(false);

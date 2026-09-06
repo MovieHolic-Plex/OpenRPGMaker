@@ -26,6 +26,7 @@ import {
   templateToolInstruction,
 } from "./narrativeHorrorWorkPlan";
 import { QUICK_REPLY_MARKER } from "@/ai/interviewPrompt";
+import { VERIFICATION_TOOL_NAMES } from "./agentVerification";
 import { allTools, getTool } from "@/editor/tools/toolRegistry";
 import { parseAcceptance, type AcceptancePromise } from "./assistantAcceptance";
 import { ACCEPTANCE_PLANNER_GUIDE } from "./assistantAcceptanceTools";
@@ -400,7 +401,7 @@ export function workPlanFromOrchestratorDecision(
   });
 }
 
-/** In-loop set_work_plan tool (Claude TodoWrite-style): generator may replan via tools. */
+/** Parse an in-loop plan proposal; the session reconciles it with existing item identity. */
 export function workPlanFromSetToolArgs(args: Record<string, unknown>, now = new Date()): WorkPlan | null {
   const goal = typeof args.goal === "string" ? args.goal.trim() : "";
   if (!goal || !Array.isArray(args.layers)) return null;
@@ -415,6 +416,51 @@ export function workPlanFromSetToolArgs(args: Record<string, unknown>, now = new
     layers,
     now,
   });
+}
+
+/** Generator repairs keep the goal's item identities; only the main planner may replace them. */
+export function repairWorkPlan(current: WorkPlan, replacement: WorkPlan):
+  | { readonly ok: true; readonly plan: WorkPlan }
+  | { readonly ok: false; readonly reason: string } {
+  const previous = new Map(current.layers.flatMap(layer => layer.items).map(item => [item.id, item]));
+  const incoming = replacement.layers.flatMap(layer => layer.items);
+  const ids = new Set(incoming.map(item => item.id));
+  if (ids.size !== incoming.length) {
+    return { ok: false, reason: "set_work_plan requires unique item IDs. Use get_work_plan and retain every existing item ID exactly once." };
+  }
+  const missing = [...previous.keys()].filter(id => !ids.has(id));
+  if (missing.length) {
+    return { ok: false, reason: `set_work_plan cannot erase existing items: ${missing.join(", ")}. Use get_work_plan; retain all IDs, including done/skipped items. Correct instructions/successTools or add/regroup items without replacing their IDs.` };
+  }
+  for (const item of incoming) {
+    const old = previous.get(item.id);
+    if (!old || old.status === "done" || old.status === "skipped") continue;
+    const removedChecks = (old.successTools ?? []).filter(name => VERIFICATION_TOOL_NAMES.has(name) && !item.successTools?.includes(name));
+    if (removedChecks.length) {
+      return { ok: false, reason: `set_work_plan cannot remove required verification from ${item.id}: ${removedChecks.join(", ")}. Fix the reported problems and rerun those checks; a summary query is not verification.` };
+    }
+  }
+  const layers = replacement.layers.map(layer => ({
+    ...layer,
+    items: layer.items.map((item): WorkItem => {
+      const old = previous.get(item.id);
+      if (old?.status === "done" || old?.status === "skipped") return { ...old };
+      return { ...item, status: old?.status ?? "pending", note: old?.note, requiresAnyWrite: old?.requiresAnyWrite ?? item.requiresAnyWrite };
+    }),
+  }));
+  const plan: WorkPlan = {
+    ...current,
+    goal: replacement.goal,
+    plannerNote: replacement.plannerNote ?? current.plannerNote,
+    acceptance: replacement.acceptance ?? current.acceptance,
+    layers,
+    currentLayerIndex: current.currentItemId
+      ? layers.findIndex(layer => layer.items.some(item => item.id === current.currentItemId))
+      : 0,
+  };
+  // Reordering must not move evidence to a different item. A finished plan can gain new items.
+  if (!plan.currentItemId) activateFirstPending(plan);
+  return { ok: true, plan };
 }
 
 function createWorkPlanFromLayers(input: {
@@ -612,7 +658,7 @@ export function formatWorkPlanForOrchestration(plan: WorkPlan): string {
   }
   if (s.current) {
     lines.push(`Current layer: ${s.current.layerTitle}`);
-    lines.push(`Current item: ${s.current.itemTitle}`);
+    lines.push(`Current item: ${s.current.itemTitle} (itemId: ${plan.currentItemId})`);
     lines.push(`Worker instruction:\n${s.current.instruction}`);
     if (s.current.doneWhen) lines.push(`Done when: ${s.current.doneWhen}`);
     const required = getCurrentWorkItem(plan)?.successTools ?? [];
@@ -631,11 +677,13 @@ export function formatWorkPlanForOrchestration(plan: WorkPlan): string {
   lines.push(
     "When all of this item's successTools succeed, the harness may auto-complete; " +
       "or call complete_work_item only after every listed tool succeeded for this item, including its continuations. " +
-      "If blocked (wrong tileset material, out of region, etc.), call skip_work_item with a note — " +
+      "For a non-verification item blocked by its premise, call skip_work_item with a note — " +
+      "required verification cannot be removed or skipped; fix its failures or report the blocker. " +
       "do NOT complete a failed item by succeeding a different tool. " +
       "If the item's premise is wrong (e.g. it prescribes creating a new map but the user asked to fix an " +
       "existing one), call set_work_plan to correct the plan instead of satisfying the wrong successTools. " +
-      "To restructure the remaining plan, call set_work_plan (full replacement). " +
+      "To repair or regroup the plan, use get_work_plan and submit set_work_plan with every existing item ID, including done/skipped items. " +
+      "Keep independent items separate; instructions/successTools may be corrected and new items added without restarting completed work. " +
       "Do not claim the full goal is finished while items remain."
   );
   return lines.join("\n");
@@ -653,7 +701,7 @@ export function formatRalphContinueMessage(plan: WorkPlan): string {
     `Progress: ${s.itemsDone}/${s.itemsTotal} items done.`,
   ];
   if (s.current) {
-    lines.push(`Current item: ${s.current.itemTitle}`);
+    lines.push(`Current item: ${s.current.itemTitle} (itemId: ${plan.currentItemId})`);
     lines.push(`Instruction:\n${s.current.instruction}`);
     if (s.current.doneWhen) lines.push(`Done when: ${s.current.doneWhen}`);
   }

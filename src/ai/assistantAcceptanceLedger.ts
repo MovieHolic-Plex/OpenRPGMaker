@@ -4,7 +4,7 @@ import {
   type AcceptancePromise, type AcceptanceSnapshot, type AcceptanceItemSnapshot,
 } from "./assistantAcceptance";
 import {
-  acceptanceFingerprint, criterionTargets, evaluateAcceptanceCriterion, resolveAcceptanceMap,
+  acceptanceFingerprint, acceptanceReviewRegion, criterionTargets, evaluateAcceptanceCriterion, resolveAcceptanceMap,
 } from "./assistantAcceptanceEvaluation";
 
 import { AssistantImageEvidence, coveredByImages, type AcceptanceImageReceipt } from "./assistantImageEvidence";
@@ -85,12 +85,12 @@ export class AssistantAcceptanceLedger {
     this.bind(project);
     const promise = this.promises.get(itemId);
     const criteria = promise?.criteria;
-    if (!criteria?.some(criterion => criterion.kind === "imageReviewed")) return false;
+    if (!promise || !criteria?.some(criterion => criterion.kind === "imageReviewed")) return false;
     const receipts = this.images.current(project);
     const covered = criteria.every(criterion => {
       if (criterion.kind !== "imageReviewed") return true;
       const map = resolveAcceptanceMap(project, criterion.target, this.bindings);
-      return map && coveredByImages(receipts, map, criterion.region ?? { x: 0, y: 0, w: map.width, h: map.height });
+      return map && coveredByImages(receipts, map, acceptanceReviewRegion(map, promise.baseline.maps[map.id], criterion.region));
     });
     if (covered) this.reviews.set(itemId, { receipts, note: note.trim(), passed: verdict === "pass" });
     return covered;

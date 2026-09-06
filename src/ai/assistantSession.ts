@@ -162,6 +162,7 @@ import {
   shouldRalphContinue,
   blockWorkItemById,
   reactivateBlockedWorkItems,
+  repairWorkPlan,
   skipWorkItemById,
   summarizeWorkPlan,
   workPlanFromOrchestratorDecision,
@@ -305,6 +306,7 @@ export interface HarnessSnapshot {
   readonly messages: readonly ChatMessage[];
   readonly audit: readonly AuditEntry[];
   readonly workPlan?: WorkPlan | null;
+  readonly acceptance?: AcceptanceSnapshot | null;
   readonly runEndProof?: RunEndProofState | null;
 }
 
@@ -668,8 +670,10 @@ export const WORK_PLAN_TOOLS: readonly OpenAiToolSchema[] = [
     function: {
       name: "set_work_plan",
       description:
-        "다층 작업 계획을 새로 세우거나 전면 교체한다(replan). layers/items 구조로 goal을 분해한다. " +
-        "실행 중 목표가 바뀌었거나 기존 계획이 틀렸을 때만 호출. 한 항목 완료에는 complete_work_item을 쓴다.",
+        "다층 작업 계획을 세우거나 기존 항목의 지시/성공 도구를 교정한다. " +
+        "수정 시 get_work_plan으로 실제 ID를 확인하고 완료/건너뜀을 포함한 모든 기존 항목 ID를 유지한다. " +
+        "항목 추가·재배치·레이어 재구성은 허용하지만 항목 삭제·통합·재시작은 불가. 새 사용자 목표 채택은 main 플래너가 담당한다. " +
+        "한 항목 완료에는 complete_work_item을 쓴다.",
       parameters: {
         type: "object",
         properties: {
@@ -691,7 +695,7 @@ export const WORK_PLAN_TOOLS: readonly OpenAiToolSchema[] = [
                   items: {
                     type: "object",
                     properties: {
-                      id: { type: "string", description: "생략 시 L1-1 … 자동" },
+                      id: { type: "string", description: "최초 생성 시 생략하면 L1-1 … 자동. 수정 시 get_work_plan의 기존 항목 ID를 유지" },
                       title: { type: "string", description: "항목 제목" },
                       instruction: { type: "string", description: "실행 모델이 그대로 수행할 구체 지시" },
                       doneWhen: { type: "string", description: "완료 판정 기준(선택)" },
@@ -732,7 +736,7 @@ export const WORK_PLAN_TOOLS: readonly OpenAiToolSchema[] = [
     type: "function",
     function: {
       name: "skip_work_item",
-      description: "현재 또는 지정 항목을 건너뛰고 다음으로 간다(막혔을 때만).",
+      description: "현재 또는 지정 항목을 건너뛰고 다음으로 간다(막혔을 때만). run_lint 등 필수 검증이 있는 항목은 건너뛸 수 없다. 오류를 수정하고 검증하거나 막힌 이유를 보고한다.",
       parameters: {
         type: "object",
         properties: {
@@ -1463,6 +1467,7 @@ export class AssistantSession {
       messages: this.messages.map((message) => ({ ...message })),
       audit: [...this.audit],
       workPlan: this.workPlan ? structuredClone(this.workPlan) : null,
+      acceptance: this.getAcceptanceSnapshot(),
       runEndProof: this.getRunEndProof(),
     };
   }
@@ -2164,18 +2169,25 @@ export class AssistantSession {
 
   private applyWorkPlanTool(name: string, args: Record<string, unknown>): ToolResult {
     if (name === "set_work_plan") {
-      const plan = workPlanFromSetToolArgs(args);
-      if (!plan) {
+      const proposed = workPlanFromSetToolArgs(args);
+      if (!proposed) {
         return {
           ok: false,
           summary: "set_work_plan 인자 오류: goal + layers[{title, items[{title, instruction}]}] 필요",
         };
       }
+      const repair = this.workPlan ? repairWorkPlan(this.workPlan, proposed) : null;
+      if (repair && !repair.ok) return { ok: false, summary: repair.reason };
+      const plan = repair?.plan ?? proposed;
       this.workPlan = plan;
       this.adoptAcceptance(plan.acceptance);
-      // 새 계획 — 항목 id 는 위치 기반("L1-1")이라 이전 계획과 겹칠 수 있다. 중복 완료 방지 추적을 초기화한다.
-      this.lastMilestoneCompletionItemId = null;
-      this.resetWorkItemEvidence();
+      if (repair) {
+        // Same goal/item: retain successful calls, verification and artifact evidence.
+        this.syncSuccessfulToolsToCurrentWorkItem();
+      } else {
+        this.lastMilestoneCompletionItemId = null;
+        this.resetWorkItemEvidence();
+      }
       const progress = summarizeWorkPlan(plan);
       return {
         ok: true,
@@ -2242,6 +2254,11 @@ export class AssistantSession {
     if (name === "skip_work_item") {
       const id = typeof args.itemId === "string" && args.itemId.trim() ? args.itemId.trim() : this.workPlan.currentItemId;
       if (!id) return { ok: false, summary: "건너뛸 항목 id가 없습니다." };
+      const item = this.workPlan.layers.flatMap(layer => layer.items).find(entry => entry.id === id);
+      if (item && item.status !== "done" && item.status !== "skipped"
+        && item.successTools?.some(tool => VERIFICATION_TOOL_NAMES.has(tool))) {
+        return { ok: false, summary: `검증 항목은 건너뛸 수 없습니다: ${id}. 보고된 문제를 수정하고 필수 검증을 다시 실행하거나 막힌 이유를 보고하세요.` };
+      }
       const note = typeof args.note === "string" ? args.note : undefined;
       const skipped = skipWorkItemById(this.workPlan, id, note);
       if (!skipped) return { ok: false, summary: `항목을 찾지 못했습니다: ${id}` };
@@ -2761,8 +2778,14 @@ export class AssistantSession {
     const verificationProblems = this.verificationEvidence.problems();
     if (verificationProblems.length > 0) {
       const notice = `검증이 아직 통과되지 않았습니다.\n${verificationProblems.slice(0, 8).map((problem) => `- ${problem}`).join("\n")}`;
-      result = { ...result, assistantText: `${result.assistantText.trim()}\n\n${notice}`.trim() };
+      result = { ...result, assistantText: notice };
       onEvent({ type: "assistant_message", content: result.assistantText });
+    }
+    // Bridge/history consumers read the latest audited response, not the live
+    // assistant_message event. Keep the authoritative final verdict there too.
+    const lastAssistant = [...this.audit].reverse().find(entry => entry.kind === "assistant");
+    if (result.assistantText.trim() && lastAssistant?.text !== result.assistantText) {
+      this.pushAudit({ kind: "assistant", text: result.assistantText });
     }
     const recap = buildRunRecap({
       elapsedMs: Date.now() - startedAt,
@@ -3013,12 +3036,14 @@ export class AssistantSession {
   }
 
   private phaseConfig(phase: AssistantPhase): AiConfig {
-    // 실행 단계는 configForLiteModel 이 reasoning 을 off 로 끈다. 계획·검수 단계는 사용자가
-    // 고른 reasoningEffort 를 그대로 쓴다(모델 이름으로 effort 를 깎던 공급자 정책은 제거됨).
-    // 다이얼은 더 이상 effort 를 덮어쓰지 않는다 — 저장된 수동값이 이긴다. 다이얼 선택 시
-    // 호출자(설정 모달·컴포저)가 resolveAutonomy 프리셋을 reasoningEffort 에 함께 저장하므로
-    // 별도 덮개가 없어도 레벨별 effort 가 유지된다. 다이얼이 정하는 것은 agentMode·예산·planOnly다.
-    if (phase === "execute") return configForLiteModel(this.config);
+    // Balanced keeps the fast executor. Explicit autonomous/max runs retain the
+    // saved reasoning choice instead of silently disabling it when models switch.
+    if (phase === "execute") {
+      const executor = configForLiteModel(this.config);
+      return this.config.autonomyLevel === "autonomous" || this.config.autonomyLevel === "max"
+        ? { ...executor, reasoningEffort: this.config.reasoningEffort }
+        : executor;
+    }
     return this.config;
   }
 
