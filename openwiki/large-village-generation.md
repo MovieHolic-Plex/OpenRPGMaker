@@ -46,6 +46,13 @@ with accepted output for ordinary and 100x100 snow villages through toolRunner.
   then keep immutable invocation-local snapshots across roads, fences, terrain,
   decor, landscape, cleanup, NPCs, and snow. Validate after each stage, including
   road retry sub-stages, before any restoration can hide damage.
+- House-owned shop signs use empty upper cells over actual kit walls inside the
+  sealed bbox. Door cells and existing windows, banners and ladders are retained;
+  no free wall means no sign, not an unprotected yard placement or later repair.
+- External-road component repair, audit and door proximity share
+  `environmentalRoadAt`. Road-valued tiles owned by houses/decks/human stamps are
+  preserved without becoming street components. Genuine external disconnection
+  still fails the unchanged connectivity gate.
 - All existing layout regions survive registration with unique IDs. Existing
   houses/human stamp geometry excludes candidates and environmental writers;
   the accepted start cannot become a new house. The full bbox/ridge and recorded
