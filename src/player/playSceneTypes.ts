@@ -149,6 +149,7 @@ export interface PlaySceneContext extends Phaser.Scene {
   playerSprite: PlayerSpriteResource;
   input_: Input;
   session: PlaySession;
+  battleAbortController?: AbortController;
   map: GameMap;
   inputEnabled: boolean;
   running: boolean;
@@ -254,7 +255,7 @@ export interface PlaySceneContext extends Phaser.Scene {
     battleFlow?: "gauge" | "strict";
     // 전투를 기동한 맵 이벤트 id(트룹 배틀 이벤트 selfSwitch 소유 이벤트). 인카운터/스폰은 없음.
     ownerEventId?: string;
-  }): Promise<"victory" | "defeat" | "escape">;
+  }): Promise<"victory" | "defeat" | "escape" | null>;
   showBattleScene(troopId: string): void;
   showRuntimeOverlay(testId: string, text: string): void;
   clearRuntimeOverlay(testId: string): void;

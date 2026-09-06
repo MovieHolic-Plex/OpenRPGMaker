@@ -25,6 +25,7 @@ import { playMapAnimation } from "@/player/playSceneMapAnimations";
 import { playPathfindMove } from "@/player/playScenePathfinding";
 import { playMovieOverlay } from "@/player/playSceneMovies";
 import { applyWeatherStep } from "@/player/playSceneWeather";
+import { applyEventRelocationStep } from "@/player/playSceneMapCommands";
 import { applyAdvanceTimeStep, applySetTimeStep, observeScheduledTimeTransition } from "@/player/playSceneTime";
 
 type AutonomousMoverSceneContext = Pick<PlaySceneContext, "map" | "autonomousNPCs" | "eventPositions" | "session">;
@@ -314,6 +315,9 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
       return true;
     case "playMovie":
       void playMovieOverlay(scene, { ...step, wait: false });
+      return true;
+    case "relocateEvents":
+      applyEventRelocationStep(scene, step);
       return true;
     case "spawnEvent":
       removeRuntimeEventSurfaces(scene, step.eventId);

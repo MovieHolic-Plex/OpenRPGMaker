@@ -17,7 +17,6 @@ import {
 } from "@/editor/panels/databaseWorkspace";
 import { renderDatabaseCommandListEditor } from "@/editor/panels/databaseCommandListAdapter";
 import { commonEventReferenceMessage } from "@/editor/databaseReferences";
-import { commandRuntimeSupport } from "@/project/eventCommands/runtimeSupport";
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
@@ -283,7 +282,6 @@ function commonEventEditor(commonEvent: CommonEvent, index: number, rerender: ()
     commands: commonEvent.commands,
     rerender,
     // 공통 이벤트 명령 배지는 common 컨텍스트 판정을 쓴다.
-    runtimeSupport: (command) => commandRuntimeSupport(command, "common"),
     pickerContext: "common",
     replaceCommands: (next: Command[]) => updateCommonEventCommands(commonEvent.id, next),
   });

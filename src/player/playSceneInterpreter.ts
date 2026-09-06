@@ -36,6 +36,7 @@ import { playPathfindMove } from "@/player/playScenePathfinding";
 import { conditionWaitScenes, isRuntimeEventIdle } from "@/player/runtimeConditionWait";
 import { playMovieOverlay } from "@/player/playSceneMovies";
 import { applyWeatherStep } from "@/player/playSceneWeather";
+import { applyEventRelocationStep } from "@/player/playSceneMapCommands";
 import { runtimeEventViewsForMap, type RuntimeEventView } from "@/project/runtimeEventState"
 import {
   CUTSCENE_END_LABEL,
@@ -208,10 +209,14 @@ export async function runCommands(
       }
       result = await consumeBlockingStep(scene, interpreter, result, currentEventId, skipController);
     }
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError"
+      && (scene.session !== activeSession || scene.sys?.isActive() === false)) return;
+    throw error;
   } finally {
     skipController.dispose();
     releaseCutsceneControlForOwner(activeSession, currentEventId);
-    if (scene.session === activeSession) {
+    if (scene.session === activeSession && !scene.battleAbortController && scene.sys?.isActive() !== false) {
       scene.clearRuntimeOverlay("cutscene-skip-hint");
       scene.running = options.allowNested === true ? previousRunning : false;
       scene.lastActionTargetKey = "";
@@ -438,7 +443,10 @@ async function consumeBlockingStep(
       return resumeAfterSurface(scene, interpreter);
     case "battleProcessing": {
       const troopId = resolveBattleTroopId(scene, step);
-      scene.session.battleResult = await scene.playBattle({ ...step, troopId });
+      const session = scene.session;
+      const result = await scene.playBattle({ ...step, troopId });
+      if (result === null || scene.session !== session || scene.sys?.isActive() === false) return { kind: "done" };
+      session.battleResult = result;
       // canLose=false 패배는 게임 오버다(sceneTestRunner/walkthroughRunner 와 같은 계약).
       // 이벤트를 여기서 끝낸다 — 전멸한 파티로 뒷 커맨드가 이어지면 안 되고, 게임 오버
       // 오버레이의 '다시 시도'(restoreCheckpoint)가 살아 있는 인터프리터와 충돌한다.
@@ -446,7 +454,7 @@ async function consumeBlockingStep(
         applyBattleDefeat(scene);
         return { kind: "done" };
       }
-      return resumeWithValue(scene, interpreter, scene.session.battleResult);
+      return resumeWithValue(scene, interpreter, result);
     }
     case "showPicture":
       showPictureState(scene.session, step);
@@ -524,6 +532,9 @@ async function consumeBlockingStep(
       }
       return resumeAfterSurface(scene, interpreter);
     }
+    case "relocateEvents":
+      applyEventRelocationStep(scene, step);
+      return resumeAfterSurface(scene, interpreter);
     case "spawnEvent":
       refreshSpawnedEvent(scene, step.eventId);
       return resumeAfterSurface(scene, interpreter);

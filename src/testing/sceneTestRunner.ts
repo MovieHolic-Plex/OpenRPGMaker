@@ -1,6 +1,6 @@
 import { buildLifeRuntimeSnapshot, type LifeRuntimeSnapshot } from "@/player/runtimeDom";
 import { canMove, isPassable } from "@/project/collision";
-import { createBattleRuntime, type BattleResult } from "@/battle/runtime";
+import { BattleEventInputRequiredError, createBattleRuntime, type BattleResult } from "@/battle/runtime";
 import { resolveEventPage } from "@/project/io";
 import { checkReachability } from "@/project/lint/reachability";
 import {
@@ -746,6 +746,12 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
         if (step.wait) {
           return { stop: "animation" };
         }
+        step = interp.resume(undefined);
+        break;
+      case "relocateEvents":
+        for (const eventId of step.eventIds) state.chasers.delete(eventId);
+        refreshChasers(state);
+        syncFollowCamera(state);
         step = interp.resume(undefined);
         break;
       case "spawnEvent":
@@ -1745,6 +1751,7 @@ function runHeadlessBattle(
   });
   for (let guard = 0; guard < 8000; guard += 1) {
     const snapshot = runtime.snapshot();
+    if (snapshot.eventChoice) throw new BattleEventInputRequiredError(snapshot.eventChoice);
     if (snapshot.result) break;
     if (snapshot.phase === "actorCommand") {
       const enemy = snapshot.enemies.find((entry) => !entry.defeated && entry.hp > 0);
@@ -1755,6 +1762,7 @@ function runHeadlessBattle(
     }
   }
   const final = runtime.snapshot();
+  if (final.eventChoice) throw new BattleEventInputRequiredError(final.eventChoice);
   const result = final.result ?? "defeat";
   applyBattleRewardsToSession(state.session, {
     result,
@@ -1843,7 +1851,10 @@ function advanceChasers(state: RunnerState, deltaMs: number): void {
       pathfind: view.movement.pathfind,
     });
     if (decision.kind === "move") {
-      state.eventPositions[eventId] = { x: decision.x, y: decision.y, direction: decision.dir };
+      const position = { x: decision.x, y: decision.y, direction: decision.dir };
+      const location = state.session.eventLocations[eventId];
+      if (location?.mapId === map.id) state.session.eventLocations[eventId] = { ...location, ...position };
+      state.eventPositions[eventId] = position;
     } else if (decision.kind === "touch" && view.trigger.kind === "eventTouch") {
       state.runtimeFailure = runEventView(state, view);
       if (state.runtimeFailure) return;

@@ -75,7 +75,7 @@ export function playShowAnimation(
   source: ShowAnimationPlaybackSource,
   options: ShowAnimationPlaybackOptions = {}
 ): ShowAnimationPlaybackHandle {
-  let timer: ReturnType<typeof window.setInterval> | null = null;
+  let timer: ReturnType<Window["setInterval"]> | null = null;
   let frameIndex = 0;
   let stopNotified = false;
   // 표시면은 문서에 붙기 전에 만들어진다. 한 번이라도 붙은 뒤 떨어졌을 때만 중단한다.

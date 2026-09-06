@@ -16,6 +16,8 @@ import type { PlaySceneContext, TransferRequest } from "@/player/playSceneTypes"
 import { removeFollowerFromSession, resetFollowerTrailNearPlayer, resolveCompanionRules } from "@/project/followers";
 import { syncFollowerSprites } from "@/player/playSceneFollowers";
 import { maybeAutosave } from "@/player/autosave";
+import { abortHop } from "@/player/characterHopRuntime";
+import { clearFurniturePush, furniturePushPosition } from "@/player/furniturePushAnimation";
 
 type FlashScreenStep = Extract<StepResult, { kind: "flashScreen" }>;
 type ShakeScreenStep = Extract<StepResult, { kind: "shakeScreen" }>;
@@ -30,6 +32,22 @@ export function applyChangeTileStep(
   if (index < 0 || index >= targetMap.lowerTiles.length) return;
   setMapTileOverride(scene.session, step.mapId, step.layer, index, step.tile);
   if (step.mapId === scene.getMapId()) applyMapOverrides(scene);
+}
+
+/** Coordinates are already committed by the interpreter; discard only affected motion. */
+export function applyEventRelocationStep(
+  scene: PlaySceneContext,
+  step: Extract<StepResult, { kind: "relocateEvents" }>
+): void {
+  for (const eventId of step.eventIds) {
+    if (scene.autonomousNPCs.get(eventId)?.activeMove?.hop) {
+      abortHop(scene, eventId, scene.eventSprites.get(eventId));
+    }
+    if (furniturePushPosition(scene, eventId)) clearFurniturePush(scene);
+    scene.autonomousNPCs.delete(eventId);
+    scene.commandMoveRouteEventIds.delete(eventId);
+    scene.pageMoveRouteEventIds.delete(eventId);
+  }
 }
 
 type FadeColor = {

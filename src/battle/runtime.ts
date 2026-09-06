@@ -17,7 +17,7 @@ import {
   usesGen1Damage,
   usesMagicalDefense,
 } from "@/battle/battleDamage";
-import { createBattleEventRuntime, type BattleEventRuntimeState } from "@/battle/battleEvents";
+import { createBattleEventRuntime, type BattleEventRuntimeResult, type BattleEventRuntimeState } from "@/battle/battleEvents";
 import { collectBattleRewards } from "@/battle/battleRewards";
 import { computeActorLevelUp } from "@/battle/battleLevelUp";
 import { battlerTypes, gen1CanonicalTypeForId, gen1ElementIdForCanonical, gen1TypeModifiersForTypes, typeChartMultiplierForTypes } from "@/battle/typeChart";
@@ -46,6 +46,7 @@ import type {
   BattleCapturedMonsterSnapshot,
   BattleCaptureResultSnapshot,
   BattleFlow,
+  BattleEventChoiceSnapshot,
   BattlePhase,
   BattleRoundActionLogSnapshot,
   BattleRoundLogSnapshot,
@@ -105,6 +106,15 @@ export type {
   EquipmentUseResult,
   EquipmentUseTarget,
 } from "@/battle/types";
+
+/** Synchronous simulations cannot invent an answer to a player-owned choice. */
+export class BattleEventInputRequiredError extends Error {
+  readonly code = "BATTLE_EVENT_INPUT_REQUIRED";
+  constructor(readonly choice: BattleEventChoiceSnapshot) {
+    super(`BATTLE_EVENT_INPUT_REQUIRED: ${choice.pageId}/${choice.id}`);
+    this.name = "BattleEventInputRequiredError";
+  }
+}
 
 const FALLBACK_SKILL_POWER = 12;
 // SC1 (C1): strict flow round cap. Prevents unbounded recursion when neither
@@ -268,6 +278,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     });
   }
   let result: BattleResult | undefined;
+  let cancelled = false;
+  let eventChoice: BattleEventChoiceSnapshot | undefined;
+  let afterBattleEvents: (() => void) | undefined;
+  let strictResolution: { readonly round: number; readonly actions: StrictQueuedAction[]; index: number; grantedExtraActions: number } | undefined;
+  let drainingStrictActions = false;
   let escaped = false;
   let turn = 0;
   let currentActorCommandKind: ActorCommand["kind"] | undefined;
@@ -366,20 +381,6 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     },
     showBattleAnimation: (target, animationId) => {
       lastAnimation = createBattleAnimationSnapshot(options.project.database.battleAnimations, animationId, target);
-    },
-    abortBattle: () => {
-      // RM2K3 Abort Battle: 승패 없이 전투 즉시 종료. 런타임은 escape 결과로 매핑한다.
-      escaped = true;
-      result = "escape";
-      phase = "resolved";
-    },
-    endBattleAsDefeat: () => {
-      // 배틀 이벤트 gameOver/killPlayer: 전투를 패배로 즉시 종결(abortBattle 의 defeat 대칭).
-      // defeat 이후 처리는 canLose 의미론을 따른다 — canLose=false 면 호스트가 게임 오버 경로,
-      // canLose=true 면 패배 복귀(+세션 write-back). 자연 패배(resolveOutcome)와 동일 정리 수행.
-      result = "defeat";
-      phase = "resolved";
-      clearEndOfBattleStates();
     },
     wait: (ms) => {
       // 배틀 이벤트 wait: 전투 흐름을 ms 동안 일시정지. 동기식 실행이라 명령 자체는 계속되지만,
@@ -700,6 +701,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function performActorCommand(command: ActorCommand): void {
+    if (cancelled || eventChoice || result) return;
     const forcedActor = forcedSwitchActor();
     if (forcedActor) {
       if (command.kind !== "switch") return;
@@ -733,7 +735,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       phase = "resolved";
       return;
     }
-    applyTroopEvents();
+    applyTroopEvents(() => finishGaugeActorCommand(actor));
+  }
+
+  function finishGaugeActorCommand(actor: MutableBattler): void {
     resolveOutcome();
     if (result) {
       actor.gauge = 0;
@@ -1034,12 +1039,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     consumeSkillMp(actor, skill.id);
     currentActorCommandKind = "skill";
     for (const skillTarget of targets) applySkill(actor, skillTarget, skill.id);
-    applyTroopEvents();
-    resolveOutcome();
-    actor.gauge = 0;
-    activeActorId = undefined;
-    currentActorCommandKind = undefined;
-    phase = result ? "resolved" : "charging";
+    applyTroopEvents(() => {
+      resolveOutcome();
+      actor.gauge = 0;
+      activeActorId = undefined;
+      currentActorCommandKind = undefined;
+      phase = result ? "resolved" : "charging";
+    });
     return { kind: "used", skillId: skill.id };
   }
   function attemptEscape(): void {
@@ -1201,65 +1207,59 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function resolveStrictRound(): void {
-    if (result) return;
+    if (result || cancelled) return;
     phase = "roundResolve";
     targetSelection = undefined;
     activeActorId = undefined;
     currentActorCommandKind = undefined;
-    const round = turn + 1;
-    // 라운드 큐는 실행 중에도 자란다: m2-108 actionTimes 가 부여한 추가 행동이
-    // 같은 라운드의 정렬 규칙에 맞춰 이 배열에 삽입된다(insertStrictExtraAction).
-    const actions = strictRoundActions();
-    let grantedExtraActions = 0;
-    for (let index = 0; index < actions.length; index += 1) {
-      const action = actions[index];
-      const order = index + 1;
-      if (result) break;
-      if (action.side === "actor") {
-        if (action.actor.hp <= 0) continue;
-        activeActorId = action.actor.recordId;
-        const beforeResult = lastActionResult;
-        applyActorCommandEffect(action.actor, action.command);
-        logStrictAction(round, order, action, beforeResult);
-        if (escaped) {
-          result = "escape";
-          phase = "resolved";
-          break;
-        }
-        applyTroopEvents(round);
-        resolveOutcome();
-        if (result) continue;
-        // m2-108 Action Times+: 같은 라운드 안에서 추가 행동을 준다. 교체는 제외한다 —
-        // 교체한 액터는 이미 필드를 떠났고 되돌리는 행동이 되어 버린다.
-        if (
-          action.command.kind !== "switch"
-          && action.actor.hp > 0
-          && grantedExtraActions < STRICT_MAX_EXTRA_ACTIONS_PER_ROUND
-          && battleEvents.consumeExtraActorAction(action.actor.recordId)
-        ) {
-          grantedExtraActions += 1;
-          insertStrictExtraAction(actions, index + 1, action);
-        }
-        continue;
-      }
-      if (action.enemy.hp <= 0 || !visibleEnemies().some((enemy) => enemy.id === action.enemy.id)) continue;
-      activeActorId = undefined;
-      currentActorCommandKind = undefined;
-      const beforeResult = lastActionResult;
-      executeEnemyAction(action.enemy, action.action);
-      logStrictAction(round, order, action, beforeResult);
-      applyTroopEvents(round);
-      resolveOutcome();
-    }
+    strictResolution = { round: turn + 1, actions: strictRoundActions(), index: 0, grantedExtraActions: 0 };
+    drainStrictActions();
+  }
 
-    completeStrictRound(round);
-    if (result) {
-      phase = "resolved";
-      return;
+  function drainStrictActions(): void {
+    if (drainingStrictActions) return;
+    drainingStrictActions = true;
+    try {
+      while (strictResolution && !eventChoice && !cancelled) {
+        const queue = strictResolution;
+        if (result || queue.index >= queue.actions.length) {
+          strictResolution = undefined;
+          completeStrictRound(queue.round);
+          if (result) { phase = "resolved"; return; }
+          // Enemy-only rounds can create the next queue synchronously. The
+          // draining guard keeps that path iterative rather than recursive.
+          startStrictRound();
+          continue;
+        }
+        phase = "roundResolve";
+        const action = queue.actions[queue.index++];
+        const beforeResult = lastActionResult;
+        if (action.side === "actor") {
+          if (action.actor.hp <= 0) continue;
+          activeActorId = action.actor.recordId;
+          applyActorCommandEffect(action.actor, action.command);
+        } else {
+          if (action.enemy.hp <= 0 || !visibleEnemies().some(enemy => enemy.id === action.enemy.id)) continue;
+          activeActorId = undefined;
+          currentActorCommandKind = undefined;
+          executeEnemyAction(action.enemy, action.action);
+        }
+        logStrictAction(queue.round, queue.index, action, beforeResult);
+        if (escaped) { result = "escape"; continue; }
+        applyTroopEvents(() => {
+          resolveOutcome();
+          if (!result && action.side === "actor" && action.command.kind !== "switch"
+            && action.actor.hp > 0 && queue.grantedExtraActions < STRICT_MAX_EXTRA_ACTIONS_PER_ROUND
+            && battleEvents.consumeExtraActorAction(action.actor.recordId)) {
+            queue.grantedExtraActions += 1;
+            insertStrictExtraAction(queue.actions, queue.index, action);
+          }
+          drainStrictActions();
+        }, queue.round);
+      }
+    } finally {
+      drainingStrictActions = false;
     }
-    // SC1 (C1): iterate to the next round instead of recursing into
-    // startStrictRound(). The round cap in startStrictRound bounds the loop.
-    startStrictRound();
   }
 
   function insertStrictExtraAction(actions: StrictQueuedAction[], from: number, action: StrictQueuedAction): void {
@@ -1429,6 +1429,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const poseContext = { lastActionResult, showActionPose };
     return {
       phase,
+      eventChoice,
       battleFlow,
       activeActorId,
       activeSlots,
@@ -1477,10 +1478,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       enemy.gauge = 0;
       for (const actor of actors) actor.defending = false;
       turn += 1;
-      applyTroopEvents();
-      resolveOutcome();
-      if (!result && beginForcedSwitchIfNeeded()) return;
-      phase = result ? "resolved" : "charging";
+      applyTroopEvents(finishGaugeEnemyTurn);
       return;
     }
     }
@@ -1490,7 +1488,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     // RM2K3: 방어는 다음 적 턴까지만 유효(1턴 가드).
     for (const actor of actors) actor.defending = false;
     turn += 1;
-    applyTroopEvents();
+    applyTroopEvents(finishGaugeEnemyTurn);
+  }
+
+  function finishGaugeEnemyTurn(): void {
     resolveOutcome();
     if (!result && beginForcedSwitchIfNeeded()) return;
     phase = result ? "resolved" : "charging";
@@ -2193,11 +2194,48 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     return usesGen1Damage(options.project) ? (user.level ?? 1) : undefined;
   }
 
-  function applyTroopEvents(eventTurn: number = turn): void {
-    const eventResult = battleEvents.applyTroopEvents({ turn: eventTurn, activeActorId, currentActorCommandKind });
-    if (!eventResult.forceEscape) return;
-    escaped = true;
-    result = "escape";
+  function applyTroopEvents(continuation: () => void, eventTurn: number = turn): void {
+    afterBattleEvents = continuation;
+    consumeBattleEventStep(battleEvents.applyTroopEvents({ turn: eventTurn, activeActorId, currentActorCommandKind }));
+  }
+
+  function consumeBattleEventStep(step: BattleEventRuntimeResult): void {
+    if (step.kind === "choice") {
+      eventChoice = step.request;
+      phase = "eventChoice";
+      return;
+    }
+    eventChoice = undefined;
+    if (step.kind === "terminated" && !result) {
+      result = step.result;
+      escaped = result === "escape";
+      phase = "resolved";
+      if (result === "defeat") clearEndOfBattleStates();
+    }
+    const continuation = afterBattleEvents;
+    afterBattleEvents = undefined;
+    continuation?.();
+  }
+
+  function resumeEventChoice(requestId: number, index: number): boolean {
+    if (cancelled || result || !eventChoice) return false;
+    const step = battleEvents.resumeChoice(requestId, index);
+    if (!step) return false;
+    consumeBattleEventStep(step);
+    return true;
+  }
+
+  function cancel(): void {
+    if (cancelled) return;
+    cancelled = true;
+    battleEvents.cancel();
+    eventChoice = undefined;
+    afterBattleEvents = undefined;
+    strictResolution = undefined;
+    strictActorCommands = [];
+    strictPendingActorIds = [];
+    activeActorId = undefined;
+    targetSelection = undefined;
     phase = "resolved";
   }
 
@@ -2412,6 +2450,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   if (battleFlow === "strict") startStrictRound();
 
   return {
+    resumeEventChoice,
+    cancel,
     tick,
     beginActorCommand,
     selectTarget,
