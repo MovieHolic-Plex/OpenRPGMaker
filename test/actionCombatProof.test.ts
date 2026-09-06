@@ -174,6 +174,22 @@ describe("runtime-owned action proof", () => {
     expect(vi.getTimerCount()).toBe(0);
   });
 
+  it("allows a cold exported-player deployment within the two-minute ceiling", async () => {
+    const project = actionProject();
+    vi.useFakeTimers();
+    playerTransport((frame, runId) => {
+      vi.advanceTimersByTime(90_000);
+      reply(frame, runId, project.startMapId);
+    });
+
+    const receipt = await runActionCombatTest(project, { mapId: project.startMapId });
+
+    expect(receipt.status).toBe("verified");
+    expect(isVerifiedActionCombatProof(receipt, project, project.startMapId)).toBe(true);
+    expect(document.querySelector("iframe")).toBeNull();
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
   it("does not label an in-flight project revision change as verified", async () => {
     const project = actionProject();
     playerTransport((frame, runId) => {

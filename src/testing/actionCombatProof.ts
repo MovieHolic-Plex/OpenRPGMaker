@@ -98,7 +98,7 @@ export async function runActionCombatTest(
   options.signal?.addEventListener("abort", cancel, { once: true });
   let timedOut = false;
   const deadline = setTimeout(() => { timedOut = true; controller.abort(); },
-    Math.max(1, Math.min(120_000, options.timeoutMs ?? 60_000)));
+    Math.max(1, Math.min(120_000, options.timeoutMs ?? 120_000)));
   let frame: HTMLIFrameElement | undefined;
   let projectUrl: string | undefined;
   let unsubscribe: (() => void) | undefined;
