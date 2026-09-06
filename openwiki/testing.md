@@ -1,3 +1,12 @@
+## 이벤트 명령의 이벤트 기반 QA (2026-09-06)
+
+- `runtimeQaEventCommands.mjs`의 `eventCommand`는 실제 입력 전에 관측을 등록한다. `trigger`는 `key`·`click`·기존 `action` 훅·준비 상태용 `none`; `observe`는 런타임 JSON 경로 또는 DOM의 존재·텍스트·속성·프로퍼티와 기대값의 정확한 일치다.
+- 완료 사건이 필요한 경우 `event: { selector, type }`, 저장 반영을 기다릴 때 `mutation: selector`를 함께 지정한다. `timeoutMs`는 양수이며 성공·오류·시간 초과·중단 시 관측기, 리스너, 타이머와 전역 핸들을 정리한다. 비트별 `eventCommands`에 입력 전후 값과 정리 결과를 남긴다. 기존 `cinematic` 연산은 유지한다.
+- 편집기는 `test/e2e/eventCommandRemediationHarness.ts`의 로컬 임시 프로젝트 경로를 쓴다. 명령 행은 선택 후 Space로 편집한다(Enter는 삽입). 맵 명령의 확인은 초안 변경이며 `event-editor-apply` 후 export JSON 반영까지 검사한다. 재가져오기는 실제 파일 선택기로 수행하고, 정규화 객체의 `undefined`가 아니라 직렬화된 JSON 값을 비교한다.
+- 픽스처 CLI는 `node node_modules/vite-node/vite-node.mjs --script scripts/prepare-event-command-remediation.mts U02 <임시 디렉터리>` 형식이다. 각 단위의 `buildFixture`를 지연 로드하며, 호출자가 생성된 임시 디렉터리를 정리한다. 앱에 싣는 데모나 원격 프로젝트를 만들지 않는다.
+- 각 새 시나리오는 고유 포트·`VITE_CACHE_DIR`와 새 브라우저 컨텍스트를 사용한다. 게임 검증은 계속 `player.html`의 내보내기 store shim 경로만 사용한다. 고정 지연이나 새 polling loop를 추가하지 않는다. 공통 이벤트·전투 이벤트 helper는 해당 단위에서 실제 화면 검증을 별도로 수행한다.
+- 기본 회귀: `npm test -- test/eventCommandRemediation/harness.test.ts test/runtimeQaReport.test.ts --maxWorkers=2`. H0의 실제 플레이어 정상·잘못된 기대값 검출과 편집기 확인·재열기·취소·가져오기 근거는 `.omo/evidence/event-command-remediation/H0/`에 있다.
+
 ## Mac onboarding Phase 1 contracts (2026-09-06)
 
 `node --test test/macLauncher.test.mjs test/setupLocal.test.mjs` (also
