@@ -34,8 +34,13 @@ export function installAiModalFocus(backdrop: HTMLElement): () => void {
   // Called after unregister/removal: a newer modal must retain its focus.
   return () => {
     backdrop.removeEventListener("keydown", trap);
-    if (opener?.isConnected && (!hasOpenModalLayer() || document.activeElement === document.body)) {
-      opener.focus({ preventScroll: true });
+    // Saving settings can rebuild the topbar without closing this modal.
+    const target = opener?.isConnected ? opener
+      : opener?.dataset.testid === "topbar-ai-settings"
+        ? document.querySelector<HTMLElement>('[data-testid="topbar-ai-settings"]')
+        : null;
+    if (target && (!hasOpenModalLayer() || document.activeElement === document.body)) {
+      target.focus({ preventScroll: true });
     }
   };
 }

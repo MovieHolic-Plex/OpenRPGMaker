@@ -139,6 +139,18 @@ it("closes only the nested settings select on the first Escape, then restores th
   expect(document.activeElement).toBe(opener);
 });
 
+it("restores the replacement topbar settings button after the toolbar rerenders", () => {
+  opener.dataset.testid = "topbar-ai-settings";
+  openAiSettingsModal();
+  const replacement = document.createElement("button");
+  replacement.dataset.testid = "topbar-ai-settings";
+  opener.replaceWith(replacement);
+
+  control("ai-settings-close").click();
+
+  expect(document.activeElement).toBe(replacement);
+});
+
 it("uses the newly rendered history row as the Tab boundary after async listing", async () => {
   await saveConversation({ id: "saved", title: "Saved", savedAt: 1000, model: "fixture", entries: [{ kind: "user", text: "Fixture" }], projectContextKey: "test" });
   await open("history");
