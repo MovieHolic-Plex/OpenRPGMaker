@@ -4,6 +4,8 @@ import { getMapEditHistoryEntries, resetMapEditHistory } from "@/editor/mapEditH
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import type { SessionEvent } from "@/ai/assistantSession";
+import { getTool } from "@/editor/tools";
+import * as applyStore from "@/editor/tools/applyChangesetToStore";
 
 const MILESTONE_TEST_ENV = {
   VITE_SUPABASE_ANON_KEY: "test-anon-key",
@@ -792,18 +794,25 @@ describe("레이어 검증(자문) + run-end 저장 증명 (todo 5)", () => {
       ]),
       gateFinal("모든 레이어를 완료했습니다."),
     ];
+    const lintTool = getTool("run_lint");
+    if (!lintTool) throw new Error("run_lint is not registered");
+    // Call-through spies: real checks and the real milestone/undo path remain exercised.
+    const lint = vi.spyOn(lintTool, "run");
+    const apply = vi.spyOn(applyStore, "applyProposedProject");
+    const events: SessionEvent[] = [];
+    let layerEventCount = 0;
     let index = 0;
     const chat = async (): Promise<ChatResult> => {
       if (index >= steps.length) gateExhausted();
+      if (index === steps.length - 1) layerEventCount = events.length;
       return steps[index++]!;
     };
-    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 8 }, chat });
-    const events: SessionEvent[] = [];
+    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 8 }, chat, yieldToUi: async () => {} });
 
-    await session.sendUserMessage("마을·퀘스트·최종 검증을 진행해줘", (event) => { events.push(event); }, undefined, { autonomous: true });
+    const result = await session.sendUserMessage("마을·퀘스트·최종 검증을 진행해줘", (event) => { events.push(event); }, undefined, { autonomous: true });
 
     // 모델 툴콜 + 게이트 툴콜이 순서대로 관측된다: 레이어 1(map) → 레이어 2(quest) → 레이어 3(final).
-    const toolCalls = events.filter((event): event is Extract<SessionEvent, { type: "tool_call" }> => event.type === "tool_call");
+    const toolCalls = events.slice(0, layerEventCount).filter((event): event is Extract<SessionEvent, { type: "tool_call" }> => event.type === "tool_call");
     expect(toolCalls.map((e) => e.name)).toEqual([
       "set_work_plan",
       "set_title_screen",
@@ -825,9 +834,35 @@ describe("레이어 검증(자문) + run-end 저장 증명 (todo 5)", () => {
     expect(verifyQuestCall.args).toEqual({ questId: "q1" });
     const gateWalkthrough = toolCalls[toolCalls.length - 1]!;
     expect(gateWalkthrough.args).toEqual({ scenario });
+    // Completion has its own two boundaries: model final response, then returned recap.
+    // Neither boundary is another layer sweep or permission to replay authored writes.
+    const completionEvents = events.slice(layerEventCount);
+    const assessments = completionEvents.filter(event => event.type === "completion_assessment");
+    expect(assessments).toHaveLength(2);
+    for (const { assessment } of assessments) {
+      expect(assessment.checks.map(check => check.name)).toEqual(["run_lint", "evaluate_game_quality", "play_walkthrough"]);
+    }
+    const completionCalls = completionEvents.filter(event => event.type === "tool_call");
+    expect(completionCalls.map(({ name, result }) => ({ name, result })))
+      .toEqual(assessments.flatMap(({ assessment }) => assessment.checks));
+    expect(completionCalls.filter(call => call.name === "play_walkthrough").map(call => call.args))
+      .toEqual([{ scenario }, { scenario }]);
+    expect(result.completionAssessment).toEqual(assessments.at(-1)?.assessment);
+    expect(lint.mock.calls.map(([checkedProject]) => checkedProject.meta.title)).toEqual(["t1", "t1", "t2", "t2", "t2"]);
+    expect(lint.mock.calls.at(-1)?.[0]).toEqual(store.getCurrent());
     const audits = gateStatusTexts(session);
     expect(audits.filter((t) => t.includes("agent_run:verification-pass")).length).toBe(3);
-    // 마일스톤은 각 항목 완료마다 적용됐고 검증 게이트는 레이어 단위로 돌았다.
+    expect(audits.filter(t => t.startsWith("agent_run:completion-check-pass "))).toHaveLength(2);
+    expect(index).toBe(steps.length);
+    expect(result.stoppedReason).toBe("final");
+    expect(result.workPlan?.layers.flatMap(layer => layer.items.map(item => item.status))).toEqual(["done", "done", "done"]);
+    expect(events.filter(event => event.type === "milestone_applied").map(event => [event.title, event.toolCount]))
+      .toEqual([["제목 1", 1], ["퀘스트 등록", 2], ["완성", 1]]);
+    expect(apply.mock.calls.map(([, options]) => options.toolNames))
+      .toEqual([["set_title_screen"], ["upsert_event", "define_quest"], ["set_title_screen"]]);
+    expect(result.appliedCalls?.map(call => call.name)).toEqual(["set_title_screen", "upsert_event", "define_quest", "set_title_screen"]);
+    expect(result.proposedCalls).toEqual([]);
+    expect(getMapEditHistoryEntries()).toHaveLength(3);
     expect(store.getCurrent().meta?.title).toBe("t2");
   }, 60000);
 
@@ -852,24 +887,63 @@ describe("레이어 검증(자문) + run-end 저장 증명 (todo 5)", () => {
       gateToolCall("set_title_screen", { title: "t2" }, "c_t2"),
       gateFinal("완료했습니다."),
     ];
+    const lintTool = getTool("run_lint");
+    if (!lintTool) throw new Error("run_lint is not registered");
+    // Call-through spies: real checks and the real milestone/undo path remain exercised.
+    const lint = vi.spyOn(lintTool, "run");
+    const apply = vi.spyOn(applyStore, "applyProposedProject");
+    const events: SessionEvent[] = [];
+    let layerEventCount = 0;
     let index = 0;
     const chat = async (): Promise<ChatResult> => {
       if (index >= steps.length) gateExhausted();
+      if (index === steps.length - 1) layerEventCount = events.length;
       return steps[index++]!;
     };
-    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 8 }, chat });
-    const events: SessionEvent[] = [];
+    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 8 }, chat, yieldToUi: async () => {} });
 
-    await session.sendUserMessage("퀘스트를 등록하고 마무리해줘", (event) => { events.push(event); }, undefined, { autonomous: true });
+    const result = await session.sendUserMessage("퀘스트를 등록하고 마무리해줘", (event) => { events.push(event); }, undefined, { autonomous: true });
 
-    const toolCalls = events.filter((event): event is Extract<SessionEvent, { type: "tool_call" }> => event.type === "tool_call");
+    const toolCalls = events.slice(0, layerEventCount).filter((event): event is Extract<SessionEvent, { type: "tool_call" }> => event.type === "tool_call");
     const verifyQuestCalls = toolCalls.filter((e) => e.name === "verify_quest");
-    // 퀘스트 레이어 1회 + final 레이어 폴백 1회 — 둘 다 런 히스토리의 q1.
+    // Layer scope: quest once + final fallback once, both using the authored q1.
     expect(verifyQuestCalls).toHaveLength(2);
-    expect(verifyQuestCalls.every((e) => JSON.stringify(e.args) === JSON.stringify({ questId: "q1" }))).toBe(true);
+    expect(verifyQuestCalls.map(call => call.args)).toEqual([{ questId: "q1" }, { questId: "q1" }]);
     // final 레이어 폴백: play_walkthrough 는 실행되지 않는다.
     expect(toolCalls.filter((e) => e.name === "play_walkthrough")).toHaveLength(0);
-    expect(gateStatusTexts(session).filter((t) => t.includes("agent_run:verification-pass")).length).toBe(2);
+    expect(toolCalls.map(call => call.name)).toEqual([
+      "set_work_plan", "upsert_event", "define_quest", "run_lint", "verify_quest",
+      "set_title_screen", "run_lint", "verify_quest",
+    ]);
+    const completionEvents = events.slice(layerEventCount);
+    const assessments = completionEvents.filter(event => event.type === "completion_assessment");
+    expect(assessments).toHaveLength(2);
+    for (const { assessment } of assessments) {
+      expect(assessment.checks.map(check => check.name)).toEqual(["run_lint", "verify_quest"]);
+      expect(assessment.checks.find(check => check.name === "verify_quest")?.result.data)
+        .toMatchObject({ ok: true, verificationStatus: "verified", verifiedNodeIds: ["n1"] });
+    }
+    const completionCalls = completionEvents.filter(event => event.type === "tool_call");
+    expect(completionCalls.map(({ name, result }) => ({ name, result })))
+      .toEqual(assessments.flatMap(({ assessment }) => assessment.checks));
+    expect(completionCalls.filter(call => call.name === "verify_quest").map(call => call.args))
+      .toEqual([{ questId: "q1" }, { questId: "q1" }]);
+    expect(result.completionAssessment).toEqual(assessments.at(-1)?.assessment);
+    expect(lint.mock.calls.map(([checkedProject]) => checkedProject.meta.title)).toEqual([project.meta.title, "t2", "t2", "t2"]);
+    expect(lint.mock.calls.at(-1)?.[0]).toEqual(store.getCurrent());
+    const audits = gateStatusTexts(session);
+    expect(audits.filter(t => t.startsWith("agent_run:verification-pass "))).toHaveLength(2);
+    expect(audits.filter(t => t.startsWith("agent_run:completion-check-pass "))).toHaveLength(2);
+    expect(index).toBe(steps.length);
+    expect(result.stoppedReason).toBe("final");
+    expect(result.workPlan?.layers.flatMap(layer => layer.items.map(item => item.status))).toEqual(["done", "done"]);
+    expect(events.filter(event => event.type === "milestone_applied").map(event => [event.title, event.toolCount]))
+      .toEqual([["퀘스트 등록", 2], ["제목 확정", 1]]);
+    expect(apply.mock.calls.map(([, options]) => options.toolNames)).toEqual([["upsert_event", "define_quest"], ["set_title_screen"]]);
+    expect(result.appliedCalls?.map(call => call.name)).toEqual(["upsert_event", "define_quest", "set_title_screen"]);
+    expect(result.proposedCalls).toEqual([]);
+    expect(getMapEditHistoryEntries()).toHaveLength(2);
+    expect(store.getCurrent().meta.title).toBe("t2");
   }, 60000);
 
   it("(b) 검증 지적(린트 오류)은 자문으로만 남고 런을 멈추지 않는다 — 재킥·verification_failed 없음", async () => {
