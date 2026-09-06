@@ -1,5 +1,45 @@
 # RPG ZZU Design System
 
+## Focused Standard / Expert sidebar (2026-09-07)
+
+- Preserve the cream shell, `el`/native controls, shared SVG icons and beginner
+  workflow. Standard is a single task surface, not a shortened Expert tree:
+  current map / map settings, common layers, primary tools, contextual options,
+  search with one category select, growing tile sheet, compact selected tile,
+  then labelled utilities. Expert keeps its resizable/collapsible map dock.
+- Standard current-map switcher opens the shared searchable map explorer without
+  reserving height. Expert's same-location switcher reveals its dock (or opens
+  the explorer if the dock was disabled). No map operations are reimplemented.
+- Paint/erase/fill/select are primary; Expert adds eyedropper. Other tools and
+  clipboard actions use `도구`. Rect/ellipse are choices in a labelled shape
+  selector, direct in Expert and in Tools in Standard. Brush size is one native
+  1–4 select only for freehand paint/erase, never fill/select/event/stamps/shapes.
+- Layers keep the same location in both modes and Event replaces the tile body;
+  no duplicate Event tool, irrelevant tile search or brush options. Connection
+  state remains visible while painting. Selected-tile reveal/property actions
+  sit near the bottom; tileset changes belong to map settings.
+- One `검사·기록` menu owns inspector/audit/history with a visible issue badge.
+  Expert can pin/unpin each inspection action; preferences are mode-local and
+  persisted, with each command appearing once. Ctrl+K remains a discovery path.
+- Named spatial reference: StyleGallery
+  [scroll-body-shell](https://github.com/changeroa/StyleGallery/blob/main/patterns/viewport-shell/scroll-body-shell.md).
+  The tile sheet owns tile scrolling; auxiliary map/assist/kit surfaces have
+  bounded overlay bodies instead of consuming the sheet's height. Fixed chrome
+  follows DOM reading order. No new motion beyond existing token transitions;
+  native selects and focusable anchored panels supersede animated menu examples.
+- Geometry: existing 300/320px Standard/Expert rails, 32px primary controls,
+  24px utility minimum, 4/8px gaps, `--radius-s/m`, `--font-ui`, 12/13px UI,
+  `--bg-raised/inset`, `--text-1/2`, `--accent`, `--border-default` and
+  `--focus-outline`. Preserve at least 520px canvas at 1024x768/1280x800/1440x900;
+  Standard sheet target is at least 60% of sidebar at 1440x900. No toolbar reel.
+- Personas: daily painter, expert mapper, keyboard-only author. Menus expose
+  names/state, support Escape and opener restoration, dismiss on outside input,
+  and never auto-open on boot or mode return. Focus and search caret survive
+  rerenders. No new onboarding, dependency, project schema or remote mutation.
+- Parent owns independent visual critique, ultrabrain review/approval and merge.
+  Browser evidence, measurements and unresolved debt are recorded with this
+  deliverable; no Lighthouse score or image-based approval is inferred from DOM.
+
 ## In-game shop trade counter (2026-09-06)
 
 Runtime only: this is not the shop-command editor. `runtime/shop.css` owns a

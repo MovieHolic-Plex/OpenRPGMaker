@@ -102,6 +102,7 @@ function commandIds(popup: FakeElement | null): string[] {
 }
 
 beforeEach(() => {
+  vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
   previousWindow = globalThis.window;
   restoreDom = installFakeDom();
   installBrowserGlobals();
@@ -114,11 +115,7 @@ beforeEach(() => {
   });
 });
 
-afterEach(async () => {
-  // menu.ts defers its outside-click listener with window.setTimeout(..., 0). That callback
-  // touches `document`, so the fake DOM must still be installed when it runs. Draining the
-  // task queue first is deterministic: the menu's 0ms callback was queued before this one.
-  await new Promise<void>((resolve) => { globalThis.setTimeout(resolve, 0); });
+afterEach(() => {
   for (const handle of pendingTimers) globalThis.clearTimeout(handle);
   pendingTimers = [];
   restoreDom?.();
@@ -127,6 +124,8 @@ afterEach(async () => {
   Object.defineProperty(globalThis, "window", { configurable: true, writable: true, value: previousWindow });
   resetEditorUiModeForTests("standard");
   vi.restoreAllMocks();
+  vi.clearAllTimers();
+  vi.useRealTimers();
 });
 
 /** 사이드바가 소유하는 액션 — 상단 영역 어디에도 나타나면 안 된다. */
@@ -307,7 +306,7 @@ describe("좌측 사이드바 ↔ 상단 메뉴 정보구조", () => {
   });
 
   for (const mode of ["standard", "expert"] as const) {
-    it(`${mode}: 사이드바 최상단이 도구 → 레이어 순서다`, () => {
+    it(`${mode}: 현재 맵 다음에 공통 레이어와 도구를 둔다`, () => {
       // Break: 레이어 전환이 다시 사이드바에서 빠져 도구 메뉴로만 남는다.
       resetEditorUiModeForTests(mode);
       const container = document.createElement("div");
@@ -325,7 +324,9 @@ describe("좌측 사이드바 ↔ 상단 메뉴 정보구조", () => {
       const toolsAt = order.indexOf("oprn-tile-toolbar");
       const layersAt = order.indexOf("left-layer-switcher");
       expect(toolsAt, "도구 줄이 팔레트 최상단 그룹이어야 한다").toBeGreaterThanOrEqual(0);
-      expect(layersAt, "레이어 줄이 도구 바로 다음이어야 한다").toBe(toolsAt + 1);
+      expect(order.indexOf('sidebar-map-header')).toBe(0);
+      expect(layersAt).toBe(1);
+      expect(toolsAt).toBe(layersAt + 1);
     });
   }
 });

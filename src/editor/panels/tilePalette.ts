@@ -5,6 +5,10 @@ import { getEditorChrome } from "@/editor/editorUiMode";
 import { renderBasicLeftRail } from "@/editor/panels/basicLeftRail";
 import { renderEventEditor } from "@/editor/panels/eventEditor";
 import { makeTileToolbar } from "@/editor/panels/tileToolbar";
+import { makeInspectionControls } from "@/editor/panels/tileToolbarMenus";
+import { makePaintShapeSelect } from "@/editor/panels/tileToolOptions";
+import { makeSidebarMapHeader } from "@/editor/panels/sidebarMapHeader";
+import { makeSidebarSurface } from "@/editor/panels/sidebarSurface";
 import { makeLeftLayerSwitcher } from "@/editor/panels/leftLayerSwitcher";
 import { isDefaultTilesetTexture, tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { openTilePropsDialog } from "@/editor/panels/tilePropsDialog";
@@ -49,8 +53,6 @@ import { captureFocus, restoreFocus, applyRovingTabindex } from "@/editor/panels
 let activeTileCategory: TileCategoryId = "all";
 let tileSearchQuery = "";
 let showQuickTileNumbers = false;
-/** 붓 보조 펼침 상태 — 팔레트는 붓질마다 재렌더되므로 DOM 에 맡기면 매번 닫힌다. */
-let brushAssistOpen = false;
 /** 맵 우클릭 스포이트 후 팔레트 타일 그림판 셀로 스크롤 (전문가 모드). */
 let pendingRevealSelectedTile = false;
 let resetChipsetScroll = false;
@@ -80,13 +82,13 @@ export function renderTilePalette(container: HTMLElement): void {
     const mapId = state.currentMapId ?? project.startMapId;
     const map = project.maps[mapId];
     const tileset = map ? project.tilesets[map.tilesetId] : undefined;
+    if (map) container.append(makeSidebarMapHeader(map, renderPalettePreservingViewport));
+    container.append(makeLeftLayerSwitcher(state.layer));
     if (map && tileset) {
       container.append(makeTileToolbar({ map, rerender: renderPalettePreservingViewport, state, tileset }));
     }
-    // 이벤트 레이어에서도 레이어 전환이 보여야 한다 — 없으면 바닥으로 돌아가는 길이 사이드바에 없다.
-    container.append(makeLeftLayerSwitcher(state.layer));
-    container.append(makeTileBrushControls(state, renderPalettePreservingViewport));
     renderEventEditor(container);
+    if (map && tileset) container.append(makeInspectionControls({ map, rerender: renderPalettePreservingViewport, state, tileset }));
     applyRovingTabindex(container);
     restoreFocus(container, focusSnapshot);
     return;
@@ -210,9 +212,8 @@ function makeSelectedTileStatus(
 }
 
 /**
- * 좌패널 단일 면. 위에서 아래로 한 흐름이다 —
- * 무엇을 골랐나(칩) → 무엇으로 칠하나(도구) → 무엇을 찾나(필터) → 고르기(팔레트)
- * → 붓 보조 → 이 타일의 속성 → 구조 킷.
+ * A single task: map/layers, tools/options, search, growing sheet, selected tile,
+ * then utilities. Auxiliary work opens without taking height from the sheet.
  */
 function makePaletteSurface(input: {
   readonly map: { readonly id: string; readonly name: string; readonly tilesetId: string };
@@ -226,12 +227,16 @@ function makePaletteSurface(input: {
     dataset: { testid: "palette-work-pane-paint" },
   });
 
-  root.append(makeSelectedTileStatus(state.selectedTile, tileset, map));
-  root.append(makeTileToolbar({ map, rerender: renderPalettePreservingViewport, state, tileset }));
-  // 도구 → 레이어 가 사이드바 최상단 순서다(사용 번도 순). 상단 「도구」 메뉴에 있었던
-  // 레이어 항목을 이리로 옷긴 것이다 — test/editorMenuSidebarIa.test.ts 가 이 순서를 고정한다.
+  const model = { map, rerender: renderPalettePreservingViewport, state, tileset };
+  root.append(makeSidebarMapHeader(map, renderPalettePreservingViewport));
   root.append(makeLeftLayerSwitcher(state.layer));
-  root.append(makeTileBrushControls(state, renderPalettePreservingViewport));
+  root.append(makeTileToolbar(model));
+  const assist = makeBrushAssistSection(map.id, state, tileset);
+  const options = el('div', { class: 'sidebar-paint-options' });
+  options.append(makeTileBrushControls(state, renderPalettePreservingViewport));
+  if (state.tool === 'paint' && !state.activePaletteStamp && getEditorChrome().advancedSidebarControls) options.append(makePaintShapeSelect(model));
+  if (assist.modeRow) options.append(assist.modeRow);
+  root.append(options);
   root.append(makePaletteFilterBar(tileset));
 
   const visibleTiles = filteredTileIdSet(tileset);
@@ -254,7 +259,8 @@ function makePaletteSurface(input: {
   if (showQuickTileNumbers) palette.classList.add("show-index");
   root.append(palette);
 
-  root.append(makeBrushAssistSection(map.id, state, tileset));
+  root.append(makeSelectedTileStatus(state.selectedTile, tileset, map));
+  const utilities = el('div', { class: 'sidebar-utilities', children: [makeInspectionControls(model), assist.section] });
   // 타일 속성은 인라인이 아니라 창이다 — 인스펙터 본문 346px 가 좌패널(526px)에서
   // 팔레트를 2px 로 눌렀다. 진입은 위 선택칩의 ⚙. (tilePropsDialog.ts 헤더 주석)
 
@@ -267,7 +273,9 @@ function makePaletteSurface(input: {
     activeKitId: state.activePaletteStamp?.kitId ?? null,
     rerender: renderPalettePreservingViewport,
   });
-  if (kitShelf) root.append(kitShelf);
+  if (kitShelf) utilities.append(makeSidebarSurface({ id: 'kits', label: '내 구조물', triggerId: 'sidebar-structure-kits',
+    rerender: renderPalettePreservingViewport, body: () => kitShelf }));
+  root.append(utilities);
 
   return { root, palette };
 }
@@ -317,36 +325,21 @@ function makePaletteFilterBar(tileset: TilesetDef): HTMLElement {
       },
     },
   });
-  bar.append(el("div", { class: "palette-filter-search-row", children: [search, numberToggle] }));
-
-  const chips = el("div", {
-    class: "tile-category-tabs",
-    attrs: { role: "group", "aria-label": "타일 분류" },
-    dataset: { testid: "palette-category-chips" },
+  const categorySelect = el("select", {
+    class: "tile-category-select", attrs: { "aria-label": "타일 분류" }, dataset: { testid: "tile-category-select" },
+    on: { change: event => {
+      if (!(event.currentTarget instanceof HTMLSelectElement)) return;
+      const value = event.currentTarget.value;
+      const category = TILE_CATEGORIES.find(item => item.id === value);
+      if (category) activeTileCategory = category.id;
+      renderPalettePreservingViewport();
+    } },
   });
   for (const category of TILE_CATEGORIES) {
-    const active = activeTileCategory === category.id;
-    chips.append(
-      el("button", {
-        class: "btn tile-category-tab" + (active ? " active" : ""),
-        text: category.label,
-        attrs: {
-          type: "button",
-          "aria-pressed": String(active),
-          title: category.id === "all" ? "분류 필터 끄기" : `${category.label} 타일만 보기`,
-        },
-        dataset: { testid: `tile-category-${category.id}` },
-        on: {
-          click: () => {
-            // 켜져 있는 분류를 다시 누르면 필터가 풀린다 — 되돌리려고 "전체"를 찾지 않게.
-            activeTileCategory = active && category.id !== "all" ? "all" : category.id;
-            renderPalettePreservingViewport();
-          },
-        },
-      })
-    );
+    categorySelect.append(el("option", { value: category.id, text: category.label }));
   }
-  bar.append(chips);
+  categorySelect.value = activeTileCategory;
+  bar.append(el("div", { class: "palette-filter-search-row", children: [search, categorySelect, numberToggle] }));
 
   if (isFilterActive()) {
     const matched = filteredTileIndexes(tileset).length;
@@ -366,6 +359,7 @@ function makePaletteFilterBar(tileset: TilesetDef): HTMLElement {
                 tileSearchQuery = "";
                 activeTileCategory = "all";
                 renderPalettePreservingViewport();
+                document.querySelector<HTMLElement>('[data-testid="tile-search-input"]')?.focus();
               },
             },
           }),
@@ -377,17 +371,14 @@ function makePaletteFilterBar(tileset: TilesetDef): HTMLElement {
 }
 
 /**
- * 붓 보조. 이웃 연결 자동/수동은 **붓의 동작을 바꾸는 토글**이므로 접이식이 닫혀 있어도
- * 보여야 한다 — 예전에는 「속성」 탭에 있어서 이웃 성형 여부를 모르고 칠하게 됐다.
- * 그래서 별도 줄을 만들지 않고 **요약줄 안에** 얹는다. 실측에서 별도 줄은 33px 를
- * 먹어 팔레트를 252px 로 눌렀다(스펙 하한 260px). 요약줄에 합치면 그 줄이 공짜가 된다.
- * 즐겨찾기·닮은 타일·쓴 곳은 참고 정보라 펼쳤을 때만 나온다.
+ * Connection state stays beside the active brush; reference strips open in a
+ * bounded auxiliary surface, never reducing the tile viewport.
  */
 function makeBrushAssistSection(
   mapId: string,
   state: ReturnType<typeof editorState.get>,
   tileset: TilesetDef
-): HTMLElement {
+): { readonly modeRow: HTMLElement | null; readonly section: HTMLElement } {
   const panel = makeTileBrushAssistPanel({
     autoConnectMode: state.autoConnectMode,
     mapId,
@@ -398,41 +389,10 @@ function makeBrushAssistSection(
   });
   const modeRow = panel.querySelector<HTMLElement>(".tile-brush-mode-row");
 
-  // <details>/<summary> 를 쓰지 않는다 — 요약줄 안에 버튼을 넣으면 그 클릭이 summary 의
-  // 기본 동작(접기/펴기)과 싸운다. stopPropagation+preventDefault 로 막을 수는 있지만
-  // 버튼 핸들러가 그 사이에 팔레트를 재렌더해 노드가 분리되므로 순서가 취약하다.
-  // 직접 제어하는 헤더 줄이 더 단순하고 확실하다.
-  const section = el("div", {
-    class: "palette-inline-section palette-brush-assist" + (brushAssistOpen ? " is-open" : ""),
-    dataset: { testid: "palette-brush-assist-section", open: String(brushAssistOpen) },
-  });
-  const header = el("div", { class: "palette-inline-header" });
-  header.append(
-    el("button", {
-      class: "palette-inline-toggle",
-      attrs: {
-        type: "button",
-        "aria-expanded": String(brushAssistOpen),
-        title: brushAssistOpen ? "붓 보조 접기" : "즐겨찾기 · 닮은 타일 · 이 맵에서 쓴 곳 펼치기",
-      },
-      dataset: { testid: "palette-brush-assist-toggle" },
-      on: {
-        click: () => {
-          brushAssistOpen = !brushAssistOpen;
-          renderPalettePreservingViewport();
-        },
-      },
-      children: [
-        el("span", { class: "palette-inline-caret", text: brushAssistOpen ? "▾" : "▸", attrs: { "aria-hidden": "true" } }),
-        el("span", { text: "붓 보조" }),
-      ],
-    })
-  );
-  // 이웃 연결은 접혀 있어도 이 줄에 남는다.
-  if (modeRow) header.append(modeRow);
-  section.append(header);
-  if (brushAssistOpen) section.append(panel);
-  return section;
+  modeRow?.remove();
+  const section = makeSidebarSurface({ id: 'assist', label: '붓 보조', triggerId: 'palette-brush-assist-toggle',
+    rerender: renderPalettePreservingViewport, body: () => panel });
+  return { modeRow, section };
 }
 
 // makeTilePropsSection 은 삭제됨 — src/editor/panels/tilePropsDialog.ts 의 창으로 대체.
