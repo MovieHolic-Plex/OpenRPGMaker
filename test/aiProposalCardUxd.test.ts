@@ -12,6 +12,7 @@ import {
 import { computeMapTileChangeBounds, renderProposalMapThumbnail } from "@/editor/panels/aiProposalCard";
 import { runTool, type ToolContext, type ToolResult } from "@/editor/tools";
 import type { ChangeSummary } from "@/editor/tools/types";
+import type { Project } from "@/project/types";
 import { createBlankProject } from "@/project/defaults";
 import { TILE } from "@/project/defaults/constants";
 import { store } from "@/project/store";
@@ -130,8 +131,15 @@ function reviewedTurn(proposedCalls: ProposedCall[], assistantText = "완료"): 
   };
 }
 
-function mockReviewedDraftApproval(): void {
-  vi.spyOn(AssistantSession.prototype, "isDraftReviewApproved").mockReturnValue(true);
+function mockReviewedDraftApproval(approved: Project): void {
+  const identity = JSON.stringify(approved);
+  vi.spyOn(AssistantSession.prototype, "isDraftReviewApproved").mockImplementation(function (
+    this: AssistantSession,
+    candidate?: Project,
+  ): boolean {
+    const current = candidate ?? this.getProposedProject();
+    return JSON.stringify(current) === identity;
+  });
 }
 
 beforeEach(() => {
@@ -204,7 +212,7 @@ describe("AI 변경 즉시 적용", () => {
       }];
       vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(reviewedTurn(calls));
       vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => structuredClone(after));
-      mockReviewedDraftApproval();
+      mockReviewedDraftApproval(after);
 
       const panel = renderPanel();
       const input = findByTestId(panel, "ai-input") as FakeElement;
@@ -242,7 +250,7 @@ describe("AI 변경 즉시 적용", () => {
     }];
     vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(reviewedTurn(calls));
     vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => structuredClone(after));
-    mockReviewedDraftApproval();
+    mockReviewedDraftApproval(after);
 
     const panel = renderPanel();
     const input = findByTestId(panel, "ai-input") as FakeElement;
@@ -265,7 +273,7 @@ describe("AI 변경 즉시 적용", () => {
     ];
     vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(reviewedTurn(calls, "NPC 1명과 길 1칸을 놓았습니다."));
     vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => structuredClone(ctx.project));
-    mockReviewedDraftApproval();
+    mockReviewedDraftApproval(ctx.project);
 
     const panel = renderPanel();
     const input = findByTestId(panel, "ai-input") as FakeElement;
@@ -281,6 +289,31 @@ describe("AI 변경 즉시 적용", () => {
     expect(findByTestId(panel, "ai-chat-log")?.textContent).toContain("요청 수량 3개");
   });
 
+  it("승인 뒤 후보가 바뀌면 적용하지 않는다", async () => {
+    const baselineTitle = store.getCurrent().meta.title;
+    const approved = structuredClone(store.getCurrent());
+    approved.meta.title = "applied:remove_event";
+    const calls = [{
+      ...proposed("remove_event", {}, { systemChanged: true }, "remove_event 적용"),
+      destructive: true,
+    }];
+    vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(reviewedTurn(calls));
+    const tampered = structuredClone(approved);
+    tampered.meta.title = "tampered:after-approval";
+    vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => structuredClone(tampered));
+    mockReviewedDraftApproval(approved);
+
+    const panel = renderPanel();
+    const input = findByTestId(panel, "ai-input") as FakeElement;
+    input.value = "이벤트 지워줘";
+    findByTestId(panel, "ai-send")?.click();
+    await flushAsync();
+
+    expect(store.getCurrent().meta.title).toBe(baselineTitle);
+    expect(findByTestId(panel, "ai-msg-badge-applied")).toBeNull();
+    expect(findByTestId(panel, "ai-status")?.textContent).toBe("검수 미완료");
+  });
+
   it("한 번의 되돌리기로 턴 전 전체 프로젝트를 복구한다", async () => {
     const baseline = store.getCurrent();
     const mapId = baseline.startMapId;
@@ -294,7 +327,7 @@ describe("AI 변경 즉시 적용", () => {
     })];
     vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(reviewedTurn(calls));
     vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => structuredClone(ctx.project));
-    mockReviewedDraftApproval();
+    mockReviewedDraftApproval(ctx.project);
 
     const panel = renderPanel();
     const input = findByTestId(panel, "ai-input") as FakeElement;
