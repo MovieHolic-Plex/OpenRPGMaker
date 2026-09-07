@@ -1,9 +1,9 @@
-import type { GameMap, Project } from "@/project/types";
+import type { Project } from "@/project/types";
 import type { AiConfig, ChatRequest, ChatResult, ContentPart } from "./llmClient";
 import type { OriginalContext } from "./originalContext";
 import { originalContextWindow } from "./originalContext";
 import { estimateContextTokens } from "./contextCompaction";
-import { mapVisualContent } from "./mapVisualEvidence";
+export { requiresVisualReview } from "./mapVisualEvidence";
 
 export interface ReviewFinding {
   readonly id: string;
@@ -128,11 +128,6 @@ export function reviewMapReferenceRoots(before: Project, after: Project, changes
     }
   }
   return roots;
-}
-
-/** Dialogue/record edits are reviewable as text; placement and graphics need images. */
-export function requiresVisualReview(before: GameMap | undefined, after: GameMap): boolean {
-  return !before || JSON.stringify(mapVisualContent(before)) !== JSON.stringify(mapVisualContent(after));
 }
 
 const REVIEW_SYSTEM = `You are an independent read-only result reviewer, not the writer.

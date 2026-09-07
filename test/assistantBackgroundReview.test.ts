@@ -79,22 +79,23 @@ describe("background review evidence", () => {
     if (mutation === "image") map.background.imageId = "new-background";
     else if (mutation === "scroll") map.background.scrollX = 4;
     else delete map.background;
-    expect(requiresVisualReview(before.maps[map.id], map)).toBe(true);
+    expect(requiresVisualReview(before, project, map.id)).toBe(true);
     expect(evidence.current(project)).toEqual([]);
     expect(evidence.current(before)).toEqual([]);
   });
 
   it("classifies map tile size and legacy event sprites, but exempts dialogue and metadata edits", () => {
-    const project = createBlankProject(), before = project.maps[project.startMapId];
-    before.events.push({ id: "npc", x: 1, y: 1, trigger: { kind: "action" }, commands: [] });
-    const after = structuredClone(before);
-    after.name = "Renamed map";
-    after.events[0].commands = [{ kind: "text", body: "Changed dialogue" }];
-    expect(requiresVisualReview(before, after)).toBe(false);
-    after.tileSize += 1;
-    expect(requiresVisualReview(before, after)).toBe(true);
-    after.tileSize = before.tileSize;
-    after.events[0].sprite = { type: "builtin", id: "replacement" };
-    expect(requiresVisualReview(before, after)).toBe(true);
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId];
+    map.events.push({ id: "npc", x: 1, y: 1, sprite: { kind: "action" }, commands: [] });
+    const beforeProject = structuredClone(project);
+    map.name = "Renamed map";
+    map.events[0].commands = [{ kind: "text", body: "Changed dialogue" }];
+    expect(requiresVisualReview(beforeProject, project, map.id)).toBe(false);
+    map.tileSize += 1;
+    expect(requiresVisualReview(beforeProject, project, map.id)).toBe(true);
+    map.tileSize = beforeProject.maps[map.id].tileSize;
+    map.events[0].sprite = { type: "builtin", id: "replacement" };
+    expect(requiresVisualReview(beforeProject, project, map.id)).toBe(true);
   });
 });

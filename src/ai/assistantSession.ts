@@ -3699,9 +3699,12 @@ export class AssistantSession {
       for (const change of changes) if (change.path === "/assets") {
         requiredProblems.push(`${change.path}: asset transport changed without reviewable original evidence`);
       }
-      const mapIds = new Set([this.originalContext!.context.target.mapId,
-        ...Object.keys(this.reviewBaseline.maps), ...Object.keys(this.ctx.project.maps)].filter(id =>
-        id === this.originalContext!.context.target.mapId || acceptanceFingerprint(this.reviewBaseline.maps[id]) !== acceptanceFingerprint(this.ctx.project.maps[id])));
+      const targetMapId = this.originalContext!.context.target.mapId;
+      const mapIds = new Set([...Object.keys(this.reviewBaseline.maps), ...Object.keys(this.ctx.project.maps)].filter(id =>
+        id === targetMapId
+        || acceptanceFingerprint(this.reviewBaseline.maps[id]) !== acceptanceFingerprint(this.ctx.project.maps[id])
+        || requiresVisualReview(this.reviewBaseline, this.ctx.project, id)));
+      if (typeof targetMapId === "string") mapIds.add(targetMapId);
       const evidence = (project: Project, prefix: string) => [...mapIds].map(mapId => extractOriginalContext(project, {
         snapshotId: `${prefix}-${revision}-${mapId}`, currentMapId: mapId,
         mapReferenceRoots: [mapId, ...mapReferenceRoots],
@@ -3711,7 +3714,7 @@ export class AssistantSession {
       for (const mapId of mapIds) {
         const before = this.reviewBaseline.maps[mapId], after = this.ctx.project.maps[mapId];
         if (!after) continue;
-        const visualChanged = requiresVisualReview(before, after);
+        const visualChanged = requiresVisualReview(this.reviewBaseline, this.ctx.project, mapId);
         const unavailable = visualChanged ? mapVisualEvidenceUnavailable(after, before) : null;
         if (unavailable) requiredProblems.push(unavailable);
         if (visualChanged && !coveredByImages(receipts, after, { x: 0, y: 0, w: after.width, h: after.height })) {

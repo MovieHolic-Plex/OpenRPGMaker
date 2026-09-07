@@ -40,7 +40,15 @@ turns; only the reviewed conclusion is published as the changed result.
 Required current rendered map coverage and failed/stale explicit scene,
 walkthrough or other verification evidence cannot be overridden by an AI pass.
 Declared verification tools must actually pass. Pure record/dialogue edits do
-not invent placement-image prerequisites. The acceptance ledger evaluates the
+not invent placement-image prerequisites. Used-tileset render dependencies
+(`tileSize`, `tilesPerRow`, `image`/`tileGrafts` and uploaded atlas bytes via
+`tilesetVisualContent` in `mapVisualEvidence.ts`) also require fresh
+`show_map_region` coverage for maps that reference the changed tileset, even
+when the map object itself is unchanged and `targetMapId` is null. Unused
+tilesets and nonvisual tileset metadata (name, passability, terrain, kind) do
+not invent that gate. Background refusal and `visualFingerprint` stale-image
+retirement stay as before. Contracts: `assistantTilesetVisualReview`,
+`mapVisualTilesetDependency`, `assistantBackgroundReview`. The acceptance ledger evaluates the
 draft privately for review without labelling it applied; applied-state acceptance
 and remote persistence receipts remain separate. Advisory lint results are sent
 as evidence, not promoted to an unconditional baseline-breaking gate.
@@ -66,7 +74,8 @@ lite configuration while reviews use the configured supervisor endpoint/model.
 
 Focused contracts: `independentReview`, `assistantIndependentReview`,
 `assistantAcceptanceSession`, `assistantVisualEvidenceSession`,
-`aiTurnAppliedAccounting`, `regionTaskRun`. Existing `chat` injection remains the
+`assistantTilesetVisualReview`, `mapVisualTilesetDependency`,
+`assistantBackgroundReview`, `aiTurnAppliedAccounting`, `regionTaskRun`. Existing `chat` injection remains the
 real-surface-friendly deterministic transport seam, not a production bypass.
 
 ## World structure activity labels (2026-09-06)
