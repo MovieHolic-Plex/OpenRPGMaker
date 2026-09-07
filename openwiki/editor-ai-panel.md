@@ -85,9 +85,17 @@ to Do. Typed, bridge and ordinary RunSurface continuation text in Ask stays Ask.
 Synthetic driver continuation and model intent claims aren't new authorization.
 A resumed read-only run with unmet required work still ends blocked/incomplete/no-change.
 
-Host `goalAction: "new-goal"` archives the prior immutable canonical snapshot;
+Host `goalAction: "new-goal"` archives the prior immutable canonical snapshot at
+public send entry, before context/image, wiki or intent awaits. Archival does not
+re-evaluate the retired snapshot or rewrite its original result. The new owner has
+no assessment until canonical adoption/evaluation; failed or cancelled entry stays
+unassessed, and repeating a failed entry does not archive the same old goal twice.
+Its request text, scope and pre-await baseline are retained for a later host resume.
 `getAcceptanceHistory()` returns session-local frozen history, not durable recovery.
-Ask overrides this action. A model `resetsContext` flag can't erase old obligations.
+Explicit composer Ask overrides this action; model question/source/reset claims do
+not undo host new-goal ownership or authorize retirement on their own. Ordinary Ask
+retains the active goal's assessment, and a same-goal failure can legitimately remain
+satisfied. Regressions: `test/aiNewGoalEarlyOwnership.test.ts`.
 Exact tool-verdict requirements reuse [the existing verification store](editor-ai-tools.md#p2-requirement-and-exact-verdict-inputs-2026-09-06).
 [P2 evidence index](../output/evidence/ai-harness/p2/README.md) distinguishes producer
 verification, independent surface evidence and pending lead gates. This section

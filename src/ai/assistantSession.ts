@@ -1592,6 +1592,19 @@ export class AssistantSession {
     // Establish delivery ownership before context/image/intent work can await or fail.
     if (!retainsAppliedDelivery) this.clearAppliedDelivery();
     this.runExecution = "response-final";
+    const startsGoal = opts?.goalAction === "new-goal" && opts.composerMode !== "ask";
+    if (startsGoal) {
+      // Retire the canonical owner before preparatory awaits (or rebase) can fail.
+      // Archive its last immutable assessment, not a new evaluation under this request.
+      const previous = this.getAcceptanceSnapshot();
+      if (previous) this.acceptanceHistory.push(previous);
+      this.imageEvidence.clear();
+      this.acceptance = null;
+      this.acceptanceAppliedProject = null;
+      this.workPlan = null;
+      this.verificationEvidence.clear();
+      this.statefulNpcRequirement = false;
+    }
     this.milestoneAutoApply = opts?.autonomous === true;
     if (this.milestoneApplyFailed) {
       // 실패한 proposed draft를 다음 턴으로 가져가면 같은 커밋 오류가 반복된다. 저장소는 실패
@@ -1610,6 +1623,12 @@ export class AssistantSession {
       composerMode: opts?.composerMode ?? "do",
     };
     try {
+      if (startsGoal) {
+        this.acceptanceRequestBaseline = structuredClone(this.baselineProject);
+        this.acceptanceRequestSource = { requestId: `request-${this.currentTurnIndex + 1}`, text: entryInstruction,
+          scope: turnOptions.scope ? structuredClone(turnOptions.scope) : null };
+        onEvent({ type: "acceptance", snapshot: null });
+      }
       const first = await this.executeUserTurn(text, onEvent, signal, turnOptions);
       const last = opts?.autonomous === true && !this.lastTurnPlanOnly && this.turnComposerMode !== "ask"
         ? await this.runAutonomousDriver(first, onEvent, signal, turnOptions) : first;
@@ -1791,25 +1810,14 @@ export class AssistantSession {
     if (intent.mode === "question") this.turnComposerMode = "ask";
     const question = this.turnComposerMode === "ask";
     const userAction = !this.turnIsDriverContinue && !question;
-    const startsGoal = userAction && options.goalAction === "new-goal";
+    // The public entry already established this owner; model routing cannot undo it.
+    const startsGoal = !this.turnIsDriverContinue && options.goalAction === "new-goal" && options.composerMode !== "ask";
     const resumesGoal = userAction && (options.goalAction === "resume" || isContinuationText(instruction));
     const newRequest = userAction && !resumesGoal && intent.source !== "continuation";
     // Delivery follows host-authorized continuation, never a model's source claim or a fresh query.
     if (!this.turnIsDriverContinue && (!resumesGoal || startsGoal)) this.clearAppliedDelivery();
-    if (startsGoal) {
-      this.publishAcceptance();
-      const previous = this.getAcceptanceSnapshot();
-      if (previous) this.acceptanceHistory.push(previous);
-      this.imageEvidence.clear();
-      this.acceptance = null;
-      this.acceptanceAppliedProject = null;
-      this.workPlan = null;
-      this.verificationEvidence.clear();
-      this.statefulNpcRequirement = false;
-      onEvent({ type: "acceptance", snapshot: null });
-    }
-    if (newRequest || startsGoal) {
-      // Capture before planning/tools; continuations and questions retain this request's baseline.
+    if (newRequest && !startsGoal) {
+      // New-goal entry captured before awaits; continuations and questions retain their baseline.
       this.acceptanceRequestBaseline = structuredClone(this.baselineProject);
       this.acceptanceRequestSource = { requestId: `request-${this.currentTurnIndex + 1}`, text: instruction,
         scope: this.turnScope ? structuredClone(this.turnScope) : null };
