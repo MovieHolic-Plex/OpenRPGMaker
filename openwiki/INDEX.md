@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **49쪽 / 1905KB / 약 538,646 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **49쪽 / 1915KB / 약 541,104 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -21,9 +21,9 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-event-authoring.md` | 125KB | 75KB ⚠상한 초과 — 절을 더 쪼개라 | 626 | ~36,040 |
 | `openwiki/editor-event-commands.md` | 50KB | 32KB | 132 | ~13,431 |
 | `openwiki/editor-pre-edit-routing.md` | 80KB | 55KB ⚠상한 초과 — 절을 더 쪼개라 | 322 | ~22,660 |
-| `openwiki/editor-workflows-misc.md` | 57KB | 29KB | 359 | ~15,790 |
+| `openwiki/editor-workflows-misc.md` | 59KB | 29KB | 383 | ~16,267 |
 | `openwiki/runtime-battle.md` | 127KB | 31KB | 447 | ~36,176 |
-| `openwiki/runtime-project-schema.md` | 84KB | 44KB | 437 | ~22,592 |
+| `openwiki/runtime-project-schema.md` | 86KB | 44KB | 464 | ~23,050 |
 | `openwiki/runtime-sessions.md` | 85KB | 48KB | 311 | ~22,520 |
 | `openwiki/testing.md` | 142KB | 48KB | 1054 | ~39,508 |
 
@@ -52,6 +52,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/agent-worktrees.md` | 2 | `result.md`, `task.json` |
 | `openwiki/ai-workflow.md` | 3 | `latest.json`, `src/ai/plannerSkip.ts`, `test/volumeContractSession.test.ts` |
 | `openwiki/bgm-catalog.md` | 2 | `artifacts/bgm-release/bgm-release-v1.json`, `catalog.raw.json` |
+| `openwiki/community-site.md` | 1 | `dependency-collector.js` |
 | `openwiki/editor-ai-panel.md` | 33 | `.omo/evidence/assistant-glass-fold/measure.json`, `.omo/evidence/autonomous-ai-rpg/task-8-autonomous-ai-rpg.md`, `15-assistant-readable.css`, `17-assistant-modern-shell.css`, `after/measure.json`, `aiCommandBar.ts`, `aiGlassPanelWidth.test.ts`, `aiSkillDrawer.ts`, `aiVolatileController.ts`, `assistant-skills.css`, `chat-dock-switch.spec.ts`, `chatDock.ts`, `intentClarify.ts`, `newmain-after-measure.json`, `output/evidence/assistant-clean-glass/phase-2/implementation.md`, `output/evidence/assistant-ui-modern/newmain-before-measure.json`, `regionIntentRouter.ts`, `scripts/qa/assistant-side-seam-hittest.mjs`, `src/ai/intentClarify.ts`, `src/ai/plannerSkip.ts`, `src/ai/skills.ts`, `src/editor/chatDock.ts`, `test/aiGlassFold.test.ts`, `test/aiGlassPanelWidth.test.ts`, `test/chatDock.test.ts`, `test/e2e/_assistant-glass-shots.spec.ts`, `test/e2e/_glass-dock-report.spec.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/plannerSkip.test.ts`, `test/regionIntentExposure.test.ts`, `test/turnGuideSharedRules.test.ts`, `test/volumeContractSession.test.ts`, `test/workspaceBarAssistantDock.test.ts` |
 | `openwiki/editor-ai-tools.md` | 4 | `aiCommandBar.ts`, `aiProposalModal.ts`, `test/intentClarify.test.ts`, `test/volumeContractSession.test.ts` |
 | `openwiki/editor-database.md` | 18 | `enemy-art-NNN.png`, `form-hierarchy-modern.css`, `output/evidence/battle-animation-ux/p1-implementation.md`, `output/evidence/battle-animation-ux/p2-implementation.md`, `output/evidence/battle-rules-ux/st_01a07318-manual-qa.md`, `output/evidence/battle-rules-ux/verification.md`, `output/evidence/concept-expansion/supabase-proof.json`, `output/evidence/concept-v2/supabase-proof.json`, `output/evidence/monster-concepts/b1/fix.md`, `output/evidence/monster-concepts/p2/verification.md`, `output/evidence/monster-concepts/r1/fix.md`, `output/evidence/system-studio/system-studio-backed-settings-1586x992.png`, `reports/generated-effect-showcase-2026-08-24.html`, `reveal-fix.md`, `scripts/generate-default-item-icons.mts`, `scripts/lib/effectSheet/paintersMonster.mjs`, `scripts/lib/effectSheet/paintersUtility.mjs`, `troops.part-1.css` |
@@ -60,7 +61,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/editor-interior-room-harness.md` | 7 | `hearth-lit.json`, `hearth-unlit.json`, `output/evidence/concept-v2/index.html`, `output/evidence/inn-exploration-v4/index.html`, `output/evidence/inn-inspection-v5/index.html`, `output/evidence/pr618-fixtures/inn.json`, `player/SUMMARY.md` |
 | `openwiki/editor-pre-edit-routing.md` | 7 | `authoringTestGate.ts`, `dbConnectionAdvancedSettings.ts`, `figma-editor/10-map-tree.css`, `rm2k3.part-1.css`, `shell/editor-responsive-expert.css`, `src/editor/tools/worldTools.ts`, `worldTools.ts` |
 | `openwiki/editor-validation.md` | 2 | `final-layout.json`, `viewport-matrix.json` |
-| `openwiki/editor-workflows-misc.md` | 6 | `.qa.json`, `default.json`, `game.html`, `release.json`, `runtime.json`, `src/editor/authoringTestGate.ts` |
+| `openwiki/editor-workflows-misc.md` | 7 | `.qa.json`, `default.json`, `dependency-collector.js`, `game.html`, `release.json`, `runtime.json`, `src/editor/authoringTestGate.ts` |
 | `openwiki/growth-trees.md` | 3 | `.omo/evidence/growth-integrated/browser-presets/report.json`, `applied-bundle.json`, `verify-shots/runtime-qa/growth-tree/SUMMARY.md` |
 | `openwiki/horror-authoring.md` | 1 | `motion-sheet.png` |
 | `openwiki/large-village-generation.md` | 2 | `HANDOFF.json`, `src/project/defaults/largeRiverMarketVillageBuild.ts` |
@@ -217,16 +218,17 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L54` Code owners
 - `L64` Validation
 
-### `openwiki/community-site.md` — 15KB · 94줄 · ~3,752 토큰
+### `openwiki/community-site.md` — 21KB · 172줄 · ~5,275 토큰
 
 - `L5` Data
 - `L12` Interop contract (do not break)
 - `L19` Immutable publication and playback (2026-09-06)
-  - `L31` Release QA and migration commands
-- `L59` Feature map (v2, 2026-07-21)
-- `L67` Historical in-browser play (v3, 2026-07-21; superseded)
-- `L83` Ops notes
-- `L87` Gotchas learned
+  - `L33` Frozen dependency authority (P2, 2026-09-07)
+  - `L68` Release QA and migration commands
+- `L137` Feature map (v2, 2026-07-21)
+- `L145` Historical in-browser play (v3, 2026-07-21; superseded)
+- `L161` Ops notes
+- `L165` Gotchas learned
 
 ### `openwiki/cpen-openwiki.md` — 1KB · 30줄 · ~378 토큰
 
@@ -476,19 +478,19 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L182` Event editor aggregate gate (2026-07-30)
 - `L191` P2 spatial integrity (2026-08-25)
 
-### `openwiki/editor-workflows-misc.md` — 57KB · 359줄 · ~15,790 토큰 · 통째읽기 잘림
+### `openwiki/editor-workflows-misc.md` — 59KB · 383줄 · ~16,267 토큰 · 통째읽기 잘림
 
 - `L7` Other Editor Workflows
   - `L9` New-project name and player title (2026-09-07)
   - `L19` 걸을 때 적 만나기 — rectangle authoring (2026-09-06)
   - `L85` Game export delivery (2026-09-06)
-  - `L172` Audio descriptions and live resource ownership
-  - `L225` Genre-neutral authoring launcher and journey (2026-08-24)
-- `L275` 편집기 z 층 밴드와 토스트 (2026-08-30, PR #308)
-- `L304` 초보 맵 사이드바 «목록 | 상세» 2단 탐색기 (2026-08-30, PR #311)
-- `L326` 커스텀 셀렉트는 열릴 때 modalStack 층이 된다 (2026-08-30)
-- `L340` 맵 설정 가독성·편집 연속성 (2026-09-05)
-- `L350` 왼쪽 사이드바 3모드 적대적 리뷰 (2026-09-05)
+  - `L196` Audio descriptions and live resource ownership
+  - `L249` Genre-neutral authoring launcher and journey (2026-08-24)
+- `L299` 편집기 z 층 밴드와 토스트 (2026-08-30, PR #308)
+- `L328` 초보 맵 사이드바 «목록 | 상세» 2단 탐색기 (2026-08-30, PR #311)
+- `L350` 커스텀 셀렉트는 열릴 때 modalStack 층이 된다 (2026-08-30)
+- `L364` 맵 설정 가독성·편집 연속성 (2026-09-05)
+- `L374` 왼쪽 사이드바 3모드 적대적 리뷰 (2026-09-05)
 
 ### `openwiki/editor-workflows.md` — 2KB · 28줄 · ~586 토큰
 
@@ -662,39 +664,39 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L175` 가구 밀기 애니메이션 (2026-09-05)
 - `L184` Recovered head emotes (2026-09-05)
 
-### `openwiki/runtime-project-schema.md` — 84KB · 437줄 · ~22,592 토큰 · 통째읽기 잘림
+### `openwiki/runtime-project-schema.md` — 86KB · 464줄 · ~23,050 토큰 · 통째읽기 잘림
 
 - `L3` Explicit publication identity and Save6 (2026-09-06)
-- `L30` P1 accepted-save receipts and read-only proof (2026-09-06)
-- `L75` Opening and game-over cinematic settings (2026-09-06)
-- `L92` 적 전투 이미지 크기 (2026-09-06)
-- `L96` Project audio description overrides
-  - `L125` Concurrent persistence
-  - `L150` Editor preservation and playable export
-- `L164` Character/face authoring metadata (2026-09-06)
-- `L172` New-project save/reload verification (2026-09-05)
-- `L176` Independent game Save5 boundary (2026-09-06)
-- `L182` Life ownership in Save5 (2026-09-06)
-- `L190` Project-authored equipment slots (2026-09-05)
-- `L198` 전투 명령 CSS (2026-09-05)
-- `L202` 기본 카탈로그 삭제 보존 (2026-09-05)
-- `L206` 전투 페이지 중복 ID 복구와 슬롯 참조 (2026-09-05)
-- `L219` 통행 컴포넌트 색인의 계약 (2026-08-30, PR #286)
-- `L227` 세계 법칙의 명시적 부재 (2026-09-05)
-- `L231` Project schema & persistence
-- `L302` Variable arithmetic & loop runtime (2026-08-07)
-- `L306` Canonical event-draft projection (2026-07-30)
-- `L312` P2 general buildings and home decorations (2026-08-25)
-- `L319` 이벤트 초안 보관함: 명시적 저장은 자기가 대체한 디바운스를 취소한다 (2026-08-29)
-- `L337` Boot normalizers must not create dangling references (2026-08-30)
-- `L363` `.oprn` 은 단일 파일 게임 컨테이너다 — 편집기와 플레이어 양쪽이 읽는다 (2026-08-30)
-- `L397` 성장 트리 선택 확장 (2026-09-05)
-- `L403` 마을 설계서 (2026-09-05)
-- `L409` 공포 게임 제작 기능 (2026-09-05)
-  - `L413` 저장된 대사 별칭과 맵 오버레이 (2026-09-05)
-- `L417` NPC 표시 이름 (2026-09-05)
-- `L430` 연결 실내 도면의 영속성 (2026-09-05)
-- `L434` 개념 장소 형상 (2026-09-05)
+- `L57` P1 accepted-save receipts and read-only proof (2026-09-06)
+- `L102` Opening and game-over cinematic settings (2026-09-06)
+- `L119` 적 전투 이미지 크기 (2026-09-06)
+- `L123` Project audio description overrides
+  - `L152` Concurrent persistence
+  - `L177` Editor preservation and playable export
+- `L191` Character/face authoring metadata (2026-09-06)
+- `L199` New-project save/reload verification (2026-09-05)
+- `L203` Independent game Save5 boundary (2026-09-06)
+- `L209` Life ownership in Save5 (2026-09-06)
+- `L217` Project-authored equipment slots (2026-09-05)
+- `L225` 전투 명령 CSS (2026-09-05)
+- `L229` 기본 카탈로그 삭제 보존 (2026-09-05)
+- `L233` 전투 페이지 중복 ID 복구와 슬롯 참조 (2026-09-05)
+- `L246` 통행 컴포넌트 색인의 계약 (2026-08-30, PR #286)
+- `L254` 세계 법칙의 명시적 부재 (2026-09-05)
+- `L258` Project schema & persistence
+- `L329` Variable arithmetic & loop runtime (2026-08-07)
+- `L333` Canonical event-draft projection (2026-07-30)
+- `L339` P2 general buildings and home decorations (2026-08-25)
+- `L346` 이벤트 초안 보관함: 명시적 저장은 자기가 대체한 디바운스를 취소한다 (2026-08-29)
+- `L364` Boot normalizers must not create dangling references (2026-08-30)
+- `L390` `.oprn` 은 단일 파일 게임 컨테이너다 — 편집기와 플레이어 양쪽이 읽는다 (2026-08-30)
+- `L424` 성장 트리 선택 확장 (2026-09-05)
+- `L430` 마을 설계서 (2026-09-05)
+- `L436` 공포 게임 제작 기능 (2026-09-05)
+  - `L440` 저장된 대사 별칭과 맵 오버레이 (2026-09-05)
+- `L444` NPC 표시 이름 (2026-09-05)
+- `L457` 연결 실내 도면의 영속성 (2026-09-05)
+- `L461` 개념 장소 형상 (2026-09-05)
 
 ### `openwiki/runtime-sessions.md` — 85KB · 311줄 · ~22,520 토큰 · 통째읽기 잘림
 

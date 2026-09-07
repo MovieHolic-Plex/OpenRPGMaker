@@ -1,6 +1,14 @@
 {
-  "artifactVersion": "8dd82bdc45e0496d",
-  "schemaVersion": 3,
-  "sourceRevision": "e36e520",
-  "syncedAt": "2026-07-21T07:36:26.581Z"
+  "sentinel": "rpg-zzu/community-player-lock",
+  "schemaVersion": 1,
+  "artifactContractVersion": 2,
+  "artifactSchemaVersion": 4,
+  "deploymentSchemaVersion": 1,
+  "artifactVersion": "2876f0e58322e550",
+  "artifactDigest": "2876f0e58322e550498460c896260546f3799dc580d4e0127faddf99d96e46d0",
+  "sourceDigest": "9c634f0abb956e9239b3a852c74c9ecc457ecfab5c0395b26e192472e1f3e754",
+  "runtimeAssetDigest": "f9c1640f3f4a95298c6c181a61c3b23027f78838b9035f94c9e354a6546d5a37",
+  "deploymentDigest": "2c31676baee5ff26f6a8447da52f78de39920e56896b8bf3171c416f2e8392cc",
+  "sourceRevision": "12649a6d7",
+  "installedAt": "2026-09-07T01:36:13.231Z"
 }
