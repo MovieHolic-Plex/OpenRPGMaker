@@ -1,0 +1,36 @@
+Exit 1; 40 tests; 12 failures
+action authoring prerequisites rejects explicit 'update' with target 'missing_spawn' before any mutation
+AssertionError: expected true to be false // Object.is equality
+
+action authoring prerequisites rejects explicit 'update' with target undefined before any mutation
+AssertionError: expected true to be false // Object.is equality
+
+action authoring prerequisites rejects explicit 'update' with target ' ' before any mutation
+AssertionError: expected true to be false // Object.is equality
+
+action authoring prerequisites rejects explicit 'add' with target 'arena_spawn' before any mutation
+AssertionError: expected true to be false // Object.is equality
+
+action authoring prerequisites rejects explicit 'udpate' with target 'arena_spawn' before any mutation
+AssertionError: expected true to be false // Object.is equality
+
+action authoring prerequisites rejects a spawn mode without a spawn before changing the enemy
+AssertionError: expected true to be false // Object.is equality
+
+action authoring prerequisites does not update a spawn identity that only exists on another map
+AssertionError: expected true to be false // Object.is equality
+
+action authoring prerequisites updates exact spawns and explicitly adds another without losing authored settings
+AssertionError: expected { enemyId: 'enemy_slime', …(1) } to match object { mapId: 'map_blank_start', …(2) }
+
+action authoring prerequisites removes only the exact authored spawn and preserves enemies and other entries
+AssertionError: 알 수 없는 툴: remove_field_spawn: expected false to be true // Object.is equality
+
+action authoring prerequisites rejects removal of 'missing_spawn' with referenced=false without mutation
+AssertionError: expected [ { severity: 'error', …(2) } ] to deeply equal ArrayContaining{…}
+
+action authoring prerequisites rejects removal of 'arena_spawn' with referenced=true without mutation
+AssertionError: expected [ { severity: 'error', …(2) } ] to deeply equal ArrayContaining{…}
+
+action authoring prerequisites exposes explicit spawn intent and targeted removal in model-facing schemas
+AssertionError: expected undefined to deeply equal [ 'add', 'update' ]

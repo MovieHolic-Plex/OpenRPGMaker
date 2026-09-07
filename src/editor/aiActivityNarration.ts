@@ -110,7 +110,7 @@ addFamily(ACTIONS.deleteDatabase, "delete_database_record delete_craft_recipe de
 addFamily(ACTIONS.createMap, "create_map duplicate_map generate_map");
 addFamily(ACTIONS.resizeMap, "resize_map");
 addFamily(ACTIONS.deleteMap, "remove_map");
-addFamily(ACTIONS.editMap, "manage_map_tree set_map_properties shift_map set_start_position set_tile_passability set_encounter_table create_farm_plot make_hunting_ground configure_roguelike_room upsert_map_connection delete_map_connection link_maps");
+addFamily(ACTIONS.editMap, "manage_map_tree set_map_properties shift_map set_start_position set_tile_passability set_encounter_table create_farm_plot make_hunting_ground remove_field_spawn configure_roguelike_room upsert_map_connection delete_map_connection link_maps");
 addFamily(ACTIONS.validate, "lint_world lint_quest run_lint verify_quest evaluate_game_quality evaluate_dungeon_room evaluate_interior_room evaluate_village_layer evaluate_village_look critique_village");
 addFamily(ACTIONS.document, "present_doc upsert_village_document delete_village_document generate_walkthrough");
 addFamily(ACTIONS.plan, "plan_world propose_tile_vocabulary");

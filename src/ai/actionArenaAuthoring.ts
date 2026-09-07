@@ -34,8 +34,8 @@ export const ACTION_ARENA_AUTHORING_RECIPE = {
     },
     {
       id: "spawn",
-      tools: ["make_action_enemy"],
-      instruction: "성공한 트룹 ID로 대상 맵의 작은 통행 영역에 spawn을 붙인다. 재시도는 동일 spawn.id를 사용한다. 없는 리소스/트룹 오류는 선행 데이터를 고친 뒤 재시도한다.",
+      tools: ["make_action_enemy", "remove_field_spawn"],
+      instruction: "성공한 트룹 ID로 대상 맵의 작은 통행 영역에 spawn을 붙인다. 새 배치는 spawnMode:'add', 교정은 spawnMode:'update'와 조회한 기존 spawn.id를 명시한다. 수정 ID가 없으면 새 스폰을 만들지 말고 대상을 다시 조회한다. 의도적인 복수 배치는 서로 다른 ID로 add한다. 불필요한 스폰 하나는 remove_field_spawn({mapId,spawnId})으로 제거하며 적·트룹은 유지한다. 없는 리소스/트룹 오류는 선행 데이터를 고친 뒤 재시도한다.",
     },
     {
       id: "controls",

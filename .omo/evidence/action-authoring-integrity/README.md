@@ -32,3 +32,26 @@ Execution journal: `/tmp/ulw-20260907-191135.jJiUQp.md`.
 - QA project: `oprn-1a8ac23163`. The initial genre preset had already added an
   unrelated slime spawn; preservation checks include that existing spawn rather
   than pretending the target was the only map entry.
+
+## Explicit spawn mutation
+
+- RED: `spawn-red-confirmed.json` / `spawn-red.log`: 12 behavior failures after
+  correcting the test fixture's map-tree shape. The initial fixture-error run is
+  not counted as proof.
+- Explicit add/update, missing-ID rejection, map identity, targeted removal,
+  roguelike-reference protection and published-schema tests now pass.
+- The non-default `chase:false` fixture also exposed an omitted-setting reset.
+  A diagnostic run identified unconsumed `width`/`height` aliases in the stored
+  area. The writer now preserves omitted chase and stores canonical Rect fields;
+  assertions were retained. See `spawn-alias-red.log`.
+- `spawn-final-green.json` / `spawn-green.log`: 98 related tests passed.
+- `spawn-surface.json`: actual browser store operations rejected unknown update,
+  duplicate add and invalid mode with no mutation; explicit add, update and
+  targeted delete succeeded, and the actual Supabase reload retained attacks,
+  database records, existing IDs and `chase:false`.
+- App typecheck, regenerated tool catalog and final full build passed.
+  See `spawn-validation.json`.
+
+Compatibility is intentional: omitted `spawnMode` retains legacy upsert/append.
+New AI guidance uses explicit modes. This is not a claim that legacy omission is
+duplicate-proof or that deliberately repeated enemies are forbidden.

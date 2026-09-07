@@ -18,6 +18,28 @@ contract belongs to the authoring boundary.
 Regression seam: `test/actionTools.test.ts`, through the real `runTool` path and
 the canonical serialize/deserialize round trip.
 
+## Explicit field-spawn mutations (2026-09-07)
+
+New AI authoring should specify top-level `spawnMode` on `make_action_enemy`.
+`"add"` requires a spawn and rejects an ID already present on the selected map.
+`"update"` requires a nonblank existing `spawn.id` on that exact map; an unknown
+ID fails with `spawn-not-found` without changing the enemy or adding a spawn.
+Both operations retain the existing required map, troop and area payload.
+Successful results include `mapId`, `spawnId` and `spawnOutcome`.
+
+Omitting `spawnMode` deliberately preserves legacy upsert/append behavior.
+That compatibility path is not duplicate-proof: use explicit modes for new
+creation and correction. Deliberate multiple spawns remain supported, including
+multiple spawns of the same enemy or troop.
+
+`remove_field_spawn({mapId, spawnId})` removes only that authored map entry.
+It never deletes enemy records, rewards, troops or other spawns. Missing targets
+fail, and references from `roguelikeRoom.encounterSlots` block removal with
+`spawn-in-use`; callers must update those references explicitly.
+
+Regression seam: `test/actionAuthoringPrerequisites.test.ts`, including direct
+handler rejection without mutation, real runner results and published schemas.
+
 ## Monster resource discovery and AI appearance evidence (2026-09-07)
 
 `list_monster_resources({})` returns the entire current monster index, without a default
