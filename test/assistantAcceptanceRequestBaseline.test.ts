@@ -13,10 +13,14 @@ type Call = { readonly name: string; readonly args: Record<string, unknown> };
 const room = { mapId: "request-a-room" };
 const start = { mapId: createBlankProject().startMapId };
 const region = { x: 0, y: 0, w: 2, h: 2 };
-function plan(acceptance?: readonly AcceptancePromise[]): Call {
+const twoStepItems = [
+  { id: "edit", title: "First", instruction: "Rename the room" },
+  { id: "verify", title: "Second", instruction: "Check preservation" },
+];
+function plan(acceptance?: readonly AcceptancePromise[], items = [{ id: "edit", title: "Edit", instruction: "Edit the map" }]): Call {
   return { name: "set_work_plan", args: {
     goal: "Request baseline contract",
-    layers: [{ title: "Edit", items: [{ id: "edit", title: "Edit", instruction: "Edit the map" }] }],
+    layers: [{ title: "Edit", items }],
     ...(acceptance ? { acceptance } : {}),
   } };
 }
@@ -39,7 +43,8 @@ async function afterRequestA() {
     config: { ...config, agentMode: "chat" },
     declareIntent,
     chat: async (_config, request): Promise<ChatResult> => {
-      if (!request.tools?.length) return { message: { role: "assistant", content: JSON.stringify({ action: "resume" }) }, finishReason: "stop" };
+      // New user requests are adopted by the main planner, not by resetting IDs in a generator repair.
+      if (!request.tools?.length) return { message: { role: "assistant", content: JSON.stringify({ action: "replan", ...rounds[0]?.find(call => call.name === "set_work_plan")?.args }) }, finishReason: "stop" };
       const batch = rounds[index++];
       return batch ? { message: { role: "assistant", content: null, tool_calls: batch.map((call, i) => ({
         id: `call-${index}-${i}`, type: "function", function: { name: call.name, arguments: JSON.stringify(call.args) },
@@ -49,6 +54,8 @@ async function afterRequestA() {
   });
   const run = async (batches: readonly (readonly Call[])[], autonomous = true) => {
     rounds = batches; index = 0; events.length = 0;
+    const targetMapId = batches.flat().find(call => call.name === "set_map_properties")?.args.mapId;
+    if (typeof targetMapId === "string") declareIntent.mockImplementation(fixedDeclarer({ mode: "modify", targetMapId }));
     return session.sendUserMessage("Edit the requested map", event => events.push(event), undefined, { autonomous });
   };
   await run([
@@ -107,7 +114,7 @@ describe("per-request acceptance baselines", () => {
     expect(events.filter(event => event.type === "tool_call" && event.name === "set_map_properties")).toMatchObject([{ result: { ok: true } }]);
     if (applied) {
       const milestone = events.findIndex(event => event.type === "milestone_applied");
-      const latePlan = events.findLastIndex(event => event.type === "tool_call" && event.name === "set_work_plan");
+      const latePlan = events.map(event => event.type === "tool_call" && event.name === "set_work_plan").lastIndexOf(true);
       expect(milestone).toBeGreaterThan(-1);
       expect(milestone).toBeLessThan(latePlan);
     }
@@ -124,15 +131,13 @@ describe("per-request acceptance baselines", () => {
     session.updateConfig({ ...config, agentMode: "chat", maxToolCalls: 1 });
     // When the first step applies a change and a synthetic continuation adopts new promises.
     await run([
-      [{ name: "set_work_plan", args: { goal: "Two steps", layers: [{ title: "Edit", items: [
-        { title: "First", instruction: "Rename the room" }, { title: "Second", instruction: "Check preservation" },
-      ] }] } }],
+      [plan(undefined, twoStepItems)],
       [rename(room.mapId, "Changed in first step")],
       [{ name: "complete_work_item", args: {} }],
       [plan([
         { id: "keep-room", title: "Keep room", criteria: [{ kind: "preserve", target: room }] },
         { id: "changed-room", title: "Changed room", criteria: [{ kind: "targetChange", target: room }] },
-      ])],
+      ], twoStepItems)],
       [skip],
     ]);
     // Then the applied milestone and continuation cannot turn changed content into a baseline.

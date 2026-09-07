@@ -1,0 +1,10 @@
+[
+  { "name": "남쪽항구", "eventId": "ev_guide_south_port" },
+  { "name": "초원마을", "eventId": "ev_guide_grassland_village" },
+  { "name": "숲속마을", "eventId": "ev_guide_forest_village" },
+  { "name": "호수쉼터", "eventId": "ev_guide_lake_shelter" },
+  { "name": "산길초소", "eventId": "ev_guide_mountain_post" },
+  { "name": "황야유적", "eventId": "ev_guide_desert_ruins" },
+  { "name": "설원마을", "eventId": "ev_guide_snow_village" },
+  { "name": "습지연구소", "eventId": "ev_guide_wetland_lab" }
+]

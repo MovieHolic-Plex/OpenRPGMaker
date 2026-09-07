@@ -13,7 +13,7 @@
 
 | 갈래 | 목록 위치 | 개수 | 대체 |
 |---|---|---|---|
-| v1 타일 배치/지식/조회 | `v2/index.ts` `V1_TILE_SUPERSEDED` | 20 | v3 정공법(`fill_region`, `tile_erase`, `place_props`, `author_house`) · `propose_tile_vocabulary` · `tile_query` |
+| v1 타일 배치/지식/조회 | `v2/index.ts` `V1_TILE_SUPERSEDED` | 17 | v3 정공법(`fill_region`, `tile_erase`, `place_props`, `author_house`) · `propose_tile_vocabulary` · `tile_query` |
 | 구조물 스탬프 시공 | — (등록 제거, 2026-09-04) | 0 | `author_house` / `build_wall` / `fill_region` — 사람 팔레트는 유지 |
 | 구 지식 UI 보조 | `toolRegistry.ts` `LEGACY_TILE_KNOWLEDGE_SUPERSEDED` | 5 | `propose_tile_vocabulary` · `tile_query` |
 | 구 v2 배치 래퍼 | `v2/index.ts` `REMOVED_V2_PLACE_TOOLS` | 4 | **이미 제거됨** — 이름 매핑만 테스트/문서용으로 잔존 |
@@ -44,6 +44,10 @@
 
 ## 개별 판단 메모
 
+- `paint_tiles`: **활성 복원 (2026-09-07)** — `fill_region`은 라벨 기반 면 채우기라
+  숫자 타일의 rect/line/cells 조작을 대체하지 못한다. 실제 월드맵 계획은 이 도구를 요구했지만
+  실행 스키마에서는 숨겨져 설원 시공이 누락됐다. 기존 구현과 보호 게이트를 그대로 노출한다.
+  `paintToolExposure`가 계획 요구 스키마와 실제 눈 타일 쓰기를 검증한다.
 - `paint_road`: **폐기 아님** — 흙길 오토타일 본선. `V1_TILE_SUPERSEDED`에 넣지 않은
   것이 의도임(주석 참조). NAME_DOMAIN_OVERRIDES로 tile+map 도메인 노출.
 - `set_tile_metadata`/`upsert_tile_group` 계열: 어휘 승인 파이프라인이 안정되면 2단계로.
