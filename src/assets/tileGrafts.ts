@@ -110,20 +110,11 @@ function tileXY(tile: number, tilesPerRow: number, tileSize: number): { x: numbe
 }
 
 function sourceWidth(source: GraftSource): number {
-  // Duck-type image vs canvas: node evidence DOM stubs Image without HTMLImageElement.
-  if ("naturalWidth" in source) {
-    const width = source.naturalWidth || source.width;
-    if (width > 0) return width;
-  }
-  return source.width;
+  return source instanceof HTMLImageElement ? source.naturalWidth || source.width : source.width;
 }
 
 function sourceHeight(source: GraftSource): number {
-  if ("naturalHeight" in source) {
-    const height = source.naturalHeight || source.height;
-    if (height > 0) return height;
-  }
-  return source.height;
+  return source instanceof HTMLImageElement ? source.naturalHeight || source.height : source.height;
 }
 
 function hashString(value: string): string {

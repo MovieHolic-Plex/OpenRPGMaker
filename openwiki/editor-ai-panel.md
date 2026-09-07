@@ -65,12 +65,14 @@ also remains an observable error. Contracts: `toolImageEventRender`,
 `toolImageEventAcceptanceSession`; `scripts/evidence-event-visual-render.mts`
 captures pixel changes for movement, graphic selection and later-page visuals.
 
-Grafted tileset atlases used by `show_map_region` / `toolImageCanvas` must finish
-an exact bake (`awaitGraftedTilesetImageUrl` in `tileGraftImageCache.ts`) bound to
-base URL, geometry and graft identity before a reviewable image is returned.
-Pending or missing graft sources raise `tileset-graft-rendering-unavailable` and
-admit no base-atlas receipt. Ordinary editor `tilesetImageUrl` may still show the
-transient ungrafted sheet until bake completion. Contract: `toolImageGraftReadiness`.
+Grafted tileset atlases used by `show_map_region` / `toolImageCanvas` require a
+complete bake bound to base URL, geometry and graft identity
+(`peekGraftedTilesetImageUrl` / `tileGraftImageCache.ts`) before a reviewable
+image is returned. While pending, evidence schedules the bake and fails closed
+immediately with `tileset-graft-rendering-unavailable` (no Session hang on held
+I/O, no base-atlas receipt). Missing/failed sources stay unapproved. Ordinary
+editor `tilesetImageUrl` may still show the transient ungrafted sheet until bake
+completion. Contract: `toolImageGraftReadiness`.
 
 
 `TurnResult.review`, `result_review` events and `HarnessSnapshot.resultReview`

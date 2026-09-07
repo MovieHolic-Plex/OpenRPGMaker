@@ -1,4 +1,4 @@
-import { awaitGraftedTilesetImageUrl } from "@/assets/tileGraftImageCache";
+import { graftedTilesetImageUrl, peekGraftedTilesetImageUrl } from "@/assets/tileGraftImageCache";
 import { activeTileGrafts } from "@/assets/tileGrafts";
 import { tilesetBaseImageUrl } from "@/editor/tilesetImage";
 import type { TilesetDef } from "@/project/types";
@@ -60,29 +60,20 @@ export function canvasDataUrl(canvas: HTMLCanvasElement): string | null {
 
 /**
  * Load the atlas actually used by tool image evidence.
- * Active grafts must finish an exact bake bound to geometry/grafts/base URL before
- * any image is returned; pending or failed sources fail closed (no base-atlas proof).
- * Ordinary editor CSS/preview still uses tilesetImageUrl's transient base fallback.
+ * Active grafts require a complete bake already bound to geometry/grafts/base URL.
+ * While pending, schedule that bake and fail closed immediately (no base-atlas proof,
+ * no Session hang on held I/O). Ordinary editor CSS still uses tilesetImageUrl fallback.
  */
-export function loadTilesetImage(tileset: TilesetDef, signal?: AbortSignal): Promise<HTMLImageElement> {
-  return resolveTilesetImageUrl(tileset, signal).then((url) => loadImageUrl(url));
-}
-
-async function resolveTilesetImageUrl(tileset: TilesetDef, signal?: AbortSignal): Promise<string> {
+export function loadTilesetImage(tileset: TilesetDef): Promise<HTMLImageElement> {
   const baseUrl = tilesetBaseImageUrl(tileset);
-  if (activeTileGrafts(tileset).length === 0) return baseUrl;
-  if (signal?.aborted) {
-    throw new Error(
-      `tileset-graft-rendering-unavailable: tileset ${tileset.id}; graft atlas bake cancelled; no approval`,
-    );
-  }
-  const baked = await awaitGraftedTilesetImageUrl(tileset, baseUrl, signal);
-  if (!baked) {
-    throw new Error(
-      `tileset-graft-rendering-unavailable: tileset ${tileset.id}; graft atlas bake incomplete or source missing; no approval`,
-    );
-  }
-  return baked;
+  if (activeTileGrafts(tileset).length === 0) return loadImageUrl(baseUrl);
+  const ready = peekGraftedTilesetImageUrl(tileset, baseUrl);
+  if (ready) return loadImageUrl(ready);
+  // Schedule the exact bake; evidence must not block the turn awaiting source I/O.
+  void graftedTilesetImageUrl(tileset, baseUrl);
+  return Promise.reject(new Error(
+    `tileset-graft-rendering-unavailable: tileset ${tileset.id}; graft atlas bake pending or incomplete; no approval`,
+  ));
 }
 
 function loadImageUrl(url: string): Promise<HTMLImageElement> {

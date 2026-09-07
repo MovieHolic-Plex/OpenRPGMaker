@@ -1,34 +1,52 @@
 {
-  "case": "session-held-then-release",
+  "case": "session-pending-then-ready-bake",
   "beforeHash": "b08965b8d0fd6116f813a8c961e2b8afb3e36f245377785406b7e03d06b813d6",
-  "renderedHash": "27d5a9e73532f007c42d33221a2f6f2f9c7b5a1883d6a3ecedd17f5ef93dcb61",
+  "readyHash": "27d5a9e73532f007c42d33221a2f6f2f9c7b5a1883d6a3ecedd17f5ef93dcb61",
   "samePng": false,
-  "reviews": [
+  "pendingReviews": [
     {
-      "revision": 1,
-      "requiredProblems": [],
-      "imageCount": 1,
-      "held": false
+      "imageCount": 0
+    },
+    {
+      "imageCount": 0
     }
   ],
-  "review": {
+  "readyReviews": [
+    {
+      "imageCount": 1
+    }
+  ],
+  "pendingAuthority": false,
+  "readyAuthority": true,
+  "pendingReview": {
+    "status": "changes_requested",
+    "revision": 1,
+    "summary": "Fixture review",
+    "findings": [
+      {
+        "id": "required-0",
+        "target": "required-evidence",
+        "problem": "show_map_region: current rendered coverage of changed map map_blank_start required",
+        "requestedChange": "Repair the reported requirement on this draft and rerun its evidence tool.",
+        "validation": "The same required check must pass on the current revision."
+      }
+    ]
+  },
+  "readyReview": {
     "status": "approved",
     "revision": 1,
     "summary": "Fixture review",
     "findings": []
   },
-  "stoppedReason": "final",
-  "authority": true,
+  "loads": [
+    "/assets/easyrpg-chipset-combined-town-transparent.png",
+    "/assets/easyrpg-chipset-interior-transparent.png"
+  ],
   "grafts": [
     {
       "targetTile": 0,
       "sourceChipset": "tex_easyrpg_chipset_interior",
       "sourceTile": 100
     }
-  ],
-  "loads": [
-    "/assets/easyrpg-chipset-combined-town-transparent.png",
-    "/assets/easyrpg-chipset-interior-transparent.png"
-  ],
-  "dataUrlLoadCount": 1
+  ]
 }

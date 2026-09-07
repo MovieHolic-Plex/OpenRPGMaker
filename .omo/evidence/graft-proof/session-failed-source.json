@@ -2,16 +2,10 @@
   "case": "session-failed-source-load",
   "reviews": [
     {
-      "imageCount": 0,
-      "requiredProblems": [
-        "show_map_region: current rendered coverage of changed map map_blank_start required"
-      ]
+      "imageCount": 0
     },
     {
-      "imageCount": 0,
-      "requiredProblems": [
-        "show_map_region: current rendered coverage of changed map map_blank_start required"
-      ]
+      "imageCount": 0
     }
   ],
   "review": {
@@ -38,7 +32,8 @@
   ],
   "loads": [
     "/assets/easyrpg-chipset-combined-town-transparent.png",
+    "/assets/easyrpg-chipset-interior-transparent.png",
+    "/assets/easyrpg-chipset-combined-town-transparent.png",
     "/assets/easyrpg-chipset-interior-transparent.png"
-  ],
-  "dataUrlLoadCount": 0
+  ]
 }

@@ -48,19 +48,11 @@ export function isTransparentColorKeySourceImage(source: object): source is HTML
 }
 
 function sourceImageWidth(source: HTMLImageElement | HTMLCanvasElement): number {
-  if ("naturalWidth" in source) {
-    const width = source.naturalWidth || source.width;
-    if (width > 0) return width;
-  }
-  return source.width;
+  return source instanceof HTMLImageElement ? source.naturalWidth || source.width : source.width;
 }
 
 function sourceImageHeight(source: HTMLImageElement | HTMLCanvasElement): number {
-  if ("naturalHeight" in source) {
-    const height = source.naturalHeight || source.height;
-    if (height > 0) return height;
-  }
-  return source.height;
+  return source instanceof HTMLImageElement ? source.naturalHeight || source.height : source.height;
 }
 
 export function resolveTransparentColorKeys(

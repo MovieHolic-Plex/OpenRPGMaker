@@ -3,15 +3,25 @@ import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { AssistantSession } from "@/ai/assistantSession";
-import { renderToolImages } from "@/ai/toolImageRenderer";
+import { renderToolImages, type RenderedToolImage } from "@/ai/toolImageRenderer";
 import { requiresVisualReview } from "@/ai/mapVisualEvidence";
-import { clearTileGraftImageCache } from "@/assets/tileGraftImageCache";
+import {
+  awaitGraftedTilesetImageUrl,
+  clearTileGraftImageCache,
+  peekGraftedTilesetImageUrl,
+} from "@/assets/tileGraftImageCache";
 import { clearTilesetImageCache } from "@/ai/toolImageCanvas";
+import { tilesetBaseImageUrl } from "@/editor/tilesetImage";
 import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
 import { createBlankProject } from "@/project/defaults";
+import type { GameMap, Project, TilesetDef } from "@/project/types";
 import { fixedDeclarer } from "./intentFixture";
 import { independentReviewPayload, approvedReviewResponse } from "./independentReviewFixture";
-import { installToolImageRasterDom } from "./toolImageRasterDom";
+import {
+  installToolImageRasterDom,
+  installToolImageUrlHoldGate,
+  installToolImageUrlLoadFailure,
+} from "./toolImageRasterDom";
 
 const EVIDENCE_DIR = path.resolve(".omo/evidence/graft-proof");
 /** Interior chipset is a valid set_tile_grafts source and a distinct atlas from the default town sheet. */
@@ -25,138 +35,123 @@ afterEach(() => {
 });
 
 function pngHash(dataUrl: string): string {
-  return createHash("sha256").update(Buffer.from(dataUrl.split(",")[1]!, "base64")).digest("hex");
+  const parts = dataUrl.split(",");
+  const payload = parts[1];
+  if (!payload) throw new Error("expected base64 png data url");
+  return createHash("sha256").update(Buffer.from(payload, "base64")).digest("hex");
 }
 
-function writeJson(name: string, value: unknown): string {
+function writeJson(name: string, value: unknown): void {
   fs.mkdirSync(EVIDENCE_DIR, { recursive: true });
-  const filePath = path.join(EVIDENCE_DIR, name);
-  fs.writeFileSync(filePath, `${JSON.stringify(value, null, 2)}\n`);
-  return filePath;
+  fs.writeFileSync(path.join(EVIDENCE_DIR, name), `${JSON.stringify(value, null, 2)}\n`);
 }
 
-type HoldGate = {
-  readonly sourceHeld: Promise<void>;
-  readonly loads: string[];
-  release: () => void;
-  isHolding: () => boolean;
-};
+function requireStartMap(project: Project): GameMap {
+  const map = project.maps[project.startMapId];
+  if (!map) throw new Error("start map missing");
+  return map;
+}
 
-function installUrlHoldGate(holdUrlSnippet: string): HoldGate {
-  const RasterImage = globalThis.Image as unknown as {
-    new (): HTMLImageElement & {
-      src: string;
-      onload: ((this: GlobalEventHandlers, ev: Event) => unknown) | null;
-      onerror: OnErrorEventHandler;
-    };
-  };
-  const loads: string[] = [];
-  let heldImage: HTMLImageElement | null = null;
-  let heldUrl = "";
-  let releaseSource = false;
-  let heldResolve!: () => void;
-  const sourceHeld = new Promise<void>((resolve) => { heldResolve = resolve; });
-  const parentSetter = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(new RasterImage()), "src")?.set
-    ?? Object.getOwnPropertyDescriptor(RasterImage.prototype, "src")?.set;
+function requireTileset(project: Project, tilesetId: string): TilesetDef {
+  const tileset = project.tilesets[tilesetId];
+  if (!tileset) throw new Error(`tileset missing: ${tilesetId}`);
+  return tileset;
+}
 
-  class HeldImage extends RasterImage {
-    override get src() {
-      return super.src;
-    }
-    override set src(url: string) {
-      loads.push(url);
-      if (!releaseSource && heldImage === null && url.includes(holdUrlSnippet)) {
-        heldUrl = url;
-        heldImage = this as unknown as HTMLImageElement;
-        heldResolve();
-        return;
-      }
-      super.src = url;
-    }
-  }
-  vi.stubGlobal("Image", HeldImage);
+function requireRendered(images: readonly RenderedToolImage[]): RenderedToolImage {
+  const image = images[0];
+  if (!image) throw new Error("expected rendered image");
+  return image;
+}
 
+function seedBlankRegion(project: Project): {
+  readonly map: GameMap;
+  readonly tileset: TilesetDef;
+  readonly region: { readonly mapId: string; readonly x: number; readonly y: number; readonly w: number; readonly h: number };
+} {
+  const map = requireStartMap(project);
+  map.width = 4;
+  map.height = 4;
+  map.lowerTiles = Array(16).fill(0);
+  map.upperTiles = Array(16).fill(-1);
+  map.events = [];
+  const tileset = requireTileset(project, map.tilesetId);
+  return { map, tileset, region: { mapId: map.id, x: 0, y: 0, w: 4, h: 4 } };
+}
+
+function regionPayload(map: GameMap): {
+  readonly mapId: string;
+  readonly x: number;
+  readonly y: number;
+  readonly w: number;
+  readonly h: number;
+  readonly lower: number[];
+  readonly upper: number[];
+} {
+  return { mapId: map.id, x: 0, y: 0, w: 4, h: 4, lower: map.lowerTiles, upper: map.upperTiles };
+}
+
+function applyInteriorGraft(tileset: TilesetDef): void {
+  tileset.tileGrafts = [{ targetTile: 0, sourceChipset: GRAFT_SOURCE, sourceTile: 100 }];
+}
+
+async function waitForExactGraftBake(tileset: TilesetDef): Promise<string> {
+  const baseUrl = tilesetBaseImageUrl(tileset);
+  const cached = peekGraftedTilesetImageUrl(tileset, baseUrl);
+  if (cached) return cached;
+  const baked = await awaitGraftedTilesetImageUrl(tileset, baseUrl);
+  if (!baked) throw new Error("expected complete graft bake");
+  return baked;
+}
+
+function toolCall(name: string, args: object, id: string): ChatResult {
   return {
-    sourceHeld,
-    loads,
-    isHolding: () => heldImage !== null && !releaseSource,
-    release: () => {
-      releaseSource = true;
-      if (!heldImage || !parentSetter) return;
-      parentSetter.call(heldImage, heldUrl);
+    message: {
+      role: "assistant",
+      content: null,
+      tool_calls: [{ id, type: "function", function: { name, arguments: JSON.stringify(args) } }],
     },
+    finishReason: "tool_calls",
   };
 }
 
-function installSourceLoadFailure(failUrlSnippet: string): string[] {
-  const RasterImage = globalThis.Image;
-  const loads: string[] = [];
-  class FailImage extends RasterImage {
-    override get src() { return super.src; }
-    override set src(url: string) {
-      loads.push(url);
-      if (url.includes(failUrlSnippet)) {
-        queueMicrotask(() => this.onerror?.(new Error(`forced load failure: ${url}`)));
-        return;
-      }
-      super.src = url;
-    }
-  }
-  vi.stubGlobal("Image", FailImage);
-  return loads;
+function nonDataLoads(loads: readonly string[]): string[] {
+  return loads.filter((url) => !url.startsWith("data:"));
 }
 
 describe("tool image graft atlas readiness", () => {
-  it("does not resolve a held graft source as the base atlas PNG", async () => {
+  it("fails closed while a graft source is held, then yields a changed PNG after release", async () => {
     const restore = installToolImageRasterDom();
     try {
       const project = createBlankProject();
-      const map = project.maps[project.startMapId]!;
-      map.width = 4;
-      map.height = 4;
-      map.lowerTiles = Array(16).fill(0);
-      map.upperTiles = Array(16).fill(-1);
-      map.events = [];
-      const tileset = project.tilesets[map.tilesetId]!;
-      const region = { mapId: map.id, x: 0, y: 0, w: 4, h: 4, lower: map.lowerTiles, upper: map.upperTiles };
+      const { map, tileset } = seedBlankRegion(project);
+      const region = regionPayload(map);
 
       const before = await renderToolImages(project, "show_map_region", region);
       expect(before).toHaveLength(1);
-      const beforeHash = pngHash(before[0]!.dataUrl);
+      const beforeHash = pngHash(requireRendered(before).dataUrl);
 
-      tileset.tileGrafts = [{
-        targetTile: 0,
-        sourceChipset: GRAFT_SOURCE,
-        sourceTile: 100,
-      }];
+      applyInteriorGraft(tileset);
       expect(requiresVisualReview(createBlankProject(), project, map.id)).toBe(true);
 
-      const gate = installUrlHoldGate(GRAFT_SOURCE_PATH_SNIP);
-      const renderPromise = renderToolImages(project, "show_map_region", region);
-      await gate.sourceHeld;
-      await Promise.resolve();
-      await Promise.resolve();
-      const race = await Promise.race([
-        renderPromise.then((images) => ({ status: "resolved" as const, images })),
-        Promise.resolve({ status: "pending" as const }),
-      ]);
-      expect(race.status).toBe("pending");
+      const gate = installToolImageUrlHoldGate(GRAFT_SOURCE_PATH_SNIP);
+      await expect(renderToolImages(project, "show_map_region", region))
+        .rejects.toThrow(/tileset-graft-rendering-unavailable/);
       expect(gate.isHolding()).toBe(true);
 
       gate.release();
-      const after = await renderPromise;
+      await waitForExactGraftBake(tileset);
+      const after = await renderToolImages(project, "show_map_region", region);
       expect(after).toHaveLength(1);
-      const afterHash = pngHash(after[0]!.dataUrl);
-      const observation = {
-        case: "held-then-release-renderer",
+      const afterHash = pngHash(requireRendered(after).dataUrl);
+      writeJson("held-release-renderer.json", {
+        case: "held-fail-closed-then-release",
         beforeHash,
         afterHash,
-        samePng: before[0]!.dataUrl === after[0]!.dataUrl,
-        loads: gate.loads,
+        samePng: beforeHash === afterHash,
+        loads: nonDataLoads(gate.loads),
         dependencyHeld: true,
-      };
-      writeJson("held-release-renderer.json", observation);
-      expect(observation.samePng).toBe(false);
+      });
       expect(afterHash).not.toBe(beforeHash);
     } finally {
       restore();
@@ -167,14 +162,8 @@ describe("tool image graft atlas readiness", () => {
     const restore = installToolImageRasterDom();
     try {
       const project = createBlankProject();
-      const map = project.maps[project.startMapId]!;
-      map.width = 4;
-      map.height = 4;
-      map.lowerTiles = Array(16).fill(0);
-      map.upperTiles = Array(16).fill(-1);
-      map.events = [];
-      const tileset = project.tilesets[map.tilesetId]!;
-      const region = { mapId: map.id, x: 0, y: 0, w: 4, h: 4, lower: map.lowerTiles, upper: map.upperTiles };
+      const { map, tileset } = seedBlankRegion(project);
+      const region = regionPayload(map);
       const before = await renderToolImages(project, "show_map_region", region);
       expect(before).toHaveLength(1);
 
@@ -189,40 +178,113 @@ describe("tool image graft atlas readiness", () => {
       writeJson("missing-source-renderer.json", {
         case: "missing-source",
         grafts: tileset.tileGrafts,
-        beforeHash: pngHash(before[0]!.dataUrl),
+        beforeHash: pngHash(requireRendered(before).dataUrl),
       });
     } finally {
       restore();
     }
   });
 
-  it("withholds session approval while the graft source is held, then admits a changed PNG after release", async () => {
+  it("does not reuse a ready graft bake after atlas geometry changes", async () => {
+    const restore = installToolImageRasterDom();
+    try {
+      const project = createBlankProject();
+      const { map, tileset } = seedBlankRegion(project);
+      const region = regionPayload(map);
+      applyInteriorGraft(tileset);
+      await waitForExactGraftBake(tileset);
+      const first = await renderToolImages(project, "show_map_region", region);
+      expect(first).toHaveLength(1);
+      const firstHash = pngHash(requireRendered(first).dataUrl);
+      const firstReady = peekGraftedTilesetImageUrl(tileset, tilesetBaseImageUrl(tileset));
+      expect(firstReady).not.toBeNull();
+
+      tileset.tilesPerRow += 1;
+      expect(peekGraftedTilesetImageUrl(tileset, tilesetBaseImageUrl(tileset))).toBeNull();
+      await expect(renderToolImages(project, "show_map_region", region))
+        .rejects.toThrow(/tileset-graft-rendering-unavailable/);
+
+      await waitForExactGraftBake(tileset);
+      const secondReady = peekGraftedTilesetImageUrl(tileset, tilesetBaseImageUrl(tileset));
+      const second = await renderToolImages(project, "show_map_region", region);
+      expect(second).toHaveLength(1);
+      writeJson("geometry-cache-bind.json", {
+        case: "geometry-change-invalidates-ready-bake",
+        firstHash,
+        firstReadyUrlPrefix: typeof firstReady === "string" ? firstReady.slice(0, 32) : null,
+        secondReadyUrlPrefix: typeof secondReady === "string" ? secondReady.slice(0, 32) : null,
+        urlsDiffer: firstReady !== secondReady,
+        tilesPerRow: tileset.tilesPerRow,
+      });
+      expect(secondReady).not.toBeNull();
+      expect(secondReady).not.toBe(firstReady);
+    } finally {
+      restore();
+    }
+  });
+
+  it("withholds session approval while pending, then admits a changed PNG after a ready bake", async () => {
     const restore = installToolImageRasterDom();
     vi.stubGlobal("fetch", vi.fn(async () => new Response(null, { status: 201 })));
     try {
       const project = createBlankProject();
-      const map = project.maps[project.startMapId]!;
-      map.width = 4;
-      map.height = 4;
-      map.lowerTiles = Array(16).fill(0);
-      map.upperTiles = Array(16).fill(-1);
-      map.events = [];
-      const tileset = project.tilesets[map.tilesetId]!;
-      const region = { mapId: map.id, x: 0, y: 0, w: 4, h: 4 };
+      const { map, tileset, region } = seedBlankRegion(project);
+      const before = await renderToolImages(project, "show_map_region", regionPayload(map));
+      const beforeHash = pngHash(requireRendered(before).dataUrl);
 
-      const before = await renderToolImages(project, "show_map_region", {
-        ...region,
-        lower: map.lowerTiles,
-        upper: map.upperTiles,
+      const gate = installToolImageUrlHoldGate(GRAFT_SOURCE_PATH_SNIP);
+      const pendingReviews: Array<{ imageCount: number }> = [];
+      let pendingRound = 0;
+      const pendingSession = new AssistantSession(project, {
+        config: { ...defaultAiConfig(), agentMode: "chat", maxToolCalls: 8 },
+        declareIntent: fixedDeclarer({
+          mode: "modify",
+          targetMapId: null,
+          tools: ["set_tile_grafts", "show_map_region"],
+        }),
+        renderImages: async (draft, name, data) => renderToolImages(draft, name, data),
+        chat: async (_config, request): Promise<ChatResult> => {
+          const input = independentReviewPayload(request);
+          if (input) {
+            const images = request.messages
+              .flatMap((message) => (Array.isArray(message.content) ? message.content : []))
+              .filter((part) => part.type === "image_url");
+            pendingReviews.push({ imageCount: images.length });
+            const approved = approvedReviewResponse(request);
+            if (!approved) throw new Error("expected approvedReviewResponse");
+            return approved;
+          }
+          pendingRound += 1;
+          if (pendingRound === 1) {
+            return toolCall("set_tile_grafts", {
+              tilesetId: tileset.id,
+              grafts: [{ targetTile: 0, sourceChipset: GRAFT_SOURCE, sourceTile: 100 }],
+              reason: "replace visible tile zero",
+            }, "graft");
+          }
+          if (pendingRound === 2) {
+            return toolCall("show_map_region", { ...region, reason: "review while pending" }, "show-pending");
+          }
+          return { message: { role: "assistant", content: "Done pending attempt" }, finishReason: "stop" };
+        },
       });
-      expect(before).toHaveLength(1);
-      const beforeHash = pngHash(before[0]!.dataUrl);
 
-      const gate = installUrlHoldGate(GRAFT_SOURCE_PATH_SNIP);
-      const reviews: Array<{ revision: number; requiredProblems: unknown; imageCount: number; held: boolean }> = [];
-      let renderedHash: string | null = null;
-      let round = 0;
-      const session = new AssistantSession(project, {
+      const pendingResult = await pendingSession.sendUserMessage("Graft and inspect while source is held");
+      expect(gate.isHolding()).toBe(true);
+      expect(pendingSession.isDraftReviewApproved()).toBe(false);
+      expect(pendingResult.review?.status).not.toBe("approved");
+      expect(pendingReviews.every((entry) => entry.imageCount === 0)).toBe(true);
+
+      gate.release();
+      const draftTileset = pendingSession.getProposedProject().tilesets[tileset.id];
+      if (!draftTileset) throw new Error("draft tileset missing");
+      await waitForExactGraftBake(draftTileset);
+
+      const readyProject = structuredClone(pendingSession.getProposedProject());
+      const readyReviews: Array<{ imageCount: number }> = [];
+      let readyHash: string | null = null;
+      let readyRound = 0;
+      const readySession = new AssistantSession(readyProject, {
         config: { ...defaultAiConfig(), agentMode: "chat", maxToolCalls: 8 },
         declareIntent: fixedDeclarer({
           mode: "modify",
@@ -231,7 +293,8 @@ describe("tool image graft atlas readiness", () => {
         }),
         renderImages: async (draft, name, data) => {
           const images = await renderToolImages(draft, name, data);
-          renderedHash = images[0] ? pngHash(images[0].dataUrl) : null;
+          const image = images[0];
+          readyHash = image ? pngHash(image.dataUrl) : null;
           return images;
         },
         chat: async (_config, request): Promise<ChatResult> => {
@@ -240,82 +303,139 @@ describe("tool image graft atlas readiness", () => {
             const images = request.messages
               .flatMap((message) => (Array.isArray(message.content) ? message.content : []))
               .filter((part) => part.type === "image_url");
-            reviews.push({
-              revision: input.revision,
-              requiredProblems: input.requiredProblems,
-              imageCount: images.length,
-              held: gate.isHolding(),
-            });
-            return approvedReviewResponse(request)!;
+            readyReviews.push({ imageCount: images.length });
+            const approved = approvedReviewResponse(request);
+            if (!approved) throw new Error("expected approvedReviewResponse");
+            return approved;
           }
-          const calls = [
-            {
-              name: "set_tile_grafts",
-              args: {
-                tilesetId: tileset.id,
-                grafts: [{ targetTile: 0, sourceChipset: GRAFT_SOURCE, sourceTile: 100 }],
-                reason: "replace visible tile zero",
-              },
-            },
-            {
-              name: "show_map_region",
-              args: { ...region, reason: "review current graft" },
-            },
-          ];
-          const call = calls[round++];
-          return call
-            ? {
-                message: {
-                  role: "assistant",
-                  content: null,
-                  tool_calls: [{
-                    id: `c${round}`,
-                    type: "function",
-                    function: { name: call.name, arguments: JSON.stringify(call.args) },
-                  }],
-                },
-                finishReason: "tool_calls",
-              }
-            : { message: { role: "assistant", content: "Done" }, finishReason: "stop" };
+          readyRound += 1;
+          if (readyRound === 1) {
+            return toolCall("set_tile_grafts", {
+              tilesetId: tileset.id,
+              grafts: [{ targetTile: 0, sourceChipset: GRAFT_SOURCE, sourceTile: 100 }],
+              reason: "confirm graft still present for review",
+            }, "graft-ready");
+          }
+          if (readyRound === 2) {
+            return toolCall("show_map_region", { ...region, reason: "review after exact bake" }, "show-ready");
+          }
+          return { message: { role: "assistant", content: "Done ready proof" }, finishReason: "stop" };
         },
       });
 
-      const turnPromise = session.sendUserMessage("Replace the visible atlas tile with a graft and inspect it");
-      await gate.sourceHeld;
-      await Promise.resolve();
-      await Promise.resolve();
-      expect(session.isDraftReviewApproved()).toBe(false);
-      expect(reviews.length).toBe(0);
-      expect(gate.isHolding()).toBe(true);
-
-      gate.release();
-      const result = await turnPromise;
-
-      const observation = {
-        case: "session-held-then-release",
+      const readyResult = await readySession.sendUserMessage("Confirm graft and show the ready atlas");
+      writeJson("session-held-release.json", {
+        case: "session-pending-then-ready-bake",
         beforeHash,
-        renderedHash,
-        samePng: renderedHash === beforeHash,
-        reviews,
-        review: result.review,
-        stoppedReason: result.stoppedReason,
-        authority: session.isDraftReviewApproved(),
-        grafts: session.getProposedProject().tilesets[tileset.id]!.tileGrafts,
-        loads: gate.loads,
-      };
-      writeJson("session-held-release.json", observation);
+        readyHash,
+        samePng: readyHash === beforeHash,
+        pendingReviews,
+        readyReviews,
+        pendingAuthority: pendingSession.isDraftReviewApproved(),
+        readyAuthority: readySession.isDraftReviewApproved(),
+        pendingReview: pendingResult.review,
+        readyReview: readyResult.review,
+        loads: nonDataLoads(gate.loads),
+        grafts: draftTileset.tileGrafts ?? null,
+      });
       writeJson("session-held-release-png-meta.json", {
         beforeHash,
-        afterHash: renderedHash,
-        changed: renderedHash !== beforeHash,
+        afterHash: readyHash,
+        changed: readyHash !== beforeHash,
       });
 
-      expect(observation.grafts).toHaveLength(1);
-      expect(observation.samePng).toBe(false);
-      expect(renderedHash).not.toBeNull();
-      expect(observation.reviews.some((entry) => entry.imageCount >= 1)).toBe(true);
-      expect(result.review?.status).toBe("approved");
-      expect(session.isDraftReviewApproved()).toBe(true);
+      expect(readyHash).not.toBeNull();
+      expect(readyHash).not.toBe(beforeHash);
+      expect(readyReviews.some((entry) => entry.imageCount >= 1)).toBe(true);
+      expect(readyResult.review?.status).toBe("approved");
+      expect(readySession.isDraftReviewApproved()).toBe(true);
+      expect(pendingSession.isDraftReviewApproved()).toBe(false);
+    } finally {
+      restore();
+    }
+  });
+
+  it("aborts a held-graft turn without receipt or authority; later bake cannot revive it", async () => {
+    const restore = installToolImageRasterDom();
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(null, { status: 201 })));
+    try {
+      const project = createBlankProject();
+      const { tileset, region } = seedBlankRegion(project);
+      const gate = installToolImageUrlHoldGate(GRAFT_SOURCE_PATH_SNIP);
+      const controller = new AbortController();
+      let round = 0;
+      let renderedCount = 0;
+
+      const session = new AssistantSession(project, {
+        config: { ...defaultAiConfig(), agentMode: "chat", maxToolCalls: 8 },
+        declareIntent: fixedDeclarer({
+          mode: "modify",
+          targetMapId: null,
+          tools: ["set_tile_grafts", "show_map_region"],
+        }),
+        renderImages: async (draft, name, data) => {
+          try {
+            const images = await renderToolImages(draft, name, data);
+            renderedCount += images.length;
+            return images;
+          } catch {
+            return [];
+          }
+        },
+        chat: async (_config, request): Promise<ChatResult> => {
+          const input = independentReviewPayload(request);
+          if (input) {
+            const approved = approvedReviewResponse(request);
+            if (!approved) throw new Error("expected approvedReviewResponse");
+            return approved;
+          }
+          round += 1;
+          if (round === 1) {
+            return toolCall("set_tile_grafts", {
+              tilesetId: tileset.id,
+              grafts: [{ targetTile: 0, sourceChipset: GRAFT_SOURCE, sourceTile: 100 }],
+              reason: "graft then abort",
+            }, "graft");
+          }
+          if (round === 2) {
+            return toolCall("show_map_region", { ...region, reason: "attempt proof while held" }, "show");
+          }
+          return { message: { role: "assistant", content: "Done" }, finishReason: "stop" };
+        },
+      });
+
+      const result = await session.sendUserMessage(
+        "Graft and inspect, then cancel",
+        (event) => {
+          if (event.type === "tool_call" && event.name === "show_map_region") {
+            void gate.sourceHeld.then(() => {
+              if (!controller.signal.aborted) controller.abort();
+            });
+          }
+        },
+        controller.signal,
+      );
+
+      expect(gate.isHolding()).toBe(true);
+      expect(result.stoppedReason).toBe("aborted");
+      expect(session.isDraftReviewApproved()).toBe(false);
+      expect(renderedCount).toBe(0);
+
+      gate.release();
+      const draftTileset = session.getProposedProject().tilesets[tileset.id];
+      if (!draftTileset) throw new Error("draft tileset missing");
+      await waitForExactGraftBake(draftTileset);
+      expect(session.isDraftReviewApproved()).toBe(false);
+
+      writeJson("session-held-abort.json", {
+        case: "session-held-abort-no-revive",
+        stoppedReason: result.stoppedReason,
+        authority: session.isDraftReviewApproved(),
+        renderedCount,
+        heldThroughAbort: true,
+        bakeCompletedAfterAbort: peekGraftedTilesetImageUrl(draftTileset, tilesetBaseImageUrl(draftTileset)) !== null,
+        grafts: draftTileset.tileGrafts ?? null,
+      });
     } finally {
       restore();
     }
@@ -326,17 +446,10 @@ describe("tool image graft atlas readiness", () => {
     vi.stubGlobal("fetch", vi.fn(async () => new Response(null, { status: 201 })));
     try {
       const project = createBlankProject();
-      const map = project.maps[project.startMapId]!;
-      map.width = 4;
-      map.height = 4;
-      map.lowerTiles = Array(16).fill(0);
-      map.upperTiles = Array(16).fill(-1);
-      map.events = [];
-      const tileset = project.tilesets[map.tilesetId]!;
-      const region = { mapId: map.id, x: 0, y: 0, w: 4, h: 4 };
-      const loads = installSourceLoadFailure(GRAFT_SOURCE_PATH_SNIP);
+      const { tileset, region } = seedBlankRegion(project);
+      const failure = installToolImageUrlLoadFailure(GRAFT_SOURCE_PATH_SNIP);
       let round = 0;
-      const reviews: Array<{ imageCount: number; requiredProblems: unknown }> = [];
+      const reviews: Array<{ imageCount: number }> = [];
       const session = new AssistantSession(project, {
         config: { ...defaultAiConfig(), agentMode: "chat", maxToolCalls: 8 },
         declareIntent: fixedDeclarer({
@@ -351,49 +464,39 @@ describe("tool image graft atlas readiness", () => {
             const images = request.messages
               .flatMap((message) => (Array.isArray(message.content) ? message.content : []))
               .filter((part) => part.type === "image_url");
-            reviews.push({ imageCount: images.length, requiredProblems: input.requiredProblems });
-            return approvedReviewResponse(request)!;
+            reviews.push({ imageCount: images.length });
+            const approved = approvedReviewResponse(request);
+            if (!approved) throw new Error("expected approvedReviewResponse");
+            return approved;
           }
-          const calls = [
-            {
-              name: "set_tile_grafts",
-              args: {
-                tilesetId: tileset.id,
-                grafts: [{ targetTile: 0, sourceChipset: GRAFT_SOURCE, sourceTile: 100 }],
-                reason: "broken source bytes",
-              },
-            },
-            {
-              name: "show_map_region",
-              args: { ...region, reason: "attempt proof" },
-            },
-          ];
-          const call = calls[round++];
-          return call
-            ? {
-                message: {
-                  role: "assistant",
-                  content: null,
-                  tool_calls: [{
-                    id: `c${round}`,
-                    type: "function",
-                    function: { name: call.name, arguments: JSON.stringify(call.args) },
-                  }],
-                },
-                finishReason: "tool_calls",
-              }
-            : { message: { role: "assistant", content: "Done" }, finishReason: "stop" };
+          round += 1;
+          if (round === 1) {
+            return toolCall("set_tile_grafts", {
+              tilesetId: tileset.id,
+              grafts: [{ targetTile: 0, sourceChipset: GRAFT_SOURCE, sourceTile: 100 }],
+              reason: "broken source bytes",
+            }, "graft");
+          }
+          if (round === 2) {
+            return toolCall("show_map_region", { ...region, reason: "attempt proof" }, "show");
+          }
+          return { message: { role: "assistant", content: "Done" }, finishReason: "stop" };
         },
       });
 
       const result = await session.sendUserMessage("Graft from a failing chipset load and inspect");
+      // Let the scheduled failing bake settle so the next peek stays empty.
+      await awaitGraftedTilesetImageUrl(
+        requireTileset(session.getProposedProject(), tileset.id),
+        tilesetBaseImageUrl(requireTileset(session.getProposedProject(), tileset.id)),
+      );
       const observation = {
         case: "session-failed-source-load",
         reviews,
         review: result.review,
         authority: session.isDraftReviewApproved(),
-        grafts: session.getProposedProject().tilesets[tileset.id]!.tileGrafts,
-        loads,
+        grafts: session.getProposedProject().tilesets[tileset.id]?.tileGrafts ?? null,
+        loads: nonDataLoads(failure.loads),
       };
       writeJson("session-failed-source.json", observation);
       expect(observation.grafts).toHaveLength(1);

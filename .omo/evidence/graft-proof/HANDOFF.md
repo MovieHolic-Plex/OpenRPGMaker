@@ -98,3 +98,39 @@ See `source-hashes.txt`. Primary paths:
 
 Combine with functional integration; ultrabrain re-review of the immutable
 repaired commit (this handoff’s HEAD after commit).
+
+## Follow-up (nonblocking pending + abort)
+
+Committed separately after the initial await-based repair.
+
+- Evidence path **fail-closes immediately** while a complete bake is not ready:
+  `loadTilesetImage` peeks `peekGraftedTilesetImageUrl`, schedules via
+  `graftedTilesetImageUrl`, and rejects `tileset-graft-rendering-unavailable`
+  without awaiting held source I/O. Session turns no longer hang on held grafts.
+- Public Session abort regression: held source stays unreleased, turn abort
+  settles `stoppedReason: "aborted"` with zero image receipts and no authority;
+  completing the bake afterward cannot revive authority
+  (`session-held-abort.json`).
+- Geometry cache identity regression: changing `tilesPerRow` drops the ready
+  peek; a new bake URL is distinct (`geometry-cache-bind.json`).
+- Raster fixture now installs `HTMLImageElement` / `HTMLCanvasElement` as the
+  pngjs doubles; production `instanceof` dimension helpers restored (no
+  duck-typing workaround). Hold/fail gates are typed exports without
+  `as unknown as` in the new test code.
+- Still no `assistantSession` edits. Optional unused AbortSignal removed from
+  the evidence load path.
+
+Commands:
+
+```sh
+npm run typecheck:app
+npm test -- test/toolImageGraftReadiness.test.ts \
+  test/toolImageEventRender.test.ts \
+  test/assistantTilesetVisualReview.test.ts \
+  test/mapVisualTilesetDependency.test.ts \
+  test/toolImageEventAcceptanceSession.test.ts \
+  test/assistantBackgroundReview.test.ts \
+  --maxWorkers=2
+# 6 files / 28 passed
+```
+

@@ -2,7 +2,8 @@
 // tilesetImageUrl 은 동기 API(CSS background/img src)라서, 베이크는 비동기로 돌리고
 // 결과 dataURL 을 캐시한다 — 캐시 미스면 베이스 URL 을 임시 반환하고 베이크를 예약한다.
 // 베이크 완료 시 "oprn:tileset-graft-image-baked" 윈도우 이벤트를 쏜다(다음 리렌더에서 반영).
-// 어시스턴트 증거 렌더는 awaitGraftedTilesetImageUrl 로 동일 키의 완전 베이크만 인정한다.
+// 어시스턴트 증거 렌더는 peekGraftedTilesetImageUrl 로 동일 키의 완전 베이크만 인정한다.
+// 미완 시 베이크만 예약하고 즉시 unavailable (세션 턴을 held I/O 에 묶지 않음).
 import {
   ASSET_TILESET,
   BUNDLED_EASYRPG_CHIPSET_ASSETS,

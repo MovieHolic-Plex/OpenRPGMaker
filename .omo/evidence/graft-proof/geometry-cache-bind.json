@@ -1,0 +1,8 @@
+{
+  "case": "geometry-change-invalidates-ready-bake",
+  "firstHash": "27d5a9e73532f007c42d33221a2f6f2f9c7b5a1883d6a3ecedd17f5ef93dcb61",
+  "firstReadyUrlPrefix": "data:image/png;base64,iVBORw0KGg",
+  "secondReadyUrlPrefix": "data:image/png;base64,iVBORw0KGg",
+  "urlsDiffer": true,
+  "tilesPerRow": 31
+}

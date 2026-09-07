@@ -55,3 +55,12 @@ Branch: `agent/ai-full-context-graft-proof`
 ## Residual risk
 
 Session turn abort is not plumbed into `renderImages` (out of authorized session edit scope). Bake abort API is ready; production cancel still depends on Image settlement or outer timeout policy unchanged from other atlas loads.
+
+## Follow-up surfaceEvidence (nonblocking + abort)
+
+| scenario id | criterion | surface | invocation | verdict | artifactRefs |
+| --- | --- | --- | --- | --- | --- |
+| S9-session-abort | held turn abort; bake cannot revive | public AssistantSession + AbortSignal | `toolImageGraftReadiness` abort case | **PASS** stoppedReason aborted, authority false after bake | session-held-abort.json, followup-vitest.log |
+| S10-geometry-cache | cache binds geometry | renderToolImages + peek | geometry-change case | **PASS** ready URL changes after tilesPerRow++ | geometry-cache-bind.json |
+| S11-nonblocking-pending | no Session hang on held I/O | renderToolImages fail-closed | held-fail-closed-then-release | **PASS** immediate unavailable then ready PNG | held-release-renderer.json |
+

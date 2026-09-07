@@ -42,7 +42,8 @@ type RgbaSource = {
   readonly data: Uint8ClampedArray;
 };
 
-class RasterImage {
+/** pngjs-backed Image stand-in used by tool image evidence tests. */
+export class ToolImageRasterImage {
   width = 0;
   height = 0;
   naturalWidth = 0;
@@ -76,15 +77,16 @@ class RasterImage {
   }
 }
 
-class RasterCanvas {
+/** pngjs-backed Canvas stand-in used by tool image evidence tests. */
+export class ToolImageRasterCanvas {
   width = 0;
   height = 0;
   private pixels = new Uint8ClampedArray(0);
 
-  getContext(type: string, _opts?: unknown): RasterContext | null {
+  getContext(type: string, _opts?: unknown): ToolImageRasterContext | null {
     if (type !== "2d") return null;
     this.ensureBuffer();
-    return new RasterContext(this);
+    return new ToolImageRasterContext(this);
   }
 
   toDataURL(_mime = "image/png"): string {
@@ -105,7 +107,7 @@ class RasterCanvas {
   }
 }
 
-class RasterContext {
+class ToolImageRasterContext {
   fillStyle = "#000000";
   strokeStyle = "#000000";
   font = "10px sans-serif";
@@ -114,7 +116,7 @@ class RasterContext {
   lineWidth = 1;
   imageSmoothingEnabled = false;
 
-  constructor(private readonly canvas: RasterCanvas) {}
+  constructor(private readonly canvas: ToolImageRasterCanvas) {}
 
   fillRect(x: number, y: number, w: number, h: number): void {
     const color = parseCssColor(this.fillStyle);
@@ -156,7 +158,7 @@ class RasterContext {
   fillText(): void {}
 
   drawImage(
-    image: RasterImage | RasterCanvas,
+    image: ToolImageRasterImage | ToolImageRasterCanvas,
     sx: number,
     sy: number,
     sw?: number,
@@ -235,8 +237,8 @@ class RasterContext {
   }
 }
 
-function toRgbaSource(image: RasterImage | RasterCanvas): RgbaSource {
-  if (image instanceof RasterCanvas) {
+function toRgbaSource(image: ToolImageRasterImage | ToolImageRasterCanvas): RgbaSource {
+  if (image instanceof ToolImageRasterCanvas) {
     return { width: image.width, height: image.height, data: image.buffer };
   }
   return { width: image.width, height: image.height, data: image.data };
@@ -248,7 +250,7 @@ function blit(
   sy: number,
   sw: number,
   sh: number,
-  dest: RasterCanvas,
+  dest: ToolImageRasterCanvas,
   dx: number,
   dy: number,
   dw: number,
@@ -317,25 +319,118 @@ function readRaster(src: string): PngRaster {
 export function installToolImageRasterDom(): () => void {
   const previousDocument = globalThis.document;
   const previousImage = globalThis.Image;
+  const previousHtmlImage = globalThis.HTMLImageElement;
+  const previousHtmlCanvas = globalThis.HTMLCanvasElement;
   Object.defineProperty(globalThis, "document", {
     configurable: true,
     writable: true,
     value: {
       createElement: (tagName: string) => {
         if (tagName !== "canvas") throw new Error(`unexpected element: ${tagName}`);
-        return new RasterCanvas();
+        return new ToolImageRasterCanvas();
       },
     },
   });
   Object.defineProperty(globalThis, "Image", {
     configurable: true,
     writable: true,
-    value: RasterImage,
+    value: ToolImageRasterImage,
+  });
+  // Production graft bake uses instanceof HTMLImageElement / HTMLCanvasElement.
+  Object.defineProperty(globalThis, "HTMLImageElement", {
+    configurable: true,
+    writable: true,
+    value: ToolImageRasterImage,
+  });
+  Object.defineProperty(globalThis, "HTMLCanvasElement", {
+    configurable: true,
+    writable: true,
+    value: ToolImageRasterCanvas,
   });
   return () => {
     Object.defineProperty(globalThis, "document", { configurable: true, writable: true, value: previousDocument });
     Object.defineProperty(globalThis, "Image", { configurable: true, writable: true, value: previousImage });
+    Object.defineProperty(globalThis, "HTMLImageElement", { configurable: true, writable: true, value: previousHtmlImage });
+    Object.defineProperty(globalThis, "HTMLCanvasElement", { configurable: true, writable: true, value: previousHtmlCanvas });
   };
+}
+
+/** Hold matching Image src loads until release(); typed for graft readiness tests. */
+export type ToolImageHoldGate = {
+  readonly sourceHeld: Promise<void>;
+  readonly loads: readonly string[];
+  release: () => void;
+  isHolding: () => boolean;
+};
+
+export function installToolImageUrlHoldGate(holdUrlSnippet: string): ToolImageHoldGate {
+  const BaseImage = globalThis.Image;
+  if (typeof BaseImage !== "function") {
+    throw new Error("installToolImageRasterDom must run before installToolImageUrlHoldGate");
+  }
+  const loads: string[] = [];
+  let heldImage: ToolImageRasterImage | null = null;
+  let heldUrl = "";
+  let releaseSource = false;
+  let heldResolve: (() => void) | undefined;
+  const sourceHeld = new Promise<void>((resolve) => { heldResolve = resolve; });
+  const parentSetter = Object.getOwnPropertyDescriptor(BaseImage.prototype, "src")?.set;
+  if (!parentSetter) {
+    throw new Error("ToolImageRasterImage src setter missing");
+  }
+
+  class HeldImage extends BaseImage {
+    override get src(): string {
+      return super.src;
+    }
+    override set src(url: string) {
+      loads.push(url);
+      if (!releaseSource && heldImage === null && url.includes(holdUrlSnippet)) {
+        heldUrl = url;
+        heldImage = this;
+        heldResolve?.();
+        return;
+      }
+      super.src = url;
+    }
+  }
+  Object.defineProperty(globalThis, "Image", { configurable: true, writable: true, value: HeldImage });
+  Object.defineProperty(globalThis, "HTMLImageElement", { configurable: true, writable: true, value: HeldImage });
+
+  return {
+    sourceHeld,
+    loads,
+    isHolding: () => heldImage !== null && !releaseSource,
+    release: () => {
+      releaseSource = true;
+      if (!heldImage) return;
+      parentSetter.call(heldImage, heldUrl);
+    },
+  };
+}
+
+export function installToolImageUrlLoadFailure(failUrlSnippet: string): { readonly loads: readonly string[] } {
+  const BaseImage = globalThis.Image;
+  if (typeof BaseImage !== "function") {
+    throw new Error("installToolImageRasterDom must run before installToolImageUrlLoadFailure");
+  }
+  const loads: string[] = [];
+  class FailImage extends BaseImage {
+    override get src(): string {
+      return super.src;
+    }
+    override set src(url: string) {
+      loads.push(url);
+      if (url.includes(failUrlSnippet)) {
+        queueMicrotask(() => this.onerror?.(new Error(`forced load failure: ${url}`)));
+        return;
+      }
+      super.src = url;
+    }
+  }
+  Object.defineProperty(globalThis, "Image", { configurable: true, writable: true, value: FailImage });
+  Object.defineProperty(globalThis, "HTMLImageElement", { configurable: true, writable: true, value: FailImage });
+  return { loads };
 }
 
 export function decodeDataUrlPng(dataUrl: string): PngRaster {
