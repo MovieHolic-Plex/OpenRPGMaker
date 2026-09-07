@@ -278,6 +278,18 @@ Phase는 순차, phase 내부는 아래 matrix가 허용하는 작업만 병렬.
   - Acceptance/QA: 신규 `npm test -- test/linkedAnimalHousing.test.ts`; happy 배치2개독립정원/upgrade2→5/이동ID유지, failure 충돌·비용·종거절전체불변, shrink/철거동물삭제0/정렬고정/이중ref거부. `E/11/{red,green,lifecycle}.json`.
   - Commit: Y | `feat(life): link animal housing to farm building instances`.
 
+- [ ] 47. 미지급 건물 금액 증빙을 수령 뒤에도 보존한다
+  - Tier: HEAVY. Astra 전담 비시각 복구 거래 수정. Task12 승인 전 선행 조건.
+  - Source: 통합 `b5c679ef`의 `placement-parent-astra/recovery-rights.mts` 실제 exit1. 지불 gold10+item1 건물 격리 후 item 수령이 미지급 gold10 원본까지 삭제하며 Save5 재개에서도 복구 기록이 없다.
+  - Work: 기존 claim 스키마와 골드 자동 환급 없음 정책을 유지하면서 미지급 증빙을 보존한다. 지급된 claim 제거·단조 sequence·원자성·분할 claim 상한·정상 무환급 철거를 유지한다. 분할 품목마다 미지급 권리를 재발행하지 않고, 옛 혼합 기록도 추정 지급/자의적 중복 제거 없이 보존한다.
+  - Acceptance/QA: 기존 정상 거래 characterization GREEN 후 양성 반례 RED-first. 수령·중복 재시도·Save5 writer/parser/apply·분할·capacity/sequence/재고 실패의 전체 상태와 원문 보존을 공개 API로 검증한다. 증거 `E/47-48/`, 독립 Astra 판정 필요. 기존 녹색 테스트로 보존 승인을 대체하지 않는다.
+
+- [ ] 48. 장식의 실제 지불 품목 증빙을 동결해 복구한다
+  - Tier: HEAVY. Task47과 같은 복구 경로를 쓰므로 한 소유자가 직렬 수정한다.
+  - Source: `placement-parent-astra/recovery-rights-state.json`에서 실제 item1을 소비한 새 장식이 증빙 없는 여섯 배치 필드만 저장되고, 비호환 격리 뒤 payable items가 비어 있다.
+  - Work: 새 장식의 실제 지불/회수 품목 증빙을 런타임 배치와 Save5에 동결한다. 현재 정의 변경·삭제 후에도 입증 품목만 정확히 한 번 회수한다. 현재 공개 배치는 필수 placementItemId의 품목 한 개를 소비한다. 무료 배치 기능이나 시작 배치의 지불 증빙 규칙을 새로 만들지 않는다. 증빙 없는 시작/legacy 배치는 미해결 원본으로 보존하며 옛 비용을 현재 정의로 소급 추정하지 않는다. Project4/Save4→Save5 정책과 live context 비저장은 유지한다.
+  - Acceptance/QA: RED-first, 신규 유료·legacy/시작·품목 ID 누락 거절·정의/품목 변경·삭제·unknown 복구·상한 실패·정상 회수·중복 수령·반복 저장/재개를 실제 공개 API로 검증한다. H1/H2/무환급 철거/공간 안전 회귀도 보존한다. 증거 `E/47-48/`, 다른 Astra 문맥의 독립 판정 필요.
+
 - [ ] 12. live 배치 안전과 저장 복원 점유를 분리한다
   - Recommended task executor category: deep — 같은 점유 함수의 거래·복원·스폰 소비자 구별.
   - Scope/References: `spatialOccupancy.ts:28-88`, `spatialPlacementTransactions.ts`, `spatialPlacementRestore.ts`, `lifeLedger.ts:135-230`, `playerStatusMenuController.ts`, live event/body 해석 모듈, `seasonalForage.ts`.
