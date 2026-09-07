@@ -1,0 +1,165 @@
+{
+  "screenshots": [
+    {
+      "width": 1024,
+      "height": 768,
+      "screenshot": "/home/main/z-project/rpg-zzu-monster-catalog-0907/output/evidence/monster-catalog/final-ui-1024.png",
+      "sha256": "9120a6b26af993eff3152c53d7ecc635f036a9db4206028d9d22b404d987eddb",
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "date": "Sun, 06 Sep 2026 20:38:13 GMT"
+      },
+      "requestedModel": "gemini-3.1-pro",
+      "actualModel": "gemini-3.1-pro",
+      "id": "oh-my-pi-1788727093407",
+      "elapsedMs": 13186,
+      "content": "```json\n{\n  \"verdict\": \"fail\",\n  \"observed\": \"모달 좌측에 검색창과 몬스터 목록, 우측에 선택된 이미지와 텍스트가 표시됨.\",\n  \"findings\": [\n    \"우측의 몬스터 이미지가 회색 배경 영역을 벗어나 하단의 파일명 텍스트와 겹쳐서 표시됨.\"\n  ]\n}\n```"
+    },
+    {
+      "width": 1280,
+      "height": 800,
+      "screenshot": "/home/main/z-project/rpg-zzu-monster-catalog-0907/output/evidence/monster-catalog/final-ui-1280.png",
+      "sha256": "adc46f0dd307369f91b1fb58e7e89b9924c87a9b09fd38d0944c4110bab5a13c",
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "date": "Sun, 06 Sep 2026 20:38:14 GMT"
+      },
+      "requestedModel": "gemini-3.1-pro",
+      "actualModel": "gemini-3.1-pro",
+      "id": "oh-my-pi-1788727094380",
+      "elapsedMs": 14170,
+      "content": "```json\n{\n  \"verdict\": \"fail\",\n  \"observed\": \"모달 좌측에 검색창과 몬스터 목록, 우측에 고블린 이미지가 표시됨. 우측 이미지가 배경 영역을 이탈해 텍스트와 겹침.\",\n  \"findings\": [\n    \"고블린 이미지가 회색 배경 컨테이너 하단으로 벗어남.\",\n    \"파일명 텍스트(generated-enemy...)가 몬스터 이미지 위로 겹쳐서 표시됨.\"\n  ]\n}\n```"
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "screenshot": "/home/main/z-project/rpg-zzu-monster-catalog-0907/output/evidence/monster-catalog/final-ui-1440.png",
+      "sha256": "53f64d021016fb3c53138a10d60ed988c9ebf94f408761e5d34b25e85da1d87b",
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "date": "Sun, 06 Sep 2026 20:38:13 GMT"
+      },
+      "requestedModel": "gemini-3.1-pro",
+      "actualModel": "gemini-3.1-pro",
+      "id": "oh-my-pi-1788727093380",
+      "elapsedMs": 13258,
+      "content": "```json\n{\n  \"verdict\": \"fail\",\n  \"observed\": \"몬스터 소재 모달 좌측에 검색창과 목록이, 우측에 고블린 이미지와 관련 텍스트가 표시됨.\",\n  \"findings\": [\n    \"우측 고블린 이미지와 'generated-enemy-goblin-scout' 텍스트가 겹쳐서 표시됨.\"\n  ]\n}\n```"
+    }
+  ],
+  "geometry": {
+    "identity": {
+      "tag": "DIV",
+      "class": "db-monster-resource-identity",
+      "x": 581.6666870117188,
+      "y": 142,
+      "width": 601.3333129882812,
+      "height": 251.5,
+      "bottom": 393.5,
+      "display": "block",
+      "position": "static",
+      "overflow": "visible",
+      "flexShrink": "0",
+      "objectFit": "fill",
+      "cssWidth": "601.333px",
+      "cssHeight": "251.5px",
+      "style": null
+    },
+    "children": [
+      {
+        "tag": "DIV",
+        "class": "db-monster-resource-preview",
+        "x": 581.6666870117188,
+        "y": 142,
+        "width": 601.3333129882812,
+        "height": 160,
+        "bottom": 302,
+        "display": "grid",
+        "position": "static",
+        "overflow": "visible",
+        "flexShrink": "1",
+        "objectFit": "fill",
+        "cssWidth": "601.333px",
+        "cssHeight": "160px",
+        "style": null
+      },
+      {
+        "tag": "CODE",
+        "class": "",
+        "x": 581.6666870117188,
+        "y": 301.75,
+        "width": 182,
+        "height": 20,
+        "bottom": 321.75,
+        "display": "inline",
+        "position": "static",
+        "overflow": "visible",
+        "flexShrink": "1",
+        "objectFit": "fill",
+        "cssWidth": "auto",
+        "cssHeight": "auto",
+        "style": null
+      },
+      {
+        "tag": "P",
+        "class": "",
+        "x": 581.6666870117188,
+        "y": 333.5,
+        "width": 601.3333129882812,
+        "height": 18,
+        "bottom": 351.5,
+        "display": "block",
+        "position": "static",
+        "overflow": "visible",
+        "flexShrink": "1",
+        "objectFit": "fill",
+        "cssWidth": "601.333px",
+        "cssHeight": "18px",
+        "style": null
+      },
+      {
+        "tag": "P",
+        "class": "",
+        "x": 581.6666870117188,
+        "y": 363.5,
+        "width": 601.3333129882812,
+        "height": 18,
+        "bottom": 381.5,
+        "display": "block",
+        "position": "static",
+        "overflow": "visible",
+        "flexShrink": "1",
+        "objectFit": "fill",
+        "cssWidth": "601.333px",
+        "cssHeight": "18px",
+        "style": null
+      }
+    ],
+    "image": {
+      "tag": "IMG",
+      "class": "",
+      "x": 581.6666870117188,
+      "y": 142,
+      "width": 601.3333129882812,
+      "height": 601.3333129882812,
+      "bottom": 743.3333129882812,
+      "display": "block",
+      "position": "static",
+      "overflow": "clip",
+      "flexShrink": "1",
+      "objectFit": "contain",
+      "cssWidth": "601.333px",
+      "cssHeight": "601.333px",
+      "style": null
+    }
+  },
+  "temporaryProbe": {
+    "frameHeight": 160,
+    "imageHeightBefore": 601.333,
+    "imageHeightWithMinmaxTracks": 160,
+    "styleRemoved": true
+  },
+  "cause": "Implicit grid min-content tracks allow the100%-sized image to exceed the fixed160px preview height."
+}

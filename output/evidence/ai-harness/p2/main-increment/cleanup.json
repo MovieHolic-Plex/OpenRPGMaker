@@ -1,0 +1,96 @@
+{
+  "ports": [
+    {
+      "port": 39841,
+      "independentlyRebound": true
+    },
+    {
+      "port": 39842,
+      "independentlyRebound": true
+    },
+    {
+      "port": 39843,
+      "independentlyRebound": true
+    }
+  ],
+  "native": {
+    "native-matrix": {
+      "absentBeforeRun": true,
+      "pageListenersAndTimersClosed": true,
+      "browserClosed": true,
+      "serverClosed": true,
+      "cacheRemoved": true,
+      "portReleased": true,
+      "remote": {
+        "projectId": "qa-ai-surface-bbad9129-c901-4898-993d-33a8c3b59763",
+        "kind": "deleted-and-absence-verified",
+        "commitIds": [
+          "30d41d19-bdf9-4017-b8ae-2aece07b2f57",
+          "2b2d9972-e23c-4848-88f0-7df2addab078",
+          "ab5edc4f-96f2-4de6-b00f-096509ff6f35",
+          "767ca5f6-0f15-422c-ba01-67685d1287fb",
+          "67ba691a-1f8a-44c6-968b-c5d469023997",
+          "6304d82f-8d4b-40d7-b1b2-0a6e9e588919",
+          "1e920498-c4e4-4c30-8e7b-7851c3d54de1",
+          "5b7a46c4-01dc-4aa7-bb3d-7afcda482624",
+          "258a3e13-46e3-4f3c-b2de-2b3df3bb2cb4",
+          "36a8b679-18b3-49d9-b542-833f1a39d26e"
+        ]
+      },
+      "remoteDeletedAndAbsent": true,
+      "reusedListener": false,
+      "activeRoutes": 0
+    },
+    "native-required": {
+      "absentBeforeRun": true,
+      "pageListenersAndTimersClosed": true,
+      "browserClosed": true,
+      "serverClosed": true,
+      "cacheRemoved": true,
+      "portReleased": true,
+      "remote": {
+        "projectId": "qa-ai-surface-e4fb195c-b0df-4c41-b435-5830133764a2",
+        "kind": "deleted-and-absence-verified",
+        "commitIds": [
+          "f4a384a6-cafa-4b77-ba91-316c16acbcf1"
+        ]
+      },
+      "remoteDeletedAndAbsent": true,
+      "reusedListener": false,
+      "activeRoutes": 0
+    },
+    "native-proof": {
+      "absentBeforeRun": true,
+      "pageListenersAndTimersClosed": true,
+      "browserClosed": true,
+      "serverClosed": true,
+      "cacheRemoved": true,
+      "portReleased": true,
+      "remote": {
+        "projectId": "qa-ai-surface-4b6994fe-e53e-40d1-9908-34089b0e1973",
+        "kind": "deleted-and-absence-verified",
+        "commitIds": [
+          "677ba3e0-cd57-435d-8490-337cdc7860d7",
+          "b90f18c6-91f1-4acf-a925-d5ce5c39ad4d",
+          "6e6cbad8-204f-4311-90c6-e60dd961b4a9"
+        ]
+      },
+      "remoteDeletedAndAbsent": true,
+      "reusedListener": false,
+      "activeRoutes": 0
+    }
+  },
+  "cacheEntries": [
+    "deps"
+  ],
+  "cacheMatchesInitial": true,
+  "tmpRootPreserved": true,
+  "tmpEntries": [
+    ".owner.json",
+    "full-gate-vite-cache",
+    "latest-main-base-vite-cache",
+    "merged-gates-vite-cache"
+  ],
+  "tmpMatchesInitial": true,
+  "preexistingDistRetained": true
+}

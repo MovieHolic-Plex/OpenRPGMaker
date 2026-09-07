@@ -18,6 +18,7 @@ import {
 } from "./supabaseProjectSync";
 import { projectWithoutEventDrafts } from "./eventDrafts";
 import { applyAudioDescriptionDelta } from "./audioDescriptions";
+import { applyMonsterMetadataDelta } from "./monsterMetadata";
 import { serialize, serializeForComparison } from "./io";
 import {
   applyEventDraftVault,
@@ -1243,10 +1244,18 @@ class ProjectStore {
       this.current.audioDescriptions,
       savedProject.audioDescriptions,
     );
-    if (JSON.stringify(audioDescriptions) !== JSON.stringify(this.current.audioDescriptions)) {
+    const monsterMetadata = applyMonsterMetadataDelta(
+      submittedProject.monsterMetadata,
+      this.current.monsterMetadata,
+      savedProject.monsterMetadata,
+    );
+    if (JSON.stringify(audioDescriptions) !== JSON.stringify(this.current.audioDescriptions)
+      || JSON.stringify(monsterMetadata) !== JSON.stringify(this.current.monsterMetadata)) {
       const reconciledProject = { ...this.current };
       if (audioDescriptions === undefined) delete reconciledProject.audioDescriptions;
       else reconciledProject.audioDescriptions = structuredClone(audioDescriptions);
+      if (monsterMetadata === undefined) delete reconciledProject.monsterMetadata;
+      else reconciledProject.monsterMetadata = structuredClone(monsterMetadata);
       this.current = reconciledProject;
       // Synchronization is observable, but is not a new authored mutation.
       this.emit({ scope: "project", origin: "system", projectSwitch: false });

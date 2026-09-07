@@ -8,6 +8,7 @@ import { switchDatabaseActiveTab } from "@/editor/panels/database";
 import { openActionContextMenu, openActionDialog } from "@/editor/panels/databaseEnemyActionDialog";
 import { aiImageGenerateField } from "@/editor/panels/aiImageGenerateField";
 import { openGraphicDialog } from "@/editor/panels/databaseEnemyGraphicDialog";
+import { monsterResourceSummary } from "@/editor/panels/monsterResourcePresentation";
 import { setSelectedMonsterSpeciesId } from "@/editor/panels/databaseMonsterSpeciesView";
 import { monsterSpeciesForEnemy, normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import { showConfirm } from "@/editor/ui/modal";
@@ -665,6 +666,7 @@ function graphicFields(record: EnemyRecord, rerender: () => void): HTMLElement[]
   // 스프라이트 미리보기는 히어로가 갖는다 — 같은 그림을 두 번 그리면
   // updateGraphicPreviewState 가 어느 쪽을 갱신할지 모호해진다.
   return [
+    ...(record.monsterResourceId ? [monsterResourceSummary(store.getCurrent(), record.monsterResourceId)] : []),
     sliderStepperField("전투 표시 크기 (%)", "db-field-enemy-battle-scale", record.battleScalePercent ?? 100, (battleScalePercent) =>
       updateDatabaseRecord("enemies", record.id, { battleScalePercent }),
       { min: 10, max: 300, step: 1, unit: "%" }

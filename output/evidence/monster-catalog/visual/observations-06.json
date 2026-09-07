@@ -1,0 +1,347 @@
+[
+  {
+    "index": 117,
+    "resourceId": "generated-enemy-lizardman-spear",
+    "sourceSha256": "f567e4f034da95c48c017d72441f8eb68b29e56c02a41d7d766957dd106603f3",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:45:14 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720314458",
+    "elapsedMs": 10948,
+    "content": "```json\n{\n  \"name\": \"창을 든 녹색 리자드맨\",\n  \"tags\": [\n    \"리자드맨\",\n    \"파충류\",\n    \"창\",\n    \"갑옷\",\n    \"lizardman\",\n    \"reptile\",\n    \"spear\",\n    \"armor\"\n  ],\n  \"description\": \"징이 박힌 가죽 갑옷을 입고 긴 창을 양손으로 쥐고 있는 녹색 비늘의 인간형 파충류입니다. 두 발로 서서 몸을 살짝 앞으로 숙인 자세를 취하고 있으며 굵은 꼬리가 뒤로 뻗어 있습니다.\",\n  \"uncertainty\": \"특정 작품이나 세계관에 속한 고유 종족명은 알 수 없어 겉으로 보이는 형태를 바탕으로 리자드맨으로 명명했습니다.\"\n}\n```"
+  },
+  {
+    "index": 118,
+    "resourceId": "generated-enemy-harpy-cliff",
+    "sourceSha256": "858765c3823c9736d6cc2f7dd3de2881c7b998a1387121c83cf9a71701d9508c",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:45:17 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720317326",
+    "elapsedMs": 12394,
+    "content": "```json\n{\n  \"name\": \"녹색 반인반조\",\n  \"tags\": [\n    \"반인반조\",\n    \"harpy\",\n    \"여성형\",\n    \"female\",\n    \"날개\",\n    \"wings\",\n    \"조류\",\n    \"avian\"\n  ],\n  \"description\": \"거대한 올리브색 날개와 새의 하체를 가진 여성 형태의 생물입니다. 징이 박힌 가죽 재질의 상의와 팔목 보호구, 허리 장식을 착용하고 있으며, 양팔을 앞으로 뻗은 채 공중에 떠 있는 듯한 자세를 취하고 있습니다.\",\n  \"uncertainty\": \"신화나 판타지 매체의 하피(Harpy)와 매우 유사한 외형이나, 정확한 고유 명칭이나 종족명은 알 수 없어 겉으로 보이는 특징을 바탕으로 이름을 지었습니다.\"\n}\n```"
+  },
+  {
+    "index": 119,
+    "resourceId": "generated-enemy-minotaur-maze",
+    "sourceSha256": "f275e4c11a8606ed7ecf3ebe4fb46d197d1792c45f4294aa5d3afe7b668050ac",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:45:19 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720319933",
+    "elapsedMs": 10422,
+    "content": "```json\n{\n  \"name\": \"무장한 미노타우로스\",\n  \"tags\": [\n    \"미노타우로스\",\n    \"minotaur\",\n    \"소인간\",\n    \"괴수\",\n    \"monster\",\n    \"도끼\",\n    \"axe\"\n  ],\n  \"description\": \"짙은 갈색 털과 붉은 눈을 가진 소의 머리에 근육질의 인간형 상체, 발굽이 있는 하반신을 가진 생물입니다. 금속 견갑과 팔보호구를 착용하고 커다란 양날 도끼를 양손으로 비스듬히 쥐고 서 있습니다.\",\n  \"uncertainty\": \"소의 머리와 인간의 몸을 결합한 특징적인 외형을 바탕으로 '미노타우로스'로 명명하였으나, 해당 세계관 내의 정확한 종족 명칭은 알 수 없습니다.\"\n}\n```"
+  },
+  {
+    "index": 120,
+    "resourceId": "generated-enemy-centaur-plains",
+    "sourceSha256": "9603231b0bfc47aaee19b6633c4a777de33c4e837dba24a7afd93e6143777d5e",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:45:20 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720320329",
+    "elapsedMs": 9929,
+    "content": "```json\n{\n  \"name\": \"켄타우로스 전사\",\n  \"tags\": [\n    \"켄타우로스\",\n    \"centaur\",\n    \"반인반마\",\n    \"창\",\n    \"spear\",\n    \"갑옷\",\n    \"armor\"\n  ],\n  \"description\": \"상반신은 구릿빛 갑옷을 입은 인간 남성이고 하반신은 갈색 말의 형태를 한 생물입니다. 오른손에 긴 창을 비스듬히 들고 서 있는 자세를 취하고 있습니다.\",\n  \"uncertainty\": \"보이는 외형을 바탕으로 켄타우로스 전사로 명명하였으나, 특정 세계관의 고유한 종족명이나 명칭은 알 수 없습니다.\"\n}\n```"
+  },
+  {
+    "index": 121,
+    "resourceId": "generated-enemy-troll-cave",
+    "sourceSha256": "1b8d21c5340ff20d5dcf218faf52479aab2ec40700285586a7fbbdae2958d000",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:45:32 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720331999",
+    "elapsedMs": 17541,
+    "content": "```json\n{\n  \"name\": \"가시 몽둥이를 든 다완 괴수\",\n  \"tags\": [\n    \"괴물\",\n    \"monster\",\n    \"거인\",\n    \"giant\",\n    \"인간형\",\n    \"humanoid\",\n    \"곤봉\",\n    \"club\"\n  ],\n  \"description\": \"뾰족한 귀와 튀어나온 아래 송곳니, 노란 눈을 가진 녹회색 피부의 거대한 인간형 괴물입니다. 온몸에 뾰족한 돌기와 붉은 흉터가 있고 왼쪽 팔이 두 개인 기형적인 체형을 띠고 있으며, 가시가 박힌 거대한 나무 몽둥이를 쥔 채 앞으로 웅크린 자세를 취하고 있습니다.\",\n  \"uncertainty\": \"트롤, 오거, 돌연변이 오크 등 거대 인간형 몬스터의 외형적 특징이 혼재되어 있으며, 특히 왼쪽 팔이 여러 개인 기형적인 구조를 가지고 있어 특정 세부 종족을 단정 지을 수 없습니다.\"\n}\n```"
+  },
+  {
+    "index": 122,
+    "resourceId": "generated-enemy-ogre-club",
+    "sourceSha256": "cea402396bc17ceeeeeb00bb6874340061d1a5976b67828a4304e5a8d5eb722c",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:45:29 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720329575",
+    "elapsedMs": 12238,
+    "content": "```json\n{\n  \"name\": \"곤봉을 든 녹색 오크\",\n  \"tags\": [\n    \"오크\",\n    \"orc\",\n    \"인간형\",\n    \"humanoid\",\n    \"괴물\",\n    \"monster\"\n  ],\n  \"description\": \"징이 박힌 거대한 나무 곤봉을 쥐고 있는 녹색 피부의 근육질 인간형 생물입니다. 찢어진 가죽 옷과 징이 박힌 방어구를 착용하고 있으며, 입 밖으로 튀어나온 큰 송곳니를 드러낸 채 몸을 앞으로 숙인 자세를 취하고 있습니다.\",\n  \"uncertainty\": \"대중적인 판타지 매체의 오크와 매우 유사한 외형을 띠고 있으나, 정확한 종족명이나 세부 분류는 시각적 정보만으로 확정할 수 없습니다.\"\n}\n```"
+  },
+  {
+    "index": 123,
+    "resourceId": "generated-enemy-imp-mischief",
+    "sourceSha256": "4f0e8a055e6417014849d85a24c4feaa1a508b82b89d0cc00419bc7bbe095aec",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:45:32 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720332217",
+    "elapsedMs": 12275,
+    "content": "```json\n{\n  \"name\": \"붉은 꼬마 악마\",\n  \"tags\": [\n    \"악마\",\n    \"demon\",\n    \"임프\",\n    \"imp\",\n    \"괴물\",\n    \"monster\"\n  ],\n  \"description\": \"붉은 피부에 뾰족한 두 개의 뿔과 작은 박쥐 날개를 가진 생물입니다. 양 손목에 징이 박힌 팔찌를 차고 낡은 천을 허리에 두른 채, 양손을 앞으로 뻗고 한쪽 다리를 들어올린 자세를 취하고 있습니다.\",\n  \"uncertainty\": \"이 생물이 임프인지 다른 종류의 소악마인지 정확한 종족명을 특정할 수 없어 눈에 보이는 형태를 바탕으로 이름을 붙였습니다.\"\n}\n```"
+  },
+  {
+    "index": 124,
+    "resourceId": "generated-enemy-fish-piranha",
+    "sourceSha256": "0f5fb73bcf629c7b7897016b67a7f280f483617c142a36c8ebe5c7a94aa6bda8",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:45:32 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720332451",
+    "elapsedMs": 12124,
+    "content": "```json\n{\n  \"name\": \"청색 주황 비늘 괴어\",\n  \"tags\": [\n    \"물고기\",\n    \"fish\",\n    \"어류\",\n    \"괴어\",\n    \"monster fish\",\n    \"이빨\",\n    \"teeth\"\n  ],\n  \"description\": \"등 쪽은 파란색, 얼굴과 지느러미 쪽은 주황색을 띠는 물고기 형태의 생물입니다. 날카로운 이빨이 가득한 큰 입을 벌리고 헤엄치는 자세를 취하고 있습니다.\",\n  \"uncertainty\": \"정확한 어종을 알 수 없는 가상의 물고기 형태이므로, 눈에 띄는 비늘 색상과 이빨 특징을 바탕으로 이름을 부여했습니다.\"\n}\n```"
+  },
+  {
+    "index": 125,
+    "resourceId": "generated-enemy-squid-deep",
+    "sourceSha256": "aad7541414437e480c0ab8b1852e5ca5b6a35d4612918955c7d84b4e9ca29e75",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:45:39 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720339074",
+    "elapsedMs": 9502,
+    "content": "```json\n{\n  \"name\": \"보라색 부리 오징어\",\n  \"tags\": [\n    \"두족류\",\n    \"오징어\",\n    \"보라색\",\n    \"cephalopod\",\n    \"squid\",\n    \"purple\"\n  ],\n  \"description\": \"짙은 보라색 몸체에 밝은 청록색 반점이 덮여 있는 두족류 형태의 생물입니다. 노란색의 큰 눈을 가지고 있으며, 얼굴 정면에 새의 부리를 연상시키는 뾰족한 구조가 돌출되어 있고 아래로 빨판이 달린 여러 개의 촉수가 뻗어 있습니다.\",\n  \"uncertainty\": \"전반적인 형태는 오징어와 같은 두족류와 유사하나, 입 안이 아닌 얼굴 정면에 새처럼 커다란 부리가 튀어나와 있어 정확한 종족을 특정하기 어렵습니다.\"\n}\n```"
+  },
+  {
+    "index": 126,
+    "resourceId": "generated-enemy-shark-land",
+    "sourceSha256": "a75f0c5db8d33f7c962f5b6af3182093f958ce5ee124865e4e816b6eb3606dbd",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:45:44 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720344148",
+    "elapsedMs": 12142,
+    "content": "```json\n{\n  \"name\": \"사족보행 상어\",\n  \"tags\": [\n    \"상어\",\n    \"괴물\",\n    \"사족보행\",\n    \"shark\",\n    \"monster\",\n    \"quadruped\"\n  ],\n  \"description\": \"푸른색 등과 밝은 배를 가진 상어의 몸체에 발톱과 비늘이 있는 네 개의 다리가 달린 생물입니다. 네 발로 땅을 딛고 서서 날카로운 이빨을 드러낸 채 입을 벌리고 있습니다.\",\n  \"uncertainty\": \"상어의 외형과 네 발 짐승의 특징이 혼합된 환상종의 형태로, 기존의 생물학적 분류에 따른 정확한 종족을 특정할 수 없습니다.\"\n}\n```"
+  },
+  {
+    "index": 127,
+    "resourceId": "generated-enemy-eel-electric",
+    "sourceSha256": "f3b400f41763ba6981761cf3075c70af87eb0e09859698f1f60cfb4560a6015e",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:45:40 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720340888",
+    "elapsedMs": 8668,
+    "content": "```json\n{\n  \"name\": \"푸른 번개장어\",\n  \"tags\": [\n    \"물고기\",\n    \"fish\",\n    \"뱀장어\",\n    \"eel\",\n    \"번개\",\n    \"lightning\"\n  ],\n  \"description\": \"파란색과 노란색의 지그재그 무늬가 교차하는 길쭉한 뱀장어 형태의 생물입니다. 날카로운 이빨을 드러낸 채 몸을 둥글게 구부리고 있으며, 몸 주변에 노란색 번개 모양의 시각 효과가 있습니다.\",\n  \"uncertainty\": \"정확한 생물학적 종을 확인할 수 없어 겉모습을 바탕으로 뱀장어로 지칭했습니다.\"\n}\n```"
+  },
+  {
+    "index": 128,
+    "resourceId": "generated-enemy-griffin-sky",
+    "sourceSha256": "f14d449fc666ca4c91a883f6152cb85ad35fd00caafc80b1120db4b106f37e31",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:45:42 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720342067",
+    "elapsedMs": 9612,
+    "content": "```json\n{\n  \"name\": \"갈색 그리핀\",\n  \"tags\": [\n    \"그리핀\",\n    \"griffin\",\n    \"환수\",\n    \"짐승\",\n    \"beast\",\n    \"새\",\n    \"bird\",\n    \"날개\"\n  ],\n  \"description\": \"독수리의 머리와 날개, 맹수의 몸통과 꼬리를 가진 갈색 생물입니다. 깃털이 달린 커다란 날개를 펼치고 네 발로 서 있는 자세를 취하고 있습니다.\",\n  \"uncertainty\": \"일반적인 그리핀의 외형을 띠고 있으나, 특정 세계관의 정확한 명칭은 확인할 수 없어 형태와 색상을 바탕으로 이름을 지정했습니다.\"\n}\n```"
+  },
+  {
+    "index": 129,
+    "resourceId": "generated-enemy-wyvern-cliff",
+    "sourceSha256": "3c4a8d634412a7dcd5597c54ac7230a91408278b6c0d0f41888aa87d051a7026",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:45:49 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720349902",
+    "elapsedMs": 10819,
+    "content": "```json\n{\n  \"name\": \"황록색 드래곤\",\n  \"tags\": [\n    \"드래곤\",\n    \"dragon\",\n    \"파충류\",\n    \"reptile\",\n    \"황록색\",\n    \"비행\",\n    \"연기\"\n  ],\n  \"description\": \"황록색 비늘과 뾰족한 뿔, 커다란 날개를 가진 네 발 달린 드래곤 형태의 생물입니다. 공중에 떠서 비행하는 자세로 입과 코에서 옅은 녹색 연기를 내뿜고 있습니다.\",\n  \"uncertainty\": \"내뿜는 연기가 단순한 숨결인지 특정 속성(예: 독가스)을 띠고 있는지는 외형만으로 확실치 않습니다.\"\n}\n```"
+  },
+  {
+    "index": 130,
+    "resourceId": "generated-enemy-roc-giant",
+    "sourceSha256": "b1602fe6ab3bc63d20ce27dc0fed23c5834693a2d38e925f686712852eacefa7",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:45:51 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720351125",
+    "elapsedMs": 10236,
+    "content": "```json\n{\n  \"name\": \"갈색 독수리\",\n  \"tags\": [\n    \"새\",\n    \"bird\",\n    \"독수리\",\n    \"eagle\",\n    \"맹금류\",\n    \"raptor\"\n  ],\n  \"description\": \"짙은 갈색 깃털과 목 주변의 황금빛 깃털을 가진 독수리 형태의 생물입니다. 날개를 활짝 펴고 날카로운 발톱을 앞으로 내민 채 비행하는 자세를 취하고 있습니다.\",\n  \"uncertainty\": \"현실의 맹금류와 매우 유사하게 생겨 특정 판타지 몬스터인지 일반 동물인지, 그리고 정확히 어떤 종(독수리, 매 등)인지는 외형만으로 확정하기 어렵습니다.\"\n}\n```"
+  },
+  {
+    "index": 131,
+    "resourceId": "generated-enemy-gargoyle-stone",
+    "sourceSha256": "be6f26e80c7e4ba149305a280404871ec9b5fa824b22994f7995b9455a18eefa",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:45:54 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720354014",
+    "elapsedMs": 11941,
+    "content": "```json\n{\n  \"name\": \"이끼 낀 돌 가고일\",\n  \"tags\": [\n    \"가고일\",\n    \"gargoyle\",\n    \"석상\",\n    \"statue\",\n    \"돌\",\n    \"stone\",\n    \"괴물\",\n    \"monster\"\n  ],\n  \"description\": \"회색 암석 재질의 몸에 군데군데 녹색 이끼가 덮여 있는 날개 달린 괴물입니다. 뾰족한 귀와 뿔, 박쥐 형태의 날개를 가졌으며 네 발을 굽힌 채 입을 벌리고 있습니다.\",\n  \"uncertainty\": \"대중적인 판타지의 가고일 형태를 띠고 있으나, 구체적인 종족명이나 게임 내 정확한 명칭은 외형만으로 확정할 수 없어 형태적 특징을 바탕으로 명명했습니다.\"\n}\n```"
+  },
+  {
+    "index": 132,
+    "resourceId": "generated-enemy-phoenix-rebirth",
+    "sourceSha256": "57cedab653a43b46bda0ab6cb8d653ed271b21cd2c00849668b64e1e9b890cb9",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:45:58 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720358967",
+    "elapsedMs": 14811,
+    "content": "```json\n{\n  \"name\": \"불새\",\n  \"tags\": [\n    \"새\",\n    \"avian\",\n    \"불\",\n    \"화염\",\n    \"붉은색\",\n    \"주황색\",\n    \"날개\"\n  ],\n  \"description\": \"전신이 붉은색과 주황색 깃털로 덮여 있으며, 꼬리가 길게 타오르는 불꽃 같은 형태를 한 커다란 새입니다. 양 날개를 넓게 펴고 발톱을 아래로 향한 채 비행하는 자세를 취하고 있습니다.\",\n  \"uncertainty\": \"외형상 피닉스(불사조)와 같은 신화 속 생물로 보이나, 시각적 정보만으로는 구체적인 전승이나 종족 명칭을 확정할 수 없습니다.\"\n}\n```"
+  },
+  {
+    "index": 133,
+    "resourceId": "generated-enemy-dragon-whelp",
+    "sourceSha256": "037483d3c09f3165b3f4b6f5345fe7e06cce71617545c39768ec814563e30cbf",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:46:02 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720362642",
+    "elapsedMs": 12738,
+    "content": "```json\n{\n  \"name\": \"황갈색 비늘 드래곤\",\n  \"tags\": [\n    \"드래곤\",\n    \"dragon\",\n    \"파충류\",\n    \"reptile\",\n    \"괴물\",\n    \"monster\"\n  ],\n  \"description\": \"전신이 황갈색 비늘로 덮여 있고 커다란 두 날개와 네 다리를 가진 드래곤 형태의 생물입니다. 입과 코 주변에서 연기를 뿜어내며 날개를 펼치고 공중에 떠 있는 듯한 자세를 취하고 있습니다.\",\n  \"uncertainty\": \"특정 세계관의 세부적인 드래곤 종(예: 브론즈 드래곤, 어스 드래곤 등)은 외형만으로 확정할 수 없어, 눈에 띄는 특징을 바탕으로 '황갈색 비늘 드래곤'이라 명명했습니다.\"\n}\n```"
+  },
+  {
+    "index": 134,
+    "resourceId": "generated-enemy-dragon-red",
+    "sourceSha256": "a2d46b5113ac04e2fc57782de685f9d9ecee81aabd2dc2fbb76613f0292c7a03",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:46:05 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720365846",
+    "elapsedMs": 14718,
+    "content": "```json\n{\n  \"name\": \"레드 드래곤\",\n  \"tags\": [\n    \"드래곤\",\n    \"dragon\",\n    \"괴물\",\n    \"monster\",\n    \"빨간색\",\n    \"비늘\",\n    \"날개\"\n  ],\n  \"description\": \"전신이 붉은 비늘로 덮여 있으며 등과 꼬리를 따라 가시가 돋아난 서양식 드래곤 형태의 생물입니다. 입과 콧구멍에서 녹색 섞인 연기를 내뿜으며, 날개를 펼치고 발톱을 세운 채 공중에 떠 있는 자세를 취하고 있습니다.\",\n  \"uncertainty\": \"입에서 내뿜는 연기의 성질(독, 불 등)이나 특정 세계관 내에서의 정확한 종족명 및 고유명사는 외형만으로 알 수 없습니다.\"\n}\n```"
+  },
+  {
+    "index": 135,
+    "resourceId": "generated-enemy-dragon-blue",
+    "sourceSha256": "8528bde03f60607840ecc0a762c8f214c5b38d4dcb25e3851b41f0161809825c",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:46:02 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720362817",
+    "elapsedMs": 8807,
+    "content": "```json\n{\n  \"name\": \"푸른 드래곤\",\n  \"tags\": [\n    \"드래곤\",\n    \"dragon\",\n    \"파란색\",\n    \"blue\",\n    \"날개\",\n    \"wings\",\n    \"비늘\",\n    \"scales\"\n  ],\n  \"description\": \"입에서 보라색 연기를 뿜어내고 있는 파란색 비늘로 덮인 드래곤입니다. 뿔과 가시가 돋친 몸통에 큰 날개를 펼치고 허공에 떠 있는 듯한 자세를 취하고 있습니다.\",\n  \"uncertainty\": \"입에서 뿜어내는 물질이 단순한 연기인지 다른 성질의 기운인지 알 수 없으며, 구체적인 드래곤의 하위 종족은 불명확합니다.\"\n}\n```"
+  },
+  {
+    "index": 136,
+    "resourceId": "generated-enemy-dragon-bone",
+    "sourceSha256": "1c557a14cf769d1ee2bd150dfa95d5f75c052dae3f05f366f4858d61a6a1fc3f",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:46:08 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720368058",
+    "elapsedMs": 9076,
+    "content": "```json\n{\n  \"name\": \"회백색 드래곤\",\n  \"tags\": [\n    \"드래곤\",\n    \"dragon\",\n    \"괴물\",\n    \"monster\",\n    \"파충류\",\n    \"reptile\"\n  ],\n  \"description\": \"전신이 두꺼운 회백색 비늘로 덮여 있으며, 머리에 뿔이 나 있고 등에 가시 돌기가 이어져 있는 네 발 달린 드래곤입니다. 박쥐 같은 커다란 날개를 펼쳐 공중에 떠 있는 자세를 취하고 있으며, 입에서 하얀 연기를 내뿜고 있습니다.\",\n  \"uncertainty\": \"일반적인 서양식 드래곤의 형태를 띠고 있으나, 정확한 세부 종족이나 뿜어내는 연기의 성질은 외형만으로 알 수 없습니다.\"\n}\n```"
+  },
+  {
+    "index": 137,
+    "resourceId": "generated-enemy-hydra-three",
+    "sourceSha256": "87c4c8c629efa56b05632be6abbc856586eb1be39d643be416154e084749e328",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:46:15 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720375305",
+    "elapsedMs": 12665,
+    "content": "```json\n{\n  \"name\": \"녹색 삼두룡\",\n  \"tags\": [\n    \"용\",\n    \"dragon\",\n    \"삼두룡\",\n    \"hydra\",\n    \"몬스터\",\n    \"monster\"\n  ],\n  \"description\": \"짙은 녹색 비늘과 황갈색 배를 가진, 머리가 세 개 달린 용 형태의 생물입니다. 뿔이 달린 세 개의 머리 모두 입을 벌리고 날카로운 이빨을 드러내며 포효하는 듯한 자세를 취하고 있습니다.\",\n  \"uncertainty\": \"날개의 유무가 명확하지 않아 일반적인 드래곤인지 히드라 등 다른 종류의 다두룡인지 알 수 없어 외형적 특징을 바탕으로 명명했습니다.\"\n}\n```"
+  },
+  {
+    "index": 138,
+    "resourceId": "generated-enemy-behemoth-horn",
+    "sourceSha256": "5f128550ae2f54274324345af9d8bd859d87c9fb5e1e5a7e803e875adc57db53",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:46:14 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720374354",
+    "elapsedMs": 11529,
+    "content": "```json\n{\n  \"name\": \"뿔 달린 흑갈색 마수\",\n  \"tags\": [\n    \"마수\",\n    \"beast\",\n    \"괴물\",\n    \"monster\",\n    \"뿔\",\n    \"horns\"\n  ],\n  \"description\": \"등에 뾰족한 돌기가 돋아나 있고 거대한 뿔과 날카로운 발톱을 지닌 짙은 갈색 털의 네발짐승 몬스터입니다. 입을 크게 벌리고 땅을 짚은 채 위협적인 자세를 취하고 있습니다.\",\n  \"uncertainty\": \"소의 뿔, 사자나 곰의 몸집과 발톱 등 여러 동물의 특징이 섞여 있어 정확한 생물 종을 특정할 수 없으므로 눈에 보이는 외형적 특징을 바탕으로 이름을 지었습니다.\"\n}\n```"
+  },
+  {
+    "index": 139,
+    "resourceId": "generated-enemy-demon-lord",
+    "sourceSha256": "5c483c5c479167e8c6a44ea4fece8ba9f2a5e323af71e74a0d76604f9c804e4d",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:46:16 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720376748",
+    "elapsedMs": 10896,
+    "content": "```json\n{\n  \"name\": \"뿔 달린 창백한 마족\",\n  \"tags\": [\n    \"악마\",\n    \"demon\",\n    \"인간형\",\n    \"humanoid\",\n    \"뿔\",\n    \"갑옷\"\n  ],\n  \"description\": \"창백한 피부와 붉은 눈을 가졌으며 머리에 검고 굽은 뿔이 돋아난 인간형 생물입니다. 붉은 문양이 있는 짙은 보라색 갑옷을 입고 날카로운 손톱을 드러낸 자세를 취하고 있습니다.\",\n  \"uncertainty\": \"정확한 종족(악마, 마족 등)을 알 수 없어 외형적 특징을 바탕으로 이름을 붙였습니다. 하반신의 형태가 흩어지듯 묘사되어 명확하지 않습니다.\"\n}\n```"
+  }
+]

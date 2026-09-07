@@ -1,0 +1,13 @@
+{
+  "command": [
+    "git",
+    "diff",
+    "--check"
+  ],
+  "cwd": "/home/main/z-project/rpg-zzu-monster-catalog-0907",
+  "exitCode": 0,
+  "timedOut": false,
+  "timeoutSeconds": 30,
+  "elapsedSeconds": 0.03282170998863876,
+  "TMPDIR": "/dev/shm/st_01a078e1-dependency-fix/diff-check"
+}

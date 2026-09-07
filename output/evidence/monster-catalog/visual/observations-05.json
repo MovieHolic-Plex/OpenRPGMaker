@@ -1,0 +1,347 @@
+[
+  {
+    "index": 94,
+    "resourceId": "generated-enemy-spirit-dark",
+    "sourceSha256": "a4637d388a937586585224154e9b280ccfa9f76f38f0eb4bd51e516769889405",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:44:10 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720250951",
+    "elapsedMs": 9787,
+    "content": "```json\n{\n  \"name\": \"회색 유령\",\n  \"tags\": [\n    \"유령\",\n    \"악령\",\n    \"언데드\",\n    \"ghost\",\n    \"spirit\",\n    \"undead\"\n  ],\n  \"description\": \"입을 크게 벌리고 날카로운 손톱이 있는 양팔을 뻗어 위협적인 자세를 취하고 있는 짙은 회색의 생물입니다. 상반신은 앙상한 인간의 모습이지만 하반신은 다리 없이 연기나 그림자처럼 너풀거리며 흩어지는 형태를 하고 있습니다.\",\n  \"uncertainty\": \"정확한 언데드나 영체의 세부 종류(레이스, 스펙터, 밴시 등)를 알 수 없어 시각적인 특징을 바탕으로 회색 유령으로 명명했습니다.\"\n}\n```"
+  },
+  {
+    "index": 95,
+    "resourceId": "generated-enemy-wisp-blue",
+    "sourceSha256": "9cdea5ebd6e17209b07f797fc81f08afa0185f892d6e169c82aa49400c5e6fc7",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:44:20 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720260050",
+    "elapsedMs": 10460,
+    "content": "```json\n{\n  \"name\": \"푸른 불꽃 정령\",\n  \"tags\": [\n    \"정령\",\n    \"spirit\",\n    \"불꽃\",\n    \"flame\",\n    \"파란색\",\n    \"blue\",\n    \"부유\",\n    \"floating\"\n  ],\n  \"description\": \"밝게 빛나는 두 눈을 가진 둥근 몸체에서 위아래로 푸른 불꽃이 일렁이는 형태의 생물입니다. 다리 없이 긴 꼬리 모양의 불꽃을 늘어뜨린 채 공중에 떠 있습니다.\",\n  \"uncertainty\": \"구체적인 판타지 종족(위스프, 영혼 등)이 명확하지 않아 겉으로 보이는 형태인 푸른색 불꽃 덩어리를 바탕으로 이름을 부여했습니다.\"\n}\n```"
+  },
+  {
+    "index": 96,
+    "resourceId": "generated-enemy-sylph-air",
+    "sourceSha256": "c2fff22669d93e9ca28f8868d36ed92ca8338769112a1930a4d4dee0c10ba1f8",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:44:20 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720260991",
+    "elapsedMs": 10175,
+    "content": "```json\n{\n  \"name\": \"구름 정령\",\n  \"tags\": [\n    \"정령\",\n    \"spirit\",\n    \"유령\",\n    \"ghost\",\n    \"구름\",\n    \"cloud\",\n    \"파란색\",\n    \"blue\"\n  ],\n  \"description\": \"연한 파란색을 띠는 구름이나 바람 형태의 생물입니다. 머리에 구름 모양의 후드를 쓴 것처럼 보이며, 팔과 몸통 아래쪽은 소용돌이치는 모양으로 흩어져 있습니다.\",\n  \"uncertainty\": \"바람, 구름, 연기 중 정확히 어떤 물질로 이루어진 생물인지 알 수 없으며, 유령인지 정령인지 명확하지 않아 가장 유사해 보이는 형태를 바탕으로 명명했습니다.\"\n}\n```"
+  },
+  {
+    "index": 97,
+    "resourceId": "generated-enemy-undine-sea",
+    "sourceSha256": "6f2002dcccc7ca314f16cfcc2ab69fdfc48edb243736851494abf7f8102d43ce",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:44:20 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720260838",
+    "elapsedMs": 9885,
+    "content": "```json\n{\n  \"name\": \"물의 정령\",\n  \"tags\": [\n    \"정령\",\n    \"elemental\",\n    \"물\",\n    \"water\",\n    \"여성형\",\n    \"humanoid\"\n  ],\n  \"description\": \"온몸이 푸른색의 물로 이루어진 여성 형태의 생물입니다. 머리카락과 하반신이 파도처럼 굽이치며 흩날리고, 빛나는 녹색 눈을 가진 채 공중에 떠 있는 자세를 취하고 있습니다.\",\n  \"uncertainty\": \"판타지 매체에서 묘사되는 물의 정령이나 운디네와 유사한 외형이나, 정확한 고유 명칭과 세부 종족을 알 수 없어 보이는 형태에 따라 '물의 정령'으로 명명했습니다.\"\n}\n```"
+  },
+  {
+    "index": 98,
+    "resourceId": "generated-enemy-salamander-flame",
+    "sourceSha256": "90e2e4dd7f20acf7cd4ef62db61a14ee2c7dfcb3fdac2eadb2395638357273a5",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:44:22 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720262441",
+    "elapsedMs": 10982,
+    "content": "```json\n{\n  \"name\": \"주황 검정 무늬 도마뱀\",\n  \"tags\": [\n    \"도마뱀\",\n    \"lizard\",\n    \"파충류\",\n    \"reptile\",\n    \"비늘\",\n    \"가시\"\n  ],\n  \"description\": \"주황색 비늘 피부에 검은색 얼룩 무늬가 덮여 있는 네 발 달린 파충류 형태의 생물입니다. 머리부터 꼬리까지 등을 따라 뾰족한 가시 돌기가 돋아나 있습니다.\",\n  \"uncertainty\": \"판타지 세계관의 드래곤 유체인지 단순한 파충류 몬스터인지 명확하지 않아 눈에 보이는 형태인 도마뱀으로 명명했습니다.\"\n}\n```"
+  },
+  {
+    "index": 99,
+    "resourceId": "generated-enemy-golem-stone",
+    "sourceSha256": "c43817ec110253203d65c4be9f7d4848f8073286912489db6e3c749ef23277cd",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:44:28 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720268730",
+    "elapsedMs": 8675,
+    "content": "```json\n{\n  \"name\": \"바위 골렘\",\n  \"tags\": [\n    \"골렘\",\n    \"바위\",\n    \"이끼\",\n    \"golem\",\n    \"rock\",\n    \"monster\"\n  ],\n  \"description\": \"온몸이 각진 회갈색 바위로 이루어진 거대한 인간형 형상이며, 돌 틈새 곳곳에 녹색 이끼가 피어 있습니다. 빛나는 노란색 눈을 가졌고, 굵고 거대한 양팔을 약간 벌린 채 서 있습니다.\",\n  \"uncertainty\": \"특정 세계관의 고유한 이름이 있을 수 있으나, 외형을 구성하는 주요 재질과 형태를 바탕으로 바위 골렘이라 명명했습니다.\"\n}\n```"
+  },
+  {
+    "index": 100,
+    "resourceId": "generated-enemy-golem-iron",
+    "sourceSha256": "04f759b35acd59d005b31aa912557814e135e5dc69fbc053d40a49fc8654e5a3",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:44:30 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720270677",
+    "elapsedMs": 9828,
+    "content": "```json\n{\n  \"name\": \"바위 골렘\",\n  \"tags\": [\n    \"바위\",\n    \"돌\",\n    \"골렘\",\n    \"거인\",\n    \"rock\",\n    \"stone\",\n    \"golem\",\n    \"giant\"\n  ],\n  \"description\": \"짙은 회색의 여러 바위 덩어리들이 뭉쳐져 거대한 인간의 형태를 이루고 있는 생물입니다. 다리를 벌리고 양 주먹을 굳게 쥔 채 서 있으며, 눈 부위에서 밝은 빛이 납니다.\",\n  \"uncertainty\": \"공식적인 종족명은 알 수 없으나, 돌로 구성된 거대한 인간형 외형이라는 특징을 근거로 바위 골렘이라고 명명했습니다.\"\n}\n```"
+  },
+  {
+    "index": 101,
+    "resourceId": "generated-enemy-golem-clay",
+    "sourceSha256": "d7bebc65b8975d6d2f059944f47e041f385e934a0e2ebb2e712f17f99e135320",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:44:31 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720271473",
+    "elapsedMs": 10478,
+    "content": "```json\n{\n  \"name\": \"이끼 바위 골렘\",\n  \"tags\": [\n    \"골렘\",\n    \"golem\",\n    \"바위\",\n    \"rock\",\n    \"이끼\",\n    \"moss\",\n    \"거인\",\n    \"giant\"\n  ],\n  \"description\": \"수많은 각진 바위들이 뭉쳐져 거대한 인간형 형태를 이룬 몬스터로, 돌 틈새마다 녹색 이끼가 자라 있습니다. 연두색으로 빛나는 두 눈을 가졌으며, 굵고 단단한 팔다리를 벌린 채 굳건하게 서 있습니다.\",\n  \"uncertainty\": \"돌이 뭉쳐진 거대한 인간형이라는 겉모습을 바탕으로 골렘이라 명명했으나, 정확한 종족명은 알 수 없습니다.\"\n}\n```"
+  },
+  {
+    "index": 102,
+    "resourceId": "generated-enemy-golem-crystal",
+    "sourceSha256": "a214a57fa4067fb106f3826e3bf394f08bf69204029ecf82d058affdf7947451",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:44:35 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720275169",
+    "elapsedMs": 12722,
+    "content": "```json\n{\n  \"name\": \"푸른 바위 골렘\",\n  \"tags\": [\n    \"골렘\",\n    \"바위\",\n    \"돌\",\n    \"golem\",\n    \"rock\",\n    \"stone\"\n  ],\n  \"description\": \"푸른색을 띠는 여러 개의 둥글고 각진 바위가 뭉쳐서 인간의 형상을 이루고 있는 몬스터입니다. 두 눈이 보라색으로 빛나고 있고 몸 곳곳에 보라색 얼룩이 묻어 있으며, 두 발로 굳건히 서서 양팔을 살짝 벌린 자세를 취하고 있습니다.\",\n  \"uncertainty\": \"공식적인 종족명이 주어지지 않아 바위로 이루어진 인간형 겉모습을 바탕으로 '골렘'이라 명명하였으며, 바위 표면에 있는 보라색 얼룩의 정확한 물질(이끼, 광물 등)은 알 수 없습니다.\"\n}\n```"
+  },
+  {
+    "index": 103,
+    "resourceId": "generated-enemy-armor-living",
+    "sourceSha256": "379f38d551c53f755cb61184eaa6f3cddf111112c7a4722cb45c613b8e7a9c99",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:44:43 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720283013",
+    "elapsedMs": 14290,
+    "content": "```json\n{\n  \"name\": \"녹슨 중갑 기사\",\n  \"tags\": [\n    \"기사\",\n    \"knight\",\n    \"갑옷\",\n    \"armor\",\n    \"대검\",\n    \"greatsword\",\n    \"휴머노이드\",\n    \"humanoid\"\n  ],\n  \"description\": \"곳곳에 구멍이 나고 붉게 녹이 슨 짙은 금속 질감의 전신 판금 갑옷을 착용하고 있습니다. 오른손에는 금빛 장식이 달렸지만 낡고 흠집이 많은 거대한 검을 쥐고 양 발을 벌려 단단히 서 있는 자세를 취하고 있습니다.\",\n  \"uncertainty\": \"머리부터 발끝까지 갑옷으로 완전히 덮여 있어 투구 안의 모습이 보이지 않으므로, 내부에 인간과 같은 생명체가 있는지 아니면 갑옷 자체가 움직이는 형태인지 종족을 명확히 알 수 없습니다.\"\n}\n```"
+  },
+  {
+    "index": 104,
+    "resourceId": "generated-enemy-sword-flying",
+    "sourceSha256": "75877631937027a8f8f4e2a69079990ec3582af06d6c78b38ea4db3413a36aa5",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:44:40 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720280286",
+    "elapsedMs": 9606,
+    "content": "```json\n{\n  \"name\": \"룬 문자가 새겨진 검\",\n  \"tags\": [\n    \"검\",\n    \"sword\",\n    \"무기\",\n    \"weapon\",\n    \"룬\",\n    \"rune\"\n  ],\n  \"description\": \"금빛으로 빛나는 룬 문자가 회색 칼날에 새겨진 양날검 형태의 개체입니다. 손잡이 부근 코등이 양쪽에 노랗게 빛나는 두 개의 눈 같은 장식이 달려 있습니다.\",\n  \"uncertainty\": \"일반적인 생물형 몬스터가 아닌 무기(검) 형태의 이미지입니다. 스스로 움직이는 개체인지 단순한 장비인지 시각적 정보만으로는 확정할 수 없어, 눈에 보이는 형태와 특징을 바탕으로 이름을 지었습니다.\"\n}\n```"
+  },
+  {
+    "index": 105,
+    "resourceId": "generated-enemy-mimic-chest",
+    "sourceSha256": "4922ba8fce231515c60addc9a436a2831cdd8af16b3375c98e27222af55fa021",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:44:42 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720282551",
+    "elapsedMs": 11076,
+    "content": "```json\n{\n  \"name\": \"외눈 보물상자 괴물\",\n  \"tags\": [\n    \"보물상자\",\n    \"chest\",\n    \"괴물\",\n    \"monster\",\n    \"외눈\",\n    \"one-eyed\",\n    \"혀\",\n    \"tongue\"\n  ],\n  \"description\": \"커다란 붉은색 외눈이 달린 낡은 나무 보물상자 형태의 생물입니다. 뚜껑을 입처럼 벌려 뾰족한 이빨을 드러내고 있으며, 점액이 뚝뚝 떨어지는 두꺼운 분홍빛 혀를 길게 내밀고 있습니다.\",\n  \"uncertainty\": \"대중적인 판타지 매체에서 '미믹(Mimic)'이라 불리는 몬스터와 외형이 일치하지만, 제공된 정보만으로는 정확한 고유 명칭이나 종족 분류를 확정할 수 없어 보이는 형태를 그대로 이름으로 사용했습니다.\"\n}\n```"
+  },
+  {
+    "index": 106,
+    "resourceId": "generated-enemy-scarecrow-field",
+    "sourceSha256": "9f7c058516ca88da3892e9a4c9f9be142781fec2966015bd8cc90062d5c8f840",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:44:44 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720284558",
+    "elapsedMs": 9389,
+    "content": "```json\n{\n  \"name\": \"낫을 든 허수아비\",\n  \"tags\": [\n    \"허수아비\",\n    \"낫\",\n    \"scarecrow\",\n    \"scythe\"\n  ],\n  \"description\": \"낡고 기워진 갈색 튜닉과 뾰족한 모자를 착용한 짚으로 만들어진 허수아비 형태입니다. 단추로 만들어진 눈과 꿰맨 자국이 있는 입을 가지고 있으며, 한 손에 녹슨 낫을 쥔 채 나무 기둥으로 세워져 있습니다.\",\n  \"uncertainty\": \"이 개체가 스스로 움직일 수 있는 마법적 생물인지, 혹은 단순한 인형인지 외형만으로는 알 수 없어 보이는 모습 그대로 명명했습니다.\"\n}\n```"
+  },
+  {
+    "index": 107,
+    "resourceId": "generated-enemy-puppet-string",
+    "sourceSha256": "b094c96368641d06b65b070339886527fd53c2ad089cb9095ea377ae2f81f550",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:44:56 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720296798",
+    "elapsedMs": 16525,
+    "content": "```json\n{\n  \"name\": \"단검을 든 목각 꼭두각시\",\n  \"tags\": [\n    \"꼭두각시\",\n    \"marionette\",\n    \"인형\",\n    \"puppet\",\n    \"광대\",\n    \"jester\",\n    \"단검\",\n    \"dagger\"\n  ],\n  \"description\": \"실에 매달려 공중에 떠 있는 자세의 나무 관절을 가진 꼭두각시입니다. 하얗게 갈라진 얼굴에 입을 크게 벌린 형태를 하고 있으며, 해진 광대풍 옷을 입고 왼손에 단검을 쥐고 있습니다.\",\n  \"uncertainty\": \"생물의 정확한 종족 명칭을 알 수 없어 관찰되는 재질(나무), 형태(꼭두각시), 장비(단검)를 바탕으로 직관적인 이름을 부여했습니다.\"\n}\n```"
+  },
+  {
+    "index": 108,
+    "resourceId": "generated-enemy-totem-cursed",
+    "sourceSha256": "6efbd0ebde0edd379987569e7ac14a7b617d1fb86c2cf5217a064599f4da97df",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:44:52 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720292188",
+    "elapsedMs": 9627,
+    "content": "```json\n{\n  \"name\": \"나무 토템\",\n  \"tags\": [\n    \"토템\",\n    \"totem\",\n    \"나무\",\n    \"wood\",\n    \"괴물\",\n    \"monster\",\n    \"이끼\",\n    \"moss\"\n  ],\n  \"description\": \"세 개의 무서운 얼굴이 세로로 층층이 조각된 갈색의 나무 기둥 형태를 하고 있습니다. 붉게 빛나는 눈을 가졌으며, 표면 곳곳에 초록색 이끼와 덩굴이 얽혀 있습니다.\",\n  \"uncertainty\": \"단순한 목각 토템에 생명이 깃든 것인지, 본래 이런 형태를 띠는 식물형 몬스터인지 정확한 종족을 알 수 없습니다.\"\n}\n```"
+  },
+  {
+    "index": 109,
+    "id": "oh-my-pi-1788719916536",
+    "sourceSha256": "daa3d1f9e4e440846fa1ce711e5db3a98e98e02961c19d2bee0243d99472ae99",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:38:36 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "elapsedMs": 14189,
+    "content": "```json\n{\n  \"name\": \"몽둥이를 든 녹색 인간형 괴물\",\n  \"tags\": [\n    \"괴물\",\n    \"monster\",\n    \"인간형\",\n    \"humanoid\",\n    \"고블린\",\n    \"goblin\",\n    \"오크\",\n    \"orc\"\n  ],\n  \"description\": \"짙은 녹색 피부와 뾰족한 귀, 튀어나온 코, 날카로운 이빨을 가진 근육질의 인간형 생물입니다. 낡고 찢어진 가죽옷과 징이 박힌 방어구를 착용하고 있으며, 가시가 박힌 굵은 나무 몽둥이를 양손으로 비스듬히 들고 서 있습니다.\",\n  \"uncertainty\": \"오크나 고블린 등의 종족 특징이 혼재되어 있어 특정 종족으로 단정할 수 없으므로, 보이는 외형을 바탕으로 인간형 괴물로 명명했습니다.\"\n}\n```",
+    "resourceId": "generated-enemy-goblin-scout"
+  },
+  {
+    "index": 110,
+    "id": "oh-my-pi-1788719915606",
+    "sourceSha256": "4eab5389019ef5c7b6cf0e69518f70465cba5b2b735bbaeed96964dce2dc4354",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:38:35 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "elapsedMs": 13270,
+    "content": "```json\n{\n  \"name\": \"가시 몽둥이를 든 녹색 몬스터\",\n  \"tags\": [\n    \"인간형\",\n    \"humanoid\",\n    \"고블린\",\n    \"goblin\",\n    \"오크\",\n    \"orc\",\n    \"몽둥이\"\n  ],\n  \"description\": \"녹색 피부에 뾰족한 귀와 튀어나온 송곳니를 가진 인간형 생물입니다. 낡은 가죽 방어구를 입고 가시가 박힌 나무 몽둥이를 들고 있습니다.\",\n  \"uncertainty\": \"오크와 고블린의 외형적 특징을 모두 가지고 있어 정확한 종족을 특정하기 어렵습니다.\"\n}\n```",
+    "resourceId": "generated-enemy-goblin-brute"
+  },
+  {
+    "index": 111,
+    "resourceId": "generated-enemy-orc-warrior",
+    "sourceSha256": "edae127646f35d58d7dea816fe027561eb06de9838e80389ae1c7e7097dbe426",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:44:52 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720292851",
+    "elapsedMs": 9822,
+    "content": "```json\n{\n  \"name\": \"도끼를 든 녹색 오크\",\n  \"tags\": [\n    \"오크\",\n    \"orc\",\n    \"인간형\",\n    \"humanoid\",\n    \"도끼\",\n    \"axe\"\n  ],\n  \"description\": \"녹색 피부와 근육질 체형, 튀어나온 아래 송곳니를 가진 인간형 생물입니다. 가죽과 금속이 섞인 털 장식 갑옷을 입고 두 손으로 커다란 녹슨 양날 도끼를 쥐고 있습니다.\",\n  \"uncertainty\": \"전형적인 오크의 외형을 하고 있으나, 구체적인 세부 종족이나 명칭은 알 수 없습니다.\"\n}\n```"
+  },
+  {
+    "index": 112,
+    "resourceId": "generated-enemy-orc-shaman",
+    "sourceSha256": "d28397017631b6b7f14e1fc5af42782debded35a05142516cff5b10bc3395ec8",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:45:00 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720300527",
+    "elapsedMs": 15960,
+    "content": "```json\n{\n  \"name\": \"해골 지팡이를 든 녹색 오크\",\n  \"tags\": [\n    \"오크\",\n    \"orc\",\n    \"인간형\",\n    \"humanoid\",\n    \"녹색 피부\",\n    \"green-skin\",\n    \"지팡이\",\n    \"staff\"\n  ],\n  \"description\": \"녹색 피부와 아래로 튀어나온 송곳니를 가진 인간형 생물이 짐승의 뼈와 깃털로 장식된 옷을 입고 있습니다. 오른손에는 짐승의 두골이 달린 지팡이를 쥐고 있으며, 왼손으로는 공중에 빛나는 녹색 문양 고리를 띄우고 있습니다.\",\n  \"uncertainty\": \"대중적인 판타지의 오크 형태를 띠고 있으나 정확한 세부 종족명은 알 수 없으며, 손에 띄운 녹색 문양이 구체적으로 어떤 원리의 현상인지는 외형만으로 확정할 수 없습니다.\"\n}\n```"
+  },
+  {
+    "index": 113,
+    "resourceId": "generated-enemy-kobold-digger",
+    "sourceSha256": "42329401f016dc4d1a59f38ca753dddd44a3fda52264b8873b8c5693e0129025",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:45:03 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720303511",
+    "elapsedMs": 11318,
+    "content": "```json\n{\n  \"name\": \"곡괭이 파충류 인간\",\n  \"tags\": [\n    \"파충류인간\",\n    \"괴물\",\n    \"곡괭이\",\n    \"reptilian\",\n    \"monster\",\n    \"pickaxe\"\n  ],\n  \"description\": \"녹갈색 비늘 피부와 꼬리를 가진 파충류형 이족 보행 괴물입니다. 낡은 가죽 방어구와 장갑을 착용한 채 양손으로 곡괭이를 쥐고 들어 올리고 있습니다.\",\n  \"uncertainty\": \"코볼트나 리자드맨과 유사한 외형이지만, 정확한 세부 종족을 확신할 수 없어 눈에 보이는 형태와 장비를 바탕으로 이름을 지었습니다.\"\n}\n```"
+  },
+  {
+    "index": 114,
+    "resourceId": "generated-enemy-bandit-mask",
+    "sourceSha256": "e7a01318364d33f70567d844423a159cd1f12180250ab82cca6610f32ce23bb0",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:45:04 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720304928",
+    "elapsedMs": 12075,
+    "content": "```json\n{\n  \"name\": \"단검을 든 복면 인간형\",\n  \"tags\": [\n    \"인간형\",\n    \"humanoid\",\n    \"단검\",\n    \"dagger\",\n    \"복면\",\n    \"mask\",\n    \"갈색\",\n    \"brown\"\n  ],\n  \"description\": \"갈색 두건과 꿰맨 자국이 있는 복면으로 눈만 내놓은 채 얼굴을 가린 생물입니다. 낡은 가죽 갑옷을 입고 오른손에 단검을 든 채 다리를 벌린 자세를 취하고 있습니다.\",\n  \"uncertainty\": \"옷과 복면으로 얼굴 대부분과 몸이 가려져 있어 정확한 세부 종족을 파악하기 어려워 외형에 따라 인간형으로 분류했습니다.\"\n}\n```"
+  },
+  {
+    "index": 115,
+    "resourceId": "generated-enemy-mage-rogue",
+    "sourceSha256": "ed47ed44de851730bf1a2ab38c93c26778ee54078c1cd56c1971752d4225995d",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:45:10 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720310397",
+    "elapsedMs": 13582,
+    "content": "```json\n{\n  \"name\": \"후드를 쓴 인간형 생물\",\n  \"tags\": [\n    \"인간형\",\n    \"humanoid\",\n    \"마법사\",\n    \"mage\",\n    \"지팡이\",\n    \"staff\",\n    \"로브\"\n  ],\n  \"description\": \"어두운 색의 낡은 로브를 입고 얼굴 상단을 후드로 가린 인간형 생물입니다. 오른손으로는 보라색 보석이 박힌 나무 지팡이를 짚고 있으며, 살짝 들어 올린 왼손 위로는 보라색 빛이 피어오르고 있습니다.\",\n  \"uncertainty\": \"후드의 짙은 그림자 때문에 눈을 포함한 얼굴 윗부분이 가려져 있어 정확한 세부 종족을 파악하기 어렵습니다.\"\n}\n```"
+  },
+  {
+    "index": 116,
+    "resourceId": "generated-enemy-knight-fallen",
+    "sourceSha256": "f95687e9f8f8a44e7eb1d89c7191660c502102f5b80521a043d2337ab5cf4c72",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:45:09 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720309507",
+    "elapsedMs": 8975,
+    "content": "```json\n{\n  \"name\": \"검은 갑옷 기사\",\n  \"tags\": [\n    \"기사\",\n    \"knight\",\n    \"갑옷\",\n    \"armor\",\n    \"인간형\",\n    \"humanoid\"\n  ],\n  \"description\": \"낡고 흠집이 많은 검은색 전신 판금 갑옷과 찢어진 망토를 착용한 개체입니다. 투구에는 깃털 장식이 있으며, 뒤로 넘어져 한 손으로 바닥을 짚고 다른 손을 허공으로 뻗고 있는 자세를 취하고 있습니다.\",\n  \"uncertainty\": \"전신이 갑옷으로 완전히 덮여 있어 내부에 있는 생물의 정확한 종족이나 형태를 알 수 없습니다.\"\n}\n```"
+  }
+]

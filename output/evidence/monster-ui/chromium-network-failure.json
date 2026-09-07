@@ -1,0 +1,752 @@
+{
+  "browser": "chromium",
+  "viewports": [],
+  "captures": [],
+  "remoteWrites": [],
+  "pageErrors": [],
+  "failedRequests": [
+    {
+      "path": "/src/battle/battleTurnGauge.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/battle/battleBackdrop.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/battle/battlePose.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/databaseEnemyTroopRecordModel.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/util/rng.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/battle/battleSkillUse.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/battle/battleAuto.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/battle/battlePredict.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/equipmentRules.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/battle/battleStrictOrder.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/battle/gen1/capture.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/battle/gen1/status.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/conditionEvaluation.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/sessionVitals.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/collections.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/lightingRules.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/roguelikeRun.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/itemQuantities.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/p1FoundationRecords.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/dailyWeather.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/player/interpreter/m2RuntimeState.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/player/weather/weatherModel.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/collision.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/ai/aiRecordDb.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/ai/conversationTurnContext.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/tools/commandTraversal.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/player/pictures/pictureResources.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/commandKindRegistry.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/io/commandReferenceValidation.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/io/shapeCommandFields.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/ai/assistantEndpoint.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/ai/eventAudioPrompt.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/ai/eventResourceCatalog.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/ai/systemPromptEnvelope.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/ai/worldCanonContext.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/ai/assistantSession.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/agentBlueprint.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/agentGhostPreview.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/tools/index.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/panels/aiProposalSummary.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/panels/eventEditor/previewSimulation.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/panels/eventEditor/sharedPickers.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/panels/eventEditor/commandBodyWeightedBranch.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/panels/eventEditor/subdialog.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/tools/toolRegistry.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/panels/eventEditor/commandListDragDrop.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/assets/charsetFrameCrop.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/panels/eventEditor/transferMapPreview.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/panels/eventEditor/commandRuntimeBadge.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/panels/eventEditor/commandPickerPreferences.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/eventCommands/commandPresentation.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/panels/eventEditor/companionRoster.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/panels/eventEditor/pageNpcBehavior.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/panels/eventEditor/pageHorror.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/storyFlags.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/panels/eventEditor/dom.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/panels/eventEditor/eventGraphicPreview.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/panels/eventEditor/graphicDialog.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/panels/eventEditor/pageAnimationType.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/panels/eventEditor/pageConditions.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/panels/eventEditor/pageConditionSentence.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/panels/eventEditor/pageFootprint.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/footprint.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/panels/eventEditor/pageMovement.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/panels/eventEditor/pageTabContextMenu.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/panels/eventEditor/pageTabDragDrop.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/panels/eventEditor/characterIdPickerDialog.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/panels/eventEditor/characterIdAutocomplete.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/panels/eventEditor/eventEditorOpenState.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/fieldMonsterTemplate.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/panels/eventEditor/recordPicker.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/followerPresets.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/panels/eventEditor/commandBodyAdvanced.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/panels/eventEditor/commandBodyCore.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/panels/eventEditor/commandBodyM2.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/panels/eventEditor/schemaCommandBody.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/shopMessages.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/terms.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/panels/eventEditor/shopEditorModel.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/player/dialoguePresentation.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/player/characterLanding.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/panels/eventEditor/facesetPreview.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/panels/eventEditor/commandPreviewActorBattle.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/panels/eventEditor/commandPreviewMapScreen.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/player/interpreter/commandCatalog.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/player/screen/tintModel.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/panels/eventEditor/commandBodyVariable.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/panels/eventEditor/previewAudio.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/panels/eventEditor/previewForkFlow.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/panels/eventEditor/previewMoveRoute.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/panels/eventEditor/previewPicture.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/panels/eventEditor/showAnimationPlayback.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/tilesetHarness/combinedTownGroups.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/defaults/roadAutotile.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/defaults/starterVillageNpcs.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/content/townShowcaseMaps.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/defaults/marketTownMap.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/tools/v3/terrainPolish.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/content/skyStairMaps.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/types/base.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/growth/requirements.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/actorModel.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/databaseAnimationRecordModel.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/actionCombat.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/databaseUtilityRecordModel.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/skillModel.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/genrePackId.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/p0SystemRecords.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/p2FoundationRecords.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/spatialPlacements.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/worldGenRules.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/cinematicSettings.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/defaults/defaultDatabaseClassRecords.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/defaults/generatedBattleEffectBindings.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/defaults/dungeonTerrainAutotiles.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/defaults/iceDiagonalTerrain.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/defaults/generatedChipsetTransparency.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/tilesetHarness/combinedTown.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/tilesetHarness/themePacks.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/defaults/generatedItemRecords.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/defaults/defaultExpandedItemRecords.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/defaults/defaultCatalogFillItems.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/defaults/enemyActionArchetypes.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/defaults/generatedEnemyRecords.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/defaults/defaultCatalogFillEquipment.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/growth/validation.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/structurePlacements.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/io/shape.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/detachedDraftMemory.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/audioDescriptionChanges.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/lint/projectLint.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/tools/toolRunner.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/editor/tools/emptyProject.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/genrePresets.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/lint/reachability.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/assets/scarloxyPackManifest.json",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/assets/bgmCatalogResolver.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/assets/seCatalogResolver.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/assets/generatedEffectSheets.json",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/assets/oprnGeneratedAssetPlan.json",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/assets/generatedAssetManifest.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/battle/animationTiming.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/player/battleAnimationPlayback.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/player/battleAnimationEffectStyle.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/player/battleAnimationAnchor.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/battle/battleCommands.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/battleCommandCss.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/util/josa.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/player/battleAudio.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/player/battleEnemyFit.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/assets/battlerIdleAnimations.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/battle/partySpriteResources.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/battle/battlerPlacements.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/assets/battlerHiresSheets.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/actorFaceDefaults.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/player/battleActionBeats.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/assets/system2Sheet.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/makers.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/lifeStateReconciliation.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/sessionActorCommands.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/npcBehavior.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/horrorState.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/growth/vitals.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/factionRuntime.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/followers.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/player/saveSlotValidation.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/shipping.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/player/systemShellState.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/player/dialoguePagination.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/player/dialogueNumberInput.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/player/dialogueTextRenderer.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/player/playResolution.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/player/playSurfaceScale.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/growth/runtime.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/player/playerStatusMenu.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/player/playerStatusMenuDetailRenderer.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/player/playerStatusMenuModel.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/player/playerStatusMenuMutations.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/toolActions.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/player/titleParticles.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/player/audio/audioEngine.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/player/audio/audioResources.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/player/audio/audioQueue.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/player/audio/fade.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/src/project/growth/lineage.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    }
+  ],
+  "failure": "locator.waitFor: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByTestId('edit-canvas') to be visible\u001b[22m\n",
+  "failureBody": "",
+  "serverStopped": true
+}

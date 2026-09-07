@@ -1,0 +1,11 @@
+import { vi, afterAll } from '/home/main/z-project/rpg-zzu/node_modules/vitest/dist/index.js';
+import { writeFileSync } from 'node:fs';
+import * as tools from '/home/main/z-project/rpg-zzu-monster-catalog-0907/src/editor/tools/toolRunner.ts';
+const original = tools.runTool;
+const calls: unknown[] = [];
+vi.spyOn(tools, 'runTool').mockImplementation((ctx, name, args, options) => {
+  const result = original(ctx, name, args, options);
+  calls.push({ ordinal: calls.length + 1, name, args: structuredClone(args), options, ok: result.ok, issues: result.issues });
+  return result;
+});
+afterAll(() => writeFileSync(process.env.REPLAY_TRACE!, JSON.stringify(calls, null, 2)));

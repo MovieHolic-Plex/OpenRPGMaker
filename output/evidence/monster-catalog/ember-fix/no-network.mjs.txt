@@ -1,0 +1,17 @@
+import http from 'node:http';
+import https from 'node:https';
+import { syncBuiltinESMExports } from 'node:module';
+import fs from 'node:fs';
+import { basename } from 'node:path';
+const readFileSync = fs.readFileSync;
+fs.readFileSync = function(path, options) {
+  if ((typeof path === 'string' || path instanceof URL) && /^\.env(?:\.|$)/.test(basename(String(path)))) throw new Error('st_01a078fc: credential file read prohibited');
+  return readFileSync.call(this, path, options);
+};
+const blocked = () => { throw new Error('st_01a078fc: real network disabled for read-only diagnosis'); };
+globalThis.fetch = async () => blocked();
+http.request = blocked;
+http.get = blocked;
+https.request = blocked;
+https.get = blocked;
+syncBuiltinESMExports();

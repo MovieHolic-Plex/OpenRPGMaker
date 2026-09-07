@@ -1,0 +1,30 @@
+✔ exports executable release boundary (2.254619ms)
+✔ actual tar roundtrip is deterministic and preserves identical starter/unrelated files (102.390136ms)
+✔ archive checksum and size corruption preserve destination (26.314721ms)
+✔ rejects duplicate before destination promotion (23.934811ms)
+✔ rejects extra before destination promotion (51.141661ms)
+✔ rejects missing before destination promotion (49.238621ms)
+✔ rejects traversal before destination promotion (64.805144ms)
+✔ rejects absolute before destination promotion (41.824452ms)
+✔ rejects backslash before destination promotion (44.172663ms)
+✔ rejects symlink before destination promotion (22.403388ms)
+✔ rejects hardlink before destination promotion (13.764034ms)
+✔ rejects directory before destination promotion (18.380843ms)
+✔ rejects wrong content before destination promotion (27.992098ms)
+✔ rejects malformed header before destination promotion (18.072555ms)
+✔ rejects manifest traversal, duplicate ids/names, bad hashes, count and totals (12.047278ms)
+✔ rejects destination file and ancestor symlinks without writing outside root (39.249097ms)
+✔ verified re-run is offline; corrupt file repairs without replacing good files (51.040329ms)
+✔ exclusive lock rejects contention and retains the other owner lock (11.559147ms)
+✔ promotion failure leaves only valid files, cleans staging, and rerun repairs (59.258675ms)
+✔ streaming HTTP success, truncated body and byte limit clean owned temporary files (110.192261ms)
+✔ final full verification rejects a promotion that does not install its files (47.29213ms)
+✔ cancellation reaches a real download child and cleans lock/staging before rejecting (125.315925ms)
+ℹ tests 22
+ℹ suites 0
+ℹ pass 22
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1147.750206

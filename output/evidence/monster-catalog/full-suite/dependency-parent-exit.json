@@ -1,0 +1,29 @@
+{
+  "revision": "19625c8587f8b41d487bac2fdb830cd3b24299d3",
+  "monitor": "mon_HW3V8FSDHRTQ4SPX",
+  "process": "bash_104",
+  "exitCode": 0,
+  "status": "completed",
+  "files": 12,
+  "tests": 156,
+  "failed": 0,
+  "report": "dependency-parent.json",
+  "diagnostics": {
+    "src/ai/assistantSession.ts": "No diagnostics found",
+    "test/assistantDependencyRetry.test.ts": "No diagnostics found"
+  },
+  "scope": [
+    "test/assistantDependencyRetry.test.ts",
+    "test/assistantOriginalContext.test.ts",
+    "test/assistantReadContract.test.ts",
+    "test/monsterAiAccounting.test.ts",
+    "test/monsterAppearanceAdversarial.test.ts",
+    "test/monsterAppearanceAssetIdentity.test.ts",
+    "test/monsterAppearanceEvidence.test.ts",
+    "test/monsterAppearanceHttp.test.ts",
+    "test/monsterAppearanceIdentity.test.ts",
+    "test/monsterAppearanceSession.test.ts",
+    "test/monsterAppearanceTransport.test.ts",
+    "test/originalContext.test.ts"
+  ]
+}

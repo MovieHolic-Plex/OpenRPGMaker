@@ -5,6 +5,7 @@
 // 싣고 오므로 Bun 에서만 로드되며, 그 Bun 의존이 인증 경로로 새지 않는 것이 이 경계의 목적이다.
 
 import { complete } from "@oh-my-pi/pi-ai";
+import type { ImageContent, TextContent } from "@oh-my-pi/pi-ai";
 import { getBundledModel, getBundledModels } from "@oh-my-pi/pi-catalog";
 import { getOhMyPiProvider } from "../../src/ai/ohMyPiProviders.ts";
 
@@ -39,7 +40,15 @@ function toolArgumentsOf(value: unknown): Record<string, unknown> {
   }
 }
 
-function openaiToContext(provider: string, body: Record<string, unknown>) {
+class UserContentInputError extends Error {
+  readonly name = "UserContentInputError";
+  readonly status = 400;
+  constructor(readonly partIndex: number) {
+    super(`Invalid user content part ${partIndex}: expected text or image_url with a non-empty PNG/JPEG/WebP base64 data URL and optional auto/low/high detail.`);
+  }
+}
+
+export function openaiToContext(provider: string, body: Record<string, unknown>) {
   const messages = Array.isArray(body.messages) ? body.messages : [];
   const systemPrompt: string[] = [];
   const converted: unknown[] = [];
@@ -52,7 +61,34 @@ function openaiToContext(provider: string, body: Record<string, unknown>) {
       continue;
     }
     if (msg.role === "user") {
-      converted.push({ role: "user", content: [{ type: "text", text: textOf(msg.content) }], timestamp: Date.now() });
+      const content: (TextContent | ImageContent)[] = Array.isArray(msg.content)
+        ? msg.content.map((part: unknown, index): TextContent | ImageContent => {
+            if (!part || typeof part !== "object" || !("type" in part)) throw new UserContentInputError(index);
+            switch (part.type) {
+              case "text":
+                return { type: "text", text: textOf([part]) };
+              case "image_url": {
+                const image = "image_url" in part ? part.image_url : undefined;
+                if (!image || typeof image !== "object" || !("url" in image) || typeof image.url !== "string") {
+                  throw new UserContentInputError(index);
+                }
+                const [, mimeType, data] = /^data:(image\/(?:png|jpeg|webp));base64,([A-Za-z0-9+/]+={0,2})$/.exec(image.url) ?? [];
+                // Buffer's decoder is permissive; round-trip to reject corrupt or noncanonical base64.
+                if (!mimeType || !data || Buffer.from(data, "base64").toString("base64") !== data) {
+                  throw new UserContentInputError(index);
+                }
+                const detail = "detail" in image ? image.detail : undefined;
+                if (detail !== undefined && detail !== "auto" && detail !== "low" && detail !== "high") {
+                  throw new UserContentInputError(index);
+                }
+                return { type: "image", data, mimeType, ...(detail === undefined ? {} : { detail }) };
+              }
+              default:
+                throw new UserContentInputError(index);
+            }
+          })
+        : [{ type: "text", text: textOf(msg.content) }];
+      converted.push({ role: "user", content, timestamp: Date.now() });
       continue;
     }
     if (msg.role === "assistant") {

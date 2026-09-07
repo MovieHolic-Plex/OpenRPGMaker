@@ -1,0 +1,11 @@
+{
+  "distPreexisted": true,
+  "retained": true,
+  "fileCount": 2001,
+  "focusedSha256": {
+    "dist/index.html": "b832b5103cc3db91d950dd451785c7418b022b90b22a7ed98be56134c8510720",
+    "dist/export-player/player.js": "45b69d7743fefc6e82ea528ccd1f9b2b0a0f4691661e300fb43b0e7416a5c401",
+    "dist/export-player/player-manifest.json": "ded62452affc60d207dfce3b9891ecac447838beeb5ee5f217b3fc4d16a10325",
+    "dist/standalone-player/standalone.js": "1bc0aedcb2cf0093a9da4be3d841f74fd243721d9943ae7b01002d56d4555d3b"
+  }
+}

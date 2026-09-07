@@ -1,0 +1,186 @@
+{
+  "baseRevision": "d932aa66b322412929d04a43af9f7f2b228f2884",
+  "sourceSha256": {
+    "src/ai/assistantSession.ts": "66d1be33249b8c8077a2beb8cd4ccd6e2bd6a2cf0c99b7ff0bba2cd8208dccfd",
+    "test/assistantDependencyRetry.test.ts": "1b4cae58baf77b4c67cd477660fe2557482f114d8ceba1d9f4731af6e3e92731"
+  },
+  "green": {
+    "files": 12,
+    "passed": 156,
+    "failed": 0,
+    "skipped": 0
+  },
+  "runs": {
+    "build-app": {
+      "command": [
+        "npm",
+        "run",
+        "build:app",
+        "--",
+        "--outDir",
+        "/dev/shm/st_01a078e1-dependency-fix/build-app-dist",
+        "--emptyOutDir"
+      ],
+      "cwd": "/home/main/z-project/rpg-zzu-monster-catalog-0907",
+      "exitCode": 0,
+      "timedOut": false,
+      "timeoutSeconds": 300,
+      "elapsedSeconds": 28.07860594592057,
+      "TMPDIR": "/dev/shm/st_01a078e1-dependency-fix/build-app"
+    },
+    "evidence-syntax": {
+      "command": [
+        "bash",
+        "-c",
+        "node --check output/evidence/monster-catalog/dependency-fix/offline.mjs && node --check output/evidence/monster-catalog/dependency-fix/vitest.config.mjs && python3 -c 'from pathlib import Path; p=Path(\"output/evidence/monster-catalog/dependency-fix/run.py\"); compile(p.read_text(), str(p), \"exec\")'"
+      ],
+      "cwd": "/home/main/z-project/rpg-zzu-monster-catalog-0907",
+      "exitCode": 0,
+      "timedOut": false,
+      "timeoutSeconds": 30,
+      "elapsedSeconds": 0.2154837839771062,
+      "TMPDIR": "/dev/shm/st_01a078e1-dependency-fix/evidence-syntax"
+    },
+    "green": {
+      "command": [
+        "node",
+        "scripts/run-vitest.mjs",
+        "run",
+        "test/assistantDependencyRetry.test.ts",
+        "test/assistantReadContract.test.ts",
+        "test/assistantOriginalContext.test.ts",
+        "test/originalContext.test.ts",
+        "test/monsterAppearanceEvidence.test.ts",
+        "test/monsterAppearanceSession.test.ts",
+        "test/monsterAppearanceTransport.test.ts",
+        "test/monsterAppearanceHttp.test.ts",
+        "test/monsterAppearanceIdentity.test.ts",
+        "test/monsterAppearanceAssetIdentity.test.ts",
+        "test/monsterAppearanceAdversarial.test.ts",
+        "test/monsterAiAccounting.test.ts",
+        "--config",
+        "output/evidence/monster-catalog/dependency-fix/vitest.config.mjs",
+        "--configLoader",
+        "runner",
+        "--no-cache",
+        "--maxWorkers",
+        "2",
+        "--minWorkers",
+        "1",
+        "--reporter",
+        "default",
+        "--reporter",
+        "json",
+        "--outputFile.json",
+        "output/evidence/monster-catalog/dependency-fix/green.json"
+      ],
+      "cwd": "/home/main/z-project/rpg-zzu-monster-catalog-0907",
+      "exitCode": 0,
+      "timedOut": false,
+      "timeoutSeconds": 420,
+      "elapsedSeconds": 66.51082649198361,
+      "TMPDIR": "/dev/shm/st_01a078e1-dependency-fix/green"
+    },
+    "red-contract": {
+      "command": [
+        "node",
+        "scripts/run-vitest.mjs",
+        "run",
+        "test/assistantDependencyRetry.test.ts",
+        "--config",
+        "output/evidence/monster-catalog/dependency-fix/vitest.config.mjs",
+        "--configLoader",
+        "runner",
+        "--no-cache",
+        "--maxWorkers",
+        "2",
+        "--minWorkers",
+        "1",
+        "--reporter",
+        "default",
+        "--reporter",
+        "json",
+        "--outputFile.json",
+        "output/evidence/monster-catalog/dependency-fix/red-contract.json"
+      ],
+      "cwd": "/home/main/z-project/rpg-zzu-monster-catalog-0907",
+      "exitCode": 1,
+      "timedOut": false,
+      "timeoutSeconds": 240,
+      "elapsedSeconds": 44.49805129598826,
+      "TMPDIR": "/dev/shm/st_01a078e1-dependency-fix/red-contract"
+    },
+    "red": {
+      "command": [
+        "node",
+        "scripts/run-vitest.mjs",
+        "run",
+        "test/assistantDependencyRetry.test.ts",
+        "--config",
+        "output/evidence/monster-catalog/dependency-fix/vitest.config.mjs",
+        "--configLoader",
+        "runner",
+        "--no-cache",
+        "--maxWorkers",
+        "2",
+        "--minWorkers",
+        "1",
+        "--reporter",
+        "default",
+        "--reporter",
+        "json",
+        "--outputFile.json",
+        "output/evidence/monster-catalog/dependency-fix/red.json"
+      ],
+      "cwd": "/home/main/z-project/rpg-zzu-monster-catalog-0907",
+      "exitCode": 1,
+      "timedOut": false,
+      "timeoutSeconds": 240,
+      "elapsedSeconds": 44.95121258101426,
+      "TMPDIR": "/dev/shm/st_01a078e1-dependency-fix/red"
+    },
+    "typecheck-app": {
+      "command": [
+        "npm",
+        "run",
+        "typecheck:app"
+      ],
+      "cwd": "/home/main/z-project/rpg-zzu-monster-catalog-0907",
+      "exitCode": 0,
+      "timedOut": false,
+      "timeoutSeconds": 180,
+      "elapsedSeconds": 48.34644654602744,
+      "TMPDIR": "/dev/shm/st_01a078e1-dependency-fix/typecheck-app"
+    },
+    "typecheck-test": {
+      "command": [
+        "node",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit",
+        "-p",
+        "output/evidence/monster-catalog/dependency-fix/tsconfig.test.json"
+      ],
+      "cwd": "/home/main/z-project/rpg-zzu-monster-catalog-0907",
+      "exitCode": 0,
+      "timedOut": false,
+      "timeoutSeconds": 180,
+      "elapsedSeconds": 38.48581489000935,
+      "TMPDIR": "/dev/shm/st_01a078e1-dependency-fix/typecheck-test"
+    },
+    "diff-check": {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/home/main/z-project/rpg-zzu-monster-catalog-0907",
+      "exitCode": 0,
+      "timedOut": false,
+      "timeoutSeconds": 30,
+      "elapsedSeconds": 0.03282170998863876,
+      "TMPDIR": "/dev/shm/st_01a078e1-dependency-fix/diff-check"
+    }
+  },
+  "enospcLogs": [],
+  "independentUltrabrainApproval": "pending parent review; unavailable to child"
+}

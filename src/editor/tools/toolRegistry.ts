@@ -62,6 +62,8 @@ import { GAME_SYSTEM_TOGGLE_TOOLS } from "./gameSystemToggleTools";
 import { TILESET_ATLAS_TOOLS } from "./tilesetAtlasTools";
 import { AUTHORING_MISC_TOOLS } from "./authoringMiscTools";
 import { RESOURCE_TOOLS } from "./resourceTools";
+import { MONSTER_RESOURCE_TOOLS } from "./monsterResourceTools";
+import { withMonsterAppearanceEnvelope } from "./monsterAppearanceTools";
 import { WORLD_STRUCTURE_TOOLS } from "./worldStructureTools";
 
 export { PLACEMENT_TOOLS };
@@ -96,7 +98,8 @@ export const CONSTRUCTION_WRITE_SUPERSEDED: ReadonlyMap<string, string> = new Ma
 
 // 레거시 툴 이름에 deprecated + supersededBy 부여 (LLM 비노출, getTool 실행 호환).
 function tagLegacy(tools: readonly ToolDefinition[]): readonly ToolDefinition[] {
-  return tools.map((tool) => {
+  return tools.map((definition) => {
+    const tool = withMonsterAppearanceEnvelope(definition);
     if (tool.deprecated) return tool;
     const superseded =
       CONSTRUCTION_WRITE_SUPERSEDED.get(tool.name)
@@ -186,6 +189,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   // 혼합 도메인 — 각 툴이 자기 domains 를 선언하고, 선언이 없으면 map 으로 떨어진다.
   ...withDomain(AUTHORING_MISC_TOOLS, "map"),
   ...withDomain(RESOURCE_TOOLS, "system"),
+  ...withDomain(MONSTER_RESOURCE_TOOLS, "database"),
   ...withDomain(WORLD_GRAPH_TOOLS, "world"),
   ...withDomain(PALETTE_PRESET_TOOLS, "tile"),
   ...withDomain(QUEST_TOOLS, "quest"),

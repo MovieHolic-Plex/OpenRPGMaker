@@ -1,0 +1,88 @@
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-monster-catalog-0907
+
+ ❯ test/assistantDependencyRetry.test.ts (16 tests | 5 failed) 30956ms
+   ✓ batch prerequisites through AssistantSession > defers failed-map writes without poisoning successTools or retries (old spec=false)  2016ms
+   ✓ batch prerequisites through AssistantSession > defers failed-map writes without poisoning successTools or retries (old spec=true)  1727ms
+   ✓ batch prerequisites through AssistantSession > a corrected spec resumes spatial execution (later batch=false)  1726ms
+   ✓ batch prerequisites through AssistantSession > a corrected spec resumes spatial execution (later batch=true)  1600ms
+   × batch prerequisites through AssistantSession > failed record creation defers only ID dependents, then creation/read/correction succeeds (read contract=false) 2265ms
+     → expected 'unknown-db-field' to be 'invalid-args' // Object.is equality
+   × batch prerequisites through AssistantSession > failed record creation defers only ID dependents, then creation/read/correction succeeds (read contract=true) 1923ms
+     → expected 'unknown-db-field' to be 'invalid-args' // Object.is equality
+   × batch prerequisites through AssistantSession > defers new-record dependents transitively without charging their retries (read contract=false) 1771ms
+     → expected [ { type: 'tool_call', …(4) }, …(4) ] to have a length of 6 but got 5
+   × batch prerequisites through AssistantSession > defers new-record dependents transitively without charging their retries (read contract=true) 1573ms
+     → expected [ { type: 'tool_call', …(4) }, …(4) ] to have a length of 6 but got 5
+   ✓ batch prerequisites through AssistantSession > keeps an existing record available after its update is deferred  1721ms
+   × batch prerequisites through AssistantSession > keeps an existing record available after its update is failed 1596ms
+     → expected 'unknown-db-field' to be 'invalid-args' // Object.is equality
+   ✓ batch prerequisites through AssistantSession > keeps the failed-read whole-batch contract and excludes deferred writes from the failure budget  1131ms
+   ✓ stable target retry budgets through AssistantSession > bounds fresh-batch lookup refusals without claiming they executed  1409ms
+   ✓ stable target retry budgets through AssistantSession > does not charge downstream same-batch refusals against their independent retry target  1965ms
+   ✓ stable target retry budgets through AssistantSession > bounds spelling and page-path variations despite unrelated writes and synthetic continuations, then rearms for a real user  4471ms
+   ✓ stable target retry budgets through AssistantSession > successful correction resets that target's accumulated failures  2330ms
+   ✓ stable target retry budgets through AssistantSession > does not execute attempts beyond the bound even within one model batch  1729ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/assistantDependencyRetry.test.ts > batch prerequisites through AssistantSession > failed record creation defers only ID dependents, then creation/read/correction succeeds (read contract=false)
+ FAIL  test/assistantDependencyRetry.test.ts > batch prerequisites through AssistantSession > failed record creation defers only ID dependents, then creation/read/correction succeeds (read contract=true)
+AssertionError: expected 'unknown-db-field' to be 'invalid-args' // Object.is equality
+
+Expected: "invalid-args"
+Received: "unknown-db-field"
+
+ ❯ test/assistantDependencyRetry.test.ts:127:51
+    125|     const afterRead = events.slice(1);
+    126|     expect(afterRead[0].result.ok).toBe(false);
+    127|     expect(afterRead[0].result.issues?.[0]?.code).toBe("invalid-args");
+       |                                                   ^
+    128|     expectDeferred(afterRead[1], "record-dependency-failed");
+    129|     expect(afterRead[2].result.ok).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  test/assistantDependencyRetry.test.ts > batch prerequisites through AssistantSession > defers new-record dependents transitively without charging their retries (read contract=false)
+ FAIL  test/assistantDependencyRetry.test.ts > batch prerequisites through AssistantSession > defers new-record dependents transitively without charging their retries (read contract=true)
+AssertionError: expected [ { type: 'tool_call', …(4) }, …(4) ] to have a length of 6 but got 5
+
+- Expected
++ Received
+
+- 6
++ 5
+
+ ❯ test/assistantDependencyRetry.test.ts:155:20
+    153|     expect(events[0].result.issues?.[0]?.code).toBe("monster-resource-…
+    154|     const troops = events.filter((event) => event.name === "upsert_tro…
+    155|     expect(troops).toHaveLength(6);
+       |                    ^
+    156|     troops.slice(0, 5).forEach((event) => expectDeferred(event, "recor…
+    157|     expect(troops[5].result.ok).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  test/assistantDependencyRetry.test.ts > batch prerequisites through AssistantSession > keeps an existing record available after its update is failed
+AssertionError: expected 'unknown-db-field' to be 'invalid-args' // Object.is equality
+
+Expected: "invalid-args"
+Received: "unknown-db-field"
+
+ ❯ test/assistantDependencyRetry.test.ts:191:50
+    189|     } else {
+    190|       expect(events[1].result.ok).toBe(false);
+    191|       expect(events[1].result.issues?.[0]?.code).toBe("invalid-args");
+       |                                                  ^
+    192|     }
+    193|     expect(events[2].result.ok).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed | 11 passed (16)
+   Start at  08:14:56
+   Duration  44.22s (transform 9.11s, setup 0ms, collect 12.71s, tests 30.96s, environment 0ms, prepare 102ms)
+
+JSON report written to /home/main/z-project/rpg-zzu-monster-catalog-0907/output/evidence/monster-catalog/dependency-fix/red.json

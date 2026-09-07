@@ -1,0 +1,417 @@
+{
+  "commit": "cc09b9ddbc76d1ffdf432b4fc2445f730fa0bb71",
+  "projectId": "qa-monster-catalog-01a077c7-20260907",
+  "expected": {
+    "name": "검증용 고블린 수호자",
+    "tags": [
+      "고블린",
+      "goblin",
+      "qa-catalog-01a077c7"
+    ],
+    "description": "녹색 피부와 가시 곤봉을 가진 고블린입니다.\n<b>문자 그대로</b> QA_META_01a077c7"
+  },
+  "baseline": {
+    "title": "몬스터 소재 설명 · 격리 검증",
+    "enemyCount": 107,
+    "metadata": null
+  },
+  "save": {
+    "saved": {
+      "kind": "saved",
+      "sha256": "955f04f6e937dba0fa23ba0021a3f772b27914781903b7ffb93030d501835299",
+      "receipt": {
+        "revisionId": "1a8e107c-c485-4045-ab47-2509c9897842",
+        "projectId": "qa-monster-catalog-01a077c7-20260907",
+        "mutationGeneration": 1,
+        "contentIdentity": "213d8a1c77efbf6eab0a44ab0f795671882f07402774fef9295d779186849cb9",
+        "sha256": "955f04f6e937dba0fa23ba0021a3f772b27914781903b7ffb93030d501835299"
+      }
+    },
+    "verified": {
+      "kind": "verified",
+      "receipt": {
+        "revisionId": "1a8e107c-c485-4045-ab47-2509c9897842",
+        "projectId": "qa-monster-catalog-01a077c7-20260907",
+        "mutationGeneration": 1,
+        "contentIdentity": "213d8a1c77efbf6eab0a44ab0f795671882f07402774fef9295d779186849cb9",
+        "sha256": "955f04f6e937dba0fa23ba0021a3f772b27914781903b7ffb93030d501835299"
+      },
+      "isCurrent": true
+    },
+    "metadata": {
+      "name": "검증용 고블린 수호자",
+      "description": "녹색 피부와 가시 곤봉을 가진 고블린입니다.\n<b>문자 그대로</b> QA_META_01a077c7",
+      "tags": [
+        "고블린",
+        "goblin",
+        "qa-catalog-01a077c7"
+      ]
+    },
+    "detail": {
+      "resource": {
+        "resourceId": "generated-enemy-goblin-scout",
+        "name": "검증용 고블린 수호자",
+        "tags": [
+          "고블린",
+          "goblin",
+          "qa-catalog-01a077c7"
+        ],
+        "description": "녹색 피부와 가시 곤봉을 가진 고블린입니다.\n<b>문자 그대로</b> QA_META_01a077c7",
+        "origin": "bundled",
+        "reviewStatus": "reviewed",
+        "sources": {
+          "name": "project",
+          "tags": "project",
+          "description": "project"
+        },
+        "assetIdentity": "sha256:5b6da57966e4cc7aebe05a96c471da43bcecdc020a4999189bfdf58962fa7ecc"
+      }
+    },
+    "search": {
+      "resources": [
+        {
+          "resourceId": "generated-enemy-goblin-scout",
+          "name": "검증용 고블린 수호자",
+          "tags": [
+            "고블린",
+            "goblin",
+            "qa-catalog-01a077c7"
+          ],
+          "description": "녹색 피부와 가시 곤봉을 가진 고블린입니다.\n<b>문자 그대로</b> QA_META_01a077c7",
+          "origin": "bundled",
+          "reviewStatus": "reviewed",
+          "sources": {
+            "name": "project",
+            "tags": "project",
+            "description": "project"
+          },
+          "assetIdentity": "sha256:5b6da57966e4cc7aebe05a96c471da43bcecdc020a4999189bfdf58962fa7ecc"
+        }
+      ],
+      "include": "full",
+      "total": 1,
+      "returned": 1,
+      "nextOffset": null,
+      "complete": true,
+      "unknownIds": []
+    },
+    "enemiesUnchanged": true
+  },
+  "reload": {
+    "name": "검증용 고블린 수호자",
+    "tags": [
+      "고블린",
+      "goblin",
+      "qa-catalog-01a077c7"
+    ],
+    "description": "녹색 피부와 가시 곤봉을 가진 고블린입니다.\n<b>문자 그대로</b> QA_META_01a077c7",
+    "source": "project",
+    "htmlNodes": 0
+  },
+  "reset": {
+    "saved": {
+      "kind": "saved",
+      "sha256": "6a6488e229f3508d47abe57d495daffe7b1dd28ff8a3f748f90ad7e39c77bd9e",
+      "receipt": {
+        "revisionId": "76eda15d-f2c1-453e-88f1-d4ba8592bcd6",
+        "projectId": "qa-monster-catalog-01a077c7-20260907",
+        "mutationGeneration": 1,
+        "contentIdentity": "17e79c3e65b9db00cfbbd898fd3a94116f6d6878a2e9c432f4a440391b43a6e2",
+        "sha256": "6a6488e229f3508d47abe57d495daffe7b1dd28ff8a3f748f90ad7e39c77bd9e"
+      }
+    },
+    "verified": {
+      "kind": "verified",
+      "receipt": {
+        "revisionId": "76eda15d-f2c1-453e-88f1-d4ba8592bcd6",
+        "projectId": "qa-monster-catalog-01a077c7-20260907",
+        "mutationGeneration": 1,
+        "contentIdentity": "17e79c3e65b9db00cfbbd898fd3a94116f6d6878a2e9c432f4a440391b43a6e2",
+        "sha256": "6a6488e229f3508d47abe57d495daffe7b1dd28ff8a3f748f90ad7e39c77bd9e"
+      },
+      "isCurrent": true
+    },
+    "overridePresent": false,
+    "resource": {
+      "resourceId": "generated-enemy-goblin-scout",
+      "name": "가시곤봉 고블린",
+      "tags": [
+        "고블린",
+        "goblin",
+        "인간형",
+        "humanoid",
+        "녹색 피부",
+        "가죽 갑옷",
+        "곤봉",
+        "club"
+      ],
+      "description": "짙은 녹색 피부와 뾰족한 귀, 튀어나온 코와 이빨을 가진 인간형 몬스터입니다. 낡은 가죽옷과 징이 박힌 보호구를 착용하고 가시가 박힌 굵은 나무 곤봉을 들고 서 있습니다.",
+      "origin": "bundled",
+      "reviewStatus": "reviewed",
+      "sources": {
+        "name": "catalog",
+        "tags": "catalog",
+        "description": "catalog"
+      },
+      "assetIdentity": "sha256:5b6da57966e4cc7aebe05a96c471da43bcecdc020a4999189bfdf58962fa7ecc"
+    },
+    "enemy": {
+      "id": "enemy_qa_monster_catalog_live",
+      "name": "밤의 족장",
+      "monsterResourceId": "generated-enemy-goblin-scout",
+      "graphicHue": 0,
+      "transparent": false,
+      "flying": false,
+      "criticalHit": {
+        "enabled": false,
+        "oneIn": 30
+      },
+      "attackOptions": {
+        "normalAttacksMiss": false
+      },
+      "skillIds": [],
+      "stats": {
+        "maxHp": 120,
+        "maxMp": 0,
+        "attack": 18,
+        "defense": 10,
+        "mind": 10,
+        "agility": 10
+      },
+      "rewards": {
+        "exp": 0,
+        "gold": 0,
+        "dropRatePercent": 0
+      },
+      "actions": [],
+      "stateRates": {
+        "state_death": "C"
+      },
+      "elementRates": {
+        "sword": "C",
+        "spear": "C",
+        "hit": "C",
+        "bow": "C",
+        "fire": "C",
+        "ice": "C",
+        "thunder": "C",
+        "water": "C",
+        "earth": "C",
+        "wind": "C",
+        "holy": "C",
+        "dark": "C"
+      }
+    }
+  },
+  "resetReload": {
+    "name": "가시곤봉 고블린",
+    "tags": [
+      "고블린",
+      "goblin",
+      "인간형",
+      "humanoid",
+      "녹색 피부",
+      "가죽 갑옷",
+      "곤봉",
+      "club"
+    ],
+    "description": "짙은 녹색 피부와 뾰족한 귀, 튀어나온 코와 이빨을 가진 인간형 몬스터입니다. 낡은 가죽옷과 징이 박힌 보호구를 착용하고 가시가 박힌 굵은 나무 곤봉을 들고 서 있습니다.",
+    "source": "catalog"
+  },
+  "controls": [
+    {
+      "width": 1024,
+      "height": 768,
+      "path": "/home/main/z-project/rpg-zzu-monster-catalog-0907/output/evidence/monster-catalog/final-ui-1024.png",
+      "box": {
+        "left": 32,
+        "top": 8,
+        "right": 992,
+        "bottom": 760,
+        "overflow": 0
+      },
+      "controls": [
+        {
+          "field": "search",
+          "width": 290.66668701171875,
+          "height": 32,
+          "disabled": false,
+          "reachable": true
+        },
+        {
+          "field": "name",
+          "width": 281.66668701171875,
+          "height": 32,
+          "disabled": false,
+          "reachable": true
+        },
+        {
+          "field": "tags",
+          "width": 281.66668701171875,
+          "height": 72,
+          "disabled": false,
+          "reachable": true
+        },
+        {
+          "field": "description",
+          "width": 281.66668701171875,
+          "height": 113.5,
+          "disabled": false,
+          "reachable": true
+        },
+        {
+          "field": "apply",
+          "width": 49.93333435058594,
+          "height": 32,
+          "disabled": true,
+          "reachable": true
+        },
+        {
+          "field": "reset",
+          "width": 89.46665954589844,
+          "height": 32,
+          "disabled": true,
+          "reachable": true
+        },
+        {
+          "field": "close",
+          "width": 49.93333435058594,
+          "height": 32,
+          "disabled": false,
+          "reachable": true
+        }
+      ],
+      "controlsPass": true
+    },
+    {
+      "width": 1280,
+      "height": 800,
+      "path": "/home/main/z-project/rpg-zzu-monster-catalog-0907/output/evidence/monster-catalog/final-ui-1280.png",
+      "box": {
+        "left": 160,
+        "top": 20,
+        "right": 1120,
+        "bottom": 780,
+        "overflow": 0
+      },
+      "controls": [
+        {
+          "field": "search",
+          "width": 290.66668701171875,
+          "height": 32,
+          "disabled": false,
+          "reachable": true
+        },
+        {
+          "field": "name",
+          "width": 281.66668701171875,
+          "height": 32,
+          "disabled": false,
+          "reachable": true
+        },
+        {
+          "field": "tags",
+          "width": 281.66668701171875,
+          "height": 72,
+          "disabled": false,
+          "reachable": true
+        },
+        {
+          "field": "description",
+          "width": 281.66668701171875,
+          "height": 113.5,
+          "disabled": false,
+          "reachable": true
+        },
+        {
+          "field": "apply",
+          "width": 49.93333435058594,
+          "height": 32,
+          "disabled": true,
+          "reachable": true
+        },
+        {
+          "field": "reset",
+          "width": 89.46665954589844,
+          "height": 32,
+          "disabled": true,
+          "reachable": true
+        },
+        {
+          "field": "close",
+          "width": 49.93333435058594,
+          "height": 32,
+          "disabled": false,
+          "reachable": true
+        }
+      ],
+      "controlsPass": true
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "path": "/home/main/z-project/rpg-zzu-monster-catalog-0907/output/evidence/monster-catalog/final-ui-1440.png",
+      "box": {
+        "left": 240,
+        "top": 70,
+        "right": 1200,
+        "bottom": 830,
+        "overflow": 0
+      },
+      "controls": [
+        {
+          "field": "search",
+          "width": 290.66668701171875,
+          "height": 32,
+          "disabled": false,
+          "reachable": true
+        },
+        {
+          "field": "name",
+          "width": 281.66668701171875,
+          "height": 32,
+          "disabled": false,
+          "reachable": true
+        },
+        {
+          "field": "tags",
+          "width": 281.66668701171875,
+          "height": 72,
+          "disabled": false,
+          "reachable": true
+        },
+        {
+          "field": "description",
+          "width": 281.66668701171875,
+          "height": 113.5,
+          "disabled": false,
+          "reachable": true
+        },
+        {
+          "field": "apply",
+          "width": 49.93333435058594,
+          "height": 32,
+          "disabled": true,
+          "reachable": true
+        },
+        {
+          "field": "reset",
+          "width": 89.46665954589844,
+          "height": 32,
+          "disabled": true,
+          "reachable": true
+        },
+        {
+          "field": "close",
+          "width": 49.93333435058594,
+          "height": 32,
+          "disabled": false,
+          "reachable": true
+        }
+      ],
+      "controlsPass": true
+    }
+  ],
+  "pageErrors": [],
+  "visualStatus": "FAIL: selected image exceeds160px grid frame; separate fix pending. Functional persistence proof is valid, not a visual PASS."
+}

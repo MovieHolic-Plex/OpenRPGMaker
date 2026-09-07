@@ -267,15 +267,24 @@ export class OriginalContextStore {
     }
   }
 
-  /** Never slice JSON or silently drop a page. Missing entries remain paged by stable path. */
-  message(tokenBudget: number): { message: ChatMessage; includedIds: string[] } {
+  private envelope() {
     const entries: { entryId: string; value: unknown }[] = [];
-    const envelope = { originalContext: {
+    return { originalContext: {
       snapshotId: this.context.snapshotId, target: this.context.target, missing: this.context.missing,
       entries, omitted: { count: this.context.entries.length,
         read: { tool: "get_original_context", args: { snapshotId: this.context.snapshotId, action: "list", offset: 0, limit: 20 } } },
       excluded: ["runtime-session", "credentials-and-configuration", "resource-urls-and-binary-assets"],
     } };
+  }
+
+  minimumTokens(): number {
+    return estimateContextTokens([{ role: "user", content: JSON.stringify(this.envelope()) }]);
+  }
+
+  /** Never slice JSON or silently drop a page. Missing entries remain paged by stable path. */
+  message(tokenBudget: number): { message: ChatMessage; includedIds: string[] } {
+    const envelope = this.envelope();
+    const entries = envelope.originalContext.entries;
     const message = (): ChatMessage => ({ role: "user", content: JSON.stringify(envelope) });
     let used = estimateContextTokens([message()]);
     if (used > tokenBudget) throw new Error("original-context-window-exceeded: no room for the original context manifest; no tools were removed");

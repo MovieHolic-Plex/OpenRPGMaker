@@ -1,0 +1,979 @@
+{
+  "exitCode": 0,
+  "selfTest": "passed",
+  "synthetic": true,
+  "expectedFiles": 1768,
+  "baselineFailedFiles": 98,
+  "cases": 25,
+  "results": [
+    {
+      "name": "complete passing control with nested suites",
+      "passed": true,
+      "complete": true,
+      "outcome": {
+        "status": "passed",
+        "failureObserved": false,
+        "passed": true,
+        "exitCode": 0
+      },
+      "issues": [],
+      "missingFiles": 0,
+      "duplicates": 0,
+      "failedFiles": [],
+      "newFailedFiles": [],
+      "counts": {
+        "scope": "schema-valid reports only; not a full-suite total unless complete",
+        "numTotalTestSuites": 3536,
+        "numPassedTestSuites": 3536,
+        "numFailedTestSuites": 0,
+        "numPendingTestSuites": 0,
+        "numTotalTests": 1768,
+        "numPassedTests": 1768,
+        "numFailedTests": 0,
+        "numPendingTests": 0,
+        "numTodoTests": 0,
+        "assertionStatuses": {
+          "passed": 1768,
+          "failed": 0,
+          "skipped": 0,
+          "pending": 0,
+          "todo": 0
+        }
+      }
+    },
+    {
+      "name": "missing shard",
+      "passed": true,
+      "complete": false,
+      "outcome": {
+        "status": "unknown",
+        "failureObserved": false,
+        "passed": false,
+        "exitCode": 2
+      },
+      "issues": [
+        {
+          "shard": 1,
+          "error": "ENOENT: no such file or directory, open '/home/main/z-project/rpg-zzu-monster-catalog-0907/output/evidence/monster-catalog/full-suite/.checker-self-test-cUFYX5/shard-01.json'"
+        },
+        {
+          "error": "expected files omitted",
+          "count": 111
+        }
+      ],
+      "missingFiles": 111,
+      "duplicates": 0,
+      "failedFiles": [],
+      "newFailedFiles": [],
+      "counts": {
+        "scope": "schema-valid reports only; not a full-suite total unless complete",
+        "numTotalTestSuites": 3314,
+        "numPassedTestSuites": 3314,
+        "numFailedTestSuites": 0,
+        "numPendingTestSuites": 0,
+        "numTotalTests": 1657,
+        "numPassedTests": 1657,
+        "numFailedTests": 0,
+        "numPendingTests": 0,
+        "numTodoTests": 0,
+        "assertionStatuses": {
+          "passed": 1657,
+          "failed": 0,
+          "skipped": 0,
+          "pending": 0,
+          "todo": 0
+        }
+      }
+    },
+    {
+      "name": "duplicate file across shards with internally consistent counts",
+      "passed": true,
+      "complete": false,
+      "outcome": {
+        "status": "unknown",
+        "failureObserved": false,
+        "passed": false,
+        "exitCode": 2
+      },
+      "issues": [
+        {
+          "error": "duplicate reported files",
+          "count": 1
+        }
+      ],
+      "missingFiles": 0,
+      "duplicates": 1,
+      "failedFiles": [],
+      "newFailedFiles": [],
+      "counts": {
+        "scope": "schema-valid reports only; not a full-suite total unless complete",
+        "numTotalTestSuites": 3538,
+        "numPassedTestSuites": 3538,
+        "numFailedTestSuites": 0,
+        "numPendingTestSuites": 0,
+        "numTotalTests": 1769,
+        "numPassedTests": 1769,
+        "numFailedTests": 0,
+        "numPendingTests": 0,
+        "numTodoTests": 0,
+        "assertionStatuses": {
+          "passed": 1769,
+          "failed": 0,
+          "skipped": 0,
+          "pending": 0,
+          "todo": 0
+        }
+      }
+    },
+    {
+      "name": "omitted expected file with internally consistent counts",
+      "passed": true,
+      "complete": false,
+      "outcome": {
+        "status": "unknown",
+        "failureObserved": false,
+        "passed": false,
+        "exitCode": 2
+      },
+      "issues": [
+        {
+          "error": "expected files omitted",
+          "count": 1
+        }
+      ],
+      "missingFiles": 1,
+      "duplicates": 0,
+      "failedFiles": [],
+      "newFailedFiles": [],
+      "counts": {
+        "scope": "schema-valid reports only; not a full-suite total unless complete",
+        "numTotalTestSuites": 3534,
+        "numPassedTestSuites": 3534,
+        "numFailedTestSuites": 0,
+        "numPendingTestSuites": 0,
+        "numTotalTests": 1767,
+        "numPassedTests": 1767,
+        "numFailedTests": 0,
+        "numPendingTests": 0,
+        "numTodoTests": 0,
+        "assertionStatuses": {
+          "passed": 1767,
+          "failed": 0,
+          "skipped": 0,
+          "pending": 0,
+          "todo": 0
+        }
+      }
+    },
+    {
+      "name": "malformed negative count",
+      "passed": true,
+      "complete": false,
+      "outcome": {
+        "status": "unknown",
+        "failureObserved": false,
+        "passed": false,
+        "exitCode": 2
+      },
+      "issues": [
+        {
+          "shard": 1,
+          "error": "invalid count: numPassedTests"
+        }
+      ],
+      "missingFiles": 0,
+      "duplicates": 0,
+      "failedFiles": [],
+      "newFailedFiles": [],
+      "counts": {
+        "scope": "schema-valid reports only; not a full-suite total unless complete",
+        "numTotalTestSuites": 3314,
+        "numPassedTestSuites": 3314,
+        "numFailedTestSuites": 0,
+        "numPendingTestSuites": 0,
+        "numTotalTests": 1657,
+        "numPassedTests": 1657,
+        "numFailedTests": 0,
+        "numPendingTests": 0,
+        "numTodoTests": 0,
+        "assertionStatuses": {
+          "passed": 1657,
+          "failed": 0,
+          "skipped": 0,
+          "pending": 0,
+          "todo": 0
+        }
+      }
+    },
+    {
+      "name": "plausible but inconsistent count",
+      "passed": true,
+      "complete": false,
+      "outcome": {
+        "status": "unknown",
+        "failureObserved": false,
+        "passed": false,
+        "exitCode": 2
+      },
+      "issues": [
+        {
+          "shard": 1,
+          "error": "test total differs from assertions"
+        }
+      ],
+      "missingFiles": 0,
+      "duplicates": 0,
+      "failedFiles": [],
+      "newFailedFiles": [],
+      "counts": {
+        "scope": "schema-valid reports only; not a full-suite total unless complete",
+        "numTotalTestSuites": 3314,
+        "numPassedTestSuites": 3314,
+        "numFailedTestSuites": 0,
+        "numPendingTestSuites": 0,
+        "numTotalTests": 1657,
+        "numPassedTests": 1657,
+        "numFailedTests": 0,
+        "numPendingTests": 0,
+        "numTodoTests": 0,
+        "assertionStatuses": {
+          "passed": 1657,
+          "failed": 0,
+          "skipped": 0,
+          "pending": 0,
+          "todo": 0
+        }
+      }
+    },
+    {
+      "name": "malformed JSON report",
+      "passed": true,
+      "complete": false,
+      "outcome": {
+        "status": "unknown",
+        "failureObserved": false,
+        "passed": false,
+        "exitCode": 2
+      },
+      "issues": [
+        {
+          "shard": 1,
+          "error": "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+        },
+        {
+          "error": "expected files omitted",
+          "count": 111
+        }
+      ],
+      "missingFiles": 111,
+      "duplicates": 0,
+      "failedFiles": [],
+      "newFailedFiles": [],
+      "counts": {
+        "scope": "schema-valid reports only; not a full-suite total unless complete",
+        "numTotalTestSuites": 3314,
+        "numPassedTestSuites": 3314,
+        "numFailedTestSuites": 0,
+        "numPendingTestSuites": 0,
+        "numTotalTests": 1657,
+        "numPassedTests": 1657,
+        "numFailedTests": 0,
+        "numPendingTests": 0,
+        "numTodoTests": 0,
+        "assertionStatuses": {
+          "passed": 1657,
+          "failed": 0,
+          "skipped": 0,
+          "pending": 0,
+          "todo": 0
+        }
+      }
+    },
+    {
+      "name": "empty report",
+      "passed": true,
+      "complete": false,
+      "outcome": {
+        "status": "unknown",
+        "failureObserved": false,
+        "passed": false,
+        "exitCode": 2
+      },
+      "issues": [
+        {
+          "shard": 1,
+          "error": "empty JSON: /home/main/z-project/rpg-zzu-monster-catalog-0907/output/evidence/monster-catalog/full-suite/.checker-self-test-cUFYX5/shard-01.json"
+        },
+        {
+          "error": "expected files omitted",
+          "count": 111
+        }
+      ],
+      "missingFiles": 111,
+      "duplicates": 0,
+      "failedFiles": [],
+      "newFailedFiles": [],
+      "counts": {
+        "scope": "schema-valid reports only; not a full-suite total unless complete",
+        "numTotalTestSuites": 3314,
+        "numPassedTestSuites": 3314,
+        "numFailedTestSuites": 0,
+        "numPendingTestSuites": 0,
+        "numTotalTests": 1657,
+        "numPassedTests": 1657,
+        "numFailedTests": 0,
+        "numPendingTests": 0,
+        "numTodoTests": 0,
+        "assertionStatuses": {
+          "passed": 1657,
+          "failed": 0,
+          "skipped": 0,
+          "pending": 0,
+          "todo": 0
+        }
+      }
+    },
+    {
+      "name": "empty testResults",
+      "passed": true,
+      "complete": false,
+      "outcome": {
+        "status": "unknown",
+        "failureObserved": false,
+        "passed": false,
+        "exitCode": 2
+      },
+      "issues": [
+        {
+          "shard": 1,
+          "error": "missing or empty testResults"
+        },
+        {
+          "error": "expected files omitted",
+          "count": 111
+        }
+      ],
+      "missingFiles": 111,
+      "duplicates": 0,
+      "failedFiles": [],
+      "newFailedFiles": [],
+      "counts": {
+        "scope": "schema-valid reports only; not a full-suite total unless complete",
+        "numTotalTestSuites": 3314,
+        "numPassedTestSuites": 3314,
+        "numFailedTestSuites": 0,
+        "numPendingTestSuites": 0,
+        "numTotalTests": 1657,
+        "numPassedTests": 1657,
+        "numFailedTests": 0,
+        "numPendingTests": 0,
+        "numTodoTests": 0,
+        "assertionStatuses": {
+          "passed": 1657,
+          "failed": 0,
+          "skipped": 0,
+          "pending": 0,
+          "todo": 0
+        }
+      }
+    },
+    {
+      "name": "missing terminal exit",
+      "passed": true,
+      "complete": false,
+      "outcome": {
+        "status": "unknown",
+        "failureObserved": false,
+        "passed": false,
+        "exitCode": 2
+      },
+      "issues": [
+        {
+          "shard": 1,
+          "error": "missing known exit 0/1 with status:completed, or contradictory timeout/signal evidence"
+        }
+      ],
+      "missingFiles": 0,
+      "duplicates": 0,
+      "failedFiles": [],
+      "newFailedFiles": [],
+      "counts": {
+        "scope": "schema-valid reports only; not a full-suite total unless complete",
+        "numTotalTestSuites": 3536,
+        "numPassedTestSuites": 3536,
+        "numFailedTestSuites": 0,
+        "numPendingTestSuites": 0,
+        "numTotalTests": 1768,
+        "numPassedTests": 1768,
+        "numFailedTests": 0,
+        "numPendingTests": 0,
+        "numTodoTests": 0,
+        "assertionStatuses": {
+          "passed": 1768,
+          "failed": 0,
+          "skipped": 0,
+          "pending": 0,
+          "todo": 0
+        }
+      }
+    },
+    {
+      "name": "missing process record preserves other terminal receipts",
+      "passed": true,
+      "complete": false,
+      "outcome": {
+        "status": "unknown",
+        "failureObserved": false,
+        "passed": false,
+        "exitCode": 2
+      },
+      "issues": [
+        {
+          "shard": 1,
+          "error": "missing known exit 0/1 with status:completed, or contradictory timeout/signal evidence"
+        }
+      ],
+      "missingFiles": 0,
+      "duplicates": 0,
+      "failedFiles": [],
+      "newFailedFiles": [],
+      "counts": {
+        "scope": "schema-valid reports only; not a full-suite total unless complete",
+        "numTotalTestSuites": 3536,
+        "numPassedTestSuites": 3536,
+        "numFailedTestSuites": 0,
+        "numPendingTestSuites": 0,
+        "numTotalTests": 1768,
+        "numPassedTests": 1768,
+        "numFailedTests": 0,
+        "numPendingTests": 0,
+        "numTodoTests": 0,
+        "assertionStatuses": {
+          "passed": 1768,
+          "failed": 0,
+          "skipped": 0,
+          "pending": 0,
+          "todo": 0
+        }
+      }
+    },
+    {
+      "name": "missing completed status",
+      "passed": true,
+      "complete": false,
+      "outcome": {
+        "status": "unknown",
+        "failureObserved": false,
+        "passed": false,
+        "exitCode": 2
+      },
+      "issues": [
+        {
+          "shard": 1,
+          "error": "missing known exit 0/1 with status:completed, or contradictory timeout/signal evidence"
+        }
+      ],
+      "missingFiles": 0,
+      "duplicates": 0,
+      "failedFiles": [],
+      "newFailedFiles": [],
+      "counts": {
+        "scope": "schema-valid reports only; not a full-suite total unless complete",
+        "numTotalTestSuites": 3536,
+        "numPassedTestSuites": 3536,
+        "numFailedTestSuites": 0,
+        "numPendingTestSuites": 0,
+        "numTotalTests": 1768,
+        "numPassedTests": 1768,
+        "numFailedTests": 0,
+        "numPendingTests": 0,
+        "numTodoTests": 0,
+        "assertionStatuses": {
+          "passed": 1768,
+          "failed": 0,
+          "skipped": 0,
+          "pending": 0,
+          "todo": 0
+        }
+      }
+    },
+    {
+      "name": "running status with exit 0",
+      "passed": true,
+      "complete": false,
+      "outcome": {
+        "status": "unknown",
+        "failureObserved": false,
+        "passed": false,
+        "exitCode": 2
+      },
+      "issues": [
+        {
+          "shard": 1,
+          "error": "missing known exit 0/1 with status:completed, or contradictory timeout/signal evidence"
+        }
+      ],
+      "missingFiles": 0,
+      "duplicates": 0,
+      "failedFiles": [],
+      "newFailedFiles": [],
+      "counts": {
+        "scope": "schema-valid reports only; not a full-suite total unless complete",
+        "numTotalTestSuites": 3536,
+        "numPassedTestSuites": 3536,
+        "numFailedTestSuites": 0,
+        "numPendingTestSuites": 0,
+        "numTotalTests": 1768,
+        "numPassedTests": 1768,
+        "numFailedTests": 0,
+        "numPendingTests": 0,
+        "numTodoTests": 0,
+        "assertionStatuses": {
+          "passed": 1768,
+          "failed": 0,
+          "skipped": 0,
+          "pending": 0,
+          "todo": 0
+        }
+      }
+    },
+    {
+      "name": "timeout status with exit 1",
+      "passed": true,
+      "complete": false,
+      "outcome": {
+        "status": "failed",
+        "failureObserved": true,
+        "passed": false,
+        "exitCode": 2
+      },
+      "issues": [
+        {
+          "shard": 1,
+          "error": "missing known exit 0/1 with status:completed, or contradictory timeout/signal evidence"
+        }
+      ],
+      "missingFiles": 0,
+      "duplicates": 0,
+      "failedFiles": [],
+      "newFailedFiles": [],
+      "counts": {
+        "scope": "schema-valid reports only; not a full-suite total unless complete",
+        "numTotalTestSuites": 3536,
+        "numPassedTestSuites": 3536,
+        "numFailedTestSuites": 0,
+        "numPendingTestSuites": 0,
+        "numTotalTests": 1768,
+        "numPassedTests": 1768,
+        "numFailedTests": 0,
+        "numPendingTests": 0,
+        "numTodoTests": 0,
+        "assertionStatuses": {
+          "passed": 1768,
+          "failed": 0,
+          "skipped": 0,
+          "pending": 0,
+          "todo": 0
+        }
+      }
+    },
+    {
+      "name": "unexpected shard process key",
+      "passed": true,
+      "complete": false,
+      "outcome": {
+        "status": "unknown",
+        "failureObserved": false,
+        "passed": false,
+        "exitCode": 2
+      },
+      "issues": [
+        {
+          "source": "process-exits",
+          "error": "invalid shard process record: 17"
+        }
+      ],
+      "missingFiles": 0,
+      "duplicates": 0,
+      "failedFiles": [],
+      "newFailedFiles": [],
+      "counts": {
+        "scope": "schema-valid reports only; not a full-suite total unless complete",
+        "numTotalTestSuites": 3536,
+        "numPassedTestSuites": 3536,
+        "numFailedTestSuites": 0,
+        "numPendingTestSuites": 0,
+        "numTotalTests": 1768,
+        "numPassedTests": 1768,
+        "numFailedTests": 0,
+        "numPendingTests": 0,
+        "numTodoTests": 0,
+        "assertionStatuses": {
+          "passed": 1768,
+          "failed": 0,
+          "skipped": 0,
+          "pending": 0,
+          "todo": 0
+        }
+      }
+    },
+    {
+      "name": "noncanonical shard process key",
+      "passed": true,
+      "complete": false,
+      "outcome": {
+        "status": "unknown",
+        "failureObserved": false,
+        "passed": false,
+        "exitCode": 2
+      },
+      "issues": [
+        {
+          "source": "process-exits",
+          "error": "invalid shard process record: 01"
+        },
+        {
+          "shard": 1,
+          "error": "missing known exit 0/1 with status:completed, or contradictory timeout/signal evidence"
+        }
+      ],
+      "missingFiles": 0,
+      "duplicates": 0,
+      "failedFiles": [],
+      "newFailedFiles": [],
+      "counts": {
+        "scope": "schema-valid reports only; not a full-suite total unless complete",
+        "numTotalTestSuites": 3536,
+        "numPassedTestSuites": 3536,
+        "numFailedTestSuites": 0,
+        "numPendingTestSuites": 0,
+        "numTotalTests": 1768,
+        "numPassedTests": 1768,
+        "numFailedTests": 0,
+        "numPendingTests": 0,
+        "numTodoTests": 0,
+        "assertionStatuses": {
+          "passed": 1768,
+          "failed": 0,
+          "skipped": 0,
+          "pending": 0,
+          "todo": 0
+        }
+      }
+    },
+    {
+      "name": "timeout despite reported exit 1",
+      "passed": true,
+      "complete": false,
+      "outcome": {
+        "status": "failed",
+        "failureObserved": true,
+        "passed": false,
+        "exitCode": 2
+      },
+      "issues": [
+        {
+          "shard": 1,
+          "error": "missing known exit 0/1 with status:completed, or contradictory timeout/signal evidence"
+        }
+      ],
+      "missingFiles": 0,
+      "duplicates": 0,
+      "failedFiles": [],
+      "newFailedFiles": [],
+      "counts": {
+        "scope": "schema-valid reports only; not a full-suite total unless complete",
+        "numTotalTestSuites": 3536,
+        "numPassedTestSuites": 3536,
+        "numFailedTestSuites": 0,
+        "numPendingTestSuites": 0,
+        "numTotalTests": 1768,
+        "numPassedTests": 1768,
+        "numFailedTests": 0,
+        "numPendingTests": 0,
+        "numTodoTests": 0,
+        "assertionStatuses": {
+          "passed": 1768,
+          "failed": 0,
+          "skipped": 0,
+          "pending": 0,
+          "todo": 0
+        }
+      }
+    },
+    {
+      "name": "signal despite reported exit 0",
+      "passed": true,
+      "complete": false,
+      "outcome": {
+        "status": "unknown",
+        "failureObserved": false,
+        "passed": false,
+        "exitCode": 2
+      },
+      "issues": [
+        {
+          "shard": 1,
+          "error": "missing known exit 0/1 with status:completed, or contradictory timeout/signal evidence"
+        }
+      ],
+      "missingFiles": 0,
+      "duplicates": 0,
+      "failedFiles": [],
+      "newFailedFiles": [],
+      "counts": {
+        "scope": "schema-valid reports only; not a full-suite total unless complete",
+        "numTotalTestSuites": 3536,
+        "numPassedTestSuites": 3536,
+        "numFailedTestSuites": 0,
+        "numPendingTestSuites": 0,
+        "numTotalTests": 1768,
+        "numPassedTests": 1768,
+        "numFailedTests": 0,
+        "numPendingTests": 0,
+        "numTodoTests": 0,
+        "assertionStatuses": {
+          "passed": 1768,
+          "failed": 0,
+          "skipped": 0,
+          "pending": 0,
+          "todo": 0
+        }
+      }
+    },
+    {
+      "name": "failed but complete, including existing and new failed files",
+      "passed": true,
+      "complete": true,
+      "outcome": {
+        "status": "failed",
+        "failureObserved": true,
+        "passed": false,
+        "exitCode": 1
+      },
+      "issues": [],
+      "missingFiles": 0,
+      "duplicates": 0,
+      "failedFiles": [
+        "test/actionAcceptanceProof.test.ts",
+        "test/actionDebounceFootprint.test.ts"
+      ],
+      "newFailedFiles": [
+        "test/actionAcceptanceProof.test.ts"
+      ],
+      "counts": {
+        "scope": "schema-valid reports only; not a full-suite total unless complete",
+        "numTotalTestSuites": 3536,
+        "numPassedTestSuites": 3532,
+        "numFailedTestSuites": 4,
+        "numPendingTestSuites": 0,
+        "numTotalTests": 1768,
+        "numPassedTests": 1766,
+        "numFailedTests": 2,
+        "numPendingTests": 0,
+        "numTodoTests": 0,
+        "assertionStatuses": {
+          "passed": 1766,
+          "failed": 2,
+          "skipped": 0,
+          "pending": 0,
+          "todo": 0
+        }
+      }
+    },
+    {
+      "name": "collection error with zero assertions remains complete and failed",
+      "passed": true,
+      "complete": true,
+      "outcome": {
+        "status": "failed",
+        "failureObserved": true,
+        "passed": false,
+        "exitCode": 1
+      },
+      "issues": [],
+      "missingFiles": 0,
+      "duplicates": 0,
+      "failedFiles": [
+        "test/actionAcceptanceProof.test.ts"
+      ],
+      "newFailedFiles": [
+        "test/actionAcceptanceProof.test.ts"
+      ],
+      "counts": {
+        "scope": "schema-valid reports only; not a full-suite total unless complete",
+        "numTotalTestSuites": 3535,
+        "numPassedTestSuites": 3534,
+        "numFailedTestSuites": 1,
+        "numPendingTestSuites": 0,
+        "numTotalTests": 1767,
+        "numPassedTests": 1767,
+        "numFailedTests": 0,
+        "numPendingTests": 0,
+        "numTodoTests": 0,
+        "assertionStatuses": {
+          "passed": 1767,
+          "failed": 0,
+          "skipped": 0,
+          "pending": 0,
+          "todo": 0
+        }
+      }
+    },
+    {
+      "name": "exit 1 with success true retains non-assertion/unhandled failure",
+      "passed": true,
+      "complete": true,
+      "outcome": {
+        "status": "failed",
+        "failureObserved": true,
+        "passed": false,
+        "exitCode": 1
+      },
+      "issues": [],
+      "missingFiles": 0,
+      "duplicates": 0,
+      "failedFiles": [],
+      "newFailedFiles": [],
+      "counts": {
+        "scope": "schema-valid reports only; not a full-suite total unless complete",
+        "numTotalTestSuites": 3536,
+        "numPassedTestSuites": 3536,
+        "numFailedTestSuites": 0,
+        "numPendingTestSuites": 0,
+        "numTotalTests": 1768,
+        "numPassedTests": 1768,
+        "numFailedTests": 0,
+        "numPendingTests": 0,
+        "numTodoTests": 0,
+        "assertionStatuses": {
+          "passed": 1768,
+          "failed": 0,
+          "skipped": 0,
+          "pending": 0,
+          "todo": 0
+        }
+      }
+    },
+    {
+      "name": "skipped and todo counted honestly",
+      "passed": true,
+      "complete": true,
+      "outcome": {
+        "status": "passed",
+        "failureObserved": false,
+        "passed": true,
+        "exitCode": 0
+      },
+      "issues": [],
+      "missingFiles": 0,
+      "duplicates": 0,
+      "failedFiles": [],
+      "newFailedFiles": [],
+      "counts": {
+        "scope": "schema-valid reports only; not a full-suite total unless complete",
+        "numTotalTestSuites": 3536,
+        "numPassedTestSuites": 3536,
+        "numFailedTestSuites": 0,
+        "numPendingTestSuites": 0,
+        "numTotalTests": 1768,
+        "numPassedTests": 1766,
+        "numFailedTests": 0,
+        "numPendingTests": 1,
+        "numTodoTests": 1,
+        "assertionStatuses": {
+          "passed": 1766,
+          "failed": 0,
+          "skipped": 1,
+          "pending": 0,
+          "todo": 1
+        }
+      }
+    },
+    {
+      "name": "unfinished pending assertion fails completeness",
+      "passed": true,
+      "complete": false,
+      "outcome": {
+        "status": "unknown",
+        "failureObserved": false,
+        "passed": false,
+        "exitCode": 2
+      },
+      "issues": [
+        {
+          "shard": 1,
+          "error": "unfinished pending assertions in terminal report"
+        }
+      ],
+      "missingFiles": 0,
+      "duplicates": 0,
+      "failedFiles": [],
+      "newFailedFiles": [],
+      "counts": {
+        "scope": "schema-valid reports only; not a full-suite total unless complete",
+        "numTotalTestSuites": 3314,
+        "numPassedTestSuites": 3314,
+        "numFailedTestSuites": 0,
+        "numPendingTestSuites": 0,
+        "numTotalTests": 1657,
+        "numPassedTests": 1657,
+        "numFailedTests": 0,
+        "numPendingTests": 0,
+        "numTodoTests": 0,
+        "assertionStatuses": {
+          "passed": 1657,
+          "failed": 0,
+          "skipped": 0,
+          "pending": 0,
+          "todo": 0
+        }
+      }
+    },
+    {
+      "name": "unexpected file",
+      "passed": true,
+      "complete": false,
+      "outcome": {
+        "status": "unknown",
+        "failureObserved": false,
+        "passed": false,
+        "exitCode": 2
+      },
+      "issues": [
+        {
+          "error": "unexpected reported files",
+          "count": 1
+        }
+      ],
+      "missingFiles": 0,
+      "duplicates": 0,
+      "failedFiles": [],
+      "newFailedFiles": [],
+      "counts": {
+        "scope": "schema-valid reports only; not a full-suite total unless complete",
+        "numTotalTestSuites": 3538,
+        "numPassedTestSuites": 3538,
+        "numFailedTestSuites": 0,
+        "numPendingTestSuites": 0,
+        "numTotalTests": 1769,
+        "numPassedTests": 1769,
+        "numFailedTests": 0,
+        "numPendingTests": 0,
+        "numTodoTests": 0,
+        "assertionStatuses": {
+          "passed": 1769,
+          "failed": 0,
+          "skipped": 0,
+          "pending": 0,
+          "todo": 0
+        }
+      }
+    },
+    {
+      "name": "CLI returns JSON and exit 2 for missing process evidence",
+      "passed": true,
+      "exitCode": 2
+    }
+  ]
+}

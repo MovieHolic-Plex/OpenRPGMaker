@@ -13,6 +13,7 @@ export const LOW_RISK_SPATIAL_TOOLS: ReadonlySet<string> = new Set([
 
 const KNOWN_DIFF_KEYS: ReadonlySet<keyof ChangeSummary> = new Set([
   "tilesChanged",
+  "monsterMetadataChanged",
   "audioDescriptionsChanged",
   "mapPropertiesChanged",
   "eventsAdded",
@@ -35,6 +36,7 @@ const KNOWN_DIFF_KEYS: ReadonlySet<keyof ChangeSummary> = new Set([
 ]);
 
 const ZERO_COUNT_KEYS: readonly (keyof ChangeSummary)[] = [
+  "monsterMetadataChanged",
   "audioDescriptionsChanged",
   "mapPropertiesChanged",
   "eventsAdded",
@@ -224,7 +226,7 @@ function isPositiveTileOnlyDiff(diff: ChangeSummary | undefined): boolean {
   if (!diff || !Number.isFinite(diff.tilesChanged) || diff.tilesChanged <= 0) return false;
   if (Object.keys(diff).some((key) => !KNOWN_DIFF_KEYS.has(key as keyof ChangeSummary))) return false;
   if (ZERO_COUNT_KEYS.some((key) =>
-    (key === "audioDescriptionsChanged" ? diff[key] ?? 0 : diff[key]) !== 0)) return false;
+    (key === "audioDescriptionsChanged" || key === "monsterMetadataChanged" ? diff[key] ?? 0 : diff[key]) !== 0)) return false;
   if (diff.sessionChanged !== false || diff.systemChanged !== false) return false;
   if ((diff.warnings ?? []).some((warning) => warning.trim().length > 0)) return false;
   return true;
