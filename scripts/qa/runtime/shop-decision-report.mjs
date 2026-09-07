@@ -12,7 +12,7 @@ import { shopFixture } from './shop-decision-fixtures.mjs';
 
 const { values } = parseArgs({ options: { case: { type: "string" } } });
 assert.ok(['economy', 'compare', 'navigation'].includes(values.case), 'Supported cases: economy|compare|navigation');
-const root = resolve(`reports/shop-decision-2026-09-07/${values.case}`);
+const root = resolve(process.env.SHOP_DECISION_QA_OUTPUT ?? `reports/shop-decision-2026-09-07/${values.case}`);
 await mkdir(root, { recursive: true });
 const report = { case: values.case, startedAt: new Date().toISOString(), actions: [], screenshots: [], errors: [], networkFailures: [], cleanup: [] };
 const resources = [];
