@@ -1,0 +1,9 @@
+{
+  "ownedTmpfs": "/dev/shm/st_01a0791b",
+  "tmpfsRemoved": true,
+  "distLinkRemoved": true,
+  "sharedDependenciesRetained": true,
+  "sharedCacheDeleted": false,
+  "browserOrServerStarted": false,
+  "remoteWrites": false
+}
