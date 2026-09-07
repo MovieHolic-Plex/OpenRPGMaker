@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **50쪽 / 1984KB / 약 559,131 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **50쪽 / 1984KB / 약 559,191 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,7 +15,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/editor-ai-panel.md` | 318KB | 95KB ⚠상한 초과 — 절을 더 쪼개라 | 1145 | ~90,867 |
+| `openwiki/editor-ai-panel.md` | 318KB | 95KB ⚠상한 초과 — 절을 더 쪼개라 | 1148 | ~90,927 |
 | `openwiki/editor-ai-tools.md` | 129KB | 73KB ⚠상한 초과 — 절을 더 쪼개라 | 774 | ~36,223 |
 | `openwiki/editor-database.md` | 248KB | 55KB ⚠상한 초과 — 절을 더 쪼개라 | 1285 | ~71,443 |
 | `openwiki/editor-event-authoring.md` | 125KB | 75KB ⚠상한 초과 — 절을 더 쪼개라 | 626 | ~36,040 |
@@ -33,7 +33,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 | 페이지 | 깨진 줄 수 | 예시 줄 번호 |
 |---|---|---|
-| `openwiki/editor-ai-panel.md` | 25 | 840, 841, 842, 843, 844, 845, 857, 866 |
+| `openwiki/editor-ai-panel.md` | 25 | 843, 844, 845, 846, 847, 848, 860, 869 |
 | `openwiki/editor-ai-tools.md` | 6 | 507, 508, 512, 514, 516, 673 |
 | `openwiki/editor-database.md` | 7 | 495, 499, 500, 501, 510, 536, 539 |
 | `openwiki/editor-event-authoring.md` | 16 | 198, 199, 202, 207, 208, 209, 210, 211 |
@@ -236,39 +236,39 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L18` Output limits
 - `L24` Practical tips
 
-### `openwiki/editor-ai-panel.md` — 318KB · 1145줄 · ~90,867 토큰 · 통째읽기 잘림 · 깨진 줄 25
+### `openwiki/editor-ai-panel.md` — 318KB · 1148줄 · ~90,927 토큰 · 통째읽기 잘림 · 깨진 줄 25
 
 - `L3` Independent result review and repair (2026-09-06)
-- `L103` Combined P2 and independent-review ownership (2026-09-07)
-- `L137` P2 run outcomes and user scope actions (2026-09-06)
-  - `L193` Canonical requirements and genuine user actions
-- `L262` Live large-world QA: plan repair and final audit (2026-09-07)
-- `L323` Assistant control audit fixes (2026-09-07)
-- `L334` World structure activity labels (2026-09-06)
-- `L343` Multi-map construction specifications (2026-09-06)
-- `L379` Plan authoring has no small-plan quota (2026-09-06)
-- `L398` Acceptance sticky note (2026-09-06)
-  - `L418` Session-owned acceptance contract
-- `L562` 자동 프로젝트 위키 (2026-09-07)
-- `L595` 브라우저 포커스와 도구 실행 대기 (2026-09-05)
-- `L602` 계획 항목의 연속 실행 증거 (2026-09-05)
-- `L608` 조회 선행·계획 완료와 실행 종료 (2026-09-05)
-- `L617` 조수 카메라 이동 수명·부드러운 줌 (2026-09-05)
-- `L633` 패널 셸 · 도크 · 접기 · 컴포저
-- `L771` 세션 수명 · 대화 컨텍스트
-- `L786` 제안 적용 · 복구 · 완성도 린트
-- `L870` 고스트 미리보기 · 활동 표시 · 청사진 · 카메라
-- `L932` 영역 작업 · 시공 · 실내/집 파이프라인
-- `L956` 툴 노출 · 프롬프트 · 의도 판정 · NPC
-- `L970` 타일셋 이해 · 검토 위저드 (T1a/T1b)
-- `L996` 저장 · 내보내기 · 프로젝트 생성
-- `L1004` 제공자 · OAuth · 동반 서비스
-- `L1034` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
-- `L1075` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
-- `L1083` 배치 의존성과 완료 멱등성 (2026-09-06)
-- `L1091` 모험 완료와 실제 적용 횟수 (2026-09-05)
-- `L1096` Assistant clean conversation — Phase 1 (2026-09-06)
-- `L1133` Assistant deck width resize (2026-09-07)
+- `L106` Combined P2 and independent-review ownership (2026-09-07)
+- `L140` P2 run outcomes and user scope actions (2026-09-06)
+  - `L196` Canonical requirements and genuine user actions
+- `L265` Live large-world QA: plan repair and final audit (2026-09-07)
+- `L326` Assistant control audit fixes (2026-09-07)
+- `L337` World structure activity labels (2026-09-06)
+- `L346` Multi-map construction specifications (2026-09-06)
+- `L382` Plan authoring has no small-plan quota (2026-09-06)
+- `L401` Acceptance sticky note (2026-09-06)
+  - `L421` Session-owned acceptance contract
+- `L565` 자동 프로젝트 위키 (2026-09-07)
+- `L598` 브라우저 포커스와 도구 실행 대기 (2026-09-05)
+- `L605` 계획 항목의 연속 실행 증거 (2026-09-05)
+- `L611` 조회 선행·계획 완료와 실행 종료 (2026-09-05)
+- `L620` 조수 카메라 이동 수명·부드러운 줌 (2026-09-05)
+- `L636` 패널 셸 · 도크 · 접기 · 컴포저
+- `L774` 세션 수명 · 대화 컨텍스트
+- `L789` 제안 적용 · 복구 · 완성도 린트
+- `L873` 고스트 미리보기 · 활동 표시 · 청사진 · 카메라
+- `L935` 영역 작업 · 시공 · 실내/집 파이프라인
+- `L959` 툴 노출 · 프롬프트 · 의도 판정 · NPC
+- `L973` 타일셋 이해 · 검토 위저드 (T1a/T1b)
+- `L999` 저장 · 내보내기 · 프로젝트 생성
+- `L1007` 제공자 · OAuth · 동반 서비스
+- `L1037` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
+- `L1078` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
+- `L1086` 배치 의존성과 완료 멱등성 (2026-09-06)
+- `L1094` 모험 완료와 실제 적용 횟수 (2026-09-05)
+- `L1099` Assistant clean conversation — Phase 1 (2026-09-06)
+- `L1136` Assistant deck width resize (2026-09-07)
 
 ### `openwiki/editor-ai-tools.md` — 129KB · 774줄 · ~36,223 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
