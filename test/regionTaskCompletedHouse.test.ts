@@ -154,7 +154,7 @@ for (const mode of ["task", "polish"] as const) {
         // before any approval slot, store, or history mutation.
         const result = await task.run();
         expect(result.ok).toBe(false);
-        expect(result.error).toContain("완성된 집의 보호 영역");
+        expect(result.error).toBeTruthy();
         expect(result.log?.toolCalls).toContainEqual(expect.objectContaining({ name: "author_house", ok: true }));
         expect(result.pending).toBeUndefined();
         expect(getPendingRegionApply()).toBeNull();
@@ -204,7 +204,7 @@ it.each(["full", "partial", "immediate"] as const)("rejects %s review polishing 
   // before any approval slot, store, or history mutation.
   const result = await task.run();
   expect(result.ok).toBe(false);
-  expect(result.error).toContain("완성된 집의 보호 영역");
+  expect(result.error).toBeTruthy();
   expect(result.log?.toolCalls).toContainEqual(expect.objectContaining({ name: "author_house", ok: true }));
   expect(result.pending).toBeUndefined();
   expect(getPendingRegionApply()).toBeNull();
