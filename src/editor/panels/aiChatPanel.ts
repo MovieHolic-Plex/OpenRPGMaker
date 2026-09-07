@@ -309,7 +309,16 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const outcome = controller.session?.getRunOutcome();
     outcomeSlot.replaceChildren(...(outcome ? [renderRunOutcome(outcome)] : []));
   };
-  const stickyChecklist = createAiStickyChecklist({ onWithdraw: withdrawAiRequirement });
+  let refreshAcceptanceMenus: () => void = () => {};
+  const stickyChecklist = createAiStickyChecklist({
+    onWithdraw: withdrawAiRequirement,
+    onChange: () => refreshAcceptanceMenus(),
+    onHide: () => {
+      const opener = moreMenuToggle.isConnected && !moreMenuToggle.closest("[hidden]")
+        && moreMenuToggle.getClientRects().length > 0 ? moreMenuToggle : input;
+      if (opener.isConnected) opener.focus();
+    },
+  });
   let disposed = false;
   const initialProjectIdentity = store.getProjectIdentity();
   const currentProjectContextKey = conversationScopeKey(initialProjectIdentity, store.getCurrent());
@@ -777,7 +786,23 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     proposalApi.lastAppliedProposalMessage = value;
   };
 
+  const retireConversationTurn = (): void => {
+    activeAbortController?.abort();
+    activeAbortController = null;
+    activeSelectionRegionController = null;
+    activeSelectionRegionKey = null;
+    pendingSends.length = 0;
+    refreshQueueIndicator();
+    turnBusy = false;
+    endTurnProgress();
+    refreshAbortButton();
+  };
+
   const restoreConversationRecord = (record: ConversationRecord, source: "auto" | "manual" | "project-switch"): void => {
+    if (source === "manual") {
+      retireConversationTurn();
+      persistConversation();
+    }
     dropSession(controller, getPendingRegionApply());
     clearWorkPlanSurface(); // 대화 전환 — 다른 대화의 할 일 목록이 남으면 안 된다(스테일 상태 방지).
     // 화면만 복원하면 사용자는 이어졌다고 믿고 모델은 아무것도 모른다 — 다음 세션에 기록 요약을
@@ -841,15 +866,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     });
     // 먼저 ownership을 끊고 abort한 뒤 큐를 버린다. 새 대화는 이유와 무관하게 진행 중인 턴을
     // 포기하며, 늦은 finally는 시작 당시 캡처한 대화와 감사 항목에만 저장한다.
-    activeAbortController?.abort();
-    activeAbortController = null;
-    activeSelectionRegionController = null;
-    activeSelectionRegionKey = null;
-    pendingSends.length = 0;
-    refreshQueueIndicator();
-    turnBusy = false;
-    endTurnProgress();
-    refreshAbortButton();
+    retireConversationTurn();
     persistConversation();
     dropSession(controller, getPendingRegionApply());
     clearWorkPlanSurface(); // 새 대화 — 이전 대화의 할 일 목록/예산/피드를 버린다.
@@ -1829,7 +1846,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (identity.id === projectIdentityId) {
       const session = controller.session;
       const owner = activeAbortController;
-      if (session && stickyChecklist.root.isConnected && !disposed && !owner?.signal.aborted) {
+      if (session && stickyChecklist.hasSnapshot() && !disposed && !owner?.signal.aborted) {
         session.refreshAcceptance(store.getCurrent(), (event) => {
           if (!disposed && controller.session === session && activeAbortController === owner
             && !owner?.signal.aborted && event.type === "acceptance") stickyChecklist.update(event.snapshot);
@@ -1848,6 +1865,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     projectIdentityId = identity.id;
     // Settle the outgoing owner before async history loading. A new project's draft may
     // arrive during that lookup and must survive the later chat reset/restore.
+    activeAbortController?.abort();
+    activeAbortController = null;
     getPendingRegionApply()?.discard();
     void panelPendingWork.track(adoptConversationForCurrentProject());
   });
@@ -2145,6 +2164,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   }
   // 두 메뉴가 공유하는 항목의 유일한 구현(aiActionMenu.ts). 컨테이너·열림 상태만 표면마다 다르다.
   const sharedMenuActions: AiActionMenuActions = {
+    showAcceptanceChecklist: () => stickyChecklist.show(),
     refreshWiki: () => {
       if (turnBusy) { toast("현재 작업이 끝난 뒤 기록을 정리해주세요.", "info"); return; }
       const coordinator = createProjectWikiCoordinator({
@@ -2729,6 +2749,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     close: closeCommandMenu,
     actions: sharedMenuActions,
   });
+  refreshAcceptanceMenus = () => {
+    const available = stickyChecklist.hasSnapshot();
+    const hidden = stickyChecklist.root.hidden;
+    headerMenu.setAcceptanceState(available, hidden);
+    composerMenu.setAcceptanceState(available, hidden);
+  };
+  refreshAcceptanceMenus();
   // 대기 화면 3분기(추천 함께 / 조수만 / 입력창만)는 취향 설정이다 — ☰ 메뉴 최상단이 아니라 설정 모달의
   // 한 절로 옮겼다(제안서 D6). testid(ai-command-temperature-*)와 동작은 그대로다.
   const composerTemperatureSection = createAssistantTemperatureMenuSection({
