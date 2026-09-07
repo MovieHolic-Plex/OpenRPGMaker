@@ -106,6 +106,12 @@ public send entry, before context/image, wiki or intent awaits. Archival does no
 re-evaluate the retired snapshot or rewrite its original result. The new owner has
 no assessment until canonical adoption/evaluation; failed or cancelled entry stays
 unassessed, and repeating a failed entry does not archive the same old goal twice.
+At that same boundary, `rebaseProject` retires pending calls and their detached
+project payload, before preparation can fail or cancel. Store-backed sessions use
+current applied store content; detached sessions use their own accepted baseline.
+Already-applied content survives, but a later resume or disjoint write cannot carry
+an old goal's abandoned draft. Errors with successful current-owner proposals still
+apply normally. Regression: `test/aiNewGoalDraftRetirement.test.ts`.
 Its request text, scope and pre-await baseline are retained for a later host resume.
 `getAcceptanceHistory()` returns session-local frozen history, not durable recovery.
 Explicit composer Ask overrides this action; model question/source/reset claims do

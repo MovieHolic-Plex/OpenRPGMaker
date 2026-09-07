@@ -1614,6 +1614,10 @@ export class AssistantSession {
       this.workPlan = null;
       this.verificationEvidence.clear();
       this.statefulNpcRequirement = false;
+      // Retire both pending apply authority and its detached payload before preparation.
+      // Applied store content survives; detached sessions keep their own accepted baseline.
+      this.rebaseProject(this.storeBacked ? store.getCurrent() : this.baselineProject);
+      this.rebuildSystemPrompt();
     }
     this.milestoneAutoApply = opts?.autonomous === true;
     if (this.milestoneApplyFailed) {
