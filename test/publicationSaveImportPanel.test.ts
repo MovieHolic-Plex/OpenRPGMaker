@@ -1,12 +1,33 @@
 // @vitest-environment happy-dom
-import { afterEach, expect, it } from "vitest";
+import { afterEach, expect, it, vi } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { startSession } from "@/project/session";
 import { preparePublication, upgradePublication } from "@/project/publication";
 import { appendPredecessorSaveImports } from "@/player/predecessorSaveImports";
 import { createSaveSnapshot, readSaveSlot, saveSlotKey, setSavePublication } from "@/player/saveSlots";
 
-afterEach(() => { localStorage.clear(); setSavePublication(undefined); document.body.replaceChildren(); });
+afterEach(() => { vi.restoreAllMocks(); localStorage.clear(); setSavePublication(undefined); document.body.replaceChildren(); });
+it("does not expose another listing's accepted predecessor manual or auto saves", () => {
+  const project = createBlankProject();
+  const original = preparePublication("a".repeat(64)); project.meta.publication = original;
+  setSavePublication(original, "listing-a");
+  const snapshot = createSaveSnapshot(project, startSession(project, 1));
+  const raw = JSON.stringify(snapshot);
+  const sourceKey = saveSlotKey(1); localStorage.setItem(sourceKey, raw);
+  const sourceAuto = sourceKey.replace(/:1$/, ":auto"); localStorage.setItem(sourceAuto, raw);
+  project.meta.publication = { ...upgradePublication(original, "b".repeat(64)), acceptedSaveCompatibilityIds: [original.saveCompatibilityId] };
+  setSavePublication(project.meta.publication, "listing-b");
+  const host = document.createElement("section"); document.body.append(host);
+  const reads = vi.spyOn(localStorage, "getItem");
+  const enumeration = vi.spyOn(localStorage, "key");
+  appendPredecessorSaveImports(host, { project, storage: localStorage, onLoadSlot: () => { throw new Error("Foreign save exposed"); } });
+  expect(host.querySelectorAll('[data-testid^="save-slot-import-"]')).toHaveLength(0);
+  expect(reads).not.toHaveBeenCalledWith(sourceKey);
+  expect(reads).not.toHaveBeenCalledWith(sourceAuto);
+  expect(enumeration).not.toHaveBeenCalled();
+  expect(localStorage.getItem(sourceKey)).toBe(raw);
+  expect(localStorage.getItem(sourceAuto)).toBe(raw);
+});
 it("copies an explicitly accepted predecessor through a visible load control", () => {
   const project = createBlankProject();
   const original = preparePublication("a".repeat(64)); project.meta.publication = original;

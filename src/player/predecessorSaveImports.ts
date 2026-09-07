@@ -3,7 +3,7 @@ import { publicationSaveKey } from "./savePublication";
 import { el } from "../util/dom";
 import type { Project } from "../project/types";
 
-/** Only author-accepted lineage keys are offered; no storage enumeration. */
+/** Only author-accepted lineage keys in this listing's scope; no storage enumeration. */
 export function appendPredecessorSaveImports(host: HTMLElement, options: {
   readonly project: Project;
   readonly storage: Storage;

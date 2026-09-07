@@ -43,6 +43,7 @@ const hash=async bytes=>Array.from(new Uint8Array(await crypto.subtle.digest('SH
 const {releaseId,...body}=manifest,runtime=manifest.runtime;
 if(manifest.sentinel!=='oprn/standalone-release'||manifest.format!==1||await hashJson(body)!==releaseId)throw Error('release identity');
 if(runtime.sentinel!=='oprn/runtime-archive'||runtime.format!==1||runtime.projectSchema!==4||runtime.collectorVersion!==1||JSON.stringify(runtime.saveSchemas)!=='[4,5,6]')throw Error('unsupported runtime');
+if(runtime.capabilities!==undefined&&(!Array.isArray(runtime.capabilities)||!runtime.capabilities.every(c=>typeof c==='string'&&/^[a-z][a-z0-9-]*-v[1-9][0-9]*$/.test(c))||new Set(runtime.capabilities).size!==runtime.capabilities.length))throw Error('unsupported capabilities');
 const {runtimeTarget,...runtimeBody}=runtime;if(await hashJson(runtimeBody)!==runtimeTarget||manifest.publication.runtimeTarget!==runtimeTarget)throw Error('runtime identity');
 const required=['standalone.js','standalone.css','project.json','source/standalone.css','source/web-sdk.json','source/standalone-sdk.json'];
 if(required.some(name=>typeof payloads[name]!=='string'))throw Error('missing required payload');

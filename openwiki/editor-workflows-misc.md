@@ -100,6 +100,15 @@ without mutating the caller's seed. Regression tests:
   contract 1. Unsupported metadata or missing targets fail without substitution.
   Collector behavior changes must bump that contract; old targets must not be
   reinterpreted with a different collector.
+- Current runtime factories/retention append `capabilities` to the canonical
+  runtime body, currently `["community-save-isolation-v1"]`. The target digest
+  therefore binds both executable inventory and capability claims. The optional
+  versioned-token list is extensible independently of `collectorVersion` (still
+  1); no dependency collector change is implied. Parsing an old manifest leaves
+  the field absent and verifies its original canonical digest. Standalone's
+  embedded verifier hashes the complete runtime body, including capabilities
+  when present, and accepts honest old manifests for offline export. Only new
+  community uploads require the isolation capability from operator provenance.
 - `npm run build` retains both freshly built variants. For runtime-only work:
   `npm run build:player && npm run build:standalone:bundle && npm run archive:runtime`.
   Retention runs the existing SDK/deployment/source/secret checks, compares the

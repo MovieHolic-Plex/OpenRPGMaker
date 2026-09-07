@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { createGameRelease, createRuntimeManifest, jsonBytes } from "../src/project/gameRelease";
+import { createGameRelease, createRuntimeManifest, jsonBytes, parseRuntimeManifest } from "../src/project/gameRelease";
+import { sha256HexText } from "../src/util/sha256";
 import { writeStoredZip } from "../src/project/packageZip";
 import { validateReleaseArchive } from "../community-site/lib/releaseArchive";
 
@@ -30,6 +31,21 @@ describe("community release archive boundary", () => {
     await expect(validateReleaseArchive(Buffer.from(await evil.blob.arrayBuffer()), async () => f.trusted)).rejects.toThrow();
   });
 
+  it("parses old manifests honestly but rejects their unsafe runtimes for new community uploads", async () => {
+    const f = await fixture();
+    const body = { sentinel: f.trusted.sentinel, format: f.trusted.format, projectSchema: f.trusted.projectSchema,
+      saveSchemas: f.trusted.saveSchemas, collectorVersion: f.trusted.collectorVersion,
+      files: f.trusted.files, requiredAssets: f.trusted.requiredAssets };
+    const old = { ...body, runtimeTarget: await sha256HexText(JSON.stringify(body)) };
+    expect(await parseRuntimeManifest(old)).toEqual(old);
+    await expect(parseRuntimeManifest({ ...old, capabilities: ["community-save-isolation-v1"] })).rejects.toThrow();
+    expect(f.trusted.capabilities).toContain("community-save-isolation-v1");
+    await expect(parseRuntimeManifest({ ...f.trusted, capabilities: [] })).rejects.toThrow();
+    const publication = { ...f.publication, runtimeTarget: old.runtimeTarget };
+    const release = await createGameRelease({ publication, entries: f.entries.map(entry => entry.name === "project.json"
+      ? { ...entry, bytes: jsonBytes({ version: 4, meta: { publication } }) } : entry) });
+    await expect(validateReleaseArchive(Buffer.from(await release.blob.arrayBuffer()), async () => old)).rejects.toThrow();
+  });
   it("rejects duplicate, traversal, undeclared and untrusted executable entries", async () => {
     const f = await fixture();
     for (const name of ["project.json", "../outside.png", "extra.js", "extra.html"]) {

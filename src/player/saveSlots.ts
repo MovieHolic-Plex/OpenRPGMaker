@@ -1,5 +1,5 @@
 import { LifeReconciliationError, parseLifeState, preserveUnresolvedLifeSource, reconcileLifeState } from "@/project/lifeRecovery";
-import { isSaveIdentity, publicationSaveKey, requireSaveIdentity, saveIdentity, saveIdentityBlocker, type SaveIdentity } from "./savePublication";
+import { isLocalSaveSourceKey, isSaveIdentity, publicationSaveKey, requireSaveIdentity, saveIdentity, saveIdentityBlocker, saveScopeBlocker, type SaveIdentity } from "./savePublication";
 import { PublicationError } from "../project/publication";
 export { setSavePublication } from "./savePublication";
 import { isDetectionEncounterCompletions } from '@/project/npcBehavior';
@@ -273,6 +273,7 @@ function legacySaveKey(slot: SaveSlotIndex | "auto"): string {
 }
 
 export function writeAutosave(storage: Storage, snapshot: SaveSnapshot): void {
+  if (saveScopeBlocker(snapshot.identity)) throw new PublicationError("save-incompatible");
   storage.setItem(autosaveKey(), JSON.stringify(snapshot));
 }
 
@@ -287,6 +288,8 @@ export function readAutosave(storage: Storage): AutosaveReadResult {
   }
   const parsed = parseSnapshotValue(value);
   if (!parsed.ok) return { kind: "corrupt", message: parsed.message };
+  const blocker = saveScopeBlocker(parsed.snapshot.identity);
+  if (blocker) return { kind: "corrupt", message: blocker };
   return { kind: "present", snapshot: parsed.snapshot };
 }
 
@@ -434,6 +437,8 @@ function pickScreenState(session: PlaySession): SaveScreenState | undefined {
 // 저장 실패(quota 초과·프라이빗 모드)를 던지면 호출부의 클릭 핸들러가 그대로 끊겨
 // 성공도 실패도 표시되지 않았다. 오토세이브(performAutosave)와 같은 계약으로 결과를 돌려준다.
 export function saveToSlot(storage: Storage, slot: SaveSlotIndex, snapshot: SaveSnapshot): SaveWriteResult {
+  const blocker = saveScopeBlocker(snapshot.identity);
+  if (blocker) return { ok: false, message: blocker };
   try {
     storage.setItem(saveSlotKey(slot), JSON.stringify(snapshot));
     return { ok: true };
@@ -457,7 +462,7 @@ function isQuotaExceededError(error: unknown): boolean {
 // 실측 결함: 저장 당시의 맵이 지워진 슬롯을 그대로 적용하면 부팅이 project.maps[id].width 에서
 // 터져 배포 플레이어가 "맵·에셋 불러오는 중…" 화면에 영구히 갇혔다. 적용 전에 막는다.
 export function snapshotLoadBlocker(project: Project, snapshot: SaveSnapshot): string | null {
-  const identityBlocker = saveIdentityBlocker(project.meta.publication, snapshot.identity);
+  const identityBlocker = saveScopeBlocker(snapshot.identity) ?? saveIdentityBlocker(project.meta.publication, snapshot.identity);
   if (identityBlocker) return identityBlocker;
   if (!project.maps[snapshot.session.currentMapId]) return "저장 당시의 맵이 이 프로젝트에 없습니다";
   for (const equipment of Object.values(snapshot.session.actorEquipment ?? {})) {
@@ -479,7 +484,9 @@ export function readSaveSlot(storage: Storage, slot: SaveSlotIndex): SaveSlotRea
       message: error instanceof Error ? error.message : "Invalid save data",
     };
   }
-  return parseSaveSnapshot(value, slot);
+  const parsed = parseSaveSnapshot(value, slot);
+  const blocker = parsed.kind === "present" ? saveScopeBlocker(parsed.snapshot.identity) : null;
+  return blocker ? { kind: "corrupt", slot, message: blocker } : parsed;
 }
 
 export function listSaveSlots(storage: Storage): readonly SaveSlotReadResult[] {
@@ -821,6 +828,7 @@ export function importSaveCopy(options: {
   const { project, storage, sourceKey, slot } = options;
   const publication = project.meta.publication;
   if (!publication) throw new PublicationError("save-incompatible");
+  if (!isLocalSaveSourceKey(sourceKey, publication, options.adoptLegacy === true)) throw new PublicationError("save-incompatible");
   const target = publicationSaveKey(slot, publication);
   if (!target || sourceKey === target || storage.getItem(target) !== null) throw new PublicationError("save-incompatible");
   const raw = storage.getItem(sourceKey);
@@ -833,6 +841,27 @@ export function importSaveCopy(options: {
   if (snapshotLoadBlocker(project, adopted)) throw new PublicationError("save-incompatible");
   const restored = applySaveSnapshot(project, adopted);
   const copy = createSaveSnapshot(project, restored);
+  storage.setItem(target, JSON.stringify(copy));
+}
+
+/** Only call with bytes from a file the PLAYER selected, never uploader metadata or discovered storage. */
+export function importSelectedSaveFileCopy(options: {
+  readonly project: Project;
+  readonly storage: Storage;
+  readonly text: string;
+  readonly slot: SaveSlotIndex;
+}): void {
+  const { project, storage, text, slot } = options;
+  const publication = project.meta.publication;
+  if (!publication) throw new PublicationError("save-incompatible");
+  const target = publicationSaveKey(slot, publication);
+  if (!target || storage.getItem(target) !== null) throw new PublicationError("save-incompatible");
+  const parsed = parseSnapshotValue(parseUniqueSaveJson(text));
+  if (!parsed.ok || !parsed.snapshot.identity || saveIdentityBlocker(publication, parsed.snapshot.identity)) throw new PublicationError("save-incompatible");
+  // Explicit file selection permits scope transfer, not game/lineage incompatibility.
+  const adopted = { ...parsed.snapshot, identity: saveIdentity(publication) };
+  if (snapshotLoadBlocker(project, adopted)) throw new PublicationError("save-incompatible");
+  const copy = createSaveSnapshot(project, applySaveSnapshot(project, adopted));
   storage.setItem(target, JSON.stringify(copy));
 }
 

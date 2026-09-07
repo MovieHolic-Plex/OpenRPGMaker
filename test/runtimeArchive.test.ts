@@ -46,6 +46,7 @@ describe("append-only trusted runtime archive", () => {
         archiveRoot: join(root, "archive"), webRoot: fixture.artifactRoot, standaloneRoot: join(root, "standalone"), publicRoot: fixture.runtimeAssetRoot };
       await writePlayerArtifactManifest({ artifactRoot: options.standaloneRoot, repoRoot: fixture.repoRoot, sourceInventory: PIPELINE_SOURCE_INVENTORY });
       const first = await retainRuntime(options);
+      expect(first.capabilities).toContain("community-save-isolation-v1");
       const duplicates = await Promise.all([retainRuntime(options), retainRuntime(options)]);
       expect(duplicates.map(value => value.runtimeTarget)).toEqual([first.runtimeTarget, first.runtimeTarget]);
       expect((await readdir(options.archiveRoot)).sort()).toEqual([first.runtimeTarget, "default.json"].sort());

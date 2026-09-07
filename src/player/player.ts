@@ -98,6 +98,8 @@ export type PlayerRunControls = {
 };
 
 export type RenderPlayerOptions = {
+  /** Community listing scope derived by the exported boot entry, not project metadata. */
+  readonly saveIsolationScope?: string;
   /** Explicit export-QA capability. Normal exported players must leave this false. */
   readonly qaInstrumentation?: boolean;
   readonly onExit?: () => void;
@@ -140,7 +142,7 @@ const TITLE_CONFIRM_JUICE_MS = 180;
 
 export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {}): void {
   teardownShell?.();
-  setSavePublication(store.getCurrent().meta.publication);
+  setSavePublication(store.getCurrent().meta.publication, options.saveIsolationScope);
   clearChildren(main);
   const audioEngine = getAudioEngine({ qaInstrumentation: options.qaInstrumentation === true });
 

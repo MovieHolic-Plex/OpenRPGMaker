@@ -8,7 +8,7 @@ import { createStandaloneHtmlExport } from "@/project/standaloneExport";
 import { createRuntimeManifest, jsonBytes, verifyGameRelease } from "@/project/gameRelease";
 import { preparePublication } from "@/project/publication";
 
-async function fixture() {
+async function fixture(legacyRuntime = false) {
   const project = createBlankProject();
   const assets = prepareWebExport(project).assets.filter(asset => asset.kind === "public");
   const entries = [
@@ -20,7 +20,11 @@ async function fixture() {
     { name: "standalone/sdk-manifest.json", bytes: jsonBytes({ standalone: 1 }) },
     ...assets.map(asset => ({ name: `public/${asset.zipPath}`, bytes: new TextEncoder().encode(`retained:${asset.zipPath}`) })),
   ];
-  const runtime = await createRuntimeManifest(entries);
+  let runtime = await createRuntimeManifest(entries);
+  if (legacyRuntime) {
+    const { runtimeTarget: _target, capabilities: _capabilities, ...body } = runtime;
+    runtime = { ...body, runtimeTarget: await sha256HexText(JSON.stringify(body)) };
+  }
   project.meta.publication = preparePublication(runtime.runtimeTarget);
   const requests: string[] = [];
   const fetchBytes = async (url: string) => {
@@ -60,8 +64,8 @@ describe("actual publication exports", () => {
     await expect(createWebPlayerExportPackage(project, { fetchBytes })).rejects.toThrow();
     await expect(createStandaloneHtmlExport(project, { fetchBytes })).rejects.toThrow();
   });
-  it("boots verified payloads but rejects coherent executable tampering", async () => {
-    const { project, fetchBytes } = await fixture();
+  it.each([false, true])("boots verified payloads (legacy runtime: %s) but rejects coherent executable tampering", async legacyRuntime => {
+    const { project, fetchBytes } = await fixture(legacyRuntime);
     const html = await (await createStandaloneHtmlExport(project, { fetchBytes })).blob.text();
     const nodes = new Map([...html.matchAll(/<script type="application\/json" id="([^"]+)">([^<]*)<\/script>/g)]
       .map(match => [match[1], { textContent: match[2] }]));

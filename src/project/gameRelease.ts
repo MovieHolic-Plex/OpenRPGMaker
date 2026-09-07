@@ -4,6 +4,9 @@ import { readStoredZipEntry, readStoredZipEntryNames, writeStoredZip, type ZipEn
 import { assertUniquePaths, compareContractPaths, contractPath, isRecord, parseFileRecords } from "./playerDeploymentPaths";
 import type { DeploymentFileRecord } from "./playerDeploymentTypes";
 
+export const COMMUNITY_SAVE_ISOLATION_CAPABILITY = "community-save-isolation-v1";
+export const CURRENT_RUNTIME_CAPABILITIES: readonly string[] = [COMMUNITY_SAVE_ISOLATION_CAPABILITY];
+
 export interface RuntimeManifest {
   readonly sentinel: "oprn/runtime-archive";
   readonly format: 1;
@@ -13,6 +16,8 @@ export interface RuntimeManifest {
   readonly collectorVersion: 1;
   readonly files: readonly DeploymentFileRecord[];
   readonly requiredAssets: readonly string[];
+  /** Absent on retained older manifests. Claims are trusted only via operator provenance. */
+  readonly capabilities?: readonly string[];
 }
 export interface GameReleaseManifest {
   readonly sentinel: "oprn/game-release";
@@ -48,7 +53,8 @@ export async function createRuntimeManifest(entries: readonly ZipEntry[], requir
 export async function runtimeManifestForFiles(files: readonly DeploymentFileRecord[], requiredAssets?: readonly string[]): Promise<RuntimeManifest> {
   const body = { sentinel: "oprn/runtime-archive" as const, format: 1 as const, projectSchema: 4 as const,
     saveSchemas: [4, 5, 6] as const, collectorVersion: 1 as const, files: parseFileRecords(files),
-    requiredAssets: [...(requiredAssets ?? files.filter(file => file.path.startsWith("public/")).map(file => file.path.slice(7)))].sort(compareContractPaths) };
+    requiredAssets: [...(requiredAssets ?? files.filter(file => file.path.startsWith("public/")).map(file => file.path.slice(7)))].sort(compareContractPaths),
+    capabilities: [...CURRENT_RUNTIME_CAPABILITIES] };
   return { ...body, runtimeTarget: await sha256HexText(JSON.stringify(body)) };
 }
 
@@ -56,12 +62,17 @@ export async function parseRuntimeManifest(value: unknown): Promise<RuntimeManif
   if (!isRecord(value) || value.sentinel !== "oprn/runtime-archive" || value.format !== 1
     || value.projectSchema !== 4 || value.collectorVersion !== 1 || JSON.stringify(value.saveSchemas) !== "[4,5,6]"
     || typeof value.runtimeTarget !== "string" || !Array.isArray(value.requiredAssets)) throw new ReleaseError("untrusted-runtime");
+  const capabilities = value.capabilities;
+  if (capabilities !== undefined && (!Array.isArray(capabilities)
+    || !capabilities.every(item => typeof item === "string" && /^[a-z][a-z0-9-]*-v[1-9][0-9]*$/.test(item))
+    || new Set(capabilities).size !== capabilities.length)) throw new ReleaseError("untrusted-runtime");
   const files = parseFileRecords(value.files);
   const requiredAssets = value.requiredAssets.map(contractPath);
   assertUniquePaths(requiredAssets);
   if (requiredAssets.some(name => !files.some(file => file.path === `public/${name}`))) throw new ReleaseError("untrusted-runtime");
   const body = { sentinel: "oprn/runtime-archive" as const, format: 1 as const, projectSchema: 4 as const,
-    saveSchemas: [4, 5, 6] as const, collectorVersion: 1 as const, files, requiredAssets };
+    saveSchemas: [4, 5, 6] as const, collectorVersion: 1 as const, files, requiredAssets,
+    ...(capabilities === undefined ? {} : { capabilities }) };
   if (await sha256HexText(JSON.stringify(body)) !== value.runtimeTarget) throw new ReleaseError("integrity");
   return { ...body, runtimeTarget: value.runtimeTarget };
 }

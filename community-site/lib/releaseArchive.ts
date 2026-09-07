@@ -2,7 +2,7 @@ import { crc32 } from "node:zlib";
 import { createHash } from "node:crypto";
 import { open } from "node:fs/promises";
 import path from "node:path";
-import { parseReleaseManifest, parseRuntimeManifest, verifyGameRelease, type GameReleaseManifest, type RuntimeManifest } from "../../src/project/gameRelease";
+import { COMMUNITY_SAVE_ISOLATION_CAPABILITY, parseReleaseManifest, parseRuntimeManifest, verifyGameRelease, type GameReleaseManifest, type RuntimeManifest } from "../../src/project/gameRelease";
 import { assertUniquePaths, contractPath, isRecord } from "../../src/project/playerDeploymentPaths";
 
 export const MAX_RELEASE_BYTES = 96 * 1024 * 1024;
@@ -93,6 +93,7 @@ export async function validateReleaseArchive(bytes: Buffer, loadRuntime = loadOp
   try { trusted = await loadRuntime(manifest.publication.runtimeTarget); }
   catch { throw new ReleaseUploadError("runtime-unavailable"); }
   await verifyGameRelease(bytes, trusted);
+  if (!trusted.capabilities?.includes(COMMUNITY_SAVE_ISOLATION_CAPABILITY)) throw new ReleaseUploadError("runtime-unavailable");
   const project: unknown = JSON.parse(decoder.decode(entries.get("project.json")));
   if (!isRecord(project) || project.version !== trusted.projectSchema) throw new ReleaseUploadError("invalid-release");
   return { bytes, manifest, entries };

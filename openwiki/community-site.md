@@ -22,6 +22,8 @@ Next.js 16 companion site for sharing OpenRPGMaker assets and games. Lives in `c
 - `lib/releaseUpload.ts` owns the bounded JSON/base64 ingress; `lib/releaseArchive.ts` strictly preflights the complete editor stored-ZIP format, then invokes `verifyGameRelease`. Duplicate/case-colliding paths, traversal, local/central disagreement, CRC mismatch, symlink attributes, compression, extra files and untrusted executable bytes are rejected before persistence.
 - Trust root: `COMMUNITY_RUNTIME_ARCHIVE_ROOT`, default `../.runtime-archive` relative to the community process working directory. Each `<runtimeTarget>/runtime.json` must come from the operator's retained runtime build (`scripts/lib/runtimeArchive.ts`), never from an upload. The bounded reader uses the same `parseRuntimeManifest` contract and digest verification. Runtime manifests are limited to 8 MiB; run on Node.js 24 LTS.
 - Every anonymous upload creates a new listing in one PostgreSQL transaction (`lib/releaseStore.ts`). An upload's `publication.gameId`, title, slug-like fields or author text confer no ownership and cannot update another listing. Publishing a new version means a new listing; identical releases may also be listed independently.
+- New shared-origin uploads require `community-save-isolation-v1` in the **operator-trusted** runtime manifest's digest-bound `capabilities` list. Old manifests parse without inventing this field/capability and remain usable for retained offline exports, but are rejected with 422 for new community publication before either database row is inserted. Never edit retained runtime bytes/manifests to claim support. Rebuild and retain a new runtime from protected sources instead. This gate is upload-only; it does not rewrite or upgrade existing releases.
+- Community manual/autosave keys and Save6 snapshots include the listing-derived isolation scope. Identical public game/lineage IDs cannot expose or overwrite another listing's saves. Accepted-predecessor controls discover only within the current listing. Cross-listing transfer requires the player to export a source save file and explicitly select it in the destination load panel; compatibility is checked, only an empty slot is written, and source bytes stay untouched. See `runtime-project-schema.md` for the save/API contract.
 - `/play/<slug>/` redirects pinned listings to `/play/<slug>/releases/<releaseId>/player.html`. The qualified directory also redirects to that explicit entry, avoiding Next's slash stripping without changing the HTML. Every file request checks the visible listing's exact release association, including on cache hits. Missing files/wrong associations return 404; no `public/player-static`, `/assets`, `/generated` or current editor fallback is consulted.
 - The route serves the retained HTML, project, runtime and assets byte-for-byte. `nosniff`, MIME types and a release-directory-scoped CSP prevent uploaded passive files from becoming same-origin executable code and block mutable root asset URLs. The producer must emit relative release URLs. CSP uses the validated public Host authority, not Next's internal localhost URL; reverse proxies must preserve public Host/protocol. SVG responses are sandboxed.
 - `/api/games/<slug>/releases/<releaseId>/download` returns the exact ZIP. The old download URL redirects pinned records to this qualified URL; legacy source downloads remain source-only. Qualified bytes are publicly immutable-cacheable for one year. Moderation is checked at origin, but cannot revoke bytes already cached/downloaded; purge an external CDN when hiding content.
@@ -29,6 +31,24 @@ Next.js 16 companion site for sharing OpenRPGMaker assets and games. Lives in `c
 - Limits: 96 MiB ZIP; 64 MiB individual file; 4096 entries; 1 MiB release manifest; JSON body capped at base64 ZIP size plus 4 MiB; 30-second body deadline; two concurrent uploads and two cold release loads. The LRU retains at most two ZIPs / 192 MiB, with entry views sharing the ZIP buffer. The existing IP rate limiter is single-instance abuse throttling, not ownership authorization.
 
 ### Release QA and migration commands
+
+P1 isolation regression (no Next/full production build, no existing runtime
+archive or shared database writes):
+
+```bash
+node --test test/communitySaveIsolation.test.mjs
+```
+
+This focused test owns a disposable socket-only PostgreSQL cluster and loopback
+HTTP server running the real upload/play handlers. It bundles only a narrow
+browser fixture with the production codec, autosave path, host scope resolver,
+store shim and load-panel DOM. Real Chrome publishes identical-ID listings and
+an accepted-lineage successor, saves gold 41 versus 999, checks manual/autosave
+nonexposure and preserved original bytes, then uses keyboard-driven native save
+downloads and file selection to copy manual and auto saves. It rejects an old
+unsafe runtime before database writes. Scratch files, browser, server and cluster
+are removed on completion. It is not a substitute for integrated Phaser gameplay
+QA; the lead still runs the real exported game and final integrated build.
 
 The supervisor supplies `COMMUNITY_DATABASE_URL` privately. Do not write it into source or evidence. After explicit coordination with that database owner:
 
