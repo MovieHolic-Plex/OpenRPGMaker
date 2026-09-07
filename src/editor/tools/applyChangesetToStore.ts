@@ -9,7 +9,7 @@ import { loadAiConfig } from "@/ai/llmClient";
 import { currentAgentEditorIdentity, currentHumanEditorIdentity } from "@/project/editorIdentity";
 import { combineDiffs, recordProjectCommit, recordProjectCommitFireAndForget, resetManualProjectCommitBaseline, summaryForDiff, type CommitLogInput, type CommitRow } from "@/project/projectCommitLog";
 import { store } from "@/project/store";
-import { createProjectWikiCoordinator } from "@/editor/projectWikiCoordinator";
+import { createProjectWikiCoordinator, type WikiDeliveryMilestone } from "@/editor/projectWikiCoordinator";
 import type { ChangeSummary, Project } from "@/project/types";
 import { commitChangeset, summarizeChanges } from "./changeset";
 import { runTool } from "./toolRunner";
@@ -212,7 +212,7 @@ export interface ApplyProposedProjectOptions {
 }
 
 export type ApplyProposedProjectResult =
-  | { readonly ok: true; readonly commit: CommitRow; readonly applied: Project; readonly commitProject?: Project; readonly wikiWarning?: string }
+  | { readonly ok: true; readonly commit: CommitRow; readonly applied: Project; readonly commitProject?: Project; readonly wikiWarning?: string; readonly wikiDelivery?: WikiDeliveryMilestone }
   | {
     readonly ok: false;
     readonly reason: "commit-rejected";
@@ -307,15 +307,18 @@ export async function applyProposedProject(
   }
   resetManualProjectCommitBaseline(appliedProject);
   let wikiWarning: string | undefined;
+  let wikiDelivery: WikiDeliveryMilestone | undefined;
   if (JSON.stringify(store.getProjectIdentity()) !== wikiProjectIdentity) {
     return { ok: true, commit: commitRow, applied: store.getCurrent(), commitProject, wikiWarning: "프로젝트가 바뀌어 이전 작업의 위키 진행 기록을 갱신하지 않았습니다." };
   }
   if (appliedProject.world?.entities.some((entity) => entity.wiki)) {
     try {
-      await createProjectWikiCoordinator().observe(options.summary, options.toolNames);
+      await createProjectWikiCoordinator().observe(options.summary, options.toolNames, undefined,
+        milestone => { wikiDelivery = milestone; });
     } catch (cause) {
       wikiWarning = cause instanceof Error ? cause.message : String(cause);
     }
   }
-  return { ok: true, commit: commitRow, applied: store.getCurrent(), commitProject, ...(wikiWarning ? { wikiWarning } : {}) };
+  return { ok: true, commit: commitRow, applied: store.getCurrent(), commitProject,
+    ...(wikiDelivery ? { wikiDelivery } : {}), ...(wikiWarning ? { wikiWarning } : {}) };
 }

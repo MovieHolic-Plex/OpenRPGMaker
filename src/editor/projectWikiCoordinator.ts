@@ -3,16 +3,22 @@ import { conversationScopeKey, listConversations, loadConversation } from "@/ai/
 import { loadAiConfig, type AiConfig } from "@/ai/llmClient";
 import { stripContextFooter } from "@/ai/contextFooter";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
-import { store, type ProjectFlushResult } from "@/project/store";
+import { store, type ProjectFlushResult, type ProjectPersistenceReceipt } from "@/project/store";
 import { applyProjectWikiPatch, type ProjectWikiPatch, type ProjectWorld, type WikiSource } from "@/project/world";
 import type { Project } from "@/project/types";
 import { genId } from "@/util/id";
+
+/** Facts emitted by the wiki writer, not inferred from a later global store diff. */
+export type WikiDeliveryMilestone =
+  | { readonly kind: "applied"; readonly project: Project | undefined }
+  | { readonly kind: "persisted"; readonly project: Project; readonly receipt: ProjectPersistenceReceipt };
 
 export interface WikiTurnInput {
   readonly text: string;
   readonly mapId: string | null;
   readonly composerMode: "do" | "ask" | "plan";
   readonly signal?: AbortSignal;
+  readonly onDelivery?: (milestone: WikiDeliveryMilestone) => void;
 }
 
 export class ProjectWikiCheckpointError extends Error {
@@ -25,7 +31,7 @@ export class ProjectWikiCheckpointError extends Error {
 export interface WikiCoordinatorDependencies {
   readonly getProject: () => Project;
   readonly getIdentity: () => string;
-  readonly updateWorld: (world: ProjectWorld) => void;
+  readonly updateWorld: (world: ProjectWorld) => Project | void;
   readonly flush: () => Promise<ProjectFlushResult>;
   readonly extract: typeof extractProjectWiki;
   readonly getConfig: () => AiConfig;
@@ -67,9 +73,12 @@ export function createProjectWikiCoordinator(overrides: Partial<WikiCoordinatorD
     getIdentity: () => JSON.stringify(store.getProjectIdentity()),
     updateWorld: (world) => {
       recordProjectSnapshot("프로젝트 위키 갱신");
-      store.update((project) => { project.world = world; }, {
+      let applied: Project | undefined;
+      store.update((project) => { project.world = world; applied = project; }, {
         scope: "project", origin: "ai", label: "프로젝트 위키 갱신",
       });
+      // Capture inside the mutation: synchronous subscribers may already have edited again.
+      return applied;
     },
     flush: () => store.flush(),
     extract: extractProjectWiki,
@@ -85,27 +94,42 @@ export function createProjectWikiCoordinator(overrides: Partial<WikiCoordinatorD
       throw new ProjectWikiCheckpointError("project-changed", "프로젝트가 바뀌어 이전 기록 갱신을 취소했습니다.");
     }
   };
-  const save = async (signal?: AbortSignal): Promise<void> => {
+  const save = async (signal: AbortSignal | undefined, onSaved: (result: ProjectFlushResult) => void): Promise<void> => {
     requireCurrent(signal);
     const result = await deps.flush();
+    // Accepted persistence survives a later cancellation/project edit; current proof does not.
+    onSaved(result);
     requireCurrent(signal);
     if (result.kind !== "saved" && result.kind !== "saved-local") {
       throw new ProjectWikiCheckpointError("save", `프로젝트 기록 저장을 완료하지 못했습니다 (${result.kind}).`);
     }
     deps.status(result.kind === "saved" ? "프로젝트 기록 저장 완료" : "임시 프로젝트에 기록했습니다. 원격 저장은 꺼져 있습니다.");
   };
-  const apply = async (base: Project, patch: ProjectWikiPatch, sources: readonly WikiSource[], signal?: AbortSignal) => {
+  const apply = async (base: Project, patch: ProjectWikiPatch, sources: readonly WikiSource[], signal?: AbortSignal,
+    onDelivery?: WikiTurnInput["onDelivery"]) => {
     requireCurrent(signal);
     const result = applyProjectWikiPatch(deps.getProject().world ?? emptyWorld(), base.world ?? emptyWorld(), patch, sources);
     if (result.conflicts.length) {
       throw new ProjectWikiCheckpointError("conflict", "기록을 읽는 동안 문서가 수정되거나 잠겼습니다. 최신 문서를 확인하고 다시 요청해주세요.");
     }
-    if (result.changed) deps.updateWorld(result.world);
-    // Also retries a prior locally applied patch whose remote save failed.
-    if (result.changed || deps.getProject().world?.entities.some((entity) => entity.wiki)) await save(signal);
+    let applied: Project | undefined;
+    if (result.changed) {
+      applied = deps.updateWorld(result.world) || undefined;
+      onDelivery?.({ kind: "applied", project: applied });
+    }
+    // Also retries a prior locally applied patch whose remote save failed, without
+    // attributing that historical write (or a human edit) to an empty extraction.
+    if (result.changed || deps.getProject().world?.entities.some((entity) => entity.wiki)) {
+      await save(signal, saved => {
+        if (applied && saved.kind === "saved" && saved.receipt
+          && store.isPersistenceReceiptForProject(saved.receipt, applied)) {
+          onDelivery?.({ kind: "persisted", project: applied, receipt: saved.receipt });
+        }
+      });
+    }
     return deps.getProject().world;
   };
-  const backfill = async (signal?: AbortSignal): Promise<number> => {
+  const backfill = async (signal?: AbortSignal, onDelivery?: WikiTurnInput["onDelivery"]): Promise<number> => {
     requireCurrent(signal);
     const initialCount = deps.getProject().world?.entities.length ?? 0;
     const known = new Set(deps.getProject().world?.entities.flatMap((entity) => entity.wiki?.sources.map((source) => source.id) ?? []) ?? []);
@@ -119,7 +143,7 @@ export function createProjectWikiCoordinator(overrides: Partial<WikiCoordinatorD
         project: base, userText: "이전 대화에서 현재 유효한 제작 결정과 세계 설정을 정리하세요. 기존의 더 최근 명시적 결정을 과거 기록으로 되돌리지 마세요.",
         sources: batch, signal,
       }, { getConfig: deps.getConfig });
-      await apply(base, patch, batch, signal);
+      await apply(base, patch, batch, signal, onDelivery);
     }
     return (deps.getProject().world?.entities.length ?? 0) - initialCount;
   };
@@ -127,7 +151,7 @@ export function createProjectWikiCoordinator(overrides: Partial<WikiCoordinatorD
     async prepare(input: WikiTurnInput): Promise<Project["world"]> {
       requireCurrent(input.signal);
       if (input.composerMode !== "do") return deps.getProject().world;
-      if (!deps.getProject().world?.entities.some((entity) => entity.wiki)) await backfill(input.signal);
+      if (!deps.getProject().world?.entities.some((entity) => entity.wiki)) await backfill(input.signal, input.onDelivery);
       const base = structuredClone(deps.getProject());
       requireCurrent(input.signal);
       const source: WikiSource = { id: genId("wiki_turn"), kind: "user", text: input.text, at: Date.now() };
@@ -136,10 +160,11 @@ export function createProjectWikiCoordinator(overrides: Partial<WikiCoordinatorD
         project: base, userText: input.text, sources: [source],
         currentMapId: input.mapId, signal: input.signal,
       }, { getConfig: deps.getConfig });
-      return apply(base, patch, [source], input.signal);
+      return apply(base, patch, [source], input.signal, input.onDelivery);
     },
     backfill,
-    async observe(summary: string, toolNames: readonly string[], signal?: AbortSignal): Promise<Project["world"]> {
+    async observe(summary: string, toolNames: readonly string[], signal?: AbortSignal,
+      onDelivery?: WikiTurnInput["onDelivery"]): Promise<Project["world"]> {
       requireCurrent(signal);
       const base = structuredClone(deps.getProject());
       if (!base.world?.entities.some((entity) => entity.wiki)) return base.world;
@@ -162,7 +187,7 @@ export function createProjectWikiCoordinator(overrides: Partial<WikiCoordinatorD
         summary, body: source.text,
         wiki: { kind: "progress", basis: "observed", sourceIds: [source.id], topic: source.id },
       }] };
-      return apply(base, patch, [source], signal);
+      return apply(base, patch, [source], signal, onDelivery);
     },
   };
 }

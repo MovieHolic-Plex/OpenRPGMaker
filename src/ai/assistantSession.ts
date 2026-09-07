@@ -53,6 +53,7 @@ import {
 import { buildIntentFacts, declareIntentCached, type IntentDeclarer } from "@/ai/intentDeclarationClient";
 import type { ComposerMode } from "@/ai/composerMode";
 import { store, type ProjectPersistenceReceipt, type ProjectPersistenceProof } from "@/project/store";
+import type { WikiTurnInput } from "@/editor/projectWikiCoordinator";
 import {
   PLAY_WALKTHROUGH_TOOL,
   VERIFICATION_TOOL_NAMES,
@@ -808,12 +809,7 @@ export interface AssistantSessionOptions {
    */
   declareIntent?: IntentDeclarer;
   /** Editor-owned, awaited wiki save. The detached session never persists wiki writes itself. */
-  prepareProjectWiki?: (input: {
-    readonly text: string;
-    readonly mapId: string | null;
-    readonly composerMode: "do" | "ask" | "plan";
-    readonly signal?: AbortSignal;
-  }) => Promise<Project["world"]>;
+  prepareProjectWiki?: (input: WikiTurnInput) => Promise<Project["world"]>;
   /**
    * 자율 실행 드라이버용 사용자-대기 조회 훅(peek-only). 패널의 pendingSends 큐에
    * 메시지가 있는지 "만" 보고한다 — 드라이버는 절대 dequeue 하지 않는다(패널의 기존
@@ -955,6 +951,11 @@ export class AssistantSession {
   private runResult: { current: TurnResult | null } = { current: null };
   private storeBacked = false;
   private runReceipt: ProjectPersistenceReceipt | null = null;
+  private wikiDelivery: {
+    owner: { current: TurnResult | null };
+    project: Project | undefined;
+    receipt: ProjectPersistenceReceipt | null;
+  } | null = null;
   private runSubscriber: ((event: SessionEvent) => void) | undefined;
   private runRecapAuditIndex: number | null = null;
   // 현재 시스템 프롬프트에 적용된 문자 예산(토큰 보정). 관측으로 값이 바뀌면 턴 시작 시 재조립한다.
@@ -1778,12 +1779,25 @@ export class AssistantSession {
     this.turnIsDriverContinue = options.driverContinue === true;
     this.skipPlannerRoundOnly = false;
     if (this.prepareProjectWiki && !this.turnIsDriverContinue) {
+      const owner = this.runResult;
       try {
         const world = await this.prepareProjectWiki({
           text: instruction,
           mapId: turnContext.mapId,
           composerMode: this.turnComposerMode,
           signal,
+          onDelivery: (milestone) => {
+            if (owner !== this.runResult) return;
+            if (milestone.kind === "applied") {
+              this.wikiDelivery = { owner, project: milestone.project, receipt: null };
+              this.lastAppliedProject = null;
+              this.runReceipt = null;
+            } else if (this.wikiDelivery?.owner === owner && this.wikiDelivery.project === milestone.project
+              && store.isPersistenceReceiptForProject(milestone.receipt, milestone.project)) {
+              this.wikiDelivery.receipt = milestone.receipt;
+            }
+            this.publishRunOutcome();
+          },
         });
         if (world) {
           this.baselineProject.world = structuredClone(world);
@@ -2895,6 +2909,8 @@ export class AssistantSession {
   }
 
   private clearAppliedDelivery(): void {
+    // Intent-time reset may retire previous work, but not this run's awaited wiki apply.
+    if (this.wikiDelivery?.owner !== this.runResult) this.wikiDelivery = null;
     this.runReceipt = null;
     this.lastAppliedProject = null;
     this.turnAppliedMilestoneCalls = [];
@@ -2902,10 +2918,17 @@ export class AssistantSession {
 
   /** Keep only metadata from the actual apply, never a newest-commit query. */
   recordAppliedProject(applied: Extract<ApplyProposedProjectResult, { ok: true }>): void {
-    this.lastAppliedProject = applied.commitProject
-      ? { project: applied.commitProject, commitId: applied.commit.commitId }
-      : null;
-    this.runReceipt = null;
+    const wiki = applied.wikiDelivery;
+    // The progress document is a later owned mutation, not the tool commit's revision.
+    this.lastAppliedProject = wiki?.project ? { project: wiki.project, commitId: null }
+      : applied.commitProject ? { project: applied.commitProject, commitId: applied.commit.commitId } : null;
+    this.runReceipt = wiki?.kind === "persisted"
+      && store.isPersistenceReceiptForProject(wiki.receipt, wiki.project) ? wiki.receipt : null;
+    if (wiki) this.wikiDelivery = { owner: this.runResult, project: wiki.project, receipt: this.runReceipt };
+    else if (this.wikiDelivery) {
+      this.wikiDelivery.project = undefined;
+      this.wikiDelivery.receipt = null;
+    }
     this.turnAppliedMilestoneCalls.push(...this.finalizeProposals(this.turnProposals));
     this.turnProposals.clear();
     this.publishRunOutcome();
@@ -2931,13 +2954,14 @@ export class AssistantSession {
     const assessmentCurrent = (!this.storeBacked && !this.lastAppliedProject) || !this.acceptanceAppliedProject
       || acceptanceFingerprint(this.acceptanceAppliedProject) === acceptanceFingerprint(store.getCurrent());
     const proof = this.getRunEndProof();
+    const receipt = this.runReceipt ?? this.wikiDelivery?.receipt ?? null;
     return deriveRunOutcome({
       execution: this.runExecution,
       acceptance: assessment ? assessment.status === "verified" && !assessmentCurrent ? "verifying" : assessment.status : null,
       hasPendingDraft: this.turnComposerMode !== "ask" && this.turnProposals.size > 0,
-      hasApplied: this.turnAppliedMilestoneCalls.length > 0,
-      persistence: this.runReceipt === null ? "none"
-        : proof?.receipt === this.runReceipt && proof.verified ? "verified-current" : "accepted",
+      hasApplied: this.turnAppliedMilestoneCalls.length > 0 || this.wikiDelivery !== null,
+      persistence: receipt === null ? "none"
+        : proof?.receipt === receipt && proof.verified ? "verified-current" : "accepted",
     });
   }
 
@@ -3012,15 +3036,16 @@ export class AssistantSession {
     if (this.runEndProof !== state) return this.projectRunEndProof(this.runEndProof);
     if (signal?.aborted) return fail("cancelled");
     try {
-      const applied = this.lastAppliedProject;
+      const applied = this.lastAppliedProject ?? (this.wikiDelivery?.project
+        ? { project: this.wikiDelivery.project, commitId: null } : null);
       const flushResult = await store.flush();
       if (this.runEndProof !== state) return this.projectRunEndProof(this.runEndProof);
-      if (signal?.aborted) return fail("cancelled");
-      if (flushResult.kind !== "saved") return fail(flushResult.kind);
+      if (flushResult.kind !== "saved") return fail(signal?.aborted ? "cancelled" : flushResult.kind);
       receipt = flushResult.receipt;
-      if (!receipt) return fail("missing-receipt");
-      // Concurrent edits during apply/flush cannot borrow that apply's commit metadata.
-      if (applied?.project === store.getCurrent() && store.isPersistenceReceiptCurrent(receipt)) {
+      if (!receipt) return fail(signal?.aborted ? "cancelled" : "missing-receipt");
+      // Correlate accepted history to the submitted owner even if newer edits now exist.
+      // A catch-up save of a human revision cannot borrow that apply's metadata.
+      if (applied && store.isPersistenceReceiptForProject(receipt, applied.project)) {
         commitId = applied.commitId;
         if (outcomeOwner === this.runResult) this.runReceipt = receipt;
       }

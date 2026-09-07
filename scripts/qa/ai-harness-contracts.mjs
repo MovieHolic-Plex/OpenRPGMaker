@@ -15,11 +15,12 @@ import { installBrowserProbe, browserSurface } from './ai-harness-browser.mjs';
 import { proofFailureResponse, runProofFailure } from './ai-harness-proof-failure.mjs';
 import { createP2Contracts } from './ai-harness-p2.mjs';
 import { createR1AskContracts } from './ai-harness-r1-ask.mjs';
+import { createWikiContracts } from './ai-harness-wiki.mjs';
 import { deleteOwnedFixture } from './ai-harness-cleanup.mjs';
 import { isWikiExtraction } from '../../test/wikiTransportFixture.ts';
 
 const { values } = parseArgs({ options: { scenario: { type: 'string' } } });
-assert.ok(['proof-failure', 'required-skip', 'outcome-matrix', 'retained-draft-ask'].includes(values.scenario), 'Unknown contract scenario');
+assert.ok(['proof-failure', 'required-skip', 'outcome-matrix', 'retained-draft-ask', 'wiki-delivery'].includes(values.scenario), 'Unknown contract scenario');
 const root = fileURLToPath(new URL('../../', import.meta.url));
 const port = Number(process.env.QA_PORT ?? 19847);
 const base = `http://127.0.0.1:${port}`;
@@ -34,7 +35,7 @@ const report = { schemaVersion: 1, scenario: values.scenario, runId, projectId,
   sourceTree: execFileSync('git', ['rev-parse', 'HEAD^{tree}', 'HEAD:src'], { cwd: root, encoding: 'utf8' }).trim().split('\n'),
   mutation: process.env.AI_HARNESS_MUTATION ?? null, pass: false, actions: [], states: {}, errors: [], blocked: [], cleanup: {} };
 let config, server, browser, context, page, cacheDir, serverLog = '', gate, created = false, closing = false;
-let llmRound = 0, p2;
+let llmRound = 0, p2, wiki;
 const p1Response = proofFailureResponse(titleToken);
 const ownsTitle = title => title === ownerTitle || p2?.ownsTitle(title) === true;
 const commits = new Set();
@@ -99,7 +100,7 @@ async function runRoute(route) {
     // Incoming main adds a separate tool-free wiki checkpoint before intent.
     // These scoped contract instructions introduce no lasting wiki facts.
     const wikiExtraction = isWikiExtraction(body.messages);
-    const message = wikiExtraction ? { role: 'assistant', content: JSON.stringify({ upserts: [] }) }
+    const message = wikiExtraction ? wiki ? wiki.extract(body) : { role: 'assistant', content: JSON.stringify({ upserts: [] }) }
       : p2 ? await p2.respond(body) : p1Response(body);
     record('scripted-llm-http', { round: ++llmRound, hasTools: !!body.tools?.length, wikiExtraction, tool: message.tool_calls?.[0]?.function.name ?? null });
     await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ choices: [{ message }] }) });
@@ -129,6 +130,7 @@ async function runRoute(route) {
     const entry = { table, method, projectId, path: url.pathname, query: url.search };
     record('browser-real-transport', entry);
     if (p2 && await p2.intercept(route, entry)) return;
+    if (wiki && await wiki.intercept(route, entry)) return;
     const held = gate;
     if (table === 'projects' && method === 'GET' && held && !held.used && await page.evaluate(() => !!window.qa?.proofWaiting)) {
       held.used = true;
@@ -208,6 +210,7 @@ try {
     armProof, bounded, observeRemote, rest, deferred, clearProofGate: () => { gate?.release.resolve(); gate = null; } };
   await surface.capture('00-before');
   if (values.scenario === 'proof-failure') await runProofFailure(harness);
+  else if (values.scenario === 'wiki-delivery') { wiki = createWikiContracts(harness); await wiki.run(); }
   else {
     p2 = values.scenario === 'retained-draft-ask' ? createR1AskContracts(harness) : createP2Contracts(harness);
     await p2.run(values.scenario);
@@ -253,11 +256,11 @@ try {
   report.pass = report.assertionsPassed === true && !process.exitCode;
   report.cleanup.reusedListener = false;
   report.cleanup.activeRoutes = routes.size;
-  report.sourceHashes = Object.fromEntries(await Promise.all(['src/ai/assistantSession.ts', 'src/ai/workPlan.ts', 'src/ai/assistantAcceptanceLedger.ts', 'src/project/store.ts',
+  report.sourceHashes = Object.fromEntries(await Promise.all(['src/editor/projectWikiCoordinator.ts', 'src/editor/tools/applyChangesetToStore.ts', 'src/editor/panels/aiChatPanel.ts', 'scripts/qa/ai-harness-wiki.mjs', 'src/ai/assistantSession.ts', 'src/ai/workPlan.ts', 'src/ai/assistantAcceptanceLedger.ts', 'src/project/store.ts',
     'src/editor/panels/aiTurnRunner.ts', 'src/editor/aiAssistantBridge.ts', 'src/ai/activityLog.ts', 'src/ai/runRecap.ts',
     'scripts/qa/ai-harness-contracts.mjs', 'scripts/qa/ai-harness-browser.mjs', 'scripts/qa/ai-harness-proof-failure.mjs',
     'scripts/qa/ai-harness-cleanup.mjs', 'scripts/qa/ai-harness-p2.mjs', 'scripts/qa/ai-harness-p2-scenarios.mjs', 'scripts/qa/ai-harness-p2-observe.mjs', 'scripts/qa/ai-harness-p2-resume.mjs', 'scripts/qa/ai-harness-r1-ask.mjs',
-    'src/editor/panels/aiProposalCard.ts', 'src/editor/tools/applyChangesetToStore.ts'].map(async path => [path, hash(await readFile(resolve(root, path)))])));
+    'src/editor/panels/aiProposalCard.ts'].map(async path => [path, hash(await readFile(resolve(root, path)))])));
   await writeFile(`${out}/server.log`, serverLog.replaceAll(config?.anonKey || '\0', '[REDACTED]'));
   await writeFile(`${out}/actions.json`, JSON.stringify(report, null, 2) + '\n');
   record('cleanup', report.cleanup);
