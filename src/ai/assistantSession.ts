@@ -559,7 +559,7 @@ export const SET_BUILD_SPEC_TOOL: OpenAiToolSchema = {
   function: {
     name: "set_build_spec",
     description:
-      "공간 빌드(집/마을/길/청소/NPC 배치/지형 채우기) 전 밑그림(명세)을 제출한다. 검증(경계/겹침) 통과 후 공간 빌드 툴을 실행한다. 페인트/배치 호출이 명세 밖 빈 영역을 쓰면 명세를 자동 확장해 warning으로 통과하지만, 기존 구조물 파괴 위험은 차단된다. 에셋마다 겹치지 않는 영역(x,y,w,h)을 배정하라.",
+      "공간 빌드(집/마을/길/청소/NPC 배치/지형 채우기) 전 밑그림(명세)을 제출한다. 검증(경계/겹침) 통과 후 공간 빌드 툴을 실행한다. 명세 밖 빈 영역은 자동 확장 warning으로 통과하지만 기존 구조물 파괴 위험은 차단된다. 같은 층 영역(x,y,w,h)은 원칙적으로 겹치지 않게 배정하되 road-road 교차와 명시적 terrain-before-road 순서의 도로 덧칠은 허용한다(assets/buildOrder 참조).",
     parameters: {
       type: "object",
       properties: {
@@ -568,7 +568,8 @@ export const SET_BUILD_SPEC_TOOL: OpenAiToolSchema = {
         assets: {
           type: "array",
           description:
-            "겹치지 않는 영역을 가진 에셋 목록. kind: house|road|npc|prop|clear|terrain 등, layer: lower(기본)|upper(장식). " +
+            "에셋 목록. kind: house|road|npc|prop|clear|terrain 등, layer: lower(기본)|upper(장식). 길은 kind:\"road\"로 명시한다; id·style·재료 라벨로 kind를 추론하지 않는다. " +
+            "같은 층 road-road는 교차 가능, terrain-road는 buildOrder에 terrain과 road를 모두 넣고 terrain을 먼저 둘 때만 겹칠 수 있다. terrain-terrain은 순서나 overExisting과 무관하게 겹침·중복 불가: 영역을 비겹침으로 분할하라. 다른 층이나 타일을 쓰지 않는 npc/event/transfer는 겹칠 수 있다. " +
             "clear 에셋이 기존 구조물(집 등)을 덮으면 confirmDestroy:true가 있어야 통과합니다 — '주변 청소'는 구조물을 피해 영역을 좁히세요. " +
             "배치 에셋 자리·주변에 기존 타일이 있으면 overExisting:\"clear\"|\"keep\"이 있어야 통과합니다.",
           // properties 를 선언하지 않으면(items:{type:"object"}) strict function-calling 경로에서
@@ -583,7 +584,7 @@ export const SET_BUILD_SPEC_TOOL: OpenAiToolSchema = {
             type: "object",
             properties: {
               id: { type: "string", description: "에셋 식별자(예: house_1)" },
-              kind: { type: "string", description: "house|road|npc|prop|clear|terrain 등" },
+              kind: { type: "string", description: "house|road|npc|prop|clear|terrain 등. 도로는 road로 명시; id·style·재료 라벨은 kind를 바꾸지 않는다" },
               x: { type: "integer", description: "영역 좌상단 타일 x(칸 좌표)" },
               y: { type: "integer", description: "영역 좌상단 타일 y(칸 좌표)" },
               w: { type: "integer", description: "가로 칸 수 — 차지하는 마지막 칸은 x+w-1" },
@@ -601,7 +602,7 @@ export const SET_BUILD_SPEC_TOOL: OpenAiToolSchema = {
                 enum: ["clear", "keep"],
                 description:
                   "배치(비-clear) 에셋 자리·주변에 기본 타일이 아닌 것이 있을 때의 정리 방침. " +
-                  "clear=정리하고 배치, keep=그대로 위에 배치. 검증기가 요구하면 반드시 넣는다",
+                  "clear=정리하고 배치, keep=그대로 위에 배치. 기존 내용 충돌 때만 요구되며 새 에셋끼리의 교차를 허용하지 않는다",
               },
             },
             required: ["id", "kind", "x", "y", "w", "h"],
@@ -610,7 +611,7 @@ export const SET_BUILD_SPEC_TOOL: OpenAiToolSchema = {
         buildOrder: {
           type: "array",
           items: { type: "string" },
-          description: "건설 순서(kind 목록, 예: [\"clear\",\"terrain\",\"prop\"]). clear가 먼저 오는 buildOrder에서는 후속 배치 에셋이 clear 영역을 덮을 수 있다.",
+          description: "건설 순서(kind 목록, 예: [\"clear\",\"terrain\",\"road\",\"prop\"]). clear와 후속 kind를 모두 넣고 clear를 먼저 두면 후속 배치가 clear 영역을 덮을 수 있다. 같은 층 terrain-road 겹침도 두 kind를 모두 넣고 terrain을 먼저 둘 때만 허용한다. road-road 교차에는 순서가 필요 없다. 어떤 순서도 terrain-terrain 겹침·중복을 허용하지 않는다. 선언한 순서대로 시공하라.",
         },
         pathWidth: { type: "integer", description: "통로 너비(칸)" },
         density: { type: "string", enum: ["spacious", "normal", "dense"], description: "에셋 분배(넓찍/보통/다닥)" },
@@ -1358,9 +1359,14 @@ export class AssistantSession {
       this.lastRejectedSpecFingerprint = fingerprint;
       this.specRejections += 1;
       const discarded = this.specRejections >= MAX_SPEC_REJECTIONS;
-      const issues = errors.map((issue) => ({ severity: "error" as const, code: "spec-invalid", message: issue.message }));
-      // 검증기가 이름을 부른 필드를 그대로 되돌려준다 — 산문 지시만으로는 모델이 좌표만 흔든다.
-      const demanded = SPEC_REMEDY_FIELDS.filter((field) => errors.some((issue) => issue.message.includes(field)));
+      const issues = errors.map((issue) => ({ severity: "error" as const, code: issue.code ?? "spec-invalid", message: issue.message }));
+      // Select repairs from diagnostics, never from localized prose or model-authored asset IDs.
+      const recovery = {
+        newPlanOverlap: errors.some((issue) => issue.code === "spec-new-plan-overlap"),
+        remedyFields: SPEC_REMEDY_FIELDS.filter((field) => errors.some((issue) => issue.code ===
+          (field === "overExisting" ? "spec-existing-content" : "spec-destroy-confirmation"))),
+      };
+      const demanded = recovery.remedyFields;
       const fieldList = demanded.join("·");
       if (repeated) {
         issues.push({
@@ -1374,16 +1380,21 @@ export class AssistantSession {
       issues.push({
         severity: "error",
         code: "spec-invalid",
-        message: discarded
-          ? `검증 ${this.specRejections}회 실패 — 이 계획은 폐기하세요. 맵 크기·좌표·buildOrder를 스스로 보정한 새 명세를 제출하세요.`
-          : demanded.length > 0
-            ? `지적된 에셋에 ${fieldList} 필드를 넣어 set_build_spec을 재제출하세요 — 좌표만 바꾸면 같은 이유로 또 거부됩니다.`
-            : "겹치지 않게 좌표를 고치고 필요한 경우 overExisting을 스스로 판단해 set_build_spec을 재제출하세요.",
+        // Keep spec-invalid on every rejection: the existing target retry budget aggregates it.
+        message: [
+          ...(discarded ? [`검증 ${this.specRejections}회 실패 — 이 계획은 폐기하고 새 명세를 제출하세요.`] : []),
+          ...(demanded.length > 0 ? [`기존 내용 충돌로 지적된 에셋에 ${fieldList} 필드를 넣어 set_build_spec을 재제출하세요. 보존할 내용은 영역에서 제외하세요. 이 선언은 새 에셋 간 교차를 해결하지 않습니다.`] : []),
+          ...(recovery.newPlanOverlap ? [
+            "새 에셋 간 교차를 고치세요: 실제 도로는 kind:\"road\"로 명시하면 road-road 교차가 허용됩니다. 같은 층 terrain-road는 buildOrder에 두 kind를 모두 넣고 terrain을 먼저 두어야 합니다. id·style·재료 라벨로 kind는 바뀌지 않습니다. terrain-terrain 겹침·중복은 어떤 순서나 overExisting으로도 허용되지 않으므로 영역을 비겹침으로 분할하세요. clear와 후속 배치의 겹침은 두 kind를 모두 넣고 clear를 먼저 두세요. 수정한 set_build_spec을 재제출하세요.",
+          ] : []),
+          ...(!recovery.newPlanOverlap && demanded.length === 0 ? ["지적된 필드·맵 크기·좌표를 고쳐 set_build_spec을 재제출하세요."] : []),
+        ].join(" "),
       });
       return {
         ok: false,
         summary: `밑그림 검증 실패(${this.specRejections}회)${repeated ? " — 직전과 동일" : ""}${discarded ? " — 계획 폐기" : ""}`,
         issues,
+        data: { rejections: this.specRejections, repeated, discarded, recovery },
       };
     }
     // 검증기는 "22" 같은 숫자 문자열을 받아주지만 게이트는 저장된 값을 그대로 더한다 — 경계에서 정수로 굳혀 저장한다.

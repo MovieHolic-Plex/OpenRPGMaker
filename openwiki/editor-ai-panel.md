@@ -37,9 +37,40 @@ construction specifications. The NPC fallback selects all current-turn specs,
 not historical NPC plans or only the latest map.
 
 Same-layer terrain/road overlap is allowed only with explicit `buildOrder` that
-places `terrain` before `road`. Missing/reversed order and terrain/house overlap
-remain invalid. This does not authorize overwriting existing structures, water,
-or completed houses: all existing protection gates still run.
+lists both kinds and places `terrain` before `road`. Road-road crossings need no
+order. Missing/reversed/incomplete order, terrain/house overlap, and arbitrary
+same-layer terrain/terrain intersections or duplicates remain invalid. Declare
+actual roads as `kind:"road"`; IDs, style and material labels never infer kinds.
+`overExisting` only concerns existing map content, not new-plan intersections.
+This does not authorize overwriting existing structures, water, or completed
+houses: all existing protection gates still run.
+
+**Overlap diagnostic repair (2026-09-07):** `validateBuildSpec` emits
+`spec-new-plan-overlap` for new-plan intersections, `spec-existing-content` for
+placement requiring an existing-content policy, and `spec-destroy-confirmation`
+for unconfirmed destructive clear. Other validation errors retain the session's
+`spec-invalid` fallback. `applyBuildSpec` preserves these codes through tool
+events, audit `issueCodes`, and model JSON. Recovery is code-selected, not matched
+against localized messages or asset IDs: overlap-only failures receive declared
+kind/order and nonoverlapping partition guidance, never an `overExisting` repair.
+Mixed failures also retain the actual existing-content remedies. Discard advice
+does not replace these cause-specific instructions.
+
+Failed tool `data` exposes `{rejections, repeated, discarded, recovery}`;
+`recovery` contains `newPlanOverlap` and `remedyFields`. The same selectors choose
+the guidance. The generic `spec-invalid` guidance issue remains on every rejected
+submission so alternating failure classes cannot reset the aggregate target
+retry count. Three spec rejections still trigger discard guidance; the separate
+four-failure work-item retry bound and dependency deferral accounting are unchanged.
+
+`test/buildSpecOverlapRecovery.test.ts` covers code propagation (including changed
+diagnostic prose), mixed conflicts, repeat/discard/reset and retry accounting,
+the accepted ordered terrain/crossroads tool sequence, and unchanged protection
+and geometry boundaries. `test/fixtures/buildSpecOverlapPlans.json` is the exact
+parsed set_build_spec input from the four archived Round9 attempts: still rejected
+with 5/5/5/7 validator errors. The archive itself is untouched. This is an existing
+repair-path improvement, not a terrain-material/passability proof or a guarantee
+that a subsequent P1 generation will succeed.
 
 Regression: `assistantMultiMapSpec`, `aiTurnAppliedAccounting`,
 `aiCompletionAccounting`, `assistantMapPreservationGuard`, `aiSpecGateHardening`.
