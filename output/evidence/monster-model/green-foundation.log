@@ -1,0 +1,24 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/monsterMetadata.test.ts test/monsterMetadataFoundation.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-monster-model-0907
+
+ ✓ test/monsterMetadata.test.ts (19 tests) 43ms
+ ✓ test/monsterMetadataFoundation.test.ts (17 tests) 5432ms
+   ✓ monster metadata foundation > rejects malformed metadata when loading null  374ms
+   ✓ monster metadata foundation > rejects malformed metadata when loading %j  310ms
+   ✓ monster metadata foundation > preserves exact stored overrides and raw IDs when serializing with function serialize(project) {
+  return JSON.stringify(project, projectJsonReplacer(project));
+}  301ms
+   ✓ monster metadata foundation > preserves exact stored overrides and raw IDs when serializing with function serializePretty(project) {
+  return JSON.stringify(project, projectJsonReplacer(project), 2);
+}  319ms
+   ✓ monster metadata foundation > preserves overrides when round-tripping an editor package  1182ms
+   ✓ monster metadata foundation > strips metadata without retaining metadata-only uploads when preparing playable data  1142ms
+
+ Test Files  2 passed (2)
+      Tests  36 passed (36)
+   Start at  03:21:58
+   Duration  25.94s (transform 12.86s, setup 0ms, collect 30.17s, tests 5.48s, environment 0ms, prepare 804ms)

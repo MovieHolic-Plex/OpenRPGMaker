@@ -186,6 +186,7 @@ export type ConstructionDiffTotals = {
   readonly endingsChanged: number;
   readonly mapPropertiesChanged?: number;
   readonly audioDescriptionsChanged?: number;
+  readonly monsterMetadataChanged?: number;
   readonly sessionChanged: boolean;
   readonly systemChanged: boolean;
 };

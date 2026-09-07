@@ -3908,7 +3908,8 @@ export class AssistantSession {
           signal,
           this.turnComposerMode === "ask" || this.turnIntent?.mode === "question"
         );
-        // Only exact originals delivered to the writer count at the existing read seam.
+        signal?.throwIfAborted();
+        // Only exact originals and native/monster reads in a successful writer request count.
         this.originalContext!.observeDelivered(requestMessages, grounded.includedIds, this.readEvidence);
         this.readEvidence.observeDelivered(requestMessages);
       } catch (cause) {
@@ -4282,11 +4283,13 @@ export class AssistantSession {
               if (toolResult.ok) failedSpecMaps.delete(args.mapId);
               else failedSpecMaps.add(args.mapId);
             }
-            const record = batchRecordTarget(name, args);
-            if (record) {
-              if (toolResult.ok) failedRecords.delete(record.key);
-              else if (!this.ctx.project.database[record.collection].some((entry) => entry.id === record.id)) failedRecords.set(record.key, record);
-            }
+          }
+          // Dependencies require an available record, even when its producer never executed.
+          // Track deferred creations too so missing IDs propagate transitively without charging dependents.
+          const record = batchRecordTarget(name, args);
+          if (record) {
+            if (toolResult.ok) failedRecords.delete(record.key);
+            else if (!this.ctx.project.database[record.collection].some((entry) => entry.id === record.id)) failedRecords.set(record.key, record);
           }
           if (tool?.mode === "read" || name === "get_original_context") {
             if (!toolResult.ok) failedReadInBatch ??= name;

@@ -1,0 +1,348 @@
+[
+  {
+    "file": "aiEditorCapabilityParity.test.ts",
+    "shard": 13,
+    "baselineStatus": "failed",
+    "integrationStatus": "failed",
+    "assertions": [
+      {
+        "fullName": "AI editor capability parity returns full database record fields when include=full",
+        "baselineStatus": "failed",
+        "integrationStatus": "failed",
+        "baselineFailureMessages": [
+          "AssertionError: 'upsert_enemy' 실행 실패: enemy.monsterResourceId: \"패리티 슬라임\"에 확실히 맞는 외형이 없습니다. list_resources(kind:\"monster\", query:\"*\")로 확인한 리소스 ID를 enemy.monsterResourceId에 지정하세요. 사용 가능한 monster 리소스 예시: generated-enemy-slime-01, generated-e…: expected false to be true // Object.is equality\n    at /tmp/st_01a07849-upstream/test/aiEditorCapabilityParity.test.ts:56:41\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+        ],
+        "integrationFailureMessages": [
+          "AssertionError: 'upsert_enemy' 실행 실패: enemy.monsterResourceId: \"패리티 슬라임\"에 확실히 맞는 외형이 없습니다. list_resources(kind:\"monster\", query:\"*\")로 확인한 리소스 ID를 enemy.monsterResourceId에 지정하세요. 사용 가능한 monster 리소스 예시: generated-enemy-slime-01, generated-e…: expected false to be true // Object.is equality\n    at /home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiEditorCapabilityParity.test.ts:56:41\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+        ],
+        "rootNormalizedExactMatch": true
+      }
+    ]
+  },
+  {
+    "file": "emberQuestToolReplay.test.ts",
+    "shard": 13,
+    "baselineStatus": "passed",
+    "integrationStatus": "failed",
+    "assertions": [
+      {
+        "fullName": "emberQuestToolReplay 모든 툴 호출이 성공한다(커밋 게이트 통과)",
+        "baselineStatus": "passed",
+        "integrationStatus": "failed",
+        "baselineFailureMessages": [],
+        "integrationFailureMessages": [
+          "AssertionError: expected [ Array(3) ] to deeply equal []\n    at /home/main/z-project/rpg-zzu-monster-catalog-0907/test/emberQuestToolReplay.test.ts:170:76\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+        ],
+        "rootNormalizedExactMatch": false
+      },
+      {
+        "fullName": "emberQuestToolReplay 스펙 카운트가 일치한다(맵5/NPC12/몬스터5/아이템8/전투블로커5)",
+        "baselineStatus": "passed",
+        "integrationStatus": "failed",
+        "baselineFailureMessages": [],
+        "integrationFailureMessages": [
+          "AssertionError: expected 4 to be 5 // Object.is equality\n    at /home/main/z-project/rpg-zzu-monster-catalog-0907/test/emberQuestToolReplay.test.ts:176:53\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+        ],
+        "rootNormalizedExactMatch": false
+      }
+    ]
+  },
+  {
+    "file": "refactorTools.test.ts",
+    "shard": 13,
+    "baselineStatus": "failed",
+    "integrationStatus": "failed",
+    "assertions": [
+      {
+        "fullName": "prune_unused 미참조 아이템/트룹을 발견한다(보고 모드)",
+        "baselineStatus": "failed",
+        "integrationStatus": "failed",
+        "baselineFailureMessages": [
+          "AssertionError: expected [] to include 'tr_orphan'\n    at Proxy.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/expect/dist/index.js:1191:15)\n    at Proxy.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/expect/dist/index.js:1029:14)\n    at Proxy.methodWrapper (file:///home/main/z-project/rpg-zzu/node_modules/chai/index.js:1686:25)\n    at /tmp/st_01a07849-upstream/test/refactorTools.test.ts:63:27\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)"
+        ],
+        "integrationFailureMessages": [
+          "AssertionError: expected [] to include 'tr_orphan'\n    at Proxy.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/expect/dist/index.js:1191:15)\n    at Proxy.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/expect/dist/index.js:1029:14)\n    at Proxy.methodWrapper (file:///home/main/z-project/rpg-zzu/node_modules/chai/index.js:1686:25)\n    at /home/main/z-project/rpg-zzu-monster-catalog-0907/test/refactorTools.test.ts:63:27\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)"
+        ],
+        "rootNormalizedExactMatch": true
+      },
+      {
+        "fullName": "prune_unused 어떤 트룹도 참조하지 않는 적을 미사용으로 잡는다",
+        "baselineStatus": "failed",
+        "integrationStatus": "failed",
+        "baselineFailureMessages": [
+          "AssertionError: expected [] to include 'en_lonely'\n    at Proxy.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/expect/dist/index.js:1191:15)\n    at Proxy.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/expect/dist/index.js:1029:14)\n    at Proxy.methodWrapper (file:///home/main/z-project/rpg-zzu/node_modules/chai/index.js:1686:25)\n    at /tmp/st_01a07849-upstream/test/refactorTools.test.ts:85:28\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)"
+        ],
+        "integrationFailureMessages": [
+          "AssertionError: expected [] to include 'en_lonely'\n    at Proxy.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/expect/dist/index.js:1191:15)\n    at Proxy.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/expect/dist/index.js:1029:14)\n    at Proxy.methodWrapper (file:///home/main/z-project/rpg-zzu/node_modules/chai/index.js:1686:25)\n    at /home/main/z-project/rpg-zzu-monster-catalog-0907/test/refactorTools.test.ts:85:28\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)"
+        ],
+        "rootNormalizedExactMatch": true
+      }
+    ]
+  },
+  {
+    "file": "tilesetAiWorkspaceModal.test.ts",
+    "shard": 13,
+    "baselineStatus": "failed",
+    "integrationStatus": "failed",
+    "assertions": [
+      {
+        "fullName": "AI tileset workspace three-step flow shows the summary step with a confirmed list and applies to the project",
+        "baselineStatus": "failed",
+        "integrationStatus": "failed",
+        "baselineFailureMessages": [
+          "TypeError: matching.matches is not a function\n    at restoreTilesetAiWorkspaceFocus (/tmp/st_01a07849-upstream/src/editor/panels/tilesetAiWorkspaceAccessibility.ts:25:29)\n    at renderActiveWorkspace (/tmp/st_01a07849-upstream/src/editor/panels/tilesetAiWorkspaceModal.ts:129:3)\n    at click (/tmp/st_01a07849-upstream/src/editor/panels/tilesetAiWorkspaceModal.ts:525:9)\n    at FakeElement.dispatchEvent (/tmp/st_01a07849-upstream/test/fakeDom.ts:242:9)\n    at FakeElement.click (/tmp/st_01a07849-upstream/test/fakeDom.ts:265:10)\n    at /tmp/st_01a07849-upstream/test/tilesetAiWorkspaceModal.test.ts:183:12\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+        ],
+        "integrationFailureMessages": [
+          "TypeError: matching.matches is not a function\n    at restoreTilesetAiWorkspaceFocus (/home/main/z-project/rpg-zzu-monster-catalog-0907/src/editor/panels/tilesetAiWorkspaceAccessibility.ts:25:29)\n    at renderActiveWorkspace (/home/main/z-project/rpg-zzu-monster-catalog-0907/src/editor/panels/tilesetAiWorkspaceModal.ts:129:3)\n    at click (/home/main/z-project/rpg-zzu-monster-catalog-0907/src/editor/panels/tilesetAiWorkspaceModal.ts:525:9)\n    at FakeElement.dispatchEvent (/home/main/z-project/rpg-zzu-monster-catalog-0907/test/fakeDom.ts:242:9)\n    at FakeElement.click (/home/main/z-project/rpg-zzu-monster-catalog-0907/test/fakeDom.ts:265:10)\n    at /home/main/z-project/rpg-zzu-monster-catalog-0907/test/tilesetAiWorkspaceModal.test.ts:183:12\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+        ],
+        "rootNormalizedExactMatch": true
+      }
+    ]
+  },
+  {
+    "file": "elementRatesPartialAccept.test.ts",
+    "shard": 14,
+    "baselineStatus": "failed",
+    "integrationStatus": "failed",
+    "assertions": [
+      {
+        "fullName": "elementRates 부분 수용 DB에 없는 속성 키만 버리고 유효한 등급은 유지한다",
+        "baselineStatus": "failed",
+        "integrationStatus": "failed",
+        "baselineFailureMessages": [
+          "AssertionError: expected false to be true // Object.is equality\n    at /tmp/st_01a07849-upstream/test/elementRatesPartialAccept.test.ts:25:23\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+        ],
+        "integrationFailureMessages": [
+          "AssertionError: expected false to be true // Object.is equality\n    at /home/main/z-project/rpg-zzu-monster-catalog-0907/test/elementRatesPartialAccept.test.ts:25:23\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+        ],
+        "rootNormalizedExactMatch": true
+      },
+      {
+        "fullName": "elementRates 부분 수용 속성 타입을 speciesId로 잘못 보낸 신규 적도 종 참조만 제외하고 생성한다",
+        "baselineStatus": "failed",
+        "integrationStatus": "passed",
+        "baselineFailureMessages": [
+          "AssertionError: [{\"severity\":\"error\",\"code\":\"monster-graphic-required\",\"message\":\"enemy.monsterResourceId: \\\"불꽃 정령\\\"에 확실히 맞는 외형이 없습니다. list_resources(kind:\\\"monster\\\", query:\\\"*\\\")로 확인한 리소스 ID를 enemy.monsterResourceId에 지정하세요. 사용 가능한 monster 리소스 예시: generated-enemy-slime-01, generated-enemy-bat-01, generated-enemy-golem-01\"}]: expected false to be true // Object.is equality\n    at /tmp/st_01a07849-upstream/test/elementRatesPartialAccept.test.ts:48:54\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+        ],
+        "integrationFailureMessages": [],
+        "rootNormalizedExactMatch": false
+      }
+    ]
+  },
+  {
+    "file": "softConfirmUxFixes.test.ts",
+    "shard": 14,
+    "baselineStatus": "failed",
+    "integrationStatus": "failed",
+    "assertions": [
+      {
+        "fullName": "soft-confirm UX fixes second identical place_props in a turn is skipped (no double scatter)",
+        "baselineStatus": "failed",
+        "integrationStatus": "failed",
+        "baselineFailureMessages": [
+          "AssertionError: expected 'error' to be 'final' // Object.is equality\n    at /tmp/st_01a07849-upstream/test/softConfirmUxFixes.test.ts:85:32\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+        ],
+        "integrationFailureMessages": [
+          "AssertionError: expected 'error' to be 'final' // Object.is equality\n    at /home/main/z-project/rpg-zzu-monster-catalog-0907/test/softConfirmUxFixes.test.ts:85:32\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+        ],
+        "rootNormalizedExactMatch": true
+      }
+    ]
+  },
+  {
+    "file": "aiEditorFullToolCoverage.test.ts",
+    "shard": 15,
+    "baselineStatus": "failed",
+    "integrationStatus": "failed",
+    "assertions": [
+      {
+        "fullName": "AI assistant editor-wide project mutation coverage changes project identity, terms, display, resources, and battle defaults",
+        "baselineStatus": "failed",
+        "integrationStatus": "failed",
+        "baselineFailureMessages": [
+          "AssertionError: 'upsert_enemy' 실행 실패: enemy.monsterResourceId: \"설정용 적\"에 확실히 맞는 외형이 없습니다. list_resources(kind:\"monster\", query:\"*\")로 확인한 리소스 ID를 enemy.monsterResourceId에 지정하세요. 사용 가능한 monster 리소스 예시: generated-enemy-slime-01, generated-ene…: expected false to be true // Object.is equality\n    at /tmp/st_01a07849-upstream/test/aiEditorFullToolCoverage.test.ts:181:37\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+        ],
+        "integrationFailureMessages": [
+          "AssertionError: 'upsert_enemy' 실행 실패: enemy.monsterResourceId: \"설정용 적\"에 확실히 맞는 외형이 없습니다. list_resources(kind:\"monster\", query:\"*\")로 확인한 리소스 ID를 enemy.monsterResourceId에 지정하세요. 사용 가능한 monster 리소스 예시: generated-enemy-slime-01, generated-ene…: expected false to be true // Object.is equality\n    at /home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiEditorFullToolCoverage.test.ts:181:37\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+        ],
+        "rootNormalizedExactMatch": true
+      }
+    ]
+  },
+  {
+    "file": "questGraph.test.ts",
+    "shard": 15,
+    "baselineStatus": "failed",
+    "integrationStatus": "failed",
+    "assertions": [
+      {
+        "fullName": "quest graph 전투 승리 write site는 manualHint set 폴백으로 생성한다",
+        "baselineStatus": "failed",
+        "integrationStatus": "failed",
+        "baselineFailureMessages": [
+          "AssertionError: expected false to be true // Object.is equality\n    at /tmp/st_01a07849-upstream/test/questGraph.test.ts:195:92\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+        ],
+        "integrationFailureMessages": [
+          "AssertionError: expected false to be true // Object.is equality\n    at /home/main/z-project/rpg-zzu-monster-catalog-0907/test/questGraph.test.ts:195:92\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+        ],
+        "rootNormalizedExactMatch": true
+      }
+    ]
+  },
+  {
+    "file": "webExportBattleDependencies.test.ts",
+    "shard": 15,
+    "baselineStatus": "failed",
+    "integrationStatus": "failed",
+    "assertions": [
+      {
+        "fullName": "export runtime-selected party battle dependencies embeds actual party render dependencies in the standalone asset table",
+        "baselineStatus": "failed",
+        "integrationStatus": "failed",
+        "baselineFailureMessages": [
+          "AssertionError: expected null not to be null\n    at renderedPartyPaths (/tmp/st_01a07849-upstream/test/webExportBattleDependencies.test.ts:28:23)\n    at /tmp/st_01a07849-upstream/test/webExportBattleDependencies.test.ts:71:32\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+        ],
+        "integrationFailureMessages": [
+          "AssertionError: expected null not to be null\n    at renderedPartyPaths (/home/main/z-project/rpg-zzu-monster-catalog-0907/test/webExportBattleDependencies.test.ts:28:23)\n    at /home/main/z-project/rpg-zzu-monster-catalog-0907/test/webExportBattleDependencies.test.ts:71:32\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+        ],
+        "rootNormalizedExactMatch": true
+      },
+      {
+        "fullName": "export runtime-selected party battle dependencies keeps a runtime-selected uploaded back sprite through preparation",
+        "baselineStatus": "failed",
+        "integrationStatus": "failed",
+        "baselineFailureMessages": [
+          "AssertionError: expected undefined to deeply equal { …(5) }\n    at /tmp/st_01a07849-upstream/test/webExportBattleDependencies.test.ts:66:50\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+        ],
+        "integrationFailureMessages": [
+          "AssertionError: expected undefined to deeply equal { …(5) }\n    at /home/main/z-project/rpg-zzu-monster-catalog-0907/test/webExportBattleDependencies.test.ts:66:50\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+        ],
+        "rootNormalizedExactMatch": true
+      },
+      {
+        "fullName": "export runtime-selected party battle dependencies ships the static and idle URLs actually rendered by rm2000",
+        "baselineStatus": "failed",
+        "integrationStatus": "failed",
+        "baselineFailureMessages": [
+          "AssertionError: expected null not to be null\n    at renderedPartyPaths (/tmp/st_01a07849-upstream/test/webExportBattleDependencies.test.ts:28:23)\n    at /tmp/st_01a07849-upstream/test/webExportBattleDependencies.test.ts:38:32\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:863:59\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)"
+        ],
+        "integrationFailureMessages": [
+          "AssertionError: expected null not to be null\n    at renderedPartyPaths (/home/main/z-project/rpg-zzu-monster-catalog-0907/test/webExportBattleDependencies.test.ts:28:23)\n    at /home/main/z-project/rpg-zzu-monster-catalog-0907/test/webExportBattleDependencies.test.ts:38:32\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:863:59\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)"
+        ],
+        "rootNormalizedExactMatch": true
+      }
+    ]
+  },
+  {
+    "file": "aiAssistantSession.test.ts",
+    "shard": 16,
+    "baselineStatus": "failed",
+    "integrationStatus": "failed",
+    "assertions": [
+      {
+        "fullName": "AssistantSession 툴콜 루프 검수 응답이 raw 툴콜 마크업이면 원문 노출 없이 1회 재투입한다",
+        "baselineStatus": "failed",
+        "integrationStatus": "failed",
+        "baselineFailureMessages": [
+          "AssertionError: expected '완료 검증이 아직 미완성입니다.\\n- 이 작업을 단계로 진행해줘. …' to be '타이틀 변경을 제안했습니다.' // Object.is equality\n    at /tmp/st_01a07849-upstream/test/aiAssistantSession.test.ts:1434:34\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+        ],
+        "integrationFailureMessages": [
+          "AssertionError: expected '완료 검증이 아직 미완성입니다.\\n- 이 작업을 단계로 진행해줘. …' to be '타이틀 변경을 제안했습니다.' // Object.is equality\n    at /home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiAssistantSession.test.ts:1434:34\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+        ],
+        "rootNormalizedExactMatch": true
+      },
+      {
+        "fullName": "AssistantSession 툴콜 루프 검수가 미이행을 발견하면 실행 모델로 한 번 재투입한 뒤 감독 모델이 최종 응답한다",
+        "baselineStatus": "failed",
+        "integrationStatus": "failed",
+        "baselineFailureMessages": [
+          "AssertionError: expected '완료 검증이 아직 미완성입니다.\\n- 이 작업을 단계로 진행해줘. …' to be '길과 꽃을 모두 제안했습니다.' // Object.is equality\n    at /tmp/st_01a07849-upstream/test/aiAssistantSession.test.ts:1389:34\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+        ],
+        "integrationFailureMessages": [
+          "AssertionError: expected '완료 검증이 아직 미완성입니다.\\n- 이 작업을 단계로 진행해줘. …' to be '길과 꽃을 모두 제안했습니다.' // Object.is equality\n    at /home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiAssistantSession.test.ts:1389:34\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+        ],
+        "rootNormalizedExactMatch": true
+      },
+      {
+        "fullName": "AssistantSession 툴콜 루프 쓰기 툴이 시작되면 이후 호출은 실행 모델로 전환하고 검수는 감독 모델로 돌아온다",
+        "baselineStatus": "failed",
+        "integrationStatus": "failed",
+        "baselineFailureMessages": [
+          "AssertionError: expected 'error' to be 'final' // Object.is equality\n    at /tmp/st_01a07849-upstream/test/aiAssistantSession.test.ts:1334:34\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+        ],
+        "integrationFailureMessages": [
+          "AssertionError: expected 'error' to be 'final' // Object.is equality\n    at /home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiAssistantSession.test.ts:1334:34\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+        ],
+        "rootNormalizedExactMatch": true
+      },
+      {
+        "fullName": "AssistantSession 툴콜 루프 오케스트레이션에서 변경 기대 요청이 0건 비질문으로 끝나면 한 번 재킥해 실행한다",
+        "baselineStatus": "failed",
+        "integrationStatus": "failed",
+        "baselineFailureMessages": [
+          "AssertionError: expected 'error' to be 'final' // Object.is equality\n    at /tmp/st_01a07849-upstream/test/aiAssistantSession.test.ts:1537:34\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+        ],
+        "integrationFailureMessages": [
+          "AssertionError: expected 'error' to be 'final' // Object.is equality\n    at /home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiAssistantSession.test.ts:1537:34\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+        ],
+        "rootNormalizedExactMatch": true
+      },
+      {
+        "fullName": "AssistantSession 툴콜 루프 자가수정: 커밋/검증 실패 → issues 반환 → 재시도 → 성공",
+        "baselineStatus": "failed",
+        "integrationStatus": "failed",
+        "baselineFailureMessages": [
+          "AssertionError: expected 'error' to be 'final' // Object.is equality\n    at /tmp/st_01a07849-upstream/test/aiAssistantSession.test.ts:1205:34\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+        ],
+        "integrationFailureMessages": [
+          "AssertionError: expected 'error' to be 'final' // Object.is equality\n    at /home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiAssistantSession.test.ts:1205:34\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+        ],
+        "rootNormalizedExactMatch": true
+      },
+      {
+        "fullName": "AssistantSession 툴콜 루프 집 3채 NPC 5명 요청에서 집 1채만 제안되면 검수가 완료라고 답해도 missingWarnings로 재투입한다",
+        "baselineStatus": "failed",
+        "integrationStatus": "failed",
+        "baselineFailureMessages": [
+          "AssertionError: expected [ 'plan', 'execute', 'execute', …(2) ] to deeply equal [ 'plan', 'execute', 'review', …(2) ]\n    at /tmp/st_01a07849-upstream/test/aiAssistantSession.test.ts:1489:20\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+        ],
+        "integrationFailureMessages": [
+          "AssertionError: expected [ 'plan', 'execute', 'execute', …(2) ] to deeply equal [ 'plan', 'execute', 'review', …(2) ]\n    at /home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiAssistantSession.test.ts:1489:20\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+        ],
+        "rootNormalizedExactMatch": true
+      },
+      {
+        "fullName": "하네스 관측 오케스트레이션 주입 원문이 감사 로그에 남고 턴 종료 라인에 출력 토큰이 붙는다",
+        "baselineStatus": "failed",
+        "integrationStatus": "failed",
+        "baselineFailureMessages": [
+          "AssertionError: expected undefined to be 'status' // Object.is equality\n    at /tmp/st_01a07849-upstream/test/aiAssistantSession.test.ts:1802:27\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+        ],
+        "integrationFailureMessages": [
+          "AssertionError: expected undefined to be 'status' // Object.is equality\n    at /home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiAssistantSession.test.ts:1802:27\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+        ],
+        "rootNormalizedExactMatch": true
+      }
+    ]
+  },
+  {
+    "file": "worldAiExclusion.test.ts",
+    "shard": 16,
+    "baselineStatus": "failed",
+    "integrationStatus": "failed",
+    "assertions": [
+      {
+        "fullName": "세계관 AI 컨텍스트·경고 배제 세계관이 있어도 villageInfoDocuments는 기존 발췌 경로를 그대로 쓴다",
+        "baselineStatus": "failed",
+        "integrationStatus": "failed",
+        "baselineFailureMessages": [
+          "AssertionError: expected '당신은 브라우저 기반 2D RPG 에디터의 개발 어시스턴트입니다.\\…' to contain '## 게임 스타일 문서(발췌)'\n    at /tmp/st_01a07849-upstream/test/worldAiExclusion.test.ts:125:20\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+        ],
+        "integrationFailureMessages": [
+          "AssertionError: expected '당신은 브라우저 기반 2D RPG 에디터의 개발 어시스턴트입니다.\\…' to contain '## 게임 스타일 문서(발췌)'\n    at /home/main/z-project/rpg-zzu-monster-catalog-0907/test/worldAiExclusion.test.ts:125:20\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+        ],
+        "rootNormalizedExactMatch": true
+      }
+    ]
+  }
+]

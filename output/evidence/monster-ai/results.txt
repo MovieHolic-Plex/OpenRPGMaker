@@ -1,0 +1,69 @@
+
+baseline-related.log
+ Test Files  1 failed | 7 passed (8)
+      Tests  1 failed | 198 passed (199)
+   Duration  81.01s (transform 23.27s, setup 0ms, collect 73.87s, tests 73.45s, environment 2ms, prepare 2.31s)
+
+build-reviewed-catalog.log
+✓ built in 1m 11s
+✓ built in 21.72s
+sdk-manifest: 12 files + 60 runtime assets, artifact 15bd47a994b1916e, source 66a889880cc9e15d, schema v4
+✓ built in 44.65s
+BUILD_EXIT=0
+
+build.log
+✓ built in 1m 17s
+✓ built in 25.75s
+sdk-manifest: 12 files + 60 runtime assets, artifact 15bd47a994b1916e, source 5dc04a4cfe71f7b1, schema v4
+
+final-related.log
+ Test Files  1 failed | 16 passed (17)
+      Tests  1 failed | 312 passed (313)
+   Duration  134.79s (transform 25.08s, setup 0ms, collect 153.40s, tests 91.75s, environment 10ms, prepare 4.77s)
+
+final-reviewed-catalog.log
+ Test Files  1 failed | 17 passed (18)
+      Tests  1 failed | 314 passed (315)
+   Duration  120.33s (transform 30.42s, setup 0ms, collect 136.36s, tests 84.21s, environment 9ms, prepare 4.97s)
+
+foundation-integration.log
+ Test Files  3 failed | 5 passed (8)
+      Tests  3 failed | 87 passed (90)
+   Duration  59.54s (transform 21.17s, setup 0ms, collect 85.02s, tests 21.70s, environment 12ms, prepare 1.66s)
+
+green-new.log
+ Test Files  9 passed (9)
+      Tests  114 passed (114)
+   Duration  82.00s (transform 27.33s, setup 0ms, collect 116.41s, tests 32.31s, environment 6ms, prepare 2.93s)
+
+red-corrected.log
+ Test Files  2 failed (2)
+      Tests  27 failed | 3 passed (30)
+   Duration  32.69s (transform 17.85s, setup 0ms, collect 53.94s, tests 5.21s, environment 1ms, prepare 1.01s)
+
+red-generic-identity.log
+ Test Files  1 failed (1)
+      Tests  21 failed | 3 passed (24)
+   Duration  42.15s (transform 24.26s, setup 0ms, collect 36.45s, tests 4.55s, environment 0ms, prepare 312ms)
+
+red-initial.log
+ Test Files  2 failed (2)
+      Tests  27 failed | 3 passed (30)
+   Duration  33.80s (transform 17.47s, setup 0ms, collect 51.86s, tests 8.85s, environment 1ms, prepare 669ms)
+
+red-mutation-session-gate.log
+ Test Files  1 failed (1)
+      Tests  6 failed | 1 passed (7)
+   Duration  53.18s (transform 23.68s, setup 0ms, collect 35.14s, tests 16.18s, environment 0ms, prepare 351ms)
+
+red-mutation-truncated-index.log
+ Test Files  2 failed (2)
+      Tests  2 failed | 6 skipped (8)
+   Duration  41.21s (transform 22.89s, setup 0ms, collect 71.37s, tests 7.03s, environment 1ms, prepare 495ms)
+
+red-session.log
+ Test Files  1 failed (1)
+      Tests  5 failed | 2 passed (7)
+   Duration  45.10s (transform 22.82s, setup 0ms, collect 34.10s, tests 9.39s, environment 0ms, prepare 283ms)
+
+typecheck-app.log

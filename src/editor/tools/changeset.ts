@@ -4,6 +4,7 @@
 
 import { cloneDetachedDraft } from "@/editor/detachedDraftMemory";
 import { countAudioDescriptionChanges } from "@/project/audioDescriptionChanges";
+import { countMonsterMetadataChanges } from "@/project/monsterMetadata";
 import { projectLint, type LintIssue } from "@/project/lint/projectLint";
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import type { ChangeSummary } from "./types";
@@ -18,6 +19,7 @@ function emptySummary(): ChangeSummary {
     tilesChanged: 0,
     mapPropertiesChanged: 0,
     audioDescriptionsChanged: 0,
+    monsterMetadataChanged: 0,
     eventsAdded: 0,
     eventsModified: 0,
     eventsRemoved: 0,
@@ -193,6 +195,7 @@ export function summarizeChanges(before: Project, after: Project): ChangeSummary
   summary.sessionChanged = JSON.stringify(before.session) !== JSON.stringify(after.session);
   summary.systemChanged = JSON.stringify(before.system) !== JSON.stringify(after.system);
   summary.audioDescriptionsChanged = countAudioDescriptionChanges(before.audioDescriptions, after.audioDescriptions);
+  summary.monsterMetadataChanged = countMonsterMetadataChanges(before.monsterMetadata, after.monsterMetadata);
   return summary;
 }
 

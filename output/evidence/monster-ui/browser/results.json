@@ -1,0 +1,462 @@
+{
+  "browser": "firefox",
+  "viewports": [
+    {
+      "viewport": 375,
+      "width": 351,
+      "height": 760,
+      "left": 12,
+      "top": 70,
+      "overflow": 0
+    },
+    {
+      "viewport": 768,
+      "width": 744,
+      "height": 760,
+      "left": 12,
+      "top": 70,
+      "overflow": 0
+    },
+    {
+      "viewport": 1024,
+      "width": 960,
+      "height": 760,
+      "left": 32,
+      "top": 70,
+      "overflow": 0
+    },
+    {
+      "viewport": 1280,
+      "width": 960,
+      "height": 760,
+      "left": 160,
+      "top": 70,
+      "overflow": 0
+    },
+    {
+      "viewport": 1440,
+      "width": 960,
+      "height": 760,
+      "left": 240,
+      "top": 70,
+      "overflow": 0
+    }
+  ],
+  "captures": [
+    "output/evidence/monster-ui/browser/catalog-375.png",
+    "output/evidence/monster-ui/browser/catalog-768.png",
+    "output/evidence/monster-ui/browser/catalog-1024.png",
+    "output/evidence/monster-ui/browser/catalog-1280.png",
+    "output/evidence/monster-ui/browser/catalog-1440.png",
+    "output/evidence/monster-ui/browser/dirty-empty-search.png",
+    "output/evidence/monster-ui/browser/dirty-close-confirmation.png",
+    "output/evidence/monster-ui/browser/validation-error.png",
+    "output/evidence/monster-ui/browser/applied.png",
+    "output/evidence/monster-ui/browser/project-replaced-draft-retained.png"
+  ],
+  "imageChecks": [
+    {
+      "label": "catalog-375",
+      "images": [
+        {
+          "width": 384,
+          "height": 384,
+          "complete": true
+        }
+      ],
+      "signature": "PNG",
+      "dimensions": {
+        "width": 375,
+        "height": 900
+      }
+    },
+    {
+      "label": "catalog-768",
+      "images": [
+        {
+          "width": 384,
+          "height": 384,
+          "complete": true
+        }
+      ],
+      "signature": "PNG",
+      "dimensions": {
+        "width": 768,
+        "height": 900
+      }
+    },
+    {
+      "label": "catalog-1024",
+      "images": [
+        {
+          "width": 384,
+          "height": 384,
+          "complete": true
+        }
+      ],
+      "signature": "PNG",
+      "dimensions": {
+        "width": 1024,
+        "height": 900
+      }
+    },
+    {
+      "label": "catalog-1280",
+      "images": [
+        {
+          "width": 384,
+          "height": 384,
+          "complete": true
+        }
+      ],
+      "signature": "PNG",
+      "dimensions": {
+        "width": 1280,
+        "height": 900
+      }
+    },
+    {
+      "label": "catalog-1440",
+      "images": [
+        {
+          "width": 384,
+          "height": 384,
+          "complete": true
+        }
+      ],
+      "signature": "PNG",
+      "dimensions": {
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "label": "dirty-empty-search",
+      "images": [
+        {
+          "width": 384,
+          "height": 384,
+          "complete": true
+        }
+      ],
+      "signature": "PNG",
+      "dimensions": {
+        "width": 1280,
+        "height": 900
+      }
+    },
+    {
+      "label": "dirty-close-confirmation",
+      "images": [
+        {
+          "width": 384,
+          "height": 384,
+          "complete": true
+        }
+      ],
+      "signature": "PNG",
+      "dimensions": {
+        "width": 1280,
+        "height": 900
+      }
+    },
+    {
+      "label": "validation-error",
+      "images": [
+        {
+          "width": 384,
+          "height": 384,
+          "complete": true
+        }
+      ],
+      "signature": "PNG",
+      "dimensions": {
+        "width": 1280,
+        "height": 900
+      }
+    },
+    {
+      "label": "applied",
+      "images": [
+        {
+          "width": 384,
+          "height": 384,
+          "complete": true
+        }
+      ],
+      "signature": "PNG",
+      "dimensions": {
+        "width": 1280,
+        "height": 900
+      }
+    },
+    {
+      "label": "project-replaced-draft-retained",
+      "images": [
+        {
+          "width": 384,
+          "height": 384,
+          "complete": true
+        }
+      ],
+      "signature": "PNG",
+      "dimensions": {
+        "width": 1280,
+        "height": 900
+      }
+    }
+  ],
+  "controls": [
+    {
+      "viewport": 375,
+      "field": "name",
+      "width": 139.5,
+      "height": 32,
+      "reachable": true
+    },
+    {
+      "viewport": 375,
+      "field": "tags",
+      "width": 139.5,
+      "height": 72,
+      "reachable": true
+    },
+    {
+      "viewport": 375,
+      "field": "description",
+      "width": 139.5,
+      "height": 113.5,
+      "reachable": true
+    },
+    {
+      "viewport": 375,
+      "field": "apply",
+      "width": 49.93333435058594,
+      "height": 32,
+      "reachable": true
+    },
+    {
+      "viewport": 375,
+      "field": "close",
+      "width": 49.93333435058594,
+      "height": 32,
+      "reachable": true
+    },
+    {
+      "viewport": 768,
+      "field": "name",
+      "width": 209.6666717529297,
+      "height": 32,
+      "reachable": true
+    },
+    {
+      "viewport": 768,
+      "field": "tags",
+      "width": 209.6666717529297,
+      "height": 72,
+      "reachable": true
+    },
+    {
+      "viewport": 768,
+      "field": "description",
+      "width": 209.6666717529297,
+      "height": 113.5,
+      "reachable": true
+    },
+    {
+      "viewport": 768,
+      "field": "apply",
+      "width": 49.93333435058594,
+      "height": 32,
+      "reachable": true
+    },
+    {
+      "viewport": 768,
+      "field": "close",
+      "width": 49.93333435058594,
+      "height": 32,
+      "reachable": true
+    },
+    {
+      "viewport": 1024,
+      "field": "name",
+      "width": 281.66668701171875,
+      "height": 32,
+      "reachable": true
+    },
+    {
+      "viewport": 1024,
+      "field": "tags",
+      "width": 281.66668701171875,
+      "height": 72,
+      "reachable": true
+    },
+    {
+      "viewport": 1024,
+      "field": "description",
+      "width": 281.66668701171875,
+      "height": 113.5,
+      "reachable": true
+    },
+    {
+      "viewport": 1024,
+      "field": "apply",
+      "width": 49.93333435058594,
+      "height": 32,
+      "reachable": true
+    },
+    {
+      "viewport": 1024,
+      "field": "close",
+      "width": 49.93333435058594,
+      "height": 32,
+      "reachable": true
+    },
+    {
+      "viewport": 1280,
+      "field": "name",
+      "width": 281.66668701171875,
+      "height": 32,
+      "reachable": true
+    },
+    {
+      "viewport": 1280,
+      "field": "tags",
+      "width": 281.66668701171875,
+      "height": 72,
+      "reachable": true
+    },
+    {
+      "viewport": 1280,
+      "field": "description",
+      "width": 281.66668701171875,
+      "height": 113.5,
+      "reachable": true
+    },
+    {
+      "viewport": 1280,
+      "field": "apply",
+      "width": 49.93333435058594,
+      "height": 32,
+      "reachable": true
+    },
+    {
+      "viewport": 1280,
+      "field": "close",
+      "width": 49.93333435058594,
+      "height": 32,
+      "reachable": true
+    },
+    {
+      "viewport": 1440,
+      "field": "name",
+      "width": 281.66668701171875,
+      "height": 32,
+      "reachable": true
+    },
+    {
+      "viewport": 1440,
+      "field": "tags",
+      "width": 281.66668701171875,
+      "height": 72,
+      "reachable": true
+    },
+    {
+      "viewport": 1440,
+      "field": "description",
+      "width": 281.66668701171875,
+      "height": 113.5,
+      "reachable": true
+    },
+    {
+      "viewport": 1440,
+      "field": "apply",
+      "width": 49.93333435058594,
+      "height": 32,
+      "reachable": true
+    },
+    {
+      "viewport": 1440,
+      "field": "close",
+      "width": 49.93333435058594,
+      "height": 32,
+      "reachable": true
+    }
+  ],
+  "remoteWrites": [],
+  "pageErrors": [],
+  "failedRequests": [
+    {
+      "path": "/v1/browser/hello",
+      "error": "NS_ERROR_DOM_BAD_URI"
+    },
+    {
+      "path": "/v1/browser/hello",
+      "error": "NS_ERROR_DOM_BAD_URI"
+    },
+    {
+      "path": "/v1/browser/hello",
+      "error": "NS_ERROR_DOM_BAD_URI"
+    },
+    {
+      "path": "/v1/browser/hello",
+      "error": "NS_ERROR_DOM_BAD_URI"
+    },
+    {
+      "path": "/v1/browser/hello",
+      "error": "NS_ERROR_DOM_BAD_URI"
+    },
+    {
+      "path": "/v1/browser/hello",
+      "error": "NS_ERROR_DOM_BAD_URI"
+    },
+    {
+      "path": "/v1/browser/hello",
+      "error": "NS_ERROR_DOM_BAD_URI"
+    },
+    {
+      "path": "/v1/browser/hello",
+      "error": "NS_ERROR_DOM_BAD_URI"
+    },
+    {
+      "path": "/v1/browser/hello",
+      "error": "NS_ERROR_DOM_BAD_URI"
+    },
+    {
+      "path": "/v1/browser/hello",
+      "error": "NS_ERROR_DOM_BAD_URI"
+    }
+  ],
+  "browserErrors": [
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 JSHandle@object",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 JSHandle@object",
+    "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 JSHandle@object",
+    "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 JSHandle@object",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 JSHandle@object",
+    "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 JSHandle@object"
+  ],
+  "httpErrors": [],
+  "stylesheetBytes": 7502870,
+  "behavior": "catalog, empty enemies/search, dirty cancellation, validation, apply, undo/redo, reset, project replacement and cleanup passed",
+  "serverStopped": true
+}

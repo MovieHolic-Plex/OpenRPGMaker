@@ -1,0 +1,243 @@
+[
+  {
+    "file": "test/regionAiHouseTreeNpc.probe.test.ts",
+    "fullName": "region AI house/tree/npc probe live region task LLM: 집과 나무 1개 npc 배치",
+    "classification": "baseline-nonfailed",
+    "baselineAssertionStatus": "passed",
+    "integrationMessages": [
+      "AssertionError: expected false to be true // Object.is equality"
+    ],
+    "baselineMessages": [],
+    "normalizedFullMessagesEqual": false,
+    "integrationFullMessages": [
+      "AssertionError: expected false to be true // Object.is equality\n    at <SOURCE>/test/regionAiHouseTreeNpc.probe.test.ts:211:23\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:752:20"
+    ],
+    "baselineFullMessages": [],
+    "finalClassification": "inconclusive-live-llm",
+    "explanation": "Unchanged test reads .env.local at line 29; guard blocks the read and the test returns without exercising live behavior at lines 122-125. Native status passed is not validation of this assertion. Frozen live failure remains unclassified for regression attribution."
+  },
+  {
+    "file": "test/storePersistence.test.ts",
+    "fullName": "Project store remote persistence does not write to Supabase before the canonical project has loaded",
+    "classification": "message-difference",
+    "baselineAssertionStatus": "failed",
+    "integrationMessages": [
+      "AssertionError: expected \"spy\" to not be called at all, but actually been called 1 times\u001b[90m\n\nReceived: \n\n\u001b[1m  1st spy call:\n\n\u001b[22m    Array [\n      \"/__oprn/edit-activity\",\n      Object {\n        \"body\": \"{\"entries\":[{\"seq\":0,\"at\":\"2026-09-06T22:29:15.454Z\",\"scope\":\"project\",\"label\":null,\"origin\":\"human\",\"generation\":1,\"reason\":\"사람이 편집\"}]}\",\n        \"headers\": Object {\n          \"Content-Type\": \"application/json\",\n        },\n        \"method\": \"POST\",\n      },\n    ]\n\u001b[39m\u001b[90m\n\nNumber of calls: \u001b[1m1\u001b[22m\n\u001b[39m"
+    ],
+    "baselineMessages": [
+      "AssertionError: expected \"spy\" to not be called at all, but actually been called 1 times\u001b[90m\n\nReceived: \n\n\u001b[1m  1st spy call:\n\n\u001b[22m    Array [\n      \"/__oprn/edit-activity\",\n      Object {\n        \"body\": \"{\"entries\":[{\"seq\":0,\"at\":\"2026-09-06T23:29:23.243Z\",\"scope\":\"project\",\"label\":null,\"origin\":\"human\",\"generation\":1,\"reason\":\"사람이 편집\"}]}\",\n        \"headers\": Object {\n          \"Content-Type\": \"application/json\",\n        },\n        \"method\": \"POST\",\n      },\n    ]\n\u001b[39m\u001b[90m\n\nNumber of calls: \u001b[1m1\u001b[22m\n\u001b[39m"
+    ],
+    "normalizedFullMessagesEqual": false,
+    "integrationFullMessages": [
+      "AssertionError: expected \"spy\" to not be called at all, but actually been called 1 times\u001b[90m\n\nReceived: \n\n\u001b[1m  1st spy call:\n\n\u001b[22m    Array [\n      \"/__oprn/edit-activity\",\n      Object {\n        \"body\": \"{\"entries\":[{\"seq\":0,\"at\":\"2026-09-06T22:29:15.454Z\",\"scope\":\"project\",\"label\":null,\"origin\":\"human\",\"generation\":1,\"reason\":\"사람이 편집\"}]}\",\n        \"headers\": Object {\n          \"Content-Type\": \"application/json\",\n        },\n        \"method\": \"POST\",\n      },\n    ]\n\u001b[39m\u001b[90m\n\nNumber of calls: \u001b[1m1\u001b[22m\n\u001b[39m\n    at Proxy.<anonymous> (file://<NODE_MODULES>/@vitest/expect/dist/index.js:1335:10)\n    at Proxy.<anonymous> (file://<NODE_MODULES>/@vitest/expect/dist/index.js:1029:14)\n    at Proxy.methodWrapper (file://<NODE_MODULES>/chai/index.js:1686:25)\n    at <SOURCE>/test/storePersistence.test.ts:35:26\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:752:20"
+    ],
+    "baselineFullMessages": [
+      "AssertionError: expected \"spy\" to not be called at all, but actually been called 1 times\u001b[90m\n\nReceived: \n\n\u001b[1m  1st spy call:\n\n\u001b[22m    Array [\n      \"/__oprn/edit-activity\",\n      Object {\n        \"body\": \"{\"entries\":[{\"seq\":0,\"at\":\"2026-09-06T23:29:23.243Z\",\"scope\":\"project\",\"label\":null,\"origin\":\"human\",\"generation\":1,\"reason\":\"사람이 편집\"}]}\",\n        \"headers\": Object {\n          \"Content-Type\": \"application/json\",\n        },\n        \"method\": \"POST\",\n      },\n    ]\n\u001b[39m\u001b[90m\n\nNumber of calls: \u001b[1m1\u001b[22m\n\u001b[39m\n    at Proxy.<anonymous> (file://<NODE_MODULES>/@vitest/expect/dist/index.js:1335:10)\n    at Proxy.<anonymous> (file://<NODE_MODULES>/@vitest/expect/dist/index.js:1029:14)\n    at Proxy.methodWrapper (file://<NODE_MODULES>/chai/index.js:1686:25)\n    at <SOURCE>/test/storePersistence.test.ts:35:26\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:752:20"
+    ],
+    "configuredControl": {
+      "report": "configured-control.json",
+      "status": "failed",
+      "messages": [
+        "AssertionError: expected \"spy\" to not be called at all, but actually been called 1 times\u001b[90m\n\nReceived: \n\n\u001b[1m  1st spy call:\n\n\u001b[22m    Array [\n      \"/__oprn/edit-activity\",\n      Object {\n        \"body\": \"{\"entries\":[{\"seq\":0,\"at\":\"2026-09-06T23:31:54.898Z\",\"scope\":\"project\",\"label\":null,\"origin\":\"human\",\"generation\":1,\"reason\":\"사람이 편집\"}]}\",\n        \"headers\": Object {\n          \"Content-Type\": \"application/json\",\n        },\n        \"method\": \"POST\",\n      },\n    ]\n\u001b[39m\u001b[90m\n\nNumber of calls: \u001b[1m1\u001b[22m\n\u001b[39m"
+      ],
+      "normalizedFullMessages": [
+        "AssertionError: expected \"spy\" to not be called at all, but actually been called 1 times\u001b[90m\n\nReceived: \n\n\u001b[1m  1st spy call:\n\n\u001b[22m    Array [\n      \"/__oprn/edit-activity\",\n      Object {\n        \"body\": \"{\"entries\":[{\"seq\":0,\"at\":\"2026-09-06T23:31:54.898Z\",\"scope\":\"project\",\"label\":null,\"origin\":\"human\",\"generation\":1,\"reason\":\"사람이 편집\"}]}\",\n        \"headers\": Object {\n          \"Content-Type\": \"application/json\",\n        },\n        \"method\": \"POST\",\n      },\n    ]\n\u001b[39m\u001b[90m\n\nNumber of calls: \u001b[1m1\u001b[22m\n\u001b[39m\n    at Proxy.<anonymous> (file://<NODE_MODULES>/@vitest/expect/dist/index.js:1335:10)\n    at Proxy.<anonymous> (file://<NODE_MODULES>/@vitest/expect/dist/index.js:1029:14)\n    at Proxy.methodWrapper (file://<NODE_MODULES>/chai/index.js:1686:25)\n    at <SOURCE>/test/storePersistence.test.ts:35:26\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:752:20"
+      ]
+    },
+    "finalClassification": "preexisting-clock-only-difference",
+    "explanation": "Raw messages differ only in the edit-activity body entries[].at ISO timestamp. All other bytes, call count, method, URL and payload fields match. Raw messages remain retained."
+  },
+  {
+    "file": "test/storePersistence.test.ts",
+    "fullName": "Project store remote persistence always creates a new fresh project instead of reloading local dev overrides",
+    "classification": "message-difference",
+    "baselineAssertionStatus": "failed",
+    "integrationMessages": [
+      "TypeError: Cannot read properties of undefined (reading 'ok')"
+    ],
+    "baselineMessages": [
+      "DbConnectionRequiredError: 온라인 저장 설정이 필요합니다."
+    ],
+    "normalizedFullMessagesEqual": false,
+    "integrationFullMessages": [
+      "TypeError: Cannot read properties of undefined (reading 'ok')\n    at loadProjectSnapshotFromSupabase (<SOURCE>/src/project/supabaseProjectSync.ts:234:17)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromSupabase (<SOURCE>/src/project/supabaseProjectSync.ts:155:20)\n    at ProjectStore.load (<SOURCE>/src/project/store.ts:281:27)\n    at <SOURCE>/test/storePersistence.test.ts:91:21\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:752:20"
+    ],
+    "baselineFullMessages": [
+      "DbConnectionRequiredError: 온라인 저장 설정이 필요합니다.\n    at ProjectStore.load (<SOURCE>/src/project/store.ts:278:17)\n    at <SOURCE>/test/storePersistence.test.ts:91:33\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:752:20"
+    ],
+    "configuredControl": {
+      "report": "configured-control.json",
+      "status": "failed",
+      "messages": [
+        "TypeError: Cannot read properties of undefined (reading 'ok')"
+      ],
+      "normalizedFullMessages": [
+        "TypeError: Cannot read properties of undefined (reading 'ok')\n    at loadProjectSnapshotFromSupabase (<SOURCE>/src/project/supabaseProjectSync.ts:233:17)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromSupabase (<SOURCE>/src/project/supabaseProjectSync.ts:154:20)\n    at ProjectStore.load (<SOURCE>/src/project/store.ts:280:27)\n    at <SOURCE>/test/storePersistence.test.ts:91:21\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:752:20"
+      ]
+    },
+    "finalClassification": "preexisting-exact-configured-control",
+    "explanation": "Exact error message reproduced with synthetic DB configuration literals already used in the unchanged tests; no network allowed."
+  },
+  {
+    "file": "test/storePersistence.test.ts",
+    "fullName": "Project store remote persistence saves and reloads local edits for dev showcase projects without Supabase",
+    "classification": "message-difference",
+    "baselineAssertionStatus": "failed",
+    "integrationMessages": [
+      "TypeError: Cannot read properties of undefined (reading 'ok')"
+    ],
+    "baselineMessages": [
+      "DbConnectionRequiredError: 온라인 저장 설정이 필요합니다."
+    ],
+    "normalizedFullMessagesEqual": false,
+    "integrationFullMessages": [
+      "TypeError: Cannot read properties of undefined (reading 'ok')\n    at loadProjectSnapshotFromSupabase (<SOURCE>/src/project/supabaseProjectSync.ts:234:17)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromSupabase (<SOURCE>/src/project/supabaseProjectSync.ts:155:20)\n    at ProjectStore.load (<SOURCE>/src/project/store.ts:281:27)\n    at <SOURCE>/test/storePersistence.test.ts:119:5\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:752:20"
+    ],
+    "baselineFullMessages": [
+      "DbConnectionRequiredError: 온라인 저장 설정이 필요합니다.\n    at ProjectStore.load (<SOURCE>/src/project/store.ts:278:17)\n    at <SOURCE>/test/storePersistence.test.ts:119:29\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:752:20"
+    ],
+    "configuredControl": {
+      "report": "configured-control.json",
+      "status": "failed",
+      "messages": [
+        "TypeError: Cannot read properties of undefined (reading 'ok')"
+      ],
+      "normalizedFullMessages": [
+        "TypeError: Cannot read properties of undefined (reading 'ok')\n    at loadProjectSnapshotFromSupabase (<SOURCE>/src/project/supabaseProjectSync.ts:233:17)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromSupabase (<SOURCE>/src/project/supabaseProjectSync.ts:154:20)\n    at ProjectStore.load (<SOURCE>/src/project/store.ts:280:27)\n    at <SOURCE>/test/storePersistence.test.ts:119:5\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:752:20"
+      ]
+    },
+    "finalClassification": "preexisting-exact-configured-control",
+    "explanation": "Exact error message reproduced with synthetic DB configuration literals already used in the unchanged tests; no network allowed."
+  },
+  {
+    "file": "test/storePersistence.test.ts",
+    "fullName": "Project store remote persistence reports why DB persistence is unavailable for local dev showcase projects",
+    "classification": "message-difference",
+    "baselineAssertionStatus": "failed",
+    "integrationMessages": [
+      "SupabaseProjectSyncError: {\n  \"message\":\"Invalid authentication credentials\"\n}"
+    ],
+    "baselineMessages": [
+      "Error: Read-only classifier: real network prohibited"
+    ],
+    "normalizedFullMessagesEqual": false,
+    "integrationFullMessages": [
+      "SupabaseProjectSyncError: {\n  \"message\":\"Invalid authentication credentials\"\n}\n    at loadProjectSnapshotFromSupabase (<SOURCE>/src/project/supabaseProjectSync.ts:235:11)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromSupabase (<SOURCE>/src/project/supabaseProjectSync.ts:155:20)\n    at ProjectStore.load (<SOURCE>/src/project/store.ts:281:27)\n    at <SOURCE>/test/storePersistence.test.ts:151:5\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:752:20"
+    ],
+    "baselineFullMessages": [
+      "Error: Read-only classifier: real network prohibited\n    at blocked (file:///tmp/st_01a079-existing/guard.mjs:36:134)\n    at globalThis.fetch (file:///tmp/st_01a079-existing/guard.mjs:37:39)\n    at loadProjectSnapshotFromSupabase (<SOURCE>/src/project/supabaseProjectSync.ts:229:26)\n    at loadProjectFromSupabase (<SOURCE>/src/project/supabaseProjectSync.ts:154:26)\n    at ProjectStore.load (<SOURCE>/src/project/store.ts:280:33)\n    at <SOURCE>/test/storePersistence.test.ts:151:17\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:752:20"
+    ],
+    "configuredControl": {
+      "report": "configured-control.json",
+      "status": "failed",
+      "messages": [
+        "Error: Read-only classifier: real network prohibited"
+      ],
+      "normalizedFullMessages": [
+        "Error: Read-only classifier: real network prohibited\n    at blocked (file:///tmp/st_01a079-existing/guard.mjs:36:134)\n    at globalThis.fetch (file:///tmp/st_01a079-existing/guard.mjs:37:39)\n    at loadProjectSnapshotFromSupabase (<SOURCE>/src/project/supabaseProjectSync.ts:229:26)\n    at loadProjectFromSupabase (<SOURCE>/src/project/supabaseProjectSync.ts:154:26)\n    at ProjectStore.load (<SOURCE>/src/project/store.ts:280:33)\n    at <SOURCE>/test/storePersistence.test.ts:151:17\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:752:20"
+      ]
+    },
+    "finalClassification": "inconclusive-db-environment",
+    "explanation": "Pristine load() reaches the DB configuration/network boundary before the frozen assertion. DevProjectFactory is not installed by these unchanged tests; store.load() does not select local mode merely from URL flags. No DB access or credentials used, so exact frozen downstream failure cannot be reproduced safely within this task."
+  },
+  {
+    "file": "test/storePersistence.test.ts",
+    "fullName": "Project store remote persistence skips remote flush when there are no unsaved changes",
+    "classification": "baseline-nonfailed",
+    "baselineAssertionStatus": "passed",
+    "integrationMessages": [
+      "AssertionError: expected \"spy\" to not be called at all, but actually been called 1 times\u001b[90m\n\nReceived: \n\n\u001b[1m  1st spy call:\n\n\u001b[22m    Array [\n      \"/__oprn/edit-activity\",\n      Object {\n        \"body\": \"{\"entries\":[{\"seq\":0,\"at\":\"2026-09-06T22:29:25.996Z\",\"scope\":\"system\",\"label\":\"프로젝트 정규화 (1종)\",\"origin\":\"system\",\"generation\":0,\"fields\":[{\"path\":\"bundledTilesets\",\"after\":true}],\"reason\":\"사람이 편집: 프로젝트 정규화 (1종)\"}]}\",\n        \"headers\": Object {\n          \"Content-Type\": \"application/json\",\n        },\n        \"method\": \"POST\",\n      },\n    ]\n\u001b[39m\u001b[90m\n\nNumber of calls: \u001b[1m1\u001b[22m\n\u001b[39m"
+    ],
+    "baselineMessages": [],
+    "normalizedFullMessagesEqual": false,
+    "integrationFullMessages": [
+      "AssertionError: expected \"spy\" to not be called at all, but actually been called 1 times\u001b[90m\n\nReceived: \n\n\u001b[1m  1st spy call:\n\n\u001b[22m    Array [\n      \"/__oprn/edit-activity\",\n      Object {\n        \"body\": \"{\"entries\":[{\"seq\":0,\"at\":\"2026-09-06T22:29:25.996Z\",\"scope\":\"system\",\"label\":\"프로젝트 정규화 (1종)\",\"origin\":\"system\",\"generation\":0,\"fields\":[{\"path\":\"bundledTilesets\",\"after\":true}],\"reason\":\"사람이 편집: 프로젝트 정규화 (1종)\"}]}\",\n        \"headers\": Object {\n          \"Content-Type\": \"application/json\",\n        },\n        \"method\": \"POST\",\n      },\n    ]\n\u001b[39m\u001b[90m\n\nNumber of calls: \u001b[1m1\u001b[22m\n\u001b[39m\n    at Proxy.<anonymous> (file://<NODE_MODULES>/@vitest/expect/dist/index.js:1335:10)\n    at Proxy.<anonymous> (file://<NODE_MODULES>/@vitest/expect/dist/index.js:1029:14)\n    at Proxy.methodWrapper (file://<NODE_MODULES>/chai/index.js:1686:25)\n    at <SOURCE>/test/storePersistence.test.ts:254:26\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:752:20"
+    ],
+    "baselineFullMessages": [],
+    "configuredControl": {
+      "report": "configured-control.json",
+      "status": "failed",
+      "messages": [
+        "AssertionError: expected \"spy\" to not be called at all, but actually been called 1 times\u001b[90m\n\nReceived: \n\n\u001b[1m  1st spy call:\n\n\u001b[22m    Array [\n      \"/__oprn/edit-activity\",\n      Object {\n        \"body\": \"{\"entries\":[{\"seq\":0,\"at\":\"2026-09-06T23:32:05.126Z\",\"scope\":\"system\",\"label\":\"프로젝트 정규화 (1종)\",\"origin\":\"system\",\"generation\":0,\"fields\":[{\"path\":\"bundledTilesets\",\"after\":true}],\"reason\":\"사람이 편집: 프로젝트 정규화 (1종)\"}]}\",\n        \"headers\": Object {\n          \"Content-Type\": \"application/json\",\n        },\n        \"method\": \"POST\",\n      },\n    ]\n\u001b[39m\u001b[90m\n\nNumber of calls: \u001b[1m1\u001b[22m\n\u001b[39m"
+      ],
+      "normalizedFullMessages": [
+        "AssertionError: expected \"spy\" to not be called at all, but actually been called 1 times\u001b[90m\n\nReceived: \n\n\u001b[1m  1st spy call:\n\n\u001b[22m    Array [\n      \"/__oprn/edit-activity\",\n      Object {\n        \"body\": \"{\"entries\":[{\"seq\":0,\"at\":\"2026-09-06T23:32:05.126Z\",\"scope\":\"system\",\"label\":\"프로젝트 정규화 (1종)\",\"origin\":\"system\",\"generation\":0,\"fields\":[{\"path\":\"bundledTilesets\",\"after\":true}],\"reason\":\"사람이 편집: 프로젝트 정규화 (1종)\"}]}\",\n        \"headers\": Object {\n          \"Content-Type\": \"application/json\",\n        },\n        \"method\": \"POST\",\n      },\n    ]\n\u001b[39m\u001b[90m\n\nNumber of calls: \u001b[1m1\u001b[22m\n\u001b[39m\n    at Proxy.<anonymous> (file://<NODE_MODULES>/@vitest/expect/dist/index.js:1335:10)\n    at Proxy.<anonymous> (file://<NODE_MODULES>/@vitest/expect/dist/index.js:1029:14)\n    at Proxy.methodWrapper (file://<NODE_MODULES>/chai/index.js:1686:25)\n    at <SOURCE>/test/storePersistence.test.ts:254:26\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:752:20"
+      ]
+    },
+    "finalClassification": "preexisting-clock-only-difference",
+    "explanation": "Raw messages differ only in the edit-activity body entries[].at ISO timestamp. All other bytes, call count, method, URL and payload fields match. Raw messages remain retained."
+  },
+  {
+    "file": "test/unsavedChangesGuard.test.ts",
+    "fullName": "store.hasUnsavedChanges devProject 모드: 변경→true, flush(로컬 기록)→false",
+    "classification": "message-difference",
+    "baselineAssertionStatus": "failed",
+    "integrationMessages": [
+      "AssertionError: expected 'saved' to be 'saved-local' // Object.is equality"
+    ],
+    "baselineMessages": [
+      "DbConnectionRequiredError: 온라인 저장 설정이 필요합니다."
+    ],
+    "normalizedFullMessagesEqual": false,
+    "integrationFullMessages": [
+      "AssertionError: expected 'saved' to be 'saved-local' // Object.is equality\n    at <SOURCE>/test/unsavedChangesGuard.test.ts:39:26\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:752:20"
+    ],
+    "baselineFullMessages": [
+      "DbConnectionRequiredError: 온라인 저장 설정이 필요합니다.\n    at ProjectStore.load (<SOURCE>/src/project/store.ts:278:17)\n    at <SOURCE>/test/unsavedChangesGuard.test.ts:30:17\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:752:20"
+    ],
+    "finalClassification": "inconclusive-db-environment",
+    "explanation": "Pristine load() reaches the DB configuration/network boundary before the frozen assertion. DevProjectFactory is not installed by these unchanged tests; store.load() does not select local mode merely from URL flags. No DB access or credentials used, so exact frozen downstream failure cannot be reproduced safely within this task."
+  },
+  {
+    "file": "test/unsavedChangesGuard.test.ts",
+    "fullName": "store.hasUnsavedChanges freshProject(저장 스킵) 모드: flush가 saved-local이어도 미저장으로 남는다",
+    "classification": "message-difference",
+    "baselineAssertionStatus": "failed",
+    "integrationMessages": [
+      "AssertionError: expected 'saved' to be 'saved-local' // Object.is equality"
+    ],
+    "baselineMessages": [
+      "DbConnectionRequiredError: 온라인 저장 설정이 필요합니다."
+    ],
+    "normalizedFullMessagesEqual": false,
+    "integrationFullMessages": [
+      "AssertionError: expected 'saved' to be 'saved-local' // Object.is equality\n    at <SOURCE>/test/unsavedChangesGuard.test.ts:58:26\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:752:20"
+    ],
+    "baselineFullMessages": [
+      "DbConnectionRequiredError: 온라인 저장 설정이 필요합니다.\n    at ProjectStore.load (<SOURCE>/src/project/store.ts:278:17)\n    at <SOURCE>/test/unsavedChangesGuard.test.ts:49:17\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:752:20"
+    ],
+    "finalClassification": "inconclusive-db-environment",
+    "explanation": "Pristine load() reaches the DB configuration/network boundary before the frozen assertion. DevProjectFactory is not installed by these unchanged tests; store.load() does not select local mode merely from URL flags. No DB access or credentials used, so exact frozen downstream failure cannot be reproduced safely within this task."
+  },
+  {
+    "file": "test/uxcEditorShell.test.ts",
+    "fullName": "UXC D30 새 이벤트 모달 상태 새 이벤트 모달 제목과 취소 안내에 자동 저장/복구 상태를 표시한다",
+    "classification": "message-difference",
+    "baselineAssertionStatus": "failed",
+    "integrationMessages": [
+      "AssertionError: expected '빈 맵2, 2새 이벤트 · 취소 시 삭제 · 자동 저장 · 저장 준…' to contain '새 이벤트 (저장 전)'"
+    ],
+    "baselineMessages": [
+      "AssertionError: expected '빈 맵2, 2새 이벤트 · 취소 시 삭제 · 자동 저장 · 저장소 …' to contain '새 이벤트 (저장 전)'"
+    ],
+    "normalizedFullMessagesEqual": false,
+    "integrationFullMessages": [
+      "AssertionError: expected '빈 맵2, 2새 이벤트 · 취소 시 삭제 · 자동 저장 · 저장 준…' to contain '새 이벤트 (저장 전)'\n    at <SOURCE>/test/uxcEditorShell.test.ts:267:76\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+    ],
+    "baselineFullMessages": [
+      "AssertionError: expected '빈 맵2, 2새 이벤트 · 취소 시 삭제 · 자동 저장 · 저장소 …' to contain '새 이벤트 (저장 전)'\n    at <SOURCE>/test/uxcEditorShell.test.ts:267:76\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+    ],
+    "configuredControl": {
+      "report": "configured-control.json",
+      "status": "failed",
+      "messages": [
+        "AssertionError: expected '빈 맵2, 2새 이벤트 · 취소 시 삭제 · 자동 저장 · 저장 준…' to contain '새 이벤트 (저장 전)'"
+      ],
+      "normalizedFullMessages": [
+        "AssertionError: expected '빈 맵2, 2새 이벤트 · 취소 시 삭제 · 자동 저장 · 저장 준…' to contain '새 이벤트 (저장 전)'\n    at <SOURCE>/test/uxcEditorShell.test.ts:267:76\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    },
+    "finalClassification": "preexisting-exact-configured-control",
+    "explanation": "Exact error message reproduced with synthetic DB configuration literals already used in the unchanged tests; no network allowed."
+  }
+]

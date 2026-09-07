@@ -34,3 +34,67 @@
     color: var(--text-1);
   }
 }
+
+/* Monster-resource worksheet: nested modal chrome, not gameplay workbench geometry. */
+.database-modal-backdrop:has(> .db-monster-resource-dialog) { z-index: var(--z-popover-high); }
+.database-modal-backdrop .database-modal-window.db-monster-resource-dialog {
+  /* Shared controls also render outside the parent-only db-shared-workspace. */
+  --db2-control-h: var(--space-6);
+  --db2-radius-control: var(--radius-m);
+  --db2-radius-card: var(--radius-m);
+  --db2-label-col: minmax(0, 1fr);
+  width: min(960px, calc(100vw - var(--space-4)));
+  height: min(760px, calc(100dvh - var(--space-4)));
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  background: var(--bg-raised);
+  color: var(--text-1);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-popover);
+  font: 13px/1.5 var(--font-ui);
+}
+.db-monster-resource-dialog > header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border-default);
+}
+.db-monster-resource-dialog h2 { font-size: 18px; margin: 0; }
+.database-modal-backdrop .database-modal-window.db-monster-resource-dialog .database-modal-body { min-height: 0; overflow: hidden; }
+.database-modal-backdrop .database-modal-window.db-monster-resource-dialog .database-modal-body .db-ws { flex: 1; height: 100%; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: var(--space-2); }
+.database-modal-backdrop .database-modal-window.db-monster-resource-dialog .database-modal-body .db-ws-detail { grid-template-rows: minmax(0, 1fr); }
+.db-monster-resource-dialog .db-ws-list { overflow: auto; min-height: 0; }
+.db-monster-resource-dialog .db-ws-detail-body { overflow: auto; min-height: 0; }
+.db-monster-resource-dialog input,
+.db-monster-resource-dialog textarea {
+  width: 100%;
+  min-width: 0;
+  min-height: var(--space-6);
+  background: var(--bg-raised);
+  color: var(--text-1);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  padding: var(--space-2);
+  font: inherit;
+}
+.db-monster-resource-dialog textarea { resize: vertical; }
+.db-monster-resource-dialog .btn { min-height: var(--space-6); flex: 0 0 auto; }
+.db-monster-resource-dialog :focus-visible { outline: var(--focus-outline); outline-offset: 2px; }
+.database-modal-backdrop .database-modal-window.db-monster-resource-dialog .db-field { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-1); }
+.db-monster-resource-dialog .db-ws-card-body { display: grid; gap: var(--space-3); }
+.db-monster-resource-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.db-monster-resource-identity { min-width: 0; overflow-wrap: anywhere; }
+.db-monster-resource-identity p,
+.db-monster-resource-summary { color: var(--text-2); font-size: 12px; }
+.db-monster-resource-preview { height: 160px; display: grid; grid-template-rows: minmax(0, 1fr); grid-template-columns: minmax(0, 1fr); place-items: center; background: var(--bg-inset); border-radius: var(--radius-s); }
+.db-monster-resource-preview img { width: 100%; height: 100%; min-width: 0; min-height: 0; object-fit: contain; image-rendering: pixelated; }
+.db-monster-resource-dialog .db-list-thumb { width: var(--space-6); height: var(--space-6); flex-shrink: 0; }
+.db-monster-resource-summary { display: grid; gap: var(--space-1); overflow-wrap: anywhere; }
+.db-monster-resource-summary p { white-space: pre-wrap; margin: 0; }
+@media (max-width: 600px) {
+  .database-modal-backdrop .database-modal-window.db-monster-resource-dialog .database-modal-body .db-ws { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 192px) minmax(0, 1fr); }
+  .database-modal-backdrop .database-modal-window.db-monster-resource-dialog .database-modal-body .db-ws-list-pane { width: auto; min-width: 0; }
+}

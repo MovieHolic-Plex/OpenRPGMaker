@@ -1,0 +1,35 @@
+{
+  "redCalls": 49,
+  "greenCalls": 49,
+  "greenAccepted": 49,
+  "allOtherArgumentsAndOptionsUnchanged": true,
+  "sourceIdenticalAfterRemovingOneFieldExpression": true,
+  "assertionsUnchanged": true,
+  "changes": [
+    {
+      "ordinal": 15,
+      "name": "upsert_enemy",
+      "before": {
+        "enemy": {
+          "id": "en_bee",
+          "name": "말벌",
+          "stats": {
+            "maxHp": 70,
+            "attack": 60
+          }
+        }
+      },
+      "after": {
+        "enemy": {
+          "id": "en_bee",
+          "name": "말벌",
+          "monsterResourceId": "generated-enemy-sylph-hornet",
+          "stats": {
+            "maxHp": 70,
+            "attack": 60
+          }
+        }
+      }
+    }
+  ]
+}

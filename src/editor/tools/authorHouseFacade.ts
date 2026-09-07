@@ -107,6 +107,7 @@ function toolDiff(diff: ChangeSummary | undefined): ConstructionDiffTotals {
     palettePresetsModified: diff?.palettePresetsModified ?? 0,
     endingsChanged: diff?.endingsChanged ?? 0,
     audioDescriptionsChanged: diff?.audioDescriptionsChanged ?? 0,
+    monsterMetadataChanged: diff?.monsterMetadataChanged ?? 0,
     sessionChanged: diff?.sessionChanged ?? false,
     systemChanged: diff?.systemChanged ?? false,
   };

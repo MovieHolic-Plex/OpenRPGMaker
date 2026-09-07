@@ -1,0 +1,74 @@
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-monster-catalog-0907
+
+ ✓ test/originalContext.test.ts (19 tests) 1605ms
+ ✓ test/assistantOriginalContext.test.ts (5 tests) 5129ms
+   ✓ grounded first working request > delivers complete target originals and grants only their real read evidence before the first write  1500ms
+   ✓ grounded first working request > makes a missing explicit target visible rather than grounding on the start map  309ms
+   ✓ session original snapshot lifecycle > pages an oversized original through the actual session tool and waits for delivered full evidence  2108ms
+   ✓ session original snapshot lifecycle > retains original identity over continuation, recaptures a new request and keeps ask mode read-only  851ms
+   ✓ session original snapshot lifecycle > stops before calling a provider when the actual native model window cannot fit the full catalog  358ms
+ ✓ test/monsterAppearanceAssetIdentity.test.ts (21 tests) 13706ms
+   ✓ 'upsert_enemy' image identity authorization > rejects stale 'get_monster_resource' evidence when image bytes change at the same ID  697ms
+   ✓ 'upsert_enemy' image identity authorization > rejects stale 'list_monster_resources' evidence when image bytes change at the same ID  508ms
+   ✓ 'upsert_enemy' image identity authorization > rejects a changed assignment using an old image read  733ms
+   ✓ 'upsert_enemy' image identity authorization > accepts a fresh full 'get_monster_resource' read after image replacement  524ms
+   ✓ 'upsert_enemy' image identity authorization > accepts a fresh full 'list_monster_resources' read after image replacement  511ms
+   ✓ 'upsert_enemy' image identity authorization > preserves unchanged art edits even after the underlying upload changes  818ms
+   ✓ 'define_monster_species' image identity authorization > rejects stale 'get_monster_resource' evidence when image bytes change at the same ID  550ms
+   ✓ 'define_monster_species' image identity authorization > rejects stale 'list_monster_resources' evidence when image bytes change at the same ID  473ms
+   ✓ 'define_monster_species' image identity authorization > rejects a changed assignment using an old image read  733ms
+   ✓ 'define_monster_species' image identity authorization > accepts a fresh full 'get_monster_resource' read after image replacement  489ms
+   ✓ 'define_monster_species' image identity authorization > accepts a fresh full 'list_monster_resources' read after image replacement  454ms
+   ✓ 'define_monster_species' image identity authorization > preserves unchanged art edits even after the underlying upload changes  682ms
+   ✓ 'make_action_enemy' image identity authorization > rejects stale 'get_monster_resource' evidence when image bytes change at the same ID  511ms
+   ✓ 'make_action_enemy' image identity authorization > rejects stale 'list_monster_resources' evidence when image bytes change at the same ID  473ms
+   ✓ 'make_action_enemy' image identity authorization > rejects a changed assignment using an old image read  719ms
+   ✓ 'make_action_enemy' image identity authorization > accepts a fresh full 'get_monster_resource' read after image replacement  551ms
+   ✓ 'make_action_enemy' image identity authorization > accepts a fresh full 'list_monster_resources' read after image replacement  469ms
+   ✓ 'make_action_enemy' image identity authorization > preserves unchanged art edits even after the underlying upload changes  719ms
+   ✓ keeps stat-only updates valid without image evidence  911ms
+   ✓ rejects stale image identity and recovers after a new full read in the actual session  1906ms
+ ✓ test/assistantReadContract.test.ts (5 tests) 2737ms
+   ✓ 실제 도구 결과에 기반한 조회 선행 > 조회 실패 응답의 후속 쓰기는 실행하지 않고, 다음 응답에서 재조회 후 복구한다  1043ms
+   ✓ 실제 도구 결과에 기반한 조회 선행 > 전달된 원본은 첫 쓰기를 허용하고, 변경 뒤 재조회는 다음 응답에서만 현재 값 근거가 된다  1166ms
+ ✓ test/monsterAppearanceAdversarial.test.ts (40 tests) 3166ms
+   ✓ 'upsert_enemy' adversarial appearance boundary > accepts intentional custom names without persisting appearanceTags  317ms
+ ✓ test/assistantDependencyRetry.test.ts (16 tests) 37109ms
+   ✓ batch prerequisites through AssistantSession > defers failed-map writes without poisoning successTools or retries (old spec=false)  2429ms
+   ✓ batch prerequisites through AssistantSession > defers failed-map writes without poisoning successTools or retries (old spec=true)  1727ms
+   ✓ batch prerequisites through AssistantSession > a corrected spec resumes spatial execution (later batch=false)  1870ms
+   ✓ batch prerequisites through AssistantSession > a corrected spec resumes spatial execution (later batch=true)  1625ms
+   ✓ batch prerequisites through AssistantSession > failed record creation defers only ID dependents, then creation/read/correction succeeds (read contract=false)  2528ms
+   ✓ batch prerequisites through AssistantSession > failed record creation defers only ID dependents, then creation/read/correction succeeds (read contract=true)  2328ms
+   ✓ batch prerequisites through AssistantSession > defers new-record dependents transitively without charging their retries (read contract=false)  3250ms
+   ✓ batch prerequisites through AssistantSession > defers new-record dependents transitively without charging their retries (read contract=true)  2870ms
+   ✓ batch prerequisites through AssistantSession > keeps an existing record available after its update is deferred  1894ms
+   ✓ batch prerequisites through AssistantSession > keeps an existing record available after its update is failed  2059ms
+   ✓ batch prerequisites through AssistantSession > keeps the failed-read whole-batch contract and excludes deferred writes from the failure budget  1299ms
+   ✓ stable target retry budgets through AssistantSession > bounds fresh-batch lookup refusals without claiming they executed  1792ms
+   ✓ stable target retry budgets through AssistantSession > does not charge downstream same-batch refusals against their independent retry target  2340ms
+   ✓ stable target retry budgets through AssistantSession > bounds spelling and page-path variations despite unrelated writes and synthetic continuations, then rearms for a real user  4853ms
+   ✓ stable target retry budgets through AssistantSession > successful correction resets that target's accumulated failures  2410ms
+   ✓ stable target retry budgets through AssistantSession > does not execute attempts beyond the bound even within one model batch  1832ms
+ ✓ test/monsterAppearanceHttp.test.ts (1 test) 1366ms
+   ✓ carries the entire index and full selected metadata over the real HTTP completion transport  1364ms
+ ✓ test/monsterAppearanceTransport.test.ts (3 tests) 258ms
+ ✓ test/monsterAppearanceIdentity.test.ts (24 tests) 1340ms
+ ✓ test/monsterAppearanceSession.test.ts (7 tests) 8864ms
+   ✓ 'upsert_enemy' actual assistant appearance flow > blocks unseen same-batch reads then accepts an observed full read with a custom boss name  1538ms
+   ✓ 'upsert_enemy' actual assistant appearance flow > rejects goblin intent paired with observed slime art  1102ms
+   ✓ 'define_monster_species' actual assistant appearance flow > blocks unseen same-batch reads then accepts an observed full read with a custom boss name  1256ms
+   ✓ 'define_monster_species' actual assistant appearance flow > rejects goblin intent paired with observed slime art  1112ms
+   ✓ 'make_action_enemy' actual assistant appearance flow > blocks unseen same-batch reads then accepts an observed full read with a custom boss name  1345ms
+   ✓ 'make_action_enemy' actual assistant appearance flow > rejects goblin intent paired with observed slime art  1204ms
+   ✓ delivers the complete index and full metadata through actual model-facing serialization  1302ms
+ ✓ test/monsterAppearanceEvidence.test.ts (12 tests) 605ms
+ ✓ test/monsterAiAccounting.test.ts (3 tests) 397ms
+
+ Test Files  12 passed (12)
+      Tests  156 passed (156)
+   Start at  08:17:39
+   Duration  65.67s (transform 10.52s, setup 0ms, collect 45.50s, tests 76.28s, environment 3ms, prepare 1.41s)
+
+JSON report written to /home/main/z-project/rpg-zzu-monster-catalog-0907/output/evidence/monster-catalog/dependency-fix/green.json
