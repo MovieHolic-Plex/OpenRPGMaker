@@ -16,10 +16,19 @@ Opaque-ID compatibility follow-up:
 | Community `npm run build -- --webpack`, including verify-only prebuild | Exit 0 |
 | Actual protected editor export/gameplay QA | Eight rows passed; exit 0 |
 | Actual protected RPG community upload/gameplay/download | Exit 0; exact download and save/reload confirmed |
+| Expanded final related Vitest suite | 197 passed, 0 failed; exit 0 |
+| Final Node artifact, QA, PostgreSQL and browser suite with concurrency 4 | 128 passed, 0 failed, 0 skipped; exit 0 |
 
 The ordinary community pipeline stopped at Next's known Turbopack worktree
 symlink error. The supported webpack invocation still ran the normal
 verify-player prebuild; no integrity gate was bypassed.
+
+The current tracked installed player had previously been an unsafe stale
+artifact. It was refreshed from the verified protected build. The old test
+expecting that current artifact to remain unsafe was updated to require a
+clean preflight; disposable secret-sentinel rejection, redaction, count-only
+findings and unreadable-input refusal remain tested. The lead reran the entire
+128-test Node selection after that test-only correction.
 
 ## Adversarial persistence proof
 
