@@ -30,6 +30,7 @@ import { passageMarkForTile } from "@/project/tilesetPassage";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { COORD_SCHEMA } from "./schemaShapes";
+import { validateArgs } from "./jsonSchema";
 
 /** 호수/강 등 물 지형(레거시 WATER 상수 + 타일 그림판/오토타일). */
 export function isMapWaterTile(tile: number): boolean {
@@ -566,7 +567,15 @@ const checkReachabilityTool: ToolDefinition = {
   run(project, args): ToolExecResult {
     const mapId = args.mapId as string;
     if (!project.maps[mapId]) throw new ToolError(`맵을 찾을 수 없습니다: ${mapId}`, { code: "map-not-found", mapId });
-    const result = checkReachability(project, mapId, args.from as ReachPoint, args.targets as ReachPoint[]);
+    // The runner checks only the outer shape; malformed points are argument
+    // failures, never negative artifact evidence from the reachability BFS.
+    const targets = args.targets as ReachPoint[];
+    const points = [["from", args.from], ...targets.map((point, index) => [`targets[${index}]`, point])] as const;
+    for (const [path, point] of points) {
+      const errors = validateArgs(COORD_SCHEMA, point);
+      if (errors.length > 0) throw new ToolError(`${path}: ${errors.join("; ")}`, { code: "invalid-args", mapId });
+    }
+    const result = checkReachability(project, mapId, args.from as ReachPoint, targets);
     return {
       summary: `도달성: ${result.reachable ? "전부 도달 가능" : `${result.unreachable.length}개 도달 불가`}`,
       data: { reachable: result.reachable, unreachable: result.unreachable },
