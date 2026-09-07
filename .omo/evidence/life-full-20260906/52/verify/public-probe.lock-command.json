@@ -1,0 +1,15 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p4",
+  "argv": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "python3",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/52/verify/run.py",
+    "--locked",
+    "public-probe",
+    "node",
+    ".omo/evidence/life-full-20260906/52/verify/probe-runner.mjs"
+  ]
+}

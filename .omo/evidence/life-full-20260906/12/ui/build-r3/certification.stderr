@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/build-r3/certify.py", line 11, in <module>
+    assert r.returncode==(1 if name=='clean' else 2)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

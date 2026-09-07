@@ -1,0 +1,34 @@
+{
+  "argv": [
+    "npm",
+    "run",
+    "openwiki:index",
+    "--",
+    "--check"
+  ],
+  "boundedArgv": [
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=30s",
+    "900s",
+    "npm",
+    "run",
+    "openwiki:index",
+    "--",
+    "--check"
+  ],
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p4",
+  "started": "2026-09-07T12:25:42.828357+00:00",
+  "finished": "2026-09-07T12:25:43.863572+00:00",
+  "exit": 0,
+  "lockHeld": "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+  "environment": {
+    "TMPDIR": "/dev/shm/st_01a07bcd",
+    "XDG_CACHE_HOME": "/dev/shm/st_01a07bcd/xdg",
+    "npm_config_cache": "/dev/shm/st_01a07bcd/npm",
+    "npm_config_offline": "true",
+    "npm_config_update_notifier": "false"
+  },
+  "stdoutSha256": "3f2805fa72c4dc3a0ea9a97a5f20db40593b9faba6ed867b8703ff05fac259b5",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

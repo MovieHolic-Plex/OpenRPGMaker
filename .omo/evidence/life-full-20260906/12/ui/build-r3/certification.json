@@ -1,0 +1,23 @@
+{
+  "status": "needs-fix",
+  "commitCreated": false,
+  "head": "ea6b2b358088cb6061783f6ffd162169764a07e9",
+  "indexUnchanged": true,
+  "sourceHashesUnchanged": true,
+  "producer119FilesUnchanged": true,
+  "changedCodeAndTests": 14,
+  "docs": {
+    "openwiki/INDEX.md": "0107435a5e3e7eac0867f85c1bac2fa2225e7e6336c3e06ee24012285af04f7b",
+    "openwiki/runtime-project-schema.md": "6f665c60446da73e3dc62a72f298aff8cb0bccf88f97866ff8a6f09735485e92",
+    "openwiki/runtime-sessions.md": "9c298c7a675c4570fb2f3dcb0fc14b33329c9e8908b8e7f5055112a58692ef18"
+  },
+  "buildExit": 0,
+  "diagnosticsExit": 0,
+  "whitespace": "tracked exit0; four added-file checks exit1 difference-only, empty diagnostics; independently calibrated",
+  "nativePrerequisitesComplete": false,
+  "requiredNativeFixes": [
+    "Successful decoration move to different coordinates and rotation with resulting owner/orientation evidence",
+    "Actual last-local-exit refusal without moving out of the tested enclosure; lastExitBlocked must be true with unchanged costs/owners"
+  ],
+  "scope": "No whole Task12, UI visual, Phase4 or overall approval."
+}

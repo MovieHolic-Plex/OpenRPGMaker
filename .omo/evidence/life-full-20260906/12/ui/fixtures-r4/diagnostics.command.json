@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "300s",
+    "node",
+    ".omo/evidence/life-full-20260906/12/ui/fixtures-r4/diagnostics.mjs"
+  ],
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p4",
+  "exit": 1,
+  "started": 1788781529.8450286,
+  "finished": 1788781555.8127933
+}

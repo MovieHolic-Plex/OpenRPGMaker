@@ -1,0 +1,6 @@
+{
+  "audit.py": "LSP no diagnostics found",
+  "composite.py": "LSP no diagnostics found after manifest list correction",
+  "productConfiguredDiagnostics": "Reused exact build-r3 result for all14 files, all6655 relevant inputs equal",
+  "testsTypecheckBuildRerun": false
+}

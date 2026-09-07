@@ -1,0 +1,13 @@
+{
+  "argv": [
+    "flock",
+    "--timeout",
+    "10",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "true"
+  ],
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p4",
+  "exit": 0,
+  "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

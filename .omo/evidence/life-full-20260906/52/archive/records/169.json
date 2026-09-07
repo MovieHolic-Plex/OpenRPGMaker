@@ -1,0 +1,24 @@
+{
+  "original_relative_to_task52": "verify/producer-original-manifest.json",
+  "original_absolute": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/52/verify/producer-original-manifest.json",
+  "original_bytes": 14785,
+  "original_sha256": "d019e7da8bc05f2ba6efb0d4150449671de331fff47f4e62591b8a937180a76c",
+  "original_mode_octal": "0o644",
+  "original_mtime_ns": 1788770337592756504,
+  "original_allocated_bytes": 16384,
+  "archive_relative_to_task52": "archive/payload/verify/producer-original-manifest.json.gz",
+  "archive_bytes": 3725,
+  "archive_sha256": "4508465766470bd52cb7d8f7e88f68a97f85533164517287cab731790d1f163d",
+  "archive_mode_octal": "0o600",
+  "archive_allocated_bytes": 4096,
+  "encoding": "gzip (no filename, mtime=0); raw bytes unchanged",
+  "verification": {
+    "original_manifest_match": null,
+    "independent_decoder": "system gzip -cd",
+    "decoded_bytes": 14785,
+    "decoded_sha256": "d019e7da8bc05f2ba6efb0d4150449671de331fff47f4e62591b8a937180a76c",
+    "byte_equal": true
+  },
+  "original_disposition": "retained_unchanged",
+  "publication": "withheld: restricted payload, not privacy-cleared"
+}

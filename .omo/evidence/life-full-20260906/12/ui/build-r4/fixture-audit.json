@@ -1,0 +1,908 @@
+{
+  "arena": {
+    "sha256": "d8a44e6019cb015ca557bdedb551efd006975f1ba754bc2a3cd611b301b234f8",
+    "projectId": "rpg-zzu-life-full-p4-t12-arena-st-01a07ba6",
+    "details": {
+      "table": {
+        "id": "table",
+        "name": "Table",
+        "placementItemId": "item_potion",
+        "footprint": {
+          "width": 2,
+          "height": 1
+        },
+        "blocksMovement": true,
+        "allowedOrientations": [
+          "down",
+          "left"
+        ],
+        "graphicResourceId": "easyrpg-picture-cloud"
+      },
+      "beforeRects": {
+        "body": {
+          "left": 7,
+          "right": 9,
+          "top": 6,
+          "bottom": 8
+        },
+        "passage": {
+          "left": 7,
+          "right": 9,
+          "top": 8,
+          "bottom": 8
+        }
+      },
+      "staticAccepted": true,
+      "liveAccepted": true,
+      "target": {
+        "mapId": "map_blank_start",
+        "x": 7,
+        "y": 9,
+        "orientation": "down"
+      },
+      "placed": {
+        "ok": true
+      },
+      "afterPlace": {
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "selfSwitches": {},
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "timers": {},
+        "gold": 500,
+        "inventory": {
+          "item_hoe": 1,
+          "item_potion": 7
+        },
+        "itemUseCharges": {},
+        "partyActorIds": [
+          "actor_hero"
+        ],
+        "shippingQueue": {},
+        "shippingHistory": [],
+        "bundleContributions": {},
+        "completedBundleIds": [],
+        "bundleRewardAppliedIds": [],
+        "unlockedRegionIds": [],
+        "unlockedRecipeIds": [],
+        "makerInstances": {},
+        "farmBuildingPlacements": {},
+        "homeDecorationPlacements": {
+          "r4-probe-table": {
+            "instanceId": "r4-probe-table",
+            "typeId": "table",
+            "mapId": "map_blank_start",
+            "x": 7,
+            "y": 9,
+            "orientation": "down",
+            "recoveryItem": {
+              "itemId": "item_potion",
+              "count": 1
+            }
+          }
+        },
+        "monsterInstances": {},
+        "monsterParty": [],
+        "monsterBox": [],
+        "actorSkillIds": {},
+        "actorSkillPp": {},
+        "actorExperience": {
+          "actor_hero": 0
+        },
+        "actorLevels": {
+          "actor_hero": 1,
+          "actor_guardian": 1,
+          "actor_mage": 1,
+          "actor_scout": 1,
+          "actor_cleric": 1,
+          "actor_ranger": 1
+        },
+        "actorVitals": {
+          "actor_hero": {
+            "hp": 514,
+            "mp": 43,
+            "maxHp": 514,
+            "maxMp": 43
+          }
+        },
+        "eventLocations": {},
+        "erasedEventIds": [],
+        "removedEventIds": {},
+        "spawnedEvents": {},
+        "camera": {
+          "mode": "follow",
+          "target": {
+            "kind": "player"
+          }
+        },
+        "lighting": {
+          "ambient": 0,
+          "sources": []
+        },
+        "npcTravelStates": {},
+        "npcActivities": {},
+        "npcScheduleStates": {},
+        "lifeSkills": {},
+        "followers": [],
+        "followerTrail": [],
+        "actorEquipment": {
+          "actor_hero": {
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "shield": "equip_oak_shield",
+            "weapon": "equip_sword",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_guardian": {
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "shield": "equip_oak_shield",
+            "weapon": "equip_sword",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_mage": {
+            "armor": "equip_mystic_robe",
+            "helmet": "equip_traveler_hat",
+            "weapon": "equip_mage_staff",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_scout": {
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "weapon": "equip_scout_dagger",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_cleric": {
+            "armor": "equip_mystic_robe",
+            "helmet": "equip_traveler_hat",
+            "shield": "equip_oak_shield",
+            "weapon": "equip_mage_staff",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_ranger": {
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "weapon": "equip_scout_dagger",
+            "accessory": "equip_focus_charm"
+          }
+        },
+        "actorRows": {
+          "actor_hero": "front"
+        },
+        "actorNames": {},
+        "actorCharacterResourceIds": {},
+        "classOverrides": {},
+        "actorParamBonuses": {},
+        "actorStateIds": {},
+        "factionStanceOverrides": {},
+        "currentMapId": "map_blank_start",
+        "x": 8,
+        "y": 8,
+        "mapOverrides": {},
+        "farmPlots": {},
+        "placeables": {},
+        "friendship": {},
+        "relationships": {},
+        "dailyGifts": {},
+        "dailyTalks": {},
+        "flags": {},
+        "audio": {},
+        "pictures": {},
+        "messageWindowSettings": {
+          "format": "normal",
+          "position": "bottom",
+          "preventObscuringPlayer": true,
+          "allowEventMovementDuringWait": false
+        },
+        "playTimeSeconds": 0,
+        "rng": {
+          "seed": 1204,
+          "streams": {
+            "encounter": {
+              "seed": 1412207393,
+              "state": 1412207393
+            },
+            "battle": {
+              "seed": 3642856502,
+              "state": 3642856502
+            },
+            "movement": {
+              "seed": 130626641,
+              "state": 130626641
+            },
+            "fishing": {
+              "seed": 1020365746,
+              "state": 1020365746
+            },
+            "misc": {
+              "seed": 3322466396,
+              "state": 3322466396
+            }
+          }
+        }
+      },
+      "rotationAccepted": true,
+      "rotatedTarget": {
+        "mapId": "map_blank_start",
+        "x": 7,
+        "y": 9,
+        "orientation": "left"
+      },
+      "rotatedCells": [
+        {
+          "x": 7,
+          "y": 9
+        },
+        {
+          "x": 7,
+          "y": 10
+        }
+      ],
+      "rotated": {
+        "ok": true
+      },
+      "afterRotate": {
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "selfSwitches": {},
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "timers": {},
+        "gold": 500,
+        "inventory": {
+          "item_hoe": 1,
+          "item_potion": 7
+        },
+        "itemUseCharges": {},
+        "partyActorIds": [
+          "actor_hero"
+        ],
+        "shippingQueue": {},
+        "shippingHistory": [],
+        "bundleContributions": {},
+        "completedBundleIds": [],
+        "bundleRewardAppliedIds": [],
+        "unlockedRegionIds": [],
+        "unlockedRecipeIds": [],
+        "makerInstances": {},
+        "farmBuildingPlacements": {},
+        "homeDecorationPlacements": {
+          "r4-probe-table": {
+            "instanceId": "r4-probe-table",
+            "typeId": "table",
+            "mapId": "map_blank_start",
+            "x": 7,
+            "y": 9,
+            "orientation": "left",
+            "recoveryItem": {
+              "itemId": "item_potion",
+              "count": 1
+            }
+          }
+        },
+        "monsterInstances": {},
+        "monsterParty": [],
+        "monsterBox": [],
+        "actorSkillIds": {},
+        "actorSkillPp": {},
+        "actorExperience": {
+          "actor_hero": 0
+        },
+        "actorLevels": {
+          "actor_hero": 1,
+          "actor_guardian": 1,
+          "actor_mage": 1,
+          "actor_scout": 1,
+          "actor_cleric": 1,
+          "actor_ranger": 1
+        },
+        "actorVitals": {
+          "actor_hero": {
+            "hp": 514,
+            "mp": 43,
+            "maxHp": 514,
+            "maxMp": 43
+          }
+        },
+        "eventLocations": {},
+        "erasedEventIds": [],
+        "removedEventIds": {},
+        "spawnedEvents": {},
+        "camera": {
+          "mode": "follow",
+          "target": {
+            "kind": "player"
+          }
+        },
+        "lighting": {
+          "ambient": 0,
+          "sources": []
+        },
+        "npcTravelStates": {},
+        "npcActivities": {},
+        "npcScheduleStates": {},
+        "lifeSkills": {},
+        "followers": [],
+        "followerTrail": [],
+        "actorEquipment": {
+          "actor_hero": {
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "shield": "equip_oak_shield",
+            "weapon": "equip_sword",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_guardian": {
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "shield": "equip_oak_shield",
+            "weapon": "equip_sword",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_mage": {
+            "armor": "equip_mystic_robe",
+            "helmet": "equip_traveler_hat",
+            "weapon": "equip_mage_staff",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_scout": {
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "weapon": "equip_scout_dagger",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_cleric": {
+            "armor": "equip_mystic_robe",
+            "helmet": "equip_traveler_hat",
+            "shield": "equip_oak_shield",
+            "weapon": "equip_mage_staff",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_ranger": {
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "weapon": "equip_scout_dagger",
+            "accessory": "equip_focus_charm"
+          }
+        },
+        "actorRows": {
+          "actor_hero": "front"
+        },
+        "actorNames": {},
+        "actorCharacterResourceIds": {},
+        "classOverrides": {},
+        "actorParamBonuses": {},
+        "actorStateIds": {},
+        "factionStanceOverrides": {},
+        "currentMapId": "map_blank_start",
+        "x": 8,
+        "y": 8,
+        "mapOverrides": {},
+        "farmPlots": {},
+        "placeables": {},
+        "friendship": {},
+        "relationships": {},
+        "dailyGifts": {},
+        "dailyTalks": {},
+        "flags": {},
+        "audio": {},
+        "pictures": {},
+        "messageWindowSettings": {
+          "format": "normal",
+          "position": "bottom",
+          "preventObscuringPlayer": true,
+          "allowEventMovementDuringWait": false
+        },
+        "playTimeSeconds": 0,
+        "rng": {
+          "seed": 1204,
+          "streams": {
+            "encounter": {
+              "seed": 1412207393,
+              "state": 1412207393
+            },
+            "battle": {
+              "seed": 3642856502,
+              "state": 3642856502
+            },
+            "movement": {
+              "seed": 130626641,
+              "state": 130626641
+            },
+            "fishing": {
+              "seed": 1020365746,
+              "state": 1020365746
+            },
+            "misc": {
+              "seed": 3322466396,
+              "state": 3322466396
+            }
+          }
+        }
+      },
+      "leftStep": {
+        "direction": "left",
+        "x": 7,
+        "y": 8,
+        "passage": {
+          "left": 6,
+          "right": 8,
+          "top": 8,
+          "bottom": 8
+        },
+        "terrain": true,
+        "persistent": false,
+        "accepted": true
+      },
+      "afterWalkRects": {
+        "body": {
+          "left": 6,
+          "right": 8,
+          "top": 6,
+          "bottom": 8
+        },
+        "passage": {
+          "left": 6,
+          "right": 8,
+          "top": 8,
+          "bottom": 8
+        }
+      },
+      "moveTarget": {
+        "mapId": "map_blank_start",
+        "x": 5,
+        "y": 6,
+        "orientation": "left"
+      },
+      "moveAccepted": true,
+      "moved": {
+        "ok": true
+      }
+    },
+    "modelOnly": true
+  },
+  "lastExit": {
+    "sha256": "ca7bb0339b1472d602db720620e927bc5b81e93cfafa18a9f1ed20df07e24813",
+    "projectId": "rpg-zzu-life-full-p4-t12-last-exit-st-01a07ba6",
+    "details": {
+      "type": {
+        "id": "shed",
+        "name": "Shed",
+        "levels": [
+          {
+            "level": 1,
+            "footprint": {
+              "width": 1,
+              "height": 1
+            },
+            "capacity": 4,
+            "cost": {
+              "gold": 10,
+              "items": [
+                {
+                  "itemId": "item_potion",
+                  "count": 2
+                }
+              ]
+            },
+            "graphicResourceId": "easyrpg-picture-cloud"
+          }
+        ]
+      },
+      "playerRects": {
+        "body": {
+          "left": 0,
+          "right": 2,
+          "top": 0,
+          "bottom": 2
+        },
+        "passage": {
+          "left": 0,
+          "right": 2,
+          "top": 2,
+          "bottom": 2
+        }
+      },
+      "exits": [
+        {
+          "direction": "up",
+          "x": 1,
+          "y": 1,
+          "passage": {
+            "left": 0,
+            "right": 2,
+            "top": 1,
+            "bottom": 1
+          },
+          "terrain": true,
+          "persistent": true,
+          "accepted": false
+        },
+        {
+          "direction": "down",
+          "x": 1,
+          "y": 3,
+          "passage": {
+            "left": 0,
+            "right": 2,
+            "top": 3,
+            "bottom": 3
+          },
+          "terrain": true,
+          "persistent": false,
+          "accepted": true
+        },
+        {
+          "direction": "left",
+          "x": 0,
+          "y": 2,
+          "passage": {
+            "left": -1,
+            "right": 1,
+            "top": 2,
+            "bottom": 2
+          },
+          "terrain": false,
+          "persistent": false,
+          "accepted": false
+        },
+        {
+          "direction": "right",
+          "x": 2,
+          "y": 2,
+          "passage": {
+            "left": 1,
+            "right": 3,
+            "top": 2,
+            "bottom": 2
+          },
+          "terrain": true,
+          "persistent": true,
+          "accepted": false
+        }
+      ],
+      "target": {
+        "mapId": "map_blank_start",
+        "x": 0,
+        "y": 3,
+        "orientation": "down"
+      },
+      "staticAccepted": true,
+      "nonblockingLiveAccepted": true,
+      "blockingLiveAccepted": false,
+      "staticConstruction": {
+        "ok": true
+      },
+      "staticPositiveControlAfter": {
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "selfSwitches": {},
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "timers": {},
+        "gold": 490,
+        "inventory": {
+          "item_hoe": 1,
+          "item_potion": 6
+        },
+        "itemUseCharges": {},
+        "partyActorIds": [
+          "actor_hero"
+        ],
+        "shippingQueue": {},
+        "shippingHistory": [],
+        "bundleContributions": {},
+        "completedBundleIds": [],
+        "bundleRewardAppliedIds": [],
+        "unlockedRegionIds": [],
+        "unlockedRecipeIds": [],
+        "makerInstances": {},
+        "farmBuildingPlacements": {
+          "r4-block-up": {
+            "instanceId": "r4-block-up",
+            "typeId": "shed",
+            "mapId": "map_blank_start",
+            "x": 1,
+            "y": 1,
+            "orientation": "down",
+            "level": 1
+          },
+          "r4-block-right": {
+            "instanceId": "r4-block-right",
+            "typeId": "shed",
+            "mapId": "map_blank_start",
+            "x": 3,
+            "y": 2,
+            "orientation": "down",
+            "level": 1
+          },
+          "r4-probe-last-exit": {
+            "instanceId": "r4-probe-last-exit",
+            "typeId": "shed",
+            "mapId": "map_blank_start",
+            "x": 0,
+            "y": 3,
+            "orientation": "down",
+            "level": 1,
+            "paymentReceipt": {
+              "gold": 10,
+              "items": [
+                {
+                  "itemId": "item_potion",
+                  "count": 2
+                }
+              ]
+            }
+          }
+        },
+        "homeDecorationPlacements": {},
+        "monsterInstances": {},
+        "monsterParty": [],
+        "monsterBox": [],
+        "actorSkillIds": {},
+        "actorSkillPp": {},
+        "actorExperience": {
+          "actor_hero": 0
+        },
+        "actorLevels": {
+          "actor_hero": 1,
+          "actor_guardian": 1,
+          "actor_mage": 1,
+          "actor_scout": 1,
+          "actor_cleric": 1,
+          "actor_ranger": 1
+        },
+        "actorVitals": {
+          "actor_hero": {
+            "hp": 514,
+            "mp": 43,
+            "maxHp": 514,
+            "maxMp": 43
+          }
+        },
+        "eventLocations": {},
+        "erasedEventIds": [],
+        "removedEventIds": {},
+        "spawnedEvents": {},
+        "camera": {
+          "mode": "follow",
+          "target": {
+            "kind": "player"
+          }
+        },
+        "lighting": {
+          "ambient": 0,
+          "sources": []
+        },
+        "npcTravelStates": {},
+        "npcActivities": {},
+        "npcScheduleStates": {},
+        "lifeSkills": {},
+        "followers": [],
+        "followerTrail": [],
+        "actorEquipment": {
+          "actor_hero": {
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "shield": "equip_oak_shield",
+            "weapon": "equip_sword",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_guardian": {
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "shield": "equip_oak_shield",
+            "weapon": "equip_sword",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_mage": {
+            "armor": "equip_mystic_robe",
+            "helmet": "equip_traveler_hat",
+            "weapon": "equip_mage_staff",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_scout": {
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "weapon": "equip_scout_dagger",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_cleric": {
+            "armor": "equip_mystic_robe",
+            "helmet": "equip_traveler_hat",
+            "shield": "equip_oak_shield",
+            "weapon": "equip_mage_staff",
+            "accessory": "equip_focus_charm"
+          },
+          "actor_ranger": {
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "weapon": "equip_scout_dagger",
+            "accessory": "equip_focus_charm"
+          }
+        },
+        "actorRows": {
+          "actor_hero": "front"
+        },
+        "actorNames": {},
+        "actorCharacterResourceIds": {},
+        "classOverrides": {},
+        "actorParamBonuses": {},
+        "actorStateIds": {},
+        "factionStanceOverrides": {},
+        "currentMapId": "map_blank_start",
+        "x": 1,
+        "y": 2,
+        "mapOverrides": {},
+        "farmPlots": {},
+        "placeables": {},
+        "friendship": {},
+        "relationships": {},
+        "dailyGifts": {},
+        "dailyTalks": {},
+        "flags": {},
+        "audio": {},
+        "pictures": {},
+        "messageWindowSettings": {
+          "format": "normal",
+          "position": "bottom",
+          "preventObscuringPlayer": true,
+          "allowEventMovementDuringWait": false
+        },
+        "playTimeSeconds": 0,
+        "rng": {
+          "seed": 1204,
+          "streams": {
+            "encounter": {
+              "seed": 1412207393,
+              "state": 1412207393
+            },
+            "battle": {
+              "seed": 3642856502,
+              "state": 3642856502
+            },
+            "movement": {
+              "seed": 130626641,
+              "state": 130626641
+            },
+            "fishing": {
+              "seed": 1020365746,
+              "state": 1020365746
+            },
+            "misc": {
+              "seed": 3322466396,
+              "state": 3322466396
+            }
+          }
+        }
+      },
+      "result": {
+        "ok": false,
+        "reason": "blocked"
+      },
+      "fullSessionUnchanged": true
+    },
+    "modelOnly": true
+  }
+}

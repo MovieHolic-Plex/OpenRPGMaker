@@ -1,0 +1,54 @@
+{
+  "task": "Task12 UI + Task52 combined delivery",
+  "taskId": "st_01a07b66",
+  "model": "gpt-6-astra",
+  "status": "needs-fix",
+  "worktree": "/home/main/z-project/rpg-zzu-life-full-p4",
+  "head": "ea6b2b358088cb6061783f6ffd162169764a07e9",
+  "sourceCommit": null,
+  "commitCreated": false,
+  "indexChanged": false,
+  "sourceFrozen": true,
+  "unknownChanges": [],
+  "blockingCriteria": [
+    {
+      "criterion": "Successful native decoration move and rotation",
+      "receipt": "../producer-r3/native/native-qa-final-evidence.json",
+      "actual": "move-rug and rotate-rug both report blocked; successful changed position/orientation is absent"
+    },
+    {
+      "criterion": "Actual native last-local-exit refusal with unchanged costs and owners",
+      "receipt": "../producer-r3/native/native-qa-final-evidence.json",
+      "actual": "lastExitBlocked:false; player moved from (1,2) to (2,2), shed3 placed at (4,0), gold460->450; script logs false but exits0"
+    }
+  ],
+  "cli": {
+    "configuredSyntacticSemanticDiagnostics14Files": 0,
+    "typecheckApp": 0,
+    "fullCombinedBuild": 0,
+    "task52DeferredBuildGateExecuted": true,
+    "openwikiGenerate": 0,
+    "openwikiIndexCheck": 0,
+    "openwikiVerify": 0,
+    "trackedWhitespace": 0,
+    "newFileWhitespaceDirectExits": [1, 1, 1, 1],
+    "newFileWhitespaceDiagnostics": "empty; difference-only exit1 confirmed by clean/bad calibration exit1/3",
+    "serialWrapperExit": 1,
+    "initialEvidenceCertificateExit": 1,
+    "initialEvidenceCertificateFailure": "Expected bad-whitespace calibration exit2, actual3 (difference bit1 plus error bit2); original receipts and script retained",
+    "finalEvidenceCertificateExit": 0,
+    "productValidatorsRetried": false,
+    "uiSuitesRerun": false
+  },
+  "summary": "SUMMARY.md",
+  "identity": "certified-identity.json",
+  "commands": "*.command.json",
+  "cleanup": ["cleanup.json", "certification-cleanup.json", "certification-final-cleanup.json"],
+  "approvals": {
+    "wholeTask12": false,
+    "nativeComplete": false,
+    "uiVisual": false,
+    "phase4": false,
+    "overall": false
+  }
+}

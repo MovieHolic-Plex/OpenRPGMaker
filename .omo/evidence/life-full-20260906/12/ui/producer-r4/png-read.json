@@ -1,0 +1,14 @@
+{
+  "readByProducer": true,
+  "notes": "All listed PNGs were opened and read as images in this node. Gold remains 500G in every frame. No missing-resource overlay.",
+  "cases": [
+    {"file": "native/arena-before-place-1024.png", "saw": "Spaces Table/Shed targets map_blank_start (7, 9); gold 500G"},
+    {"file": "native/arena-after-place-1024.png", "saw": "Table owner 아래 · 2×1 at 빈 맵 (7, 9); message Table을(를) 배치했습니다; gold 500G"},
+    {"file": "native/arena-after-rotate-1024.png", "saw": "message Table을(를) 회전했습니다; rotate action now 아래으로 돌리기 (next after left); gold 500G"},
+    {"file": "native/arena-after-move-1024.png", "saw": "Table 왼쪽 · 1×2 at 빈 맵 (5, 6); message Table을(를) 이동했습니다; gold 500G"},
+    {"file": "native/arena-after-move-1440.png", "saw": "same move success at 1440"},
+    {"file": "native/last-exit-before-place-1024.png", "saw": "Shed 배치 map_blank_start (0, 3); authored Shed at 빈 맵 (1, 1) · 아래; gold 500G"},
+    {"file": "native/last-exit-after-refuse-1024.png", "saw": "처리할 수 없습니다: blocked; still Shed 배치 (0, 3) and (1, 1) owner; gold 500G"},
+    {"file": "native/last-exit-after-refuse-1440.png", "saw": "same blocked refusal at 1440"}
+  ]
+}

@@ -1,0 +1,189 @@
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/lifePlacementRenderedBodyReplay.test.ts > life placement rendered-body replay (new, not historical RED) > refuses construction through the ledger while an interpolating NPC body still covers the target and the destination body does not
+AssertionError: expected { switches: { …(20) }, …(68) } to deeply equal { switches: { …(20) }, …(68) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -93,22 +93,41 @@[39m
+[2m        "y": 6,[22m
+[2m      },[22m
+[2m    },[22m
+[2m    "factionStanceOverrides": {},[22m
+[2m    "farmAnimals": undefined,[22m
+[32m-   "farmBuildingPlacements": undefined,[39m
+[31m+   "farmBuildingPlacements": {[39m
+[31m+     "ledger:building:shed:1": {[39m
+[31m+       "instanceId": "ledger:building:shed:1",[39m
+[31m+       "level": 1,[39m
+[31m+       "mapId": "map_blank_start",[39m
+[31m+       "orientation": "down",[39m
+[31m+       "paymentReceipt": {[39m
+[31m+         "gold": 10,[39m
+[31m+         "items": [[39m
+[31m+           {[39m
+[31m+             "count": 1,[39m
+[31m+             "itemId": "item_potion",[39m
+[31m+           },[39m
+[31m+         ],[39m
+[31m+       },[39m
+[31m+       "typeId": "shed",[39m
+[31m+       "x": 12,[39m
+[31m+       "y": 3,[39m
+[31m+     },[39m
+[31m+   },[39m
+[2m    "farmPlots": {},[22m
+[2m    "farmPlotsAdvancedThrough": undefined,[22m
+[2m    "flags": {},[22m
+[2m    "followerTrail": [],[22m
+[2m    "followers": [],[22m
+[2m    "friendship": {},[22m
+[2m    "gameTime": undefined,[22m
+[32m-   "gold": 100,[39m
+[31m+   "gold": 90,[39m
+[2m    "homeDecorationPlacements": undefined,[22m
+[2m    "inventory": {[22m
+[32m-     "item_potion": 2,[39m
+[31m+     "item_potion": 1,[39m
+[2m    },[22m
+[2m    "itemUseCharges": {},[22m
+[2m    "lifeSkills": {},[22m
+[2m    "lighting": {[22m
+[2m      "ambient": 0,[22m
+
+ ❯ test/lifePlacementRenderedBodyReplay.test.ts:119:21
+    117|       onMutation: (ok, message) => mutations.push({ ok, message }),
+    118|     }), "life-ledger-space-building-place-shed");
+    119|     expect(session).toEqual(before);
+       |                     ^
+    120|     expect(mutations).toEqual([{ ok: false, message: "처리할 수 없습니다: bloc…
+    121|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  test/lifePlacementRenderedBodyReplay.test.ts > life placement rendered-body replay (new, not historical RED) > refuses visible below and pass-through overlap through the ledger without making them walking walls
+AssertionError: expected { switches: { …(20) }, …(68) } to deeply equal { switches: { …(20) }, …(68) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -87,22 +87,41 @@[39m
+[2m    "energy": undefined,[22m
+[2m    "erasedEventIds": [],[22m
+[2m    "eventLocations": {},[22m
+[2m    "factionStanceOverrides": {},[22m
+[2m    "farmAnimals": undefined,[22m
+[32m-   "farmBuildingPlacements": undefined,[39m
+[31m+   "farmBuildingPlacements": {[39m
+[31m+     "ledger:building:shed:1": {[39m
+[31m+       "instanceId": "ledger:building:shed:1",[39m
+[31m+       "level": 1,[39m
+[31m+       "mapId": "map_blank_start",[39m
+[31m+       "orientation": "down",[39m
+[31m+       "paymentReceipt": {[39m
+[31m+         "gold": 10,[39m
+[31m+         "items": [[39m
+[31m+           {[39m
+[31m+             "count": 1,[39m
+[31m+             "itemId": "item_potion",[39m
+[31m+           },[39m
+[31m+         ],[39m
+[31m+       },[39m
+[31m+       "typeId": "shed",[39m
+[31m+       "x": 5,[39m
+[31m+       "y": 6,[39m
+[31m+     },[39m
+[31m+   },[39m
+[2m    "farmPlots": {},[22m
+[2m    "farmPlotsAdvancedThrough": undefined,[22m
+[2m    "flags": {},[22m
+[2m    "followerTrail": [],[22m
+[2m    "followers": [],[22m
+[2m    "friendship": {},[22m
+[2m    "gameTime": undefined,[22m
+[32m-   "gold": 100,[39m
+[31m+   "gold": 90,[39m
+[2m    "homeDecorationPlacements": undefined,[22m
+[2m    "inventory": {[22m
+[32m-     "item_potion": 3,[39m
+[31m+     "item_potion": 2,[39m
+[2m    },[22m
+[2m    "itemUseCharges": {},[22m
+[2m    "lifeSkills": {},[22m
+[2m    "lighting": {[22m
+[2m      "ambient": 0,[22m
+
+ ❯ test/lifePlacementRenderedBodyReplay.test.ts:156:21
+    154|       onMutation: (ok, message) => mutations.push({ ok, message }),
+    155|     }), "life-ledger-space-building-place-shed");
+    156|     expect(session).toEqual(before);
+       |                     ^
+    157|     session.x = 8;
+    158|     session.y = 7;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  test/lifePlacementRenderedBodyReplay.test.ts > life placement rendered-body replay (new, not historical RED) > refuses an in-flight player through the ledger while the integer origin is still committed
+AssertionError: expected { switches: { …(20) }, …(68) } to deeply equal { switches: { …(20) }, …(68) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -87,22 +87,41 @@[39m
+[2m    "energy": undefined,[22m
+[2m    "erasedEventIds": [],[22m
+[2m    "eventLocations": {},[22m
+[2m    "factionStanceOverrides": {},[22m
+[2m    "farmAnimals": undefined,[22m
+[32m-   "farmBuildingPlacements": undefined,[39m
+[31m+   "farmBuildingPlacements": {[39m
+[31m+     "ledger:building:shed:1": {[39m
+[31m+       "instanceId": "ledger:building:shed:1",[39m
+[31m+       "level": 1,[39m
+[31m+       "mapId": "map_blank_start",[39m
+[31m+       "orientation": "down",[39m
+[31m+       "paymentReceipt": {[39m
+[31m+         "gold": 10,[39m
+[31m+         "items": [[39m
+[31m+           {[39m
+[31m+             "count": 1,[39m
+[31m+             "itemId": "item_potion",[39m
+[31m+           },[39m
+[31m+         ],[39m
+[31m+       },[39m
+[31m+       "typeId": "shed",[39m
+[31m+       "x": 7,[39m
+[31m+       "y": 3,[39m
+[31m+     },[39m
+[31m+   },[39m
+[2m    "farmPlots": {},[22m
+[2m    "farmPlotsAdvancedThrough": undefined,[22m
+[2m    "flags": {},[22m
+[2m    "followerTrail": [],[22m
+[2m    "followers": [],[22m
+[2m    "friendship": {},[22m
+[2m    "gameTime": undefined,[22m
+[32m-   "gold": 100,[39m
+[31m+   "gold": 90,[39m
+[2m    "homeDecorationPlacements": undefined,[22m
+[2m    "inventory": {[22m
+[32m-     "item_potion": 2,[39m
+[31m+     "item_potion": 1,[39m
+[2m    },[22m
+[2m    "itemUseCharges": {},[22m
+[2m    "lifeSkills": {},[22m
+[2m    "lighting": {[22m
+[2m      "ambient": 0,[22m
+
+ ❯ test/lifePlacementRenderedBodyReplay.test.ts:208:21
+    206|       onMutation: (ok, message) => mutations.push({ ok, message }),
+    207|     }), "life-ledger-space-building-place-shed");
+    208|     expect(session).toEqual(before);
+       |                     ^
+    209|     expect(mutations).toEqual([{ ok: false, message: "처리할 수 없습니다: bloc…
+    210|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+

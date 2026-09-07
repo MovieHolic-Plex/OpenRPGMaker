@@ -1,0 +1,18 @@
+{
+  "readByProducer": true,
+  "notes": "All listed PNGs were opened and read as images in this node. Gold remains 500G in every menu frame. No missing-resource overlay. Standing-on field frame shows player on rug graphic (cloud).",
+  "cases": [
+    {"file": "native/rug-before-place-1024.png", "saw": "Spaces Rug 배치 map_blank_start (7, 9); Shed owner 빈 맵 (12, 6); gold 500G"},
+    {"file": "native/rug-after-place-1024.png", "saw": "message Rug을(를) 배치했습니다; Shed (12, 6) · 아래; gold 500G"},
+    {"file": "native/rug-after-place-1440.png", "saw": "same place success at 1440"},
+    {"file": "native/rug-standing-on-1024.png", "saw": "field view player standing on pink/cloud rug tile; second cloud (shed graphic) distant; empty hand 빈 손"},
+    {"file": "native/rug-standing-on-1440.png", "saw": "same standing-on-rug field frame at 1440"},
+    {"file": "native/rug-after-divergent-move-1024.png", "saw": "Rug owner 아래 · 2×1 at 빈 맵 (7, 11); message Rug을(를) 이동했습니다; gold 500G"},
+    {"file": "native/rug-after-divergent-move-1440.png", "saw": "same divergent move at 1440"},
+    {"file": "native/rug-after-load-1024.png", "saw": "after Load spaces: Shed still 빈 맵 (12, 6) · 아래 Lv.1; gold 500G; live rug owner asserted via state (7,9) in evidence"},
+    {"file": "native/rug-after-load-1440.png", "saw": "same post-load spaces at 1440; gold 500G; shed (12,6)"},
+    {"file": "native/rug-after-save-slot1-1024.png", "saw": "save UI after slot1 while standing on rug"},
+    {"file": "native/rug-after-save-slot2-1024.png", "saw": "1번/2번 저장 both 저장됨; message 2번 저장 칸에 저장했습니다; gold 500G"},
+    {"file": "native/rug-after-save-slot2-1440.png", "saw": "same slot2 save success at 1440"}
+  ]
+}

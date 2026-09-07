@@ -1,0 +1,815 @@
+{
+  "requirement": "Original DAG native: including walking onto a nonblocking rug then save/resume",
+  "authority": [
+    "src/project/playerFootprint.ts:playerPassageRect",
+    "src/project/footprint.ts:passageBounds",
+    "src/project/spatialPlacements.ts:footprintCells"
+  ],
+  "rugOwner": {
+    "instanceId": "ledger:decoration:rug:1",
+    "typeId": "rug",
+    "mapId": "map_blank_start",
+    "x": 3,
+    "y": 1,
+    "orientation": "down",
+    "recoveryItem": {
+      "itemId": "item_potion",
+      "count": 1
+    }
+  },
+  "rugDefinition": {
+    "id": "rug",
+    "name": "Rug",
+    "placementItemId": "item_potion",
+    "footprint": {
+      "width": 2,
+      "height": 1
+    },
+    "blocksMovement": false,
+    "allowedOrientations": [
+      "down",
+      "left"
+    ],
+    "graphicResourceId": "easyrpg-picture-cloud"
+  },
+  "rugCells": [
+    {
+      "x": 3,
+      "y": 1
+    },
+    {
+      "x": 4,
+      "y": 1
+    }
+  ],
+  "labelledStep": {
+    "step": "walk-onto-rug",
+    "at": "2026-09-07T10:22:00.996Z",
+    "from": {
+      "x": 2,
+      "y": 2
+    },
+    "to": {
+      "x": 2,
+      "y": 3
+    },
+    "gold": 470,
+    "farmPlots": {}
+  },
+  "loggedMovementAfterPlaceBeforeSave": [
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:21:59.380Z",
+      "foot": {
+        "x": 3,
+        "y": 4
+      },
+      "passage": {
+        "left": 2,
+        "right": 4,
+        "top": 4,
+        "bottom": 4
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:21:59.561Z",
+      "foot": {
+        "x": 2,
+        "y": 4
+      },
+      "passage": {
+        "left": 1,
+        "right": 3,
+        "top": 4,
+        "bottom": 4
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:21:59.730Z",
+      "foot": {
+        "x": 2,
+        "y": 3
+      },
+      "passage": {
+        "left": 1,
+        "right": 3,
+        "top": 3,
+        "bottom": 3
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:21:59.915Z",
+      "foot": {
+        "x": 2,
+        "y": 2
+      },
+      "passage": {
+        "left": 1,
+        "right": 3,
+        "top": 2,
+        "bottom": 2
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-onto-rug",
+      "at": "2026-09-07T10:22:00.996Z",
+      "foot": {
+        "x": 2,
+        "y": 3
+      },
+      "passage": {
+        "left": 1,
+        "right": 3,
+        "top": 3,
+        "bottom": 3
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:01.180Z",
+      "foot": {
+        "x": 3,
+        "y": 3
+      },
+      "passage": {
+        "left": 2,
+        "right": 4,
+        "top": 3,
+        "bottom": 3
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:01.363Z",
+      "foot": {
+        "x": 4,
+        "y": 3
+      },
+      "passage": {
+        "left": 3,
+        "right": 5,
+        "top": 3,
+        "bottom": 3
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:01.546Z",
+      "foot": {
+        "x": 5,
+        "y": 3
+      },
+      "passage": {
+        "left": 4,
+        "right": 6,
+        "top": 3,
+        "bottom": 3
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:01.728Z",
+      "foot": {
+        "x": 6,
+        "y": 3
+      },
+      "passage": {
+        "left": 5,
+        "right": 7,
+        "top": 3,
+        "bottom": 3
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:01.912Z",
+      "foot": {
+        "x": 7,
+        "y": 3
+      },
+      "passage": {
+        "left": 6,
+        "right": 8,
+        "top": 3,
+        "bottom": 3
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:02.079Z",
+      "foot": {
+        "x": 7,
+        "y": 4
+      },
+      "passage": {
+        "left": 6,
+        "right": 8,
+        "top": 4,
+        "bottom": 4
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:02.245Z",
+      "foot": {
+        "x": 7,
+        "y": 5
+      },
+      "passage": {
+        "left": 6,
+        "right": 8,
+        "top": 5,
+        "bottom": 5
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:02.430Z",
+      "foot": {
+        "x": 7,
+        "y": 6
+      },
+      "passage": {
+        "left": 6,
+        "right": 8,
+        "top": 6,
+        "bottom": 6
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:02.612Z",
+      "foot": {
+        "x": 7,
+        "y": 7
+      },
+      "passage": {
+        "left": 6,
+        "right": 8,
+        "top": 7,
+        "bottom": 7
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:02.796Z",
+      "foot": {
+        "x": 7,
+        "y": 8
+      },
+      "passage": {
+        "left": 6,
+        "right": 8,
+        "top": 8,
+        "bottom": 8
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:03.047Z",
+      "foot": {
+        "x": 8,
+        "y": 8
+      },
+      "passage": {
+        "left": 7,
+        "right": 9,
+        "top": 8,
+        "bottom": 8
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:03.230Z",
+      "foot": {
+        "x": 8,
+        "y": 7
+      },
+      "passage": {
+        "left": 7,
+        "right": 9,
+        "top": 7,
+        "bottom": 7
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:03.412Z",
+      "foot": {
+        "x": 8,
+        "y": 8
+      },
+      "passage": {
+        "left": 7,
+        "right": 9,
+        "top": 8,
+        "bottom": 8
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:04.212Z",
+      "foot": {
+        "x": 7,
+        "y": 8
+      },
+      "passage": {
+        "left": 6,
+        "right": 8,
+        "top": 8,
+        "bottom": 8
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:04.394Z",
+      "foot": {
+        "x": 6,
+        "y": 8
+      },
+      "passage": {
+        "left": 5,
+        "right": 7,
+        "top": 8,
+        "bottom": 8
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:04.563Z",
+      "foot": {
+        "x": 5,
+        "y": 8
+      },
+      "passage": {
+        "left": 4,
+        "right": 6,
+        "top": 8,
+        "bottom": 8
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:04.746Z",
+      "foot": {
+        "x": 4,
+        "y": 8
+      },
+      "passage": {
+        "left": 3,
+        "right": 5,
+        "top": 8,
+        "bottom": 8
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:04.928Z",
+      "foot": {
+        "x": 3,
+        "y": 8
+      },
+      "passage": {
+        "left": 2,
+        "right": 4,
+        "top": 8,
+        "bottom": 8
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:05.114Z",
+      "foot": {
+        "x": 2,
+        "y": 8
+      },
+      "passage": {
+        "left": 1,
+        "right": 3,
+        "top": 8,
+        "bottom": 8
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:05.298Z",
+      "foot": {
+        "x": 1,
+        "y": 8
+      },
+      "passage": {
+        "left": 0,
+        "right": 2,
+        "top": 8,
+        "bottom": 8
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:05.862Z",
+      "foot": {
+        "x": 1,
+        "y": 7
+      },
+      "passage": {
+        "left": 0,
+        "right": 2,
+        "top": 7,
+        "bottom": 7
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:06.048Z",
+      "foot": {
+        "x": 1,
+        "y": 6
+      },
+      "passage": {
+        "left": 0,
+        "right": 2,
+        "top": 6,
+        "bottom": 6
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:06.233Z",
+      "foot": {
+        "x": 1,
+        "y": 5
+      },
+      "passage": {
+        "left": 0,
+        "right": 2,
+        "top": 5,
+        "bottom": 5
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:06.413Z",
+      "foot": {
+        "x": 1,
+        "y": 4
+      },
+      "passage": {
+        "left": 0,
+        "right": 2,
+        "top": 4,
+        "bottom": 4
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:06.597Z",
+      "foot": {
+        "x": 1,
+        "y": 3
+      },
+      "passage": {
+        "left": 0,
+        "right": 2,
+        "top": 3,
+        "bottom": 3
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:06.779Z",
+      "foot": {
+        "x": 1,
+        "y": 2
+      },
+      "passage": {
+        "left": 0,
+        "right": 2,
+        "top": 2,
+        "bottom": 2
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:06.965Z",
+      "foot": {
+        "x": 1,
+        "y": 1
+      },
+      "passage": {
+        "left": 0,
+        "right": 2,
+        "top": 1,
+        "bottom": 1
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:07.162Z",
+      "foot": {
+        "x": 1,
+        "y": 2
+      },
+      "passage": {
+        "left": 0,
+        "right": 2,
+        "top": 2,
+        "bottom": 2
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "last-exit-moved",
+      "at": "2026-09-07T10:22:07.712Z",
+      "foot": {
+        "x": 2,
+        "y": 2
+      },
+      "passage": {
+        "left": 1,
+        "right": 3,
+        "top": 2,
+        "bottom": 2
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:08.296Z",
+      "foot": {
+        "x": 3,
+        "y": 2
+      },
+      "passage": {
+        "left": 2,
+        "right": 4,
+        "top": 2,
+        "bottom": 2
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:08.480Z",
+      "foot": {
+        "x": 4,
+        "y": 2
+      },
+      "passage": {
+        "left": 3,
+        "right": 5,
+        "top": 2,
+        "bottom": 2
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:08.661Z",
+      "foot": {
+        "x": 5,
+        "y": 2
+      },
+      "passage": {
+        "left": 4,
+        "right": 6,
+        "top": 2,
+        "bottom": 2
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:08.846Z",
+      "foot": {
+        "x": 6,
+        "y": 2
+      },
+      "passage": {
+        "left": 5,
+        "right": 7,
+        "top": 2,
+        "bottom": 2
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:09.029Z",
+      "foot": {
+        "x": 7,
+        "y": 2
+      },
+      "passage": {
+        "left": 6,
+        "right": 8,
+        "top": 2,
+        "bottom": 2
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:09.214Z",
+      "foot": {
+        "x": 8,
+        "y": 2
+      },
+      "passage": {
+        "left": 7,
+        "right": 9,
+        "top": 2,
+        "bottom": 2
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:09.395Z",
+      "foot": {
+        "x": 9,
+        "y": 2
+      },
+      "passage": {
+        "left": 8,
+        "right": 10,
+        "top": 2,
+        "bottom": 2
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:09.640Z",
+      "foot": {
+        "x": 10,
+        "y": 2
+      },
+      "passage": {
+        "left": 9,
+        "right": 11,
+        "top": 2,
+        "bottom": 2
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:09.864Z",
+      "foot": {
+        "x": 11,
+        "y": 2
+      },
+      "passage": {
+        "left": 10,
+        "right": 12,
+        "top": 2,
+        "bottom": 2
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:10.045Z",
+      "foot": {
+        "x": 12,
+        "y": 2
+      },
+      "passage": {
+        "left": 11,
+        "right": 13,
+        "top": 2,
+        "bottom": 2
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:10.229Z",
+      "foot": {
+        "x": 13,
+        "y": 2
+      },
+      "passage": {
+        "left": 12,
+        "right": 14,
+        "top": 2,
+        "bottom": 2
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:10.411Z",
+      "foot": {
+        "x": 14,
+        "y": 2
+      },
+      "passage": {
+        "left": 13,
+        "right": 15,
+        "top": 2,
+        "bottom": 2
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:10.596Z",
+      "foot": {
+        "x": 15,
+        "y": 2
+      },
+      "passage": {
+        "left": 14,
+        "right": 16,
+        "top": 2,
+        "bottom": 2
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:10.777Z",
+      "foot": {
+        "x": 16,
+        "y": 2
+      },
+      "passage": {
+        "left": 15,
+        "right": 17,
+        "top": 2,
+        "bottom": 2
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:10.945Z",
+      "foot": {
+        "x": 16,
+        "y": 1
+      },
+      "passage": {
+        "left": 15,
+        "right": 17,
+        "top": 1,
+        "bottom": 1
+      },
+      "overlapsRug": false
+    },
+    {
+      "step": "walk-step",
+      "at": "2026-09-07T10:22:11.129Z",
+      "foot": {
+        "x": 16,
+        "y": 2
+      },
+      "passage": {
+        "left": 15,
+        "right": 17,
+        "top": 2,
+        "bottom": 2
+      },
+      "overlapsRug": false
+    }
+  ],
+  "allLoggedPassagesMissRug": true,
+  "fullBodyOverlapNotEquivalentToPassageTraversal": true,
+  "r4Scope": "table arena and last-exit only; no rug traversal",
+  "verdict": "missing native nonblocking-rug traversal; no product defect inferred"
+}

@@ -1,0 +1,11 @@
+{
+  "original_relative_to_task52": "verify/captures/2x5-pass2-cycle3.json",
+  "durable_mapping": "archive/records/201.json",
+  "archive_relative_to_task52": "archive/payload/verify/captures/2x5-pass2-cycle3.json.gz",
+  "raw_bytes_removed": 5013947,
+  "original_allocated_bytes_removed": 5017600,
+  "archive_bytes": 194209,
+  "archive_allocated_bytes": 196608,
+  "original_absent_after_unlink": true,
+  "verified_before_unlink": true
+}

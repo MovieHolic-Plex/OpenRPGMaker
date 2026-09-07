@@ -1,0 +1,16 @@
+[rpg-zzu] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] QWENCLOUD_API_KEY 가 없어 /api/qwen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] CPENROUTER_API_KEY 가 없어 /api/cpen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/native/build-fixture.mts:113
+if (!config.url.startsWith("https://")) throw new Error("Supabase URL must be https");
+                                              ^
+
+Error: Supabase URL must be https
+    at /home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/native/build-fixture.mts:117:47
+    at ViteNodeRunner.runModule (file:///home/main/z-project/rpg-zzu/node_modules/vite-node/dist/client.mjs:397:4)
+    at ViteNodeRunner.directRequest (file:///home/main/z-project/rpg-zzu/node_modules/vite-node/dist/client.mjs:375:3)
+    at ViteNodeRunner.cachedRequest (file:///home/main/z-project/rpg-zzu/node_modules/vite-node/dist/client.mjs:189:11)
+    at ViteNodeRunner.executeFile (file:///home/main/z-project/rpg-zzu/node_modules/vite-node/dist/client.mjs:162:10)
+    at CAC.run (file:///home/main/z-project/rpg-zzu/node_modules/vite-node/dist/cli.mjs:102:28)
+
+Node.js v24.11.1

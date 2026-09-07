@@ -1,0 +1,67 @@
+{
+  "buildings": {
+    "ledger:building:shed:1": {
+      "instanceId": "ledger:building:shed:1",
+      "typeId": "shed",
+      "mapId": "map_blank_start",
+      "x": 11,
+      "y": 6,
+      "orientation": "down",
+      "level": 2,
+      "paymentReceipt": {
+        "gold": 30,
+        "items": []
+      }
+    },
+    "ledger:building:shed:2": {
+      "instanceId": "ledger:building:shed:2",
+      "typeId": "shed",
+      "mapId": "map_blank_start",
+      "x": 0,
+      "y": 3,
+      "orientation": "down",
+      "level": 1,
+      "paymentReceipt": {
+        "gold": 10,
+        "items": []
+      }
+    },
+    "ledger:building:shed:3": {
+      "instanceId": "ledger:building:shed:3",
+      "typeId": "shed",
+      "mapId": "map_blank_start",
+      "x": 4,
+      "y": 0,
+      "orientation": "down",
+      "level": 1,
+      "paymentReceipt": {
+        "gold": 10,
+        "items": []
+      }
+    }
+  },
+  "decorations": {
+    "ledger:decoration:rug:1": {
+      "instanceId": "ledger:decoration:rug:1",
+      "typeId": "rug",
+      "mapId": "map_blank_start",
+      "x": 3,
+      "y": 1,
+      "orientation": "down",
+      "recoveryItem": {
+        "itemId": "item_potion",
+        "count": 1
+      }
+    }
+  },
+  "x": 16,
+  "y": 2,
+  "farmPlots": {
+    "map_blank_start": {
+      "7,9": {
+        "tilled": true,
+        "watered": false
+      }
+    }
+  }
+}

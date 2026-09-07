@@ -1,0 +1,11 @@
+{
+  "original_relative_to_task52": "verify/captures/save4-parsed.json",
+  "durable_mapping": "archive/records/312.json",
+  "archive_relative_to_task52": "archive/payload/verify/captures/save4-parsed.json.gz",
+  "raw_bytes_removed": 8038,
+  "original_allocated_bytes_removed": 8192,
+  "archive_bytes": 1718,
+  "archive_allocated_bytes": 4096,
+  "original_absent_after_unlink": true,
+  "verified_before_unlink": true
+}

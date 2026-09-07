@@ -1,0 +1,20 @@
+[rpg-zzu] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] QWENCLOUD_API_KEY 가 없어 /api/qwen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] CPENROUTER_API_KEY 가 없어 /api/cpen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+/home/main/z-project/rpg-zzu-life-full-p4/src/project/io/guards.ts:56
+  throw new __vite_ssr_import_1__.ProjectFormatError(`${label}가 숫자가 아닙니다.`);
+        ^
+
+ProjectFormatError: map map_blank_start.farmableArea[0].w가 숫자가 아닙니다.
+    at requireNumber (/home/main/z-project/rpg-zzu-life-full-p4/src/project/io/guards.ts:58:9)
+    at validateRect (/home/main/z-project/rpg-zzu-life-full-p4/src/project/io/shapeEventFields.ts:161:3)
+    at validateRectArray (/home/main/z-project/rpg-zzu-life-full-p4/src/project/io/shapeEventFields.ts:153:5)
+    at validateMaps (/home/main/z-project/rpg-zzu-life-full-p4/src/project/io/shapeEventFields.ts:43:41)
+    at validateProjectV4 (/home/main/z-project/rpg-zzu-life-full-p4/src/project/io/shape.ts:82:16)
+    at deserialize (/home/main/z-project/rpg-zzu-life-full-p4/src/project/io/serialize.ts:42:42)
+    at deserializeSupabaseCurrentJson (/home/main/z-project/rpg-zzu-life-full-p4/src/project/supabaseProjectSync.ts:1285:12)
+    at loadProjectSnapshotFromSupabase (/home/main/z-project/rpg-zzu-life-full-p4/src/project/supabaseProjectSync.ts:227:19)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at loadProjectFromSupabase (/home/main/z-project/rpg-zzu-life-full-p4/src/project/supabaseProjectSync.ts:151:20)
+
+Node.js v24.11.1

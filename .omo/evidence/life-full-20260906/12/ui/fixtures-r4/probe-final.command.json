@@ -1,0 +1,47 @@
+{
+  "argv": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=30s",
+    "600s",
+    "node",
+    "node_modules/vite-node/vite-node.mjs",
+    "--script",
+    ".omo/evidence/life-full-20260906/12/ui/fixtures-r4/fixture.mts",
+    "--",
+    "probe-final"
+  ],
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p4",
+  "environment": {
+    "TMPDIR": "/dev/shm/st_01a07ba6",
+    "XDG_CACHE_HOME": "/dev/shm/st_01a07ba6/xdg",
+    "VITE_CACHE_DIR": "/dev/shm/st_01a07ba6/vite"
+  },
+  "started": 1788781452.156699,
+  "ownedInputsBefore": {
+    "arena.reloaded.json": "d8a44e6019cb015ca557bdedb551efd006975f1ba754bc2a3cd611b301b234f8",
+    "lastExit.authored.json": "ca7bb0339b1472d602db720620e927bc5b81e93cfafa18a9f1ed20df07e24813",
+    "fixture.mts": "c176f547b627a31070daa0d51e17d3ca9b2a26b55bb917e7587d6b4b5bada1e5",
+    "fixture.initial-probe.mts": "eb6a087da04cd619eb90238729e4ad5468770a3ef908541189ad470b46cb59ea",
+    "run.py": "3599ada1072c0fc15a7fb8c5236e4cbc5e062a6387adf01efcd4e2c9db357565",
+    "arena.authored.json": "d8a44e6019cb015ca557bdedb551efd006975f1ba754bc2a3cd611b301b234f8",
+    "lastExit.reloaded.json": "ca7bb0339b1472d602db720620e927bc5b81e93cfafa18a9f1ed20df07e24813"
+  },
+  "exit": 0,
+  "finished": 1788781461.4187057,
+  "stdoutSha256": "246e1a6119288ac0d30bcf5dc995f1bddbdc39f8b02e7015541c3b4b119bde07",
+  "stderrSha256": "a59fad9430b7e8b04c98c88280a4c1e9dc6fce8c2d9f4fb799670f6217e5b742",
+  "ownedInputsAfter": {
+    "arena.reloaded.json": "d8a44e6019cb015ca557bdedb551efd006975f1ba754bc2a3cd611b301b234f8",
+    "lastExit.authored.json": "ca7bb0339b1472d602db720620e927bc5b81e93cfafa18a9f1ed20df07e24813",
+    "fixture.mts": "c176f547b627a31070daa0d51e17d3ca9b2a26b55bb917e7587d6b4b5bada1e5",
+    "fixture.initial-probe.mts": "eb6a087da04cd619eb90238729e4ad5468770a3ef908541189ad470b46cb59ea",
+    "run.py": "3599ada1072c0fc15a7fb8c5236e4cbc5e062a6387adf01efcd4e2c9db357565",
+    "arena.authored.json": "d8a44e6019cb015ca557bdedb551efd006975f1ba754bc2a3cd611b301b234f8",
+    "lastExit.reloaded.json": "ca7bb0339b1472d602db720620e927bc5b81e93cfafa18a9f1ed20df07e24813"
+  }
+}

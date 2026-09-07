@@ -1,0 +1,11 @@
+{
+  "config": "tsconfig.json",
+  "file": ".omo/evidence/life-full-20260906/12/ui/fixtures-r5/fixture.mts",
+  "diagnostics": [
+    {
+      "code": 2540,
+      "line": 120,
+      "message": "Cannot assign to 'y' because it is a read-only property."
+    }
+  ]
+}

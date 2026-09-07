@@ -1,0 +1,21 @@
+{
+  "archive_path": "archive/payload/verify/evidence-manifest.json.gz",
+  "archive_sha256": "b68e07c0bc4b8bbf9b8280ce4145d85b6a75e82905dd72e775e9c2825ccfe598",
+  "archive_bytes": 6245,
+  "original_sha256": "7b0d8f6a9c014ddead29868bf57ba122ce08a35a9c98afcf61f6eeba321e5db6",
+  "original_bytes": 30426,
+  "record_path": "archive/records/144.json",
+  "integrity": "encoded and decoded hash/size match immutable record",
+  "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits",
+  "finding_reasons": [],
+  "inspection": {
+    "utf8": true,
+    "entire_utf8_text_marker_scan": true,
+    "structured_json": true,
+    "structured_nodes": 646,
+    "structured_strings": 215,
+    "opaque_asset_or_base64_strings_not_decoded": 0,
+    "notes": []
+  },
+  "limitation": "Automated bounded inspection does not establish absence of opaque/encoded secrets or unmarked sensitive prose. No embedded assets decoded or interpreted; no candidate values emitted."
+}

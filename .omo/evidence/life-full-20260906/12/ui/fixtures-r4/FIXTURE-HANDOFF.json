@@ -1,0 +1,149 @@
+{
+  "taskId": "st_01a07ba6",
+  "status": "core-preflighted-remotely-reloaded-native-inputs-ready",
+  "nativeAcceptance": false,
+  "worktree": "/home/main/z-project/rpg-zzu-life-full-p4",
+  "branch": "agent/life-full-p4",
+  "head": "ea6b2b358088cb6061783f6ffd162169764a07e9",
+  "fixtures": [
+    {
+      "kind": "arena",
+      "projectId": "rpg-zzu-life-full-p4-t12-arena-st-01a07ba6",
+      "fixture": "arena.reloaded.json",
+      "sha256": "d8a44e6019cb015ca557bdedb551efd006975f1ba754bc2a3cd611b301b234f8",
+      "mapId": "map_blank_start",
+      "initialFoot": {
+        "x": 8,
+        "y": 8
+      },
+      "initialFacing": "down",
+      "playerFootprint": {
+        "width": 3,
+        "height": 3
+      },
+      "playerPassRows": 1,
+      "saveReceipt": "arena.save-receipt.json",
+      "reloadReceipt": "arena.reload-receipt.json",
+      "coreProof": "arena.core-proof.json",
+      "nativeContract": {
+        "typeId": "table",
+        "placementItemId": "item_potion",
+        "initialItems": 8,
+        "afterPlaceItems": 7,
+        "goldBeforeAndAfter": 500,
+        "nativeInstanceId": "ledger:decoration:table:1",
+        "place": {
+          "x": 7,
+          "y": 9,
+          "orientation": "down",
+          "size": {
+            "width": 2,
+            "height": 1
+          }
+        },
+        "rotate": {
+          "x": 7,
+          "y": 9,
+          "orientation": "left",
+          "size": {
+            "width": 1,
+            "height": 2
+          }
+        },
+        "walk": {
+          "direction": "left",
+          "toFoot": {
+            "x": 7,
+            "y": 8
+          }
+        },
+        "move": {
+          "x": 5,
+          "y": 6,
+          "orientation": "left"
+        },
+        "keepInstanceAndRecoveryItem": true
+      }
+    },
+    {
+      "kind": "lastExit",
+      "projectId": "rpg-zzu-life-full-p4-t12-last-exit-st-01a07ba6",
+      "fixture": "lastExit.reloaded.json",
+      "sha256": "ca7bb0339b1472d602db720620e927bc5b81e93cfafa18a9f1ed20df07e24813",
+      "mapId": "map_blank_start",
+      "initialFoot": {
+        "x": 1,
+        "y": 2
+      },
+      "initialFacing": "down",
+      "playerFootprint": {
+        "width": 3,
+        "height": 3
+      },
+      "playerPassRows": 1,
+      "saveReceipt": "lastExit.save-receipt.json",
+      "reloadReceipt": "lastExit.reload-receipt.json",
+      "coreProof": "lastExit.core-proof.json",
+      "nativeContract": {
+        "typeId": "shed",
+        "target": {
+          "x": 0,
+          "y": 3,
+          "orientation": "down",
+          "width": 1,
+          "height": 1
+        },
+        "doNotWalkOrTurnBeforeAction": true,
+        "blockerIds": [
+          "r4-block-up",
+          "r4-block-right"
+        ],
+        "expectedResult": {
+          "ok": false,
+          "reason": "blocked"
+        },
+        "goldBeforeAndAfter": 500,
+        "potionBeforeAndAfter": 8,
+        "hoeBeforeAndAfter": 1,
+        "buildingOwnerCountBeforeAndAfter": 2,
+        "decorationOwnerCountBeforeAndAfter": 0,
+        "fullRelevantCostsAndOwnersUnchanged": true,
+        "onlyOpenDirection": "down"
+      }
+    }
+  ],
+  "baseInput": "../producer-r3/native/fixture.json",
+  "baseInputSha256": "e48e935a33b8f6ed42e987ea7231ca508d1ae05abfc4862e11364e0357c54ff2",
+  "probeEntryPoint": "fixture.mts",
+  "probeEntryPointSha256": "1d66be3caede937d05ffc6adc0ab68eb8aca5b6b1014f7d795c025acf44a582f",
+  "probeCommand": "probe-certified.command.json",
+  "probeExit": 0,
+  "diagnosticsExit": 0,
+  "remoteCommands": [
+    "connection.command.json",
+    "author.command.json"
+  ],
+  "remoteHttpReceipts": [
+    "author.requests.json",
+    "probe-certified.requests.json"
+  ],
+  "sourceCertificate": "certification.json",
+  "cleanupReceipts": [
+    "connection.cleanup.json",
+    "author.cleanup.json",
+    "probe.cleanup.json",
+    "probe-final.cleanup.json",
+    "probe-certified.cleanup.json"
+  ],
+  "modelProbeSessionsAreNotNewGameInputs": true,
+  "localAndRemoteAuthoredInputsUnchangedByProbes": true,
+  "remainingOwner": "Grok: actual player.html native rotation, distinct-coordinate move, stationary last-exit refusal and saved-slot evidence",
+  "historicalFailuresPreserved": [
+    "probe.exit",
+    "probe.stderr",
+    "fixture.initial-probe.mts",
+    "diagnostics.exit",
+    "diagnostics.stdout",
+    "fixture.pre-diagnostics.mts"
+  ]
+}

@@ -49,6 +49,7 @@ import {
   normalizeHomeDecorationTypes,
 } from "@/project/spatialPlacements";
 import type { ActorExperienceCurve, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemCareProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, LifeSkillRecord, MonsterCareConfig, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, StateRecord, SystemRecords, TitleBackgroundLayer, TitleIntroSettings, TitleParticleSettings, TitleScreenGraphic, TitleScreenMenuVisibility, TitleScreenSettings, TitleScreenSounds, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
+import { normalizeCharacterFootprint, normalizePassRows } from "@/project/footprint";
 import { normalizePlayResolution } from "@/project/playResolution";
 import { normalizeWorldGenRulesForStorage } from "@/project/worldGenRules";
 
@@ -159,8 +160,13 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   const typeChart = normalizeTypeChart(system.typeChart);
   const timeSystem = normalizeTimeSystemConfig(system.timeSystem);
   const actionCombat = normalizeActionCombatConfig(system.actionCombat);
+  const playerFootprint = normalizeCharacterFootprint(system.playerFootprint);
   return {
     startActorIds: cleanIds(system.startActorIds),
+    ...(system.playerFootprint !== undefined ? { playerFootprint } : {}),
+    ...(system.playerPassRows !== undefined
+      ? { playerPassRows: normalizePassRows(system.playerPassRows, playerFootprint.height) }
+      : {}),
     ...(() => {
       const playResolution = normalizePlayResolution(system.playResolution);
       return playResolution ? { playResolution } : {};

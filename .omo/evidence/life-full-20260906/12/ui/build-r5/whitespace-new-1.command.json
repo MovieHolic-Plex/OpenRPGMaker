@@ -1,0 +1,15 @@
+{
+  "argv": [
+    "git",
+    "diff",
+    "--no-index",
+    "--check",
+    "/dev/null",
+    "test/lifePlacementRenderedBodyReplay.test.ts"
+  ],
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p4",
+  "started": 1788788006.6079757,
+  "finished": 1788788006.613263,
+  "directExit": 1,
+  "differenceOnly": true
+}

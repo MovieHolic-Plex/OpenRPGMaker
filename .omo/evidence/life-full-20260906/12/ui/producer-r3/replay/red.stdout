@@ -1,0 +1,16 @@
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p4
+
+ ❯ test/lifePlacementRenderedBodyReplay.test.ts (3 tests | 3 failed) 202ms
+   × life placement rendered-body replay (new, not historical RED) > refuses construction through the ledger while an interpolating NPC body still covers the target and the destination body does not 80ms
+     → expected { switches: { …(20) }, …(68) } to deeply equal { switches: { …(20) }, …(68) }
+   × life placement rendered-body replay (new, not historical RED) > refuses visible below and pass-through overlap through the ledger without making them walking walls 65ms
+     → expected { switches: { …(20) }, …(68) } to deeply equal { switches: { …(20) }, …(68) }
+   × life placement rendered-body replay (new, not historical RED) > refuses an in-flight player through the ledger while the integer origin is still committed 54ms
+     → expected { switches: { …(20) }, …(68) } to deeply equal { switches: { …(20) }, …(68) }
+
+ Test Files  1 failed (1)
+      Tests  3 failed (3)
+   Start at  18:19:10
+   Duration  8.51s (transform 5.34s, setup 0ms, collect 7.67s, tests 202ms, environment 258ms, prepare 90ms)
+

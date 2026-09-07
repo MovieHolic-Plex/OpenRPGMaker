@@ -1,0 +1,21 @@
+{
+  "argv": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=30s",
+    "900s",
+    "npm",
+    "run",
+    "openwiki:verify"
+  ],
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p4",
+  "started": 1788787874.003517,
+  "finished": 1788787874.2795656,
+  "directBoundedExit": 0,
+  "stdoutSha256": "619e5c4341f1ba9f34774acc44fa2ca983859f5a8cb76e79f03649f142b09566",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

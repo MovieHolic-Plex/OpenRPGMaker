@@ -1,0 +1,204 @@
+{
+  "results": [
+    {
+      "archive_path": "archive/payload/verify/certify.before.json.gz",
+      "result_path": "archive/public-final/results/120.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/certify.cleanup.json.gz",
+      "result_path": "archive/public-final/results/121.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/certify.command.json.gz",
+      "result_path": "archive/public-final/results/122.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/certify.exit.gz",
+      "result_path": "archive/public-final/results/123.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/certify.lock-command.json.gz",
+      "result_path": "archive/public-final/results/124.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/certify.lock-exit.gz",
+      "result_path": "archive/public-final/results/125.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/certify.py.gz",
+      "result_path": "archive/public-final/results/126.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/certify.stderr.gz",
+      "result_path": "archive/public-final/results/127.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/certify.stdout.gz",
+      "result_path": "archive/public-final/results/128.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/cleanup.json.gz",
+      "result_path": "archive/public-final/results/129.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/diagnostics-syntax.command.json.gz",
+      "result_path": "archive/public-final/results/130.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/diagnostics-syntax.exit.gz",
+      "result_path": "archive/public-final/results/131.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/diagnostics-syntax.stderr.gz",
+      "result_path": "archive/public-final/results/132.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/diagnostics-syntax.stdout.gz",
+      "result_path": "archive/public-final/results/133.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/diagnostics.after.json.gz",
+      "result_path": "archive/public-final/results/134.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/diagnostics.before.json.gz",
+      "result_path": "archive/public-final/results/135.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/diagnostics.cleanup.json.gz",
+      "result_path": "archive/public-final/results/136.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/diagnostics.command.json.gz",
+      "result_path": "archive/public-final/results/137.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/diagnostics.exit.gz",
+      "result_path": "archive/public-final/results/138.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/diagnostics.lock-command.json.gz",
+      "result_path": "archive/public-final/results/139.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/diagnostics.lock-exit.gz",
+      "result_path": "archive/public-final/results/140.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/diagnostics.mjs.gz",
+      "result_path": "archive/public-final/results/141.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/diagnostics.stderr.gz",
+      "result_path": "archive/public-final/results/142.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/diagnostics.stdout.gz",
+      "result_path": "archive/public-final/results/143.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/evidence-manifest.json.gz",
+      "result_path": "archive/public-final/results/144.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/final-status.command.json.gz",
+      "result_path": "archive/public-final/results/145.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/final-status.exit.gz",
+      "result_path": "archive/public-final/results/146.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/final-status.stderr.gz",
+      "result_path": "archive/public-final/results/147.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/final-status.stdout.gz",
+      "result_path": "archive/public-final/results/148.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/focused.after.json.gz",
+      "result_path": "archive/public-final/results/149.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/focused.before.json.gz",
+      "result_path": "archive/public-final/results/150.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/focused.cleanup.json.gz",
+      "result_path": "archive/public-final/results/151.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/focused.command.json.gz",
+      "result_path": "archive/public-final/results/152.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/focused.exit.gz",
+      "result_path": "archive/public-final/results/153.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/focused.lock-command.json.gz",
+      "result_path": "archive/public-final/results/154.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/focused.lock-exit.gz",
+      "result_path": "archive/public-final/results/155.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/focused.stderr.gz",
+      "result_path": "archive/public-final/results/156.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/focused.stdout.gz",
+      "result_path": "archive/public-final/results/157.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/initial.json.gz",
+      "result_path": "archive/public-final/results/158.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    },
+    {
+      "archive_path": "archive/payload/verify/new-test-diff.command.json.gz",
+      "result_path": "archive/public-final/results/159.json",
+      "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits"
+    }
+  ]
+}

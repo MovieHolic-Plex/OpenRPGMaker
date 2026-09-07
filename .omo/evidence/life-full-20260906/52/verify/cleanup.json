@@ -1,0 +1,33 @@
+{
+  "validators": {
+    "diagnostics": {
+      "scratch": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/52/verify/cache-diagnostics-1hc7aqt9",
+      "removed": true,
+      "identityUnchanged": true
+    },
+    "focused": {
+      "scratch": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/52/verify/cache-focused-vlyl4ktp",
+      "removed": true,
+      "identityUnchanged": true
+    },
+    "public-probe": {
+      "scratch": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/52/verify/cache-public-probe-st092kwq",
+      "removed": true,
+      "identityUnchanged": true
+    },
+    "typecheck-app": {
+      "scratch": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/52/verify/cache-typecheck-app-8u9j2m8g",
+      "removed": true,
+      "identityUnchanged": true
+    },
+    "certify": {
+      "scratch": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/52/verify/cache-certify-dgowvyym",
+      "removed": true,
+      "identityUnchanged": true
+    }
+  },
+  "remainingPrivateCacheDirectories": [],
+  "sharedLock": "released on process exit; pre-existing lock retained",
+  "sourceStatusUnchanged": true,
+  "evidenceRetained": true
+}

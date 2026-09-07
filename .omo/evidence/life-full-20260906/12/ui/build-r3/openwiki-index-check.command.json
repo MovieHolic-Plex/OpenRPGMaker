@@ -1,0 +1,40 @@
+{
+  "argv": [
+    "npm",
+    "run",
+    "openwiki:index",
+    "--",
+    "--check"
+  ],
+  "boundedArgv": [
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=30s",
+    "900",
+    "npm",
+    "run",
+    "openwiki:index",
+    "--",
+    "--check"
+  ],
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p4",
+  "start": "2026-09-07T10:32:24.187775+00:00",
+  "end": "2026-09-07T10:32:25.062140+00:00",
+  "directBoundedExit": 0,
+  "timeoutExit124IsFailure": true,
+  "sharedLock": "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+  "lockHeldBySerialParent": true,
+  "environment": {
+    "TMPDIR": "/dev/shm/st_01a07b66/tmp",
+    "TMP": "/dev/shm/st_01a07b66/tmp",
+    "TEMP": "/dev/shm/st_01a07b66/tmp",
+    "npm_config_cache": "/dev/shm/st_01a07b66/npm",
+    "XDG_CACHE_HOME": "/dev/shm/st_01a07b66/cache",
+    "VITE_CACHE_DIR": "/dev/shm/st_01a07b66/vite",
+    "npm_config_offline": "true",
+    "npm_config_update_notifier": "false",
+    "GIT_OPTIONAL_LOCKS": "0"
+  },
+  "stdoutSha256": "3f2805fa72c4dc3a0ea9a97a5f20db40593b9faba6ed867b8703ff05fac259b5",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

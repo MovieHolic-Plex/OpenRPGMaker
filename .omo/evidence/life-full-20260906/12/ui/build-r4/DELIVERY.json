@@ -1,0 +1,11 @@
+{
+  "status": "needs-fix",
+  "summarySha256": "42ea7081616ef763445d27b19c575cb376e03cce158abb4df8744a603236a863",
+  "needsFixSha256": "1a85f8f7b64abdb7483d19ed4ad6dcd05c9ea331f3306dd9d8a6076e2b807560",
+  "sourceAndDocsEqualFinalIdentity": true,
+  "indexUnchangedAndEmpty": true,
+  "head": "ea6b2b358088cb6061783f6ffd162169764a07e9",
+  "commitCreated": false,
+  "committedRecordAbsent": true,
+  "ownedScratchAbsent": true
+}

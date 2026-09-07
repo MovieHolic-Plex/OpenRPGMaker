@@ -1,0 +1,122 @@
+{
+  "steps": [
+    {
+      "step": "server",
+      "at": "2026-09-07T09:51:35.523Z",
+      "url": "http://127.0.0.1:41665",
+      "port": 41665
+    },
+    {
+      "step": "browser",
+      "at": "2026-09-07T09:51:35.722Z",
+      "scratch": "/dev/shm/st_01a07b22"
+    },
+    {
+      "step": "goto",
+      "at": "2026-09-07T09:51:35.741Z",
+      "url": "http://127.0.0.1:41665/player.html"
+    },
+    {
+      "step": "title",
+      "at": "2026-09-07T09:51:38.299Z",
+      "url": "http://127.0.0.1:41665/player.html"
+    },
+    {
+      "step": "runtime",
+      "at": "2026-09-07T09:51:41.396Z",
+      "mapId": "map_blank_start",
+      "player": {
+        "x": 8,
+        "y": 8
+      },
+      "gold": 500,
+      "farmPlots": {}
+    },
+    {
+      "step": "npc-interpolation",
+      "at": "2026-09-07T09:51:41.454Z",
+      "move": {
+        "fromX": 16,
+        "fromY": 5,
+        "toX": 16,
+        "toY": 6,
+        "dir": "down"
+      },
+      "sprite": {
+        "x": 264,
+        "y": 96
+      },
+      "fractional": false,
+      "eventLocations": null,
+      "player": {
+        "x": 8,
+        "y": 8
+      },
+      "logical": {
+        "x": 16,
+        "y": 6,
+        "pageId": "walk",
+        "priority": "same",
+        "trigger": "action",
+        "direction": "down",
+        "footprint": {
+          "width": 3,
+          "height": 3
+        },
+        "passRows": 1,
+        "bodyRect": {
+          "left": 15,
+          "right": 17,
+          "top": 4,
+          "bottom": 6
+        },
+        "passRect": {
+          "left": 15,
+          "right": 17,
+          "top": 6,
+          "bottom": 6
+        }
+      }
+    },
+    {
+      "step": "spaces",
+      "at": "2026-09-07T09:51:42.411Z",
+      "placeLabel": "Shed 배치map_blank_start (7, 9)",
+      "selected": "status-menu-command-record-menu"
+    },
+    {
+      "step": "failed",
+      "at": "2026-09-07T09:51:50.732Z",
+      "error": "jsHandle.evaluate: Error: timeout selection change from status-menu-command-record-menu\n    at eval (eval at evaluate (:303:30), <anonymous>:19:59)"
+    }
+  ],
+  "screenshots": [
+    {
+      "name": "spaces-before-place",
+      "width": 1024,
+      "file": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/native/spaces-before-place-1024.png"
+    },
+    {
+      "name": "spaces-before-place",
+      "width": 1440,
+      "file": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/native/spaces-before-place-1440.png"
+    }
+  ],
+  "errors": [
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED",
+    "console: Failed to load resource: net::ERR_NETWORK_CHANGED"
+  ],
+  "pageErrors": [],
+  "requestFailures": [
+    {
+      "url": "http://127.0.0.1:41665/assets/generated/starter/monster-fish-piranha.png",
+      "failure": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:41665/assets/generated/starter/monster-squid-deep.png",
+      "failure": "net::ERR_NETWORK_CHANGED"
+    }
+  ],
+  "scenarioErrors": [],
+  "uncaught": "jsHandle.evaluate: Error: timeout selection change from status-menu-command-record-menu\n    at eval (eval at evaluate (:303:30), <anonymous>:19:59)\n    at Object.wait (/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/native/native-qa.mjs:157:30)\n    at stepToward (/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/native/native-qa.mjs:192:32)\n    at async ensureSelected (/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/native/native-qa.mjs:203:9)\n    at async activateByTestid (/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/native/native-qa.mjs:388:3)\n    at async file:///home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/native/native-qa.mjs:715:21"
+}

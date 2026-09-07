@@ -1,0 +1,100 @@
+import json
+from datetime import datetime
+from audit import R, E, U, T, load, save, sha, identity
+
+
+def main():
+    current = identity()
+    p = U / 'producer-r5'
+    c = load(p / 'native-qa-3.command.json')
+    assert c['exit'] == 0 and c['scriptSha256'] == sha(p / 'native/native-qa.mjs')
+    assert load(p / 'native-qa-3.before.json') == load(p / 'native-qa-3.after.json')
+    for stream in ['stdout', 'stderr']:
+        assert c[stream + 'Sha256'] == sha(p / ('native/native-qa-3.' + stream))
+        assert sha(p / ('native/native-qa-3.' + stream)) == sha(p / ('native/native-qa-final.' + stream))
+    n = load(p / 'native/native-qa-final-evidence.json')
+    assert n == load(p / 'native/native-evidence.json')
+    assert not any(n.get(k) for k in ['uncaught', 'cleanupErrors', 'pageErrors', 'errors'])
+    slots = []
+    for name in ['standing-on-rug', 'after-load-slot2']:
+        raw = load(p / ('native/raw-slot-' + name + '.json'))
+        s = raw.get('session', raw)
+        owners = load(p / ('native/raw-slot-' + name + '.parsed.json'))
+        assert s['farmBuildingPlacements'] == owners['buildings']
+        assert s['homeDecorationPlacements'] == owners['decorations']
+        assert all(s[k] == owners[k] for k in ['x', 'y', 'gold', 'inventory'])
+        slots.append(owners)
+    assert slots[0] == slots[1]
+    s = slots[0]
+    rug = s['decorations']['ledger:decoration:rug:1']
+    assert (s['x'], s['y'], s['gold']) == (8, 9, 500)
+    assert s['inventory'] == {'item_hoe': 1, 'item_potion': 7}
+    assert (rug['x'], rug['y'], rug['orientation']) == (7, 9, 'down')
+    assert rug['recoveryItem'] == {'itemId': 'item_potion', 'count': 1}
+    fx = U / 'fixtures-r5'
+    h = sha(fx / 'rug.reloaded.json')
+    assert h == c['fixtureSha256']['rug.reloaded.json']
+    fixture = load(fx / 'rug.reloaded.json')
+    assert fixture['system']['playerFootprint'] == {'width': 3, 'height': 3}
+    assert fixture['system']['playerPassRows'] == 1
+    definition = next(x for x in fixture['database']['homeDecorationTypes'] if x['id'] == rug['typeId'])
+    assert definition['blocksMovement'] is False and definition['footprint'] == {'width': 2, 'height': 1}
+    cells = [{'x': rug['x'] + dx, 'y': rug['y']} for dx in range(2)]
+    steps = n['steps']
+    onto = next(x for x in steps if x['step'] == 'down-onto')
+    assert onto['from'] == {'x': 8, 'y': 8} and onto['to'] == {'x': 8, 'y': 9}
+    intersections = []
+    for foot in [onto['from'], onto['to']]:
+        intersections.append([cell for cell in cells if foot['x'] - 1 <= cell['x'] <= foot['x'] + 1 and cell['y'] == foot['y']])
+    assert intersections == [[], cells]
+    live = n['sessions']['rug']
+    assert live['divergent']['foot'] == {'x': 8, 'y': 10}
+    assert live['divergent']['rug'] == {'x': 7, 'y': 11, 'orientation': 'down'}
+    restored = live['liveAfterLoad']
+    assert restored['player'] == {'x': 8, 'y': 9}
+    assert all(restored['rug'][k] == rug[k] for k in ['x', 'y', 'orientation'])
+    assert restored['buildings'] == s['buildings'] and restored['inventory'] == s['inventory']
+    assert restored['gold'] == s['gold']
+    shed = s['buildings']['r5-retained-shed']
+    assert (shed['x'], shed['y'], shed['level']) == (12, 6, 1)
+    intervals = []
+    for i, step in enumerate(steps):
+        if step['step'] == 'save-slot':
+            elapsed = (datetime.fromisoformat(step['at']) - datetime.fromisoformat(steps[i-1]['at'])).total_seconds()
+            assert elapsed < 10
+            intervals.append({'slot': step['slot'], 'precedingStep': steps[i-1], 'saveStep': step, 'upperBoundSeconds': elapsed, 'storageTimeoutSeconds': 10})
+    assert [x['slot'] for x in intervals] == [1, 2]
+    assert not any(x['step'] == 'save-overwrite-confirm' for x in steps)
+    proof = load(fx / 'core-proof.json')
+    assert proof['allAssertionsPassed'] and proof['modelOnlyNotNativeProof']
+    for rec in load(fx / 'PUBLIC-MANIFEST.json')['files']:
+        name = rec['path']
+        assert sha(fx / name) == rec['sha256'] and (fx / name).stat().st_size == rec['bytes']
+    for label in ['connection', 'author', 'probe-final', 'diagnostics-final']:
+        assert int((fx / (label + '.exit')).read_text()) == 0
+    assert not __import__('pathlib').Path('/dev/shm/st_01a07bf9').exists()
+    save('rug-resume-audit.json', {'fixtureSha256': h, 'definition': definition, 'measuredIntersections': intersections, 'nativeSteps': steps, 'rawSlotsEqual': True, 'liveDivergenceAndRestorationVerified': True, 'saveTimeoutAudit': intervals, 'catchesRemainInImmutableHarness': True, 'actualSaveTimeoutObserved': False, 'modelProofSeparate': True, 'nativeRerun': False})
+    old_inventory = load(U / 'build-r4/task52-publication-inventory.json')
+    new_inventory = load(E / 'task52-publication-inventory.json')
+    assert old_inventory == new_inventory
+    archive = load(U / 'build-r4/task52-archive-integrity.json')
+    assert archive['allEncodedAndDecodedEqual'] and archive['payloadCount'] == 328
+    save('archive-reuse.json', {'inventoryByteEquality': sha(U / 'build-r4/task52-publication-inventory.json') == sha(E / 'task52-publication-inventory.json'), 'all1152RelevantFileHashesEqual': True, 'priorIntegrityReceiptSha256': sha(U / 'build-r4/task52-archive-integrity.json'), 'payloadCount': 328, 'redecoded': False})
+    # Read complete original Task52 CLI streams and identity receipts; archive paths remain root-relative.
+    records = {}
+    for root in [T / 'producer', T / 'verify', T / 'parent-check']:
+        for f in sorted(root.rglob('*')):
+            if f.is_file() and '__pycache__' not in f.parts and 'captures' not in f.parts:
+                data = f.read_bytes()
+                if f.suffix == '.json':
+                    json.loads(data)
+                records[str(f.relative_to(R))] = {'sha256': sha(f), 'bytes': len(data)}
+    save('task52-direct-receipts.json', records)
+    criteria = load(p / 'CRITERION-MAP.json')
+    assert all(x['status'] == 'pass' for x in criteria['criteria'])
+    save('composite-result.json', {'producerCriteria': criteria, 'sourceIdentity': current['hashes'], 'nativeGate': 'complete composite producer prerequisite; not independent acceptance', 'oldMistakesRetained': True, 'selectedRoute': 'Grok4.5 provider recovery, not a model-family policy change'})
+    print('Composite raw native, fixture, source and archive reuse gates pass; no native/UI rerun.')
+
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,29 @@
+{
+  "privateTmpfsAbsent": true,
+  "sharedLockRetained": true,
+  "sourceAndIndexPreserved": true,
+  "olderEvidencePreserved": true,
+  "serversBrowsersRemoteActions": false,
+  "archivesDecodedInMemoryOnly": true,
+  "sourceHashes": {
+    "src/player/lifePlacementScene.ts": "275318021fbdfdfa0a8bcb131314fd7a75bf5a8fba1c37fdd35b47eac4739565",
+    "src/player/lifeLedger.ts": "9e7ffb6f6e3bdd24f22d723556513570be03a5cb0394640ea718d918e5cfebcb",
+    "src/player/playerStatusMenuDetails.ts": "26b30f5a06f8fc49ce9a815d7493300c4aae42d2d8b1693304cf9a2a3f96b67b",
+    "src/player/playerStatusMenu.ts": "5d33e4a4844ddf2a5f623928b2c730ca514cdca29922d7435feeff2a4a3d6370",
+    "src/player/playerStatusMenuController.ts": "7cf1dd019700f5ad8e19a170f6aa33fccfa0bfdce388eb00241c364bf81565e7",
+    "src/player/playerStatusMenuTypes.ts": "40efe968f6d087034ec01e134f87043327eac5108d0b20ddb4b1b6ddee54972c",
+    "src/player/playerStatusMenuDetailTypes.ts": "42ac4b0a3b6e06b1f6f5b594843b7c61cf85f141dd46c6711a9fc9b30a89614a",
+    "src/player/PlayScene.ts": "a3c2fe2b3baad143cdef4db6de14590137316669961a451ec65407b0c156225d",
+    "test/lifePlacementSceneUi.test.ts": "78403533ace4a55fa78c8b1e77e8466c87a18f1db187c5c38e0968a4821f6b56",
+    "test/p2SpatialPlayIntegration.test.ts": "b7329262d031932ab515ec5647026e0a956c8275a145051e40f8ccc8403a9e51",
+    "test/p2SpatialRuntimeUi.test.ts": "927d55ec45b0a72e8cd0240270701f9983f76734f1ace7b1d145cd822663be2f",
+    "test/lifePlacementRenderedBodyReplay.test.ts": "f7ffd8d8a89a2fb10ef67ee13a459a8bda592e63e7035a50b63a75d27b06cc97",
+    "src/project/databaseRecordModel.ts": "c27eb4c534e39a6b0c68c2d3650aadb905c8f42e0d053d10f79c8092aa6cbdfd",
+    "test/playerBodyProjectPersistence.test.ts": "0dd6e5c03614aa124a4d953c8f80e6189fbdaebe0c31bf0b3335619861372ef1"
+  },
+  "wikiHashes": {
+    "openwiki/INDEX.md": "d2655a73e67d99bca9bf8eab2947a00e24f9092b74b23d88aa3f28c6a58bbf82",
+    "openwiki/runtime-project-schema.md": "e3bf9a0c581d3c6957db1a03ed30116695854cb878659a2df0f9e037341cd060",
+    "openwiki/runtime-sessions.md": "d0bc255fdaa7edf993695e28c6c0f28647c3fee4c20d325b6d5a0765a89d0fcb"
+  }
+}

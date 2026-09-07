@@ -1,0 +1,38 @@
+{
+  "projectId": "rpg-zzu-life-full-p4-t12-last-exit-st-01a07ba6",
+  "saveKind": "saved",
+  "savedSha256": "ca7bb0339b1472d602db720620e927bc5b81e93cfafa18a9f1ed20df07e24813",
+  "authoredSha256": "ca7bb0339b1472d602db720620e927bc5b81e93cfafa18a9f1ed20df07e24813",
+  "serializedReloadSha256": "ca7bb0339b1472d602db720620e927bc5b81e93cfafa18a9f1ed20df07e24813",
+  "playerFootprint": {
+    "width": 3,
+    "height": 3
+  },
+  "playerPassRows": 1,
+  "startPos": {
+    "x": 1,
+    "y": 2
+  },
+  "mapId": "map_blank_start",
+  "farmBuildingPlacements": [
+    {
+      "instanceId": "r4-block-up",
+      "typeId": "shed",
+      "mapId": "map_blank_start",
+      "x": 1,
+      "y": 1,
+      "orientation": "down",
+      "level": 1
+    },
+    {
+      "instanceId": "r4-block-right",
+      "typeId": "shed",
+      "mapId": "map_blank_start",
+      "x": 3,
+      "y": 2,
+      "orientation": "down",
+      "level": 1
+    }
+  ],
+  "homeDecorationPlacements": []
+}

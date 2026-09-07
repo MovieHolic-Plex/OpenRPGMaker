@@ -1,0 +1,24 @@
+{
+  "original_relative_to_task52": "producer/carryover-after.json",
+  "original_absolute": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/52/producer/carryover-after.json",
+  "original_bytes": 1481,
+  "original_sha256": "3282a8c8a59e9a110924369251088df392332b152a28782144d2e59c97159202",
+  "original_mode_octal": "0o644",
+  "original_mtime_ns": 1788769802913725620,
+  "original_allocated_bytes": 4096,
+  "archive_relative_to_task52": "archive/payload/producer/carryover-after.json.gz",
+  "archive_bytes": 782,
+  "archive_sha256": "5349d24b25785a0814923e9f922af6114e0a55bb32e812a56d5aa6d164cbb005",
+  "archive_mode_octal": "0o600",
+  "archive_allocated_bytes": 4096,
+  "encoding": "gzip (no filename, mtime=0); raw bytes unchanged",
+  "verification": {
+    "original_manifest_match": null,
+    "independent_decoder": "system gzip -cd",
+    "decoded_bytes": 1481,
+    "decoded_sha256": "3282a8c8a59e9a110924369251088df392332b152a28782144d2e59c97159202",
+    "byte_equal": true
+  },
+  "original_disposition": "retained_unchanged",
+  "publication": "withheld: restricted payload, not privacy-cleared"
+}

@@ -1,0 +1,88 @@
+{
+  "steps": [
+    {
+      "step": "server",
+      "at": "2026-09-07T09:39:43.413Z",
+      "url": "http://127.0.0.1:41519",
+      "port": 41519
+    },
+    {
+      "step": "browser",
+      "at": "2026-09-07T09:39:43.550Z",
+      "scratch": "/dev/shm/st_01a07b22"
+    },
+    {
+      "step": "title",
+      "at": "2026-09-07T09:39:45.864Z",
+      "url": "http://127.0.0.1:41519/player.html"
+    },
+    {
+      "step": "runtime",
+      "at": "2026-09-07T09:39:48.312Z",
+      "mapId": "map_blank_start",
+      "player": {
+        "x": 8,
+        "y": 8
+      },
+      "gold": 500,
+      "farmPlots": {}
+    },
+    {
+      "step": "npc-interpolation",
+      "at": "2026-09-07T09:39:48.355Z",
+      "move": {
+        "fromX": 16,
+        "fromY": 5,
+        "toX": 16,
+        "toY": 6,
+        "dir": "down"
+      },
+      "sprite": {
+        "x": 264,
+        "y": 96
+      },
+      "fractional": false,
+      "eventLocations": null,
+      "player": {
+        "x": 8,
+        "y": 8
+      },
+      "logical": {
+        "x": 16,
+        "y": 6,
+        "pageId": "walk",
+        "priority": "same",
+        "trigger": "action",
+        "direction": "down",
+        "footprint": {
+          "width": 3,
+          "height": 3
+        },
+        "passRows": 1,
+        "bodyRect": {
+          "left": 15,
+          "right": 17,
+          "top": 4,
+          "bottom": 6
+        },
+        "passRect": {
+          "left": 15,
+          "right": 17,
+          "top": 6,
+          "bottom": 6
+        }
+      }
+    },
+    {
+      "step": "failed",
+      "at": "2026-09-07T09:39:56.727Z",
+      "error": "jsHandle.evaluate: Error: timeout selected status-menu-group-command-relationships\n    at eval (eval at evaluate (:303:30), <anonymous>:21:59)"
+    }
+  ],
+  "screenshots": [],
+  "errors": [],
+  "pageErrors": [],
+  "requestFailures": [],
+  "scenarioErrors": [],
+  "uncaught": "jsHandle.evaluate: Error: timeout selected status-menu-group-command-relationships\n    at eval (eval at evaluate (:303:30), <anonymous>:21:59)\n    at Object.wait (/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/native/native-qa.mjs:123:30)\n    at keyUntilSelected (/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/native/native-qa.mjs:180:16)\n    at async openSpaces (/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/native/native-qa.mjs:461:7)\n    at async file:///home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/producer-r3/native/native-qa.mjs:700:3"
+}

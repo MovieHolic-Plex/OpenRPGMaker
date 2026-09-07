@@ -1,0 +1,30 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p4",
+  "argv": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "python3",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/52/verify/run.py",
+    "--locked",
+    "focused",
+    "node",
+    "scripts/run-vitest.mjs",
+    "run",
+    "--configLoader",
+    "runner",
+    "--cache=false",
+    "--maxWorkers=2",
+    "--minWorkers=1",
+    "test/playerBodyProjectPersistence.test.ts",
+    "test/playerFootprint.test.ts",
+    "test/characterFootprint.test.ts",
+    "test/ioFootprintValidation.test.ts",
+    "test/lifeSaveVersion.test.ts",
+    "test/p0ProjectSchema.test.ts",
+    "test/p1FoundationSchema.test.ts",
+    "test/p2ProjectSchema.test.ts",
+    "test/p2SpatialSchema.test.ts"
+  ]
+}

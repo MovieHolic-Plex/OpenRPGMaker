@@ -1,0 +1,24 @@
+{
+  "privateTmpfs": "/dev/shm/st_01a07b66",
+  "removed": true,
+  "distAbsent": true,
+  "sharedCacheDeleted": false,
+  "sharedLockDeleted": false,
+  "serversStarted": false,
+  "results": {
+    "diagnostics": 0,
+    "typecheck-app": 0,
+    "build": 0,
+    "openwiki-index": 0,
+    "openwiki-index-check": 0,
+    "openwiki-verify": 0,
+    "whitespace": 0,
+    "whitespace-new-0": 1,
+    "whitespace-new-1": 1,
+    "whitespace-new-2": 1,
+    "whitespace-new-3": 1
+  },
+  "sourceFrozen": true,
+  "producerPreserved": true,
+  "end": "2026-09-07T10:32:37.437411+00:00"
+}

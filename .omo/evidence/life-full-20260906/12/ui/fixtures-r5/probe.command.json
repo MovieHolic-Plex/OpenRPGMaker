@@ -1,0 +1,41 @@
+{
+  "argv": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=30s",
+    "600s",
+    "node",
+    "node_modules/vite-node/vite-node.mjs",
+    "--script",
+    ".omo/evidence/life-full-20260906/12/ui/fixtures-r5/fixture.mts",
+    "--",
+    "probe"
+  ],
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p4",
+  "environment": {
+    "TMPDIR": "/dev/shm/st_01a07be4",
+    "XDG_CACHE_HOME": "/dev/shm/st_01a07be4/xdg",
+    "VITE_CACHE_DIR": "/dev/shm/st_01a07be4/vite"
+  },
+  "started": 1788785305.9747899,
+  "ownedInputsBefore": {
+    "rug.reloaded.json": "265f600a710025ee451361b70746b50ca2bf9165e6815d4ce0aa582e7eca520b",
+    "fixture.mts": "e14d3510f2220f446576e00361c1e78ff26c0ebb019aa401aea22c46e0693272",
+    "rug.authored.json": "265f600a710025ee451361b70746b50ca2bf9165e6815d4ce0aa582e7eca520b",
+    "run.py": "5dbb4ac382f1ee0042fba7386623edf96e835791c90494e52b5a824ae4ae800c"
+  },
+  "exit": 1,
+  "finished": 1788785319.3114598,
+  "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderrSha256": "7844b9ecadfbb6d9bbf742d69df86de5fb11eeafcd73619f6279395abe8c3787",
+  "ownedInputsAfter": {
+    "rug.reloaded.json": "265f600a710025ee451361b70746b50ca2bf9165e6815d4ce0aa582e7eca520b",
+    "fixture.mts": "e14d3510f2220f446576e00361c1e78ff26c0ebb019aa401aea22c46e0693272",
+    "rug.authored.json": "265f600a710025ee451361b70746b50ca2bf9165e6815d4ce0aa582e7eca520b",
+    "run.py": "5dbb4ac382f1ee0042fba7386623edf96e835791c90494e52b5a824ae4ae800c"
+  }
+}

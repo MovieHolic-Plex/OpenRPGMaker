@@ -1,0 +1,24 @@
+{
+  "original_relative_to_task52": "producer/diagnostics-runner-syntax.command.json",
+  "original_absolute": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/52/producer/diagnostics-runner-syntax.command.json",
+  "original_bytes": 210,
+  "original_sha256": "ae7019e288738f4f535cca3ea1016576b4a229bab5c3a7c9dd6ecd4ca1764922",
+  "original_mode_octal": "0o644",
+  "original_mtime_ns": 1788769803087399907,
+  "original_allocated_bytes": 4096,
+  "archive_relative_to_task52": "archive/payload/producer/diagnostics-runner-syntax.command.json.gz",
+  "archive_bytes": 157,
+  "archive_sha256": "fff7d1bb114723269ee529ec82eac19063db8385a2254ce2cdcdcb759f622326",
+  "archive_mode_octal": "0o600",
+  "archive_allocated_bytes": 4096,
+  "encoding": "gzip (no filename, mtime=0); raw bytes unchanged",
+  "verification": {
+    "original_manifest_match": null,
+    "independent_decoder": "system gzip -cd",
+    "decoded_bytes": 210,
+    "decoded_sha256": "ae7019e288738f4f535cca3ea1016576b4a229bab5c3a7c9dd6ecd4ca1764922",
+    "byte_equal": true
+  },
+  "original_disposition": "retained_unchanged",
+  "publication": "withheld: restricted payload, not privacy-cleared"
+}

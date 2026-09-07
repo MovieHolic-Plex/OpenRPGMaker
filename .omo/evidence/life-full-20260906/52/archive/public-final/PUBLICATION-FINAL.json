@@ -1,0 +1,42 @@
+{
+  "status": "public allowlist finalized; no publication or staging performed",
+  "supersedes": [
+    "archive/PUBLICATION.json",
+    "archive/STAGE-LIST.txt",
+    "archive/PRIVACY.json",
+    "archive/FINALIZATION.json publication hold",
+    "archive/PREPARED.md publication hold",
+    "archive/records/*.json publication field only"
+  ],
+  "path_base": "Task52 root; every public path is a literal archive/ path",
+  "exact_allowlist": "archive/public-final/PUBLIC-PATHS.txt",
+  "allowlist_chunks": [
+    "archive/public-final/allowlist/000.txt",
+    "archive/public-final/allowlist/001.txt",
+    "archive/public-final/allowlist/002.txt",
+    "archive/public-final/allowlist/003.txt",
+    "archive/public-final/allowlist/004.txt",
+    "archive/public-final/allowlist/005.txt",
+    "archive/public-final/allowlist/006.txt",
+    "archive/public-final/allowlist/007.txt",
+    "archive/public-final/allowlist/008.txt",
+    "archive/public-final/allowlist/009.txt",
+    "archive/public-final/allowlist/010.txt",
+    "archive/public-final/allowlist/011.txt"
+  ],
+  "total_public_paths": 1152,
+  "cleared_payloads": 328,
+  "withheld_payloads": 0,
+  "privacy_receipt": "archive/public-final/PRIVACY-FINAL.json",
+  "per_file_result_indexes": [
+    "archive/public-final/indexes/000.json",
+    "archive/public-final/indexes/001.json",
+    "archive/public-final/indexes/002.json",
+    "archive/public-final/indexes/003.json",
+    "archive/public-final/indexes/004.json",
+    "archive/public-final/indexes/005.json",
+    "archive/public-final/indexes/006.json",
+    "archive/public-final/indexes/007.json",
+    "archive/public-final/indexes/008.json"
+  ]
+}

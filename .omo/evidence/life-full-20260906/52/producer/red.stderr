@@ -1,0 +1,210 @@
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 20 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/playerBodyProjectPersistence.test.ts > player body Project persistence > starts the authored 3 x 3 / 1 body after public IO
+ FAIL  test/playerBodyProjectPersistence.test.ts > player body Project persistence > starts the authored 2 x 5 / 2 body after public IO
+ FAIL  test/playerBodyProjectPersistence.test.ts > player body Project persistence > starts the authored 8 x 8 / 7 body after public IO
+AssertionError: expected { …(2) } to deeply equal { …(2) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "footprint": {[22m
+[32m-     "height": 3,[39m
+[32m-     "width": 3,[39m
+[31m+     "height": 1,[39m
+[31m+     "width": 1,[39m
+[2m    },[22m
+[2m    "passRows": 1,[22m
+[2m  }[22m
+
+ ❯ test/playerBodyProjectPersistence.test.ts:37:50
+     35|     for (let cycle = 0; cycle < 3; cycle += 1) {
+     36|       const session = startSession(loaded, 52);
+     37|       expect(resolvePlayerBody(loaded, session)).toEqual({ footprint: …
+       |                                                  ^
+     38|       expect(loaded.system.playerFootprint).toEqual({ width, height });
+     39|       expect(loaded.system.playerPassRows).toBe(rows);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/20]⎯
+
+ FAIL  test/playerBodyProjectPersistence.test.ts > player body Project persistence > does not materialize an independently absent optional: {"playerFootprint":{"width":3,"height":3}}
+ FAIL  test/playerBodyProjectPersistence.test.ts > player body Project persistence > does not materialize an independently absent optional: {"playerPassRows":1}
+AssertionError: expected false to be true // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+ ❯ test/playerBodyProjectPersistence.test.ts:55:49
+     53|     const loaded = deserialize(serialize(project));
+     54|     for (const key of ["playerFootprint", "playerPassRows"] as const) {
+     55|       expect(Object.hasOwn(loaded.system, key)).toBe(fields[key] !== u…
+       |                                                 ^
+     56|     }
+     57|     expect(resolvePlayerBody(loaded, startSession(loaded, 52))).toEqua…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/20]⎯
+
+ FAIL  test/playerBodyProjectPersistence.test.ts > player body Project persistence > matches established bounded runtime meaning for malformed wire values: {"footprint":{"width":99,"height":99},"rows":99}
+ FAIL  test/playerBodyProjectPersistence.test.ts > player body Project persistence > matches established bounded runtime meaning for malformed wire values: {"footprint":{"width":-2,"height":3},"rows":0}
+ FAIL  test/playerBodyProjectPersistence.test.ts > player body Project persistence > matches established bounded runtime meaning for malformed wire values: {"footprint":{"width":2.5,"height":3},"rows":-1}
+ProjectFormatError: system.playerFootprint.width은 1~8 범위의 정수여야 합니다.
+ ❯ assert src/project/io/guards.ts:67:25
+     65| 
+     66| export function assert(condition: boolean, message: string): asserts c…
+     67|   if (!condition) throw new ProjectFormatError(message);
+       |                         ^
+     68| }
+     69| 
+ ❯ assertFootprintAxis src/project/io/shapeEventFields.ts:236:3
+ ❯ validateFootprintPair src/project/io/shapeEventFields.ts:222:5
+ ❯ validateSystem src/project/io/shapeDatabaseFields.ts:85:3
+ ❯ validateProjectV4 src/project/io/shape.ts:80:3
+ ❯ deserialize src/project/io/serialize.ts:42:42
+ ❯ test/playerBodyProjectPersistence.test.ts:78:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/20]⎯
+
+ FAIL  test/playerBodyProjectPersistence.test.ts > player body Project persistence > matches established bounded runtime meaning for malformed wire values: {"footprint":{"width":"3","height":4},"rows":1.5}
+ FAIL  test/playerBodyProjectPersistence.test.ts > player body Project persistence > matches established bounded runtime meaning for malformed wire values: {"footprint":{"height":3},"rows":"1"}
+ProjectFormatError: system.playerFootprint.width가 숫자가 아닙니다.
+ ❯ requireNumber src/project/io/guards.ts:58:9
+     56| export function requireNumber(label: string, value: unknown): number {
+     57|   if (typeof value === "number" && Number.isFinite(value)) return valu…
+     58|   throw new ProjectFormatError(`${label}가 숫자가 아닙니다.`);
+       |         ^
+     59| }
+     60| 
+ ❯ validateFootprintPair src/project/io/shapeEventFields.ts:220:19
+ ❯ validateSystem src/project/io/shapeDatabaseFields.ts:85:3
+ ❯ validateProjectV4 src/project/io/shape.ts:80:3
+ ❯ deserialize src/project/io/serialize.ts:42:42
+ ❯ test/playerBodyProjectPersistence.test.ts:78:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/20]⎯
+
+ FAIL  test/playerBodyProjectPersistence.test.ts > player body Project persistence > matches established bounded runtime meaning for malformed wire values: {"footprint":{"width":3,"height":3},"rows":null}
+ProjectFormatError: system.playerPassRows가 숫자가 아닙니다.
+ ❯ requireNumber src/project/io/guards.ts:58:9
+     56| export function requireNumber(label: string, value: unknown): number {
+     57|   if (typeof value === "number" && Number.isFinite(value)) return valu…
+     58|   throw new ProjectFormatError(`${label}가 숫자가 아닙니다.`);
+       |         ^
+     59| }
+     60| 
+ ❯ validateFootprintPair src/project/io/shapeEventFields.ts:226:18
+ ❯ validateSystem src/project/io/shapeDatabaseFields.ts:85:3
+ ❯ validateProjectV4 src/project/io/shape.ts:80:3
+ ❯ deserialize src/project/io/serialize.ts:42:42
+ ❯ test/playerBodyProjectPersistence.test.ts:78:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/20]⎯
+
+ FAIL  test/playerBodyProjectPersistence.test.ts > player body Project persistence > matches established bounded runtime meaning for malformed wire values: {"footprint":{"width":3,"height":3},"rows":9007199254740992}
+ProjectFormatError: system.playerPassRows는 1~3(몸 높이) 범위의 정수여야 합니다.
+ ❯ assert src/project/io/guards.ts:67:25
+     65| 
+     66| export function assert(condition: boolean, message: string): asserts c…
+     67|   if (!condition) throw new ProjectFormatError(message);
+       |                         ^
+     68| }
+     69| 
+ ❯ validateFootprintPair src/project/io/shapeEventFields.ts:228:5
+ ❯ validateSystem src/project/io/shapeDatabaseFields.ts:85:3
+ ❯ validateProjectV4 src/project/io/shape.ts:80:3
+ ❯ deserialize src/project/io/serialize.ts:42:42
+ ❯ test/playerBodyProjectPersistence.test.ts:78:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/20]⎯
+
+ FAIL  test/playerBodyProjectPersistence.test.ts > player body Project persistence > matches established bounded runtime meaning for malformed wire values: {"footprint":null,"rows":2}
+ FAIL  test/playerBodyProjectPersistence.test.ts > player body Project persistence > matches established bounded runtime meaning for malformed wire values: {"footprint":[],"rows":1}
+ FAIL  test/playerBodyProjectPersistence.test.ts > player body Project persistence > matches established bounded runtime meaning for malformed wire values: {"footprint":"3x3","rows":1}
+ProjectFormatError: system.playerFootprint가 객체가 아닙니다.
+ ❯ requireRecord src/project/io/guards.ts:43:9
+     41| export function requireRecord(label: string, value: unknown): JsonReco…
+     42|   if (isRecord(value)) return value;
+     43|   throw new ProjectFormatError(`${label}가 객체가 아닙니다.`);
+       |         ^
+     44| }
+     45| 
+ ❯ validateFootprintPair src/project/io/shapeEventFields.ts:219:20
+ ❯ validateSystem src/project/io/shapeDatabaseFields.ts:85:3
+ ❯ validateProjectV4 src/project/io/shape.ts:80:3
+ ❯ deserialize src/project/io/serialize.ts:42:42
+ ❯ test/playerBodyProjectPersistence.test.ts:78:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/20]⎯
+
+ FAIL  test/playerBodyProjectPersistence.test.ts > player body Project persistence > matches established bounded runtime meaning for malformed wire values: {"footprint":{"width":3,"height":9007199254740992},"rows":2}
+ProjectFormatError: system.playerFootprint.height은 1~8 범위의 정수여야 합니다.
+ ❯ assert src/project/io/guards.ts:67:25
+     65| 
+     66| export function assert(condition: boolean, message: string): asserts c…
+     67|   if (!condition) throw new ProjectFormatError(message);
+       |                         ^
+     68| }
+     69| 
+ ❯ assertFootprintAxis src/project/io/shapeEventFields.ts:236:3
+ ❯ validateFootprintPair src/project/io/shapeEventFields.ts:223:5
+ ❯ validateSystem src/project/io/shapeDatabaseFields.ts:85:3
+ ❯ validateProjectV4 src/project/io/shape.ts:80:3
+ ❯ deserialize src/project/io/serialize.ts:42:42
+ ❯ test/playerBodyProjectPersistence.test.ts:78:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/20]⎯
+
+ FAIL  test/playerBodyProjectPersistence.test.ts > player body Project persistence > normalizes nonfinite direct inputs with the existing helpers: NaN
+ FAIL  test/playerBodyProjectPersistence.test.ts > player body Project persistence > normalizes nonfinite direct inputs with the existing helpers: Infinity
+ FAIL  test/playerBodyProjectPersistence.test.ts > player body Project persistence > normalizes nonfinite direct inputs with the existing helpers: -Infinity
+AssertionError: expected undefined to deeply equal { width: 1, height: 3 }
+
+[32m- Expected:[39m 
+{
+  "height": 3,
+  "width": 1,
+}
+
+[31m+ Received:[39m 
+undefined
+
+ ❯ test/playerBodyProjectPersistence.test.ts:91:36
+     89|     project.system.playerPassRows = value;
+     90|     const system = normalizeSystemRecords(project.system);
+     91|     expect(system.playerFootprint).toEqual({ width: 1, height: 3 });
+       |                                    ^
+     92|     expect(system.playerPassRows).toBe(3);
+     93|     expect(resolvePlayerBody({ system })).toEqual(resolvePlayerBody(pr…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/20]⎯
+
+ FAIL  test/playerBodyProjectPersistence.test.ts > player body Project persistence > keeps independent session override priority and resolved-height clamping after IO
+AssertionError: expected { …(2) } to deeply equal { …(2) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "footprint": {[22m
+[32m-     "height": 3,[39m
+[32m-     "width": 3,[39m
+[31m+     "height": 1,[39m
+[31m+     "width": 1,[39m
+[2m    },[22m
+[2m    "passRows": 1,[22m
+[2m  }[22m
+
+ ❯ test/playerBodyProjectPersistence.test.ts:105:48
+    103|     expect(session.playerPassRows).toBeUndefined();
+    104|     session.playerPassRows = 1;
+    105|     expect(resolvePlayerBody(loaded, session)).toEqual({ footprint: { …
+       |                                                ^
+    106|     session.playerFootprint = { width: 2, height: 5 };
+    107|     expect(resolvePlayerBody(loaded, session)).toEqual({ footprint: { …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/20]⎯
+

@@ -1,0 +1,18 @@
+{
+  "config": "tsconfig.json",
+  "additionalRoot": ".omo/evidence/life-full-20260906/52/producer/public-probe.ts",
+  "results": [
+    {
+      "file": "src/project/databaseRecordModel.ts",
+      "diagnostics": []
+    },
+    {
+      "file": "test/playerBodyProjectPersistence.test.ts",
+      "diagnostics": []
+    },
+    {
+      "file": ".omo/evidence/life-full-20260906/52/producer/public-probe.ts",
+      "diagnostics": []
+    }
+  ]
+}

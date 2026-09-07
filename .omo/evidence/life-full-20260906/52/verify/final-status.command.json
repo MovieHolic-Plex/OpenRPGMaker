@@ -1,0 +1,11 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p4",
+  "argv": [
+    "git",
+    "status",
+    "--short"
+  ],
+  "env": {
+    "GIT_OPTIONAL_LOCKS": "0"
+  }
+}

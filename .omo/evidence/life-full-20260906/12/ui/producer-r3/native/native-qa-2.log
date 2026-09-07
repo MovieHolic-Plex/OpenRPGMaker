@@ -1,0 +1,2 @@
+{"step":"server","url":"http://127.0.0.1:38221","port":38221}
+{"step":"failed","error":"browserType.launch: Pass userDataDir parameter to 'browserType.launchPersistentContext(userDataDir, options)' instead of specifying '--user-data-dir' argument"}

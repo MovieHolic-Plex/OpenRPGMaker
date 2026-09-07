@@ -1,0 +1,12 @@
+{
+  "head": "ea6b2b358088cb6061783f6ffd162169764a07e9",
+  "branch": "agent/life-full-p4",
+  "protectedFileCount": 13097,
+  "allCommandInventoriesEqual": true,
+  "currentProtectedHashesEqual": true,
+  "statusAndIndexUnchanged": true,
+  "fixtureSha256": "265f600a710025ee451361b70746b50ca2bf9165e6815d4ce0aa582e7eca520b",
+  "finalProbeSha256": "182bee00f268cb6161a2fcd8de2c9541ca37df6e371819535c6692558534f89a",
+  "diagnosticsScriptSha256": "d4f841b77700d1090353864a2449f8c409e8d45501665493452d72e73574cf26",
+  "nativeExecuted": false
+}

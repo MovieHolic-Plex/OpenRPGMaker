@@ -1,0 +1,238 @@
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 20 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/playerBodyProjectPersistence.test.ts > player body Project persistence > starts the authored 3 x 3 / 1 body after public IO
+ FAIL  test/playerBodyProjectPersistence.test.ts > player body Project persistence > starts the authored 2 x 5 / 2 body after public IO
+ FAIL  test/playerBodyProjectPersistence.test.ts > player body Project persistence > starts the authored 8 x 8 / 7 body after public IO
+AssertionError: expected { …(2) } to deeply equal { …(2) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "footprint": {[22m
+[32m-     "height": 3,[39m
+[32m-     "width": 3,[39m
+[31m+     "height": 1,[39m
+[31m+     "width": 1,[39m
+[2m    },[22m
+[2m    "passRows": 1,[22m
+[2m  }[22m
+
+ ❯ test/playerBodyProjectPersistence.test.ts:37:50
+     35|     for (let cycle = 0; cycle < 3; cycle += 1) {
+     36|       const session = startSession(loaded, 52);
+     37|       expect(resolvePlayerBody(loaded, session)).toEqual({ footprint: …
+       |                                                  ^
+     38|       expect(loaded.system.playerFootprint).toEqual({ width, height });
+     39|       expect(loaded.system.playerPassRows).toBe(rows);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/20]⎯
+
+ FAIL  test/playerBodyProjectPersistence.test.ts > player body Project persistence > does not materialize an independently absent optional: {"playerFootprint":{"width":3,"height":3}}
+ FAIL  test/playerBodyProjectPersistence.test.ts > player body Project persistence > does not materialize an independently absent optional: {"playerPassRows":1}
+AssertionError: expected false to be true // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+ ❯ test/playerBodyProjectPersistence.test.ts:55:49
+     53|     const loaded = deserialize(serialize(project));
+     54|     for (const key of ["playerFootprint", "playerPassRows"] as const) {
+     55|       expect(Object.hasOwn(loaded.system, key)).toBe(fields[key] !== u…
+       |                                                 ^
+     56|     }
+     57|     expect(resolvePlayerBody(loaded, startSession(loaded, 52))).toEqua…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/20]⎯
+
+ FAIL  test/playerBodyProjectPersistence.test.ts > player body Project persistence > rejects malformed wire values but normalizes direct inputs with runtime authority: {"footprint":{"width":99,"height":99},"rows":99}
+AssertionError: expected undefined to deeply equal { width: 8, height: 8 }
+
+[32m- Expected:[39m 
+{
+  "height": 8,
+  "width": 8,
+}
+
+[31m+ Received:[39m 
+undefined
+
+ ❯ test/playerBodyProjectPersistence.test.ts:80:44
+     78|     expect(() => deserialize(serialize(project))).toThrow(ProjectForma…
+     79|     project.system = normalizeSystemRecords(project.system);
+     80|     expect(project.system.playerFootprint).toEqual(expected.footprint);
+       |                                            ^
+     81|     expect(project.system.playerPassRows).toBe(expected.passRows);
+     82|     const loaded = deserialize(serialize(project));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/20]⎯
+
+ FAIL  test/playerBodyProjectPersistence.test.ts > player body Project persistence > rejects malformed wire values but normalizes direct inputs with runtime authority: {"footprint":{"width":-2,"height":3},"rows":0}
+ FAIL  test/playerBodyProjectPersistence.test.ts > player body Project persistence > rejects malformed wire values but normalizes direct inputs with runtime authority: {"footprint":{"width":2.5,"height":3},"rows":-1}
+ FAIL  test/playerBodyProjectPersistence.test.ts > player body Project persistence > rejects malformed wire values but normalizes direct inputs with runtime authority: {"footprint":{"height":3},"rows":"1"}
+AssertionError: expected undefined to deeply equal { width: 1, height: 3 }
+
+[32m- Expected:[39m 
+{
+  "height": 3,
+  "width": 1,
+}
+
+[31m+ Received:[39m 
+undefined
+
+ ❯ test/playerBodyProjectPersistence.test.ts:80:44
+     78|     expect(() => deserialize(serialize(project))).toThrow(ProjectForma…
+     79|     project.system = normalizeSystemRecords(project.system);
+     80|     expect(project.system.playerFootprint).toEqual(expected.footprint);
+       |                                            ^
+     81|     expect(project.system.playerPassRows).toBe(expected.passRows);
+     82|     const loaded = deserialize(serialize(project));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/20]⎯
+
+ FAIL  test/playerBodyProjectPersistence.test.ts > player body Project persistence > rejects malformed wire values but normalizes direct inputs with runtime authority: {"footprint":{"width":"3","height":4},"rows":1.5}
+AssertionError: expected undefined to deeply equal { width: 1, height: 4 }
+
+[32m- Expected:[39m 
+{
+  "height": 4,
+  "width": 1,
+}
+
+[31m+ Received:[39m 
+undefined
+
+ ❯ test/playerBodyProjectPersistence.test.ts:80:44
+     78|     expect(() => deserialize(serialize(project))).toThrow(ProjectForma…
+     79|     project.system = normalizeSystemRecords(project.system);
+     80|     expect(project.system.playerFootprint).toEqual(expected.footprint);
+       |                                            ^
+     81|     expect(project.system.playerPassRows).toBe(expected.passRows);
+     82|     const loaded = deserialize(serialize(project));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/20]⎯
+
+ FAIL  test/playerBodyProjectPersistence.test.ts > player body Project persistence > rejects malformed wire values but normalizes direct inputs with runtime authority: {"footprint":{"width":3,"height":3},"rows":null}
+ FAIL  test/playerBodyProjectPersistence.test.ts > player body Project persistence > rejects malformed wire values but normalizes direct inputs with runtime authority: {"footprint":{"width":3,"height":3},"rows":9007199254740992}
+AssertionError: expected undefined to deeply equal { width: 3, height: 3 }
+
+[32m- Expected:[39m 
+{
+  "height": 3,
+  "width": 3,
+}
+
+[31m+ Received:[39m 
+undefined
+
+ ❯ test/playerBodyProjectPersistence.test.ts:80:44
+     78|     expect(() => deserialize(serialize(project))).toThrow(ProjectForma…
+     79|     project.system = normalizeSystemRecords(project.system);
+     80|     expect(project.system.playerFootprint).toEqual(expected.footprint);
+       |                                            ^
+     81|     expect(project.system.playerPassRows).toBe(expected.passRows);
+     82|     const loaded = deserialize(serialize(project));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/20]⎯
+
+ FAIL  test/playerBodyProjectPersistence.test.ts > player body Project persistence > rejects malformed wire values but normalizes direct inputs with runtime authority: {"footprint":null,"rows":2}
+ FAIL  test/playerBodyProjectPersistence.test.ts > player body Project persistence > rejects malformed wire values but normalizes direct inputs with runtime authority: {"footprint":[],"rows":1}
+ FAIL  test/playerBodyProjectPersistence.test.ts > player body Project persistence > rejects malformed wire values but normalizes direct inputs with runtime authority: {"footprint":"3x3","rows":1}
+AssertionError: expected undefined to deeply equal { width: 1, height: 1 }
+
+[32m- Expected:[39m 
+{
+  "height": 1,
+  "width": 1,
+}
+
+[31m+ Received:[39m 
+undefined
+
+ ❯ test/playerBodyProjectPersistence.test.ts:80:44
+     78|     expect(() => deserialize(serialize(project))).toThrow(ProjectForma…
+     79|     project.system = normalizeSystemRecords(project.system);
+     80|     expect(project.system.playerFootprint).toEqual(expected.footprint);
+       |                                            ^
+     81|     expect(project.system.playerPassRows).toBe(expected.passRows);
+     82|     const loaded = deserialize(serialize(project));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/20]⎯
+
+ FAIL  test/playerBodyProjectPersistence.test.ts > player body Project persistence > rejects malformed wire values but normalizes direct inputs with runtime authority: {"footprint":{"width":3,"height":9007199254740992},"rows":2}
+AssertionError: expected undefined to deeply equal { width: 3, height: 1 }
+
+[32m- Expected:[39m 
+{
+  "height": 1,
+  "width": 3,
+}
+
+[31m+ Received:[39m 
+undefined
+
+ ❯ test/playerBodyProjectPersistence.test.ts:80:44
+     78|     expect(() => deserialize(serialize(project))).toThrow(ProjectForma…
+     79|     project.system = normalizeSystemRecords(project.system);
+     80|     expect(project.system.playerFootprint).toEqual(expected.footprint);
+       |                                            ^
+     81|     expect(project.system.playerPassRows).toBe(expected.passRows);
+     82|     const loaded = deserialize(serialize(project));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/20]⎯
+
+ FAIL  test/playerBodyProjectPersistence.test.ts > player body Project persistence > normalizes nonfinite direct inputs with the existing helpers: NaN
+ FAIL  test/playerBodyProjectPersistence.test.ts > player body Project persistence > normalizes nonfinite direct inputs with the existing helpers: Infinity
+ FAIL  test/playerBodyProjectPersistence.test.ts > player body Project persistence > normalizes nonfinite direct inputs with the existing helpers: -Infinity
+AssertionError: expected undefined to deeply equal { width: 1, height: 3 }
+
+[32m- Expected:[39m 
+{
+  "height": 3,
+  "width": 1,
+}
+
+[31m+ Received:[39m 
+undefined
+
+ ❯ test/playerBodyProjectPersistence.test.ts:95:36
+     93|     project.system.playerPassRows = value;
+     94|     const system = normalizeSystemRecords(project.system);
+     95|     expect(system.playerFootprint).toEqual({ width: 1, height: 3 });
+       |                                    ^
+     96|     expect(system.playerPassRows).toBe(3);
+     97|     expect(resolvePlayerBody({ system })).toEqual(resolvePlayerBody(pr…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/20]⎯
+
+ FAIL  test/playerBodyProjectPersistence.test.ts > player body Project persistence > keeps independent session override priority and resolved-height clamping after IO
+AssertionError: expected { …(2) } to deeply equal { …(2) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "footprint": {[22m
+[32m-     "height": 3,[39m
+[32m-     "width": 3,[39m
+[31m+     "height": 1,[39m
+[31m+     "width": 1,[39m
+[2m    },[22m
+[2m    "passRows": 1,[22m
+[2m  }[22m
+
+ ❯ test/playerBodyProjectPersistence.test.ts:109:48
+    107|     expect(session.playerPassRows).toBeUndefined();
+    108|     session.playerPassRows = 1;
+    109|     expect(resolvePlayerBody(loaded, session)).toEqual({ footprint: { …
+       |                                                ^
+    110|     session.playerFootprint = { width: 2, height: 5 };
+    111|     expect(resolvePlayerBody(loaded, session)).toEqual({ footprint: { …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/20]⎯
+

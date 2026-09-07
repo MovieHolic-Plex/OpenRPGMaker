@@ -1,0 +1,23 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p4",
+  "argv": [
+    "timeout",
+    "--kill-after=10s",
+    "600s",
+    "node",
+    ".omo/evidence/life-full-20260906/52/verify/probe-runner.mjs"
+  ],
+  "directArgv": [
+    "node",
+    ".omo/evidence/life-full-20260906/52/verify/probe-runner.mjs"
+  ],
+  "env": {
+    "TMPDIR": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/52/verify/cache-public-probe-st092kwq",
+    "XDG_CACHE_HOME": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/52/verify/cache-public-probe-st092kwq/xdg",
+    "VITE_CACHE_DIR": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/52/verify/cache-public-probe-st092kwq/vite",
+    "npm_config_cache": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/52/verify/cache-public-probe-st092kwq/npm",
+    "npm_config_update_notifier": "false",
+    "npm_config_offline": "true",
+    "GIT_OPTIONAL_LOCKS": "0"
+  }
+}

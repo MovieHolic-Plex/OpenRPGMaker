@@ -1,0 +1,24 @@
+{
+  "original_relative_to_task52": "producer/diagnostics.mjs",
+  "original_absolute": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/52/producer/diagnostics.mjs",
+  "original_bytes": 1465,
+  "original_sha256": "8316994a4a705fbcda13a915c5d0f34733b3f64f5dbbafe990acf9c4278968b3",
+  "original_mode_octal": "0o644",
+  "original_mtime_ns": 1788769505285851625,
+  "original_allocated_bytes": 4096,
+  "archive_relative_to_task52": "archive/payload/producer/diagnostics.mjs.gz",
+  "archive_bytes": 747,
+  "archive_sha256": "c98de42c83a3360a6952d8718922281f2c762ec92a36438f6506ba223216e413",
+  "archive_mode_octal": "0o600",
+  "archive_allocated_bytes": 4096,
+  "encoding": "gzip (no filename, mtime=0); raw bytes unchanged",
+  "verification": {
+    "original_manifest_match": null,
+    "independent_decoder": "system gzip -cd",
+    "decoded_bytes": 1465,
+    "decoded_sha256": "8316994a4a705fbcda13a915c5d0f34733b3f64f5dbbafe990acf9c4278968b3",
+    "byte_equal": true
+  },
+  "original_disposition": "retained_unchanged",
+  "publication": "withheld: restricted payload, not privacy-cleared"
+}

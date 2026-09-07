@@ -1,0 +1,18 @@
+{
+  "validator": "functions.lsp_diagnostics",
+  "files": {
+    "audit.py": {
+      "result": "No diagnostics found",
+      "sha256": "7fe0ee74ba1803468c0ee52502caae19e495a9314e2103bc195c9cc7be3098f9"
+    },
+    "run.py": {
+      "result": "No diagnostics found",
+      "sha256": "6879d5cae3ee229f20d525ab591e5489a57fc1467aec7ec99815a10f1ceeae56"
+    },
+    "certify.py": {
+      "result": "No diagnostics found",
+      "sha256": "b6bffbab7d1704df377c2337d56c3cbe0f3ea00edc1cd06871b16f3f6d8a5744"
+    }
+  },
+  "initialWarnings": "Ruff E701/E702/E401 and two unused imports in initial evidence scripts; corrected only in evidence; executed initial text preserved."
+}

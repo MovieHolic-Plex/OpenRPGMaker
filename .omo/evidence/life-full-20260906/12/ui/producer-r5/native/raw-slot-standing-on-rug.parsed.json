@@ -1,0 +1,40 @@
+{
+  "buildings": {
+    "r5-retained-shed": {
+      "instanceId": "r5-retained-shed",
+      "typeId": "shed",
+      "mapId": "map_blank_start",
+      "x": 12,
+      "y": 6,
+      "orientation": "down",
+      "level": 1
+    }
+  },
+  "decorations": {
+    "ledger:decoration:rug:1": {
+      "instanceId": "ledger:decoration:rug:1",
+      "typeId": "rug",
+      "mapId": "map_blank_start",
+      "x": 7,
+      "y": 9,
+      "orientation": "down",
+      "recoveryItem": {
+        "itemId": "item_potion",
+        "count": 1
+      }
+    }
+  },
+  "x": 8,
+  "y": 9,
+  "gold": 500,
+  "inventory": {
+    "item_hoe": 1,
+    "item_potion": 7
+  },
+  "recoveryItems": {
+    "ledger:decoration:rug:1": {
+      "itemId": "item_potion",
+      "count": 1
+    }
+  }
+}

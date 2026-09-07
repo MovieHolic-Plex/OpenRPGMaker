@@ -1,0 +1,41 @@
+{
+  "argv": [
+    "flock",
+    "--timeout",
+    "900",
+    "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=30s",
+    "600s",
+    "node",
+    ".omo/evidence/life-full-20260906/12/ui/fixtures-r5/diagnostics.mjs"
+  ],
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p4",
+  "environment": {
+    "TMPDIR": "/dev/shm/st_01a07be4",
+    "XDG_CACHE_HOME": "/dev/shm/st_01a07be4/xdg",
+    "VITE_CACHE_DIR": "/dev/shm/st_01a07be4/vite"
+  },
+  "started": 1788785436.3564994,
+  "ownedInputsBefore": {
+    "rug.reloaded.json": "265f600a710025ee451361b70746b50ca2bf9165e6815d4ce0aa582e7eca520b",
+    "fixture.pre-diagnostics.mts": "57cf4615612f9bd01874a03cf7a4ac869fc9255a5dd0682d02e4fec702a5cb1c",
+    "fixture.mts": "182bee00f268cb6161a2fcd8de2c9541ca37df6e371819535c6692558534f89a",
+    "rug.authored.json": "265f600a710025ee451361b70746b50ca2bf9165e6815d4ce0aa582e7eca520b",
+    "fixture.initial-probe.mts": "e14d3510f2220f446576e00361c1e78ff26c0ebb019aa401aea22c46e0693272",
+    "run.py": "1575614f299b8ec9e681b23f0e2044d4c1d3d36ce463fa3540ef72cd888e1158"
+  },
+  "exit": 0,
+  "finished": 1788785451.6991577,
+  "stdoutSha256": "dd4fa13550bdd0e3e6bbad26545ea2e7d0686200c05d6a24d13c609eeed8134e",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "ownedInputsAfter": {
+    "rug.reloaded.json": "265f600a710025ee451361b70746b50ca2bf9165e6815d4ce0aa582e7eca520b",
+    "fixture.pre-diagnostics.mts": "57cf4615612f9bd01874a03cf7a4ac869fc9255a5dd0682d02e4fec702a5cb1c",
+    "fixture.mts": "182bee00f268cb6161a2fcd8de2c9541ca37df6e371819535c6692558534f89a",
+    "rug.authored.json": "265f600a710025ee451361b70746b50ca2bf9165e6815d4ce0aa582e7eca520b",
+    "fixture.initial-probe.mts": "e14d3510f2220f446576e00361c1e78ff26c0ebb019aa401aea22c46e0693272",
+    "run.py": "1575614f299b8ec9e681b23f0e2044d4c1d3d36ce463fa3540ef72cd888e1158"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "archive_path": "archive/payload/verify/captures/invalid3-normalized.json.gz",
+  "archive_sha256": "f19f2fc82d95c3a887741c4794b0065d415a95774288a5592b21271c564545a1",
+  "archive_bytes": 701,
+  "original_sha256": "0b69b00a79da612c5820b3e7d0eced6f613e1d39ebc34bdb7599aac5bedb1ece",
+  "original_bytes": 1905,
+  "record_path": "archive/records/267.json",
+  "integrity": "encoded and decoded hash/size match immutable record",
+  "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits",
+  "finding_reasons": [],
+  "inspection": {
+    "utf8": true,
+    "entire_utf8_text_marker_scan": true,
+    "structured_json": true,
+    "structured_nodes": 65,
+    "structured_strings": 24,
+    "opaque_asset_or_base64_strings_not_decoded": 0,
+    "notes": []
+  },
+  "limitation": "Automated bounded inspection does not establish absence of opaque/encoded secrets or unmarked sensitive prose. No embedded assets decoded or interpreted; no candidate values emitted."
+}

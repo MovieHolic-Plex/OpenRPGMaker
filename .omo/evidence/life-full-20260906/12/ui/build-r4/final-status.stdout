@@ -1,0 +1,17 @@
+ M openwiki/INDEX.md
+ M openwiki/runtime-project-schema.md
+ M openwiki/runtime-sessions.md
+ M src/player/PlayScene.ts
+ M src/player/lifeLedger.ts
+ M src/player/playerStatusMenu.ts
+ M src/player/playerStatusMenuController.ts
+ M src/player/playerStatusMenuDetailTypes.ts
+ M src/player/playerStatusMenuDetails.ts
+ M src/player/playerStatusMenuTypes.ts
+ M src/project/databaseRecordModel.ts
+ M test/p2SpatialPlayIntegration.test.ts
+ M test/p2SpatialRuntimeUi.test.ts
+?? src/player/lifePlacementScene.ts
+?? test/lifePlacementRenderedBodyReplay.test.ts
+?? test/lifePlacementSceneUi.test.ts
+?? test/playerBodyProjectPersistence.test.ts

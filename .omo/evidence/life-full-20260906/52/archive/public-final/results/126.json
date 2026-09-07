@@ -1,0 +1,21 @@
+{
+  "archive_path": "archive/payload/verify/certify.py.gz",
+  "archive_sha256": "8d70257654e26d00ae1d6fc506d287f5d7113fdd01eef8673d2cb569232ee8e2",
+  "archive_bytes": 1474,
+  "original_sha256": "117f7955096a8231f6163589fce5599147984e42482bc292fdb82a0e2bbceef2",
+  "original_bytes": 3524,
+  "record_path": "archive/records/126.json",
+  "integrity": "encoded and decoded hash/size match immutable record",
+  "privacy_status": "cleared_for_public_allowlist_under_documented_scan_limits",
+  "finding_reasons": [],
+  "inspection": {
+    "utf8": true,
+    "entire_utf8_text_marker_scan": true,
+    "structured_json": false,
+    "structured_nodes": 0,
+    "structured_strings": 0,
+    "opaque_asset_or_base64_strings_not_decoded": 0,
+    "notes": []
+  },
+  "limitation": "Automated bounded inspection does not establish absence of opaque/encoded secrets or unmarked sensitive prose. No embedded assets decoded or interpreted; no candidate values emitted."
+}

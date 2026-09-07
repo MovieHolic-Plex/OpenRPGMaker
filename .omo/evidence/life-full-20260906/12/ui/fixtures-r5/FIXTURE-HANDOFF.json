@@ -1,0 +1,141 @@
+{
+  "status": "CORE-PREFLIGHT-PASS-NATIVE-PENDING",
+  "taskId": "st_01a07be4",
+  "projectId": "rpg-zzu-life-full-p4-t12-rug-st-01a07be4",
+  "input": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/fixtures-r5/rug.reloaded.json",
+  "inputSha256": "265f600a710025ee451361b70746b50ca2bf9165e6815d4ce0aa582e7eca520b",
+  "inputKind": "remotely-reloaded-pre-action-Project4",
+  "immutableMode": "0444",
+  "sourceProjectId": "rpg-zzu-life-full-p4-t12-arena-st-01a07ba6",
+  "body": {
+    "footprint": {
+      "width": 3,
+      "height": 3
+    },
+    "passRows": 1
+  },
+  "mapId": "map_blank_start",
+  "startFoot": {
+    "x": 8,
+    "y": 8
+  },
+  "initialFacingContract": "down",
+  "authoredShed": {
+    "instanceId": "r5-retained-shed",
+    "typeId": "shed",
+    "mapId": "map_blank_start",
+    "x": 12,
+    "y": 6,
+    "orientation": "down",
+    "level": 1
+  },
+  "rugDefinition": {
+    "id": "rug",
+    "name": "Rug",
+    "placementItemId": "item_potion",
+    "footprint": {
+      "width": 2,
+      "height": 1
+    },
+    "blocksMovement": false,
+    "allowedOrientations": [
+      "down",
+      "left"
+    ],
+    "graphicResourceId": "easyrpg-picture-cloud"
+  },
+  "placementTarget": {
+    "mapId": "map_blank_start",
+    "x": 7,
+    "y": 9,
+    "orientation": "down"
+  },
+  "downOnto": {
+    "from": {
+      "x": 8,
+      "y": 8
+    },
+    "to": {
+      "x": 8,
+      "y": 9
+    },
+    "passage": {
+      "left": 7,
+      "right": 9,
+      "top": 9,
+      "bottom": 9
+    },
+    "intersection": [
+      {
+        "x": 7,
+        "y": 9
+      },
+      {
+        "x": 8,
+        "y": 9
+      }
+    ],
+    "terrain": true,
+    "persistentBlocking": false
+  },
+  "downOff": {
+    "from": {
+      "x": 8,
+      "y": 9
+    },
+    "to": {
+      "x": 8,
+      "y": 10
+    },
+    "passage": {
+      "left": 7,
+      "right": 9,
+      "top": 10,
+      "bottom": 10
+    },
+    "intersection": [],
+    "terrain": true,
+    "persistentBlocking": false
+  },
+  "relocationTarget": {
+    "mapId": "map_blank_start",
+    "x": 7,
+    "y": 11,
+    "orientation": "down"
+  },
+  "nativeExpectedOwnerId": "ledger:decoration:rug:1",
+  "nativeSteps": [
+    "place rug at7,9/down; potion8->7, gold500",
+    "DOWN to8,9; actual passage intersects both rug cells",
+    "Save slot1 while standing on rug; inspect actual slot values",
+    "DOWN to8,10; move same rug to7,11 without extra cost",
+    "Load slot1; inspect actual LIVE foot8,9 and rug7,9 plus retained shed/costs",
+    "Save loaded state to slot2; compare actual new slot2 foot/owners/costs with slot1 and live state"
+  ],
+  "notNativeProof": true,
+  "noTask12Approval": true,
+  "coreProof": "core-proof.json",
+  "remoteReceipts": [
+    "connection-proof.json",
+    "save-receipt.json",
+    "reload-receipt.json",
+    "author.requests.json",
+    "probe-final.requests.json"
+  ],
+  "commands": {
+    "connection": 0,
+    "author": 0,
+    "probe": 1,
+    "diagnostics": 1,
+    "diagnostics-final": 0,
+    "probe-final": 0
+  },
+  "failureNotes": [
+    "probe: omitted chests is undefined, not empty object; exact assertion corrected",
+    "diagnostics: readonly expected placement property; replaced expected owner object without suppression"
+  ],
+  "preservation": "certification.json",
+  "cleanup": "final-cleanup.json",
+  "nativeContract": "HANDOFF.md",
+  "remoteProjectRetained": true
+}
