@@ -4,6 +4,7 @@ import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { enumValue } from "./assistantPayload";
 import { jsonObject } from "./checkpointState";
 import type { BlobRef, JsonObject } from "./contracts";
+import { parseReportAssets } from "./reportAssets.mjs";
 import type { GeneratedPictureKind } from "@/editor/generatedPictureAsset";
 
 /** Prompt already includes the field's kind prefix. resourceId is allocated at admission;
@@ -15,6 +16,7 @@ export interface ImageJobPayload {
   readonly name: string;
   readonly kind: GeneratedPictureKind;
   readonly postprocess: "none" | "flatten";
+  readonly reportAssets?: Record<string, BlobRef>;
 }
 export type ImageJobDestination =
   | { readonly kind: "database"; readonly table: "actors"; readonly recordId: string; readonly field: "faceResourceId" }
@@ -66,7 +68,8 @@ export function parseImageJobPayload(value: unknown): ImageJobPayload {
   assert(kind !== "faceset" || resourceId.includes("-bust"), "Faceset resource ID must retain -bust");
   return { prompt: imageString("prompt", r.prompt).trim(), resourceId, name: imageString("name", r.name).trim(), kind,
     model: r.model === undefined ? undefined : imageString("model", r.model),
-    postprocess: enumValue(r.postprocess, ["none", "flatten"]) };
+    postprocess: enumValue(r.postprocess, ["none", "flatten"]),
+    ...(r.reportAssets === undefined ? {} : { reportAssets: parseReportAssets(r.reportAssets) }) };
 }
 export function parseImageJobDestination(value: unknown, imageKind: GeneratedPictureKind): ImageJobDestination {
   const r = requireRecord("image destination", value);

@@ -1,4 +1,5 @@
 import { assert, requireNumber, requireRecord, requireString } from "@/project/io/guards";
+import { parseReportAssets } from "./reportAssets.mjs";
 import type { Project } from "@/project/types";
 import { enumValue, parseAssistantPayload, type AssistantJobPayload } from "./assistantPayload";
 import type { RegionGenerationOptions, RegionGenerationProposal } from "@/editor/regionTask/regionGenerationCore";
@@ -7,11 +8,12 @@ import type { RegionGenerationOptions, RegionGenerationProposal } from "@/editor
 export interface RegionJobPayload extends RegionGenerationOptions {
   config: AssistantJobPayload["config"];
   context: AssistantJobPayload["context"];
+  reportAssets?: AssistantJobPayload["reportAssets"];
 }
 
 export function parseRegionPayload(value: unknown, project: Project): RegionJobPayload {
   const p = requireRecord("region payload", value);
-  assert(Object.keys(p).every(key => ["instruction", "mapId", "region", "mode", "config", "context"].includes(key)), "Unexpected region input field");
+  assert(Object.keys(p).every(key => ["instruction", "mapId", "region", "mode", "config", "context", "reportAssets"].includes(key)), "Unexpected region input field");
   const mapId = requireString("mapId", p.mapId);
   const map = project.maps[mapId];
   assert(!!map, "Region map does not exist");
@@ -24,7 +26,8 @@ export function parseRegionPayload(value: unknown, project: Project): RegionJobP
   assert(assistant.context.currentMapId === undefined || assistant.context.currentMapId === mapId, "Captured current map differs from region map");
   assert(!assistant.context.viewport || assistant.context.viewport.mapId === mapId, "Captured viewport differs from region map");
   return { instruction: assistant.instruction, config: assistant.config, context: { ...assistant.context, currentMapId: mapId },
-    mapId, region, mode: enumValue(p.mode, ["task", "polish"]) };
+    mapId, region, mode: enumValue(p.mode, ["task", "polish"]),
+    ...(p.reportAssets === undefined ? {} : { reportAssets: parseReportAssets(p.reportAssets) }) };
 }
 
 /** Typed region portion of result.payload; assistant turn/usage/audit fields accompany it. */

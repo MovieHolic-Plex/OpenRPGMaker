@@ -67,7 +67,9 @@ const config = {
   model: "gemini-3.7-flash", maxToolCalls: 8, maxTokens: 4096,
 };
 
-it("routes a database request through the actual worker entry and returns a private generated record", async () => {
+const reportPin = { sha256: createHash("sha256").update("captured-artwork").digest("hex"), byteLength: 16, mediaType: "image/png" };
+
+it.each([false, true])("routes a database request through the actual worker entry (report pins: %s) and returns a private generated record", async pinned => {
   const baseline = createBlankProject();
   const { host, snapshot, run } = await routingFixture(baseline, async ({ key }) => {
     expect(key).toBe("database/text");
@@ -78,8 +80,9 @@ it("routes a database request through the actual worker entry and returns a priv
   });
   const input: AiJobInput = {
     version: 1, family: "database", project: { backend: "local", projectId: "routing-project" },
-    projectSnapshot: snapshot, artwork: [], target: {}, mode: "review", dependsOn: [],
-    payload: { kind: "item", brief: "Create a potion", withArtwork: false, config },
+    projectSnapshot: snapshot, artwork: pinned ? [reportPin] : [], target: {}, mode: "review", dependsOn: [],
+    payload: { kind: "item", brief: "Create a potion", withArtwork: false, config,
+      ...(pinned ? { reportAssets: { atlas: reportPin } } : {}) },
   };
   const result = await run(input);
   expect(result.family).toBe("database");
@@ -92,7 +95,7 @@ it("routes a database request through the actual worker entry and returns a priv
   expect(result.payload.persistence).toBe("not-applicable");
 }, 60000);
 
-it("routes captured event drafts into a reviewed proposal without changing the saved commands", async () => {
+it.each([false, true])("routes captured event drafts (report pins: %s) into a reviewed proposal without changing the saved commands", async pinned => {
   const baseline = createBlankProject();
   const page: EventPage = {
     id: "routing-page", name: "Greeting", commands: [{ kind: "text", body: "Saved greeting" }],
@@ -113,12 +116,13 @@ it("routes captured event drafts into a reviewed proposal without changing the s
   });
   const result = await run({
     version: 1, family: "event-commands", project: { backend: "local", projectId: "routing-project" },
-    projectSnapshot: snapshot, artwork: [], mode: "review", dependsOn: [],
+    projectSnapshot: snapshot, artwork: pinned ? [reportPin] : [], mode: "review", dependsOn: [],
     target: { kind: "map-event-page", mapId, eventId: "routing-event", pageId: page.id },
     payload: {
       prompt: "Rewrite this greeting", config,
       baseCommands: [{ kind: "text", body: "Unsaved draft greeting" }],
       selection: null, preferenceMemorySection: "",
+      ...(pinned ? { reportAssets: { atlas: reportPin } } : {}),
     },
   });
   expect(result.generatedSnapshot).toBeNull();

@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { parseReportAssets } from '../../../src/ai/jobs/reportAssets.mjs';
 
 export class AiJobsRepositoryError extends Error {
   constructor(code, message, options) { super(message, options); this.name = 'AiJobsRepositoryError'; this.code = code; }
@@ -56,6 +57,13 @@ export function validateInput(v) {
   identity(v.project); validateRef(v.projectSnapshot);
   requireValue(Array.isArray(v.artwork) && Array.isArray(v.dependsOn) && v.dependsOn.every(text) && new Set(v.dependsOn).size === v.dependsOn.length, 'Invalid input references');
   v.artwork.forEach(validateRef);
+  if (v.payload.reportAssets !== undefined) {
+    const pins = parseReportAssets(v.payload.reportAssets, requireValue);
+    for (const ref of Object.values(pins)) {
+      const matches = v.artwork.filter(art => art.sha256 === ref.sha256);
+      requireValue(matches.length > 0 && matches.every(art => canonicalJson(art) === canonicalJson(ref)), 'reportAssets reference is outside input artwork manifest');
+    }
+  }
 }
 export function validateResult(v) {
   keys(v, ['version', 'family', 'jobId', 'attemptId', 'project', 'baseSnapshot', 'generatedSnapshot', 'artifacts', 'payload']);

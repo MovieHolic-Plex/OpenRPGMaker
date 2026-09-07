@@ -7,6 +7,7 @@ import type { AiConfig } from "../llmClient";
 import type { AssistScope, EventAssistContext } from "../eventCommandAssist";
 import { enumValue } from "./assistantPayload";
 import type { BlobRef } from "./contracts";
+import { parseReportAssets } from "./reportAssets.mjs";
 
 /** input.target. common-event still captures the map used for reference context. */
 export type EventCommandsTarget =
@@ -26,6 +27,7 @@ export interface EventCommandsJobPayload {
   selectionLabel?: string;
   preferenceMemorySection: string;
   projectScopeKey?: string;
+  reportAssets?: Record<string, BlobRef>;
 }
 
 function shape(value: unknown, keys: readonly string[]): Record<string, unknown> {
@@ -74,7 +76,7 @@ export function parseEventCommands(value: unknown): Command[] {
   return commands;
 }
 export function parseEventCommandsPayload(value: unknown): EventCommandsJobPayload {
-  const p = shape(value, ["prompt", "config", "draftBinding", "baseCommands", "selection", "selectionLabel", "preferenceMemorySection", "projectScopeKey"]);
+  const p = shape(value, ["prompt", "config", "draftBinding", "baseCommands", "selection", "selectionLabel", "preferenceMemorySection", "projectScopeKey", "reportAssets"]);
   const c = shape(p.config, ["authMode", "providerId", "model", "liteModel", "maxTokens", "maxToolCalls", "reasoningEffort"]);
   const selection = p.selection === null ? null : requireArray("selection", p.selection).map((value, index) => {
     const n = requireNumber("selection index", value);
@@ -95,6 +97,7 @@ export function parseEventCommandsPayload(value: unknown): EventCommandsJobPaylo
     baseCommands: parseEventCommands(p.baseCommands), selection,
     selectionLabel: optionalString(p.selectionLabel), preferenceMemorySection: requireString("preferenceMemorySection", p.preferenceMemorySection),
     projectScopeKey: optionalString(p.projectScopeKey),
+    ...(p.reportAssets === undefined ? {} : { reportAssets: parseReportAssets(p.reportAssets) }),
   };
 }
 export function eventCommandsContext(project: Project, target: EventCommandsTarget, payload: EventCommandsJobPayload): EventAssistContext {

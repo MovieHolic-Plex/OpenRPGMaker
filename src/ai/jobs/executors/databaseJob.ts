@@ -2,6 +2,7 @@ import type { AiJobHost } from "../../../../scripts/lib/aiJobs/scheduler.mjs";
 import type { AiJobInput, AiJobResult, BlobRef, JsonObject, JsonValue } from "../contracts";
 import { jsonObject, jsonValue, parseProject } from "../checkpointState";
 import { enumValue, parseAssistantPayload } from "../assistantPayload";
+import { parseReportAssets } from "../reportAssets.mjs";
 import { assert, requireBoolean, requireNumber, requireRecord, requireString } from "@/project/io/guards";
 import { requestBody, parseNonStream, type AiConfig } from "../../llmClient";
 import { generateAiImage, IMAGE_GENERATION_PROVIDER_ID } from "../../imageGenerationClient";
@@ -19,6 +20,7 @@ export interface DatabaseJobPayload {
   readonly brief: string;
   readonly config: Omit<AiConfig, "apiKey" | "baseUrl">;
   readonly withArtwork: boolean;
+  readonly reportAssets?: Record<string, BlobRef>;
 }
 export interface DatabaseJobProposal {
   readonly kind: AiDatabaseKind;
@@ -48,15 +50,16 @@ interface DatabaseState {
   completed?: { generatedSnapshot: BlobRef; proposal: JsonObject };
 }
 
-function parsePayload(value: unknown): DatabaseJobPayload {
+export function parseDatabaseJobPayload(value: unknown): DatabaseJobPayload {
   const p = requireRecord("database payload", value);
-  assert(Object.keys(p).every(key => ["kind", "brief", "config", "withArtwork"].includes(key)), "Unexpected database payload field");
+  assert(Object.keys(p).every(key => ["kind", "brief", "config", "withArtwork", "reportAssets"].includes(key)), "Unexpected database payload field");
   const brief = requireString("brief", p.brief).trim();
   // Reuse the captured nonsecret provider-config guard, including rejection of
   // unsupported transports. No assistant session is constructed or executed.
   const { config } = parseAssistantPayload({ instruction: brief, config: p.config, domain: "database",
     context: { budgetChars: 1, preferenceMemorySection: "" } });
-  return { kind: enumValue(p.kind, ["item", "enemy"]), brief, config, withArtwork: requireBoolean("withArtwork", p.withArtwork) };
+  return { kind: enumValue(p.kind, ["item", "enemy"]), brief, config, withArtwork: requireBoolean("withArtwork", p.withArtwork),
+    ...(p.reportAssets === undefined ? {} : { reportAssets: parseReportAssets(p.reportAssets) }) };
 }
 function parseRef(value: unknown, image = false): BlobRef {
   const r = requireRecord("database blob reference", value);
@@ -131,7 +134,7 @@ function capturedProposal(project: Project, state: DatabaseState): DatabaseJobPr
 
 /** Executes against the submitted snapshot only. No live apply/save authority. */
 export async function executeDatabaseJob(input: AiJobInput & { family: "database" }, host: AiJobHost): Promise<AiJobResult> {
-  const payload = parsePayload(input.payload);
+  const payload = parseDatabaseJobPayload(input.payload);
   const baseline = parseProject(await host.readJson(input.projectSnapshot));
   const checkpoint = await host.loadCheckpoint();
   let state = checkpoint ? parseState(checkpoint.state, payload, baseline) : undefined;

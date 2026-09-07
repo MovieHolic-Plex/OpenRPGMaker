@@ -1,13 +1,14 @@
 import { assert, requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "@/project/io/guards";
 import { enumValue, parseAssistantPayload, type AssistantJobPayload } from "./assistantPayload";
 import type { BlobRef } from "./contracts";
+import { parseReportAssets } from "./reportAssets.mjs";
 import type { AiSetupChoice } from "@/editor/panels/tilesetAiSetupMapping";
 import type { TilesetAiReviewReady, TilesetAiReviewProposal } from "@/editor/tilesetAiNativeReviewModel";
 import type { TilesetAiConversationTurn } from "@/editor/tilesetAiConversationSession";
 
 export const TILESET_JOB_OPERATIONS = ["cluster-edit", "range-classify", "unclassified-analysis", "knowledge-analysis", "proposal-draft", "question-followup", "structure-kit-metadata"] as const;
 export type TilesetJobOperation = typeof TILESET_JOB_OPERATIONS[number];
-type Base = Pick<AssistantJobPayload, "config" | "context"> & { tilesetId: string; sourceJobId?: string };
+type Base = Pick<AssistantJobPayload, "config" | "context" | "reportAssets"> & { tilesetId: string; sourceJobId?: string };
 type Cluster = { instruction?: string; priorTranscript?: string };
 export type TilesetJobPayload = Base & (
   | (Cluster & { operation: "cluster-edit"; groupId: string })
@@ -56,7 +57,8 @@ export function parseTilesetPayload(value: unknown): TilesetJobPayload {
   const p = requireRecord("tileset payload", value);
   const operation = enumValue(p.operation, TILESET_JOB_OPERATIONS);
   const settings = parseAssistantPayload({ instruction: "Tileset job", domain: "tile", config: p.config, context: p.context });
-  const base = { config: settings.config, context: settings.context, tilesetId: text(p.tilesetId), sourceJobId: p.sourceJobId === undefined ? undefined : text(p.sourceJobId) };
+  const base = { config: settings.config, context: settings.context, tilesetId: text(p.tilesetId), sourceJobId: p.sourceJobId === undefined ? undefined : text(p.sourceJobId),
+    ...(p.reportAssets === undefined ? {} : { reportAssets: parseReportAssets(p.reportAssets) }) };
   const cluster = () => ({ instruction: p.instruction === undefined ? undefined : text(p.instruction), priorTranscript: p.priorTranscript === undefined ? undefined : text(p.priorTranscript) });
   switch (operation) {
     case "cluster-edit": return { ...base, ...cluster(), operation, groupId: text(p.groupId) };

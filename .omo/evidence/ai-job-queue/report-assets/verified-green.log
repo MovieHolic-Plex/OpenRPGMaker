@@ -1,0 +1,152 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiReportAssetsPayload.test.ts test/aiJobWorkerRouting.test.ts test/aiJobWorkerIsolation.test.ts test/aiSessionJobHost.test.ts test/aiRegionJob.test.ts test/aiDatabaseJob.test.ts test/aiEventCommandsJob.test.ts test/aiImageJob.test.ts test/aiTilesetJob.test.ts test/aiJobReports.test.ts test/aiJobCanonicalReplay.test.ts --maxWorkers=4
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-ai-report-assets-0906
+
+ ✓ test/aiRegionJob.test.ts (15 tests) 31844ms
+   ✓ isolated real session import graph > has no runtime editor/store/persistence boot edges  3176ms
+   ✓ isolated region generation > does not boot the editor, store, pending slot, or preference distillation  2557ms
+   ✓ clips real outside-region tile/event writes without changing either snapshot  1333ms
+   ✓ retains a new interior-only map from a real session across a deferred provider boundary  3020ms
+   ✓ retains allocated map IDs and paid responses after a post-response interruption  4382ms
+   ✓ protects a completed new house from north-ridge clipping (task), retaining raw output  3180ms
+   ✓ protects a completed new house from north-ridge clipping (polish), retaining raw output  3294ms
+   ✓ rejects malformed input, project and checkpoint before any provider request  796ms
+   ✓ retries failed region output storage without replaying completed session or artwork  3552ms
+   ✓ returns an intact completed house and review metadata (task)  2500ms
+   ✓ returns an intact completed house and review metadata (polish)  2475ms
+   ✓ preserves real tool-result JSON bytes through validated checkpoints  1128ms
+ ✓ test/aiTilesetJob.test.ts (36 tests) 38954ms
+   ✓ isolated real session import graph > has no runtime editor/store/persistence boot edges  3238ms
+   ✓ tileset worker isolation > src/ai/jobs/executors/tilesetJob.ts has no editor boot dependencies  2495ms
+   ✓ captured tileset analysis jobs > holds the real knowledge analyzer at the durable vision boundary, then returns immutable review choices  880ms
+   ✓ captured tileset analysis jobs > runs proposal orchestration with locked edits, captured temp-map image and user answers  392ms
+   ✓ captured tileset analysis jobs > runs question follow-up over captured review, preserving accepted/skipped choices and IDs  737ms
+   ✓ captured tileset analysis jobs > binds a queued question to its predecessor while permitting captured review choices  835ms
+   ✓ captured tileset analysis jobs > preserves deterministic structure condition IDs across a failed completion checkpoint  591ms
+   ✓ captured tileset analysis jobs > retains invalid mapping output without false success or repeated spend: not JSON  444ms
+   ✓ captured tileset analysis jobs > retains invalid mapping output without false success or repeated spend: {}  470ms
+   ✓ captured tileset analysis jobs > retains invalid mapping output without false success or repeated spend: {"tiles":"malformed"}  518ms
+   ✓ captured tileset analysis jobs > retains invalid mapping output without false success or repeated spend: {"previewMaps":[{"width":2,"height":2,"lowerTiles":[1]}],"tiles":[{"tile":4}]}  463ms
+   ✓ captured tileset analysis jobs > never upgrades a length-truncated response to success on retry  452ms
+   ✓ captured tileset analysis jobs > rejects malformed captured input before spend: {"config":{"authMode":"apiKey","providerId":"openai-codex","model":"gpt-5.4","liteModel":"gpt-5.4-mini","maxToolCalls":12,"maxTokens":8192,"agentMode":"chat"}}  307ms
+   ✓ captured tileset analysis jobs > rejects malformed captured input before spend: {"tilesetId":"missing"}  362ms
+   ✓ captured tileset analysis jobs > rejects malformed projects, stale reviews, checkpoints and refs before spend  757ms
+   ✓ captured tileset analysis jobs > does not retry or change providers after an uncertain provider failure  371ms
+   ✓ real isolated cluster session operations > executes 'cluster-edit' through actual tools, with retry-stable IDs and no application  3914ms
+   ✓ real isolated cluster session operations > executes 'range-classify' through actual tools, with retry-stable IDs and no application  3126ms
+   ✓ real isolated cluster session operations > executes 'unclassified-analysis' through actual tools, with retry-stable IDs and no application  3121ms
+   ✓ cluster vision stages > executes range suggestion and actual sample rendering, retains image refs, and replays without a renderer  2634ms
+   ✓ cluster vision stages > retains budget-limited cluster output as partial, not success  1444ms
+   ✓ canonical filesystem proposal retry > completed knowledge-analysis retries after repository reopen with identical immutable output  1430ms
+   ✓ canonical filesystem proposal retry > completed proposal-draft retries after repository reopen with identical immutable output  1425ms
+   ✓ canonical filesystem proposal retry > completed question-followup retries after repository reopen with identical immutable output  1691ms
+   ✓ canonical filesystem proposal retry > completed structure-kit-metadata retries after repository reopen with identical immutable output  1554ms
+   ✓ canonical filesystem proposal retry > knowledge-analysis resumes a failed proposal checkpoint from one paid raw response  1088ms
+   ✓ canonical filesystem proposal retry > proposal-draft resumes a failed proposal checkpoint from one paid raw response  1064ms
+   ✓ canonical filesystem proposal retry > question-followup resumes a failed proposal checkpoint from one paid raw response  1053ms
+   ✓ canonical filesystem proposal retry > structure-kit-metadata resumes a failed proposal checkpoint from one paid raw response  1071ms
+ ✓ test/aiReportAssetsPayload.test.ts (29 tests) 47448ms
+   ✓ 'assistant' HTTP capture, executor, report and disk reload retain exact refs  1793ms
+   ✓ 'region' HTTP capture, executor, report and disk reload retain exact refs  1375ms
+   ✓ 'event-commands' HTTP capture, executor, report and disk reload retain exact refs  1413ms
+   ✓ 'database' HTTP capture, executor, report and disk reload retain exact refs  1243ms
+   ✓ 'image' HTTP capture, executor, report and disk reload retain exact refs  1312ms
+   ✓ 'tileset' HTTP capture, executor, report and disk reload retain exact refs  1491ms
+   ✓ 'assistant' rejects foreign, mismatched and malformed HTTP pins before execution  6481ms
+   ✓ 'region' rejects foreign, mismatched and malformed HTTP pins before execution  6529ms
+   ✓ 'event-commands' rejects foreign, mismatched and malformed HTTP pins before execution  6148ms
+   ✓ 'database' rejects foreign, mismatched and malformed HTTP pins before execution  6582ms
+   ✓ 'image' rejects foreign, mismatched and malformed HTTP pins before execution  6591ms
+   ✓ 'tileset' rejects foreign, mismatched and malformed HTTP pins before execution  6339ms
+ ✓ test/aiDatabaseJob.test.ts (24 tests) 20946ms
+   ✓ isolated real session import graph > has no runtime editor/store/persistence boot edges  2735ms
+   ✓ database job output validation > has no transitive editor/store/panels/PWA boot imports  2100ms
+   ✓ database job output validation > checkpoints item text before held artwork and returns captured record facts and transparent refs  1626ms
+   ✓ database job output validation > checkpoints enemy text before held artwork and returns captured record facts and transparent refs  1422ms
+   ✓ database job output validation > retries failed artwork without regenerating text or reallocating IDs  881ms
+   ✓ database job output validation > retries canvas failure from the immutable raw image, not the provider  860ms
+   ✓ database job output validation > retries snapshot postprocessing failure with the processed image and identical deterministic record  1351ms
+   ✓ database job output validation > reuses ledger responses after checkpoint persistence failure at database/text  836ms
+   ✓ database job output validation > reuses ledger responses after checkpoint persistence failure at database/artwork  860ms
+   ✓ database job output validation > reuses ledger responses after checkpoint persistence failure at database/artwork-processed  830ms
+   ✓ database job output validation > reuses ledger responses after checkpoint persistence failure at database/completed  1438ms
+   ✓ database job output validation > text-only generation needs no DOM, returns a proposal, and uses existing ID collision semantics  786ms
+   ✓ database job output validation > rejects truncated text, malformed artwork and forbidden canon without completing generation  860ms
+   ✓ database job output validation > uses the shared artwork helper's 512px sizing before recording the processed artifact  1008ms
+   ✓ database job output validation > does not return forged artwork bindings from a completed checkpoint  959ms
+   ✓ database job output validation > retains artwork when the real enemy tool rejects an invalid reference, without publishing a generated snapshot  984ms
+ ✓ test/aiJobReports.test.ts (21 tests) 29759ms
+   ✓ retains successful previews across provider-free retry, frozen snapshots, reconnects and restart  2726ms
+   ✓ reports actual read-only text without fake imagery or usage totals  1103ms
+   ✓ keeps an already durable preview when the browser crashes, then retries only unfinished rendering  1824ms
+   ✓ enumerates every map and asset, aligns region comparisons, and marks missing/unsupported previews  1512ms
+   ✓ uses real DB record artwork bindings and image proposals, not live records  1870ms
+   ✓ renders deterministic event/quest structure and canonical branches without treating conditions/routes as commands  1814ms
+   ✓ retains tileset cluster-edit atlas, every crop and exact proposal metadata  747ms
+   ✓ retains tileset range-classify atlas, every crop and exact proposal metadata  742ms
+   ✓ retains tileset unclassified-analysis atlas, every crop and exact proposal metadata  760ms
+   ✓ retains tileset knowledge-analysis atlas, every crop and exact proposal metadata  734ms
+   ✓ retains tileset question-followup atlas, every crop and exact proposal metadata  816ms
+   ✓ retains tileset proposal-draft atlas, every crop and exact proposal metadata  772ms
+   ✓ retains tileset structure-kit-metadata atlas, every crop and exact proposal metadata  746ms
+   ✓ refreshes late receipt/save evidence without relabeling generated output or altering an earlier revision  4332ms
+   ✓ strictly rejects every mismatched applied artifact binding and preserves noChanges/draft distinctions  5623ms
+   ✓ fences cancelled report checkpoints and rejects foreign preview references  1742ms
+   ✓ does not repeat captured binary artwork in gallery revisions  1331ms
+ ✓ test/aiJobCanonicalReplay.test.ts (6 tests) 16013ms
+   ✓ canonical filesystem checkpoint replay > reuses exact paid requests and create_map IDs after a real assistant repository restart  7100ms
+   ✓ canonical filesystem checkpoint replay > reuses exact paid requests and create_map IDs after a real region repository restart  8137ms
+ ✓ test/aiJobWorkerRouting.test.ts (4 tests) 4728ms
+   ✓ routes a database request through the actual worker entry (report pins: false) and returns a private generated record  2067ms
+   ✓ routes a database request through the actual worker entry (report pins: true) and returns a private generated record  1435ms
+   ✓ routes captured event drafts (report pins: false) into a reviewed proposal without changing the saved commands  634ms
+   ✓ routes captured event drafts (report pins: true) into a reviewed proposal without changing the saved commands  590ms
+ ✓ test/aiSessionJobHost.test.ts (10 tests) 7805ms
+   ✓ store-free session execution host > validates complete project and checkpoint structure before execution  347ms
+   ✓ store-free session execution host > retains budget-limited output privately without completing generation  1519ms
+   ✓ store-free session execution host > runs a real milestone without editor application or false save evidence  1731ms
+   ✓ store-free session execution host > resumes tool IDs and paid responses from a durable checkpoint after a response-boundary crash  2759ms
+   ✓ store-free session execution host > does not continue paid work when intent dispatch fails  746ms
+ ✓ test/aiJobWorkerIsolation.test.ts (1 test) 3115ms
+   ✓ isolated real session import graph > has no runtime editor/store/persistence boot edges  3113ms
+ ✓ test/aiEventCommandsJob.test.ts (16 tests) 11934ms
+   ✓ isolated real session import graph > has no runtime editor/store/persistence boot edges  2987ms
+   ✓ durable event command proposals > runs real assist through a held wire response and retains draft context and exclusion review without applying  934ms
+   ✓ durable event command proposals > preserves long-page insertion scope and selection null  500ms
+   ✓ durable event command proposals > preserves long-page insertion scope and selection [ +0, -2, +0 ]  459ms
+   ✓ durable event command proposals > preserves long-page insertion scope and selection [ +0, -3, +0 ]  522ms
+   ✓ durable event command proposals > captures a common event without treating it as a map event page  490ms
+   ✓ durable event command proposals > retains invalid content before failed repair and retries only the missing paid stage  670ms
+   ✓ durable event command proposals > reuses the host ledger after interruption between durable paid response and worker receipt  678ms
+   ✓ durable event command proposals > retains validated output when final proposal persistence fails without repeating assist work  789ms
+   ✓ durable event command proposals > preserves three-attempt validation failure and paid outputs without a false completed proposal  663ms
+   ✓ durable event command proposals > allows clearing a nonempty page  471ms
+   ✓ durable event command proposals > rejects automatic application mode before any paid operation  302ms
+   ✓ durable event command proposals > rejects malformed payload, target, project and checkpoint before paid work  618ms
+   ✓ durable event command proposals > rejects a foreign checkpoint and altered proposal without provider work  718ms
+   ✓ durable event command proposals > has no transitive store, panel, editor boot or PWA runtime edge  1021ms
+ ✓ test/aiImageJob.test.ts (16 tests) 90166ms
+   ✓ isolated real session import graph > has no runtime editor/store/persistence boot edges  3182ms
+   ✓ real image-family execution > keeps a held provider result bound to the captured project, ID, and two title fields  9149ms
+   ✓ real image-family execution > retries real flattening and completed output through canonical persisted checkpoints without repeating the paid operation  10220ms
+   ✓ real image-family execution > does not accept invalid image bytes as successful generation and retains them for inspection  4029ms
+   ✓ real image-family execution > retains processed artwork if project snapshot persistence fails  8101ms
+   ✓ real image-family execution > replays a ledger response after worker interruption without changing the paid request or resource ID  6410ms
+   ✓ real image-family execution > keeps title slot 'titleScreen.backgroundResourceId' 'system' separate from the shared title resource  4644ms
+   ✓ real image-family execution > keeps title slot 'titleScreen.titleGraphic.resourceId' 'system' separate from the shared title resource  4658ms
+   ✓ real image-family execution > keeps title slot undefined 'title-layer' separate from the shared title resource  4652ms
+   ✓ real image-family execution > returns a reviewed show-picture command proposal without generating a saved-project patch  2387ms
+   ✓ real image-family execution > returns a reviewed change-face command proposal without generating a saved-project patch  2524ms
+   ✓ real image-family execution > returns a reviewed actor-faceset command proposal without generating a saved-project patch  2672ms
+   ✓ real image-family execution > returns a reviewed parallax command proposal without generating a saved-project patch  2375ms
+   ✓ real image-family execution > rejects changed target content, command path order, project identity and resource IDs after canonical persistence  14687ms
+   ✓ real image-family execution > rejects malformed payload/project/checkpoint and missing destinations before paid work  6161ms
+   ✓ real image-family execution > has no transitive store, panel, editor boot, or PWA imports  923ms
+
+ Test Files  11 passed (11)
+      Tests  178 passed (178)
+   Start at  10:57:55
+   Duration  94.65s (transform 8.57s, setup 0ms, collect 34.61s, tests 302.71s, environment 3ms, prepare 747ms)

@@ -1,4 +1,6 @@
 import { requireRecord, requireString, requireNumber, requireBoolean, assert } from "@/project/io/guards";
+import { parseReportAssets } from "./reportAssets.mjs";
+import type { BlobRef } from "./contracts";
 import { AUTONOMY_LEVEL_IDS } from "../autonomyLevels";
 import type { AiConfig } from "../llmClient";
 import type { ContextOptions } from "../contextBuilder";
@@ -15,6 +17,7 @@ export interface AssistantJobPayload {
   selection?: TurnSelectionSnapshot;
   turn?: SessionTurnOptions;
   priorTranscript?: string;
+  reportAssets?: Record<string, BlobRef>;
 }
 export function enumValue<const T extends string>(value: unknown, values: readonly T[]): T {
   for (const candidate of values) if (candidate === value) return candidate;
@@ -39,7 +42,7 @@ function viewport(value: unknown): MapViewportSnapshot | null | undefined {
     viewX: optionalNumber(r.viewX), viewY: optionalNumber(r.viewY), viewW: optionalNumber(r.viewW), viewH: optionalNumber(r.viewH) };
 }
 export function parseAssistantPayload(value: unknown): AssistantJobPayload {
-  const p = shape(value, ["instruction", "config", "context", "domain", "selection", "turn", "priorTranscript"]);
+  const p = shape(value, ["instruction", "config", "context", "domain", "selection", "turn", "priorTranscript", "reportAssets"]);
   const c = shape(p.config, ["authMode", "providerId", "model", "liteModel", "maxToolCalls", "maxTokens", "reasoningEffort", "autonomyLevel", "agentMode"]);
   const context = shape(p.context, ["currentMapId", "budgetChars", "viewport", "projectScopeKey", "preferenceMemorySection"]);
   const instruction = requireString("instruction", p.instruction); assert(instruction.trim().length > 0, "Instruction required");
@@ -64,5 +67,6 @@ export function parseAssistantPayload(value: unknown): AssistantJobPayload {
     context: { currentMapId: optionalString(context.currentMapId), projectScopeKey: optionalString(context.projectScopeKey), viewport: viewport(context.viewport),
       budgetChars: positive(context.budgetChars), preferenceMemorySection: requireString("preferenceMemorySection", context.preferenceMemorySection) },
     selection, turn, priorTranscript: optionalString(p.priorTranscript),
+    ...(p.reportAssets === undefined ? {} : { reportAssets: parseReportAssets(p.reportAssets) }),
   };
 }

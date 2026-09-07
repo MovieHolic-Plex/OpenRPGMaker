@@ -1,0 +1,79 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiReportAssetsPayload.test.ts
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-ai-report-assets-0906
+
+ ❯ test/aiReportAssetsPayload.test.ts (3 tests | 3 failed) 14ms
+   × 'assistant' accepts real immutable report pins without changing the request 10ms
+     → expected [Function] to not throw an error but 'ProjectFormatError: Unexpected captur…' was thrown
+   × 'region' accepts real immutable report pins without changing the request 1ms
+     → expected [Function] to not throw an error but 'ProjectFormatError: Unexpected region…' was thrown
+   × 'event-commands' accepts real immutable report pins without changing the request 1ms
+     → expected [Function] to not throw an error but 'ProjectFormatError: Unexpected event …' was thrown
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiReportAssetsPayload.test.ts > 'assistant' accepts real immutable report pins without changing the request
+AssertionError: expected [Function] to not throw an error but 'ProjectFormatError: Unexpected captur…' was thrown
+
+- Expected:
+undefined
+
++ Received:
+"ProjectFormatError: Unexpected captured input field"
+
+ ❯ test/aiReportAssetsPayload.test.ts:22:57
+     20|
+     21| it.each(cases)("$family accepts real immutable report pins without cha…
+     22|   expect(() => parse({ ...payload, reportAssets })).not.toThrow();
+       |                                                         ^
+     23|   expect(parse({ ...payload, reportAssets })).toEqual({ ...parse(paylo…
+     24| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  test/aiReportAssetsPayload.test.ts > 'region' accepts real immutable report pins without changing the request
+AssertionError: expected [Function] to not throw an error but 'ProjectFormatError: Unexpected region…' was thrown
+
+- Expected:
+undefined
+
++ Received:
+"ProjectFormatError: Unexpected region input field"
+
+ ❯ test/aiReportAssetsPayload.test.ts:22:57
+     20|
+     21| it.each(cases)("$family accepts real immutable report pins without cha…
+     22|   expect(() => parse({ ...payload, reportAssets })).not.toThrow();
+       |                                                         ^
+     23|   expect(parse({ ...payload, reportAssets })).toEqual({ ...parse(paylo…
+     24| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  test/aiReportAssetsPayload.test.ts > 'event-commands' accepts real immutable report pins without changing the request
+AssertionError: expected [Function] to not throw an error but 'ProjectFormatError: Unexpected event …' was thrown
+
+- Expected:
+undefined
+
++ Received:
+"ProjectFormatError: Unexpected event commands field"
+
+ ❯ test/aiReportAssetsPayload.test.ts:22:57
+     20|
+     21| it.each(cases)("$family accepts real immutable report pins without cha…
+     22|   expect(() => parse({ ...payload, reportAssets })).not.toThrow();
+       |                                                         ^
+     23|   expect(parse({ ...payload, reportAssets })).toEqual({ ...parse(paylo…
+     24| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed (3)
+   Start at  10:40:31
+   Duration  3.86s (transform 2.39s, setup 0ms, collect 3.32s, tests 14ms, environment 0ms, prepare 130ms)

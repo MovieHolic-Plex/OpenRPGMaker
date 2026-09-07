@@ -1,0 +1,10 @@
+{
+  "entry": "ai-job-worker.html",
+  "chunks": 21,
+  "modules": 642,
+  "reportAssetsIncluded": true,
+  "serverRuntimeModules": [],
+  "nodeExternals": [],
+  "browserExternalShims": [],
+  "publicAssetsCopied": false
+}
