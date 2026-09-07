@@ -152,7 +152,7 @@ export function requireMapGenerationProfile(project: Project, tilesetId: string)
 }
 
 export type MapGenerationTile = { readonly tile: number; readonly layer: "lower" | "upper" };
-export type MapGenerationPaletteResolver = (role: keyof MapGenerationPalette) => MapGenerationTile;
+export type MapGenerationPaletteResolver = (paletteSlot: keyof MapGenerationPalette) => MapGenerationTile;
 
 // Resolve only roles actually consumed by the algorithm. In particular, settlement
 // never consumes accent. This boundary must not author shared tileset rules.
@@ -179,36 +179,36 @@ export function resolveMapGenerationPalette(
   const canonical = structuredClone(tileset);
   ensureTilesetHarnesses({ tilesets: { [profile.tilesetId]: canonical } });
   const resolved = new Map<keyof MapGenerationPalette, MapGenerationTile>();
-  return role => {
-    const cached = resolved.get(role);
+  return paletteSlot => {
+    const cached = resolved.get(paletteSlot);
     if (cached) return cached;
-    const tile = palette[role];
-    if (!Number.isInteger(tile) || tile < 0 || tile >= tileset.count) reject(`${role}:${tile} out of atlas`);
+    const tile = palette[paletteSlot];
+    if (!Number.isInteger(tile) || tile < 0 || tile >= tileset.count) reject(`${paletteSlot}:${tile} out of atlas`);
     const layer = tileset.priority[tile];
     const pass = tileset.passability[tile];
     const expected = canonical.passability[tile];
     const directions = ["up", "down", "left", "right"] as const;
     if ((layer !== "lower" && layer !== "upper") || !pass || !expected
       || layer !== canonical.priority[tile] || directions.some(dir => pass[dir] !== expected[dir])) {
-      reject(`${role}:${tile} runtime / authored rules differ`);
+      reject(`${paletteSlot}:${tile} runtime / authored rules differ`);
     }
     const meta = tileset.tileMeta?.[tile];
     if (tileMetaLocked(meta) || tileMetaOrigin(meta) === "user") {
       if ((meta?.defaultLayer === "lower" || meta?.defaultLayer === "upper") && meta.defaultLayer !== layer) {
-        reject(`${role}:${tile} authored layer`);
+        reject(`${paletteSlot}:${tile} authored layer`);
       }
       if (meta?.passage && directions.some(dir => pass[dir] !== (meta.passage !== "solid"))) {
-        reject(`${role}:${tile} authored passage`);
+        reject(`${paletteSlot}:${tile} authored passage`);
       }
     }
     // Corridors are carved in both axes. Obstacles may be lower terrain/trunks or
     // upper solid props; world accent bands need not be passable corridors.
-    if ((role === "base" || role === "path") && (layer !== "lower" || directions.some(dir => !pass[dir]))) {
-      reject(`${role}:${tile} requires lower, four-direction passable ground`);
+    if ((paletteSlot === "base" || paletteSlot === "path") && (layer !== "lower" || directions.some(dir => !pass[dir]))) {
+      reject(`${paletteSlot}:${tile} requires lower, four-direction passable ground`);
     }
-    if (role === "obstacle" && directions.some(dir => pass[dir])) reject(`${role}:${tile} requires solid passage`);
+    if (paletteSlot === "obstacle" && directions.some(dir => pass[dir])) reject(`${paletteSlot}:${tile} requires solid passage`);
     const choice = { tile, layer };
-    resolved.set(role, choice);
+    resolved.set(paletteSlot, choice);
     return choice;
   };
 }
