@@ -170,8 +170,13 @@ npcRewards?: readonly {
   therefore receive fresh execution, not a cached verdict. The result reports phase, compiled
   failed-step index, counters, claim/repeat deltas and final reward counts, all host-generated.
 - Pending choices cannot be abandoned. Cancellation/invalid choices and unfinished interactions
-  are unverified. Each earlier bound-NPC interaction must pay zero requested components. Claim
-  baselines are taken after the route and host approach; repeat immediately re-interacts with
+  are unverified. Every bound-NPC interaction before the protected claim snapshot must have zero
+  requested-component delta, including the host-owned approach (which retains protected transfer
+  and foreign-event restrictions). Snapshot entry is tracked independently of the reported phase.
+  Check each completed interaction, not just the end of a multi-touch walk; synchronous baselines
+  stay local across nested events, while held choices retain theirs until completion. Unrelated
+  prerequisite rewards remain legitimate: never compare the claim to authored starting balances.
+  Claim baselines are taken after the route and host approach; repeat immediately re-interacts with
   no navigation and must change no gold, inventory or owned-monster counts, even undeclared ones.
 - `SceneRewardProof` is a host-only runner capability, outside ordinary scene-input schemas.
   Restrictions execute at `runEventView` and interpreter `executeCommand`, not a page scan or
@@ -194,6 +199,8 @@ npcRewards?: readonly {
 - This proves a reachable reward claim on the supplied legitimate route, not whole-game or
   universal-path correctness. Regression seams: `npcPrerequisite.test.ts`,
   `npcPrerequisiteSession.test.ts`; evidence: `.omo/evidence/npc-prerequisite-0907/`.
+  P1 host-approach regressions: `npcApproach.test.ts`; red/green source-only receipts:
+  `.omo/evidence/npc-approach-p1-0907/`. This is not live-game or final source approval.
 
 ## After changing files
 

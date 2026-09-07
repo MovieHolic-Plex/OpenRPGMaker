@@ -150,15 +150,15 @@ function proofPosition(state: RunnerState): string | null {
     ? `Invalid start/transfer landing: ${currentMapId} (${x},${y})` : null;
 }
 
-function checkEarlyReward(state: RunnerState): string | null {
-  if (!state.earlyRewardBaseline || state.held) return null;
-  const delta = rewardDelta(state.session, state.earlyRewardBaseline);
-  state.earlyRewardBaseline = undefined;
+function checkEarlyReward(state: RunnerState, baseline = state.earlyRewardBaseline): string | null {
+  if (!baseline || state.held) return null;
+  const delta = rewardDelta(state.session, baseline);
+  if (baseline === state.earlyRewardBaseline) state.earlyRewardBaseline = undefined;
   const requested = state.rewardProof!.requested;
   return (requested.goldDelta !== undefined && delta.gold !== 0)
     || Object.keys(requested.inventoryDelta ?? {}).some(id => (delta.inventory[id] ?? 0) !== 0)
     || Object.keys(requested.ownedMonsterDelta ?? {}).some(id => (delta.monsters[id] ?? 0) !== 0)
-    ? "Earlier reward NPC interaction paid requested rewards during prelude" : null;
+    ? "Earlier reward NPC interaction changed requested rewards before the protected claim snapshot" : null;
 }
 
 export type SceneStep =
@@ -302,6 +302,8 @@ interface CameraModel {
 interface RunnerState {
   readonly rewardProof?: SceneRewardProof;
   earlyRewardBaseline?: RewardDelta;
+  /** Host approach is protected, but cannot pay before its claim snapshot. */
+  rewardClaimSnapshotTaken?: boolean;
   proofEventActive?: boolean;
   readonly project: Project;
   readonly runtimeMaps: Record<string, GameMap>;
@@ -529,6 +531,7 @@ function runStep(state: RunnerState, step: SceneStep): string | null {
       return runInteractStep(state, step.eventId);
     case "snapshotRewards":
       state.rewardBaseline = { gold: state.session.gold, inventory: { ...state.session.inventory }, monsters: ownedMonsterCounts(state.session) };
+      if (state.rewardProof?.report.phase === "claim") state.rewardClaimSnapshotTaken = true;
       state.log.push(`reward baseline ${JSON.stringify(state.rewardBaseline)}`);
       return null;
     case "gift":
@@ -837,18 +840,19 @@ function runChooseStep(state: RunnerState, index: number): string | null {
 
 function runEventView(state: RunnerState, view: RuntimeEventView): string | null {
   const proof = state.rewardProof;
+  let earlyRewardBaseline: RewardDelta | undefined;
   if (proof) {
     if (state.held) return "Cannot abandon a held interaction for another event";
     if (proof.report.phase !== "prelude" && (state.proofEventActive || state.session.currentMapId !== proof.target.mapId || view.event.id !== proof.target.eventId)) return "Protected foreign map-event entry";
     if (isFieldSpawnEventId(view.event.id)) return "NPC reward unverified: field battle";
-    if (proof.report.phase === "prelude" && state.session.currentMapId === proof.target.mapId && view.event.id === proof.target.eventId) state.earlyRewardBaseline ??= rewardSnapshot(state.session);
+    if (!state.rewardClaimSnapshotTaken && state.session.currentMapId === proof.target.mapId && view.event.id === proof.target.eventId) earlyRewardBaseline = rewardSnapshot(state.session);
   }
   if (isFieldSpawnEventId(view.event.id)) return runFieldSpawnBattleForRunner(state, view.event.id);
   const commands = view.page?.commands ?? resolveEventPage(view.event, state.session)?.commands ?? view.event.commands;
   if (commands.length === 0) {
     state.held = null;
     state.log.push(`event ${view.event.id}: no commands`);
-    return null;
+    return checkEarlyReward(state, earlyRewardBaseline);
   }
   const interp = createInterpreter([...commands], state.session, state.project, {
     currentEventId: view.event.id, eventPositions: state.eventPositions,
@@ -861,7 +865,10 @@ function runEventView(state: RunnerState, view: RuntimeEventView): string | null
   state.proofEventActive = wasActive;
   refreshRoguelikeRoomForRunner(state);
   updateHeldInterpreter(state, interp, stop, view.event.id);
-  return stop.stop === "failed" ? stop.reason : null;
+  // Keep synchronous baselines local across nested events; only held choices outlive this call.
+  if (earlyRewardBaseline && state.held) state.earlyRewardBaseline = earlyRewardBaseline;
+  // A walk may dispatch several touch interactions; do not net their deltas together.
+  return stop.stop === "failed" ? stop.reason : checkEarlyReward(state, earlyRewardBaseline);
 }
 
 function updateHeldInterpreter(
