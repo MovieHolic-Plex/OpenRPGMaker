@@ -1,0 +1,174 @@
+{
+  "projectId": "oprn-1a8ac23163",
+  "realAiPatch": {
+    "args": {
+      "spawn": {
+        "id": "qa_spawn_1",
+        "area": {
+          "w": 2,
+          "x": 6,
+          "h": 2,
+          "y": 5
+        },
+        "troopId": "qa_troop",
+        "mapId": "map_blank_start"
+      },
+      "enemyId": "qa_enemy",
+      "actionProfile": {
+        "aggroRange": 7
+      }
+    },
+    "ok": true,
+    "summary": "적 '무결성 검증 슬라임' 수정(actionProfile) / 맵 '훈련장'에 스폰 qa_spawn_1 수정"
+  },
+  "save": "saved",
+  "attackBefore": {
+    "kind": "projectile",
+    "windupMs": 600,
+    "recoverMs": 400,
+    "damage": 5,
+    "range": 8,
+    "cooldownMs": 1600,
+    "projectileSpeedTilesPerSec": 7
+  },
+  "attackAfter": {
+    "kind": "projectile",
+    "windupMs": 600,
+    "recoverMs": 400,
+    "damage": 5,
+    "range": 8,
+    "cooldownMs": 1600,
+    "projectileSpeedTilesPerSec": 7
+  },
+  "statsPreserved": true,
+  "rewardsPreserved": true,
+  "aggroRange": 7,
+  "spawnsBefore": [
+    {
+      "id": "spawn_enemy_slime_0",
+      "troopId": "troop_slime",
+      "area": {
+        "y": 4,
+        "x": 4,
+        "h": 4,
+        "w": 4
+      },
+      "maxAlive": 2,
+      "respawnSec": 5,
+      "chase": true
+    },
+    {
+      "id": "qa_spawn_1",
+      "troopId": "qa_troop",
+      "area": {
+        "w": 2,
+        "y": 5,
+        "x": 8,
+        "h": 2
+      },
+      "maxAlive": 1,
+      "respawnSec": 600,
+      "chase": true
+    }
+  ],
+  "spawnsAfter": [
+    {
+      "id": "spawn_enemy_slime_0",
+      "area": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 4
+      },
+      "chase": true,
+      "troopId": "troop_slime",
+      "maxAlive": 2,
+      "respawnSec": 5
+    },
+    {
+      "id": "qa_spawn_1",
+      "area": {
+        "h": 2,
+        "w": 2,
+        "x": 6,
+        "y": 5
+      },
+      "chase": true,
+      "troopId": "qa_troop",
+      "maxAlive": 1,
+      "respawnSec": 600
+    }
+  ],
+  "malformed": [
+    {
+      "args": {
+        "enemyId": "qa_enemy",
+        "actionProfile": {
+          "contactDamage": 8,
+          "\"attack\"": {
+            "kind": "melee"
+          }
+        }
+      },
+      "ok": false,
+      "summary": "'make_action_enemy' 실행 실패: actionProfile: 허용되지 않은 인자: \"attack\"",
+      "issues": [
+        {
+          "severity": "error",
+          "code": "invalid-args",
+          "message": "actionProfile: 허용되지 않은 인자: \"attack\""
+        }
+      ],
+      "unchanged": true
+    },
+    {
+      "args": {
+        "enemyId": "qa_enemy",
+        "actionProfile": {
+          "contactDamage": 8,
+          "attack": {
+            "kind": "beam",
+            "windupMs": 500,
+            "recoverMs": 300,
+            "damage": 8,
+            "range": 4
+          }
+        }
+      },
+      "ok": false,
+      "summary": "'make_action_enemy' 실행 실패: actionProfile: attack: 인자 'kind'는 [melee, projectile, dash] 중 하나여야 합니다.",
+      "issues": [
+        {
+          "severity": "error",
+          "code": "invalid-args",
+          "message": "actionProfile: attack: 인자 'kind'는 [melee, projectile, dash] 중 하나여야 합니다."
+        }
+      ],
+      "unchanged": true
+    },
+    {
+      "args": {
+        "enemyId": "qa_enemy",
+        "actionProfile": {
+          "contactDamage": 8,
+          "moveIntervalMs": "fast"
+        }
+      },
+      "ok": false,
+      "summary": "'make_action_enemy' 실행 실패: actionProfile: 인자 'moveIntervalMs'의 타입이 integer이어야 합니다.",
+      "issues": [
+        {
+          "severity": "error",
+          "code": "invalid-args",
+          "message": "actionProfile: 인자 'moveIntervalMs'의 타입이 integer이어야 합니다."
+        }
+      ],
+      "unchanged": true
+    }
+  ],
+  "screenshot": "output/action-integrity-profile-after.png",
+  "pageErrors": [
+    "TypeError: Invalid state: Controller is already closed",
+    "TypeError: Invalid state: Controller is already closed"
+  ]
+}

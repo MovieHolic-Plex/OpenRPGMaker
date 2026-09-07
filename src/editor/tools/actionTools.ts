@@ -3,31 +3,36 @@ import { normalizeActionCombatConfig, normalizeEnemyActionProfile } from "@/proj
 import { normalizeProjectFactions, PLAYER_FACTION_ID } from "@/project/factions";
 import { requireMap } from "./mapHelpers";
 import { ensureMonsterGraphic } from "./monsterGraphicAssignment";
+import { validateArgs } from "./jsonSchema";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import type { EnemyActionProfile, EnemyRecord, FactionDef, FactionRelationDef, FieldSpawnDef, Project } from "@/project/types";
 
 const enemyHpBarsSchema: JsonSchema = { type: "string", enum: ["always", "damaged", "never"] };
 
+const actionAttackSchema: JsonSchema = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    kind: { type: "string", enum: ["melee", "projectile", "dash"] },
+    windupMs: { type: "integer" },
+    recoverMs: { type: "integer" },
+    damage: { type: "integer" },
+    range: { type: "integer" },
+    cooldownMs: { type: "integer" },
+    projectileSpeedTilesPerSec: { type: "integer" },
+  },
+  required: ["kind", "windupMs", "recoverMs", "damage", "range"],
+};
+
 const actionProfileSchema: JsonSchema = {
   type: "object",
+  additionalProperties: false,
   properties: {
     contactDamage: { type: "integer" },
     moveIntervalMs: { type: "integer" },
     aggroRange: { type: "integer" },
     knockbackResist: { type: "number" },
-    attack: {
-      type: "object",
-      properties: {
-        kind: { type: "string", enum: ["melee", "projectile", "dash"] },
-        windupMs: { type: "integer" },
-        recoverMs: { type: "integer" },
-        damage: { type: "integer" },
-        range: { type: "integer" },
-        cooldownMs: { type: "integer" },
-        projectileSpeedTilesPerSec: { type: "integer" },
-      },
-      required: ["kind", "windupMs", "recoverMs", "damage", "range"],
-    },
+    attack: actionAttackSchema,
   },
 };
 
@@ -94,9 +99,17 @@ function prepareActionEnemy(
   warnings: string[],
 ): { enemy: EnemyRecord; outcome: "added" | "modified" } {
   const enemyId = args.enemyId as string;
-  const profile = normalizeEnemyActionProfile(args.actionProfile as Partial<EnemyActionProfile> | undefined);
-  if (!profile) throw new ToolError("actionProfile이 비었거나 유효하지 않습니다. attack.kind는 melee/projectile/dash 중 하나여야 합니다.", { code: "invalid-action-profile" });
+  const suppliedProfile = args.actionProfile as Partial<EnemyActionProfile> | undefined;
+  const errors = validateArgs(actionProfileSchema, suppliedProfile);
+  if (suppliedProfile?.attack !== undefined) {
+    errors.push(...validateArgs(actionAttackSchema, suppliedProfile.attack).map((message) => `attack: ${message}`));
+  }
+  if (errors.length > 0) {
+    throw new ToolError(`actionProfile: ${errors.join(" / ")}`, { code: "invalid-args" });
+  }
   const existing = draft.database.enemies.find((entry) => entry.id === enemyId);
+  const profile = normalizeEnemyActionProfile({ ...existing?.actionProfile, ...suppliedProfile });
+  if (!profile) throw new ToolError("actionProfile이 비었거나 유효하지 않습니다. attack.kind는 melee/projectile/dash 중 하나여야 합니다.", { code: "invalid-action-profile" });
   const factionId = typeof args.factionId === "string" && args.factionId.length > 0 ? args.factionId : undefined;
   if (existing) {
     const enemy = structuredClone(existing);

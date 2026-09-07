@@ -1,5 +1,23 @@
 # Editor AI Tools & Vocabulary
 
+## Action enemy profile edits (2026-09-07)
+
+`make_action_enemy` patches an existing enemy's `actionProfile`: omitted fields,
+including `attack`, retain their authored values. A supplied `attack` replaces
+that attack and must contain its complete required fields. Existing stats,
+rewards and other enemy fields are not reset by a profile edit. New contact-only
+enemies remain supported.
+
+The tool validates the profile and its nested attack before preparing any
+mutation. Unknown keys (including a literal quoted `"attack"` key), unsupported
+attack kinds, missing attack fields, wrong value types and non-finite numbers
+return `invalid-args` rather than becoming a successful lossy normalization.
+The shared project-load normalizer retains its legacy behavior; this stricter
+contract belongs to the authoring boundary.
+
+Regression seam: `test/actionTools.test.ts`, through the real `runTool` path and
+the canonical serialize/deserialize round trip.
+
 ## Monster resource discovery and AI appearance evidence (2026-09-07)
 
 `list_monster_resources({})` returns the entire current monster index, without a default
