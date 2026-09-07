@@ -86,6 +86,8 @@ export function createChatResizeChrome(deps: ChatResizeChromeDeps): ChatResizeCh
     handle.setAttribute("aria-valuemax", String(limits.max));
     handle.setAttribute("aria-valuenow", String(Math.round(rect.width || barSize?.width || limits.min)));
   };
+  const sizeObserver = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(syncAria);
+  sizeObserver?.observe(deck);
 
   const applySize = (): void => {
     clearPanelSize();
@@ -162,6 +164,7 @@ export function createChatResizeChrome(deps: ChatResizeChromeDeps): ChatResizeCh
     syncAria,
     mountHandle,
     dispose: (): void => {
+      sizeObserver?.disconnect();
       activeResizeCleanup?.();
       activeResizeCleanup = null;
       if (typeof window !== "undefined") window.removeEventListener("resize", onViewportResize);

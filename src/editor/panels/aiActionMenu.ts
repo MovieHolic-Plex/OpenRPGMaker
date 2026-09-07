@@ -32,6 +32,7 @@ export interface AiActionMenuActions {
 export interface AiActionMenuItems {
   /** 메뉴 컨테이너에 그대로 넣을 항목들(선언 순서 = 표시 순서). */
   readonly items: readonly HTMLButtonElement[];
+  readonly setHistoryOpen: (open: boolean) => void;
 }
 
 /** 항목 오른쪽 메타(맥락 사용률·지침 줄 수·도구 수·현재 모델). 값이 null 이면 비운다. */
@@ -112,6 +113,12 @@ export function createAiActionMenuItems(options: {
     testid: header ? "ai-more-history" : null,
     run: options.actions.openHistory,
   });
+  const setHistoryOpen = (open: boolean): void => {
+    const label = history.querySelector(".ai-command-menu-label");
+    if (label) label.textContent = open ? "전체 기록 닫기" : "전체 기록";
+    history.setAttribute("aria-expanded", String(open));
+  };
+  setHistoryOpen(false);
   const tools = build({
     key: "tools",
     icon: "wrench",
@@ -130,6 +137,7 @@ export function createAiActionMenuItems(options: {
   });
 
   return {
+    setHistoryOpen,
     items: [
       compact, instructions,
       ...(options.actions.refreshWiki ? [build({

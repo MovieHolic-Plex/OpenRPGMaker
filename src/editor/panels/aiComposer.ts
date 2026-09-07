@@ -29,6 +29,7 @@ import { COMPOSER_MODES, COMPOSER_MODE_LABEL, type ComposerMode } from "@/ai/com
 import type { AiConfig } from "@/ai/llmClient";
 import { el } from "@/util/dom";
 import { deckIcon } from "./aiDeckIcons";
+import { anchoredPopupPosition } from "./popupPosition";
 
 /** 서로 배타적인 컴포저 팝오버. 하나가 열리면 나머지는 닫힌다. */
 export type ComposerPopover = "suggest" | "menu" | "preference" | "context";
@@ -398,6 +399,29 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     return null;
   };
 
+  const positionPopover = (): void => {
+    if (openState === null || openState === "suggest" || typeof window === "undefined") return;
+    const popover = popoverOf(openState);
+    const toggle = toggleOf(openState);
+    const parent = popover?.parentElement;
+    if (!popover || !toggle || !parent) return;
+    popover.style.maxWidth = `${Math.max(0, window.innerWidth - 16)}px`;
+    popover.style.maxHeight = `${Math.min(420, window.innerHeight - 16)}px`;
+    const rect = popover.getBoundingClientRect();
+    const position = anchoredPopupPosition(toggle.getBoundingClientRect(), rect, {
+      width: window.innerWidth, height: window.innerHeight,
+    }, 6);
+    // The deck's glass establishes a containing block, so keep the popover absolute
+    // and translate viewport coordinates into its rail instead of using fixed.
+    const origin = parent.getBoundingClientRect();
+    popover.style.left = `${position.left - origin.left}px`;
+    popover.style.top = `${position.top - origin.top}px`;
+    popover.style.right = "auto";
+    popover.style.bottom = "auto";
+    popover.style.overflowY = "auto";
+  };
+  const popoverResize = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(positionPopover);
+
   const openPopover = (kind: ComposerPopover | null): void => {
     if (openState === kind) return;
     // 없는 종류를 열라는 요청은 조용히 닫기로 바꾼다.
@@ -414,6 +438,16 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     commandBar.classList.toggle("has-popover", resolved !== null);
     // 목록 갱신은 **열기 직후** 한 번만 — 매 턴 갱신하면 닫힌 팝오버를 위해 localStorage 를 계속 읽는다.
     if (resolved === "preference") options.onPreferenceOpen?.();
+    popoverResize?.disconnect();
+    positionPopover();
+    if (resolved !== null && resolved !== "suggest") {
+      const popover = popoverOf(resolved);
+      if (popover) {
+        popoverResize?.observe(popover);
+        const deck = popover.parentElement?.parentElement;
+        if (deck) popoverResize?.observe(deck);
+      }
+    }
     options.onPopoverChange?.(resolved);
   };
 
@@ -434,7 +468,9 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
   if (typeof document !== "undefined" && typeof document.addEventListener === "function") {
     document.addEventListener("pointerdown", onDocumentPointerDown);
     document.addEventListener("keydown", onDocumentKeyDown);
+    document.addEventListener("scroll", positionPopover, true);
   }
+  if (typeof window !== "undefined") window.addEventListener("resize", positionPopover);
 
   const measuredTop = (): number => {
     const barTop = commandBar.getBoundingClientRect().top;
@@ -465,11 +501,14 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     openKind: () => openState,
     measuredTop,
     dispose: () => {
+      popoverResize?.disconnect();
+      if (typeof window !== "undefined") window.removeEventListener("resize", positionPopover);
       options.input.removeEventListener("focus", onInputFocus);
       options.input.removeEventListener("blur", onInputBlur);
       if (typeof document === "undefined" || typeof document.removeEventListener !== "function") return;
       document.removeEventListener("pointerdown", onDocumentPointerDown);
       document.removeEventListener("keydown", onDocumentKeyDown);
+      document.removeEventListener("scroll", positionPopover, true);
     },
   };
 }
