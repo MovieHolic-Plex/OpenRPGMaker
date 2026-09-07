@@ -16,7 +16,8 @@ and `deriveRunOutcome(facts)`. The pure function returns a frozen value from
 (`none | accepted | verified-current`). It owns no evidence or evaluator.
 Pending draft takes precedence over earlier applied milestones; otherwise no
 applied work means `no-change`, then current proof, accepted save and actual apply
-select the remaining delivery states. Both pending and applied call collections
+select the remaining delivery states. Applied work includes owned coordinator wiki
+writes, even without tool calls. Both pending and applied call collections
 survive this display precedence. Only authorized pending calls are candidates for
 application; proof retry doesn't replay already-applied tools.
 
@@ -296,6 +297,30 @@ Regression entry points: `test/assistantAcceptance.test.ts`,
 전체 기록 복구, 오류·경합 처리, 실제 전투 수락 검증은
 [프로젝트 위키](project-wiki.md)를 따른다. 아래의 과거 세계관 AI 배제 기록은
 일반 CRUD·무조건 다이제스트에만 남으며, 이 제한된 위키 경로에는 적용하지 않는다.
+
+R3 delivery accounting (2026-09-07) uses the real coordinator's
+`WikiTurnInput.onDelivery` callbacks: `applied` after a changed patch reaches the
+store, then `persisted` only for its correlated accepted remote-save receipt.
+This covers awaited history backfill and current extraction. Without an accepted
+owned save, checkpoint failure or cancellation after apply still reports `applied`.
+Empty extraction doesn't claim a historical wiki write or its clean-flush receipt.
+Explicit Ask/Plan preparation remains read-only. No wiki milestone invents proposed
+or applied tool calls.
+
+The session captures the current run-result owner for these callbacks and ignores
+late callbacks from an older run. Intent-time delivery cleanup preserves this
+run's already-applied wiki work, not another run's context. Accepted persistence
+survives a later edit or cancellation, including during proof retry; only a
+passing, still-current proof promotes `persisted` to `persisted-verified`.
+
+Post-tool progress writes use the same coordinator through `observe`.
+`applyProposedProject` returns the actual `wikiDelivery` milestone, and
+`recordAppliedProject` uses that later wiki revision for save/proof correlation,
+not the earlier tool commit's project. Its proof has `commitId: null` rather than
+borrowing the tool commit ID. A progress-save failure preserves the actual apply
+and existing optional `wikiWarning` policy. See
+[receipt ownership](editor-observability.md#p2-outcome-publication-2026-09-06) and
+[wiki delivery QA](testing.md#p2-r3-wiki-delivery-2026-09-07).
 
 ## 브라우저 포커스와 도구 실행 대기 (2026-09-05)
 

@@ -83,10 +83,37 @@ scenario doesn't click `ai-continue-run`; inferred Plan is covered by the unit t
 Native `recordAppliedProject` observations count successful apply receipts:
 **0 after cancellation, 0 after Ask, 0 after typed Continue in Ask, 1 after authorized
 resume, 1 after repeated resume**. They don't count failed apply attempts; exact
-invocation counts come from the real-adapter unit spy above. The source-bound
-[R1 report](../output/evidence/ai-harness/p2/review-r1-ask/report.md) retains RED/GREEN,
-final native evidence and the separate failed observer attempt. It isn't R3 wiki
-ownership verification or integrated P2 approval.
+invocation counts come from the real-adapter unit spy above. This scenario doesn't
+verify wiki delivery or establish integrated P2 approval.
+
+### P2 R3 wiki delivery (2026-09-07)
+
+Run `npm test -- test/projectWikiDelivery.test.ts --maxWorkers=1` for coordinator,
+session and real store/apply coverage: changed versus empty extraction, backfill,
+checkpoint failure, cancellation at apply, accepted save followed by edit/cancel,
+proof retry/currentness, stale/foreign/missing receipts, unrelated human revisions,
+late old-run callbacks and post-tool progress writes. Wiki-only runs keep tool-call
+arrays empty even when delivery is `applied` or `persisted`.
+
+The final producer native command was:
+
+```sh
+QA_PORT=36901 \
+  EVIDENCE_DIR=output/evidence/ai-harness/p2/review-r3-wiki/native-final \
+  xvfb-run -a node scripts/qa/ai-harness-contracts.mjs --scenario wiki-delivery
+```
+
+Use a free owned port and fresh evidence directory, with the same Firefox/Xvfb and
+owned Supabase setup as R1. The scenario scripts wiki extraction and a labelled
+HTTP 503 on the wiki project-save request, not a real remote outage or synthetic
+owner outcome. Actual composer submission and the default coordinator leave the
+new guideline dirty locally while independent remote readback matches the accepted
+pre-wiki baseline. Result, recap, getter, harness, bridge harness, local activity,
+terminal event and visible DOM agree on `failed / unassessed / applied`, with zero
+authoring tool calls. Owned remote deletion and browser/server/cache cleanup are
+checked. Native coverage is the failed checkpoint path, not successful wiki save,
+post-tool progress or edit/cancel races; those are unit contracts above. It doesn't
+establish pixel review, external MCP HTTP, remote telemetry or integrated P2 approval.
 
 ## Canonical project storage versus AI history (2026-09-06)
 

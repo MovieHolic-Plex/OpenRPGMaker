@@ -134,6 +134,18 @@ checks result, recap, getter, harness, fresh serialized activity and visible DOM
 outcome agreement. Its successful-apply receipts aren't apply-invocation counts;
 the real-adapter unit regression asserts those counts, including zero calls.
 
+R3 wiki delivery comes from coordinator apply/save callbacks, not a later global
+store diff or tool count. The writer captures the applied project inside the
+mutation, before synchronous subscribers can replace it. The store's private
+receipt association records the actual `projectAtSubmit`;
+`isPersistenceReceiptForProject(receipt, project)` checks that submitted owner,
+not content equality or the latest live revision. A copied, missing or unrelated
+receipt can't establish owned persistence, nor can a catch-up save of a human edit.
+Accepted persistence remains historical fact after a later edit/cancel, while
+`isPersistenceReceiptCurrent` and P1 proof separately determine current verification.
+Late old-run callbacks can't republish either result. Post-tool wiki progress has
+its own later revision, so don't attach the earlier tool commit ID to its proof.
+
 Outcome fields are optional in compatibility types. Legacy stored records without
 them remain without them; `parseRunRecapPayload` accepts only the typed axis
 literals and doesn't recover authority from prose. Bridge readiness/configuration
