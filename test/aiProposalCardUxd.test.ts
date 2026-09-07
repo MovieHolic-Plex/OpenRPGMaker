@@ -87,6 +87,7 @@ function installBrowserGlobals(): void {
       clearTimeout: vi.fn(),
       addEventListener: vi.fn(),
       removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(() => true),
       innerWidth: 1280,
       innerHeight: 800,
     },
@@ -114,6 +115,23 @@ async function flushAsync(): Promise<void> {
 
 function turn(proposedCalls: ProposedCall[], assistantText = "완료"): TurnResult {
   return { assistantText, proposedCalls, stoppedReason: "final" };
+}
+
+/**
+ * 독립 검수를 통과한 후보를 모델링한다. fake 세션의 getProposedProject가 돌려주는
+ * 초안이 곧 검수 승인본이므로, 실제 적용 경로의 승인 확인(isDraftReviewApproved)과
+ * 불변 베이스라인(stale) 검사는 그대로 탄다 — 검수를 끄거나 베이스라인을
+ * 다시 캡처하지 않는다.
+ */
+function reviewedTurn(proposedCalls: ProposedCall[], assistantText = "완료"): TurnResult {
+  return {
+    ...turn(proposedCalls, assistantText),
+    review: { status: "approved", revision: 1, summary: "독립 검수 승인", findings: [] },
+  };
+}
+
+function mockReviewedDraftApproval(): void {
+  vi.spyOn(AssistantSession.prototype, "isDraftReviewApproved").mockReturnValue(true);
 }
 
 beforeEach(() => {
@@ -184,8 +202,9 @@ describe("AI 변경 즉시 적용", () => {
         ...proposed(toolName, {}, { systemChanged: true }, `${toolName} 적용`),
         destructive: true,
       }];
-      vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn(calls));
+      vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(reviewedTurn(calls));
       vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => structuredClone(after));
+      mockReviewedDraftApproval();
 
       const panel = renderPanel();
       const input = findByTestId(panel, "ai-input") as FakeElement;
@@ -221,8 +240,9 @@ describe("AI 변경 즉시 적용", () => {
       requiresApproval: true,
       approvalWarning: "재료 합의",
     }];
-    vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn(calls));
+    vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(reviewedTurn(calls));
     vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => structuredClone(after));
+    mockReviewedDraftApproval();
 
     const panel = renderPanel();
     const input = findByTestId(panel, "ai-input") as FakeElement;
@@ -243,12 +263,13 @@ describe("AI 변경 즉시 적용", () => {
       runProposed(ctx, "paint_tiles", { mapId, layer: "lower", mode: "cells", tile: TILE.PATH, cells: [{ x: 2, y: 2 }] }),
       proposed("place_npc", { mapId, x: 1, y: 1 }, { eventsAdded: 1 }, "NPC 1명"),
     ];
-    vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn(calls, "NPC 1명과 길 1칸을 놓았습니다."));
+    vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(reviewedTurn(calls, "NPC 1명과 길 1칸을 놓았습니다."));
     vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => structuredClone(ctx.project));
+    mockReviewedDraftApproval();
 
     const panel = renderPanel();
     const input = findByTestId(panel, "ai-input") as FakeElement;
-    input.value = "여기 NPC 3명 넣고 길 깔아줘";
+    input.value = "여기 NPC 3명 추가해줘, 그리고 길 깔아줘";
     findByTestId(panel, "ai-send")?.click();
     await flushAsync();
 
@@ -271,8 +292,9 @@ describe("AI 변경 즉시 적용", () => {
       tile: TILE.PATH,
       cells: [{ x: 2, y: 2 }],
     })];
-    vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn(calls));
+    vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(reviewedTurn(calls));
     vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => structuredClone(ctx.project));
+    mockReviewedDraftApproval();
 
     const panel = renderPanel();
     const input = findByTestId(panel, "ai-input") as FakeElement;
