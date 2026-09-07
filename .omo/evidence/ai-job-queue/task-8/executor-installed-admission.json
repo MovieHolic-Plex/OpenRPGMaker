@@ -1,0 +1,56 @@
+{
+  "node": "v24.11.1",
+  "execPath": "/usr/local/bin/node",
+  "root": "/home/main/.herdr/worktrees/rpg-zzu/worktree-silver-harbor-d2a7",
+  "nodeModules": "/home/main/z-project/rpg-zzu/node_modules",
+  "playwrightEntry": "/home/main/z-project/rpg-zzu/node_modules/playwright/index.js",
+  "playwrightVersion": "1.61.0",
+  "testVersion": "1.61.0",
+  "executablePath": "/home/main/.cache/ms-playwright/chromium-1228/chrome-linux64/chrome",
+  "home": "/home/main",
+  "tmpdir": "/dev/shm",
+  "playwrightEnv": [],
+  "executableAccess": "X_OK",
+  "browserVersion": "149.0.7827.55",
+  "browserClosed": true,
+  "ownedListener": {
+    "pid": 3008367,
+    "origin": "http://127.0.0.1:19841",
+    "configLoader": "runner"
+  },
+  "session": {
+    "configuredBackend": "supabase-proxy:6c0fac7eba408cfc4f6081240871bf070fd1b460c06895c07dd4150b08dbe6d0",
+    "generationAvailable": true,
+    "reportAvailable": true,
+    "requiresRestart": false
+  },
+  "admission": {
+    "status": 202,
+    "created": true,
+    "jobId": "f50d2b1e-6aa1-4ee2-a0b7-f79b94b55875",
+    "project": {
+      "backend": "supabase-proxy:6c0fac7eba408cfc4f6081240871bf070fd1b460c06895c07dd4150b08dbe6d0",
+      "projectId": "task8-executor-availability-isolated-fixture"
+    }
+  },
+  "admittedEvent": {
+    "seq": 1,
+    "jobId": "f50d2b1e-6aa1-4ee2-a0b7-f79b94b55875",
+    "kind": "admitted",
+    "createdAt": 1788746212409,
+    "states": {
+      "generation": "queued",
+      "report": "pending",
+      "application": "not-requested",
+      "save": "not-requested"
+    }
+  },
+  "cancel": {
+    "status": 200,
+    "generation": "cancelled"
+  },
+  "providerOperations": [],
+  "userProjectWrites": 0,
+  "ownedServerClosed": true,
+  "privateDirectoryRemoved": true
+}

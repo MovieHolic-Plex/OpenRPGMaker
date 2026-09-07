@@ -1,0 +1,13 @@
+RUNNER_RUNTIME_PROBE_ERROR {
+  stage: 'import',
+  name: 'Error',
+  message: 'Vite module runner has been closed.',
+  stack: 'Error: Vite module runner has been closed.\n' +
+    '    at ModuleRunner.getModuleInformation (file:///home/main/z-project/rpg-zzu/node_modules/vite/dist/node/module-runner.js:1201:13)\n' +
+    '    at ModuleRunner.cachedModule (file:///home/main/z-project/rpg-zzu/node_modules/vite/dist/node/module-runner.js:1191:21)\n' +
+    '    at request (file:///home/main/z-project/rpg-zzu/node_modules/vite/dist/node/module-runner.js:1227:99)\n' +
+    '    at dynamicRequest (file:///home/main/z-project/rpg-zzu/node_modules/vite/dist/node/module-runner.js:1229:124)\n' +
+    '    at Object.configureServer (/home/main/.herdr/worktrees/rpg-zzu/worktree-silver-harbor-d2a7/.omo/evidence/ai-job-queue/task-8/runtime-import-diagnostic.mjs:14:30)\n' +
+    '    at file:///home/main/.herdr/worktrees/rpg-zzu/worktree-silver-harbor-d2a7/[eval1]:3:38'
+}
+CONFIRMED_CONFIG_LOADER_FAILURE Vite module runner has been closed.

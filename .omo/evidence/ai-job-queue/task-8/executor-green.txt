@@ -1,0 +1,36 @@
+✔ missing installed Chromium rejects admission explicitly, without durable doomed work (412.605974ms)
+✔ unknown provider operation/URL never starts auth, Bun or paid fetch (1.97616ms)
+✔ Node-only auth is passed only to owned Bun; success closes that process (3.9037ms)
+✔ abort disposes owned provider process and reports unknown dispatched outcome (1.676924ms)
+✔ actual provider fetch guard blocks SDK paid retry rather than silently spending again (0.561991ms)
+✔ worker transport permits only the configured external Vite cache, not adjacent files (7.268299ms)
+✔ asset routing failures stay owned by the job instead of escaping the async handler (10.825362ms)
+✔ real browser boot tolerates one reset of an allowed static GET without a provider call (789.118639ms)
+✔ persisted queued work waits for Vite listening before resolving the worker origin (38.718613ms)
+✔ explicit runtime CLI installs the exact project Chromium without private setup (156.605845ms)
+✔ installed runtime is probed and closed with no install or env mutation (98.080518ms)
+✔ installer failure and false-success never report a usable runtime or expose raw errors (209.590489ms)
+✔ unusable existing runtime and close failure fail without reinstalling (183.77028ms)
+✔ missing project package and missing local CLI never fall back to npm or global Playwright (169.398708ms)
+✔ CLI rejects unknown, repeated, or credential-bearing arguments before any setup (164.266471ms)
+✔ no-argument CLI retains npm preflight and private configuration protection, never provisions (101.757193ms)
+✔ already aborted setup never spawns, logs readiness, or changes process environment (9.630166ms)
+✔ command cancellation is latched even for exit zero, waits for close and removes listeners (1.366618ms)
+✔ spawn errors remove signal listeners and pre-aborted commands do not spawn (0.552211ms)
+✔ cancellation during the real fixture install reaps its child without advancing setup (52.859222ms)
+✔ cancellation during the real fixture probe reaps its child without advancing setup (50.883061ms)
+✔ cancellation between install and probe cannot announce success or launch another child (8.270129ms)
+✔ global NODE_PATH packages and mismatched transitive versions are not project provisioning (177.520323ms)
+✔ successful runtime-only API leaves process environment untouched (42.313575ms)
+[rpg-zzu] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] QWENCLOUD_API_KEY 가 없어 /api/qwen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] CPENROUTER_API_KEY 가 없어 /api/cpen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+✔ real Vite runner config retains installed executor availability after config loading (2546.184775ms)
+ℹ tests 25
+ℹ suites 0
+ℹ pass 25
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2794.719822

@@ -15,6 +15,12 @@ exists, then run `npm run setup:ai-runtime`. Record the no-download result and c
 closure, without printing env values or contacting providers/Supabase. Missing-runtime
 installation QA uses the fixtures, not a maintainer's cache or real download. Evidence for
 this independent provisioning slice is `.omo/evidence/ai-job-queue/runtime-setup/`.
+`TMPDIR=/dev/shm node --test test/aiJobsViteRuntime.test.mjs` additionally exercises the
+actual `vite.config.ts` with `configLoader: 'runner'`, an owned loopback listener and an
+isolated job directory/cache. It requires the already installed managed runtime and checks
+session availability plus admission validation without scheduling work. Runtime package
+loading must remain Node-owned: a deferred `import('playwright')` in `configureServer`
+uses Vite's already-closed config runner and falsely reports missing Chromium.
 Full Task9 dev/preview integration, app/player builds and final gates remain supervisor-owned.
 Linux checks do not establish macOS/Finder behavior.
 

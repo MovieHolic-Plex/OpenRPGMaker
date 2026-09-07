@@ -1,5 +1,6 @@
 import { access } from 'node:fs/promises';
 import { constants } from 'node:fs';
+import { createRequire } from 'node:module';
 import { isAbsolute, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createJobProviderAdapter } from './providerAdapter.mjs';
@@ -8,7 +9,9 @@ import { createJobProviderAdapter } from './providerAdapter.mjs';
 export async function createBrowserRuntime({ origin, cacheDir, executablePath, chromium: suppliedChromium, dispatchProvider = createJobProviderAdapter() } = {}) {
   let chromium = suppliedChromium;
   try {
-    chromium ??= (await import('playwright')).chromium;
+    // Vite closes its config runner before configureServer invokes this factory.
+    // Keep deferred package loading owned by Node, not that disposed runner.
+    chromium ??= createRequire(import.meta.url)('playwright').chromium;
     executablePath ??= chromium.executablePath();
     await access(executablePath, constants.X_OK);
   } catch {
