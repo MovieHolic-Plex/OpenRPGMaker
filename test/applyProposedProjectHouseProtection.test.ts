@@ -1,5 +1,5 @@
 import { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, assert, beforeEach, describe, expect, it, vi } from "vitest";
 import { AssistantSession, type SessionEvent } from "@/ai/assistantSession";
 import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
 import * as history from "@/editor/mapEditHistory";
@@ -171,7 +171,9 @@ describe("real autonomous milestone application", () => {
           expect(review.requiredProblems, JSON.stringify(review.requiredProblems)).toEqual([]);
           expect(reviewedRevision).toBeUndefined();
           reviewedRevision = review.revision;
-          return approvedReviewResponse(request)!;
+          const response = approvedReviewResponse(request);
+          assert(response !== null);
+          return response;
         }
         if (!request.tools?.length) return { message: { role: "assistant", content: JSON.stringify(plan) }, finishReason: "stop" };
         if (wrote) return { message: { role: "assistant", content: "Done" }, finishReason: "stop" };
