@@ -1,4 +1,6 @@
 import { assertGrowthShape } from "@/project/growth/validation";
+import { validateSpatialAuthoring } from "../spatial/guards";
+import { validateSpatialReferences } from "../spatial/references";
 import { validateAudioDescriptions } from "../audioDescriptions";
 import { validateMonsterMetadata } from "../monsterMetadata";
 import { validateCharacterGraphicsProject } from "../characterGraphics";
@@ -70,6 +72,7 @@ export function validateProjectV2(data: JsonRecord): ProjectV2 {
 
 /** 현재(v4) 프로젝트 셰이프 검증. v3 저장본은 migrateV3toV4 가 얼굴 짝을 바꾼 뒤 여기로 들어온다. */
 export function validateProjectV4(data: JsonRecord): Project {
+  const spatialAuthoring = data.spatialAuthoring === undefined ? undefined : validateSpatialAuthoring(data.spatialAuthoring);
   validateAudioDescriptions(data.audioDescriptions);
   validateMonsterMetadata(data.monsterMetadata);
   assertGrowthShape(data.growth);
@@ -123,6 +126,10 @@ export function validateProjectV4(data: JsonRecord): Project {
   requireRecord("flags", data.flags);
 
   const project = cloneJson<Project>(data);
+  if (spatialAuthoring !== undefined) {
+    validateSpatialReferences(spatialAuthoring, project);
+    project.spatialAuthoring = spatialAuthoring;
+  }
   project.mapTree = mapTree;
   project.mapConnections ??= [];
   project.villageInfoDocuments ??= [];

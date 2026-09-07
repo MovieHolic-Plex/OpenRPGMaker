@@ -8,4 +8,5 @@ export type * from "./types/village";
 export type * from "./types/interior";
 export type * from "./types/conceptBundle";
 export type * from "./types/project";
+export type * from "./spatial/types";
 export type * from "./roguelikeRun";
