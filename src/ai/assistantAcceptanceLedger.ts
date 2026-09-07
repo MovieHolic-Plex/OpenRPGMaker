@@ -1,4 +1,4 @@
-import { isFunctionalCriterionKind, parseFunctionalRequirements, type FunctionalCriterion, type FunctionalRefinement, type UnresolvedFunctionalRequirement } from "./functionalAcceptance";
+import { isFunctionalCriterionKind, parseCanonicalFunctionalScene, parseFunctionalRequirements, type FunctionalCriterion, type FunctionalRefinement, type UnresolvedFunctionalRequirement } from "./functionalAcceptance";
 import type { Project } from "@/project/types";
 import { isVerifiedActionCombatProof, type ActionCombatProofReceipt } from "@/testing/actionCombatProof";
 import {
@@ -28,6 +28,7 @@ export class AssistantAcceptanceLedger {
     readonly baseline: Project;
     readonly source: AcceptanceSource;
     readonly refinements?: readonly AcceptanceSource[];
+    readonly functionalSceneIndices?: readonly number[];
     readonly withdrawal?: RequirementWithdrawalAction & { readonly source: "user" };
   }>();
   private readonly actionRequirements = new Map<string, AcceptancePromise & { readonly baseline: Project }>();
@@ -64,32 +65,48 @@ export class AssistantAcceptanceLedger {
   }
 
   getUnresolvedFunctional(): readonly UnresolvedFunctionalRequirement[] {
-    return structuredClone([...this.promises.values()].flatMap(promise => {
-      const criterion = promise.criteria?.length === 1 ? promise.criteria[0] : undefined;
-      return !promise.withdrawal && promise.required !== false && criterion?.kind === "functionalUnresolved"
-        ? [{ requirementId: promise.id, source: promise.source, criterion, ...(promise.refinements ? { refinements: promise.refinements } : {}) }] : [];
-    }));
+    return structuredClone([...this.promises.values()].flatMap(promise =>
+      !promise.withdrawal && promise.required !== false ? (promise.criteria ?? []).flatMap((criterion, criterionIndex) =>
+        criterion.kind === "functionalUnresolved" ? [{ requirementId: promise.id, criterionIndex, source: promise.source,
+          criterion, ...(promise.refinements ? { refinements: promise.refinements } : {}) }] : []) : []));
   }
 
   /** Host-only user clarification: refine a placeholder, never a concrete accepted contract. */
   refineFunctional(refinement: FunctionalRefinement, source: AcceptanceSource): boolean {
-    const promise = this.promises.get(refinement.requirementId);
-    const original = promise?.criteria?.length === 1 ? promise.criteria[0] : undefined;
-    if (!promise || promise.withdrawal || original?.kind !== "functionalUnresolved"
-      || !source.text.trim() || source.requestId === promise.source.requestId
-      || promise.refinements?.some(entry => entry.requestId === source.requestId)) return false;
-    const incoming = refinement.criterion.kind === "functionalUnresolved" ? refinement.criterion.expectations : refinement.criterion;
-    if (!incoming || (original.expectations && original.expectations.kind !== incoming.kind)) return false;
-    const previous: Readonly<Record<string, unknown>> = original.expectations ?? {};
-    const next: Readonly<Record<string, unknown>> = incoming;
-    const corrections = new Set(refinement.corrections ?? []);
-    if ([...corrections].some(key => key === "kind" || !Object.hasOwn(previous, key) || !Object.hasOwn(next, key))) return false;
-    if (Object.entries(previous).some(([key, value]) => Object.hasOwn(next, key)
-      && acceptanceFingerprint(value) !== acceptanceFingerprint(next[key]) && !corrections.has(key))) return false;
-    const criterion = parseFunctionalRequirements([{ ...previous, ...next }])[0];
-    if (!criterion) return false;
-    this.promises.set(promise.id, { ...promise, criteria: [criterion],
-      refinements: [...(promise.refinements ?? []), structuredClone(source)] });
+    return this.refineFunctionals([refinement], source);
+  }
+
+  /** Validate the entire user declaration before publishing any replacement or provenance. */
+  refineFunctionals(refinements: readonly FunctionalRefinement[], source: AcceptanceSource): boolean {
+    const pending = new Map(this.promises);
+    const selected = new Set<string>();
+    for (const refinement of refinements) {
+      const promise = this.promises.get(refinement.requirementId);
+      const index = refinement.criterionIndex ?? (promise?.criteria?.length === 1 ? 0 : -1);
+      const original = promise?.criteria?.[index];
+      const selector = JSON.stringify([refinement.requirementId, index]);
+      if (!promise || promise.withdrawal || promise.required === false || !Number.isSafeInteger(index) || index < 0
+        || original?.kind !== "functionalUnresolved" || selected.has(selector)
+        || !source.text.trim() || source.requestId === promise.source.requestId
+        || promise.refinements?.some(entry => entry.requestId === source.requestId)) return false;
+      selected.add(selector);
+      const incoming = refinement.criterion.kind === "functionalUnresolved" ? refinement.criterion.expectations : refinement.criterion;
+      if (!incoming || (original.expectations && original.expectations.kind !== incoming.kind)) return false;
+      const previous: Readonly<Record<string, unknown>> = original.expectations ?? {};
+      const next: Readonly<Record<string, unknown>> = { ...incoming };
+      const corrections = new Set(refinement.corrections ?? []);
+      if ([...corrections].some(key => key === "kind" || !Object.hasOwn(previous, key) || !Object.hasOwn(next, key))) return false;
+      if (Object.entries(previous).some(([key, value]) => Object.hasOwn(next, key)
+        && acceptanceFingerprint(value) !== acceptanceFingerprint(next[key]) && !corrections.has(key))) return false;
+      const criterion = incoming.kind === "toolVerdict" ? parseCanonicalFunctionalScene(incoming)
+        : parseFunctionalRequirements([{ ...previous, ...next }])[0];
+      if (!criterion) return false;
+      const updated = pending.get(promise.id)!;
+      pending.set(promise.id, { ...updated, criteria: updated.criteria!.map((sibling, siblingIndex) => siblingIndex === index ? criterion : sibling),
+        ...(criterion.kind === "toolVerdict" ? { functionalSceneIndices: [...(updated.functionalSceneIndices ?? []), index] } : {}),
+        refinements: [...(promise.refinements ?? []), structuredClone(source)] });
+    }
+    for (const [id, promise] of pending) this.promises.set(id, promise);
     return true;
   }
 
@@ -292,7 +309,8 @@ export class AssistantAcceptanceLedger {
         args: pendingCanonicalScene(criterion) ? null : verificationInput(criterion.tool, criterion.args),
         acceptedCriterion: original?.acceptedCriterion ?? criterion,
         interactionTargets: criterion.tool === "run_scene_test" ? criterion.interactionTargets ?? [] : undefined,
-        initialState: original ? original.initialState : verificationInitialState(criterion.tool, project ?? promise.baseline) });
+        initialState: original ? original.initialState : verificationInitialState(criterion.tool,
+          promise.functionalSceneIndices?.includes(index) ? promise.baseline : project ?? promise.baseline) });
       verification?.setRequirementActive(checkId, promise.required !== false && !promise.withdrawal);
     }
   }

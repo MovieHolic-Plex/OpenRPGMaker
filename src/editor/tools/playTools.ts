@@ -115,6 +115,7 @@ const runSceneTestTool: ToolDefinition = {
             lastTransfer: { type: "object", properties: { fromMapId: { type: "string" }, eventId: { type: "string" }, toMapId: { type: "string" } }, required: ["fromMapId", "eventId", "toMapId"], additionalProperties: false },
             text: { type: "string" },
             interactionComplete: { type: "boolean" },
+            endingReached: { type: "string", minLength: 1, pattern: "\\S", description: "Exact ending ID reached by the scene (e.g. ending_escape), never a boolean." },
             goldDelta: { description: "Currency delta: exact signed safe integer (e.g. 20 or 0), or {atLeast:1}. Relative to snapshotRewards, scene start by default. Not an inventory item." },
             inventoryDelta: {
               type: "object", description: "Item ID to exact delta or {atLeast:number}, relative to snapshotRewards (scene start by default).",

@@ -341,16 +341,44 @@ action withdraws it; ordinary follow-ups retain the ledger and explicit host
 `functionalUnresolved` evidence with typed known `expectations`, not a silent
 opt-out or an easy static substitute. Review repair (2026-09-07): a later genuine
 user clarification can resolve that placeholder without discarding the goal.
-`IntentFacts.unresolvedFunctional` supplies its exact requirement ID, original
-source text, known expectations and prior user refinement sources to the lite
-declarer. `functionalRefinements:[{requirementId,criterion,corrections?}]` is consumed
-only at the actual user-declaration boundary, including host `resume`, never by
-worker tools or synthetic continuations. `AssistantAcceptanceLedger.refineFunctional`
-keeps the original ID, source and baseline and appends frozen `refinements` source
-metadata. Omitted known fields are retained; conflicts require explicit typed
-user-correction fields. Partial/ambiguous refinements remain unresolved. Once
-concrete, a contract cannot be refined or repaired into an easier one; existing
+`IntentFacts.unresolvedFunctional` enumerates every required, non-withdrawn unresolved
+leaf, including mixed arrays, with stable `requirementId` plus zero-based
+`criterionIndex`, original source, known expectations and previous refinement sources.
+`functionalRefinements:[{requirementId,criterionIndex,criterion,corrections?}]` is consumed
+only at the actual LLM-classified user-declaration boundary, including host `resume`,
+never by worker tools, Ask, synthetic/fast-path continuations or timeout/fallback.
+Omitting the index remains compatible only with an original singleton index0.
+The parser and host `refineFunctionals` validate the entire batch before mutation:
+ambiguous, duplicate, out-of-range, optional, withdrawn or concrete selectors reject
+it without accepting a valid prefix. Only selected leaves change; all siblings,
+original promise/source/baseline/required/withdrawal metadata survive, and one source
+entry is appended per affected promise. Omitted known fields are retained; conflicts
+still require explicit typed user-correction fields. Partial refinements stay unresolved.
+Once concrete, a contract cannot be refined or repaired into an easier one; existing
 host withdrawal/new-goal actions remain the scope-change authority.
+
+Round13 source repair (2026-09-07): a generic ending/compound placeholder without typed
+expectations can specialize through this same later-user route to a narrowly parsed
+`toolVerdict/run_scene_test`, not an arbitrary verification tool. The host requires
+complete native input, named interact steps and complete ordered map-qualified
+`interactionTargets` before execution; no debug `set`, checkpoint reset or first-probe
+ownership. A post-interaction ending-ID, actual transfer or nonzero reward/consumption
+assertion is required; empty scripts, positions, interaction completion and zero-only
+assertions alone are not functional outcomes. Typed shop/travel/reward expectations
+cannot be laundered into a scene. The selected index becomes the existing canonical
+check ID, with the original request's protected initial state, and requires fresh
+exact explicit execution; a prior passing probe or advisory result is not authority.
+This does not restore private ledgers from saved conversation transcripts.
+
+The registered `run_scene_test` expect-step schema exposes `endingReached` as a string
+with `minLength:1` and a non-whitespace pattern. Native input still rejects `true`,
+empty/blank IDs and unknown fields without coercion or invented endings. The installed
+Google/Antigravity SDK retains STRING on the emitted wire but spills unsupported
+length/pattern constraints into descriptions; native validation remains authoritative
+for nonempty IDs. Round13's intended ID is `ending_escape`. Offline real-session and
+installed-provider wire regressions: `functionalCompositeClarification.test.ts`,
+`functionalClarification.test.ts`, `ohMyPiEndingWire.bun.test.ts`; canonical ownership,
+advisory, functional and reward regressions remain unchanged.
 
 `functionalAcceptanceEvaluation.ts` runs the real scene interpreter on current
 applied content. Purchase walks to and triggers the exact seller, resolves runtime

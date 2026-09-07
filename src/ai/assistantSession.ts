@@ -2190,9 +2190,10 @@ export class AssistantSession {
     if (userAction && !startsGoal && intent.source === "llm") {
       const source: AcceptanceSource = { requestId: `request-${this.currentTurnIndex + 1}`, text: instruction,
         scope: this.turnScope ? structuredClone(this.turnScope) : null };
-      for (const refinement of intent.functionalRefinements ?? []) {
-        const refined = this.acceptance?.refineFunctional(refinement, source) === true;
-        this.pushAudit({ kind: "status", text: `functional:refinement-${refined ? "accepted" : "rejected"} ${refinement.requirementId}` });
+      const refinements = intent.functionalRefinements ?? [];
+      const refined = this.acceptance?.refineFunctionals(refinements, source) === true;
+      for (const refinement of refinements) {
+        this.pushAudit({ kind: "status", text: `functional:refinement-${refined ? "accepted" : "rejected"} ${refinement.requirementId}:${refinement.criterionIndex ?? 0}` });
       }
       this.publishAcceptance(onEvent);
     }

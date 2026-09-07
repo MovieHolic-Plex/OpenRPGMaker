@@ -1,6 +1,8 @@
 import type { Point } from "@/project/lint/reachability";
 import type { AcceptanceSource, AcceptanceTarget } from "./assistantAcceptance";
 import { parseNpcRewardRequirements, type NpcRewardRequirement } from "./intentDeclaration";
+import { isSceneTestInput, type SceneInteractionReceipt } from "@/testing/sceneTestRunner";
+import { parseSceneInteractionTargets, verificationInput } from "./toolVerificationEvidence";
 
 export type FunctionalEventTarget = { readonly eventId: string } | { readonly eventName: string };
 export type FunctionalItemTarget = { readonly id: string } | { readonly name: string };
@@ -15,13 +17,23 @@ export type FunctionalExpectations = {
 }[ConcreteFunctionalCriterion["kind"]];
 export type FunctionalCriterion = ConcreteFunctionalCriterion
   | { readonly kind: "functionalUnresolved"; readonly reason: string; readonly expectations?: FunctionalExpectations };
+/** Only later host clarification can specialize a generic placeholder into a canonical scene. */
+export interface CanonicalFunctionalScene {
+  readonly kind: "toolVerdict";
+  readonly tool: "run_scene_test";
+  readonly args: Readonly<Record<string, unknown>>;
+  readonly interactionTargets: readonly SceneInteractionReceipt[];
+}
 export interface FunctionalRefinement {
   readonly requirementId: string;
-  readonly criterion: FunctionalCriterion;
+  /** Omission is compatible only with an original singleton at index zero. */
+  readonly criterionIndex?: number;
+  readonly criterion: FunctionalCriterion | CanonicalFunctionalScene;
   readonly corrections?: readonly string[];
 }
 export interface UnresolvedFunctionalRequirement {
   readonly requirementId: string;
+  readonly criterionIndex: number;
   readonly source: AcceptanceSource;
   readonly refinements?: readonly AcceptanceSource[];
   readonly criterion: Extract<FunctionalCriterion, { kind: "functionalUnresolved" }>;
@@ -87,17 +99,42 @@ function isFunctionalExpectations(value: unknown): value is FunctionalExpectatio
   return fields !== null && Object.entries(value).every(([key, entry]) => key === "kind" || (fields.includes(key) && checks[key](entry)));
 }
 
-/** Refinements are interpreted only at the genuine user-declaration boundary, never as worker tools. */
+/** Native input plus complete, named ownership; no debug-state or vacuous pass escape. */
+export function parseCanonicalFunctionalScene(value: unknown): CanonicalFunctionalScene | null {
+  if (!record(value) || value.kind !== "toolVerdict" || value.tool !== "run_scene_test"
+    || Object.keys(value).some(key => !["kind", "tool", "args", "interactionTargets"].includes(key))) return null;
+  const args = verificationInput(value.tool, value.args);
+  if (!args || !isSceneTestInput(args) || args.steps.some(step => ![
+    "walk", "move", "face", "interact", "snapshotRewards", "choose", "purchase", "wait", "expect",
+  ].includes(step.kind))) return null;
+  const interactionTargets = parseSceneInteractionTargets(args, value.interactionTargets);
+  if (!interactionTargets?.length) return null;
+  const nonzero = (delta: unknown): boolean => typeof delta === "number" ? delta !== 0
+    : record(delta) && typeof delta.atLeast === "number" && delta.atLeast > 0;
+  const outcome = args.steps.some((step, index) => step.kind === "expect"
+    && interactionTargets.some(target => target.stepIndex < index)
+    && (step.endingReached !== undefined || step.lastTransfer !== undefined || nonzero(step.goldDelta)
+      || Object.values(step.inventoryDelta ?? {}).some(nonzero) || Object.values(step.ownedMonsterDelta ?? {}).some(nonzero)));
+  return outcome ? { kind: "toolVerdict", tool: "run_scene_test", args, interactionTargets } : null;
+}
+
+/** The whole declaration fails closed: a malformed sibling must not leave a valid prefix authorized. */
 export function parseFunctionalRefinements(value: unknown): readonly FunctionalRefinement[] {
   if (!Array.isArray(value)) return [];
-  return value.flatMap(entry => {
+  const refinements: FunctionalRefinement[] = [];
+  for (const entry of value) {
     if (!record(entry) || !text(entry.requirementId)
-      || Object.keys(entry).some(key => !["requirementId", "criterion", "corrections"].includes(key))
+      || Object.keys(entry).some(key => !["requirementId", "criterionIndex", "criterion", "corrections"].includes(key))
+      || (entry.criterionIndex !== undefined && !count(entry.criterionIndex))
       || (entry.corrections !== undefined && (!Array.isArray(entry.corrections) || !entry.corrections.every(text)))) return [];
-    const criterion = parseFunctionalRequirements([entry.criterion])[0];
-    return criterion ? [{ requirementId: entry.requirementId, criterion,
-      ...(Array.isArray(entry.corrections) ? { corrections: entry.corrections.filter(text) } : {}) }] : [];
-  });
+    const criterion = parseCanonicalFunctionalScene(entry.criterion) ?? parseFunctionalCriterion(entry.criterion)
+      ?? (isFunctionalExpectations(entry.criterion) ? parseFunctionalRequirements([entry.criterion])[0] : null);
+    if (!criterion) return [];
+    refinements.push({ requirementId: entry.requirementId, criterion,
+      ...(typeof entry.criterionIndex === "number" ? { criterionIndex: entry.criterionIndex } : {}),
+      ...(Array.isArray(entry.corrections) ? { corrections: entry.corrections.filter(text) } : {}) });
+  }
+  return refinements;
 }
 
 export function parseFunctionalRequirements(value: unknown): readonly FunctionalCriterion[] {
