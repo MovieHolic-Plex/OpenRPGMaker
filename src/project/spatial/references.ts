@@ -1,7 +1,7 @@
 import { assert } from "../io/guards";
 import { resolveSpatialGraphic } from "./assets";
 import { validateOccurrencePorts, validateParentSlot } from "./associations";
-import { isOwnedSpatialBinding } from "./bindings";
+import { hasProjectedSpatialPort, isOwnedSpatialBinding } from "./bindings";
 import type * as S from "./types";
 
 type Design = S.ObjectDesign | S.SpaceDesign | S.PlaceDesign | S.RegionDesign | S.WorldDesign;
@@ -211,7 +211,10 @@ export function validateSpatialReferences(document: S.SpatialAuthoringDocument, 
       }
       ownedEvents.set(map.id, events);
       unique(binding.connectionIds, `${path}.connectionIds`);
-      for (const id of binding.connectionIds) assert(document.connections.some(connection => connection.id === id && (connection.from.occurrenceId === occurrence.id || connection.to.occurrenceId === occurrence.id)), `${path}.connectionIds: missing owned connection ${id}`);
+      for (const id of binding.connectionIds) assert(document.connections.some(connection => connection.id === id &&
+        [connection.from, connection.to].some(endpoint => endpoint.occurrenceId === occurrence.id ||
+          hasProjectedSpatialPort(own(document.occurrences, endpoint.occurrenceId, path), binding, endpoint.portId))),
+      `${path}.connectionIds: missing owned connection ${id}`);
     });
   }
   unique(document.legacyImport.mapping.map(entry => entry.sourceKey), `${p}.legacyImport.mapping`);

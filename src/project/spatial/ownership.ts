@@ -1,6 +1,6 @@
 import { assertNever, checkedDocument, designNode, freezeSpatial, own, SpatialOperationError } from "./domain";
 import type * as S from "./types";
-import { isOwnedSpatialBinding } from "./bindings";
+import { hasProjectedSpatialPort, isOwnedSpatialBinding } from "./bindings";
 
 export type SpatialReferenceImpact = {
   readonly strong: readonly { readonly owner: S.SpatialDesignReference; readonly path: string }[];
@@ -105,5 +105,13 @@ export function detachSpatialOccurrence(input: unknown, assets: S.SpatialAssetCo
   const document = checkedDocument(input, assets);
   const selected = new Set(occurrenceSubtree(document, id));
   const occurrences = Object.fromEntries(Object.values(document.occurrences).map(value => [value.id, selected.has(value.id) ? { ...value, bindings: [] } : value]));
-  return freezeSpatial(checkedDocument({ ...document, occurrences }, assets));
+  // Detaching a projection releases only the bookkeeping it supported, not navigation.
+  const retained = Object.fromEntries(Object.values(occurrences).map(value => [value.id, { ...value,
+    bindings: value.bindings.map(binding => !isOwnedSpatialBinding(binding) ? binding : { ...binding,
+      connectionIds: binding.connectionIds.filter(connectionId => document.connections.some(connection => connection.id === connectionId &&
+        [connection.from, connection.to].some(endpoint => endpoint.occurrenceId === value.id ||
+          hasProjectedSpatialPort(own(occurrences, endpoint.occurrenceId), binding, endpoint.portId)))),
+    }),
+  }]));
+  return freezeSpatial(checkedDocument({ ...document, occurrences: retained }, assets));
 }
