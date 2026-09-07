@@ -92,20 +92,97 @@ async function finishDialogue(page, actions) {
   throw new Error("Authored dialogue did not finish");
 }
 
-async function readPartyImages(page) {
-  return page.evaluate(async () => {
-    const images = [...document.querySelectorAll('[data-testid^="battle-actor-"] img')];
-    return await Promise.all(images.map(async (image) => {
-      await image.decode();
-      const animation = image.style.getPropertyValue("--battler-anim-url").trim();
-      if (animation) {
-        const strip = new Image();
-        strip.src = animation.replace(/^url\(["']?/, "").replace(/["']?\)$/, "");
-        await strip.decode();
+export async function readPartyImages(page) {
+  const images = await page.evaluate(async () => {
+    const actors = [...document.querySelectorAll('[data-testid="battle-actor-sprites"] > .battle-actor')];
+    return await Promise.all(actors.map(async (actor) => {
+      const id = actor.dataset.testid;
+      const sprites = actor.querySelectorAll(".battle-actor-image, .battle-actor-sprite");
+      if (sprites.length !== 1) throw new Error(`${id}: expected one party sprite, found ${sprites.length}`);
+      const sprite = sprites[0];
+      const style = getComputedStyle(sprite);
+      const rect = sprite.getBoundingClientRect();
+      if (!(rect.width > 0 && rect.height > 0) || !sprite.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true })) {
+        throw new Error(`${id}: party sprite has no visible geometry`);
       }
-      return { id: image.closest('[data-testid^="battle-actor-"]').dataset.testid, width: image.naturalWidth };
+      // Read the computed background, not the saved sheet URL or idle variable:
+      // sheets replace their background for idle; image strips can be disabled
+      // by dead-pose/reduced-motion CSS while their custom property stays set.
+      const background = style.backgroundImage;
+      const isImage = sprite instanceof HTMLImageElement;
+      if (background === "none" && (!isImage || style.objectPosition === "-99999px -99999px")) {
+        throw new Error(`${id}: party sprite has no rendered art`);
+      }
+      let image = isImage ? sprite : null;
+      let timer;
+      try {
+        await Promise.race([
+          (async () => {
+            // Keep validating the static image too: it supplies intrinsic sizing
+            // and is the renderer's fallback when image-strip animation stops.
+            if (image) await image.decode();
+            if (background !== "none") {
+              const url = background.match(/^url\(["']?(.*?)["']?\)$/)?.[1];
+              if (!url) throw new Error(`${id}: unsupported party sprite background ${background}`);
+              image = new Image();
+              image.src = url;
+              await image.decode();
+            }
+          })(),
+          new Promise((_, reject) => { timer = setTimeout(() => reject(new Error(`${id}: party art decode deadline`)), 15000); }),
+        ]);
+      } catch (error) {
+        throw new Error(`${id}: ${String(error)}`);
+      } finally {
+        clearTimeout(timer);
+      }
+      return { id, src: image.currentSrc || image.src, width: image.naturalWidth, height: image.naturalHeight,
+        renderedWidth: rect.width, renderedHeight: rect.height };
     }));
   });
+  assert.equal(images.length, 4, "All four party actors must render");
+  assert.ok(images.every((image) => image.width > 0 && image.height > 0), "Party art must decode to nonzero dimensions");
+  return images;
+}
+
+export function requiredRuntimePngPattern(runtime) {
+  const png = runtime.requiredAssets.find((path) => path.endsWith(".png"));
+  assert.ok(png, "The retained runtime must declare a required PNG for export rejection QA");
+  return `**/runtime-archive/${runtime.runtimeTarget}/public/${png}`;
+}
+
+export async function rejectBadExport(page, pattern, body, status) {
+  let downloaded = false;
+  let interceptions = 0;
+  let onDownload;
+  const invalidDownload = new Promise((resolve) => {
+    onDownload = () => { downloaded = true; resolve(); };
+  });
+  page.on("download", onDownload);
+  const inject = (route) => {
+    interceptions += 1;
+    return route.fulfill({ status, contentType: "text/html", body });
+  };
+  try {
+    await page.route(pattern, inject);
+    if (await page.getByTestId("toast").count()) {
+      await page.getByTestId("toast").evaluate((node) => node.setAttribute("data-qa-previous-toast", "true"));
+    }
+    const error = page.locator('[data-testid="toast"].error:not([data-qa-previous-toast])');
+    // Subscribe before input. A download is a failure signal, not a reason to
+    // spend the entire toast deadline waiting for an error that never happened.
+    const outcome = Promise.race([error.waitFor({ state: "visible", timeout: 180000 }), invalidDownload]);
+    await page.getByTestId("menu-project").click();
+    await page.getByTestId("menu-project-export-standalone").click();
+    await outcome;
+    assert.equal(downloaded, false, `Invalid export downloaded: ${pattern}`);
+    assert.ok(interceptions > 0, `Required failure injection was never requested: ${pattern}`);
+    const message = await error.textContent();
+    return { pattern, status, message, downloaded, interceptions, pass: true };
+  } finally {
+    page.off("download", onDownload);
+    await page.unroute(pattern, inject);
+  }
 }
 
 export async function installExportObservations(context) {
@@ -142,12 +219,30 @@ export async function verifyEditorTestPlay(page) {
   return { before, after };
 }
 
+export async function verifyExportBattleStyle(page) {
+  const style = await page.evaluate(async () => {
+    // Match exportEntry's project selection, including file:// standalone HTML.
+    const embedded = document.getElementById("oprn-standalone-project")?.textContent;
+    let project;
+    if (embedded?.trim()) project = JSON.parse(embedded);
+    else {
+      const response = await fetch(window.__OPENRPG_BOOT__?.projectUrl ?? new URL("project.json", location.href),
+        { signal: AbortSignal.timeout(15000) });
+      if (!response.ok) throw new Error(`QA project could not load: ${response.status}`);
+      project = await response.json();
+    }
+    return project.system?.battleUiStyle;
+  });
+  assert.equal(style, "rm2003", "Four-party-art QA requires an explicitly exported rm2003 sideview project; export a new private QA release");
+  return style;
+}
+
 /** Real input only: no teleport, event invocation, inventory writes, or forced results. */
 export async function exerciseExport(page, { url, kind, outDir }) {
   const actions = [];
   const failures = [];
   const errors = [];
-  page.on("requestfailed", (r) => failures.push({ url: r.url().slice(0, 200), type: r.resourceType(), error: r.failure()?.errorText }));
+  page.on("requestfailed", (r) => failures.push({ url: r.url(), type: r.resourceType(), error: r.failure()?.errorText }));
   page.on("response", (r) => { if (r.status() >= 400) failures.push({ url: r.url(), status: r.status() }); });
   page.on("pageerror", (error) => errors.push(String(error)));
   const shot = async (name) => page.screenshot({ path: join(outDir, `${kind}-${name}.png`) });
@@ -155,6 +250,7 @@ export async function exerciseExport(page, { url, kind, outDir }) {
   try {
     await page.goto(url, { waitUntil: "load" });
     await page.getByTestId("title-screen").waitFor({ state: "visible" });
+    result.battleUiStyle = await verifyExportBattleStyle(page);
     result.titleImage = await page.getByTestId("title-screen").evaluate(async (title) => {
       const url = getComputedStyle(title).backgroundImage.replace(/^url\(["']?/, "").replace(/["']?\)$/, "");
       const image = new Image();
@@ -189,8 +285,6 @@ export async function exerciseExport(page, { url, kind, outDir }) {
     await finishDialogue(page, actions);
     await until(page, `!!document.querySelector('[data-testid="actor-command-attack"]')`);
     result.partyImages = await readPartyImages(page);
-    assert.equal(result.partyImages.length, 4);
-    assert.ok(result.partyImages.every((image) => image.width > 0));
     await shot("battle");
     for (let turn = 0; turn < 12; turn += 1) {
       const phase = await page.getByTestId("battle-scene").getAttribute("data-battle-phase");

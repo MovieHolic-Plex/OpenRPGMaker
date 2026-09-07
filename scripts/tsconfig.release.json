@@ -1,0 +1,11 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": { "noEmit": true, "allowJs": true, "types": ["node"] },
+  "include": [
+    "archive-runtime.mts", "qa-release-artifact.mts", "qa-map-resource-clears.mts", "lib/runtimeArchive.ts", "lib/runtimeArchiveMiddleware.ts",
+    "lib/devPlayerBundles.ts", "qa-export-playability.mts", "../vite.standalone.config.ts",
+    "../test/publication.test.ts", "../test/publicationSaves.test.ts", "../test/gameRelease.test.ts",
+    "../test/publicationExport.test.ts", "../test/runtimeArchive.test.ts", "../test/publishingDialog.test.ts",
+    "../test/publicationSaveImportPanel.test.ts", "../test/releaseZipHeaders.test.ts", "../src/**/*.d.ts"
+  ]
+}
