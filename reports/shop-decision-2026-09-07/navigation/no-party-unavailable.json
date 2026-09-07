@@ -1,0 +1,83 @@
+{
+  "id": "no-party-unavailable",
+  "screenshot": "no-party-unavailable.png",
+  "expected": {
+    "kind": "unavailable",
+    "reason": "noActor",
+    "stats": {
+      "attack": null,
+      "defense": null,
+      "mind": null,
+      "agility": null
+    }
+  },
+  "observed": {
+    "gold": 200,
+    "inventory": {
+      "candidate": 1,
+      "old": 1,
+      "potion": 1
+    },
+    "owned": 0,
+    "playerGold": 200,
+    "merchantGold": 200,
+    "selected": "shop-buy-candidate",
+    "cap": 5,
+    "unitPrice": 40,
+    "displayedPrice": 40,
+    "displayedOwned": 1,
+    "quantity": "1",
+    "quantityMax": "5",
+    "total": 40,
+    "rows": 6,
+    "actorEquipment": {
+      "a1": {
+        "weapon": "old"
+      },
+      "a2": {
+        "weapon": "old"
+      },
+      "a3": {
+        "weapon": "curse"
+      },
+      "a4": {
+        "weapon": "old"
+      },
+      "a5": {
+        "weapon": "old"
+      },
+      "a6": {
+        "weapon": "old"
+      }
+    },
+    "tradeCounts": {},
+    "focus": "shop-detail-scroll",
+    "balance": "160",
+    "shortage": null,
+    "x": 14,
+    "y": 18,
+    "warnings": [],
+    "detail": {
+      "kind": "unavailable",
+      "actor": null,
+      "slot": null,
+      "same": null,
+      "reason": "noActor",
+      "actors": [],
+      "stats": {
+        "attack": null,
+        "defense": null,
+        "mind": null,
+        "agility": null
+      },
+      "effects": {
+        "gained": [],
+        "lost": [],
+        "changed": []
+      },
+      "displaced": [],
+      "focus": "shop-detail-scroll",
+      "scrollTop": 0
+    }
+  }
+}

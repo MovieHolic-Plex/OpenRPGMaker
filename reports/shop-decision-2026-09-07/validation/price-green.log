@@ -1,0 +1,16 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/shopPrice.test.ts
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-clear-harbor-3da2
+
+ ✓ test/shopPrice.test.ts (6 tests) 1100ms
+   ✓ shop price unification > uses the equipment database price when stock has no override  409ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  04:33:02
+   Duration  19.45s (transform 11.24s, setup 0ms, collect 15.89s, tests 1.10s, environment 0ms, prepare 816ms)
+
+EXIT_CODE=0

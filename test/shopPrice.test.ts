@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
-import { resolveShopBuyUnitPrice, resolveShopSellUnitPrice } from "@/project/shopPrice";
+import { resolvePricedShopStock, resolveShopBuyUnitPrice, resolveShopSellUnitPrice } from "@/project/shopPrice";
 import { shouldRestock } from "@/project/shopStock";
 import type { Command } from "@/project/types";
 
@@ -13,6 +13,44 @@ function shop(overrides: Partial<Extract<Command, { kind: "shop" }>> = {}): Extr
 }
 
 describe("shop price unification", () => {
+  it("uses the equipment database price when stock has no override", () => {
+    const project = createBlankProject();
+    const equipment = { ...project.database.equipment[0], id: "equipment_price_test", price: 40 };
+    project.database.equipment = [equipment];
+    expect(resolvePricedShopStock(project, {}, shop({ itemIds: [equipment.id] }))).toEqual([
+      { itemId: equipment.id, price: 40 },
+    ]);
+  });
+
+  it("keeps equipment discount floors and explicit seasonal price priority", () => {
+    const project = createBlankProject();
+    project.database.equipment = [{ ...project.database.equipment[0], id: "equipment_price_test", price: 40 }];
+    const id = "equipment_price_test";
+    const session = { gameTime: { minute: 0, hour: 21, day: 1, season: "spring" as const, year: 1 }, shopLoyaltySpend: { global: 60000 } };
+    expect(resolveShopBuyUnitPrice(project, session, shop({ economy: { closingSaleEnabled: true } }), id, 10)).toBe(20);
+    project.system.timeSystem = { ...project.system.timeSystem, enabled: true };
+    expect(resolvePricedShopStock(project, {}, shop({ stock: [{ itemId: id, priceOverride: 60 }] }))[0]?.price).toBe(60);
+    expect(resolvePricedShopStock(project, { gameTime: session.gameTime }, shop({ stock: [{ itemId: id, priceOverride: 60, priceBySeason: { spring: 80 } }] }))[0]?.price).toBe(80);
+    expect(resolveShopBuyUnitPrice(project, session, shop({ economy: { closingSaleEnabled: true } }), id, 40)).toBe(30);
+  });
+
+  it("preserves zero prices and item-first lookup for duplicate ids", () => {
+    const project = createBlankProject();
+    project.database.equipment = [{ ...project.database.equipment[0], id: "equipment_price_test", price: 0 }];
+    expect(resolvePricedShopStock(project, {}, shop({ itemIds: ["equipment_price_test"] }))[0]?.price).toBe(0);
+    project.database.items = [{ ...project.database.items[0], id: "equipment_price_test", price: 0 }];
+    project.database.equipment[0].price = 40;
+    expect(resolvePricedShopStock(project, {}, shop({ stock: [{ itemId: "equipment_price_test", priceOverride: 0 }] }))[0]?.price).toBe(0);
+  });
+
+  it("applies the social discount to equipment without an override", () => {
+    const project = createBlankProject();
+    project.database.equipment = [{ ...project.database.equipment[0], id: "equipment_price_test", price: 40 }];
+    expect(resolvePricedShopStock(project, { friendship: { merchant: 100 } }, shop({ itemIds: ["equipment_price_test"] }), {
+      id: "merchant", characterId: "merchant", socialShop: { minFriendship: 10, priceMultiplier: 0.75 },
+    })).toEqual([{ itemId: "equipment_price_test", price: 30 }]);
+  });
+
   it("Given / When / Then loyalty and closing sale never break sell < buy", () => {
     const project = createBlankProject();
     project.database.items = [{

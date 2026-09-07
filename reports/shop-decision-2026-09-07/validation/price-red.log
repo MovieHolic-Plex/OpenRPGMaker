@@ -1,0 +1,94 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/shopPrice.test.ts
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-clear-harbor-3da2
+
+ ❯ test/shopPrice.test.ts (6 tests | 3 failed) 1841ms
+   × shop price unification > uses the equipment database price when stock has no override 627ms
+     → expected [ { …(2) } ] to deeply equal [ { …(2) } ]
+   × shop price unification > keeps equipment discount floors and explicit seasonal price priority 347ms
+     → expected 7 to be 20 // Object.is equality
+   ✓ shop price unification > preserves zero prices and item-first lookup for duplicate ids  392ms
+   × shop price unification > applies the social discount to equipment without an override 236ms
+     → expected [ { …(2) } ] to deeply equal [ { …(2) } ]
+   ✓ shop price unification > Given / When / Then loyalty and closing sale never break sell < buy 226ms
+   ✓ shop price unification > Given / When / Then weekly restock ignores same-week day changes 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/shopPrice.test.ts > shop price unification > uses the equipment database price when stock has no override
+AssertionError: expected [ { …(2) } ] to deeply equal [ { …(2) } ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[2m    {[22m
+[2m      "itemId": "equipment_price_test",[22m
+[32m-     "price": 40,[39m
+[31m+     "price": 0,[39m
+[2m    },[22m
+[2m  ][22m
+
+ ❯ test/shopPrice.test.ts:20:84
+     18|     const equipment = { ...project.database.equipment[0], id: "equipme…
+     19|     project.database.equipment = [equipment];
+     20|     expect(resolvePricedShopStock(project, {}, shop({ itemIds: [equipm…
+       |                                                                                    ^
+     21|       { itemId: equipment.id, price: 40 },
+     22|     ]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  test/shopPrice.test.ts > shop price unification > keeps equipment discount floors and explicit seasonal price priority
+AssertionError: expected 7 to be 20 // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 20[39m
+[31m+ 7[39m
+
+ ❯ test/shopPrice.test.ts:30:112
+     28|     const id = "equipment_price_test";
+     29|     const session = { gameTime: { minute: 0, hour: 21, day: 1, season:…
+     30|     expect(resolveShopBuyUnitPrice(project, session, shop({ economy: {…
+       |                                                                                                                ^
+     31|     project.system.timeSystem = { ...project.system.timeSystem, enable…
+     32|     expect(resolvePricedShopStock(project, {}, shop({ stock: [{ itemId…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  test/shopPrice.test.ts > shop price unification > applies the social discount to equipment without an override
+AssertionError: expected [ { …(2) } ] to deeply equal [ { …(2) } ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[2m    {[22m
+[2m      "itemId": "equipment_price_test",[22m
+[32m-     "price": 30,[39m
+[31m+     "price": 0,[39m
+[2m    },[22m
+[2m  ][22m
+
+ ❯ test/shopPrice.test.ts:51:9
+     49|     expect(resolvePricedShopStock(project, { friendship: { merchant: 1…
+     50|       id: "merchant", characterId: "merchant", socialShop: { minFriend…
+     51|     })).toEqual([{ itemId: "equipment_price_test", price: 30 }]);
+       |         ^
+     52|   });
+     53|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 3 passed (6)
+   Start at  04:32:09
+   Duration  27.15s (transform 17.30s, setup 0ms, collect 22.93s, tests 1.84s, environment 0ms, prepare 469ms)
+
+EXIT_CODE=1
