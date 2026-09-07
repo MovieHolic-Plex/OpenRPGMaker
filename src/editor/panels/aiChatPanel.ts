@@ -74,7 +74,7 @@ import { serializeAuditTranscript } from "@/ai/conversationReplay";
 import { createProjectWikiCoordinator } from "@/editor/projectWikiCoordinator";
 import { EMPTY_SESSION_USAGE } from "@/ai/sessionUsage";
 import { createAiContextMeter, type AiContextMeterHandle, type AiContextSnapshot } from "./aiContextMeter";
-import { openAiConversationHistoryModal } from "./aiConversationHistoryModal";
+import { closeAiConversationHistoryModal, openAiConversationHistoryModal } from "./aiConversationHistoryModal";
 import { openAiInstructionsModal } from "./aiInstructionsModal";
 import { aiActivityPersistenceState, extractCommitIdsFromAudit } from "@/ai/activityLog";
 import { listAiUiEvents, recordAiUiEvent } from "@/ai/uiEventLog";
@@ -384,7 +384,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 않아 testid 로 세면 복원된 로그를 숨긴다. `:empty` 로도 못 잡는다 — 껍데기 안에 빈
   // .ai-chat-log 엘리먼트가 실제로 들어 있다.
   const syncConversationState = (): void => {
-    if (panelRoot) panelRoot.dataset.aiConversation = log.childElementCount > 0 ? "active" : "empty";
+    if (!panelRoot) return;
+    panelRoot.dataset.aiConversation = log.childElementCount > 0 ? "active" : "empty";
+    panelRoot.dataset.aiConversationId = conversationId;
   };
   // 변경 0건 알림 전용 호스트 — 쓰기가 있는 턴은 승인 없이 바로 적용되므로 결정 카드·핀·모달이 없다.
   const proposalNoticeHost = el("div", { class: "ai-proposal-notice-host" });
@@ -932,10 +934,21 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 지금 대화를 먼저 보관한다 — 열기 직후 dropSession 이 세션을 버리므로 여기서 저장하지
     // 않으면 방금까지의 턴이 어디에도 남지 않는다.
     persistConversation();
+    const capturedScope = conversationScope;
+    const capturedIdentityId = projectIdentityId;
+    const project = store.getCurrent();
+    const stateMapId = editorState.get().currentMapId;
+    const currentMapId = stateMapId && project.maps[stateMapId] ? stateMapId : project.startMapId;
     openAiConversationHistoryModal({
-      scopeKey: conversationScope,
+      scopeKey: capturedScope,
       currentConversationId: conversationId,
+      currentMapId,
+      knownMaps: Object.values(project.maps).map((map) => ({ id: map.id, name: map.name })),
       onOpen: (record) => {
+        if (disposed) return;
+        if (projectIdentityId !== capturedIdentityId) return;
+        if (conversationScope !== capturedScope) return;
+        if ((record.projectContextKey ?? null) !== capturedScope) return;
         restoreConversationRecord(record, "manual");
       },
     });
@@ -1846,6 +1859,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     }
     // 스토어가 로드 중 여러 번 알리므로 표식을 먼저 갱신해 같은 전환이 여러 번 채택되지 않게 한다.
     projectIdentityId = identity.id;
+    closeAiConversationHistoryModal();
     // Settle the outgoing owner before async history loading. A new project's draft may
     // arrive during that lookup and must survive the later chat reset/restore.
     getPendingRegionApply()?.discard();
@@ -3001,6 +3015,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   activeAiChatPanelCleanup = () => {
     if (disposed) return;
     disposed = true;
+    closeAiConversationHistoryModal();
     unregisterSettingsPanel();
     persistConversation();
 
