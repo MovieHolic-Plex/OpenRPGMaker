@@ -80,31 +80,40 @@ export function awaitGraftedTilesetImageUrl(
   });
 }
 
-function graftImageCacheKey(tileset: GraftBakeSnapshot, baseUrl: string): string {
-  // Exact identity for ready/in-flight evidence bakes: full active graft tuples
-  // (every rendering field) plus atlas geometry and base URL. A short texture
-  // suffix hash is not equality — distinct compositions must not share a bucket.
-  const grafts = activeTileGrafts(tileset).map((graft) => ({
+/** Independent copies of every active graft field — never alias live project objects. */
+function canonicalGraftTuples(tileset: Pick<TilesetDef, "tileGrafts">): Array<{
+  targetTile: number;
+  sourceChipset: string;
+  sourceTile: number;
+}> {
+  return activeTileGrafts(tileset).map((graft) => ({
     targetTile: graft.targetTile,
     sourceChipset: graft.sourceChipset,
     sourceTile: graft.sourceTile,
   }));
+}
+
+function graftImageCacheKey(tileset: GraftBakeSnapshot, baseUrl: string): string {
+  // Exact identity for ready/in-flight evidence bakes: full active graft tuples
+  // (every rendering field) plus atlas geometry and base URL. A short texture
+  // suffix hash is not equality — distinct compositions must not share a bucket.
   return JSON.stringify({
     baseUrl,
     count: tileset.count,
     tileSize: tileset.tileSize,
     tilesPerRow: tileset.tilesPerRow,
-    grafts,
+    grafts: canonicalGraftTuples(tileset),
   });
 }
 
 function snapshotGraftBake(tileset: TilesetDef): GraftBakeSnapshot {
-  // Snapshot — async completion must bake the requested composition, not a later edit.
+  // Snapshot copies — async completion must bake the requested composition, not a
+  // later in-place edit of the original TileGraft objects still held by the project.
   return {
     count: tileset.count,
     tileSize: tileset.tileSize,
     tilesPerRow: tileset.tilesPerRow,
-    tileGrafts: activeTileGrafts(tileset),
+    tileGrafts: canonicalGraftTuples(tileset),
   };
 }
 

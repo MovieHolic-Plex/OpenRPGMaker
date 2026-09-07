@@ -670,6 +670,74 @@ describe("tool image graft atlas readiness", () => {
     }
   });
 
+
+  it("bakes the snapshotted composition when live graft fields mutate while the source is held", async () => {
+    const restore = installToolImageRasterDom();
+    try {
+      const project = createBlankProject();
+      const { map, tileset } = seedBlankRegion(project);
+      const baseUrl = tilesetBaseImageUrl(tileset);
+      // Live mutable objects owned by the project — not frozen literals.
+      const liveGraft = {
+        targetTile: 0,
+        sourceChipset: GRAFT_SOURCE,
+        sourceTile: 65,
+      };
+      tileset.tileGrafts = [liveGraft];
+
+      const gate = installToolImageUrlHoldGate(GRAFT_SOURCE_PATH_SNIP);
+      const heldBake = awaitGraftedTilesetImageUrl(tileset, baseUrl);
+      await gate.sourceHeld;
+      expect(gate.isHolding()).toBe(true);
+
+      // In-place edit while the A bake is still awaiting its source load.
+      liveGraft.sourceTile = 387;
+      expect(tileset.tileGrafts?.[0]?.sourceTile).toBe(387);
+
+      gate.release();
+      const urlA = await heldBake;
+      expect(urlA).not.toBeNull();
+
+      const tilesetA: TilesetDef = {
+        ...tileset,
+        tileGrafts: [{ targetTile: 0, sourceChipset: GRAFT_SOURCE, sourceTile: 65 }],
+      };
+      const tilesetB: TilesetDef = {
+        ...tileset,
+        tileGrafts: [{ targetTile: 0, sourceChipset: GRAFT_SOURCE, sourceTile: 387 }],
+      };
+
+      // Original request key still maps to the A bake; edited inputs need their own exact bake.
+      expect(peekGraftedTilesetImageUrl(tilesetA, baseUrl)).toBe(urlA);
+      expect(peekGraftedTilesetImageUrl(tilesetB, baseUrl)).toBeNull();
+
+      const urlB = await awaitGraftedTilesetImageUrl(tilesetB, baseUrl);
+      expect(urlB).not.toBeNull();
+      expect(urlB).not.toBe(urlA);
+      const hashA = pngHash(urlA!);
+      const hashB = pngHash(urlB!);
+      expect(hashA).not.toBe(hashB);
+
+      // Independent fresh A bake (no clear of A entry) still matches the held snapshot result.
+      const confirmA = await awaitGraftedTilesetImageUrl(tilesetA, baseUrl);
+      expect(confirmA).toBe(urlA);
+
+      writeJson("snapshot-held-mutate.json", {
+        case: "held-source-mutate-keeps-snapshotted-A",
+        requestedSourceTile: 65,
+        mutatedSourceTile: 387,
+        hashA,
+        hashB,
+        hashesDiffer: hashA !== hashB,
+        peekAMatchesHeld: peekGraftedTilesetImageUrl(tilesetA, baseUrl) === urlA,
+        peekBEmptyBeforeOwnBake: true,
+        confirmAReusesExactKey: confirmA === urlA,
+      });
+    } finally {
+      restore();
+    }
+  });
+
   it("does not alias an in-flight bake across colliding graft compositions", async () => {
     const restore = installToolImageRasterDom();
     try {
