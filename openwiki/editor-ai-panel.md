@@ -1,5 +1,153 @@
 # Editor AI Panel & Tools
 
+## Frozen core execution integration (2026-09-07)
+
+This section supersedes the older total-48, repair-count termination and dormant
+source-capture descriptions. It is a core contract, not a claim that the editor UI
+already consumes the new detail. The latest-main integration retains the existing
+session, canonical acceptance ledger, WorkPlan repair, native apply/store, P1 receipt
+and mutable result/recap owners. There is no second scheduler or completion ledger.
+
+### Request and execution ownership
+
+- `sendUserMessage` establishes the main result owner and captures exact raw UTF-16
+  source, scope, pre-write baseline and declaration facts before preparation awaits.
+  `goalAction: "new-goal"` (except explicit Ask) archives the prior immutable
+  assessment and source inventory, retires its draft, domain/extraction/retry state,
+  and rebases using main's store-backed versus detached accepted-baseline rule.
+  Already applied content is retained. Captured but unprepared source is not a pass:
+  a failed new-goal preparation remains unassessed and cannot schedule completion.
+- Ordinary additions stay inside the active goal. Their source, volume and domain
+  obligations are additive with request-owned baselines. Older uncovered source can
+  recover only inside that goal. Archived requests never become a recovery queue.
+  `getRequestHistory()` returns isolated historical copies, not execution authority.
+- Host `goalAction: "resume"` restores the original authoring request after a
+  question or Plan preview. Ask always wins. Raw continuation cannot escalate an
+  Ask/Plan owner into Do, even if the caller supplies Do without the host Resume
+  action. A second ordinary Do confirmation after a **Confirm-level Do preview**
+  resumes that existing Do request; it is not Ask/Plan escalation. Non-authorizing
+  continuation does not add a spurious uncovered "continue" requirement.
+- `AssistantAcceptanceLedger.markAnswer(requestId): boolean` is host-only. It can
+  classify only the newest unvalidated source as answer-only, never a request with
+  validated source predicates, uncovered numeric/preservation constraints,
+  supplemental planner/volume authority, withdrawal or supersession. It does not
+  fabricate withdrawal or rewrite historical evidence. Question classification
+  with omitted/empty extraction cannot demote raw dimensions or prohibitions:
+  the session and ledger both reuse `hasUnresolvedWriteConstraint(requests, true)`.
+  The ordinary write gate keeps its existing preservation-only default.
+  This is a conservative lexical coverage guard, not an NLP/genre/size classifier.
+  Numeric informational text in Do can remain unresolved; explicit Ask is still
+  read-only. List numbering and quoted preservation words retain the source
+  scanner's existing treatment. Ordinary H5 informational questions still answer.
+  Recovery reports `intentModeRepair.reason: "unresolved-source-constraints"` for
+  omissions, versus `"authored-request-criteria"` for existing validated predicates.
+  Both use the same driver and original source/baseline. Already satisfied applied
+  predicates need no model approval. Regression/evidence:
+  `assistantQuestionAuthority.test.ts`, `assistantCoreIntegration.test.ts` and
+  `.omo/evidence/core-integration/ANSWER-OMISSION-VERIFICATION.md`.
+- `get_request_contract` is now exposed and dispatched read-only. Omitting
+  `requestId` lists identities/lengths; a named request pages exact raw UTF-16 text
+  with `offset >= 0`, `limit` in `1..8192`, `nextOffset` and overlapping source units.
+  It grants no amendment, withdrawal, verifier or write authority.
+- Anchored source extraction, exact-field user amendments and volume use the one
+  canonical ledger. `evaluate(applied, draft, verification, blockingProblems)` is
+  unchanged. Main's required/optional semantics, reserved source IDs, immutable
+  provenance, full native verifier arguments/freshness, action receipts, draft veto
+  and flattened provider schemas remain. Authored source cannot become optional.
+  NPC amount projection consumes only uniquely proven source/grant ownership and
+  accepted host supersession/withdrawal; positive grants and one-time conditions
+  remain enforced. Late extraction cannot revive an obsolete approved count.
+
+### Finite segments, real apply and proof
+
+- Authorized autonomous Do runs rotate positive finite provider rounds/output
+  segments without a cumulative terminal cap. `AGENT_RUN_MAX_TOTAL_STEPS = 48`
+  remains exported solely for legacy UI parsing; it is not consulted by the driver.
+  Repair thresholds select refreshed prerequisites, corrected arguments or another
+  strategy. Replan and unrelated writes do not erase excluded failing candidates.
+  Detached/manual callers remain finite. Actual abort, project switch, queued input,
+  main's explicit quick-reply user wait and evidenced provider/store failures retain
+  their boundaries. Project identity takes precedence over coincident abort,
+  including after-await and terminal-publication callbacks.
+- Complete received tool batches retain paired responses and partial successful
+  work. Checkpoints apply pending snapshots through native `applyProposedProject`.
+  **Main `recordAppliedProject` is the only pending-to-applied accounting transfer.**
+  The checkpoint does not append/clear those calls again. Native `commitProject`,
+  session-owned wiki `onDelivery`, save-failure facts, receipt object/lineage/generation
+  ownership, rejection settlement and original mutable result handles are preserved.
+- Canonical acceptance includes current applied **and** pending domain checks, not
+  model final text, tool counts or scheduler completion. Direct/no-plan authoring
+  can finish. A source binding or an advisory check cannot supply an exact verifier
+  receipt. Same-project external edits retire stale explicit proof, including during
+  a proof-only retry whose source Boolean predicates still pass.
+- `retryLastTurn` can retry an eligible failed persistence proof without entering
+  the model/tool authoring loop. It rechecks current acceptance, domain and explicit
+  verifier obligations before and after proof awaits, retries a stale same-project
+  receipt only while those facts still pass, and settles the existing result/recap.
+  Successful retry clears its old persistence blocker/error. Reopened work returns
+  incomplete/manual detail without replay; disabled persistence is local-only.
+  Result-owner and invocation/proof-attempt checks prevent an obsolete retry from
+  finalizing a newer question or a resumed owner with the same request ID.
+
+### Frozen UI API handoff
+
+Keep both axes. `RunOutcome` remains the canonical execution/goal/delivery projection;
+`RequestExecution` explains the live segment/recovery and finer stopping boundary.
+They are not interchangeable verdict enums.
+
+```ts
+interface RequestExecution {
+  readonly requestId: string;
+  readonly state: "running" | "recovering" | "verified-local" | "verified"
+    | "answer" | "preview" | "queued" | "aborted" | "external-blocker"
+    | "manual-segment" | "project-switch";
+  readonly segment: number; // 1-based
+  readonly rounds: number;
+  readonly roundCap: number;
+  readonly recovery?: string;
+  readonly blocker?: ExternalBlocker;
+}
+// Both are exported from assistantSession.ts.
+// SessionEvent adds { type: "run_state"; execution: RequestExecution }.
+// Existing { type: "run_outcome"; runOutcome: RunOutcome } stays intact.
+```
+
+`TurnResult` and `RunRecap` carry optional `execution` alongside `runOutcome`.
+`HarnessSnapshot` retains `acceptance`, `runOutcome`, `runEndProof` and adds
+`execution`/`requests`. `getExecution()` and the harness recheck current detail
+without publishing, evaluating, saving or mutating historical returned results.
+`AiActivityResult` retains `runOutcome`, adds `execution`, `acceptance`, `requests`,
+and preserves both fields in its recap. Activity serialization clones the added
+snapshots. Compact recap parsing retains both axes as history only; it cannot
+restore a live run or receipt. Recap counters cover the full audit, independently
+of its 80-entry process display limit.
+
+`verified` detail means current required acceptance and fresh current P1 proof; it
+does **not** donate a human revision's receipt to this run's delivery. UI must use
+`runOutcome.delivery`, not `execution.state`, to label owned apply/save delivery.
+For example, proof-only recheck after a compatible human edit can have verified
+detail while main preserves only the earlier owned accepted delivery.
+
+Required Grok glue (not applied by the core lane):
+
+1. Consume `run_state` for live segment/budget detail and serialize both axes plus
+   source/acceptance on normal and orphaned results. Keep main RunOutcome rendering.
+2. Conjoin main's non-Ask apply guard with the no-replay guard: ordinary apply only
+   for missing legacy execution or `manual-segment`. Autonomous terminal proposals
+   are not outer apply authority. Keep `recordApplyRejected` and session-owned wiki.
+3. Keep Do autonomous independent of agentMode; explicit Continue uses `userResume`
+   and `goalAction: "resume"`. Preserve the distinct Confirm-level second-Do case.
+   Internal rollover must not offer Continue or terminal budget exhaustion.
+4. Busy queued input uses the real composer Enter path. Preserve project-switch
+   detail and zero late apply after owner retirement; never infer it from prose.
+
+The prepared `.omo/evidence/ui-integration-patch` API shapes match this handoff.
+Its production and test/harness patches remain unapplied. No editor UI file,
+editor-observability wiki, browser, live provider or remote DB write was changed or
+used by this core lane. Final candidate evidence and exact legacy failures are in
+`.omo/evidence/core-integration/FROZEN-CORE-HANDOFF.md`; full11, full candidate gates,
+review and PR remain lead/Grok-owned.
+
 ## P2 run outcomes and user scope actions (2026-09-06)
 
 The session publishes three independent facts, not a single completion badge:

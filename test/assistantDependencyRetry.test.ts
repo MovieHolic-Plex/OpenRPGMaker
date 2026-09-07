@@ -27,7 +27,7 @@ const badNpc = (n: number): Call => {
 beforeEach(() => resetIntentDeclarationCache());
 afterEach(() => { resetIntentDeclarationCache(); vi.restoreAllMocks(); vi.unstubAllGlobals(); vi.unstubAllEnvs(); });
 
-function setup(rounds: Call[][], options: { planned?: boolean; maxToolCalls?: number; references?: boolean; successTools?: string[] } = {}) {
+function setup(rounds: Call[][], options: { planned?: boolean; maxToolCalls?: number; references?: boolean; successTools?: string[]; outcome?: string } = {}) {
   const ctx = { project: createBlankProject() };
   for (const id of ["m1", "m2"]) expect(runTool(ctx, "create_map", { id, name: id, width: 20, height: 20 }).ok).toBe(true);
   for (const c of [npc(), npc(GOOD_PAGES, "npc_other")]) expect(runTool(ctx, c.name, c.args).ok).toBe(true);
@@ -50,7 +50,12 @@ function setup(rounds: Call[][], options: { planned?: boolean; maxToolCalls?: nu
   };
   const session = new AssistantSession(ctx.project, {
     config: { ...CONFIG, maxToolCalls: options.maxToolCalls ?? CONFIG.maxToolCalls }, chat,
-    declareIntent: fixedDeclarer({ mode: "modify", needsPlan: options.planned ?? false, ...(options.references ? { readBeforeWrite: { project: false, collections: [], references: true } } : {}) }),
+    declareIntent: async facts => fixedDeclarer({ mode: "modify", needsPlan: options.planned ?? false,
+      ...(options.outcome ? { requestRequirements: { entries: [{ source: [{ start: 0, end: facts.userText.length, quote: facts.userText }],
+        criteria: [{ kind: "valueEquals", subject: { kind: "event", mapId: "m1", eventId: "npc_target" }, path: ["name"], value: options.outcome }],
+        bindings: [{ source: { start: facts.userText.indexOf('"'), end: facts.userText.length, quote: JSON.stringify(options.outcome) }, role: "value", criterionIndex: 0, fieldPath: ["value"] }],
+      }] } } : {}), ...(options.references ? { readBeforeWrite: { project: false, collections: [], references: true } } : {}),
+    })(facts),
   });
   const events: ToolEvent[] = [];
   const collect = (event: SessionEvent): void => { if (event.type === "tool_call") events.push(event); };
@@ -215,14 +220,14 @@ describe("stable target retry budgets through AssistantSession", () => {
       [call("get_database_records", { collection: "items", ids: ["item_potion"] })],
       [correctedNpc(4), readMap],
     ];
-    const { session, events, collect, state, project } = setup(rounds, { planned: true, references: true, maxToolCalls: 1 });
-    const result = await session.sendUserMessage("조회 없이 반복하는 주민 수정", collect, undefined, { autonomous: true });
-    expect(result.workPlan?.layers[0].items[0].status).toBe("blocked");
-    expect(state.batches).toBe(4);
-    expect(events).toHaveLength(4);
-    events.forEach((event) => expectDeferred(event, "read-before-write-required"));
-    expect(result.recap).toMatchObject({ toolFailures: 0, deferredToolCalls: 4, ralphContinues: 0 });
-    expect(session.getProposedProject().maps.m1).toEqual(project.maps.m1);
+    const { session, events, collect, state } = setup(rounds, { planned: true, references: true, maxToolCalls: 1, outcome: "Corrected 4" });
+    const result = await session.sendUserMessage('Set NPC name to "Corrected 4"', collect, undefined, { autonomous: true });
+    expect(result.execution?.state).toBe("verified-local");
+    expect(state.batches).toBe(6);
+    events.slice(0, 4).forEach((event) => expectDeferred(event, "read-before-write-required"));
+    expect(events.find(event => event.name === "place_npc" && event.result.ok)).toBeDefined();
+    expect(result.recap).toMatchObject({ toolFailures: 0, deferredToolCalls: 4 });
+    expect(store.getCurrent().maps.m1.events.find(event => event.id === "npc_target")?.name).toBe("Corrected 4");
     expectResponses(session);
   });
 
@@ -247,39 +252,131 @@ describe("stable target retry budgets through AssistantSession", () => {
     expectResponses(session);
   });
 
-  it("bounds spelling and page-path variations despite unrelated writes and synthetic continuations, then rearms for a real user", async () => {
-    const rounds = Array.from({ length: 4 }, (_, i) => [badNpc(i), title(i), npc(GOOD_PAGES, "npc_other")]);
-    const { session, events, collect, state } = setup(rounds, { planned: true, maxToolCalls: 1 });
-    const first = await session.sendUserMessage("주민 명령 수정", collect, undefined, { autonomous: true });
-    expect(first.workPlan?.layers[0].items[0].status).toBe("blocked");
-    expect(state.batches).toBe(4);
-    expect(events.filter((event) => event.name === "place_npc" && event.args.id === "npc_target").map((event) => event.result.issues?.[0]?.code)).toEqual(Array(4).fill("invalid-args"));
-    expect(first.stoppedReason).toBe("final");
-    expect(first.recap?.ralphContinues).toBe(0);
+  it.each(["npc-name", "map-name"] as const)("H2-cosmetic-%s-does-not-rearm-invalid-command", async cosmetic => {
+    const invalid = badNpc(0);
+    const retry = cosmetic === "npc-name" ? call("place_npc", { ...invalid.args, name: "Cosmetic rename" }) : invalid;
+    const rounds = [
+      ...Array.from({ length: 4 }, () => [invalid]),
+      [...(cosmetic === "map-name" ? [call("set_map_properties", { mapId: "m1", name: "Unrelated map rename" })] : []), retry],
+      [correctedNpc(9), readMap],
+    ];
+    const { session, events, collect, state } = setup(rounds, { planned: true, maxToolCalls: 1, outcome: "Corrected 9" });
+    const controller = new AbortController();
+    const result = await session.sendUserMessage('Set NPC name to "Corrected 9"', event => {
+      collect(event);
+      if (event.type === "run_state" && event.execution.state === "recovering" && state.batches > rounds.length) controller.abort();
+    }, controller.signal, { autonomous: true });
+    const attempts = events.filter(event => event.name === "place_npc");
+    expect(attempts).toHaveLength(6);
+    attempts.slice(0, 4).forEach(event => expect(event.result).toMatchObject({ ok: false, issues: [{ code: "invalid-args" }] }));
+    expectDeferred(attempts[4], "tool-retry-exhausted");
+    expect(attempts[5].result.ok).toBe(true);
+    expect(result.execution?.state).toBe("verified-local");
+    const applied = store.getCurrent().maps.m1;
+    expect(applied.events.find(event => event.id === "npc_target")).toMatchObject({ name: "Corrected 9", pages: [
+      { commands: expect.arrayContaining([expect.objectContaining({ kind: "changeItem", itemId: "item_potion", amount: 1 })]) },
+      expect.anything(),
+    ] });
+    if (cosmetic === "map-name") {
+      expect(events.find(event => event.name === "set_map_properties")?.result.ok).toBe(true);
+      expect(applied.name).toBe("Unrelated map rename");
+    }
+    expect(result.recap).toMatchObject({ toolFailures: 4, deferredToolCalls: 1 });
     expectResponses(session);
+  });
 
-    expect(session.getAcceptanceSnapshot()).toMatchObject({ status: "blocked", items: [{ id: "acceptance-contract", evidence: [] }] });
-    // Repair the missing spatial contract in the successful correction batch.
-    // Target only this NPC's cell, so unrelated writes cannot satisfy the promise.
-    const criteria = [{ kind: "targetChange", target: { mapId: "m1" }, region: { x: 2, y: 2, w: 1, h: 1 } }];
-    rounds.push([badNpc(0)], [badNpc(1)], [badNpc(2)], [correctedNpc(1), readMap,
-      call("repair_acceptance", { itemId: "acceptance-contract", criteria }),
-    ]);
-    // P2 requires the host's explicit resume action, not arbitrary new prose.
-    const second = await session.sendUserMessage("같은 주민 명령을 다시 고쳐줘", collect, undefined, { autonomous: true, goalAction: "resume" });
-    expect(second.workPlan?.layers[0].items[0].status).toBe("done");
-    expect(state.batches).toBe(8);
-    expect(events.find((event) => event.name === "repair_acceptance")?.result).toMatchObject({ ok: true, data: { acceptance: { status: "verifying", items: [{ evidence: [{ passed: false }] }] } } });
-    expect(session.getAcceptanceSnapshot()).toMatchObject({ status: "verified", items: [{ id: "acceptance-contract", evidence: [{ expected: JSON.stringify(criteria[0]), passed: true }] }] });
-    expect(second.proposedCalls).toEqual([]);
-    // Resume retains previously pending independent writes; none were applied in
-    // the blocked first run, so they must be delivered once rather than erased.
-    expect(first.appliedCalls).toEqual([]);
-    expect(second.appliedCalls?.slice(0, -1)).toEqual(first.proposedCalls);
-    expect(second.appliedCalls?.at(-1)).toMatchObject({ name: "place_npc", args: { id: "npc_target" } });
-    expect(second.appliedCalls?.filter(entry => entry.name === "place_npc" && entry.args.id === "npc_other")).toHaveLength(1);
-    expect(events.filter((event) => event.name === "place_npc" && event.args.id === "npc_target").map((event) => event.result.ok)).toEqual([false, false, false, false, false, false, false, true]);
-    expect(events.filter((event) => event.name === "place_npc" && event.args.id === "npc_target").at(-1)?.result.ok).toBe(true);
+  it("H2-identical-arguments-rearm-only-after-relevant-read", async () => {
+    const write = correctedNpc(9);
+    const rounds = [
+      ...Array.from({ length: 4 }, () => [write]),
+      [call("get_project_summary")],
+      [write],
+      [call("get_database_records", { collection: "items", ids: ["item_potion"] })],
+      [write, readMap],
+    ];
+    const { session, events, collect, state } = setup(rounds, { planned: true, references: true, maxToolCalls: 1, outcome: "Corrected 9" });
+    const controller = new AbortController();
+    const result = await session.sendUserMessage('Set NPC name to "Corrected 9"', event => {
+      collect(event);
+      if (event.type === "run_state" && event.execution.state === "recovering" && state.batches > rounds.length) controller.abort();
+    }, controller.signal, { autonomous: true });
+    const attempts = events.filter(event => event.name === "place_npc");
+    expect(attempts).toHaveLength(6);
+    attempts.slice(0, 4).forEach(event => expectDeferred(event, "read-before-write-required"));
+    expectDeferred(attempts[4], "tool-retry-exhausted");
+    expect(attempts[5].args).toEqual(attempts[0].args);
+    expect(attempts[5].result.ok).toBe(true);
+    expect(result.execution?.state).toBe("verified-local");
+    expect(store.getCurrent().maps.m1.events.find(event => event.id === "npc_target")?.name).toBe("Corrected 9");
+    expectResponses(session);
+  });
+
+  it("H2-identical-arguments-rearm-after-actual-spec-prerequisite", async () => {
+    const write = call("place_npc", { ...npc().args, id: "npc_spec_target", x: 4, y: 4 });
+    const rounds = [
+      ...Array.from({ length: 4 }, () => [write]),
+      [spec()],
+      [write, correctedNpc(9), readMap],
+    ];
+    const { session, events, collect, state } = setup(rounds, { planned: true, maxToolCalls: 1, outcome: "Corrected 9" });
+    const controller = new AbortController();
+    const result = await session.sendUserMessage('Set NPC name to "Corrected 9"', event => {
+      collect(event);
+      if (event.type === "run_state" && event.execution.state === "recovering" && state.batches > rounds.length) controller.abort();
+    }, controller.signal, { autonomous: true });
+    const attempts = events.filter(event => event.name === "place_npc" && event.args.id === "npc_spec_target");
+    expect(attempts).toHaveLength(5);
+    attempts.slice(0, 4).forEach(event => expect(event.result).toMatchObject({ ok: false, issues: [{ code: "spec-gate" }] }));
+    expect(events.find(event => event.name === "set_build_spec")?.result.ok).toBe(true);
+    expect(attempts[4].args).toEqual(attempts[0].args);
+    expect(attempts[4].result.ok).toBe(true);
+    expect(result.execution?.state).toBe("verified-local");
+    expect(store.getCurrent().maps.m1.events.some(event => event.id === "npc_spec_target")).toBe(true);
+    expectResponses(session);
+  });
+
+  it("H2-distinct-target-and-meaningful-name-corrections-remain-executable", async () => {
+    const invalid = call("place_npc", { ...npc().args, name: {} });
+    const rounds = [
+      ...Array.from({ length: 4 }, () => [invalid]),
+      [call("place_npc", { ...invalid.args, id: "npc_other", x: 8 })],
+      [correctedNpc(9), readMap],
+    ];
+    const { session, events, collect, state } = setup(rounds, { planned: true, maxToolCalls: 1, outcome: "Corrected 9" });
+    const controller = new AbortController();
+    const result = await session.sendUserMessage('Set NPC name to "Corrected 9"', event => {
+      collect(event);
+      if (event.type === "run_state" && event.execution.state === "recovering" && state.batches > rounds.length) controller.abort();
+    }, controller.signal, { autonomous: true });
+    const attempts = events.filter(event => event.name === "place_npc");
+    expect(attempts).toHaveLength(6);
+    attempts.slice(0, 5).forEach(event => expect(event.result).toMatchObject({ ok: false, issues: [{ code: "invalid-args" }] }));
+    expect(attempts[4].args.id).toBe("npc_other");
+    expect(attempts[5].result.ok).toBe(true);
+    expect(result.execution?.state).toBe("verified-local");
+    expect(store.getCurrent().maps.m1.events.find(event => event.id === "npc_target")?.name).toBe("Corrected 9");
+    expectResponses(session);
+  });
+
+  it("C4 unchanged candidate stays excluded across unrelated writes and continuation; a valid correction succeeds", async () => {
+    const rounds = Array.from({ length: 5 }, (_, i) => [badNpc(0), title(i), call("place_npc", { ...npc(GOOD_PAGES, "npc_other").args, name: `Independent NPC ${i}` })]);
+    const { session, events, collect } = setup(rounds, { planned: true, maxToolCalls: 1, outcome: "Corrected 1" });
+    const controller = new AbortController();
+    const first = await session.sendUserMessage('Set NPC name to "Corrected 1"', event => {
+      collect(event);
+      if (event.type === "tool_call" && event.name === "place_npc" && event.args.id === "npc_target"
+        && events.filter(entry => entry.name === "place_npc" && entry.args.id === "npc_target").length === 5) controller.abort();
+    }, controller.signal, { autonomous: true });
+    expect(first.execution?.state).toBe("aborted");
+    const failed = events.filter(event => event.name === "place_npc" && event.args.id === "npc_target");
+    expect(failed).toHaveLength(5);
+    expectDeferred(failed[4], "tool-retry-exhausted");
+    expect(session.getAcceptanceSnapshot()?.status).not.toBe("verified");
+    rounds.push([correctedNpc(1), readMap]);
+    const second = await session.sendUserMessage("continue", collect, undefined, { autonomous: true, goalAction: "resume" });
+    expect(second.execution?.state).toBe("verified-local");
+    expect(store.getCurrent().maps.m1.events.find(event => event.id === "npc_target")?.name).toBe("Corrected 1");
+    expect(session.getHarnessSnapshot().requests).toHaveLength(1);
     expectResponses(session);
   });
 
@@ -295,7 +392,7 @@ describe("stable target retry budgets through AssistantSession", () => {
   });
 
   it("does not execute attempts beyond the bound even within one model batch", async () => {
-    const { session, events, collect } = setup([[...Array.from({ length: 6 }, (_, i) => badNpc(i)), title(1)]], { planned: true, maxToolCalls: 1 });
+    const { session, events, collect } = setup([[...Array.from({ length: 6 }, () => badNpc(0)), title(1)]], { planned: true, maxToolCalls: 1 });
     const result = await session.sendUserMessage("주민 명령 수정", collect);
     expect(result.workPlan?.layers[0].items[0].status).toBe("blocked");
     events.slice(4, 6).forEach((event) => expectDeferred(event, "tool-retry-exhausted"));

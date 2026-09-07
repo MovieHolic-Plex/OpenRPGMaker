@@ -92,8 +92,11 @@ describe("canonical requirements", () => {
     // When the host submits the real scoped request.
     await f.run([[plan([{ ...size, source: { text: "FORGED", requestId: "fake" }, withdrawal: { reason: "FORGED" } }]), skip]], { scope }, "ORIGINAL");
     // Then only host facts own provenance and the requirement remains open.
-    expect(f.session.getAcceptanceSnapshot()).toMatchObject({ status: "blocked", items: [{ source: { text: "ORIGINAL", scope }, required: true }] });
-    expect(f.session.getAcceptanceSnapshot()?.items[0]?.withdrawal).toBeUndefined();
+    expect(f.session.getAcceptanceSnapshot()).toMatchObject({ status: "blocked", items: [
+      { id: "request-1:source:0", source: { text: "ORIGINAL", scope }, required: true, coverage: "uncovered" },
+      { id: "size", source: { text: "ORIGINAL", scope }, required: true },
+    ] });
+    expect(f.session.getAcceptanceSnapshot()?.items.every(item => !item.withdrawal)).toBe(true);
   });
 
   it.each([false, true])("retains only the original user utterance through replan with instruction override=%s", async override => {
@@ -176,7 +179,9 @@ describe("canonical requirements", () => {
     // When the host dispatches a genuine new-goal action.
     await f.run([], { goalAction: "new-goal" }, "New unrelated task");
     // Then old history is retained, not rewritten as satisfied.
-    expect(f.session.getAcceptanceSnapshot()).toBeNull();
+    expect(f.session.getAcceptanceSnapshot()).toMatchObject({ status: "blocked", items: [
+      { id: "request-2:source:0", required: true, coverage: "uncovered" },
+    ] });
     expect(f.session.getAcceptanceHistory()).toEqual([before]);
   });
 });

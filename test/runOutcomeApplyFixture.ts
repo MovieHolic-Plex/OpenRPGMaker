@@ -67,7 +67,7 @@ export function applyFixture(
   project.tilesets = { [map.tilesetId]: {
     id: map.tilesetId, name: "Outcome tileset", image: tileset.image, kind: "custom",
     tileSize: map.tileSize, tilesPerRow: 1, count: 1,
-    passability: [0], priority: ["lower"], terrain: [0],
+    passability: [{ up: true, down: true, left: true, right: true }], priority: ["lower"], terrain: [0],
   } };
   store.replace(project);
   store._setPersistedBaselineForTest(null);
@@ -87,6 +87,8 @@ export function applyFixture(
   });
   return { session, events, setProofResponse: (response?: () => Response | Promise<Response>) => { proofResponse = response; },
     setCommitResponse: (response: () => Response) => { commitResponse = response; },
-    run: () => session.sendUserMessage("Set title", event => events.push(event)),
+    // This legacy adapter fixture measures apply/receipt ownership, with no extracted
+    // raw-user contract. Explicit canonical requirements are supplied by its tool script.
+    run: () => session.sendUserMessage("Set title", event => events.push(event), undefined, { instruction: "" }),
   };
 }

@@ -23,6 +23,9 @@ export type AiActivityToolCall = {
 
 export type AiActivityResult = {
   readonly runOutcome?: RunOutcome;
+  readonly execution?: import("./assistantSession").RequestExecution;
+  readonly acceptance?: import("./assistantAcceptance").AcceptanceSnapshot | null;
+  readonly requests?: readonly import("./assistantRequestContract").RequestSource[];
   readonly ok: boolean;
   readonly applied?: boolean;
   readonly error?: string;
@@ -49,6 +52,7 @@ export type AiActivityResult = {
   /** 이 목표가 태운 토큰·경과·과정. 있으면 로그 요약에 그대로 싣는다. */
   readonly recap?: {
     readonly runOutcome?: RunOutcome;
+    readonly execution?: import("./assistantSession").RequestExecution;
     readonly elapsedMs: number;
     readonly promptTokens: number;
     readonly completionTokens: number;

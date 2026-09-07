@@ -179,7 +179,7 @@ describe("컴포저 모드 — 계획(plan)", () => {
 
     await session.sendUserMessage("타이틀을 두 단계로 다듬어줘", () => {}, undefined, { composerMode: "plan" });
     const planOnlyCalls = requests.length;
-    const result = await session.sendUserMessage("계속", () => {}, undefined, { composerMode: "plan" });
+    const result = await session.sendUserMessage("계속", () => {}, undefined, { composerMode: "do", goalAction: "resume" });
 
     expect(planOnlyCalls).toBe(1);
     expect(requests.length).toBeGreaterThan(planOnlyCalls);

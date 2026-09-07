@@ -32,7 +32,7 @@ it.each(["tools", "tokens"] as const)("projects budget exhaustion when the %s li
   expect(result.stoppedReason).toBe(budget === "tools" ? "max-tool-calls" : "token-budget");
 });
 
-it("preserves the driver user-wait decision after a tool-budget return", async () => {
+it("gives an already queued user message precedence before any tool-budget work", async () => {
   // Given an unfinished native plan and a real pending-user boundary.
   const session = new AssistantSession(createBlankProject(), {
     config: { ...defaultAiConfig(), model: "test", liteModel: "test", agentMode: "chat", maxToolCalls: 1 },
@@ -44,7 +44,9 @@ it("preserves the driver user-wait decision after a tool-budget return", async (
   // When the driver yields to the user after the inner budget limit.
   const result = await session.sendUserMessage("Inspect", undefined, undefined, { autonomous: true });
   // Then the later actual decision wins without rewriting legacy stoppedReason.
-  expect(result.stoppedReason).toBe("max-tool-calls");
+  expect(result.stoppedReason).toBe("final");
+  expect(result.execution?.state).toBe("queued");
+  expect(session.getAuditEntries().filter(entry => entry.kind === "tool")).toEqual([]);
   expect(result.runOutcome).toEqual({ execution: "awaiting-user", goal: "unassessed", delivery: "no-change" });
 });
 
@@ -63,7 +65,7 @@ it("projects a recovered retry without inventing application", async () => {
   expect(recovered.runOutcome).toEqual({ execution: "response-final", goal: "unassessed", delivery: "no-change" });
 });
 
-it("retains both applied milestones and pending calls when a later transport fails", async () => {
+it("retains both real applied checkpoints when a later transport fails", async () => {
   // Given two native writes separated by a real milestone application.
   const tool = (name: string, args: Record<string, unknown>): ChatResult => ({ message: { role: "assistant", content: null,
     tool_calls: [{ id: name, type: "function", function: { name, arguments: JSON.stringify(args) } }] }, finishReason: "tool_calls" });
@@ -80,10 +82,10 @@ it("retains both applied milestones and pending calls when a later transport fai
   // When a later failure ends the actual autonomous run.
   const result = await f.session.sendUserMessage("Set titles", undefined, undefined, { autonomous: true });
   // Then draft precedence neither erases nor replays the first milestone.
-  expect(result.runOutcome).toEqual({ execution: "failed", goal: "unassessed", delivery: "draft" });
-  expect(result.appliedCalls?.map(call => call.args.title)).toEqual(["Applied first"]);
-  expect(result.proposedCalls.map(call => call.args.title)).toEqual(["Pending second"]);
-  expect(store.getCurrent().system.titleScreen?.title).toBe("Applied first");
+  expect(result.runOutcome).toEqual({ execution: "failed", goal: "incomplete", delivery: "applied" });
+  expect(result.appliedCalls?.map(call => call.args.title)).toEqual(["Applied first", "Pending second"]);
+  expect(result.proposedCalls).toEqual([]);
+  expect(store.getCurrent().system.titleScreen?.title).toBe("Pending second");
 });
 
 it("routes an explicit user withdrawal to the sole session authority", async () => {

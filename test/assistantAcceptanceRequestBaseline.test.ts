@@ -1,13 +1,12 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { AssistantSession, type SessionEvent } from "@/ai/assistantSession";
 import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
-import type { AcceptancePromise } from "@/ai/assistantAcceptance";
-import * as applyStore from "@/editor/tools/applyChangesetToStore";
+import { parseAcceptance, type AcceptancePromise } from "@/ai/assistantAcceptance";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { fixedDeclarer } from "./intentFixture";
 
-afterEach(() => vi.restoreAllMocks());
+afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); vi.unstubAllEnvs(); });
 
 type Call = { readonly name: string; readonly args: Record<string, unknown> };
 const room = { mapId: "request-a-room" };
@@ -28,18 +27,26 @@ const skip: Call = { name: "skip_work_item", args: {} };
 const rename = (mapId: string, name: string): Call => ({ name: "set_map_properties", args: { mapId, name } });
 
 async function afterRequestA() {
-  // Only the external persistence boundary is replaced; session/tools/adoption are real.
-  vi.spyOn(store, "isRemotePersistenceEnabled").mockReturnValue(false);
-  vi.spyOn(applyStore, "applyProposedProject").mockImplementation(async applied => ({
-    ok: true, applied,
-    commit: { commitId: null, persisted: false, reviewStatus: "approved", summary: "local test", toolNames: [], recordedAt: "2026-09-06T00:00:00.000Z" },
-  }));
+  // Keep native commit validation, store replacement and pending-to-applied accounting.
+  vi.stubGlobal("fetch", vi.fn(async () => new Response(null, { status: 201 })));
+  vi.stubEnv("VITE_SUPABASE_URL", "http://baseline-fixture.invalid");
+  vi.stubEnv("VITE_SUPABASE_ANON_KEY", "fixture");
+  store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
   let rounds: readonly (readonly Call[])[] = [];
   let index = 0;
   const events: SessionEvent[] = [];
-  const declareIntent = vi.fn(fixedDeclarer({ mode: "modify", targetMapId: start.mapId }));
+  const instruction = "Edit the requested map";
+  const declareIntent = vi.fn(async (facts: Parameters<ReturnType<typeof fixedDeclarer>>[0]) => {
+    const calls = rounds.flat();
+    const targetMapId = calls.find(call => call.name === "set_map_properties")?.args.mapId;
+    const criteria = parseAcceptance(calls.find(call => call.name === "set_work_plan")?.args.acceptance)?.flatMap(promise => promise.criteria ?? []) ?? [];
+    return fixedDeclarer({ mode: "modify", targetMapId: typeof targetMapId === "string" ? targetMapId : start.mapId,
+      requestRequirements: { entries: [{ source: [{ start: 0, end: instruction.length, quote: instruction }], criteria, bindings: [] }] },
+    })(facts);
+  });
   const config = { ...defaultAiConfig(), model: "test", liteModel: "test", apiKey: "test", maxToolCalls: 12 };
-  const session = new AssistantSession(createBlankProject(), {
+  const project = createBlankProject(); store.replace(project);
+  const session = new AssistantSession(project, {
     config: { ...config, agentMode: "chat" },
     declareIntent,
     chat: async (_config, request): Promise<ChatResult> => {
@@ -52,11 +59,13 @@ async function afterRequestA() {
         : { message: { role: "assistant", content: "SCRIPTED_SUCCESS" }, finishReason: "stop" };
     },
   });
-  const run = async (batches: readonly (readonly Call[])[], autonomous = true) => {
+  const run = async (batches: readonly (readonly Call[])[], autonomous = true, continuing = false) => {
     rounds = batches; index = 0; events.length = 0;
-    const targetMapId = batches.flat().find(call => call.name === "set_map_properties")?.args.mapId;
-    if (typeof targetMapId === "string") declareIntent.mockImplementation(fixedDeclarer({ mode: "modify", targetMapId }));
-    return session.sendUserMessage("Edit the requested map", event => events.push(event), undefined, { autonomous });
+    const controller = new AbortController();
+    return session.sendUserMessage(continuing ? "continue" : instruction, event => {
+      events.push(event);
+      if (autonomous && index > rounds.length && event.type === "run_state" && event.execution.state === "recovering") controller.abort();
+    }, controller.signal, { autonomous, ...(continuing ? { goalAction: "resume" } : {}) });
   };
   await run([
     [plan([
@@ -70,6 +79,12 @@ async function afterRequestA() {
   return { session, events, run, declareIntent, config };
 }
 
+function planSnapshot(session: AssistantSession) {
+  const snapshot = session.getAcceptanceSnapshot();
+  // Keep the whole canonical status; select planner rows only for their original row assertions.
+  return snapshot ? { ...snapshot, items: snapshot.items.filter(item => !item.id.startsWith("request-")) } : null;
+}
+
 describe("per-request acceptance baselines", () => {
   it("preserves a map created in A while B changes another map", async () => {
     // Given A's applied map and retained promises.
@@ -80,7 +95,7 @@ describe("per-request acceptance baselines", () => {
       { id: "change-again", title: "Change again", criteria: [{ kind: "targetChange", target: start }] },
     ]), rename(start.mapId, "Request B start"), skip]]);
     // Then old and new promises all verify against their own request snapshots.
-    expect(session.getAcceptanceSnapshot()).toMatchObject({ status: "verified", items: [
+    expect(planSnapshot(session)).toMatchObject({ status: "verified", items: [
       { id: "created", status: "verified" }, { id: "original-change", status: "verified" },
       { id: "keep-room", status: "verified" }, { id: "change-again", status: "verified" },
     ] });
@@ -92,7 +107,7 @@ describe("per-request acceptance baselines", () => {
     // When B promises another change but only skips its execution item.
     await run([[plan([{ id: "change-again", title: "Change again", criteria: [{ kind: "targetChange", target: start }] }]), skip]]);
     // Then the original change remains verified, but the new promise fails.
-    expect(session.getAcceptanceSnapshot()).toMatchObject({ status: "blocked", items: [
+    expect(planSnapshot(session)).toMatchObject({ status: "blocked", items: [
       { id: "created", status: "verified" }, { id: "original-change", status: "verified" },
       { id: "change-again", evidence: [{ passed: false }] },
     ] });
@@ -118,7 +133,7 @@ describe("per-request acceptance baselines", () => {
       expect(milestone).toBeGreaterThan(-1);
       expect(milestone).toBeLessThan(latePlan);
     }
-    expect(session.getAcceptanceSnapshot()?.items.slice(2)).toMatchObject([
+    expect(planSnapshot(session)?.items.slice(2)).toMatchObject([
       { id: "keep-room", evidence: [{ passed: false }] },
       { id: "keep-region", status: "verified" },
       { id: "changed-room", status: "verified" },
@@ -142,7 +157,7 @@ describe("per-request acceptance baselines", () => {
     ]);
     // Then the applied milestone and continuation cannot turn changed content into a baseline.
     expect(events.some(event => event.type === "milestone_applied")).toBe(true);
-    expect(session.getAcceptanceSnapshot()?.items.slice(2)).toMatchObject([
+    expect(planSnapshot(session)?.items.slice(2)).toMatchObject([
       { id: "keep-room", evidence: [{ passed: false }] }, { id: "changed-room", status: "verified" },
     ]);
   });
@@ -159,9 +174,9 @@ describe("per-request acceptance baselines", () => {
         { id: "changed-room", title: "Changed room", criteria: [{ kind: "targetChange", target: room }] },
       ])],
       [{ name: "repair_acceptance", args: { itemId: "repair", criteria: [{ kind: "preserve", target: room }] } }, skip],
-    ]);
+    ], true, true);
     // Then repair and duplicate IDs retain the old baseline; new continuation promises use B's too.
-    expect(session.getAcceptanceSnapshot()?.items.slice(2)).toMatchObject([
+    expect(planSnapshot(session)?.items.slice(2)).toMatchObject([
       { id: "repair", title: "Original repair", evidence: [{ passed: false }] },
       { id: "changed-room", status: "verified" },
     ]);

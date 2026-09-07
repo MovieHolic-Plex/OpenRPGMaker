@@ -4,6 +4,7 @@
 // 감사 로그·활동 로그에는 과정 전부, 채팅에는 토큰(+경과)만. 개선은 로그를 보고 한다.
 
 import type { RunOutcome } from "./runOutcome";
+import type { ExternalBlocker, RequestExecution } from "./assistantSession";
 import {
   formatTokenCount,
   type SessionUsageTotals,
@@ -23,6 +24,7 @@ export interface RunProcessStep {
 
 export interface RunRecap {
   readonly runOutcome?: RunOutcome;
+  readonly execution?: RequestExecution;
   readonly elapsedMs: number;
   readonly usage: SessionUsageTotals;
   readonly toolCalls: number;
@@ -112,19 +114,22 @@ export function buildRunRecap(input: {
   readonly stoppedReason: string;
   readonly proposedWrites: number;
   readonly runOutcome?: RunOutcome;
+  readonly execution?: RequestExecution;
 }): RunRecap {
   const process = extractRunProcess(input.audit);
+  const statuses = input.audit.filter((entry): entry is Extract<RecapAuditEntry, { kind: "status" }> => entry.kind === "status");
   const tools = input.audit.filter((entry): entry is Extract<RecapAuditEntry, { kind: "tool" }> => entry.kind === "tool");
   const deferredToolCalls = tools.filter((entry) => entry.deferred).length;
   return {
     ...(input.runOutcome ? { runOutcome: input.runOutcome } : {}),
+    ...(input.execution ? { execution: input.execution } : {}),
     elapsedMs: Math.max(0, Math.trunc(input.elapsedMs)),
     usage: input.usage,
     toolCalls: tools.length,
     toolFailures: tools.filter((entry) => !entry.ok && !entry.deferred).length,
     ...(deferredToolCalls > 0 ? { deferredToolCalls } : {}),
-    ralphContinues: process.filter((step) => step.kind === "ralph" && /ralph:continue/u.test(step.text)).length,
-    volumeContinues: process.filter((step) => step.kind === "volume" && /volume-contract:continue/u.test(step.text)).length,
+    ralphContinues: statuses.filter((entry) => entry.text.startsWith("ralph:continue")).length,
+    volumeContinues: statuses.filter((entry) => entry.text.startsWith("volume-contract:continue")).length,
     proposedWrites: input.proposedWrites,
     stoppedReason: input.stoppedReason,
     process,
@@ -145,6 +150,7 @@ export function formatRunRecapPlayerLine(recap: RunRecap): string {
 export function serializeRunRecap(recap: RunRecap): string {
   return JSON.stringify({
     ...(recap.runOutcome ? { runOutcome: recap.runOutcome } : {}),
+    ...(recap.execution ? { execution: recap.execution } : {}),
     elapsedMs: recap.elapsedMs,
     prompt: recap.usage.promptTokens,
     completion: recap.usage.completionTokens,
@@ -175,6 +181,7 @@ export function parseRunRecapPayload(raw: string): RunRecap | null {
     const parsed = JSON.parse(jsonText) as Record<string, unknown>;
     if (!isRecord(parsed)) return null;
     const runOutcome = parseStoredRunOutcome(parsed.runOutcome);
+    const execution = parseStoredExecution(parsed.execution);
     const elapsedMs = asInt(parsed.elapsedMs);
     const processRaw = Array.isArray(parsed.process) ? parsed.process : [];
     const processKinds = new Set<RunProcessStep["kind"]>([
@@ -191,6 +198,7 @@ export function parseRunRecapPayload(raw: string): RunRecap | null {
     const byModelRaw = Array.isArray(parsed.byModel) ? parsed.byModel : [];
     return {
       ...(runOutcome ? { runOutcome } : {}),
+      ...(execution ? { execution } : {}),
       elapsedMs,
       usage: {
         calls: asInt(parsed.calls),
@@ -235,6 +243,39 @@ function parseStoredRunOutcome(value: unknown): RunOutcome | null {
   if (delivery !== "no-change" && delivery !== "draft" && delivery !== "applied"
     && delivery !== "persisted" && delivery !== "persisted-verified") return null;
   return Object.freeze({ execution, goal, delivery });
+}
+
+/** Historical detail only. Parsing cannot restore any live execution/proof authority. */
+function parseStoredExecution(value: unknown): RequestExecution | null {
+  if (!isRecord(value)) return null;
+  const { requestId, state, segment, rounds, roundCap, recovery } = value;
+  if (typeof requestId !== "string" || !requestId || typeof segment !== "number" || !Number.isSafeInteger(segment) || segment < 1
+    || typeof rounds !== "number" || !Number.isSafeInteger(rounds) || rounds < 0
+    || typeof roundCap !== "number" || !Number.isSafeInteger(roundCap) || roundCap < 1
+    || (recovery !== undefined && typeof recovery !== "string")) return null;
+  if (state !== "running" && state !== "recovering" && state !== "verified-local" && state !== "verified"
+    && state !== "answer" && state !== "preview" && state !== "queued" && state !== "aborted"
+    && state !== "external-blocker" && state !== "manual-segment" && state !== "project-switch") return null;
+  let blocker: ExternalBlocker | undefined;
+  if (value.blocker !== undefined) {
+    if (!isRecord(value.blocker)) return null;
+    const { kind, requestId: blockerRequest, obligationIds, sourceSpans, evidence, neededAction } = value.blocker;
+    if (kind !== "auth" && kind !== "transport" && kind !== "persistence" && kind !== "missing-input"
+      && kind !== "unsupported-capability" && kind !== "provider-refusal") return null;
+    if (typeof blockerRequest !== "string" || typeof neededAction !== "string" || !Array.isArray(obligationIds)
+      || !obligationIds.every((id): id is string => typeof id === "string") || !Array.isArray(sourceSpans) || !isRecord(evidence)) return null;
+    const { origin, code, details } = evidence;
+    if ((origin !== "transport" && origin !== "store" && origin !== "registry" && origin !== "request")
+      || typeof code !== "string" || typeof details !== "string") return null;
+    const spans: import("./assistantRequestContract").RequestSourceSpan[] = [];
+    for (const span of sourceSpans) {
+      if (!isRecord(span) || typeof span.start !== "number" || !Number.isSafeInteger(span.start) || span.start < 0
+        || typeof span.end !== "number" || !Number.isSafeInteger(span.end) || span.end < span.start || typeof span.quote !== "string") return null;
+      spans.push({ start: span.start, end: span.end, quote: span.quote });
+    }
+    blocker = { kind, requestId: blockerRequest, obligationIds, sourceSpans: spans, evidence: { origin, code, details }, neededAction };
+  }
+  return { requestId, state, segment, rounds, roundCap, ...(recovery ? { recovery } : {}), ...(blocker ? { blocker } : {}) };
 }
 
 function asInt(value: unknown): number {

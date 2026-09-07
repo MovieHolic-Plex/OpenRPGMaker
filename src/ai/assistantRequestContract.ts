@@ -93,8 +93,10 @@ function preservationSpans(source: RequestSourceSpan): RequestSourceSpan[] {
     .filter(match => !literals.some(token => match.index < token.end && match.index + match[0].length > token.start))
     .map(match => ({ start: source.start + match.index, end: source.start + match.index + match[0].length, quote: match[0] }));
 }
-export function hasUnresolvedWriteConstraint(requests: readonly RequestSource[]): boolean {
-  return requests.some(request => request.authoring !== false && request.units.some(unit => !unit.supersededBy && !unit.withdrawal && unit.coverage !== "declared" && preservationSpans(unit.source).length > 0));
+/** Answer demotion also requires numeric coverage; the ordinary write gate stays preservation-only. */
+export function hasUnresolvedWriteConstraint(requests: readonly RequestSource[], includeNumeric = false): boolean {
+  return requests.some(request => request.authoring !== false && request.units.some(unit => !unit.supersededBy && !unit.withdrawal && unit.coverage !== "declared"
+    && (preservationSpans(unit.source).length > 0 || (includeNumeric && /\d/u.test(unit.source.quote)))));
 }
 /** Bind authored values/identities, never criterion discriminators or path metadata. */
 function scalarBindingField(criterion: AcceptanceCriterion, path: readonly string[]): boolean {

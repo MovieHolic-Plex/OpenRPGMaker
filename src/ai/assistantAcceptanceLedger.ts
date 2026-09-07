@@ -10,7 +10,7 @@ import {
 } from "./assistantAcceptanceEvaluation";
 
 import { measureVolume, volumeGaps, type VolumeBar, type VolumeSnapshot } from "./volumeContract";
-import { createRequestSource, extractRequestCoverage, parseRequestSourceSpan, type RequestSource, type RequestSourceUnit } from "./assistantRequestContract";
+import { createRequestSource, extractRequestCoverage, hasUnresolvedWriteConstraint, parseRequestSourceSpan, type RequestSource, type RequestSourceUnit } from "./assistantRequestContract";
 import { AssistantImageEvidence, coveredByImages, type AcceptanceImageReceipt } from "./assistantImageEvidence";
 import type { ToolVerificationEvidence } from "./toolVerificationEvidence";
 export type { AcceptanceImageReceipt } from "./assistantImageEvidence";
@@ -49,6 +49,21 @@ export class AssistantAcceptanceLedger {
       id: unit.id, title: unit.source.quote, criteria: null, required: true,
       baseline: request.baseline, source, sourceUnit: unit,
     });
+  }
+
+  /** Host-validated answer classification after capture, never model withdrawal.
+   * Only the newest, as-yet unauthored request can leave the write denominator.
+   * Validated predicates and uncovered numeric/preservation constraints cannot be erased.
+   */
+  markAnswer(requestId: string): boolean {
+    const request = this.requests.get(requestId);
+    if (!request?.authoring || [...this.requests.keys()].at(-1) !== requestId) return false;
+    if (hasUnresolvedWriteConstraint([request], true)) return false;
+    const owned = [...this.promises.values()].filter(promise => promise.source?.requestId === requestId);
+    if (owned.some(promise => !promise.sourceUnit || promise.criteria?.length || promise.withdrawal || promise.supersession)) return false;
+    this.requests.set(requestId, { ...request, authoring: false });
+    for (const promise of owned) this.promises.delete(promise.id);
+    return true;
   }
 
   adoptRequestRequirements(requestId: string, payload: unknown): void {

@@ -163,11 +163,14 @@ describe("자율 런 통합 스모크 (todo 7)", () => {
       declareIntent: fixedDeclarer({ space: "unclear", clarify: "실내 맵인가요, 야외 외장인가요?", needsPlan: false }),
     });
 
-    const result = await session.sendUserMessage(HOUSE_GOAL_AMBIGUOUS, () => {}, undefined, { autonomous: true });
+    const controller = new AbortController();
+    const result = await session.sendUserMessage(HOUSE_GOAL_AMBIGUOUS, event => {
+      if (event.type === "run_state" && event.execution.state === "recovering") controller.abort();
+    }, controller.signal, { autonomous: true });
 
     expect(calls).toBeGreaterThan(0);
-    expect(result.stoppedReason).toBe("final");
-    expect(result.assistantText).toContain("야외 집(외장)으로");
+    expect(result.stoppedReason).toBe("aborted");
+    expect(session.getAcceptanceSnapshot()?.status).not.toBe("verified");
     const audits = statusTexts(session);
     expect(audits.some((t) => t.includes("의도 확인"))).toBe(true);
     // 드라이버는 질문 턴에 자동 계속하지 않는다(사용자 우선).

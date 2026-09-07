@@ -215,13 +215,17 @@ it('archives applied-plus-pending history before rebase, preserves applied conte
   const actualApply = vi.spyOn(apply, 'applyProposedProject');
   const old = await f.send('Set titles', { autonomous: true }, 'PENDING_SECOND');
   expect(old.result.appliedCalls?.map(call => call.args.title)).toEqual(['APPLIED_FIRST']);
-  expect(old.result.proposedCalls.map(call => call.args.title)).toEqual(['PENDING_SECOND']);
+  // Retained autonomous draft is context, not outer-runner apply authority.
+  expect(old.result.proposedCalls).toEqual([]);
+  expect(f.session.getProposedProject().system.titleScreen?.title).toBe('PENDING_SECOND');
   expect(old.result.runOutcome?.delivery).toBe('draft');
   expect(store.getCurrent().system.titleScreen?.title).toBe('APPLIED_FIRST');
   expect(actualApply).toHaveBeenCalledTimes(1);
   const resultHistory = structuredClone(old.result);
   const assessment = f.session.getAcceptanceSnapshot();
-  expect(assessment?.status).toBe('verified');
+  expect(assessment?.status).toBe('blocked');
+  expect(assessment?.items.find(item => item.id === 'size')?.status).toBe('verified');
+  expect(assessment?.items.find(item => item.id === 'request-1:source:0')?.coverage).toBe('uncovered');
   f.atBoundary(() => { throw new Error('new-owner-fault'); });
   await f.send('Different goal', { goalAction: 'new-goal' });
   const history = f.session.getAcceptanceHistory();
@@ -247,7 +251,7 @@ it('still applies current successful proposals on a new-goal authoring error exa
   const f = runnerFor(session);
   const result = await f.send('Create an item', { goalAction: 'new-goal' });
   expect(result.result.stoppedReason).toBe('error');
-  expect(result.result.runOutcome).toEqual({ execution: 'failed', goal: 'unassessed', delivery: 'applied' });
+  expect(result.result.runOutcome).toEqual({ execution: 'failed', goal: 'incomplete', delivery: 'applied' });
   expect(f.applyProposal).toHaveBeenCalledTimes(1);
   expect(store.getCurrent().database.items.find(item => item.id === 'item_new_owner')?.name).toBe('New owner item');
   await f.send('Continue', { goalAction: 'resume' });

@@ -14,6 +14,8 @@ import { ADVENTURE_AUTHORING_GUIDE } from "./adventureCompletion";
 import type { ToolDomain } from "@/editor/tools/types";
 import { QUICK_REPLY_MARKER } from "./interviewPrompt";
 import { parseActionCombatRequirements, type AcceptanceTarget } from "./assistantAcceptance";
+import { ACCEPTANCE_CRITERIA_SCHEMA } from "./assistantAcceptanceTools";
+import { createRequestSource } from "./assistantRequestContract";
 
 export type IntentMode = "create" | "modify" | "question" | "other";
 export type IntentSpace = "interior" | "outdoor" | "both" | "none" | "unclear";
@@ -46,6 +48,8 @@ export interface NpcRewardRequirement {
 export type NpcRewardRequirements = readonly NpcRewardRequirement[] | { readonly invalidReason: string };
 
 export interface IntentDeclaration {
+  /** Untrusted extraction; only the source-contract boundary may adopt it. */
+  readonly requestRequirements?: unknown;
   /** 새로 만든다 / 있는 것을 고친다·지운다·옮긴다 / 질문·조회 / 그 외(인사·진행 지시·판단 불가). */
   readonly mode: IntentMode;
   /** 시설·집·방을 만들 때 어디에 — 들어가서 걷는 실내 맵인지, 맵 위 외장인지. 공간 시공이 아니면 none. */
@@ -101,6 +105,18 @@ export interface IntentFacts {
   readonly toolNames: readonly string[];
   readonly hasActivePlan: boolean;
   readonly wikiContext?: string;
+  readonly requestCoverage?: unknown;
+  readonly extractionRepair?: {
+    readonly kind: "npc-rewards";
+    readonly requestId: string;
+    readonly previous: NpcRewardRequirements;
+    readonly reason: string;
+  };
+  readonly intentModeRepair?: {
+    readonly requestId: string;
+    readonly previousMode: "question";
+    readonly reason: "authored-request-criteria" | "unresolved-source-constraints";
+  };
 }
 
 export const INTENT_MODES: readonly IntentMode[] = ["create", "modify", "question", "other"];
@@ -117,7 +133,11 @@ export function isContinuationText(text: string): boolean {
 
 export const INTENT_SYSTEM_PROMPT = `You classify ONE user request addressed to an RPG map/event editor assistant. Output JSON only — no prose, no fences.
 
+When extractionRepair.kind is npc-rewards, repair that request's malformed reward extraction. Return a nonempty npcRewards array preserving every original grant, count and one-time requirement. Omission is not a repair. Preserve unrelated declaration fields and source obligations; this is not a new user request or amendment.
+When intentModeRepair is present, question mode conflicts with retained authored predicates or unresolved numeric/preservation source constraints. Revisit the original request and supply anchored coverage for supported constraints; leave unsupported requirements unresolved. Correct authoring routing according to the original request, never by dropping, weakening or amending retained obligations. Completion is decided from applied evidence, not this mode correction.
+
 Fields:
+- "requestRequirements": ALWAYS declare independently of needsPlan/mode/planner. {entries:[{source:[{start,end,quote}],criteria:[...],bindings:[{source:{start,end,quote},role:"value"|"count"|"width"|"height"|"coordinate"|"minimum"|"maximum"|"preserve"|"prohibit",criterionIndex:0,fieldPath:["value"]}],unresolvedReason?:"ambiguous-target"|"unspecified-value"|"unsupported-verifier"}]}. Use the exact source units provided below, UTF-16 offsets into rawInstruction. Each entry covers ONE source unit, never a broad quote spanning obligations. Bind every explicit number to its exact typed field and every preservation/prohibition span to a real preservation/zero-count predicate. Exact values must remain exact. Bind numeric text inside a quoted string via role value to the entire value. Unsupported subjective requirements remain criteria:null; do not replace them with targetChange. Valid criteria schema: ${JSON.stringify(ACCEPTANCE_CRITERIA_SCHEMA)}. Existing IDs come from actual facts, not invented placeholders. This payload never supplies verification evidence. For an explicit USER correction of a uniquely identified earlier exact authored field, requestRequirements may also contain amendments:[{obligationId:<original source unit ID from requestCoverage>,source:{start,end,quote:<exact replacement/correction clause>}}]. Also declare the replacement's full criteria and literal bindings in entries. Only a new raw user correction can supersede the corresponding old exact-field obligation; never use amendments for questions, status, replanning, or model-generated recovery. Unsupported/ambiguous cancellations remain unresolved. entityPreserve optionally accepts path to preserve ONLY that original field (for example database item name while changing price); the preserved value always comes from the pre-write baseline, never a model-supplied value.
 - "mode": "create" (새로 만든다) | "modify" (지금 있는 것을 고친다·지운다·옮긴다·추가로 얹는다) | "question" (질문·설명·조회, 변경 없음) | "other" (인사·진행 지시·판단 불가).
 - "space": 시설·집·방을 세울 때 어디에 — "interior" (외장 없이 새로 짓는 독립 실내 방·시설 실내. 예: 여관 실내만, 빈 방 꾸미기) | "outdoor" (지금 맵 위에 건물 외장) | "both" (야외 외곽+들어가서 걷는 실내 둘 다. 예: 집 지어줘+들어갈 수 있게, 민가·상점·대장간을 짓고 안에도 들어가게) | "none" (공간 시공이 아닌 요청) | "unclear" (집·건물·방을 만들라는데 어느 쪽인지 표지가 없음).
 - "facility": 입력의 개념 꾸러미 시설 라벨 중 하나를 만들라는 요청이면 그 라벨 그대로, 아니면 null. 모든 신규 실내는 get_concept_facility 로 꾸러미를 읽고 place_concept(plan) 로 짓는다. 등록되지 않은 실내도 sources의 장소·물건을 조합한다 — 야외 표지("맵 위에", "외장", "마을에 건물")가 없으면 space="interior".
@@ -148,7 +168,7 @@ JSON schema:
 {"mode":"create","space":"interior","facility":"여관","targetMapId":null,"useSelection":false,"clarify":null,"clarifyOptions":[],"needsPlan":false,"resetsContext":false,"tools":["get_concept_facility","place_concept"],"summary":"여관 실내 맵을 설계해 시공"}`;
 
 export function buildIntentUserPayload(facts: IntentFacts): string {
-  const lines: string[] = [`## 요청\n${facts.userText.trim()}`];
+  const lines: string[] = [`## 요청\n${facts.userText}`, JSON.stringify({ requestSource: createRequestSource("request", facts.userText), ...(facts.requestCoverage ? { requestCoverage: facts.requestCoverage } : {}), ...(facts.extractionRepair ? { extractionRepair: facts.extractionRepair } : {}), ...(facts.intentModeRepair ? { intentModeRepair: facts.intentModeRepair } : {}) })];
   const context: string[] = [];
   context.push(facts.currentMap ? `현재 열린 맵: ${facts.currentMap.name} (${facts.currentMap.id})` : "현재 열린 맵: 없음");
   context.push(
@@ -285,6 +305,7 @@ export function parseIntentDeclaration(raw: string, facts: IntentFacts): IntentP
   return {
     intent: {
       mode: mode as IntentMode,
+      requestRequirements: parsed.requestRequirements,
       space,
       facility,
       targetMapId,

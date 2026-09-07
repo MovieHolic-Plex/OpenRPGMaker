@@ -35,6 +35,8 @@ export interface IntentDeclarationOutcome {
   readonly elapsedMs: number;
   /** 폴백으로 떨어진 이유(있을 때만). */
   readonly error?: string;
+  /** Parsing failure is recoverable extraction; only an observed provider failure is external. */
+  readonly failure?: { readonly kind: "provider"; readonly message: string; readonly status?: number } | { readonly kind: "aborted" };
 }
 
 /** 사실 묶음 → 선언. 세션·러너가 주입받는 함수 타입이라 테스트는 JSON 문자열을 돌려주는 가짜를 넣는다. */
@@ -99,8 +101,10 @@ export function createLlmIntentDeclarer(
     const timer = setTimeout(() => controller.abort(), timeoutMs);
     const onOuterAbort = (): void => controller.abort();
     signal?.addEventListener("abort", onOuterAbort, { once: true });
+    if (signal?.aborted) controller.abort();
     let invalidIntent: IntentDeclaration | undefined;
     try {
+      controller.signal.throwIfAborted();
       const config = configForLiteModel(getConfig());
       const request: ChatRequest = {
         messages: [
@@ -114,6 +118,7 @@ export function createLlmIntentDeclarer(
         disableTransientRetry: true,
       };
       const result = await chat(config, request);
+      controller.signal.throwIfAborted();
       const parsed = parseIntentDeclaration(contentText(result), facts);
       if (parsed.intent) {
         const error = invalidNpcRewardReason(parsed.intent);
@@ -127,6 +132,7 @@ export function createLlmIntentDeclarer(
             { role: "user", content: `Correct only the npcRewards JSON shape and return the full declaration. Preserve every grant, count and one-time requirement from the user request. ${error}. Each target must use exactly one eventId or eventName; each grant exactly one id or name. Omit unused keys instead of writing null. Do not omit npcRewards to bypass this error.` },
           ],
         });
+        controller.signal.throwIfAborted();
         const correction = parseIntentDeclaration(contentText(repaired), facts);
         if (correction.intent?.npcRewards !== undefined && !invalidNpcRewardReason(correction.intent)) {
           return {
@@ -141,7 +147,9 @@ export function createLlmIntentDeclarer(
       const reason = controller.signal.aborted && !signal?.aborted
         ? `시간 초과(${timeoutMs}ms)`
         : cause instanceof Error ? cause.message : String(cause);
-      return { intent: invalidIntent ?? fallbackIntentDeclaration(facts), elapsedMs: Date.now() - started, error: reason };
+      const status = typeof cause === "object" && cause !== null && "status" in cause && typeof cause.status === "number" ? cause.status : undefined;
+      return { intent: invalidIntent ?? fallbackIntentDeclaration(facts), elapsedMs: Date.now() - started, error: reason,
+        failure: signal?.aborted ? { kind: "aborted" } : { kind: "provider", message: reason, ...(status !== undefined ? { status } : {}) } };
     } finally {
       clearTimeout(timer);
       signal?.removeEventListener("abort", onOuterAbort);
@@ -158,7 +166,7 @@ function cacheKey(facts: IntentFacts): string {
   const selection = facts.selection
     ? `${facts.selection.mapId}:${facts.selection.x},${facts.selection.y},${facts.selection.width},${facts.selection.height}`
     : "-";
-  return `${facts.userText.trim()}|${facts.currentMap?.id ?? "-"}|${selection}|${facts.hasActivePlan ? "plan" : "noplan"}|${facts.wikiContext ?? ""}`;
+  return `${facts.userText}|${facts.currentMap?.id ?? "-"}|${selection}|${facts.hasActivePlan ? "plan" : "noplan"}|${facts.wikiContext ?? ""}`;
 }
 
 export async function declareIntentCached(
@@ -166,6 +174,9 @@ export async function declareIntentCached(
   facts: IntentFacts,
   signal?: AbortSignal,
 ): Promise<IntentDeclarationOutcome> {
+  // Source-contract extraction belongs to this explicit user boundary. A routing
+  // cache from another session/request cannot donate amendments or requirements.
+  if (facts.requestCoverage !== undefined || facts.extractionRepair !== undefined || facts.intentModeRepair !== undefined) return declarer(facts, signal);
   const key = cacheKey(facts);
   const now = Date.now();
   const hit = cache.get(key);
@@ -173,7 +184,7 @@ export async function declareIntentCached(
   const outcome = await declarer(facts, signal);
   // 폴백(모델 실패)은 캐시하지 않는다 — 다음 호출이 다시 시도할 수 있어야 한다.
   if ((outcome.intent.source === "llm" || outcome.intent.source === "continuation")
-    && !invalidNpcRewardReason(outcome.intent)) {
+    && !outcome.failure && !invalidNpcRewardReason(outcome.intent)) {
     cache.set(key, { outcome, at: now });
     while (cache.size > CACHE_MAX) {
       const oldest = cache.keys().next().value;

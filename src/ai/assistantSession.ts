@@ -1,9 +1,9 @@
 import { missingAcceptance, type AcceptanceSnapshot, type AcceptancePromise, type AcceptanceSource, type RequirementWithdrawalAction } from "./assistantAcceptance";
-import { acceptanceFingerprint } from "./assistantAcceptanceEvaluation";
+import { acceptanceFingerprint, selectedPath, selectedSubject } from "./assistantAcceptanceEvaluation";
 import { deriveRunOutcome, type RunOutcome } from "./runOutcome";
 import { AssistantAcceptanceLedger } from "./assistantAcceptanceLedger";
 import { AssistantImageEvidence, coveredByImages, type AcceptanceImageReceipt } from "./assistantImageEvidence";
-import { ACCEPTANCE_SCHEMA, ACCEPTANCE_TOOLS } from "./assistantAcceptanceTools";
+import { ACCEPTANCE_SCHEMA, ACCEPTANCE_TOOLS, REQUEST_CONTRACT_TOOL } from "./assistantAcceptanceTools";
 import { adventureCompletionProblems, ADVENTURE_AUTHORING_GUIDE, type AdventureRequirements } from "./adventureCompletion";
 import { buildActionArenaAuthoringGuide, selectActionArenaAuthoringRecipe } from "./actionArenaAuthoring";
 // ai/assistantSession.ts
@@ -47,6 +47,7 @@ import {
   formatScopeNote,
   isContinuationText,
   type IntentDeclaration,
+  type IntentFacts,
   type NpcRewardRequirement,
   type NpcRewardRequirements,
 } from "@/ai/intentDeclaration";
@@ -117,6 +118,7 @@ import {
   isOhMyPiWorkerCrash,
   isRetryableLlmError,
   LLM_RETRY_BACKOFF_MS,
+  LlmError,
   loadAiConfig,
   type AiConfig,
   type ChatMessage,
@@ -193,16 +195,13 @@ import {
   verifyTargetMapChanged,
   type BattlePhaseSimulation,
 } from "./workItemOutcome";
+import { hasUnresolvedWriteConstraint, type RequestSource } from "./assistantRequestContract";
 import {
   MAX_VOLUME_CONTINUES_PER_TURN,
   formatVolumeContinueMessage,
-  measureVolume,
   placedNpcIdFrom,
   verifyPlacedNpcsHaveStatePages,
-  volumeGaps,
-  volumeUnmet,
   type VolumeBar,
-  type VolumeSnapshot,
 } from "./volumeContract";
 import {
   buildRunRecap,
@@ -229,6 +228,30 @@ function discoveredToolNames(result: ToolResult): string[] {
   });
 }
 
+export interface ExternalBlocker {
+  readonly kind: "auth" | "transport" | "persistence" | "missing-input" | "unsupported-capability" | "provider-refusal";
+  readonly requestId: string;
+  readonly obligationIds: readonly string[];
+  readonly sourceSpans: readonly import("./assistantRequestContract").RequestSourceSpan[];
+  readonly evidence: { readonly origin: "transport" | "store" | "registry" | "request"; readonly code: string; readonly details: string };
+  readonly neededAction: string;
+}
+export interface RequestExecution {
+  readonly requestId: string;
+  readonly state: "running" | "recovering" | "verified-local" | "verified" | "answer" | "preview" | "queued" | "aborted" | "external-blocker" | "manual-segment" | "project-switch";
+  readonly segment: number;
+  readonly rounds: number;
+  readonly roundCap: number;
+  readonly recovery?: string;
+  readonly blocker?: ExternalBlocker;
+}
+type SegmentDisposition =
+  | { readonly kind: "yield"; readonly reason: "rounds" | "tokens" | "sprints" }
+  | { readonly kind: "recover"; readonly cause: string }
+  | { readonly kind: "candidate-final" }
+  | { readonly kind: "user-boundary"; readonly reason: "aborted" | "queued" | "project-switch" }
+  | { readonly kind: "external-blocker"; readonly blocker: ExternalBlocker };
+
 /** Persistence evidence only; execution and goal outcomes remain separate. */
 export interface RunEndProofState {
   readonly status: "attempted" | "failed" | "succeeded";
@@ -241,6 +264,7 @@ export interface RunEndProofState {
 
 // UI 스트리밍/로그용 이벤트.
 export type SessionEvent =
+  | { type: "run_state"; execution: RequestExecution }
   | { type: "assistant_token"; delta: string }
   | { type: "reasoning_token"; delta: string }
   | { type: "assistant_message"; content: string }
@@ -278,6 +302,7 @@ export interface ProposedCall {
 }
 
 export interface TurnResult {
+  execution?: RequestExecution;
   /** Session-owned settlement updates this value after ordinary apply/proof. Legacy callers may omit it. */
   runOutcome?: RunOutcome;
   assistantText: string;
@@ -312,6 +337,8 @@ export type AuditEntry =
 // 하네스 스냅샷 — 오케스트레이션 주입을 포함한 세션 원본 메시지와 감사 로그를 한 번에 관측한다.
 // 🔬 하네스 뷰어와 window.__oprnAiHarness(헤드리스 디버깅)가 소비한다.
 export interface HarnessSnapshot {
+  readonly execution?: RequestExecution;
+  readonly requests?: readonly RequestSource[];
   readonly model: string;
   readonly liteModel?: string;
   readonly maxTokens: number;
@@ -640,12 +667,7 @@ function specFingerprint(value: unknown): string {
 const ASSISTANT_TURN_RETRY_ATTEMPTS = 3;
 const TRANSIENT_NETWORK_RETRY_GUIDANCE = "일시적 네트워크 문제로 보이면 재시도를 눌러 주세요.";
 
-/**
- * 자율 런(autonomous driver)의 총 예산 — 자동 계속 턴 수 상한.
- * 턴당 Ralph 상한(MAX_WORK_PLAN_AUTO_STEPS_PER_TURN)과 별개로, 하나의 목표에 대해
- * 하니스가 사용자 개입 없이 소비할 수 있는 총 턴 수를 묶는다. 소진 시
- * agent_run_budget_exhausted 감사를 남기고 멈추며, 사용자의 「계속」 한마디로 재가동된다.
- */
+/** @deprecated Legacy exported value only; never a cumulative execution limit. */
 export const AGENT_RUN_MAX_TOTAL_STEPS = 48;
 
 /**
@@ -859,7 +881,6 @@ export class AssistantSession {
   /** 이번 턴의 컴포저 모드. ask 는 쓰기 툴을 노출·실행하지 않고, plan 은 계획만 세우고 멈춘다. */
   private turnComposerMode: ComposerMode = "do";
   /** 이번 턴의 플래너가 계획을 새로 세웠는가(new_plan/replan/폴백). resume 은 아니다 — 계획 모드의 「계속」은 실행된다. */
-  private planAuthoredThisTurn = false;
   /** 직전 턴이 계획만 세우고 멈춘 턴이었는가 — 자율 드라이버는 이 턴 다음에 자동 계속하지 않는다. */
   private lastTurnPlanOnly = false;
   // 누적 draft를 담는 툴 컨텍스트(연쇄 툴콜이 이전 변경을 본다).
@@ -907,6 +928,19 @@ export class AssistantSession {
   private adventureRequirements: AdventureRequirements | undefined;
   private statefulNpcRequirement = false;
   private npcRewardRequirements: NpcRewardRequirements | undefined;
+  /** Only proven exact grant-count/source associations may authorize retirement. */
+  private readonly npcRewardCountOwners = new Map<NpcRewardRequirement, readonly (string | null)[]>();
+  /** Source unit -> item identity observed at its accepted amendment boundary. */
+  private readonly npcRewardCountSupersessions = new Map<string, string>();
+  private readonly pendingNpcRewardExtractions = new Map<string, {
+    repair: NonNullable<IntentFacts["extractionRepair"]>;
+    readonly facts: IntentFacts;
+    readonly baseline: Project;
+    readonly sourceUnitIds: readonly string[];
+  }>();
+  private requestIntentFacts: IntentFacts | null = null;
+  private readonly requestRecoveryFacts = new Map<string, IntentFacts>();
+
   /** Only declared NPC event state, so DB/terrain items do not inherit NPC acceptance. */
   private readonly npcRewardItemBaseline = new Map<NpcRewardRequirement, string>();
   private adventureRepairAttempts = 0;
@@ -948,6 +982,7 @@ export class AssistantSession {
   private verifiedPlanId: string | null = null;
   private verifiedLayerIds = new Set<string>();
   private runEndProof: RunEndProofState | null = null;
+  private proofProjectIdentity: string | null = null;
   private lastAppliedProject: { project: Project; commitId: string | null } | null = null;
   private runExecution: RunOutcome["execution"] = "response-final";
   private acceptanceApplyPending = false;
@@ -1004,9 +1039,34 @@ export class AssistantSession {
   private acceptanceRequestBaseline: Project;
   private acceptanceRequestSource: AcceptanceSource = { requestId: "request-0", text: "", scope: null };
   private readonly acceptanceHistory: AcceptanceSnapshot[] = [];
+  private readonly requestHistory: (readonly RequestSource[])[] = [];
   private acceptanceAppliedProject: Project | null = null;
   private acceptanceRepairAttempts = 0;
   private acceptanceSequence = 0;
+  private requestSequence = 0;
+  private requestPrepared = true;
+  private currentRequestId: string | null = null;
+  private requestScope: SessionTurnScope | null = null;
+  private executionAuthorized = false;
+  private requestIntent: IntentDeclaration | null = null;
+  /** Answer turns have their own identity without replacing explicit-resume authoring facts. */
+  private resumableAuthoringRequest: {
+    readonly requestId: string;
+    readonly intent: IntentDeclaration;
+    readonly facts: IntentFacts | null;
+    readonly baseline: Project;
+    readonly scope: SessionTurnScope | null;
+    readonly requestText: string;
+    readonly originalContext: OriginalContextStore | null;
+  } | null = null;
+  private execution: RequestExecution | undefined;
+  private executionGeneration = 0;
+  private segmentDisposition: SegmentDisposition = { kind: "candidate-final" };
+  private runProjectIdentity: string | null = null;
+  private runSignal: AbortSignal | undefined;
+  private failedApplyFingerprint: string | null = null;
+  private readonly seenAcceptanceStates = new Set<string>();
+
   /** 이번 사용자 메시지 안에서 자동으로 진행한 추가 단계 수. */
   private workPlanAutoStepsThisUserMessage = 0;
   /**
@@ -1024,11 +1084,10 @@ export class AssistantSession {
    * 을 대본이 주는 대로 30번 반복했고 Ralph 는 한 번도 안 돌았다). 같은 실패가 이 상한에 닿으면 항목을
    * blocked 로 돌려 같은 출구로 나간다.
    */
-  private repeatedToolFailures = new Map<string, Map<string, { target: string; count: number; summary: string }>>();
+  private repeatedToolFailures = new Map<string, Map<string, ToolRetryFailure>>();
   /** 이 턴은 자율 드라이버의 합성 「계속」인가(SessionTurnOptions.driverContinue). */
   private turnIsDriverContinue = false;
   /** 플래너 LLM 왕복만 건너뛴다 — 계획 툴·오케스트레이션 주입은 그대로 둔다(skipPlannerThisTurn 과 다르다). */
-  private skipPlannerRoundOnly = false;
   /** 현재 WorkItem에서 이번 사용자 메시지 동안 성공한 모든 툴 이름(읽기 포함). */
   private turnSuccessfulTools = new Set<string>();
   private successfulToolsWorkItemId: string | null = null;
@@ -1046,8 +1105,7 @@ export class AssistantSession {
    * 볼륨 계약은 **사용자 목표 런** 단위다. 자율 드라이버의 「계속」 턴이 시작 스냅샷을
    * 다시 찍으면 직전 턴에서 채운 맵이 기준이 되어 같은 막대를 또 요구한다.
    */
-  private runVolumeBaseline: VolumeSnapshot | null = null;
-  private runVolumeBar: VolumeBar | null = null;
+
   /** 이번 사용자 턴 안에서 볼륨 미달로 재주입한 횟수(턴마다 0으로 리셋). */
   private volumeContinueUsed = 0;
   /**
@@ -1263,17 +1321,23 @@ export class AssistantSession {
   }
 
   getAcceptanceSnapshot(): AcceptanceSnapshot | null {
-    return this.acceptance?.getSnapshot() ?? null;
+    const snapshot = this.acceptance?.getSnapshot();
+    return snapshot?.items.length ? snapshot : null;
   }
 
   getAcceptanceHistory(): readonly AcceptanceSnapshot[] {
     return Object.freeze([...this.acceptanceHistory]);
   }
 
+  getRequestHistory(): readonly (readonly RequestSource[])[] {
+    return structuredClone(this.requestHistory);
+  }
+
   /** UI/bridge user action only; deliberately absent from all LLM tool schemas. */
   withdrawRequirement(action: RequirementWithdrawalAction, onEvent?: (event: SessionEvent) => void): boolean {
     const accepted = this.acceptance?.withdraw(action) === true;
     if (accepted) {
+      this.projectNpcRewardCounts();
       this.publishAcceptance(onEvent);
       this.publishRunOutcome(onEvent);
     }
@@ -1302,17 +1366,295 @@ export class AssistantSession {
   }
 
   private publishAcceptance(onEvent?: (event: SessionEvent) => void): void {
+    if (!this.requestPrepared) return;
     this.imageEvidence.current(this.ctx.project);
     if (!this.acceptance || !this.acceptanceAppliedProject) return;
     const snapshot = this.acceptance.evaluate(this.acceptanceAppliedProject,
       this.turnProposals.size > 0 ? this.ctx.project : this.acceptanceAppliedProject,
-      this.verificationEvidence, this.verificationEvidence.problems("required"));
+      this.verificationEvidence, [...new Set([...this.verificationEvidence.problems("required"),
+        ...this.completionProblems(this.acceptanceAppliedProject),
+        ...(this.turnProposals.size > 0 ? this.completionProblems(this.ctx.project) : []),
+      ])]);
     onEvent?.({ type: "acceptance", snapshot });
+  }
+
+  private hasQuestionAuthoringConflict(): boolean {
+    if (this.turnComposerMode === "ask" || this.turnIntent?.mode !== "question") return false;
+    const request = this.acceptance?.getRequests().find(source => source.requestId === this.currentRequestId);
+    return request?.authoring !== false && Boolean(request && (hasUnresolvedWriteConstraint([request], true)
+      || request.units.some(unit => !unit.supersededBy && !unit.withdrawal && unit.criteria?.length)));
+  }
+
+  private isAnswerOnlyTurn(): boolean {
+    return this.turnComposerMode === "ask" || (this.turnIntent?.mode === "question" && !this.hasQuestionAuthoringConflict());
+  }
+
+  private acceptanceControlsDraftSegment(): boolean {
+    return !this.isAnswerOnlyTurn() && (this.milestoneAutoApply || this.spatialAcceptanceRequired() || (this.workPlan?.acceptance?.length ?? 0) > 0);
+  }
+
+  private userBoundary(signal = this.runSignal): "aborted" | "queued" | "project-switch" | null {
+    if (this.runProjectIdentity !== null && store.getProjectIdentity().id !== this.runProjectIdentity) return "project-switch";
+    if (signal?.aborted) return "aborted";
+    const pending = this.peekPendingUserMessage?.();
+    if (this.milestoneAutoApply && typeof pending === "string" && pending.trim()) return "queued";
+    return null;
+  }
+
+  private emitExecution(state: RequestExecution["state"], onEvent: (event: SessionEvent) => void, recovery?: string, blocker?: ExternalBlocker): RequestExecution {
+    const owner = this.runResult;
+    const execution: RequestExecution = { requestId: this.currentRequestId ?? "answer", state, segment: this.autoRunSteps + 1,
+      rounds: this.execution?.rounds ?? 0, roundCap: Math.max(1, Math.min(this.config.maxToolCalls, this.autonomy()?.budgetCap ?? this.config.maxToolCalls)),
+      ...(recovery ? { recovery } : {}), ...(blocker ? { blocker } : {}) };
+    this.execution = execution;
+    onEvent({ type: "run_state", execution });
+    if (owner === this.runResult) this.pushAudit({ kind: "status", text: `run_state ${JSON.stringify(execution)}` });
+    return execution;
+  }
+
+  private recordProviderBlocker(cause: unknown, onEvent: (event: SessionEvent) => void): void {
+    const status = typeof cause === "object" && cause !== null && "status" in cause && cause.status !== undefined ? String(cause.status) : "transport-failed";
+    const request = this.acceptance?.getRequests().find(source => source.requestId === this.currentRequestId);
+    const active = request?.units.filter(unit => !unit.supersededBy) ?? [];
+    const blocker: ExternalBlocker = { kind: status === "401" || status === "403" ? "auth" : "transport", requestId: this.currentRequestId ?? "unknown",
+      obligationIds: active.map(unit => unit.id), sourceSpans: active.map(unit => unit.source),
+      evidence: { origin: "transport", code: status, details: cause instanceof Error ? cause.message : String(cause) }, neededAction: "Restore provider access and retry this request" };
+    this.segmentDisposition = { kind: "external-blocker", blocker };
+    this.emitExecution("external-blocker", onEvent, undefined, blocker);
+  }
+
+  private recoverSegment(cause: string, onEvent: (event: SessionEvent) => void): void {
+    this.segmentDisposition = { kind: "recover", cause };
+    this.emitExecution("recovering", onEvent, cause);
+  }
+
+  private async recoverRequest(onEvent: (event: SessionEvent) => void, signal?: AbortSignal): Promise<void> {
+    const owner = this.runResult;
+    const modeConflict = this.hasQuestionAuthoringConflict();
+    const requests = this.acceptance?.getRequests() ?? [];
+    const uncovered = (source: RequestSource | undefined): boolean => source?.authoring !== false
+      && Boolean(source?.units.some(unit => !unit.supersededBy && !unit.withdrawal && unit.coverage !== "declared"));
+    const current = requests.find(source => source.requestId === this.currentRequestId);
+    // Settle current-user extraction first, then revisit eligible older owners without switching execution identity.
+    const request = current && current.authoring !== false && (modeConflict || this.pendingNpcRewardExtractions.has(current.requestId) || uncovered(current)) ? current
+      : requests.find(source => source.authoring !== false && source.units.some(unit => !unit.supersededBy && !unit.withdrawal) && this.pendingNpcRewardExtractions.has(source.requestId))
+        ?? requests.find(uncovered);
+    const pending = request ? this.pendingNpcRewardExtractions.get(request.requestId) : undefined;
+    if (request && (pending || modeConflict || uncovered(request)) && this.declareIntent && !this.userBoundary(signal)) {
+      const facts = pending?.facts ?? this.requestRecoveryFacts.get(request.requestId);
+      if (!facts) throw new Error(`Missing captured request facts: ${request.requestId}`);
+      const result = await this.declareIntent({ ...facts, hasActivePlan: false, requestCoverage: request.units,
+        ...(pending ? { extractionRepair: pending.repair } : {}),
+        ...(modeConflict ? { intentModeRepair: { requestId: request.requestId, previousMode: "question" as const,
+          reason: hasUnresolvedWriteConstraint([request], true) ? "unresolved-source-constraints" as const : "authored-request-criteria" as const } } : {}) }, signal);
+      if (owner !== this.runResult || this.userBoundary(signal)) return;
+      if (result.failure?.kind === "provider") throw new LlmError(result.failure.message, result.failure.status);
+      this.acceptance?.adoptRequestRequirements(request.requestId, result.intent.requestRequirements);
+      const rewards = result.intent.npcRewards;
+      if (pending && rewards) {
+        if (!("invalidReason" in rewards) && rewards.length > 0) {
+          this.adoptNpcRewards(request.requestId, rewards, pending.baseline);
+          this.pendingNpcRewardExtractions.delete(request.requestId);
+          if (request.requestId === this.currentRequestId) {
+            if (this.requestIntent) this.requestIntent = { ...this.requestIntent, npcRewards: rewards };
+            if (this.turnIntent) this.turnIntent = { ...this.turnIntent, npcRewards: rewards };
+          }
+        } else {
+          pending.repair = { ...pending.repair, previous: structuredClone(rewards),
+            reason: "invalidReason" in rewards ? rewards.invalidReason : "npcRewards: missing requirements" };
+        }
+      }
+      if (modeConflict && (result.intent.mode === "create" || result.intent.mode === "modify")) {
+        // Repair routing only. Existing authored predicates and domain obligations keep their owners.
+        if (this.requestIntent) this.requestIntent = { ...this.requestIntent, mode: result.intent.mode };
+        this.turnIntent = { ...this.turnIntent!, mode: result.intent.mode };
+        beginAssistantToolDomainTurn(this.turnIntent);
+        const note = formatIntentNote(this.turnIntent);
+        if (note) this.pushOrchestrationMessage(note);
+      }
+      this.publishAcceptance(onEvent);
+    }
+    if (this.hasQuestionAuthoringConflict()) {
+      this.recoverSegment("inconsistent-intent-mode", onEvent);
+      return;
+    }
+    if (this.pendingNpcRewardExtractions.size > 0) {
+      this.recoverSegment("invalid-npc-rewards", onEvent);
+      return;
+    }
+    // Thresholds select a fresh strategy, never a terminal disposition. Replanning cannot erase exclusions.
+    this.acceptanceRepairAttempts += 1;
+    this.pushOrchestrationMessage(`Recover the original request. Refresh missing prerequisites with canonical reads/get_original_context, correct arguments from actual issue paths, or decompose the SAME obligation using an alternative tool. Never repeat an excluded candidate, lower quantities, skip scope, or claim done.\n${JSON.stringify({ acceptance: this.getAcceptanceSnapshot(), failures: [...this.repeatedToolFailures.values()].flatMap(entries => [...entries.values()]) })}`);
+    if (this.acceptanceRepairAttempts % MAX_RALPH_ATTEMPTS_PER_ITEM === 0 && !this.userBoundary(signal)) {
+      await this.runOrchestratorPlanner(this.currentTurnInstruction, onEvent, signal);
+    }
+  }
+
+  private captureIntentFacts(instruction: string, scope: SessionTurnScope | null): IntentFacts {
+    const hasActivePlan = Boolean(this.workPlan && !isWorkPlanComplete(this.workPlan)) || this.acceptanceOpen();
+    const selection = scope
+      ? { mapId: scope.mapId, x: scope.region.x, y: scope.region.y, width: scope.region.width, height: scope.region.height }
+      : this.getTurnSelection?.() ?? null;
+    return buildIntentFacts({
+      project: this.acceptanceRequestBaseline,
+      userText: instruction,
+      currentMapId: resolveContextMapId(this.contextOptions) ?? null,
+      selection,
+      hasActivePlan,
+    });
+  }
+
+  private retryCandidate(name: string, args: Record<string, unknown>, failure: Pick<ToolRetryFailure, "code" | "paths">): string {
+    const normalized = normalizeToolArgs(name, args);
+    const values = failure.paths ? failure.paths.map(path => selectedPath(normalized, path)) : normalized;
+    // Only the prerequisite that actually refused this attempt can rearm it.
+    // Invalid command syntax is independent of map names, terrain and read history.
+    const prerequisite = failure.code === "read-before-write-required"
+      ? this.readEvidence.beforeWrite(this.ctx.project, name, args)?.issues
+      : failure.code === "spec-gate" ? isSpecGatePass(this.specGate(name, args)) : undefined;
+    return acceptanceFingerprint([toolRetryTarget(name, args), failure.code, failure.paths, values, prerequisite]);
+  }
+
+  private adoptNpcRewards(requestId: string, rewards: readonly NpcRewardRequirement[], baseline: Project): void {
+    const additions = structuredClone(rewards);
+    const units = this.acceptance?.getRequests().find(request => request.requestId === requestId)?.units ?? [];
+    for (const requirement of additions) {
+      const { target } = requirement;
+      const targets = Object.values(baseline.maps).filter(map => target.mapId === undefined || target.mapId === map.id)
+        .flatMap(map => map.events.filter(event => target.eventId !== undefined ? event.id === target.eventId : (event.name ?? event.pages?.[0]?.name) === target.eventName)
+          .map(event => ({ mapId: map.id, event })));
+      const owners = requirement.grants.map(grant => {
+        if (targets.length !== 1 || grant.kind !== "item" || grant.id === undefined || grant.count === undefined) return null;
+        const resolved = targets[0]!;
+        const matches = units.filter(unit => {
+          const criterion = unit.criteria?.length === 1 ? unit.criteria[0] : undefined;
+          if (unit.coverage !== "declared" || criterion?.kind !== "valueEquals" || criterion.subject.kind !== "event"
+            || criterion.subject.mapId !== resolved.mapId || criterion.subject.eventId !== resolved.event.id
+            || criterion.path.at(-1) !== "amount" || criterion.value !== grant.count) return false;
+          const command = selectedPath(resolved.event, criterion.path.slice(0, -1));
+          return isRecord(command) && command.kind === "changeItem" && command.op === "+=" && command.itemId === grant.id;
+        });
+        return matches.length === 1 ? matches[0]!.id : null;
+      });
+      this.npcRewardCountOwners.set(requirement, owners);
+    }
+    this.npcRewardRequirements = [...(this.npcRewardRequirements && !("invalidReason" in this.npcRewardRequirements) ? this.npcRewardRequirements : []), ...additions];
+    for (const requirement of additions) this.npcRewardItemBaseline.set(requirement, npcRewardTargetSnapshot(baseline, requirement));
+    // Late extraction may describe historical counts whose owners are already superseded.
+    this.projectNpcRewardCounts();
+  }
+
+  private reconcileNpcRewardAmendments(): void {
+    const units = new Map(this.acceptance?.getRequests().flatMap(request => request.units.map(unit => [unit.id, unit] as const)) ?? []);
+    for (const [requestId, pending] of this.pendingNpcRewardExtractions) {
+      if (pending.sourceUnitIds.length > 0 && pending.sourceUnitIds.every(id => units.get(id)?.supersededBy)) {
+        this.pendingNpcRewardExtractions.delete(requestId);
+      }
+    }
+    for (const unit of units.values()) {
+      const criterion = unit.criteria?.[0];
+      if (unit.supersededBy !== this.currentRequestId || this.npcRewardCountSupersessions.has(unit.id)
+        || criterion?.kind !== "valueEquals" || criterion.subject.kind !== "event" || criterion.path.at(-1) !== "amount") continue;
+      // Capture authority now, including for not-yet-extracted grants. Never recapture it during recovery.
+      const command = selectedPath(selectedSubject(this.acceptanceRequestBaseline, criterion.subject), criterion.path.slice(0, -1));
+      if (isRecord(command) && command.kind === "changeItem" && command.op === "+=" && typeof command.itemId === "string") {
+        this.npcRewardCountSupersessions.set(unit.id, command.itemId);
+      }
+    }
+    this.projectNpcRewardCounts();
+  }
+
+  private projectNpcRewardCounts(): void {
+    if (!this.npcRewardRequirements || "invalidReason" in this.npcRewardRequirements) return;
+    const units = new Map(this.acceptance?.getRequests().flatMap(request => request.units.map(unit => [unit.id, unit] as const)) ?? []);
+    this.npcRewardRequirements = this.npcRewardRequirements.map(requirement => {
+      const owners = [...this.npcRewardCountOwners.get(requirement)!];
+      let changed = false;
+      const grants = requirement.grants.map((grant, index) => {
+        const owner = owners[index];
+        if (!owner || grant.id === undefined || (this.npcRewardCountSupersessions.get(owner) !== grant.id && !units.get(owner)?.withdrawal)) return grant;
+        changed = true; owners[index] = null;
+        // Retire only the exact count. Preserve grant presence and one-time/choice constraints.
+        const { count: _count, ...remaining } = grant;
+        return remaining;
+      });
+      if (!changed) return requirement;
+      const replacement = { ...requirement, grants };
+      const baseline = this.npcRewardItemBaseline.get(requirement);
+      this.npcRewardItemBaseline.delete(requirement);
+      if (baseline !== undefined) this.npcRewardItemBaseline.set(replacement, baseline);
+      this.npcRewardCountOwners.delete(requirement);
+      this.npcRewardCountOwners.set(replacement, owners);
+      return replacement;
+    });
+  }
+
+  private async checkpoint(onEvent: (event: SessionEvent) => void, signal?: AbortSignal): Promise<TurnResult | null> {
+    const owner = this.runResult;
+    const boundaryResult = (): TurnResult | null => {
+      if (owner !== this.runResult) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
+      const boundary = this.userBoundary(signal);
+      if (!boundary) return null;
+      this.segmentDisposition = { kind: "user-boundary", reason: boundary };
+      this.emitExecution(boundary, onEvent);
+      return { assistantText: "", proposedCalls: this.finalizeProposals(this.turnProposals), stoppedReason: boundary === "queued" ? "final" : "aborted" };
+    };
+    const before = boundaryResult();
+    if (before) return before;
+    if (this.turnProposals.size > 0) {
+      const fingerprint = JSON.stringify(this.ctx.project);
+      if (this.failedApplyFingerprint !== fingerprint) {
+        this.milestoneApplyFailed = false;
+        await this.maybeAutoApplyMilestone({ id: `checkpoint:${this.autoRunSteps}:${this.turnToolStartedCount}`, title: this.currentTurnInstruction, instruction: "Apply pending snapshot", status: "done" }, onEvent);
+      }
+    }
+    const after = boundaryResult();
+    if (after) return after;
+    this.refreshAcceptance(store.getCurrent(), onEvent);
+    if (this.getAcceptanceSnapshot()?.status === "verified" && this.turnProposals.size === 0
+      && !this.explicitVerificationOpen() && !this.volumeUnmetNow() && this.completionProblems().length === 0) {
+      this.segmentDisposition = { kind: "candidate-final" };
+      return { assistantText: "Applied request predicates verified.", proposedCalls: [], stoppedReason: "final" };
+    }
+    const progress = JSON.stringify(this.getAcceptanceSnapshot()?.items.map(item => [item.id, item.evidence]));
+    if (this.seenAcceptanceStates.has(progress)) {
+      this.recoverSegment("unchanged-required-targets", onEvent);
+      return { assistantText: this.acceptanceIncompleteText(), proposedCalls: this.finalizeProposals(this.turnProposals), stoppedReason: "final" };
+    }
+    this.seenAcceptanceStates.add(progress);
+    return null;
+  }
+
+  private async completeAppliedProof(onEvent: (event: SessionEvent) => void, signal?: AbortSignal, ownsInvocation: () => boolean = () => true): Promise<void> {
+    const ready = (): boolean => {
+      if (!ownsInvocation() || this.userBoundary(signal) || this.turnProposals.size > 0) return false;
+      this.syncBaselineFromStoreIfClean(store.getCurrent());
+      this.publishAcceptance(onEvent);
+      return ownsInvocation() && !this.userBoundary(signal) && !this.acceptanceOpen()
+        && !this.explicitVerificationOpen() && !this.volumeUnmetNow() && this.completionProblems().length === 0;
+    };
+    if (!ready()) return;
+    let proof = await this.proveAppliedRevision(onEvent, signal, ownsInvocation);
+    if (!ready()) return;
+    while (proof.reason === "stale" || (proof.status === "succeeded" && !proof.verified)) {
+      await this.yieldForUi(signal);
+      if (!ready()) return;
+      proof = await this.proveAppliedRevision(onEvent, signal, ownsInvocation);
+      if (!ready()) return;
+    }
+    if (proof.status === "failed" && proof.reason !== "disabled" && !this.userBoundary(signal)) {
+      const request = this.acceptance?.getRequests().find(source => source.requestId === this.currentRequestId);
+      const blocker: ExternalBlocker = { kind: "persistence", requestId: this.currentRequestId ?? "unknown",
+        obligationIds: request?.units.filter(unit => !unit.supersededBy).map(unit => unit.id) ?? [], sourceSpans: request?.units.map(unit => unit.source) ?? [],
+        evidence: { origin: "store", code: proof.reason ?? "proof-failed", details: JSON.stringify(proof) }, neededAction: "Restore project persistence and retry proof; do not replay tools" };
+      this.segmentDisposition = { kind: "external-blocker", blocker };
+      this.emitExecution("external-blocker", onEvent, undefined, blocker);
+    }
   }
 
   private spatialAcceptanceRequired(): boolean {
     const intent = this.turnIntent;
-    if (this.turnComposerMode === "ask" || intent?.mode === "question") return false;
+    if (this.isAnswerOnlyTurn()) return false;
     if (intent && (intent.mode === "create" || intent.mode === "modify")
       && (intent.space !== "none" || intent.targetMapId !== null)) return true;
     const names = [...(intent?.tools ?? []), ...(this.workPlan?.layers.flatMap(layer => layer.items.flatMap(item => item.successTools ?? [])) ?? [])];
@@ -1333,7 +1675,7 @@ export class AssistantSession {
   private adoptAcceptance(promises: readonly AcceptancePromise[] | undefined, onEvent?: (event: SessionEvent) => void): void {
     if (this.workPlan) this.verificationEvidence.requireTools(
       this.workPlan.layers.flatMap(layer => layer.items.flatMap(item => item.successTools ?? [])));
-    if (!promises && (this.acceptance || !this.spatialAcceptanceRequired())) return;
+    if (!promises && (this.getAcceptanceSnapshot() || !this.spatialAcceptanceRequired())) return;
     const goal = this.acceptance?.goal ?? this.workPlan?.goal ?? this.currentTurnInstruction;
     if (!this.acceptance) {
       this.acceptance = new AssistantAcceptanceLedger(`acceptance-${++this.acceptanceSequence}`, goal, this.acceptanceRequestBaseline, this.imageEvidence);
@@ -1344,11 +1686,12 @@ export class AssistantSession {
   }
 
   private acceptanceOpen(): boolean {
-    return this.acceptance !== null && this.acceptance.getSnapshot().status !== "verified";
+    const snapshot = this.getAcceptanceSnapshot();
+    return snapshot !== null && snapshot.status !== "verified";
   }
 
   private explicitVerificationOpen(): boolean {
-    return this.turnExpectsChange() && this.verificationEvidence.problems("explicit").length > 0;
+    return !this.isAnswerOnlyTurn() && this.verificationEvidence.problems("explicit").length > 0;
   }
 
   private acceptanceIncompleteText(): string {
@@ -1565,6 +1908,17 @@ export class AssistantSession {
 
   // 하네스 관측: 주입 포함 원본 메시지는 여기가 유일한 노출점이다(턴 종료 시 주입은 제거되므로
   // 진행 중 스냅샷과 종료 후 스냅샷이 다를 수 있다 — 감사 로그가 영속 기록을 맡는다).
+  getExecution(): RequestExecution | undefined {
+    const execution = this.execution;
+    if (!execution || execution.state === "running" || execution.state === "recovering") return execution;
+    const outcome = this.getRunOutcome();
+    if ((execution.state === "verified" || execution.state === "verified-local")
+      && (outcome?.goal !== "satisfied" || outcome.delivery === "draft")) return { ...execution, state: "manual-segment" };
+    if (execution.state === "verified" && !this.getRunEndProof()?.verified) return { ...execution,
+      state: store.isRemotePersistenceEnabled() ? "manual-segment" : "verified-local" };
+    return execution;
+  }
+
   getHarnessSnapshot(): HarnessSnapshot {
     return {
       model: this.config.model,
@@ -1576,6 +1930,8 @@ export class AssistantSession {
       acceptance: this.getAcceptanceSnapshot(),
       runEndProof: this.getRunEndProof(),
       runOutcome: this.getRunOutcome(),
+      requests: this.acceptance?.getRequests() ?? [],
+      execution: this.getExecution(),
     };
   }
 
@@ -1585,77 +1941,135 @@ export class AssistantSession {
     signal?: AbortSignal,
     opts?: SessionTurnOptions,
   ): Promise<TurnResult> {
-    // 자율 드라이버: opts.autonomous === true 일 때만 진입한다(명시 플래그 — 플래그 없는 기존
-    // 호출처(영역 작업·클러스터 모달·평가 러너)는 종전대로 턴 1개로 끝난다). 패널·MCP 브리지는
-    // 패널의 sendText 가 autonomous:true 를 주므로 같은 진입점을 공유하고, 브리지 코드는 불변이다.
-    // 사용자의 수동 진입(새 sendUserMessage 호출)은 예산 카운터를 0으로 되돌린다(re-arm).
-    // 마일스톤 자동 적용도 같은 명시 플래그로만 켠다. 직전 턴의 커밋 게이트 실패는
-    // 현재 자율 런만 중단하는 상태이므로 새 사용자 메시지에서 반드시 재가동한다.
-    this.runResult = { current: null };
-    this.runSubscriber = onEvent;
+    // Save the original authoring context before a question takes publication ownership.
+    if (this.currentRequestId && this.requestIntent && !this.isAnswerOnlyTurn()
+      && this.acceptance?.getRequests().find(request => request.requestId === this.currentRequestId)?.authoring) {
+      this.resumableAuthoringRequest = { requestId: this.currentRequestId, intent: this.requestIntent,
+        facts: this.requestIntentFacts, baseline: this.acceptanceRequestBaseline, scope: this.requestScope,
+        requestText: this.currentTurnRequestText, originalContext: this.originalContext };
+    }
+    const instruction = opts?.instruction ?? stripContextFooter(text);
+    const rawContinuation = isContinuationText(instruction) && opts?.goalAction !== "resume" && opts?.goalAction !== "new-goal";
+    // A second Do confirms a Confirm preview. Raw text cannot change an Ask/Plan
+    // owner into Do; that transition belongs to the host's explicit Resume action.
+    const mode = opts?.composerMode === "ask" ? "ask"
+      : rawContinuation && this.turnComposerMode !== "do" ? this.turnComposerMode : opts?.composerMode ?? "do";
+    const startsGoal = opts?.goalAction === "new-goal" && mode !== "ask";
+    const continuing = !startsGoal && mode !== "ask" && this.currentRequestId !== null
+      && (opts?.goalAction === "resume" || (mode === "do" && this.turnComposerMode === "do"
+        && (this.executionAuthorized || (this.lastTurnPlanOnly && this.autonomy()?.planOnly === true)) && isContinuationText(instruction)));
+    const retainingRequest = continuing || (rawContinuation && mode !== "do" && this.currentRequestId !== null);
+    const owner = this.runResult = { current: null };
+    this.executionGeneration += 1;
+    const emit = (event: SessionEvent): void => { if (this.runResult === owner) onEvent(event); };
+    this.runSubscriber = emit;
     this.runRecapAuditIndex = null;
-    // Explicit Ask owns publication even if preparation fails before intent is declared.
-    this.turnComposerMode = opts?.composerMode ?? "do";
-    const entryInstruction = (opts?.instruction ?? stripContextFooter(text)).trim();
-    const retainsAppliedDelivery = opts?.composerMode !== "ask" && opts?.goalAction !== "new-goal"
-      && (opts?.goalAction === "resume" || isContinuationText(entryInstruction));
-    // Establish delivery ownership before context/image/intent work can await or fail.
-    if (!retainsAppliedDelivery) this.clearAppliedDelivery();
+    this.turnComposerMode = mode;
+    this.turnIntent = null;
+    this.requestPrepared = false;
     this.runExecution = "response-final";
-    const startsGoal = opts?.goalAction === "new-goal" && opts.composerMode !== "ask";
+    this.acceptanceApplyPending = false;
+    this.lastTurnPlanOnly = false;
+    this.lastTurnFailed = false;
+    if (!continuing) this.clearAppliedDelivery();
     if (startsGoal) {
-      // Retire the canonical owner before preparatory awaits (or rebase) can fail.
-      // Archive its last immutable assessment, not a new evaluation under this request.
+      // Retire all executable authority before preparation. Snapshots remain history, not a queue.
       const previous = this.getAcceptanceSnapshot();
       if (previous) this.acceptanceHistory.push(previous);
+      if (this.acceptance) this.requestHistory.push(this.acceptance.getRequests());
       this.imageEvidence.clear();
       this.acceptance = null;
       this.acceptanceAppliedProject = null;
       this.workPlan = null;
       this.verificationEvidence.clear();
+      this.workItemVerificationEvidence.clear();
       this.statefulNpcRequirement = false;
-      // Retire both pending apply authority and its detached payload before preparation.
-      // Applied store content survives; detached sessions keep their own accepted baseline.
+      this.adventureRequirements = undefined;
+      this.npcRewardRequirements = undefined;
+      this.npcRewardItemBaseline.clear();
+      this.npcRewardCountOwners.clear();
+      this.npcRewardCountSupersessions.clear();
+      this.pendingNpcRewardExtractions.clear();
+      this.requestRecoveryFacts.clear();
+      this.requestIntentFacts = null;
+      this.requestIntent = null;
+      this.resumableAuthoringRequest = null;
+      this.currentRequestId = null;
+      this.originalContext = null;
+      this.adventureIconRecords.clear();
+      this.ralphAttemptsByItemId.clear();
+      this.lastBlockReasonByItemId.clear();
+      this.repeatedToolFailures.clear();
+      this.readEvidence.begin(undefined);
       this.rebaseProject(this.storeBacked ? store.getCurrent() : this.baselineProject);
+      this.resetWorkItemEvidence();
       this.rebuildSystemPrompt();
     }
-    this.milestoneAutoApply = opts?.autonomous === true;
-    if (this.milestoneApplyFailed) {
-      // 실패한 proposed draft를 다음 턴으로 가져가면 같은 커밋 오류가 반복된다. 저장소는 실패
-      // 당시 바뀌지 않았으므로 canonical store에서 세션 draft를 다시 시작한다.
-      this.rebaseProject(store.getCurrent());
-    } else {
-      this.milestoneApplyFailed = false;
+    if (continuing && this.resumableAuthoringRequest) {
+      const request = this.resumableAuthoringRequest;
+      this.currentRequestId = request.requestId;
+      this.requestIntent = request.intent;
+      this.requestIntentFacts = request.facts;
+      this.acceptanceRequestBaseline = request.baseline;
+      this.requestScope = request.scope;
+      this.currentTurnRequestText = request.requestText;
+      this.originalContext = request.originalContext;
     }
-    const startedAt = Date.now();
-    const usageBefore = this.usageTotals;
-    const auditFrom = this.audit.length;
-    const turnOptions: SessionTurnOptions = {
-      ...(opts?.goalAction ? { goalAction: opts.goalAction } : {}),
-      ...(opts?.instruction !== undefined ? { instruction: opts.instruction } : {}),
-      scope: opts?.scope ?? null,
-      composerMode: opts?.composerMode ?? "do",
+    if (!retainingRequest) {
+      this.currentRequestId = `request-${++this.requestSequence}`;
+      this.requestScope = opts?.scope ?? null;
+      this.requestIntent = null;
+      this.requestIntentFacts = null;
+      this.acceptanceRequestBaseline = structuredClone(this.storeBacked ? store.getCurrent() : this.baselineProject);
+      this.currentTurnInstruction = instruction;
+      this.currentTurnRequestText = text;
+      this.acceptanceRequestSource = { requestId: this.currentRequestId, text: instruction,
+        scope: this.requestScope ? structuredClone(this.requestScope) : null };
+      this.adoptAcceptance([]);
+      this.acceptance?.startRequest(this.currentRequestId, instruction, this.acceptanceRequestBaseline, mode !== "ask", this.requestScope);
+      this.requestRecoveryFacts.set(this.currentRequestId, this.captureIntentFacts(instruction, this.requestScope));
+      this.pushAudit({ kind: "status", text: `request:source ${JSON.stringify(this.acceptanceRequestSource)}` });
+    } else {
+      const request = this.acceptance?.getRequests().find(source => source.requestId === this.currentRequestId);
+      if (request) this.currentTurnInstruction = request.rawInstruction;
+      this.acceptanceRequestSource = { requestId: this.currentRequestId!, text: this.currentTurnInstruction,
+        scope: this.requestScope ? structuredClone(this.requestScope) : null };
+    }
+    this.executionAuthorized = mode !== "ask" && (continuing || (mode === "do" && this.autonomy()?.planOnly !== true));
+    this.milestoneAutoApply = opts?.autonomous === true && this.executionAuthorized;
+    this.runProjectIdentity = this.storeBacked || opts?.autonomous ? store.getProjectIdentity().id : null;
+    this.runSignal = signal;
+    this.autoRunSteps = 0;
+    this.execution = undefined;
+    this.segmentDisposition = { kind: "candidate-final" };
+    this.failedApplyFingerprint = null;
+    this.seenAcceptanceStates.clear();
+    this.milestoneApplyFailed = false;
+    const startedAt = Date.now(), usageBefore = this.usageTotals, auditFrom = this.audit.length;
+    const retired = (): TurnResult => ({ assistantText: "", proposedCalls: [], stoppedReason: "aborted" });
+    const turnOptions: SessionTurnOptions = { ...opts,
+      instruction: retainingRequest ? this.currentTurnInstruction : instruction,
+      scope: this.requestScope, composerMode: continuing ? "do" : mode,
+      driverContinue: retainingRequest,
     };
     try {
-      if (startsGoal) {
-        this.acceptanceRequestBaseline = structuredClone(this.baselineProject);
-        this.acceptanceRequestSource = { requestId: `request-${this.currentTurnIndex + 1}`, text: entryInstruction,
-          scope: turnOptions.scope ? structuredClone(turnOptions.scope) : null };
-        onEvent({ type: "acceptance", snapshot: null });
-      }
-      const first = await this.executeUserTurn(text, onEvent, signal, turnOptions);
-      const last = opts?.autonomous === true && !this.lastTurnPlanOnly && this.turnComposerMode !== "ask"
-        ? await this.runAutonomousDriver(first, onEvent, signal, turnOptions) : first;
-      if (signal?.aborted) this.runExecution = "cancelled";
-      return this.finishRunRecap(last, startedAt, usageBefore, auditFrom, onEvent);
+      if (startsGoal) emit({ type: "acceptance", snapshot: null });
+      this.publishAcceptance(emit);
+      const first = await this.executeUserTurn(text, emit, signal, turnOptions);
+      if (owner !== this.runResult) return retired();
+      const last = this.milestoneAutoApply && !this.lastTurnPlanOnly && !this.isAnswerOnlyTurn()
+        ? await this.runAutonomousDriver(first, emit, signal) : first;
+      if (owner !== this.runResult) return retired();
+      return this.finishRunRecap(last, startedAt, usageBefore, auditFrom, emit, { owns: () => owner === this.runResult, retired });
     } catch (cause) {
-      this.runExecution = signal?.aborted || isLlmAbortError(cause) ? "cancelled" : "failed";
+      if (owner !== this.runResult) return retired();
+      this.runExecution = this.userBoundary(signal) || isLlmAbortError(cause) ? "cancelled" : "failed";
       const error = cause instanceof Error ? cause.message : String(cause);
       this.pushAudit({ kind: "status", text: `turn-boundary-error ${error}` });
       return this.finishRunRecap(this.withTurnLedger({ assistantText: "", error,
         proposedCalls: this.finalizeProposals(this.turnProposals),
         stoppedReason: this.runExecution === "cancelled" ? "aborted" : "error",
-      }), startedAt, usageBefore, auditFrom, onEvent);
+      }), startedAt, usageBefore, auditFrom, emit, { owns: () => owner === this.runResult, retired });
     }
   }
 
@@ -1667,73 +2081,59 @@ export class AssistantSession {
     first: TurnResult,
     onEvent: (event: SessionEvent) => void,
     signal?: AbortSignal,
-    options: SessionTurnOptions = {},
   ): Promise<TurnResult> {
-    this.autoRunSteps = 0;
+    const owner = this.runResult;
     let last = first;
-    while (this.shouldAutoContinue(last, onEvent, signal)) {
-      this.autoRunSteps += 1;
-      this.pushAudit({ kind: "status", text: `agent_run:auto-continue step=${this.autoRunSteps}/${AGENT_RUN_MAX_TOTAL_STEPS}` });
-      onEvent({
-        type: "status",
-        text: `자율 실행 계속 (${this.autoRunSteps}/${AGENT_RUN_MAX_TOTAL_STEPS})`,
-      });
-      const next = await this.executeUserTurn("계속", onEvent, signal, { ...options, instruction: "계속", driverContinue: true });
-      if (next.stoppedReason === "aborted" || next.stoppedReason === "error") return next;
-      last = next;
+    for (;;) {
+      while (this.shouldAutoContinue(last, onEvent, signal)) {
+        await this.yieldForUi(signal);
+        if (owner !== this.runResult) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
+        if (this.userBoundary(signal)) break;
+        this.autoRunSteps += 1;
+        this.workPlanAutoStepsThisUserMessage = 0;
+        this.volumeContinueUsed = 0;
+        this.compactionAttemptedThisTurn = false;
+        this.pushAudit({ kind: "status", text: `agent_run:auto-continue segment=${this.autoRunSteps + 1}` });
+        if (this.segmentDisposition.kind === "recover") {
+          try {
+            await this.recoverRequest(onEvent, signal);
+          } catch (cause) {
+            if (owner !== this.runResult) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
+            if (this.userBoundary(signal)) break;
+            this.recordProviderBlocker(cause, onEvent);
+            this.lastTurnFailed = true;
+            return this.withTurnLedger({ ...last, stoppedReason: "error", error: this.execution?.blocker?.evidence.details });
+          }
+        }
+        if (owner !== this.runResult) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
+        if (this.userBoundary(signal)) break;
+        if (this.pendingNpcRewardExtractions.size > 0 || this.hasQuestionAuthoringConflict()) continue;
+        this.injectWorkPlanOrchestration();
+        last = this.withTurnLedger(this.withWorkPlanResult(await this.runTurnLoop(onEvent, signal)));
+        if (owner !== this.runResult) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
+      }
+      if (owner !== this.runResult) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
+      const boundary = this.userBoundary(signal);
+      if (boundary) {
+        this.segmentDisposition = { kind: "user-boundary", reason: boundary };
+        this.emitExecution(boundary, onEvent);
+        return this.withTurnLedger({ ...last, stoppedReason: boundary === "queued" ? "final" : "aborted" });
+      }
+      if (!this.isAnswerOnlyTurn() && last.stoppedReason !== "aborted" && last.stoppedReason !== "error" && !this.acceptanceOpen()) await this.maybeRunEndProof(onEvent, signal);
+      if (owner !== this.runResult) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
+      if (this.execution?.state === "external-blocker") return this.withTurnLedger({ ...last, stoppedReason: "error", error: this.execution.blocker?.evidence.details ?? last.error });
+      if (this.shouldAutoContinue(last, onEvent, signal)) continue;
+      return this.withTurnLedger(last);
     }
-    if (last.stoppedReason !== "aborted" && last.stoppedReason !== "error") {
-      await this.maybeRunEndProof(onEvent, signal);
-    }
-    return last;
   }
 
-  /** 드라이버 계속 판정 — 계획 미완료 && 예산 잔여 && 사용자 대기 없음 && 중단 아님. */
+  /** Continue authorized unfinished applied outcomes, not a cumulative budget or model verdict. */
   private shouldAutoContinue(last: TurnResult, onEvent: (event: SessionEvent) => void, signal?: AbortSignal): boolean {
-    if (signal?.aborted) { this.runExecution = "cancelled"; return false; }
-    if (last.stoppedReason === "aborted" || last.stoppedReason === "error") return false;
-    // 저장소를 바꾸지 못한 마일스톤이 있으면 현재 자율 런을 멈춘다. 승인 UI는 없으며,
-    // 다음 사용자 메시지가 새 턴을 시작하면 다시 적용을 시도할 수 있다.
-    if (this.milestoneApplyFailed) {
-      this.pushAudit({ kind: "status", text: "agent_run:stopped-apply-failed — 마일스톤 적용 실패로 현재 자율 실행을 멈춥니다 (프로젝트 저장소 변경 없음)" });
-      return false;
-    }
-    const acceptanceOpen = this.acceptanceOpen();
-    const verificationOpen = this.explicitVerificationOpen();
-    if ((acceptanceOpen || verificationOpen) && this.acceptanceRepairAttempts >= MAX_RALPH_ATTEMPTS_PER_ITEM) return false;
-    const volumeOpen = this.volumeUnmetNow();
-    if ((!this.workPlan || isWorkPlanComplete(this.workPlan)) && !volumeOpen && !acceptanceOpen && !verificationOpen) return false;
-    if (this.autoRunSteps >= AGENT_RUN_MAX_TOTAL_STEPS) {
-      this.runExecution = "budget-exhausted";
-      this.pushAudit({
-        kind: "status",
-        text: `agent_run_budget_exhausted steps=${this.autoRunSteps}/${AGENT_RUN_MAX_TOTAL_STEPS} — 이어서 진행하려면 「계속」 이라고 보내세요`,
-      });
-      onEvent({ type: "status", text: "자율 실행 예산 소진 — 「계속」이라고 보내면 이어서 진행합니다." });
-      return false;
-    }
-    // 사용자 우선: 패널의 pendingSends 큐에 대기 메시지가 있으면 드라이버는 양보한다.
-    // dequeue 하지 않는다(peek-only) — 패널의 기존 드레인 루프가 전달하고, 계획이 여전히
-    // 미완료면 다음 사용자 턴 종료 후 런이 다시 자동 계속된다.
-    const pending = this.peekPendingUserMessage?.() ?? null;
-    if (typeof pending === "string" && pending.trim().length > 0) {
-      this.runExecution = "awaiting-user";
-      this.pushAudit({ kind: "status", text: "agent_run:paused-user-message — 대기 중 사용자 메시지가 자동 계속보다 우선합니다" });
-      return false;
-    }
-    // Ralph 지속 판정을 그대로 재사용(두 번째 휴리스틱을 만들지 않는다). autoStepsUsed=0 은
-    // 다음 턴을 시작해도 되는가(턴 시작 시점)의 판정이고, assistantText 는 직전 턴이 사용자
-    // 질문으로 끝났는지 판별한다 — 질문이면 false(문의 대기, 자동 송신 금지).
-    const assistantText = this.rawLastTurnAssistantText(last);
-    if (this.workPlan && !isWorkPlanComplete(this.workPlan)) {
-      return this.recordWorkPlanDecision(ralphContinuationDecision(this.workPlan, { autoStepsUsed: 0, assistantText }));
-    }
-    // 계획이 끝났거나 없어도 볼륨 막대가 비면 코드가 다음 턴을 연다. 사용자 「계속」이 아니다.
-    if (volumeOpen && assistantTextLooksLikeQuestion(assistantText)) {
-      this.runExecution = "awaiting-user";
-      return false;
-    }
-    return volumeOpen || acceptanceOpen || verificationOpen;
+    if (this.userBoundary(signal) || last.stoppedReason === "aborted" || last.stoppedReason === "error") return false;
+    if (this.runExecution === "awaiting-user") return false;
+    if (!this.milestoneAutoApply || this.isAnswerOnlyTurn() || this.lastTurnPlanOnly) return false;
+    this.refreshAcceptance(store.getCurrent(), onEvent);
+    return this.pendingNpcRewardExtractions.size > 0 || this.acceptanceOpen() || this.explicitVerificationOpen() || this.turnProposals.size > 0 || this.volumeUnmetNow() || this.completionProblems().length > 0;
   }
 
   /** Carry the actual scheduling decision; never run another text classifier for projection. */
@@ -1746,11 +2146,6 @@ export class AssistantSession {
     return decision === "continue";
   }
 
-  /** 드라이버의 질문 판별용 원문 — 계획 게시판 접미어(행 끝 정규식 오염)를 제거한 최종 응답. */
-  private rawLastTurnAssistantText(last: TurnResult): string {
-    return last.assistantText.split("\n\n---\n")[0]!.trim();
-  }
-
   // 한 턴 실행: 사용자 메시지 → (LLM ↔ 툴) 루프 → 최종 응답 + 제안 changeset.
   private async executeUserTurn(
     text: string,
@@ -1758,6 +2153,7 @@ export class AssistantSession {
     signal?: AbortSignal,
     options: SessionTurnOptions = {},
   ): Promise<TurnResult> {
+    const owner = this.runResult;
     this.runExecution = "response-final";
     this.acceptanceApplyPending = false;
     // 토큰 보정: 직전 턴들의 usage 관측으로 문자 예산이 달라졌으면 시스템 프롬프트를 재조립한다.
@@ -1775,12 +2171,13 @@ export class AssistantSession {
       onEvent({ type: "status", text: transition });
     }
     const userContent = await this.buildUserTurnContent(text);
+    if (owner !== this.runResult || this.userBoundary(signal)) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
     this.messages.push({ role: "user", content: userContent });
     this.pushAudit({ kind: "user", text, context: turnContext });
     // 사용자 발화만 따로 든다. `[컨텍스트]` footer 는 코드가 아는 사실이라 모델에는 그대로 가지만,
     // 의도 선언·툴 이름 언급·능력 승격의 입력은 사용자 말이어야 한다 — 기계 텍스트가 이 자리에
     // 섞여 들어 라우팅이 어긋났던 것이 2026-09-03 감사의 근인이었다.
-    const instruction = (options.instruction ?? stripContextFooter(text)).trim();
+    const instruction = options.instruction ?? stripContextFooter(text);
     // 합성 "계속"은 라우팅 입력일 뿐이다. 검수·완성도 검사에는 이 런의 원래 요청을 유지한다.
     if (!options.driverContinue) {
       this.currentTurnInstruction = instruction;
@@ -1788,10 +2185,8 @@ export class AssistantSession {
     }
     this.turnScope = options.scope ?? null;
     this.turnComposerMode = options.composerMode ?? "do";
-    this.planAuthoredThisTurn = false;
     this.lastTurnPlanOnly = false;
     this.turnIsDriverContinue = options.driverContinue === true;
-    this.skipPlannerRoundOnly = false;
     if (this.prepareProjectWiki && !this.turnIsDriverContinue) {
       const owner = this.runResult;
       try {
@@ -1813,6 +2208,7 @@ export class AssistantSession {
             this.publishRunOutcome();
           },
         });
+        if (owner !== this.runResult || this.userBoundary(signal)) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
         if (world) {
           this.baselineProject.world = structuredClone(world);
           this.ctx.project.world = structuredClone(world);
@@ -1822,6 +2218,7 @@ export class AssistantSession {
         }
         this.rebuildSystemPrompt();
       } catch (cause) {
+        if (owner !== this.runResult) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
         const error = cause instanceof Error ? cause.message : String(cause);
         const stoppedReason = signal?.aborted ? "aborted" : "error";
         this.runExecution = signal?.aborted ? "cancelled" : "failed";
@@ -1833,53 +2230,66 @@ export class AssistantSession {
     // 의도 선언: 모델이 한 번 읽어 구조화한다(수정/생성·실내/야외·시설·되묻기·계획·툴). 코드는 이 선언만
     // Neutral fallback retains the full tool catalog when declaration is unavailable.
     // 질문 모드는 사용자가 직접 고른 사실이라 선언의 create/modify 를 덮어쓴다 — 안 그러면 플래너·쓰기 기대가 문장 판정으로 돈다.
-    const intent = this.applyComposerModeToIntent(await this.declareTurnIntent(instruction, onEvent, signal));
+    const initialDeclaration = !this.turnIsDriverContinue || !this.requestIntent;
+    const declared = this.turnIsDriverContinue && this.requestIntent
+      ? { ...this.requestIntent, source: "continuation" as const }
+      : await this.declareTurnIntent(instruction, onEvent, signal);
+    if (owner !== this.runResult || this.userBoundary(signal)) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
+    if (this.execution?.state === "external-blocker") return { assistantText: "", proposedCalls: [], stoppedReason: "error", error: this.execution.blocker?.evidence.details };
+    const intent = this.applyComposerModeToIntent(declared);
+    if (!initialDeclaration) this.pushAudit({ kind: "status", text: formatIntentAudit(intent, 0) });
     this.turnIntent = intent;
-    if (intent.mode === "question") this.turnComposerMode = "ask";
-    const question = this.turnComposerMode === "ask";
-    const userAction = !this.turnIsDriverContinue && !question;
-    // The public entry already established this owner; model routing cannot undo it.
-    const startsGoal = !this.turnIsDriverContinue && options.goalAction === "new-goal" && options.composerMode !== "ask";
-    const resumesGoal = userAction && (options.goalAction === "resume" || isContinuationText(instruction));
-    const newRequest = userAction && !resumesGoal && intent.source !== "continuation";
-    // Delivery follows host-authorized continuation, never a model's source claim or a fresh query.
-    if (!this.turnIsDriverContinue && (!resumesGoal || startsGoal)) this.clearAppliedDelivery();
-    if (newRequest && !startsGoal) {
-      // New-goal entry captured before awaits; continuations and questions retain their baseline.
-      this.acceptanceRequestBaseline = structuredClone(this.baselineProject);
-      this.acceptanceRequestSource = { requestId: `request-${this.currentTurnIndex + 1}`, text: instruction,
-        scope: this.turnScope ? structuredClone(this.turnScope) : null };
+    this.requestPrepared = true;
+    const startsGoal = options.goalAction === "new-goal" && options.composerMode !== "ask";
+    const resumesGoal = this.turnIsDriverContinue && this.turnComposerMode !== "ask";
+    if (initialDeclaration && this.turnComposerMode !== "ask" && this.currentRequestId) {
+      this.requestIntent = intent;
+      this.acceptance?.adoptRequestRequirements(this.currentRequestId, intent.requestRequirements);
+      if (!this.turnIsDriverContinue) {
+        this.acceptance?.adoptUserAmendments(this.currentRequestId, intent.requestRequirements);
+        this.reconcileNpcRewardAmendments();
+      }
+      if (this.isAnswerOnlyTurn()) this.acceptance?.markAnswer(this.currentRequestId);
     }
-    if (resumesGoal || startsGoal) {
-      this.ralphAttemptsByItemId.clear();
-      this.lastBlockReasonByItemId.clear();
-      this.repeatedToolFailures.clear();
+    const question = this.isAnswerOnlyTurn();
+    if (!question) {
       this.acceptanceRepairAttempts = 0;
       this.adventureRepairAttempts = 0;
       this.acceptance?.resume();
       if (resumesGoal && this.workPlan) {
         const revived = reactivateBlockedWorkItems(this.workPlan);
-        if (revived > 0) {
-          this.pushAudit({ kind: "status", text: `work-item:reactivated ${revived}건 — 사용자 메시지로 재시도` });
-          this.emitWorkPlan(onEvent);
-        }
+        if (revived > 0) this.emitWorkPlan(onEvent);
       }
-      this.publishAcceptance(onEvent);
+      if (initialDeclaration) {
+        if (intent.adventure) this.adventureRequirements = {
+          village: this.adventureRequirements?.village === true || intent.adventure.village,
+          dungeon: this.adventureRequirements?.dungeon === true || intent.adventure.dungeon,
+          party: this.adventureRequirements?.party === true || intent.adventure.party,
+          battle: this.adventureRequirements?.battle === true || intent.adventure.battle,
+        };
+        if (intent.npcRewards && this.currentRequestId) {
+          const rewards = intent.npcRewards;
+          if ("invalidReason" in rewards || rewards.length === 0) {
+            const facts = this.requestRecoveryFacts.get(this.currentRequestId);
+            if (!facts) throw new Error(`Missing captured request facts: ${this.currentRequestId}`);
+            this.pendingNpcRewardExtractions.set(this.currentRequestId, {
+              repair: { kind: "npc-rewards", requestId: this.currentRequestId, previous: structuredClone(rewards),
+                reason: "invalidReason" in rewards ? rewards.invalidReason : "npcRewards: missing requirements" },
+              facts, baseline: this.acceptanceRequestBaseline,
+              sourceUnitIds: this.acceptance?.getRequests().find(request => request.requestId === this.currentRequestId)?.units.map(unit => unit.id) ?? [],
+            });
+          } else this.adoptNpcRewards(this.currentRequestId, rewards, this.acceptanceRequestBaseline);
+        }
+        this.readEvidence.begin(intent.readBeforeWrite);
+      }
+      if (intent.statefulNpcs === true) this.statefulNpcRequirement = true;
+      if (intent.actionCombat) {
+        this.adoptAcceptance([], onEvent);
+        this.acceptance?.requireActionCombat(intent.actionCombat.targets, this.acceptanceRequestBaseline);
+        this.verificationEvidence.requireTools(["run_action_combat_test"]);
+      }
     }
-    if (newRequest || startsGoal) {
-      this.adventureRequirements = intent.adventure;
-      this.npcRewardRequirements = intent.npcRewards === undefined ? undefined : structuredClone(intent.npcRewards);
-      this.adventureRepairAttempts = 0;
-      this.adventureIconRecords.clear();
-      this.readEvidence.begin(intent.readBeforeWrite);
-    }
-    if (!question && intent.statefulNpcs === true) this.statefulNpcRequirement = true;
-    if (intent.actionCombat && intent.mode !== "question") {
-      this.adoptAcceptance([], onEvent);
-      this.acceptance?.requireActionCombat(intent.actionCombat.targets, this.acceptanceRequestBaseline);
-      this.verificationEvidence.requireTools(["run_action_combat_test"]);
-      this.publishAcceptance(onEvent);
-    }
+    this.publishAcceptance(onEvent);
     beginAssistantToolDomainTurn(intent);
 
     // 스펙 게이트 턴 초기화: 사용자 선택 영역([컨텍스트])은 이 턴의 암묵적 명세가 된다.
@@ -1893,7 +2303,7 @@ export class AssistantSession {
     this.carryoverWarningsAdded.clear();
     this.specRejections = 0;
     this.lastRejectedSpecFingerprint = null;
-    const continuesGoal = !startsGoal && (question || resumesGoal || this.turnIsDriverContinue || intent.source === "continuation");
+    const continuesGoal = !startsGoal;
     const retainsOriginal = !startsGoal && (resumesGoal || this.turnIsDriverContinue || intent.source === "continuation");
     if (!retainsOriginal || !this.originalContext) {
       const scope = this.turnScope;
@@ -1914,18 +2324,42 @@ export class AssistantSession {
     if (!continuesGoal) this.resetWorkItemEvidence();
     this.syncSuccessfulToolsToCurrentWorkItem();
     // 볼륨 막대는 플래너가 계획과 함께 선언한 것만 남는다. 이어가기(계속)는 유지, 새 요청은 풀어 준다.
-    if (!question && !resumesGoal) this.releaseVolumeContractForNewRequest(intent);
+
     this.volumeContinueUsed = 0;
     this.eventBaseProposalKeys = new Map();
     this.skipPlannerThisTurn = false;
 
-    const rewardRequirements = question ? undefined : this.npcRewardRequirements;
-    if (rewardRequirements && ("invalidReason" in rewardRequirements || rewardRequirements.length === 0)) {
-      const reason = "invalidReason" in rewardRequirements ? rewardRequirements.invalidReason : "npcRewards: missing requirements";
+    if (this.hasQuestionAuthoringConflict()) {
+      if (!this.executionAuthorized && (this.turnComposerMode === "plan" || this.autonomy()?.planOnly)) {
+        if (!this.workPlan) this.adoptFallbackWorkPlan(this.currentTurnInstruction, onEvent, "Plan preview");
+        return this.finishPlanOnlyTurn(onEvent);
+      }
+      if (this.milestoneAutoApply) {
+        this.refreshAcceptance(store.getCurrent(), onEvent);
+        if (this.getAcceptanceSnapshot()?.status === "verified" && this.turnProposals.size === 0
+          && !this.volumeUnmetNow() && this.completionProblems().length === 0) {
+          return { assistantText: "Applied request predicates verified.", proposedCalls: [], stoppedReason: "final" };
+        }
+        this.recoverSegment("inconsistent-intent-mode", onEvent);
+      }
+      return { assistantText: this.acceptanceIncompleteText(), proposedCalls: [], stoppedReason: "final" };
+    }
+
+    const pendingReward = this.pendingNpcRewardExtractions.values().next().value;
+    if (pendingReward && !this.isAnswerOnlyTurn()) {
+      const reason = pendingReward.repair.reason;
+      this.pushAudit({ kind: "status", text: `intent:extraction-repair ${JSON.stringify(pendingReward.repair)}` });
+      if (this.milestoneAutoApply) {
+        this.recoverSegment("invalid-npc-rewards", onEvent);
+        return { assistantText: "", proposedCalls: [], stoppedReason: "final" };
+      }
+      if (!this.executionAuthorized && (this.turnComposerMode === "plan" || this.autonomy()?.planOnly)) {
+        if (!this.workPlan) this.adoptFallbackWorkPlan(this.currentTurnInstruction, onEvent, "Plan preview");
+        return this.finishPlanOnlyTurn(onEvent);
+      }
       const assistantText = `보상 요구사항을 해석하지 못해 편집을 시작하지 않았습니다.\n${reason}\n다시 시도해 주세요.`;
       this.lastTurnFailed = true;
       this.messages.push({ role: "assistant", content: assistantText });
-      this.runExecution = "failed";
       this.pushAudit({ kind: "status", text: `intent:invalid-npc-rewards ${reason}` });
       this.pushAudit({ kind: "assistant", text: assistantText });
       onEvent({ type: "assistant_message", content: assistantText });
@@ -1936,7 +2370,7 @@ export class AssistantSession {
     // F-05: auto/orchestrated 모드에서는 멈추지 않고 진행한다 — 의도 노트가 「되묻지 말고 택하라」고 알린다.
     let clarifyBypassed = false;
     if (intent.clarify) {
-      const shouldBypassClarify = this.config.agentMode === "auto" || this.orchestrationEnabled();
+      const shouldBypassClarify = this.milestoneAutoApply || this.config.agentMode === "auto" || this.orchestrationEnabled();
       if (shouldBypassClarify) {
         clarifyBypassed = true;
         this.pushAudit({ kind: "status", text: `의도 확인 건너뜀: ${intent.clarify} — auto/orchestrated` });
@@ -1969,26 +2403,11 @@ export class AssistantSession {
     if (skipReason) {
       this.pushAudit({ kind: "status", text: `planner:skip ${skipReason}` });
     }
-    // 드라이버의 합성 「계속」은 계획이 그대로면 결정이 자명하다(resume) — main 모델 왕복을 건너뛰고
-    // planner:resume 이 하던 일(계획 재주입 + 목록 갱신)만 코드가 직접 한다. 계획 툴은 그대로 노출된다
-    // (숨기면 모델이 complete_work_item 을 못 불러 교착이 오히려 늘어난다). 사용자가 직접 친 「계속」은
-    // 이 경로가 아니므로 플래너가 정상적으로 replan 할 수 있다.
-    if (
-      !this.skipPlannerThisTurn
-      && this.turnIsDriverContinue
-      && this.workPlan
-      && !isWorkPlanComplete(this.workPlan)
-      && getCurrentWorkItem(this.workPlan)?.status !== "blocked"
-    ) {
-      this.skipPlannerRoundOnly = true;
-      this.pushAudit({ kind: "status", text: "planner:skip driver-continue (resume 자명 — main 모델 왕복 생략)" });
-      this.emitWorkPlan(onEvent);
-      this.injectWorkPlanOrchestration();
-    }
+    // Automatic segments enter the loop directly. Explicit host resume may replan
+    // while retaining the original declaration, source and accepted baseline.
     if (
       (this.orchestrationEnabled() || this.workPlan || this.turnComposerMode === "plan")
       && !this.skipPlannerThisTurn
-      && !this.skipPlannerRoundOnly
     ) {
       try {
         await this.runOrchestratorPlanner(text, onEvent, signal);
@@ -2009,7 +2428,8 @@ export class AssistantSession {
     // 이미 세운 계획이 있는 「계속」 턴(resume)은 그대로 실행된다(finishPlanOnlyTurn 은
     // 미완성 계획에만 해당하므로 재진입 시 실행 경로로 떨어진다).
     const autonomyPlanOnly = this.autonomy()?.planOnly === true;
-    if ((this.turnComposerMode === "plan" || autonomyPlanOnly) && this.planAuthoredThisTurn && this.workPlan && !isWorkPlanComplete(this.workPlan)) {
+    if (!question && (this.turnComposerMode === "plan" || autonomyPlanOnly) && !this.executionAuthorized) {
+      if (!this.workPlan) this.adoptFallbackWorkPlan(this.currentTurnInstruction, onEvent, "Plan preview");
       this.removeOrchestrationMessages();
       return this.finishPlanOnlyTurn(onEvent);
     }
@@ -2054,19 +2474,11 @@ export class AssistantSession {
     signal?: AbortSignal,
   ): Promise<IntentDeclaration> {
     if (!instruction) return emptyIntentDeclaration();
-    const hasActivePlan = Boolean(this.workPlan && !isWorkPlanComplete(this.workPlan)) || this.acceptanceOpen() || this.explicitVerificationOpen();
-    const scope = this.turnScope;
-    const selection = scope
-      ? { mapId: scope.mapId, x: scope.region.x, y: scope.region.y, width: scope.region.width, height: scope.region.height }
-      : this.getTurnSelection?.() ?? null;
-    const facts = buildIntentFacts({
-      project: this.ctx.project,
-      userText: instruction,
-      currentMapId: resolveContextMapId(this.contextOptions) ?? null,
-      selection,
-      hasActivePlan,
-    });
-    if (isContinuationText(instruction) && (hasActivePlan || this.runVolumeBar)) {
+    const original = this.turnComposerMode !== "ask" ? this.requestRecoveryFacts.get(this.currentRequestId ?? "") : undefined;
+    const facts = original?.userText === instruction ? original : this.captureIntentFacts(instruction, this.turnScope);
+    const hasActivePlan = facts.hasActivePlan;
+    if (this.turnComposerMode !== "ask") this.requestIntentFacts = structuredClone(facts);
+    if (isContinuationText(instruction) && (hasActivePlan || this.volumeUnmetNow())) {
       const intent = continuationIntentDeclaration(facts);
       this.pushAudit({ kind: "status", text: formatIntentAudit(intent, 0) });
       return intent;
@@ -2077,7 +2489,11 @@ export class AssistantSession {
       return intent;
     }
     onEvent({ type: "status", text: "요청을 읽는 중…" });
-    const outcome = await declareIntentCached(this.declareIntent, facts, signal);
+    const outcome = await declareIntentCached(this.declareIntent, { ...facts, requestCoverage: this.acceptance?.getRequests() }, signal);
+    if (!this.userBoundary(signal) && outcome.failure?.kind === "provider") {
+      this.recordProviderBlocker(new LlmError(outcome.failure.message, outcome.failure.status), onEvent);
+      this.lastTurnFailed = true;
+    }
     this.pushAudit({
       kind: "status",
       text: `${formatIntentAudit(outcome.intent, outcome.elapsedMs)}${outcome.error ? ` — 폴백 사유: ${outcome.error}` : ""}`,
@@ -2100,6 +2516,7 @@ export class AssistantSession {
     // 다이얼 confirm(planOnly): 계획 모드처럼 플래너를 항상 돌린다 — 그래야 계획만 세우고
     // 멈추는 확인 중심 턴이 성립한다. 미지정 config 는 아래 종래 스킵 그대로.
     if (this.autonomy()?.planOnly) return null;
+    if (this.isAnswerOnlyTurn()) return "question";
     if (this.workPlan) return null;
     if (this.turnScope) return "selection";
     if (intent.mode === "question") return "question";
@@ -2216,7 +2633,6 @@ export class AssistantSession {
     this.adoptPlanAcceptance(onEvent);
     this.resetWorkItemEvidence();
     this.lastMilestoneCompletionItemId = null;
-    this.planAuthoredThisTurn = true;
     // 볼륨 막대는 플래너가 계획과 함께 선언한 값만 쓴다 — 문장 정규식으로 막대를 씌우지 않는다.
     this.armVolumeContractFromPlanner(decision.volume ?? null);
     const progress = summarizeWorkPlan(this.workPlan);
@@ -2238,7 +2654,6 @@ export class AssistantSession {
     this.adoptPlanAcceptance(onEvent);
     this.resetWorkItemEvidence();
     this.lastMilestoneCompletionItemId = null;
-    this.planAuthoredThisTurn = true;
     this.emitWorkPlan(onEvent);
     this.injectWorkPlanOrchestration();
     onEvent({ type: "status", text: statusText });
@@ -2300,30 +2715,33 @@ export class AssistantSession {
 
   /** Retry budgets are target-scoped, unlike Ralph's consecutive lack-of-progress counter. */
   private noteToolRetryResult(name: string, args: Record<string, unknown>, result: ToolResult): void {
-    const currentItemId = this.workPlan?.currentItemId;
-    if (this.turnComposerMode === "ask" || !currentItemId || (getTool(name)?.mode !== "write" && name !== "set_build_spec")) return;
+    if (this.isAnswerOnlyTurn()) return;
+    const currentItemId = this.currentRequestId ?? this.workPlan?.currentItemId;
+    if (!currentItemId || (getTool(name)?.mode !== "write" && name !== "set_build_spec")) return;
     // A fresh missing-lookup refusal is a correctable attempt, even though it did not execute.
     // Only downstream dependency deferrals (and already-exhausted targets) are free retries.
     if (isDeferredToolResult(result) && !result.issues?.some((issue) => issue.code === "read-before-write-required")) return;
-    const target = toolRetryTarget(name, args);
-    const entries = this.repeatedToolFailures.get(currentItemId) ?? new Map<string, { target: string; count: number; summary: string }>();
-    if (result.ok) {
-      for (const [key, entry] of entries) if (entry.target === target) entries.delete(key);
-    } else {
-      const codes = result.issues?.filter((issue) => issue.severity === "error").map((issue) => issue.code) ?? [];
-      for (const code of new Set(codes.length > 0 ? codes : ["tool-failure"])) {
-        const key = JSON.stringify([target, code]);
-        entries.set(key, { target, count: (entries.get(key)?.count ?? 0) + 1, summary: result.summary });
+    const entries = this.repeatedToolFailures.get(currentItemId) ?? new Map<string, ToolRetryFailure>();
+    if (!result.ok) {
+      const issues = result.issues?.filter(issue => issue.severity === "error") ?? [];
+      for (const code of new Set(issues.length > 0 ? issues.map(issue => issue.code) : ["tool-failure"])) {
+        const paths = code === "invalid-args" ? issues.filter(issue => issue.code === code).map(issue => toolRepairPath(issue.message)) : [];
+        const failure = { target: toolRetryTarget(name, args), code,
+          ...(paths.length > 0 && paths.every((path): path is string[] => path !== null) ? { paths } : {}) };
+        const candidate = this.retryCandidate(name, args, failure);
+        entries.set(candidate, { ...failure, candidate, count: (entries.get(candidate)?.count ?? 0) + 1, summary: result.summary });
       }
     }
     this.repeatedToolFailures.set(currentItemId, entries);
   }
 
-  private repeatedToolFailureStall(target?: string): { summary: string } | undefined {
-    const currentItemId = this.workPlan?.currentItemId;
-    if (this.turnComposerMode === "ask" || !currentItemId) return undefined;
+  private repeatedToolFailureStall(attempt?: { name: string; args: Record<string, unknown> }): { summary: string } | undefined {
+    const currentItemId = this.currentRequestId ?? this.workPlan?.currentItemId;
+    if (!currentItemId) return undefined;
     return [...(this.repeatedToolFailures.get(currentItemId)?.values() ?? [])]
-      .find((entry) => entry.count >= MAX_REPEATED_TOOL_FAILURES_PER_ITEM && (target === undefined || entry.target === target));
+      .find(entry => entry.count >= MAX_REPEATED_TOOL_FAILURES_PER_ITEM && (!attempt
+        || (entry.target === toolRetryTarget(attempt.name, attempt.args)
+          && entry.candidate === this.retryCandidate(attempt.name, attempt.args, entry))));
   }
 
   /** 막힌 항목으로 턴을 끝낼 때 사용자에게 보내는 문장 — 무엇이 막혔고 무엇을 하면 되는지. */
@@ -2360,17 +2778,13 @@ export class AssistantSession {
    * 새 요청은 이전 런의 볼륨 막대를 풀어 준다. 이어가기(계속/이어서 — continuation 선언)는 막대를 유지해
    * 미달 재주입이 다음 턴까지 이어진다. 막대를 새로 세우는 것은 플래너다(armVolumeContractFromPlanner).
    */
-  private releaseVolumeContractForNewRequest(intent: IntentDeclaration): void {
-    if (intent.source === "continuation" && this.runVolumeBar) return;
-    this.runVolumeBaseline = null;
-    this.runVolumeBar = null;
-  }
+
 
   /** 플래너가 계획과 함께 선언한 최소 산출량. null 이면 이 런에는 볼륨 계약이 없다. */
   private armVolumeContractFromPlanner(bar: VolumeBar | null): void {
     if (!bar || (bar.authoredMaps <= 0 && bar.multiPageNpcs <= 0 && bar.shops <= 0 && bar.quests <= 0)) return;
-    this.runVolumeBaseline = measureVolume(this.ctx.project);
-    this.runVolumeBar = bar;
+    this.adoptAcceptance([]);
+    this.acceptance?.requireVolume(this.currentRequestId ?? `request-${this.requestSequence}`, bar, this.acceptanceRequestBaseline);
     this.pushAudit({
       kind: "status",
       text: `volume-contract:armed maps+${bar.authoredMaps} npcs+${bar.multiPageNpcs} shops+${bar.shops} quests+${bar.quests} (플래너 선언)`,
@@ -2378,18 +2792,16 @@ export class AssistantSession {
   }
 
   private volumeGapsNow(): string[] {
-    if (!this.runVolumeBar || !this.runVolumeBaseline) return [];
-    return volumeGaps(this.runVolumeBaseline, measureVolume(this.getProposedProject()), this.runVolumeBar);
+    return this.acceptance?.getVolumeGaps(this.acceptanceAppliedProject ?? this.baselineProject) ?? [];
   }
 
   private volumeUnmetNow(): boolean {
-    if (!this.runVolumeBar || !this.runVolumeBaseline) return false;
-    return volumeUnmet(this.runVolumeBaseline, measureVolume(this.getProposedProject()), this.runVolumeBar);
+    return this.volumeGapsNow().length > 0;
   }
 
   /** 모델이 볼륨 미달인 채 퇴장하면 Ralph 다음으로 재주입한다. 사용자 「계속」이 아니다. */
   private injectVolumeContinue(onEvent: (event: SessionEvent) => void, finalText: string): boolean {
-    if (this.milestoneApplyFailed || this.turnComposerMode === "ask") return false;
+    if (this.milestoneApplyFailed || this.isAnswerOnlyTurn()) return false;
     if (assistantTextLooksLikeQuestion(finalText)) return false;
     if (this.volumeContinueUsed >= MAX_VOLUME_CONTINUES_PER_TURN) return false;
     const gaps = this.volumeGapsNow();
@@ -2598,10 +3010,12 @@ export class AssistantSession {
       item.id === itemId || item.status === "done" || item.status === "skipped")) ?? false;
   }
 
-  private npcRewardOutcome(item?: WorkItem): WorkItemOutcomeVerdict {
+  private npcRewardOutcome(item?: WorkItem, project = this.ctx.project): WorkItemOutcomeVerdict {
     const required = this.npcRewardRequirements;
-    if (required === undefined || this.turnComposerMode === "ask" || this.lastTurnPlanOnly) return { ok: true };
-    const project = this.getProposedProject();
+    if (this.isAnswerOnlyTurn() || this.lastTurnPlanOnly) return { ok: true };
+    const pending = this.pendingNpcRewardExtractions.values().next().value;
+    if (pending) return { ok: false, reason: pending.repair.reason };
+    if (required === undefined) return { ok: true };
     if (!item || this.finishesWorkPlan(item.id)) return verifyNpcRewardsPlayable(project, required);
     if ("invalidReason" in required) return { ok: true }; // No resolvable item target; whole-goal closure still fails.
     const changed = required.filter((requirement) =>
@@ -2610,7 +3024,7 @@ export class AssistantSession {
   }
 
   private npcRewardNote(): string | null {
-    return this.turnComposerMode === "ask" || this.npcRewardRequirements === undefined ? null : formatIntentNote({
+    return this.isAnswerOnlyTurn() || this.npcRewardRequirements === undefined ? null : formatIntentNote({
       ...emptyIntentDeclaration(), source: "llm", npcRewards: this.npcRewardRequirements,
     });
   }
@@ -2620,14 +3034,13 @@ export class AssistantSession {
     return rewards.ok ? text : `NPC 보상이 아직 미완성입니다.\n- ${rewards.reason}`;
   }
 
-  private completionProblems(): string[] {
-    const rewards = this.npcRewardOutcome();
-    return [...this.adventureProblems(), ...(rewards.ok ? [] : [rewards.reason])];
+  private completionProblems(project = this.ctx.project): string[] {
+    const rewards = this.npcRewardOutcome(undefined, project);
+    return [...this.adventureProblems(project), ...(rewards.ok ? [] : [rewards.reason])];
   }
 
-  private adventureProblems(): string[] {
-    if (!this.adventureRequirements || this.turnComposerMode === "ask") return [];
-    const project = this.getProposedProject();
+  private adventureProblems(project = this.ctx.project): string[] {
+    if (!this.adventureRequirements || this.isAnswerOnlyTurn()) return [];
     const problems = adventureCompletionProblems(project, this.adventureRequirements);
     for (const { collection, id } of this.adventureIconRecords.values()) {
       const item = project.database[collection].find(i => i.id === id);
@@ -2668,6 +3081,7 @@ export class AssistantSession {
 
   /** Keep transport/execution ok intact; only actual passing checks satisfy successTools. */
   private recordToolResult(name: string, args: Record<string, unknown>, result: ToolResult, countAsSuccess = true): void {
+    if (this.isAnswerOnlyTurn()) return;
     this.syncSuccessfulToolsToCurrentWorkItem();
     if (result.ok) for (const [tool, field, collection] of [["upsert_item", "item", "items"], ["upsert_equipment", "equipment", "equipment"]] as const) {
       const record = args[field] as { id?: unknown } | undefined;
@@ -2716,7 +3130,7 @@ export class AssistantSession {
   }
 
   private async noteSuccessfulTools(names: readonly string[], onEvent: (event: SessionEvent) => void): Promise<void> {
-    if (this.turnComposerMode === "ask" || !this.workPlan || names.length === 0) return;
+    if (this.isAnswerOnlyTurn() || !this.workPlan || names.length === 0) return;
     const { completed, next, blocked } = advanceWorkPlanFromTools(this.workPlan, names, this.autoCompleteGate());
     const blockedKey = blocked ? `${blocked.item.id}::${blocked.reason}` : null;
     if (blocked && blockedKey !== this.lastOutcomeBlockedKey) {
@@ -2752,7 +3166,7 @@ export class AssistantSession {
    * (커밋 게이트 차단) 하나뿐이다.
    */
   private async maybeAutoApplyMilestone(completed: WorkItem, onEvent: (event: SessionEvent) => void): Promise<void> {
-    if (!this.milestoneAutoApply || this.turnComposerMode === "ask") return;
+    if (!this.milestoneAutoApply || this.isAnswerOnlyTurn() || this.userBoundary()) return;
     // 같은 턴에서 적용 실패 뒤 후속 완료 신호가 와도 조용히 누락하지 않고 감사로 남긴다.
     if (this.milestoneApplyFailed) {
       this.pushAudit({
@@ -2766,6 +3180,7 @@ export class AssistantSession {
     const calls = this.finalizeProposals(this.turnProposals);
     if (calls.length === 0) return; // 이번 턴에 마일스톤 쓰기가 없으면 적용 대상이 없다.
     const proposed = this.getProposedProject();
+    const owner = this.runResult;
     const applied = await applyProposedProject(proposed, {
       source: "agent-milestone",
       agentName: this.config.model,
@@ -2774,12 +3189,14 @@ export class AssistantSession {
       snapshotLabel: `마일스톤: ${completed.title}`,
       reason: calls.map((call) => call.reason).filter(isUsableToolReason).join(" · ") || `마일스톤 적용: ${completed.title}`,
     });
+    if (owner !== this.runResult) return;
     if (!applied.ok) {
       // 커밋 게이트 차단 — 저장소는 그대로 두고 현재 자율 런만 중단한다.
       this.failMilestoneApply(completed, `적용 검증 실패: ${applied.issue ?? "무결성 오류"}`, [], onEvent);
       return;
     }
     this.recordAppliedProject(applied);
+    if (this.userBoundary()) return;
 
     if (applied.wikiWarning) {
       this.pushAudit({ kind: "status", text: `게임 변경은 적용됐지만 위키 진행 기록은 갱신하지 못했습니다: ${applied.wikiWarning}` });
@@ -2803,7 +3220,6 @@ export class AssistantSession {
     //
     // clear 전에 원장에 남긴다: 이 호출들은 **저장소에 들어갔다**. 검수 단계와 패널의 완성도
     // 린트가 `turnProposals` 만 보면 여기서 지운 몫이 "변경 없음" 으로 뒤집힌다.
-    this.turnProposals.clear();
     this.rebaseProject(applied.applied);
     this.publishAcceptance(onEvent);
   }
@@ -2827,7 +3243,8 @@ export class AssistantSession {
     onEvent: (event: SessionEvent) => void,
   ): void {
     this.milestoneApplyFailed = true;
-    this.runExecution = "failed";
+    this.failedApplyFingerprint = JSON.stringify(this.ctx.project);
+    this.recoverSegment(`apply-rejected: ${reason}`, onEvent);
     this.pushAudit({ kind: "status", text: `agent_run:milestone-apply-failed "${completed.title}" — ${reason} (프로젝트 저장소 변경 없음)` });
     // 이벤트 이름은 기존 패널/테스트 소비 계약을 유지한다. 의미는 적용 실패다.
     onEvent({ type: "proposal_paused", reason, warnings });
@@ -2928,9 +3345,9 @@ export class AssistantSession {
 
   /** Completion schedules proof only after all pending writes have actually been applied. */
   private async maybeRunEndProof(onEvent: (event: SessionEvent) => void, signal?: AbortSignal): Promise<void> {
-    if (!this.workPlan || !this.milestoneAutoApply || this.milestoneApplyFailed) return;
-    if (!isWorkPlanComplete(this.workPlan) || this.acceptanceOpen() || this.explicitVerificationOpen() || this.turnProposals.size > 0 || signal?.aborted) return;
-    await this.proveAppliedRevision(onEvent, signal);
+    if (!this.milestoneAutoApply || this.milestoneApplyFailed || this.isAnswerOnlyTurn()) return;
+    const owner = this.runResult;
+    await this.completeAppliedProof(onEvent, signal, () => owner === this.runResult);
   }
 
   private clearAppliedDelivery(): void {
@@ -2983,7 +3400,7 @@ export class AssistantSession {
     return deriveRunOutcome({
       execution: this.runExecution,
       acceptance: assessment ? assessment.status === "verified" && !assessmentCurrent ? "verifying" : assessment.status : null,
-      hasPendingDraft: this.turnComposerMode !== "ask" && this.turnProposals.size > 0,
+      hasPendingDraft: !this.isAnswerOnlyTurn() && this.turnProposals.size > 0,
       hasApplied: this.turnAppliedMilestoneCalls.length > 0 || this.wikiDelivery !== null,
       persistence: receipt === null ? "none"
         : proof?.receipt === receipt && proof.verified ? "verified-current" : "accepted",
@@ -2997,18 +3414,43 @@ export class AssistantSession {
     if (!result || !runOutcome) return;
     // Retention is not authorization: questions keep the draft for a later resume,
     // but must not offer its calls to ordinary apply or claim it as query delivery.
-    result.proposedCalls = this.turnComposerMode === "ask" ? [] : this.finalizeProposals(this.turnProposals);
+    result.proposedCalls = this.isAnswerOnlyTurn() || this.milestoneAutoApply ? [] : this.finalizeProposals(this.turnProposals);
     result.appliedCalls = [...this.turnAppliedMilestoneCalls];
     result.runOutcome = runOutcome;
+    if (this.currentRequestId) {
+      const boundary = this.userBoundary();
+      const state: RequestExecution["state"] = boundary ?? (this.lastTurnPlanOnly ? "preview" : this.isAnswerOnlyTurn() ? "answer"
+        : runOutcome.execution === "cancelled" ? "aborted"
+        : this.execution?.blocker ? "external-blocker"
+        : runOutcome.execution === "response-final" && runOutcome.goal === "satisfied" && runOutcome.delivery !== "draft"
+          ? this.getRunEndProof()?.verified ? "verified"
+            : !store.isRemotePersistenceEnabled() || runOutcome.delivery === "no-change" ? "verified-local" : "manual-segment"
+          : "manual-segment");
+      const detail: RequestExecution = { requestId: this.currentRequestId, state, segment: this.autoRunSteps + 1,
+        rounds: this.execution?.rounds ?? 0, roundCap: Math.max(1, Math.min(this.config.maxToolCalls, this.autonomy()?.budgetCap ?? this.config.maxToolCalls)),
+        ...(this.execution?.recovery ? { recovery: this.execution.recovery } : {}),
+        ...(this.execution?.blocker && state === "external-blocker" ? { blocker: this.execution.blocker } : {}) };
+      this.execution = detail;
+      result.execution = detail;
+    }
     if (result.recap) {
-      result.recap = { ...result.recap, runOutcome };
+      result.recap = { ...result.recap, runOutcome, execution: result.execution };
       if (this.runRecapAuditIndex !== null) {
         const previous = this.audit[this.runRecapAuditIndex];
         this.audit[this.runRecapAuditIndex] = { kind: "status", at: previous?.at,
           text: `run-recap ${serializeRunRecap(result.recap)}` };
       }
     }
-    (onEvent ?? this.runSubscriber)?.({ type: "run_outcome", runOutcome });
+    const emit = onEvent ?? this.runSubscriber;
+    if (result.execution && this.runResult.current === result) emit?.({ type: "run_state", execution: result.execution });
+    const boundaryAfterPublication = this.userBoundary();
+    if (this.runResult.current === result && boundaryAfterPublication && result.execution?.state !== boundaryAfterPublication) {
+      this.runExecution = boundaryAfterPublication === "queued" ? "awaiting-user" : "cancelled";
+      result.stoppedReason = boundaryAfterPublication === "queued" ? "final" : "aborted";
+      this.publishRunOutcome(onEvent);
+      return;
+    }
+    if (this.runResult.current === result) emit?.({ type: "run_outcome", runOutcome });
   }
 
   /** Historical success is not authority for a newer editor revision. */
@@ -3030,6 +3472,7 @@ export class AssistantSession {
   async proveAppliedRevision(
     onEvent: (event: SessionEvent) => void = () => {},
     signal?: AbortSignal,
+    ownsInvocation: () => boolean = () => true,
   ): Promise<RunEndProofState> {
     const outcomeOwner = this.runResult;
     const previous = this.getRunEndProof();
@@ -3037,34 +3480,46 @@ export class AssistantSession {
       this.publishRunOutcome(onEvent);
       return previous;
     }
+    const previousState = this.runEndProof, previousProject = this.proofProjectIdentity;
+    const projectIdentity = store.getProjectIdentity().id;
+    this.proofProjectIdentity = projectIdentity;
     let receipt: ProjectPersistenceReceipt | undefined;
     let commitId: string | null = null;
     // Each attempt owns only its last published state. A newer invocation replaces it.
     let state: RunEndProofState = { status: "attempted", verified: false };
     this.runEndProof = state;
+    const ownsAttempt = (): boolean => {
+      if (this.runEndProof !== state) return false;
+      if (outcomeOwner === this.runResult && ownsInvocation() && store.getProjectIdentity().id === projectIdentity) return true;
+      this.runEndProof = previousState;
+      this.proofProjectIdentity = previousProject;
+      return false;
+    };
+    const current = (): RunEndProofState => this.getRunEndProof() ?? { status: "failed", verified: false, reason: "superseded" };
     const fail = (reason: string, proof?: ProjectPersistenceProof): RunEndProofState => {
       if (outcomeOwner === this.runResult && reason === "cancelled") this.runExecution = "cancelled";
       state = { status: "failed", verified: false, reason, receipt, commitId, proof };
       this.emitRunEndProof(this.runEndProof = state, onEvent);
-      if (this.runEndProof !== state) return this.projectRunEndProof(this.runEndProof);
+      if (!ownsAttempt()) return current();
       this.pushAudit({ kind: "status", text: `agent_run:proof-failed reason=${reason} revision=${receipt?.revisionId ?? "none"}` });
       onEvent({ type: "status", text: `저장 증명 미완료(${reason}) — 다시 검증할 수 있습니다.` });
       if (outcomeOwner === this.runResult) this.publishRunOutcome(onEvent);
-      return this.projectRunEndProof(this.runEndProof);
+      return current();
     };
+    if (!ownsAttempt()) return current();
     if (signal?.aborted) return fail("cancelled");
     if (!store.isRemotePersistenceEnabled()) {
       this.pushAudit({ kind: "status", text: "agent_run_local_only — remote persistence 비활성으로 저장 증명을 건너뜁니다" });
       return fail("disabled");
     }
     this.emitRunEndProof(state, onEvent);
-    if (this.runEndProof !== state) return this.projectRunEndProof(this.runEndProof);
+    if (!ownsAttempt()) return current();
     if (signal?.aborted) return fail("cancelled");
     try {
       const applied = this.lastAppliedProject ?? (this.wikiDelivery?.project
         ? { project: this.wikiDelivery.project, commitId: null } : null);
       const flushResult = await store.flush();
-      if (this.runEndProof !== state) return this.projectRunEndProof(this.runEndProof);
+      if (!ownsAttempt()) return current();
       if (flushResult.kind !== "saved") return fail(signal?.aborted ? "cancelled" : flushResult.kind);
       receipt = flushResult.receipt;
       if (!receipt) return fail(signal?.aborted ? "cancelled" : "missing-receipt");
@@ -3076,17 +3531,17 @@ export class AssistantSession {
       }
       state = { status: "attempted", verified: false, receipt, commitId };
       this.emitRunEndProof(this.runEndProof = state, onEvent);
-      if (this.runEndProof !== state) return this.projectRunEndProof(this.runEndProof);
+      if (!ownsAttempt()) return current();
       if (signal?.aborted) return fail("cancelled");
       const proof = await store.verifyPersistedRevision(receipt, { signal });
-      if (this.runEndProof !== state) return this.projectRunEndProof(this.runEndProof);
+      if (!ownsAttempt()) return current();
       if (signal?.aborted) return fail("cancelled", proof);
       if (proof.kind !== "verified") return fail(proof.kind === "mismatch" ? `mismatch-${proof.reason}` : proof.kind, proof);
       if (!proof.isCurrent || !store.isPersistenceReceiptCurrent(receipt)) return fail("stale", proof);
       state = { status: "succeeded", verified: true, receipt, commitId, proof };
       this.emitRunEndProof(this.runEndProof = state, onEvent);
       // Recheck ownership before freshness: an obsolete attempt cannot replace newer state.
-      if (this.runEndProof !== state) return this.projectRunEndProof(this.runEndProof);
+      if (!ownsAttempt()) return current();
       if (!store.isPersistenceReceiptCurrent(receipt) || signal?.aborted) return fail(signal?.aborted ? "cancelled" : "stale", proof);
       this.pushAudit({
         kind: "status",
@@ -3094,9 +3549,9 @@ export class AssistantSession {
       });
       onEvent({ type: "status", text: `저장 증명 완료 — projectId=${receipt.projectId} revision=${receipt.revisionId}` });
       if (outcomeOwner === this.runResult) this.publishRunOutcome(onEvent);
-      return this.projectRunEndProof(this.runEndProof);
+      return current();
     } catch (error) {
-      if (this.runEndProof !== state) return this.projectRunEndProof(this.runEndProof);
+      if (!ownsAttempt()) return current();
       this.pushAudit({ kind: "status", text: `agent_run:save-failed — ${error instanceof Error ? error.message : String(error)}` });
       return fail(signal?.aborted ? "cancelled" : "failed");
     }
@@ -3118,7 +3573,7 @@ export class AssistantSession {
     const hitCap =
       !isWorkPlanComplete(this.workPlan) &&
       this.workPlanAutoStepsThisUserMessage >= MAX_WORK_PLAN_AUTO_STEPS_PER_TURN;
-    const suffix = hitCap ? "\n\n이어서 진행하려면 「계속」이라고 보내세요." : "";
+    const suffix = hitCap && !this.milestoneAutoApply ? "\n\n이어서 진행하려면 「계속」이라고 보내세요." : "";
     return {
       ...result,
       assistantText: `${result.assistantText.trim()}${suffix}`,
@@ -3134,27 +3589,47 @@ export class AssistantSession {
   // 오류로 끊긴 턴 재개: 새 사용자 메시지 없이 (LLM ↔ 툴) 루프만 다시 돈다.
   // 이미 누적된 제안(turnProposals)과 대화 문맥은 그대로 유지된다.
   async retryLastTurn(onEvent: (event: SessionEvent) => void = () => {}, signal?: AbortSignal): Promise<TurnResult> {
+    const owner = this.runResult, generation = ++this.executionGeneration;
+    const owns = (): boolean => owner === this.runResult && generation === this.executionGeneration;
+    const emit = (event: SessionEvent): void => { if (owns()) onEvent(event); };
+    const previousExecution = this.execution;
+    const projectIdentity = this.runProjectIdentity ?? this.proofProjectIdentity ?? store.getProjectIdentity().id;
+    const retired = (): TurnResult => ({ assistantText: "", proposedCalls: [], stoppedReason: "aborted",
+      ...(previousExecution ? { execution: { ...previousExecution,
+        state: store.getProjectIdentity().id === projectIdentity ? "aborted" : "project-switch" } } : {}) });
+    const startedAt = Date.now(), usageBefore = this.usageTotals, auditFrom = this.audit.length;
+    this.runSignal = signal;
     if (!this.lastTurnFailed) {
-      if (this.runEndProof?.status === "failed" && this.turnProposals.size === 0
-        && this.turnComposerMode !== "ask" && !this.lastTurnPlanOnly) {
-        await this.proveAppliedRevision(onEvent, signal);
+      if (this.runEndProof?.status !== "failed" || this.turnProposals.size > 0 || this.isAnswerOnlyTurn()
+        || this.lastTurnPlanOnly || this.milestoneApplyFailed
+        || (this.execution?.blocker && this.execution.blocker.kind !== "persistence")) {
+        return this.runResult.current ?? this.withTurnLedger({ assistantText: "", proposedCalls: [], stoppedReason: "final" });
       }
-      return this.finishRunRecap(this.withTurnLedger({ assistantText: "", proposedCalls: this.finalizeProposals(this.turnProposals), stoppedReason: "final" }), Date.now(), this.usageTotals, this.audit.length, onEvent);
+      this.runProjectIdentity = projectIdentity;
+      this.runExecution = "response-final";
+      this.segmentDisposition = { kind: "candidate-final" };
+      this.execution = undefined;
+      if (!this.userBoundary(signal)) {
+        this.emitExecution("running", emit, "proof-only-retry");
+        if (owns()) await this.completeAppliedProof(emit, signal, owns);
+      }
+      if (!owns()) return retired();
+      return this.finishRunRecap(this.withTurnLedger({ assistantText: "", proposedCalls: [], stoppedReason: "final" }),
+        startedAt, usageBefore, auditFrom, emit, { owns, retired });
     }
     this.runExecution = "response-final";
+    this.execution = undefined;
+    this.acceptance?.resume();
     this.pushAudit({ kind: "status", text: "오류 후 재시도(retryLastTurn)" });
-    const startedAt = Date.now();
-    const usageBefore = this.usageTotals;
-    const auditFrom = this.audit.length;
     try {
-      const result = this.withTurnLedger(await this.runTurnLoop(onEvent, signal));
-      if (result.stoppedReason !== "aborted" && result.stoppedReason !== "error"
-        && this.turnComposerMode !== "ask" && !this.lastTurnPlanOnly) {
-        await this.maybeRunEndProof(onEvent, signal);
-      }
-      return this.finishRunRecap(result, startedAt, usageBefore, auditFrom, onEvent);
+      const first = this.withTurnLedger(await this.runTurnLoop(emit, signal));
+      if (!owns()) return retired();
+      const result = this.milestoneAutoApply && !this.isAnswerOnlyTurn() && !this.lastTurnPlanOnly
+        ? await this.runAutonomousDriver(first, emit, signal) : first;
+      if (!owns()) return retired();
+      return this.finishRunRecap(result, startedAt, usageBefore, auditFrom, emit, { owns, retired });
     } finally {
-      this.removeOrchestrationMessages();
+      if (owns()) this.removeOrchestrationMessages();
     }
   }
 
@@ -3165,31 +3640,47 @@ export class AssistantSession {
     usageBefore: SessionUsageTotals,
     auditFrom: number,
     onEvent: (event: SessionEvent) => void,
+    owner?: { readonly owns: () => boolean; readonly retired: () => TurnResult },
   ): TurnResult {
+    if (owner && !owner.owns()) return owner.retired();
     this.publishAcceptance(onEvent);
-    if (this.acceptanceOpen() && !this.lastTurnPlanOnly && this.turnComposerMode !== "ask") {
+    if (this.requestPrepared && this.acceptanceOpen() && !this.lastTurnPlanOnly && !this.isAnswerOnlyTurn()) {
       this.acceptance?.stop();
       this.publishAcceptance(onEvent);
-      result = { ...result, assistantText: this.acceptanceIncompleteText() };
-      onEvent({ type: "assistant_message", content: result.assistantText });
+      if (this.acceptanceControlsDraftSegment() && !(this.turnIntent?.clarify && !this.milestoneAutoApply)) {
+        result = { ...result, assistantText: this.acceptanceIncompleteText() };
+        onEvent({ type: "assistant_message", content: result.assistantText });
+      }
     }
     const adventureProblems = this.completionProblems();
     if (adventureProblems.length) {
       result = { ...result, assistantText: `요청한 구성이 아직 미완성입니다.\n${adventureProblems.map(p => `- ${p}`).join("\n")}` };
       onEvent({ type: "assistant_message", content: result.assistantText });
     }
-    const verificationProblems = this.verificationEvidence.problems();
+    const verificationProblems = this.isAnswerOnlyTurn() ? [] : this.verificationEvidence.problems();
     if (verificationProblems.length > 0) {
       const notice = `검증이 아직 통과되지 않았습니다.\n${verificationProblems.slice(0, 8).map((problem) => `- ${problem}`).join("\n")}`;
       result = { ...result, assistantText: notice };
       onEvent({ type: "assistant_message", content: result.assistantText });
     }
-    if (this.runExecution === "response-final" && this.turnComposerMode !== "ask" && this.acceptanceOpen()) this.stopForAcceptance();
+    if (this.requestPrepared && this.runExecution === "response-final" && !this.isAnswerOnlyTurn() && this.acceptanceOpen()) this.stopForAcceptance();
     if (adventureProblems.length > 0) {
       this.acceptanceApplyPending = false;
-      if (this.runExecution === "response-final" && this.turnComposerMode !== "ask") this.runExecution = "blocked";
+      if (this.runExecution === "response-final" && !this.isAnswerOnlyTurn()) this.runExecution = "blocked";
     }
-    this.runResult.current = result;
+    if (owner && !owner.owns()) return owner.retired();
+    const boundary = this.userBoundary();
+    if (boundary) {
+      this.runExecution = boundary === "queued" ? "awaiting-user" : "cancelled";
+      result.stoppedReason = boundary === "queued" ? "final" : "aborted";
+    } else if (this.execution?.blocker) {
+      this.runExecution = "failed";
+      result.stoppedReason = "error";
+      result.error = this.execution.blocker.evidence.details;
+    }
+    // A proof-only settlement updates the original returned handle, not a second verdict.
+    if (this.runResult.current) result = Object.assign(this.runResult.current, result, { error: result.error });
+    else this.runResult.current = result;
     this.publishRunOutcome();
     // Bridge/history consumers read the latest audited response, not the live
     // assistant_message event. Keep the authoritative final verdict there too.
@@ -3197,6 +3688,7 @@ export class AssistantSession {
     if (result.assistantText.trim() && lastAssistant?.text !== result.assistantText) {
       this.pushAudit({ kind: "assistant", text: result.assistantText });
     }
+    if (owner && !owner.owns()) return owner.retired();
     const recap = buildRunRecap({
       elapsedMs: Date.now() - startedAt,
       usage: usageDelta(usageBefore, this.usageTotals),
@@ -3204,11 +3696,13 @@ export class AssistantSession {
       stoppedReason: result.stoppedReason,
       proposedWrites: result.proposedCalls.length + (result.appliedCalls?.length ?? 0),
       runOutcome: result.runOutcome,
+      execution: result.execution,
     });
     this.runRecapAuditIndex = this.audit.length;
     this.pushAudit({ kind: "status", text: `run-recap ${serializeRunRecap(recap)}` });
     result.recap = recap;
     onEvent({ type: "run_recap", recap });
+    if (owner && !owner.owns()) return owner.retired();
     this.publishRunOutcome(onEvent);
     return result;
   }
@@ -3629,7 +4123,7 @@ export class AssistantSession {
     proposedByKey: Map<string, ProposedCall>,
     theme: string,
   ): Promise<"none" | "applied" | "rekick"> {
-    if (signal?.aborted) return "none";
+    if (this.userBoundary(signal) || this.isAnswerOnlyTurn()) return "none";
     const pending = collectPendingNpcs(this.ctx.project, this.baselineProject);
     if (pending.length === 0) return "none";
     let outcome: "none" | "applied" | "rekick" = "none";
@@ -3850,7 +4344,12 @@ export class AssistantSession {
   }
 
   private async runTurnLoop(onEvent: (event: SessionEvent) => void, signal?: AbortSignal): Promise<TurnResult> {
+    const owner = this.runResult;
     this.lastTurnFailed = false;
+    this.runExecution = "response-final";
+    this.segmentDisposition = { kind: "yield", reason: "rounds" };
+    this.execution = this.execution ? { ...this.execution, rounds: 0 } : undefined;
+    if (this.milestoneAutoApply) this.emitExecution("running", onEvent);
     // WorkPlan 툴(set/get_work_plan, complete/skip_work_item)은 **계획을 실제로 쓰는 턴에만**
     // 붙인다. 예전에는 무조건 붙어서, 오케스트레이션이 꺼진 기본 설정(감독=실행 모델 동일)에서
     // 플래너가 돌지도 않는데 4개가 매 요청에 실려 갔다(실측: 45개 중 4개).
@@ -3873,11 +4372,13 @@ export class AssistantSession {
     // (maxToolCalls 기본 2000은 폭주 방지 안전핀), 누적 출력 토큰이 maxTokens를 넘으면 멈춘다.
     // 다이얼 명시 시 레벨의 budgetCap 을 추가로 씌운다 — 미지정 config 는 종래 상한 그대로.
     const autonomyCap = this.autonomy()?.budgetCap;
-    const roundCap = autonomyCap === undefined ? this.config.maxToolCalls : Math.min(this.config.maxToolCalls, autonomyCap);
+    const roundCap = Math.max(1, autonomyCap === undefined ? this.config.maxToolCalls : Math.min(this.config.maxToolCalls, autonomyCap));
     let spentOutputTokens = 0;
 
     for (let round = 0; round < roundCap; round += 1) {
-      if (signal?.aborted) {
+      if (this.execution) this.execution = { ...this.execution, rounds: round + 1 };
+      if (this.milestoneAutoApply) this.emitExecution("running", onEvent);
+      if (owner !== this.runResult || this.userBoundary(signal)) {
         this.runExecution = "cancelled";
         this.pushAudit({ kind: "status", text: "턴 중단(aborted): 사용자가 중단했습니다" });
         return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "aborted", error: "사용자가 중단했습니다" };
@@ -3890,9 +4391,9 @@ export class AssistantSession {
         GET_ORIGINAL_CONTEXT_TOOL,
         SET_BUILD_SPEC_TOOL,
         ...(planToolsOn ? WORK_PLAN_TOOLS : []),
-        ...(this.acceptance ? ACCEPTANCE_TOOLS : []),
+        ...(this.acceptance ? [...ACCEPTANCE_TOOLS, REQUEST_CONTRACT_TOOL] : []),
       ]
-        .filter((tool) => this.turnComposerMode !== "ask" || !isWriteToolName(tool.function.name))
+        .filter((tool) => !this.isAnswerOnlyTurn() || !isWriteToolName(tool.function.name))
         .map((tool) => injectToolReasonIntoOpenAiTool(tool));
       const toolsChars = JSON.stringify(tools).length;
       this.pushAudit({
@@ -3913,6 +4414,12 @@ export class AssistantSession {
         );
         requestMessages = grounded.messages;
         this.readEvidence.observeRequest(requestMessages);
+        if (this.acceptance && !this.isAnswerOnlyTurn()) requestMessages.push({ role: "user", content: JSON.stringify({
+          requestContract: this.acceptance.getRequests().map(source => ({ ...source,
+            rawInstruction: source.rawInstruction.slice(0, 8192), units: source.units.slice(0, 24),
+            totalUnits: source.units.length, rawLength: source.rawInstruction.length })),
+          acceptance: this.getAcceptanceSnapshot(), contractPagingTool: "get_request_contract",
+        }) });
         this.pushAudit({ kind: "status", text: `context:grounded ${JSON.stringify(grounded.budget)} originals=${grounded.includedIds.length}/${this.originalContext!.context.entries.length}` });
         result = await this.chatWithTransientRetry(
           this.phaseConfig(phase),
@@ -3932,6 +4439,8 @@ export class AssistantSession {
           this.runExecution = "cancelled";
           return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "aborted", error: "사용자가 중단했습니다" };
         }
+        if (owner !== this.runResult) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
+        if (this.milestoneAutoApply) this.recordProviderBlocker(cause, onEvent);
         const rawError = cause instanceof Error ? cause.message : String(cause);
         const error = isRetryableLlmError(cause) && !isOhMyPiWorkerCrash(cause)
           ? appendTransientRetryGuidance(rawError)
@@ -3941,6 +4450,7 @@ export class AssistantSession {
         this.pushAudit({ kind: "status", text: `턴 중단(error): ${error} · 출력 토큰 ~${spentOutputTokens}` });
         return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "error", error };
       }
+      if (owner !== this.runResult || this.userBoundary(signal)) return { assistantText, proposedCalls: [], stoppedReason: "aborted" };
       spentOutputTokens += result.usage?.completion_tokens ?? estimateOutputTokens(result.message);
       // 문자↔토큰 보정 관측(usage 없으면 조용히 스킵). review 단계 요청에는 tools가 없다.
       this.recordPromptUsage(result, phase === "review" ? 0 : toolsChars, requestMessages);
@@ -3959,17 +4469,30 @@ export class AssistantSession {
         toolCalls: assistantMsg.tool_calls?.map((tc) => ({ name: tc.function.name, args: tc.function.arguments })),
       });
 
+      if (this.isAnswerOnlyTurn() && !(assistantMsg.tool_calls?.length)) {
+        assistantText = sanitizeAssistantText(messageText ?? "");
+        onEvent({ type: "assistant_message", content: assistantText });
+        return { assistantText, proposedCalls: [], stoppedReason: "final" };
+      }
+
       // Common final-success boundary: plan completion is never goal verification.
       if (phase === "review" || !(assistantMsg.tool_calls?.length)) {
         this.adoptAcceptance(undefined, onEvent);
-        if (this.acceptance && this.milestoneAutoApply && this.turnProposals.size > 0 && !this.milestoneApplyFailed
-          && (!this.workPlan || isWorkPlanComplete(this.workPlan))) {
-          await this.maybeAutoApplyMilestone({ id: `${this.acceptance.id}:${this.turnToolStartedCount}`, title: this.acceptance.goal,
-            instruction: "Apply acceptance progress", status: "done" }, onEvent);
+        if (this.milestoneAutoApply) {
+          const decision = ralphContinuationDecision(this.workPlan, { autoStepsUsed: 0, assistantText: messageText ?? "" });
+          if (decision === "awaiting-user") {
+            this.recordWorkPlanDecision(decision);
+            return { assistantText: sanitizeAssistantText(messageText ?? ""), proposedCalls: [], stoppedReason: "final" };
+          }
+          const checkpoint = await this.checkpoint(onEvent, signal);
+          if (checkpoint) return checkpoint;
+          this.recoverSegment("candidate-final-incomplete", onEvent);
+          return { assistantText: this.acceptanceIncompleteText(), proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "final" };
         }
         this.publishAcceptance(onEvent);
         const verificationProblems = this.turnExpectsChange() ? this.verificationEvidence.problems("explicit") : [];
-        if ((this.acceptanceOpen() || verificationProblems.length > 0) && this.turnComposerMode !== "ask") {
+        if ((this.acceptanceOpen() || verificationProblems.length > 0) && !this.isAnswerOnlyTurn()
+          && (this.acceptanceControlsDraftSegment() || verificationProblems.length > 0)) {
           if (!this.milestoneApplyFailed && this.acceptanceRepairAttempts < MAX_RALPH_ATTEMPTS_PER_ITEM
             && spentOutputTokens < this.config.maxTokens) {
             this.acceptanceRepairAttempts += 1;
@@ -4190,13 +4713,17 @@ export class AssistantSession {
             this.pushAudit({ kind: "status", text: `tool-args:missing-reason ${name}` });
           }
           const recordDependency = tool?.mode === "write" ? failedRecordReference(args, failedRecords) : undefined;
-          if (parsedCall.parseError !== null) {
+          if (owner !== this.runResult || this.userBoundary(signal)) {
+            toolResult = deferredToolResult("user-boundary", "Request retired before execution");
+          } else if (parsedCall.parseError !== null) {
             toolResult = invalidJsonArgsResult(name, call.function.arguments ?? "", parsedCall.parseError);
             this.pushAudit({ kind: "status", text: `tool-args:invalid-json ${name} — ${parsedCall.parseError}` });
-          } else if (this.turnComposerMode === "ask" && isWriteToolName(name)) {
+          } else if (this.isAnswerOnlyTurn() && isWriteToolName(name)) {
             // 노출 목록은 감사용이고 실행은 이름으로 한다 — 모델이 외워 둔 쓰기 툴을 불러도 여기서 막는다.
             toolResult = composerAskRefusal(name);
             this.pushAudit({ kind: "status", text: `composer:ask 쓰기 툴 거부 ${name}` });
+          } else if (tool?.mode === "write" && hasUnresolvedWriteConstraint(this.acceptance?.getRequests() ?? [])) {
+            toolResult = deferredToolResult("unresolved-source-constraint", "Resolve the original prohibition/preservation clause before writing");
           } else if (failedReadInBatch && isWriteToolName(name)) {
             const summary = `${failedReadInBatch} 조회가 실패하여 같은 응답의 ${name} 실행을 보류했습니다. 조회를 성공시키고 반환값을 확인한 다음 다시 호출하세요.`;
             toolResult = deferredToolResult("read-dependency-failed", summary);
@@ -4206,8 +4733,8 @@ export class AssistantSession {
             toolResult = deferredToolResult("record-dependency-failed", `${name}: ${recordDependency.kind} ${recordDependency.id} 생성이 실패하여 실행을 보류했습니다. 생성·조회 후 다시 호출하세요.`);
           } else if (name === "complete_work_item" && failedWriteTargets.size > 0) {
             toolResult = deferredToolResult("work-dependency-failed", `이 응답에서 ${[...new Set(failedWriteTargets.values())].join(", ")} 실행이 실패하여 완료 처리를 보류했습니다. 실패를 교정한 뒤 완료하세요.`);
-          } else if (this.repeatedToolFailureStall(toolRetryTarget(name, args))) {
-            toolResult = deferredToolResult("tool-retry-exhausted", `${name}: 같은 대상의 실패 상한에 도달하여 실행을 보류했습니다. 사용자 지시가 필요합니다.`);
+          } else if (this.repeatedToolFailureStall({ name, args })) {
+            toolResult = deferredToolResult("tool-retry-exhausted", `${name}: unchanged failed candidate excluded. Read missing prerequisites or use corrected arguments/tool/decomposition for the original obligation.`);
           } else if (name === "run_action_combat_test" && tool) {
             const errors = validateArgs(tool.parameters, args);
             if (errors.length > 0 || typeof args.mapId !== "string") {
@@ -4225,6 +4752,14 @@ export class AssistantSession {
                 data: receipt,
               };
             }
+          } else if (name === "get_request_contract") {
+            const requests = this.acceptance?.getRequests() ?? [];
+            const request = requests.find(source => source.requestId === args.requestId);
+            const offset = args.offset ?? 0, limit = args.limit ?? 4096;
+            if (Object.keys(args).some(key => !["requestId", "offset", "limit"].includes(key)) || typeof offset !== "number" || !Number.isSafeInteger(offset) || offset < 0 || typeof limit !== "number" || !Number.isSafeInteger(limit) || limit < 1 || limit > 8192) toolResult = { ok: false, summary: "Invalid contract page" };
+            else if (args.requestId === undefined) toolResult = { ok: true, summary: "Request identities", data: { requests: requests.map(source => ({ requestId: source.requestId, length: source.rawInstruction.length, units: source.units.length })) } };
+            else if (!request) toolResult = { ok: false, summary: "Request identity not found" };
+            else toolResult = { ok: true, summary: "Immutable request page", data: { requestId: request.requestId, offset, text: request.rawInstruction.slice(offset, offset + limit), nextOffset: offset + limit < request.rawInstruction.length ? offset + limit : null, units: request.units.filter(unit => unit.source.end > offset && unit.source.start < offset + limit) } };
           } else if (name === "get_original_context") {
             toolResult = this.originalContext!.read(args);
           } else if (name === "repair_acceptance" || name === "review_acceptance") {
@@ -4489,6 +5024,12 @@ export class AssistantSession {
 
       // A different write succeeding in this batch cannot erase an exhausted target's budget.
       const retryStall = this.repeatedToolFailureStall();
+      if (retryStall && this.milestoneAutoApply) {
+        const checkpoint = await this.checkpoint(onEvent, signal);
+        if (checkpoint) return checkpoint;
+        this.recoverSegment(`candidate-excluded: ${retryStall.summary}`, onEvent);
+        return { assistantText: this.acceptanceIncompleteText(), proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "final" };
+      }
       if (retryStall && this.workPlan) {
         const currentItemId = this.workPlan.currentItemId;
         const reason = retryStall.summary;
@@ -4511,14 +5052,19 @@ export class AssistantSession {
         }
       }
 
-      // 출력 토큰 예산 확인(라운드의 툴 실행까지 마친 뒤). 예산 소진이 유일한 사용자 제한.
+      if (this.milestoneAutoApply && !this.isAnswerOnlyTurn()) {
+        const checkpoint = await this.checkpoint(onEvent, signal);
+        if (checkpoint) return checkpoint;
+      }
+      // Rotate only after the complete received batch has paired responses.
       if (spentOutputTokens >= this.config.maxTokens) {
+        this.segmentDisposition = { kind: "yield", reason: "tokens" };
         await this.authorPendingNpcCast(onEvent, signal, proposedByKey, turnTheme || this.getActiveSpec()?.title || "");
         onEvent({
           type: "status",
-          text: TOKEN_BUDGET_STATUS_TEXT,
+          text: this.milestoneAutoApply ? "Continuing the authorized request in a fresh segment." : TOKEN_BUDGET_STATUS_TEXT,
         });
-        this.runExecution = "budget-exhausted";
+        if (!this.milestoneAutoApply) this.runExecution = "budget-exhausted";
         this.pushAudit({ kind: "status", text: `턴 종료(token-budget) — 제안 ${proposedByKey.size}건 · 출력 토큰 ~${spentOutputTokens}` });
         return {
           assistantText: truncatedTurnText(assistantText, proposedByKey.size, "출력 토큰 예산", this.turnAppliedMilestoneCalls.length),
@@ -4530,8 +5076,8 @@ export class AssistantSession {
 
     // 라운드 안전핀 도달(기본 200 — 정상 작업에선 도달하지 않음) — 현재까지의 changeset을 제시.
     await this.authorPendingNpcCast(onEvent, signal, proposedByKey, turnTheme || this.getActiveSpec()?.title || "");
-    onEvent({ type: "status", text: TOKEN_BUDGET_STATUS_TEXT });
-    this.runExecution = "budget-exhausted";
+    onEvent({ type: "status", text: this.milestoneAutoApply ? "Continuing the authorized request in a fresh segment." : TOKEN_BUDGET_STATUS_TEXT });
+    if (!this.milestoneAutoApply) this.runExecution = "budget-exhausted";
     this.pushAudit({ kind: "status", text: `턴 종료(max-tool-calls) — 제안 ${proposedByKey.size}건 · 출력 토큰 ~${spentOutputTokens}` });
     return {
       assistantText: truncatedTurnText(assistantText, proposedByKey.size, "도구 호출 예산", this.turnAppliedMilestoneCalls.length),
@@ -4727,6 +5273,23 @@ function eventTargetKey(target: EventTargetKey): string {
 function toolTargetMapId(args: Record<string, unknown>): string | undefined {
   const mapId = args.mapId ?? (isRecord(args.target) ? args.target.mapId : undefined);
   return typeof mapId === "string" ? mapId : undefined;
+}
+
+interface ToolRetryFailure {
+  readonly target: string;
+  readonly code: string;
+  readonly paths?: readonly (readonly string[])[];
+  readonly candidate: string;
+  readonly count: number;
+  readonly summary: string;
+}
+
+function toolRepairPath(message: string): string[] | null {
+  // Read only the canonical machine-consumed repair line, never infer paths from prose.
+  const path = /^repair: \{"path":"([^"\\]+)",/mu.exec(message)?.[1];
+  if (!path || !/^[A-Za-z_]\w*(?:\.[A-Za-z_]\w*|\[\d+\])*$/u.test(path)) return null;
+  const keys = path.match(/[A-Za-z_]\w*|\d+/gu)!;
+  return keys.some(key => ["__proto__", "constructor", "prototype"].includes(key)) ? null : keys;
 }
 
 function toolRetryTarget(name: string, args: Record<string, unknown>): string {

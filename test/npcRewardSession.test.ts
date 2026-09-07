@@ -1,10 +1,12 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { AssistantSession, type SessionEvent } from "@/ai/assistantSession";
 import { defaultAiConfig, type ChatRequest, type ChatResult } from "@/ai/llmClient";
 import { resetIntentDeclarationCache, type IntentDeclarer } from "@/ai/intentDeclarationClient";
 import type { NpcRewardRequirements } from "@/ai/intentDeclaration";
 import { verifyNpcRewardsPlayable } from "@/ai/workItemOutcome";
 import { createBlankProject } from "@/project/defaults";
+import { store } from "@/project/store";
+import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import type { Command, GameEvent } from "@/project/types";
 import { declaredIntent, fixedDeclarer } from "./intentFixture";
 
@@ -36,9 +38,16 @@ function npc(variant: "text" | "once" | "repeat"): GameEvent {
   ] };
 }
 const plan = (tools: string[]) => ({ goal: "Reward request", layers: [{ title: "Author", items: tools.map((tool, i) => ({ title: `Item ${i}`, instruction: `Use ${tool}`, successTools: [tool] })) }] });
-function harness(steps: readonly (ChatResult | Error)[], options: { required?: NpcRewardRequirements; noContract?: boolean; declarer?: IntentDeclarer; maxToolCalls?: number; pause?: () => string | null } = {}) {
+function harness(steps: readonly (ChatResult | Error)[], options: { required?: NpcRewardRequirements; noContract?: boolean; declarer?: IntentDeclarer; maxToolCalls?: number; pause?: () => string | null; local?: boolean } = {}) {
   const project = createBlankProject();
   project.maps[project.startMapId].events = [];
+  if (options.local) {
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(null, { status: 201 })));
+    vi.stubEnv("VITE_SUPABASE_URL", "http://fixture.invalid");
+    vi.stubEnv("VITE_SUPABASE_ANON_KEY", "fixture");
+    store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
+    store.replace(project); resetMapEditHistory();
+  }
   const requests: ChatRequest[] = [];
   const events: SessionEvent[] = [];
   let index = 0;
@@ -58,20 +67,29 @@ function harness(steps: readonly (ChatResult | Error)[], options: { required?: N
 const writeNpc = (mapId: string, variant: "text" | "once" | "repeat") => call("upsert_event", { mapId, event: npc(variant) });
 const tools = (events: SessionEvent[], name: string) => events.filter((event): event is Extract<SessionEvent, { type: "tool_call" }> => event.type === "tool_call" && event.name === name);
 const hasContract = (request: ChatRequest) => request.messages.some((message) => typeof message.content === "string" && message.content.includes(JSON.stringify(REQUIRED)));
+const npcSource = (raw: string) => ({ entries: [{ source: [{ start: 0, end: raw.length, quote: raw }], criteria: [{
+  kind: "entityCount", collection: { kind: "events", mapId: createBlankProject().startMapId }, selector: { ids: [NPC] }, comparison: "eq", count: 1, basis: "requestDelta",
+}], bindings: [] }] });
 
-afterEach(() => resetIntentDeclarationCache());
+afterEach(() => { resetIntentDeclarationCache(); vi.restoreAllMocks(); vi.unstubAllGlobals(); vi.unstubAllEnvs(); });
 
 describe("NPC reward request lifetime in AssistantSession", () => {
-  it("does not dispatch authoring or planner calls for an unrepairable reward declaration", async () => {
+  it("H3 unrepairable reward declaration stays recoverable until user abort without authoring or planner calls", async () => {
+    let declarations = 0;
     const h = harness([call("set_title_screen", { title: "Must not change" })], {
-      required: { invalidReason: "npcRewards: invalid target" },
+      declarer: async () => { declarations++; return { intent: declaredIntent({ mode: "modify", npcRewards: { invalidReason: "npcRewards: invalid target" } }), elapsedMs: 0 }; },
     });
     const originalTitle = h.project.meta.title;
-    const result = await h.session.sendUserMessage("Create the requested reward NPC", h.onEvent, undefined, { autonomous: true });
+    const controller = new AbortController();
+    const result = await h.session.sendUserMessage("Create the requested reward NPC", event => {
+      h.onEvent(event);
+      if (event.type === "run_state" && event.execution.state === "recovering" && declarations >= 2) controller.abort();
+    }, controller.signal, { autonomous: true });
     expect(h.requests).toHaveLength(0);
     expect(h.events.filter((event) => event.type === "tool_call")).toEqual([]);
     expect(h.session.getProposedProject().meta.title).toBe(originalTitle);
-    expect(result.stoppedReason).toBe("error");
+    expect(declarations).toBe(2);
+    expect(result.execution?.state).toBe("aborted");
   });
 
   it.each([
@@ -131,10 +149,12 @@ describe("NPC reward request lifetime in AssistantSession", () => {
 
   it("cannot erase the obligation by replanning into an unrelated skipped plan", async () => {
     const mapId = createBlankProject().startMapId;
-    const h = harness([call("set_work_plan", plan(["upsert_event", "upsert_item"])), writeNpc(mapId, "text"), call("set_work_plan", plan(["get_database_records"])), call("skip_work_item", { itemId: "L1-1", note: "Everything is unnecessary" })]);
+    const h = harness([call("set_work_plan", plan(["upsert_event", "upsert_item"])), writeNpc(mapId, "text"), call("set_work_plan", plan(["get_database_records"])),
+      call("skip_work_item", { itemId: "L1-1", note: "Everything is unnecessary" }), call("skip_work_item", { itemId: "L1-2", note: "Drop the rest" })]);
     const result = await h.session.sendUserMessage("Create the requested reward NPC", h.onEvent);
     expect(tools(h.events, "set_work_plan")).toHaveLength(2);
-    expect(tools(h.events, "skip_work_item")[0]?.result.ok).toBe(false);
+    expect(tools(h.events, "set_work_plan")[1]?.result.ok).toBe(false); // Main rejects dropping an existing item ID.
+    expect(tools(h.events, "skip_work_item").at(-1)?.result.ok).toBe(false);
     expect(result.assistantText).not.toContain(COMPLETE);
     expect(h.requests.every(hasContract)).toBe(true);
   });
@@ -165,10 +185,15 @@ describe("NPC reward request lifetime in AssistantSession", () => {
     });
     await h.session.sendUserMessage("Plan the requested reward NPC", h.onEvent, undefined, { composerMode: "plan" });
     expect(tools(h.events, "upsert_event")).toHaveLength(0);
-    const result = await h.session.sendUserMessage("계속", h.onEvent);
+    expect(h.session.getWorkPlan()?.layers[0]?.items[0]?.successTools).toEqual(["upsert_event"]);
+    const result = await h.session.sendUserMessage("계속", h.onEvent, undefined, { goalAction: "resume" });
     expect(declarations).toBe(1);
+    expect(h.requests.filter(request => !request.tools?.length)).toHaveLength(2);
+    expect(h.session.getWorkPlan()?.layers[0]?.items[0]?.successTools).toEqual(["get_database_records"]);
+    expect(h.events.some(event => event.type === "work_plan" && event.plan.layers[0]?.items[0]?.successTools?.[0] === "get_database_records")).toBe(true);
     expect(h.session.getAuditEntries().some((entry) => entry.kind === "status" && entry.text.startsWith("planner:replan"))).toBe(true);
-    expect(tools(h.events, "skip_work_item")[0]?.result.ok).toBe(false);
+    expect(tools(h.events, "skip_work_item")[0]?.result).toMatchObject({ ok: false, issues: [{ code: "npc-reward-incomplete" }] });
+    expect(verifyNpcRewardsPlayable(h.session.getProposedProject(), REQUIRED).ok).toBe(false);
     expect(h.requests.every(hasContract)).toBe(true);
     expect(result.assistantText).not.toContain(COMPLETE);
   });
@@ -186,27 +211,83 @@ describe("NPC reward request lifetime in AssistantSession", () => {
 
   it("preserves the request across the real autonomous synthetic continuation", async () => {
     let declarations = 0;
-    let calls = 0;
-    const h = harness([call("set_work_plan", plan(["upsert_event", "upsert_item"]))], {
-      maxToolCalls: 1,
-      declarer: async () => { declarations++; return { intent: declaredIntent({ mode: "modify", npcRewards: REQUIRED }), elapsedMs: 0 }; },
-      pause: () => ++calls >= 2 ? "User has a new message" : null,
+    let queued: string | null = null, segment = 0;
+    const h = harness([call("set_work_plan", plan(["upsert_event", "upsert_item"])), writeNpc(createBlankProject().startMapId, "once")], {
+      maxToolCalls: 1, local: true,
+      declarer: async facts => { declarations++; return { intent: declaredIntent({ mode: "modify", npcRewards: REQUIRED, requestRequirements: npcSource(facts.userText) }), elapsedMs: 0 }; },
+      pause: () => queued,
     });
-    await h.session.sendUserMessage("Create the requested reward NPC", h.onEvent, undefined, { autonomous: true });
+    const raw = "Create the requested reward NPC";
+    const result = await h.session.sendUserMessage(raw, event => {
+      h.onEvent(event);
+      if (event.type === "run_state") segment = event.execution.segment;
+      if (event.type === "tool_call" && event.name === "upsert_event" && event.result.ok) {
+        expect(segment).toBe(2);
+        queued = "User has a new message";
+      }
+    }, undefined, { autonomous: true });
     expect(declarations).toBe(1);
+    expect(result.execution).toMatchObject({ state: "queued", segment: 2 });
+    expect(h.session.getHarnessSnapshot().requests).toMatchObject([{ requestId: "request-1", rawInstruction: raw }]);
+    expect(h.session.getHarnessSnapshot().requests).toHaveLength(1);
+    expect(verifyNpcRewardsPlayable(h.session.getProposedProject(), REQUIRED).ok).toBe(true);
+    expect(store.getCurrent().maps[h.project.startMapId]!.events).toEqual([]);
+    expect(result.appliedCalls ?? []).toEqual([]);
+    expect(result.recap?.process.some(step => step.kind === "continue")).toBe(true);
     expect(h.session.getAuditEntries().some((entry) => entry.kind === "status" && entry.text.startsWith("agent_run:auto-continue"))).toBe(true);
-    expect(h.requests.length).toBeGreaterThan(1);
+    expect(h.requests).toHaveLength(2);
     expect(h.requests.every(hasContract)).toBe(true);
   });
 
-  it.each(["new-request", "ask"] as const)("clears old obligations for %s", async (mode) => {
+  it("new authorized work applies without clearing unfinished rewards from a manual request", async () => {
+    const firstRaw = "Create the requested reward NPC", nextRaw = 'Set title to "New work"';
+    const steps: ChatResult[] = [];
+    const h = harness(steps, { local: true, maxToolCalls: 1, declarer: async facts => ({ intent: declaredIntent({ mode: "modify",
+      ...(facts.userText === firstRaw ? { npcRewards: REQUIRED, requestRequirements: npcSource(firstRaw) } : { requestRequirements: { entries: [{
+        source: [{ start: 0, end: nextRaw.length, quote: nextRaw }], criteria: [{ kind: "valueEquals", subject: { kind: "project" }, path: ["meta", "title"], value: "New work" }],
+        bindings: [{ source: { start: nextRaw.indexOf('"'), end: nextRaw.length, quote: '"New work"' }, role: "value", criterionIndex: 0, fieldPath: ["value"] }],
+      }] } }),
+    }), elapsedMs: 0 }) });
+    const initial = await h.session.sendUserMessage(firstRaw, h.onEvent);
+    expect(initial.assistantText).not.toContain(COMPLETE);
+    expect(store.getCurrent().maps[h.project.startMapId]!.events).toEqual([]);
+    steps[h.requests.length] = call("set_title_screen", { title: "New work" });
+    const controller = new AbortController();
+    const result = await h.session.sendUserMessage(nextRaw, event => {
+      h.onEvent(event);
+      if (event.type === "run_state" && event.execution.state === "recovering" && store.getCurrent().meta.title === "New work") controller.abort();
+    }, controller.signal, { autonomous: true });
+    expect(store.getCurrent().meta.title).toBe("New work");
+    expect(result.appliedCalls?.map(call => call.name)).toContain("set_title_screen");
+    expect(result.execution?.state).toBe("aborted");
+    expect(h.session.getAcceptanceSnapshot()?.status).not.toBe("verified");
+    expect(verifyNpcRewardsPlayable(store.getCurrent(), REQUIRED).ok).toBe(false);
+    expect(h.session.getHarnessSnapshot().requests?.map(request => request.rawInstruction)).toEqual([firstRaw, nextRaw]);
+    expect(h.session.getHarnessSnapshot().requests?.[0]?.units[0]?.supersededBy).toBeUndefined();
+  });
+
+  it("ask suspends reward authoring grounding without forgetting enforceable scope", async () => {
     let declarations = 0;
-    const h = harness([], { declarer: async () => ({ intent: declaredIntent({ mode: "modify", ...(declarations++ === 0 || mode === "ask" ? { npcRewards: REQUIRED } : {}) }), elapsedMs: 0 }) });
+    const steps: ChatResult[] = [];
+    const h = harness(steps, { local: true, maxToolCalls: 1, declarer: async facts => { declarations++; return { intent: declaredIntent({ mode: "modify", npcRewards: REQUIRED, requestRequirements: npcSource(facts.userText) }), elapsedMs: 0 }; } });
     const initial = await h.session.sendUserMessage("Create the requested reward NPC", h.onEvent);
     expect(initial.assistantText).not.toContain(COMPLETE);
     const at = h.requests.length;
-    const next = await h.session.sendUserMessage("An unrelated question", h.onEvent, undefined, { composerMode: mode === "ask" ? "ask" : "do" });
+    const before = structuredClone(h.session.getProposedProject());
+    const next = await h.session.sendUserMessage("An unrelated question", h.onEvent, undefined, { composerMode: "ask" });
     expect(next.assistantText).toBe(COMPLETE);
     expect(h.requests.slice(at).some(hasContract)).toBe(false);
+    expect(h.session.getProposedProject()).toEqual(before);
+    const resumedAt = h.requests.length;
+    const batch = call("set_work_plan", plan(["upsert_event"]));
+    batch.message.tool_calls!.push(...writeNpc(h.project.startMapId, "text").message.tool_calls!, ...call("skip_work_item", { itemId: "L1-1" }).message.tool_calls!);
+    steps[resumedAt] = batch;
+    const resumed = await h.session.sendUserMessage("continue", h.onEvent, undefined, { goalAction: "resume" });
+    expect(declarations).toBe(2);
+    expect(h.requests.slice(resumedAt).some(hasContract)).toBe(true);
+    expect(tools(h.events, "skip_work_item").at(-1)?.result).toMatchObject({ ok: false, issues: [{ code: "npc-reward-incomplete" }] });
+    expect(verifyNpcRewardsPlayable(h.session.getProposedProject(), REQUIRED).ok).toBe(false);
+    expect(resumed.assistantText).not.toContain(COMPLETE);
+    expect(h.session.getHarnessSnapshot().requests?.[0]?.units[0]?.supersededBy).toBeUndefined();
   });
 });

@@ -36,7 +36,9 @@ export function fixture() {
   return {
     session, events,
     setIntent(value: Partial<IntentDeclaration>) { intent = value; },
-    run(calls: readonly (readonly Call[])[], options: SessionTurnOptions = {}, text = "Inspect this map") {
+    // Empty raw source deliberately exercises legacy tool-declared contracts. Provenance
+    // cases pass their actual source explicitly and must account for its required rows.
+    run(calls: readonly (readonly Call[])[], options: SessionTurnOptions = {}, text = "") {
       batches = calls; round = 0; events.length = 0;
       return session.sendUserMessage(text, event => events.push(event), undefined, options);
     },

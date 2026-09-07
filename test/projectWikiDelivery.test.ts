@@ -44,6 +44,7 @@ function localStore() {
   store.replace(createEmptyToolProject("Isolated review fixture")); resetMapEditHistory();
 }
 
+// Captured world-authoring source remains uncovered: wiki delivery alone is not goal proof.
 function agreement(f: ReturnType<typeof fixture>, result: TurnResult, expected: NonNullable<TurnResult["runOutcome"]>) {
   expect(result.runOutcome).toEqual(expected);
   expect(f.session.getRunOutcome()).toEqual(expected);
@@ -95,7 +96,7 @@ it("keeps empty extraction no-change without requiring an unloaded save", async 
   const result = await f.run();
   expect(store.getCurrent()).toBe(before);
   expect(f.authored).toHaveBeenCalledTimes(1);
-  agreement(f, result, { execution: "response-final", goal: "unassessed", delivery: "no-change" });
+  agreement(f, result, { execution: "blocked", goal: "incomplete", delivery: "no-change" });
 });
 
 it("owns successful real save, consumes its current proof, and rechecks freshness without mutating history", async () => {
@@ -106,11 +107,11 @@ it("owns successful real save, consumes its current proof, and rechecks freshnes
   expect(f.session.getProposedProject().world).toEqual(store.getCurrent().world);
   expect(store.hasUnsavedChanges()).toBe(false);
   expect(f.authored).toHaveBeenCalledTimes(1);
-  agreement(f, result, { execution: "response-final", goal: "unassessed", delivery: "persisted" });
+  agreement(f, result, { execution: "blocked", goal: "incomplete", delivery: "persisted" });
   const proof = await f.session.proveAppliedRevision(event => f.events.push(event));
   expect(proof).toMatchObject({ status: "succeeded", verified: true, commitId: null });
   expect(proof.receipt && store.isPersistenceReceiptCurrent(proof.receipt)).toBe(true);
-  agreement(f, result, { execution: "response-final", goal: "unassessed", delivery: "persisted-verified" });
+  agreement(f, result, { execution: "blocked", goal: "incomplete", delivery: "persisted-verified" });
   store.update(project => { project.meta.title = "Later human edit"; });
   expect(f.session.getRunOutcome()?.delivery).toBe("persisted");
   expect(result.runOutcome?.delivery).toBe("persisted-verified"); // Historical publication, not current proof.
@@ -127,7 +128,7 @@ it.each(["human-edit", "cancellation"])("retains the accepted wiki version when 
     return saved;
   } });
   const result = await f.run(controller.signal);
-  agreement(f, result, { execution: afterSave === "cancellation" ? "cancelled" : "response-final", goal: "unassessed", delivery: "persisted" });
+  agreement(f, result, { execution: afterSave === "cancellation" ? "cancelled" : "blocked", goal: afterSave === "cancellation" ? "unassessed" : "incomplete", delivery: "persisted" });
   expect(f.session.getRunEndProof()?.verified ?? false).toBe(false);
   if (afterSave === "human-edit") {
     expect(store.hasUnsavedChanges()).toBe(true);
@@ -166,7 +167,7 @@ it("does not own a previous wiki write or its clean-flush receipt on empty extra
   const saved = await store.flush();
   expect(saved.kind === "saved" && !!saved.receipt).toBe(true);
   const f = fixture({ extract: async () => ({ upserts: [] }) });
-  agreement(f, await f.run(), { execution: "response-final", goal: "unassessed", delivery: "no-change" });
+  agreement(f, await f.run(), { execution: "blocked", goal: "incomplete", delivery: "no-change" });
 });
 
 it.each(["stale", "foreign", "missing"])("rejects %s checkpoint receipts for a real wiki apply", async kind => {
@@ -183,7 +184,7 @@ it.each(["stale", "foreign", "missing"])("rejects %s checkpoint receipts for a r
     }
     return { kind: "saved", receipt };
   } });
-  agreement(f, await f.run(), { execution: "response-final", goal: "unassessed", delivery: "applied" });
+  agreement(f, await f.run(), { execution: "blocked", goal: "incomplete", delivery: "applied" });
 });
 
 it.each(["subscriber", "flush"])("does not claim an unrelated human revision saved during %s", async boundary => {
@@ -197,9 +198,9 @@ it.each(["subscriber", "flush"])("does not claim an unrelated human revision sav
     expect(edited).toBe(true);
     expect(store.getCurrent().meta.title).toBe("Concurrent human edit");
     expect(store.hasUnsavedChanges()).toBe(false);
-    agreement(f, result, { execution: "response-final", goal: "unassessed", delivery: "applied" });
+    agreement(f, result, { execution: "blocked", goal: "incomplete", delivery: "applied" });
     await f.session.proveAppliedRevision(event => f.events.push(event));
-    agreement(f, result, { execution: "response-final", goal: "unassessed", delivery: "applied" });
+    agreement(f, result, { execution: "blocked", goal: "incomplete", delivery: "applied" });
   } finally { unsubscribe(); }
 });
 
@@ -221,7 +222,7 @@ it("ignores late old wiki callbacks after a newer run without rewriting either r
   milestones.forEach(milestone => oldCallback?.(milestone));
   expect(f.events).toHaveLength(count);
   expect(old.runOutcome).toBe(oldOutcome);
-  agreement(f, newer, { execution: "response-final", goal: "unassessed", delivery: "no-change" });
+  agreement(f, newer, { execution: "response-final", goal: "incomplete", delivery: "no-change" });
 });
 
 it.each([true, false])("carries the actual observed wiki apply through the ordinary apply result with save=%s", async save => {

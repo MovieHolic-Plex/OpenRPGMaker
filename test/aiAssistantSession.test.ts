@@ -1,9 +1,18 @@
 import { fixedDeclarer } from "./intentFixture";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getMapEditHistoryEntries, resetMapEditHistory } from "@/editor/mapEditHistory";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import type { SessionEvent } from "@/ai/assistantSession";
+
+const TITLE_REQUEST = 'Set title to "t3"';
+function titleDeclarer(value = "t3", raw = TITLE_REQUEST) {
+  return fixedDeclarer({ mode: "modify", needsPlan: true, requestRequirements: { entries: [{
+    source: [{ start: 0, end: raw.length, quote: raw }],
+    criteria: [{ kind: "valueEquals", subject: { kind: "project" }, path: ["meta", "title"], value }],
+    bindings: [{ source: { start: raw.indexOf('"'), end: raw.length, quote: JSON.stringify(value) }, role: "value", criterionIndex: 0, fieldPath: ["value"] }],
+  }] } });
+}
 
 const MILESTONE_TEST_ENV = {
   VITE_SUPABASE_ANON_KEY: "test-anon-key",
@@ -35,6 +44,12 @@ function initMilestoneStore(project: Project): void {
   store.replace(project);
   resetMapEditHistory();
 }
+
+beforeEach(() => {
+  stubSupabaseEnv();
+  vi.stubGlobal("fetch", vi.fn(async () => Response.json([])));
+  store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
+});
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -103,19 +118,10 @@ describe("자율 실행 드라이버", () => {
     const { AssistantSession, createBlankProject } = await load();
     // maxToolCalls=4 로 한 턴이 결정적으로 상한 도달로 끝난다(라운드: planner는 라운드 카운트 밖).
     // 드라이버의 합성 「계속」 턴은 플래너 왕복을 태우지 않는다(2026-09-03) — 그래서 resume 응답이 없다.
-    // 턴1: new_plan(set_work_plan + t1 완료) → 라운드 상한. 턴2: t2 → 상한. 턴3: t3 → 완료 보고.
     const steps: ChatResult[] = [
       finalResult(THREE_ITEM_PLAN_JSON),
       toolCallResult("set_work_plan", THREE_ITEM_PLAN, "c_plan"),
-      titleWrite("c_t1", "t1"),
-      finalResult("이어서 진행합니다."),
-      finalResult("이어서 진행합니다."),
-      titleWrite("c_t2", "t2"),
-      finalResult("이어서 진행합니다."),
-      finalResult("이어서 진행합니다."),
-      finalResult("이어서 진행합니다."),
-      titleWrite("c_t3", "t3"),
-      finalResult("모든 항목을 완료했습니다."),
+      titleWrite("c_t1", "t1"), titleWrite("c_t2", "t2"), titleWrite("c_t3", "t3"),
     ];
     let index = 0;
     const chat = async (): Promise<ChatResult> => {
@@ -126,26 +132,24 @@ describe("자율 실행 드라이버", () => {
     // env/fetch를 스텁하고 세션·store를 같은 프로젝트로 초기화한다.
     const project = createBlankProject();
     installMilestoneHermeticEnv(project);
-    const session = new AssistantSession(project, { config: ORCH_AUTO, chat });
+    const session = new AssistantSession(project, { config: { ...ORCH_AUTO, maxToolCalls: 1 }, chat, declareIntent: titleDeclarer() });
 
-    const result = await session.sendUserMessage("타이틀을 3단계로 개선해줘", () => {}, undefined, { autonomous: true });
+    const result = await session.sendUserMessage(TITLE_REQUEST, () => {}, undefined, { autonomous: true });
 
     const items = session.getWorkPlan()!.layers.flatMap((l) => l.items);
     expect(items.map((i) => i.status)).toEqual(["done", "done", "done"]);
     const statuses = statusTexts(session);
     expect(statuses.some((t) => t.includes("agent_run:auto-continue"))).toBe(true);
-    expect(result.assistantText).toContain("모든 항목을 완료했습니다");
-    // 턴1(플래너1+4라운드) + 턴2(4라운드) + 턴3(쓰기+최종) = 11콜. 플래너는 사용자 턴에서 한 번만 돈다.
-    expect(index).toBe(11);
-    expect(statuses.filter((t) => t.startsWith("planner:start")).length).toBe(1);
-    expect(statuses.filter((t) => t.includes("planner:skip driver-continue")).length).toBe(2);
+    expect(result.execution?.state).toBe("verified-local");
+    expect(store.getCurrent().meta.title).toBe("t3");
+    expect(index).toBe(5); // One planner and four complete tool batches.
+    expect(result.appliedCalls).toHaveLength(3);
     // 진행이 있는 항목은 막지 않는다 — 쓰기가 성공할 때마다 항목별 시도 수가 0으로 돌아간다.
     expect(statuses.some((t) => t.startsWith("ralph:stalled"))).toBe(false);
   }, 120000);
 
-  it("(b) 총 예산 48 소진 시 agent_run_budget_exhausted 감사를 남기고 멈춘다", async () => {
-    const { AssistantSession, createBlankProject, AGENT_RUN_MAX_TOTAL_STEPS } = await load();
-    expect(AGENT_RUN_MAX_TOTAL_STEPS).toBe(48);
+  it("C4 unknown models remain recovering and explicitly abortable, not budget-complete", async () => {
+    const { AssistantSession, createBlankProject } = await load();
     const NEVER_PLAN = { goal: "끝나지 않는 목표", layers: [{ title: "L", items: [{ title: "무한", instruction: "완료 불가" }] }] };
     const steps: ChatResult[] = [
       finalResult(JSON.stringify({ action: "new_plan", ...NEVER_PLAN })),
@@ -163,17 +167,16 @@ describe("자율 실행 드라이버", () => {
     };
     const session = new AssistantSession(createBlankProject(), { config: ORCH_AUTO, chat });
 
-    await session.sendUserMessage(`${ORCH_GOAL}끝나지 않는 목표를 처리해줘`, () => {}, undefined, { autonomous: true });
-
-    const statuses = statusTexts(session);
-    expect(statuses.some((t) => t.includes("agent_run_budget_exhausted"))).toBe(true);
-    // 48회까지 자동 계속하고 49번째는 송신하지 않는다 — 본문 턴 = 초기 1 + 자동 48.
-    expect(statuses.filter((t) => t.includes("agent_run:auto-continue")).length).toBe(48);
-    // 진행이 계속되는 동안은 교착으로 판정하지 않는다.
-    expect(statuses.some((t) => t.startsWith("ralph:stalled"))).toBe(false);
+    const controller = new AbortController();
+    const result = await session.sendUserMessage(`${ORCH_GOAL}끝나지 않는 목표를 처리해줘`, event => {
+      if (event.type === "run_state" && event.execution.state === "recovering") controller.abort();
+    }, controller.signal, { autonomous: true });
+    expect(result.stoppedReason).toBe("aborted");
+    expect(session.getAcceptanceSnapshot()?.status).not.toBe("verified");
+    expect(statusTexts(session).some(text => text.includes("agent_run_budget_exhausted"))).toBe(false);
   }, 300000);
 
-  it("(c) 턴이 사용자 질문으로 끝나면 드라이버는 자동 송신하지 않고 일시정지한다", async () => {
+  it("(c) a model question without a resolved source contract remains abortable recovery", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const steps: ChatResult[] = [
       finalResult(THREE_ITEM_PLAN_JSON),
@@ -191,11 +194,14 @@ describe("자율 실행 드라이버", () => {
     installMilestoneHermeticEnv(project);
     const session = new AssistantSession(project, { config: ORCH_AUTO, chat });
 
-    const result = await session.sendUserMessage("타이틀을 3단계로 개선해줘", () => {}, undefined, { autonomous: true });
+    const controller = new AbortController();
+    const result = await session.sendUserMessage("타이틀을 3단계로 개선해줘", event => {
+      if (event.type === "run_state" && event.execution.state === "recovering") controller.abort();
+    }, controller.signal, { autonomous: true });
 
-    expect(result.assistantText).toContain("어떤 분위기");
-    expect(index).toBe(4); // 스크립트 소진 = 자동 송신 0건.
-    expect(statusTexts(session).some((t) => t.includes("agent_run:auto-continue"))).toBe(false);
+    expect(result.execution?.state).toBe("aborted");
+    expect(session.getAcceptanceSnapshot()?.status).not.toBe("verified");
+    expect(index).toBeLessThanOrEqual(4);
   }, 30000);
 
   it("(d) 런 중 중단이면 드라이버는 즉시 멈추고 추가 송신이 없다", async () => {
@@ -258,36 +264,29 @@ describe("자율 실행 드라이버", () => {
     const project = createBlankProject();
     installMilestoneHermeticEnv(project);
     const session = new AssistantSession(project, {
-      config: ORCH_AUTO,
+      config: { ...ORCH_AUTO, maxToolCalls: 1 },
+      declareIntent: titleDeclarer(),
       peekPendingUserMessage: () => pending,
       chat: (config, req) => chatRef.current(config as never, req as never),
     });
 
     // 턴1 종료 시점에 큐에 사용자 메시지가 있다 — 드라이버는 peek 로 보고 송신을 쉰다.
-    pending = "중간 지시";
-    await session.sendUserMessage("타이틀을 3단계로 개선해줘", () => {}, undefined, { autonomous: true });
+    const paused = await session.sendUserMessage(TITLE_REQUEST, event => {
+      if (event.type === "milestone_applied") pending = "중간 지시";
+    }, undefined, { autonomous: true });
 
-    expect(index).toBe(5); // 스크립트 소진 = 턴1 이후 LLM 호출 0건(플래너1+본문4).
-    const statuses1 = statusTexts(session);
-    expect(statuses1.some((t) => t.includes("agent_run:paused-user-message"))).toBe(true);
-    expect(statuses1.some((t) => t.includes("agent_run:auto-continue"))).toBe(false);
+    expect(index).toBe(3);
+    expect(paused.execution?.state).toBe("queued");
+    expect(store.getCurrent().meta.title).toBe("t1");
 
     // 패널의 기존 드레인 루프가 큐의 메시지를 전달한 뒤(여기선 계속), 계획이 여전히 미완료면 런 재개.
     pending = null;
     // 사용자가 직접 친 「계속」은 사용자 턴이므로 플래너가 한 번 돈다(resume). 그 뒤 드라이버 턴은 왕복 없음.
-    steps = [
-      finalResult(RESUME_JSON),
-      titleWrite("c_t2", "t2"),
-      finalResult("이어서 진행합니다."),
-      finalResult("이어서 진행합니다."),
-      finalResult("이어서 진행합니다."),
-      titleWrite("c_t3", "t3"),
-      finalResult("모든 항목을 완료했습니다."),
-    ];
+    steps = [finalResult(RESUME_JSON), titleWrite("c_t2", "t2"), titleWrite("c_t3", "t3")];
     index = 0;
-    const result = await session.sendUserMessage("계속", () => {}, undefined, { autonomous: true });
+    const result = await session.sendUserMessage("계속", () => {}, undefined, { autonomous: true, goalAction: "resume" });
 
-    expect(result.assistantText).toContain("모든 항목을 완료했습니다");
+    expect(result.execution?.state).toBe("verified-local");
     const items = session.getWorkPlan()!.layers.flatMap((l) => l.items);
     expect(items.map((i) => i.status)).toEqual(["done", "done", "done"]);
   }, 30000);
@@ -299,15 +298,7 @@ describe("자율 실행 드라이버", () => {
     const steps: ChatResult[] = [
       finalResult(THREE_ITEM_PLAN_JSON),
       toolCallResult("set_work_plan", THREE_ITEM_PLAN, "c_plan"),
-      titleWrite("c_t1", "t1"),
-      finalResult("이어서 진행합니다."),
-      finalResult("이어서 진행합니다."),
-      titleWrite("c_t2", "t2"),
-      finalResult("이어서 진행합니다."),
-      finalResult("이어서 진행합니다."),
-      finalResult("이어서 진행합니다."),
-      titleWrite("c_t3", "t3"),
-      finalResult("모든 항목을 완료했습니다."),
+      titleWrite("c_t1", "t1"), titleWrite("c_t2", "t2"), titleWrite("c_t3", "t3"),
     ];
     let index = 0;
     const chat = async (): Promise<ChatResult> => {
@@ -317,12 +308,13 @@ describe("자율 실행 드라이버", () => {
     const project = createBlankProject();
     installMilestoneHermeticEnv(project);
     const session = new AssistantSession(project, {
-      config: ORCH_AUTO,
+      config: { ...ORCH_AUTO, maxToolCalls: 1 },
+      declareIntent: titleDeclarer(),
       peekPendingUserMessage: () => (gi < garbage.length ? (garbage[gi++] as string) : null),
       chat,
     });
 
-    await session.sendUserMessage("타이틀을 3단계로 개선해줘", () => {}, undefined, { autonomous: true });
+    await session.sendUserMessage(TITLE_REQUEST, () => {}, undefined, { autonomous: true });
 
     const statuses = statusTexts(session);
     expect(statuses.some((t) => t.includes("agent_run:auto-continue"))).toBe(true);
@@ -383,8 +375,8 @@ describe("자율 실행 드라이버", () => {
     expect(statusTexts(session).some((t) => t.includes("agent_run:"))).toBe(false);
   }, 30000);
 
-  it("예산 소진 후 사용자 계속 메시지는 예산을 재가동(re-arm)한다", async () => {
-    const { AssistantSession, createBlankProject, AGENT_RUN_MAX_TOTAL_STEPS } = await load();
+  it("C2 explicit continuation after user stop retains the same request", async () => {
+    const { AssistantSession, createBlankProject } = await load();
     const NEVER_PLAN = { goal: "끝나지 않는 목표", layers: [{ title: "L", items: [{ title: "무한", instruction: "완료 불가" }] }] };
     let bodyTurns = 0;
     const chat = async (_config: unknown, req: ChatRequest): Promise<ChatResult> => {
@@ -400,15 +392,17 @@ describe("자율 실행 드라이버", () => {
     };
     const session = new AssistantSession(createBlankProject(), { config: ORCH_AUTO, chat });
 
-    await session.sendUserMessage(`${ORCH_GOAL}끝나지 않는 목표를 처리해줘`, () => {}, undefined, { autonomous: true });
-    let statuses = statusTexts(session);
-    expect(statuses.filter((t) => t.includes("agent_run:auto-continue")).length).toBe(AGENT_RUN_MAX_TOTAL_STEPS);
-
-    // "계속" — 수동 경로 그대로 재개하고 예산 카운터는 리셋(다시 최대치만큼 계속 가능).
-    await session.sendUserMessage("계속", () => {}, undefined, { autonomous: true });
-    statuses = statusTexts(session);
-    expect(statuses.filter((t) => t.includes("agent_run:auto-continue")).length).toBe(AGENT_RUN_MAX_TOTAL_STEPS * 2);
-    expect(statuses.filter((t) => t.includes("agent_run_budget_exhausted")).length).toBe(2);
+    const stop = async (text: string) => {
+      const controller = new AbortController();
+      return session.sendUserMessage(text, event => {
+        if (event.type === "run_state" && event.execution.state === "recovering") controller.abort();
+      }, controller.signal, { autonomous: true });
+    };
+    expect((await stop(`${ORCH_GOAL}끝나지 않는 목표를 처리해줘`)).stoppedReason).toBe("aborted");
+    const original = session.getHarnessSnapshot().requests;
+    expect((await stop("계속")).stoppedReason).toBe("aborted");
+    expect(session.getHarnessSnapshot().requests).toEqual(original);
+    expect(statusTexts(session).some(text => text.includes("agent_run_budget_exhausted"))).toBe(false);
   }, 600000);
 });
 
@@ -467,12 +461,7 @@ describe("마일스톤 자동 적용 (todo 4)", () => {
     milestoneFinal(MILESTONE_PLAN_JSON),
     milestoneToolCall("set_work_plan", MILESTONE_PLAN, "c_plan"),
     titleWrite("c_t1", "t1"),
-    milestoneFinal("이어서 진행합니다."),
-    milestoneFinal("이어서 진행합니다."),
     titleWrite("c_t2", "t2"),
-    milestoneFinal("이어서 진행합니다."),
-    milestoneFinal("이어서 진행합니다."),
-    milestoneFinal("이어서 진행합니다."),
     titleWrite("c_t3", "t3"),
     milestoneFinal("모든 항목을 완료했습니다."),
   ];
@@ -494,10 +483,10 @@ describe("마일스톤 자동 적용 (todo 4)", () => {
       if (index >= steps.length) milestoneExhausted();
       return steps[index++]!;
     };
-    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 4 }, chat });
+    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 1 }, chat, declareIntent: titleDeclarer() });
     const events: SessionEvent[] = [];
 
-    await session.sendUserMessage("타이틀을 3단계로 개선해줘", (event) => { events.push(event); }, undefined, { autonomous: true });
+    await session.sendUserMessage(TITLE_REQUEST, (event) => { events.push(event); }, undefined, { autonomous: true });
 
     // 사용자 조작 없이 스토어에 적용 완료.
     expect(store.getCurrent().meta?.title).toBe("t3");
@@ -559,7 +548,7 @@ describe("마일스톤 자동 적용 (todo 4)", () => {
 
     // remove_event도 같은 마일스톤 적용 경로를 타며 전체 프로젝트 undo 스냅샷을 남긴다.
     expect(JSON.stringify(store.getCurrent())).toBe(before);
-    expect(getMapEditHistoryEntries()).toHaveLength(1);
+    expect(getMapEditHistoryEntries()).toHaveLength(2); // Each complete write batch is an applied checkpoint.
     expect(events.some((event) => event.type === "proposal_paused")).toBe(false);
     expect(events.some((event) => event.type === "milestone_applied")).toBe(true);
     expect(milestoneStatusTexts(session).some((t) => t.includes("agent_run:milestone-applied"))).toBe(true);
@@ -616,12 +605,13 @@ describe("마일스톤 자동 적용 (todo 4)", () => {
     };
     // agentMode는 대화/자율 실행 선택이지 승인 설정이 아니다.
     const session = new AssistantSession(project, {
-      config: { ...ORCH_CONFIG, maxToolCalls: 4, agentMode: "chat" as const },
+      config: { ...ORCH_CONFIG, maxToolCalls: 1, agentMode: "chat" as const },
+      declareIntent: titleDeclarer(),
       chat,
     });
     const events: SessionEvent[] = [];
 
-    const result = await session.sendUserMessage("타이틀을 3단계로 개선해줘", (event) => { events.push(event); }, undefined, { autonomous: true });
+    const result = await session.sendUserMessage(TITLE_REQUEST, (event) => { events.push(event); }, undefined, { autonomous: true });
 
     expect(JSON.stringify(store.getCurrent())).not.toBe(before);
     expect(store.getCurrent().meta.title).toBe("t3");
@@ -630,7 +620,7 @@ describe("마일스톤 자동 적용 (todo 4)", () => {
     expect(result.proposedCalls).toHaveLength(0);
     expect(milestoneStatusTexts(session).some((t) => t.includes("agent_run:auto-continue"))).toBe(true);
   }, 30000);
-  it("(c-3) 커밋 게이트 적용 실패는 현재 런만 멈추고 다음 사용자 턴의 자동 적용을 다시 허용한다", async () => {
+  it("C4 rejected draft stays unapplied until real prerequisite repair in the same run", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const project = createBlankProject();
     installMilestoneHermeticEnv(project);
@@ -648,8 +638,7 @@ describe("마일스톤 자동 적용 (todo 4)", () => {
       milestoneFinal(JSON.stringify({ action: "new_plan", ...TWO_ITEM_PLAN })),
       milestoneToolCall("set_work_plan", TWO_ITEM_PLAN, "c_plan"),
       titleWrite("c_first", "first"),
-      milestoneFinal("첫 항목을 마쳤습니다."),
-      milestoneFinal(JSON.stringify({ action: "resume", reason: "같은 목표 계속" })),
+      milestoneToolCall("set_start_position", { mapId: project.startMapId, ...project.startPos }, "c_repair"),
       titleWrite("c_second", "second"),
       milestoneFinal("두 번째 항목을 마쳤습니다."),
     ];
@@ -658,11 +647,17 @@ describe("마일스톤 자동 적용 (todo 4)", () => {
       if (index >= steps.length) milestoneExhausted();
       return steps[index++]!;
     };
-    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 4 }, chat });
+    const raw = 'Set title to "second"';
+    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 1 }, chat, declareIntent: titleDeclarer("second", raw) });
     const firstEvents: SessionEvent[] = [];
     let corruptFirstDraft = true;
+    let observedRejectedStore = false;
 
-    await session.sendUserMessage("타이틀을 두 단계로 바꿔줘", (event) => {
+    const result = await session.sendUserMessage(raw, (event) => {
+      if (event.type === "proposal_paused") {
+        expect(store.getCurrent().meta.title).toBe(project.meta.title);
+        observedRejectedStore = true;
+      }
       firstEvents.push(event);
       if (corruptFirstDraft && event.type === "tool_call" && event.name === "set_title_screen" && event.result.ok) {
         corruptFirstDraft = false;
@@ -671,22 +666,19 @@ describe("마일스톤 자동 적용 (todo 4)", () => {
       }
     }, undefined, { autonomous: true });
 
-    expect(store.getCurrent().meta.title).not.toBe("first");
+    expect(observedRejectedStore).toBe(true);
+    expect(result.execution?.state).toBe("verified-local");
+    expect(store.getCurrent().meta.title).toBe("second");
     expect(firstEvents.some((event) => event.type === "proposal_paused")).toBe(true);
     expect(firstEvents.some((event) => event.type === "status" && event.text.includes("마일스톤 적용 실패"))).toBe(true);
     expect(firstEvents.some((event) => event.type === "status" && event.text.includes("프로젝트 저장소는 변경되지 않았습니다"))).toBe(true);
     const firstAudits = milestoneStatusTexts(session);
     expect(firstAudits.some((text) => text.includes("agent_run:milestone-apply-failed"))).toBe(true);
-    expect(firstAudits.some((text) => text.includes("agent_run:stopped-apply-failed"))).toBe(true);
+    expect(firstEvents.some(event => event.type === "run_state" && event.execution.state === "recovering")).toBe(true);
     expect(firstAudits.some((text) => text.includes("승인 대기") || text.includes("paused-approval"))).toBe(false);
 
-    const secondEvents: SessionEvent[] = [];
-    await session.sendUserMessage("다음 항목을 계속해줘", (event) => { secondEvents.push(event); }, undefined, { autonomous: true });
-
-    expect(store.getCurrent().meta.title).toBe("second");
-    expect(secondEvents.some((event) => event.type === "milestone_applied" && event.title === "다음 적용")).toBe(true);
-    expect(secondEvents.some((event) => event.type === "proposal_paused")).toBe(false);
-    expect(getMapEditHistoryEntries()).toHaveLength(1);
+    expect(result.appliedCalls?.map(call => call.name)).toEqual(["set_title_screen", "set_start_position", "set_title_screen"]);
+    expect(getMapEditHistoryEntries()).toHaveLength(2);
   }, 30000);
 });
 
@@ -911,10 +903,11 @@ describe("레이어 검증(자문) + run-end 저장 증명 (todo 5)", () => {
       if (index >= steps.length) gateExhausted();
       return steps[index++]!;
     };
-    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 8 }, chat });
+    const raw = 'Set title to "t1"';
+    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 8 }, chat, declareIntent: titleDeclarer("t1", raw) });
     const events: SessionEvent[] = [];
 
-    const result = await session.sendUserMessage(`${ORCH_GOAL}타이틀을 바꿔줘`, (event) => { events.push(event); }, undefined, { autonomous: true });
+    const result = await session.sendUserMessage(raw, (event) => { events.push(event); }, undefined, { autonomous: true });
 
     const toolCalls = events.filter((event): event is Extract<SessionEvent, { type: "tool_call" }> => event.type === "tool_call");
     // 레이어당 1회만 검증한다 — 같은 지적으로 재검하지 않는다(markLayerVerified).
@@ -941,10 +934,7 @@ describe("레이어 검증(자문) + run-end 저장 증명 (todo 5)", () => {
     gateFinal(JSON.stringify({ action: "new_plan", ...MILESTONE_PLAN_SHAPE })),
     gateToolCall("set_work_plan", MILESTONE_PLAN_SHAPE, "c_plan"),
     gateToolCall("set_title_screen", { title: "t1" }, "c_t1"),
-    gateFinal("이어서 진행합니다."),
-    gateFinal("이어서 진행합니다."),
     gateToolCall("set_title_screen", { title: "t2" }, "c_t2"),
-    gateFinal("이어서 진행합니다."),
     gateToolCall("set_title_screen", { title: "t3" }, "c_t3"),
     gateFinal("모든 항목을 완료했습니다."),
   ];
@@ -966,11 +956,11 @@ describe("레이어 검증(자문) + run-end 저장 증명 (todo 5)", () => {
       if (index >= steps.length) gateExhausted();
       return steps[index++]!;
     };
-    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 4 }, chat });
+    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 1 }, chat, declareIntent: titleDeclarer() });
 
-    const result = await session.sendUserMessage("타이틀을 3단계로 개선해줘", () => {}, undefined, { autonomous: true });
+    const result = await session.sendUserMessage(TITLE_REQUEST, () => {}, undefined, { autonomous: true });
 
-    expect(result.stoppedReason).toBe("final");
+    expect(result.execution?.state).toBe("verified");
     expect(flushSpy).toHaveBeenCalledTimes(1);
     expect(reloadSpy).not.toHaveBeenCalled();
     expect(verifySpy).toHaveBeenCalledExactlyOnceWith(receipt, { signal: undefined });
@@ -979,7 +969,7 @@ describe("레이어 검증(자문) + run-end 저장 증명 (todo 5)", () => {
     expect(audits.filter((t) => t.split(" ")[0] === "agent_run_saved")).toHaveLength(1);
     // 드라이버 계속 턴은 플래너 왕복을 태우지 않는다 — 플래너는 사용자 턴에서 한 번만 돈다.
     expect(audits.filter((t) => t.startsWith("planner:start")).length).toBe(1);
-    expect(audits.some((t) => t.includes("planner:skip driver-continue"))).toBe(true);
+    expect(result.appliedCalls).toHaveLength(3);
     expect(audits.some((t) => t.includes("agent_run:auto-continue"))).toBe(true);
     // 정상 진행 중인 항목은 막히지 않는다(쓰기가 성공하면 항목별 시도 수가 0으로 돌아간다).
     expect(audits.some((t) => t.includes("ralph:stalled"))).toBe(false);
@@ -996,11 +986,11 @@ describe("레이어 검증(자문) + run-end 저장 증명 (todo 5)", () => {
       if (index >= steps.length) gateExhausted();
       return steps[index++]!;
     };
-    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 4 }, chat });
+    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 1 }, chat, declareIntent: titleDeclarer() });
 
-    const result = await session.sendUserMessage("타이틀을 3단계로 개선해줘", () => {}, undefined, { autonomous: true });
+    const result = await session.sendUserMessage(TITLE_REQUEST, () => {}, undefined, { autonomous: true });
 
-    expect(result.stoppedReason).toBe("final");
+    expect(result.execution?.state).toBe("verified-local");
     expect(flushSpy).not.toHaveBeenCalled();
     const audits = gateStatusTexts(session);
     expect(audits.some((t) => t.includes("agent_run_local_only"))).toBe(true);
@@ -1034,7 +1024,6 @@ async function load() {
     hasRawToolCallMarkup: assistantSession.hasRawToolCallMarkup,
     sanitizeAssistantText: assistantSession.sanitizeAssistantText,
     truncatedTurnText: assistantSession.truncatedTurnText,
-    AGENT_RUN_MAX_TOTAL_STEPS: assistantSession.AGENT_RUN_MAX_TOTAL_STEPS,
     createBlankProject: defaults.createBlankProject,
     llm,
   };
@@ -1300,8 +1289,9 @@ describe("AssistantSession 툴콜 루프", () => {
     const audit = JSON.parse(session.exportAudit());
     expect(audit.model).toBe(CONFIG.model);
     // at(ISO 타임스탬프)는 결함 ⑬(구조화 세션 로그)에서 추가 — 내용 필드만 고정 검증.
-    expect(audit.entries[0]).toMatchObject({ kind: "user", text: "안녕" });
-    expect(typeof audit.entries[0].at).toBe("string");
+    const userEntry = audit.entries.find((entry: { kind: string }) => entry.kind === "user");
+    expect(userEntry).toMatchObject({ kind: "user", text: "안녕" });
+    expect(typeof userEntry.at).toBe("string");
     expect(audit.entries.some((e: { kind: string }) => e.kind === "assistant")).toBe(true);
   }, 30000);
 

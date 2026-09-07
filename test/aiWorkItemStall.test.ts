@@ -16,7 +16,6 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
-import { MAX_RALPH_ATTEMPTS_PER_ITEM } from "@/ai/workPlan";
 import { fixedDeclarer } from "./intentFixture";
 
 type ChatResult = import("@/ai/llmClient").ChatResult;
@@ -88,7 +87,8 @@ function exhausted(): never {
 /** 대본을 순서대로 돌려주되, 소진 후 몇 번까지는 「끝났습니다」로 답하는 chat(Ralph 재주입 관측용). */
 function scriptedChat(steps: readonly ChatResult[], padding: ChatResult | null = null) {
   const state = { calls: 0 };
-  const chat = async (): Promise<ChatResult> => {
+  const chat = async (_config: unknown, request: import("@/ai/llmClient").ChatRequest): Promise<ChatResult> => {
+    if (!request.tools?.length && state.calls > 0) return final(JSON.stringify({ action: "resume" }));
     const step = steps[state.calls];
     state.calls += 1;
     if (step) return step;
@@ -115,7 +115,7 @@ const STUCK_PLAN = {
 const planDeclarer = fixedDeclarer({ needsPlan: true, mode: "create" });
 
 describe("진행이 멈춘 항목은 사람에게 넘긴다", () => {
-  it("(a)(b) 같은 항목에서 연속 3번 헛되이 나가면 blocked 로 표시하고 턴을 끝낸다 — 드라이버도 멈춘다", async () => {
+  it("C4-internal-is-not-external: a noncooperative final stays recovering until user abort", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const project = createBlankProject();
     installHermeticEnv(project);
@@ -126,24 +126,22 @@ describe("진행이 멈춘 항목은 사람에게 넘긴다", () => {
     );
     const session = new AssistantSession(project, { config: CONFIG, chat, declareIntent: planDeclarer });
 
-    const result = await session.sendUserMessage("광장에 연못 만들어줘", () => {}, undefined, { autonomous: true });
-
-    const audits = statusTexts(session);
-    const item = result.workPlan?.layers[0]?.items[0];
-    expect(item?.status).toBe("blocked");
-    expect(item?.note ?? "").toContain("fill_region");
-    const stalled = audits.find((t) => t.startsWith("ralph:stalled"));
-    expect(stalled).toBeTruthy();
-    expect(stalled!).toContain(`attempts=${MAX_RALPH_ATTEMPTS_PER_ITEM}/${MAX_RALPH_ATTEMPTS_PER_ITEM}`);
-    expect(result.assistantText).toContain("연못 채우기");
-    expect(result.assistantText).toContain("건너뛰기");
-    expect(result.stoppedReason).toBe("final");
-    expect(audits.some((t) => t.includes("agent_run:auto-continue"))).toBe(false);
-    // 그리고 이것이 요점이다 — 173번이 아니라 손에 꼽는 왕복에서 끝난다.
-    expect(state.calls).toBeLessThan(12);
+    const controller = new AbortController();
+    const states: string[] = [];
+    const result = await session.sendUserMessage("광장에 연못 만들어줘", event => {
+      if (event.type === "run_state") {
+        states.push(event.execution.state);
+        if (event.execution.state === "recovering") controller.abort();
+      }
+    }, controller.signal, { autonomous: true });
+    expect(states).toContain("recovering");
+    expect(states).not.toContain("external-blocker");
+    expect(result.stoppedReason).toBe("aborted");
+    expect(session.getAcceptanceSnapshot()?.status).not.toBe("verified");
+    expect(state.calls).toBeGreaterThan(1);
   }, 30000);
 
-  it("(a-2) 같은 쓰기 툴이 같은 이유로 반복 실패하면 Ralph 신호 없이도 막힌다", async () => {
+  it("C4-duplicate-refusal-not-replayed: unchanged failing mutations are deferred, not terminal", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const project = createBlankProject();
     installHermeticEnv(project);
@@ -165,21 +163,18 @@ describe("진행이 멈춘 항목은 사람에게 넘긴다", () => {
     );
     const session = new AssistantSession(project, { config: CONFIG, chat, declareIntent: planDeclarer });
 
-    const result = await session.sendUserMessage("광장에 연못 만들어줘", () => {}, undefined, { autonomous: true });
-
-    const audits = statusTexts(session);
-    const stalled = audits.find((t) => t.startsWith("tool-failure:stalled"));
-    expect(stalled).toBeTruthy();
-    expect(result.workPlan?.layers[0]?.items[0]?.status).toBe("blocked");
-    expect(result.workPlan?.layers[0]?.items[0]?.note ?? "").toContain("스펙 게이트");
-    expect(result.assistantText).toContain("막혔습니다");
-    expect(result.stoppedReason).toBe("final");
-    expect(audits.some((t) => t.includes("agent_run:auto-continue"))).toBe(false);
-    // 라운드 상한(12)까지 태우지 않고 몇 번 만에 끝난다.
-    expect(state.calls).toBeLessThan(10);
+    const controller = new AbortController();
+    let excluded = false;
+    const result = await session.sendUserMessage("광장에 연못 만들어줘", event => {
+      if (event.type === "tool_call" && event.result.issues?.some(issue => issue.code === "tool-retry-exhausted")) { excluded = true; controller.abort(); }
+    }, controller.signal, { autonomous: true });
+    expect(excluded).toBe(true);
+    expect(result.stoppedReason).toBe("aborted");
+    expect(session.getAcceptanceSnapshot()?.status).not.toBe("verified");
+    expect(state.calls).toBeGreaterThan(4);
   }, 30000);
 
-    it("(c) 사용자의 다음 메시지가 막힌 항목을 되살린다", async () => {
+    it("C2 ordinary user follow-up retains unresolved original work", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const project = createBlankProject();
     installHermeticEnv(project);
@@ -189,17 +184,16 @@ describe("진행이 멈춘 항목은 사람에게 넘긴다", () => {
     );
     const session = new AssistantSession(project, { config: CONFIG, chat, declareIntent: planDeclarer });
 
-    const first = await session.sendUserMessage("광장에 연못 만들어줘", () => {}, undefined, { autonomous: true });
-    expect(first.workPlan?.layers[0]?.items[0]?.status).toBe("blocked");
-
-    const auditsBefore = statusTexts(session).length;
-    const second = await session.sendUserMessage("연못 말고 그냥 풀밭으로 해줘", () => {}, undefined, { autonomous: true });
-
-    const newAudits = statusTexts(session).slice(auditsBefore);
-    expect(newAudits.some((t) => t.startsWith("work-item:reactivated"))).toBe(true);
-    // 되살아난 항목은 다시 진행 대상이 되고, 다시 막히면 또 사람에게 넘어온다(무한 루프 없음).
-    expect(second.workPlan?.layers[0]?.items[0]?.status).toBe("blocked");
-    expect(statusTexts(session).filter((t) => t.startsWith("ralph:stalled")).length).toBe(2);
+    const stopOnRecovery = async (text: string) => {
+      const controller = new AbortController();
+      return session.sendUserMessage(text, event => { if (event.type === "run_state" && event.execution.state === "recovering") controller.abort(); }, controller.signal, { autonomous: true });
+    };
+    expect((await stopOnRecovery("광장에 연못 만들어줘")).stoppedReason).toBe("aborted");
+    const original = session.getHarnessSnapshot().requests?.[0];
+    expect((await stopOnRecovery("연못 말고 그냥 풀밭으로 해줘")).stoppedReason).toBe("aborted");
+    expect(session.getHarnessSnapshot().requests?.[0]).toEqual(original);
+    expect(session.getHarnessSnapshot().requests).toHaveLength(2);
+    expect(session.getAcceptanceSnapshot()?.status).not.toBe("verified");
   }, 30000);
 
   it("(d) 쓰기가 성공하면 그 항목의 시도 수가 0으로 돌아간다 — 헛도는 사이 진행한 항목은 막히지 않는다", async () => {

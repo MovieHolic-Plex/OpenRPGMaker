@@ -32,11 +32,12 @@ function scriptedSession(required: string[], rounds: Call[][], nextRequired?: st
     declareIntent: fixedDeclarer({ mode: "modify", needsPlan: false }),
     chat: async (): Promise<ChatResult> => {
       const calls = steps[cursor++];
-      return calls ? {
+      if (!calls) throw Object.assign(new Error("Fixture provider unavailable after verification observations"), { status: 401 });
+      return {
         message: { role: "assistant", content: null, tool_calls: calls.map((call, i) => ({
           id: `call_${cursor}_${i}`, type: "function", function: { name: call.name, arguments: JSON.stringify(call.args) },
         })) }, finishReason: "tool_calls",
-      } : { message: { role: "assistant", content: "작업과 검증을 모두 완료했습니다." }, finishReason: "stop" };
+      };
     },
   });
   return session;

@@ -1,7 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import * as applyStore from "@/editor/tools/applyChangesetToStore";
 import { store } from "@/project/store";
-afterEach(() => vi.restoreAllMocks());
+afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 import { AssistantSession } from "@/ai/assistantSession";
 import { createBlankProject } from "@/project/defaults";
 
@@ -35,7 +34,13 @@ function script(rounds: readonly (readonly Call[])[]) {
         : { message: { role: "assistant", content: "SCRIPTED_SUCCESS" }, finishReason: "stop" };
     },
   });
-  return { session, events, project, run: (autonomous = false) => session.sendUserMessage("Edit the authored map", event => events.push(event), undefined, { autonomous }), calls: () => calls };
+  return { session, events, project, run: (autonomous = false, stopOnRecovery = false, instruction = "") => {
+    const controller = new AbortController();
+    return session.sendUserMessage("Edit the authored map", event => {
+      events.push(event);
+      if (stopOnRecovery && event.type === "run_state" && event.execution.state === "recovering") controller.abort();
+    }, controller.signal, { autonomous, instruction });
+  }, calls: () => calls };
 }
 function snapshot(session: AssistantSession): unknown {
   return "getAcceptanceSnapshot" in session && typeof session.getAcceptanceSnapshot === "function" ? session.getAcceptanceSnapshot() : null;
@@ -48,7 +53,8 @@ describe("acceptance controls actual session termination", () => {
       { id: "size", title: "Required size", criteria: [{ kind: "mapDimensions", target, width: 99, height: 99 }] },
     ] } }, { name: "skip_work_item", args: {} }]]);
     const prove = vi.spyOn(fixture.session, "proveAppliedRevision");
-    await fixture.run(true);
+    const result = await fixture.run(true, true);
+    expect(result.execution?.state).toBe("aborted");
     expect(fixture.session.getWorkPlan()?.layers[0]?.items[0]?.status).toBe("skipped");
     expect(fixture.session.getAcceptanceSnapshot()?.status).toBe("blocked");
     expect(prove).not.toHaveBeenCalled();
@@ -131,10 +137,8 @@ describe("applied acceptance lifecycle through real tools", () => {
   it("repairs exact dimensions after plan completion and invalidates on applied undo", async () => {
     // Given the real resize tool and only the external persistence boundary replaced.
     vi.spyOn(store, "isRemotePersistenceEnabled").mockReturnValue(false);
-    vi.spyOn(applyStore, "applyProposedProject").mockImplementation(async applied => ({
-      ok: true, applied,
-      commit: { commitId: null, persisted: false, reviewStatus: "approved", summary: "local test", toolNames: [], recordedAt: "2026-09-06T00:00:00.000Z" },
-    }));
+    store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(null, { status: 201 })));
     const fixture = script([
       [{ name: "set_work_plan", args: { ...work, acceptance: [{ id: "size", title: "Required size", criteria: [{ kind: "mapDimensions", target, width: 22, height: 17 }] }] } }, { name: "skip_work_item", args: {} }],
       [],
@@ -142,6 +146,7 @@ describe("applied acceptance lifecycle through real tools", () => {
       [],
       [{ name: "resize_map", args: { mapId: target.mapId, width: 22, height: 17 } }],
     ]);
+    store.replace(fixture.project);
     // When the plan is already done but the first resize is insufficient.
     await fixture.run(true);
     // Then final verification follows the applied map rather than the finished plan.
@@ -172,7 +177,7 @@ describe("applied acceptance lifecycle through real tools", () => {
     });
     const deadline = AbortSignal.timeout(5000);
     const expired = new Promise<never>((_resolve, reject) => deadline.addEventListener("abort", () => reject(new Error("Model hold deadline exceeded")), { once: true }));
-    const running = session.sendUserMessage("Resize map", () => {}, controller.signal);
+    const running = session.sendUserMessage("Resize map", () => {}, controller.signal, { instruction: "" });
     // When the exact pending-model event fires, abort without sleeping/polling.
     await Promise.race([entered, expired]);
     controller.abort(); releaseResolve?.();
@@ -196,15 +201,17 @@ describe("applied acceptance lifecycle through real tools", () => {
     expect(fixture.session.getAcceptanceSnapshot()?.status).toBe("blocked");
   });
 
-  it("requires visible contract repair for a spatial plan missing criteria", async () => {
-    // Given a spatial work plan without any structured criteria.
+  it("requires anchored source extraction rather than planner repair for a spatial request missing criteria", async () => {
+    // Given a captured spatial request omitted by the declarer and a plan without criteria.
     const fixture = script([[{ name: "set_work_plan", args: work }, { name: "skip_work_item", args: {} }],
-      [{ name: "repair_acceptance", args: { itemId: "acceptance-contract", criteria: [{ kind: "mapDimensions", target, width: 20, height: 15 }] } }],
+      [{ name: "repair_acceptance", args: { itemId: "request-1:source:0", criteria: [{ kind: "mapDimensions", target, width: 20, height: 15 }] } }],
     ]);
-    // When repaired through its dedicated tool; then only measured applied facts verify.
-    await fixture.run();
-    expect(fixture.events.filter(event => event.type === "acceptance").some(event => event.type === "acceptance" && event.snapshot?.items[0]?.id === "acceptance-contract" && event.snapshot.status === "blocked")).toBe(true);
-    expect(fixture.session.getAcceptanceSnapshot()?.status).toBe("verified");
+    // Unanchored planner repair cannot make source disappear or manufacture coverage.
+    await fixture.run(false, false, "Edit the authored map");
+    expect(fixture.events.find(event => event.type === "tool_call" && event.name === "repair_acceptance")).toMatchObject({ result: { ok: false } });
+    expect(fixture.session.getAcceptanceSnapshot()).toMatchObject({ status: "blocked", items: [
+      { id: "request-1:source:0", required: true, coverage: "uncovered" },
+    ] });
   });
 
   it("keeps legacy nonspatial and read-only requests free of fabricated map promises", async () => {

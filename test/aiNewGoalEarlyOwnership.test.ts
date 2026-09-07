@@ -44,7 +44,15 @@ function goalFixture() {
     config: { ...defaultAiConfig(), agentMode: "chat", model: "test", liteModel: "test", apiKey: "test", maxToolCalls: 8 },
     yieldToUi: async () => {},
     prepareProjectWiki: async input => { boundaries.push("wiki"); boundaryHook("wiki", input.signal); return undefined; },
-    declareIntent: async (facts, signal) => { boundaries.push("intent"); boundaryHook("intent", signal); return fixedDeclarer(intent)(facts); },
+    declareIntent: async (facts, signal) => {
+      boundaries.push("intent"); boundaryHook("intent", signal);
+      return fixedDeclarer({ ...intent, ...(facts.userText === "Preserve this map" ? {
+        requestRequirements: { entries: [{ source: [{ start: 0, end: facts.userText.length, quote: facts.userText }],
+          criteria: [{ kind: "preserve", target: { mapId: map.id } }],
+          bindings: [{ source: { start: 0, end: 8, quote: "Preserve" }, role: "preserve", criterionIndex: 0, fieldPath: [] }],
+        }] },
+      } : {}) })(facts);
+    },
     chat: async () => { const next = response; response = final; return next; },
   });
   return {
@@ -73,7 +81,8 @@ function agreement(session: AssistantSession, result: TurnResult, events: readon
 }
 
 async function assessed(f: ReturnType<typeof goalFixture>) {
-  const result = await f.send("Inspect the original map");
+  // Establish the legacy explicit canonical owner; subsequent sends test real raw-source boundaries.
+  const result = await f.send("Inspect the original map", { instruction: "" });
   const snapshot = f.session.getAcceptanceSnapshot();
   if (!snapshot) throw new Error("Real plan failed to establish canonical assessment");
   expect(f.events.find(event => event.type === "tool_call" && event.name === "set_work_plan")).toMatchObject({ result: { ok: true } });
@@ -113,9 +122,9 @@ describe("host new-goal early ownership", () => {
       expect(next.stoppedReason).toBe(ending === "failure" ? "error" : "aborted");
       agreement(f.session, next, f.events, expected);
       expect(atEntry).toBeNull();
-      expect(atBoundary).toBeNull();
-      expect(boundaryHistory).toEqual([old.snapshot]);
-      expect(f.boundaries).toEqual(boundary === "wiki" ? ["wiki"] : ["wiki", "intent"]);
+      expect(atBoundary).toBe(ending === "already-aborted" ? undefined : null);
+      expect(boundaryHistory).toEqual(ending === "already-aborted" ? [] : [old.snapshot]);
+      expect(f.boundaries).toEqual(ending === "already-aborted" ? [] : boundary === "wiki" ? ["wiki"] : ["wiki", "intent"]);
       expect(f.session.getWorkPlan()).toBeNull();
       expect(f.session.getAcceptanceSnapshot()).toBeNull();
       expect(f.session.getAcceptanceHistory()).toEqual([old.snapshot]);
@@ -189,8 +198,13 @@ describe("host new-goal early ownership", () => {
     if (mode === "model-continuation") f.setIntent({ mode: "other", source: "continuation" });
     const result = await f.send("Explain the current goal", mode === "ask" || mode === "ask-new-goal"
       ? { composerMode: "ask", ...(mode === "ask-new-goal" ? { goalAction: "new-goal" } : {}) } : {});
-    agreement(f.session, result, f.events, { execution: "response-final", goal: "satisfied", delivery: "no-change" });
-    expect(f.session.getAcceptanceSnapshot()).toEqual(old.snapshot);
+    const addsUncoveredSource = mode === "model-reset" || mode === "model-continuation";
+    agreement(f.session, result, f.events, { execution: addsUncoveredSource ? "blocked" : "response-final",
+      goal: addsUncoveredSource ? "incomplete" : "satisfied", delivery: "no-change" });
+    if (addsUncoveredSource) {
+      expect(f.session.getAcceptanceSnapshot()?.items[0]).toEqual(old.snapshot.items[0]);
+      expect(f.session.getAcceptanceSnapshot()?.items[1]).toMatchObject({ required: true, coverage: "uncovered" });
+    } else expect(f.session.getAcceptanceSnapshot()).toEqual(old.snapshot);
     expect(f.session.getAcceptanceHistory()).toEqual([]);
     expect(old.result).toEqual(old.originalResult);
   });
@@ -209,6 +223,9 @@ describe("host new-goal early ownership", () => {
     let round = 0;
     let fault = false;
     const f = applyFixture(async () => {
+      // Resume reuses captured declaration facts, so fail the actual executor rather
+      // than relying on an unnecessary second intent-classification call.
+      if (fault) throw new Error("executor-entry-failure");
       if (round++ > 0) return final;
       const project = store.getCurrent();
       const map = project.maps[project.startMapId];

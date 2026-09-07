@@ -425,6 +425,9 @@ export function buildAiActivityLogRecord(input: AiActivityLogInput): AiActivityL
     result: {
       ...(input.result.runOutcome ? { runOutcome: input.result.runOutcome } : {}),
       ...(input.result.recap ? { recap: input.result.recap } : {}),
+      ...(input.result.execution ? { execution: structuredClone(input.result.execution) } : {}),
+      ...(input.result.acceptance !== undefined ? { acceptance: structuredClone(input.result.acceptance) } : {}),
+      ...(input.result.requests ? { requests: structuredClone(input.result.requests) } : {}),
       ok: input.result.ok,
       ...(input.result.applied === undefined ? {} : { applied: input.result.applied }),
       ...(input.result.error ? { error: clipText(input.result.error, 1500) } : {}),
