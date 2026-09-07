@@ -278,7 +278,8 @@ Phase는 순차, phase 내부는 아래 matrix가 허용하는 작업만 병렬.
   - Acceptance/QA: 신규 `npm test -- test/linkedAnimalHousing.test.ts`; happy 배치2개독립정원/upgrade2→5/이동ID유지, failure 충돌·비용·종거절전체불변, shrink/철거동물삭제0/정렬고정/이중ref거부. `E/11/{red,green,lifecycle}.json`.
   - Commit: Y | `feat(life): link animal housing to farm building instances`.
 
-- [ ] 51. 유실된 실행 증거와 미커밋 수정본을 보존 복구한다
+- [x] 51. 유실된 실행 증거와 미커밋 수정본을 보존 복구한다
+  - Result: 아홉 수정본·binary diff와 복구 자료384개의 무결성을 직접 확인했다. 공개389경로 검증0, 비공개 원본30파일은 별도 보존한다. 원본 실행 발췌는 복구했지만 r2 전체 로그·상태 캡처는 미복구이며, 이 완료는 제품 승인이나 누락 원본 복구 주장이 아니다. 수정본 체크포인트 `2e847642`; r3 검증은 별도 실행한다.
   - Scope: `spatial-rights` r2 작업자의 sparse 재설정으로 삭제된 ignored 증거와 남은 아홉 소스/테스트/위키 변경. 새 기능이나 원본 테스트 결과 생성이 아니다.
   - Acceptance: 먼저 현재 변경과 신규 테스트를 별도 안전 경로에 바이트 일치로 보관한다. st_01a07964/972 및 독립967/982의 실제 세션/tool 원문·사본에서 복구 가능한 자료를 출처와 함께 보관하고, 복구 불가능·부분 자료는 그대로 구분한다. 누락 raw를 요약/재실행 결과로 원본인 척 채우지 않는다. `E/51/`에 복구 매핑·현재 수정 해시·명시한 증거 공백을 기록한다.
   - 재실행 조건: 미커밋 원본 트리의 reset/read-tree/sparse 변경 금지. 새로운 검증 시도는 필요한 빌드 입력과 증거 경로를 먼저 보존 설정하고 이후 sparse 재설정을 하지 않는다. 보존된 수정본을 재사용하되 실제 새 baseline/RED/GREEN/공개 probe/build를 새 시도로 기록한다. 기존355 통과 주장은 검증 근거가 아니다.

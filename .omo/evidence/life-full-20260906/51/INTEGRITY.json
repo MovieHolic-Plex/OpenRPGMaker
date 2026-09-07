@@ -1,0 +1,22 @@
+{
+  "verified_utc": "2026-09-07T01:58:24.732321+00:00",
+  "verification": "forensic integrity only, no product QA",
+  "provenance_artifacts_verified": 384,
+  "source_files_verified": 9,
+  "binary_diff_verified": true,
+  "untracked_test_preserved": true,
+  "head_unchanged": "b5c679efc6c5e575f7a1afb65dfa86939aade325",
+  "dirty_status_unchanged": true,
+  "all_source_bytes_unchanged": true,
+  "all_four_owned_session_sources_unchanged": true,
+  "existing_evidence_sources_unchanged": true,
+  "independent_r2_diff_equals_current_bytes": true,
+  "post_loss_source_and_parent_hashes_match": true,
+  "first_summary_write_equals_verifier_copy": true,
+  "gzip_artifact_bytes": 594840,
+  "limitations": [
+    "No original final-source.sha256 receipt recovered",
+    "Final probe decoded from recorded patches, no surviving final disk hash",
+    "No implementation, diagnostics, test, typecheck, build or public probe executed by recovery"
+  ]
+}

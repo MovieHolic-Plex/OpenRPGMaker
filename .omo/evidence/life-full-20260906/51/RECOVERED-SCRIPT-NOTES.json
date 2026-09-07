@@ -1,0 +1,8 @@
+{
+  "first_summary_write_equals_independent_copy": true,
+  "final_probe_kind": "decoded original patch history, not new reconstruction or rerun; final disk-byte hash receipt unavailable",
+  "final_probe_bytes": 10479,
+  "final_probe_sha256": "bbb4d4562544f0bcd8c65f11c2bed6d6d5cc1f61d6a83a0406eeba90ebec08b6",
+  "original_tests": "r2-line47 test file is original 19-case RED revision, NOT current final test file",
+  "artifacts": 384
+}
