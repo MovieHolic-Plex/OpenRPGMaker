@@ -55,6 +55,12 @@ test("preview stays current while faces are edited and branches are traversed", 
   await page.getByTestId("event-editor-open").click();
   const editor = page.getByTestId("event-editor-modal");
   await editor.getByTestId("event-view-toggle-list").click();
+  await editor.getByTestId("event-command-changeFace").first().dblclick();
+  const faceDialog = page.getByTestId("event-command-edit-dialog");
+  await expect(faceDialog).toBeVisible();
+  await expect(editor.getByTestId("event-view-toggle-list")).toHaveAttribute("aria-selected", "true");
+  await faceDialog.getByTestId("event-command-edit-cancel").click();
+  actions.push("Cold-inspector double-click opens the command editor without switching to Preview");
   await editor.getByTestId("event-command-changeFace").first().locator(".cmd-head").click();
   await expect(editor.getByTestId("event-view-toggle-list")).toHaveAttribute("aria-selected", "true");
   await editor.getByTestId("event-view-toggle-preview").click();
@@ -107,6 +113,16 @@ test("preview stays current while faces are edited and branches are traversed", 
   await page.screenshot({ path: resolve(output, "branch-state-1024.png") });
 
   await editor.getByTestId("event-view-toggle-list").click();
+  await editor.getByTestId("event-inspector-close").click();
+  const textRow = editor.getByTestId("event-command-text").first();
+  const beforeOpen = await textRow.boundingBox();
+  await textRow.dblclick();
+  const textDialog = page.getByTestId("event-command-edit-dialog");
+  await expect(textDialog).toBeVisible();
+  expect(await textRow.boundingBox()).toEqual(beforeOpen);
+  await expect(editor.getByTestId("event-view-toggle-list")).toHaveAttribute("aria-selected", "true");
+  await textDialog.getByTestId("event-command-edit-cancel").click();
+  actions.push("At1024, closing/reopening the inspector does not move the double-clicked row");
   await editor.getByTestId("event-command-text").first().locator(".cmd-head").click();
   await expect(editor.getByTestId("event-view-toggle-list")).toHaveAttribute("aria-selected", "true");
   const inspector = editor.getByTestId("event-editor-inspector");
