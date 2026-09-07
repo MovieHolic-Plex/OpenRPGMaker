@@ -265,13 +265,19 @@ describe("stable target retry budgets through AssistantSession", () => {
     rounds.push([badNpc(0)], [badNpc(1)], [badNpc(2)], [correctedNpc(1), readMap,
       call("repair_acceptance", { itemId: "acceptance-contract", criteria }),
     ]);
-    const second = await session.sendUserMessage("같은 주민 명령을 다시 고쳐줘", collect, undefined, { autonomous: true });
+    // P2 requires the host's explicit resume action, not arbitrary new prose.
+    const second = await session.sendUserMessage("같은 주민 명령을 다시 고쳐줘", collect, undefined, { autonomous: true, goalAction: "resume" });
     expect(second.workPlan?.layers[0].items[0].status).toBe("done");
     expect(state.batches).toBe(8);
     expect(events.find((event) => event.name === "repair_acceptance")?.result).toMatchObject({ ok: true, data: { acceptance: { status: "verifying", items: [{ evidence: [{ passed: false }] }] } } });
     expect(session.getAcceptanceSnapshot()).toMatchObject({ status: "verified", items: [{ id: "acceptance-contract", evidence: [{ expected: JSON.stringify(criteria[0]), passed: true }] }] });
     expect(second.proposedCalls).toEqual([]);
-    expect(second.appliedCalls?.map((entry) => entry.name)).toEqual(["place_npc"]);
+    // Resume retains previously pending independent writes; none were applied in
+    // the blocked first run, so they must be delivered once rather than erased.
+    expect(first.appliedCalls).toEqual([]);
+    expect(second.appliedCalls?.slice(0, -1)).toEqual(first.proposedCalls);
+    expect(second.appliedCalls?.at(-1)).toMatchObject({ name: "place_npc", args: { id: "npc_target" } });
+    expect(second.appliedCalls?.filter(entry => entry.name === "place_npc" && entry.args.id === "npc_other")).toHaveLength(1);
     expect(events.filter((event) => event.name === "place_npc" && event.args.id === "npc_target").map((event) => event.result.ok)).toEqual([false, false, false, false, false, false, false, true]);
     expect(events.filter((event) => event.name === "place_npc" && event.args.id === "npc_target").at(-1)?.result.ok).toBe(true);
     expectResponses(session);

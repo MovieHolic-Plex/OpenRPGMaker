@@ -1,0 +1,27 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiOutcomeApplyPolicy.test.ts test/aiOutcomeContinuationDelivery.test.ts test/workPlan.test.ts --maxWorkers 1 --minWorkers 1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p2-20260906
+
+ ✓ test/aiOutcomeApplyPolicy.test.ts (6 tests) 31994ms
+   ✓ settles the same verified requirement with milestone=false  6139ms
+   ✓ settles the same verified requirement with milestone=true  6041ms
+   ✓ uses the existing quick-reply stop decision without reclassifying response prose  660ms
+   ✓ preserves genuine blocked execution when an applied draft later verifies  7797ms
+   ✓ preserves genuine failed execution when an applied draft later verifies  6038ms
+   ✓ preserves genuine cancelled execution when an applied draft later verifies  5317ms
+ ✓ test/aiOutcomeContinuationDelivery.test.ts (5 tests) 21225ms
+   ✓ preserves delivery ownership for 'continue' with verified=false  4764ms
+   ✓ preserves delivery ownership for 'continue' with verified=true  3726ms
+   ✓ preserves delivery ownership for 'proof-retry' with verified=false  4127ms
+   ✓ preserves delivery ownership for 'query' with verified=true  4296ms
+   ✓ preserves delivery ownership for 'ask' with verified=true  4310ms
+ ✓ test/workPlan.test.ts (40 tests) 113ms
+
+ Test Files  3 passed (3)
+      Tests  51 passed (51)
+   Start at  04:09:24
+   Duration  89.26s (transform 18.08s, setup 0ms, collect 32.47s, tests 53.33s, environment 10ms, prepare 957ms)
+

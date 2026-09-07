@@ -1,0 +1,89 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiRequiredOutcomes.test.ts -t original user utterance --maxWorkers 2 --minWorkers 1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p2-20260906
+
+ ❯ test/aiRequiredOutcomes.test.ts (39 tests | 2 failed | 37 skipped) 1061ms
+   ↓ canonical requirements > keeps required skipped obligations when a replan tries to weaken them
+   ↓ canonical requirements > allows optional skipped work without labeling it verified
+   ↓ canonical requirements > fails closed for malformed declarations null
+   ↓ canonical requirements > fails closed for malformed declarations %j
+   ↓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":[{"kind":"mapDimensions","target":{"mapId":"map_blank_start"},"width":99,"height":99}],"required":"false"}
+   ↓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":[{"kind":"invented","passed":true}]}
+   ↓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":null,"required":false}
+   ↓ canonical requirements > preserves requirements and item links through the planner parser
+   ↓ canonical requirements > keeps a bare legacy scheduler plan unassessed
+   ↓ canonical requirements > assesses existing explicit acceptance without requiring the new field
+   ↓ canonical requirements > retains an unlinked required obligation when replan drops links=false
+   ↓ canonical requirements > retains an unlinked required obligation when replan drops links=true
+   ↓ canonical requirements > binds original text and scope at the host boundary despite fabricated source and withdrawal
+   × canonical requirements > retains only the original user utterance through replan with instruction override=false 596ms
+     → expected { requestId: 'request-1', …(2) } to match object { text: 'USER_ORIGINAL', …(1) }
+(1 matching property omitted from actual)
+   × canonical requirements > retains only the original user utterance through replan with instruction override=true 463ms
+     → expected { requestId: 'request-1', …(2) } to match object { text: 'USER_ORIGINAL', …(1) }
+(1 matching property omitted from actual)
+   ↓ canonical requirements > withdraws only the named current requirement through the user-only API
+   ↓ canonical requirements > keeps sibling obligations when the user withdraws just one
+   ↓ canonical requirements > rejects model tool withdrawal even with fabricated user provenance
+   ↓ canonical requirements > rejects stale goal withdrawal actions
+   ↓ canonical requirements > does not erase old obligations on a model resetsContext claim
+   ↓ canonical requirements > archives an incomplete goal when the user explicitly starts a new goal
+   ↓ exact scoped verdict authority > evaluates explicit evidence without tool-name credit
+   ↓ exact scoped verdict authority > evaluates wrong-target evidence without tool-name credit
+   ↓ exact scoped verdict authority > evaluates stale evidence without tool-name credit
+   ↓ exact scoped verdict authority > evaluates advisory evidence without tool-name credit
+   ↓ exact scoped verdict authority > evaluates advisory-after-stale evidence without tool-name credit
+   ↓ exact scoped verdict authority > evaluates advisory-after-explicit evidence without tool-name credit
+   ↓ exact scoped verdict authority > evaluates negative evidence without tool-name credit
+   ↓ exact scoped verdict authority > evaluates model evidence without tool-name credit
+   ↓ exact scoped verdict authority > does not verify an unapplied draft from a passing scoped verdict
+   ↓ exact scoped verdict authority > retires scoped verdicts after applied content changes even if later undone
+   ↓ exact scoped verdict authority > rejects pre-declaration evidence after an external rebase
+   ↓ exact scoped verdict authority > credits a real scoped tool response through the session dispatcher
+   ↓ question-safe continuation > preserves blocked work and counters for ask
+   ↓ question-safe continuation > preserves blocked work and counters for question
+   ↓ question-safe continuation > preserves repeated failure counters while answering a question
+   ↓ question-safe continuation > does not reactivate from fabricated continuation source
+   ↓ question-safe continuation > reactivates blocked work only with explicit user resume
+   ↓ question-safe continuation > retains goal evidence and repair counters during ask
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiRequiredOutcomes.test.ts > canonical requirements > retains only the original user utterance through replan with instruction override=false
+ FAIL  test/aiRequiredOutcomes.test.ts > canonical requirements > retains only the original user utterance through replan with instruction override=true
+AssertionError: expected { requestId: 'request-1', …(2) } to match object { text: 'USER_ORIGINAL', …(1) }
+(1 matching property omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -6,7 +6,8 @@[39m
+[2m        "width": 3,[22m
+[2m        "x": 1,[22m
+[2m        "y": 2,[22m
+[2m      },[22m
+[2m    },[22m
+[32m-   "text": "USER_ORIGINAL",[39m
+[31m+   "text": "USER_ORIGINAL[39m
+[31m+ [컨텍스트] 현재 맵: Editor map (map_blank_start)",[39m
+[2m  }[22m
+
+ ❯ test/aiRequiredOutcomes.test.ts:109:65
+    107|     await f.run([[plan([{ ...size, source: { text: "MODEL_REPLACEMENT"…
+    108|     // Then original user words survive, without either transport's co…
+    109|     expect(f.session.getAcceptanceSnapshot()?.items[0]?.source).toMatc…
+       |                                                                 ^
+    110|   });
+    111| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 37 skipped (39)
+   Start at  02:15:40
+   Duration  13.09s (transform 8.22s, setup 0ms, collect 11.63s, tests 1.06s, environment 0ms, prepare 84ms)
+

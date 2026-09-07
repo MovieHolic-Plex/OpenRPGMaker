@@ -1,0 +1,39 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/runOutcomeApplyFixture.test.ts --maxWorkers 1 --minWorkers 1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p2-20260906
+
+ ❯ test/runOutcomeApplyFixture.test.ts (2 tests | 1 failed) 5068ms
+   × awaits real manual writer body handling when proof is cancelled at the receipt 3366ms
+     → expected false to be true // Object.is equality
+   ✓ finishes drainage without a new changes row when a save is deduplicated  1700ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/runOutcomeApplyFixture.test.ts > awaits real manual writer body handling when proof is cancelled at the receipt
+AssertionError: expected false to be true // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+ ❯ test/runOutcomeApplyFixture.test.ts:53:36
+     51|     await bounded(bodyWriter.close());
+     52|     // Then drainage includes native body parsing and writer completio…
+     53|     expect(await completedAtDrain).toBe(true);
+       |                                    ^
+     54|     expect(await call.value).toMatchObject({ kind: "not-configured" });
+     55|   } finally {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed (2)
+   Start at  03:24:14
+   Duration  36.86s (transform 20.59s, setup 0ms, collect 30.56s, tests 5.07s, environment 0ms, prepare 286ms)
+

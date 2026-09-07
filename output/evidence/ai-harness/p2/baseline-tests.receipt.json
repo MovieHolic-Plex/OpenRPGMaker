@@ -1,0 +1,30 @@
+{
+  "taskId": "st_01a0777d",
+  "kind": "new-baseline-run",
+  "cwd": "/home/main/z-project/rpg-zzu-ai-harness-p2-20260906",
+  "command": "npm test -- test/assistantVerificationEvidence.test.ts test/workItemOutcome.test.ts --maxWorkers 2 --minWorkers 1",
+  "exitCode": 0,
+  "headBefore": "e827eb5c8371ff87ea29231a124806f687c3aba2",
+  "headAfter": "e827eb5c8371ff87ea29231a124806f687c3aba2",
+  "tree": "90e4dcaae23e36c148a79cacc2981cd26da00e32",
+  "sourceTree": "7cffd2bbcc3208e91510aec30a50a703a783b255",
+  "testTree": "d3f153dbf7d1d2cf43067280d74a00b9ac90c722",
+  "sourceWorktreeDiffExit": 0,
+  "vitestVersion": "3.2.4",
+  "filesPassed": 2,
+  "testsPassed": 34,
+  "testsFailed": 0,
+  "vitestDurationSeconds": 37.24,
+  "suites": [
+    { "path": "test/assistantVerificationEvidence.test.ts", "passed": 20 },
+    { "path": "test/workItemOutcome.test.ts", "passed": 14 }
+  ],
+  "rawLog": "baseline-tests.log",
+  "rawLogBytes": 4073,
+  "rawLogLines": 36,
+  "limitations": [
+    "Existing tests only; no new P2 behavior tests or browser/remote scenarios were run.",
+    "P1 merge-compatibility tests and build are reused historical evidence, not part of this execution.",
+    "Source-characterized lifecycle gaps are not runtime reproductions."
+  ]
+}

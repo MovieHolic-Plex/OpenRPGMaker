@@ -1,0 +1,17 @@
+{
+  "stable": true,
+  "head": "016818b8c78efbb839de6464c5932b425d423942",
+  "branch": "agent/ai-harness-p2-20260906",
+  "hashes": {
+    "DESIGN.md": "985e22561d0dcb150e51cd07aca0db5c8223755c7ccd9afb527fbd40d4bc7e63",
+    "src/editor/panels/aiChatPanel.ts": "003066d14d6a8cffb16ca25d21ae5a2f793dad6fc7a15d04a543659023821751",
+    "src/editor/panels/aiChatRenderers.ts": "1863b02bbe10ef5aa2c8d2b41b93d10851c27a51c6ea3da8370dd7be6d0b7d80",
+    "src/editor/panels/aiStickyChecklist.ts": "b8ddb2ffa39545b4f1b0ec2013b26e18a39e22ed1c4db3fb936f5c153ac9a980",
+    "src/styles/database/assistant-sticky-checklist.css": "71c707dc664b34fd47ef2eb9c30b711571d2bdc7653138f78e2704ece60762c4",
+    "src/styles/database/tabs-b-assistant-panel/19-assistant-cards.css": "ffb8ff6e90611a6a2e4abb26d15f9341722cb2dd00d942a0e37f48a3cd8925dd",
+    "test/aiOutcomePresentation.test.ts": "4173d0ab90082be9d04fa7dece5b5533f4756d2bac0543be91d40970e13bac79",
+    "test/aiAutonomousRunSurface.test.ts": "871161dafbbb45ac425136d1093e2aacedbbbf504339be78bebe229e776a4a82",
+    "test/aiContinueUserAction.test.ts": "1fabd13e45b3fc028c471a91ad13ea6f748078d6cf680f40720f6a1886a7b2b7",
+    "test/aiOutcomeBrowserEvidence.mjs": "aeb3fd4f566a3a9dc6c135a971220a858f2a1cc8373cf7502ac5d95de0ab4dae"
+  }
+}

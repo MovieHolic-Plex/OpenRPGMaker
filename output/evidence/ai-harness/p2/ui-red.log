@@ -1,0 +1,328 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiOutcomePresentation.test.ts --maxWorkers 1 --minWorkers 1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p2-20260906
+
+ ❯ test/aiOutcomePresentation.test.ts (93 tests | 92 failed) 4056ms
+   × projects response-final/unassessed/no-change without changing authority 13ms
+     → (0 , renderRunOutcome) is not a function
+   × projects response-final/unassessed/draft without changing authority 3ms
+     → (0 , renderRunOutcome) is not a function
+   × projects response-final/unassessed/applied without changing authority 1ms
+     → (0 , renderRunOutcome) is not a function
+   × projects response-final/unassessed/persisted without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects response-final/unassessed/persisted-verified without changing authority 1ms
+     → (0 , renderRunOutcome) is not a function
+   × projects response-final/incomplete/no-change without changing authority 1ms
+     → (0 , renderRunOutcome) is not a function
+   × projects response-final/incomplete/draft without changing authority 1ms
+     → (0 , renderRunOutcome) is not a function
+   × projects response-final/incomplete/applied without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects response-final/incomplete/persisted without changing authority 1ms
+     → (0 , renderRunOutcome) is not a function
+   × projects response-final/incomplete/persisted-verified without changing authority 1ms
+     → (0 , renderRunOutcome) is not a function
+   × projects response-final/satisfied/no-change without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects response-final/satisfied/draft without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects response-final/satisfied/applied without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects response-final/satisfied/persisted without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects response-final/satisfied/persisted-verified without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects awaiting-user/unassessed/no-change without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects awaiting-user/unassessed/draft without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects awaiting-user/unassessed/applied without changing authority 1ms
+     → (0 , renderRunOutcome) is not a function
+   × projects awaiting-user/unassessed/persisted without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects awaiting-user/unassessed/persisted-verified without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects awaiting-user/incomplete/no-change without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects awaiting-user/incomplete/draft without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects awaiting-user/incomplete/applied without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects awaiting-user/incomplete/persisted without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects awaiting-user/incomplete/persisted-verified without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects awaiting-user/satisfied/no-change without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects awaiting-user/satisfied/draft without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects awaiting-user/satisfied/applied without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects awaiting-user/satisfied/persisted without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects awaiting-user/satisfied/persisted-verified without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects blocked/unassessed/no-change without changing authority 1ms
+     → (0 , renderRunOutcome) is not a function
+   × projects blocked/unassessed/draft without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects blocked/unassessed/applied without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects blocked/unassessed/persisted without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects blocked/unassessed/persisted-verified without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects blocked/incomplete/no-change without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects blocked/incomplete/draft without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects blocked/incomplete/applied without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects blocked/incomplete/persisted without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects blocked/incomplete/persisted-verified without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects blocked/satisfied/no-change without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects blocked/satisfied/draft without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects blocked/satisfied/applied without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects blocked/satisfied/persisted without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects blocked/satisfied/persisted-verified without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects cancelled/unassessed/no-change without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects cancelled/unassessed/draft without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects cancelled/unassessed/applied without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects cancelled/unassessed/persisted without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects cancelled/unassessed/persisted-verified without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects cancelled/incomplete/no-change without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects cancelled/incomplete/draft without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects cancelled/incomplete/applied without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects cancelled/incomplete/persisted without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects cancelled/incomplete/persisted-verified without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects cancelled/satisfied/no-change without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects cancelled/satisfied/draft without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects cancelled/satisfied/applied without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects cancelled/satisfied/persisted without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects cancelled/satisfied/persisted-verified without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects budget-exhausted/unassessed/no-change without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects budget-exhausted/unassessed/draft without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects budget-exhausted/unassessed/applied without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects budget-exhausted/unassessed/persisted without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects budget-exhausted/unassessed/persisted-verified without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects budget-exhausted/incomplete/no-change without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects budget-exhausted/incomplete/draft without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects budget-exhausted/incomplete/applied without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects budget-exhausted/incomplete/persisted without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects budget-exhausted/incomplete/persisted-verified without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects budget-exhausted/satisfied/no-change without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects budget-exhausted/satisfied/draft without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects budget-exhausted/satisfied/applied without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects budget-exhausted/satisfied/persisted without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects budget-exhausted/satisfied/persisted-verified without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects failed/unassessed/no-change without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects failed/unassessed/draft without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects failed/unassessed/applied without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects failed/unassessed/persisted without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects failed/unassessed/persisted-verified without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects failed/incomplete/no-change without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects failed/incomplete/draft without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects failed/incomplete/applied without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects failed/incomplete/persisted without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects failed/incomplete/persisted-verified without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects failed/satisfied/no-change without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects failed/satisfied/draft without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects failed/satisfied/applied without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects failed/satisfied/persisted without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × projects failed/satisfied/persisted-verified without changing authority 0ms
+     → (0 , renderRunOutcome) is not a function
+   × withdraws the exact real requirement only on user activation, retaining source and failed evidence 1539ms
+     → Missing requirement action
+   × keeps rejected and busy actions from changing the canonical obligation 1075ms
+     → note.setBusy is not a function
+   ✓ does not offer a user action for legacy read-only callers  1391ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 92 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiOutcomePresentation.test.ts > projects response-final/unassessed/no-change without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects response-final/unassessed/draft without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects response-final/unassessed/applied without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects response-final/unassessed/persisted without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects response-final/unassessed/persisted-verified without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects response-final/incomplete/no-change without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects response-final/incomplete/draft without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects response-final/incomplete/applied without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects response-final/incomplete/persisted without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects response-final/incomplete/persisted-verified without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects response-final/satisfied/no-change without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects response-final/satisfied/draft without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects response-final/satisfied/applied without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects response-final/satisfied/persisted without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects response-final/satisfied/persisted-verified without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects awaiting-user/unassessed/no-change without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects awaiting-user/unassessed/draft without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects awaiting-user/unassessed/applied without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects awaiting-user/unassessed/persisted without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects awaiting-user/unassessed/persisted-verified without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects awaiting-user/incomplete/no-change without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects awaiting-user/incomplete/draft without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects awaiting-user/incomplete/applied without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects awaiting-user/incomplete/persisted without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects awaiting-user/incomplete/persisted-verified without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects awaiting-user/satisfied/no-change without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects awaiting-user/satisfied/draft without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects awaiting-user/satisfied/applied without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects awaiting-user/satisfied/persisted without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects awaiting-user/satisfied/persisted-verified without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects blocked/unassessed/no-change without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects blocked/unassessed/draft without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects blocked/unassessed/applied without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects blocked/unassessed/persisted without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects blocked/unassessed/persisted-verified without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects blocked/incomplete/no-change without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects blocked/incomplete/draft without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects blocked/incomplete/applied without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects blocked/incomplete/persisted without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects blocked/incomplete/persisted-verified without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects blocked/satisfied/no-change without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects blocked/satisfied/draft without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects blocked/satisfied/applied without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects blocked/satisfied/persisted without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects blocked/satisfied/persisted-verified without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects cancelled/unassessed/no-change without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects cancelled/unassessed/draft without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects cancelled/unassessed/applied without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects cancelled/unassessed/persisted without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects cancelled/unassessed/persisted-verified without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects cancelled/incomplete/no-change without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects cancelled/incomplete/draft without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects cancelled/incomplete/applied without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects cancelled/incomplete/persisted without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects cancelled/incomplete/persisted-verified without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects cancelled/satisfied/no-change without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects cancelled/satisfied/draft without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects cancelled/satisfied/applied without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects cancelled/satisfied/persisted without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects cancelled/satisfied/persisted-verified without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects budget-exhausted/unassessed/no-change without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects budget-exhausted/unassessed/draft without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects budget-exhausted/unassessed/applied without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects budget-exhausted/unassessed/persisted without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects budget-exhausted/unassessed/persisted-verified without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects budget-exhausted/incomplete/no-change without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects budget-exhausted/incomplete/draft without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects budget-exhausted/incomplete/applied without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects budget-exhausted/incomplete/persisted without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects budget-exhausted/incomplete/persisted-verified without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects budget-exhausted/satisfied/no-change without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects budget-exhausted/satisfied/draft without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects budget-exhausted/satisfied/applied without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects budget-exhausted/satisfied/persisted without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects budget-exhausted/satisfied/persisted-verified without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects failed/unassessed/no-change without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects failed/unassessed/draft without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects failed/unassessed/applied without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects failed/unassessed/persisted without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects failed/unassessed/persisted-verified without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects failed/incomplete/no-change without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects failed/incomplete/draft without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects failed/incomplete/applied without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects failed/incomplete/persisted without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects failed/incomplete/persisted-verified without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects failed/satisfied/no-change without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects failed/satisfied/draft without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects failed/satisfied/applied without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects failed/satisfied/persisted without changing authority
+ FAIL  test/aiOutcomePresentation.test.ts > projects failed/satisfied/persisted-verified without changing authority
+TypeError: (0 , renderRunOutcome) is not a function
+ ❯ test/aiOutcomePresentation.test.ts:27:18
+     25|   it(`projects ${execution}/${goal}/${delivery} without changing autho…
+     26|     const outcome = Object.freeze({ execution, goal, delivery });
+     27|     const root = renderRunOutcome(outcome);
+       |                  ^
+     28|     expect(root.dataset).toMatchObject({ testid: "ai-run-outcome", exe…
+     29|     expect(root.getAttribute("role")).toBe("status");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/92]⎯
+
+ FAIL  test/aiOutcomePresentation.test.ts > withdraws the exact real requirement only on user activation, retaining source and failed evidence
+Error: Missing requirement action
+ ❯ button test/aiOutcomePresentation.test.ts:17:21
+     15| function button(): HTMLButtonElement {
+     16|   const found = document.querySelector<HTMLButtonElement>("[data-testi…
+     17|   if (!found) throw new Error("Missing requirement action");
+       |                     ^
+     18|   return found;
+     19| }
+ ❯ test/aiOutcomePresentation.test.ts:47:10
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/92]⎯
+
+ FAIL  test/aiOutcomePresentation.test.ts > keeps rejected and busy actions from changing the canonical obligation
+TypeError: note.setBusy is not a function
+ ❯ test/aiOutcomePresentation.test.ts:69:8
+     67|   const note = createAiStickyChecklist({ onWithdraw: withdraw }); note…
+     68|   note.update(f.session.getAcceptanceSnapshot());
+     69|   note.setBusy(true); button().click(); expect(withdraw).not.toHaveBee…
+       |        ^
+     70|   note.setBusy(false); button().click(); expect(withdraw).toHaveBeenCa…
+     71|   expect(f.session.getRunOutcome()?.goal).toBe("incomplete");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/92]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  92 failed | 1 passed (93)
+   Start at  05:09:30
+   Duration  34.96s (transform 19.89s, setup 0ms, collect 29.08s, tests 4.06s, environment 485ms, prepare 167ms)
+

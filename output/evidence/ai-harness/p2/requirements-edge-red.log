@@ -1,0 +1,99 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiRequiredOutcomes.test.ts --maxWorkers 2 --minWorkers 1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p2-20260906
+
+ ❯ test/aiRequiredOutcomes.test.ts (31 tests | 2 failed) 21598ms
+   ✓ canonical requirements > keeps required skipped obligations when a replan tries to weaken them  718ms
+   ✓ canonical requirements > allows optional skipped work without labeling it verified  792ms
+   ✓ canonical requirements > fails closed for malformed declarations null  527ms
+   ✓ canonical requirements > fails closed for malformed declarations %j  712ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":[{"kind":"mapDimensions","target":{"mapId":"map_blank_start"},"width":99,"height":99}],"required":"false"}  695ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":[{"kind":"invented","passed":true}]}  800ms
+   × canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":null,"required":false} 687ms
+     → expected { id: 'acceptance-1', …(3) } to match object { status: 'blocked', …(1) }
+(10 matching properties omitted from actual)
+   ✓ canonical requirements > preserves requirements and item links through the planner parser 3ms
+   ✓ canonical requirements > keeps a bare legacy scheduler plan unassessed  477ms
+   ✓ canonical requirements > assesses existing explicit acceptance without requiring the new field  807ms
+   ✓ canonical requirements > binds original text and scope at the host boundary despite fabricated source and withdrawal  737ms
+   ✓ canonical requirements > withdraws only the named current requirement through the user-only API  671ms
+   ✓ canonical requirements > rejects model tool withdrawal even with fabricated user provenance  809ms
+   ✓ canonical requirements > rejects stale goal withdrawal actions  784ms
+   ✓ canonical requirements > does not erase old obligations on a model resetsContext claim  746ms
+   ✓ canonical requirements > archives an incomplete goal when the user explicitly starts a new goal  741ms
+   ✓ exact scoped verdict authority > evaluates explicit evidence without tool-name credit  628ms
+   ✓ exact scoped verdict authority > evaluates wrong-target evidence without tool-name credit  445ms
+   ✓ exact scoped verdict authority > evaluates stale evidence without tool-name credit  424ms
+   ✓ exact scoped verdict authority > evaluates advisory evidence without tool-name credit  388ms
+   ✓ exact scoped verdict authority > evaluates advisory-after-stale evidence without tool-name credit  425ms
+   × exact scoped verdict authority > evaluates advisory-after-explicit evidence without tool-name credit 588ms
+     → expected false to be true // Object.is equality
+   ✓ exact scoped verdict authority > evaluates negative evidence without tool-name credit  559ms
+   ✓ exact scoped verdict authority > evaluates model evidence without tool-name credit  562ms
+   ✓ exact scoped verdict authority > credits a real scoped tool response through the session dispatcher  2900ms
+   ✓ question-safe continuation > preserves blocked work and counters for ask  485ms
+   ✓ question-safe continuation > preserves blocked work and counters for question  866ms
+   ✓ question-safe continuation > preserves repeated failure counters while answering a question  910ms
+   ✓ question-safe continuation > does not reactivate from fabricated continuation source  473ms
+   ✓ question-safe continuation > reactivates blocked work only with explicit user resume  353ms
+   ✓ question-safe continuation > retains goal evidence and repair counters during ask  883ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiRequiredOutcomes.test.ts > canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":null,"required":false}
+AssertionError: expected { id: 'acceptance-1', …(3) } to match object { status: 'blocked', …(1) }
+(10 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "items": [[22m
+[2m      {[22m
+[32m-       "required": true,[39m
+[31m+       "required": false,[39m
+[2m        "status": "blocked",[22m
+[2m      },[22m
+[2m    ],[22m
+[32m-   "status": "blocked",[39m
+[31m+   "status": "verified",[39m
+[2m  }[22m
+
+ ❯ test/aiRequiredOutcomes.test.ts:38:47
+     36|     const f = fixture();
+     37|     await f.run([[plan(requirements), skip]]);
+     38|     expect(f.session.getAcceptanceSnapshot()).toMatchObject({ status: …
+       |                                               ^
+     39|   });
+     40| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  test/aiRequiredOutcomes.test.ts > exact scoped verdict authority > evaluates advisory-after-explicit evidence without tool-name credit
+AssertionError: expected false to be true // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+ ❯ test/aiRequiredOutcomes.test.ts:151:44
+    149|     // When the canonical ledger evaluates actual evidence; then only …
+    150|     const snapshot = ledger.evaluate(project, project, evidence);
+    151|     expect(snapshot.status === "verified").toBe(source === "explicit" …
+       |                                            ^
+    152|     expect(snapshot.items[0]?.evidence[0]?.passed).toBe(source === "ex…
+    153|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 29 passed (31)
+   Start at  01:35:35
+   Duration  45.00s (transform 15.17s, setup 0ms, collect 22.61s, tests 21.60s, environment 0ms, prepare 136ms)
+

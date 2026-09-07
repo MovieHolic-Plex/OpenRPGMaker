@@ -111,7 +111,7 @@ describe("completion accounting through real assistant sessions", () => {
       // These turns intentionally retain drafts. Supply the real spatial contract,
       // then answer the initial final request and all three bounded repair nudges.
       // No model response can turn an unapplied draft into verified acceptance.
-      const pendingFinal = (status: "verifying" | "working") => () => {
+      const pendingFinal = (status: "verifying" | "blocked") => () => {
         expect(session.getAcceptanceSnapshot()).toMatchObject({ status, items: [{
           id: "acceptance-contract", status, evidence: [{ expected: JSON.stringify(criteria[0]), passed: false }],
         }] });
@@ -124,7 +124,8 @@ describe("completion accounting through real assistant sessions", () => {
         toolCall("repair_acceptance", { itemId: "acceptance-contract", criteria }, "repair"),
         ...Array.from({ length: 4 }, () => pendingFinal("verifying")),
         toolCall("paint_tiles", { mapId: "m1", from: { x: rect.x, y: rect.y }, to: { x: rect.x, y: rect.y }, mode: "rect", layer: "lower", tile: 240 }, "next-turn"),
-        ...Array.from({ length: 4 }, () => pendingFinal(scope === "active" ? "verifying" : "working")),
+        // A fresh instruction does not resume the already stopped canonical goal.
+        pendingFinal("blocked"),
       ];
       const chat = scriptedChat(steps);
       const session = new AssistantSession(project, { config: CONFIG, chat });
@@ -185,7 +186,9 @@ describe("completion accounting through real assistant sessions", () => {
       toolCall("fill_region", { mapId: "m1", rect: { x: 12, y: 12, w: 3, h: 3 }, material: "모래", shape: "rect" }, "throw"),
     ]) });
 
-    await expect(session.sendUserMessage("지형 칠해줘", () => {})).rejects.toThrow(failure);
+    const result = await session.sendUserMessage("지형 칠해줘", () => {});
+    expect(result).toMatchObject({ stoppedReason: "error", error: failure.message,
+      runOutcome: { execution: "failed", goal: "incomplete", delivery: "no-change" } });
     expect(session.getActiveSpec()).toEqual(SPEC);
     expect(session.getProposedProject().maps.m1).toEqual(project.maps.m1);
     const response = session.getMessages().find((message) => message.role === "tool" && message.tool_call_id === "throw");

@@ -1,0 +1,31 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiRunOutcome.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p2-outcome-20260906
+
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiRunOutcome.test.ts [ test/aiRunOutcome.test.ts ]
+Error: Cannot find module '@/ai/runOutcome' imported from '/home/main/z-project/rpg-zzu-ai-harness-p2-outcome-20260906/test/aiRunOutcome.test.ts'.
+
+- If you rely on tsconfig.json's "paths" to resolve modules, please install "vite-tsconfig-paths" plugin to handle module resolution.
+- Make sure you don't have relative aliases in your Vitest config. Use absolute paths instead. Read more: https://vitest.dev/guide/common-errors
+ ❯ test/aiRunOutcome.test.ts:3:1
+      1| import { describe, expect, expectTypeOf, it } from "vitest";
+      2| import type { AcceptanceStatus } from "@/ai/assistantAcceptance";
+      3| import { deriveRunOutcome, type RunOutcome } from "@/ai/runOutcome";
+       | ^
+      4| 
+      5| type Facts = Parameters<typeof deriveRunOutcome>[0];
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  01:22:35
+   Duration  6.80s (transform 231ms, setup 0ms, collect 0ms, tests 0ms, environment 0ms, prepare 443ms)
+

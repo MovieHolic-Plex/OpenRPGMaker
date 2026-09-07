@@ -1,0 +1,3485 @@
+[
+  {
+    "label": "00-before",
+    "viewport": {
+      "width": 1024,
+      "height": 768
+    },
+    "documentWidth": 1024,
+    "nodes": []
+  },
+  {
+    "label": "00-before",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "documentWidth": 1280,
+    "nodes": []
+  },
+  {
+    "label": "00-before",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "documentWidth": 1440,
+    "nodes": []
+  },
+  {
+    "label": "required-skip",
+    "viewport": {
+      "width": 1024,
+      "height": 768
+    },
+    "documentWidth": 1024,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "blocked",
+          "goal": "incomplete",
+          "delivery": "no-change"
+        },
+        "text": "진행 막힘 · 목표 미충족 · 변경 없음",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 372,
+          "y": 616,
+          "width": 640,
+          "height": 35,
+          "right": 1012,
+          "bottom": 651
+        },
+        "visibleWidth": 640,
+        "visibleHeight": 35,
+        "clientWidth": 640,
+        "scrollWidth": 640,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-sticky-checklist",
+        "attributes": {
+          "editorNavigationOwner": "true",
+          "testid": "ai-sticky-checklist",
+          "expanded": "false",
+          "status": "blocked"
+        },
+        "text": "완료 기준진행 막힘QA scoped requirements0/1진행 막힘Required event진행 막힘이 요구 제외원래 요청: qa-ai-surface-4a5dcf3b-a94b-4452-8922-b25101fc96d7/required-skip: inspect only the scripted scope.Acceptance incomplete; execution stopped기대{\"kind\":\"eventCount\",\"target\":{\"mapId\":\"map_blank_start\"},\"count\":1}확인0 scoped events판정미충족맵에서 보기",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 318,
+          "y": 141,
+          "width": 272,
+          "height": 59,
+          "right": 590,
+          "bottom": 200
+        },
+        "visibleWidth": 272,
+        "visibleHeight": 59,
+        "clientWidth": 270,
+        "scrollWidth": 270,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "13px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "required-events"
+        },
+        "text": "이 요구 제외",
+        "hidden": false,
+        "visible": false,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "visibleWidth": 0,
+        "visibleHeight": 0,
+        "clientWidth": 0,
+        "scrollWidth": 0,
+        "color": "rgb(74, 87, 214)",
+        "fontSize": "12px",
+        "disabled": false
+      },
+      {
+        "testid": "ai-continue-run",
+        "attributes": {
+          "testid": "ai-continue-run"
+        },
+        "text": "계속",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 388,
+          "y": 604.2999877929688,
+          "width": 42.06666564941406,
+          "height": 28,
+          "right": 430.06666564941406,
+          "bottom": 632.2999877929688
+        },
+        "visibleWidth": 42.06666564941406,
+        "visibleHeight": 3.70001220703125,
+        "clientWidth": 40,
+        "scrollWidth": 40,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "12px",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "label": "required-skip",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "documentWidth": 1280,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "blocked",
+          "goal": "incomplete",
+          "delivery": "no-change"
+        },
+        "text": "진행 막힘 · 목표 미충족 · 변경 없음",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 628,
+          "y": 648,
+          "width": 640,
+          "height": 35,
+          "right": 1268,
+          "bottom": 683
+        },
+        "visibleWidth": 640,
+        "visibleHeight": 35,
+        "clientWidth": 640,
+        "scrollWidth": 640,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-sticky-checklist",
+        "attributes": {
+          "editorNavigationOwner": "true",
+          "testid": "ai-sticky-checklist",
+          "expanded": "true",
+          "status": "blocked"
+        },
+        "text": "완료 기준진행 막힘QA scoped requirements0/1진행 막힘Required event진행 막힘이 요구 제외원래 요청: qa-ai-surface-4a5dcf3b-a94b-4452-8922-b25101fc96d7/required-skip: inspect only the scripted scope.Acceptance incomplete; execution stopped기대{\"kind\":\"eventCount\",\"target\":{\"mapId\":\"map_blank_start\"},\"count\":1}확인0 scoped events판정미충족맵에서 보기",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 318,
+          "y": 141,
+          "width": 272,
+          "height": 242,
+          "right": 590,
+          "bottom": 383
+        },
+        "visibleWidth": 272,
+        "visibleHeight": 242,
+        "clientWidth": 270,
+        "scrollWidth": 270,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "13px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "required-events"
+        },
+        "text": "이 요구 제외",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 355,
+          "y": 326,
+          "width": 79.89999389648438,
+          "height": 32,
+          "right": 434.8999938964844,
+          "bottom": 358
+        },
+        "visibleWidth": 79.89999389648438,
+        "visibleHeight": 32,
+        "clientWidth": 78,
+        "scrollWidth": 78,
+        "color": "rgb(74, 87, 214)",
+        "fontSize": "12px",
+        "disabled": false
+      },
+      {
+        "testid": "ai-continue-run",
+        "attributes": {
+          "testid": "ai-continue-run"
+        },
+        "text": "계속",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 644,
+          "y": 616.4500122070312,
+          "width": 42.06666564941406,
+          "height": 28,
+          "right": 686.0666656494141,
+          "bottom": 644.4500122070312
+        },
+        "visibleWidth": 42.06666564941406,
+        "visibleHeight": 23.54998779296875,
+        "clientWidth": 40,
+        "scrollWidth": 40,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "12px",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "label": "required-skip",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "documentWidth": 1440,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "blocked",
+          "goal": "incomplete",
+          "delivery": "no-change"
+        },
+        "text": "진행 막힘 · 목표 미충족 · 변경 없음",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 668,
+          "y": 748,
+          "width": 760,
+          "height": 35,
+          "right": 1428,
+          "bottom": 783
+        },
+        "visibleWidth": 760,
+        "visibleHeight": 35,
+        "clientWidth": 760,
+        "scrollWidth": 760,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-sticky-checklist",
+        "attributes": {
+          "editorNavigationOwner": "true",
+          "testid": "ai-sticky-checklist",
+          "expanded": "true",
+          "status": "blocked"
+        },
+        "text": "완료 기준진행 막힘QA scoped requirements0/1진행 막힘Required event진행 막힘이 요구 제외원래 요청: qa-ai-surface-4a5dcf3b-a94b-4452-8922-b25101fc96d7/required-skip: inspect only the scripted scope.Acceptance incomplete; execution stopped기대{\"kind\":\"eventCount\",\"target\":{\"mapId\":\"map_blank_start\"},\"count\":1}확인0 scoped events판정미충족맵에서 보기",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 318,
+          "y": 141,
+          "width": 272,
+          "height": 242,
+          "right": 590,
+          "bottom": 383
+        },
+        "visibleWidth": 272,
+        "visibleHeight": 242,
+        "clientWidth": 270,
+        "scrollWidth": 270,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "13px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "required-events"
+        },
+        "text": "이 요구 제외",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 355,
+          "y": 326,
+          "width": 79.89999389648438,
+          "height": 32,
+          "right": 434.8999938964844,
+          "bottom": 358
+        },
+        "visibleWidth": 79.89999389648438,
+        "visibleHeight": 32,
+        "clientWidth": 78,
+        "scrollWidth": 78,
+        "color": "rgb(74, 87, 214)",
+        "fontSize": "12px",
+        "disabled": false
+      },
+      {
+        "testid": "ai-continue-run",
+        "attributes": {
+          "testid": "ai-continue-run"
+        },
+        "text": "계속",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 684,
+          "y": 706,
+          "width": 42.06666564941406,
+          "height": 28,
+          "right": 726.0666656494141,
+          "bottom": 734
+        },
+        "visibleWidth": 42.06666564941406,
+        "visibleHeight": 28,
+        "clientWidth": 40,
+        "scrollWidth": 40,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "12px",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "label": "optional-skip",
+    "viewport": {
+      "width": 1024,
+      "height": 768
+    },
+    "documentWidth": 1024,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "response-final",
+          "goal": "satisfied",
+          "delivery": "no-change"
+        },
+        "text": "응답 종료 · 목표 충족 · 변경 없음",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 372,
+          "y": 616,
+          "width": 640,
+          "height": 35,
+          "right": 1012,
+          "bottom": 651
+        },
+        "visibleWidth": 640,
+        "visibleHeight": 35,
+        "clientWidth": 640,
+        "scrollWidth": 640,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-sticky-checklist",
+        "attributes": {
+          "editorNavigationOwner": "true",
+          "testid": "ai-sticky-checklist",
+          "expanded": "false",
+          "status": "verified"
+        },
+        "text": "완료 기준검증 완료QA scoped requirements1/2작업 중 · Optional eventExisting dimensions검증 완료이 요구 제외원래 요청: qa-ai-surface-4a5dcf3b-a94b-4452-8922-b25101fc96d7/optional-skip: inspect only the scripted scope.기대{\"kind\":\"mapDimensions\",\"target\":{\"mapId\":\"map_blank_start\"},\"width\":20,\"height\":15}확인20x15판정충족맵에서 보기Optional event선택 · 작업 중이 요구 제외원래 요청: qa-ai-surface-4a5dcf3b-a94b-4452-8922-b25101fc96d7/optional-skip: inspect only the scripted scope.Acceptance checks remain open기대{\"kind\":\"eventCount\",\"target\":{\"mapId\":\"map_blank_start\"},\"count\":1}확인0 scoped events판정미충족맵에서 보기",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 318,
+          "y": 141,
+          "width": 272,
+          "height": 59,
+          "right": 590,
+          "bottom": 200
+        },
+        "visibleWidth": 272,
+        "visibleHeight": 59,
+        "clientWidth": 270,
+        "scrollWidth": 270,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "13px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "existing-size"
+        },
+        "text": "이 요구 제외",
+        "hidden": true,
+        "visible": false,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "visibleWidth": 0,
+        "visibleHeight": 0,
+        "clientWidth": 0,
+        "scrollWidth": 0,
+        "color": "rgb(74, 87, 214)",
+        "fontSize": "12px",
+        "disabled": false
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "optional-events"
+        },
+        "text": "이 요구 제외",
+        "hidden": false,
+        "visible": false,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "visibleWidth": 0,
+        "visibleHeight": 0,
+        "clientWidth": 0,
+        "scrollWidth": 0,
+        "color": "rgb(74, 87, 214)",
+        "fontSize": "12px",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "label": "optional-skip",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "documentWidth": 1280,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "response-final",
+          "goal": "satisfied",
+          "delivery": "no-change"
+        },
+        "text": "응답 종료 · 목표 충족 · 변경 없음",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 628,
+          "y": 648,
+          "width": 640,
+          "height": 35,
+          "right": 1268,
+          "bottom": 683
+        },
+        "visibleWidth": 640,
+        "visibleHeight": 35,
+        "clientWidth": 640,
+        "scrollWidth": 640,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-sticky-checklist",
+        "attributes": {
+          "editorNavigationOwner": "true",
+          "testid": "ai-sticky-checklist",
+          "expanded": "true",
+          "status": "verified"
+        },
+        "text": "완료 기준검증 완료QA scoped requirements1/2작업 중 · Optional eventExisting dimensions검증 완료이 요구 제외원래 요청: qa-ai-surface-4a5dcf3b-a94b-4452-8922-b25101fc96d7/optional-skip: inspect only the scripted scope.기대{\"kind\":\"mapDimensions\",\"target\":{\"mapId\":\"map_blank_start\"},\"width\":20,\"height\":15}확인20x15판정충족맵에서 보기Optional event선택 · 작업 중이 요구 제외원래 요청: qa-ai-surface-4a5dcf3b-a94b-4452-8922-b25101fc96d7/optional-skip: inspect only the scripted scope.Acceptance checks remain open기대{\"kind\":\"eventCount\",\"target\":{\"mapId\":\"map_blank_start\"},\"count\":1}확인0 scoped events판정미충족맵에서 보기",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 318,
+          "y": 141,
+          "width": 272,
+          "height": 309,
+          "right": 590,
+          "bottom": 450
+        },
+        "visibleWidth": 272,
+        "visibleHeight": 309,
+        "clientWidth": 270,
+        "scrollWidth": 270,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "13px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "existing-size"
+        },
+        "text": "이 요구 제외",
+        "hidden": true,
+        "visible": false,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "visibleWidth": 0,
+        "visibleHeight": 0,
+        "clientWidth": 0,
+        "scrollWidth": 0,
+        "color": "rgb(74, 87, 214)",
+        "fontSize": "12px",
+        "disabled": false
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "optional-events"
+        },
+        "text": "이 요구 제외",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 355,
+          "y": 393,
+          "width": 79.89999389648438,
+          "height": 32,
+          "right": 434.8999938964844,
+          "bottom": 425
+        },
+        "visibleWidth": 79.89999389648438,
+        "visibleHeight": 32,
+        "clientWidth": 78,
+        "scrollWidth": 78,
+        "color": "rgb(74, 87, 214)",
+        "fontSize": "12px",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "label": "optional-skip",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "documentWidth": 1440,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "response-final",
+          "goal": "satisfied",
+          "delivery": "no-change"
+        },
+        "text": "응답 종료 · 목표 충족 · 변경 없음",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 668,
+          "y": 748,
+          "width": 760,
+          "height": 35,
+          "right": 1428,
+          "bottom": 783
+        },
+        "visibleWidth": 760,
+        "visibleHeight": 35,
+        "clientWidth": 760,
+        "scrollWidth": 760,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-sticky-checklist",
+        "attributes": {
+          "editorNavigationOwner": "true",
+          "testid": "ai-sticky-checklist",
+          "expanded": "true",
+          "status": "verified"
+        },
+        "text": "완료 기준검증 완료QA scoped requirements1/2작업 중 · Optional eventExisting dimensions검증 완료이 요구 제외원래 요청: qa-ai-surface-4a5dcf3b-a94b-4452-8922-b25101fc96d7/optional-skip: inspect only the scripted scope.기대{\"kind\":\"mapDimensions\",\"target\":{\"mapId\":\"map_blank_start\"},\"width\":20,\"height\":15}확인20x15판정충족맵에서 보기Optional event선택 · 작업 중이 요구 제외원래 요청: qa-ai-surface-4a5dcf3b-a94b-4452-8922-b25101fc96d7/optional-skip: inspect only the scripted scope.Acceptance checks remain open기대{\"kind\":\"eventCount\",\"target\":{\"mapId\":\"map_blank_start\"},\"count\":1}확인0 scoped events판정미충족맵에서 보기",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 318,
+          "y": 141,
+          "width": 272,
+          "height": 309,
+          "right": 590,
+          "bottom": 450
+        },
+        "visibleWidth": 272,
+        "visibleHeight": 309,
+        "clientWidth": 270,
+        "scrollWidth": 270,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "13px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "existing-size"
+        },
+        "text": "이 요구 제외",
+        "hidden": true,
+        "visible": false,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "visibleWidth": 0,
+        "visibleHeight": 0,
+        "clientWidth": 0,
+        "scrollWidth": 0,
+        "color": "rgb(74, 87, 214)",
+        "fontSize": "12px",
+        "disabled": false
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "optional-events"
+        },
+        "text": "이 요구 제외",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 355,
+          "y": 393,
+          "width": 79.89999389648438,
+          "height": 32,
+          "right": 434.8999938964844,
+          "bottom": 425
+        },
+        "visibleWidth": 79.89999389648438,
+        "visibleHeight": 32,
+        "clientWidth": 78,
+        "scrollWidth": 78,
+        "color": "rgb(74, 87, 214)",
+        "fontSize": "12px",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "label": "replan-preserves-required",
+    "viewport": {
+      "width": 1024,
+      "height": 768
+    },
+    "documentWidth": 1024,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "blocked",
+          "goal": "incomplete",
+          "delivery": "no-change"
+        },
+        "text": "진행 막힘 · 목표 미충족 · 변경 없음",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 372,
+          "y": 616,
+          "width": 640,
+          "height": 35,
+          "right": 1012,
+          "bottom": 651
+        },
+        "visibleWidth": 640,
+        "visibleHeight": 35,
+        "clientWidth": 640,
+        "scrollWidth": 640,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-sticky-checklist",
+        "attributes": {
+          "editorNavigationOwner": "true",
+          "testid": "ai-sticky-checklist",
+          "expanded": "false",
+          "status": "blocked"
+        },
+        "text": "완료 기준진행 막힘QA scoped requirements1/2진행 막힘Required event진행 막힘이 요구 제외원래 요청: qa-ai-surface-4a5dcf3b-a94b-4452-8922-b25101fc96d7/replan-preserves-required: inspect only the scripted scope.Acceptance incomplete; execution stopped기대{\"kind\":\"eventCount\",\"target\":{\"mapId\":\"map_blank_start\"},\"count\":1}확인0 scoped events판정미충족맵에서 보기Existing dimensions검증 완료이 요구 제외원래 요청: qa-ai-surface-4a5dcf3b-a94b-4452-8922-b25101fc96d7/replan-preserves-required: inspect only the scripted scope.기대{\"kind\":\"mapDimensions\",\"target\":{\"mapId\":\"map_blank_start\"},\"width\":20,\"height\":15}확인20x15판정충족맵에서 보기",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 318,
+          "y": 141,
+          "width": 272,
+          "height": 59,
+          "right": 590,
+          "bottom": 200
+        },
+        "visibleWidth": 272,
+        "visibleHeight": 59,
+        "clientWidth": 270,
+        "scrollWidth": 270,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "13px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "required-events"
+        },
+        "text": "이 요구 제외",
+        "hidden": false,
+        "visible": false,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "visibleWidth": 0,
+        "visibleHeight": 0,
+        "clientWidth": 0,
+        "scrollWidth": 0,
+        "color": "rgb(74, 87, 214)",
+        "fontSize": "12px",
+        "disabled": false
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "existing-size"
+        },
+        "text": "이 요구 제외",
+        "hidden": true,
+        "visible": false,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "visibleWidth": 0,
+        "visibleHeight": 0,
+        "clientWidth": 0,
+        "scrollWidth": 0,
+        "color": "rgb(74, 87, 214)",
+        "fontSize": "12px",
+        "disabled": false
+      },
+      {
+        "testid": "ai-continue-run",
+        "attributes": {
+          "testid": "ai-continue-run"
+        },
+        "text": "계속",
+        "hidden": false,
+        "visible": false,
+        "rect": {
+          "x": 388,
+          "y": 677.5,
+          "width": 42.06666564941406,
+          "height": 28,
+          "right": 430.06666564941406,
+          "bottom": 705.5
+        },
+        "visibleWidth": 42.06666564941406,
+        "visibleHeight": 0,
+        "clientWidth": 40,
+        "scrollWidth": 40,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "12px",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "label": "replan-preserves-required",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "documentWidth": 1280,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "blocked",
+          "goal": "incomplete",
+          "delivery": "no-change"
+        },
+        "text": "진행 막힘 · 목표 미충족 · 변경 없음",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 628,
+          "y": 648,
+          "width": 640,
+          "height": 35,
+          "right": 1268,
+          "bottom": 683
+        },
+        "visibleWidth": 640,
+        "visibleHeight": 35,
+        "clientWidth": 640,
+        "scrollWidth": 640,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-sticky-checklist",
+        "attributes": {
+          "editorNavigationOwner": "true",
+          "testid": "ai-sticky-checklist",
+          "expanded": "true",
+          "status": "blocked"
+        },
+        "text": "완료 기준진행 막힘QA scoped requirements1/2진행 막힘Required event진행 막힘이 요구 제외원래 요청: qa-ai-surface-4a5dcf3b-a94b-4452-8922-b25101fc96d7/replan-preserves-required: inspect only the scripted scope.Acceptance incomplete; execution stopped기대{\"kind\":\"eventCount\",\"target\":{\"mapId\":\"map_blank_start\"},\"count\":1}확인0 scoped events판정미충족맵에서 보기Existing dimensions검증 완료이 요구 제외원래 요청: qa-ai-surface-4a5dcf3b-a94b-4452-8922-b25101fc96d7/replan-preserves-required: inspect only the scripted scope.기대{\"kind\":\"mapDimensions\",\"target\":{\"mapId\":\"map_blank_start\"},\"width\":20,\"height\":15}확인20x15판정충족맵에서 보기",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 318,
+          "y": 141,
+          "width": 272,
+          "height": 309,
+          "right": 590,
+          "bottom": 450
+        },
+        "visibleWidth": 272,
+        "visibleHeight": 309,
+        "clientWidth": 270,
+        "scrollWidth": 270,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "13px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "required-events"
+        },
+        "text": "이 요구 제외",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 355,
+          "y": 326,
+          "width": 79.89999389648438,
+          "height": 32,
+          "right": 434.8999938964844,
+          "bottom": 358
+        },
+        "visibleWidth": 79.89999389648438,
+        "visibleHeight": 32,
+        "clientWidth": 78,
+        "scrollWidth": 78,
+        "color": "rgb(74, 87, 214)",
+        "fontSize": "12px",
+        "disabled": false
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "existing-size"
+        },
+        "text": "이 요구 제외",
+        "hidden": true,
+        "visible": false,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "visibleWidth": 0,
+        "visibleHeight": 0,
+        "clientWidth": 0,
+        "scrollWidth": 0,
+        "color": "rgb(74, 87, 214)",
+        "fontSize": "12px",
+        "disabled": false
+      },
+      {
+        "testid": "ai-continue-run",
+        "attributes": {
+          "testid": "ai-continue-run"
+        },
+        "text": "계속",
+        "hidden": false,
+        "visible": false,
+        "rect": {
+          "x": 644,
+          "y": 689.6500244140625,
+          "width": 42.06666564941406,
+          "height": 28,
+          "right": 686.0666656494141,
+          "bottom": 717.6500244140625
+        },
+        "visibleWidth": 42.06666564941406,
+        "visibleHeight": 0,
+        "clientWidth": 40,
+        "scrollWidth": 40,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "12px",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "label": "replan-preserves-required",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "documentWidth": 1440,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "blocked",
+          "goal": "incomplete",
+          "delivery": "no-change"
+        },
+        "text": "진행 막힘 · 목표 미충족 · 변경 없음",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 668,
+          "y": 748,
+          "width": 760,
+          "height": 35,
+          "right": 1428,
+          "bottom": 783
+        },
+        "visibleWidth": 760,
+        "visibleHeight": 35,
+        "clientWidth": 760,
+        "scrollWidth": 760,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-sticky-checklist",
+        "attributes": {
+          "editorNavigationOwner": "true",
+          "testid": "ai-sticky-checklist",
+          "expanded": "true",
+          "status": "blocked"
+        },
+        "text": "완료 기준진행 막힘QA scoped requirements1/2진행 막힘Required event진행 막힘이 요구 제외원래 요청: qa-ai-surface-4a5dcf3b-a94b-4452-8922-b25101fc96d7/replan-preserves-required: inspect only the scripted scope.Acceptance incomplete; execution stopped기대{\"kind\":\"eventCount\",\"target\":{\"mapId\":\"map_blank_start\"},\"count\":1}확인0 scoped events판정미충족맵에서 보기Existing dimensions검증 완료이 요구 제외원래 요청: qa-ai-surface-4a5dcf3b-a94b-4452-8922-b25101fc96d7/replan-preserves-required: inspect only the scripted scope.기대{\"kind\":\"mapDimensions\",\"target\":{\"mapId\":\"map_blank_start\"},\"width\":20,\"height\":15}확인20x15판정충족맵에서 보기",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 318,
+          "y": 141,
+          "width": 272,
+          "height": 309,
+          "right": 590,
+          "bottom": 450
+        },
+        "visibleWidth": 272,
+        "visibleHeight": 309,
+        "clientWidth": 270,
+        "scrollWidth": 270,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "13px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "required-events"
+        },
+        "text": "이 요구 제외",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 355,
+          "y": 326,
+          "width": 79.89999389648438,
+          "height": 32,
+          "right": 434.8999938964844,
+          "bottom": 358
+        },
+        "visibleWidth": 79.89999389648438,
+        "visibleHeight": 32,
+        "clientWidth": 78,
+        "scrollWidth": 78,
+        "color": "rgb(74, 87, 214)",
+        "fontSize": "12px",
+        "disabled": false
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "existing-size"
+        },
+        "text": "이 요구 제외",
+        "hidden": true,
+        "visible": false,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "visibleWidth": 0,
+        "visibleHeight": 0,
+        "clientWidth": 0,
+        "scrollWidth": 0,
+        "color": "rgb(74, 87, 214)",
+        "fontSize": "12px",
+        "disabled": false
+      },
+      {
+        "testid": "ai-continue-run",
+        "attributes": {
+          "testid": "ai-continue-run"
+        },
+        "text": "계속",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 684,
+          "y": 705.9500122070312,
+          "width": 42.06666564941406,
+          "height": 28,
+          "right": 726.0666656494141,
+          "bottom": 733.9500122070312
+        },
+        "visibleWidth": 42.06666564941406,
+        "visibleHeight": 28,
+        "clientWidth": 40,
+        "scrollWidth": 40,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "12px",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "label": "user-withdrawal",
+    "viewport": {
+      "width": 1024,
+      "height": 768
+    },
+    "documentWidth": 1024,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "blocked",
+          "goal": "incomplete",
+          "delivery": "no-change"
+        },
+        "text": "진행 막힘 · 목표 미충족 · 변경 없음",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 372,
+          "y": 616,
+          "width": 640,
+          "height": 35,
+          "right": 1012,
+          "bottom": 651
+        },
+        "visibleWidth": 640,
+        "visibleHeight": 35,
+        "clientWidth": 640,
+        "scrollWidth": 640,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-sticky-checklist",
+        "attributes": {
+          "editorNavigationOwner": "true",
+          "testid": "ai-sticky-checklist",
+          "expanded": "false",
+          "status": "blocked"
+        },
+        "text": "완료 기준진행 막힘QA scoped requirements1/2진행 막힘Existing dimensions검증 완료이 요구 제외원래 요청: qa-ai-surface-4a5dcf3b-a94b-4452-8922-b25101fc96d7/user-withdrawal: inspect only the scripted scope.기대{\"kind\":\"mapDimensions\",\"target\":{\"mapId\":\"map_blank_start\"},\"width\":20,\"height\":15}확인20x15판정충족맵에서 보기Required event진행 막힘이 요구 제외원래 요청: qa-ai-surface-4a5dcf3b-a94b-4452-8922-b25101fc96d7/user-withdrawal: inspect only the scripted scope.Acceptance incomplete; execution stopped기대{\"kind\":\"eventCount\",\"target\":{\"mapId\":\"map_blank_start\"},\"count\":1}확인0 scoped events판정미충족맵에서 보기",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 318,
+          "y": 141,
+          "width": 272,
+          "height": 59,
+          "right": 590,
+          "bottom": 200
+        },
+        "visibleWidth": 272,
+        "visibleHeight": 59,
+        "clientWidth": 270,
+        "scrollWidth": 270,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "13px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "existing-size"
+        },
+        "text": "이 요구 제외",
+        "hidden": true,
+        "visible": false,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "visibleWidth": 0,
+        "visibleHeight": 0,
+        "clientWidth": 0,
+        "scrollWidth": 0,
+        "color": "rgb(74, 87, 214)",
+        "fontSize": "12px",
+        "disabled": false
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "required-events"
+        },
+        "text": "이 요구 제외",
+        "hidden": false,
+        "visible": false,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "visibleWidth": 0,
+        "visibleHeight": 0,
+        "clientWidth": 0,
+        "scrollWidth": 0,
+        "color": "rgb(74, 87, 214)",
+        "fontSize": "12px",
+        "disabled": false
+      },
+      {
+        "testid": "ai-continue-run",
+        "attributes": {
+          "testid": "ai-continue-run"
+        },
+        "text": "계속",
+        "hidden": false,
+        "visible": false,
+        "rect": {
+          "x": 388,
+          "y": 652.4000244140625,
+          "width": 42.06666564941406,
+          "height": 28,
+          "right": 430.06666564941406,
+          "bottom": 680.4000244140625
+        },
+        "visibleWidth": 42.06666564941406,
+        "visibleHeight": 0,
+        "clientWidth": 40,
+        "scrollWidth": 40,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "12px",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "label": "user-withdrawal",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "documentWidth": 1280,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "blocked",
+          "goal": "incomplete",
+          "delivery": "no-change"
+        },
+        "text": "진행 막힘 · 목표 미충족 · 변경 없음",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 628,
+          "y": 648,
+          "width": 640,
+          "height": 35,
+          "right": 1268,
+          "bottom": 683
+        },
+        "visibleWidth": 640,
+        "visibleHeight": 35,
+        "clientWidth": 640,
+        "scrollWidth": 640,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-sticky-checklist",
+        "attributes": {
+          "editorNavigationOwner": "true",
+          "testid": "ai-sticky-checklist",
+          "expanded": "true",
+          "status": "blocked"
+        },
+        "text": "완료 기준진행 막힘QA scoped requirements1/2진행 막힘Existing dimensions검증 완료이 요구 제외원래 요청: qa-ai-surface-4a5dcf3b-a94b-4452-8922-b25101fc96d7/user-withdrawal: inspect only the scripted scope.기대{\"kind\":\"mapDimensions\",\"target\":{\"mapId\":\"map_blank_start\"},\"width\":20,\"height\":15}확인20x15판정충족맵에서 보기Required event진행 막힘이 요구 제외원래 요청: qa-ai-surface-4a5dcf3b-a94b-4452-8922-b25101fc96d7/user-withdrawal: inspect only the scripted scope.Acceptance incomplete; execution stopped기대{\"kind\":\"eventCount\",\"target\":{\"mapId\":\"map_blank_start\"},\"count\":1}확인0 scoped events판정미충족맵에서 보기",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 318,
+          "y": 141,
+          "width": 272,
+          "height": 309,
+          "right": 590,
+          "bottom": 450
+        },
+        "visibleWidth": 272,
+        "visibleHeight": 309,
+        "clientWidth": 270,
+        "scrollWidth": 270,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "13px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "existing-size"
+        },
+        "text": "이 요구 제외",
+        "hidden": true,
+        "visible": false,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "visibleWidth": 0,
+        "visibleHeight": 0,
+        "clientWidth": 0,
+        "scrollWidth": 0,
+        "color": "rgb(74, 87, 214)",
+        "fontSize": "12px",
+        "disabled": false
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "required-events"
+        },
+        "text": "이 요구 제외",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 355,
+          "y": 393,
+          "width": 79.89999389648438,
+          "height": 32,
+          "right": 434.8999938964844,
+          "bottom": 425
+        },
+        "visibleWidth": 79.89999389648438,
+        "visibleHeight": 32,
+        "clientWidth": 78,
+        "scrollWidth": 78,
+        "color": "rgb(74, 87, 214)",
+        "fontSize": "12px",
+        "disabled": false
+      },
+      {
+        "testid": "ai-continue-run",
+        "attributes": {
+          "testid": "ai-continue-run"
+        },
+        "text": "계속",
+        "hidden": false,
+        "visible": false,
+        "rect": {
+          "x": 644,
+          "y": 664.5499877929688,
+          "width": 42.06666564941406,
+          "height": 28,
+          "right": 686.0666656494141,
+          "bottom": 692.5499877929688
+        },
+        "visibleWidth": 42.06666564941406,
+        "visibleHeight": 0,
+        "clientWidth": 40,
+        "scrollWidth": 40,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "12px",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "label": "user-withdrawal",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "documentWidth": 1440,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "blocked",
+          "goal": "incomplete",
+          "delivery": "no-change"
+        },
+        "text": "진행 막힘 · 목표 미충족 · 변경 없음",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 668,
+          "y": 748,
+          "width": 760,
+          "height": 35,
+          "right": 1428,
+          "bottom": 783
+        },
+        "visibleWidth": 760,
+        "visibleHeight": 35,
+        "clientWidth": 760,
+        "scrollWidth": 760,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-sticky-checklist",
+        "attributes": {
+          "editorNavigationOwner": "true",
+          "testid": "ai-sticky-checklist",
+          "expanded": "true",
+          "status": "blocked"
+        },
+        "text": "완료 기준진행 막힘QA scoped requirements1/2진행 막힘Existing dimensions검증 완료이 요구 제외원래 요청: qa-ai-surface-4a5dcf3b-a94b-4452-8922-b25101fc96d7/user-withdrawal: inspect only the scripted scope.기대{\"kind\":\"mapDimensions\",\"target\":{\"mapId\":\"map_blank_start\"},\"width\":20,\"height\":15}확인20x15판정충족맵에서 보기Required event진행 막힘이 요구 제외원래 요청: qa-ai-surface-4a5dcf3b-a94b-4452-8922-b25101fc96d7/user-withdrawal: inspect only the scripted scope.Acceptance incomplete; execution stopped기대{\"kind\":\"eventCount\",\"target\":{\"mapId\":\"map_blank_start\"},\"count\":1}확인0 scoped events판정미충족맵에서 보기",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 318,
+          "y": 141,
+          "width": 272,
+          "height": 309,
+          "right": 590,
+          "bottom": 450
+        },
+        "visibleWidth": 272,
+        "visibleHeight": 309,
+        "clientWidth": 270,
+        "scrollWidth": 270,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "13px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "existing-size"
+        },
+        "text": "이 요구 제외",
+        "hidden": true,
+        "visible": false,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "visibleWidth": 0,
+        "visibleHeight": 0,
+        "clientWidth": 0,
+        "scrollWidth": 0,
+        "color": "rgb(74, 87, 214)",
+        "fontSize": "12px",
+        "disabled": false
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "required-events"
+        },
+        "text": "이 요구 제외",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 355,
+          "y": 393,
+          "width": 79.89999389648438,
+          "height": 32,
+          "right": 434.8999938964844,
+          "bottom": 425
+        },
+        "visibleWidth": 79.89999389648438,
+        "visibleHeight": 32,
+        "clientWidth": 78,
+        "scrollWidth": 78,
+        "color": "rgb(74, 87, 214)",
+        "fontSize": "12px",
+        "disabled": false
+      },
+      {
+        "testid": "ai-continue-run",
+        "attributes": {
+          "testid": "ai-continue-run"
+        },
+        "text": "계속",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 684,
+          "y": 706,
+          "width": 42.06666564941406,
+          "height": 28,
+          "right": 726.0666656494141,
+          "bottom": 734
+        },
+        "visibleWidth": 42.06666564941406,
+        "visibleHeight": 28,
+        "clientWidth": 40,
+        "scrollWidth": 40,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "12px",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "label": "user-withdrawal-withdrawn",
+    "viewport": {
+      "width": 1024,
+      "height": 768
+    },
+    "documentWidth": 1024,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "blocked",
+          "goal": "satisfied",
+          "delivery": "no-change"
+        },
+        "text": "진행 막힘 · 목표 충족 · 변경 없음",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 372,
+          "y": 616,
+          "width": 640,
+          "height": 35,
+          "right": 1012,
+          "bottom": 651
+        },
+        "visibleWidth": 640,
+        "visibleHeight": 35,
+        "clientWidth": 640,
+        "scrollWidth": 640,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-sticky-checklist",
+        "attributes": {
+          "editorNavigationOwner": "true",
+          "testid": "ai-sticky-checklist",
+          "expanded": "false",
+          "status": "verified"
+        },
+        "text": "완료 기준검증 완료QA scoped requirements1/2검증 완료Existing dimensions검증 완료이 요구 제외원래 요청: qa-ai-surface-4a5dcf3b-a94b-4452-8922-b25101fc96d7/user-withdrawal: inspect only the scripted scope.기대{\"kind\":\"mapDimensions\",\"target\":{\"mapId\":\"map_blank_start\"},\"width\":20,\"height\":15}확인20x15판정충족맵에서 보기Required event진행 막힘사용자가 제외함원래 요청: qa-ai-surface-4a5dcf3b-a94b-4452-8922-b25101fc96d7/user-withdrawal: inspect only the scripted scope.사용자 제외: 사용자가 완료 범위에서 이 요구를 제외함기대{\"kind\":\"eventCount\",\"target\":{\"mapId\":\"map_blank_start\"},\"count\":1}확인0 scoped events판정미충족맵에서 보기",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 318,
+          "y": 141,
+          "width": 272,
+          "height": 59,
+          "right": 590,
+          "bottom": 200
+        },
+        "visibleWidth": 272,
+        "visibleHeight": 59,
+        "clientWidth": 270,
+        "scrollWidth": 270,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "13px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "existing-size"
+        },
+        "text": "이 요구 제외",
+        "hidden": true,
+        "visible": false,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "visibleWidth": 0,
+        "visibleHeight": 0,
+        "clientWidth": 0,
+        "scrollWidth": 0,
+        "color": "rgb(74, 87, 214)",
+        "fontSize": "12px",
+        "disabled": false
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "required-events"
+        },
+        "text": "사용자가 제외함",
+        "hidden": false,
+        "visible": false,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "visibleWidth": 0,
+        "visibleHeight": 0,
+        "clientWidth": 0,
+        "scrollWidth": 0,
+        "color": "rgb(71, 85, 105)",
+        "fontSize": "12px",
+        "disabled": true
+      },
+      {
+        "testid": "ai-continue-run",
+        "attributes": {
+          "testid": "ai-continue-run"
+        },
+        "text": "계속",
+        "hidden": false,
+        "visible": false,
+        "rect": {
+          "x": 388,
+          "y": 652.4000244140625,
+          "width": 42.06666564941406,
+          "height": 28,
+          "right": 430.06666564941406,
+          "bottom": 680.4000244140625
+        },
+        "visibleWidth": 42.06666564941406,
+        "visibleHeight": 0,
+        "clientWidth": 40,
+        "scrollWidth": 40,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "12px",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "label": "user-withdrawal-withdrawn",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "documentWidth": 1280,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "blocked",
+          "goal": "satisfied",
+          "delivery": "no-change"
+        },
+        "text": "진행 막힘 · 목표 충족 · 변경 없음",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 628,
+          "y": 648,
+          "width": 640,
+          "height": 35,
+          "right": 1268,
+          "bottom": 683
+        },
+        "visibleWidth": 640,
+        "visibleHeight": 35,
+        "clientWidth": 640,
+        "scrollWidth": 640,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-sticky-checklist",
+        "attributes": {
+          "editorNavigationOwner": "true",
+          "testid": "ai-sticky-checklist",
+          "expanded": "true",
+          "status": "verified"
+        },
+        "text": "완료 기준검증 완료QA scoped requirements1/2검증 완료Existing dimensions검증 완료이 요구 제외원래 요청: qa-ai-surface-4a5dcf3b-a94b-4452-8922-b25101fc96d7/user-withdrawal: inspect only the scripted scope.기대{\"kind\":\"mapDimensions\",\"target\":{\"mapId\":\"map_blank_start\"},\"width\":20,\"height\":15}확인20x15판정충족맵에서 보기Required event진행 막힘사용자가 제외함원래 요청: qa-ai-surface-4a5dcf3b-a94b-4452-8922-b25101fc96d7/user-withdrawal: inspect only the scripted scope.사용자 제외: 사용자가 완료 범위에서 이 요구를 제외함기대{\"kind\":\"eventCount\",\"target\":{\"mapId\":\"map_blank_start\"},\"count\":1}확인0 scoped events판정미충족맵에서 보기",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 318,
+          "y": 141,
+          "width": 272,
+          "height": 309,
+          "right": 590,
+          "bottom": 450
+        },
+        "visibleWidth": 272,
+        "visibleHeight": 309,
+        "clientWidth": 270,
+        "scrollWidth": 270,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "13px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "existing-size"
+        },
+        "text": "이 요구 제외",
+        "hidden": true,
+        "visible": false,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "visibleWidth": 0,
+        "visibleHeight": 0,
+        "clientWidth": 0,
+        "scrollWidth": 0,
+        "color": "rgb(74, 87, 214)",
+        "fontSize": "12px",
+        "disabled": false
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "required-events"
+        },
+        "text": "사용자가 제외함",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 355,
+          "y": 393,
+          "width": 98.60000610351562,
+          "height": 32,
+          "right": 453.6000061035156,
+          "bottom": 425
+        },
+        "visibleWidth": 98.60000610351562,
+        "visibleHeight": 32,
+        "clientWidth": 97,
+        "scrollWidth": 97,
+        "color": "rgb(71, 85, 105)",
+        "fontSize": "12px",
+        "disabled": true
+      },
+      {
+        "testid": "ai-continue-run",
+        "attributes": {
+          "testid": "ai-continue-run"
+        },
+        "text": "계속",
+        "hidden": false,
+        "visible": false,
+        "rect": {
+          "x": 644,
+          "y": 664.5499877929688,
+          "width": 42.06666564941406,
+          "height": 28,
+          "right": 686.0666656494141,
+          "bottom": 692.5499877929688
+        },
+        "visibleWidth": 42.06666564941406,
+        "visibleHeight": 0,
+        "clientWidth": 40,
+        "scrollWidth": 40,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "12px",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "label": "user-withdrawal-withdrawn",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "documentWidth": 1440,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "blocked",
+          "goal": "satisfied",
+          "delivery": "no-change"
+        },
+        "text": "진행 막힘 · 목표 충족 · 변경 없음",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 668,
+          "y": 748,
+          "width": 760,
+          "height": 35,
+          "right": 1428,
+          "bottom": 783
+        },
+        "visibleWidth": 760,
+        "visibleHeight": 35,
+        "clientWidth": 760,
+        "scrollWidth": 760,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-sticky-checklist",
+        "attributes": {
+          "editorNavigationOwner": "true",
+          "testid": "ai-sticky-checklist",
+          "expanded": "true",
+          "status": "verified"
+        },
+        "text": "완료 기준검증 완료QA scoped requirements1/2검증 완료Existing dimensions검증 완료이 요구 제외원래 요청: qa-ai-surface-4a5dcf3b-a94b-4452-8922-b25101fc96d7/user-withdrawal: inspect only the scripted scope.기대{\"kind\":\"mapDimensions\",\"target\":{\"mapId\":\"map_blank_start\"},\"width\":20,\"height\":15}확인20x15판정충족맵에서 보기Required event진행 막힘사용자가 제외함원래 요청: qa-ai-surface-4a5dcf3b-a94b-4452-8922-b25101fc96d7/user-withdrawal: inspect only the scripted scope.사용자 제외: 사용자가 완료 범위에서 이 요구를 제외함기대{\"kind\":\"eventCount\",\"target\":{\"mapId\":\"map_blank_start\"},\"count\":1}확인0 scoped events판정미충족맵에서 보기",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 318,
+          "y": 141,
+          "width": 272,
+          "height": 309,
+          "right": 590,
+          "bottom": 450
+        },
+        "visibleWidth": 272,
+        "visibleHeight": 309,
+        "clientWidth": 270,
+        "scrollWidth": 270,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "13px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "existing-size"
+        },
+        "text": "이 요구 제외",
+        "hidden": true,
+        "visible": false,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "visibleWidth": 0,
+        "visibleHeight": 0,
+        "clientWidth": 0,
+        "scrollWidth": 0,
+        "color": "rgb(74, 87, 214)",
+        "fontSize": "12px",
+        "disabled": false
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "required-events"
+        },
+        "text": "사용자가 제외함",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 355,
+          "y": 393,
+          "width": 98.60000610351562,
+          "height": 32,
+          "right": 453.6000061035156,
+          "bottom": 425
+        },
+        "visibleWidth": 98.60000610351562,
+        "visibleHeight": 32,
+        "clientWidth": 97,
+        "scrollWidth": 97,
+        "color": "rgb(71, 85, 105)",
+        "fontSize": "12px",
+        "disabled": true
+      },
+      {
+        "testid": "ai-continue-run",
+        "attributes": {
+          "testid": "ai-continue-run"
+        },
+        "text": "계속",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 684,
+          "y": 706,
+          "width": 42.06666564941406,
+          "height": 28,
+          "right": 726.0666656494141,
+          "bottom": 734
+        },
+        "visibleWidth": 42.06666564941406,
+        "visibleHeight": 28,
+        "clientWidth": 40,
+        "scrollWidth": 40,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "12px",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "label": "blocked-ask-resume",
+    "viewport": {
+      "width": 1024,
+      "height": 768
+    },
+    "documentWidth": 1024,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "blocked",
+          "goal": "incomplete",
+          "delivery": "no-change"
+        },
+        "text": "진행 막힘 · 목표 미충족 · 변경 없음",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 372,
+          "y": 616,
+          "width": 640,
+          "height": 35,
+          "right": 1012,
+          "bottom": 651
+        },
+        "visibleWidth": 640,
+        "visibleHeight": 35,
+        "clientWidth": 640,
+        "scrollWidth": 640,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-sticky-checklist",
+        "attributes": {
+          "editorNavigationOwner": "true",
+          "testid": "ai-sticky-checklist",
+          "expanded": "false",
+          "status": "blocked"
+        },
+        "text": "완료 기준진행 막힘QA scoped requirements0/1진행 막힘Required event진행 막힘이 요구 제외원래 요청: qa-ai-surface-4a5dcf3b-a94b-4452-8922-b25101fc96d7/blocked-ask-resume: inspect only the scripted scope.Acceptance incomplete; execution stopped기대{\"kind\":\"eventCount\",\"target\":{\"mapId\":\"map_blank_start\"},\"count\":1}확인0 scoped events판정미충족맵에서 보기",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 318,
+          "y": 141,
+          "width": 272,
+          "height": 59,
+          "right": 590,
+          "bottom": 200
+        },
+        "visibleWidth": 272,
+        "visibleHeight": 59,
+        "clientWidth": 270,
+        "scrollWidth": 270,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "13px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "blocked-resume-event"
+        },
+        "text": "이 요구 제외",
+        "hidden": false,
+        "visible": false,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "visibleWidth": 0,
+        "visibleHeight": 0,
+        "clientWidth": 0,
+        "scrollWidth": 0,
+        "color": "rgb(74, 87, 214)",
+        "fontSize": "12px",
+        "disabled": false
+      },
+      {
+        "testid": "ai-continue-run",
+        "attributes": {
+          "testid": "ai-continue-run"
+        },
+        "text": "계속",
+        "hidden": false,
+        "visible": false,
+        "rect": {
+          "x": 388,
+          "y": 677.9000244140625,
+          "width": 42.06666564941406,
+          "height": 28,
+          "right": 430.06666564941406,
+          "bottom": 705.9000244140625
+        },
+        "visibleWidth": 42.06666564941406,
+        "visibleHeight": 0,
+        "clientWidth": 40,
+        "scrollWidth": 40,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "12px",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "label": "blocked-ask-resume",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "documentWidth": 1280,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "blocked",
+          "goal": "incomplete",
+          "delivery": "no-change"
+        },
+        "text": "진행 막힘 · 목표 미충족 · 변경 없음",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 628,
+          "y": 648,
+          "width": 640,
+          "height": 35,
+          "right": 1268,
+          "bottom": 683
+        },
+        "visibleWidth": 640,
+        "visibleHeight": 35,
+        "clientWidth": 640,
+        "scrollWidth": 640,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-sticky-checklist",
+        "attributes": {
+          "editorNavigationOwner": "true",
+          "testid": "ai-sticky-checklist",
+          "expanded": "true",
+          "status": "blocked"
+        },
+        "text": "완료 기준진행 막힘QA scoped requirements0/1진행 막힘Required event진행 막힘이 요구 제외원래 요청: qa-ai-surface-4a5dcf3b-a94b-4452-8922-b25101fc96d7/blocked-ask-resume: inspect only the scripted scope.Acceptance incomplete; execution stopped기대{\"kind\":\"eventCount\",\"target\":{\"mapId\":\"map_blank_start\"},\"count\":1}확인0 scoped events판정미충족맵에서 보기",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 318,
+          "y": 141,
+          "width": 272,
+          "height": 242,
+          "right": 590,
+          "bottom": 383
+        },
+        "visibleWidth": 272,
+        "visibleHeight": 242,
+        "clientWidth": 270,
+        "scrollWidth": 270,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "13px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "blocked-resume-event"
+        },
+        "text": "이 요구 제외",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 355,
+          "y": 326,
+          "width": 79.89999389648438,
+          "height": 32,
+          "right": 434.8999938964844,
+          "bottom": 358
+        },
+        "visibleWidth": 79.89999389648438,
+        "visibleHeight": 32,
+        "clientWidth": 78,
+        "scrollWidth": 78,
+        "color": "rgb(74, 87, 214)",
+        "fontSize": "12px",
+        "disabled": false
+      },
+      {
+        "testid": "ai-continue-run",
+        "attributes": {
+          "testid": "ai-continue-run"
+        },
+        "text": "계속",
+        "hidden": false,
+        "visible": false,
+        "rect": {
+          "x": 644,
+          "y": 690.0499877929688,
+          "width": 42.06666564941406,
+          "height": 28,
+          "right": 686.0666656494141,
+          "bottom": 718.0499877929688
+        },
+        "visibleWidth": 42.06666564941406,
+        "visibleHeight": 0,
+        "clientWidth": 40,
+        "scrollWidth": 40,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "12px",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "label": "blocked-ask-resume",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "documentWidth": 1440,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "blocked",
+          "goal": "incomplete",
+          "delivery": "no-change"
+        },
+        "text": "진행 막힘 · 목표 미충족 · 변경 없음",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 668,
+          "y": 748,
+          "width": 760,
+          "height": 35,
+          "right": 1428,
+          "bottom": 783
+        },
+        "visibleWidth": 760,
+        "visibleHeight": 35,
+        "clientWidth": 760,
+        "scrollWidth": 760,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-sticky-checklist",
+        "attributes": {
+          "editorNavigationOwner": "true",
+          "testid": "ai-sticky-checklist",
+          "expanded": "true",
+          "status": "blocked"
+        },
+        "text": "완료 기준진행 막힘QA scoped requirements0/1진행 막힘Required event진행 막힘이 요구 제외원래 요청: qa-ai-surface-4a5dcf3b-a94b-4452-8922-b25101fc96d7/blocked-ask-resume: inspect only the scripted scope.Acceptance incomplete; execution stopped기대{\"kind\":\"eventCount\",\"target\":{\"mapId\":\"map_blank_start\"},\"count\":1}확인0 scoped events판정미충족맵에서 보기",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 318,
+          "y": 141,
+          "width": 272,
+          "height": 242,
+          "right": 590,
+          "bottom": 383
+        },
+        "visibleWidth": 272,
+        "visibleHeight": 242,
+        "clientWidth": 270,
+        "scrollWidth": 270,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "13px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "blocked-resume-event"
+        },
+        "text": "이 요구 제외",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 355,
+          "y": 326,
+          "width": 79.89999389648438,
+          "height": 32,
+          "right": 434.8999938964844,
+          "bottom": 358
+        },
+        "visibleWidth": 79.89999389648438,
+        "visibleHeight": 32,
+        "clientWidth": 78,
+        "scrollWidth": 78,
+        "color": "rgb(74, 87, 214)",
+        "fontSize": "12px",
+        "disabled": false
+      },
+      {
+        "testid": "ai-continue-run",
+        "attributes": {
+          "testid": "ai-continue-run"
+        },
+        "text": "계속",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 684,
+          "y": 706.3499755859375,
+          "width": 42.06666564941406,
+          "height": 28,
+          "right": 726.0666656494141,
+          "bottom": 734.3499755859375
+        },
+        "visibleWidth": 42.06666564941406,
+        "visibleHeight": 28,
+        "clientWidth": 40,
+        "scrollWidth": 40,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "12px",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "label": "blocked-question-in-flight",
+    "viewport": {
+      "width": 1024,
+      "height": 768
+    },
+    "documentWidth": 1024,
+    "nodes": [
+      {
+        "testid": "ai-sticky-checklist",
+        "attributes": {
+          "editorNavigationOwner": "true",
+          "testid": "ai-sticky-checklist",
+          "expanded": "false",
+          "status": "blocked"
+        },
+        "text": "완료 기준진행 막힘QA scoped requirements0/1진행 막힘Required event진행 막힘이 요구 제외원래 요청: qa-ai-surface-4a5dcf3b-a94b-4452-8922-b25101fc96d7/blocked-ask-resume: inspect only the scripted scope.Acceptance incomplete; execution stopped기대{\"kind\":\"eventCount\",\"target\":{\"mapId\":\"map_blank_start\"},\"count\":1}확인0 scoped events판정미충족맵에서 보기",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 318,
+          "y": 141,
+          "width": 272,
+          "height": 59,
+          "right": 590,
+          "bottom": 200
+        },
+        "visibleWidth": 272,
+        "visibleHeight": 59,
+        "clientWidth": 270,
+        "scrollWidth": 270,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "13px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "blocked-resume-event"
+        },
+        "text": "이 요구 제외",
+        "hidden": false,
+        "visible": false,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "visibleWidth": 0,
+        "visibleHeight": 0,
+        "clientWidth": 0,
+        "scrollWidth": 0,
+        "color": "rgb(71, 85, 105)",
+        "fontSize": "12px",
+        "disabled": true
+      },
+      {
+        "testid": "ai-continue-run",
+        "attributes": {
+          "testid": "ai-continue-run"
+        },
+        "text": "계속",
+        "hidden": false,
+        "visible": false,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "visibleWidth": 0,
+        "visibleHeight": 0,
+        "clientWidth": 0,
+        "scrollWidth": 0,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "12px",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "label": "blocked-question-in-flight",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "documentWidth": 1280,
+    "nodes": [
+      {
+        "testid": "ai-sticky-checklist",
+        "attributes": {
+          "editorNavigationOwner": "true",
+          "testid": "ai-sticky-checklist",
+          "expanded": "true",
+          "status": "blocked"
+        },
+        "text": "완료 기준진행 막힘QA scoped requirements0/1진행 막힘Required event진행 막힘이 요구 제외원래 요청: qa-ai-surface-4a5dcf3b-a94b-4452-8922-b25101fc96d7/blocked-ask-resume: inspect only the scripted scope.Acceptance incomplete; execution stopped기대{\"kind\":\"eventCount\",\"target\":{\"mapId\":\"map_blank_start\"},\"count\":1}확인0 scoped events판정미충족맵에서 보기",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 318,
+          "y": 141,
+          "width": 272,
+          "height": 242,
+          "right": 590,
+          "bottom": 383
+        },
+        "visibleWidth": 272,
+        "visibleHeight": 242,
+        "clientWidth": 270,
+        "scrollWidth": 270,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "13px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "blocked-resume-event"
+        },
+        "text": "이 요구 제외",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 355,
+          "y": 326,
+          "width": 79.89999389648438,
+          "height": 32,
+          "right": 434.8999938964844,
+          "bottom": 358
+        },
+        "visibleWidth": 79.89999389648438,
+        "visibleHeight": 32,
+        "clientWidth": 78,
+        "scrollWidth": 78,
+        "color": "rgb(71, 85, 105)",
+        "fontSize": "12px",
+        "disabled": true
+      },
+      {
+        "testid": "ai-continue-run",
+        "attributes": {
+          "testid": "ai-continue-run"
+        },
+        "text": "계속",
+        "hidden": false,
+        "visible": false,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "visibleWidth": 0,
+        "visibleHeight": 0,
+        "clientWidth": 0,
+        "scrollWidth": 0,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "12px",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "label": "blocked-question-in-flight",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "documentWidth": 1440,
+    "nodes": [
+      {
+        "testid": "ai-sticky-checklist",
+        "attributes": {
+          "editorNavigationOwner": "true",
+          "testid": "ai-sticky-checklist",
+          "expanded": "true",
+          "status": "blocked"
+        },
+        "text": "완료 기준진행 막힘QA scoped requirements0/1진행 막힘Required event진행 막힘이 요구 제외원래 요청: qa-ai-surface-4a5dcf3b-a94b-4452-8922-b25101fc96d7/blocked-ask-resume: inspect only the scripted scope.Acceptance incomplete; execution stopped기대{\"kind\":\"eventCount\",\"target\":{\"mapId\":\"map_blank_start\"},\"count\":1}확인0 scoped events판정미충족맵에서 보기",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 318,
+          "y": 141,
+          "width": 272,
+          "height": 242,
+          "right": 590,
+          "bottom": 383
+        },
+        "visibleWidth": 272,
+        "visibleHeight": 242,
+        "clientWidth": 270,
+        "scrollWidth": 270,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "13px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "blocked-resume-event"
+        },
+        "text": "이 요구 제외",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 355,
+          "y": 326,
+          "width": 79.89999389648438,
+          "height": 32,
+          "right": 434.8999938964844,
+          "bottom": 358
+        },
+        "visibleWidth": 79.89999389648438,
+        "visibleHeight": 32,
+        "clientWidth": 78,
+        "scrollWidth": 78,
+        "color": "rgb(71, 85, 105)",
+        "fontSize": "12px",
+        "disabled": true
+      },
+      {
+        "testid": "ai-continue-run",
+        "attributes": {
+          "testid": "ai-continue-run"
+        },
+        "text": "계속",
+        "hidden": false,
+        "visible": false,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "visibleWidth": 0,
+        "visibleHeight": 0,
+        "clientWidth": 0,
+        "scrollWidth": 0,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "12px",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "label": "blocked-question-settled",
+    "viewport": {
+      "width": 1024,
+      "height": 768
+    },
+    "documentWidth": 1024,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "response-final",
+          "goal": "incomplete",
+          "delivery": "no-change"
+        },
+        "text": "응답 종료 · 목표 미충족 · 변경 없음",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 372,
+          "y": 616,
+          "width": 640,
+          "height": 35,
+          "right": 1012,
+          "bottom": 651
+        },
+        "visibleWidth": 640,
+        "visibleHeight": 35,
+        "clientWidth": 640,
+        "scrollWidth": 640,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-sticky-checklist",
+        "attributes": {
+          "editorNavigationOwner": "true",
+          "testid": "ai-sticky-checklist",
+          "expanded": "false",
+          "status": "blocked"
+        },
+        "text": "완료 기준진행 막힘QA scoped requirements0/1진행 막힘Required event진행 막힘이 요구 제외원래 요청: qa-ai-surface-4a5dcf3b-a94b-4452-8922-b25101fc96d7/blocked-ask-resume: inspect only the scripted scope.Acceptance incomplete; execution stopped기대{\"kind\":\"eventCount\",\"target\":{\"mapId\":\"map_blank_start\"},\"count\":1}확인0 scoped events판정미충족맵에서 보기",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 318,
+          "y": 141,
+          "width": 272,
+          "height": 59,
+          "right": 590,
+          "bottom": 200
+        },
+        "visibleWidth": 272,
+        "visibleHeight": 59,
+        "clientWidth": 270,
+        "scrollWidth": 270,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "13px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "blocked-resume-event"
+        },
+        "text": "이 요구 제외",
+        "hidden": false,
+        "visible": false,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "visibleWidth": 0,
+        "visibleHeight": 0,
+        "clientWidth": 0,
+        "scrollWidth": 0,
+        "color": "rgb(74, 87, 214)",
+        "fontSize": "12px",
+        "disabled": false
+      },
+      {
+        "testid": "ai-continue-run",
+        "attributes": {
+          "testid": "ai-continue-run"
+        },
+        "text": "계속",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 388,
+          "y": 574,
+          "width": 42.06666564941406,
+          "height": 28,
+          "right": 430.06666564941406,
+          "bottom": 602
+        },
+        "visibleWidth": 42.06666564941406,
+        "visibleHeight": 28,
+        "clientWidth": 40,
+        "scrollWidth": 40,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "12px",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "label": "blocked-question-settled",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "documentWidth": 1280,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "response-final",
+          "goal": "incomplete",
+          "delivery": "no-change"
+        },
+        "text": "응답 종료 · 목표 미충족 · 변경 없음",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 628,
+          "y": 648,
+          "width": 640,
+          "height": 35,
+          "right": 1268,
+          "bottom": 683
+        },
+        "visibleWidth": 640,
+        "visibleHeight": 35,
+        "clientWidth": 640,
+        "scrollWidth": 640,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-sticky-checklist",
+        "attributes": {
+          "editorNavigationOwner": "true",
+          "testid": "ai-sticky-checklist",
+          "expanded": "true",
+          "status": "blocked"
+        },
+        "text": "완료 기준진행 막힘QA scoped requirements0/1진행 막힘Required event진행 막힘이 요구 제외원래 요청: qa-ai-surface-4a5dcf3b-a94b-4452-8922-b25101fc96d7/blocked-ask-resume: inspect only the scripted scope.Acceptance incomplete; execution stopped기대{\"kind\":\"eventCount\",\"target\":{\"mapId\":\"map_blank_start\"},\"count\":1}확인0 scoped events판정미충족맵에서 보기",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 318,
+          "y": 141,
+          "width": 272,
+          "height": 242,
+          "right": 590,
+          "bottom": 383
+        },
+        "visibleWidth": 272,
+        "visibleHeight": 242,
+        "clientWidth": 270,
+        "scrollWidth": 270,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "13px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "blocked-resume-event"
+        },
+        "text": "이 요구 제외",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 355,
+          "y": 326,
+          "width": 79.89999389648438,
+          "height": 32,
+          "right": 434.8999938964844,
+          "bottom": 358
+        },
+        "visibleWidth": 79.89999389648438,
+        "visibleHeight": 32,
+        "clientWidth": 78,
+        "scrollWidth": 78,
+        "color": "rgb(74, 87, 214)",
+        "fontSize": "12px",
+        "disabled": false
+      },
+      {
+        "testid": "ai-continue-run",
+        "attributes": {
+          "testid": "ai-continue-run"
+        },
+        "text": "계속",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 644,
+          "y": 606,
+          "width": 42.06666564941406,
+          "height": 28,
+          "right": 686.0666656494141,
+          "bottom": 634
+        },
+        "visibleWidth": 42.06666564941406,
+        "visibleHeight": 28,
+        "clientWidth": 40,
+        "scrollWidth": 40,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "12px",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "label": "blocked-question-settled",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "documentWidth": 1440,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "response-final",
+          "goal": "incomplete",
+          "delivery": "no-change"
+        },
+        "text": "응답 종료 · 목표 미충족 · 변경 없음",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 668,
+          "y": 748,
+          "width": 760,
+          "height": 35,
+          "right": 1428,
+          "bottom": 783
+        },
+        "visibleWidth": 760,
+        "visibleHeight": 35,
+        "clientWidth": 760,
+        "scrollWidth": 760,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-sticky-checklist",
+        "attributes": {
+          "editorNavigationOwner": "true",
+          "testid": "ai-sticky-checklist",
+          "expanded": "true",
+          "status": "blocked"
+        },
+        "text": "완료 기준진행 막힘QA scoped requirements0/1진행 막힘Required event진행 막힘이 요구 제외원래 요청: qa-ai-surface-4a5dcf3b-a94b-4452-8922-b25101fc96d7/blocked-ask-resume: inspect only the scripted scope.Acceptance incomplete; execution stopped기대{\"kind\":\"eventCount\",\"target\":{\"mapId\":\"map_blank_start\"},\"count\":1}확인0 scoped events판정미충족맵에서 보기",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 318,
+          "y": 141,
+          "width": 272,
+          "height": 242,
+          "right": 590,
+          "bottom": 383
+        },
+        "visibleWidth": 272,
+        "visibleHeight": 242,
+        "clientWidth": 270,
+        "scrollWidth": 270,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "13px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "blocked-resume-event"
+        },
+        "text": "이 요구 제외",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 355,
+          "y": 326,
+          "width": 79.89999389648438,
+          "height": 32,
+          "right": 434.8999938964844,
+          "bottom": 358
+        },
+        "visibleWidth": 79.89999389648438,
+        "visibleHeight": 32,
+        "clientWidth": 78,
+        "scrollWidth": 78,
+        "color": "rgb(74, 87, 214)",
+        "fontSize": "12px",
+        "disabled": false
+      },
+      {
+        "testid": "ai-continue-run",
+        "attributes": {
+          "testid": "ai-continue-run"
+        },
+        "text": "계속",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 684,
+          "y": 706,
+          "width": 42.06666564941406,
+          "height": 28,
+          "right": 726.0666656494141,
+          "bottom": 734
+        },
+        "visibleWidth": 42.06666564941406,
+        "visibleHeight": 28,
+        "clientWidth": 40,
+        "scrollWidth": 40,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "12px",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "label": "blocked-user-resume-in-flight",
+    "viewport": {
+      "width": 1024,
+      "height": 768
+    },
+    "documentWidth": 1024,
+    "nodes": [
+      {
+        "testid": "ai-sticky-checklist",
+        "attributes": {
+          "editorNavigationOwner": "true",
+          "testid": "ai-sticky-checklist",
+          "expanded": "false",
+          "status": "working"
+        },
+        "text": "완료 기준작업 중QA scoped requirements0/1작업 중 · Required eventRequired event작업 중이 요구 제외원래 요청: qa-ai-surface-4a5dcf3b-a94b-4452-8922-b25101fc96d7/blocked-ask-resume: inspect only the scripted scope.Acceptance checks remain open기대{\"kind\":\"eventCount\",\"target\":{\"mapId\":\"map_blank_start\"},\"count\":1}확인0 scoped events판정미충족맵에서 보기",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 318,
+          "y": 141,
+          "width": 272,
+          "height": 59,
+          "right": 590,
+          "bottom": 200
+        },
+        "visibleWidth": 272,
+        "visibleHeight": 59,
+        "clientWidth": 270,
+        "scrollWidth": 270,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "13px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "blocked-resume-event"
+        },
+        "text": "이 요구 제외",
+        "hidden": false,
+        "visible": false,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "visibleWidth": 0,
+        "visibleHeight": 0,
+        "clientWidth": 0,
+        "scrollWidth": 0,
+        "color": "rgb(71, 85, 105)",
+        "fontSize": "12px",
+        "disabled": true
+      },
+      {
+        "testid": "ai-continue-run",
+        "attributes": {
+          "testid": "ai-continue-run"
+        },
+        "text": "계속",
+        "hidden": false,
+        "visible": false,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "visibleWidth": 0,
+        "visibleHeight": 0,
+        "clientWidth": 0,
+        "scrollWidth": 0,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "12px",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "label": "blocked-user-resume-in-flight",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "documentWidth": 1280,
+    "nodes": [
+      {
+        "testid": "ai-sticky-checklist",
+        "attributes": {
+          "editorNavigationOwner": "true",
+          "testid": "ai-sticky-checklist",
+          "expanded": "true",
+          "status": "working"
+        },
+        "text": "완료 기준작업 중QA scoped requirements0/1작업 중 · Required eventRequired event작업 중이 요구 제외원래 요청: qa-ai-surface-4a5dcf3b-a94b-4452-8922-b25101fc96d7/blocked-ask-resume: inspect only the scripted scope.Acceptance checks remain open기대{\"kind\":\"eventCount\",\"target\":{\"mapId\":\"map_blank_start\"},\"count\":1}확인0 scoped events판정미충족맵에서 보기",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 318,
+          "y": 141,
+          "width": 272,
+          "height": 242,
+          "right": 590,
+          "bottom": 383
+        },
+        "visibleWidth": 272,
+        "visibleHeight": 242,
+        "clientWidth": 270,
+        "scrollWidth": 270,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "13px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "blocked-resume-event"
+        },
+        "text": "이 요구 제외",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 355,
+          "y": 326,
+          "width": 79.89999389648438,
+          "height": 32,
+          "right": 434.8999938964844,
+          "bottom": 358
+        },
+        "visibleWidth": 79.89999389648438,
+        "visibleHeight": 32,
+        "clientWidth": 78,
+        "scrollWidth": 78,
+        "color": "rgb(71, 85, 105)",
+        "fontSize": "12px",
+        "disabled": true
+      },
+      {
+        "testid": "ai-continue-run",
+        "attributes": {
+          "testid": "ai-continue-run"
+        },
+        "text": "계속",
+        "hidden": false,
+        "visible": false,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "visibleWidth": 0,
+        "visibleHeight": 0,
+        "clientWidth": 0,
+        "scrollWidth": 0,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "12px",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "label": "blocked-user-resume-in-flight",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "documentWidth": 1440,
+    "nodes": [
+      {
+        "testid": "ai-sticky-checklist",
+        "attributes": {
+          "editorNavigationOwner": "true",
+          "testid": "ai-sticky-checklist",
+          "expanded": "true",
+          "status": "working"
+        },
+        "text": "완료 기준작업 중QA scoped requirements0/1작업 중 · Required eventRequired event작업 중이 요구 제외원래 요청: qa-ai-surface-4a5dcf3b-a94b-4452-8922-b25101fc96d7/blocked-ask-resume: inspect only the scripted scope.Acceptance checks remain open기대{\"kind\":\"eventCount\",\"target\":{\"mapId\":\"map_blank_start\"},\"count\":1}확인0 scoped events판정미충족맵에서 보기",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 318,
+          "y": 141,
+          "width": 272,
+          "height": 242,
+          "right": 590,
+          "bottom": 383
+        },
+        "visibleWidth": 272,
+        "visibleHeight": 242,
+        "clientWidth": 270,
+        "scrollWidth": 270,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "13px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "blocked-resume-event"
+        },
+        "text": "이 요구 제외",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 355,
+          "y": 326,
+          "width": 79.89999389648438,
+          "height": 32,
+          "right": 434.8999938964844,
+          "bottom": 358
+        },
+        "visibleWidth": 79.89999389648438,
+        "visibleHeight": 32,
+        "clientWidth": 78,
+        "scrollWidth": 78,
+        "color": "rgb(71, 85, 105)",
+        "fontSize": "12px",
+        "disabled": true
+      },
+      {
+        "testid": "ai-continue-run",
+        "attributes": {
+          "testid": "ai-continue-run"
+        },
+        "text": "계속",
+        "hidden": false,
+        "visible": false,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "visibleWidth": 0,
+        "visibleHeight": 0,
+        "clientWidth": 0,
+        "scrollWidth": 0,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "12px",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "label": "blocked-user-resume-settled",
+    "viewport": {
+      "width": 1024,
+      "height": 768
+    },
+    "documentWidth": 1024,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "blocked",
+          "goal": "incomplete",
+          "delivery": "no-change"
+        },
+        "text": "진행 막힘 · 목표 미충족 · 변경 없음",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 372,
+          "y": 616,
+          "width": 640,
+          "height": 35,
+          "right": 1012,
+          "bottom": 651
+        },
+        "visibleWidth": 640,
+        "visibleHeight": 35,
+        "clientWidth": 640,
+        "scrollWidth": 640,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-sticky-checklist",
+        "attributes": {
+          "editorNavigationOwner": "true",
+          "testid": "ai-sticky-checklist",
+          "expanded": "false",
+          "status": "blocked"
+        },
+        "text": "완료 기준진행 막힘QA scoped requirements0/1진행 막힘Required event진행 막힘이 요구 제외원래 요청: qa-ai-surface-4a5dcf3b-a94b-4452-8922-b25101fc96d7/blocked-ask-resume: inspect only the scripted scope.Acceptance incomplete; execution stopped기대{\"kind\":\"eventCount\",\"target\":{\"mapId\":\"map_blank_start\"},\"count\":1}확인0 scoped events판정미충족맵에서 보기",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 318,
+          "y": 141,
+          "width": 272,
+          "height": 59,
+          "right": 590,
+          "bottom": 200
+        },
+        "visibleWidth": 272,
+        "visibleHeight": 59,
+        "clientWidth": 270,
+        "scrollWidth": 270,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "13px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "blocked-resume-event"
+        },
+        "text": "이 요구 제외",
+        "hidden": false,
+        "visible": false,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "visibleWidth": 0,
+        "visibleHeight": 0,
+        "clientWidth": 0,
+        "scrollWidth": 0,
+        "color": "rgb(74, 87, 214)",
+        "fontSize": "12px",
+        "disabled": false
+      },
+      {
+        "testid": "ai-continue-run",
+        "attributes": {
+          "testid": "ai-continue-run"
+        },
+        "text": "계속",
+        "hidden": false,
+        "visible": false,
+        "rect": {
+          "x": 388,
+          "y": 611.4000244140625,
+          "width": 42.06666564941406,
+          "height": 28,
+          "right": 430.06666564941406,
+          "bottom": 639.4000244140625
+        },
+        "visibleWidth": 42.06666564941406,
+        "visibleHeight": 0,
+        "clientWidth": 40,
+        "scrollWidth": 40,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "12px",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "label": "blocked-user-resume-settled",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "documentWidth": 1280,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "blocked",
+          "goal": "incomplete",
+          "delivery": "no-change"
+        },
+        "text": "진행 막힘 · 목표 미충족 · 변경 없음",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 628,
+          "y": 648,
+          "width": 640,
+          "height": 35,
+          "right": 1268,
+          "bottom": 683
+        },
+        "visibleWidth": 640,
+        "visibleHeight": 35,
+        "clientWidth": 640,
+        "scrollWidth": 640,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-sticky-checklist",
+        "attributes": {
+          "editorNavigationOwner": "true",
+          "testid": "ai-sticky-checklist",
+          "expanded": "true",
+          "status": "blocked"
+        },
+        "text": "완료 기준진행 막힘QA scoped requirements0/1진행 막힘Required event진행 막힘이 요구 제외원래 요청: qa-ai-surface-4a5dcf3b-a94b-4452-8922-b25101fc96d7/blocked-ask-resume: inspect only the scripted scope.Acceptance incomplete; execution stopped기대{\"kind\":\"eventCount\",\"target\":{\"mapId\":\"map_blank_start\"},\"count\":1}확인0 scoped events판정미충족맵에서 보기",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 318,
+          "y": 141,
+          "width": 272,
+          "height": 242,
+          "right": 590,
+          "bottom": 383
+        },
+        "visibleWidth": 272,
+        "visibleHeight": 242,
+        "clientWidth": 270,
+        "scrollWidth": 270,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "13px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "blocked-resume-event"
+        },
+        "text": "이 요구 제외",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 355,
+          "y": 326,
+          "width": 79.89999389648438,
+          "height": 32,
+          "right": 434.8999938964844,
+          "bottom": 358
+        },
+        "visibleWidth": 79.89999389648438,
+        "visibleHeight": 32,
+        "clientWidth": 78,
+        "scrollWidth": 78,
+        "color": "rgb(74, 87, 214)",
+        "fontSize": "12px",
+        "disabled": false
+      },
+      {
+        "testid": "ai-continue-run",
+        "attributes": {
+          "testid": "ai-continue-run"
+        },
+        "text": "계속",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 644,
+          "y": 623.5499877929688,
+          "width": 42.06666564941406,
+          "height": 28,
+          "right": 686.0666656494141,
+          "bottom": 651.5499877929688
+        },
+        "visibleWidth": 42.06666564941406,
+        "visibleHeight": 16.45001220703125,
+        "clientWidth": 40,
+        "scrollWidth": 40,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "12px",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "label": "blocked-user-resume-settled",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "documentWidth": 1440,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "blocked",
+          "goal": "incomplete",
+          "delivery": "no-change"
+        },
+        "text": "진행 막힘 · 목표 미충족 · 변경 없음",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 668,
+          "y": 748,
+          "width": 760,
+          "height": 35,
+          "right": 1428,
+          "bottom": 783
+        },
+        "visibleWidth": 760,
+        "visibleHeight": 35,
+        "clientWidth": 760,
+        "scrollWidth": 760,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-sticky-checklist",
+        "attributes": {
+          "editorNavigationOwner": "true",
+          "testid": "ai-sticky-checklist",
+          "expanded": "true",
+          "status": "blocked"
+        },
+        "text": "완료 기준진행 막힘QA scoped requirements0/1진행 막힘Required event진행 막힘이 요구 제외원래 요청: qa-ai-surface-4a5dcf3b-a94b-4452-8922-b25101fc96d7/blocked-ask-resume: inspect only the scripted scope.Acceptance incomplete; execution stopped기대{\"kind\":\"eventCount\",\"target\":{\"mapId\":\"map_blank_start\"},\"count\":1}확인0 scoped events판정미충족맵에서 보기",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 318,
+          "y": 141,
+          "width": 272,
+          "height": 242,
+          "right": 590,
+          "bottom": 383
+        },
+        "visibleWidth": 272,
+        "visibleHeight": 242,
+        "clientWidth": 270,
+        "scrollWidth": 270,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "13px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "blocked-resume-event"
+        },
+        "text": "이 요구 제외",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 355,
+          "y": 326,
+          "width": 79.89999389648438,
+          "height": 32,
+          "right": 434.8999938964844,
+          "bottom": 358
+        },
+        "visibleWidth": 79.89999389648438,
+        "visibleHeight": 32,
+        "clientWidth": 78,
+        "scrollWidth": 78,
+        "color": "rgb(74, 87, 214)",
+        "fontSize": "12px",
+        "disabled": false
+      },
+      {
+        "testid": "ai-continue-run",
+        "attributes": {
+          "testid": "ai-continue-run"
+        },
+        "text": "계속",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 684,
+          "y": 706,
+          "width": 42.06666564941406,
+          "height": 28,
+          "right": 726.0666656494141,
+          "bottom": 734
+        },
+        "visibleWidth": 42.06666564941406,
+        "visibleHeight": 28,
+        "clientWidth": 40,
+        "scrollWidth": 40,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "12px",
+        "disabled": false
+      }
+    ]
+  }
+]

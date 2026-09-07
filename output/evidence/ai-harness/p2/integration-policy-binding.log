@@ -1,0 +1,34 @@
+{
+  "sourceHashesVerified": 16,
+  "backendPassed": 138,
+  "uiPending": 10,
+  "fixture": "qa-ai-surface-86b3383b-439b-49c7-b044-d2365806b6aa",
+  "cleanup": {
+    "absentBeforeRun": true,
+    "pageListenersAndTimersClosed": true,
+    "browserClosed": true,
+    "serverClosed": true,
+    "cacheRemoved": true,
+    "portReleased": true,
+    "remote": {
+      "projectId": "qa-ai-surface-86b3383b-439b-49c7-b044-d2365806b6aa",
+      "kind": "deleted-and-absence-verified",
+      "commitIds": [
+        "f6204472-d86d-4e13-b95b-5028ac17d3f5",
+        "8ad72749-c34c-48da-9c0c-8db6d49ed219",
+        "9a64b6d5-dd44-4aae-bcdf-996a0d214966",
+        "1520ce22-0cd8-40b2-bb97-9224d0a10f0c",
+        "cd8d313c-bfdb-435a-9023-0008b978321b",
+        "b79a641b-8563-4935-a150-26e44bdf2e32",
+        "f41e4859-e1cb-4866-8ecf-6c8033f45d3d",
+        "caef5e89-5846-400f-9037-e38262b90394",
+        "7d61a965-fb2e-4d0f-a2fa-56a3d788bd7c",
+        "cad07cb5-515e-4146-8214-b2cf8416511e"
+      ]
+    },
+    "remoteDeletedAndAbsent": true,
+    "reusedListener": false,
+    "activeRoutes": 0
+  }
+}
+Configured key-value scan passed.

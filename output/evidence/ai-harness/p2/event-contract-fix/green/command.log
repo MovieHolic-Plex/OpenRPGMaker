@@ -1,0 +1,28 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/assistantVerificationEvidence.test.ts --maxWorkers 1 --minWorkers 1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p2-event-contract-20260906
+
+ ✓ test/assistantVerificationEvidence.test.ts (20 tests) 8310ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > run_lint ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  664ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > check_reachability ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  468ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > verify_quest ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  470ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > play_walkthrough ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  481ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > run_scene_test ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  493ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > evaluate_game_quality ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  497ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 같은 검사 재실패는 앞선 성공을 제거하고, 이후 실제 재통과는 복구한다  491ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 쓰기 이후에는 이전 검증 성공으로 완료할 수 없고 다시 검사해야 한다  519ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 재검사 없는 쓰기는 최종 보고에서도 검증 통과로 남지 않는다  456ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 실행되지 않은 잘못된 인자는 고친 호출로 복구할 수 있다  434ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > warning-only lint는 통과하며 거부된 쓰기는 성공 근거를 무효화하지 않는다  495ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 레이어 자동 통과는 재검증 의무를 만들지 않고 명시 검사만 유지한다 (explicit=false)  719ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 레이어 자동 통과는 재검증 의무를 만들지 않고 명시 검사만 유지한다 (explicit=true)  902ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 다음 항목은 자기 대상의 검증으로 완료하며 이전 항목의 stale 검사는 최종 보고에 보존한다  547ms
+
+ Test Files  1 passed (1)
+      Tests  20 passed (20)
+   Start at  07:21:08
+   Duration  21.10s (transform 8.67s, setup 0ms, collect 12.23s, tests 8.31s, environment 0ms, prepare 109ms)
+

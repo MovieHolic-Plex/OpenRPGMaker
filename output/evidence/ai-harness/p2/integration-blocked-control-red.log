@@ -1,0 +1,54 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiBlockedContinue.test.ts --maxWorkers 1 --minWorkers 1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p2-20260906
+
+ ❯ test/aiBlockedContinue.test.ts (4 tests | 2 failed) 3190ms
+   × offers the real Continue control when required work blocks without a budget stop 787ms
+     → expected null not to be null
+   × keeps one Continue control when a question follows blocked work 978ms
+     → expected [] to have a length of 1 but got +0
+   ✓ does not publish a Continue control when the blocked owner is retired  683ms
+   ✓ publishes the resumed unfinished result instead of the preceding question outcome  739ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiBlockedContinue.test.ts > offers the real Continue control when required work blocks without a budget stop
+AssertionError: expected null not to be null
+ ❯ test/aiBlockedContinue.test.ts:67:22
+     65|   // Then the existing control is mounted by production rendering and …
+     66|   const button = f.log.querySelector<HTMLButtonElement>("[data-testid=…
+     67|   expect(button).not.toBeNull();
+       |                      ^
+     68|   button?.click();
+     69|   expect(f.sendText).toHaveBeenCalledExactlyOnceWith("계속");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  test/aiBlockedContinue.test.ts > keeps one Continue control when a question follows blocked work
+AssertionError: expected [] to have a length of 1 but got +0
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 0[39m
+
+ ❯ test/aiBlockedContinue.test.ts:79:67
+     77|   await f.runner.executeTurn(f.session, "What remains?", () => f.run([…
+     78|   // Then the user action remains available without being duplicated o…
+     79|   expect(f.log.querySelectorAll("[data-testid=ai-continue-run]")).toHa…
+       |                                                                   ^
+     80|   expect(f.sendText).not.toHaveBeenCalled();
+     81| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 2 passed (4)
+   Start at  03:40:42
+   Duration  21.88s (transform 12.38s, setup 0ms, collect 17.92s, tests 3.19s, environment 0ms, prepare 108ms)
+

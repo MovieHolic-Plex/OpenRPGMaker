@@ -1,0 +1,167 @@
+implementation 383c27539d8ce94846c660bf45c2a070dfd9b940
+bound ui-explicit-resume-outcome-matrix src/ai/assistantSession.ts 4219b0a4e7bc9f5d570d9ef3f62a5249c763d26da3e02e7b990a401a82efaba1
+bound ui-explicit-resume-outcome-matrix src/ai/workPlan.ts f471aa410b6bbf00edd65d2cb98c909e3006e6d54a406d9166651fb4a69d454f
+bound ui-explicit-resume-outcome-matrix src/ai/assistantAcceptanceLedger.ts a4fdf4a5535116df492499e3b890da65268e6098973150baade1aa0a2d78abd4
+bound ui-explicit-resume-outcome-matrix src/project/store.ts 8d8bea0ae98fb42b4e3c1e9f0eaa71bba6176eb84475832d15395384415312b9
+bound ui-explicit-resume-outcome-matrix src/editor/panels/aiTurnRunner.ts b9788fbfd0a5b81512723160031bcaa52ffa2936efe6e0d4e460b912dbbf4e66
+bound ui-explicit-resume-outcome-matrix src/editor/aiAssistantBridge.ts 221260ab53900ea000f3f1cf99487ef47b041dd2a0b549f908ed20eb309a85f7
+bound ui-explicit-resume-outcome-matrix src/ai/activityLog.ts 3d27d741243093428fde5798ef38a83fd5b755893abd7edffc4dd91bd92bc323
+bound ui-explicit-resume-outcome-matrix src/ai/runRecap.ts 66b59b0c4b4205955b278bc500b08676b559048714cb2a821366d6130fd2e3ae
+bound ui-explicit-resume-outcome-matrix scripts/qa/ai-harness-contracts.mjs a4f89eade69c9ab9c7d167f40924561ab487a070b2da2e9868957439919be569
+bound ui-explicit-resume-outcome-matrix scripts/qa/ai-harness-browser.mjs ddce9bf11db3e242af86e80ccd56958339ab8b4e7aa4e1b664ccf123566c3c83
+bound ui-explicit-resume-outcome-matrix scripts/qa/ai-harness-proof-failure.mjs 0e2fcc85ce1d867f24c355a13999b3ab8865623e60d40630426a5d6a06c03507
+bound ui-explicit-resume-outcome-matrix scripts/qa/ai-harness-cleanup.mjs cca421282dda00bfb1773268c8378e00c71ab44d1aff3c42d0056ca6d5f5fa07
+bound ui-explicit-resume-outcome-matrix scripts/qa/ai-harness-p2.mjs 81c7b57d1cecb3c3cdc18db4e3f46aaa82ae2358af24e7c2a9b76d384cc52326
+bound ui-explicit-resume-outcome-matrix scripts/qa/ai-harness-p2-scenarios.mjs c20959243619beca413d44e3005f46c0b3a9f2229a860bbec7d3358cefa4ce3a
+bound ui-explicit-resume-outcome-matrix scripts/qa/ai-harness-p2-observe.mjs 56b650dd393b9713f895144f6cbbfda687941ec60f2a34bd895a78f2260596a6
+bound ui-explicit-resume-outcome-matrix scripts/qa/ai-harness-p2-resume.mjs 4005732b9686bb61600250ef978625dc5f3d571f0250be134b3e51813c90693f
+bound ui-explicit-resume-outcome-matrix DESIGN.md b7cd413001c7aebb8289ee9fc761f33800c982409921de295a4574380cb6f7fa
+bound ui-explicit-resume-outcome-matrix src/editor/panels/aiChatPanel.ts b0a25914cd059ba5c7bdeb9d0fe7e73f05aa9f5fc955f9f03737667a87d6632d
+bound ui-explicit-resume-outcome-matrix src/editor/panels/aiChatRenderers.ts 1863b02bbe10ef5aa2c8d2b41b93d10851c27a51c6ea3da8370dd7be6d0b7d80
+bound ui-explicit-resume-outcome-matrix src/editor/panels/aiStickyChecklist.ts b8ddb2ffa39545b4f1b0ec2013b26e18a39e22ed1c4db3fb936f5c153ac9a980
+bound ui-explicit-resume-outcome-matrix src/editor/panels/aiRunSurface.ts a94bf5cf36a1fac7b2c636d8dd000855cff9d3d9324f8162d0e8073597462e73
+bound ui-explicit-resume-outcome-matrix src/styles/database/assistant-sticky-checklist.css 71c707dc664b34fd47ef2eb9c30b711571d2bdc7653138f78e2704ece60762c4
+bound ui-explicit-resume-outcome-matrix src/styles/database/tabs-b-assistant-panel/19-assistant-cards.css ffb8ff6e90611a6a2e4abb26d15f9341722cb2dd00d942a0e37f48a3cd8925dd
+bound ui-explicit-resume-outcome-matrix test/aiOutcomePresentation.test.ts 4173d0ab90082be9d04fa7dece5b5533f4756d2bac0543be91d40970e13bac79
+bound ui-explicit-resume-outcome-matrix test/aiAutonomousRunSurface.test.ts 871161dafbbb45ac425136d1093e2aacedbbbf504339be78bebe229e776a4a82
+bound ui-explicit-resume-outcome-matrix test/aiContinueUserAction.test.ts da372964f85ee31badb71ce6d6a76d5e97c5eb97e39fd9b4ac785d49316fe7fe
+bound ui-explicit-resume-outcome-matrix test/aiOutcomeBrowserEvidence.mjs ddd80659b0fcba435b65bb948def7caa68621945629f8083baf9f210981e06a4
+PASS ui-explicit-resume-outcome-matrix checks 148 pngs 48 measurements 36 project qa-ai-surface-b3b0c3a1-019b-4e82-9917-fb58cf8115e3 cleanup {"absentBeforeRun":true,"pageListenersAndTimersClosed":true,"browserClosed":true,"serverClosed":true,"cacheRemoved":true,"portReleased":true,"remote":{"projectId":"qa-ai-surface-b3b0c3a1-019b-4e82-9917-fb58cf8115e3","kind":"deleted-and-absence-verified","commitIds":["65ffe708-3388-478b-bf79-3b00e28ae398","6186200f-58f8-4f8d-99ac-1f66aaa7cebe","9ea42e66-1921-4161-916b-06f2bc780ee1","f5d1a3b0-9673-48ad-837a-f6da59ed8fbb","e63db71c-1562-4bce-aa1d-37e36286a607","e35d027d-271e-47df-a67c-dc77ff96244c","dfacd5cf-3bfe-4124-9e16-51e2a64da216","aa88d06a-241a-4c85-90b9-0a408bf255ca","a55a264c-c62f-445f-b734-130ed57b5de6","948126f3-bced-415f-a6b7-6c4977574f3c"]},"remoteDeletedAndAbsent":true,"reusedListener":false,"activeRoutes":0}
+bound ui-explicit-resume-required-skip src/ai/assistantSession.ts 4219b0a4e7bc9f5d570d9ef3f62a5249c763d26da3e02e7b990a401a82efaba1
+bound ui-explicit-resume-required-skip src/ai/workPlan.ts f471aa410b6bbf00edd65d2cb98c909e3006e6d54a406d9166651fb4a69d454f
+bound ui-explicit-resume-required-skip src/ai/assistantAcceptanceLedger.ts a4fdf4a5535116df492499e3b890da65268e6098973150baade1aa0a2d78abd4
+bound ui-explicit-resume-required-skip src/project/store.ts 8d8bea0ae98fb42b4e3c1e9f0eaa71bba6176eb84475832d15395384415312b9
+bound ui-explicit-resume-required-skip src/editor/panels/aiTurnRunner.ts b9788fbfd0a5b81512723160031bcaa52ffa2936efe6e0d4e460b912dbbf4e66
+bound ui-explicit-resume-required-skip src/editor/aiAssistantBridge.ts 221260ab53900ea000f3f1cf99487ef47b041dd2a0b549f908ed20eb309a85f7
+bound ui-explicit-resume-required-skip src/ai/activityLog.ts 3d27d741243093428fde5798ef38a83fd5b755893abd7edffc4dd91bd92bc323
+bound ui-explicit-resume-required-skip src/ai/runRecap.ts 66b59b0c4b4205955b278bc500b08676b559048714cb2a821366d6130fd2e3ae
+bound ui-explicit-resume-required-skip scripts/qa/ai-harness-contracts.mjs a4f89eade69c9ab9c7d167f40924561ab487a070b2da2e9868957439919be569
+bound ui-explicit-resume-required-skip scripts/qa/ai-harness-browser.mjs ddce9bf11db3e242af86e80ccd56958339ab8b4e7aa4e1b664ccf123566c3c83
+bound ui-explicit-resume-required-skip scripts/qa/ai-harness-proof-failure.mjs 0e2fcc85ce1d867f24c355a13999b3ab8865623e60d40630426a5d6a06c03507
+bound ui-explicit-resume-required-skip scripts/qa/ai-harness-cleanup.mjs cca421282dda00bfb1773268c8378e00c71ab44d1aff3c42d0056ca6d5f5fa07
+bound ui-explicit-resume-required-skip scripts/qa/ai-harness-p2.mjs 81c7b57d1cecb3c3cdc18db4e3f46aaa82ae2358af24e7c2a9b76d384cc52326
+bound ui-explicit-resume-required-skip scripts/qa/ai-harness-p2-scenarios.mjs c20959243619beca413d44e3005f46c0b3a9f2229a860bbec7d3358cefa4ce3a
+bound ui-explicit-resume-required-skip scripts/qa/ai-harness-p2-observe.mjs 56b650dd393b9713f895144f6cbbfda687941ec60f2a34bd895a78f2260596a6
+bound ui-explicit-resume-required-skip scripts/qa/ai-harness-p2-resume.mjs 4005732b9686bb61600250ef978625dc5f3d571f0250be134b3e51813c90693f
+bound ui-explicit-resume-required-skip DESIGN.md b7cd413001c7aebb8289ee9fc761f33800c982409921de295a4574380cb6f7fa
+bound ui-explicit-resume-required-skip src/editor/panels/aiChatPanel.ts b0a25914cd059ba5c7bdeb9d0fe7e73f05aa9f5fc955f9f03737667a87d6632d
+bound ui-explicit-resume-required-skip src/editor/panels/aiChatRenderers.ts 1863b02bbe10ef5aa2c8d2b41b93d10851c27a51c6ea3da8370dd7be6d0b7d80
+bound ui-explicit-resume-required-skip src/editor/panels/aiStickyChecklist.ts b8ddb2ffa39545b4f1b0ec2013b26e18a39e22ed1c4db3fb936f5c153ac9a980
+bound ui-explicit-resume-required-skip src/editor/panels/aiRunSurface.ts a94bf5cf36a1fac7b2c636d8dd000855cff9d3d9324f8162d0e8073597462e73
+bound ui-explicit-resume-required-skip src/styles/database/assistant-sticky-checklist.css 71c707dc664b34fd47ef2eb9c30b711571d2bdc7653138f78e2704ece60762c4
+bound ui-explicit-resume-required-skip src/styles/database/tabs-b-assistant-panel/19-assistant-cards.css ffb8ff6e90611a6a2e4abb26d15f9341722cb2dd00d942a0e37f48a3cd8925dd
+bound ui-explicit-resume-required-skip test/aiOutcomePresentation.test.ts 4173d0ab90082be9d04fa7dece5b5533f4756d2bac0543be91d40970e13bac79
+bound ui-explicit-resume-required-skip test/aiAutonomousRunSurface.test.ts 871161dafbbb45ac425136d1093e2aacedbbbf504339be78bebe229e776a4a82
+bound ui-explicit-resume-required-skip test/aiContinueUserAction.test.ts da372964f85ee31badb71ce6d6a76d5e97c5eb97e39fd9b4ac785d49316fe7fe
+bound ui-explicit-resume-required-skip test/aiOutcomeBrowserEvidence.mjs ddd80659b0fcba435b65bb948def7caa68621945629f8083baf9f210981e06a4
+PASS ui-explicit-resume-required-skip checks 107 pngs 44 measurements 33 project qa-ai-surface-2d66e4ab-9154-4275-b54d-3dddffe1afb2 cleanup {"absentBeforeRun":true,"pageListenersAndTimersClosed":true,"browserClosed":true,"serverClosed":true,"cacheRemoved":true,"portReleased":true,"remote":{"projectId":"qa-ai-surface-2d66e4ab-9154-4275-b54d-3dddffe1afb2","kind":"deleted-and-absence-verified","commitIds":["b575ccda-de7c-4319-915b-1d4f7b71279b"]},"remoteDeletedAndAbsent":true,"reusedListener":false,"activeRoutes":0}
+reachability {"viewport":{"width":1024,"height":768},"focused":true,"unique":1,"hit":true,"modeBefore":"ask","rect":{"x":388,"y":574,"width":42.06666564941406,"height":28,"right":430.06666564941406,"bottom":602},"scrollOwner":{"testid":"ai-chat-log","scrollTop":0,"clientHeight":428,"scrollHeight":428,"rect":{"x":372,"y":179.85000610351562,"right":1012,"bottom":608}},"inViewport":true,"fullyExposed":true,"focusOutline":"rgb(15, 23, 42) 3px","beforeScroll":{"scrollTop":0,"scrollHeight":428,"clientHeight":428},"activation":"click","instrumentPath":"test/aiContinueReachability.mjs","instrumentHash":"f76a49f8cc1b5fae1b577b63431fcc80eeca0bcd7a5b8dbc7416e59792f85800"}
+bound ui-continue-reachable-1024 src/ai/assistantSession.ts 4219b0a4e7bc9f5d570d9ef3f62a5249c763d26da3e02e7b990a401a82efaba1
+bound ui-continue-reachable-1024 src/ai/workPlan.ts f471aa410b6bbf00edd65d2cb98c909e3006e6d54a406d9166651fb4a69d454f
+bound ui-continue-reachable-1024 src/ai/assistantAcceptanceLedger.ts a4fdf4a5535116df492499e3b890da65268e6098973150baade1aa0a2d78abd4
+bound ui-continue-reachable-1024 src/project/store.ts 8d8bea0ae98fb42b4e3c1e9f0eaa71bba6176eb84475832d15395384415312b9
+bound ui-continue-reachable-1024 src/editor/panels/aiTurnRunner.ts b9788fbfd0a5b81512723160031bcaa52ffa2936efe6e0d4e460b912dbbf4e66
+bound ui-continue-reachable-1024 src/editor/aiAssistantBridge.ts 221260ab53900ea000f3f1cf99487ef47b041dd2a0b549f908ed20eb309a85f7
+bound ui-continue-reachable-1024 src/ai/activityLog.ts 3d27d741243093428fde5798ef38a83fd5b755893abd7edffc4dd91bd92bc323
+bound ui-continue-reachable-1024 src/ai/runRecap.ts 66b59b0c4b4205955b278bc500b08676b559048714cb2a821366d6130fd2e3ae
+bound ui-continue-reachable-1024 scripts/qa/ai-harness-contracts.mjs a4f89eade69c9ab9c7d167f40924561ab487a070b2da2e9868957439919be569
+bound ui-continue-reachable-1024 scripts/qa/ai-harness-browser.mjs ddce9bf11db3e242af86e80ccd56958339ab8b4e7aa4e1b664ccf123566c3c83
+bound ui-continue-reachable-1024 scripts/qa/ai-harness-proof-failure.mjs 0e2fcc85ce1d867f24c355a13999b3ab8865623e60d40630426a5d6a06c03507
+bound ui-continue-reachable-1024 scripts/qa/ai-harness-cleanup.mjs cca421282dda00bfb1773268c8378e00c71ab44d1aff3c42d0056ca6d5f5fa07
+bound ui-continue-reachable-1024 scripts/qa/ai-harness-p2.mjs 81c7b57d1cecb3c3cdc18db4e3f46aaa82ae2358af24e7c2a9b76d384cc52326
+bound ui-continue-reachable-1024 scripts/qa/ai-harness-p2-scenarios.mjs c20959243619beca413d44e3005f46c0b3a9f2229a860bbec7d3358cefa4ce3a
+bound ui-continue-reachable-1024 scripts/qa/ai-harness-p2-observe.mjs 56b650dd393b9713f895144f6cbbfda687941ec60f2a34bd895a78f2260596a6
+bound ui-continue-reachable-1024 scripts/qa/ai-harness-p2-resume.mjs 4005732b9686bb61600250ef978625dc5f3d571f0250be134b3e51813c90693f
+bound ui-continue-reachable-1024 DESIGN.md b7cd413001c7aebb8289ee9fc761f33800c982409921de295a4574380cb6f7fa
+bound ui-continue-reachable-1024 src/editor/panels/aiChatPanel.ts b0a25914cd059ba5c7bdeb9d0fe7e73f05aa9f5fc955f9f03737667a87d6632d
+bound ui-continue-reachable-1024 src/editor/panels/aiChatRenderers.ts 1863b02bbe10ef5aa2c8d2b41b93d10851c27a51c6ea3da8370dd7be6d0b7d80
+bound ui-continue-reachable-1024 src/editor/panels/aiStickyChecklist.ts b8ddb2ffa39545b4f1b0ec2013b26e18a39e22ed1c4db3fb936f5c153ac9a980
+bound ui-continue-reachable-1024 src/editor/panels/aiRunSurface.ts a94bf5cf36a1fac7b2c636d8dd000855cff9d3d9324f8162d0e8073597462e73
+bound ui-continue-reachable-1024 src/styles/database/assistant-sticky-checklist.css 71c707dc664b34fd47ef2eb9c30b711571d2bdc7653138f78e2704ece60762c4
+bound ui-continue-reachable-1024 src/styles/database/tabs-b-assistant-panel/19-assistant-cards.css ffb8ff6e90611a6a2e4abb26d15f9341722cb2dd00d942a0e37f48a3cd8925dd
+bound ui-continue-reachable-1024 test/aiOutcomePresentation.test.ts 4173d0ab90082be9d04fa7dece5b5533f4756d2bac0543be91d40970e13bac79
+bound ui-continue-reachable-1024 test/aiAutonomousRunSurface.test.ts 871161dafbbb45ac425136d1093e2aacedbbbf504339be78bebe229e776a4a82
+bound ui-continue-reachable-1024 test/aiContinueUserAction.test.ts da372964f85ee31badb71ce6d6a76d5e97c5eb97e39fd9b4ac785d49316fe7fe
+bound ui-continue-reachable-1024 test/aiOutcomeBrowserEvidence.mjs ddd80659b0fcba435b65bb948def7caa68621945629f8083baf9f210981e06a4
+bound ui-continue-reachable-1024 test/aiContinueReachability.mjs f76a49f8cc1b5fae1b577b63431fcc80eeca0bcd7a5b8dbc7416e59792f85800
+PASS ui-continue-reachable-1024 checks 107 pngs 45 measurements 33 project qa-ai-surface-e9293808-acbb-4c2b-bc4b-75c7b63ee879 cleanup {"absentBeforeRun":true,"pageListenersAndTimersClosed":true,"browserClosed":true,"serverClosed":true,"cacheRemoved":true,"portReleased":true,"remote":{"projectId":"qa-ai-surface-e9293808-acbb-4c2b-bc4b-75c7b63ee879","kind":"deleted-and-absence-verified","commitIds":["e15641e8-47fc-45c9-b983-c05a8b25ea22"]},"remoteDeletedAndAbsent":true,"reusedListener":false,"activeRoutes":0}
+reachability {"viewport":{"width":1280,"height":800},"focused":true,"unique":1,"hit":true,"modeBefore":"ask","rect":{"x":644,"y":606,"width":42.06666564941406,"height":28,"right":686.0666656494141,"bottom":634},"scrollOwner":{"testid":"ai-chat-log","scrollTop":0,"clientHeight":428,"scrollHeight":428,"rect":{"x":628,"y":211.85000610351562,"right":1268,"bottom":640}},"inViewport":true,"fullyExposed":true,"focusOutline":"rgb(15, 23, 42) 3px","beforeScroll":{"scrollTop":0,"scrollHeight":428,"clientHeight":428},"activation":"keyboard","instrumentPath":"test/aiContinueReachability.mjs","instrumentHash":"f76a49f8cc1b5fae1b577b63431fcc80eeca0bcd7a5b8dbc7416e59792f85800"}
+bound ui-continue-reachable-1280 src/ai/assistantSession.ts 4219b0a4e7bc9f5d570d9ef3f62a5249c763d26da3e02e7b990a401a82efaba1
+bound ui-continue-reachable-1280 src/ai/workPlan.ts f471aa410b6bbf00edd65d2cb98c909e3006e6d54a406d9166651fb4a69d454f
+bound ui-continue-reachable-1280 src/ai/assistantAcceptanceLedger.ts a4fdf4a5535116df492499e3b890da65268e6098973150baade1aa0a2d78abd4
+bound ui-continue-reachable-1280 src/project/store.ts 8d8bea0ae98fb42b4e3c1e9f0eaa71bba6176eb84475832d15395384415312b9
+bound ui-continue-reachable-1280 src/editor/panels/aiTurnRunner.ts b9788fbfd0a5b81512723160031bcaa52ffa2936efe6e0d4e460b912dbbf4e66
+bound ui-continue-reachable-1280 src/editor/aiAssistantBridge.ts 221260ab53900ea000f3f1cf99487ef47b041dd2a0b549f908ed20eb309a85f7
+bound ui-continue-reachable-1280 src/ai/activityLog.ts 3d27d741243093428fde5798ef38a83fd5b755893abd7edffc4dd91bd92bc323
+bound ui-continue-reachable-1280 src/ai/runRecap.ts 66b59b0c4b4205955b278bc500b08676b559048714cb2a821366d6130fd2e3ae
+bound ui-continue-reachable-1280 scripts/qa/ai-harness-contracts.mjs a4f89eade69c9ab9c7d167f40924561ab487a070b2da2e9868957439919be569
+bound ui-continue-reachable-1280 scripts/qa/ai-harness-browser.mjs ddce9bf11db3e242af86e80ccd56958339ab8b4e7aa4e1b664ccf123566c3c83
+bound ui-continue-reachable-1280 scripts/qa/ai-harness-proof-failure.mjs 0e2fcc85ce1d867f24c355a13999b3ab8865623e60d40630426a5d6a06c03507
+bound ui-continue-reachable-1280 scripts/qa/ai-harness-cleanup.mjs cca421282dda00bfb1773268c8378e00c71ab44d1aff3c42d0056ca6d5f5fa07
+bound ui-continue-reachable-1280 scripts/qa/ai-harness-p2.mjs 81c7b57d1cecb3c3cdc18db4e3f46aaa82ae2358af24e7c2a9b76d384cc52326
+bound ui-continue-reachable-1280 scripts/qa/ai-harness-p2-scenarios.mjs c20959243619beca413d44e3005f46c0b3a9f2229a860bbec7d3358cefa4ce3a
+bound ui-continue-reachable-1280 scripts/qa/ai-harness-p2-observe.mjs 56b650dd393b9713f895144f6cbbfda687941ec60f2a34bd895a78f2260596a6
+bound ui-continue-reachable-1280 scripts/qa/ai-harness-p2-resume.mjs 4005732b9686bb61600250ef978625dc5f3d571f0250be134b3e51813c90693f
+bound ui-continue-reachable-1280 DESIGN.md b7cd413001c7aebb8289ee9fc761f33800c982409921de295a4574380cb6f7fa
+bound ui-continue-reachable-1280 src/editor/panels/aiChatPanel.ts b0a25914cd059ba5c7bdeb9d0fe7e73f05aa9f5fc955f9f03737667a87d6632d
+bound ui-continue-reachable-1280 src/editor/panels/aiChatRenderers.ts 1863b02bbe10ef5aa2c8d2b41b93d10851c27a51c6ea3da8370dd7be6d0b7d80
+bound ui-continue-reachable-1280 src/editor/panels/aiStickyChecklist.ts b8ddb2ffa39545b4f1b0ec2013b26e18a39e22ed1c4db3fb936f5c153ac9a980
+bound ui-continue-reachable-1280 src/editor/panels/aiRunSurface.ts a94bf5cf36a1fac7b2c636d8dd000855cff9d3d9324f8162d0e8073597462e73
+bound ui-continue-reachable-1280 src/styles/database/assistant-sticky-checklist.css 71c707dc664b34fd47ef2eb9c30b711571d2bdc7653138f78e2704ece60762c4
+bound ui-continue-reachable-1280 src/styles/database/tabs-b-assistant-panel/19-assistant-cards.css ffb8ff6e90611a6a2e4abb26d15f9341722cb2dd00d942a0e37f48a3cd8925dd
+bound ui-continue-reachable-1280 test/aiOutcomePresentation.test.ts 4173d0ab90082be9d04fa7dece5b5533f4756d2bac0543be91d40970e13bac79
+bound ui-continue-reachable-1280 test/aiAutonomousRunSurface.test.ts 871161dafbbb45ac425136d1093e2aacedbbbf504339be78bebe229e776a4a82
+bound ui-continue-reachable-1280 test/aiContinueUserAction.test.ts da372964f85ee31badb71ce6d6a76d5e97c5eb97e39fd9b4ac785d49316fe7fe
+bound ui-continue-reachable-1280 test/aiOutcomeBrowserEvidence.mjs ddd80659b0fcba435b65bb948def7caa68621945629f8083baf9f210981e06a4
+bound ui-continue-reachable-1280 test/aiContinueReachability.mjs f76a49f8cc1b5fae1b577b63431fcc80eeca0bcd7a5b8dbc7416e59792f85800
+PASS ui-continue-reachable-1280 checks 107 pngs 45 measurements 33 project qa-ai-surface-678084cb-f0a8-4b11-a053-3b3629341fe8 cleanup {"absentBeforeRun":true,"pageListenersAndTimersClosed":true,"browserClosed":true,"serverClosed":true,"cacheRemoved":true,"portReleased":true,"remote":{"projectId":"qa-ai-surface-678084cb-f0a8-4b11-a053-3b3629341fe8","kind":"deleted-and-absence-verified","commitIds":["dd9268ff-8529-4530-947f-47562493b04c"]},"remoteDeletedAndAbsent":true,"reusedListener":false,"activeRoutes":0}
+negative typed-composer {
+  execution: 'response-final',
+  goal: 'incomplete',
+  delivery: 'no-change'
+} {
+  autonomous: true,
+  instruction: '계속',
+  scope: null,
+  composerMode: 'ask'
+}
+negative registered-bridge {
+  execution: 'response-final',
+  goal: 'incomplete',
+  delivery: 'no-change'
+} {
+  autonomous: true,
+  instruction: '계속',
+  scope: null,
+  composerMode: 'ask'
+}
+bound ui-negative-continue-surface-final src/ai/assistantSession.ts 4219b0a4e7bc9f5d570d9ef3f62a5249c763d26da3e02e7b990a401a82efaba1
+bound ui-negative-continue-surface-final src/ai/workPlan.ts f471aa410b6bbf00edd65d2cb98c909e3006e6d54a406d9166651fb4a69d454f
+bound ui-negative-continue-surface-final src/ai/assistantAcceptanceLedger.ts a4fdf4a5535116df492499e3b890da65268e6098973150baade1aa0a2d78abd4
+bound ui-negative-continue-surface-final src/project/store.ts 8d8bea0ae98fb42b4e3c1e9f0eaa71bba6176eb84475832d15395384415312b9
+bound ui-negative-continue-surface-final src/editor/panels/aiTurnRunner.ts b9788fbfd0a5b81512723160031bcaa52ffa2936efe6e0d4e460b912dbbf4e66
+bound ui-negative-continue-surface-final src/editor/aiAssistantBridge.ts 221260ab53900ea000f3f1cf99487ef47b041dd2a0b549f908ed20eb309a85f7
+bound ui-negative-continue-surface-final src/ai/activityLog.ts 3d27d741243093428fde5798ef38a83fd5b755893abd7edffc4dd91bd92bc323
+bound ui-negative-continue-surface-final src/ai/runRecap.ts 66b59b0c4b4205955b278bc500b08676b559048714cb2a821366d6130fd2e3ae
+bound ui-negative-continue-surface-final scripts/qa/ai-harness-contracts.mjs a4f89eade69c9ab9c7d167f40924561ab487a070b2da2e9868957439919be569
+bound ui-negative-continue-surface-final scripts/qa/ai-harness-browser.mjs ddce9bf11db3e242af86e80ccd56958339ab8b4e7aa4e1b664ccf123566c3c83
+bound ui-negative-continue-surface-final scripts/qa/ai-harness-proof-failure.mjs 0e2fcc85ce1d867f24c355a13999b3ab8865623e60d40630426a5d6a06c03507
+bound ui-negative-continue-surface-final scripts/qa/ai-harness-cleanup.mjs cca421282dda00bfb1773268c8378e00c71ab44d1aff3c42d0056ca6d5f5fa07
+bound ui-negative-continue-surface-final scripts/qa/ai-harness-p2.mjs 81c7b57d1cecb3c3cdc18db4e3f46aaa82ae2358af24e7c2a9b76d384cc52326
+bound ui-negative-continue-surface-final scripts/qa/ai-harness-p2-scenarios.mjs c20959243619beca413d44e3005f46c0b3a9f2229a860bbec7d3358cefa4ce3a
+bound ui-negative-continue-surface-final scripts/qa/ai-harness-p2-observe.mjs 56b650dd393b9713f895144f6cbbfda687941ec60f2a34bd895a78f2260596a6
+bound ui-negative-continue-surface-final scripts/qa/ai-harness-p2-resume.mjs 4005732b9686bb61600250ef978625dc5f3d571f0250be134b3e51813c90693f
+bound ui-negative-continue-surface-final DESIGN.md b7cd413001c7aebb8289ee9fc761f33800c982409921de295a4574380cb6f7fa
+bound ui-negative-continue-surface-final src/editor/panels/aiChatPanel.ts b0a25914cd059ba5c7bdeb9d0fe7e73f05aa9f5fc955f9f03737667a87d6632d
+bound ui-negative-continue-surface-final src/editor/panels/aiChatRenderers.ts 1863b02bbe10ef5aa2c8d2b41b93d10851c27a51c6ea3da8370dd7be6d0b7d80
+bound ui-negative-continue-surface-final src/editor/panels/aiStickyChecklist.ts b8ddb2ffa39545b4f1b0ec2013b26e18a39e22ed1c4db3fb936f5c153ac9a980
+bound ui-negative-continue-surface-final src/editor/panels/aiRunSurface.ts a94bf5cf36a1fac7b2c636d8dd000855cff9d3d9324f8162d0e8073597462e73
+bound ui-negative-continue-surface-final src/styles/database/assistant-sticky-checklist.css 71c707dc664b34fd47ef2eb9c30b711571d2bdc7653138f78e2704ece60762c4
+bound ui-negative-continue-surface-final src/styles/database/tabs-b-assistant-panel/19-assistant-cards.css ffb8ff6e90611a6a2e4abb26d15f9341722cb2dd00d942a0e37f48a3cd8925dd
+bound ui-negative-continue-surface-final test/aiOutcomePresentation.test.ts 4173d0ab90082be9d04fa7dece5b5533f4756d2bac0543be91d40970e13bac79
+bound ui-negative-continue-surface-final test/aiAutonomousRunSurface.test.ts 871161dafbbb45ac425136d1093e2aacedbbbf504339be78bebe229e776a4a82
+bound ui-negative-continue-surface-final test/aiContinueUserAction.test.ts da372964f85ee31badb71ce6d6a76d5e97c5eb97e39fd9b4ac785d49316fe7fe
+bound ui-negative-continue-surface-final test/aiOutcomeBrowserEvidence.mjs ddd80659b0fcba435b65bb948def7caa68621945629f8083baf9f210981e06a4
+bound ui-negative-continue-surface-final test/aiContinueNegativeSurface.mjs 32d5611dd27747258fba0a7b064c6604c279be0228174f6f5dcdf8bd760b3d2d
+PASS ui-negative-continue-surface-final checks 107 pngs 46 measurements 33 project qa-ai-surface-62da0cce-4589-4e10-a625-cf60a204c959 cleanup {"absentBeforeRun":true,"pageListenersAndTimersClosed":true,"browserClosed":true,"serverClosed":true,"cacheRemoved":true,"portReleased":true,"remote":{"projectId":"qa-ai-surface-62da0cce-4589-4e10-a625-cf60a204c959","kind":"deleted-and-absence-verified","commitIds":["898259ea-5bbc-4d64-b4d5-d63fd82fbd36"]},"remoteDeletedAndAbsent":true,"reusedListener":false,"activeRoutes":0}
+configured-secret scan PASS, no values printed

@@ -1,0 +1,53 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/runOutcomeApplyFixture.test.ts test/aiRunOutcomeApply.test.ts test/aiRunOutcomeOwnership.test.ts test/aiRunOutcomeLifecycle.test.ts test/storePersistenceProof.test.ts --maxWorkers 1 --minWorkers 1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p2-20260906
+
+ ✓ test/storePersistenceProof.test.ts (18 tests) 48208ms
+   ✓ accepted revision persistence proof > verifies the accepted content through actual save/read transport and reuses its clean-flush receipt  13483ms
+   ✓ accepted revision persistence proof > compares normalized values rather than JSONB object-key order  2131ms
+   ✓ accepted revision persistence proof > uses the ordinary normalized remote load and map-overlay contract  1379ms
+   ✓ accepted revision persistence proof > does not verify a matching projects row when the ordinary map read fails  1012ms
+   ✓ accepted revision persistence proof > binds the receipt to the accepted merged project, not the unmerged live store  3299ms
+   ✓ accepted revision persistence proof > keeps open event drafts local and out of accepted content identity  9699ms
+   ✓ accepted revision persistence proof > rejects a copied token without issuing a read  1094ms
+   ✓ accepted revision persistence proof > does not verify a failed read  888ms
+   ✓ accepted revision persistence proof > does not verify a missing read  1530ms
+   ✓ accepted revision persistence proof > does not verify a disabled read  915ms
+   ✓ accepted revision persistence proof > does not verify a cancelled read  1262ms
+   ✓ accepted revision persistence proof > rejects wrong target even when current_sha256 is unchanged  1276ms
+   ✓ accepted revision persistence proof > rejects wrong content even when current_sha256 is unchanged  1481ms
+   ✓ accepted revision persistence proof > keeps a failed proof retryable for the same accepted revision  1906ms
+   ✓ accepted revision persistence proof > preserves newer local edits during the read and does not attach old proof to them  1647ms
+   ✓ accepted revision persistence proof > pins the original target across a configuration change during read  1600ms
+   ✓ accepted revision persistence proof > does not verify when cancelled while the read is in flight  1927ms
+   ✓ accepted revision persistence proof > does not verify when disabled while the read is in flight  1675ms
+ ✓ test/aiRunOutcomeLifecycle.test.ts (6 tests) 8753ms
+   ✓ projects budget exhaustion when the tools limit ends execution  1226ms
+   ✓ projects budget exhaustion when the tokens limit ends execution  1462ms
+   ✓ preserves the driver user-wait decision after a tool-budget return  752ms
+   ✓ projects a recovered retry without inventing application  624ms
+   ✓ retains both applied milestones and pending calls when a later transport fails  3774ms
+   ✓ routes an explicit user withdrawal to the sole session authority  913ms
+ ✓ test/aiRunOutcomeApply.test.ts (7 tests) 29387ms
+   ✓ run outcome actual application > settles the returned result when ordinary proof is verified  5565ms
+   ✓ run outcome actual application > settles the returned result when ordinary proof is failed  4485ms
+   ✓ run outcome actual application > settles the returned result when ordinary proof is cancelled  3385ms
+   ✓ run outcome actual application > refreshes the compact recap when proof settles after the returned draft  3702ms
+   ✓ run outcome actual application > publishes apply rejection through the original session subscriber  845ms
+   ✓ run outcome actual application > rechecks current proof without mutating the historical returned result  5784ms
+   ✓ run outcome actual application > does not credit an old receipt when another user run only queries  5620ms
+ ✓ test/aiRunOutcomeOwnership.test.ts (2 tests) 9192ms
+   ✓ does not settle a newer query when an old run's proof is cancelled  5772ms
+   ✓ rechecks a canonical no-write pass when the live assessed map changes  3419ms
+ ✓ test/runOutcomeApplyFixture.test.ts (2 tests) 3974ms
+   ✓ awaits real manual writer body handling when proof is cancelled at the receipt  2501ms
+   ✓ finishes drainage without a new changes row when a save is deduplicated  1462ms
+
+ Test Files  5 passed (5)
+      Tests  35 passed (35)
+   Start at  03:26:37
+   Duration  134.59s (transform 22.98s, setup 0ms, collect 29.53s, tests 99.52s, environment 2ms, prepare 1.11s)
+

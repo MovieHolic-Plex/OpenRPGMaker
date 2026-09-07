@@ -33,6 +33,7 @@ import { ACCEPTANCE_PLANNER_GUIDE } from "./assistantAcceptanceTools";
 export type WorkItemStatus = "pending" | "in_progress" | "done" | "skipped" | "blocked";
 
 export interface WorkItem {
+  readonly requirementIds?: readonly string[];
   readonly id: string;
   readonly title: string;
   /** Concrete worker instruction (tool names + numbers preferred). */
@@ -57,6 +58,7 @@ export interface WorkLayer {
 }
 
 export interface WorkPlan {
+  readonly requirements?: readonly AcceptancePromise[];
   readonly acceptance?: readonly AcceptancePromise[];
   readonly id: string;
   readonly goal: string;
@@ -111,6 +113,7 @@ export type OrchestratorDecision =
        * 「마을=맵 1·NPC 3·상점 1」 막대를 씌우던 경로는 없다(2026-09-03 감사: 「이 마을에 상인 하나 추가」 폭주).
        */
       readonly volume?: PlannerVolumeBar;
+      readonly requirements?: readonly AcceptancePromise[];
       readonly acceptance?: readonly AcceptancePromise[];
       readonly layers: readonly {
         readonly id?: string;
@@ -121,6 +124,7 @@ export type OrchestratorDecision =
           readonly instruction: string;
           readonly doneWhen?: string;
           readonly successTools?: readonly string[];
+          readonly requirementIds?: readonly string[];
           readonly requiresAnyWrite?: boolean;
         }[];
       }[];
@@ -290,13 +294,15 @@ export function parseOrchestratorDecision(raw: string): OrchestratorParseResult 
   }
   const volume = parsePlannerVolume(parsed.volume);
   let acceptance = parseAcceptance(parsed.acceptance);
-  if (acceptance) {
+  let requirements = parseAcceptance(parsed.requirements);
+  if (acceptance || requirements) {
     try {
       JSON.parse(jsonText);
     } catch (cause) {
       if (!(cause instanceof SyntaxError)) throw cause;
       // Truncation repair can recover a plan, never a partial acceptance array.
-      acceptance = acceptance.map(promise => ({ ...promise, criteria: null }));
+      acceptance = acceptance?.map(promise => ({ ...promise, criteria: null }));
+      requirements = requirements?.map(promise => ({ ...promise, required: true, criteria: null }));
     }
   }
   return {
@@ -306,6 +312,7 @@ export function parseOrchestratorDecision(raw: string): OrchestratorParseResult 
       ...(typeof parsed.plannerNote === "string" ? { plannerNote: parsed.plannerNote } : {}),
       ...(volume ? { volume } : {}),
       ...(acceptance ? { acceptance } : {}),
+      ...(requirements ? { requirements } : {}),
       layers,
     },
   };
@@ -394,6 +401,7 @@ export function workPlanFromOrchestratorDecision(
   return createWorkPlanFromLayers({
     goal: decision.goal,
     acceptance: decision.acceptance,
+    requirements: decision.requirements,
     plannerNote: decision.plannerNote,
     layers: decision.layers,
     targetMapId,
@@ -412,6 +420,7 @@ export function workPlanFromSetToolArgs(args: Record<string, unknown>, now = new
   return createWorkPlanFromLayers({
     goal,
     acceptance: parseAcceptance(args.acceptance),
+    requirements: parseAcceptance(args.requirements),
     plannerNote: typeof args.plannerNote === "string" ? args.plannerNote : undefined,
     layers,
     now,
@@ -444,7 +453,11 @@ export function repairWorkPlan(current: WorkPlan, replacement: WorkPlan):
     ...layer,
     items: layer.items.map((item): WorkItem => {
       const old = previous.get(item.id);
-      if (old?.status === "done" || old?.status === "skipped") return { ...old };
+      if (old?.status === "done" || old?.status === "skipped") {
+        // Links are scheduler metadata, never canonical requirement ownership.
+        const { requirementIds: _previousLinks, ...settled } = old;
+        return { ...settled, ...(item.requirementIds ? { requirementIds: item.requirementIds } : {}) };
+      }
       return { ...item, status: old?.status ?? "pending", note: old?.note, requiresAnyWrite: old?.requiresAnyWrite ?? item.requiresAnyWrite };
     }),
   }));
@@ -453,6 +466,7 @@ export function repairWorkPlan(current: WorkPlan, replacement: WorkPlan):
     goal: replacement.goal,
     plannerNote: replacement.plannerNote ?? current.plannerNote,
     acceptance: replacement.acceptance ?? current.acceptance,
+    requirements: replacement.requirements ?? current.requirements,
     layers,
     currentLayerIndex: current.currentItemId
       ? layers.findIndex(layer => layer.items.some(item => item.id === current.currentItemId))
@@ -464,6 +478,7 @@ export function repairWorkPlan(current: WorkPlan, replacement: WorkPlan):
 }
 
 function createWorkPlanFromLayers(input: {
+  requirements?: readonly AcceptancePromise[];
   acceptance?: readonly AcceptancePromise[];
   goal: string;
   plannerNote?: string;
@@ -476,6 +491,7 @@ function createWorkPlanFromLayers(input: {
       instruction: string;
       doneWhen?: string;
       successTools?: readonly string[];
+      requirementIds?: readonly string[];
       requiresAnyWrite?: boolean;
     }[];
   }[];
@@ -491,6 +507,7 @@ function createWorkPlanFromLayers(input: {
       instruction: it.instruction.trim(),
       doneWhen: it.doneWhen?.trim() || undefined,
       successTools: sanitizeToolNames(it.successTools),
+      ...(it.requirementIds ? { requirementIds: it.requirementIds } : {}),
       requiresAnyWrite: it.requiresAnyWrite === true || undefined,
       status: "pending" as const,
     })),
@@ -499,6 +516,7 @@ function createWorkPlanFromLayers(input: {
     id: `wp_${input.now.getTime().toString(36)}`,
     goal: input.goal,
     ...(input.acceptance ? { acceptance: input.acceptance } : {}),
+    ...(input.requirements ? { requirements: input.requirements } : {}),
     createdAt: input.now.toISOString(),
     layers,
     currentLayerIndex: 0,
@@ -522,6 +540,7 @@ function normalizeLayer(
     instruction: string;
     doneWhen?: string;
     successTools?: readonly string[];
+    requirementIds?: readonly string[];
   }[];
 } | null {
   if (!isRecord(layer)) return null;
@@ -539,6 +558,7 @@ function normalizeLayer(
         id: typeof it.id === "string" ? it.id : `L${li + 1}-${ii + 1}`,
         title: itemTitle,
         instruction,
+        ...(Array.isArray(it.requirementIds) ? { requirementIds: it.requirementIds.filter((id): id is string => typeof id === "string" && id.trim().length > 0) } : {}),
         doneWhen: typeof it.doneWhen === "string" ? it.doneWhen : undefined,
         successTools: Array.isArray(it.successTools)
           ? it.successTools.filter((t): t is string => typeof t === "string")
@@ -738,28 +758,35 @@ export function formatWorkPlanUserVisible(plan: WorkPlan): string {
  * Should the harness Ralph-continue (re-inject + keep looping) instead of ending the turn?
  * Code decides continuation; model does not get a silent early exit on multi-step plans.
  */
-export function shouldRalphContinue(
+export type RalphContinuationDecision = "continue" | "complete" | "blocked" | "budget-exhausted" | "awaiting-user";
+
+export function ralphContinuationDecision(
   plan: WorkPlan | null,
   opts: {
     readonly autoStepsUsed: number;
     readonly assistantText?: string;
   }
-): boolean {
-  if (!plan || isWorkPlanComplete(plan)) return false;
+): RalphContinuationDecision {
+  if (!plan || isWorkPlanComplete(plan)) return "complete";
   const current = getCurrentWorkItem(plan);
-  if (!current) return false;
+  if (!current) return "complete";
   // 막힌 항목은 사람의 판단을 기다린다 — 재주입도, 자동 계속도 하지 않는다(2026-09-03).
-  if (current.status === "blocked") return false;
-  if (opts.autoStepsUsed >= MAX_WORK_PLAN_AUTO_STEPS_PER_TURN) return false;
+  if (current.status === "blocked") return "blocked";
+  if (opts.autoStepsUsed >= MAX_WORK_PLAN_AUTO_STEPS_PER_TURN) return "budget-exhausted";
   const remaining = summarizeWorkPlan(plan).itemsTotal - summarizeWorkPlan(plan).itemsDone;
   if (remaining > MAX_WORK_PLAN_ITEMS_PER_BURST && opts.autoStepsUsed >= MAX_WORK_PLAN_AUTO_STEPS_PER_TURN) {
-    return false;
+    return "budget-exhausted";
   }
   // Incomplete plans keep looping through a trailing ?; only explicit quick-replies pause.
   if (opts.assistantText?.includes(QUICK_REPLY_MARKER)) {
-    return false;
+    return "awaiting-user";
   }
-  return true;
+  return "continue";
+}
+
+/** Boolean compatibility for existing scheduling callers; the decision remains single-source. */
+export function shouldRalphContinue(plan: WorkPlan | null, opts: Parameters<typeof ralphContinuationDecision>[1]): boolean {
+  return ralphContinuationDecision(plan, opts) === "continue";
 }
 
 /**

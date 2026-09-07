@@ -1,0 +1,154 @@
+{
+  "sourceReport": "output/evidence/ai-harness/p2/outcome-matrix-red-01/actions.json",
+  "cleanup": {
+    "projectId": "qa-ai-surface-15cf1ab4-e619-465f-b859-39986e590a44",
+    "kind": "deleted-and-absence-verified",
+    "commitIds": [
+      "7aeacb78-e95b-456e-8e34-a8a6dd714cd0",
+      "51ddcc4a-ceba-4fc3-b8b4-b44154f7994d",
+      "b64b9209-f5e9-4fd8-bc82-6bc5acbcc27e",
+      "2911b869-460b-4dea-a498-b93b6468f24c",
+      "55bcccbd-9e95-4835-9ab5-fa3075809024",
+      "28541efb-9d2c-4205-8021-521921529d2b",
+      "469c6c5b-d627-439f-af93-5d148c0b30a1",
+      "fbf124fa-911b-4a96-8e32-5f0b92b6b061"
+    ]
+  },
+  "requests": [
+    {
+      "table": "project_commits",
+      "method": "GET",
+      "query": {
+        "project_id": "eq.qa-ai-surface-15cf1ab4-e619-465f-b859-39986e590a44",
+        "select": "commit_id"
+      },
+      "status": 200
+    },
+    {
+      "table": "projects",
+      "method": "GET",
+      "query": {
+        "project_id": "eq.qa-ai-surface-15cf1ab4-e619-465f-b859-39986e590a44",
+        "select": "project_id,title"
+      },
+      "status": 200
+    },
+    {
+      "table": "projects",
+      "method": "DELETE",
+      "query": {
+        "project_id": "eq.qa-ai-surface-15cf1ab4-e619-465f-b859-39986e590a44",
+        "title": "eq.QA surface 15cf1ab4-e619-465f-b859-39986e590a44 proof-mismatch"
+      },
+      "status": 200
+    },
+    {
+      "table": "projects",
+      "method": "GET",
+      "query": {
+        "project_id": "eq.qa-ai-surface-15cf1ab4-e619-465f-b859-39986e590a44",
+        "select": "project_id"
+      },
+      "status": 200
+    },
+    {
+      "table": "maps",
+      "method": "GET",
+      "query": {
+        "project_id": "eq.qa-ai-surface-15cf1ab4-e619-465f-b859-39986e590a44",
+        "select": "project_id"
+      },
+      "status": 200
+    },
+    {
+      "table": "tilesets",
+      "method": "GET",
+      "query": {
+        "project_id": "eq.qa-ai-surface-15cf1ab4-e619-465f-b859-39986e590a44",
+        "select": "project_id"
+      },
+      "status": 200
+    },
+    {
+      "table": "project_commits",
+      "method": "GET",
+      "query": {
+        "project_id": "eq.qa-ai-surface-15cf1ab4-e619-465f-b859-39986e590a44",
+        "select": "project_id"
+      },
+      "status": 200
+    },
+    {
+      "table": "project_changes",
+      "method": "GET",
+      "query": {
+        "commit_id": "eq.7aeacb78-e95b-456e-8e34-a8a6dd714cd0",
+        "select": "commit_id"
+      },
+      "status": 200
+    },
+    {
+      "table": "project_changes",
+      "method": "GET",
+      "query": {
+        "commit_id": "eq.51ddcc4a-ceba-4fc3-b8b4-b44154f7994d",
+        "select": "commit_id"
+      },
+      "status": 200
+    },
+    {
+      "table": "project_changes",
+      "method": "GET",
+      "query": {
+        "commit_id": "eq.b64b9209-f5e9-4fd8-bc82-6bc5acbcc27e",
+        "select": "commit_id"
+      },
+      "status": 200
+    },
+    {
+      "table": "project_changes",
+      "method": "GET",
+      "query": {
+        "commit_id": "eq.2911b869-460b-4dea-a498-b93b6468f24c",
+        "select": "commit_id"
+      },
+      "status": 200
+    },
+    {
+      "table": "project_changes",
+      "method": "GET",
+      "query": {
+        "commit_id": "eq.55bcccbd-9e95-4835-9ab5-fa3075809024",
+        "select": "commit_id"
+      },
+      "status": 200
+    },
+    {
+      "table": "project_changes",
+      "method": "GET",
+      "query": {
+        "commit_id": "eq.28541efb-9d2c-4205-8021-521921529d2b",
+        "select": "commit_id"
+      },
+      "status": 200
+    },
+    {
+      "table": "project_changes",
+      "method": "GET",
+      "query": {
+        "commit_id": "eq.469c6c5b-d627-439f-af93-5d148c0b30a1",
+        "select": "commit_id"
+      },
+      "status": 200
+    },
+    {
+      "table": "project_changes",
+      "method": "GET",
+      "query": {
+        "commit_id": "eq.fbf124fa-911b-4a96-8e32-5f0b92b6b061",
+        "select": "commit_id"
+      },
+      "status": 200
+    }
+  ]
+}

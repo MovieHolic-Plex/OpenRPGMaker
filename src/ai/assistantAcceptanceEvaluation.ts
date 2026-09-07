@@ -2,6 +2,7 @@ import { canMove, inBounds, isPassable } from "@/project/collision";
 import { passageBounds } from "@/project/footprint";
 import type { GameMap, Project } from "@/project/types";
 import type { AcceptanceCriterion, AcceptanceItemSnapshot, AcceptanceRegion, AcceptanceTarget } from "./assistantAcceptance";
+import type { ToolVerificationEvidence } from "./toolVerificationEvidence";
 
 type Evidence = AcceptanceItemSnapshot["evidence"][number];
 export function acceptanceFingerprint(value: unknown): string {
@@ -67,9 +68,15 @@ export function visualFingerprint(project: Project, map: GameMap): string {
   return acceptanceFingerprint([map, project.tilesets[map.tilesetId], project.assets]);
 }
 export function criterionTargets(criterion: AcceptanceCriterion): readonly AcceptanceTarget[] {
-  return criterion.kind === "mapCount" ? criterion.targets : [criterion.target];
+  switch (criterion.kind) {
+    case "toolVerdict": return [];
+    case "mapCount": return criterion.targets;
+    case "mapDimensions": case "eventCount": case "targetChange": case "preserve": case "imageReviewed": case "reachability": case "actionCombat": return [criterion.target];
+    default: return assertNever(criterion);
+  }
 }
 export interface AcceptanceEvaluation {
+  readonly verification?: ToolVerificationEvidence;
   readonly project: Project;
   readonly baseline: Project;
   readonly bindings: ReadonlyMap<string, string>;
@@ -78,10 +85,18 @@ export interface AcceptanceEvaluation {
 }
 export function evaluateAcceptanceCriterion(criterion: AcceptanceCriterion, input: AcceptanceEvaluation): Evidence {
   const expected = JSON.stringify(criterion);
-  if (criterion.kind === "mapCount") {
-    const maps = criterion.targets.map(target => resolveAcceptanceMap(input.project, target, input.bindings));
-    const count = new Set(maps.filter(map => map !== undefined).map(map => map.id)).size;
-    return { expected, observed: `${count} scoped maps`, passed: count === criterion.count };
+  switch (criterion.kind) {
+    case "toolVerdict": {
+      const passed = input.verification?.passedScope(criterion.tool, criterion.args) === true;
+      return { expected, observed: passed ? "Current explicit scoped tool verdict" : "Current explicit scoped tool verdict required", passed };
+    }
+    case "mapCount": {
+      const maps = criterion.targets.map(target => resolveAcceptanceMap(input.project, target, input.bindings));
+      const count = new Set(maps.filter(map => map !== undefined).map(map => map.id)).size;
+      return { expected, observed: `${count} scoped maps`, passed: count === criterion.count };
+    }
+    case "mapDimensions": case "eventCount": case "targetChange": case "preserve": case "imageReviewed": case "reachability": case "actionCombat": break;
+    default: return assertNever(criterion);
   }
   const map = resolveAcceptanceMap(input.project, criterion.target, input.bindings);
   if (!map) return { expected, observed: "Target map missing or new-map binding unresolved", passed: false };

@@ -1,0 +1,216 @@
+{
+  "harnessCommit": "0d3793b45a0c24c0a651568367e04ac5f8ed61ca",
+  "note": "Historical command strings reconstructed from actual task invocations; final verified-* directories also retain command.txt and shell exit-code.txt. All historical exits match direct tool results.",
+  "executions": [
+    {
+      "directory": "outcome-matrix-red-01",
+      "command": "QA_PORT=37025 EVIDENCE_DIR=output/evidence/ai-harness/p2/outcome-matrix-red-01 xvfb-run -a node scripts/qa/ai-harness-contracts.mjs --scenario outcome-matrix",
+      "exit": 1,
+      "projectId": "qa-ai-surface-15cf1ab4-e619-465f-b859-39986e590a44",
+      "sourceSha": "e827eb5c8371ff87ea29231a124806f687c3aba2",
+      "cleanup": {
+        "projectId": "qa-ai-surface-15cf1ab4-e619-465f-b859-39986e590a44",
+        "kind": "deleted-and-absence-verified",
+        "commitIds": [
+          "7aeacb78-e95b-456e-8e34-a8a6dd714cd0",
+          "51ddcc4a-ceba-4fc3-b8b4-b44154f7994d",
+          "b64b9209-f5e9-4fd8-bc82-6bc5acbcc27e",
+          "2911b869-460b-4dea-a498-b93b6468f24c",
+          "55bcccbd-9e95-4835-9ab5-fa3075809024",
+          "28541efb-9d2c-4205-8021-521921529d2b",
+          "469c6c5b-d627-439f-af93-5d148c0b30a1",
+          "fbf124fa-911b-4a96-8e32-5f0b92b6b061"
+        ]
+      }
+    },
+    {
+      "directory": "outcome-matrix-red-02",
+      "command": "QA_PORT=37025 EVIDENCE_DIR=output/evidence/ai-harness/p2/outcome-matrix-red-02 xvfb-run -a node scripts/qa/ai-harness-contracts.mjs --scenario outcome-matrix",
+      "exit": 1,
+      "projectId": "qa-ai-surface-a6e561b5-954c-4fc1-88a7-f642e33cd2c3",
+      "sourceSha": "e827eb5c8371ff87ea29231a124806f687c3aba2",
+      "cleanup": {
+        "projectId": "qa-ai-surface-a6e561b5-954c-4fc1-88a7-f642e33cd2c3",
+        "kind": "deleted-and-absence-verified",
+        "commitIds": [
+          "71a2646e-dbda-4e05-a2fb-4d21916f3233",
+          "1e347a32-9b61-40c0-bad0-784afc1a2224",
+          "341363c7-b00f-4f10-bb9e-b49059259b20",
+          "46b2020a-3f36-4747-8021-d9a1728eeda0",
+          "89bba78b-1a4e-4e75-a916-5b13b903accb",
+          "21626528-f967-4c2c-b717-da42f2c76872",
+          "cde34180-f708-41f2-a70b-b45c974df782",
+          "30f1de94-3d7b-44b9-b2b4-e04a7ab3bbaa",
+          "d592c5d4-30bc-4035-8e64-41cc7abc4d1a",
+          "c1dec6ca-b611-4890-9e61-29a9768655e6"
+        ]
+      }
+    },
+    {
+      "directory": "outcome-matrix-red-final",
+      "command": "QA_PORT=37025 EVIDENCE_DIR=output/evidence/ai-harness/p2/outcome-matrix-red-final xvfb-run -a node scripts/qa/ai-harness-contracts.mjs --scenario outcome-matrix",
+      "exit": 1,
+      "projectId": "qa-ai-surface-3f08b4c6-d215-4fe8-b450-c50bcf05b918",
+      "sourceSha": "e827eb5c8371ff87ea29231a124806f687c3aba2",
+      "cleanup": {
+        "projectId": "qa-ai-surface-3f08b4c6-d215-4fe8-b450-c50bcf05b918",
+        "kind": "deleted-and-absence-verified",
+        "commitIds": [
+          "9d3fbe3e-080e-48d7-bc42-396efd5dfc23",
+          "22af493a-c4f4-4644-aa74-9840ce1d262b",
+          "a521be6b-6f6b-4b89-a200-f089cbd92f2b",
+          "723888ff-75e5-458d-b127-773d84df177b",
+          "76262e08-5a4a-4273-a9aa-9862cec2c122",
+          "ac0e64f1-e209-408b-8010-d6ea46cf5c27",
+          "7a494e31-37c8-4bd6-bd68-15be9a2238fe",
+          "0e8fb2c8-be4c-4672-9ac5-4b8ace1ace47",
+          "0454b0c8-33d1-406e-93ad-b6609d2e764a",
+          "01e3606a-da93-4ea4-a247-95311b646152"
+        ]
+      }
+    },
+    {
+      "directory": "p1-extracted",
+      "command": "QA_PORT=37025 EVIDENCE_DIR=output/evidence/ai-harness/p2/p1-extracted xvfb-run -a node scripts/qa/ai-harness-contracts.mjs --scenario proof-failure",
+      "exit": 0,
+      "projectId": "qa-ai-surface-0ba86836-ced7-4a5f-b4e4-844028191f0a",
+      "sourceSha": "e827eb5c8371ff87ea29231a124806f687c3aba2",
+      "cleanup": {
+        "projectId": "qa-ai-surface-0ba86836-ced7-4a5f-b4e4-844028191f0a",
+        "kind": "deleted-and-absence-verified",
+        "commitIds": [
+          "3df8f154-8e7b-4ebb-b2bb-be55d746a59e",
+          "46abc92b-294b-4a3c-93e3-cf9794c672a6",
+          "ab7c2e8a-edfb-4de8-9ffe-b1ca41ceaabd"
+        ]
+      }
+    },
+    {
+      "directory": "p1-green-final",
+      "command": "QA_PORT=37025 EVIDENCE_DIR=output/evidence/ai-harness/p2/p1-green-final xvfb-run -a node scripts/qa/ai-harness-contracts.mjs --scenario proof-failure",
+      "exit": 0,
+      "projectId": "qa-ai-surface-0e83a627-9d58-42c6-894d-637dad328f3c",
+      "sourceSha": "e827eb5c8371ff87ea29231a124806f687c3aba2",
+      "cleanup": {
+        "projectId": "qa-ai-surface-0e83a627-9d58-42c6-894d-637dad328f3c",
+        "kind": "deleted-and-absence-verified",
+        "commitIds": [
+          "b778d9b7-5f50-4f79-b9c0-14e3e8ce8849",
+          "a01b639d-977e-4352-b03b-d523e687e6ed",
+          "4159840c-be60-498c-a78c-3a493ba63c1b"
+        ]
+      }
+    },
+    {
+      "directory": "p1-original",
+      "command": "QA_PORT=37025 EVIDENCE_DIR=output/evidence/ai-harness/p2/p1-original xvfb-run -a node scripts/qa/ai-harness-contracts.mjs --scenario proof-failure",
+      "exit": 0,
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "sourceSha": "e827eb5c8371ff87ea29231a124806f687c3aba2",
+      "cleanup": {
+        "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+        "kind": "deleted-and-absence-verified",
+        "commitIds": [
+          "5e897399-ff1f-4e0f-b93f-8275cd6b25e5",
+          "c3779fd3-a45f-41d9-906d-1d783dfa098c",
+          "55730b54-ffe0-43e9-8eab-d6e929f14f26"
+        ]
+      }
+    },
+    {
+      "directory": "required-skip-red-01",
+      "command": "QA_PORT=37025 EVIDENCE_DIR=output/evidence/ai-harness/p2/required-skip-red-01 xvfb-run -a node scripts/qa/ai-harness-contracts.mjs --scenario required-skip",
+      "exit": 1,
+      "projectId": "qa-ai-surface-d65f595b-d29e-4844-b6d4-51a2a296b2c0",
+      "sourceSha": "e827eb5c8371ff87ea29231a124806f687c3aba2",
+      "cleanup": {
+        "projectId": "qa-ai-surface-d65f595b-d29e-4844-b6d4-51a2a296b2c0",
+        "kind": "deleted-and-absence-verified",
+        "commitIds": [
+          "640d40c5-3505-4173-ae2c-f254f4dfa687"
+        ]
+      }
+    },
+    {
+      "directory": "required-skip-red-02",
+      "command": "QA_PORT=37025 EVIDENCE_DIR=output/evidence/ai-harness/p2/required-skip-red-02 xvfb-run -a node scripts/qa/ai-harness-contracts.mjs --scenario required-skip",
+      "exit": 1,
+      "projectId": "qa-ai-surface-e7a633d4-1eab-4f31-ad9f-9a5979197026",
+      "sourceSha": "e827eb5c8371ff87ea29231a124806f687c3aba2",
+      "cleanup": {
+        "projectId": "qa-ai-surface-e7a633d4-1eab-4f31-ad9f-9a5979197026",
+        "kind": "deleted-and-absence-verified",
+        "commitIds": [
+          "e606ff3b-a0cf-482f-bd04-9ab477222d38"
+        ]
+      }
+    },
+    {
+      "directory": "required-skip-red-final",
+      "command": "QA_PORT=37025 EVIDENCE_DIR=output/evidence/ai-harness/p2/required-skip-red-final xvfb-run -a node scripts/qa/ai-harness-contracts.mjs --scenario required-skip",
+      "exit": 1,
+      "projectId": "qa-ai-surface-eac32f9e-2513-44ab-8839-f417f7632f13",
+      "sourceSha": "e827eb5c8371ff87ea29231a124806f687c3aba2",
+      "cleanup": {
+        "projectId": "qa-ai-surface-eac32f9e-2513-44ab-8839-f417f7632f13",
+        "kind": "deleted-and-absence-verified",
+        "commitIds": [
+          "732a3531-89b2-44fc-a34e-3d47ea0f7283"
+        ]
+      }
+    },
+    {
+      "directory": "verified-outcome-matrix",
+      "command": "QA_PORT=37025 EVIDENCE_DIR=output/evidence/ai-harness/p2/verified-outcome-matrix xvfb-run -a node scripts/qa/ai-harness-contracts.mjs --scenario outcome-matrix",
+      "exit": 1,
+      "projectId": "qa-ai-surface-ab6f743b-29d2-40f1-9f51-418d8cde5d43",
+      "sourceSha": "e827eb5c8371ff87ea29231a124806f687c3aba2",
+      "cleanup": {
+        "projectId": "qa-ai-surface-ab6f743b-29d2-40f1-9f51-418d8cde5d43",
+        "kind": "deleted-and-absence-verified",
+        "commitIds": [
+          "66f49ea7-1dcd-4a62-8033-d9ef170e02f5",
+          "1d8f37d7-f677-4e2c-8d7b-d6552d364e0d",
+          "3f92e0fc-b557-41e0-841e-892b9de6db3a",
+          "e75709ab-9dc6-413e-8daf-d5a05644cbb4",
+          "556038e4-8eb1-448e-9d24-2558ce3f64e1",
+          "4db871e8-1b38-4388-b57f-27982ec182c5",
+          "6b6e93ce-2a05-4b7a-81ba-c0979e01769a",
+          "60fdb4da-38e0-42f7-b99c-02b5532f347a",
+          "e3d56bfa-ec99-4c34-97cf-ef961554a699",
+          "9e2d4659-e855-40da-90ff-6206a9fd3250"
+        ]
+      }
+    },
+    {
+      "directory": "verified-proof-failure",
+      "command": "QA_PORT=37025 EVIDENCE_DIR=output/evidence/ai-harness/p2/verified-proof-failure xvfb-run -a node scripts/qa/ai-harness-contracts.mjs --scenario proof-failure",
+      "exit": 0,
+      "projectId": "qa-ai-surface-cfb5d702-d23b-409f-960f-b4f37c4bc417",
+      "sourceSha": "e827eb5c8371ff87ea29231a124806f687c3aba2",
+      "cleanup": {
+        "projectId": "qa-ai-surface-cfb5d702-d23b-409f-960f-b4f37c4bc417",
+        "kind": "deleted-and-absence-verified",
+        "commitIds": [
+          "a1e664ac-2662-481c-ac3c-93ef571bf16a",
+          "d2802052-c772-4168-9ef6-6dc15fa70597",
+          "88597513-91a1-40a5-8a59-0cd747196792"
+        ]
+      }
+    },
+    {
+      "directory": "verified-required-skip",
+      "command": "QA_PORT=37025 EVIDENCE_DIR=output/evidence/ai-harness/p2/verified-required-skip xvfb-run -a node scripts/qa/ai-harness-contracts.mjs --scenario required-skip",
+      "exit": 1,
+      "projectId": "qa-ai-surface-9e074aef-0549-491e-b069-c5eb9290c89d",
+      "sourceSha": "e827eb5c8371ff87ea29231a124806f687c3aba2",
+      "cleanup": {
+        "projectId": "qa-ai-surface-9e074aef-0549-491e-b069-c5eb9290c89d",
+        "kind": "deleted-and-absence-verified",
+        "commitIds": [
+          "a40266f3-4b93-487c-a94e-64f848a712b9"
+        ]
+      }
+    }
+  ]
+}

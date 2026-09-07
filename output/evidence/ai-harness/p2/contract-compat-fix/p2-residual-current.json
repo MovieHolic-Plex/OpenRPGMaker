@@ -1,0 +1,41 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-ai-harness-p2-20260906",
+  "command": "env",
+  "args": [
+    "TMPDIR=/dev/shm/rpg-zzu-ai-harness-p2-01a07564",
+    "npm",
+    "test",
+    "--",
+    "test/aiBlockedContinue.test.ts",
+    "test/aiToolCallSessionProtocol.test.ts",
+    "test/assistantSessionIntent.test.ts",
+    "test/databaseSpeciesModalRefresh.test.ts",
+    "test/toolSchemaProviderCompat.test.ts",
+    "--maxWorkers",
+    "1",
+    "--minWorkers",
+    "1",
+    "--reporter",
+    "default",
+    "--reporter",
+    "json",
+    "--outputFile",
+    "/home/main/z-project/rpg-zzu/.omo/evidence/ai-harness-implementation/p2-residual-current-vitest.json"
+  ],
+  "before": {
+    "head": "dfa8bdd15e4e39904ae910101d5e90579b5d8a67",
+    "tree": "d891bbd81abe1eaf9b1573ecf28b63251ea05cc7"
+  },
+  "after": {
+    "head": "dfa8bdd15e4e39904ae910101d5e90579b5d8a67",
+    "tree": "d891bbd81abe1eaf9b1573ecf28b63251ea05cc7"
+  },
+  "startedAt": "2026-09-06T22:42:58.383Z",
+  "finishedAt": "2026-09-06T22:44:05.550Z",
+  "exitCode": 1,
+  "signal": null,
+  "spawnError": null,
+  "sameHead": true,
+  "sameTree": true,
+  "log": "/home/main/z-project/rpg-zzu/.omo/evidence/ai-harness-implementation/p2-residual-current.log"
+}

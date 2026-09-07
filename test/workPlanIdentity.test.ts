@@ -157,7 +157,8 @@ describe("in-loop WorkPlan identity", () => {
     const events: SessionEvent[] = [];
     let index = 0;
     const session = new AssistantSession(project, {
-      config, declareIntent: fixedDeclarer({ mode: "question", needsPlan: false }),
+      // Scheduling repairs require Do authorization; Ask keeps its plan unchanged.
+      config, declareIntent: fixedDeclarer({ mode: "other", needsPlan: false }),
       chat: async () => rounds[index++] ?? final("Finished"),
     });
     // When the generator corrects the contract after completion fails.
