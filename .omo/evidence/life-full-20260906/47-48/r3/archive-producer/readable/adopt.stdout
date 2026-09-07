@@ -1,0 +1,6 @@
+
+> rpg-zzu@0.1.0 wt
+> node scripts/agent-worktree.mjs adopt --path /home/main/z-project/rpg-zzu-life-full-spatial-rights-r3
+
+rpg-zzu-life-full-spatial-rights-r3  port=9841  /home/main/z-project/rpg-zzu-life-full-spatial-rights-r3
+   보정: node_modules 정션, .env.local 복사

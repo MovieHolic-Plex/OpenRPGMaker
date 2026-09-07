@@ -1,0 +1,27 @@
+{
+  "ok": true,
+  "surface": "public placement/collect/Save5 APIs with MemoryStorage",
+  "root": "/home/main/z-project/rpg-zzu-life-full-spatial-rights-r3",
+  "exactlyOnceItems": 2,
+  "inventory": 10,
+  "gold": 90,
+  "retainedOriginal": {
+    "instanceId": "b1",
+    "typeId": "b",
+    "mapId": "map_blank_start",
+    "x": 8,
+    "y": 5,
+    "orientation": "down",
+    "level": 1,
+    "paymentReceipt": {
+      "gold": 10,
+      "items": [
+        {
+          "itemId": "item_potion",
+          "count": 1
+        }
+      ]
+    }
+  },
+  "capturedCases": 24
+}

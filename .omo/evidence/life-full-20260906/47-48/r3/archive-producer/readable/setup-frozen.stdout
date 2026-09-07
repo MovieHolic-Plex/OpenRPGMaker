@@ -1,0 +1,14 @@
+b5c679efc6c5e575f7a1afb65dfa86939aade325
+.omo/evidence/life-full-20260906/47-48/r3
+community-site/scripts
+openwiki
+public
+scripts
+src
+test
+vendor
+Filesystem        1B-blocks         Used   Available Use% Mounted on
+/dev/sda2      980451471360 939120070656   922066944 100% /
+tmpfs           52732497920   1165283328 51567214592   3% /dev/shm
+302M	.
+/home/main/z-project/rpg-zzu/node_modules

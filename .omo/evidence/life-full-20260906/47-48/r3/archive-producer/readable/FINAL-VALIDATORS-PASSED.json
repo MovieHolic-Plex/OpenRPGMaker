@@ -1,0 +1,20 @@
+{
+  "all_required_validators_passed": true,
+  "product_bytes_unchanged": true,
+  "commit_sha": "b87c9822f431ece4674e97a9d9cd15d1956be327",
+  "success_receipts": {
+    "characterization": 0,
+    "diagnostics-probe-final": 0,
+    "tests": 0,
+    "public-rights-final": 0,
+    "typecheck": 0,
+    "build": 0,
+    "wiki-check": 0,
+    "diff-check": 0,
+    "wrapper-adversarial": 0,
+    "certification": 0,
+    "commit": 0,
+    "committed-identity": 0
+  },
+  "previous_failed_adaptations_retained": true
+}

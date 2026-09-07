@@ -1,0 +1,3 @@
+[agent/life-full-spatial-rights-r3 b87c9822f] fix(life): preserve unpaid spatial recovery rights and paid decoration proof
+ 10 files changed, 397 insertions(+), 55 deletions(-)
+ create mode 100644 test/spatialRecoveryRights.test.ts

@@ -1,0 +1,80 @@
+{
+  "status": "SUCCESS",
+  "task_id": "st_01a079b9",
+  "attempt": "NEW r3",
+  "commit_sha": "b87c9822f431ece4674e97a9d9cd15d1956be327",
+  "sha": "b87c9822f431ece4674e97a9d9cd15d1956be327",
+  "branch": "agent/life-full-spatial-rights-r3",
+  "base_sha": "b5c679efc6c5e575f7a1afb65dfa86939aade325",
+  "worktree": "/home/main/z-project/rpg-zzu-life-full-spatial-rights-r3",
+  "evidence": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/47-48/r3/producer",
+  "summary": "SUMMARY.md",
+  "summary_sha256": "20f2feb365ce10b98dd8512484cbcff88fce570393ac3a2de66564742c296648",
+  "source_frozen": true,
+  "clean_worktree": true,
+  "manifest_sources_exact": true,
+  "fresh_characterization": {
+    "files": 2,
+    "passed": 75,
+    "exit": 0
+  },
+  "fresh_red": {
+    "revision": "preserved final 22-case test, not historical original RED",
+    "failed": 17,
+    "passed": 5,
+    "exit": 1
+  },
+  "final_tests": {
+    "files": 18,
+    "passed": 355,
+    "executions": 1,
+    "exit": 0
+  },
+  "public_probe": {
+    "exit": 0,
+    "captures": 24,
+    "state": "public-state.json",
+    "imports": "import-resolution.json"
+  },
+  "successful_receipts": {
+    "characterization": 0,
+    "diagnostics-probe-final": 0,
+    "tests": 0,
+    "public-rights-final": 0,
+    "typecheck": 0,
+    "build": 0,
+    "wiki-check": 0,
+    "diff-check": 0,
+    "wrapper-adversarial": 0,
+    "certification": 0,
+    "commit": 0,
+    "committed-identity": 0
+  },
+  "preserved_attempt_failures": {
+    "diagnostics": 1,
+    "public-rights": 1,
+    "public-rights-external-config": 1
+  },
+  "intentional_wrapper_exits": {
+    "interrupted_inner": -15,
+    "interrupted_wrapper": 241,
+    "failure_stub": 7
+  },
+  "cleanup": {
+    "owned_scratch_removed": true,
+    "owned_dist_removed": true,
+    "evidence_retained": true,
+    "worktree_retained": true,
+    "shared_cache_deleted": false,
+    "server_started": false
+  },
+  "pending": [
+    "independent parent verification",
+    "whole task12",
+    "Grok lifeFieldInteraction45",
+    "native/visual verification",
+    "Phase4 approval",
+    "overall goal approval"
+  ],
+  "completed_utc": "2026-09-07T02:55:32.745589+00:00"
+}

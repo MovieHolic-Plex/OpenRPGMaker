@@ -1,0 +1,10 @@
+[save] failed to write save slot: DOMException [QuotaExceededError]: Owned storage quota refusal
+    at new DOMException (node:internal/per_context/domexception:76:18)
+    at MemoryStorage.setItem (/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/47-48/r3/producer/public-rights.mts:25:64)
+    at saveToSlot (/home/main/z-project/rpg-zzu-life-full-spatial-rights-r3/src/player/saveSlots.ts:422:13)
+    at /home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/47-48/r3/producer/public-rights.mts:97:17
+    at ViteNodeRunner.runModule (file:///home/main/z-project/rpg-zzu/node_modules/vite-node/dist/client.mjs:397:4)
+    at ViteNodeRunner.directRequest (file:///home/main/z-project/rpg-zzu/node_modules/vite-node/dist/client.mjs:375:3)
+    at ViteNodeRunner.cachedRequest (file:///home/main/z-project/rpg-zzu/node_modules/vite-node/dist/client.mjs:189:11)
+    at ViteNodeRunner.executeFile (file:///home/main/z-project/rpg-zzu/node_modules/vite-node/dist/client.mjs:162:10)
+    at CAC.run (file:///home/main/z-project/rpg-zzu/node_modules/vite-node/dist/cli.mjs:102:28)
