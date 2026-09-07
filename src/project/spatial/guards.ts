@@ -195,16 +195,28 @@ const connection: Parser<S.SpatialConnection> = (v, p) => {
   const end: Parser<S.SpatialConnection["from"]> = (v, p) => { const r = record(v, p, "occurrenceId portId"); return { occurrenceId: id(r.occurrenceId, `${p}.occurrenceId`), portId: id(r.portId, `${p}.portId`) }; };
   return { id: id(r.id, `${p}.id`), from: end(r.from, `${p}.from`), to: end(r.to, `${p}.to`), bidirectional: boolean(r.bidirectional, `${p}.bidirectional`) };
 };
+const roomKind: Parser<NonNullable<S.LegacySpatialImportReceipt["roomKinds"]>[number]> = (v, p) => {
+  const r = record(v, p, "tilesetId record");
+  const path = `${p}.record`;
+  const original = record(r.record, path, "id label requiredRoles suggestedModifiers walkway");
+  return { tilesetId: text(r.tilesetId, `${p}.tilesetId`), record: {
+    id: text(original.id, `${path}.id`), label: text(original.label, `${path}.label`),
+    requiredRoles: [...texts(original.requiredRoles, `${path}.requiredRoles`)],
+    ...(Object.hasOwn(original, "suggestedModifiers") ? { suggestedModifiers: [...texts(original.suggestedModifiers, `${path}.suggestedModifiers`)] } : {}),
+    ...(Object.hasOwn(original, "walkway") ? { walkway: boolean(original.walkway, `${path}.walkway`) } : {}),
+  } };
+};
 export function validateSpatialAuthoring(value: unknown): S.SpatialAuthoringDocument {
   const p = "spatialAuthoring";
   const r = record(value, p);
   const version = choice([1] as const)(r.version, `${p}.version`);
   record(r, p, "version library occurrences rootOccurrenceIds connections legacyImport");
-  const receipt = record(r.legacyImport, `${p}.legacyImport`, "version sourceHash mapping backup");
+  const receipt = record(r.legacyImport, `${p}.legacyImport`, "version sourceHash mapping backup roomKinds");
   const backup = record(receipt.backup, `${p}.legacyImport.backup`, "encoding json sha256");
   const mapping = list(receipt.mapping, `${p}.legacyImport.mapping`, (v, p) => { const r = record(v, p, "sourceKey target"); return { sourceKey: id(r.sourceKey, `${p}.sourceKey`), target: reference(kind)(r.target, `${p}.target`) }; });
   return { version, library: library(r.library, `${p}.library`), occurrences: dictionary(r.occurrences, `${p}.occurrences`, occurrence), rootOccurrenceIds: ids(r.rootOccurrenceIds, `${p}.rootOccurrenceIds`), connections: list(r.connections, `${p}.connections`, connection), legacyImport: {
     version: choice([1] as const)(receipt.version, `${p}.legacyImport.version`), sourceHash: digest(receipt.sourceHash, `${p}.legacyImport.sourceHash`), mapping,
+    ...(Object.hasOwn(receipt, "roomKinds") ? { roomKinds: list(receipt.roomKinds, `${p}.legacyImport.roomKinds`, roomKind) } : {}),
     backup: { encoding: choice(["raw-json"] as const)(backup.encoding, `${p}.legacyImport.backup.encoding`), json: text(backup.json, `${p}.legacyImport.backup.json`), sha256: digest(backup.sha256, `${p}.legacyImport.backup.sha256`) },
   } };
 }

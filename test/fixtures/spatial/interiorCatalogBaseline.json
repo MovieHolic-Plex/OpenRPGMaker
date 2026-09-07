@@ -1,0 +1,2288 @@
+{
+  "catalog": [
+    {
+      "id": "bed_h",
+      "label": "침대(가로)",
+      "role": "bed",
+      "width": 2,
+      "height": 1,
+      "layer": "upper",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 355
+        },
+        {
+          "dx": 1,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 356
+        }
+      ],
+      "themes": [
+        "bedroom"
+      ],
+      "snap": "wall-north"
+    },
+    {
+      "id": "bed_v",
+      "label": "침대(세로)",
+      "role": "bed",
+      "width": 1,
+      "height": 2,
+      "layer": "upper",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 324
+        },
+        {
+          "dx": 0,
+          "dy": 1,
+          "layer": "upper",
+          "tile": 354
+        }
+      ],
+      "themes": [
+        "bedroom"
+      ],
+      "snap": "wall-north"
+    },
+    {
+      "id": "bookshelf",
+      "label": "책장",
+      "role": "bookshelf",
+      "width": 3,
+      "height": 3,
+      "layer": "lower",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 18
+        },
+        {
+          "dx": 1,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 19
+        },
+        {
+          "dx": 2,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 20
+        },
+        {
+          "dx": 0,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 48
+        },
+        {
+          "dx": 1,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 49
+        },
+        {
+          "dx": 2,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 50
+        },
+        {
+          "dx": 0,
+          "dy": 2,
+          "layer": "lower",
+          "tile": 78
+        },
+        {
+          "dx": 1,
+          "dy": 2,
+          "layer": "lower",
+          "tile": 79
+        },
+        {
+          "dx": 2,
+          "dy": 2,
+          "layer": "lower",
+          "tile": 80
+        }
+      ],
+      "themes": [
+        "study"
+      ],
+      "snap": "wall-north"
+    },
+    {
+      "id": "stove",
+      "label": "화덕",
+      "role": "stove",
+      "width": 1,
+      "height": 2,
+      "layer": "lower",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 21
+        },
+        {
+          "dx": 0,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 51
+        }
+      ],
+      "themes": [
+        "kitchen"
+      ],
+      "snap": "wall-north"
+    },
+    {
+      "id": "table_long",
+      "label": "긴 탁자",
+      "role": "table",
+      "width": 3,
+      "height": 1,
+      "layer": "upper",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 325
+        },
+        {
+          "dx": 1,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 326
+        },
+        {
+          "dx": 2,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 327
+        }
+      ],
+      "themes": [
+        "dining",
+        "tavern"
+      ],
+      "snap": "floor"
+    },
+    {
+      "id": "study_desk",
+      "label": "학습 책상과 걸상",
+      "role": "table",
+      "width": 1,
+      "height": 2,
+      "layer": "upper",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 328
+        },
+        {
+          "dx": 0,
+          "dy": 1,
+          "layer": "upper",
+          "tile": 266
+        }
+      ],
+      "themes": [
+        "study"
+      ],
+      "snap": "floor"
+    },
+    {
+      "id": "counter",
+      "label": "접수용 긴 탁자",
+      "role": "counter",
+      "width": 3,
+      "height": 1,
+      "layer": "upper",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 325
+        },
+        {
+          "dx": 1,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 326
+        },
+        {
+          "dx": 2,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 327
+        }
+      ],
+      "themes": [
+        "tavern"
+      ],
+      "snap": "wall-north"
+    },
+    {
+      "id": "table_chairs",
+      "label": "사각 탁자+의자 짝",
+      "role": "table",
+      "width": 3,
+      "height": 1,
+      "layer": "upper",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 297
+        },
+        {
+          "dx": 1,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 328
+        },
+        {
+          "dx": 2,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 298
+        }
+      ],
+      "themes": [
+        "dining",
+        "study",
+        "kitchen",
+        "tavern"
+      ],
+      "snap": "floor"
+    },
+    {
+      "id": "piano",
+      "label": "피아노",
+      "role": null,
+      "width": 3,
+      "height": 1,
+      "layer": "upper",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 357
+        },
+        {
+          "dx": 1,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 358
+        },
+        {
+          "dx": 2,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 359
+        }
+      ],
+      "themes": [
+        "tavern",
+        "dining"
+      ],
+      "snap": "wall-north"
+    },
+    {
+      "id": "clock",
+      "label": "벽걸이 괘종시계",
+      "role": null,
+      "width": 1,
+      "height": 2,
+      "layer": "upper",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 389
+        },
+        {
+          "dx": 0,
+          "dy": 1,
+          "layer": "upper",
+          "tile": 419
+        }
+      ],
+      "themes": [
+        "bedroom",
+        "study",
+        "dining"
+      ],
+      "snap": "wall-any"
+    },
+    {
+      "id": "armor",
+      "label": "갑옷 전시대",
+      "role": null,
+      "width": 1,
+      "height": 2,
+      "layer": "upper",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 87
+        },
+        {
+          "dx": 0,
+          "dy": 1,
+          "layer": "upper",
+          "tile": 117
+        }
+      ],
+      "themes": [
+        "corridor",
+        "storage"
+      ],
+      "snap": "wall-north"
+    },
+    {
+      "id": "bust",
+      "label": "흉상",
+      "role": null,
+      "width": 1,
+      "height": 2,
+      "layer": "upper",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 88
+        },
+        {
+          "dx": 0,
+          "dy": 1,
+          "layer": "upper",
+          "tile": 118
+        }
+      ],
+      "themes": [
+        "corridor",
+        "study"
+      ],
+      "snap": "wall-north"
+    },
+    {
+      "id": "mirror",
+      "label": "대형 거울",
+      "role": null,
+      "width": 1,
+      "height": 2,
+      "layer": "upper",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 269
+        },
+        {
+          "dx": 0,
+          "dy": 1,
+          "layer": "upper",
+          "tile": 299
+        }
+      ],
+      "themes": [
+        "bedroom",
+        "dining"
+      ],
+      "snap": "wall-north"
+    },
+    {
+      "id": "display",
+      "label": "검 진열 박스",
+      "role": null,
+      "width": 1,
+      "height": 2,
+      "layer": "upper",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 263
+        },
+        {
+          "dx": 0,
+          "dy": 1,
+          "layer": "upper",
+          "tile": 293
+        }
+      ],
+      "themes": [
+        "tavern",
+        "dining"
+      ],
+      "snap": "wall-north"
+    },
+    {
+      "id": "cabinet",
+      "label": "캐비닛",
+      "role": null,
+      "width": 1,
+      "height": 2,
+      "layer": "lower",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 148
+        },
+        {
+          "dx": 0,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 178
+        }
+      ],
+      "themes": [
+        "bedroom",
+        "dining"
+      ],
+      "snap": "wall-north"
+    },
+    {
+      "id": "rug",
+      "label": "러그",
+      "role": null,
+      "width": 3,
+      "height": 3,
+      "layer": "lower",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 279
+        },
+        {
+          "dx": 1,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 280
+        },
+        {
+          "dx": 2,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 281
+        },
+        {
+          "dx": 0,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 309
+        },
+        {
+          "dx": 1,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 310
+        },
+        {
+          "dx": 2,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 311
+        },
+        {
+          "dx": 0,
+          "dy": 2,
+          "layer": "lower",
+          "tile": 339
+        },
+        {
+          "dx": 1,
+          "dy": 2,
+          "layer": "lower",
+          "tile": 340
+        },
+        {
+          "dx": 2,
+          "dy": 2,
+          "layer": "lower",
+          "tile": 341
+        }
+      ],
+      "themes": [
+        "bedroom",
+        "dining",
+        "study"
+      ],
+      "snap": "floor"
+    },
+    {
+      "id": "hearth",
+      "label": "벽난로 아궁이",
+      "role": null,
+      "width": 1,
+      "height": 1,
+      "layer": "lower",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 373
+        }
+      ],
+      "themes": [
+        "kitchen",
+        "tavern"
+      ],
+      "snap": "wall-any"
+    },
+    {
+      "id": "cauldron",
+      "label": "가마솥",
+      "role": null,
+      "width": 1,
+      "height": 1,
+      "layer": "upper",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 323
+        }
+      ],
+      "themes": [
+        "kitchen"
+      ],
+      "snap": "floor"
+    },
+    {
+      "id": "barrel",
+      "label": "술통",
+      "role": null,
+      "width": 1,
+      "height": 1,
+      "layer": "upper",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 205
+        }
+      ],
+      "themes": [
+        "storage",
+        "tavern",
+        "kitchen"
+      ],
+      "snap": "floor"
+    },
+    {
+      "id": "crate",
+      "label": "나무 상자",
+      "role": null,
+      "width": 1,
+      "height": 1,
+      "layer": "lower",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 55
+        }
+      ],
+      "themes": [
+        "storage",
+        "tavern",
+        "kitchen"
+      ],
+      "snap": "floor"
+    },
+    {
+      "id": "jars",
+      "label": "항아리",
+      "role": null,
+      "width": 1,
+      "height": 1,
+      "layer": "upper",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 350
+        }
+      ],
+      "themes": [
+        "kitchen",
+        "storage",
+        "bedroom"
+      ],
+      "snap": "floor"
+    },
+    {
+      "id": "plant",
+      "label": "화분",
+      "role": null,
+      "width": 1,
+      "height": 1,
+      "layer": "upper",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 289
+        }
+      ],
+      "themes": [
+        "corridor",
+        "dining"
+      ],
+      "snap": "floor"
+    },
+    {
+      "id": "window",
+      "label": "창문",
+      "role": null,
+      "width": 1,
+      "height": 1,
+      "layer": "lower",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 56
+        }
+      ],
+      "themes": [
+        "bedroom",
+        "study",
+        "dining",
+        "kitchen",
+        "storage",
+        "tavern",
+        "corridor"
+      ],
+      "snap": "wall-any"
+    },
+    {
+      "id": "picture",
+      "label": "그림",
+      "role": null,
+      "width": 2,
+      "height": 1,
+      "layer": "lower",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 114
+        },
+        {
+          "dx": 1,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 115
+        }
+      ],
+      "themes": [
+        "bedroom",
+        "study",
+        "dining",
+        "corridor"
+      ],
+      "snap": "wall-any"
+    },
+    {
+      "id": "sword_rack",
+      "label": "검 거치대",
+      "role": null,
+      "width": 1,
+      "height": 1,
+      "layer": "upper",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 260
+        }
+      ],
+      "themes": [
+        "tavern",
+        "corridor"
+      ],
+      "snap": "wall-any"
+    },
+    {
+      "id": "crystal",
+      "label": "수정구 점술대",
+      "role": null,
+      "width": 1,
+      "height": 1,
+      "layer": "upper",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 329
+        }
+      ],
+      "themes": [
+        "study"
+      ],
+      "snap": "floor"
+    },
+    {
+      "id": "stairs",
+      "label": "붉은 카펫 대계단",
+      "role": null,
+      "width": 3,
+      "height": 1,
+      "layer": "lower",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 465
+        },
+        {
+          "dx": 1,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 466
+        },
+        {
+          "dx": 2,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 467
+        }
+      ],
+      "themes": [
+        "corridor",
+        "tavern"
+      ],
+      "snap": "free"
+    },
+    {
+      "id": "tavern_sign",
+      "label": "선술집 간판",
+      "role": null,
+      "width": 1,
+      "height": 1,
+      "layer": "lower",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 58
+        }
+      ],
+      "themes": [
+        "tavern"
+      ],
+      "snap": "wall-any"
+    },
+    {
+      "id": "ladder",
+      "label": "사다리",
+      "role": null,
+      "width": 1,
+      "height": 1,
+      "layer": "lower",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 472
+        }
+      ],
+      "themes": [
+        "storage"
+      ],
+      "snap": "wall-any"
+    },
+    {
+      "id": "religious",
+      "label": "성상",
+      "role": null,
+      "width": 1,
+      "height": 1,
+      "layer": "upper",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 59
+        }
+      ],
+      "themes": [
+        "study",
+        "dining",
+        "bedroom",
+        "corridor"
+      ],
+      "snap": "wall-any"
+    },
+    {
+      "id": "fruit_shelf",
+      "label": "과일 선반",
+      "role": null,
+      "width": 1,
+      "height": 1,
+      "layer": "upper",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 25
+        }
+      ],
+      "themes": [
+        "kitchen",
+        "dining",
+        "tavern"
+      ],
+      "snap": "wall-any"
+    },
+    {
+      "id": "shelf_jars",
+      "label": "항아리 선반",
+      "role": null,
+      "width": 1,
+      "height": 1,
+      "layer": "upper",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 320
+        }
+      ],
+      "themes": [
+        "kitchen",
+        "storage",
+        "tavern"
+      ],
+      "snap": "wall-any"
+    },
+    {
+      "id": "grain",
+      "label": "곡물 자루",
+      "role": null,
+      "width": 1,
+      "height": 1,
+      "layer": "upper",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 471
+        }
+      ],
+      "themes": [
+        "storage",
+        "kitchen"
+      ],
+      "snap": "floor"
+    },
+    {
+      "id": "box",
+      "label": "잡화 상자",
+      "role": null,
+      "width": 1,
+      "height": 1,
+      "layer": "upper",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 295
+        }
+      ],
+      "themes": [
+        "storage",
+        "bedroom",
+        "study",
+        "dining"
+      ],
+      "snap": "floor"
+    },
+    {
+      "id": "bucket",
+      "label": "물통",
+      "role": null,
+      "width": 1,
+      "height": 1,
+      "layer": "upper",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 265
+        }
+      ],
+      "themes": [
+        "kitchen",
+        "storage"
+      ],
+      "snap": "floor"
+    },
+    {
+      "id": "kettle",
+      "label": "항아리",
+      "role": null,
+      "width": 1,
+      "height": 1,
+      "layer": "upper",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 235
+        }
+      ],
+      "themes": [
+        "kitchen",
+        "tavern"
+      ],
+      "snap": "floor"
+    },
+    {
+      "id": "stool",
+      "label": "스툴",
+      "role": null,
+      "width": 1,
+      "height": 1,
+      "layer": "upper",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 266
+        }
+      ],
+      "themes": [
+        "tavern",
+        "kitchen",
+        "dining"
+      ],
+      "snap": "floor"
+    },
+    {
+      "id": "rug_red",
+      "label": "붉은 카펫",
+      "role": null,
+      "width": 3,
+      "height": 3,
+      "layer": "lower",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 375
+        },
+        {
+          "dx": 1,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 376
+        },
+        {
+          "dx": 2,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 377
+        },
+        {
+          "dx": 0,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 405
+        },
+        {
+          "dx": 1,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 406
+        },
+        {
+          "dx": 2,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 407
+        },
+        {
+          "dx": 0,
+          "dy": 2,
+          "layer": "lower",
+          "tile": 435
+        },
+        {
+          "dx": 1,
+          "dy": 2,
+          "layer": "lower",
+          "tile": 436
+        },
+        {
+          "dx": 2,
+          "dy": 2,
+          "layer": "lower",
+          "tile": 437
+        }
+      ],
+      "themes": [
+        "dining",
+        "tavern",
+        "study",
+        "corridor"
+      ],
+      "snap": "floor"
+    },
+    {
+      "id": "rug_mat",
+      "label": "짚 돗자리",
+      "role": null,
+      "width": 3,
+      "height": 3,
+      "layer": "lower",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 108
+        },
+        {
+          "dx": 1,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 109
+        },
+        {
+          "dx": 2,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 110
+        },
+        {
+          "dx": 0,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 138
+        },
+        {
+          "dx": 1,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 139
+        },
+        {
+          "dx": 2,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 140
+        },
+        {
+          "dx": 0,
+          "dy": 2,
+          "layer": "lower",
+          "tile": 168
+        },
+        {
+          "dx": 1,
+          "dy": 2,
+          "layer": "lower",
+          "tile": 169
+        },
+        {
+          "dx": 2,
+          "dy": 2,
+          "layer": "lower",
+          "tile": 170
+        }
+      ],
+      "themes": [
+        "bedroom",
+        "kitchen",
+        "storage",
+        "dining"
+      ],
+      "snap": "floor"
+    },
+    {
+      "id": "table_wood",
+      "label": "확장 목재 탁자",
+      "role": "table",
+      "width": 3,
+      "height": 3,
+      "layer": "lower",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 156
+        },
+        {
+          "dx": 1,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 157
+        },
+        {
+          "dx": 2,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 158
+        },
+        {
+          "dx": 0,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 186
+        },
+        {
+          "dx": 1,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 187
+        },
+        {
+          "dx": 2,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 188
+        },
+        {
+          "dx": 0,
+          "dy": 2,
+          "layer": "upper",
+          "tile": 198
+        },
+        {
+          "dx": 1,
+          "dy": 2,
+          "layer": "upper",
+          "tile": 199
+        },
+        {
+          "dx": 2,
+          "dy": 2,
+          "layer": "upper",
+          "tile": 200
+        }
+      ],
+      "themes": [
+        "dining",
+        "study",
+        "kitchen"
+      ],
+      "snap": "floor"
+    },
+    {
+      "id": "table_white",
+      "label": "흰색 탁자",
+      "role": "table",
+      "width": 3,
+      "height": 3,
+      "layer": "lower",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 159
+        },
+        {
+          "dx": 1,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 160
+        },
+        {
+          "dx": 2,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 161
+        },
+        {
+          "dx": 0,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 189
+        },
+        {
+          "dx": 1,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 190
+        },
+        {
+          "dx": 2,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 191
+        },
+        {
+          "dx": 0,
+          "dy": 2,
+          "layer": "upper",
+          "tile": 228
+        },
+        {
+          "dx": 1,
+          "dy": 2,
+          "layer": "upper",
+          "tile": 229
+        },
+        {
+          "dx": 2,
+          "dy": 2,
+          "layer": "upper",
+          "tile": 230
+        }
+      ],
+      "themes": [
+        "dining",
+        "study"
+      ],
+      "snap": "floor"
+    },
+    {
+      "id": "tea_table",
+      "label": "차탁과 마주 보는 의자",
+      "role": "table",
+      "width": 5,
+      "height": 3,
+      "layer": "lower",
+      "cells": [
+        {
+          "dx": 1,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 156
+        },
+        {
+          "dx": 2,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 157
+        },
+        {
+          "dx": 3,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 158
+        },
+        {
+          "dx": 1,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 186
+        },
+        {
+          "dx": 2,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 187
+        },
+        {
+          "dx": 3,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 188
+        },
+        {
+          "dx": 1,
+          "dy": 2,
+          "layer": "upper",
+          "tile": 198
+        },
+        {
+          "dx": 2,
+          "dy": 2,
+          "layer": "upper",
+          "tile": 199
+        },
+        {
+          "dx": 3,
+          "dy": 2,
+          "layer": "upper",
+          "tile": 200
+        },
+        {
+          "dx": 0,
+          "dy": 1,
+          "layer": "upper",
+          "tile": 297
+        },
+        {
+          "dx": 4,
+          "dy": 1,
+          "layer": "upper",
+          "tile": 298
+        },
+        {
+          "dx": 1,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 235
+        },
+        {
+          "dx": 2,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 204
+        }
+      ],
+      "themes": [
+        "study",
+        "dining",
+        "kitchen",
+        "tavern"
+      ],
+      "snap": "floor"
+    },
+    {
+      "id": "reading_table",
+      "label": "책·촛대와 독서 좌석",
+      "role": "table",
+      "width": 5,
+      "height": 3,
+      "layer": "lower",
+      "cells": [
+        {
+          "dx": 1,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 156
+        },
+        {
+          "dx": 2,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 157
+        },
+        {
+          "dx": 3,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 158
+        },
+        {
+          "dx": 1,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 186
+        },
+        {
+          "dx": 2,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 187
+        },
+        {
+          "dx": 3,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 188
+        },
+        {
+          "dx": 1,
+          "dy": 2,
+          "layer": "upper",
+          "tile": 198
+        },
+        {
+          "dx": 2,
+          "dy": 2,
+          "layer": "upper",
+          "tile": 199
+        },
+        {
+          "dx": 3,
+          "dy": 2,
+          "layer": "upper",
+          "tile": 200
+        },
+        {
+          "dx": 0,
+          "dy": 1,
+          "layer": "upper",
+          "tile": 297
+        },
+        {
+          "dx": 4,
+          "dy": 1,
+          "layer": "upper",
+          "tile": 298
+        },
+        {
+          "dx": 1,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 145
+        },
+        {
+          "dx": 2,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 204
+        }
+      ],
+      "themes": [
+        "study",
+        "dining",
+        "kitchen",
+        "tavern"
+      ],
+      "snap": "floor"
+    },
+    {
+      "id": "dining_table",
+      "label": "식기·요리와 식사 좌석",
+      "role": "table",
+      "width": 5,
+      "height": 3,
+      "layer": "lower",
+      "cells": [
+        {
+          "dx": 1,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 156
+        },
+        {
+          "dx": 2,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 157
+        },
+        {
+          "dx": 3,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 158
+        },
+        {
+          "dx": 1,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 186
+        },
+        {
+          "dx": 2,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 187
+        },
+        {
+          "dx": 3,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 188
+        },
+        {
+          "dx": 1,
+          "dy": 2,
+          "layer": "upper",
+          "tile": 198
+        },
+        {
+          "dx": 2,
+          "dy": 2,
+          "layer": "upper",
+          "tile": 199
+        },
+        {
+          "dx": 3,
+          "dy": 2,
+          "layer": "upper",
+          "tile": 200
+        },
+        {
+          "dx": 0,
+          "dy": 1,
+          "layer": "upper",
+          "tile": 297
+        },
+        {
+          "dx": 4,
+          "dy": 1,
+          "layer": "upper",
+          "tile": 298
+        },
+        {
+          "dx": 1,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 207
+        },
+        {
+          "dx": 2,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 238
+        },
+        {
+          "dx": 3,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 208
+        }
+      ],
+      "themes": [
+        "study",
+        "dining",
+        "kitchen",
+        "tavern"
+      ],
+      "snap": "floor"
+    },
+    {
+      "id": "consultation_table",
+      "label": "기록·촛대와 상담 좌석",
+      "role": "table",
+      "width": 5,
+      "height": 3,
+      "layer": "lower",
+      "cells": [
+        {
+          "dx": 1,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 159
+        },
+        {
+          "dx": 2,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 160
+        },
+        {
+          "dx": 3,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 161
+        },
+        {
+          "dx": 1,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 189
+        },
+        {
+          "dx": 2,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 190
+        },
+        {
+          "dx": 3,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 191
+        },
+        {
+          "dx": 1,
+          "dy": 2,
+          "layer": "upper",
+          "tile": 228
+        },
+        {
+          "dx": 2,
+          "dy": 2,
+          "layer": "upper",
+          "tile": 229
+        },
+        {
+          "dx": 3,
+          "dy": 2,
+          "layer": "upper",
+          "tile": 230
+        },
+        {
+          "dx": 0,
+          "dy": 1,
+          "layer": "upper",
+          "tile": 297
+        },
+        {
+          "dx": 4,
+          "dy": 1,
+          "layer": "upper",
+          "tile": 298
+        },
+        {
+          "dx": 1,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 145
+        },
+        {
+          "dx": 2,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 204
+        }
+      ],
+      "themes": [
+        "study",
+        "dining",
+        "kitchen",
+        "tavern"
+      ],
+      "snap": "floor"
+    },
+    {
+      "id": "altar_table",
+      "label": "흰 제단과 촛대",
+      "role": "table",
+      "width": 3,
+      "height": 3,
+      "layer": "lower",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 159
+        },
+        {
+          "dx": 1,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 160
+        },
+        {
+          "dx": 2,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 161
+        },
+        {
+          "dx": 0,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 189
+        },
+        {
+          "dx": 1,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 190
+        },
+        {
+          "dx": 2,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 191
+        },
+        {
+          "dx": 0,
+          "dy": 2,
+          "layer": "upper",
+          "tile": 228
+        },
+        {
+          "dx": 1,
+          "dy": 2,
+          "layer": "upper",
+          "tile": 229
+        },
+        {
+          "dx": 2,
+          "dy": 2,
+          "layer": "upper",
+          "tile": 230
+        },
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 204
+        },
+        {
+          "dx": 2,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 204
+        }
+      ],
+      "themes": [
+        "study"
+      ],
+      "snap": "floor"
+    },
+    {
+      "id": "work_table",
+      "label": "작업 탁자와 도구",
+      "role": "table",
+      "width": 3,
+      "height": 3,
+      "layer": "lower",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 156
+        },
+        {
+          "dx": 1,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 157
+        },
+        {
+          "dx": 2,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 158
+        },
+        {
+          "dx": 0,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 186
+        },
+        {
+          "dx": 1,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 187
+        },
+        {
+          "dx": 2,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 188
+        },
+        {
+          "dx": 0,
+          "dy": 2,
+          "layer": "upper",
+          "tile": 198
+        },
+        {
+          "dx": 1,
+          "dy": 2,
+          "layer": "upper",
+          "tile": 199
+        },
+        {
+          "dx": 2,
+          "dy": 2,
+          "layer": "upper",
+          "tile": 200
+        },
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 261
+        },
+        {
+          "dx": 2,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 414
+        }
+      ],
+      "themes": [
+        "kitchen"
+      ],
+      "snap": "wall-north"
+    },
+    {
+      "id": "stairs_small",
+      "label": "한 칸 계단",
+      "role": null,
+      "width": 1,
+      "height": 1,
+      "layer": "lower",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 444
+        }
+      ],
+      "themes": [
+        "corridor"
+      ],
+      "snap": "free"
+    },
+    {
+      "id": "stairs_horizontal",
+      "label": "벽 높이를 잇는 돌계단",
+      "role": null,
+      "width": 3,
+      "height": 3,
+      "layer": "lower",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 141
+        },
+        {
+          "dx": 1,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 111
+        },
+        {
+          "dx": 2,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 171
+        },
+        {
+          "dx": 0,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 141
+        },
+        {
+          "dx": 1,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 111
+        },
+        {
+          "dx": 2,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 171
+        },
+        {
+          "dx": 0,
+          "dy": 2,
+          "layer": "lower",
+          "tile": 141
+        },
+        {
+          "dx": 1,
+          "dy": 2,
+          "layer": "lower",
+          "tile": 111
+        },
+        {
+          "dx": 2,
+          "dy": 2,
+          "layer": "lower",
+          "tile": 171
+        }
+      ],
+      "themes": [
+        "corridor"
+      ],
+      "snap": "free"
+    },
+    {
+      "id": "stairs_down",
+      "label": "아래층 계단",
+      "role": null,
+      "width": 1,
+      "height": 1,
+      "layer": "upper",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 474
+        }
+      ],
+      "themes": [
+        "corridor"
+      ],
+      "snap": "free"
+    },
+    {
+      "id": "flue",
+      "label": "난로 연통",
+      "role": null,
+      "width": 1,
+      "height": 2,
+      "layer": "upper",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 209
+        },
+        {
+          "dx": 0,
+          "dy": 1,
+          "layer": "upper",
+          "tile": 239
+        }
+      ],
+      "themes": [
+        "kitchen",
+        "tavern"
+      ],
+      "snap": "wall-north"
+    },
+    {
+      "id": "stone_hearth_unlit",
+      "label": "석조 화로 (꺼짐, 3×3)",
+      "role": null,
+      "width": 3,
+      "height": 3,
+      "layer": "lower",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 402
+        },
+        {
+          "dx": 1,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 403
+        },
+        {
+          "dx": 2,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 404
+        },
+        {
+          "dx": 0,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 432
+        },
+        {
+          "dx": 1,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 433
+        },
+        {
+          "dx": 2,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 434
+        },
+        {
+          "dx": 0,
+          "dy": 2,
+          "layer": "lower",
+          "tile": 462
+        },
+        {
+          "dx": 1,
+          "dy": 2,
+          "layer": "lower",
+          "tile": 463
+        },
+        {
+          "dx": 2,
+          "dy": 2,
+          "layer": "lower",
+          "tile": 464
+        }
+      ],
+      "themes": [
+        "kitchen",
+        "tavern",
+        "dining"
+      ],
+      "snap": "wall-north",
+      "description": "하나의 3×3 석조 화로: 402·403·404 / 432·433·434 / 462·463·464. 아래 가운데 463은 불이 꺼진 화구다. 벽·창살 낱장으로 조립하지 않는다. 켜진 화로는 stone_hearth_lit을 선택한다."
+    },
+    {
+      "id": "stone_hearth_lit",
+      "label": "석조 화로 (불 켜짐, 3×3)",
+      "role": null,
+      "width": 3,
+      "height": 3,
+      "layer": "lower",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 402
+        },
+        {
+          "dx": 1,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 403
+        },
+        {
+          "dx": 2,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 404
+        },
+        {
+          "dx": 0,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 432
+        },
+        {
+          "dx": 1,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 433
+        },
+        {
+          "dx": 2,
+          "dy": 1,
+          "layer": "lower",
+          "tile": 434
+        },
+        {
+          "dx": 0,
+          "dy": 2,
+          "layer": "lower",
+          "tile": 462
+        },
+        {
+          "dx": 1,
+          "dy": 2,
+          "layer": "lower",
+          "tile": 124
+        },
+        {
+          "dx": 2,
+          "dy": 2,
+          "layer": "lower",
+          "tile": 464
+        }
+      ],
+      "themes": [
+        "kitchen",
+        "tavern",
+        "dining"
+      ],
+      "snap": "wall-north",
+      "description": "꺼진 화로의 아래 가운데 (1,2)만 463 대신 124로 바꾼다. 불은 124→154→184→214, 초당 4프레임으로 반복 재생된다. 나머지 여덟 석재 셀은 동일하다. 꺼진 화로는 stone_hearth_unlit을 선택한다."
+    },
+    {
+      "id": "care_bed",
+      "label": "병상과 간병 걸상",
+      "role": "bed",
+      "width": 2,
+      "height": 2,
+      "layer": "upper",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 324
+        },
+        {
+          "dx": 0,
+          "dy": 1,
+          "layer": "upper",
+          "tile": 354
+        },
+        {
+          "dx": 1,
+          "dy": 1,
+          "layer": "upper",
+          "tile": 266
+        }
+      ],
+      "themes": [
+        "bedroom"
+      ],
+      "snap": "wall-north"
+    },
+    {
+      "id": "teacher_desk",
+      "label": "교사용 책상과 펼친 책",
+      "role": "table",
+      "width": 3,
+      "height": 2,
+      "layer": "lower",
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 156
+        },
+        {
+          "dx": 1,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 157
+        },
+        {
+          "dx": 2,
+          "dy": 0,
+          "layer": "lower",
+          "tile": 158
+        },
+        {
+          "dx": 0,
+          "dy": 1,
+          "layer": "upper",
+          "tile": 198
+        },
+        {
+          "dx": 1,
+          "dy": 1,
+          "layer": "upper",
+          "tile": 199
+        },
+        {
+          "dx": 2,
+          "dy": 1,
+          "layer": "upper",
+          "tile": 200
+        },
+        {
+          "dx": 1,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 145
+        }
+      ],
+      "themes": [
+        "study"
+      ],
+      "snap": "wall-north"
+    }
+  ],
+  "vocabulary": {
+    "VOID": 430,
+    "FLOOR": 72,
+    "FLOOR_HOLE": 73,
+    "BODY": 366,
+    "INNER_L": 104,
+    "INNER_R": 106,
+    "EDGE_W": 396,
+    "EDGE_E": 398,
+    "EDGE_N": 367,
+    "EDGE_S": 427,
+    "CORNER_NW": 368,
+    "CORNER_NE": 369,
+    "BEAM_SW": 426,
+    "BEAM_SE": 428,
+    "ALCOVE_L": 396,
+    "ALCOVE_R": 398,
+    "BOOK_TL": 18,
+    "BOOK_TR": 20,
+    "BOOK_ML": 48,
+    "BOOK_MR": 50,
+    "BOOK_BL": 78,
+    "BOOK_BR": 80,
+    "WINDOW": 56,
+    "RELIGIOUS": 59,
+    "PICTURE_L": 114,
+    "PICTURE_R": 115,
+    "CABINET_U": 148,
+    "CABINET_L": 178,
+    "SWORD_RACK": 260,
+    "PLANT": 289,
+    "TABLE_TOP": 264,
+    "TABLE_BOT": 294,
+    "BOX": 295,
+    "CHAIR_RIGHT": 297,
+    "CHAIR_LEFT": 298,
+    "BED_L": 355,
+    "BED_R": 356,
+    "BROKEN_GLASS": 417,
+    "GRAIN": 471,
+    "STAIRS_DOWN": 475,
+    "STOVE_TOP": 21,
+    "STOVE_BOT": 51,
+    "HEARTH": 373,
+    "CAULDRON": 323,
+    "KETTLE": 235,
+    "BUCKET": 265,
+    "JARS": 350,
+    "FRUIT_SHELF": 25,
+    "SHELF_JARS": 320,
+    "CRATE": 55,
+    "BARREL": 205,
+    "TAVERN_SIGN": 58,
+    "LADDER": 472,
+    "TABLE_L": 325,
+    "TABLE_R": 326,
+    "STOOL": 266,
+    "TABLE_R3": 327,
+    "PIANO_L": 357,
+    "PIANO_M": 358,
+    "PIANO_R": 359,
+    "MIRROR_T": 269,
+    "MIRROR_B": 299,
+    "CLOCK_T": 389,
+    "CLOCK_B": 419,
+    "BUST_T": 88,
+    "BUST_B": 118,
+    "ARMOR_T": 87,
+    "ARMOR_B": 117,
+    "DISPLAY_T": 263,
+    "DISPLAY_B": 293,
+    "SQUARE_TABLE": 328,
+    "CRYSTAL_BALL": 329,
+    "STAIRS_L": 465,
+    "STAIRS_M": 466,
+    "STAIRS_R": 467,
+    "BED_V_HEAD": 324,
+    "BED_V_FOOT": 354,
+    "COUNTER_L": 325,
+    "COUNTER_M": 326,
+    "COUNTER_R": 327
+  }
+}

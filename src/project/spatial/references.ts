@@ -1,4 +1,5 @@
 import { assert } from "../io/guards";
+import { resolveSpatialGraphic } from "./assets";
 import type * as S from "./types";
 
 type Design = S.ObjectDesign | S.SpaceDesign | S.PlaceDesign | S.RegionDesign | S.WorldDesign;
@@ -34,8 +35,8 @@ function design(library: S.SpatialLibrary, ref: S.SpatialDesignReference, path: 
 }
 function designPorts(value: Design): readonly S.SpatialPort[] { return "anchors" in value ? value.anchors : value.ports; }
 function graphic(ref: S.SpatialGraphic, context: LibraryContext, path: string): void {
-  const tileset = own(context.assets.tilesets, ref.tilesetId, `${path}.tilesetId`);
-  if (!context.frozen) assert(tileset.structureKits?.some(kit => kit.id === ref.kitId) === true, `${path}.kitId: missing reference ${ref.kitId}`);
+  own(context.assets.tilesets, ref.tilesetId, `${path}.tilesetId`);
+  if (!context.frozen) assert(resolveSpatialGraphic(context.assets, ref) !== undefined, `${path}.kitId: missing reference ${ref.kitId}`);
 }
 /** Iterative design-DAG check: repeated references are edges, not cycles or additional parents. */
 function acyclic(edges: ReadonlyMap<S.SpatialId, readonly Edge[]>): void {

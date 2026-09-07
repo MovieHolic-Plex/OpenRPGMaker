@@ -1,4 +1,4 @@
-import type { GameMap, TilesetDef } from "../types";
+import type { GameMap, InteriorRoomKindRecord, TilesetDef } from "../types";
 
 declare const spatialId: unique symbol;
 /** Opaque identity; labels and legacy qualified names are never identity parsers. */
@@ -115,6 +115,8 @@ export type SpatialConnection = {
 };
 export type LegacySpatialImportReceipt = {
   readonly version: 1; readonly sourceHash: string;
+  /** Original legacy compatibility constraints; qualifiers and repetitions are historical. */
+  readonly roomKinds?: readonly { readonly tilesetId: string; readonly record: InteriorRoomKindRecord }[];
   /** Qualified legacy keys are historical, not strong references into the active library. */
   readonly mapping: readonly { readonly sourceKey: string; readonly target: SpatialDesignReference }[];
   /** Never parse, normalize or recursively traverse this archive during ordinary project IO. */
