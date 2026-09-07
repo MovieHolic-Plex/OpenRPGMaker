@@ -87,7 +87,7 @@
   display: none;
 }
 
-/* Match or beat the open-deck width rule specificity (0,4,1). The weaker
+/* Match the open-deck width rule's class specificity. The weaker
    `.ai-chat-panel.chat-dock-float .ai-deck` selector lost to `transition: width`,
    so prefers-reduced-motion never actually disabled the animation (F10 e2e). */
 @media (prefers-reduced-motion: reduce) {

@@ -880,7 +880,7 @@ Live drag and `prefers-reduced-motion` must not leave `transition: width` active
 keep running and `getBoundingClientRect()` lagged the committed `--ai-float-bar-width`
 (Firefox F10: expected +88px, observed ~10–80px short). Fix: match open-deck specificity for
 `transition: none` under reduced motion, add `.is-resizing` (no transition while dragging),
-and seed pointer gestures from committed `barSize` rather than a mid-transition layout rect.
+and seed pointer gestures / ARIA from the **viewport-clamped effective width** (preferred `barSize` stays in storage across viewport-only shrinks).
 Contracts: `test/aiPanelGlassResize.test.ts`, `test/aiDeckResizeTransitionCss.test.ts`,
 e2e `ai-ui-audit-fixes` F10.
 

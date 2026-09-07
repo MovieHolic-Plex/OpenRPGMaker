@@ -161,6 +161,19 @@ describe("컴포저 캡슐은 저장된 폭으로 열린다", () => {
     // 캡슐 상한 = min(PANEL_SIZE_LIMITS.maxWidth, 뷰포트폭 − 24) = 776.
     expect(barWidth(deck)).toBe("776px");
   });
+
+  it("뷰포트 축소 후 ARIA valuemax/now 는 표시 클램프 폭을 따르고 저장 선호폭은 유지한다", () => {
+    // Break: aria-valuenow advertises raw saved 900 while max is 776.
+    installFakeWindow(800, 700);
+    storage.set(SIZE_KEY, JSON.stringify({ width: 900, height: 400 }));
+    const { deck, handle } = renderSurface();
+
+    expect(barWidth(deck)).toBe("776px");
+    expect(handle.getAttribute("aria-valuemax")).toBe("776");
+    expect(handle.getAttribute("aria-valuenow")).toBe("776");
+    // Preferred storage untouched by viewport-only apply.
+    expect(savedSize()).toEqual({ width: 900, height: 400 });
+  });
 });
 
 describe("핸들은 캡슐 왼쪽 끝의 세로 분리자다", () => {
@@ -205,6 +218,22 @@ describe("드래그는 폭만 바꾼다", () => {
     // 레거시 도크별 키는 더 쓰지 않는다.
     expect(storage.has(LEGACY_FLOAT_SIZE_KEY)).toBe(false);
     expectNoInlinePanelSize(panel);
+  });
+
+  it("뷰포트 클램프된 표시 폭에서 안쪽 드래그는 즉시 줄어든다", () => {
+    // Break: seed drag from raw saved 900; 80px inward stays clamped at 776.
+    installFakeWindow(800, 700);
+    storage.set(SIZE_KEY, JSON.stringify({ width: 900, height: 400 }));
+    const { deck, handle } = renderSurface();
+    expect(barWidth(deck)).toBe("776px");
+
+    handle.dispatchEvent(pointerEvent("pointerdown", 500, 300));
+    globalThis.window.dispatchEvent(pointerEvent("pointermove", 580, 300)); // +80 clientX = narrower
+    // Effective start 776 - 80 = 696.
+    expect(barWidth(deck)).toBe("696px");
+    expect(handle.getAttribute("aria-valuenow")).toBe("696");
+    globalThis.window.dispatchEvent(pointerEvent("pointerup", 580, 300));
+    expect(savedSize()).toEqual({ width: 696, height: 400 });
   });
 
   it("드래그 시작 폭은 전환 중 레이아웃 값이 아니라 커밋된 barSize를 쓴다", () => {

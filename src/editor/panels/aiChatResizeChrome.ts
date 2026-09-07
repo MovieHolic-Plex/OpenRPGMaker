@@ -56,6 +56,11 @@ export function createChatResizeChrome(deps: ChatResizeChromeDeps): ChatResizeCh
     return Math.round(Math.min(limits.max, Math.max(limits.min, width)));
   };
   const measuredDeck = (): DOMRect | Size => deck.getBoundingClientRect?.() ?? { width: 640, height: 120 };
+  /** Displayed/gesture width: viewport-clamped. barSize keeps the preferred saved value. */
+  const effectiveWidth = (): number => {
+    if (barSize) return clampWidth(barSize.width);
+    return Math.round(measuredDeck().width) || 640;
+  };
 
   const handle = el("div", {
     class: "ai-chat-resize-handle is-edge-start",
@@ -81,9 +86,8 @@ export function createChatResizeChrome(deps: ChatResizeChromeDeps): ChatResizeCh
 
   const syncAria = (): void => {
     const limits = widthLimits();
-    const rect = measuredDeck();
-    // Prefer the committed logical width. Layout rect lags while CSS width transitions.
-    const now = barSize?.width ?? Math.round(rect.width || limits.min);
+    // Effective (clamped) width only — never advertise preferred barSize above valuemax.
+    const now = effectiveWidth();
     handle.setAttribute("aria-valuemin", String(limits.min));
     handle.setAttribute("aria-valuemax", String(limits.max));
     handle.setAttribute("aria-valuenow", String(now));
@@ -118,9 +122,9 @@ export function createChatResizeChrome(deps: ChatResizeChromeDeps): ChatResizeCh
     activeResizeCleanup?.();
     const startX = event.clientX;
     const rect = measuredDeck();
-    // Committed bar width first — never seed the gesture from a mid-transition layout rect
-    // (that under-shot the pointer delta by ~10–80px in Firefox e2e F10).
-    const startWidth = barSize?.width ?? (Math.round(rect.width) || 640);
+    // Effective clamped width — not raw preferred barSize (may exceed viewport max) and not a
+    // mid-transition layout rect (Firefox F10 under-shot).
+    const startWidth = effectiveWidth();
     const startHeight = barSize?.height ?? (Math.round(rect.height) || 620);
     panel.classList.add("is-resizing");
     deck.classList.add("is-resizing");
