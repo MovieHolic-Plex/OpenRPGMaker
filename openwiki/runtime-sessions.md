@@ -134,6 +134,18 @@ Both manual and automatic readers reject duplicate JSON keys before last-key-win
   좌우키가 목록의 위아래 이동을 대신하지 않는다. 영역 간 이동·다시 열기에서 커서를 유지한다.
 - `playerStatusMenuDetailRenderer.updateStatusMenuDetailSelection` 이 커서 이동 때 설명 영역만
   갱신한다. 목록 DOM·스크롤·포커스를 보존한다. 페이지 이동 때도 명령 레일 DOM은 보존한다.
+  아이템 작업 패널은 장비 후보와 같은 쇼케이스 열에 `activeItemEffects` 기준 종류·효과·사용
+  가능 여부를 두고, 행은 아이콘·이름·개수만 유지한다. 비활성 종류 필드는 광고하지 않는다.
+  효과 값은 상태·스킬·스위치 이름(누락 시 ID), 부여 확률, 돌봄 수치, RM2k3 포획 배율,
+  Gen1 실효 볼 등급(`ballClass ?? "poke"`, 비활성 배율 제외),
+  씨앗 능력별 부호 있는 증감을 안전한 텍스트로 보존한다. 상태 해제는 메뉴 실행처럼
+  chance와 무관하고, 부여는 존재하는 상태의 양수 확률만 표시한다. 배우·직업 제한은
+  약·책·씨앗에만 적용한다. 쇼케이스는 장비 비교와 같은 라벨·값 행으로 종류·효과·사용·대상·소모를
+  나누어 두고, 아이템 사실 값만 접는다(장비 수치 말줄임은 유지). 실효 대상(책·씨앗의 1명/스위치의
+  무대상 우선, 전체 아군·전투불능·파티 몬스터)과 소모/재사용은 사용 가능 여부와 별 행이다. 유한 사용 횟수는
+  `session.itemUseCharges`의 FIFO 사용 완료 수를 차감한 현재 사본 잔량과 전체 잔량이다.
+  `noLimit` 소모품도 `itemTransitions`처럼 성공당 사본 하나를 소비한다.
+  회귀: `test/playerStatusMenuItemShowcase.test.ts`는 투영·안전한 DOM 텍스트·실제 사용을 비교한다.
 - `playerItemUse.menuItemUnavailableReason` / `previewMenuItemTarget` 는 실제 실행의
   `activeItemEffects`, 사용 장소, 대상 제한, 회복·상태 효과 판정을 공유한다. 미리보기는 세션과
   난수 상태를 바꾸지 않는다. 사용 불가 항목도 커서로 설명을 읽을 수 있고 결정 시 이유를 보여준다.
