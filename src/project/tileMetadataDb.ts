@@ -1,4 +1,4 @@
-import { loadProjectFromSupabase, recordSupabaseAiAnalysisRun, saveProjectToSupabase } from "./supabaseProjectSync";
+import { loadProjectSnapshotFromSupabase, recordSupabaseAiAnalysisRun, saveProjectToSupabase, type ProjectWriteAuthority, type SupabaseSaveResult } from "./supabaseProjectSync";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import type { Project } from "@/project/types";
 
@@ -14,6 +14,7 @@ export function setAiActivityRecorder(recorder: AiActivityRecorder | null): void
 type StoredProject = {
   readonly found: boolean;
   readonly project: Project | null;
+  readonly authority?: ProjectWriteAuthority;
 };
 
 type AiAnalysisRunInput = {
@@ -27,8 +28,8 @@ export async function loadProjectFromCanonicalStore(): Promise<StoredProject> {
   return loadProjectFromSupabaseCanonicalStore();
 }
 
-export async function saveProjectToCanonicalStore(project: Project): Promise<void> {
-  await saveProjectToSupabaseCanonicalStore(project);
+export async function saveProjectToCanonicalStore(project: Project, authority?: ProjectWriteAuthority): Promise<SupabaseSaveResult> {
+  return saveProjectToSupabaseCanonicalStore(project, authority);
 }
 
 export async function clearCanonicalProjectStore(): Promise<void> {
@@ -36,12 +37,12 @@ export async function clearCanonicalProjectStore(): Promise<void> {
 }
 
 export async function loadProjectFromSupabaseCanonicalStore(): Promise<StoredProject> {
-  const project = await loadProjectFromSupabase();
-  return { found: project !== null, project };
+  const snapshot = await loadProjectSnapshotFromSupabase();
+  return snapshot ? { found: true, project: snapshot.project, authority: snapshot.authority } : { found: false, project: null };
 }
 
-export async function saveProjectToSupabaseCanonicalStore(project: Project): Promise<void> {
-  await saveProjectToSupabase(projectWithoutEventDrafts(project));
+export async function saveProjectToSupabaseCanonicalStore(project: Project, authority?: ProjectWriteAuthority): Promise<SupabaseSaveResult> {
+  return saveProjectToSupabase(projectWithoutEventDrafts(project), undefined, authority);
 }
 
 export async function clearSupabaseCanonicalProjectStore(): Promise<void> {

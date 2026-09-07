@@ -1,4 +1,7 @@
+import "./spatial-local-only.mjs";
 import assert from "node:assert/strict";
+import { runSpatialStoreScenario } from "./spatial-store-scenarios.mts";
+import { runSpatialActivationScenario } from "./spatial-activation-scenarios.mts";
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
@@ -11,12 +14,26 @@ import { legacyRawFixture } from "../../test/support/spatialLegacyImportFixture"
 import { spatialFixture } from "../../test/support/spatialSchemaFixture";
 import { spatialPersistenceHttp, type HttpExchange } from "../../test/support/spatialPersistenceHttp";
 
-// This increment deliberately accepts no URL, credentials, project or environment defaults.
-const { values } = parseArgs({ options: { scenario: { type: "string" }, evidence: { type: "string" } }, strict: true });
-assert.equal(values.scenario, "transport");
+// No URL/credential flags or environment defaults. Q7/Q8 require explicit local-only consent.
+const { values } = parseArgs({ options: { scenario: { type: "string" }, evidence: { type: "string" }, project: { type: "string" }, "local-only": { type: "boolean" } }, strict: true });
+assert(values.scenario === "transport" || values.scenario === "stale-writers" || values.scenario === "mirror-failure"
+  || values.scenario === "activation-dirty-before" || values.scenario === "activation-edit-during"
+  || values.scenario === "activation-composition-during" || values.scenario === "activation-changed-target");
 const evidence = resolve(values.evidence ?? "output/evidence/tile-to-world/task-6/transport");
 await mkdir(evidence, { recursive: true });
 const sourceSHA = execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
+if (values.scenario !== "transport") {
+  assert.equal(values["local-only"], true, "Q7/Q8 are loopback-only: pass --local-only");
+  switch (values.scenario) {
+    case "stale-writers": case "mirror-failure":
+      await runSpatialStoreScenario({ scenario: values.scenario, projectId: values.project ?? "transport-fixture", evidence, sourceSHA });
+      break;
+    case "activation-dirty-before": case "activation-edit-during": case "activation-composition-during": case "activation-changed-target":
+      await runSpatialActivationScenario({ scenario: values.scenario, projectId: values.project ?? "transport-fixture", evidence, sourceSHA });
+      break;
+    default: throw new TypeError(String(values.scenario satisfies never));
+  }
+} else {
 const traces: { readonly scenario: string; readonly url: string; readonly exchanges: readonly HttpExchange[]; readonly lifecycle: { readonly closed: boolean } }[] = [];
 const checks: string[] = [];
 const fixture = spatialFixture();
@@ -116,3 +133,4 @@ try {
     remoteCalls: 0, databaseResourcesCreated: 0, browserResourcesCreated: 0, temporarySandboxesCreated: 0 }, null, 2));
 }
 process.stdout.write(`${JSON.stringify({ sourceSHA, scenario: "transport", passed: checks, evidence, localOnly: true })}\n`);
+}
