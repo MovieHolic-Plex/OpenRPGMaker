@@ -1351,7 +1351,7 @@ export class AssistantSession {
     if (!this.acceptance && !this.verificationEvidence.hasChecks()) return;
     // A verdict may precede declaration; late adoption must not revive pre-edit proof.
     const previous = this.acceptanceAppliedProject ?? this.acceptanceRequestBaseline;
-    if (previous !== project && acceptanceFingerprint(previous) !== acceptanceFingerprint(project)) {
+    if (this.verificationEvidence.hasChecks() && previous !== project && acceptanceFingerprint(previous) !== acceptanceFingerprint(project)) {
       this.verificationEvidence.invalidateAfterWrite();
     }
     this.acceptanceAppliedProject = structuredClone(project);

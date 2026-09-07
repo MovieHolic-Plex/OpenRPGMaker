@@ -80,6 +80,11 @@ and mutable result/recap owners. There is no second scheduler or completion ledg
   can finish. A source binding or an advisory check cannot supply an exact verifier
   receipt. Same-project external edits retire stale explicit proof, including during
   a proof-only retry whose source Boolean predicates still pass.
+  Applied refresh compares whole-project fingerprints only when the existing
+  verification-evidence owner has checks to invalidate. With no observed checks,
+  snapshot capture, canonical evaluation/publication and image retirement still
+  run; missing verifier obligations remain blocked. There is no cache or relaxed
+  draft, source or receipt freshness (`assistantAcceptanceCost.test.ts`).
 - `retryLastTurn` can retry an eligible failed persistence proof without entering
   the model/tool authoring loop. It rechecks current acceptance, domain and explicit
   verifier obligations before and after proof awaits, retries a stale same-project

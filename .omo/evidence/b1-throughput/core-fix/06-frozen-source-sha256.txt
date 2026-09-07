@@ -1,0 +1,3 @@
+a3cd1cc295a52a8cf37c86362161667a497a4b9956c52a31b702a787a40a0158  src/ai/assistantSession.ts
+89e56869b216ab8a88e12ed6eac7a3545021929274cef8a60244adcf2df8d015  test/assistantAcceptanceCost.test.ts
+e41cb2d99c4c6a24e6701b414c71db540e31757e4212d266a18d820e291dbb7f  openwiki/editor-ai-panel.md
