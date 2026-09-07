@@ -155,7 +155,8 @@ Failed final verification replaces a model success claim rather than appending
 contradictory failure text below it.
 The PR687 adjudication retains bounded final repair, driven by adopted pending,
 unverified or stale requirements and genuine unresolved findings, including findings
-without an acceptance declaration. Successful unadopted exploratory probes never
+without an acceptance declaration. The narrow pre-write lint exception below separates
+reported baseline defects from terminal blockers. Successful unadopted exploratory probes never
 create rerun obligations after a write or dummy removal. Malformed/execution failures
 remain attempts, with only the narrow unowned assertion-free no-target setup exception.
 Questions report retained verification negatives without executing repair or changing
@@ -165,6 +166,16 @@ Run-end proof waits for authoritative blockers to clear. An unfinished declared
 verification item (including pending scope or current passed proof) cannot be skipped:
 rejection preserves plan position, acceptance, requirements, findings and proof. Ordinary
 optional/non-verification skips remain usable. Regression: `pr687VerificationIntegration`.
+Before preparation or model writes, the host runs the same read-only lint producer against
+its pre-write project baseline once per goal. Rebase, repair and continuation never replace
+that provenance. An automatic default `run_lint({})` finding can be report-only only when its
+complete error records (including code, message, referenced IDs/locations and multiplicity)
+were present in that baseline, it has never been observed explicitly, and no active lint
+requirement owns the check. Unknown/incomplete provenance, new identities (even at equal
+counts), explicit negatives and adopted checks still block. Findings are retained; no pass is
+invented. `CompletionAssessment.verification` reports all problems while `blockingVerification`
+is the terminal subset. Report-only lint is appended to the completed response and remains in
+audits/snapshots without a repair loop. Regression: `advisoryLintProvenance`.
 Stale-check feedback includes the exact canonical tool/argument identity. A new
 check of guide cells does not silently replace an earlier frontage check; the
 executor can see which original coordinates remain pending after compaction.

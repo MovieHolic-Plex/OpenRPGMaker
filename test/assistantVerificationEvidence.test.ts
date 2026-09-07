@@ -232,16 +232,30 @@ describe("verification ownership regression", () => {
 describe("검증 근거의 대상과 변경 수명", () => {
   it("reports the exact stale scope when a different destination is rechecked", () => {
     const evidence = new ToolVerificationEvidence();
-    const frontage = { mapId: "world", targets: [{ x: 24, y: 115 }] };
-    const guide = { mapId: "world", targets: [{ x: 24, y: 116 }] };
+    const from = { x: 24, y: 114 };
+    const frontage = { mapId: "world", from, targets: [{ x: 24, y: 115 }] };
+    const guide = { mapId: "world", from, targets: [{ x: 24, y: 116 }] };
     const passing = { ok: true, data: { reachable: true } };
-    evidence.observe("check_reachability", frontage, passing);
+    const checkId = JSON.stringify(["check_reachability", frontage]);
+    const ownerId = "frontage-owner";
+    evidence.adopt({ checkId, ownerId, name: "check_reachability", args: frontage });
+    evidence.observe("check_reachability", frontage, passing, "explicit", ownerId, checkId);
+    const original = evidence.snapshot().requirements[0]!;
+    expect(original).toMatchObject({ checkId, ownerId, args: frontage, status: "passed" });
+    expect(evidence.snapshot().attempts[0]?.status).toBe("passed");
     evidence.invalidateAfterWrite();
-    evidence.observe("check_reachability", guide, passing);
+    expect(evidence.snapshot().requirements).toEqual([{ ...original, status: "stale" }]);
+    evidence.observe("check_reachability", guide, passing, "explicit", "guide-owner");
+    expect(evidence.snapshot().attempts.at(-1)).toMatchObject({ args: guide, status: "passed" });
+    expect(evidence.snapshot().requirements).toEqual([{ ...original, status: "stale" }]);
     expect(evidence.passed("check_reachability")).toBe(false);
     expect(evidence.problems().join("\n")).toContain(JSON.stringify(["check_reachability", frontage]));
     expect(evidence.problems().join("\n")).not.toContain(JSON.stringify(["check_reachability", guide]));
-    evidence.observe("check_reachability", frontage, passing);
+    evidence.observe("check_reachability", frontage, passing, "explicit", ownerId, checkId);
+    expect(evidence.snapshot().requirements).toEqual([original]);
+    expect(evidence.snapshot().attempts).toHaveLength(3);
+    expect(evidence.snapshot().attempts.every(attempt => attempt.status === "passed")).toBe(true);
+    expect(evidence.passed("check_reachability")).toBe(true);
     expect(evidence.problems()).toEqual([]);
   });
 

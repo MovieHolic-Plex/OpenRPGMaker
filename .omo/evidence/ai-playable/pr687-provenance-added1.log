@@ -1,0 +1,15 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiAssistantSession.test.ts -t 검증 지적 --maxWorkers=1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86
+
+ ✓ test/aiAssistantSession.test.ts (63 tests | 62 skipped) 3498ms
+   ✓ 레이어 검증(자문) + run-end 저장 증명 (todo 5) > (b) 검증 지적(린트 오류)은 자문으로만 남고 런을 멈추지 않는다 — 재킥·verification_failed 없음  3496ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 62 skipped (63)
+   Start at  03:46:23
+   Duration  21.34s (transform 12.90s, setup 0ms, collect 17.16s, tests 3.50s, environment 1ms, prepare 184ms)
+

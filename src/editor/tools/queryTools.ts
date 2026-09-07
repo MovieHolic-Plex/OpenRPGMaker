@@ -517,6 +517,21 @@ function toReachSpecs(value: unknown): Array<{ mapId: string; from: ReachPoint; 
   return value as Array<{ mapId: string; from: ReachPoint; targets: ReachPoint[] }>;
 }
 
+/** Shared read-only producer for the registered check and host pre-write provenance. */
+export function runProjectLint(project: Project, args: Record<string, unknown>): ToolExecResult {
+  const issues: LintIssue[] = [
+    ...projectLint(project, { reachability: toReachSpecs(args.reachability) }),
+    ...lintTilesetPalettes(project),
+    ...verifyPlacedTiles(project),
+  ];
+  const errors = issues.filter((issue) => issue.severity === "error").length;
+  const warnings = issues.filter((issue) => issue.severity === "warning").length;
+  const infos = issues.filter((issue) => issue.severity === "info").length;
+  return { summary: `lint: error ${errors}건 / warning ${warnings}건 / info ${infos}건`,
+    issues: issues.filter(issue => issue.relocation !== undefined),
+    data: { counts: { errors, infos, warnings }, issues } };
+}
+
 const runLint: ToolDefinition = {
   name: "run_lint",
   description: "projectLint, 타일셋 팔레트 lint, 타일 후검증을 실행해 무결성 issue 목록(error/warning/info)을 반환한다.",
@@ -539,19 +554,7 @@ const runLint: ToolDefinition = {
       },
     },
   },
-  run(project, args): ToolExecResult {
-    const issues: LintIssue[] = [
-      ...projectLint(project, { reachability: toReachSpecs(args.reachability) }),
-      ...lintTilesetPalettes(project),
-      ...verifyPlacedTiles(project),
-    ];
-    const errors = issues.filter((issue) => issue.severity === "error").length;
-    const warnings = issues.filter((issue) => issue.severity === "warning").length;
-    const infos = issues.filter((issue) => issue.severity === "info").length;
-    return { summary: `lint: error ${errors}건 / warning ${warnings}건 / info ${infos}건`,
-      issues: issues.filter(issue => issue.relocation !== undefined),
-      data: { counts: { errors, infos, warnings }, issues } };
-  },
+  run: runProjectLint,
 };
 
 const checkReachabilityTool: ToolDefinition = {

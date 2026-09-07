@@ -16,6 +16,7 @@ import { buildActionArenaAuthoringGuide, selectActionArenaAuthoringRecipe } from
 import { workTargetContractIssues, workTargetIssues, workToolOutcome, type WorkToolOutcome } from "./workPlanTargets";
 import { ToolReadEvidence } from "./toolReadEvidence";
 import { ToolVerificationEvidence, parseVerificationChecks, verificationInitialState, type VerificationRequirement } from "./toolVerificationEvidence";
+import { runProjectLint } from "@/editor/tools/queryTools";
 import { isVerifyNpcRewardInput, VERIFY_NPC_REWARD_TOOL, type NpcRewardWitness } from "./npcRewardWitness";
 import { getTool, normalizeToolArgs, runTool } from "@/editor/tools";
 import { validateArgs } from "@/editor/tools/jsonSchema";
@@ -290,6 +291,7 @@ export interface CompletionAssessment {
   readonly acceptance: AcceptanceSnapshot | null;
   readonly adventure: readonly string[];
   readonly verification: readonly string[];
+  readonly blockingVerification: readonly string[];
   readonly checks: readonly LayerVerdictInput[];
 }
 
@@ -1364,7 +1366,7 @@ export class AssistantSession {
     const draft = this.turnProposals.size > 0 ? this.ctx.project : this.acceptanceAppliedProject;
     this.acceptance.bindVerificationRequirements(this.verificationEvidence, this.ctx.project);
     this.adoptVerificationRequirements();
-    const snapshot = this.acceptance.evaluate(this.acceptanceAppliedProject, draft, this.verificationEvidence, this.verificationEvidence.problems());
+    const snapshot = this.acceptance.evaluate(this.acceptanceAppliedProject, draft, this.verificationEvidence, this.verificationEvidence.problems("blocking"));
     onEvent?.({ type: "acceptance", snapshot });
   }
 
@@ -1607,7 +1609,7 @@ export class AssistantSession {
   }
 
   private explicitVerificationOpen(): boolean {
-    return this.turnComposerMode !== "ask" && !this.lastTurnPlanOnly && this.verificationEvidence.problems().length > 0;
+    return this.turnComposerMode !== "ask" && !this.lastTurnPlanOnly && this.verificationEvidence.problems("blocking").length > 0;
   }
 
   private acceptanceIncompleteText(): string {
@@ -1940,6 +1942,18 @@ export class AssistantSession {
         this.acceptanceRequestSource = { requestId: `request-${this.currentTurnIndex + 1}`, text: entryInstruction,
           scope: turnOptions.scope ? structuredClone(turnOptions.scope) : null };
         onEvent({ type: "acceptance", snapshot: null });
+      }
+      if (!this.verificationEvidence.hasLintBaseline()) {
+        // Pin actual host lint against the existing pre-write project baseline before
+        // preparation/model tools can mutate or rebase it. Only a new goal clears it.
+        try {
+          this.verificationEvidence.captureLintBaseline({ ok: true, ...runProjectLint(this.baselineProject, {}) });
+        } catch (cause) {
+          this.verificationEvidence.captureLintBaseline({ ok: false });
+          const text = `verification:baseline-unavailable ${cause instanceof Error ? cause.message : String(cause)}`;
+          this.pushAudit({ kind: "status", text });
+          onEvent({ type: "status", text });
+        }
       }
       const first = await this.executeUserTurn(text, onEvent, signal, turnOptions);
       const last = opts?.autonomous === true && !this.lastTurnPlanOnly && this.turnComposerMode !== "ask"
@@ -2809,7 +2823,7 @@ export class AssistantSession {
       if (!id && args.itemId === undefined && this.workPlan.layers.every((layer) => layer.items.every((item) => item.status === "done"))) {
         const rewards = this.npcRewardOutcome();
         if (!rewards.ok) return { ok: false, summary: rewards.reason, issues: [{ severity: "error", code: "npc-reward-incomplete", message: rewards.reason }] };
-        const pending = [...this.adventureProblems(), ...this.verificationEvidence.problems()];
+        const pending = [...this.adventureProblems(), ...this.verificationEvidence.problems("blocking")];
         if (pending.length > 0) {
           const summary = pending.join("\n");
           return { ok: false, summary, issues: [{ severity: "error", code: "work-item-incomplete", message: summary }] };
@@ -3347,7 +3361,7 @@ export class AssistantSession {
     this.publishAcceptance(onEvent);
     const assessment: CompletionAssessment = {
       acceptance: this.getAcceptanceSnapshot(), adventure: this.completionProblems(),
-      verification: this.verificationEvidence.problems(), checks,
+      verification: this.verificationEvidence.problems(), blockingVerification: this.verificationEvidence.problems("blocking"), checks,
     };
     onEvent({ type: "completion_assessment", assessment });
     return assessment;
@@ -3357,7 +3371,7 @@ export class AssistantSession {
     return [
       ...(assessment.acceptance && assessment.acceptance.status !== "verified" ? [this.acceptanceIncompleteText()] : []),
       ...(assessment.adventure.length ? [`모험 구성이 아직 미완성입니다.\n${assessment.adventure.map(problem => `- ${problem}`).join("\n")}`] : []),
-      ...(assessment.verification.length ? [`검증이 아직 통과되지 않았습니다.\n${assessment.verification.map(problem => `- ${problem}`).join("\n")}`] : []),
+      ...(assessment.blockingVerification.length ? [`검증이 아직 통과되지 않았습니다.\n${assessment.blockingVerification.map(problem => `- ${problem}`).join("\n")}`] : []),
     ].join("\n\n");
   }
 
@@ -3629,6 +3643,11 @@ export class AssistantSession {
     if (assessment.adventure.length > 0) {
       this.acceptanceApplyPending = false;
       if (this.runExecution === "response-final" && this.turnComposerMode !== "ask") this.runExecution = "blocked";
+    }
+    const reportedOnly = assessment.verification.filter(problem => !assessment.blockingVerification.includes(problem));
+    if (reportedOnly.length && !this.lastTurnPlanOnly) {
+      result = { ...result, assistantText: `${result.assistantText}\n\n선재 린트 지적 (자문):\n${reportedOnly.map(problem => `- ${problem}`).join("\n")}` };
+      onEvent({ type: "assistant_message", content: result.assistantText });
     }
     result = { ...result, completionAssessment: assessment };
     this.runResult.current = result;

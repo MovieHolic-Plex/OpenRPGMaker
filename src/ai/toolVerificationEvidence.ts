@@ -29,6 +29,8 @@ export interface VerificationRequirement {
 }
 interface RequirementState { requirement: VerificationRequirement; pass: boolean; stale: boolean; criterionPassed: boolean; inactive?: boolean }
 interface Finding {
+  readonly source: "explicit" | "advisory";
+  readonly baselineLint?: boolean;
   readonly checkId: string;
   readonly initialState?: unknown;
   readonly ownerId?: string;
@@ -152,6 +154,18 @@ function matchingTrace(original: Record<string, unknown>, targets: readonly Scen
   return targets.every(target => observed.some(entry => key(entry) === key(canonicalTarget(original, target))));
 }
 
+/** Full diagnostic records (including referenced IDs/locations), never just counts or codes. */
+function lintErrorKeys(result: ToolResultLike): string[] | null {
+  if (result.ok !== true || !acceptanceRecord(result.data) || !acceptanceRecord(result.data.counts)
+    || !Array.isArray(result.data.issues) || !result.data.issues.every(acceptanceRecord)) return null;
+  const errors = result.data.issues.filter(issue => issue.severity === "error");
+  if (result.data.counts.errors !== errors.length
+    || errors.some(issue => typeof issue.code !== "string" || !issue.code || typeof issue.message !== "string" || !issue.message)) return null;
+  const keys = errors.map(key).sort();
+  if (result.issues?.some(issue => issue.severity === "error" && !keys.includes(key(issue)))) return null;
+  return keys;
+}
+
 /** A session owns adoption. Invocation history can never declare a requirement. */
 export class ToolVerificationEvidence {
   private readonly requirements = new Map<string, RequirementState>();
@@ -159,6 +173,31 @@ export class ToolVerificationEvidence {
   private readonly attempts: VerificationAttempt[] = [];
   private sequence = 0;
   private revision = 0;
+  private lintBaseline: ReadonlyMap<string, number> | null | undefined;
+
+  hasLintBaseline(): boolean { return this.lintBaseline !== undefined; }
+
+  /** Host-only capture before writes. Same-goal repair, rebase and continuation cannot replace it. */
+  captureLintBaseline(result: ToolResultLike): void {
+    if (this.hasLintBaseline()) return;
+    const errors = lintErrorKeys(result);
+    if (errors === null) { this.lintBaseline = null; return; }
+    const counts = new Map<string, number>();
+    for (const error of errors) counts.set(error, (counts.get(error) ?? 0) + 1);
+    this.lintBaseline = counts;
+  }
+
+  private baselineLint(result: ToolResultLike): boolean {
+    const errors = lintErrorKeys(result);
+    if (!this.lintBaseline || errors === null || errors.length === 0) return false;
+    const remaining = new Map(this.lintBaseline);
+    for (const error of errors) {
+      const count = remaining.get(error) ?? 0;
+      if (count === 0) return false;
+      remaining.set(error, count - 1);
+    }
+    return true;
+  }
 
   adopt(requirement: VerificationRequirement): void {
     const existing = this.requirements.get(requirement.checkId);
@@ -201,7 +240,7 @@ export class ToolVerificationEvidence {
 
   hasChecks(): boolean { return this.requirements.size > 0 || this.findings.size > 0 || this.attempts.length > 0; }
 
-  clear(): void { this.requirements.clear(); this.findings.clear(); this.attempts.length = 0; }
+  clear(): void { this.requirements.clear(); this.findings.clear(); this.attempts.length = 0; this.lintBaseline = undefined; }
 
   observe(name: string, raw: Record<string, unknown>, result: ToolResultLike, source: "explicit" | "advisory" = "explicit", ownerId?: string, checkId?: string, initialState?: unknown, ownedCheckIds: readonly string[] = []): Verdict | null {
     if (!VERIFICATION_TOOL_NAMES.has(name)) return null;
@@ -246,12 +285,15 @@ export class ToolVerificationEvidence {
     } else {
       const existing = [...this.findings.values()].find(f => f.name === name && key(f.args) === key(candidate)
         && key(f.initialState) === key(initialState)
+        && (name !== "run_lint" || key(lintErrorKeys(f.result)) === key(lintErrorKeys(result)))
         && (name !== "run_scene_test" || key(sceneTargets(f.args, f.result)) === key(sceneTargets(candidate, result))));
       // Identical input can visit distinct map-owned targets after a write.
       // Sharing a requirement must not overwrite another unresolved finding.
       const requirementId = matching[0]?.requirement.checkId;
       const id = existing?.checkId ?? (requirementId && !this.findings.has(requirementId) ? requirementId : `finding-${++this.sequence}`);
-      if (!this.findings.has(id)) this.findings.set(id, structuredClone({ checkId: id, ownerId, name, args: candidate, result, verdict, initialState }));
+      if (!this.findings.has(id)) this.findings.set(id, structuredClone({ checkId: id, ownerId, name, args: candidate, result, verdict, initialState, source,
+        ...(name === "run_lint" ? { baselineLint: key(candidate) === key({}) && this.baselineLint(result) } : {}) }));
+      else if (existing && source === "explicit" && existing.source !== "explicit") this.findings.set(id, { ...existing, source });
     }
     return verdict;
   }
@@ -280,9 +322,11 @@ export class ToolVerificationEvidence {
       && ![...this.findings.values()].some(finding => finding.name === name && key(finding.args) === key(args));
   }
 
-  problems(): readonly string[] {
+  problems(scope: "all" | "blocking" = "all"): readonly string[] {
+    const requiredLint = [...this.requirements.values()].some(state => !state.inactive && state.requirement.name === "run_lint");
     return [...new Set([
-      ...[...this.findings.values()].flatMap(f => f.verdict.blockingIssues.map(issue => `${f.name}: ${issue} [${f.checkId}]`)),
+      ...[...this.findings.values()].filter(f => scope === "all" || f.source !== "advisory" || !f.baselineLint || requiredLint)
+        .flatMap(f => f.verdict.blockingIssues.map(issue => `${f.name}: ${issue} [${f.checkId}]`)),
       ...[...this.requirements.values()].flatMap(({ requirement, pass, stale, criterionPassed, inactive }) => {
         if (inactive) return [];
         const problem = requirement.args === null ? "pending specification" : stale ? "변경 후 재검증 필요" : !pass || !criterionPassed ? "필수 검증 미통과" : null;
