@@ -140,8 +140,10 @@ criterion/index/map bindings without changing promises, baselines or the evaluat
 Reachability successTools bind to those exact accepted routes, including conservative
 exact-cell acceptance; the query tool's adjacent-or-on pass alone cannot substitute.
 
-Only where a verification successTool has no resolved criterion, a plan declares
-`verificationChecks`. Both planner JSON and `set_work_plan` use the same parser:
+A plan may declare independent `verificationChecks` even when the same tool already
+has accepted criteria. Only an exact scope match reuses a criterion; a same-map or
+same-tool sibling cannot substitute. Both planner JSON and `set_work_plan` use the
+same parser and atomic adoption preflight:
 
 ```json
 {"successTools":["check_reachability"],"mapTargets":["map_id"],
@@ -152,12 +154,28 @@ Only where a verification successTool has no resolved criterion, a plan declares
 A criterion reference is `{tool,criterion:{promiseId,criterionIndex}}`. A scene uses
 its complete `SceneTestInput` as `args`, plus `interactionTargets:[{stepIndex,mapId,eventId}]`
 for every explicit interact step. This freezes start/seed state, ordered targets,
-choices, assertions and snapshot boundaries. Missing/malformed declarations stay
-`pending-specification`; no arbitrary first same-tool pass can fill them. To specify
-an existing pending scope in a later accepted plan, include its returned `checkId`
-with the declaration and retain its tool/mapTargets. The original owner survives,
+choices, assertions and snapshot boundaries. A legitimately adopted missing/malformed
+scope stays `pending-specification`; no arbitrary first same-tool pass can fill it.
+Every unresolved new sibling remains pending or rejects the candidate atomically.
+To specify an existing pending scope in a later accepted plan, include its returned
+`checkId` with the declaration and retain its tool/mapTargets. The original owner survives,
 valid specifications are immutable, and earlier exploratory passes are not proof.
 These declarations describe only the user's accepted goals; do not invent game goals.
+
+A changed specified `checkId` rejects the whole candidate before plan, acceptance or
+verification mutation, whether expressed as args or a criterion reference and whether
+its original proof is unverified, passed or stale. Exact reuse retains owner, criterion
+linkage, frozen scene state and proof. A distinct new scope must omit the retained ID
+and needs fresh execution. Pending resolutions retain tool/owner/mapTargets (omitting
+retained targets is not preservation); contradictory same-ID resolutions anywhere in
+the candidate reject before either applies. Raw IDs are inspected before lossy parsing.
+Rejection returns `ok:false`, `data.conflicts` with item/declaration index/checkId/reason,
+and unchanged live `plan`, `acceptance`, and `verification` snapshots. Planner rejection
+publishes this same structured result in its status/context instead of installing the
+candidate. Rejection creates no extra obligation and does not invalidate genuine old
+proof. Native project/quest/troop/scenario inputs retain item map ownership without an
+invented `mapId`; the map-scope guard applies only when the tool schema declares it.
+Regression: `verificationPlanAtomicity`, `verificationRouteDeclaration`, `verificationNativeScopes`.
 
 `get_work_plan` and verification tool results return `data.verification.requirements`
 and `.findings` with ready machine check IDs. `correct_verification({checkId,args})`

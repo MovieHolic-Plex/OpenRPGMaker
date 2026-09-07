@@ -1,4 +1,4 @@
-import { ACCEPTANCE_EXAMPLES, missingAcceptance, type AcceptanceSnapshot, type AcceptancePromise } from "./assistantAcceptance";
+import { ACCEPTANCE_EXAMPLES, acceptanceRecord, missingAcceptance, type AcceptanceSnapshot, type AcceptancePromise } from "./assistantAcceptance";
 import { AssistantAcceptanceLedger } from "./assistantAcceptanceLedger";
 import { acceptanceFingerprint } from "./assistantAcceptanceEvaluation";
 import { AssistantImageEvidence, coveredByImages, type AcceptanceImageReceipt } from "./assistantImageEvidence";
@@ -13,7 +13,7 @@ import { buildActionArenaAuthoringGuide, selectActionArenaAuthoringRecipe } from
 
 import { workTargetContractIssues, workTargetIssues, workToolOutcome, type WorkToolOutcome } from "./workPlanTargets";
 import { ToolReadEvidence } from "./toolReadEvidence";
-import { ToolVerificationEvidence } from "./toolVerificationEvidence";
+import { ToolVerificationEvidence, parseVerificationChecks, type VerificationRequirement } from "./toolVerificationEvidence";
 import { isVerifyNpcRewardInput, VERIFY_NPC_REWARD_TOOL, type NpcRewardWitness } from "./npcRewardWitness";
 import { getTool, normalizeToolArgs, runTool } from "@/editor/tools";
 import { validateArgs } from "@/editor/tools/jsonSchema";
@@ -177,6 +177,7 @@ import {
   summarizeWorkPlan,
   workPlanFromOrchestratorDecision,
   workPlanFromSetToolArgs,
+  workPlanVerificationInputs,
   type WorkItem,
   type WorkItemOutcomeGate,
   type WorkLayer,
@@ -1353,6 +1354,78 @@ export class AssistantSession {
     return { session: project.session, flags: project.flags, switches: project.switches.map(entry => entry.id), variables: project.variables.map(entry => entry.id) };
   }
 
+  /** Both authoring paths must validate the entire candidate before touching live state. */
+  private preflightWorkPlan(plan: WorkPlan): ToolResult | null {
+    const items = plan.layers.flatMap(layer => layer.items);
+    const conflicts: { itemId: string; declarationIndex: number; checkId?: unknown; reason: string }[] = [];
+    // Inspect wire input first: parseVerificationChecks deliberately rejects an
+    // entire malformed array and normalization can discard malformed items.
+    for (const input of workPlanVerificationInputs(plan)) {
+      const declarations = Array.isArray(input.checks) ? input.checks : [input.checks];
+      const parsed = parseVerificationChecks(input.checks);
+      for (const [declarationIndex, raw] of declarations.entries()) {
+        const checkId = acceptanceRecord(raw) ? raw.checkId : undefined;
+        const check = parseVerificationChecks([raw])?.[0];
+        const retained = check && items.some(item => item.id === input.itemId && item.verificationChecks?.some(entry =>
+          acceptanceFingerprint(entry) === acceptanceFingerprint(check)));
+        if ((!parsed && (checkId !== undefined || declarations.length > 1)) || (check && !retained)) {
+          conflicts.push({ itemId: input.itemId, declarationIndex, checkId, reason: "Malformed or discarded verification declaration; retain valid item fields and complete tool input." });
+        }
+      }
+    }
+    const ledger = this.acceptance ?? new AssistantAcceptanceLedger(`acceptance-${this.acceptanceSequence + 1}`,
+      plan.goal, this.acceptanceRequestBaseline);
+    const ownership = ledger.verificationOwnership(this.ctx.project, plan.acceptance, this.acceptanceRequestBaseline);
+    const existing = this.verificationEvidence.snapshot(false).requirements;
+    const resolutions = new Map<string, VerificationRequirement>();
+    for (const item of items) for (const [declarationIndex, check] of (item.verificationChecks ?? []).entries()) {
+      const reject = (reason: string) => conflicts.push({ itemId: item.id, declarationIndex, checkId: check.checkId, reason });
+      if (!item.successTools?.includes(check.tool)) { reject("Declare this verification tool in the item's successTools."); continue; }
+      const previous = check.checkId ? existing.find(entry => entry.checkId === check.checkId) : undefined;
+      if (check.checkId && !previous) { reject("Unknown retained checkId; use a session-owned requirement ID."); continue; }
+      if (previous && (previous.name !== check.tool
+        || acceptanceFingerprint(previous.mapTargets ?? []) !== acceptanceFingerprint(item.mapTargets ?? []))) {
+        reject("Retained requirements must preserve their tool and exact mapTargets (including when omitted)."); continue;
+      }
+      const binding = "criterion" in check ? ownership.find(entry => entry.promiseId === check.criterion.promiseId
+        && entry.criterionIndex === check.criterion.criterionIndex
+        && (entry.criterion.kind === "reachability" ? "check_reachability" : "run_action_combat_test") === check.tool) : undefined;
+      const args = "args" in check ? check.args : !binding?.mapId ? null : binding.criterion.kind === "reachability"
+        ? { mapId: binding.mapId, from: binding.criterion.from, targets: binding.criterion.to } : { mapId: binding.mapId };
+      const inScope = !args || !item.mapTargets?.length || !getTool(check.tool)?.parameters.properties?.mapId
+        || (typeof args.mapId === "string" && item.mapTargets.includes(args.mapId));
+      if (!previous) continue; // New unresolved scopes are adopted as independent pending checks.
+      if (!args || !inScope) { reject("The retained ID must resolve to valid input on its retained targets."); continue; }
+      const requirement: VerificationRequirement = { checkId: previous.checkId, ownerId: previous.ownerId, name: check.tool, args,
+        mapTargets: previous.mapTargets,
+        ...("criterion" in check ? { criterion: check.criterion, acceptedCriterion: binding?.criterion }
+          : { interactionTargets: check.interactionTargets, initialState: this.verificationInitialState(check.tool) }) };
+      if (previous.args !== null) {
+        if (acceptanceFingerprint(previous.args) !== acceptanceFingerprint(args)
+          || ("args" in check && acceptanceFingerprint(previous.interactionTargets) !== acceptanceFingerprint(check.interactionTargets))
+          || ("criterion" in check && previous.criterion && acceptanceFingerprint(previous.criterion) !== acceptanceFingerprint(check.criterion))) {
+          reject("Specified checkId has immutable scope or interaction ownership; a distinct additional check must omit checkId.");
+        }
+        continue; // Exact reuse never respecifies criterion linkage, initial state, owner or proof.
+      }
+      if (previous.acceptedCriterion && acceptanceFingerprint(previous.acceptedCriterion) !== acceptanceFingerprint(requirement.acceptedCriterion)) {
+        reject("Pending criterion resolution must preserve its accepted criterion and ownership."); continue;
+      }
+      const earlier = resolutions.get(previous.checkId);
+      if (earlier && acceptanceFingerprint(earlier) !== acceptanceFingerprint(requirement)) {
+        reject("Contradictory resolutions of the same pending checkId in this candidate; provide one compatible specification."); continue;
+      }
+      resolutions.set(previous.checkId, requirement);
+    }
+    if (conflicts.length) return { ok: false, summary: "WorkPlan rejected atomically: verification declaration conflict. Old plan and proof remain installed. Distinct checks omit checkId; pending resolutions preserve owner, tool and targets.",
+      issues: conflicts.map(conflict => ({ severity: "error", code: "verification-declaration-conflict", message: `${conflict.itemId}[${conflict.declarationIndex}] ${conflict.checkId ?? "new check"}: ${conflict.reason}` })),
+      data: { conflicts, plan: this.getWorkPlan(), acceptance: this.getAcceptanceSnapshot(), verification: this.getVerificationSnapshot() } };
+    const targetIssues = items.flatMap(item => workTargetContractIssues(item).map(issue => ({ ...issue, itemId: item.id })));
+    return targetIssues.length ? { ok: false, summary: targetIssues.map(issue => `${issue.itemId}: ${issue.message}`).join(" "),
+      issues: targetIssues.map(issue => ({ severity: "error", code: issue.code, message: issue.message })),
+      data: { targetIssues, plan: this.getWorkPlan(), acceptance: this.getAcceptanceSnapshot(), verification: this.getVerificationSnapshot() } } : null;
+  }
+
   private adoptVerificationRequirements(): void {
     const ownership = this.acceptance?.verificationOwnership(this.ctx.project) ?? [];
     const accepted = ownership.map(binding => {
@@ -1376,6 +1449,8 @@ export class AssistantSession {
       }
       this.verificationEvidence.setCriterionPassed(requirement.checkId, binding.passed);
     }
+    const malformedItems = new Set(this.workPlan ? workPlanVerificationInputs(this.workPlan)
+      .filter(input => !parseVerificationChecks(input.checks)).map(input => input.itemId) : []);
     for (const item of this.workPlan?.layers.flatMap(layer => layer.items) ?? []) {
       if (this.verificationOwners.has(item)) continue;
       const ownerId = `verification-owner-${++this.verificationOwnerSequence}`;
@@ -1385,16 +1460,21 @@ export class AssistantSession {
         const criteria = accepted.filter(binding => binding.name === name && (!item.mapTargets?.length
           || binding.mapId === undefined || item.mapTargets.includes(binding.mapId)));
         const declarations = (item.verificationChecks ?? []).filter(check => check.tool === name);
-        if (criteria.length && !declarations.length) { checkIds.push(...criteria.map(binding => binding.checkId)); continue; }
-        let resolved = false;
+        if (criteria.length && !declarations.length && !malformedItems.has(item.id)) { checkIds.push(...criteria.map(binding => binding.checkId)); continue; }
+        const adoptPending = (checkId: string) => {
+          this.verificationEvidence.adopt({ checkId, ownerId, name, args: null, mapTargets: item.mapTargets ?? undefined });
+          checkIds.push(checkId);
+        };
+        if (!declarations.length) adoptPending(`${ownerId}:${name}:pending`);
         for (const [index, check] of declarations.entries()) {
           const previous = check.checkId ? this.verificationEvidence.snapshot(false).requirements.find(entry => entry.checkId === check.checkId) : undefined;
-          if (check.checkId && (!previous || previous.name !== name
-            || JSON.stringify(previous.mapTargets ?? []) !== JSON.stringify(item.mapTargets ?? []))) continue;
           const declarationOwner = previous?.ownerId ?? ownerId;
           const checkId = previous?.checkId ?? `${ownerId}:${name}:${index}`;
+          // Preflight established exact reuse. Never rewrite frozen linkage,
+          // interaction/initial-state ownership or proof, even through a ref.
+          if (previous && previous.args !== null) { checkIds.push(checkId); continue; }
           if ("criterion" in check) {
-            const binding = accepted.find(entry => entry.name === name && entry.promiseId === check.criterion.promiseId && entry.criterionIndex === check.criterion.criterionIndex);
+            const binding = criteria.find(entry => entry.promiseId === check.criterion.promiseId && entry.criterionIndex === check.criterion.criterionIndex);
             if (binding) {
               if (previous) {
                 const requirement = this.verificationEvidence.snapshot(false).requirements.find(entry => entry.checkId === binding.checkId)!;
@@ -1402,15 +1482,12 @@ export class AssistantSession {
                 this.verificationEvidence.setCriterionPassed(checkId, binding.passed);
               }
               checkIds.push(previous ? checkId : binding.checkId);
-              resolved = true;
-            }
+            } else adoptPending(checkId);
           } else {
-            if (item.mapTargets?.length && (typeof check.args.mapId !== "string" || !item.mapTargets.includes(check.args.mapId))) continue;
-            if (previous?.args && acceptanceFingerprint(previous.args) !== acceptanceFingerprint(check.args)) {
-              const pendingId = `${ownerId}:${name}:${index}:pending`;
-              this.verificationEvidence.adopt({ checkId: pendingId, ownerId, name, args: null, mapTargets: item.mapTargets ?? undefined });
-              checkIds.push(pendingId);
-              resolved = true;
+            // Retain plan ownership without adding mapId to project/quest/troop/scenario inputs.
+            if (item.mapTargets?.length && getTool(name)?.parameters.properties?.mapId
+              && (typeof check.args.mapId !== "string" || !item.mapTargets.includes(check.args.mapId))) {
+              adoptPending(checkId);
               continue;
             }
             // Only an exact criterion scope can stand in for an explicit declaration.
@@ -1418,20 +1495,13 @@ export class AssistantSession {
             const binding = !previous && criteria.find(entry => acceptanceFingerprint(entry.args) === acceptanceFingerprint(check.args));
             if (binding) {
               checkIds.push(binding.checkId);
-              resolved = true;
               continue;
             }
             this.verificationEvidence.adopt({ checkId, ownerId: declarationOwner, name, args: check.args,
               mapTargets: item.mapTargets ?? undefined, interactionTargets: check.interactionTargets,
               initialState: this.verificationInitialState(name) });
             checkIds.push(checkId);
-            resolved = true;
           }
-        }
-        if (!resolved) {
-          const checkId = `${ownerId}:${name}:pending`;
-          this.verificationEvidence.adopt({ checkId, ownerId, name, args: null, mapTargets: item.mapTargets ?? undefined });
-          checkIds.push(checkId);
         }
       }
       this.verificationOwners.set(item, { ownerId, checkIds });
@@ -2300,8 +2370,17 @@ export class AssistantSession {
     // new_plan | replan
     // 수정 요청이면 대상 맵 id 를 계획에 박아 매 스프린트 재주입한다 — footer 가 없는
     // 자율 계속 턴에도 대상이 남아야 한다(진단 근본원인 14).
-    this.workPlan = workPlanFromOrchestratorDecision(decision, new Date(), this.planTargetMapId(text));
-    this.adoptAcceptance(this.workPlan.acceptance, onEvent);
+    const plan = workPlanFromOrchestratorDecision(decision, new Date(), this.planTargetMapId(text));
+    const rejection = this.preflightWorkPlan(plan);
+    if (rejection) {
+      const text = JSON.stringify(rejection);
+      this.pushOrchestrationMessage(text);
+      onEvent({ type: "status", text });
+      this.emitWorkPlan(onEvent);
+      return;
+    }
+    this.workPlan = plan;
+    this.adoptAcceptance(plan.acceptance, onEvent);
     this.resetWorkItemEvidence();
     this.lastMilestoneCompletionItemId = null;
     this.planAuthoredThisTurn = true;
@@ -2504,13 +2583,8 @@ export class AssistantSession {
           summary: "set_work_plan 인자 오류: goal + layers[{title, items[{title, instruction}]}] 필요",
         };
       }
-      const targetIssues = plan.layers.flatMap(layer => layer.items.flatMap(item =>
-        workTargetContractIssues(item).map(issue => ({ ...issue, itemId: item.id }))));
-      if (targetIssues.length) return {
-        ok: false, summary: targetIssues.map(issue => `${issue.itemId}: ${issue.message}`).join(" "),
-        issues: targetIssues.map(issue => ({ severity: "error", code: issue.code, message: issue.message })),
-        data: { targetIssues },
-      };
+      const rejection = this.preflightWorkPlan(plan);
+      if (rejection) return rejection;
       this.workPlan = plan;
       this.adoptAcceptance(plan.acceptance);
       // 새 계획 — 항목 id 는 위치 기반("L1-1")이라 이전 계획과 겹칠 수 있다. 중복 완료 방지 추적을 초기화한다.

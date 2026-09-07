@@ -113,13 +113,27 @@ export class AssistantAcceptanceLedger {
   getSnapshot(): AcceptanceSnapshot { return this.snapshot; }
 
   /** Detached read-only ownership view. Does not adopt, rebase, bind or forge proof. */
-  verificationOwnership(project: Project) {
-    return [...this.promises.values(), ...this.actionRequirements.values()].flatMap(promise =>
+  verificationOwnership(project: Project, additions: readonly AcceptancePromise[] = [], requestBaseline = this.baseline) {
+    // Preview only genuinely new promises using the same first-ID-wins and map
+    // binding rules as adoption/evaluation, without mutating promises or proof.
+    const promises = new Map(this.promises);
+    for (const promise of additions) if (!promises.has(promise.id)) promises.set(promise.id, { ...promise, baseline: requestBaseline,
+      criteria: promise.criteria && this.originalTargetIssues(promise.criteria, requestBaseline).length ? null : promise.criteria });
+    const all = [...promises.values(), ...this.actionRequirements.values()];
+    const bindings = new Map(this.bindings);
+    const attempted = new Set<string>();
+    for (const promise of all) for (const criterion of promise.criteria ?? []) for (const target of criterionTargets(criterion)) {
+      if (!("newMapName" in target) || bindings.has(target.newMapName) || attempted.has(target.newMapName)) continue;
+      attempted.add(target.newMapName);
+      const matches = Object.values(project.maps).filter(map => !promise.baseline.maps[map.id] && map.name === target.newMapName);
+      if (matches.length === 1 && matches[0]) bindings.set(target.newMapName, matches[0].id);
+    }
+    return all.flatMap(promise =>
       (promise.criteria ?? []).flatMap((criterion, criterionIndex) => {
         if (criterion.kind !== "reachability" && criterion.kind !== "actionCombat") return [];
-        const map = resolveAcceptanceMap(project, criterion.target, this.bindings);
+        const map = resolveAcceptanceMap(project, criterion.target, bindings);
         const evidence = evaluateAcceptanceCriterion(criterion, {
-          project, baseline: promise.baseline, bindings: this.bindings, reviewed: () => false,
+          project, baseline: promise.baseline, bindings, reviewed: () => false,
           actionProven: target => isVerifiedActionCombatProof(this.actionProofs.get(target.id), project, target.id),
         });
         return [{ promiseId: promise.id, criterionIndex, criterion: structuredClone(criterion),

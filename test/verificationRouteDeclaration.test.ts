@@ -131,11 +131,22 @@ describe("normal session exact route declaration adoption", () => {
     const f = routeSession();
     await f.run([f.adopt([{ tool: reach, args: f.later }]), f.probe(), f.probe(f.later)]);
     const retained = f.session.getVerificationSnapshot().requirements.find(check => !check.criterion)!;
-    const turn = await f.run([f.adopt([{ tool: reach, args: f.original, checkId: retained.checkId }]), f.probe(f.later), complete]);
-    expect(toolResults(turn.events, "complete_work_item").map(result => result.ok)).toEqual([false]);
-    expect(f.session.getVerificationSnapshot().requirements.find(check => check.checkId === retained.checkId)).toEqual(retained);
-    expect(f.session.getVerificationSnapshot().requirements.at(-1)?.status).toBe("pending-specification");
-    expect(f.session.getAcceptanceSnapshot()?.status).toBe("blocked");
+    expect(retained.status).toBe("passed");
+    const before = { plan: f.session.getWorkPlan(), acceptance: f.session.getAcceptanceSnapshot(), verification: f.session.getVerificationSnapshot() };
+    const candidate = f.adopt([{ tool: reach, args: f.original, checkId: retained.checkId }]);
+    candidate.args.goal = "Rejected replacement";
+    (candidate.args.acceptance as unknown[]).push({ id: "candidate-only", title: "New promise", criteria: null });
+    const turn = await f.run([candidate]);
+    const rejection = toolResults(turn.events, "set_work_plan")[0]!;
+    expect(rejection.ok).toBe(false);
+    expect(rejection.data).toMatchObject({ conflicts: [{ itemId: "same-id", declarationIndex: 0, checkId: retained.checkId, reason: expect.any(String) }] });
+    expect(rejection.data).toMatchObject(before);
+    expect(f.session.getVerificationSnapshot()).toEqual(before.verification);
+    expect(f.session.getAcceptanceSnapshot()?.items.some(item => item.id === "candidate-only")).toBe(false);
+    expect(f.session.getVerificationSnapshot().requirements.some(check => check.status === "pending-specification")).toBe(false);
+    expect(f.session.getWorkPlan()?.goal).toBe(before.plan?.goal);
+    await f.run([f.probe(f.later), complete]);
+    expect(f.session.getAcceptanceSnapshot()?.status).toBe("verified");
   });
 
   it("retains a late-specified check's distinct ownership even when its args match a passed criterion", async () => {

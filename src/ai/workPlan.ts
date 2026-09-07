@@ -250,6 +250,24 @@ export const TARGET_SELECTION_RULE = [
   "- 사용자가 '새로 만들지 마'라고 명시했으면 신축 툴은 successTools 에도 넣지 않는다 — 넣으면 그 툴이 성공할 때까지 항목이 완료되지 않아 신축이 강제된다.",
 ].join("\n");
 
+// Keep the actual wire declarations until session preflight. Normalization may
+// discard malformed arrays or items, but must not erase a retained checkId.
+const verificationInputLayers = new WeakMap<object, unknown>();
+
+export function workPlanVerificationInputs(plan: WorkPlan) {
+  const layers = verificationInputLayers.get(plan) ?? plan.layers;
+  if (!Array.isArray(layers)) return [];
+  return layers.flatMap((layer, li) => {
+    if (!isRecord(layer)) return [];
+    const items = [layer.items, layer.steps, layer.tasks].find(Array.isArray);
+    if (!Array.isArray(items)) return [];
+    return items.flatMap((item, ii) => !isRecord(item) || item.verificationChecks === undefined ? [] : [{
+      itemId: typeof item.id === "string" && item.id.trim() ? item.id.trim() : `L${li + 1}-${ii + 1}`,
+      checks: item.verificationChecks,
+    }]);
+  });
+}
+
 /** 파싱 결과 — 실패 시 **어느 검증에서 걸렸는지** 를 문자열로 돌려준다. */
 export type OrchestratorParseResult =
   | { readonly decision: OrchestratorDecision }
@@ -309,16 +327,15 @@ export function parseOrchestratorDecision(raw: string): OrchestratorParseResult 
       acceptance = acceptance.map(promise => ({ ...promise, criteria: null }));
     }
   }
-  return {
-    decision: {
-      action,
-      goal,
-      ...(typeof parsed.plannerNote === "string" ? { plannerNote: parsed.plannerNote } : {}),
-      ...(volume ? { volume } : {}),
-      ...(acceptance ? { acceptance } : {}),
-      layers,
-    },
+  const decision: Extract<OrchestratorDecision, { action: "new_plan" | "replan" }> = {
+    action, goal,
+    ...(typeof parsed.plannerNote === "string" ? { plannerNote: parsed.plannerNote } : {}),
+    ...(volume ? { volume } : {}),
+    ...(acceptance ? { acceptance } : {}),
+    layers,
   };
+  verificationInputLayers.set(decision, layersRaw);
+  return { decision };
 }
 
 /** 플래너가 선언한 볼륨 막대. 정수 0 이상만 받고, 전부 0 이면 없는 것으로 본다. */
@@ -401,7 +418,7 @@ export function workPlanFromOrchestratorDecision(
   /** 계획을 만든 턴의 대상 맵 id(`[컨텍스트] 현재 맵`). 신규 생성 요청이면 생략. */
   targetMapId?: string,
 ): WorkPlan {
-  return createWorkPlanFromLayers({
+  const plan = createWorkPlanFromLayers({
     goal: decision.goal,
     acceptance: decision.acceptance,
     plannerNote: decision.plannerNote,
@@ -409,6 +426,8 @@ export function workPlanFromOrchestratorDecision(
     targetMapId,
     now,
   });
+  verificationInputLayers.set(plan, verificationInputLayers.get(decision) ?? decision.layers);
+  return plan;
 }
 
 /** In-loop set_work_plan tool (Claude TodoWrite-style): generator may replan via tools. */
@@ -419,13 +438,15 @@ export function workPlanFromSetToolArgs(args: Record<string, unknown>, now = new
     .map((layer, li) => normalizeLayer(layer, li))
     .filter((layer): layer is NonNullable<typeof layer> => layer !== null);
   if (layers.length === 0) return null;
-  return createWorkPlanFromLayers({
+  const plan = createWorkPlanFromLayers({
     goal,
     acceptance: parseAcceptance(args.acceptance),
     plannerNote: typeof args.plannerNote === "string" ? args.plannerNote : undefined,
     layers,
     now,
   });
+  verificationInputLayers.set(plan, args.layers);
+  return plan;
 }
 
 function createWorkPlanFromLayers(input: {
