@@ -5,13 +5,15 @@ import { requireNumber, requireRecord } from "./guards";
 import { migrateV1toV3, migrateV2toV3, migrateV3toV4 } from "./migration";
 import { validateProjectV1, validateProjectV2, validateProjectV4 } from "./shape";
 
-/** Retired fields are omitted, but raw metadata resource IDs are not field names. */
-function projectJsonReplacer(project: Project) {
-  const descriptions = project.audioDescriptions;
-  return function (this: unknown, key: string, value: unknown): unknown {
-    return key === "terrainTemplates" && this !== descriptions?.music && this !== descriptions?.sound && this !== project.monsterMetadata
-      ? undefined
-      : value;
+function omitRetiredTerrainTemplates(owner: object): Record<string, unknown> {
+  return Object.fromEntries(Object.entries(owner).filter(([key]) => key !== "terrainTemplates"));
+}
+
+/** Only the project root and tileset records own the retired field, never nested dictionaries. */
+function projectJson(project: Project) {
+  return {
+    ...omitRetiredTerrainTemplates(project),
+    tilesets: Object.fromEntries(Object.entries(project.tilesets).map(([id, tileset]) => [id, omitRetiredTerrainTemplates(tileset)])),
   };
 }
 
@@ -20,7 +22,7 @@ function projectJsonReplacer(project: Project) {
  * Compact (no pretty indent) — payload size and main-thread stringify cost matter on large maps.
  */
 export function serialize(project: Project): string {
-  return JSON.stringify(project, projectJsonReplacer(project));
+  return JSON.stringify(projectJson(project));
 }
 
 /**
@@ -37,7 +39,7 @@ export function serializeForComparison(project: Project): string {
 
 /** Human-readable project.json for .rpgzzu packages and debug dumps only. */
 export function serializePretty(project: Project): string {
-  return JSON.stringify(project, projectJsonReplacer(project), 2);
+  return JSON.stringify(projectJson(project), null, 2);
 }
 
 export function deserialize(raw: string): Project {

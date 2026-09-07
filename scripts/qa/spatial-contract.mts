@@ -5,7 +5,7 @@ import { resolve } from "node:path";
 import { createHash } from "node:crypto";
 import { deserialize, ProjectFormatError, serialize, serializePretty } from "../../src/project/io";
 import { validateProjectV4 } from "../../src/project/io/shape";
-import { emptySpatialDocument, placeDesign, spatialBindingFixture, spatialFixture, spatialHierarchyFixture, spatialProject, spatialWire } from "../../test/support/spatialSchemaFixture";
+import { emptySpatialDocument, placeDesign, spatialBindingFixture, spatialFixture, spatialHierarchyFixture, spatialOpaqueIdFixtures, spatialProject, spatialWire } from "../../test/support/spatialSchemaFixture";
 
 const { values } = parseArgs({ options: { scenario: { type: "string" }, evidence: { type: "string", default: "output/evidence/tile-to-world/task-3" } } });
 assert.equal(values.scenario, "schema", "Supported scenario: --scenario schema");
@@ -33,6 +33,7 @@ accept("empty-canonical", emptySpatialDocument());
 accept("repeated-designs-distinct-occurrences", document);
 accept("complete-five-tier-library", spatialHierarchyFixture().document);
 accept("disjoint-owned-map-bindings", spatialBindingFixture().document);
+for (const fixture of spatialOpaqueIdFixtures()) accept(fixture.scenario, fixture.document);
 const third = { ...structuredClone(document.occurrences["occ-b"]), id: "occ-c" };
 third.snapshot.ports = [{ id: "port-c", name: "Door", x: 0, y: 2 }];
 accept("navigation-three-cycle", {

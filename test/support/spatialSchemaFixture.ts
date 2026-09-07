@@ -96,6 +96,30 @@ export function spatialBindingFixture() {
   return { project, document: { ...document, occurrences: { ...document.occurrences, "occ-a": { ...document.occurrences["occ-a"], bindings: [binding] }, "occ-b": { ...document.occurrences["occ-b"], bindings: [{ ...binding, rect: { ...binding.rect, x: 8 }, ports: [{ portId: "port-b", x: 8, y: 2 }] }] } } } };
 }
 
+/** Rename whole identifier values, including references, without changing archive bytes. */
+export function spatialOpaqueIdFixtures() {
+  const { project, document } = spatialHierarchyFixture();
+  document.occurrences["occ-a"].snapshot.library.objects.desk.name = "Frozen desk A";
+  document.occurrences["occ-b"].snapshot.library.objects.desk.name = "Frozen desk B";
+  document.occurrences["occ-a"].snapshot.library.spaces.room.floor = "stone";
+  document.occurrences["occ-b"].snapshot.library.spaces.room.floor = "mat";
+  // Keep the role token distinct from the room identifier being renamed.
+  document.library.spaces.room.role = "entrance";
+  document.occurrences["occ-a"].snapshot.library.spaces.room.role = "entrance";
+  document.occurrences["occ-b"].snapshot.library.spaces.room.role = "entrance";
+  const cases = [
+    ...["desk", "room", "inn", "country", "kingdom", "occ-a"].map(id => ({ scenario: `opaque-${id}`, id, document })),
+    { scenario: "opaque-unreferenced-space", id: "room", document: { ...emptySpatialDocument(),
+      library: { ...emptySpatialDocument().library, spaces: { room: { ...document.library.spaces.room, objectSlots: [] } } },
+    } },
+    { scenario: "opaque-historical-snapshot", id: "desk", document: { ...document, library: emptySpatialDocument().library } },
+  ];
+  return cases.map(({ scenario, id, document: input }) => {
+    const renamed: unknown = JSON.parse(JSON.stringify(input).replaceAll(JSON.stringify(id), JSON.stringify("terrainTemplates")));
+    return { scenario, project, document: renamed };
+  });
+}
+
 export function spatialWire(project: ReturnType<typeof spatialProject>["project"], document: unknown): string {
   return JSON.stringify({ ...project, spatialAuthoring: document });
 }
