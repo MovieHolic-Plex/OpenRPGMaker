@@ -15,7 +15,7 @@ import { buildActionArenaAuthoringGuide, selectActionArenaAuthoringRecipe } from
 
 import { workTargetContractIssues, workTargetIssues, workToolOutcome, type WorkToolOutcome } from "./workPlanTargets";
 import { ToolReadEvidence } from "./toolReadEvidence";
-import { ToolVerificationEvidence, parseVerificationChecks, type VerificationRequirement } from "./toolVerificationEvidence";
+import { ToolVerificationEvidence, parseVerificationChecks, verificationInitialState, type VerificationRequirement } from "./toolVerificationEvidence";
 import { isVerifyNpcRewardInput, VERIFY_NPC_REWARD_TOOL, type NpcRewardWitness } from "./npcRewardWitness";
 import { getTool, normalizeToolArgs, runTool } from "@/editor/tools";
 import { validateArgs } from "@/editor/tools/jsonSchema";
@@ -1362,7 +1362,7 @@ export class AssistantSession {
     this.imageEvidence.current(this.ctx.project);
     if (!this.acceptance || !this.acceptanceAppliedProject) return;
     const draft = this.turnProposals.size > 0 ? this.ctx.project : this.acceptanceAppliedProject;
-    this.acceptance.bindVerificationRequirements(this.verificationEvidence);
+    this.acceptance.bindVerificationRequirements(this.verificationEvidence, this.ctx.project);
     this.adoptVerificationRequirements();
     const snapshot = this.acceptance.evaluate(this.acceptanceAppliedProject, draft, this.verificationEvidence, this.verificationEvidence.problems());
     onEvent?.({ type: "acceptance", snapshot });
@@ -1413,9 +1413,7 @@ export class AssistantSession {
   getVerificationSnapshot(includeAttempts = true) { return this.verificationEvidence.snapshot(includeAttempts); }
 
   private verificationInitialState(name: string): unknown {
-    if (name !== "run_scene_test") return undefined;
-    const project = this.ctx.project;
-    return { session: project.session, flags: project.flags, switches: project.switches.map(entry => entry.id), variables: project.variables.map(entry => entry.id) };
+    return verificationInitialState(name, this.ctx.project);
   }
 
   /** Both authoring paths must validate the entire candidate before touching live state. */

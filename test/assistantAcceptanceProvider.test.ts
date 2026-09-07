@@ -36,7 +36,10 @@ describe("acceptance at the installed Antigravity schema boundary", () => {
       const item = record(record(criteria).items);
       expect(item.oneOf).toBeUndefined();
       const fields = record(item.properties);
-      expect(Object.keys(fields)).toEqual(expect.arrayContaining(["kind", "target", "targets", "count", "from", "to"]));
+      expect(Object.keys(fields)).toEqual(expect.arrayContaining(["kind", "target", "targets", "count", "from", "to", "interactionTargets"]));
+      const ownership = record(record(fields.interactionTargets).items);
+      expect(ownership.required).toEqual(["stepIndex", "mapId", "eventId"]);
+      expect(Object.keys(record(ownership.properties))).toEqual(["stepIndex", "mapId", "eventId"]);
       for (const selector of [fields.target, record(fields.targets).items]) {
         expect(Object.keys(record(record(selector).properties))).toEqual(["mapId", "newMapName"]);
         expect(record(selector).oneOf).toBeUndefined();

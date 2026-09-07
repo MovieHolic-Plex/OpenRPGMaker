@@ -3,7 +3,8 @@ import { acceptanceRecord, type AcceptanceCriterion } from "./assistantAcceptanc
 import { getTool } from "@/editor/tools/toolRegistry";
 import { normalizeArgsForSchema, validateArgs } from "@/editor/tools/jsonSchema";
 import { COORD_SCHEMA } from "@/editor/tools/schemaShapes";
-import { isSceneTestInput, type SceneInteractionReceipt } from "@/testing/sceneTestRunner";
+import { isSceneTestInput, type SceneInteractionReceipt, type SceneTestInput } from "@/testing/sceneTestRunner";
+import type { Project } from "@/project/types";
 import { validateWalkthroughScenario } from "@/testing/walkthroughRunner";
 
 function key(value: unknown): string {
@@ -60,6 +61,29 @@ export function verificationInput(name: string, raw: unknown): Record<string, un
   return args;
 }
 
+/** Host snapshot shared by ordinary declarations, canonical declarations and execution. */
+export function verificationInitialState(name: string, project: Project): unknown {
+  if (name !== "run_scene_test") return undefined;
+  return { session: project.session, flags: project.flags, switches: project.switches.map(entry => entry.id), variables: project.variables.map(entry => entry.id) };
+}
+
+/** Partial ownership can be retained while pending; executable scopes require every interaction. */
+export function parseSceneInteractionTargets(input: SceneTestInput, raw: unknown, complete = true): SceneInteractionReceipt[] | null {
+  if (!Array.isArray(raw)) return null;
+  const targets: SceneInteractionReceipt[] = [];
+  let previous = -1;
+  for (const target of raw) {
+    if (!acceptanceRecord(target) || Object.keys(target).some(k => !["stepIndex", "mapId", "eventId"].includes(k))
+      || typeof target.stepIndex !== "number" || !Number.isSafeInteger(target.stepIndex) || target.stepIndex <= previous
+      || typeof target.mapId !== "string" || !target.mapId || typeof target.eventId !== "string") return null;
+    const step = input.steps[target.stepIndex];
+    if (step?.kind !== "interact" || typeof step.eventId !== "string" || target.eventId !== step.eventId) return null;
+    targets.push({ stepIndex: target.stepIndex, mapId: target.mapId, eventId: target.eventId });
+    previous = target.stepIndex;
+  }
+  return complete && targets.length !== input.steps.filter(step => step.kind === "interact").length ? null : targets;
+}
+
 export function parseVerificationChecks(raw: unknown): readonly VerificationCheck[] | undefined {
   if (!Array.isArray(raw)) return undefined;
   const parsed = raw.flatMap((entry): VerificationCheck[] => {
@@ -76,17 +100,8 @@ export function parseVerificationChecks(raw: unknown): readonly VerificationChec
     const args = verificationInput(entry.tool, entry.args);
     if (!args) return [];
     if (entry.tool === "run_scene_test" && isSceneTestInput(args)) {
-      const interactions = args.steps.flatMap((step, stepIndex) => step.kind === "interact" ? [{ step, stepIndex }] : []);
-      if (!Array.isArray(entry.interactionTargets) || entry.interactionTargets.length !== interactions.length) return [];
-      const targets: SceneInteractionReceipt[] = [];
-      for (const [index, { step, stepIndex }] of interactions.entries()) {
-        const target: unknown = entry.interactionTargets[index];
-        if (!acceptanceRecord(target) || Object.keys(target).some(k => !["stepIndex", "mapId", "eventId"].includes(k))
-          || target.stepIndex !== stepIndex || typeof target.mapId !== "string" || !target.mapId
-          || typeof step.eventId !== "string" || target.eventId !== step.eventId) return [];
-        targets.push({ stepIndex, mapId: target.mapId, eventId: step.eventId });
-      }
-      return [{ ...reference, tool: entry.tool, args, interactionTargets: targets }];
+      const targets = parseSceneInteractionTargets(args, entry.interactionTargets);
+      return targets ? [{ ...reference, tool: entry.tool, args, interactionTargets: targets }] : [];
     }
     return entry.interactionTargets === undefined ? [{ ...reference, tool: entry.tool, args }] : [];
   });

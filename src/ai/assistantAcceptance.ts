@@ -1,6 +1,8 @@
 import type { Point } from "@/project/lint/reachability";
 import { isFunctionalCriterionKind, parseFunctionalCriterion, type FunctionalCriterion } from "./functionalAcceptance";
 import { VERIFICATION_TOOL_NAMES } from "./agentVerification";
+import { verificationInput, parseSceneInteractionTargets } from "./toolVerificationEvidence";
+import { isSceneTestInput, type SceneInteractionReceipt } from "@/testing/sceneTestRunner";
 
 export type AcceptanceStatus = "pending" | "working" | "verifying" | "verified" | "blocked";
 export interface AcceptanceSnapshot {
@@ -41,13 +43,20 @@ export type AcceptanceTarget = { readonly mapId: string } | { readonly newMapNam
 type ScopedTarget = { readonly target: AcceptanceTarget; readonly region?: AcceptanceRegion };
 export type AcceptanceCriterion =
   | FunctionalCriterion
-  | { readonly kind: "toolVerdict"; readonly tool: string; readonly args: Readonly<Record<string, unknown>> }
+  | { readonly kind: "toolVerdict"; readonly tool: string; readonly args: Readonly<Record<string, unknown>>;
+      readonly interactionTargets?: readonly SceneInteractionReceipt[] }
   | { readonly kind: "mapDimensions"; readonly target: AcceptanceTarget; readonly width: number; readonly height: number }
   | { readonly kind: "mapCount"; readonly targets: readonly AcceptanceTarget[]; readonly count: number }
   | (ScopedTarget & { readonly kind: "eventCount"; readonly count: number })
   | (ScopedTarget & { readonly kind: "targetChange" | "preserve" | "imageReviewed" })
   | { readonly kind: "actionCombat"; readonly target: AcceptanceTarget }
   | { readonly kind: "reachability"; readonly target: AcceptanceTarget; readonly from: Point; readonly to: readonly Point[] };
+/** Valid native arguments with incomplete scene ownership remain fixed, pending scope. */
+export function pendingCanonicalScene(criterion: AcceptanceCriterion): boolean {
+  return criterion.kind === "toolVerdict" && criterion.tool === "run_scene_test" && isSceneTestInput(criterion.args)
+    && parseSceneInteractionTargets(criterion.args, criterion.interactionTargets ?? []) === null;
+}
+
 export interface AcceptancePromise {
   readonly required?: boolean;
   readonly id: string;
@@ -138,7 +147,7 @@ function criterion(value: unknown, index: number, issues: AcceptanceIssue[]): Ac
     mapDimensions: ["kind", "target", "width", "height"], mapCount: ["kind", "targets", "count"],
     eventCount: ["kind", "target", "region", "count"], targetChange: ["kind", "target", "region"],
     preserve: ["kind", "target", "region"], imageReviewed: ["kind", "target", "region"],
-    reachability: ["kind", "target", "from", "to"], toolVerdict: ["kind", "tool", "args"],
+    reachability: ["kind", "target", "from", "to"], toolVerdict: ["kind", "tool", "args", "interactionTargets"],
     actionCombat: ["kind", "target"],
   };
   const allowed = typeof value.kind === "string" && Object.hasOwn(keys, value.kind) ? keys[value.kind] : undefined;
@@ -146,8 +155,20 @@ function criterion(value: unknown, index: number, issues: AcceptanceIssue[]): Ac
   const extra = Object.keys(value).find(key => !allowed.includes(key));
   if (extra) return fail(extra, "unknown-field", `only ${allowed.join(", ")}`);
   if (value.kind === "toolVerdict") {
-    return text(value.tool) && VERIFICATION_TOOL_NAMES.has(value.tool) && acceptanceRecord(value.args)
-      ? { kind: "toolVerdict", tool: value.tool, args: structuredClone(value.args) } : null;
+    if (!text(value.tool) || !VERIFICATION_TOOL_NAMES.has(value.tool)) return invalid("tool", "registered verification tool");
+    const args = verificationInput(value.tool, value.args);
+    if (!args) return invalid("args", `complete valid native ${value.tool} input, including its runtime scenario/coordinate rules`);
+    if (value.tool === "run_scene_test" && isSceneTestInput(args)
+      && args.steps.some(step => step.kind === "interact" && typeof step.eventId !== "string")) {
+      return invalid("args", "canonical scene interact steps require explicit eventId before their ownership can be fixed");
+    }
+    const interactionTargets = value.interactionTargets === undefined ? undefined
+      : value.tool === "run_scene_test" && isSceneTestInput(args) ? parseSceneInteractionTargets(args, value.interactionTargets, false) : null;
+    if (interactionTargets === null) return invalid("interactionTargets", "ordered unique {stepIndex,mapId,eventId} entries matching declared scene interact steps");
+    const parsed: AcceptanceCriterion = { kind: "toolVerdict", tool: value.tool, args, ...(interactionTargets ? { interactionTargets } : {}) };
+    if (pendingCanonicalScene(parsed)) fail("interactionTargets", "pending-verification-scope",
+      "repair_acceptance must fill every scene interact step's map-qualified ownership; preserve fixed arguments and already declared targets. A probe cannot supply this scope");
+    return parsed;
   }
   if (value.kind === "mapCount") {
     if (!Array.isArray(value.targets) || value.targets.length === 0) return invalid("targets", "nonempty array of explicit scoped map selectors; never a project total");
@@ -209,7 +230,7 @@ export function parseAcceptance(value: unknown): readonly AcceptancePromise[] | 
     ids.add(entry.id);
     const validRequired = entry.required === undefined || typeof entry.required === "boolean";
     const parsed = parseAcceptanceCriteriaResult(validRequired ? entry.criteria : undefined);
-    promises.push({ id: entry.id, title: entry.title, required: parsed.criteria === null || entry.required !== false, criteria: parsed.criteria, ...(parsed.issues.length ? { issues: parsed.issues } : {}) });
+    promises.push({ id: entry.id, title: entry.title, required: parsed.criteria === null || parsed.criteria.some(pendingCanonicalScene) || entry.required !== false, criteria: parsed.criteria, ...(parsed.issues.length ? { issues: parsed.issues } : {}) });
   }
   if (needsRepair) {
     let id = "acceptance-contract";

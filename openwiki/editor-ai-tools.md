@@ -654,8 +654,25 @@ invocation object, not a tool-name-only claim. For this native tool the field is
 parsing, and [ToolVerificationEvidence.passedScope](../src/ai/toolVerificationEvidence.ts)
 reads only previously adopted canonical scopes with exact native arguments and
 `parseToolVerdict`. The acceptance ledger binds those scopes before execution;
-a later declaration cannot borrow an earlier exploratory pass. Only a current
-host-observed explicit pass satisfies that exact scope. Wrong targets, negative
+a later declaration cannot borrow an earlier exploratory pass.
+
+Canonical input now passes the registered tool schema AND native scenario/coordinate
+validation before becoming immutable. Malformed arguments are actionable repair
+obligations, even when declared optional; valid optional criteria remain optional.
+For `toolVerdict/run_scene_test`, explicit `interact` steps also declare
+`interactionTargets:[{stepIndex,mapId,eventId}]`. Arguments with unnamed interactions
+are not an admissible canonical scope; repair their malformed specification first.
+Valid fixed arguments with missing/partial ownership remain `pending-specification`.
+`repair_acceptance` can complete only the missing ownership: it cannot change fixed
+arguments, known targets, sibling criteria, source/owner or original baseline.
+The host captures the same protected initial state as ordinary scene declarations,
+including while scope is pending. Repair retains that state and requires fresh
+post-resolution execution. A previous passing probe cannot fill ownership, and a
+same-argument run through another map's same-ID NPC cannot satisfy the original.
+Scenes without interactions have an empty ownership scope. No runtime state is
+accepted from model-authored criteria. Regression: `canonicalAcceptanceOwnership`.
+
+Only a current host-observed explicit pass satisfies that exact scope. Wrong targets, negative
 verdicts, stale checks, model `passed` claims and advisory-only success don't.
 A clean advisory check can retain an already-current explicit canonical pass,
 but cannot renew it after a write. Writes stale passing required evidence; successful

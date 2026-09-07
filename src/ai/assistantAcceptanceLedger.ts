@@ -2,7 +2,7 @@ import { isFunctionalCriterionKind, parseFunctionalRequirements, type Functional
 import type { Project } from "@/project/types";
 import { isVerifiedActionCombatProof, type ActionCombatProofReceipt } from "@/testing/actionCombatProof";
 import {
-  ACCEPTANCE_EXAMPLES, parseAcceptanceCriteriaResult,
+  ACCEPTANCE_EXAMPLES, parseAcceptanceCriteriaResult, pendingCanonicalScene,
   type AcceptancePromise, type AcceptanceSnapshot, type AcceptanceItemSnapshot, type AcceptanceIssue, type AcceptanceCriterion,
   acceptanceRecord, type AcceptanceTarget,
   type AcceptanceSource, type RequirementWithdrawalAction,
@@ -12,7 +12,7 @@ import {
 } from "./assistantAcceptanceEvaluation";
 
 import { AssistantImageEvidence, coveredByImages, type AcceptanceImageReceipt } from "./assistantImageEvidence";
-import { verificationInput, type ToolVerificationEvidence } from "./toolVerificationEvidence";
+import { verificationInput, verificationInitialState, type ToolVerificationEvidence } from "./toolVerificationEvidence";
 export type { AcceptanceImageReceipt } from "./assistantImageEvidence";
 
 export interface AcceptanceToolResult {
@@ -58,7 +58,7 @@ export class AssistantAcceptanceLedger {
     for (const promise of additions) {
       if (this.promises.has(promise.id)) continue;
       const issues = promise.criteria ? this.originalTargetIssues(promise.criteria, baseline) : [];
-      this.promises.set(promise.id, { ...structuredClone(promise), baseline, required: promise.required !== false, source: provenance,
+      this.promises.set(promise.id, { ...structuredClone(promise), baseline, required: promise.required !== false || promise.criteria?.some(pendingCanonicalScene) === true, source: provenance,
         ...(issues.length ? { criteria: null, issues } : {}) });
     }
   }
@@ -120,11 +120,23 @@ export class AssistantAcceptanceLedger {
   repair(itemId: unknown, criteria: unknown): AcceptanceToolResult {
     const promise = typeof itemId === "string" ? this.promises.get(itemId) : undefined;
     if (!promise) return this.unavailableItem();
-    if (promise.criteria !== null) return { ok: false, code: "immutable-valid", issues: [{
-      field: "itemId", code: "immutable-valid", expected: "an item with missing/malformed criteria; valid promises and baselines are immutable", example: ACCEPTANCE_EXAMPLES.mapCount,
-    }] };
+    const immutable = (): AcceptanceToolResult => ({ ok: false, code: "immutable-valid", issues: [{
+      field: "itemId", code: "immutable-valid", expected: "repair missing/malformed criteria, or fill only missing scene ownership; fixed arguments, known targets, sibling criteria and baselines are immutable", example: ACCEPTANCE_EXAMPLES.toolVerdict,
+    }] });
+    if (promise.criteria !== null && !promise.criteria.some(pendingCanonicalScene)) return immutable();
     const parsed = parseAcceptanceCriteriaResult(criteria);
-    if (!parsed.criteria) return { ok: false, code: "malformed-criteria", issues: parsed.issues };
+    if (!parsed.criteria || parsed.criteria.some(pendingCanonicalScene)) return { ok: false, code: "malformed-criteria", issues: parsed.issues };
+    if (promise.criteria !== null) {
+      const repaired = parsed.criteria;
+      const changed = repaired.length !== promise.criteria.length || promise.criteria.some((original, index) => {
+        const next = repaired[index];
+        if (original.kind !== "toolVerdict" || !pendingCanonicalScene(original)) return acceptanceFingerprint(original) !== acceptanceFingerprint(next);
+        return next?.kind !== "toolVerdict" || next.tool !== original.tool
+          || acceptanceFingerprint(next.args) !== acceptanceFingerprint(original.args)
+          || (original.interactionTargets ?? []).some(target => !next.interactionTargets?.some(entry => acceptanceFingerprint(entry) === acceptanceFingerprint(target)));
+      });
+      if (changed) return immutable();
+    }
     const issues = this.originalTargetIssues(parsed.criteria, promise.baseline);
     if (issues.length) return { ok: false, code: "malformed-criteria", issues };
     this.promises.set(promise.id, { ...promise, criteria: parsed.criteria, issues: undefined });
@@ -268,14 +280,19 @@ export class AssistantAcceptanceLedger {
     return { ok: true, code: "reviewed", issues: [] };
   }
 
-  bindVerificationRequirements(verification?: ToolVerificationEvidence): void {
+  bindVerificationRequirements(verification?: ToolVerificationEvidence, project?: Project): void {
     // Canonical tool consumers declare authority before execution. Evaluation can
     // bind a late declaration, but cannot reuse the earlier exploratory attempt.
+    const existing = new Map(verification?.snapshot(false).requirements.map(requirement => [requirement.checkId, requirement]));
     for (const promise of this.promises.values()) for (const [index, criterion] of (promise.criteria ?? []).entries()) {
       if (criterion.kind !== "toolVerdict") continue;
       const checkId = `${this.id}:${promise.id}:${index}`;
+      const original = existing.get(checkId);
       verification?.adopt({ checkId, ownerId: `${this.id}:${promise.id}`, name: criterion.tool,
-        args: verificationInput(criterion.tool, criterion.args), acceptedCriterion: criterion });
+        args: pendingCanonicalScene(criterion) ? null : verificationInput(criterion.tool, criterion.args),
+        acceptedCriterion: original?.acceptedCriterion ?? criterion,
+        interactionTargets: criterion.tool === "run_scene_test" ? criterion.interactionTargets ?? [] : undefined,
+        initialState: original ? original.initialState : verificationInitialState(criterion.tool, project ?? promise.baseline) });
       verification?.setRequirementActive(checkId, promise.required !== false && !promise.withdrawal);
     }
   }
@@ -283,7 +300,7 @@ export class AssistantAcceptanceLedger {
   evaluate(applied: Project, draft = applied, verification?: ToolVerificationEvidence,
     blockingProblems: readonly string[] = []): AcceptanceSnapshot {
     this.bind(draft);
-    this.bindVerificationRequirements(verification);
+    this.bindVerificationRequirements(verification, draft);
     // Retirement is permanent: an edit followed by undo cannot revive old proof.
     for (const [mapId, receipt] of this.actionProofs) {
       if (!isVerifiedActionCombatProof(receipt, draft, mapId)) this.actionProofs.delete(mapId);
@@ -342,6 +359,7 @@ export class AssistantAcceptanceLedger {
       const status = passed ? "verified" : this.stopped ? "blocked" : unapplied ? "verifying" : "working";
       return Object.freeze({
         ...metadata, id: promise.id, title: promise.title, status, evidence: Object.freeze(evidence),
+        ...(promise.issues?.length ? { issues: promise.issues } : {}),
         ...(!passed ? { reason: unapplied ? "Draft is not yet applied" : this.stopped ? "Acceptance incomplete; execution stopped" : "Acceptance checks remain open" } : {}),
         ...(map ? { mapId: map.id } : {}), ...(region ? { region: Object.freeze({ ...region }) } : {}),
       });

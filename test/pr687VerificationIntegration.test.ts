@@ -155,12 +155,17 @@ describe("PR687 adjudicated verification scheduling through normal dispatch", ()
     expect(f.session.getAcceptanceSnapshot()?.status).toBe("blocked");
     await f.send([probe(f.args)]);
     expect(f.session.getAcceptanceSnapshot()?.status).toBe("verified");
-    const edited = f.session.getProposedProject();
+    const protectedProject = f.session.getProposedProject();
+    const edited = structuredClone(protectedProject);
     edited.session.gold = 99;
     expect(f.session.syncBaselineFromStoreIfClean(edited)).toBe(true);
     await f.send([probe({ ...f.args, start: { x: 4, y: 6 } })]);
     expect(f.snapshot().verification.requirements.find(requirement => requirement.checkId === original!.checkId)?.status).toBe("stale");
     expect(f.session.getAcceptanceSnapshot()?.status).toBe("blocked");
+    await f.send([probe(f.args)]);
+    expect(f.session.getAcceptanceSnapshot()?.status).toBe("blocked");
+    expect(f.session.getVerificationSnapshot().requirements[0]?.initialState).toEqual(original!.initialState);
+    expect(f.session.syncBaselineFromStoreIfClean(protectedProject)).toBe(true);
     await f.send([probe(f.args)]);
     expect(f.session.getAcceptanceSnapshot()?.status).toBe("verified");
   });

@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **50쪽 / 2019KB / 약 568,077 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **50쪽 / 2020KB / 약 568,383 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -16,7 +16,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
 | `openwiki/editor-ai-panel.md` | 320KB | 95KB ⚠상한 초과 — 절을 더 쪼개라 | 1148 | ~91,438 |
-| `openwiki/editor-ai-tools.md` | 142KB | 77KB ⚠상한 초과 — 절을 더 쪼개라 | 915 | ~39,627 |
+| `openwiki/editor-ai-tools.md` | 144KB | 77KB ⚠상한 초과 — 절을 더 쪼개라 | 932 | ~39,933 |
 | `openwiki/editor-database.md` | 248KB | 55KB ⚠상한 초과 — 절을 더 쪼개라 | 1285 | ~71,443 |
 | `openwiki/editor-event-authoring.md` | 125KB | 75KB ⚠상한 초과 — 절을 더 쪼개라 | 626 | ~36,040 |
 | `openwiki/editor-event-commands.md` | 50KB | 32KB | 132 | ~13,431 |
@@ -34,7 +34,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | 페이지 | 깨진 줄 수 | 예시 줄 번호 |
 |---|---|---|
 | `openwiki/editor-ai-panel.md` | 25 | 855, 856, 857, 858, 859, 860, 872, 882 |
-| `openwiki/editor-ai-tools.md` | 6 | 606, 607, 611, 613, 615, 782 |
+| `openwiki/editor-ai-tools.md` | 6 | 606, 607, 611, 613, 615, 799 |
 | `openwiki/editor-database.md` | 7 | 495, 499, 500, 501, 510, 536, 539 |
 | `openwiki/editor-event-authoring.md` | 16 | 198, 199, 202, 207, 208, 209, 210, 211 |
 | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
@@ -269,7 +269,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1107` 모험 완료와 실제 적용 횟수 (2026-09-05)
 - `L1112` Assistant clean conversation — Phase 1 (2026-09-06)
 
-### `openwiki/editor-ai-tools.md` — 142KB · 915줄 · ~39,627 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-ai-tools.md` — 144KB · 932줄 · ~39,933 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
 - `L3` Measured zero-prop rejection diagnostics (2026-09-07)
 - `L100` Logical walkthrough versus real player traversal (2026-09-07)
@@ -290,16 +290,16 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L509` 퀘스트 입력과 완주 증거 계약 (2026-09-05)
 - `L519` DB 조회 페이지와 마을 전체 범위 (2026-09-05)
 - `L632` P2 requirement and exact-verdict inputs (2026-09-06)
-- `L687` Project-wide quality evaluation
-- `L701` prune_unused 의 참조 수집은 variableId 를 가진 명령 전부를 세야 한다 (2026-08-29 실측 결함 수정)
-- `L737` Action controls guide (2026-09-07)
-- `L780` NPC 대사는 코드가 지어내지 않는다 — 캐스트 라이터 계약 (2026-09-03)
-- `L811` 「이 세계」 캐논은 문장 3채널에 강제된다 (2026-09-04)
-- `L826` 마을 설계서 (2026-09-05)
-- `L830` 저수준 이벤트 입력은 명령 위치를 검증한다 (2026-09-05)
-- `L865` 보물상자는 노출된 수면을 거부한다 (2026-09-05)
-- `L872` 모험 저작 완료와 재시도 (2026-09-05)
-- `L902` 실제 이미지 입력 보존 (2026-09-07)
+- `L704` Project-wide quality evaluation
+- `L718` prune_unused 의 참조 수집은 variableId 를 가진 명령 전부를 세야 한다 (2026-08-29 실측 결함 수정)
+- `L754` Action controls guide (2026-09-07)
+- `L797` NPC 대사는 코드가 지어내지 않는다 — 캐스트 라이터 계약 (2026-09-03)
+- `L828` 「이 세계」 캐논은 문장 3채널에 강제된다 (2026-09-04)
+- `L843` 마을 설계서 (2026-09-05)
+- `L847` 저수준 이벤트 입력은 명령 위치를 검증한다 (2026-09-05)
+- `L882` 보물상자는 노출된 수면을 거부한다 (2026-09-05)
+- `L889` 모험 저작 완료와 재시도 (2026-09-05)
+- `L919` 실제 이미지 입력 보존 (2026-09-07)
 
 ### `openwiki/editor-database.md` — 248KB · 1285줄 · ~71,443 토큰 · 통째읽기 잘림 · 깨진 줄 7
 

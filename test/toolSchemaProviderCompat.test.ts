@@ -127,9 +127,8 @@ describe("툴 스키마 프로바이더 호환(Gemini 엄격 검증)", () => {
 const criterionCases: AcceptanceCriterion[] = [
   { kind: "toolVerdict", tool: "run_lint", args: {} },
   { kind: "toolVerdict", tool: "play_walkthrough", args: {
-    mapId: "map_start", scenario: [{ do: "setVariable", id: "progress", value: 0 },
-      { expect: "variable", id: "progress", value: 0 }],
-    runtimeKeys: { "authored-id": [null, false, 0, "0", { nested: {} }] },
+    scenario: [{ do: "moveTo", mapId: "map_start", x: 0, y: 0 },
+      { expect: "variable", variableId: "progress", op: ">=", value: 0 }], seed: 0,
   } },
   ...[{ mapId: "map_start" }, { newMapName: "New room" }].flatMap((target): AcceptanceCriterion[] => [
     { kind: "actionCombat", target },
@@ -201,7 +200,7 @@ describe("acceptance and requirement schema/runtime contract", () => {
       "toolVerdict", "shopPurchase", "mapRoundTrip", "npcReward", "functionalUnresolved", "reachability",
     ] });
     expect(Object.keys(item?.properties ?? {}).sort()).toEqual([
-      "args", "count", "destination", "expectations", "from", "height", "item", "kind", "outgoing", "reason", "region", "requirement",
+      "args", "count", "destination", "expectations", "from", "height", "interactionTargets", "item", "kind", "outgoing", "reason", "region", "requirement",
       "returning", "seller", "start", "target", "targets", "to", "tool", "unitPrice", "width",
     ]);
     expect(item?.properties?.args).toMatchObject({ type: "object", additionalProperties: true });
@@ -227,6 +226,14 @@ describe("acceptance and requirement schema/runtime contract", () => {
       ...(criterion.kind === "toolVerdict" ? ["target"] : ["args"])]) {
       expect(parseAcceptanceCriteria([criterion, { ...valid, [extra]: {} }]), `extra ${extra}`).toBeNull();
     }
+  });
+
+  it("rejects unsupported native arguments even when the dynamic provider envelope can represent them", () => {
+    const args = { mapId: "map_start", scenario: [{ do: "setVariable", id: "progress", value: 0 },
+      { expect: "variable", id: "progress", value: 0 }], runtimeKeys: { "authored-id": [null, false, 0, "0", { nested: {} }] } };
+    expect(parseAcceptanceCriteria([{ kind: "toolVerdict", tool: "play_walkthrough", args }])).toBeNull();
+    const scene = { mapId: "map_start", start: { x: 0, y: 0 }, steps: [{ kind: "interact" }] };
+    expect(parseAcceptanceCriteria([{ kind: "toolVerdict", tool: "run_scene_test", args: scene }])).toBeNull();
   });
 
   it.each([{}, { mapId: "map_start", newMapName: "New room" }, { mapId: "" }, { newMapName: " " },
