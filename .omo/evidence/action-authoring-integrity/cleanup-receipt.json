@@ -1,0 +1,62 @@
+{
+  "at": "2026-09-07T12:27:33.146Z",
+  "ports": [
+    {
+      "port": 45991,
+      "closed": true
+    },
+    {
+      "port": 45992,
+      "closed": true
+    },
+    {
+      "port": 45993,
+      "closed": true
+    },
+    {
+      "port": 45994,
+      "closed": true
+    }
+  ],
+  "paths": [
+    {
+      "path": "/tmp/oprn-action-integrity-vite-45991",
+      "absent": true
+    },
+    {
+      "path": "/tmp/oprn-action-integrity-build-cache",
+      "absent": true
+    },
+    {
+      "path": "/tmp/oprn-action-integrity-final-vite-45991",
+      "absent": true
+    },
+    {
+      "path": "/tmp/oprn-action-integrity-player-vite-45992",
+      "absent": true
+    },
+    {
+      "path": "/tmp/oprn-action-integrity-final-build-cache",
+      "absent": true
+    },
+    {
+      "path": "/tmp/oprn-integrity-chrome.eMsFDi",
+      "absent": true
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-action-integrity-control-20260907",
+      "absent": true
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-action-integrity-20260907/output/action-integrity-browser-probe.mjs",
+      "absent": true
+    }
+  ],
+  "buildExit": 0,
+  "isolatedBaselineExit": 0,
+  "isolatedCurrentExit": 0,
+  "keptDeliveryWorktree": "/home/main/z-project/rpg-zzu-action-integrity-20260907",
+  "keptRemoteProject": "oprn-1a8ac23163",
+  "keptEvidence": true,
+  "userProfileClearing": false
+}
