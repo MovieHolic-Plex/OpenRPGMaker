@@ -16,6 +16,7 @@ import {
 } from "./combinedTownGroups";
 import { applyEasyRpgThemeMetadataPacks } from "./themePacks";
 import { hasInteriorCabinetOverride } from "@/project/defaults/interiorTransparentPropLayerRepair";
+import { hasInteriorLongTableOverride } from "./interiorLongTableLegacy";
 import { roleCapabilities } from "@/project/tileRoles";
 import { chipsetLabelCorrection, seedChipsetLabelCorrections } from "@/project/defaults/chipsetLabelCorrections";
 
@@ -54,8 +55,10 @@ function applyCustomChipsetMinimalHarness(tileset: TilesetDef): boolean {
   ensureTileMetaLength(tileset);
   const cabinetOverride = tileset.image.type === "bundled"
     && tileset.image.id === "tex_easyrpg_chipset_interior" && hasInteriorCabinetOverride(tileset);
+  const tableOverride = hasInteriorLongTableOverride(tileset);
   for (let tile = 0; tile < tileset.count; tile += 1) {
     if (cabinetOverride && (tile === 148 || tile === 178)) continue;
+    if (tableOverride && (tile === 325 || tile === 326 || tile === 327)) continue;
     if (!isTransparentChipsetTile(tile)) continue;
     if (isTreeTrunkTileId(tile)) continue;
     const meta = tileset.tileMeta?.[tile];

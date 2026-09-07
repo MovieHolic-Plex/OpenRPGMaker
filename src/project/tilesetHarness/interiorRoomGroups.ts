@@ -93,7 +93,7 @@ export function interiorVocabTiles() {
     BARREL: 205,
     TAVERN_SIGN: 58,
     LADDER: 472,
-    /** 가로 긴 탁자 좌(325)|우(326) — 침대와 같은 hard 좌우쌍. */
+    /** 긴 탁자 좌(325) · 반복 몸통(326) · 우(327). TABLE_R is the legacy middle-tile alias. */
     TABLE_L: 325,
     TABLE_R: 326,
     STOOL: 266,
@@ -138,14 +138,23 @@ export function interiorBedHardRule(): ClusterRule {
   };
 }
 
-/** Hard adjacency: long table left 325 must sit immediately left of right 326 (upper). */
+/** Left cap starts a closed run; every middle has a left cap or middle to its left. */
 export function interiorLongTableHardRule(): ClusterRule {
   return {
     id: "r_interior_long_table_h_pair",
     kind: "adjacency",
     strength: "hard",
-    message: "긴 탁자 좌(325)는 우(326) 바로 왼쪽에 있어야 합니다 (hard cluster).",
-    params: { a: VR.TABLE_L, b: VR.TABLE_R, relation: "aLeftOfB" },
+    message: "긴 탁자는 좌 325 · 몸통 326(가로 반복) · 우 327로 닫아야 합니다.",
+    params: { a: VR.TABLE_L, b: VR.TABLE_R, aAlt: [VR.TABLE_R], bAlt: [VR.TABLE_R3], relation: "aLeftOfB" },
+  };
+}
+
+/** Every middle continues or closes to the right; the right cap cannot be orphaned. */
+function interiorLongTableEndRule(): ClusterRule {
+  return {
+    id: "r_interior_long_table_h_end", kind: "adjacency", strength: "hard",
+    message: "긴 탁자 몸통 326 오른쪽은 몸통 326 또는 우 327, 우 327 왼쪽은 좌 325 또는 몸통 326이어야 합니다.",
+    params: { a: VR.TABLE_R, b: VR.TABLE_R3, aAlt: [VR.TABLE_L], bAlt: [VR.TABLE_R], relation: "aLeftOfB" },
   };
 }
 
@@ -273,19 +282,20 @@ export function interiorRoomTileGroups(): TileGroupMetadata[] {
     group("kitchen-props", "주방 소품", "prop", "upper", [VR.CAULDRON, VR.KETTLE, VR.FRUIT_SHELF, VR.SHELF_JARS], "가마솥/항아리는 openFloor, 선반은 wallFace", {
       layerHome: "upper",
     }),
-    group("tavern-table", "긴 탁자", "prop", "upper", [VR.TABLE_L, VR.TABLE_R], "openFloor, 좌우 한 쌍", {
+    group("tavern-table", "긴 탁자", "prop", "upper", [VR.TABLE_L, VR.TABLE_R, VR.TABLE_R3], "openFloor, 좌 325 · 몸통 326(가로 반복) · 우 327; 양끝 필수", {
       layerHome: "upper",
-      rules: [tableRule],
+      rules: [tableRule, interiorLongTableEndRule()],
       patternGrammar: {
         kind: "horizontal_expandable",
         axis: "horizontal",
         minWidth: 2,
         minHeight: 1,
         preserveCaps: true,
-        repeat: "source_order",
+        repeat: "body",
         parts: [
           { role: "leftCap", tileIds: [VR.TABLE_L] },
-          { role: "rightCap", tileIds: [VR.TABLE_R] },
+          { role: "repeatBody", tileIds: [VR.TABLE_R] },
+          { role: "rightCap", tileIds: [VR.TABLE_R3] },
         ],
       },
     }),

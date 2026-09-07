@@ -2495,18 +2495,18 @@ function critiqueRoom(map: GameMap, plan: InteriorRoomPlan): string[] {
     }
   }
 
-  // Long table/counter: 325 | 326 (repeatable) | optional 327 end cap.
+  // Long table/counter: closed caps 325 | optional repeatable 326 | 327.
   for (let y = 0; y < map.height; y += 1) {
     for (let x = 0; x < map.width; x += 1) {
       const u = getU(map, x, y);
-      if (u === VR.TABLE_L && getU(map, x + 1, y) !== VR.TABLE_R) {
-        issues.push(`hard table: 325 at (${x},${y}) missing 326 to the right`);
+      if ((u === VR.TABLE_L || u === VR.TABLE_R) && getU(map, x + 1, y) !== VR.TABLE_R && getU(map, x + 1, y) !== VR.TABLE_R3) {
+        issues.push(`hard table: ${u} at (${x},${y}) missing 326/327 to the right`);
       }
       if (u === VR.TABLE_R && getU(map, x - 1, y) !== VR.TABLE_L && getU(map, x - 1, y) !== VR.TABLE_R) {
         issues.push(`hard table: 326 at (${x},${y}) missing 325/326 to the left`);
       }
-      if (u === VR.TABLE_R3 && getU(map, x - 1, y) !== VR.TABLE_R) {
-        issues.push(`hard table: 327 at (${x},${y}) missing 326 to the left`);
+      if (u === VR.TABLE_R3 && getU(map, x - 1, y) !== VR.TABLE_R && getU(map, x - 1, y) !== VR.TABLE_L) {
+        issues.push(`hard table: 327 at (${x},${y}) missing 325/326 to the left`);
       }
     }
   }

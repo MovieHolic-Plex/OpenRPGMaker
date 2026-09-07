@@ -1,5 +1,6 @@
 import { buildEdgeCornerVariantMap } from "@/project/defaults/autotileEngine";
 import { interiorRoomTileGroups } from "./interiorRoomGroups";
+import { hasInteriorLongTableOverride, migrateLegacyInteriorLongTable } from "./interiorLongTableLegacy";
 import { hasInteriorCabinetOverride, repairLegacyInteriorCabinetKit } from "@/project/defaults/interiorTransparentPropLayerRepair";
 import {
   createDarkWallAutotileGroup,
@@ -429,12 +430,15 @@ export function ensureInteriorProjectGroups(tileset: TilesetDef): boolean {
   const groups = INTERIOR_HARNESS_GROUPS.map(({ passage: _passage, repeatability: _repeatability, ...group }) => ({
     ...group, tileIds: [...group.tileIds], patternGrammar: clonePattern(group.patternGrammar),
   }));
-  return ensureProjectGroups(tileset, [...groups, ...interiorRoomTileGroups()]);
+  const supplemental = interiorRoomTileGroups();
+  const migrated = migrateLegacyInteriorLongTable(tileset, supplemental.find(group => group.id.endsWith("-tavern-table"))!);
+  return ensureProjectGroups(tileset, [...groups, ...supplemental]) || migrated;
 }
 
 function applyTileContract(tileset: TilesetDef, group: PackHarnessGroup, tile: number): boolean {
   if (tile < 0 || tile >= tileset.count) return false;
   const meta = tileset.tileMeta?.[tile];
+  if ((tile === 325 || tile === 326 || tile === 327) && hasInteriorLongTableOverride(tileset)) return false;
   if (isInteriorPackTileset(tileset) && (tile === 148 || tile === 178) && hasInteriorCabinetOverride(tileset)) return false;
   if (chipsetLabelCorrection(tileset.image.id, tile) && (meta?.origin === "user" || meta?.locked || tileset.tileGrafts?.some(graft => graft.targetTile === tile))) return false;
   if (meta?.userLocked === true || meta?.source === "user") return setTileRuntimeContract(tileset, tile, group, meta);

@@ -185,14 +185,16 @@ function adjacencyViolation(map: GameMap, group: TileGroupMetadata, rule: Cluste
   }
   for (const coord of tileCoords(map, params.b)) {
     const expected = neighbor(coord, oppositeRelation(params.relation));
-    if (!isInside(map, expected.x, expected.y) || !hasTileAt(map, expected.x, expected.y, params.a)) {
+    // aAlt is the symmetric counterpart of bAlt, not permission to skip the reverse check.
+    if (!isInside(map, expected.x, expected.y) || !(hasTileAt(map, expected.x, expected.y, params.a)
+      || params.aAlt.some((alt) => hasTileAt(map, expected.x, expected.y, alt)))) {
       coords.set(coordKey(coord), { mapId: map.id, x: coord.x, y: coord.y });
     }
   }
   return coords.size > 0 ? baseViolation(group, rule, [...coords.values()]) : null;
 }
 
-function adjacencyParams(params: Record<string, unknown>): { readonly a: number; readonly b: number; readonly bAlt: readonly number[]; readonly relation: RuleRelation } | null {
+function adjacencyParams(params: Record<string, unknown>): { readonly a: number; readonly b: number; readonly aAlt: readonly number[]; readonly bAlt: readonly number[]; readonly relation: RuleRelation } | null {
   const a = integerParam(params.a);
   const b = integerParam(params.b);
   const relation = RELATIONS.find((candidate) => candidate === params.relation);
@@ -200,7 +202,10 @@ function adjacencyParams(params: Record<string, unknown>): { readonly a: number;
   const bAlt = Array.isArray(params.bAlt)
     ? params.bAlt.map((value) => integerParam(value)).filter((value): value is number => value !== null)
     : [];
-  return { a, b, bAlt, relation };
+  const aAlt = Array.isArray(params.aAlt)
+    ? params.aAlt.map((value) => integerParam(value)).filter((value): value is number => value !== null)
+    : [];
+  return { a, b, aAlt, bAlt, relation };
 }
 
 function neighbor(coord: ClusterRuleViolationCoord, relation: RuleRelation): { readonly x: number; readonly y: number } {
