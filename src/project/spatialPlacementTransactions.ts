@@ -1,8 +1,8 @@
 import { GOLD_MAX } from "@/project/economyValues";
 import { isItemQuantity, ITEM_QUANTITY_MAX, type ItemQuantityOperation } from "@/project/itemQuantities";
-import { changeItemsAtomically, type PlaySession, type SpatialPaymentReceipt } from "@/project/session";
+import { changeItemsAtomically, type HomeDecorationPlacementState, type PlaySession, type SpatialPaymentReceipt } from "@/project/session";
 import { reconcileLinkedAnimalHousing } from "./animalHousing";
-import { isSpatialPaymentReceipt } from "./lifeRecovery";
+import { isDecorationRecoveryItem, isSpatialPaymentReceipt } from "./lifeRecovery";
 import { canPlaceSpatialFootprint, type SpatialLiveContextReader } from "@/project/spatialOccupancy";
 import {
   isSpatialFootprint,
@@ -12,7 +12,6 @@ import {
 } from "@/project/spatialPlacements";
 import type {
   Dir,
-  HomeDecorationPlacement,
   Project,
   SpatialPlacementCost,
 } from "@/project/types";
@@ -125,7 +124,7 @@ export function placeHomeDecoration(project: Project, session: PlaySession, inpu
   if (!project.database.items.some((entry) => entry.id === type.placementItemId)) return invalid();
   if (!canPlaceSpatialFootprint(project, session, input, type.footprint, readLive, undefined, type.blocksMovement)) return blocked();
   if (!hasItems(session, [{ itemId: type.placementItemId, count: 1 }])) return insufficientOrInvalid(session.inventory[type.placementItemId]);
-  const placement: HomeDecorationPlacement = placementFields(input);
+  const placement: HomeDecorationPlacementState = { ...placementFields(input), recoveryItem: { itemId: type.placementItemId, count: 1 } };
   return commitWithInventory(session, [{ itemId: type.placementItemId, op: "-=", amount: 1 }], () => {
     session.homeDecorationPlacements = { ...placements, [input.instanceId]: placement };
   });
@@ -157,11 +156,14 @@ export function removeHomeDecoration(project: Project, session: PlaySession, ins
   const placement = session.homeDecorationPlacements?.[instanceId];
   if (!placement) return missing();
   const type = project.database.homeDecorationTypes?.find((entry) => entry.id === placement.typeId);
-  if (!type || !project.database.items.some((entry) => entry.id === type.placementItemId)) return invalid();
-  const current = session.inventory[type.placementItemId] ?? 0;
+  if (placement.recoveryItem !== undefined && !isDecorationRecoveryItem(placement.recoveryItem)) return invalid();
+  // Keep the existing ordinary legacy reclaim path; recovery cancellation never infers it.
+  const itemId = placement.recoveryItem?.itemId ?? type?.placementItemId;
+  if (!itemId || !project.database.items.some((entry) => entry.id === itemId)) return invalid();
+  const current = session.inventory[itemId] ?? 0;
   if (!isItemQuantity(current)) return invalid();
   if (current >= ITEM_QUANTITY_MAX) return { ok: false, reason: "overflow" };
-  return commitWithInventory(session, [{ itemId: type.placementItemId, op: "+=", amount: 1 }], () => {
+  return commitWithInventory(session, [{ itemId, op: "+=", amount: 1 }], () => {
     const next = { ...session.homeDecorationPlacements };
     delete next[instanceId];
     session.homeDecorationPlacements = next;
