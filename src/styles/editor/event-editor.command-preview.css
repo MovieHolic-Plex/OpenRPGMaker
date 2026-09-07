@@ -1,5 +1,6 @@
 /* 이벤트 명령 편집 모달 — 2열(폼 / 이미지 리치 프리뷰) 레이아웃 + 종류별 프리뷰.
-   event-editor.css 에서 modern.css 다음(마지막)으로 import 되어 캐스케이드 우선권을 갖는다. */
+   event-editor.css 는 modern → command-preview → modernize 순이다. 이 배럴이 마지막이 아니며
+   이름표/결과/오디오 페인트는 여기서 고친다(balanced/modernize 오버라이드 레이어를 올리지 않음). */
 
 /* 분할 목차 — 아래 @import 순서가 캐스케이드(규칙 순서)를 결정하므로 재배열 금지. */
 @import "./event-editor.command-preview/01-event-editor-modern-import.css";

@@ -16,7 +16,7 @@
   border-radius: 8px;
   background: linear-gradient(180deg, var(--bg-surface), var(--bg-surface));
   color: var(--text-1);
-  box-shadow: 0 8px 24px var(--shadow-pop);
+  box-shadow: var(--shadow-pop);
   border-image: none !important;
   background-image: none !important;
 }
@@ -57,7 +57,7 @@
   background:
     linear-gradient(180deg, var(--bg-surface), var(--bg-surface));
   color: var(--text-1);
-  box-shadow: 0 8px 24px var(--shadow-pop);
+  box-shadow: var(--shadow-pop);
   /* applySystemGraphic 이 실수로 붙어도 fill 이 새지 않게 */
   border-image: none !important;
   background-image: none !important;
@@ -245,8 +245,8 @@
 /* audio 파형/컨트롤 */
 .ecp-audio { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 12px 8px; }
 .ecp-audio-icon { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; font-size: 18px; }
-.ecp-audio-icon.play { background: var(--border-default); color: var(--border-default); border: 1px solid var(--border-default); }
-.ecp-audio-icon.stop { background: var(--border-default); color: var(--border-default); border: 1px solid var(--border-default); }
+.ecp-audio-icon.play { background: var(--success-muted); color: var(--success); border: 1px solid var(--success); }
+.ecp-audio-icon.stop { background: var(--danger-muted); color: var(--danger); border: 1px solid var(--danger); }
 .ecp-audio-name { font-size: 12px; font-weight: 600; color: var(--text-1, #2A2521); text-align: center; word-break: break-all; }
 .ecp-audio-wave { display: flex; align-items: center; gap: 2px; height: 40px; width: 100%; max-width: 220px; justify-content: center; }
 .ecp-audio-bar { width: 4px; min-height: 3px; background: linear-gradient(180deg, var(--accent, #4A57D6), rgba(74, 87, 214, 0.3)); border-radius: 2px; }
