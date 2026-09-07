@@ -1,6 +1,6 @@
 # Editor AI Panel & Tools
 
-## Map-scoped conversation archive (2026-09-08, nonvisual repository)
+## Map-scoped conversation archive (2026-09-08)
 
 This supersedes the older 50-record retention and current-config mirror notes below.
 `src/ai/conversationStore.ts` retains conversations in IndexedDB `oprn-ai-records`
@@ -49,6 +49,29 @@ records; offset-based remote pagination is deterministic on a stable remote set,
 not a transaction snapshot of concurrent remote writes. Repeated recovery is safe.
 Tests: `mapConversationStore`, `conversationStore`, `mapConversationRemote`,
 `projectWikiHistorySources`. Browser/live remote evidence is lead-owned.
+
+### Editor history surface
+
+The existing assistant clock (`ai-open-conversations`) opens the same history
+modal, initially filtered to the current map. Its visible clock glyph also exposes
+`ai-map-history-open`; this is not a second toolbar button. The modal offers
+current-map, whole-project and unknown-attribution filters, explicit map choices,
+search, pagination and manual remote recovery. Known deleted-map IDs remain
+selectable rather than becoming unknown.
+
+Every view uses the captured project scope. Opening a result restores its original
+conversation ID and all retained entries. Earlier turns can remain visually
+collapsed using the existing turn toggle; they are not discarded. Browsing history
+and navigating A-B-A do not reset the live project conversation. Project changes
+and modal closure invalidate outstanding requests and restoration callbacks.
+
+Recovery reports transport errors instead of an empty success; deletion removes
+the whole conversation from every local map view and explicitly remains
+browser-local. Compact/partial provenance and memory-only storage are disclosed.
+Contracts: `aiConversationHistoryModal`, `aiChatSessionScope`,
+`test/e2e/ai-map-history.spec.ts`. Real local, remote and visual evidence lives under
+`output/evidence/map-ai-history/`.
+
 ## Independent result review and repair (2026-09-06)
 
 This supersedes older same-conversation review/9-write-threshold and unreviewed
