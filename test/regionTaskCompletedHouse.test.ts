@@ -3,8 +3,6 @@ import { AssistantSession } from "@/ai/assistantSession";
 import type { ChatResult } from "@/ai/llmClient";
 import * as history from "@/editor/mapEditHistory";
 import { getPendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
-import { composePartialProject } from "@/editor/regionTask/partialApplyCompose";
-import { groupRegionChanges } from "@/editor/regionTask/regionChangeGroups";
 import { applyRegionProjectWithHistory, runRegionTask } from "@/editor/regionTask/runRegionTask";
 import type { RegionTaskOptions } from "@/editor/regionTask/runRegionTask";
 import { captureHouseProtection } from "@/editor/tools/houseProtection";
@@ -12,6 +10,7 @@ import { createBlankProject } from "@/project/defaults";
 import { serialize } from "@/project/io";
 import { store } from "@/project/store";
 import { houseMap } from "./fixtures/completedHouse";
+import { approvedReviewResponse } from "./independentReviewFixture";
 import { fixedDeclarer } from "./intentFixture";
 
 const BBOX_ONLY = { x: 2, y: 2, width: 6, height: 6 };
@@ -36,6 +35,22 @@ afterEach(() => {
   vi.unstubAllEnvs();
 });
 
+const IMAGE = {
+  label: "Completed house renderer double",
+  dataUrl: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGNgYGD4DwABBAEAX+XDSwAAAABJRU5ErkJggg==",
+};
+
+function toolCall(id: string, name: string, args: Record<string, unknown>): ChatResult {
+  return {
+    message: {
+      role: "assistant",
+      content: null,
+      tool_calls: [{ id, type: "function", function: { name, arguments: JSON.stringify(args) } }],
+    },
+    finishReason: "tool_calls",
+  };
+}
+
 function houseTask(options: Pick<RegionTaskOptions, "region" | "gate" | "mode">) {
   let session: AssistantSession | undefined;
   return {
@@ -43,21 +58,49 @@ function houseTask(options: Pick<RegionTaskOptions, "region" | "gate" | "mode">)
       getProject: () => store.getCurrent(),
       applyProject: applyRegionProjectWithHistory,
       createSession: (project, mapId) => {
-        let wrote = false;
+        const map = project.maps[mapId];
+        if (!map) throw new Error("Missing session map");
+        // Production order: plan (acceptance criteria) -> write -> fresh visual
+        // evidence -> final text. The independent reviewer round is served by the
+        // machine-discriminated review transport, never writer prose.
+        const steps: ChatResult[] = [
+          toolCall("plan", "set_work_plan", {
+            goal: "author_house",
+            acceptance: [{ id: "house", title: "House built", criteria: [
+              { kind: "targetChange", target: { mapId } },
+              { kind: "imageReviewed", target: { mapId } },
+            ] }],
+            layers: [
+              { title: "집 짓기", items: [{ title: "집 시공", instruction: "author_house", successTools: ["author_house"] }] },
+              { title: "마무리", items: [{ title: "시각 확인", instruction: "show_map_region", successTools: ["show_map_region"] }] },
+            ],
+          }),
+          // Spec gate order: author_house requires an established build spec on the draft.
+          toolCall("spec", "set_build_spec", {
+            mapId, assets: [{ id: "house", kind: "house", x: 2, y: 2, w: 6, h: 6 }],
+          }),
+          toolCall("house", "author_house", {
+            kind: "single", mapId, kitId: "bright-plaster", wings: [{ x: 2, y: 2, w: 6, h: 6 }],
+            interior: "exterior-only", yard: [],
+          }),
+          // Success-tool ledger order: complete each item while it is current, or the
+          // next item reports its successTools missing. Ralph re-injects final text
+          // while any plan item is open, so all items must complete before review.
+          toolCall("done1", "complete_work_item", { note: "집 시공 완료" }),
+          toolCall("shot", "show_map_region", { mapId, x: 0, y: 0, w: map.width, h: map.height }),
+          toolCall("done2", "complete_work_item", { note: "시각 확인 완료" }),
+        ];
+        let consumed = 0;
         session = new AssistantSession(project, {
-          config: { authMode: "apiKey", agentMode: "chat", baseUrl: "x", model: "test", apiKey: "test", maxToolCalls: 4, maxTokens: 1024 },
+          config: { authMode: "apiKey", agentMode: "chat", baseUrl: "x", model: "gemini-2.5-flash-lite", apiKey: "test", maxToolCalls: 16, maxTokens: 16000 },
           contextOptions: { currentMapId: mapId },
           declareIntent: fixedDeclarer({ mode: "modify", space: "outdoor", useSelection: true, tools: ["author_house"] }),
           yieldToUi: async () => {},
-          chat: async (): Promise<ChatResult> => {
-            if (wrote) return { message: { role: "assistant", content: "Done" }, finishReason: "stop" };
-            wrote = true;
-            return { message: { role: "assistant", content: null, tool_calls: [{
-              id: "house", type: "function", function: { name: "author_house", arguments: JSON.stringify({
-                kind: "single", mapId, kitId: "bright-plaster", wings: [{ x: 2, y: 2, w: 6, h: 6 }],
-                interior: "exterior-only", yard: [],
-              }) },
-            }] }, finishReason: "tool_calls" };
+          renderImages: async () => [IMAGE],
+          chat: async (_config, request) => {
+            const approval = approvedReviewResponse(request);
+            if (approval) return approval;
+            return steps[consumed++] ?? { message: { role: "assistant", content: "Done" }, finishReason: "stop" };
           },
         });
         return session;
@@ -105,33 +148,16 @@ for (const mode of ["task", "polish"] as const) {
         const task = houseTask({ region: BBOX_ONLY, mode, gate: approval === "immediate" ? "immediate" : "approval" });
         const observed = observeApplication();
 
-        // When: full/partial approval or legacy immediate application follows clipping/review.
-        if (approval === "immediate") {
-          await expect(task.run()).rejects.toMatchObject({ code: "protected-house-write" });
-        } else {
-          const result = await task.run();
-          expect(result.ok, result.error).toBe(true);
-          expect(result.log?.toolCalls).toMatchObject([{ name: "author_house", ok: true }]);
-          expect(result.clippedCells).toBe(6);
-          const pending = result.pending;
-          if (!pending) throw new Error("Missing real region approval");
-          const map = houseMap(pending.clippedProject);
-          expect(map.layoutPlan?.regions).toMatchObject([{ id: "house_1", role: "house" }]);
-          expect(map.upperTiles[map.width + 2]).toBe(-1);
-          expect(map.lowerTiles.slice(map.width + 3, map.width + 7)).toEqual([240, 240, 240, 240]);
-          expect(map.upperTiles[map.width + 7]).toBe(-1);
-          const groups = groupRegionChanges(pending.baseProject, pending.clippedProject, map.id, BBOX_ONLY);
-          const partial = composePartialProject({
-            base: pending.baseProject, clipped: pending.clippedProject, mapId: map.id, region: BBOX_ONLY,
-            selectedChunkIds: [...groups.lower, ...groups.upper].map((chunk) => chunk.id), groups,
-          });
-          const outcome = approval === "full" ? pending.apply() : pending.applyProject(partial);
-          expect(outcome.ok).toBe(false);
-          expect(outcome.applied).toBe(false);
-          expect(outcome.error).toBeTruthy();
-          expect(pending.lastApplyError).toBe(outcome.error);
-          expect(pending.settled).toBe(false);
-        }
+        // When: clipping the north ridge breaks the completed house, so the production
+        // review-draft transform throws protected-house-write inside independent review.
+        // Full, partial, and legacy immediate converge on this fail-closed error result
+        // before any approval slot, store, or history mutation.
+        const result = await task.run();
+        expect(result.ok).toBe(false);
+        expect(result.error).toBeTruthy();
+        expect(result.log?.toolCalls).toContainEqual(expect.objectContaining({ name: "author_house", ok: true }));
+        expect(result.pending).toBeUndefined();
+        expect(getPendingRegionApply()).toBeNull();
 
         // Then: neither damaged house metadata nor unowned partial house tiles reach history/store.
         task.completed();
@@ -147,7 +173,7 @@ for (const mode of ["task", "polish"] as const) {
       // When
       const result = await task.run();
       expect(result.ok, result.error).toBe(true);
-      expect(result.log?.toolCalls).toMatchObject([{ name: "author_house", ok: true }]);
+      expect(result.log?.toolCalls).toContainEqual(expect.objectContaining({ name: "author_house", ok: true }));
       expect(result.clippedCells).toBe(0);
       if (gate === "approval") {
         if (!result.pending) throw new Error("Missing real region approval");
@@ -172,28 +198,19 @@ it.each(["full", "partial", "immediate"] as const)("rejects %s review polishing 
   const task = houseTask({ region: WHOLE_HOUSE, mode: "polish", gate: approval === "immediate" ? "immediate" : "approval" });
   const observed = observeApplication();
 
-  // When: partial's replacement candidate starts intact, then approval re-polishes it.
-  if (approval === "immediate") {
-    await expect(task.run()).rejects.toMatchObject({ code: "protected-house-write" });
-  } else {
-    const result = await task.run();
-    expect(result.ok, result.error).toBe(true);
-    expect(result.log?.toolCalls).toMatchObject([{ name: "author_house", ok: true }]);
-    expect(result.clippedCells).toBe(0);
-    const pending = result.pending;
-    if (!pending) throw new Error("Missing real region approval");
-    const map = houseMap(pending.clippedProject);
-    expect(map.lowerTiles[map.width + 2]).toBe(360);
-    const intact = task.completed();
-    expect(houseMap(intact).lowerTiles[map.width + 2]).toBe(421);
-    const outcome = approval === "full" ? pending.apply() : pending.applyProject(intact);
-    expect(outcome.ok).toBe(false);
-    expect(outcome.applied).toBe(false);
-    expect(pending.settled).toBe(false);
-    expect(houseMap(pending.clippedProject).lowerTiles[map.width + 2]).toBe(360);
-  }
+  // When: the polish-mode review-draft transform re-polishes the ridge (421 -> 360)
+  // before the guard, so the completed house seal breaks inside independent review.
+  // Full, partial, and legacy immediate converge on this fail-closed error result
+  // before any approval slot, store, or history mutation.
+  const result = await task.run();
+  expect(result.ok).toBe(false);
+  expect(result.error).toBeTruthy();
+  expect(result.log?.toolCalls).toContainEqual(expect.objectContaining({ name: "author_house", ok: true }));
+  expect(result.pending).toBeUndefined();
+  expect(getPendingRegionApply()).toBeNull();
 
-  // Then: the immutable completion baseline, not the reviewed candidate, owns the values.
+  // Then: the session draft still owns the completed values, and neither damaged
+  // house metadata nor re-polished tiles reach history/store.
   const completed = task.completed();
   expect(houseMap(completed).lowerTiles[houseMap(completed).width + 2]).toBe(421);
   observed.rejected();

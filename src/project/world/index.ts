@@ -5,3 +5,4 @@ export { normalizeWorldCanon } from "./canonNormalize";
 export * from "./digest";
 export * from "./lint";
 export * from "./wiki";
+export * from "./review";

@@ -49,6 +49,142 @@ records; offset-based remote pagination is deterministic on a stable remote set,
 not a transaction snapshot of concurrent remote writes. Repeated recovery is safe.
 Tests: `mapConversationStore`, `conversationStore`, `mapConversationRemote`,
 `projectWikiHistorySources`. Browser/live remote evidence is lead-owned.
+## Independent result review and repair (2026-09-06)
+
+This supersedes older same-conversation review/9-write-threshold and unreviewed
+milestone-application descriptions below. `independentReview.ts` builds a fresh
+system/user request through the existing authenticated `ChatFn` transport. It has
+no writer transcript, writer success prose, streaming callbacks or executable
+tools. A single whole-response Markdown fence (optional `json` label) is
+normalized before JSON parsing; surrounding prose, partial/multiple fences and
+other language labels are rejected. This matches an observed authenticated
+Gemini HTTP 200 response, not only the original unfenced fixture. Any returned
+tool call, malformed/inconsistent JSON, stale revision,
+truncated response or transport error stops without approval.
+
+`AssistantSession` reviews every completed write batch, including direct/lite
+and autonomous work. No-write questions and ask turns do not invoke it. Authoring
+turns with zero successful writes still run the existing acceptance/completion
+checks: bounded repair attempts end in an error, never a success publication, if
+those requirements remain unmet. The
+supervisor receives the original request, complete original/current projections
+from `originalContext.ts`, actual changed values, tool results, draft acceptance
+and available executable/image evidence. Duplicate read-credit receipts are not
+sent twice. Oversized complete evidence is an explicit window error, not a
+truncated review. Asset transport changes that lack a reviewable projection are
+explicitly blocked; their omission never earns approval. `Project.session` is the
+authored `ProjectStartState` seed (`startStateOf(project)`), not a live `PlaySession`.
+Its party, inventory, gold, flags and farm starts are reviewed as exact before/after
+values, alongside authored test presets. No live scene session is read.
+
+Verdicts echo `revision` and contain `verdict`, `summary` and structured findings
+(`id`, `target`, `problem`, `requestedChange`, `validation`). Findings go back to
+the writer on the same draft; fresh record reads and all existing write gates
+still apply. The repaired revision gets another isolated review. Reviews consume
+the same round/output budget. Repeated unchanged failures stop; distinct failures
+also stop at the existing three-attempt repair cap. Cancellation and reviewer
+errors never count as approval. Writer success streaming is withheld on editing
+turns; only the reviewed conclusion is published as the changed result.
+
+Required current rendered map coverage and failed/stale explicit scene,
+walkthrough or other verification evidence cannot be overridden by an AI pass.
+Declared verification tools must actually pass. Pure record/dialogue edits do
+not invent placement-image prerequisites. Used-tileset render dependencies
+(`tileSize`, `tilesPerRow`, `image`/`tileGrafts` and uploaded atlas bytes via
+`tilesetVisualContent` in `mapVisualEvidence.ts`) also require fresh
+`show_map_region` coverage for maps that reference the changed tileset, even
+when the map object itself is unchanged and `targetMapId` is null. Unused
+tilesets and nonvisual tileset metadata (name, passability, terrain, kind) do
+not invent that gate. Background refusal and `visualFingerprint` stale-image
+retirement stay as before. Contracts: `assistantTilesetVisualReview`,
+`mapVisualTilesetDependency`, `assistantBackgroundReview`. The acceptance ledger evaluates the
+draft privately for review without labelling it applied; applied-state acceptance
+and remote persistence receipts remain separate. Advisory lint results are sent
+as evidence, not promoted to an unconditional baseline-breaking gate.
+
+`toolImageEventSprites.ts` adds authored event charset visuals to map-region
+images using the shared frame, transparency, scale and footprint helpers.
+This is an authoring preview, not a simulation of active page conditions:
+identical visible page states share one sprite, and a sole visible graphic on
+a later page is still depicted. Distinct visible page graphics, priorities or
+footprints cannot be represented by this single frame and explicitly raise
+`map-event-rendering-unavailable`; unsupported assets do the same. Neither
+case issues a tile-only image receipt. Background rendering unavailability
+also remains an observable error. Contracts: `toolImageEventRender`,
+`toolImageEventAcceptanceSession`; `scripts/evidence-event-visual-render.mts`
+captures pixel changes for movement, graphic selection and later-page visuals.
+
+Grafted tileset atlases used by `show_map_region` / `toolImageCanvas` require a
+complete bake bound to base URL, geometry (`count` / `tileSize` / `tilesPerRow`),
+and the **canonical complete active graft tuples** (every rendering field:
+`targetTile`, `sourceChipset`, `sourceTile`) before a reviewable image is
+returned. Ready and in-flight evidence cache keys use that exact identity — not
+a short texture-suffix hash — so distinct compositions cannot share a bake or
+authority. While pending, evidence schedules the bake and fails closed
+immediately with `tileset-graft-rendering-unavailable` (no Session hang on held
+I/O, no base-atlas receipt). Missing/failed sources stay unapproved. Ordinary
+editor `tilesetImageUrl` may still show the transient ungrafted sheet until bake
+completion. Contract: `toolImageGraftReadiness`.
+
+
+`TurnResult.review`, `result_review` events and `HarnessSnapshot.resultReview`
+expose the outcome. `isDraftReviewApproved(project?)` checks the exact current
+revision and cancellation state; mutation/undo cannot revive invalidated approval.
+Milestones are batched until approval, then use the existing commit/undo/persistence
+path. `aiTurnRunner`, the direct proposal host, cluster acceptance and region
+application reject unapproved/error/budget/cancelled drafts, even when successful
+writes remain in the proposal ledger. Evaluation retains draft measurements and
+review evidence, but an unapproved solver result cannot pass the task.
+The real proposal-host and autonomous apply boundaries call `rebaseProject` after
+successful application; clean pre-turn store sync does the same. Rejecting a later
+draft and starting an unrelated request therefore restores the latest applied
+baseline, not the initial conversation project. Both paths have regression tests.
+
+Region clipping and seam preparation run through `setReviewDraftTransform` before
+review. Repairs and rerenders see that prepared draft. Later clipping, partial
+application, schedule edits or room rerolls cannot borrow its approval; a changed
+candidate needs another reviewed request. Region/cluster writers retain their
+lite configuration while reviews use the configured supervisor endpoint/model.
+
+Focused contracts: `independentReview`, `assistantIndependentReview`,
+`assistantAcceptanceSession`, `assistantVisualEvidenceSession`,
+`assistantTilesetVisualReview`, `mapVisualTilesetDependency`,
+`assistantBackgroundReview`, `aiTurnAppliedAccounting`, `regionTaskRun`. Existing `chat` injection remains the
+real-surface-friendly deterministic transport seam, not a production bypass.
+
+## Combined P2 and independent-review ownership (2026-09-07)
+
+P2 scheduling, canonical requirements and delivery are composed with independent
+review, not alternatives to it. `evaluateForReview` receives the current exact
+verification store while keeping applied acceptance private. Only active required
+items become requirement findings; optional/withdrawn items retain their original
+failed evidence without becoming new review blockers. An exact reviewed candidate
+can carry its current checks through application, including synchronous store
+subscriptions; changed content still retires proof. This never renews apply authority.
+
+Every public send retires the previous review owner before preparatory awaits.
+Previously reviewed, unchanged content may remain in the detached draft for the
+next request, but requires fresh review before application. Questions retain pending
+drafts without invoking review or replacing their answer with a draft error. A host
+new-goal action also resets the review baseline, original-context snapshot and read
+credits before awaits, so a failed entry followed by resume cannot borrow the old
+goal's originals. Successful apply consumes live approval while preserving its
+recorded revision in the returned historical result. Apply rejection retires it too.
+
+Review rejection/repeated repair stops project `blocked`, reviewer errors project
+`failed`, and review round/output limits project `budget-exhausted`. Boundary
+exceptions settle the current returned error handle and cannot make its remaining
+calls authoritative. No-write unmet authoring requirements still fail closed after
+the bounded repair loop. Regression: `assistantP2ReviewIntegration.test.ts` plus
+retained authored-baseline, consumed-approval and P2 owner/continuation suites.
+
+QA transports must recognize the machine `kind: "independent-review"` payload
+before handling zero-tool planner/intent requests, then return a revision-bound
+review verdict. The frozen upstream `ai-harness-p2`, `ai-harness-r1-ask` and
+`ai-harness-r21-new-goal` browser adapters do not yet distinguish these requests.
+Their visual writes also need actual current `show_map_region` evidence; an
+approval-shaped reply cannot bypass coverage. They use remote QA project writes
+and must only run with explicit isolated QA setup, never against user projects.
 
 ## P2 run outcomes and user scope actions (2026-09-06)
 
@@ -88,6 +224,8 @@ Cancellation doesn't roll back applied milestones. Fresh sends clear prior appli
 delivery before fallible context/intent awaits; Ask also clears delivery ownership,
 not the retained goal evidence. Trusted continuation retains already-owned delivery.
 Auto-apply, undo, separate region approval and advisory checks keep their policies.
+Outcome projection never grants independent review approval: both apply paths still
+require the exact current reviewed draft, live authored baseline and live owner.
 
 Retained cancelled pending work is session context, not current Ask proposal
 authority (R1, 2026-09-07). Explicit Ask and model-declared questions, including
@@ -160,8 +298,8 @@ At that same boundary, `rebaseProject` retires pending calls and their detached
 project payload, before preparation can fail or cancel. Store-backed sessions use
 current applied store content; detached sessions use their own accepted baseline.
 Already-applied content survives, but a later resume or disjoint write cannot carry
-an old goal's abandoned draft. Errors with successful current-owner proposals still
-apply normally. Regression: `test/aiNewGoalDraftRetirement.test.ts`.
+an old goal's abandoned draft. Successful current-owner proposals from errors remain detached and cannot apply
+until a subsequent authorized run independently reviews the exact current draft. Regression: `test/aiNewGoalDraftRetirement.test.ts`.
 Its request text, scope and pre-await baseline are retained for a later host resume.
 `getAcceptanceHistory()` returns session-local frozen history, not durable recovery.
 Explicit composer Ask overrides this action; model question/source/reset claims do
@@ -205,6 +343,10 @@ For authoring requests, failed or stale explicit checks now trigger the existing
 bounded final-repair loop and continuation before finalization. Advisory-only
 findings do not create automatic authoring requirements. Run-end proof waits for
 explicit revalidation after the final write.
+With an isolated write draft, those checks enter the independent review's required
+problems and structured repair loop; even a model approval cannot override them.
+Without a write draft, the bounded acceptance/completion repair loop owns explicit
+check recovery. Neither path applies a milestone before independent approval.
 Stale-check feedback includes the exact canonical tool/argument identity. A new
 check of guide cells does not silently replace an earlier frontage check; the
 executor can see which original coordinates remain pending after compaction.
@@ -1039,3 +1181,16 @@ and assistant suggestion-row/chip descriptions above. Glass, opacity and icon st
   and event-driven completion. Its existing SSE response fixture is incompatible with the
   default non-streaming provider request; lead reproduced 6 failures / 1 pass on unchanged
   `e07cd4f8`. That production transport is deliberately not changed by this phase.
+
+## Assistant deck width resize (2026-09-07)
+
+Live drag and `prefers-reduced-motion` must not leave `transition: width` active on the open
+`.ai-deck` rule. The open-deck selector is more specific than a bare
+`.ai-chat-panel.chat-dock-float .ai-deck` reduced-motion override, so the animation used to
+keep running and `getBoundingClientRect()` lagged the committed `--ai-float-bar-width`
+(Firefox F10: expected +88px, observed ~10–80px short). Fix: match open-deck specificity for
+`transition: none` under reduced motion, add `.is-resizing` (no transition while dragging),
+and seed pointer gestures / ARIA from the **viewport-clamped effective width** (preferred `barSize` stays in storage across viewport-only shrinks).
+Contracts: `test/aiPanelGlassResize.test.ts`, `test/aiDeckResizeTransitionCss.test.ts`,
+e2e `ai-ui-audit-fixes` F10.
+

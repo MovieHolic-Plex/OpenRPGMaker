@@ -1,3 +1,4 @@
+import { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
 // 커밋 게이트가 반려 사유로 **이 변경이 만든 오류**만 보고하는지.
 //
 // 예전 구현은 `commit.issues` 에서 첫 error 를 골랐다. issues 에는 이 변경이 만들지 않은 선재
@@ -50,6 +51,7 @@ describe("커밋 게이트 반려 사유", () => {
       );
 
       const result = await applyProposedProject(proposed, {
+        baseline: new AuthoredProjectBaseline(before),
         source: "agent",
         summary: "이벤트 추가",
         toolNames: ["upsert_event"],

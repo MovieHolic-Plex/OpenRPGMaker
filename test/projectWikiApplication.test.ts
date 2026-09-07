@@ -1,3 +1,4 @@
+import { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -51,6 +52,7 @@ describe("wiki ownership at authoring application", () => {
     store.replace(live);
 
     const result = await applyProposedProject(proposed, {
+      baseline: new AuthoredProjectBaseline(baseline),
       source: "agent", summary: "Title edit", toolNames: ["set_title_screen"],
     });
 

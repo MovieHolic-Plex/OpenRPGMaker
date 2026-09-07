@@ -1,3 +1,4 @@
+import { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
 import { describe, expect, it, vi } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
 import { reassembleSelectedProposalProject } from "@/editor/panels/aiChatPanel";
@@ -126,6 +127,7 @@ describe("reset_project", () => {
       proposed.meta.title = "초기화된 프로젝트";
 
       const result = await applyProposedProject(proposed, {
+        baseline: new AuthoredProjectBaseline(before),
         source: "agent",
         summary: "프로젝트 초기화",
         toolNames: ["reset_project"],
