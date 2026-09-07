@@ -4,6 +4,7 @@ import { getTool } from "@/editor/tools/toolRegistry";
 import { normalizeArgsForSchema, validateArgs } from "@/editor/tools/jsonSchema";
 import { COORD_SCHEMA } from "@/editor/tools/schemaShapes";
 import { isSceneTestInput, type SceneInteractionReceipt } from "@/testing/sceneTestRunner";
+import { validateWalkthroughScenario } from "@/testing/walkthroughRunner";
 
 function key(value: unknown): string {
   return JSON.stringify(value, (_key, entry: unknown) =>
@@ -53,6 +54,7 @@ export function verificationInput(name: string, raw: unknown): Record<string, un
   const args = normalizeArgsForSchema(tool.parameters, structuredClone(raw));
   if (!acceptanceRecord(args) || validateArgs(tool.parameters, args).length) return null;
   if (name === "run_scene_test" && !isSceneTestInput(args)) return null;
+  if (name === "play_walkthrough" && !validateWalkthroughScenario(args.scenario).ok) return null;
   if (name === "check_reachability" && (validateArgs(COORD_SCHEMA, args.from).length
     || !Array.isArray(args.targets) || args.targets.some(point => validateArgs(COORD_SCHEMA, point).length))) return null;
   return args;
