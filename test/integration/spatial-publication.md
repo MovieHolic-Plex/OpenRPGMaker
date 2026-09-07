@@ -13,22 +13,62 @@ production/admin URL or the application's credentials. Supabase roles are
 created locally, then the applicable checked-in `rpg_zzu` migrations run
 unchanged. The unrelated public benchmark and DRAFT auth migrations do not run.
 
-The runner executes the prior-schema preservation assertion first (expected
-psql exit 3), applies the migration, then executes:
+The runner requires Bun. It executes the prior-schema preservation assertion
+first (expected psql exit 3), applies the unchanged migration, then executes all
+66 integration assertions, including the original role fences. SQL runs from the
+owned temporary directory: the role test's historical relative task-5 output
+path is sandboxed there and its receipt is collected as `roles.json`. No
+historical task-5 receipt is overwritten.
+
+Next, `spatial-sql-echo-red.sh` deterministically reproduces the rejected old
+schedule on actual browser-role connections. The holder reserves an ID, the
+contender emits the old `CREATE_STARTED` echo, and a FIFO gates psql before its
+already queued duplicate-create statement can reach PostgreSQL. A live snapshot
+records the open holder and idle, unblocked contender. Only after the holder's
+COMMIT acknowledgement does the coordinator open the gate. The same queued
+statement returns PT409, proving that the original outcome could pass without
+overlap. The test intentionally exits 1 with `SPATIAL_ECHO_WITHOUT_OVERLAP`;
+the runner requires both that exit and sentinel, not an incidental failure.
+
+Finally, `bun scripts/qa/spatial-sql-races.mts` must exit 0 with five real overlaps:
+
+1. The local cluster enables `log_lock_waits`, a 50ms `deadlock_timeout`, and a
+   PID-bearing log prefix in the C locale. This threshold triggers PostgreSQL's
+   actual lock-wait event; elapsed time is never the success assertion.
+2. Before submitting each contender statement, the driver opens an append-only
+   log cursor at EOF and subscribes with `fs.watch`. Historical events, other
+   backend PIDs, SQL text, and lock-acquired messages cannot satisfy the barrier.
+3. After the specific contender's wait event, a third, local-admin connection
+   takes one live catalog snapshot. The SQL assertion requires the holder to be
+   idle in an open transaction, the contender active in a Lock wait, the holder
+   in `pg_blocking_pids`, and matching granted ExclusiveLock/ungranted ShareLock
+   entries for the exact transaction ID named by the server event. Both racing
+   connections remain `authenticator` -> `anon`; observation does not grant them
+   administrative capabilities.
+4. Only that proof allows holder COMMIT. The same blocked statement resumes;
+   it is never cancelled and retried as a fresh query. Every original rejection
+   and preservation assertion remains in place, including the NOWAIT probe.
+
+`races.json` records both backend IDs, the raw wait event, lock identity/modes,
+blocker relationship, holder transaction, blocked SQL/query start, and ordered
+subscription/event/verification/COMMIT/completion events per scenario. Client
+COMMIT acknowledgement and contender completion may arrive in either order;
+both necessarily follow COMMIT submission after the live proof. A contender
+completing early fails closed. Event and process waits have bounded failure
+timeouts, not sleeps or polling. PostgreSQL NOTIFY is not used: delivery on
+commit cannot establish this precommit barrier.
+
+Each invocation prints its unique evidence directory under
+`output/evidence/tile-to-world/task-30/run.*`. It contains `schema-red.log`,
+`red.log`, `green.log`, `roles.json`, `races.json`, the actual `postgres.log`, and
+`cleanup.md`. Independent runs cannot overwrite one another. The runner always
+stops only its owned cluster and removes its private directory, including on
+failure; no protected-project DELETE bypass is introduced. Evidence is not
+committed. Run the focused log-subscription tests with:
 
 ```sh
-psql "$SPATIAL_TEST_DATABASE_URL" -X -v ON_ERROR_STOP=1 \
-  -f test/integration/spatial-publication.sql
-npx tsx scripts/qa/spatial-sql-races.mts
+bun test scripts/qa/spatial-sql-lock-wait.test.mts
 ```
-
-Both GREEN commands must exit 0. The runner always stops its own cluster and
-removes its private directory; it does not introduce a protected-project DELETE
-bypass. Evidence is under `output/evidence/tile-to-world/task-5/` and is not
-committed. The race driver uses two actual psql connections, subscribed protocol
-barriers, open transactions, and a NOWAIT parent-lock proof. No sleeps or polling
-are involved. A concurrent loser can either encounter the held lock or reach it
-after release; both schedules must preserve the same accepted data.
 
 ## RPC wire shape
 
