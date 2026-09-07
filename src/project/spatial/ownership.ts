@@ -1,5 +1,6 @@
 import { assertNever, checkedDocument, designNode, freezeSpatial, own, SpatialOperationError } from "./domain";
 import type * as S from "./types";
+import { isOwnedSpatialBinding } from "./bindings";
 
 export type SpatialReferenceImpact = {
   readonly strong: readonly { readonly owner: S.SpatialDesignReference; readonly path: string }[];
@@ -55,16 +56,25 @@ export function occurrenceSubtree(document: S.SpatialAuthoringDocument, id: S.Sp
 export type SpatialDeletionImpact = {
   readonly occurrenceIds: readonly S.SpatialId[]; readonly connections: readonly S.SpatialConnection[];
   readonly externalConnectionIds: readonly S.SpatialId[];
-  readonly artifacts: readonly { readonly occurrenceId: S.SpatialId; readonly binding: S.SpatialCompiledBinding }[];
+  readonly artifacts: readonly { readonly occurrenceId: S.SpatialId; readonly binding: S.SpatialOwnedBinding }[];
+  readonly projections: readonly { readonly occurrenceId: S.SpatialId; readonly binding: S.SpatialProjectionBinding }[];
 };
 export function inspectSpatialOccurrenceDeletion(input: unknown, assets: S.SpatialAssetContext, id: S.SpatialId): SpatialDeletionImpact {
   const document = checkedDocument(input, assets);
   const occurrenceIds = occurrenceSubtree(document, id);
   const selected = new Set(occurrenceIds);
   const connections = document.connections.filter(link => selected.has(link.from.occurrenceId) || selected.has(link.to.occurrenceId));
-  return freezeSpatial({ occurrenceIds, connections,
+  const artifacts: SpatialDeletionImpact["artifacts"][number][] = [];
+  const projections: SpatialDeletionImpact["projections"][number][] = [];
+  for (const occurrenceId of occurrenceIds) for (const binding of own(document.occurrences, occurrenceId).bindings) {
+    switch (binding.kind) {
+      case undefined: artifacts.push({ occurrenceId, binding }); break;
+      case "projection": projections.push({ occurrenceId, binding }); break;
+      default: return assertNever(binding);
+    }
+  }
+  return freezeSpatial({ occurrenceIds, connections, artifacts, projections,
     externalConnectionIds: connections.filter(link => selected.has(link.from.occurrenceId) !== selected.has(link.to.occurrenceId)).map(link => link.id),
-    artifacts: occurrenceIds.flatMap(occurrenceId => own(document.occurrences, occurrenceId).bindings.map(binding => ({ occurrenceId, binding }))),
   });
 }
 export type SpatialDeletion = { readonly occurrenceId: S.SpatialId; readonly externalConnections: "reject" | "remove" };
@@ -82,7 +92,8 @@ export function deleteSpatialOccurrence(input: unknown, assets: S.SpatialAssetCo
   const removed = new Set(impact.occurrenceIds);
   const removedConnections = new Set(impact.connections.map(link => link.id));
   const occurrences = Object.fromEntries(Object.values(document.occurrences).filter(value => !removed.has(value.id)).map(value => [value.id, {
-    ...value, bindings: value.bindings.map(binding => ({ ...binding, connectionIds: binding.connectionIds.filter(id => !removedConnections.has(id)) })),
+    ...value, bindings: value.bindings.map(binding => isOwnedSpatialBinding(binding)
+      ? { ...binding, connectionIds: binding.connectionIds.filter(id => !removedConnections.has(id)) } : binding),
   }]));
   return freezeSpatial(checkedDocument({ ...document, occurrences,
     rootOccurrenceIds: document.rootOccurrenceIds.filter(id => !removed.has(id)),

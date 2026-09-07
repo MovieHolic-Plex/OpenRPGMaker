@@ -1,0 +1,701 @@
+{
+  "map": {
+    "id": "binding-contract-31",
+    "name": "Binding contract fixture",
+    "width": 14,
+    "height": 14,
+    "tilesetId": "easyrpg_chipset_interior",
+    "tileSize": 16,
+    "lowerTiles": [
+      430,
+      430,
+      430,
+      430,
+      430,
+      430,
+      430,
+      430,
+      430,
+      430,
+      430,
+      430,
+      430,
+      430,
+      430,
+      371,
+      460,
+      460,
+      460,
+      460,
+      460,
+      460,
+      460,
+      460,
+      460,
+      460,
+      371,
+      430,
+      430,
+      431,
+      74,
+      75,
+      75,
+      75,
+      75,
+      75,
+      75,
+      75,
+      75,
+      76,
+      429,
+      430,
+      430,
+      431,
+      104,
+      105,
+      105,
+      105,
+      105,
+      105,
+      105,
+      105,
+      105,
+      106,
+      429,
+      430,
+      430,
+      431,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      429,
+      430,
+      430,
+      431,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      429,
+      430,
+      430,
+      431,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      429,
+      430,
+      430,
+      431,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      429,
+      430,
+      430,
+      431,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      429,
+      430,
+      430,
+      431,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      429,
+      430,
+      430,
+      431,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      429,
+      430,
+      430,
+      431,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      429,
+      430,
+      430,
+      371,
+      400,
+      400,
+      400,
+      400,
+      401,
+      72,
+      399,
+      400,
+      400,
+      400,
+      371,
+      430,
+      430,
+      430,
+      430,
+      430,
+      430,
+      430,
+      371,
+      400,
+      371,
+      430,
+      430,
+      430,
+      430,
+      430
+    ],
+    "upperTiles": [
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      474,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1
+    ],
+    "events": []
+  },
+  "spatialAuthoring": {
+    "version": 1,
+    "library": {
+      "objects": {
+        "stair-design": {
+          "id": "stair-design",
+          "name": "Stair",
+          "revision": 1,
+          "tags": [],
+          "provenance": {
+            "origin": "user"
+          },
+          "graphic": {
+            "tilesetId": "easyrpg_chipset_interior",
+            "kitId": "stairs_down"
+          },
+          "anchors": [
+            {
+              "x": 0,
+              "y": 0,
+              "id": "stair-anchor",
+              "name": "Landing"
+            }
+          ],
+          "chips": [
+            "pass"
+          ]
+        }
+      },
+      "spaces": {
+        "space-design": {
+          "id": "space-design",
+          "name": "Landing room",
+          "revision": 1,
+          "tags": [],
+          "provenance": {
+            "origin": "user"
+          },
+          "tilesetId": "easyrpg_chipset_interior",
+          "shape": "rect",
+          "width": 10,
+          "height": 8,
+          "floor": "wood",
+          "wall": "cream",
+          "objectSlots": [
+            {
+              "id": "stair-slot",
+              "objectDesignId": "stair-design",
+              "quantity": 1,
+              "required": true,
+              "placement": {
+                "mode": "fixed",
+                "x": 5,
+                "y": 7
+              }
+            }
+          ],
+          "ports": [
+            {
+              "x": 5,
+              "y": 7,
+              "id": "space-entry",
+              "name": "Entry"
+            }
+          ],
+          "environment": "interior",
+          "role": "entrance"
+        }
+      },
+      "places": {},
+      "regions": {},
+      "worlds": {}
+    },
+    "occurrences": {
+      "space-occurrence": {
+        "x": 0,
+        "y": 0,
+        "id": "space-occurrence",
+        "level": 0,
+        "seed": 31,
+        "generatorVersion": "contract-probe",
+        "bindings": [],
+        "kind": "space",
+        "source": {
+          "kind": "space",
+          "id": "space-design",
+          "revision": 1
+        },
+        "parentId": null,
+        "parentSlot": null,
+        "snapshot": {
+          "root": {
+            "kind": "space",
+            "id": "space-design",
+            "revision": 1
+          },
+          "library": {
+            "objects": {
+              "stair-design": {
+                "id": "stair-design",
+                "name": "Stair",
+                "revision": 1,
+                "tags": [],
+                "provenance": {
+                  "origin": "user"
+                },
+                "graphic": {
+                  "tilesetId": "easyrpg_chipset_interior",
+                  "kitId": "stairs_down"
+                },
+                "anchors": [
+                  {
+                    "x": 0,
+                    "y": 0,
+                    "id": "stair-anchor",
+                    "name": "Landing"
+                  }
+                ],
+                "chips": [
+                  "pass"
+                ]
+              }
+            },
+            "spaces": {
+              "space-design": {
+                "id": "space-design",
+                "name": "Landing room",
+                "revision": 1,
+                "tags": [],
+                "provenance": {
+                  "origin": "user"
+                },
+                "tilesetId": "easyrpg_chipset_interior",
+                "shape": "rect",
+                "width": 10,
+                "height": 8,
+                "floor": "wood",
+                "wall": "cream",
+                "objectSlots": [
+                  {
+                    "id": "stair-slot",
+                    "objectDesignId": "stair-design",
+                    "quantity": 1,
+                    "required": true,
+                    "placement": {
+                      "mode": "fixed",
+                      "x": 5,
+                      "y": 7
+                    }
+                  }
+                ],
+                "ports": [
+                  {
+                    "x": 5,
+                    "y": 7,
+                    "id": "space-entry",
+                    "name": "Entry"
+                  }
+                ],
+                "environment": "interior",
+                "role": "entrance"
+              }
+            },
+            "places": {},
+            "regions": {},
+            "worlds": {}
+          },
+          "kitCells": {
+            "stair-design": {
+              "tilesetId": "easyrpg_chipset_interior",
+              "kitId": "stairs_down",
+              "width": 1,
+              "height": 1,
+              "cells": [
+                {
+                  "x": 0,
+                  "y": 0,
+                  "layer": "upper",
+                  "tile": 474
+                }
+              ]
+            }
+          },
+          "ports": [
+            {
+              "x": 5,
+              "y": 7,
+              "id": "port:16:space-occurrence11:space-entry",
+              "name": "Entry",
+              "localPortId": "space-entry"
+            }
+          ]
+        }
+      },
+      "child:16:space-occurrence10:stair-slot:0": {
+        "x": 5,
+        "y": 7,
+        "id": "child:16:space-occurrence10:stair-slot:0",
+        "level": 0,
+        "seed": 31,
+        "generatorVersion": "contract-probe",
+        "bindings": [],
+        "kind": "object",
+        "source": {
+          "kind": "object",
+          "id": "stair-design",
+          "revision": 1
+        },
+        "parentId": "space-occurrence",
+        "parentSlot": {
+          "slotId": "stair-slot",
+          "index": 0
+        },
+        "snapshot": {
+          "root": {
+            "kind": "object",
+            "id": "stair-design",
+            "revision": 1
+          },
+          "library": {
+            "objects": {
+              "stair-design": {
+                "id": "stair-design",
+                "name": "Stair",
+                "revision": 1,
+                "tags": [],
+                "provenance": {
+                  "origin": "user"
+                },
+                "graphic": {
+                  "tilesetId": "easyrpg_chipset_interior",
+                  "kitId": "stairs_down"
+                },
+                "anchors": [
+                  {
+                    "x": 0,
+                    "y": 0,
+                    "id": "stair-anchor",
+                    "name": "Landing"
+                  }
+                ],
+                "chips": [
+                  "pass"
+                ]
+              }
+            },
+            "spaces": {},
+            "places": {},
+            "regions": {},
+            "worlds": {}
+          },
+          "kitCells": {
+            "stair-design": {
+              "tilesetId": "easyrpg_chipset_interior",
+              "kitId": "stairs_down",
+              "width": 1,
+              "height": 1,
+              "cells": [
+                {
+                  "x": 0,
+                  "y": 0,
+                  "layer": "upper",
+                  "tile": 474
+                }
+              ]
+            }
+          },
+          "ports": [
+            {
+              "x": 0,
+              "y": 0,
+              "id": "port:40:child:16:space-occurrence10:stair-slot:012:stair-anchor",
+              "name": "Landing",
+              "localPortId": "stair-anchor"
+            }
+          ]
+        }
+      }
+    },
+    "rootOccurrenceIds": [
+      "space-occurrence"
+    ],
+    "connections": [],
+    "legacyImport": {
+      "version": 1,
+      "sourceHash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mapping": [],
+      "backup": {
+        "encoding": "raw-json",
+        "json": "{}",
+        "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+      }
+    }
+  }
+}

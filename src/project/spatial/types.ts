@@ -95,12 +95,21 @@ export type SpatialCompositionSnapshot<P extends SpatialPort = SpatialPort> = {
   readonly kitCells: Readonly<Record<string, SpatialKitSnapshot>>;
   readonly ports: readonly P[];
 };
-export type SpatialCompiledBinding = {
-  readonly mapId: string; readonly rect: SpatialRect; readonly eventIds: readonly string[];
-  readonly connectionIds: readonly SpatialId[];
+type SpatialBindingExtent = {
+  readonly mapId: string; readonly rect: SpatialRect;
   readonly ports: readonly (SpatialPoint & { readonly portId: SpatialId })[];
-  readonly contentDigest: string;
 };
+/** Historical untagged raster/event ownership; absence of kind is preserved by IO. */
+export type SpatialOwnedBinding = SpatialBindingExtent & {
+  readonly kind?: never; readonly eventIds: readonly string[];
+  readonly connectionIds: readonly SpatialId[]; readonly contentDigest: string;
+};
+/** Non-owning placement/port extent, not proof of painted cells or passability. */
+export type SpatialProjectionBinding = SpatialBindingExtent & {
+  readonly kind: "projection";
+  readonly eventIds?: never; readonly connectionIds?: never; readonly contentDigest?: never;
+};
+export type SpatialCompiledBinding = SpatialOwnedBinding | SpatialProjectionBinding;
 type SpatialOccurrenceBase = {
   readonly [K in SpatialKind]: SpatialPoint & {
     readonly id: SpatialId; readonly kind: K;

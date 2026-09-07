@@ -180,9 +180,17 @@ const snapshot = <P extends S.SpatialPort>(parsePort: Parser<P>): Parser<S.Spati
   return { root: source(kind)(r.root, `${p}.root`), library: library(r.library, `${p}.library`), kitCells: dictionary(r.kitCells, `${p}.kitCells`, kit), ports: list(r.ports, `${p}.ports`, parsePort) };
 };
 const binding: Parser<S.SpatialCompiledBinding> = (v, p) => {
-  const r = record(v, p, "mapId rect eventIds connectionIds ports contentDigest");
+  const r = record(v, p);
+  const bindingKind = Object.hasOwn(r, "kind") ? choice(["projection"] as const)(r.kind, `${p}.kind`) : undefined;
   const boundPorts = list(r.ports, `${p}.ports`, (v, p) => { const r = record(v, p, "portId x y"); return { ...point(r, p), portId: id(r.portId, `${p}.portId`) }; });
-  return { mapId: id(r.mapId, `${p}.mapId`), rect: rect(r.rect, `${p}.rect`), eventIds: texts(r.eventIds, `${p}.eventIds`), connectionIds: ids(r.connectionIds, `${p}.connectionIds`), ports: boundPorts, contentDigest: digest(r.contentDigest, `${p}.contentDigest`) };
+  const extent = { mapId: id(r.mapId, `${p}.mapId`), rect: rect(r.rect, `${p}.rect`), ports: boundPorts };
+  switch (bindingKind) {
+    case "projection": record(r, p, "kind mapId rect ports"); return { kind: bindingKind, ...extent };
+    case undefined:
+      record(r, p, "mapId rect eventIds connectionIds ports contentDigest");
+      return { mapId: extent.mapId, rect: extent.rect, eventIds: texts(r.eventIds, `${p}.eventIds`), connectionIds: ids(r.connectionIds, `${p}.connectionIds`), ports: boundPorts, contentDigest: digest(r.contentDigest, `${p}.contentDigest`) };
+    default: return assertNever(bindingKind);
+  }
 };
 const occurrence: Parser<S.SpatialOccurrence> = (v, p) => {
   const r = record(v, p, "id kind parentId parentSlot source x y level seed snapshot generatorVersion bindings");

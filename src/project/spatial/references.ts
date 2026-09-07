@@ -1,6 +1,7 @@
 import { assert } from "../io/guards";
 import { resolveSpatialGraphic } from "./assets";
 import { validateOccurrencePorts, validateParentSlot } from "./associations";
+import { isOwnedSpatialBinding } from "./bindings";
 import type * as S from "./types";
 
 type Design = S.ObjectDesign | S.SpaceDesign | S.PlaceDesign | S.RegionDesign | S.WorldDesign;
@@ -194,6 +195,11 @@ export function validateSpatialReferences(document: S.SpatialAuthoringDocument, 
       const path = `${p}.occurrences.${occurrence.id}.bindings[${i}]`;
       const map = own(assets.maps, binding.mapId, `${path}.mapId`);
       bounds([binding.rect, { x: binding.rect.x + binding.rect.width - 1, y: binding.rect.y + binding.rect.height - 1 }], map, `${path}.rect`);
+      for (const port of binding.ports) {
+        assert(occurrence.snapshot.ports.some(owned => owned.id === port.portId) && contains(binding.rect, port), `${path}.ports: missing or out-of-bounds owned port`);
+        assert(!boundPorts.has(port.portId), `${path}.ports: duplicate port binding`); boundPorts.add(port.portId);
+      }
+      if (!isOwnedSpatialBinding(binding)) return;
       const rects = ownedRects.get(map.id) ?? [];
       for (const rect of rects) assert(binding.rect.x + binding.rect.width <= rect.x || rect.x + rect.width <= binding.rect.x || binding.rect.y + binding.rect.height <= rect.y || rect.y + rect.height <= binding.rect.y, `${path}.rect: overlapping ownership`);
       ownedRects.set(map.id, [...rects, binding.rect]);
@@ -206,10 +212,6 @@ export function validateSpatialReferences(document: S.SpatialAuthoringDocument, 
       ownedEvents.set(map.id, events);
       unique(binding.connectionIds, `${path}.connectionIds`);
       for (const id of binding.connectionIds) assert(document.connections.some(connection => connection.id === id && (connection.from.occurrenceId === occurrence.id || connection.to.occurrenceId === occurrence.id)), `${path}.connectionIds: missing owned connection ${id}`);
-      for (const port of binding.ports) {
-        assert(occurrence.snapshot.ports.some(owned => owned.id === port.portId) && contains(binding.rect, port), `${path}.ports: missing or out-of-bounds owned port`);
-        assert(!boundPorts.has(port.portId), `${path}.ports: duplicate port binding`); boundPorts.add(port.portId);
-      }
     });
   }
   unique(document.legacyImport.mapping.map(entry => entry.sourceKey), `${p}.legacyImport.mapping`);
