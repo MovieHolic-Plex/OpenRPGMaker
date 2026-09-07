@@ -48,6 +48,46 @@ cleanup; transport coverage verifies that settings recovery actually opens.
 Mutation evidence breaks those production connections independently and restores
 them before the final passing run.
 
+### P2 R1 retained-draft Ask (2026-09-07)
+
+`test/aiAskRetainedDraft.test.ts` exercises the real session, runner, registered
+write tool, apply adapter and undo. Cancellation fires on the subscribed successful
+tool result, not a delay. It asserts zero real apply invocations during explicit
+Ask and inferred questions under Do or Plan, then one on authorized Do/resume,
+no replay on repeat resume, and exact undo restoration. Other cases cover Ask at
+the acceptance-milestone boundary, early preparation failure, executor-supplied
+calls and applied/pending coexistence. Run the focused regression with
+`npm test -- test/aiAskRetainedDraft.test.ts --maxWorkers=1`.
+
+The native editor command used for R1 was:
+
+```sh
+export TMPDIR=/dev/shm/rpg-zzu-ai-harness-p2-01a07564
+QA_PORT=37047 QA_CACHE_ROOT="$TMPDIR/r1-ask-native-cache" \
+  EVIDENCE_DIR=output/evidence/ai-harness/p2/review-r1-ask/native \
+  xvfb-run -a node scripts/qa/ai-harness-contracts.mjs --scenario retained-draft-ask
+```
+
+Choose a free owned port and fresh evidence directory for another run.
+`QA_CACHE_ROOT` is optional and defaults to `.vite-cache` under the worktree;
+relative overrides resolve there too. The harness creates and removes a unique
+Vite cache child beneath that root. Native QA requires Firefox/Xvfb and Supabase
+access for fresh owned projects, with remote save/readback and owned cleanup.
+
+Only LLM HTTP responses are scripted. The adapter waits for the next model request
+after a successful title write, clicks Abort, then exercises explicit Ask and an
+inferred question under Do. Typed Continue in Ask stays unauthorized; selecting
+Do and typing Continue applies once, repeat Continue doesn't replay, and the real
+undo control restores the original bytes with independent remote readback. This
+scenario doesn't click `ai-continue-run`; inferred Plan is covered by the unit test.
+Native `recordAppliedProject` observations count successful apply receipts:
+**0 after cancellation, 0 after Ask, 0 after typed Continue in Ask, 1 after authorized
+resume, 1 after repeated resume**. They don't count failed apply attempts; exact
+invocation counts come from the real-adapter unit spy above. The source-bound
+[R1 report](../output/evidence/ai-harness/p2/review-r1-ask/report.md) retains RED/GREEN,
+final native evidence and the separate failed observer attempt. It isn't R3 wiki
+ownership verification or integrated P2 approval.
+
 ## Canonical project storage versus AI history (2026-09-06)
 
 `test/noLocalProjectDb.test.ts` guards project/editor source against a local

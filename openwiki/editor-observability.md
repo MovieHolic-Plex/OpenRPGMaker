@@ -125,6 +125,15 @@ can't settle a newer result owner. Read-only getters recheck freshness but don't
 rewrite stored activity, audit or acceptance evidence. Post-turn withdrawal
 refreshes the live session/UI; it doesn't rewrite already-published activity rows.
 
+R1 separates inspectable session context from current question delivery. After a
+successful write is cancelled, `getProposedProject()` can still expose its detached
+draft while explicit or inferred Ask publishes no proposed calls and no draft
+delivery (`hasPendingDraft: false`). Don't infer apply authority from that snapshot
+or a pending baseline-sync refusal. The [R1 native scenario](testing.md#p2-r1-retained-draft-ask-2026-09-07)
+checks result, recap, getter, harness, fresh serialized activity and visible DOM
+outcome agreement. Its successful-apply receipts aren't apply-invocation counts;
+the real-adapter unit regression asserts those counts, including zero calls.
+
 Outcome fields are optional in compatibility types. Legacy stored records without
 them remain without them; `parseRunRecapPayload` accepts only the typed axis
 literals and doesn't recover authority from prose. Bridge readiness/configuration

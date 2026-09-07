@@ -17,8 +17,8 @@ and `deriveRunOutcome(facts)`. The pure function returns a frozen value from
 Pending draft takes precedence over earlier applied milestones; otherwise no
 applied work means `no-change`, then current proof, accepted save and actual apply
 select the remaining delivery states. Both pending and applied call collections
-survive this display precedence. Only pending calls are candidates for application;
-proof retry doesn't replay already-applied tools.
+survive this display precedence. Only authorized pending calls are candidates for
+application; proof retry doesn't replay already-applied tools.
 
 [AssistantSession](../src/ai/assistantSession.ts) owns the normalized facts.
 `getRunOutcome(): RunOutcome | null` is read-only and returns null before a result
@@ -37,6 +37,21 @@ Cancellation doesn't roll back applied milestones. Fresh sends clear prior appli
 delivery before fallible context/intent awaits; Ask also clears delivery ownership,
 not the retained goal evidence. Trusted continuation retains already-owned delivery.
 Auto-apply, undo, separate region approval and advisory checks keep their policies.
+
+Retained cancelled pending work is session context, not current Ask proposal
+authority (R1, 2026-09-07). Explicit Ask and model-declared questions, including
+questions inferred under Plan, publish `proposedCalls: []` and set the outcome
+fact `hasPendingDraft: false`; the question doesn't claim the draft as delivery.
+The internal proposal map and detached project remain available for an authorized
+Do/resume. `syncBaselineFromStoreIfClean` still refuses to discard that draft.
+
+`maybeAutoApplyMilestone` refuses Ask at the shared acceptance-milestone boundary.
+The runner also blocks ordinary application in explicit host Ask even if an
+executor supplies calls; inferred questions rely on session normalization and
+publication, not host mode alone. Explicit Ask owns publication before fallible
+preparation too. Authorized Do/resume still applies the pending work once without
+replaying its tool, and real undo restores the pre-draft project. See the
+[R1 regression and native scenario](testing.md#p2-r1-retained-draft-ask-2026-09-07).
 
 ### Canonical requirements and genuine user actions
 
