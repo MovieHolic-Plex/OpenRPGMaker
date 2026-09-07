@@ -1,0 +1,27 @@
+{
+  "inspector": "PI_MODEL=grok-4.6 PI_PROVIDER=xai",
+  "method": "Read PNG as images in this session, plus Phaser inspect JSON from public-lifecycle.json",
+  "pixelsDoNotProve": ["receipt rows", "claims", "gold", "inventory", "Save5"],
+  "pinkSheet": "approved documented raw-picture contract, not a new art task",
+  "redProvenance": ".omo/evidence/life-full-20260906/model-routing/grok-ui-diagnosis/red/",
+  "red": {
+    "earned-product.png": {
+      "md5": "6e3a91570e2494955e7a7d54f2b24fb6",
+      "visual": "four Phaser __MISSING black/green-X tiles including 2-wide home1; grass and player charset present"
+    }
+  },
+  "green": {
+    "earned-product.png": {
+      "sha256": "4e692d23512f5bd2f929cfa5d2b8d0ed5c226a888535ce629ab7b53c894e492e",
+      "visual": "white Cloud.png on pink sheets: one 2-wide plus three 1x1; HUD day2; not __MISSING tiles"
+    },
+    "resumed-unassigned.png": {
+      "sha256": "b9b760f3c011da2e0cd9f64b373c2e803f239bc380f8ce30b9e5f6a2ce09931e",
+      "visual": "2-wide home1 gone; three 1x1 Cloud sheets remain"
+    },
+    "cumulative-recovered.png": {
+      "sha256": "edb07d98fa469484adb3393b7bbb29c50386bf327e0730746fd443ebb1e6ffe5",
+      "visual": "two 1x1 Cloud sheets (home2 and repeated); former cumulative cell empty"
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "ownedShmRemoved": "/dev/shm/st_01a07924-ui-val",
+  "distSymlinkRemoved": true,
+  "port39941": "free",
+  "otherResourcesDeleted": false,
+  "diagnosisPreserved": ".omo/evidence/life-full-20260906/model-routing/grok-ui-diagnosis/",
+  "parentHeadUnchanged": "3df665bf28c3eb4f87252a4acb6260d25589850c",
+  "trackedSourceDiff": "empty"
+}

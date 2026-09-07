@@ -1,0 +1,46 @@
+{
+  "source": "3df665bf28c3eb4f87252a4acb6260d25589850c",
+  "uiSource": "78197cd54db57f01a5730d08bddcb1f532785efa",
+  "model": "xai/grok-4.6",
+  "actualRawReceipts": [
+    "focused-tests-run",
+    "diagnostics",
+    "typecheck-app",
+    "native-run",
+    "build"
+  ],
+  "exits": [
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "tests": {
+    "files": 5,
+    "passed": 22
+  },
+  "sourceHashesChecked": 4,
+  "shotHashesChecked": 3,
+  "liveCounts": [
+    4,
+    3,
+    2
+  ],
+  "missingSprites": [
+    0,
+    0,
+    0
+  ],
+  "remoteWrites": 0,
+  "pageErrors": 0,
+  "independentReview": "grok-spatial-ui-review/REPORT.md + ADDENDUM.md",
+  "failingFirst": "Preserved actual browser RED before product changes; unit-RED raw output unavailable and not claimed",
+  "limits": "Raw-picture pink sheet is existing contract; decoration proof is public/source plus export check, not separate native decoration journey. No whole Phase4/remote/all51 approval.",
+  "cleanup": {
+    "distAbsent": true,
+    "ownedShmAbsent": true,
+    "port39941Unbound": true
+  },
+  "liveCredentialMatches": 0
+}

@@ -1,0 +1,37 @@
+{
+  "event": "spatial-ui-source-integrated-validation-pending",
+  "tasks": [
+    45,
+    46
+  ],
+  "source": "78197cd54db57f01a5730d08bddcb1f532785efa",
+  "integration": "3df665bf28c3eb4f87252a4acb6260d25589850c",
+  "reviewArchive": "d7f71b8d557b99fa54c92b56aa43a3e9b52c784a",
+  "redArchive": "d6f7cc98b51e777b899181b9b45c2a35863a31f9",
+  "exportRereview": {
+    "exit": 0,
+    "profileStrippedValid": true,
+    "requiredPicturesIncluded": true,
+    "unreferencedStrippedBlankExcluded": true
+  },
+  "sourceMatchesReviewed": true,
+  "coreSourceUnchanged": true,
+  "index": 0,
+  "wiki": 0,
+  "cleanup": [
+    {
+      "path": "/home/main/z-project/rpg-zzu-life-full-receipt-ui-grok",
+      "exit": 0,
+      "requiredEvidenceArchived": true,
+      "commitsReachableFrom": "3df665bf28c3eb4f87252a4acb6260d25589850c"
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-life-full-spatial-ui-grok-review",
+      "exit": 0,
+      "requiredEvidenceArchived": true,
+      "commitsReachableFrom": "3df665bf28c3eb4f87252a4acb6260d25589850c"
+    }
+  ],
+  "remaining": "Raw producer test/build receipts insufficient; first NEW integrated-input UI validation runs on frozen3df665 with Grok. No task45/46 completion before it passes.",
+  "placementCore": "Parent empty-index setup repaired; same DAG core/verifier nodes re-dispatched; original blocked reports preserved."
+}

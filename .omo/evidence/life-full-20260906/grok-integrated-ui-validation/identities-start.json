@@ -1,0 +1,34 @@
+{
+  "taskId": "st_01a07924",
+  "model": {
+    "PI_MODEL": "grok-4.6",
+    "PI_PROVIDER": "xai"
+  },
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-p4",
+  "frozenHeadExpected": "3df665bf28c3eb4f87252a4acb6260d25589850c",
+  "head": "3df665bf28c3eb4f87252a4acb6260d25589850c",
+  "headMatchesFrozen": true,
+  "gitStatusPorcelain": "",
+  "producerCommitCompared": "78197cd54db57f01a5730d08bddcb1f532785efa",
+  "uiFilesMatch78197": true,
+  "hashes": {
+    "src/assets/bundled.ts": "ddb6af223e92d6c6cf1d6c897794c92b50895aef162b0d7de488a0344e1d2688",
+    "src/player/eventSpriteResources.ts": "7ec273fd3c851e3ef8f8ed914850d576206f16784eb05215e3394162c5ccf72d",
+    "src/player/playScenePlaceables.ts": "b07d6177ef14accff0eee7e6ec5e3ff6ca81f48670e947d275cb999b07925b9a",
+    "test/spatialCatalogPictureRender.test.ts": "d9f3f524361fe7b1c722b606c7dd4e7f6cb1bc7731391cff14618aecb8973e6e",
+    "test/playScenePlaceableOverlay.test.ts": "12fc6ba5632664db057cabceed58640aa7b31fb97c088a8dd8b15d159e3d9fad",
+    "test/p2SpatialPlayIntegration.test.ts": "03f5842d15079b924835ed572c39a8e850770a634c2025aad995be621ab2abda",
+    "test/generatedMonsterFieldSprites.test.ts": "762ea831cc7535542522ffc41bcf278e19579be188c549f88e2c944deadf2d57",
+    "test/bundledAssetWarmup.test.ts": "dc84ca55713889e731e0a92e08a43880dd5cfab62110778c6612853e802c3135"
+  },
+  "hashes78197": {
+    "src/assets/bundled.ts": "ddb6af223e92d6c6cf1d6c897794c92b50895aef162b0d7de488a0344e1d2688",
+    "src/player/eventSpriteResources.ts": "7ec273fd3c851e3ef8f8ed914850d576206f16784eb05215e3394162c5ccf72d",
+    "src/player/playScenePlaceables.ts": "b07d6177ef14accff0eee7e6ec5e3ff6ca81f48670e947d275cb999b07925b9a",
+    "test/spatialCatalogPictureRender.test.ts": "d9f3f524361fe7b1c722b606c7dd4e7f6cb1bc7731391cff14618aecb8973e6e"
+  },
+  "fixtureProjectJson": "f995e7c27d284593e5fb0101954872405b9eb7b68ffd5f5fd8e55b8181b4bbfc",
+  "node": "v24.11.1",
+  "npm": "11.6.2",
+  "disk": "Filesystem      Size  Used Avail Use% Mounted on\n/dev/sda2       914G  874G  1.9G 100% /\ntmpfs            50G  2.4G   47G   5% /dev/shm\n"
+}

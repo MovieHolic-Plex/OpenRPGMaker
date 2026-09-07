@@ -1,0 +1,18 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/spatialCatalogPictureRender.test.ts test/playScenePlaceableOverlay.test.ts test/p2SpatialPlayIntegration.test.ts test/generatedMonsterFieldSprites.test.ts test/bundledAssetWarmup.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p4
+
+ ✓ test/bundledAssetWarmup.test.ts (2 tests) 238ms
+ ✓ test/playScenePlaceableOverlay.test.ts (5 tests) 313ms
+ ✓ test/spatialCatalogPictureRender.test.ts (5 tests) 393ms
+ ✓ test/p2SpatialPlayIntegration.test.ts (3 tests) 200ms
+ ✓ test/generatedMonsterFieldSprites.test.ts (7 tests) 772ms
+
+ Test Files  5 passed (5)
+      Tests  22 passed (22)
+   Start at  08:58:48
+   Duration  9.68s (transform 11.34s, setup 0ms, collect 30.30s, tests 1.92s, environment 1.35s, prepare 849ms)
+

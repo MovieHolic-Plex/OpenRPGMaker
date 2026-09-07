@@ -1,0 +1,19 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+browserType.launch: Executable doesn't exist at /dev/shm/st_01a07924-ui-val/xdg/ms-playwright/firefox-1532/firefox/firefox
+╔════════════════════════════════════════════════════════════╗
+║ Looks like Playwright was just installed or updated.       ║
+║ Please run the following command to download new browsers: ║
+║                                                            ║
+║     npx playwright install                                 ║
+║                                                            ║
+║ <3 Playwright Team                                         ║
+╚════════════════════════════════════════════════════════════╝
+    at /home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/grok-integrated-ui-validation/public-player-green.mjs:176:27 {
+  log: [],
+  name: 'Error'
+}
+
+Node.js v24.11.1
