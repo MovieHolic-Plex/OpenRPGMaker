@@ -1,0 +1,554 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/storeSaveOrdering.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-interior-load-consistency-0907
+
+ ❯ test/storeSaveOrdering.test.ts (8 tests | 6 failed) 27966ms
+   × explicit store flush transport ordering > serializes an explicit B flush behind held A with 'missing' descriptions 4188ms
+     → expected "saveProjectToSupabase" to not be called at all, but actually been called 1 times[90m
+
+Received:
+
+[1m  1st saveProjectToSupabase call:
+
+[22m    Array [
+      Object {
+        "assets": [Object],
+        "commonEvents": [Array],
+        "database": [Object],
+        "flags": [Object],
+        "mapConnections": [Array],
+        "mapTree": [Object],
+        "maps": [Object],
+        "meta": [Object],
+        "resourceProfiles": [Array],
+        "session": [Object],
+        "startMapId": "map_blank_start",
+        "startPos": [Object],
+        "switches": [Array],
+        "system": [Object],
+        "tilesets": [Object],
+        "variables": [Array],
+        "version": 4,
+        "villageInfoDocuments": [Array],
+      },
+      Object {
+        "anonKey": "test-anon-key",
+        "projectId": "audio-description-persistence",
+        "url": "http://dbserver:8100",
+      },
+    ]
+[39m[90m
+
+Number of calls: [1m1[22m
+[39m
+   × explicit store flush transport ordering > serializes an explicit B flush behind held A with 'cleared' descriptions 3375ms
+     → expected "saveProjectToSupabase" to not be called at all, but actually been called 1 times[90m
+
+Received:
+
+[1m  1st saveProjectToSupabase call:
+
+[22m    Array [
+      Object {
+        "assets": [Object],
+        "audioDescriptions": [Object],
+        "commonEvents": [Array],
+        "database": [Object],
+        "flags": [Object],
+        "mapConnections": [Array],
+        "mapTree": [Object],
+        "maps": [Object],
+        "meta": [Object],
+        "resourceProfiles": [Array],
+        "session": [Object],
+        "startMapId": "map_blank_start",
+        "startPos": [Object],
+        "switches": [Array],
+        "system": [Object],
+        "tilesets": [Object],
+        "variables": [Array],
+        "version": 4,
+        "villageInfoDocuments": [Array],
+      },
+      Object {
+        "anonKey": "test-anon-key",
+        "projectId": "audio-description-persistence",
+        "url": "http://dbserver:8100",
+      },
+    ]
+[39m[90m
+
+Number of calls: [1m1[22m
+[39m
+   × explicit store flush transport ordering > serializes an explicit B flush behind held A with 'authored' descriptions 3389ms
+     → expected "saveProjectToSupabase" to not be called at all, but actually been called 1 times[90m
+
+Received:
+
+[1m  1st saveProjectToSupabase call:
+
+[22m    Array [
+      Object {
+        "assets": [Object],
+        "audioDescriptions": [Object],
+        "commonEvents": [Array],
+        "database": [Object],
+        "flags": [Object],
+        "mapConnections": [Array],
+        "mapTree": [Object],
+        "maps": [Object],
+        "meta": [Object],
+        "resourceProfiles": [Array],
+        "session": [Object],
+        "startMapId": "map_blank_start",
+        "startPos": [Object],
+        "switches": [Array],
+        "system": [Object],
+        "tilesets": [Object],
+        "variables": [Array],
+        "version": 4,
+        "villageInfoDocuments": [Array],
+      },
+      Object {
+        "anonKey": "test-anon-key",
+        "projectId": "audio-description-persistence",
+        "url": "http://dbserver:8100",
+      },
+    ]
+[39m[90m
+
+Number of calls: [1m1[22m
+[39m
+   ✓ explicit store flush transport ordering > A alone cannot authorize B even after A has settled  2581ms
+   × explicit store flush transport ordering > queued B cannot write C (C requests its own flush: false) 3283ms
+     → expected "saveProjectToSupabase" to not be called at all, but actually been called 1 times[90m
+
+Received:
+
+[1m  1st saveProjectToSupabase call:
+
+[22m    Array [
+      Object {
+        "assets": [Object],
+        "commonEvents": [Array],
+        "database": [Object],
+        "flags": [Object],
+        "mapConnections": [Array],
+        "mapTree": [Object],
+        "maps": [Object],
+        "meta": [Object],
+        "resourceProfiles": [Array],
+        "session": [Object],
+        "startMapId": "map_blank_start",
+        "startPos": [Object],
+        "switches": [Array],
+        "system": [Object],
+        "tilesets": [Object],
+        "variables": [Array],
+        "version": 4,
+        "villageInfoDocuments": [Array],
+      },
+      Object {
+        "anonKey": "test-anon-key",
+        "projectId": "audio-description-persistence",
+        "url": "http://dbserver:8100",
+      },
+    ]
+[39m[90m
+
+Number of calls: [1m1[22m
+[39m
+   × explicit store flush transport ordering > queued B cannot write C (C requests its own flush: true) 4138ms
+     → expected "saveProjectToSupabase" to not be called at all, but actually been called 2 times[90m
+
+Received:
+
+[1m  1st saveProjectToSupabase call:
+
+[22m    Array [
+      Object {
+        "assets": [Object],
+        "commonEvents": [Array],
+        "database": [Object],
+        "flags": [Object],
+        "mapConnections": [Array],
+        "mapTree": [Object],
+        "maps": [Object],
+        "meta": [Object],
+        "resourceProfiles": [Array],
+        "session": [Object],
+        "startMapId": "map_blank_start",
+        "startPos": [Object],
+        "switches": [Array],
+        "system": [Object],
+        "tilesets": [Object],
+        "variables": [Array],
+        "version": 4,
+        "villageInfoDocuments": [Array],
+      },
+      Object {
+        "anonKey": "test-anon-key",
+        "projectId": "audio-description-persistence",
+        "url": "http://dbserver:8100",
+      },
+    ]
+
+[1m  2nd saveProjectToSupabase call:
+
+[22m    Array [
+      Object {
+        "assets": [Object],
+        "audioDescriptions": [Object],
+        "commonEvents": [Array],
+        "database": [Object],
+        "flags": [Object],
+        "mapConnections": [Array],
+        "mapTree": [Object],
+        "maps": [Object],
+        "meta": [Object],
+        "resourceProfiles": [Array],
+        "session": [Object],
+        "startMapId": "map_blank_start",
+        "startPos": [Object],
+        "switches": [Array],
+        "system": [Object],
+        "tilesets": [Object],
+        "variables": [Array],
+        "version": 4,
+        "villageInfoDocuments": [Array],
+      },
+      Object {
+        "anonKey": "test-anon-key",
+        "projectId": "audio-description-persistence",
+        "url": "http://dbserver:8100",
+      },
+    ]
+[39m[90m
+
+Number of calls: [1m2[22m
+[39m
+   × explicit store flush transport ordering > A's failure remains visible to A callers without rejecting an owned queued B save 2763ms
+     → expected "saveProjectToSupabase" to not be called at all, but actually been called 1 times[90m
+
+Received:
+
+[1m  1st saveProjectToSupabase call:
+
+[22m    Array [
+      Object {
+        "assets": [Object],
+        "audioDescriptions": [Object],
+        "commonEvents": [Array],
+        "database": [Object],
+        "flags": [Object],
+        "mapConnections": [Array],
+        "mapTree": [Object],
+        "maps": [Object],
+        "meta": [Object],
+        "resourceProfiles": [Array],
+        "session": [Object],
+        "startMapId": "map_blank_start",
+        "startPos": [Object],
+        "switches": [Array],
+        "system": [Object],
+        "tilesets": [Object],
+        "variables": [Array],
+        "version": 4,
+        "villageInfoDocuments": [Array],
+      },
+      Object {
+        "anonKey": "test-anon-key",
+        "projectId": "audio-description-persistence",
+        "url": "http://dbserver:8100",
+      },
+    ]
+[39m[90m
+
+Number of calls: [1m1[22m
+[39m
+   ✓ explicit store flush transport ordering > preserves same-lineage coalescing and immediate map catch-up  4246ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/storeSaveOrdering.test.ts > explicit store flush transport ordering > serializes an explicit B flush behind held A with 'missing' descriptions
+AssertionError: expected "saveProjectToSupabase" to not be called at all, but actually been called 1 times[90m
+
+Received:
+
+[1m  1st saveProjectToSupabase call:
+
+[22m    Array [
+      Object {
+        "assets": [Object],
+        "commonEvents": [Array],
+        "database": [Object],
+        "flags": [Object],
+        "mapConnections": [Array],
+        "mapTree": [Object],
+        "maps": [Object],
+        "meta": [Object],
+        "resourceProfiles": [Array],
+        "session": [Object],
+        "startMapId": "map_blank_start",
+        "startPos": [Object],
+        "switches": [Array],
+        "system": [Object],
+        "tilesets": [Object],
+        "variables": [Array],
+        "version": 4,
+        "villageInfoDocuments": [Array],
+      },
+      Object {
+        "anonKey": "test-anon-key",
+        "projectId": "audio-description-persistence",
+        "url": "http://dbserver:8100",
+      },
+    ]
+[39m[90m
+
+Number of calls: [1m1[22m
+[39m
+ ❯ test/storeSaveOrdering.test.ts:72:30
+     70|       // A is still physically held. Do not advance a timer or rely on…
+     71|       // B's hashing/network microtasks happen to run to establish tha…
+     72|       expect(f.fullSave).not.toHaveBeenCalled();
+       |                              ^
+     73|       expect(states).toEqual([]);
+     74|       expect(f.store.hasUnsavedChanges()).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  test/storeSaveOrdering.test.ts > explicit store flush transport ordering > serializes an explicit B flush behind held A with 'cleared' descriptions
+ FAIL  test/storeSaveOrdering.test.ts > explicit store flush transport ordering > serializes an explicit B flush behind held A with 'authored' descriptions
+AssertionError: expected "saveProjectToSupabase" to not be called at all, but actually been called 1 times[90m
+
+Received:
+
+[1m  1st saveProjectToSupabase call:
+
+[22m    Array [
+      Object {
+        "assets": [Object],
+        "audioDescriptions": [Object],
+        "commonEvents": [Array],
+        "database": [Object],
+        "flags": [Object],
+        "mapConnections": [Array],
+        "mapTree": [Object],
+        "maps": [Object],
+        "meta": [Object],
+        "resourceProfiles": [Array],
+        "session": [Object],
+        "startMapId": "map_blank_start",
+        "startPos": [Object],
+        "switches": [Array],
+        "system": [Object],
+        "tilesets": [Object],
+        "variables": [Array],
+        "version": 4,
+        "villageInfoDocuments": [Array],
+      },
+      Object {
+        "anonKey": "test-anon-key",
+        "projectId": "audio-description-persistence",
+        "url": "http://dbserver:8100",
+      },
+    ]
+[39m[90m
+
+Number of calls: [1m1[22m
+[39m
+ ❯ test/storeSaveOrdering.test.ts:72:30
+     70|       // A is still physically held. Do not advance a timer or rely on…
+     71|       // B's hashing/network microtasks happen to run to establish tha…
+     72|       expect(f.fullSave).not.toHaveBeenCalled();
+       |                              ^
+     73|       expect(states).toEqual([]);
+     74|       expect(f.store.hasUnsavedChanges()).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  test/storeSaveOrdering.test.ts > explicit store flush transport ordering > queued B cannot write C (C requests its own flush: false)
+AssertionError: expected "saveProjectToSupabase" to not be called at all, but actually been called 1 times[90m
+
+Received:
+
+[1m  1st saveProjectToSupabase call:
+
+[22m    Array [
+      Object {
+        "assets": [Object],
+        "commonEvents": [Array],
+        "database": [Object],
+        "flags": [Object],
+        "mapConnections": [Array],
+        "mapTree": [Object],
+        "maps": [Object],
+        "meta": [Object],
+        "resourceProfiles": [Array],
+        "session": [Object],
+        "startMapId": "map_blank_start",
+        "startPos": [Object],
+        "switches": [Array],
+        "system": [Object],
+        "tilesets": [Object],
+        "variables": [Array],
+        "version": 4,
+        "villageInfoDocuments": [Array],
+      },
+      Object {
+        "anonKey": "test-anon-key",
+        "projectId": "audio-description-persistence",
+        "url": "http://dbserver:8100",
+      },
+    ]
+[39m[90m
+
+Number of calls: [1m1[22m
+[39m
+ ❯ test/storeSaveOrdering.test.ts:130:30
+    128|     const queuedC = ownCFlush ? f.store.flush() : undefined;
+    129|     try {
+    130|       expect(f.fullSave).not.toHaveBeenCalled();
+       |                              ^
+    131|       expect(f.store.hasUnsavedChanges()).toBe(true);
+    132|     } finally {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  test/storeSaveOrdering.test.ts > explicit store flush transport ordering > queued B cannot write C (C requests its own flush: true)
+AssertionError: expected "saveProjectToSupabase" to not be called at all, but actually been called 2 times[90m
+
+Received:
+
+[1m  1st saveProjectToSupabase call:
+
+[22m    Array [
+      Object {
+        "assets": [Object],
+        "commonEvents": [Array],
+        "database": [Object],
+        "flags": [Object],
+        "mapConnections": [Array],
+        "mapTree": [Object],
+        "maps": [Object],
+        "meta": [Object],
+        "resourceProfiles": [Array],
+        "session": [Object],
+        "startMapId": "map_blank_start",
+        "startPos": [Object],
+        "switches": [Array],
+        "system": [Object],
+        "tilesets": [Object],
+        "variables": [Array],
+        "version": 4,
+        "villageInfoDocuments": [Array],
+      },
+      Object {
+        "anonKey": "test-anon-key",
+        "projectId": "audio-description-persistence",
+        "url": "http://dbserver:8100",
+      },
+    ]
+
+[1m  2nd saveProjectToSupabase call:
+
+[22m    Array [
+      Object {
+        "assets": [Object],
+        "audioDescriptions": [Object],
+        "commonEvents": [Array],
+        "database": [Object],
+        "flags": [Object],
+        "mapConnections": [Array],
+        "mapTree": [Object],
+        "maps": [Object],
+        "meta": [Object],
+        "resourceProfiles": [Array],
+        "session": [Object],
+        "startMapId": "map_blank_start",
+        "startPos": [Object],
+        "switches": [Array],
+        "system": [Object],
+        "tilesets": [Object],
+        "variables": [Array],
+        "version": 4,
+        "villageInfoDocuments": [Array],
+      },
+      Object {
+        "anonKey": "test-anon-key",
+        "projectId": "audio-description-persistence",
+        "url": "http://dbserver:8100",
+      },
+    ]
+[39m[90m
+
+Number of calls: [1m2[22m
+[39m
+ ❯ test/storeSaveOrdering.test.ts:130:30
+    128|     const queuedC = ownCFlush ? f.store.flush() : undefined;
+    129|     try {
+    130|       expect(f.fullSave).not.toHaveBeenCalled();
+       |                              ^
+    131|       expect(f.store.hasUnsavedChanges()).toBe(true);
+    132|     } finally {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  test/storeSaveOrdering.test.ts > explicit store flush transport ordering > A's failure remains visible to A callers without rejecting an owned queued B save
+AssertionError: expected "saveProjectToSupabase" to not be called at all, but actually been called 1 times[90m
+
+Received:
+
+[1m  1st saveProjectToSupabase call:
+
+[22m    Array [
+      Object {
+        "assets": [Object],
+        "audioDescriptions": [Object],
+        "commonEvents": [Array],
+        "database": [Object],
+        "flags": [Object],
+        "mapConnections": [Array],
+        "mapTree": [Object],
+        "maps": [Object],
+        "meta": [Object],
+        "resourceProfiles": [Array],
+        "session": [Object],
+        "startMapId": "map_blank_start",
+        "startPos": [Object],
+        "switches": [Array],
+        "system": [Object],
+        "tilesets": [Object],
+        "variables": [Array],
+        "version": 4,
+        "villageInfoDocuments": [Array],
+      },
+      Object {
+        "anonKey": "test-anon-key",
+        "projectId": "audio-description-persistence",
+        "url": "http://dbserver:8100",
+      },
+    ]
+[39m[90m
+
+Number of calls: [1m1[22m
+[39m
+ ❯ test/storeSaveOrdering.test.ts:164:34
+    162|     f.store.replaceProject(f.replacement("PROJECT_B", { music: { repla…
+    163|     const queuedB = f.store.flush();
+    164|     try { expect(f.fullSave).not.toHaveBeenCalled(); }
+       |                                  ^
+    165|     finally {
+    166|       f.held.release(503);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  6 failed | 2 passed (8)
+   Start at  09:17:26
+   Duration  32.61s (transform 3.38s, setup 0ms, collect 4.06s, tests 27.97s, environment 0ms, prepare 71ms)

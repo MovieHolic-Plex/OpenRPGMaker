@@ -1,0 +1,21 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/storeSaveOrdering.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-interior-load-consistency-0907
+
+ ✓ test/storeSaveOrdering.test.ts (8 tests) 27614ms
+   ✓ explicit store flush transport ordering > serializes an explicit B flush behind held A with 'missing' descriptions  4737ms
+   ✓ explicit store flush transport ordering > serializes an explicit B flush behind held A with 'cleared' descriptions  3513ms
+   ✓ explicit store flush transport ordering > serializes an explicit B flush behind held A with 'authored' descriptions  3602ms
+   ✓ explicit store flush transport ordering > A alone cannot authorize B even after A has settled  2581ms
+   ✓ explicit store flush transport ordering > queued B cannot write C (C requests its own flush: false)  2777ms
+   ✓ explicit store flush transport ordering > queued B cannot write C (C requests its own flush: true)  3371ms
+   ✓ explicit store flush transport ordering > A's failure remains visible to A callers without rejecting an owned queued B save  2965ms
+   ✓ explicit store flush transport ordering > preserves same-lineage coalescing and immediate map catch-up  4067ms
+
+ Test Files  1 passed (1)
+      Tests  8 passed (8)
+   Start at  09:18:29
+   Duration  32.29s (transform 3.48s, setup 0ms, collect 4.20s, tests 27.61s, environment 0ms, prepare 63ms)

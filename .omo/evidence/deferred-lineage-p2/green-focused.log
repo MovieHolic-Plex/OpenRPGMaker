@@ -1,0 +1,25 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/storeDeferredLineage.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-interior-load-consistency-0907
+
+ ✓ test/storeDeferredLineage.test.ts (12 tests) 36821ms
+   ✓ deferred store persistence owns its scheduling lineage > ignores A's migration callback on clean B before any state or persistence access  3905ms
+   ✓ deferred store persistence owns its scheduling lineage > ignores A's retry callback on clean B before any state or persistence access  3364ms
+   ✓ deferred store persistence owns its scheduling lineage > ignores A's health callback on clean B before any state or persistence access  3148ms
+   ✓ deferred store persistence owns its scheduling lineage > A's migration callback cannot save dirty B or steal B's newer timer  3142ms
+   ✓ deferred store persistence owns its scheduling lineage > A's retry callback cannot save dirty B or steal B's newer timer  3103ms
+   ✓ deferred store persistence owns its scheduling lineage > A's health callback cannot save dirty B or steal B's newer timer  3234ms
+   ✓ deferred store persistence owns its scheduling lineage > a superseded same-lineage migration timer cannot consume the newer edit timer  2518ms
+   ✓ deferred store persistence owns its scheduling lineage > the current migration callback persists migration and catches up concurrent edits  3099ms
+   ✓ deferred store persistence owns its scheduling lineage > the current retry callback persists migration and catches up concurrent edits  3278ms
+   ✓ deferred store persistence owns its scheduling lineage > a pending subscriber's replacement keeps its own timer registration  2015ms
+   ✓ deferred store persistence owns its scheduling lineage > an error subscriber's replacement does not acquire the old failed save's retry  2552ms
+   ✓ deferred store persistence owns its scheduling lineage > an in-flight A health response cannot clear B's retry or persist B  3462ms
+
+ Test Files  1 passed (1)
+      Tests  12 passed (12)
+   Start at  08:56:29
+   Duration  41.03s (transform 3.17s, setup 0ms, collect 3.76s, tests 36.82s, environment 0ms, prepare 64ms)

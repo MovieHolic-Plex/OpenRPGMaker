@@ -29,6 +29,18 @@ The LLM-harnessed interior pipeline: start session, advance build per layer, eva
   failure/concurrent-edit behavior. No shipped demo, live DB or model is involved.
   The archived Round8 result remains failed; these are engine regression contracts,
   not a retrospective success label for that run.
+- Deferred migration/autosave callbacks belong to the content lineage and timer
+  handle that scheduled them. A reload makes the old callback inert before it can
+  change save state, consume a newer timer, or submit replacement content. Retry
+  timers and their health probes enforce the same ownership, including after a
+  pending probe response. `test/storeDeferredLineage.test.ts` invokes registered
+  callbacks directly and checks clean replacement preservation, normal edit/flush,
+  synchronous status-subscriber replacement, and same-lineage save catch-up.
+- An explicit replacement flush also waits for any older in-flight transport to
+  settle before saving under its own lineage. A alone never authorizes B, a queued
+  B request cannot write C, and an A failure still rejects A's callers without
+  cancelling a valid B request. `test/storeSaveOrdering.test.ts` covers this
+  ordering with held real persistence transports and unchanged audio assertions.
 
 ## 사용자 타일 정정: 항아리·돌계단·석조 화로
 
