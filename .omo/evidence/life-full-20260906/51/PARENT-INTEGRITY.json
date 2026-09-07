@@ -1,0 +1,36 @@
+{
+  "verified_utc": "2026-09-07T02:17:46.221659+00:00",
+  "verification": "forensic integrity only, no product QA",
+  "provenance_artifacts_verified": 384,
+  "source_files_verified": 9,
+  "binary_diff_verified": true,
+  "untracked_test_preserved": true,
+  "head_unchanged": "b5c679efc6c5e575f7a1afb65dfa86939aade325",
+  "dirty_status_unchanged": true,
+  "all_source_bytes_unchanged": true,
+  "all_four_owned_session_sources_unchanged": true,
+  "existing_evidence_sources_unchanged": true,
+  "independent_r2_diff_equals_current_bytes": true,
+  "post_loss_source_and_parent_hashes_match": true,
+  "first_summary_write_equals_verifier_copy": true,
+  "gzip_artifact_bytes": 594840,
+  "limitations": [
+    "No original final-source.sha256 receipt recovered",
+    "Final probe decoded from recorded patches, no surviving final disk hash",
+    "No implementation, diagnostics, test, typecheck, build or public probe executed by recovery"
+  ],
+  "parent_lifecycle_metadata_changes": [
+    {
+      "artifact": "owned/st_01a07972/task.json.gz",
+      "transition": "resident -> evicted",
+      "old_updated_at": "2026-09-07T01:36:32.158Z",
+      "new_updated_at": "2026-09-07T02:01:04.802Z"
+    },
+    {
+      "artifact": "owned/st_01a07982/task.json.gz",
+      "transition": "resident -> evicted",
+      "old_updated_at": "2026-09-07T01:38:55.689Z",
+      "new_updated_at": "2026-09-07T02:01:04.813Z"
+    }
+  ]
+}
