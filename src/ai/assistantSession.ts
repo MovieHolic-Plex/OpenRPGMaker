@@ -1,5 +1,6 @@
 import { ACCEPTANCE_EXAMPLES, missingAcceptance, type AcceptanceSnapshot, type AcceptancePromise } from "./assistantAcceptance";
 import { AssistantAcceptanceLedger } from "./assistantAcceptanceLedger";
+import { acceptanceFingerprint } from "./assistantAcceptanceEvaluation";
 import { AssistantImageEvidence, coveredByImages, type AcceptanceImageReceipt } from "./assistantImageEvidence";
 import { ACCEPTANCE_SCHEMA, ACCEPTANCE_TOOLS } from "./assistantAcceptanceTools";
 import { adventureToolNames, adventureCompletionProblems, ADVENTURE_AUTHORING_GUIDE, type AdventureRequirements } from "./adventureCompletion";
@@ -1363,7 +1364,7 @@ export class AssistantSession {
       this.verificationEvidence.adopt({ checkId, ownerId: `${this.acceptance!.id}:${binding.promiseId}`, name, args,
         criterion: { promiseId: binding.promiseId, criterionIndex: binding.criterionIndex }, acceptedCriterion: binding.criterion });
       this.verificationEvidence.setCriterionPassed(checkId, binding.passed);
-      return { ...binding, checkId, name };
+      return { ...binding, checkId, name, args };
     });
     for (const requirement of this.verificationEvidence.snapshot(false).requirements) {
       if (!requirement.criterion) continue;
@@ -1384,7 +1385,7 @@ export class AssistantSession {
         const criteria = accepted.filter(binding => binding.name === name && (!item.mapTargets?.length
           || binding.mapId === undefined || item.mapTargets.includes(binding.mapId)));
         const declarations = (item.verificationChecks ?? []).filter(check => check.tool === name);
-        if (criteria.length && !declarations.some(check => check.checkId)) { checkIds.push(...criteria.map(binding => binding.checkId)); continue; }
+        if (criteria.length && !declarations.length) { checkIds.push(...criteria.map(binding => binding.checkId)); continue; }
         let resolved = false;
         for (const [index, check] of declarations.entries()) {
           const previous = check.checkId ? this.verificationEvidence.snapshot(false).requirements.find(entry => entry.checkId === check.checkId) : undefined;
@@ -1403,8 +1404,23 @@ export class AssistantSession {
               checkIds.push(previous ? checkId : binding.checkId);
               resolved = true;
             }
-          } else if (!criteria.length) {
+          } else {
             if (item.mapTargets?.length && (typeof check.args.mapId !== "string" || !item.mapTargets.includes(check.args.mapId))) continue;
+            if (previous?.args && acceptanceFingerprint(previous.args) !== acceptanceFingerprint(check.args)) {
+              const pendingId = `${ownerId}:${name}:${index}:pending`;
+              this.verificationEvidence.adopt({ checkId: pendingId, ownerId, name, args: null, mapTargets: item.mapTargets ?? undefined });
+              checkIds.push(pendingId);
+              resolved = true;
+              continue;
+            }
+            // Only an exact criterion scope can stand in for an explicit declaration.
+            // A retained checkId keeps its own ownership, even for identical args.
+            const binding = !previous && criteria.find(entry => acceptanceFingerprint(entry.args) === acceptanceFingerprint(check.args));
+            if (binding) {
+              checkIds.push(binding.checkId);
+              resolved = true;
+              continue;
+            }
             this.verificationEvidence.adopt({ checkId, ownerId: declarationOwner, name, args: check.args,
               mapTargets: item.mapTargets ?? undefined, interactionTargets: check.interactionTargets,
               initialState: this.verificationInitialState(name) });
