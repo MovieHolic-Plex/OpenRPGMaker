@@ -93,7 +93,7 @@ import { toolIconKey } from "./aiToolLabels";
 import { renderPreferenceMemorySettings } from "./aiPreferenceMemorySettings";
 import { createCollapsedUndoButton, createDirectorRestoreButton, setRestoreButtonState } from "./aiDirectorChrome";
 import { getEditorUiMode } from "@/editor/editorUiMode";
-import { openAiSettingsModal, type AiSettingsExtraSection } from "./aiSettingsModal";
+import { openAiSettingsModal, registerAiSettingsPanel, type AiSettingsExtraSection } from "./aiSettingsModal";
 import { getTool } from "@/editor/tools/toolRegistry";
 import {
   formatComposerPlaceholder,
@@ -470,21 +470,22 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 저장 시 진행 중 세션 config도 즉시 갱신한다.
   // 설정 모달에 실리는 패널 소유 절(대기 화면 3분기 — 제안서 D6). 데크 조립 뒤 채운다.
   let settingsExtraSections: readonly AiSettingsExtraSection[] = [];
+  const unregisterSettingsPanel = registerAiSettingsPanel(() => ({
+    fontRoot: panel,
+    onSaved: (config) => {
+      controller.session?.updateConfig(config);
+      composerShell.setModelLabel(modelChipLabel());
+      composerShell.syncEffort(
+        isAutonomyLevel(config.autonomyLevel) ? config.autonomyLevel : "balanced",
+        config.reasoningEffort ?? "low",
+      );
+    },
+    extraSections: settingsExtraSections,
+  }));
   const openAiSettings = (focusTarget: "first" | "apiKey" = "first"): void => {
-    openAiSettingsModal({
-      focusTarget,
-      fontRoot: panel,
-      onSaved: (config) => {
-        controller.session?.updateConfig(config);
-        composerShell.setModelLabel(modelChipLabel());
-        composerShell.syncEffort(
-          isAutonomyLevel(config.autonomyLevel) ? config.autonomyLevel : "balanced",
-          config.reasoningEffort ?? "low",
-        );
-      },
-      onFontSizeChange: (size) => applyPanelFontSize(size),
-      extraSections: settingsExtraSections,
-    });
+    // The menu item is hidden before its action runs; restore to its visible opener instead.
+    if (commandMenu.contains(document.activeElement)) composerShell.menuToggle.focus();
+    openAiSettingsModal({ focusTarget });
   };
 
   // 시작 화면(빈 대화) — 첫 콘텐츠가 붙는 순간 제거된다.
@@ -1915,32 +1916,31 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 광고한다. 대신 `panel.dataset.chatDock` 은 `"float"` 로 고정 노출한다 — 레이아웃
   // 테스트가 "어디에 붙었나"를 읽는 단일 창구다.
   // z-layers: panel 30 / bar 40 / overlay 41 / palette 80 — 56/50/62 난장 정리
+  const exportAudit = (): void => {
+    const json = exportCombinedAudit(controller);
+    if (!json) {
+      toast("내보낼 대화가 없습니다.", "info");
+      recordAiUiEvent({ surface: "panel", action: AI_UI_ACTIONS.conversationExport, testid: "ai-export", disabled: true, detail: { entries: 0 } });
+      return;
+    }
+    downloadJson("ai-session-audit.json", json);
+    recordAiUiEvent({
+      surface: "panel",
+      action: AI_UI_ACTIONS.conversationExport,
+      testid: "ai-export",
+      detail: {
+        format: "json",
+        bytes: json.length,
+        entries: [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])].length,
+      },
+    });
+  };
   exportButton = el("button", {
     class: "ai-assistant-action ai-export-button",
     text: "내보내기",
     attrs: { type: "button", hidden: "", "aria-hidden": "true", title: "대화 감사 로그 내보내기", "aria-label": "대화 내보내기" },
     dataset: { testid: "ai-export" },
-    on: {
-      click: () => {
-        const json = exportCombinedAudit(controller);
-        if (!json) {
-          toast("내보낼 대화가 없습니다.", "info");
-          recordAiUiEvent({ surface: "panel", action: AI_UI_ACTIONS.conversationExport, testid: "ai-export", disabled: true, detail: { entries: 0 } });
-          return;
-        }
-        downloadJson("ai-session-audit.json", json);
-        recordAiUiEvent({
-          surface: "panel",
-          action: AI_UI_ACTIONS.conversationExport,
-          testid: "ai-export",
-          detail: {
-            format: "json",
-            bytes: json.length,
-            entries: [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])].length,
-          },
-        });
-      },
-    },
+    on: { click: exportAudit },
   }) as HTMLButtonElement;
   refreshExportButton();
   const undoLastButton = el("button", {
@@ -2142,10 +2142,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       });
     },
     openSettings: () => openAiSettings("first"),
-    exportAudit: () => exportButton?.click(),
+    exportAudit,
     openHistory: () => {
       historyButton.click();
-      applyHistoryOpen(true);
     },
     openTools: () => toolsButton.click(),
     openInstructions: () => {
@@ -2575,6 +2574,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 수동으로 접으면 예약 취소. 수동으로 펼치면 다음 AI 턴 전까지는 연 상태 유지.
     collapseAfterAiWork = false;
     if (collapsed && studio) applyStudio(false); // 접으면 스튜디오도 해제.
+    if (collapsed && historyOpen) applyHistoryOpen(false);
     savePanelCollapsed(collapsed);
     applyCollapsed();
     // 턴 중에 접혔는지가 「답장이 안 보였다」류 신고의 갈림길이다.
@@ -2614,6 +2614,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
 
   applyHistoryOpen = (next: boolean): void => {
     historyOpen = next;
+    headerMenu.setHistoryOpen(next);
+    composerMenu.setHistoryOpen(next);
     if (historyOpen) {
       panel.classList.add("is-history-open");
       panel.classList.add("is-docked");
@@ -2652,7 +2654,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       applySize(); // 크기만 해제하고 배경 농도·글자 크기 설정은 유지한다.
       // 로그 슬롯은 기록 마운트. is-history-open 은 다른 오버레이라 붙이지 않는다.
       historyOpen = true;
-      panel.classList.remove("is-docked");
+      panel.classList.remove("is-docked", "is-history-open");
       if (typeof document !== "undefined" && document.body) {
         document.body.classList.remove("ai-panel-docked");
         document.body.classList.add("ai-studio-open");
@@ -2970,6 +2972,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   activeAiChatPanelCleanup = () => {
     if (disposed) return;
     disposed = true;
+    unregisterSettingsPanel();
     persistConversation();
 
     const turnController = activeAbortController;

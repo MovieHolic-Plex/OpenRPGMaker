@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **50쪽 / 1947KB / 약 549,590 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **50쪽 / 1949KB / 약 550,177 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,7 +15,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/editor-ai-panel.md` | 297KB | 95KB ⚠상한 초과 — 절을 더 쪼개라 | 863 | ~85,482 |
+| `openwiki/editor-ai-panel.md` | 299KB | 95KB ⚠상한 초과 — 절을 더 쪼개라 | 874 | ~86,069 |
 | `openwiki/editor-ai-tools.md` | 126KB | 73KB ⚠상한 초과 — 절을 더 쪼개라 | 721 | ~35,373 |
 | `openwiki/editor-database.md` | 248KB | 55KB ⚠상한 초과 — 절을 더 쪼개라 | 1285 | ~71,443 |
 | `openwiki/editor-event-authoring.md` | 125KB | 75KB ⚠상한 초과 — 절을 더 쪼개라 | 626 | ~36,040 |
@@ -33,7 +33,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 | 페이지 | 깨진 줄 수 | 예시 줄 번호 |
 |---|---|---|
-| `openwiki/editor-ai-panel.md` | 25 | 571, 572, 573, 574, 575, 576, 588, 597 |
+| `openwiki/editor-ai-panel.md` | 25 | 582, 583, 584, 585, 586, 587, 599, 608 |
 | `openwiki/editor-ai-tools.md` | 6 | 502, 503, 507, 509, 511, 620 |
 | `openwiki/editor-database.md` | 7 | 495, 499, 500, 501, 510, 536, 539 |
 | `openwiki/editor-event-authoring.md` | 16 | 198, 199, 202, 207, 208, 209, 210, 211 |
@@ -236,34 +236,35 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L18` Output limits
 - `L24` Practical tips
 
-### `openwiki/editor-ai-panel.md` — 297KB · 863줄 · ~85,482 토큰 · 통째읽기 잘림 · 깨진 줄 25
+### `openwiki/editor-ai-panel.md` — 299KB · 874줄 · ~86,069 토큰 · 통째읽기 잘림 · 깨진 줄 25
 
 - `L3` Independent result review and repair (2026-09-06)
 - `L93` Live large-world QA: plan repair and final audit (2026-09-07)
-- `L146` World structure activity labels (2026-09-06)
-- `L155` Multi-map construction specifications (2026-09-06)
-- `L191` Plan authoring has no small-plan quota (2026-09-06)
-- `L210` Acceptance sticky note (2026-09-06)
-  - `L229` Session-owned acceptance contract
-- `L317` 자동 프로젝트 위키 (2026-09-07)
-- `L326` 브라우저 포커스와 도구 실행 대기 (2026-09-05)
-- `L333` 계획 항목의 연속 실행 증거 (2026-09-05)
-- `L339` 조회 선행·계획 완료와 실행 종료 (2026-09-05)
-- `L348` 조수 카메라 이동 수명·부드러운 줌 (2026-09-05)
-- `L364` 패널 셸 · 도크 · 접기 · 컴포저
-- `L502` 세션 수명 · 대화 컨텍스트
-- `L517` 제안 적용 · 복구 · 완성도 린트
-- `L601` 고스트 미리보기 · 활동 표시 · 청사진 · 카메라
-- `L663` 영역 작업 · 시공 · 실내/집 파이프라인
-- `L687` 툴 노출 · 프롬프트 · 의도 판정 · NPC
-- `L701` 타일셋 이해 · 검토 위저드 (T1a/T1b)
-- `L727` 저장 · 내보내기 · 프로젝트 생성
-- `L735` 제공자 · OAuth · 동반 서비스
-- `L765` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
-- `L806` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
-- `L814` 배치 의존성과 완료 멱등성 (2026-09-06)
-- `L822` 모험 완료와 실제 적용 횟수 (2026-09-05)
-- `L827` Assistant clean conversation — Phase 1 (2026-09-06)
+- `L146` Assistant control audit fixes (2026-09-07)
+- `L157` World structure activity labels (2026-09-06)
+- `L166` Multi-map construction specifications (2026-09-06)
+- `L202` Plan authoring has no small-plan quota (2026-09-06)
+- `L221` Acceptance sticky note (2026-09-06)
+  - `L240` Session-owned acceptance contract
+- `L328` 자동 프로젝트 위키 (2026-09-07)
+- `L337` 브라우저 포커스와 도구 실행 대기 (2026-09-05)
+- `L344` 계획 항목의 연속 실행 증거 (2026-09-05)
+- `L350` 조회 선행·계획 완료와 실행 종료 (2026-09-05)
+- `L359` 조수 카메라 이동 수명·부드러운 줌 (2026-09-05)
+- `L375` 패널 셸 · 도크 · 접기 · 컴포저
+- `L513` 세션 수명 · 대화 컨텍스트
+- `L528` 제안 적용 · 복구 · 완성도 린트
+- `L612` 고스트 미리보기 · 활동 표시 · 청사진 · 카메라
+- `L674` 영역 작업 · 시공 · 실내/집 파이프라인
+- `L698` 툴 노출 · 프롬프트 · 의도 판정 · NPC
+- `L712` 타일셋 이해 · 검토 위저드 (T1a/T1b)
+- `L738` 저장 · 내보내기 · 프로젝트 생성
+- `L746` 제공자 · OAuth · 동반 서비스
+- `L776` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
+- `L817` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
+- `L825` 배치 의존성과 완료 멱등성 (2026-09-06)
+- `L833` 모험 완료와 실제 적용 횟수 (2026-09-05)
+- `L838` Assistant clean conversation — Phase 1 (2026-09-06)
 
 ### `openwiki/editor-ai-tools.md` — 126KB · 721줄 · ~35,373 토큰 · 통째읽기 잘림 · 깨진 줄 6
 

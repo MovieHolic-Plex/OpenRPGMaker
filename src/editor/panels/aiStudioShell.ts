@@ -398,7 +398,7 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     const px = clampSize(key, value);
     layoutSizes[key] = px;
     root.style.setProperty(
-      key === "scenes" ? "--studio-scenes-w" : key === "chat" ? "--studio-chat-w" : "--studio-deck-h",
+      key === "scenes" ? "--studio-scenes-col" : key === "chat" ? "--studio-chat-col" : "--studio-deck-h",
       `${px}px`,
     );
     if (persist) {

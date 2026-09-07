@@ -21,12 +21,14 @@ import {
 } from "@/ai/conversationStore";
 import { recordAiUiEvent } from "@/ai/uiEventLog";
 import { AI_UI_ACTIONS } from "@/ai/uiEventTypes";
-import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
+import { isTopModal, registerModal } from "@/editor/ui/modalStack";
+import { installAiModalFocus } from "./aiModalFocus";
 import { el } from "@/util/dom";
 import { createPendingWorkTracker } from "@/util/pendingWork";
 import { deckIcon } from "./aiDeckIcons";
 
 let openBackdrop: HTMLElement | null = null;
+let activeHistoryClose: (() => void) | null = null;
 // 목록 갱신·열기·삭제는 IndexedDB 를 기다린다. 테스트·하네스는 이걸로 «목록이 그려졌다» 를 기다린다.
 const modalPendingWork = createPendingWorkTracker();
 
@@ -36,8 +38,7 @@ export function whenAiConversationHistoryModalSettled(): Promise<void> {
 }
 
 export function closeAiConversationHistoryModal(): void {
-  openBackdrop?.remove();
-  openBackdrop = null;
+  activeHistoryClose?.();
 }
 
 function formatSavedAt(savedAt: number): string {
@@ -233,20 +234,22 @@ export function openAiConversationHistoryModal(options: {
     ],
   });
 
-  const close = (): void => {
-    unregisterModal(backdrop);
+  const restoreFocus = installAiModalFocus(backdrop);
+  const close = registerModal(backdrop, () => {
     backdrop.remove();
-    openBackdrop = null;
-  };
+    if (openBackdrop === backdrop) openBackdrop = null;
+    if (activeHistoryClose === close) activeHistoryClose = null;
+    restoreFocus();
+  });
+  activeHistoryClose = close;
   closeButton.addEventListener("click", close);
   backdrop.addEventListener("mousedown", (event) => {
-    if (event.target === backdrop) close();
+    if (event.target === backdrop && isTopModal(backdrop)) close();
   });
 
   document.body.append(backdrop);
   // Escape 는 공용 모달 스택이 라우팅한다 — 자체 document 리스너는 데이터베이스 모달의
   // Escape 핸들러와 같은 버블 단계라 등록 순서에 따라 바깥이 먼저 닫혔다.
-  registerModal(backdrop, close);
   openBackdrop = backdrop;
   // 목록은 등록 뒤에 그린다 — renderList 는 «아직 이 모달이 열려 있나» 를 openBackdrop 으로 판정한다.
   void modalPendingWork.track(renderList());

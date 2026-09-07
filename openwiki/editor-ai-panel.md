@@ -143,6 +143,17 @@ Regression seams: `workPlanIdentity`, `assistantFinalAudit`,
 is under `output/evidence/live-world-qa/`; do not mistake saved partial output for
 completed content.
 
+## Assistant control audit fixes (2026-09-07)
+
+- Composer menu, preference and context popovers use `anchoredPopupPosition` and rail-relative coordinates; the glass deck establishes a containing block, so viewport `fixed` coordinates are not interchangeable. Open content/deck resize and viewport/scroll changes reposition the popup. Dispose removes observers/listeners. Suggestion content stays in normal flow.
+- Full history is a visible toggle: both menu variants update their label and `aria-expanded`. Collapsing history returns to float before hiding the deck; entering studio removes the history CSS class before reparenting. Preserve the separate studio log-mount state without leaving both surface classes active.
+- Export actions call the shared export operation, not a disabled hidden button. Empty export shows feedback; the native hidden-button disabled contract remains intact. `aiEmptyExportFeedback.test.ts` uses real DOM semantics because FakeDom.click does not enforce native disabled behavior.
+- A saved/user-resized width overrides the idle compact default. `aiChatResizeChrome` observes the actual deck width to keep separator ARIA values correct through focus, viewport and animated size changes.
+- Studio splitters persist expanded `--studio-scenes-col` / `--studio-chat-col` values. Collapse classes own effective `--studio-*-w` tracks at 52px; never write the effective tracks inline or collapse loses the CSS cascade.
+- The mounted panel registers settings bindings with `registerAiSettingsPanel`. Every settings opener receives the same font root, live-session/model/effort callbacks and temperature section; explicit standalone caller options remain supported. Panel teardown unregisters ownership and closes its settings.
+- Settings/history use scoped `installAiModalFocus`: live Tab boundaries exclude hidden/inert/disabled controls and yield to newer modal layers. Closing restores the attached opener. Settings saves can replace the topbar button, so that one stable entry resolves its replacement; other detached openers remain unfocused. Nested custom-select Escape continues through the existing modal stack.
+- Regression surfaces: `test/aiPanelChrome.test.ts`, `test/aiEmptyExportFeedback.test.ts`, `test/e2e/ai-ui-audit-fixes.spec.ts`; original findings remain in `docs/qa/2026-09-06-ai-assistant-ui-audit.md`.
+
 ## World structure activity labels (2026-09-06)
 
 `author_world_bridge` and `author_world_mountain` explicitly use the world activity
