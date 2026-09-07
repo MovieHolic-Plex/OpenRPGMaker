@@ -1123,6 +1123,51 @@ Chromium local network 검사만 캡처 실행 인자로 끈다. 일반 출하 �
 - 이 세션의 무격리 게이트를 중단하고, 환경의 Supabase URL/키/프록시를 비운 뒤 Node `--import`로 **실 네트워크 fetch 차단**을 설치해 다시 실행했다. `.env.local`을 직접 읽는 테스트도 있으므로 환경 변수만 비우는 것으로 충분하지 않다. 네트워크 모의 응답은 그대로 쓰며 실 DB URL과 외부 주소 요청을 거절한다. 로컬 HTTP 하네스는 허용하되 `.env.local`의 실제 DB origin은 로컬이어도 막는다.
 - 세션 증거: `output/evidence/concept-expansion/README.md`, 원격 저장 직후 증명 `supabase-proof-first-save.json`. 후속 저장에서는 CAS가 동시 변경을 감지해 덮어쓰기를 거절했다. 실 콘텐츠 작업과 전체 검사를 같은 공유 프로젝트에서 병행하지 말고, 외부 쓰기가 끝난 뒤 최신 스냅샷으로 추가하고 재로드하라.
 
+## Request-bound functional acceptance verification (2026-09-07)
+
+Focused suites: `functionalScenePurchase`, `functionalAcceptance`,
+`functionalAcceptanceSession`, `functionalPersistenceProof`, `npcRewardSession`,
+`functionalWalkSuspension`, `functionalClarification`, and `functionalInterpreterResume`.
+They exercise the public scene tool, real interpreter/production transactions,
+live declaration parser and session gates, immutable plan replacement, actual
+proposal apply, and the canonical persistence-read boundary (only transport/model
+responses are scripted). Red/green logs live under
+`output/evidence/functional-acceptance/`; no sleeps synchronize these tests.
+
+Run the executable public-API browser smoke against an isolated worktree server:
+
+```bash
+npm run dev:worktree -- --port 9841
+node scripts/qa/functional-acceptance-smoke.mjs http://127.0.0.1:9841
+```
+
+The script uses Playwright Firefox (`npx playwright install firefox` if absent),
+avoiding this Linux host's documented Chromium `ERR_NETWORK_CHANGED` cancellation.
+It loads public session/parser/runtime modules without booting the editor,
+uses only `test/fixtures/functionalAcceptance.ts`, blocks all network writes and
+external requests, and records `output/evidence/functional-acceptance/public-smoke.json`.
+It verifies exact purchase deltas, outgoing/return travel, one-time rewards,
+broken variants, stale applied evidence and attempted contract replacement.
+The review regressions force travel through a touch-shop corridor, compare split
+and unsplit walks, retain post-shop game-over behavior, and refuse nested held
+interpreter replacement. Clarification coverage includes original-source linkage,
+partial completion, retained known expectations, explicit user corrections,
+host-resume clarification, and rejected worker/concrete-contract replacement.
+The public smoke also exercises the corridor and a three-message clarification
+(`blocked -> blocked -> verified`) with the same requirement ID.
+Consumed-hold regressions cover purchase/choice/animation resuming through transfer
+into a non-suspending variable initializer, a second suspension under the same
+owner, and retained rejection of newly suspended nested interpreters. Animation
+tests advance deterministic engine ticks derived from its authored duration;
+no wall-clock sleep or polling is used. The public smoke additionally verifies
+purchase -> transfer -> initializer ends with 80 gold, two potions and var_0001=1.
+It does NOT claim live-model semantic extraction, graphical-player QA or a real
+Supabase-authored project. Canonical reload behavior is covered by the focused
+transport-boundary tests; independent full gates/build/player QA remain lead gates.
+Check the server's worktree identity, not just an HTTP 200; another checkout on the
+same port serves different modules. Pass an explicit free port if the assigned
+port belongs to another running checkout; do not kill that server.
+
 ## 조수 보상 저작과 출하 플레이어 검증 (2026-09-06)
 
 `npcCommandContract`, `aiCompletionAccounting`, `assistantDependencyRetry`, `npcRewardAcceptance`, `npcRewardSession`은 각각 명령 규격, 적용 완료 원장, 종속 보류/재시도, 실제 장면 보상, 세션 완료 판정을 검사한다. 보상 요구는 `IntentDeclaration.npcRewards`에서 오며 최종 이벤트 명령으로 역산하지 않는다. 페이지 두 개나 도구 성공 횟수는 지급 증거가 아니다.

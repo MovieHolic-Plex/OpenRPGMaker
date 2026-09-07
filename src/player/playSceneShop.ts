@@ -4,6 +4,7 @@ import {
   isSafeEconomyValue,
   isSafeShopTradeCountsRecord,
 } from "@/project/economyValues";
+import type { Project } from "@/project/types";
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 import { store } from "@/project/store";
 import { resolveTerms, type ResolvedTerms } from "@/project/terms";
@@ -453,7 +454,7 @@ function recordPawnOnSell(
   session.shopPawnTickets = tickets;
 }
 
-function accrueShopLoyalty(scene: PlaySceneContext, step: ShopStep, cost: number): void {
+export function accrueShopLoyalty(scene: Pick<PlaySceneContext, "session" | "syncRuntimeState">, step: ShopStep, cost: number): void {
   const session = scene.session as typeof scene.session & {
     shopLoyaltySpend?: Record<string, number>;
     shopMileagePoints?: number;
@@ -513,8 +514,8 @@ function showShopNotice(scene: PlaySceneContext, terms: ResolvedTerms, message: 
  * 예전에는 `database.items` 만 봐서 장비 id 는 조용히 사라졌고(무기점 불가),
  * 아이템 탭에 무기 타입 레코드를 새로 만들어 우회해도 장비 메뉴가 못 찾아 장착이 안 됐다.
  */
-function shopItems(step: ShopStep): ShopGoods[] {
-  const index = goodsIndex(store.getCurrent());
+export function shopItems(step: ShopStep, project: Project = store.getCurrent()): ShopGoods[] {
+  const index = goodsIndex(project);
   const rows: readonly { readonly itemId: string; readonly price?: number }[] =
     step.items ?? step.itemIds.map((itemId) => ({ itemId }));
   const resolved: ShopGoods[] = [];
@@ -554,7 +555,7 @@ function goldUnit(): string {
 
 /** 순수 거래 규칙 — 상인 소지금 한도를 포함. 단위 테스트용 export. */
 export function handleShopTransaction(
-  scene: PlaySceneContext,
+  scene: Pick<PlaySceneContext, "session" | "syncRuntimeState">,
   item: ShopTradeable,
   mode: ShopMode,
   count: number,

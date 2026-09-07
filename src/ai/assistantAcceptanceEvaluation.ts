@@ -1,3 +1,4 @@
+import { evaluateFunctionalCriterion } from "./functionalAcceptanceEvaluation";
 import { canMove, inBounds, isPassable } from "@/project/collision";
 import { passageBounds } from "@/project/footprint";
 import type { GameMap, Project } from "@/project/types";
@@ -69,7 +70,9 @@ export function visualFingerprint(project: Project, map: GameMap): string {
 }
 export function criterionTargets(criterion: AcceptanceCriterion): readonly AcceptanceTarget[] {
   switch (criterion.kind) {
-    case "toolVerdict": return [];
+    case "toolVerdict": case "npcReward": case "functionalUnresolved": return [];
+    case "shopPurchase": return [criterion.target];
+    case "mapRoundTrip": return [criterion.target, criterion.destination];
     case "mapCount": return criterion.targets;
     case "mapDimensions": case "eventCount": case "targetChange": case "preserve": case "imageReviewed": case "reachability": case "actionCombat": return [criterion.target];
     default: return assertNever(criterion);
@@ -86,6 +89,7 @@ export interface AcceptanceEvaluation {
 export function evaluateAcceptanceCriterion(criterion: AcceptanceCriterion, input: AcceptanceEvaluation): Evidence {
   const expected = JSON.stringify(criterion);
   switch (criterion.kind) {
+    case "shopPurchase": case "mapRoundTrip": case "npcReward": case "functionalUnresolved": return evaluateFunctionalCriterion(criterion, input);
     case "toolVerdict": {
       const passed = input.verification?.passedScope(criterion.tool, criterion.args) === true;
       return { expected, observed: passed ? "Current explicit scoped tool verdict" : "Current explicit scoped tool verdict required", passed };

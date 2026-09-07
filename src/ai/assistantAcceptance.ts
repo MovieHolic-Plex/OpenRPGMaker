@@ -1,4 +1,5 @@
 import type { Point } from "@/project/lint/reachability";
+import { isFunctionalCriterionKind, parseFunctionalCriterion, type FunctionalCriterion } from "./functionalAcceptance";
 import { VERIFICATION_TOOL_NAMES } from "./agentVerification";
 
 export type AcceptanceStatus = "pending" | "working" | "verifying" | "verified" | "blocked";
@@ -24,6 +25,7 @@ export interface RequirementWithdrawalAction {
 export interface AcceptanceItemSnapshot {
   readonly required?: boolean;
   readonly source?: AcceptanceSource;
+  readonly refinements?: readonly AcceptanceSource[];
   readonly withdrawal?: RequirementWithdrawalAction & { readonly source: "user" };
   readonly id: string;
   readonly title: string;
@@ -37,6 +39,7 @@ export interface AcceptanceRegion { readonly x: number; readonly y: number; read
 export type AcceptanceTarget = { readonly mapId: string } | { readonly newMapName: string };
 type ScopedTarget = { readonly target: AcceptanceTarget; readonly region?: AcceptanceRegion };
 export type AcceptanceCriterion =
+  | FunctionalCriterion
   | { readonly kind: "toolVerdict"; readonly tool: string; readonly args: Readonly<Record<string, unknown>> }
   | { readonly kind: "mapDimensions"; readonly target: AcceptanceTarget; readonly width: number; readonly height: number }
   | { readonly kind: "mapCount"; readonly targets: readonly AcceptanceTarget[]; readonly count: number }
@@ -79,6 +82,7 @@ export function parseAcceptanceRegion(value: unknown): AcceptanceRegion | null {
 }
 function criterion(value: unknown): AcceptanceCriterion | null {
   if (!acceptanceRecord(value)) return null;
+  if (typeof value.kind === "string" && isFunctionalCriterionKind(value.kind)) return parseFunctionalCriterion(value);
   // Evidence is generated only by the harness. Unknown fields fail closed.
   const keys: Record<string, readonly string[]> = {
     mapDimensions: ["kind", "target", "width", "height"], mapCount: ["kind", "targets", "count"],
