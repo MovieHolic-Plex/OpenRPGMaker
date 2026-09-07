@@ -844,6 +844,7 @@ Evidence expectations:
   `playSurface.css` 의 inset 목록에 든 것은 cover/crop 모드가 생길 때를 위한 대비다.
   측정 함정 하나: 디밍은 `--dialogue-scrim-ms`(140~260ms) 전이라서 창이 뜬 **직후**에 읽으면
   `::before` opacity 가 `0.26` 처럼 중간값으로 잡힌다. 정착값을 볼 거면 400ms 쯤 기다려라.
+- `test/eventPreviewPaintCssom.test.ts` — 명령 미리보기 페인트. Chromium `getComputedStyle` 로 이름표 `backgroundImage`/그림자 리스트를 읽고, 글자만 `color: transparent` 로 숨긴 샷과 비교해 글리프 대 실제 배경(그라디언트 포함) 대비를 잰다. 테두리·그림자를 전역 min/max 로 통과시키지 않는다. `EVENT_PREVIEW_PAINT_FROM=HEAD` 는 수정 전 CSS 를 `git show` 로 주입한다.
 - `test/dialoguePreviewPresentationCss.test.ts` — 에디터 프리뷰와 게임의 감정→keyframe 짝을
   두 CSS 파일에서 뽑아 대조한다. 프리뷰 창은 `.ecp-message-window`, 게임 창은 `.dialogue-box` 라
   규칙을 두 번 적어야 하고, 그 중복은 조용히 어긋난다 — 프리뷰만 옛 곡선으로 튀어도 예외가 없고,
