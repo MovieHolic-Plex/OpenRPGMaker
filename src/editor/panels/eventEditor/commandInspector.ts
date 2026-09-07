@@ -13,12 +13,13 @@ import { renderCommandBody } from "./commandBody";
 import { renderCommandPreview } from "./commandPreview";
 import type { CommandListActions } from "./types";
 import { eventCommandBranches } from "@/editor/eventCommandBranches";
+import type { ActiveFace } from "./previewSimulation";
 
 type InspectorTarget = {
   readonly command: Command;
   readonly path: number[];
   readonly actions: CommandListActions;
-  readonly previewFace?: { readonly resourceId: string };
+  readonly previewFace?: ActiveFace;
   readonly preserveSelection?: boolean;
 };
 

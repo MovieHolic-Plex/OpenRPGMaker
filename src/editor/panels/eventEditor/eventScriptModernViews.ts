@@ -19,7 +19,7 @@ import { renderCommandPreview } from "./commandPreview";
 import { commandSummary } from "./commandSummary";
 import { commandKindLabel } from "./options";
 import { renderEditorIcon, type EditorIconName } from "./editorIcons";
-import { simulatePageCommands, type SimulatedStep, type ActiveFace } from "./previewSimulation";
+import { simulatePageCommands, type SimulatedStep } from "./previewSimulation";
 
 export type EventScriptModernViewsOptions = {
   readonly mapId: MapId;
@@ -144,9 +144,8 @@ export function renderEventPagePreview(options: EventScriptModernViewsOptions): 
     const step = steps[index];
     if (!step) return;
     clearChildren(stage);
-    const activeFace = trackFace(steps, index, key);
     stage.append(renderCommandPreview(step.command, {
-      face: activeFace,
+      face: step.simState.face,
       simState: step.simState,
       hostEventId,
       forkTaken: step.forkTaken,
@@ -174,39 +173,6 @@ export function renderEventPagePreview(options: EventScriptModernViewsOptions): 
   panel.append(controls, stage, context, status);
   renderStep();
   return panel;
-}
-
-const faceCacheByPage = new Map<string, Map<number, ActiveFace | undefined>>();
-
-function trackFace(steps: readonly SimulatedStep[], uptoIndex: number, cacheKey?: string): ActiveFace | undefined {
-  if (cacheKey) {
-    const cache = faceCacheByPage.get(cacheKey);
-    if (cache) {
-      const cached = cache.get(uptoIndex);
-      if (cached !== undefined || cache.has(uptoIndex)) return cached;
-    }
-  }
-  for (let i = uptoIndex; i >= 0; i--) {
-    const step = steps[i];
-    if (!step) continue;
-    if (step.command.kind === "changeFace" && step.command.resourceId) {
-      const face = { resourceId: step.command.resourceId };
-      if (cacheKey) {
-        if (!faceCacheByPage.has(cacheKey)) faceCacheByPage.set(cacheKey, new Map());
-        faceCacheByPage.get(cacheKey)!.set(uptoIndex, face);
-      }
-      return face;
-    }
-  }
-  if (cacheKey) {
-    if (!faceCacheByPage.has(cacheKey)) faceCacheByPage.set(cacheKey, new Map());
-    faceCacheByPage.get(cacheKey)!.set(uptoIndex, undefined);
-  }
-  return undefined;
-}
-
-export function invalidateFaceCache(cacheKey: string): void {
-  faceCacheByPage.delete(cacheKey);
 }
 
 export function flattenScript(commands: readonly Command[]): readonly SimulatedStep[] {
