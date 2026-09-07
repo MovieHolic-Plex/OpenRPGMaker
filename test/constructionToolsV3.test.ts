@@ -389,7 +389,7 @@ describe("fill_region / tile_erase (면 채우기·부분 보호)", () => {
     expect(isPassable(ctx.project, after, 7, 7)).toBe(true);
   });
 
-  it("tile_erase: 기본 바닥이 통행을 막을 때만 transfer 목적지 셀을 제외한다", () => {
+  it("tile_erase: upper 지우기가 통행을 막을 때만 transfer 목적지 셀을 제외한다", () => {
     const { ctx } = context();
     ctx.project.startPos = { x: 0, y: 0 };
     const map = ctx.project.maps[MAP_ID];
@@ -400,19 +400,20 @@ describe("fill_region / tile_erase (면 채우기·부분 보호)", () => {
       trigger: { kind: "action" },
       commands: [{ kind: "transfer", mapId: MAP_ID, x: 7, y: 7 }],
     });
-    // 기본 바닥이 물(통행 불가)인 맵 — 지우면 목적지가 막히므로 그 칸은 보호되어야 한다.
+    // 물 위 통행 가능한 upper 발판 — 지우면 목적지가 막히므로 그 칸은 보호되어야 한다.
     map.lowerTiles.fill(TILE.WATER);
     for (let y = 6; y < 9; y += 1) {
-      for (let x = 6; x < 9; x += 1) map.lowerTiles[y * map.width + x] = TILE.PATH;
+      for (let x = 6; x < 9; x += 1) map.upperTiles[y * map.width + x] = TILE.PATH;
     }
 
-    const result = runTool(ctx, "tile_erase", { mapId: MAP_ID, rect: { x: 6, y: 6, w: 3, h: 3 }, layer: "lower" });
+    const result = runTool(ctx, "tile_erase", { mapId: MAP_ID, rect: { x: 6, y: 6, w: 3, h: 3 }, layer: "upper" });
     const after = ctx.project.maps[MAP_ID];
     expect(result.ok, result.summary).toBe(true);
     expect(result.diff?.warnings).toContain("(7,7)은 transfer 목적지라 제외했습니다");
-    expect(result.data).toMatchObject({ cleared: 8, requested: 9, skipped: 1, groundTile: TILE.WATER });
-    expect(after.lowerTiles[6 * after.width + 6]).toBe(TILE.WATER);
-    expect(after.lowerTiles[7 * after.width + 7]).toBe(TILE.PATH);
+    expect(result.data).toMatchObject({ cleared: 8, requested: 9, skipped: 1 });
+    expect(after.lowerTiles).toEqual(map.lowerTiles);
+    expect(after.upperTiles[6 * after.width + 6]).toBe(TILE.EMPTY);
+    expect(after.upperTiles[7 * after.width + 7]).toBe(TILE.PATH);
     expect(isPassable(ctx.project, after, 7, 7)).toBe(true);
   });
 

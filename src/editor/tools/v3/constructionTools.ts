@@ -8,6 +8,8 @@
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { isPassable, tilePassability } from "@/project/collision";
 import { roleCapabilities } from "@/project/tileRoles";
+import { tileMetaLocked, tileMetaOrigin } from "@/project/tilesetPalette";
+import { tileLayerHome } from "@/editor/tileLayerClassification";
 import { TILE } from "@/project/defaults/constants";
 import {
   resolveMaterialByLabel,
@@ -1031,10 +1033,10 @@ function applyMarketPlan(map: GameMap, plan: MarketErasePlan): void {
 // 조수에게 "이거 지워·다시 해줘" 를 시키면 되돌릴 곳은 구멍이 아니라 지면이다 — clear_region(기본 잔디),
 // planMarketErase(잔디 복원), resize_map, applyMapShift 는 이미 그렇게 한다. tile_erase 만 이 열 밖에 있어서
 // 조수가 기본 바닥을 체커로 남기는 상황을 만들어 왔다(사용자 보고 2026-08-27).
-// rect 밖에서 가장 흔한 하위 타일을 기본 바닥으로 본다 — 실내는 실내 바닥, 야외는 잔디가 자연히 잡힌다.
-// 맵 전체가 rect 면 안쪽 최빈값, 그마저도 없으면 잔디.
+// 관측된 통행 가능 하위 지면만 후보로 삼는다. 구조물 최빈값(테두리 벽 포함)은 바닥이 아니다.
+// rect 밖 후보를 우선하고 없으면 안쪽 후보를 쓴다. 후보가 없으면 타일을 지어내지 않고 변경 전에 실패한다.
 // 진짜 구멍(하늘 맵·허공)이 필요하면 clear_region 의 fill="empty" 를 쓴다.
-function baseGroundTile(map: GameMap, rect: Rect): number {
+function baseGroundTile(map: GameMap, rect: Rect, tileset: TilesetDef): number {
   const outside = new Map<number, number>();
   const inside = new Map<number, number>();
   for (let y = 0; y < map.height; y += 1) {
@@ -1046,14 +1048,35 @@ function baseGroundTile(map: GameMap, rect: Rect): number {
       counts.set(tile, (counts.get(tile) ?? 0) + 1);
     }
   }
-  return mostFrequentTile(outside) ?? mostFrequentTile(inside) ?? TILE.GRASS;
+  const tile = mostFrequentTile(outside, tileset) ?? mostFrequentTile(inside, tileset);
+  if (tile === null) {
+    throw new ToolError(
+      "복원할 바닥을 찾을 수 없습니다. 현재 타일셋의 통행 가능한 하위 지면을 tile_query로 확인하고 명시적으로 바닥을 칠한 뒤 다시 정리하세요. 상위만 지우려면 layer:\"upper\"를 사용하세요.",
+      { code: "erase-ground-unresolved", mapId: map.id },
+    );
+  }
+  return tile;
 }
 
-function mostFrequentTile(counts: ReadonlyMap<number, number>): number | null {
+function isRestorationGround(tileset: TilesetDef, tile: number): boolean {
+  if (!Number.isInteger(tile) || tile < 0 || tile >= tileset.count) return false;
+  if (tileLayerHome(tileset, tile) !== "lower" || tileset.priority[tile] === "upper" || tileBlocksPassage(tileset, tile)) return false;
+  const meta = tileset.tileMeta?.[tile];
+  if (meta?.passage === "solid" || meta?.passage === "star") return false;
+  // Bundled semantic tables also use "floor" for ungrouped indoor surfaces.
+  const isGroundRole = (role: string): boolean => role === "floor" || roleCapabilities(tileset, role).naturalGround;
+  // A human's explicit tile role overrides inherited group vocabulary, but never runtime passage/layer rules.
+  if (meta?.role && (tileMetaOrigin(meta) === "user" || tileMetaLocked(meta))) return isGroundRole(meta.role);
+  const roles = (tileset.tileGroups ?? []).filter(group => group.tileIds.includes(tile)).map(group => group.role);
+  const groundRoles: string[] = meta?.role ? [meta.role, ...roles] : roles;
+  return groundRoles.length > 0 && groundRoles.every(isGroundRole);
+}
+
+function mostFrequentTile(counts: ReadonlyMap<number, number>, tileset: TilesetDef): number | null {
   let best: number | null = null;
   let bestCount = 0;
   for (const [tile, count] of counts) {
-    if (count > bestCount) {
+    if (count > bestCount && isRestorationGround(tileset, tile)) {
       best = tile;
       bestCount = count;
     }
@@ -1066,7 +1089,7 @@ function mostFrequentTile(counts: ReadonlyMap<number, number>): number | null {
 const tileErase: ToolDefinition = {
   name: "tile_erase",
   description:
-    "지정 사각형을 정리한다(v3). layer: both(기본, 상·하위 모두)/lower/upper. 상위는 빈 칸이 되고, 하위는 맵의 기본 바닥(rect 밖에서 가장 흔한 하위 타일 — 실내는 실내 바닥, 야외는 잔디)으로 되돌아가 바닥에 구멍을 남기지 않는다. 바닥 자리가 진짜 빈 칸이어야 하는 경우(하늘 맵·허공)만 clear_region 의 fill=\"empty\" 를 쓴다. 승인 어휘가 필요 없는 유일한 배치 툴 — 실수 정리·재시공 전 청소에 쓴다.  상점·가게 철거는 find_layout_regions({mapId, query})로 영역을 먼저 찾은 뒤 tile_erase({mapId, rect, kind:\"market\"})(kind market 은 상점 타일만 지워 이웃 집·흙길 보존) → show_map_region 으로 결과 확인. 영역 상자는 find_layout_regions 가 준 rect 를 쓰고 비전으로 추측하지 말 것. 기존 것을 고칠 때는 get_map_region/find_layout_regions 로 현재 상태를 먼저 확인하고 이 툴로 정리한 뒤 다시 깐다." +
+    "지정 사각형을 정리한다(v3). layer: both(기본, 상·하위 모두)/lower/upper. 상위는 빈 칸이 되고, 하위는 맵에서 관측된 통행 가능한 하위 지면(rect 밖 우선, 없으면 안쪽의 최빈 지면)으로 복원한다. 벽·지붕·소품·막힌 타일은 바닥 후보가 아니다. 유효한 지면이 없으면 erase-ground-unresolved로 변경 없이 실패한다. 바닥 자리가 진짜 빈 칸이어야 하는 경우(하늘 맵·허공)만 clear_region 의 fill=\"empty\" 를 쓴다. 승인 어휘가 필요 없는 유일한 배치 툴 — 실수 정리·재시공 전 청소에 쓴다.  상점·가게 철거는 find_layout_regions({mapId, query})로 영역을 먼저 찾은 뒤 tile_erase({mapId, rect, kind:\"market\"})(kind market 은 상점 타일만 지워 이웃 집·흙길 보존) → show_map_region 으로 결과 확인. 영역 상자는 find_layout_regions 가 준 rect 를 쓰고 비전으로 추측하지 말 것. 기존 것을 고칠 때는 get_map_region/find_layout_regions 로 현재 상태를 먼저 확인하고 이 툴로 정리한 뒤 다시 깐다." +
     "kind: all(기본, rect 전체를 통째로 비움)/market(시장·상점 데크 철거 전용 — 나무 마루·좌판 난간·진열대·과일·나무 상자·돌 단만 지우고, " +
     "겹친 집(벽·창문·지붕)·흙길(360)·잔디처럼 시장 타일이 아닌 것은 그대로 보존한다. 시장 lower를 지운 칸은 잔디로 되돌린다). " +
     "집과 시장이 한 bbox에 섞여 있으면 kind=market 을 쓸 것 — kind 생략(all)은 집까지 다 지운다.",
@@ -1091,7 +1114,7 @@ const tileErase: ToolDefinition = {
     required: ["mapId", "rect"],
   },
   run(draft: Project, args: Record<string, unknown>): ToolExecResult {
-    const { map } = requireMapContext(draft, args, ERASE_EXAMPLE);
+    const { map, tileset } = requireMapContext(draft, args, ERASE_EXAMPLE);
     const rect = coerceRect(args.rect, "rect", ERASE_EXAMPLE);
     const layer = args.layer === undefined ? "both" : args.layer;
     if (layer !== "both" && layer !== "lower" && layer !== "upper") {
@@ -1122,16 +1145,16 @@ const tileErase: ToolDefinition = {
         },
       };
     }
-    const groundTile = baseGroundTile(map, rect);
+    const groundTile = layer === "upper" ? null : baseGroundTile(map, rect, tileset);
     const filtered = filterPassageProtectedCells(draft, map, allCells, (cell) => {
       const index = cell.y * map.width + cell.x;
-      if (layer === "both" || layer === "lower") map.lowerTiles[index] = groundTile;
+      if (groundTile !== null) map.lowerTiles[index] = groundTile;
       if (layer === "both" || layer === "upper") map.upperTiles[index] = TILE.EMPTY;
     });
     let cleared = 0;
     for (const cell of filtered.cells) {
       const index = cell.y * map.width + cell.x;
-      if (layer === "both" || layer === "lower") map.lowerTiles[index] = groundTile;
+      if (groundTile !== null) map.lowerTiles[index] = groundTile;
       if (layer === "both" || layer === "upper") map.upperTiles[index] = TILE.EMPTY;
       cleared += 1;
     }
