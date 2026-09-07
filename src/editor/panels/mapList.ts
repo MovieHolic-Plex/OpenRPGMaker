@@ -27,7 +27,7 @@ import { store } from "@/project/store";
 import { toast } from "@/util/toast";
 import type { MapId, MapTreeNode, Project } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
-import { isMapPanelCollapsed, toggleMapPanelCollapsed } from "@/editor/workspace/mapPanelSection";
+import { isMapPanelCollapsed, setMapPanelCollapsed, toggleMapPanelCollapsed } from "@/editor/workspace/mapPanelSection";
 
 type RenderNodeContext = {
   readonly activeId: string;
@@ -832,7 +832,10 @@ function beginRename(mapId: MapId): void {
 }
 
 function renameField(mapId: MapId, currentName: string): HTMLInputElement {
+  let settled = false;
   const commit = (value: string): void => {
+    if (settled) return;
+    settled = true;
     const next = value.trim();
     renamingMapId = null;
     if (next && next !== currentName) renameMap(mapId, next);
@@ -854,6 +857,9 @@ function renameField(mapId: MapId, currentName: string): HTMLInputElement {
         }
         if (event.key === "Escape") {
           event.preventDefault();
+          // Removing the focused input can synchronously emit blur. Cancellation
+          // settles this draft before teardown, so blur cannot commit it.
+          settled = true;
           renamingMapId = null;
           rerenderMapList();
           focusMapRow(mapId);
@@ -964,6 +970,16 @@ function rerenderMapList(): void {
   }
 }
 
+/** Reveal in the existing dock owner, including its markup, filters and branches. */
+export function revealMapInDock(mapId: MapId): void {
+  setMapPanelCollapsed(false);
+  mapFilterQuery = '';
+  mapFilterFacet = 'all';
+  expandPathToMap(store.getCurrent().mapTree, mapId);
+  rerenderMapList();
+  focusMapRow(mapId);
+}
+
 function duplicateAndSelect(mapId: MapId): void {
   const id = duplicateMap(mapId);
   if (!id) return;
@@ -1005,12 +1021,12 @@ function openMapActions(context: MapActionContext, point: MapContextMenuPoint): 
     selectedMapIds.add(context.mapId);
     lastClickedMapId = context.mapId;
   }
-  globalThis.setTimeout?.(() => focusMapRow(context.mapId), 0);
   openMapContextMenu({
     items: mapContextMenuItems(context),
     mapId: context.mapId,
     mapName: context.mapName,
     point,
+    restoreFocus: () => focusMapRow(context.mapId),
   });
 }
 

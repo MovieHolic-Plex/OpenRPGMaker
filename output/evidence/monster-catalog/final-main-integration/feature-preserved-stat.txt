@@ -1,0 +1,305 @@
+ DESIGN.md                                          |    29 +
+ openwiki/INDEX.md                                  |   384 +-
+ openwiki/editor-ai-tools.md                        |    92 +
+ openwiki/editor-database.md                        |     6 +
+ openwiki/monster-resource-editor.md                |    59 +
+ openwiki/runtime-project-schema.md                 |    42 +
+ openwiki/testing.md                                |     9 +
+ output/evidence/monster-ai/README.md               |    70 +
+ output/evidence/monster-ai/c4/README.md            |    35 +
+ output/evidence/monster-ai/c4/loc.txt              |     6 +
+ output/evidence/monster-ai/c4/raw-logs.tar.gz      |   Bin 0 -> 5480 bytes
+ output/evidence/monster-ai/loc.txt                 |    19 +
+ output/evidence/monster-ai/raw-logs.tar.gz         |   Bin 0 -> 26243 bytes
+ output/evidence/monster-ai/results.txt             |    69 +
+ output/evidence/monster-catalog/README.md          |    58 +
+ output/evidence/monster-catalog/VERIFICATION.md    |   112 +
+ output/evidence/monster-catalog/db-before-ui.png   |   Bin 0 -> 481055 bytes
+ .../monster-catalog/dependency-fix/README.md       |    42 +
+ .../dependency-fix/build-app-exit.json             |    17 +
+ .../monster-catalog/dependency-fix/build-app.log   |    80 +
+ .../dependency-fix/diff-check-exit.json            |    13 +
+ .../monster-catalog/dependency-fix/diff-check.log  |     0
+ .../dependency-fix/evidence-syntax-exit.json       |    13 +
+ .../dependency-fix/evidence-syntax.log             |     0
+ .../monster-catalog/dependency-fix/green-exit.json |    40 +
+ .../monster-catalog/dependency-fix/green.json      |     1 +
+ .../monster-catalog/dependency-fix/green.log       |    74 +
+ .../monster-catalog/dependency-fix/offline.mjs     |    35 +
+ .../monster-catalog/dependency-fix/raw-logs.tar.gz |   Bin 0 -> 6705 bytes
+ .../dependency-fix/red-contract-exit.json          |    29 +
+ .../dependency-fix/red-contract.json               |     1 +
+ .../dependency-fix/red-contract.log                |    91 +
+ .../monster-catalog/dependency-fix/red-exit.json   |    29 +
+ .../monster-catalog/dependency-fix/red.json        |     1 +
+ .../monster-catalog/dependency-fix/red.log         |    88 +
+ .../evidence/monster-catalog/dependency-fix/run.py |    36 +
+ .../dependency-fix/tsconfig.test.json              |     5 +
+ .../dependency-fix/typecheck-app-exit.json         |    13 +
+ .../dependency-fix/typecheck-app.log               |     3 +
+ .../dependency-fix/typecheck-test-exit.json        |    15 +
+ .../dependency-fix/typecheck-test.log              |     0
+ .../monster-catalog/dependency-fix/validation.json |   186 +
+ .../dependency-fix/vitest.config.mjs               |     7 +
+ .../evidence/monster-catalog/ember-fix/README.md   |    52 +
+ .../monster-catalog/ember-fix/call-comparison.json |    35 +
+ .../monster-catalog/ember-fix/compiler.json        |     6 +
+ .../monster-catalog/ember-fix/compiler.log         |     1 +
+ .../ember-fix/exact-errors-reporter.mjs.txt        |    12 +
+ .../ember-fix/green-exact-errors.json              |     4 +
+ .../monster-catalog/ember-fix/green-exit.json      |    31 +
+ .../monster-catalog/ember-fix/green-trace.json     |  1046 +
+ .../evidence/monster-catalog/ember-fix/green.json  |     1 +
+ .../evidence/monster-catalog/ember-fix/green.log   |     1 +
+ .../monster-catalog/ember-fix/no-network.mjs.txt   |    17 +
+ .../ember-fix/red-exact-errors.json                |    41 +
+ .../monster-catalog/ember-fix/red-exit.json        |    31 +
+ .../monster-catalog/ember-fix/red-trace.json       |  1069 +
+ output/evidence/monster-catalog/ember-fix/red.json |     1 +
+ output/evidence/monster-catalog/ember-fix/red.log  |     1 +
+ .../evidence/monster-catalog/ember-fix/run.py.txt  |     6 +
+ .../ember-fix/scoped-compiler.mjs.txt              |    16 +
+ .../monster-catalog/ember-fix/trace-setup.ts.txt   |    11 +
+ .../monster-catalog/ember-fix/validation.json      |    46 +
+ .../ember-fix/vitest-config.mjs.txt                |     2 +
+ .../monster-catalog/final-gate-comparison.json     |    81 +
+ output/evidence/monster-catalog/final-ui-1024.png  |   Bin 0 -> 84864 bytes
+ output/evidence/monster-catalog/final-ui-1280.png  |   Bin 0 -> 134040 bytes
+ output/evidence/monster-catalog/final-ui-1440.png  |   Bin 0 -> 162223 bytes
+ .../evidence/monster-catalog/final-ui-applied.png  |   Bin 0 -> 171012 bytes
+ .../evidence/monster-catalog/final-ui-before.png   |   Bin 0 -> 200841 bytes
+ .../monster-catalog/final-ui-fixed-1024.png        |   Bin 0 -> 65597 bytes
+ .../monster-catalog/final-ui-fixed-1280.png        |   Bin 0 -> 112416 bytes
+ .../monster-catalog/final-ui-fixed-1440.png        |   Bin 0 -> 141186 bytes
+ .../evidence/monster-catalog/final-ui-reloaded.png |   Bin 0 -> 203259 bytes
+ .../final-visual-runtime-proof.json                |   150 +
+ .../evidence/monster-catalog/full-suite/README.md  |   102 +
+ .../full-suite/actual-report-results.json          |  3335 +++
+ .../monster-catalog/full-suite/check-shards.mjs    |   333 +
+ .../full-suite/checker-parent-self-test.json       |   979 +
+ .../full-suite/dependency-parent-exit.json         |    29 +
+ .../full-suite/dependency-parent.json              |     1 +
+ .../full-suite/ember-parent-exit.json              |    11 +
+ .../monster-catalog/full-suite/ember-parent.json   |     1 +
+ .../full-suite/native-reporter-results.json        |   214 +
+ .../full-suite/raw-d932/.omo/gates-baseline.json   |   136 +
+ .../raw-d932/.omo/monster-expected-files.json      |  5306 ++++
+ .../raw-d932/.omo/monster-shards/aggregate.json    |  4795 +++
+ .../raw-d932/.omo/monster-shards/exits.json        |   106 +
+ .../raw-d932/.omo/monster-shards/plan.json         |    10 +
+ .../raw-d932/.omo/monster-shards/shard-01.json     |     1 +
+ .../raw-d932/.omo/monster-shards/shard-02.json     |     1 +
+ .../raw-d932/.omo/monster-shards/shard-03.json     |     1 +
+ .../raw-d932/.omo/monster-shards/shard-04.json     |     1 +
+ .../raw-d932/.omo/monster-shards/shard-05.json     |     1 +
+ .../raw-d932/.omo/monster-shards/shard-06.json     |     1 +
+ .../raw-d932/.omo/monster-shards/shard-07.json     |     1 +
+ .../raw-d932/.omo/monster-shards/shard-08.json     |     1 +
+ .../raw-d932/.omo/monster-shards/shard-09.json     |     1 +
+ .../raw-d932/.omo/monster-shards/shard-10.json     |     1 +
+ .../raw-d932/.omo/monster-shards/shard-11.json     |     1 +
+ .../raw-d932/.omo/monster-shards/shard-12.json     |     1 +
+ .../raw-d932/.omo/monster-shards/shard-13.json     |     1 +
+ .../raw-d932/.omo/monster-shards/shard-14.json     |     1 +
+ .../raw-d932/.omo/monster-shards/shard-15.json     |     1 +
+ .../raw-d932/.omo/monster-shards/shard-16.json     |     1 +
+ .../full-suite/raw-d932/manifest.json              |   111 +
+ .../full-suite/region-log-recovery/README.md       |    45 +
+ .../region-log-recovery/frozen-region-report.json  |    37 +
+ .../implementation-evidence.txt                    |   142 +
+ .../region-log-recovery/session-receipts.json      |    41 +
+ .../region-log-recovery/terminal-manifest.json     |     7 +
+ .../full-suite/repair-build-parent.json            |    15 +
+ .../full-suite/self-test-results.json              |   978 +
+ .../upstream/classification-extension-12.md        |    45 +
+ .../full-suite/upstream/classification.md          |    74 +
+ .../full-suite/upstream/comparison-eight.json      |   133 +
+ .../upstream/comparison-twelve-final.json          |   205 +
+ .../full-suite/upstream/comparison.json            |   108 +
+ .../full-suite/upstream/enospc-audit.json          |    74 +
+ ...-classification-after-persistence-controls.json |  3942 +++
+ .../upstream/existing-66/asset-read-mapping.json   | 15554 ++++++++++
+ .../upstream/existing-66/batch-01-exit.json        |    56 +
+ .../full-suite/upstream/existing-66/batch-01.json  |     1 +
+ .../upstream/existing-66/batch-02-exit.json        |    56 +
+ .../full-suite/upstream/existing-66/batch-02.json  |     1 +
+ .../upstream/existing-66/batch-03-exit.json        |    56 +
+ .../full-suite/upstream/existing-66/batch-03.json  |     1 +
+ .../upstream/existing-66/batch-04-exit.json        |    56 +
+ .../full-suite/upstream/existing-66/batch-04.json  |     1 +
+ .../upstream/existing-66/batch-05-exit.json        |    56 +
+ .../full-suite/upstream/existing-66/batch-05.json  |     1 +
+ .../upstream/existing-66/batch-06-exit.json        |    56 +
+ .../full-suite/upstream/existing-66/batch-06.json  |     1 +
+ .../upstream/existing-66/batch-07-exit.json        |    56 +
+ .../full-suite/upstream/existing-66/batch-07.json  |     1 +
+ .../upstream/existing-66/batch-08-exit.json        |    56 +
+ .../full-suite/upstream/existing-66/batch-08.json  |     1 +
+ .../upstream/existing-66/batch-09-exit.json        |    56 +
+ .../full-suite/upstream/existing-66/batch-09.json  |     1 +
+ .../upstream/existing-66/batch-10-exit.json        |    56 +
+ .../full-suite/upstream/existing-66/batch-10.json  |     1 +
+ .../upstream/existing-66/batch-11-exit.json        |    56 +
+ .../full-suite/upstream/existing-66/batch-11.json  |     1 +
+ .../upstream/existing-66/classification.md         |   138 +
+ .../existing-66/configured-control-exit.json       |    48 +
+ .../upstream/existing-66/configured-control.json   |     1 +
+ .../upstream/existing-66/exceptions.json           |   243 +
+ .../full-suite/upstream/existing-66/exits.json     |   618 +
+ .../full-suite/upstream/existing-66/files.json     |    68 +
+ .../upstream/existing-66/final-provenance.json     |    25 +
+ .../persistence-authentication-error-exit.json     |    50 +
+ .../persistence-authentication-error.json          |     1 +
+ .../persistence-controls-classification.json       |   221 +
+ .../existing-66/persistence-controls-exits.json    |   100 +
+ .../upstream/existing-66/persistence-controls.md   |    57 +
+ .../existing-66/persistence-success-exit.json      |    48 +
+ .../upstream/existing-66/persistence-success.json  |     1 +
+ .../upstream/final-11/baseline-exact-errors.json   |   373 +
+ .../upstream/final-11/baseline-exit.json           |    40 +
+ .../full-suite/upstream/final-11/baseline.json     |     1 +
+ .../full-suite/upstream/final-11/classification.md |   173 +
+ .../full-suite/upstream/final-11/comparison.json   |   348 +
+ .../full-suite/upstream/final-11/provenance.json   | 29894 +++++++++++++++++++
+ .../upstream/final-11/test-provenance.json         |    68 +
+ .../monster-catalog/implementation-contract.md     |    51 +
+ output/evidence/monster-catalog/live-ai-proof.json |   622 +
+ .../monster-catalog/preview-overlap-red.json       |   165 +
+ .../evidence/monster-catalog/runtime-project.json  |     1 +
+ .../monster-catalog/runtime/02-goblin-battle.png   |   Bin 0 -> 1192494 bytes
+ output/evidence/monster-catalog/runtime/SUMMARY.md |    16 +
+ .../evidence/monster-catalog/runtime/manifest.json |   107 +
+ .../monster-catalog/ui-functional-proof.json       |   417 +
+ output/evidence/monster-catalog/vision-proof.json  |    84 +
+ .../evidence/monster-catalog/visual/manifest.json  |  8836 ++++++
+ .../monster-catalog/visual/missing-files.json      |     5 +
+ .../monster-catalog/visual/observations-01.json    |   362 +
+ .../monster-catalog/visual/observations-02.json    |   347 +
+ .../monster-catalog/visual/observations-03.json    |   347 +
+ .../monster-catalog/visual/observations-04.json    |   347 +
+ .../monster-catalog/visual/observations-05.json    |   347 +
+ .../monster-catalog/visual/observations-06.json    |   347 +
+ .../monster-catalog/visual/observations-07.json    |   347 +
+ .../monster-catalog/visual/pixel-verification.json |   171 +
+ .../evidence/monster-catalog/visual/sheet-01.png   |   Bin 0 -> 1055427 bytes
+ .../evidence/monster-catalog/visual/sheet-02.png   |   Bin 0 -> 1021623 bytes
+ .../evidence/monster-catalog/visual/sheet-03.png   |   Bin 0 -> 986150 bytes
+ .../evidence/monster-catalog/visual/sheet-04.png   |   Bin 0 -> 1044538 bytes
+ .../evidence/monster-catalog/visual/sheet-05.png   |   Bin 0 -> 1128208 bytes
+ .../evidence/monster-catalog/visual/sheet-06.png   |   Bin 0 -> 1156943 bytes
+ .../evidence/monster-catalog/visual/sheet-07.png   |   Bin 0 -> 279450 bytes
+ .../monster-catalog/visual/verification.json       |    20 +
+ output/evidence/monster-model/README.md            |   120 +
+ output/evidence/monster-model/build-app.log        |    76 +
+ output/evidence/monster-model/green-foundation.log |    24 +
+ .../monster-model/green-persistence-accounting.log |    26 +
+ .../evidence/monster-model/green-regressions.log   |   133 +
+ output/evidence/monster-model/loc.txt              |    33 +
+ output/evidence/monster-model/raw-logs.tar.gz      |   Bin 0 -> 11155 bytes
+ output/evidence/monster-model/red-delta.log        |   143 +
+ output/evidence/monster-model/red-foundation.log   |   227 +
+ .../monster-model/red-persistence-accounting.log   |   226 +
+ output/evidence/monster-model/typecheck-app.log    |     3 +
+ output/evidence/monster-preview-fix/README.md      |    42 +
+ .../monster-preview-fix/green/catalog-1024.png     |   Bin 0 -> 75189 bytes
+ .../monster-preview-fix/green/catalog-1280.png     |   Bin 0 -> 121838 bytes
+ .../monster-preview-fix/green/catalog-1440.png     |   Bin 0 -> 138139 bytes
+ .../evidence/monster-preview-fix/verification.json |  1241 +
+ output/evidence/monster-ui/README.md               |   112 +
+ .../monster-ui/browser-control-size-red.json       |    84 +
+ .../monster-ui/browser-control-size-red.png        |   Bin 0 -> 97445 bytes
+ output/evidence/monster-ui/browser/applied.png     |   Bin 0 -> 107178 bytes
+ .../evidence/monster-ui/browser/catalog-1024.png   |   Bin 0 -> 74603 bytes
+ .../evidence/monster-ui/browser/catalog-1280.png   |   Bin 0 -> 110414 bytes
+ .../evidence/monster-ui/browser/catalog-1440.png   |   Bin 0 -> 121882 bytes
+ output/evidence/monster-ui/browser/catalog-375.png |   Bin 0 -> 103801 bytes
+ output/evidence/monster-ui/browser/catalog-768.png |   Bin 0 -> 83662 bytes
+ .../browser/dirty-close-confirmation.png           |   Bin 0 -> 130465 bytes
+ .../monster-ui/browser/dirty-empty-search.png      |   Bin 0 -> 107049 bytes
+ .../browser/project-replaced-draft-retained.png    |   Bin 0 -> 94933 bytes
+ output/evidence/monster-ui/browser/results.json    |   462 +
+ .../monster-ui/browser/validation-error.png        |   Bin 0 -> 111030 bytes
+ output/evidence/monster-ui/build-final.log         |    78 +
+ .../monster-ui/chromium-network-failure.json       |   752 +
+ output/evidence/monster-ui/css-gate-after.log      |    37 +
+ output/evidence/monster-ui/green.log               |    31 +
+ .../evidence/monster-ui/raw-validation-logs.tar.gz |   Bin 0 -> 5716 bytes
+ output/evidence/monster-ui/red.log                 |    30 +
+ output/evidence/monster-ui/typecheck-final.log     |     6 +
+ output/evidence/monster-ui/wiki.log                |   131 +
+ scripts/lib/ohMyPiPiAiRuntime.ts                   |    40 +-
+ scripts/qa/monster-metadata.mjs                    |   232 +
+ scripts/qa/runtime/monster-catalog.scenario.mjs    |    27 +
+ src/ai/assistantSession.ts                         |    20 +-
+ src/ai/contextBuilder.ts                           |    13 +-
+ src/ai/monsterAppearanceEvidence.ts                |   109 +
+ src/ai/monsterResourceSnapshot.ts                  |    11 +
+ src/ai/originalContext.ts                          |    15 +-
+ src/ai/proposalCompleteness.ts                     |     1 +
+ src/ai/toolReadEvidence.ts                         |    19 +-
+ src/assets/monsterCatalog.ts                       |     5 +
+ src/assets/monsterCatalogData.json                 |  2048 ++
+ src/assets/monsterCatalogReview.json               |   981 +
+ src/assets/monsterResourceCatalog.ts               |    74 +
+ src/assets/resourceSearch.ts                       |    64 +-
+ src/editor/construction/constructionAudit.ts       |     1 +
+ src/editor/construction/contracts.ts               |     1 +
+ .../construction/parseConstructionOutcome.ts       |     5 +-
+ src/editor/panels/aiChangePreview.ts               |     1 +
+ src/editor/panels/aiProposalSummary.ts             |     2 +
+ src/editor/panels/databaseEnemyRecordView.ts       |     2 +
+ src/editor/panels/databaseMonsterResourceEditor.ts |   199 +
+ src/editor/panels/databaseRecordViews.ts           |     6 +
+ src/editor/panels/databaseResourcePickerDialog.ts  |    15 +-
+ src/editor/panels/monsterResourcePresentation.ts   |    49 +
+ src/editor/proposalSafety.ts                       |     4 +-
+ src/editor/tools/authorHouseExecution.ts           |     1 +
+ src/editor/tools/authorHouseFacade.ts              |     1 +
+ src/editor/tools/authorHousePostconditions.ts      |     1 +
+ src/editor/tools/authorVillageSupport.ts           |     2 +-
+ src/editor/tools/authorVillageTool.ts              |     3 +-
+ src/editor/tools/changeset.ts                      |     3 +
+ src/editor/tools/monsterAppearanceTools.ts         |    22 +
+ src/editor/tools/monsterGraphicAssignment.ts       |    12 +-
+ src/editor/tools/monsterResourceTools.ts           |    69 +
+ src/editor/tools/queryTools.ts                     |     1 +
+ src/editor/tools/toolRegistry.ts                   |     6 +-
+ src/headless/index.ts                              |     3 +
+ src/project/io/serialize.ts                        |     4 +-
+ src/project/io/shape.ts                            |     2 +
+ src/project/monsterMetadata.ts                     |    98 +
+ src/project/projectCommitLog.ts                    |     3 +
+ src/project/store.ts                               |    11 +-
+ src/project/supabaseProjectSync.ts                 |     8 +
+ src/project/types/base.ts                          |     9 +
+ src/project/types/project.ts                       |     4 +
+ src/project/webExport.ts                           |     1 +
+ src/project/webExportAssets.ts                     |     2 +-
+ src/styles/database/enemies.part-3.css             |    64 +
+ src/util/sha256.ts                                 |     5 +
+ test/assistantDependencyRetry.test.ts              |   108 +-
+ test/assistantReadContract.test.ts                 |     4 +-
+ test/databaseMonsterMetadata.test.ts               |   195 +
+ test/emberQuestToolReplay.test.ts                  |     2 +-
+ test/monsterAiAccounting.test.ts                   |    16 +
+ test/monsterAiFixture.ts                           |    22 +
+ test/monsterAppearanceAdversarial.test.ts          |   102 +
+ test/monsterAppearanceAssetIdentity.test.ts        |   131 +
+ test/monsterAppearanceEvidence.test.ts             |    43 +
+ test/monsterAppearanceHttp.test.ts                 |    83 +
+ test/monsterAppearanceIdentity.test.ts             |    36 +
+ test/monsterAppearanceSession.test.ts              |    85 +
+ test/monsterAppearanceTransport.test.ts            |    56 +
+ test/monsterCatalogCoverage.test.ts                |    29 +
+ test/monsterMetadata.test.ts                       |    75 +
+ test/monsterMetadataAccounting.test.ts             |    76 +
+ test/monsterMetadataFoundation.test.ts             |    92 +
+ test/monsterMetadataHistory.test.ts                |    65 +
+ test/monsterMetadataPersistence.test.ts            |   164 +
+ test/monsterResourceCatalog.test.ts                |    85 +
+ test/monsterResourceMetadataTools.test.ts          |    49 +
+ test/monsterResourceTools.test.ts                  |    80 +
+ test/ohMyPiVision.bun.test.ts                      |   198 +
+ test/originalContext.test.ts                       |    20 +
+ test/sha256.test.ts                                |    10 +-
+ 304 files changed, 97260 insertions(+), 299 deletions(-)

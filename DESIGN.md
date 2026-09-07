@@ -108,6 +108,18 @@
   Browser evidence, measurements and unresolved debt are recorded with this
   deliverable; no Lighthouse score or image-based approval is inferred from DOM.
 
+### Sidebar ownership repairs (R1)
+
+- Actual map context menus participate in the shared keyboard layer stack and
+  use `--z-popover-high` above the map explorer. Child pointer actions retain the
+  explorer; Escape closes one layer and restores the map row before the opener.
+- Mode cleanup removes the live auxiliary surface regardless of subscriber order;
+  editor/dock teardown clears its ownership and listeners. No implicit reopen.
+- Expert current-map reveal goes through the map-list renderer, expanding the
+  dock and ancestor path before focusing the current row. Inspection commands
+  activate the Tiles host through workspace state before opening the same pinned
+  or unpinned inspection surface. No new default controls or onboarding.
+
 ## In-game shop trade counter (2026-09-06)
 
 Runtime only: this is not the shop-command editor. `runtime/shop.css` owns a
@@ -729,6 +741,35 @@ The float assistant is **one glass instrument**, `div.ai-deck` inside the transp
 - **Zoom**: integer steps only: `1, 2, 3, 4, 6, 8` (`EDITOR_ZOOM_LEVELS`). One canvas stepper (`−` / current / `+`) plus a menu of `editor-zoom-*` marks. The classic toolbar no longer duplicates `1x 2x 4x 8x`. Beginner docks the stepper in `--editor-canvas-chrome-top`. Standard/expert keep map-save/build behind the ⋯ gate.
 
 ### Database & resource modals
+
+#### Event page Preview contract (2026-09-06)
+
+- Page Preview fits the actual remaining command-column row, including the
+  disclaimer, transport, heading, padding and collapsed context. Ordinary dialogue
+  and speaker must be fully visible at scroll origin at 1024x768, 1280x800 and
+  1440x900, also with the contextual inspector. No viewport-height stage cap or
+  automatic scroll-to-bottom. Standalone command previews retain 4:3 and message
+  top/center/bottom positioning; only page framing fills its parent.
+- Long content uses a named, keyboard-focusable scroll region. Step changes reset
+  its scroll origin. Choice rows remain display-only; a decorative SVG arrow has
+  its own column and complete labels wrap (CJK, Latin tokens and newlines).
+- Transport labels are 13px, supporting text at least 12px, buttons at least 30px
+  high. Natural-width controls wrap as whole units; a tabular, non-wrapping counter
+  reserves seven characters. This is scoped to Preview, not global `.btn.small`.
+- Previous/Next are native-disabled at boundaries. Restart stops and returns to
+  step one (disabled only when already idle there). Play at the final multi-step
+  frame explicitly replays from the start; arrival at the end stops immediately.
+  Single-step pages disable all transport, and empty pages omit it. Manual movement,
+  view/page replacement and modal removal stop playback; view re-entry preserves
+  the remembered/clamped nested step, never implicitly replays.
+- Enabled transport retains focus. If activation disables the focused control,
+  use Next, then Previous, then Play as the deterministic enabled fallback. View
+  replacement restores selected-tab focus only when focus was inside that group.
+- A two-line context summary opens a native keyboard/pointer disclosure with a
+  bounded, separately scrollable full caption/branch/skipped context. One persistent
+  polite atomic status announces current/total, command kind and a bounded branch
+  excerpt, never full dialogue/choice bodies. It updates with the visible counter.
+  Simulation semantics and Preview-to-Flow exact command paths stay unchanged.
 
 - **Topbar actions**: Resources (소재) opens `resourceModal`; Database (DB) opens `databaseModal`. They are the canonical editor paths for asset and database work.
 - Map properties and Event editing are not dock tabs: event editing lives in the left palette when the event layer is active and opens as a modal; map properties are edited via the map tree context menu / database.

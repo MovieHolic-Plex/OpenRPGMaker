@@ -3074,3 +3074,106 @@ footer {
   background: var(--accent-muted);
   border-color: var(--accent);
 }
+
+/* Page Preview owns its remaining grid row, not a viewport-height approximation.
+   Standalone command previews retain their 4:3 stages and positional settings. */
+.event-page-preview {
+  position: relative;
+  min-width: 0;
+}
+.event-page-preview .event-script-live-stage {
+  scrollbar-gutter: stable;
+  overscroll-behavior: contain;
+}
+.event-page-preview .event-script-live-stage > .event-command-preview {
+  height: 100%;
+  min-height: 100%;
+  min-width: 0;
+}
+.event-page-preview .event-command-preview > .ecp-caption {
+  flex: 0 0 auto;
+}
+.event-page-preview .ecp-stage {
+  flex: 1 0 auto;
+  aspect-ratio: auto;
+  min-width: 0;
+  overflow: visible;
+}
+.event-page-preview .ecp-stage:has(> .ecp-message-window) {
+  align-content: safe end;
+}
+.event-page-preview .ecp-stage.pos-top { align-content: start; }
+.event-page-preview .ecp-stage.pos-center { align-content: safe center; }
+.event-page-preview .ecp-settings-preview {
+  flex: 1 0 auto;
+}
+.event-page-preview .event-script-live-controls {
+  flex-wrap: wrap;
+}
+.event-page-preview .btn.event-script-transport-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  gap: 5px;
+  min-height: 30px;
+  font: 500 13px/1.3 var(--font-ui);
+  white-space: nowrap;
+}
+.event-page-preview .event-script-transport-button:disabled {
+  border-style: dashed;
+  cursor: not-allowed;
+  color: var(--text-3);
+}
+.event-page-preview .event-script-live-position {
+  min-width: 7ch;
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  text-align: right;
+}
+.event-page-preview .event-script-preview-disclaimer,
+.event-page-preview .event-script-live-caption,
+.event-page-preview .event-script-live-context {
+  font-size: 12px;
+}
+.event-page-preview .event-script-live-context {
+  min-width: 0;
+  color: var(--text-2);
+  line-height: 1.4;
+}
+.event-page-preview .event-script-live-context > summary {
+  cursor: pointer;
+}
+.event-page-preview .event-script-live-context-label { font-weight: 600; }
+.event-page-preview .event-script-live-caption {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  white-space: pre-wrap;
+  word-break: normal;
+  overflow-wrap: anywhere;
+}
+.event-page-preview .event-script-live-context-body {
+  max-height: 5em;
+  overflow: auto;
+  overscroll-behavior: contain;
+  white-space: pre-wrap;
+  word-break: normal;
+  overflow-wrap: anywhere;
+  padding: 4px;
+  border: 1px solid var(--border-subtle);
+}
+.event-page-preview :is(.event-script-live-stage, summary, .event-script-live-context-body, .event-script-transport-button):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+.event-page-preview .event-script-live-status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

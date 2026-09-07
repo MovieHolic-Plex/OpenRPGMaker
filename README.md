@@ -4,13 +4,86 @@
 
 ## 실행
 
+Node.js 24 LTS와 npm이 필요합니다. 프로젝트 저장용 개인 Supabase 설정은
+[`openwiki/quickstart.md`](openwiki/quickstart.md)의 로컬 설정 절차를 따르세요.
+다른 사람의 `.env.local`을 복사하거나 커밋하지 마세요.
+
 ```bash
-npm install
+npm ci
 npm run dev      # 개발 서버 (http://localhost:9999)
 npm run build    # 프로덕션 빌드 (typecheck + bundle)
 npm test         # 단위 테스트 실행
-npm run typecheck # 타입 검사만
+npm run typecheck:app # 앱 타입 검사
 ```
+
+### 그림·효과음·배경음 설치
+
+**그림과 효과음은 clone에 포함되고, 전체 BGM은 별도 Release 팩으로 설치합니다.**
+`npm ci`나 실행 명령이 대용량 음원을 자동 다운로드하지는 않습니다.
+
+| 에셋 | 위치 | 별도 설치 |
+|---|---|---|
+| 기본 타일셋·캐릭터·얼굴·몬스터·아이콘 | `public/assets/` | 없음 |
+| CC0 효과음 635개, 기존 배경음 5곡 | `public/assets/se/`, `public/assets/cc0/audio/bgm/` | 없음 |
+| BGM 카탈로그 기본 3곡 | `public/assets/cc0/audio/catalog/` | 없음 |
+| BGM 카탈로그 전체 281곡 | [BGM v1 Release](https://github.com/MovieHolic-Plex/rpg-zzu/releases/tag/bgm-v1) | 아래 명령 |
+| 사용자가 추가한 그림·음원 | 프로젝트 데이터 | 해당 프로젝트 불러오기 |
+
+#### GitHub에서 바로 설치
+
+이 저장소는 **비공개**입니다. 저장소에 접근 가능한 계정과
+[GitHub CLI (`gh`)](https://cli.github.com/)가 필요합니다.
+
+```bash
+gh auth login
+npm run bgm:install
+npm run bgm:verify
+npm run dev
+```
+
+`bgm:install`은 `bgm-v1`의 `rpg-zzu-bgm-v1.tar`를 받아, 코드에 고정된
+`assets/bgm-release-v1.json`의 크기와 SHA-256으로 검증한 뒤 설치합니다.
+완료 메시지는 **281/281곡 검증 완료**입니다. 이미 전곡이 정상 설치돼 있으면
+다시 다운로드하지 않습니다.
+
+#### gh 없이 수동 설치 / 다른 컴퓨터로 옮기기
+
+1. 접근 권한이 있는 GitHub 계정으로 [BGM v1 Release](https://github.com/MovieHolic-Plex/rpg-zzu/releases/tag/bgm-v1)를 엽니다.
+2. **Assets의 `rpg-zzu-bgm-v1.tar`**를 다운로드합니다. `Source code (zip)`은 음원 팩이 아닙니다.
+3. 압축을 직접 풀지 말고, 프로젝트 폴더에서 받은 파일을 지정합니다. 경로에 공백이 있으면 따옴표로 감싸세요.
+
+```bash
+npm run bgm:install -- --archive "/다운로드/경로/rpg-zzu-bgm-v1.tar"
+npm run bgm:verify
+```
+
+수동 설치는 **의존성 설치가 끝난 Node.js 환경에서** `gh`나 인터넷 없이 실행됩니다.
+팩은 약 **1.304 GB**, 음원 원본 합계는 **1,303,934,164 bytes**입니다.
+검증용 임시 복사와 기존 설치본을 고려해 여유 공간 **5 GB 이상**을 권장합니다.
+설치된 음원은 Git에서 제외되므로 clone 크기와 커밋 이력을 늘리지 않습니다.
+
+#### 로컬 재생·빌드·복구
+
+- 로컬 음원을 사용하려면 `VITE_BGM_CDN_BASE`를 설정하지 마세요. `.env.local`,
+  모드별 `.env` 또는 셸에 기존 CDN 주소가 있으면 **그 주소가 우선**합니다.
+  설치 도구는 개인 설정을 수정하지 않습니다. 설정을 바꿨으면 서버를 재시작하세요.
+- 프로덕션 사용은 **음원 설치 → `npm run build` → `npm start`** 순서입니다.
+  이미 빌드한 뒤 음원을 설치했다면 재빌드해야 정적 산출물에 포함됩니다.
+  웹 게임 내보내기도 음원 설치 후 실행하세요.
+- 오프라인으로 가능한 것은 **설치된 음원 재생**입니다. Supabase 저장·AI 서비스까지
+  오프라인이 되는 것은 아닙니다.
+- `npm run bgm:verify`가 누락·손상을 보고하면 `bgm:install`을 다시 실행하세요.
+  정상 파일과 관계없는 파일은 유지하고, 누락·손상된 곡만 교체합니다.
+- 팩의 크기·해시가 틀리면 기존 음원은 바꾸지 않고 실패합니다. 설치 후반에 디스크 오류가
+  나면 일부 파일만 교체된 상태일 수 있으며, 같은 명령을 다시 실행해 복구합니다.
+- Ctrl-C는 임시 파일·설치 잠금을 정리합니다. 강제 종료나 전원 차단 후
+  `public/assets/cc0/audio/.bgm-install.lock`이 남았다면, 실행 중인 설치가 없음을
+  확인한 뒤 해당 잠금 파일만 제거하고 재실행하세요.
+
+CDN 스트리밍을 계속 쓰거나 새 팩을 제작하는 관리자는
+[`openwiki/bgm-catalog.md`](openwiki/bgm-catalog.md)를 참고하세요.
+BGM 팩은 CC0-1.0이며, 다른 기본 에셋의 라이선스는
+[`public/assets/ATTRIBUTION.md`](public/assets/ATTRIBUTION.md)를 따릅니다.
 
 ### AI 어시스턴트 연결
 
@@ -66,9 +139,9 @@ API 사용이 필요한 경우 `AI 설정 → API / 게이트웨이`로 전환�
 
 - **단일 진실 원천**: `Project` 데이터(JSON 직렬화)가 유일한 상태. 에디터만 쓰고, 플레이어는 읽기 전용 + 런타임 세션(`PlaySession`) 사용.
 - **에디터/플레이어 분리**: 한 번에 한 모드. 전환 시 Phaser 게임 재부팅.
-- **Phaser(캔버스) + 바닐라 TS DOM**: 의존성 = `phaser`(런타임) + `vitest`(dev).
-- **절차적 기본 에셋**: `Graphics.generateTexture`로 타일/캐릭터 생성 → 바이너리 파일 의존성 0.
-- **저장**: IndexedDB(자동 저장 + 수동). 작업물은 JSON으로 내보내기/가져오기.
+- **Phaser(캔버스) + 바닐라 TS DOM**: 실제 의존성 목록은 `package.json`을 참고하세요.
+- **기본 에셋**: 그림·효과음은 `public/assets/`에 포함하고, 대용량 BGM은 Release 팩으로 별도 설치합니다.
+- **저장**: 프로젝트의 원격 정본은 Supabase이며 로컬 저장도 사용합니다. 작업물은 파일로 내보내기/가져오기가 가능합니다.
 
 ## 데이터 스키마
 
@@ -140,7 +213,7 @@ API 사용이 필요한 경우 `AI 설정 → API / 게이트웨이`로 전환�
 
 포함(v3): 3레이어 맵, Map Tree, Database(switches/variables/commonEvents/tilesets/terms + 액터/직업/스킬/아이템/장비/적/적그룹/상태/전투애니메이션/시스템), RM2K3 명령 세트(드래그 재정렬), Resource Manager(임포트), 패널 유연 레이아웃, v1→v3 마이그레이션, **RM2K3 사이드뷰 전투(DB 구동)**, **실행취소/다시실행**, **드래그 영역 복사/붙여넣기**, **에디터 키보드 단축키**.
 
-제외(이후 단계): BGM/사운드, 백엔드/계정.
+BGM/효과음 재생을 지원합니다. 전체 BGM 카탈로그는 위 Release 팩 설치 절차를 따르세요.
 
 ## 테스트
 

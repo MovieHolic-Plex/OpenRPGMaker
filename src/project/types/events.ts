@@ -579,6 +579,8 @@ export interface GameEvent {
   name?: string;
   /** Opt-in relationship identity for friendship/gifts (shared across multi-map copies). Empty/omit = no social self-key. */
   characterId?: string;
+  /** Authored placement semantics, independent of graphics and opt-in social identity. */
+  placementRole?: "npc";
   x: number;
   y: number;
   sprite?: AssetRef;

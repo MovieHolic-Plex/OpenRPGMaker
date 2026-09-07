@@ -39,7 +39,7 @@
   min-width: 226px;
   padding: 3px;
   position: fixed;
-  z-index: var(--z-status);
+  z-index: var(--z-popover-high);
 }
 
 .map-context-menu-item {

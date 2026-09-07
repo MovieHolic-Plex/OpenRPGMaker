@@ -1,6 +1,7 @@
 import { subscribeEditorUiMode } from '@/editor/editorUiMode';
 import { el } from '@/util/dom';
 import { hasOpenModalLayer } from '@/editor/ui/modalStack';
+import { closeMapContextMenu } from '@/editor/panels/mapContextMenu';
 
 type SurfaceId = 'maps' | 'tools' | 'assist' | 'kits';
 type SurfaceInput = {
@@ -13,16 +14,23 @@ type SurfaceInput = {
 
 let opened: SurfaceId | null = null;
 let current: { readonly input: SurfaceInput; readonly panel: HTMLElement; readonly trigger: HTMLElement } | null = null;
-let installed = false;
+let detachListeners: (() => void) | null = null;
 export const SIDEBAR_SURFACE_OPEN = 'oprn:sidebar-surface-open';
 
-export function resetSidebarSurfaceForTests(): void { opened = null; current = null; }
+export function teardownSidebarSurfaces(): void {
+  closeSidebarSurface();
+  detachListeners?.();
+  detachListeners = null;
+}
+
+export function resetSidebarSurfaceForTests(): void { teardownSidebarSurfaces(); }
 
 export function closeSidebarSurface(restore = false): void {
   const previous = current;
   opened = null;
   current = null;
   if (!previous) return;
+  if (previous.input.id === 'maps') closeMapContextMenu();
   // Pointerdown dismissal must not detach the outside target before its click.
   previous.panel.remove();
   previous.trigger.setAttribute('aria-expanded', 'false');
@@ -30,24 +38,33 @@ export function closeSidebarSurface(restore = false): void {
 }
 
 function installListeners(): void {
-  if (installed) return;
-  installed = true;
-  subscribeEditorUiMode(() => { opened = null; current = null; });
-  document.addEventListener(SIDEBAR_SURFACE_OPEN, event => {
+  if (detachListeners) return;
+  const unsubscribeMode = subscribeEditorUiMode(() => closeSidebarSurface());
+  const onSurfaceOpen = (event: Event) => {
     if (event instanceof CustomEvent && event.detail !== opened) closeSidebarSurface();
-  });
-  document.addEventListener('pointerdown', event => {
+  };
+  const onPointerDown = (event: Event) => {
     if (!current || hasOpenModalLayer() || !(event.target instanceof Node)) return;
     if (!current.panel.contains(event.target) && !current.trigger.contains(event.target)) closeSidebarSurface();
-  });
-  document.addEventListener('keydown', event => {
+  };
+  const onKeyDown = (event: KeyboardEvent) => {
     if (!current || event.defaultPrevented || event.key !== 'Escape') return;
     // A child modal/context menu must consume its Escape before this layer.
     event.preventDefault();
     event.stopPropagation();
     closeSidebarSurface(true);
-  });
+  };
+  document.addEventListener(SIDEBAR_SURFACE_OPEN, onSurfaceOpen);
+  document.addEventListener('pointerdown', onPointerDown);
+  document.addEventListener('keydown', onKeyDown);
   if (typeof window !== 'undefined') window.addEventListener('resize', positionCurrent);
+  detachListeners = () => {
+    unsubscribeMode();
+    document.removeEventListener(SIDEBAR_SURFACE_OPEN, onSurfaceOpen);
+    document.removeEventListener('pointerdown', onPointerDown);
+    document.removeEventListener('keydown', onKeyDown);
+    if (typeof window !== 'undefined') window.removeEventListener('resize', positionCurrent);
+  };
 }
 
 function positionCurrent(): void {

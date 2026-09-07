@@ -1,0 +1,220 @@
+{
+  "featureParent": "02acae3604b014f8c5a7e9861d03cdda286e35cb",
+  "upstreamParent": "147218a2dcfd5d5996e666395e53626706904a60",
+  "mergeBase": "142db78e9eb3cd762bacd63cb0324c709392f6ed",
+  "stagedTreeAtAudit": "439baa6c205c72b267aedbf9a714d62e0a57c612",
+  "overlappingPaths": [
+    "DESIGN.md",
+    "openwiki/INDEX.md",
+    "openwiki/runtime-project-schema.md"
+  ],
+  "allNonoverlappingParentBlobsPreserved": true,
+  "authoredOverlappingDocumentsEqualAutomaticMerge": true,
+  "fullSuiteEvidenceUnchanged": true,
+  "vitest": {
+    "numTotalTests": 495,
+    "numPassedTests": 492,
+    "numFailedTests": 3,
+    "numPendingTests": 0,
+    "numTodoTests": 0,
+    "success": false
+  },
+  "featureChangedTests": [
+    {
+      "file": "test/assistantDependencyRetry.test.ts",
+      "tests": 16,
+      "status": "passed"
+    },
+    {
+      "file": "test/assistantReadContract.test.ts",
+      "tests": 5,
+      "status": "passed"
+    },
+    {
+      "file": "test/databaseMonsterMetadata.test.ts",
+      "tests": 11,
+      "status": "passed"
+    },
+    {
+      "file": "test/emberQuestToolReplay.test.ts",
+      "tests": 5,
+      "status": "passed"
+    },
+    {
+      "file": "test/monsterAiAccounting.test.ts",
+      "tests": 3,
+      "status": "passed"
+    },
+    {
+      "file": "test/monsterAppearanceAdversarial.test.ts",
+      "tests": 40,
+      "status": "passed"
+    },
+    {
+      "file": "test/monsterAppearanceAssetIdentity.test.ts",
+      "tests": 21,
+      "status": "passed"
+    },
+    {
+      "file": "test/monsterAppearanceEvidence.test.ts",
+      "tests": 12,
+      "status": "passed"
+    },
+    {
+      "file": "test/monsterAppearanceHttp.test.ts",
+      "tests": 1,
+      "status": "passed"
+    },
+    {
+      "file": "test/monsterAppearanceIdentity.test.ts",
+      "tests": 24,
+      "status": "passed"
+    },
+    {
+      "file": "test/monsterAppearanceSession.test.ts",
+      "tests": 7,
+      "status": "passed"
+    },
+    {
+      "file": "test/monsterAppearanceTransport.test.ts",
+      "tests": 3,
+      "status": "passed"
+    },
+    {
+      "file": "test/monsterCatalogCoverage.test.ts",
+      "tests": 2,
+      "status": "passed"
+    },
+    {
+      "file": "test/monsterMetadata.test.ts",
+      "tests": 19,
+      "status": "passed"
+    },
+    {
+      "file": "test/monsterMetadataAccounting.test.ts",
+      "tests": 8,
+      "status": "passed"
+    },
+    {
+      "file": "test/monsterMetadataFoundation.test.ts",
+      "tests": 17,
+      "status": "passed"
+    },
+    {
+      "file": "test/monsterMetadataHistory.test.ts",
+      "tests": 3,
+      "status": "passed"
+    },
+    {
+      "file": "test/monsterMetadataPersistence.test.ts",
+      "tests": 5,
+      "status": "passed"
+    },
+    {
+      "file": "test/monsterResourceCatalog.test.ts",
+      "tests": 6,
+      "status": "passed"
+    },
+    {
+      "file": "test/monsterResourceMetadataTools.test.ts",
+      "tests": 6,
+      "status": "passed"
+    },
+    {
+      "file": "test/monsterResourceTools.test.ts",
+      "tests": 18,
+      "status": "passed"
+    },
+    {
+      "file": "test/originalContext.test.ts",
+      "tests": 19,
+      "status": "passed"
+    },
+    {
+      "file": "test/sha256.test.ts",
+      "tests": 6,
+      "status": "passed"
+    }
+  ],
+  "featureChangedTestCount": 257,
+  "upstreamChangedTests": [
+    {
+      "file": "test/aiBlockedEventRelocation.test.ts",
+      "tests": 48,
+      "status": "passed"
+    },
+    {
+      "file": "test/bgmCatalog.test.ts",
+      "tests": 24,
+      "status": "passed"
+    },
+    {
+      "file": "test/eventEditorPagePreviewView.test.ts",
+      "tests": 6,
+      "status": "passed"
+    },
+    {
+      "file": "test/eventPagePreviewTransport.test.ts",
+      "tests": 7,
+      "status": "passed"
+    },
+    {
+      "file": "test/sidebarFocusModes.test.ts",
+      "tests": 12,
+      "status": "passed"
+    },
+    {
+      "file": "test/sidebarFocusR1.test.ts",
+      "tests": 11,
+      "status": "passed"
+    }
+  ],
+  "upstreamChangedTestCount": 108,
+  "knownFailures": [
+    {
+      "file": "test/monsterCollection.test.ts",
+      "fullName": "monster collection core blocks uncapturable troops and excludes captured enemies from EXP",
+      "exactMessageAndStackMatchAfterRootNormalization": true,
+      "failureMessages": [
+        "AssertionError: expected undefined to be 'victory' // Object.is equality\n    at /home/main/z-project/rpg-zzu-monster-catalog-0907/test/monsterCollection.test.ts:125:29\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    },
+    {
+      "file": "test/monsterCollection.test.ts",
+      "fullName": "monster collection core simulateBattle strict script captures a weakened slime and fails at full HP",
+      "exactMessageAndStackMatchAfterRootNormalization": true,
+      "failureMessages": [
+        "AssertionError: expected +0 to be 1 // Object.is equality\n    at /home/main/z-project/rpg-zzu-monster-catalog-0907/test/monsterCollection.test.ts:166:35\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    },
+    {
+      "file": "test/monsterEvolutionTypeChart.test.ts",
+      "fullName": "monster type editor tools writes type charts and species type/evolution data through database tools",
+      "exactMessageAndStackMatchAfterRootNormalization": true,
+      "failureMessages": [
+        "AssertionError: 'define_monster_species' 실행 실패: species.graphic.monsterResourceId: \"도구 슬라임\"에 확실히 맞는 외형이 없습니다. list_resources(kind:\"monster\", query:\"*\")로 확인한 리소스 ID를 species.graphic.monsterResourceId에 지정하세요. 사용 가능한 monster 리소스 예시: generated-enemy-sl…: expected false to be true // Object.is equality\n    at /home/main/z-project/rpg-zzu-monster-catalog-0907/test/monsterEvolutionTypeChart.test.ts:223:53\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    }
+  ],
+  "newFailureCount": 0,
+  "baselineEvidence": "output/evidence/monster-catalog/full-suite/upstream/existing-66/batch-08.json",
+  "baselineEvidenceSHA256": "610dd0a38b2573a03002f5b52af57aa4baf56058860a44c2c08ac0900b29067e",
+  "baselineCommit": "142db78e9eb3cd762bacd63cb0324c709392f6ed",
+  "browser": {
+    "passed": true,
+    "viewportWidths": [
+      375,
+      768,
+      1024,
+      1280,
+      1440
+    ],
+    "captures": 10,
+    "remoteWrites": 0,
+    "pageErrors": 0,
+    "httpErrors": 0,
+    "consoleWarningsAllPresentInPriorEvidence": true,
+    "priorEvidence": "output/evidence/monster-ui/browser/results.json",
+    "serverStopped": true
+  }
+}

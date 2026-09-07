@@ -90,6 +90,20 @@ authoring. Generic world CRUD and blanket lint/digests remain excluded.
   search, pin storage, command access, focus), retained `sidebarModeWorkflow`,
   `sidebarBrushUi`, map/dock, toolbar and keyboard suites. Presentation assertions
   follow moved controls without removing actual state/reset/undo coverage.
+- R1 ownership repairs: the actual `mapContextMenu` registers with `modalStack`
+  and uses `--z-popover-high`, so body-mounted child actions retain the explorer
+  and Escape returns to the originating row. Its old deferred row-focus job is
+  removed: it stole focus from keyboard menu navigation. Surface mode cleanup
+  calls real teardown, even if editor rendering subscribed first; dock remount
+  closes ownership and editor teardown detaches surface listeners.
+- `revealMapInDock` owns collapse markup, ancestor expansion/filter reset and
+  current-row focus. Inspection command dispatch first activates a missing Tiles
+  host through workspace state, then `openSidebarInspection` opens/focuses the same pinned/unpinned
+  surface. Tests: `sidebarFocusR1.test.ts` plus real-browser
+  `scripts/qa/sidebar-focus-r1.mjs` (Beginner/Standard-first Ctrl+K, actual context
+  menus, persisted collapse, and all three inspections from maps-only reload).
+- Rename settles Enter/Escape before removing its focused input: the resulting
+  blur cannot commit a cancelled draft or repeat a completed edit.
 
 ### Automatic usage guides disabled (2026-09-06)
 

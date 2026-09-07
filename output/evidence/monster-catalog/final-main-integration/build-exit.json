@@ -1,0 +1,12 @@
+{
+  "command": [
+    "npm",
+    "run",
+    "build"
+  ],
+  "cwd": "/home/main/z-project/rpg-zzu-monster-catalog-0907",
+  "exitCode": 0,
+  "durationSeconds": 95.349,
+  "TMPDIR": "/dev/shm/st_01a0793a/tmp",
+  "externalNetworkBlocked": false
+}

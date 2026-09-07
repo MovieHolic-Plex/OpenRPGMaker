@@ -28,6 +28,8 @@ export type EditorIconName =
   | "undo"
   | "redo"
   | "refresh"
+  | "play"
+  | "pause"
   | "arrowUp"
   | "arrowDown"
   | "arrowLeft"
@@ -85,6 +87,8 @@ const SPECS: Readonly<Record<EditorIconName, readonly SvgNodeSpec[]>> = {
   undo: [path("M7 5.5 3.5 9l3.5 3.5M3.5 9h9.5a4.5 4.5 0 0 1 0 9H9.5")],
   redo: [path("M15 5.5 18.5 9 15 12.5M18.5 9H9a4.5 4.5 0 0 0 0 9h3.5")],
   refresh: [path("M18 11a7 7 0 1 1-2-4.9M18 4v3.5h-3.5")],
+  play: [path("M7 4.5 18 11 7 17.5z")],
+  pause: [path("M8 4.5v13M14 4.5v13")],
   arrowUp: [path("M11 18V4M5.5 9.5 11 4l5.5 5.5")],
   arrowDown: [path("M11 4v14M5.5 12.5 11 18l5.5-5.5")],
   arrowLeft: [path("M18 11H4M9.5 5.5 4 11l5.5 5.5")],
