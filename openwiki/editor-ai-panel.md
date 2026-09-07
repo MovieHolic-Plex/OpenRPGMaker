@@ -309,8 +309,11 @@ transfers in one session, checks interpreter-owned source/destination evidence,
 then walks back to the original start. Walking checks held-interpreter ownership
 at every tile, not just at the SceneStep boundary: a mandatory touch shop cannot
 be walked through or replaced by the next transfer. The same event resumes after
-a purchase. Unsupported nested autorun suspension fails closed without replacing
-the held interpreter. Both require the declared actual project
+a purchase. Purchase, choice and animation completion consume the old hold BEFORE
+resuming, keeping interpreter/event ownership locally. A non-suspending arrival
+autorun can therefore run after transfer; a new hold is installed only if execution
+suspends again. Unsupported nested autorun suspension still fails closed without
+replacing the newly held interpreter. Both require the declared actual project
 entry; no convenience teleport or injected gold/switch state. NPC rewards reuse
 `verifyNpcRewardsPlayable`: exact requested first grants, then zero item/equipment,
 monster and gold reward deltas on the second interaction in that same session.

@@ -751,6 +751,7 @@ function runPurchaseStep(state: RunnerState, purchase: Extract<SceneStep, { kind
   }
   endShopVisit(scene, step, merchantGold, identity);
   state.log.push(`purchase ${purchase.eventId} ${purchase.itemId} count=${purchase.count} unitPrice=${goods.price}`);
+  state.held = null;
   state.executingEventId = held.currentEventId;
   const stop = pump(state, held.interp, held.interp.resume(true));
   updateHeldInterpreter(state, held.interp, stop, held.currentEventId);
@@ -758,13 +759,14 @@ function runPurchaseStep(state: RunnerState, purchase: Extract<SceneStep, { kind
 }
 
 function runChooseStep(state: RunnerState, index: number): string | null {
-  if (!state.held || state.held.mode !== "choices") return "choose를 처리할 대기 중 선택지가 없습니다.";
-  if (!Number.isInteger(index) || index < -1 || index >= state.held.choiceCount) return `Choice index ${index} is out of range (${state.held.choiceCount} options).`;
-  const interp = state.held.interp;
-  state.executingEventId = state.held.currentEventId;
-  const stop = pump(state, interp, interp.resume(index));
+  const held = state.held;
+  if (!held || held.mode !== "choices") return "choose를 처리할 대기 중 선택지가 없습니다.";
+  if (!Number.isInteger(index) || index < -1 || index >= held.choiceCount) return `Choice index ${index} is out of range (${held.choiceCount} options).`;
+  state.held = null;
+  state.executingEventId = held.currentEventId;
+  const stop = pump(state, held.interp, held.interp.resume(index));
   refreshRoguelikeRoomForRunner(state);
-  updateHeldInterpreter(state, interp, stop, state.held.currentEventId);
+  updateHeldInterpreter(state, held.interp, stop, held.currentEventId);
   return stop.stop === "failed" ? stop.reason : null;
 }
 
@@ -1341,6 +1343,8 @@ function advanceAnimations(state: RunnerState, deltaMs: number): void {
 function resumeHeldAnimationIfReady(state: RunnerState): void {
   if (!state.held || state.held.mode !== "animation" || state.activeAnimations.length > 0) return;
   const held = state.held;
+  state.held = null;
+  state.executingEventId = held.currentEventId;
   const stop = pump(state, held.interp, held.interp.resume(undefined));
   updateHeldInterpreter(state, held.interp, stop, held.currentEventId);
   if (stop.stop === "failed") state.runtimeFailure = stop.reason;

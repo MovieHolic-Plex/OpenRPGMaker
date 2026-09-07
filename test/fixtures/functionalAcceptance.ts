@@ -31,6 +31,21 @@ export function functionalFixture() {
   return { project, origin, destination, seller, outgoing, returning, reward };
 }
 
+export function shopTransferInitializerFixture() {
+  const fixture = functionalFixture();
+  const { seller, destination } = fixture;
+  const sellerPage = seller.pages?.[0];
+  const initializer = structuredClone(seller);
+  const initializerPage = initializer.pages?.[0];
+  if (!sellerPage || !initializerPage) throw new Error("Missing initializer fixture pages");
+  sellerPage.commands.push({ kind: "transfer", mapId: destination.id, x: 1, y: 1 });
+  initializer.id = "arrival_initializer";
+  initializerPage.trigger = { kind: "auto" };
+  initializerPage.commands = [{ kind: "setVariable", variableId: "var_0001", op: "=", value: 1 }, { kind: "m2Command", commandId: "m2-086-erase-event", fields: {} }];
+  destination.events.push(initializer);
+  return { ...fixture, initializer };
+}
+
 export function suspendedCorridorFixture() {
   const fixture = functionalFixture();
   const { seller, outgoing, origin } = fixture;

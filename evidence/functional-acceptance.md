@@ -13,6 +13,52 @@ Scope: engine/harness code, minimal test fixtures, public-API smoke and focused 
 - Accepted-revision proof reruns functional criteria on the matching canonical reload through the existing store proof path.
 - Parent-confirmed baseline failure in `npcRewardSession` (replanning into an unrelated skipped plan) is now passing.
 
+## Rereview P2: consumed hold ownership (after 9d7ba7fab)
+
+Production changes are limited to the purchase, choice and animation resume paths
+in `sceneTestRunner.ts`. Each captures the interpreter/event owner locally and
+clears the consumed `state.held` before invoking `resume`. A resumed continuation
+can transfer into a non-suspending autorun, or suspend again under its original
+owner. The existing nested-owner guard and corridor rejection are unchanged.
+No R2 clarification behavior was changed.
+
+Regression coverage includes the exact purchase -> transfer -> variable initializer
+path, plain-transfer control, all three resume modes, a second suspension, and
+rejected replacement of a newly held nested interpreter. The initializer uses the
+persisted M2 Erase Event command, and tests assert that it actually erased itself.
+Animation completion uses authored-duration-derived engine ticks, not a wall-clock
+sleep or polling.
+
+Evidence under `output/evidence/functional-acceptance/`:
+
+- `resume-red.log`: 7 initial failures; purchase/choice/animation transfer and ledger acceptance reproduced the stale consumed-hold bug.
+- `resume-focused-integration.log`: 3 remaining test-fixture failures after the production fix. The test incorrectly put a second pause after transfer; `interpreter/resume.ts` intentionally ends an event at transfer. The second pause was moved before transfer, with stronger exact gold/inventory/initializer assertions.
+- `resume-test-types-red.log`: direct test typechecking caught the fixture's runtime-step spelling `eraseEvent`; it was replaced with the valid persisted M2 command. The diagnostic invocation was also aligned with the app command's `noEmit` option.
+- `resume-final-green.log`: **143 tests / 11 files passed**, exit 0, in one final thread-worker run.
+- `resume-typecheck.log`: `npm run typecheck:app`, exit 0.
+- `resume-test-types.log`: app sources plus the new regression and its imported fixture, using TypeScript with the app options and `noEmit:true`: **0 diagnostics**. This replaced timed-out fresh LSP diagnostics for the new test; no errors were suppressed.
+- `resume-final-smoke.log` / `resume-final-smoke.json`: public Firefox smoke passed, including the resumed purchase ending on `test_interior` with **80 gold, 2 potions, var_0001=1**, while the forced corridor remains blocked.
+
+Exact final focused command:
+
+```bash
+npm test -- \
+  test/functionalInterpreterResume.test.ts test/functionalWalkSuspension.test.ts \
+  test/functionalClarification.test.ts test/functionalAcceptance.test.ts \
+  test/functionalScenePurchase.test.ts test/functionalAcceptanceSession.test.ts \
+  test/functionalPersistenceProof.test.ts test/sceneTestRunner.test.ts \
+  test/sceneVerificationRepair.test.ts test/npcRewardAcceptance.test.ts \
+  test/npcRewardSession.test.ts --pool=threads --maxWorkers=1 --reporter=dot
+npm run typecheck:app
+node scripts/qa/functional-acceptance-smoke.mjs http://127.0.0.1:9842 output/evidence/functional-acceptance/resume-final-smoke.json
+npm run openwiki:index
+node scripts/openwiki-index.mjs --check
+git diff --check
+```
+
+Independent lead gates/build and ultrabrain rereview remain required for this
+revision. No push, PR edit or merge was performed.
+
 ## Review repair R1/R2 (after 0977da78c)
 
 R1: each individual tile movement refuses to advance while an interpreter is held.

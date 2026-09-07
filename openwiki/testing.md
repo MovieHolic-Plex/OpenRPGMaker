@@ -1127,7 +1127,7 @@ Chromium local network 검사만 캡처 실행 인자로 끈다. 일반 출하 �
 
 Focused suites: `functionalScenePurchase`, `functionalAcceptance`,
 `functionalAcceptanceSession`, `functionalPersistenceProof`, `npcRewardSession`,
-`functionalWalkSuspension`, and `functionalClarification`.
+`functionalWalkSuspension`, `functionalClarification`, and `functionalInterpreterResume`.
 They exercise the public scene tool, real interpreter/production transactions,
 live declaration parser and session gates, immutable plan replacement, actual
 proposal apply, and the canonical persistence-read boundary (only transport/model
@@ -1155,6 +1155,12 @@ partial completion, retained known expectations, explicit user corrections,
 host-resume clarification, and rejected worker/concrete-contract replacement.
 The public smoke also exercises the corridor and a three-message clarification
 (`blocked -> blocked -> verified`) with the same requirement ID.
+Consumed-hold regressions cover purchase/choice/animation resuming through transfer
+into a non-suspending variable initializer, a second suspension under the same
+owner, and retained rejection of newly suspended nested interpreters. Animation
+tests advance deterministic engine ticks derived from its authored duration;
+no wall-clock sleep or polling is used. The public smoke additionally verifies
+purchase -> transfer -> initializer ends with 80 gold, two potions and var_0001=1.
 It does NOT claim live-model semantic extraction, graphical-player QA or a real
 Supabase-authored project. Canonical reload behavior is covered by the focused
 transport-boundary tests; independent full gates/build/player QA remain lead gates.
