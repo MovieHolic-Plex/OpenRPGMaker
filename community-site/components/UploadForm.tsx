@@ -9,7 +9,7 @@ interface UploadDict {
   title: string; assetTab: string; gameTab: string; name: string; gameTitle: string;
   author: string; kind: string; desc: string; tags: string; fileAsset: string; fileGame: string;
   submit: string; submitting: string; doneAsset: string; doneGame: string; pickFile: string;
-  license: string; chooseLicense: string; coverLabel: string; schemaHint: string;
+  license: string; chooseLicense: string; coverLabel: string; schemaHint: string; releaseFileError: string;
 }
 
 export default function UploadForm({ lang, dict }: { lang: string; dict: UploadDict }) {
@@ -44,6 +44,10 @@ export default function UploadForm({ lang, dict }: { lang: string; dict: UploadD
         url = "/api/assets";
         payload = { ...base, name: String(form.get("name") || ""), kind, dataUrl, meta: dims ?? {} };
       } else {
+        if (!file.name.toLowerCase().endsWith(".zip") || file.size > 96 * 1024 * 1024) {
+          setStatus({ kind: "err", text: dict.releaseFileError });
+          return;
+        }
         const dataUrl = await readAsDataUrl(file);
         const cover = form.get("cover") as File | null;
         const coverDataUrl = cover && cover.size > 0 ? await readAsDataUrl(cover) : "";
@@ -76,7 +80,7 @@ export default function UploadForm({ lang, dict }: { lang: string; dict: UploadD
     }
   }
 
-  const accept = type === "asset" ? (AUDIO_KINDS.has(kind) ? "audio/*" : "image/*") : ".oprn,.rpgzzu,application/vnd.openrpg.project+zip";
+  const accept = type === "asset" ? (AUDIO_KINDS.has(kind) ? "audio/*" : "image/*") : ".zip,application/zip";
 
   return (
     <form className="form-card" onSubmit={onSubmit}>

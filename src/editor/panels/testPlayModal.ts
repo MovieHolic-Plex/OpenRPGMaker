@@ -365,7 +365,7 @@ function openTestPlayShell(
   titlebar.append(
     el("span", {
       class: "test-play-title",
-      text: title,
+      text: store.getCurrent().meta.publication ? `${title} · 현재 편집기 엔진 미리보기` : title,
       dataset: { testid: "test-play-window-title" },
     }),
     el("button", {

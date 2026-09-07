@@ -1,4 +1,5 @@
 import { isInteriorRoomShape } from "@/project/interiorRoomFootprint";
+import { parsePublication } from "../publication";
 import {
   CONCEPT_PLACE_COUNT_MAX,
   CONCEPT_PLACE_LEVEL_MAX,
@@ -19,6 +20,7 @@ export function validateMeta(value: unknown): void {
   const meta = requireRecord("meta", value);
   requireString("meta.title", meta.title);
   requireString("meta.author", meta.author);
+  if (meta.publication !== undefined) parsePublication(meta.publication);
   repairTerms(meta);
 }
 

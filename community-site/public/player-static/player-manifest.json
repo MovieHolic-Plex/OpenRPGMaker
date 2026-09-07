@@ -1,6 +1,10 @@
 {
-  "_PlayScene-DqWHjf0Y.js": {
-    "file": "assets/PlayScene-DqWHjf0Y.js",
+  "../rpg-zzu/node_modules/phaser/dist/phaser.min.js": {
+    "file": "assets/phaser.min-CwlHMuXa.js",
+    "src": "../rpg-zzu/node_modules/phaser/dist/phaser.min.js"
+  },
+  "_PlayScene-DWs2s4K0.js": {
+    "file": "assets/PlayScene-DWs2s4K0.js",
     "name": "PlayScene",
     "isDynamicEntry": true,
     "imports": [
@@ -10,33 +14,54 @@
       "src/player/playSceneBattle.ts"
     ]
   },
-  "node_modules/.pnpm/phaser@3.90.0/node_modules/phaser/dist/phaser.min.js": {
-    "file": "assets/phaser.min-CwlHMuXa.js",
-    "src": "node_modules/.pnpm/phaser@3.90.0/node_modules/phaser/dist/phaser.min.js"
-  },
   "player.html": {
     "file": "player.js",
     "name": "player",
     "src": "player.html",
     "isEntry": true,
     "dynamicImports": [
-      "_PlayScene-DqWHjf0Y.js"
+      "_PlayScene-DWs2s4K0.js"
     ],
     "css": [
-      "assets/player-BzO0ayTa.css"
+      "assets/player-BsonWbrb.css"
     ],
     "assets": [
-      "assets/phaser.min-CwlHMuXa.js"
+      "assets/phaser.min-CwlHMuXa.js",
+      "assets/neodgm-CYAlbkIQ.woff2",
+      "assets/Galmuri9-B9HMP827.woff2",
+      "assets/Galmuri11-DfQIlyDK.woff2",
+      "assets/Galmuri11-Bold-QdFGsJ3v.woff2",
+      "assets/windowskin-warm-CcYC0PVf.png"
     ]
   },
+  "public/assets/fonts/Galmuri11-Bold.woff2": {
+    "file": "assets/Galmuri11-Bold-QdFGsJ3v.woff2",
+    "src": "public/assets/fonts/Galmuri11-Bold.woff2"
+  },
+  "public/assets/fonts/Galmuri11.woff2": {
+    "file": "assets/Galmuri11-DfQIlyDK.woff2",
+    "src": "public/assets/fonts/Galmuri11.woff2"
+  },
+  "public/assets/fonts/Galmuri9.woff2": {
+    "file": "assets/Galmuri9-B9HMP827.woff2",
+    "src": "public/assets/fonts/Galmuri9.woff2"
+  },
+  "public/assets/fonts/neodgm.woff2": {
+    "file": "assets/neodgm-CYAlbkIQ.woff2",
+    "src": "public/assets/fonts/neodgm.woff2"
+  },
+  "public/assets/ui/windowskin-warm.png": {
+    "file": "assets/windowskin-warm-CcYC0PVf.png",
+    "src": "public/assets/ui/windowskin-warm.png"
+  },
   "src/player/playSceneBattle.ts": {
-    "file": "assets/playSceneBattle-BjBPPx5i.js",
+    "file": "assets/playSceneBattle-C5SB7qUN.js",
     "name": "playSceneBattle",
     "src": "src/player/playSceneBattle.ts",
     "isDynamicEntry": true,
     "imports": [
       "player.html",
-      "_PlayScene-DqWHjf0Y.js"
+      "_PlayScene-DWs2s4K0.js"
     ]
   }
 }

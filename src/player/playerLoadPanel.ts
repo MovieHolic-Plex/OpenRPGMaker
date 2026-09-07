@@ -11,6 +11,8 @@ import { applyTitleScreenBackground } from "@/player/systemGraphics";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
+import { appendPredecessorSaveImports } from "./predecessorSaveImports";
+import { appendSaveFileTransfers } from "./saveFileTransfers";
 
 type PlayerLoadPanelOptions = {
   readonly fromTitle: boolean;
@@ -86,6 +88,8 @@ export function renderPlayerLoadPanel(options: PlayerLoadPanelOptions): HTMLElem
     }),
   );
   panel.append(loadWindow);
+  appendPredecessorSaveImports(slots, { project: store.getCurrent(), storage: window.localStorage, onLoadSlot: options.onLoadSlot });
+  appendSaveFileTransfers(slots, { project: store.getCurrent(), storage: window.localStorage, onLoadSlot: options.onLoadSlot });
   return panel;
 }
 
