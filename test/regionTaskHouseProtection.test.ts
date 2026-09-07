@@ -6,6 +6,7 @@ import { getPendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
 import { composePartialProject } from "@/editor/regionTask/partialApplyCompose";
 import { groupRegionChanges } from "@/editor/regionTask/regionChangeGroups";
 import { applyRegionProjectWithHistory, runRegionTask } from "@/editor/regionTask/runRegionTask";
+import type { RegionTaskDeps } from "@/editor/regionTask/runRegionTask";
 import { runTool } from "@/editor/tools";
 import { captureHouseProtection } from "@/editor/tools/houseProtection";
 import { createBlankProject } from "@/project/defaults";
@@ -13,6 +14,7 @@ import { serialize } from "@/project/io";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import { houseMap } from "./fixtures/completedHouse";
+import { approvedReviewResponse } from "./independentReviewFixture";
 import { fixedDeclarer } from "./intentFixture";
 
 const REGION = { x: 0, y: 0, width: 2, height: 2 };
@@ -46,35 +48,73 @@ afterEach(() => {
   vi.unstubAllEnvs();
 });
 
-async function proposeRegion(region = REGION) {
-  const result = await runRegionTask({
-    mapId: store.getCurrent().startMapId, region, instruction: "paint_tiles", mode: "polish", gate: "approval",
-  }, {
+const IMAGE = {
+  label: "Region renderer double",
+  dataUrl: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGNgYGD4DwABBAEAX+XDSwAAAABJRU5ErkJggg==",
+};
+
+function toolCall(id: string, name: string, args: Record<string, unknown>): ChatResult {
+  return {
+    message: {
+      role: "assistant",
+      content: null,
+      tool_calls: [{ id, type: "function", function: { name, arguments: JSON.stringify(args) } }],
+    },
+    finishReason: "tool_calls",
+  };
+}
+
+function regionTaskOptions(region = REGION): RegionTaskDeps {
+  return {
     getProject: () => store.getCurrent(),
     applyProject: applyRegionProjectWithHistory,
     createSession: (project, mapId) => {
-      let wrote = false;
+      const map = project.maps[mapId];
+      if (!map) throw new Error("Missing session map");
+      const steps: ChatResult[] = [
+        toolCall("plan", "set_work_plan", {
+          goal: "paint_tiles",
+          acceptance: [{ id: "paint", title: "Paint applied", criteria: [
+            { kind: "targetChange", target: { mapId } },
+            { kind: "imageReviewed", target: { mapId } },
+          ] }],
+          layers: [
+            { title: "Paint", items: [{ title: "Paint tiles", instruction: "paint_tiles", successTools: ["paint_tiles"] }] },
+            { title: "Review", items: [{ title: "Visual check", instruction: "show_map_region", successTools: ["show_map_region"] }] },
+          ],
+        }),
+        toolCall("paint", "paint_tiles", {
+          mapId, mode: "cells", layer: "upper", tile: 237, cells: [{ x: region.x + 1, y: region.y + 1 }],
+        }),
+        toolCall("done1", "complete_work_item", { note: "Paint tiles complete" }),
+        toolCall("shot", "show_map_region", { mapId, x: 0, y: 0, w: map.width, h: map.height }),
+        toolCall("done2", "complete_work_item", { note: "Visual check complete" }),
+      ];
+      let consumed = 0;
       return new AssistantSession(project, {
-        config: { authMode: "apiKey", agentMode: "chat", baseUrl: "x", model: "test", apiKey: "test", maxToolCalls: 4, maxTokens: 1024 },
+        config: { authMode: "apiKey", agentMode: "chat", baseUrl: "x", model: "gemini-2.5-flash-lite", apiKey: "test", maxToolCalls: 16, maxTokens: 16000 },
         contextOptions: { currentMapId: mapId },
         declareIntent: fixedDeclarer({ mode: "modify", space: "outdoor", useSelection: true, tools: ["paint_tiles"] }),
         yieldToUi: async () => {},
-        chat: async (): Promise<ChatResult> => {
-          if (wrote) return { message: { role: "assistant", content: "Done" }, finishReason: "stop" };
-          wrote = true;
-          return { message: { role: "assistant", content: null, tool_calls: [{
-            id: "paint", type: "function", function: { name: "paint_tiles", arguments: JSON.stringify({
-              mapId, mode: "cells", layer: "upper", tile: 237, cells: [{ x: region.x + 1, y: region.y + 1 }],
-            }) },
-          }] }, finishReason: "tool_calls" };
+        renderImages: async () => [IMAGE],
+        chat: async (_config, request) => {
+          const approval = approvedReviewResponse(request);
+          if (approval) return approval;
+          return steps[consumed++] ?? { message: { role: "assistant", content: "Done" }, finishReason: "stop" };
         },
       });
     },
-  });
+  };
+}
+
+async function proposeRegion(region = REGION) {
+  const result = await runRegionTask({
+    mapId: store.getCurrent().startMapId, region, instruction: "paint_tiles", mode: "polish", gate: "approval",
+  }, regionTaskOptions(region));
   expect(result.ok, result.error).toBe(true);
   expect(result.applied).toBe(false);
   expect(result.proposedCalls).toBe(1);
-  expect(result.log?.toolCalls).toMatchObject([{ name: "paint_tiles", ok: true }]);
+  expect(result.log?.toolCalls).toContainEqual(expect.objectContaining({ name: "paint_tiles", ok: true }));
   expect(result.changedCells).toBe(1);
   const pending = result.pending;
   if (!pending) throw new Error("Missing real region approval");
@@ -103,33 +143,24 @@ for (const approval of ["full", "partial"] as const) {
       // Given: only the registered tool's safe upper paint is requested outside the house.
       const before = store.getCurrent();
       const beforeBytes = serialize(before);
-      const { result, pending } = await proposeRegion();
-      const map = houseMap(pending.clippedProject);
-      expect(result.seamCells).toBe(1);
-      expect(map.lowerTiles[map.width + 2]).toBe(360);
-      expect(serialize(store.getCurrent())).toBe(beforeBytes);
-      const groups = groupRegionChanges(before, pending.clippedProject, map.id, REGION);
-      const requested = composePartialProject({
-        base: before, clipped: pending.clippedProject, mapId: map.id, region: REGION,
-        selectedChunkIds: groups.upper.map((chunk) => chunk.id), groups,
-      });
-      // Partial selection excludes the ridge, but approval's real review polishes it again.
-      expect(houseMap(requested).lowerTiles[map.width + 2]).toBe(421);
       const observed = observeApplication();
 
-      // When
-      const outcome = approval === "full" ? pending.apply() : pending.applyProject(requested);
+      // When: polish-mode review-draft transform re-polishes the ridge before the guard.
+      const result = await runRegionTask({
+        mapId: before.startMapId, region: REGION, instruction: "paint_tiles", mode: "polish", gate: "approval",
+      }, regionTaskOptions());
 
-      // Then: reject the entire candidate, not just the seam or its undo record.
-      expect(outcome.ok).toBe(false);
-      expect(outcome.applied).toBe(false);
-      expect(outcome.error).toBeTruthy();
-      expect(pending.lastApplyError).toBe(outcome.error);
-      expect(pending.settled).toBe(false);
+      // Then: fail closed before any approval slot, store, or history mutation.
+      expect(result.ok).toBe(false);
+      expect(result.error).toBeTruthy();
+      expect(result.pending).toBeUndefined();
+      expect(getPendingRegionApply()).toBeNull();
+      expect(result.log?.toolCalls).toContainEqual(expect.objectContaining({ name: "paint_tiles", ok: true }));
       expectNoApplication(before, observed);
       expect(serialize(store.getCurrent())).toBe(beforeBytes);
-      expect(houseMap(store.getCurrent()).lowerTiles[map.width + 2]).toBe(421);
-      expect(houseMap(store.getCurrent()).upperTiles[map.width + 1]).toBe(-1);
+      const map = houseMap(store.getCurrent());
+      expect(map.lowerTiles[map.width + 2]).toBe(421);
+      expect(map.upperTiles[map.width + 1]).toBe(-1);
     });
 
     it("applies an unrelated outside edit when accepted house values remain unchanged", async () => {
@@ -162,6 +193,69 @@ for (const approval of ["full", "partial"] as const) {
     });
   });
 }
+
+describe("partial composition keeps the reviewed approval identity", () => {
+  it("rejects a candidate with tampered tileset authored data", async () => {
+    // Given: the same approved outside edit as the legitimate partial path.
+    const region = { x: 10, y: 10, width: 2, height: 2 };
+    const before = store.getCurrent();
+    const beforeBytes = serialize(before);
+    const { pending } = await proposeRegion(region);
+    const mapId = before.startMapId;
+    const groups = groupRegionChanges(before, pending.clippedProject, mapId, region);
+    const requested = composePartialProject({
+      base: before, clipped: pending.clippedProject, mapId, region,
+      selectedChunkIds: groups.upper.map((chunk) => chunk.id), groups,
+    });
+    // When: hand-edited tile-group content rides on the composed candidate.
+    // A tile-group name is authored data, not harness-derived output, so the
+    // normalization must not paper over it.
+    const tamperedTileset = requested.tilesets[houseMap(requested).tilesetId];
+    const tamperedGroup = tamperedTileset?.tileGroups?.[0];
+    if (!tamperedTileset || !tamperedGroup) throw new Error("Missing fixture tile groups");
+    tamperedGroup.name = "손댄 타일 그룹";
+    const observed = observeApplication();
+
+    const outcome = pending.applyProject(requested);
+
+    // Then: the approval identity no longer matches — fail before any mutation.
+    expect(outcome.ok).toBe(false);
+    expect(outcome.applied).toBe(false);
+    expect(outcome.error).toContain("독립 검수 이후 초안이 바뀌었");
+    expect(pending.settled).toBe(false);
+    expectNoApplication(before, observed);
+    expect(serialize(store.getCurrent())).toBe(beforeBytes);
+  });
+
+  it("rejects a truly different unreviewed candidate", async () => {
+    // Given: the same approved outside edit as the legitimate partial path.
+    const region = { x: 10, y: 10, width: 2, height: 2 };
+    const before = store.getCurrent();
+    const beforeBytes = serialize(before);
+    const { pending } = await proposeRegion(region);
+    const mapId = before.startMapId;
+    const groups = groupRegionChanges(before, pending.clippedProject, mapId, region);
+    const requested = composePartialProject({
+      base: before, clipped: pending.clippedProject, mapId, region,
+      selectedChunkIds: groups.upper.map((chunk) => chunk.id), groups,
+    });
+    // When: an extra authored cell outside the selected subset is added after review.
+    const divergent = structuredClone(requested);
+    const divergentMap = houseMap(divergent);
+    divergentMap.upperTiles[12 * divergentMap.width + 12] = 238;
+    const observed = observeApplication();
+
+    const outcome = pending.applyProject(divergent);
+
+    // Then: the unreviewed authored change must not become auto-approved.
+    expect(outcome.ok).toBe(false);
+    expect(outcome.applied).toBe(false);
+    expect(outcome.error).toContain("독립 검수 이후 초안이 바뀌었");
+    expect(pending.settled).toBe(false);
+    expectNoApplication(before, observed);
+    expect(serialize(store.getCurrent())).toBe(beforeBytes);
+  });
+});
 
 describe("final region application uses the current store", () => {
   it.each(["lowerTiles", "upperTiles", "lowerTileStacks", "upperTileStacks", "new-house"] as const)(
