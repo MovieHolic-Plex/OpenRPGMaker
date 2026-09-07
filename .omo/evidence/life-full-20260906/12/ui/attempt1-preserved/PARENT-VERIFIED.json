@@ -1,0 +1,14 @@
+{
+  "status": "PRESERVED_NOT_APPROVED",
+  "files": 14,
+  "baseFilesVerifiedAgainstGit": 12,
+  "base": "a51149b344d345f134cf2831c06867ba2a8a003c",
+  "currentUiAndWikiBytesMatch": true,
+  "diff_sha256": "b7d040b590440bc468e82588908f86126c54409b7c85a04215533a4220d44837",
+  "limits": [
+    "UI/source remains uncommitted and unapproved",
+    "Six test diagnostics and native/RED/cleanup gaps remain",
+    "SAFE-STAGE-LIST.txt names future source candidates, NOT archive paths"
+  ],
+  "sourceOwnership": "No product/index changes during preservation; subsequent checkpoint commit stages ONLY this archive"
+}
