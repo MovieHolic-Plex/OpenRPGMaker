@@ -1,0 +1,241 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/assistantMultiMapSpec.test.ts test/aiCompletionAccounting.test.ts test/assistantDependencyRetry.test.ts test/assistantAcceptanceSession.test.ts test/npcRewardSession.test.ts test/aiSpecGate.test.ts test/aiSpecGateHardening.test.ts test/assistantMapPreservationGuard.test.ts test/buildOrder.test.ts test/proposalCompleteness.test.ts test/assistantProposalAssembly.test.ts test/aiTurnAppliedAccounting.test.ts test/aiAssistantTurnCleanup.test.ts test/aiAutonomousRunSurface.test.ts test/aiAutonomyRunSurface.test.ts test/aiPanelAutoExpand.test.ts test/aiPanelExpandShrink.test.ts test/aiComposerEffortPanel.test.ts test/aiClusterAssist.test.ts --pool=threads --maxWorkers=2 --testTimeout=60000
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-rapid-harbor-7ca6
+
+ ✓ test/assistantMultiMapSpec.test.ts (18 tests) 35744ms
+   ✓ map-owned construction contracts through AssistantSession > retains A after B, including a continued turn=false  4239ms
+   ✓ map-owned construction contracts through AssistantSession > retains A after B, including a continued turn=true  3380ms
+   ✓ map-owned construction contracts through AssistantSession > isolates failed updates, keeps both historical warnings, and selects both changed maps  4156ms
+   ✓ map-owned construction contracts through AssistantSession > commits only successful map-local expansion after invalid-args  1835ms
+   ✓ map-owned construction contracts through AssistantSession > commits only successful map-local expansion after throwing-runner  2281ms
+   ✓ map-owned construction contracts through AssistantSession > expires implicit A selection without evicting explicit B  2528ms
+   ✓ map-owned construction contracts through AssistantSession > uses per-map completeness precedence and does not merge identical asset IDs  3307ms
+   ✓ map-owned construction contracts through AssistantSession > preserves future planned maps through rebase and checks their own dimensions after B  1045ms
+   ✓ map-owned construction contracts through AssistantSession > prunes a successful removal before ID reuse, not failed removal or surviving maps  2951ms
+   ✓ map-owned construction contracts through AssistantSession > prunes external rebase deletions while preserving surviving and never-created maps  2636ms
+   ✓ map-owned construction contracts through AssistantSession > builds pending NPC assets from every current map, never historical specs  2005ms
+   ✓ map-owned construction contracts through AssistantSession > clears every spec on successful reset, including reused start ID and future plans  1963ms
+   ✓ ordered terrain background and road overlay > executes the terrain then road batch with no dependency deferral  2725ms
+ ✓ test/assistantDependencyRetry.test.ts (12 tests) 49291ms
+   ✓ batch prerequisites through AssistantSession > defers failed-map writes without poisoning successTools or retries (old spec=false)  5214ms
+   ✓ batch prerequisites through AssistantSession > defers failed-map writes without poisoning successTools or retries (old spec=true)  5015ms
+   ✓ batch prerequisites through AssistantSession > a corrected spec resumes spatial execution (later batch=false)  2989ms
+   ✓ batch prerequisites through AssistantSession > a corrected spec resumes spatial execution (later batch=true)  3123ms
+   ✓ batch prerequisites through AssistantSession > failed record creation defers only ID dependents, then creation/read/correction succeeds (read contract=false)  4866ms
+   ✓ batch prerequisites through AssistantSession > failed record creation defers only ID dependents, then creation/read/correction succeeds (read contract=true)  3407ms
+   ✓ batch prerequisites through AssistantSession > keeps the failed-read whole-batch contract and excludes deferred writes from the failure budget  1685ms
+   ✓ stable target retry budgets through AssistantSession > bounds fresh-batch lookup refusals without claiming they executed  2873ms
+   ✓ stable target retry budgets through AssistantSession > does not charge downstream same-batch refusals against their independent retry target  4135ms
+   ✓ stable target retry budgets through AssistantSession > bounds spelling and page-path variations despite unrelated writes and synthetic continuations, then rearms for a real user  9401ms
+   ✓ stable target retry budgets through AssistantSession > successful correction resets that target's accumulated failures  4394ms
+   ✓ stable target retry budgets through AssistantSession > does not execute attempts beyond the bound even within one model batch  2182ms
+ ✓ test/aiCompletionAccounting.test.ts (8 tests) 19960ms
+   ✓ completion accounting through real assistant sessions > auto-completes a later spatial milestone using applied plus pending writes without reapplying the first  6845ms
+   ✓ completion accounting through real assistant sessions > active spec expansion > does not retain a invalid-args write; a successful retry expands and keeps the correct lifetime  1946ms
+   ✓ completion accounting through real assistant sessions > active spec expansion > does not retain a out-of-bounds write; a successful retry expands and keeps the correct lifetime  2386ms
+   ✓ completion accounting through real assistant sessions > active spec expansion > does not retain a throwing-tool write; a successful retry expands and keeps the correct lifetime  2414ms
+   ✓ completion accounting through real assistant sessions > implicit spec expansion > does not retain a invalid-args write; a successful retry expands and keeps the correct lifetime  1706ms
+   ✓ completion accounting through real assistant sessions > implicit spec expansion > does not retain a out-of-bounds write; a successful retry expands and keeps the correct lifetime  2510ms
+   ✓ completion accounting through real assistant sessions > implicit spec expansion > does not retain a throwing-tool write; a successful retry expands and keeps the correct lifetime  1410ms
+   ✓ completion accounting through real assistant sessions > does not commit expansion when the runner itself throws, and preserves the failed tool response  724ms
+ ✓ test/npcRewardSession.test.ts (19 tests) 30494ms
+   ✓ NPC reward request lifetime in AssistantSession > does not dispatch authoring or planner calls for an unrepairable reward declaration  664ms
+   ✓ NPC reward request lifetime in AssistantSession > direct 'text' NPC, contract opt-out=false  2199ms
+   ✓ NPC reward request lifetime in AssistantSession > direct 'once' NPC, contract opt-out=false  1723ms
+   ✓ NPC reward request lifetime in AssistantSession > direct 'repeat' NPC, contract opt-out=false  2179ms
+   ✓ NPC reward request lifetime in AssistantSession > direct 'text' NPC, contract opt-out=true  1315ms
+   ✓ NPC reward request lifetime in AssistantSession > does not finalize unresolved or invalid obligations {"required":[{"target":{"eventId":"missing_npc"},"grants":[{"kind":"item","id":"item_potion","count":1}]}]}  1100ms
+   ✓ NPC reward request lifetime in AssistantSession > uses bounded repair to correct the real NPC rather than weaken the request  1812ms
+   ✓ NPC reward request lifetime in AssistantSession > allows an earlier DB item but refuses final explicit completion and skip with missing rewards  2972ms
+   ✓ NPC reward request lifetime in AssistantSession > gates a non-final item that actually authors the declared NPC  3312ms
+   ✓ NPC reward request lifetime in AssistantSession > cannot erase the obligation by replanning into an unrelated skipped plan  2401ms
+   ✓ NPC reward request lifetime in AssistantSession > rechecks a previously completed NPC after its grants are removed  1960ms
+   ✓ NPC reward request lifetime in AssistantSession > completes an actual one-time NPC plan and accepts idempotent explicit completion  2109ms
+   ✓ NPC reward request lifetime in AssistantSession > preserves the obligation through plan-only confirmation and the actual planner replan  1502ms
+   ✓ NPC reward request lifetime in AssistantSession > retains the captured requirement and context on retryLastTurn  2120ms
+   ✓ NPC reward request lifetime in AssistantSession > preserves the request across the real autonomous synthetic continuation  726ms
+   ✓ NPC reward request lifetime in AssistantSession > clears old obligations for new-request  753ms
+   ✓ NPC reward request lifetime in AssistantSession > clears old obligations for ask  1140ms
+ ✓ test/aiSpecGate.test.ts (44 tests) 36103ms
+   ✓ buildSpec 검증기(결정적) > 경계를 벗어난 에셋은 error  463ms
+   ✓ buildSpec 검증기(결정적) > 모델이 좌표를 숫자 문자열로 보내도 수용한다 — set_build_spec 은 runTool 정규화를 안 거침  427ms
+   ✓ buildSpec 검증기(결정적) > 같은 층(lower) 에셋 겹침은 error — 두 id를 모두 언급  331ms
+   ✓ buildSpec 검증기(결정적) > upper 장식이 lower 위에 겹치는 것과 길×길 교차는 허용  522ms
+   ✓ buildSpec 검증기(결정적) > buildOrder상 clear가 먼저 오면 clear와 후속 배치 에셋의 겹침은 허용한다  725ms
+   ✓ buildSpec 검증기(결정적) > 없는 맵/빈 에셋/깨진 좌표는 error  466ms
+   ✓ 세션 스펙 게이트 > canonical planned target requires matching BuildSpec dimensions before runner entry  1077ms
+   ✓ 세션 스펙 게이트 > 스펙 없이 공간 툴 호출 → 차단(set_build_spec 안내), 비공간 쓰기(create_map)는 그대로 실행  830ms
+   ✓ 세션 스펙 게이트 > 기존 이벤트를 같은 좌표에서 갱신할 때는 새 공간 스펙을 요구하지 않는다  2626ms
+   ✓ 세션 스펙 게이트 > 겹침 스펙 거부 → 수정 재제출 → 할당 영역 안 빌드 실행  1104ms
+   ✓ 세션 스펙 게이트 > 할당 영역 밖 빈 영역 빌드는 차단하지 않고 명세 자동 확장 warning으로 통과한다  1370ms
+   ✓ 세션 스펙 게이트 > 할당 영역 동쪽 +1칸 초과는 명세 자동 확장 warning으로 통과  1636ms
+   ✓ 세션 스펙 게이트 > 할당 영역 동쪽 +2칸 초과도 명세 자동 확장 warning으로 통과  1031ms
+   ✓ 세션 스펙 게이트 > 할당 영역 동쪽 +3칸 초과도 빈 영역이면 자동 확장으로 통과  1755ms
+   ✓ 세션 스펙 게이트 > clear_region도 빈 영역 초과는 자동 확장 warning으로 통과한다  794ms
+   ✓ 세션 스펙 게이트 > 확정된 스펙은 턴 간 유지된다 — 다음 턴 '계속해'에서 재제출 없이 빌드  1063ms
+   ✓ 세션 스펙 게이트 > 사용자 선택 영역([컨텍스트])은 암묵 스펙으로 인정된다  1221ms
+   ✓ 세션 스펙 게이트 > 사용자 선택 영역 암묵 스펙도 경계 밖 빈 영역은 자동 확장 warning으로 통과한다  2205ms
+   ✓ 세션 스펙 게이트 > 16×16 맵에서 스펙과 동일한 3개 wings author_house는 bounding rect 오차단 없이 통과한다  1987ms
+   ✓ 세션 스펙 게이트 > 자동 확장 대상에 기존 구조물이 있으면 계속 차단한다  804ms
+   ✓ 세션 스펙 게이트 > 스펙 검증 3회 실패 → 폐기 안내, 공간 툴은 계속 차단  563ms
+   ✓ 세션 스펙 게이트 > 비공간 쓰기(타일 메타데이터)는 스펙 없이 실행된다  534ms
+   ✓ 스펙 게이트 — 구조물 보호(집 삭제 방지) > builtCellsInRegions는 지어진 칸만 센다(빈 잔디 0, 집 위 다수)  1395ms
+   ✓ 스펙 게이트 — 구조물 보호(집 삭제 방지) > 집을 덮는 clear 에셋은 confirmDestroy 없이는 거부된다(구조물 언급)  985ms
+   ✓ 스펙 게이트 — 구조물 보호(집 삭제 방지) > 구조물보다 +1칸 넓힌 clear도 slack 예외 없이 confirmDestroy 없이는 거부  840ms
+   ✓ 스펙 게이트 — 구조물 보호(집 삭제 방지) > confirmDestroy:true면 철거 의도로 인정되어 통과  870ms
+   ✓ 스펙 게이트 — 구조물 보호(집 삭제 방지) > 빈터를 청소하는 것은 통과(구조물 없음)  661ms
+   ✓ 스펙 게이트 — 구조물 보호(집 삭제 방지) > 집을 덮지 않는 '주변만' 청소는 통과  1061ms
+   ✓ 스펙 게이트 — 배치 전 주변 정리 확인 > 기존 구조물 위/근처에 배치하려는 비-clear 에셋은 overExisting 없이는 거부(자율 판단 지시)  491ms
+   ✓ 스펙 게이트 — 배치 전 주변 정리 확인 > 타일을 덮어쓰지 않는 event·npc·transfer는 장식된 칸에서도 overExisting 없이 통과  779ms
+   ✓ 스펙 게이트 — 배치 전 주변 정리 확인 > overExisting을 선언하면 통과  799ms
+   ✓ 스펙 게이트 — 배치 전 주변 정리 확인 > 빈 잔디에 배치는 정리 확인 없이 통과  1447ms
+   ✓ 스펙 게이트 — 배치 전 주변 정리 확인 > 동일 명세 재제출을 '직전과 동일'로 짚고, 거부 메시지가 채울 필드 이름을 준다  1335ms
+   ✓ 스펙 게이트 — 배치 전 주변 정리 확인 > 같은 스펙에 clear 에셋으로 정리를 명시하면 배치 에셋은 통과  734ms
+   ✓ 비전 이미지 주입(유지) > show_tiles 실행 뒤 이미지 파트를 담은 user 메시지가 주입된다  496ms
+   ✓ 비전 이미지 주입(유지) > 렌더러가 없으면 이미지 주입 없이 텍스트 전용으로 동작한다  397ms
+ ✓ test/assistantMapPreservationGuard.test.ts (21 tests) 33591ms
+   ✓ completed houses cannot be overwritten through session permissions > accepted: rejects destruction despite 'selection'  1519ms
+   ✓ completed houses cannot be overwritten through session permissions > accepted: rejects destruction despite 'confirmDestroy'  1165ms
+   ✓ completed houses cannot be overwritten through session permissions > accepted: rejects destruction despite 'overExisting-clear'  1796ms
+   ✓ completed houses cannot be overwritten through session permissions > accepted: rejects destruction despite 'overExisting-keep'  1219ms
+   ✓ completed houses cannot be overwritten through session permissions > same-turn: rejects destruction despite 'selection'  1844ms
+   ✓ completed houses cannot be overwritten through session permissions > same-turn: rejects destruction despite 'confirmDestroy'  1555ms
+   ✓ completed houses cannot be overwritten through session permissions > same-turn: rejects destruction despite 'overExisting-clear'  2384ms
+   ✓ completed houses cannot be overwritten through session permissions > same-turn: rejects destruction despite 'overExisting-keep'  1551ms
+   ✓ completed houses cannot be overwritten through session permissions > new-map: rejects destruction despite 'selection'  3821ms
+   ✓ completed houses cannot be overwritten through session permissions > new-map: rejects destruction despite 'confirmDestroy'  1384ms
+   ✓ completed houses cannot be overwritten through session permissions > new-map: rejects destruction despite 'overExisting-clear'  2846ms
+   ✓ completed houses cannot be overwritten through session permissions > new-map: rejects destruction despite 'overExisting-keep'  1527ms
+   ✓ completed houses cannot be overwritten through session permissions > same-session: rejects destruction despite 'selection'  945ms
+   ✓ completed houses cannot be overwritten through session permissions > same-session: rejects destruction despite 'confirmDestroy'  1640ms
+   ✓ completed houses cannot be overwritten through session permissions > same-session: rejects destruction despite 'overExisting-clear'  1692ms
+   ✓ completed houses cannot be overwritten through session permissions > same-session: rejects destruction despite 'overExisting-keep'  1153ms
+   ✓ 수정 요청에서 맵 보존 > 기존 맵 id 로 방 세션을 시작하려 하면 거부되고 맵이 그대로 남는다  1109ms
+   ✓ 수정 요청에서 맵 보존 > 같은 id 로 create_map 하면 map-exists 로 거부되고 편집 경로를 안내한다  947ms
+   ✓ 수정 요청에서 맵 보존 > 같은 id 로 duplicate_map 하는 우회도 막힌다  1122ms
+   ✓ 수정 요청에서 맵 보존 > 시스템 프롬프트가 현재 맵 id 와 대상 선택 규칙을 함께 싣는다  808ms
+   ✓ 수정 요청에서 맵 보존 > 정직한 수정(지우고 다시 놓기)은 그대로 통과한다  1551ms
+ ❯ test/aiSpecGateHardening.test.ts (21 tests | 1 failed) 18551ms
+   ✓ 밑그림 좌표 정규화 — 게이트는 검증기가 받아준 값과 같은 숫자를 본다 > normalizeBuildSpec 은 숫자 문자열 좌표를 정수로 바꾸고 나머지 필드는 보존한다 4ms
+   ✓ 밑그림 좌표 정규화 — 게이트는 검증기가 받아준 값과 같은 숫자를 본다 > 문자열 좌표로 확정한 밑그림도 밑그림 밖 구조물 정리를 차단한다  2055ms
+   ✓ 기존 내용 보호는 밑그림 안에서도 — 기준선(사용자 맵)에 있던 것은 선언 없이 덮지 않는다 > 밑그림 확정 뒤 사용자가 그 자리에 판 호수는 다음 턴의 채우기가 덮지 못한다  1310ms
+   ✓ 기존 내용 보호는 밑그림 안에서도 — 기준선(사용자 맵)에 있던 것은 선언 없이 덮지 않는다 > 이 세션이 밑그림 안에 지은 것은 같은 세션이 다시 손댈 수 있다  1165ms
+   ✓ 기존 내용 보호는 밑그림 안에서도 — 기준선(사용자 맵)에 있던 것은 선언 없이 덮지 않는다 > clear 에셋에 confirmDestroy 가 있으면 기존 구조물을 덮는 clear_region 이 통과한다  1632ms
+   ✓ 기존 내용 보호는 밑그림 안에서도 — 기준선(사용자 맵)에 있던 것은 선언 없이 덮지 않는다 > overExisting 을 선언한 배치 에셋 자리의 기존 구조물은 덮을 수 있다  1185ms
+   ✓ 게이트 밖이던 타일 쓰기 툴도 기존 구조물 보호를 받는다 > TILE_WRITE_TOOLS 는 살아 있는 v3 시공 프리미티브를 포함하고 전부 레지스트리에 있다 1ms
+   ✓ 게이트 밖이던 타일 쓰기 툴도 기존 구조물 보호를 받는다 > tile_erase 가 밑그림 없이 기준선 구조물을 지우려 하면 차단되고 빈 땅 정리는 그대로 통과한다  1268ms
+   ✓ 게이트 밖이던 타일 쓰기 툴도 기존 구조물 보호를 받는다 > build_wall 은 빈 땅이면 밑그림 없이 통과하고(v3 soft-allow) 기존 구조물 위면 차단된다  1340ms
+   ✓ 게이트 밖이던 타일 쓰기 툴도 기존 구조물 보호를 받는다 > paint_tiles mode=fill 은 맵 전체를 영향 영역으로 본다  659ms
+   ✓ 게이트 밖이던 타일 쓰기 툴도 기존 구조물 보호를 받는다 > affectedRegions 는 area·at·wallRect 를 읽는다 1ms
+   ✓ 지어진 칸 판정은 잔디 리터럴이 아니라 타일셋 어휘(terrain 역할 + 통행 가능)다 > 모래 바닥 맵에서 집·정리 밑그림은 정리 방침 없이 통과하고, 벽을 덮는 정리는 confirmDestroy 를 요구한다  309ms
+   ✓ 지어진 칸 판정은 잔디 리터럴이 아니라 타일셋 어휘(terrain 역할 + 통행 가능)다 > 얼음 대평원의 눈밭은 지어진 칸이 아니고 절벽은 지어진 칸이다  810ms
+   ✓ 지어진 칸 판정은 잔디 리터럴이 아니라 타일셋 어휘(terrain 역할 + 통행 가능)다 > 길(terrain·통행 가능) 옆에 붙인 집은 정리 방침 없이 통과한다  352ms
+   ✓ 지어진 칸 판정은 잔디 리터럴이 아니라 타일셋 어휘(terrain 역할 + 통행 가능)다 > 사용자가 가장자리에 세운 벽은 보호되고, 생성된 WALL 테두리 링은 제외된다  1315ms
+   ✓ 교차 규칙 — 타일을 쓰지 않는 에셋은 겹쳐도 교차가 아니다 > npc·event·transfer 는 길·집과 겹칠 수 있다  544ms
+   ✓ 암묵 스펙 — 선택 영역 > 실제 패널 footer(재료 힌트가 맵과 선택 사이)와 영역 작업 footer(힌트가 뒤)를 모두 파싱한다  450ms
+   × 암묵 스펙 — 선택 영역 > 선택 영역 암묵 스펙은 그 턴에만 유효하고 다음 턴으로 승격되지 않는다 1287ms
+     → expected undefined to be false // Object.is equality
+   ✓ 암묵 스펙 — 선택 영역 > 사용자가 지목한 선택 영역 안의 기존 구조물은 그 턴의 쓰기가 고칠 수 있고, 선택 밖은 여전히 보호된다  1296ms
+   ✓ 암묵 스펙 — 선택 영역 > opts.scope 로 넘어온 선택 영역도 암묵 스펙이다  1096ms
+   ✓ 질문으로 끝난 턴 > 모델이 되묻고 끝낸 턴에서는 밑그림 NPC 를 자동 배치하지 않는다  458ms
+ ✓ test/aiTurnAppliedAccounting.test.ts (12 tests) 7605ms
+   ✓ panel map completeness selection > uses the real session's plural selection instead of the most recent spec  2586ms
+   ✓ 턴 표면의 이미 적용된 쓰기 정산 > max-tool-calls 이후 원장만 남아도 변경 없음으로 기록하지 않는다  902ms
+   ✓ 턴 표면의 이미 적용된 쓰기 정산 > token-budget 이후 원장만 남아도 변경 없음으로 기록하지 않는다  727ms
+   ✓ 턴 표면의 이미 적용된 쓰기 정산 > error 이후 원장만 남아도 변경 없음으로 기록하지 않는다  669ms
+   ✓ 턴 표면의 이미 적용된 쓰기 정산 > 적용이 거부된 제안은 실제 변경으로 세지 않는다  498ms
+   ✓ 턴 표면의 이미 적용된 쓰기 정산 > 원장과 종료 시 적용한 제안을 모두 세되 원장은 다시 적용하지 않는다  794ms
+   ✓ 턴 표면의 이미 적용된 쓰기 정산 > 제안 호스트를 직접 호출해도 적용된 턴에는 변경 없음 알림을 만들지 않는다  328ms
+ ✓ test/assistantAcceptanceSession.test.ts (11 tests) 9255ms
+   ✓ acceptance controls actual session termination > does not turn a review without an explicit passing verdict into completion  792ms
+   ✓ acceptance controls actual session termination > withdraws an earlier pass when a later explicit review fails  860ms
+   ✓ acceptance controls actual session termination > continues then blocks insufficient dimensions and quantity even after skip completes the plan  434ms
+   ✓ acceptance controls actual session termination > retains original denominator when skip and set_work_plan try to shrink promises  632ms
+   ✓ acceptance controls actual session termination > invalidates an attributed image review after a subsequent real map write  2096ms
+   ✓ applied acceptance lifecycle through real tools > repairs exact dimensions after plan completion and invalidates on applied undo  2415ms
+   ✓ applied acceptance lifecycle through real tools > blocks and retains the ledger when aborted while the next model response is held  539ms
+   ✓ applied acceptance lifecycle through real tools > never credits a review authored in the same response as the image request  484ms
+   ✓ applied acceptance lifecycle through real tools > requires visible contract repair for a spatial plan missing criteria  530ms
+ ✓ test/assistantProposalAssembly.test.ts (7 tests) 9195ms
+   ✓ assistant proposal assembly scope warnings > adds a diff warning when a previous-turn build spec is used in the next proposal  1078ms
+   ✓ assistant proposal assembly scope warnings > does not add a carryover warning when the build spec is created in the same turn  1008ms
+   ✓ assistant proposal assembly scope warnings > adds the carryover warning only once for multiple spatial calls  1420ms
+   ✓ assistant proposal assembly move_event squash > squashes a new NPC followed by repeated move_event calls into one final placement proposal  1780ms
+   ✓ assistant proposal assembly move_event squash > squashes repeated move_event calls for an existing event to the final move  1347ms
+   ✓ assistant proposal assembly move_event squash > does not squash move_event calls for different event targets  2240ms
+   ✓ assistant WorkPlan evidence isolation > clears successful-tool evidence when set_work_plan replaces a same-id item  306ms
+ ✓ test/aiAssistantTurnCleanup.test.ts (14 tests) 6120ms
+   ✓ assistant owner-turn presentation cleanup > retires visible planning on final without changing retained data  692ms
+   ✓ assistant owner-turn presentation cleanup > retires visible planning on error without changing retained data  835ms
+   ✓ assistant owner-turn presentation cleanup > retires visible planning on aborted without changing retained data  404ms
+   ✓ assistant owner-turn presentation cleanup > retires visible planning on throw without changing retained data  482ms
+   ✓ assistant owner-turn presentation cleanup > retires visible planning on abort-throw without changing retained data  746ms
+   ✓ assistant owner-turn presentation cleanup > clears the owner ghost on final when no region approval owns it  352ms
+   ✓ assistant owner-turn presentation cleanup > clears the owner ghost on error when no region approval owns it  354ms
+   ✓ assistant owner-turn presentation cleanup > clears the owner ghost on throw when no region approval owns it  445ms
+   ✓ assistant owner-turn presentation cleanup > clears the owner ghost on abort-throw when no region approval owns it  349ms
+   ✓ assistant owner-turn presentation cleanup > retires unseen automatic spec expansion before a follow-up turn can sync it  447ms
+ ✓ test/aiClusterAssist.test.ts (5 tests) 3391ms
+   ✓ 클러스터 AI 킥오프 > 클러스터 수정/미분류 분석 킥오프에 그룹 JSON과 첫 배치가 들어간다  477ms
+   ✓ AI 패널 브리지 > cluster-edit 이벤트가 접힌 패널을 펼치고 클러스터 킥오프를 전송 경로로 보낸다  609ms
+   ✓ list_unclassified_tiles > 라벨 있거나 그룹에 속한 타일을 제외하고 offset/limit 페이지와 total을 반환한다  444ms
+   ✓ delete_tile_group > 그룹을 삭제하고 없는 groupId는 에러로 돌려준다  1118ms
+   ✓ delete_tile_group > 기본 Combined Town 하네스 그룹 삭제는 tombstone을 남겨 재시드를 막는다  740ms
+ ✓ test/aiAutonomousRunSurface.test.ts (12 tests) 4503ms
+   ✓ 할 일 목록 표면 (작업 계획 체크리스트) > does not promote quick-reply presets but retains their transcript text  806ms
+   ✓ 할 일 목록 표면 (작업 계획 체크리스트) > (a) emitWorkPlan 이벤트로 체크리스트가 렌더된다 — 항목별 진행 + 현재 레이어 표시  372ms
+   ✓ 할 일 목록 표면 (작업 계획 체크리스트) > tool_started 이벤트는 진행 중 항목의 활동 줄만 갈아 끼운다(체크리스트 재렌더 없음)  318ms
+   ✓ 할 일 목록 표면 (작업 계획 체크리스트) > (b) 자동 계속/예산 소진 status 이벤트로 예산 표시(used/total)가 갱신된다 — 표시는 저장 레벨 cap  519ms
+   ✓ 할 일 목록 표면 (작업 계획 체크리스트) > (c) milestone_applied / proposal_paused 이벤트마다 적용/실패 피드 라인이 렌더된다  317ms
+   ✓ 할 일 목록 표면 (작업 계획 체크리스트) > 턴이 끝나면 할 일 표면은 걷히고 다음 턴의 새 계획은 보인다  379ms
+   ✓ 할 일 목록 표면 (작업 계획 체크리스트) > 완료 계획은 표면에서 걷히고 계획 없는 턴도 목록을 만들지 않는다  330ms
+   ✓ 할 일 목록 표면 (작업 계획 체크리스트) > 목록의 「중지」 버튼은 진행 중 턴을 중단한다  447ms
+   ✓ 할 일 목록 표면 (작업 계획 체크리스트) > agentMode chat 에서도 할 일 목록은 뜨되 예산 없이 뜨고, 세션에 autonomous 플래그가 전달되지 않는다  403ms
+ ✓ test/buildOrder.test.ts (7 tests) 2431ms
+   ✓ validateBuildSpec buildOrder > buildOrder가 문자열 배열이 아니면 error  865ms
+   ✓ validateBuildSpec buildOrder > buildOrder에 없는 kind가 있으면 warning만 낸다  463ms
+   ✓ validateBuildSpec buildOrder > 비어 있지 않은 buildOrder가 asset kind를 빠뜨리면 마지막 배치 warning을 낸다  649ms
+   ✓ validateBuildSpec buildOrder > 유효한 spec과 buildOrder는 error가 없다  428ms
+ ✓ test/aiPanelAutoExpand.test.ts (4 tests) 1734ms
+   ✓ AI 패널 자동 펼침/접기 > 부팅 시 저장된 접힘 선택('1')을 복원한다 — fold 로 새지 않는다  567ms
+   ✓ AI 패널 자동 펼침/접기 > 접힌 채 전송하면 펼치고, 턴이 끝나도 답을 읽도록 열어 둔다  569ms
+   ✓ AI 패널 자동 펼침/접기 > 이미 펼친 첫 방문은 턴 종료 후 자동으로 접히지 않는다 — 키를 쓰지 않는다  379ms
+ ✓ test/aiComposerEffortPanel.test.ts (4 tests) 1199ms
+   ✓ 지시줄 effort 셀렉트 — 패널 배선 > 저장된 레벨·effort 를 초기값으로 그린다  375ms
+   ✓ 지시줄 effort 셀렉트 — 패널 배선 > 지시줄에서 바꾼 값은 다음 전송 때 세션 생성 설정에 실린다  351ms
+ ✓ test/aiAutonomyRunSurface.test.ts (4 tests) 1243ms
+   ✓ 자율성 다이얼 런 표면 > confirm 저장 시 자율 런 예산이 0/6 으로 시작한다  464ms
+   ✓ 자율성 다이얼 런 표면 > 레벨 미지정 저장은 balanced 로 백필돼 예산이 0/16 이다  332ms
+ ✓ test/proposalCompleteness.test.ts (24 tests) 131ms
+ ✓ test/aiPanelExpandShrink.test.ts (2 tests) 745ms
+   ✓ 조수 캡슐 넓힘/줄임 > 턴이 돌면 로그가 펼쳐지고, 답이 남으면 열린 채로 둔다  447ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiSpecGateHardening.test.ts > 암묵 스펙 — 선택 영역 > 선택 영역 암묵 스펙은 그 턴에만 유효하고 다음 턴으로 승격되지 않는다
+AssertionError: expected undefined to be false // Object.is equality
+
+[32m- Expected:[39m
+false
+
+[31m+ Received:[39m
+undefined
+
+ ❯ test/aiSpecGateHardening.test.ts:319:27
+    317|     const second: Ev[] = [];
+    318|     await session.sendUserMessage("(15,15)에도 모래 깔아줘", collect(second));
+    319|     expect(second[0]?.ok).toBe(false);
+       |                           ^
+    320|     expect(second[0]?.summary).toContain("밑그림");
+    321|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 18 passed (19)
+      Tests  1 failed | 248 passed (249)
+   Start at  21:24:24
+   Duration  225.14s (transform 38.26s, setup 0ms, collect 155.91s, tests 271.29s, environment 26ms, prepare 5.65s)

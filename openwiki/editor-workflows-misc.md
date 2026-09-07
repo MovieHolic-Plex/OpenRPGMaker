@@ -6,17 +6,29 @@ Map/event search, audio test, help modal, themed dungeons, resource manager, vil
 
 ## Other Editor Workflows
 
+### New-project name and player title (2026-09-07)
+
+`store.loadNewRemoteProject` and `store.loadNewRemoteProjectTransactionally`
+apply an explicit project name to both `meta.title` and an absent/default
+`system.titleScreen.title`. A deliberately different player title is preserved;
+existing projects are not renamed on load. The transactional path names its
+cloned candidate before saving, so remote verification covers the player title
+without mutating the caller's seed. Regression tests:
+`loadNewRemoteProject.test.ts`, `transactionalNewRemoteProject.test.ts`.
+
 ### 걸을 때 적 만나기 — rectangle authoring (2026-09-06)
 
 - Select with the sidebar's **선택** tool and left-drag, then click the visible
   **걸을 때 적 만나기** selection chip. Right-drag/context entry is also available,
   but right-click knowledge is not required. The always-visible canvas button
   with the same label opens the region list and offers **맵에서 범위 선택하기**.
-- Choose one or more named enemy thumbnails (search keeps selection), choose
-  **드물게 / 보통 / 자주**, then **완료**. Each encounter picks one selected enemy;
-  a safe, plain single-enemy troop is reused or generated automatically. Existing
-  multi-enemy/scripted groups are available under advanced settings. No AI call.
-- Advanced settings expose each entry's relative weight, named switch, variable
+- The worksheet contains selected **groups**, not individual monsters. **+ 그룹 추가**
+  opens a searchable existing-group picker (name, ID or composition). Rows show
+  group name, member thumbnails/counts, direct weight and live normalized relative
+  share. Authored `members` take precedence over legacy `enemyIds`; hidden members
+  are included and labelled. Already-selected groups cannot be added again; legacy
+  duplicate condition variants remain separate rows. No troop generation or AI call.
+- Each row has its own **출현 조건** disclosure exposing named switch, variable
   threshold, party's highest level range, time phase and season. These remain the
   existing `encounterTable[].conditions.region` rectangles, not a new schema.
   Time/season conditions require game-time configuration. Overlapping rectangles
@@ -38,13 +50,22 @@ Map/event search, audio test, help modal, themed dungeons, resource manager, vil
   Identical rectangles are one group; a move onto an existing identical rectangle
   is rejected rather than silently merging groups. Delete requires a second click
   and removes only those rules, never tiles or shared/generated troops.
-- On another selection, **마지막 설정 가져오기** copies enemies/weights/conditions
+- On another selection, **마지막 설정 가져오기** copies group IDs/weights/conditions
   from the last successful save in this project session; destination-map frequency
   is retained. This memory is not persisted and resets on project switching.
-- Owner: `src/editor/walkEncounterAuthoring.ts` validates before one project snapshot and one
-  labelled `store.update`; project-level history includes generated troops.
+- Owner: `src/editor/walkEncounterAuthoring.ts` validates before one map-only snapshot and one
+  labelled map-scoped `store.update`. It never mutates `database.troops`, including
+  old automatically generated troops. Undo does not revert unrelated group edits.
   `src/editor/panels/walkEncounterModal.ts` / `src/editor/panels/walkEncounterOptions.ts`
   own local drafts and native subdialog-stack/focus/Escape. Cancel is mutation-free.
+  Weight input updates only output nodes, preserving focus/caret. Relative shares
+  describe the current worksheet, not actual conditional/overlapping eligibility.
+  Missing groups stay visible and block save; replace/remove is explicit.
+  Group edit opens the existing Troops database, then reveals the chosen record
+  (first-open session reset requires this order). A narrow `openDatabaseModal`
+  onClose callback restores the same in-memory draft; initial and apply-time stale
+  validation blocks project/map/settings changes. The encounter modal is closed
+  while DB owns Escape. Empty databases offer direct group editor entry.
   `src/editor/hotkeys.ts` prevents
   editor shortcuts/project undo from leaking into these draft dialogs.
   Project identity, map, map dimensions, encounter table/rate/legacy list, references
@@ -55,7 +76,7 @@ Map/event search, audio test, help modal, themed dungeons, resource manager, vil
   `DEV_SERVER_PORT=<supervisor-port> E2E_RETRIES=0 npx playwright test
   test/e2e/walk-encounter-authoring.spec.ts` (1024/1280/1440, blank local project,
   no remote content writes). It subscribes before selection/mutation triggers and
-  captures basic/advanced forms. On Linux Firefox hosts that abort the large dev
+  captures worksheet/picker/per-row condition forms. On Linux Firefox hosts that abort the large dev
   CSS module, `WALK_QA_ROUTE_CSS=1` transports that unmodified response through
   Playwright's request client. Controls are hit-tested and clicked with real
   pointer coordinates; no forced clicks or fixed sleeps. Supervisor owns
@@ -67,6 +88,59 @@ Map/event search, audio test, help modal, themed dungeons, resource manager, vil
 - Builds run in production child processes, not inside the editor's development module environment. Concurrent requests share one build; relevant source/public changes invalidate it. Each server owns a temporary output directory under its cache and removes it on close.
 - `/export-player/` and `/standalone-player/` requests are handled before SPA fallback. Build failure or an absent file returns an error rather than editor HTML or stale output. The existing menu catches rejected exports before `downloadBlob`; required media failures are no longer an informational warning after a broken HTML download.
 - Browser acceptance must begin with these menu buttons and play the downloaded files outside the editor server. See `npm run qa:export` in `openwiki/testing.md`; normal Test Play is a separate adjacent-surface regression.
+
+### Audio descriptions and live resource ownership
+
+The Resource Manager's music/sound categories use the complete shared catalog from
+`src/assets/audioResourceCatalog.ts`. Select a row to see its raw ID, native preview,
+effective description and source. Search matches names, IDs, tags and descriptions;
+the empty-description filter tests the effective value, including deliberate clears.
+`audio-description-search`, `audio-description-input` and `audio-description-save`
+are the feature's browser test controls.
+
+Save trims new input and writes one project override, including `""`. Restore default
+removes the override. Source labels distinguish project text, BGM creative briefs,
+metadata-derived descriptions and missing descriptions. Neither selection nor preview
+authors metadata. Implementation lives in `src/editor/panels/audioDescriptionEditor.ts`,
+`audioDescriptionDetail.ts`, `audioDescriptionDirtyDialog.ts` and
+`audioResourcePresentation.ts` under the same panels directory.
+
+Dirty row/category/close transitions offer Save, Discard and Cancel. Cancel retains the
+input node, caret and selected resource; a refresh doesn't erase a dirty draft.
+Project replacement ends the old draft's ownership, and an in-flight import can't write
+into another project. The textarea keeps native text undo; project history applies outside
+text controls. Escape and focus restoration remain owned by the modal stack.
+
+Successful audio import selects the upload for description editing without changing file
+validation. `src/editor/panels/resourceManagerAudioDelete.ts` checks real references before
+deleting. A successful deletion removes the upload, matching `ResourceProfile` rows and its
+override in one history operation. A blocked deletion leaves all three intact; bundled audio
+isn't a file-deletion target. `src/editor/tools/resourceTools.ts` also removes matching
+profiles through the tool deletion path.
+
+| Consumer | Shared metadata path |
+| --- | --- |
+| Map BGM, system/title/battle music and sound slots | `src/editor/panels/databaseResourcePickerDialog.ts` |
+| Toolbar audio test dialog | `src/editor/panels/audioTestDialog.ts` |
+| Normal event `playAudio` form | `src/editor/panels/eventEditor/commandBodyAdvanced.ts` |
+| M2 audio form and command preview | `src/editor/panels/eventEditor/commandBodyM2.ts`, `previewAudio.ts` |
+| AI search and detail | `src/assets/resourceSearch.ts`, `src/editor/tools/queryTools.ts`, `src/editor/tools/audioDescriptionTools.ts` |
+| Event prompt candidates | `src/ai/eventAudioPrompt.ts`, separate from full-ID eligibility |
+
+An open music/sound picker or audio-test dialog subscribes to project/assets changes, refreshes descriptions and
+search results, and invalidates a removed selected ID so it can't be confirmed. Closing the
+dialog releases its subscription; switching projects closes it. Reopened consumers use the
+latest project. Don't introduce per-surface fallback descriptions or global description storage.
+Reopening the audio-test dialog closes the previous instance through its modal teardown,
+including its store subscription and audio settings; removing its DOM alone leaks ownership.
+
+Coverage includes `test/audioDescriptionEditor.test.ts`,
+`test/audioDescriptionLifecycle.test.ts`, `test/audioDescriptionPickerSurfaces.test.ts`,
+`test/audioDescriptionCommandSurfaces.test.ts`,
+`test/audioDescriptionResourceLifecycle.test.ts`, `test/e2e/audio-descriptions.spec.ts`
+and `test/e2e/audio-description-search.spec.ts`. See `openwiki/testing.md` for scoped
+browser setup and separate exported-player evidence.
+
 
 ### Genre-neutral authoring launcher and journey (2026-08-24)
 

@@ -1,0 +1,13 @@
+{
+  "pass": true,
+  "width": 1280,
+  "height": 960,
+  "changedPixels": 3408,
+  "bounds": {
+    "minX": 128,
+    "minY": 188,
+    "maxX": 191,
+    "maxY": 259
+  },
+  "method": "Exact native PNG RGBA comparison, no baseline update; marker-region change only. Not a human visual review."
+}

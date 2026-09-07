@@ -70,11 +70,11 @@ describe("도구막대 오버플로 도달성", () => {
     const scroll = row.querySelector<HTMLElement>(".oprn-tile-toolbar-scroll");
     expect(scroll).toBeTruthy();
     expect(scroll!.parentElement).toBe(row);
-    for (const testid of ["tool-select", "tool-paint", "tool-erase", "oprn-tool-rect", "oprn-tool-round", "tool-fill", "tool-grid", "oprn-tool-undo"]) {
+    for (const testid of ["tool-select", "tool-paint", "tool-erase", "tool-fill", "oprn-tool-undo"]) {
       expect(scroll!.querySelector(`[data-testid="${testid}"]`), testid).toBeTruthy();
     }
-    const wrapper = row.querySelector<HTMLElement>('[data-testid="toolbar-overflow-menu"]');
-    const trigger = row.querySelector<HTMLElement>('[data-testid="oprn-tool-overflow"]');
+    const trigger = row.querySelector<HTMLElement>('[data-testid="sidebar-tools-menu"]');
+    const wrapper = trigger?.parentElement;
     expect(wrapper).toBeTruthy();
     expect(trigger).toBeTruthy();
     expect(wrapper!.parentElement).toBe(row);
@@ -83,27 +83,30 @@ describe("도구막대 오버플로 도달성", () => {
 
   it("열린 드롭다운은 잘리는 스크롤 컨테이너의 자손이 아니다", () => {
     const expectDirectSizes = () => {
-      for (const size of [1, 2, 3, 4]) {
-        const controls = host.querySelectorAll<HTMLButtonElement>(`[data-testid="brush-size-${size}"]`);
+        const controls = host.querySelectorAll<HTMLSelectElement>('[data-testid="brush-size-select"]');
         expect(controls).toHaveLength(1);
         const control = controls[0];
-        if (!control) throw new Error(`Missing brush ${size}`);
+        if (!control) throw new Error('Missing brush selector');
+        expect(Array.from(control.options, option => option.value)).toEqual(['1', '2', '3', '4']);
         expect(control.closest('[data-testid="toolbar-overflow-dropdown"]')).toBeNull();
         expect(control.closest('[hidden], .hidden')).toBeNull();
         expect(control.disabled).toBe(false);
-      }
     };
     expectDirectSizes();
-    toolbarRow().querySelector<HTMLElement>('[data-testid="oprn-tool-overflow"]')!.click();
+    host.querySelector<HTMLElement>('[data-testid="oprn-tool-overflow"]')!.click();
     const row = toolbarRow();
-    const dropdown = row.querySelector<HTMLElement>('[data-testid="toolbar-overflow-dropdown"]');
+    const dropdown = host.querySelector<HTMLElement>('[data-testid="toolbar-overflow-dropdown"]');
     expect(dropdown).toBeTruthy();
     const scroll = row.querySelector<HTMLElement>(".oprn-tile-toolbar-scroll")!;
     expect(scroll.contains(dropdown!)).toBe(false);
-    for (const testid of ["copy-button", "paste-button", "oprn-tool-inspector", "toolbar-toggle-ruleAudit", "toolbar-toggle-history"]) {
+    for (const testid of ["oprn-tool-inspector", "toolbar-toggle-ruleAudit", "toolbar-toggle-history"]) {
       expect(dropdown!.querySelector(`[data-testid="${testid}"]`), testid).toBeTruthy();
     }
     expectDirectSizes();
+    host.querySelector<HTMLElement>('[data-testid="sidebar-tools-menu"]')!.click();
+    for (const testid of ['copy-button', 'paste-button', 'paint-shape-select']) {
+      expect(host.querySelector(`[data-testid="sidebar-tools-surface"] [data-testid="${testid}"]`)).not.toBeNull();
+    }
   });
 
   it("도구막대 행은 더 이상 가로 스크롤 띠가 아니고, 내부 컨테이너가 스크롤을 맡는다", () => {

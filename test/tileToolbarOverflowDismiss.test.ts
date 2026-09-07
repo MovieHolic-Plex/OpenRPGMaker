@@ -11,7 +11,7 @@
  */
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { editorState } from "@/editor/editorState";
-import { makeTileToolbar } from "@/editor/panels/tileToolbar";
+import { makeInspectionControls } from "@/editor/panels/tileToolbarMenus";
 import { resetTileToolbarMenusForTests } from "@/editor/panels/tileToolbarMenus";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -23,7 +23,7 @@ function render(): void {
   host.replaceChildren();
   const project = store.getCurrent();
   const map = project.maps[project.startMapId]!;
-  host.append(makeTileToolbar({
+  host.append(makeInspectionControls({
     map,
     rerender: () => { render(); },
     state: editorState.get(),

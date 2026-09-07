@@ -5601,16 +5601,17 @@
   },
   "ecp-stage": {
    "props": [
+    "align-content",
     "align-items",
     "aspect-ratio",
     "background",
     "border-radius",
     "display",
+    "flex",
     "flex-direction",
     "justify-content",
-    "margin-inline",
-    "max-width",
     "min-height",
+    "min-width",
     "overflow",
     "padding",
     "place-items",
@@ -5618,6 +5619,9 @@
     "width"
    ],
    "decls": [
+    "align-content:safe center",
+    "align-content:safe end",
+    "align-content:start",
     "align-items:stretch",
     "aspect-ratio:16 / 10",
     "aspect-ratio:4 / 3",
@@ -5627,12 +5631,13 @@
     "display:flex",
     "display:grid",
     "flex-direction:column",
+    "flex:1 0 auto",
     "justify-content:flex-end",
-    "margin-inline:auto",
-    "max-width:calc(58vh * 4 / 3)",
     "min-height:150px",
     "min-height:200px",
+    "min-width:0",
     "overflow:hidden",
+    "overflow:visible",
     "padding:10px",
     "place-items:center",
     "place-items:end center",
@@ -5641,6 +5646,7 @@
     "width:100%"
    ],
    "sheets": [
+    "src/styles/editor/event-editor.balanced.css",
     "src/styles/editor/event-editor.command-preview/01-event-editor-modern-import.css",
     "src/styles/editor/event-editor.command-preview/02-changeface-play-mock-larger.css",
     "src/styles/editor/event-editor.modernize.css"

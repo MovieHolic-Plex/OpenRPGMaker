@@ -144,6 +144,7 @@ describe("accepted receipt content lineage", () => {
         expect(replacementFlush.receipt?.contentIdentity).toBe(await f.identity(live));
         expect(replacementFlush.receipt).toBeDefined();
       }
+      const replacementBaseline = structuredClone(f.store._getPersistedBaselineForTest());
       gate.release.resolve();
       const result = await bounded(pending);
       await bounded(committed);
@@ -164,6 +165,7 @@ describe("accepted receipt content lineage", () => {
       if (clean.kind !== "saved") throw new Error("Expected clean saved result");
       expect(clean.receipt).toBe(replacementFlush.receipt);
       expect(f.store.getCurrent()).toBe(live);
+      expect(f.store._getPersistedBaselineForTest()).toEqual(replacementBaseline);
       expect(f.store.hasUnsavedChanges()).toBe(false);
       // A later authored save must recover normally, without reviving the old receipt.
       f.store.update((draft) => { draft.meta.title = "later-legitimate-save"; });

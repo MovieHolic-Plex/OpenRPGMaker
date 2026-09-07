@@ -1,0 +1,283 @@
+{
+  "schemaVersion": 1,
+  "baseCommit": "49067218a",
+  "url": "http://127.0.0.1:19841/?freshProject=1",
+  "browser": "149.0.7827.55",
+  "method": "Actual Chromium UI through Playwright; unchanged static GET relay. Conversation scenarios use a deterministic read-only completion response and isolated activity logging.",
+  "records": [
+    {
+      "capture": "14-minimum-float",
+      "state": {
+        "viewport": [
+          1024,
+          768
+        ],
+        "classes": "ai-chat-panel is-assistant-idle chat-dock-float",
+        "deck": {
+          "x": 532,
+          "y": 613,
+          "w": 480,
+          "h": 141,
+          "display": "flex"
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "w": 0,
+          "h": 0,
+          "display": "none"
+        },
+        "focus": null
+      }
+    },
+    {
+      "click": "ai-collapse"
+    },
+    {
+      "scenario": "collapse reload",
+      "persisted": true
+    },
+    {
+      "click": "ai-collapsed-restore"
+    },
+    {
+      "click": "ai-command-menu-toggle"
+    },
+    {
+      "click": "ai-command-menu-toggle"
+    },
+    {
+      "capture": "15-minimum-history-menu",
+      "state": {
+        "viewport": [
+          1024,
+          768
+        ],
+        "classes": "ai-chat-panel is-assistant-idle chat-dock-float is-history-open is-docked",
+        "deck": {
+          "x": 315,
+          "y": 57,
+          "w": 503,
+          "h": 703,
+          "display": "flex"
+        },
+        "menu": {
+          "x": 562,
+          "y": -189,
+          "w": 248,
+          "h": 240,
+          "display": "grid"
+        },
+        "focus": "ai-command-menu-toggle"
+      }
+    },
+    {
+      "click": "ai-collapse"
+    },
+    {
+      "capture": "16-minimum-history-collapse",
+      "state": {
+        "viewport": [
+          1024,
+          768
+        ],
+        "classes": "ai-chat-panel is-assistant-idle chat-dock-float is-history-open is-docked is-collapsed",
+        "deck": {
+          "x": 963,
+          "y": 49,
+          "w": 47,
+          "h": 667,
+          "display": "flex"
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "w": 0,
+          "h": 0,
+          "display": "none"
+        },
+        "focus": "ai-collapse"
+      }
+    },
+    {
+      "click": "topbar-ai-studio"
+    },
+    {
+      "click": "topbar-ai-studio"
+    },
+    {
+      "click": "topbar-ai-studio"
+    },
+    {
+      "click": "ai-studio-scenes-collapse"
+    },
+    {
+      "click": "ai-studio-chat-collapse"
+    },
+    {
+      "scenario": "minimum studio collapse",
+      "before": "252px 8px 308px 8px 400px",
+      "after": "252px 8px 308px 8px 400px"
+    },
+    {
+      "capture": "17-minimum-studio-collapse",
+      "state": {
+        "viewport": [
+          1024,
+          768
+        ],
+        "classes": "ai-chat-panel is-assistant-idle chat-dock-float is-studio",
+        "deck": {
+          "x": 0,
+          "y": 0,
+          "w": 0,
+          "h": 0,
+          "display": "none"
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "w": 0,
+          "h": 0,
+          "display": "none"
+        },
+        "focus": "ai-studio-chat-collapse"
+      }
+    },
+    {
+      "click": "topbar-ai-studio"
+    },
+    {
+      "click": "ai-command-menu-toggle"
+    },
+    {
+      "click": "ai-command-menu-settings"
+    },
+    {
+      "click": "ai-settings-close"
+    },
+    {
+      "click": "ai-composer-mode-ask"
+    },
+    {
+      "click": "ai-send"
+    },
+    {
+      "scenario": "fixture send",
+      "i": 1,
+      "stop": "final"
+    },
+    {
+      "click": "ai-send"
+    },
+    {
+      "scenario": "fixture send",
+      "i": 2,
+      "stop": "final"
+    },
+    {
+      "scenario": "turn group toggle",
+      "result": "PASS"
+    },
+    {
+      "click": "ai-command-menu-toggle"
+    },
+    {
+      "capture": "18-tall-float-menu",
+      "state": {
+        "viewport": [
+          1440,
+          900
+        ],
+        "classes": "ai-chat-panel chat-dock-float is-assistant-log-open",
+        "deck": {
+          "x": 668,
+          "y": 187,
+          "w": 760,
+          "h": 699,
+          "display": "flex"
+        },
+        "menu": {
+          "x": 1172,
+          "y": -59,
+          "w": 248,
+          "h": 240,
+          "display": "grid"
+        },
+        "focus": "ai-command-menu-toggle"
+      }
+    },
+    {
+      "scenario": "nonempty export keyboard",
+      "filename": "ai-session-audit.json",
+      "failure": null
+    },
+    {
+      "click": "ai-new-chat"
+    },
+    {
+      "click": "ai-open-conversations"
+    },
+    {
+      "scenario": "history restore",
+      "result": "PASS"
+    },
+    {
+      "click": "ai-new-chat"
+    },
+    {
+      "click": "ai-send"
+    },
+    {
+      "click": "ai-abort"
+    },
+    {
+      "scenario": "abort held response",
+      "sendVisible": true,
+      "abortHidden": true,
+      "log": "2026년 9월 7일 월\nUI audit abort fixture\n여기서 다시\n\n사용자가 중단했습니다."
+    },
+    {
+      "click": "ai-new-chat"
+    },
+    {
+      "click": "ai-send"
+    },
+    {
+      "scenario": "rewind read-only turn",
+      "input": "UI audit rewind target",
+      "log": "이 지시 직전으로 대화를 되감았습니다. 되돌릴 편집 기록은 남아 있지 않았습니다."
+    },
+    {
+      "click": "ai-new-chat"
+    },
+    {
+      "click": "ai-open-conversations"
+    },
+    {
+      "capture": "19-conversation-cleaned",
+      "state": {
+        "viewport": [
+          1440,
+          900
+        ],
+        "classes": "ai-chat-panel chat-dock-float is-assistant-idle",
+        "deck": {
+          "x": 948,
+          "y": 745,
+          "w": 480,
+          "h": 141,
+          "display": "flex"
+        },
+        "menu": {
+          "x": 0,
+          "y": 0,
+          "w": 0,
+          "h": 0,
+          "display": "none"
+        },
+        "focus": null
+      }
+    }
+  ]
+}

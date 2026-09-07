@@ -88,6 +88,8 @@ describe("native command guarantee registry", () => {
   });
 
   it("declares only battle-executor-proven native kinds as full in troop context", () => {
+    // 2026-09-06: text/face/settings/wait are narrower than map semantics.
+    // Runtime-backed boundaries are exercised by eventCommandSupportRepairs.test.ts.
     // 2026-08-20 오표시 정정: battleEvents.ts executor 실측(스위치 실행 22종) 전수 대조 결과,
     // 이미 구현돼 있던 changeGold/changeExp/changeLevel/learnSkill/changeParty/changeFriendship/
     // getFriendship/wait/playAudio/stopAudio 10종을 troop-full 로 승격했다.
@@ -99,7 +101,6 @@ describe("native command guarantee registry", () => {
     // Step 3d(2026-08-20): changeEquipment/promoteActor — 맵과 같은 전이 권위자
     // (transitionActorEquipment/sessionClass.promoteActor) + 배틀러 파생 스탯 재계산 + write-back.
     const expected = [
-      "text",
       "choices",
       "fork",
       "setSwitch",
@@ -117,7 +118,6 @@ describe("native command guarantee registry", () => {
       "changeFriendship",
       "setRelationship",
       "getFriendship",
-      "wait",
       "playAudio",
       "stopAudio",
       "setSelfSwitch",
@@ -130,8 +130,6 @@ describe("native command guarantee registry", () => {
       "showAnimation",
       "gameOver",
       "killPlayer",
-      "changeFace",
-      "displayTextSettings",
       "changeEquipment",
       "promoteActor",
     ].sort();

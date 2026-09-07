@@ -1,7 +1,8 @@
 // ai/intentDeclarationClient.ts
 // 의도 선언의 LLM 어댑터. 선언 본체(intentDeclaration.ts)는 순수하게 두고, 네트워크·레지스트리·프로젝트는 여기만 안다.
 //
-// 호출은 **한 번, JSON 하나**다 — 도구 루프도 스트리밍도 없다. llmClient 의 response_format:"json_object"
+// 보통 한 번, JSON 하나다. 잘못된 보상 선언만 같은 시간 예산 안에서 한 번 교정한다.
+// 도구 루프도 스트리밍도 없다. llmClient 의 response_format:"json_object"
 // 경로를 쓴다(operatorIntentClient 와 같은 자리). 벽시계 상한을 넘기거나 응답을 읽지 못하면 중립 폴백으로
 // 떨어지고 그 사실을 감사 로그에 남긴다 — 되묻지 않고, 툴은 UI 도메인·핀·이름 언급·능력 승격으로만 노출된다.
 //
@@ -22,6 +23,7 @@ import {
   type IntentSelectionFact,
 } from "./intentDeclaration";
 import { chatCompletion, configForLiteModel, loadAiConfig, type AiConfig, type ChatRequest, type ChatResult } from "./llmClient";
+import { projectWikiContext } from "./projectWikiContext";
 
 /** 한 문장을 JSON 으로 옮기는 데 허용하는 벽시계. 넘기면 끊고 폴백으로 떨어진다. */
 export const INTENT_DECLARATION_TIMEOUT_MS = 20_000;
@@ -59,6 +61,7 @@ export function buildIntentFacts(input: BuildIntentFactsInput): IntentFacts {
     facilityLabels: [...listLiveConceptFacilityLabels(input.project)],
     toolNames: activeTools().map((tool) => tool.name),
     hasActivePlan: input.hasActivePlan,
+    wikiContext: projectWikiContext(input.project, { query: input.userText, mapId: input.currentMapId }).text,
   };
 }
 
@@ -68,6 +71,11 @@ function contentText(result: ChatResult): string {
   if (typeof content === "string") return content;
   if (Array.isArray(content)) return content.map((part) => (part.type === "text" ? part.text : "")).join("");
   return "";
+}
+
+function invalidNpcRewardReason(intent: IntentDeclaration): string | undefined {
+  const rewards = intent.npcRewards;
+  return rewards && "invalidReason" in rewards ? rewards.invalidReason : undefined;
 }
 
 /**
@@ -91,8 +99,10 @@ export function createLlmIntentDeclarer(
     const timer = setTimeout(() => controller.abort(), timeoutMs);
     const onOuterAbort = (): void => controller.abort();
     signal?.addEventListener("abort", onOuterAbort, { once: true });
+    let invalidIntent: IntentDeclaration | undefined;
     try {
-      const result = await chat(configForLiteModel(getConfig()), {
+      const config = configForLiteModel(getConfig());
+      const request: ChatRequest = {
         messages: [
           { role: "system", content: INTENT_SYSTEM_PROMPT },
           { role: "user", content: buildIntentUserPayload(facts) },
@@ -102,15 +112,36 @@ export function createLlmIntentDeclarer(
         temperature: 0.1,
         signal: controller.signal,
         disableTransientRetry: true,
-      });
+      };
+      const result = await chat(config, request);
       const parsed = parseIntentDeclaration(contentText(result), facts);
-      if (parsed.intent) return { intent: parsed.intent, elapsedMs: Date.now() - started };
+      if (parsed.intent) {
+        const error = invalidNpcRewardReason(parsed.intent);
+        if (!error) return { intent: parsed.intent, elapsedMs: Date.now() - started };
+        invalidIntent = parsed.intent;
+        const repaired = await chat(config, {
+          ...request,
+          messages: [
+            ...request.messages,
+            { role: "assistant", content: contentText(result) },
+            { role: "user", content: `Correct only the npcRewards JSON shape and return the full declaration. Preserve every grant, count and one-time requirement from the user request. ${error}. Each target must use exactly one eventId or eventName; each grant exactly one id or name. Omit unused keys instead of writing null. Do not omit npcRewards to bypass this error.` },
+          ],
+        });
+        const correction = parseIntentDeclaration(contentText(repaired), facts);
+        if (correction.intent?.npcRewards !== undefined && !invalidNpcRewardReason(correction.intent)) {
+          return {
+            intent: { ...invalidIntent, npcRewards: correction.intent.npcRewards },
+            elapsedMs: Date.now() - started,
+          };
+        }
+        return { intent: invalidIntent, elapsedMs: Date.now() - started, error: correction.error ?? error };
+      }
       return { intent: fallbackIntentDeclaration(facts), elapsedMs: Date.now() - started, error: parsed.error ?? "해석 실패" };
     } catch (cause) {
       const reason = controller.signal.aborted && !signal?.aborted
         ? `시간 초과(${timeoutMs}ms)`
         : cause instanceof Error ? cause.message : String(cause);
-      return { intent: fallbackIntentDeclaration(facts), elapsedMs: Date.now() - started, error: reason };
+      return { intent: invalidIntent ?? fallbackIntentDeclaration(facts), elapsedMs: Date.now() - started, error: reason };
     } finally {
       clearTimeout(timer);
       signal?.removeEventListener("abort", onOuterAbort);
@@ -127,7 +158,7 @@ function cacheKey(facts: IntentFacts): string {
   const selection = facts.selection
     ? `${facts.selection.mapId}:${facts.selection.x},${facts.selection.y},${facts.selection.width},${facts.selection.height}`
     : "-";
-  return `${facts.userText.trim()}|${facts.currentMap?.id ?? "-"}|${selection}|${facts.hasActivePlan ? "plan" : "noplan"}`;
+  return `${facts.userText.trim()}|${facts.currentMap?.id ?? "-"}|${selection}|${facts.hasActivePlan ? "plan" : "noplan"}|${facts.wikiContext ?? ""}`;
 }
 
 export async function declareIntentCached(
@@ -141,7 +172,8 @@ export async function declareIntentCached(
   if (hit && now - hit.at < CACHE_TTL_MS) return { ...hit.outcome, elapsedMs: 0 };
   const outcome = await declarer(facts, signal);
   // 폴백(모델 실패)은 캐시하지 않는다 — 다음 호출이 다시 시도할 수 있어야 한다.
-  if (outcome.intent.source === "llm" || outcome.intent.source === "continuation") {
+  if ((outcome.intent.source === "llm" || outcome.intent.source === "continuation")
+    && !invalidNpcRewardReason(outcome.intent)) {
     cache.set(key, { outcome, at: now });
     while (cache.size > CACHE_MAX) {
       const oldest = cache.keys().next().value;

@@ -1,0 +1,8 @@
+{
+  "id": 4,
+  "command": "node",
+  "args": [
+    "scripts/check-css-graph.mjs"
+  ],
+  "started": "2026-09-06T16:38:00.799Z"
+}

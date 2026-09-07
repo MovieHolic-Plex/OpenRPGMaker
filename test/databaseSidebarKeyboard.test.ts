@@ -54,6 +54,7 @@ const TAB_TESTID: Record<string, string> = {
   system: "db-tab-system",
   opening: "db-tab-opening",
   gameOver: "db-tab-game-over",
+  characterGraphics: "db-tab-character-graphics",
   terms: "db-tab-terms",
   switches: "db-tab-switches",
   variables: "db-tab-variables",

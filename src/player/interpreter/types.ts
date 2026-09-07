@@ -1,4 +1,5 @@
 import type { EmoteKind } from "@/project/emotes";
+import type { AudioChannel, AudioTrackState } from "@/project/session";
 import type {
   ChoiceCancelBehavior,
   Command,
@@ -92,7 +93,7 @@ export type StepResult =
       waitForPicture?: boolean;
     }
   | { kind: "erasePicture"; pictureId: string }
-  | { kind: "playAudio"; resourceId: string; loop: boolean }
+  | ({ kind: "playAudio"; channel?: AudioChannel } & AudioTrackState)
   | { kind: "stopAudio" }
   | { kind: "setLighting"; ambient: number; color?: string; transitionMs: number }
   | { kind: "setWeather"; weather: WeatherKind; intensity: number; transitionMs: number }
@@ -121,6 +122,7 @@ export type StepResult =
       offsetY?: number;
       zoom?: number;
     }
+  | { kind: "relocateEvents"; eventIds: readonly string[] }
   | { kind: "spawnEvent"; eventId: string }
   | { kind: "removeEvent"; eventId: string }
   | {
@@ -178,6 +180,7 @@ export interface Frame {
 }
 
 export interface InterpreterState {
+  continueAfterTransfer?: boolean;
   stack: Frame[];
   waitUntil?: { elapsedMs: number; intervalMs: number };
   isEventIdle?: (target: string) => boolean;
@@ -197,6 +200,8 @@ export interface InterpreterState {
 }
 
 export interface InterpreterOptions {
+  /** An admitted detection command list may continue after its own transfer; legacy callers still terminate. */
+  readonly continueAfterTransfer?: boolean;
   readonly getEventPositions?: () => import("@/project/runtimeEventState").RuntimeEventPositions;
   readonly isEventIdle?: (target: string) => boolean;
   readonly eventPositions?: import("@/project/runtimeEventState").RuntimeEventPositions;

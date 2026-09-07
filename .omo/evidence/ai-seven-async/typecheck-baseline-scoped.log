@@ -1,0 +1,5 @@
+src/editor/panels/eventEditor/customSelect.ts(363,5): error TS2322: Type 'Timeout' is not assignable to type 'number'.
+src/editor/panels/eventEditor/showAnimationPlayback.ts(138,5): error TS2322: Type 'number' is not assignable to type 'Timeout'.
+test/aiChatObservability.test.ts(54,30): error TS2353: Object literal may only specify known properties, and 'getChatDock' does not exist in type 'AiChatPanelOptions'.
+test/aiChatPanelTransportError.test.ts(52,84): error TS2353: Object literal may only specify known properties, and 'getChatDock' does not exist in type 'AiChatPanelOptions'.
+test/aiChatPanelTransportError.test.ts(80,84): error TS2353: Object literal may only specify known properties, and 'getChatDock' does not exist in type 'AiChatPanelOptions'.

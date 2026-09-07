@@ -1,0 +1,26 @@
+{
+  "initialExit": 1,
+  "initialReceipt": "editor.json",
+  "initialState": "editor-state.json",
+  "observed": "All eight native editor actions and Project4 roundtrip assertions passed; initial and replacement remotePersistence flags were false. The final remote-attempt assertion misclassified three blocked loopback browser-registration POSTs.",
+  "actualAttempts": [
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:17831",
+      "path": "/v1/browser/hello"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:17831",
+      "path": "/v1/browser/hello"
+    },
+    {
+      "method": "POST",
+      "origin": "http://127.0.0.1:17831",
+      "path": "/v1/browser/hello"
+    }
+  ],
+  "change": "Keep every non-owned-origin write blocked. Record only exact loopback /v1/browser/hello registrations separately; all other cross-origin write attempts still fail the remoteWrites assertion. Preserve all original inputs, action/undo/roundtrip assertions and deadlines.",
+  "notClaimed": "No product fix or native networking issue; first parent run remains exit1.",
+  "tooling": "Automatic JSON LSP hook reported missing biome; persisted Boulder and ledger parse as valid JSON. No dependency installed."
+}

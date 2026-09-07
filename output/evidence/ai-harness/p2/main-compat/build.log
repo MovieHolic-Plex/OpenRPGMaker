@@ -1,0 +1,132 @@
+
+> rpg-zzu@0.1.0 build
+> tsc --noEmit -p tsconfig.app.json && vite build --configLoader runner && npm run build:player && npm run build:standalone:bundle
+
+[rpg-zzu] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] QWENCLOUD_API_KEY 가 없어 /api/qwen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] CPENROUTER_API_KEY 가 없어 /api/cpen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+vite v6.4.3 building for production...
+transforming...
+✓ 1527 modules transformed.
+Export "openRecordPickerPanel" of module "src/editor/panels/eventEditor/recordPickerPanel.ts" was reexported through module "src/editor/panels/eventEditor/recordPickerDialog.ts" while both modules are dependencies of each other and will end up in different chunks by current Rollup settings. This scenario is not well supported at the moment as it will produce a circular dependency between chunks and will likely lead to broken execution order.
+Either change the import in "src/editor/panels/databaseEnemyActionDialog.ts" to point directly to the exporting module or reconfigure "output.manualChunks" to ensure these modules end up in the same chunk.
+rendering chunks...
+[plugin vite:reporter] 
+(!) /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/player/playSceneInterpreter.ts is dynamically imported by /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/player/PlayScene.ts but also statically imported by /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/player/PlayScene.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/player/npcDetectionEncounter.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/player/playSceneMapRuntime.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter] 
+(!) /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/editorUiMode.ts is dynamically imported by /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/app/mode.ts but also statically imported by /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/coachMarks.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/commandRegistry.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/panels/aiAgentBrief.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/panels/aiChatPanel.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/panels/aiConversationLog.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/panels/aiProposalCard.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/panels/basicLeftRail.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/panels/database.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/panels/editor.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/panels/editorZoomToolbar.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/panels/mapContextMenu.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/panels/menu.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/panels/sidebarInspectionPins.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/panels/sidebarMapHeader.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/panels/sidebarSurface.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/panels/tilePalette.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/panels/tilePaletteStampStatus.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/panels/tileToolOptions.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/panels/tileToolbar.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/panels/tileToolbarMenus.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/panels/workspaceBar.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/workspace/workspaceStore.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/main.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter] 
+(!) /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/project/devProjectPersistence.ts is dynamically imported by /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/app/mode.ts but also statically imported by /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/panels/editor.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/project/store.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter] 
+(!) /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/player/audio/index.ts is dynamically imported by /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/app/mode.ts but also statically imported by /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/panels/audioTestDialog.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/panels/databaseResourcePickerDialog.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/panels/databaseSystemView.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/panels/eventEditor/commandBodyAdvanced.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/player/PlayScene.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/player/battleAudio.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/player/characterHopRuntime.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/player/mapBgm.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/player/playSceneActionCombat.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/player/playSceneBattle.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/player/playSceneInterpreter.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/player/playSceneMapAnimations.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/player/playSceneSchedulers.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/player/player.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter] 
+(!) /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/mapSelection.ts is dynamically imported by /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/app/mode.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/panels/dbConnectionSettings.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/panels/menu.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/panels/menu.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/saveActions.ts but also statically imported by /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/agentFocus.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/commandRegistry.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/editorReferenceNavigation.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/editorToolHook.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/mapUrlSync.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/panels/aiStudioShell.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/panels/databaseCharacterView.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/panels/databaseCropView.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/panels/databaseFactionPreview.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/panels/databaseMonsterSpeciesView.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/panels/editor.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/panels/eventEditor/modal.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/panels/mapCreateDialog.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/panels/mapEventSearchModal.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/panels/mapList.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/panels/mapPropertiesDialog.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/panels/worldManager.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/welcomeGenreSystemPresetAction.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter] 
+(!) /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/player/player.ts is dynamically imported by /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/app/mode.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/app/mode.ts but also statically imported by /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/editor/panels/testPlayModal.ts, dynamic import will not move module into another chunk.
+
+computing gzip size...
+dist/benchmark.html                                         0.77 kB │ gzip:     0.47 kB
+dist/index.html                                             0.82 kB │ gzip:     0.48 kB
+dist/assets/windowskin-warm-CcYC0PVf.png                   10.02 kB
+dist/assets/neodgm-CYAlbkIQ.woff2                          44.35 kB
+dist/assets/Galmuri11-Bold-QdFGsJ3v.woff2                 166.63 kB
+dist/assets/Galmuri9-B9HMP827.woff2                       429.61 kB
+dist/assets/Galmuri11-DfQIlyDK.woff2                      504.74 kB
+dist/assets/phaser.min-CwlHMuXa.js                      1,196.12 kB
+dist/assets/benchmark-CNDwkXV0.css                          6.54 kB │ gzip:     2.15 kB
+dist/assets/databaseModal-DNnKfsLC.css                    118.22 kB │ gzip:    13.65 kB
+dist/assets/main-C3GTFrPJ.css                           1,893.21 kB │ gzip:   277.70 kB
+dist/assets/pwa-CRridmjp.js                                 0.25 kB │ gzip:     0.20 kB
+dist/assets/welcomeGenreSystemPresetAction-BLbgmelb.js      0.39 kB │ gzip:     0.28 kB
+dist/assets/modulepreload-polyfill-B5Qt9EMX.js              0.71 kB │ gzip:     0.40 kB
+dist/assets/welcomeGenrePresetApply-BvrBfUNK.js             0.78 kB │ gzip:     0.50 kB
+dist/assets/aiBootIntent-Gq1lbJuN.js                        0.83 kB │ gzip:     0.40 kB
+dist/assets/mapUrlSync-DbZvUTvc.js                          1.17 kB │ gzip:     0.62 kB
+dist/assets/eventSpriteResources-Da7wPycJ.js                1.39 kB │ gzip:     0.66 kB
+dist/assets/worldEntries-Cg957vuh.js                        1.73 kB │ gzip:     0.89 kB
+dist/assets/databaseRecordViewSession-C3iigit6.js           2.78 kB │ gzip:     1.06 kB
+dist/assets/tileShapeTools-B9-WqsV2.js                      3.25 kB │ gzip:     1.31 kB
+dist/assets/workspaceStore-Dq0tu8UV.js                      3.53 kB │ gzip:     1.56 kB
+dist/assets/defaults-JxmlnM5t.js                            4.60 kB │ gzip:     2.08 kB
+dist/assets/actionCombatRuntimeProbe-tCZbqVdM.js            4.76 kB │ gzip:     2.31 kB
+dist/assets/playSceneBattle-mYzZp79i.js                     6.58 kB │ gzip:     2.62 kB
+dist/assets/benchmark-BdOMv0KF.js                           7.03 kB │ gzip:     2.47 kB
+dist/assets/teamWorkflowUi-DCfIu6f5.js                      9.51 kB │ gzip:     3.44 kB
+dist/assets/transientEditorChrome-BmNkAL_2.js              11.88 kB │ gzip:     4.34 kB
+dist/assets/dbConnectionSettings-BGCAcTC-.js               13.30 kB │ gzip:     4.99 kB
+dist/assets/helpModal-DZiO3qZW.js                          14.36 kB │ gzip:     5.68 kB
+dist/assets/applyChangesetToStore-DAI8fV9l.js              15.74 kB │ gzip:     6.71 kB
+dist/assets/databaseAiGenerateDialog-9Dpg0jf_.js           16.09 kB │ gzip:     7.06 kB
+dist/assets/menu-8_Kb2TKr.js                               34.93 kB │ gzip:    11.95 kB
+dist/assets/structureKitEditorDialog-DG7v7GNU.js           41.91 kB │ gzip:    14.34 kB
+dist/assets/aiStudioMode-CGooSW7M.js                       62.29 kB │ gzip:    20.83 kB
+dist/assets/EditScene-CWOlDJFU.js                         102.89 kB │ gzip:    31.25 kB
+dist/assets/tilePalette-Oa0UGuYG.js                       175.12 kB │ gzip:    55.11 kB
+dist/assets/editor-DGX54LyQ.js                            215.42 kB │ gzip:    71.78 kB
+dist/assets/PlayScene-BfClNHQs.js                         237.30 kB │ gzip:    75.41 kB
+dist/assets/saveActions-BiS92H3S.js                       419.57 kB │ gzip:   146.51 kB
+dist/assets/databaseModal-PpnAM4JZ.js                   1,172.02 kB │ gzip:   354.40 kB
+dist/assets/main-DKf-cWF8.js                            7,245.42 kB │ gzip: 1,630.63 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 29.42s
+
+> rpg-zzu@0.1.0 build:player
+> vite build --config vite.player.config.ts --configLoader runner && node scripts/build-player-sdk.mjs
+
+vite v6.4.3 building for production...
+transforming...
+
+/generated/battle-reference-forest.png referenced in /generated/battle-reference-forest.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+✓ 562 modules transformed.
+rendering chunks...
+[plugin vite:reporter] 
+(!) /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/player/playSceneInterpreter.ts is dynamically imported by /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/player/PlayScene.ts but also statically imported by /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/player/PlayScene.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/player/npcDetectionEncounter.ts, /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/src/player/playSceneMapRuntime.ts, dynamic import will not move module into another chunk.
+
+computing gzip size...
+dist/export-player/player.html                               0.38 kB │ gzip:   0.26 kB
+dist/export-player/player-manifest.json                      1.92 kB │ gzip:   0.48 kB
+dist/export-player/assets/windowskin-warm-CcYC0PVf.png      10.02 kB
+dist/export-player/assets/neodgm-CYAlbkIQ.woff2             44.35 kB
+dist/export-player/assets/Galmuri11-Bold-QdFGsJ3v.woff2    166.63 kB
+dist/export-player/assets/Galmuri9-B9HMP827.woff2          429.61 kB
+dist/export-player/assets/Galmuri11-DfQIlyDK.woff2         504.74 kB
+dist/export-player/assets/phaser.min-CwlHMuXa.js         1,196.12 kB
+dist/export-player/assets/player-BsonWbrb.css              303.35 kB │ gzip:  52.79 kB
+dist/export-player/assets/playSceneBattle-C5SB7qUN.js        6.43 kB │ gzip:   2.53 kB
+dist/export-player/assets/PlayScene-DWs2s4K0.js            434.90 kB │ gzip: 134.05 kB
+dist/export-player/player.js                             1,678.54 kB │ gzip: 421.28 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 9.10s
+sdk-manifest: 12 files + 60 runtime assets, artifact 841b8201d379f9f3, source 84f8ad941312d621, schema v4
+
+> rpg-zzu@0.1.0 build:standalone:bundle
+> vite build --config vite.standalone.config.ts --configLoader runner
+
+vite v6.4.3 building for production...
+transforming...
+
+/generated/battle-reference-forest.png referenced in /generated/battle-reference-forest.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+✓ 564 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/standalone-player/standalone.css  1,843.81 kB │ gzip: 1,164.65 kB
+dist/standalone-player/standalone.js   3,602.83 kB │ gzip:   895.46 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 21.57s

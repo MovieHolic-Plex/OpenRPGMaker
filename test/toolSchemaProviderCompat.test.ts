@@ -132,6 +132,7 @@ const criterionCases: AcceptanceCriterion[] = [
     runtimeKeys: { "authored-id": [null, false, 0, "0", { nested: {} }] },
   } },
   ...[{ mapId: "map_start" }, { newMapName: "New room" }].flatMap((target): AcceptanceCriterion[] => [
+    { kind: "actionCombat", target },
     { kind: "mapDimensions", target, width: 20, height: 15 },
     { kind: "mapCount", targets: [target], count: 1 },
     { kind: "reachability", target, from: { x: 0, y: 0 }, to: [{ x: 1, y: 0 }] },
@@ -196,7 +197,7 @@ describe("acceptance and requirement schema/runtime contract", () => {
     expect(item?.required).toEqual(["kind"]);
     expect(item?.additionalProperties).toBe(false);
     expect(item?.properties?.kind).toEqual({ type: "string", enum: [
-      "toolVerdict", "mapDimensions", "mapCount", "eventCount", "targetChange", "preserve", "imageReviewed", "reachability",
+      "toolVerdict", "mapDimensions", "mapCount", "eventCount", "targetChange", "preserve", "imageReviewed", "reachability", "actionCombat",
     ] });
     expect(Object.keys(item?.properties ?? {}).sort()).toEqual([
       "args", "count", "from", "height", "kind", "region", "target", "targets", "to", "tool", "width",

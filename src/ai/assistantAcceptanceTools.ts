@@ -10,9 +10,9 @@ const count = { type: "integer", minimum: 0 };
 // required/allowed keys and exclusive target shape; only the provider shape is flattened.
 export const ACCEPTANCE_CRITERIA_SCHEMA = { type: "array", minItems: 1, items: {
   type: "object",
-  description: "Send only fields for the chosen kind. Required: toolVerdict: tool,args; mapDimensions: target,width,height; mapCount: targets,count; eventCount: target,count; targetChange/preserve/imageReviewed: target; reachability: target,from,to. Optional region only for eventCount/targetChange/preserve/imageReviewed. Missing or mixed-kind fields fail closed.",
+  description: "Send only fields for the chosen kind. Required: toolVerdict: tool,args; mapDimensions: target,width,height; mapCount: targets,count; eventCount: target,count; targetChange/preserve/imageReviewed/actionCombat: target; reachability: target,from,to. Optional region only for eventCount/targetChange/preserve/imageReviewed. Missing or mixed-kind fields fail closed.",
   properties: {
-    kind: { type: "string", enum: ["toolVerdict", "mapDimensions", "mapCount", "eventCount", "targetChange", "preserve", "imageReviewed", "reachability"] },
+    kind: { type: "string", enum: ["toolVerdict", "mapDimensions", "mapCount", "eventCount", "targetChange", "preserve", "imageReviewed", "reachability", "actionCombat"] },
     tool: { type: "string" },
     args: { type: "object", additionalProperties: true, description: "Full exact verification-tool arguments, with original keys and nested JSON values; use {} for no arguments. Not evidence or a verdict." },
     target, targets: { type: "array", minItems: 1, items: target },
@@ -30,8 +30,8 @@ export const ACCEPTANCE_TOOLS: readonly OpenAiToolSchema[] = [
 ];
 export const ACCEPTANCE_PLANNER_GUIDE = `
 Requirements are a separate immutable goal contract, NOT the replaceable WorkPlan. Author requirements:[{id,title,required?,criteria}] and item requirementIds; required defaults to true. Optional work is excluded from the required denominator but is never verified by skipping. The legacy acceptance field remains supported. toolVerdict uses a registered verification tool and its FULL exact args; only a current explicit tool response counts, not a tool name, advisory check, or model-provided evidence. Source and withdrawal belong exclusively to host user actions. Skip, replan, source claims and resetsContext cannot withdraw requirements.
-World-map acceptance is a separate immutable goal contract, NOT the replaceable WorkPlan.
 For map/event spatial deliverables author top-level acceptance:[{id,title,criteria:[...]}]. Every requested promise, exact size/count, target change, preservation constraint and image review must be represented. Do not invent genre quotas. Nonspatial/read-only requests omit acceptance.
 Criteria schema: ${JSON.stringify(ACCEPTANCE_CRITERIA_SCHEMA)}
+Requested field-action combat requires actionCombat criteria for every target and run_action_combat_test. Wait/spawn scene tests, static checks, turn-based simulations and model-authored evidence never prove field-action behavior. Intent-owned action obligations survive replanning and repair. Ordinary guide NPCs may use one page unless stateful behavior or a multipage volume obligation was explicitly declared.
 Use actual mapId for existing maps; newMapName is an exact authored name and binds only a unique newly created map. Counts are EXACT and scoped to the listed targets/region, never project totals. Preserve without region includes metadata; with region compares tiles/stacks/events. targetChange compares original baseline, never the latest plan. Reachability is conservative static tile/event passage, not a runtime playthrough. Whole-map image review requires actual delivered coverage (show_map_region clips to 24x24, so tile larger maps) then review_acceptance({itemId,verdict:"pass"|"fail",note}) in a subsequent response. Report defects with verdict:"fail"; it revokes a previous pass. No model-provided evidence IDs/fingerprints. Missing/malformed arrays fail closed and require repair_acceptance; replan/complete/skip cannot remove accepted promises.
 `;

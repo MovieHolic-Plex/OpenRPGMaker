@@ -1,6 +1,11 @@
 # Runtime Action Combat
 
-> **지원 종료 (deprecated, 2026-08-28).** 액션 전투는 더 이상 지원 대상이 아니다. 이미 저작된 액션 맵은 계속 동작하고, 아래 런타임 라우팅 계약도 바뀌지 않았다. 달라진 것은 저작 표면이다. 프로젝트 린트가 `system.actionCombat.enabled === true` 인 프로젝트에 `deprecated:action-combat` 코드로 경고를 남긴다. 새 프로젝트는 RM식(`rm2k3`) 또는 포켓몬식(`gen1`) 턴제 전투를 쓴다. 지원 전투 2종 정책과 지원 종료 목록은 `openwiki/runtime-battle.md` 의 "지원 전투 시스템은 둘뿐이다 (2026-08-28)" 절이 권위자다. 이 문서의 나머지는 현재 구현에 대한 정확한 참조로 그대로 유지된다.
+> **2D 타일 액션 전투 지원 (2026-09-07).** 기존 액션 런타임을 신규 저작에도 사용한다. `action-rpg` 장르는 시스템 설정을 켜며, 개별 맵의 옵트인은 계속 명시적으로 지정한다. RM식(`rm2k3`)과 포켓몬식(`gen1`)은 턴제 전투 모델이고, 액션 전투는 별도의 이중 옵트인 패키지다. 스폰 수·대기·턴제 씬 테스트는 액션 검증이 아니다. 브라우저 AI의 완료 판정은 현재 프로젝트에 귀속된 실제 플레이어 전투 증거를 요구한다.
+
+The action HUD displays the lead actor's effective equipped weapon and the
+canonical attack/moving-dodge bindings. The farming hand chip is hidden on
+action maps without farmable areas; mixed maps keep an explicitly labelled
+farming chip. Menus and dialogue retain their existing HUD suppression.
 
 This page is the authority for the real-time action-combat package in RPG ZZU. It documents the activation contract, pure rule modules under `src/battle/action/`, the scene integration layer, player and enemy capabilities, schema definitions, authoring boundaries, and verification targets.
 
@@ -194,6 +199,72 @@ There is no new budget system. Field spawns already cap concurrency with `maxAli
 - **Wall occlusion shadows for projectiles**: Projectiles check wall tile collision on substeps, but do not cast dynamic line-of-sight shadow geometry.
 
 ## Verification and test coverage
+
+### Runtime-owned AI action proof (2026-09-07)
+
+`src/editor/actionCombatRuntimeProbe.ts` exports
+`runActionCombatTest(project, { mapId, signal?, timeoutMs? })`.
+It copies the project and opens a separate `export-player/player.html` iframe,
+with the exported store shim and explicit `qaInstrumentation` boot capability.
+It never enters editor play mode, writes authored content, or treats the
+turn-based `sceneTestRunner` contact simulation as action evidence.
+
+The immutable `ActionCombatProofReceipt` and
+`isVerifiedActionCombatProof(receipt, project, mapId)` live in
+`src/testing/actionCombatProof.ts`. The guard requires exact in-memory issuer
+ownership, the current whole-project fingerprint, matching map, and a completed
+passing run. JSON copies, model-supplied objects, stale revisions, missing
+outcomes, wrong-map results, cancellation and timeouts cannot verify. The receipt
+includes `version`, `projectFingerprint`, `mapId`, `scenarioId`, `runId`,
+`status`, `pass`, numeric `observations`, and an optional failure `reason`.
+The public runner has no evidence-input argument or public receipt-minting API.
+The fingerprint is canonical whole-project FNV-1a 64-bit. Two unsigned 32-bit
+words preserve the exact digest without per-character BigInt overhead; an
+independent BigInt oracle test covers the arithmetic.
+
+The fixed `action-combat-v1` scenario runs in `playSceneTestHooks.ts`. It requires
+live authored melee and projectile field spawns, passable staging cells and an
+actor who survives the control strike. It parks background movers and relocates
+live runtime actors for reproducibility; it does not replace authored combat
+stats, rewards, weapons, collision rules or the real scene input dispatcher.
+It subscribes before input, then pairs the same seed-731 melee strike with
+stationary Shift and directional Shift. `damagePlayer` must observe actual
+damage in the first case and the **dodge-specific damage rejection gate** in
+the second, with the same attack identity. Positive iframe counters, walking
+away, and post-hit invulnerability do not establish dodge proof.
+
+The remaining required observations are swing hit, enemy defeat, stamina spent,
+stamina recovered, enemy projectile creation and reward grant. They come from
+the real combat mutation sites, not UI snapshots or guessed state deltas.
+`subscribeActionCombatObservations` is QA-capability gated; normal exports
+install no proof globals or observers. The scenario has a 45-second deadline;
+the transport defaults to 120 seconds, including a cold development-player build,
+and caps caller overrides at the same 120 seconds. An explicit shorter deadline
+still cancels and cleans up the owned frame.
+Outcome/post-frame listeners are removed on completion or abort, and every
+transport exit removes its iframe, timer, abort/message listeners and blob URL.
+Execution unavailable or incomplete returns `unverified`, never simulated success.
+
+Focused checks:
+
+```bash
+npm test -- test/actionCombatProof.test.ts test/actionCombatRuntimeProof.test.ts test/actionCombatProbeBoot.test.ts
+npm run typecheck:app
+node scripts/qa/runtime/action-rpg.scenario.mjs
+```
+
+The action scenario is a direct executable because the existing visual beat
+runner does not expose this async receipt transport. It starts a private
+Vite server on **45973**, tests the existing authored action demo on
+`map_mine_1f`, and writes
+`verify-shots/runtime-qa/action-rpg/{SUMMARY.md,receipt.json,player-proof.png}`.
+Read `SUMMARY.md` first. No Supabase or project-content writes are made.
+The scenario uses a blank host and the real `/export-player/` deployment from
+`devPlayerBundlesPlugin`, without browser request routing. The plugin builds the
+player and standalone bundles on first access; `npm run build:player` is the
+production player build command. Only the private probe boot resolves public
+game resources against the parent editor directory: normal exported games still
+resolve assets inside their own deployment directory.
 
 ### Pure rule unit tests
 - `test/actionAttackWindow.test.ts`: Attack buffering lifetime and single-fire timing.

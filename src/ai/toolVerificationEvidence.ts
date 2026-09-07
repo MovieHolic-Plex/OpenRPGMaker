@@ -9,19 +9,42 @@ function stableKey(value: unknown): string {
 
 /** Scoped by the session to a work item or goal, including continuations. */
 export class ToolVerificationEvidence {
-  private readonly checks = new Map<string, { name: string; verdict: Verdict; stale: boolean; executionFailed: boolean; explicit: boolean; explicitPass: boolean }>();
+  private readonly checks = new Map<string, { name: string; verdict: Verdict; stale: boolean; executionFailed: boolean; explicit: boolean }>();
+  // Navigation repair coalesces obligations, not independently observed exact passes.
+  private readonly explicitPasses = new Set<string>();
+  private readonly requiredTools = new Set<string>();
+  private readonly skippedTools = new Map<string, Set<string>>();
+
+  /** Plan replacement/skipping changes scheduling, never a declared verification obligation. */
+  requireTools(names: Iterable<string>): void {
+    for (const name of names) if (VERIFICATION_TOOL_NAMES.has(name)) this.requiredTools.add(name);
+  }
+
+  recordSkippedTools(itemId: string, names: Iterable<string>): void {
+    const skipped = this.skippedTools.get(itemId) ?? new Set<string>();
+    for (const name of names) if (VERIFICATION_TOOL_NAMES.has(name)) skipped.add(name);
+    if (skipped.size > 0) this.skippedTools.set(itemId, skipped);
+  }
 
   clear(): void {
     this.checks.clear();
+    this.explicitPasses.clear();
+    this.requiredTools.clear();
+    this.skippedTools.clear();
   }
 
   hasChecks(): boolean {
-    return this.checks.size > 0;
+    return this.checks.size > 0 || this.explicitPasses.size > 0;
   }
 
-  observe(name: string, args: Record<string, unknown>, result: ToolResultLike, source: "explicit" | "advisory" = "explicit"): Verdict | null {
+  observe(name: string, args: Record<string, unknown>, result: ToolResultLike, source: "explicit" | "advisory" = "explicit", workItemId?: string): Verdict | null {
     if (!VERIFICATION_TOOL_NAMES.has(name)) return null;
     const verdict = parseToolVerdict(name, result);
+    if (verdict.pass && source === "explicit" && workItemId) {
+      const skipped = this.skippedTools.get(workItemId);
+      skipped?.delete(name);
+      if (skipped?.size === 0) this.skippedTools.delete(workItemId);
+    }
     // A corrected invocation supersedes transport/argument errors, which did not
     // check any artifact. Actual negative verdicts remain tied to their targets.
     if (result.ok === true) {
@@ -29,20 +52,35 @@ export class ToolVerificationEvidence {
         if (check.name === name && check.executionFailed) this.checks.delete(key);
       }
     }
-    const key = stableKey([name, args]);
-    const previous = this.checks.get(key);
-    const explicit = source === "explicit" || previous?.explicit === true;
-    const explicitPass = result.ok === true && verdict.pass && (source === "explicit"
-      || (previous?.explicitPass === true && !previous.stale));
+    let identity = args;
+    if (name === "run_scene_test" && Array.isArray(args.steps)) {
+      const steps = args.steps.filter((step): step is Record<string, unknown> =>
+        step !== null && typeof step === "object" && !Array.isArray(step));
+      const interactions = steps.filter((step) => step.kind === "interact");
+      if (steps.length === args.steps.length && steps.some((step) => step.kind === "expect")
+        && interactions.length > 0 && interactions.every((step) => typeof step.eventId === "string")) {
+        // A navigation correction is the same check only when explicit NPC targets,
+        // assertions, choices and reward checkpoints remain unchanged.
+        identity = { ...args, steps: steps
+          .filter((step) => !["face", "move", "walk"].includes(String(step.kind))
+            && !(step.kind === "set" && Object.keys(step).every((key) => ["kind", "x", "y"].includes(key))))
+          .map((step) => step.kind === "interact" ? { kind: step.kind, eventId: step.eventId } : step) };
+      }
+    }
+    const key = stableKey([name, identity]);
+    const exactKey = stableKey([name, args]);
+    const explicit = source === "explicit" || this.requiredTools.has(name) || this.checks.get(key)?.explicit === true;
+    if (result.ok !== true || !verdict.pass) this.explicitPasses.delete(exactKey);
+    else if (source === "explicit") this.explicitPasses.add(exactKey);
     // A clean automatic check resolves its own prior finding but never creates
     // a new required check after later writes. Preserve explicit check history.
     if (source === "advisory" && verdict.pass && !explicit) this.checks.delete(key);
-    else this.checks.set(key, { name, verdict, stale: false, executionFailed: result.ok !== true, explicit,
-      explicitPass });
+    else this.checks.set(key, { name, verdict, stale: false, executionFailed: result.ok !== true, explicit });
     return verdict;
   }
 
   invalidateAfterWrite(): void {
+    this.explicitPasses.clear();
     for (const check of this.checks.values()) {
       if (check.explicit) check.stale = true;
     }
@@ -55,15 +93,18 @@ export class ToolVerificationEvidence {
 
   /** Exact invocation only; advisory rechecks cannot renew canonical proof. */
   passedScope(name: string, args: Readonly<Record<string, unknown>>): boolean {
-    const check = this.checks.get(stableKey([name, args]));
-    return check?.explicitPass === true && !check.stale && check.verdict.pass;
+    return this.explicitPasses.has(stableKey([name, args]));
   }
 
-  problems(): readonly string[] {
-    return [...new Set([...this.checks.values()].flatMap(({ name, verdict, stale }) => {
+  problems(scope: "all" | "required" = "all"): readonly string[] {
+    return [...new Set([...this.checks.values()].flatMap(({ name, verdict, stale, explicit }) => {
+      if (scope === "required" && !explicit && !this.requiredTools.has(name)) return [];
       const issues = verdict.blockingIssues.map((issue) => `${name}: ${issue}`);
       if (stale) issues.push(`${name}: 변경 후 재검증 필요`);
       return issues;
-    }))];
+    }).concat(
+      [...this.requiredTools].filter(name => !this.passed(name)).map(name => `${name}: 필수 검증 미통과`),
+      [...this.skippedTools].flatMap(([id, names]) => [...names].map(name => `${name}: ${id} 필수 검증 건너뜀`)),
+    ))];
   }
 }

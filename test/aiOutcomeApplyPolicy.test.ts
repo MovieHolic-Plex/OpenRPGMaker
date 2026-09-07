@@ -54,7 +54,7 @@ it.each([false, true])("settles the same verified requirement with milestone=%s"
   }
   // Then both paths use the same post-apply completion policy and P1 proof authority.
   const expected = { execution: "response-final", goal: "satisfied", delivery: "persisted-verified" };
-  expect(f.session.getAcceptanceSnapshot()?.status).toBe("verified");
+  expect(f.session.getAcceptanceSnapshot()?.status, JSON.stringify(f.session.getAcceptanceSnapshot())).toBe("verified");
   expect(result.runOutcome).toEqual(expected);
   expect(result.recap?.runOutcome).toEqual(expected);
   expect(f.session.getHarnessSnapshot().runOutcome).toEqual(expected);

@@ -18,6 +18,7 @@
 //   · 두 사각 CSS 시트의 클래스가 실제로 축에 잡힌다(교집합 > 0)
 //   · 수확 순서를 뒤집어도 결과 동일(격리 증명)
 //   · diff() 가 합성 변이 4종을 반드시 보고한다
+import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -38,6 +39,25 @@ import { assertSurfaceGate } from "./surfaceGateSupport";
 
 const BASELINE = resolve(process.cwd(), "test/fixtures/eventEditorPortalSurface.baseline.json");
 const FLOOR = resolve(process.cwd(), "test/fixtures/eventEditorPortalSurface.floor.json");
+
+// Independent of snapshot updates: exact control keys AND signatures, not counts.
+// Source: d1d5e7e98dd0c6c5ef837db2a1456e280359be42, BASELINE above, before badge migration.
+// Source file SHA256: 414e0a96afd614a544f6e76b6e5282717ea0829ec18a15bac857426fb3d53413.
+// Hash UTF-8 JSON.stringify([controlKey, signature] pairs sorted lexically by key).
+// df8e3734 removes 12 proven commands' obsolete badges, not their controls. Only
+// badge testids/spans/labels and six testid floors migrate; other drift stays red.
+// Do not regenerate these identities from the current catalog or DOM capture.
+const PRE_FEATURE_PICKER_CONTROL_SHA256 = {
+  commandPicker: "d7202e383d2c8ee5a92dece9d3778910cb49dda54e5dbf047f523b6af20c9bc2",
+  commandPickerTab2: "a1b03238fc6d6ba727f40db05dfe3b40da8fd83655fc3746a95a825d816958a0",
+  commandPickerTab3: "d0526f63dd0edb3e61650249314232e6a521be9913f7c1d44551395b6d8e6140",
+  commandPickerTab4: "12e9f10bcba86a8f79db482fa54fcbdc94792ebed41764e245bacd5f2a94fc95",
+  commandPickerSearch: "8ed69ecef4ef73962ab06aafa4c8a340684783e3fc833ba7f110d3170f8b1366",
+  commandPickerSearchInformational: "1f94b355d4aa302c096fd5fd0c3f7d0d70abb5543bba8b752d0b20893ae5f5dc",
+  commandPickerSearchEmpty: "9958c02a4288731e18cf62a97656f15b6f5bdc1a4da839ff508539b1851c587d",
+  commandPickerFavorites: "df509e6cd8443f8ee61e7f401f6f03286e61655e842e7732649817594f3535af",
+  commandPickerGrid: "d7202e383d2c8ee5a92dece9d3778910cb49dda54e5dbf047f523b6af20c9bc2",
+} as const;
 
 /** 이 축이 생기기 전까지 어떤 게이트도 렌더로 증명하지 못했던 두 시트(실측). */
 const BLIND_SHEETS = [
@@ -155,6 +175,21 @@ describe("포털(피커/모달) 표면 스냅샷", () => {
       .filter(([, surface]) => surface.testidCount === 0 || surface.rootCount === 0)
       .map(([key, surface]) => `${key}: testid ${surface.testidCount}종 / root ${surface.rootCount}개`);
     expect(dead, "포털이 body 에 아무것도 붙이지 않았다 = 렌더 죽음").toEqual([]);
+  });
+
+  it("preserves pre-feature picker control identities and signatures", () => {
+    const digests = Object.fromEntries(
+      Object.entries(actual)
+        .filter(([key]) => key.startsWith("commandPicker"))
+        .map(([key, surface]) => {
+          const pairs = Object.entries(surface.controls).sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0);
+          return [key, createHash("sha256").update(JSON.stringify(pairs), "utf8").digest("hex")];
+        })
+    );
+    expect(
+      digests,
+      "Picker controls changed from the pre-feature contract; badge removal must not remove or replace controls"
+    ).toEqual(PRE_FEATURE_PICKER_CONTROL_SHA256);
   });
 
   it("의도적으로 제외한 포털 수가 고정 수치와 같다", () => {

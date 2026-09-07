@@ -46,7 +46,6 @@ import {
 } from "@/editor/agentGhostPreview";
 import {
   attachCompletenessWarnings,
-  completenessSpecForProposal,
   isWriteTool,
   phaseStatusText,
   shouldShowStatusInChat,
@@ -213,7 +212,6 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
     });
     // 고스트 렌더러가 승인 전 초안 맵을 에디터 컴포지터 경로로 합성해 찍도록 공급한다.
     setAgentGhostDraftMapProvider((mapId) => session.getProposedProject().maps[mapId]);
-    let confirmedBuildSpecThisTurn: BuildSpec | null = null;
     let highlightedRegionThisTurn = false;
     let turnFailed = false; // 접힘 레일 알림 점의 색(완료=초록/오류=빨강) 결정용.
     let turnResult: TurnResult | null = null;
@@ -337,7 +335,6 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
         // 밑그림(스펙) 확정: 짧은 요약 + 접힌 상세(채팅 노이즈 감소).
         if (event.name === "set_build_spec" && event.result.ok && event.result.data) {
           const spec = event.result.data as BuildSpec;
-          confirmedBuildSpecThisTurn = spec;
           // 밑그림을 맵에도 깐다 — 지금까지는 이 접힌 텍스트가 계획을 볼 수 있는 유일한 창이었다.
           setAgentBlueprintFromSpec(spec);
           const title = spec.title ?? spec.mapId;
@@ -502,7 +499,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
         : proposalCompletenessWarnings({
             requestText,
             assistantText: result.assistantText,
-            buildSpec: completenessSpecForProposal(confirmedBuildSpecThisTurn, activeSpecAtTurnStart, turnWrites, requestText),
+            buildSpecs: session.getCompletionSpecs(turnWrites),
             calls: turnWrites,
       });
       attachCompletenessWarnings(result.proposedCalls, completenessWarnings);

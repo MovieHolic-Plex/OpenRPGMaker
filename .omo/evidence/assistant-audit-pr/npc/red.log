@@ -1,0 +1,180 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/npcAuditRepair.test.ts
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-rapid-harbor-7ca6-audit-npc
+
+ ❯ test/npcAuditRepair.test.ts (26 tests | 6 failed) 9641ms
+   × audited NPC repairs through the real runner > entry170: requires pages but supplies the original dialogue as a usable pages correction 866ms
+     → {"ok":false,"summary":"'place_npc' 인자 검증 실패","issues":[{"severity":"error","code":"invalid-args","message":"필수 인자 누락: pages — 보물상자·보관 상자·세이브포인트 등 오브젝트 기믹은 place_chest/place_storage_chest/place_savepoint를 사용하세요 — place_npc로 흉내내지 마세요."}]}: expected undefined to deeply equal { Object (path, example) }
+   × audited NPC repairs through the real runner > entry174: rejects the unknown M2 id and offers native text preserving all lines 520ms
+     → {"ok":false,"summary":"'place_npc' 실행 실패: SimplePage 인자 오류: 필드: pages[0].commands[0].kind; 기대 타입: string; 실제 타입: undefined; 최소 예시: {\"pages\":[{\"lines\":[\"안녕하세요\"],\"conditions\":[],\"commands\":[{\"kind\":\"text\",\"body\":\"안녕하세요\"}]}]}","issues":[{"severity":"error","code":"invalid-args","message":"SimplePage 인자 오류: 필드: pages[0].commands[0].kind; 기대 타입: string; 실제 타입: undefined; 최소 예시: {\"pages\":[{\"lines\":[\"안녕하세요\"],\"conditions\":[],\"commands\":[{\"kind\":\"text\",\"body\":\"안녕하세요\"}]}]}"}]}: expected undefined to deeply equal { path: 'pages[0].commands[0]', …(1) }
+   × audited NPC repairs through the real runner > entry196: replaces the actual singleton condition field without dropping either page 306ms
+     → {"ok":false,"summary":"'place_npc' 실행 실패: SimplePage 인자 오류: 필드: pages[1].conditions[0].kind; 기대 타입: string; 실제 타입: undefined; 최소 예시: {\"pages\":[{\"lines\":[\"안녕하세요\"],\"conditions\":[],\"commands\":[{\"kind\":\"text\",\"body\":\"안녕하세요\"}]}]} 페이지 조건 예: {kind:\"…","issues":[{"severity":"error","code":"invalid-args","message":"SimplePage 인자 오류: 필드: pages[1].conditions[0].kind; 기대 타입: string; 실제 타입: undefined; 최소 예시: {\"pages\":[{\"lines\":[\"안녕하세요\"],\"conditions\":[],\"commands\":[{\"kind\":\"text\",\"body\":\"안녕하세요\"}]}]} 페이지 조건 예: {kind:\"selfSwitch\",key:\"A\",value:true} 또는 {kind:\"switch\",switchId:\"조회한 ID\",value:true}. 첫 페이지 conditions:[], 다음 페이지에 위 조건을 사용하세요."}]}: expected undefined to deeply equal { path: 'pages[1].conditions', …(1) }
+   × audited NPC repairs through the real runner > keeps explicit self-switch value=true and sibling array conditions 345ms
+     → expected undefined to deeply equal { Object (path, example) }
+   × audited NPC repairs through the real runner > keeps explicit self-switch value=false and sibling array conditions 238ms
+     → expected undefined to deeply equal { Object (path, example) }
+   ✓ audited NPC repairs through the real runner > preserves canonical pages and condition arrays without repairs  499ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not invent pages for dialogue undefined  326ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not invent pages for dialogue null 297ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not invent pages for dialogue {"text":42}  414ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not invent pages for dialogue {"text":""}  414ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not invent pages for dialogue {"text":"Keep","when":{"selfSwitch":"A"}} 158ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not invent pages for dialogue {"text":"Keep","choices":["Yes","No"]} 152ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not invent dialogue for chest misuse 173ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not guess a command correction for {"commandId":"m2-999-unknown","fields":{"lines":["Keep"]}}  417ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not guess a command correction for {"commandId":"m2-101-show-text","fields":{"lines":["Keep",42]}}  446ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not guess a command correction for {"commandId":"m2-101-show-text","fields":{"lines":["Keep"],"speaker":"Other"}}  502ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not guess a command correction for {"commandId":"m2-101-show-text","fields":{"lines":["Keep"]},"body":"Conflicting"}  304ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not guess a command correction for {"commandId":"m2-101-show-text","fields":{"lines":[]}}  473ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not guess a command correction for {"kind":{"value":"text"},"commandId":"m2-101-show-text","fields":{"lines":["Keep"]}} 215ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not drop malformed or extra conditions {"selfSwitch":"E"}  459ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not drop malformed or extra conditions {"selfSwitch":1}  348ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not drop malformed or extra conditions {"selfSwitch":"A","value":"false"}  455ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not drop malformed or extra conditions {"selfSwitch":"A","switchId":"also_required"} 265ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not drop malformed or extra conditions {"selfSwitch":"A","variableId":"v1","value":3}  321ms
+   ✓ ambiguous NPC input remains rejected without lossy repairs > does not drop malformed or extra conditions {"selfSwitch":"A","kind":"unknown"}  305ms
+   × ambiguous NPC input remains rejected without lossy repairs > does not drop malformed or extra conditions {"kind":"none","selfSwitch":"A"} 400ms
+     → {"ok":true,"summary":"빈 맵에 NPC '모험 가이드' 배치 (8, 6) — 페이지 1개 — SimplePage 정규화 경고 2건","diff":{"tilesChanged":0,"mapPropertiesChanged":0,"eventsAdded":1,"eventsModified":0,"eventsRemoved":0,"mapsAdded":0,"mapsRemoved":0,"dbRecordsChanged":0,"tilesetsChanged":0,"switchesAdded":0,"variablesAdded":0,"worldEntitiesAdded":0,"worldEntitiesModified":0,"palettePresetsAdded":0,"palettePresetsModified":0,"endingsChanged":0,"sessionChanged":false,"systemChanged":false,"warnings":["SimplePage 정규화: pages[0].conditions 단수 객체를 배열로 감쌌습니다.","SimplePage 정규화: pages[0].conditions[0] 빈/없음 조건을 제외했습니다."]},"data":{"eventId":"npc_village_guide","x":8,"y":6,"adjusted":false,"reused":false,"pageCount":1}}: expected true to be false // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/npcAuditRepair.test.ts > audited NPC repairs through the real runner > entry170: requires pages but supplies the original dialogue as a usable pages correction
+AssertionError: {"ok":false,"summary":"'place_npc' 인자 검증 실패","issues":[{"severity":"error","code":"invalid-args","message":"필수 인자 누락: pages — 보물상자·보관 상자·세이브포인트 등 오브젝트 기믹은 place_chest/place_storage_chest/place_savepoint를 사용하세요 — place_npc로 흉내내지 마세요."}]}: expected undefined to deeply equal { Object (path, example) }
+
+[32m- Expected:[39m
+{
+  "example": [
+    {
+      "lines": [
+        "오른쪽 길을 따라가면 위험한 동굴이 나온단다. 조심해서 모험을 떠나렴!",
+      ],
+    },
+  ],
+  "path": "pages",
+}
+
+[31m+ Received:[39m
+undefined
+
+ ❯ test/npcAuditRepair.test.ts:156:44
+    154|     const repair = repairFrom(result);
+    155|     const pages = [{ lines: [entry170.dialogue.text] }];
+    156|     expect(repair, JSON.stringify(result)).toEqual({ path: "pages", ex…
+       |                                            ^
+    157|     if (!repair || !Array.isArray(repair.example)) throw new Error("Mi…
+    158|     // Replay the parsed example, not a separately authored replacemen…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  test/npcAuditRepair.test.ts > audited NPC repairs through the real runner > entry174: rejects the unknown M2 id and offers native text preserving all lines
+AssertionError: {"ok":false,"summary":"'place_npc' 실행 실패: SimplePage 인자 오류: 필드: pages[0].commands[0].kind; 기대 타입: string; 실제 타입: undefined; 최소 예시: {\"pages\":[{\"lines\":[\"안녕하세요\"],\"conditions\":[],\"commands\":[{\"kind\":\"text\",\"body\":\"안녕하세요\"}]}]}","issues":[{"severity":"error","code":"invalid-args","message":"SimplePage 인자 오류: 필드: pages[0].commands[0].kind; 기대 타입: string; 실제 타입: undefined; 최소 예시: {\"pages\":[{\"lines\":[\"안녕하세요\"],\"conditions\":[],\"commands\":[{\"kind\":\"text\",\"body\":\"안녕하세요\"}]}]}"}]}: expected undefined to deeply equal { path: 'pages[0].commands[0]', …(1) }
+
+[32m- Expected:[39m
+{
+  "example": {
+    "body": "오른쪽 길을 따라가면 위험한 동굴이 나온단다.
+준비를 단단히 하고 떠나렴!",
+    "kind": "text",
+  },
+  "path": "pages[0].commands[0]",
+}
+
+[31m+ Received:[39m
+undefined
+
+ ❯ test/npcAuditRepair.test.ts:168:44
+    166|     const repair = repairFrom(result);
+    167|     const example = { kind: "text", body: entry174.pages[0]?.commands[…
+    168|     expect(repair, JSON.stringify(result)).toEqual({ path: "pages[0].c…
+       |                                            ^
+    169|     if (!repair) throw new Error("Missing command repair");
+    170|     const pages = entry174.pages.map(page => ({ ...page, commands: [re…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  test/npcAuditRepair.test.ts > audited NPC repairs through the real runner > entry196: replaces the actual singleton condition field without dropping either page
+AssertionError: {"ok":false,"summary":"'place_npc' 실행 실패: SimplePage 인자 오류: 필드: pages[1].conditions[0].kind; 기대 타입: string; 실제 타입: undefined; 최소 예시: {\"pages\":[{\"lines\":[\"안녕하세요\"],\"conditions\":[],\"commands\":[{\"kind\":\"text\",\"body\":\"안녕하세요\"}]}]} 페이지 조건 예: {kind:\"…","issues":[{"severity":"error","code":"invalid-args","message":"SimplePage 인자 오류: 필드: pages[1].conditions[0].kind; 기대 타입: string; 실제 타입: undefined; 최소 예시: {\"pages\":[{\"lines\":[\"안녕하세요\"],\"conditions\":[],\"commands\":[{\"kind\":\"text\",\"body\":\"안녕하세요\"}]}]} 페이지 조건 예: {kind:\"selfSwitch\",key:\"A\",value:true} 또는 {kind:\"switch\",switchId:\"조회한 ID\",value:true}. 첫 페이지 conditions:[], 다음 페이지에 위 조건을 사용하세요."}]}: expected undefined to deeply equal { path: 'pages[1].conditions', …(1) }
+
+[32m- Expected:[39m
+{
+  "example": [
+    {
+      "key": "A",
+      "kind": "selfSwitch",
+      "value": true,
+    },
+  ],
+  "path": "pages[1].conditions",
+}
+
+[31m+ Received:[39m
+undefined
+
+ ❯ test/npcAuditRepair.test.ts:179:44
+    177|     const result = rejectWithoutMutation(ctx, entry196);
+    178|     const repair = repairFrom(result);
+    179|     expect(repair, JSON.stringify(result)).toEqual({ path: "pages[1].c…
+       |                                            ^
+    180|     if (!repair || !Array.isArray(repair.example)) throw new Error("Mi…
+    181|     const conditions: unknown[] = repair.example;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  test/npcAuditRepair.test.ts > audited NPC repairs through the real runner > keeps explicit self-switch value=true and sibling array conditions
+ FAIL  test/npcAuditRepair.test.ts > audited NPC repairs through the real runner > keeps explicit self-switch value=false and sibling array conditions
+AssertionError: expected undefined to deeply equal { Object (path, example) }
+
+[32m- Expected:[39m
+{
+  "example": {
+    "key": "D",
+    "kind": "selfSwitch",
+    "value": true,
+  },
+  "path": "pages[0].conditions[1]",
+}
+
+[31m+ Received:[39m
+undefined
+
+ ❯ test/npcAuditRepair.test.ts:191:20
+    189|     const args = { ...entry170, pages: [{ lines: [entry170.dialogue.te…
+    190|     const repair = repairFrom(rejectWithoutMutation(ctx, args));
+    191|     expect(repair).toEqual({ path: "pages[0].conditions[1]", example: …
+       |                    ^
+    192|     if (!repair) throw new Error("Missing condition repair");
+    193|     assertRetry(ctx, args, [{ lines: [entry170.dialogue.text], conditi…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  test/npcAuditRepair.test.ts > ambiguous NPC input remains rejected without lossy repairs > does not drop malformed or extra conditions {"kind":"none","selfSwitch":"A"}
+AssertionError: {"ok":true,"summary":"빈 맵에 NPC '모험 가이드' 배치 (8, 6) — 페이지 1개 — SimplePage 정규화 경고 2건","diff":{"tilesChanged":0,"mapPropertiesChanged":0,"eventsAdded":1,"eventsModified":0,"eventsRemoved":0,"mapsAdded":0,"mapsRemoved":0,"dbRecordsChanged":0,"tilesetsChanged":0,"switchesAdded":0,"variablesAdded":0,"worldEntitiesAdded":0,"worldEntitiesModified":0,"palettePresetsAdded":0,"palettePresetsModified":0,"endingsChanged":0,"sessionChanged":false,"systemChanged":false,"warnings":["SimplePage 정규화: pages[0].conditions 단수 객체를 배열로 감쌌습니다.","SimplePage 정규화: pages[0].conditions[0] 빈/없음 조건을 제외했습니다."]},"data":{"eventId":"npc_village_guide","x":8,"y":6,"adjusted":false,"reused":false,"pageCount":1}}: expected true to be false // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+ ❯ rejectWithoutMutation test/npcAuditRepair.test.ts:128:45
+    126|   const input = structuredClone(args);
+    127|   const result = runTool(ctx, "place_npc", args);
+    128|   expect(result.ok, JSON.stringify(result)).toBe(false);
+       |                                             ^
+    129|   expect(result.issues?.[0]?.code).toBe("invalid-args");
+    130|   expect(ctx.project).toBe(project);
+ ❯ test/npcAuditRepair.test.ts:240:23
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  6 failed | 20 passed (26)
+   Start at  21:08:18
+   Duration  39.43s (transform 19.82s, setup 0ms, collect 28.25s, tests 9.64s, environment 0ms, prepare 418ms)
+
+
+EXIT_STATUS=1

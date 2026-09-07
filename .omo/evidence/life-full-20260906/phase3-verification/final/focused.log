@@ -1,0 +1,34 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/lifeSkillDisabledHarvest.test.ts test/cropRegrowthContract.test.ts test/toolActionAuthoringParity.test.ts test/makerClockIntegration.test.ts test/lifeFieldInteraction.test.ts test/databaseLifeCraftingView.test.ts test/playSceneFarmFeedback.test.ts test/playScenePlaceableOverlay.test.ts test/npcActionFacing.test.ts test/seasonalForage.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-field-verify
+
+ ✓ test/seasonalForage.test.ts (4 tests) 209ms
+ ✓ test/lifeSkillDisabledHarvest.test.ts (49 tests) 2253ms
+ ✓ test/playScenePlaceableOverlay.test.ts (5 tests) 387ms
+ ✓ test/toolActionAuthoringParity.test.ts (44 tests) 2305ms
+ ✓ test/cropRegrowthContract.test.ts (30 tests) 1809ms
+ ✓ test/playSceneFarmFeedback.test.ts (5 tests) 438ms
+ ✓ test/makerClockIntegration.test.ts (28 tests) 2382ms
+ ✓ test/npcActionFacing.test.ts (9 tests) 1384ms
+ ✓ test/lifeFieldInteraction.test.ts (45 tests) 2498ms
+ ✓ test/databaseLifeCraftingView.test.ts (14 tests) 12454ms
+   ✓ database life skill and crafting view > materializes real defaults only on first custom-table creation, as one undoable edit  670ms
+   ✓ database life skill and crafting view > appends to existing tables without merging and preserves false through editing and load  634ms
+   ✓ database life skill and crafting view > authors a life skill and level reward, then undo restores the prior record  1100ms
+   ✓ database life skill and crafting view > authors a recipe with ingredient and output item references  692ms
+   ✓ database life skill and crafting view > authors upgrade, sell-price, and tool-action records through their detail forms  1624ms
+   ✓ database life skill and crafting view > rejects duplicate record ids and chooses an unused sell-price item  1731ms
+   ✓ database life skill and crafting view > authors recipe unlock requirements and tool capability fields  1018ms
+   ✓ database life skill and crafting view > clamps authored tool capability axes to the runtime-safe 9x9 limit  519ms
+   ✓ database life skill and crafting view > creates energy and shipping settings and preserves disabled shipping values  958ms
+   ✓ database life skill and crafting view > authors world unlock, bundle rewards, and maker processing without raw JSON  2518ms
+   ✓ database life skill and crafting view > rejects duplicate package ids, guards reward targets, and records undo  570ms
+
+ Test Files  10 passed (10)
+      Tests  233 passed (233)
+   Start at  00:19:57
+   Duration  24.32s (transform 26.26s, setup 0ms, collect 103.27s, tests 26.12s, environment 2.01s, prepare 3.28s)
+

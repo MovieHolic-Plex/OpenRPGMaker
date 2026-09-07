@@ -1,3 +1,88 @@
+## CSS budget: file count is informational
+
+`scripts/check-css-budget.mjs` reports stylesheet count and paths but does not
+treat adding or removing files as a regression or quality improvement. Keep
+styles split by ownership; do not concatenate unrelated styles to meet a count.
+The existing baseline remains valid without regeneration. Increases in hardcoded
+hex colors, `!important`, undefined custom properties and global `:root` files
+still fail. Import-graph and live-class checks remain separate active gates.
+
+Run `node --test test/cssBudget.test.mjs` for isolated CLI regression coverage,
+then `npm run gates:css` and `npm run gates -- --only css` on the real repository.
+
+## Selection and composer surface contracts (2026-09-06)
+
+`aiSelectionChipScope.test.ts` mounts the real panel/composer in happy-dom and
+processes the ordered assistant stylesheet imports with Vite, including tokens
+and the late editor UI-mode constraints. Do not test fabricated chips against
+one historical CSS fragment or load the deleted repair stylesheet.
+
+Idle current-map pins remain visible. Selection prioritizes the scope pin and
+hides only its nonselection siblings; clearing restores the map pin and removes
+the AI scope without clearing the editor selection. Keyboard help is the
+textarea title, not a separate action-row hint. Focus and blur retain the
+shipped row layout and controls.
+
+Routing tests subscribe to the panel's running-to-terminal class transition
+before clicking Send, including old attribute values for transitions batched
+into one observer delivery. The bounded timer only rejects a missing transition;
+the observer and timer are always disposed. CSS/DOM mutation probes confirm
+that the visibility and row-layout assertions reject actual regressions.
+
+## AI turn observation contracts (2026-09-06)
+
+`aiChatObservability.test.ts` and `aiChatPanelTransportError.test.ts` exercise the
+real panel/session/parser/tool pipeline. HTTP fixtures distinguish the
+non-streaming `response_format: { type: "json_object" }` intent request from chat
+responses. A single-step `needsPlan: false` intent is required when the test is
+about one chat loop: `agentMode: "chat"` alone does not disable the balanced
+autonomy planner. Do not restore obsolete API-key configuration to avoid this
+contract; the editor uses OAuth.
+
+Subscribe to terminal `recordAiActivity` publication before clicking Send.
+`whenAiChatPanelSettled()` covers boot and persistence, not an active chat turn.
+Do not replace the terminal signal with microtask counts, sleep loops or guessed
+retry durations. Reasoning coverage uses two distinct successful query tools;
+ghost coverage subscribes during the write and also verifies its final apply and
+cleanup; transport coverage verifies that settings recovery actually opens.
+Mutation evidence breaks those production connections independently and restores
+them before the final passing run.
+
+## Canonical project storage versus AI history (2026-09-06)
+
+`test/noLocalProjectDb.test.ts` guards project/editor source against a local
+canonical-project database. A direct `typeof indexedDB` capability check does not
+read or write project data and is allowed. Every actual IndexedDB reference,
+including an alias, guarded open, window property or computed property access,
+remains rejected by the TypeScript AST check. SQLite and removed JSON fallback
+restrictions remain unchanged.
+
+Do not remove the guard to accommodate AI history: its IndexedDB implementation
+belongs to `src/ai/aiRecordDb.ts`. The editor may report whether that history is
+durable. Negative guard fixtures and a temporary actual project-source mutation
+prove that allowing capability detection does not allow a local project store.
+
+## Action RPG authoring and runtime proof (2026-09-07)
+
+`test/actionRpgAuthoringAcceptance.test.ts` exercises the actual AssistantSession:
+wait-only scene success and failed mandatory verification followed by skipped
+work cannot publish verified acceptance. Goal-scoped action targets and required
+verification survive replanning; only an explicit context reset clears them.
+Ordinary one-page guides are not subject to a stateful-NPC quota.
+
+`run_action_combat_test({mapId})` is an asynchronous session dispatch; the normal
+synchronous tool registry deliberately fails closed. The session validates its
+arguments, invokes the copied exported player, captures the exact owned receipt
+before serialization, and publishes verification blockers with the same ledger
+used by the checklist. It never interprets model-provided receipt JSON as proof.
+
+Run `node scripts/qa/runtime/action-rpg.scenario.mjs` for the existing action
+demo through the actual compiled `/export-player/` deployment. Read
+`verify-shots/runtime-qa/action-rpg/SUMMARY.md` first. The script is not a generic
+`qa:runtime --scenario` beat file. For a newly authored game, the lead must also
+use the actual browser AI, save/reload the remote project, and exercise the
+resulting player with keyboard inputs. Unit receipts do not replace that run.
+
 ## Database CSS ownership contracts (2026-09-06)
 
 The required surface gate includes `databaseAllTabsRenderWalk`, using the actual
@@ -18,6 +103,106 @@ fonts, focus, virtualized reveal, domain variants and deliberate CSS regressions
 Editor boot must complete before opening Database; wait for the published boot
 metric rather than the first toolbar node. Existing whole-suite failures and
 timeouts remain explicit, with assertion/diagnostic comparison against a frozen base.
+
+## Audio description verification
+
+These are reproducible verification requirements, not a claim that every gate has passed.
+Record commands, exit codes and evidence under `output/evidence/audio-descriptions/`;
+keep baseline failures and unverified visual review separate from feature results.
+No live project backfill, SQL migration, asset conversion or catalog regeneration is needed.
+
+Focused model, persistence, tool, UI, prompt and export gates:
+
+```sh
+npm test -- test/audioDescriptions.test.ts test/audioDescriptionPersistence.test.ts test/audioDescriptionConcurrentPersistence.test.ts test/audioResourceCatalog.test.ts
+npm test -- test/audioDescriptionTools.test.ts test/audioDescriptionDiff.test.ts test/audioDescriptionToolStore.test.ts test/audioDescriptionToolExposure.test.ts test/audioResourceToolPagination.test.ts
+npm test -- test/audioDescriptionEditor.test.ts test/audioDescriptionLifecycle.test.ts test/audioDescriptionPickerSurfaces.test.ts test/audioDescriptionCommandSurfaces.test.ts test/audioDescriptionResourceLifecycle.test.ts test/audioResourceSearchContract.test.ts
+npm test -- test/audioDescriptionPrompt.test.ts test/audioDescriptionPromptTransport.test.ts test/audioDescriptionSessionPrompt.test.ts
+npm test -- test/audioDescriptionExport.test.ts test/projectPackage.test.ts test/webExportUsagePruning.test.ts test/cc0AudioPlayback.test.ts test/playerRuntimeAudioIds.test.ts test/runtimeQaAudioContract.test.ts
+npm run build
+```
+
+Assert machine-consumed fields, raw IDs, source values, truncation, input sentinels and
+state changes, not exact explanatory prose. Persistence coverage must include deferred
+save responses, repeated map saves, same/different-key conflicts, clear/reset, and edits
+made after submission. Mock only transport when asserting real serialization/load/merge
+behavior; label that evidence as mocked transport rather than live Supabase persistence.
+
+### Real editor surfaces
+
+```sh
+npx playwright test --config playwright.audio.config.ts
+```
+
+`playwright.audio.config.ts` scopes Firefox, zero retries and an isolated Vite cache to
+`test/e2e/audio-descriptions.spec.ts` and `test/e2e/audio-description-search.spec.ts`.
+It defaults to port 19847 and `.omo/audio-e2e-vite-cache`; `DEV_SERVER_PORT` and
+`VITE_CACHE_DIR` can override those values. A reused server must use the same isolated
+cache/setup. This local Firefox choice addresses Chromium module requests failing with
+host `ERR_NETWORK_CHANGED`; it doesn't change global browser policy.
+
+`test/e2e/audioDescriptionHarness.ts` waits for DOMContentLoaded, the real toolbar and
+the loaded store, rejects remote persistence, then installs a normal blank project through
+the real store. Readiness comes from actual state, not page-load timing or fixed sleeps.
+Subscribe before triggering asynchronous edits/imports/playback, then await their exact
+signal with a bounded timeout.
+
+At 1024x768 and 1440x900, verify save/reopen/search, clear/reset, modal undo/redo, dirty
+cancellation, real WAV import/edit/delete and project-import isolation. Also exercise live
+picker refresh, removed-ID confirmation blocking, listener cleanup, project-switch close,
+audio test, normal/M2 event forms and actual registered AI tool parity.
+Capture screenshots/traces with selected IDs and worktree/port information. Capturing an
+image isn't visual-review approval; keyboard/focus and layout inspection remain separate.
+Don't claim Lighthouse approval from this scoped suite.
+
+### Exported-player playback and dependency evidence
+
+`scripts/qa/prepare-audio-descriptions.mts` uses
+`test/fixtures/audioDescriptions.ts` and the real `prepareWebExport()` boundary.
+It checks source immutability and removed metadata, then writes a new fixture path with
+exclusive-create semantics. Use a fresh evidence directory for each run:
+
+```sh
+EVIDENCE=output/evidence/audio-descriptions/08-export
+mkdir -p "$EVIDENCE"
+RUN="$(mktemp -d "$EVIDENCE/run-XXXXXX")"
+CACHE="$(mktemp -d /tmp/oprn-audio-qa-cache-XXXXXX)"
+trap 'rm -rf -- "$CACHE"' EXIT
+bun scripts/qa/prepare-audio-descriptions.mts "$RUN/project.json"
+VITE_CACHE_DIR="$CACHE" npm run qa:runtime -- --scenario audio-descriptions --browser firefox --project "$RUN/project.json" --out "$RUN/runtime"
+AUDIO_QA_BROWSER=firefox AUDIO_QA_PROJECT="$PWD/$RUN/project.json" AUDIO_QA_FAILURE_OUT="$PWD/$RUN/runtime-failure" VITE_CACHE_DIR="$CACHE" node --test test/runtimeQaAudioFailure.test.mjs
+node scripts/qa/check-player-audio-dependencies.mjs "$RUN/player-dependencies.json"
+```
+
+The fixture preparer and dependency checker refuse to overwrite their output files.
+`scripts/runtime-qa.mjs` runs the dedicated `player.html` surface, not editor play mode.
+`scripts/qa/runtime/audio-descriptions.scenario.mjs` starts starter BGM
+`cc0-bgm-rtp-fld-003` through title input, then triggers local SE `cc0-sound-ui-confirm`
+through an interaction. The commands above select Firefox for this host; the runtime CLI
+defaults to Chromium. Its optional `--browser firefox` and the failure test's
+`AUDIO_QA_BROWSER=firefox` are separate from the editor Playwright configuration.
+
+`scripts/lib/runtimeQaAudio.mjs` installs native `playing`/`error` listeners before the
+action. Evidence requires a trusted event from the matching engine-owned, same-origin audio
+element, valid ready/paused/ended state, expected loop/mute state, the engine-requested ID
+and an engine snapshot. It doesn't replace `Audio`, `play()` or engine methods. A requested-ID
+log alone isn't playback evidence. `test/runtimeQaAudioFailure.test.mjs` aborts the real SE
+request and requires failed playback evidence while BGM succeeds.
+
+This proves native playback start, not human listening, full-track playback or label accuracy.
+Inspect the runtime `SUMMARY.md` and machine-readable audio evidence, including failures.
+`test/runtimeQaAudioContract.test.ts` covers the report contract.
+
+`scripts/qa/check-player-audio-dependencies.mjs` performs a production player build with
+`write: false` and records modules with positive rendered length. It rejects
+`src/assets/audioResourceCatalog.ts`, `bgmCatalog.ts` and `seCatalog.ts`, while requiring
+`src/assets/bgmCatalogRuntime.ts` and `seCatalogRuntime.ts`. This is rendered-bundle evidence,
+not a source-grep claim. Keep prompt descriptions in `src/ai/eventAudioPrompt.ts`, separate
+from shared event eligibility and player dependencies.
+
+Close owned browsers/servers and remove only owned temporary caches after verification.
+After applying documentation, the integrating lead runs `npm run openwiki:index`, then
+`npm run openwiki:index -- --check` and `npm run openwiki:verify`. Don't hand-edit INDEX.md.
 
 ## Mac onboarding Phase 1 contracts (2026-09-06)
 
@@ -46,6 +231,22 @@ URL validation or edits to the existing env file; identify that limitation in th
 The narrow macOS workflow uses Node 24 and no live DB secrets. Actions are disabled and the
 producer host is Linux: neither the workflow file nor Linux Bash tests prove macOS/Finder QA.
 Actual Mac execution or explicit reviewer acceptance of that gap remains a merge prerequisite.
+
+## Task10 field-input verification and limits (2026-09-06)
+
+Recorded verification, not a new execution by this documentation update: `.omo/evidence/life-full-20260906/10/VERIFY.md` and `.omo/evidence/life-full-20260906/phase3-verification/final/VERIFY.md` confirm task10 and integrated tasks6..10 at producer `bbaf9464cad3768da057ef9909338b5cfb25aa8c`. This documentation checkout integrates that source at `d107ac24ed72902fb35980034d08aed3ab3e0553`.
+
+- All **45 cases** in `test/lifeFieldInteraction.test.ts` passed: front/feet priority, consumed refusal without attack/fallback, conservation, authored tools, bounds/capacity/disabled/missing-definition failures, renderer warnings and runner alignment. Exact-date controls cover future/expired forage, adjacent/duplicate/backward cursors, three-day cadence and 28/99-day year boundaries, including year `9007199254740991`.
+- The independent first-and-only focused run passed **233 tests in 10 files, exit 0**, with the command below. Diagnostics covered all 25 Phase3 source/test paths with zero TypeScript diagnostics; app typecheck and full build exited 0. These retained receipts aren't whole-project gates.
+- Independent `priority.mjs` executes real `handleAction` through both five-step priority chains with actual chest DOM, front farming before an underfoot event, and six normal/extreme-date controls. Event execution records dispatch only. Runner chest logs alone don't prove storage transfer.
+- Native Firefox uses `player.html` and the shipping export store shim: three scenarios, five real Z inputs, no initial reward items/generated forage. Real catch spends energy 3 -> 0; authored underfoot sleep reaches day2 before pickup grants berry 0 -> 1. Energy/tool refusals preserve the readable QA snapshot except its action receipt, with zero swing cooldown, unchanged stamina and no attack audio request. Complete hidden-owner/RNG preservation comes from transaction tests, not the limited QA mirror.
+- `performObservedAction` arms `oprn:action` before input. Sleep completion uses a prearmed DOM mutation signal for day2, an authored post-sleep switch and `running=false`. No fixed sleeps, polling or injected successful outcomes. Native images differ by exactly **3408 RGBA pixels**, confined to x128..191/y188..259 at the forage marker. This proves localized refresh, not aesthetic approval. Missing-definition fallback/warning survival use real renderer/event refresh with recording endpoints, not a native edited-content journey.
+
+```sh
+npm test -- test/lifeSkillDisabledHarvest.test.ts test/cropRegrowthContract.test.ts test/toolActionAuthoringParity.test.ts test/makerClockIntegration.test.ts test/lifeFieldInteraction.test.ts test/databaseLifeCraftingView.test.ts test/playSceneFarmFeedback.test.ts test/playScenePlaceableOverlay.test.ts test/npcActionFacing.test.ts test/seasonalForage.test.ts
+```
+
+The broader 17-file selection remains **283 passed, 2 failed, exit 1**. Inherited `actionDebounceFootprint.test.ts` cases `3x3 + passRows1 body/pass rectangle case` and `absent footprint identity case` throw `TypeError: Cannot read properties of undefined (reading 'registry')` in `syncCutsceneHudVisibility`. Earlier whole-suite/gate attempts timed out twice at 1200s (exit 124); current whole-suite regression status is unknown and six matched pre-existing surface failures remain. Build warnings are retained. Native image viewing was unavailable, so numerical pixels and DOM evidence aren't image-level approval. No complete 51-feature journey, remote persistence, whole-project green verdict or task33 final approval is claimed. Existing task6..9 evidence below keeps its original scope.
 
 ## Life QA observation and action receipts (2026-09-06)
 
@@ -368,6 +569,8 @@ PROBE_BASE=http://127.0.0.1:9873/ PROBE_OUT=/tmp/probe PROBE_SUBNAV=1 node scrip
 
 ## Agent validation rule
 
+- Tool-rule parity: `test/toolActionAuthoringParity.test.ts` plus database-life, farming, tool-capability, serialization, regrowth and disabled-XP regressions. Task8 evidence at `.omo/evidence/life-full-20260906/8/` records RED, 269 tests/15 files, changed-file diagnostics, app typecheck, full build, the public authority probe, and native Firefox editor keyboard/undo controls at 1440x900 and 1024x768. The editor boot subscription uses `perf-metrics-json.initialEditRenderMs`, not the early toolbar mount, which can be replaced during boot. Native player gameplay is not claimed. Chromium transport failures, probe setup failures and offline fixture warnings remain in the evidence. Screenshots were captured, but this child had no image-decoding-capable model; DOM observations are verified, visual image review remains with the parent.
+
 **Authored game content** (demo maps, events, sample adventure data meant for the product): incomplete until **Supabase save + load-back** succeeds. Repo fixtures alone do not count. See root `AGENTS.md`.
 
 Pick validation based on the touched boundary:
@@ -405,7 +608,7 @@ Pick validation based on the touched boundary:
 - Monster collection changes should cover capture formula boundaries, uncapturable troop blocking, deterministic IV generation, party-six overflow to box, save/load plus legacy-save compatibility, captured-enemy EXP exclusion, `simulate_battle` strict `"capture"` scripts, and starter-choice event walkthroughs. Evolution/type changes should additionally cover level/item/friendship requirements, item consumption, HP-ratio preservation, learned target-species skills, automatic post-victory evolution, `evolveMonster` success/failure branches, type-chart single/dual/STAB/immunity multipliers, missing-chart regression, and `simulate_battle` favorable/unfavorable damage comparisons. Care-item tests must reject missing/zero, non-finite, unsafe, and over-cap source stacks and assert exact session non-mutation, including friendship and EXP. Include a command-contract file for any new native event command kind and run `node scripts/generateToolCatalog.mjs` when `define_monster_species`, `set_type_chart`, or `give_starter_monsters` schemas change.
 - Hunting-runtime changes should cover weighted encounter distribution with fixed seeds, switch/variable/level/region filtering, field-spawn maxAlive/respawn/passable-cell selection, save/load policy that excludes spawn runtime state, `run_scene_test` field-spawn contact battle/respawn assertions, and a headless hunting-growth path that reaches promotion requirements.
 - Farming-runtime changes should cover till/plant/water/harvest state transitions, unwatered-day growth stop, season-change death, regrow harvest cycles, save/load preservation, farmableArea bounds, crop DB/tool schemas, `advanceCropGrowth`, and a `run_scene_test` path that plants, waters through `advanceDays`, asserts `cropStageAt`, harvests, and asserts `inventoryCount`.
-- P0 life-runtime changes use `test/p0RuntimeIntegration.test.ts`, `test/p0DayTransitionSceneFailure.test.ts`, `test/p0TransitionControlFlow.test.ts`, `test/p0LifeLedgerUi.test.ts`, and `test/p0SessionPersistence.test.ts`. Required hostile cases are exact and zero-minute day boundaries, `restorePerDay: 0`, repeated/source-stale transition keys, malformed/current/non-adjacent saved cursors, non-safe and absolute-minute-overflow saved clocks, already-settled and invalid shipping, season day 28 plus custom season boundaries, stale maker state, maker-disabled overflow bypass plus maker-enabled overflow fail-closed, insufficient-energy all-or-nothing area actions, success-only crop/rock/tree XP, manual/autosave/checkpoint cursor roundtrip, legacy menu absence, generated-art wiring, four tab roles/action indices, long labels, empty states, and pure API-backed UI actions. Preflight failures must show `day-transition-error` without running hooks/fades/success refreshes. Post-fade hook failures must roll the session back, fade in, refresh/sync the restored surfaces, and remain visibly failed. Blocking interpreter sleeps must not resume later commands after `false`; ordinary fire-and-forget sleep/advance paths must observe false/rejected promises. Parallel sleep/advance cases must stay pending without resuming, resume only after success, and retain a stopped process/error surface without executing later commands after false or rejection.
+- P0 life-runtime changes use `test/p0RuntimeIntegration.test.ts`, `test/p0DayTransitionSceneFailure.test.ts`, `test/p0TransitionControlFlow.test.ts`, `test/p0LifeLedgerUi.test.ts`, and `test/p0SessionPersistence.test.ts`. Required hostile cases are exact and zero-minute day boundaries, `restorePerDay: 0`, repeated/source-stale transition keys, malformed/current/non-adjacent saved cursors, non-safe and absolute-minute-overflow saved clocks, already-settled and invalid shipping, season day 28 plus custom season boundaries, stale maker state, maker-disabled overflow bypass plus maker-enabled overflow fail-closed, insufficient-energy all-or-nothing area actions, success-only crop/rock/tree XP, manual/autosave/checkpoint cursor roundtrip, legacy menu absence, generated-art wiring, four tab roles/action indices, long labels, empty states, and pure API-backed UI actions. Preflight failures must show `day-transition-error` without running hooks/fades/success refreshes. Post-fade hook failures must roll the session back, fade in, refresh/sync the restored surfaces, and remain visibly failed. Blocking interpreter sleeps must not resume later commands after `false`; ordinary fire-and-forget sleep/advance paths must observe false/rejected promises. Parallel sleep/advance cases must stay pending without resuming, resume only after success, and retain a stopped process/error surface without executing later commands after false or rejection. `test/makerClockIntegration.test.ts` exercises actual `updateGameTime`, command/set-time, sleep and the Storage codec. It covers minute 29/30, multi-day residual deadlines, menu-open elapsed frames, zero-owner-identity preservation, backward-ready state, frozen promises, original-clock recovery, invalid dates, later-stage rollback and collection overflow/duplication. The task9 public ledger/clock probe uses Happy DOM plus real modules with camera/render endpoints, not native player gameplay or the complete 51-feature journey.
 - P1 weather/animal foundation changes use `test/p1FoundationSchema.test.ts`. Keep authored normalize/shape/serialize/deserialize/start-session coverage together with manual save, autosave, and checkpoint round trips. Hostile coverage must include unknown weather enums, duplicate ids, over-limit arrays, non-finite or unsafe numeric fields, writer/parser/direct-apply sanitization, one-day-only weather persistence (no forecast snapshot), and schema-v3 saves that omit both optional runtime fields.
 - P1 daily-weather runtime changes use `test/p1WeatherCalendar.test.ts` and `test/p1WeatherDayTransition.test.ts`. Keep fixed-seed/day determinism, season/year forecast boundaries, authored `forecastDays`, all-zero/malformed table fallback, disabled-package clearing, and exact `session.rng` non-mutation under repeated/out-of-order forecast queries. The farming handoff must reject stale/non-rain/zero-intensity weather, be idempotent, skip dead/untilled plots, and prove rain/storm watering happens before `syncFarmPlotsToDate`. Actual `dayTransition.ts` wiring is an integration-owner test and must preserve atomic transition rollback.
 - P1 farm-animal runtime changes use `test/p1FarmAnimals.test.ts` and `test/p1SessionPersistence.test.ts` together with the foundation suite. Cover compatible assignment/move and capacity, missing species/building/item refs, duplicate or malformed live instances, empty arrays, atomic feed debit and same-day receipt, late/future care rejection, friendship cap, both-care production eligibility, per-species cadence, exact-once/future advance cursors, whole-herd product overflow rollback, atomic ready-product collection, valid moved-home save roundtrip, stale-home fallback, and deterministic unassignment of saved capacity overflow. `test/p1DayTransitionIntegration.test.ts` additionally proves source-day care produces after the other stages and animal overflow rolls back weather, calendar, shipping, farming, energy, and makers with the live session unchanged. `test/p1HostileAudit.test.ts` independently guards live-calendar care, future production, capacity repair, disabled screen-weather clearing, and stale saved-weather replacement. `test/p1RuntimeUi.test.ts` proves an animal-only package exposes the life ledger, generated animal artwork is wired, and feed/pet/collect buttons mutate only through the animal authorities.
@@ -834,6 +1037,16 @@ Chromium local network 검사만 캡처 실행 인자로 끈다. 일반 출하 �
 - `.env.local`에 실 Supabase 키가 있는 상태의 전체 검사 중 `rpg-zzu-house-template-gallery`에 테스트 문구(`증발 위험 변경`, `마일스톤: 1차 제목` 등)가 저장되고 저작한 꾸러미가 다시 사라졌다. 여러 워크트리에서 동시에 전체 검사가 돌았으므로 어느 실행이 썼는지는 확정하지 못했다. `lakeVillageRebuildFinal`만 제외돼 있어도 안전하다고 보지 마라.
 - 이 세션의 무격리 게이트를 중단하고, 환경의 Supabase URL/키/프록시를 비운 뒤 Node `--import`로 **실 네트워크 fetch 차단**을 설치해 다시 실행했다. `.env.local`을 직접 읽는 테스트도 있으므로 환경 변수만 비우는 것으로 충분하지 않다. 네트워크 모의 응답은 그대로 쓰며 실 DB URL과 외부 주소 요청을 거절한다. 로컬 HTTP 하네스는 허용하되 `.env.local`의 실제 DB origin은 로컬이어도 막는다.
 - 세션 증거: `output/evidence/concept-expansion/README.md`, 원격 저장 직후 증명 `supabase-proof-first-save.json`. 후속 저장에서는 CAS가 동시 변경을 감지해 덮어쓰기를 거절했다. 실 콘텐츠 작업과 전체 검사를 같은 공유 프로젝트에서 병행하지 말고, 외부 쓰기가 끝난 뒤 최신 스냅샷으로 추가하고 재로드하라.
+
+## 조수 보상 저작과 출하 플레이어 검증 (2026-09-06)
+
+`npcCommandContract`, `aiCompletionAccounting`, `assistantDependencyRetry`, `npcRewardAcceptance`, `npcRewardSession`은 각각 명령 규격, 적용 완료 원장, 종속 보류/재시도, 실제 장면 보상, 세션 완료 판정을 검사한다. 보상 요구는 `IntentDeclaration.npcRewards`에서 오며 최종 이벤트 명령으로 역산하지 않는다. 페이지 두 개나 도구 성공 횟수는 지급 증거가 아니다.
+
+실제 모델 검증은 별도 원격 QA 프로젝트에서 조수를 실행하고 정상 저장 후 같은 project id로 다시 읽는다. 재로드한 JSON을 `npm run qa:runtime -- --scenario assistant-reward --project <path>`에 전달한다. 이 시나리오는 `player.html`에서 실제 상호작용 두 번으로 `item_capture_orb`와 `species_leafling`이 각각 `0/0 → 5/1 → 5/1`인지 검사한다. 맵은 `map_blank_start`, 시작점은 `(10,8)`, 고정 보상 NPC는 `(10,7)`이다. 장면 테스트가 통과해도 출하 플레이어 검증을 생략하지 않는다.
+
+런타임 QA의 선택적 `inventoryCounts`/`ownedMonsterCounts`는 요청한 ID만 manifest에 기록한다. 몬스터 수는 파티와 보관함의 소유 인스턴스를 합쳐 세며, 훅이나 관측 데이터가 없으면 0으로 간주하지 않고 실패한다. 관련 회귀는 `runtimeQaGate`, `runtimeQaInstrumentationBoundary`, `runtimeQaReport`다.
+
+실제 모델 후속 검증에서 `giveMonster`의 `speciesId`/`level`, 장면 스텝의 `dir`/`to`/`ticks`/`index`가 노출 스키마에 빠져 인자가 다른 필드로 반복 전송됐다. 해당 필드의 노출과 컴파일러 계약은 `npcCommandContract`가 검사한다. `sceneVerificationRepair`는 명시 NPC ID·단언·선택지·보상 기준점이 같은 검사에서 이동/방향을 고친 재실행이 과거 실패를 해소하는지 검사한다. 기대 보상이나 NPC 대상을 바꾼 별개 검사는 기존 실패를 지울 수 없다.
 
 ## 실내 조립·형상 검증 (2026-09-05)
 

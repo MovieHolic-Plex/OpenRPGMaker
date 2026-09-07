@@ -1,0 +1,215 @@
+{
+  "time": "2026-09-07T00:51:42.670171+00:00",
+  "remoteRuns": [
+    {
+      "packet": "verified-native-required/actions.json",
+      "pass": true,
+      "projectId": "qa-ai-surface-fbd370ed-41ee-4e98-8366-473190fb41e8",
+      "cleanup": {
+        "absentBeforeRun": true,
+        "pageListenersAndTimersClosed": true,
+        "browserClosed": true,
+        "serverClosed": true,
+        "cacheRemoved": true,
+        "portReleased": true,
+        "remote": {
+          "projectId": "qa-ai-surface-fbd370ed-41ee-4e98-8366-473190fb41e8",
+          "kind": "deleted-and-absence-verified",
+          "commitIds": [
+            "70da076d-bb8f-4aaf-8971-e1fcc7c8467d"
+          ]
+        },
+        "remoteDeletedAndAbsent": true,
+        "reusedListener": false,
+        "activeRoutes": 0
+      },
+      "checks": 107,
+      "failedChecks": 0
+    },
+    {
+      "packet": "native-outcome-matrix-compatible/actions.json",
+      "pass": true,
+      "projectId": "qa-ai-surface-870fada5-50de-4c46-a6cd-32862fab1509",
+      "cleanup": {
+        "absentBeforeRun": true,
+        "pageListenersAndTimersClosed": true,
+        "browserClosed": true,
+        "serverClosed": true,
+        "cacheRemoved": true,
+        "portReleased": true,
+        "remote": {
+          "projectId": "qa-ai-surface-870fada5-50de-4c46-a6cd-32862fab1509",
+          "kind": "deleted-and-absence-verified",
+          "commitIds": [
+            "0ce8b845-5180-43c3-ac87-52eaa89eef50",
+            "88c5bb09-c9db-4f9f-b141-3e06f9e7e929",
+            "76d20565-e99c-4070-84a4-438f5a9b5e8e",
+            "cd6c4355-0a07-4453-9402-9687f2f51c04",
+            "187c6bc1-ed3a-4a04-88d7-bc7164182f88",
+            "51edcee2-ea74-41cb-bf0f-2492582e5d87",
+            "194e3b37-4dd4-469e-aa5b-956722685b50",
+            "b13f9c48-9587-43ab-9fb9-98afec64121f",
+            "1c531b61-6c2f-4336-8f21-03353f122230",
+            "860469c9-28b5-4956-a1d0-16c842bcc2a6"
+          ]
+        },
+        "remoteDeletedAndAbsent": true,
+        "reusedListener": false,
+        "activeRoutes": 0
+      },
+      "checks": 148,
+      "failedChecks": 0
+    },
+    {
+      "packet": "native-required-skip/actions.json",
+      "pass": true,
+      "projectId": "qa-ai-surface-cbd53f47-81dc-4feb-9864-a34ae38552e0",
+      "cleanup": {
+        "absentBeforeRun": true,
+        "pageListenersAndTimersClosed": true,
+        "browserClosed": true,
+        "serverClosed": true,
+        "cacheRemoved": true,
+        "portReleased": true,
+        "remote": {
+          "projectId": "qa-ai-surface-cbd53f47-81dc-4feb-9864-a34ae38552e0",
+          "kind": "deleted-and-absence-verified",
+          "commitIds": [
+            "011214c2-bdf7-4f21-97ad-0d18941912c9"
+          ]
+        },
+        "remoteDeletedAndAbsent": true,
+        "reusedListener": false,
+        "activeRoutes": 0
+      },
+      "checks": 107,
+      "failedChecks": 0
+    },
+    {
+      "packet": "verified-native-proof/actions.json",
+      "pass": true,
+      "projectId": "qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4",
+      "cleanup": {
+        "absentBeforeRun": true,
+        "pageListenersAndTimersClosed": true,
+        "browserClosed": true,
+        "serverClosed": true,
+        "cacheRemoved": true,
+        "portReleased": true,
+        "remote": {
+          "projectId": "qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4",
+          "kind": "deleted-and-absence-verified",
+          "commitIds": [
+            "638ef66f-c083-4070-875c-57cd5c7dff45",
+            "7406a1d9-f0b0-4ea2-9edf-6d02b2466c69",
+            "0626a38e-953c-41b2-873b-dcabc2c7c832"
+          ]
+        },
+        "remoteDeletedAndAbsent": true,
+        "reusedListener": false,
+        "activeRoutes": 0
+      },
+      "checks": 0,
+      "failedChecks": 0
+    },
+    {
+      "packet": "verified-native-matrix/actions.json",
+      "pass": true,
+      "projectId": "qa-ai-surface-6306a729-de8a-4d0f-8076-d6dcc54543a6",
+      "cleanup": {
+        "absentBeforeRun": true,
+        "pageListenersAndTimersClosed": true,
+        "browserClosed": true,
+        "serverClosed": true,
+        "cacheRemoved": true,
+        "portReleased": true,
+        "remote": {
+          "projectId": "qa-ai-surface-6306a729-de8a-4d0f-8076-d6dcc54543a6",
+          "kind": "deleted-and-absence-verified",
+          "commitIds": [
+            "efbea81a-1f6a-45a8-943f-5e36e3159f83",
+            "bec223d5-0662-43e5-8f2f-b598c842cc65",
+            "c9fc0462-0a19-4615-b9fe-3d237dff3040",
+            "6b10b74b-8f87-4b3f-88c1-a744f43ce923",
+            "f5e467c4-f071-4ee7-aff7-6cdfea8f7a5e",
+            "e95ba256-7dc1-4c56-8ad4-d3578937c6bd",
+            "2d49e5a2-1485-4377-9d6f-9505b1626331",
+            "2ec04b3f-d479-4ac1-bb57-ba0b9577601c",
+            "7d883027-c2b5-48c2-8e56-0f63517a7ece",
+            "20f2204a-4955-411e-ae67-a24f845cff5b"
+          ]
+        },
+        "remoteDeletedAndAbsent": true,
+        "reusedListener": false,
+        "activeRoutes": 0
+      },
+      "checks": 148,
+      "failedChecks": 0
+    },
+    {
+      "packet": "native-outcome-matrix/actions.json",
+      "pass": false,
+      "projectId": "qa-ai-surface-2d00ffe2-0f63-449f-930a-f886cbd7c5f1",
+      "cleanup": {
+        "absentBeforeRun": true,
+        "pageListenersAndTimersClosed": true,
+        "browserClosed": true,
+        "serverClosed": true,
+        "cacheRemoved": true,
+        "portReleased": true,
+        "remote": {
+          "projectId": "qa-ai-surface-2d00ffe2-0f63-449f-930a-f886cbd7c5f1",
+          "kind": "deleted-and-absence-verified",
+          "commitIds": [
+            "34abcacf-de0c-455e-bcd5-da9be952c5d5"
+          ]
+        },
+        "remoteDeletedAndAbsent": true,
+        "reusedListener": false,
+        "activeRoutes": 0
+      },
+      "checks": 44,
+      "failedChecks": 24
+    },
+    {
+      "packet": "native-proof-failure/actions.json",
+      "pass": true,
+      "projectId": "qa-ai-surface-f555f036-604b-4b8c-81cf-de68f6a84401",
+      "cleanup": {
+        "absentBeforeRun": true,
+        "pageListenersAndTimersClosed": true,
+        "browserClosed": true,
+        "serverClosed": true,
+        "cacheRemoved": true,
+        "portReleased": true,
+        "remote": {
+          "projectId": "qa-ai-surface-f555f036-604b-4b8c-81cf-de68f6a84401",
+          "kind": "deleted-and-absence-verified",
+          "commitIds": [
+            "60cf916b-b7a0-4ef3-a046-c02e6160608a",
+            "0c00c3f7-d4a1-451c-8a02-badfb7ba6671",
+            "9dd8a042-b212-4c43-b7a3-33b6bdd26082"
+          ]
+        },
+        "remoteDeletedAndAbsent": true,
+        "reusedListener": false,
+        "activeRoutes": 0
+      },
+      "checks": 0,
+      "failedChecks": 0
+    }
+  ],
+  "portsVerifiedFree": [
+    39763,
+    39764,
+    39765,
+    39766,
+    39767,
+    39768,
+    39769
+  ],
+  "newDistRemoved": true,
+  "buildArtifactCount": 2001,
+  "leadTmpdirPreserved": true,
+  "existingViteCacheParentPreserved": true
+}

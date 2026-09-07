@@ -1,0 +1,85 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle --maxWorkers=2 test/aiOutcomeApplyPolicy.test.ts test/assistantMultiMapSpec.test.ts test/aiCompletionAccounting.test.ts test/assistantDependencyRetry.test.ts test/actionAcceptanceRequirements.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906
+
+ ✓ test/actionAcceptanceRequirements.test.ts (10 tests) 1578ms
+ ✓ test/assistantMultiMapSpec.test.ts (18 tests) 17616ms
+   ✓ map-owned construction contracts through AssistantSession > retains A after B, including a continued turn=false  1415ms
+   ✓ map-owned construction contracts through AssistantSession > retains A after B, including a continued turn=true  1532ms
+   ✓ map-owned construction contracts through AssistantSession > isolates failed updates, keeps both historical warnings, and selects both changed maps  1691ms
+   ✓ map-owned construction contracts through AssistantSession > commits only successful map-local expansion after invalid-args  1080ms
+   ✓ map-owned construction contracts through AssistantSession > commits only successful map-local expansion after throwing-runner  1104ms
+   ✓ map-owned construction contracts through AssistantSession > expires implicit A selection without evicting explicit B  1236ms
+   ✓ map-owned construction contracts through AssistantSession > uses per-map completeness precedence and does not merge identical asset IDs  1656ms
+   ✓ map-owned construction contracts through AssistantSession > preserves future planned maps through rebase and checks their own dimensions after B  1028ms
+   ✓ map-owned construction contracts through AssistantSession > prunes a successful removal before ID reuse, not failed removal or surviving maps  1612ms
+   ✓ map-owned construction contracts through AssistantSession > prunes external rebase deletions while preserving surviving and never-created maps  1516ms
+   ✓ map-owned construction contracts through AssistantSession > builds pending NPC assets from every current map, never historical specs  1245ms
+   ✓ map-owned construction contracts through AssistantSession > clears every spec on successful reset, including reused start ID and future plans  1095ms
+   ✓ ordered terrain background and road overlay > executes the terrain then road batch with no dependency deferral  1231ms
+ ❯ test/assistantDependencyRetry.test.ts (12 tests | 1 failed) 22993ms
+   ✓ batch prerequisites through AssistantSession > defers failed-map writes without poisoning successTools or retries (old spec=false)  1941ms
+   ✓ batch prerequisites through AssistantSession > defers failed-map writes without poisoning successTools or retries (old spec=true)  1603ms
+   ✓ batch prerequisites through AssistantSession > a corrected spec resumes spatial execution (later batch=false)  1629ms
+   ✓ batch prerequisites through AssistantSession > a corrected spec resumes spatial execution (later batch=true)  1551ms
+   ✓ batch prerequisites through AssistantSession > failed record creation defers only ID dependents, then creation/read/correction succeeds (read contract=false)  1939ms
+   ✓ batch prerequisites through AssistantSession > failed record creation defers only ID dependents, then creation/read/correction succeeds (read contract=true)  1736ms
+   ✓ batch prerequisites through AssistantSession > keeps the failed-read whole-batch contract and excludes deferred writes from the failure budget  1043ms
+   ✓ stable target retry budgets through AssistantSession > bounds fresh-batch lookup refusals without claiming they executed  1329ms
+   ✓ stable target retry budgets through AssistantSession > does not charge downstream same-batch refusals against their independent retry target  1819ms
+   × stable target retry budgets through AssistantSession > bounds spelling and page-path variations despite unrelated writes and synthetic continuations, then rearms for a real user 4623ms
+     → expected [ 'set_title_screen', …(5) ] to deeply equal [ 'place_npc' ]
+   ✓ stable target retry budgets through AssistantSession > successful correction resets that target's accumulated failures  2179ms
+   ✓ stable target retry budgets through AssistantSession > does not execute attempts beyond the bound even within one model batch  1597ms
+ ✓ test/aiOutcomeApplyPolicy.test.ts (6 tests) 5996ms
+   ✓ settles the same verified requirement with milestone=false  1391ms
+   ✓ settles the same verified requirement with milestone=true  988ms
+   ✓ preserves genuine blocked execution when an applied draft later verifies  1239ms
+   ✓ preserves genuine failed execution when an applied draft later verifies  1135ms
+   ✓ preserves genuine cancelled execution when an applied draft later verifies  1092ms
+ ✓ test/aiCompletionAccounting.test.ts (8 tests) 12465ms
+   ✓ completion accounting through real assistant sessions > auto-completes a later spatial milestone using applied plus pending writes without reapplying the first  3375ms
+   ✓ completion accounting through real assistant sessions > active spec expansion > does not retain a invalid-args write; a successful retry expands and keeps the correct lifetime  1508ms
+   ✓ completion accounting through real assistant sessions > active spec expansion > does not retain a out-of-bounds write; a successful retry expands and keeps the correct lifetime  1485ms
+   ✓ completion accounting through real assistant sessions > active spec expansion > does not retain a throwing-tool write; a successful retry expands and keeps the correct lifetime  1522ms
+   ✓ completion accounting through real assistant sessions > implicit spec expansion > does not retain a invalid-args write; a successful retry expands and keeps the correct lifetime  1459ms
+   ✓ completion accounting through real assistant sessions > implicit spec expansion > does not retain a out-of-bounds write; a successful retry expands and keeps the correct lifetime  1258ms
+   ✓ completion accounting through real assistant sessions > implicit spec expansion > does not retain a throwing-tool write; a successful retry expands and keeps the correct lifetime  1191ms
+   ✓ completion accounting through real assistant sessions > does not commit expansion when the runner itself throws, and preserves the failed tool response  663ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/assistantDependencyRetry.test.ts > stable target retry budgets through AssistantSession > bounds spelling and page-path variations despite unrelated writes and synthetic continuations, then rearms for a real user
+AssertionError: expected [ 'set_title_screen', …(5) ] to deeply equal [ 'place_npc' ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[31m+   "set_title_screen",[39m
+[31m+   "place_npc",[39m
+[31m+   "set_title_screen",[39m
+[31m+   "set_title_screen",[39m
+[31m+   "set_title_screen",[39m
+[2m    "place_npc",[22m
+[2m  ][22m
+
+ ❯ test/assistantDependencyRetry.test.ts:197:61
+    195|     expect(session.getAcceptanceSnapshot()).toMatchObject({ status: "v…
+    196|     expect(second.proposedCalls).toEqual([]);
+    197|     expect(second.appliedCalls?.map((entry) => entry.name)).toEqual(["…
+       |                                                             ^
+    198|     expect(events.filter((event) => event.name === "place_npc" && even…
+    199|     expect(events.filter((event) => event.name === "place_npc" && even…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 4 passed (5)
+      Tests  1 failed | 53 passed (54)
+   Start at  09:25:14
+   Duration  45.71s (transform 7.49s, setup 0ms, collect 24.36s, tests 60.65s, environment 1ms, prepare 362ms)
+

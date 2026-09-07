@@ -66,6 +66,82 @@ The duration contract for playback consumers is: zero means keyboard advance for
 
 `EnemyRecord.battleScalePercent?: number`는 선택적인 전투 표시 백분율이다. `normalizeEnemyRecord`는 유한 숫자를 반올림해 정수 10~300에 제한하고, 누락·비숫자·비유한 값은 100으로 처리한다. 100은 키를 생략해 기존 프로젝트를 희소하게 유지한다. 기존 editor mutation allowlist와 `upsert_enemy` 정수 스키마에 포함되며 `serialize`/`deserialize`가 비기본값을 보존한다. 기존 로드 정규화를 재사용하는 additive 필드라 스키마 버전 변경이나 SQL migration은 없다. `test/enemyBattleScale.test.ts`가 실제 편집→저장→로드→재저장과 손상된 입력/기본값 복귀를 검증한다. 원격 DB 쓰기 없이 엔진·편집기 코드만 변경한 계약이다.
 
+## Project audio description overrides
+
+`Project.audioDescriptions` is an optional v4 field, defined in
+`src/project/types/base.ts` and `src/project/types/project.ts`:
+
+```ts
+audioDescriptions?: {
+  music?: Record<string, string>;
+  sound?: Record<string, string>;
+};
+```
+
+Keys are raw resource IDs, not `bgm:`/`se:` search IDs, filenames or URLs. A missing key
+inherits the catalog default; an own key with `""` explicitly clears it; another string
+is project-authored text. Reset removes only the override, pruning empty containers.
+An explicit value equal to today's default stays an override.
+
+`src/project/audioDescriptions.ts` is the catalog/DOM/store/player-independent authority.
+New writes trim surrounding whitespace and enforce 4,000 UTF-16 code units after trimming,
+preserving internal line breaks. `src/project/io/shape.ts` validates stored strings without
+rewriting them, rejects malformed partitions/values and overlong strings, and accepts field
+absence. Unknown IDs survive loading as metadata but don't become selectable resources.
+`src/project/io/serialize.ts` preserves raw dictionary keys even when they resemble a
+legacy field name.
+
+Defaults remain in immutable catalogs; overrides aren't duplicated in upload `meta`,
+profiles or browser-global localStorage. Existing projects need no default backfill,
+schema-version bump, new SQL table or live-project rewrite.
+
+### Concurrent persistence
+
+`applyAudioDescriptionDelta(base, local, latest)` starts from the latest stored descriptions
+and applies only kind/raw-ID states that changed locally relative to base. Different-key
+edits survive together; a changed local key wins a same-key conflict. Absence is reset,
+not clear. Unchanged local keys retain remote edits and remote resets.
+
+`src/project/supabaseProjectSync.ts` uses this delta for map-patch saves. A project-scoped
+description mutation doesn't force a full save: `src/project/store.ts` chooses the save API
+from the persisted baseline. After success, the store reconciles descriptions with
+`base=submitted`, `local=current`, `latest=saved`. This preserves typing during the request,
+adopts remote-only changes and avoids resending stale metadata on the next map save.
+It replaces only the necessary root/description state, keeps live maps and mutation-generation
+handling, and emits synchronization without counting a new authored edit.
+
+Reconciliation uses the same content-lineage counter as accepted-save receipts.
+Full project replacement/reset advances lineage, invalidates current proof and clears
+the old persisted baseline, so its next save is authoritative
+rather than a merge with the previous project. A late completion from an earlier epoch
+cannot reinstall that baseline or copy remote descriptions into the replacement.
+Accepted historical saves still issue verifiable, non-current receipts and commit records.
+The ownership check runs after receipt hashing and again after synchronization callbacks;
+neither boundary may reset a replacement's dirty state.
+Ordinary edits and undo within one project keep the per-key reconciliation contract.
+
+### Editor preservation and playable export
+
+Editor JSON, backups and `src/project/package.ts` packages preserve absent, empty, authored
+and orphan states. `src/project/webExport.ts` removes the entire field from the playable
+export clone before loading/validation, without changing the source project.
+`src/project/webExportAssets.ts` excludes the description subtree from usage traversal:
+neither a description key nor text equal to an upload ID keeps an unused upload alive.
+Real playback references still retain their assets and IDs.
+
+`test/audioDescriptions.test.ts`, `test/audioDescriptionPersistence.test.ts`,
+`test/audioDescriptionConcurrentPersistence.test.ts` and
+`test/audioDescriptionExport.test.ts` exercise these boundaries. Transport-mocked tests
+using real save/load/merge functions aren't evidence of a live Supabase write.
+
+## Character/face authoring metadata (2026-09-06)
+
+`ResourceProfile` optionally carries standalone-face `graphicAttributes`/`graphicNote`, or charset `characterSlots: [{characterIndex,graphicAttributes,status,faceResourceId,quality,note}]`. Seven independent string axes are kind/age/gender/skin/hair/clothing/role. Sprite names remain in `Project.charsetLabels`; face names use the existing profile name. No parallel asset registry, project version bump, or SQL migration is introduced.
+
+`characterGraphics.validateCharacterGraphicsProject` runs in `validateProjectV4`, rejecting malformed attributes, duplicate canonical sprite slots and unknown mapped face IDs. Non-mapped states require an explicit null face ID; pending/no-face are distinct. Existing projects keep these optional fields absent; display-only literal-label suggestions do not write metadata on load. Texture-key/resource-ID profile aliases resolve to the annotated profile rather than hiding edits. Whole-project serialize/deserialize, packages and Supabase current_json retain the fields; the existing missing-only bundled-profile supplementation preserves annotated profiles.
+
+Metadata JSON import validates all v1/v2 rows before a single mutation, retains pending labels and exact supplied face IDs, and never invokes automatic face matching or rewrites authored event commands. V2 exports both independent attribute sets. Focused contracts: `test/characterGraphics.test.ts`, `test/characterGraphicsLoad.test.ts`, `test/databaseCharacterGraphics.test.ts`.
+
 ## New-project save/reload verification (2026-09-05)
 
 `store.loadNewRemoteProjectTransactionally` compares draft-free projects with `serializeForComparison`, not raw wire bytes. The comparison runs both sides through the project loader's normalization and recursively sorts object keys; arrays and authored non-default values remain significant. New blank/preset seeds contain the default `system.titleScreen.titleGraphic = { mode: "text", x: 32, y: 62 }`, which normalization omits, and the farm preset gains `system.timeSystem.forceSleep = false` on load. PostgreSQL JSONB also changes object-key order. These representation differences must not reject a successful save/reload. Wire serialization and SHA-256 persistence remain unchanged; actual mismatches still reject before adopting the new project or changing drafts, config, or URL. `test/transactionalNewRemoteProject.test.ts` exercises all five presets plus blank creation through real save/load functions with a JSONB-like transport, and rejects changed titles, map tiles, and array order.
@@ -77,6 +153,10 @@ Project `SCHEMA_VERSION` remains 4 (`Project.version`); runtime `SaveSnapshot.sc
 Manual keys are `oprn:save-slot:v5:1..3` and autosave is `oprn:save-slot:v5:auto`. An export namespace substitutes for `oprn` unchanged. Each reader consults the matching old key only when the new key is absent (`null`), never when it is empty, malformed, or unsupported. Reading/migration performs no writes. Writing touches only the new key; no backup copy or deletion is needed because the original bytes stay at the old key. Failed quota writes preserve the old bytes, previous new slot, and live session. Equipment parsing and the missing-custom-slot load blocker are unchanged. Tests: `test/lifeSaveVersion.test.ts`, `autosave.test.ts`, `customEquipmentSlots.test.ts`.
 
 ## Life ownership in Save5 (2026-09-06)
+
+Farm plots optionally retain `regrowDaysRemaining` as a non-negative safe integer. The existing lossless plot validation rejects malformed countdowns without trimming plots or rewriting saved bytes. Zero is retained as a ready regrowing crop; omission preserves legacy initial-growth behavior, never an inferred prior harvest. The writer, Storage reader and apply path retain the complete plot record. Save5 keys and Project4 are unchanged; see `test/cropRegrowthContract.test.ts` for remaining-seven roundtrip and malformed-value refusal.
+
+When saved maker jobs depend on a present clock, writer/parser/apply reject malformed dates rather than dropping the clock while keeping its jobs. Frozen jobs also reject absolute-minute overflow in their original basis. Legacy omitted clocks retain the initial-clock fallback; project-free parsing does not impose the default calendar on legacy jobs. Save5/Project4 versions and key namespaces are unchanged.
 
 Optional `session.lifeRecovery` now crosses writer, manual/auto Storage, parser and apply unchanged after bounded validation. Shared pure life reconciliation runs before known-content filters; incompatible sources are moved to claims or preserved as unpayable original JSON, never silently deleted. Completion/reward tombstones and region/recipe IDs retain dormant rights. Claim quantities/counts, monotonic sequence, 64 KiB raw UTF-8 and 8 MiB total limits are reject-without-trimming boundaries. Duplicate JSON object keys are rejected by both disk readers. Existing Save4 migration and v5 key isolation remain unchanged. Source removal plus claim creation and explicit receipt plus inventory transfer are separate atomic draft transactions. See `runtime-sessions.md` for restoration order, cancellation clocks and task boundaries; regression `test/lifeRecoveryPersistence.test.ts` executes the actual codec.
 
@@ -310,6 +390,14 @@ v4에 선택 필드 villagePresets[].design, defaultVillagePresetId, maps[].vill
 ## NPC 표시 이름 (2026-09-05)
 
 GameEvent.name은 선택적 표시 이름이다. place_npc가 저작한 이름을 상태 페이지의 name과 별도로 보존해 재시도 중 중복 생성되지 않게 한다. 기존 이름 없는 이벤트는 페이지 이름을 조회 폴백으로 유지한다. 저장→로드 뒤 동일 NPC 갱신 계약은 test/adventureCompletion.test.ts로 검증한다.
+
+`GameEvent.placementRole?: "npc"` is optional authored placement metadata (2026-09-06).
+`place_npc` stamps it independently of sprite names and opt-in social `characterId`.
+The existing JSON persistence path preserves it, and `validateEventShape` rejects
+unknown role values. No version bump or blanket migration of custom sprites is used:
+legacy unknown fixed objects must not become NPCs. Uploaded graphic replacements,
+serialized reload, blocked-position lint and `move_event` recovery are covered by
+`test/aiBlockedEventRelocation.test.ts`; authored pages and commands remain unchanged.
 
 `set_project_settings({startActorIds})`는 system 메타데이터와 저작 시작 상태 `project.session.partyActorIds`를 함께 갱신한다. 실제 새 게임은 `startStateOf(project)`를 사용한다. 시스템 필드만 변경하고 런타임 파티 인원까지 바뀌었다고 판정하지 않는다.
 ## 연결 실내 도면의 영속성 (2026-09-05)

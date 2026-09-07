@@ -15,6 +15,7 @@ import { installBrowserProbe, browserSurface } from './ai-harness-browser.mjs';
 import { proofFailureResponse, runProofFailure } from './ai-harness-proof-failure.mjs';
 import { createP2Contracts } from './ai-harness-p2.mjs';
 import { deleteOwnedFixture } from './ai-harness-cleanup.mjs';
+import { isWikiExtraction } from '../../test/wikiTransportFixture.ts';
 
 const { values } = parseArgs({ options: { scenario: { type: 'string' } } });
 assert.ok(['proof-failure', 'required-skip', 'outcome-matrix'].includes(values.scenario), 'Unknown contract scenario');
@@ -94,8 +95,12 @@ async function runRoute(route) {
   if (url.origin === base && url.pathname === '/v1/chat/completions') {
     assert.equal(closing, false);
     const body = request.postDataJSON();
-    const message = p2 ? await p2.respond(body) : p1Response(body);
-    record('scripted-llm-http', { round: ++llmRound, hasTools: !!body.tools?.length, tool: message.tool_calls?.[0]?.function.name ?? null });
+    // Incoming main adds a separate tool-free wiki checkpoint before intent.
+    // These scoped contract instructions introduce no lasting wiki facts.
+    const wikiExtraction = isWikiExtraction(body.messages);
+    const message = wikiExtraction ? { role: 'assistant', content: JSON.stringify({ upserts: [] }) }
+      : p2 ? await p2.respond(body) : p1Response(body);
+    record('scripted-llm-http', { round: ++llmRound, hasTools: !!body.tools?.length, wikiExtraction, tool: message.tool_calls?.[0]?.function.name ?? null });
     await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ choices: [{ message }] }) });
     return;
   }

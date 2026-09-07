@@ -1,7 +1,7 @@
 import type { GrowthMenuTab, GrowthMenuMutation } from "@/player/playerGrowthMenu";
 import type { SaveSlotIndex, SaveSlotReadResult } from "@/player/saveSlots";
 import type { PlaySession } from "@/project/session";
-import type { ActorInitialEquipment, Project } from "@/project/types";
+import type { ActorInitialEquipment, BattleAnimationSheet, Project } from "@/project/types";
 import type { StatusMenuCommandId, StatusMenuRailId } from "@/player/playerStatusMenuModel";
 
 export type StatusMenuDetailEntry = {
@@ -22,6 +22,7 @@ export type StatusMenuDetailEntry = {
   /** 행이 가리키는 데이터베이스 레코드의 아이콘(아이템/장비/스킬). 행의 앞머리 칸에 그린다. */
   readonly icon?: {
     readonly resourceId?: string;
+    readonly sheet?: BattleAnimationSheet;
     readonly alt: string;
     readonly testId: string;
   };

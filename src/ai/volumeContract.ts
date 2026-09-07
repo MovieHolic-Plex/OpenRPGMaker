@@ -102,7 +102,9 @@ export function placedNpcIdFrom(name: string, data: unknown, args?: Record<strin
 export function verifyPlacedNpcsHaveStatePages(
   project: Project,
   eventIds: Iterable<string>,
+  explicitlyStateful = false,
 ): { ok: true } | { ok: false; reason: string } {
+  if (!explicitlyStateful) return { ok: true };
   const ids = [...new Set([...eventIds].filter((id) => id.trim().length > 0))];
   if (ids.length === 0) return { ok: true };
   const thin: string[] = [];
@@ -116,7 +118,7 @@ export function verifyPlacedNpcsHaveStatePages(
     reason:
       `산출물 미완성: NPC ${thin.join(", ")} 가 상태별 다중 페이지가 아닙니다 — ` +
       `조건이 다른 페이지(selfSwitch/switch/timePhase/friendshipAtLeast 등)를 넣은 뒤 완료하세요. ` +
-      `한 줄 인사는 완료가 아닙니다.`,
+      `요청된 상태별 행동을 구현해야 합니다.`,
   };
 }
 

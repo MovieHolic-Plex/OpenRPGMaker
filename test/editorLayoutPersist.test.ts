@@ -223,7 +223,7 @@ describe("에디터 레이아웃 크기 저장", () => {
   // `applyLayout` 이 읽지 않는 죽은 상태였고(.omo/plans/sidebar-ux.md §1-1 B-7), 되살리면
   // "좌측 사이드바는 절대 비지 않는다" 불변식과 싸운다. 그래서 크기만 저장한다.
   it("리사이저 mouseup 시 크기를 저장하고 모듈 재로드 후 복원한다 (접힘 상태·도크는 저장하지 않는다)", async () => {
-    useStandardUiMode();
+    storage.setItem("oprn:editor-ui-mode", "expert");
     const { renderEditor } = await import("@/editor/panels/editor");
     const main = document.createElement("main");
     renderEditor(main);
@@ -253,8 +253,8 @@ describe("에디터 레이아웃 크기 저장", () => {
     const nextRoot = fakeElement(nextMain);
     const nextLeft = nextRoot.querySelector(".left-panel");
     expect(nextLeft?.style.display).not.toBe("none");
-    // 맵트리 높이는 좌패널의 `--map-tree-height` 로 직접 관측된다. 좌패널 폭은 표준 모드의
-    // `leftPanelMaxWidthPx`(300) 에 눌려 인라인 width 로는 보이지 않으니 재저장으로 읽는다.
+    // Tree resizing remains Expert-owned. Stored width is capped to 320px in
+    // this mode, so re-saving observes the original width preference.
     expect(cssVar(nextLeft, "--map-tree-height")).toBe("306px");
     expect(resaveLayout(nextRoot)).toMatchObject({ leftWidth: 626, mapTreeHeight: 306 });
     // 이 파일의 첫 테스트가 `@/editor/panels/editor` 그래프 전체를 처음 변환·실행한다 —
@@ -303,7 +303,7 @@ describe("에디터 레이아웃 크기 저장", () => {
   }, 120_000);
 
   it("맵 트리 높이는 기본이 자동이고, 리사이저를 끌면 수동으로 저장되며 더블클릭이 자동으로 되돌린다", async () => {
-    useStandardUiMode();
+    storage.setItem("oprn:editor-ui-mode", "expert");
     const { renderEditor } = await import("@/editor/panels/editor");
     const main = document.createElement("main");
     renderEditor(main);

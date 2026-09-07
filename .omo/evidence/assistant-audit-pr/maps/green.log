@@ -1,0 +1,90 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/assistantMultiMapSpec.test.ts test/aiTurnAppliedAccounting.test.ts test/aiCompletionAccounting.test.ts test/assistantDependencyRetry.test.ts test/assistantAcceptanceSession.test.ts test/npcRewardSession.test.ts --pool=threads --maxWorkers=2 --testTimeout=60000
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-rapid-harbor-7ca6
+
+ ✓ test/assistantMultiMapSpec.test.ts (18 tests) 35955ms
+   ✓ map-owned construction contracts through AssistantSession > retains A after B, including a continued turn=false  4002ms
+   ✓ map-owned construction contracts through AssistantSession > retains A after B, including a continued turn=true  2602ms
+   ✓ map-owned construction contracts through AssistantSession > isolates failed updates, keeps both historical warnings, and selects both changed maps  2947ms
+   ✓ map-owned construction contracts through AssistantSession > commits only successful map-local expansion after invalid-args  1879ms
+   ✓ map-owned construction contracts through AssistantSession > commits only successful map-local expansion after throwing-runner  2256ms
+   ✓ map-owned construction contracts through AssistantSession > expires implicit A selection without evicting explicit B  3190ms
+   ✓ map-owned construction contracts through AssistantSession > uses per-map completeness precedence and does not merge identical asset IDs  3980ms
+   ✓ map-owned construction contracts through AssistantSession > preserves future planned maps through rebase and checks their own dimensions after B  1203ms
+   ✓ map-owned construction contracts through AssistantSession > prunes a successful removal before ID reuse, not failed removal or surviving maps  3498ms
+   ✓ map-owned construction contracts through AssistantSession > prunes external rebase deletions while preserving surviving and never-created maps  3395ms
+   ✓ map-owned construction contracts through AssistantSession > builds pending NPC assets from every current map, never historical specs  2957ms
+   ✓ map-owned construction contracts through AssistantSession > clears every spec on successful reset, including reused start ID and future plans  1351ms
+   ✓ ordered terrain background and road overlay > executes the terrain then road batch with no dependency deferral  2258ms
+ ✓ test/assistantDependencyRetry.test.ts (12 tests) 53026ms
+   ✓ batch prerequisites through AssistantSession > defers failed-map writes without poisoning successTools or retries (old spec=false)  5715ms
+   ✓ batch prerequisites through AssistantSession > defers failed-map writes without poisoning successTools or retries (old spec=true)  3517ms
+   ✓ batch prerequisites through AssistantSession > a corrected spec resumes spatial execution (later batch=false)  3496ms
+   ✓ batch prerequisites through AssistantSession > a corrected spec resumes spatial execution (later batch=true)  4005ms
+   ✓ batch prerequisites through AssistantSession > failed record creation defers only ID dependents, then creation/read/correction succeeds (read contract=false)  4427ms
+   ✓ batch prerequisites through AssistantSession > failed record creation defers only ID dependents, then creation/read/correction succeeds (read contract=true)  4134ms
+   ✓ batch prerequisites through AssistantSession > keeps the failed-read whole-batch contract and excludes deferred writes from the failure budget  2391ms
+   ✓ stable target retry budgets through AssistantSession > bounds fresh-batch lookup refusals without claiming they executed  2659ms
+   ✓ stable target retry budgets through AssistantSession > does not charge downstream same-batch refusals against their independent retry target  5073ms
+   ✓ stable target retry budgets through AssistantSession > bounds spelling and page-path variations despite unrelated writes and synthetic continuations, then rearms for a real user  11300ms
+   ✓ stable target retry budgets through AssistantSession > successful correction resets that target's accumulated failures  3497ms
+   ✓ stable target retry budgets through AssistantSession > does not execute attempts beyond the bound even within one model batch  2809ms
+ ✓ test/aiCompletionAccounting.test.ts (8 tests) 19806ms
+   ✓ completion accounting through real assistant sessions > auto-completes a later spatial milestone using applied plus pending writes without reapplying the first  7576ms
+   ✓ completion accounting through real assistant sessions > active spec expansion > does not retain a invalid-args write; a successful retry expands and keeps the correct lifetime  2044ms
+   ✓ completion accounting through real assistant sessions > active spec expansion > does not retain a out-of-bounds write; a successful retry expands and keeps the correct lifetime  2494ms
+   ✓ completion accounting through real assistant sessions > active spec expansion > does not retain a throwing-tool write; a successful retry expands and keeps the correct lifetime  2212ms
+   ✓ completion accounting through real assistant sessions > implicit spec expansion > does not retain a invalid-args write; a successful retry expands and keeps the correct lifetime  1559ms
+   ✓ completion accounting through real assistant sessions > implicit spec expansion > does not retain a out-of-bounds write; a successful retry expands and keeps the correct lifetime  1642ms
+   ✓ completion accounting through real assistant sessions > implicit spec expansion > does not retain a throwing-tool write; a successful retry expands and keeps the correct lifetime  1469ms
+   ✓ completion accounting through real assistant sessions > does not commit expansion when the runner itself throws, and preserves the failed tool response  803ms
+ ✓ test/aiTurnAppliedAccounting.test.ts (12 tests) 13127ms
+   ✓ panel map completeness selection > uses the real session's plural selection instead of the most recent spec  5017ms
+   ✓ running-tool event target forwarding > uses event target {"mapId":"a"} rather than the viewed map in chat  911ms
+   ✓ running-tool event target forwarding > uses event target {"target":{"kind":"existing","mapId":"a"}} rather than the viewed map in chat  812ms
+   ✓ running-tool event target forwarding > uses event target undefined rather than the viewed map in chat  580ms
+   ✓ running-tool event target forwarding > forwards the tool target instead of the viewed map or selected region map  465ms
+   ✓ 턴 표면의 이미 적용된 쓰기 정산 > 활동 로그 변환기와 JSON 왕복이 적용 건수를 보존한다  328ms
+   ✓ 턴 표면의 이미 적용된 쓰기 정산 > max-tool-calls 이후 원장만 남아도 변경 없음으로 기록하지 않는다  1141ms
+   ✓ 턴 표면의 이미 적용된 쓰기 정산 > token-budget 이후 원장만 남아도 변경 없음으로 기록하지 않는다  902ms
+   ✓ 턴 표면의 이미 적용된 쓰기 정산 > error 이후 원장만 남아도 변경 없음으로 기록하지 않는다  926ms
+   ✓ 턴 표면의 이미 적용된 쓰기 정산 > 적용이 거부된 제안은 실제 변경으로 세지 않는다  547ms
+   ✓ 턴 표면의 이미 적용된 쓰기 정산 > 원장과 종료 시 적용한 제안을 모두 세되 원장은 다시 적용하지 않는다  910ms
+   ✓ 턴 표면의 이미 적용된 쓰기 정산 > 제안 호스트를 직접 호출해도 적용된 턴에는 변경 없음 알림을 만들지 않는다  554ms
+ ✓ test/npcRewardSession.test.ts (19 tests) 38543ms
+   ✓ NPC reward request lifetime in AssistantSession > does not dispatch authoring or planner calls for an unrepairable reward declaration  509ms
+   ✓ NPC reward request lifetime in AssistantSession > direct 'text' NPC, contract opt-out=false  1350ms
+   ✓ NPC reward request lifetime in AssistantSession > direct 'once' NPC, contract opt-out=false  1601ms
+   ✓ NPC reward request lifetime in AssistantSession > direct 'repeat' NPC, contract opt-out=false  1541ms
+   ✓ NPC reward request lifetime in AssistantSession > direct 'text' NPC, contract opt-out=true  1526ms
+   ✓ NPC reward request lifetime in AssistantSession > does not finalize unresolved or invalid obligations {"required":[]}  467ms
+   ✓ NPC reward request lifetime in AssistantSession > does not finalize unresolved or invalid obligations {"required":[{"target":{"eventId":"missing_npc"},"grants":[{"kind":"item","id":"item_potion","count":1}]}]}  1324ms
+   ✓ NPC reward request lifetime in AssistantSession > uses bounded repair to correct the real NPC rather than weaken the request  3077ms
+   ✓ NPC reward request lifetime in AssistantSession > allows an earlier DB item but refuses final explicit completion and skip with missing rewards  7825ms
+   ✓ NPC reward request lifetime in AssistantSession > gates a non-final item that actually authors the declared NPC  2572ms
+   ✓ NPC reward request lifetime in AssistantSession > cannot erase the obligation by replanning into an unrelated skipped plan  2841ms
+   ✓ NPC reward request lifetime in AssistantSession > rechecks a previously completed NPC after its grants are removed  4278ms
+   ✓ NPC reward request lifetime in AssistantSession > completes an actual one-time NPC plan and accepts idempotent explicit completion  3140ms
+   ✓ NPC reward request lifetime in AssistantSession > preserves the obligation through plan-only confirmation and the actual planner replan  1476ms
+   ✓ NPC reward request lifetime in AssistantSession > retains the captured requirement and context on retryLastTurn  1909ms
+   ✓ NPC reward request lifetime in AssistantSession > preserves the request across the real autonomous synthetic continuation  518ms
+   ✓ NPC reward request lifetime in AssistantSession > clears old obligations for new-request  1012ms
+   ✓ NPC reward request lifetime in AssistantSession > clears old obligations for ask  1376ms
+ ✓ test/assistantAcceptanceSession.test.ts (11 tests) 10787ms
+   ✓ acceptance controls actual session termination > does not turn a review without an explicit passing verdict into completion  1149ms
+   ✓ acceptance controls actual session termination > withdraws an earlier pass when a later explicit review fails  1001ms
+   ✓ acceptance controls actual session termination > continues then blocks insufficient dimensions and quantity even after skip completes the plan  696ms
+   ✓ acceptance controls actual session termination > retains original denominator when skip and set_work_plan try to shrink promises  643ms
+   ✓ acceptance controls actual session termination > invalidates an attributed image review after a subsequent real map write  2222ms
+   ✓ applied acceptance lifecycle through real tools > repairs exact dimensions after plan completion and invalidates on applied undo  2936ms
+   ✓ applied acceptance lifecycle through real tools > blocks and retains the ledger when aborted while the next model response is held  576ms
+   ✓ applied acceptance lifecycle through real tools > never credits a review authored in the same response as the image request  592ms
+   ✓ applied acceptance lifecycle through real tools > requires visible contract repair for a spatial plan missing criteria  428ms
+
+ Test Files  6 passed (6)
+      Tests  80 passed (80)
+   Start at  21:30:17
+   Duration  126.82s (transform 20.88s, setup 0ms, collect 70.83s, tests 171.24s, environment 2ms, prepare 2.35s)

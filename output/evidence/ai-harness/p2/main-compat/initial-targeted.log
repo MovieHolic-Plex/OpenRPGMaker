@@ -1,0 +1,383 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle --maxWorkers=2 test/aiRequiredOutcomes.test.ts test/actionAcceptanceRequirements.test.ts test/actionAcceptanceProof.test.ts test/sceneVerificationRepair.test.ts test/assistantSessionIntent.test.ts test/toolSchemaProviderCompat.test.ts test/projectWikiSession.test.ts test/npcRewardSession.test.ts test/assistantOriginalContext.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906
+
+ ❯ test/assistantSessionIntent.test.ts (15 tests | 3 failed) 8131ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 선언이 질문을 냈으면 chat 모드는 모델을 부르지 않고 그 질문으로 턴을 끝낸다  522ms
+   × 의도 선언이 세션 라우팅을 정한다 > auto 모드는 같은 선언에도 멈추지 않고 진행한다(F-05) 510ms
+     → expected '완료 검증이 아직 미완성입니다.\n- 집 하나 만들어줘: Missi…' to be '야외 집으로 진행합니다.' // Object.is equality
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 선언자가 없으면 폴백 선언이다 — 되묻지 않고, 계획 여부는 플래너(direct)에게 넘긴다  560ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 질문 선언은 플래너를 건너뛰고, 계획 필요 선언은 플래너를 돈다  554ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 플래너의 direct 는 존중한다 — 「마을」이라도 코드가 계획을 강제하지 않는다  542ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 플래너가 volume 을 선언한 계획만 막대를 세우고, 막대 미달로 끝내면 재주입한다  1047ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > volume 없는 계획은 막대가 없다  512ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 선언한 툴은 도메인 상한과 무관하게 이번 라운드 스키마에 실린다 257ms
+   × 의도 선언이 세션 라우팅을 정한다 > 지시 모드의 툴 이름 언급은 사용자 발화에서만 읽고 footer 는 보지 않는다 (explicit instruction=false) 264ms
+     → expected [ 'find_tools', …(201) ] to not include 'set_type_chart'
+   × 의도 선언이 세션 라우팅을 정한다 > 지시 모드의 툴 이름 언급은 사용자 발화에서만 읽고 footer 는 보지 않는다 (explicit instruction=true) 238ms
+     → expected [ 'find_tools', …(201) ] to not include 'set_type_chart'
+   ✓ 의도 선언이 세션 라우팅을 정한다 > ask 는 언급·선언된 쓰기도 노출하거나 실행하지 않고 조회는 허용한다  567ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > question 는 언급·선언된 쓰기도 노출하거나 실행하지 않고 조회는 허용한다  519ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 선택 영역은 사실로 붙고 선언에 따라 경계 또는 참고용 노트가 된다  654ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 수정 선언은 계획의 대상 맵을 현재 맵으로 고정하고, 생성 선언은 고정하지 않는다  956ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 「계속」은 모델을 부르지 않고 진행 중 계획을 이어간다(continuation)  426ms
+ ❯ test/npcRewardSession.test.ts (19 tests | 1 failed) 19179ms
+   ✓ NPC reward request lifetime in AssistantSession > does not dispatch authoring or planner calls for an unrepairable reward declaration  462ms
+   ✓ NPC reward request lifetime in AssistantSession > direct 'text' NPC, contract opt-out=false  1551ms
+   ✓ NPC reward request lifetime in AssistantSession > direct 'once' NPC, contract opt-out=false  823ms
+   ✓ NPC reward request lifetime in AssistantSession > direct 'repeat' NPC, contract opt-out=false  1029ms
+   ✓ NPC reward request lifetime in AssistantSession > direct 'text' NPC, contract opt-out=true  553ms
+   ✓ NPC reward request lifetime in AssistantSession > does not finalize unresolved or invalid obligations {"required":[]}  324ms
+   ✓ NPC reward request lifetime in AssistantSession > does not finalize unresolved or invalid obligations {"required":{"invalidReason":"npcRewards: invalid grant"}} 268ms
+   ✓ NPC reward request lifetime in AssistantSession > does not finalize unresolved or invalid obligations {"required":[{"target":{"eventId":"missing_npc"},"grants":[{"kind":"item","id":"item_potion","count":1}]}]}  831ms
+   ✓ NPC reward request lifetime in AssistantSession > uses bounded repair to correct the real NPC rather than weaken the request  1222ms
+   ✓ NPC reward request lifetime in AssistantSession > allows an earlier DB item but refuses final explicit completion and skip with missing rewards  2168ms
+   ✓ NPC reward request lifetime in AssistantSession > gates a non-final item that actually authors the declared NPC  1563ms
+   ✓ NPC reward request lifetime in AssistantSession > cannot erase the obligation by replanning into an unrelated skipped plan  1693ms
+   ✓ NPC reward request lifetime in AssistantSession > rechecks a previously completed NPC after its grants are removed  1552ms
+   ✓ NPC reward request lifetime in AssistantSession > completes an actual one-time NPC plan and accepts idempotent explicit completion  986ms
+   ✓ NPC reward request lifetime in AssistantSession > preserves the obligation through plan-only confirmation and the actual planner replan  1109ms
+   ✓ NPC reward request lifetime in AssistantSession > retains the captured requirement and context on retryLastTurn  1006ms
+   ✓ NPC reward request lifetime in AssistantSession > preserves the request across the real autonomous synthetic continuation  446ms
+   ✓ NPC reward request lifetime in AssistantSession > clears old obligations for new-request  841ms
+   × NPC reward request lifetime in AssistantSession > clears old obligations for ask 751ms
+     → expected true to be false // Object.is equality
+ ❯ test/assistantOriginalContext.test.ts (5 tests | 1 failed) 3853ms
+   ✓ grounded first working request > delivers complete target originals and grants only their real read evidence before the first write  1162ms
+   ✓ grounded first working request > makes a missing explicit target visible rather than grounding on the start map 174ms
+   ✓ session original snapshot lifecycle > pages an oversized original through the actual session tool and waits for delivered full evidence  1657ms
+   × session original snapshot lifecycle > retains original identity over continuation, recaptures a new request and keeps ask mode read-only 484ms
+     → expected 'original-1' not to be 'original-1' // Object.is equality
+   ✓ session original snapshot lifecycle > stops before calling a provider when the actual native model window cannot fit the full catalog  372ms
+ ✓ test/aiRequiredOutcomes.test.ts (39 tests) 16968ms
+   ✓ canonical requirements > keeps required skipped obligations when a replan tries to weaken them  559ms
+   ✓ canonical requirements > allows optional skipped work without labeling it verified  553ms
+   ✓ canonical requirements > fails closed for malformed declarations null  587ms
+   ✓ canonical requirements > fails closed for malformed declarations %j  492ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":[{"kind":"mapDimensions","target":{"mapId":"map_blank_start"},"width":99,"height":99}],"required":"false"}  503ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":[{"kind":"invented","passed":true}]}  483ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":null,"required":false}  472ms
+   ✓ canonical requirements > assesses existing explicit acceptance without requiring the new field  471ms
+   ✓ canonical requirements > retains an unlinked required obligation when replan drops links=false  487ms
+   ✓ canonical requirements > retains an unlinked required obligation when replan drops links=true  539ms
+   ✓ canonical requirements > binds original text and scope at the host boundary despite fabricated source and withdrawal  479ms
+   ✓ canonical requirements > retains only the original user utterance through replan with instruction override=false  609ms
+   ✓ canonical requirements > retains only the original user utterance through replan with instruction override=true  574ms
+   ✓ canonical requirements > withdraws only the named current requirement through the user-only API  490ms
+   ✓ canonical requirements > keeps sibling obligations when the user withdraws just one  553ms
+   ✓ canonical requirements > rejects model tool withdrawal even with fabricated user provenance  553ms
+   ✓ canonical requirements > rejects stale goal withdrawal actions  501ms
+   ✓ canonical requirements > does not erase old obligations on a model resetsContext claim  574ms
+   ✓ canonical requirements > archives an incomplete goal when the user explicitly starts a new goal  568ms
+   ✓ exact scoped verdict authority > does not verify an unapplied draft from a passing scoped verdict  393ms
+   ✓ exact scoped verdict authority > retires scoped verdicts after applied content changes even if later undone  878ms
+   ✓ exact scoped verdict authority > rejects pre-declaration evidence after an external rebase  947ms
+   ✓ exact scoped verdict authority > credits a real scoped tool response through the session dispatcher  424ms
+   ✓ question-safe continuation > preserves blocked work and counters for ask  364ms
+   ✓ question-safe continuation > preserves blocked work and counters for question  358ms
+   ✓ question-safe continuation > preserves repeated failure counters while answering a question  879ms
+   ✓ question-safe continuation > does not reactivate from fabricated continuation source  397ms
+   ✓ question-safe continuation > reactivates blocked work only with explicit user resume  573ms
+   ✓ question-safe continuation > retains goal evidence and repair counters during ask  537ms
+ ✓ test/sceneVerificationRepair.test.ts (6 tests) 1583ms
+   ✓ corrected scene navigation retains the same verification obligation > replaces a failed navigation attempt with the passing same-target assertions: []  376ms
+ ❯ test/actionAcceptanceRequirements.test.ts (8 tests | 2 failed) 1289ms
+   ✓ authoritative action acceptance > represents action proof separately from static map criteria 194ms
+   × authoritative action acceptance > retains structured action requirements outside replacement plans and repairs 249ms
+     → Unhandled acceptance criterion: [object Object]
+   × authoritative action acceptance > does not accept a wait/spawn-only scene result or forged combat receipt 192ms
+     → Unhandled acceptance criterion: [object Object]
+   ✓ authoritative action acceptance > cannot publish verified while a failed required check remains 151ms
+   ✓ authoritative action acceptance > cannot publish verified while a stale required check remains 154ms
+   ✓ authoritative action acceptance > skips scheduling without waiving a required check through a replan 117ms
+   ✓ authoritative action acceptance > parses structured requirements without routing prose into action or stateful NPC scope 120ms
+   ✓ authoritative action acceptance > does not waive a skipped check using another item's earlier or later success 108ms
+ ❯ test/projectWikiSession.test.ts (2 tests | 1 failed) 406ms
+   × project wiki session checkpoint > awaits the persisted wiki before intent and authoring consume the project 249ms
+     → expected [ 'intent', 'persisted', 'authoring' ] to deeply equal [ 'persisted', 'intent', 'authoring' ]
+   ✓ project wiki session checkpoint > does not start authoring when its wiki persistence checkpoint fails 155ms
+ ❯ test/toolSchemaProviderCompat.test.ts (69 tests | 1 failed) 149ms
+   ✓ 툴 스키마 프로바이더 호환(Gemini 엄격 검증) > 전 툴 파라미터가 union type/비객체 properties/비배열 items 를 쓰지 않는다 8ms
+   ✓ 툴 스키마 프로바이더 호환(Gemini 엄격 검증) > 객체 타입 파라미터는 properties 를 선언한다 (모델이 {} 만 보내는 벽 방지) 3ms
+   ✓ 툴 스키마 프로바이더 호환(Gemini 엄격 검증) > 노출 스키마 어디에도 provider 금지 oneOf/anyOf 가 없다 3ms
+   ✓ 툴 스키마 프로바이더 호환(Gemini 엄격 검증) > 실측 회귀: set_work_plan.layers 와 set_build_spec.assets 가 항목 필드를 노출한다 2ms
+   ✓ 툴 스키마 프로바이더 호환(Gemini 엄격 검증) > 실측 회귀: 검증기가 재제출을 요구하는 필드(SPEC_REMEDY_FIELDS)가 set_build_spec.assets 에 선언돼 있다 0ms
+   ✓ 툴 스키마 프로바이더 호환(Gemini 엄격 검증) > overExisting 은 clear|keep 로 열거돼 모델이 값까지 정확히 낼 수 있다 0ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'toolVerdict' {"kind":"toolVerdict","tool":"run_lint","args":{}} on every exposed surface 7ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'toolVerdict' {"kind":"toolVerdict","tool":"play_walkthrough","args":{"mapId":"map_start","scenario":[{"do":"setVariable","id":"progress","value":0},{"expect":"variable","id":"progress","value":0}],"runtimeKeys":{"authored-id":[null,false,0,"0",{"nested":{}}]}}} on every exposed surface 5ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'mapDimensions' {"kind":"mapDimensions","target":{"mapId":"map_start"},"width":20,"height":15} on every exposed surface 5ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'mapCount' {"kind":"mapCount","targets":[{"mapId":"map_start"}],"count":1} on every exposed surface 4ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'reachability' {"kind":"reachability","target":{"mapId":"map_start"},"from":{"x":0,"y":0},"to":[{"x":1,"y":0}]} on every exposed surface 6ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'eventCount' {"kind":"eventCount","target":{"mapId":"map_start"},"count":0} on every exposed surface 3ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'targetChange' {"kind":"targetChange","target":{"mapId":"map_start"}} on every exposed surface 3ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'preserve' {"kind":"preserve","target":{"mapId":"map_start"}} on every exposed surface 3ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'imageReviewed' {"kind":"imageReviewed","target":{"mapId":"map_start"}} on every exposed surface 3ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'eventCount' {"kind":"eventCount","target":{"mapId":"map_start"},"count":0,"region":{"x":0,"y":1,"w":2,"h":3}} on every exposed surface 5ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'targetChange' {"kind":"targetChange","target":{"mapId":"map_start"},"region":{"x":0,"y":1,"w":2,"h":3}} on every exposed surface 5ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'preserve' {"kind":"preserve","target":{"mapId":"map_start"},"region":{"x":0,"y":1,"w":2,"h":3}} on every exposed surface 5ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'imageReviewed' {"kind":"imageReviewed","target":{"mapId":"map_start"},"region":{"x":0,"y":1,"w":2,"h":3}} on every exposed surface 5ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'mapDimensions' {"kind":"mapDimensions","target":{"newMapName":"New room"},"width":20,"height":15} on every exposed surface 4ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'mapCount' {"kind":"mapCount","targets":[{"newMapName":"New room"}],"count":1} on every exposed surface 4ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'reachability' {"kind":"reachability","target":{"newMapName":"New room"},"from":{"x":0,"y":0},"to":[{"x":1,"y":0}]} on every exposed surface 5ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'eventCount' {"kind":"eventCount","target":{"newMapName":"New room"},"count":0} on every exposed surface 4ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'targetChange' {"kind":"targetChange","target":{"newMapName":"New room"}} on every exposed surface 3ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'preserve' {"kind":"preserve","target":{"newMapName":"New room"}} on every exposed surface 14ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'imageReviewed' {"kind":"imageReviewed","target":{"newMapName":"New room"}} on every exposed surface 2ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'eventCount' {"kind":"eventCount","target":{"newMapName":"New room"},"count":0,"region":{"x":0,"y":1,"w":2,"h":3}} on every exposed surface 3ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'targetChange' {"kind":"targetChange","target":{"newMapName":"New room"},"region":{"x":0,"y":1,"w":2,"h":3}} on every exposed surface 3ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'preserve' {"kind":"preserve","target":{"newMapName":"New room"},"region":{"x":0,"y":1,"w":2,"h":3}} on every exposed surface 4ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'imageReviewed' {"kind":"imageReviewed","target":{"newMapName":"New room"},"region":{"x":0,"y":1,"w":2,"h":3}} on every exposed surface 3ms
+   ✓ acceptance and requirement schema/runtime contract > represents and roundtrips 'mapCount' {"kind":"mapCount","targets":[{"mapId":"map_start"},{"newMapName":"New room"}],"count":2} on every exposed surface 3ms
+   × acceptance and requirement schema/runtime contract > keeps the shared discriminator, closed structural keys and genuine dynamic args 11ms
+     → expected { type: 'string', enum: [ …(9) ] } to deeply equal { type: 'string', enum: [ …(8) ] }
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'toolVerdict' {"kind":"toolVerdict","tool":"run_lint","args":{}} 1ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'toolVerdict' {"kind":"toolVerdict","tool":"play_walkthrough","args":{"mapId":"map_start","scenario":[{"do":"setVariable","id":"progress","value":0},{"expect":"variable","id":"progress","value":0}],"runtimeKeys":{"authored-id":[null,false,0,"0",{"nested":{}}]}}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'mapDimensions' {"kind":"mapDimensions","target":{"mapId":"map_start"},"width":20,"height":15} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'mapCount' {"kind":"mapCount","targets":[{"mapId":"map_start"}],"count":1} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'reachability' {"kind":"reachability","target":{"mapId":"map_start"},"from":{"x":0,"y":0},"to":[{"x":1,"y":0}]} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'eventCount' {"kind":"eventCount","target":{"mapId":"map_start"},"count":0} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'targetChange' {"kind":"targetChange","target":{"mapId":"map_start"}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'preserve' {"kind":"preserve","target":{"mapId":"map_start"}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'imageReviewed' {"kind":"imageReviewed","target":{"mapId":"map_start"}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'eventCount' {"kind":"eventCount","target":{"mapId":"map_start"},"count":0,"region":{"x":0,"y":1,"w":2,"h":3}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'targetChange' {"kind":"targetChange","target":{"mapId":"map_start"},"region":{"x":0,"y":1,"w":2,"h":3}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'preserve' {"kind":"preserve","target":{"mapId":"map_start"},"region":{"x":0,"y":1,"w":2,"h":3}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'imageReviewed' {"kind":"imageReviewed","target":{"mapId":"map_start"},"region":{"x":0,"y":1,"w":2,"h":3}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'mapDimensions' {"kind":"mapDimensions","target":{"newMapName":"New room"},"width":20,"height":15} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'mapCount' {"kind":"mapCount","targets":[{"newMapName":"New room"}],"count":1} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'reachability' {"kind":"reachability","target":{"newMapName":"New room"},"from":{"x":0,"y":0},"to":[{"x":1,"y":0}]} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'eventCount' {"kind":"eventCount","target":{"newMapName":"New room"},"count":0} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'targetChange' {"kind":"targetChange","target":{"newMapName":"New room"}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'preserve' {"kind":"preserve","target":{"newMapName":"New room"}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'imageReviewed' {"kind":"imageReviewed","target":{"newMapName":"New room"}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'eventCount' {"kind":"eventCount","target":{"newMapName":"New room"},"count":0,"region":{"x":0,"y":1,"w":2,"h":3}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'targetChange' {"kind":"targetChange","target":{"newMapName":"New room"},"region":{"x":0,"y":1,"w":2,"h":3}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'preserve' {"kind":"preserve","target":{"newMapName":"New room"},"region":{"x":0,"y":1,"w":2,"h":3}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'imageReviewed' {"kind":"imageReviewed","target":{"newMapName":"New room"},"region":{"x":0,"y":1,"w":2,"h":3}} 0ms
+   ✓ acceptance and requirement schema/runtime contract > retains runtime requiredness and rejects extra fields for 'mapCount' {"kind":"mapCount","targets":[{"mapId":"map_start"},{"newMapName":"New room"}],"count":2} 0ms
+   ✓ acceptance and requirement schema/runtime contract > rejects malformed or ambiguous target {} 0ms
+   ✓ acceptance and requirement schema/runtime contract > rejects malformed or ambiguous target {"mapId":"map_start","newMapName":"New room"} 0ms
+   ✓ acceptance and requirement schema/runtime contract > rejects malformed or ambiguous target {"mapId":""} 0ms
+   ✓ acceptance and requirement schema/runtime contract > rejects malformed or ambiguous target {"newMapName":" "} 0ms
+   ✓ acceptance and requirement schema/runtime contract > rejects malformed or ambiguous target {"mapId":"map_start","passed":true} 0ms
+   ✓ acceptance and requirement schema/runtime contract > rejects non-object exact args undefined 0ms
+   ✓ acceptance and requirement schema/runtime contract > rejects non-object exact args null 0ms
+   ✓ acceptance and requirement schema/runtime contract > rejects non-object exact args %j 0ms
+   ✓ acceptance and requirement schema/runtime contract > rejects non-object exact args "{}" 0ms
+   ✓ acceptance and requirement schema/runtime contract > rejects non-object exact args 0 0ms
+   ✓ acceptance and requirement schema/runtime contract > rejects non-object exact args false 0ms
+   ✓ acceptance and requirement schema/runtime contract > preserves required defaults and never accepts an unregistered verification tool 0ms
+ ❯ test/actionAcceptanceProof.test.ts (3 tests | 3 failed) 1748ms
+   × action acceptance receipt lifecycle > accepts only the authentic current-map receipt and rejects serialized copies 706ms
+     → Unhandled acceptance criterion: [object Object]
+   × action acceptance receipt lifecycle > retires proof after content changes even if undo restores the exact content 523ms
+     → Unhandled acceptance criterion: [object Object]
+   × action acceptance receipt lifecycle > revokes a passing map proof when its later harness run fails 518ms
+     → Unhandled acceptance criterion: [object Object]
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 12 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/actionAcceptanceProof.test.ts > action acceptance receipt lifecycle > accepts only the authentic current-map receipt and rejects serialized copies
+Error: Unhandled acceptance criterion: [object Object]
+ ❯ assertNever src/ai/assistantAcceptanceEvaluation.ts:101:51
+     99|   }
+    100| }
+    101| function assertNever(value: never): never { throw new Error(`Unhandled…
+       |                                                   ^
+    102| 
+    103| function conservativeReachability(project: Project, map: GameMap, crit…
+ ❯ criterionTargets src/ai/assistantAcceptanceEvaluation.ts:43:21
+ ❯ AssistantAcceptanceLedger.bind src/ai/assistantAcceptanceLedger.ts:105:30
+ ❯ AssistantAcceptanceLedger.evaluate src/ai/assistantAcceptanceLedger.ts:149:10
+ ❯ test/actionAcceptanceProof.test.ts:61:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/12]⎯
+
+ FAIL  test/actionAcceptanceProof.test.ts > action acceptance receipt lifecycle > retires proof after content changes even if undo restores the exact content
+Error: Unhandled acceptance criterion: [object Object]
+ ❯ assertNever src/ai/assistantAcceptanceEvaluation.ts:101:51
+     99|   }
+    100| }
+    101| function assertNever(value: never): never { throw new Error(`Unhandled…
+       |                                                   ^
+    102| 
+    103| function conservativeReachability(project: Project, map: GameMap, crit…
+ ❯ criterionTargets src/ai/assistantAcceptanceEvaluation.ts:43:21
+ ❯ AssistantAcceptanceLedger.bind src/ai/assistantAcceptanceLedger.ts:105:30
+ ❯ AssistantAcceptanceLedger.evaluate src/ai/assistantAcceptanceLedger.ts:149:10
+ ❯ test/actionAcceptanceProof.test.ts:75:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/12]⎯
+
+ FAIL  test/actionAcceptanceProof.test.ts > action acceptance receipt lifecycle > revokes a passing map proof when its later harness run fails
+Error: Unhandled acceptance criterion: [object Object]
+ ❯ assertNever src/ai/assistantAcceptanceEvaluation.ts:101:51
+     99|   }
+    100| }
+    101| function assertNever(value: never): never { throw new Error(`Unhandled…
+       |                                                   ^
+    102| 
+    103| function conservativeReachability(project: Project, map: GameMap, crit…
+ ❯ criterionTargets src/ai/assistantAcceptanceEvaluation.ts:43:21
+ ❯ AssistantAcceptanceLedger.bind src/ai/assistantAcceptanceLedger.ts:105:30
+ ❯ AssistantAcceptanceLedger.evaluate src/ai/assistantAcceptanceLedger.ts:149:10
+ ❯ test/actionAcceptanceProof.test.ts:88:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/12]⎯
+
+ FAIL  test/actionAcceptanceRequirements.test.ts > authoritative action acceptance > retains structured action requirements outside replacement plans and repairs
+Error: Unhandled acceptance criterion: [object Object]
+ ❯ assertNever src/ai/assistantAcceptanceEvaluation.ts:101:51
+     99|   }
+    100| }
+    101| function assertNever(value: never): never { throw new Error(`Unhandled…
+       |                                                   ^
+    102| 
+    103| function conservativeReachability(project: Project, map: GameMap, crit…
+ ❯ criterionTargets src/ai/assistantAcceptanceEvaluation.ts:43:21
+ ❯ AssistantAcceptanceLedger.bind src/ai/assistantAcceptanceLedger.ts:105:30
+ ❯ AssistantAcceptanceLedger.evaluate src/ai/assistantAcceptanceLedger.ts:149:10
+ ❯ test/actionAcceptanceRequirements.test.ts:37:29
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/12]⎯
+
+ FAIL  test/actionAcceptanceRequirements.test.ts > authoritative action acceptance > does not accept a wait/spawn-only scene result or forged combat receipt
+Error: Unhandled acceptance criterion: [object Object]
+ ❯ assertNever src/ai/assistantAcceptanceEvaluation.ts:101:51
+     99|   }
+    100| }
+    101| function assertNever(value: never): never { throw new Error(`Unhandled…
+       |                                                   ^
+    102| 
+    103| function conservativeReachability(project: Project, map: GameMap, crit…
+ ❯ criterionTargets src/ai/assistantAcceptanceEvaluation.ts:43:21
+ ❯ AssistantAcceptanceLedger.bind src/ai/assistantAcceptanceLedger.ts:105:30
+ ❯ AssistantAcceptanceLedger.evaluate src/ai/assistantAcceptanceLedger.ts:149:10
+ ❯ test/actionAcceptanceRequirements.test.ts:50:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/12]⎯
+
+ FAIL  test/assistantOriginalContext.test.ts > session original snapshot lifecycle > retains original identity over continuation, recaptures a new request and keeps ask mode read-only
+AssertionError: expected 'original-1' not to be 'original-1' // Object.is equality
+ ❯ test/assistantOriginalContext.test.ts:142:51
+    140|     expect(original(seen.at(-1)!).snapshotId).toBe(first.snapshotId);
+    141|     await session.sendUserMessage("새 요청 데이터 확인", () => {}, undefined, …
+    142|     expect(original(seen.at(-1)!).snapshotId).not.toBe(first.snapshotI…
+       |                                                   ^
+    143|     expect(session.getProposedProject()).toEqual(project);
+    144|     for (const request of seen) expect(request.tools?.some(tool => too…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/12]⎯
+
+ FAIL  test/assistantSessionIntent.test.ts > 의도 선언이 세션 라우팅을 정한다 > auto 모드는 같은 선언에도 멈추지 않고 진행한다(F-05)
+AssertionError: expected '완료 검증이 아직 미완성입니다.\n- 집 하나 만들어줘: Missi…' to be '야외 집으로 진행합니다.' // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 야외 집으로 진행합니다.[39m
+[31m+ 완료 검증이 아직 미완성입니다.[39m
+[31m+ - 집 하나 만들어줘: Missing or malformed criteria: repair_acceptance required[39m
+[31m+[39m
+
+ ❯ test/assistantSessionIntent.test.ts:114:34
+    112|     const result = await session.sendUserMessage("집 하나 만들어줘", () => {}…
+    113|     expect(seen.length).toBeGreaterThan(0);
+    114|     expect(result.assistantText).toBe("야외 집으로 진행합니다.");
+       |                                  ^
+    115|     expect(statuses(session).some((text) => text.startsWith("의도 확인 건너뜀…
+    116|   }, 30000);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/12]⎯
+
+ FAIL  test/assistantSessionIntent.test.ts > 의도 선언이 세션 라우팅을 정한다 > 지시 모드의 툴 이름 언급은 사용자 발화에서만 읽고 footer 는 보지 않는다 (explicit instruction=false)
+ FAIL  test/assistantSessionIntent.test.ts > 의도 선언이 세션 라우팅을 정한다 > 지시 모드의 툴 이름 언급은 사용자 발화에서만 읽고 footer 는 보지 않는다 (explicit instruction=true)
+AssertionError: expected [ 'find_tools', …(201) ] to not include 'set_type_chart'
+ ❯ test/assistantSessionIntent.test.ts:282:23
+    280|     const names = request.tools.map(tool => tool.function.name);
+    281|     expect(names).toContain("define_ending");
+    282|     expect(names).not.toContain("set_type_chart");
+       |                       ^
+    283|   }, 30000);
+    284| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/12]⎯
+
+ FAIL  test/npcRewardSession.test.ts > NPC reward request lifetime in AssistantSession > clears old obligations for ask
+AssertionError: expected true to be false // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+ ❯ test/npcRewardSession.test.ts:210:52
+    208|     const next = await h.session.sendUserMessage("An unrelated questio…
+    209|     expect(next.assistantText).toBe(COMPLETE);
+    210|     expect(h.requests.slice(at).some(hasContract)).toBe(false);
+       |                                                    ^
+    211|   });
+    212| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/12]⎯
+
+ FAIL  test/projectWikiSession.test.ts > project wiki session checkpoint > awaits the persisted wiki before intent and authoring consume the project
+AssertionError: expected [ 'intent', 'persisted', 'authoring' ] to deeply equal [ 'persisted', 'intent', 'authoring' ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[32m-   "persisted",[39m
+[2m    "intent",[22m
+[31m+   "persisted",[39m
+[2m    "authoring",[22m
+[2m  ][22m
+
+ ❯ test/projectWikiSession.test.ts:44:19
+     42|     await session.sendUserMessage("Tell me about this game.");
+     43| 
+     44|     expect(order).toEqual(["persisted", "intent", "authoring"]);
+       |                   ^
+     45|     expect(session.getProposedProject().world).toEqual(world);
+     46|     expect(requests).toHaveLength(1);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/12]⎯
+
+ FAIL  test/toolSchemaProviderCompat.test.ts > acceptance and requirement schema/runtime contract > keeps the shared discriminator, closed structural keys and genuine dynamic args
+AssertionError: expected { type: 'string', enum: [ …(9) ] } to deeply equal { type: 'string', enum: [ …(8) ] }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -6,8 +6,9 @@[39m
+[2m      "eventCount",[22m
+[2m      "targetChange",[22m
+[2m      "preserve",[22m
+[2m      "imageReviewed",[22m
+[2m      "reachability",[22m
+[31m+     "actionCombat",[39m
+[2m    ],[22m
+[2m    "type": "string",[22m
+[2m  }[22m
+
+ ❯ test/toolSchemaProviderCompat.test.ts:198:36
+    196|     expect(item?.required).toEqual(["kind"]);
+    197|     expect(item?.additionalProperties).toBe(false);
+    198|     expect(item?.properties?.kind).toEqual({ type: "string", enum: [
+       |                                    ^
+    199|       "toolVerdict", "mapDimensions", "mapCount", "eventCount", "targe…
+    200|     ] });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/12]⎯
+
+
+ Test Files  7 failed | 2 passed (9)
+      Tests  12 failed | 154 passed (166)
+   Start at  09:08:27
+   Duration  47.24s (transform 11.48s, setup 0ms, collect 33.66s, tests 53.31s, environment 248ms, prepare 640ms)
+

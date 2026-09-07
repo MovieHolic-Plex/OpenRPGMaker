@@ -4,7 +4,8 @@ import { deriveRunOutcome, type RunOutcome } from "./runOutcome";
 import { AssistantAcceptanceLedger } from "./assistantAcceptanceLedger";
 import { AssistantImageEvidence, coveredByImages, type AcceptanceImageReceipt } from "./assistantImageEvidence";
 import { ACCEPTANCE_SCHEMA, ACCEPTANCE_TOOLS } from "./assistantAcceptanceTools";
-import { adventureToolNames, adventureCompletionProblems, ADVENTURE_AUTHORING_GUIDE, type AdventureRequirements } from "./adventureCompletion";
+import { adventureCompletionProblems, ADVENTURE_AUTHORING_GUIDE, type AdventureRequirements } from "./adventureCompletion";
+import { buildActionArenaAuthoringGuide, selectActionArenaAuthoringRecipe } from "./actionArenaAuthoring";
 // ai/assistantSession.ts
 // 어시스턴트 세션: user msg → LLM → tool_calls → runTool(dryRun 누적) → tool 메시지 → … → 최종 응답.
 // - 쓰기 툴은 로컬 draft(ctx.project)에 누적되어 연쇄 툴콜이 이전 결과를 본다(store는 건드리지 않음).
@@ -14,6 +15,7 @@ import { adventureToolNames, adventureCompletionProblems, ADVENTURE_AUTHORING_GU
 import { ToolReadEvidence } from "./toolReadEvidence";
 import { ToolVerificationEvidence } from "./toolVerificationEvidence";
 import { getTool, normalizeToolArgs, runTool } from "@/editor/tools";
+import { validateArgs } from "@/editor/tools/jsonSchema";
 import { viewportVillageBounds } from "@/editor/tools/authorVillageSupport";
 import { toOpenAiTools } from "@/editor/tools";
 import type { ToolContext, ToolDomain, ToolResult } from "@/editor/tools";
@@ -45,6 +47,8 @@ import {
   formatScopeNote,
   isContinuationText,
   type IntentDeclaration,
+  type NpcRewardRequirement,
+  type NpcRewardRequirements,
 } from "@/ai/intentDeclaration";
 import { buildIntentFacts, declareIntentCached, type IntentDeclarer } from "@/ai/intentDeclarationClient";
 import type { ComposerMode } from "@/ai/composerMode";
@@ -59,21 +63,20 @@ import {
   type VerificationCallRecord,
 } from "./agentVerification";
 import type { LintIssue } from "@/project/lint/projectLint";
-import { beginAssistantToolDomainTurn, computeActiveToolDomains, recordAssistantToolDomainUse } from "@/editor/assistantToolMode";
+import { beginAssistantToolDomainTurn, recordAssistantToolDomainUse } from "@/editor/assistantToolMode";
 import { cloneDetachedDraft } from "@/editor/detachedDraftMemory";
 import { extractVocabSoftConfirm } from "@/project/tileVocabulary";
 import type { Project } from "@/project/types";
-import { buildSystemPrompt, DEFAULT_BUDGET_CHARS, resolveContextMapId, resolveContextViewport, type ContextOptions } from "./contextBuilder";
+import { buildGroundedRequest, buildSystemPrompt, DEFAULT_BUDGET_CHARS, resolveContextMapId, resolveContextViewport, type ContextOptions } from "./contextBuilder";
+import { extractOriginalContext, GET_ORIGINAL_CONTEXT_TOOL, OriginalContextStore } from "./originalContext";
 import {
   buildConversationTurnContext,
   mapTransitionNote,
   type ConversationTurnContext,
   type TurnSelectionSnapshot,
 } from "./conversationTurnContext";
-import { capabilityEscalationSchemas, clampTurnToolSchemas } from "./capabilityEscalation";
 import { buildPreferenceMemorySection } from "./preferenceMemory";
-import { mentionedToolSchemas, planRequiredToolSchemas, toolSchemasForNames } from "./planToolExposure";
-import { compactMessagesForRequest, resolveRequestCharBudget, resolveWorkingContextTokens } from "./messageBudget";
+import { resolveWorkingContextTokens } from "./messageBudget";
 import {
   buildCompactedMessages,
   buildSummarizationRequest,
@@ -145,6 +148,7 @@ import {
   proposalHasChangedMap,
   proposalScopeCarryoverWarning,
   requestLikelyExpectsChange,
+  type ProposalCompletenessCall,
 } from "./proposalCompleteness";
 import { defaultYieldToUi, type YieldToUi } from "./yieldToUi";
 import {
@@ -181,6 +185,8 @@ import {
   createdMapIdFrom,
   verifyAuthoredBossPhases,
   verifyAuthoredQuestsPlayable,
+  verifyNpcRewardsPlayable,
+  type WorkItemOutcomeVerdict,
   verifyCreatedMapsAuthored,
   verifyTargetMapChanged,
   type BattlePhaseSimulation,
@@ -209,7 +215,6 @@ const MAX_ESCALATED_TOOLS_PER_TURN = 16;
  * 스펙 게이트 거부처럼 인자를 바꾸지 않으면 영원히 같은 결과인 실패가 여기서 끊긴다.
  */
 const MAX_REPEATED_TOOL_FAILURES_PER_ITEM = 4;
-const MAX_BASE_TURN_TOOL_SCHEMAS = 40;
 
 function discoveredToolNames(result: ToolResult): string[] {
   if (!result.ok || typeof result.data !== "object" || result.data === null || Array.isArray(result.data)) return [];
@@ -299,7 +304,7 @@ export interface TurnResult {
 export type AuditEntry =
   | { kind: "user"; text: string; at?: string; context?: ConversationTurnContext }
   | { kind: "assistant"; text: string; toolCalls?: { name: string; args: string }[]; at?: string }
-  | { kind: "tool"; name: string; args: Record<string, unknown>; ok: boolean; summary: string; reason?: string; issues?: string[]; construction?: import("@/editor/construction/constructionAudit").ConstructionAuditRecord; at?: string }
+  | { kind: "tool"; name: string; args: Record<string, unknown>; ok: boolean; summary: string; reason?: string; issues?: string[]; issueCodes?: string[]; deferred?: boolean; construction?: import("@/editor/construction/constructionAudit").ConstructionAuditRecord; at?: string }
   | { kind: "status"; text: string; at?: string };
 
 // 하네스 스냅샷 — 오케스트레이션 주입을 포함한 세션 원본 메시지와 감사 로그를 한 번에 관측한다.
@@ -763,6 +768,7 @@ function specGateResult(summary: string, guidance: readonly string[]): ToolResul
 
 interface SpecGatePass {
   warnings: LintIssue[];
+  commitExpansion?: () => void;
 }
 
 /** 이번 턴이 손댈 범위 — 현재 맵의 선택 사각형. 사실이지 의도가 아니다. */
@@ -801,6 +807,13 @@ export interface AssistantSessionOptions {
    * 도메인을 문장 키워드로 추측하는 경로는 없다(2026-09-03 의도 라우터 감사).
    */
   declareIntent?: IntentDeclarer;
+  /** Editor-owned, awaited wiki save. The detached session never persists wiki writes itself. */
+  prepareProjectWiki?: (input: {
+    readonly text: string;
+    readonly mapId: string | null;
+    readonly composerMode: "do" | "ask" | "plan";
+    readonly signal?: AbortSignal;
+  }) => Promise<Project["world"]>;
   /**
    * 자율 실행 드라이버용 사용자-대기 조회 훅(peek-only). 패널의 pendingSends 큐에
    * 메시지가 있는지 "만" 보고한다 — 드라이버는 절대 dequeue 하지 않는다(패널의 기존
@@ -809,7 +822,7 @@ export interface AssistantSessionOptions {
   peekPendingUserMessage?: () => string | null;
   // 비전 이미지 렌더러(브라우저 전용). 없으면 텍스트 전용(Node/테스트에서 동일 동작).
   renderImages?: ToolImageRenderer;
-  // 이전 모드 스코핑 호환 옵션. 현재는 computeActiveToolDomains()가 UI 도메인을 직접 계산한다.
+  // Legacy scoped-consumer option. The session exposes the complete active catalog.
   toolMode?: () => ToolDomain | undefined;
   /**
    * 턴 시점 선택 영역 조회(에디터 UI 상태). 사용자 감사 항목의 상황 스냅샷에만 쓰이며
@@ -856,16 +869,16 @@ export class AssistantSession {
   // 세션 시작 시점 스냅샷(수락 시 store와 대조/리플레이용). rebaseProject로 갱신될 수 있다.
   baselineProject: Project;
   // 스펙 게이트 상태: 확정된 밑그림은 턴 간 유지된다(사용자가 "계속해"로 이어가도 재제출 불필요).
-  // 새 set_build_spec이 검증을 통과하면 교체된다.
-  private activeSpec: BuildSpec | null = null;
-  private activeSpecTurnIndex = 0;
+  // 같은 맵의 성공한 제출만 교체한다. 삽입 순서는 최근 확정/확장 순서다.
+  private readonly specsByMap = new Map<string, { spec: BuildSpec; turnIndex: number }>();
+  private latestSpecMapId: string | null = null;
   private currentTurnIndex = 0;
   // 이번 턴 사용자 메시지의 [컨텍스트] 선택 영역에서 파생된 암묵적 명세(턴마다 재계산).
   private turnImplicitSpec: BuildSpec | null = null;
   // 이번 턴 시작 전에 이미 존재하던 명시 스펙. 이 스펙으로 변경 제안이 만들어지면
   // 카드에 이전 계획 포함 경고를 붙인다(D06).
-  private carryoverSpecForTurn: BuildSpec | null = null;
-  private carryoverWarningAdded = false;
+  private carryoverSpecsForTurn = new Map<string, BuildSpec>();
+  private readonly carryoverWarningsAdded = new Set<string>();
   // 이번 턴의 명세 검증 실패 횟수 — MAX_SPEC_REJECTIONS 초과 시 폐기 지시.
   private specRejections = 0;
   // 직전에 거부된 명세의 정규화 지문. 키 순서만 바꾼 같은 명세를 재제출하는 공회전을
@@ -888,17 +901,21 @@ export class AssistantSession {
   /** 이번 턴에 실행을 시작한 툴 수 — tool_started 이벤트의 1-based 서수 원천. */
   private turnToolStartedCount = 0;
   private eventBaseProposalKeys = new Map<string, string>();
-  private currentTurnToolDomains: ReadonlySet<ToolDomain> | undefined;
   private currentTurnRequestText = "";
   /** 이번 턴의 사용자 발화만(가이드·footer 없음) — 툴 이름 언급·능력 승격·의도 선언의 입력. */
   private currentTurnInstruction = "";
   private adventureRequirements: AdventureRequirements | undefined;
+  private statefulNpcRequirement = false;
+  private npcRewardRequirements: NpcRewardRequirements | undefined;
+  /** Only declared NPC event state, so DB/terrain items do not inherit NPC acceptance. */
+  private readonly npcRewardItemBaseline = new Map<NpcRewardRequirement, string>();
   private adventureRepairAttempts = 0;
   private readonly imageEvidence = new AssistantImageEvidence();
   private readonly adventureIconRecords = new Map<string, { collection: "items" | "equipment"; id: string }>();
   /** 이번 턴의 의도 선언. 턴 시작에 한 번 정해지고 라우팅(되묻기·플래너·툴 노출·대상 맵)이 이것만 읽는다. */
   private turnIntent: IntentDeclaration | null = null;
   private readonly readEvidence = new ToolReadEvidence();
+  private originalContext: OriginalContextStore | null = null;
   private readonly verificationEvidence = new ToolVerificationEvidence();
   private readonly workItemVerificationEvidence = new ToolVerificationEvidence();
   /** 이번 턴이 손댈 선택 사각형(있으면). 패널·영역 작업이 사실로 넘긴다. */
@@ -995,14 +1012,14 @@ export class AssistantSession {
   /** 항목 id → 마지막으로 자동 완료를 막은 사유(산출물 게이트·완성도 경고). 교착 안내 문구의 근거. */
   private lastBlockReasonByItemId = new Map<string, string>();
   /**
-   * 항목 id → `${툴 이름}::${실패 요약}` 이 연속으로 몇 번 같았는가.
+   * 항목 id → 툴/대상/안정된 issue code별 실패 횟수. 다른 대상의 성공은 지우지 않는다.
    *
    * Ralph 교착 판정은 「모델이 나가려 한다」를 신호로 쓰는데, 같은 쓰기 툴을 **같은 이유로 계속 실패**하는
    * 모델은 나가려 하지 않으므로 그 신호가 오지 않는다(2026-09-03 e2e 실측: 스펙 게이트에 막힌 fill_region
    * 을 대본이 주는 대로 30번 반복했고 Ralph 는 한 번도 안 돌았다). 같은 실패가 이 상한에 닿으면 항목을
    * blocked 로 돌려 같은 출구로 나간다.
    */
-  private repeatedToolFailures = new Map<string, { readonly key: string; count: number }>();
+  private repeatedToolFailures = new Map<string, Map<string, { target: string; count: number; summary: string }>>();
   /** 이 턴은 자율 드라이버의 합성 「계속」인가(SessionTurnOptions.driverContinue). */
   private turnIsDriverContinue = false;
   /** 플래너 LLM 왕복만 건너뛴다 — 계획 툴·오케스트레이션 주입은 그대로 둔다(skipPlannerThisTurn 과 다르다). */
@@ -1038,6 +1055,7 @@ export class AssistantSession {
   private lastTurnContext: ConversationTurnContext | null = null;
   private readonly getTurnSelection?: () => TurnSelectionSnapshot | null | undefined;
   private readonly declareIntent: IntentDeclarer | null;
+  private readonly prepareProjectWiki: AssistantSessionOptions["prepareProjectWiki"];
 
   constructor(project: Project, options: AssistantSessionOptions = {}) {
     this.storeBacked = project === store.getCurrent();
@@ -1056,6 +1074,7 @@ export class AssistantSession {
     this.yieldToUi = options.yieldToUi ?? defaultYieldToUi;
     this.getTurnSelection = options.getTurnSelection;
     this.declareIntent = options.declareIntent ?? null;
+    this.prepareProjectWiki = options.prepareProjectWiki;
     this.baselineProject = structuredClone(project);
     this.ctx = { project: cloneDetachedDraft(project) };
     this.acceptanceRequestBaseline = structuredClone(project);
@@ -1084,6 +1103,7 @@ export class AssistantSession {
       ...this.contextOptions,
       budgetChars: this.appliedBudgetChars,
       preferenceMemorySection: buildPreferenceMemorySection(this.contextOptions.projectScopeKey),
+      wikiQuery: this.currentTurnInstruction,
     };
   }
 
@@ -1172,6 +1192,7 @@ export class AssistantSession {
   // 제안 수락/거부 후, 대화(메시지·감사 로그)를 유지한 채 프로젝트 기준만 store 최신 상태로 갱신한다.
   // 세션 폐기(dropSession)와 달리 대화 기억을 잃지 않는다 — "채팅 세션 단위 전체 기억"(#6)의 핵심.
   rebaseProject(project: Project): void {
+    this.pruneRemovedMapSpecs(this.ctx.project, project);
     this.baselineProject = structuredClone(project);
     this.ctx = { project: cloneDetachedDraft(project) };
     // rebase = 적용 성공 후 세션이 store와 재동기화됐다는 신호다. 현재 턴의 적용 실패 상태를 버린다.
@@ -1200,8 +1221,32 @@ export class AssistantSession {
   }
 
   // 현재 확정된 밑그림(없으면 null). 패널이 상태 표시/카드 렌더에 쓴다.
-  getActiveSpec(): BuildSpec | null {
-    return this.activeSpec;
+  getActiveSpec(mapId: string | null = this.latestSpecMapId): BuildSpec | null {
+    return mapId === null ? null : this.specsByMap.get(mapId)?.spec ?? null;
+  }
+
+  private rememberSpec(spec: BuildSpec): void {
+    this.specsByMap.delete(spec.mapId);
+    this.specsByMap.set(spec.mapId, { spec, turnIndex: this.currentTurnIndex });
+    this.latestSpecMapId = spec.mapId;
+  }
+
+  /** Never-created planned maps survive normal rebases; removed identities do not. */
+  private pruneRemovedMapSpecs(before: Project, after: Project, reset = false): void {
+    const removed = (mapId: string): boolean => reset || Boolean(before.maps[mapId] && !after.maps[mapId]);
+    for (const mapId of this.specsByMap.keys()) {
+      if (removed(mapId)) this.specsByMap.delete(mapId);
+    }
+    for (const mapId of this.carryoverSpecsForTurn.keys()) {
+      if (removed(mapId)) {
+        this.carryoverSpecsForTurn.delete(mapId);
+        this.carryoverWarningsAdded.delete(mapId);
+      }
+    }
+    if (this.turnImplicitSpec && removed(this.turnImplicitSpec.mapId)) this.turnImplicitSpec = null;
+    if (this.latestSpecMapId !== null && !this.specsByMap.has(this.latestSpecMapId)) {
+      this.latestSpecMapId = [...this.specsByMap.keys()].at(-1) ?? null;
+    }
   }
 
   getWorkPlan(): WorkPlan | null {
@@ -1255,7 +1300,8 @@ export class AssistantSession {
     this.imageEvidence.current(this.ctx.project);
     if (!this.acceptance || !this.acceptanceAppliedProject) return;
     const snapshot = this.acceptance.evaluate(this.acceptanceAppliedProject,
-      this.turnProposals.size > 0 ? this.ctx.project : this.acceptanceAppliedProject, this.verificationEvidence);
+      this.turnProposals.size > 0 ? this.ctx.project : this.acceptanceAppliedProject,
+      this.verificationEvidence, this.verificationEvidence.problems("required"));
     onEvent?.({ type: "acceptance", snapshot });
   }
 
@@ -1280,6 +1326,8 @@ export class AssistantSession {
   }
 
   private adoptAcceptance(promises: readonly AcceptancePromise[] | undefined, onEvent?: (event: SessionEvent) => void): void {
+    if (this.workPlan) this.verificationEvidence.requireTools(
+      this.workPlan.layers.flatMap(layer => layer.items.flatMap(item => item.successTools ?? [])));
     if (!promises && (this.acceptance || !this.spatialAcceptanceRequired())) return;
     const goal = this.acceptance?.goal ?? this.workPlan?.goal ?? this.currentTurnInstruction;
     if (!this.acceptance) {
@@ -1351,11 +1399,8 @@ export class AssistantSession {
     }
     // 검증기는 "22" 같은 숫자 문자열을 받아주지만 게이트는 저장된 값을 그대로 더한다 — 경계에서 정수로 굳혀 저장한다.
     const normalized = normalizeBuildSpec(spec);
-    this.activeSpec = normalized;
-    this.activeSpecTurnIndex = this.currentTurnIndex;
-    // carryoverSpecForTurn은 previous-turn 스펙을 다음 턴으로 넘기는 슬롯이라
-    // 현재 턴에서 새로 확정된 스펙이 이전 계획을 덮으면 다음 턴 carryover가 끊긴다.
-    // previous-turn carryover는 다음 sendUserMessage 초입에서 세팅되므로 여기서 null로 비우지 않는다.
+    this.rememberSpec(normalized);
+    // Preserve the map-keyed turn-start snapshots for historical scope warnings.
     this.specRejections = 0;
     this.lastRejectedSpecFingerprint = null;
     const kinds = [...new Set(normalized.assets.map((asset) => asset.kind))].join("·");
@@ -1392,7 +1437,8 @@ export class AssistantSession {
     const regions = this.gateRegions(name, args);
     if (regions.length === 0) return { warnings: [] }; // mapId 없는 인자 형태 — 현 공간 툴셋엔 없음.
     const mapId = regions[0].mapId;
-    const specs = [this.activeSpec, this.turnImplicitSpec]
+    const activeSpec = this.getActiveSpec(mapId);
+    const specs = [activeSpec, this.turnImplicitSpec]
       .filter((spec): spec is BuildSpec => spec !== null && spec.mapId === mapId);
     if (scoped && specs.length === 0) {
       return specGateResult(`스펙 게이트: '${name}' 차단 — 이 맵의 밑그림(스펙)이 없습니다`, [
@@ -1401,8 +1447,8 @@ export class AssistantSession {
         "현재 컨텍스트 선택 영역이 있으면 암묵적 명세로 인정됩니다. 없으면 필요한 영역을 직접 산정해 set_build_spec으로 제출하세요.",
       ]);
     }
-    if (scoped && this.activeSpec?.mapId === mapId) {
-      const mismatch = plannedTargetMismatch(this.activeSpec, args);
+    if (scoped && activeSpec) {
+      const mismatch = plannedTargetMismatch(activeSpec, args);
       if (mismatch) {
         return specGateResult(`스펙 게이트: '${name}' 차단 — plannedMap 불일치`, [
           mismatch,
@@ -1437,8 +1483,8 @@ export class AssistantSession {
     if (coverage.covered) return { warnings: [] };
 
     const uncovered = uncoveredRegionsBySpec(assets, regions);
-    const warnings = this.expandSpecWithRegions(mapId, name, regions, uncovered);
-    if (warnings.length > 0) return { warnings };
+    const expansion = this.expandSpecWithRegions(mapId, name, regions, uncovered);
+    if (expansion.warnings.length > 0) return expansion;
     if (slackCells > 0 && coverage.slackWarning) {
       return { warnings: [{ severity: "warning", code: "spec-gate-auto-expand", message: `명세를 자동 확장했습니다: ${coverage.slackWarning}` }] };
     }
@@ -1459,14 +1505,11 @@ export class AssistantSession {
     toolName: string,
     regions: readonly AffectedRegion[],
     uncovered: readonly AffectedRegion[]
-  ): LintIssue[] {
-    if (uncovered.length === 0) return [];
-    const target = this.activeSpec?.mapId === mapId
-      ? this.activeSpec
-      : this.turnImplicitSpec?.mapId === mapId
-      ? this.turnImplicitSpec
-      : null;
-    if (target === null) return [];
+  ): SpecGatePass {
+    if (uncovered.length === 0) return { warnings: [] };
+    const activeSpec = this.getActiveSpec(mapId);
+    const target = activeSpec ?? (this.turnImplicitSpec?.mapId === mapId ? this.turnImplicitSpec : null);
+    if (target === null) return { warnings: [] };
 
     const additions = regions
       .filter((region) => region.w > 0 && region.h > 0 && uncovered.some((cell) => regionContains(region, cell.x, cell.y)))
@@ -1479,24 +1522,27 @@ export class AssistantSession {
         h: region.h,
         note: "스펙 게이트 자동 확장",
       }));
-    if (additions.length === 0) return [];
+    if (additions.length === 0) return { warnings: [] };
 
     const expanded = { ...target, assets: [...target.assets, ...additions] };
-    if (target === this.activeSpec) {
-      this.activeSpec = expanded;
-      this.activeSpecTurnIndex = this.currentTurnIndex;
-    } else {
-      // 선택 영역 암묵 스펙은 이 턴의 것이다 — activeSpec 으로 승격하면 다음 턴부터 그 맵의 게이트가
-      // 밑그림 없이 열린다(2026-09-03 적대적 리뷰 P3). 확장도 그 턴 안에서만 유효하다.
-      this.turnImplicitSpec = expanded;
-    }
     const listed = additions.slice(0, 3).map((asset) => `(${asset.x},${asset.y}) ${asset.w}×${asset.h}`).join(", ");
     const extra = additions.length > 3 ? ` 외 ${additions.length - 3}개` : "";
-    return [{
-      severity: "warning",
-      code: "spec-gate-auto-expand",
-      message: `명세를 자동 확장했습니다: ${toolName} ${listed}${extra}.`,
-    }];
+    return {
+      warnings: [{
+        severity: "warning",
+        code: "spec-gate-auto-expand",
+        message: `명세를 자동 확장했습니다: ${toolName} ${listed}${extra}.`,
+      }],
+      // The gate only prepares expansion; failed or throwing writes must leave no spec debt.
+      commitExpansion: () => {
+        if (target === activeSpec) {
+          this.rememberSpec(expanded);
+        } else {
+          // 선택 영역 암묵 스펙은 이 턴의 것이다 — activeSpec 으로 승격하지 않는다.
+          this.turnImplicitSpec = expanded;
+        }
+      },
+    };
   }
 
   exportAudit(): string {
@@ -1710,8 +1756,33 @@ export class AssistantSession {
     this.lastTurnPlanOnly = false;
     this.turnIsDriverContinue = options.driverContinue === true;
     this.skipPlannerRoundOnly = false;
+    if (this.prepareProjectWiki && !this.turnIsDriverContinue) {
+      try {
+        const world = await this.prepareProjectWiki({
+          text: instruction,
+          mapId: turnContext.mapId,
+          composerMode: this.turnComposerMode,
+          signal,
+        });
+        if (world) {
+          this.baselineProject.world = structuredClone(world);
+          this.ctx.project.world = structuredClone(world);
+        } else {
+          delete this.baselineProject.world;
+          delete this.ctx.project.world;
+        }
+        this.rebuildSystemPrompt();
+      } catch (cause) {
+        const error = cause instanceof Error ? cause.message : String(cause);
+        const stoppedReason = signal?.aborted ? "aborted" : "error";
+        this.runExecution = signal?.aborted ? "cancelled" : "failed";
+        this.pushAudit({ kind: "status", text: `프로젝트 기록 준비 실패: ${error}` });
+        onEvent({ type: "status", text: `프로젝트 기록을 확인하지 못했습니다: ${error}` });
+        return { assistantText: "", proposedCalls: [], stoppedReason, error };
+      }
+    }
     // 의도 선언: 모델이 한 번 읽어 구조화한다(수정/생성·실내/야외·시설·되묻기·계획·툴). 코드는 이 선언만
-    // 소비한다. 선언자가 없거나 실패하면 중립 폴백 — 되묻지 않고, 툴은 UI 도메인·핀·이름 언급·승격만.
+    // Neutral fallback retains the full tool catalog when declaration is unavailable.
     // 질문 모드는 사용자가 직접 고른 사실이라 선언의 create/modify 를 덮어쓴다 — 안 그러면 플래너·쓰기 기대가 문장 판정으로 돈다.
     const intent = this.applyComposerModeToIntent(await this.declareTurnIntent(instruction, onEvent, signal));
     this.turnIntent = intent;
@@ -1732,6 +1803,7 @@ export class AssistantSession {
       this.acceptanceAppliedProject = null;
       this.workPlan = null;
       this.verificationEvidence.clear();
+      this.statefulNpcRequirement = false;
       onEvent({ type: "acceptance", snapshot: null });
     }
     if (newRequest || startsGoal) {
@@ -1758,25 +1830,42 @@ export class AssistantSession {
     }
     if (newRequest || startsGoal) {
       this.adventureRequirements = intent.adventure;
+      this.npcRewardRequirements = intent.npcRewards === undefined ? undefined : structuredClone(intent.npcRewards);
       this.adventureRepairAttempts = 0;
       this.adventureIconRecords.clear();
       this.readEvidence.begin(intent.readBeforeWrite);
     }
+    if (!question && intent.statefulNpcs === true) this.statefulNpcRequirement = true;
+    if (intent.actionCombat && intent.mode !== "question") {
+      this.adoptAcceptance([], onEvent);
+      this.acceptance?.requireActionCombat(intent.actionCombat.targets, this.acceptanceRequestBaseline);
+      this.verificationEvidence.requireTools(["run_action_combat_test"]);
+      this.publishAcceptance(onEvent);
+    }
     beginAssistantToolDomainTurn(intent);
-    this.currentTurnToolDomains = computeActiveToolDomains(intent);
 
     // 스펙 게이트 턴 초기화: 사용자 선택 영역([컨텍스트])은 이 턴의 암묵적 명세가 된다.
     this.currentTurnIndex += 1;
     this.turnImplicitSpec = implicitSpecFromContext(text)
       ?? implicitSpecFromScope(options.scope)
       ?? this.implicitSpecFromViewPhrase(instruction);
-    this.carryoverSpecForTurn = this.activeSpec && this.activeSpecTurnIndex < this.currentTurnIndex
-      ? structuredClone(this.activeSpec)
-      : null;
-    this.carryoverWarningAdded = false;
+    this.carryoverSpecsForTurn = new Map([...this.specsByMap]
+      .filter(([, entry]) => entry.turnIndex < this.currentTurnIndex)
+      .map(([mapId, entry]) => [mapId, structuredClone(entry.spec)]));
+    this.carryoverWarningsAdded.clear();
     this.specRejections = 0;
     this.lastRejectedSpecFingerprint = null;
     const continuesGoal = !startsGoal && (question || resumesGoal || this.turnIsDriverContinue || intent.source === "continuation");
+    const retainsOriginal = !startsGoal && (resumesGoal || this.turnIsDriverContinue || intent.source === "continuation");
+    if (!retainsOriginal || !this.originalContext) {
+      const scope = this.turnScope;
+      this.originalContext = new OriginalContextStore(extractOriginalContext(this.ctx.project, {
+        snapshotId: `original-${this.currentTurnIndex}`,
+        currentMapId: resolveContextMapId(this.contextOptions) ?? turnContext.mapId ?? undefined,
+        selection: scope ? { mapId: scope.mapId, ...scope.region } : turnContext.selection,
+        intent,
+      }));
+    }
     // A tool budget splits execution, not the work item. Keep unapplied calls and
     // artifact evidence until that item completes (or a different goal starts).
     if (!continuesGoal) this.turnProposals = new Map();
@@ -1791,6 +1880,19 @@ export class AssistantSession {
     this.volumeContinueUsed = 0;
     this.eventBaseProposalKeys = new Map();
     this.skipPlannerThisTurn = false;
+
+    const rewardRequirements = question ? undefined : this.npcRewardRequirements;
+    if (rewardRequirements && ("invalidReason" in rewardRequirements || rewardRequirements.length === 0)) {
+      const reason = "invalidReason" in rewardRequirements ? rewardRequirements.invalidReason : "npcRewards: missing requirements";
+      const assistantText = `보상 요구사항을 해석하지 못해 편집을 시작하지 않았습니다.\n${reason}\n다시 시도해 주세요.`;
+      this.lastTurnFailed = true;
+      this.messages.push({ role: "assistant", content: assistantText });
+      this.runExecution = "failed";
+      this.pushAudit({ kind: "status", text: `intent:invalid-npc-rewards ${reason}` });
+      this.pushAudit({ kind: "assistant", text: assistantText });
+      onEvent({ type: "assistant_message", content: assistantText });
+      return { assistantText, proposedCalls: [], stoppedReason: "error" };
+    }
 
     // 되묻기: 선언이 질문을 냈을 때만, chat 모드에서만 멈춘다.
     // F-05: auto/orchestrated 모드에서는 멈추지 않고 진행한다 — 의도 노트가 「되묻지 말고 택하라」고 알린다.
@@ -1815,6 +1917,8 @@ export class AssistantSession {
     // 선언이 확정한 것은 본문 모델도 봐야 한다 — 안 그러면 모델이 같은 것을 되묻는다(2026-09-03 실측: 대장간).
     const intentNote = formatIntentNote(intent, { clarifyBypassed });
     if (intentNote) this.pushOrchestrationMessage(intentNote);
+    const actionRecipe = selectActionArenaAuthoringRecipe(intent);
+    if (actionRecipe) this.pushOrchestrationMessage(buildActionArenaAuthoringGuide(actionRecipe));
     // 선택 사각형은 사실이다 — 선언이 그 안에서 작업한다고 했으면 경계를, 새 맵/실내 시공이면 참고용임을 알린다.
     if (this.turnScope) this.pushOrchestrationMessage(formatScopeNote(this.turnScope, intent));
 
@@ -1883,9 +1987,9 @@ export class AssistantSession {
   /** 질문 모드는 선언을 「질문·단일 단계」로 고정한다. 다른 모드는 선언 그대로. */
   private applyComposerModeToIntent(intent: IntentDeclaration): IntentDeclaration {
     if (this.turnComposerMode !== "ask") return intent;
-    if (intent.mode === "question" && !intent.needsPlan) return intent;
+    if (intent.mode === "question" && !intent.needsPlan && !intent.npcRewards) return intent;
     this.pushAudit({ kind: "status", text: `composer:ask 선언 mode=${intent.mode}→question needsPlan=${intent.needsPlan}→false` });
-    return { ...intent, mode: "question", needsPlan: false };
+    return { ...intent, mode: "question", needsPlan: false, npcRewards: undefined };
   }
 
   /** 계획 모드: 계획 카드를 내고 실행 없이 턴을 끝낸다. 「계속」이 다음 턴에서 resume 으로 실행한다. */
@@ -1990,6 +2094,7 @@ export class AssistantSession {
           + (m.id === targetMapId ? " ← 현재 열린 맵(기본 작업 대상)" : ""),
         ),
       ...(targetMapId ? [`## Target map\n${targetMapId}`] : []),
+      this.npcRewardNote() ?? "",
     ].join("\n");
 
     let raw = "";
@@ -1998,7 +2103,7 @@ export class AssistantSession {
       const result = await this.chatWithTransientRetry(
         this.config,
         {
-          messages: [
+          messages: buildGroundedRequest([
             { role: "system", content: ORCHESTRATOR_SYSTEM_PROMPT },
             {
               role: "user",
@@ -2008,7 +2113,7 @@ export class AssistantSession {
                 projectSummary,
               }),
             },
-          ],
+          ], [], this.config, this.originalContext!).messages,
         },
         onEvent,
         signal,
@@ -2155,38 +2260,43 @@ export class AssistantSession {
     return blocked;
   }
 
-  /**
-   * 같은 쓰기 툴이 같은 이유로 연속 실패하는 것을 센다. 상한에 닿으면 현재 항목을 blocked 로 돌려
-   * Ralph 교착과 같은 출구(사용자에게 넘김)로 보낸다. 성공한 쓰기 하나가 카운터를 지운다.
-   */
-  private noteRepeatedToolFailure(name: string, result: ToolResult): void {
+  /** Retry budgets are target-scoped, unlike Ralph's consecutive lack-of-progress counter. */
+  private noteToolRetryResult(name: string, args: Record<string, unknown>, result: ToolResult): void {
     const currentItemId = this.workPlan?.currentItemId;
-    if (this.turnComposerMode === "ask" || !currentItemId || getTool(name)?.mode !== "write") return;
-    const key = `${name}::${result.summary.slice(0, 120)}`;
-    const entry = this.repeatedToolFailures.get(currentItemId);
-    const next = entry && entry.key === key ? { key, count: entry.count + 1 } : { key, count: 1 };
-    this.repeatedToolFailures.set(currentItemId, next);
-    if (next.count >= MAX_REPEATED_TOOL_FAILURES_PER_ITEM) {
-      this.lastBlockReasonByItemId.set(currentItemId, result.summary);
+    if (this.turnComposerMode === "ask" || !currentItemId || (getTool(name)?.mode !== "write" && name !== "set_build_spec")) return;
+    // A fresh missing-lookup refusal is a correctable attempt, even though it did not execute.
+    // Only downstream dependency deferrals (and already-exhausted targets) are free retries.
+    if (isDeferredToolResult(result) && !result.issues?.some((issue) => issue.code === "read-before-write-required")) return;
+    const target = toolRetryTarget(name, args);
+    const entries = this.repeatedToolFailures.get(currentItemId) ?? new Map<string, { target: string; count: number; summary: string }>();
+    if (result.ok) {
+      for (const [key, entry] of entries) if (entry.target === target) entries.delete(key);
+    } else {
+      const codes = result.issues?.filter((issue) => issue.severity === "error").map((issue) => issue.code) ?? [];
+      for (const code of new Set(codes.length > 0 ? codes : ["tool-failure"])) {
+        const key = JSON.stringify([target, code]);
+        entries.set(key, { target, count: (entries.get(key)?.count ?? 0) + 1, summary: result.summary });
+      }
     }
+    this.repeatedToolFailures.set(currentItemId, entries);
   }
 
-  /** 같은 실패가 상한만큼 반복됐는가 — 참이면 호출부가 항목을 막고 턴을 끝낸다. */
-  private hasRepeatedToolFailureStall(): boolean {
+  private repeatedToolFailureStall(target?: string): { summary: string } | undefined {
     const currentItemId = this.workPlan?.currentItemId;
-    if (this.turnComposerMode === "ask" || !currentItemId) return false;
-    return (this.repeatedToolFailures.get(currentItemId)?.count ?? 0) >= MAX_REPEATED_TOOL_FAILURES_PER_ITEM;
+    if (this.turnComposerMode === "ask" || !currentItemId) return undefined;
+    return [...(this.repeatedToolFailures.get(currentItemId)?.values() ?? [])]
+      .find((entry) => entry.count >= MAX_REPEATED_TOOL_FAILURES_PER_ITEM && (target === undefined || entry.target === target));
   }
 
   /** 막힌 항목으로 턴을 끝낼 때 사용자에게 보내는 문장 — 무엇이 막혔고 무엇을 하면 되는지. */
   private blockedTurnText(blocked: WorkItem, modelText = ""): string {
-    return [
+    return this.npcRewardFinalText([
       modelText.trim(),
       `**${blocked.title}** 에서 막혔습니다 — ${blocked.note ?? ""}`.trim(),
       "무엇을 바꿔야 할지 알려 주시면 그 지점부터 다시 진행합니다. 이 단계를 빼려면 「건너뛰기」 라고 보내세요.",
     ]
       .filter((part) => part.length > 0)
-      .join("\n\n");
+      .join("\n\n"));
   }
 
   /** Ralph: re-inject current item when generator tries to exit early. */
@@ -2300,9 +2410,27 @@ export class AssistantSession {
     }
     if (name === "complete_work_item") {
       const id = typeof args.itemId === "string" && args.itemId.trim() ? args.itemId.trim() : this.workPlan.currentItemId;
+      if (!id && args.itemId === undefined && this.workPlan.layers.every((layer) => layer.items.every((item) => item.status === "done"))) {
+        const rewards = this.npcRewardOutcome();
+        if (!rewards.ok) return { ok: false, summary: rewards.reason, issues: [{ severity: "error", code: "npc-reward-incomplete", message: rewards.reason }] };
+        const pending = [...this.adventureProblems(), ...this.verificationEvidence.problems()];
+        if (pending.length > 0) {
+          const summary = pending.join("\n");
+          return { ok: false, summary, issues: [{ severity: "error", code: "work-item-incomplete", message: summary }] };
+        }
+        if (this.acceptanceOpen()) {
+          const summary = this.acceptanceIncompleteText();
+          return { ok: false, summary, issues: [{ severity: "error", code: "acceptance-incomplete", message: summary }] };
+        }
+        return { ok: true, summary: "작업 계획은 이미 완료되었습니다. 다시 적용하지 않습니다.", data: { alreadyComplete: true, progress: summarizeWorkPlan(this.workPlan) } };
+      }
       if (!id) return { ok: false, summary: "완료할 항목 id가 없습니다." };
       const note = typeof args.note === "string" ? args.note : undefined;
       this.syncSuccessfulToolsToCurrentWorkItem();
+      // completeWorkItemById's already-done shortcut must not bypass changed rewards.
+      const item = findWorkItemById(this.workPlan, id);
+      const rewards: WorkItemOutcomeVerdict = item ? this.npcRewardOutcome(item) : { ok: true };
+      if (!rewards.ok) return { ok: false, summary: rewards.reason, issues: [{ severity: "error", code: "npc-reward-incomplete", message: rewards.reason }] };
       const result = completeWorkItemById(this.workPlan, id, note, {
         successfulTools: [...this.turnSuccessfulTools],
         outcomeGate: this.outcomeGate(),
@@ -2340,6 +2468,10 @@ export class AssistantSession {
       const id = typeof args.itemId === "string" && args.itemId.trim() ? args.itemId.trim() : this.workPlan.currentItemId;
       if (!id) return { ok: false, summary: "건너뛸 항목 id가 없습니다." };
       const note = typeof args.note === "string" ? args.note : undefined;
+      const rewards: WorkItemOutcomeVerdict = this.finishesWorkPlan(id) ? this.npcRewardOutcome() : { ok: true };
+      if (!rewards.ok) return { ok: false, summary: rewards.reason, issues: [{ severity: "error", code: "npc-reward-incomplete", message: rewards.reason }] };
+      const item = findWorkItemById(this.workPlan, id);
+      if (item) this.verificationEvidence.recordSkippedTools(id, item.successTools ?? []);
       const skipped = skipWorkItemById(this.workPlan, id, note);
       if (!skipped) return { ok: false, summary: `항목을 찾지 못했습니다: ${id}` };
       const next = getCurrentWorkItem(this.workPlan);
@@ -2367,6 +2499,13 @@ export class AssistantSession {
     this.turnItemBattleSimulations.clear();
     this.turnItemQuestIds.clear();
     this.turnItemPlacedNpcIds.clear();
+    this.npcRewardItemBaseline.clear();
+    if (this.npcRewardRequirements && !("invalidReason" in this.npcRewardRequirements)) {
+      const project = this.getProposedProject();
+      for (const requirement of this.npcRewardRequirements) {
+        this.npcRewardItemBaseline.set(requirement, npcRewardTargetSnapshot(project, requirement));
+      }
+    }
     this.lastOutcomeBlockedKey = null;
     this.successfulToolsWorkItemId = this.workPlan?.currentItemId ?? null;
   }
@@ -2380,7 +2519,7 @@ export class AssistantSession {
    *    새 맵을 만들어 시공하면 successTools 이름 매칭은 전부 통과하고 대상 맵은 그대로 남았다).
    */
   private outcomeGate(): WorkItemOutcomeGate {
-    return () => {
+    return (item) => {
       const project = this.getProposedProject();
       const maps = verifyCreatedMapsAuthored(project, this.turnItemCreatedMapIds);
       if (!maps.ok) return maps;
@@ -2399,8 +2538,42 @@ export class AssistantSession {
       if (!phases.ok) return phases;
       const quests = verifyAuthoredQuestsPlayable(project, this.turnItemQuestIds);
       if (!quests.ok) return quests;
-      return verifyPlacedNpcsHaveStatePages(project, this.turnItemPlacedNpcIds);
+      const rewards = this.npcRewardOutcome(item);
+      if (!rewards.ok) return rewards;
+      return verifyPlacedNpcsHaveStatePages(project, this.turnItemPlacedNpcIds, this.statefulNpcRequirement);
     };
+  }
+
+  private finishesWorkPlan(itemId: string): boolean {
+    return this.workPlan?.layers.every((layer) => layer.items.every((item) =>
+      item.id === itemId || item.status === "done" || item.status === "skipped")) ?? false;
+  }
+
+  private npcRewardOutcome(item?: WorkItem): WorkItemOutcomeVerdict {
+    const required = this.npcRewardRequirements;
+    if (required === undefined || this.turnComposerMode === "ask" || this.lastTurnPlanOnly) return { ok: true };
+    const project = this.getProposedProject();
+    if (!item || this.finishesWorkPlan(item.id)) return verifyNpcRewardsPlayable(project, required);
+    if ("invalidReason" in required) return { ok: true }; // No resolvable item target; whole-goal closure still fails.
+    const changed = required.filter((requirement) =>
+      this.npcRewardItemBaseline.get(requirement) !== npcRewardTargetSnapshot(project, requirement));
+    return verifyNpcRewardsPlayable(project, changed.length ? changed : undefined);
+  }
+
+  private npcRewardNote(): string | null {
+    return this.turnComposerMode === "ask" || this.npcRewardRequirements === undefined ? null : formatIntentNote({
+      ...emptyIntentDeclaration(), source: "llm", npcRewards: this.npcRewardRequirements,
+    });
+  }
+
+  private npcRewardFinalText(text: string): string {
+    const rewards = this.npcRewardOutcome();
+    return rewards.ok ? text : `NPC 보상이 아직 미완성입니다.\n- ${rewards.reason}`;
+  }
+
+  private completionProblems(): string[] {
+    const rewards = this.npcRewardOutcome();
+    return [...this.adventureProblems(), ...(rewards.ok ? [] : [rewards.reason])];
   }
 
   private adventureProblems(): string[] {
@@ -2441,7 +2614,6 @@ export class AssistantSession {
     if (currentItemId && getTool(name)?.mode === "write") {
       this.ralphAttemptsByItemId.delete(currentItemId);
       this.lastBlockReasonByItemId.delete(currentItemId);
-      this.repeatedToolFailures.delete(currentItemId);
     }
   }
 
@@ -2452,7 +2624,8 @@ export class AssistantSession {
       const record = args[field] as { id?: unknown } | undefined;
       if (name === tool && record && typeof record.id === "string") this.adventureIconRecords.set(`${collection}/${record.id}`, { collection, id: record.id });
     }
-    this.verificationEvidence.observe(name, args, result, countAsSuccess ? "explicit" : "advisory");
+    this.verificationEvidence.observe(name, args, result, countAsSuccess ? "explicit" : "advisory",
+      this.workPlan?.currentItemId ?? undefined);
     if (!countAsSuccess) return;
     const verdict = this.workItemVerificationEvidence.observe(name, args, result);
     if (verdict && !this.workItemVerificationEvidence.passed(name)) {
@@ -2477,12 +2650,12 @@ export class AssistantSession {
     return (item) => {
       const verdict = outcome(item);
       if (!verdict.ok) return verdict;
-      const calls = this.finalizeProposals(this.turnProposals);
+      const calls = this.turnWriteLedger(this.finalizeProposals(this.turnProposals));
       if (calls.length === 0) return { ok: true };
       const warnings = proposalCompletenessWarnings({
         requestText: this.currentTurnInstruction,
         intent: this.turnIntent,
-        buildSpec: this.reviewBuildSpecForProposal(calls),
+        buildSpecs: this.getCompletionSpecs(calls),
         calls,
       });
       if (warnings.length === 0) return { ok: true };
@@ -2558,6 +2731,11 @@ export class AssistantSession {
       return;
     }
     this.recordAppliedProject(applied);
+
+    if (applied.wikiWarning) {
+      this.pushAudit({ kind: "status", text: `게임 변경은 적용됐지만 위키 진행 기록은 갱신하지 못했습니다: ${applied.wikiWarning}` });
+      onEvent({ type: "status", text: `위키 진행 기록 갱신 실패: ${applied.wikiWarning}` });
+    }
     this.pushAudit({
       kind: "status",
       text: `agent_run:milestone-applied "${completed.title}" calls=${calls.length} commit=${applied.commit.commitId ?? "local-only"} persisted=${String(applied.commit.persisted)}`,
@@ -2933,9 +3111,9 @@ export class AssistantSession {
       result = { ...result, assistantText: this.acceptanceIncompleteText() };
       onEvent({ type: "assistant_message", content: result.assistantText });
     }
-    const adventureProblems = this.adventureProblems();
+    const adventureProblems = this.completionProblems();
     if (adventureProblems.length) {
-      result = { ...result, assistantText: `모험 구성이 아직 미완성입니다.\n${adventureProblems.map(p => `- ${p}`).join("\n")}` };
+      result = { ...result, assistantText: `요청한 구성이 아직 미완성입니다.\n${adventureProblems.map(p => `- ${p}`).join("\n")}` };
       onEvent({ type: "assistant_message", content: result.assistantText });
     }
     const verificationProblems = this.verificationEvidence.problems();
@@ -3137,9 +3315,10 @@ export class AssistantSession {
   }
 
   private withCarryoverWarningIfNeeded(proposal: ProposedCall): ProposedCall {
-    const spec = this.carryoverSpecForTurn;
-    if (spec === null || this.carryoverWarningAdded) return proposal;
     if (!SPATIAL_BUILD_TOOLS.has(proposal.name)) return proposal;
+    const mapId = toolTargetMapId(proposal.args);
+    const spec = mapId ? this.carryoverSpecsForTurn.get(mapId) : undefined;
+    if (!spec || this.carryoverWarningsAdded.has(spec.mapId)) return proposal;
     // carryover는 diff 생성 전 시점에 붙는다 — tilesChanged 기준으로 거르면 아직 0이라 누락된다.
     // previous-turn spec의 같은 맵에 다시 쓰는 공간 쓰기면 1회 경고를 붙인다.
     // paint_tiles 등 from/to 직사각형이 regionsFromKnownCall에서 0-폭으로 잡히는 레거시
@@ -3148,8 +3327,9 @@ export class AssistantSession {
     const isSameMapWrite = typeof callerMapId === "string" && callerMapId === spec.mapId;
     if (!isSameMapWrite && !proposalHasChangedMap([proposal], spec.mapId)) return proposal;
 
-    this.carryoverWarningAdded = true;
-    const warning = proposalScopeCarryoverWarning(buildSpecPlanLabel(spec));
+    this.carryoverWarningsAdded.add(spec.mapId);
+    const label = buildSpecPlanLabel(spec);
+    const warning = proposalScopeCarryoverWarning(this.carryoverSpecsForTurn.size > 1 ? `${spec.mapId}: ${label}` : label);
     return { ...proposal, result: appendDiffWarning(proposal.result, warning) };
   }
 
@@ -3287,9 +3467,7 @@ export class AssistantSession {
    * 이쪽은 "에셋 명세를 확정해 두고 실행을 건너뛴" 상태라 사용자에게 아무 결과도 남지 않는다.
    */
   private hasUnbuiltSpecThisTurn(): boolean {
-    if (this.activeSpecTurnIndex !== this.currentTurnIndex) return false;
-    const assets = this.activeSpec?.assets ?? [];
-    return assets.length > 0;
+    return [...this.specsByMap.values()].some(({ spec, turnIndex }) => turnIndex === this.currentTurnIndex && spec.assets.length > 0);
   }
 
   /**
@@ -3310,12 +3488,12 @@ export class AssistantSession {
     onEvent: (event: SessionEvent) => void,
     proposedByKey: Map<string, ProposedCall>
   ): number {
-    const assets = (this.activeSpec?.assets ?? []).filter((asset) => asset.kind === "npc");
-    const mapId = this.activeSpec?.mapId;
-    if (!mapId || assets.length === 0) return 0;
+    const assets = [...this.specsByMap.values()]
+      .filter(({ turnIndex }) => turnIndex === this.currentTurnIndex)
+      .flatMap(({ spec }) => spec.assets.filter(asset => asset.kind === "npc").map(asset => ({ mapId: spec.mapId, asset })));
 
     let placed = 0;
-    for (const asset of assets) {
+    for (const { mapId, asset } of assets) {
       const name = specNpcName(asset);
       const args: Record<string, unknown> = {
         mapId,
@@ -3475,19 +3653,23 @@ export class AssistantSession {
     onEvent({ type: "status", text: `주민 대사 생성 실패 — 모델이 직접 씁니다 (${eventIds.length}명)` });
   }
 
-  private reviewBuildSpecForProposal(calls: readonly ProposedCall[]): BuildSpec | null {
-    const currentSpec = this.activeSpec && this.activeSpecTurnIndex === this.currentTurnIndex ? this.activeSpec : null;
-    if (currentSpec && proposalHasChangedMap(calls, currentSpec.mapId)) return currentSpec;
-    if (this.turnImplicitSpec && proposalHasChangedMap(calls, this.turnImplicitSpec.mapId)) return this.turnImplicitSpec;
-    if (this.carryoverSpecForTurn && proposalHasChangedMap(calls, this.carryoverSpecForTurn.mapId)) return this.carryoverSpecForTurn;
-    if (
-      this.activeSpec &&
-      this.turnExpectsChange() &&
-      proposalHasChangedMap(calls, this.activeSpec.mapId)
-    ) {
-      return this.activeSpec;
+  /** Shared by session review/auto-completion and panel completion accounting.
+   * Only changed maps participate; precedence is applied independently per map.
+   */
+  getCompletionSpecs(calls: readonly ProposalCompletenessCall[]): BuildSpec[] {
+    const mapIds = new Set([...this.specsByMap.keys(), ...this.carryoverSpecsForTurn.keys()]);
+    if (this.turnImplicitSpec) mapIds.add(this.turnImplicitSpec.mapId);
+    const specs: BuildSpec[] = [];
+    for (const mapId of [...mapIds].sort()) {
+      if (!proposalHasChangedMap(calls, mapId)) continue;
+      const entry = this.specsByMap.get(mapId);
+      const spec = (entry?.turnIndex === this.currentTurnIndex ? entry.spec : null)
+        ?? (this.turnImplicitSpec?.mapId === mapId ? this.turnImplicitSpec : null)
+        ?? this.carryoverSpecsForTurn.get(mapId)
+        ?? (this.turnExpectsChange() ? entry?.spec : null);
+      if (spec) specs.push(spec);
     }
-    return null;
+    return specs;
   }
 
   /**
@@ -3505,7 +3687,7 @@ export class AssistantSession {
     const lintWarnings = proposalCompletenessWarnings({
       requestText: this.currentTurnInstruction,
       intent: this.turnIntent,
-      buildSpec: this.reviewBuildSpecForProposal(calls),
+      buildSpecs: this.getCompletionSpecs(calls),
       calls,
     });
     const diffWarnings = calls.flatMap((call) => call.result.diff?.warnings ?? []);
@@ -3599,16 +3781,11 @@ export class AssistantSession {
 
   private async runTurnLoop(onEvent: (event: SessionEvent) => void, signal?: AbortSignal): Promise<TurnResult> {
     this.lastTurnFailed = false;
-    // 컨텍스트 도메인 스코핑: 턴 시작 사용자 메시지 기준의 도메인 유니온을 기본 작업 세트로 쓴다.
-    const domains = this.currentTurnToolDomains ?? computeActiveToolDomains(this.turnIntent);
     // WorkPlan 툴(set/get_work_plan, complete/skip_work_item)은 **계획을 실제로 쓰는 턴에만**
     // 붙인다. 예전에는 무조건 붙어서, 오케스트레이션이 꺼진 기본 설정(감독=실행 모델 동일)에서
     // 플래너가 돌지도 않는데 4개가 매 요청에 실려 갔다(실측: 45개 중 4개).
     // 조건은 아래 `orchestrated` 와 같아야 한다 — 계획 단계를 알리면서 계획 툴을 숨기면 모순이다.
     const planToolsOn = (this.orchestrationEnabled() || Boolean(this.workPlan)) && !this.skipPlannerThisTurn;
-    // 계획 요구 툴(todo 8 실측): successTools/지시문에 명시된 툴은 도메인 게이트·40툴 상한에
-    // 떨어져도 계획이 활성인 동안 반드시 노출한다(plan_world/play_walkthrough/build_village 등).
-    // 도메인 캡 목록과 합집합을 만들고 중복은 제거한다(CPEN 128툴 상한 내 유지).
     const proposedByKey = this.turnProposals;
     let assistantText = "";
     const orchestrated = (this.orchestrationEnabled() || Boolean(this.workPlan)) && !this.skipPlannerThisTurn;
@@ -3636,70 +3813,36 @@ export class AssistantSession {
         return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "aborted", error: "사용자가 중단했습니다" };
       }
       let result: ChatResult;
-      const baseTools = toOpenAiTools(undefined, { domains });
-      // 이름 언급·선언 툴은 사용자 발화와 의도 선언에서만 온다. footer/가이드 같은 기계 텍스트는 보지 않는다.
-      const mentioned = mentionedToolSchemas(this.currentTurnInstruction);
-      const declared = toolSchemasForNames(this.turnIntent?.tools ?? []);
-      const planRequired = this.workPlan ? planRequiredToolSchemas(this.workPlan) : [];
-      const questPersist = this.currentTurnToolDomains?.has("quest")
-        ? toolSchemasForNames(["author_story_arc", "define_quest", "create_quest", "verify_quest", "lint_quest", "generate_walkthrough"])
-        : [];
-      const discoveryEscalated = toolSchemasForNames(this.turnEscalatedToolNames);
-      const requiredByName = new Map(
-        [
-          ...mentioned,
-          ...declared,
-          ...toolSchemasForNames(adventureToolNames(this.adventureRequirements)),
-          ...toolSchemasForNames(this.readEvidence.requiredReadTools()),
-          ...planRequired,
-          ...questPersist,
-          ...discoveryEscalated,
-          SET_BUILD_SPEC_TOOL,
-          ...(planToolsOn ? WORK_PLAN_TOOLS : []),
-          ...(this.acceptance ? ACCEPTANCE_TOOLS : []),
-        ].map((tool) => [tool.function.name, tool] as const),
-      );
-      const requiredNames = new Set(requiredByName.keys());
-      const requiredTools = [...requiredByName.values()].filter((tool) => tool.function.name !== "find_tools");
-      const baseCandidates = baseTools
-        .filter((tool) => !requiredNames.has(tool.function.name) && tool.function.name !== "find_tools")
-        .slice(0, MAX_BASE_TURN_TOOL_SCHEMAS);
-      // 자연어 능력 승격: 사용자가 정확한 레지스트리 이름을 안 써도 요청 문장과 실제로 매칭되는
-      // 툴을 같은 라운드에 얹는다. 도메인 40 상한에 밀려 "그 기능이 없습니다"로 답하던 회귀 방지.
-      // 승격분은 required 와 같이 도메인 게이트 밖에서 살아남고, 대신 도메인 작업 세트의 꼬리
-      // (도메인 쿼터가 마지막에 채운, 요청과 가장 관련 없는 항목)를 그만큼 내준다 — 라운드당
-      // 예약 없는 작업 툴 수는 40으로 유지된다.
-      const capability = capabilityEscalationSchemas(
-        this.currentTurnInstruction,
-        new Set([...baseCandidates.map((tool) => tool.function.name), ...requiredNames, "find_tools"]),
-      );
-      const capabilityNames = new Set(capability.map((tool) => tool.function.name));
-      const baseExposed = baseCandidates.slice(0, Math.max(0, MAX_BASE_TURN_TOOL_SCHEMAS - capability.length));
-      const tools = clampTurnToolSchemas(
-        [...baseExposed, ...requiredTools, ...capability, ...toolSchemasForNames(["find_tools"])],
-        capabilityNames,
-      )
-        // 질문 모드: 쓰기 스키마는 모델에 보이지 않는다. 문장으로 "바꾸지 마라"고 부탁하는 대신 능력을 뺀다.
+      // Full native schemas are the working catalog, not a domain-ranked shortlist.
+      // Session-only tools retain their lifecycle gates; ask mode removes every write.
+      const tools = [
+        ...toOpenAiTools(),
+        GET_ORIGINAL_CONTEXT_TOOL,
+        SET_BUILD_SPEC_TOOL,
+        ...(planToolsOn ? WORK_PLAN_TOOLS : []),
+        ...(this.acceptance ? ACCEPTANCE_TOOLS : []),
+      ]
         .filter((tool) => this.turnComposerMode !== "ask" || !isWriteToolName(tool.function.name))
         .map((tool) => injectToolReasonIntoOpenAiTool(tool));
       const toolsChars = JSON.stringify(tools).length;
-      const exposedNames = new Set(tools.map((tool) => tool.function.name));
-      const capabilityExposed = [...capabilityNames].filter((name) => exposedNames.has(name));
-      if (capabilityExposed.length > 0) {
-        this.pushAudit({ kind: "status", text: `tools:escalated ${capabilityExposed.join(",")} (capability)` });
-      }
       this.pushAudit({
         kind: "status",
-        text: `tools:exposed ${tools.length} — ${tools.map((tool) => tool.function.name).join(",")}${capabilityExposed.length > 0 ? ` | capability:${capabilityExposed.join(",")}` : ""}`.slice(0, 2000),
+        text: `tools:exposed ${tools.length} — ${tools.map((tool) => tool.function.name).join(",")}`,
       });
       // 컨텍스트 압축(요약)은 요청 조립보다 **먼저** 돈다: 대화 자체를 줄이지 못하면
       // 아래 문자 클램프가 오래된 assistant/tool 을 통째로 버려 기억이 소리 없이 사라진다.
       await this.maybeCompactConversation(onEvent, signal);
-      // 요청 문자 클램프: 예산은 모델 창에서 끌어낸다(resolveRequestCharBudget) — 고정 52,000 은
-      // 사라진 공급자(CPEN)의 검증 상한이라 창 1M 짜리 모델의 기억까지 잘라냈다.
-      // 원본(this.messages)은 감사/하네스용으로 유지된다.
-      const requestMessages = compactMessagesForRequest(this.messages, resolveRequestCharBudget(this.config));
+      let requestMessages: ChatMessage[] = [];
       try {
+        const rewardNote = this.npcRewardNote();
+        const grounded = buildGroundedRequest(
+          rewardNote ? [...this.messages, { role: "user", content: rewardNote }] : this.messages,
+          phase === "review" ? [] : tools,
+          this.phaseConfig(phase),
+          this.originalContext!,
+        );
+        requestMessages = grounded.messages;
+        this.pushAudit({ kind: "status", text: `context:grounded ${JSON.stringify(grounded.budget)} originals=${grounded.includedIds.length}/${this.originalContext!.context.entries.length}` });
         result = await this.chatWithTransientRetry(
           this.phaseConfig(phase),
           phase === "review"
@@ -3709,6 +3852,8 @@ export class AssistantSession {
           signal,
           phase !== "execute"
         );
+        // Only exact originals delivered to the writer count at the existing read seam.
+        this.originalContext!.observeDelivered(requestMessages, grounded.includedIds, this.readEvidence);
       } catch (cause) {
         if (isLlmAbortError(cause) || signal?.aborted) {
           this.lastTurnFailed = false;
@@ -3773,12 +3918,12 @@ export class AssistantSession {
 
       // Goal-level contract survives plan replacement and applies to both final paths.
       if ((phase === "review" || !(assistantMsg.tool_calls?.length)) && !this.milestoneApplyFailed) {
-        const problems = this.adventureProblems();
+        const problems = this.completionProblems();
         if (problems.length && this.adventureRepairAttempts < 4) {
           this.adventureRepairAttempts += 1;
           phase = "execute";
           this.emitPhase(onEvent, "execute");
-          this.pushOrchestrationMessage(`모험 완료 검사 미통과 (${this.adventureRepairAttempts}/4). 완료라고 보고하지 말고 누락을 실제 도구로 보완하세요. 기존 산출물을 다시 만들지 마세요.\n${problems.join("\n")}\n${ADVENTURE_AUTHORING_GUIDE}`);
+          this.pushOrchestrationMessage(`요청 완료 검사 미통과 (${this.adventureRepairAttempts}/4). 완료라고 보고하지 말고 누락을 실제 도구로 보완하세요. 기존 산출물을 다시 만들지 마세요.\n${problems.join("\n")}\n${this.adventureRequirements ? ADVENTURE_AUTHORING_GUIDE : ""}`);
           continue;
         }
       }
@@ -3796,8 +3941,8 @@ export class AssistantSession {
         }
         // 레이어 검증(자문): 지적을 감사에 남기되 최종화를 막지 않는다.
         await this.sweepFinishedLayers(onEvent);
-        await this.authorPendingNpcCast(onEvent, signal, proposedByKey, turnTheme || this.activeSpec?.title || "");
-        assistantText = sanitizeAssistantText(stripReviewCompletePrefix(reviewText));
+        await this.authorPendingNpcCast(onEvent, signal, proposedByKey, turnTheme || this.getActiveSpec()?.title || "");
+        assistantText = this.npcRewardFinalText(sanitizeAssistantText(stripReviewCompletePrefix(reviewText)));
         onEvent({ type: "assistant_message", content: assistantText });
         this.pushAudit({ kind: "status", text: `턴 종료(final) — 제안 ${proposedByKey.size}건 · 출력 토큰 ~${spentOutputTokens}` });
         return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "final" };
@@ -3903,7 +4048,7 @@ export class AssistantSession {
         }
         // 캐스트 라이터: 이 턴이 남긴 대사 없는 NPC 를 한 장의 시트로 채운다. 실패하면 모델에게 한 번 되돌린다.
         if (!npcCastRekickUsed) {
-          const cast = await this.authorPendingNpcCast(onEvent, signal, proposedByKey, turnTheme || this.activeSpec?.title || "");
+          const cast = await this.authorPendingNpcCast(onEvent, signal, proposedByKey, turnTheme || this.getActiveSpec()?.title || "");
           if (cast === "rekick") {
             npcCastRekickUsed = true;
             phase = "execute";
@@ -3915,7 +4060,7 @@ export class AssistantSession {
         await this.sweepFinishedLayers(onEvent);
         if (workPlanDecision !== null) this.recordWorkPlanDecision(workPlanDecision);
         // 최종 응답.
-        assistantText = finalText;
+        assistantText = this.npcRewardFinalText(finalText);
         onEvent({ type: "assistant_message", content: assistantText });
         this.pushAudit({ kind: "status", text: `턴 종료(final) — 제안 ${proposedByKey.size}건 · 출력 토큰 ~${spentOutputTokens}` });
         return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "final" };
@@ -3931,6 +4076,10 @@ export class AssistantSession {
       // 같은 배치의 인자는 실패 결과를 보기 전에 만들어졌다. 뒤쪽 읽기가 성공해도
       // 모델이 그 결과를 소비한 것은 아니므로 현재 배치의 쓰기를 다시 열지 않는다.
       let failedReadInBatch: string | null = null;
+      const failedSpecMaps = new Set<string>();
+      const failedRecords = new Map<string, BatchRecordTarget>();
+      const failedWriteTargets = new Map<string, string>();
+      const successfulWriteTargets = new Set<string>();
       const batchReads: { name: string; args: Record<string, unknown>; result: ToolResult }[] = [];
       // 각 tool_call 실행 → role:"tool" 메시지로 결과 반환.
       for (const call of toolCalls) {
@@ -3968,6 +4117,7 @@ export class AssistantSession {
           if (split.missing && parsedCall.parseError === null) {
             this.pushAudit({ kind: "status", text: `tool-args:missing-reason ${name}` });
           }
+          const recordDependency = tool?.mode === "write" ? failedRecordReference(args, failedRecords) : undefined;
           if (parsedCall.parseError !== null) {
             toolResult = invalidJsonArgsResult(name, call.function.arguments ?? "", parsedCall.parseError);
             this.pushAudit({ kind: "status", text: `tool-args:invalid-json ${name} — ${parsedCall.parseError}` });
@@ -3977,7 +4127,34 @@ export class AssistantSession {
             this.pushAudit({ kind: "status", text: `composer:ask 쓰기 툴 거부 ${name}` });
           } else if (failedReadInBatch && isWriteToolName(name)) {
             const summary = `${failedReadInBatch} 조회가 실패하여 같은 응답의 ${name} 실행을 보류했습니다. 조회를 성공시키고 반환값을 확인한 다음 다시 호출하세요.`;
-            toolResult = { ok: false, summary, issues: [{ severity: "error", code: "read-dependency-failed", message: summary }] };
+            toolResult = deferredToolResult("read-dependency-failed", summary);
+          } else if ((SPATIAL_BUILD_TOOLS.has(name) || TILE_WRITE_TOOLS.has(name)) && failedSpecMaps.has(toolTargetMapId(args) ?? "")) {
+            toolResult = deferredToolResult("build-spec-dependency-failed", `${name}: 이 응답의 대상 맵 밑그림이 거부되어 실행을 보류했습니다. set_build_spec을 고쳐 제출하세요.`);
+          } else if (recordDependency) {
+            toolResult = deferredToolResult("record-dependency-failed", `${name}: ${recordDependency.kind} ${recordDependency.id} 생성이 실패하여 실행을 보류했습니다. 생성·조회 후 다시 호출하세요.`);
+          } else if (name === "complete_work_item" && failedWriteTargets.size > 0) {
+            toolResult = deferredToolResult("work-dependency-failed", `이 응답에서 ${[...new Set(failedWriteTargets.values())].join(", ")} 실행이 실패하여 완료 처리를 보류했습니다. 실패를 교정한 뒤 완료하세요.`);
+          } else if (this.repeatedToolFailureStall(toolRetryTarget(name, args))) {
+            toolResult = deferredToolResult("tool-retry-exhausted", `${name}: 같은 대상의 실패 상한에 도달하여 실행을 보류했습니다. 사용자 지시가 필요합니다.`);
+          } else if (name === "run_action_combat_test" && tool) {
+            const errors = validateArgs(tool.parameters, args);
+            if (errors.length > 0 || typeof args.mapId !== "string") {
+              toolResult = {
+                ok: false, summary: "액션 전투 검증 인자 오류",
+                issues: errors.map(message => ({ severity: "error", code: "invalid-args", message })),
+              };
+            } else {
+              const { runActionCombatTest } = await import("@/editor/actionCombatRuntimeProbe");
+              const receipt = await runActionCombatTest(this.ctx.project, { mapId: args.mapId, signal });
+              this.acceptance?.captureActionProof(receipt, this.ctx.project, args.mapId);
+              toolResult = {
+                ok: true,
+                summary: receipt.pass ? "실제 액션 전투 검증 통과" : `실제 액션 전투 검증 미통과: ${receipt.reason ?? receipt.status}`,
+                data: receipt,
+              };
+            }
+          } else if (name === "get_original_context") {
+            toolResult = this.originalContext!.read(args);
           } else if (name === "repair_acceptance" || name === "review_acceptance") {
             toolResult = this.applyAcceptanceTool(name, args);
             this.publishAcceptance(onEvent);
@@ -4016,7 +4193,7 @@ export class AssistantSession {
             const dedupeKey = writeDedupeKey(name, args);
             const cached = dedupeKey ? this.turnWriteDedupe.get(dedupeKey) : undefined;
             if (readGate) {
-              toolResult = readGate;
+              toolResult = { ...readGate, data: { code: "tool-deferred", executed: false, reason: "read-before-write-required" } };
             } else if (cached) {
               toolResult = {
                 ...cached,
@@ -4030,20 +4207,50 @@ export class AssistantSession {
               const gate = tool?.mode === "write" && (SPATIAL_BUILD_TOOLS.has(name) || TILE_WRITE_TOOLS.has(name))
                 ? this.specGate(name, args)
                 : { warnings: [] };
-              toolResult = isSpecGatePass(gate)
-                ? withSpecGateWarnings(runTool(this.ctx, name, args, { dryRun: false }), gate.warnings)
-                : gate;
+              if (isSpecGatePass(gate)) {
+                const before = this.ctx.project;
+                toolResult = runTool(this.ctx, name, args, { dryRun: false });
+                if (toolResult.ok) {
+                  gate.commitExpansion?.();
+                  this.pruneRemovedMapSpecs(before, this.ctx.project, name === "reset_project");
+                }
+                toolResult = withSpecGateWarnings(toolResult, gate.warnings);
+              } else {
+                toolResult = gate;
+              }
               if (dedupeKey && toolResult.ok) this.turnWriteDedupe.set(dedupeKey, toolResult);
             }
           }
-          if (tool?.mode === "read") {
+          if (tool?.mode === "write" || name === "set_build_spec") {
+            const target = toolRetryTarget(name, args);
+            if (toolResult.ok) {
+              successfulWriteTargets.add(target);
+              failedWriteTargets.delete(target);
+            } else if (!successfulWriteTargets.has(target)
+              && (!isDeferredToolResult(toolResult) || toolResult.issues?.some((issue) => issue.code === "read-before-write-required"))) {
+              failedWriteTargets.set(target, name);
+            }
+          }
+          if (!isDeferredToolResult(toolResult)) {
+            if (name === "set_build_spec" && typeof args.mapId === "string") {
+              if (toolResult.ok) failedSpecMaps.delete(args.mapId);
+              else failedSpecMaps.add(args.mapId);
+            }
+            const record = batchRecordTarget(name, args);
+            if (record) {
+              if (toolResult.ok) failedRecords.delete(record.key);
+              else if (!this.ctx.project.database[record.collection].some((entry) => entry.id === record.id)) failedRecords.set(record.key, record);
+            }
+          }
+          if (tool?.mode === "read" || name === "get_original_context") {
             batchReads.push({ name, args, result: toolResult });
             if (!toolResult.ok) failedReadInBatch ??= name;
           }
           // 읽기 툴도 기록한다 — 플래너가 `successTools:["get_map_region"]` 같은 확인 항목을 자주 쓰는데
           // 쓰기만 세면 그 항목은 무슨 짓을 해도 완료할 수 없는 게이트가 된다(2026-08-23 실측: 2회 거부 후 skip).
           this.recordToolResult(name, args, toolResult);
-          if (!toolResult.ok) this.noteRepeatedToolFailure(name, toolResult);
+          this.publishAcceptance(onEvent);
+          this.noteToolRetryResult(name, args, toolResult);
           if (toolResult.ok) {
             // 이 항목이 새로 만든 맵을 기록한다 — 산출물 게이트가 "만들고 안 채운 맵"을 여기서 잡는다.
             const createdMapId = createdMapIdFrom(name, args, toolResult.data);
@@ -4063,8 +4270,10 @@ export class AssistantSession {
             const npcId = placedNpcIdFrom(name, toolResult.data, args);
             if (npcId) this.turnItemPlacedNpcIds.add(npcId);
           }
-          if (name === "find_tools") {
-            const discovered = discoveredToolNames(toolResult);
+          const relocationAvailable = toolResult.issues?.some(issue => issue.relocation !== undefined) === true;
+          if (name === "find_tools" || relocationAvailable) {
+            const discovered = [...(name === "find_tools" ? discoveredToolNames(toolResult) : []),
+              ...(relocationAvailable ? ["move_event"] : [])];
             const next = [...this.turnEscalatedToolNames];
             for (const toolName of discovered) {
               const existing = next.indexOf(toolName);
@@ -4085,6 +4294,8 @@ export class AssistantSession {
             ok: toolResult.ok,
             summary: toolResult.summary,
             reason: recordedReason,
+            ...(isDeferredToolResult(toolResult) ? { deferred: true } : {}),
+            ...(toolResult.issues?.length ? { issueCodes: toolResult.issues.map((issue) => issue.code) } : {}),
             // 실패/경고 원인은 감사 로그에도 남긴다 — summary만으로 원인 추적이 안 되던 문제 방지.
             ...(toolResult.issues && toolResult.issues.length > 0 ? { issues: toolResult.issues.map((issue) => issue.message) } : {}),
           });
@@ -4202,10 +4413,11 @@ export class AssistantSession {
         });
       }
 
-      // 같은 쓰기 실패가 반복되면(인자를 바꾸지 않는 모델) 라운드를 더 태우지 않고 사용자에게 넘긴다.
-      if (this.hasRepeatedToolFailureStall() && this.workPlan) {
+      // A different write succeeding in this batch cannot erase an exhausted target's budget.
+      const retryStall = this.repeatedToolFailureStall();
+      if (retryStall && this.workPlan) {
         const currentItemId = this.workPlan.currentItemId;
-        const reason = currentItemId ? this.lastBlockReasonByItemId.get(currentItemId) ?? "같은 실패가 반복됩니다." : "";
+        const reason = retryStall.summary;
         const blocked = currentItemId ? blockWorkItemById(this.workPlan, currentItemId, reason) : null;
         if (blocked) {
           this.runExecution = "blocked";
@@ -4227,7 +4439,7 @@ export class AssistantSession {
 
       // 출력 토큰 예산 확인(라운드의 툴 실행까지 마친 뒤). 예산 소진이 유일한 사용자 제한.
       if (spentOutputTokens >= this.config.maxTokens) {
-        await this.authorPendingNpcCast(onEvent, signal, proposedByKey, turnTheme || this.activeSpec?.title || "");
+        await this.authorPendingNpcCast(onEvent, signal, proposedByKey, turnTheme || this.getActiveSpec()?.title || "");
         onEvent({
           type: "status",
           text: TOKEN_BUDGET_STATUS_TEXT,
@@ -4243,7 +4455,7 @@ export class AssistantSession {
     }
 
     // 라운드 안전핀 도달(기본 200 — 정상 작업에선 도달하지 않음) — 현재까지의 changeset을 제시.
-    await this.authorPendingNpcCast(onEvent, signal, proposedByKey, turnTheme || this.activeSpec?.title || "");
+    await this.authorPendingNpcCast(onEvent, signal, proposedByKey, turnTheme || this.getActiveSpec()?.title || "");
     onEvent({ type: "status", text: TOKEN_BUDGET_STATUS_TEXT });
     this.runExecution = "budget-exhausted";
     this.pushAudit({ kind: "status", text: `턴 종료(max-tool-calls) — 제안 ${proposedByKey.size}건 · 출력 토큰 ~${spentOutputTokens}` });
@@ -4253,6 +4465,16 @@ export class AssistantSession {
       stoppedReason: "max-tool-calls",
     };
   }
+}
+
+/** Event-state comparison only: never derives reward expectations from event commands. */
+function npcRewardTargetSnapshot(project: Project, requirement: NpcRewardRequirement): string {
+  const { target } = requirement;
+  return JSON.stringify(Object.values(project.maps)
+    .filter((map) => target.mapId === undefined || target.mapId === map.id)
+    .flatMap((map) => map.events
+      .filter((event) => target.eventId !== undefined ? event.id === target.eventId : (event.name ?? event.pages?.[0]?.name) === target.eventName)
+      .map((event) => [map.id, event])));
 }
 
 interface EventTargetKey {
@@ -4275,6 +4497,7 @@ function diffSummaryLine(diff: ToolResult["diff"]): string {
   if (!diff) return "diff 없음";
   const parts = [
     diff.tilesChanged > 0 ? `타일 ${diff.tilesChanged}` : null,
+    (diff.audioDescriptionsChanged ?? 0) > 0 ? `오디오 설명 ${diff.audioDescriptionsChanged}` : null,
     diff.eventsAdded > 0 ? `이벤트 추가 ${diff.eventsAdded}` : null,
     diff.eventsModified > 0 ? `이벤트 수정 ${diff.eventsModified}` : null,
     diff.eventsRemoved > 0 ? `이벤트 삭제 ${diff.eventsRemoved}` : null,
@@ -4426,6 +4649,74 @@ function eventTargetKey(target: EventTargetKey): string {
   return `${target.mapId}:${target.eventId}`;
 }
 
+function toolTargetMapId(args: Record<string, unknown>): string | undefined {
+  const mapId = args.mapId ?? (isRecord(args.target) ? args.target.mapId : undefined);
+  return typeof mapId === "string" ? mapId : undefined;
+}
+
+function toolRetryTarget(name: string, args: Record<string, unknown>): string {
+  const record = name.startsWith("upsert_") ? args[name.slice("upsert_".length)] : undefined;
+  const id = args.id ?? args.eventId ?? (isRecord(record) ? record.id : undefined) ?? args.name;
+  return JSON.stringify([name, toolTargetMapId(args) ?? null, typeof id === "string" ? id : null]);
+}
+
+function deferredToolResult(reason: string, summary: string): ToolResult {
+  return {
+    ok: false, summary,
+    issues: [{ severity: "error", code: reason, message: summary }],
+    data: { code: "tool-deferred", executed: false, reason },
+  };
+}
+
+function isDeferredToolResult(result: ToolResult): boolean {
+  return isRecord(result.data) && result.data.code === "tool-deferred" && result.data.executed === false;
+}
+
+// Only explicit DB ID contracts, matching ToolReadEvidence; never infer dependencies from prose.
+const BATCH_RECORD_COLLECTIONS = [
+  ["item", "items"], ["enemy", "enemies"], ["troop", "troops"],
+  ["actor", "actors"], ["skill", "skills"], ["equipment", "equipment"],
+] as const;
+type BatchRecordKind = typeof BATCH_RECORD_COLLECTIONS[number][0];
+interface BatchRecordTarget {
+  key: string;
+  kind: BatchRecordKind;
+  collection: typeof BATCH_RECORD_COLLECTIONS[number][1];
+  id: string;
+}
+
+function batchRecordTarget(name: string, args: Record<string, unknown>): BatchRecordTarget | null {
+  for (const [kind, collection] of BATCH_RECORD_COLLECTIONS) {
+    const value = args[kind];
+    if (name === `upsert_${kind}` && isRecord(value) && typeof value.id === "string") {
+      return { key: `${kind}:${value.id}`, kind, collection, id: value.id };
+    }
+  }
+  return null;
+}
+
+function failedRecordReference(value: unknown, failed: ReadonlyMap<string, BatchRecordTarget>): BatchRecordTarget | undefined {
+  if (failed.size === 0) return undefined;
+  if (Array.isArray(value)) {
+    for (const child of value) {
+      const found = failedRecordReference(child, failed);
+      if (found) return found;
+    }
+  } else if (isRecord(value)) {
+    for (const [key, child] of Object.entries(value)) {
+      for (const target of failed.values()) {
+        const idField = key === `${target.kind}Id` || key === `${target.kind}Ids`
+          || (target.kind === "actor" && (key === "partyActorIds" || key === "startActorIds"));
+        if (idField && (Array.isArray(child) ? child : [child]).includes(target.id)) return target;
+        if (target.kind === "item" && key === "inventory" && isRecord(child) && Object.hasOwn(child, target.id)) return target;
+      }
+      const found = failedRecordReference(child, failed);
+      if (found) return found;
+    }
+  }
+  return undefined;
+}
+
 function isSpecGatePass(result: ToolResult | SpecGatePass): result is SpecGatePass {
   return "warnings" in result;
 }
@@ -4489,7 +4780,9 @@ function toolResultForModel(result: ToolResult): Record<string, unknown> {
     summary: result.summary,
     diff: result.diff,
     // issues가 있으면 원인을 읽고 인자를 고쳐 재시도하라는 신호.
-    issues: result.issues?.map((issue) => ({ severity: issue.severity, code: issue.code, message: issue.message })),
+    issues: result.issues?.map((issue) => ({ severity: issue.severity, code: issue.code, message: issue.message,
+      ...(issue.relocation ? { mapId: issue.mapId, eventId: issue.eventId, x: issue.x, y: issue.y, relocation: issue.relocation } : {}),
+    })),
     ...(result.warnings && result.warnings.length > 0 ? { warnings: result.warnings } : {}),
     data: compactToolDataForModel(result.data),
   };

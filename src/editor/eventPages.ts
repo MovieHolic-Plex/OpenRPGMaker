@@ -61,6 +61,7 @@ export function normalizeEventPage(page: Pick<EventPage, "id"> & Partial<EventPa
       type: movement?.type ?? "fixed",
       speed: typeof movement?.speed === "number" ? movement.speed : 3,
       frequency: typeof movement?.frequency === "number" ? movement.frequency : 3,
+      ...(movement?.sight ? { sight: movement.sight } : {}),
       ...(movement?.pursuit ? { pursuit: movement.pursuit } : {}),
       ...(movement?.route ? { route: movement.route } : {}),
       ...(movement?.living ? { living: movement.living } : {}),

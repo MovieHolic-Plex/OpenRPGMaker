@@ -42,7 +42,19 @@ export type ResourceKind =
   | "music"
   | "sound";
 
+export type AudioResourceKind = "music" | "sound";
+
+/** Raw resource IDs: absent key inherits; an empty string explicitly clears. */
+export interface AudioDescriptionOverrides {
+  readonly music?: Readonly<Record<string, string>>;
+  readonly sound?: Readonly<Record<string, string>>;
+}
+
 export interface ResourceProfile {
+  /** Authoring-only metadata; sprite slots and standalone faces are classified independently. */
+  graphicAttributes?: import("../characterGraphics").GraphicAttributes;
+  graphicNote?: string;
+  characterSlots?: import("../characterGraphics").CharacterGraphicSlot[];
   kind: ResourceKind;
   name: string;
   tileWidth?: number;

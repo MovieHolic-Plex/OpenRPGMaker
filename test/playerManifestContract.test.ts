@@ -337,9 +337,10 @@ describe("player deployment manifest", () => {
     })).rejects.toMatchObject({ code: "zip-path-collision" });
   });
 
-  it("writes the exact verified deployment closure and project payload into the ZIP", async () => {
+  it.each([undefined, "pokemon", "rm2003"] as const)("writes the exact verified deployment closure and project payload into the ZIP for %s", async skin => {
     const fixture = await deploymentFixture();
     const project = createBlankProject();
+    project.system.battleUiStyle = skin;
 
     const result = await createWebPlayerExportPackage(project, {
       bundleBase: BUNDLE_BASE,
@@ -357,7 +358,9 @@ describe("player deployment manifest", () => {
     expect(readStoredZipEntryNames(zipBytes)).toEqual(expectedPaths);
     for (const idle of BATTLER_IDLE_ANIMATIONS.filter((entry) => entry.resourceId.endsWith("-back"))) {
       for (const path of [idle.path.replace("/idle/", "/"), idle.path]) {
-        expect(readStoredZipEntry(zipBytes, path), path).toEqual(await fixture.fetchBytes(`/${path}`));
+        const bytes = readStoredZipEntry(zipBytes, path);
+        if (skin === "pokemon") expect(bytes, path).toEqual(await fixture.fetchBytes(`/${path}`));
+        else expect(bytes, path).toBeNull();
       }
     }
     for (const [filePath, bytes] of fixture.artifactBytes) {

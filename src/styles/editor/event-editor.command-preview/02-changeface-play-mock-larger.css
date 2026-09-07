@@ -167,7 +167,17 @@
 }
 
 .ecp-choice-list { display: flex; flex-direction: column; gap: 3px; margin-top: 4px; }
+.ecp-choice-window,
+.ecp-choice-list,
 .ecp-choice {
+  min-width: 0;
+  max-width: 100%;
+}
+.ecp-choice {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+  align-items: start;
+  gap: 5px;
   background: transparent;
   border: 1px solid transparent;
   border-radius: var(--runtime-dialogue-radius-small);
@@ -181,6 +191,13 @@
   box-shadow: var(--runtime-dialogue-glass-focus-shadow);
 }
 .ecp-choice.empty { opacity: 0.6; }
+.ecp-choice > .ee-icon { width: 16px; height: 16px; margin-top: 1px; }
+.ecp-choice-label {
+  min-width: 0;
+  white-space: pre-wrap;
+  word-break: normal;
+  overflow-wrap: anywhere;
+}
 
 /* 미니맵 */
 .ecp-map-stage { place-items: center; background: var(--bg-surface); }

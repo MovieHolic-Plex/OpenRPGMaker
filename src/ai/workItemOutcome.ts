@@ -14,13 +14,17 @@
 // 이 검사는 자연어 doneWhen 을 파싱하지 않는다 — 프로젝트 상태만 본다.
 
 import { TILE } from "@/project/defaults/constants";
+import { isPassable } from "@/project/collision";
+import { startSession } from "@/project/session";
+import { findBlockingRuntimeEventAtInMap, initialRuntimeEventPositions } from "@/project/runtimeEventState";
+import type { NpcRewardRequirements } from "./intentDeclaration";
 import {
   findQuestById,
   findQuestGraph,
   generateQuestWalkthrough,
   lintQuestGraph,
 } from "@/project/quest/questGraph";
-import { runSceneTest, type SceneStep } from "@/testing/sceneTestRunner";
+import { runSceneTest, type SceneStep, type SceneExpectStep } from "@/testing/sceneTestRunner";
 import type { BattleEventCondition, TroopRecord } from "@/project/types";
 import type { GameMap, Project } from "@/project/types/project";
 
@@ -84,6 +88,83 @@ export function unauthoredMapLabels(project: Project, mapIds: Iterable<string>):
 }
 
 export type WorkItemOutcomeVerdict = { readonly ok: true } | { readonly ok: false; readonly reason: string };
+
+/**
+ * Opt-in local NPC acceptance. Expectations are captured from the request, not commands.
+ * Each NPC runs in a fresh scene; both interactions use that SAME runtime session.
+ * This checks local interaction, not a world traversal or quest prerequisite walkthrough.
+ */
+export function verifyNpcRewardsPlayable(
+  project: Project,
+  required: NpcRewardRequirements | undefined,
+): WorkItemOutcomeVerdict {
+  if (required === undefined) return { ok: true };
+  if ("invalidReason" in required) return { ok: false, reason: required.invalidReason };
+  if (required.length === 0) return { ok: false, reason: "npcRewards: missing requirements" };
+  for (const requirement of required) {
+    const { target } = requirement;
+    const matches = Object.values(project.maps)
+      .filter((map) => target.mapId === undefined || map.id === target.mapId)
+      .flatMap((map) => map.events
+        .filter((event) => target.eventId !== undefined ? event.id === target.eventId : (event.name ?? event.pages?.[0]?.name) === target.eventName)
+        .map((event) => ({ map, event })));
+    const match = matches[0];
+    if (matches.length !== 1 || !match) {
+      return { ok: false, reason: `NPC reward target ${JSON.stringify(target)}: expected one exact match, found ${matches.length}` };
+    }
+    const { map, event } = match;
+    const first: SceneExpectStep = { kind: "expect", interactionComplete: true, inventoryDelta: {}, ownedMonsterDelta: {} };
+    for (const grant of requirement.grants) {
+      const records = grant.kind === "item" ? project.database.items : project.database.monsterSpecies ?? [];
+      const rewards = records.filter((record) => grant.id !== undefined ? record.id === grant.id : record.name === grant.name);
+      const reward = rewards[0];
+      if (rewards.length !== 1 || !reward) {
+        return { ok: false, reason: `NPC ${event.id} reward ${JSON.stringify(grant)}: expected one exact database match, found ${rewards.length}` };
+      }
+      const counts = grant.kind === "item" ? first.inventoryDelta : first.ownedMonsterDelta;
+      if (counts) {
+        if (reward.id in counts) return { ok: false, reason: `NPC ${event.id}: duplicate reward requirement ${reward.id}; declare the total count once` };
+        counts[reward.id] = grant.count ?? { atLeast: 1 };
+      }
+    }
+    if (requirement.grants.length === 0) return { ok: false, reason: `NPC ${event.id}: missing reward grants` };
+    const session = startSession(project, 1);
+    const positions = initialRuntimeEventPositions(map.events);
+    const start = [
+      { x: event.x, y: event.y - 1 }, { x: event.x - 1, y: event.y },
+      { x: event.x + 1, y: event.y }, { x: event.x, y: event.y + 1 },
+    ].find((point) => isPassable(project, map, point.x, point.y)
+      && !findBlockingRuntimeEventAtInMap(project, map, session, positions, point.x, point.y));
+    if (!start) return { ok: false, reason: `NPC ${event.id}: no passable interaction position` };
+    const interact: SceneStep[] = [
+      { kind: "expect", mapId: map.id },
+      { kind: "walk", to: { x: event.x, y: event.y }, adjacent: true },
+      { kind: "snapshotRewards" },
+      { kind: "interact", eventId: event.id },
+    ];
+    const steps: SceneStep[] = [
+      ...interact,
+      ...(requirement.choices ?? []).map((index): SceneStep => ({ kind: "choose", index })),
+      first,
+    ];
+    if (requirement.oneTime) {
+      steps.push(
+        ...interact,
+        ...(requirement.repeatChoices ?? []).map((index): SceneStep => ({ kind: "choose", index })),
+        {
+          kind: "expect", interactionComplete: true,
+          inventoryDelta: Object.fromEntries(project.database.items.map((item) => [item.id, 0])),
+          ownedMonsterDelta: Object.fromEntries((project.database.monsterSpecies ?? []).map((species) => [species.id, 0])),
+        },
+      );
+    }
+    const result = runSceneTest(project, { mapId: map.id, start, steps });
+    if (!result.ok) {
+      return { ok: false, reason: `NPC ${event.id} reward acceptance failed at step ${result.failedStepIndex}: ${result.failureReason}. Preserve the requested grants and fix the runtime interaction; do not remove the reward to complete.` };
+    }
+  }
+  return { ok: true };
+}
 
 /**
  * 이번 항목에서 **새로 만든 맵**이 전부 저작됐는지 확인한다.

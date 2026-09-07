@@ -34,16 +34,20 @@ import { applyDailyWeatherForDate } from "@/project/dailyWeather";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import { weatherToRuntimeString } from "@/player/weather/weatherModel";
 
-export type AudioChannel = "bgm" | "bgs" | "me" | "se";
+export type AudioChannel = "bgm" | "bgs" | "ambient" | "me" | "se";
 
 export type AudioTrackState = {
   readonly resourceId: string;
   readonly loop: boolean;
+  /** Authored track volume, 0..100; independent of the user mixer. */
+  readonly volume?: number;
+  readonly fadeInMs?: number;
 };
 
 export type AudioCommandState = {
   bgm?: AudioTrackState;
   bgs?: AudioTrackState;
+  ambient?: AudioTrackState;
   me?: AudioTrackState;
   se?: AudioTrackState;
 };
@@ -126,6 +130,8 @@ export type FarmPlotState = {
   readonly dead?: boolean;
   // 단계별 소요일을 결정적으로 누적하기 위한 런타임 진행도. 저장/로드 대상이다.
   readonly growthDays?: number;
+  // Absent until a successful regrowing harvest; zero means ready to harvest again.
+  readonly regrowDaysRemaining?: number;
 };
 
 export type FarmPlots = Record<MapId, Record<string, FarmPlotState>>;
@@ -269,6 +275,7 @@ export interface PlaySession {
   actorVitals: Record<string, ActorVitals>;
   eventLocations: Record<string, RuntimeEventLocation>;
   horror?: import("./horrorState").HorrorState;
+  detectionEncounterCompletions?: import("./npcBehavior").DetectionEncounterCompletions;
   // Erase Event 런타임 소거 목록. 맵을 다시 로드/진입하면 RM2003 관례대로 초기화된다.
   erasedEventIds: string[];
   // Persistent Modern Remove Event state. Erase Event remains map-entry scoped.
@@ -754,13 +761,15 @@ export function getMapTile(
 }
 
 export function setAudioState(
-  session: PlaySession,
-  state: { readonly channel?: AudioChannel; readonly resourceId: string; readonly loop: boolean }
+  session: { audio: AudioCommandState },
+  state: AudioTrackState & { readonly channel?: AudioChannel }
 ): void {
   const channel = state.channel ?? (state.loop ? "bgm" : "se");
   session.audio[channel] = {
     resourceId: state.resourceId,
     loop: state.loop,
+    ...(state.volume === undefined ? {} : { volume: state.volume }),
+    ...(state.fadeInMs === undefined ? {} : { fadeInMs: state.fadeInMs }),
   };
 }
 

@@ -16,7 +16,7 @@ import {
 import { applyCharsetFrameCrop } from "@/assets/charsetFrameCrop";
 import { beginCommandSelectionScope, isCommandSelected, sameInspectorPath, selectedCommandPath, setCommandSelectionSurface, showCommandInspector } from "./commandInspector";
 import { drawTransferFallback, drawTransferMapPreview } from "./transferMapPreview";
-import { commandRuntimeSupport, type CommandRuntimeSupport, type M2RuntimeContext } from "@/project/eventCommands/runtimeSupport";
+import { commandRuntimeSupportDescriptor, type M2RuntimeContext } from "@/project/eventCommands/runtimeSupport";
 import { store } from "@/project/store";
 import type { Command } from "@/project/types";
 import type { CommandListActions } from "./types";
@@ -26,9 +26,8 @@ import type { EventDraftIssue } from "@/editor/eventDraftValidator";
 type CommandListRenderOptions = {
   readonly selectionScope?: string | HTMLElement;
   readonly rootCommands?: readonly Command[];
-  readonly runtimeSupport?: (command: Command) => CommandRuntimeSupport;
   readonly issues?: readonly EventDraftIssue[];
-  /** 컨텍스트 메뉴 "삽입..." 피커에 넘길 편집 컨텍스트(맵/공통/배틀). 없으면 보수 배지. */
+  /** 목록 설명과 "삽입..." 피커가 공유하는 실행 맥락. 없으면 맥락 미지정 안내. */
   readonly pickerContext?: M2RuntimeContext;
   /** 빈 분기 버튼이 이 컨테이너에 명령을 추가하는 피커를 연다. */
   readonly openCommandPicker?: (containerPath: readonly number[]) => void;
@@ -156,7 +155,7 @@ function renderCommandItem(
   });
   // 핸들에서 누르면 항목을 드래그 가능하게 만든다.
   enableItemDrag(handle, item, path);
-  const supportBadge = renderRuntimeSupportBadge((options.runtimeSupport ?? commandRuntimeSupport)(cmd), `command-runtime-badge-list-${path.join("-")}`);
+  const supportBadge = renderRuntimeSupportBadge(commandRuntimeSupportDescriptor(cmd, options.pickerContext), `command-runtime-badge-list-${path.join("-")}`);
   const issueBadge = renderCommandIssueBadge(path, options.issues ?? []);
   // 문장 표시 줄: 직전 changeFace 상태를 화자 얼굴 16px 크롭으로 부가.
   const activeFaceForItem = faceState.current;

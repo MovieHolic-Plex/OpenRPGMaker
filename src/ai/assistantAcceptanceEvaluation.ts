@@ -39,7 +39,7 @@ export function criterionTargets(criterion: AcceptanceCriterion): readonly Accep
   switch (criterion.kind) {
     case "toolVerdict": return [];
     case "mapCount": return criterion.targets;
-    case "mapDimensions": case "eventCount": case "targetChange": case "preserve": case "imageReviewed": case "reachability": return [criterion.target];
+    case "mapDimensions": case "eventCount": case "targetChange": case "preserve": case "imageReviewed": case "reachability": case "actionCombat": return [criterion.target];
     default: return assertNever(criterion);
   }
 }
@@ -49,6 +49,7 @@ export interface AcceptanceEvaluation {
   readonly baseline: Project;
   readonly bindings: ReadonlyMap<string, string>;
   readonly reviewed: (map: GameMap, region: AcceptanceRegion) => boolean;
+  readonly actionProven?: (map: GameMap) => boolean;
 }
 export function evaluateAcceptanceCriterion(criterion: AcceptanceCriterion, input: AcceptanceEvaluation): Evidence {
   const expected = JSON.stringify(criterion);
@@ -62,7 +63,7 @@ export function evaluateAcceptanceCriterion(criterion: AcceptanceCriterion, inpu
       const count = new Set(maps.filter(map => map !== undefined).map(map => map.id)).size;
       return { expected, observed: `${count} scoped maps`, passed: count === criterion.count };
     }
-    case "mapDimensions": case "eventCount": case "targetChange": case "preserve": case "imageReviewed": case "reachability": break;
+    case "mapDimensions": case "eventCount": case "targetChange": case "preserve": case "imageReviewed": case "reachability": case "actionCombat": break;
     default: return assertNever(criterion);
   }
   const map = resolveAcceptanceMap(input.project, criterion.target, input.bindings);
@@ -70,6 +71,10 @@ export function evaluateAcceptanceCriterion(criterion: AcceptanceCriterion, inpu
   const region = "region" in criterion ? criterion.region : undefined;
   if (region && !validRegion(map, region)) return { expected, observed: "Region outside target map", passed: false };
   switch (criterion.kind) {
+    case "actionCombat": {
+      const passed = input.actionProven?.(map) === true;
+      return { expected, observed: passed ? "Current harness-owned action combat proof" : "Current map-bound action combat proof required; scene/static checks are not combat proof", passed };
+    }
     case "mapDimensions": return { expected, observed: `${map.width}x${map.height}`, passed: map.width === criterion.width && map.height === criterion.height };
     case "eventCount": {
       const count = region ? map.events.filter(event => contains(region, event)).length : map.events.length;

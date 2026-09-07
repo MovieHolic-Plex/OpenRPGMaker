@@ -262,10 +262,11 @@ describe("의도 선언이 세션 라우팅을 정한다", () => {
   it.each([false, true])("지시 모드의 툴 이름 언급은 사용자 발화에서만 읽고 footer 는 보지 않는다 (explicit instruction=%s)", async explicitInstruction => {
     const { AssistantSession, createBlankProject } = await load();
     const seen: ChatRequest[] = [];
+    const declareIntent = vi.fn(fixedDeclarer({ mode: "modify" }));
     const session = new AssistantSession(createBlankProject(), {
       config: CHAT_CONFIG,
       chat: scriptedChat([finalResult("완료")], seen),
-      declareIntent: fixedDeclarer({ mode: "modify" }),
+      declareIntent,
     });
     const instruction = "define_ending 툴로 엔딩 조건을 설정해줘";
     await session.sendUserMessage(
@@ -278,8 +279,12 @@ describe("의도 선언이 세션 라우팅을 정한다", () => {
     const request = seen[0];
     if (!request?.tools) throw new Error("Missing authorized Do tool schemas");
     const names = request.tools.map(tool => tool.function.name);
+    // PR667 exposes the complete Do catalog regardless of mentions. The trusted
+    // instruction boundary is the declarer's actual input, not schema absence.
     expect(names).toContain("define_ending");
-    expect(names).not.toContain("set_type_chart");
+    expect(names).toContain("set_type_chart");
+    expect(declareIntent).toHaveBeenCalledTimes(1);
+    expect(declareIntent.mock.calls[0]?.[0].userText).toBe(instruction);
   }, 30000);
 
   it.each(["ask", "question"] as const)("%s 는 언급·선언된 쓰기도 노출하거나 실행하지 않고 조회는 허용한다", async mode => {

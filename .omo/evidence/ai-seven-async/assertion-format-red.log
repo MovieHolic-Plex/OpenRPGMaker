@@ -1,0 +1,45 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiChatObservability.test.ts test/aiChatPanelTransportError.test.ts --reporter=default --reporter=json --outputFile=.omo/evidence/ai-seven-async/pre-mutation-green.json
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-clear-field-e552-ai-seven-async
+
+ ✓ test/aiChatObservability.test.ts (9 tests) 4012ms
+   ✓ 도구 호출 상세 아코디언 (V3C ③) > 복원된 대화의 도구 로그는 한 줄 요약으로 남고 JSON 상세는 숨긴다  507ms
+   ✓ 병합 추론 원문 전체 열람 (V3C ②) > 도구 사이 추론이 한 블록으로 병합돼도 각 추론의 원문 전체가 아이템으로 남고 토글은 횟수를 표시한다  746ms
+   ✓ 실시간 고스트 프리뷰 연결 > 채팅 턴의 성공한 쓰기 tool_call 뒤 세션 draft diff 고스트를 발행한다  1786ms
+ ❯ test/aiChatPanelTransportError.test.ts (2 tests | 1 failed) 10563ms
+   × transport failure paints recovery CTA and keeps Send mounted > refused fetch: is-turn-running cleared, system error bubble + ai-error-open-settings, ai-send stays disabled with ai-abort visible 9827ms
+     → expected '2026년 9월 7일 월@>hello여기서 다시@>일시 오류 — 재…' to contain '네트워크 오류: LLM 엔드포인트에 연결할 수 없습니다(/v1). …'
+   ✓ transport failure paints recovery CTA and keeps Send mounted > 401 also mounts settings opener  734ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiChatPanelTransportError.test.ts > transport failure paints recovery CTA and keeps Send mounted > refused fetch: is-turn-running cleared, system error bubble + ai-error-open-settings, ai-send stays disabled with ai-abort visible
+AssertionError: expected '2026년 9월 7일 월@>hello여기서 다시@>일시 오류 — 재…' to contain '네트워크 오류: LLM 엔드포인트에 연결할 수 없습니다(/v1). …'
+
+- Expected
++ Received
+
+- 네트워크 오류: LLM 엔드포인트에 연결할 수 없습니다(/v1). npm run ai:oauth로 로컬 동반 서비스를 실행하세요. Failed to fetch
+- 일시적 네트워크 문제로 보이면 재시도를 눌러 주세요.
++ 2026년 9월 7일 월@>hello여기서 다시@>일시 오류 — 재시도 중(1/3)@>일시 오류 — 재시도 중(2/3)@>일시 오류 — 재시도 중(3/3)@>토큰 입력 0 · 출력 0 · 9초@>오류: 네트워크 오류: LLM 엔드포인트에 연결할 수 없습니다(/v1). npm run ai:oauth로 로컬 동반 서비스를 실행하세요. Failed to fetch일시적 네트워크 문제로 보이면 재시도를 눌러 주세요.재시도 — 같은 문맥에서 1회 재시도설정 열기
+
+ ❯ test/aiChatPanelTransportError.test.ts:115:61
+    113|     expect(result.result.error).toContain("Failed to fetch");
+    114|     expect(requests).toEqual({ intent: 1, chat: 4 });
+    115|     expect(findByTestId(panel, "ai-chat-log")?.textContent).toContain(…
+       |                                                             ^
+    116|     expectRecovery(panel);
+    117|   }, 20_000);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 10 passed (11)
+   Start at  00:36:40
+   Duration  39.15s (transform 21.44s, setup 0ms, collect 54.75s, tests 14.57s, environment 1ms, prepare 524ms)
+
+JSON report written to /home/main/.herdr/worktrees/rpg-zzu/worktree-clear-field-e552-ai-seven-async/.omo/evidence/ai-seven-async/pre-mutation-green.json

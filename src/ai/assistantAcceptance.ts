@@ -42,6 +42,7 @@ export type AcceptanceCriterion =
   | { readonly kind: "mapCount"; readonly targets: readonly AcceptanceTarget[]; readonly count: number }
   | (ScopedTarget & { readonly kind: "eventCount"; readonly count: number })
   | (ScopedTarget & { readonly kind: "targetChange" | "preserve" | "imageReviewed" })
+  | { readonly kind: "actionCombat"; readonly target: AcceptanceTarget }
   | { readonly kind: "reachability"; readonly target: AcceptanceTarget; readonly from: Point; readonly to: readonly Point[] };
 export interface AcceptancePromise {
   readonly required?: boolean;
@@ -62,6 +63,12 @@ function target(value: unknown): AcceptanceTarget | null {
   if (text(value.newMapName) && Object.keys(value).length === 1) return { newMapName: value.newMapName };
   return null;
 }
+export function parseActionCombatRequirements(value: unknown): { readonly targets: readonly AcceptanceTarget[] } | null {
+  if (!acceptanceRecord(value) || Object.keys(value).some(key => key !== "targets")
+    || !Array.isArray(value.targets) || value.targets.length === 0) return null;
+  const targets = value.targets.map(target);
+  return targets.every((entry): entry is AcceptanceTarget => entry !== null) ? { targets } : null;
+}
 function point(value: unknown): Point | null {
   return acceptanceRecord(value) && integer(value.x) && integer(value.y) ? { x: value.x, y: value.y } : null;
 }
@@ -78,6 +85,7 @@ function criterion(value: unknown): AcceptanceCriterion | null {
     eventCount: ["kind", "target", "region", "count"], targetChange: ["kind", "target", "region"],
     preserve: ["kind", "target", "region"], imageReviewed: ["kind", "target", "region"],
     reachability: ["kind", "target", "from", "to"], toolVerdict: ["kind", "tool", "args"],
+    actionCombat: ["kind", "target"],
   };
   const allowed = typeof value.kind === "string" && Object.hasOwn(keys, value.kind) ? keys[value.kind] : undefined;
   if (!allowed || Object.keys(value).some(key => !allowed.includes(key))) return null;
@@ -97,6 +105,7 @@ function criterion(value: unknown): AcceptanceCriterion | null {
   if (region === null) return null;
   const scope = { target: parsedTarget, ...(region ? { region } : {}) };
   switch (value.kind) {
+    case "actionCombat": return { kind: value.kind, target: parsedTarget };
     case "mapDimensions":
       return integer(value.width) && integer(value.height) && value.width > 0 && value.height > 0
         ? { kind: value.kind, target: parsedTarget, width: value.width, height: value.height } : null;

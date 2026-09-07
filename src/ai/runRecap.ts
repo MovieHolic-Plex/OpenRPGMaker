@@ -11,7 +11,7 @@ import {
 
 /** assistantSession.AuditEntry 의 계량에 필요한 부분집합 — 세션 모듈을 끌어오지 않는다. */
 export type RecapAuditEntry =
-  | { readonly kind: "tool"; readonly name: string; readonly ok: boolean; readonly at?: string }
+  | { readonly kind: "tool"; readonly name: string; readonly ok: boolean; readonly deferred?: boolean; readonly at?: string }
   | { readonly kind: "status"; readonly text: string; readonly at?: string }
   | { readonly kind: string; readonly at?: string };
 
@@ -27,6 +27,7 @@ export interface RunRecap {
   readonly usage: SessionUsageTotals;
   readonly toolCalls: number;
   readonly toolFailures: number;
+  readonly deferredToolCalls?: number;
   readonly ralphContinues: number;
   readonly volumeContinues: number;
   readonly proposedWrites: number;
@@ -83,7 +84,7 @@ export function extractRunProcess(audit: readonly RecapAuditEntry[]): RunProcess
   for (const entry of audit) {
     if (entry.kind === "tool") {
       const tool = entry as Extract<RecapAuditEntry, { kind: "tool" }>;
-      const mark = tool.ok ? "ok" : "fail";
+      const mark = tool.deferred ? "deferred" : tool.ok ? "ok" : "fail";
       const prev = steps[steps.length - 1];
       const compact = `${tool.name} ${mark}`;
       if (prev?.kind === "tool" && prev.text.startsWith(`${compact}`)) {
@@ -114,12 +115,14 @@ export function buildRunRecap(input: {
 }): RunRecap {
   const process = extractRunProcess(input.audit);
   const tools = input.audit.filter((entry): entry is Extract<RecapAuditEntry, { kind: "tool" }> => entry.kind === "tool");
+  const deferredToolCalls = tools.filter((entry) => entry.deferred).length;
   return {
     ...(input.runOutcome ? { runOutcome: input.runOutcome } : {}),
     elapsedMs: Math.max(0, Math.trunc(input.elapsedMs)),
     usage: input.usage,
     toolCalls: tools.length,
-    toolFailures: tools.filter((entry) => !entry.ok).length,
+    toolFailures: tools.filter((entry) => !entry.ok && !entry.deferred).length,
+    ...(deferredToolCalls > 0 ? { deferredToolCalls } : {}),
     ralphContinues: process.filter((step) => step.kind === "ralph" && /ralph:continue/u.test(step.text)).length,
     volumeContinues: process.filter((step) => step.kind === "volume" && /volume-contract:continue/u.test(step.text)).length,
     proposedWrites: input.proposedWrites,
@@ -155,6 +158,7 @@ export function serializeRunRecap(recap: RunRecap): string {
     })),
     tools: recap.toolCalls,
     toolFail: recap.toolFailures,
+    ...(recap.deferredToolCalls ? { toolDeferred: recap.deferredToolCalls } : {}),
     ralph: recap.ralphContinues,
     volume: recap.volumeContinues,
     writes: recap.proposedWrites,
@@ -206,6 +210,7 @@ export function parseRunRecapPayload(raw: string): RunRecap | null {
       },
       toolCalls: asInt(parsed.tools),
       toolFailures: asInt(parsed.toolFail),
+      ...(asInt(parsed.toolDeferred) > 0 ? { deferredToolCalls: asInt(parsed.toolDeferred) } : {}),
       ralphContinues: asInt(parsed.ralph),
       volumeContinues: asInt(parsed.volume),
       proposedWrites: asInt(parsed.writes),

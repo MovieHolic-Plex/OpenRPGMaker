@@ -1,3 +1,4 @@
+import { updateDetectionEncounters } from "./npcDetectionEncounter";
 import { advanceFurniturePush, beginFurniturePush, clearFurniturePush, furniturePushFrames } from './furniturePushAnimation';
 import { advancePursuitDoors, isPlayerHiding, pushObject, toggleHiding } from "./horrorRuntime";
 import { refreshRuntimeEntities } from "./playSceneMapRuntime";
@@ -41,6 +42,7 @@ import type { RuntimeDomOverlay } from "@/player/runtimeDom";
 import type { FarmInteractionResult } from "@/player/farming";
 import { farmIntentForHand, interactWithFarmPlot, farmIgnoreMessage } from "@/player/farming";
 import { showFarmFeedbackMessage } from "@/player/playSceneZoneFeedback";
+import { interactWithLifeField } from "@/player/lifeFieldInteraction";
 import { tryChestInteraction } from "@/player/playSceneChest";
 import { tryActionCombatSwing, tryActionSkillCast } from "@/player/playSceneActionCombat";
 import { applyBattleDefeat } from "@/player/playSceneDefeat";
@@ -90,6 +92,7 @@ export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void 
     scene.syncRuntimeState();
     return;
   }
+  updateDetectionEncounters(scene, deltaMs);
   const world = { project: store.getCurrent(), map: scene.map, session: scene.session, positions: scene.eventPositions };
   if (!scene.running && advancePursuitDoors(world, deltaMs)) refreshRuntimeEntities(scene);
   scene.player.setVisible?.(!isPlayerHiding(world));
@@ -504,6 +507,7 @@ function performAction(
     return true;
   }
   if (tryChestInteraction(scene as any, tx, ty)) return true;
+  if (attemptLifeInteraction(scene, tx, ty)) return true;
   const facingFarm = attemptFarmInteraction(scene, tx, ty, farmAttempts);
   if (facingFarm.handled) return true;
   // RM2K3 관례: 정면에 없으면 발밑(하위 우선순위) 액션 이벤트를 조사한다.
@@ -516,6 +520,7 @@ function performAction(
     return true;
   }
   if (tryChestInteraction(scene as any, scene.tileX, scene.tileY)) return true;
+  if (attemptLifeInteraction(scene, scene.tileX, scene.tileY)) return true;
   const underfootFarm = attemptFarmInteraction(scene, scene.tileX, scene.tileY, farmAttempts);
   if (underfootFarm.handled) return true;
   // 한 번의 A 입력에 안내 문구는 최대 하나. 정면과 발밑 두 번 시도하므로 여기서 한 번만 띄운다.
@@ -523,6 +528,18 @@ function performAction(
   const message = underfootFarm.message ?? facingFarm.message;
   if (message) showFarmFeedbackMessage(scene, message);
   return false;
+}
+
+function attemptLifeInteraction(scene: ActionEventSceneContext, x: number, y: number): boolean {
+  const result = interactWithLifeField(store.getCurrent(), scene.session, { mapId: scene.map.id, x, y });
+  if (result.kind === "unhandled") return false;
+  if (result.kind === "refused") showFarmFeedbackMessage(scene, result.message);
+  else {
+    scene.lastActionTargetKey = "";
+    scene.refreshRuntimeSurfaces?.();
+    scene.syncRuntimeState?.();
+  }
+  return true;
 }
 
 type FarmAttempt = { readonly handled: boolean; readonly message: string | null };
@@ -755,6 +772,7 @@ export function maybeTriggerRandomEncounter(scene: PlaySceneContext): void {
 
 // runFieldSpawnEventBattle(playSceneFieldSpawns.ts) 과 같은 재진입 가드 계약이다.
 async function runRandomEncounterBattle(scene: PlaySceneContext, troopId: string): Promise<void> {
+  const session = scene.session;
   const previousInputEnabled = scene.inputEnabled;
   scene.running = true;
   scene.setInputEnabled(false);
@@ -762,11 +780,14 @@ async function runRandomEncounterBattle(scene: PlaySceneContext, troopId: string
     // 결과를 버리면 안 된다: battleResult 는 페이지 조건·분기의 SSOT 이고, 랜덤 인카운터는
     // canLose=false 라 패배가 곧 게임 오버다(sceneTestRunner 의 인카운터 경로와 같은 계약).
     const result = await scene.playBattle({ kind: "battleProcessing", troopId, canEscape: true, canLose: false });
-    scene.session.battleResult = result;
+    if (result === null || scene.session !== session || scene.sys?.isActive() === false) return;
+    session.battleResult = result;
     if (result === "defeat") applyBattleDefeat(scene);
   } finally {
-    scene.running = false;
-    scene.setInputEnabled(previousInputEnabled);
+    if (scene.session === session && !scene.battleAbortController && scene.sys?.isActive() !== false) {
+      scene.running = false;
+      scene.setInputEnabled(previousInputEnabled);
+    }
   }
 }
 

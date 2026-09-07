@@ -4,6 +4,8 @@ import { CONFIGURE_OBJECT_BEHAVIOR, PURSUIT_SCHEMA, parsePursuit } from "./horro
 //              / duplicate_event / remove_event / move_event.
 
 import { shadowedPageWarnings } from "@/project/eventPageShadow";
+import { ACTION_CONTROLS_GUIDE } from "@/player/keyBindings";
+import { EventPlacementAnalysis, eventRequiresPassableTile } from "@/project/eventPlacementRecovery";
 import { isPassable, tileAt } from "@/project/collision";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
@@ -336,6 +338,8 @@ export function resolveEventPlacement(
   y: number,
   options: {
     readonly kind: "character" | "interaction";
+    readonly event?: GameEvent;
+    readonly from?: Point;
     readonly steppable?: boolean;
     readonly ignoreEventId?: string;
     readonly reserved?: ReadonlySet<string>;
@@ -344,6 +348,23 @@ export function resolveEventPlacement(
   },
 ): { x: number; y: number; adjusted: boolean } {
   const mustStandOnPassable = options.kind === "character" || options.steppable === true;
+  // Existing-event moves must validate the whole body against the CURRENT draft.
+  // A preceding move in the same assistant batch may have consumed this advice.
+  if (options.event) {
+    const analysis = new EventPlacementAnalysis(project, map);
+    for (let radius = 0; radius <= 3; radius++) {
+      for (let dy = -radius; dy <= radius; dy++) for (let dx = -radius; dx <= radius; dx++) {
+        if (Math.max(Math.abs(dx), Math.abs(dy)) !== radius) continue;
+        const moved = { ...options.event, x: x + dx, y: y + dy };
+        if (!analysis.validDestination(moved, mustStandOnPassable, options.from)) continue;
+        return { x: moved.x, y: moved.y, adjusted: radius !== 0 };
+      }
+    }
+    throw new ToolError(
+      `${options.label}의 몸·통행·이동·접근 조건을 만족하는 빈 자리가 (${x}, ${y}) 반경 3칸에 없습니다. run_lint 또는 get_map_region으로 현재 점유와 지형을 확인하고 다른 위치를 선택하세요.`,
+      { code: options.code, mapId: map.id, x, y },
+    );
+  }
   const requestedReserved = options.reserved?.has(`${x},${y}`) === true;
   if (!requestedReserved && isPassable(project, map, x, y)) return { x, y, adjusted: false };
   if (!requestedReserved && !mustStandOnPassable && passableLanding(project, map, x, y)) return { x, y, adjusted: false };
@@ -514,7 +535,8 @@ const placeNpc: ToolDefinition = {
     `${PLACE_NPC_OBJECT_GIMMICK_HINT} NPC 이벤트를 배치한다. 쓰기 전 find_events/get_event/get_story_state 로 기존 NPC·플래그를 읽고, 상태별 페이지(기본 + 조건이 다른 뒤 페이지)로 구성하라.  페이지는 조건이 서로 다른 상태 변형이어야 한다 — 한 줄 인사 한 페이지만 놓고 끝내지 말 것. graphic 은 query 로 외형을 고르고 생략하면 villager 기본. 물 위·통행 불가 칸 금지. 상점 NPC 는 make_villager({shop}) 1회 또는 이 툴 1회 — 같은 역할을 중복 배치하지 말 것. 순찰·시간표는 set_npc_schedule, 재고는 set_shop_stock.`
     + "한 줄 인사만 놓고 끝내지 마라. graphic은 {query} 또는 {textureKey,characterIndex}. query는 기존 별칭(villager|people|npc|human|사람|주민|actor|hero|animal|monster)과 자유 질의를 허용한다: 예 '할머니', 'old woman', '노인 남성'. "
     + "pages는 SimplePage로 EventPage로 컴파일된다. 페이지마다 name/graphic/conditions 를 줄 수 있다. 호감/선물은 characterId 를 명시. "
-    + "**대사가 있으면 charset에 대응하는 faceset changeFace를 자동 삽입**한다(page.face로 덮어쓰기 가능). page.conditions 단수 객체/null, page.commands 단수 객체, command→kind alias는 warning과 함께 정규화한다. 통행 불가/점유 칸이면 근처 통행 가능 칸으로 자동 착지한다.",
+    + "**대사가 있으면 charset에 대응하는 faceset changeFace를 자동 삽입**한다(page.face로 덮어쓰기 가능). page.conditions 단수 객체/null, page.commands 단수 객체, command→kind alias는 warning과 함께 정규화한다. 통행 불가/점유 칸이면 근처 통행 가능 칸으로 자동 착지한다. "
+    + "guide:'action-controls'는 예외: pages 없이 실제 키 계약의 조작 안내 한 페이지만 만든다. 맵마다 같은 안내를 재사용하며 재시도 시 기존 위치를 유지한다. 명시 id가 우선한다.",
   mode: "write",
   parameters: {
     type: "object",
@@ -533,17 +555,32 @@ const placeNpc: ToolDefinition = {
         items: SIMPLE_PAGE_SCHEMA,
       },
       id: { type: "string" },
+      guide: { type: "string", enum: ["action-controls"], description: "키 바인딩 정본의 조작 안내 한 페이지. pages 대신 사용하며 맵별 고정 ID로 재사용한다." },
       characterId: { type: "string", description: "공유 호감/선물 키. 호감 페이지를 쓰면 필수. 생략 시 호감 조건/커맨드가 있으면 이름에서 할당" },
     },
-    required: ["mapId", "x", "y", "name", "pages"],
+    required: ["mapId", "x", "y", "name"],
   },
-  invalidArgsHint: PLACE_NPC_OBJECT_GIMMICK_HINT,
+  invalidArgsHint: "대화 NPC는 pages:[{lines:[원래 대사]}]가 필수입니다. dialogue.text는 pages의 lines로 옮기세요. 오브젝트 기믹을 만들려는 경우에만 place_chest/place_storage_chest/place_savepoint를 사용하세요.",
+  invalidArgsRepair(args) {
+    const dialogue = args.dialogue;
+    if (args.pages !== undefined || typeof dialogue !== "object" || dialogue === null || Array.isArray(dialogue)) return undefined;
+    if (Object.keys(args).some(key => key !== "dialogue" && !(key in (placeNpc.parameters.properties ?? {})))) return undefined;
+    if (Object.keys(dialogue).length !== 1 || !("text" in dialogue) || typeof dialogue.text !== "string" || !dialogue.text.trim()) return undefined;
+    return { path: "pages", example: [{ lines: [dialogue.text] }] };
+  },
   run(draft, args): ToolExecResult {
     const map = requireMap(draft, args.mapId as string);
     const requestedX = args.x as number;
     const requestedY = args.y as number;
     const name = args.name as string;
-    const explicitId = typeof args.id === "string" && args.id.trim() ? args.id.trim() : undefined;
+    const actionGuide = args.guide === "action-controls";
+    if (!actionGuide && args.pages === undefined) {
+      const repair = placeNpc.invalidArgsRepair?.(args);
+      throw new ToolError(`일반 NPC에는 pages가 필요합니다.${repair ? `\nrepair: ${JSON.stringify(repair)}` : ""}`, { code: "invalid-args" });
+    }
+    const explicitId = typeof args.id === "string" && args.id.trim()
+      ? args.id.trim()
+      : actionGuide ? `ev_action_controls_${map.id}` : undefined;
     if (!inMapBounds(map, requestedX, requestedY)) {
       throw new ToolError(`NPC 위치가 맵 밖입니다: (${requestedX}, ${requestedY})`, { code: "npc-out-of-bounds", mapId: map.id, x: requestedX, y: requestedY });
     }
@@ -567,20 +604,21 @@ const placeNpc: ToolDefinition = {
     });
     // 근접 유사 NPC: 상점 역할이면 id가 달라도 기존 이벤트로 합친다(상점 주인+상인 thrash).
     // 일반 NPC는 id 생략일 때만 병합 — 명시 id 2개는 의도적 복수 배치.
-    const similar = existingNpc ?? findNearbySimilarNpc(map, x, y, name, 2);
+    const similar = existingNpc ?? (actionGuide ? undefined : findNearbySimilarNpc(map, x, y, name, 2));
     const shopRole = isShopRoleNpcName(name);
     const mergeSimilar = Boolean(similar) && (similar?.id === explicitId || shopRole || !explicitId);
     const id = mergeSimilar ? similar!.id : (explicitId ?? genId("ev_npc"));
     const reused = mergeSimilar;
-    const movement = (args.movement as string | undefined) === "random" ? WANDER : PASSIVE;
+    const movement = !actionGuide && args.movement === "random" ? WANDER : PASSIVE;
     const normalizationWarnings: string[] = [];
     if (args.graphic === undefined) normalizationWarnings.push("graphic 생략 → query:\"villager\" 기본 적용");
     if (reused) normalizationWarnings.push(`근접 유사 NPC 재사용 → id:${id} (새 이벤트 대신 갱신)`);
     const faceArg = resolvePlaceNpcFaceArg(args.face, graphic);
-    const pages = compileSimplePages(id, name, args.pages as SimplePage[], graphic, {
+    const pages = compileSimplePages(id, name, actionGuide ? [{ text: ACTION_CONTROLS_GUIDE }] : args.pages as SimplePage[], graphic, {
       movement,
       warnings: normalizationWarnings,
       face: faceArg,
+      injectFace: !actionGuide || args.face !== undefined,
     });
     let event: GameEvent;
     let finalX = x;
@@ -595,6 +633,7 @@ const placeNpc: ToolDefinition = {
       event = { id, x, y, trigger: { kind: "action" }, commands: [], pages };
     }
     event.name = name;
+    event.placementRole = "npc";
     const requestedCharacterId = typeof args.characterId === "string" && args.characterId.trim()
       ? args.characterId.trim()
       : undefined;
@@ -2328,7 +2367,10 @@ const moveEvent: ToolDefinition = {
   mode: "write",
   parameters: {
     type: "object",
-    properties: { mapId: { type: "string" }, eventId: { type: "string" }, x: { type: "integer" }, y: { type: "integer" } },
+    properties: {
+      mapId: { type: "string" }, eventId: { type: "string" }, x: { type: "integer" }, y: { type: "integer" },
+      from: { ...COORD_SCHEMA, description: "접근성을 검사할 같은 맵의 진입 좌표. 린트 후보의 from을 그대로 전달한다. 생략하면 시작 맵의 시작 위치, 그 외 맵은 로컬 접근성을 사용한다." },
+    },
     required: ["mapId", "eventId", "x", "y"],
   },
   run(draft, args): ToolExecResult {
@@ -2338,8 +2380,17 @@ const moveEvent: ToolDefinition = {
     const requestedX = args.x as number;
     const requestedY = args.y as number;
     if (!inMapBounds(map, requestedX, requestedY)) throw new ToolError(`이동 위치가 맵 밖입니다: (${requestedX}, ${requestedY})`, { mapId: map.id, x: requestedX, y: requestedY });
+    const from = args.from as Point | undefined;
+    if (from !== undefined && (!Number.isInteger(from.x) || !Number.isInteger(from.y)
+      || !inMapBounds(map, from.x, from.y) || !isPassable(draft, map, from.x, from.y))) {
+      throw new ToolError("from은 같은 맵의 통행 가능한 정수 좌표여야 합니다. get_map_region으로 진입 위치를 확인하세요.", {
+        code: "move-event-origin-invalid", mapId: map.id, x: from.x, y: from.y,
+      });
+    }
     const placement = resolveEventPlacement(draft, map, requestedX, requestedY, {
-      kind: "interaction",
+      kind: eventRequiresPassableTile(event) ? "character" : "interaction",
+      event,
+      from,
       steppable: eventIsSteppable(event),
       ignoreEventId: event.id,
       label: `이벤트 '${event.id}'`,

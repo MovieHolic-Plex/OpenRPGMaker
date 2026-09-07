@@ -279,6 +279,7 @@ function commandReferencesCommonEvent(command: Command, id: string): boolean {
 
 export function resourceReferenceMessage(resourceId: string): string | null {
   const project = store.getCurrent();
+  if (project.resourceProfiles.some((profile) => profile.characterSlots?.some((slot) => slot.status === "mapped" && slot.faceResourceId === resourceId))) return "캐릭터·얼굴 수동 연결이 이 리소스를 사용 중입니다.";
   if (project.database.actors.some((record) => record.faceResourceId === resourceId || record.characterResourceId === resourceId || record.battleCharacterResourceId === resourceId)) return "주인공이 이 리소스를 사용 중입니다.";
   if (project.database.items.some((record) => record.imageResourceId === resourceId || record.iconResourceId === resourceId)) return "아이템이 이 리소스를 사용 중입니다.";
   if (project.database.equipment.some((record) => record.imageResourceId === resourceId || record.iconResourceId === resourceId)) return "장비가 이 리소스를 사용 중입니다.";

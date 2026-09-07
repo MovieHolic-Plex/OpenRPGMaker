@@ -1,0 +1,107 @@
+[
+  {
+    "mutation": "idle-map-host-hidden",
+    "source": "src/styles/database/tabs-b-assistant-panel/12-assistant-temperature.css",
+    "exit": 1,
+    "targeted_assertion_failed": true,
+    "source_restored": true
+  },
+  {
+    "mutation": "scoped-host-hidden",
+    "source": "src/styles/database/tabs-b-assistant-panel/12-assistant-temperature.css",
+    "exit": 1,
+    "targeted_assertion_failed": true,
+    "source_restored": true
+  },
+  {
+    "mutation": "scoped-priority-lost",
+    "source": "src/styles/database/tabs-b-assistant-panel/12-assistant-temperature.css",
+    "exit": 1,
+    "targeted_assertion_failed": true,
+    "source_restored": true
+  },
+  {
+    "mutation": "map-sibling-visible-while-scoped",
+    "source": "src/styles/database/tabs-b-assistant-panel/12-assistant-temperature.css",
+    "exit": 1,
+    "targeted_assertion_failed": true,
+    "source_restored": true
+  },
+  {
+    "mutation": "selection-hidden-with-siblings",
+    "source": "src/styles/database/tabs-b-assistant-panel/12-assistant-temperature.css",
+    "exit": 1,
+    "targeted_assertion_failed": true,
+    "source_restored": true
+  },
+  {
+    "mutation": "clear-button-hidden",
+    "source": "src/styles/database/tabs-b-assistant-panel/07-viewer-modal-settings.css",
+    "exit": 1,
+    "targeted_assertion_failed": true,
+    "source_restored": true
+  },
+  {
+    "mutation": "input-help-removed",
+    "source": "src/editor/panels/aiComposer.ts",
+    "exit": 1,
+    "targeted_assertion_failed": true,
+    "source_restored": true
+  },
+  {
+    "mutation": "retired-hint-restored",
+    "source": "src/editor/panels/aiComposer.ts",
+    "exit": 1,
+    "targeted_assertion_failed": true,
+    "source_restored": true
+  },
+  {
+    "mutation": "help-takes-row-space-with-new-class",
+    "source": "src/editor/panels/aiComposer.ts",
+    "exit": 1,
+    "targeted_assertion_failed": true,
+    "source_restored": true
+  },
+  {
+    "mutation": "action-row-block-layout",
+    "source": "src/styles/database/assistant-composer.css",
+    "exit": 1,
+    "targeted_assertion_failed": true,
+    "source_restored": true
+  },
+  {
+    "mutation": "deck-action-row-height",
+    "source": "src/styles/database/tabs-b-assistant-panel/18-assistant-deck.css",
+    "exit": 1,
+    "targeted_assertion_failed": true,
+    "source_restored": true
+  },
+  {
+    "mutation": "action-lead-wraps",
+    "source": "src/styles/database/assistant-composer.css",
+    "exit": 1,
+    "targeted_assertion_failed": true,
+    "source_restored": true
+  },
+  {
+    "mutation": "focus-class-missing",
+    "source": "src/editor/panels/aiComposer.ts",
+    "exit": 1,
+    "targeted_assertion_failed": true,
+    "source_restored": true
+  },
+  {
+    "mutation": "blur-class-sticks",
+    "source": "src/editor/panels/aiComposer.ts",
+    "exit": 1,
+    "targeted_assertion_failed": true,
+    "source_restored": true
+  },
+  {
+    "mutation": "send-control-detached",
+    "source": "src/editor/panels/aiComposer.ts",
+    "exit": 1,
+    "targeted_assertion_failed": true,
+    "source_restored": true
+  }
+]

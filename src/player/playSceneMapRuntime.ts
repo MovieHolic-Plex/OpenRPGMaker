@@ -1,3 +1,5 @@
+import { resetDetectionForMap } from "./npcDetectionEncounter";
+import { evalCondition } from "@/project/session";
 import { clearFurniturePush, furniturePushPosition } from './furniturePushAnimation';
 import { chipsetAnimationKey, TILE_SIZE } from "@/assets/bundled";
 import {
@@ -19,6 +21,7 @@ import {
   type ChipsetQuarterComposition,
 } from "@/project/defaults/terrainQuarterAutotile";
 import { mapWithCommittedEvents } from "@/project/eventDrafts";
+import { applyRuntimeMapOverrides } from "@/project/runtimeMap";
 import { tileStackAt } from "@/project/mapOverlayTiles";
 import { invalidateTilePassabilityComponents } from "@/project/tilePassabilityComponents";
 import { isTreeTrunkTileId } from "@/project/tilesetHarness";
@@ -52,7 +55,7 @@ import { DEFAULT_EASYRPG_CHARSET_ID } from "@/project/defaults/constants";
 import { applyMapDefaultLighting } from "@/project/lightingRules";
 import { initializeFieldSpawnsForScene } from "@/player/playSceneFieldSpawns";
 import { renderFarmOverlays } from "@/player/playSceneFarming";
-import { renderPlaceableOverlays } from "@/player/playScenePlaceables";
+import { renderPlaceableOverlays, syncForageWarnings } from "@/player/playScenePlaceables";
 import { initialRuntimeEventPositions,
 runtimeEventViewsForMap,
 type RuntimeEventView, } from "@/project/runtimeEventState"
@@ -502,6 +505,7 @@ function renderEvents<TImage extends RenderedTileImage, TSprite extends Rendered
     marker.setScale(eventSpriteScale(spriteTexture, marker, view.scale));
     scene.eventSprites.set(event.id, marker);
   }
+  syncForageWarnings(scene);
   scene.runtimeDom.syncMissingResourceError(scene.missingResources);
   scene.syncRuntimeState();
 }
@@ -521,6 +525,7 @@ function renderedEventPosition(
 }
 
 export function resetMapRuntime(scene: PlaySceneContext): void {
+  resetDetectionForMap(scene);
   clearFurniturePush(scene);
   // 맵이 바뀌면 타일 서명도 버린다 — 같은 맵 객체를 다시 로드하는 경로에서도 반드시 다시 그린다.
   invalidateTileLayer(scene);
@@ -555,7 +560,10 @@ export function activeRuntimeEvents(
   triggerKind: "action" | "touch" | "playerTouch" | "eventTouch" | "auto" | "parallel"
 ): RuntimeEventView[] {
   return runtimeEventViewsForMap(store.getCurrent(), scene.map, scene.session, scene.eventPositions)
-    .filter((event) => event.trigger.kind === triggerKind);
+    .filter((event) => event.trigger.kind === triggerKind
+      && (event.event.pages?.length
+        ? event.page !== undefined
+        : evalCondition(scene.session, event.event.condition, event.event)));
 }
 
 export function syncRuntimeState(scene: PlaySceneContext): void {
@@ -721,21 +729,7 @@ export async function fireAutoTriggers(scene: PlaySceneContext): Promise<void> {
 }
 
 export function applyMapOverrides(scene: PlaySceneContext): void {
-  const overrides = scene.session.mapOverrides[scene.getMapId()];
-  if (!overrides) return;
-  // 런타임에서 타일이 바뀌는 유일한 지점이다. 통행 성분 색인을 여기서 버린다 —
-  // 지문 검증이 이미 막아주지만(tilePassabilityComponents §terrainMayReach) 뜻을 남긴다.
+  if (!scene.session.mapOverrides[scene.getMapId()]) return;
   invalidateTilePassabilityComponents(scene.map);
-  for (const idxStr in overrides.lower) {
-    const index = Number(idxStr);
-    if (index >= 0 && index < scene.map.lowerTiles.length) {
-      scene.map.lowerTiles[index] = overrides.lower[index];
-    }
-  }
-  for (const idxStr in overrides.upper) {
-    const index = Number(idxStr);
-    if (index >= 0 && index < scene.map.upperTiles.length) {
-      scene.map.upperTiles[index] = overrides.upper[index];
-    }
-  }
+  applyRuntimeMapOverrides(scene.map, scene.session);
 }

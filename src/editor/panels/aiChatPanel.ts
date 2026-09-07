@@ -71,6 +71,7 @@ import {
 import { noteAiChangeUndone } from "@/ai/preferenceSignals";
 import type { AuditEntry } from "@/ai/assistantSession";
 import { serializeAuditTranscript } from "@/ai/conversationReplay";
+import { createProjectWikiCoordinator } from "@/editor/projectWikiCoordinator";
 import { EMPTY_SESSION_USAGE } from "@/ai/sessionUsage";
 import { createAiContextMeter, type AiContextMeterHandle, type AiContextSnapshot } from "./aiContextMeter";
 import { openAiConversationHistoryModal } from "./aiConversationHistoryModal";
@@ -700,6 +701,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       pendingPriorTranscript = null;
       controller.session = new AssistantSession(store.getCurrent(), {
         config: resolveSurfaceAiConfig("chat"),
+        prepareProjectWiki: createProjectWikiCoordinator({
+          getConfig: () => resolveSurfaceAiConfig("chat"),
+          status: (text) => setStatus(text),
+        }).prepare,
         // 턴 시작에 사용자 발화를 모델이 한 번 읽어 의도(수정/생성·실내/야외·시설·되묻기·계획·툴)를 선언한다.
         // 되묻기·플래너·툴 노출은 그 선언만 소비한다 — 문장 키워드 스캔은 없다(2026-09-03 의도 라우터 감사).
         declareIntent: createLlmIntentDeclarer(),
@@ -2140,6 +2145,21 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   }
   // 두 메뉴가 공유하는 항목의 유일한 구현(aiActionMenu.ts). 컨테이너·열림 상태만 표면마다 다르다.
   const sharedMenuActions: AiActionMenuActions = {
+    refreshWiki: () => {
+      if (turnBusy) { toast("현재 작업이 끝난 뒤 기록을 정리해주세요.", "info"); return; }
+      const coordinator = createProjectWikiCoordinator({
+        getConfig: () => resolveSurfaceAiConfig("chat"), status: (text) => setStatus(text),
+      });
+      void coordinator.backfill().then((count) => {
+        controller.session?.syncBaselineFromStoreIfClean(store.getCurrent());
+        appendBubble("system", `이 프로젝트의 이전 대화에서 설정집 문서 ${count}개를 정리했습니다.`);
+        setStatus("기록 정리 완료");
+      }, (cause: unknown) => {
+        const message = cause instanceof Error ? cause.message : String(cause);
+        appendBubble("system", `설정집 정리를 완료하지 못했습니다: ${message}`);
+        setStatus("기록 정리 실패");
+      });
+    },
     openSettings: () => openAiSettings("first"),
     exportAudit: () => exportButton?.click(),
     openHistory: () => {

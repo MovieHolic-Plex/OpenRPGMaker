@@ -63,6 +63,14 @@ until those removals have real ownership evidence.
 
 # Editor Database
 
+## 캐릭터·얼굴 메타데이터 (2026-09-06)
+
+- System 그룹의 `characterGraphics` (`db-tab-character-graphics`)는 `databaseCharacterGraphicsView.ts`가 기존 workspace/list/detail 빌더로 렌더한다. 주민 관계(`characters`)와 다른 면이며, 새로운 자산 목록이나 자동 이벤트 변경 경로를 만들지 않는다.
+- `project/characterGraphics.ts`가 기존 `resourceProfiles`의 얼굴 `graphicAttributes`/`graphicNote`, charset `characterSlots`를 읽고 쓴다. 이름은 sprite의 경우 기존 `charsetLabels`, 얼굴은 profile.name이다. 두 그림의 종류·나이·성별·피부·머리·의상·역할은 독립이며 명확한 글자 특징만 기본 표시한다. 모호함은 빈칸이다.
+- 상태는 pending/mapped/no-face, 품질은 unspecified/exact/approximate다. pending 이름 편집은 검토 완료가 아니며, no-face는 명시적인 값이다. 그림으로 얼굴을 지정해도 속성을 복사하지 않고 기존 맵·이벤트 명령을 바꾸지 않는다.
+- `rpg-zzu-npc-face-mapping` v1 `mappings`를 가져올 때 label/note/status/faceResourceId를 보존하며 품질 생략은 unspecified다. v2는 같은 mappings에 attributes/quality를 더하고 `faces: [{resourceId,label,note,attributes}]`를 갖는다. 전체 검증 후 history + labeled store.update 한 번으로 적용한다. 중복·잘못된 칸·알 수 없는 얼굴은 전체 가져오기를 거부한다.
+- QA 진입: 기존 데이터베이스 → 시스템 → 캐릭터·얼굴. `db-cg-view-sprites`/`db-cg-view-faces`, `db-cg-import-file`, `db-cg-import-json`/`db-cg-import-apply`, `db-cg-export`가 공개 표면이다. 이름·속성 필터와 얼굴 후보 필터는 독립된 editor-only 상태다. 테스트: `characterGraphics.test.ts`, `characterGraphicsLoad.test.ts`, `databaseCharacterGraphics.test.ts`; 브라우저/원격 저장 검증은 별도다.
+
 ## Concept navigation integration (2026-09-06)
 
 PR617's concept-first Map rail is integrated with the current unified inventory
@@ -355,6 +363,18 @@ Party record tabs use the final section of `studio-v2.css`: actors, classes, ski
 - The hero owns selected-actor identity, class, level range, and start-party membership. The table owns selection and comparison only; do not restore duplicate current-selection/party summary metrics or analytics. System remains the authority for `startActorIds`.
 - Scroll ownership is explicit: list rows scroll inside `.db-actor-studio-table`; the actor hero and section tabs remain fixed; only `.actor-section-body` scrolls. Do not return to one long inspector document where category navigation depends on scrolling.
 
+## 프로젝트 위키 출처와 수동 편집 (2026-09-07)
+
+설정집의 위키 문서는 `world-wiki-provenance`에 선언/지식/진행 기록과
+명시/추론/실제 적용 근거를 표시한다. 출처 원문은 접힌 `world-wiki-sources`에서
+읽으며 HTML로 실행하지 않는다. 대체된 문서는 이력을 남기고 현재 지침에서 제외한다.
+수동 편집은 출처를 추가하며 제목/요약/본문 변경 시 낡은 자동 combatMode를 해제한다.
+실제 적용 기록의 수동 수정은 원본 증거를 바꾸지 않고 별도 지식 메모를 만든다.
+대체 이력에 연결된 문서는 삭제를 거부해 이전 지침이 되살아나지 않게 한다.
+열린 초안은 문서 지문으로 경합을 검사하며 충돌 시 사용자 입력을 보존한다.
+테스트: `projectWikiCodex.test.ts`, `projectWikiManualEdit.test.ts`.
+전체 AI 연결과 지속성은 [프로젝트 위키](project-wiki.md)를 따른다.
+
 ## 세계관 그룹 — 세계 개요 · 설정집 (2026-09-06)
 
 - **문서 작업실 개편:** `worldCanon`의 표시 이름은 「세계 개요」이며 stable tab/field testid는 유지한다. 제목·전제·본문이 중앙 문서를 구성하고 톤·시대·기술 수준·금지 항목·법칙은 `src/editor/panels/worldDocumentProperties.ts`의 접을 수 있는 속성에 둔다. 두 탭 모두 `workspaceShell`의 단일 루트/모달 크기 계약을 유지한다.
@@ -412,6 +432,7 @@ Party record tabs use the final section of `studio-v2.css`: actors, classes, ski
 - `src/editor/panels/database.ts`의 `lifeCrafting` / `db-tab-life-crafting`은 grouped navigation의 `생활` 그룹에 있다. 탭 count는 `database.lifeSkills`와 기존 제작/강화/가격/도구 행동뿐 아니라 `energy`, `shipping`, `worldUnlocks`, `bundles`, `makers`도 합산한다. optional singleton인 energy/shipping은 존재할 때 각각 1건으로 센다.
 - `src/editor/panels/databaseLifeCraftingView.ts`가 생활 기술·제작과 P0 생활 시스템의 구조화 저작을 소유한다. 사이드바 탭 제목을 본문에 반복하지 않고, 열 개 종류는 `db-ws-section-tab` 한 줄(가로 스크롤)로만 전환한다. 빈 상세는 한 줄 설명 + 만들기 CTA 이고, 에너지/출하도 같은 목록+상세 2칸을 유지한다. 생활 기술 5종/type/maxLevel/레벨 보상, 제작법 재료·결과·`requiresUnlock`, 강화 전후·비용·재료·도구 capability(`areaWidth`, `areaHeight`, `energyMultiplier`), 판매가와 도구 행동을 JSON 없이 편집한다. 도구 capability 축은 런타임/shape와 같은 `1..9`(총 81칸 이하)로 clamp한다.
 - 같은 화면의 `에너지`는 max/initial/restorePerDay, `출하`는 enabled/historyLimit/allowedItemIds 다중 선택, `지역 해금`은 id/name/switch, `꾸러미`는 요구 아이템과 gold/item/switch/worldUnlock/recipe 보상, `가공 설비`는 input/output/durationMinutes를 필드로 노출한다. 구조 변경은 `recordProjectSnapshot`, 필드 변경은 `recordCoalescedSnapshot`을 사용하므로 add/duplicate/delete와 field edit 모두 undo·dirty-state 계약을 따른다.
+- Tool-action authoring uses the real resolver defaults: creating the first nonempty custom table copies hoe/till, wateringCan/water, axe/chop/tree and pickaxe/mine/rock, then prepends the new row. Existing nonempty tables remain ordered complete replacements; adding another row only appends and loading never merges defaults. New rows do not silently select the first database item. `itemId` takes precedence over `farmTool` within a row; first matching rows retain their order. The condition hint explains that empty item/kind conditions mean any valid non-consumable farm tool, not a seed or consumable. The farmable checkbox displays the effective default (true for till/water) but stores an explicit boolean when edited, so unchecked false survives Project4 serialization, reload and undo/redo. `test/toolActionAuthoringParity.test.ts` and `test/databaseLifeCraftingView.test.ts` cover these contracts.
 - optional 설정을 끄는 동작은 값을 조용히 제거하지 않는다. `shipping.enabled=false`는 historyLimit/allowedItemIds를 그대로 보존하며, energy/shipping 객체 삭제와 bundle reward 초기화는 설명이 붙은 명시적 제거 버튼으로만 수행한다. 비어 있는 collection은 `[]`로 유지되어 기존 값을 암묵적으로 재생성하지 않는다.
 - `databaseRecordModel.ts`의 system whitelist와 `p0SystemRecords.ts` 정규화를 그대로 거치며 별도 migration은 없다. complete nested shape와 serialize/deserialize 왕복은 `test/p0ProjectSchema.test.ts`, `test/databaseLifeCraftingView.test.ts`, `test/lifeAuthoringReferences.test.ts`가 증명한다.
 - System `time` 섹션은 `db-field-system-time-days-per-season`으로 `TimeSystemConfig.daysPerSeason`을 편집한다. 기본값은 28이며 `dayStartHour` / `dayEndHour`와 함께 보존된다. 현재 schema에는 별도 시작 계절·시작 날짜 필드가 없으므로 UI가 임의 필드를 만들지 않는다.

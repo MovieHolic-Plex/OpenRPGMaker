@@ -9,10 +9,12 @@ import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 
 const EVENT_ID = "ev_page_preview";
+let pageSequence = 0;
 
 function seedProject(): string {
   const project = createBlankProject();
   const mapId = project.startMapId;
+  const pageId = `preview-${++pageSequence}`;
   project.maps[mapId]!.events = [
     {
       id: EVENT_ID,
@@ -22,7 +24,7 @@ function seedProject(): string {
       commands: [],
       pages: [
         {
-          id: "p1",
+          id: pageId,
           name: "안내인",
           conditions: [],
           graphic: {},
@@ -38,7 +40,7 @@ function seedProject(): string {
     },
   ];
   store.replace(project);
-  editorState.set({ currentMapId: mapId, selectedEventId: EVENT_ID, selectedEventPageId: "p1" });
+  editorState.set({ currentMapId: mapId, selectedEventId: EVENT_ID, selectedEventPageId: pageId });
   return mapId;
 }
 
@@ -102,6 +104,35 @@ describe("이 페이지가 하는 일 — 미리보기 보기", () => {
     click(host, "event-script-live-prev");
     expect(position()).toBe("1/2");
     expect(caption()).toBe(first);
+  });
+
+  it("keeps the selected tab focused through actual parent view replacement", () => {
+    const mapId = seedProject();
+    renderEventEditorDynamic(host, mapId, EVENT_ID);
+    click(host, "event-view-toggle-preview");
+    host.querySelector<HTMLElement>('[data-testid="event-view-toggle-preview"]')!.focus();
+    for (const [key, mode] of [
+      ["ArrowRight", "flow"], ["ArrowLeft", "preview"], ["Home", "list"],
+      ["ArrowLeft", "flow"], ["ArrowRight", "list"], ["End", "flow"], ["ArrowLeft", "preview"],
+    ]) {
+      document.activeElement!.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true }));
+      const selected = host.querySelector<HTMLElement>(`[data-testid="event-view-toggle-${mode}"]`)!;
+      expect(document.activeElement).toBe(selected);
+      expect(selected.isConnected).toBe(true);
+      expect(selected.getAttribute("aria-selected")).toBe("true");
+      expect(host.querySelectorAll('[data-testid="event-view-toggle"] [role="tab"][tabindex="0"]')).toHaveLength(1);
+    }
+  });
+
+  it("does not steal outside focus when a view refresh is not keyboard activation", () => {
+    const mapId = seedProject();
+    renderEventEditorDynamic(host, mapId, EVENT_ID);
+    const input = host.querySelector<HTMLInputElement>(".event-editor-command-search")!;
+    input.focus();
+    click(host, "event-view-toggle-preview");
+    expect(document.activeElement).toBe(input);
+    click(host, "event-view-toggle-flow");
+    expect(document.activeElement).toBe(input);
   });
 
   // 미리보기는 보기 방식 세그먼트가 유일한 입구다. 예전에는 툴바에도 «▶ 미리보기» 가

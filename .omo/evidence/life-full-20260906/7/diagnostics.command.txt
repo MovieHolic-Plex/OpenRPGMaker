@@ -1,0 +1,1 @@
+flock --timeout 900 /tmp/rpg-zzu-life-full-qa-01a0727b.lock timeout 300s node .omo/evidence/life-full-20260906/7/diagnostics.mjs

@@ -1,9 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { renderLifeCraftingTab } from "@/editor/panels/databaseLifeCraftingView";
-import { resetMapEditHistory, undoMapEdit } from "@/editor/mapEditHistory";
+import { redoMapEdit, resetMapEditHistory, undoMapEdit } from "@/editor/mapEditHistory";
 import { createBlankProject } from "@/project/defaults";
 import { deserialize, serialize } from "@/project/io";
 import { store } from "@/project/store";
+import { toolActionRulesOf } from "@/project/toolActions";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
 
 function renderTab(): FakeElement {
@@ -40,6 +41,35 @@ describe("database life skill and crafting view", () => {
   });
 
   afterEach(() => cleanupDom?.());
+
+  it("materializes real defaults only on first custom-table creation, as one undoable edit", () => {
+    const defaults = structuredClone(toolActionRulesOf(store.getCurrent()));
+    const host = renderTab();
+    findByTestId(host, "db-life-section-tool-actions")?.click();
+    expect(store.getCurrent().system.toolActions).toBeUndefined();
+    findByTestId(host, "db-life-add")?.click();
+    expect(store.getCurrent().system.toolActions).toHaveLength(5);
+    expect(store.getCurrent().system.toolActions?.slice(1)).toEqual(defaults);
+    expect(store.getCurrent().system.toolActions?.[0]?.itemId).toBeUndefined();
+    expect(undoMapEdit()).toBe(true);
+    expect(store.getCurrent().system.toolActions).toBeUndefined();
+    expect(redoMapEdit()).toBe(true);
+    expect(store.getCurrent().system.toolActions?.slice(1)).toEqual(defaults);
+  });
+
+  it("appends to existing tables without merging and preserves false through editing and load", () => {
+    store.update((project) => { project.system.toolActions = [{ id: "existing", action: "till", farmTool: "hoe" }]; });
+    const host = renderTab();
+    findByTestId(host, "db-life-section-tool-actions")?.click();
+    findByTestId(host, "db-life-row-existing")?.click();
+    expect(findByTestId(host, "db-life-tool-requires-farmable")?.checked).toBe(true);
+    setChecked(host, "db-life-tool-requires-farmable", false);
+    expect(store.getCurrent().system.toolActions?.[0]?.requiresFarmable).toBe(false);
+    expect(deserialize(serialize(store.getCurrent())).system.toolActions?.[0]?.requiresFarmable).toBe(false);
+    findByTestId(host, "db-life-add")?.click();
+    expect(store.getCurrent().system.toolActions).toHaveLength(2);
+    expect(store.getCurrent().system.toolActions?.[0]?.id).toBe("existing");
+  });
 
   // Break caught: life skill records have no list/detail editor or reward controls.
   it("authors a life skill and level reward, then undo restores the prior record", () => {
@@ -130,7 +160,7 @@ describe("database life skill and crafting view", () => {
             ? store.getCurrent().system.itemUpgrades ?? []
             : store.getCurrent().system.toolActions ?? [];
       const firstId = records[0]?.id;
-      const secondId = records[1]?.id;
+      const secondId = records.at(-1)?.id;
       if (!firstId || !secondId) throw new Error(`missing ${section} ids`);
       const prefix = section === "skills" ? "skill" : section === "recipes" ? "recipe" : section === "upgrades" ? "upgrade" : "tool";
       setValue(host, `db-life-${prefix}-id`, firstId);
@@ -141,7 +171,7 @@ describe("database life skill and crafting view", () => {
           : section === "upgrades"
             ? store.getCurrent().system.itemUpgrades ?? []
             : store.getCurrent().system.toolActions ?? [];
-      expect(after[1]?.id).toBe(secondId);
+      expect(after.at(-1)?.id).toBe(secondId);
     }
 
     findByTestId(host, "db-life-section-sell-prices")?.click();

@@ -13,6 +13,7 @@ import * as commits from "@/project/projectCommitLog";
 import { store } from "@/project/store";
 import { toast } from "@/util/toast";
 import { completedHouseProject, houseMap } from "./fixtures/completedHouse";
+import { isWikiExtraction } from "./wikiTransportFixture";
 
 // Only model transport, UI yielding and transient notifications are substituted.
 // The modal, session, registered tool, application guard, store and undo are real.
@@ -40,6 +41,7 @@ beforeEach(() => {
   vi.mocked(toast).mockClear();
   let wrote = false;
   vi.mocked(chatCompletion).mockReset().mockImplementation(async (_config, request) => {
+    if (isWikiExtraction(request.messages)) return { message: { role: "assistant", content: '{"upserts":[]}' }, finishReason: "stop" };
     if (!request.tools?.length) return { message: { role: "assistant", content: JSON.stringify({
       action: "new_plan", goal: "Classify tile metadata", layers: [{ title: "Metadata", items: [{
         title: "Metadata", instruction: "upsert_tile_group", successTools: ["upsert_tile_group"],

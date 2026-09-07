@@ -1,5 +1,147 @@
 # Editor AI Tools & Vocabulary
 
+Generated `place_npc({guide:"action-controls"})` guides omit automatic portraits;
+an explicit `face` still uses the normal authoring contract. This avoids shipping
+an inferred faceset ID absent from the project while preserving the canonical
+controls, existing guide identity and position.
+
+## Pre-write original grounding (2026-09-06)
+
+`originalContext.ts` exports a detached authored-state extractor reusable for before/after
+review. The session captures it before planning or tools, retains its snapshot ID across
+continuations, and recaptures on a new request (including a fresh Ask). Retaining P2
+canonical goal evidence across questions does not freeze the question's original-data
+snapshot. Target selection uses structured intent,
+actual selection and current map, never new natural-language keyword routing. A missing
+explicit target is reported, not replaced with the start map. Target map metadata, complete
+tile layers/stacks, complete events/pages/commands, authored system settings and relevant
+full database records are included. Actual record IDs are followed transitively, including
+common-event cycles; declared database/battle/system and quest/world tasks broaden the
+authored context. Runtime session, credentials/configuration and asset transport blobs are
+outside this projection. Existing resource tools remain the resource lookup surface.
+
+`buildGroundedRequest` appends JSON `originalContext` after history compaction, so the
+first writer sees its original values even with `budgetChars: 1`. It accounts for complete
+native schemas, history, originals and the existing 16,384-token response reserve against
+the actual supported bundled model window. The small browser-safe capacity table is
+checked against installed pi-catalog; the 9 MB provider catalog/runtime is not bundled.
+Unknown native IDs use the companion's provider-default fallback; injected unknown models
+retain the conservative legacy estimate. Token counting remains an estimate, not a tokenizer.
+
+Whole entries that do not fit remain explicitly omitted with a `get_original_context`
+list/read route, stable entry paths, snapshot ID and UTF-16 offsets. Concatenate exact JSON
+pages before parsing. Only successfully delivered whole originals or fully covered page
+ranges count at the existing `ToolReadEvidence` seam; partial/omitted/failed reads do not.
+Original receipts cannot replace a subsequent fresh read; existing fingerprint/reference
+checks and ask-mode refusal remain. Irreducible mandatory requests fail explicitly without
+pruning tools. A huge latest write result may still exceed a small window; paging originals
+does not claim arbitrary tool-result paging. Task recipes accompany the catalog for NPC,
+map/interior, database/battle, quest/world and life read-write-verify work. Tests:
+`originalContext`, `assistantOriginalContext`, `assistantReadContract`, `aiToolDiscoveryEscalation`.
+
+## Full native tool exposure (2026-09-06)
+
+`AssistantSession.runTurnLoop` sends every active editor tool's complete native description
+and input schema from the first working request. It no longer uses UI/intent domains,
+40-tool quotas, natural-language promotion slots, or a global 128-tool tail clamp to choose
+capabilities. `toolRegistry.toOpenAiTools` still honors an explicit domain filter for scoped
+callers, but retains **every** eligible definition in registry order. There is no pin list.
+Deprecated tools remain hidden; ask mode removes registry and session write schemas and
+still rejects attempted writes at execution. WorkPlan and acceptance tools retain their
+existing lifecycle gates. Schema validation, read-evidence gates, detached drafts,
+cancellation and usage accounting stay in the existing execution pipeline.
+
+The capability index is navigation alongside native schemas, not a promise to unlock
+missing tools later. `find_tools` is optional search, not an exposure prerequisite.
+The supported subscription adapters have no local function-count clipping: Antigravity
+uses Cloud Code Assist `functionDeclarations`; Codex uses a zstd Responses request with
+`input` entries of type `additional_tools`. Do not impose old CPEN/Chat Completions/Vertex
+limits on these transports. Lead evidence accepted 198 native definitions on Antigravity
+with HTTP 200; Codex live acceptance remains unverified without connected credentials.
+An upstream rejection is surfaced unchanged, never retried with a smaller capability set.
+No domain delegation is needed for the supported, observed full-native path.
+
+Regression seams: `aiToolDiscoveryEscalation`, `toolExposureQuota`, `toolDomainScoping`,
+`aiToolCapabilityIndex`, `aiComposerModeSession`, and `ohMyPiFullCatalog.bun.test.ts`.
+The transport fixture crosses counts 40/41, 127/128/129 and 198/207 using the installed
+adapters and verifies names, descriptions, nested schemas and explicit upstream errors.
+
+## Audio description tools and event candidates
+
+Audio identity is `{ kind: "music" | "sound", resourceId: rawId }`. Search-result prefixes
+`bgm:` and `se:` aren't valid override keys or detail/write tool IDs.
+`src/editor/tools/audioDescriptionTools.ts` defines:
+
+| Tool | Contract |
+| --- | --- |
+| `get_audio_resource` | Read an existing resource's full description and source from the current project. The resource is returned at `data.resource`, with its raw `id`. |
+| `set_audio_description` | Write through the existing draft/proposal/approval path. `action: "set"` requires a string; `""` clears. `action: "reset"` removes the override and rejects a supplied `description`. |
+| `upsert_resource` | `resource.description` is optional and allowed only for music/sound. Omission preserves the override; an explicit string uses the same writer. Description-only edits don't need a new asset or `dataUrl`. |
+
+New strings are trimmed at the write boundary and limited to 4,000 UTF-16 code units after
+trimming. Internal line breaks survive. Kind/ID existence and input validation happen before
+applying the edit. `src/editor/tools/resourceTools.ts` owns upload integration.
+`audioDescriptionsChanged` counts changed kind/raw-ID states, including clears and resets.
+The changeset, preview, commit summary and meaningful-change checks retain description-only
+proposals; they aren't tile-only auto-apply work. Approval and project undo/redo use the
+existing transaction path.
+
+### Search pages and full detail
+
+`list_resources` in `src/editor/tools/queryTools.ts` keeps search kinds `bgm`/`se`, existing
+prefixed result IDs and the default 20 results. `offset` defaults to 0 and must be a
+nonnegative safe integer; `limit` is an integer from 1 through 50. The response contains
+`data.matches`, `data.total` and `data.nextOffset`, which is `null` at the end.
+Non-audio search meaning stays unchanged.
+
+Audio matches also contain raw `resourceId`, `description`, `descriptionSource` and
+`descriptionTruncated`. Lists expose at most 240 UTF-16 code units per description;
+`get_audio_resource` returns the full value. Search ranking uses the full effective
+description in `src/assets/resourceSearch.ts`, including text beyond that excerpt.
+Overridden or cleared catalog descriptions aren't secretly appended as search terms.
+
+### Event prompt projection is not ID authority
+
+`src/ai/eventAudioPrompt.ts` builds at most 40 candidates per music/sound slot:
+
+1. Up to 20 positive-score request matches, ranked using names, tags and full descriptions.
+   Equal scores retain existing event catalog order.
+2. Up to 10 still-unselected project-override or uploaded candidates.
+3. All remaining places use still-unselected candidates in existing scene/category order.
+
+Zero matches consume no first-group quota; duplicate IDs don't consume later quotas.
+Each JSON entry includes raw ID, name, tags, a 240-unit description excerpt, source and
+truncation flag. `src/ai/eventCommandAssist.ts` forwards the submitted request into this
+projection. Validation still uses the full `eventResourceIdSet()` in
+`src/ai/eventResourceCatalog.ts`, so a valid ID outside the visible 40 remains valid.
+Keep description-heavy prompt imports in the prompt module, not the shared eligibility
+module used by other consumers.
+
+Descriptions are JSON-escaped reference data, not instructions or proof of listening.
+Escaping doesn't replace write approval or tool validation. `src/ai/contextBuilder.ts`
+directs fresh detail reads when full/current evidence is needed, including after conversation
+compaction. Each request uses the current project rather than a description cache or an
+old tool-result excerpt. Automatic `recommendMapBgm` selection is unchanged.
+
+Focused coverage: `test/audioDescriptionTools.test.ts`,
+`test/audioDescriptionDiff.test.ts`, `test/audioDescriptionToolStore.test.ts`,
+`test/audioDescriptionToolExposure.test.ts`, `test/audioResourceToolPagination.test.ts`,
+`test/audioDescriptionPrompt.test.ts`, `test/audioDescriptionPromptTransport.test.ts`,
+`test/audioDescriptionSessionPrompt.test.ts`.
+
+## Project wiki application ownership (2026-09-07)
+
+`AssistantSessionOptions.prepareProjectWiki` is an awaited editor-owned checkpoint
+before intent selection and authoring. Failure stops that turn before tools run.
+The callback refreshes only the detached session's world documents.
+Ordinary `applyProposedProject` calls retain the live `project.world`, because a
+map/title proposal does not own codex edits made after its preview. Explicit
+`resetProject` keeps its replacement semantics. Tests:
+`projectWikiSession.test.ts` and `projectWikiApplication.test.ts`. P2 projects checkpoint
+failure/cancellation as `failed`/`cancelled`, never successful response completion.
+Explicit Ask/Plan retains the coordinator's read-only path; intent is still selected
+after the wiki checkpoint, and blocked-work reactivation remains after that decision.
+
 ## Completed-house transaction protection - Phase 1 (2026-09-05)
 
 `src/editor/tools/houseProtection.ts` is the shared completed-house ownership rule.
@@ -182,6 +324,8 @@ Soft-confirm vocabulary, region task routing, AI visual polish, dock modes, tool
 - **Tool JSON schemas must be strict-provider compatible (2026-08-14 실측):** array-typed tool params MUST carry `items`, and union-typed items must not use bare `oneOf` without a `type` — Gemini-backed gateways reject the whole request with 400 `upstream_request_rejected ... properties[yard].items: missing field`, killing every chat turn while OpenAI-style backends accept the same payload. Two such bugs shipped (`build_house_lots` yard items as `oneOf`, `author_house` yard array with no `items`); both fixed in `src/editor/tools/houseLotTools.ts` / `src/editor/tools/authorHouseToolDef.ts`. When adding tool params, run a catalog audit: every `{type:"array"}` node must have `items`, and validate the full exposed tool list through the real gateway (cpen caps `tools` at 128; session exposure cap 40 stays within it).
 
 - **객체 타입 파라미터는 `properties` 를 반드시 선언한다 (2026-08-23 실측):** `{ type: "object" }` 만 적고 실제 필드를 `description` 문자열에만 써 두면 400 은 안 나지만 strict function-calling 경로에서 모델이 그 객체의 필드를 **표현할 방법이 없어 `{}` 만 보낸다.** 실측 턴: `set_work_plan` 이 `layers:[{}]` 8회, `set_build_spec` 이 `assets:[{}]` 10회 연속 → 계획 폐기 → 스펙 게이트가 `fill_region`/`place_npc` 까지 차단 → 31콜 중 21콜 실패. 배열 길이만 1,2,3,6,5 로 바뀌고 내용은 늘 비어 있었다는 게 모델이 아니라 스키마가 벽이라는 증거다. 카탈로그 전역 109개 노드를 고쳤고(재사용 조각은 `src/editor/tools/schemaShapes.ts`: `COORD_SCHEMA`/`RECT_SCHEMA`/`COMMAND_SCHEMA`/`SIMPLE_PAGE_SCHEMA`/`CUTSCENE_BEAT_SCHEMA`/`CONDITION_SCHEMA`/`LIGHT_SOURCE_SCHEMA`/`VILLAGE_*_PLAN_SCHEMA`), 감사는 `test/toolSchemaProviderCompat.test.ts` 가 고정한다. 유니온 shape 은 `oneOf` 금지 → **키 합집합을 전부 선택 필드로**. 진짜 동적 키 맵(`elementRates`, `priceBySeason`, `inventory` 등)만 `additionalProperties: true` 로 명시 면제. 커맨드 `kind` 는 자유 문자열로 두지 말고 `COMMAND_KINDS`/`CONDITION_KINDS` enum 을 노출한다(자유 문자열이면 모델이 없는 kind 를 만들어 보낸다).
+- **NPC command contract / repair (2026-09-06):** `COMMAND_SCHEMA.kind` exposes only `COMMAND_KINDS`; `CONDITION_SCHEMA.kind` exposes only `CONDITION_KINDS`. `item` and `selfSwitch` are page conditions, not executable commands. Item grants use `{kind:"changeItem",itemId,op:"+=",amount}`; switch writes use `setSelfSwitch` or `setSwitch`. Command `op` is declared explicitly. Command/condition `value` fields are declared without a single-type restriction so boolean, numeric, and supported variable operands are not falsely advertised as strings. This uses no `oneOf`, `anyOf`, or array-valued provider `type`; `jsonSchema.matchesType` treats an omitted type as unconstrained, while the existing command/condition shape validators remain responsible for variant validity. Existing internal type-array consumers remain supported. Rejected `item`/`changeItems`/`gainItem` commands return an `invalid-args` issue containing a standalone `repair: <JSON>` line with `{path,example}`. The example uses canonical `changeItem`, preserves a supplied string item ID and finite numeric amount (otherwise lookup placeholder / amount 1), and is guidance only: none of these names becomes an alias. Read the full issue message, not the 200-character summary. Replace only the command at `path` and use an ID obtained from `get_database_records`; do not remove the grant to make the call succeed. `test/npcCommandContract.test.ts` parses the repair JSON, checks schema/compiler/shape acceptance, and retries through the real `place_npc` runner. Evidence: `.omo/evidence/assistant-tool-reliability/schema`. Live Gemini acceptance is not established by the local provider-compatibility audit.
+  - Audit NPC repairs (entries 170/174/196): the real runner keeps missing `pages` invalid. Only an otherwise recognized `place_npc` call with a sole nonempty `dialogue.text` receives `{path:"pages",example:[{lines:[originalText]}]}`; the hint distinguishes dialogue NPCs from object gimmicks. The optional `ToolDefinition.invalidArgsRepair` callback supplies input-specific schema-error guidance without running or mutating the project. Missing-kind `{commandId,fields:{lines}}` for Show Text (`m2-001-show-text`, or the audited invalid `m2-101-show-text`) remains rejected and suggests native `{kind:"text",body:lines.join("\n")}`. This is not an M2 ID alias, and no other ID or extra/conflicting field is guessed away. Sole `{selfSwitch:"A"}` condition shorthand receives canonical `{kind:"selfSwitch",key:"A",value:true}`; explicit boolean false/true is retained (the same omitted-value default as `make_villager.dialogue.when`). Singleton corrections target the actual `pages[i].conditions` field with an array; array corrections target only `pages[i].conditions[j]`, preserving siblings. Extra or malformed conditions get no lossy repair, including `kind:"none"` with additional fields (only bare `{kind:"none"}` still normalizes away). Apply the parsed `example` at `path`, retain other pages and dialogue, and retry through the runner. No story text is invented and canonical pages/condition arrays are unchanged. Focused contract: `test/npcAuditRepair.test.ts`; RED/GREEN and correction evidence: `.omo/evidence/assistant-audit-pr/npc/`.
 - **`kind` 로 허용 키가 갈리는 툴은 스키마가 아니라 파서에서 정규화한다.** `oneOf` 를 못 쓰므로 모델은 두 모드 키를 섞어 보낸다 — 실측: `author_house` 에 `kind:"lots"` + 최상위 `kitId/wings` 를 한 턴에 33회 연속 전송. 에러 문구에 허용 키 전체를 실어도(`rejectUnknownKeys` 개선) 같은 턴에서 교정되지 않았다. `parseAuthorHouseRequest` 의 `normalizeRequestShape` 가 shape 로 모드를 추론하고 단일 모드 키를 `houses[0]` 로 접는다 — 같은 파일의 wings 클램프·`windows:true` 보정과 동일 방침. 실측 결과 33회 실패 → 성공 1회.
 - **동료 저작 전용 툴 (`src/editor/tools/companionTools.ts`).** `add_companion` 은 `target.eventId` 면 그 이벤트의 **마지막 페이지**(RM 계열은 조건을 만족하는 마지막 페이지가 실행된다 — 첫 페이지에 넣으면 조건 가드용 빈 페이지에 박힌다)에 `addFollower` 를 붙이고, `target.mapId/x/y` 면 이벤트를 만든다(`trigger:"talk"` = 말 걸어 합류 + `setSelfSwitch A` 로 사라짐, `"autorun"` = `{kind:"auto"}` + 스위치 가드로 1회). `who` 는 `{actorId}` / `{query}` / `{textureKey, characterIndex}` 이고 그래픽은 항상 `charsetFollowerGraphic` 을 거친다. `configure_companion_rules` 는 `system.companions`(대형·간격·인원 상한·초과 정책·맵 이동 시 해제)를 쓰며 `domains: ["system"]` 로 선언해 event 도메인 자리를 잡아먹지 않는다. 동료는 DB 레코드가 아니라 세션 상태이므로 `DB_TOOLS`/database 도메인에는 넣지 않는다. 노출 경로 확보를 위해 `assistantToolMode` event 의도 키워드에 `동료/동행/펫/따라오/따라다니/companion/follower/pet` 을 추가했다 — 키워드가 없으면 40툴 트림에서 잘려 모델이 "그 기능이 없다"고 오보한다.
 - **노출되지 않은 툴은 모델에게 "없는 기능"이다 (2026-08-23 실측).** "상성표/엔딩 조건" 요청에서 `set_type_chart`·`define_ending`·`get_database_records`·`script_cutscene` 가 도메인 스코핑·40툴 상한에 밀려 노출되지 않았고, 모델은 사용자에게 **"그 기능이 없습니다"** 라고 보고하며 작업 3건을 skip 했다. 툴콜 실패보다 나쁘다 — 사용자가 제품 한계로 오해한다. 수정: 참조 id 조회(`get_database_records`)를 `CORE_TOOL_NAMES` 로 승격(모든 쓰기의 전제), 의도 키워드에 `상성/상성표/속성`(battle+database) · `엔딩/ending/결말`(event+quest) · `컷신/cutscene/연출/선택지`(event) 추가, `PINNED_TOOLS_BY_DOMAIN` 에 `set_type_chart`/`define_ending`/`list_endings`/`script_cutscene(_preset)` 핀. **핀은 `tool.domains` 기준이다** — 엔딩 툴은 `withDomain(ENDING_TOOLS,"event")` 이므로 quest 에 핀해도 효과가 없다. 회귀 고정: `test/aiEndingToolExposure.test.ts`. 매 턴 노출 목록은 `tools:exposed <n> — <names>` 감사 라인으로 확인한다.
@@ -261,7 +405,18 @@ but can't renew it after a write. Successful writes and changed applied-state
 refreshes retire checks, including checks made before requirement declaration;
 undo doesn't revive them. A passing verdict can't verify an unapplied draft.
 
+Corrected `run_scene_test` navigation retires the same NPC/assertion obligation,
+but its exact invocation key remains separate: it cannot satisfy a `toolVerdict`
+with different navigation arguments. Both `toolVerdict` and incoming `actionCombat`
+are exposed in the flattened provider-safe criterion schema; runtime parsing still
+requires each kind's exact fields and exclusive target.
+
 Name-level scheduler queries and advisory reporting retain their existing roles.
+Canonical acceptance also receives required verification problems: explicit checks,
+declared required tools and skipped-item obligations remain blocking. Pure advisory
+failures remain visible in audit/problem reporting without becoming required goal
+items or suppressing P1 end proof. Intent action obligations and current map-bound
+runtime receipts remain independent of planner replacement and optional promises.
 The ledger's existing evaluation receives the goal evidence store; absence of that
 store fails tool-verdict criteria closed. No new verification ledger or dependency
 was added. Withdrawal is a local user action, never a `withdraw_requirement` tool,
@@ -314,6 +469,49 @@ id 슬롯은 남긴다**(`def.name = ""`). id 가 지워지지 않으므로 `com
   만들지 않는다) — 그래서 이미지 바이트는 전송 계층에서 직접 줍는다. (2) 그때 재생하는
   `Response` 에 `url` 을 다시 심어야 한다. 없으면 pi-ai 가 `Missing request URL` 로 끊는다.
 
+
+## Action controls guide (2026-09-07)
+
+2D tile action combat is supported; 3D open worlds remain outside the engine.
+`actionArenaAuthoring.ts` selects its recipe only for a structured creation
+declaration with nonempty `actionCombat.targets` and no clarification. The
+selector never parses user keywords. `buildActionArenaAuthoringGuide` is consumed
+by the action welcome preset and the lead's context integration. It reads
+existing maps/events/resources/party/enemies/troops before minimal terrain/start,
+names the map and game, orders enemy before troop before spawn, and makes one
+controls guide. Each target must pass `run_action_combat_test({mapId})` before
+decorations; the async acceptance/runtime lane owns that tool's receipt.
+`run_scene_test`, spawn counts and turn-based `simulate_battle` cannot substitute
+for action proof. Unrequested quests, shops, bosses, rewards and multi-page
+quotas are not part of this recipe. Existing arena modifications remain focused
+repairs with retained acceptance targets, not a new-arena starter.
+Free-text welcome handoff also preserves the requested scope rather than adding
+the generic preset's NPC/item quotas before structured intent classification.
+
+`make_action_enemy` prepares the enemy and validates its graphic, target map,
+troop membership and spawn area before committing either record. `spawn.id`
+upserts within the target map; omission appends a fresh ID. `set_action_combat`
+validates its map before enabling the system and exposes the existing
+`dodgeStaminaCost`, `dodgeIframesMs`, `guardDamageReductionPercent` and
+`guardStaminaDrainPerSec` normalizers. Read resources first, create the enemy,
+then `upsert_troop({troop:{id,name,enemyIds:[enemyId]}})`, then attach its spawn.
+`test/actionAuthoringPrerequisites.test.ts` covers both direct-draft atomic
+failure and the real runner's successful dependency order.
+
+`place_npc` accepts `guide: "action-controls"` instead of authored `pages` for one
+controls page only. `src/player/keyBindings.ts` exports `ACTION_CONTROL_BINDINGS`
+(`id`, normalized `keys`, `label`) and `ACTION_CONTROLS_GUIDE`; the generated text
+comes from those runtime predicates, not model-authored key descriptions.
+The default identity is `ev_action_controls_<mapId>`. An explicit ID takes
+precedence. Retries update that event's page without moving it, even when the
+requested name or coordinates change. Nearby ordinary NPCs are not guide
+identities, and distinct explicit ordinary NPC IDs still remain distinct.
+Ordinary NPCs still require authored pages. The guide is the narrow exception to
+the narrative multi-page recommendation, not a fallback for missing dialogue.
+
+Regression: `test/actionControlsGuide.test.ts` exercises real tool dispatch,
+repeat identity, explicit-ID priority, ordinary NPC separation, and shipped
+command-body equality with the canonical guide.
 
 ## NPC 대사는 코드가 지어내지 않는다 — 캐스트 라이터 계약 (2026-09-03)
 

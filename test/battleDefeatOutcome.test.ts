@@ -30,6 +30,8 @@ function battleScene(result: BattleResult) {
   expect(session.partyActorIds.length).toBeGreaterThan(0);
   const gameOverMessages: string[] = [];
   const battleSteps: Array<{ readonly canLose: boolean }> = [];
+  let finishBattle: (() => void) | undefined;
+  const battleFinished = new Promise<void>(resolve => { finishBattle = resolve; });
   const dialogue = {
     showText: vi.fn(async () => undefined),
     showChoices: vi.fn(async () => 0),
@@ -58,7 +60,7 @@ function battleScene(result: BattleResult) {
       return result;
     },
     showGameOverScreen: (message?: string) => gameOverMessages.push(message ?? ""),
-    setInputEnabled: vi.fn(),
+    setInputEnabled: vi.fn((enabled: boolean) => { if (enabled) finishBattle?.(); }),
     refreshRuntimeSurfaces: vi.fn(),
     syncRuntimeState: vi.fn(),
     showRuntimeOverlay: vi.fn(),
@@ -66,7 +68,7 @@ function battleScene(result: BattleResult) {
     registerPageMoveRoutes: vi.fn(),
     renderTiles: vi.fn(),
   } as unknown as PlaySceneContext;
-  return { project, session, scene, gameOverMessages, battleSteps };
+  return { project, session, scene, gameOverMessages, battleSteps, battleFinished };
 }
 
 function partyIsDead(session: ReturnType<typeof startSession>): boolean {
@@ -131,25 +133,44 @@ describe("전투 패배 결말", () => {
     expect(session.switches.after_battle).toBe(true);
   });
 
+  it("cancelled event cleanup does not unlock a replacement battle in the same session", async () => {
+    const { project, session, scene } = battleScene("defeat");
+    store.replaceProject(project);
+    const replacement = new AbortController();
+    // This isolates the caller's ownership contract. Real runtime, DOM and
+    // session cancellation are exercised in playSceneBattleCancellation.
+    scene.playBattle = async () => { scene.battleAbortController = replacement; return null; };
+    await runCommands(scene, [
+      { kind: "battleProcessing", troopId: ENCOUNTER_TROOP_ID, canEscape: false, canLose: true },
+      { kind: "setSwitch", switchId: "stale", value: true },
+    ]);
+    expect(scene.running).toBe(true);
+    expect(scene.setInputEnabled).not.toHaveBeenCalledWith(true);
+    expect(session.switches.stale).toBeUndefined();
+    expect(session.battleResult).toBeUndefined();
+  });
+
   it("랜덤 인카운터 패배도 파티 사망 + 게임 오버로 끝난다", async () => {
-    const { project, session, scene, gameOverMessages, battleSteps } = battleScene("defeat");
+    const { project, session, scene, gameOverMessages, battleSteps, battleFinished } = battleScene("defeat");
     store.replaceProject(project);
 
     maybeTriggerRandomEncounter(scene);
 
-    await vi.waitFor(() => expect(gameOverMessages.length).toBe(1));
+    await battleFinished;
+    expect(gameOverMessages.length).toBe(1);
     expect(battleSteps).toEqual([{ canLose: false }]);
     expect(session.battleResult).toBe("defeat");
     expect(partyIsDead(session)).toBe(true);
   });
 
   it("랜덤 인카운터 승리는 게임 오버 없이 결과만 세션에 남긴다", async () => {
-    const { project, session, scene, gameOverMessages } = battleScene("victory");
+    const { project, session, scene, gameOverMessages, battleFinished } = battleScene("victory");
     store.replaceProject(project);
 
     maybeTriggerRandomEncounter(scene);
 
-    await vi.waitFor(() => expect(session.battleResult).toBe("victory"));
+    await battleFinished;
+    expect(session.battleResult).toBe("victory");
     expect(gameOverMessages).toEqual([]);
     expect(partyIsDead(session)).toBe(false);
   });

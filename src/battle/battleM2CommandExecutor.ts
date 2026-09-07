@@ -16,10 +16,9 @@ export type M2BattleCommandExecutorOptions = {
   readonly showBattleAnimation?: (target: string, animationId: string) => void;
   // m2-105: 전투를 즉시 중단(승패 없이 종료 → escape 결과와 동등).
   readonly abortBattle?: () => void;
-  // m2-106: 커먼 이벤트 commands 를 받아 재귀 실행. forceEscape 여부 반환.
-  readonly executeCommonEvent?: (commonEventId: string) => boolean;
-  // m2-104: 같은 트룹의 다른 배틀 이벤트 페이지를 실행. forceEscape 여부 반환.
-  readonly executeTroopPage?: (pageId: string) => boolean;
+  // Calls enqueue an invocation; the event frame machine owns suspension and termination.
+  readonly executeCommonEvent?: (commonEventId: string) => void;
+  readonly executeTroopPage?: (pageId: string) => void;
 };
 
 export type M2BattleCommandExecution = {
@@ -72,14 +71,14 @@ export function executeM2BattleCommand(command: M2Command, options: M2BattleComm
     case "battleEvents": {
       const pageId = parsed.target.trim();
       if (!pageId || !options.executeTroopPage) return { handled: true, forceEscape: false };
-      const forceEscape = options.executeTroopPage(pageId);
-      return { handled: true, forceEscape };
+      options.executeTroopPage(pageId);
+      return { handled: true, forceEscape: false };
     }
     case "callCommonEvent": {
       const id = parsed.commonEventId.trim();
       if (!id || !options.executeCommonEvent) return { handled: true, forceEscape: false };
-      const forceEscape = options.executeCommonEvent(id);
-      return { handled: true, forceEscape };
+      options.executeCommonEvent(id);
+      return { handled: true, forceEscape: false };
     }
     case "forceEscape":
       return { handled: true, forceEscape: true };

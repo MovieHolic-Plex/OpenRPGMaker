@@ -1,0 +1,5 @@
+Baseline full typecheck exit: 2
+Current full typecheck exit: 2
+Outputs identical: True
+Baseline error lines: 824
+Changed test error lines: 0

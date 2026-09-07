@@ -10,6 +10,28 @@ const observed = {
 };
 
 describe("evaluateExpect", () => {
+  it("checks each requested reward count without treating missing observations as zero", () => {
+    const expected = { inventoryCounts: { item_capture_orb: 5 }, ownedMonsterCounts: { species_leafling: 1 } };
+    const rewarded = { ...observed, state: { ...observed.state, ...expected } };
+    expect(evaluateExpect(expected, rewarded)).toEqual([]);
+    const failures = evaluateExpect({
+      inventoryCounts: { item_capture_orb: 10 }, ownedMonsterCounts: { species_leafling: 2 },
+    }, rewarded);
+    expect(failures).toHaveLength(2);
+    expect(failures[0]).toContain("inventoryCounts[item_capture_orb]");
+    expect(failures[1]).toContain("ownedMonsterCounts[species_leafling]");
+  });
+
+  it.each([null, observed.state])("rejects zero reward expectations when counts are unavailable: %j", (state) => {
+    const zero = { inventoryCounts: { item_capture_orb: 0 }, ownedMonsterCounts: { species_leafling: 0 } };
+    expect(evaluateExpect(zero, { ...observed, state })).toHaveLength(2);
+  });
+
+  it("preserves existing behavior without reward expectations", () => {
+    expect(evaluateExpect({}, { ...observed, state: null })).toEqual([]);
+    expect(evaluateExpect({ x: 3 }, observed)).toEqual([]);
+  });
+
   it("emote expectations require a visible sprite on the requested target", () => {
     const expected = { emoteTargets: [{ target: "npc", frame: 0 }] };
     expect(evaluateExpect(expected, { ...observed, emotes: [{ target: "npc", frame: "0", alpha: 1 }] })).toEqual([]);
