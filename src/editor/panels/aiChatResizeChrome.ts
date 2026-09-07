@@ -82,9 +82,11 @@ export function createChatResizeChrome(deps: ChatResizeChromeDeps): ChatResizeCh
   const syncAria = (): void => {
     const limits = widthLimits();
     const rect = measuredDeck();
+    // Prefer the committed logical width. Layout rect lags while CSS width transitions.
+    const now = barSize?.width ?? Math.round(rect.width || limits.min);
     handle.setAttribute("aria-valuemin", String(limits.min));
     handle.setAttribute("aria-valuemax", String(limits.max));
-    handle.setAttribute("aria-valuenow", String(Math.round(rect.width || barSize?.width || limits.min)));
+    handle.setAttribute("aria-valuenow", String(now));
   };
   const sizeObserver = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(syncAria);
   sizeObserver?.observe(deck);
@@ -116,8 +118,12 @@ export function createChatResizeChrome(deps: ChatResizeChromeDeps): ChatResizeCh
     activeResizeCleanup?.();
     const startX = event.clientX;
     const rect = measuredDeck();
-    const startWidth = rect.width || barSize?.width || 640;
-    const startHeight = rect.height || barSize?.height || 620;
+    // Committed bar width first — never seed the gesture from a mid-transition layout rect
+    // (that under-shot the pointer delta by ~10–80px in Firefox e2e F10).
+    const startWidth = barSize?.width ?? (Math.round(rect.width) || 640);
+    const startHeight = barSize?.height ?? (Math.round(rect.height) || 620);
+    panel.classList.add("is-resizing");
+    deck.classList.add("is-resizing");
     // 핸들은 데크 왼쪽 끝에 있다 — 왼쪽으로 끌면 넓어진다(dx 부호 반전).
     const onMove = (move: PointerEvent): void => {
       updateBarSize(startWidth - (move.clientX - startX), startHeight, false);
@@ -125,6 +131,8 @@ export function createChatResizeChrome(deps: ChatResizeChromeDeps): ChatResizeCh
     const cleanupResize = (): void => {
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerup", onUp);
+      panel.classList.remove("is-resizing");
+      deck.classList.remove("is-resizing");
       if (activeResizeCleanup === cleanupResize) activeResizeCleanup = null;
     };
     const onUp = (): void => {

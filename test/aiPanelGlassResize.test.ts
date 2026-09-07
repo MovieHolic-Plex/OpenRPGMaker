@@ -69,6 +69,8 @@ function barWidth(deck: FakeElement): string {
   return deck.style["--ai-float-bar-width"] ?? "";
 }
 
+
+
 /** 패널 자체에는 크기용 인라인 스타일이 남지 않아야 한다. */
 function expectNoInlinePanelSize(panel: FakeElement): void {
   expect(panel.style.width ?? "").toBe("");
@@ -203,6 +205,27 @@ describe("드래그는 폭만 바꾼다", () => {
     // 레거시 도크별 키는 더 쓰지 않는다.
     expect(storage.has(LEGACY_FLOAT_SIZE_KEY)).toBe(false);
     expectNoInlinePanelSize(panel);
+  });
+
+  it("드래그 시작 폭은 전환 중 레이아웃 값이 아니라 커밋된 barSize를 쓴다", () => {
+    // Break: seed startWidth from getBoundingClientRect while CSS width is still animating.
+    installFakeWindow();
+    storage.set(SIZE_KEY, JSON.stringify({ width: 640, height: 400 }));
+    const { panel, deck, handle } = renderSurface();
+    (deck as unknown as { getBoundingClientRect: () => object }).getBoundingClientRect = () =>
+      ({ width: 600, height: 400, x: 0, y: 0, top: 0, left: 0, bottom: 400, right: 600, toJSON: () => ({}) });
+
+    handle.dispatchEvent(pointerEvent("pointerdown", 500, 300));
+    expect(panel.className).toContain("is-resizing");
+    expect(deck.className).toContain("is-resizing");
+    globalThis.window.dispatchEvent(pointerEvent("pointermove", 420, 300));
+    // 640 + (500-420) = 720, not 600+80=680.
+    expect(barWidth(deck)).toBe("720px");
+    expect(handle.getAttribute("aria-valuenow")).toBe("720");
+    globalThis.window.dispatchEvent(pointerEvent("pointerup", 420, 300));
+    expect(savedSize()).toEqual({ width: 720, height: 400 });
+    expect(panel.className).not.toContain("is-resizing");
+    expect(deck.className).not.toContain("is-resizing");
   });
 
   it("오른쪽으로 끌면 좁아진다", () => {

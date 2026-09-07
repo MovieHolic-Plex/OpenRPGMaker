@@ -871,3 +871,16 @@ and assistant suggestion-row/chip descriptions above. Glass, opacity and icon st
   and event-driven completion. Its existing SSE response fixture is incompatible with the
   default non-streaming provider request; lead reproduced 6 failures / 1 pass on unchanged
   `e07cd4f8`. That production transport is deliberately not changed by this phase.
+
+## Assistant deck width resize (2026-09-07)
+
+Live drag and `prefers-reduced-motion` must not leave `transition: width` active on the open
+`.ai-deck` rule. The open-deck selector is more specific than a bare
+`.ai-chat-panel.chat-dock-float .ai-deck` reduced-motion override, so the animation used to
+keep running and `getBoundingClientRect()` lagged the committed `--ai-float-bar-width`
+(Firefox F10: expected +88px, observed ~10–80px short). Fix: match open-deck specificity for
+`transition: none` under reduced motion, add `.is-resizing` (no transition while dragging),
+and seed pointer gestures from committed `barSize` rather than a mid-transition layout rect.
+Contracts: `test/aiPanelGlassResize.test.ts`, `test/aiDeckResizeTransitionCss.test.ts`,
+e2e `ai-ui-audit-fixes` F10.
+
