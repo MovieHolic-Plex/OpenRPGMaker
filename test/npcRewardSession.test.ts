@@ -1,4 +1,7 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
+import * as commitLog from "@/project/projectCommitLog";
+import { store } from "@/project/store";
 import { AssistantSession, type SessionEvent } from "@/ai/assistantSession";
 import { defaultAiConfig, type ChatRequest, type ChatResult } from "@/ai/llmClient";
 import { resetIntentDeclarationCache, type IntentDeclarer } from "@/ai/intentDeclarationClient";
@@ -76,7 +79,19 @@ const writeNpc = (mapId: string, variant: "text" | "once" | "repeat") => call("u
 const tools = (events: SessionEvent[], name: string) => events.filter((event): event is Extract<SessionEvent, { type: "tool_call" }> => event.type === "tool_call" && event.name === name);
 const hasContract = (request: ChatRequest) => request.messages.some((message) => typeof message.content === "string" && message.content.includes(JSON.stringify(REQUIRED)));
 
-afterEach(() => resetIntentDeclarationCache());
+afterEach(() => { resetIntentDeclarationCache(); vi.restoreAllMocks(); });
+
+async function applyAndVerify(h: ReturnType<typeof harness>) {
+  store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
+  store.replace(h.project);
+  // Only the external history write is replaced; the real commit gate and store apply run.
+  vi.spyOn(commitLog, "recordProjectCommit").mockResolvedValue({ commitId: null, persisted: false, reviewStatus: "approved", summary: "test", toolNames: [], recordedAt: "2026-09-07T00:00:00.000Z" });
+  expect(h.session.isDraftReviewApproved()).toBe(true);
+  const applied = await applyProposedProject(h.session.getProposedProject(), { baseline: h.session.getDraftBaseline(), source: "agent", summary: "Requested reward", toolNames: ["upsert_event"] });
+  expect(applied.ok).toBe(true);
+  h.session.refreshAcceptance(store.getCurrent());
+  expect(h.session.getAcceptanceSnapshot()?.status).toBe("verified");
+}
 
 describe("NPC reward request lifetime in AssistantSession", () => {
   it("does not dispatch authoring or planner calls for an unrepairable reward declaration", async () => {
@@ -107,6 +122,7 @@ describe("NPC reward request lifetime in AssistantSession", () => {
     expect(h.session.isDraftReviewApproved()).toBe(pass);
     expect(h.events.filter((event) => event.type === "assistant_message").some((event) => event.content.includes(COMPLETE))).toBe(false);
     expect(h.reviews.length).toBe(pass ? 1 : 2);
+    if (pass && !noContract) await applyAndVerify(h);
     expect(h.requests.length).toBeLessThanOrEqual(7);
   });
 
@@ -125,7 +141,9 @@ describe("NPC reward request lifetime in AssistantSession", () => {
     expect(result.stoppedReason, result.error).toBe("final");
     expect(result.review?.status).toBe("approved");
     expect(h.events.filter((event) => event.type === "result_review").map((event) => event.review.status)).toEqual(["changes_requested", "approved"]);
+    expect(result.assistantText).not.toBe(COMPLETE);
     expect(verifyNpcRewardsPlayable(h.session.getProposedProject(), REQUIRED).ok).toBe(true);
+    await applyAndVerify(h);
   });
 
   it("allows an earlier DB item but refuses final explicit completion and skip with missing rewards", async () => {
@@ -178,6 +196,8 @@ describe("NPC reward request lifetime in AssistantSession", () => {
     expect(h.session.getWorkPlan()?.layers[0]?.items[0]?.status).toBe("done");
     expect(result.stoppedReason, result.error).toBe("final");
     expect(result.review?.status).toBe("approved");
+    expect(result.assistantText).not.toBe(COMPLETE);
+    await applyAndVerify(h);
   });
 
   it("preserves the obligation through plan-only confirmation and the actual planner replan", async () => {
@@ -222,13 +242,13 @@ describe("NPC reward request lifetime in AssistantSession", () => {
     expect(h.requests.every(hasContract)).toBe(true);
   });
 
-  it.each(["new-request", "ask"] as const)("clears old obligations for %s", async (mode) => {
+  it.each(["new-request", "ask"] as const)("host new-goal clears old obligations; ask does not enforce them: %s", async (mode) => {
     let declarations = 0;
     const h = harness([], { declarer: async () => ({ intent: declaredIntent({ mode: "modify", ...(declarations++ === 0 || mode === "ask" ? { npcRewards: REQUIRED } : {}) }), elapsedMs: 0 }) });
     const initial = await h.session.sendUserMessage("Create the requested reward NPC", h.onEvent);
     expect(initial.assistantText).not.toContain(COMPLETE);
     const at = h.requests.length;
-    const next = await h.session.sendUserMessage("An unrelated question", h.onEvent, undefined, { composerMode: mode === "ask" ? "ask" : "do" });
+    const next = await h.session.sendUserMessage("An unrelated question", h.onEvent, undefined, { composerMode: mode === "ask" ? "ask" : "do", ...(mode === "new-request" ? { goalAction: "new-goal" as const } : {}) });
     expect(next.assistantText).toBe(COMPLETE);
     expect(h.requests.slice(at).some(hasContract)).toBe(false);
   });

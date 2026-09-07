@@ -407,6 +407,62 @@ restores those contracts without changing browser checklist ownership.
 
 ### Session-owned acceptance contract
 
+Request-bound functional acceptance (2026-09-07): the live lite declaration accepts
+`functionalAcceptance` for requested `shopPurchase` and `mapRoundTrip` expectations;
+existing `npcRewards` becomes mandatory `npcReward` criteria in the same
+`AssistantAcceptanceLedger`. IDs are host-owned `request-N:functional:index`, with
+original request source and baseline. Planner/native-plan schemas expose the same
+narrow criteria, but replan, skip, optional replacement and `repair_acceptance`
+cannot weaken an adopted criterion. Only the existing host `withdrawRequirement`
+action withdraws it; ordinary follow-ups retain the ledger and explicit host
+`new-goal` starts a new one. Missing/unsupported semantic targets become
+`functionalUnresolved` evidence with typed known `expectations`, not a silent
+opt-out or an easy static substitute. Review repair (2026-09-07): a later genuine
+user clarification can resolve that placeholder without discarding the goal.
+`IntentFacts.unresolvedFunctional` supplies its exact requirement ID, original
+source text, known expectations and prior user refinement sources to the lite
+declarer. `functionalRefinements:[{requirementId,criterion,corrections?}]` is consumed
+only at the actual user-declaration boundary, including host `resume`, never by
+worker tools or synthetic continuations. `AssistantAcceptanceLedger.refineFunctional`
+keeps the original ID, source and baseline and appends frozen `refinements` source
+metadata. Omitted known fields are retained; conflicts require explicit typed
+user-correction fields. Partial/ambiguous refinements remain unresolved. Once
+concrete, a contract cannot be refined or repaired into an easier one; existing
+host withdrawal/new-goal actions remain the scope-change authority.
+
+`functionalAcceptanceEvaluation.ts` runs the real scene interpreter on current
+applied content. Purchase walks to and triggers the exact seller, resolves runtime
+stock/pricing, calls production `handleShopTransaction` (including normal visit
+and loyalty semantics), and checks exact gold AND inventory deltas. Single-quantity
+shops use repeated real transactions. Round trip walks through both exact authored
+transfers in one session, checks interpreter-owned source/destination evidence,
+then walks back to the original start. Walking checks held-interpreter ownership
+at every tile, not just at the SceneStep boundary: a mandatory touch shop cannot
+be walked through or replaced by the next transfer. The same event resumes after
+a purchase. Purchase, choice and animation completion consume the old hold BEFORE
+resuming, keeping interpreter/event ownership locally. A non-suspending arrival
+autorun can therefore run after transfer; a new hold is installed only if execution
+suspends again. Unsupported nested autorun suspension still fails closed without
+replacing the newly held interpreter. Both require the declared actual project
+entry; no convenience teleport or injected gold/switch state. NPC rewards reuse
+`verifyNpcRewardsPlayable`: exact requested first grants, then zero item/equipment,
+monster and gold reward deltas on the second interaction in that same session.
+The NPC check is local interaction evidence, not a world-route/prerequisite proof.
+
+No worker-provided pass flag, script, tool name or image can supply these verdicts.
+All project changes, including DB/session-default changes, keep drafts unverified;
+functional evaluation reruns rather than reviving stale receipts. Run-end persistence
+uses `verifyPersistedRevision`'s trusted `validate` callback to rerun the immutable
+checks on the canonical reload AFTER it matches the accepted content identity.
+The remote proof path remains read-only and retains currentness/cancellation checks.
+No persisted project-schema change or parallel evidence ledger was introduced.
+
+Scope: ordinary player-buy shops and authored action/touch transfers from the
+actual project start; shopkeeper, haggle, service modes, ambiguous triggers and
+missing prerequisites fail closed with expected/observed diagnostics. Unrequested
+behaviors impose no requirement. Natural-language extraction is still performed by
+the declarer model, not proven exhaustive by the engine or scripted-model tests.
+
 Field-action acceptance (2026-09-07): `IntentDeclaration.actionCombat` carries
 `{ targets: AcceptanceTarget[] }`, with exact existing `mapId` or authored
 `newMapName` targets. This is a structured semantic declaration, not a keyword

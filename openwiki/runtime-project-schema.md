@@ -69,13 +69,18 @@ normalization, derived from `result.project ?? submittedProject`, not live
 editor. The optional wire/server hash alone doesn't establish content equality.
 If accepted content can't normalize, saving logs the error and returns no receipt.
 
-`store.verifyPersistedRevision(receipt, { signal? })` accepts the exact
+`store.verifyPersistedRevision(receipt, { signal?, validate? })` accepts the exact
 store-issued object. A private WeakMap holds its captured Supabase configuration
 and load/adoption lineage; copied or reconstructed tokens fail. `loadProjectForPersistenceProof` reuses the
 normalized/hybrid loader with observed `project_id` and cancellation, without
 commit-tip hydration. It performs a remote read, not `reloadFromRemote()`: no
 live-project replacement, dirty reset, draft change, URL change, or store event.
-Manual reload retains its separate contract.
+Manual reload retains its separate contract. The optional trusted synchronous
+`validate(project)` callback runs on the canonical read only after target and
+normalized content identity match. Returning a diagnostic produces `failed`;
+throwing or cancellation cannot produce success. Assistant functional acceptance
+uses this hook to re-run immutable gameplay expectations, not to accept worker
+scripts or pass flags. The callback does not persist or replace project data.
 
 Results are `verified` with `isCurrent`, `mismatch` with `reason: target | content`,
 `disabled`, `cancelled`, or `failed` with a message. Missing rows and read errors
