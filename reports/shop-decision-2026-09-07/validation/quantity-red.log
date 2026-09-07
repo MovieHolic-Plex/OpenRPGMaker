@@ -1,0 +1,321 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/shopRuntimeUx.test.ts
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-clear-harbor-3da2
+
+ ❯ test/shopRuntimeUx.test.ts (23 tests | 5 failed) 20711ms
+   ✓ 상점 도움말·통화 표시 > 도움말 창이 첫 물건의 설명을 보여주고 커서 이동에 따라 바뀐다  681ms
+   ✓ 상점 도움말·통화 표시 > 설명이 없으면 목록 안내문으로 되돌린다 — 아이템 효과 문장을 머리글에 박지 않는다  348ms
+   ✓ 상점 도움말·통화 표시 > 가격에 통화 단위가 붙고 소지금·상인 소지금 모두 라벨이 있다  614ms
+   ✓ 상점 구매 가능 표시 > 소지금으로 못 사는 행에 표시와 이유가 붙는다  1404ms
+   ✓ 상점 구매 가능 표시 > 판매에서는 상인이 못 사주는 행에 표시가 붙는다  2117ms
+   ✓ 상점 구매 가능 표시 > 거래 후 행 표시가 제자리에서 갱신된다  1937ms
+   ✓ 상점 수량 입력 > 수량 입력과 합계가 목록이 아니라 프롬프트 줄에 있다  454ms
+   ✓ 상점 수량 입력 > 합계가 선택 행의 단가 × 수량으로 갱신된다 230ms
+   ✓ 상점 수량 입력 > 수량 모드가 아니면 입력칸을 만들지 않는다  501ms
+   ✓ 상점 사이드 패널 > 파티 칸이 에디터 밝은 회색 빈 박스가 아니다  571ms
+   ✓ 상점 사이드 패널 > '장비' 줄은 장비 종류에만 뜨고 실제 착용 수를 센다  2775ms
+   ✓ 상점 접근성·제자리 갱신 > 오버레이가 모달 대화창 시맨틱을 갖는다 1ms
+   ✓ 상점 접근성·제자리 갱신 > 상태 문구가 live region 이고 제자리에서 바뀐다  1128ms
+   ✓ 상점 접근성·제자리 갱신 > 목록에 list 시맨틱이 있다  1065ms
+   ✓ 상점 접근성·제자리 갱신 > 다 팔린 행은 목록에서 빠진다  1643ms
+   ✓ 상점 빈 목록 > 모드에 맞는 빈 목록 안내가 한국어로 뜬다  1299ms
+   ✓ 상점 빈 목록 > 거래할 게 없는 상점도 닫을 수 있는 안내 창을 띄운다 190ms
+   × post-trade quantity synchronization > clamps the selected buy quantity and refreshes every row after spending gold 1450ms
+     → expected '2' to be '0' // Object.is equality
+     → expected { max: '2', value: '2', total: 80 } to deeply equal { max: '1', value: '1', total: 40 }
+     → expected '10' to be '2' // Object.is equality
+     → expected { max: '10', value: '2', total: 20 } to deeply equal { max: '2', value: '1', total: 10 }
+   × post-trade quantity synchronization > clamps sell quantity to the remaining merchant budget and updates other rows 526ms
+     → expected '3' to be '1' // Object.is equality
+     → expected { max: '3', value: '2', total: 40 } to deeply equal { max: '1', value: '1', total: 20 }
+     → expected '10' to be '5' // Object.is equality
+   × post-trade quantity synchronization > clamps sell quantity to remaining inventory when the merchant can afford more 201ms
+     → expected { max: '3', value: '2', total: 40 } to deeply equal { max: '1', value: '1', total: 20 }
+   × post-trade quantity synchronization > reselects the surviving row using its new capacity after selling the last copies 283ms
+     → expected '8' to be '5' // Object.is equality
+     → expected { max: '8', value: '2', total: 10 } to deeply equal { max: '5', value: '2', total: 10 }
+   × post-trade quantity synchronization > keeps a zero-capacity row inspectable at quantity one and rejects another trade 223ms
+     → expected '2' to be '0' // Object.is equality
+     → expected { max: '2', value: '2', total: 80 } to deeply equal { max: '1', value: '1', total: 40 }
+   ✓ 상점 거래 메시지 > 성공·실패 메시지가 모두 한국어이고 금액을 알려준다  1020ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/shopRuntimeUx.test.ts > post-trade quantity synchronization > clamps the selected buy quantity and refreshes every row after spending gold
+AssertionError: expected '2' to be '0' // Object.is equality
+
+Expected: [32m"0"[39m
+Received: [31m"2"[39m
+
+ ❯ test/shopRuntimeUx.test.ts:327:40
+    325|       expect(session.inventory.equip_main).toBe(2);
+    326|       expect(overlay.querySelector("[data-testid='shop-buy-equip_main'…
+    327|       expect.soft(row?.dataset.maxQty).toBe("0");
+       |                                        ^
+    328|       expect.soft(quantity(overlay)).toEqual({ max: "1", value: "1", t…
+    329|       expect.soft(overlay.querySelector<HTMLElement>("[data-testid='sh…
+ ❯ withShop test/shopRuntimeUx.test.ts:304:7
+ ❯ test/shopRuntimeUx.test.ts:320:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/12]⎯
+
+ FAIL  test/shopRuntimeUx.test.ts > post-trade quantity synchronization > clamps the selected buy quantity and refreshes every row after spending gold
+AssertionError: expected { max: '2', value: '2', total: 80 } to deeply equal { max: '1', value: '1', total: 40 }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "max": "1",[39m
+[32m-   "total": 40,[39m
+[32m-   "value": "1",[39m
+[31m+   "max": "2",[39m
+[31m+   "total": 80,[39m
+[31m+   "value": "2",[39m
+[2m  }[22m
+
+ ❯ test/shopRuntimeUx.test.ts:328:38
+    326|       expect(overlay.querySelector("[data-testid='shop-buy-equip_main'…
+    327|       expect.soft(row?.dataset.maxQty).toBe("0");
+    328|       expect.soft(quantity(overlay)).toEqual({ max: "1", value: "1", t…
+       |                                      ^
+    329|       expect.soft(overlay.querySelector<HTMLElement>("[data-testid='sh…
+    330|       key("ArrowDown");
+ ❯ withShop test/shopRuntimeUx.test.ts:304:7
+ ❯ test/shopRuntimeUx.test.ts:320:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/12]⎯
+
+ FAIL  test/shopRuntimeUx.test.ts > post-trade quantity synchronization > clamps the selected buy quantity and refreshes every row after spending gold
+AssertionError: expected '10' to be '2' // Object.is equality
+
+Expected: [32m"2"[39m
+Received: [31m"10"[39m
+
+ ❯ test/shopRuntimeUx.test.ts:329:111
+    327|       expect.soft(row?.dataset.maxQty).toBe("0");
+    328|       expect.soft(quantity(overlay)).toEqual({ max: "1", value: "1", t…
+    329|       expect.soft(overlay.querySelector<HTMLElement>("[data-testid='sh…
+       |                                                                                                               ^
+    330|       key("ArrowDown");
+    331|       expect(quantity(overlay)).toEqual({ max: "2", value: "1", total:…
+ ❯ withShop test/shopRuntimeUx.test.ts:304:7
+ ❯ test/shopRuntimeUx.test.ts:320:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/12]⎯
+
+ FAIL  test/shopRuntimeUx.test.ts > post-trade quantity synchronization > clamps the selected buy quantity and refreshes every row after spending gold
+AssertionError: expected { max: '10', value: '2', total: 20 } to deeply equal { max: '2', value: '1', total: 10 }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "max": "2",[39m
+[32m-   "total": 10,[39m
+[32m-   "value": "1",[39m
+[31m+   "max": "10",[39m
+[31m+   "total": 20,[39m
+[31m+   "value": "2",[39m
+[2m  }[22m
+
+ ❯ test/shopRuntimeUx.test.ts:331:33
+    329|       expect.soft(overlay.querySelector<HTMLElement>("[data-testid='sh…
+    330|       key("ArrowDown");
+    331|       expect(quantity(overlay)).toEqual({ max: "2", value: "1", total:…
+       |                                 ^
+    332|     });
+    333|   });
+ ❯ withShop test/shopRuntimeUx.test.ts:304:7
+ ❯ test/shopRuntimeUx.test.ts:320:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/12]⎯
+
+ FAIL  test/shopRuntimeUx.test.ts > post-trade quantity synchronization > clamps sell quantity to the remaining merchant budget and updates other rows
+AssertionError: expected '3' to be '1' // Object.is equality
+
+Expected: [32m"1"[39m
+Received: [31m"3"[39m
+
+ ❯ test/shopRuntimeUx.test.ts:341:111
+    339|       expect(session.gold).toBe(140);
+    340|       expect(session.inventory.equip_main).toBe(3);
+    341|       expect.soft(overlay.querySelector<HTMLElement>("[data-testid='sh…
+       |                                                                                                               ^
+    342|       expect.soft(quantity(overlay)).toEqual({ max: "1", value: "1", t…
+    343|       expect(overlay.querySelector<HTMLElement>("[data-testid='shop-se…
+ ❯ withShop test/shopRuntimeUx.test.ts:304:7
+ ❯ test/shopRuntimeUx.test.ts:336:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/12]⎯
+
+ FAIL  test/shopRuntimeUx.test.ts > post-trade quantity synchronization > clamps sell quantity to the remaining merchant budget and updates other rows
+AssertionError: expected { max: '3', value: '2', total: 40 } to deeply equal { max: '1', value: '1', total: 20 }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "max": "1",[39m
+[32m-   "total": 20,[39m
+[32m-   "value": "1",[39m
+[31m+   "max": "3",[39m
+[31m+   "total": 40,[39m
+[31m+   "value": "2",[39m
+[2m  }[22m
+
+ ❯ test/shopRuntimeUx.test.ts:342:38
+    340|       expect(session.inventory.equip_main).toBe(3);
+    341|       expect.soft(overlay.querySelector<HTMLElement>("[data-testid='sh…
+    342|       expect.soft(quantity(overlay)).toEqual({ max: "1", value: "1", t…
+       |                                      ^
+    343|       expect(overlay.querySelector<HTMLElement>("[data-testid='shop-se…
+    344|     });
+ ❯ withShop test/shopRuntimeUx.test.ts:304:7
+ ❯ test/shopRuntimeUx.test.ts:336:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/12]⎯
+
+ FAIL  test/shopRuntimeUx.test.ts > post-trade quantity synchronization > clamps sell quantity to the remaining merchant budget and updates other rows
+AssertionError: expected '10' to be '5' // Object.is equality
+
+Expected: [32m"5"[39m
+Received: [31m"10"[39m
+
+ ❯ test/shopRuntimeUx.test.ts:343:107
+    341|       expect.soft(overlay.querySelector<HTMLElement>("[data-testid='sh…
+    342|       expect.soft(quantity(overlay)).toEqual({ max: "1", value: "1", t…
+    343|       expect(overlay.querySelector<HTMLElement>("[data-testid='shop-se…
+       |                                                                                                           ^
+    344|     });
+    345|   });
+ ❯ withShop test/shopRuntimeUx.test.ts:304:7
+ ❯ test/shopRuntimeUx.test.ts:336:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/12]⎯
+
+ FAIL  test/shopRuntimeUx.test.ts > post-trade quantity synchronization > clamps sell quantity to remaining inventory when the merchant can afford more
+AssertionError: expected { max: '3', value: '2', total: 40 } to deeply equal { max: '1', value: '1', total: 20 }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "max": "1",[39m
+[32m-   "total": 20,[39m
+[32m-   "value": "1",[39m
+[31m+   "max": "3",[39m
+[31m+   "total": 40,[39m
+[31m+   "value": "2",[39m
+[2m  }[22m
+
+ ❯ test/shopRuntimeUx.test.ts:352:33
+    350|       key("e");
+    351|       expect(session.inventory.equip_main).toBe(1);
+    352|       expect(quantity(overlay)).toEqual({ max: "1", value: "1", total:…
+       |                                 ^
+    353|     });
+    354|   });
+ ❯ withShop test/shopRuntimeUx.test.ts:304:7
+ ❯ test/shopRuntimeUx.test.ts:348:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/12]⎯
+
+ FAIL  test/shopRuntimeUx.test.ts > post-trade quantity synchronization > reselects the surviving row using its new capacity after selling the last copies
+AssertionError: expected '8' to be '5' // Object.is equality
+
+Expected: [32m"5"[39m
+Received: [31m"8"[39m
+
+ ❯ test/shopRuntimeUx.test.ts:364:45
+    362|       expect(overlay.querySelector("[data-testid='shop-sell-equip_main…
+    363|       expect(overlay.querySelector(".runtime-shop-item-row.selected"))…
+    364|       expect.soft(survivor?.dataset.maxQty).toBe("5");
+       |                                             ^
+    365|       expect(quantity(overlay)).toEqual({ max: "5", value: "2", total:…
+    366|     });
+ ❯ withShop test/shopRuntimeUx.test.ts:304:7
+ ❯ test/shopRuntimeUx.test.ts:357:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/12]⎯
+
+ FAIL  test/shopRuntimeUx.test.ts > post-trade quantity synchronization > reselects the surviving row using its new capacity after selling the last copies
+AssertionError: expected { max: '8', value: '2', total: 10 } to deeply equal { max: '5', value: '2', total: 10 }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "max": "5",[39m
+[31m+   "max": "8",[39m
+[2m    "total": 10,[22m
+[2m    "value": "2",[22m
+[2m  }[22m
+
+ ❯ test/shopRuntimeUx.test.ts:365:33
+    363|       expect(overlay.querySelector(".runtime-shop-item-row.selected"))…
+    364|       expect.soft(survivor?.dataset.maxQty).toBe("5");
+    365|       expect(quantity(overlay)).toEqual({ max: "5", value: "2", total:…
+       |                                 ^
+    366|     });
+    367|   });
+ ❯ withShop test/shopRuntimeUx.test.ts:304:7
+ ❯ test/shopRuntimeUx.test.ts:357:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/12]⎯
+
+ FAIL  test/shopRuntimeUx.test.ts > post-trade quantity synchronization > keeps a zero-capacity row inspectable at quantity one and rejects another trade
+AssertionError: expected '2' to be '0' // Object.is equality
+
+Expected: [32m"0"[39m
+Received: [31m"2"[39m
+
+ ❯ test/shopRuntimeUx.test.ts:378:106
+    376|       expect(session.inventory.equip_main).toBe(2);
+    377|       expect(session.shopTradeCounts?.equip_main).toEqual({ bought: 2,…
+    378|       expect.soft(overlay.querySelector<HTMLElement>(".runtime-shop-it…
+       |                                                                                                          ^
+    379|       expect(quantity(overlay)).toEqual({ max: "1", value: "1", total:…
+    380|     });
+ ❯ withShop test/shopRuntimeUx.test.ts:304:7
+ ❯ test/shopRuntimeUx.test.ts:370:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/12]⎯
+
+ FAIL  test/shopRuntimeUx.test.ts > post-trade quantity synchronization > keeps a zero-capacity row inspectable at quantity one and rejects another trade
+AssertionError: expected { max: '2', value: '2', total: 80 } to deeply equal { max: '1', value: '1', total: 40 }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "max": "1",[39m
+[32m-   "total": 40,[39m
+[32m-   "value": "1",[39m
+[31m+   "max": "2",[39m
+[31m+   "total": 80,[39m
+[31m+   "value": "2",[39m
+[2m  }[22m
+
+ ❯ test/shopRuntimeUx.test.ts:379:33
+    377|       expect(session.shopTradeCounts?.equip_main).toEqual({ bought: 2,…
+    378|       expect.soft(overlay.querySelector<HTMLElement>(".runtime-shop-it…
+    379|       expect(quantity(overlay)).toEqual({ max: "1", value: "1", total:…
+       |                                 ^
+    380|     });
+    381|   });
+ ❯ withShop test/shopRuntimeUx.test.ts:304:7
+ ❯ test/shopRuntimeUx.test.ts:370:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/12]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed | 18 passed (23)
+   Start at  04:35:25
+   Duration  66.12s (transform 23.72s, setup 0ms, collect 36.88s, tests 20.71s, environment 5.10s, prepare 718ms)
+
+EXIT_CODE=1

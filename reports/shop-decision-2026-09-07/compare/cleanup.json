@@ -1,0 +1,68 @@
+[
+  {
+    "resource": "/home/main/.herdr/worktrees/rpg-zzu/worktree-clear-harbor-3da2/.vite-cache/shop-decision-player-uyZBhu",
+    "registeredAt": "2026-09-06T21:27:15.134Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:28:53.747Z"
+  },
+  {
+    "resource": "http://127.0.0.1:39709",
+    "registeredAt": "2026-09-06T21:27:42.440Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:28:53.742Z"
+  },
+  {
+    "resource": "chromium",
+    "registeredAt": "2026-09-06T21:27:42.604Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:28:53.739Z"
+  },
+  {
+    "resource": "compare-1024x768:context",
+    "registeredAt": "2026-09-06T21:27:42.885Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:28:37.068Z"
+  },
+  {
+    "resource": "compare-1024x768:page",
+    "registeredAt": "2026-09-06T21:27:43.040Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:28:37.055Z"
+  },
+  {
+    "resource": "compare-1024x768:cdp",
+    "registeredAt": "2026-09-06T21:27:50.772Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:28:36.921Z"
+  },
+  {
+    "resource": "compare-1024x768:heap-read-handle",
+    "registeredAt": "2026-09-06T21:27:54.277Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:28:36.805Z"
+  },
+  {
+    "resource": "twohand-1024x768:context",
+    "registeredAt": "2026-09-06T21:28:37.166Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:28:53.072Z"
+  },
+  {
+    "resource": "twohand-1024x768:page",
+    "registeredAt": "2026-09-06T21:28:37.250Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:28:53.059Z"
+  },
+  {
+    "resource": "twohand-1024x768:cdp",
+    "registeredAt": "2026-09-06T21:28:43.382Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:28:52.984Z"
+  },
+  {
+    "resource": "twohand-1024x768:heap-read-handle",
+    "registeredAt": "2026-09-06T21:28:45.479Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:28:52.898Z"
+  }
+]

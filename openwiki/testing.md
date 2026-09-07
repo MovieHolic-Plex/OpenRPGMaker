@@ -1,3 +1,12 @@
+## Real large-world player QA (2026-09-07)
+
+`npm run qa:runtime -- --scenario live-world-start --project <saved-project.json>`
+checks the real 128x128 QA world's shipped-player boot and authored harbor start.
+It does not teleport. This is only boot proof, not proof of eight-landmark reachability.
+The live-world evidence also records event-driven directional input, every actual
+tile arrival, and rendered-player agreement for the complete landmark walk.
+Read the generated `SUMMARY.md` before its relevant screenshots.
+
 ## CSS budget: file count is informational
 
 `scripts/check-css-budget.mjs` reports stylesheet count and paths but does not

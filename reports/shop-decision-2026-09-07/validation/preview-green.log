@@ -1,0 +1,507 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/shopEquipmentPreview.test.ts test/playerEquipmentRules.test.ts test/customEquipmentSlots.test.ts
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-clear-harbor-3da2
+
+ ✓ test/playerEquipmentRules.test.ts (10 tests) 2140ms
+   ✓ atomic equipment transition authority > occupies both hands for a two-handed weapon while conserving one inventory copy  396ms
+   ✓ atomic equipment transition authority > activates a dual-wield weapon from the shield screen into the shield slot  316ms
+ ❯ test/shopEquipmentPreview.test.ts (28 tests | 11 failed) 2940ms
+   × pure actor-specific shop equipment preview > shows all four truthful totals, including a lost zero-bonus stat and a positive-bonus downgrade 631ms
+     → expected [ { key: 'attack', …(3) }, …(3) ] to deeply equal [ { key: 'attack', …(3) }, …(3) ]
+   ✓ pure actor-specific shop equipment preview > returns same-equipment zero deltas without displacing or inventing inventory 153ms
+   × pure actor-specific shop equipment preview > counts a two-hand mirror once, displaces both hands, and compares derived effects 147ms
+     → expected [ { key: 'attack', …(3) }, …(3) ] to deeply equal [ { key: 'attack', …(3) }, …(3) ]
+   ✓ pure actor-specific shop equipment preview > retains shared derived effects instead of claiming that every removed item's effect was lost 56ms
+   × pure actor-specific shop equipment preview > keeps all six actual party actors selectable and uses their distinct current totals and session names 60ms
+     → expected [ { key: 'attack', …(3) }, …(3) ] to deeply equal [ { key: 'attack', …(3) }, …(3) ]
+   × pure actor-specific shop equipment preview > preserves the requested dual-wield shield slot granted by actor 70ms
+     → expected [ 35, 18, 8, 6 ] to deeply equal [ 35, 18, 8, 4 ]
+   × pure actor-specific shop equipment preview > preserves the requested dual-wield shield slot granted by class 117ms
+     → expected [ 35, 18, 8, 6 ] to deeply equal [ 35, 18, 8, 4 ]
+   × pure actor-specific shop equipment preview > counts two identical dual-wield copies as two displaced objects 89ms
+     → expected [ 25, 10, 8, 6 ] to deeply equal [ 25, 10, 8, 4 ]
+   × pure actor-specific shop equipment preview > uses the authored charm catalog slot and replaces an incompatible previous slot default 62ms
+     → expected [ 35, 18, 8, 6 ] to deeply equal [ 35, 18, 8, 4 ]
+   × pure actor-specific shop equipment preview > preserves level, current class curves, invested growth, earned promotion lineage and permanent bonuses 71ms
+     → expected [ { key: 'attack', …(3) }, …(3) ] to deeply equal [ { key: 'attack', …(3) }, …(3) ]
+   ✓ pure actor-specific shop equipment preview > retains readable actor and current stats when actorFixed blocks replacement 71ms
+   ✓ pure actor-specific shop equipment preview > retains readable actor and current stats when classFixed blocks replacement 82ms
+   ✓ pure actor-specific shop equipment preview > retains readable actor and current stats when gearFixed blocks replacement 141ms
+   ✓ pure actor-specific shop equipment preview > retains readable actor and current stats when cursed blocks replacement 130ms
+   ✓ pure actor-specific shop equipment preview > retains readable actor and current stats when actorRestricted blocks replacement 53ms
+   ✓ pure actor-specific shop equipment preview > retains readable actor and current stats when classRestricted blocks replacement 39ms
+   × pure actor-specific shop equipment preview > uses current class permissions and falls back from a deleted class override 61ms
+     → expected [ { key: 'attack', …(3) }, …(3) ] to deeply equal [ { key: 'attack', …(3) }, …(3) ]
+   ✓ pure actor-specific shop equipment preview > does not bypass transition permission for same-item actorFixed 73ms
+   ✓ pure actor-specific shop equipment preview > does not bypass transition permission for same-item gearFixed 33ms
+   ✓ pure actor-specific shop equipment preview > does not bypass transition permission for same-item cursed 49ms
+   ✓ pure actor-specific shop equipment preview > does not bypass transition permission for same-item restricted 35ms
+   ✓ pure actor-specific shop equipment preview > passes raw hand occupancy to authority, so a hidden cursed shield still blocks displacement 36ms
+   × pure actor-specific shop equipment preview > returns real raw-state displaced objects even when the stat projection hides a shield 46ms
+     → expected [ { key: 'attack', …(3) }, …(3) ] to deeply equal [ { key: 'attack', …(3) }, …(3) ]
+   ✓ pure actor-specific shop equipment preview > does not fabricate targets for an empty or missing party actor 39ms
+   ✓ pure actor-specific shop equipment preview > explicitly rejects non-equipment, missing equipment and legacy item-source weapons 56ms
+   ✓ pure actor-specific shop equipment preview > keeps incompatible custom equipment inspectable with an invalid-slot reason 47ms
+   × pure actor-specific shop equipment preview > reads initial equipment when the session lacks an override 38ms
+     → expected [ { key: 'attack', …(3) }, …(3) ] to deeply equal [ { key: 'attack', …(3) }, …(3) ]
+   ✓ pure actor-specific shop equipment preview > never mutates deeply frozen project, session or goods, on ready or blocked paths  446ms
+ ✓ test/customEquipmentSlots.test.ts (10 tests) 4810ms
+   ✓ project-authored equipment slots > roundtrips initial equipment, equips through menu and event authority, derives stats, and saves/reloads  563ms
+   ✓ project-authored equipment slots > rejects unknown or unsafe authored slot "missing" on project reload  620ms
+   ✓ project-authored equipment slots > rejects unknown or unsafe authored slot "" on project reload  359ms
+   ✓ project-authored equipment slots > rejects unknown or unsafe authored slot "__proto__" on project reload  350ms
+   ✓ project-authored equipment slots > validates catalog identity, initial equipment, event slots, and all custom save values  955ms
+   ✓ project-authored equipment slots > keeps catalog-free legacy projects and saves compatible, even after renaming built-in labels  414ms
+   ✓ project-authored equipment slots > authors a custom slot inline, retains its ID on rename, and exposes it in the actor picker  1078ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 11 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/shopEquipmentPreview.test.ts > pure actor-specific shop equipment preview > shows all four truthful totals, including a lost zero-bonus stat and a positive-bonus downgrade
+AssertionError: expected [ { key: 'attack', …(3) }, …(3) ] to deeply equal [ { key: 'attack', …(3) }, …(3) ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -17,10 +17,10 @@[39m
+[2m      "key": "mind",[22m
+[2m      "next": 8,[22m
+[2m    },[22m
+[2m    {[22m
+[2m      "current": 6,[22m
+[32m-     "delta": -2,[39m
+[31m+     "delta": 0,[39m
+[2m      "key": "agility",[22m
+[32m-     "next": 4,[39m
+[31m+     "next": 6,[39m
+[2m    },[22m
+[2m  ][22m
+
+ ❯ test/shopEquipmentPreview.test.ts:82:26
+     80|     expect(result).toMatchObject({ kind: "ready", actorId: f.actor.id,…
+     81|     if (result.kind !== "ready") throw new Error("Expected ready previ…
+     82|     expect(result.stats).toEqual(downgradeRows);
+       |                          ^
+     83|     expect(result.currentEquipment).toEqual({ weapon: f.oldWeapon.id }…
+     84|     expect(result.nextEquipment).toEqual({ weapon: f.candidate.id });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/11]⎯
+
+ FAIL  test/shopEquipmentPreview.test.ts > pure actor-specific shop equipment preview > counts a two-hand mirror once, displaces both hands, and compares derived effects
+AssertionError: expected [ { key: 'attack', …(3) }, …(3) ] to deeply equal [ { key: 'attack', …(3) }, …(3) ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -17,10 +17,10 @@[39m
+[2m      "key": "mind",[22m
+[2m      "next": 8,[22m
+[2m    },[22m
+[2m    {[22m
+[2m      "current": 6,[22m
+[32m-     "delta": -2,[39m
+[31m+     "delta": 0,[39m
+[2m      "key": "agility",[22m
+[32m-     "next": 4,[39m
+[31m+     "next": 6,[39m
+[2m    },[22m
+[2m  ][22m
+
+ ❯ test/shopEquipmentPreview.test.ts:125:26
+    123|     expect(result.kind).toBe("ready");
+    124|     if (result.kind !== "ready") throw new Error("Expected ready previ…
+    125|     expect(result.stats).toEqual([
+       |                          ^
+    126|       { key: "attack", current: 30, next: 35, delta: 5 },
+    127|       { key: "defense", current: 18, next: 10, delta: -8 },
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/11]⎯
+
+ FAIL  test/shopEquipmentPreview.test.ts > pure actor-specific shop equipment preview > keeps all six actual party actors selectable and uses their distinct current totals and session names
+AssertionError: expected [ { key: 'attack', …(3) }, …(3) ] to deeply equal [ { key: 'attack', …(3) }, …(3) ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -17,10 +17,10 @@[39m
+[2m      "key": "mind",[22m
+[2m      "next": 8,[22m
+[2m    },[22m
+[2m    {[22m
+[2m      "current": 6,[22m
+[32m-     "delta": -2,[39m
+[31m+     "delta": 0,[39m
+[2m      "key": "agility",[22m
+[32m-     "next": 4,[39m
+[31m+     "next": 6,[39m
+[2m    },[22m
+[2m  ][22m
+
+ ❯ test/shopEquipmentPreview.test.ts:175:28
+    173|       expect(result.targets[5]?.name).toBe("Renamed sixth");
+    174|       expect(result.actorId).toBe(actorId);
+    175|       expect(result.stats).toEqual([
+       |                            ^
+    176|         { key: "attack", current, next, delta: -5 },
+    177|         { key: "defense", current: 18, next: 10, delta: -8 },
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/11]⎯
+
+ FAIL  test/shopEquipmentPreview.test.ts > pure actor-specific shop equipment preview > preserves the requested dual-wield shield slot granted by actor
+ FAIL  test/shopEquipmentPreview.test.ts > pure actor-specific shop equipment preview > preserves the requested dual-wield shield slot granted by class
+AssertionError: expected [ 35, 18, 8, 6 ] to deeply equal [ 35, 18, 8, 4 ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[2m    35,[22m
+[2m    18,[22m
+[2m    8,[22m
+[32m-   4,[39m
+[31m+   6,[39m
+[2m  ][22m
+
+ ❯ test/shopEquipmentPreview.test.ts:194:47
+    192|     expect(result.slot).toBe("shield");
+    193|     expect(result.nextEquipment).toEqual({ weapon: f.oldWeapon.id, shi…
+    194|     expect(result.stats.map(row => row.next)).toEqual([35, 18, 8, 4]);
+       |                                               ^
+    195|     expect(result.displaced).toEqual([]);
+    196|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/11]⎯
+
+ FAIL  test/shopEquipmentPreview.test.ts > pure actor-specific shop equipment preview > counts two identical dual-wield copies as two displaced objects
+AssertionError: expected [ 25, 10, 8, 6 ] to deeply equal [ 25, 10, 8, 4 ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[2m    25,[22m
+[2m    10,[22m
+[2m    8,[22m
+[32m-   4,[39m
+[31m+   6,[39m
+[2m  ][22m
+
+ ❯ test/shopEquipmentPreview.test.ts:210:47
+    208|     expect(result.displaced).toEqual([{ id: f.oldWeapon.id, count: 2 }…
+    209|     expect(result.stats.map(row => row.current)).toEqual([40, 26, 8, 6…
+    210|     expect(result.stats.map(row => row.next)).toEqual([25, 10, 8, 4]);
+       |                                               ^
+    211|   });
+    212|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/11]⎯
+
+ FAIL  test/shopEquipmentPreview.test.ts > pure actor-specific shop equipment preview > uses the authored charm catalog slot and replaces an incompatible previous slot default
+AssertionError: expected [ 35, 18, 8, 6 ] to deeply equal [ 35, 18, 8, 4 ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[2m    35,[22m
+[2m    18,[22m
+[2m    8,[22m
+[32m-   4,[39m
+[31m+   6,[39m
+[2m  ][22m
+
+ ❯ test/shopEquipmentPreview.test.ts:222:47
+    220|     expect(result.targets[0]?.slots).toEqual([{ id: "charm", label: "C…
+    221|     expect(result.nextEquipment).toEqual({ weapon: f.oldWeapon.id, cha…
+    222|     expect(result.stats.map(row => row.next)).toEqual([35, 18, 8, 4]);
+       |                                               ^
+    223|   });
+    224|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/11]⎯
+
+ FAIL  test/shopEquipmentPreview.test.ts > pure actor-specific shop equipment preview > preserves level, current class curves, invested growth, earned promotion lineage and permanent bonuses
+AssertionError: expected [ { key: 'attack', …(3) }, …(3) ] to deeply equal [ { key: 'attack', …(3) }, …(3) ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -17,10 +17,10 @@[39m
+[2m      "key": "mind",[22m
+[2m      "next": 13,[22m
+[2m    },[22m
+[2m    {[22m
+[2m      "current": 13,[22m
+[32m-     "delta": -2,[39m
+[31m+     "delta": 0,[39m
+[2m      "key": "agility",[22m
+[32m-     "next": 11,[39m
+[31m+     "next": 13,[39m
+[2m    },[22m
+[2m  ][22m
+
+ ❯ test/shopEquipmentPreview.test.ts:247:26
+    245|     expect(result.kind).toBe("ready");
+    246|     if (result.kind !== "ready") throw new Error("Expected ready previ…
+    247|     expect(result.stats).toEqual([
+       |                          ^
+    248|       { key: "attack", current: 60, next: 55, delta: -5 },
+    249|       { key: "defense", current: 30, next: 22, delta: -8 },
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/11]⎯
+
+ FAIL  test/shopEquipmentPreview.test.ts > pure actor-specific shop equipment preview > uses current class permissions and falls back from a deleted class override
+AssertionError: expected [ { key: 'attack', …(3) }, …(3) ] to deeply equal [ { key: 'attack', …(3) }, …(3) ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -17,10 +17,10 @@[39m
+[2m      "key": "mind",[22m
+[2m      "next": 8,[22m
+[2m    },[22m
+[2m    {[22m
+[2m      "current": 6,[22m
+[32m-     "delta": -2,[39m
+[31m+     "delta": 0,[39m
+[2m      "key": "agility",[22m
+[32m-     "next": 4,[39m
+[31m+     "next": 6,[39m
+[2m    },[22m
+[2m  ][22m
+
+ ❯ test/shopEquipmentPreview.test.ts:297:28
+    295|     expect(fallback.kind).toBe("ready");
+    296|     if (fallback.kind !== "ready") throw new Error("Expected ready pre…
+    297|     expect(fallback.stats).toEqual(downgradeRows);
+       |                            ^
+    298|   });
+    299|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/11]⎯
+
+ FAIL  test/shopEquipmentPreview.test.ts > pure actor-specific shop equipment preview > returns real raw-state displaced objects even when the stat projection hides a shield
+AssertionError: expected [ { key: 'attack', …(3) }, …(3) ] to deeply equal [ { key: 'attack', …(3) }, …(3) ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -17,10 +17,10 @@[39m
+[2m      "key": "mind",[22m
+[2m      "next": 8,[22m
+[2m    },[22m
+[2m    {[22m
+[2m      "current": 6,[22m
+[32m-     "delta": -2,[39m
+[31m+     "delta": 0,[39m
+[2m      "key": "agility",[22m
+[32m-     "next": 4,[39m
+[31m+     "next": 6,[39m
+[2m    },[22m
+[2m  ][22m
+
+ ❯ test/shopEquipmentPreview.test.ts:333:26
+    331|     if (result.kind !== "ready") throw new Error("Expected ready previ…
+    332|     expect(result.displaced).toEqual([{ id: f.oldWeapon.id, count: 1 }…
+    333|     expect(result.stats).toEqual(downgradeRows);
+       |                          ^
+    334|   });
+    335|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/11]⎯
+
+ FAIL  test/shopEquipmentPreview.test.ts > pure actor-specific shop equipment preview > reads initial equipment when the session lacks an override
+AssertionError: expected [ { key: 'attack', …(3) }, …(3) ] to deeply equal [ { key: 'attack', …(3) }, …(3) ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -17,10 +17,10 @@[39m
+[2m      "key": "mind",[22m
+[2m      "next": 8,[22m
+[2m    },[22m
+[2m    {[22m
+[2m      "current": 6,[22m
+[32m-     "delta": -2,[39m
+[31m+     "delta": 0,[39m
+[2m      "key": "agility",[22m
+[32m-     "next": 4,[39m
+[31m+     "next": 6,[39m
+[2m    },[22m
+[2m  ][22m
+
+ ❯ test/shopEquipmentPreview.test.ts:370:26
+    368|     expect(result.kind).toBe("ready");
+    369|     if (result.kind !== "ready") throw new Error("Expected ready previ…
+    370|     expect(result.stats).toEqual(downgradeRows);
+       |                          ^
+    371|   });
+    372|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/11]⎯
+
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  11 failed | 37 passed (48)
+   Start at  05:01:49
+   Duration  30.09s (transform 17.90s, setup 0ms, collect 57.63s, tests 9.89s, environment 1ms, prepare 1.55s)
+
+
+GREEN_EXIT=1
+
+--- Fixture correction: normalizer clamps negative bonuses; runtime candidate agility now explicitly -2. Expectations unchanged. ---
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/shopEquipmentPreview.test.ts test/playerEquipmentRules.test.ts test/customEquipmentSlots.test.ts
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-clear-harbor-3da2
+
+ ✓ test/playerEquipmentRules.test.ts (10 tests) 1763ms
+   ✓ atomic equipment transition authority > occupies both hands for a two-handed weapon while conserving one inventory copy  340ms
+   ✓ atomic equipment transition authority > activates a dual-wield weapon from the shield screen into the shield slot  513ms
+ ✓ test/shopEquipmentPreview.test.ts (28 tests) 4943ms
+   ✓ pure actor-specific shop equipment preview > shows all four truthful totals, including a lost zero-bonus stat and a positive-bonus downgrade  663ms
+   ✓ pure actor-specific shop equipment preview > returns same-equipment zero deltas without displacing or inventing inventory  423ms
+   ✓ pure actor-specific shop equipment preview > never mutates deeply frozen project, session or goods, on ready or blocked paths  539ms
+ ✓ test/customEquipmentSlots.test.ts (10 tests) 6427ms
+   ✓ project-authored equipment slots > rejects unknown or unsafe authored slot "missing" on project reload  666ms
+   ✓ project-authored equipment slots > validates catalog identity, initial equipment, event slots, and all custom save values  1455ms
+   ✓ project-authored equipment slots > keeps catalog-free legacy projects and saves compatible, even after renaming built-in labels  618ms
+   ✓ project-authored equipment slots > authors a custom slot inline, retains its ID on rename, and exposes it in the actor picker  2542ms
+
+ Test Files  3 passed (3)
+      Tests  48 passed (48)
+   Start at  05:02:54
+   Duration  33.27s (transform 18.30s, setup 0ms, collect 58.83s, tests 13.13s, environment 1ms, prepare 1.75s)
+
+
+GREEN_EXIT=0
+
+  ../../../../../../tmp/shop-preview-entry-aOhbdC/preview-entry.mjs  1.4mb ⚠️
+
+⚡ Done in 866ms
+MODULE_ENTRY_PASS {"kind":"ready","stats":[{"key":"attack","current":53,"next":53,"delta":0},{"key":"defense","current":59,"next":59,"delta":0},{"key":"mind","current":45,"next":45,"delta":0},{"key":"agility","current":43,"next":43,"delta":0}],"unchanged":true}
+LIBRARY_BUILD_AND_EXECUTION_EXIT=0
+MODULE_ENTRY_TEMP_CLEANUP=complete
+
+--- Authorable oracle added: old attack10/agility2 to candidate attack5/agility0; totals30/18/8/8 to25/10/8/6. Negative runtime bonus remains labelled in-memory edge only. Normalizer is an authoring constraint, not a product defect. ---
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/shopEquipmentPreview.test.ts test/playerEquipmentRules.test.ts test/customEquipmentSlots.test.ts
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-clear-harbor-3da2
+
+ ✓ test/playerEquipmentRules.test.ts (10 tests) 4475ms
+   ✓ atomic equipment transition authority > occupies both hands for a two-handed weapon while conserving one inventory copy  744ms
+   ✓ atomic equipment transition authority > routes script equipment changes through inventory-conserving rejection-safe authority  453ms
+   ✓ atomic equipment transition authority > keeps shield candidates aligned with the actor dual-wield writer  876ms
+   ✓ atomic equipment transition authority > keeps shield candidates aligned with the class dual-wield writer  437ms
+   ✓ atomic equipment transition authority > activates a dual-wield weapon from the shield screen into the shield slot  1008ms
+   ✓ atomic equipment transition authority > omits weapons from the shield candidates when neither actor nor class can dual-wield  335ms
+ ✓ test/shopEquipmentPreview.test.ts (29 tests) 10696ms
+   ✓ pure actor-specific shop equipment preview > shows authorable positive-bonus downgrades and lost zero-bonus stats without negative authored bonuses  866ms
+   ✓ pure actor-specific shop equipment preview > handles the runtime-only negative-bonus edge with all four truthful totals  805ms
+   ✓ pure actor-specific shop equipment preview > returns same-equipment zero deltas without displacing or inventing inventory  448ms
+   ✓ pure actor-specific shop equipment preview > counts a two-hand mirror once, displaces both hands, and compares derived effects  734ms
+   ✓ pure actor-specific shop equipment preview > retains shared derived effects instead of claiming that every removed item's effect was lost  755ms
+   ✓ pure actor-specific shop equipment preview > keeps all six actual party actors selectable and uses their distinct current totals and session names  668ms
+   ✓ pure actor-specific shop equipment preview > preserves the requested dual-wield shield slot granted by actor  637ms
+   ✓ pure actor-specific shop equipment preview > preserves the requested dual-wield shield slot granted by class  740ms
+   ✓ pure actor-specific shop equipment preview > counts two identical dual-wield copies as two displaced objects  491ms
+   ✓ pure actor-specific shop equipment preview > retains readable actor and current stats when actorFixed blocks replacement  327ms
+   ✓ pure actor-specific shop equipment preview > retains readable actor and current stats when cursed blocks replacement  301ms
+   ✓ pure actor-specific shop equipment preview > reads initial equipment when the session lacks an override  351ms
+   ✓ pure actor-specific shop equipment preview > never mutates deeply frozen project, session or goods, on ready or blocked paths  1240ms
+ ✓ test/customEquipmentSlots.test.ts (10 tests) 10569ms
+   ✓ project-authored equipment slots > retains a real custom slot in the runtime equipment projection  377ms
+   ✓ project-authored equipment slots > roundtrips initial equipment, equips through menu and event authority, derives stats, and saves/reloads  1345ms
+   ✓ project-authored equipment slots > rejects unknown slots atomically, including empty-slot unequip, and preserves permissions and curse rules  370ms
+   ✓ project-authored equipment slots > rejects unknown or unsafe authored slot "missing" on project reload  964ms
+   ✓ project-authored equipment slots > rejects unknown or unsafe authored slot "" on project reload  1023ms
+   ✓ project-authored equipment slots > rejects unknown or unsafe authored slot "__proto__" on project reload  413ms
+   ✓ project-authored equipment slots > validates catalog identity, initial equipment, event slots, and all custom save values  2003ms
+   ✓ project-authored equipment slots > keeps catalog-free legacy projects and saves compatible, even after renaming built-in labels  370ms
+   ✓ project-authored equipment slots > authors a custom slot inline, retains its ID on rename, and exposes it in the actor picker  3426ms
+
+ Test Files  3 passed (3)
+      Tests  49 passed (49)
+   Start at  05:05:11
+   Duration  52.82s (transform 32.11s, setup 0ms, collect 95.40s, tests 25.74s, environment 1ms, prepare 1.31s)
+
+
+FINAL_GREEN_EXIT=0
+TARGETED_TYPECHECK_FILES=src/player/shopEquipmentPreview.ts,test/shopEquipmentPreview.test.ts
+TARGETED_TYPECHECK_DIAGNOSTICS=9
+[96mtest/shopEquipmentPreview.test.ts[0m:[93m9[0m:[93m29[0m - [91merror[0m[90m TS2339: [0mProperty 'glob' does not exist on type 'ImportMeta'.
+
+[7m9[0m const modules = import.meta.glob<typeof import("@/player/shopEquipmentPreview")>("../src/player/shopEquipmentPreview.ts");
+[7m [0m [91m                            ~~~~[0m
+[96mtest/shopEquipmentPreview.test.ts[0m:[93m196[0m:[93m33[0m - [91merror[0m[90m TS7006: [0mParameter 'target' implicitly has an 'any' type.
+
+[7m196[0m       expect(result.targets.map(target => target.actorId)).toEqual(f.session.partyActorIds);
+[7m   [0m [91m                                ~~~~~~[0m
+[96mtest/shopEquipmentPreview.test.ts[0m:[93m215[0m:[93m41[0m - [91merror[0m[90m TS7006: [0mParameter 'slot' implicitly has an 'any' type.
+
+[7m215[0m     expect(result.targets[0]?.slots.map(slot => slot.id)).toEqual(["weapon", "shield"]);
+[7m   [0m [91m                                        ~~~~[0m
+[96mtest/shopEquipmentPreview.test.ts[0m:[93m218[0m:[93m29[0m - [91merror[0m[90m TS7006: [0mParameter 'row' implicitly has an 'any' type.
+
+[7m218[0m     expect(result.stats.map(row => row.next)).toEqual([35, 18, 8, 4]);
+[7m   [0m [91m                            ~~~[0m
+[96mtest/shopEquipmentPreview.test.ts[0m:[93m231[0m:[93m41[0m - [91merror[0m[90m TS7006: [0mParameter 'slot' implicitly has an 'any' type.
+
+[7m231[0m     expect(result.targets[0]?.slots.map(slot => slot.id)).toEqual(["weapon"]);
+[7m   [0m [91m                                        ~~~~[0m
+[96mtest/shopEquipmentPreview.test.ts[0m:[93m233[0m:[93m29[0m - [91merror[0m[90m TS7006: [0mParameter 'row' implicitly has an 'any' type.
+
+[7m233[0m     expect(result.stats.map(row => row.current)).toEqual([40, 26, 8, 6]);
+[7m   [0m [91m                            ~~~[0m
+[96mtest/shopEquipmentPreview.test.ts[0m:[93m234[0m:[93m29[0m - [91merror[0m[90m TS7006: [0mParameter 'row' implicitly has an 'any' type.
+
+[7m234[0m     expect(result.stats.map(row => row.next)).toEqual([25, 10, 8, 4]);
+[7m   [0m [91m                            ~~~[0m
+[96mtest/shopEquipmentPreview.test.ts[0m:[93m246[0m:[93m29[0m - [91merror[0m[90m TS7006: [0mParameter 'row' implicitly has an 'any' type.
+
+[7m246[0m     expect(result.stats.map(row => row.next)).toEqual([35, 18, 8, 4]);
+[7m   [0m [91m                            ~~~[0m
+[96mtest/shopEquipmentPreview.test.ts[0m:[93m300[0m:[93m31[0m - [91merror[0m[90m TS7006: [0mParameter 'target' implicitly has an 'any' type.
+
+[7m300[0m     expect(result.targets.map(target => target.actorId)).toEqual([f.actor.id]);
+[7m   [0m [91m                              ~~~~~~[0m
+
+LSP_FINAL_SOURCE=clean; LSP_FINAL_TEST=3000ms freshness timeout; targeted compiler fallback used
+
+--- Test typing correction: RED discovery helper replaced by direct production API import; no output expectations changed. ---
+TARGETED_TYPECHECK_FILES=src/player/shopEquipmentPreview.ts,test/shopEquipmentPreview.test.ts
+TARGETED_TYPECHECK_DIAGNOSTICS=0
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/shopEquipmentPreview.test.ts test/playerEquipmentRules.test.ts test/customEquipmentSlots.test.ts
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-clear-harbor-3da2
+
+ ✓ test/playerEquipmentRules.test.ts (10 tests) 1433ms
+   ✓ atomic equipment transition authority > activates a dual-wield weapon from the shield screen into the shield slot  314ms
+ ✓ test/shopEquipmentPreview.test.ts (29 tests) 3582ms
+   ✓ pure actor-specific shop equipment preview > shows authorable positive-bonus downgrades and lost zero-bonus stats without negative authored bonuses  445ms
+   ✓ pure actor-specific shop equipment preview > never mutates deeply frozen project, session or goods, on ready or blocked paths  804ms
+ ✓ test/customEquipmentSlots.test.ts (10 tests) 5855ms
+   ✓ project-authored equipment slots > roundtrips initial equipment, equips through menu and event authority, derives stats, and saves/reloads  1192ms
+   ✓ project-authored equipment slots > rejects unknown or unsafe authored slot "missing" on project reload  873ms
+   ✓ project-authored equipment slots > rejects unknown or unsafe authored slot "" on project reload  801ms
+   ✓ project-authored equipment slots > rejects unknown or unsafe authored slot "__proto__" on project reload  497ms
+   ✓ project-authored equipment slots > validates catalog identity, initial equipment, event slots, and all custom save values  727ms
+   ✓ project-authored equipment slots > authors a custom slot inline, retains its ID on rename, and exposes it in the actor picker  953ms
+
+ Test Files  3 passed (3)
+      Tests  49 passed (49)
+   Start at  05:09:05
+   Duration  32.39s (transform 19.95s, setup 0ms, collect 59.74s, tests 10.87s, environment 4ms, prepare 1.30s)
+
+
+FINAL_GREEN_EXIT=0
