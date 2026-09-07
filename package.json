@@ -7,6 +7,9 @@
   "scripts": {
     "mac:launch": "node scripts/mac-launch.mjs",
     "setup:local": "node scripts/setup-local.mjs",
+    "bgm:pack": "vite-node --script scripts/build-bgm-release.mts",
+    "bgm:install": "node scripts/install-bgm.mjs",
+    "bgm:verify": "node scripts/install-bgm.mjs --verify",
     "test:mac-onboarding": "node --test test/macLauncher.test.mjs test/setupLocal.test.mjs",
     "dev": "vite --configLoader runner --host 0.0.0.0 --port 9999 --strictPort",
     "dev:worktree": "vite --configLoader runner --host 127.0.0.1 --strictPort",
@@ -83,7 +86,8 @@
   },
   "dependencies": {
     "jimp": "^0.16.13",
-    "phaser": "^3.90.0"
+    "phaser": "^3.90.0",
+    "tar": "7.5.22"
   },
   "devDependencies": {
     "@oh-my-pi/pi-ai": "^17.4.0",
@@ -95,6 +99,7 @@
     "ts-ebml": "^3.0.2",
     "typescript": "^5.7.0",
     "vite": "^6.0.0",
+    "vite-node": "3.2.4",
     "vitest": "3.2.4",
     "webm-duration-fix": "^1.0.4"
   }

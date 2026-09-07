@@ -30,8 +30,8 @@ export function computeReachableCells(
 ): Set<string> {
   const seen = new Set<string>([`${sx},${sy}`]);
   const queue: Array<[number, number]> = [[sx, sy]];
-  while (queue.length > 0) {
-    const [x, y] = queue.shift() as [number, number];
+  for (let head = 0; head < queue.length; head++) {
+    const [x, y] = queue[head];
     for (const [dx, dy] of [
       [1, 0],
       [-1, 0],
