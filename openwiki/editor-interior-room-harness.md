@@ -9,7 +9,8 @@ The LLM-harnessed interior pipeline: start session, advance build per layer, eva
   records and 13 supplemental records for both room authoring and bundled load.
   Existing records win by their exact ID, including user-origin records that retain
   `source: bundled-default`; IDs, membership, rules, grammar and overrides are not
-  replaced or renamed. Suppressed IDs stay suppressed. A prefix is not ownership.
+  replaced or renamed, except for the complete proven legacy table factory record
+  described below. Suppressed IDs stay suppressed. A prefix is not ownership.
 - Group composition is separate from per-tile runtime seeding. Only pack groups
   seed passage/priority/repeatability; supplemental room guidance must not overwrite
   those contracts. Existing unknown/retired-looking groups are preserved, not deleted.
@@ -29,6 +30,36 @@ The LLM-harnessed interior pipeline: start session, advance build per layer, eva
   failure/concurrent-edit behavior. No shipped demo, live DB or model is involved.
   The archived Round8 result remains failed; these are engine regression contracts,
   not a retrospective success label for that run.
+
+## Closed expandable long tables (2026-09-07)
+
+- The bundled interior table is `325 | 326* | 327`: left cap, zero or more
+  repeatable middle tiles, right cap. `[325,327]` is closed; `[325,326]` is not.
+  `table_long` and `counter` retain their upper-layer three-cell catalog assembly.
+  The supplemental `harness-interior-house-v1-tavern-table` group includes all
+  three tiles, with `leftCap`, `repeatBody`, `rightCap` and minimum width 2.
+  The row painter honors that explicit minimum; its unspecified minimum remains 3.
+- Cluster adjacency lint checks both directions. `bAlt` permits alternative
+  neighbors of each `a`; `aAlt` permits alternative reverse neighbors of each `b`.
+  Alternatives do not themselves become rule anchors or disable reverse checks.
+  Without either array the original strict pair semantics remain unchanged.
+  The table's original hard rule ID is retained with
+  `{a:325,b:326,aAlt:[326],bAlt:[327],relation:"aLeftOfB"}`; a second hard rule uses
+  `{a:326,b:327,aAlt:[325],bAlt:[326],relation:"aLeftOfB"}`. Together they check both
+  caps and every middle tile. Room critique requires the same closed composition.
+- `interiorLongTableLegacy.ts` migrates only a unique, complete frozen factory
+  record, including `source:"bundled-default"`, on the exact bundled 16px/30-column/
+  480-tile interior layout. Both room authoring and bundled load use it. Matching
+  IDs or provenance alone are insufficient; customized/ambiguous records and
+  suppressed IDs remain authored state, even when their retained rules report lint.
+- Table-specific user/origin/lock metadata, grafts and lower-layer overrides block
+  migration and runtime reseeding. This includes the legacy priority-only case:
+  metadata still says `defaultLayer:"upper"`, but `tileset.priority[tile]` is
+  `"lower"`. An override on any of 325/326/327 preserves the table override
+  through authoring, load and serialized reload. No map cells or kits are migrated.
+- `test/interiorLongTable.test.ts` covers closed/broken runs, both normalizers,
+  priority-only and other overrides, painters, critique and canonical fixed points.
+  The original demo integrity assertion remains in force; demo content is unchanged.
 
 ## 사용자 타일 정정: 항아리·돌계단·석조 화로
 

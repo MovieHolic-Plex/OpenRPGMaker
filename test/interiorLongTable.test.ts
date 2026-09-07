@@ -151,6 +151,39 @@ describe("interior long-table vocabulary seam", () => {
     expect(tileset.structureKits?.find(kit=>kit.id==="own-table")).toEqual(kits[0]);
     expect(project.maps).toEqual(maps);
   });
+  it.each([325, 326, 327].flatMap(tile => ["load", "author"].map(path => ({ tile, path }))))(
+    "preserves a priority-only lower override on $tile through $path and fresh normalization",
+    ({ tile, path }) => {
+      const { project, tileset } = scene([[325, 326, 326, 327]]);
+      ensureBundledTilesets(project);
+      ensureInteriorRoomHarness(project);
+      expect(tileset.tileMeta![tile]).toMatchObject({ source: "bundled-default", defaultLayer: "upper" });
+      tileset.priority[tile] = "lower";
+      const group = legacy();
+      tileset.tileGroups = [group];
+      const meta = structuredClone(tileset.tileMeta![tile]);
+      const maps = structuredClone(project.maps);
+      const kits = structuredClone(tileset.structureKits);
+
+      if (path === "load") ensureBundledTilesets(project); else ensureInteriorRoomHarness(project);
+      expect(tileset.priority[tile]).toBe("lower");
+      expect(tileset.tileGroups.find(candidate => candidate.id === id)).toEqual(group);
+      ensureBundledTilesets(project);
+      ensureInteriorRoomHarness(project);
+      expect(tileset.tileMeta![tile]).toEqual(meta);
+      expect(tileset.structureKits).toEqual(kits);
+      expect(project.maps).toEqual(maps);
+
+      const before = serializeForComparison(project);
+      const fresh = deserialize(serialize(project));
+      ensureBundledTilesets(fresh);
+      ensureInteriorRoomHarness(fresh);
+      expect(fresh.tilesets[INTERIOR_ROOM_TILESET_ID]!.priority[tile]).toBe("lower");
+      expect(fresh.tilesets[INTERIOR_ROOM_TILESET_ID]!.tileGroups!.find(candidate => candidate.id === id)).toEqual(group);
+      expect(serializeForComparison(fresh)).toBe(before);
+      expect(tableIssues(fresh)).toMatchObject([{ severity: "error", coords: [{ x: 3, y: 1 }] }]);
+    },
+  );
   it("keeps an explicit user hard pair effective instead of globally forgiving repeats", () => {
     const {project,tileset}=scene([[325,326,326,327]]);
     const group=legacy(); group.source="user"; tileset.tileGroups=[group];

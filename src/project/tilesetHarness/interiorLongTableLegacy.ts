@@ -22,6 +22,7 @@ export function hasInteriorLongTableOverride(tileset: TilesetDef): boolean {
     const meta = tileset.tileMeta?.[tile];
     return meta?.source === "user" || meta?.origin === "user" || meta?.locked || meta?.userLocked
       || meta?.defaultLayer === "lower"
+      || (meta?.defaultLayer === "upper" && tileset.priority[tile] === "lower")
       || tileset.tileGrafts?.some(graft => graft.targetTile === tile);
   });
 }
