@@ -1,0 +1,605 @@
+{
+  "base": "bb0ca961498e872276292ed0139d11b216c9b7aa",
+  "scope": "offline registered runner and normal session; scripted responses only",
+  "networkCalls": 0,
+  "cases": [
+    {
+      "mode": "ordinary",
+      "scenario": "foreign-pass",
+      "checkpoints": [
+        {
+          "label": "A negative",
+          "acceptance": "blocked",
+          "item": "in_progress",
+          "findings": [
+            {
+              "id": "finding-2",
+              "failedSelection": {
+                "stepIndex": 2,
+                "mapId": "mapA",
+                "eventId": "shared_npc"
+              },
+              "interactions": [
+                {
+                  "stepIndex": 0,
+                  "mapId": "map_blank_start",
+                  "eventId": "doorA"
+                }
+              ]
+            }
+          ],
+          "requirements": [
+            {
+              "id": "verification-owner-1:run_scene_test:0",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "label": "B rerun",
+          "acceptance": "blocked",
+          "item": "in_progress",
+          "findings": [
+            {
+              "id": "finding-2",
+              "failedSelection": {
+                "stepIndex": 2,
+                "mapId": "mapA",
+                "eventId": "shared_npc"
+              },
+              "interactions": [
+                {
+                  "stepIndex": 0,
+                  "mapId": "map_blank_start",
+                  "eventId": "doorA"
+                }
+              ]
+            }
+          ],
+          "requirements": [
+            {
+              "id": "verification-owner-1:run_scene_test:0",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "label": "A repaired",
+          "acceptance": "verified",
+          "item": "done",
+          "findings": [],
+          "requirements": [
+            {
+              "id": "verification-owner-1:run_scene_test:0",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "label": "all failed maps repaired",
+          "acceptance": "verified",
+          "item": "done",
+          "findings": [],
+          "requirements": [
+            {
+              "id": "verification-owner-1:run_scene_test:0",
+              "status": "passed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "ordinary",
+      "scenario": "two-negatives",
+      "checkpoints": [
+        {
+          "label": "A negative",
+          "acceptance": "blocked",
+          "item": "in_progress",
+          "findings": [
+            {
+              "id": "finding-2",
+              "failedSelection": {
+                "stepIndex": 2,
+                "mapId": "mapA",
+                "eventId": "shared_npc"
+              },
+              "interactions": [
+                {
+                  "stepIndex": 0,
+                  "mapId": "map_blank_start",
+                  "eventId": "doorA"
+                }
+              ]
+            }
+          ],
+          "requirements": [
+            {
+              "id": "verification-owner-1:run_scene_test:0",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "label": "B rerun",
+          "acceptance": "blocked",
+          "item": "in_progress",
+          "findings": [
+            {
+              "id": "finding-2",
+              "failedSelection": {
+                "stepIndex": 2,
+                "mapId": "mapA",
+                "eventId": "shared_npc"
+              },
+              "interactions": [
+                {
+                  "stepIndex": 0,
+                  "mapId": "map_blank_start",
+                  "eventId": "doorA"
+                }
+              ]
+            },
+            {
+              "id": "finding-5",
+              "failedSelection": {
+                "stepIndex": 2,
+                "mapId": "mapB",
+                "eventId": "shared_npc"
+              },
+              "interactions": [
+                {
+                  "stepIndex": 0,
+                  "mapId": "map_blank_start",
+                  "eventId": "doorA"
+                }
+              ]
+            }
+          ],
+          "requirements": [
+            {
+              "id": "verification-owner-1:run_scene_test:0",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "label": "A repaired",
+          "acceptance": "blocked",
+          "item": "in_progress",
+          "findings": [
+            {
+              "id": "finding-5",
+              "failedSelection": {
+                "stepIndex": 2,
+                "mapId": "mapB",
+                "eventId": "shared_npc"
+              },
+              "interactions": [
+                {
+                  "stepIndex": 0,
+                  "mapId": "map_blank_start",
+                  "eventId": "doorA"
+                }
+              ]
+            }
+          ],
+          "requirements": [
+            {
+              "id": "verification-owner-1:run_scene_test:0",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "label": "all failed maps repaired",
+          "acceptance": "verified",
+          "item": "done",
+          "findings": [],
+          "requirements": [
+            {
+              "id": "verification-owner-1:run_scene_test:0",
+              "status": "passed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "ordinary",
+      "scenario": "no-target-control",
+      "checkpoints": [
+        {
+          "label": "A negative",
+          "acceptance": "blocked",
+          "item": "in_progress",
+          "findings": [
+            {
+              "id": "finding-2",
+              "failedSelection": {
+                "stepIndex": 2,
+                "mapId": "mapA",
+                "eventId": "shared_npc"
+              },
+              "setupFailure": {
+                "kind": "no-interaction-target",
+                "stepIndex": 2,
+                "mapId": "mapA"
+              },
+              "interactions": [
+                {
+                  "stepIndex": 0,
+                  "mapId": "map_blank_start",
+                  "eventId": "doorA"
+                }
+              ]
+            }
+          ],
+          "requirements": [
+            {
+              "id": "verification-owner-1:run_scene_test:0",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "label": "B rerun",
+          "acceptance": "blocked",
+          "item": "in_progress",
+          "findings": [
+            {
+              "id": "finding-2",
+              "failedSelection": {
+                "stepIndex": 2,
+                "mapId": "mapA",
+                "eventId": "shared_npc"
+              },
+              "setupFailure": {
+                "kind": "no-interaction-target",
+                "stepIndex": 2,
+                "mapId": "mapA"
+              },
+              "interactions": [
+                {
+                  "stepIndex": 0,
+                  "mapId": "map_blank_start",
+                  "eventId": "doorA"
+                }
+              ]
+            }
+          ],
+          "requirements": [
+            {
+              "id": "verification-owner-1:run_scene_test:0",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "label": "A repaired",
+          "acceptance": "verified",
+          "item": "done",
+          "findings": [],
+          "requirements": [
+            {
+              "id": "verification-owner-1:run_scene_test:0",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "label": "all failed maps repaired",
+          "acceptance": "verified",
+          "item": "done",
+          "findings": [],
+          "requirements": [
+            {
+              "id": "verification-owner-1:run_scene_test:0",
+              "status": "passed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "correct_verification",
+      "scenario": "foreign-pass",
+      "checkpoints": [
+        {
+          "label": "A negative",
+          "acceptance": "blocked",
+          "item": "in_progress",
+          "findings": [
+            {
+              "id": "finding-2",
+              "failedSelection": {
+                "stepIndex": 2,
+                "mapId": "mapA",
+                "eventId": "shared_npc"
+              },
+              "interactions": [
+                {
+                  "stepIndex": 0,
+                  "mapId": "map_blank_start",
+                  "eventId": "doorA"
+                }
+              ]
+            }
+          ],
+          "requirements": [
+            {
+              "id": "verification-owner-1:run_scene_test:0",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "label": "B rerun",
+          "acceptance": "blocked",
+          "item": "in_progress",
+          "findings": [
+            {
+              "id": "finding-2",
+              "failedSelection": {
+                "stepIndex": 2,
+                "mapId": "mapA",
+                "eventId": "shared_npc"
+              },
+              "interactions": [
+                {
+                  "stepIndex": 0,
+                  "mapId": "map_blank_start",
+                  "eventId": "doorA"
+                }
+              ]
+            }
+          ],
+          "requirements": [
+            {
+              "id": "verification-owner-1:run_scene_test:0",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "label": "A repaired",
+          "acceptance": "verified",
+          "item": "done",
+          "findings": [],
+          "requirements": [
+            {
+              "id": "verification-owner-1:run_scene_test:0",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "label": "all failed maps repaired",
+          "acceptance": "verified",
+          "item": "done",
+          "findings": [],
+          "requirements": [
+            {
+              "id": "verification-owner-1:run_scene_test:0",
+              "status": "passed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "correct_verification",
+      "scenario": "two-negatives",
+      "checkpoints": [
+        {
+          "label": "A negative",
+          "acceptance": "blocked",
+          "item": "in_progress",
+          "findings": [
+            {
+              "id": "finding-2",
+              "failedSelection": {
+                "stepIndex": 2,
+                "mapId": "mapA",
+                "eventId": "shared_npc"
+              },
+              "interactions": [
+                {
+                  "stepIndex": 0,
+                  "mapId": "map_blank_start",
+                  "eventId": "doorA"
+                }
+              ]
+            }
+          ],
+          "requirements": [
+            {
+              "id": "verification-owner-1:run_scene_test:0",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "label": "B rerun",
+          "acceptance": "blocked",
+          "item": "in_progress",
+          "findings": [
+            {
+              "id": "finding-2",
+              "failedSelection": {
+                "stepIndex": 2,
+                "mapId": "mapA",
+                "eventId": "shared_npc"
+              },
+              "interactions": [
+                {
+                  "stepIndex": 0,
+                  "mapId": "map_blank_start",
+                  "eventId": "doorA"
+                }
+              ]
+            },
+            {
+              "id": "finding-5",
+              "failedSelection": {
+                "stepIndex": 2,
+                "mapId": "mapB",
+                "eventId": "shared_npc"
+              },
+              "interactions": [
+                {
+                  "stepIndex": 0,
+                  "mapId": "map_blank_start",
+                  "eventId": "doorA"
+                }
+              ]
+            }
+          ],
+          "requirements": [
+            {
+              "id": "verification-owner-1:run_scene_test:0",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "label": "A repaired",
+          "acceptance": "blocked",
+          "item": "in_progress",
+          "findings": [
+            {
+              "id": "finding-5",
+              "failedSelection": {
+                "stepIndex": 2,
+                "mapId": "mapB",
+                "eventId": "shared_npc"
+              },
+              "interactions": [
+                {
+                  "stepIndex": 0,
+                  "mapId": "map_blank_start",
+                  "eventId": "doorA"
+                }
+              ]
+            }
+          ],
+          "requirements": [
+            {
+              "id": "verification-owner-1:run_scene_test:0",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "label": "all failed maps repaired",
+          "acceptance": "verified",
+          "item": "done",
+          "findings": [],
+          "requirements": [
+            {
+              "id": "verification-owner-1:run_scene_test:0",
+              "status": "passed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "correct_verification",
+      "scenario": "no-target-control",
+      "checkpoints": [
+        {
+          "label": "A negative",
+          "acceptance": "blocked",
+          "item": "in_progress",
+          "findings": [
+            {
+              "id": "finding-2",
+              "failedSelection": {
+                "stepIndex": 2,
+                "mapId": "mapA",
+                "eventId": "shared_npc"
+              },
+              "setupFailure": {
+                "kind": "no-interaction-target",
+                "stepIndex": 2,
+                "mapId": "mapA"
+              },
+              "interactions": [
+                {
+                  "stepIndex": 0,
+                  "mapId": "map_blank_start",
+                  "eventId": "doorA"
+                }
+              ]
+            }
+          ],
+          "requirements": [
+            {
+              "id": "verification-owner-1:run_scene_test:0",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "label": "B rerun",
+          "acceptance": "blocked",
+          "item": "in_progress",
+          "findings": [
+            {
+              "id": "finding-2",
+              "failedSelection": {
+                "stepIndex": 2,
+                "mapId": "mapA",
+                "eventId": "shared_npc"
+              },
+              "setupFailure": {
+                "kind": "no-interaction-target",
+                "stepIndex": 2,
+                "mapId": "mapA"
+              },
+              "interactions": [
+                {
+                  "stepIndex": 0,
+                  "mapId": "map_blank_start",
+                  "eventId": "doorA"
+                }
+              ]
+            }
+          ],
+          "requirements": [
+            {
+              "id": "verification-owner-1:run_scene_test:0",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "label": "A repaired",
+          "acceptance": "verified",
+          "item": "done",
+          "findings": [],
+          "requirements": [
+            {
+              "id": "verification-owner-1:run_scene_test:0",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "label": "all failed maps repaired",
+          "acceptance": "verified",
+          "item": "done",
+          "findings": [],
+          "requirements": [
+            {
+              "id": "verification-owner-1:run_scene_test:0",
+              "status": "passed"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

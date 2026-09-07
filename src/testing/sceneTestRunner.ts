@@ -248,6 +248,8 @@ export interface SceneSetupFailure {
 export interface SceneTestResult {
   readonly interactions: readonly SceneInteractionReceipt[];
   readonly setupFailure?: SceneSetupFailure;
+  /** Explicit intent that failed selection, never an executed interaction. */
+  readonly failedSelection?: SceneInteractionReceipt;
   readonly ok: boolean;
   readonly stepsRun: number;
   readonly totalSteps: number;
@@ -316,6 +318,7 @@ interface RunnerState {
   stepIndex: number;
   readonly interactions: SceneInteractionReceipt[];
   setupFailure?: SceneSetupFailure;
+  failedSelection?: SceneInteractionReceipt;
   readonly rewardProof?: SceneRewardProof;
   earlyRewardBaseline?: RewardDelta;
   /** Host approach is protected, but cannot pay before its claim snapshot. */
@@ -527,7 +530,7 @@ export function runSceneTest(project: Project, input: SceneTestInput, rewardProo
       reason = `예외: ${cause instanceof Error ? cause.message : String(cause)}`;
     }
     if (reason !== null) {
-      return result(false, project, state.session, state.eventPositions, state.camera, log, state.messages, input.steps, i, step, reason, state.fieldSpawnState, state.gameOver, state.activeAnimations.length > 0, state.interactions, state.setupFailure);
+      return result(false, project, state.session, state.eventPositions, state.camera, log, state.messages, input.steps, i, step, reason, state.fieldSpawnState, state.gameOver, state.activeAnimations.length > 0, state.interactions, state.setupFailure, state.failedSelection);
     }
   }
 
@@ -793,6 +796,10 @@ function findGiftEventOverlapping(
 }
 
 function runInteractStep(state: RunnerState, expectedEventId?: string): string | null {
+  // Capture before every selection exit; clear only when the intended event is selected.
+  if (expectedEventId !== undefined) state.failedSelection = {
+    stepIndex: state.stepIndex, mapId: state.session.currentMapId, eventId: expectedEventId,
+  };
   if (state.gameOver) return "게임 오버 중에는 이벤트를 조사할 수 없습니다.";
   const map = currentMap(state);
   if (!map) return `현재 맵 없음: ${state.session.currentMapId}`;
@@ -808,6 +815,7 @@ function runInteractStep(state: RunnerState, expectedEventId?: string): string |
   );
   if (front) {
     if (expectedEventId !== undefined && front.event.id !== expectedEventId) return `Interaction target: expected ${expectedEventId}, actual ${front.event.id}`;
+    delete state.failedSelection;
     return runEventView(state, front);
   }
   const farmFront = interactWithFarmPlot(state.project, state.session, map, state.session.x + delta.x, state.session.y + delta.y);
@@ -819,6 +827,7 @@ function runInteractStep(state: RunnerState, expectedEventId?: string): string |
   const underfoot = findRuntimeEventAtInMap(state.project, map, state.session, state.eventPositions, state.session.x, state.session.y, "action");
   if (underfoot) {
     if (expectedEventId !== undefined && underfoot.event.id !== expectedEventId) return `Interaction target: expected ${expectedEventId}, actual ${underfoot.event.id}`;
+    delete state.failedSelection;
     return runEventView(state, underfoot);
   }
   const farmUnderfoot = interactWithFarmPlot(state.project, state.session, map, state.session.x, state.session.y);
@@ -2195,6 +2204,7 @@ function result(
   animationPlaying: boolean,
   interactions: readonly SceneInteractionReceipt[] = [],
   setupFailure?: SceneSetupFailure,
+  failedSelection?: SceneInteractionReceipt,
 ): SceneTestResult {
   void eventPositions;
   const lighting = normalizeLightingState(session.lighting);
@@ -2204,6 +2214,7 @@ function result(
     totalSteps: steps.length,
     interactions,
     ...(setupFailure ? { setupFailure } : {}),
+    ...(failedSelection ? { failedSelection } : {}),
     failedStepIndex: ok ? undefined : stepsRun,
     failedStep,
     failureReason,

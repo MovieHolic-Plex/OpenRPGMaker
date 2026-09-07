@@ -112,6 +112,15 @@ function sceneTargets(args: Record<string, unknown>, result: ToolResultLike): Sc
   const trace = Array.isArray(data.interactions) ? data.interactions : [];
   const targets = trace.filter((entry): entry is SceneInteractionReceipt => acceptanceRecord(entry)
     && typeof entry.stepIndex === "number" && typeof entry.mapId === "string" && typeof entry.eventId === "string");
+  const selection = data.failedSelection;
+  if (acceptanceRecord(selection) && typeof selection.stepIndex === "number" && typeof selection.mapId === "string"
+    && typeof selection.eventId === "string") {
+    const step = args.steps[selection.stepIndex];
+    if (step?.kind === "interact" && step.eventId === selection.eventId) {
+      targets.push({ stepIndex: selection.stepIndex, mapId: selection.mapId, eventId: selection.eventId });
+      return targets;
+    }
+  }
   const failure = data.setupFailure;
   if (acceptanceRecord(failure) && failure.kind === "no-interaction-target" && typeof failure.stepIndex === "number" && typeof failure.mapId === "string") {
     const step = args.steps[failure.stepIndex];
