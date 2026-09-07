@@ -174,7 +174,7 @@ function axisAtom(
       head: head ?? body,
       body,
       tail: tail ?? body,
-      minLength: Math.max(minSpan ?? 3, 3),
+      minLength: Math.max(minSpan ?? 3, 2),
       shape: `${axisLabel} 신축(양 끝 캡 + 본체 반복)`,
     };
   }
