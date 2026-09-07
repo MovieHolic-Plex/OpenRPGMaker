@@ -9,6 +9,7 @@ import { buildAiActivityLogRecord } from '@/ai/activityLog';
 import * as apply from '@/editor/tools/applyChangesetToStore';
 import { createBlankProject } from '@/project/defaults';
 import { store } from '@/project/store';
+import { createProjectWikiCoordinator } from '@/editor/projectWikiCoordinator';
 import { clearAgentBlueprint } from '@/editor/agentBlueprint';
 import { clearAgentGhostPreview } from '@/editor/agentGhostPreview';
 import { resetMapEditHistory } from '@/editor/mapEditHistory';
@@ -251,4 +252,30 @@ it('still applies current successful proposals on a new-goal authoring error exa
   expect(store.getCurrent().database.items.find(item => item.id === 'item_new_owner')?.name).toBe('New owner item');
   await f.send('Continue', { goalAction: 'resume' });
   expect(f.applyProposal).toHaveBeenCalledTimes(1);
+});
+
+
+it('retires the old draft but preserves an actual current-owner wiki apply before checkpoint failure', async () => {
+  let newOwner = false; let round = 0;
+  const coordinator = createProjectWikiCoordinator({ history: async () => [], extract: async input => ({
+    upserts: newOwner ? [{ id: 'w_new_owner', type: 'guideline', name: 'New owner rule', summary: 'Contact combat',
+      wiki: { kind: 'declaration', basis: 'explicit', combatMode: 'contact', sourceIds: input.sources.map(source => source.id) } }] : [],
+  }) });
+  const session = new AssistantSession(store.getCurrent(), { config, prepareProjectWiki: coordinator.prepare,
+    declareIntent: fixedDeclarer({ mode: 'other' }),
+    chat: async () => round++ === 0 ? tool('set_title_screen', { title: 'CANCELLED_OLD_GOAL' }) : final });
+  const f = runnerFor(session); const before = structuredClone(store.getCurrent());
+  const old = await f.send('Old title', {}, true); const historical = structuredClone(old.result);
+  expect(old.result.proposedCalls).toHaveLength(1); expect(f.applyProposal).not.toHaveBeenCalled();
+  newOwner = true;
+  const current = await f.send('Use contact combat', { composerMode: 'do', goalAction: 'new-goal' });
+  expect(current.result.stoppedReason).toBe('error'); // Real unloaded checkpoint, after local wiki mutation.
+  expect(current.result.runOutcome).toEqual({ execution: 'failed', goal: 'unassessed', delivery: 'applied' });
+  expect(current.result.proposedCalls).toEqual([]); expect(current.result.appliedCalls).toEqual([]);
+  expect(f.applyProposal).not.toHaveBeenCalled();
+  expect(store.getCurrent().world?.entities.find(entity => entity.id === 'w_new_owner')?.wiki?.combatMode).toBe('contact');
+  expect(store.getCurrent().system.titleScreen).toEqual(before.system.titleScreen);
+  expect(session.getProposedProject().system.titleScreen).toEqual(before.system.titleScreen);
+  expect(session.getRunOutcome()).toEqual(current.result.runOutcome);
+  expect(old.result).toEqual(historical);
 });

@@ -15,12 +15,13 @@ import { installBrowserProbe, browserSurface } from './ai-harness-browser.mjs';
 import { proofFailureResponse, runProofFailure } from './ai-harness-proof-failure.mjs';
 import { createP2Contracts } from './ai-harness-p2.mjs';
 import { createR1AskContracts } from './ai-harness-r1-ask.mjs';
+import { createNewGoalDraftContracts } from './ai-harness-r21-new-goal.mjs';
 import { createWikiContracts } from './ai-harness-wiki.mjs';
 import { deleteOwnedFixture } from './ai-harness-cleanup.mjs';
 import { isWikiExtraction } from '../../test/wikiTransportFixture.ts';
 
 const { values } = parseArgs({ options: { scenario: { type: 'string' } } });
-assert.ok(['proof-failure', 'required-skip', 'outcome-matrix', 'retained-draft-ask', 'wiki-delivery'].includes(values.scenario), 'Unknown contract scenario');
+assert.ok(['proof-failure', 'required-skip', 'outcome-matrix', 'retained-draft-ask', 'wiki-delivery', 'new-goal-draft'].includes(values.scenario), 'Unknown contract scenario');
 const root = fileURLToPath(new URL('../../', import.meta.url));
 const port = Number(process.env.QA_PORT ?? 19847);
 const base = `http://127.0.0.1:${port}`;
@@ -94,6 +95,7 @@ async function runRoute(route) {
   const request = route.request();
   const url = new URL(request.url());
   const method = request.method();
+  if (url.origin === base && p2?.interceptPreparation && await p2.interceptPreparation(route)) return;
   if (url.origin === base && url.pathname === '/v1/chat/completions') {
     assert.equal(closing, false);
     const body = request.postDataJSON();
@@ -212,7 +214,8 @@ try {
   if (values.scenario === 'proof-failure') await runProofFailure(harness);
   else if (values.scenario === 'wiki-delivery') { wiki = createWikiContracts(harness); await wiki.run(); }
   else {
-    p2 = values.scenario === 'retained-draft-ask' ? createR1AskContracts(harness) : createP2Contracts(harness);
+    p2 = values.scenario === 'new-goal-draft' ? createNewGoalDraftContracts(harness)
+      : values.scenario === 'retained-draft-ask' ? createR1AskContracts(harness) : createP2Contracts(harness);
     await p2.run(values.scenario);
   }
 } catch (error) {
@@ -259,7 +262,7 @@ try {
   report.sourceHashes = Object.fromEntries(await Promise.all(['src/editor/projectWikiCoordinator.ts', 'src/editor/tools/applyChangesetToStore.ts', 'src/editor/panels/aiChatPanel.ts', 'scripts/qa/ai-harness-wiki.mjs', 'src/ai/assistantSession.ts', 'src/ai/workPlan.ts', 'src/ai/assistantAcceptanceLedger.ts', 'src/project/store.ts',
     'src/editor/panels/aiTurnRunner.ts', 'src/editor/aiAssistantBridge.ts', 'src/ai/activityLog.ts', 'src/ai/runRecap.ts',
     'scripts/qa/ai-harness-contracts.mjs', 'scripts/qa/ai-harness-browser.mjs', 'scripts/qa/ai-harness-proof-failure.mjs',
-    'scripts/qa/ai-harness-cleanup.mjs', 'scripts/qa/ai-harness-p2.mjs', 'scripts/qa/ai-harness-p2-scenarios.mjs', 'scripts/qa/ai-harness-p2-observe.mjs', 'scripts/qa/ai-harness-p2-resume.mjs', 'scripts/qa/ai-harness-r1-ask.mjs',
+    'scripts/qa/ai-harness-cleanup.mjs', 'scripts/qa/ai-harness-p2.mjs', 'scripts/qa/ai-harness-p2-scenarios.mjs', 'scripts/qa/ai-harness-p2-observe.mjs', 'scripts/qa/ai-harness-p2-resume.mjs', 'scripts/qa/ai-harness-r1-ask.mjs', 'scripts/qa/ai-harness-r21-new-goal.mjs',
     'src/editor/panels/aiProposalCard.ts'].map(async path => [path, hash(await readFile(resolve(root, path)))])));
   await writeFile(`${out}/server.log`, serverLog.replaceAll(config?.anonKey || '\0', '[REDACTED]'));
   await writeFile(`${out}/actions.json`, JSON.stringify(report, null, 2) + '\n');
