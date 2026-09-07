@@ -12,6 +12,7 @@ import { runTool } from "@/editor/tools/toolRunner";
 import { createBlankProject } from "@/project/defaults";
 import { TILE } from "@/project/defaults/constants";
 import type { Project } from "@/project/types";
+import { approvedReview } from "./independentReviewFixture";
 
 const MAP_ID = "map_region_log";
 const REGION: RegionRect = { x: 1, y: 1, width: 4, height: 4 };
@@ -88,6 +89,7 @@ describe("region task log export", () => {
       assistantText: "영역 완료",
       proposedCalls: [],
       stoppedReason: "final",
+      review: approvedReview,
     };
     const session: RegionTaskSessionLike = {
       async sendUserMessage(_text, onEvent) {
