@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
 import { runTool } from "@/editor/tools";
+import { getTool } from "@/editor/tools/toolRegistry";
 import type { ChatRequest, ChatResult } from "@/ai/llmClient";
 import { createBlankProject } from "@/project/defaults/defaultProject";
 
@@ -59,7 +60,28 @@ describe("AI tool discovery escalation", () => {
     expect(firstNames).toContain("find_tools");
     expect(firstNames).not.toContain("define_ending");
     const reserved = new Set(["find_tools", "set_build_spec", "author_story_arc", "define_quest", "create_quest", "verify_quest", "lint_quest", "generate_walkthrough"]);
-    expect(firstNames.filter((name) => !reserved.has(name)).length, firstNames.join(",")).toBeLessThanOrEqual(40);
+    // Session controls are not ordinary domain tools or discovery reservations.
+    const sessionControls = new Set(["correct_verification"]);
+    expect(getTool("correct_verification")).toBeUndefined();
+    expect(firstNames.filter((name) => !reserved.has(name) && !sessionControls.has(name))).toHaveLength(40);
+    expect(requests).toHaveLength(2);
+    for (const request of requests) {
+      const controls = request.tools?.filter((tool) => sessionControls.has(tool.function.name)) ?? [];
+      expect(controls).toHaveLength(1);
+      expect(controls[0]).toMatchObject({ type: "function", function: {
+        name: "correct_verification",
+        parameters: {
+          type: "object", additionalProperties: false,
+          required: ["checkId", "args", "reason"],
+          properties: {
+            checkId: { type: "string" },
+            args: { type: "object", additionalProperties: true },
+            reason: { type: "string", minLength: 1 },
+          },
+        },
+      } });
+      expect(request.tools!.length).toBeLessThanOrEqual(96);
+    }
     expect(secondNames).toContain("define_ending");
     expect(secondNames.length).toBeLessThanOrEqual(96);
     const statusTexts = session.getAuditEntries().flatMap((entry) => entry.kind === "status" ? [entry.text] : []);
