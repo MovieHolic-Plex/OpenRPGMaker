@@ -1,4 +1,4 @@
-import { buildIndependentReviewRequest, parseIndependentReview, reviewChanges, requiresVisualReview, type ResultReview } from "./independentReview";
+import { buildIndependentReviewRequest, parseIndependentReview, reviewChanges, reviewMapReferenceRoots, requiresVisualReview, type ResultReview } from "./independentReview";
 import { acceptanceFingerprint } from "./assistantAcceptanceEvaluation";
 import { missingAcceptance, type AcceptanceSnapshot, type AcceptancePromise } from "./assistantAcceptance";
 import { AssistantAcceptanceLedger } from "./assistantAcceptanceLedger";
@@ -3673,6 +3673,7 @@ export class AssistantSession {
         if (VERIFICATION_TOOL_NAMES.has(name) && !this.verificationEvidence.passed(name)) requiredProblems.push(`${name}: declared verification must pass on the current revision`);
       }
       const changes = reviewChanges(this.reviewBaseline, this.ctx.project);
+      const mapReferenceRoots = reviewMapReferenceRoots(this.reviewBaseline, this.ctx.project, changes);
       for (const change of changes) if (change.path === "/assets") {
         requiredProblems.push(`${change.path}: asset transport changed without reviewable original evidence`);
       }
@@ -3681,6 +3682,7 @@ export class AssistantSession {
         id === this.originalContext!.context.target.mapId || acceptanceFingerprint(this.reviewBaseline.maps[id]) !== acceptanceFingerprint(this.ctx.project.maps[id])));
       const evidence = (project: Project, prefix: string) => [...mapIds].map(mapId => extractOriginalContext(project, {
         snapshotId: `${prefix}-${revision}-${mapId}`, currentMapId: mapId,
+        mapReferenceRoots: [mapId, ...mapReferenceRoots],
         intent: this.turnIntent ? { ...this.turnIntent, targetMapId: mapId, tools: this.turnIntent.tools } : null,
       }));
       const receipts = this.imageEvidence.current(this.ctx.project);

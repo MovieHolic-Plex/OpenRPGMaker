@@ -67,6 +67,31 @@ export function reviewChanges(before: Project, after: Project): ReviewInput["cha
   });
 }
 
+/** Scope map closure to actual edits, not every unchanged authored start/preset.
+ * Both sides seed both projections so removed/replaced references remain reviewable.
+ * Presets are independent starts: a changed preset needs its complete old/new roots,
+ * but unchanged siblings are not map evidence for that edit.
+ */
+export function reviewMapReferenceRoots(before: Project, after: Project, changes: ReviewInput["changes"]): readonly unknown[] {
+  const roots: unknown[] = [];
+  for (const change of changes) {
+    if (change.path === "/testPresets") {
+      const oldPresets = new Map(before.testPresets?.map(preset => [preset.id, preset]));
+      const newPresets = new Map(after.testPresets?.map(preset => [preset.id, preset]));
+      for (const id of new Set([...oldPresets.keys(), ...newPresets.keys()])) {
+        const oldPreset = oldPresets.get(id), newPreset = newPresets.get(id);
+        if (JSON.stringify(oldPreset) === JSON.stringify(newPreset)) continue;
+        if (oldPreset) roots.push(oldPreset, oldPreset.startMapId ?? before.startMapId);
+        if (newPreset) roots.push(newPreset, newPreset.startMapId ?? after.startMapId);
+      }
+    } else {
+      roots.push(change.before, change.after);
+      if (["/session", "/startMapId", "/startPos"].includes(change.path)) roots.push(before.startMapId, after.startMapId);
+    }
+  }
+  return roots;
+}
+
 /** Dialogue/record edits are reviewable as text; placement and graphics need images. */
 export function requiresVisualReview(before: GameMap | undefined, after: GameMap): boolean {
   const visual = (map: GameMap) => [map.width, map.height, map.tilesetId, map.lowerTiles, map.upperTiles,

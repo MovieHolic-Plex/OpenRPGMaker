@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildIndependentReviewRequest, reviewChanges, type ReviewInput } from "@/ai/independentReview";
+import { buildIndependentReviewRequest, reviewChanges, reviewMapReferenceRoots, type ReviewInput } from "@/ai/independentReview";
 import { estimateContextTokens } from "@/ai/contextCompaction";
 import { defaultAiConfig } from "@/ai/llmClient";
 import { extractOriginalContext, originalContextWindow } from "@/ai/originalContext";
@@ -8,16 +8,18 @@ import type { Project } from "@/project/types";
 import { independentReviewPayload } from "./independentReviewFixture";
 
 function reviewInput(before: Project, after: Project): ReviewInput {
+  const changes = reviewChanges(before, after);
+  const mapReferenceRoots = [before.startMapId, ...reviewMapReferenceRoots(before, after, changes)];
   return {
-    revision: 1, originalRequest: "Rename the target map", changes: reviewChanges(before, after),
-    before: [extractOriginalContext(before, { snapshotId: "before", currentMapId: before.startMapId })],
-    after: [extractOriginalContext(after, { snapshotId: "after", currentMapId: after.startMapId })],
+    revision: 1, originalRequest: "Rename the target map", changes,
+    before: [extractOriginalContext(before, { snapshotId: "before", currentMapId: before.startMapId, mapReferenceRoots })],
+    after: [extractOriginalContext(after, { snapshotId: "after", currentMapId: after.startMapId, mapReferenceRoots })],
     toolResults: [], acceptance: null, requiredProblems: [], images: [],
   };
 }
 
 describe("independent review map deltas", () => {
-  it("fits a complete small-map rename with five unchanged 256x256 maps in the default reviewer", () => {
+  it.each([false, true])("fits a complete small-map rename with five unchanged 256x256 maps (preset references: %s)", withPresets => {
     const before = createBlankProject();
     const target = before.maps[before.startMapId];
     if (!target) throw new Error("Blank project requires its start map");
@@ -25,6 +27,8 @@ describe("independent review map deltas", () => {
     for (let i = 0; i < 5; i++) {
       const id = `unchanged_${i}`;
       before.maps[id] = { ...createBlankMap(id, 256, 256), id };
+      if (withPresets) (before.testPresets ??= []).push({ id: `preset_${i}`, name: `Preset ${i}`,
+        startMapId: id, startPos: { x: i + 1, y: i + 2 }, gold: 100 + i });
     }
     const after = structuredClone(before);
     const renamed = { ...structuredClone(target), name: "Renamed target" };
@@ -33,11 +37,16 @@ describe("independent review map deltas", () => {
     const config = defaultAiConfig();
     expect(config.model).toBe("gemini-3.7-flash");
 
-    // Whole-collection /maps deltas overflow here despite the complete target evidence fitting.
+    // Both whole-collection deltas and unconditional preset map closure overflow here.
     const request = buildIndependentReviewRequest(config, input);
     const delivered = independentReviewPayload(request);
     expect(delivered?.changes).toEqual([{ path: `/maps/${target.id}`, before: target, after: renamed }]);
     for (const side of ["before", "after"] as const) {
+      const entries = delivered?.[side].flatMap(context => context.entries);
+      expect(entries?.filter(entry => /^\/maps\/[^/]+$/.test(entry.id)).map(entry => entry.id))
+        .toEqual([`/maps/${target.id}`]);
+      expect(entries).toContainEqual({ id: "/session", value: before.session });
+      if (withPresets) expect(entries).toContainEqual({ id: "/testPresets", value: before.testPresets });
       expect(delivered?.[side]).toEqual(input[side].map(context => ({ ...context,
         entries: context.entries.map(({ id, value }) => ({ id, value })) })));
     }

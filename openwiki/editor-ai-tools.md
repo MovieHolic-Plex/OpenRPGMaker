@@ -26,6 +26,16 @@ flag definitions and referenced maps/events/common-event cycles. Referenced maps
 target-map projection; maps and shared tilesets appear once. Summary/map-tree navigation
 does not expand unrelated maps. Runtime-exclusion tests mutate a separate `startSession` result.
 
+Independent review supplies explicit `mapReferenceRoots` from the current/changed maps
+and actual before/after edits. `reviewMapReferenceRoots` compares presets by authored ID:
+changed/added/deleted presets include their complete old/new references and effective start
+maps, not unchanged sibling maps. Changed start state/position includes the effective start
+maps; relevant map/common-event references still close transitively. Complete `/session`
+and `/testPresets` values and record references remain in both projections. The writer's
+default start/preset closure and exact paging are unchanged. This prevents the R5+R6
+six-map rename overflow without a map cap, truncation or capacity-guard change. Contracts:
+`independentReviewMapDeltas`, `independentReviewReferenceScope`, `assistantIndependentReviewCapacity`.
+
 `buildGroundedRequest` appends JSON `originalContext` after history compaction, so the
 first writer sees its original values even with `budgetChars: 1`. It accounts for complete
 native schemas, history, originals and the existing 16,384-token response reserve against

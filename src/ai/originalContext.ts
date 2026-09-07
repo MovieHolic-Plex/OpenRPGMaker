@@ -80,6 +80,8 @@ export interface OriginalContextOptions {
   currentMapId?: string;
   selection?: IntentSelectionFact | null;
   intent?: IntentDeclaration | null;
+  /** Review-only map relevance roots. Omission preserves the complete writer start/preset closure. */
+  readonly mapReferenceRoots?: readonly unknown[];
 }
 
 const pointer = (id: string): string => id.replaceAll("~", "~0").replaceAll("/", "~1");
@@ -190,8 +192,9 @@ export function extractOriginalContext(project: Project, options: OriginalContex
   const byId = new Map<string, typeof candidates>();
   for (const candidate of candidates) byId.set(candidate.id, [...(byId.get(candidate.id) ?? []), candidate]);
   const selected = new Set<string>();
-  // Only authored start roots expand maps; summary/mapTree are navigation, not map relevance.
-  const queue: unknown[] = [startStateOf(project), project.testPresets];
+  // Review scopes map expansion without removing authored values or record references.
+  // Summary/mapTree remain navigation, not map relevance.
+  const queue: unknown[] = [...(options.mapReferenceRoots ?? [startStateOf(project), project.testPresets])];
   const followedMaps = new Set<string>();
   const include = (candidate: typeof candidates[number]): void => {
     if (selected.has(candidate.entryId)) return;
