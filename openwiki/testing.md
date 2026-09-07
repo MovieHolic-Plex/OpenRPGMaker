@@ -1126,7 +1126,8 @@ Chromium local network 검사만 캡처 실행 인자로 끈다. 일반 출하 �
 ## Request-bound functional acceptance verification (2026-09-07)
 
 Focused suites: `functionalScenePurchase`, `functionalAcceptance`,
-`functionalAcceptanceSession`, `functionalPersistenceProof`, and `npcRewardSession`.
+`functionalAcceptanceSession`, `functionalPersistenceProof`, `npcRewardSession`,
+`functionalWalkSuspension`, and `functionalClarification`.
 They exercise the public scene tool, real interpreter/production transactions,
 live declaration parser and session gates, immutable plan replacement, actual
 proposal apply, and the canonical persistence-read boundary (only transport/model
@@ -1147,6 +1148,13 @@ uses only `test/fixtures/functionalAcceptance.ts`, blocks all network writes and
 external requests, and records `output/evidence/functional-acceptance/public-smoke.json`.
 It verifies exact purchase deltas, outgoing/return travel, one-time rewards,
 broken variants, stale applied evidence and attempted contract replacement.
+The review regressions force travel through a touch-shop corridor, compare split
+and unsplit walks, retain post-shop game-over behavior, and refuse nested held
+interpreter replacement. Clarification coverage includes original-source linkage,
+partial completion, retained known expectations, explicit user corrections,
+host-resume clarification, and rejected worker/concrete-contract replacement.
+The public smoke also exercises the corridor and a three-message clarification
+(`blocked -> blocked -> verified`) with the same requirement ID.
 It does NOT claim live-model semantic extraction, graphical-player QA or a real
 Supabase-authored project. Canonical reload behavior is covered by the focused
 transport-boundary tests; independent full gates/build/player QA remain lead gates.

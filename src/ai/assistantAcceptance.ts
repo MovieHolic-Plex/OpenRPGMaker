@@ -25,6 +25,7 @@ export interface RequirementWithdrawalAction {
 export interface AcceptanceItemSnapshot {
   readonly required?: boolean;
   readonly source?: AcceptanceSource;
+  readonly refinements?: readonly AcceptanceSource[];
   readonly withdrawal?: RequirementWithdrawalAction & { readonly source: "user" };
   readonly id: string;
   readonly title: string;

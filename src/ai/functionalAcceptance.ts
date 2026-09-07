@@ -1,16 +1,31 @@
 import type { Point } from "@/project/lint/reachability";
-import type { AcceptanceTarget } from "./assistantAcceptance";
+import type { AcceptanceSource, AcceptanceTarget } from "./assistantAcceptance";
 import { parseNpcRewardRequirements, type NpcRewardRequirement } from "./intentDeclaration";
 
 export type FunctionalEventTarget = { readonly eventId: string } | { readonly eventName: string };
 export type FunctionalItemTarget = { readonly id: string } | { readonly name: string };
-export type FunctionalCriterion =
+export type ConcreteFunctionalCriterion =
   | { readonly kind: "shopPurchase"; readonly target: AcceptanceTarget; readonly start: Point;
       readonly seller: FunctionalEventTarget; readonly item: FunctionalItemTarget; readonly count: number; readonly unitPrice: number }
   | { readonly kind: "mapRoundTrip"; readonly target: AcceptanceTarget; readonly start: Point;
       readonly destination: AcceptanceTarget; readonly outgoing: FunctionalEventTarget; readonly returning: FunctionalEventTarget }
-  | { readonly kind: "npcReward"; readonly requirement: NpcRewardRequirement }
-  | { readonly kind: "functionalUnresolved"; readonly reason: string };
+  | { readonly kind: "npcReward"; readonly requirement: NpcRewardRequirement };
+export type FunctionalExpectations = {
+  [Kind in ConcreteFunctionalCriterion["kind"]]: Partial<Extract<ConcreteFunctionalCriterion, { kind: Kind }>> & { readonly kind: Kind }
+}[ConcreteFunctionalCriterion["kind"]];
+export type FunctionalCriterion = ConcreteFunctionalCriterion
+  | { readonly kind: "functionalUnresolved"; readonly reason: string; readonly expectations?: FunctionalExpectations };
+export interface FunctionalRefinement {
+  readonly requirementId: string;
+  readonly criterion: FunctionalCriterion;
+  readonly corrections?: readonly string[];
+}
+export interface UnresolvedFunctionalRequirement {
+  readonly requirementId: string;
+  readonly source: AcceptanceSource;
+  readonly refinements?: readonly AcceptanceSource[];
+  readonly criterion: Extract<FunctionalCriterion, { kind: "functionalUnresolved" }>;
+}
 
 const record = (value: unknown): value is Record<string, unknown> => typeof value === "object" && value !== null && !Array.isArray(value);
 const text = (value: unknown): value is string => typeof value === "string" && value.trim().length > 0;
@@ -33,11 +48,15 @@ export function parseFunctionalCriterion(value: unknown): FunctionalCriterion | 
   const fields: Record<string, readonly string[]> = {
     shopPurchase: ["kind", "target", "start", "seller", "item", "count", "unitPrice"],
     mapRoundTrip: ["kind", "target", "start", "destination", "outgoing", "returning"],
-    npcReward: ["kind", "requirement"], functionalUnresolved: ["kind", "reason"],
+    npcReward: ["kind", "requirement"], functionalUnresolved: ["kind", "reason", "expectations"],
   };
   if (typeof value.kind !== "string" || !Object.hasOwn(fields, value.kind)
     || Object.keys(value).some(key => !fields[value.kind as string].includes(key))) return null;
-  if (value.kind === "functionalUnresolved") return text(value.reason) ? { kind: value.kind, reason: value.reason } : null;
+  if (value.kind === "functionalUnresolved") {
+    if (!text(value.reason) || (value.expectations !== undefined && !isFunctionalExpectations(value.expectations))) return null;
+    return { kind: value.kind, reason: value.reason,
+      ...(isFunctionalExpectations(value.expectations) ? { expectations: structuredClone(value.expectations) } : {}) };
+  }
   if (value.kind === "npcReward") {
     const requirements = parseNpcRewardRequirements([value.requirement]);
     return "invalidReason" in requirements || !requirements[0] ? null : { kind: value.kind, requirement: requirements[0] };
@@ -55,9 +74,36 @@ export function parseFunctionalCriterion(value: unknown): FunctionalCriterion | 
   return null;
 }
 
+function isFunctionalExpectations(value: unknown): value is FunctionalExpectations {
+  if (!record(value)) return false;
+  const checks: Record<string, (entry: unknown) => boolean> = {
+    target: map, start: point, seller: event, item, count: entry => count(entry) && entry > 0 && entry <= 99,
+    unitPrice: count, destination: map, outgoing: event, returning: event,
+    requirement: entry => !("invalidReason" in parseNpcRewardRequirements([entry])),
+  };
+  const fields = value.kind === "shopPurchase" ? ["target", "start", "seller", "item", "count", "unitPrice"]
+    : value.kind === "mapRoundTrip" ? ["target", "start", "destination", "outgoing", "returning"]
+    : value.kind === "npcReward" ? ["requirement"] : null;
+  return fields !== null && Object.entries(value).every(([key, entry]) => key === "kind" || (fields.includes(key) && checks[key](entry)));
+}
+
+/** Refinements are interpreted only at the genuine user-declaration boundary, never as worker tools. */
+export function parseFunctionalRefinements(value: unknown): readonly FunctionalRefinement[] {
+  if (!Array.isArray(value)) return [];
+  return value.flatMap(entry => {
+    if (!record(entry) || !text(entry.requirementId)
+      || Object.keys(entry).some(key => !["requirementId", "criterion", "corrections"].includes(key))
+      || (entry.corrections !== undefined && (!Array.isArray(entry.corrections) || !entry.corrections.every(text)))) return [];
+    const criterion = parseFunctionalRequirements([entry.criterion])[0];
+    return criterion ? [{ requirementId: entry.requirementId, criterion,
+      ...(Array.isArray(entry.corrections) ? { corrections: entry.corrections.filter(text) } : {}) }] : [];
+  });
+}
+
 export function parseFunctionalRequirements(value: unknown): readonly FunctionalCriterion[] {
   if (!Array.isArray(value) || value.length === 0) return [{ kind: "functionalUnresolved", reason: "functionalAcceptance requires nonempty request-derived criteria" }];
   return value.map(entry => parseFunctionalCriterion(entry) ?? {
     kind: "functionalUnresolved", reason: `Missing or unsupported functional target/expectations: ${JSON.stringify(entry)}. Identify exact targets, actual start and requested quantities/prices; do not replace with static or image checks.`,
+    ...(isFunctionalExpectations(entry) ? { expectations: structuredClone(entry) } : {}),
   });
 }

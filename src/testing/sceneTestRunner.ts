@@ -402,7 +402,7 @@ export function runSceneTest(project: Project, input: SceneTestInput): SceneTest
   syncFollowCamera(state);
   applyNpcSchedulesForRunner(state);
   refreshChasers(state);
-  const autoReason = runAutoTriggers(state);
+  const autoReason = runAutoTriggers(state) ?? state.runtimeFailure;
   if (autoReason !== null) {
     return result(false, project, state.session, state.eventPositions, state.camera, log, state.messages, input.steps, 0, input.steps[0], autoReason, state.fieldSpawnState, state.gameOver, state.activeAnimations.length > 0);
   }
@@ -411,7 +411,7 @@ export function runSceneTest(project: Project, input: SceneTestInput): SceneTest
     const step = input.steps[i];
     let reason: string | null;
     try {
-      reason = runStep(state, step);
+      reason = runStep(state, step) ?? state.runtimeFailure;
     } catch (cause) {
       reason = `예외: ${cause instanceof Error ? cause.message : String(cause)}`;
     }
@@ -495,6 +495,7 @@ function runMoveStep(state: RunnerState, step: Extract<SceneStep, { kind: "move"
 }
 
 function movePlayerOneStep(state: RunnerState, x: number, y: number): string | null {
+  if (state.held) return `Interaction still waiting for ${state.held.mode}`;
   const map = currentMap(state);
   if (!map) return `현재 맵 없음: ${state.session.currentMapId}`;
   if (!canMove(state.project, map, state.session.x, state.session.y, x, y)) {
@@ -768,6 +769,7 @@ function runChooseStep(state: RunnerState, index: number): string | null {
 }
 
 function runEventView(state: RunnerState, view: RuntimeEventView): string | null {
+  if (state.held) return `Interaction still waiting for ${state.held.mode}`;
   if (isFieldSpawnEventId(view.event.id)) return runFieldSpawnBattleForRunner(state, view.event.id);
   const commands = view.page?.commands ?? resolveEventPage(view.event, state.session)?.commands ?? view.event.commands;
   if (commands.length === 0) {
@@ -790,6 +792,10 @@ function updateHeldInterpreter(
   stop: PumpStop,
   currentEventId: string | undefined
 ): void {
+  if (state.held && state.held.interp !== interp) {
+    state.runtimeFailure = `Nested interaction still waiting for ${state.held.mode}; cannot replace its interpreter`;
+    return;
+  }
   if (stop.stop === "choices" || stop.stop === "animation" || stop.stop === "shop") {
     state.held = stop.stop === "choices"
       ? { interp, mode: "choices", currentEventId, choiceCount: stop.choiceCount }

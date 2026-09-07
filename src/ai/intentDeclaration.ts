@@ -9,7 +9,7 @@
 // 경계: 「무엇을 원하나」(수정/생성, 실내/야외, 시설, 되묻기, 계획 필요, 쓸 툴)는 이 선언이 정한다.
 // 「무엇이 사실인가」(열린 모달, 선택 사각형, 현재 맵, 타일셋 라벨)와 「지켜졌나」(승인·클립·스펙·검증)는
 // 코드가 그대로 맡는다. 이 모듈은 순수 함수만 둔다 — 네트워크는 intentDeclarationClient 가 안다.
-import { parseFunctionalRequirements, type FunctionalCriterion } from "./functionalAcceptance";
+import { parseFunctionalRequirements, parseFunctionalRefinements, type FunctionalCriterion, type FunctionalRefinement, type UnresolvedFunctionalRequirement } from "./functionalAcceptance";
 import type { AdventureRequirements } from "./adventureCompletion";
 import { ADVENTURE_AUTHORING_GUIDE } from "./adventureCompletion";
 import type { ToolDomain } from "@/editor/tools/types";
@@ -81,6 +81,7 @@ export interface IntentDeclaration {
   /** Only explicit create/modify NPC reward requests; never inferred from authored commands. */
   readonly npcRewards?: NpcRewardRequirements;
   readonly functionalAcceptance?: readonly FunctionalCriterion[];
+  readonly functionalRefinements?: readonly FunctionalRefinement[];
   readonly summary: string;
   readonly source: IntentSource;
 }
@@ -104,6 +105,7 @@ export interface IntentFacts {
   readonly hasActivePlan: boolean;
   readonly wikiContext?: string;
   readonly actualStart?: { readonly mapId: string; readonly x: number; readonly y: number };
+  readonly unresolvedFunctional?: readonly UnresolvedFunctionalRequirement[];
 }
 
 export const INTENT_MODES: readonly IntentMode[] = ["create", "modify", "question", "other"];
@@ -138,6 +140,7 @@ Fields:
 
 - "npcRewards": ONLY for explicit create/modify requests to make an NPC grant items or collected monsters. Omit for ordinary dialogue/NPCs, questions, and reward removal requests. Array example: [{"target":{"eventId":"known_event_id"},"grants":[{"kind":"item","id":"known_item_id","count":2}],"oneTime":true}]. Grant kind may also be "monster". When an ID is unknown, replace target eventId with eventName, or grant id with name. Each reference must contain exactly ONE of those keys, never both; omit unused keys rather than writing null. Optional mapId belongs inside target. Preserve every requested grant. count is a positive integer for an explicit amount; omit count for an unspecified positive amount. oneTime=true ONLY when requested. Choices are zero-based and only declared when requested; repeatChoices describes the second interaction, normally omitted. Use IDs only when known, otherwise exact names (must resolve uniquely at completion); do not invent IDs or substitute actors/changeParty for collected monsters. If the requested target/reward cannot be identified, include an incomplete requirement so completion remains blocked, not an omitted contract. These expectations come from the REQUEST, never the eventual event commands, and must not be weakened to pass completion.
 - "functionalAcceptance": ONLY requested working purchases or map round-trip travel, not a shop decoration, map listing, genre label, question, or excluded behavior. Array of immutable expectations, never success flags/scripts. Purchase: {"kind":"shopPurchase","target":{"mapId":"actual map"},"start":{"x":1,"y":1},"seller":{"eventId":"known seller"},"item":{"id":"known item"},"count":2,"unitPrice":10}. Round trip: {"kind":"mapRoundTrip","target":{"mapId":"origin"},"start":{"x":1,"y":1},"destination":{"mapId":"destination"},"outgoing":{"eventId":"outgoing transfer"},"returning":{"eventId":"return transfer"}}. Use exact eventName/name instead of invented eventId/id; a new map uses newMapName instead of mapId. Start must be the requested actual project entry, supplied in facts, never a convenient test teleport. Preserve requested seller, stock, price/count, origin/destination and both authored transfers. For missing/ambiguous/unsupported targets or unspecified price/count include {"kind":"functionalUnresolved","reason":"Identify the missing request expectations"}; do not drop the requested behavior. Existing npcRewards already creates mandatory real-interaction acceptance. Non-requested behaviors MUST be omitted.
+- "functionalRefinements": ONLY when this USER message clarifies an unresolvedFunctional requirement supplied in facts. Read its original source.text, current typed expectations and prior user refinements together with the latest message. Output [{"requirementId":"the exact supplied id","criterion":{...concrete or partial functional criterion},"corrections":["count"]}]. Keep the original behavior/targets and known quantities; fill missing fields without inventing them. corrections is optional and names only known top-level fields explicitly corrected by this user's message; never infer a correction to make a failing check pass. A partial criterion retains known fields and stays unresolved until complete. Do not output duplicate functionalAcceptance for this clarification. Do not refine unrelated requirements or concrete contracts; there is no worker repair/replan authority here. For an initial unresolved request, preserve all known machine-checkable fields in functionalUnresolved.expectations (e.g. {"kind":"shopPurchase","seller":{"eventName":"Mira"},"item":{"name":"Potion"},"count":2}), not only in the reason string.
 - "summary": 요청을 한 문장으로.
 
 Rules:
@@ -166,6 +169,7 @@ export function buildIntentUserPayload(facts: IntentFacts): string {
   }
   if (facts.actualStart) context.push(`Actual project entry: ${JSON.stringify(facts.actualStart)}`);
   lines.push(`## 사실\n${context.join("\n")}`);
+  if (facts.unresolvedFunctional?.length) lines.push(`## Unresolved functional requirements - original user context and known expectations\n${JSON.stringify(facts.unresolvedFunctional)}`);
   if (facts.wikiContext) lines.push(`## 프로젝트 위키 — 이전에 정한 제작 방향과 현재 맵의 예외\n${facts.wikiContext}`);
   lines.push(`## 개념 꾸러미 시설 라벨\n${facts.facilityLabels.length > 0 ? facts.facilityLabels.join(", ") : "(없음)"}`);
   lines.push(`## 툴 목록\n${facts.toolNames.join(", ")}`);
@@ -313,6 +317,7 @@ export function parseIntentDeclaration(raw: string, facts: IntentFacts): IntentP
       ...(isRecord(parsed.adventure) && (mode === "create" || mode === "modify") ? { adventure: { village: parsed.adventure.village === true, dungeon: parsed.adventure.dungeon === true, party: parsed.adventure.party === true, battle: parsed.adventure.battle === true } } : {}),
       ...(actionCombat ? { actionCombat } : {}),
       ...(authoring && parsed.functionalAcceptance !== undefined ? { functionalAcceptance: parseFunctionalRequirements(parsed.functionalAcceptance) } : {}),
+      ...(authoring && parsed.functionalRefinements !== undefined ? { functionalRefinements: parseFunctionalRefinements(parsed.functionalRefinements) } : {}),
       ...(authoring && parsed.statefulNpcs === true ? { statefulNpcs: true } : {}),
       summary: readString(parsed.summary, 200) ?? facts.userText.trim().slice(0, 200),
       source: "llm",

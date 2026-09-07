@@ -1,4 +1,4 @@
-import { isFunctionalCriterionKind, type FunctionalCriterion } from "./functionalAcceptance";
+import { isFunctionalCriterionKind, parseFunctionalRequirements, type FunctionalCriterion, type FunctionalRefinement, type UnresolvedFunctionalRequirement } from "./functionalAcceptance";
 import type { Project } from "@/project/types";
 import { isVerifiedActionCombatProof, type ActionCombatProofReceipt } from "@/testing/actionCombatProof";
 import {
@@ -20,6 +20,7 @@ export class AssistantAcceptanceLedger {
   private readonly promises = new Map<string, AcceptancePromise & {
     readonly baseline: Project;
     readonly source: AcceptanceSource;
+    readonly refinements?: readonly AcceptanceSource[];
     readonly withdrawal?: RequirementWithdrawalAction & { readonly source: "user" };
   }>();
   private readonly actionRequirements = new Map<string, AcceptancePromise & { readonly baseline: Project }>();
@@ -52,6 +53,36 @@ export class AssistantAcceptanceLedger {
         required: promise.required !== false, baseline, source: provenance,
       });
     }
+  }
+
+  getUnresolvedFunctional(): readonly UnresolvedFunctionalRequirement[] {
+    return structuredClone([...this.promises.values()].flatMap(promise => {
+      const criterion = promise.criteria?.length === 1 ? promise.criteria[0] : undefined;
+      return !promise.withdrawal && promise.required !== false && criterion?.kind === "functionalUnresolved"
+        ? [{ requirementId: promise.id, source: promise.source, criterion, ...(promise.refinements ? { refinements: promise.refinements } : {}) }] : [];
+    }));
+  }
+
+  /** Host-only user clarification: refine a placeholder, never a concrete accepted contract. */
+  refineFunctional(refinement: FunctionalRefinement, source: AcceptanceSource): boolean {
+    const promise = this.promises.get(refinement.requirementId);
+    const original = promise?.criteria?.length === 1 ? promise.criteria[0] : undefined;
+    if (!promise || promise.withdrawal || original?.kind !== "functionalUnresolved"
+      || !source.text.trim() || source.requestId === promise.source.requestId
+      || promise.refinements?.some(entry => entry.requestId === source.requestId)) return false;
+    const incoming = refinement.criterion.kind === "functionalUnresolved" ? refinement.criterion.expectations : refinement.criterion;
+    if (!incoming || (original.expectations && original.expectations.kind !== incoming.kind)) return false;
+    const previous: Readonly<Record<string, unknown>> = original.expectations ?? {};
+    const next: Readonly<Record<string, unknown>> = incoming;
+    const corrections = new Set(refinement.corrections ?? []);
+    if ([...corrections].some(key => key === "kind" || !Object.hasOwn(previous, key) || !Object.hasOwn(next, key))) return false;
+    if (Object.entries(previous).some(([key, value]) => Object.hasOwn(next, key)
+      && acceptanceFingerprint(value) !== acceptanceFingerprint(next[key]) && !corrections.has(key))) return false;
+    const criterion = parseFunctionalRequirements([{ ...previous, ...next }])[0];
+    if (!criterion) return false;
+    this.promises.set(promise.id, { ...promise, criteria: [criterion],
+      refinements: [...(promise.refinements ?? []), structuredClone(source)] });
+    return true;
   }
 
   /** Intent-owned obligations are outside planner IDs and cannot be repaired away. */
@@ -175,6 +206,7 @@ export class AssistantAcceptanceLedger {
     const promises: (AcceptancePromise & {
       readonly baseline: Project;
       readonly source?: AcceptanceSource;
+      readonly refinements?: readonly AcceptanceSource[];
       readonly withdrawal?: RequirementWithdrawalAction & { readonly source: "user" };
     })[] = [...this.promises.values(), ...this.actionRequirements.values()];
     const projectBound = (kind: string): boolean => kind === "toolVerdict" || isFunctionalCriterionKind(kind);
@@ -183,6 +215,8 @@ export class AssistantAcceptanceLedger {
       && acceptanceFingerprint(applied) !== acceptanceFingerprint(draft);
     const items: AcceptanceItemSnapshot[] = promises.map(promise => {
       const metadata = { required: promise.required !== false, ...(promise.source ? { source: promise.source } : {}),
+        ...(promise.refinements ? { refinements: Object.freeze(promise.refinements.map(source => Object.freeze({ ...source,
+          scope: source.scope ? Object.freeze({ ...source.scope, region: Object.freeze({ ...source.scope.region }) }) : null }))) } : {}),
         ...(promise.withdrawal ? { withdrawal: promise.withdrawal } : {}) };
       if (!promise.criteria) return Object.freeze({ ...metadata, id: promise.id, title: promise.title, status: "blocked", reason: "Missing or malformed criteria: repair_acceptance required", evidence: Object.freeze([]) });
       const review = this.reviews.get(promise.id);

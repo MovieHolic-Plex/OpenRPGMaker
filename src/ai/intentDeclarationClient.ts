@@ -48,6 +48,7 @@ export interface BuildIntentFactsInput {
   readonly currentMapId: string | null | undefined;
   readonly selection: IntentSelectionFact | null | undefined;
   readonly hasActivePlan: boolean;
+  readonly unresolvedFunctional?: IntentFacts["unresolvedFunctional"];
 }
 
 /** 코드가 아는 사실만 모은다 — 열린 맵, 선택 사각형, 맵 목록, 개념 시설 라벨, 활성 툴 이름. */
@@ -61,6 +62,7 @@ export function buildIntentFacts(input: BuildIntentFactsInput): IntentFacts {
     facilityLabels: [...listLiveConceptFacilityLabels(input.project)],
     toolNames: activeTools().map((tool) => tool.name),
     hasActivePlan: input.hasActivePlan,
+    ...(input.unresolvedFunctional?.length ? { unresolvedFunctional: input.unresolvedFunctional } : {}),
     actualStart: { mapId: input.project.startMapId, ...input.project.startPos },
     wikiContext: projectWikiContext(input.project, { query: input.userText, mapId: input.currentMapId }).text,
   };
@@ -159,7 +161,7 @@ function cacheKey(facts: IntentFacts): string {
   const selection = facts.selection
     ? `${facts.selection.mapId}:${facts.selection.x},${facts.selection.y},${facts.selection.width},${facts.selection.height}`
     : "-";
-  return `${facts.userText.trim()}|${facts.currentMap?.id ?? "-"}|${selection}|${facts.hasActivePlan ? "plan" : "noplan"}|${facts.wikiContext ?? ""}|${JSON.stringify(facts.actualStart)}|${JSON.stringify(facts.maps)}`;
+  return `${facts.userText.trim()}|${facts.currentMap?.id ?? "-"}|${selection}|${facts.hasActivePlan ? "plan" : "noplan"}|${facts.wikiContext ?? ""}|${JSON.stringify(facts.actualStart)}|${JSON.stringify(facts.maps)}|${JSON.stringify(facts.unresolvedFunctional)}`;
 }
 
 export async function declareIntentCached(

@@ -1874,6 +1874,15 @@ export class AssistantSession {
       this.adventureIconRecords.clear();
       this.readEvidence.begin(intent.readBeforeWrite);
     }
+    if (userAction && !startsGoal && intent.source === "llm") {
+      const source: AcceptanceSource = { requestId: `request-${this.currentTurnIndex + 1}`, text: instruction,
+        scope: this.turnScope ? structuredClone(this.turnScope) : null };
+      for (const refinement of intent.functionalRefinements ?? []) {
+        const refined = this.acceptance?.refineFunctional(refinement, source) === true;
+        this.pushAudit({ kind: "status", text: `functional:refinement-${refined ? "accepted" : "rejected"} ${refinement.requirementId}` });
+      }
+      this.publishAcceptance(onEvent);
+    }
     if (!question && (newRequest || startsGoal)) {
       const functional: FunctionalCriterion[] = intent.functionalAcceptance ? [...parseFunctionalRequirements(intent.functionalAcceptance)] : [];
       const rewards = this.npcRewardRequirements;
@@ -2039,9 +2048,9 @@ export class AssistantSession {
   /** 질문 모드는 선언을 「질문·단일 단계」로 고정한다. 다른 모드는 선언 그대로. */
   private applyComposerModeToIntent(intent: IntentDeclaration): IntentDeclaration {
     if (this.turnComposerMode !== "ask") return intent;
-    if (intent.mode === "question" && !intent.needsPlan && !intent.npcRewards && !intent.functionalAcceptance) return intent;
+    if (intent.mode === "question" && !intent.needsPlan && !intent.npcRewards && !intent.functionalAcceptance && !intent.functionalRefinements) return intent;
     this.pushAudit({ kind: "status", text: `composer:ask 선언 mode=${intent.mode}→question needsPlan=${intent.needsPlan}→false` });
-    return { ...intent, mode: "question", needsPlan: false, npcRewards: undefined, functionalAcceptance: undefined };
+    return { ...intent, mode: "question", needsPlan: false, npcRewards: undefined, functionalAcceptance: undefined, functionalRefinements: undefined };
   }
 
   /** 계획 모드: 계획 카드를 내고 실행 없이 턴을 끝낸다. 「계속」이 다음 턴에서 resume 으로 실행한다. */
@@ -2079,6 +2088,7 @@ export class AssistantSession {
       currentMapId: resolveContextMapId(this.contextOptions) ?? null,
       selection,
       hasActivePlan,
+      unresolvedFunctional: this.acceptance?.getUnresolvedFunctional(),
     });
     if (isContinuationText(instruction) && (hasActivePlan || this.runVolumeBar)) {
       const intent = continuationIntentDeclaration(facts);

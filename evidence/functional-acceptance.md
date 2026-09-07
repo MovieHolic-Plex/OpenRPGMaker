@@ -13,7 +13,60 @@ Scope: engine/harness code, minimal test fixtures, public-API smoke and focused 
 - Accepted-revision proof reruns functional criteria on the matching canonical reload through the existing store proof path.
 - Parent-confirmed baseline failure in `npcRewardSession` (replanning into an unrelated skipped plan) is now passing.
 
-## TDD evidence
+## Review repair R1/R2 (after 0977da78c)
+
+R1: each individual tile movement refuses to advance while an interpreter is held.
+Starting another event cannot replace that interpreter; nested autorun suspension
+that cannot preserve the outer continuation fails closed. Regression tests force
+all travel through a touch shop followed by game-over, compare split/unsplit
+walks, and verify the shop continuation both through a real purchase and through
+the production interpreter's cancel result.
+
+R2: `functionalRefinements` is a trusted user-declaration field, not a worker tool.
+The declarer receives the original unresolved requirement/source, typed known
+expectations and prior user clarification sources. Host refinement keeps the
+original ID/source/baseline, retains omitted known fields, rejects conflicting
+values without an explicit user correction, and appends source metadata. Partial
+clarification remains blocked; a concrete contract becomes immutable again.
+Genuine user host-resume works; worker repair/replan and unlinked refinement do not.
+
+Repair evidence under `output/evidence/functional-acceptance/`:
+
+- `r1-red.log`: 2 reproduced failures (false-positive corridor and unsplit walk).
+- `r1-green-r2-red.log`: R1 green; 4 R2 failures reproduced through public session/declaration APIs.
+- `r2-resume-red.log`: genuine host-resume clarification reproduced as blocked.
+- `repair-focused-final.log`: **275 tests / 18 files passed**, exit 0, one thread-worker run.
+- `repair-typecheck.log`: `npm run typecheck:app`, exit 0.
+- `repair-public-smoke.log` / `repair-public-smoke.json`: Firefox public-API smoke passed on 9842, including forced corridor, split/unsplit equivalence and three-message clarification with rejected worker repair.
+- All changed source/test files and the smoke script: LSP diagnostics returned no errors.
+
+Exact repair validation commands:
+
+```bash
+npm test -- \
+  test/functionalAcceptance.test.ts test/functionalScenePurchase.test.ts \
+  test/functionalAcceptanceSession.test.ts test/functionalPersistenceProof.test.ts \
+  test/functionalWalkSuspension.test.ts test/functionalClarification.test.ts \
+  test/npcRewardSession.test.ts test/npcRewardAcceptance.test.ts \
+  test/sceneTestRunner.test.ts test/workItemOutcome.test.ts \
+  test/assistantAcceptance.test.ts test/assistantAcceptanceSession.test.ts \
+  test/intentDeclaration.test.ts test/intentDeclarationClient.test.ts \
+  test/aiRunEndProof.test.ts test/shopMerchantGold.test.ts \
+  test/shopRuntimeUx.test.ts test/sceneVerificationRepair.test.ts \
+  --pool=threads --maxWorkers=1 --reporter=dot
+npm run typecheck:app
+node scripts/qa/functional-acceptance-smoke.mjs http://127.0.0.1:9842 output/evidence/functional-acceptance/repair-public-smoke.json
+npm run openwiki:index
+node scripts/openwiki-index.mjs --check
+git diff --check
+```
+
+The original implementation checks below did not cover R1/R2; they are historical
+baseline evidence, not substitutes for these new regressions. Independent full
+gates/build and ultrabrain rereview remain required. No push, PR edit or merge
+was performed during this repair.
+
+## Original implementation TDD evidence
 
 Untracked detailed logs are retained in this worktree under `output/evidence/functional-acceptance/`:
 

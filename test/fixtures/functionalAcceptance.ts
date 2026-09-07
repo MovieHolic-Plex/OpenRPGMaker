@@ -30,3 +30,20 @@ export function functionalFixture() {
   destination.events.push(returning);
   return { project, origin, destination, seller, outgoing, returning, reward };
 }
+
+export function suspendedCorridorFixture() {
+  const fixture = functionalFixture();
+  const { seller, outgoing, origin } = fixture;
+  const shop = seller.pages?.[0]?.commands[0];
+  const corridor = structuredClone(outgoing);
+  const page = corridor.pages?.[0];
+  if (!shop || !page) throw new Error("Missing corridor fixture commands");
+  corridor.id = "mandatory_shop";
+  corridor.y = 2;
+  page.commands = [structuredClone(shop), { kind: "gameOver" }];
+  origin.events.push(corridor);
+  for (let x = 0; x < origin.width; x++) {
+    if (x !== 1) origin.events.push({ ...structuredClone(seller), id: `corridor_wall_${x}`, x, y: 2 });
+  }
+  return { ...fixture, corridor };
+}

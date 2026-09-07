@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **50쪽 / 1964KB / 약 553,985 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **50쪽 / 1966KB / 약 554,426 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,7 +15,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/editor-ai-panel.md` | 306KB | 95KB ⚠상한 초과 — 절을 더 쪼개라 | 974 | ~87,861 |
+| `openwiki/editor-ai-panel.md` | 307KB | 95KB ⚠상한 초과 — 절을 더 쪼개라 | 989 | ~88,153 |
 | `openwiki/editor-ai-tools.md` | 125KB | 73KB ⚠상한 초과 — 절을 더 쪼개라 | 716 | ~35,084 |
 | `openwiki/editor-database.md` | 248KB | 55KB ⚠상한 초과 — 절을 더 쪼개라 | 1285 | ~71,443 |
 | `openwiki/editor-event-authoring.md` | 125KB | 75KB ⚠상한 초과 — 절을 더 쪼개라 | 626 | ~36,040 |
@@ -25,7 +25,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/runtime-battle.md` | 127KB | 31KB | 447 | ~36,176 |
 | `openwiki/runtime-project-schema.md` | 89KB | 44KB | 511 | ~23,948 |
 | `openwiki/runtime-sessions.md` | 86KB | 49KB | 312 | ~22,720 |
-| `openwiki/testing.md` | 149KB | 48KB | 1170 | ~41,356 |
+| `openwiki/testing.md` | 150KB | 48KB | 1178 | ~41,505 |
 
 ## 한국어 산문이 깨진 페이지
 
@@ -33,7 +33,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 | 페이지 | 깨진 줄 수 | 예시 줄 번호 |
 |---|---|---|
-| `openwiki/editor-ai-panel.md` | 25 | 682, 683, 684, 685, 686, 687, 699, 708 |
+| `openwiki/editor-ai-panel.md` | 25 | 697, 698, 699, 700, 701, 702, 714, 723 |
 | `openwiki/editor-ai-tools.md` | 6 | 449, 450, 454, 456, 458, 615 |
 | `openwiki/editor-database.md` | 7 | 495, 499, 500, 501, 510, 536, 539 |
 | `openwiki/editor-event-authoring.md` | 16 | 198, 199, 202, 207, 208, 209, 210, 211 |
@@ -52,7 +52,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/agent-worktrees.md` | 2 | `result.md`, `task.json` |
 | `openwiki/ai-workflow.md` | 3 | `latest.json`, `src/ai/plannerSkip.ts`, `test/volumeContractSession.test.ts` |
 | `openwiki/bgm-catalog.md` | 2 | `artifacts/bgm-release/bgm-release-v1.json`, `catalog.raw.json` |
-| `openwiki/editor-ai-panel.md` | 34 | `.omo/evidence/assistant-glass-fold/measure.json`, `.omo/evidence/autonomous-ai-rpg/task-8-autonomous-ai-rpg.md`, `15-assistant-readable.css`, `17-assistant-modern-shell.css`, `after/measure.json`, `aiCommandBar.ts`, `aiGlassPanelWidth.test.ts`, `aiSkillDrawer.ts`, `aiVolatileController.ts`, `assistant-skills.css`, `chat-dock-switch.spec.ts`, `chatDock.ts`, `functionalAcceptanceEvaluation.ts`, `intentClarify.ts`, `newmain-after-measure.json`, `output/evidence/assistant-clean-glass/phase-2/implementation.md`, `output/evidence/assistant-ui-modern/newmain-before-measure.json`, `regionIntentRouter.ts`, `scripts/qa/assistant-side-seam-hittest.mjs`, `src/ai/intentClarify.ts`, `src/ai/plannerSkip.ts`, `src/ai/skills.ts`, `src/editor/chatDock.ts`, `test/aiGlassFold.test.ts`, `test/aiGlassPanelWidth.test.ts`, `test/chatDock.test.ts`, `test/e2e/_assistant-glass-shots.spec.ts`, `test/e2e/_glass-dock-report.spec.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/plannerSkip.test.ts`, `test/regionIntentExposure.test.ts`, `test/turnGuideSharedRules.test.ts`, `test/volumeContractSession.test.ts`, `test/workspaceBarAssistantDock.test.ts` |
+| `openwiki/editor-ai-panel.md` | 33 | `.omo/evidence/assistant-glass-fold/measure.json`, `.omo/evidence/autonomous-ai-rpg/task-8-autonomous-ai-rpg.md`, `15-assistant-readable.css`, `17-assistant-modern-shell.css`, `after/measure.json`, `aiCommandBar.ts`, `aiGlassPanelWidth.test.ts`, `aiSkillDrawer.ts`, `aiVolatileController.ts`, `assistant-skills.css`, `chat-dock-switch.spec.ts`, `chatDock.ts`, `intentClarify.ts`, `newmain-after-measure.json`, `output/evidence/assistant-clean-glass/phase-2/implementation.md`, `output/evidence/assistant-ui-modern/newmain-before-measure.json`, `regionIntentRouter.ts`, `scripts/qa/assistant-side-seam-hittest.mjs`, `src/ai/intentClarify.ts`, `src/ai/plannerSkip.ts`, `src/ai/skills.ts`, `src/editor/chatDock.ts`, `test/aiGlassFold.test.ts`, `test/aiGlassPanelWidth.test.ts`, `test/chatDock.test.ts`, `test/e2e/_assistant-glass-shots.spec.ts`, `test/e2e/_glass-dock-report.spec.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/plannerSkip.test.ts`, `test/regionIntentExposure.test.ts`, `test/turnGuideSharedRules.test.ts`, `test/volumeContractSession.test.ts`, `test/workspaceBarAssistantDock.test.ts` |
 | `openwiki/editor-ai-tools.md` | 4 | `aiCommandBar.ts`, `aiProposalModal.ts`, `test/intentClarify.test.ts`, `test/volumeContractSession.test.ts` |
 | `openwiki/editor-database.md` | 18 | `enemy-art-NNN.png`, `form-hierarchy-modern.css`, `output/evidence/battle-animation-ux/p1-implementation.md`, `output/evidence/battle-animation-ux/p2-implementation.md`, `output/evidence/battle-rules-ux/st_01a07318-manual-qa.md`, `output/evidence/battle-rules-ux/verification.md`, `output/evidence/concept-expansion/supabase-proof.json`, `output/evidence/concept-v2/supabase-proof.json`, `output/evidence/monster-concepts/b1/fix.md`, `output/evidence/monster-concepts/p2/verification.md`, `output/evidence/monster-concepts/r1/fix.md`, `output/evidence/system-studio/system-studio-backed-settings-1586x992.png`, `reports/generated-effect-showcase-2026-08-24.html`, `reveal-fix.md`, `scripts/generate-default-item-icons.mts`, `scripts/lib/effectSheet/paintersMonster.mjs`, `scripts/lib/effectSheet/paintersUtility.mjs`, `troops.part-1.css` |
 | `openwiki/editor-event-authoring.md` | 6 | `audit-before.md`, `new-editor/REPORT.html`, `output/evidence/event-ai-assist-ux/960x900-compact.png`, `scripts/generated/toolCatalog.json`, `verify-shots/page-preview-probe/02-preview-open.png`, `verify-shots/runtime-qa/cheolsu-keyboard-fixed/SUMMARY.md` |
@@ -236,7 +236,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L18` Output limits
 - `L24` Practical tips
 
-### `openwiki/editor-ai-panel.md` — 306KB · 974줄 · ~87,861 토큰 · 통째읽기 잘림 · 깨진 줄 25
+### `openwiki/editor-ai-panel.md` — 307KB · 989줄 · ~88,153 토큰 · 통째읽기 잘림 · 깨진 줄 25
 
 - `L3` P2 run outcomes and user scope actions (2026-09-06)
   - `L57` Canonical requirements and genuine user actions
@@ -247,25 +247,25 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L239` Plan authoring has no small-plan quota (2026-09-06)
 - `L258` Acceptance sticky note (2026-09-06)
   - `L278` Session-owned acceptance contract
-- `L404` 자동 프로젝트 위키 (2026-09-07)
-- `L437` 브라우저 포커스와 도구 실행 대기 (2026-09-05)
-- `L444` 계획 항목의 연속 실행 증거 (2026-09-05)
-- `L450` 조회 선행·계획 완료와 실행 종료 (2026-09-05)
-- `L459` 조수 카메라 이동 수명·부드러운 줌 (2026-09-05)
-- `L475` 패널 셸 · 도크 · 접기 · 컴포저
-- `L613` 세션 수명 · 대화 컨텍스트
-- `L628` 제안 적용 · 복구 · 완성도 린트
-- `L712` 고스트 미리보기 · 활동 표시 · 청사진 · 카메라
-- `L774` 영역 작업 · 시공 · 실내/집 파이프라인
-- `L798` 툴 노출 · 프롬프트 · 의도 판정 · NPC
-- `L812` 타일셋 이해 · 검토 위저드 (T1a/T1b)
-- `L838` 저장 · 내보내기 · 프로젝트 생성
-- `L846` 제공자 · OAuth · 동반 서비스
-- `L876` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
-- `L917` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
-- `L925` 배치 의존성과 완료 멱등성 (2026-09-06)
-- `L933` 모험 완료와 실제 적용 횟수 (2026-09-05)
-- `L938` Assistant clean conversation — Phase 1 (2026-09-06)
+- `L419` 자동 프로젝트 위키 (2026-09-07)
+- `L452` 브라우저 포커스와 도구 실행 대기 (2026-09-05)
+- `L459` 계획 항목의 연속 실행 증거 (2026-09-05)
+- `L465` 조회 선행·계획 완료와 실행 종료 (2026-09-05)
+- `L474` 조수 카메라 이동 수명·부드러운 줌 (2026-09-05)
+- `L490` 패널 셸 · 도크 · 접기 · 컴포저
+- `L628` 세션 수명 · 대화 컨텍스트
+- `L643` 제안 적용 · 복구 · 완성도 린트
+- `L727` 고스트 미리보기 · 활동 표시 · 청사진 · 카메라
+- `L789` 영역 작업 · 시공 · 실내/집 파이프라인
+- `L813` 툴 노출 · 프롬프트 · 의도 판정 · NPC
+- `L827` 타일셋 이해 · 검토 위저드 (T1a/T1b)
+- `L853` 저장 · 내보내기 · 프로젝트 생성
+- `L861` 제공자 · OAuth · 동반 서비스
+- `L891` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
+- `L932` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
+- `L940` 배치 의존성과 완료 멱등성 (2026-09-06)
+- `L948` 모험 완료와 실제 적용 횟수 (2026-09-05)
+- `L953` Assistant clean conversation — Phase 1 (2026-09-06)
 
 ### `openwiki/editor-ai-tools.md` — 125KB · 716줄 · ~35,084 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
@@ -787,7 +787,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L110` Files to inspect before editing
 - `L122` Related pages
 
-### `openwiki/testing.md` — 149KB · 1170줄 · ~41,356 토큰 · 통째읽기 잘림
+### `openwiki/testing.md` — 150KB · 1178줄 · ~41,505 토큰 · 통째읽기 잘림
 
 - `L1` Real large-world player QA (2026-09-07)
 - `L10` CSS budget: file count is informational
@@ -844,8 +844,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1112` 상점 진열 중심 편집 검증 (2026-09-05)
 - `L1120` 실제 DB로 나가는 전체 검사 요청 (2026-09-05 실측)
 - `L1126` Request-bound functional acceptance verification (2026-09-07)
-- `L1157` 조수 보상 저작과 출하 플레이어 검증 (2026-09-06)
-- `L1167` 실내 조립·형상 검증 (2026-09-05)
+- `L1165` 조수 보상 저작과 출하 플레이어 검증 (2026-09-06)
+- `L1175` 실내 조립·형상 검증 (2026-09-05)
 
 ### `openwiki/town-tile-benchmark.md` — 10KB · 153줄 · ~3,010 토큰
 

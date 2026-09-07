@@ -31,7 +31,7 @@ try {
   await page.goto(new URL("/functional-acceptance-smoke", origin).href, { waitUntil: "domcontentloaded" });
   const result = await Promise.race([
     page.evaluate(async () => {
-      const [{ AssistantSession }, { createLlmIntentDeclarer, resetIntentDeclarationCache }, { defaultAiConfig }, { functionalFixture }, { PLAY_TOOLS }] = await Promise.all([
+      const [{ AssistantSession }, { createLlmIntentDeclarer, resetIntentDeclarationCache }, { defaultAiConfig }, { functionalFixture, suspendedCorridorFixture }, { PLAY_TOOLS }] = await Promise.all([
         import("/src/ai/assistantSession.ts"), import("/src/ai/intentDeclarationClient.ts"), import("/src/ai/llmClient.ts"),
         import("/test/fixtures/functionalAcceptance.ts"), import("/src/editor/tools/playTools.ts"),
       ]);
@@ -43,7 +43,7 @@ try {
       const check = (condition, message, observed) => { if (!condition) throw new Error(`${message}: ${JSON.stringify(observed)}`); };
       async function run(variant) {
         resetIntentDeclarationCache();
-        const f = functionalFixture();
+        const f = variant === "corridor-fails" ? suspendedCorridorFixture() : functionalFixture();
         if (variant === "purchase-fails" || variant === "replacement-fails") f.project.session.gold = 1;
         if (variant === "roundtrip-fails") f.destination.events = [];
         if (variant === "reward-fails") f.reward.pages[0].commands[0].amount = 1;
@@ -71,7 +71,7 @@ try {
         const snapshot = session.getAcceptanceSnapshot();
         const kinds = snapshot?.items.map(item => ({ kind: JSON.parse(item.evidence[0].expected).kind, status: item.status, passed: item.evidence[0].passed }));
         check(kinds?.length === 3, "Request obligations missing", snapshot);
-        const failedIndex = variant === "roundtrip-fails" ? 1 : variant === "reward-fails" ? 2 : 0;
+        const failedIndex = ["roundtrip-fails", "corridor-fails"].includes(variant) ? 1 : variant === "reward-fails" ? 2 : 0;
         if (variant === "happy") {
           check(snapshot.status === "verified" && kinds.every(item => item.passed), "Happy path failed", snapshot);
           const changed = structuredClone(f.project);
@@ -85,7 +85,7 @@ try {
         return { variant, status: snapshot.status, checks: kinds, staleRevalidation: variant === "happy" ? "rejected" : undefined };
       }
       const cases = [];
-      for (const variant of ["happy", "purchase-fails", "roundtrip-fails", "reward-fails", "replacement-fails"]) cases.push(await run(variant));
+      for (const variant of ["happy", "purchase-fails", "roundtrip-fails", "reward-fails", "replacement-fails", "corridor-fails"]) cases.push(await run(variant));
       const f = functionalFixture();
       const sceneTool = PLAY_TOOLS.find(tool => tool.name === "run_scene_test");
       const transaction = sceneTool.run(f.project, { mapId: f.project.startMapId, start: f.project.startPos, steps: [
@@ -94,14 +94,49 @@ try {
         { kind: "expect", goldDelta: -20, inventoryDelta: { item_potion: 2 }, interactionComplete: true },
       ] });
       check(transaction.data.ok && transaction.data.finalState.gold === 80 && transaction.data.finalState.inventory.item_potion === 2, "Public shop transaction failed", transaction);
-      return { cases, transaction: transaction.data, scope: "Scripted model boundary; real public session/parser and engine/interpreter/transaction modules. No authored remote project or graphical-player QA." };
+      const corridor = suspendedCorridorFixture();
+      const suspension = [false, true].map(split => sceneTool.run(corridor.project, { mapId: corridor.origin.id, start: corridor.project.startPos, steps: [
+        ...(split ? [{ kind: "walk", to: { x: 1, y: 2 } }] : []), { kind: "walk", to: { x: 1, y: 4 } },
+      ] }).data);
+      check(suspension.every(result => !result.ok && result.finalState.mapId === corridor.origin.id && result.finalState.y === 2 && result.finalState.gold === 100), "Split/unsplit walks bypassed a held shop", suspension);
+      resetIntentDeclarationCache();
+      const requirementId = "request-1:functional:0";
+      const known = { kind: "shopPurchase", seller: { eventId: f.seller.id }, item: { id: "item_potion" }, count: 2 };
+      const full = { ...known, target: { mapId: f.origin.id }, start: f.project.startPos, unitPrice: 10 };
+      const declarations = [
+        { functionalAcceptance: [{ kind: "functionalUnresolved", reason: "Specify price and entry", expectations: known }] },
+        { functionalRefinements: [{ requirementId, criterion: { kind: "shopPurchase", target: full.target, start: full.start } }] },
+        { functionalRefinements: [{ requirementId, criterion: { kind: "shopPurchase", unitPrice: 10 } }] },
+      ];
+      let declarationIndex = 0, repairAttempted = false, workerRepairRejected = false;
+      const clarificationSession = new AssistantSession(f.project, { config,
+        declareIntent: createLlmIntentDeclarer({ getConfig: () => config, chat: async () => ({ message: { role: "assistant", content: JSON.stringify({ mode: "modify", needsPlan: false, ...declarations[declarationIndex++] }) }, finishReason: "stop" }) }),
+        chat: async () => {
+          if (declarationIndex === 3 && !repairAttempted) {
+            repairAttempted = true;
+            return toolCall("repair_acceptance", { itemId: requirementId, criteria: [{ ...full, count: 1 }] });
+          }
+          return complete();
+        },
+      });
+      const clarificationStatuses = [];
+      for (const text of ["Let test_seller sell two potions, but the price and entry are not decided.", "Use the actual project entry.", "Set the price to ten gold each."]) {
+        await clarificationSession.sendUserMessage(text, event => { if (event.type === "tool_call" && event.name === "repair_acceptance") workerRepairRejected = !event.result.ok; }, AbortSignal.timeout(30000));
+        clarificationStatuses.push(clarificationSession.getAcceptanceSnapshot().status);
+      }
+      const clarified = clarificationSession.getAcceptanceSnapshot();
+      check(JSON.stringify(clarificationStatuses) === JSON.stringify(["blocked", "blocked", "verified"])
+        && clarified.items.length === 1 && clarified.items[0].id === requirementId && clarified.items[0].source.requestId === "request-1"
+        && clarified.items[0].refinements.length === 2 && JSON.parse(clarified.items[0].evidence[0].expected).count === 2 && workerRepairRejected,
+      "Trusted clarification lost provenance or weakened the contract", { clarificationStatuses, clarified, workerRepairRejected });
+      return { cases, suspension, clarification: { statuses: clarificationStatuses, requirement: clarified.items[0], workerRepairRejected }, transaction: transaction.data, scope: "Scripted model boundary; real public session/parser and engine/interpreter/transaction modules. No authored remote project or graphical-player QA." };
     }),
     new Promise((_, reject) => { deadline = setTimeout(() => reject(new Error("Public API smoke exceeded 120 seconds")), 120000); }),
   ]);
   assert.equal(blockedWrites.length, 0, `Unexpected write attempts: ${JSON.stringify(blockedWrites)}`);
   await mkdir(resolve(output, ".."), { recursive: true });
   await writeFile(output, `${JSON.stringify({ ok: true, browser: "firefox", origin: origin.origin, ...result }, null, 2)}\n`);
-  console.log(`PASS: 3 behaviors, 4 hostile/stale cases, immutable replacement, public transaction. Evidence: ${output}`);
+  console.log(`PASS: 3 behaviors, hostile/stale cases, suspended corridor, trusted clarification, immutable replacement, public transaction. Evidence: ${output}`);
 } finally {
   clearTimeout(deadline);
   await browser.close();

@@ -285,9 +285,20 @@ original request source and baseline. Planner/native-plan schemas expose the sam
 narrow criteria, but replan, skip, optional replacement and `repair_acceptance`
 cannot weaken an adopted criterion. Only the existing host `withdrawRequirement`
 action withdraws it; ordinary follow-ups retain the ledger and explicit host
-`new-goal` starts a new one. Missing/unsupported semantic targets become immutable
-`functionalUnresolved` evidence, not a silent opt-out or an easy static substitute.
-Resolve such request ambiguity with a genuine user scope correction/new goal.
+`new-goal` starts a new one. Missing/unsupported semantic targets become
+`functionalUnresolved` evidence with typed known `expectations`, not a silent
+opt-out or an easy static substitute. Review repair (2026-09-07): a later genuine
+user clarification can resolve that placeholder without discarding the goal.
+`IntentFacts.unresolvedFunctional` supplies its exact requirement ID, original
+source text, known expectations and prior user refinement sources to the lite
+declarer. `functionalRefinements:[{requirementId,criterion,corrections?}]` is consumed
+only at the actual user-declaration boundary, including host `resume`, never by
+worker tools or synthetic continuations. `AssistantAcceptanceLedger.refineFunctional`
+keeps the original ID, source and baseline and appends frozen `refinements` source
+metadata. Omitted known fields are retained; conflicts require explicit typed
+user-correction fields. Partial/ambiguous refinements remain unresolved. Once
+concrete, a contract cannot be refined or repaired into an easier one; existing
+host withdrawal/new-goal actions remain the scope-change authority.
 
 `functionalAcceptanceEvaluation.ts` runs the real scene interpreter on current
 applied content. Purchase walks to and triggers the exact seller, resolves runtime
@@ -295,7 +306,11 @@ stock/pricing, calls production `handleShopTransaction` (including normal visit
 and loyalty semantics), and checks exact gold AND inventory deltas. Single-quantity
 shops use repeated real transactions. Round trip walks through both exact authored
 transfers in one session, checks interpreter-owned source/destination evidence,
-then walks back to the original start. Both require the declared actual project
+then walks back to the original start. Walking checks held-interpreter ownership
+at every tile, not just at the SceneStep boundary: a mandatory touch shop cannot
+be walked through or replaced by the next transfer. The same event resumes after
+a purchase. Unsupported nested autorun suspension fails closed without replacing
+the held interpreter. Both require the declared actual project
 entry; no convenience teleport or injected gold/switch state. NPC rewards reuse
 `verifyNpcRewardsPlayable`: exact requested first grants, then zero item/equipment,
 monster and gold reward deltas on the second interaction in that same session.
