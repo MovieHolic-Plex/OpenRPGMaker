@@ -1,0 +1,32 @@
+{
+  "sourceCommit": "2c136343eae7e39700fe4b0752d96b6e9c89e70d",
+  "sourceRunner": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r6/run-native.py",
+  "sourceRunnerHash": "a79dcf688493c96f265a0d72b6cada7e53135600a1797fda342af7359b5dce00",
+  "runnerChanges": [
+    "owned output/scratch paths",
+    "extra argv for original UI91 command",
+    "final cleanup of owned root scratch",
+    "import formatting"
+  ],
+  "scripts": {
+    "general": {
+      "from": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r6/native/native-qa-general.mjs",
+      "sha256": "c4c623affb63d69437ea320977cf5d0e3335ca4752b2902a24171af00f6d788b",
+      "unchanged": true
+    },
+    "arena-lastexit": {
+      "from": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r6/native/native-qa-arena-lastexit.mjs",
+      "sha256": "ac09972a1030e33c60c7af0cbce1849678a3ab9ad730800124266397e565d805",
+      "unchanged": true
+    },
+    "rug": {
+      "from": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r6/native/native-qa-rug.mjs",
+      "sha256": "5ef0e08728b281fab931a8f4e968ca639638319dbd899f34e0a859eb8858e099",
+      "unchanged": true
+    }
+  },
+  "commands": [
+    "python3 -B /home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/run-checks.py ui arena-lastexit rug general"
+  ],
+  "originalEvidenceReadOnly": true
+}

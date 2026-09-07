@@ -1,0 +1,14 @@
+{
+  "scratchBefore": true,
+  "removed": [
+    "/dev/shm/st_01a07c17/pw-profile",
+    "/dev/shm/st_01a07c17/vite-cache",
+    "/dev/shm/st_01a07c17/xdg-data",
+    "/dev/shm/st_01a07c17/xdg-config",
+    "/dev/shm/st_01a07c17/xdg-cache",
+    "/dev/shm/st_01a07c17/tmp"
+  ],
+  "retainedLock": "/tmp/rpg-zzu-life-full-qa-01a0727b.lock",
+  "scratchAfter": false,
+  "lockExists": true
+}

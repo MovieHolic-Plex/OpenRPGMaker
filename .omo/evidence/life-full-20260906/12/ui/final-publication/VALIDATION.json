@@ -1,0 +1,592 @@
+{
+  "status": "verified",
+  "publisherValidationCorrection": "Initial metadata validator stopped with KeyError farmBuildings before publication; corrected its read-only field lookup to actual farmBuildingPlacements/homeDecorationPlacements. Product and assertions unchanged.",
+  "sourceCommit": "2c136343eae7e39700fe4b0752d96b6e9c89e70d",
+  "commands": "Metadata-only Python/Git byte, JSON, reference and domain checks; no test/build/native execution.",
+  "parentExecutions": {
+    "ui": {
+      "exit": 0,
+      "stdoutBytes": 642,
+      "stderrBytes": 0,
+      "scriptSha256": "56c3dd87560e58a09411e92144000612d0b63d2e5ac698ec877b6a0e87d9480c",
+      "cleanupPathsAbsent": [
+        "/dev/shm/life-t12-parent-01a0727b/ui"
+      ]
+    },
+    "safety": {
+      "exit": 0,
+      "stdoutBytes": 297,
+      "stderrBytes": 0,
+      "scriptSha256": "56c3dd87560e58a09411e92144000612d0b63d2e5ac698ec877b6a0e87d9480c",
+      "cleanupPathsAbsent": [
+        "/dev/shm/life-t12-parent-01a0727b/safety"
+      ]
+    },
+    "arena-lastexit": {
+      "exit": 0,
+      "stdoutBytes": 19460,
+      "stderrBytes": 0,
+      "scriptSha256": "ac09972a1030e33c60c7af0cbce1849678a3ab9ad730800124266397e565d805",
+      "cleanupPathsAbsent": [
+        "/dev/shm/life-t12-parent-01a0727b/native-arena"
+      ]
+    },
+    "rug": {
+      "exit": 0,
+      "stdoutBytes": 25444,
+      "stderrBytes": 0,
+      "scriptSha256": "5ef0e08728b281fab931a8f4e968ca639638319dbd899f34e0a859eb8858e099",
+      "cleanupPathsAbsent": [
+        "/dev/shm/life-t12-parent-01a0727b/native-rug"
+      ]
+    },
+    "general-replay": {
+      "exit": 0,
+      "stdoutBytes": 24349,
+      "stderrBytes": 0,
+      "scriptSha256": "73cc3433ad046736595907fe45fbfe996fb9a430d7b4130776aecd79af752b52",
+      "cleanupPathsAbsent": [
+        "/dev/shm/life-t12-parent-01a0727b/native-general-replay"
+      ]
+    },
+    "general": {
+      "exit": 1,
+      "stdoutBytes": 0,
+      "stderrBytes": 772,
+      "scriptSha256": "c4c623affb63d69437ea320977cf5d0e3335ca4752b2902a24171af00f6d788b",
+      "cleanupPathsAbsent": [
+        "/dev/shm/life-t12-parent-01a0727b/native-general"
+      ]
+    }
+  },
+  "sourceInputScriptEquality": {
+    "sourceHashesMatchBuildR5": true,
+    "parentScriptsEqualVerifyR6": {
+      "general": {
+        "from": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r6/native/native-qa-general.mjs",
+        "sha256": "c4c623affb63d69437ea320977cf5d0e3335ca4752b2902a24171af00f6d788b",
+        "unchanged": true
+      },
+      "arena-lastexit": {
+        "from": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r6/native/native-qa-arena-lastexit.mjs",
+        "sha256": "ac09972a1030e33c60c7af0cbce1849678a3ab9ad730800124266397e565d805",
+        "unchanged": true
+      },
+      "rug": {
+        "from": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r6/native/native-qa-rug.mjs",
+        "sha256": "5ef0e08728b281fab931a8f4e968ca639638319dbd899f34e0a859eb8858e099",
+        "unchanged": true
+      }
+    },
+    "generalReplay": {
+      "priorFailure": "native/general.stderr: ENOENT missing copied fixture-general.json; prior receipts preserved",
+      "input": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r6/native/fixture-general.json",
+      "inputSha256": "e48e935a33b8f6ed42e987ea7231ca508d1ae05abfc4862e11364e0357c54ff2",
+      "sourceScriptSha256": "c4c623affb63d69437ea320977cf5d0e3335ca4752b2902a24171af00f6d788b",
+      "replayScriptSha256": "73cc3433ad046736595907fe45fbfe996fb9a430d7b4130776aecd79af752b52",
+      "scriptChange": "Only bind input read to existing hash-verified immutable fixture; native action/assertion logic unchanged",
+      "rerun": "general-replay only; ui/arena/rug passing results retained"
+    },
+    "onlyGeneralInputReadPathChanged": true,
+    "verifyR5R6UIStreamsEqual": true
+  },
+  "domainRecords": {
+    ".omo/evidence/life-full-20260906/12/ui/verify-r5/native/arena-lastexit/native-evidence.json": {
+      "sha256": "8fd6a9970ea8325b1fd144fe49f03908183d27272b80b8dab5df683b2bcf3d10",
+      "steps": 66,
+      "errors": [],
+      "pageErrors": []
+    },
+    ".omo/evidence/life-full-20260906/12/ui/verify-r5/native/general/native-evidence.json": {
+      "sha256": "d36ea3f96b8c8c62110ffb94d4c3e3d524a7e02adcb994c7ea2c8046b19b294b",
+      "steps": 151,
+      "errors": [],
+      "pageErrors": []
+    },
+    ".omo/evidence/life-full-20260906/12/ui/verify-r5/native/rug/native-evidence.json": {
+      "sha256": "49a261265628b936513e9144c5555f920dbccbcb1154cbd0adc4fd6dced683c8",
+      "steps": 80,
+      "errors": [],
+      "pageErrors": []
+    },
+    ".omo/evidence/life-full-20260906/12/ui/verify-r6/native/arena-lastexit/native-evidence.json": {
+      "sha256": "85b196ab41fbc525e2bdc845078440c1c379f9d1133c3a13cf859cb2092b0557",
+      "steps": 68,
+      "errors": [],
+      "pageErrors": []
+    },
+    ".omo/evidence/life-full-20260906/12/ui/verify-r6/native/general/native-evidence.json": {
+      "sha256": "1362ffbab50ef64f02ab84828e757dd5cb3bc8b0b54691af780be1ad13e48cf8",
+      "steps": 152,
+      "errors": [],
+      "pageErrors": []
+    },
+    ".omo/evidence/life-full-20260906/12/ui/verify-r6/native/rug/native-evidence.json": {
+      "sha256": "11eb78ba55d18448233d88d81d03d75b3f1a4df7990f2522c496f30bac3fe7cb",
+      "steps": 85,
+      "errors": [],
+      "pageErrors": []
+    },
+    ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/general-replay/native-evidence.json": {
+      "sha256": "82270d595ec04512652de2b158ac8a0235fcc72a773a2953107a338afeb3482e",
+      "steps": 152,
+      "errors": [],
+      "pageErrors": []
+    },
+    ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/arena-lastexit/native-evidence.json": {
+      "sha256": "e7d9689e321704bade91694f771ce1b203d8389fe52058e448b5f821aec3076b",
+      "steps": 68,
+      "errors": [],
+      "pageErrors": []
+    },
+    ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/rug/native-evidence.json": {
+      "sha256": "0e64000327a93aa146ce2f4c14fa4c390765e4fc618ca6840b10a7b72a34032b",
+      "steps": 85,
+      "errors": [],
+      "pageErrors": []
+    }
+  },
+  "rugStorageTransitions": [
+    {
+      "step": "save-storage-changed",
+      "at": "2026-09-07T14:34:06.271Z",
+      "ns": "task12-ui-verify-r6-rug",
+      "slot": 1,
+      "filename": "raw-slot-standing-on-rug.json",
+      "key": "task12-ui-verify-r6-rug:save-slot:v5:1",
+      "storageResult": {
+        "beforeBytes": 0,
+        "afterBytes": 3736,
+        "changed": true
+      }
+    },
+    {
+      "step": "save-storage-changed",
+      "at": "2026-09-07T14:34:09.491Z",
+      "ns": "task12-ui-verify-r6-rug",
+      "slot": 2,
+      "filename": "raw-slot-after-load-slot2.json",
+      "key": "task12-ui-verify-r6-rug:save-slot:v5:2",
+      "storageResult": {
+        "beforeBytes": 0,
+        "afterBytes": 3794,
+        "changed": true
+      }
+    }
+  ],
+  "rugParsedSlotsEqual": true,
+  "rugRawSessionDomainMatchesParsed": true,
+  "parentScratchAbsent": true,
+  "historicalCopies": [
+    {
+      "source": ".omo/evidence/life-full-20260906/12/ui/producer-r2/pre/red.log",
+      "published": ".omo/evidence/life-full-20260906/12/ui/final-publication/historical-ui-red/red.log",
+      "sha256": "1353c0a5db562ed32cb533051ec2b66393cf8cf4fa3cbccd2e7913250da45977",
+      "byteIdentical": true
+    },
+    {
+      "source": ".omo/evidence/life-full-20260906/12/ui/producer-r2/pre/red.stderr",
+      "published": ".omo/evidence/life-full-20260906/12/ui/final-publication/historical-ui-red/red.stderr",
+      "sha256": "dfa17979480e6910d5539219ae29ac0e4e1d478108b2bca30bea5fa5a93b0ec3",
+      "byteIdentical": true
+    },
+    {
+      "source": ".omo/evidence/life-full-20260906/12/ui/producer-r2/pre/red.exit",
+      "published": ".omo/evidence/life-full-20260906/12/ui/final-publication/historical-ui-red/red.exit",
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+      "byteIdentical": true
+    },
+    {
+      "source": ".omo/evidence/life-full-20260906/12/ui/producer-r2/pre/red.command.txt",
+      "published": ".omo/evidence/life-full-20260906/12/ui/final-publication/historical-ui-red/red.command.txt",
+      "sha256": "a0b5a2a2e0f79a767576492cacd9c02749d3313d10b71c6c4c4e78a9a0340a78",
+      "byteIdentical": true
+    },
+    {
+      "source": ".omo/evidence/life-full-20260906/12/ui/producer-r2/HANDOFF.md",
+      "published": ".omo/evidence/life-full-20260906/12/ui/final-publication/historical-ui-red/HANDOFF.md",
+      "sha256": "605bf414672c6e63f1edf62e8ac1d0b23e6d96ed3bcdef9284b6e441c1c8a641",
+      "byteIdentical": true
+    }
+  ],
+  "namedIndexReferences": [
+    {
+      "index": "red",
+      "reference": "core/red-behavior.log.gz",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/core/red-behavior.log.gz",
+      "exists": true,
+      "publication": false
+    },
+    {
+      "index": "red",
+      "reference": "core/red-behavior.exit",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/core/red-behavior.exit",
+      "exists": true,
+      "publication": false
+    },
+    {
+      "index": "red",
+      "reference": "core/SUMMARY.md",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/core/SUMMARY.md",
+      "exists": true,
+      "publication": false
+    },
+    {
+      "index": "red",
+      "reference": "ui/final-publication/historical-ui-red/red.log",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/final-publication/historical-ui-red/red.log",
+      "exists": true,
+      "publication": true
+    },
+    {
+      "index": "red",
+      "reference": "ui/final-publication/historical-ui-red/red.exit",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/final-publication/historical-ui-red/red.exit",
+      "exists": true,
+      "publication": true
+    },
+    {
+      "index": "red",
+      "reference": "ui/final-publication/historical-ui-red/red.command.txt",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/final-publication/historical-ui-red/red.command.txt",
+      "exists": true,
+      "publication": true
+    },
+    {
+      "index": "red",
+      "reference": "ui/final-publication/historical-ui-red/red.stderr",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/final-publication/historical-ui-red/red.stderr",
+      "exists": true,
+      "publication": true
+    },
+    {
+      "index": "red",
+      "reference": "ui/final-publication/historical-ui-red/HANDOFF.md",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/final-publication/historical-ui-red/HANDOFF.md",
+      "exists": true,
+      "publication": true
+    },
+    {
+      "index": "red",
+      "reference": "ui/producer-r3/replay/red.stdout",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/producer-r3/replay/red.stdout",
+      "exists": true,
+      "publication": false
+    },
+    {
+      "index": "red",
+      "reference": "ui/producer-r3/replay/red.exit",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/producer-r3/replay/red.exit",
+      "exists": true,
+      "publication": false
+    },
+    {
+      "index": "red",
+      "reference": "core/red.log.gz",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/core/red.log.gz",
+      "exists": true,
+      "publication": false
+    },
+    {
+      "index": "green",
+      "reference": "ui/parent-final-2c136343/native/ui.command.json",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/ui.command.json",
+      "exists": true,
+      "publication": true
+    },
+    {
+      "index": "green",
+      "reference": "ui/parent-final-2c136343/native/ui.stdout",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/ui.stdout",
+      "exists": true,
+      "publication": true
+    },
+    {
+      "index": "green",
+      "reference": "ui/parent-final-2c136343/native/ui.stderr",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/ui.stderr",
+      "exists": true,
+      "publication": true
+    },
+    {
+      "index": "green",
+      "reference": "ui/parent-final-2c136343/native/ui.exit",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/ui.exit",
+      "exists": true,
+      "publication": true
+    },
+    {
+      "index": "green",
+      "reference": "ui/parent-final-2c136343/native/safety.command.json",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/safety.command.json",
+      "exists": true,
+      "publication": true
+    },
+    {
+      "index": "green",
+      "reference": "ui/parent-final-2c136343/native/safety.stdout",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/safety.stdout",
+      "exists": true,
+      "publication": true
+    },
+    {
+      "index": "green",
+      "reference": "ui/parent-final-2c136343/native/safety.stderr",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/safety.stderr",
+      "exists": true,
+      "publication": true
+    },
+    {
+      "index": "green",
+      "reference": "ui/parent-final-2c136343/native/safety.exit",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/safety.exit",
+      "exists": true,
+      "publication": true
+    },
+    {
+      "index": "green",
+      "reference": "ui/parent-final-2c136343/native/arena-lastexit.command.json",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/arena-lastexit.command.json",
+      "exists": true,
+      "publication": true
+    },
+    {
+      "index": "green",
+      "reference": "ui/parent-final-2c136343/native/arena-lastexit.stdout",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/arena-lastexit.stdout",
+      "exists": true,
+      "publication": true
+    },
+    {
+      "index": "green",
+      "reference": "ui/parent-final-2c136343/native/arena-lastexit.stderr",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/arena-lastexit.stderr",
+      "exists": true,
+      "publication": true
+    },
+    {
+      "index": "green",
+      "reference": "ui/parent-final-2c136343/native/arena-lastexit.exit",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/arena-lastexit.exit",
+      "exists": true,
+      "publication": true
+    },
+    {
+      "index": "green",
+      "reference": "ui/parent-final-2c136343/native/rug.command.json",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/rug.command.json",
+      "exists": true,
+      "publication": true
+    },
+    {
+      "index": "green",
+      "reference": "ui/parent-final-2c136343/native/rug.stdout",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/rug.stdout",
+      "exists": true,
+      "publication": true
+    },
+    {
+      "index": "green",
+      "reference": "ui/parent-final-2c136343/native/rug.stderr",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/rug.stderr",
+      "exists": true,
+      "publication": true
+    },
+    {
+      "index": "green",
+      "reference": "ui/parent-final-2c136343/native/rug.exit",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/rug.exit",
+      "exists": true,
+      "publication": true
+    },
+    {
+      "index": "green",
+      "reference": "ui/parent-final-2c136343/native/general-replay.command.json",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/general-replay.command.json",
+      "exists": true,
+      "publication": true
+    },
+    {
+      "index": "green",
+      "reference": "ui/parent-final-2c136343/native/general-replay.stdout",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/general-replay.stdout",
+      "exists": true,
+      "publication": true
+    },
+    {
+      "index": "green",
+      "reference": "ui/parent-final-2c136343/native/general-replay.stderr",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/general-replay.stderr",
+      "exists": true,
+      "publication": true
+    },
+    {
+      "index": "green",
+      "reference": "ui/parent-final-2c136343/native/general-replay.exit",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/general-replay.exit",
+      "exists": true,
+      "publication": true
+    },
+    {
+      "index": "green",
+      "reference": "ui/parent-final-2c136343/native/general.command.json",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/general.command.json",
+      "exists": true,
+      "publication": true
+    },
+    {
+      "index": "green",
+      "reference": "ui/parent-final-2c136343/native/general.stdout",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/general.stdout",
+      "exists": true,
+      "publication": true
+    },
+    {
+      "index": "green",
+      "reference": "ui/parent-final-2c136343/native/general.stderr",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/general.stderr",
+      "exists": true,
+      "publication": true
+    },
+    {
+      "index": "green",
+      "reference": "ui/parent-final-2c136343/native/general.exit",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/general.exit",
+      "exists": true,
+      "publication": true
+    },
+    {
+      "index": "green",
+      "reference": "ui/verify-r6/VERIFY.md",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/verify-r6/VERIFY.md",
+      "exists": true,
+      "publication": true
+    },
+    {
+      "index": "green",
+      "reference": "core/SUMMARY.md",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/core/SUMMARY.md",
+      "exists": true,
+      "publication": false
+    },
+    {
+      "index": "green",
+      "reference": "../47-48/VERIFY.md",
+      "repositoryPath": ".omo/evidence/life-full-20260906/47-48/VERIFY.md",
+      "exists": true,
+      "publication": false
+    },
+    {
+      "index": "green",
+      "reference": "ui/build-r5/build-reuse.json",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/build-r5/build-reuse.json",
+      "exists": true,
+      "publication": false
+    },
+    {
+      "index": "green",
+      "reference": "ui/build-r3/build.exit",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/build-r3/build.exit",
+      "exists": true,
+      "publication": false
+    },
+    {
+      "index": "green",
+      "reference": "../52/FINAL-DELIVERY.md",
+      "repositoryPath": ".omo/evidence/life-full-20260906/52/FINAL-DELIVERY.md",
+      "exists": true,
+      "publication": true
+    },
+    {
+      "index": "occupancy",
+      "reference": "ui/verify-r6/VERIFY.md",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/verify-r6/VERIFY.md",
+      "exists": true,
+      "publication": true
+    },
+    {
+      "index": "occupancy",
+      "reference": "ui/parent-final-2c136343",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343",
+      "exists": true,
+      "publication": true
+    },
+    {
+      "index": "occupancy",
+      "reference": "core/SUMMARY.md",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/core/SUMMARY.md",
+      "exists": true,
+      "publication": false
+    },
+    {
+      "index": "occupancy",
+      "reference": "ui/parent-final-2c136343/native/safety.stdout",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/safety.stdout",
+      "exists": true,
+      "publication": true
+    },
+    {
+      "index": "occupancy",
+      "reference": "ui/parent-final-2c136343/native/ui.stdout",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/ui.stdout",
+      "exists": true,
+      "publication": true
+    },
+    {
+      "index": "occupancy",
+      "reference": "ui/parent-final-2c136343/native/general-replay/native-evidence.json",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/general-replay/native-evidence.json",
+      "exists": true,
+      "publication": true
+    },
+    {
+      "index": "occupancy",
+      "reference": "ui/parent-final-2c136343/native/arena-lastexit/native-evidence.json",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/arena-lastexit/native-evidence.json",
+      "exists": true,
+      "publication": true
+    },
+    {
+      "index": "occupancy",
+      "reference": "ui/parent-final-2c136343/native/rug/native-evidence.json",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/rug/native-evidence.json",
+      "exists": true,
+      "publication": true
+    },
+    {
+      "index": "occupancy",
+      "reference": "ui/parent-final-2c136343/native/rug/raw-slot-standing-on-rug.json",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/rug/raw-slot-standing-on-rug.json",
+      "exists": true,
+      "publication": true
+    },
+    {
+      "index": "occupancy",
+      "reference": "ui/parent-final-2c136343/native/rug/raw-slot-after-load-slot2.json",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/parent-final-2c136343/native/rug/raw-slot-after-load-slot2.json",
+      "exists": true,
+      "publication": true
+    },
+    {
+      "index": "occupancy",
+      "reference": "ui/verify-r6/png-read.json",
+      "repositoryPath": ".omo/evidence/life-full-20260906/12/ui/verify-r6/png-read.json",
+      "exists": true,
+      "publication": true
+    }
+  ],
+  "credentialPrivateScan": {
+    "candidateFiles": 296,
+    "bytes": 18699804,
+    "maximumFileBytes": 3000000,
+    "rules": {
+      "private-key": "-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----",
+      "credential": "(?:sk-[A-Za-z0-9_-]{20,}|gh[pousr]_[A-Za-z0-9]{20,}|AKIA[A-Z0-9]{16}|eyJ[A-Za-z0-9_-]{15,}\\.[A-Za-z0-9_-]{15,}\\.[A-Za-z0-9_-]{15,})",
+      "secret-value": "(?i)(?:api[_-]?key|access[_-]?token|refresh[_-]?token|password|service_role)\\s*[\"\\x27]?\\s*[:=]\\s*[\"\\x27][^\"\\x27\\n]{8,}[\"\\x27]",
+      "private-reasoning": "(?i)(?:<analysis>|<thinking>|\"(?:reasoning_content|chain_of_thought)\"\\s*:)"
+    },
+    "hits": [],
+    "scope": "Complete UTF-8 contents; PNGs mechanically hashed, not interpreted. Public DAG task instructions are not private reasoning; command env subsets contain only owned paths. No env files/configs/caches collected."
+  },
+  "postCommitReceiptExcluded": "COMMITTED.json is written only after the one publication commit and intentionally not included in it."
+}

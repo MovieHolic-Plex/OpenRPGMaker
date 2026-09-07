@@ -1,0 +1,207 @@
+{
+  "general": {
+    "general/raw-slot-1.parsed.json": {
+      "buildings": {
+        "ledger:building:shed:1": {
+          "instanceId": "ledger:building:shed:1",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 11,
+          "y": 6,
+          "orientation": "down",
+          "level": 2,
+          "paymentReceipt": {
+            "gold": 30,
+            "items": []
+          }
+        }
+      },
+      "decorations": {
+        "ledger:decoration:rug:1": {
+          "instanceId": "ledger:decoration:rug:1",
+          "typeId": "rug",
+          "mapId": "map_blank_start",
+          "x": 3,
+          "y": 1,
+          "orientation": "down",
+          "recoveryItem": {
+            "itemId": "item_potion",
+            "count": 1
+          }
+        }
+      },
+      "x": 16,
+      "y": 2,
+      "farmPlots": {
+        "map_blank_start": {
+          "7,9": {
+            "tilled": true,
+            "watered": false
+          }
+        }
+      }
+    }
+  },
+  "arena-lastexit": {
+    "arena-lastexit/raw-slot-arena-rotated.parsed.json": {
+      "buildings": {},
+      "decorations": {
+        "ledger:decoration:table:1": {
+          "instanceId": "ledger:decoration:table:1",
+          "typeId": "table",
+          "mapId": "map_blank_start",
+          "x": 7,
+          "y": 9,
+          "orientation": "left",
+          "recoveryItem": {
+            "itemId": "item_potion",
+            "count": 1
+          }
+        }
+      },
+      "x": 8,
+      "y": 8,
+      "gold": 500,
+      "inventory": {
+        "item_hoe": 1,
+        "item_potion": 7
+      }
+    },
+    "arena-lastexit/raw-slot-arena-moved.parsed.json": {
+      "buildings": {},
+      "decorations": {
+        "ledger:decoration:table:1": {
+          "instanceId": "ledger:decoration:table:1",
+          "typeId": "table",
+          "mapId": "map_blank_start",
+          "x": 5,
+          "y": 6,
+          "orientation": "left",
+          "recoveryItem": {
+            "itemId": "item_potion",
+            "count": 1
+          }
+        }
+      },
+      "x": 7,
+      "y": 8,
+      "gold": 500,
+      "inventory": {
+        "item_hoe": 1,
+        "item_potion": 7
+      }
+    },
+    "arena-lastexit/raw-slot-last-exit.parsed.json": {
+      "buildings": {
+        "r4-block-up": {
+          "instanceId": "r4-block-up",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 1,
+          "y": 1,
+          "orientation": "down",
+          "level": 1
+        },
+        "r4-block-right": {
+          "instanceId": "r4-block-right",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 3,
+          "y": 2,
+          "orientation": "down",
+          "level": 1
+        }
+      },
+      "decorations": {},
+      "x": 1,
+      "y": 2,
+      "gold": 500,
+      "inventory": {
+        "item_hoe": 1,
+        "item_potion": 8
+      }
+    }
+  },
+  "rug": {
+    "rug/raw-slot-standing-on-rug.parsed.json": {
+      "buildings": {
+        "r5-retained-shed": {
+          "instanceId": "r5-retained-shed",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 12,
+          "y": 6,
+          "orientation": "down",
+          "level": 1
+        }
+      },
+      "decorations": {
+        "ledger:decoration:rug:1": {
+          "instanceId": "ledger:decoration:rug:1",
+          "typeId": "rug",
+          "mapId": "map_blank_start",
+          "x": 7,
+          "y": 9,
+          "orientation": "down",
+          "recoveryItem": {
+            "itemId": "item_potion",
+            "count": 1
+          }
+        }
+      },
+      "x": 8,
+      "y": 9,
+      "gold": 500,
+      "inventory": {
+        "item_hoe": 1,
+        "item_potion": 7
+      },
+      "recoveryItems": {
+        "ledger:decoration:rug:1": {
+          "itemId": "item_potion",
+          "count": 1
+        }
+      }
+    },
+    "rug/raw-slot-after-load-slot2.parsed.json": {
+      "buildings": {
+        "r5-retained-shed": {
+          "instanceId": "r5-retained-shed",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 12,
+          "y": 6,
+          "orientation": "down",
+          "level": 1
+        }
+      },
+      "decorations": {
+        "ledger:decoration:rug:1": {
+          "instanceId": "ledger:decoration:rug:1",
+          "typeId": "rug",
+          "mapId": "map_blank_start",
+          "x": 7,
+          "y": 9,
+          "orientation": "down",
+          "recoveryItem": {
+            "itemId": "item_potion",
+            "count": 1
+          }
+        }
+      },
+      "x": 8,
+      "y": 9,
+      "gold": 500,
+      "inventory": {
+        "item_hoe": 1,
+        "item_potion": 7
+      },
+      "recoveryItems": {
+        "ledger:decoration:rug:1": {
+          "itemId": "item_potion",
+          "count": 1
+        }
+      }
+    }
+  }
+}

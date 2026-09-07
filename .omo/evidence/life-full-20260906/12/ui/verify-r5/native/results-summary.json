@@ -1,0 +1,563 @@
+{
+  "arena-lastexit": {
+    "steps": 66,
+    "sessions": {
+      "arena": {
+        "instanceId": "ledger:decoration:table:1",
+        "place": {
+          "text": "Table\uc544\ub798 \u00b7 2\u00d71\ube48 \ub9f5 (7, 9) ",
+          "x": 7,
+          "y": 9,
+          "orientation": "down"
+        },
+        "rotate": {
+          "text": "Table\uc67c\ucabd \u00b7 1\u00d72\ube48 \ub9f5 (7, 9) ",
+          "x": 7,
+          "y": 9,
+          "orientation": "left"
+        },
+        "move": {
+          "text": "Table\uc67c\ucabd \u00b7 1\u00d72\ube48 \ub9f5 (5, 6) ",
+          "x": 5,
+          "y": 6,
+          "orientation": "left"
+        },
+        "rotatedSlot": {
+          "instanceId": "ledger:decoration:table:1",
+          "typeId": "table",
+          "mapId": "map_blank_start",
+          "x": 7,
+          "y": 9,
+          "orientation": "left",
+          "recoveryItem": {
+            "itemId": "item_potion",
+            "count": 1
+          }
+        },
+        "movedSlot": {
+          "instanceId": "ledger:decoration:table:1",
+          "typeId": "table",
+          "mapId": "map_blank_start",
+          "x": 5,
+          "y": 6,
+          "orientation": "left",
+          "recoveryItem": {
+            "itemId": "item_potion",
+            "count": 1
+          }
+        },
+        "gold": 500,
+        "potions": 7,
+        "playerAfterMove": {
+          "x": 7,
+          "y": 8
+        }
+      },
+      "lastExit": {
+        "refuseMsg": {
+          "text": "\ucc98\ub9ac\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4: blocked"
+        },
+        "player": {
+          "x": 1,
+          "y": 2
+        },
+        "gold": 500,
+        "inventory": {
+          "item_hoe": 1,
+          "item_potion": 8
+        },
+        "buildings": {
+          "r4-block-up": {
+            "instanceId": "r4-block-up",
+            "typeId": "shed",
+            "mapId": "map_blank_start",
+            "x": 1,
+            "y": 1,
+            "orientation": "down",
+            "level": 1
+          },
+          "r4-block-right": {
+            "instanceId": "r4-block-right",
+            "typeId": "shed",
+            "mapId": "map_blank_start",
+            "x": 3,
+            "y": 2,
+            "orientation": "down",
+            "level": 1
+          }
+        },
+        "slot": {
+          "buildings": {
+            "r4-block-up": {
+              "instanceId": "r4-block-up",
+              "typeId": "shed",
+              "mapId": "map_blank_start",
+              "x": 1,
+              "y": 1,
+              "orientation": "down",
+              "level": 1
+            },
+            "r4-block-right": {
+              "instanceId": "r4-block-right",
+              "typeId": "shed",
+              "mapId": "map_blank_start",
+              "x": 3,
+              "y": 2,
+              "orientation": "down",
+              "level": 1
+            }
+          },
+          "decorations": {},
+          "x": 1,
+          "y": 2,
+          "gold": 500,
+          "inventory": {
+            "item_hoe": 1,
+            "item_potion": 8
+          }
+        }
+      }
+    },
+    "pageErrors": [],
+    "errors": [],
+    "passages": null,
+    "uncaught": null
+  },
+  "arena-lastexit.exit": 0,
+  "rug": {
+    "steps": 80,
+    "sessions": {
+      "divergence": {
+        "liveDivergent": {
+          "foot": {
+            "x": 8,
+            "y": 10
+          },
+          "rug": {
+            "x": 7,
+            "y": 11,
+            "orientation": "down"
+          },
+          "gold": 500,
+          "potions": 7
+        },
+        "slot1Summary": {
+          "foot": {
+            "x": 8,
+            "y": 9
+          },
+          "rug": {
+            "x": 7,
+            "y": 9,
+            "orientation": "down"
+          },
+          "gold": 500,
+          "potions": 7
+        }
+      },
+      "rug": {
+        "instanceId": "ledger:decoration:rug:1",
+        "place": {
+          "text": "Rug\uc544\ub798 \u00b7 2\u00d71\ube48 \ub9f5 (7, 9) ",
+          "x": 7,
+          "y": 9,
+          "orientation": "down"
+        },
+        "standingFoot": {
+          "x": 8,
+          "y": 9
+        },
+        "passage": {
+          "origin": {
+            "foot": {
+              "x": 8,
+              "y": 8
+            },
+            "passage": {
+              "left": 7,
+              "right": 9,
+              "top": 8,
+              "bottom": 8,
+              "bodyTop": 6
+            },
+            "intersection": [],
+            "rugCells": [
+              {
+                "x": 7,
+                "y": 9
+              },
+              {
+                "x": 8,
+                "y": 9
+              }
+            ]
+          },
+          "downOnto": {
+            "foot": {
+              "x": 8,
+              "y": 9
+            },
+            "passage": {
+              "left": 7,
+              "right": 9,
+              "top": 9,
+              "bottom": 9,
+              "bodyTop": 7
+            },
+            "intersection": [
+              {
+                "x": 7,
+                "y": 9
+              },
+              {
+                "x": 8,
+                "y": 9
+              }
+            ],
+            "rugCells": [
+              {
+                "x": 7,
+                "y": 9
+              },
+              {
+                "x": 8,
+                "y": 9
+              }
+            ]
+          },
+          "downOff": {
+            "foot": {
+              "x": 8,
+              "y": 10
+            },
+            "passage": {
+              "left": 7,
+              "right": 9,
+              "top": 10,
+              "bottom": 10,
+              "bodyTop": 8
+            },
+            "intersection": [],
+            "stillAt79": [
+              {
+                "x": 7,
+                "y": 9
+              },
+              {
+                "x": 8,
+                "y": 9
+              }
+            ]
+          }
+        },
+        "slot1": {
+          "buildings": {
+            "r5-retained-shed": {
+              "instanceId": "r5-retained-shed",
+              "typeId": "shed",
+              "mapId": "map_blank_start",
+              "x": 12,
+              "y": 6,
+              "orientation": "down",
+              "level": 1
+            }
+          },
+          "decorations": {
+            "ledger:decoration:rug:1": {
+              "instanceId": "ledger:decoration:rug:1",
+              "typeId": "rug",
+              "mapId": "map_blank_start",
+              "x": 7,
+              "y": 9,
+              "orientation": "down",
+              "recoveryItem": {
+                "itemId": "item_potion",
+                "count": 1
+              }
+            }
+          },
+          "x": 8,
+          "y": 9,
+          "gold": 500,
+          "inventory": {
+            "item_hoe": 1,
+            "item_potion": 7
+          },
+          "recoveryItems": {
+            "ledger:decoration:rug:1": {
+              "itemId": "item_potion",
+              "count": 1
+            }
+          }
+        },
+        "divergent": {
+          "foot": {
+            "x": 8,
+            "y": 10
+          },
+          "rug": {
+            "x": 7,
+            "y": 11,
+            "orientation": "down"
+          },
+          "gold": 500,
+          "potions": 7
+        },
+        "liveAfterLoad": {
+          "player": {
+            "x": 8,
+            "y": 9
+          },
+          "rug": {
+            "text": "Rug\uc544\ub798 \u00b7 2\u00d71\ube48 \ub9f5 (7, 9) ",
+            "x": 7,
+            "y": 9,
+            "orientation": "down"
+          },
+          "gold": 500,
+          "inventory": {
+            "item_hoe": 1,
+            "item_potion": 7
+          },
+          "buildings": {
+            "r5-retained-shed": {
+              "instanceId": "r5-retained-shed",
+              "typeId": "shed",
+              "mapId": "map_blank_start",
+              "x": 12,
+              "y": 6,
+              "orientation": "down",
+              "level": 1
+            }
+          }
+        },
+        "slot2": {
+          "buildings": {
+            "r5-retained-shed": {
+              "instanceId": "r5-retained-shed",
+              "typeId": "shed",
+              "mapId": "map_blank_start",
+              "x": 12,
+              "y": 6,
+              "orientation": "down",
+              "level": 1
+            }
+          },
+          "decorations": {
+            "ledger:decoration:rug:1": {
+              "instanceId": "ledger:decoration:rug:1",
+              "typeId": "rug",
+              "mapId": "map_blank_start",
+              "x": 7,
+              "y": 9,
+              "orientation": "down",
+              "recoveryItem": {
+                "itemId": "item_potion",
+                "count": 1
+              }
+            }
+          },
+          "x": 8,
+          "y": 9,
+          "gold": 500,
+          "inventory": {
+            "item_hoe": 1,
+            "item_potion": 7
+          },
+          "recoveryItems": {
+            "ledger:decoration:rug:1": {
+              "itemId": "item_potion",
+              "count": 1
+            }
+          }
+        },
+        "compare": {
+          "foot": {
+            "slot1": {
+              "x": 8,
+              "y": 9
+            },
+            "slot2": {
+              "x": 8,
+              "y": 9
+            },
+            "live": {
+              "x": 8,
+              "y": 9
+            }
+          },
+          "rug": {
+            "slot1": {
+              "x": 7,
+              "y": 9,
+              "orientation": "down",
+              "recoveryItem": {
+                "itemId": "item_potion",
+                "count": 1
+              }
+            },
+            "slot2": {
+              "x": 7,
+              "y": 9,
+              "orientation": "down",
+              "recoveryItem": {
+                "itemId": "item_potion",
+                "count": 1
+              }
+            },
+            "live": {
+              "text": "Rug\uc544\ub798 \u00b7 2\u00d71\ube48 \ub9f5 (7, 9) ",
+              "x": 7,
+              "y": 9,
+              "orientation": "down"
+            }
+          },
+          "shed": {
+            "slot1": {
+              "instanceId": "r5-retained-shed",
+              "typeId": "shed",
+              "mapId": "map_blank_start",
+              "x": 12,
+              "y": 6,
+              "orientation": "down",
+              "level": 1
+            },
+            "slot2": {
+              "instanceId": "r5-retained-shed",
+              "typeId": "shed",
+              "mapId": "map_blank_start",
+              "x": 12,
+              "y": 6,
+              "orientation": "down",
+              "level": 1
+            },
+            "live": {
+              "instanceId": "r5-retained-shed",
+              "typeId": "shed",
+              "mapId": "map_blank_start",
+              "x": 12,
+              "y": 6,
+              "orientation": "down",
+              "level": 1
+            }
+          },
+          "gold": {
+            "slot1": 500,
+            "slot2": 500,
+            "live": 500
+          },
+          "inventory": {
+            "slot1": {
+              "item_hoe": 1,
+              "item_potion": 7
+            },
+            "slot2": {
+              "item_hoe": 1,
+              "item_potion": 7
+            },
+            "live": {
+              "item_hoe": 1,
+              "item_potion": 7
+            }
+          }
+        }
+      }
+    },
+    "pageErrors": [],
+    "errors": [],
+    "passages": {
+      "origin": {
+        "foot": {
+          "x": 8,
+          "y": 8
+        },
+        "passage": {
+          "left": 7,
+          "right": 9,
+          "top": 8,
+          "bottom": 8,
+          "bodyTop": 6
+        },
+        "intersection": [],
+        "rugCells": [
+          {
+            "x": 7,
+            "y": 9
+          },
+          {
+            "x": 8,
+            "y": 9
+          }
+        ]
+      },
+      "downOnto": {
+        "foot": {
+          "x": 8,
+          "y": 9
+        },
+        "passage": {
+          "left": 7,
+          "right": 9,
+          "top": 9,
+          "bottom": 9,
+          "bodyTop": 7
+        },
+        "intersection": [
+          {
+            "x": 7,
+            "y": 9
+          },
+          {
+            "x": 8,
+            "y": 9
+          }
+        ],
+        "rugCells": [
+          {
+            "x": 7,
+            "y": 9
+          },
+          {
+            "x": 8,
+            "y": 9
+          }
+        ]
+      },
+      "downOff": {
+        "foot": {
+          "x": 8,
+          "y": 10
+        },
+        "passage": {
+          "left": 7,
+          "right": 9,
+          "top": 10,
+          "bottom": 10,
+          "bodyTop": 8
+        },
+        "intersection": [],
+        "stillAt79": [
+          {
+            "x": 7,
+            "y": 9
+          },
+          {
+            "x": 8,
+            "y": 9
+          }
+        ]
+      }
+    },
+    "uncaught": null
+  },
+  "rug.exit": 0,
+  "general": {
+    "steps": 151,
+    "sessions": null,
+    "pageErrors": [],
+    "errors": [],
+    "passages": null,
+    "uncaught": null
+  },
+  "general.exit": 0
+}

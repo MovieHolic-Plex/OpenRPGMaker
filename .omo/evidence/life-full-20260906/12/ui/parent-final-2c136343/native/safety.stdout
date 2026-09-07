@@ -1,0 +1,10 @@
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p4
+
+ ✓ test/lifePlacementSafety.test.ts (11 tests) 581ms
+
+ Test Files  1 passed (1)
+      Tests  11 passed (11)
+   Start at  23:54:08
+   Duration  4.43s (transform 2.56s, setup 0ms, collect 3.57s, tests 581ms, environment 0ms, prepare 65ms)
+

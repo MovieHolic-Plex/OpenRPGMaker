@@ -1,0 +1,36 @@
+{
+  "commit": "2c136343eae7e39700fe4b0752d96b6e9c89e70d",
+  "expectedAllowlistCount": 2000,
+  "expectedSortedChangedPathsSha256": "15cdf9ffff226f4e518beeadd5f89959a029931256e515beca6c3825fc300772",
+  "commands": [
+    {
+      "command": "git -C /home/main/z-project/rpg-zzu-life-full-p4 rev-parse HEAD && git -C /home/main/z-project/rpg-zzu-life-full-p4 show -s --format='%H%n%P%n%s' 2c136343eae7e39700fe4b0752d96b6e9c89e70d && git -C /home/main/z-project/rpg-zzu-life-full-p4 status --short && git -C /home/main/z-project/rpg-zzu-life-full-p4 diff --cached --quiet && git -C /home/main/z-project/rpg-zzu-life-full-p4 diff --quiet HEAD -- src test openwiki && printf 'JOINT_SOURCE_CLEAN\\n'",
+      "result": "2c136343eae7e39700fe4b0752d96b6e9c89e70d\n2c136343eae7e39700fe4b0752d96b6e9c89e70d\nea6b2b358088cb6061783f6ffd162169764a07e9\nfeat(life): deliver live placement safety and authored body persistence\nJOINT_SOURCE_CLEAN",
+      "toolStatus": {
+        "status": "completed"
+      }
+    },
+    {
+      "command": "set -o pipefail; git -C /home/main/z-project/rpg-zzu-life-full-p4 -c core.quotePath=false diff-tree --no-commit-id --name-only -r 2c136343eae7e39700fe4b0752d96b6e9c89e70d | LC_ALL=C sort | sha256sum",
+      "result": "15cdf9ffff226f4e518beeadd5f89959a029931256e515beca6c3825fc300772  -",
+      "toolStatus": {
+        "status": "completed"
+      }
+    },
+    {
+      "command": "git -C /home/main/z-project/rpg-zzu-life-full-p4 diff ea6b2b358088cb6061783f6ffd162169764a07e9 2c136343eae7e39700fe4b0752d96b6e9c89e70d -- src/project/databaseRecordModel.ts",
+      "result": "diff --git a/src/project/databaseRecordModel.ts b/src/project/databaseRecordModel.ts\nindex 6fbb0d3d9..720409ea1 100644\n--- a/src/project/databaseRecordModel.ts\n+++ b/src/project/databaseRecordModel.ts\n@@ -49,6 +49,7 @@ import {\n   normalizeHomeDecorationTypes,\n } from \"@/project/spatialPlacements\";\n import type { ActorExperienceCurve, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemCareProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, LifeSkillRecord, MonsterCareConfig, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, StateRecord, SystemRecords, TitleBackgroundLayer, TitleIntroSettings, TitleParticleSettings, TitleScreenGraphic, TitleScreenMenuVisibility, TitleScreenSettings, TitleScreenSounds, TitleScreenTitleMode, TypeChartRecord } from \"@/project/types\";\n+import { normalizeCharacterFootprint, normalizePassRows } from \"@/project/footprint\";\n import { normalizePlayResolution } from \"@/project/playResolution\";\n import { normalizeWorldGenRulesForStorage } from \"@/project/worldGenRules\";\n \n@@ -159,8 +160,13 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys\n   const typeChart = normalizeTypeChart(system.typeChart);\n   const timeSystem = normalizeTimeSystemConfig(system.timeSystem);\n   const actionCombat = normalizeActionCombatConfig(system.actionCombat);\n+  const playerFootprint = normalizeCharacterFootprint(system.playerFootprint);\n   return {\n     startActorIds: cleanIds(system.startActorIds),\n+    ...(system.playerFootprint !== undefined ? { playerFootprint } : {}),\n+    ...(system.playerPassRows !== undefined\n+      ? { playerPassRows: normalizePassRows(system.playerPassRows, playerFootprint.height) }\n+      : {}),\n     ...(() => {\n       const playResolution = normalizePlayResolution(system.playResolution);\n       return playResolution ? { playResolution } : {};",
+      "toolStatus": {
+        "status": "completed"
+      }
+    }
+  ],
+  "checks": {
+    "actualHeadAndParentMatch": true,
+    "sourceAndIndexCleanSentinelObserved": true,
+    "actualChangedPathDigestEqualsAllowlist": true,
+    "nonEvidencePathsExactlyDeclared17": true,
+    "evidenceOnlyInOwned12And52": true
+  },
+  "newParentBuildOrNativeRun": false
+}

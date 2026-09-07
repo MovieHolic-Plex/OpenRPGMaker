@@ -1,0 +1,25 @@
+{
+  "head": "2c136343eae7e39700fe4b0752d96b6e9c89e70d",
+  "branch": "agent/life-full-p4",
+  "subject": "feat(life): deliver live placement safety and authored body persistence",
+  "committedSha": "2c136343eae7e39700fe4b0752d96b6e9c89e70d",
+  "headMatchesCommitted": true,
+  "taskId": "st_01a07c36",
+  "when": "2026-09-07T14:18:43.840563+00:00",
+  "phase": "after",
+  "porcelain": "",
+  "workingTreeClean": true,
+  "sourceStillMatches": true,
+  "nativeExits": {
+    "arena-lastexit": 0,
+    "rug": 0,
+    "general": 0
+  },
+  "cleanup": {
+    "scratchRoot": "/dev/shm/st_01a07c36",
+    "removed": true,
+    "errors": [],
+    "lockRetained": "/tmp/rpg-zzu-life-full-qa-01a0727b.lock"
+  },
+  "pngCount": 33
+}

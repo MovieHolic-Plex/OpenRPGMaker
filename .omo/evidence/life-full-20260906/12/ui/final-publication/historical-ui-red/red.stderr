@@ -1,0 +1,102 @@
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/lifePlacementSceneUi.test.ts > life placement live UI > refuses all six live mutations without a scene reader and leaves costs/state unchanged
+AssertionError: expected { switches: { …(20) }, …(68) } to deeply equal { switches: { …(20) }, …(68) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -88,15 +88,37 @@[39m
+[2m    "erasedEventIds": [],[22m
+[2m    "eventLocations": {},[22m
+[2m    "factionStanceOverrides": {},[22m
+[2m    "farmAnimals": undefined,[22m
+[2m    "farmBuildingPlacements": {[22m
+[31m+     "ledger:building:shed:1": {[39m
+[31m+       "instanceId": "ledger:building:shed:1",[39m
+[31m+       "level": 1,[39m
+[31m+       "mapId": "map_blank_start",[39m
+[31m+       "orientation": "down",[39m
+[31m+       "paymentReceipt": {[39m
+[31m+         "gold": 10,[39m
+[31m+         "items": [[39m
+[31m+           {[39m
+[31m+             "count": 1,[39m
+[31m+             "itemId": "item_potion",[39m
+[31m+           },[39m
+[31m+         ],[39m
+[31m+       },[39m
+[31m+       "typeId": "shed",[39m
+[31m+       "x": 5,[39m
+[31m+       "y": 5,[39m
+[31m+     },[39m
+[2m      "shed_1": {[22m
+[2m        "instanceId": "shed_1",[22m
+[32m-       "level": 1,[39m
+[31m+       "level": 2,[39m
+[2m        "mapId": "map_blank_start",[22m
+[2m        "orientation": "down",[22m
+[31m+       "paymentReceipt": {[39m
+[31m+         "gold": 20,[39m
+[31m+         "items": [],[39m
+[31m+       },[39m
+[2m        "typeId": "shed",[22m
+[2m        "x": 1,[22m
+[2m        "y": 1,[22m
+[2m      },[22m
+[2m    },[22m
+[33m@@ -105,23 +127,23 @@[39m
+[2m    "flags": {},[22m
+[2m    "followerTrail": [],[22m
+[2m    "followers": [],[22m
+[2m    "friendship": {},[22m
+[2m    "gameTime": undefined,[22m
+[32m-   "gold": 100,[39m
+[31m+   "gold": 70,[39m
+[2m    "homeDecorationPlacements": {[22m
+[2m      "table_1": {[22m
+[2m        "instanceId": "table_1",[22m
+[2m        "mapId": "map_blank_start",[22m
+[32m-       "orientation": "down",[39m
+[31m+       "orientation": "left",[39m
+[2m        "typeId": "table",[22m
+[2m        "x": 8,[22m
+[2m        "y": 1,[22m
+[2m      },[22m
+[2m    },[22m
+[2m    "inventory": {[22m
+[32m-     "item_potion": 4,[39m
+[31m+     "item_potion": 3,[39m
+[2m    },[22m
+[2m    "itemUseCharges": {},[22m
+[2m    "lifeSkills": {},[22m
+[2m    "lighting": {[22m
+[2m      "ambient": 0,[22m
+
+ ❯ test/lifePlacementSceneUi.test.ts:102:21
+    100|     activate(detail, "life-ledger-space-decoration-move-table_1");
+    101|     activate(detail, "life-ledger-space-decoration-rotate-table_1");
+    102|     expect(session).toEqual(before);
+       |                     ^
+    103|     expect(mutations).toEqual(Array.from({ length: 6 }, () => ({
+    104|       ok: false,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  test/lifePlacementSceneUi.test.ts > life placement live UI > displays and applies the adjacent full-body target, not the player foot tile
+AssertionError: expected 'map_blank_start (5, 5)' to be 'map_blank_start (5, 6)' // Object.is equality
+
+Expected: [32m"map_blank_start (5, [7m6[27m)"[39m
+Received: [31m"map_blank_start (5, [7m5[27m)"[39m
+
+ ❯ test/lifePlacementSceneUi.test.ts:124:34
+    122|     const detail = createLifeLedgerDetail({ project, session, tab: "sp…
+    123|     const placeBuilding = detail.entries.find((entry) => entry.testId …
+    124|     expect(placeBuilding?.value).toBe(`${project.startMapId} (5, 6)`);
+       |                                  ^
+    125|     expect(placeBuilding?.value).not.toBe(`${project.startMapId} (5, 5…
+    126|     activate(detail, "life-ledger-space-building-place-shed");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+

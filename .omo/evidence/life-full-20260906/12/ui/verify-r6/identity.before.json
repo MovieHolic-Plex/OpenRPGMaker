@@ -1,0 +1,116 @@
+{
+  "when": "2026-09-07T14:16:24.382192+00:00",
+  "verify": "r6",
+  "head": "2c136343eae7e39700fe4b0752d96b6e9c89e70d",
+  "branch": "agent/life-full-p4",
+  "subject": "feat(life): deliver live placement safety and authored body persistence",
+  "committedSha": "2c136343eae7e39700fe4b0752d96b6e9c89e70d",
+  "headMatchesCommitted": true,
+  "porcelain": "",
+  "workingTreeClean": true,
+  "source": {
+    "src/player/lifePlacementScene.ts": {
+      "sha256": "275318021fbdfdfa0a8bcb131314fd7a75bf5a8fba1c37fdd35b47eac4739565",
+      "bytes": 6063
+    },
+    "src/player/lifeLedger.ts": {
+      "sha256": "9e7ffb6f6e3bdd24f22d723556513570be03a5cb0394640ea718d918e5cfebcb",
+      "bytes": 30221
+    },
+    "src/player/playerStatusMenuDetails.ts": {
+      "sha256": "26b30f5a06f8fc49ce9a815d7493300c4aae42d2d8b1693304cf9a2a3f96b67b",
+      "bytes": 36013
+    },
+    "src/player/playerStatusMenu.ts": {
+      "sha256": "5d33e4a4844ddf2a5f623928b2c730ca514cdca29922d7435feeff2a4a3d6370",
+      "bytes": 16481
+    },
+    "src/player/playerStatusMenuController.ts": {
+      "sha256": "7cf1dd019700f5ad8e19a170f6aa33fccfa0bfdce388eb00241c364bf81565e7",
+      "bytes": 31985
+    },
+    "src/player/playerStatusMenuTypes.ts": {
+      "sha256": "40efe968f6d087034ec01e134f87043327eac5108d0b20ddb4b1b6ddee54972c",
+      "bytes": 3556
+    },
+    "src/player/playerStatusMenuDetailTypes.ts": {
+      "sha256": "42ac4b0a3b6e06b1f6f5b594843b7c61cf85f141dd46c6711a9fc9b30a89614a",
+      "bytes": 5081
+    },
+    "src/player/PlayScene.ts": {
+      "sha256": "a3c2fe2b3baad143cdef4db6de14590137316669961a451ec65407b0c156225d",
+      "bytes": 27542
+    },
+    "test/lifePlacementSceneUi.test.ts": {
+      "sha256": "78403533ace4a55fa78c8b1e77e8466c87a18f1db187c5c38e0968a4821f6b56",
+      "bytes": 35644
+    },
+    "test/p2SpatialPlayIntegration.test.ts": {
+      "sha256": "b7329262d031932ab515ec5647026e0a956c8275a145051e40f8ccc8403a9e51",
+      "bytes": 8496
+    },
+    "test/p2SpatialRuntimeUi.test.ts": {
+      "sha256": "927d55ec45b0a72e8cd0240270701f9983f76734f1ace7b1d145cd822663be2f",
+      "bytes": 2873
+    },
+    "test/lifePlacementRenderedBodyReplay.test.ts": {
+      "sha256": "f7ffd8d8a89a2fb10ef67ee13a459a8bda592e63e7035a50b63a75d27b06cc97",
+      "bytes": 7659
+    },
+    "src/project/databaseRecordModel.ts": {
+      "sha256": "c27eb4c534e39a6b0c68c2d3650aadb905c8f42e0d053d10f79c8092aa6cbdfd",
+      "bytes": 46246
+    },
+    "test/playerBodyProjectPersistence.test.ts": {
+      "sha256": "0dd6e5c03614aa124a4d953c8f80e6189fbdaebe0c31bf0b3335619861372ef1",
+      "bytes": 6375
+    },
+    "openwiki/INDEX.md": {
+      "sha256": "3671e8357729819f30c557ec70a345a1e26593bcfec1db25cc400f30f120ca45",
+      "bytes": 38587
+    },
+    "openwiki/runtime-project-schema.md": {
+      "sha256": "0d88d9040930ec3a1d7a88105bbd56e193d660da0b10703520d7986793c3753d",
+      "bytes": 76618
+    },
+    "openwiki/runtime-sessions.md": {
+      "sha256": "8c3d2d7ae0eb27d1666ace7365b6c66b1299cb132ec18bd294d6d6237d9db975",
+      "bytes": 83643
+    }
+  },
+  "fixtures": {
+    "fixtures-r4/arena.reloaded.json": {
+      "sha256": "d8a44e6019cb015ca557bdedb551efd006975f1ba754bc2a3cd611b301b234f8",
+      "bytes": 2292505
+    },
+    "fixtures-r4/lastExit.reloaded.json": {
+      "sha256": "ca7bb0339b1472d602db720620e927bc5b81e93cfafa18a9f1ed20df07e24813",
+      "bytes": 2292738
+    },
+    "fixtures-r5/rug.reloaded.json": {
+      "sha256": "265f600a710025ee451361b70746b50ca2bf9165e6815d4ce0aa582e7eca520b",
+      "bytes": 2292631
+    },
+    "verify-r6/native/fixture-general.json": {
+      "sha256": "e48e935a33b8f6ed42e987ea7231ca508d1ae05abfc4862e11364e0357c54ff2",
+      "bytes": 2293303
+    }
+  },
+  "adapters": {
+    "native-qa-general.mjs": {
+      "sha256": "c4c623affb63d69437ea320977cf5d0e3335ca4752b2902a24171af00f6d788b",
+      "bytes": 45187
+    },
+    "native-qa-arena-lastexit.mjs": {
+      "sha256": "ac09972a1030e33c60c7af0cbce1849678a3ab9ad730800124266397e565d805",
+      "bytes": 42356
+    },
+    "native-qa-rug.mjs": {
+      "sha256": "5ef0e08728b281fab931a8f4e968ca639638319dbd899f34e0a859eb8858e099",
+      "bytes": 56138
+    }
+  },
+  "taskId": "st_01a07c36",
+  "scratch": "/dev/shm/st_01a07c36",
+  "lock": "/tmp/rpg-zzu-life-full-qa-01a0727b.lock"
+}

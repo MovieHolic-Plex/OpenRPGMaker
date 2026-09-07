@@ -1,0 +1,10 @@
+{
+  "when": "2026-09-07T14:33:44.099838+00:00",
+  "scenario": "ui",
+  "exit": 0,
+  "elapsedSec": 17.973,
+  "stdoutBytes": 642,
+  "stderrBytes": 0,
+  "scratchExists": true,
+  "archived": []
+}

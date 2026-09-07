@@ -1,0 +1,14 @@
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p4
+
+ ❯ test/lifePlacementSceneUi.test.ts (2 tests | 2 failed) 287ms
+   × life placement live UI > refuses all six live mutations without a scene reader and leaves costs/state unchanged 217ms
+     → expected { switches: { …(20) }, …(68) } to deeply equal { switches: { …(20) }, …(68) }
+   × life placement live UI > displays and applies the adjacent full-body target, not the player foot tile 68ms
+     → expected 'map_blank_start (5, 5)' to be 'map_blank_start (5, 6)' // Object.is equality
+
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+   Start at  15:40:50
+   Duration  6.71s (transform 3.93s, setup 0ms, collect 5.37s, tests 287ms, environment 557ms, prepare 108ms)
+

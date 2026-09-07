@@ -1,0 +1,30 @@
+{
+  "when": "2026-09-07T14:17:01.248806+00:00",
+  "scenario": "rug",
+  "exit": 0,
+  "elapsedSec": 11.831,
+  "stdoutBytes": 25418,
+  "stderrBytes": 0,
+  "scratchExists": true,
+  "archived": [
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r6/native/rug/native-evidence.json",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r6/native/rug/raw-slot-after-load-slot2.parsed.json",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r6/native/rug/raw-slot-standing-on-rug.parsed.json",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r6/native/rug/raw-slot-after-load-slot2.json",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r6/native/rug/raw-slot-standing-on-rug.json",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r6/native/rug/rug-after-divergent-move-1024.png",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r6/native/rug/rug-after-save-slot2-1440.png",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r6/native/rug/rug-before-place-1024.png",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r6/native/rug/rug-after-load-1440.png",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r6/native/rug/rug-standing-on-1440.png",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r6/native/rug/rug-after-save-slot1-1440.png",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r6/native/rug/rug-after-place-1024.png",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r6/native/rug/rug-after-load-1024.png",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r6/native/rug/rug-after-place-1440.png",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r6/native/rug/rug-before-place-1440.png",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r6/native/rug/rug-after-divergent-move-1440.png",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r6/native/rug/rug-after-save-slot2-1024.png",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r6/native/rug/rug-standing-on-1024.png",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r6/native/rug/rug-after-save-slot1-1024.png"
+  ]
+}

@@ -1,0 +1,2279 @@
+{
+  "steps": [
+    {
+      "step": "server",
+      "at": "2026-09-07T13:50:05.345Z",
+      "url": "http://127.0.0.1:39365",
+      "port": 39365,
+      "scratch": "/dev/shm/st_01a07c17/native-rug"
+    },
+    {
+      "step": "rug-fixture",
+      "at": "2026-09-07T13:50:05.395Z",
+      "sha256": "265f600a710025ee451361b70746b50ca2bf9165e6815d4ce0aa582e7eca520b",
+      "bytes": 2077140,
+      "path": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/fixtures-r5/rug.reloaded.json"
+    },
+    {
+      "step": "goto",
+      "at": "2026-09-07T13:50:05.537Z",
+      "url": "http://127.0.0.1:39365/player.html",
+      "profileName": "profile-rug",
+      "saveNamespace": "task12-ui-verify-r5-rug"
+    },
+    {
+      "step": "rug-runtime",
+      "at": "2026-09-07T13:50:10.434Z",
+      "player": {
+        "x": 8,
+        "y": 8
+      },
+      "gold": 500,
+      "inventory": {
+        "item_hoe": 1,
+        "item_potion": 8
+      },
+      "buildings": {
+        "r5-retained-shed": {
+          "instanceId": "r5-retained-shed",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 12,
+          "y": 6,
+          "orientation": "down",
+          "level": 1
+        }
+      }
+    },
+    {
+      "step": "not-moving",
+      "at": "2026-09-07T13:50:10.458Z",
+      "label": "rug-boot",
+      "sprite": {
+        "textureKey": "tex_easyrpg_charset_actor1",
+        "frame": 25,
+        "resourceId": "easyrpg-charset-actor1",
+        "kind": "charset",
+        "moving": false,
+        "x": 136,
+        "y": 144
+      },
+      "player": {
+        "x": 8,
+        "y": 8
+      },
+      "running": false
+    },
+    {
+      "step": "open-spaces-start",
+      "at": "2026-09-07T13:50:10.601Z",
+      "debug": "{\"selectedCommand\":\"items\",\"mode\":\"main\"}",
+      "selected": [
+        "status-menu-command-items",
+        "status-menu-item-item_potion"
+      ],
+      "tabs": [],
+      "group": [],
+      "spaces": []
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T13:50:11.062Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-shipping",
+      "to": "life-ledger-tab-bundles",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T13:50:11.081Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-bundles",
+      "to": "life-ledger-tab-skills",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T13:50:11.102Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-skills",
+      "to": "life-ledger-tab-makers",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T13:50:11.133Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-makers",
+      "to": "life-ledger-tab-animals",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T13:50:11.166Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-animals",
+      "to": "life-ledger-tab-spaces",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "not-moving",
+      "at": "2026-09-07T13:50:11.220Z",
+      "label": "before-place",
+      "sprite": {
+        "textureKey": "tex_easyrpg_charset_actor1",
+        "frame": 25,
+        "resourceId": "easyrpg-charset-actor1",
+        "kind": "charset",
+        "moving": false,
+        "x": 136,
+        "y": 144
+      },
+      "player": {
+        "x": 8,
+        "y": 8
+      },
+      "running": false
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T13:50:11.248Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-building-place-shed",
+      "to": "life-ledger-space-building-move-r5-retained-shed",
+      "want": "life-ledger-space-decoration-place-rug"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T13:50:11.280Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-building-move-r5-retained-shed",
+      "to": "life-ledger-space-building-remove-r5-retained-shed",
+      "want": "life-ledger-space-decoration-place-rug"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T13:50:11.303Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-building-remove-r5-retained-shed",
+      "to": "life-ledger-space-decoration-place-rug",
+      "want": "life-ledger-space-decoration-place-rug"
+    },
+    {
+      "step": "place-label",
+      "at": "2026-09-07T13:50:11.369Z",
+      "rugLabel": "Rug 배치map_blank_start (7, 9)",
+      "selected": "life-ledger-space-decoration-place-rug",
+      "spaces": [
+        {
+          "testid": "life-ledger-space-building-place-shed",
+          "text": "Shed 배치map_blank_start (7, 9)",
+          "aria": "Shed 배치"
+        },
+        {
+          "testid": "life-ledger-space-building-r5-retained-shed",
+          "text": "ShedLv.1 · 수용량 4빈 맵 (12, 6) · 아래",
+          "aria": null
+        },
+        {
+          "testid": "life-ledger-space-building-move-r5-retained-shed",
+          "text": "Shed 이동map_blank_start (7, 9)",
+          "aria": "Shed 이동"
+        },
+        {
+          "testid": "life-ledger-space-building-remove-r5-retained-shed",
+          "text": "Shed 철거배치에서 제거",
+          "aria": "Shed 철거"
+        },
+        {
+          "testid": "life-ledger-space-decoration-place-rug",
+          "text": "Rug 배치map_blank_start (7, 9)",
+          "aria": "Rug 배치"
+        }
+      ]
+    },
+    {
+      "step": "place",
+      "at": "2026-09-07T13:50:11.711Z",
+      "placedMsg": {
+        "text": "Rug을(를) 배치했습니다"
+      },
+      "gold": 500,
+      "inventory": {
+        "item_hoe": 1,
+        "item_potion": 7
+      },
+      "player": {
+        "x": 8,
+        "y": 8
+      },
+      "instanceId": "ledger:decoration:rug:1",
+      "ownerAfterPlace": {
+        "text": "Rug아래 · 2×1빈 맵 (7, 9) ",
+        "x": 7,
+        "y": 9,
+        "orientation": "down"
+      },
+      "buildings": {
+        "r5-retained-shed": {
+          "instanceId": "r5-retained-shed",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 12,
+          "y": 6,
+          "orientation": "down",
+          "level": 1
+        }
+      }
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T13:50:12.015Z",
+      "kind": "mode",
+      "from": "{\"selectedCommand\":\"life-ledger\",\"mode\":\"function\"}",
+      "to": "{\"selectedCommand\":\"record-menu\",\"mode\":\"function\"}"
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T13:50:12.050Z",
+      "kind": "mode",
+      "from": "{\"selectedCommand\":\"record-menu\",\"mode\":\"function\"}",
+      "to": "{\"selectedCommand\":\"record-menu\",\"mode\":\"main\"}"
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T13:50:12.206Z",
+      "kind": "absent"
+    },
+    {
+      "step": "not-moving",
+      "at": "2026-09-07T13:50:12.218Z",
+      "label": "before-down-onto",
+      "sprite": {
+        "textureKey": "tex_easyrpg_charset_actor1",
+        "frame": 25,
+        "resourceId": "easyrpg-charset-actor1",
+        "kind": "charset",
+        "moving": false,
+        "x": 136,
+        "y": 144
+      },
+      "player": {
+        "x": 8,
+        "y": 8
+      },
+      "running": false
+    },
+    {
+      "step": "down-onto",
+      "at": "2026-09-07T13:50:12.400Z",
+      "from": {
+        "x": 8,
+        "y": 8
+      },
+      "to": {
+        "x": 8,
+        "y": 9
+      },
+      "gold": 500,
+      "inventory": {
+        "item_hoe": 1,
+        "item_potion": 7
+      },
+      "buildings": {
+        "r5-retained-shed": {
+          "instanceId": "r5-retained-shed",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 12,
+          "y": 6,
+          "orientation": "down",
+          "level": 1
+        }
+      }
+    },
+    {
+      "step": "not-moving",
+      "at": "2026-09-07T13:50:12.412Z",
+      "label": "after-down-onto",
+      "sprite": {
+        "textureKey": "tex_easyrpg_charset_actor1",
+        "frame": 25,
+        "resourceId": "easyrpg-charset-actor1",
+        "kind": "charset",
+        "moving": false,
+        "x": 136,
+        "y": 160
+      },
+      "player": {
+        "x": 8,
+        "y": 9
+      },
+      "running": false
+    },
+    {
+      "step": "passage-down-onto",
+      "at": "2026-09-07T13:50:12.412Z",
+      "foot": {
+        "x": 8,
+        "y": 9
+      },
+      "passage": {
+        "left": 7,
+        "right": 9,
+        "top": 9,
+        "bottom": 9,
+        "bodyTop": 7
+      },
+      "intersection": [
+        {
+          "x": 7,
+          "y": 9
+        },
+        {
+          "x": 8,
+          "y": 9
+        }
+      ],
+      "rugCells": [
+        {
+          "x": 7,
+          "y": 9
+        },
+        {
+          "x": 8,
+          "y": 9
+        }
+      ]
+    },
+    {
+      "step": "system-group",
+      "at": "2026-09-07T13:50:12.736Z",
+      "debug": "{\"selectedCommand\":\"system-menu\",\"mode\":\"function\"}",
+      "selected": [
+        "status-menu-command-system-menu",
+        "status-menu-group-command-save"
+      ],
+      "tabs": [],
+      "group": [
+        "status-menu-group-command-save",
+        "status-menu-group-command-load",
+        "status-menu-group-command-wait",
+        "status-menu-group-command-to-title"
+      ],
+      "spaces": []
+    },
+    {
+      "step": "save-menu-open",
+      "at": "2026-09-07T13:50:12.839Z",
+      "selected": "save-slot-1",
+      "debug": "{\"selectedCommand\":\"save\",\"mode\":\"function\"}"
+    },
+    {
+      "step": "save-slot",
+      "at": "2026-09-07T13:50:12.899Z",
+      "ns": "task12-ui-verify-r5-rug",
+      "slot": 1,
+      "filename": "raw-slot-standing-on-rug.json",
+      "saveMsg": {
+        "text": "1번 저장 칸에 저장했습니다"
+      },
+      "key": "task12-ui-verify-r5-rug:save-slot:v5:1",
+      "bytes": 3739,
+      "owners": {
+        "buildings": {
+          "r5-retained-shed": {
+            "instanceId": "r5-retained-shed",
+            "typeId": "shed",
+            "mapId": "map_blank_start",
+            "x": 12,
+            "y": 6,
+            "orientation": "down",
+            "level": 1
+          }
+        },
+        "decorations": {
+          "ledger:decoration:rug:1": {
+            "instanceId": "ledger:decoration:rug:1",
+            "typeId": "rug",
+            "mapId": "map_blank_start",
+            "x": 7,
+            "y": 9,
+            "orientation": "down",
+            "recoveryItem": {
+              "itemId": "item_potion",
+              "count": 1
+            }
+          }
+        },
+        "x": 8,
+        "y": 9,
+        "gold": 500,
+        "inventory": {
+          "item_hoe": 1,
+          "item_potion": 7
+        },
+        "recoveryItems": {
+          "ledger:decoration:rug:1": {
+            "itemId": "item_potion",
+            "count": 1
+          }
+        }
+      }
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T13:50:13.167Z",
+      "kind": "mode",
+      "from": "{\"selectedCommand\":\"save\",\"mode\":\"function\"}",
+      "to": "{\"selectedCommand\":\"system-menu\",\"mode\":\"function\"}"
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T13:50:13.232Z",
+      "kind": "mode",
+      "from": "{\"selectedCommand\":\"system-menu\",\"mode\":\"function\"}",
+      "to": "{\"selectedCommand\":\"system-menu\",\"mode\":\"main\"}"
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T13:50:13.405Z",
+      "kind": "absent"
+    },
+    {
+      "step": "not-moving",
+      "at": "2026-09-07T13:50:13.425Z",
+      "label": "before-down-off",
+      "sprite": {
+        "textureKey": "tex_easyrpg_charset_actor1",
+        "frame": 25,
+        "resourceId": "easyrpg-charset-actor1",
+        "kind": "charset",
+        "moving": false,
+        "x": 136,
+        "y": 160
+      },
+      "player": {
+        "x": 8,
+        "y": 9
+      },
+      "running": false
+    },
+    {
+      "step": "down-off",
+      "at": "2026-09-07T13:50:13.601Z",
+      "from": {
+        "x": 8,
+        "y": 9
+      },
+      "to": {
+        "x": 8,
+        "y": 10
+      },
+      "gold": 500,
+      "inventory": {
+        "item_hoe": 1,
+        "item_potion": 7
+      },
+      "buildings": {
+        "r5-retained-shed": {
+          "instanceId": "r5-retained-shed",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 12,
+          "y": 6,
+          "orientation": "down",
+          "level": 1
+        }
+      }
+    },
+    {
+      "step": "not-moving",
+      "at": "2026-09-07T13:50:13.620Z",
+      "label": "after-down-off",
+      "sprite": {
+        "textureKey": "tex_easyrpg_charset_actor1",
+        "frame": 25,
+        "resourceId": "easyrpg-charset-actor1",
+        "kind": "charset",
+        "moving": false,
+        "x": 136,
+        "y": 176
+      },
+      "player": {
+        "x": 8,
+        "y": 10
+      },
+      "running": false
+    },
+    {
+      "step": "open-spaces-start",
+      "at": "2026-09-07T13:50:13.703Z",
+      "debug": "{\"selectedCommand\":\"system-menu\",\"mode\":\"main\"}",
+      "selected": [
+        "status-menu-command-system-menu",
+        "status-menu-group-command-save"
+      ],
+      "tabs": [],
+      "group": [
+        "status-menu-group-command-save",
+        "status-menu-group-command-load",
+        "status-menu-group-command-wait",
+        "status-menu-group-command-to-title"
+      ],
+      "spaces": []
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T13:50:14.048Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-decoration-place-rug",
+      "to": "life-ledger-space-decoration-move-ledger:decoration:rug:1",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T13:50:14.081Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-decoration-move-ledger:decoration:rug:1",
+      "to": "life-ledger-space-decoration-remove-ledger:decoration:rug:1",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T13:50:14.119Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-decoration-remove-ledger:decoration:rug:1",
+      "to": "life-ledger-space-decoration-rotate-ledger:decoration:rug:1",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T13:50:14.154Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-decoration-rotate-ledger:decoration:rug:1",
+      "to": "life-ledger-tab-shipping",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T13:50:14.200Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-shipping",
+      "to": "life-ledger-tab-bundles",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T13:50:14.248Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-bundles",
+      "to": "life-ledger-tab-skills",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T13:50:14.285Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-skills",
+      "to": "life-ledger-tab-makers",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T13:50:14.338Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-makers",
+      "to": "life-ledger-tab-animals",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T13:50:14.419Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-animals",
+      "to": "life-ledger-tab-spaces",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "not-moving",
+      "at": "2026-09-07T13:50:14.493Z",
+      "label": "before-move",
+      "sprite": {
+        "textureKey": "tex_easyrpg_charset_actor1",
+        "frame": 25,
+        "resourceId": "easyrpg-charset-actor1",
+        "kind": "charset",
+        "moving": false,
+        "x": 136,
+        "y": 176
+      },
+      "player": {
+        "x": 8,
+        "y": 10
+      },
+      "running": false
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T13:50:14.533Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-building-place-shed",
+      "to": "life-ledger-space-building-move-r5-retained-shed",
+      "want": "life-ledger-space-decoration-move-ledger:decoration:rug:1"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T13:50:14.563Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-building-move-r5-retained-shed",
+      "to": "life-ledger-space-building-remove-r5-retained-shed",
+      "want": "life-ledger-space-decoration-move-ledger:decoration:rug:1"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T13:50:14.602Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-building-remove-r5-retained-shed",
+      "to": "life-ledger-space-decoration-place-rug",
+      "want": "life-ledger-space-decoration-move-ledger:decoration:rug:1"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T13:50:14.687Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-decoration-place-rug",
+      "to": "life-ledger-space-decoration-move-ledger:decoration:rug:1",
+      "want": "life-ledger-space-decoration-move-ledger:decoration:rug:1"
+    },
+    {
+      "step": "move-label",
+      "at": "2026-09-07T13:50:14.738Z",
+      "moveLabel": "Rug 이동map_blank_start (7, 11)",
+      "selected": "life-ledger-space-decoration-move-ledger:decoration:rug:1"
+    },
+    {
+      "step": "move",
+      "at": "2026-09-07T13:50:14.850Z",
+      "moveMsg": {
+        "text": "Rug을(를) 이동했습니다"
+      },
+      "gold": 500,
+      "inventory": {
+        "item_hoe": 1,
+        "item_potion": 7
+      },
+      "player": {
+        "x": 8,
+        "y": 10
+      },
+      "ownerAfterMove": {
+        "text": "Rug아래 · 2×1빈 맵 (7, 11) ",
+        "x": 7,
+        "y": 11,
+        "orientation": "down"
+      },
+      "buildings": {
+        "r5-retained-shed": {
+          "instanceId": "r5-retained-shed",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 12,
+          "y": 6,
+          "orientation": "down",
+          "level": 1
+        }
+      }
+    },
+    {
+      "step": "divergence-before-load",
+      "at": "2026-09-07T13:50:15.184Z",
+      "liveDivergent": {
+        "foot": {
+          "x": 8,
+          "y": 10
+        },
+        "rug": {
+          "x": 7,
+          "y": 11,
+          "orientation": "down"
+        },
+        "gold": 500,
+        "potions": 7
+      },
+      "slot1Summary": {
+        "foot": {
+          "x": 8,
+          "y": 9
+        },
+        "rug": {
+          "x": 7,
+          "y": 9,
+          "orientation": "down"
+        },
+        "gold": 500,
+        "potions": 7
+      }
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T13:50:15.287Z",
+      "kind": "mode",
+      "from": "{\"selectedCommand\":\"life-ledger\",\"mode\":\"function\"}",
+      "to": "{\"selectedCommand\":\"record-menu\",\"mode\":\"function\"}"
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T13:50:15.385Z",
+      "kind": "mode",
+      "from": "{\"selectedCommand\":\"record-menu\",\"mode\":\"function\"}",
+      "to": "{\"selectedCommand\":\"record-menu\",\"mode\":\"main\"}"
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T13:50:15.614Z",
+      "kind": "absent"
+    },
+    {
+      "step": "system-group",
+      "at": "2026-09-07T13:50:15.896Z",
+      "debug": "{\"selectedCommand\":\"system-menu\",\"mode\":\"function\"}",
+      "selected": [
+        "status-menu-command-system-menu",
+        "status-menu-group-command-save"
+      ],
+      "tabs": [],
+      "group": [
+        "status-menu-group-command-save",
+        "status-menu-group-command-load",
+        "status-menu-group-command-wait",
+        "status-menu-group-command-to-title"
+      ],
+      "spaces": []
+    },
+    {
+      "step": "load-menu-open",
+      "at": "2026-09-07T13:50:16.073Z",
+      "selected": "load-slot-1",
+      "debug": "{\"selectedCommand\":\"load\",\"mode\":\"function\"}"
+    },
+    {
+      "step": "load-restore-signal",
+      "at": "2026-09-07T13:50:16.211Z",
+      "from": {
+        "x": 8,
+        "y": 10
+      },
+      "to": {
+        "x": 8,
+        "y": 9
+      },
+      "gold": 500,
+      "inventory": {
+        "item_hoe": 1,
+        "item_potion": 7
+      },
+      "buildings": {
+        "r5-retained-shed": {
+          "instanceId": "r5-retained-shed",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 12,
+          "y": 6,
+          "orientation": "down",
+          "level": 1
+        }
+      }
+    },
+    {
+      "step": "load-slot",
+      "at": "2026-09-07T13:50:16.230Z",
+      "loadMsg": {
+        "text": ""
+      }
+    },
+    {
+      "step": "live-after-load",
+      "at": "2026-09-07T13:50:16.255Z",
+      "player": {
+        "x": 8,
+        "y": 9
+      },
+      "gold": 500,
+      "inventory": {
+        "item_hoe": 1,
+        "item_potion": 7
+      },
+      "buildings": {
+        "r5-retained-shed": {
+          "instanceId": "r5-retained-shed",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 12,
+          "y": 6,
+          "orientation": "down",
+          "level": 1
+        }
+      }
+    },
+    {
+      "step": "open-spaces-start",
+      "at": "2026-09-07T13:50:16.363Z",
+      "debug": "{\"selectedCommand\":\"system-menu\",\"mode\":\"main\"}",
+      "selected": [
+        "status-menu-command-system-menu",
+        "status-menu-group-command-load"
+      ],
+      "tabs": [],
+      "group": [
+        "status-menu-group-command-save",
+        "status-menu-group-command-load",
+        "status-menu-group-command-wait",
+        "status-menu-group-command-to-title"
+      ],
+      "spaces": []
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T13:50:16.699Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-decoration-move-ledger:decoration:rug:1",
+      "to": "life-ledger-space-decoration-remove-ledger:decoration:rug:1",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T13:50:16.795Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-decoration-remove-ledger:decoration:rug:1",
+      "to": "life-ledger-space-decoration-rotate-ledger:decoration:rug:1",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T13:50:16.921Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-space-decoration-rotate-ledger:decoration:rug:1",
+      "to": "life-ledger-tab-shipping",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T13:50:16.984Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-shipping",
+      "to": "life-ledger-tab-bundles",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T13:50:17.017Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-bundles",
+      "to": "life-ledger-tab-skills",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T13:50:17.083Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-skills",
+      "to": "life-ledger-tab-makers",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T13:50:17.113Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-makers",
+      "to": "life-ledger-tab-animals",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T13:50:17.166Z",
+      "key": "ArrowDown",
+      "from": "life-ledger-tab-animals",
+      "to": "life-ledger-tab-spaces",
+      "want": "life-ledger-tab-spaces"
+    },
+    {
+      "step": "live-rug-after-load",
+      "at": "2026-09-07T13:50:17.215Z",
+      "ownerAfterLoad": {
+        "text": "Rug아래 · 2×1빈 맵 (7, 9) ",
+        "x": 7,
+        "y": 9,
+        "orientation": "down"
+      },
+      "spacesAfterLoad": [
+        {
+          "testid": "life-ledger-space-building-place-shed",
+          "text": "Shed 배치map_blank_start (7, 10)",
+          "aria": "Shed 배치"
+        },
+        {
+          "testid": "life-ledger-space-building-r5-retained-shed",
+          "text": "ShedLv.1 · 수용량 4빈 맵 (12, 6) · 아래",
+          "aria": null
+        },
+        {
+          "testid": "life-ledger-space-building-move-r5-retained-shed",
+          "text": "Shed 이동map_blank_start (7, 10)",
+          "aria": "Shed 이동"
+        },
+        {
+          "testid": "life-ledger-space-building-remove-r5-retained-shed",
+          "text": "Shed 철거배치에서 제거",
+          "aria": "Shed 철거"
+        },
+        {
+          "testid": "life-ledger-space-decoration-place-rug",
+          "text": "Rug 배치map_blank_start (7, 10)",
+          "aria": "Rug 배치"
+        },
+        {
+          "testid": "life-ledger-space-decoration-ledger:decoration:rug:1",
+          "text": "Rug아래 · 2×1빈 맵 (7, 9)",
+          "aria": null
+        },
+        {
+          "testid": "life-ledger-space-decoration-move-ledger:decoration:rug:1",
+          "text": "Rug 이동map_blank_start (7, 10)",
+          "aria": "Rug 이동"
+        },
+        {
+          "testid": "life-ledger-space-decoration-remove-ledger:decoration:rug:1",
+          "text": "Rug 치우기인벤토리로 회수",
+          "aria": "Rug 치우기"
+        },
+        {
+          "testid": "life-ledger-space-decoration-rotate-ledger:decoration:rug:1",
+          "text": "Rug 회전왼쪽으로 돌리기",
+          "aria": "Rug 회전"
+        }
+      ]
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T13:50:17.520Z",
+      "kind": "mode",
+      "from": "{\"selectedCommand\":\"life-ledger\",\"mode\":\"function\"}",
+      "to": "{\"selectedCommand\":\"record-menu\",\"mode\":\"function\"}"
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T13:50:17.550Z",
+      "kind": "mode",
+      "from": "{\"selectedCommand\":\"record-menu\",\"mode\":\"function\"}",
+      "to": "{\"selectedCommand\":\"record-menu\",\"mode\":\"main\"}"
+    },
+    {
+      "step": "menu-close-step",
+      "at": "2026-09-07T13:50:17.721Z",
+      "kind": "absent"
+    },
+    {
+      "step": "system-group",
+      "at": "2026-09-07T13:50:17.869Z",
+      "debug": "{\"selectedCommand\":\"system-menu\",\"mode\":\"function\"}",
+      "selected": [
+        "status-menu-command-system-menu",
+        "status-menu-group-command-load"
+      ],
+      "tabs": [],
+      "group": [
+        "status-menu-group-command-save",
+        "status-menu-group-command-load",
+        "status-menu-group-command-wait",
+        "status-menu-group-command-to-title"
+      ],
+      "spaces": []
+    },
+    {
+      "step": "save-menu-open",
+      "at": "2026-09-07T13:50:17.936Z",
+      "selected": "save-slot-1",
+      "debug": "{\"selectedCommand\":\"save\",\"mode\":\"function\"}"
+    },
+    {
+      "step": "menu-step",
+      "at": "2026-09-07T13:50:17.966Z",
+      "key": "ArrowDown",
+      "from": "save-slot-1",
+      "to": "save-slot-2",
+      "want": "save-slot-2"
+    },
+    {
+      "step": "save-slot",
+      "at": "2026-09-07T13:50:18.017Z",
+      "ns": "task12-ui-verify-r5-rug",
+      "slot": 2,
+      "filename": "raw-slot-after-load-slot2.json",
+      "saveMsg": {
+        "text": "2번 저장 칸에 저장했습니다"
+      },
+      "key": "task12-ui-verify-r5-rug:save-slot:v5:2",
+      "bytes": 3797,
+      "owners": {
+        "buildings": {
+          "r5-retained-shed": {
+            "instanceId": "r5-retained-shed",
+            "typeId": "shed",
+            "mapId": "map_blank_start",
+            "x": 12,
+            "y": 6,
+            "orientation": "down",
+            "level": 1
+          }
+        },
+        "decorations": {
+          "ledger:decoration:rug:1": {
+            "instanceId": "ledger:decoration:rug:1",
+            "typeId": "rug",
+            "mapId": "map_blank_start",
+            "x": 7,
+            "y": 9,
+            "orientation": "down",
+            "recoveryItem": {
+              "itemId": "item_potion",
+              "count": 1
+            }
+          }
+        },
+        "x": 8,
+        "y": 9,
+        "gold": 500,
+        "inventory": {
+          "item_hoe": 1,
+          "item_potion": 7
+        },
+        "recoveryItems": {
+          "ledger:decoration:rug:1": {
+            "itemId": "item_potion",
+            "count": 1
+          }
+        }
+      }
+    },
+    {
+      "step": "slot1-slot2-compare",
+      "at": "2026-09-07T13:50:18.018Z",
+      "foot": {
+        "slot1": {
+          "x": 8,
+          "y": 9
+        },
+        "slot2": {
+          "x": 8,
+          "y": 9
+        },
+        "live": {
+          "x": 8,
+          "y": 9
+        }
+      },
+      "rug": {
+        "slot1": {
+          "x": 7,
+          "y": 9,
+          "orientation": "down",
+          "recoveryItem": {
+            "itemId": "item_potion",
+            "count": 1
+          }
+        },
+        "slot2": {
+          "x": 7,
+          "y": 9,
+          "orientation": "down",
+          "recoveryItem": {
+            "itemId": "item_potion",
+            "count": 1
+          }
+        },
+        "live": {
+          "text": "Rug아래 · 2×1빈 맵 (7, 9) ",
+          "x": 7,
+          "y": 9,
+          "orientation": "down"
+        }
+      },
+      "shed": {
+        "slot1": {
+          "instanceId": "r5-retained-shed",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 12,
+          "y": 6,
+          "orientation": "down",
+          "level": 1
+        },
+        "slot2": {
+          "instanceId": "r5-retained-shed",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 12,
+          "y": 6,
+          "orientation": "down",
+          "level": 1
+        },
+        "live": {
+          "instanceId": "r5-retained-shed",
+          "typeId": "shed",
+          "mapId": "map_blank_start",
+          "x": 12,
+          "y": 6,
+          "orientation": "down",
+          "level": 1
+        }
+      },
+      "gold": {
+        "slot1": 500,
+        "slot2": 500,
+        "live": 500
+      },
+      "inventory": {
+        "slot1": {
+          "item_hoe": 1,
+          "item_potion": 7
+        },
+        "slot2": {
+          "item_hoe": 1,
+          "item_potion": 7
+        },
+        "live": {
+          "item_hoe": 1,
+          "item_potion": 7
+        }
+      }
+    },
+    {
+      "step": "slot-keys-present",
+      "at": "2026-09-07T13:50:18.030Z",
+      "s1": 3739,
+      "s2": 3797
+    },
+    {
+      "step": "rug-ok",
+      "at": "2026-09-07T13:50:18.370Z",
+      "instanceId": "ledger:decoration:rug:1",
+      "place": {
+        "text": "Rug아래 · 2×1빈 맵 (7, 9) ",
+        "x": 7,
+        "y": 9,
+        "orientation": "down"
+      },
+      "standingFoot": {
+        "x": 8,
+        "y": 9
+      },
+      "passage": {
+        "origin": {
+          "foot": {
+            "x": 8,
+            "y": 8
+          },
+          "passage": {
+            "left": 7,
+            "right": 9,
+            "top": 8,
+            "bottom": 8,
+            "bodyTop": 6
+          },
+          "intersection": [],
+          "rugCells": [
+            {
+              "x": 7,
+              "y": 9
+            },
+            {
+              "x": 8,
+              "y": 9
+            }
+          ]
+        },
+        "downOnto": {
+          "foot": {
+            "x": 8,
+            "y": 9
+          },
+          "passage": {
+            "left": 7,
+            "right": 9,
+            "top": 9,
+            "bottom": 9,
+            "bodyTop": 7
+          },
+          "intersection": [
+            {
+              "x": 7,
+              "y": 9
+            },
+            {
+              "x": 8,
+              "y": 9
+            }
+          ],
+          "rugCells": [
+            {
+              "x": 7,
+              "y": 9
+            },
+            {
+              "x": 8,
+              "y": 9
+            }
+          ]
+        },
+        "downOff": {
+          "foot": {
+            "x": 8,
+            "y": 10
+          },
+          "passage": {
+            "left": 7,
+            "right": 9,
+            "top": 10,
+            "bottom": 10,
+            "bodyTop": 8
+          },
+          "intersection": [],
+          "stillAt79": [
+            {
+              "x": 7,
+              "y": 9
+            },
+            {
+              "x": 8,
+              "y": 9
+            }
+          ]
+        }
+      },
+      "slot1": {
+        "buildings": {
+          "r5-retained-shed": {
+            "instanceId": "r5-retained-shed",
+            "typeId": "shed",
+            "mapId": "map_blank_start",
+            "x": 12,
+            "y": 6,
+            "orientation": "down",
+            "level": 1
+          }
+        },
+        "decorations": {
+          "ledger:decoration:rug:1": {
+            "instanceId": "ledger:decoration:rug:1",
+            "typeId": "rug",
+            "mapId": "map_blank_start",
+            "x": 7,
+            "y": 9,
+            "orientation": "down",
+            "recoveryItem": {
+              "itemId": "item_potion",
+              "count": 1
+            }
+          }
+        },
+        "x": 8,
+        "y": 9,
+        "gold": 500,
+        "inventory": {
+          "item_hoe": 1,
+          "item_potion": 7
+        },
+        "recoveryItems": {
+          "ledger:decoration:rug:1": {
+            "itemId": "item_potion",
+            "count": 1
+          }
+        }
+      },
+      "divergent": {
+        "foot": {
+          "x": 8,
+          "y": 10
+        },
+        "rug": {
+          "x": 7,
+          "y": 11,
+          "orientation": "down"
+        },
+        "gold": 500,
+        "potions": 7
+      },
+      "liveAfterLoad": {
+        "player": {
+          "x": 8,
+          "y": 9
+        },
+        "rug": {
+          "text": "Rug아래 · 2×1빈 맵 (7, 9) ",
+          "x": 7,
+          "y": 9,
+          "orientation": "down"
+        },
+        "gold": 500,
+        "inventory": {
+          "item_hoe": 1,
+          "item_potion": 7
+        },
+        "buildings": {
+          "r5-retained-shed": {
+            "instanceId": "r5-retained-shed",
+            "typeId": "shed",
+            "mapId": "map_blank_start",
+            "x": 12,
+            "y": 6,
+            "orientation": "down",
+            "level": 1
+          }
+        }
+      },
+      "slot2": {
+        "buildings": {
+          "r5-retained-shed": {
+            "instanceId": "r5-retained-shed",
+            "typeId": "shed",
+            "mapId": "map_blank_start",
+            "x": 12,
+            "y": 6,
+            "orientation": "down",
+            "level": 1
+          }
+        },
+        "decorations": {
+          "ledger:decoration:rug:1": {
+            "instanceId": "ledger:decoration:rug:1",
+            "typeId": "rug",
+            "mapId": "map_blank_start",
+            "x": 7,
+            "y": 9,
+            "orientation": "down",
+            "recoveryItem": {
+              "itemId": "item_potion",
+              "count": 1
+            }
+          }
+        },
+        "x": 8,
+        "y": 9,
+        "gold": 500,
+        "inventory": {
+          "item_hoe": 1,
+          "item_potion": 7
+        },
+        "recoveryItems": {
+          "ledger:decoration:rug:1": {
+            "itemId": "item_potion",
+            "count": 1
+          }
+        }
+      },
+      "compare": {
+        "foot": {
+          "slot1": {
+            "x": 8,
+            "y": 9
+          },
+          "slot2": {
+            "x": 8,
+            "y": 9
+          },
+          "live": {
+            "x": 8,
+            "y": 9
+          }
+        },
+        "rug": {
+          "slot1": {
+            "x": 7,
+            "y": 9,
+            "orientation": "down",
+            "recoveryItem": {
+              "itemId": "item_potion",
+              "count": 1
+            }
+          },
+          "slot2": {
+            "x": 7,
+            "y": 9,
+            "orientation": "down",
+            "recoveryItem": {
+              "itemId": "item_potion",
+              "count": 1
+            }
+          },
+          "live": {
+            "text": "Rug아래 · 2×1빈 맵 (7, 9) ",
+            "x": 7,
+            "y": 9,
+            "orientation": "down"
+          }
+        },
+        "shed": {
+          "slot1": {
+            "instanceId": "r5-retained-shed",
+            "typeId": "shed",
+            "mapId": "map_blank_start",
+            "x": 12,
+            "y": 6,
+            "orientation": "down",
+            "level": 1
+          },
+          "slot2": {
+            "instanceId": "r5-retained-shed",
+            "typeId": "shed",
+            "mapId": "map_blank_start",
+            "x": 12,
+            "y": 6,
+            "orientation": "down",
+            "level": 1
+          },
+          "live": {
+            "instanceId": "r5-retained-shed",
+            "typeId": "shed",
+            "mapId": "map_blank_start",
+            "x": 12,
+            "y": 6,
+            "orientation": "down",
+            "level": 1
+          }
+        },
+        "gold": {
+          "slot1": 500,
+          "slot2": 500,
+          "live": 500
+        },
+        "inventory": {
+          "slot1": {
+            "item_hoe": 1,
+            "item_potion": 7
+          },
+          "slot2": {
+            "item_hoe": 1,
+            "item_potion": 7
+          },
+          "live": {
+            "item_hoe": 1,
+            "item_potion": 7
+          }
+        }
+      }
+    },
+    {
+      "step": "ok",
+      "at": "2026-09-07T13:50:18.371Z",
+      "scratch": "/dev/shm/st_01a07c17/native-rug",
+      "rug": {
+        "instanceId": "ledger:decoration:rug:1",
+        "place": {
+          "text": "Rug아래 · 2×1빈 맵 (7, 9) ",
+          "x": 7,
+          "y": 9,
+          "orientation": "down"
+        },
+        "standingFoot": {
+          "x": 8,
+          "y": 9
+        },
+        "passage": {
+          "origin": {
+            "foot": {
+              "x": 8,
+              "y": 8
+            },
+            "passage": {
+              "left": 7,
+              "right": 9,
+              "top": 8,
+              "bottom": 8,
+              "bodyTop": 6
+            },
+            "intersection": [],
+            "rugCells": [
+              {
+                "x": 7,
+                "y": 9
+              },
+              {
+                "x": 8,
+                "y": 9
+              }
+            ]
+          },
+          "downOnto": {
+            "foot": {
+              "x": 8,
+              "y": 9
+            },
+            "passage": {
+              "left": 7,
+              "right": 9,
+              "top": 9,
+              "bottom": 9,
+              "bodyTop": 7
+            },
+            "intersection": [
+              {
+                "x": 7,
+                "y": 9
+              },
+              {
+                "x": 8,
+                "y": 9
+              }
+            ],
+            "rugCells": [
+              {
+                "x": 7,
+                "y": 9
+              },
+              {
+                "x": 8,
+                "y": 9
+              }
+            ]
+          },
+          "downOff": {
+            "foot": {
+              "x": 8,
+              "y": 10
+            },
+            "passage": {
+              "left": 7,
+              "right": 9,
+              "top": 10,
+              "bottom": 10,
+              "bodyTop": 8
+            },
+            "intersection": [],
+            "stillAt79": [
+              {
+                "x": 7,
+                "y": 9
+              },
+              {
+                "x": 8,
+                "y": 9
+              }
+            ]
+          }
+        },
+        "slot1": {
+          "buildings": {
+            "r5-retained-shed": {
+              "instanceId": "r5-retained-shed",
+              "typeId": "shed",
+              "mapId": "map_blank_start",
+              "x": 12,
+              "y": 6,
+              "orientation": "down",
+              "level": 1
+            }
+          },
+          "decorations": {
+            "ledger:decoration:rug:1": {
+              "instanceId": "ledger:decoration:rug:1",
+              "typeId": "rug",
+              "mapId": "map_blank_start",
+              "x": 7,
+              "y": 9,
+              "orientation": "down",
+              "recoveryItem": {
+                "itemId": "item_potion",
+                "count": 1
+              }
+            }
+          },
+          "x": 8,
+          "y": 9,
+          "gold": 500,
+          "inventory": {
+            "item_hoe": 1,
+            "item_potion": 7
+          },
+          "recoveryItems": {
+            "ledger:decoration:rug:1": {
+              "itemId": "item_potion",
+              "count": 1
+            }
+          }
+        },
+        "divergent": {
+          "foot": {
+            "x": 8,
+            "y": 10
+          },
+          "rug": {
+            "x": 7,
+            "y": 11,
+            "orientation": "down"
+          },
+          "gold": 500,
+          "potions": 7
+        },
+        "liveAfterLoad": {
+          "player": {
+            "x": 8,
+            "y": 9
+          },
+          "rug": {
+            "text": "Rug아래 · 2×1빈 맵 (7, 9) ",
+            "x": 7,
+            "y": 9,
+            "orientation": "down"
+          },
+          "gold": 500,
+          "inventory": {
+            "item_hoe": 1,
+            "item_potion": 7
+          },
+          "buildings": {
+            "r5-retained-shed": {
+              "instanceId": "r5-retained-shed",
+              "typeId": "shed",
+              "mapId": "map_blank_start",
+              "x": 12,
+              "y": 6,
+              "orientation": "down",
+              "level": 1
+            }
+          }
+        },
+        "slot2": {
+          "buildings": {
+            "r5-retained-shed": {
+              "instanceId": "r5-retained-shed",
+              "typeId": "shed",
+              "mapId": "map_blank_start",
+              "x": 12,
+              "y": 6,
+              "orientation": "down",
+              "level": 1
+            }
+          },
+          "decorations": {
+            "ledger:decoration:rug:1": {
+              "instanceId": "ledger:decoration:rug:1",
+              "typeId": "rug",
+              "mapId": "map_blank_start",
+              "x": 7,
+              "y": 9,
+              "orientation": "down",
+              "recoveryItem": {
+                "itemId": "item_potion",
+                "count": 1
+              }
+            }
+          },
+          "x": 8,
+          "y": 9,
+          "gold": 500,
+          "inventory": {
+            "item_hoe": 1,
+            "item_potion": 7
+          },
+          "recoveryItems": {
+            "ledger:decoration:rug:1": {
+              "itemId": "item_potion",
+              "count": 1
+            }
+          }
+        },
+        "compare": {
+          "foot": {
+            "slot1": {
+              "x": 8,
+              "y": 9
+            },
+            "slot2": {
+              "x": 8,
+              "y": 9
+            },
+            "live": {
+              "x": 8,
+              "y": 9
+            }
+          },
+          "rug": {
+            "slot1": {
+              "x": 7,
+              "y": 9,
+              "orientation": "down",
+              "recoveryItem": {
+                "itemId": "item_potion",
+                "count": 1
+              }
+            },
+            "slot2": {
+              "x": 7,
+              "y": 9,
+              "orientation": "down",
+              "recoveryItem": {
+                "itemId": "item_potion",
+                "count": 1
+              }
+            },
+            "live": {
+              "text": "Rug아래 · 2×1빈 맵 (7, 9) ",
+              "x": 7,
+              "y": 9,
+              "orientation": "down"
+            }
+          },
+          "shed": {
+            "slot1": {
+              "instanceId": "r5-retained-shed",
+              "typeId": "shed",
+              "mapId": "map_blank_start",
+              "x": 12,
+              "y": 6,
+              "orientation": "down",
+              "level": 1
+            },
+            "slot2": {
+              "instanceId": "r5-retained-shed",
+              "typeId": "shed",
+              "mapId": "map_blank_start",
+              "x": 12,
+              "y": 6,
+              "orientation": "down",
+              "level": 1
+            },
+            "live": {
+              "instanceId": "r5-retained-shed",
+              "typeId": "shed",
+              "mapId": "map_blank_start",
+              "x": 12,
+              "y": 6,
+              "orientation": "down",
+              "level": 1
+            }
+          },
+          "gold": {
+            "slot1": 500,
+            "slot2": 500,
+            "live": 500
+          },
+          "inventory": {
+            "slot1": {
+              "item_hoe": 1,
+              "item_potion": 7
+            },
+            "slot2": {
+              "item_hoe": 1,
+              "item_potion": 7
+            },
+            "live": {
+              "item_hoe": 1,
+              "item_potion": 7
+            }
+          }
+        }
+      }
+    }
+  ],
+  "screenshots": [
+    {
+      "name": "rug-before-place",
+      "width": 1024,
+      "file": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r5/native/rug-before-place-1024.png"
+    },
+    {
+      "name": "rug-before-place",
+      "width": 1440,
+      "file": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r5/native/rug-before-place-1440.png"
+    },
+    {
+      "name": "rug-after-place",
+      "width": 1024,
+      "file": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r5/native/rug-after-place-1024.png"
+    },
+    {
+      "name": "rug-after-place",
+      "width": 1440,
+      "file": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r5/native/rug-after-place-1440.png"
+    },
+    {
+      "name": "rug-standing-on",
+      "width": 1024,
+      "file": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r5/native/rug-standing-on-1024.png"
+    },
+    {
+      "name": "rug-standing-on",
+      "width": 1440,
+      "file": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r5/native/rug-standing-on-1440.png"
+    },
+    {
+      "name": "rug-after-save-slot1",
+      "width": 1024,
+      "file": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r5/native/rug-after-save-slot1-1024.png"
+    },
+    {
+      "name": "rug-after-save-slot1",
+      "width": 1440,
+      "file": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r5/native/rug-after-save-slot1-1440.png"
+    },
+    {
+      "name": "rug-after-divergent-move",
+      "width": 1024,
+      "file": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r5/native/rug-after-divergent-move-1024.png"
+    },
+    {
+      "name": "rug-after-divergent-move",
+      "width": 1440,
+      "file": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r5/native/rug-after-divergent-move-1440.png"
+    },
+    {
+      "name": "rug-after-load",
+      "width": 1024,
+      "file": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r5/native/rug-after-load-1024.png"
+    },
+    {
+      "name": "rug-after-load",
+      "width": 1440,
+      "file": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r5/native/rug-after-load-1440.png"
+    },
+    {
+      "name": "rug-after-save-slot2",
+      "width": 1024,
+      "file": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r5/native/rug-after-save-slot2-1024.png"
+    },
+    {
+      "name": "rug-after-save-slot2",
+      "width": 1440,
+      "file": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r5/native/rug-after-save-slot2-1440.png"
+    }
+  ],
+  "errors": [],
+  "pageErrors": [],
+  "requestFailures": [
+    {
+      "url": "http://127.0.0.1:39365/assets/cc0/audio/catalog/rtp-fld-003-amber-meadow-end-final_f5dafd12.mp3",
+      "failure": "net::ERR_ABORTED"
+    }
+  ],
+  "sessions": {
+    "divergence": {
+      "liveDivergent": {
+        "foot": {
+          "x": 8,
+          "y": 10
+        },
+        "rug": {
+          "x": 7,
+          "y": 11,
+          "orientation": "down"
+        },
+        "gold": 500,
+        "potions": 7
+      },
+      "slot1Summary": {
+        "foot": {
+          "x": 8,
+          "y": 9
+        },
+        "rug": {
+          "x": 7,
+          "y": 9,
+          "orientation": "down"
+        },
+        "gold": 500,
+        "potions": 7
+      }
+    },
+    "rug": {
+      "instanceId": "ledger:decoration:rug:1",
+      "place": {
+        "text": "Rug아래 · 2×1빈 맵 (7, 9) ",
+        "x": 7,
+        "y": 9,
+        "orientation": "down"
+      },
+      "standingFoot": {
+        "x": 8,
+        "y": 9
+      },
+      "passage": {
+        "origin": {
+          "foot": {
+            "x": 8,
+            "y": 8
+          },
+          "passage": {
+            "left": 7,
+            "right": 9,
+            "top": 8,
+            "bottom": 8,
+            "bodyTop": 6
+          },
+          "intersection": [],
+          "rugCells": [
+            {
+              "x": 7,
+              "y": 9
+            },
+            {
+              "x": 8,
+              "y": 9
+            }
+          ]
+        },
+        "downOnto": {
+          "foot": {
+            "x": 8,
+            "y": 9
+          },
+          "passage": {
+            "left": 7,
+            "right": 9,
+            "top": 9,
+            "bottom": 9,
+            "bodyTop": 7
+          },
+          "intersection": [
+            {
+              "x": 7,
+              "y": 9
+            },
+            {
+              "x": 8,
+              "y": 9
+            }
+          ],
+          "rugCells": [
+            {
+              "x": 7,
+              "y": 9
+            },
+            {
+              "x": 8,
+              "y": 9
+            }
+          ]
+        },
+        "downOff": {
+          "foot": {
+            "x": 8,
+            "y": 10
+          },
+          "passage": {
+            "left": 7,
+            "right": 9,
+            "top": 10,
+            "bottom": 10,
+            "bodyTop": 8
+          },
+          "intersection": [],
+          "stillAt79": [
+            {
+              "x": 7,
+              "y": 9
+            },
+            {
+              "x": 8,
+              "y": 9
+            }
+          ]
+        }
+      },
+      "slot1": {
+        "buildings": {
+          "r5-retained-shed": {
+            "instanceId": "r5-retained-shed",
+            "typeId": "shed",
+            "mapId": "map_blank_start",
+            "x": 12,
+            "y": 6,
+            "orientation": "down",
+            "level": 1
+          }
+        },
+        "decorations": {
+          "ledger:decoration:rug:1": {
+            "instanceId": "ledger:decoration:rug:1",
+            "typeId": "rug",
+            "mapId": "map_blank_start",
+            "x": 7,
+            "y": 9,
+            "orientation": "down",
+            "recoveryItem": {
+              "itemId": "item_potion",
+              "count": 1
+            }
+          }
+        },
+        "x": 8,
+        "y": 9,
+        "gold": 500,
+        "inventory": {
+          "item_hoe": 1,
+          "item_potion": 7
+        },
+        "recoveryItems": {
+          "ledger:decoration:rug:1": {
+            "itemId": "item_potion",
+            "count": 1
+          }
+        }
+      },
+      "divergent": {
+        "foot": {
+          "x": 8,
+          "y": 10
+        },
+        "rug": {
+          "x": 7,
+          "y": 11,
+          "orientation": "down"
+        },
+        "gold": 500,
+        "potions": 7
+      },
+      "liveAfterLoad": {
+        "player": {
+          "x": 8,
+          "y": 9
+        },
+        "rug": {
+          "text": "Rug아래 · 2×1빈 맵 (7, 9) ",
+          "x": 7,
+          "y": 9,
+          "orientation": "down"
+        },
+        "gold": 500,
+        "inventory": {
+          "item_hoe": 1,
+          "item_potion": 7
+        },
+        "buildings": {
+          "r5-retained-shed": {
+            "instanceId": "r5-retained-shed",
+            "typeId": "shed",
+            "mapId": "map_blank_start",
+            "x": 12,
+            "y": 6,
+            "orientation": "down",
+            "level": 1
+          }
+        }
+      },
+      "slot2": {
+        "buildings": {
+          "r5-retained-shed": {
+            "instanceId": "r5-retained-shed",
+            "typeId": "shed",
+            "mapId": "map_blank_start",
+            "x": 12,
+            "y": 6,
+            "orientation": "down",
+            "level": 1
+          }
+        },
+        "decorations": {
+          "ledger:decoration:rug:1": {
+            "instanceId": "ledger:decoration:rug:1",
+            "typeId": "rug",
+            "mapId": "map_blank_start",
+            "x": 7,
+            "y": 9,
+            "orientation": "down",
+            "recoveryItem": {
+              "itemId": "item_potion",
+              "count": 1
+            }
+          }
+        },
+        "x": 8,
+        "y": 9,
+        "gold": 500,
+        "inventory": {
+          "item_hoe": 1,
+          "item_potion": 7
+        },
+        "recoveryItems": {
+          "ledger:decoration:rug:1": {
+            "itemId": "item_potion",
+            "count": 1
+          }
+        }
+      },
+      "compare": {
+        "foot": {
+          "slot1": {
+            "x": 8,
+            "y": 9
+          },
+          "slot2": {
+            "x": 8,
+            "y": 9
+          },
+          "live": {
+            "x": 8,
+            "y": 9
+          }
+        },
+        "rug": {
+          "slot1": {
+            "x": 7,
+            "y": 9,
+            "orientation": "down",
+            "recoveryItem": {
+              "itemId": "item_potion",
+              "count": 1
+            }
+          },
+          "slot2": {
+            "x": 7,
+            "y": 9,
+            "orientation": "down",
+            "recoveryItem": {
+              "itemId": "item_potion",
+              "count": 1
+            }
+          },
+          "live": {
+            "text": "Rug아래 · 2×1빈 맵 (7, 9) ",
+            "x": 7,
+            "y": 9,
+            "orientation": "down"
+          }
+        },
+        "shed": {
+          "slot1": {
+            "instanceId": "r5-retained-shed",
+            "typeId": "shed",
+            "mapId": "map_blank_start",
+            "x": 12,
+            "y": 6,
+            "orientation": "down",
+            "level": 1
+          },
+          "slot2": {
+            "instanceId": "r5-retained-shed",
+            "typeId": "shed",
+            "mapId": "map_blank_start",
+            "x": 12,
+            "y": 6,
+            "orientation": "down",
+            "level": 1
+          },
+          "live": {
+            "instanceId": "r5-retained-shed",
+            "typeId": "shed",
+            "mapId": "map_blank_start",
+            "x": 12,
+            "y": 6,
+            "orientation": "down",
+            "level": 1
+          }
+        },
+        "gold": {
+          "slot1": 500,
+          "slot2": 500,
+          "live": 500
+        },
+        "inventory": {
+          "slot1": {
+            "item_hoe": 1,
+            "item_potion": 7
+          },
+          "slot2": {
+            "item_hoe": 1,
+            "item_potion": 7
+          },
+          "live": {
+            "item_hoe": 1,
+            "item_potion": 7
+          }
+        }
+      }
+    }
+  },
+  "passages": {
+    "origin": {
+      "foot": {
+        "x": 8,
+        "y": 8
+      },
+      "passage": {
+        "left": 7,
+        "right": 9,
+        "top": 8,
+        "bottom": 8,
+        "bodyTop": 6
+      },
+      "intersection": [],
+      "rugCells": [
+        {
+          "x": 7,
+          "y": 9
+        },
+        {
+          "x": 8,
+          "y": 9
+        }
+      ]
+    },
+    "downOnto": {
+      "foot": {
+        "x": 8,
+        "y": 9
+      },
+      "passage": {
+        "left": 7,
+        "right": 9,
+        "top": 9,
+        "bottom": 9,
+        "bodyTop": 7
+      },
+      "intersection": [
+        {
+          "x": 7,
+          "y": 9
+        },
+        {
+          "x": 8,
+          "y": 9
+        }
+      ],
+      "rugCells": [
+        {
+          "x": 7,
+          "y": 9
+        },
+        {
+          "x": 8,
+          "y": 9
+        }
+      ]
+    },
+    "downOff": {
+      "foot": {
+        "x": 8,
+        "y": 10
+      },
+      "passage": {
+        "left": 7,
+        "right": 9,
+        "top": 10,
+        "bottom": 10,
+        "bodyTop": 8
+      },
+      "intersection": [],
+      "stillAt79": [
+        {
+          "x": 7,
+          "y": 9
+        },
+        {
+          "x": 8,
+          "y": 9
+        }
+      ]
+    }
+  }
+}

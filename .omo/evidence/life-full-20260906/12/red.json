@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "task": 12,
+  "kind": "historical-behavioral-RED-index",
+  "artifacts": [
+    {
+      "scope": "core public APIs",
+      "log": "core/red-behavior.log.gz",
+      "exit": "core/red-behavior.exit",
+      "failed": 4,
+      "passed": 2,
+      "note": "Selected existing-API cases before product edits; two future-export cases excluded from this selected run, not deleted and included in GREEN",
+      "provenance": "core/SUMMARY.md"
+    },
+    {
+      "scope": "existing UI ledger entry points",
+      "log": "ui/final-publication/historical-ui-red/red.log",
+      "exit": "ui/final-publication/historical-ui-red/red.exit",
+      "command": "ui/final-publication/historical-ui-red/red.command.txt",
+      "stderr": "ui/final-publication/historical-ui-red/red.stderr",
+      "failed": 2,
+      "passed": 0,
+      "provenance": "ui/final-publication/historical-ui-red/HANDOFF.md",
+      "publicationNote": "Byte-identical copies of the untracked producer-r2 receipts; originals preserved. See final-publication/VALIDATION.json."
+    },
+    {
+      "scope": "rendered moving-body protection",
+      "log": "ui/producer-r3/replay/red.stdout",
+      "exit": "ui/producer-r3/replay/red.exit",
+      "failed": 3,
+      "passed": 0,
+      "note": "New counterfactual replay on preserved pre-render UI; not a recovered original run"
+    }
+  ],
+  "retainedNonBehavioralFailure": {
+    "log": "core/red.log.gz",
+    "note": "Initial missing-export and fixture errors are not accepted behavioral RED proof"
+  },
+  "notNewExecution": true
+}

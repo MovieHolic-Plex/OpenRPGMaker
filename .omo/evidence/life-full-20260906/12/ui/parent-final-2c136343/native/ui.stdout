@@ -1,0 +1,16 @@
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p4
+
+ ✓ test/lifePlacementSceneUi.test.ts (15 tests) 665ms
+ ✓ test/lifeFieldInteraction.test.ts (45 tests) 1513ms
+ ✓ test/p2SpatialPlayIntegration.test.ts (3 tests) 187ms
+ ✓ test/lifePlacementRenderedBodyReplay.test.ts (3 tests) 148ms
+ ✓ test/playerOpenSaveMenu.test.ts (7 tests) 1239ms
+ ✓ test/playerStatusMenu.test.ts (17 tests) 637ms
+ ✓ test/p2SpatialRuntimeUi.test.ts (1 test) 98ms
+
+ Test Files  7 passed (7)
+      Tests  91 passed (91)
+   Start at  23:33:26
+   Duration  17.33s (transform 9.40s, setup 0ms, collect 21.17s, tests 4.49s, environment 1.28s, prepare 491ms)
+

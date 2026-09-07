@@ -1,0 +1,21 @@
+{
+  "when": "2026-09-07T13:51:02.587896+00:00",
+  "scenario": "general",
+  "exit": 0,
+  "elapsedSec": 22.842,
+  "stdoutBytes": 24209,
+  "stderrBytes": 0,
+  "scratchExists": true,
+  "archived": [
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r5/native/general/native-evidence.json",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r5/native/general/raw-slot-1.json",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r5/native/general/raw-slot-1.parsed.json",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r5/native/general/field-after-load-1024.png",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r5/native/general/spaces-before-place-1440.png",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r5/native/general/npc-overlap-menu-1024.png",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r5/native/general/spaces-before-place-1024.png",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r5/native/general/npc-overlap-menu-1440.png",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r5/native/general/field-after-load-1440.png",
+    "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/12/ui/verify-r5/native/general/after-place-1024.png"
+  ]
+}

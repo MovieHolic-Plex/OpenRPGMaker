@@ -1,0 +1,236 @@
+[
+  {
+    "step": "runtime",
+    "mapId": "map_blank_start",
+    "player": {
+      "x": 8,
+      "y": 8
+    },
+    "gold": 500,
+    "farmPlots": {}
+  },
+  {
+    "step": "place-building",
+    "placedMsg": {
+      "text": "Shed을(를) 배치했습니다"
+    },
+    "placed": {
+      "id": "ledger:building:shed:1",
+      "instanceId": "ledger:building:shed:1",
+      "typeId": "shed",
+      "mapId": "map_blank_start",
+      "x": 7,
+      "y": 9,
+      "orientation": "down",
+      "level": 1,
+      "paymentReceipt": {
+        "gold": 10,
+        "items": []
+      }
+    },
+    "gold": 490,
+    "player": {
+      "x": 8,
+      "y": 8
+    }
+  },
+  {
+    "step": "upgrade",
+    "upgradeMsg": {
+      "text": "Shed을(를) 업그레이드했습니다"
+    },
+    "gold": 470,
+    "placement": {
+      "instanceId": "ledger:building:shed:1",
+      "typeId": "shed",
+      "mapId": "map_blank_start",
+      "x": 7,
+      "y": 9,
+      "orientation": "down",
+      "level": 2,
+      "paymentReceipt": {
+        "gold": 30,
+        "items": []
+      }
+    }
+  },
+  {
+    "step": "move-building",
+    "moveMsg": {
+      "text": "Shed을(를) 이동했습니다"
+    },
+    "placement": {
+      "instanceId": "ledger:building:shed:1",
+      "typeId": "shed",
+      "mapId": "map_blank_start",
+      "x": 11,
+      "y": 6,
+      "orientation": "down",
+      "level": 2,
+      "paymentReceipt": {
+        "gold": 30,
+        "items": []
+      }
+    },
+    "player": {
+      "x": 9,
+      "y": 8
+    }
+  },
+  {
+    "step": "tilled-keys",
+    "plotKeys": [
+      "7,9"
+    ],
+    "farmPlots": {
+      "map_blank_start": {
+        "7,9": {
+          "tilled": true,
+          "watered": false
+        }
+      }
+    }
+  },
+  {
+    "step": "plot-refuse",
+    "plotMsg": {
+      "text": "처리할 수 없습니다: blocked"
+    },
+    "gold": 470,
+    "buildings": {
+      "ledger:building:shed:1": {
+        "instanceId": "ledger:building:shed:1",
+        "typeId": "shed",
+        "mapId": "map_blank_start",
+        "x": 11,
+        "y": 6,
+        "orientation": "down",
+        "level": 2,
+        "paymentReceipt": {
+          "gold": 30,
+          "items": []
+        }
+      }
+    },
+    "farmPlots": {
+      "map_blank_start": {
+        "7,9": {
+          "tilled": true,
+          "watered": false
+        }
+      }
+    }
+  },
+  {
+    "step": "edge-refuse",
+    "edgeMsg": {
+      "text": "처리할 수 없습니다: blocked"
+    },
+    "gold": 470,
+    "player": {
+      "x": 1,
+      "y": 8
+    },
+    "buildings": {
+      "ledger:building:shed:1": {
+        "instanceId": "ledger:building:shed:1",
+        "typeId": "shed",
+        "mapId": "map_blank_start",
+        "x": 11,
+        "y": 6,
+        "orientation": "down",
+        "level": 2,
+        "paymentReceipt": {
+          "gold": 30,
+          "items": []
+        }
+      }
+    }
+  },
+  {
+    "step": "npc-overlap-refuse",
+    "npcPlace": {
+      "text": "처리할 수 없습니다: blocked"
+    },
+    "gold": 470,
+    "player": {
+      "x": 16,
+      "y": 2
+    },
+    "buildings": {
+      "ledger:building:shed:1": {
+        "instanceId": "ledger:building:shed:1",
+        "typeId": "shed",
+        "mapId": "map_blank_start",
+        "x": 11,
+        "y": 6,
+        "orientation": "down",
+        "level": 2,
+        "paymentReceipt": {
+          "gold": 30,
+          "items": []
+        }
+      }
+    },
+    "logical": {
+      "x": 16,
+      "y": 6,
+      "bodyRect": {
+        "left": 15,
+        "right": 17,
+        "top": 4,
+        "bottom": 6
+      },
+      "passRect": {
+        "left": 15,
+        "right": 17,
+        "top": 6,
+        "bottom": 6
+      }
+    },
+    "move": {
+      "fromX": 16,
+      "fromY": 5,
+      "toX": 16,
+      "toY": 6,
+      "dir": "down"
+    }
+  },
+  {
+    "step": "save-slot",
+    "saveMsg": {
+      "text": "1번 저장 칸에 저장했습니다"
+    }
+  },
+  {
+    "step": "load-restored",
+    "loadedTestids": [
+      "life-ledger-space-decoration-place-rug",
+      "life-ledger-space-decoration-place-table",
+      "life-ledger-space-decoration-ledger:decoration:rug:1",
+      "life-ledger-space-decoration-move-ledger:decoration:rug:1",
+      "life-ledger-space-decoration-remove-ledger:decoration:rug:1",
+      "life-ledger-space-decoration-rotate-ledger:decoration:rug:1"
+    ],
+    "loadedBuildings": {
+      "ledger:building:shed:1": {
+        "instanceId": "ledger:building:shed:1",
+        "typeId": "shed",
+        "mapId": "map_blank_start",
+        "x": 11,
+        "y": 6,
+        "orientation": "down",
+        "level": 2,
+        "paymentReceipt": {
+          "gold": 30,
+          "items": []
+        }
+      }
+    },
+    "gold": 470
+  },
+  {
+    "step": "ok",
+    "scratch": "/dev/shm/st_01a07c17/native-general"
+  }
+]
