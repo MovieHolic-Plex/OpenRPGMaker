@@ -1,4 +1,3 @@
-import { footprintCells } from "@/project/spatialPlacements";
 import { canOccupySpatialFootprint } from "@/project/spatialOccupancy";
 import type { PlaySession } from "@/project/session";
 import type { FarmBuildingPlacement, HomeDecorationPlacement, Project } from "@/project/types";
@@ -25,7 +24,6 @@ export function restoreSpatialPlacementRecords(
       const type = project.database.farmBuildingTypes?.find((entry) => entry.id === placement.typeId);
       const level = type?.levels.find((entry) => entry.level === placement.level);
       if (!type || !level || !mapAllowed(type.allowedMapIds, placement.mapId)) continue;
-      if (footprintCells(placement.x, placement.y, level.footprint, placement.orientation).some(({ x, y }) => session.farmPlots?.[placement.mapId]?.[`${x},${y}`])) continue;
       if (!canOccupySpatialFootprint(project, staging, placement, level.footprint)) continue;
       staging.farmBuildingPlacements[placement.instanceId] = structuredClone(placement);
     }
@@ -37,7 +35,6 @@ export function restoreSpatialPlacementRecords(
       if (!type
         || !type.allowedOrientations.includes(placement.orientation)
         || !mapAllowed(type.allowedMapIds, placement.mapId)) continue;
-      if (footprintCells(placement.x, placement.y, type.footprint, placement.orientation).some(({ x, y }) => session.farmPlots?.[placement.mapId]?.[`${x},${y}`])) continue;
       if (!canOccupySpatialFootprint(project, staging, placement, type.footprint)) continue;
       staging.homeDecorationPlacements[placement.instanceId] = structuredClone(placement);
     }
