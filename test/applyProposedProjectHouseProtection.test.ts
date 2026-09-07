@@ -1,7 +1,7 @@
 import { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AssistantSession, type SessionEvent } from "@/ai/assistantSession";
-import type { ChatResult } from "@/ai/llmClient";
+import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
 import * as history from "@/editor/mapEditHistory";
 import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
 import { serialize } from "@/project/io";
@@ -10,6 +10,7 @@ import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import { completedHouseProject, houseMap, mutateProject } from "./fixtures/completedHouse";
 import { fixedDeclarer } from "./intentFixture";
+import { approvedReviewResponse, independentReviewPayload } from "./independentReviewFixture";
 
 beforeEach(() => {
   vi.stubEnv("VITE_SUPABASE_ANON_KEY", "");
@@ -158,11 +159,20 @@ describe("real autonomous milestone application", () => {
       title: "Title", instruction: "set_title_screen", successTools: ["set_title_screen"],
     }] }] };
     let wrote = false;
+    let reviewedRevision: number | undefined;
     const session = new AssistantSession(project, {
-      config: { authMode: "apiKey", agentMode: "auto", baseUrl: "x", model: "test", apiKey: "test", maxToolCalls: 4, maxTokens: 1024 },
+      config: { ...defaultAiConfig(), agentMode: "auto", maxToolCalls: 4, maxTokens: 16000 },
       declareIntent: fixedDeclarer({ mode: "modify", needsPlan: true, tools: ["set_title_screen"] }),
       yieldToUi: async () => {},
       chat: async (_config, request): Promise<ChatResult> => {
+        const review = independentReviewPayload(request);
+        if (review) {
+          expect(request.tools).toEqual([]);
+          expect(review.requiredProblems, JSON.stringify(review.requiredProblems)).toEqual([]);
+          expect(reviewedRevision).toBeUndefined();
+          reviewedRevision = review.revision;
+          return approvedReviewResponse(request)!;
+        }
         if (!request.tools?.length) return { message: { role: "assistant", content: JSON.stringify(plan) }, finishReason: "stop" };
         if (wrote) return { message: { role: "assistant", content: "Done" }, finishReason: "stop" };
         wrote = true;
@@ -190,15 +200,29 @@ describe("real autonomous milestone application", () => {
     }, undefined, { autonomous: true });
 
     expect(successfulWrite).toBe(true);
-    expect(result.error).toBeUndefined();
+    expect(reviewedRevision).toBeTypeOf("number");
+    expect(events.filter((event) => event.type === "result_review").map((event) => event.review))
+      .toEqual([expect.objectContaining({ status: "approved", revision: reviewedRevision, findings: [] })]);
     if (scenario === "unchanged") {
+      expect(result.stoppedReason).toBe("final");
+      expect(result.error).toBeUndefined();
+      expect(result.review).toMatchObject({ status: "approved", revision: reviewedRevision });
       expect(events.filter((event) => event.type === "milestone_applied")).toHaveLength(1);
       expect(result.appliedCalls?.map((call) => call.name)).toEqual(["set_title_screen"]);
       expect(store.getCurrent().meta?.title).toBe("AI title");
       expect(observed.commit).toHaveBeenCalledTimes(1);
       expect(history.getMapEditHistoryEntries()).toHaveLength(1);
     } else {
-      expect(events.filter((event) => event.type === "proposal_paused")).toHaveLength(1);
+      // Review succeeded, but the captured authored baseline no longer matches
+      // the live store. Application must fail closed and revoke that approval.
+      expect(session.getDraftBaseline().matches(project)).toBe(true);
+      expect(session.getDraftBaseline().matches(accepted)).toBe(false);
+      expect(result.stoppedReason).toBe("error");
+      expect(result.review).toMatchObject({ status: "error", revision: reviewedRevision, findings: [] });
+      expect(result.error).toBeTruthy();
+      expect(result.error).toBe(result.review?.summary);
+      expect(session.isDraftReviewApproved()).toBe(false);
+      expect(result.proposedCalls.map((call) => call.name)).toEqual(["set_title_screen"]);
       expect(events.filter((event) => event.type === "milestone_applied")).toHaveLength(0);
       expect(result.appliedCalls ?? []).toHaveLength(0);
       expectNoApplication(observed, accepted, acceptedBytes);
