@@ -470,7 +470,7 @@ permission to shrink the authored plan. `test/workPlanSize.test.ts` covers 320
 independent items, complete parsed payloads and declared volume above 50; prompt
 prose is reviewed rather than pinned by string tests.
 
-## Acceptance sticky note (2026-09-06)
+## Acceptance sticky note (2026-09-07)
 
 `aiStickyChecklist.ts` is a body-mounted projection of backend
 `AcceptanceSnapshot`, separate from ephemeral work-plan/book chrome. P2 adds only
@@ -482,10 +482,40 @@ The panel's store subscription refreshes retained acceptance on edits/undo; new
 chat, history/rewind, project/reset and teardown clear the note. No snapshot is
 written into project data or conversation history. Native keyed details/buttons
 retain open/focus state; navigation resolves actual maps via `focusEditorRegion`.
-Geometry uses measured `--editor-left-safe`, toolbar clearance and compact defaults
-without overriding manual expansion. Styles: `assistant-sticky-checklist.css`.
+The note defaults to compact at every viewport. Inline activity stays current while
+collapsed. Only non-withdrawn required items enter the numeric fraction and its
+`requiredCount`/`verifiedCount` datasets; zero required hides the fraction. Separate
+`optionalCount`/`withdrawnCount` datasets describe the folded optional/withdrawn
+groups. Active required working/blocked rows precede verifying/pending rows;
+required verified rows have their own initially folded group. Every row retains
+its backend status, including genuinely verified optional items. Keyed rows preserve
+native disclosure and focus on regrouping; a destination group opens only when
+needed to keep a focused row accessible. Blocked reasons are in the row summary;
+source, evidence, and the user-only withdrawal action remain in details.
+
+`hide()` keeps the note attached and receiving snapshots/activity/busy updates;
+`show()` reopens the same snapshot and focuses its toggle. `hasSnapshot()` is the
+panel's refresh/availability seam, independent of visibility. Both AI action menus
+share `showAcceptanceChecklist`; their reopen entry is hidden without a snapshot
+and disabled while the note is already visible. Hide restores the visible header
+menu opener, falling back to the composer input. A new acceptance ID resets hide,
+expansion, position, and disclosures. Clear/dispose cannot reopen retired evidence.
+Project changes retire the outgoing turn before asynchronous history adoption so
+late acceptance cannot remount the previous project's note.
+Manual saved-history adoption also retires the outgoing turn before dropping its
+session: it shares the new-chat abort/owner invalidation, queue discard, and
+busy/progress settlement. The selected record is retained and immediately usable;
+late live events and terminal snapshots cannot remount the old checklist or drain
+old queued sends into the restored conversation. `aiStickyChecklist` exercises
+the real history opener/search/open controls, with terminal assertions synchronized
+to the runner's terminal activity record rather than the transport's return.
+
+Pointer drag uses the existing drag button with pointer capture and session-only
+position, clamped against measured `--editor-left-safe`, toolbar clearance and the
+viewport. Pointer up/cancel/lost capture, hide, clear, and dispose end the gesture;
+resize re-clamps a moved visible note. Styles: `assistant-sticky-checklist.css`.
 Tests: `aiStickyChecklist`, `aiWorkPlanTerminalFocus`, `aiRetryWorkPlanLifecycle`.
-Viewport listeners and `matchMedia` are optional, matching the panel's existing
+Viewport listeners are optional, matching the panel's existing
 headless DOM contract. The PR637/638 integration exposed twelve
 `aiChatSessionScope` failures from eager `window` access; the viewport guard
 restores those contracts without changing browser checklist ownership.

@@ -1129,34 +1129,49 @@ Disclose excluded factors in one concise note: defense, skill power, type chart/
   final full-gate approval remain supervisor-owned; image-view limits must be
   disclosed with actual browser evidence.
 
-## AI acceptance sticky note (2026-09-06)
+## AI acceptance sticky note (2026-09-06, compact bar 2026-09-07)
 
 - A read-only session note lives outside the chat deck, aligned to the measured
   `--editor-left-safe` canvas edge plus `--space-3`. It never covers the 288px
   palette. Its top clears the measured canvas toolbar; fallback is 112px.
   Width is 272px, bounded by remaining viewport space; maximum height is 480px
-  and the viewport remainder. New local geometry tokens own these dimensions.
+  and the viewport remainder. Local geometry tokens own these dimensions.
+  Drag may write session-only inline left/top; z-index stays `--z-canvas-chip`.
 - Reuse vanilla `el`, `deckIcon`, native button/details and the Studio palette:
   raised white paper, subtle border, indigo top rule, `--shadow-pop`, radius-m,
   `--font-ui`, 12px metadata, 13px body, 14px goal, line-height 1.5 and existing
-  4/8/12/16px spacing tokens. No yellow paper, rotation, emoji or new dependency.
-- Fixed header (goal, verified/total, collapse) and a single scrolling body follow
-  StyleGallery scroll-body-shell. Each keyed disclosure retains its open state
-  and keyboard focus across updates; expected/observed/reason are plain text.
-  Map actions resolve current project maps and use `focusEditorRegion`.
-- Pending, working, verifying, verified and blocked are backend truth, not editable
-  checkboxes. Status text accompanies every icon/color. Only verified counts.
-  Current activity is subordinate to the goal; a completed note remains after
-  turn completion while existing work-plan/book chrome keeps its ephemeral life.
-- Collapse becomes a compact goal/count chip. At <=1100px width or <=700px height
-  default to compact, without overriding a manual expansion/collapse choice.
-  New chat, history/rewind, project/reset and teardown clear note and preference.
-- Motion adapts beui checkbox/raw: a short check-stroke reveal only on entry to
-  verified, using `--transition-med`; reduced motion removes it entirely. No
-  looping animation. Native keyboard actions, `--focus-outline`, overflow wrapping
-  for long Korean/IDs, and opaque text-1/text-2 backgrounds serve novice authors,
-  keyboard authors and dense-project authors. Body owns editor navigation keys.
+  4/8/12/16/24px spacing tokens. No yellow paper, rotation, emoji or new dependency.
+- Header chrome: 24px drag (`ai-sticky-drag`), caption, expand toggle, 24px hide
+  (`ai-sticky-hide`). Compact default is a 56px bar: required count plus one-line
+  `.ai-sticky-activity-inline`. Expanded header shows 완료 기준 / snapshot status
+  and the goal; `.ai-sticky-body` is the only scroll owner (scroll-body-shell).
+- Compact count datasets `data-required-verified` / `data-active-required` are
+  host-filled. The fraction is required verified / active required
+  (`required !== false && !withdrawal`). Optional and withdrawn stay inspectable
+  in folded groups and never enter the fraction. Do not render `0/0` or fake
+  “모두 완료” when there are no active required items. Optional verified keeps
+  truthful `검증 완료` text and item-level check from **item.status**, not from
+  `snapshot.status` or work-plan done.
+- Expanded list highlights working/verifying with accent inset and blocked with
+  danger inset. Blocked `item.reason` is `.ai-sticky-block-reason` on the summary.
+  Rows are concise: mark, title, status. Original request, evidence, map pin and
+  `이 요구 제외` live in `.ai-sticky-item-detail` only. Folded groups:
+  `.ai-sticky-done-group` (`ai-sticky-verified-group`), `.ai-sticky-optional-group`,
+  `.ai-sticky-withdrawn-group`; omit a group at n=0.
+- Keyed disclosures retain open/focus across updates. Map actions still use
+  `focusEditorRegion`. Collapse leaves the bar; hide is a separate control and
+  must keep the node attached for live updates. Reopen belongs to the assistant
+  ☰ (`aiActionMenu` shared actions), not the work-plan book.
+- Pending, working, verifying, verified and blocked remain backend truth, not
+  editable checkboxes. A completed note remains after the turn; work-plan/book
+  chrome stays ephemeral and unstyled here.
+- Manual expand still wins across resize. New chat, history/rewind, project/reset
+  and teardown clear the note. New acceptance id clears hide.
+- Motion: existing verified check-stroke with `--transition-med`; reduced motion
+  removes it. No height animation or looping pulse. `--focus-outline` on
+  button/summary. Overflow wrapping for long Korean/IDs. Body owns editor
+  navigation keys.
 - Backend owns `AcceptanceSnapshot`, acceptance events and refresh on store/undo.
   UI never synthesizes verification or persists snapshots into project/history.
-  Browser matrix: 1024x768, 1280x800, 1440x900 plus narrow component showcase.
-  Independent final visual review and integrated backend typecheck are lead-owned.
+  Browser matrix: 1024x768, 1280x800, 1440x900. Independent visual review of the
+  compact bar is Grok-owned; grouping/count/hide/menu behavior is host-owned.
