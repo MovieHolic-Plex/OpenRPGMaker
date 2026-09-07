@@ -141,6 +141,8 @@ const runSceneTestTool: ToolDefinition = {
         failedStep: result.failedStep,
         failureReason: result.failureReason,
         finalState: result.finalState,
+        interactions: result.interactions,
+        ...(result.setupFailure ? { setupFailure: result.setupFailure } : {}),
         log: result.log,
       },
     };

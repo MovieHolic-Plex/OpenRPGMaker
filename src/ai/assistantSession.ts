@@ -677,6 +677,16 @@ function composerAskRefusal(name: string): ToolResult {
   };
 }
 
+const CORRECT_VERIFICATION_TOOL: OpenAiToolSchema = {
+  type: "function", function: {
+    name: "correct_verification",
+    description: "Rerun an adopted requirement or unresolved finding by its session checkId with compatible original-tool args. No verdict, deletion, baseline or weakened assertions. Only facing repairs preserve scene scripts; map-qualified host receipts must match. Read check IDs from get_work_plan or verification results.",
+    parameters: { type: "object", properties: {
+      checkId: { type: "string" }, args: { type: "object", additionalProperties: true },
+    }, required: ["checkId", "args"], additionalProperties: false },
+  },
+};
+
 export const WORK_PLAN_TOOLS: readonly OpenAiToolSchema[] = [
   {
     type: "function",
@@ -721,6 +731,18 @@ export const WORK_PLAN_TOOLS: readonly OpenAiToolSchema[] = [
                       mapTargets: {
                         type: "array", items: { type: "string" },
                         description: "Required for spatial work: one exact map ID per authoring item. Linking declares exactly both endpoint IDs in its separate item.",
+                      },
+                      verificationChecks: {
+                        type: "array", description: "Only for verification successTools lacking a resolved accepted criterion. Immutable validated specifications; missing scope stays pending.",
+                        items: { type: "object", properties: {
+                          tool: { type: "string" },
+                          checkId: { type: "string", description: "Optional existing pending check ID to specify without changing its owner; valid scopes remain immutable." },
+                          criterion: { type: "object", properties: { promiseId: { type: "string" }, criterionIndex: { type: "integer", minimum: 0 } }, required: ["promiseId", "criterionIndex"] },
+                          args: { type: "object", additionalProperties: true },
+                          interactionTargets: { type: "array", description: "Every scene interact step's frozen map/event ownership.", items: { type: "object", properties: {
+                            stepIndex: { type: "integer", minimum: 0 }, mapId: { type: "string" }, eventId: { type: "string" },
+                          }, required: ["stepIndex", "mapId", "eventId"] } },
+                        }, required: ["tool"], additionalProperties: false },
                       },
                       successTools: {
                         type: "array",
@@ -936,7 +958,8 @@ export class AssistantSession {
   private turnIntent: IntentDeclaration | null = null;
   private readonly readEvidence = new ToolReadEvidence();
   private readonly verificationEvidence = new ToolVerificationEvidence();
-  private readonly workItemVerificationEvidence = new ToolVerificationEvidence();
+  private readonly verificationOwners = new WeakMap<WorkItem, { ownerId: string; checkIds: string[] }>();
+  private verificationOwnerSequence = 0;
   /** 이번 턴이 손댈 선택 사각형(있으면). 패널·영역 작업이 사실로 넘긴다. */
   private turnScope: SessionTurnScope | null = null;
   // 직전 턴이 LLM 오류로 끊겼는가(수동 재시도 허용 플래그).
@@ -1202,6 +1225,7 @@ export class AssistantSession {
   // 제안 수락/거부 후, 대화(메시지·감사 로그)를 유지한 채 프로젝트 기준만 store 최신 상태로 갱신한다.
   // 세션 폐기(dropSession)와 달리 대화 기억을 잃지 않는다 — "채팅 세션 단위 전체 기억"(#6)의 핵심.
   rebaseProject(project: Project): void {
+    if (JSON.stringify(this.ctx.project) !== JSON.stringify(project)) this.invalidateVerificationAfterWrite();
     this.pruneRemovedMapSpecs(this.ctx.project, project);
     this.baselineProject = structuredClone(project);
     this.ctx = { project: cloneDetachedDraft(project) };
@@ -1273,6 +1297,7 @@ export class AssistantSession {
 
   /** Applied-state refresh for store changes/undo, including after completion. */
   refreshAcceptance(project: Project, onEvent?: (event: SessionEvent) => void): void {
+    if (JSON.stringify(this.ctx.project) !== JSON.stringify(project)) this.invalidateVerificationAfterWrite();
     this.imageEvidence.current(project);
     if (!this.acceptance) return;
     this.acceptanceAppliedProject = structuredClone(project);
@@ -1282,9 +1307,10 @@ export class AssistantSession {
   private publishAcceptance(onEvent?: (event: SessionEvent) => void): void {
     this.imageEvidence.current(this.ctx.project);
     if (!this.acceptance || !this.acceptanceAppliedProject) return;
-    const snapshot = this.acceptance.evaluate(this.acceptanceAppliedProject,
-      this.turnProposals.size > 0 ? this.ctx.project : this.acceptanceAppliedProject,
-      this.verificationEvidence.problems());
+    const draft = this.turnProposals.size > 0 ? this.ctx.project : this.acceptanceAppliedProject;
+    this.acceptance.evaluate(this.acceptanceAppliedProject, draft);
+    this.adoptVerificationRequirements();
+    const snapshot = this.acceptance.evaluate(this.acceptanceAppliedProject, draft, this.verificationEvidence.problems());
     onEvent?.({ type: "acceptance", snapshot });
   }
 
@@ -1303,9 +1329,10 @@ export class AssistantSession {
   }
 
   private adoptAcceptance(promises: readonly AcceptancePromise[] | undefined, onEvent?: (event: SessionEvent) => void): void {
-    if (this.workPlan) this.verificationEvidence.requireTools(
-      this.workPlan.layers.flatMap(layer => layer.items.flatMap(item => item.successTools ?? [])));
-    if (!promises && (this.acceptance || !this.spatialAcceptanceRequired())) return;
+    if (!promises && (this.acceptance || !this.spatialAcceptanceRequired())) {
+      this.adoptVerificationRequirements();
+      return;
+    }
     const goal = this.acceptance?.goal ?? this.workPlan?.goal ?? this.currentTurnInstruction;
     if (!this.acceptance) {
       this.acceptance = new AssistantAcceptanceLedger(`acceptance-${++this.acceptanceSequence}`, goal, this.acceptanceRequestBaseline, this.imageEvidence);
@@ -1315,6 +1342,115 @@ export class AssistantSession {
     this.publishAcceptance(onEvent);
     const malformed = this.acceptance.getSnapshot().items.filter(item => item.issues?.length);
     if (malformed.length) this.pushOrchestrationMessage(`Acceptance contract requires repair before content generation. Use repair_acceptance for these item IDs; valid promises and baselines remain unchanged.\n${JSON.stringify({ code: "malformed-criteria", items: malformed })}`);
+  }
+
+  getVerificationSnapshot(includeAttempts = true) { return this.verificationEvidence.snapshot(includeAttempts); }
+
+  private verificationInitialState(name: string): unknown {
+    if (name !== "run_scene_test") return undefined;
+    const project = this.ctx.project;
+    return { session: project.session, flags: project.flags, switches: project.switches.map(entry => entry.id), variables: project.variables.map(entry => entry.id) };
+  }
+
+  private adoptVerificationRequirements(): void {
+    const ownership = this.acceptance?.verificationOwnership(this.ctx.project) ?? [];
+    const accepted = ownership.map(binding => {
+      const name = binding.criterion.kind === "reachability" ? "check_reachability" : "run_action_combat_test";
+      const checkId = `${this.acceptance!.id}:${binding.promiseId}:${binding.criterionIndex}`;
+      const args = !binding.mapId ? null : binding.criterion.kind === "reachability"
+        ? { mapId: binding.mapId, from: binding.criterion.from, targets: binding.criterion.to }
+        : { mapId: binding.mapId };
+      this.verificationEvidence.adopt({ checkId, ownerId: `${this.acceptance!.id}:${binding.promiseId}`, name, args,
+        criterion: { promiseId: binding.promiseId, criterionIndex: binding.criterionIndex }, acceptedCriterion: binding.criterion });
+      this.verificationEvidence.setCriterionPassed(checkId, binding.passed);
+      return { ...binding, checkId, name };
+    });
+    for (const requirement of this.verificationEvidence.snapshot(false).requirements) {
+      if (!requirement.criterion) continue;
+      const binding = accepted.find(entry => entry.promiseId === requirement.criterion!.promiseId && entry.criterionIndex === requirement.criterion!.criterionIndex);
+      if (!binding) continue;
+      if (requirement.args === null && binding.mapId) {
+        const original = this.verificationEvidence.snapshot(false).requirements.find(entry => entry.checkId === binding.checkId)!;
+        this.verificationEvidence.adopt({ ...requirement, args: original.args });
+      }
+      this.verificationEvidence.setCriterionPassed(requirement.checkId, binding.passed);
+    }
+    for (const item of this.workPlan?.layers.flatMap(layer => layer.items) ?? []) {
+      if (this.verificationOwners.has(item)) continue;
+      const ownerId = `verification-owner-${++this.verificationOwnerSequence}`;
+      const checkIds: string[] = [];
+      for (const name of item.successTools ?? []) {
+        if (!VERIFICATION_TOOL_NAMES.has(name)) continue;
+        const criteria = accepted.filter(binding => binding.name === name && (!item.mapTargets?.length
+          || binding.mapId === undefined || item.mapTargets.includes(binding.mapId)));
+        const declarations = (item.verificationChecks ?? []).filter(check => check.tool === name);
+        if (criteria.length && !declarations.some(check => check.checkId)) { checkIds.push(...criteria.map(binding => binding.checkId)); continue; }
+        let resolved = false;
+        for (const [index, check] of declarations.entries()) {
+          const previous = check.checkId ? this.verificationEvidence.snapshot(false).requirements.find(entry => entry.checkId === check.checkId) : undefined;
+          if (check.checkId && (!previous || previous.name !== name
+            || JSON.stringify(previous.mapTargets ?? []) !== JSON.stringify(item.mapTargets ?? []))) continue;
+          const declarationOwner = previous?.ownerId ?? ownerId;
+          const checkId = previous?.checkId ?? `${ownerId}:${name}:${index}`;
+          if ("criterion" in check) {
+            const binding = accepted.find(entry => entry.name === name && entry.promiseId === check.criterion.promiseId && entry.criterionIndex === check.criterion.criterionIndex);
+            if (binding) {
+              if (previous) {
+                const requirement = this.verificationEvidence.snapshot(false).requirements.find(entry => entry.checkId === binding.checkId)!;
+                this.verificationEvidence.adopt({ ...requirement, checkId, ownerId: declarationOwner, mapTargets: item.mapTargets ?? undefined });
+                this.verificationEvidence.setCriterionPassed(checkId, binding.passed);
+              }
+              checkIds.push(previous ? checkId : binding.checkId);
+              resolved = true;
+            }
+          } else if (!criteria.length) {
+            if (item.mapTargets?.length && (typeof check.args.mapId !== "string" || !item.mapTargets.includes(check.args.mapId))) continue;
+            this.verificationEvidence.adopt({ checkId, ownerId: declarationOwner, name, args: check.args,
+              mapTargets: item.mapTargets ?? undefined, interactionTargets: check.interactionTargets,
+              initialState: this.verificationInitialState(name) });
+            checkIds.push(checkId);
+            resolved = true;
+          }
+        }
+        if (!resolved) {
+          const checkId = `${ownerId}:${name}:pending`;
+          this.verificationEvidence.adopt({ checkId, ownerId, name, args: null, mapTargets: item.mapTargets ?? undefined });
+          checkIds.push(checkId);
+        }
+      }
+      this.verificationOwners.set(item, { ownerId, checkIds });
+    }
+  }
+
+  private async executeVerificationTool(name: string, args: Record<string, unknown>, signal?: AbortSignal): Promise<ToolResult> {
+    const tool = getTool(name);
+    if (name !== "run_action_combat_test" || !tool) return runTool(this.ctx, name, args, { dryRun: false });
+    const errors = validateArgs(tool.parameters, args);
+    if (errors.length > 0 || typeof args.mapId !== "string") return {
+      ok: false, summary: "액션 전투 검증 인자 오류", issues: errors.map(message => ({ severity: "error", code: "invalid-args", message })),
+    };
+    try {
+      const { runActionCombatTest } = await import("@/editor/actionCombatRuntimeProbe");
+      const receipt = await runActionCombatTest(this.ctx.project, { mapId: args.mapId, signal });
+      this.acceptance?.captureActionProof(receipt, this.ctx.project, args.mapId);
+      return { ok: true, summary: receipt.pass ? "실제 액션 전투 검증 통과" : `실제 액션 전투 검증 미통과: ${receipt.reason ?? receipt.status}`, data: receipt };
+    } catch (cause) {
+      this.acceptance?.captureActionProof(null, this.ctx.project, args.mapId);
+      const message = cause instanceof Error ? cause.message : String(cause);
+      return { ok: false, summary: message, issues: [{ severity: "error", code: "verification-execution-failed", message }] };
+    }
+  }
+
+  private async correctVerification(args: Record<string, unknown>, signal?: AbortSignal): Promise<ToolResult> {
+    const correction = Object.keys(args).every(key => key === "checkId" || key === "args")
+      ? this.verificationEvidence.correction(args.checkId, args.args) : null;
+    if (!correction || typeof args.checkId !== "string") return { ok: false, summary: "Unknown check or incompatible correction",
+      issues: [{ severity: "error", code: "invalid-verification-correction", message: "Use an existing checkId and compatible original-tool args; accepted checks cannot be replaced." }],
+      data: { verification: this.getVerificationSnapshot(false) } };
+    const result = await this.executeVerificationTool(correction.name, correction.args, signal);
+    this.recordToolResult(correction.name, correction.args, result, true, args.checkId);
+    return { ...result, data: { ...(isRecord(result.data) ? result.data : {}), checkId: args.checkId,
+      tool: correction.name, verification: this.getVerificationSnapshot(false) } };
   }
 
   private acceptanceOpen(): boolean {
@@ -1822,7 +1958,6 @@ export class AssistantSession {
     if (intent.actionCombat && intent.mode !== "question") {
       this.adoptAcceptance([], onEvent);
       this.acceptance?.requireActionCombat(intent.actionCombat.targets, this.acceptanceRequestBaseline);
-      this.verificationEvidence.requireTools(["run_action_combat_test"]);
       this.publishAcceptance(onEvent);
     }
     beginAssistantToolDomainTurn(intent);
@@ -2369,19 +2504,19 @@ export class AssistantSession {
       return {
         ok: true,
         summary: `WorkPlan 설정: ${progress.layersTotal}레이어 / ${progress.itemsTotal}항목. 현재: ${progress.current?.itemTitle ?? "(완료)"}`,
-        data: { plan: structuredClone(plan), progress, acceptance: this.getAcceptanceSnapshot() },
+        data: { plan: structuredClone(plan), progress, acceptance: this.getAcceptanceSnapshot(), verification: this.getVerificationSnapshot(false) },
       };
     }
     // 조회는 계획이 없어도 실패가 아니다 — "없음"은 정확한 답이다. ok:false 로 돌려주면 정상 상태가
     // 실패 통계에 섞이고 모델이 교정할 것도 없는 실패를 재시도한다(2026-08-23 실측).
     if (name === "get_work_plan") {
       if (!this.workPlan) {
-        return { ok: true, summary: "활성 WorkPlan 없음. 다단계 작업이면 set_work_plan으로 계획을 세우세요.", data: { plan: null } };
+        return { ok: true, summary: "활성 WorkPlan 없음. 다단계 작업이면 set_work_plan으로 계획을 세우세요.", data: { plan: null, verification: this.getVerificationSnapshot(false) } };
       }
       return {
         ok: true,
         summary: formatWorkPlanUserVisible(this.workPlan).slice(0, 500),
-        data: { plan: structuredClone(this.workPlan), progress: summarizeWorkPlan(this.workPlan), acceptance: this.getAcceptanceSnapshot() },
+        data: { plan: structuredClone(this.workPlan), progress: summarizeWorkPlan(this.workPlan), acceptance: this.getAcceptanceSnapshot(), verification: this.getVerificationSnapshot(false) },
       };
     }
     if (!this.workPlan) {
@@ -2454,7 +2589,8 @@ export class AssistantSession {
       const rewards: WorkItemOutcomeVerdict = this.finishesWorkPlan(id) ? this.npcRewardOutcome() : { ok: true };
       if (!rewards.ok) return { ok: false, summary: rewards.reason, issues: [{ severity: "error", code: "npc-reward-incomplete", message: rewards.reason }] };
       const item = findWorkItemById(this.workPlan, id);
-      if (item) this.verificationEvidence.recordSkippedTools(id, item.successTools ?? []);
+      // Scheduling cannot remove the session-owned checks adopted for this item.
+      if (item) this.adoptVerificationRequirements();
       const skipped = skipWorkItemById(this.workPlan, id, note);
       if (!skipped) return { ok: false, summary: `항목을 찾지 못했습니다: ${id}` };
       const next = getCurrentWorkItem(this.workPlan);
@@ -2477,7 +2613,6 @@ export class AssistantSession {
     this.turnSuccessfulTools.clear();
     this.workItemToolOutcomes = [];
     this.workItemProposals.clear();
-    this.workItemVerificationEvidence.clear();
     // 산출물 추적도 항목 단위다 — 이전 항목이 만든 맵을 다음 항목이 채울 책임으로 물려받지 않는다.
     this.turnItemCreatedMapIds.clear();
     this.turnItemAuthoredTroopIds.clear();
@@ -2611,16 +2746,17 @@ export class AssistantSession {
     return problems;
   }
 
+  private invalidateVerificationAfterWrite(): void {
+    this.verificationEvidence.invalidateAfterWrite();
+    for (const previous of this.turnSuccessfulTools) {
+      if (VERIFICATION_TOOL_NAMES.has(previous)) this.turnSuccessfulTools.delete(previous);
+    }
+  }
+
   private recordSuccessfulTool(name: string): void {
     this.syncSuccessfulToolsToCurrentWorkItem();
     this.imageEvidence.current(this.ctx.project);
-    if (getTool(name)?.mode === "write") {
-      this.verificationEvidence.invalidateAfterWrite();
-      this.workItemVerificationEvidence.invalidateAfterWrite();
-      for (const previous of this.turnSuccessfulTools) {
-        if (VERIFICATION_TOOL_NAMES.has(previous)) this.turnSuccessfulTools.delete(previous);
-      }
-    }
+    if (getTool(name)?.mode === "write") this.invalidateVerificationAfterWrite();
     this.turnSuccessfulTools.add(name);
     // 교착 판정은 **연속** 무진행이다 — 이 항목에서 쓰기가 하나라도 성공했으면 진행이 있었으므로
     // 시도 수를 0으로 돌린다. 그러지 않으면 여러 턴에 걸쳐 정상 진행하는 큰 항목이 누적으로 막힌다.
@@ -2632,27 +2768,30 @@ export class AssistantSession {
   }
 
   /** Keep transport/execution ok intact; only actual passing checks satisfy successTools. */
-  private recordToolResult(name: string, args: Record<string, unknown>, result: ToolResult, countAsSuccess = true): void {
+  private recordToolResult(name: string, args: Record<string, unknown>, result: ToolResult, countAsSuccess = true, checkId?: string): void {
     this.syncSuccessfulToolsToCurrentWorkItem();
     if (name === EVALUATE_GAME_QUALITY_TOOL) this.completionQualityRequired = true;
     if (result.ok) for (const [tool, field, collection] of [["upsert_item", "item", "items"], ["upsert_equipment", "equipment", "equipment"]] as const) {
       const record = args[field] as { id?: unknown } | undefined;
       if (name === tool && record && typeof record.id === "string") this.adventureIconRecords.set(`${collection}/${record.id}`, { collection, id: record.id });
     }
-    this.verificationEvidence.observe(name, args, result, countAsSuccess ? "explicit" : "advisory",
-      this.workPlan?.currentItemId ?? undefined);
+    this.adoptVerificationRequirements();
+    const item = this.workPlan ? getCurrentWorkItem(this.workPlan) : null;
+    const owner = item ? this.verificationOwners.get(item) : undefined;
+    const verdict = this.verificationEvidence.observe(name, args, result, countAsSuccess ? "explicit" : "advisory", owner?.ownerId, checkId,
+      this.verificationInitialState(name), owner?.checkIds);
     if (!countAsSuccess) return;
-    const verdict = this.workItemVerificationEvidence.observe(name, args, result);
-    const outcome = workToolOutcome(name, args, result.ok && (!verdict || this.workItemVerificationEvidence.passed(name)), result.data);
+    const passed = !verdict || this.verificationEvidence.passed(name, owner?.checkIds, owner?.ownerId);
+    const outcome = workToolOutcome(name, args, result.ok && passed, result.data);
     if (outcome.mapIds.length) {
       this.workItemToolOutcomes = this.workItemToolOutcomes.filter(previous =>
         previous.name !== name || previous.mapIds.length !== outcome.mapIds.length
         || previous.mapIds.some((mapId, index) => mapId !== outcome.mapIds[index]));
       this.workItemToolOutcomes.push(outcome);
     }
-    if (verdict && !this.workItemVerificationEvidence.passed(name)) {
+    if (!passed) {
       this.turnSuccessfulTools.delete(name);
-      this.pushAudit({ kind: "status", text: `verification:unmet ${name} — ${this.workItemVerificationEvidence.problems().join("; ")}` });
+      this.pushAudit({ kind: "status", text: `verification:unmet ${name} — ${this.verificationEvidence.problems().join("; ")}` });
     } else if (result.ok) {
       this.recordSuccessfulTool(name);
     }
@@ -3830,6 +3969,7 @@ export class AssistantSession {
           ...discoveryEscalated,
           SET_BUILD_SPEC_TOOL,
           ...(planToolsOn ? WORK_PLAN_TOOLS : []),
+          CORRECT_VERIFICATION_TOOL,
           ...(this.npcRewardRequirements ? [VERIFY_NPC_REWARD_TOOL] : []),
           ...(this.acceptance ? ACCEPTANCE_TOOLS : []),
         ].map((tool) => [tool.function.name, tool] as const),
@@ -4176,23 +4316,10 @@ export class AssistantSession {
             toolResult = deferredToolResult("work-dependency-failed", `이 응답에서 ${[...new Set(failedWriteTargets.values())].join(", ")} 실행이 실패하여 완료 처리를 보류했습니다. 실패를 교정한 뒤 완료하세요.`);
           } else if (this.repeatedToolFailureStall(toolRetryTarget(name, args))) {
             toolResult = deferredToolResult("tool-retry-exhausted", `${name}: 같은 대상의 실패 상한에 도달하여 실행을 보류했습니다. 사용자 지시가 필요합니다.`);
-          } else if (name === "run_action_combat_test" && tool) {
-            const errors = validateArgs(tool.parameters, args);
-            if (errors.length > 0 || typeof args.mapId !== "string") {
-              toolResult = {
-                ok: false, summary: "액션 전투 검증 인자 오류",
-                issues: errors.map(message => ({ severity: "error", code: "invalid-args", message })),
-              };
-            } else {
-              const { runActionCombatTest } = await import("@/editor/actionCombatRuntimeProbe");
-              const receipt = await runActionCombatTest(this.ctx.project, { mapId: args.mapId, signal });
-              this.acceptance?.captureActionProof(receipt, this.ctx.project, args.mapId);
-              toolResult = {
-                ok: true,
-                summary: receipt.pass ? "실제 액션 전투 검증 통과" : `실제 액션 전투 검증 미통과: ${receipt.reason ?? receipt.status}`,
-                data: receipt,
-              };
-            }
+          } else if (name === "correct_verification") {
+            toolResult = await this.correctVerification(args, signal);
+          } else if (VERIFICATION_TOOL_NAMES.has(name)) {
+            toolResult = await this.executeVerificationTool(name, args, signal);
           } else if (name === "verify_npc_reward") {
             // Validate raw args, before generic reason stripping or target normalization.
             toolResult = this.verifyNpcRewardTool(parsedCall.args, signal);
@@ -4290,6 +4417,8 @@ export class AssistantSession {
           // 읽기 툴도 기록한다 — 플래너가 `successTools:["get_map_region"]` 같은 확인 항목을 자주 쓰는데
           // 쓰기만 세면 그 항목은 무슨 짓을 해도 완료할 수 없는 게이트가 된다(2026-08-23 실측: 2회 거부 후 skip).
           this.recordToolResult(name, args, toolResult);
+          if (VERIFICATION_TOOL_NAMES.has(name)) toolResult = { ...toolResult,
+            data: { ...(isRecord(toolResult.data) ? toolResult.data : {}), verification: this.getVerificationSnapshot(false) } };
           this.publishAcceptance(onEvent);
           this.noteToolRetryResult(name, args, toolResult);
           if (toolResult.ok) {
@@ -4343,7 +4472,7 @@ export class AssistantSession {
           if (tool && (tool.mode === "write" || name === PLAY_WALKTHROUGH_TOOL)) {
             this.verificationHistory.push({
               name, args,
-              ok: toolResult.ok && (name !== PLAY_WALKTHROUGH_TOOL || this.workItemVerificationEvidence.passed(name)),
+              ok: toolResult.ok && (name !== PLAY_WALKTHROUGH_TOOL || this.turnSuccessfulTools.has(name)),
               layerId: this.verificationLayerId(),
             });
           }

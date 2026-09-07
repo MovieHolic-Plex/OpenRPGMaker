@@ -234,7 +234,20 @@ export interface SceneTestInput {
   readonly steps: readonly SceneStep[];
 }
 
+export interface SceneInteractionReceipt {
+  readonly stepIndex: number;
+  readonly mapId: string;
+  readonly eventId: string;
+}
+export interface SceneSetupFailure {
+  readonly kind: "no-interaction-target" | "invalid-input" | "execution-failure";
+  readonly stepIndex: number;
+  readonly mapId: string;
+}
+
 export interface SceneTestResult {
+  readonly interactions: readonly SceneInteractionReceipt[];
+  readonly setupFailure?: SceneSetupFailure;
   readonly ok: boolean;
   readonly stepsRun: number;
   readonly totalSteps: number;
@@ -300,6 +313,9 @@ interface CameraModel {
 }
 
 interface RunnerState {
+  stepIndex: number;
+  readonly interactions: SceneInteractionReceipt[];
+  setupFailure?: SceneSetupFailure;
   readonly rewardProof?: SceneRewardProof;
   earlyRewardBaseline?: RewardDelta;
   /** Host approach is protected, but cannot pay before its claim snapshot. */
@@ -434,7 +450,8 @@ export function runSceneTest(project: Project, input: SceneTestInput, rewardProo
   const session = startSession(project, 1);
   if (!isSceneTestInput(input)) {
     return result(false, project, session, emptyEventPositions(project), emptyCamera(session), [], [],
-      [], 0, undefined, "Malformed scene test input", null, false, false);
+      [], 0, undefined, "Malformed scene test input", null, false, false, [],
+      { kind: "invalid-input", stepIndex: 0, mapId: session.currentMapId });
   }
   const runtimeMaps = structuredClone(project.maps);
   const map = runtimeMaps[input.mapId];
@@ -448,6 +465,8 @@ export function runSceneTest(project: Project, input: SceneTestInput, rewardProo
   applyMapDefaultLighting(session, map);
   applyMapBgmToSession(session.audio, resolveMapBgm(project, input.mapId));
   const state: RunnerState = {
+    stepIndex: -1,
+    interactions: [],
     rewardProof,
     project,
     runtimeMaps,
@@ -483,14 +502,16 @@ export function runSceneTest(project: Project, input: SceneTestInput, rewardProo
     autoReason ??= runAutoTriggers(state);
     autoReason ??= checkEarlyReward(state);
   } catch (cause) {
+    state.setupFailure = { kind: "execution-failure", stepIndex: -1, mapId: state.session.currentMapId };
     autoReason = cause instanceof Error ? cause.message : String(cause);
   }
   if (autoReason !== null) {
-    return result(false, project, state.session, state.eventPositions, state.camera, log, state.messages, input.steps, 0, input.steps[0], autoReason, state.fieldSpawnState, state.gameOver, state.activeAnimations.length > 0);
+    return result(false, project, state.session, state.eventPositions, state.camera, log, state.messages, input.steps, 0, input.steps[0], autoReason, state.fieldSpawnState, state.gameOver, state.activeAnimations.length > 0, state.interactions, state.setupFailure);
   }
 
   for (let i = 0; i < input.steps.length; i += 1) {
     const step = input.steps[i];
+    state.stepIndex = i;
     let reason: string | null;
     try {
       if (rewardProof) {
@@ -502,14 +523,15 @@ export function runSceneTest(project: Project, input: SceneTestInput, rewardProo
       reason = runStep(state, step);
       reason ??= checkEarlyReward(state);
     } catch (cause) {
+      state.setupFailure = { kind: "execution-failure", stepIndex: i, mapId: state.session.currentMapId };
       reason = `예외: ${cause instanceof Error ? cause.message : String(cause)}`;
     }
     if (reason !== null) {
-      return result(false, project, state.session, state.eventPositions, state.camera, log, state.messages, input.steps, i, step, reason, state.fieldSpawnState, state.gameOver, state.activeAnimations.length > 0);
+      return result(false, project, state.session, state.eventPositions, state.camera, log, state.messages, input.steps, i, step, reason, state.fieldSpawnState, state.gameOver, state.activeAnimations.length > 0, state.interactions, state.setupFailure);
     }
   }
 
-  return result(true, project, state.session, state.eventPositions, state.camera, log, state.messages, input.steps, input.steps.length, undefined, undefined, state.fieldSpawnState, state.gameOver, state.activeAnimations.length > 0);
+  return result(true, project, state.session, state.eventPositions, state.camera, log, state.messages, input.steps, input.steps.length, undefined, undefined, state.fieldSpawnState, state.gameOver, state.activeAnimations.length > 0, state.interactions);
 }
 
 function runStep(state: RunnerState, step: SceneStep): string | null {
@@ -805,6 +827,7 @@ function runInteractStep(state: RunnerState, expectedEventId?: string): string |
     state.log.push(`farm ${farmUnderfoot.kind}: ${map.id} (${farmUnderfoot.x},${farmUnderfoot.y})${farmUnderfoot.cropId ? ` ${farmUnderfoot.cropId}` : ""}`);
     return null;
   }
+  state.setupFailure = { kind: "no-interaction-target", stepIndex: state.stepIndex, mapId: map.id };
   return `조사할 action 이벤트 없음: ${map.id} (${state.session.x},${state.session.y}) facing=${state.facing}`;
 }
 
@@ -839,6 +862,7 @@ function runChooseStep(state: RunnerState, index: number): string | null {
 }
 
 function runEventView(state: RunnerState, view: RuntimeEventView): string | null {
+  state.interactions.push({ stepIndex: state.stepIndex, mapId: state.session.currentMapId, eventId: view.event.id });
   const proof = state.rewardProof;
   let earlyRewardBaseline: RewardDelta | undefined;
   if (proof) {
@@ -2168,7 +2192,9 @@ function result(
   failureReason: string | undefined,
   fieldSpawnState: FieldSpawnRuntimeState | null,
   gameOver: boolean,
-  animationPlaying: boolean
+  animationPlaying: boolean,
+  interactions: readonly SceneInteractionReceipt[] = [],
+  setupFailure?: SceneSetupFailure,
 ): SceneTestResult {
   void eventPositions;
   const lighting = normalizeLightingState(session.lighting);
@@ -2176,6 +2202,8 @@ function result(
     ok,
     stepsRun,
     totalSteps: steps.length,
+    interactions,
+    ...(setupFailure ? { setupFailure } : {}),
     failedStepIndex: ok ? undefined : stepsRun,
     failedStep,
     failureReason,

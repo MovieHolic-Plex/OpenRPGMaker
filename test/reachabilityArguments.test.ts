@@ -36,7 +36,7 @@ describe("reachability coordinate argument boundary", () => {
     const ctx = { project: createBlankProject() };
     const before = JSON.stringify(ctx.project);
     const history = new ToolVerificationEvidence();
-    history.requireTools(["check_reachability"]);
+    history.adopt({ checkId: "accepted-route", ownerId: "goal", name: "check_reachability", args: validArgs });
     const bad = runTool(ctx, "check_reachability", wire114);
     expect(bad.ok).toBe(false);
     expect(bad.data).toBeUndefined();

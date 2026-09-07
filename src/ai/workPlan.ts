@@ -30,6 +30,7 @@ import { allTools, getTool } from "@/editor/tools/toolRegistry";
 import { parseAcceptance, type AcceptancePromise } from "./assistantAcceptance";
 import { ACCEPTANCE_PLANNER_GUIDE } from "./assistantAcceptanceTools";
 import { parseWorkTargetIds, workTargetContractIssues } from "./workPlanTargets";
+import { parseVerificationChecks, type VerificationCheck } from "./toolVerificationEvidence";
 export type WorkItemStatus = "pending" | "in_progress" | "done" | "skipped" | "blocked";
 
 export interface WorkItem {
@@ -44,6 +45,8 @@ export interface WorkItem {
   readonly doneWhen?: string;
   /** Tools that must all succeed before this item can auto-complete (orchestrator-authored). */
   readonly successTools?: readonly string[];
+  /** Accepted verification scope; absent/invalid declarations remain pending. */
+  readonly verificationChecks?: readonly VerificationCheck[];
   /** Exact map identities; authoring is single-map, linking declares both endpoints. */
   readonly mapTargets?: readonly string[] | null;
   /** Emergency generic fallback: require evidence from at least one successful write tool. */
@@ -123,6 +126,7 @@ export type OrchestratorDecision =
           readonly instruction: string;
           readonly doneWhen?: string;
           readonly successTools?: readonly string[];
+          readonly verificationChecks?: readonly VerificationCheck[];
           readonly mapTargets?: readonly string[] | null;
           readonly requiresAnyWrite?: boolean;
         }[];
@@ -157,7 +161,8 @@ Harness contract:
 14. Preserve an explicit numbered checklist and its dependencies. Put required project/map/event/DB reads in the first item, before any writes. Use only names from the canonical tool list below: get_database_records, set_start_position, set_session_start, upsert_troop are distinct tools. Do not invent get_database or set_player_start.
 15. For a full adventure JRPG stage request, include actual village buildings, a connected explorable dungeon with a return transfer, a reachable encounter, a real start party or changeParty join, and final full-map show_map_region inspection. A sign saying dungeon and an NPC talking about joining do not implement these. Seed-only database requests are exempt. Use upsert_equipment for equippable weapons and queried iconResourceId for items.
 16. For a party adventure, inspect the current party and supplies, make an accessible village-to-dungeon route, and inspect every affected map with show_map_region. A solid grass rectangle or a small decorated viewport does not complete a dungeon or whole-map stage. Preserve existing content while improving it. Separate visual inspection from authoring so premature tool-name completion cannot omit it.
-17. Spatial authoring items MUST declare mapTargets:["exact_map_id"] (choose stable IDs for new maps). One map per authoring item, with that map's own single-map BuildSpec. Never combine terrain/buildings on different maps in one item. Put create_transfer_pair in a separate linking item with mapTargets:["map_a","map_b"] after both map authoring items in existing layer/item order. Each successTool is credited only for its declared targets; a no-op on A cannot discharge B. Include structure-authoring tools for promised buildings, not just fill_region, roads or transfers.
+17. Verification successTools bind to accepted criteria on the item's mapTargets. Where no criterion resolves, declare verificationChecks:[{tool,args}] using complete validated tool input, or {tool,criterion:{promiseId,criterionIndex}}. Scenes also declare interactionTargets:[{stepIndex,mapId,eventId}] for every explicit interact step. Missing/invalid scope stays pending specification; the first probe is never a declaration. Accepted checks survive skipping/replanning and cannot be weakened. Do not invent additional game goals.
+18. Spatial authoring items MUST declare mapTargets:["exact_map_id"] (choose stable IDs for new maps). One map per authoring item, with that map's own single-map BuildSpec. Never combine terrain/buildings on different maps in one item. Put create_transfer_pair in a separate linking item with mapTargets:["map_a","map_b"] after both map authoring items in existing layer/item order. Each successTool is credited only for its declared targets; a no-op on A cannot discharge B. Include structure-authoring tools for promised buildings, not just fill_region, roads or transfers.
 ${NARRATIVE_HORROR_PLANNER_RULE}
 ${ACCEPTANCE_PLANNER_GUIDE}
 
@@ -436,6 +441,7 @@ function createWorkPlanFromLayers(input: {
       instruction: string;
       doneWhen?: string;
       successTools?: readonly string[];
+      verificationChecks?: readonly VerificationCheck[];
       mapTargets?: readonly string[] | null;
       requiresAnyWrite?: boolean;
     }[];
@@ -452,6 +458,7 @@ function createWorkPlanFromLayers(input: {
       instruction: it.instruction.trim(),
       doneWhen: it.doneWhen?.trim() || undefined,
       successTools: sanitizeToolNames(it.successTools),
+      verificationChecks: parseVerificationChecks(it.verificationChecks),
       mapTargets: it.mapTargets,
       requiresAnyWrite: it.requiresAnyWrite === true || undefined,
       status: "pending" as const,
@@ -484,6 +491,7 @@ function normalizeLayer(
     instruction: string;
     doneWhen?: string;
     successTools?: readonly string[];
+    verificationChecks?: readonly VerificationCheck[];
     mapTargets?: readonly string[] | null;
   }[];
 } | null {
@@ -504,6 +512,7 @@ function normalizeLayer(
         instruction,
         doneWhen: typeof it.doneWhen === "string" ? it.doneWhen : undefined,
         mapTargets: parseWorkTargetIds(it.mapTargets),
+        verificationChecks: parseVerificationChecks(it.verificationChecks),
         successTools: Array.isArray(it.successTools)
           ? it.successTools.filter((t): t is string => typeof t === "string")
           : undefined,

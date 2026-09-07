@@ -53,7 +53,9 @@ describe("authoritative action acceptance", () => {
   it.each(["failed", "stale"] as const)("cannot publish verified while a %s required check remains", kind => {
     const { project, ledger } = setup();
     const evidence = new ToolVerificationEvidence();
-    evidence.observe("run_scene_test", { mapId: project.startMapId }, { ok: true, data: { ok: kind !== "failed" } });
+    const args = { mapId: project.startMapId, start: { x: 1, y: 1 }, steps: [] };
+    evidence.adopt({ checkId: "scene", ownerId: "goal", name: "run_scene_test", args, interactionTargets: [] });
+    evidence.observe("run_scene_test", args, { ok: true, data: { ok: kind !== "failed" } });
     if (kind === "stale") evidence.invalidateAfterWrite();
     expect(ledger.evaluate(project, project, evidence.problems()).status).toBe("blocked");
   });
@@ -65,12 +67,12 @@ describe("authoritative action acceptance", () => {
       { id: "qa", title: "Scene", instruction: "Check", successTools: ["run_scene_test"] },
     ] }] });
     if (!plan) throw new Error("Fixture plan missing");
-    evidence.requireTools(plan.layers.flatMap(layer => layer.items.flatMap(item => item.successTools ?? [])));
+    const args = { mapId: project.startMapId, start: { x: 1, y: 1 }, steps: [] };
+    evidence.adopt({ checkId: "qa-scene", ownerId: "original-qa", name: "run_scene_test", args, interactionTargets: [] });
     skipWorkItemById(plan, "qa", "Unable to execute");
     expect(isWorkPlanComplete(plan)).toBe(true);
-    evidence.requireTools([]);
     expect(ledger.evaluate(project, project, evidence.problems()).status).toBe("blocked");
-    evidence.observe("run_scene_test", { mapId: project.startMapId }, { ok: true, data: { ok: true } });
+    evidence.observe("run_scene_test", args, { ok: true, data: { ok: true } });
     expect(ledger.evaluate(project, project, evidence.problems()).status).toBe("verified");
   });
 
@@ -93,13 +95,14 @@ describe("authoritative action acceptance", () => {
     const { project, ledger } = setup();
     const evidence = new ToolVerificationEvidence();
     const success = { ok: true, data: { ok: true } };
-    evidence.observe("run_scene_test", { mapId: "other" }, success, "explicit", "other-item");
-    evidence.recordSkippedTools("required-item", ["run_scene_test"]);
-    evidence.requireTools([]);
+    const otherArgs = { mapId: "other", start: { x: 1, y: 1 }, steps: [] };
+    const args = { ...otherArgs, mapId: project.startMapId };
+    evidence.observe("run_scene_test", otherArgs, success, "explicit", "other-item");
+    evidence.adopt({ checkId: "required-scene", ownerId: "original-required-owner", name: "run_scene_test", args, interactionTargets: [] });
     expect(ledger.evaluate(project, project, evidence.problems()).status).toBe("blocked");
-    evidence.observe("run_scene_test", { mapId: "other" }, success, "explicit", "other-item");
+    evidence.observe("run_scene_test", otherArgs, success, "explicit", "other-item");
     expect(ledger.evaluate(project, project, evidence.problems()).status).toBe("blocked");
-    evidence.observe("run_scene_test", { mapId: project.startMapId }, success, "explicit", "required-item");
+    evidence.observe("run_scene_test", args, success, "explicit", "required-item");
     expect(ledger.evaluate(project, project, evidence.problems()).status).toBe("verified");
   });
 });

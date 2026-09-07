@@ -1984,3 +1984,98 @@ describe("밑그림만 그리고 끝내는 턴", () => {
     expect(diff?.eventsAdded ?? 0).toBe(1);
   }, 30000);
 });
+
+describe("verification declaration and correction caller boundary", () => {
+  it.each([false, true])("adopts a frozen map-qualified scene and executes correction (changed initial state=%s)", async changedSeed => {
+    const { AssistantSession } = await load();
+    const { verificationJourney } = await import("./fixtures/verificationOwnership");
+    const f = verificationJourney();
+    const map = f.village;
+    const declaration = { tool: "run_scene_test", args: f.wire180, interactionTargets: [
+      { stepIndex: 2, mapId: f.cellar.id, eventId: f.chest.id }, { stepIndex: 6, mapId: map.id, eventId: f.chief.id },
+      { stepIndex: 9, mapId: map.id, eventId: f.chief.id },
+    ] };
+    let round = 0;
+    let session: InstanceType<typeof AssistantSession>;
+    const events: SessionEvent[] = [];
+    session = new AssistantSession(f.project, { config: { ...CONFIG, maxToolCalls: 12, maxTokens: 8192 }, declareIntent: fixedDeclarer({ mode: "modify", needsPlan: false }),
+      chat: async () => {
+        round++;
+        if (round === 1) return assistantToolCall("set_work_plan", { goal: "Frozen journey", acceptance: [{ id: "size", title: "Map", criteria: [
+          { kind: "mapDimensions", target: { mapId: map.id }, width: map.width, height: map.height },
+        ] }], layers: [{ title: "QA", items: [{ title: "Journey", instruction: "Check", successTools: ["run_scene_test"], verificationChecks: [declaration] }] }] });
+        if (round === 2) return assistantToolCall("run_scene_test", f.wire180);
+        const id = session.getVerificationSnapshot().requirements[0]!.checkId;
+        if (round === 3) return assistantToolCall("correct_verification", { checkId: id, args: f.wire181, verdict: "pass" });
+        if (round === 4) return assistantToolCall("correct_verification", { checkId: id, args: f.wire181 });
+        if (round === 5 && changedSeed) return assistantToolCall("set_session_start", { gold: 100 });
+        if (round === 6 && changedSeed) return assistantToolCall("correct_verification", { checkId: id, args: f.wire181 });
+        return assistantFinal("Checks recorded.");
+      } });
+    const result = await session.sendUserMessage("Inspect the frozen scene.", event => events.push(event));
+    expect(result.stoppedReason, result.error).toBe("final");
+    expect(session.getVerificationSnapshot().requirements).toHaveLength(1);
+    expect(events.filter(e => e.type === "tool_call" && e.name === "correct_verification").map(e => e.type === "tool_call" && e.result.ok)).toEqual(changedSeed ? [false, true, true] : [false, true]);
+    const snapshot = session.getVerificationSnapshot();
+    expect(snapshot.requirements).toHaveLength(1);
+    expect(snapshot.requirements[0]?.args).toEqual(f.wire180);
+    expect(snapshot.requirements[0]?.interactionTargets).toEqual(declaration.interactionTargets);
+    expect(snapshot.requirements[0]?.status).toBe(changedSeed ? "unverified" : "passed");
+    expect(snapshot.findings).toEqual([]);
+    expect(session.getAcceptanceSnapshot()?.status).toBe(changedSeed ? "blocked" : "verified");
+  });
+  it.each(["wire114", "wire281", "dummy-removal", "cross-map", "weaker-assertion", "write-after-pass", "foreign-owner"])("retains the correct terminal contract for %s", async variant => {
+    const { AssistantSession } = await load();
+    const { verificationJourney, crossMapVerification, verificationEvent } = await import("./fixtures/verificationOwnership");
+    const f = verificationJourney();
+    const cross = crossMapVerification();
+    const project = variant === "cross-map" ? cross.project : f.project;
+    const map = project.maps[project.startMapId]!;
+    const route = { mapId: map.id, from: { x: 10, y: 12 }, targets: [{ x: 5, y: 8 }] };
+    const calls: Array<{ name: string; args: Record<string, unknown> }> = [];
+    const checks: unknown[] = [];
+    const required = ["get_project_summary"];
+    const sceneCall = (args: Record<string, unknown>) => ({ name: "run_scene_test", args });
+    if (variant === "wire114") calls.push({ name: "check_reachability", args: { mapId: map.id, from: { x: 10, y: 8 }, targets: [{ newMapName: "지하실", mapId: map.id }] } }, { name: "check_reachability", args: route });
+    if (variant === "wire281") calls.push(sceneCall({ mapId: f.cellar.id, start: { x: 6, y: 3 }, steps: [{ kind: "face", dir: "down" }, { kind: "interact" }] }),
+      sceneCall({ mapId: f.cellar.id, start: { x: 6, y: 3 }, steps: [{ kind: "face", dir: "up" }, { kind: "interact" }] }));
+    if (variant === "dummy-removal") {
+      f.cellar.events.push(verificationEvent("ev_dummy_fix", 6, 4, []));
+      calls.push(sceneCall({ mapId: f.cellar.id, start: { x: 6, y: 3 }, steps: [{ kind: "interact", eventId: "ev_dummy_fix" }] }),
+        { name: "remove_event", args: { mapId: f.cellar.id, eventId: "ev_dummy_fix" } });
+    }
+    if (variant === "cross-map") calls.push(sceneCall({ ...cross.a }), sceneCall({ ...cross.b }));
+    if (variant === "weaker-assertion") calls.push(sceneCall({ ...f.wire180 }), sceneCall({ ...f.corrected171 }));
+    if (variant === "write-after-pass" || variant === "foreign-owner") {
+      required.push("check_reachability");
+      checks.push({ tool: "check_reachability", args: route });
+      calls.push({ name: "check_reachability", args: route }, { name: "set_title_screen", args: { title: "Changed after proof" } });
+    }
+    if (variant === "foreign-owner") calls.push({ name: "run_scene_test", args: { ...f.wire180, ownerId: "forged-owner" } });
+    const plan = { goal: "Scoped checks", acceptance: [{ id: "size", title: "Map", criteria: [{ kind: "mapDimensions", target: { mapId: map.id }, width: map.width, height: map.height }] }],
+      layers: [{ title: "Check", items: [{ id: "qa", title: "Inspect", instruction: "Inspect", successTools: required, verificationChecks: checks }] }] };
+    const rounds = [{ name: "set_work_plan", args: plan }, ...calls, { name: "get_project_summary", args: {} }];
+    let cursor = 0;
+    const events: SessionEvent[] = [];
+    const session = new AssistantSession(project, { config: { ...CONFIG, maxToolCalls: 12 }, declareIntent: fixedDeclarer({ mode: "modify", needsPlan: false }),
+      chat: async () => {
+        const call = rounds[cursor++];
+        return call ? assistantToolCall(call.name, call.args, `ownership-${cursor}`) : assistantFinal("Checks recorded.");
+      } });
+    await session.sendUserMessage("Inspect the scoped checks.", event => events.push(event));
+    const blocked = ["cross-map", "weaker-assertion", "write-after-pass", "foreign-owner"].includes(variant);
+    expect(session.getAcceptanceSnapshot()?.status).toBe(blocked ? "blocked" : "verified");
+    if (variant === "wire114") {
+      expect(session.getVerificationSnapshot().attempts[0]?.status).toBe("unsuccessful");
+      expect(session.getVerificationSnapshot().findings).toEqual([]);
+    }
+    if (variant === "wire281") expect(session.getVerificationSnapshot().attempts.map(a => a.status)).toEqual(["setup-failure", "passed"]);
+    if (variant === "dummy-removal") {
+      expect(session.getProposedProject().maps[f.cellar.id]?.events.some(e => e.id === "ev_dummy_fix")).toBe(false);
+      expect(events.find(e => e.type === "tool_call" && e.name === "remove_event")).toMatchObject({ result: { ok: true } });
+      expect(session.getVerificationSnapshot().requirements).toEqual([]);
+    }
+    if (variant === "cross-map" || variant === "weaker-assertion") expect(session.getVerificationSnapshot().findings).toHaveLength(1);
+    if (variant === "foreign-owner") expect(session.getVerificationSnapshot().attempts.at(-1)?.status).toBe("unsuccessful");
+  });
+});

@@ -129,16 +129,48 @@ the original object before JSON serialization and pass the requested map even
 on failed/cancelled runs, which revoke prior success. Any observed content change
 retires old receipts permanently; undo cannot revive them.
 
-`ToolVerificationEvidence.requireTools(successTools)` retains declared verification
-obligations across plan replacement and skipping. `evaluate(applied, draft,
-blockingProblems)` publishes blocked verification evidence rather than a verified
-ledger alongside failed, stale or unexecuted required checks. Scheduling still treats
-skipped items as terminal; these proof obligations must not reactivate skipped items
-or bypass the existing bounded repair limits.
-The skip boundary calls `recordSkippedTools(itemId, successTools)` before advancing;
-`observe(name, args, result, source, workItemId)` only clears that skipped obligation
-on an explicit pass from the same item. Earlier or later same-name checks for
-another item cannot waive it.
+Verification ownership (2026-09-07): `ToolVerificationEvidence` stores immutable
+adopted requirements, unresolved artifact findings, and auditable attempts separately.
+An invocation is not adoption. Session-owned check IDs, not reused scheduling IDs,
+survive skip/replan/continuation. Skipped items remain terminal scheduling entries;
+`evaluate(applied, draft, blockingProblems)` still publishes its synthetic blocker
+until every adopted scope and genuine negative finding is resolved.
+`AssistantAcceptanceLedger.verificationOwnership(project)` exposes detached accepted
+criterion/index/map bindings without changing promises, baselines or the evaluator.
+Reachability successTools bind to those exact accepted routes, including conservative
+exact-cell acceptance; the query tool's adjacent-or-on pass alone cannot substitute.
+
+Only where a verification successTool has no resolved criterion, a plan declares
+`verificationChecks`. Both planner JSON and `set_work_plan` use the same parser:
+
+```json
+{"successTools":["check_reachability"],"mapTargets":["map_id"],
+ "verificationChecks":[{"tool":"check_reachability",
+   "args":{"mapId":"map_id","from":{"x":2,"y":2},"targets":[{"x":3,"y":2}]}}]}
+```
+
+A criterion reference is `{tool,criterion:{promiseId,criterionIndex}}`. A scene uses
+its complete `SceneTestInput` as `args`, plus `interactionTargets:[{stepIndex,mapId,eventId}]`
+for every explicit interact step. This freezes start/seed state, ordered targets,
+choices, assertions and snapshot boundaries. Missing/malformed declarations stay
+`pending-specification`; no arbitrary first same-tool pass can fill them. To specify
+an existing pending scope in a later accepted plan, include its returned `checkId`
+with the declaration and retain its tool/mapTargets. The original owner survives,
+valid specifications are immutable, and earlier exploratory passes are not proof.
+These declarations describe only the user's accepted goals; do not invent game goals.
+
+`get_work_plan` and verification tool results return `data.verification.requirements`
+and `.findings` with ready machine check IDs. `correct_verification({checkId,args})`
+resolves that stored check, validates compatible input, executes its original registered
+tool through the session dispatcher, and records the real result. It accepts no verdict,
+delete, baseline, owner override or replacement requirement. A normal exact-compatible
+rerun also works. Corrections can change facing only: movement/walk/set-position stays
+exact. Ordered host map/event receipts must match; an early failure without ownership
+trace does not authorize navigation equivalence. Changed targets, start, choices,
+reward checkpoints or weaker/dropped assertions cannot discharge the original check.
+Successful writes stale adopted passing proof, not unowned exploratory history.
+An unowned assertion-free no-selected-target interaction records structured setup
+failure, not a promise to create an event. Genuine exploratory negatives still block.
 
 The synchronous `playTools` entry for `run_action_combat_test` fails closed unless
 the session's async browser dispatcher intercepts it. `run_scene_test` preflights

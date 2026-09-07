@@ -112,6 +112,21 @@ export class AssistantAcceptanceLedger {
   stop(): void { this.stopped = true; }
   getSnapshot(): AcceptanceSnapshot { return this.snapshot; }
 
+  /** Detached read-only ownership view. Does not adopt, rebase, bind or forge proof. */
+  verificationOwnership(project: Project) {
+    return [...this.promises.values(), ...this.actionRequirements.values()].flatMap(promise =>
+      (promise.criteria ?? []).flatMap((criterion, criterionIndex) => {
+        if (criterion.kind !== "reachability" && criterion.kind !== "actionCombat") return [];
+        const map = resolveAcceptanceMap(project, criterion.target, this.bindings);
+        const evidence = evaluateAcceptanceCriterion(criterion, {
+          project, baseline: promise.baseline, bindings: this.bindings, reviewed: () => false,
+          actionProven: target => isVerifiedActionCombatProof(this.actionProofs.get(target.id), project, target.id),
+        });
+        return [{ promiseId: promise.id, criterionIndex, criterion: structuredClone(criterion),
+          mapId: map?.id, passed: evidence.passed }];
+      }));
+  }
+
   private bind(project: Project): void {
     const attempted = new Set<string>();
     for (const promise of [...this.promises.values(), ...this.actionRequirements.values()]) {
