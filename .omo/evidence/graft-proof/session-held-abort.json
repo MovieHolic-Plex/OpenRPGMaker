@@ -1,0 +1,15 @@
+{
+  "case": "session-held-abort-no-revive",
+  "stoppedReason": "aborted",
+  "authority": false,
+  "renderedCount": 0,
+  "heldThroughAbort": true,
+  "bakeCompletedAfterAbort": true,
+  "grafts": [
+    {
+      "targetTile": 0,
+      "sourceChipset": "tex_easyrpg_chipset_interior",
+      "sourceTile": 100
+    }
+  ]
+}

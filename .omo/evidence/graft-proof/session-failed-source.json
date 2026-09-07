@@ -1,0 +1,39 @@
+{
+  "case": "session-failed-source-load",
+  "reviews": [
+    {
+      "imageCount": 0
+    },
+    {
+      "imageCount": 0
+    }
+  ],
+  "review": {
+    "status": "changes_requested",
+    "revision": 1,
+    "summary": "Fixture review",
+    "findings": [
+      {
+        "id": "required-0",
+        "target": "required-evidence",
+        "problem": "show_map_region: current rendered coverage of changed map map_blank_start required",
+        "requestedChange": "Repair the reported requirement on this draft and rerun its evidence tool.",
+        "validation": "The same required check must pass on the current revision."
+      }
+    ]
+  },
+  "authority": false,
+  "grafts": [
+    {
+      "targetTile": 0,
+      "sourceChipset": "tex_easyrpg_chipset_interior",
+      "sourceTile": 100
+    }
+  ],
+  "loads": [
+    "/assets/easyrpg-chipset-combined-town-transparent.png",
+    "/assets/easyrpg-chipset-interior-transparent.png",
+    "/assets/easyrpg-chipset-combined-town-transparent.png",
+    "/assets/easyrpg-chipset-interior-transparent.png"
+  ]
+}

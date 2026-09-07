@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
 import { defaultAiConfig, type ChatRequest, type ChatResult } from "@/ai/llmClient";
 import { createBlankProject } from "@/project/defaults";
+import { startSession } from "@/project/session";
 import { fixedDeclarer } from "./intentFixture";
 import { runTool } from "@/editor/tools";
 
@@ -17,6 +18,50 @@ function original(request: ChatRequest) {
 }
 
 describe("grounded first working request", () => {
+  it("delivers authored start gold and presets before their first writes while excluding live runtime and config", async () => {
+    const project = createBlankProject();
+    project.session.gold = 472319;
+    project.session.inventory = { item_potion: 17 };
+    project.testPresets = [{ id: "preset_r5_unique", name: "R5", gold: 583421,
+      inventory: { item_potion: 23 }, startMapId: project.startMapId, startPos: { x: 2, y: 3 } }];
+    const expectedSeed = structuredClone(project.session);
+    const expectedPresets = structuredClone(project.testPresets);
+    const runtime = startSession(project, 5);
+    runtime.gold = 913579;
+    runtime.inventory.RUNTIME_SECRET_SENTINEL = 1;
+    const requests: ChatRequest[] = [];
+    const session = new AssistantSession(project, {
+      config: { ...defaultAiConfig(), model: "gemini-3.7-flash", agentMode: "chat", maxToolCalls: 1,
+        apiKey: "PRIVATE_CONFIG_SENTINEL" },
+      contextOptions: { budgetChars: 1 },
+      declareIntent: fixedDeclarer({ mode: "modify", tools: ["set_session_start", "upsert_test_preset"] }),
+      chat: async (_config, request): Promise<ChatResult> => {
+        requests.push(request);
+        return { message: { role: "assistant", content: null, tool_calls: [
+          { id: "seed_write", type: "function", function: { name: "set_session_start",
+            arguments: JSON.stringify({ gold: 472320, reason: "Increment authored gold" }) } },
+          { id: "preset_write", type: "function", function: { name: "upsert_test_preset",
+            arguments: JSON.stringify({ preset: { ...expectedPresets[0], gold: 583422 }, reason: "Increment preset gold" }) } },
+        ] }, finishReason: "tool_calls" };
+      },
+    });
+    const result = await session.sendUserMessage("Increase starting gold and preset gold by one; preserve inventory");
+    expect(requests).toHaveLength(1);
+    const request = requests[0];
+    if (!request) throw new Error("First writer request was not delivered");
+    const context = original(request);
+    expect(context.entries).toContainEqual({ entryId: "/session", value: expectedSeed });
+    expect(context.entries).toContainEqual({ entryId: "/testPresets", value: expectedPresets });
+    expect(context.omitted.count).toBe(0);
+    expect(JSON.stringify(request.messages)).not.toContain("SENTINEL");
+    expect(JSON.stringify(context)).not.toContain('"gold":913579');
+    expect(result.stoppedReason, result.error).toBe("max-tool-calls");
+    expect(session.getProposedProject().session).toEqual({ ...expectedSeed, gold: 472320 });
+    expect(session.getProposedProject().testPresets).toEqual([{ ...expectedPresets[0], gold: 583422 }]);
+    expect(project.session).toEqual(expectedSeed);
+    expect(project.testPresets).toEqual(expectedPresets);
+  });
+
   it("delivers complete target originals and grants only their real read evidence before the first write", async () => {
     const project = createBlankProject();
     const map = project.maps[project.startMapId]!;
