@@ -7,6 +7,8 @@ import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { fixedDeclarer } from "./intentFixture";
+import { approvedReviewResponse } from "./independentReviewFixture";
+import type { TilesetDef } from "@/project/types";
 
 const fixtureWriters: (() => readonly Promise<unknown>[])[] = [];
 
@@ -27,6 +29,7 @@ export async function drainOutcomeFixtures(): Promise<void> {
 export function applyFixture(
   chat?: AssistantSessionOptions["chat"],
   declareIntent: AssistantSessionOptions["declareIntent"] = fixedDeclarer({ mode: "other" }),
+  renderImages?: AssistantSessionOptions["renderImages"],
 ) {
   vi.useFakeTimers(); // Autosave is unrelated; flush and exact callbacks drive every operation.
   const commits = vi.spyOn(sync, "recordProjectCommitToSupabase"); // Call through, never replace the writer.
@@ -67,23 +70,26 @@ export function applyFixture(
   project.tilesets = { [map.tilesetId]: {
     id: map.tilesetId, name: "Outcome tileset", image: tileset.image, kind: "custom",
     tileSize: map.tileSize, tilesPerRow: 1, count: 1,
-    passability: [0], priority: ["lower"], terrain: [0],
-  } };
+    passability: [{ up: true, down: true, left: true, right: true }], priority: ["lower"], terrain: [0],
+  } satisfies TilesetDef };
   store.replace(project);
   store._setPersistedBaselineForTest(null);
   resetMapEditHistory();
   store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: true, disabledReason: null });
   let round = 0;
   const events: SessionEvent[] = [];
+  const writer = chat ?? (async (): Promise<ChatResult> => round++ === 0
+    ? { message: { role: "assistant", content: null, tool_calls: [{ id: "title", type: "function", function: {
+      name: "set_title_screen", arguments: JSON.stringify({ title: "Run-owned title" }),
+    } }] }, finishReason: "tool_calls" }
+    : { message: { role: "assistant", content: "RESULT" }, finishReason: "stop" });
   const session = new AssistantSession(store.getCurrent(), {
     config: { ...defaultAiConfig(), model: "test", liteModel: "test", apiKey: "test", agentMode: "chat", maxToolCalls: 4 },
-    declareIntent,
+    declareIntent, renderImages,
     yieldToUi: async () => {},
-    chat: chat ?? (async (): Promise<ChatResult> => round++ === 0
-      ? { message: { role: "assistant", content: null, tool_calls: [{ id: "title", type: "function", function: {
-        name: "set_title_screen", arguments: JSON.stringify({ title: "Run-owned title" }),
-      } }] }, finishReason: "tool_calls" }
-      : { message: { role: "assistant", content: "RESULT" }, finishReason: "stop" }),
+    chat: async (config, request) => approvedReviewResponse(request)
+      ?? (!request.tools?.length ? { message: { role: "assistant", content: JSON.stringify({ action: "resume" }) }, finishReason: "stop" }
+        : writer(config, request)),
   });
   return { session, events, setProofResponse: (response?: () => Response | Promise<Response>) => { proofResponse = response; },
     setCommitResponse: (response: () => Response) => { commitResponse = response; },

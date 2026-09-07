@@ -8,6 +8,7 @@ import type { ChatRequest, ChatResult } from "@/ai/llmClient";
 import type { SessionEvent } from "@/ai/assistantSession";
 import { resetIntentDeclarationCache } from "@/ai/intentDeclarationClient";
 import { declaredIntent, fixedDeclarer } from "./intentFixture";
+import { toOpenAiTools } from "@/editor/tools/toolRegistry";
 
 beforeEach(resetIntentDeclarationCache);
 afterEach(() => {
@@ -101,18 +102,33 @@ describe("의도 선언이 세션 라우팅을 정한다", () => {
     expect(statuses(session).some((text) => text.startsWith("의도 확인:"))).toBe(true);
   }, 30000);
 
-  it("auto 모드는 같은 선언에도 멈추지 않고 진행한다(F-05)", async () => {
+  it("auto 모드는 되묻기를 건너뛰지만 미완성 acceptance 를 성공으로 게시하지 않는다(F-05)", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const seen: ChatRequest[] = [];
-    const session = new AssistantSession(createBlankProject(), {
+    const project = createBlankProject();
+    installHermetic(project);
+    const published: string[] = [];
+    const session = new AssistantSession(project, {
       config: AUTO_CONFIG,
-      chat: scriptedChat([finalResult("야외 집으로 진행합니다.")], seen),
+      chat: async (_config, request) => {
+        seen.push(request);
+        return finalResult("WRITER_SUCCESS_SENTINEL");
+      },
       declareIntent: fixedDeclarer({ space: "unclear", clarify: "실내인가요 야외인가요?", needsPlan: false }),
     });
-    const result = await session.sendUserMessage("집 하나 만들어줘", () => {});
+    const result = await session.sendUserMessage("집 하나 만들어줘", event => {
+      if (event.type === "assistant_message") published.push(event.content);
+    });
     expect(seen.length).toBeGreaterThan(0);
-    expect(result.assistantText).toBe("야외 집으로 진행합니다.");
-    expect(statuses(session).some((text) => text.startsWith("의도 확인 건너뜀"))).toBe(true);
+    expect(seen.length).toBeLessThanOrEqual(AUTO_CONFIG.maxToolCalls);
+    expect(seen[0]?.tools?.length).toBeGreaterThan(0);
+    expect(result.stoppedReason).toBe("error");
+    expect(session.getAcceptanceSnapshot()?.status).toBe("blocked");
+    expect(result.proposedCalls).toEqual([]);
+    expect(result.appliedCalls ?? []).toEqual([]);
+    expect(session.isDraftReviewApproved()).toBe(false);
+    expect(result.assistantText).not.toContain("WRITER_SUCCESS_SENTINEL");
+    expect(published.join("\n")).not.toContain("WRITER_SUCCESS_SENTINEL");
   }, 30000);
 
   it("선언자가 없으면 폴백 선언이다 — 되묻지 않고, 계획 여부는 플래너(direct)에게 넘긴다", async () => {
@@ -283,6 +299,7 @@ describe("의도 선언이 세션 라우팅을 정한다", () => {
     // instruction boundary is the declarer's actual input, not schema absence.
     expect(names).toContain("define_ending");
     expect(names).toContain("set_type_chart");
+    expect(request.tools).toEqual(expect.arrayContaining(toOpenAiTools()));
     expect(declareIntent).toHaveBeenCalledTimes(1);
     expect(declareIntent.mock.calls[0]?.[0].userText).toBe(instruction);
   }, 30000);

@@ -1,0 +1,16 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/toolImageGraftReadiness.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-full-context-graft-proof
+
+ ✓ test/toolImageGraftReadiness.test.ts (4 tests) 3326ms
+   ✓ tool image graft atlas readiness > withholds session approval while the graft source is held, then admits a changed PNG after release  1572ms
+   ✓ tool image graft atlas readiness > keeps failed graft source loads unapproved in the public session reviewer  1451ms
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  23:57:07
+   Duration  14.19s (transform 7.42s, setup 0ms, collect 10.47s, tests 3.33s, environment 0ms, prepare 68ms)
+

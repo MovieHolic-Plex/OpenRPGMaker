@@ -87,10 +87,18 @@
   display: none;
 }
 
+/* Match the open-deck width rule's class specificity. The weaker
+   `.ai-chat-panel.chat-dock-float .ai-deck` selector lost to `transition: width`,
+   so prefers-reduced-motion never actually disabled the animation (F10 e2e). */
 @media (prefers-reduced-motion: reduce) {
-  .ai-chat-panel.chat-dock-float .ai-deck {
+  .ai-chat-panel.chat-dock-float:not(.is-studio):not(.is-history-open):not(.is-collapsed) .ai-deck {
     transition: none;
   }
+}
+
+/* Live drag must track the pointer exactly — never ease toward the target mid-gesture. */
+.ai-chat-panel.chat-dock-float.is-resizing:not(.is-studio):not(.is-history-open):not(.is-collapsed) .ai-deck {
+  transition: none;
 }
 
 /* ── 2. 상태 레일 ─────────────────────────────────────────────── */

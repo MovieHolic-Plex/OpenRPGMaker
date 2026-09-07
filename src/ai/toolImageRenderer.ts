@@ -1,24 +1,40 @@
-import { tilesetImageUrl } from "@/editor/tilesetImage";
 import type { GameMap, Project, TilesetDef } from "@/project/types";
+import { mapVisualEvidenceUnavailable } from "./mapVisualEvidence";
+import {
+  canvasDataUrl,
+  createCanvas,
+  drawCheckerBackground,
+  drawTile,
+  EMPTY_TILE,
+  loadTilesetImage,
+} from "./toolImageCanvas";
+import {
+  drawRegionEventSprites,
+  resolveRegionEventSprites,
+  type RegionEventSprite,
+} from "./toolImageEventSprites";
 
 export type RenderedToolImage = { readonly dataUrl: string; readonly label: string };
 
-const MAX_IMAGE_DIMENSION = 512;
 const MAX_TILE_SWATCHES = 12;
 const TILE_SWATCH_SCALE = 6;
 /** 맵 미리보기 타일 배율 — 너무 크면 base64가 컨텍스트를 잠식(16×16×3×16px ≈ 거대). */
 const TILE_GRID_SCALE = 2;
 const MIN_SWATCH_SIZE = 48;
 const MAX_SWATCH_COLUMNS = 6;
-const EMPTY_TILE = -1;
-const CHECKER_DARK = "#2a2a2e";
-const CHECKER_LIGHT = "#33333a";
 
 type UnknownRecord = { readonly [key: string]: unknown };
 
-type TileGridPayload = { readonly tileset: TilesetDef; readonly x: number; readonly y: number; readonly w: number; readonly h: number; readonly lower: readonly (readonly number[])[]; readonly upper: readonly (readonly number[])[] };
-
-const tilesetImagePromises = new Map<string, Promise<HTMLImageElement>>();
+type TileGridPayload = {
+  readonly tileset: TilesetDef;
+  readonly x: number;
+  readonly y: number;
+  readonly w: number;
+  readonly h: number;
+  readonly lower: readonly (readonly number[])[];
+  readonly upper: readonly (readonly number[])[];
+  readonly events: readonly RegionEventSprite[];
+};
 
 /** 뷰포트/영역 타일 그리드를 데이터 URL 이미지로 렌더(어시스턴트 턴 시작 비전 주입용). */
 export async function renderMapRegionImages(
@@ -29,7 +45,8 @@ export async function renderMapRegionImages(
   if (typeof document === "undefined") return [];
   try {
     return await renderTileGrid(project, data, label);
-  } catch {
+  } catch (cause) {
+    if (cause instanceof Error && cause.message.includes("rendering-unavailable")) throw cause;
     return [];
   }
 }
@@ -37,15 +54,17 @@ export async function renderMapRegionImages(
 export async function renderToolImages(project: Project, toolName: string, data: unknown): Promise<RenderedToolImage[]> {
   if (typeof document === "undefined") return [];
   try {
-    if (toolName === "show_tiles") return renderShowTiles(project, data);
-    if (toolName === "show_map_region") return renderTileGrid(project, data, "맵 미리보기");
-    if (toolName === "show_tile_grid") return renderTileGrid(project, data);
-    if (toolName === "get_map_region") return renderTileGrid(project, data);
-    if (toolName === "preview_house") return renderTileGrid(project, data, "집 미리보기");
-    if (toolName === "look_at_houses") return renderTileGrid(project, data, "깔린 집 관찰");
-    if (toolName === "render_group_sample") return renderGroupSamples(project, data);
+    if (toolName === "show_tiles") return await renderShowTiles(project, data);
+    if (toolName === "show_map_region") return await renderTileGrid(project, data, "맵 미리보기");
+    if (toolName === "show_tile_grid") return await renderTileGrid(project, data);
+    if (toolName === "get_map_region") return await renderTileGrid(project, data);
+    if (toolName === "preview_house") return await renderTileGrid(project, data, "집 미리보기");
+    if (toolName === "look_at_houses") return await renderTileGrid(project, data, "깔린 집 관찰");
+    if (toolName === "render_group_sample") return await renderGroupSamples(project, data);
     return [];
-  } catch {
+  } catch (cause) {
+    // Intentional unavailable contracts must stay observable; load/decode noise stays soft.
+    if (cause instanceof Error && cause.message.includes("rendering-unavailable")) throw cause;
     return [];
   }
 }
@@ -99,6 +118,9 @@ async function renderShowTiles(project: Project, data: unknown): Promise<Rendere
 }
 
 async function renderTileGrid(project: Project, data: unknown, label = "영역"): Promise<RenderedToolImage[]> {
+  const raw = toolPayload(data), map = raw ? mapField(project, raw) : undefined;
+  const unavailable = map ? mapVisualEvidenceUnavailable(map) : null;
+  if (unavailable) throw new Error(unavailable);
   const payload = tileGridPayload(project, data);
   if (!payload) return [];
   return renderTileGridPayload(payload, `${label} (${payload.x},${payload.y}) ${payload.w}×${payload.h}`);
@@ -114,13 +136,19 @@ async function renderTileGridPayload(payload: TileGridPayload, label: string): P
   for (let row = 0; row < payload.h; row += 1) {
     for (let column = 0; column < payload.w; column += 1) {
       const lowerTile = tileAt(payload.lower, row, column);
-      const upperTile = tileAt(payload.upper, row, column);
-      const targetX = column * drawSize;
-      const targetY = row * drawSize;
-      if (lowerTile >= 0) drawTile(context, image, lowerTile, payload.tileset, targetX, targetY, drawSize);
-      if (upperTile >= 0) drawTile(context, image, upperTile, payload.tileset, targetX, targetY, drawSize);
+      if (lowerTile >= 0) drawTile(context, image, lowerTile, payload.tileset, column * drawSize, row * drawSize, drawSize);
     }
   }
+  const below = payload.events.filter((event) => event.priority === "below");
+  const rest = payload.events.filter((event) => event.priority !== "below");
+  await drawRegionEventSprites(context, below);
+  for (let row = 0; row < payload.h; row += 1) {
+    for (let column = 0; column < payload.w; column += 1) {
+      const upperTile = tileAt(payload.upper, row, column);
+      if (upperTile >= 0) drawTile(context, image, upperTile, payload.tileset, column * drawSize, row * drawSize, drawSize);
+    }
+  }
+  await drawRegionEventSprites(context, rest);
   const dataUrl = canvasDataUrl(canvas);
   return dataUrl ? [{ dataUrl, label }] : [];
 }
@@ -166,7 +194,12 @@ function tileGridPayload(project: Project, data: unknown): TileGridPayload | nul
   if (w <= 0 || h <= 0) return null;
   const tileset = tilesetForPayload(project, payload);
   if (!isRenderableTileset(tileset)) return null;
-  return { tileset, x, y, w, h, lower, upper };
+  const map = mapField(project, payload);
+  const events = map
+    ? resolveRegionEventSprites(project, map, { x, y, w, h }, tileset.tileSize * TILE_GRID_SCALE)
+    : { ok: true as const, sprites: [] };
+  if (!events.ok) throw new Error(events.reason);
+  return { tileset, x, y, w, h, lower, upper, events: events.sprites };
 }
 
 function tilesetForPayload(project: Project, payload: UnknownRecord): TilesetDef | undefined {
@@ -230,56 +263,4 @@ function gridWidth(grid: readonly (readonly number[])[]): number {
 
 function tileAt(grid: readonly (readonly number[])[], row: number, column: number): number {
   return grid[row]?.[column] ?? EMPTY_TILE;
-}
-
-function createCanvas(width: number, height: number): { readonly canvas: HTMLCanvasElement; readonly context: CanvasRenderingContext2D } | null {
-  const canvas = document.createElement("canvas");
-  canvas.width = Math.max(1, Math.ceil(width));
-  canvas.height = Math.max(1, Math.ceil(height));
-  const context = canvas.getContext("2d");
-  if (!context) return null;
-  context.imageSmoothingEnabled = false;
-  return { canvas, context };
-}
-
-function drawCheckerBackground(context: CanvasRenderingContext2D, width: number, height: number, size: number): void {
-  context.fillStyle = CHECKER_DARK;
-  context.fillRect(0, 0, width, height);
-  context.fillStyle = CHECKER_LIGHT;
-  for (let y = 0; y < height; y += size) {
-    for (let x = 0; x < width; x += size) {
-      if ((x / size + y / size) % 2 === 0) context.fillRect(x, y, size, size);
-    }
-  }
-}
-
-function drawTile(context: CanvasRenderingContext2D, image: HTMLImageElement, tile: number, tileset: TilesetDef, targetX: number, targetY: number, targetSize: number): void {
-  const sourceX = (tile % tileset.tilesPerRow) * tileset.tileSize;
-  const sourceY = Math.floor(tile / tileset.tilesPerRow) * tileset.tileSize;
-  context.drawImage(image, sourceX, sourceY, tileset.tileSize, tileset.tileSize, targetX, targetY, targetSize, targetSize);
-}
-
-function canvasDataUrl(canvas: HTMLCanvasElement): string | null {
-  const maxDimension = Math.max(canvas.width, canvas.height);
-  if (maxDimension <= MAX_IMAGE_DIMENSION) return canvas.toDataURL("image/png");
-  const scale = MAX_IMAGE_DIMENSION / maxDimension;
-  const scaledPair = createCanvas(canvas.width * scale, canvas.height * scale);
-  if (!scaledPair) return null;
-  scaledPair.context.drawImage(canvas, 0, 0, scaledPair.canvas.width, scaledPair.canvas.height);
-  return scaledPair.canvas.toDataURL("image/png");
-}
-
-function loadTilesetImage(tileset: TilesetDef): Promise<HTMLImageElement> {
-  const url = tilesetImageUrl(tileset);
-  const existing = tilesetImagePromises.get(url);
-  if (existing) return existing;
-  const promise = new Promise<HTMLImageElement>((resolve, reject) => {
-    const image = new Image();
-    image.onload = () => resolve(image);
-    image.onerror = () => reject(new Error("tileset image failed to load"));
-    image.src = url;
-  });
-  tilesetImagePromises.set(url, promise);
-  promise.catch(() => tilesetImagePromises.delete(url));
-  return promise;
 }

@@ -132,6 +132,10 @@ const criterionCases: AcceptanceCriterion[] = [
     runtimeKeys: { "authored-id": [null, false, 0, "0", { nested: {} }] },
   } },
   ...[{ mapId: "map_start" }, { newMapName: "New room" }].flatMap((target): AcceptanceCriterion[] => [
+    { kind: "shopPurchase", target, start: { x: 1, y: 1 }, seller: { eventId: "seller" },
+      item: { id: "item_potion" }, count: 2, unitPrice: 10 },
+    { kind: "mapRoundTrip", target, start: { x: 1, y: 1 }, destination: { mapId: "interior" },
+      outgoing: { eventName: "Exit" }, returning: { eventId: "return" } },
     { kind: "actionCombat", target },
     { kind: "mapDimensions", target, width: 20, height: 15 },
     { kind: "mapCount", targets: [target], count: 1 },
@@ -142,6 +146,12 @@ const criterionCases: AcceptanceCriterion[] = [
     ]),
   ]),
   { kind: "mapCount", targets: [{ mapId: "map_start" }, { newMapName: "New room" }], count: 2 },
+  { kind: "npcReward", requirement: { target: { mapId: "map_start", eventName: "Mira" },
+    grants: [{ kind: "item", name: "Potion", count: 2 }, { kind: "monster", id: "species_leafling" }],
+    oneTime: true, choices: [0], repeatChoices: [1] } },
+  { kind: "functionalUnresolved", reason: "Specify the requested price" },
+  { kind: "functionalUnresolved", reason: "Specify the requested price", expectations: {
+    kind: "shopPurchase", seller: { eventName: "Mira" }, item: { name: "Potion" }, count: 2 } },
 ];
 
 function expectRepresentable(schema: SchemaNode | undefined, value: unknown): void {
@@ -198,9 +208,11 @@ describe("acceptance and requirement schema/runtime contract", () => {
     expect(item?.additionalProperties).toBe(false);
     expect(item?.properties?.kind).toEqual({ type: "string", enum: [
       "toolVerdict", "mapDimensions", "mapCount", "eventCount", "targetChange", "preserve", "imageReviewed", "reachability", "actionCombat",
+      "shopPurchase", "mapRoundTrip", "npcReward", "functionalUnresolved",
     ] });
     expect(Object.keys(item?.properties ?? {}).sort()).toEqual([
-      "args", "count", "from", "height", "kind", "region", "target", "targets", "to", "tool", "width",
+      "args", "count", "destination", "expectations", "from", "height", "item", "kind", "outgoing", "reason", "region", "requirement",
+      "returning", "seller", "start", "target", "targets", "to", "tool", "unitPrice", "width",
     ]);
     expect(item?.properties?.args).toMatchObject({ type: "object", additionalProperties: true });
     expect(item?.properties?.target).toMatchObject({ type: "object", additionalProperties: false,
@@ -215,7 +227,7 @@ describe("acceptance and requirement schema/runtime contract", () => {
 
   it.each(criterionCases)("retains runtime requiredness and rejects extra fields for $kind %j", criterion => {
     const valid: Record<string, unknown> = { ...criterion };
-    for (const key of Object.keys(valid).filter(key => key !== "region")) {
+    for (const key of Object.keys(valid).filter(key => key !== "region" && !(criterion.kind === "functionalUnresolved" && key === "expectations"))) {
       const missing = { ...valid };
       delete missing[key];
       expect(parseAcceptanceCriteria([criterion, missing]), `missing ${key}`).toBeNull();
