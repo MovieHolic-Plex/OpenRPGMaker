@@ -7,6 +7,7 @@ import { runTool } from "@/editor/tools/toolRunner";
 import { createBlankProject } from "@/project/defaults";
 import { TILE } from "@/project/defaults/constants";
 import type { GameEvent, Project } from "@/project/types";
+import { approvedReview } from "./independentReviewFixture";
 
 const MAP_ID = "map_clip";
 const W = 10;
@@ -182,19 +183,26 @@ describe("runRegionTask live ghost preview", () => {
     draft.maps[MAP_ID].lowerTiles[idx(2, 2)] = 42;
     const seen: AgentGhostPreviewState[] = [];
     const unsubscribe = subscribeAgentGhostPreview((state) => seen.push(state));
+    // 생산 세션과 같은 순서로 검수-준비 변환을 거친 후보를 발행한다:
+    // runRegionTask가 등록한 setReviewDraftTransform(영역 클립 + 하우스 가드)을
+    // sendUserMessage 안에서 후보에 적용하고, 독립 검수 승인 리뷰를 담은 턴을 반환한다.
+    let candidate: Project = draft;
+    let prepare: ((project: Project) => Project) | undefined;
     const deps: RegionTaskDeps = {
       getProject: () => base,
       applyProject: () => undefined,
       createSession: () => ({
-        getProposedProject: () => draft,
+        getProposedProject: () => candidate,
+        setReviewDraftTransform: (transform) => { prepare = transform; },
         sendUserMessage: async (_message, onEvent) => {
+          candidate = prepare?.(candidate) ?? candidate;
           onEvent?.({
             type: "tool_call",
             name: "paint_tiles",
             args: { mapId: MAP_ID },
             result: { ok: true, summary: "타일 변경" },
           });
-          return { assistantText: "", proposedCalls: [], stoppedReason: "final" };
+          return { assistantText: "", proposedCalls: [], stoppedReason: "final", review: approvedReview };
         },
       }),
     };
@@ -209,7 +217,9 @@ describe("runRegionTask live ghost preview", () => {
     expect(result.pending).toBeDefined();
     expect(seen.at(-1)?.previews.length).toBeGreaterThan(0);
     // discard로 게이트가 해소되면 그제서야 clear된다.
-    result.pending!.discard();
+    const pending = result.pending;
+    expect(pending).toBeDefined();
+    pending?.discard();
     expect(seen.at(-1)?.previews).toEqual([]);
     unsubscribe();
   });

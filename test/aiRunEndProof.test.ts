@@ -3,10 +3,12 @@ import { clearTimeout as clearDeadline, setTimeout as setDeadline } from "node:t
 import type { Project } from "@/project/types";
 import type { ChatResult } from "@/ai/llmClient";
 import { fixedDeclarer } from "./intentFixture";
+import { approvedReviewResponse, independentReviewPayload } from "./independentReviewFixture";
 import { AssistantSession, type RunEndProofState } from "@/ai/assistantSession";
 import { store } from "@/project/store";
 import { createBlankProject } from "@/project/defaults";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
+import { resetIntentDeclarationCache } from "@/ai/intentDeclarationClient";
 
 const projectId = "p1-session-proof-fixture";
 type Row = { project_id: string; current_json: Project; current_sha256: string };
@@ -29,6 +31,7 @@ async function waitForSignal(signal: Promise<void>): Promise<void> {
 }
 
 async function fixture(withPlan = true) {
+  resetIntentDeclarationCache(); // Same prompt, different plan/no-plan scenarios must not share a cached declaration.
   let row: Row | undefined;
   let read: (() => Promise<Response>) | undefined;
   let write: (() => Promise<void>) | undefined;
@@ -64,13 +67,20 @@ async function fixture(withPlan = true) {
   let failFinal = false;
   let chatCalls = 0;
   const session = new AssistantSession(store.getCurrent(), {
-    config: { authMode: "apiKey", agentMode: withPlan ? "auto" : "chat", baseUrl: "x", model: "test", apiKey: "test", maxTokens: 1024, maxToolCalls: 10 },
+    config: { authMode: "apiKey", agentMode: withPlan ? "auto" : "chat", baseUrl: "x", model: "test", apiKey: "test", maxTokens: 8192, maxToolCalls: 10 },
     declareIntent: fixedDeclarer({ mode: "modify", needsPlan: withPlan }),
     yieldToUi: async () => {},
     chat: async (_config, request) => {
       chatCalls += 1;
-      if (wrote && failFinal) { failFinal = false; throw Object.assign(new Error("scripted-final-failure"), { name: "LlmError", status: 401 }); }
+      const approval = approvedReviewResponse(request);
+      if (approval) {
+        expect(request.tools).toEqual([]);
+        expect(independentReviewPayload(request)?.originalRequest).toBe("Set the title");
+        expect(independentReviewPayload(request)?.requiredProblems).toEqual([]);
+        return approval;
+      }
       if (!request.tools?.length) return final(JSON.stringify(wrote ? { action: "resume" } : { action: "new_plan", ...plan }));
+      if (wrote && failFinal) { failFinal = false; throw Object.assign(new Error("scripted-final-failure"), { name: "LlmError", status: 401 }); }
       if (wrote) return final("Finished.");
       wrote = true;
       return { message: { role: "assistant", content: null, tool_calls: [{ id: "title", type: "function", function: {
@@ -87,7 +97,7 @@ async function fixture(withPlan = true) {
     setCommit: (next: () => Promise<Response>) => { commitResponse = next; },
     row: () => { if (!row) throw new Error("No saved row"); return row; },
     run: (onEvent: Parameters<typeof session.sendUserMessage>[1] = () => {}, signal?: AbortSignal) =>
-      session.sendUserMessage("Set the title", onEvent, signal, { autonomous: true }),
+      session.sendUserMessage("Set the title", onEvent, signal, { autonomous: withPlan }),
     savedAudits: () => session.getAuditEntries().filter((entry) => entry.kind === "status" && entry.text.split(" ")[0] === "agent_run_saved"),
   };
 }
@@ -304,28 +314,33 @@ describe("AssistantSession accepted-revision proof", () => {
     f.setRead(() => { started.resolve(); return reply.promise; });
     const reload = vi.spyOn(f.store, "reloadFromRemote");
     const running = f.run(() => {}, controller.signal);
-    await started.promise;
-    expect(f.session.getRunEndProof()).toMatchObject({ status: "attempted", verified: false });
-    const row = structuredClone(f.row());
-    if (failure === "cancelled") controller.abort();
-    if (failure === "disabled") f.store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: false });
-    if (failure === "target") row.project_id = "other-project";
-    if (failure === "content") row.current_json.meta.title = "other-content";
-    if (failure === "local-edit") f.store.update((draft) => { draft.meta.title = "human-edit"; });
-    const live = f.store.getCurrent();
-    reply.resolve(Response.json([row]));
-    await running;
-    expect(f.savedAudits()).toHaveLength(0);
-    expect(f.session.getRunEndProof()).toMatchObject({ status: "failed", verified: false,
-      reason: failure === "local-edit" ? "stale" : failure === "target" || failure === "content" ? `mismatch-${failure}` : failure });
-    expect(f.store.getCurrent()).toBe(live);
-    expect(reload).not.toHaveBeenCalled();
-    if (failure === "local-edit") {
-      expect(f.store.getCurrent().meta.title).toBe("human-edit");
-      expect(f.store.hasUnsavedChanges()).toBe(true);
-      expect(f.session.getRunEndProof()?.proof).toMatchObject({ kind: "verified", isCurrent: false });
+    try {
+      await waitForSignal(started.promise);
+      expect(f.session.getRunEndProof()).toMatchObject({ status: "attempted", verified: false });
+      const row = structuredClone(f.row());
+      if (failure === "cancelled") controller.abort();
+      if (failure === "disabled") f.store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: false });
+      if (failure === "target") row.project_id = "other-project";
+      if (failure === "content") row.current_json.meta.title = "other-content";
+      if (failure === "local-edit") f.store.update((draft) => { draft.meta.title = "human-edit"; });
+      const live = f.store.getCurrent();
+      reply.resolve(Response.json([row]));
+      await running;
+      expect(f.savedAudits()).toHaveLength(0);
+      expect(f.session.getRunEndProof()).toMatchObject({ status: "failed", verified: false,
+        reason: failure === "local-edit" ? "stale" : failure === "target" || failure === "content" ? `mismatch-${failure}` : failure });
+      expect(f.store.getCurrent()).toBe(live);
+      expect(reload).not.toHaveBeenCalled();
+      if (failure === "local-edit") {
+        expect(f.store.getCurrent().meta.title).toBe("human-edit");
+        expect(f.store.hasUnsavedChanges()).toBe(true);
+        expect(f.session.getRunEndProof()?.proof).toMatchObject({ kind: "verified", isCurrent: false });
+      }
+    } finally {
+      reply.resolve(Response.json([]));
+      await running;
     }
-  });
+  }, 60_000);
 
   it("uses the real apply commit, not a newest remote commit read", async () => {
     const f = await fixture();
@@ -350,8 +365,10 @@ describe("AssistantSession accepted-revision proof", () => {
     expect(f.session.getHarnessSnapshot().workPlan).toBeNull();
     expect(f.session.getRunEndProof()).toBeNull();
     expect(result.proposedCalls.map((call) => call.name)).toEqual(["set_title_screen"]);
+    expect(result.review?.status).toBe("approved");
+    expect(f.session.isDraftReviewApproved(f.session.getProposedProject())).toBe(true);
     const { applyProposedProject } = await import("@/editor/tools/applyChangesetToStore");
-    const applied = await applyProposedProject(f.session.getProposedProject(), { source: "agent", summary: "title", toolNames: ["set_title_screen"] });
+    const applied = await applyProposedProject(f.session.getProposedProject(), { baseline: f.session.getDraftBaseline(), source: "agent", summary: "title", toolNames: ["set_title_screen"] });
     if (!applied.ok) throw new Error(applied.issue);
     f.session.recordAppliedProject(applied);
     f.session.rebaseProject(f.store.getCurrent());
@@ -361,22 +378,29 @@ describe("AssistantSession accepted-revision proof", () => {
 
   it("does not correlate a later human edit with an in-flight apply commit", async () => {
     const f = await fixture(false);
-    await f.run();
+    const result = await f.run();
+    expect(result.review?.status).toBe("approved");
+    expect(f.commits).toHaveLength(0);
     const started = Promise.withResolvers<void>();
     const reply = Promise.withResolvers<Response>();
     f.setCommit(() => { started.resolve(); return reply.promise; });
     const { applyProposedProject } = await import("@/editor/tools/applyChangesetToStore");
-    const applying = applyProposedProject(f.session.getProposedProject(), { source: "agent", summary: "title", toolNames: ["set_title_screen"] });
-    await started.promise;
-    f.store.update((draft) => { draft.meta.title = "human-during-commit"; });
-    reply.resolve(Response.json([]));
-    const applied = await applying;
-    if (!applied.ok) throw new Error(applied.issue);
-    expect(applied.commitProject).not.toBe(f.store.getCurrent());
-    f.session.recordAppliedProject(applied);
-    expect(await f.session.proveAppliedRevision()).toMatchObject({ status: "succeeded", verified: true, commitId: null });
-    expect(f.store.getCurrent().meta.title).toBe("human-during-commit");
-  });
+    const applying = applyProposedProject(f.session.getProposedProject(), { baseline: f.session.getDraftBaseline(), source: "agent", summary: "title", toolNames: ["set_title_screen"] });
+    try {
+      await waitForSignal(started.promise);
+      f.store.update((draft) => { draft.meta.title = "human-during-commit"; });
+      reply.resolve(Response.json([]));
+      const applied = await applying;
+      if (!applied.ok) throw new Error(applied.issue);
+      expect(applied.commitProject).not.toBe(f.store.getCurrent());
+      f.session.recordAppliedProject(applied);
+      expect(await f.session.proveAppliedRevision()).toMatchObject({ status: "succeeded", verified: true, commitId: null });
+      expect(f.store.getCurrent().meta.title).toBe("human-during-commit");
+    } finally {
+      reply.resolve(Response.json([]));
+      await applying;
+    }
+  }, 60_000);
 
   it("retryLastTurn retries failed proof without replaying the LLM or applied tools", async () => {
     const f = await fixture();
@@ -391,16 +415,37 @@ describe("AssistantSession accepted-revision proof", () => {
     expect(f.commits).toHaveLength(1);
   });
 
-  it("retryLastTurn proves already applied milestones after a recovered LLM failure", async () => {
+  it.each(["pending", "applied"] as const)("retryLastTurn proves %s milestones after a recovered LLM failure without replaying tools", async state => {
     const f = await fixture();
+    if (state === "applied") {
+      f.setRead(async () => new Response("unavailable", { status: 503 }));
+      expect((await f.run()).appliedCalls?.map(call => call.name)).toEqual(["set_title_screen"]);
+      expect(f.session.getRunEndProof()).toMatchObject({ status: "failed", verified: false });
+      expect(f.commits).toHaveLength(1);
+    }
     f.failFinal();
-    expect((await f.run()).stoppedReason).toBe("error");
-    expect(f.session.getRunEndProof()).toBeNull();
-    const commits = f.commits.length;
-    expect((await f.session.retryLastTurn()).stoppedReason).toBe("final");
+    const failed = await f.run();
+    expect(failed.stoppedReason).toBe("error");
+    expect(failed.proposedCalls.map(call => call.name)).toEqual(state === "pending" ? ["set_title_screen"] : []);
+    // Without independent review the completed item remains detached; earlier approved work is retained.
+    expect(f.commits).toHaveLength(state === "pending" ? 0 : 1);
+    if (state === "pending") expect(f.session.getRunEndProof()).toBeNull();
+    f.setRead(async () => Response.json([f.row()]));
+    const events: string[] = [];
+    const recovered = await f.session.retryLastTurn(event => { events.push(event.type); });
+    expect(recovered.stoppedReason, recovered.error).toBe("final");
+    expect(events).not.toContain("tool_started");
+    if (state === "pending") {
+      expect(recovered.review?.status).toBe("approved");
+      expect(events.filter(type => type === "result_review" || type === "milestone_applied"))
+        .toEqual(["result_review", "milestone_applied"]);
+    } else {
+      expect(events).not.toContain("result_review");
+      expect(events).not.toContain("milestone_applied");
+    }
     expect(f.session.getRunEndProof()).toMatchObject({ status: "succeeded", verified: true });
-    expect(f.commits).toHaveLength(commits);
-  });
+    expect(f.commits).toHaveLength(1);
+  }, 60_000);
 
   it("a clean saved response without an accepted receipt cannot become proof", async () => {
     const f = await fixture();

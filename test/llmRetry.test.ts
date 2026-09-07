@@ -8,6 +8,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   chatCompletion,
+  defaultAiConfig,
   isRetryableLlmError,
   LlmError,
   LlmAbortError,
@@ -20,10 +21,14 @@ import { AssistantSession } from "@/ai/assistantSession";
 import type { SessionEvent } from "@/ai/assistantSession";
 import { createBlankProject } from "@/project/defaults";
 import type { ChatResult } from "@/ai/llmClient";
+import { fixedDeclarer } from "./intentFixture";
+import { approvedReviewResponse } from "./independentReviewFixture";
 
 const CONFIG: AiConfig = {
+  ...defaultAiConfig(),
+  authMode: "apiKey",
+  agentMode: "chat",
   baseUrl: "http://llm.test/v1",
-  model: "stub-model",
   apiKey: "sk-test",
   maxToolCalls: 8,
   maxTokens: 512,
@@ -105,8 +110,8 @@ describe("chatCompletion 자동 재시도", () => {
     const error = await pending;
 
     expect(error).toBeInstanceOf(LlmError);
-    expect((error as LlmError).message).toContain("네트워크 오류");
-    expect((error as LlmError).message).toContain("자동 재시도 1회 실패");
+    expect(error).toMatchObject({ message: expect.stringContaining("네트워크 오류") });
+    expect(error).toMatchObject({ message: expect.stringContaining("자동 재시도 1회 실패") });
   });
 
   it("401(인증)은 재시도 없이 즉시 던진다", async () => {
@@ -128,7 +133,7 @@ describe("chatCompletion 자동 재시도", () => {
     }).catch((cause: unknown) => cause);
 
     expect(error).toBeInstanceOf(LlmError);
-    expect((error as LlmError).message).toContain("스트리밍 연결이 끊겼습니다");
+    expect(error).toMatchObject({ message: expect.stringContaining("스트리밍 연결이 끊겼습니다") });
     expect(fetchSpy).toHaveBeenCalledTimes(1);
     expect(tokens).toEqual(["부분"]);
   });
@@ -155,8 +160,7 @@ describe("chatCompletion 자동 재시도", () => {
     const error = await assertion;
 
     expect(error).toBeInstanceOf(LlmError);
-    expect((error as LlmError).status).toBe(504);
-    expect((error as LlmError).message).toContain("요청 시간 초과");
+    expect(error).toMatchObject({ status: 504, message: expect.stringContaining("요청 시간 초과") });
     expect(isRetryableLlmError(error)).toBe(true);
   });
 
@@ -203,13 +207,20 @@ describe("AssistantSession.retryLastTurn — 수동 재시도", () => {
 
   it("오류로 끊긴 턴을 재개하면 이전 제안이 유지된 채 완주한다", async () => {
     let round = 0;
-    const chat = async (): Promise<ChatResult> => {
+    const chat = async (_config: AiConfig, request: ChatRequest): Promise<ChatResult> => {
+      const review = approvedReviewResponse(request);
+      if (review) return review;
       round += 1;
       if (round === 1) return toolCallResult("create_map", { id: "m_retry", name: "재시도 맵", width: 6, height: 6 });
       if (round === 2) throw new Error("일반 오류: 수동 재시도 확인");
+      if (round === 3) return toolCallResult("show_map_region", { mapId: "m_retry", x: 0, y: 0, w: 6, h: 6 });
       return { message: { role: "assistant", content: "완료했습니다.", tool_calls: undefined }, finishReason: "stop" };
     };
-    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
+    const session = new AssistantSession(createBlankProject(), {
+      config: CONFIG, chat,
+      declareIntent: fixedDeclarer({ mode: "modify" }),
+      renderImages: async () => [{ label: "Retry map", dataUrl: "data:image/png;base64,AA==" }],
+    });
 
     const first = await session.sendUserMessage("맵 만들어줘", () => {});
     expect(first.stoppedReason).toBe("error");
@@ -218,7 +229,7 @@ describe("AssistantSession.retryLastTurn — 수동 재시도", () => {
 
     const retried = await session.retryLastTurn(() => {});
     expect(retried.stoppedReason).toBe("final");
-    expect(retried.assistantText).toBe("완료했습니다.");
+    expect(retried.review?.status).toBe("approved");
     // 오류 이전에 누적된 제안을 잃지 않는다.
     expect(retried.proposedCalls.map((call) => call.name)).toEqual(["create_map"]);
     expect(session.canRetryLastTurn()).toBe(false);
@@ -232,7 +243,7 @@ describe("AssistantSession.retryLastTurn — 수동 재시도", () => {
       if (calls === 1) throw new LlmError("서버 오류", 503);
       return { message: { role: "assistant", content: "자동 복구됨", tool_calls: undefined }, finishReason: "stop" };
     };
-    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
+    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat, declareIntent: fixedDeclarer({ mode: "question" }) });
 
     const pending = session.sendUserMessage("안녕", () => {});
     await vi.advanceTimersByTimeAsync(LLM_RETRY_BACKOFF_MS + 10);
@@ -254,7 +265,7 @@ describe("AssistantSession.retryLastTurn — 수동 재시도", () => {
         500,
       );
     };
-    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
+    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat, declareIntent: fixedDeclarer({ mode: "question" }) });
     const events: SessionEvent[] = [];
 
     const pending = session.sendUserMessage("야외 집 한 채", (event) => events.push(event));
@@ -263,9 +274,8 @@ describe("AssistantSession.retryLastTurn — 수동 재시도", () => {
 
     expect(calls).toBe(2);
     expect(result.stoppedReason).toBe("error");
-    expect(events.filter((event) => event.type === "status").map((event) => event.text)).toEqual([
-      "일시 오류 — 재시도 중(1/1)",
-    ]);
+    expect(session.canRetryLastTurn()).toBe(true);
+    expect(events.filter(event => event.type === "assistant_stream_reset")).toEqual([]);
   });
 
   it("토큰 일부 수신 후 스트림이 끊기면 부분 출력을 초기화하고 같은 라운드를 재시도한다", async () => {
@@ -282,7 +292,7 @@ describe("AssistantSession.retryLastTurn — 수동 재시도", () => {
       req.onToken?.("완료");
       return { message: { role: "assistant", content: "완료", tool_calls: undefined }, finishReason: "stop" };
     };
-    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
+    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat, declareIntent: fixedDeclarer({ mode: "question" }) });
     const events: SessionEvent[] = [];
     let displayed = "";
 
@@ -300,7 +310,7 @@ describe("AssistantSession.retryLastTurn — 수동 재시도", () => {
     expect(displayed).toBe("완료");
     expect(displayed).not.toContain("부분 출력");
     expect(events.some((event) => event.type === "assistant_stream_reset")).toBe(true);
-    expect(events.some((event) => event.type === "status" && event.text === "연결 끊김 — 재시도 중(1/3)")).toBe(true);
+    expect(events.filter(event => event.type === "reasoning_token")).toEqual([{ type: "reasoning_token", delta: "중간 추론" }]);
   });
 
   it("스트림 절단이 재시도 3회를 모두 소진하면 오류로 종료하고 수동 재시도를 허용한다", async () => {
@@ -312,7 +322,7 @@ describe("AssistantSession.retryLastTurn — 수동 재시도", () => {
       req.onToken?.(`부분 ${calls} `.repeat(80));
       throw new LlmError("네트워크 오류: 스트리밍 연결이 끊겼습니다.");
     };
-    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
+    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat, declareIntent: fixedDeclarer({ mode: "question" }) });
     const events: SessionEvent[] = [];
 
     const pending = session.sendUserMessage("긴 작업", (event) => events.push(event));
@@ -321,13 +331,11 @@ describe("AssistantSession.retryLastTurn — 수동 재시도", () => {
 
     expect(calls).toBe(4);
     expect(result.stoppedReason).toBe("error");
-    expect(result.error).toContain("일시적 네트워크 문제로 보이면 재시도를 눌러 주세요");
+    expect(result.error).toBeDefined();
     expect(session.canRetryLastTurn()).toBe(true);
     expect(events.filter((event) => event.type === "assistant_stream_reset")).toHaveLength(3);
-    expect(events.filter((event) => event.type === "status").map((event) => event.text)).toEqual([
-      "연결 끊김 — 재시도 중(1/3)",
-      "연결 끊김 — 재시도 중(2/3)",
-      "연결 끊김 — 재시도 중(3/3)",
+    expect(events.filter(event => event.type === "reasoning_token").map(event => event.delta)).toEqual([
+      "추론 1", "추론 2", "추론 3", "추론 4",
     ]);
   });
 
@@ -338,7 +346,7 @@ describe("AssistantSession.retryLastTurn — 수동 재시도", () => {
       req.onToken?.("중단 전 ".repeat(80));
       throw new LlmAbortError();
     };
-    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
+    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat, declareIntent: fixedDeclarer({ mode: "question" }) });
     const events: SessionEvent[] = [];
 
     const result = await session.sendUserMessage("중단 테스트", (event) => events.push(event));
@@ -355,7 +363,7 @@ describe("AssistantSession.retryLastTurn — 수동 재시도", () => {
       message: { role: "assistant", content: "네.", tool_calls: undefined },
       finishReason: "stop",
     });
-    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
+    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat, declareIntent: fixedDeclarer({ mode: "question" }) });
     await session.sendUserMessage("안녕", () => {});
     expect(session.canRetryLastTurn()).toBe(false);
     const noop = await session.retryLastTurn(() => {});

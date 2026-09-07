@@ -1,3 +1,4 @@
+import { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
 import { createHash } from "node:crypto";
 import { clearTimeout, setTimeout } from "node:timers";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -115,6 +116,7 @@ describe.each([false, true])("actual apply commit correlation (resetProject=%s)"
     }
     try {
       const applying = applyProposedProject(proposed, {
+        baseline: new AuthoredProjectBaseline(before),
         source: "agent", summary: "Apply correlation", toolNames: ["set_title_screen"], resetProject,
       });
       if (scenario === "async-commit-edit") {

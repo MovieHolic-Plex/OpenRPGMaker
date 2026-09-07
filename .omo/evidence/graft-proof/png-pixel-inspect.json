@@ -1,0 +1,10 @@
+{
+  "size": [
+    128,
+    128
+  ],
+  "tile0_pixels": 1024,
+  "tile0_diff_pixels": 1024,
+  "tile0_changed": true,
+  "full_equal": false
+}

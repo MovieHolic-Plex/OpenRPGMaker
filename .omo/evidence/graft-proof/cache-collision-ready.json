@@ -1,0 +1,61 @@
+{
+  "case": "warmed-ready-collision-no-stale-authority",
+  "firstGrafts": [
+    {
+      "targetTile": 0,
+      "sourceChipset": "tex_easyrpg_chipset_interior",
+      "sourceTile": 65
+    },
+    {
+      "targetTile": 1,
+      "sourceChipset": "tex_easyrpg_chipset_interior",
+      "sourceTile": 309
+    },
+    {
+      "targetTile": 2,
+      "sourceChipset": "tex_easyrpg_chipset_interior",
+      "sourceTile": 431
+    }
+  ],
+  "secondGrafts": [
+    {
+      "targetTile": 0,
+      "sourceChipset": "tex_easyrpg_chipset_interior",
+      "sourceTile": 387
+    },
+    {
+      "targetTile": 1,
+      "sourceChipset": "tex_easyrpg_chipset_interior",
+      "sourceTile": 227
+    },
+    {
+      "targetTile": 2,
+      "sourceChipset": "tex_easyrpg_chipset_interior",
+      "sourceTile": 361
+    }
+  ],
+  "warmedAHash": "1230fc11bf3a0463620dc62f54d0db7d1f959a984aa38269acbd429384c915bc",
+  "certifiedHash": null,
+  "actualBHash": "b82a97619667f02711f6e6029eab6a3e084ba4a77a907b8287dd3d9beb87c64b",
+  "releaseHash": "b82a97619667f02711f6e6029eab6a3e084ba4a77a907b8287dd3d9beb87c64b",
+  "pendingAuthority": false,
+  "releaseAuthority": true,
+  "reviews": [
+    {
+      "revision": 1,
+      "imageCount": 0
+    },
+    {
+      "revision": 1,
+      "imageCount": 0
+    }
+  ],
+  "releaseReviews": [
+    {
+      "imageCount": 1
+    }
+  ],
+  "renderRejected": true,
+  "stoppedReason": "error",
+  "releaseStoppedReason": "final"
+}
