@@ -180,6 +180,120 @@ async function publishViaPanel(page) {
   () => page.getByTestId("ai-send").click());
 }
 
+async function verifyHistoryRace(page, mapId) {
+  await page.evaluate(async (outgoing) => {
+    const { whenAiChatPanelSettled } = await import("/src/editor/panels/aiChatPanel.ts");
+    const { saveConversation, conversationScopeKey } = await import("/src/ai/conversationStore.ts");
+    const { store } = await import("/src/project/store.ts");
+    const { AssistantSession } = await import("/src/ai/assistantSession.ts");
+    await whenAiChatPanelSettled();
+    const saved = await saveConversation({ id: "qa-history-race-target", title: "HISTORY_RACE_TARGET", model: "fixture", savedAt: 1,
+      projectContextKey: conversationScopeKey(store.getProjectIdentity(), store.getCurrent()),
+      entries: [{ kind: "user", text: "HISTORY_SAVED_REQUEST" }, { kind: "assistant", text: "HISTORY-SAVED-RESPONSE" }],
+    });
+    if (!saved.ok) throw new Error("History race fixture could not be saved");
+    const deferred = () => {
+      let resolve;
+      const promise = new Promise(done => { resolve = done; });
+      return { promise, resolve };
+    };
+    const bounded = (promise, label) => new Promise((resolve, reject) => {
+      const timer = setTimeout(() => reject(new Error(`Missing history race signal: ${label}`)), 20_000);
+      promise.then(value => { clearTimeout(timer); resolve(value); }, error => { clearTimeout(timer); reject(error); });
+    });
+    const held = deferred(); const released = deferred(); const terminal = deferred(); const restored = deferred();
+    const previousSend = AssistantSession.prototype.sendUserMessage;
+    const activityDescriptor = Object.getOwnPropertyDescriptor(window, "__oprnAiActivityLog");
+    let activity = window.__oprnAiActivityLog;
+    // Observe the production publisher; do not substitute a transport-completion signal.
+    Object.defineProperty(window, "__oprnAiActivityLog", { configurable: true, enumerable: true,
+      get: () => activity,
+      set: record => {
+        activity = record;
+        if (record?.result && record.result.pending !== true) {
+          if (record.instruction === "HISTORY_OUTGOING_REQUEST") terminal.resolve(record);
+          if (record.instruction === "HISTORY_RESTORED_REQUEST") restored.resolve(record);
+        }
+      },
+    });
+    const state = {
+      signal: null, publish: null, requests: [],
+      waitHeld: () => bounded(held.promise, "held transport"),
+      waitTerminal: () => bounded(terminal.promise, "outgoing runner terminal activity"),
+      waitRestored: () => bounded(restored.promise, "restored runner terminal activity"),
+      release: released.resolve,
+      restore: () => {
+        AssistantSession.prototype.sendUserMessage = previousSend;
+        Object.defineProperty(window, "__oprnAiActivityLog", { ...activityDescriptor, value: activity });
+      },
+    };
+    window.__qaHistoryRace = state;
+    AssistantSession.prototype.sendUserMessage = async function (text, onEvent, signal) {
+      const request = text.split("\n")[0]; state.requests.push(request);
+      if (request === "HISTORY_OUTGOING_REQUEST") {
+        state.signal = signal;
+        state.publish = () => onEvent?.({ type: "acceptance", snapshot: outgoing });
+        Object.defineProperty(this, "getAcceptanceSnapshot", { value: () => outgoing, configurable: true });
+        state.publish(); held.resolve(); await released.promise;
+        state.publish();
+        return { assistantText: "HISTORY_OUTGOING_TERMINAL", proposedCalls: [], stoppedReason: "final" };
+      }
+      return { assistantText: "HISTORY-RESTORED-RESPONSE", proposedCalls: [], stoppedReason: "final" };
+    };
+  }, { ...snapshot(mapId), id: "HISTORY_OUTGOING_OWNER", goal: "HISTORY_OUTGOING_OWNER" });
+  try {
+    await page.getByTestId("ai-input").fill("HISTORY_OUTGOING_REQUEST");
+    await page.getByTestId("ai-send").click();
+    await page.evaluate(() => window.__qaHistoryRace.waitHeld());
+    await page.getByTestId("ai-input").fill("HISTORY_QUEUED_OUTGOING");
+    await page.getByTestId("ai-input").press("Enter");
+    assert("history-queued-before-adoption", await page.getByTestId("ai-pending-queue").isVisible(), "queued send missing");
+    await page.getByTestId("ai-open-conversations").click();
+    const target = page.getByTestId("ai-history-open").filter({ hasText: "HISTORY_RACE_TARGET" });
+    await transition(page, () => !document.querySelector("[data-testid=ai-history-modal]")
+      && document.querySelector("[data-testid=ai-chat-log]")?.textContent.includes("HISTORY-SAVED-RESPONSE"), () => target.click());
+    const adopted = await page.evaluate(() => ({
+      note: !!document.querySelector("[data-testid=ai-sticky-checklist]"),
+      aborted: window.__qaHistoryRace.signal?.aborted,
+      busy: document.querySelector("[data-testid=ai-send]")?.disabled,
+      queued: document.querySelector("[data-testid=ai-pending-queue]")?.hidden === false,
+    }));
+    assert("history-adoption-retires-owner", !adopted.note && adopted.aborted === true && adopted.busy === false && !adopted.queued, JSON.stringify(adopted));
+    const lateLive = await page.evaluate(() => {
+      window.__qaHistoryRace.publish();
+      return !!document.querySelector("[data-testid=ai-sticky-checklist]");
+    });
+    assert("history-late-live-rejected", lateLive === false, `note=${lateLive}`);
+    await page.evaluate(() => window.__qaHistoryRace.release());
+    const terminal = await page.evaluate(() => window.__qaHistoryRace.waitTerminal());
+    assert("history-runner-terminal-observed", terminal.result.orphaned === true, JSON.stringify(terminal.result));
+    assert("history-late-terminal-rejected", await page.getByTestId("ai-sticky-checklist").count() === 0, "outgoing checklist remounted after runner finalization");
+    await page.getByTestId("ai-input").fill("HISTORY_RESTORED_REQUEST");
+    await page.getByTestId("ai-send").click();
+    await page.evaluate(() => window.__qaHistoryRace.waitRestored());
+    const final = await page.evaluate(async () => {
+      const { whenAiChatPanelSettled } = await import("/src/editor/panels/aiChatPanel.ts");
+      const { loadConversation } = await import("/src/ai/conversationStore.ts");
+      await whenAiChatPanelSettled();
+      const record = await loadConversation("qa-history-race-target");
+      return { requests: window.__qaHistoryRace.requests,
+        log: document.querySelector("[data-testid=ai-chat-log]")?.textContent ?? "",
+        saved: record?.entries.some(entry => entry.kind === "assistant" && entry.text === "HISTORY-SAVED-RESPONSE"),
+        contaminated: record?.entries.some(entry => entry.kind === "assistant" && entry.text === "HISTORY_OUTGOING_TERMINAL"),
+      };
+    });
+    assert("history-restored-conversation-usable", final.log.includes("HISTORY-RESTORED-RESPONSE") && final.saved === true && final.contaminated === false, JSON.stringify(final));
+    assert("history-outgoing-queue-discarded", JSON.stringify(final.requests) === JSON.stringify(["HISTORY_OUTGOING_REQUEST", "HISTORY_RESTORED_REQUEST"]), JSON.stringify(final.requests));
+  } finally {
+    await page.evaluate(async () => {
+      const state = window.__qaHistoryRace;
+      state.release();
+      try { await state.waitTerminal(); }
+      finally { state.restore(); delete window.__qaHistoryRace; }
+    });
+  }
+}
+
 async function measure(page) {
   return page.evaluate(() => {
     const node = document.querySelector("[data-testid=ai-sticky-checklist]");
@@ -487,6 +601,7 @@ try {
     () => page.getByTestId("ai-new-chat").click());
   assert("new-chat-clears", await page.getByTestId("ai-sticky-checklist").count() === 0, "checklist survived new chat");
   await shot(page, "18-1024-new-chat-cleared", "body");
+  await verifyHistoryRace(page, mapId);
 } catch (error) {
   assert("script-error", false, error instanceof Error ? error.stack ?? error.message : String(error));
   if (CAPTURE) {

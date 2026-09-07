@@ -786,7 +786,23 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     proposalApi.lastAppliedProposalMessage = value;
   };
 
+  const retireConversationTurn = (): void => {
+    activeAbortController?.abort();
+    activeAbortController = null;
+    activeSelectionRegionController = null;
+    activeSelectionRegionKey = null;
+    pendingSends.length = 0;
+    refreshQueueIndicator();
+    turnBusy = false;
+    endTurnProgress();
+    refreshAbortButton();
+  };
+
   const restoreConversationRecord = (record: ConversationRecord, source: "auto" | "manual" | "project-switch"): void => {
+    if (source === "manual") {
+      retireConversationTurn();
+      persistConversation();
+    }
     dropSession(controller, getPendingRegionApply());
     clearWorkPlanSurface(); // 대화 전환 — 다른 대화의 할 일 목록이 남으면 안 된다(스테일 상태 방지).
     // 화면만 복원하면 사용자는 이어졌다고 믿고 모델은 아무것도 모른다 — 다음 세션에 기록 요약을
@@ -850,15 +866,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     });
     // 먼저 ownership을 끊고 abort한 뒤 큐를 버린다. 새 대화는 이유와 무관하게 진행 중인 턴을
     // 포기하며, 늦은 finally는 시작 당시 캡처한 대화와 감사 항목에만 저장한다.
-    activeAbortController?.abort();
-    activeAbortController = null;
-    activeSelectionRegionController = null;
-    activeSelectionRegionKey = null;
-    pendingSends.length = 0;
-    refreshQueueIndicator();
-    turnBusy = false;
-    endTurnProgress();
-    refreshAbortButton();
+    retireConversationTurn();
     persistConversation();
     dropSession(controller, getPendingRegionApply());
     clearWorkPlanSurface(); // 새 대화 — 이전 대화의 할 일 목록/예산/피드를 버린다.

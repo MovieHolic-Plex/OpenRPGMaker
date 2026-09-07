@@ -3,7 +3,8 @@ import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { AssistantSession, type SessionEvent } from "@/ai/assistantSession";
 import type { AcceptanceSnapshot } from "@/ai/assistantAcceptance";
 import { buildAiActivityLogRecord, recordAiActivity } from "@/ai/activityLog";
-import { clearConversations } from "@/ai/conversationStore";
+import { clearConversations, conversationScopeKey, loadConversation, saveConversation } from "@/ai/conversationStore";
+import { closeAiConversationHistoryModal, whenAiConversationHistoryModalSettled } from "@/editor/panels/aiConversationHistoryModal";
 import { renderAiChatPanel, teardownAiChatPanel, whenAiChatPanelSettled } from "@/editor/panels/aiChatPanel";
 import { editorState } from "@/editor/editorState";
 import { store } from "@/project/store";
@@ -68,6 +69,7 @@ beforeEach(async () => {
   editorState.set({ currentMapId: store.getCurrent().startMapId, selection: null });
 });
 afterEach(async () => {
+  closeAiConversationHistoryModal(); await bounded(whenAiConversationHistoryModalSettled());
   notes.forEach(note => note.dispose()); notes.length = 0;
   teardownAiChatPanel(); await bounded(whenAiChatPanelSettled()); await clearConversations();
   document.body.replaceChildren(); localStorage.clear(); vi.restoreAllMocks(); vi.unstubAllEnvs();
@@ -477,6 +479,66 @@ it("clamps a primary captured drag and resets position, disclosure and hiding on
   expect(note.root.style.left).toBe(""); expect(note.root.style.top).toBe("");
   expect(node("ai-sticky-toggle").getAttribute("aria-expanded")).toBe("false");
   expect(node("ai-sticky-item")).not.toBe(retained); expect(node<HTMLDetailsElement>("ai-sticky-item").open).toBe(false);
+});
+
+it.each(["live", "terminal"] as const)("manual saved-history adoption retires outgoing %s acceptance through real controls", async publication => {
+  const held = signal(); const release = signal(); const outgoingTerminal = signal(); const restoredTerminal = signal();
+  const outgoing = { ...snapshot("verified"), id: "OUTGOING_OWNER", goal: "OUTGOING_OWNER" };
+  let publish: ((event: SessionEvent) => void) | undefined;
+  let outgoingSignal: AbortSignal | undefined;
+  const sent: string[] = [];
+  vi.mocked(recordAiActivity).mockImplementation(async record => {
+    if (record.result && record.result.pending !== true) {
+      if (record.instruction === "OUTGOING_REQUEST") outgoingTerminal.resolve();
+      if (record.instruction === "RESTORED_REQUEST") restoredTerminal.resolve();
+    }
+    return buildAiActivityLogRecord(record);
+  });
+  vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockImplementation(async function (this: AssistantSession, text, onEvent, abort) {
+    const request = text.split("\n")[0]!;
+    sent.push(request);
+    if (request === "OUTGOING_REQUEST") {
+      publish = onEvent; outgoingSignal = abort;
+      Object.defineProperty(this, "getAcceptanceSnapshot", { value: () => outgoing, configurable: true });
+      onEvent?.({ type: "acceptance", snapshot: { ...outgoing, status: "working" } });
+      held.resolve(); await release.promise;
+      return { assistantText: "OUTGOING_TERMINAL", proposedCalls: [], stoppedReason: "final" };
+    }
+    return { assistantText: "RESTORED_RESPONSE", proposedCalls: [], stoppedReason: "final" };
+  });
+  document.body.append(renderAiChatPanel()); await bounded(whenAiChatPanelSettled());
+  expect((await saveConversation({ id: "saved-history-target", title: "HISTORY_TARGET", model: "fixture", savedAt: 1,
+    projectContextKey: conversationScopeKey(store.getProjectIdentity(), store.getCurrent()),
+    entries: [{ kind: "user", text: "SAVED_REQUEST" }, { kind: "assistant", text: "SAVED_RESPONSE" }],
+  })).ok).toBe(true);
+  node<HTMLTextAreaElement>("ai-input").value = "OUTGOING_REQUEST"; node("ai-send").click();
+  try {
+    await bounded(held.promise);
+    node<HTMLTextAreaElement>("ai-input").value = "QUEUED_OUTGOING_REQUEST";
+    node("ai-input").dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }));
+    node("ai-open-conversations").click(); await bounded(whenAiConversationHistoryModalSettled());
+    const search = node<HTMLInputElement>("ai-history-search"); search.value = "HISTORY_TARGET";
+    search.dispatchEvent(new Event("input", { bubbles: true })); await bounded(whenAiConversationHistoryModalSettled());
+    node("ai-history-open").click(); await bounded(whenAiConversationHistoryModalSettled());
+    expect(document.querySelector("[data-testid='ai-sticky-checklist']")).toBeNull();
+    expect(node("ai-chat-log").textContent).toContain("SAVED_RESPONSE");
+    if (publication === "live") publish?.({ type: "acceptance", snapshot: outgoing });
+    else { release.resolve(); await bounded(outgoingTerminal.promise); }
+    expect(document.querySelector("[data-testid='ai-sticky-checklist']")).toBeNull();
+    expect(outgoingSignal?.aborted).toBe(true);
+    expect(node<HTMLButtonElement>("ai-abort").hidden).toBe(true);
+    expect(node<HTMLButtonElement>("ai-send").disabled).toBe(false);
+    node<HTMLTextAreaElement>("ai-input").value = "RESTORED_REQUEST"; node("ai-send").click();
+    await bounded(restoredTerminal.promise);
+    expect(node("ai-chat-log").textContent).toContain("RESTORED_RESPONSE");
+  } finally { release.resolve(); await bounded(outgoingTerminal.promise); }
+  await bounded(whenAiChatPanelSettled());
+  expect(sent).toEqual(["OUTGOING_REQUEST", "RESTORED_REQUEST"]);
+  expect(document.querySelector("[data-testid='ai-sticky-checklist']")).toBeNull();
+  expect(node("ai-chat-log").textContent).not.toContain("OUTGOING_TERMINAL");
+  const restored = await loadConversation("saved-history-target");
+  expect(restored?.entries.some(entry => entry.kind === "assistant" && entry.text === "SAVED_RESPONSE")).toBe(true);
+  expect(restored?.entries.some(entry => entry.kind === "assistant" && entry.text === "OUTGOING_TERMINAL")).toBe(false);
 });
 
 it.each(["project", "dispose"] as const)("rejects old live and terminal acceptance immediately after %s retirement", async boundary => {

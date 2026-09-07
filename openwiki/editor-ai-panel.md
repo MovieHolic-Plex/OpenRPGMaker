@@ -430,6 +430,13 @@ menu opener, falling back to the composer input. A new acceptance ID resets hide
 expansion, position, and disclosures. Clear/dispose cannot reopen retired evidence.
 Project changes retire the outgoing turn before asynchronous history adoption so
 late acceptance cannot remount the previous project's note.
+Manual saved-history adoption also retires the outgoing turn before dropping its
+session: it shares the new-chat abort/owner invalidation, queue discard, and
+busy/progress settlement. The selected record is retained and immediately usable;
+late live events and terminal snapshots cannot remount the old checklist or drain
+old queued sends into the restored conversation. `aiStickyChecklist` exercises
+the real history opener/search/open controls, with terminal assertions synchronized
+to the runner's terminal activity record rather than the transport's return.
 
 Pointer drag uses the existing drag button with pointer capture and session-only
 position, clamped against measured `--editor-left-safe`, toolbar clearance and the
