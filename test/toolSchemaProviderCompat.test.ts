@@ -20,10 +20,11 @@
 import { describe, expect, it } from "vitest";
 import { allTools } from "@/editor/tools/toolRegistry";
 import { SET_BUILD_SPEC_TOOL, SPEC_REMEDY_FIELDS, WORK_PLAN_TOOLS } from "@/ai/assistantSession";
-import { ACCEPTANCE_CRITERIA_SCHEMA, ACCEPTANCE_SCHEMA, ACCEPTANCE_TOOLS } from "@/ai/assistantAcceptanceTools";
-import { parseAcceptance, parseAcceptanceCriteria, type AcceptanceCriterion } from "@/ai/assistantAcceptance";
+import { ACCEPTANCE_CRITERIA_SCHEMA, ACCEPTANCE_SCHEMA, ACCEPTANCE_TOOLS, REQUEST_CONTRACT_TOOL } from "@/ai/assistantAcceptanceTools";
+import { parseAcceptance, parseAcceptanceCriteria, ACCEPTANCE_DATABASE_COLLECTIONS, type AcceptanceSubject, type AcceptanceCollection, type AcceptanceSelector, type AcceptanceCriterion } from "@/ai/assistantAcceptance";
 import { workPlanFromSetToolArgs } from "@/ai/workPlan";
 type SchemaNode = {
+  readonly description?: string;
   readonly type?: unknown;
   readonly enum?: readonly unknown[];
   readonly required?: readonly string[];
@@ -39,7 +40,7 @@ type SchemaNode = {
 /** 모델에 노출되는 전체 파라미터 스키마 — 레지스트리 툴 + 세션 전용 툴. */
 function exposedSchemas(): { name: string; parameters: SchemaNode }[] {
   const registry = allTools().map((tool) => ({ name: tool.name, parameters: tool.parameters as SchemaNode }));
-  const session = [SET_BUILD_SPEC_TOOL, ...WORK_PLAN_TOOLS, ...ACCEPTANCE_TOOLS].map((tool) => ({
+  const session = [SET_BUILD_SPEC_TOOL, ...WORK_PLAN_TOOLS, ...ACCEPTANCE_TOOLS, REQUEST_CONTRACT_TOOL].map((tool) => ({
     name: tool.function.name,
     parameters: tool.function.parameters as SchemaNode,
   }));
@@ -124,7 +125,33 @@ describe("툴 스키마 프로바이더 호환(Gemini 엄격 검증)", () => {
 });
 
 // Every runtime variant must be expressible without a union or invented wrapper.
+const subjects: AcceptanceSubject[] = [
+  { kind: "project" },
+  ...ACCEPTANCE_DATABASE_COLLECTIONS.map(collection => ({ kind: "database" as const, collection, id: "record" })),
+  { kind: "event", mapId: "map_start", eventId: "event" },
+  ...(["sprites", "uploaded"] as const).map(category => ({ kind: "asset" as const, category, id: "asset" })),
+];
+const collections: AcceptanceCollection[] = [
+  ...ACCEPTANCE_DATABASE_COLLECTIONS.map(collection => ({ kind: "database" as const, collection })),
+  { kind: "events", mapId: "map_start" },
+  ...(["sprites", "uploaded"] as const).map(category => ({ kind: "assets" as const, category })),
+];
+const selectors: AcceptanceSelector[] = [{ all: true }, { ids: ["first", "second"] }, { names: ["First", "Second"] }];
 const criterionCases: AcceptanceCriterion[] = [
+  ...subjects.flatMap((subject): AcceptanceCriterion[] => [
+    ...[null, false, 0.5, "literal", [null, true, 2.5], { nested: [false, { count: 0 }] }].map(value => ({
+      kind: "valueEquals" as const, subject, path: subject.kind === "project" ? ["meta", "title"] : ["name"], value,
+    })),
+    { kind: "entityPreserve", subject },
+    { kind: "entityPreserve", subject, path: subject.kind === "project" ? ["meta", "title"] : ["name"] },
+  ]),
+  ...collections.flatMap(collection => selectors.flatMap((selector): AcceptanceCriterion[] => [
+    { kind: "membershipPreserve", collection, selector },
+    ...(["eq", "gte", "lte"] as const).flatMap(comparison => (["current", "requestDelta"] as const).map(basis => ({
+      kind: "entityCount" as const, collection, selector, comparison, count: 2, basis,
+    }))),
+  ])),
+
   { kind: "toolVerdict", tool: "run_lint", args: {} },
   { kind: "toolVerdict", tool: "play_walkthrough", args: {
     mapId: "map_start", scenario: [{ do: "setVariable", id: "progress", value: 0 },
@@ -148,6 +175,7 @@ function expectRepresentable(schema: SchemaNode | undefined, value: unknown): vo
   expect(schema).toBeDefined();
   if (!schema) throw new Error("Missing exposed schema field");
   if (schema.enum) expect(schema.enum).toContain(value);
+  if (schema.type === undefined) return;
   if (Array.isArray(value)) {
     expect(schema.type).toBe("array");
     if (schema.minItems !== undefined) expect(value.length).toBeGreaterThanOrEqual(schema.minItems);
@@ -197,10 +225,10 @@ describe("acceptance and requirement schema/runtime contract", () => {
     expect(item?.required).toEqual(["kind"]);
     expect(item?.additionalProperties).toBe(false);
     expect(item?.properties?.kind).toEqual({ type: "string", enum: [
-      "toolVerdict", "mapDimensions", "mapCount", "eventCount", "targetChange", "preserve", "imageReviewed", "reachability", "actionCombat",
+      "toolVerdict", "mapDimensions", "mapCount", "eventCount", "targetChange", "preserve", "imageReviewed", "reachability", "actionCombat", "valueEquals", "entityPreserve", "membershipPreserve", "entityCount",
     ] });
     expect(Object.keys(item?.properties ?? {}).sort()).toEqual([
-      "args", "count", "from", "height", "kind", "region", "target", "targets", "to", "tool", "width",
+      "args", "basis", "collection", "comparison", "count", "from", "height", "kind", "path", "region", "selector", "subject", "target", "targets", "to", "tool", "value", "width",
     ]);
     expect(item?.properties?.args).toMatchObject({ type: "object", additionalProperties: true });
     expect(item?.properties?.target).toMatchObject({ type: "object", additionalProperties: false,
@@ -215,7 +243,7 @@ describe("acceptance and requirement schema/runtime contract", () => {
 
   it.each(criterionCases)("retains runtime requiredness and rejects extra fields for $kind %j", criterion => {
     const valid: Record<string, unknown> = { ...criterion };
-    for (const key of Object.keys(valid).filter(key => key !== "region")) {
+    for (const key of Object.keys(valid).filter(key => key !== "region" && !(criterion.kind === "entityPreserve" && key === "path"))) {
       const missing = { ...valid };
       delete missing[key];
       expect(parseAcceptanceCriteria([criterion, missing]), `missing ${key}`).toBeNull();
@@ -237,7 +265,7 @@ describe("acceptance and requirement schema/runtime contract", () => {
   });
 
   it("preserves required defaults and never accepts an unregistered verification tool", () => {
-    const criteria = [criterionCases[0]];
+    const criteria = [{ kind: "toolVerdict", tool: "run_lint", args: {} }];
     for (const required of [undefined, true, false, "false"]) {
       const promise = { id: "promise", title: "Promise", criteria, ...(required === undefined ? {} : { required }) };
       expect(parseAcceptance([promise])).toEqual([{ id: "promise", title: "Promise",

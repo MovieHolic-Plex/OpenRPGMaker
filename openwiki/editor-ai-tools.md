@@ -519,6 +519,222 @@ store fails tool-verdict criteria closed. No new verification ledger or dependen
 was added. Withdrawal is a local user action, never a `withdraw_requirement` tool,
 model note, `skip_work_item` effect or `resetsContext` permission.
 
+## Raw request / canonical ledger boundary (2026-09-07)
+
+This is a selective source/ledger/schema port onto `f22d64f7c`, not the autonomous
+session integration. Existing session callers and `evaluate(applied, draft,
+verification, blockingProblems)` retain their signatures. Source capture, extraction,
+amendments and additive volume are dormant until the session owner calls these APIs.
+No new driver, goal routing, persistence authority, UI or semantic planner is included.
+
+### Session-port API handoff
+
+`AssistantAcceptanceLedger` remains the single acceptance owner:
+
+- `startRequest(requestId: string, rawInstruction: string, baseline: Project,
+  authoring = true, scope: AcceptanceSource["scope"] = null): void` captures exact
+  UTF-16 source and an owned pre-write baseline. Call before preparation awaits.
+  Reusing the request ID is a no-op, not a rebase. Only a host-established read-only
+  request uses `authoring: false`; a model's optional flag cannot classify away source.
+  H5 caller obligation remains deferred: there is no post-extraction `markAnswer`
+  transition. Later host-validated question classification after pre-await capture
+  must not fake withdrawal or discard validated authored predicates.
+- `adoptRequestRequirements(requestId: string, payload: unknown): void` accepts
+  `{ entries: [{ source: [{start,end,quote}], criteria, bindings,
+  unresolvedReason? }] }`. Each entry anchors exactly one complete lexical unit.
+  `RequestSourceBinding` is `{ source: {start,end,quote}, role, criterionIndex,
+  fieldPath: string[] }`. Roles are `value`, `width`, `height`, `count`, `minimum`,
+  `maximum`, `coordinate`, `preserve`, `prohibit`. Numeric/literal/prohibition
+  bindings must match their supported predicate fields. Repeated criteria cannot
+  reuse one field to discharge independent source markers. Successful mappings and
+  their bindings are copied; malformed/omitted mappings remain unresolved.
+  `role: "value"` binds exact scalar values at `valueEquals.value`,
+  `target.mapId|newMapName`, `mapCount.targets[index].mapId|newMapName`,
+  `subject.id|mapId|eventId`, `collection.mapId`, and `selector.ids|names[index]`.
+  For `toolVerdict`, it also binds scalar `args` leaves explicitly declared in the
+  registered native tool schema, traversing named properties and canonical array
+  indices. Undeclared/dynamic-map leaves and criterion metadata (`kind`, `tool`,
+  `comparison`, `basis`, `path`, collection/category discriminators, `selector.all`)
+  cannot discharge source literals. Quoted strings must equal the selected string;
+  numbers, booleans and null use matching unquoted scalar text. Existing width/count/
+  range/prohibition roles and independent-source non-aliasing rules remain intact.
+  Binding an argument supplies traceability only, never a passing verifier receipt.
+- `getRequests(): readonly RequestSource[]` returns isolated raw-source/coverage
+  snapshots, not baselines or writable authority. Each unit has its canonical `id`,
+  exact `source` span, `coverage`, `criteria`, accepted `bindings`, and optional
+  `withdrawal`, `supersededBy`, `archivedEvidence`, `unresolvedReason`.
+  `hasUnresolvedWriteConstraint(requests)` ignores only read-only or genuinely
+  retired units; quoted authored words such as "No Signal" are not prohibitions.
+- `adopt(promises, requestBaseline?, source?)` and `repair(itemId, criteria)` keep
+  main's planner semantics. IDs ending in `:source:<digits>` or `:volume` are
+  reserved even before capture, so a planner cannot preoccupy or repair them.
+  Original source rows are always required. Supplemental planner optionality remains
+  visible but cannot change source requiredness.
+- `withdraw({acceptanceId, requirementId, reason}): boolean` is still host-only.
+  Source IDs (`<requestId>:source:<index>`) and supplemental volume IDs
+  (`<requestId>:volume`) live in the same canonical promise map this method addresses.
+  Stale goal IDs, repeated actions and blank reasons fail. Only the named row retires;
+  no semantic alias is inferred between separate source/planner/domain declarations.
+- `adoptUserAmendments(requestId, { amendments: [{obligationId,
+  source: {start,end,quote}}] }): void` is also host-only. Invoke only for an accepted
+  new-user correction, never from planner tools or automatic extraction recovery.
+  First adopt the correction's source criteria. Exactly one active original and one
+  anchored replacement must each contain one `valueEquals` on the same subject/path;
+  the original must belong to an earlier request. Wrong IDs/fields, broad or forged
+  anchors, missing correction wording, ambiguity and unresolved originals do not
+  grant supersession. Snapshot `supersession` identifies the replacement request,
+  requirement ID and exact correction span. Withdrawal of that replacement never
+  restores the original authority.
+- `requireVolume(requestId, bar: VolumeBar, baseline: Project): void` retains every
+  active request's bar. Same-ID updates take per-dimension maxima and retain the
+  original baseline; captured source baselines win over late supplied projects.
+  Different requests retain separate baselines, not a replaceable last-plan bar.
+  `getVolumeGaps(applied)` is a projection of these same canonical rows, not another
+  denominator. Evaluation measures each distinct applied/draft project once for all
+  volume rows, never once per row. Unapplied volume changes veto verification.
+
+Retirement preserves already-published evidence/status without turning failures into
+passes. If the host retires a row before any evaluation, the first subsequent real
+assessment is retained. Late extraction, replan, repair and repeated volume adoption
+cannot reactivate retired authority. Historical snapshots and provenance are frozen;
+returned request copies cannot mutate the owner. Missing source criteria block
+canonical completion until proven or explicitly retired, including direct/no-plan work
+once source capture is wired. On explicit new-goal the later session port must archive
+and discard this ledger and its source/volume state; this module does not route goals.
+
+### Authored predicates and flattened transport
+
+`AcceptanceCriterion` adds `valueEquals`, `entityPreserve`, `membershipPreserve` and
+`entityCount` alongside every existing main criterion, including `toolVerdict`.
+Subjects are project `meta`/`system`, a unique database record from
+`ACCEPTANCE_DATABASE_COLLECTIONS`, a unique map event, or sprite/uploaded asset
+metadata. Collections are database records, map events or assets; selectors are
+exactly one of unique `ids`, unambiguous `names`, or `all: true`. `entityCount` uses
+`comparison: eq|gte|lte`, nonnegative integer `count`, and `basis: current|requestDelta`.
+Missing/ambiguous identities fail closed. Preservation compares the original request
+baseline. Unsafe/prototype paths and selectable `dataUrl` transport blobs are rejected.
+No asset binary/provider claim, runtime simulation or arbitrary prose understanding
+is established by these authored facts.
+
+`ACCEPTANCE_CRITERIA_SCHEMA` is still a flattened union of optional fields with a
+required `kind`. Subject/collection/selector schemas are also flattened; runtime
+parsing enforces exact per-kind fields and exclusive selectors. JSON `value` deliberately
+has no single-type restriction. `ACCEPTANCE_SCHEMA` retains `required` defaults and
+is shared by requirements, legacy acceptance and repair surfaces. Exact full-argument
+tool verdicts still use main's `ToolVerificationEvidence`; a named tool or source
+binding is never proof. Full-project draft comparison remains shared across all
+source and planner tool-verdict rows. Review-region expansion and action proof remain
+main's existing contracts.
+
+`REQUEST_CONTRACT_TOOL` exports the provider-safe `get_request_contract` schema
+separately. It is deliberately **not** in `ACCEPTANCE_TOOLS` until a session dispatcher
+exists. That later dispatcher must list request IDs or page `getRequests()` raw text
+using UTF-16 `offset` and `limit` (1..8192), without summarizing or granting mutation
+authority. No withdrawal or amendment tool is exposed.
+
+Direct regression files: `assistantRequestContract.test.ts` (feature lexical/binding
+controls), `assistantAcceptanceSelectors.test.ts` (feature authored predicates; unsafe
+path table passes actual arrays), `assistantAcceptanceSourceIntegration.test.ts`
+(`I1` parser/ledger RED, `I2` requiredness/collision, `I3` withdrawal/extraction,
+`I4-I5` exact amendments/history, `I6` ownership/answers, `I7-I8` exact verdict/cost,
+`I9` volume, `I10` strict selectors), and the expanded
+`toolSchemaProviderCompat.test.ts` (every supported database collection, subject,
+selector, count basis/comparison and JSON value family across exposed main surfaces).
+
+### Boundary verification evidence (st_01a07bf3)
+
+Model: `opencodex/gpt-6-astra`, high. Worktree:
+`/home/main/z-project/rpg-zzu-unbounded-integrate-01a07570`; branch
+`fix/ai-unbounded-execution-main`; HEAD remains
+`f22d64f7c2d95247189e8dacbffecc90dd0721d7`. Patch is uncommitted.
+
+- Behavioral RED, before production changes:
+  `npm test -- test/assistantAcceptanceSourceIntegration.test.ts --maxWorkers=2`
+  exited 1. `I1-authored-value-enters-existing-parser-ledger-and-host-withdrawal`
+  collected and ran through the existing parser/ledger, failing with
+  **expected `verifying`, received `blocked`** for the authored title draft.
+  This was not a missing-module/export collection failure.
+- First combined run: 1609 passed / 1 failed. The introduced retirement fallback
+  lost evidence for a main requirement withdrawn before its first assessment:
+  `actionAcceptanceRequirements.test.ts` / "keeps intent action and required checks
+  open despite optionality or genuine withdrawal" expected `[{passed:false}]`,
+  received `[]`. Production retirement now retains the first real assessment when
+  no earlier assessment exists. That existing test was not changed or weakened.
+- Final combined command below: **13 files / 1610 tests passed**, exit 0, 78.05s.
+  Includes 28 feature source tests, 10 feature selector tests, 29 combined controls,
+  1423 schema/runtime cases, and all selected existing main controls.
+- Final `npm run typecheck:app`: exit 0. Final `npm run build:app`: exit 0, 41.47s.
+  Vite reported six mixed static/dynamic-import chunking warnings and chunks above
+  500 kB. No warning suppression or unrelated snapshot/baseline refresh was made.
+- Changed-file LSP was requested for every changed source/test file. Initial source
+  checks were clean; final schema and all four changed test files were clean.
+  Refreshed diagnostics for `assistantAcceptance.ts`, `assistantAcceptanceEvaluation.ts`,
+  `assistantAcceptanceLedger.ts`, and `assistantRequestContract.ts` timed out at the
+  tool's 3000ms limit. Those final LSP results are **unverified**, not asserted clean;
+  the successful app typecheck independently covers their final types. No Markdown
+  LSP is configured. `git diff --check` passed.
+- Existing session callers were exercised by the selected main session tests. New
+  source behavior was exercised through its real parser/ledger APIs, not a browser
+  or the not-yet-integrated session dispatcher. No server, model request, DB write,
+  merge, rebase, commit or push was performed. Full repository gates and live provider
+  acceptance were not run; this evidence establishes only this boundary.
+
+```sh
+npm test -- \
+  test/assistantAcceptance.test.ts \
+  test/assistantAcceptanceCost.test.ts \
+  test/assistantAcceptancePromiseBaseline.test.ts \
+  test/assistantAcceptanceRequestBaseline.test.ts \
+  test/assistantAcceptanceSession.test.ts \
+  test/assistantAcceptanceSelectors.test.ts \
+  test/assistantRequestContract.test.ts \
+  test/assistantAcceptanceSourceIntegration.test.ts \
+  test/toolSchemaProviderCompat.test.ts \
+  test/aiRequiredOutcomes.test.ts \
+  test/actionAcceptanceRequirements.test.ts \
+  test/actionAcceptanceProof.test.ts \
+  test/volumeContract.test.ts --maxWorkers=2
+npm run typecheck:app
+npm run build:app
+```
+
+### Quoted/scalar binding correction evidence (st_01a07bf3)
+
+The earlier 1610-test result did not cover quoted target/verifier arguments. This
+bounded correction changes only `assistantRequestContract.ts`, its direct test file,
+and this wiki relative to the frozen boundary; the four acceptance production files
+retain their recorded SHA-256 hashes. No session or goal-routing changes were added.
+
+- Behavioral RED command:
+  `npm test -- test/assistantRequestContract.test.ts -t 'B[12]-' --maxWorkers=2`.
+  Both selected tests executed and failed: expected `declared`, received `unsupported`.
+  `B1` uses `Create map "New Hall" at 20x15` with the exact `mapDimensions` target
+  and dimensions. `B2` uses the registered `check_reachability` tool's real `mapId`,
+  `from:{x:0,y:1}`, and `targets:[{x:2,y:3}]` arguments, not invented parameters.
+- `B1` now proves coverage plus unique new-map binding and applied/draft behavior.
+  `B2` runs the real tool and feeds its actual result to `ToolVerificationEvidence`:
+  coverage without evidence, a different target invocation, invalidated evidence,
+  and an unapplied draft cannot verify the original criterion.
+- `B3` covers each allowed target/identity path family; `B4` rejects criterion
+  metadata, undeclared arguments, nested ignored fields and audit reasons; `B5`
+  checks exact Boolean/null scalar equality; `B6` retains non-aliasing for independent
+  quoted markers even with duplicated criteria; `B7` rejects wrong values, quoted
+  numbers standing in for numeric args, noncanonical indices, array metadata and
+  prototype paths. These are 34 new controls, bringing the source file to 62 tests.
+- The full 13-file command above was rerun once after this correction:
+  **1644 passed / 0 failed**, exit 0, 109.94s. `npm run typecheck:app` and
+  `npm run build:app` both exited 0; app build took 51.82s and still reports Vite
+  chunking/size warnings. No failure, warning or snapshot was suppressed.
+- Final source-module LSP: clean. The expanded test file's initial LSP was clean;
+  refresh after its final fixture-path correction timed out at 3000ms, so that final
+  test-file LSP result is unverified. `git diff --check` passed. No Markdown LSP is
+  configured. No real model/DB calls, servers, commits, merges or pushes were used.
+
+The binding helper consults declared native schema paths, not a semantic inference
+engine. Dynamic-map/undeclared verifier leaves remain unresolved. Scalar traceability
+does not validate a whole tool invocation or replace its actual runtime verdict.
+The boundary is frozen again and remains uncommitted.
+
 ## Project-wide quality evaluation
 
 `evaluate_game_quality` is read-only. It combines project lint and tileset-palette findings with structural coverage across legacy event commands, event pages, common events, troop battle pages, and every nested command branch. It also reports quest/battle/ending/content counts, story-flag reads and writes, and optional caller-supplied walkthrough results. Objective project errors, unauthored secondary maps, and uninvoked ending definitions block its verdict; palette findings and caller-supplied walkthrough results remain explicit evidence. It never emits a numeric score and cannot measure fun, originality, emotional impact, pacing quality, or preferred difficulty.

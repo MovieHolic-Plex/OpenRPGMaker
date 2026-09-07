@@ -1,7 +1,7 @@
 import { canMove, inBounds, isPassable } from "@/project/collision";
 import { passageBounds } from "@/project/footprint";
 import type { GameMap, Project } from "@/project/types";
-import type { AcceptanceCriterion, AcceptanceItemSnapshot, AcceptanceRegion, AcceptanceTarget } from "./assistantAcceptance";
+import type { AcceptanceCollection, AcceptanceSubject, AcceptanceSelector, AcceptanceCriterion, AcceptanceItemSnapshot, AcceptanceRegion, AcceptanceTarget } from "./assistantAcceptance";
 import type { ToolVerificationEvidence } from "./toolVerificationEvidence";
 
 type Evidence = AcceptanceItemSnapshot["evidence"][number];
@@ -69,11 +69,63 @@ export function visualFingerprint(project: Project, map: GameMap): string {
 }
 export function criterionTargets(criterion: AcceptanceCriterion): readonly AcceptanceTarget[] {
   switch (criterion.kind) {
-    case "toolVerdict": return [];
+    case "toolVerdict": case "valueEquals": case "entityPreserve": case "membershipPreserve": case "entityCount": return [];
     case "mapCount": return criterion.targets;
     case "mapDimensions": case "eventCount": case "targetChange": case "preserve": case "imageReviewed": case "reachability": case "actionCombat": return [criterion.target];
     default: return assertNever(criterion);
   }
+}
+/** Only own JSON properties. Missing and ambiguous identities never equal each other. */
+export function selectedSubject(project: Project, subject: AcceptanceSubject): unknown {
+  switch (subject.kind) {
+    case "project": return { meta: project.meta, system: project.system };
+    case "database": {
+      const matches = (project.database[subject.collection] ?? []).filter(entry => entry.id === subject.id);
+      return matches.length === 1 ? matches[0] : undefined;
+    }
+    case "event": {
+      const map = Object.hasOwn(project.maps, subject.mapId) ? project.maps[subject.mapId] : undefined;
+      const matches = map?.events.filter(entry => entry.id === subject.eventId) ?? [];
+      return matches.length === 1 ? matches[0] : undefined;
+    }
+    case "asset": {
+      const entries = project.assets[subject.category];
+      if (!Object.hasOwn(entries, subject.id)) return undefined;
+      // Metadata proves no binary/provider claim; transport blobs are not selectable.
+      return Object.fromEntries(Object.entries(entries[subject.id]!).filter(([key]) => key !== "dataUrl"));
+    }
+  }
+}
+export function selectedPath(value: unknown, path: readonly string[]): unknown {
+  for (const key of path) {
+    if (!value || typeof value !== "object" || !Object.hasOwn(value, key)) return undefined;
+    value = (value as Record<string, unknown>)[key];
+  }
+  return value;
+}
+function selectedCollection(project: Project, collection: AcceptanceCollection, selector: AcceptanceSelector): readonly { id: string }[] | undefined {
+  let entries: readonly { id: string; name?: string }[];
+  switch (collection.kind) {
+    case "database": entries = project.database[collection.collection] ?? []; break;
+    case "events": {
+      if (!Object.hasOwn(project.maps, collection.mapId)) return undefined;
+      entries = project.maps[collection.mapId]!.events; break;
+    }
+    case "assets": entries = Object.entries(project.assets[collection.category]).map(([id, entry]) => ({ ...entry, id })); break;
+  }
+  if (new Set(entries.map(entry => entry.id)).size !== entries.length) return undefined;
+  if ("all" in selector) return entries;
+  if ("ids" in selector) return entries.filter(entry => selector.ids.includes(entry.id));
+  if (selector.names.some(name => entries.filter(entry => entry.name === name).length > 1)) return undefined;
+  return entries.filter(entry => entry.name !== undefined && selector.names.includes(entry.name));
+}
+export function selectedCriterionState(project: Project, criterion: AcceptanceCriterion): unknown {
+  if ("subject" in criterion) {
+    const value = selectedSubject(project, criterion.subject);
+    return criterion.path ? selectedPath(value, criterion.path) : value;
+  }
+  if ("collection" in criterion) return selectedCollection(project, criterion.collection, criterion.selector);
+  return undefined;
 }
 export interface AcceptanceEvaluation {
   readonly verification?: ToolVerificationEvidence;
@@ -85,6 +137,30 @@ export interface AcceptanceEvaluation {
 }
 export function evaluateAcceptanceCriterion(criterion: AcceptanceCriterion, input: AcceptanceEvaluation): Evidence {
   const expected = JSON.stringify(criterion);
+  if (criterion.kind === "valueEquals" || criterion.kind === "entityPreserve") {
+    const current = selectedCriterionState(input.project, criterion);
+    const original = selectedCriterionState(input.baseline, criterion);
+    const passed = current !== undefined && (criterion.kind === "valueEquals"
+      ? acceptanceFingerprint(current) === acceptanceFingerprint(criterion.value)
+      : original !== undefined && acceptanceFingerprint(current) === acceptanceFingerprint(original));
+    return { expected, observed: current === undefined ? "Selected identity/value missing or ambiguous" : acceptanceFingerprint(current), passed };
+  }
+  if (criterion.kind === "membershipPreserve" || criterion.kind === "entityCount") {
+    const current = selectedCollection(input.project, criterion.collection, criterion.selector);
+    const original = selectedCollection(input.baseline, criterion.collection, criterion.selector);
+    if (!current) return { expected, observed: "Selected collection missing or ambiguous", passed: false };
+    let passed: boolean;
+    if (criterion.kind === "membershipPreserve") {
+      passed = original !== undefined && acceptanceFingerprint(current.map(entry => entry.id).sort())
+        === acceptanceFingerprint(original.map(entry => entry.id).sort());
+    } else {
+      const baselineCount = criterion.basis === "requestDelta" ? original?.length : 0;
+      if (baselineCount === undefined) return { expected, observed: "Original collection missing", passed: false };
+      const count = current.length - baselineCount;
+      passed = criterion.comparison === "eq" ? count === criterion.count : criterion.comparison === "gte" ? count >= criterion.count : count <= criterion.count;
+    }
+    return { expected, observed: acceptanceFingerprint(current), passed };
+  }
   switch (criterion.kind) {
     case "toolVerdict": {
       const passed = input.verification?.passedScope(criterion.tool, criterion.args) === true;
