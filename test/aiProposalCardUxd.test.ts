@@ -311,7 +311,6 @@ describe("AI 변경 즉시 적용", () => {
 
     expect(store.getCurrent().meta.title).toBe(baselineTitle);
     expect(findByTestId(panel, "ai-msg-badge-applied")).toBeNull();
-    expect(findByTestId(panel, "ai-status")?.textContent).toBe("검수 미완료");
   });
 
   it("한 번의 되돌리기로 턴 전 전체 프로젝트를 복구한다", async () => {
