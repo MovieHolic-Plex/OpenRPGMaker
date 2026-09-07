@@ -45,7 +45,8 @@ export async function renderMapRegionImages(
   if (typeof document === "undefined") return [];
   try {
     return await renderTileGrid(project, data, label);
-  } catch {
+  } catch (cause) {
+    if (cause instanceof Error && cause.message.includes("rendering-unavailable")) throw cause;
     return [];
   }
 }
@@ -61,7 +62,9 @@ export async function renderToolImages(project: Project, toolName: string, data:
     if (toolName === "look_at_houses") return await renderTileGrid(project, data, "깔린 집 관찰");
     if (toolName === "render_group_sample") return await renderGroupSamples(project, data);
     return [];
-  } catch {
+  } catch (cause) {
+    // Intentional unavailable contracts must stay observable; load/decode noise stays soft.
+    if (cause instanceof Error && cause.message.includes("rendering-unavailable")) throw cause;
     return [];
   }
 }

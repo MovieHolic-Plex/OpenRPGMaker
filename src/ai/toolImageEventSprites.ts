@@ -3,14 +3,10 @@ import { findCharsetAsset } from "@/assets/charsetCatalog";
 import {
   charsetFrameSource,
   decodeCharsetFrameIndex,
-  type CharsetFrameSource,
   type CharsetDirection,
+  type CharsetFrameSource,
 } from "@/assets/easyrpgRtp";
-import {
-  applyTransparentColorKey,
-  applyTransparentColorKeys,
-  STANDARD_COLOR_KEYS,
-} from "@/assets/transparentColorKey";
+import { clearCharsetImageCache, loadKeyedCharsetImage } from "./toolImageCanvas";
 import { characterSpriteY, footprintSpriteX } from "@/player/characterDepth";
 import {
   normalizeCharacterFootprint,
@@ -18,6 +14,7 @@ import {
   UNIT_FOOTPRINT,
 } from "@/project/footprint";
 import type {
+  CharacterFootprint,
   EventPage,
   EventPageGraphic,
   EventPriority,
@@ -44,12 +41,19 @@ export type RegionEventSpritesResult =
 
 type RegionBox = { readonly x: number; readonly y: number; readonly w: number; readonly h: number };
 
-const PRIORITY_ORDER: Record<EventPriority, number> = { below: 0, same: 1, above: 2 };
-const charsetImagePromises = new Map<string, Promise<HTMLImageElement>>();
+type ClaimedPageVisual = {
+  readonly imageUrl: string;
+  readonly frame: CharsetFrameSource;
+  readonly scale: number;
+  readonly footprint: CharacterFootprint;
+  readonly priority: EventPriority;
+};
 
+const PRIORITY_ORDER: Record<EventPriority, number> = { below: 0, same: 1, above: 2 };
 /**
  * Map events inside a show_map_region clip, using only canonical charset/uploaded graphics.
- * Unsupported claimed graphics fail closed — never silently omit into a tile-only proof.
+ * Every page graphic is a claimed visual (same contract as mapVisualContent). Unsupported or
+ * multi-variant page states fail closed — never silently pick page[0] as full coverage.
  */
 export function resolveRegionEventSprites(
   project: Project,
@@ -77,7 +81,7 @@ export async function drawRegionEventSprites(
   sprites: readonly RegionEventSprite[],
 ): Promise<void> {
   for (const sprite of sprites) {
-    const image = await loadCharsetImage(sprite.imageUrl);
+    const image = await loadKeyedCharsetImage(sprite.imageUrl);
     context.drawImage(
       image,
       sprite.frame.x,
@@ -93,7 +97,7 @@ export async function drawRegionEventSprites(
 }
 
 export function clearToolImageEventSpriteCache(): void {
-  charsetImagePromises.clear();
+  clearCharsetImageCache();
 }
 
 function resolveEventSprite(
@@ -102,33 +106,29 @@ function resolveEventSprite(
   region: RegionBox,
   pixelsPerTile: number,
 ): { readonly ok: true; readonly sprite: RegionEventSprite | null } | { readonly ok: false; readonly reason: string } {
-  const page = previewPage(event);
-  const graphic = page?.graphic ?? (event.sprite ? { sprite: event.sprite } : undefined);
-  if (!graphic || graphic.transparent === true || !graphic.sprite) {
-    return { ok: true, sprite: null };
-  }
-  const imageUrl = charsetImageUrl(project, graphic.sprite.id);
-  if (!imageUrl) {
+  const claimed = claimedPageVisuals(project, event);
+  if (!claimed.ok) return claimed;
+  if (claimed.visuals.length === 0) return { ok: true, sprite: null };
+  if (claimed.visuals.length > 1) {
     return {
       ok: false,
-      reason: `map-event-rendering-unavailable: event ${event.id} graphic ${graphic.sprite.id} is not a supported charset/image for show_map_region; no approval`,
+      reason: `map-event-rendering-unavailable: event ${event.id} has ${claimed.visuals.length} distinct page graphics/priorities/footprints; show_map_region cannot represent conditional page states in one frame; no approval`,
     };
   }
-  const footprint = normalizeCharacterFootprint(page?.footprint ?? UNIT_FOOTPRINT);
-  const scale = normalizeCharacterScale(graphic.scale);
-  const frame = frameSourceForGraphic(graphic);
+  const visual = claimed.visuals[0];
+  if (!visual) return { ok: true, sprite: null };
   const worldScale = pixelsPerTile / TILE_SIZE;
-  const destW = frame.width * worldScale * scale;
-  const destH = frame.height * worldScale * scale;
-  const feetX = (footprintSpriteX(event.x, footprint) - region.x * TILE_SIZE) * worldScale;
+  const destW = visual.frame.width * worldScale * visual.scale;
+  const destH = visual.frame.height * worldScale * visual.scale;
+  const feetX = (footprintSpriteX(event.x, visual.footprint) - region.x * TILE_SIZE) * worldScale;
   const feetY = (characterSpriteY(event.y) - region.y * TILE_SIZE) * worldScale;
   return {
     ok: true,
     sprite: {
       eventId: event.id,
-      priority: page?.priority ?? "same",
-      imageUrl,
-      frame,
+      priority: visual.priority,
+      imageUrl: visual.imageUrl,
+      frame: visual.frame,
       destX: feetX - destW / 2,
       destY: feetY - destH,
       destW,
@@ -137,8 +137,63 @@ function resolveEventSprite(
   };
 }
 
-function previewPage(event: GameEvent): EventPage | undefined {
-  return event.pages?.[0];
+function claimedPageVisuals(
+  project: Project,
+  event: GameEvent,
+): { readonly ok: true; readonly visuals: readonly ClaimedPageVisual[] } | { readonly ok: false; readonly reason: string } {
+  const pages = previewPages(event);
+  const byKey = new Map<string, ClaimedPageVisual>();
+  for (const page of pages) {
+    const graphic = page.graphic;
+    if (!graphic || graphic.transparent === true || !graphic.sprite) continue;
+    const imageUrl = charsetImageUrl(project, graphic.sprite.id);
+    if (!imageUrl) {
+      return {
+        ok: false,
+        reason: `map-event-rendering-unavailable: event ${event.id} graphic ${graphic.sprite.id} is not a supported charset/image for show_map_region; no approval`,
+      };
+    }
+    const visual: ClaimedPageVisual = {
+      imageUrl,
+      frame: frameSourceForGraphic(graphic),
+      scale: normalizeCharacterScale(graphic.scale),
+      footprint: normalizeCharacterFootprint(page.footprint ?? UNIT_FOOTPRINT),
+      priority: page.priority,
+    };
+    byKey.set(pageVisualKey(visual), visual);
+  }
+  return { ok: true, visuals: [...byKey.values()] };
+}
+
+function previewPages(event: GameEvent): readonly EventPage[] {
+  if (event.pages && event.pages.length > 0) return event.pages;
+  if (event.sprite) {
+    return [{
+      id: `${event.id}_legacy`,
+      name: event.name ?? event.id,
+      conditions: [],
+      graphic: { sprite: event.sprite },
+      trigger: event.trigger,
+      priority: "same",
+      movement: { type: "fixed", speed: 3, frequency: 3 },
+      commands: event.commands,
+    }];
+  }
+  return [];
+}
+
+function pageVisualKey(visual: ClaimedPageVisual): string {
+  return [
+    visual.imageUrl,
+    visual.frame.x,
+    visual.frame.y,
+    visual.frame.width,
+    visual.frame.height,
+    visual.scale,
+    visual.footprint.width,
+    visual.footprint.height,
+    visual.priority,
+  ].join(":");
 }
 
 function anchorInRegion(event: GameEvent, region: RegionBox): boolean {
@@ -175,41 +230,3 @@ function charsetImageUrl(project: Project, spriteId: string): string | null {
   return null;
 }
 
-function loadCharsetImage(url: string): Promise<HTMLImageElement> {
-  const existing = charsetImagePromises.get(url);
-  if (existing) return existing;
-  const promise = new Promise<HTMLImageElement>((resolve, reject) => {
-    const image = new Image();
-    image.onload = () => {
-      void keyOutCharsetImage(image).then(resolve, reject);
-    };
-    image.onerror = () => reject(new Error(`charset image failed to load: ${url}`));
-    image.src = url;
-  });
-  charsetImagePromises.set(url, promise);
-  promise.catch(() => charsetImagePromises.delete(url));
-  return promise;
-}
-
-async function keyOutCharsetImage(source: HTMLImageElement): Promise<HTMLImageElement> {
-  const width = source.naturalWidth || source.width;
-  const height = source.naturalHeight || source.height;
-  if (width <= 0 || height <= 0) return source;
-  const canvas = document.createElement("canvas");
-  canvas.width = width;
-  canvas.height = height;
-  const context = canvas.getContext("2d", { willReadFrequently: true });
-  if (!context) return source;
-  context.drawImage(source, 0, 0);
-  const imageData = context.getImageData(0, 0, width, height);
-  applyTransparentColorKey(imageData.data);
-  applyTransparentColorKeys(imageData.data, STANDARD_COLOR_KEYS);
-  context.putImageData(imageData, 0, 0);
-  const keyed = new Image();
-  await new Promise<void>((resolve, reject) => {
-    keyed.onload = () => resolve();
-    keyed.onerror = () => reject(new Error("keyed charset image failed"));
-    keyed.src = canvas.toDataURL("image/png");
-  });
-  return keyed;
-}
