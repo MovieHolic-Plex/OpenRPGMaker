@@ -1,7 +1,7 @@
 import type { GrowthMenuTab, GrowthMenuMutation } from "@/player/playerGrowthMenu";
 import type { SaveSlotIndex, SaveSlotReadResult } from "@/player/saveSlots";
 import type { PlaySession } from "@/project/session";
-import type { ActorInitialEquipment, BattleAnimationSheet, Project } from "@/project/types";
+import type { ActorInitialEquipment, BattleAnimationSheet, ItemScope, Project } from "@/project/types";
 import type { StatusMenuCommandId, StatusMenuRailId } from "@/player/playerStatusMenuModel";
 
 export type StatusMenuDetailEntry = {
@@ -30,9 +30,22 @@ export type StatusMenuDetailEntry = {
   /** 이 후보를 고르면 능력치가 어떻게 변하는가. 커서가 올라간 항목의 값을 사이드바가 그린다.
       설명 문자열에도 증감이 들어 있지만 좁은 행에서 말줄임으로 묻혀 판단에 못 쓴다. */
   readonly statDelta?: readonly StatusMenuStatDelta[];
+  /** Inventory showcase facts (type / active effects / use eligibility). Machine values, not row copy. */
+  readonly facts?: readonly StatusMenuDetailFact[];
   readonly onActivate?: () => void;
   readonly disabled?: boolean;
   readonly destructive?: boolean;
+};
+
+export type StatusMenuDetailFactId = "type" | "effects" | "eligibility";
+
+export type StatusMenuDetailFact = {
+  readonly id: StatusMenuDetailFactId;
+  readonly value: string;
+  readonly targeting?: { readonly scope: ItemScope | "partyMonster"; readonly deadOnly: boolean };
+  readonly consumption?:
+    | { readonly consumable: false }
+    | { readonly consumable: true; readonly usesPerCopy: number; readonly remainingCopyUses: number; readonly remainingUses: number };
 };
 
 export type StatusMenuStatDelta = {

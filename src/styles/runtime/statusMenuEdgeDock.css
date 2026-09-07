@@ -291,6 +291,30 @@
 .oprn-status-menu .status-menu-stat-delta-value { color: var(--status-edge-muted); text-align: right; }
 .oprn-status-menu .status-menu-stat-delta-row.up .status-menu-stat-delta-value { color: rgba(144, 220, 168, 1); }
 .oprn-status-menu .status-menu-stat-delta-row.down .status-menu-stat-delta-value { color: rgba(255, 158, 151, 1); }
+.oprn-status-menu .status-menu-item-facts {
+  display: grid;
+  gap: 2px;
+  grid-auto-rows: max-content;
+  min-height: 0;
+  overflow: visible;
+  width: 100%;
+}
+.oprn-status-menu .status-menu-item-facts .status-menu-stat-delta-row {
+  font: 500 6.5px/1.25 var(--runtime-ui-font);
+}
+.oprn-status-menu .status-menu-item-facts .status-menu-stat-delta-row[data-fact-id="effects"] {
+  align-items: start;
+  min-height: 0;
+}
+.oprn-status-menu .status-menu-item-facts .status-menu-stat-delta-value {
+  min-width: 0;
+  overflow: visible;
+  overflow-wrap: normal;
+  text-align: right;
+  text-overflow: unset;
+  white-space: normal;
+  word-break: keep-all;
+}
 .oprn-status-menu.has-party-overview .status-menu-detail { bottom: 129px; grid-template-rows: minmax(0, 1fr); }
 .oprn-status-menu.has-party-overview .status-menu-detail-title { display: none; }
 .oprn-status-menu.has-party-overview .status-menu-detail-list { --oprn-menu-row-step: 17px; }
@@ -378,5 +402,8 @@
 .oprn-status-menu .has-stat-delta { gap: 3px; }
 .oprn-status-menu .has-stat-delta .status-menu-showcase-frame { height: 28px; width: 28px; }
 .oprn-status-menu .has-stat-delta .status-menu-showcase-description { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+.oprn-status-menu .has-item-facts { gap: 2px; min-height: 0; }
+.oprn-status-menu .has-item-facts .status-menu-item-facts { align-self: start; width: 100%; }
+.oprn-status-menu .has-item-facts .status-menu-showcase-description { display: none; }
 .oprn-status-menu .status-menu-detail-value { max-width: 100%; }
 .oprn-status-menu [data-testid="status-menu-owned-equipment-worn"] .status-menu-detail-value { justify-self: stretch; text-align: left; }
