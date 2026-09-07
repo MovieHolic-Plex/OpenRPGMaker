@@ -53,6 +53,18 @@ draft privately for review without labelling it applied; applied-state acceptanc
 and remote persistence receipts remain separate. Advisory lint results are sent
 as evidence, not promoted to an unconditional baseline-breaking gate.
 
+`toolImageEventSprites.ts` adds authored event charset visuals to map-region
+images using the shared frame, transparency, scale and footprint helpers.
+This is an authoring preview, not a simulation of active page conditions:
+identical visible page states share one sprite, and a sole visible graphic on
+a later page is still depicted. Distinct visible page graphics, priorities or
+footprints cannot be represented by this single frame and explicitly raise
+`map-event-rendering-unavailable`; unsupported assets do the same. Neither
+case issues a tile-only image receipt. Background rendering unavailability
+also remains an observable error. Contracts: `toolImageEventRender`,
+`toolImageEventAcceptanceSession`; `scripts/evidence-event-visual-render.mts`
+captures pixel changes for movement, graphic selection and later-page visuals.
+
 `TurnResult.review`, `result_review` events and `HarnessSnapshot.resultReview`
 expose the outcome. `isDraftReviewApproved(project?)` checks the exact current
 revision and cancellation state; mutation/undo cannot revive invalidated approval.
