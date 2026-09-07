@@ -10,6 +10,26 @@ import { store } from "@/project/store";
 import { createBlankProject } from "@/project/defaults";
 import { createAiStickyChecklist } from "@/editor/panels/aiStickyChecklist";
 import { subscribeEditorCameraFocus } from "@/editor/editorCameraFocus";
+import { shouldIgnoreEditorShortcut } from "@/editor/hotkeys";
+
+const notes: ReturnType<typeof createAiStickyChecklist>[] = [];
+function mountNote(value = snapshot()) {
+  const note = createAiStickyChecklist(); notes.push(note); note.update(value); return note;
+}
+function expandNote() {
+  const toggle = node<HTMLButtonElement>("ai-sticky-toggle");
+  if (toggle.getAttribute("aria-expanded") !== "true") toggle.click();
+}
+function verifiedGroup(): HTMLDetailsElement {
+  const group = document.querySelector<HTMLDetailsElement>(".ai-sticky-done-group");
+  if (!group) throw new Error("Missing rendered verified group");
+  return group;
+}
+function assertVisibilityApi(note: ReturnType<typeof createAiStickyChecklist>): asserts note is ReturnType<typeof createAiStickyChecklist> & {
+  hide(): void; show(): void; hasSnapshot(): boolean;
+} {
+  expect(note).toEqual(expect.objectContaining({ hide: expect.any(Function), show: expect.any(Function), hasSnapshot: expect.any(Function) }));
+}
 
 vi.mock("@/ai/activityLog", async (original) => ({
   ...await original<typeof import("@/ai/activityLog")>(), recordAiActivity: vi.fn(async () => ({})),
@@ -48,6 +68,7 @@ beforeEach(async () => {
   editorState.set({ currentMapId: store.getCurrent().startMapId, selection: null });
 });
 afterEach(async () => {
+  notes.forEach(note => note.dispose()); notes.length = 0;
   teardownAiChatPanel(); await bounded(whenAiChatPanelSettled()); await clearConversations();
   document.body.replaceChildren(); localStorage.clear(); vi.restoreAllMocks(); vi.unstubAllEnvs();
 });
@@ -91,6 +112,7 @@ it("preserves disclosure and focused navigation while backend status and evidenc
   const initial = snapshot();
   const item = { ...initial.items[0], id: "item-a", title: "fixture", status: "working", evidence: [], mapId: store.getCurrent().startMapId } as const;
   note.update({ ...initial, items: [item] });
+  expandNote();
   const details = node<HTMLDetailsElement>("ai-sticky-item"); details.open = true;
   const navigate = node<HTMLButtonElement>("ai-sticky-navigate"); navigate.focus();
   // When the same item receives verified evidence.
@@ -98,6 +120,7 @@ it("preserves disclosure and focused navigation while backend status and evidenc
   // Then native interaction identity and backend evidence are preserved.
   expect(node("ai-sticky-item")).toBe(details);
   expect(details.open).toBe(true); expect(document.activeElement).toBe(navigate);
+  expect(verifiedGroup().open).toBe(true);
   expect(node("ai-sticky-evidence").querySelector("dd")?.textContent).toBe("EXPECTED");
   expect(node("ai-sticky-count").textContent).toBe("1/1");
   note.dispose();
@@ -113,6 +136,15 @@ it.each(["pending", "working", "verifying", "verified", "blocked"] as const)("pr
   expect(node("ai-sticky-count").textContent).toBe(status === "verified" ? "1/1" : "0/1");
   expect(note.root.querySelector("input, [role='checkbox']")).toBeNull();
   note.dispose();
+});
+
+it.each([false, true])("defaults to compact with compact media match=%s", (matches) => {
+  const query = window.matchMedia("(max-width: 1100px), (max-height: 700px)");
+  vi.spyOn(window, "matchMedia").mockReturnValue(query);
+  vi.spyOn(query, "matches", "get").mockReturnValue(matches);
+  mountNote();
+  expect(node("ai-sticky-toggle").getAttribute("aria-expanded")).toBe("false");
+  expect(node("ai-sticky-checklist").dataset.expanded).toBe("false");
 });
 
 it("preserves a manual expansion through tight viewport changes and clears on disposal", () => {
@@ -218,4 +250,258 @@ it("retains the backend blocked snapshot when the actual abort button ends a hel
   // Then terminal publication retains backend evidence without accepting late live events.
   expect(node("ai-sticky-item").dataset.status).toBe("blocked");
   expect(node("ai-sticky-count").textContent).toBe("0/1");
+});
+
+it("hides without discarding live updates and reopens the latest backend evidence", () => {
+  const note = mountNote(); assertVisibilityApi(note);
+  expect(note.hasSnapshot()).toBe(true);
+  expandNote();
+  const row = node<HTMLDetailsElement>("ai-sticky-item"); row.open = true;
+  note.hide();
+  expect(note.root.isConnected && !note.root.hidden).toBe(false);
+  const next = snapshot("blocked"); note.update(next);
+  expect(note.hasSnapshot()).toBe(true);
+  expect(note.root.isConnected && !note.root.hidden).toBe(false);
+  note.show();
+  expect(note.root.isConnected && !note.root.hidden).toBe(true);
+  expect(node("ai-sticky-item")).toBe(row);
+  expect(row.open).toBe(true);
+  expect(row.dataset.status).toBe("blocked");
+  expect(node("ai-sticky-evidence").querySelector("[data-passed='false']")).not.toBeNull();
+  expect(document.activeElement).toBe(node("ai-sticky-toggle"));
+  expect(next).toEqual(snapshot("blocked"));
+});
+
+it.each(["clear", "dispose"] as const)("does not reopen retired acceptance after %s", boundary => {
+  const note = mountNote(); assertVisibilityApi(note); note.hide();
+  if (boundary === "clear") note.update(null); else note.dispose();
+  expect(note.hasSnapshot()).toBe(false);
+  note.show();
+  expect(note.root.isConnected).toBe(false);
+  if (boundary === "dispose") {
+    note.update(snapshot()); note.show();
+    expect(note.hasSnapshot()).toBe(false);
+    expect(note.root.isConnected).toBe(false);
+  } else {
+    note.update({ ...snapshot(), id: "NEXT_OWNER" });
+    expect(note.root.isConnected && !note.root.hidden).toBe(true);
+    expect(node("ai-sticky-toggle").getAttribute("aria-expanded")).toBe("false");
+  }
+});
+
+it("exposes a blocked reason with item details closed and keeps source and evidence inside", () => {
+  const value: AcceptanceSnapshot = { ...snapshot("blocked"), items: [{ id: "blocked", title: "BLOCKED_ITEM", status: "blocked",
+    reason: "BLOCKED_REASON_SENTINEL", source: { requestId: "REQUEST", text: "SOURCE_SENTINEL", scope: null },
+    evidence: [{ expected: "EXPECTED_SENTINEL", observed: "OBSERVED_SENTINEL", passed: false }] }] };
+  const note = mountNote(value); expandNote();
+  const row = node<HTMLDetailsElement>("ai-sticky-item");
+  expect(row.open).toBe(false);
+  const reason = note.root.querySelector<HTMLElement>(".ai-sticky-block-reason");
+  if (!reason) throw new Error("Missing rendered blocked reason");
+  expect(reason.hidden).toBe(false);
+  expect(reason.textContent).toContain(value.items[0]!.reason);
+  // A summary descendant remains exposed when its own details is closed.
+  expect(!row.contains(reason) || row.querySelector("summary")!.contains(reason)).toBe(true);
+  expect(row.querySelector("summary")!.textContent).not.toContain("SOURCE_SENTINEL");
+  expect(row.querySelector("summary")!.textContent).not.toContain("OBSERVED_SENTINEL");
+  expect(row.contains(node("ai-sticky-evidence"))).toBe(true);
+  note.update({ ...value, status: "working", items: [{ ...value.items[0]!, status: "working", reason: undefined }] });
+  expect(note.root.querySelector<HTMLElement>(".ai-sticky-block-reason")?.hidden ?? true).toBe(true);
+});
+
+it("folds verified rows separately and retains disclosure and focus when a row becomes active again", () => {
+  const mapId = store.getCurrent().startMapId;
+  const value: AcceptanceSnapshot = { ...snapshot(), items: [
+    { id: "active", title: "ACTIVE", status: "working", evidence: [] },
+    { id: "done", title: "DONE", status: "verified", evidence: [], mapId },
+  ] };
+  const note = mountNote(value); expandNote();
+  const group = verifiedGroup();
+  const row = note.root.querySelector<HTMLDetailsElement>("[data-item-id='done']")!;
+  expect(group.open).toBe(false);
+  expect(group.contains(row)).toBe(true);
+  expect(group.contains(note.root.querySelector("[data-item-id='active']"))).toBe(false);
+  group.open = true; row.open = true;
+  const navigate = row.querySelector<HTMLButtonElement>("[data-testid='ai-sticky-navigate']")!; navigate.focus();
+  note.update({ ...value, items: [value.items[0]!, { ...value.items[1]!, evidence: [{ expected: "EXPECTED", observed: "CURRENT", passed: true }] }] });
+  expect(verifiedGroup()).toBe(group);
+  expect(group.open).toBe(true); expect(row.open).toBe(true); expect(document.activeElement).toBe(navigate);
+  note.update({ ...value, status: "blocked", items: [value.items[0]!, { ...value.items[1]!, status: "blocked", reason: "INVALIDATED" }] });
+  expect(note.root.querySelector("[data-item-id='done']")).toBe(row);
+  expect(group.contains(row)).toBe(false);
+  expect(row.open).toBe(true); expect(document.activeElement).toBe(navigate);
+  expect(row.dataset.status).toBe("blocked");
+});
+
+it("returns collapsed detail focus to the toggle without stealing native navigation keys", () => {
+  const note = mountNote({ ...snapshot(), items: [{ id: "map", title: "MAP", status: "working", evidence: [], mapId: store.getCurrent().startMapId }] });
+  expandNote(); node<HTMLDetailsElement>("ai-sticky-item").open = true;
+  const navigate = node<HTMLButtonElement>("ai-sticky-navigate"); navigate.focus();
+  for (const key of ["ArrowDown", "Home", "End", " "]) {
+    const event = new KeyboardEvent("keydown", { key, bubbles: true, cancelable: true }); navigate.dispatchEvent(event);
+    expect(shouldIgnoreEditorShortcut(event)).toBe(true); expect(event.defaultPrevented).toBe(false);
+  }
+  node("ai-sticky-toggle").click();
+  expect(document.activeElement).toBe(node("ai-sticky-toggle"));
+  expect(node("ai-sticky-toggle").getAttribute("aria-expanded")).toBe("false");
+  expect(note.root.querySelector("input, [role='checkbox']")).toBeNull();
+});
+
+it.each(["pointercancel", "lostpointercapture", "hide", "clear", "dispose"] as const)("ends captured checklist drag on %s", boundary => {
+  const note = mountNote();
+  const handle = node("ai-sticky-drag");
+  const captured = new Set<number>();
+  handle.setPointerCapture = vi.fn(id => { captured.add(id); });
+  handle.hasPointerCapture = id => captured.has(id);
+  handle.releasePointerCapture = vi.fn(id => { captured.delete(id); });
+  vi.spyOn(note.root, "getBoundingClientRect").mockReturnValue(new DOMRect(100, 100, 280, 80));
+  const pointer = (type: string, x: number) => handle.dispatchEvent(new PointerEvent(type, {
+    bubbles: true, cancelable: true, pointerId: 7, button: 0, clientX: x, clientY: 120,
+  }));
+  const initial = note.root.style.cssText;
+  pointer("pointerdown", 120); expect(handle.hasPointerCapture(7)).toBe(true);
+  pointer("pointermove", 170); expect(note.root.style.cssText).not.toBe(initial);
+  if (boundary === "hide") { assertVisibilityApi(note); note.hide(); }
+  else if (boundary === "clear") note.update(null);
+  else if (boundary === "dispose") note.dispose();
+  else {
+    if (boundary === "lostpointercapture") captured.delete(7);
+    pointer(boundary, 170);
+  }
+  expect(handle.hasPointerCapture(7)).toBe(false);
+  const stopped = note.root.style.cssText;
+  pointer("pointermove", 230); pointer("pointerup", 230);
+  expect(note.root.style.cssText).toBe(stopped);
+});
+
+it.each(["header", "composer"] as const)("reopens hidden fresh acceptance through the actual %s AI menu", async variant => {
+  const held = signal(); const release = signal(); const terminal = signal();
+  let current = snapshot("verified");
+  const refresh = vi.fn((_project: ReturnType<typeof store.getCurrent>, onEvent?: (event: SessionEvent) => void) => {
+    current = snapshot("blocked"); onEvent?.({ type: "acceptance", snapshot: current });
+  });
+  vi.mocked(recordAiActivity).mockImplementation(async record => {
+    if (record.result && record.result.pending !== true) terminal.resolve();
+    return buildAiActivityLogRecord(record);
+  });
+  vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockImplementation(async function (this: AssistantSession, _text, onEvent) {
+    Object.defineProperty(this, "getAcceptanceSnapshot", { value: () => current, configurable: true });
+    Object.defineProperty(this, "refreshAcceptance", { value: refresh, configurable: true });
+    onEvent?.({ type: "acceptance", snapshot: current }); held.resolve(); await release.promise;
+    return { assistantText: "", proposedCalls: [], stoppedReason: "final" };
+  });
+  document.body.append(renderAiChatPanel()); await bounded(whenAiChatPanelSettled());
+  for (const id of ["ai-more-acceptance-show", "ai-command-menu-acceptance-show"]) {
+    expect(node<HTMLButtonElement>(id).hidden).toBe(true);
+    expect(node<HTMLButtonElement>(id).disabled).toBe(true);
+  }
+  node<HTMLTextAreaElement>("ai-input").value = "REOPEN_FIXTURE"; node("ai-send").click();
+  try {
+    await bounded(held.promise);
+    const root = node("ai-sticky-checklist");
+    for (const id of ["ai-more-acceptance-show", "ai-command-menu-acceptance-show"]) {
+      expect(node<HTMLButtonElement>(id).hidden).toBe(false);
+      expect(node<HTMLButtonElement>(id).disabled).toBe(true);
+    }
+    node("ai-sticky-hide").click();
+    expect(root.isConnected).toBe(true);
+    expect(root.isConnected && !root.hidden).toBe(false);
+    expect(document.activeElement).toBe(node("ai-input"));
+    expect(root.contains(document.activeElement)).toBe(false);
+    store.update(project => { project.meta.title = "HIDDEN_MUTATION"; }, { scope: "project", label: "acceptance hidden refresh test" });
+    expect(refresh).toHaveBeenCalledWith(store.getCurrent(), expect.any(Function));
+    expect(root.isConnected && !root.hidden).toBe(false);
+    const prefix = variant === "header" ? "ai-more" : "ai-command-menu";
+    if (variant === "header") {
+      node("ai-more-menu-toggle").click(); node<HTMLDetailsElement>("ai-more-actions").open = true;
+    } else node("ai-command-menu-toggle").click();
+    const reopen = node<HTMLButtonElement>(`${prefix}-acceptance-show`);
+    expect(reopen.disabled).toBe(false); expect(reopen.hidden).toBe(false); reopen.click();
+    expect(root.isConnected && !root.hidden).toBe(true);
+    expect(node("ai-sticky-item").dataset.status).toBe("blocked");
+    expect(node("ai-sticky-count").textContent).toBe("0/1");
+    expect(document.activeElement).toBe(node("ai-sticky-toggle"));
+    expect(reopen.disabled).toBe(true);
+    node("ai-new-chat").click(); reopen.click();
+    expect(reopen.hidden).toBe(true); expect(reopen.disabled).toBe(true);
+    expect(document.querySelector("[data-testid='ai-sticky-checklist']")).toBeNull();
+  } finally { release.resolve(); await bounded(terminal.promise); }
+});
+
+it("orders active required work first and keeps compact activity live even while hidden", () => {
+  const value: AcceptanceSnapshot = { ...snapshot(), items: [
+    { id: "optional", title: "OPTIONAL_SENTINEL", required: false, status: "working", evidence: [] },
+    { id: "pending", title: "PENDING_SENTINEL", status: "pending", evidence: [] },
+    { id: "verifying", title: "VERIFYING_SENTINEL", status: "verifying", evidence: [] },
+    { id: "blocked", title: "BLOCKED_SENTINEL", status: "blocked", evidence: [] },
+    { id: "working", title: "WORKING_SENTINEL", status: "working", evidence: [] },
+  ] };
+  const note = mountNote(value);
+  expect([...note.root.querySelectorAll<HTMLElement>(".ai-sticky-list > [data-item-id]")].map(row => row.dataset.itemId))
+    .toEqual(["blocked", "working", "verifying", "pending"]);
+  const inline = note.root.querySelector<HTMLElement>(".ai-sticky-activity-inline")!;
+  expect(inline.textContent).not.toContain("OPTIONAL_SENTINEL");
+  expect(inline.textContent).toContain("VERIFYING_SENTINEL");
+  note.setActivity("ACTIVITY_SENTINEL"); expect(inline.textContent).toBe("ACTIVITY_SENTINEL");
+  note.hide(); note.setActivity("HIDDEN_ACTIVITY_SENTINEL");
+  expect(note.root.hidden).toBe(true); expect(note.root.isConnected).toBe(true);
+  note.show(); expect(inline.textContent).toBe("HIDDEN_ACTIVITY_SENTINEL");
+  expect(node("ai-sticky-toggle").getAttribute("aria-expanded")).toBe("false");
+});
+
+it("clamps a primary captured drag and resets position, disclosure and hiding on new acceptance", () => {
+  const note = mountNote(); expandNote(); node<HTMLDetailsElement>("ai-sticky-item").open = true;
+  const handle = node("ai-sticky-drag"); const captured = new Set<number>();
+  handle.setPointerCapture = id => { captured.add(id); };
+  handle.hasPointerCapture = id => captured.has(id);
+  handle.releasePointerCapture = id => { captured.delete(id); };
+  vi.spyOn(note.root, "getBoundingClientRect").mockReturnValue(new DOMRect(100, 100, 280, 80));
+  note.root.style.setProperty("--editor-left-safe", "40px");
+  note.root.style.setProperty("--space-3", "12px");
+  note.root.style.setProperty("--ai-sticky-toolbar-bottom", "90px");
+  const pointer = (type: string, id: number, x: number, y: number, button = 0) => handle.dispatchEvent(new PointerEvent(type, {
+    bubbles: true, cancelable: true, pointerId: id, button, clientX: x, clientY: y,
+  }));
+  pointer("pointerdown", 7, 120, 120, 2); expect(captured.size).toBe(0);
+  pointer("pointerdown", 7, 120, 120);
+  pointer("pointermove", 8, 9999, 9999); expect(note.root.style.left).toBe("");
+  pointer("pointermove", 7, -9999, -9999);
+  expect(note.root.style.left).toBe("52px"); expect(note.root.style.top).toBe("102px");
+  pointer("pointermove", 7, 9999, 9999);
+  expect(parseFloat(note.root.style.left)).toBe(window.innerWidth - 280 - 12);
+  expect(parseFloat(note.root.style.top)).toBe(window.innerHeight - 80 - 12);
+  pointer("pointerup", 7, 9999, 9999); expect(captured.size).toBe(0);
+  const retained = node("ai-sticky-item"); note.hide();
+  note.update({ ...snapshot(), id: "NEW_ACCEPTANCE" });
+  expect(note.root.hidden).toBe(false); expect(note.root.dataset.hiddenByUser).toBe("false");
+  expect(note.root.style.left).toBe(""); expect(note.root.style.top).toBe("");
+  expect(node("ai-sticky-toggle").getAttribute("aria-expanded")).toBe("false");
+  expect(node("ai-sticky-item")).not.toBe(retained); expect(node<HTMLDetailsElement>("ai-sticky-item").open).toBe(false);
+});
+
+it.each(["project", "dispose"] as const)("rejects old live and terminal acceptance immediately after %s retirement", async boundary => {
+  const held = signal(); const release = signal(); const terminal = signal();
+  let publish: ((event: SessionEvent) => void) | undefined;
+  vi.mocked(recordAiActivity).mockImplementation(async record => {
+    if (record.result && record.result.pending !== true) terminal.resolve();
+    return buildAiActivityLogRecord(record);
+  });
+  vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockImplementation(async function (this: AssistantSession, _text, onEvent) {
+    publish = onEvent;
+    Object.defineProperty(this, "getAcceptanceSnapshot", { value: () => snapshot("verified"), configurable: true });
+    onEvent?.({ type: "acceptance", snapshot: snapshot() }); held.resolve(); await release.promise;
+    onEvent?.({ type: "acceptance", snapshot: snapshot("verified") });
+    return { assistantText: "", proposedCalls: [], stoppedReason: "final" };
+  });
+  document.body.append(renderAiChatPanel()); await bounded(whenAiChatPanelSettled());
+  node<HTMLTextAreaElement>("ai-input").value = "RETIREMENT_FIXTURE"; node("ai-send").click();
+  try {
+    await bounded(held.promise);
+    if (boundary === "project") store.replaceProject(createBlankProject()); else teardownAiChatPanel();
+    expect(document.querySelector("[data-testid='ai-sticky-checklist']")).toBeNull();
+    publish?.({ type: "acceptance", snapshot: snapshot("verified") });
+    expect(document.querySelector("[data-testid='ai-sticky-checklist']")).toBeNull();
+  } finally { release.resolve(); await bounded(terminal.promise); }
+  await bounded(whenAiChatPanelSettled());
+  expect(document.querySelector("[data-testid='ai-sticky-checklist']")).toBeNull();
 });
