@@ -2,6 +2,7 @@
 // tilesetImageUrl 은 동기 API(CSS background/img src)라서, 베이크는 비동기로 돌리고
 // 결과 dataURL 을 캐시한다 — 캐시 미스면 베이스 URL 을 임시 반환하고 베이크를 예약한다.
 // 베이크 완료 시 "oprn:tileset-graft-image-baked" 윈도우 이벤트를 쏜다(다음 리렌더에서 반영).
+// 어시스턴트 증거 렌더는 awaitGraftedTilesetImageUrl 로 동일 키의 완전 베이크만 인정한다.
 import {
   ASSET_TILESET,
   BUNDLED_EASYRPG_CHIPSET_ASSETS,
@@ -16,8 +17,16 @@ import type { TilesetDef } from "@/project/types";
 
 export const TILE_GRAFT_IMAGE_BAKED_EVENT = "oprn:tileset-graft-image-baked";
 
+type GraftBakeSnapshot = Pick<TilesetDef, "count" | "tileSize" | "tilesPerRow" | "tileGrafts">;
+
 const bakedUrlCache = new Map<string, string>();
-const pendingBakes = new Set<string>();
+const inFlightBakes = new Map<string, Promise<string | null>>();
+
+/** Test-only: drop baked URLs and in-flight work so readiness cases stay isolated. */
+export function clearTileGraftImageCache(): void {
+  bakedUrlCache.clear();
+  inFlightBakes.clear();
+}
 
 // 베이크 결과가 있으면 dataURL, 없으면 null(베이크 예약). baseUrl 은 graft 없는 원본 시트 URL.
 export function graftedTilesetImageUrl(tileset: TilesetDef, baseUrl: string): string | null {
@@ -25,48 +34,113 @@ export function graftedTilesetImageUrl(tileset: TilesetDef, baseUrl: string): st
   const cacheKey = graftImageCacheKey(tileset, baseUrl);
   const cached = bakedUrlCache.get(cacheKey);
   if (cached) return cached;
-  scheduleGraftImageBake(cacheKey, tileset, baseUrl);
+  void ensureGraftImageBake(cacheKey, snapshotGraftBake(tileset), baseUrl);
   return null;
 }
 
-function graftImageCacheKey(tileset: TilesetDef, baseUrl: string): string {
-  return `${baseUrl}|${tileset.count}|${tileGraftsTextureSuffix(tileset)}`;
+/** Cached bake for the exact render inputs, or null when grafts are absent. */
+export function peekGraftedTilesetImageUrl(tileset: TilesetDef, baseUrl: string): string | null {
+  if (activeTileGrafts(tileset).length === 0) return null;
+  return bakedUrlCache.get(graftImageCacheKey(tileset, baseUrl)) ?? null;
 }
 
-function scheduleGraftImageBake(cacheKey: string, tileset: TilesetDef, baseUrl: string): void {
-  if (pendingBakes.has(cacheKey) || typeof document === "undefined" || typeof Image === "undefined") return;
-  pendingBakes.add(cacheKey);
-  // 스냅샷 — 비동기 완료 시점에 tileset 객체가 바뀌어도 요청 시점 구성을 베이크한다.
-  const snapshot: Pick<TilesetDef, "count" | "tileSize" | "tilesPerRow" | "tileGrafts"> = {
+/**
+ * Evidence path: await the complete grafted atlas for these exact inputs.
+ * Missing/failed sources and incomplete bakes resolve to null — never a partial atlas.
+ * Ordinary editor preview keeps the synchronous base fallback via graftedTilesetImageUrl.
+ */
+export function awaitGraftedTilesetImageUrl(
+  tileset: TilesetDef,
+  baseUrl: string,
+  signal?: AbortSignal,
+): Promise<string | null> {
+  if (activeTileGrafts(tileset).length === 0) return Promise.resolve(null);
+  if (signal?.aborted) return Promise.resolve(null);
+  const cacheKey = graftImageCacheKey(tileset, baseUrl);
+  const cached = bakedUrlCache.get(cacheKey);
+  if (cached) return Promise.resolve(cached);
+  const bake = ensureGraftImageBake(cacheKey, snapshotGraftBake(tileset), baseUrl);
+  if (!signal) return bake;
+  return new Promise<string | null>((resolve) => {
+    let settled = false;
+    const onAbort = (): void => {
+      if (settled) return;
+      settled = true;
+      signal.removeEventListener("abort", onAbort);
+      resolve(null);
+    };
+    signal.addEventListener("abort", onAbort, { once: true });
+    void bake.then((url) => {
+      if (settled) return;
+      settled = true;
+      signal.removeEventListener("abort", onAbort);
+      resolve(url);
+    });
+  });
+}
+
+function graftImageCacheKey(tileset: GraftBakeSnapshot, baseUrl: string): string {
+  // Bind every atlas input the canvas bake actually consumes.
+  return [
+    baseUrl,
+    tileset.count,
+    tileset.tileSize,
+    tileset.tilesPerRow,
+    tileGraftsTextureSuffix(tileset),
+  ].join("|");
+}
+
+function snapshotGraftBake(tileset: TilesetDef): GraftBakeSnapshot {
+  // Snapshot — async completion must bake the requested composition, not a later edit.
+  return {
     count: tileset.count,
     tileSize: tileset.tileSize,
     tilesPerRow: tileset.tilesPerRow,
     tileGrafts: activeTileGrafts(tileset),
   };
-  void bakeGraftedTilesetImage(snapshot, baseUrl)
+}
+
+function ensureGraftImageBake(
+  cacheKey: string,
+  tileset: GraftBakeSnapshot,
+  baseUrl: string,
+): Promise<string | null> {
+  const existing = inFlightBakes.get(cacheKey);
+  if (existing) return existing;
+  const pending = bakeGraftedTilesetImage(tileset, baseUrl)
     .then((dataUrl) => {
-      if (!dataUrl) return;
+      if (!dataUrl) return null;
       bakedUrlCache.set(cacheKey, dataUrl);
       if (typeof window !== "undefined") {
         window.dispatchEvent(new CustomEvent(TILE_GRAFT_IMAGE_BAKED_EVENT, { detail: { cacheKey } }));
       }
+      return dataUrl;
+    })
+    .catch((cause) => {
+      console.warn("[tileGrafts] graft atlas bake failed", cause);
+      return null;
     })
     .finally(() => {
-      pendingBakes.delete(cacheKey);
+      inFlightBakes.delete(cacheKey);
     });
+  inFlightBakes.set(cacheKey, pending);
+  return pending;
 }
 
 async function bakeGraftedTilesetImage(
-  tileset: Pick<TilesetDef, "count" | "tileSize" | "tilesPerRow" | "tileGrafts">,
-  baseUrl: string
+  tileset: GraftBakeSnapshot,
+  baseUrl: string,
 ): Promise<string | null> {
   const grafts = activeTileGrafts(tileset);
+  if (grafts.length === 0) return null;
   const sourceKeys = [...new Set(grafts.map((graft) => graft.sourceChipset))];
   const [base, ...sources] = await Promise.all([
     loadImage(baseUrl),
     ...sourceKeys.map((key) => loadChipsetSourceImage(key)),
   ]);
   if (!base) return null;
+  // Incomplete source sets are not successful evidence or cacheable preview bakes.
+  if (sources.some((image) => !image)) return null;
   const sourceByKey = new Map<string, HTMLImageElement | HTMLCanvasElement>();
   sourceKeys.forEach((key, index) => {
     const image = sources[index];

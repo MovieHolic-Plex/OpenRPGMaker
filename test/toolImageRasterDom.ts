@@ -134,6 +134,24 @@ class RasterContext {
     }
   }
 
+  /** Graft atlas bake clears the destination tile before blitting the source chip. */
+  clearRect(x: number, y: number, w: number, h: number): void {
+    const x0 = Math.max(0, Math.floor(x));
+    const y0 = Math.max(0, Math.floor(y));
+    const x1 = Math.min(this.canvas.width, Math.ceil(x + w));
+    const y1 = Math.min(this.canvas.height, Math.ceil(y + h));
+    const buf = this.canvas.buffer;
+    for (let py = y0; py < y1; py += 1) {
+      for (let px = x0; px < x1; px += 1) {
+        const i = (py * this.canvas.width + px) * 4;
+        buf[i] = 0;
+        buf[i + 1] = 0;
+        buf[i + 2] = 0;
+        buf[i + 3] = 0;
+      }
+    }
+  }
+
   strokeText(): void {}
   fillText(): void {}
 

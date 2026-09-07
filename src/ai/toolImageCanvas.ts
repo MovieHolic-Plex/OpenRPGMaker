@@ -1,4 +1,6 @@
-import { tilesetImageUrl } from "@/editor/tilesetImage";
+import { awaitGraftedTilesetImageUrl } from "@/assets/tileGraftImageCache";
+import { activeTileGrafts } from "@/assets/tileGrafts";
+import { tilesetBaseImageUrl } from "@/editor/tilesetImage";
 import type { TilesetDef } from "@/project/types";
 import {
   applyTransparentColorKey,
@@ -13,6 +15,11 @@ export const EMPTY_TILE = -1;
 
 const tilesetImagePromises = new Map<string, Promise<HTMLImageElement>>();
 const charsetImagePromises = new Map<string, Promise<HTMLImageElement>>();
+
+/** Test-only: drop decoded atlas promises so graft readiness cases cannot reuse stale base URLs. */
+export function clearTilesetImageCache(): void {
+  tilesetImagePromises.clear();
+}
 
 export function createCanvas(width: number, height: number): { readonly canvas: HTMLCanvasElement; readonly context: CanvasRenderingContext2D } | null {
   const canvas = document.createElement("canvas");
@@ -51,8 +58,34 @@ export function canvasDataUrl(canvas: HTMLCanvasElement): string | null {
   return scaledPair.canvas.toDataURL("image/png");
 }
 
-export function loadTilesetImage(tileset: TilesetDef): Promise<HTMLImageElement> {
-  const url = tilesetImageUrl(tileset);
+/**
+ * Load the atlas actually used by tool image evidence.
+ * Active grafts must finish an exact bake bound to geometry/grafts/base URL before
+ * any image is returned; pending or failed sources fail closed (no base-atlas proof).
+ * Ordinary editor CSS/preview still uses tilesetImageUrl's transient base fallback.
+ */
+export function loadTilesetImage(tileset: TilesetDef, signal?: AbortSignal): Promise<HTMLImageElement> {
+  return resolveTilesetImageUrl(tileset, signal).then((url) => loadImageUrl(url));
+}
+
+async function resolveTilesetImageUrl(tileset: TilesetDef, signal?: AbortSignal): Promise<string> {
+  const baseUrl = tilesetBaseImageUrl(tileset);
+  if (activeTileGrafts(tileset).length === 0) return baseUrl;
+  if (signal?.aborted) {
+    throw new Error(
+      `tileset-graft-rendering-unavailable: tileset ${tileset.id}; graft atlas bake cancelled; no approval`,
+    );
+  }
+  const baked = await awaitGraftedTilesetImageUrl(tileset, baseUrl, signal);
+  if (!baked) {
+    throw new Error(
+      `tileset-graft-rendering-unavailable: tileset ${tileset.id}; graft atlas bake incomplete or source missing; no approval`,
+    );
+  }
+  return baked;
+}
+
+function loadImageUrl(url: string): Promise<HTMLImageElement> {
   const existing = tilesetImagePromises.get(url);
   if (existing) return existing;
   const promise = new Promise<HTMLImageElement>((resolve, reject) => {
