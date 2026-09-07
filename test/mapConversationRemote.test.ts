@@ -160,6 +160,54 @@ it("Given P save and Q switch before local persistence When mirror fails and out
   expect(bodies).toMatchObject([[{ project_id: "P" }], [{ project_id: "P" }]]);
 });
 
+it.each([
+  { snapshot: "equal-timestamp replacement", replace: true, savedAt: 1000, counts: [1, 2, 2] },
+  { snapshot: "equal-timestamp current retry", replace: false, savedAt: 1000, counts: [1, 1] },
+  { snapshot: "strictly newer replacement", replace: true, savedAt: 1001, counts: [1, 2] },
+])("Given a failed mirror and $snapshot When flushing under Q Then the authoritative snapshot stays at P", async ({ replace, savedAt, counts }) => {
+  const queued = deferred<void>(); const replaced = deferred<void>();
+  const writes: Array<{ conversation_id: string; project_id: string; project_context_key: string; title: string;
+    model: string; saved_at: string; entries_json: unknown[] }> = [];
+  const remote = new Map<string, (typeof writes)[number]>();
+  const setItem = localStorage.setItem.bind(localStorage);
+  vi.spyOn(localStorage, "setItem").mockImplementation((key, value) => {
+    setItem(key, value);
+    if (listRemoteOutbox().some(entry => entry.id === "C")) queued.resolve();
+  });
+  const mirrorError = vi.spyOn(console, "error").mockImplementation(() => undefined);
+  vi.stubGlobal("fetch", (async (_input, init) => {
+    expect(init?.method).toBe("POST");
+    const [row] = JSON.parse(String(init?.body)) as typeof writes;
+    if (!row) throw new Error("Missing conversation row");
+    writes.push(row);
+    if (writes.length === 1) return new Response(null, { status: 503 });
+    remote.set(row.conversation_id, row);
+    replaced.resolve();
+    return new Response(null, { status: 201 });
+  }) satisfies typeof fetch);
+  const initial: conversations.ConversationRecord = { id: "C", title: "old", model: "initial", savedAt: 1000,
+    projectContextKey: "local:origin::A", entries: [{ kind: "user", text: "request" }] };
+  expect(await conversations.saveConversation(initial)).toMatchObject({ ok: true, durable: true });
+  await queued.promise;
+  expect(mirrorError).toHaveBeenCalledTimes(1);
+  expect(listRemoteOutbox()).toHaveLength(1);
+  expect(listRemoteOutbox()[0]?.payload).toMatchObject({ title: initial.title, savedAt: initial.savedAt, entries: initial.entries });
+  const authoritative: conversations.ConversationRecord = replace ? { ...initial, title: "final", model: "updated", savedAt,
+    entries: [...initial.entries, { kind: "assistant", text: "done" }] } : initial;
+  if (replace) {
+    expect(await conversations.saveConversation(authoritative)).toMatchObject({ ok: true, durable: true });
+    await replaced.promise;
+  }
+  expect(await conversations.loadConversationForScope("C", initial.projectContextKey ?? null)).toMatchObject(authoritative);
+  state.config = { ...state.config, projectId: "Q" };
+  expect(await flushRemoteOutbox()).toEqual({ sent: 1, failed: 0, skipped: 0 });
+  expect.soft(writes.map(row => row.entries_json.length)).toEqual(counts);
+  expect.soft(remote.get("C")).toEqual({ conversation_id: "C", project_id: "P", project_context_key: authoritative.projectContextKey,
+    title: authoritative.title, model: authoritative.model, saved_at: new Date(authoritative.savedAt).toISOString(), entries_json: authoritative.entries });
+  expect(writes.every(row => row.project_id === "P" && row.project_context_key === initial.projectContextKey)).toBe(true);
+  expect(listRemoteOutbox()).toEqual([]);
+});
+
 it("Given old outbox payloads When replayed under Q Then explicit remote P is safe and ambiguous local origin is retained as failure", async () => {
   const bodies: unknown[] = [];
   vi.stubGlobal("fetch", (async (_input, init) => { bodies.push(JSON.parse(String(init?.body))); return new Response(null, { status: 201 }); }) satisfies typeof fetch);
