@@ -40,7 +40,10 @@ export interface GameRow {
   license: string;
   likes: number;
   cover_data_url: string | null;
-  package_base64: string;
+  package_base64: string | null;
+  release_id: string | null;
+  release_bytes: number | null;
+  release_version: string | null;
   map_count: number;
   asset_count: number;
   downloads: number;
@@ -110,7 +113,7 @@ export async function listGames(opts: { q?: string; sort?: Sort; limit?: number 
   const order = opts.sort === "popular" ? "downloads desc, created_at desc" : "created_at desc";
   params.push(Math.min(opts.limit ?? 60, 200));
   const { rows } = await getPool().query(
-    `select id, slug, title, description, author, tags, license, likes, cover_data_url, map_count, asset_count, downloads, created_at
+    `select id, slug, title, description, author, tags, license, likes, cover_data_url, map_count, asset_count, downloads, created_at, release_id
      from openrpg_games where ${where.join(" and ")} order by ${order} limit $${params.length}`,
     params,
   );
@@ -119,7 +122,9 @@ export async function listGames(opts: { q?: string; sort?: Sort; limit?: number 
 
 export async function getGame(slug: string): Promise<GameRow | null> {
   const { rows } = await getPool().query(
-    "select * from openrpg_games where slug = $1 and status = 'visible'",
+    `select g.*, octet_length(r.zip_bytes) as release_bytes, r.manifest #>> '{publication,versionLabel}' as release_version
+     from openrpg_games g left join openrpg_game_releases r on r.listing_id=g.id and r.release_id=g.release_id
+     where g.slug = $1 and g.status = 'visible'`,
     [slug],
   );
   return rows[0] ?? null;

@@ -1,4 +1,6 @@
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
+import { createGameRelease, verifyGameRelease } from "./gameRelease";
+import { loadPublicationRuntime, publicationAssetEntries } from "./publicationExport";
 import { deserialize, serialize } from "@/project/io";
 import { writeStoredZip } from "@/project/packageZip";
 import {
@@ -87,6 +89,17 @@ export async function createWebPlayerExportPackage(
 ): Promise<WebExportPackageResult> {
   const prepared = prepareWebExport(project);
   const fetchBytes = options.fetchBytes ?? defaultFetchBytes;
+  if (project.meta.publication) {
+    const archive = await loadPublicationRuntime(prepared, fetchBytes);
+    const bundles = await Promise.all(archive.runtime.files.filter(file => file.path.startsWith("web/")).map(async file => ({
+      name: file.path.slice(4), bytes: await archive.read(file.path),
+    })));
+    const entries = [{ name: "project.json", bytes: encoder.encode(prepared.projectJson) }, ...bundles,
+      ...await publicationAssetEntries(prepared, archive)];
+    const release = await createGameRelease({ publication: archive.publication, entries });
+    await verifyGameRelease(new Uint8Array(await release.blob.arrayBuffer()), archive.runtime, archive.collectDependencies);
+    return { blob: release.blob, summary: { ...prepared.summary, playerBundleFileCount: bundles.length, zipEntryCount: entries.length + 1 } };
+  }
   const bundleBase = options.bundleBase ?? WEB_PLAYER_BUNDLE_BASE;
   const deployment = await loadVerifiedPlayerDeployment({ bundleBase, adapters: { fetchBytes } });
   const entries = await exactWebExportEntries(prepared, deployment, fetchBytes);

@@ -1,4 +1,6 @@
 node_modules/
+.runtime-archive/
+/verify-shots/release-artifact/
 dist/
 # The deployed root build can be a symlink to a versioned release.
 /dist

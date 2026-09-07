@@ -33,6 +33,7 @@ import {
 } from "@/project/package";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import { createStandaloneHtmlExport } from "@/project/standaloneExport";
+import { openPublishingDialog } from "./publishingDialog";
 import { createWebPlayerExportPackage, webExportFileName } from "@/project/webExport";
 import { store, type AutoSaveState } from "@/project/store";
 import type { Project } from "@/project/types";
@@ -676,6 +677,12 @@ function menuCommands(id: MenuId, topbar: HTMLElement): readonly MenuCommand[] {
         // 라벨 구분: 전에는 프로젝트/게임 메뉴에 「내보내기...」가 따로 있어 같은 말로 다른 일을
         // 했다. 둘을 한 자리에 모으고 무엇을 내보내는지 이름에 쓴다.
         item("프로젝트 파일 내보내기...", "menu-project-export", () => void exportProjectPackage()),
+        item("게임 및 배포...", "menu-project-publication", () => void openPublishingDialog({
+          project: store.getCurrent(),
+          opener: topbar.querySelector<HTMLElement>('[data-testid="menu-project"]'),
+          apply: publication => store.update(project => { project.meta.publication = publication; }, { scope: "project", label: "게임 배포 설정" }),
+          exportZip: doExportWebGame, exportHtml: doExportStandaloneHtml,
+        })),
         item("웹 게임 내보내기...", "menu-project-export-web", () => void doExportWebGame()),
         item("실행형 HTML 내보내기...", "menu-project-export-standalone", () => void doExportStandaloneHtml()),
       ];

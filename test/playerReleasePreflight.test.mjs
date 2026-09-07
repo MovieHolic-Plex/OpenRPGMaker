@@ -209,19 +209,20 @@ test("preflight rejects a fake provider sentinel without echoing it", async () =
     const output = `${result.stdout}\n${result.stderr}`;
 
     // Then: it rejects the artifact while emitting counts, never the match.
-    assert.notEqual(result.exitCode, 0);
+    assert.equal(result.exitCode, 1);
+    assert.equal(result.stderr, "");
     assert.equal(output.includes(sentinel), false, "preflight echoed the fake sentinel");
-    assert.equal(
-      result.stdout.includes("release-preflight unsafe=true"),
-      true,
-      "preflight did not report the unsafe result",
-    );
+    assert.deepEqual(result.stdout.trim().split(/\r?\n/u), [
+      "release-preflight unsafe=true total=1",
+      "file=argument-1 rule=provider-key count=1",
+      "release-prerequisite provider-rotation=required scope=llm-key,db-password authority=external",
+    ]);
   } finally {
     await rm(directory, { recursive: true, force: true });
   }
 });
 
-test("preflight rejects the current public player artifacts with count-only findings", async () => {
+test("preflight accepts the current public player artifacts with no findings", async () => {
   // Given: the default current build and installed public player artifact paths.
   // When: the release preflight scans its default targets.
   const result = await runProcess(
@@ -230,28 +231,14 @@ test("preflight rejects the current public player artifacts with count-only find
     childEnvironment(),
   );
   const output = `${result.stdout}\n${result.stderr}`;
-  const findingLines = result.stdout
-    .split(/\r?\n/u)
-    .filter((line) => line.startsWith("file="));
 
-  // Then: stale unsafe artifacts fail despite success-like stdout, and findings are redacted.
-  assert.notEqual(result.exitCode, 0);
-  assert.equal(
-    result.stdout.includes("release-preflight unsafe=true"),
-    true,
-    "preflight did not report the unsafe result",
-  );
-  assert.equal(findingLines.length > 0, true, "preflight emitted no count findings");
-  assert.equal(
-    result.stdout.includes("release-prerequisite provider-rotation=required"),
-    true,
-    "preflight omitted the external provider-rotation prerequisite",
-  );
-  assert.equal(
-    findingLines.every((line) => /^file=\S+ rule=[a-z0-9-]+ count=\d+$/u.test(line)),
-    true,
-    "preflight finding output was not file/rule/count only",
-  );
+  // Then: safe artifacts pass with zero findings; external provider rotation remains required.
+  assert.equal(result.exitCode, 0);
+  assert.equal(result.stderr, "");
+  assert.deepEqual(result.stdout.trim().split(/\r?\n/u), [
+    "release-preflight unsafe=false total=0",
+    "release-prerequisite provider-rotation=required scope=llm-key,db-password authority=external",
+  ]);
   assert.equal(
     /(?:sk-(?:ant-|proj-)?[A-Za-z0-9_-]{20,}|eyJ[A-Za-z0-9_-]{12,}\.[A-Za-z0-9_-]{12,}\.[A-Za-z0-9_-]{12,})/u.test(
       output,

@@ -5,6 +5,8 @@ export interface ZipEntry {
 
 interface ZipCentralEntry {
   readonly name: string;
+  readonly crc: number;
+  readonly flags: number;
   readonly method: number;
   readonly compressedSize: number;
   readonly uncompressedSize: number;
@@ -69,13 +71,27 @@ export function readStoredZipEntry(bytes: Uint8Array, name: string): Uint8Array 
   if (contentEnd > bytes.length) {
     throw new ZipFormatError(`Truncated entry ${entry.name}`);
   }
-  return bytes.slice(contentStart, contentEnd);
+  const localName = decoder.decode(bytes.slice(entry.localOffset + 30, entry.localOffset + 30 + nameLength));
+  const payload = bytes.slice(contentStart, contentEnd);
+  if (localName !== entry.name || uint16(bytes, entry.localOffset + 8) !== entry.method
+    || uint16(bytes, entry.localOffset + 6) !== entry.flags || (entry.flags & ~UTF8_FLAG) !== 0
+    || entry.compressedSize !== entry.uncompressedSize
+    || uint32(bytes, entry.localOffset + 18) !== entry.compressedSize
+    || uint32(bytes, entry.localOffset + 22) !== entry.uncompressedSize
+    || uint32(bytes, entry.localOffset + 14) !== entry.crc || crc32(payload) !== entry.crc) {
+    throw new ZipFormatError(`Inconsistent stored entry ${entry.name}`);
+  }
+  return payload;
 }
 
 function readCentralDirectory(bytes: Uint8Array): readonly ZipCentralEntry[] {
   const endOffset = findEndRecord(bytes);
   const entryCount = uint16(bytes, endOffset + 10);
   const centralOffset = uint32(bytes, endOffset + 16);
+  if (endOffset + 22 + uint16(bytes, endOffset + 20) !== bytes.length
+    || uint16(bytes, endOffset + 4) !== 0 || uint16(bytes, endOffset + 6) !== 0
+    || uint16(bytes, endOffset + 8) !== entryCount
+    || centralOffset + uint32(bytes, endOffset + 12) !== endOffset) throw new ZipFormatError("Inconsistent ZIP directory");
   const entries: ZipCentralEntry[] = [];
   let offset = centralOffset;
   for (let index = 0; index < entryCount; index += 1) {
@@ -96,6 +112,8 @@ function readCentralDirectory(bytes: Uint8Array): readonly ZipCentralEntry[] {
     }
     entries.push({
       name: decoder.decode(bytes.slice(nameStart, nameEnd)),
+      crc: uint32(bytes, offset + 16),
+      flags: uint16(bytes, offset + 8),
       method,
       compressedSize,
       uncompressedSize,
@@ -103,6 +121,13 @@ function readCentralDirectory(bytes: Uint8Array): readonly ZipCentralEntry[] {
     });
     offset = nameEnd + extraLength + commentLength;
   }
+  if (offset !== endOffset) throw new ZipFormatError("Undeclared directory data");
+  let localEnd = 0;
+  for (const entry of [...entries].sort((a, b) => a.localOffset - b.localOffset)) {
+    if (entry.localOffset !== localEnd || uint32(bytes, localEnd) !== LOCAL_FILE_HEADER) throw new ZipFormatError("Undeclared local entry data");
+    localEnd += 30 + uint16(bytes, localEnd + 26) + uint16(bytes, localEnd + 28) + entry.compressedSize;
+  }
+  if (localEnd !== centralOffset) throw new ZipFormatError("Undeclared payload data");
   return entries;
 }
 

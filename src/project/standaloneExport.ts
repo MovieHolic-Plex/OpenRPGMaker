@@ -11,6 +11,7 @@ import {
   standaloneHtmlFileName,
 } from "@/project/standaloneHtml";
 import { prepareWebExport } from "@/project/webExport";
+import { buildStandaloneRelease } from "./standaloneRelease";
 import { exportAssetSourceUrl, invalidExportDependencyBytes } from "@/project/webExportAssets";
 import type { Project } from "@/project/types";
 
@@ -57,6 +58,12 @@ export async function createStandaloneHtmlExport(
   options: StandaloneExportOptions = {},
 ): Promise<StandaloneExportResult> {
   const source = options.fetchBytes ?? defaultFetchBytes;
+  if (project.meta.publication) {
+    const prepared = prepareWebExport(project);
+    const html = await buildStandaloneRelease(prepared, source);
+    return { blob: new Blob([html], { type: "text/html;charset=utf-8" }), fileName: standaloneHtmlFileName(project.meta.title),
+      summary: { assetCount: prepared.assets.length, missingAssets: [], htmlBytes: new TextEncoder().encode(html).length } };
+  }
   const fetchBytes: StandaloneFetchBytes = async (path) => {
     let bytes: Uint8Array;
     try { bytes = await source(path); }
