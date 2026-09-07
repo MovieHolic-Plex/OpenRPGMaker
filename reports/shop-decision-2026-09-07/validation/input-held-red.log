@@ -1,0 +1,113 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/shopDecisionInput.test.ts
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-clear-harbor-3da2
+
+ ❯ test/shopDecisionInput.test.ts (18 tests | 4 failed) 7397ms
+   ✓ mounted shop decision focus and comparison > cycles exact stock focus groups in both directions without trading  914ms
+   ✓ mounted shop decision focus and comparison > moves mode/category focus without committing until confirm and never buys  614ms
+   ✓ mounted shop decision focus and comparison > confirms only rows/transaction buttons with "e"; ignores repeats  322ms
+   ✓ mounted shop decision focus and comparison > confirms only rows/transaction buttons with "z"; ignores repeats  433ms
+   ✓ mounted shop decision focus and comparison > confirms only rows/transaction buttons with "Enter"; ignores repeats 293ms
+   ✓ mounted shop decision focus and comparison > confirms only rows/transaction buttons with " "; ignores repeats  421ms
+   ✓ mounted shop decision focus and comparison > moves actual row focus, preserves horizontal quantity and updates balance 205ms
+   × mounted shop decision focus and comparison > keeps moving actual row focus while ArrowDown repeats 172ms
+     → expected 'shop-buy-old' to be 'shop-buy-potion' // Object.is equality
+   × mounted shop decision focus and comparison > keeps increasing selected quantity while ArrowRight repeats without trading 192ms
+     → expected '2' to be '3' // Object.is equality
+   × mounted shop decision focus and comparison > keeps held detail arrow/page scrolling while repeated confirm/cancel remain inert 217ms
+     → expected 32 to be 64 // Object.is equality
+   × mounted shop decision focus and comparison > uses horizontal arrows for 1D row navigation when single mode has no quantity input 122ms
+     → expected 'shop-buy-candidate' to be 'shop-buy-old' // Object.is equality
+   ✓ mounted shop decision focus and comparison > renders four truthful downgrade totals, +0, displacement and effect data without mutation  373ms
+   ✓ mounted shop decision focus and comparison > exposes all six actors, immediate dual-wield slots, scroll ring and exact opener restoration 232ms
+   ✓ mounted shop decision focus and comparison > shows blocked current totals without fabricated next, and same-equipment status 252ms
+   ✓ mounted shop decision focus and comparison > supports custom slots and unavailable non-equipment/legacy/no-party states  1593ms
+   ✓ mounted shop decision focus and comparison > retains real selection after last-copy sale, skips absent groups and empty-list confirm  658ms
+   ✓ mounted shop decision focus and comparison > aborts old stock/detail listeners on rerender and close without document-wide capture 195ms
+   ✓ mounted shop decision focus and comparison > closes the real empty-stock notice 172ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/shopDecisionInput.test.ts > mounted shop decision focus and comparison > keeps moving actual row focus while ArrowDown repeats
+AssertionError: expected 'shop-buy-old' to be 'shop-buy-potion' // Object.is equality
+
+Expected: [32m"shop-buy-[7mpotion[27m"[39m
+Received: [31m"shop-buy-[7mold[27m"[39m
+
+ ❯ test/shopDecisionInput.test.ts:165:63
+    163|       const snapshot = structuredClone(s.session);
+    164|       s.key("ArrowDown"); expect(s.focus()).toBe("shop-buy-old");
+    165|       s.key("ArrowDown", { repeat: true }); expect(s.focus()).toBe("sh…
+       |                                                               ^
+    166|       s.key("ArrowDown", { repeat: true }); expect(s.focus()).toBe("sh…
+    167|       expect(s.session).toEqual(snapshot);
+ ❯ stock test/shopDecisionInput.test.ts:89:25
+ ❯ test/shopDecisionInput.test.ts:162:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  test/shopDecisionInput.test.ts > mounted shop decision focus and comparison > keeps increasing selected quantity while ArrowRight repeats without trading
+AssertionError: expected '2' to be '3' // Object.is equality
+
+Expected: [32m"3"[39m
+Received: [31m"2"[39m
+
+ ❯ test/shopDecisionInput.test.ts:178:66
+    176|       if (!(input instanceof HTMLInputElement)) throw new Error("Missi…
+    177|       s.key("ArrowRight"); expect(input.value).toBe("2");
+    178|       s.key("ArrowRight", { repeat: true }); expect(input.value).toBe(…
+       |                                                                  ^
+    179|       s.key("ArrowRight", { repeat: true }); expect(input.value).toBe(…
+    180|       expect(s.focus()).toBe("shop-buy-candidate");
+ ❯ stock test/shopDecisionInput.test.ts:89:25
+ ❯ test/shopDecisionInput.test.ts:173:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  test/shopDecisionInput.test.ts > mounted shop decision focus and comparison > keeps held detail arrow/page scrolling while repeated confirm/cancel remain inert
+AssertionError: expected 32 to be 64 // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 64[39m
+[31m+ 32[39m
+
+ ❯ test/shopDecisionInput.test.ts:194:70
+    192|       Object.defineProperties(scroll, { scrollHeight: { value: 1000 },…
+    193|       s.key("ArrowDown"); expect(scroll.scrollTop).toBe(32);
+    194|       s.key("ArrowDown", { repeat: true }); expect(scroll.scrollTop).t…
+       |                                                                      ^
+    195|       s.key("PageDown", { repeat: true }); expect(scroll.scrollTop).to…
+    196|       s.key("PageUp", { repeat: true }); expect(scroll.scrollTop).toBe…
+ ❯ stock test/shopDecisionInput.test.ts:89:25
+ ❯ test/shopDecisionInput.test.ts:186:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  test/shopDecisionInput.test.ts > mounted shop decision focus and comparison > uses horizontal arrows for 1D row navigation when single mode has no quantity input
+AssertionError: expected 'shop-buy-candidate' to be 'shop-buy-old' // Object.is equality
+
+Expected: [32m"shop-buy-[7mold[27m"[39m
+Received: [31m"shop-buy-[7mcandidate[27m"[39m
+
+ ❯ stock.quantityMode test/shopDecisionInput.test.ts:215:46
+    213|       expect(s.get("shop-quantity-input")).toBeNull();
+    214|       expect(s.focus()).toBe("shop-buy-candidate");
+    215|       s.key("ArrowRight"); expect(s.focus()).toBe("shop-buy-old");
+       |                                              ^
+    216|       s.key("ArrowLeft"); expect(s.focus()).toBe("shop-buy-candidate");
+    217|       s.key("ArrowRight", { repeat: true }); expect(s.focus()).toBe("s…
+ ❯ stock test/shopDecisionInput.test.ts:89:25
+ ❯ test/shopDecisionInput.test.ts:211:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed | 14 passed (18)
+   Start at  05:35:57
+   Duration  29.70s (transform 14.01s, setup 0ms, collect 20.15s, tests 7.40s, environment 579ms, prepare 266ms)

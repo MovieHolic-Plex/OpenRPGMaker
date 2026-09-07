@@ -1,0 +1,42 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/shopMerchantGold.test.ts test/shopHaggleRuntime.test.ts test/shopEconomyValidationAndKey.test.ts test/shopFeedbackJuice.test.ts test/friendshipGiftsShop.test.ts
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-clear-harbor-3da2
+
+ ✓ test/shopEconomyValidationAndKey.test.ts (11 tests) 3919ms
+   ✓ 저작된 상점 economy 는 로드 경계에서 검사된다 > 정상 값은 통과한다  1300ms
+   ✓ 저작된 상점 economy 는 로드 경계에서 검사된다 > 참 같은 문자열을 boolean 자리에 넣으면 막는다  361ms
+   ✓ 저작된 상점 economy 는 로드 경계에서 검사된다 > boolean 자리의 배열도 막는다  826ms
+   ✓ 저작된 상점 economy 는 로드 경계에서 검사된다 > 무한대에 가까운 흥정 수치를 막는다  435ms
+   ✓ 저작된 상점 economy 는 로드 경계에서 검사된다 > 음수 인내심을 막는다  502ms
+   ✓ 저작된 상점 economy 는 로드 경계에서 검사된다 > 유니온 밖 restockPolicy 를 막는다  470ms
+ ✓ test/shopHaggleRuntime.test.ts (3 tests) 1766ms
+   ✓ haggle runtime invariants > Given / When / Then an agreed buy stays in [floor, list] and changes gold once  504ms
+   ✓ haggle runtime invariants > Given / When / Then an agreed sell stays below buy and above the list sell  434ms
+   ✓ haggle runtime invariants > Given / When / Then a broken visit state survives save/load  792ms
+ ✓ test/shopMerchantGold.test.ts (4 tests) 1840ms
+   ✓ shop merchant gold > blocks selling when merchant cannot afford the payout  681ms
+   ✓ shop merchant gold > adds player purchase payments to merchant gold  1077ms
+ ✓ test/shopFeedbackJuice.test.ts (19 tests) 7941ms
+   ✓ 수량 상한 — RM2003 std::min(max, gold / price) > 행에 상한이 실려서 오버레이가 읽어간다  1610ms
+   ✓ 수량 상한 — RM2003 std::min(max, gold / price) > 한 개도 못 사는 행에서도 수량칸은 1을 보인다(거절은 결정 시점의 몫)  1503ms
+   ✓ 수량 스테퍼가 상한에 부딪히면 버저 > 상한까지는 조용히 올라간다  1089ms
+   ✓ 수량 스테퍼가 상한에 부딪히면 버저 > 상한을 넘기려 하면 값이 그대로고 버저가 울린다  409ms
+   ✓ 수량 스테퍼가 상한에 부딪히면 버저 > 1에서 더 줄이려 하면 버저가 울린다  348ms
+   ✓ 수량 스테퍼가 상한에 부딪히면 버저 > input 의 max 속성과 안내 문구가 상한을 따라간다  1175ms
+   ✓ 수량 스테퍼가 상한에 부딪히면 버저 > 마운트 전에도 라벨이 있다 — 첫 렌더에 aria-label 이 비지 않는다  1555ms
+ ✓ test/friendshipGiftsShop.test.ts (18 tests) 19515ms
+   ✓ friendship runtime > changes, clamps, and round-trips friendship through save/load  319ms
+   ✓ gift runtime > rejects over cap gift inventory without mutating any session state  304ms
+   ✓ friendship and shop tools > set_shop_stock writes seasonal stock onto an existing event  3521ms
+   ✓ friendship and shop tools > make_villager accepts gift preferences and shopkeeper stock  12276ms
+   ✓ Phase 11b run_scene_test integration > gifts a loved item, branches on friendship, and changes shop stock by season  318ms
+
+ Test Files  5 passed (5)
+      Tests  55 passed (55)
+   Start at  04:38:26
+   Duration  83.30s (transform 88.09s, setup 0ms, collect 228.33s, tests 34.98s, environment 870ms, prepare 2.31s)
+
+EXIT_CODE=0

@@ -90,6 +90,59 @@ Focused contracts: `independentReview`, `assistantIndependentReview`,
 `assistantBackgroundReview`, `aiTurnAppliedAccounting`, `regionTaskRun`. Existing `chat` injection remains the
 real-surface-friendly deterministic transport seam, not a production bypass.
 
+## Live large-world QA: plan repair and final audit (2026-09-07)
+
+The actual 128x128/six-region/eight-landmark run initially produced 19 independent
+items, then generator `set_work_plan` collapsed them to five aggregate items after
+a tool mismatch. `repairWorkPlan` now retains every existing item ID, completed/
+skipped state, notes and current-item evidence during in-loop repair. Missing or
+duplicate IDs reject the replacement atomically. Pending instructions/tools,
+regrouping and additions remain editable; main-planner adoption owns new goals.
+Orchestration and Ralph context expose the actual current `itemId`.
+Required verification tools cannot be removed during repair or skipped; a
+`run_lint` requirement cannot become `get_project_summary` after lint fails.
+
+The same run exposed a reporting split: live final messages correctly said
+incomplete, but the latest audited message still contained the model's raw success
+claim. `finishRunRecap` now appends its authoritative final text when it differs.
+Bridge/history consumers therefore receive the same final verdict as the panel.
+`getHarnessSnapshot().acceptance` exposes structured completion state; bridge
+`ok` only means the RPC completed, not that the authored goal was verified.
+Failed final verification replaces a model success claim rather than appending
+contradictory failure text below it.
+For authoring requests, failed or stale explicit checks now trigger the existing
+bounded final-repair loop and continuation before finalization. Advisory-only
+findings do not create automatic authoring requirements. Run-end proof waits for
+explicit revalidation after the final write.
+With an isolated write draft, those checks enter the independent review's required
+problems and structured repair loop; even a model approval cannot override them.
+Without a write draft, the bounded acceptance/completion repair loop owns explicit
+check recovery. Neither path applies a milestone before independent approval.
+Stale-check feedback includes the exact canonical tool/argument identity. A new
+check of guide cells does not silently replace an earlier frontage check; the
+executor can see which original coordinates remain pending after compaction.
+
+`paint_tiles` is active again: replacing it with semantic `fill_region` removed
+numeric-tile rect/line/cell painting, leaving planned snow terrain impossible for
+the executor even though the primitive existed. The planner's canonical tool
+list now uses active tools, not hidden legacy names. Spec, read and house-protection
+gates still apply to raw painting.
+
+Explicit autonomous/max settings now retain the saved reasoning effort during
+execution. Balanced retains its existing fast executor policy. This honors the
+chosen setting; it does not remove execution budgets or force high effort over a
+manual override.
+
+An image-review crop must also cover the request's actual tile/stack changes and
+changed event positions, measured against the immutable request baseline. New or
+resized maps require whole-map review. The effective rectangle appears in evidence
+so the model can request missing images; an unchanged local inspection stays local.
+
+Regression seams: `workPlanIdentity`, `assistantFinalAudit`,
+`assistantAcceptanceRequestBaseline`, `assistantProposalAssembly`. Live evidence
+is under `output/evidence/live-world-qa/`; do not mistake saved partial output for
+completed content.
+
 ## World structure activity labels (2026-09-06)
 
 `author_world_bridge` and `author_world_mountain` explicitly use the world activity

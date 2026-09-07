@@ -126,6 +126,19 @@ export function directionForKey(key: string): Dir | null {
   }
 }
 
+/** Shop-only group traversal; do not capture Tab in unrelated runtime menus. */
+export function isShopFocusGroupKey(key: string): boolean {
+  return normalizeKey(key) === "tab";
+}
+
+export function isShopDetailScrollKey(key: string): boolean {
+  return isNavKey(key) || ["pageup", "pagedown", "home", "end"].includes(normalizeKey(key));
+}
+
+export const SHOP_FOCUS_GROUP_KEY_LABEL = "Tab/Shift+Tab";
+export const SHOP_CONFIRM_KEY_LABEL = "E/Z/Enter/Space";
+export const SHOP_DETAIL_SCROLL_KEY_LABEL = "방향키/PageUp/PageDown/Home/End";
+
 export function isNavKey(key: string): boolean {
   return directionForKey(key) !== null;
 }

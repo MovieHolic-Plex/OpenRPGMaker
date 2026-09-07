@@ -80,10 +80,10 @@ export class ToolVerificationEvidence {
     return checks.length > 0 && checks.every((check) => check.verdict.pass && !check.stale);
   }
 
-  problems(explicitOnly = false): readonly string[] {
-    return [...new Set([...this.checks.values()].filter(check => !explicitOnly || check.explicit).flatMap(({ name, verdict, stale }) => {
+  problems(source: "all" | "explicit" = "all"): readonly string[] {
+    return [...new Set([...this.checks.entries()].filter(([, check]) => source === "all" || check.explicit).flatMap(([key, { name, verdict, stale }]) => {
       const issues = verdict.blockingIssues.map((issue) => `${name}: ${issue}`);
-      if (stale) issues.push(`${name}: 변경 후 재검증 필요`);
+      if (stale) issues.push(`${name}: 변경 후 재검증 필요 — ${key}`);
       return issues;
     }).concat(
       [...this.requiredTools].filter(name => !this.passed(name)).map(name => `${name}: 필수 검증 미통과`),

@@ -1,0 +1,407 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/shopEquipmentPreview.test.ts
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-clear-harbor-3da2
+
+ ❯ test/shopEquipmentPreview.test.ts (28 tests | 28 failed) 3269ms
+   × pure actor-specific shop equipment preview > shows all four truthful totals, including a lost zero-bonus stat and a positive-bonus downgrade 120ms
+     → shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+   × pure actor-specific shop equipment preview > returns same-equipment zero deltas without displacing or inventing inventory 76ms
+     → shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+   × pure actor-specific shop equipment preview > counts a two-hand mirror once, displaces both hands, and compares derived effects 165ms
+     → shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+   × pure actor-specific shop equipment preview > retains shared derived effects instead of claiming that every removed item's effect was lost 184ms
+     → shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+   × pure actor-specific shop equipment preview > keeps all six actual party actors selectable and uses their distinct current totals and session names 187ms
+     → shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+   × pure actor-specific shop equipment preview > preserves the requested dual-wield shield slot granted by actor 140ms
+     → shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+   × pure actor-specific shop equipment preview > preserves the requested dual-wield shield slot granted by class 62ms
+     → shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+   × pure actor-specific shop equipment preview > counts two identical dual-wield copies as two displaced objects 61ms
+     → shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+   × pure actor-specific shop equipment preview > uses the authored charm catalog slot and replaces an incompatible previous slot default 51ms
+     → shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+   × pure actor-specific shop equipment preview > preserves level, current class curves, invested growth, earned promotion lineage and permanent bonuses 55ms
+     → shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+   × pure actor-specific shop equipment preview > retains readable actor and current stats when actorFixed blocks replacement 43ms
+     → shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+   × pure actor-specific shop equipment preview > retains readable actor and current stats when classFixed blocks replacement 223ms
+     → shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+   × pure actor-specific shop equipment preview > retains readable actor and current stats when gearFixed blocks replacement 313ms
+     → shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+   × pure actor-specific shop equipment preview > retains readable actor and current stats when cursed blocks replacement 259ms
+     → shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+   × pure actor-specific shop equipment preview > retains readable actor and current stats when actorRestricted blocks replacement 92ms
+     → shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+   × pure actor-specific shop equipment preview > retains readable actor and current stats when classRestricted blocks replacement 87ms
+     → shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+   × pure actor-specific shop equipment preview > uses current class permissions and falls back from a deleted class override 98ms
+     → shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+   × pure actor-specific shop equipment preview > does not bypass transition permission for same-item actorFixed 111ms
+     → shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+   × pure actor-specific shop equipment preview > does not bypass transition permission for same-item gearFixed 120ms
+     → shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+   × pure actor-specific shop equipment preview > does not bypass transition permission for same-item cursed 140ms
+     → shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+   × pure actor-specific shop equipment preview > does not bypass transition permission for same-item restricted 73ms
+     → shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+   × pure actor-specific shop equipment preview > passes raw hand occupancy to authority, so a hidden cursed shield still blocks displacement 43ms
+     → shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+   × pure actor-specific shop equipment preview > returns real raw-state displaced objects even when the stat projection hides a shield 49ms
+     → shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+   × pure actor-specific shop equipment preview > does not fabricate targets for an empty or missing party actor 55ms
+     → shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+   × pure actor-specific shop equipment preview > explicitly rejects non-equipment, missing equipment and legacy item-source weapons 112ms
+     → shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+   × pure actor-specific shop equipment preview > keeps incompatible custom equipment inspectable with an invalid-slot reason 61ms
+     → shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+   × pure actor-specific shop equipment preview > reads initial equipment when the session lacks an override 102ms
+     → shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+   × pure actor-specific shop equipment preview > never mutates deeply frozen project, session or goods, on ready or blocked paths 181ms
+     → shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 28 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/shopEquipmentPreview.test.ts > pure actor-specific shop equipment preview > shows all four truthful totals, including a lost zero-bonus stat and a positive-bonus downgrade
+AssertionError: shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+
+Expected: [32m"[7mf[27mun[7mction[27m"[39m
+Received: [31m"un[7mdefined[27m"[39m
+
+ ❯ preview test/shopEquipmentPreview.test.ts:12:74
+     10| async function preview(input: ShopEquipmentPreviewInput) {
+     11|   const load = modules["../src/player/shopEquipmentPreview.ts"];
+     12|   expect(load, "shop equipment preview must expose an executable model…
+       |                                                                          ^
+     13|   if (!load) throw new Error("Preview module missing");
+     14|   return (await load()).previewShopEquipment(input);
+ ❯ test/shopEquipmentPreview.test.ts:79:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/28]⎯
+
+ FAIL  test/shopEquipmentPreview.test.ts > pure actor-specific shop equipment preview > returns same-equipment zero deltas without displacing or inventing inventory
+AssertionError: shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+
+Expected: [32m"[7mf[27mun[7mction[27m"[39m
+Received: [31m"un[7mdefined[27m"[39m
+
+ ❯ preview test/shopEquipmentPreview.test.ts:12:74
+     10| async function preview(input: ShopEquipmentPreviewInput) {
+     11|   const load = modules["../src/player/shopEquipmentPreview.ts"];
+     12|   expect(load, "shop equipment preview must expose an executable model…
+       |                                                                          ^
+     13|   if (!load) throw new Error("Preview module missing");
+     14|   return (await load()).previewShopEquipment(input);
+ ❯ test/shopEquipmentPreview.test.ts:91:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/28]⎯
+
+ FAIL  test/shopEquipmentPreview.test.ts > pure actor-specific shop equipment preview > counts a two-hand mirror once, displaces both hands, and compares derived effects
+AssertionError: shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+
+Expected: [32m"[7mf[27mun[7mction[27m"[39m
+Received: [31m"un[7mdefined[27m"[39m
+
+ ❯ preview test/shopEquipmentPreview.test.ts:12:74
+     10| async function preview(input: ShopEquipmentPreviewInput) {
+     11|   const load = modules["../src/player/shopEquipmentPreview.ts"];
+     12|   expect(load, "shop equipment preview must expose an executable model…
+       |                                                                          ^
+     13|   if (!load) throw new Error("Preview module missing");
+     14|   return (await load()).previewShopEquipment(input);
+ ❯ test/shopEquipmentPreview.test.ts:122:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/28]⎯
+
+ FAIL  test/shopEquipmentPreview.test.ts > pure actor-specific shop equipment preview > retains shared derived effects instead of claiming that every removed item's effect was lost
+AssertionError: shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+
+Expected: [32m"[7mf[27mun[7mction[27m"[39m
+Received: [31m"un[7mdefined[27m"[39m
+
+ ❯ preview test/shopEquipmentPreview.test.ts:12:74
+     10| async function preview(input: ShopEquipmentPreviewInput) {
+     11|   const load = modules["../src/player/shopEquipmentPreview.ts"];
+     12|   expect(load, "shop equipment preview must expose an executable model…
+       |                                                                          ^
+     13|   if (!load) throw new Error("Preview module missing");
+     14|   return (await load()).previewShopEquipment(input);
+ ❯ test/shopEquipmentPreview.test.ts:151:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/28]⎯
+
+ FAIL  test/shopEquipmentPreview.test.ts > pure actor-specific shop equipment preview > keeps all six actual party actors selectable and uses their distinct current totals and session names
+AssertionError: shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+
+Expected: [32m"[7mf[27mun[7mction[27m"[39m
+Received: [31m"un[7mdefined[27m"[39m
+
+ ❯ preview test/shopEquipmentPreview.test.ts:12:74
+     10| async function preview(input: ShopEquipmentPreviewInput) {
+     11|   const load = modules["../src/player/shopEquipmentPreview.ts"];
+     12|   expect(load, "shop equipment preview must expose an executable model…
+       |                                                                          ^
+     13|   if (!load) throw new Error("Preview module missing");
+     14|   return (await load()).previewShopEquipment(input);
+ ❯ test/shopEquipmentPreview.test.ts:169:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/28]⎯
+
+ FAIL  test/shopEquipmentPreview.test.ts > pure actor-specific shop equipment preview > preserves the requested dual-wield shield slot granted by actor
+ FAIL  test/shopEquipmentPreview.test.ts > pure actor-specific shop equipment preview > preserves the requested dual-wield shield slot granted by class
+AssertionError: shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+
+Expected: [32m"[7mf[27mun[7mction[27m"[39m
+Received: [31m"un[7mdefined[27m"[39m
+
+ ❯ preview test/shopEquipmentPreview.test.ts:12:74
+     10| async function preview(input: ShopEquipmentPreviewInput) {
+     11|   const load = modules["../src/player/shopEquipmentPreview.ts"];
+     12|   expect(load, "shop equipment preview must expose an executable model…
+       |                                                                          ^
+     13|   if (!load) throw new Error("Preview module missing");
+     14|   return (await load()).previewShopEquipment(input);
+ ❯ test/shopEquipmentPreview.test.ts:188:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/28]⎯
+
+ FAIL  test/shopEquipmentPreview.test.ts > pure actor-specific shop equipment preview > counts two identical dual-wield copies as two displaced objects
+AssertionError: shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+
+Expected: [32m"[7mf[27mun[7mction[27m"[39m
+Received: [31m"un[7mdefined[27m"[39m
+
+ ❯ preview test/shopEquipmentPreview.test.ts:12:74
+     10| async function preview(input: ShopEquipmentPreviewInput) {
+     11|   const load = modules["../src/player/shopEquipmentPreview.ts"];
+     12|   expect(load, "shop equipment preview must expose an executable model…
+       |                                                                          ^
+     13|   if (!load) throw new Error("Preview module missing");
+     14|   return (await load()).previewShopEquipment(input);
+ ❯ test/shopEquipmentPreview.test.ts:203:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/28]⎯
+
+ FAIL  test/shopEquipmentPreview.test.ts > pure actor-specific shop equipment preview > uses the authored charm catalog slot and replaces an incompatible previous slot default
+AssertionError: shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+
+Expected: [32m"[7mf[27mun[7mction[27m"[39m
+Received: [31m"un[7mdefined[27m"[39m
+
+ ❯ preview test/shopEquipmentPreview.test.ts:12:74
+     10| async function preview(input: ShopEquipmentPreviewInput) {
+     11|   const load = modules["../src/player/shopEquipmentPreview.ts"];
+     12|   expect(load, "shop equipment preview must expose an executable model…
+       |                                                                          ^
+     13|   if (!load) throw new Error("Preview module missing");
+     14|   return (await load()).previewShopEquipment(input);
+ ❯ test/shopEquipmentPreview.test.ts:217:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/28]⎯
+
+ FAIL  test/shopEquipmentPreview.test.ts > pure actor-specific shop equipment preview > preserves level, current class curves, invested growth, earned promotion lineage and permanent bonuses
+AssertionError: shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+
+Expected: [32m"[7mf[27mun[7mction[27m"[39m
+Received: [31m"un[7mdefined[27m"[39m
+
+ ❯ preview test/shopEquipmentPreview.test.ts:12:74
+     10| async function preview(input: ShopEquipmentPreviewInput) {
+     11|   const load = modules["../src/player/shopEquipmentPreview.ts"];
+     12|   expect(load, "shop equipment preview must expose an executable model…
+       |                                                                          ^
+     13|   if (!load) throw new Error("Preview module missing");
+     14|   return (await load()).previewShopEquipment(input);
+ ❯ test/shopEquipmentPreview.test.ts:244:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/28]⎯
+
+ FAIL  test/shopEquipmentPreview.test.ts > pure actor-specific shop equipment preview > retains readable actor and current stats when actorFixed blocks replacement
+ FAIL  test/shopEquipmentPreview.test.ts > pure actor-specific shop equipment preview > retains readable actor and current stats when classFixed blocks replacement
+ FAIL  test/shopEquipmentPreview.test.ts > pure actor-specific shop equipment preview > retains readable actor and current stats when gearFixed blocks replacement
+ FAIL  test/shopEquipmentPreview.test.ts > pure actor-specific shop equipment preview > retains readable actor and current stats when cursed blocks replacement
+ FAIL  test/shopEquipmentPreview.test.ts > pure actor-specific shop equipment preview > retains readable actor and current stats when actorRestricted blocks replacement
+ FAIL  test/shopEquipmentPreview.test.ts > pure actor-specific shop equipment preview > retains readable actor and current stats when classRestricted blocks replacement
+AssertionError: shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+
+Expected: [32m"[7mf[27mun[7mction[27m"[39m
+Received: [31m"un[7mdefined[27m"[39m
+
+ ❯ preview test/shopEquipmentPreview.test.ts:12:74
+     10| async function preview(input: ShopEquipmentPreviewInput) {
+     11|   const load = modules["../src/player/shopEquipmentPreview.ts"];
+     12|   expect(load, "shop equipment preview must expose an executable model…
+       |                                                                          ^
+     13|   if (!load) throw new Error("Preview module missing");
+     14|   return (await load()).previewShopEquipment(input);
+ ❯ test/shopEquipmentPreview.test.ts:271:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/28]⎯
+
+ FAIL  test/shopEquipmentPreview.test.ts > pure actor-specific shop equipment preview > uses current class permissions and falls back from a deleted class override
+AssertionError: shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+
+Expected: [32m"[7mf[27mun[7mction[27m"[39m
+Received: [31m"un[7mdefined[27m"[39m
+
+ ❯ preview test/shopEquipmentPreview.test.ts:12:74
+     10| async function preview(input: ShopEquipmentPreviewInput) {
+     11|   const load = modules["../src/player/shopEquipmentPreview.ts"];
+     12|   expect(load, "shop equipment preview must expose an executable model…
+       |                                                                          ^
+     13|   if (!load) throw new Error("Preview module missing");
+     14|   return (await load()).previewShopEquipment(input);
+ ❯ test/shopEquipmentPreview.test.ts:290:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/28]⎯
+
+ FAIL  test/shopEquipmentPreview.test.ts > pure actor-specific shop equipment preview > does not bypass transition permission for same-item actorFixed
+ FAIL  test/shopEquipmentPreview.test.ts > pure actor-specific shop equipment preview > does not bypass transition permission for same-item gearFixed
+ FAIL  test/shopEquipmentPreview.test.ts > pure actor-specific shop equipment preview > does not bypass transition permission for same-item cursed
+ FAIL  test/shopEquipmentPreview.test.ts > pure actor-specific shop equipment preview > does not bypass transition permission for same-item restricted
+AssertionError: shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+
+Expected: [32m"[7mf[27mun[7mction[27m"[39m
+Received: [31m"un[7mdefined[27m"[39m
+
+ ❯ preview test/shopEquipmentPreview.test.ts:12:74
+     10| async function preview(input: ShopEquipmentPreviewInput) {
+     11|   const load = modules["../src/player/shopEquipmentPreview.ts"];
+     12|   expect(load, "shop equipment preview must expose an executable model…
+       |                                                                          ^
+     13|   if (!load) throw new Error("Preview module missing");
+     14|   return (await load()).previewShopEquipment(input);
+ ❯ test/shopEquipmentPreview.test.ts:306:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/28]⎯
+
+ FAIL  test/shopEquipmentPreview.test.ts > pure actor-specific shop equipment preview > passes raw hand occupancy to authority, so a hidden cursed shield still blocks displacement
+AssertionError: shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+
+Expected: [32m"[7mf[27mun[7mction[27m"[39m
+Received: [31m"un[7mdefined[27m"[39m
+
+ ❯ preview test/shopEquipmentPreview.test.ts:12:74
+     10| async function preview(input: ShopEquipmentPreviewInput) {
+     11|   const load = modules["../src/player/shopEquipmentPreview.ts"];
+     12|   expect(load, "shop equipment preview must expose an executable model…
+       |                                                                          ^
+     13|   if (!load) throw new Error("Preview module missing");
+     14|   return (await load()).previewShopEquipment(input);
+ ❯ test/shopEquipmentPreview.test.ts:320:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/28]⎯
+
+ FAIL  test/shopEquipmentPreview.test.ts > pure actor-specific shop equipment preview > returns real raw-state displaced objects even when the stat projection hides a shield
+AssertionError: shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+
+Expected: [32m"[7mf[27mun[7mction[27m"[39m
+Received: [31m"un[7mdefined[27m"[39m
+
+ ❯ preview test/shopEquipmentPreview.test.ts:12:74
+     10| async function preview(input: ShopEquipmentPreviewInput) {
+     11|   const load = modules["../src/player/shopEquipmentPreview.ts"];
+     12|   expect(load, "shop equipment preview must expose an executable model…
+       |                                                                          ^
+     13|   if (!load) throw new Error("Preview module missing");
+     14|   return (await load()).previewShopEquipment(input);
+ ❯ test/shopEquipmentPreview.test.ts:329:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/28]⎯
+
+ FAIL  test/shopEquipmentPreview.test.ts > pure actor-specific shop equipment preview > does not fabricate targets for an empty or missing party actor
+AssertionError: shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+
+Expected: [32m"[7mf[27mun[7mction[27m"[39m
+Received: [31m"un[7mdefined[27m"[39m
+
+ ❯ preview test/shopEquipmentPreview.test.ts:12:74
+     10| async function preview(input: ShopEquipmentPreviewInput) {
+     11|   const load = modules["../src/player/shopEquipmentPreview.ts"];
+     12|   expect(load, "shop equipment preview must expose an executable model…
+       |                                                                          ^
+     13|   if (!load) throw new Error("Preview module missing");
+     14|   return (await load()).previewShopEquipment(input);
+ ❯ test/shopEquipmentPreview.test.ts:339:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/28]⎯
+
+ FAIL  test/shopEquipmentPreview.test.ts > pure actor-specific shop equipment preview > explicitly rejects non-equipment, missing equipment and legacy item-source weapons
+AssertionError: shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+
+Expected: [32m"[7mf[27mun[7mction[27m"[39m
+Received: [31m"un[7mdefined[27m"[39m
+
+ ❯ preview test/shopEquipmentPreview.test.ts:12:74
+     10| async function preview(input: ShopEquipmentPreviewInput) {
+     11|   const load = modules["../src/player/shopEquipmentPreview.ts"];
+     12|   expect(load, "shop equipment preview must expose an executable model…
+       |                                                                          ^
+     13|   if (!load) throw new Error("Preview module missing");
+     14|   return (await load()).previewShopEquipment(input);
+ ❯ test/shopEquipmentPreview.test.ts:349:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/28]⎯
+
+ FAIL  test/shopEquipmentPreview.test.ts > pure actor-specific shop equipment preview > keeps incompatible custom equipment inspectable with an invalid-slot reason
+AssertionError: shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+
+Expected: [32m"[7mf[27mun[7mction[27m"[39m
+Received: [31m"un[7mdefined[27m"[39m
+
+ ❯ preview test/shopEquipmentPreview.test.ts:12:74
+     10| async function preview(input: ShopEquipmentPreviewInput) {
+     11|   const load = modules["../src/player/shopEquipmentPreview.ts"];
+     12|   expect(load, "shop equipment preview must expose an executable model…
+       |                                                                          ^
+     13|   if (!load) throw new Error("Preview module missing");
+     14|   return (await load()).previewShopEquipment(input);
+ ❯ test/shopEquipmentPreview.test.ts:360:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/28]⎯
+
+ FAIL  test/shopEquipmentPreview.test.ts > pure actor-specific shop equipment preview > reads initial equipment when the session lacks an override
+AssertionError: shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+
+Expected: [32m"[7mf[27mun[7mction[27m"[39m
+Received: [31m"un[7mdefined[27m"[39m
+
+ ❯ preview test/shopEquipmentPreview.test.ts:12:74
+     10| async function preview(input: ShopEquipmentPreviewInput) {
+     11|   const load = modules["../src/player/shopEquipmentPreview.ts"];
+     12|   expect(load, "shop equipment preview must expose an executable model…
+       |                                                                          ^
+     13|   if (!load) throw new Error("Preview module missing");
+     14|   return (await load()).previewShopEquipment(input);
+ ❯ test/shopEquipmentPreview.test.ts:367:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/28]⎯
+
+ FAIL  test/shopEquipmentPreview.test.ts > pure actor-specific shop equipment preview > never mutates deeply frozen project, session or goods, on ready or blocked paths
+AssertionError: shop equipment preview must expose an executable model: expected undefined to be type of 'function'
+
+Expected: [32m"[7mf[27mun[7mction[27m"[39m
+Received: [31m"un[7mdefined[27m"[39m
+
+ ❯ preview test/shopEquipmentPreview.test.ts:12:74
+     10| async function preview(input: ShopEquipmentPreviewInput) {
+     11|   const load = modules["../src/player/shopEquipmentPreview.ts"];
+     12|   expect(load, "shop equipment preview must expose an executable model…
+       |                                                                          ^
+     13|   if (!load) throw new Error("Preview module missing");
+     14|   return (await load()).previewShopEquipment(input);
+ ❯ test/shopEquipmentPreview.test.ts:383:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/28]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  28 failed (28)
+   Start at  04:59:29
+   Duration  24.92s (transform 14.86s, setup 0ms, collect 20.05s, tests 3.27s, environment 0ms, prepare 427ms)
+
+
+RED_EXIT=1

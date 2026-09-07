@@ -1,5 +1,59 @@
 # Runtime Project Schema & Persistence
 
+## Explicit publication identity and Save6 (2026-09-06)
+
+Project4 optionally carries `meta.publication`: `gameId`, `versionLabel`, a full
+SHA-256 `runtimeTarget`, `saveCompatibilityId`, and directional
+`acceptedSaveCompatibilityIds`. `publication.ts` validates without repairing or
+generating identity. Only explicit prepare/fork/upgrade operations create IDs.
+Rename, ordinary persistence and `.oprn` package round-trips preserve them.
+Upgrade preserves game identity and starts a new save lineage; fork changes both.
+
+Identity-bearing snapshots use Save6. Standalone/editor keys remain
+`oprn:game:<gameId>:lineage:<saveCompatibilityId>:save-slot:v6:<slot|auto>`;
+title, filename and legacy host namespace changes do not change that identity.
+Community keys instead begin `oprn:community:<encoded-listing-slug>:game:...`.
+`exportEntry` derives `saveIsolationScope` from the actual `/play/<slug>/...` URL,
+even for opened/embedded projects; neither project metadata nor a boot
+`saveNamespace` override can choose it. `renderPlayer` installs publication and
+scope together via `setSavePublication(publication, isolationScope?)`.
+Save6 `identity.isolationScope` records the host scope separately from game and
+lineage. Manual/autosave readers, writers, blockers and apply reject foreign
+scope snapshots. Community boot also skips the global legacy-prefix migration
+(`exportStorageBoot.ts`); it must not enumerate, migrate or delete other saves.
+Legacy projects still write Save5 and retain the existing Save4/5 read/fallback
+rules. Legacy readers do not accept Save6. Save6 without identity is invalid.
+`applySaveSnapshot` rejects wrong-game/unaccepted-lineage snapshots before state
+restoration. `importSaveCopy` accepts one explicitly named storage key, requires
+explicit legacy adoption for Save4/5, validates a separate session, and writes
+only an empty destination slot. It never scans storage or changes source bytes.
+Tests: `publication.test.ts`, `publicationSaves.test.ts`, `lifeSaveVersion.test.ts`.
+
+The runtime load panel offers copy-and-load controls only for explicitly accepted
+predecessor lineage keys **inside the current listing scope**, including their
+autosave, into the first empty manual slot. `importSaveCopy` checks the source key
+against local current/accepted lineage keys before reading it; uploader-accepted
+lineage metadata is compatibility, never cross-listing access authority.
+Legacy adoption remains an explicit standalone
+`importSaveCopy({sourceKey, adoptLegacy: true, ...})` operation on a known legacy
+key, not title/slug discovery or a bypass for community keys.
+
+Cross-listing transfer is a separate player-selected file flow: in the source
+load panel export a manual/autosave JSON file, then in the destination select
+that file using the copy-and-load control. `importSelectedSaveFileCopy` receives
+only those selected bytes (never a discovered storage key), requires compatible
+Save6 game/lineage metadata, validates a separate session, rebinds scope, and
+writes an empty manual slot. It cannot overwrite a destination or change the
+source. Cancel/failure changes no live session. Native file controls and the
+existing keyboard cursor menu own selection; no accounts or listing ownership
+platform is involved. The UI caps selected files at 8 MiB.
+
+Tests: `communitySaveBoot.test.ts`, `publicationSaves.test.ts`,
+`publicationSaveImportPanel.test.ts`, and the real Chrome/PostgreSQL seam
+`node --test test/communitySaveIsolation.test.mjs`. Runtime archive/export
+operations and browser QA commands are in `editor-workflows-misc.md` under
+Versioned publication.
+
 ## P1 accepted-save receipts and read-only proof (2026-09-06)
 
 `ProjectFlushResult` keeps its existing variants; `saved` optionally includes a

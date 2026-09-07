@@ -28,6 +28,7 @@ import {
   type ShopMode,
 } from "@/player/playSceneShopParts";
 import { emitRuntimeJuice } from "@/player/runtimeJuice";
+import { SHOP_CONFIRM_KEY_LABEL, SHOP_FOCUS_GROUP_KEY_LABEL } from "@/player/keyBindings";
 import type { ShopStep } from "@/player/playSceneShop";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import type { ResolvedTerms } from "@/project/terms";
@@ -61,6 +62,7 @@ type ShopItemsRenderRequest = {
   readonly categorySource?: readonly ShopListing[];
   /** 탭으로 구매/판매를 그 자리에서 바꾼다. 없으면 탭을 만들지 않는다. */
   readonly onMode?: (mode: ShopMode) => void;
+  readonly onDetail?: () => void;
 };
 
 export { flashGoldDelta } from "@/player/playSceneShopParts";
@@ -170,8 +172,8 @@ export function renderShopItems(request: ShopItemsRenderRequest): HTMLElement {
       shopPrompt(request, first),
       keyHints(
         (request.step.quantityMode ?? "single") === "select"
-          ? [["↑↓", "선택"], ["←→", "수량"], ["Enter", "결정"], ["Esc", "뒤로"]]
-          : [["↑↓", "선택"], ["Enter", "결정"], ["Esc", "뒤로"]]
+          ? [[SHOP_FOCUS_GROUP_KEY_LABEL, "영역"], ["↑↓", "선택"], ["←→", "수량"], [SHOP_CONFIRM_KEY_LABEL, "결정"], ["Esc", "뒤로"]]
+          : [[SHOP_FOCUS_GROUP_KEY_LABEL, "영역"], ["↑↓", "선택"], [SHOP_CONFIRM_KEY_LABEL, "결정"], ["Esc", "뒤로"]]
       ),
     ])
   );
@@ -266,6 +268,8 @@ export function updateShopGoldPanel(
   if (!panel) return;
   clear(panel);
   panel.append(goldPanel(scene, terms, merchantGold, mode));
+  const balance = overlay.querySelector<HTMLElement>("[data-testid='shop-balance-after']");
+  if (balance) balance.dataset.gold = String(scene.session.gold);
 }
 
 /** 거래 후 한 행의 보유 수량과 '살 수 있는지' 표시를 제자리 갱신. */
@@ -349,7 +353,7 @@ function shopItemList(request: ShopItemsRenderRequest, goods: readonly ShopGoods
         terms: request.terms,
         merchantGold: request.merchantGold,
         selected: index === 0,
-        onActivate: () => request.onItem(entry, request.mode, currentQuantity(request.step)),
+        onActivate: () => request.onItem(entry, request.mode, currentQuantity(request.step, wrapOverlay(wrap))),
       })
     );
   }
@@ -398,13 +402,20 @@ function shopPrompt(request: ShopItemsRenderRequest, first: ShopGoods | undefine
   if ((step.quantityMode ?? "single") === "select") {
     wrap.append(quantityControl(terms, first, mode, (dir) => adjustShopQuantity(wrapOverlay(wrap), dir)));
   }
+  wrap.append(el("span", { class: "runtime-shop-balance-after", dataset: {
+    testid: "shop-balance-after", gold: String(request.scene.session.gold), mode, goldUnit: terms.gold,
+  } }));
   const actions = el("div", { class: "runtime-shop-prompt-actions" });
+  if (request.onDetail) actions.append(el("button", {
+    class: "runtime-shop-detail-open", text: "상세 / 장비 비교", dataset: { testid: "shop-detail-open" },
+    attrs: { type: "button", ...(first ? {} : { disabled: "" }) }, on: { click: request.onDetail },
+  }));
   actions.append(
     el("button", {
       class: "runtime-shop-confirm",
       text: mode === "sell" ? terms.shopSell : terms.shopBuy,
       dataset: { testid: "shop-confirm" },
-      attrs: { type: "button", tabindex: "-1" },
+      attrs: { type: "button", tabindex: "-1", ...(first ? {} : { disabled: "" }) },
       on: {
         click: () => {
           // 마우스로 결정 버튼을 눌렀을 때는 커서가 얹힌 행을 거래한다.
@@ -423,6 +434,10 @@ function shopPrompt(request: ShopItemsRenderRequest, first: ShopGoods | undefine
     })
   );
   wrap.append(actions);
+  if (!first) {
+    const quantity = wrap.querySelector<HTMLInputElement>("[data-testid='shop-quantity-input']");
+    if (quantity) quantity.disabled = true;
+  }
   return wrap;
 }
 
@@ -430,12 +445,9 @@ function wrapOverlay(node: HTMLElement): HTMLElement {
   return node.closest<HTMLElement>(".runtime-shop-overlay") ?? node;
 }
 
-function currentQuantity(step: ShopStep): number {
+function currentQuantity(step: ShopStep, overlay: HTMLElement): number {
   if ((step.quantityMode ?? "single") !== "select") return 1;
-  // overlay 스코프 고정: 전역 document 조회가 다른 상점/오버레이 값을 읽는 간섭 방지 + 1..99 하드 클램프
-  const overlay = document.querySelector<HTMLElement>(".runtime-shop-overlay");
-  const input = overlay?.querySelector<HTMLInputElement>("[data-testid='shop-quantity-input']")
-    ?? document.querySelector<HTMLInputElement>("[data-testid='shop-quantity-input']");
+  const input = overlay.querySelector<HTMLInputElement>("[data-testid='shop-quantity-input']");
   const raw = input ? Number.parseInt(input.value, 10) : 1;
   return Math.min(99, Math.max(1, Number.isFinite(raw) ? raw : 1));
 }

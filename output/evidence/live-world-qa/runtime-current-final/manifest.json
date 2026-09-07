@@ -1,0 +1,1927 @@
+{
+  "scenarioId": "live-world-landmark-walk",
+  "projectPath": "/home/main/.herdr/worktrees/rpg-zzu/worktree-clear-valley-09ba/output/evidence/live-world-qa/integrated-project.json",
+  "projectSha256": "93e42af1a3373047f1a64f8f4ed16e7ac5d896b2aaa9320a531a89e5a1b7796e",
+  "seed": "authored",
+  "viewport": {
+    "width": 1024,
+    "height": 768
+  },
+  "beats": [
+    {
+      "id": "start",
+      "note": "저작된 시작 위치",
+      "observed": {
+        "state": {
+          "farmPlots": {},
+          "makerInstances": {},
+          "eventLocations": {},
+          "currentMapId": "map_blank_start",
+          "x": 24,
+          "y": 118,
+          "gold": 0,
+          "switches": {
+            "sw_0001": false,
+            "sw_0002": false,
+            "sw_0003": false,
+            "sw_0004": false,
+            "sw_0005": false,
+            "sw_0006": false,
+            "sw_0007": false,
+            "sw_0008": false,
+            "sw_0009": false,
+            "sw_0010": false,
+            "sw_0011": false,
+            "sw_0012": false,
+            "sw_0013": false,
+            "sw_0014": false,
+            "sw_0015": false,
+            "sw_0016": false,
+            "sw_0017": false,
+            "sw_0018": false,
+            "sw_0019": false,
+            "sw_0020": false
+          },
+          "variables": {
+            "var_0001": 0,
+            "var_0002": 0,
+            "var_0003": 0,
+            "var_0004": 0,
+            "var_0005": 0,
+            "var_0006": 0,
+            "var_0007": 0,
+            "var_0008": 0,
+            "var_0009": 0,
+            "var_0010": 0,
+            "var_0011": 0,
+            "var_0012": 0,
+            "var_0013": 0,
+            "var_0014": 0,
+            "var_0015": 0,
+            "var_0016": 0,
+            "var_0017": 0,
+            "var_0018": 0,
+            "var_0019": 0,
+            "var_0020": 0
+          },
+          "selfSwitches": {},
+          "timers": {},
+          "inventory": {},
+          "monsterInstances": {},
+          "monsterParty": [],
+          "monsterBox": [],
+          "partyActorIds": [
+            "actor_hero"
+          ],
+          "npcActivities": {},
+          "friendship": {},
+          "rng": {
+            "seed": 647336853,
+            "streams": {
+              "encounter": {
+                "seed": 557016071,
+                "state": 557016071
+              },
+              "battle": {
+                "seed": 1808112128,
+                "state": 1808112128
+              },
+              "movement": {
+                "seed": 1166691691,
+                "state": 1166691691
+              },
+              "fishing": {
+                "seed": 2730148172,
+                "state": 2730148172
+              },
+              "misc": {
+                "seed": 2506918146,
+                "state": 2506918146
+              }
+            }
+          }
+        },
+        "mirror": {
+          "farmPlots": {},
+          "makerInstances": {},
+          "mapId": "map_blank_start",
+          "inputEnabled": true,
+          "running": false,
+          "player": {
+            "x": 24,
+            "y": 118
+          },
+          "switches": {
+            "sw_0001": false,
+            "sw_0002": false,
+            "sw_0003": false,
+            "sw_0004": false,
+            "sw_0005": false,
+            "sw_0006": false,
+            "sw_0007": false,
+            "sw_0008": false,
+            "sw_0009": false,
+            "sw_0010": false,
+            "sw_0011": false,
+            "sw_0012": false,
+            "sw_0013": false,
+            "sw_0014": false,
+            "sw_0015": false,
+            "sw_0016": false,
+            "sw_0017": false,
+            "sw_0018": false,
+            "sw_0019": false,
+            "sw_0020": false
+          },
+          "variables": {
+            "var_0001": 0,
+            "var_0002": 0,
+            "var_0003": 0,
+            "var_0004": 0,
+            "var_0005": 0,
+            "var_0006": 0,
+            "var_0007": 0,
+            "var_0008": 0,
+            "var_0009": 0,
+            "var_0010": 0,
+            "var_0011": 0,
+            "var_0012": 0,
+            "var_0013": 0,
+            "var_0014": 0,
+            "var_0015": 0,
+            "var_0016": 0,
+            "var_0017": 0,
+            "var_0018": 0,
+            "var_0019": 0,
+            "var_0020": 0
+          },
+          "timers": {},
+          "timerActive": {},
+          "flags": {},
+          "mapOverrides": {},
+          "gold": 0,
+          "inventory": {},
+          "partyActorIds": [
+            "actor_hero"
+          ],
+          "actorSkillIds": {},
+          "actorExperience": {
+            "actor_hero": 0
+          },
+          "actorLevels": {
+            "actor_hero": 1,
+            "actor_guardian": 1,
+            "actor_mage": 1,
+            "actor_scout": 1,
+            "actor_cleric": 1,
+            "actor_ranger": 1
+          },
+          "actorVitals": {
+            "actor_hero": {
+              "hp": 514,
+              "mp": 43,
+              "maxHp": 514,
+              "maxMp": 43
+            }
+          },
+          "eventLocations": {},
+          "followers": [],
+          "followerTrail": [],
+          "removedEventIds": {},
+          "spawnedEvents": {},
+          "camera": {
+            "mode": "follow",
+            "target": {
+              "kind": "player"
+            }
+          },
+          "lighting": {
+            "ambient": 0,
+            "sources": []
+          },
+          "actorEquipment": {
+            "actor_hero": {
+              "armor": "equip_leather_armor",
+              "helmet": "equip_traveler_hat",
+              "shield": "equip_oak_shield",
+              "weapon": "equip_sword",
+              "accessory": "equip_focus_charm"
+            },
+            "actor_guardian": {
+              "armor": "equip_leather_armor",
+              "helmet": "equip_traveler_hat",
+              "shield": "equip_oak_shield",
+              "weapon": "equip_sword",
+              "accessory": "equip_focus_charm"
+            },
+            "actor_mage": {
+              "armor": "equip_mystic_robe",
+              "helmet": "equip_traveler_hat",
+              "weapon": "equip_mage_staff",
+              "accessory": "equip_focus_charm"
+            },
+            "actor_scout": {
+              "armor": "equip_leather_armor",
+              "helmet": "equip_traveler_hat",
+              "weapon": "equip_scout_dagger",
+              "accessory": "equip_focus_charm"
+            },
+            "actor_cleric": {
+              "armor": "equip_mystic_robe",
+              "helmet": "equip_traveler_hat",
+              "shield": "equip_oak_shield",
+              "weapon": "equip_mage_staff",
+              "accessory": "equip_focus_charm"
+            },
+            "actor_ranger": {
+              "armor": "equip_leather_armor",
+              "helmet": "equip_traveler_hat",
+              "weapon": "equip_scout_dagger",
+              "accessory": "equip_focus_charm"
+            }
+          },
+          "actorRows": {
+            "actor_hero": "front"
+          },
+          "classOverrides": {},
+          "audio": {
+            "bgm": {
+              "resourceId": "cc0-bgm-rtp-fld-003",
+              "loop": true
+            }
+          },
+          "pictures": {},
+          "events": {
+            "ev_house_door_map_blank_start_bright_plaster_25_84": {
+              "x": 25,
+              "y": 84,
+              "pageId": "ev_house_door_map_blank_start_bright_plaster_25_84_page",
+              "priority": "below",
+              "trigger": "playerTouch",
+              "footprint": {
+                "width": 1,
+                "height": 1
+              },
+              "passRows": 1,
+              "bodyRect": {
+                "left": 25,
+                "right": 25,
+                "top": 84,
+                "bottom": 84
+              },
+              "passRect": {
+                "left": 25,
+                "right": 25,
+                "top": 84,
+                "bottom": 84
+              }
+            },
+            "ev_house_door_map_blank_start_bright_plaster_25_84_step": {
+              "x": 25,
+              "y": 85,
+              "pageId": "ev_house_door_map_blank_start_bright_plaster_25_84_step_page",
+              "priority": "below",
+              "trigger": "playerTouch",
+              "footprint": {
+                "width": 1,
+                "height": 1
+              },
+              "passRows": 1,
+              "bodyRect": {
+                "left": 25,
+                "right": 25,
+                "top": 85,
+                "bottom": 85
+              },
+              "passRect": {
+                "left": 25,
+                "right": 25,
+                "top": 85,
+                "bottom": 85
+              }
+            },
+            "ev_house_door_map_blank_start_amber_wood_35_85": {
+              "x": 35,
+              "y": 85,
+              "pageId": "ev_house_door_map_blank_start_amber_wood_35_85_page",
+              "priority": "below",
+              "trigger": "playerTouch",
+              "footprint": {
+                "width": 1,
+                "height": 1
+              },
+              "passRows": 1,
+              "bodyRect": {
+                "left": 35,
+                "right": 35,
+                "top": 85,
+                "bottom": 85
+              },
+              "passRect": {
+                "left": 35,
+                "right": 35,
+                "top": 85,
+                "bottom": 85
+              }
+            },
+            "ev_house_door_map_blank_start_amber_wood_35_85_step": {
+              "x": 35,
+              "y": 86,
+              "pageId": "ev_house_door_map_blank_start_amber_wood_35_85_step_page",
+              "priority": "below",
+              "trigger": "playerTouch",
+              "footprint": {
+                "width": 1,
+                "height": 1
+              },
+              "passRows": 1,
+              "bodyRect": {
+                "left": 35,
+                "right": 35,
+                "top": 86,
+                "bottom": 86
+              },
+              "passRect": {
+                "left": 35,
+                "right": 35,
+                "top": 86,
+                "bottom": 86
+              }
+            },
+            "ev_house_door_map_blank_start_timber_hall_22_27": {
+              "x": 22,
+              "y": 27,
+              "pageId": "ev_house_door_map_blank_start_timber_hall_22_27_page",
+              "priority": "below",
+              "trigger": "playerTouch",
+              "footprint": {
+                "width": 1,
+                "height": 1
+              },
+              "passRows": 1,
+              "bodyRect": {
+                "left": 22,
+                "right": 22,
+                "top": 27,
+                "bottom": 27
+              },
+              "passRect": {
+                "left": 22,
+                "right": 22,
+                "top": 27,
+                "bottom": 27
+              }
+            },
+            "ev_house_door_map_blank_start_timber_hall_22_27_step": {
+              "x": 22,
+              "y": 28,
+              "pageId": "ev_house_door_map_blank_start_timber_hall_22_27_step_page",
+              "priority": "below",
+              "trigger": "playerTouch",
+              "footprint": {
+                "width": 1,
+                "height": 1
+              },
+              "passRows": 1,
+              "bodyRect": {
+                "left": 22,
+                "right": 22,
+                "top": 28,
+                "bottom": 28
+              },
+              "passRect": {
+                "left": 22,
+                "right": 22,
+                "top": 28,
+                "bottom": 28
+              }
+            },
+            "ev_house_door_map_blank_start_slate_wood_32_27": {
+              "x": 32,
+              "y": 27,
+              "pageId": "ev_house_door_map_blank_start_slate_wood_32_27_page",
+              "priority": "below",
+              "trigger": "playerTouch",
+              "footprint": {
+                "width": 1,
+                "height": 1
+              },
+              "passRows": 1,
+              "bodyRect": {
+                "left": 32,
+                "right": 32,
+                "top": 27,
+                "bottom": 27
+              },
+              "passRect": {
+                "left": 32,
+                "right": 32,
+                "top": 27,
+                "bottom": 27
+              }
+            },
+            "ev_house_door_map_blank_start_slate_wood_32_27_step": {
+              "x": 32,
+              "y": 28,
+              "pageId": "ev_house_door_map_blank_start_slate_wood_32_27_step_page",
+              "priority": "below",
+              "trigger": "playerTouch",
+              "footprint": {
+                "width": 1,
+                "height": 1
+              },
+              "passRows": 1,
+              "bodyRect": {
+                "left": 32,
+                "right": 32,
+                "top": 28,
+                "bottom": 28
+              },
+              "passRect": {
+                "left": 32,
+                "right": 32,
+                "top": 28,
+                "bottom": 28
+              }
+            },
+            "ev_house_door_map_blank_start_blue_stone_105_17": {
+              "x": 105,
+              "y": 17,
+              "pageId": "ev_house_door_map_blank_start_blue_stone_105_17_page",
+              "priority": "below",
+              "trigger": "playerTouch",
+              "footprint": {
+                "width": 1,
+                "height": 1
+              },
+              "passRows": 1,
+              "bodyRect": {
+                "left": 105,
+                "right": 105,
+                "top": 17,
+                "bottom": 17
+              },
+              "passRect": {
+                "left": 105,
+                "right": 105,
+                "top": 17,
+                "bottom": 17
+              }
+            },
+            "ev_house_door_map_blank_start_blue_stone_105_17_step": {
+              "x": 105,
+              "y": 18,
+              "pageId": "ev_house_door_map_blank_start_blue_stone_105_17_step_page",
+              "priority": "below",
+              "trigger": "playerTouch",
+              "footprint": {
+                "width": 1,
+                "height": 1
+              },
+              "passRows": 1,
+              "bodyRect": {
+                "left": 105,
+                "right": 105,
+                "top": 18,
+                "bottom": 18
+              },
+              "passRect": {
+                "left": 105,
+                "right": 105,
+                "top": 18,
+                "bottom": 18
+              }
+            },
+            "ev_house_door_map_blank_start_bright_plaster_116_17": {
+              "x": 116,
+              "y": 17,
+              "pageId": "ev_house_door_map_blank_start_bright_plaster_116_17_page",
+              "priority": "below",
+              "trigger": "playerTouch",
+              "footprint": {
+                "width": 1,
+                "height": 1
+              },
+              "passRows": 1,
+              "bodyRect": {
+                "left": 116,
+                "right": 116,
+                "top": 17,
+                "bottom": 17
+              },
+              "passRect": {
+                "left": 116,
+                "right": 116,
+                "top": 17,
+                "bottom": 17
+              }
+            },
+            "ev_house_door_map_blank_start_bright_plaster_116_17_step": {
+              "x": 116,
+              "y": 18,
+              "pageId": "ev_house_door_map_blank_start_bright_plaster_116_17_step_page",
+              "priority": "below",
+              "trigger": "playerTouch",
+              "footprint": {
+                "width": 1,
+                "height": 1
+              },
+              "passRows": 1,
+              "bodyRect": {
+                "left": 116,
+                "right": 116,
+                "top": 18,
+                "bottom": 18
+              },
+              "passRect": {
+                "left": 116,
+                "right": 116,
+                "top": 18,
+                "bottom": 18
+              }
+            },
+            "ev_guide_south_port": {
+              "x": 24,
+              "y": 116,
+              "pageId": "pages[0]",
+              "priority": "same",
+              "trigger": "action",
+              "direction": "down",
+              "footprint": {
+                "width": 1,
+                "height": 1
+              },
+              "passRows": 1,
+              "bodyRect": {
+                "left": 24,
+                "right": 24,
+                "top": 116,
+                "bottom": 116
+              },
+              "passRect": {
+                "left": 24,
+                "right": 24,
+                "top": 116,
+                "bottom": 116
+              }
+            },
+            "ev_guide_grassland_village": {
+              "x": 24,
+              "y": 86,
+              "pageId": "pages[0]",
+              "priority": "same",
+              "trigger": "action",
+              "direction": "down",
+              "footprint": {
+                "width": 1,
+                "height": 1
+              },
+              "passRows": 1,
+              "bodyRect": {
+                "left": 24,
+                "right": 24,
+                "top": 86,
+                "bottom": 86
+              },
+              "passRect": {
+                "left": 24,
+                "right": 24,
+                "top": 86,
+                "bottom": 86
+              }
+            },
+            "ev_guide_forest_village": {
+              "x": 24,
+              "y": 29,
+              "pageId": "pages[0]",
+              "priority": "same",
+              "trigger": "action",
+              "direction": "down",
+              "footprint": {
+                "width": 1,
+                "height": 1
+              },
+              "passRows": 1,
+              "bodyRect": {
+                "left": 24,
+                "right": 24,
+                "top": 29,
+                "bottom": 29
+              },
+              "passRect": {
+                "left": 24,
+                "right": 24,
+                "top": 29,
+                "bottom": 29
+              }
+            },
+            "ev_guide_lake_shelter": {
+              "x": 49,
+              "y": 49,
+              "pageId": "pages[0]",
+              "priority": "same",
+              "trigger": "action",
+              "direction": "down",
+              "footprint": {
+                "width": 1,
+                "height": 1
+              },
+              "passRows": 1,
+              "bodyRect": {
+                "left": 49,
+                "right": 49,
+                "top": 49,
+                "bottom": 49
+              },
+              "passRect": {
+                "left": 49,
+                "right": 49,
+                "top": 49,
+                "bottom": 49
+              }
+            },
+            "ev_guide_mountain_post": {
+              "x": 85,
+              "y": 25,
+              "pageId": "pages[0]",
+              "priority": "same",
+              "trigger": "action",
+              "direction": "down",
+              "footprint": {
+                "width": 1,
+                "height": 1
+              },
+              "passRows": 1,
+              "bodyRect": {
+                "left": 85,
+                "right": 85,
+                "top": 25,
+                "bottom": 25
+              },
+              "passRect": {
+                "left": 85,
+                "right": 85,
+                "top": 25,
+                "bottom": 25
+              }
+            },
+            "ev_guide_desert_ruins": {
+              "x": 105,
+              "y": 65,
+              "pageId": "pages[0]",
+              "priority": "same",
+              "trigger": "action",
+              "direction": "down",
+              "footprint": {
+                "width": 1,
+                "height": 1
+              },
+              "passRows": 1,
+              "bodyRect": {
+                "left": 105,
+                "right": 105,
+                "top": 65,
+                "bottom": 65
+              },
+              "passRect": {
+                "left": 105,
+                "right": 105,
+                "top": 65,
+                "bottom": 65
+              }
+            },
+            "ev_guide_snow_village": {
+              "x": 105,
+              "y": 20,
+              "pageId": "pages[0]",
+              "priority": "same",
+              "trigger": "action",
+              "direction": "down",
+              "footprint": {
+                "width": 1,
+                "height": 1
+              },
+              "passRows": 1,
+              "bodyRect": {
+                "left": 105,
+                "right": 105,
+                "top": 20,
+                "bottom": 20
+              },
+              "passRect": {
+                "left": 105,
+                "right": 105,
+                "top": 20,
+                "bottom": 20
+              }
+            },
+            "ev_guide_wetland_lab": {
+              "x": 75,
+              "y": 102,
+              "pageId": "pages[0]",
+              "priority": "same",
+              "trigger": "action",
+              "direction": "down",
+              "footprint": {
+                "width": 1,
+                "height": 1
+              },
+              "passRows": 1,
+              "bodyRect": {
+                "left": 75,
+                "right": 75,
+                "top": 102,
+                "bottom": 102
+              },
+              "passRect": {
+                "left": 75,
+                "right": 75,
+                "top": 102,
+                "bottom": 102
+              }
+            }
+          },
+          "movers": {}
+        },
+        "sprite": {
+          "textureKey": "tex_easyrpg_charset_actor1",
+          "frame": 25,
+          "resourceId": "easyrpg-charset-actor1",
+          "kind": "charset",
+          "moving": false,
+          "x": 392,
+          "y": 1904
+        }
+      },
+      "failures": [],
+      "shot": "00-start.png"
+    },
+    {
+      "id": "landmark-1",
+      "note": "남쪽항구",
+      "observed": {
+        "state": {
+          "farmPlots": {},
+          "makerInstances": {},
+          "eventLocations": {},
+          "currentMapId": "map_blank_start",
+          "x": 24,
+          "y": 117,
+          "gold": 0,
+          "switches": {
+            "sw_0001": false,
+            "sw_0002": false,
+            "sw_0003": false,
+            "sw_0004": false,
+            "sw_0005": false,
+            "sw_0006": false,
+            "sw_0007": false,
+            "sw_0008": false,
+            "sw_0009": false,
+            "sw_0010": false,
+            "sw_0011": false,
+            "sw_0012": false,
+            "sw_0013": false,
+            "sw_0014": false,
+            "sw_0015": false,
+            "sw_0016": false,
+            "sw_0017": false,
+            "sw_0018": false,
+            "sw_0019": false,
+            "sw_0020": false
+          },
+          "variables": {
+            "var_0001": 0,
+            "var_0002": 0,
+            "var_0003": 0,
+            "var_0004": 0,
+            "var_0005": 0,
+            "var_0006": 0,
+            "var_0007": 0,
+            "var_0008": 0,
+            "var_0009": 0,
+            "var_0010": 0,
+            "var_0011": 0,
+            "var_0012": 0,
+            "var_0013": 0,
+            "var_0014": 0,
+            "var_0015": 0,
+            "var_0016": 0,
+            "var_0017": 0,
+            "var_0018": 0,
+            "var_0019": 0,
+            "var_0020": 0
+          },
+          "selfSwitches": {},
+          "timers": {},
+          "inventory": {},
+          "monsterInstances": {},
+          "monsterParty": [],
+          "monsterBox": [],
+          "partyActorIds": [
+            "actor_hero"
+          ],
+          "npcActivities": {},
+          "friendship": {},
+          "rng": {
+            "seed": 647336853,
+            "streams": {
+              "encounter": {
+                "seed": 557016071,
+                "state": 557016071
+              },
+              "battle": {
+                "seed": 1808112128,
+                "state": 1808112128
+              },
+              "movement": {
+                "seed": 1166691691,
+                "state": 1166691691
+              },
+              "fishing": {
+                "seed": 2730148172,
+                "state": 2730148172
+              },
+              "misc": {
+                "seed": 2506918146,
+                "state": 2506918146
+              }
+            }
+          }
+        },
+        "sprite": {
+          "textureKey": "tex_easyrpg_charset_actor1",
+          "frame": 1,
+          "resourceId": "easyrpg-charset-actor1",
+          "kind": "charset",
+          "moving": false,
+          "x": 392,
+          "y": 1888
+        },
+        "target": {
+          "name": "남쪽항구",
+          "eventId": "ev_guide_south_port"
+        },
+        "guide": {
+          "x": 24,
+          "y": 116,
+          "pageId": "pages[0]",
+          "priority": "same",
+          "trigger": "action",
+          "direction": "down",
+          "footprint": {
+            "width": 1,
+            "height": 1
+          },
+          "passRows": 1,
+          "bodyRect": {
+            "left": 24,
+            "right": 24,
+            "top": 116,
+            "bottom": 116
+          },
+          "passRect": {
+            "left": 24,
+            "right": 24,
+            "top": 116,
+            "bottom": 116
+          }
+        }
+      },
+      "failures": [],
+      "shot": "01-landmark-1.png"
+    },
+    {
+      "id": "landmark-2",
+      "note": "초원마을",
+      "observed": {
+        "state": {
+          "farmPlots": {},
+          "makerInstances": {},
+          "eventLocations": {},
+          "currentMapId": "map_blank_start",
+          "x": 24,
+          "y": 87,
+          "gold": 0,
+          "switches": {
+            "sw_0001": false,
+            "sw_0002": false,
+            "sw_0003": false,
+            "sw_0004": false,
+            "sw_0005": false,
+            "sw_0006": false,
+            "sw_0007": false,
+            "sw_0008": false,
+            "sw_0009": false,
+            "sw_0010": false,
+            "sw_0011": false,
+            "sw_0012": false,
+            "sw_0013": false,
+            "sw_0014": false,
+            "sw_0015": false,
+            "sw_0016": false,
+            "sw_0017": false,
+            "sw_0018": false,
+            "sw_0019": false,
+            "sw_0020": false
+          },
+          "variables": {
+            "var_0001": 0,
+            "var_0002": 0,
+            "var_0003": 0,
+            "var_0004": 0,
+            "var_0005": 0,
+            "var_0006": 0,
+            "var_0007": 0,
+            "var_0008": 0,
+            "var_0009": 0,
+            "var_0010": 0,
+            "var_0011": 0,
+            "var_0012": 0,
+            "var_0013": 0,
+            "var_0014": 0,
+            "var_0015": 0,
+            "var_0016": 0,
+            "var_0017": 0,
+            "var_0018": 0,
+            "var_0019": 0,
+            "var_0020": 0
+          },
+          "selfSwitches": {},
+          "timers": {},
+          "inventory": {},
+          "monsterInstances": {},
+          "monsterParty": [],
+          "monsterBox": [],
+          "partyActorIds": [
+            "actor_hero"
+          ],
+          "npcActivities": {},
+          "friendship": {},
+          "rng": {
+            "seed": 647336853,
+            "streams": {
+              "encounter": {
+                "seed": 557016071,
+                "state": 557016071
+              },
+              "battle": {
+                "seed": 1808112128,
+                "state": 1808112128
+              },
+              "movement": {
+                "seed": 1166691691,
+                "state": 1166691691
+              },
+              "fishing": {
+                "seed": 2730148172,
+                "state": 2730148172
+              },
+              "misc": {
+                "seed": 2506918146,
+                "state": 2506918146
+              }
+            }
+          }
+        },
+        "sprite": {
+          "textureKey": "tex_easyrpg_charset_actor1",
+          "frame": 1,
+          "resourceId": "easyrpg-charset-actor1",
+          "kind": "charset",
+          "moving": false,
+          "x": 392,
+          "y": 1408
+        },
+        "target": {
+          "name": "초원마을",
+          "eventId": "ev_guide_grassland_village"
+        },
+        "guide": {
+          "x": 24,
+          "y": 86,
+          "pageId": "pages[0]",
+          "priority": "same",
+          "trigger": "action",
+          "direction": "down",
+          "footprint": {
+            "width": 1,
+            "height": 1
+          },
+          "passRows": 1,
+          "bodyRect": {
+            "left": 24,
+            "right": 24,
+            "top": 86,
+            "bottom": 86
+          },
+          "passRect": {
+            "left": 24,
+            "right": 24,
+            "top": 86,
+            "bottom": 86
+          }
+        }
+      },
+      "failures": [],
+      "shot": "02-landmark-2.png"
+    },
+    {
+      "id": "landmark-3",
+      "note": "숲속마을",
+      "observed": {
+        "state": {
+          "farmPlots": {},
+          "makerInstances": {},
+          "eventLocations": {},
+          "currentMapId": "map_blank_start",
+          "x": 24,
+          "y": 30,
+          "gold": 0,
+          "switches": {
+            "sw_0001": false,
+            "sw_0002": false,
+            "sw_0003": false,
+            "sw_0004": false,
+            "sw_0005": false,
+            "sw_0006": false,
+            "sw_0007": false,
+            "sw_0008": false,
+            "sw_0009": false,
+            "sw_0010": false,
+            "sw_0011": false,
+            "sw_0012": false,
+            "sw_0013": false,
+            "sw_0014": false,
+            "sw_0015": false,
+            "sw_0016": false,
+            "sw_0017": false,
+            "sw_0018": false,
+            "sw_0019": false,
+            "sw_0020": false
+          },
+          "variables": {
+            "var_0001": 0,
+            "var_0002": 0,
+            "var_0003": 0,
+            "var_0004": 0,
+            "var_0005": 0,
+            "var_0006": 0,
+            "var_0007": 0,
+            "var_0008": 0,
+            "var_0009": 0,
+            "var_0010": 0,
+            "var_0011": 0,
+            "var_0012": 0,
+            "var_0013": 0,
+            "var_0014": 0,
+            "var_0015": 0,
+            "var_0016": 0,
+            "var_0017": 0,
+            "var_0018": 0,
+            "var_0019": 0,
+            "var_0020": 0
+          },
+          "selfSwitches": {},
+          "timers": {},
+          "inventory": {},
+          "monsterInstances": {},
+          "monsterParty": [],
+          "monsterBox": [],
+          "partyActorIds": [
+            "actor_hero"
+          ],
+          "npcActivities": {},
+          "friendship": {},
+          "rng": {
+            "seed": 647336853,
+            "streams": {
+              "encounter": {
+                "seed": 557016071,
+                "state": 557016071
+              },
+              "battle": {
+                "seed": 1808112128,
+                "state": 1808112128
+              },
+              "movement": {
+                "seed": 1166691691,
+                "state": 1166691691
+              },
+              "fishing": {
+                "seed": 2730148172,
+                "state": 2730148172
+              },
+              "misc": {
+                "seed": 2506918146,
+                "state": 2506918146
+              }
+            }
+          }
+        },
+        "sprite": {
+          "textureKey": "tex_easyrpg_charset_actor1",
+          "frame": 1,
+          "resourceId": "easyrpg-charset-actor1",
+          "kind": "charset",
+          "moving": false,
+          "x": 392,
+          "y": 496
+        },
+        "target": {
+          "name": "숲속마을",
+          "eventId": "ev_guide_forest_village"
+        },
+        "guide": {
+          "x": 24,
+          "y": 29,
+          "pageId": "pages[0]",
+          "priority": "same",
+          "trigger": "action",
+          "direction": "down",
+          "footprint": {
+            "width": 1,
+            "height": 1
+          },
+          "passRows": 1,
+          "bodyRect": {
+            "left": 24,
+            "right": 24,
+            "top": 29,
+            "bottom": 29
+          },
+          "passRect": {
+            "left": 24,
+            "right": 24,
+            "top": 29,
+            "bottom": 29
+          }
+        }
+      },
+      "failures": [],
+      "shot": "03-landmark-3.png"
+    },
+    {
+      "id": "landmark-4",
+      "note": "호수쉼터",
+      "observed": {
+        "state": {
+          "farmPlots": {},
+          "makerInstances": {},
+          "eventLocations": {},
+          "currentMapId": "map_blank_start",
+          "x": 49,
+          "y": 48,
+          "gold": 0,
+          "switches": {
+            "sw_0001": false,
+            "sw_0002": false,
+            "sw_0003": false,
+            "sw_0004": false,
+            "sw_0005": false,
+            "sw_0006": false,
+            "sw_0007": false,
+            "sw_0008": false,
+            "sw_0009": false,
+            "sw_0010": false,
+            "sw_0011": false,
+            "sw_0012": false,
+            "sw_0013": false,
+            "sw_0014": false,
+            "sw_0015": false,
+            "sw_0016": false,
+            "sw_0017": false,
+            "sw_0018": false,
+            "sw_0019": false,
+            "sw_0020": false
+          },
+          "variables": {
+            "var_0001": 0,
+            "var_0002": 0,
+            "var_0003": 0,
+            "var_0004": 0,
+            "var_0005": 0,
+            "var_0006": 0,
+            "var_0007": 0,
+            "var_0008": 0,
+            "var_0009": 0,
+            "var_0010": 0,
+            "var_0011": 0,
+            "var_0012": 0,
+            "var_0013": 0,
+            "var_0014": 0,
+            "var_0015": 0,
+            "var_0016": 0,
+            "var_0017": 0,
+            "var_0018": 0,
+            "var_0019": 0,
+            "var_0020": 0
+          },
+          "selfSwitches": {},
+          "timers": {},
+          "inventory": {},
+          "monsterInstances": {},
+          "monsterParty": [],
+          "monsterBox": [],
+          "partyActorIds": [
+            "actor_hero"
+          ],
+          "npcActivities": {},
+          "friendship": {},
+          "rng": {
+            "seed": 647336853,
+            "streams": {
+              "encounter": {
+                "seed": 557016071,
+                "state": 557016071
+              },
+              "battle": {
+                "seed": 1808112128,
+                "state": 1808112128
+              },
+              "movement": {
+                "seed": 1166691691,
+                "state": 1166691691
+              },
+              "fishing": {
+                "seed": 2730148172,
+                "state": 2730148172
+              },
+              "misc": {
+                "seed": 2506918146,
+                "state": 2506918146
+              }
+            }
+          }
+        },
+        "sprite": {
+          "textureKey": "tex_easyrpg_charset_actor1",
+          "frame": 13,
+          "resourceId": "easyrpg-charset-actor1",
+          "kind": "charset",
+          "moving": false,
+          "x": 792,
+          "y": 784
+        },
+        "target": {
+          "name": "호수쉼터",
+          "eventId": "ev_guide_lake_shelter"
+        },
+        "guide": {
+          "x": 49,
+          "y": 49,
+          "pageId": "pages[0]",
+          "priority": "same",
+          "trigger": "action",
+          "direction": "down",
+          "footprint": {
+            "width": 1,
+            "height": 1
+          },
+          "passRows": 1,
+          "bodyRect": {
+            "left": 49,
+            "right": 49,
+            "top": 49,
+            "bottom": 49
+          },
+          "passRect": {
+            "left": 49,
+            "right": 49,
+            "top": 49,
+            "bottom": 49
+          }
+        }
+      },
+      "failures": [],
+      "shot": "04-landmark-4.png"
+    },
+    {
+      "id": "landmark-5",
+      "note": "산길초소",
+      "observed": {
+        "state": {
+          "farmPlots": {},
+          "makerInstances": {},
+          "eventLocations": {},
+          "currentMapId": "map_blank_start",
+          "x": 85,
+          "y": 26,
+          "gold": 0,
+          "switches": {
+            "sw_0001": false,
+            "sw_0002": false,
+            "sw_0003": false,
+            "sw_0004": false,
+            "sw_0005": false,
+            "sw_0006": false,
+            "sw_0007": false,
+            "sw_0008": false,
+            "sw_0009": false,
+            "sw_0010": false,
+            "sw_0011": false,
+            "sw_0012": false,
+            "sw_0013": false,
+            "sw_0014": false,
+            "sw_0015": false,
+            "sw_0016": false,
+            "sw_0017": false,
+            "sw_0018": false,
+            "sw_0019": false,
+            "sw_0020": false
+          },
+          "variables": {
+            "var_0001": 0,
+            "var_0002": 0,
+            "var_0003": 0,
+            "var_0004": 0,
+            "var_0005": 0,
+            "var_0006": 0,
+            "var_0007": 0,
+            "var_0008": 0,
+            "var_0009": 0,
+            "var_0010": 0,
+            "var_0011": 0,
+            "var_0012": 0,
+            "var_0013": 0,
+            "var_0014": 0,
+            "var_0015": 0,
+            "var_0016": 0,
+            "var_0017": 0,
+            "var_0018": 0,
+            "var_0019": 0,
+            "var_0020": 0
+          },
+          "selfSwitches": {},
+          "timers": {},
+          "inventory": {},
+          "monsterInstances": {},
+          "monsterParty": [],
+          "monsterBox": [],
+          "partyActorIds": [
+            "actor_hero"
+          ],
+          "npcActivities": {},
+          "friendship": {},
+          "rng": {
+            "seed": 647336853,
+            "streams": {
+              "encounter": {
+                "seed": 557016071,
+                "state": 557016071
+              },
+              "battle": {
+                "seed": 1808112128,
+                "state": 1808112128
+              },
+              "movement": {
+                "seed": 1166691691,
+                "state": 1166691691
+              },
+              "fishing": {
+                "seed": 2730148172,
+                "state": 2730148172
+              },
+              "misc": {
+                "seed": 2506918146,
+                "state": 2506918146
+              }
+            }
+          }
+        },
+        "sprite": {
+          "textureKey": "tex_easyrpg_charset_actor1",
+          "frame": 1,
+          "resourceId": "easyrpg-charset-actor1",
+          "kind": "charset",
+          "moving": false,
+          "x": 1368,
+          "y": 432
+        },
+        "target": {
+          "name": "산길초소",
+          "eventId": "ev_guide_mountain_post"
+        },
+        "guide": {
+          "x": 85,
+          "y": 25,
+          "pageId": "pages[0]",
+          "priority": "same",
+          "trigger": "action",
+          "direction": "down",
+          "footprint": {
+            "width": 1,
+            "height": 1
+          },
+          "passRows": 1,
+          "bodyRect": {
+            "left": 85,
+            "right": 85,
+            "top": 25,
+            "bottom": 25
+          },
+          "passRect": {
+            "left": 85,
+            "right": 85,
+            "top": 25,
+            "bottom": 25
+          }
+        }
+      },
+      "failures": [],
+      "shot": "05-landmark-5.png"
+    },
+    {
+      "id": "landmark-6",
+      "note": "황야유적",
+      "observed": {
+        "state": {
+          "farmPlots": {},
+          "makerInstances": {},
+          "eventLocations": {},
+          "currentMapId": "map_blank_start",
+          "x": 105,
+          "y": 64,
+          "gold": 0,
+          "switches": {
+            "sw_0001": false,
+            "sw_0002": false,
+            "sw_0003": false,
+            "sw_0004": false,
+            "sw_0005": false,
+            "sw_0006": false,
+            "sw_0007": false,
+            "sw_0008": false,
+            "sw_0009": false,
+            "sw_0010": false,
+            "sw_0011": false,
+            "sw_0012": false,
+            "sw_0013": false,
+            "sw_0014": false,
+            "sw_0015": false,
+            "sw_0016": false,
+            "sw_0017": false,
+            "sw_0018": false,
+            "sw_0019": false,
+            "sw_0020": false
+          },
+          "variables": {
+            "var_0001": 0,
+            "var_0002": 0,
+            "var_0003": 0,
+            "var_0004": 0,
+            "var_0005": 0,
+            "var_0006": 0,
+            "var_0007": 0,
+            "var_0008": 0,
+            "var_0009": 0,
+            "var_0010": 0,
+            "var_0011": 0,
+            "var_0012": 0,
+            "var_0013": 0,
+            "var_0014": 0,
+            "var_0015": 0,
+            "var_0016": 0,
+            "var_0017": 0,
+            "var_0018": 0,
+            "var_0019": 0,
+            "var_0020": 0
+          },
+          "selfSwitches": {},
+          "timers": {},
+          "inventory": {},
+          "monsterInstances": {},
+          "monsterParty": [],
+          "monsterBox": [],
+          "partyActorIds": [
+            "actor_hero"
+          ],
+          "npcActivities": {},
+          "friendship": {},
+          "rng": {
+            "seed": 647336853,
+            "streams": {
+              "encounter": {
+                "seed": 557016071,
+                "state": 557016071
+              },
+              "battle": {
+                "seed": 1808112128,
+                "state": 1808112128
+              },
+              "movement": {
+                "seed": 1166691691,
+                "state": 1166691691
+              },
+              "fishing": {
+                "seed": 2730148172,
+                "state": 2730148172
+              },
+              "misc": {
+                "seed": 2506918146,
+                "state": 2506918146
+              }
+            }
+          }
+        },
+        "sprite": {
+          "textureKey": "tex_easyrpg_charset_actor1",
+          "frame": 13,
+          "resourceId": "easyrpg-charset-actor1",
+          "kind": "charset",
+          "moving": false,
+          "x": 1688,
+          "y": 1040
+        },
+        "target": {
+          "name": "황야유적",
+          "eventId": "ev_guide_desert_ruins"
+        },
+        "guide": {
+          "x": 105,
+          "y": 65,
+          "pageId": "pages[0]",
+          "priority": "same",
+          "trigger": "action",
+          "direction": "down",
+          "footprint": {
+            "width": 1,
+            "height": 1
+          },
+          "passRows": 1,
+          "bodyRect": {
+            "left": 105,
+            "right": 105,
+            "top": 65,
+            "bottom": 65
+          },
+          "passRect": {
+            "left": 105,
+            "right": 105,
+            "top": 65,
+            "bottom": 65
+          }
+        }
+      },
+      "failures": [],
+      "shot": "06-landmark-6.png"
+    },
+    {
+      "id": "landmark-7",
+      "note": "설원마을",
+      "observed": {
+        "state": {
+          "farmPlots": {},
+          "makerInstances": {},
+          "eventLocations": {},
+          "currentMapId": "map_blank_start",
+          "x": 105,
+          "y": 21,
+          "gold": 0,
+          "switches": {
+            "sw_0001": false,
+            "sw_0002": false,
+            "sw_0003": false,
+            "sw_0004": false,
+            "sw_0005": false,
+            "sw_0006": false,
+            "sw_0007": false,
+            "sw_0008": false,
+            "sw_0009": false,
+            "sw_0010": false,
+            "sw_0011": false,
+            "sw_0012": false,
+            "sw_0013": false,
+            "sw_0014": false,
+            "sw_0015": false,
+            "sw_0016": false,
+            "sw_0017": false,
+            "sw_0018": false,
+            "sw_0019": false,
+            "sw_0020": false
+          },
+          "variables": {
+            "var_0001": 0,
+            "var_0002": 0,
+            "var_0003": 0,
+            "var_0004": 0,
+            "var_0005": 0,
+            "var_0006": 0,
+            "var_0007": 0,
+            "var_0008": 0,
+            "var_0009": 0,
+            "var_0010": 0,
+            "var_0011": 0,
+            "var_0012": 0,
+            "var_0013": 0,
+            "var_0014": 0,
+            "var_0015": 0,
+            "var_0016": 0,
+            "var_0017": 0,
+            "var_0018": 0,
+            "var_0019": 0,
+            "var_0020": 0
+          },
+          "selfSwitches": {},
+          "timers": {},
+          "inventory": {},
+          "monsterInstances": {},
+          "monsterParty": [],
+          "monsterBox": [],
+          "partyActorIds": [
+            "actor_hero"
+          ],
+          "npcActivities": {},
+          "friendship": {},
+          "rng": {
+            "seed": 647336853,
+            "streams": {
+              "encounter": {
+                "seed": 557016071,
+                "state": 557016071
+              },
+              "battle": {
+                "seed": 1808112128,
+                "state": 1808112128
+              },
+              "movement": {
+                "seed": 1166691691,
+                "state": 1166691691
+              },
+              "fishing": {
+                "seed": 2730148172,
+                "state": 2730148172
+              },
+              "misc": {
+                "seed": 2506918146,
+                "state": 2506918146
+              }
+            }
+          }
+        },
+        "sprite": {
+          "textureKey": "tex_easyrpg_charset_actor1",
+          "frame": 1,
+          "resourceId": "easyrpg-charset-actor1",
+          "kind": "charset",
+          "moving": false,
+          "x": 1688,
+          "y": 352
+        },
+        "target": {
+          "name": "설원마을",
+          "eventId": "ev_guide_snow_village"
+        },
+        "guide": {
+          "x": 105,
+          "y": 20,
+          "pageId": "pages[0]",
+          "priority": "same",
+          "trigger": "action",
+          "direction": "down",
+          "footprint": {
+            "width": 1,
+            "height": 1
+          },
+          "passRows": 1,
+          "bodyRect": {
+            "left": 105,
+            "right": 105,
+            "top": 20,
+            "bottom": 20
+          },
+          "passRect": {
+            "left": 105,
+            "right": 105,
+            "top": 20,
+            "bottom": 20
+          }
+        }
+      },
+      "failures": [],
+      "shot": "07-landmark-7.png"
+    },
+    {
+      "id": "landmark-8",
+      "note": "습지연구소",
+      "observed": {
+        "state": {
+          "farmPlots": {},
+          "makerInstances": {},
+          "eventLocations": {},
+          "currentMapId": "map_blank_start",
+          "x": 76,
+          "y": 102,
+          "gold": 0,
+          "switches": {
+            "sw_0001": false,
+            "sw_0002": false,
+            "sw_0003": false,
+            "sw_0004": false,
+            "sw_0005": false,
+            "sw_0006": false,
+            "sw_0007": false,
+            "sw_0008": false,
+            "sw_0009": false,
+            "sw_0010": false,
+            "sw_0011": false,
+            "sw_0012": false,
+            "sw_0013": false,
+            "sw_0014": false,
+            "sw_0015": false,
+            "sw_0016": false,
+            "sw_0017": false,
+            "sw_0018": false,
+            "sw_0019": false,
+            "sw_0020": false
+          },
+          "variables": {
+            "var_0001": 0,
+            "var_0002": 0,
+            "var_0003": 0,
+            "var_0004": 0,
+            "var_0005": 0,
+            "var_0006": 0,
+            "var_0007": 0,
+            "var_0008": 0,
+            "var_0009": 0,
+            "var_0010": 0,
+            "var_0011": 0,
+            "var_0012": 0,
+            "var_0013": 0,
+            "var_0014": 0,
+            "var_0015": 0,
+            "var_0016": 0,
+            "var_0017": 0,
+            "var_0018": 0,
+            "var_0019": 0,
+            "var_0020": 0
+          },
+          "selfSwitches": {},
+          "timers": {},
+          "inventory": {},
+          "monsterInstances": {},
+          "monsterParty": [],
+          "monsterBox": [],
+          "partyActorIds": [
+            "actor_hero"
+          ],
+          "npcActivities": {},
+          "friendship": {},
+          "rng": {
+            "seed": 647336853,
+            "streams": {
+              "encounter": {
+                "seed": 557016071,
+                "state": 557016071
+              },
+              "battle": {
+                "seed": 1808112128,
+                "state": 1808112128
+              },
+              "movement": {
+                "seed": 1166691691,
+                "state": 1166691691
+              },
+              "fishing": {
+                "seed": 2730148172,
+                "state": 2730148172
+              },
+              "misc": {
+                "seed": 2506918146,
+                "state": 2506918146
+              }
+            }
+          }
+        },
+        "sprite": {
+          "textureKey": "tex_easyrpg_charset_actor1",
+          "frame": 37,
+          "resourceId": "easyrpg-charset-actor1",
+          "kind": "charset",
+          "moving": false,
+          "x": 1224,
+          "y": 1648
+        },
+        "target": {
+          "name": "습지연구소",
+          "eventId": "ev_guide_wetland_lab"
+        },
+        "guide": {
+          "x": 75,
+          "y": 102,
+          "pageId": "pages[0]",
+          "priority": "same",
+          "trigger": "action",
+          "direction": "down",
+          "footprint": {
+            "width": 1,
+            "height": 1
+          },
+          "passRows": 1,
+          "bodyRect": {
+            "left": 75,
+            "right": 75,
+            "top": 102,
+            "bottom": 102
+          },
+          "passRect": {
+            "left": 75,
+            "right": 75,
+            "top": 102,
+            "bottom": 102
+          }
+        }
+      },
+      "failures": [],
+      "shot": "08-landmark-8.png"
+    }
+  ],
+  "errors": [],
+  "arrivals": [
+    {
+      "name": "남쪽항구",
+      "eventId": "ev_guide_south_port",
+      "steps": 1,
+      "position": {
+        "x": 24,
+        "y": 117
+      }
+    },
+    {
+      "name": "초원마을",
+      "eventId": "ev_guide_grassland_village",
+      "steps": 32,
+      "position": {
+        "x": 24,
+        "y": 87
+      }
+    },
+    {
+      "name": "숲속마을",
+      "eventId": "ev_guide_forest_village",
+      "steps": 63,
+      "position": {
+        "x": 24,
+        "y": 30
+      }
+    },
+    {
+      "name": "호수쉼터",
+      "eventId": "ev_guide_lake_shelter",
+      "steps": 43,
+      "position": {
+        "x": 49,
+        "y": 48
+      }
+    },
+    {
+      "name": "산길초소",
+      "eventId": "ev_guide_mountain_post",
+      "steps": 58,
+      "position": {
+        "x": 85,
+        "y": 26
+      }
+    },
+    {
+      "name": "황야유적",
+      "eventId": "ev_guide_desert_ruins",
+      "steps": 58,
+      "position": {
+        "x": 105,
+        "y": 64
+      }
+    },
+    {
+      "name": "설원마을",
+      "eventId": "ev_guide_snow_village",
+      "steps": 51,
+      "position": {
+        "x": 105,
+        "y": 21
+      }
+    },
+    {
+      "name": "습지연구소",
+      "eventId": "ev_guide_wetland_lab",
+      "steps": 110,
+      "position": {
+        "x": 76,
+        "y": 102
+      }
+    }
+  ],
+  "cleanup": {
+    "browser": true,
+    "server": true
+  },
+  "preflight": {
+    "repairs": [],
+    "blockers": [],
+    "startPixel": {
+      "x": 392,
+      "y": 1904
+    }
+  }
+}

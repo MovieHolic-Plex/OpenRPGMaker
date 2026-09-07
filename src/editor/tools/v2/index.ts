@@ -4,7 +4,7 @@
 /** 레거시 툴 이름 → 현재 권장 툴 (LLM 비노출 마킹용). */
 export const V1_TILE_SUPERSEDED: ReadonlyMap<string, string> = new Map([
   // 배치: v3 정공법
-  ["paint_tiles", "fill_region"],
+  // paint_tiles remains active: semantic fill cannot replace raw rect/line/cell painting.
   ["clear_region", "tile_erase"],
   // paint_road 는 활성 유지 (흙길 오토타일 본선) — 여기 넣지 않음
   ["scatter_object", "place_props"],

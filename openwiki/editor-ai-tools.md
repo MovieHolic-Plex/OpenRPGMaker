@@ -77,6 +77,25 @@ data, never instructions or a permission to change the user's request. Human/vis
 review of actual artwork is separate; reviewed status is owned by the catalog lane,
 not inferred by these tools. Provider image delivery is a separate transport gate.
 
+## House-site tree clearance before ownership (2026-09-07)
+
+`author_house` checks all requested lots before stamping or sealing any house.
+Canopy/trunk tiles in the completed-house footprint, including the north ridge
+and gaps between wings, return `house-tree-clearance-required` with coordinates.
+Clear the entire tree atom explicitly before construction or choose another site.
+The producer does not erase beyond its requested footprint or bypass completed
+house protection. Unrelated trees/errors outside the requested sites do not block
+construction. Real facade and `runTool` atomicity, batch, clear-then-build and
+ownership controls are in `test/authorHouseTreeClearance.test.ts`.
+
+## Flower-yard material in house lots (2026-09-07)
+
+The high-level `author_house` lots path translates `yard:"flowers"` to the
+canonical bundled material label `꽃/자연 소품`. The former bare `꽃` did not resolve
+in the shipped catalog and caused the entire construction to fail. This does not
+ignore yard shortfalls or bypass structure protection. The actual producer path
+is covered by `test/houseLotFlowerMaterial.test.ts`.
+
 Generated `place_npc({guide:"action-controls"})` guides omit automatic portraits;
 an explicit `face` still uses the normal authoring contract. This avoids shipping
 an inferred faceset ID absent from the project while preserving the canonical

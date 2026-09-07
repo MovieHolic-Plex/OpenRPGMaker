@@ -52,9 +52,9 @@ it("retains advisory evidence without making it a required explicit check", () =
   const failure = { ok: true, data: { ok: false, failureReason: "Unmet scene expectation" } };
   evidence.observe("run_scene_test", { mapId: "m" }, failure, "advisory");
   expect(evidence.problems().length).toBeGreaterThan(0);
-  expect(evidence.problems(true)).toEqual([]);
+  expect(evidence.problems("explicit")).toEqual([]);
   evidence.observe("run_scene_test", { mapId: "m" }, failure, "explicit");
-  expect(evidence.problems(true).length).toBeGreaterThan(0);
+  expect(evidence.problems("explicit").length).toBeGreaterThan(0);
   evidence.invalidateAfterWrite();
   expect(evidence.passed("run_scene_test")).toBe(false);
 });
