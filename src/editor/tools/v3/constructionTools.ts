@@ -446,7 +446,7 @@ function isWallCell(map: GameMap, tileset: TilesetDef, x: number, y: number): bo
 const buildWall: ToolDefinition = {
   name: "build_wall",
   description:
-    "material(타일 라벨/설명)로 벽을 시공한다(v3). rect에 9분할/기둥 패턴 전개. 그룹 id 금지. 시공 후 place_door/place_window → build_roof. 울타리·안뜰·광장 바닥·탑 같은 야외 구조물은 build_wall + fill_region 으로 세운다. 실내/방 맵 요청에는 쓰지 말 것(실내 세션 툴). 집 외장은 author_house.",
+    "material(타일 라벨/설명)로 벽을 시공한다(v3). rect에 정의된 확장 패턴 전개. 그룹 id 금지. 시공 후 place_door/place_window → build_roof. 야외 벽·울타리·탑은 지원하는 확장 패턴이 정의된 재료만 build_wall로 시공한다. 패턴 없는 고정형 울타리 소품은 place_props, 안뜰·광장 바닥은 fill_region(오토타일 재료). 실내/방 맵 요청에는 쓰지 말 것(실내 세션 툴). 집 외장은 author_house.",
   mode: "write",
   version: 3,
   parameters: {
