@@ -1,0 +1,32 @@
+{
+  "targeted": {
+    "exit": 1,
+    "unchanged": true,
+    "sourceTree": "faefee85c07e7ccd07623eea19ab89cde3c8b646"
+  },
+  "build": {
+    "exit": 0,
+    "unchanged": true,
+    "sourceTree": "faefee85c07e7ccd07623eea19ab89cde3c8b646"
+  },
+  "vision-catalog-bun": {
+    "exit": 0,
+    "unchanged": true,
+    "sourceTree": "faefee85c07e7ccd07623eea19ab89cde3c8b646"
+  },
+  "native-matrix": {
+    "exit": 0,
+    "unchanged": true,
+    "sourceTree": "faefee85c07e7ccd07623eea19ab89cde3c8b646"
+  },
+  "native-required": {
+    "exit": 0,
+    "unchanged": true,
+    "sourceTree": "faefee85c07e7ccd07623eea19ab89cde3c8b646"
+  },
+  "native-proof": {
+    "exit": 0,
+    "unchanged": true,
+    "sourceTree": "faefee85c07e7ccd07623eea19ab89cde3c8b646"
+  }
+}

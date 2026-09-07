@@ -1,0 +1,12 @@
+HEAD=bc417f9fbce1b99e70cb52836d6076594b22b73b
+tree=16c25ac395f4d6bfeb9ae46967fb05bcf889e7db
+source_blob=97b2fa1a3391c939ab5cbb5d592bc5e560306a85
+26e94e2c522e2bec3a98d6a7f359e00f8f079378959b9706f23751929f3301fd  test/assistantVerificationEvidence.test.ts
+
+tracked status after test commit:
+
+base-to-HEAD changed files:
+M	test/assistantVerificationEvidence.test.ts
+
+product/config comparison to base:
+comparison_exit=0

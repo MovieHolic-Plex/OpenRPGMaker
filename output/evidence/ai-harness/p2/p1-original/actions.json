@@ -1,0 +1,2051 @@
+{
+  "schemaVersion": 1,
+  "scenario": "proof-failure",
+  "runId": "27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+  "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+  "sourceSha": "e827eb5c8371ff87ea29231a124806f687c3aba2",
+  "mutation": null,
+  "pass": true,
+  "actions": [
+    {
+      "sequence": 1,
+      "type": "real-rest",
+      "table": "projects",
+      "method": "GET",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "status": 200,
+      "bytes": 2
+    },
+    {
+      "sequence": 2,
+      "type": "isolated-project-available",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "beforeContentQa": true
+    },
+    {
+      "sequence": 3,
+      "type": "cold-css-ready",
+      "bytes": 7490229
+    },
+    {
+      "sequence": 4,
+      "type": "state",
+      "label": "00-before",
+      "state": {
+        "proof": null,
+        "title": "새 프로젝트",
+        "metaTitle": "QA surface 27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+        "mapId": "map_blank_start",
+        "sameStore": true,
+        "remoteEnabled": true,
+        "dirty": true,
+        "sameLiveObject": true,
+        "sameLiveBytes": true,
+        "sessionCount": 0,
+        "toolCalls": [],
+        "savedAuditTokens": 0,
+        "sendDisabled": false
+      }
+    },
+    {
+      "sequence": 5,
+      "type": "composer-send",
+      "text": "Use set_title_screen to set the title to QA surface 27506bee-16ca-4ec9-9075-bfc4667d2b1a."
+    },
+    {
+      "sequence": 6,
+      "type": "scripted-llm-http",
+      "round": 1,
+      "hasTools": false,
+      "tool": null
+    },
+    {
+      "sequence": 7,
+      "type": "scripted-llm-http",
+      "round": 2,
+      "hasTools": false,
+      "tool": null
+    },
+    {
+      "sequence": 8,
+      "type": "scripted-llm-http",
+      "round": 3,
+      "hasTools": true,
+      "tool": "set_title_screen"
+    },
+    {
+      "sequence": 9,
+      "type": "browser-real-transport",
+      "table": "project_commits",
+      "method": "POST",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "path": "/supabase/rest/v1/project_commits",
+      "query": ""
+    },
+    {
+      "sequence": 10,
+      "type": "scripted-llm-http",
+      "round": 4,
+      "hasTools": true,
+      "tool": null
+    },
+    {
+      "sequence": 11,
+      "type": "browser-real-transport",
+      "table": "projects",
+      "method": "POST",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "path": "/supabase/rest/v1/projects",
+      "query": "?on_conflict=project_id"
+    },
+    {
+      "sequence": 12,
+      "type": "browser-real-transport",
+      "table": "maps",
+      "method": "DELETE",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "path": "/supabase/rest/v1/maps",
+      "query": "?project_id=eq.qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a"
+    },
+    {
+      "sequence": 13,
+      "type": "browser-real-transport",
+      "table": "maps",
+      "method": "POST",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "path": "/supabase/rest/v1/maps",
+      "query": "?on_conflict=project_id%2Cmap_id"
+    },
+    {
+      "sequence": 14,
+      "type": "browser-real-transport",
+      "table": "tilesets",
+      "method": "DELETE",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "path": "/supabase/rest/v1/tilesets",
+      "query": "?project_id=eq.qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a"
+    },
+    {
+      "sequence": 15,
+      "type": "browser-real-transport",
+      "table": "tilesets",
+      "method": "POST",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "path": "/supabase/rest/v1/tilesets",
+      "query": "?on_conflict=project_id%2Ctileset_id"
+    },
+    {
+      "sequence": 16,
+      "type": "browser-real-transport",
+      "table": "projects",
+      "method": "GET",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "path": "/supabase/rest/v1/projects",
+      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a"
+    },
+    {
+      "sequence": 17,
+      "type": "state",
+      "label": "01-accepted-read-pending",
+      "state": {
+        "proof": {
+          "status": "attempted",
+          "verified": false,
+          "receipt": {
+            "revisionId": "aa040a28-4bbd-4712-b76f-ce4d3b9a26d1",
+            "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+            "mutationGeneration": 2,
+            "contentIdentity": "3fb6dcdccff671e00296473d838155a70d6a40335b5a09868de778a38aaf2ac7",
+            "sha256": "a71f0c28a38e0de320dea9d4da02e13f90c8aedb83deea461ba8e955695f53a7"
+          },
+          "commitId": null
+        },
+        "title": "QA surface 27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+        "metaTitle": "QA surface 27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+        "mapId": "map_blank_start",
+        "sameStore": true,
+        "remoteEnabled": true,
+        "dirty": false,
+        "sameLiveObject": true,
+        "sameLiveBytes": true,
+        "sessionCount": 1,
+        "toolCalls": [
+          {
+            "name": "set_title_screen",
+            "ok": true
+          },
+          {
+            "name": "run_lint",
+            "ok": true
+          }
+        ],
+        "workItems": [
+          {
+            "id": "L1-1",
+            "status": "done"
+          }
+        ],
+        "savedAuditTokens": 0,
+        "sendDisabled": true
+      }
+    },
+    {
+      "sequence": 18,
+      "type": "real-rest",
+      "table": "projects",
+      "method": "GET",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "status": 200,
+      "bytes": 2425926
+    },
+    {
+      "sequence": 19,
+      "type": "browser-real-transport",
+      "table": "projects",
+      "method": "GET",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "path": "/supabase/rest/v1/projects",
+      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a"
+    },
+    {
+      "sequence": 20,
+      "type": "browser-real-transport",
+      "table": "maps",
+      "method": "GET",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "path": "/supabase/rest/v1/maps",
+      "query": "?project_id=eq.qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a&select=map_id%2Cmap_json"
+    },
+    {
+      "sequence": 21,
+      "type": "normalized-remote",
+      "label": "accepted",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "observedIdentity": "3fb6dcdccff671e00296473d838155a70d6a40335b5a09868de778a38aaf2ac7",
+      "sha256": "a71f0c28a38e0de320dea9d4da02e13f90c8aedb83deea461ba8e955695f53a7"
+    },
+    {
+      "sequence": 22,
+      "type": "real-rest",
+      "table": "projects",
+      "method": "PATCH",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "status": 200,
+      "bytes": 2426066
+    },
+    {
+      "sequence": 23,
+      "type": "real-rest",
+      "table": "projects",
+      "method": "GET",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "status": 200,
+      "bytes": 2425942
+    },
+    {
+      "sequence": 24,
+      "type": "browser-real-transport",
+      "table": "projects",
+      "method": "GET",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "path": "/supabase/rest/v1/projects",
+      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a"
+    },
+    {
+      "sequence": 25,
+      "type": "browser-real-transport",
+      "table": "maps",
+      "method": "GET",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "path": "/supabase/rest/v1/maps",
+      "query": "?project_id=eq.qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a&select=map_id%2Cmap_json"
+    },
+    {
+      "sequence": 26,
+      "type": "normalized-remote",
+      "label": "mismatched",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "observedIdentity": "9b627af64cdeaa6c940d7f6ab6d348c34af88e1d837f5c27cac6f1a7d442c685",
+      "sha256": "a71f0c28a38e0de320dea9d4da02e13f90c8aedb83deea461ba8e955695f53a7"
+    },
+    {
+      "sequence": 27,
+      "type": "real-proof-read-released",
+      "label": "actual remote content mismatch"
+    },
+    {
+      "sequence": 28,
+      "type": "browser-real-transport",
+      "table": "maps",
+      "method": "GET",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "path": "/supabase/rest/v1/maps",
+      "query": "?project_id=eq.qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a&select=map_id%2Cmap_json"
+    },
+    {
+      "sequence": 29,
+      "type": "state",
+      "label": "02-proof-failed",
+      "state": {
+        "proof": {
+          "status": "failed",
+          "verified": false,
+          "reason": "mismatch-content",
+          "receipt": {
+            "revisionId": "aa040a28-4bbd-4712-b76f-ce4d3b9a26d1",
+            "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+            "mutationGeneration": 2,
+            "contentIdentity": "3fb6dcdccff671e00296473d838155a70d6a40335b5a09868de778a38aaf2ac7",
+            "sha256": "a71f0c28a38e0de320dea9d4da02e13f90c8aedb83deea461ba8e955695f53a7"
+          },
+          "commitId": null,
+          "proof": {
+            "kind": "mismatch",
+            "receipt": {
+              "revisionId": "aa040a28-4bbd-4712-b76f-ce4d3b9a26d1",
+              "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+              "mutationGeneration": 2,
+              "contentIdentity": "3fb6dcdccff671e00296473d838155a70d6a40335b5a09868de778a38aaf2ac7",
+              "sha256": "a71f0c28a38e0de320dea9d4da02e13f90c8aedb83deea461ba8e955695f53a7"
+            },
+            "reason": "content"
+          }
+        },
+        "title": "QA surface 27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+        "metaTitle": "QA surface 27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+        "mapId": "map_blank_start",
+        "sameStore": true,
+        "remoteEnabled": true,
+        "dirty": false,
+        "sameLiveObject": true,
+        "sameLiveBytes": true,
+        "sessionCount": 1,
+        "result": {
+          "assistantText": "QA_FINAL",
+          "proposedCalls": [],
+          "stoppedReason": "final",
+          "workPlan": {
+            "id": "wp_mtq0us2c",
+            "goal": "Set the title screen",
+            "createdAt": "2026-09-06T16:24:14.484Z",
+            "layers": [
+              {
+                "id": "L1",
+                "title": "Title",
+                "items": [
+                  {
+                    "id": "L1-1",
+                    "title": "Title",
+                    "instruction": "set_title_screen",
+                    "successTools": [
+                      "set_title_screen"
+                    ],
+                    "status": "done"
+                  }
+                ]
+              }
+            ],
+            "currentLayerIndex": 0,
+            "currentItemId": null,
+            "targetMapId": "map_blank_start"
+          },
+          "appliedCalls": [
+            {
+              "name": "set_title_screen",
+              "args": {
+                "title": "QA surface 27506bee-16ca-4ec9-9075-bfc4667d2b1a"
+              },
+              "summary": "타이틀 화면 설정: \"QA surface 27506bee-16ca-4ec9-9075-bfc4667d2b1a\"",
+              "result": {
+                "ok": true,
+                "summary": "타이틀 화면 설정: \"QA surface 27506bee-16ca-4ec9-9075-bfc4667d2b1a\"",
+                "diff": {
+                  "tilesChanged": 0,
+                  "mapPropertiesChanged": 0,
+                  "eventsAdded": 0,
+                  "eventsModified": 0,
+                  "eventsRemoved": 0,
+                  "mapsAdded": 0,
+                  "mapsRemoved": 0,
+                  "dbRecordsChanged": 0,
+                  "tilesetsChanged": 0,
+                  "switchesAdded": 0,
+                  "variablesAdded": 0,
+                  "worldEntitiesAdded": 0,
+                  "worldEntitiesModified": 0,
+                  "palettePresetsAdded": 0,
+                  "palettePresetsModified": 0,
+                  "endingsChanged": 0,
+                  "sessionChanged": false,
+                  "systemChanged": true,
+                  "warnings": []
+                }
+              },
+              "reason": "P1 accepted revision proof",
+              "destructive": false,
+              "requiresApproval": false
+            }
+          ],
+          "recap": {
+            "elapsedMs": 24225,
+            "usage": {
+              "calls": 3,
+              "promptTokens": 0,
+              "completionTokens": 0,
+              "callsWithoutUsage": 3,
+              "byModel": [
+                {
+                  "model": "gemini-3.7-flash",
+                  "calls": 3,
+                  "promptTokens": 0,
+                  "completionTokens": 0,
+                  "callsWithoutUsage": 3
+                }
+              ]
+            },
+            "toolCalls": 2,
+            "toolFailures": 0,
+            "ralphContinues": 0,
+            "volumeContinues": 0,
+            "proposedWrites": 1,
+            "stoppedReason": "final",
+            "process": [
+              {
+                "kind": "planner",
+                "at": "2026-09-06T16:24:14.343Z",
+                "text": "planner:start"
+              },
+              {
+                "kind": "planner",
+                "at": "2026-09-06T16:24:14.484Z",
+                "text": "planner:new_plan items=1 layers=1"
+              },
+              {
+                "kind": "phase",
+                "at": "2026-09-06T16:24:14.492Z",
+                "text": "phase:execute"
+              },
+              {
+                "kind": "tool",
+                "at": "2026-09-06T16:24:15.951Z",
+                "text": "set_title_screen ok"
+              },
+              {
+                "kind": "other",
+                "at": "2026-09-06T16:24:16.091Z",
+                "text": "WorkPlan 자동 완료: Title"
+              },
+              {
+                "kind": "tool",
+                "at": "2026-09-06T16:24:20.217Z",
+                "text": "run_lint ok"
+              },
+              {
+                "kind": "end",
+                "at": "2026-09-06T16:24:21.026Z",
+                "text": "턴 종료(final) — 제안 0건 · 출력 토큰 ~41"
+              }
+            ]
+          }
+        },
+        "toolCalls": [
+          {
+            "name": "set_title_screen",
+            "ok": true
+          },
+          {
+            "name": "run_lint",
+            "ok": true
+          }
+        ],
+        "workItems": [
+          {
+            "id": "L1-1",
+            "status": "done"
+          }
+        ],
+        "savedAuditTokens": 0,
+        "sendDisabled": false
+      }
+    },
+    {
+      "sequence": 30,
+      "type": "real-rest",
+      "table": "projects",
+      "method": "PATCH",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "status": 200,
+      "bytes": 2426050
+    },
+    {
+      "sequence": 31,
+      "type": "composer-send",
+      "text": "계속"
+    },
+    {
+      "sequence": 32,
+      "type": "scripted-llm-http",
+      "round": 5,
+      "hasTools": false,
+      "tool": null
+    },
+    {
+      "sequence": 33,
+      "type": "scripted-llm-http",
+      "round": 6,
+      "hasTools": false,
+      "tool": null
+    },
+    {
+      "sequence": 34,
+      "type": "scripted-llm-http",
+      "round": 7,
+      "hasTools": true,
+      "tool": null
+    },
+    {
+      "sequence": 35,
+      "type": "scripted-llm-http",
+      "round": 8,
+      "hasTools": true,
+      "tool": null
+    },
+    {
+      "sequence": 36,
+      "type": "browser-real-transport",
+      "table": "projects",
+      "method": "GET",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "path": "/supabase/rest/v1/projects",
+      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a"
+    },
+    {
+      "sequence": 37,
+      "type": "browser-real-transport",
+      "table": "maps",
+      "method": "GET",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "path": "/supabase/rest/v1/maps",
+      "query": "?project_id=eq.qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a&select=map_id%2Cmap_json"
+    },
+    {
+      "sequence": 38,
+      "type": "state",
+      "label": "03-same-revision-retry",
+      "state": {
+        "proof": {
+          "status": "succeeded",
+          "verified": true,
+          "receipt": {
+            "revisionId": "aa040a28-4bbd-4712-b76f-ce4d3b9a26d1",
+            "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+            "mutationGeneration": 2,
+            "contentIdentity": "3fb6dcdccff671e00296473d838155a70d6a40335b5a09868de778a38aaf2ac7",
+            "sha256": "a71f0c28a38e0de320dea9d4da02e13f90c8aedb83deea461ba8e955695f53a7"
+          },
+          "commitId": null,
+          "proof": {
+            "kind": "verified",
+            "receipt": {
+              "revisionId": "aa040a28-4bbd-4712-b76f-ce4d3b9a26d1",
+              "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+              "mutationGeneration": 2,
+              "contentIdentity": "3fb6dcdccff671e00296473d838155a70d6a40335b5a09868de778a38aaf2ac7",
+              "sha256": "a71f0c28a38e0de320dea9d4da02e13f90c8aedb83deea461ba8e955695f53a7"
+            },
+            "isCurrent": true
+          }
+        },
+        "title": "QA surface 27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+        "metaTitle": "QA surface 27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+        "mapId": "map_blank_start",
+        "sameStore": true,
+        "remoteEnabled": true,
+        "dirty": false,
+        "sameLiveObject": true,
+        "sameLiveBytes": true,
+        "sessionCount": 1,
+        "result": {
+          "assistantText": "QA_FINAL",
+          "proposedCalls": [],
+          "stoppedReason": "final",
+          "workPlan": {
+            "id": "wp_mtq0us2c",
+            "goal": "Set the title screen",
+            "createdAt": "2026-09-06T16:24:14.484Z",
+            "layers": [
+              {
+                "id": "L1",
+                "title": "Title",
+                "items": [
+                  {
+                    "id": "L1-1",
+                    "title": "Title",
+                    "instruction": "set_title_screen",
+                    "successTools": [
+                      "set_title_screen"
+                    ],
+                    "status": "done"
+                  }
+                ]
+              }
+            ],
+            "currentLayerIndex": 0,
+            "currentItemId": null,
+            "targetMapId": "map_blank_start"
+          },
+          "recap": {
+            "elapsedMs": 4849,
+            "usage": {
+              "calls": 3,
+              "promptTokens": 0,
+              "completionTokens": 0,
+              "callsWithoutUsage": 3,
+              "byModel": [
+                {
+                  "model": "gemini-3.7-flash",
+                  "calls": 3,
+                  "promptTokens": 0,
+                  "completionTokens": 0,
+                  "callsWithoutUsage": 3
+                }
+              ]
+            },
+            "toolCalls": 0,
+            "toolFailures": 0,
+            "ralphContinues": 0,
+            "volumeContinues": 0,
+            "proposedWrites": 0,
+            "stoppedReason": "final",
+            "process": [
+              {
+                "kind": "planner",
+                "at": "2026-09-06T16:24:42.068Z",
+                "text": "planner:start"
+              },
+              {
+                "kind": "phase",
+                "at": "2026-09-06T16:24:42.257Z",
+                "text": "phase:execute"
+              },
+              {
+                "kind": "rekick",
+                "at": "2026-09-06T16:24:42.568Z",
+                "text": "zero-change-rekick"
+              },
+              {
+                "kind": "end",
+                "at": "2026-09-06T16:24:42.871Z",
+                "text": "턴 종료(final) — 제안 0건 · 출력 토큰 ~6"
+              }
+            ]
+          }
+        },
+        "toolCalls": [
+          {
+            "name": "set_title_screen",
+            "ok": true
+          },
+          {
+            "name": "run_lint",
+            "ok": true
+          }
+        ],
+        "workItems": [
+          {
+            "id": "L1-1",
+            "status": "done"
+          }
+        ],
+        "savedAuditTokens": 1,
+        "sendDisabled": false
+      }
+    },
+    {
+      "sequence": 39,
+      "type": "real-rest",
+      "table": "projects",
+      "method": "GET",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "status": 200,
+      "bytes": 2425926
+    },
+    {
+      "sequence": 40,
+      "type": "browser-real-transport",
+      "table": "projects",
+      "method": "GET",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "path": "/supabase/rest/v1/projects",
+      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a"
+    },
+    {
+      "sequence": 41,
+      "type": "browser-real-transport",
+      "table": "maps",
+      "method": "GET",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "path": "/supabase/rest/v1/maps",
+      "query": "?project_id=eq.qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a&select=map_id%2Cmap_json"
+    },
+    {
+      "sequence": 42,
+      "type": "normalized-remote",
+      "label": "restored-retry",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "observedIdentity": "3fb6dcdccff671e00296473d838155a70d6a40335b5a09868de778a38aaf2ac7",
+      "sha256": "a71f0c28a38e0de320dea9d4da02e13f90c8aedb83deea461ba8e955695f53a7"
+    },
+    {
+      "sequence": 43,
+      "type": "composer-send",
+      "text": "계속"
+    },
+    {
+      "sequence": 44,
+      "type": "scripted-llm-http",
+      "round": 9,
+      "hasTools": false,
+      "tool": null
+    },
+    {
+      "sequence": 45,
+      "type": "scripted-llm-http",
+      "round": 10,
+      "hasTools": true,
+      "tool": null
+    },
+    {
+      "sequence": 46,
+      "type": "scripted-llm-http",
+      "round": 11,
+      "hasTools": true,
+      "tool": null
+    },
+    {
+      "sequence": 47,
+      "type": "browser-real-transport",
+      "table": "projects",
+      "method": "GET",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "path": "/supabase/rest/v1/projects",
+      "query": "?select=current_json%2Ccurrent_sha256&project_id=eq.qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a"
+    },
+    {
+      "sequence": 48,
+      "type": "browser-real-transport",
+      "table": "projects",
+      "method": "PATCH",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "path": "/supabase/rest/v1/projects",
+      "query": "?project_id=eq.qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a&current_sha256=eq.a71f0c28a38e0de320dea9d4da02e13f90c8aedb83deea461ba8e955695f53a7"
+    },
+    {
+      "sequence": 49,
+      "type": "browser-real-transport",
+      "table": "projects",
+      "method": "GET",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "path": "/supabase/rest/v1/projects",
+      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a"
+    },
+    {
+      "sequence": 50,
+      "type": "browser-real-transport",
+      "table": "project_commits",
+      "method": "POST",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "path": "/supabase/rest/v1/project_commits",
+      "query": ""
+    },
+    {
+      "sequence": 51,
+      "type": "browser-real-transport",
+      "table": "project_changes",
+      "method": "POST",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "path": "/supabase/rest/v1/project_changes",
+      "query": ""
+    },
+    {
+      "sequence": 52,
+      "type": "real-proof-read-released",
+      "label": "newer live edit during real proof read"
+    },
+    {
+      "sequence": 53,
+      "type": "browser-real-transport",
+      "table": "maps",
+      "method": "GET",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "path": "/supabase/rest/v1/maps",
+      "query": "?project_id=eq.qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a&select=map_id%2Cmap_json"
+    },
+    {
+      "sequence": 54,
+      "type": "state",
+      "label": "04-live-edit-preserved",
+      "state": {
+        "proof": {
+          "status": "failed",
+          "verified": false,
+          "reason": "stale",
+          "receipt": {
+            "revisionId": "e5e343dd-527f-45b3-89dc-4c832b8dd12c",
+            "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+            "mutationGeneration": 3,
+            "contentIdentity": "6c2244662ad2beab0f171641e454a1b1e519927aa5da6d2b45ec8c186bcaadb5",
+            "sha256": "6e52e414ba3e71325fe38863432df573ff7c1e2f4668606759d221963b9e7b11"
+          },
+          "commitId": null,
+          "proof": {
+            "kind": "verified",
+            "receipt": {
+              "revisionId": "e5e343dd-527f-45b3-89dc-4c832b8dd12c",
+              "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+              "mutationGeneration": 3,
+              "contentIdentity": "6c2244662ad2beab0f171641e454a1b1e519927aa5da6d2b45ec8c186bcaadb5",
+              "sha256": "6e52e414ba3e71325fe38863432df573ff7c1e2f4668606759d221963b9e7b11"
+            },
+            "isCurrent": false
+          }
+        },
+        "title": "QA surface 27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+        "metaTitle": "QA surface 27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+        "mapId": "map_blank_start",
+        "sameStore": true,
+        "remoteEnabled": true,
+        "dirty": true,
+        "sameLiveObject": true,
+        "sameLiveBytes": true,
+        "sessionCount": 1,
+        "result": {
+          "assistantText": "QA_FINAL",
+          "proposedCalls": [],
+          "stoppedReason": "final",
+          "workPlan": {
+            "id": "wp_mtq0us2c",
+            "goal": "Set the title screen",
+            "createdAt": "2026-09-06T16:24:14.484Z",
+            "layers": [
+              {
+                "id": "L1",
+                "title": "Title",
+                "items": [
+                  {
+                    "id": "L1-1",
+                    "title": "Title",
+                    "instruction": "set_title_screen",
+                    "successTools": [
+                      "set_title_screen"
+                    ],
+                    "status": "done"
+                  }
+                ]
+              }
+            ],
+            "currentLayerIndex": 0,
+            "currentItemId": null,
+            "targetMapId": "map_blank_start"
+          },
+          "recap": {
+            "elapsedMs": 11727,
+            "usage": {
+              "calls": 3,
+              "promptTokens": 0,
+              "completionTokens": 0,
+              "callsWithoutUsage": 3,
+              "byModel": [
+                {
+                  "model": "gemini-3.7-flash",
+                  "calls": 3,
+                  "promptTokens": 0,
+                  "completionTokens": 0,
+                  "callsWithoutUsage": 3
+                }
+              ]
+            },
+            "toolCalls": 0,
+            "toolFailures": 0,
+            "ralphContinues": 0,
+            "volumeContinues": 0,
+            "proposedWrites": 0,
+            "stoppedReason": "final",
+            "process": [
+              {
+                "kind": "planner",
+                "at": "2026-09-06T16:24:57.953Z",
+                "text": "planner:start"
+              },
+              {
+                "kind": "phase",
+                "at": "2026-09-06T16:24:58.095Z",
+                "text": "phase:execute"
+              },
+              {
+                "kind": "rekick",
+                "at": "2026-09-06T16:24:58.507Z",
+                "text": "zero-change-rekick"
+              },
+              {
+                "kind": "end",
+                "at": "2026-09-06T16:24:58.669Z",
+                "text": "턴 종료(final) — 제안 0건 · 출력 토큰 ~6"
+              }
+            ]
+          }
+        },
+        "toolCalls": [
+          {
+            "name": "set_title_screen",
+            "ok": true
+          },
+          {
+            "name": "run_lint",
+            "ok": true
+          }
+        ],
+        "workItems": [
+          {
+            "id": "L1-1",
+            "status": "done"
+          }
+        ],
+        "savedAuditTokens": 1,
+        "sendDisabled": false
+      }
+    },
+    {
+      "sequence": 55,
+      "type": "composer-send",
+      "text": "계속"
+    },
+    {
+      "sequence": 56,
+      "type": "scripted-llm-http",
+      "round": 12,
+      "hasTools": false,
+      "tool": null
+    },
+    {
+      "sequence": 57,
+      "type": "scripted-llm-http",
+      "round": 13,
+      "hasTools": true,
+      "tool": null
+    },
+    {
+      "sequence": 58,
+      "type": "scripted-llm-http",
+      "round": 14,
+      "hasTools": true,
+      "tool": null
+    },
+    {
+      "sequence": 59,
+      "type": "browser-real-transport",
+      "table": "projects",
+      "method": "GET",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "path": "/supabase/rest/v1/projects",
+      "query": "?select=current_json%2Ccurrent_sha256&project_id=eq.qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a"
+    },
+    {
+      "sequence": 60,
+      "type": "browser-real-transport",
+      "table": "projects",
+      "method": "PATCH",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "path": "/supabase/rest/v1/projects",
+      "query": "?project_id=eq.qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a&current_sha256=eq.6e52e414ba3e71325fe38863432df573ff7c1e2f4668606759d221963b9e7b11"
+    },
+    {
+      "sequence": 61,
+      "type": "browser-real-transport",
+      "table": "projects",
+      "method": "GET",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "path": "/supabase/rest/v1/projects",
+      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a"
+    },
+    {
+      "sequence": 62,
+      "type": "browser-real-transport",
+      "table": "project_commits",
+      "method": "POST",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "path": "/supabase/rest/v1/project_commits",
+      "query": ""
+    },
+    {
+      "sequence": 63,
+      "type": "browser-real-transport",
+      "table": "project_changes",
+      "method": "POST",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "path": "/supabase/rest/v1/project_changes",
+      "query": ""
+    },
+    {
+      "sequence": 64,
+      "type": "browser-real-transport",
+      "table": "maps",
+      "method": "GET",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "path": "/supabase/rest/v1/maps",
+      "query": "?project_id=eq.qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a&select=map_id%2Cmap_json"
+    },
+    {
+      "sequence": 65,
+      "type": "state",
+      "label": "05-latest-revision-verified",
+      "state": {
+        "proof": {
+          "status": "succeeded",
+          "verified": true,
+          "receipt": {
+            "revisionId": "ec919288-c35e-4421-84cc-2f8e992f4b8b",
+            "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+            "mutationGeneration": 4,
+            "contentIdentity": "ce5696689b08f546f4b37fd88ef34a0fcb84328e3299495f4864b822cdc24a8a",
+            "sha256": "4ee9b20ad4349ad39f3a0ec92b5bd65fd32a35ed37e09073e18140bfdaff1757"
+          },
+          "commitId": null,
+          "proof": {
+            "kind": "verified",
+            "receipt": {
+              "revisionId": "ec919288-c35e-4421-84cc-2f8e992f4b8b",
+              "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+              "mutationGeneration": 4,
+              "contentIdentity": "ce5696689b08f546f4b37fd88ef34a0fcb84328e3299495f4864b822cdc24a8a",
+              "sha256": "4ee9b20ad4349ad39f3a0ec92b5bd65fd32a35ed37e09073e18140bfdaff1757"
+            },
+            "isCurrent": true
+          }
+        },
+        "title": "QA surface 27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+        "metaTitle": "QA surface 27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+        "mapId": "map_blank_start",
+        "sameStore": true,
+        "remoteEnabled": true,
+        "dirty": false,
+        "sameLiveObject": true,
+        "sameLiveBytes": true,
+        "sessionCount": 1,
+        "result": {
+          "assistantText": "QA_FINAL",
+          "proposedCalls": [],
+          "stoppedReason": "final",
+          "workPlan": {
+            "id": "wp_mtq0us2c",
+            "goal": "Set the title screen",
+            "createdAt": "2026-09-06T16:24:14.484Z",
+            "layers": [
+              {
+                "id": "L1",
+                "title": "Title",
+                "items": [
+                  {
+                    "id": "L1-1",
+                    "title": "Title",
+                    "instruction": "set_title_screen",
+                    "successTools": [
+                      "set_title_screen"
+                    ],
+                    "status": "done"
+                  }
+                ]
+              }
+            ],
+            "currentLayerIndex": 0,
+            "currentItemId": null,
+            "targetMapId": "map_blank_start"
+          },
+          "recap": {
+            "elapsedMs": 10606,
+            "usage": {
+              "calls": 3,
+              "promptTokens": 0,
+              "completionTokens": 0,
+              "callsWithoutUsage": 3,
+              "byModel": [
+                {
+                  "model": "gemini-3.7-flash",
+                  "calls": 3,
+                  "promptTokens": 0,
+                  "completionTokens": 0,
+                  "callsWithoutUsage": 3
+                }
+              ]
+            },
+            "toolCalls": 0,
+            "toolFailures": 0,
+            "ralphContinues": 0,
+            "volumeContinues": 0,
+            "proposedWrites": 0,
+            "stoppedReason": "final",
+            "process": [
+              {
+                "kind": "planner",
+                "at": "2026-09-06T16:25:12.803Z",
+                "text": "planner:start"
+              },
+              {
+                "kind": "phase",
+                "at": "2026-09-06T16:25:12.972Z",
+                "text": "phase:execute"
+              },
+              {
+                "kind": "rekick",
+                "at": "2026-09-06T16:25:13.145Z",
+                "text": "zero-change-rekick"
+              },
+              {
+                "kind": "end",
+                "at": "2026-09-06T16:25:13.283Z",
+                "text": "턴 종료(final) — 제안 0건 · 출력 토큰 ~6"
+              }
+            ]
+          }
+        },
+        "toolCalls": [
+          {
+            "name": "set_title_screen",
+            "ok": true
+          },
+          {
+            "name": "run_lint",
+            "ok": true
+          }
+        ],
+        "workItems": [
+          {
+            "id": "L1-1",
+            "status": "done"
+          }
+        ],
+        "savedAuditTokens": 2,
+        "sendDisabled": false
+      }
+    },
+    {
+      "sequence": 66,
+      "type": "real-rest",
+      "table": "projects",
+      "method": "GET",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "status": 200,
+      "bytes": 2425970
+    },
+    {
+      "sequence": 67,
+      "type": "browser-real-transport",
+      "table": "projects",
+      "method": "GET",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "path": "/supabase/rest/v1/projects",
+      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a"
+    },
+    {
+      "sequence": 68,
+      "type": "browser-real-transport",
+      "table": "maps",
+      "method": "GET",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "path": "/supabase/rest/v1/maps",
+      "query": "?project_id=eq.qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a&select=map_id%2Cmap_json"
+    },
+    {
+      "sequence": 69,
+      "type": "normalized-remote",
+      "label": "latest",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "observedIdentity": "ce5696689b08f546f4b37fd88ef34a0fcb84328e3299495f4864b822cdc24a8a",
+      "sha256": "4ee9b20ad4349ad39f3a0ec92b5bd65fd32a35ed37e09073e18140bfdaff1757"
+    },
+    {
+      "sequence": 70,
+      "type": "PASS",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "oneAppliedTool": true,
+      "sameRevisionRetry": true,
+      "localOverwrite": false
+    },
+    {
+      "sequence": 71,
+      "type": "real-rest",
+      "table": "projects",
+      "method": "GET",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "status": 200,
+      "bytes": 127
+    },
+    {
+      "sequence": 72,
+      "type": "real-rest",
+      "table": "projects",
+      "method": "DELETE",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "status": 200,
+      "bytes": 2426094
+    },
+    {
+      "sequence": 73,
+      "type": "real-rest",
+      "table": "projects",
+      "method": "GET",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "status": 200,
+      "bytes": 2
+    },
+    {
+      "sequence": 74,
+      "type": "real-rest",
+      "table": "maps",
+      "method": "GET",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "status": 200,
+      "bytes": 2
+    },
+    {
+      "sequence": 75,
+      "type": "real-rest",
+      "table": "tilesets",
+      "method": "GET",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "status": 200,
+      "bytes": 2
+    },
+    {
+      "sequence": 76,
+      "type": "real-rest",
+      "table": "project_commits",
+      "method": "GET",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "status": 200,
+      "bytes": 2
+    },
+    {
+      "sequence": 77,
+      "type": "real-rest",
+      "table": "project_changes",
+      "method": "GET",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "status": 200,
+      "bytes": 2
+    },
+    {
+      "sequence": 78,
+      "type": "real-rest",
+      "table": "project_changes",
+      "method": "GET",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "status": 200,
+      "bytes": 2
+    },
+    {
+      "sequence": 79,
+      "type": "real-rest",
+      "table": "project_changes",
+      "method": "GET",
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "status": 200,
+      "bytes": 2
+    }
+  ],
+  "states": {
+    "00-before": {
+      "proof": null,
+      "title": "새 프로젝트",
+      "metaTitle": "QA surface 27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "mapId": "map_blank_start",
+      "sameStore": true,
+      "remoteEnabled": true,
+      "dirty": true,
+      "sameLiveObject": true,
+      "sameLiveBytes": true,
+      "sessionCount": 0,
+      "toolCalls": [],
+      "savedAuditTokens": 0,
+      "sendDisabled": false
+    },
+    "01-accepted-read-pending": {
+      "proof": {
+        "status": "attempted",
+        "verified": false,
+        "receipt": {
+          "revisionId": "aa040a28-4bbd-4712-b76f-ce4d3b9a26d1",
+          "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+          "mutationGeneration": 2,
+          "contentIdentity": "3fb6dcdccff671e00296473d838155a70d6a40335b5a09868de778a38aaf2ac7",
+          "sha256": "a71f0c28a38e0de320dea9d4da02e13f90c8aedb83deea461ba8e955695f53a7"
+        },
+        "commitId": null
+      },
+      "title": "QA surface 27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "metaTitle": "QA surface 27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "mapId": "map_blank_start",
+      "sameStore": true,
+      "remoteEnabled": true,
+      "dirty": false,
+      "sameLiveObject": true,
+      "sameLiveBytes": true,
+      "sessionCount": 1,
+      "toolCalls": [
+        {
+          "name": "set_title_screen",
+          "ok": true
+        },
+        {
+          "name": "run_lint",
+          "ok": true
+        }
+      ],
+      "workItems": [
+        {
+          "id": "L1-1",
+          "status": "done"
+        }
+      ],
+      "savedAuditTokens": 0,
+      "sendDisabled": true
+    },
+    "02-proof-failed": {
+      "proof": {
+        "status": "failed",
+        "verified": false,
+        "reason": "mismatch-content",
+        "receipt": {
+          "revisionId": "aa040a28-4bbd-4712-b76f-ce4d3b9a26d1",
+          "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+          "mutationGeneration": 2,
+          "contentIdentity": "3fb6dcdccff671e00296473d838155a70d6a40335b5a09868de778a38aaf2ac7",
+          "sha256": "a71f0c28a38e0de320dea9d4da02e13f90c8aedb83deea461ba8e955695f53a7"
+        },
+        "commitId": null,
+        "proof": {
+          "kind": "mismatch",
+          "receipt": {
+            "revisionId": "aa040a28-4bbd-4712-b76f-ce4d3b9a26d1",
+            "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+            "mutationGeneration": 2,
+            "contentIdentity": "3fb6dcdccff671e00296473d838155a70d6a40335b5a09868de778a38aaf2ac7",
+            "sha256": "a71f0c28a38e0de320dea9d4da02e13f90c8aedb83deea461ba8e955695f53a7"
+          },
+          "reason": "content"
+        }
+      },
+      "title": "QA surface 27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "metaTitle": "QA surface 27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "mapId": "map_blank_start",
+      "sameStore": true,
+      "remoteEnabled": true,
+      "dirty": false,
+      "sameLiveObject": true,
+      "sameLiveBytes": true,
+      "sessionCount": 1,
+      "result": {
+        "assistantText": "QA_FINAL",
+        "proposedCalls": [],
+        "stoppedReason": "final",
+        "workPlan": {
+          "id": "wp_mtq0us2c",
+          "goal": "Set the title screen",
+          "createdAt": "2026-09-06T16:24:14.484Z",
+          "layers": [
+            {
+              "id": "L1",
+              "title": "Title",
+              "items": [
+                {
+                  "id": "L1-1",
+                  "title": "Title",
+                  "instruction": "set_title_screen",
+                  "successTools": [
+                    "set_title_screen"
+                  ],
+                  "status": "done"
+                }
+              ]
+            }
+          ],
+          "currentLayerIndex": 0,
+          "currentItemId": null,
+          "targetMapId": "map_blank_start"
+        },
+        "appliedCalls": [
+          {
+            "name": "set_title_screen",
+            "args": {
+              "title": "QA surface 27506bee-16ca-4ec9-9075-bfc4667d2b1a"
+            },
+            "summary": "타이틀 화면 설정: \"QA surface 27506bee-16ca-4ec9-9075-bfc4667d2b1a\"",
+            "result": {
+              "ok": true,
+              "summary": "타이틀 화면 설정: \"QA surface 27506bee-16ca-4ec9-9075-bfc4667d2b1a\"",
+              "diff": {
+                "tilesChanged": 0,
+                "mapPropertiesChanged": 0,
+                "eventsAdded": 0,
+                "eventsModified": 0,
+                "eventsRemoved": 0,
+                "mapsAdded": 0,
+                "mapsRemoved": 0,
+                "dbRecordsChanged": 0,
+                "tilesetsChanged": 0,
+                "switchesAdded": 0,
+                "variablesAdded": 0,
+                "worldEntitiesAdded": 0,
+                "worldEntitiesModified": 0,
+                "palettePresetsAdded": 0,
+                "palettePresetsModified": 0,
+                "endingsChanged": 0,
+                "sessionChanged": false,
+                "systemChanged": true,
+                "warnings": []
+              }
+            },
+            "reason": "P1 accepted revision proof",
+            "destructive": false,
+            "requiresApproval": false
+          }
+        ],
+        "recap": {
+          "elapsedMs": 24225,
+          "usage": {
+            "calls": 3,
+            "promptTokens": 0,
+            "completionTokens": 0,
+            "callsWithoutUsage": 3,
+            "byModel": [
+              {
+                "model": "gemini-3.7-flash",
+                "calls": 3,
+                "promptTokens": 0,
+                "completionTokens": 0,
+                "callsWithoutUsage": 3
+              }
+            ]
+          },
+          "toolCalls": 2,
+          "toolFailures": 0,
+          "ralphContinues": 0,
+          "volumeContinues": 0,
+          "proposedWrites": 1,
+          "stoppedReason": "final",
+          "process": [
+            {
+              "kind": "planner",
+              "at": "2026-09-06T16:24:14.343Z",
+              "text": "planner:start"
+            },
+            {
+              "kind": "planner",
+              "at": "2026-09-06T16:24:14.484Z",
+              "text": "planner:new_plan items=1 layers=1"
+            },
+            {
+              "kind": "phase",
+              "at": "2026-09-06T16:24:14.492Z",
+              "text": "phase:execute"
+            },
+            {
+              "kind": "tool",
+              "at": "2026-09-06T16:24:15.951Z",
+              "text": "set_title_screen ok"
+            },
+            {
+              "kind": "other",
+              "at": "2026-09-06T16:24:16.091Z",
+              "text": "WorkPlan 자동 완료: Title"
+            },
+            {
+              "kind": "tool",
+              "at": "2026-09-06T16:24:20.217Z",
+              "text": "run_lint ok"
+            },
+            {
+              "kind": "end",
+              "at": "2026-09-06T16:24:21.026Z",
+              "text": "턴 종료(final) — 제안 0건 · 출력 토큰 ~41"
+            }
+          ]
+        }
+      },
+      "toolCalls": [
+        {
+          "name": "set_title_screen",
+          "ok": true
+        },
+        {
+          "name": "run_lint",
+          "ok": true
+        }
+      ],
+      "workItems": [
+        {
+          "id": "L1-1",
+          "status": "done"
+        }
+      ],
+      "savedAuditTokens": 0,
+      "sendDisabled": false
+    },
+    "03-same-revision-retry": {
+      "proof": {
+        "status": "succeeded",
+        "verified": true,
+        "receipt": {
+          "revisionId": "aa040a28-4bbd-4712-b76f-ce4d3b9a26d1",
+          "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+          "mutationGeneration": 2,
+          "contentIdentity": "3fb6dcdccff671e00296473d838155a70d6a40335b5a09868de778a38aaf2ac7",
+          "sha256": "a71f0c28a38e0de320dea9d4da02e13f90c8aedb83deea461ba8e955695f53a7"
+        },
+        "commitId": null,
+        "proof": {
+          "kind": "verified",
+          "receipt": {
+            "revisionId": "aa040a28-4bbd-4712-b76f-ce4d3b9a26d1",
+            "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+            "mutationGeneration": 2,
+            "contentIdentity": "3fb6dcdccff671e00296473d838155a70d6a40335b5a09868de778a38aaf2ac7",
+            "sha256": "a71f0c28a38e0de320dea9d4da02e13f90c8aedb83deea461ba8e955695f53a7"
+          },
+          "isCurrent": true
+        }
+      },
+      "title": "QA surface 27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "metaTitle": "QA surface 27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "mapId": "map_blank_start",
+      "sameStore": true,
+      "remoteEnabled": true,
+      "dirty": false,
+      "sameLiveObject": true,
+      "sameLiveBytes": true,
+      "sessionCount": 1,
+      "result": {
+        "assistantText": "QA_FINAL",
+        "proposedCalls": [],
+        "stoppedReason": "final",
+        "workPlan": {
+          "id": "wp_mtq0us2c",
+          "goal": "Set the title screen",
+          "createdAt": "2026-09-06T16:24:14.484Z",
+          "layers": [
+            {
+              "id": "L1",
+              "title": "Title",
+              "items": [
+                {
+                  "id": "L1-1",
+                  "title": "Title",
+                  "instruction": "set_title_screen",
+                  "successTools": [
+                    "set_title_screen"
+                  ],
+                  "status": "done"
+                }
+              ]
+            }
+          ],
+          "currentLayerIndex": 0,
+          "currentItemId": null,
+          "targetMapId": "map_blank_start"
+        },
+        "recap": {
+          "elapsedMs": 4849,
+          "usage": {
+            "calls": 3,
+            "promptTokens": 0,
+            "completionTokens": 0,
+            "callsWithoutUsage": 3,
+            "byModel": [
+              {
+                "model": "gemini-3.7-flash",
+                "calls": 3,
+                "promptTokens": 0,
+                "completionTokens": 0,
+                "callsWithoutUsage": 3
+              }
+            ]
+          },
+          "toolCalls": 0,
+          "toolFailures": 0,
+          "ralphContinues": 0,
+          "volumeContinues": 0,
+          "proposedWrites": 0,
+          "stoppedReason": "final",
+          "process": [
+            {
+              "kind": "planner",
+              "at": "2026-09-06T16:24:42.068Z",
+              "text": "planner:start"
+            },
+            {
+              "kind": "phase",
+              "at": "2026-09-06T16:24:42.257Z",
+              "text": "phase:execute"
+            },
+            {
+              "kind": "rekick",
+              "at": "2026-09-06T16:24:42.568Z",
+              "text": "zero-change-rekick"
+            },
+            {
+              "kind": "end",
+              "at": "2026-09-06T16:24:42.871Z",
+              "text": "턴 종료(final) — 제안 0건 · 출력 토큰 ~6"
+            }
+          ]
+        }
+      },
+      "toolCalls": [
+        {
+          "name": "set_title_screen",
+          "ok": true
+        },
+        {
+          "name": "run_lint",
+          "ok": true
+        }
+      ],
+      "workItems": [
+        {
+          "id": "L1-1",
+          "status": "done"
+        }
+      ],
+      "savedAuditTokens": 1,
+      "sendDisabled": false
+    },
+    "04-live-edit-preserved": {
+      "proof": {
+        "status": "failed",
+        "verified": false,
+        "reason": "stale",
+        "receipt": {
+          "revisionId": "e5e343dd-527f-45b3-89dc-4c832b8dd12c",
+          "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+          "mutationGeneration": 3,
+          "contentIdentity": "6c2244662ad2beab0f171641e454a1b1e519927aa5da6d2b45ec8c186bcaadb5",
+          "sha256": "6e52e414ba3e71325fe38863432df573ff7c1e2f4668606759d221963b9e7b11"
+        },
+        "commitId": null,
+        "proof": {
+          "kind": "verified",
+          "receipt": {
+            "revisionId": "e5e343dd-527f-45b3-89dc-4c832b8dd12c",
+            "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+            "mutationGeneration": 3,
+            "contentIdentity": "6c2244662ad2beab0f171641e454a1b1e519927aa5da6d2b45ec8c186bcaadb5",
+            "sha256": "6e52e414ba3e71325fe38863432df573ff7c1e2f4668606759d221963b9e7b11"
+          },
+          "isCurrent": false
+        }
+      },
+      "title": "QA surface 27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "metaTitle": "QA surface 27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "mapId": "map_blank_start",
+      "sameStore": true,
+      "remoteEnabled": true,
+      "dirty": true,
+      "sameLiveObject": true,
+      "sameLiveBytes": true,
+      "sessionCount": 1,
+      "result": {
+        "assistantText": "QA_FINAL",
+        "proposedCalls": [],
+        "stoppedReason": "final",
+        "workPlan": {
+          "id": "wp_mtq0us2c",
+          "goal": "Set the title screen",
+          "createdAt": "2026-09-06T16:24:14.484Z",
+          "layers": [
+            {
+              "id": "L1",
+              "title": "Title",
+              "items": [
+                {
+                  "id": "L1-1",
+                  "title": "Title",
+                  "instruction": "set_title_screen",
+                  "successTools": [
+                    "set_title_screen"
+                  ],
+                  "status": "done"
+                }
+              ]
+            }
+          ],
+          "currentLayerIndex": 0,
+          "currentItemId": null,
+          "targetMapId": "map_blank_start"
+        },
+        "recap": {
+          "elapsedMs": 11727,
+          "usage": {
+            "calls": 3,
+            "promptTokens": 0,
+            "completionTokens": 0,
+            "callsWithoutUsage": 3,
+            "byModel": [
+              {
+                "model": "gemini-3.7-flash",
+                "calls": 3,
+                "promptTokens": 0,
+                "completionTokens": 0,
+                "callsWithoutUsage": 3
+              }
+            ]
+          },
+          "toolCalls": 0,
+          "toolFailures": 0,
+          "ralphContinues": 0,
+          "volumeContinues": 0,
+          "proposedWrites": 0,
+          "stoppedReason": "final",
+          "process": [
+            {
+              "kind": "planner",
+              "at": "2026-09-06T16:24:57.953Z",
+              "text": "planner:start"
+            },
+            {
+              "kind": "phase",
+              "at": "2026-09-06T16:24:58.095Z",
+              "text": "phase:execute"
+            },
+            {
+              "kind": "rekick",
+              "at": "2026-09-06T16:24:58.507Z",
+              "text": "zero-change-rekick"
+            },
+            {
+              "kind": "end",
+              "at": "2026-09-06T16:24:58.669Z",
+              "text": "턴 종료(final) — 제안 0건 · 출력 토큰 ~6"
+            }
+          ]
+        }
+      },
+      "toolCalls": [
+        {
+          "name": "set_title_screen",
+          "ok": true
+        },
+        {
+          "name": "run_lint",
+          "ok": true
+        }
+      ],
+      "workItems": [
+        {
+          "id": "L1-1",
+          "status": "done"
+        }
+      ],
+      "savedAuditTokens": 1,
+      "sendDisabled": false
+    },
+    "05-latest-revision-verified": {
+      "proof": {
+        "status": "succeeded",
+        "verified": true,
+        "receipt": {
+          "revisionId": "ec919288-c35e-4421-84cc-2f8e992f4b8b",
+          "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+          "mutationGeneration": 4,
+          "contentIdentity": "ce5696689b08f546f4b37fd88ef34a0fcb84328e3299495f4864b822cdc24a8a",
+          "sha256": "4ee9b20ad4349ad39f3a0ec92b5bd65fd32a35ed37e09073e18140bfdaff1757"
+        },
+        "commitId": null,
+        "proof": {
+          "kind": "verified",
+          "receipt": {
+            "revisionId": "ec919288-c35e-4421-84cc-2f8e992f4b8b",
+            "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+            "mutationGeneration": 4,
+            "contentIdentity": "ce5696689b08f546f4b37fd88ef34a0fcb84328e3299495f4864b822cdc24a8a",
+            "sha256": "4ee9b20ad4349ad39f3a0ec92b5bd65fd32a35ed37e09073e18140bfdaff1757"
+          },
+          "isCurrent": true
+        }
+      },
+      "title": "QA surface 27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "metaTitle": "QA surface 27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "mapId": "map_blank_start",
+      "sameStore": true,
+      "remoteEnabled": true,
+      "dirty": false,
+      "sameLiveObject": true,
+      "sameLiveBytes": true,
+      "sessionCount": 1,
+      "result": {
+        "assistantText": "QA_FINAL",
+        "proposedCalls": [],
+        "stoppedReason": "final",
+        "workPlan": {
+          "id": "wp_mtq0us2c",
+          "goal": "Set the title screen",
+          "createdAt": "2026-09-06T16:24:14.484Z",
+          "layers": [
+            {
+              "id": "L1",
+              "title": "Title",
+              "items": [
+                {
+                  "id": "L1-1",
+                  "title": "Title",
+                  "instruction": "set_title_screen",
+                  "successTools": [
+                    "set_title_screen"
+                  ],
+                  "status": "done"
+                }
+              ]
+            }
+          ],
+          "currentLayerIndex": 0,
+          "currentItemId": null,
+          "targetMapId": "map_blank_start"
+        },
+        "recap": {
+          "elapsedMs": 10606,
+          "usage": {
+            "calls": 3,
+            "promptTokens": 0,
+            "completionTokens": 0,
+            "callsWithoutUsage": 3,
+            "byModel": [
+              {
+                "model": "gemini-3.7-flash",
+                "calls": 3,
+                "promptTokens": 0,
+                "completionTokens": 0,
+                "callsWithoutUsage": 3
+              }
+            ]
+          },
+          "toolCalls": 0,
+          "toolFailures": 0,
+          "ralphContinues": 0,
+          "volumeContinues": 0,
+          "proposedWrites": 0,
+          "stoppedReason": "final",
+          "process": [
+            {
+              "kind": "planner",
+              "at": "2026-09-06T16:25:12.803Z",
+              "text": "planner:start"
+            },
+            {
+              "kind": "phase",
+              "at": "2026-09-06T16:25:12.972Z",
+              "text": "phase:execute"
+            },
+            {
+              "kind": "rekick",
+              "at": "2026-09-06T16:25:13.145Z",
+              "text": "zero-change-rekick"
+            },
+            {
+              "kind": "end",
+              "at": "2026-09-06T16:25:13.283Z",
+              "text": "턴 종료(final) — 제안 0건 · 출력 토큰 ~6"
+            }
+          ]
+        }
+      },
+      "toolCalls": [
+        {
+          "name": "set_title_screen",
+          "ok": true
+        },
+        {
+          "name": "run_lint",
+          "ok": true
+        }
+      ],
+      "workItems": [
+        {
+          "id": "L1-1",
+          "status": "done"
+        }
+      ],
+      "savedAuditTokens": 2,
+      "sendDisabled": false
+    }
+  },
+  "errors": [],
+  "blocked": [
+    {
+      "method": "POST",
+      "path": "/__oprn/edit-activity",
+      "reason": "non-QA write"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/browser/hello",
+      "reason": "non-QA write"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/browser/hello",
+      "reason": "non-QA write"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/browser/hello",
+      "reason": "non-QA write"
+    },
+    {
+      "method": "POST",
+      "path": "/__oprn/ai-activity",
+      "reason": "non-QA write"
+    },
+    {
+      "table": "ai_activity_logs",
+      "method": "POST",
+      "reason": "unrelated telemetry/table"
+    },
+    {
+      "table": "ai_activity_logs",
+      "method": "POST",
+      "reason": "unrelated telemetry/table"
+    },
+    {
+      "table": "ai_conversations",
+      "method": "POST",
+      "reason": "unrelated telemetry/table"
+    },
+    {
+      "table": "ai_activity_logs",
+      "method": "POST",
+      "reason": "unrelated telemetry/table"
+    },
+    {
+      "table": "ai_conversations",
+      "method": "POST",
+      "reason": "unrelated telemetry/table"
+    },
+    {
+      "table": "ai_activity_logs",
+      "method": "POST",
+      "reason": "unrelated telemetry/table"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/browser/hello",
+      "reason": "non-QA write"
+    },
+    {
+      "table": "ai_activity_logs",
+      "method": "POST",
+      "reason": "unrelated telemetry/table"
+    },
+    {
+      "table": "ai_conversations",
+      "method": "POST",
+      "reason": "unrelated telemetry/table"
+    },
+    {
+      "table": "ai_activity_logs",
+      "method": "POST",
+      "reason": "unrelated telemetry/table"
+    },
+    {
+      "table": "ai_activity_logs",
+      "method": "POST",
+      "reason": "unrelated telemetry/table"
+    },
+    {
+      "table": "ai_conversations",
+      "method": "POST",
+      "reason": "unrelated telemetry/table"
+    },
+    {
+      "table": "ai_activity_logs",
+      "method": "POST",
+      "reason": "unrelated telemetry/table"
+    },
+    {
+      "table": "ai_activity_logs",
+      "method": "POST",
+      "reason": "unrelated telemetry/table"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/browser/hello",
+      "reason": "non-QA write"
+    },
+    {
+      "table": "ai_activity_logs",
+      "method": "POST",
+      "reason": "unrelated telemetry/table"
+    },
+    {
+      "table": "ai_activity_logs",
+      "method": "POST",
+      "reason": "unrelated telemetry/table"
+    },
+    {
+      "table": "ai_conversations",
+      "method": "POST",
+      "reason": "unrelated telemetry/table"
+    },
+    {
+      "table": "ai_activity_logs",
+      "method": "POST",
+      "reason": "unrelated telemetry/table"
+    },
+    {
+      "table": "ai_activity_logs",
+      "method": "POST",
+      "reason": "unrelated telemetry/table"
+    },
+    {
+      "table": "ai_activity_logs",
+      "method": "POST",
+      "reason": "unrelated telemetry/table"
+    },
+    {
+      "table": "ai_conversations",
+      "method": "POST",
+      "reason": "unrelated telemetry/table"
+    }
+  ],
+  "cleanup": {
+    "absentBeforeRun": true,
+    "pageListenersAndTimersClosed": true,
+    "browserClosed": true,
+    "serverClosed": true,
+    "cacheRemoved": true,
+    "portReleased": true,
+    "remote": {
+      "projectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a",
+      "kind": "deleted-and-absence-verified",
+      "commitIds": [
+        "5e897399-ff1f-4e0f-b93f-8275cd6b25e5",
+        "c3779fd3-a45f-41d9-906d-1d783dfa098c",
+        "55730b54-ffe0-43e9-8eab-d6e929f14f26"
+      ]
+    },
+    "remoteDeletedAndAbsent": true,
+    "reusedListener": false,
+    "activeRoutes": 0
+  },
+  "configuration": {
+    "origin": "http://dbserver:8100",
+    "anonValidated": true,
+    "configuredProjectPresent": true,
+    "configuredProjectAccessed": false,
+    "fixtureProjectId": "qa-ai-surface-27506bee-16ca-4ec9-9075-bfc4667d2b1a"
+  },
+  "assertionsPassed": true,
+  "sourceHashes": {
+    "src/ai/assistantSession.ts": "9c73177bd6162f97b1f82b9bfd334343dc1d5f873e72ad7bbfee4c7bdd5b09e0",
+    "src/project/store.ts": "8d8bea0ae98fb42b4e3c1e9f0eaa71bba6176eb84475832d15395384415312b9",
+    "scripts/qa/ai-harness-contracts.mjs": "f16661fec79f339d0d2324710e3791475913de3e0c354cdc86d0f0526abcb663"
+  }
+}

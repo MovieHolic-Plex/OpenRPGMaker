@@ -1,0 +1,22 @@
+$ git rev-parse HEAD HEAD^{tree} HEAD:src HEAD:test HEAD:scripts 58105616b^{tree} 0ef1046d:src 0ef1046d:test 0ef1046d:scripts
+e827eb5c8371ff87ea29231a124806f687c3aba2
+90e4dcaae23e36c148a79cacc2981cd26da00e32
+7cffd2bbcc3208e91510aec30a50a703a783b255
+d3f153dbf7d1d2cf43067280d74a00b9ac90c722
+b4422873b68cdc72c9687074550a0a23cf6cebac
+0ef1046d14e7dc2c750ee635b72e373a7ff4ac13
+7cffd2bbcc3208e91510aec30a50a703a783b255
+d3f153dbf7d1d2cf43067280d74a00b9ac90c722
+b4422873b68cdc72c9687074550a0a23cf6cebac
+exit=0
+$ git diff --name-status 0ef1046d HEAD
+M	.omo/plans/ai-harness-omo-adoption.md
+exit=0
+$ git diff --exit-code 0ef1046d HEAD -- src test scripts package.json package-lock.json tsconfig.json tsconfig.app.json vite.config.ts vitest.config.ts
+exit=0
+$ git diff --exit-code HEAD -- src test scripts package.json package-lock.json
+exit=0
+$ rg -n "runOutcome|RunOutcome|deriveRunOutcome|run_outcome|ai-run-outcome|ai-requirement-withdraw|required-skip|outcome-matrix" src scripts/qa test
+exit=1 (1 means no matches)
+$ git ls-files src/ai/runOutcome.ts test/aiRequiredOutcomes.test.ts test/aiRunOutcome.test.ts
+exit=0

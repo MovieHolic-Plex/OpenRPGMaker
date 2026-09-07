@@ -1,0 +1,45 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle --maxWorkers=1 test/sceneVerificationRepair.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906
+
+ ❯ test/sceneVerificationRepair.test.ts (8 tests | 1 failed) 1903ms
+   ✓ corrected scene navigation retains the same verification obligation > replaces a failed navigation attempt with the passing same-target assertions: []  331ms
+   ✓ corrected scene navigation retains the same verification obligation > replaces a failed navigation attempt with the passing same-target assertions: [ { kind: 'face', text: 'up' } ] 272ms
+   ✓ corrected scene navigation retains the same verification obligation > replaces a failed navigation attempt with the passing same-target assertions: [ { kind: 'move', text: 'up' } ] 227ms
+   ✓ corrected scene navigation retains the same verification obligation > replaces a failed navigation attempt with the passing same-target assertions: [ { kind: 'set', x: 10, y: 8 } ] 225ms
+   ✓ corrected scene navigation retains the same verification obligation > keeps exact canonical proof separate from corrected navigation and advisory checks 216ms
+   × corrected scene navigation retains the same verification obligation > retains independently passing exact invocations of the same normalized scene 212ms
+     → expected false to be true // Object.is equality
+   ✓ corrected scene navigation retains the same verification obligation > cannot erase a different assertion by weakening its expected reward 207ms
+   ✓ corrected scene navigation retains the same verification obligation > keeps distinct explicit NPC targets separate 209ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/sceneVerificationRepair.test.ts > corrected scene navigation retains the same verification obligation > retains independently passing exact invocations of the same normalized scene
+AssertionError: expected false to be true // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+ ❯ test/sceneVerificationRepair.test.ts:86:59
+     84|       evidence.observe("run_scene_test", exact, result);
+     85|     }
+     86|     expect(evidence.passedScope("run_scene_test", first)).toBe(true);
+       |                                                           ^
+     87|     expect(evidence.passedScope("run_scene_test", second)).toBe(true);
+     88|     evidence.invalidateAfterWrite();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 7 passed (8)
+   Start at  09:42:16
+   Duration  11.62s (transform 6.71s, setup 0ms, collect 9.36s, tests 1.90s, environment 0ms, prepare 68ms)
+

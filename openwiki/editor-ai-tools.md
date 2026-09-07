@@ -105,7 +105,9 @@ controls, existing guide identity and position.
 
 `originalContext.ts` exports a detached authored-state extractor reusable for before/after
 review. The session captures it before planning or tools, retains its snapshot ID across
-continuations, and recaptures on a new request. Target selection uses structured intent,
+continuations, and recaptures on a new request (including a fresh Ask). Retaining P2
+canonical goal evidence across questions does not freeze the question's original-data
+snapshot. Target selection uses structured intent,
 actual selection and current map, never new natural-language keyword routing. A missing
 explicit target is reported, not replaced with the start map. Target map metadata, complete
 tile layers/stacks, complete events/pages/commands, authored system settings and relevant
@@ -290,7 +292,10 @@ The callback refreshes only the detached session's world documents.
 Ordinary `applyProposedProject` calls retain the live `project.world`, because a
 map/title proposal does not own codex edits made after its preview. Explicit
 `resetProject` keeps its replacement semantics. Tests:
-`projectWikiSession.test.ts` and `projectWikiApplication.test.ts`.
+`projectWikiSession.test.ts` and `projectWikiApplication.test.ts`. P2 projects checkpoint
+failure/cancellation as `failed`/`cancelled`, never successful response completion.
+Explicit Ask/Plan retains the coordinator's read-only path; intent is still selected
+after the wiki checkpoint, and blocked-work reactivation remains after that decision.
 
 ## Completed-house transaction protection - Phase 1 (2026-09-05)
 
@@ -523,6 +528,54 @@ Soft-confirm vocabulary, region task routing, AI visual polish, dock modes, tool
 - `build_village` 간선은 4갈래 중 1갈래가 광장이 아니라 인접 축 간선에 T자로 붙는다 (2026-09-04): 예전엔 4갈래가 전부 광장 rect 변에 닿아 매번 같은 plus 위상(= 십자가로 보임)이 반복됐다. `villageArteryRoutes` 가 시드별 분기 갈래를 돌리고(4-cycle, [N,S,W,E]에서 +2라 정반대 축이 아님), N/S 앵커는 가장자리 1/5 폭으로 흩어 일직선 세로축을 깬다. 앵커·분기 갈래는 원본 시드에 묶고 흔들림만 재시도 시드에 맡겨 layoutPlan.roadAnchors와 exitRoads 게이트가 어긋나지 않는다. 4변 출구는 유지되므로 `exitRoads=4` 게이트는 그대로 통과한다. Tests: `test/villageCrossRoad.test.ts`.
 - `build_village`는 집을 찍기 전에 스케치 프리패스를 먼저 돌린다 (2026-09-04): `build_village`가 `buildHouses` 전에 `sketchHouseSites`를 뽑고, 스케치 후보를 분수 슬롯·격자보다 먼저 시도한다. 사이트 간격은 8폭+마진(10). 격자는 폴백이다. `villageArteryRoutes`는 다리당 내부 경유점 하나를 더 넣되 `host[1]` T-join과 4변 출구는 그대로 둔다. Tests: `test/villageSketch.test.ts`.
 - `build_village` 대형 맵 대로 골격은 이제 곡선이다 (2026-09-05): `villageBoulevardPath`가 시드 고정 경유점으로 동서·남북 곡선을 그리고, 예약과 시공은 `boulevardCells` 한 칸 함수를 같이 쓴다. Tests: `test/villageBoulevard.test.ts`.
+
+## P2 requirement and exact-verdict inputs (2026-09-06)
+
+Planner output and native `set_work_plan` accept optional `requirements` using
+`{ id, title, required?, criteria }` and item `requirementIds`. They feed the same
+`AssistantAcceptanceLedger` as existing explicit `acceptance`; item scheduling
+isn't satisfaction authority. Required defaults true. Malformed criteria or
+required flags remain required repair obligations, even if the model claims
+optionality or supplies evidence. `repair_acceptance` can't replace valid original
+criteria. See [requirement lifecycle and user actions](editor-ai-panel.md#canonical-requirements-and-genuine-user-actions).
+
+The additional structural criterion is:
+
+```ts
+{ kind: "toolVerdict", tool: "check_reachability", args: {
+  mapId, from: { x: 0, y: 0 }, targets: [{ x: 1, y: 0 }]
+} }
+```
+
+`tool` must belong to the existing verification family. `args` is the full native
+invocation object, not a tool-name-only claim. For this native tool the field is
+`targets`; the separate structural `reachability` criterion uses `to`.
+[Acceptance parsing](../src/ai/assistantAcceptance.ts) reuses custom fail-closed
+parsing, and [ToolVerificationEvidence.passedScope](../src/ai/toolVerificationEvidence.ts)
+uses the existing stable tool-plus-full-arguments key and `parseToolVerdict`.
+Only a current host-observed explicit pass satisfies that exact scope. Wrong
+targets, negative verdicts, stale checks, model `passed` claims and advisory-only
+success don't. A clean advisory check can retain an already-current explicit pass,
+but can't renew it after a write. Successful writes and changed applied-state
+refreshes retire checks, including checks made before requirement declaration;
+undo doesn't revive them. A passing verdict can't verify an unapplied draft.
+
+Corrected `run_scene_test` navigation retires the same NPC/assertion obligation,
+but its exact invocation key remains separate: it cannot satisfy a `toolVerdict`
+with different navigation arguments. Both `toolVerdict` and incoming `actionCombat`
+are exposed in the flattened provider-safe criterion schema; runtime parsing still
+requires each kind's exact fields and exclusive target.
+
+Name-level scheduler queries and advisory reporting retain their existing roles.
+Canonical acceptance also receives required verification problems: explicit checks,
+declared required tools and skipped-item obligations remain blocking. Pure advisory
+failures remain visible in audit/problem reporting without becoming required goal
+items or suppressing P1 end proof. Intent action obligations and current map-bound
+runtime receipts remain independent of planner replacement and optional promises.
+The ledger's existing evaluation receives the goal evidence store; absence of that
+store fails tool-verdict criteria closed. No new verification ledger or dependency
+was added. Withdrawal is a local user action, never a `withdraw_requirement` tool,
+model note, `skip_work_item` effect or `resetsContext` permission.
 
 ## Project-wide quality evaluation
 

@@ -1,0 +1,68 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiRunOutcomeApply.test.ts --maxWorkers 2 --minWorkers 1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p2-20260906
+
+ ❯ test/aiRunOutcomeApply.test.ts (7 tests | 2 failed) 13708ms
+   ✓ run outcome actual application > settles the returned result when ordinary proof is verified  2549ms
+   ✓ run outcome actual application > settles the returned result when ordinary proof is failed  1707ms
+   ✓ run outcome actual application > settles the returned result when ordinary proof is cancelled  1743ms
+   × run outcome actual application > refreshes the compact recap when proof settles after the returned draft 2279ms
+     → expected { runOutcome: { …(3) }, …(13) } to have property "runOutcome.delivery" with value 'persisted-verified'
+   × run outcome actual application > publishes apply rejection through the original session subscriber 595ms
+     → expected { type: 'run_outcome', …(1) } to deeply equal { type: 'run_outcome', …(1) }
+   ✓ run outcome actual application > rechecks current proof without mutating the historical returned result  2452ms
+   ✓ run outcome actual application > does not credit an old receipt when another user run only queries  2381ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiRunOutcomeApply.test.ts > run outcome actual application > refreshes the compact recap when proof settles after the returned draft
+AssertionError: expected { runOutcome: { …(3) }, …(13) } to have property "runOutcome.delivery" with value 'persisted-verified'
+
+Expected: [32m"persisted-verified"[39m
+Received: [31m"draft"[39m
+
+ ❯ test/aiRunOutcomeApply.test.ts:57:21
+     55|     if (!entry || entry.kind !== "status") throw new Error("Missing re…
+     56|     const payload: unknown = JSON.parse(entry.text.slice("run-recap ".…
+     57|     expect(payload).toHaveProperty("runOutcome.delivery", "persisted-v…
+       |                     ^
+     58|   });
+     59| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  test/aiRunOutcomeApply.test.ts > run outcome actual application > publishes apply rejection through the original session subscriber
+AssertionError: expected { type: 'run_outcome', …(1) } to deeply equal { type: 'run_outcome', …(1) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "runOutcome": {[22m
+[2m      "delivery": "draft",[22m
+[32m-     "execution": "failed",[39m
+[31m+     "execution": "response-final",[39m
+[2m      "goal": "unassessed",[22m
+[2m    },[22m
+[2m    "type": "run_outcome",[22m
+[2m  }[22m
+
+ ❯ test/aiRunOutcomeApply.test.ts:69:29
+     67|     const expected = { execution: "failed", goal: "unassessed", delive…
+     68|     expect(result.runOutcome).toEqual(expected);
+     69|     expect(f.events.at(-1)).toEqual({ type: "run_outcome", runOutcome:…
+       |                             ^
+     70|   });
+     71| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 5 passed (7)
+   Start at  02:37:57
+   Duration  28.11s (transform 9.70s, setup 0ms, collect 13.77s, tests 13.71s, environment 0ms, prepare 122ms)
+

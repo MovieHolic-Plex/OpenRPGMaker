@@ -1,0 +1,12 @@
+{
+  "publicSurfaces": [
+    "set_work_plan.acceptance",
+    "set_work_plan.requirements",
+    "repair_acceptance.criteria"
+  ],
+  "roundtrip": "exact nested args preserved",
+  "actualTool": "check_reachability",
+  "result": "pass",
+  "authority": "only fresh exact real tool evidence verifies; changed args and stale evidence do not",
+  "remoteWrites": 0
+}

@@ -46,6 +46,27 @@ describe("project wiki session checkpoint", () => {
     expect(requests).toHaveLength(1);
   });
 
+  it("publishes cancellation when the wiki checkpoint is aborted", async () => {
+    const abort = new AbortController();
+    let authored = false;
+    const session = new AssistantSession(createEmptyToolProject("Wiki cancellation"), {
+      config: { ...defaultAiConfig(), agentMode: "chat" },
+      prepareProjectWiki: async () => {
+        abort.abort();
+        abort.signal.throwIfAborted();
+        return undefined;
+      },
+      chat: async () => {
+        authored = true;
+        return { message: { role: "assistant", content: "Unexpected" }, finishReason: "stop" };
+      },
+    });
+    const result = await session.sendUserMessage("Place a monster.", () => {}, abort.signal);
+    expect(authored).toBe(false);
+    expect(result.stoppedReason).toBe("aborted");
+    expect(result.runOutcome).toEqual({ execution: "cancelled", goal: "unassessed", delivery: "no-change" });
+  });
+
   it("does not start authoring when its wiki persistence checkpoint fails", async () => {
     const calls: string[] = [];
     const options = {
@@ -66,5 +87,7 @@ describe("project wiki session checkpoint", () => {
     expect(calls).toEqual([]);
     expect(result.stoppedReason).toBe("error");
     expect(result.error).toContain("wiki-save-failed");
+    expect(result.runOutcome).toEqual({ execution: "failed", goal: "unassessed", delivery: "no-change" });
+    expect(session.getRunOutcome()).toEqual(result.runOutcome);
   });
 });

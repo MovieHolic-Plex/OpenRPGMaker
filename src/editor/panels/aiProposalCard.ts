@@ -309,6 +309,7 @@ export function createProposalHost(options: {
     });
     if (!applied.ok) {
       if (applied.reason === "stale-baseline") session.refreshAcceptance(store.getCurrent());
+      session.recordApplyRejected();
       setStatus("적용 실패");
       toast(`적용 실패: ${applied.issue ?? "무결성 오류"}`, "error");
       // 예전에는 이 게이트만 채팅에 아무 기록도 남기지 않았다 — 토스트가 사라지면 흔적이 없다.

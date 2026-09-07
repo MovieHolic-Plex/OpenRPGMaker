@@ -281,7 +281,8 @@ describe("stable target retry budgets through AssistantSession", () => {
     // Final writer response + independent review require two rounds. A one-round
     // budget can test failure bounds, but cannot admit even a corrected draft.
     session.updateConfig({ ...CONFIG, maxToolCalls: 2 });
-    const second = await session.sendUserMessage("같은 주민 명령을 다시 고쳐줘", collect, undefined, { autonomous: true });
+    // P2 requires the host's explicit resume action, not arbitrary new prose.
+    const second = await session.sendUserMessage("같은 주민 명령을 다시 고쳐줘", collect, undefined, { autonomous: true, goalAction: "resume" });
     expect(second.workPlan?.layers[0].items[0].status).toBe("done");
     expect(state.batches).toBe(9); // Eight tool batches plus the terminal writer response.
     expect(state.reviews).toBe(1);
@@ -290,12 +291,17 @@ describe("stable target retry budgets through AssistantSession", () => {
     expect(events.find((event) => event.name === "repair_acceptance")?.result).toMatchObject({ ok: true, data: { acceptance: { status: "verifying", items: [{ evidence: [{ passed: false }] }] } } });
     expect(session.getAcceptanceSnapshot()).toMatchObject({ status: "verified", items: [{ id: "acceptance-contract", evidence: [{ expected: JSON.stringify(criteria[0]), passed: true }] }] });
     expect(second.proposedCalls).toEqual([]);
-    expect(second.appliedCalls?.map((entry) => entry.name)).toEqual(["place_npc"]);
+    // Resume retains previously pending independent writes; none were applied in
+    // the blocked first run, so they must be reviewed and delivered once rather than erased.
+    expect(first.appliedCalls).toEqual([]);
+    expect(second.appliedCalls?.slice(0, -1)).toEqual(first.proposedCalls);
+    expect(second.appliedCalls?.at(-1)).toMatchObject({ name: "place_npc", args: { id: "npc_target" } });
+    expect(second.appliedCalls?.filter(entry => entry.name === "place_npc" && entry.args.id === "npc_other")).toHaveLength(1);
     expect(getMapEditHistoryEntries()).toHaveLength(1);
     expect(commit).toHaveBeenCalledTimes(1);
-    expect(store.getCurrent().meta.title).toBe(authored.meta.title);
+    expect(store.getCurrent().meta.title).toBe(session.getProposedProject().meta.title);
     expect(store.getCurrent().maps.m1.events.find(event => event.id === "npc_target")?.name).toBe("Corrected 1");
-    expect(store.getCurrent().maps.m1.events.find(event => event.id === "npc_other")).toEqual(authored.maps.m1.events.find(event => event.id === "npc_other"));
+    expect(store.getCurrent().maps.m1.events.find(event => event.id === "npc_other")).toEqual(session.getProposedProject().maps.m1.events.find(event => event.id === "npc_other"));
     expect(events.filter((event) => event.name === "place_npc" && event.args.id === "npc_target").map((event) => event.result.ok)).toEqual([false, false, false, false, false, false, false, true]);
     expect(events.filter((event) => event.name === "place_npc" && event.args.id === "npc_target").at(-1)?.result.ok).toBe(true);
     expectResponses(session);

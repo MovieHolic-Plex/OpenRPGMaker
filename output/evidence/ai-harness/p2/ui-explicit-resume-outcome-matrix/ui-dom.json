@@ -1,0 +1,1322 @@
+[
+  {
+    "label": "00-before",
+    "viewport": {
+      "width": 1024,
+      "height": 768
+    },
+    "documentWidth": 1024,
+    "nodes": []
+  },
+  {
+    "label": "00-before",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "documentWidth": 1280,
+    "nodes": []
+  },
+  {
+    "label": "00-before",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "documentWidth": 1440,
+    "nodes": []
+  },
+  {
+    "label": "query-no-change",
+    "viewport": {
+      "width": 1024,
+      "height": 768
+    },
+    "documentWidth": 1024,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "response-final",
+          "goal": "unassessed",
+          "delivery": "no-change"
+        },
+        "text": "응답 종료 · 목표 미평가 · 변경 없음",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 372,
+          "y": 616,
+          "width": 640,
+          "height": 35,
+          "right": 1012,
+          "bottom": 651
+        },
+        "visibleWidth": 640,
+        "visibleHeight": 35,
+        "clientWidth": 640,
+        "scrollWidth": 640,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      }
+    ]
+  },
+  {
+    "label": "query-no-change",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "documentWidth": 1280,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "response-final",
+          "goal": "unassessed",
+          "delivery": "no-change"
+        },
+        "text": "응답 종료 · 목표 미평가 · 변경 없음",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 628,
+          "y": 648,
+          "width": 640,
+          "height": 35,
+          "right": 1268,
+          "bottom": 683
+        },
+        "visibleWidth": 640,
+        "visibleHeight": 35,
+        "clientWidth": 640,
+        "scrollWidth": 640,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      }
+    ]
+  },
+  {
+    "label": "query-no-change",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "documentWidth": 1440,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "response-final",
+          "goal": "unassessed",
+          "delivery": "no-change"
+        },
+        "text": "응답 종료 · 목표 미평가 · 변경 없음",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 668,
+          "y": 748,
+          "width": 760,
+          "height": 35,
+          "right": 1428,
+          "bottom": 783
+        },
+        "visibleWidth": 760,
+        "visibleHeight": 35,
+        "clientWidth": 760,
+        "scrollWidth": 760,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      }
+    ]
+  },
+  {
+    "label": "awaiting-user",
+    "viewport": {
+      "width": 1024,
+      "height": 768
+    },
+    "documentWidth": 1024,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "awaiting-user",
+          "goal": "unassessed",
+          "delivery": "no-change"
+        },
+        "text": "사용자 응답 대기 · 목표 미평가 · 변경 없음",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 372,
+          "y": 616,
+          "width": 640,
+          "height": 35,
+          "right": 1012,
+          "bottom": 651
+        },
+        "visibleWidth": 640,
+        "visibleHeight": 35,
+        "clientWidth": 640,
+        "scrollWidth": 640,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      }
+    ]
+  },
+  {
+    "label": "awaiting-user",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "documentWidth": 1280,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "awaiting-user",
+          "goal": "unassessed",
+          "delivery": "no-change"
+        },
+        "text": "사용자 응답 대기 · 목표 미평가 · 변경 없음",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 628,
+          "y": 648,
+          "width": 640,
+          "height": 35,
+          "right": 1268,
+          "bottom": 683
+        },
+        "visibleWidth": 640,
+        "visibleHeight": 35,
+        "clientWidth": 640,
+        "scrollWidth": 640,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      }
+    ]
+  },
+  {
+    "label": "awaiting-user",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "documentWidth": 1440,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "awaiting-user",
+          "goal": "unassessed",
+          "delivery": "no-change"
+        },
+        "text": "사용자 응답 대기 · 목표 미평가 · 변경 없음",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 668,
+          "y": 748,
+          "width": 760,
+          "height": 35,
+          "right": 1428,
+          "bottom": 783
+        },
+        "visibleWidth": 760,
+        "visibleHeight": 35,
+        "clientWidth": 760,
+        "scrollWidth": 760,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      }
+    ]
+  },
+  {
+    "label": "ordinary-apply",
+    "viewport": {
+      "width": 1024,
+      "height": 768
+    },
+    "documentWidth": 1024,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "response-final",
+          "goal": "unassessed",
+          "delivery": "persisted-verified"
+        },
+        "text": "응답 종료 · 목표 미평가 · 온라인 저장·검증됨",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 372,
+          "y": 616,
+          "width": 640,
+          "height": 35,
+          "right": 1012,
+          "bottom": 651
+        },
+        "visibleWidth": 640,
+        "visibleHeight": 35,
+        "clientWidth": 640,
+        "scrollWidth": 640,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      }
+    ]
+  },
+  {
+    "label": "ordinary-apply",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "documentWidth": 1280,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "response-final",
+          "goal": "unassessed",
+          "delivery": "persisted-verified"
+        },
+        "text": "응답 종료 · 목표 미평가 · 온라인 저장·검증됨",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 628,
+          "y": 648,
+          "width": 640,
+          "height": 35,
+          "right": 1268,
+          "bottom": 683
+        },
+        "visibleWidth": 640,
+        "visibleHeight": 35,
+        "clientWidth": 640,
+        "scrollWidth": 640,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      }
+    ]
+  },
+  {
+    "label": "ordinary-apply",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "documentWidth": 1440,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "response-final",
+          "goal": "unassessed",
+          "delivery": "persisted-verified"
+        },
+        "text": "응답 종료 · 목표 미평가 · 온라인 저장·검증됨",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 668,
+          "y": 748,
+          "width": 760,
+          "height": 35,
+          "right": 1428,
+          "bottom": 783
+        },
+        "visibleWidth": 760,
+        "visibleHeight": 35,
+        "clientWidth": 760,
+        "scrollWidth": 760,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      }
+    ]
+  },
+  {
+    "label": "cancelled-applied-before-abort",
+    "viewport": {
+      "width": 1024,
+      "height": 768
+    },
+    "documentWidth": 1024,
+    "nodes": []
+  },
+  {
+    "label": "cancelled-applied-before-abort",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "documentWidth": 1280,
+    "nodes": []
+  },
+  {
+    "label": "cancelled-applied-before-abort",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "documentWidth": 1440,
+    "nodes": []
+  },
+  {
+    "label": "cancelled-applied",
+    "viewport": {
+      "width": 1024,
+      "height": 768
+    },
+    "documentWidth": 1024,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "cancelled",
+          "goal": "unassessed",
+          "delivery": "persisted"
+        },
+        "text": "사용자 중단 · 목표 미평가 · 온라인 저장됨",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 372,
+          "y": 616,
+          "width": 640,
+          "height": 35,
+          "right": 1012,
+          "bottom": 651
+        },
+        "visibleWidth": 640,
+        "visibleHeight": 35,
+        "clientWidth": 640,
+        "scrollWidth": 640,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      }
+    ]
+  },
+  {
+    "label": "cancelled-applied",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "documentWidth": 1280,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "cancelled",
+          "goal": "unassessed",
+          "delivery": "persisted"
+        },
+        "text": "사용자 중단 · 목표 미평가 · 온라인 저장됨",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 628,
+          "y": 648,
+          "width": 640,
+          "height": 35,
+          "right": 1268,
+          "bottom": 683
+        },
+        "visibleWidth": 640,
+        "visibleHeight": 35,
+        "clientWidth": 640,
+        "scrollWidth": 640,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      }
+    ]
+  },
+  {
+    "label": "cancelled-applied",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "documentWidth": 1440,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "cancelled",
+          "goal": "unassessed",
+          "delivery": "persisted"
+        },
+        "text": "사용자 중단 · 목표 미평가 · 온라인 저장됨",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 668,
+          "y": 748,
+          "width": 760,
+          "height": 35,
+          "right": 1428,
+          "bottom": 783
+        },
+        "visibleWidth": 760,
+        "visibleHeight": 35,
+        "clientWidth": 760,
+        "scrollWidth": 760,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      }
+    ]
+  },
+  {
+    "label": "rejected-apply",
+    "viewport": {
+      "width": 1024,
+      "height": 768
+    },
+    "documentWidth": 1024,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "failed",
+          "goal": "unassessed",
+          "delivery": "draft"
+        },
+        "text": "실행 실패 · 목표 미평가 · 미적용 초안",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 372,
+          "y": 616,
+          "width": 640,
+          "height": 35,
+          "right": 1012,
+          "bottom": 651
+        },
+        "visibleWidth": 640,
+        "visibleHeight": 35,
+        "clientWidth": 640,
+        "scrollWidth": 640,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      }
+    ]
+  },
+  {
+    "label": "rejected-apply",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "documentWidth": 1280,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "failed",
+          "goal": "unassessed",
+          "delivery": "draft"
+        },
+        "text": "실행 실패 · 목표 미평가 · 미적용 초안",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 628,
+          "y": 648,
+          "width": 640,
+          "height": 35,
+          "right": 1268,
+          "bottom": 683
+        },
+        "visibleWidth": 640,
+        "visibleHeight": 35,
+        "clientWidth": 640,
+        "scrollWidth": 640,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      }
+    ]
+  },
+  {
+    "label": "rejected-apply",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "documentWidth": 1440,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "failed",
+          "goal": "unassessed",
+          "delivery": "draft"
+        },
+        "text": "실행 실패 · 목표 미평가 · 미적용 초안",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 668,
+          "y": 748,
+          "width": 760,
+          "height": 35,
+          "right": 1428,
+          "bottom": 783
+        },
+        "visibleWidth": 760,
+        "visibleHeight": 35,
+        "clientWidth": 760,
+        "scrollWidth": 760,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      }
+    ]
+  },
+  {
+    "label": "commit-log-failure",
+    "viewport": {
+      "width": 1024,
+      "height": 768
+    },
+    "documentWidth": 1024,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "response-final",
+          "goal": "unassessed",
+          "delivery": "persisted-verified"
+        },
+        "text": "응답 종료 · 목표 미평가 · 온라인 저장·검증됨",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 372,
+          "y": 616,
+          "width": 640,
+          "height": 35,
+          "right": 1012,
+          "bottom": 651
+        },
+        "visibleWidth": 640,
+        "visibleHeight": 35,
+        "clientWidth": 640,
+        "scrollWidth": 640,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      }
+    ]
+  },
+  {
+    "label": "commit-log-failure",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "documentWidth": 1280,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "response-final",
+          "goal": "unassessed",
+          "delivery": "persisted-verified"
+        },
+        "text": "응답 종료 · 목표 미평가 · 온라인 저장·검증됨",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 628,
+          "y": 648,
+          "width": 640,
+          "height": 35,
+          "right": 1268,
+          "bottom": 683
+        },
+        "visibleWidth": 640,
+        "visibleHeight": 35,
+        "clientWidth": 640,
+        "scrollWidth": 640,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      }
+    ]
+  },
+  {
+    "label": "commit-log-failure",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "documentWidth": 1440,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "response-final",
+          "goal": "unassessed",
+          "delivery": "persisted-verified"
+        },
+        "text": "응답 종료 · 목표 미평가 · 온라인 저장·검증됨",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 668,
+          "y": 748,
+          "width": 760,
+          "height": 35,
+          "right": 1428,
+          "bottom": 783
+        },
+        "visibleWidth": 760,
+        "visibleHeight": 35,
+        "clientWidth": 760,
+        "scrollWidth": 760,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      }
+    ]
+  },
+  {
+    "label": "failed-proof",
+    "viewport": {
+      "width": 1024,
+      "height": 768
+    },
+    "documentWidth": 1024,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "response-final",
+          "goal": "unassessed",
+          "delivery": "persisted"
+        },
+        "text": "응답 종료 · 목표 미평가 · 온라인 저장됨",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 372,
+          "y": 616,
+          "width": 640,
+          "height": 35,
+          "right": 1012,
+          "bottom": 651
+        },
+        "visibleWidth": 640,
+        "visibleHeight": 35,
+        "clientWidth": 640,
+        "scrollWidth": 640,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      }
+    ]
+  },
+  {
+    "label": "failed-proof",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "documentWidth": 1280,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "response-final",
+          "goal": "unassessed",
+          "delivery": "persisted"
+        },
+        "text": "응답 종료 · 목표 미평가 · 온라인 저장됨",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 628,
+          "y": 648,
+          "width": 640,
+          "height": 35,
+          "right": 1268,
+          "bottom": 683
+        },
+        "visibleWidth": 640,
+        "visibleHeight": 35,
+        "clientWidth": 640,
+        "scrollWidth": 640,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      }
+    ]
+  },
+  {
+    "label": "failed-proof",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "documentWidth": 1440,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "response-final",
+          "goal": "unassessed",
+          "delivery": "persisted"
+        },
+        "text": "응답 종료 · 목표 미평가 · 온라인 저장됨",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 668,
+          "y": 748,
+          "width": 760,
+          "height": 35,
+          "right": 1428,
+          "bottom": 783
+        },
+        "visibleWidth": 760,
+        "visibleHeight": 35,
+        "clientWidth": 760,
+        "scrollWidth": 760,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      }
+    ]
+  },
+  {
+    "label": "budget-exhausted",
+    "viewport": {
+      "width": 1024,
+      "height": 768
+    },
+    "documentWidth": 1024,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "budget-exhausted",
+          "goal": "unassessed",
+          "delivery": "no-change"
+        },
+        "text": "실행 한도 도달 · 목표 미평가 · 변경 없음",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 372,
+          "y": 616,
+          "width": 640,
+          "height": 35,
+          "right": 1012,
+          "bottom": 651
+        },
+        "visibleWidth": 640,
+        "visibleHeight": 35,
+        "clientWidth": 640,
+        "scrollWidth": 640,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      }
+    ]
+  },
+  {
+    "label": "budget-exhausted",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "documentWidth": 1280,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "budget-exhausted",
+          "goal": "unassessed",
+          "delivery": "no-change"
+        },
+        "text": "실행 한도 도달 · 목표 미평가 · 변경 없음",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 628,
+          "y": 648,
+          "width": 640,
+          "height": 35,
+          "right": 1268,
+          "bottom": 683
+        },
+        "visibleWidth": 640,
+        "visibleHeight": 35,
+        "clientWidth": 640,
+        "scrollWidth": 640,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      }
+    ]
+  },
+  {
+    "label": "budget-exhausted",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "documentWidth": 1440,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "budget-exhausted",
+          "goal": "unassessed",
+          "delivery": "no-change"
+        },
+        "text": "실행 한도 도달 · 목표 미평가 · 변경 없음",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 668,
+          "y": 748,
+          "width": 760,
+          "height": 35,
+          "right": 1428,
+          "bottom": 783
+        },
+        "visibleWidth": 760,
+        "visibleHeight": 35,
+        "clientWidth": 760,
+        "scrollWidth": 760,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      }
+    ]
+  },
+  {
+    "label": "legacy-unassessed",
+    "viewport": {
+      "width": 1024,
+      "height": 768
+    },
+    "documentWidth": 1024,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "response-final",
+          "goal": "unassessed",
+          "delivery": "no-change"
+        },
+        "text": "응답 종료 · 목표 미평가 · 변경 없음",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 372,
+          "y": 616,
+          "width": 640,
+          "height": 35,
+          "right": 1012,
+          "bottom": 651
+        },
+        "visibleWidth": 640,
+        "visibleHeight": 35,
+        "clientWidth": 640,
+        "scrollWidth": 640,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      }
+    ]
+  },
+  {
+    "label": "legacy-unassessed",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "documentWidth": 1280,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "response-final",
+          "goal": "unassessed",
+          "delivery": "no-change"
+        },
+        "text": "응답 종료 · 목표 미평가 · 변경 없음",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 628,
+          "y": 648,
+          "width": 640,
+          "height": 35,
+          "right": 1268,
+          "bottom": 683
+        },
+        "visibleWidth": 640,
+        "visibleHeight": 35,
+        "clientWidth": 640,
+        "scrollWidth": 640,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      }
+    ]
+  },
+  {
+    "label": "legacy-unassessed",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "documentWidth": 1440,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "response-final",
+          "goal": "unassessed",
+          "delivery": "no-change"
+        },
+        "text": "응답 종료 · 목표 미평가 · 변경 없음",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 668,
+          "y": 748,
+          "width": 760,
+          "height": 35,
+          "right": 1428,
+          "bottom": 783
+        },
+        "visibleWidth": 760,
+        "visibleHeight": 35,
+        "clientWidth": 760,
+        "scrollWidth": 760,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      }
+    ]
+  },
+  {
+    "label": "legacy-assessed",
+    "viewport": {
+      "width": 1024,
+      "height": 768
+    },
+    "documentWidth": 1024,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "response-final",
+          "goal": "satisfied",
+          "delivery": "no-change"
+        },
+        "text": "응답 종료 · 목표 충족 · 변경 없음",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 372,
+          "y": 616,
+          "width": 640,
+          "height": 35,
+          "right": 1012,
+          "bottom": 651
+        },
+        "visibleWidth": 640,
+        "visibleHeight": 35,
+        "clientWidth": 640,
+        "scrollWidth": 640,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-sticky-checklist",
+        "attributes": {
+          "editorNavigationOwner": "true",
+          "testid": "ai-sticky-checklist",
+          "expanded": "false",
+          "status": "verified"
+        },
+        "text": "완료 기준검증 완료QA scoped requirements1/1검증 완료Existing dimensions검증 완료이 요구 제외원래 요청: qa-ai-surface-b3b0c3a1-019b-4e82-9917-fb58cf8115e3/legacy-assessed: inspect only the scripted scope.기대{\"kind\":\"mapDimensions\",\"target\":{\"mapId\":\"map_blank_start\"},\"width\":20,\"height\":15}확인20x15판정충족맵에서 보기",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 318,
+          "y": 141,
+          "width": 272,
+          "height": 59,
+          "right": 590,
+          "bottom": 200
+        },
+        "visibleWidth": 272,
+        "visibleHeight": 59,
+        "clientWidth": 270,
+        "scrollWidth": 270,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "13px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "existing-size"
+        },
+        "text": "이 요구 제외",
+        "hidden": true,
+        "visible": false,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "visibleWidth": 0,
+        "visibleHeight": 0,
+        "clientWidth": 0,
+        "scrollWidth": 0,
+        "color": "rgb(74, 87, 214)",
+        "fontSize": "12px",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "label": "legacy-assessed",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "documentWidth": 1280,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "response-final",
+          "goal": "satisfied",
+          "delivery": "no-change"
+        },
+        "text": "응답 종료 · 목표 충족 · 변경 없음",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 628,
+          "y": 648,
+          "width": 640,
+          "height": 35,
+          "right": 1268,
+          "bottom": 683
+        },
+        "visibleWidth": 640,
+        "visibleHeight": 35,
+        "clientWidth": 640,
+        "scrollWidth": 640,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-sticky-checklist",
+        "attributes": {
+          "editorNavigationOwner": "true",
+          "testid": "ai-sticky-checklist",
+          "expanded": "true",
+          "status": "verified"
+        },
+        "text": "완료 기준검증 완료QA scoped requirements1/1검증 완료Existing dimensions검증 완료이 요구 제외원래 요청: qa-ai-surface-b3b0c3a1-019b-4e82-9917-fb58cf8115e3/legacy-assessed: inspect only the scripted scope.기대{\"kind\":\"mapDimensions\",\"target\":{\"mapId\":\"map_blank_start\"},\"width\":20,\"height\":15}확인20x15판정충족맵에서 보기",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 318,
+          "y": 141,
+          "width": 272,
+          "height": 206,
+          "right": 590,
+          "bottom": 347
+        },
+        "visibleWidth": 272,
+        "visibleHeight": 206,
+        "clientWidth": 270,
+        "scrollWidth": 270,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "13px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "existing-size"
+        },
+        "text": "이 요구 제외",
+        "hidden": true,
+        "visible": false,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "visibleWidth": 0,
+        "visibleHeight": 0,
+        "clientWidth": 0,
+        "scrollWidth": 0,
+        "color": "rgb(74, 87, 214)",
+        "fontSize": "12px",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "label": "legacy-assessed",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "documentWidth": 1440,
+    "nodes": [
+      {
+        "testid": "ai-run-outcome",
+        "attributes": {
+          "testid": "ai-run-outcome",
+          "execution": "response-final",
+          "goal": "satisfied",
+          "delivery": "no-change"
+        },
+        "text": "응답 종료 · 목표 충족 · 변경 없음",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 668,
+          "y": 748,
+          "width": 760,
+          "height": 35,
+          "right": 1428,
+          "bottom": 783
+        },
+        "visibleWidth": 760,
+        "visibleHeight": 35,
+        "clientWidth": 760,
+        "scrollWidth": 760,
+        "color": "color(srgb 0.24549 0.296863 0.374706)",
+        "fontSize": "12px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-sticky-checklist",
+        "attributes": {
+          "editorNavigationOwner": "true",
+          "testid": "ai-sticky-checklist",
+          "expanded": "true",
+          "status": "verified"
+        },
+        "text": "완료 기준검증 완료QA scoped requirements1/1검증 완료Existing dimensions검증 완료이 요구 제외원래 요청: qa-ai-surface-b3b0c3a1-019b-4e82-9917-fb58cf8115e3/legacy-assessed: inspect only the scripted scope.기대{\"kind\":\"mapDimensions\",\"target\":{\"mapId\":\"map_blank_start\"},\"width\":20,\"height\":15}확인20x15판정충족맵에서 보기",
+        "hidden": false,
+        "visible": true,
+        "rect": {
+          "x": 318,
+          "y": 141,
+          "width": 272,
+          "height": 206,
+          "right": 590,
+          "bottom": 347
+        },
+        "visibleWidth": 272,
+        "visibleHeight": 206,
+        "clientWidth": 270,
+        "scrollWidth": 270,
+        "color": "rgb(15, 23, 42)",
+        "fontSize": "13px",
+        "disabled": null
+      },
+      {
+        "testid": "ai-requirement-withdraw",
+        "attributes": {
+          "testid": "ai-requirement-withdraw",
+          "requirementId": "existing-size"
+        },
+        "text": "이 요구 제외",
+        "hidden": true,
+        "visible": false,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "visibleWidth": 0,
+        "visibleHeight": 0,
+        "clientWidth": 0,
+        "scrollWidth": 0,
+        "color": "rgb(74, 87, 214)",
+        "fontSize": "12px",
+        "disabled": false
+      }
+    ]
+  }
+]

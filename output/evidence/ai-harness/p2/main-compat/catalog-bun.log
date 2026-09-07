@@ -1,0 +1,22 @@
+bun test v1.4.2 (744846f84)
+
+test/ohMyPiFullCatalog.bun.test.ts:
+(pass) full native catalog on supported subscription transports > google-antigravity preserves 40 full definitions and surfaces upstream rejection [25.15ms]
+(pass) full native catalog on supported subscription transports > google-antigravity preserves 41 full definitions and surfaces upstream rejection [11.17ms]
+(pass) full native catalog on supported subscription transports > google-antigravity preserves 127 full definitions and surfaces upstream rejection [28.36ms]
+(pass) full native catalog on supported subscription transports > google-antigravity preserves 128 full definitions and surfaces upstream rejection [14.29ms]
+(pass) full native catalog on supported subscription transports > google-antigravity preserves 129 full definitions and surfaces upstream rejection [12.04ms]
+(pass) full native catalog on supported subscription transports > google-antigravity preserves 198 full definitions and surfaces upstream rejection [13.50ms]
+(pass) full native catalog on supported subscription transports > google-antigravity preserves 207 full definitions and surfaces upstream rejection [12.52ms]
+(pass) full native catalog on supported subscription transports > openai-codex preserves 40 full definitions and surfaces upstream rejection [6.03ms]
+(pass) full native catalog on supported subscription transports > openai-codex preserves 41 full definitions and surfaces upstream rejection [2.81ms]
+(pass) full native catalog on supported subscription transports > openai-codex preserves 127 full definitions and surfaces upstream rejection [8.33ms]
+(pass) full native catalog on supported subscription transports > openai-codex preserves 128 full definitions and surfaces upstream rejection [6.30ms]
+(pass) full native catalog on supported subscription transports > openai-codex preserves 129 full definitions and surfaces upstream rejection [5.52ms]
+(pass) full native catalog on supported subscription transports > openai-codex preserves 198 full definitions and surfaces upstream rejection [7.05ms]
+(pass) full native catalog on supported subscription transports > openai-codex preserves 207 full definitions and surfaces upstream rejection [7.36ms]
+
+ 14 pass
+ 0 fail
+ 42 expect() calls
+Ran 14 tests across 1 file. [442.00ms]

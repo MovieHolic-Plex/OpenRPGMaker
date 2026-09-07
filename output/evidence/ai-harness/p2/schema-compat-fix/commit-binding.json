@@ -1,0 +1,15 @@
+{
+  "base": "dfa8bdd15e4e39904ae910101d5e90579b5d8a67",
+  "commit": "68ab835fc098b7486417d0eaed8b83f88d68d777",
+  "tree": "1dd36238133657e76992cd4baf7393f72d0d1355",
+  "changedFiles": [
+    "src/ai/assistantAcceptanceTools.ts",
+    "test/toolSchemaProviderCompat.test.ts"
+  ],
+  "verifiedFilesMatchBuildAndFinalTests": true,
+  "hashes": {
+    "src/ai/assistantAcceptanceTools.ts": "313b97a1ade2896883e6e4e7a9deec733c43f9353ce73faac7b8caa78179bb10",
+    "test/toolSchemaProviderCompat.test.ts": "916e1e36ea67bf2196c7326326a4365102c29566c4e117afa1ccf0ae603680dc",
+    "output/evidence/ai-harness/p2/schema-compat-fix/public-roundtrip.mts": "194f55e92cfc3edd29f3c458c098181c0395611bb7e6f80d3191c963f702ef4e"
+  }
+}

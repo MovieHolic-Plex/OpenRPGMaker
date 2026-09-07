@@ -232,6 +232,7 @@ class ProjectStore {
   private readonly persistenceTargets = new WeakMap<ProjectPersistenceReceipt, {
     readonly target: SupabaseProjectConfig;
     readonly contentLineage: number;
+    readonly projectAtSubmit: Project;
   }>();
   private persistInFlight: Promise<ProjectFlushResult> | null = null;
   // 마지막 "실제 저장"(원격 업서트 또는 dev override 기록) 이후 변경이 있는가 —
@@ -845,6 +846,11 @@ class ProjectStore {
     this.persistedBaseline = project;
   }
 
+  /** Historical acceptance belongs to its actual submitted owner, not the latest live revision. */
+  isPersistenceReceiptForProject(receipt: ProjectPersistenceReceipt, project: Project): boolean {
+    return this.persistenceTargets.get(receipt)?.projectAtSubmit === project;
+  }
+
   /** Recheck at consumption time: proof can outlive the editor revision it describes. */
   isPersistenceReceiptCurrent(receipt: ProjectPersistenceReceipt): boolean {
     const authority = this.persistenceTargets.get(receipt);
@@ -1202,7 +1208,8 @@ class ProjectStore {
     const target = Object.freeze({ ...config });
     const generationAtSubmit = this.mutationGeneration;
     const lineageAtSubmit = this.contentLineage;
-    const submittedProject = projectWithoutEventDrafts(this.current);
+    const projectAtSubmit = this.current;
+    const submittedProject = projectWithoutEventDrafts(projectAtSubmit);
     // 커밋 로그가 쓸 diff baseline — **이 저장 직전에 서버가 갖고 있던 내용**이다.
     // 아래에서 `this.persistedBaseline` 을 저장 결과로 갈아치우므로 여기서 잡아두지 않으면
     // 커밋 diff 가 "자기 자신과의 비교"(=빈 diff)로 무너진다. await 앞에서 읽는 이유는
@@ -1228,7 +1235,7 @@ class ProjectStore {
         contentIdentity: await sha256HexText(acceptedContent),
         ...(result.sha256 ? { sha256: result.sha256 } : {}),
       });
-      this.persistenceTargets.set(receipt, { target, contentLineage: lineageAtSubmit });
+      this.persistenceTargets.set(receipt, { target, contentLineage: lineageAtSubmit, projectAtSubmit });
     } catch (error) {
       // Intermediate projects may save but cannot supply normalized proof. Preserve flush compatibility.
       log.warn("Accepted project could not produce a persistence receipt", error);

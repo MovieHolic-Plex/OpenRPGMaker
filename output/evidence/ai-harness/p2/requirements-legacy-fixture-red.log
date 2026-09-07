@@ -1,0 +1,96 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiRequiredOutcomes.test.ts -t legacy|existing explicit acceptance --maxWorkers 2 --minWorkers 1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p2-20260906
+
+ ❯ test/aiRequiredOutcomes.test.ts (35 tests | 2 failed | 33 skipped) 457ms
+   ↓ canonical requirements > keeps required skipped obligations when a replan tries to weaken them
+   ↓ canonical requirements > allows optional skipped work without labeling it verified
+   ↓ canonical requirements > fails closed for malformed declarations null
+   ↓ canonical requirements > fails closed for malformed declarations %j
+   ↓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":[{"kind":"mapDimensions","target":{"mapId":"map_blank_start"},"width":99,"height":99}],"required":"false"}
+   ↓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":[{"kind":"invented","passed":true}]}
+   ↓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":null,"required":false}
+   ↓ canonical requirements > preserves requirements and item links through the planner parser
+   × canonical requirements > keeps a bare legacy scheduler plan unassessed 279ms
+     → expected { goal: 'Map contract', …(1) } to not have property "layers.0.items.0.requirementIds"
+   × canonical requirements > assesses existing explicit acceptance without requiring the new field 175ms
+     → expected { goal: 'Map contract', …(2) } to not have property "layers.0.items.0.requirementIds"
+   ↓ canonical requirements > binds original text and scope at the host boundary despite fabricated source and withdrawal
+   ↓ canonical requirements > withdraws only the named current requirement through the user-only API
+   ↓ canonical requirements > keeps sibling obligations when the user withdraws just one
+   ↓ canonical requirements > rejects model tool withdrawal even with fabricated user provenance
+   ↓ canonical requirements > rejects stale goal withdrawal actions
+   ↓ canonical requirements > does not erase old obligations on a model resetsContext claim
+   ↓ canonical requirements > archives an incomplete goal when the user explicitly starts a new goal
+   ↓ exact scoped verdict authority > evaluates explicit evidence without tool-name credit
+   ↓ exact scoped verdict authority > evaluates wrong-target evidence without tool-name credit
+   ↓ exact scoped verdict authority > evaluates stale evidence without tool-name credit
+   ↓ exact scoped verdict authority > evaluates advisory evidence without tool-name credit
+   ↓ exact scoped verdict authority > evaluates advisory-after-stale evidence without tool-name credit
+   ↓ exact scoped verdict authority > evaluates advisory-after-explicit evidence without tool-name credit
+   ↓ exact scoped verdict authority > evaluates negative evidence without tool-name credit
+   ↓ exact scoped verdict authority > evaluates model evidence without tool-name credit
+   ↓ exact scoped verdict authority > does not verify an unapplied draft from a passing scoped verdict
+   ↓ exact scoped verdict authority > retires scoped verdicts after applied content changes even if later undone
+   ↓ exact scoped verdict authority > rejects pre-declaration evidence after an external rebase
+   ↓ exact scoped verdict authority > credits a real scoped tool response through the session dispatcher
+   ↓ question-safe continuation > preserves blocked work and counters for ask
+   ↓ question-safe continuation > preserves blocked work and counters for question
+   ↓ question-safe continuation > preserves repeated failure counters while answering a question
+   ↓ question-safe continuation > does not reactivate from fabricated continuation source
+   ↓ question-safe continuation > reactivates blocked work only with explicit user resume
+   ↓ question-safe continuation > retains goal evidence and repair counters during ask
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiRequiredOutcomes.test.ts > canonical requirements > keeps a bare legacy scheduler plan unassessed
+AssertionError: expected { goal: 'Map contract', …(1) } to not have property "layers.0.items.0.requirementIds"
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+[
+  "size",
+]
+
+ ❯ test/aiRequiredOutcomes.test.ts:57:29
+     55|     const legacy = plan();
+     56|     expect(legacy.args).not.toHaveProperty("requirements");
+     57|     expect(legacy.args).not.toHaveProperty("layers.0.items.0.requireme…
+       |                             ^
+     58|     // When the plan is skipped; then no assessment is fabricated.
+     59|     await f.run([[legacy, skip]]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  test/aiRequiredOutcomes.test.ts > canonical requirements > assesses existing explicit acceptance without requiring the new field
+AssertionError: expected { goal: 'Map contract', …(2) } to not have property "layers.0.items.0.requirementIds"
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+[
+  "size",
+]
+
+ ❯ test/aiRequiredOutcomes.test.ts:68:29
+     66|     const legacy = { name: "set_work_plan", args: { ...plan().args, ac…
+     67|     expect(legacy.args).not.toHaveProperty("requirements");
+     68|     expect(legacy.args).not.toHaveProperty("layers.0.items.0.requireme…
+       |                             ^
+     69|     // When skipped; then the explicit contract's measured failure rem…
+     70|     await f.run([[legacy, skip]]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 33 skipped (35)
+   Start at  02:03:35
+   Duration  16.25s (transform 10.82s, setup 0ms, collect 15.21s, tests 457ms, environment 0ms, prepare 118ms)
+

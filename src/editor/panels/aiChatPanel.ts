@@ -104,6 +104,7 @@ import {
   registerAiAssistantBridge,
   setAiBridgeLastStatus,
   unregisterAiAssistantBridge,
+  withdrawAiRequirement,
   type AiBridgeAuditEntry,
   type AiBridgeTurnResult,
 } from "@/editor/aiAssistantBridge";
@@ -121,7 +122,7 @@ import {
   type AiFontSize,
 } from "./aiPanelLayout";
 import { narrateAiActivity } from "@/editor/aiActivityNarration";
-import { formatAiRunningStatus, formatToolActivityLine, renderToolActivityEntry, renderWorkPlanChecklist, type AutonomousRunBudget } from "./aiChatRenderers";
+import { formatAiRunningStatus, formatToolActivityLine, renderToolActivityEntry, renderWorkPlanChecklist, renderRunOutcome, type AutonomousRunBudget } from "./aiChatRenderers";
 import { closeWorkPlanBook, openWorkPlanBook, updateWorkPlanBook } from "./aiWorkPlanModal";
 import {
   createConversationLogHost,
@@ -303,7 +304,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     parseAssistantTemperature(options.getAssistantTemperature?.() ?? editorState.get().assistantTemperature);
   let refreshTemperatureChrome: () => void = () => {};
   const controller: ChatController = { session: null, auditHistory: [], statusTimeline: [] };
-  const stickyChecklist = createAiStickyChecklist();
+  const outcomeSlot = el("div");
+  const refreshRunOutcome = (): void => {
+    const outcome = controller.session?.getRunOutcome();
+    outcomeSlot.replaceChildren(...(outcome ? [renderRunOutcome(outcome)] : []));
+  };
+  const stickyChecklist = createAiStickyChecklist({ onWithdraw: withdrawAiRequirement });
   let disposed = false;
   const initialProjectIdentity = store.getProjectIdentity();
   const currentProjectContextKey = conversationScopeKey(initialProjectIdentity, store.getCurrent());
@@ -1213,6 +1219,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
   /** 대화 경계 — 목록을 완전히 걷는다(새 대화·전환·되감기·해제). */
   const clearWorkPlanSurface = (): void => {
+    outcomeSlot.replaceChildren();
     stickyChecklist.update(null);
     workPlanSurfaceState = null;
     workPlanActivity = "";
@@ -1230,6 +1237,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     return isAutonomyLevel(raw) ? Math.min(resolveAutonomy(raw).budgetCap, AGENT_RUN_MAX_TOTAL_STEPS) : AGENT_RUN_MAX_TOTAL_STEPS;
   };
   const beginWorkPlanTurn = (opts: { readonly autonomous: boolean; readonly carriedPlan: WorkPlan | null }): void => {
+    outcomeSlot.replaceChildren();
+    stickyChecklist.setBusy(true);
     const carried = opts.carriedPlan && !isWorkPlanComplete(opts.carriedPlan) ? opts.carriedPlan : null;
     workPlanSurfaceState = {
       active: true,
@@ -1243,6 +1252,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
   /** End live chrome, retaining plan/budget state for history and continuation. */
   const settleWorkPlanTurn = (): void => {
+    refreshRunOutcome();
+    stickyChecklist.setBusy(false);
     stickyChecklist.setActivity("");
     const focused = document.activeElement;
     const restoreComposerFocus = workPlanSurface?.contains(focused)
@@ -1568,7 +1579,14 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     notifyIfObscuredByTestPlay: () => notifyIfObscuredByTestPlay(),
     drainPendingSends: () => drainPendingSends(),
     persistConversation: (target) => persistConversation(target),
-    sendText: (text, displayAs, opts) => sendText(text, displayAs, opts),
+    sendText: (text, displayAs, opts) => {
+      // The existing Continue control is explicit user authorization, not an Ask query.
+      if (opts?.userResume && !turnBusy) {
+        composerMode = "do";
+        composerShell.setMode(composerMode);
+      }
+      return sendText(text, displayAs, opts);
+    },
     appendBubble: (role, text) => appendBubble(role, text),
     appendReasoning: () => appendReasoning(),
     closeToolActivity: () => closeToolActivity(),
@@ -1818,6 +1836,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         });
         stickyChecklist.update(session.getAcceptanceSnapshot());
       }
+      if (!turnBusy && !disposed) refreshRunOutcome();
       return;
     }
     stickyChecklist.update(null);
@@ -2368,7 +2387,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const deck = el("div", {
     class: "ai-deck",
     dataset: { testid: "ai-deck" },
-    children: [rail.root, body, commandBar],
+    children: [rail.root, body, outcomeSlot, commandBar],
   });
   deckRoot = deck;
 
@@ -2890,6 +2909,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
           audit,
           harness: controller.session?.getHarnessSnapshot() ?? null,
           lastAssistantText: lastAssistantFromAudit(),
+          runOutcome: controller.session?.getRunOutcome() ?? null,
         };
       } catch (cause) {
         return {
@@ -2914,6 +2934,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     }),
     getAudit: () => collectAudit(),
     getHarness: () => controller.session?.getHarnessSnapshot() ?? null,
+    withdrawRequirement: (action) => {
+      if (disposed || turnBusy) return false;
+      const session = controller.session;
+      if (!session) return false;
+      const accepted = session.withdrawRequirement(action);
+      stickyChecklist.update(session.getAcceptanceSnapshot());
+      refreshRunOutcome();
+      return accepted;
+    },
     abort: () => abortActiveTurn(),
     // DB 모달 AI 바 등 외부 진입점이 "채팅 도크 열기"를 요청할 때 — 접힘만 해제한다.
     openPanel: () => {

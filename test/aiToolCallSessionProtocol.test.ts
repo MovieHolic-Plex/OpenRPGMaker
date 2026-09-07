@@ -8,8 +8,8 @@
 import { describe, expect, it } from "vitest";
 // 정적 import 다 — 동적 import 를 테스트 본문에서 하면 레지스트리(188툴) 로딩 시간이 그 테스트의
 // 15초 예산에 들어가 부하가 걸린 병렬 스위트에서 타임아웃으로 깜박인다(실측: 단독 8초 / 스위트 15초+).
-import { AssistantSession } from "@/ai/assistantSession";
-import type { ChatMessage, ChatResult } from "@/ai/llmClient";
+import { AssistantSession, type SessionEvent } from "@/ai/assistantSession";
+import type { ChatMessage, ChatRequest, ChatResult } from "@/ai/llmClient";
 import { createBlankProject } from "@/project/defaults";
 
 const CONFIG = {
@@ -64,24 +64,64 @@ describe("툴 인자 JSON 파싱 실패", () => {
 
 describe("툴 루프 예외", () => {
   it("예외가 나도 그 호출의 tool 응답이 남아 세션이 오염되지 않는다", async () => {
-    let round = 0;
-    const chat = async (): Promise<ChatResult> => {
-      round += 1;
-      return round === 1 ? toolCallRound("c1", "set_title_screen", JSON.stringify({ title: "t" })) : finalAnswer();
+    const sent: (readonly ChatMessage[])[] = [];
+    const events: SessionEvent[] = [];
+    const chat = async (_config: unknown, request: ChatRequest): Promise<ChatResult> => {
+      sent.push(structuredClone(request.messages));
+      return sent.length === 1 ? toolCallRound("c1", "set_title_screen", JSON.stringify({ title: "t" })) : finalAnswer();
     };
-    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat: chat as never });
+    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
     // 툴 실행 성공 직후(=tool 응답을 붙이기 전) 단계에서 던지게 만든다. 실제로는 마일스톤 자동
     // 적용·검증 스윕처럼 await 가 걸린 후처리가 이 자리에서 던질 수 있다.
     const internals = session as unknown as { recordSuccessfulTool: (name: string) => void };
+    const recordSuccessfulTool = internals.recordSuccessfulTool;
     internals.recordSuccessfulTool = (): never => {
       throw new Error("후처리 폭발");
     };
 
-    await expect(session.sendUserMessage("타이틀 바꿔줘", () => {})).rejects.toThrow("후처리 폭발");
+    const failed = await session.sendUserMessage("타이틀 바꿔줘", event => events.push(event));
+    internals.recordSuccessfulTool = recordSuccessfulTool;
+    const failureOutcome = { execution: "failed", goal: "unassessed", delivery: "no-change" };
+    expect(failed.error).toBe("후처리 폭발");
+    expect(failed.stoppedReason).toBe("error");
+    expect(failed.runOutcome).toEqual(failureOutcome);
+    expect(failed.recap?.stoppedReason).toBe("error");
+    expect(failed.recap?.runOutcome).toEqual(failureOutcome);
+    expect(session.getRunOutcome()).toEqual(failureOutcome);
+    expect(session.getHarnessSnapshot().runOutcome).toEqual(failureOutcome);
+    expect(events.at(-1)).toEqual({ type: "run_outcome", runOutcome: failureOutcome });
+    expect(sent).toHaveLength(1);
 
     const messages = session.getMessages();
     expect(orphanCallIds(messages)).toEqual([]);
-    const toolMessage = messages.find((message) => message.role === "tool");
-    expect(String(toolMessage?.content)).toContain("후처리 폭발");
+    const toolMessages = messages.filter(message => message.role === "tool");
+    expect(toolMessages).toHaveLength(1);
+    const toolMessage = toolMessages[0];
+    if (!toolMessage) throw new Error("Missing failed tool response");
+    expect(toolMessage).toMatchObject({ tool_call_id: "c1", name: "set_title_screen" });
+    expect(String(toolMessage.content)).toContain("후처리 폭발");
+    expect(JSON.parse(String(toolMessage.content))).toMatchObject({
+      ok: false,
+      issues: [{ severity: "error", code: "tool-loop-exception", message: "후처리 폭발" }],
+    });
+
+    // A new public turn must send the failed call AND its response to the provider, not erase history.
+    const recovered = await session.sendUserMessage("현재 타이틀은 뭐야?", event => events.push(event), undefined, { composerMode: "ask" });
+    expect(sent).toHaveLength(2);
+    const followupMessages = sent[1];
+    if (!followupMessages) throw new Error("Missing subsequent provider request");
+    const callMessage = followupMessages.find(message => message.tool_calls);
+    if (!callMessage?.tool_calls) throw new Error("Missing retained assistant tool calls");
+    expect(callMessage.tool_calls.map(call => call.id)).toEqual(["c1"]);
+    expect(followupMessages.filter(message => message.role === "tool")).toEqual([toolMessage]);
+    expect(orphanCallIds(followupMessages)).toEqual([]);
+    expect(orphanCallIds(session.getMessages())).toEqual([]);
+    expect(recovered.error).toBeUndefined();
+    expect(recovered.stoppedReason).toBe("final");
+    const recoveredOutcome = { execution: "response-final", goal: "unassessed", delivery: "no-change" };
+    expect(recovered.runOutcome).toEqual(recoveredOutcome);
+    expect(recovered.recap?.runOutcome).toEqual(recoveredOutcome);
+    expect(session.getHarnessSnapshot().runOutcome).toEqual(recoveredOutcome);
+    expect(events.at(-1)).toEqual({ type: "run_outcome", runOutcome: recoveredOutcome });
   });
 });

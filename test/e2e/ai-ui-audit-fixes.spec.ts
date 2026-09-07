@@ -1,6 +1,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import { isWikiExtraction } from "../wikiTransportFixture";
 
 const evidence = path.resolve("output/evidence/ai-ui-fixes", process.env.AI_UI_PHASE ?? "green");
 mkdirSync(evidence, { recursive: true });
@@ -8,7 +9,7 @@ mkdirSync(evidence, { recursive: true });
 async function boot(page: Page): Promise<void> {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.addInitScript(() => {
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "standard");
+    localStorage.setItem("oprn:editor-ui-mode", "standard");
     localStorage.setItem("oprn:standard-welcome-seen", "1");
     localStorage.setItem("oprn:coachmarks-basic-v1", "1");
     if (!sessionStorage.getItem("ai-ui-fix-initialized")) {
@@ -64,6 +65,42 @@ async function geometry(node: Locator) {
     const r = element.getBoundingClientRect();
     return { x: r.x, y: r.y, width: r.width, height: r.height, right: r.right, bottom: r.bottom };
   });
+}
+
+async function resizeTo(page: Page, width: number, trigger: () => Promise<void>): Promise<void> {
+  const signal = await page.evaluateHandle((expected) => {
+    const deck = document.querySelector('[data-testid="ai-deck"]');
+    const handle = document.querySelector('[data-testid="ai-resize-handle"]');
+    if (!deck || !handle) throw new Error("Missing resize surface");
+    let stop = () => {};
+    const done = new Promise<boolean>((resolve) => {
+      const finish = (matched: boolean) => {
+        clearTimeout(deadline);
+        sizeObserver.disconnect();
+        ariaObserver.disconnect();
+        resolve(matched);
+      };
+      const check = () => {
+        if (deck.getBoundingClientRect().width === expected
+          && handle.getAttribute("aria-valuenow") === String(expected)) finish(true);
+      };
+      const sizeObserver = new ResizeObserver(check);
+      const ariaObserver = new MutationObserver(check);
+      const deadline = setTimeout(() => finish(false), 5000);
+      stop = () => finish(false);
+      sizeObserver.observe(deck);
+      ariaObserver.observe(handle, { attributes: true, attributeFilter: ["aria-valuenow"] });
+      check();
+    });
+    return { done, stop: () => stop() };
+  }, width);
+  try {
+    await trigger();
+    expect(await signal.evaluate((state) => state.done), `resize to ${width}px`).toBe(true);
+  } finally {
+    await signal.evaluate((state) => state.stop());
+    await signal.dispose();
+  }
 }
 
 async function capture(page: Page, suffix = ""): Promise<void> {
@@ -222,7 +259,9 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768
       const sentinel = "UI-FIX-TRANSCRIPT-END";
       await page.route("**/v1/chat/completions", async (route) => {
         const request = route.request().postDataJSON();
-        const content = request.tools?.length
+        const content = isWikiExtraction(request.messages)
+          ? JSON.stringify({ upserts: [] })
+          : request.tools?.length
           ? `${Array.from({ length: 24 }, (_, i) => `Paragraph ${i}: read-only UI fixture.`).join("\n\n")}\n\n${sentinel}`
           : JSON.stringify({ mode: "question", space: "none", needsPlan: false, tools: [], action: "direct", reason: "read-only" });
         if (request.stream) {
@@ -266,20 +305,23 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768
       const handle = page.getByTestId("ai-resize-handle");
       const before = await geometry(deck);
       await handle.focus();
-      await page.keyboard.press("ArrowLeft");
+      await resizeTo(page, before.width + 8, () => page.keyboard.press("ArrowLeft"));
       expect((await geometry(deck)).width).toBe(before.width + 8);
       await expect(handle).toHaveAttribute("aria-valuenow", String(before.width + 8));
       const box = await geometry(handle);
-      await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-      await page.mouse.down();
-      await page.mouse.move(box.x + box.width / 2 - 80, box.y + box.height / 2, { steps: 4 });
-      await page.mouse.up();
+      await resizeTo(page, before.width + 88, async () => {
+        await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+        await page.mouse.down();
+        await page.mouse.move(box.x + box.width / 2 - 80, box.y + box.height / 2, { steps: 4 });
+        await page.mouse.up();
+      });
       const resized = await geometry(deck);
       expect(resized.width).toBe(before.width + 88);
       await page.getByTestId("ai-input").focus();
       await expect(handle).toHaveAttribute("aria-valuenow", String(resized.width));
       await page.reload({ waitUntil: "domcontentloaded" });
       await ready(page);
+      await resizeTo(page, resized.width, async () => {});
       expect((await geometry(deck)).width).toBe(resized.width);
     });
   });

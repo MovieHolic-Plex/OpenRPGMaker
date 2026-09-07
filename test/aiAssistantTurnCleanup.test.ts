@@ -137,6 +137,27 @@ describe("assistant owner-turn presentation cleanup", () => {
     expect(observed.activity).toHaveBeenLastCalledWith(expect.objectContaining({ result: expect.objectContaining({ appliedCalls: outcome === "applied" ? 1 : 0 }) }));
   });
 
+  it("retires an Ask owner without applying executor-supplied proposals", async () => {
+    const h = setup();
+    const before = structuredClone(store.getCurrent());
+    const proof = vi.spyOn(h.session, "proveAppliedRevision");
+    const result: TurnResult = {
+      assistantText: "answer", stoppedReason: "final",
+      proposedCalls: [{ name: "set_title_screen", args: { title: "title" }, destructive: false, summary: "title", result: { ok: true, summary: "title" } }],
+    };
+    let visibleCount = 0;
+    await h.runner.executeTurn(h.session, "title", async () => {
+      visibleCount = agentBlueprintForMap(getAgentBlueprintState(), spec.mapId).length;
+      return result;
+    }, { composerMode: "ask" });
+    expect(visibleCount).toBe(1);
+    expect(getAgentBlueprintState().entries).toHaveLength(0);
+    expect(h.deps.applyProposal).not.toHaveBeenCalled();
+    expect(proof).not.toHaveBeenCalled();
+    expect(observed.activity).toHaveBeenLastCalledWith(expect.objectContaining({ result: expect.objectContaining({ appliedCalls: 0 }) }));
+    expect(store.getCurrent()).toEqual(before);
+  });
+
   it("retires unseen automatic spec expansion before a follow-up turn can sync it", async () => {
     const h = setup();
     await h.runner.executeTurn(h.session, "expand", async () => {

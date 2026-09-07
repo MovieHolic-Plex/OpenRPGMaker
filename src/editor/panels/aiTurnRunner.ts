@@ -121,6 +121,26 @@ export interface AiTurnRunner {
 }
 
 export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
+  const offerContinuation = (): void => {
+    const existingRow = deps.surface.log.querySelector("[data-testid=ai-continue-run]")?.parentElement;
+    if (existingRow) {
+      existingRow.remove();
+      existingRow.classList.remove("is-prior-turn");
+      deps.surface.log.append(existingRow);
+      return;
+    }
+    const continueRow = el("div", { class: "ai-retry-row" });
+    const continueBtn = el("button", {
+      class: "ai-assistant-action",
+      text: "계속",
+      attrs: { type: "button" },
+      dataset: { testid: "ai-continue-run" },
+      on: { click: () => { void deps.surface.sendText("계속", undefined, { userResume: true }); } },
+    });
+    continueRow.append(continueBtn);
+    deps.surface.log.append(continueRow);
+    deps.surface.log.scrollTop = deps.surface.log.scrollHeight;
+  };
   const executeTurn = async (
     session: AssistantSession,
     requestText: string,
@@ -385,21 +405,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
           deps.workPlanSurfaceState.budget = budget;
           deps.refreshWorkPlanSurface();
         }
-        if (event.text.includes("예산 소진") || event.text.includes("agent_run_budget_exhausted")) {
-          if (!deps.surface.log.querySelector("[data-testid=ai-continue-run]")) {
-            const continueRow = el("div", { class: "ai-retry-row" });
-            const continueBtn = el("button", {
-              class: "ai-assistant-action",
-              text: "계속",
-              attrs: { type: "button" },
-              dataset: { testid: "ai-continue-run" },
-              on: { click: () => { void deps.surface.sendText("계속"); } },
-            });
-            continueRow.append(continueBtn);
-            deps.surface.log.append(continueRow);
-            deps.surface.log.scrollTop = deps.surface.log.scrollHeight;
-          }
-        }
+        if (event.text.includes("예산 소진") || event.text.includes("agent_run_budget_exhausted")) offerContinuation();
         if (shouldShowStatusInChat(event.text)) deps.surface.appendBubble("system", event.text);
       } else if (event.type === "work_plan") {
         const s = event.plan;
@@ -520,36 +526,38 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
       const currentMapId = editorState.get().currentMapId ?? beforeProject.startMapId ?? null;
       // 승인 카드는 없다 — 쓰기가 있으면 그대로 적용하고, 복구는 되돌리기다(approvalPolicy 머리말).
       const applyMode = resolveProposalApplyMode({ callCount: result.proposedCalls.length });
-      if (applyMode === "apply-now") {
+      if (runOpts?.composerMode !== "ask" && applyMode === "apply-now") {
         // 적용을 먼저 하고 그 결과를 기다린 다음에 로그를 붙인다 — 배치 검증·커밋 게이트가 적용을
         // 거부하면 store 는 그대로이므로 "적용됨 N건" 은 거짓이 된다(사유는 deps.applyProposal 이
         // 이미 ❌ 버블로 남긴다).
-        const appliedSummary = result.proposedCalls.map((call) => call.summary || call.name).join(" · ");
+        const pendingCalls = result.proposedCalls;
+        const appliedSummary = pendingCalls.map((call) => call.summary || call.name).join(" · ");
         // 게이트에서 내린 경고는 정보로 남긴다 — 적용을 막지는 않되 삼키지도 않는다.
         if (completenessWarnings.length > 0) deps.surface.appendBubble("system", completenessWarnings.join("\n"));
         deps.applyingProposal = true;
         let outcome: ProposalApplyOutcome;
         try {
-          outcome = await deps.applyProposal(result.proposedCalls, assistantBubble);
+          outcome = await deps.applyProposal(pendingCalls, assistantBubble);
         } finally {
           deps.applyingProposal = false;
           deps.projectIdentityId = store.getProjectIdentity().id;
         }
         const applied = outcome === "applied";
         if (!applied && deps.workPlanSurfaceState) deps.workPlanSurfaceState.stoppedReason = "apply-failed";
+        if (!applied) session.recordApplyRejected(onEvent);
         if (applied) {
-          appliedWriteCount += result.proposedCalls.length;
+          appliedWriteCount += pendingCalls.length;
           await session.proveAppliedRevision(onEvent, abortController.signal);
           if (!ownsTurn(true)) return;
         }
         // 적용 결과가 나온 다음에 청사진을 정산한다 — 배치 검증·커밋 게이트가 거부하면
         // (applied === false) 저장소는 그대로이므로 done 은 거짓이다.
-        settleBlueprintForTurnEnd(applied ? result.proposedCalls : null);
+        settleBlueprintForTurnEnd(applied ? pendingCalls : null);
         deps.surface.setStatus(applied ? "대기" : "적용 실패");
         // 변경 카드는 proposalApi.onApplied 가 한 장만 남긴다. 여기서 또 emitChangeCard 를 부르면
         // 한 턴에 카드가 두 장 붙는다(e2e 로 잡혔다).
         if (applied && !currentMapId) {
-          deps.surface.appendBubble("system", `적용됨 ${result.proposedCalls.length}건 — ${appliedSummary}`);
+          deps.surface.appendBubble("system", `적용됨 ${pendingCalls.length}건 — ${appliedSummary}`);
         }
       } else {
         // 쓰기 제안이 0건이면 적용할 것이 없다 — 진행 표시만 남으면 거짓이 된다.
@@ -631,6 +639,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
             proposedCalls: turnResult?.proposedCalls.length,
             appliedCalls: appliedWriteCount,
             assistantText: turnResult?.assistantText,
+            runOutcome: turnResult?.runOutcome,
           },
           toolCalls: liveToolCalls.length > 0 ? liveToolCalls : toolCallsFromAudit(turnAudit),
           audit: turnAudit,
@@ -671,6 +680,10 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
           : turnCatchError || turnFailed ? "error" : turnResult?.stoppedReason ?? "error";
       }
       deps.settleWorkPlanTurn();
+      const blockedWork = turnResult?.workPlan?.layers.some(layer => layer.items.some(item => item.status === "blocked"));
+      const retainedContinuation = turnResult?.runOutcome?.goal === "incomplete"
+        && deps.surface.log.querySelector("[data-testid=ai-continue-run]") !== null;
+      if (turnResult?.runOutcome?.execution === "blocked" || blockedWork || retainedContinuation) offerContinuation();
       // An aborted owner cannot publish live events, but its backend terminal snapshot
       // is authoritative. The ownsTurn(true) guard above still rejects retired owners.
       if (receivedAcceptance) deps.showAcceptance(session.getAcceptanceSnapshot());
@@ -703,9 +716,11 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
           proposedCalls: turnResult?.proposedCalls.length,
           appliedCalls: appliedWriteCount,
           assistantText: turnResult?.assistantText,
+          runOutcome: turnResult?.runOutcome,
           ...(turnResult?.recap
             ? {
                 recap: {
+                  runOutcome: turnResult.recap.runOutcome,
                   elapsedMs: turnResult.recap.elapsedMs,
                   promptTokens: turnResult.recap.usage.promptTokens,
                   completionTokens: turnResult.recap.usage.completionTokens,

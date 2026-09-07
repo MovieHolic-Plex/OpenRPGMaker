@@ -1,0 +1,70 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/toolSchemaProviderCompat.test.ts test/assistantAcceptance.test.ts test/assistantAcceptanceSession.test.ts test/assistantAcceptanceRequestBaseline.test.ts test/assistantAcceptancePromiseBaseline.test.ts test/assistantAcceptanceCost.test.ts test/aiRequiredOutcomes.test.ts test/workPlan.test.ts test/agentVerification.test.ts --maxWorkers 1 --minWorkers 1 --no-cache --reporter default --reporter json --outputFile output/evidence/ai-harness/p2/schema-compat-fix/green-final-vitest.json
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p2-outcome-20260906
+
+ ✓ test/workPlan.test.ts (40 tests) 27ms
+ ✓ test/aiRequiredOutcomes.test.ts (39 tests) 13748ms
+   ✓ canonical requirements > keeps required skipped obligations when a replan tries to weaken them  470ms
+   ✓ canonical requirements > allows optional skipped work without labeling it verified  341ms
+   ✓ canonical requirements > fails closed for malformed declarations null  440ms
+   ✓ canonical requirements > fails closed for malformed declarations %j  427ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":[{"kind":"mapDimensions","target":{"mapId":"map_blank_start"},"width":99,"height":99}],"required":"false"}  376ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":[{"kind":"invented","passed":true}]}  362ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":null,"required":false}  354ms
+   ✓ canonical requirements > assesses existing explicit acceptance without requiring the new field  380ms
+   ✓ canonical requirements > retains an unlinked required obligation when replan drops links=false  363ms
+   ✓ canonical requirements > retains an unlinked required obligation when replan drops links=true  394ms
+   ✓ canonical requirements > binds original text and scope at the host boundary despite fabricated source and withdrawal  423ms
+   ✓ canonical requirements > retains only the original user utterance through replan with instruction override=false  463ms
+   ✓ canonical requirements > retains only the original user utterance through replan with instruction override=true  495ms
+   ✓ canonical requirements > withdraws only the named current requirement through the user-only API  397ms
+   ✓ canonical requirements > keeps sibling obligations when the user withdraws just one  411ms
+   ✓ canonical requirements > rejects model tool withdrawal even with fabricated user provenance  404ms
+   ✓ canonical requirements > rejects stale goal withdrawal actions  432ms
+   ✓ canonical requirements > does not erase old obligations on a model resetsContext claim  556ms
+   ✓ canonical requirements > archives an incomplete goal when the user explicitly starts a new goal  442ms
+   ✓ exact scoped verdict authority > does not verify an unapplied draft from a passing scoped verdict  343ms
+   ✓ exact scoped verdict authority > retires scoped verdicts after applied content changes even if later undone  944ms
+   ✓ exact scoped verdict authority > rejects pre-declaration evidence after an external rebase  827ms
+   ✓ exact scoped verdict authority > credits a real scoped tool response through the session dispatcher  392ms
+   ✓ question-safe continuation > preserves blocked work and counters for ask  305ms
+   ✓ question-safe continuation > preserves repeated failure counters while answering a question  522ms
+   ✓ question-safe continuation > reactivates blocked work only with explicit user resume  309ms
+   ✓ question-safe continuation > retains goal evidence and repair counters during ask  421ms
+ ✓ test/agentVerification.test.ts (41 tests) 30ms
+ ✓ test/assistantAcceptanceSession.test.ts (12 tests) 7052ms
+   ✓ acceptance controls actual session termination > does not schedule run-end persistence proof for a completed plan with unmet acceptance  526ms
+   ✓ acceptance controls actual session termination > does not turn a review without an explicit passing verdict into completion  585ms
+   ✓ acceptance controls actual session termination > withdraws an earlier pass when a later explicit review fails  659ms
+   ✓ acceptance controls actual session termination > continues then blocks insufficient dimensions and quantity even after skip completes the plan  426ms
+   ✓ acceptance controls actual session termination > retains original denominator when skip and set_work_plan try to shrink promises  478ms
+   ✓ acceptance controls actual session termination > invalidates an attributed image review after a subsequent real map write  819ms
+   ✓ applied acceptance lifecycle through real tools > repairs exact dimensions after plan completion and invalidates on applied undo  1913ms
+   ✓ applied acceptance lifecycle through real tools > blocks and retains the ledger when aborted while the next model response is held  378ms
+   ✓ applied acceptance lifecycle through real tools > never credits a review authored in the same response as the image request  514ms
+   ✓ applied acceptance lifecycle through real tools > requires visible contract repair for a spatial plan missing criteria  408ms
+ ✓ test/toolSchemaProviderCompat.test.ts (69 tests) 160ms
+ ✓ test/assistantAcceptance.test.ts (23 tests) 1708ms
+ ✓ test/assistantAcceptanceRequestBaseline.test.ts (6 tests) 12254ms
+   ✓ per-request acceptance baselines > preserves a map created in A while B changes another map  2397ms
+   ✓ per-request acceptance baselines > does not credit A's change toward a newly accepted B change promise  1415ms
+   ✓ per-request acceptance baselines > late adoption cannot baseline away B's earlier write (applied=false)  1992ms
+   ✓ per-request acceptance baselines > late adoption cannot baseline away B's earlier write (applied=true)  2203ms
+   ✓ per-request acceptance baselines > retains B's pre-write baseline across budget-driven synthetic continuation  1995ms
+   ✓ per-request acceptance baselines > retains B's baseline when a manual continuation repairs and replans after application  2249ms
+ ✓ test/assistantAcceptancePromiseBaseline.test.ts (13 tests) 2029ms
+ ✓ test/assistantAcceptanceCost.test.ts (6 tests) 2699ms
+   ✓ bounded canonical project comparisons > compares shared project content once for same-content  348ms
+   ✓ bounded canonical project comparisons > compares shared project content once for changed-content  326ms
+   ✓ bounded canonical project comparisons > preserves late-adoption freshness when content changed=false  825ms
+   ✓ bounded canonical project comparisons > preserves late-adoption freshness when content changed=true  774ms
+
+ Test Files  9 passed (9)
+      Tests  249 passed (249)
+   Start at  07:58:16
+   Duration  64.96s (transform 7.44s, setup 0ms, collect 22.00s, tests 39.71s, environment 2ms, prepare 676ms)
+
+JSON report written to /home/main/z-project/rpg-zzu-ai-harness-p2-outcome-20260906/output/evidence/ai-harness/p2/schema-compat-fix/green-final-vitest.json

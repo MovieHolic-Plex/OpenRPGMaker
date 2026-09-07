@@ -1,0 +1,47 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiRunOutcomeLifecycle.test.ts -t driver user-wait --maxWorkers 2 --minWorkers 1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p2-20260906
+
+ ❯ test/aiRunOutcomeLifecycle.test.ts (6 tests | 1 failed | 5 skipped) 530ms
+   ↓ projects budget exhaustion when the tools limit ends execution
+   ↓ projects budget exhaustion when the tokens limit ends execution
+   × preserves the driver user-wait decision after a tool-budget return 528ms
+     → expected { execution: 'budget-exhausted', …(2) } to deeply equal { execution: 'awaiting-user', …(2) }
+   ↓ projects a recovered retry without inventing application
+   ↓ retains both applied milestones and pending calls when a later transport fails
+   ↓ routes an explicit user withdrawal to the sole session authority
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiRunOutcomeLifecycle.test.ts > preserves the driver user-wait decision after a tool-budget return
+AssertionError: expected { execution: 'budget-exhausted', …(2) } to deeply equal { execution: 'awaiting-user', …(2) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "delivery": "no-change",[22m
+[32m-   "execution": "awaiting-user",[39m
+[31m+   "execution": "budget-exhausted",[39m
+[2m    "goal": "unassessed",[22m
+[2m  }[22m
+
+ ❯ test/aiRunOutcomeLifecycle.test.ts:45:29
+     43|   // Then the later actual decision wins without rewriting legacy stop…
+     44|   expect(result.stoppedReason).toBe("max-tool-calls");
+     45|   expect(result.runOutcome).toEqual({ execution: "awaiting-user", goal…
+       |                             ^
+     46| });
+     47| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 5 skipped (6)
+   Start at  02:49:48
+   Duration  32.57s (transform 20.04s, setup 0ms, collect 30.32s, tests 530ms, environment 4ms, prepare 460ms)
+

@@ -139,7 +139,7 @@ describe("completion accounting through real assistant sessions", () => {
       // Deliberately omit rendered evidence: approval-shaped reviewer JSON must
       // still fail closed. An unrelated next request drops this rejected draft,
       // while an explicit spec (unlike a selection) keeps its expanded lifetime.
-      const pendingFinal = (status: "verifying" | "working") => () => {
+      const pendingFinal = (status: "verifying" | "blocked") => () => {
         expect(session.getAcceptanceSnapshot()).toMatchObject({ status, items: [{
           id: "acceptance-contract", status, evidence: [{ expected: JSON.stringify(criteria[0]), passed: false }],
         }] });
@@ -152,7 +152,8 @@ describe("completion accounting through real assistant sessions", () => {
         toolCall("repair_acceptance", { itemId: "acceptance-contract", criteria }, "repair"),
         ...Array.from({ length: 2 }, () => pendingFinal("verifying")),
         toolCall("paint_tiles", { mapId: "m1", from: { x: rect.x, y: rect.y }, to: { x: rect.x, y: rect.y }, mode: "rect", layer: "lower", tile: 281 }, "next-turn"),
-        ...Array.from({ length: scope === "active" ? 2 : 4 }, () => pendingFinal(scope === "active" ? "verifying" : "working")),
+        // Arbitrary new prose cannot resume a stopped canonical requirement.
+        ...Array.from({ length: scope === "active" ? 2 : 4 }, () => pendingFinal("blocked")),
       ];
       const chat = scriptedChat(steps);
       const session = new AssistantSession(project, { config: CONFIG, chat, declareIntent: fixedDeclarer({ mode: "modify" }) });
@@ -226,7 +227,9 @@ describe("completion accounting through real assistant sessions", () => {
       toolCall("fill_region", { mapId: "m1", rect: { x: 12, y: 12, w: 3, h: 3 }, material: "모래", shape: "rect" }, "throw"),
     ]) });
 
-    await expect(session.sendUserMessage("지형 칠해줘", () => {})).rejects.toThrow(failure);
+    const result = await session.sendUserMessage("지형 칠해줘", () => {});
+    expect(result).toMatchObject({ stoppedReason: "error", error: failure.message,
+      runOutcome: { execution: "failed", goal: "incomplete", delivery: "no-change" } });
     expect(session.getActiveSpec()).toEqual(SPEC);
     expect(session.getProposedProject().maps.m1).toEqual(project.maps.m1);
     const response = session.getMessages().find((message) => message.role === "tool" && message.tool_call_id === "throw");

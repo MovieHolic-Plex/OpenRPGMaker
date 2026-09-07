@@ -1,0 +1,7 @@
+cwd=/home/main/z-project/rpg-zzu-ai-harness-p2-event-contract-20260906
+branch=agent/ai-harness-p2-event-contract-20260906
+HEAD=6f203da81c6d9d956a0e4b8d23c3f9f0a2b23c19
+tree=63f7db51796770c40fa0bc63350add69908fc993
+source_sha256=2fe12c82a70e1143f78407a605cde243e8b183c82d709328974c6fdc76415228  test/assistantVerificationEvidence.test.ts
+command=npm test -- test/assistantVerificationEvidence.test.ts --maxWorkers 1 --minWorkers 1
+started=2026-09-06T22:19:12Z

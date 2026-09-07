@@ -1,6 +1,6 @@
 import { setImmediate } from "node:timers/promises";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { AssistantSession, type AssistantSessionOptions, type SessionEvent, type SessionTurnOptions } from "@/ai/assistantSession";
+import { AssistantSession, type AssistantSessionOptions, type SessionEvent, type SessionTurnOptions, type TurnResult } from "@/ai/assistantSession";
 import { type BuildSpec, validateBuildSpec } from "@/ai/buildSpec";
 import { proposalCompletenessWarnings, PROPOSAL_SCOPE_WARNING_PREFIX } from "@/ai/proposalCompleteness";
 import * as tools from "@/editor/tools";
@@ -31,13 +31,13 @@ function fixture(options: Pick<AssistantSessionOptions, "declareIntent"> = {}) {
   const events: ToolEvent[] = [];
   // Each send exercises one actual model batch and ends at the configured budget.
   // No fabricated acceptance pass: unfinished spatial promises stay blocked.
-  const send = async (calls: Call[], turnOptions: SessionTurnOptions = {}) => {
+  const send = async (calls: Call[], turnOptions: SessionTurnOptions = {}, expectedStop: TurnResult["stoppedReason"] = "max-tool-calls") => {
     chat.mockImplementationOnce(async () => ({ message: { role: "assistant", content: null, tool_calls: calls.map((entry, index) => ({
       id: `b${batch}_${index}`, type: "function", function: { name: entry.name, arguments: JSON.stringify(entry.args) },
     })) }, finishReason: "tool_calls" }));
     batch += 1;
     const result = await session.sendUserMessage("Edit the requested maps", event => { if (event.type === "tool_call") events.push(event); }, undefined, turnOptions);
-    expect(result.stoppedReason).toBe("max-tool-calls");
+    expect(result.stoppedReason).toBe(expectedStop);
     expect(chat).toHaveBeenCalledTimes(batch);
     return result;
   };
@@ -81,7 +81,11 @@ describe("map-owned construction contracts through AssistantSession", () => {
         if (name === "fill_region") throw new Error("injected runner failure");
         return original(ctx, name, args, options);
       });
-      await expect(h.send([fill("a")])).rejects.toThrow("injected runner failure");
+      const result = await h.send([fill("a")], {}, "error");
+      expect(result.error).toBe("injected runner failure");
+      expect(result.runOutcome).toEqual({ execution: "failed", goal: "incomplete", delivery: "no-change" });
+      const response = h.session.getMessages().find(message => message.role === "tool" && message.tool_call_id === "b2_0");
+      expect(JSON.parse(String(response?.content))).toMatchObject({ ok: false, issues: [{ code: "tool-loop-exception" }] });
       spy.mockRestore();
     } else {
       await h.send([fill("a", "invalid")]);

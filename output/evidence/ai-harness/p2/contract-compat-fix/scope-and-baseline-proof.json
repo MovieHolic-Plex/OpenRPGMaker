@@ -1,0 +1,48 @@
+{
+  "worktree": "/home/main/z-project/rpg-zzu-ai-harness-p2-event-contract-20260906",
+  "branch": "agent/ai-harness-p2-contracts-20260906",
+  "parentCommit": "dfa8bdd15e4e39904ae910101d5e90579b5d8a67",
+  "sourceTree": "45c9a7a48f1f1c3eb9cfea2966ac477c86307957",
+  "changedTrackedFiles": [
+    "test/aiBlockedContinue.test.ts",
+    "test/aiToolCallSessionProtocol.test.ts",
+    "test/assistantSessionIntent.test.ts"
+  ],
+  "protectedDiffExit": 0,
+  "sha256": {
+    "test/aiBlockedContinue.test.ts": "d4ee43b94294811c94e59daecb788af60d6f67a2d38d1e218d9030e4953e6975",
+    "test/aiToolCallSessionProtocol.test.ts": "7e5cad6a40499bda6ab7ae1c15dc437ea5844387b2fee625d0505fad47e26ca3",
+    "test/assistantSessionIntent.test.ts": "a36213b566d0e7d597553a41f6f207ce66dff2df42d7fcec32e4aa54ead24775"
+  },
+  "final": {
+    "tests": 85,
+    "passed": 84,
+    "failed": 1,
+    "pending": 0,
+    "exit": 1
+  },
+  "f05BodyUnchanged": true,
+  "f05FailureComparison": {
+    "base": {
+      "status": "failed",
+      "fullName": "의도 선언이 세션 라우팅을 정한다 auto 모드는 같은 선언에도 멈추지 않고 진행한다(F-05)",
+      "failure": "AssertionError: expected '완료 검증이 아직 미완성입니다.\\n- 집 하나 만들어줘: Missi…' to be '야외 집으로 진행합니다.' // Object.is equality"
+    },
+    "current": {
+      "status": "failed",
+      "fullName": "의도 선언이 세션 라우팅을 정한다 auto 모드는 같은 선언에도 멈추지 않고 진행한다(F-05)",
+      "failure": "AssertionError: expected '완료 검증이 아직 미완성입니다.\\n- 집 하나 만들어줘: Missi…' to be '야외 집으로 진행합니다.' // Object.is equality"
+    },
+    "final": {
+      "status": "failed",
+      "fullName": "의도 선언이 세션 라우팅을 정한다 auto 모드는 같은 선언에도 멈추지 않고 진행한다(F-05)",
+      "failure": "AssertionError: expected '완료 검증이 아직 미완성입니다.\\n- 집 하나 만들어줘: Missi…' to be '야외 집으로 진행합니다.' // Object.is equality"
+    }
+  },
+  "newNonNullAssertions": 0,
+  "diagnostics": {
+    "exit": 0,
+    "output": "test/aiBlockedContinue.test.ts: 0 diagnostics\ntest/aiToolCallSessionProtocol.test.ts: 0 diagnostics\ntest/assistantSessionIntent.test.ts: 0 diagnostics\n"
+  },
+  "testCommit": "6f8000763a411a24db540b6b16875a39644f1b1b"
+}

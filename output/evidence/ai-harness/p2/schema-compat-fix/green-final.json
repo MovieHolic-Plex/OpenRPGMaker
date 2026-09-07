@@ -1,0 +1,67 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-ai-harness-p2-outcome-20260906",
+  "command": "npm",
+  "args": [
+    "test",
+    "--",
+    "test/toolSchemaProviderCompat.test.ts",
+    "test/assistantAcceptance.test.ts",
+    "test/assistantAcceptanceSession.test.ts",
+    "test/assistantAcceptanceRequestBaseline.test.ts",
+    "test/assistantAcceptancePromiseBaseline.test.ts",
+    "test/assistantAcceptanceCost.test.ts",
+    "test/aiRequiredOutcomes.test.ts",
+    "test/workPlan.test.ts",
+    "test/agentVerification.test.ts",
+    "--maxWorkers",
+    "1",
+    "--minWorkers",
+    "1",
+    "--no-cache",
+    "--reporter",
+    "default",
+    "--reporter",
+    "json",
+    "--outputFile",
+    "output/evidence/ai-harness/p2/schema-compat-fix/green-final-vitest.json"
+  ],
+  "env": {
+    "TMPDIR": "/dev/shm/rpg-zzu-ai-harness-p2-01a07564"
+  },
+  "before": {
+    "head": "dfa8bdd15e4e39904ae910101d5e90579b5d8a67",
+    "tree": "d891bbd81abe1eaf9b1573ecf28b63251ea05cc7",
+    "trackedDiffSha256": "5fc9494a224984b235f0b9bb9de816b2e79b2a55d21772c4daec99261cd6c9b2",
+    "files": {
+      "src/ai/assistantAcceptanceTools.ts": "313b97a1ade2896883e6e4e7a9deec733c43f9353ce73faac7b8caa78179bb10",
+      "src/ai/assistantAcceptance.ts": "200f0ea274bdb5fa3c79cad81aada89245738ff03f21fdb8900e3d79c537a85e",
+      "src/ai/assistantAcceptanceLedger.ts": "a4fdf4a5535116df492499e3b890da65268e6098973150baade1aa0a2d78abd4",
+      "src/ai/assistantAcceptanceEvaluation.ts": "5fbda69719b0801d166f15f9e96c53eb18069e4d9378851abfccb576c809bc68",
+      "src/ai/assistantSession.ts": "4219b0a4e7bc9f5d570d9ef3f62a5249c763d26da3e02e7b990a401a82efaba1",
+      "src/ai/workPlan.ts": "f471aa410b6bbf00edd65d2cb98c909e3006e6d54a406d9166651fb4a69d454f",
+      "src/ai/toolVerificationEvidence.ts": "bb14ee339b4b0eec00173b189b44190c5943291cb01bdb09167f2e52d28d7f0e",
+      "test/toolSchemaProviderCompat.test.ts": "916e1e36ea67bf2196c7326326a4365102c29566c4e117afa1ccf0ae603680dc"
+    }
+  },
+  "after": {
+    "head": "dfa8bdd15e4e39904ae910101d5e90579b5d8a67",
+    "tree": "d891bbd81abe1eaf9b1573ecf28b63251ea05cc7",
+    "trackedDiffSha256": "5fc9494a224984b235f0b9bb9de816b2e79b2a55d21772c4daec99261cd6c9b2",
+    "files": {
+      "src/ai/assistantAcceptanceTools.ts": "313b97a1ade2896883e6e4e7a9deec733c43f9353ce73faac7b8caa78179bb10",
+      "src/ai/assistantAcceptance.ts": "200f0ea274bdb5fa3c79cad81aada89245738ff03f21fdb8900e3d79c537a85e",
+      "src/ai/assistantAcceptanceLedger.ts": "a4fdf4a5535116df492499e3b890da65268e6098973150baade1aa0a2d78abd4",
+      "src/ai/assistantAcceptanceEvaluation.ts": "5fbda69719b0801d166f15f9e96c53eb18069e4d9378851abfccb576c809bc68",
+      "src/ai/assistantSession.ts": "4219b0a4e7bc9f5d570d9ef3f62a5249c763d26da3e02e7b990a401a82efaba1",
+      "src/ai/workPlan.ts": "f471aa410b6bbf00edd65d2cb98c909e3006e6d54a406d9166651fb4a69d454f",
+      "src/ai/toolVerificationEvidence.ts": "bb14ee339b4b0eec00173b189b44190c5943291cb01bdb09167f2e52d28d7f0e",
+      "test/toolSchemaProviderCompat.test.ts": "916e1e36ea67bf2196c7326326a4365102c29566c4e117afa1ccf0ae603680dc"
+    }
+  },
+  "startedAt": "2026-09-06T22:58:15.874Z",
+  "finishedAt": "2026-09-06T22:59:21.755Z",
+  "exitCode": 0,
+  "signal": null,
+  "spawnError": null,
+  "logSha256": "8c8ab2da7e6098a6245a88a039bba86d39710a9103ec4b2eef9ff62fba31be2a"
+}

@@ -1,0 +1,41 @@
+{
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "focused": true,
+  "unique": 1,
+  "hit": true,
+  "modeBefore": "ask",
+  "rect": {
+    "x": 644,
+    "y": 606,
+    "width": 42.06666564941406,
+    "height": 28,
+    "right": 686.0666656494141,
+    "bottom": 634
+  },
+  "scrollOwner": {
+    "testid": "ai-chat-log",
+    "scrollTop": 0,
+    "clientHeight": 428,
+    "scrollHeight": 428,
+    "rect": {
+      "x": 628,
+      "y": 211.85000610351562,
+      "right": 1268,
+      "bottom": 640
+    }
+  },
+  "inViewport": true,
+  "fullyExposed": true,
+  "focusOutline": "rgb(15, 23, 42) 3px",
+  "beforeScroll": {
+    "scrollTop": 0,
+    "scrollHeight": 428,
+    "clientHeight": 428
+  },
+  "activation": "keyboard",
+  "instrumentPath": "test/aiContinueReachability.mjs",
+  "instrumentHash": "f76a49f8cc1b5fae1b577b63431fcc80eeca0bcd7a5b8dbc7416e59792f85800"
+}

@@ -5,12 +5,12 @@ import type { Project } from "@/project/types";
 import { store } from "@/project/store";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import type { ChatRequest, ChatResult } from "@/ai/llmClient";
+import type { SessionEvent } from "@/ai/assistantSession";
+import { resetIntentDeclarationCache } from "@/ai/intentDeclarationClient";
 import { declaredIntent, fixedDeclarer } from "./intentFixture";
 import { toOpenAiTools } from "@/editor/tools/toolRegistry";
-import { resetIntentDeclarationCache } from "@/ai/intentDeclarationClient";
 
-beforeEach(() => resetIntentDeclarationCache());
-
+beforeEach(resetIntentDeclarationCache);
 afterEach(() => {
   resetIntentDeclarationCache();
   vi.restoreAllMocks();
@@ -23,7 +23,7 @@ async function load() {
     import("@/ai/assistantSession"),
     import("@/project/defaults"),
   ]);
-  return { AssistantSession: assistantSession.AssistantSession, createBlankProject: defaults.createBlankProject };
+  return { AssistantSession: assistantSession.AssistantSession, isWriteToolName: assistantSession.isWriteToolName, createBlankProject: defaults.createBlankProject };
 }
 
 function toolCallResult(name: string, args: unknown, id: string): ChatResult {
@@ -155,25 +155,42 @@ describe("의도 선언이 세션 라우팅을 정한다", () => {
 
   it("질문 선언은 플래너를 건너뛰고, 계획 필요 선언은 플래너를 돈다", async () => {
     const { AssistantSession, createBlankProject } = await load();
+    const questionSeen: ChatRequest[] = [];
     const question = new AssistantSession(createBlankProject(), {
       config: AUTO_CONFIG,
-      chat: scriptedChat([finalResult("여관은 숙박 시설입니다.")]),
+      chat: scriptedChat([finalResult("여관은 숙박 시설입니다.")], questionSeen),
       declareIntent: fixedDeclarer({ mode: "question" }),
     });
-    await question.sendUserMessage("여관이 뭐야", () => {});
-    expect(statuses(question)).toContain("planner:skip question");
+    const answer = await question.sendUserMessage("여관이 뭐야", () => {});
+    // Planner requests have no tools; the sole request must be the normal answer round.
+    expect(questionSeen).toHaveLength(1);
+    const questionRequest = questionSeen[0];
+    if (!questionRequest?.tools) throw new Error("Missing question tool-loop request");
+    expect(questionRequest.tools.length).toBeGreaterThan(0);
+    expect(questionRequest.tool_choice).toBe("auto");
     expect(statuses(question)).not.toContain("planner:start");
+    expect(question.getWorkPlan()).toBeNull();
+    expect(answer.error).toBeUndefined();
+    expect(answer.runOutcome).toEqual({ execution: "response-final", goal: "unassessed", delivery: "no-change" });
 
+    const plannedSeen: ChatRequest[] = [];
     const planned = new AssistantSession(createBlankProject(), {
       config: AUTO_CONFIG,
       chat: scriptedChat([
         finalResult(JSON.stringify({ action: "direct", reason: "한 턴으로 충분" })),
         finalResult("완료"),
-      ]),
+      ], plannedSeen),
       declareIntent: fixedDeclarer({ needsPlan: true }),
     });
     await planned.sendUserMessage("마을 만들어줘", () => {});
     expect(statuses(planned)).toContain("planner:start");
+    expect(plannedSeen.filter(request => request.tools === undefined)).toHaveLength(1);
+    const [plannerRequest, executionRequest] = plannedSeen;
+    if (!plannerRequest || !executionRequest?.tools) throw new Error("Missing planner-to-execution requests");
+    expect(plannerRequest.tools).toBeUndefined();
+    expect(plannerRequest.tool_choice).toBeUndefined();
+    expect(executionRequest.tools.length).toBeGreaterThan(0);
+    expect(executionRequest.tool_choice).toBe("auto");
   }, 30000);
 
   it("플래너의 direct 는 존중한다 — 「마을」이라도 코드가 계획을 강제하지 않는다", async () => {
@@ -258,32 +275,88 @@ describe("의도 선언이 세션 라우팅을 정한다", () => {
     expect(names).toContain("script_cutscene");
   }, 30000);
 
-  it.each([
-    ["define_ending 툴이 뭐야", ""],
-    ["define_ending 툴이 뭐야", "\n\n[컨텍스트] 현재 맵: 시작 맵 (map_blank_start) · set_type_chart"],
-    ["지금 뭘 할 수 있어?", "\n\n[컨텍스트] 현재 맵: 시작 맵 (map_blank_start) · set_type_chart"],
-  ])("전체 활성 스키마는 키워드·footer 와 무관하고 선언은 instruction 만 읽는다: %s / %s", async (instruction, footer) => {
+  it.each([false, true])("지시 모드의 툴 이름 언급은 사용자 발화에서만 읽고 footer 는 보지 않는다 (explicit instruction=%s)", async explicitInstruction => {
     const { AssistantSession, createBlankProject } = await load();
     const seen: ChatRequest[] = [];
-    const declareIntent = vi.fn(fixedDeclarer({ mode: "question" }));
+    const declareIntent = vi.fn(fixedDeclarer({ mode: "modify" }));
     const session = new AssistantSession(createBlankProject(), {
       config: CHAT_CONFIG,
       chat: scriptedChat([finalResult("완료")], seen),
       declareIntent,
     });
+    const instruction = "define_ending 툴로 엔딩 조건을 설정해줘";
     await session.sendUserMessage(
-      instruction + footer,
+      `${instruction}\n\n[컨텍스트] 현재 맵: 시작 맵 (map_blank_start) · set_type_chart`,
       () => {},
       undefined,
-      { instruction },
+      { composerMode: "do", ...(explicitInstruction ? { instruction } : {}) },
     );
+    expect(seen).toHaveLength(1);
+    const request = seen[0];
+    if (!request?.tools) throw new Error("Missing authorized Do tool schemas");
+    const names = request.tools.map(tool => tool.function.name);
+    // PR667 exposes the complete Do catalog regardless of mentions. The trusted
+    // instruction boundary is the declarer's actual input, not schema absence.
+    expect(names).toContain("define_ending");
+    expect(names).toContain("set_type_chart");
+    expect(request.tools).toEqual(expect.arrayContaining(toOpenAiTools()));
     expect(declareIntent).toHaveBeenCalledTimes(1);
     expect(declareIntent.mock.calls[0]?.[0].userText).toBe(instruction);
-    expect(seen).toHaveLength(1);
-    expect(seen[0]?.tools).toEqual(expect.arrayContaining(toOpenAiTools()));
-    expect(seen[0]?.tools?.map(tool => tool.function.name)).toContain("set_type_chart");
-    expect(statuses(session)).toContain("planner:skip question");
   }, 30000);
+
+  it.each(["ask", "question"] as const)("%s 는 언급·선언된 쓰기도 노출하거나 실행하지 않고 조회는 허용한다", async mode => {
+    const { AssistantSession, isWriteToolName, createBlankProject } = await load();
+    const project = createBlankProject();
+    const before = structuredClone(project);
+    const seen: ChatRequest[] = [];
+    const events: SessionEvent[] = [];
+    const declareIntent = vi.fn(fixedDeclarer({
+      mode: mode === "ask" ? "modify" : "question", needsPlan: true,
+      tools: ["define_ending", "set_type_chart", "list_endings"],
+    }));
+    const session = new AssistantSession(project, {
+      config: AUTO_CONFIG,
+      chat: scriptedChat([
+        toolCallResult("define_ending", { id: "ending_test", name: "Test ending", conditions: [] }, "c_write"),
+        toolCallResult("list_endings", {}, "c_read"),
+        finalResult("응답"),
+      ], seen),
+      declareIntent,
+    });
+    const result = await session.sendUserMessage(
+      "define_ending 툴이 뭐야\n\n[컨텍스트] 현재 맵: 시작 맵 (map_blank_start) · set_type_chart",
+      event => events.push(event), undefined,
+      { instruction: "define_ending 툴이 뭐야", composerMode: mode === "ask" ? "ask" : "do" },
+    );
+    expect(declareIntent).toHaveBeenCalledTimes(1);
+    expect(seen).toHaveLength(3);
+    for (const request of seen) {
+      if (!request.tools) throw new Error("Missing read-only tool schemas");
+      const names = request.tools.map(tool => tool.function.name);
+      expect(names).toContain("list_endings");
+      expect(names).not.toContain("define_ending");
+      expect(names).not.toContain("set_type_chart");
+      expect(names.filter(isWriteToolName)).toEqual([]);
+      expect(request.tool_choice).toBe("auto");
+    }
+    expect(statuses(session)).not.toContain("planner:start");
+    const toolEvents = events.filter(event => event.type === "tool_call");
+    expect(toolEvents).toHaveLength(2);
+    expect(toolEvents[0]).toMatchObject({ name: "define_ending", result: {
+      ok: false, issues: [{ severity: "error", code: "composer-mode-ask" }],
+    } });
+    expect(toolEvents[1]).toMatchObject({ name: "list_endings", result: { ok: true, data: { endings: [] } } });
+    const readRequest = seen[1];
+    if (!readRequest) throw new Error("Missing request after refused write");
+    const refused = readRequest.messages.find(message => message.role === "tool" && message.tool_call_id === "c_write");
+    if (!refused) throw new Error("Missing write refusal in provider request");
+    expect(JSON.parse(String(refused.content))).toMatchObject({ ok: false, issues: [{ code: "composer-mode-ask" }] });
+    expect(result.error).toBeUndefined();
+    expect(result.proposedCalls).toEqual([]);
+    expect(session.getProposedProject()).toEqual(before);
+    expect(session.getWorkPlan()).toBeNull();
+    expect(result.runOutcome).toEqual({ execution: "response-final", goal: "unassessed", delivery: "no-change" });
+  });
 
   it("선택 영역은 사실로 붙고 선언에 따라 경계 또는 참고용 노트가 된다", async () => {
     const { AssistantSession, createBlankProject } = await load();

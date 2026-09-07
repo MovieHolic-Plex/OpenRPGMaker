@@ -1,0 +1,90 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiRequiredQuestionDispatch.test.ts test/aiRequiredOutcomes.test.ts test/assistantVerificationEvidence.test.ts test/workItemOutcome.test.ts test/assistantAcceptance.test.ts test/assistantAcceptanceSession.test.ts test/assistantAcceptanceRequestBaseline.test.ts --maxWorkers 2 --minWorkers 1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p2-20260906
+
+ ✓ test/assistantVerificationEvidence.test.ts (20 tests) 9421ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > run_lint ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  745ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > check_reachability ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  552ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > verify_quest ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  542ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > play_walkthrough ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  500ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > run_scene_test ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  549ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > evaluate_game_quality ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  501ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 같은 검사 재실패는 앞선 성공을 제거하고, 이후 실제 재통과는 복구한다  466ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 쓰기 이후에는 이전 검증 성공으로 완료할 수 없고 다시 검사해야 한다  530ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 재검사 없는 쓰기는 최종 보고에서도 검증 통과로 남지 않는다  481ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 실행되지 않은 잘못된 인자는 고친 호출로 복구할 수 있다  612ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > warning-only lint는 통과하며 거부된 쓰기는 성공 근거를 무효화하지 않는다  521ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 레이어 자동 통과는 재검증 의무를 만들지 않고 명시 검사만 유지한다 (explicit=false)  981ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 레이어 자동 통과는 재검증 의무를 만들지 않고 명시 검사만 유지한다 (explicit=true)  1034ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 다음 항목은 자기 대상의 검증으로 완료하며 이전 항목의 stale 검사는 최종 보고에 보존한다  676ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 실패한 walkthrough 실행은 레이어의 성공 시나리오로 기록하지 않는다  332ms
+ ✓ test/assistantAcceptanceRequestBaseline.test.ts (6 tests) 13859ms
+   ✓ per-request acceptance baselines > preserves a map created in A while B changes another map  2597ms
+   ✓ per-request acceptance baselines > does not credit A's change toward a newly accepted B change promise  1475ms
+   ✓ per-request acceptance baselines > late adoption cannot baseline away B's earlier write (applied=false)  2222ms
+   ✓ per-request acceptance baselines > late adoption cannot baseline away B's earlier write (applied=true)  2581ms
+   ✓ per-request acceptance baselines > retains B's pre-write baseline across budget-driven synthetic continuation  2283ms
+   ✓ per-request acceptance baselines > retains B's baseline when a manual continuation repairs and replans after application  2698ms
+ ✓ test/assistantAcceptanceSession.test.ts (12 tests) 8696ms
+   ✓ acceptance controls actual session termination > does not schedule run-end persistence proof for a completed plan with unmet acceptance  632ms
+   ✓ acceptance controls actual session termination > does not turn a review without an explicit passing verdict into completion  773ms
+   ✓ acceptance controls actual session termination > withdraws an earlier pass when a later explicit review fails  850ms
+   ✓ acceptance controls actual session termination > continues then blocks insufficient dimensions and quantity even after skip completes the plan  464ms
+   ✓ acceptance controls actual session termination > retains original denominator when skip and set_work_plan try to shrink promises  667ms
+   ✓ acceptance controls actual session termination > invalidates an attributed image review after a subsequent real map write  1024ms
+   ✓ applied acceptance lifecycle through real tools > repairs exact dimensions after plan completion and invalidates on applied undo  2272ms
+   ✓ applied acceptance lifecycle through real tools > blocks and retains the ledger when aborted while the next model response is held  368ms
+   ✓ applied acceptance lifecycle through real tools > never credits a review authored in the same response as the image request  683ms
+   ✓ applied acceptance lifecycle through real tools > requires visible contract repair for a spatial plan missing criteria  479ms
+ ✓ test/workItemOutcome.test.ts (14 tests) 2407ms
+   ✓ 산출물 게이트 — create_map 직후 상태 판별 > create_map 직후의 맵은 미저작으로 본다  488ms
+   ✓ 산출물 게이트 — create_map 직후 상태 판별 > upper 타일이 한 칸이라도 있으면 저작된 것으로 본다  308ms
+ ✓ test/assistantAcceptance.test.ts (23 tests) 2179ms
+   ✓ acceptance evaluator > keeps a malformed item visible and permits repair only before criteria become valid  313ms
+ ✓ test/aiRequiredOutcomes.test.ts (35 tests) 22959ms
+   ✓ canonical requirements > keeps required skipped obligations when a replan tries to weaken them  568ms
+   ✓ canonical requirements > allows optional skipped work without labeling it verified  476ms
+   ✓ canonical requirements > fails closed for malformed declarations null  490ms
+   ✓ canonical requirements > fails closed for malformed declarations %j  517ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":[{"kind":"mapDimensions","target":{"mapId":"map_blank_start"},"width":99,"height":99}],"required":"false"}  502ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":[{"kind":"invented","passed":true}]}  483ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":null,"required":false}  492ms
+   ✓ canonical requirements > assesses existing explicit acceptance without requiring the new field  483ms
+   ✓ canonical requirements > binds original text and scope at the host boundary despite fabricated source and withdrawal  580ms
+   ✓ canonical requirements > withdraws only the named current requirement through the user-only API  547ms
+   ✓ canonical requirements > keeps sibling obligations when the user withdraws just one  728ms
+   ✓ canonical requirements > rejects model tool withdrawal even with fabricated user provenance  494ms
+   ✓ canonical requirements > rejects stale goal withdrawal actions  497ms
+   ✓ canonical requirements > does not erase old obligations on a model resetsContext claim  655ms
+   ✓ canonical requirements > archives an incomplete goal when the user explicitly starts a new goal  598ms
+   ✓ exact scoped verdict authority > evaluates explicit evidence without tool-name credit  448ms
+   ✓ exact scoped verdict authority > evaluates wrong-target evidence without tool-name credit  380ms
+   ✓ exact scoped verdict authority > evaluates stale evidence without tool-name credit  351ms
+   ✓ exact scoped verdict authority > evaluates advisory evidence without tool-name credit  376ms
+   ✓ exact scoped verdict authority > evaluates advisory-after-stale evidence without tool-name credit  372ms
+   ✓ exact scoped verdict authority > evaluates advisory-after-explicit evidence without tool-name credit  348ms
+   ✓ exact scoped verdict authority > evaluates negative evidence without tool-name credit  376ms
+   ✓ exact scoped verdict authority > evaluates model evidence without tool-name credit  384ms
+   ✓ exact scoped verdict authority > does not verify an unapplied draft from a passing scoped verdict  459ms
+   ✓ exact scoped verdict authority > retires scoped verdicts after applied content changes even if later undone  2904ms
+   ✓ exact scoped verdict authority > rejects pre-declaration evidence after an external rebase  3476ms
+   ✓ exact scoped verdict authority > credits a real scoped tool response through the session dispatcher  2063ms
+   ✓ question-safe continuation > preserves blocked work and counters for question  312ms
+   ✓ question-safe continuation > preserves repeated failure counters while answering a question  622ms
+   ✓ question-safe continuation > does not reactivate from fabricated continuation source  383ms
+   ✓ question-safe continuation > reactivates blocked work only with explicit user resume  435ms
+   ✓ question-safe continuation > retains goal evidence and repair counters during ask  575ms
+ ✓ test/aiRequiredQuestionDispatch.test.ts (4 tests) 3401ms
+   ✓ question dispatch preserves blocked goal ownership > ask preserves blocked state when tools attempt mutation=false  1040ms
+   ✓ question dispatch preserves blocked goal ownership > ask preserves blocked state when tools attempt mutation=true  871ms
+   ✓ question dispatch preserves blocked goal ownership > question preserves blocked state when tools attempt mutation=false  728ms
+   ✓ question dispatch preserves blocked goal ownership > question preserves blocked state when tools attempt mutation=true  760ms
+
+ Test Files  7 passed (7)
+      Tests  114 passed (114)
+   Start at  01:59:08
+   Duration  60.46s (transform 9.58s, setup 0ms, collect 38.88s, tests 62.92s, environment 2ms, prepare 821ms)
+

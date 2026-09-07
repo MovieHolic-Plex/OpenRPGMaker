@@ -2,19 +2,25 @@ import type { Project } from "@/project/types";
 import { isVerifiedActionCombatProof, type ActionCombatProofReceipt } from "@/testing/actionCombatProof";
 import {
   parseAcceptanceCriteria,
-  acceptanceRecord, type AcceptanceTarget, type AcceptancePromise, type AcceptanceSnapshot, type AcceptanceItemSnapshot,
+  acceptanceRecord, type AcceptanceTarget,
+  type AcceptancePromise, type AcceptanceSnapshot, type AcceptanceItemSnapshot, type AcceptanceSource, type RequirementWithdrawalAction,
 } from "./assistantAcceptance";
 import {
   acceptanceFingerprint, acceptanceReviewRegion, criterionTargets, evaluateAcceptanceCriterion, resolveAcceptanceMap,
 } from "./assistantAcceptanceEvaluation";
 
 import { AssistantImageEvidence, coveredByImages, type AcceptanceImageReceipt } from "./assistantImageEvidence";
+import type { ToolVerificationEvidence } from "./toolVerificationEvidence";
 export type { AcceptanceImageReceipt } from "./assistantImageEvidence";
 
 /** Session-owned ledger. Plans never own or replace its promises/baselines. */
 export class AssistantAcceptanceLedger {
   private readonly baseline: Project;
-  private readonly promises = new Map<string, AcceptancePromise & { readonly baseline: Project }>();
+  private readonly promises = new Map<string, AcceptancePromise & {
+    readonly baseline: Project;
+    readonly source: AcceptanceSource;
+    readonly withdrawal?: RequirementWithdrawalAction & { readonly source: "user" };
+  }>();
   private readonly actionRequirements = new Map<string, AcceptancePromise & { readonly baseline: Project }>();
   private readonly actionProofs = new Map<string, ActionCombatProofReceipt>();
   private readonly bindings = new Map<string, string>();
@@ -32,12 +38,18 @@ export class AssistantAcceptanceLedger {
   }
 
   /** requestBaseline must precede this request's writes, even for late adoption. */
-  adopt(promises: readonly AcceptancePromise[], requestBaseline = this.baseline): void {
+  adopt(promises: readonly AcceptancePromise[], requestBaseline = this.baseline,
+    source: AcceptanceSource = { requestId: this.id, text: this.goal, scope: null }): void {
     const additions = promises.filter(promise => !this.promises.has(promise.id));
     if (additions.length === 0) return;
     const baseline = structuredClone(requestBaseline);
+    const provenance = Object.freeze({ requestId: source.requestId, text: source.text,
+      scope: source.scope ? Object.freeze({ mapId: source.scope.mapId, region: Object.freeze({ ...source.scope.region }) }) : null });
     for (const promise of additions) {
-      if (!this.promises.has(promise.id)) this.promises.set(promise.id, { ...structuredClone(promise), baseline });
+      if (!this.promises.has(promise.id)) this.promises.set(promise.id, {
+        id: promise.id, title: promise.title, criteria: structuredClone(promise.criteria),
+        required: promise.required !== false, baseline, source: provenance,
+      });
     }
   }
 
@@ -70,6 +82,15 @@ export class AssistantAcceptanceLedger {
     const parsed = parseAcceptanceCriteria(criteria);
     if (!promise || promise.criteria !== null || !parsed) return false;
     this.promises.set(promise.id, { ...promise, criteria: parsed });
+    return true;
+  }
+
+  /** Host-only scope action. Never dispatched from an assistant tool. */
+  withdraw(action: RequirementWithdrawalAction): boolean {
+    const promise = this.promises.get(action.requirementId);
+    if (action.acceptanceId !== this.id || !promise || promise.withdrawal || !action.reason.trim()) return false;
+    const withdrawal = Object.freeze({ acceptanceId: this.id, requirementId: promise.id, reason: action.reason.trim(), source: "user" as const });
+    this.promises.set(promise.id, { ...promise, withdrawal });
     return true;
   }
 
@@ -124,14 +145,15 @@ export class AssistantAcceptanceLedger {
   }
 
   /** Read-only draft evidence for the independent reviewer, not applied verification. */
-  evaluateForReview(draft: Project): AcceptanceSnapshot {
+  evaluateForReview(draft: Project, verification?: ToolVerificationEvidence): AcceptanceSnapshot {
     const previous = this.snapshot;
-    const result = this.evaluate(draft, draft, [], true);
+    const result = this.evaluate(draft, draft, verification, [], true);
     this.snapshot = previous;
     return result;
   }
 
-  evaluate(applied: Project, draft = applied, blockingProblems: readonly string[] = [], deliveredImagesOnly = false): AcceptanceSnapshot {
+  evaluate(applied: Project, draft = applied, verification?: ToolVerificationEvidence,
+    blockingProblems: readonly string[] = [], deliveredImagesOnly = false): AcceptanceSnapshot {
     this.bind(draft);
     // Retirement is permanent: an edit followed by undo cannot revive old proof.
     for (const [mapId, receipt] of this.actionProofs) {
@@ -143,12 +165,22 @@ export class AssistantAcceptanceLedger {
       if (receipts.length === 0) this.reviews.delete(id);
       else this.reviews.set(id, { ...review, receipts });
     }
-    const items: AcceptanceItemSnapshot[] = [...this.promises.values(), ...this.actionRequirements.values()].map(promise => {
-      if (!promise.criteria) return Object.freeze({ id: promise.id, title: promise.title, status: "blocked", reason: "Missing or malformed criteria: repair_acceptance required", evidence: Object.freeze([]) });
+    const promises: (AcceptancePromise & {
+      readonly baseline: Project;
+      readonly source?: AcceptanceSource;
+      readonly withdrawal?: RequirementWithdrawalAction & { readonly source: "user" };
+    })[] = [...this.promises.values(), ...this.actionRequirements.values()];
+    const toolDraftChanged = applied !== draft
+      && promises.some(promise => promise.criteria?.some(criterion => criterion.kind === "toolVerdict"))
+      && acceptanceFingerprint(applied) !== acceptanceFingerprint(draft);
+    const items: AcceptanceItemSnapshot[] = promises.map(promise => {
+      const metadata = { required: promise.required !== false, ...(promise.source ? { source: promise.source } : {}),
+        ...(promise.withdrawal ? { withdrawal: promise.withdrawal } : {}) };
+      if (!promise.criteria) return Object.freeze({ ...metadata, id: promise.id, title: promise.title, status: "blocked", reason: "Missing or malformed criteria: repair_acceptance required", evidence: Object.freeze([]) });
       const review = this.reviews.get(promise.id);
       const evidence = promise.criteria.map(criterion => {
         const result = evaluateAcceptanceCriterion(criterion, {
-          project: applied, baseline: promise.baseline, bindings: this.bindings,
+          project: applied, baseline: promise.baseline, bindings: this.bindings, verification,
           reviewed: (map, region) => deliveredImagesOnly
             ? coveredByImages(this.images.matching(applied), map, region)
             : review?.passed === true && coveredByImages(this.currentReceipts(review.receipts, applied), map, region),
@@ -161,7 +193,7 @@ export class AssistantAcceptanceLedger {
         });
       });
       const maps = promise.criteria.flatMap(criterion => criterionTargets(criterion));
-      const unapplied = maps.some(target => {
+      const unapplied = (toolDraftChanged && promise.criteria.some(criterion => criterion.kind === "toolVerdict")) || maps.some(target => {
         const before = resolveAcceptanceMap(applied, target, this.bindings), after = resolveAcceptanceMap(draft, target, this.bindings);
         return acceptanceFingerprint(before) !== acceptanceFingerprint(after);
       });
@@ -172,7 +204,7 @@ export class AssistantAcceptanceLedger {
       const passed = evidence.every(entry => entry.passed) && !unapplied;
       const status = passed ? "verified" : this.stopped ? "blocked" : unapplied ? "verifying" : "working";
       return Object.freeze({
-        id: promise.id, title: promise.title, status, evidence: Object.freeze(evidence),
+        ...metadata, id: promise.id, title: promise.title, status, evidence: Object.freeze(evidence),
         ...(!passed ? { reason: unapplied ? "Draft is not yet applied" : this.stopped ? "Acceptance incomplete; execution stopped" : "Acceptance checks remain open" } : {}),
         ...(map ? { mapId: map.id } : {}), ...(region ? { region: Object.freeze({ ...region }) } : {}),
       });
@@ -184,9 +216,10 @@ export class AssistantAcceptanceLedger {
         expected: "Every required check passes against current content", observed, passed: false,
       }))),
     }));
-    const status = items.length > 0 && items.every(item => item.status === "verified") ? "verified"
-      : items.some(item => item.status === "blocked") ? "blocked"
-      : items.some(item => item.status === "verifying") ? "verifying" : "working";
+    const required = items.filter(item => item.required !== false && !item.withdrawal);
+    const status = items.length > 0 && required.every(item => item.status === "verified") ? "verified"
+      : required.some(item => item.status === "blocked") ? "blocked"
+      : required.some(item => item.status === "verifying") ? "verifying" : "working";
     this.snapshot = Object.freeze({ id: this.id, goal: this.goal, status, items: Object.freeze(items) });
     return this.snapshot;
   }

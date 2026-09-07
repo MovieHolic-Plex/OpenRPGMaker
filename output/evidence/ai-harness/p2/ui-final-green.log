@@ -1,0 +1,51 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiOutcomePresentation.test.ts test/aiContinueUserAction.test.ts test/aiStickyChecklist.test.ts test/aiAutonomousRunSurface.test.ts test/aiWorkPlanTerminalFocus.test.ts test/aiRetryWorkPlanLifecycle.test.ts --maxWorkers 1 --minWorkers 1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p2-20260906
+
+ ✓ test/aiWorkPlanTerminalFocus.test.ts (7 tests) 13993ms
+   ✓ terminal work-plan focus ownership > returns removed ai-plan-book focus to the stable composer  3559ms
+   ✓ terminal work-plan focus ownership > returns removed ai-plan-book-close focus to the stable composer  2386ms
+   ✓ terminal work-plan focus ownership > returns removed ai-plan-book-open focus to the stable composer  2414ms
+   ✓ terminal work-plan focus ownership > restores composer focus on an aborted terminal result  1077ms
+   ✓ terminal work-plan focus ownership > does not steal focus from an unrelated control while removing an open book  1578ms
+   ✓ terminal work-plan focus ownership > preserves the error dialog's focus when it supersedes the focused book  2075ms
+   ✓ terminal work-plan focus ownership > keeps manual close notification distinct from terminal programmatic close  895ms
+ ✓ test/aiRetryWorkPlanLifecycle.test.ts (7 tests) 13901ms
+   ✓ manual retry work-plan ownership > reopens live checklist on actual retry and removes it at 'final' ('chat'/'do', completed=undefined)  1126ms
+   ✓ manual retry work-plan ownership > reopens live checklist on actual retry and removes it at 'final' ('auto'/'do', completed=undefined)  1198ms
+   ✓ manual retry work-plan ownership > reopens live checklist on actual retry and removes it at 'final' ('auto'/'plan', completed=undefined)  1388ms
+   ✓ manual retry work-plan ownership > reopens live checklist on actual retry and removes it at 'error' ('chat'/'ask', completed=undefined)  934ms
+   ✓ manual retry work-plan ownership > reopens live checklist on actual retry and removes it at 'aborted' ('chat'/'do', completed=undefined)  1485ms
+   ✓ manual retry work-plan ownership > reopens live checklist on actual retry and removes it at 'throw' ('chat'/'do', completed=undefined)  2028ms
+   ✓ manual retry work-plan ownership > reopens live checklist on actual retry and removes it at 'final' ('chat'/'do', completed=true)  5736ms
+ ✓ test/aiStickyChecklist.test.ts (13 tests) 8549ms
+   ✓ renders acceptance outside chat and retains verified evidence after the turn  1193ms
+   ✓ preserves disclosure and focused navigation while backend status and evidence change  689ms
+   ✓ projects pending without a mutable checkbox  432ms
+   ✓ ignores late acceptance events after the real new-chat boundary  1122ms
+   ✓ refreshes backend acceptance on a store mutation without manufacturing verification  2125ms
+   ✓ retains the backend blocked snapshot when the actual abort button ends a held turn  1652ms
+ ✓ test/aiOutcomePresentation.test.ts (93 tests) 6407ms
+   ✓ withdraws the exact real requirement only on user activation, retaining source and failed evidence  1799ms
+   ✓ keeps rejected and busy actions from changing the canonical obligation  2360ms
+   ✓ does not offer a user action for legacy read-only callers  1220ms
+ ✓ test/aiContinueUserAction.test.ts (1 test) 1492ms
+   ✓ the real Continue control updates both the panel send mode and composer presentation after Ask  1482ms
+ ✓ test/aiAutonomousRunSurface.test.ts (12 tests) 5129ms
+   ✓ 할 일 목록 표면 (작업 계획 체크리스트) > does not promote quick-reply presets but retains their transcript text  583ms
+   ✓ 할 일 목록 표면 (작업 계획 체크리스트) > (a) emitWorkPlan 이벤트로 체크리스트가 렌더된다 — 항목별 진행 + 현재 레이어 표시  928ms
+   ✓ 할 일 목록 표면 (작업 계획 체크리스트) > tool_started 이벤트는 진행 중 항목의 활동 줄만 갈아 끼운다(체크리스트 재렌더 없음)  541ms
+   ✓ 할 일 목록 표면 (작업 계획 체크리스트) > (d) 런 진행 중에는 자동 접기가 비활성화되고, 런 종료 후에는 재개된다  307ms
+   ✓ 할 일 목록 표면 (작업 계획 체크리스트) > 완료 계획은 표면에서 걷히고 계획 없는 턴도 목록을 만들지 않는다  336ms
+   ✓ 할 일 목록 표면 (작업 계획 체크리스트) > 런 중 중단하면 목록과 활동 표면이 함께 걷힌다  471ms
+   ✓ 할 일 목록 표면 (작업 계획 체크리스트) > 목록의 「중지」 버튼은 진행 중 턴을 중단한다  469ms
+   ✓ 할 일 목록 표면 (작업 계획 체크리스트) > agentMode chat 에서도 할 일 목록은 뜨되 예산 없이 뜨고, 세션에 autonomous 플래그가 전달되지 않는다  607ms
+
+ Test Files  6 passed (6)
+      Tests  133 passed (133)
+   Start at  05:38:10
+   Duration  269.25s (transform 107.09s, setup 0ms, collect 205.75s, tests 49.47s, environment 4.05s, prepare 1.90s)
+

@@ -140,9 +140,13 @@ describe("review approval ownership", () => {
   it.each(["result_review", "assistant_message"] satisfies SessionEvent["type"][])("retires approval when the %s subscriber throws", async boundary => {
     const f = fixture();
     const failure = new Error("Subscriber failure");
-    await expect(f.session.sendUserMessage("Change title", event => {
+    const result = await f.session.sendUserMessage("Change title", event => {
       if (event.type === boundary) throw failure;
-    })).rejects.toBe(failure);
+    });
+    // P2 settles boundary exceptions on the owned handle instead of rejecting the send.
+    expect(result).toMatchObject({ stoppedReason: "error", error: failure.message,
+      runOutcome: { execution: "failed", goal: "unassessed", delivery: "draft" } });
+    expect(result.review?.status).toBe("unapproved");
     expect(f.session.isDraftReviewApproved()).toBe(false);
     expect(getMapEditHistoryState().canUndo).toBe(false);
   });

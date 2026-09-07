@@ -1,0 +1,103 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiOutcomeApplyPolicy.test.ts test/aiOutcomeContinuationDelivery.test.ts --maxWorkers 1 --minWorkers 1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p2-20260906
+
+ ❯ test/aiOutcomeApplyPolicy.test.ts (6 tests | 2 failed) 37579ms
+   × settles the same verified requirement with milestone=false 10119ms
+     → expected { execution: 'blocked', …(2) } to deeply equal { execution: 'response-final', …(2) }
+   ✓ settles the same verified requirement with milestone=true  8086ms
+   × uses the existing quick-reply stop decision without reclassifying response prose 714ms
+     → expected { execution: 'blocked', …(2) } to deeply equal { execution: 'awaiting-user', …(2) }
+   ✓ preserves genuine blocked execution when an applied draft later verifies  6726ms
+   ✓ preserves genuine failed execution when an applied draft later verifies  5507ms
+   ✓ preserves genuine cancelled execution when an applied draft later verifies  6425ms
+ ❯ test/aiOutcomeContinuationDelivery.test.ts (5 tests | 2 failed) 23630ms
+   × preserves delivery ownership for 'continue' with verified=false 3988ms
+     → expected { execution: 'response-final', …(2) } to deeply equal { execution: 'response-final', …(2) }
+   × preserves delivery ownership for 'continue' with verified=true 5313ms
+     → expected { execution: 'response-final', …(2) } to deeply equal { execution: 'response-final', …(2) }
+   ✓ preserves delivery ownership for 'proof-retry' with verified=false  4936ms
+   ✓ preserves delivery ownership for 'query' with verified=true  4981ms
+   ✓ preserves delivery ownership for 'ask' with verified=true  4412ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiOutcomeApplyPolicy.test.ts > settles the same verified requirement with milestone=false
+AssertionError: expected { execution: 'blocked', …(2) } to deeply equal { execution: 'response-final', …(2) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "delivery": "persisted-verified",[22m
+[32m-   "execution": "response-final",[39m
+[31m+   "execution": "blocked",[39m
+[2m    "goal": "satisfied",[22m
+[2m  }[22m
+
+ ❯ test/aiOutcomeApplyPolicy.test.ts:58:29
+     56|   const expected = { execution: "response-final", goal: "satisfied", d…
+     57|   expect(f.session.getAcceptanceSnapshot()?.status).toBe("verified");
+     58|   expect(result.runOutcome).toEqual(expected);
+       |                             ^
+     59|   expect(result.recap?.runOutcome).toEqual(expected);
+     60|   expect(f.session.getHarnessSnapshot().runOutcome).toEqual(expected);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  test/aiOutcomeApplyPolicy.test.ts > uses the existing quick-reply stop decision without reclassifying response prose
+AssertionError: expected { execution: 'blocked', …(2) } to deeply equal { execution: 'awaiting-user', …(2) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "delivery": "no-change",[22m
+[32m-   "execution": "awaiting-user",[39m
+[31m+   "execution": "blocked",[39m
+[2m    "goal": "unassessed",[22m
+[2m  }[22m
+
+ ❯ test/aiOutcomeApplyPolicy.test.ts:73:29
+     71|   const result = await f.run();
+     72|   // Then the carried stop reason is awaiting-user, not an independent…
+     73|   expect(result.runOutcome).toEqual({ execution: "awaiting-user", goal…
+       |                             ^
+     74| });
+     75| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  test/aiOutcomeContinuationDelivery.test.ts > preserves delivery ownership for 'continue' with verified=false
+ FAIL  test/aiOutcomeContinuationDelivery.test.ts > preserves delivery ownership for 'continue' with verified=true
+AssertionError: expected { execution: 'response-final', …(2) } to deeply equal { execution: 'response-final', …(2) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "delivery": "persisted",[39m
+[31m+   "delivery": "no-change",[39m
+[2m    "execution": "response-final",[22m
+[2m    "goal": "unassessed",[22m
+[2m  }[22m
+
+ ❯ test/aiOutcomeContinuationDelivery.test.ts:48:29
+     46|   // Then only trusted continuation/retry retains the owned receipt an…
+     47|   const expected = { execution: "response-final", goal: "unassessed", …
+     48|   expect(result.runOutcome).toEqual(expected);
+       |                             ^
+     49|   expect(result.appliedCalls).toHaveLength(spec.calls);
+     50|   expect(result.proposedCalls).toHaveLength(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  4 failed | 7 passed (11)
+   Start at  04:05:07
+   Duration  101.87s (transform 23.38s, setup 0ms, collect 38.15s, tests 61.21s, environment 1ms, prepare 608ms)
+

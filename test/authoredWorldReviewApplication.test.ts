@@ -125,8 +125,10 @@ it("npc cast review apply undo preserves existing manual/locked wiki plus the ne
   expect(world.relations).toContainEqual({ a: "w_npc_ev_cast", b: "w_place_map_blank_start", kind: "locatedIn" });
   const castEvent = store.getCurrent().maps[MAP_KEY]!.events.find(event => event.id === EV_ID)!;
   expect(JSON.stringify(castEvent)).toContain("New authored dialogue");
-  // Approval semantics hold after a correct apply — no post-mutation unapproved flip.
-  expect(session.isDraftReviewApproved()).toBe(true);
+  // The exact authored values and recorded approval survive; live apply authority is consumed.
+  expect(session.getResultReview()).toEqual(result.review);
+  expect(session.getResultReview()?.status).toBe("approved");
+  expect(session.isDraftReviewApproved()).toBe(false);
   // Undo restores the pre-apply project exactly (applied draft first, then the
   // coordinator's own post-apply wiki receipt, which owns a separate boundary).
   const entries = history.getMapEditHistoryEntries().length;

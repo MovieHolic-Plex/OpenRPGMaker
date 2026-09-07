@@ -10,6 +10,8 @@ function stableKey(value: unknown): string {
 /** Scoped by the session to a work item or goal, including continuations. */
 export class ToolVerificationEvidence {
   private readonly checks = new Map<string, { name: string; verdict: Verdict; stale: boolean; executionFailed: boolean; explicit: boolean }>();
+  // Navigation repair coalesces obligations, not independently observed exact passes.
+  private readonly explicitPasses = new Set<string>();
   private readonly requiredTools = new Set<string>();
   private readonly skippedTools = new Map<string, Set<string>>();
 
@@ -26,8 +28,13 @@ export class ToolVerificationEvidence {
 
   clear(): void {
     this.checks.clear();
+    this.explicitPasses.clear();
     this.requiredTools.clear();
     this.skippedTools.clear();
+  }
+
+  hasChecks(): boolean {
+    return this.checks.size > 0 || this.explicitPasses.size > 0;
   }
 
   observe(name: string, args: Record<string, unknown>, result: ToolResultLike, source: "explicit" | "advisory" = "explicit", workItemId?: string): Verdict | null {
@@ -61,7 +68,10 @@ export class ToolVerificationEvidence {
       }
     }
     const key = stableKey([name, identity]);
+    const exactKey = stableKey([name, args]);
     const explicit = source === "explicit" || this.requiredTools.has(name) || this.checks.get(key)?.explicit === true;
+    if (result.ok !== true || !verdict.pass) this.explicitPasses.delete(exactKey);
+    else if (source === "explicit") this.explicitPasses.add(exactKey);
     // A clean automatic check resolves its own prior finding but never creates
     // a new required check after later writes. Preserve explicit check history.
     if (source === "advisory" && verdict.pass && !explicit) this.checks.delete(key);
@@ -70,6 +80,7 @@ export class ToolVerificationEvidence {
   }
 
   invalidateAfterWrite(): void {
+    this.explicitPasses.clear();
     for (const check of this.checks.values()) {
       if (check.explicit) check.stale = true;
     }
@@ -80,8 +91,15 @@ export class ToolVerificationEvidence {
     return checks.length > 0 && checks.every((check) => check.verdict.pass && !check.stale);
   }
 
-  problems(source: "all" | "explicit" = "all"): readonly string[] {
-    return [...new Set([...this.checks.entries()].filter(([, check]) => source === "all" || check.explicit).flatMap(([key, { name, verdict, stale }]) => {
+  /** Exact invocation only; advisory rechecks cannot renew canonical proof. */
+  passedScope(name: string, args: Readonly<Record<string, unknown>>): boolean {
+    return this.explicitPasses.has(stableKey([name, args]));
+  }
+
+  problems(scope: "all" | "required" | "explicit" = "all"): readonly string[] {
+    return [...new Set([...this.checks.entries()].flatMap(([key, { name, verdict, stale, explicit }]) => {
+      if (scope === "explicit" && !explicit) return [];
+      if (scope === "required" && !explicit && !this.requiredTools.has(name)) return [];
       const issues = verdict.blockingIssues.map((issue) => `${name}: ${issue}`);
       if (stale) issues.push(`${name}: 변경 후 재검증 필요 — ${key}`);
       return issues;

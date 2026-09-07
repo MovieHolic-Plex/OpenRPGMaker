@@ -1,0 +1,3 @@
+Command: git diff --exit-code dfa8bdd15e4e39904ae910101d5e90579b5d8a67 -- . ':(exclude)test/aiBlockedContinue.test.ts' ':(exclude)test/aiToolCallSessionProtocol.test.ts' ':(exclude)test/assistantSessionIntent.test.ts' ':(exclude)output/evidence/ai-harness/p2/contract-compat-fix'
+Exit: 0
+Output: empty
