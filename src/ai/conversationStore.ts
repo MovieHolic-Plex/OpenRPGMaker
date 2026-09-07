@@ -280,8 +280,11 @@ registerRemoteOutboxSender("ai-conversation", async (payload) => {
   if (await isScopedAiRecordDeleted(payload.conversationId, scope)) return;
   const local = await loadConversationForScope(payload.conversationId, scope);
   if (local && local.savedAt > payload.savedAt) return;
-  const result = await recordSupabaseConversation({ conversationId: payload.conversationId, title: payload.title,
-    model: payload.model, entries: payload.entries, savedAt: payload.savedAt, destinationProjectId: destination,
+  // Equal milliseconds can contain a later local save; retry that snapshot, not the queued copy.
+  const snapshot = local?.savedAt === payload.savedAt ? local
+    : { title: payload.title, model: payload.model, entries: payload.entries };
+  const result = await recordSupabaseConversation({ conversationId: payload.conversationId, title: snapshot.title,
+    model: snapshot.model, entries: snapshot.entries, savedAt: payload.savedAt, destinationProjectId: destination,
     ...(scope === null ? {} : { projectContextKey: scope }) });
   if (result.kind === "not-configured") throw new Error("supabase not configured");
 });
