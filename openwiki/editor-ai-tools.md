@@ -1,5 +1,102 @@
 # Editor AI Tools & Vocabulary
 
+## Measured zero-prop rejection diagnostics (2026-09-07)
+
+`placePropsDomain.ts` and the shared pattern engine in `placementTools.ts` retain
+the existing single/pattern admission rules, material resolution, sampling,
+packing, event opt-out and unconditional house/stamp ownership protections.
+Zero placement still throws `placement-zero`; neither rejection nor diagnosis
+changes tile arrays, shared tile rules, authored overrides or requested count.
+
+On zero placement, `PropPlacementError.diagnostics` measures candidate origins
+with the same admission predicates, collecting all vetoes instead of stopping at
+the first. The unchanged runner transports the machine record as one standalone
+`placement_diagnostics: <JSON>` line in the **full** `issues[].message`. Parse that
+sentinel and JSON, not cause/recovery prose or the clipped `summary`. This track
+does not add error `data` transport or an automatic retry consumer.
+
+- `unit: "candidate-origin"`: each geometrically fitting object origin counts
+  once, not once per footprint cell, rejected prop, or placement attempt.
+  `footprint.w/h` are tile-cell dimensions. `candidateOrigins = rejectedOrigins
+  + eligibleOrigins`; `rejectedBy` counts each origin once per reason, so its
+  overlapping values must **not** be summed as a rejected-origin total.
+- `scope: "area-candidate-origins"` is a census of the area on zero placement,
+  not a claim that the natural sampler tried every origin. Single-tile natural
+  sampling can miss eligible cells; `eligibleOrigins` is not packing capacity.
+  Pattern origins must fit the area and map. No fitting geometry yields zero
+  origins and empty reasons, not an invented occupancy cause. Single-tile
+  domain calls also count out-of-map origins as `outOfBounds` (the public v3
+  boundary still rejects out-of-map rectangles before placement).
+- Internal dense explicit origins use `scope: "explicit-candidate-origins"`;
+  repeated coordinates count once and outside-area/map footprints are rejected.
+  Tree visibility and first-step bag footprints retain their actual policies.
+- Reasons distinguish `upperOccupied`, `lowerImpassable`, `protectedSurface`
+  (road/sand/cobble), `blockedLowerSurface` (the existing water/wall mask),
+  `lowerIncompatible` (the lower footprint's placement rule, not necessarily
+  impassability), `protectedEvent` (start/event/transfer), `protectedOwnership`
+  (house/stamp), `outOfBounds`, and `trunkVisibility`.
+  An upper-occupied origin also checks the lower ground that clearing upper
+  would expose, across the entire footprint; `lowerImpassable` includes that
+  recovery blocker. Existing trunk-supported canopy overlap is preserved.
+- `upperErase.upperOnlyOrigins` counts origins whose only blocker is upper
+  occupancy. `upperErase.recommended` is true only when **every** census origin
+  is upper-only and at least one exists. Mixed causes, blocked lower, protected
+  surfaces, events/ownership, insufficient geometry and missed samples get no
+  erase recommendation. When applicable the hint explicitly uses
+  `tile_erase(layer:"upper")`, never its destructive default `both`. This is
+  advice, not permission to bypass approval, ownership or the commit gate.
+
+The captured regenerated-cellar area `(7,5) 3x3` contains six passable lower423
+and three passable lower360 cells, with empty upper. Its diagnostic is exactly
+`candidateOrigins:9, rejectedOrigins:9, eligibleOrigins:0,
+rejectedBy:{protectedSurface:9}` with upper erase disabled, even for count2/3.
+The older tall-grass forest test actually writes incompatible **lower**
+vegetation: its 30x30 area has 870 rejected 1x2 origins, not occupied upper.
+Its former prose expectation requiring upper erase was replaced by those exact
+machine counters and whole-project non-mutation assertions.
+
+Contracts: `test/propRejectionDiagnostics.test.ts` and
+`test/placePropsZeroPlacement.test.ts`. Real runner countercases preserve exact
+2/2 combined-town crates237 on ground222/240 and interior crates295 on floor72;
+they assert unchanged lower material and tileset rules, not reduced counts or
+material substitution. Diagnostics are offline engine/tool evidence, not a
+repair of Round10 content or proof of live-model recovery.
+
+Verification receipt for task `st_01a079e9`, exact base
+`ecae43ffca8714cb1a13b073c0825c65e8ae8c30`:
+
+- RED: the initial 22-case diagnostic suite had 19 missing-diagnostics failures
+  and three passing exact 2/2 crate controls. Additional countercases caught
+  blocked lower furniture backing and incorrectly labeled explicit-origin scope.
+- GREEN: `npm test -- test/propRejectionDiagnostics.test.ts
+  test/placePropsZeroPlacement.test.ts --maxWorkers=2` passed all 29 tests.
+  No timeout, sleep, polling or expected placement-count relaxation was added.
+- Protected run: 19 files, 201 passing / 14 failing tests. An untouched archived
+  base run of the 18 pre-existing files had 174 passing / the **same 14 failing
+  test identities**, giving zero new failures. Existing failures remain visible:
+  `scatterObject` six (legacy tree origin/count expectations),
+  `clusterRulePlacement` five (legacy tile-layer expectations), `forestDensity`
+  two (`0.3003472222222222 < 0.3`), and `houseProtectionForest` one (puddle
+  fixture `Cannot read properties of undefined (reading 'type')`).
+- `npm run typecheck:app` and `npm run build:app` exited 0. Build emitted circular
+  re-export, mixed static/dynamic import and large-chunk warnings. The shared LSP
+  client timed out on refreshed files; a dedicated local TypeScript `tsserver`
+  completed syntax, semantic and suggestion diagnostics for all four changed TS
+  files, with zero diagnostics and no missing completion events. No Markdown
+  LSP is configured; the wiki passed `git diff --check`.
+- An offline `vite-node --config vitest.config.ts` exercise called the real
+  `runTool` boundary: the nine-cell sand/road case rejected without mutation,
+  while ground222, ground240 and interior floor72 each placed exactly 2/2 crates
+  with original lower tiles and tileset rules intact. No live DB, model, UI,
+  gameplay session, push, PR or remote merge was part of verification.
+- Raw local receipts: `/tmp/st_01a079e9-receipts/`. `red.log` SHA256
+  `7f7540b4dc729563aed45506bc5d43e3fd47d3436dbde54a07ad81f033bb0886`;
+  `green-focused-final.log` SHA256
+  `a14b6b58cd6b6fff6a6e2a5770151833cb7b60bf4254b638a32a50245795c95a`.
+  Those temporary logs are not shipped source; the tests and this receipt are
+  the durable reproduction contract. Full-suite gates and player/standalone
+  builds were not run for this bounded editor-only repair.
+
 ## Logical walkthrough versus real player traversal (2026-09-07)
 
 `play_walkthrough`의 `moveTo`는 좌표를 이동시키지만 `playerTouch`/`eventTouch`를 발동하지 않는다.
