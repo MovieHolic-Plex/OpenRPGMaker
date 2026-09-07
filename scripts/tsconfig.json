@@ -5,5 +5,5 @@
     "allowJs": true,
     "types": ["node"]
   },
-  "include": ["qa-export-playability.mts", "../src/**/*.d.ts"]
+  "include": ["qa-export-playability.mts", "qa-map-resource-clears.mts", "../src/**/*.d.ts"]
 }

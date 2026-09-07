@@ -125,7 +125,7 @@ function collectProjectStrings(project: Project): Set<string> {
   return values;
 }
 
-function isAudioCatalogRow(row: unknown): boolean {
+export function isAudioCatalogRow(row: unknown): boolean {
   if (typeof row !== "object" || row === null) return false;
   const kind = (row as { readonly kind?: unknown }).kind;
   // 모르는 kind 는 getResourceProfileSpec 이 이미지 스펙으로 떨어뜨린다 — 안전한 쪽 기본값.
