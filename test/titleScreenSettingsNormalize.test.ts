@@ -184,11 +184,7 @@ describe("titleScreen settings normalize expansion", () => {
     });
     expect(project.system.titleScreen?.showInputHint).toBe(true);
     expect(project.system.titleScreen?.sounds).toBeUndefined();
-    expect(project.system.titleScreen?.titleGraphic).toEqual({
-      mode: "text",
-      x: 32,
-      y: 62,
-    });
+    expect(project.system.titleScreen?.titleGraphic).toBeUndefined();
   });
 
   it("omits backgroundLayers/particles/intro entirely for legacy JSON (byte-stable)", () => {
