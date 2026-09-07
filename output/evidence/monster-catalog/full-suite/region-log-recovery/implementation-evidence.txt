@@ -1,0 +1,142 @@
+## /home/main/.npm-global/lib/node_modules/omo-ai/node_modules/@code-yeongyu/senpi/dist/core/extensions/builtin/terminal/terminal-manifest.js:1-21
+1: /**
+2:  * The manifest write side: `createTerminalManifestStore` plus `TerminalManifestWriter`,
+3:  * persisting ONLY lifecycle transitions and debounced checkpoints of the record shaped in
+4:  * `terminal-manifest-model.ts` — never per-line output and never a runtime handle.
+5:  */
+6: import { join } from "node:path";
+7: import { createSidecarStore } from "../../../session-sidecar-store.js";
+8: import { parseTerminalManifest } from "./restore.js";
+9: import { DURABLE_MONITOR_EXPIRY_MS } from "./shared.js";
+10: import { TERMINAL_MANIFEST_CHECKPOINT_DEBOUNCE_MS, TERMINAL_MANIFEST_VERSION, } from "./terminal-manifest-model.js";
+11: // The data model is re-exported so every importer keeps this module as the manifest's single
+12: // entry point; nothing outside had to learn the model module's path.
+13: export { DURABLE_MONITOR_EXPIRY_MS, TERMINAL_MANIFEST_CHECKPOINT_DEBOUNCE_MS, TERMINAL_MANIFEST_VERSION, } from "./terminal-manifest-model.js";
+14: export function createTerminalManifestStore(session) {
+15:     return createSidecarStore({
+16:         baseDir: join(session.getSessionDir(), "extensions", "terminal"),
+17:         sessionId: session.getSessionId(),
+18:         version: TERMINAL_MANIFEST_VERSION,
+19:         tempPrefix: "terminal",
+20:         parse: parseTerminalManifest,
+21:     });
+
+## /home/main/.npm-global/lib/node_modules/omo-ai/node_modules/@code-yeongyu/senpi/dist/core/extensions/builtin/terminal/terminal-manifest.js:84-96
+84:             }
+85:             live.set(entry.monitorId, { paused: entry.paused, fireWindow: entry.fireWindow });
+86:         }
+87:         let changed = false;
+88:         for (const [monitorId, known] of this.#entries) {
+89:             const current = live.get(monitorId);
+90:             if (current === undefined) {
+91:                 if (known.suspended)
+92:                     continue; // shutdown-suspended entries are expected to be absent
+93:                 this.#entries.delete(monitorId); // settle: the registry transitioned it out
+94:                 changed = true;
+95:                 continue;
+96:             }
+
+## /home/main/.npm-global/lib/node_modules/omo-ai/node_modules/@code-yeongyu/senpi/dist/core/extensions/builtin/terminal/runtime-session.js:1-16
+1: import { TerminalScreen, TerminalSession, } from "@earendil-works/pi-pty";
+2: import { DEFAULT_SCROLLBACK, MAX_SESSION_OUTPUT_CHARS } from "./shared.js";
+3: /**
+4:  * A live terminal session: a pi-pty {@link TerminalSession} plus an xterm screen model
+5:  * and a bounded decoded-output buffer with a per-consumer read cursor. Reads are pure
+6:  * non-blocking peeks; watchers subscribe through `onOutput` (the monitor path).
+7:  */
+8: export class TerminalRuntimeSession {
+9:     constructor(command, options) {
+10:         this.decoder = new TextDecoder("utf-8", { fatal: false });
+11:         this.buffer = "";
+12:         this.droppedChars = 0;
+13:         this.consumed = 0;
+14:         this.outputListeners = new Set();
+15:         this.unsubscribeData = null;
+16:         /**
+
+## /home/main/.npm-global/lib/node_modules/omo-ai/node_modules/@code-yeongyu/senpi/dist/core/extensions/builtin/terminal/runtime-session.js:62-73
+62:         const text = this.decoder.decode(chunk, { stream: true });
+63:         if (text.length === 0)
+64:             return text;
+65:         this.ownScreenWrite(this.screen.feed(text));
+66:         this.buffer += text;
+67:         if (this.buffer.length > MAX_SESSION_OUTPUT_CHARS) {
+68:             const overflow = this.buffer.length - MAX_SESSION_OUTPUT_CHARS;
+69:             this.buffer = this.buffer.slice(overflow);
+70:             this.droppedChars += overflow;
+71:         }
+72:         return text;
+73:     }
+
+## /home/main/.npm-global/lib/node_modules/omo-ai/node_modules/@code-yeongyu/senpi/dist/core/extensions/builtin/terminal/manager.js:105-130
+105:         await this.registry.teardown();
+106:         for (const runtime of this.runtimes.values())
+107:             runtime.dispose();
+108:         this.runtimes.clear();
+109:         this.exited.clear();
+110:         this.monitorIds.clear();
+111:     }
+112:     /** Dispose runtime wrappers whose registry entry was pruned (capacity/LRU eviction). */
+113:     reconcileRuntimes() {
+114:         const liveIds = new Set(this.registry.list().map((entry) => entry.id));
+115:         for (const [id, runtime] of this.runtimes) {
+116:             if (liveIds.has(id))
+117:                 continue;
+118:             runtime.dispose();
+119:             this.runtimes.delete(id);
+120:             this.exited.delete(id);
+121:             for (const [monitorId, sessionId] of this.monitorIds) {
+122:                 if (sessionId === id)
+123:                     this.monitorIds.delete(monitorId);
+124:             }
+125:         }
+126:     }
+127: }
+128: export function isCapacityError(error) {
+129:     return error instanceof SessionRegistryCapacityError;
+130: }
+
+## /home/main/.npm-global/lib/node_modules/omo-ai/node_modules/@code-yeongyu/senpi/dist/core/extensions/builtin/terminal/durable-command.js:1-8
+1: /**
+2:  * The `restartable-command` durability class: the restore handler that brings a persistent
+3:  * command monitor back after a restart. It re-spawns the saved command EXACTLY ONCE, in the
+4:  * saved working directory, with NO timeout (a persistent watch has no deadline), and
+5:  * re-registers it under the SAVED `mon_` id so the stable handle the agent already knows
+6:  * keeps resolving. Nothing the pre-restart PTY produced is replayed — no output is persisted
+7:  * anywhere, so a restored watch starts from an empty buffer by construction.
+8:  */
+
+## /home/main/.npm-global/lib/node_modules/omo-ai/node_modules/@code-yeongyu/senpi/dist/core/extensions/builtin/terminal/monitor-registry.js:556-574
+556:     #consume(record, chunk) {
+557:         if (record.settled || chunk.length === 0)
+558:             return;
+559:         let remaining = record.lineBuffer + chunk;
+560:         for (;;) {
+561:             const newline = remaining.indexOf("\n");
+562:             if (newline < 0)
+563:                 break;
+564:             const rawLine = remaining.slice(0, newline);
+565:             remaining = remaining.slice(newline + 1);
+566:             const line = rawLine.endsWith("\r") ? rawLine.slice(0, -1) : rawLine;
+567:             const matchesFilter = !record.filter || record.filter.test(line);
+568:             if (!matchesFilter)
+569:                 continue;
+570:             if (record.paused) {
+571:                 record.mutedDropped += 1;
+572:                 continue;
+573:             }
+574:             this.#emit({ type: "line", id: record.id, description: record.description, line });
+
+## /home/main/.npm-global/lib/node_modules/omo-ai/node_modules/@code-yeongyu/senpi/dist/core/extensions/builtin/terminal/tools/bash-output.js:47-53
+47:                 return errorResult(`No terminal session found with id: ${input.bash_id}`);
+48:             const monitorEntry = ctx.monitorRegistry?.snapshot().find((entry) => entry.id === sessionId);
+49:             const muted = monitorEntry?.paused === true;
+50:             const mutedDropped = muted ? (ctx.monitorRegistry?.mutedDropped(sessionId) ?? 0) : 0;
+51:             let mutedNote = "";
+52:             if (muted) {
+53:                 mutedNote =
+
+## /home/main/.npm-global/lib/node_modules/omo-ai/node_modules/@code-yeongyu/senpi/dist/core/extensions/builtin/terminal/shared.js:21-23
+21: export const DEFAULT_MAX_SESSIONS = 32;
+22: /** Upper bound on decoded output retained per session for delta reads and `view:"log"`. */
+23: export const MAX_SESSION_OUTPUT_CHARS = 1_000_000;

@@ -1,0 +1,37 @@
+
+> rpg-zzu@0.1.0 gates
+> node scripts/verify-gates.mjs --only css
+
+css            exit=1  budget=1  graph=0
+   CSS 예산 래칫 — 기준선 .omo/css-budget-baseline.json
+      지표                    기준선       현재      증감  설명
+      hexLiterals          1668     1616     -52  하드코딩 hex 리터럴 (TOKENS.md §4.1)
+      important             988      698    -290  !important 선언
+      undefinedVars          61       60      -1  정의 없는 커스텀 프로퍼티
+      globalRootFiles        10       10       0  전역 :root 블록을 가진 파일
+      cssFileCount          267      268      +1  CSS 파일 수
+
+   GOOD: hexLiterals 1668 → 1616 (-52). 래칫을 조이세요 — node scripts/check-css-budget.mjs --save-baseline
+   GOOD: important 988 → 698 (-290). 래칫을 조이세요 — node scripts/check-css-budget.mjs --save-baseline
+   GOOD: undefinedVars 61 → 60 (-1). 래칫을 조이세요 — node scripts/check-css-budget.mjs --save-baseline
+   FAIL: cssFileCount 267 → 268 (+1)
+            src/styles/database/assistant-sticky-checklist.css
+            src/styles/database/growth-tree.css
+            src/styles/database/tabs-b-assistant-panel/18-assistant-deck.css
+            src/styles/database/tabs-b-assistant-panel/19-assistant-cards.css
+            src/styles/database/village-design.css
+            src/styles/editor/walk-encounter.css
+            src/styles/runtime/battle-skins/_rm2003.css
+            src/styles/shell/studio-bar.modern.css
+
+   1개 지표가 기준선을 넘었다. 새로 들어온 위반을 되돌리세요.
+   토큰을 쓰는 법: src/styles/TOKENS.md §4. 의도적 상향이면 --save-baseline 을 리뷰에 포함하세요.
+   CSS graph gate: entries=13 (scan), files=270, reachable=270, orphan=0
+     missing @import target : 0 new (유예 없음)
+     unreachable            : 0 found, 0 allowlisted, 0 new
+     double-imported        : 5 found, 5 allowlisted, 0 new
+     unregistered slice     : 1 found, 1 allowlisted, 0 new
+     duplicate NN- prefix   : 1 found, 1 allowlisted, 0 new
+
+기준선 대비 회귀 1건:
+   css check-css-budget.mjs exit=1

@@ -1,5 +1,80 @@
 # Editor AI Tools & Vocabulary
 
+## Monster resource discovery and AI appearance evidence (2026-09-07)
+
+`list_monster_resources({})` returns the entire current monster index, without a default
+20/50-entry cap. Optional `query`, exact `ids`, `include: "index" | "full"`, `offset`
+and `limit` allow filtered/paged reads. The response contains `resources`, `include`,
+`total`, `returned`, `nextOffset`, `complete` and `unknownIds`. `complete` means the
+response covers the entire filtered result (offset zero and no next page); it does
+not claim that unknown requested IDs exist. Index entries omit description; full
+entries preserve the entire effective description. `get_monster_resource({resourceId})`
+returns `{resource}` with the exact current full entry or fails, never a substitute.
+All entries come from `assets/monsterResourceCatalog`, including project metadata
+overrides. Metadata-only stored keys do not register resources; explicit non-monster
+uploads cannot masquerade as monsters through prefixes or profiles.
+
+The three appearance writers (`upsert_enemy`, `define_monster_species`,
+`make_action_enemy`) accept root-level, tool-only `appearanceTags`. For a new/changed
+visible AI selection, use a raw exact monster ID, read its full current metadata,
+then declare 1-32 desired visible identity tags (each 1-64 characters). Every declared
+tag must match an effective resource tag after NFKC/case/outer-whitespace
+normalization. Tags are whole values, not fuzzy queries, substrings or enemy names.
+At least one matched tag must also contain a letter-bearing identity word outside
+`GENERIC_APPEARANCE_WORDS` in `ai/monsterAppearanceEvidence.ts`. This bounded exclusion
+set covers common creature/class labels (monster/enemy/creature/beast/animal/humanoid/
+undead/boss/minion and Korean counterparts), basic English/Korean colors, broad
+size/appearance words and asset-origin words. Whitespace/hyphen/underscore-separated
+combinations of these words do not evade the rule; numbers alone do not count.
+Specific user-authored tags remain legal: there is no closed species-name catalog.
+An arbitrary boss display name with goblin art is valid; declared goblin identity
+with slime art is not. The envelope is never persisted in enemy/species records.
+Existing unchanged art/stat edits and intentional transparency remain valid.
+Non-AI explicit-art/rename and reliable legacy identity-query behavior are preserved.
+
+`ToolReadEvidence` enforces this independently of the generic read-before-write
+contract. The session registers current-request read call IDs, then consumes only
+full successful results actually present in the post-compaction model request.
+Index pages, missing/failed results, unreturned IDs, stale metadata, historical user
+requests and same-batch unobserved reads cannot authorize a new selection. Budget
+compaction cannot turn an executed-but-undelivered full read into permission.
+`monsterAppearanceSession` tests the actual model-facing serialized catalog, not
+only the read tool; `monsterAppearanceTransport` tests budget loss explicitly.
+
+An appearance-read refusal leaves a newly declared record unavailable even though
+the producer did not execute. `AssistantSession` tracks that absent ID for the
+current batch, so dependent troops and transitive encounter writes receive
+`record-dependency-failed` deferrals rather than consuming their own retry targets.
+Unrelated writes continue. A successful creation clears the unavailable ID;
+a failed/deferred update does not invalidate a record that already exists.
+`assistantDependencyRetry` covers both generic-read modes, delivered appearance
+reads, transitive recovery and existing-record references.
+
+Full entries also include `assetIdentity`, a compact SHA-256 digest shared by the
+read response and current authorization snapshot (`ai/monsterResourceSnapshot.ts`).
+It hashes the raw resource ID plus the upload's encoded image source and render
+metadata, never returning base64. Replacing `assets.uploaded[id].dataUrl` at the
+same ID invalidates old evidence for new/changed assignments even when effective
+name/tags/description are unchanged; a fresh full read restores eligibility.
+The index remains compact and unchanged. Existing unchanged-art/stat-only edits
+still bypass selection evidence deliberately: this is not a gate on upload editing.
+Bundled/profile image sources are assumed fixed within the running asset build;
+this token does not fetch/revalidate remote bytes behind an unchanged URL.
+`monsterAppearanceAssetIdentity` covers replacement/reread across all three writers,
+both full-read paths, and the actual assistant session.
+
+**Limits of this check:** tags are the assistant's declared visible identity, not
+machine vision and not proof of the user's intent. Generic/shared tags may match
+many resources. The finite generic-word policy rejects known generic-only declarations,
+not every synonym, compound or invented vague phrase; a nonexcluded tag is not a
+semantic proof. Incorrect or adversarially edited metadata may be internally
+consistent but visually wrong. The guard cannot prove that a model honestly chose
+tags from the user request rather than retrofitting them to an arbitrary resource.
+Names, tags and descriptions (including prompt-like text) are untrusted reference
+data, never instructions or a permission to change the user's request. Human/vision
+review of actual artwork is separate; reviewed status is owned by the catalog lane,
+not inferred by these tools. Provider image delivery is a separate transport gate.
+
 Generated `place_npc({guide:"action-controls"})` guides omit automatic portraits;
 an explicit `face` still uses the normal authoring contract. This avoids shipping
 an inferred faceset ID absent from the project while preserving the canonical
@@ -23,6 +98,9 @@ first writer sees its original values even with `budgetChars: 1`. It accounts fo
 native schemas, history, originals and the existing 16,384-token response reserve against
 the actual supported bundled model window. The small browser-safe capacity table is
 checked against installed pi-catalog; the 9 MB provider catalog/runtime is not bundled.
+History compaction also reserves the original paging manifest and reconciles its character
+clamp with token-weighted messages and tool-call arguments. An expanded native catalog must
+not strand otherwise pageable originals at a nearly full history boundary.
 Unknown native IDs use the companion's provider-default fallback; injected unknown models
 retain the conservative legacy estimate. Token counting remains an estimate, not a tokenizer.
 
@@ -549,3 +627,17 @@ NPC 고수준 commands의 `text.lines`는 실제 줄바꿈을 포함한 `text.bo
 선언된 adventure 계약의 도구는 `adventureToolNames`에서 실제 호출 스키마로 승격되어 첫 실행부터 노출된다. 안내문에서 언급만 하고 도메인 쿼터에 숨기는 것을 금지한다. 조건 kind 누락 오류는 실행 가능한 selfSwitch/switch 예시를 반환한다.
 
 시각 재검증에서 장비 아이콘 누락이 발견돼 모험 완료 검사의 저작 레코드 추적을 items와 equipment로 확장했다. 두 컬렉션의 동일 ID도 따로 추적한다. 그림 없는 장비를 생성하고 완료라고 답하는 통합 회귀를 유지한다.
+
+## 실제 이미지 입력 보존 (2026-09-07)
+
+`scripts/lib/ohMyPiPiAiRuntime.ts`의 `openaiToContext`는 사용자 메시지의 텍스트와
+`image_url` 순서를 보존한다. PNG/JPEG/WebP base64 data URL을 pi-ai의 이미지 블록으로
+변환하며 바이트를 텍스트 요약으로 대체하지 않는다. 잘못된 base64, 지원하지 않는 MIME,
+원격 이미지 URL과 잘못된 detail 값은 HTTP 400 입력 오류로 거부한다.
+
+이전 구현은 `textOf`로 이미지 부분을 버렸다. HTTP 200과 그럴듯한 외형 설명만으로는
+이미지를 실제로 전달했다는 증거가 아니다. `test/ohMyPiVision.bun.test.ts`가 바이트·순서,
+실제 pi-ai 직렬화와 worker의 잘못된 입력 거부를 검증한다. 실제 제공자 검증에서는
+서로 다른 단색 이미지가 구분되는지 먼저 확인한 뒤 원본 그림을 전달한다.
+몬스터 카탈로그의 원본 해시와 관측 근거는 `src/assets/monsterCatalogReview.json` 및
+`output/evidence/monster-catalog/README.md`를 참조한다.

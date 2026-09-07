@@ -1,0 +1,20 @@
+{
+  "canonicalCount": 162,
+  "canonicalUniqueIdCount": 162,
+  "decodedResourceCount": 162,
+  "missingOrUndecodableCount": 0,
+  "uniqueResolvedUrlCount": 162,
+  "uniqueFileSha256Count": 161,
+  "uniqueDecodedPixelCount": 161,
+  "sheetCount": 7,
+  "sheetEntryCount": 162,
+  "fullCatalogCoverage": true,
+  "duplicateSheetEntries": 0,
+  "placeholderImages": 0,
+  "visuallyAnnotatedCount": 0,
+  "decodedDimensions": {
+    "384x384": 140,
+    "64x64": 2,
+    "96x96": 20
+  }
+}

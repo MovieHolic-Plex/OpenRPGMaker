@@ -1,0 +1,214 @@
+{
+  "verification": "passed",
+  "vitestVersion": "3.2.4",
+  "method": "Installed JsonReporter.onFinished over synthetic task graphs for all independently discovered files; checker invoked as child CLI. No product tests executed.",
+  "outcomes": [
+    {
+      "mode": "pass",
+      "syntheticTasks": true,
+      "nativeReporter": true,
+      "exitCode": 0,
+      "completeness": {
+        "complete": true,
+        "expectedShards": 16,
+        "completeShards": 16,
+        "expectedFiles": 1768,
+        "reportedUniqueFiles": 1768,
+        "missingFiles": [],
+        "unexpectedFiles": [],
+        "duplicates": [],
+        "issues": []
+      },
+      "outcome": {
+        "status": "passed",
+        "failureObserved": false,
+        "passed": true,
+        "exitCode": 0
+      },
+      "counts": {
+        "scope": "schema-valid reports only; not a full-suite total unless complete",
+        "numTotalTestSuites": 3536,
+        "numPassedTestSuites": 3536,
+        "numFailedTestSuites": 0,
+        "numPendingTestSuites": 0,
+        "numTotalTests": 1768,
+        "numPassedTests": 1736,
+        "numFailedTests": 0,
+        "numPendingTests": 16,
+        "numTodoTests": 16,
+        "assertionStatuses": {
+          "passed": 1736,
+          "failed": 0,
+          "skipped": 16,
+          "pending": 0,
+          "todo": 16
+        }
+      },
+      "failedFiles": [],
+      "nativeSamples": [
+        {
+          "keys": [
+            "numTotalTestSuites",
+            "numPassedTestSuites",
+            "numFailedTestSuites",
+            "numPendingTestSuites",
+            "numTotalTests",
+            "numPassedTests",
+            "numFailedTests",
+            "numPendingTests",
+            "numTodoTests",
+            "snapshot",
+            "startTime",
+            "success",
+            "testResults"
+          ],
+          "success": true,
+          "numTotalTestSuites": 222,
+          "numTotalTests": 111,
+          "numPendingTests": 1,
+          "numTodoTests": 1,
+          "hasUnhandledErrorsField": false
+        }
+      ]
+    },
+    {
+      "mode": "failed-and-collection",
+      "syntheticTasks": true,
+      "nativeReporter": true,
+      "exitCode": 1,
+      "completeness": {
+        "complete": true,
+        "expectedShards": 16,
+        "completeShards": 16,
+        "expectedFiles": 1768,
+        "reportedUniqueFiles": 1768,
+        "missingFiles": [],
+        "unexpectedFiles": [],
+        "duplicates": [],
+        "issues": []
+      },
+      "outcome": {
+        "status": "failed",
+        "failureObserved": true,
+        "passed": false,
+        "exitCode": 1
+      },
+      "counts": {
+        "scope": "schema-valid reports only; not a full-suite total unless complete",
+        "numTotalTestSuites": 3535,
+        "numPassedTestSuites": 3532,
+        "numFailedTestSuites": 3,
+        "numPendingTestSuites": 0,
+        "numTotalTests": 1767,
+        "numPassedTests": 1734,
+        "numFailedTests": 1,
+        "numPendingTests": 16,
+        "numTodoTests": 16,
+        "assertionStatuses": {
+          "passed": 1734,
+          "failed": 1,
+          "skipped": 16,
+          "pending": 0,
+          "todo": 16
+        }
+      },
+      "failedFiles": [
+        "test/actionAcceptanceProof.test.ts",
+        "test/actionControlsGuide.test.ts"
+      ],
+      "nativeSamples": [
+        {
+          "keys": [
+            "numTotalTestSuites",
+            "numPassedTestSuites",
+            "numFailedTestSuites",
+            "numPendingTestSuites",
+            "numTotalTests",
+            "numPassedTests",
+            "numFailedTests",
+            "numPendingTests",
+            "numTodoTests",
+            "snapshot",
+            "startTime",
+            "success",
+            "testResults"
+          ],
+          "success": false,
+          "numTotalTestSuites": 221,
+          "numTotalTests": 110,
+          "numPendingTests": 1,
+          "numTodoTests": 1,
+          "hasUnhandledErrorsField": false
+        }
+      ]
+    },
+    {
+      "mode": "unhandled-exit",
+      "syntheticTasks": true,
+      "nativeReporter": true,
+      "exitCode": 1,
+      "completeness": {
+        "complete": true,
+        "expectedShards": 16,
+        "completeShards": 16,
+        "expectedFiles": 1768,
+        "reportedUniqueFiles": 1768,
+        "missingFiles": [],
+        "unexpectedFiles": [],
+        "duplicates": [],
+        "issues": []
+      },
+      "outcome": {
+        "status": "failed",
+        "failureObserved": true,
+        "passed": false,
+        "exitCode": 1
+      },
+      "counts": {
+        "scope": "schema-valid reports only; not a full-suite total unless complete",
+        "numTotalTestSuites": 3536,
+        "numPassedTestSuites": 3536,
+        "numFailedTestSuites": 0,
+        "numPendingTestSuites": 0,
+        "numTotalTests": 1768,
+        "numPassedTests": 1736,
+        "numFailedTests": 0,
+        "numPendingTests": 16,
+        "numTodoTests": 16,
+        "assertionStatuses": {
+          "passed": 1736,
+          "failed": 0,
+          "skipped": 16,
+          "pending": 0,
+          "todo": 16
+        }
+      },
+      "failedFiles": [],
+      "nativeSamples": [
+        {
+          "keys": [
+            "numTotalTestSuites",
+            "numPassedTestSuites",
+            "numFailedTestSuites",
+            "numPendingTestSuites",
+            "numTotalTests",
+            "numPassedTests",
+            "numFailedTests",
+            "numPendingTests",
+            "numTodoTests",
+            "snapshot",
+            "startTime",
+            "success",
+            "testResults"
+          ],
+          "success": true,
+          "numTotalTestSuites": 222,
+          "numTotalTests": 111,
+          "numPendingTests": 1,
+          "numTodoTests": 1,
+          "hasUnhandledErrorsField": false
+        }
+      ]
+    }
+  ]
+}

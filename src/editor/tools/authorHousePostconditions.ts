@@ -154,6 +154,7 @@ function hasForbiddenDiff(diff: ChangeSummary): boolean {
     || diff.variablesAdded !== 0 || diff.worldEntitiesAdded !== 0 || diff.worldEntitiesModified !== 0
     || diff.palettePresetsAdded !== 0 || diff.palettePresetsModified !== 0 || diff.endingsChanged !== 0
     || (diff.audioDescriptionsChanged ?? 0) !== 0
+    || (diff.monsterMetadataChanged ?? 0) !== 0
     || diff.sessionChanged || diff.systemChanged;
 }
 

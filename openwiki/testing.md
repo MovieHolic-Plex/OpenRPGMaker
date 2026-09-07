@@ -280,6 +280,15 @@ JRPG 재검증에서 `roleNameComparisonGate`는 양쪽 모두 실패 1개였지
 워크트리 경로·스택 줄 번호 차이를 제외한 새 위반을 수정하고, 실패 메시지가 불완전한 기준선은
 해당 테스트만 다시 실행한다. 전체 게이트의 직접 종료 코드와 기존 실패는 보고서에 그대로 남긴다.
 
+전체 실행이 시간 제한에 걸리면 테스트 범위를 줄이는 대신 native Vitest `run --shard=i/N`으로
+나눌 수 있다. 먼저 같은 설정의 `list --filesOnly --json`으로 전체 파일 집합을 보존하고,
+각 shard의 실제 종료 코드와 JSON을 모아 합집합 일치·누락 0·중복 0을 검증한다.
+Vitest 3.2.4의 `list --shard`는 실제 실행 분할을 반영하지 않았으므로 분할 증거로 쓰지 않는다.
+완전한 수집과 테스트 통과는 별개다. JSON에 없는 unhandled error도 있으므로 종료 코드 1을
+카운터만 보고 성공으로 바꾸지 않는다. `ENOSPC`가 섞인 결과는 보존하고 해당 분할만 별도
+임시 공간에서 다시 실행한다. 기존 실패 파일 안의 새 assertion도 원본 기준선과 대조한다.
+PR678의 고정 리비전별 원본·영수증·검사기는 `output/evidence/monster-catalog/full-suite/`에 있다.
+
 ## Esc 메뉴 동작·시각 검증 (2026-09-05)
 
 - `npm run qa:runtime -- --scenario esc-menu`: 미리보기, 회복량 예고, 대상 유지·연속 사용,

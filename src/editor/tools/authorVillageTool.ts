@@ -149,7 +149,7 @@ function hasWriteTotals(diff: ConstructionDiffTotals): boolean {
   return diff.tilesChanged + diff.eventsAdded + diff.eventsModified + diff.eventsRemoved + diff.mapsAdded
     + diff.mapsRemoved + diff.dbRecordsChanged + diff.tilesetsChanged + diff.switchesAdded + diff.variablesAdded
     + diff.worldEntitiesAdded + diff.worldEntitiesModified + diff.palettePresetsAdded + diff.palettePresetsModified
-    + diff.endingsChanged + (diff.mapPropertiesChanged ?? 0) + (diff.audioDescriptionsChanged ?? 0) > 0
+    + diff.endingsChanged + (diff.mapPropertiesChanged ?? 0) + (diff.audioDescriptionsChanged ?? 0) + (diff.monsterMetadataChanged ?? 0) > 0
     || diff.sessionChanged || diff.systemChanged;
 }
 
@@ -171,6 +171,7 @@ function toolDiff(diff: ChangeSummary | undefined): ConstructionDiffTotals {
     palettePresetsModified: diff?.palettePresetsModified ?? 0,
     endingsChanged: diff?.endingsChanged ?? 0,
     audioDescriptionsChanged: diff?.audioDescriptionsChanged ?? 0,
+    monsterMetadataChanged: diff?.monsterMetadataChanged ?? 0,
     sessionChanged: diff?.sessionChanged ?? false,
     systemChanged: diff?.systemChanged ?? false,
   };

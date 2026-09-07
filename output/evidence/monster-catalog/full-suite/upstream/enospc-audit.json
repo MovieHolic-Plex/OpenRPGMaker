@@ -1,0 +1,74 @@
+{
+  "pattern": "ENOSPC|no space left on device|disk quota exceeded",
+  "checkedFiles": [
+    "/tmp/st_01a078e1/upstream-eight-exit.json",
+    "/tmp/st_01a078e1/upstream-eight.json",
+    "/tmp/st_01a078e1/upstream-eight.log",
+    "/tmp/st_01a078e1/upstream-interior-exact-errors.json",
+    "/tmp/st_01a078e1/upstream-interior-exit.json",
+    "/tmp/st_01a078e1/upstream-interior.json",
+    "/tmp/st_01a078e1/upstream-interior.log",
+    "/tmp/st_01a078e1/upstream-picture-exit.json",
+    "/tmp/st_01a078e1/upstream-picture.json",
+    "/tmp/st_01a078e1/upstream-picture.log",
+    "/tmp/st_01a078e1/upstream-provenance.json",
+    "/tmp/st_01a078e1/upstream-six-exit.json",
+    "/tmp/st_01a078e1/upstream-six.json",
+    "/tmp/st_01a078e1/upstream-six.log",
+    "/tmp/st_01a078e1/upstream-twelve-exact-errors.json",
+    "/tmp/st_01a078e1/upstream-twelve-exit.json",
+    "/tmp/st_01a078e1/upstream-twelve-run-exit.json",
+    "/tmp/st_01a078e1/upstream-twelve-run.json",
+    "/tmp/st_01a078e1/upstream-twelve-run.log",
+    "/tmp/st_01a078e1/upstream-twelve.log"
+  ],
+  "matches": [],
+  "baselineReports": [
+    {
+      "path": "/tmp/st_01a078e1/upstream-six.json",
+      "parseable": true,
+      "reportedFiles": 6,
+      "totalTests": 65,
+      "failedTests": 13,
+      "passedTests": 52,
+      "pendingTests": 0
+    },
+    {
+      "path": "/tmp/st_01a078e1/upstream-eight.json",
+      "parseable": true,
+      "reportedFiles": 8,
+      "totalTests": 65,
+      "failedTests": 10,
+      "passedTests": 47,
+      "pendingTests": 8
+    },
+    {
+      "path": "/tmp/st_01a078e1/upstream-picture.json",
+      "parseable": true,
+      "reportedFiles": 1,
+      "totalTests": 8,
+      "failedTests": 0,
+      "passedTests": 0,
+      "pendingTests": 8
+    },
+    {
+      "path": "/tmp/st_01a078e1/upstream-twelve-run.json",
+      "parseable": true,
+      "reportedFiles": 12,
+      "totalTests": 147,
+      "failedTests": 22,
+      "passedTests": 125,
+      "pendingTests": 0
+    },
+    {
+      "path": "/tmp/st_01a078e1/upstream-interior.json",
+      "parseable": true,
+      "reportedFiles": 1,
+      "totalTests": 39,
+      "failedTests": 1,
+      "passedTests": 38,
+      "pendingTests": 0
+    }
+  ],
+  "requiresEnospcRerun": false
+}

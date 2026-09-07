@@ -1,0 +1,106 @@
+{
+  "1": {
+    "exitCode": 1,
+    "status": "completed",
+    "signal": null,
+    "timedOut": false
+  },
+  "2": {
+    "exitCode": 1,
+    "status": "completed",
+    "signal": null,
+    "timedOut": false
+  },
+  "3": {
+    "exitCode": 1,
+    "status": "completed",
+    "signal": null,
+    "timedOut": false
+  },
+  "4": {
+    "exitCode": 1,
+    "status": "completed",
+    "signal": null,
+    "timedOut": false
+  },
+  "5": {
+    "exitCode": 1,
+    "status": "completed",
+    "signal": null,
+    "timedOut": false
+  },
+  "6": {
+    "exitCode": 1,
+    "status": "completed",
+    "signal": null,
+    "timedOut": false
+  },
+  "7": {
+    "exitCode": 1,
+    "status": "completed",
+    "signal": null,
+    "timedOut": false
+  },
+  "8": {
+    "exitCode": 1,
+    "status": "completed",
+    "signal": null,
+    "timedOut": false
+  },
+  "9": {
+    "exitCode": 1,
+    "status": "completed",
+    "signal": null,
+    "timedOut": false
+  },
+  "10": {
+    "exitCode": 1,
+    "status": "completed",
+    "signal": null,
+    "timedOut": false
+  },
+  "11": {
+    "exitCode": 1,
+    "status": "completed",
+    "signal": null,
+    "timedOut": false
+  },
+  "12": {
+    "exitCode": 1,
+    "status": "completed",
+    "signal": null,
+    "timedOut": false
+  },
+  "13": {
+    "exitCode": 1,
+    "status": "completed",
+    "signal": null,
+    "timedOut": false,
+    "attempt": 2,
+    "tmpdir": "/dev/shm/monster-shards-01a077c7/13"
+  },
+  "14": {
+    "exitCode": 1,
+    "status": "completed",
+    "signal": null,
+    "timedOut": false,
+    "attempt": 2,
+    "tmpdir": "/dev/shm/monster-shards-01a077c7/14"
+  },
+  "15": {
+    "exitCode": 1,
+    "status": "completed",
+    "signal": null,
+    "timedOut": false,
+    "attempt": 2,
+    "tmpdir": "/dev/shm/monster-shards-01a077c7/15"
+  },
+  "16": {
+    "exitCode": 1,
+    "status": "completed",
+    "signal": null,
+    "timedOut": false,
+    "attempt": 2,
+    "tmpdir": "/dev/shm/monster-shards-01a077c7/16"
+  }
+}

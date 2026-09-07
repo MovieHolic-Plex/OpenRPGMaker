@@ -1,7 +1,7 @@
 // Broad resource search is for browsing. Writers require an exact identity or every
 // semantic term; unrelated hash fallbacks must never become persisted monster art.
 import { searchResources } from "@/assets/resourceSearch";
-import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
+import { getMonsterResource, listMonsterResources } from "@/assets/monsterResourceCatalog";
 import type { Project } from "@/project/types";
 import { ToolError } from "./types";
 
@@ -14,7 +14,7 @@ function matchingMonsterResourceId(project: Project, query: string): string | un
   const terms = normalized.split(" ");
   // Browse commands and catalog/category words carry no monster identity.
   if (!normalized || terms.some((term) => /^(?:\*|all|전체|monster|enemy|generated|easyrpg|scarloxy|몬스터|적|\d+)$/u.test(term))) return undefined;
-  const available = collectResourceIds(project);
+  const available = new Set(listMonsterResources(project).map(resource => resource.resourceId));
   const candidates = searchResources("monster", "*").filter((match) => available.has(match.id));
   const exact = candidates.find((match) =>
     normalizedIdentity(match.label) === normalized ||
@@ -33,8 +33,7 @@ function matchingMonsterResourceId(project: Project, query: string): string | un
 }
 
 function missingGraphicError(project: Project, value: string, label: string, code: string): ToolError {
-  const available = collectResourceIds(project);
-  const examples = searchResources("monster", "*").filter((match) => available.has(match.id)).slice(0, 3).map((match) => match.id).join(", ");
+  const examples = listMonsterResources(project).slice(0, 3).map(resource => resource.resourceId).join(", ");
   return new ToolError(
     `${label}: "${value}"에 확실히 맞는 외형이 없습니다. list_resources(kind:"monster", query:"*")로 확인한 리소스 ID를 ${label}에 지정하세요. 사용 가능한 monster 리소스 예시: ${examples}`,
     { code },
@@ -66,7 +65,10 @@ export function ensureMonsterGraphic(
   const value = graphic.monsterResourceId;
   if (value !== undefined) {
     // Explicit IDs are author decisions, not names to reinterpret on later edits.
-    if (collectResourceIds(project).has(value)) return;
+    if (getMonsterResource(project, value)) return;
+    if (Object.hasOwn(project.assets.uploaded, value)) {
+      throw missingGraphicError(project, value, label, "invalid-args");
+    }
     const resolved = matchingMonsterResourceId(project, value);
     if (!resolved) throw missingGraphicError(project, value, label, "invalid-args");
     graphic.monsterResourceId = resolved;

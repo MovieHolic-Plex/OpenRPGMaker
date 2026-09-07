@@ -1,0 +1,37 @@
+{
+  "source": "/home/main/z-project/rpg-zzu-monster-catalog-0907/.omo/monster-shards/shard-03.json",
+  "sourceSha256": "06c4133d74d4bd681ad84764b1cc98e2e3ee6eed95c9a725cb745d18c6003371",
+  "testResult": {
+    "assertionResults": [
+      {
+        "ancestorTitles": [
+          "region AI house/tree/npc probe"
+        ],
+        "fullName": "region AI house/tree/npc probe reports approved vocab + direct tool success for place_props/place_npc/author_house",
+        "status": "passed",
+        "title": "reports approved vocab + direct tool success for place_props/place_npc/author_house",
+        "duration": 1373.093789999999,
+        "failureMessages": [],
+        "meta": {}
+      },
+      {
+        "ancestorTitles": [
+          "region AI house/tree/npc probe"
+        ],
+        "fullName": "region AI house/tree/npc probe live region task LLM: 집과 나무 1개 npc 배치",
+        "status": "failed",
+        "title": "live region task LLM: 집과 나무 1개 npc 배치",
+        "duration": 9862.406235,
+        "failureMessages": [
+          "AssertionError: expected false to be true // Object.is equality\n    at /home/main/z-project/rpg-zzu-monster-catalog-0907/test/regionAiHouseTreeNpc.probe.test.ts:211:23\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+        ],
+        "meta": {}
+      }
+    ],
+    "startTime": 1788733768552,
+    "endTime": 1788733779787.4062,
+    "status": "failed",
+    "message": "",
+    "name": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/regionAiHouseTreeNpc.probe.test.ts"
+  }
+}

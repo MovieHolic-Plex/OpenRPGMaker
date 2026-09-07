@@ -42,6 +42,15 @@ export type ResourceKind =
   | "music"
   | "sound";
 
+export type MonsterMetadata = {
+  readonly name: string;
+  readonly tags: readonly string[];
+  readonly description: string;
+};
+
+/** Raw resource IDs; absent fields inherit bundled metadata. */
+export type MonsterMetadataOverrides = Record<string, Partial<MonsterMetadata>>;
+
 export type AudioResourceKind = "music" | "sound";
 
 /** Raw resource IDs: absent key inherits; an empty string explicitly clears. */

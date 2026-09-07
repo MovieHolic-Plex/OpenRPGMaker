@@ -1,0 +1,10 @@
+{
+  "revision": "d932aa66b322412929d04a43af9f7f2b228f2884",
+  "expectedFileCount": 1768,
+  "discovery": "node scripts/run-vitest.mjs list --configLoader bundle --filesOnly --json .omo/monster-expected-files.json",
+  "shardCount": 16,
+  "concurrentShards": 4,
+  "workersPerShard": 2,
+  "scope": "Every file selected by the unchanged Vitest configuration; no additional exclusions, skips or weakened assertions.",
+  "completionRule": "Every shard terminates with a readable JSON report; the union of reported files equals the discovered set with no duplicates. Failures and collection errors remain failures and are compared against existing evidence."
+}

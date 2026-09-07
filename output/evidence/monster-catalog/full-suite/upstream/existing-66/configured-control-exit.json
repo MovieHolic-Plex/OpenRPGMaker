@@ -1,0 +1,48 @@
+{
+  "purpose": "Resolve config-dependent message differences, not retry to make failures pass. Synthetic values are literal values already present in unchanged storePersistence tests. Real network remains blocked.",
+  "files": [
+    "test/storePersistence.test.ts",
+    "test/uxcEditorShell.test.ts"
+  ],
+  "command": [
+    "/usr/local/bin/node",
+    "/home/main/z-project/rpg-zzu/node_modules/vitest/vitest.mjs",
+    "run",
+    "test/storePersistence.test.ts",
+    "test/uxcEditorShell.test.ts",
+    "--root",
+    "/dev/shm/st_01a079-existing/pristine",
+    "--config",
+    "/tmp/st_01a079-existing/baseline.config.mjs",
+    "--configLoader",
+    "bundle",
+    "--maxWorkers",
+    "2",
+    "--minWorkers",
+    "1",
+    "--reporter",
+    "json",
+    "--reporter",
+    "/tmp/st_01a079-existing/errors-reporter.mjs",
+    "--outputFile",
+    "/tmp/st_01a079-existing/configured-control.json"
+  ],
+  "cwd": "/dev/shm/st_01a079-existing/pristine",
+  "env": {
+    "PATH": "/usr/local/bin:/usr/bin:/bin",
+    "HOME": "/dev/shm/st_01a079-existing/home",
+    "TMPDIR": "/dev/shm/st_01a079-existing/tmp/configured-control",
+    "TMP": "/dev/shm/st_01a079-existing/tmp/configured-control",
+    "TEMP": "/dev/shm/st_01a079-existing/tmp/configured-control",
+    "NODE_OPTIONS": "--import=/tmp/st_01a079-existing/guard.mjs",
+    "DIAG_SUITE_ERRORS": "/tmp/st_01a079-existing/configured-control-errors.json",
+    "READONLY_AUDIT": "/tmp/st_01a079-existing/configured-control-audit.jsonl",
+    "LANG": "C.UTF-8",
+    "VITE_SUPABASE_URL": "http://dbserver:8100",
+    "VITE_SUPABASE_ANON_KEY": "test-anon-key",
+    "VITE_SUPABASE_PROJECT_ID": "rpg-zzu-house-template-gallery"
+  },
+  "startedAt": "2026-09-06T23:31:54.002411+00:00",
+  "durationSeconds": 23.21574622602202,
+  "exitCode": 1
+}

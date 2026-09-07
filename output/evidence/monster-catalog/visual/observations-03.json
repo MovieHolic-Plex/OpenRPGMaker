@@ -1,0 +1,347 @@
+[
+  {
+    "index": 48,
+    "resourceId": "generated-enemy-slime-cube",
+    "sourceSha256": "dc3b92cbd17a9408b2471a6752db383925219878c7cfa0ec3d3d1e240283645e",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:42:14 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720134263",
+    "elapsedMs": 8625,
+    "content": "```json\n{\n  \"name\": \"초록 큐브 슬라임\",\n  \"tags\": [\n    \"슬라임\",\n    \"slime\",\n    \"큐브\",\n    \"cube\",\n    \"초록색\",\n    \"green\",\n    \"괴물\",\n    \"monster\"\n  ],\n  \"description\": \"투명한 초록색을 띠는 정육면체 모양의 젤리 또는 슬라임 형태의 생물입니다. 정면에 두 개의 크고 둥근 눈과 미소 짓는 입이 그려져 있습니다.\",\n  \"uncertainty\": \"정확한 종족이나 명칭을 알 수 없어, 시각적으로 확인되는 형태(큐브)와 재질(슬라임/젤리), 색상(초록색)을 바탕으로 이름을 임의로 부여했습니다.\"\n}\n```"
+  },
+  {
+    "index": 49,
+    "resourceId": "generated-enemy-ooze-black",
+    "sourceSha256": "a1683cd4234a6a6b7d0aa0b49dbccbe40b098dc85a1fc29391536992cbc9442f",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:42:21 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720141432",
+    "elapsedMs": 10957,
+    "content": "```json\n{\n  \"name\": \"검은 얼룩 슬라임\",\n  \"tags\": [\n    \"슬라임\",\n    \"slime\",\n    \"점액\",\n    \"blob\",\n    \"얼룩무늬\"\n  ],\n  \"description\": \"짙은 검은색 바탕에 흰색 무늬가 불규칙하게 섞여 있는 둥근 점액질 형태의 생물입니다. 둥글고 큰 두 눈과 미소 짓는 입을 가지고 바닥에 자리 잡고 있습니다.\",\n  \"uncertainty\": \"정확한 종족이나 몸을 구성하는 물질을 알 수 없어 외형적 특성인 둥근 덩어리를 바탕으로 슬라임으로 분류하였습니다.\"\n}\n```"
+  },
+  {
+    "index": 50,
+    "resourceId": "generated-enemy-ooze-acid",
+    "sourceSha256": "930b33d4e50950b487ce88fb79f44bdbf44880a4addd74f313689966ef8a54f7",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:42:23 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720143232",
+    "elapsedMs": 12375,
+    "content": "```json\n{\n  \"name\": \"청록색 슬라임\",\n  \"tags\": [\n    \"슬라임\",\n    \"slime\",\n    \"젤리\",\n    \"jelly\",\n    \"몬스터\",\n    \"monster\",\n    \"청록색\"\n  ],\n  \"description\": \"바닥에 퍼진 둥근 반구 형태의 청록색 슬라임입니다. 커다란 두 눈과 미소 짓는 입을 가지고 있으며, 표면에 흰색 반점이 보입니다.\",\n  \"uncertainty\": \"정확한 종족을 알 수 없어 젤리 같은 외형을 바탕으로 슬라임으로 명명했으며, 몸체의 흰색 부분이 고유의 무늬인지 빛이 반사된 것인지 명확하지 않습니다.\"\n}\n```"
+  },
+  {
+    "index": 51,
+    "resourceId": "generated-enemy-bat-cave",
+    "sourceSha256": "38be67d39197156b2e6d682a18ebe9e4caf29bbb825df178d2102d24bb2cd6cd",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:42:19 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720139361",
+    "elapsedMs": 8450,
+    "content": "```json\n{\n  \"name\": \"갈색 박쥐\",\n  \"tags\": [\n    \"박쥐\",\n    \"bat\",\n    \"동물\",\n    \"animal\",\n    \"갈색\",\n    \"brown\"\n  ],\n  \"description\": \"갈색 털과 짙은 갈색의 넓은 날개막을 가진 박쥐 형태의 생물입니다. 날개를 활짝 펴고 비행하는 자세로, 입을 벌려 날카로운 이빨을 드러내고 있습니다.\",\n  \"uncertainty\": \"일반적인 동물 형태의 박쥐인지 판타지 세계의 특정 몬스터 종족인지 구별할 수 없어, 눈에 보이는 외형을 바탕으로 '갈색 박쥐'로 명명했습니다.\"\n}\n```"
+  },
+  {
+    "index": 52,
+    "resourceId": "generated-enemy-bat-vampire",
+    "sourceSha256": "09ad805a30220ed8e3d09e7670e7a04c042af6451b0b26e28b186637a37e16f0",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:42:26 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720146250",
+    "elapsedMs": 11988,
+    "content": "```json\n{\n  \"name\": \"적갈색 박쥐\",\n  \"tags\": [\n    \"박쥐\",\n    \"bat\",\n    \"동물\",\n    \"animal\",\n    \"날개\",\n    \"wing\"\n  ],\n  \"description\": \"짙은 적갈색의 털과 피막을 가진 박쥐가 양 날개를 넓게 펴고 비행하는 모습입니다. 입을 벌려 날카로운 송곳니를 드러내고 있으며, 장비는 착용하지 않았습니다.\",\n  \"uncertainty\": \"일반적인 동물 형태의 박쥐로 보이며, 흡혈 박쥐나 특정 판타지 세계관의 변종 등 구체적인 세부 종족은 겉모습만으로 확정할 수 없습니다.\"\n}\n```"
+  },
+  {
+    "index": 53,
+    "resourceId": "generated-enemy-bee-giant",
+    "sourceSha256": "0fe40f155d4a7cba75dabd9c877cafe27eed924722a87e6afcad02297324370e",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:42:28 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720148019",
+    "elapsedMs": 8648,
+    "content": "```json\n{\n  \"name\": \"거대 벌\",\n  \"tags\": [\n    \"벌\",\n    \"bee\",\n    \"곤충\",\n    \"insect\",\n    \"bug\"\n  ],\n  \"description\": \"노란색과 검은색 줄무늬 패턴의 털이 많은 몸통을 가진 벌 형태의 생물입니다. 붉은빛이 도는 눈과 두 쌍의 반투명한 날개를 가지고 공중에 떠 있는 자세를 취하고 있습니다.\",\n  \"uncertainty\": \"일반적인 꿀벌이나 말벌의 외형을 하고 있으나, 구체적인 판타지 세계관의 세부 종족명은 확인할 수 없어 보이는 외형을 바탕으로 명명했습니다.\"\n}\n```"
+  },
+  {
+    "index": 54,
+    "resourceId": "generated-enemy-spider-cave",
+    "sourceSha256": "3733e8b1667042705fd1058777ac78bc59b9b56d75f76e74ff59f70e04caf78c",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:42:31 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720151598",
+    "elapsedMs": 10168,
+    "content": "```json\n{\n  \"name\": \"가시 거미\",\n  \"tags\": [\n    \"거미\",\n    \"spider\",\n    \"절지동물\",\n    \"arthropod\",\n    \"괴물\",\n    \"monster\"\n  ],\n  \"description\": \"어두운 색의 몸통과 크고 둥근 배를 가진 거미 형태의 몬스터입니다. 몸 전체에 뾰족한 가시가 돋아 있으며, 보라색의 여러 눈과 날카로운 이빨을 드러낸 채 여덟 개의 다리로 서 있습니다.\",\n  \"uncertainty\": \"정확한 세부 종족이나 판타지적 기원을 알 수 없어 겉으로 보이는 특징인 가시를 바탕으로 이름을 붙였습니다.\"\n}\n```"
+  },
+  {
+    "index": 55,
+    "resourceId": "generated-enemy-spider-widow",
+    "sourceSha256": "88357b1dbd547b58019645acaaa0bf3b39ea73d00825917454b930723855a217",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:42:32 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720152146",
+    "elapsedMs": 8914,
+    "content": "```json\n{\n  \"name\": \"가시 돋친 흑거미\",\n  \"tags\": [\n    \"거미\",\n    \"spider\",\n    \"벌레\",\n    \"bug\",\n    \"절지동물\",\n    \"arthropod\"\n  ],\n  \"description\": \"어두운 색상의 몸체에 뾰족한 가시들이 돋아 있는 거미 형태의 생물입니다. 붉은색 눈 여러 개와 날카로운 이빨을 드러낸 채 여덟 개의 다리로 서 있습니다.\",\n  \"uncertainty\": \"일반적인 거미의 형태를 크게 확대한 모습이나, 정확한 생물학적 세부 종이나 판타지적 설정은 시각적 정보만으로 식별할 수 없어 보이는 특징을 바탕으로 명명했습니다.\"\n}\n```"
+  },
+  {
+    "index": 56,
+    "resourceId": "generated-enemy-scorpion-sand",
+    "sourceSha256": "5517400a05677af88125c2f1774435cafc721960ec26afedece086914333b3fa",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:42:35 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720155992",
+    "elapsedMs": 9740,
+    "content": "```json\n{\n  \"name\": \"황록색 전갈\",\n  \"tags\": [\n    \"전갈\",\n    \"scorpion\",\n    \"절지동물\",\n    \"arthropod\"\n  ],\n  \"description\": \"어두운 반점 무늬가 있는 황록색 몸통을 가진 전갈입니다. 커다란 양 집게발을 앞으로 내밀고 독침이 있는 꼬리를 등 위로 치켜든 자세를 하고 있습니다.\",\n  \"uncertainty\": \"현실의 특정 전갈 종인지 판별할 수 없어 외형의 두드러진 색상을 기준으로 이름을 부여했습니다.\"\n}\n```"
+  },
+  {
+    "index": 57,
+    "resourceId": "generated-enemy-beetle-horn",
+    "sourceSha256": "4681ee9fef1937bc1dbc8652397b590e76f0a1dac54fa23859bf6b8f90a8cd05",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:42:38 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720158750",
+    "elapsedMs": 10729,
+    "content": "```json\n{\n  \"name\": \"푸른 장수풍뎅이\",\n  \"tags\": [\n    \"곤충\",\n    \"장수풍뎅이\",\n    \"딱정벌레\",\n    \"insect\",\n    \"beetle\"\n  ],\n  \"description\": \"머리와 앞가슴에 크고 날카로운 뿔을 가진 장수풍뎅이 형태의 생물입니다. 단단해 보이는 외골격은 푸른색과 보라색이 감도는 짙은 금속성 광택을 띠고 있습니다.\",\n  \"uncertainty\": \"없음\"\n}\n```"
+  },
+  {
+    "index": 58,
+    "resourceId": "generated-enemy-mantis-blade",
+    "sourceSha256": "dc75536d101f411761205e6aba74dfcee154be986be2f7fa46604cd76d4fd7c5",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:42:41 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720161350",
+    "elapsedMs": 9747,
+    "content": "```json\n{\n  \"name\": \"거대 녹색 사마귀\",\n  \"tags\": [\n    \"곤충\",\n    \"사마귀\",\n    \"벌레\",\n    \"insect\",\n    \"mantis\",\n    \"bug\"\n  ],\n  \"description\": \"가시가 돋친 낫 모양의 두 앞다리를 치켜들고 있는 짙은 녹색의 거대한 사마귀 형태의 생물입니다. 마디가 있는 튼튼한 외골격과 커다란 겹눈을 지니고 있으며 네 다리로 지탱하여 서 있습니다.\",\n  \"uncertainty\": \"일반적인 사마귀의 형태를 띠고 있으나, 특정 세계관의 고유한 종족명이나 변종 여부는 알 수 없어 겉모습을 바탕으로 이름을 붙였습니다.\"\n}\n```"
+  },
+  {
+    "index": 59,
+    "resourceId": "generated-enemy-centipede-fire",
+    "sourceSha256": "b994d398485435d5555950a11fec5841dee81f5a94de9c60271ae3d0db688c25",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:42:42 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720162658",
+    "elapsedMs": 10507,
+    "content": "```json\n{\n  \"name\": \"자줏빛 등갑 지네\",\n  \"tags\": [\n    \"지네\",\n    \"centipede\",\n    \"벌레\",\n    \"bug\",\n    \"절지동물\",\n    \"arthropod\"\n  ],\n  \"description\": \"보라색 등껍질과 주황색 마디, 수많은 뾰족한 다리를 가진 지네 형태의 생물입니다. 몸을 C자 형태로 구부린 채 붉은 눈과 날카로운 턱을 드러내고 있습니다.\",\n  \"uncertainty\": \"일반적인 지네의 외형을 띠고 있으나 정확한 몬스터 명칭은 알 수 없어, 눈에 보이는 형태와 색상 특징을 바탕으로 이름을 부여했습니다.\"\n}\n```"
+  },
+  {
+    "index": 60,
+    "resourceId": "generated-enemy-moth-dust",
+    "sourceSha256": "29025f298867abee43d5d28ecb23bce958cdfd7d6c68619c26ab810d9b445276",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:42:45 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720165480",
+    "elapsedMs": 9490,
+    "content": "```json\n{\n  \"name\": \"갈색 털 나방\",\n  \"tags\": [\n    \"나방\",\n    \"moth\",\n    \"곤충\",\n    \"insect\",\n    \"갈색\",\n    \"brown\"\n  ],\n  \"description\": \"복슬복슬한 털로 덮인 몸통과 크고 둥근 검은 눈을 가진 갈색 곤충 형태의 생물입니다. 짙은 갈색의 소용돌이무늬가 있는 크고 다소 너덜너덜한 날개를 펼친 채 날아가는 자세를 취하고 있습니다.\",\n  \"uncertainty\": \"일반적인 곤충인지 거대한 판타지 몬스터인지 크기를 짐작할 수 없으며, 정확한 생물학적 종은 불명확하여 외형을 바탕으로 이름을 붙였습니다.\"\n}\n```"
+  },
+  {
+    "index": 61,
+    "resourceId": "generated-enemy-worm-sand",
+    "sourceSha256": "963d96f01a7f036efd289d61b243a9808d9fcb6fce3b9887929ccaac1234b52b",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:42:50 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720170373",
+    "elapsedMs": 11628,
+    "content": "```json\n{\n  \"name\": \"갈색 거대 벌레\",\n  \"tags\": [\n    \"벌레\",\n    \"worm\",\n    \"괴물\",\n    \"monster\",\n    \"촉수\",\n    \"tentacle\",\n    \"가시\",\n    \"spike\"\n  ],\n  \"description\": \"단단해 보이는 마디진 갈색 몸통에 가시 돌기가 돋아난 거대한 벌레 형태의 생물입니다. 몸을 둥글게 말고 입을 크게 벌려 뾰족한 이빨과 입가에 달린 촉수들을 드러내고 있습니다.\",\n  \"uncertainty\": \"정확한 종족 분류는 불명확하여 눈에 보이는 거대한 벌레(웜) 형태를 기준으로 명명했습니다.\"\n}\n```"
+  },
+  {
+    "index": 62,
+    "resourceId": "generated-enemy-ant-soldier",
+    "sourceSha256": "60239109bf9ea9be0c7d54614c00b5b119d19ef9c3e658cf4c6cba72534afe38",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:42:51 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720171738",
+    "elapsedMs": 10391,
+    "content": "```json\n{\n  \"name\": \"붉은 개미\",\n  \"tags\": [\n    \"개미\",\n    \"ant\",\n    \"곤충\",\n    \"insect\",\n    \"붉은색\",\n    \"red\"\n  ],\n  \"description\": \"적갈색 외골격과 크고 날카로운 큰턱을 가진 곤충형 생물입니다. 몸통 곳곳에 작은 가시 돌기가 돋아 있으며 여섯 개의 다리를 이용해 서 있습니다.\",\n  \"uncertainty\": \"이미지만으로는 실제 크기를 가늠할 수 없어 일반적인 개미인지 거대화된 몬스터인지 불명확하여 외형을 바탕으로 이름을 붙였습니다.\"\n}\n```"
+  },
+  {
+    "index": 63,
+    "resourceId": "generated-enemy-wolf-grey",
+    "sourceSha256": "85181a503fec87c0574357b5c905705d6118229ff64f425af01c4f18a97b65a6",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:42:52 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720172497",
+    "elapsedMs": 9837,
+    "content": "```json\n{\n  \"name\": \"회색 늑대\",\n  \"tags\": [\n    \"늑대\",\n    \"wolf\",\n    \"동물\",\n    \"animal\",\n    \"짐승\",\n    \"beast\"\n  ],\n  \"description\": \"짙은 회색 털을 지닌 네 발 달린 늑대 형태의 생물입니다. 날카로운 이빨을 드러내고 앞으로 걸어오는 듯한 자세를 취하고 있습니다.\",\n  \"uncertainty\": \"\"\n}\n```"
+  },
+  {
+    "index": 64,
+    "resourceId": "generated-enemy-wolf-dire",
+    "sourceSha256": "4d6bf1f194657fb4753c21a3289c8db0e54763b1ee82fc8ed9d524fc18f65c0b",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:42:55 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720175531",
+    "elapsedMs": 10046,
+    "content": "```json\n{\n  \"name\": \"검은 늑대\",\n  \"tags\": [\n    \"늑대\",\n    \"wolf\",\n    \"짐승\",\n    \"beast\",\n    \"검은색\",\n    \"black\"\n  ],\n  \"description\": \"보라색 눈을 번뜩이며 날카로운 이빨을 드러낸 채 몸을 낮추고 걷고 있는 짙은 회색 털의 늑대입니다. 입을 벌려 으르렁거리는 듯한 자세를 취하고 있습니다.\",\n  \"uncertainty\": \"눈과 입 안쪽이 보라색을 띠고 있어 평범한 동물인지 판타지적인 마수인지 명확하지 않습니다.\"\n}\n```"
+  },
+  {
+    "index": 65,
+    "resourceId": "generated-enemy-boar-tusk",
+    "sourceSha256": "56a63d2644d0bc422ed0e35f3d383936f0cab19a4e74e8a1eeb6fd72be2dcdbb",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:43:00 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720180588",
+    "elapsedMs": 10204,
+    "content": "```json\n{\n  \"name\": \"갈색 멧돼지\",\n  \"tags\": [\n    \"멧돼지\",\n    \"동물\",\n    \"짐승\",\n    \"boar\",\n    \"animal\",\n    \"beast\"\n  ],\n  \"description\": \"크고 날카로운 위쪽 엄니와 짙은 갈색의 거친 털을 가진 멧돼지입니다. 장비 없이 네 발로 땅을 디디고 정면을 주시하며 서 있는 자세를 취하고 있습니다.\",\n  \"uncertainty\": \"일반적인 야생 멧돼지의 형태를 띠고 있어 특정 판타지 몬스터나 세부 종족으로 구분하기 어렵습니다.\"\n}\n```"
+  },
+  {
+    "index": 66,
+    "resourceId": "generated-enemy-bear-brown",
+    "sourceSha256": "cd4d9cedff1031a260ee363a4c1d3199e4ce4bb87c0bebc7a9830e7351f3025d",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:43:00 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720180894",
+    "elapsedMs": 9144,
+    "content": "```json\n{\n  \"name\": \"갈색 곰\",\n  \"tags\": [\n    \"곰\",\n    \"bear\",\n    \"동물\",\n    \"animal\",\n    \"야수\",\n    \"beast\"\n  ],\n  \"description\": \"두 발로 서서 입을 크게 벌려 날카로운 이빨을 드러내고 있는 짙은 갈색 털의 곰입니다. 두 앞발을 앞으로 뻗은 자세를 취하고 있으며 날카로운 발톱이 돋보입니다.\",\n  \"uncertainty\": \"일반적인 야생의 갈색 곰인지 특정 판타지 세계관의 몬스터인지 외형만으로는 정확히 구별할 수 없습니다.\"\n}\n```"
+  },
+  {
+    "index": 67,
+    "resourceId": "generated-enemy-tiger-saber",
+    "sourceSha256": "35fb12a2be8b4f01f39cc8917dfab603840d8f6be82e02237bdef637eb51d19e",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:43:03 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720183726",
+    "elapsedMs": 11228,
+    "content": "```json\n{\n  \"name\": \"갑옷 입은 검치호랑이\",\n  \"tags\": [\n    \"호랑이\",\n    \"tiger\",\n    \"야수\",\n    \"beast\",\n    \"검치호\",\n    \"saber-toothed cat\"\n  ],\n  \"description\": \"검은 줄무늬가 있는 주황색 털과 위턱에 거대한 두 개의 송곳니를 가진 맹수입니다. 가슴과 어깨에 긁힌 자국이 있는 금속 갑옷을 착용하고, 입을 크게 벌린 채 앞으로 뛰어드는 역동적인 자세를 취하고 있습니다.\",\n  \"uncertainty\": \"호랑이 특유의 털 무늬와 검치호의 거대한 송곳니 특징이 혼합되어 나타나며, 정확한 종족명은 알 수 없어 외형적인 특징을 바탕으로 이름을 붙였습니다.\"\n}\n```"
+  },
+  {
+    "index": 68,
+    "resourceId": "generated-enemy-rat-giant",
+    "sourceSha256": "e2658dd7b43114274a2c843b0acc531feaa11813fb4ab76d902e4f84c2729a11",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:43:05 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720185536",
+    "elapsedMs": 10005,
+    "content": "```json\n{\n  \"name\": \"붉은 눈의 갈색 쥐\",\n  \"tags\": [\n    \"쥐\",\n    \"rat\",\n    \"동물\",\n    \"animal\",\n    \"설치류\",\n    \"rodent\"\n  ],\n  \"description\": \"갈색 털과 붉은 눈을 가진 쥐 형태의 생물입니다. 입을 크게 벌려 날카로운 이빨을 드러낸 채 앞다리를 들고 뛰어오르는 듯한 자세를 취하고 있습니다.\",\n  \"uncertainty\": \"배경이나 비교 대상이 없어 일반적인 크기의 쥐인지 거대화된 몬스터인지 명확하지 않아 눈에 보이는 특징만으로 이름을 지었습니다.\"\n}\n```"
+  },
+  {
+    "index": 69,
+    "resourceId": "generated-enemy-bird-hawk",
+    "sourceSha256": "49693ccc36172d608fe3f0b5a68ee59a2c917810277ebb48731568754959bf2c",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:43:08 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720188356",
+    "elapsedMs": 7766,
+    "content": "```json\n{\n  \"name\": \"갈색 매\",\n  \"tags\": [\n    \"새\",\n    \"bird\",\n    \"맹금류\",\n    \"hawk\",\n    \"비행\",\n    \"동물\"\n  ],\n  \"description\": \"갈색과 흰색 무늬가 섞인 깃털을 가진 맹금류가 날개를 활짝 펴고 비행하는 모습입니다. 날카로운 노란색 부리와 발톱을 아래로 향하고 있습니다.\",\n  \"uncertainty\": \"정확한 맹금류의 종(매, 수리 등)은 외형만으로 특정하기 어려워 갈색 매로 명명했습니다.\"\n}\n```"
+  },
+  {
+    "index": 70,
+    "resourceId": "generated-enemy-snake-viper",
+    "sourceSha256": "fa7a65a08e6ebcba1922be3686c0b1f2e0ebba1bcd51952da676954eb3296139",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:43:13 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720193314",
+    "elapsedMs": 12426,
+    "content": "```json\n{\n  \"name\": \"초록 코브라\",\n  \"tags\": [\n    \"뱀\",\n    \"snake\",\n    \"코브라\",\n    \"cobra\",\n    \"파충류\",\n    \"reptile\",\n    \"녹색\",\n    \"green\"\n  ],\n  \"description\": \"몸을 둥글게 똬리 틀고 상체를 높이 세운 채 입을 크게 벌리고 있는 초록색 뱀입니다. 목 부위가 넓게 펴진 형태를 하고 있으며, 전신이 짙고 밝은 녹색 비늘로 덮여 있고 입 안에는 날카로운 송곳니가 드러나 있습니다.\",\n  \"uncertainty\": \"실제 동물인 코브라와 매우 유사한 외형을 하고 있어, 특정한 판타지 몬스터로서의 세부적인 종족 분류는 확인할 수 없습니다.\"\n}\n```"
+  }
+]

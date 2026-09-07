@@ -3662,6 +3662,7 @@ export class AssistantSession {
           this.originalContext!,
         );
         requestMessages = grounded.messages;
+        this.readEvidence.observeRequest(requestMessages);
         this.pushAudit({ kind: "status", text: `context:grounded ${JSON.stringify(grounded.budget)} originals=${grounded.includedIds.length}/${this.originalContext!.context.entries.length}` });
         result = await this.chatWithTransientRetry(
           this.phaseConfig(phase),
@@ -3898,7 +3899,7 @@ export class AssistantSession {
       const failedRecords = new Map<string, BatchRecordTarget>();
       const failedWriteTargets = new Map<string, string>();
       const successfulWriteTargets = new Set<string>();
-      const batchReads: { name: string; args: Record<string, unknown>; result: ToolResult }[] = [];
+      const batchReads: { name: string; args: Record<string, unknown>; result: ToolResult; callId: string }[] = [];
       // 각 tool_call 실행 → role:"tool" 메시지로 결과 반환.
       for (const call of toolCalls) {
         const parsedCall = parseToolCall(call);
@@ -4054,14 +4055,16 @@ export class AssistantSession {
               if (toolResult.ok) failedSpecMaps.delete(args.mapId);
               else failedSpecMaps.add(args.mapId);
             }
-            const record = batchRecordTarget(name, args);
-            if (record) {
-              if (toolResult.ok) failedRecords.delete(record.key);
-              else if (!this.ctx.project.database[record.collection].some((entry) => entry.id === record.id)) failedRecords.set(record.key, record);
-            }
+          }
+          // Dependencies require an available record, even when its producer never executed.
+          // Track deferred creations too so missing IDs propagate transitively without charging dependents.
+          const record = batchRecordTarget(name, args);
+          if (record) {
+            if (toolResult.ok) failedRecords.delete(record.key);
+            else if (!this.ctx.project.database[record.collection].some((entry) => entry.id === record.id)) failedRecords.set(record.key, record);
           }
           if (tool?.mode === "read" || name === "get_original_context") {
-            batchReads.push({ name, args, result: toolResult });
+            batchReads.push({ name, args, result: toolResult, callId: call.id });
             if (!toolResult.ok) failedReadInBatch ??= name;
           }
           // 읽기 툴도 기록한다 — 플래너가 `successTools:["get_map_region"]` 같은 확인 항목을 자주 쓰는데
@@ -4206,7 +4209,7 @@ export class AssistantSession {
       }
 
       // 반환된 조회 결과는 다음 모델 응답에서만 참조 근거로 쓴다.
-      for (const read of batchReads) this.readEvidence.observe(read.name, read.args, read.result);
+      for (const read of batchReads) this.readEvidence.observeExecutedRead(read);
       // WorkPlan advance: successTools auto-complete OR complete/skip tools moved the cursor.
       await this.noteSuccessfulTools([...this.turnSuccessfulTools], onEvent);
       const afterItemId = this.workPlan?.currentItemId ?? null;
@@ -4313,6 +4316,7 @@ function diffSummaryLine(diff: ToolResult["diff"]): string {
   const parts = [
     diff.tilesChanged > 0 ? `타일 ${diff.tilesChanged}` : null,
     (diff.audioDescriptionsChanged ?? 0) > 0 ? `오디오 설명 ${diff.audioDescriptionsChanged}` : null,
+    (diff.monsterMetadataChanged ?? 0) > 0 ? `몬스터 소재 정보 ${diff.monsterMetadataChanged}` : null,
     diff.eventsAdded > 0 ? `이벤트 추가 ${diff.eventsAdded}` : null,
     diff.eventsModified > 0 ? `이벤트 수정 ${diff.eventsModified}` : null,
     diff.eventsRemoved > 0 ? `이벤트 삭제 ${diff.eventsRemoved}` : null,

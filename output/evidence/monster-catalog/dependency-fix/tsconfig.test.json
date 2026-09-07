@@ -1,0 +1,5 @@
+{
+  "extends": "../../../../tsconfig.app.json",
+  "include": ["../../../../src", "../../../../test/assistantDependencyRetry.test.ts"],
+  "exclude": ["../../../../node_modules", "../../../../dist", "../../../../src/benchmark"]
+}

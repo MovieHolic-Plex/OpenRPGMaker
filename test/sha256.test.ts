@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { sha256HexBytes, sha256HexText } from "../src/util/sha256";
+import { sha256HexBytes, sha256HexText, sha256HexTextSync } from "../src/util/sha256";
 
 const VECTORS: ReadonlyArray<readonly [string, string]> = [
   ["", "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"],
@@ -9,6 +9,14 @@ const VECTORS: ReadonlyArray<readonly [string, string]> = [
 ];
 
 describe("sha256", () => {
+  it.each(VECTORS)("hashes synchronous text against a standard vector when input is %j", (input, expected) => {
+    // Given a standard SHA-256 input/output pair.
+    // When a synchronous tool boundary hashes the input.
+    const digest = sha256HexTextSync(input);
+    // Then it has the same cryptographic identity as the standard algorithm.
+    expect(digest).toBe(expected);
+  });
+
   afterEach(() => {
     vi.unstubAllGlobals();
   });

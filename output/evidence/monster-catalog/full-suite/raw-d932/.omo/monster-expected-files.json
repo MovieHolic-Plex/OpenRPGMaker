@@ -1,0 +1,5306 @@
+[
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actionAcceptanceProof.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actionAcceptanceRequirements.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actionArenaAuthoring.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actionAttackWindow.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actionAuthoringPrerequisites.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actionCombatConfig.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actionCombatDocLinks.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actionCombatEditorFields.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actionCombatFootprint.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actionCombatMath.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actionCombatMpCost.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actionCombatProbeBoot.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actionCombatProof.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actionCombatRuntimeProof.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actionCombatToolPresentation.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actionContactDamage.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actionControlsGuide.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actionDebounceFootprint.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actionDemoHeroScale.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actionDemoProject.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actionDodge.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actionEncounterGuard.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actionEnemyAuthoring.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actionGenreAuthoring.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actionGuard.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actionHitbox.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actionHitboxOverlap.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actionHitstop.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actionHud.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actionKiting.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actionKnockback.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actionRpgAuthoringAcceptance.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actionSimulate.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actionSimulateSharedRules.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actionSkillSlots.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actionStagger.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actionSurvival.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actionTools.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actions.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actorBattleAuthoringSurface.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actorCombatCommandBodies.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actorM2CommandBodies.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/actorModel.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/advancedDialogueMerge.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/adventureCompletion.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/agentBench.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/agentBlueprint.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/agentBlueprintHardening.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/agentBlueprintRenderer.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/agentBlueprintTurnEnd.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/agentFocus.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/agentFocusCamera.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/agentGhostCumulativeReveal.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/agentGhostPreview.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/agentGhostPreviewHidden.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/agentGhostPreviewRenderers.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/agentGhostRunningTool.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/agentToolFollowups.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/agentUxPolicyPrompt.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/agentVerification.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiActivityCanvasChip.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiActivityChipPlacement.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiActivityDiagnostics.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiActivityLiveRow.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiActivityLog.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiActivityLogEndpoint.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiActivityLogIndex.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiActivityNarration.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiAgentBrief.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiAgentic.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiAnswerLinkRender.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiAnswerLinks.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiAntigravityOnly.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiAppliedBudgetStop.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiApplyActivityLabels.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiApplyCommitCorrelation.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiAskPendingPlan.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiAssistantAfterUx.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiAssistantBridge.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiAssistantPanel.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiAssistantSession.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiAssistantTurnCleanup.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiAssistantUxP0P2.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiAudioPromptBias.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiAuthConnectionCache.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiAuthDisconnect.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiAuthSettingsSeparation.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiAutonomousRunSmoke.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiAutonomousRunSurface.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiAutonomyDialSettings.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiAutonomyRunSurface.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiBackgroundOpacity.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiBlockedEventRelocation.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiBootIntent.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiBossPhaseGateSmoke.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiBusyQueue.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiCapabilityEscalation.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiChangeCardWiring.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiChangePreview.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiChatLeanUi.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiChatMentionThumbs.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiChatObservability.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiChatPanelComposerMode.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiChatPanelSettings.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiChatPanelTransportError.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiChatPanelUxRepairs.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiChatSessionScope.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiClusterAssist.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiCollapsedUndoReach.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiCommandSchemaContract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiCompanionAuthClient.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiCompanionSameOrigin.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiCompletionAccounting.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiComposerDeck.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiComposerEffort.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiComposerEffortPanel.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiComposerEffortSession.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiComposerInputUx.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiComposerModeSession.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiComposerUndo.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiConfigMigration.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiConnectionKind.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiConnectionStatus.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiConnectionStatusWiring.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiContextMeter.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiConversationHistoryModal.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiConversationLog.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiConversationNavigation.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiConversationReplay.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiDatabaseGeneration.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiDeckCss.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiDeckIcons.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiDeckRail.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiDefaultModelForced.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiDocTools.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiDockMetaReach.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiEditorCapabilityParity.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiEditorFullToolCoverage.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiEditorFullToolSafety.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiEditorReachParity.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiEndingCompletionRegression.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiEndingToolExposure.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiEntityMentions.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiEventPageSemantics.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiEventPlacementPassability.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiEventPlacementSurfaceGate.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiGateCommitRejection.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiGateNotice.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiGraphicAutofill.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiHarnessTimelineMerge.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiImageGenerateField.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiImageGenerateQueue.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiInstructionsModal.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiInterviewUx.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiLlmClient.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiLogRunIsolationOutbox.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiLogSlot.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiMapChip.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiMapContextPassability.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiMapContextPassabilityWiring.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiMapEditLive.live.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiMilestoneTurnAccounting.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiModelDemotion.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiMoreMenuLayout.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiPanelAutoExpand.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiPanelChrome.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiPanelContextSurfaces.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiPanelDockChrome.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiPanelExpandShrink.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiPanelGlassResize.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiPanelLayoutResponsive.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiPanelModernShell.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiPanelResizeAndToolBrowser.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiPlacementCopyRegion.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiPlacementCutsceneCheckpoint.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiPlacementInvestigationPuzzles.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiPlacementLighting.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiPlacementQuestCompiler.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiPlacementStarterMonsters.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiPlacementStoryArc.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiPreferenceComposerButton.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiPreferenceMemorySettings.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiPreviewContracts.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiPreviewGenerator.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiPreviewPatternGrammarRequirement.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiProjectInstructions.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiProposalCardUxd.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiProposalEmptyNotice.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiProposalSoftConfirm.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiQuickReplyPlacement.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiRegionChatBoundary.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiRegionPreviewHandoff.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiRetryWorkPlanLifecycle.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiRunEndProof.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiSelectionAutoChip.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiSelectionChipScope.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiSessionUsage.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiSettingsModalLayout.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiSettingsModalNoBrowserKey.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiSharedSurface.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiSlashExclusive.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiSpecGate.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiSpecGateHardening.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiStartScreenCards.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiStickyChecklist.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiStudioOpacityPersistence.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiStudioShell.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiSuggestionRows.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiTemperatureMenu.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiThreeMapRpg.live.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiToolCallProtocol.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiToolCallSessionProtocol.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiToolCapabilityIndex.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiToolDiscoveryEscalation.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiToolLabels.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiTransportHealth.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiTurnAppliedAccounting.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiTurnGroupSquash.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiUiEventContract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiUiEventLog.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiVisualPolish.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiWorkItemOutcomeGateSmoke.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiWorkItemStall.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiWorkPlanBook.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/aiWorkPlanTerminalFocus.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/animationSchema.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/antigravityOAuthFlow.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/appStorageMigration.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/applyChangesetToStore.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/applyProposedProjectHouseProtection.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/approvalDestructiveOutcome.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/assistantAcceptance.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/assistantAcceptancePromiseBaseline.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/assistantAcceptanceRequestBaseline.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/assistantAcceptanceSession.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/assistantBatchCompletion.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/assistantDependencyRetry.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/assistantEndpoint.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/assistantImageEvidence.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/assistantMapPreservationGuard.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/assistantMultiMapSpec.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/assistantOriginalContext.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/assistantProposalAssembly.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/assistantReadContract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/assistantSessionCompaction.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/assistantSessionContextSurface.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/assistantSessionIntent.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/assistantSessionYield.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/assistantSkillsRemoved.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/assistantTemperature.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/assistantVerificationEvidence.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/assistantVisualEvidenceSession.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/audioDescriptionCommandSurfaces.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/audioDescriptionConcurrentPersistence.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/audioDescriptionDiff.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/audioDescriptionEditor.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/audioDescriptionExport.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/audioDescriptionLifecycle.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/audioDescriptionPersistence.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/audioDescriptionPickerSurfaces.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/audioDescriptionPrompt.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/audioDescriptionPromptTransport.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/audioDescriptionResourceLifecycle.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/audioDescriptionSessionPrompt.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/audioDescriptionToolExposure.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/audioDescriptionToolStore.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/audioDescriptionTools.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/audioDescriptions.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/audioEngine.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/audioEnginePlaybackControls.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/audioQaInstrumentation.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/audioResourceCatalog.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/audioResourceSearchContract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/audioResourceToolPagination.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/authorHouseFacade.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/authorVillageFacade.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/authorVillageScopeGate.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/authorVillageViewportBounds.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/authoringJourney.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/authoringTasks.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/autonomyHarness.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/autonomyLevels.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/autosave.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/autosaveStatus.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/autotile.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/autotileClusterRules.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/autotileEngine.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/autotileGroupPersistence.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/autotileTemplates.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/auxOpenController.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/backBattlerGazeContract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/basicLeftRail.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/basicRailFlyout.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/basicTilePalette.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleActiveSlotsEvents.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleAdversarialFixes.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleAnimationAnchor.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleAnimationEffectStyle.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleAnimationFollowUps.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleAnimationPlaybackFixes.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleAnimationSheetScale.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleAnimationSheetScalePreview.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleAnimationTimingEffects.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleAudio.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleCommandCss.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleCommandPreview.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleConditionStateBridge.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleCoreFixes.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleDefeatOutcome.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleDefeatedSpriteOpacity.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleDomIncremental.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleDomKeyboard.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleElementAdversarialFixes.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleElementDamage.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleEnemyFit.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleEnemyGraphicFidelity.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleEnemyPlacementGeometry.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleEventChoiceHost.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleEventRepairFlow.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleEventRepairHud.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleEventRepairState.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleEventSimulationInput.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleEventWaitAudio.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleEventsExhaustive.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleEventsSelfSwitch.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleFeelFixes.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleFieldAllySprite.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleHitIntensity.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleLevelUp.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleModelSelector.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battlePartyComposition.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battlePoseHitFeelBackdropEvents.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleProcessingCommandBody.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleResultErasePattern.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleRewardsToSession.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleRm2000PixelGrid.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleRuntime.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleRuntimeDb.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleRuntimeDefects.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleRuntimeStates.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleRuntimeSuccessRate.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleRuntimeSwitchSkill.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleSequencer.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleSessionLevel.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleSimulate.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleSkinRegistry.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleStageScale.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleStates.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleStatusBadgeToken.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleStrictPriority.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleStrictRecursionSafety.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleStrictRuntime.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleSystemDeprecation.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleTextAuditGeometry.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battleTransition.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battlerBackIdleAnimation.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battlerHiresSheets.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battlerIdleAnimation.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battlerIdleMetrics.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battlerPoseFrame.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/battlesArePlayable.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/benchmarkContract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/benchmarkGroundTruth.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/benchmarkInputImages.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/benchmarkPrompts.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/benchmarkRunner.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/benchmarkScoringAutotile.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/benchmarkScoringConstruction.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/benchmarkScoringDetection.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/benchmarkScoringUtils.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/bgmCatalog.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/bootLoadFailureRecovery.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/bootNormalizerReferenceSafety.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/bossPhaseQuestOutcomeGate.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/buildOrder.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/buildPalette.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/buildPaletteClaimLayerHome.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/buildPaletteToggle.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/builtinAutotileGroups.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/bundledAssetWarmup.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/bundledBattleAnimations.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/callMapEvent.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/cameraFocusViewport.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/cameraStability.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/canonicalProjectDigest.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/canvasAiWorkbench.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/canvasInspectionPanel.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/captureGen1.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/castleEvaluate.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/castleKit.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/catalogStateElementExpansion.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/cc0AudioPlayback.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/cc0BgmAssets.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/cc0IconAssets.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/changeActorVitalPercent.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/changeBattleCommandsCommandBody.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/changeEquipmentCommandBody.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/changeExpCommandBody.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/changeGoldCommandBody.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/changeItemCommandBody.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/changeParametersCommandBody.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/changePartyCommandBody.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/characterDepthYSort.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/characterFootprint.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/characterGraphics.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/characterGraphicsLoad.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/characterHop.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/characterHopChainedScale.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/characterIdAutocomplete.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/characterIdIndex.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/characterIdPickerDialog.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/characterIdRelationshipGate.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/characterListThumbnail.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/characterProfiles.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/charsetLabelOverrides.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/charsetQuery.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/chatgptOAuthClient.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/checkpointEndingRuntime.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/chipsetAnimation.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/chipsetLabelCorrections.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/chipsetMapping.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/chipsetTransparency.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/choicesCommandBody.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/chromaKey.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/cinematicMediaImport.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/cinematicSequence.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/cinematicSettings.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/clusterAiModal.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/clusterAiModalHouseProtection.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/clusterAiModalImageFirst.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/clusterAiModalRangeClassify.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/clusterRuleAuthoring.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/clusterRuleCommitGate.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/clusterRulePlacement.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/clusterRuleSurface.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/clusterRuleValidators.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/coachMarks.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/codexBrowserOAuthFlow.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/codexOAuthFlow.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/collision.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/collisionFootprint.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/combinedTownAutotileAudit.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/combinedTownTerrainTag.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandDiff.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandEditModalPreview.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandKindCoverage.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandListBranchEnd.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandListInlineThumbs.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandPalette.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandPickerTestIds.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandPresentation.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandPreviewBadgeCss.characterization.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandPreviewBadgeCss.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandRegistry.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandSummaryEventName.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commentCommandBody.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commitEditActivityAttachment.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/communityPlayRoute.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/companionRoster.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/companionRules.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/complexMonsterAuthoring.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/conceptDoubleRowLayout.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/conceptFacilityComposition.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/conceptFacilityLevels.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/conceptFacilityScore.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/conceptFacilityTemplates.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/conceptOutdoorGates.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/conditionCompile.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/conditionCopyTokens.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/conditionEvalPreview.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/conditionEvaluatorParity.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/constructionActivityOutcome.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/constructionContracts.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/constructionHarness.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/constructionOutcome.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/constructionToolsV3.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/contextBuilder.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/contextCompaction.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/conversationStore.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/conversationTurnContext.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/cookingStation.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/createDefaultGameEvent.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/cropRegrowthContract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/customEquipmentSlots.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/customSeasonSave.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/customSelectEscapeLayer.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/cutsceneCompiler.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/cutsceneHudVisibility.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/darkWallAutotile.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseActions.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseAiBar.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseAiGenerateDialog.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseAiGenerateLazyImport.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseAllTabsRenderWalk.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseAnimationAutoplay.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseAnimationCacheLifecycle.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseAnimationCellStaleClosure.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseAnimationFrameSelect.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseAnimationModalIntent.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseAnimationPreview.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseBalanceCompute.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseBattleCommandCatalogIds.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseBattleCommandDuplicateRows.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseBattleCommandStaleClass.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseBattleCommandStudio.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseBattleCommandsTab.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseBattleStudio.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseCharacterGraphics.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseCharacterView.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseCinematicResources.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseCinematics.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseClassLearnedSkills.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseClassPromotionRequirements.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseCollectionTabsHardening.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseCommonEventCommandListAdapter.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseCommonEventOnDayEndGuard.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseCommonEventViews.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseConceptFirstNav.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseContractUnify.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseControlsNumberField.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseCopy.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseCropView.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseCrossTabNav.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseCssOwnerProof.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseCssOwnershipAudit.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseCurveDialogDraft.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseElementsUx.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseEnemyActionDialogTrust.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseEnemyDialogFocus.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseEnemyFactionPanel.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseEnemyRelationship.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseEnemyResourceSlot.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseEnemySelectionTrust.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseEnemySpeciesPanel.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseEquipmentInspector.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseEquipmentRecordView.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseFactionModel.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseFactionView.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseFieldSupport.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseFilterChips.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseFocusRestoration.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseGalleryView.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseGroupPeek.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseImageFailurePlaceholder.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseInventoryCatalog.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseItemInspector.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseKoreanRtpDefaults.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseLifeCraftingView.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseLifeReadinessNav.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseLightTheme.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseListGeometry.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseListVirtualizer.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseModalAiConnection.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseModalDirtySession.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseModalDockMode.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseModalFooter.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseModalReopenLeak.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseModernControls.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseMonsterEventEditing.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseMonsterMetadata.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseMonsterSpeciesView.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseNavMode.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseNestedModalEscape.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseNumericLabelTrust.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseOverviewDashboard.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseOverviewTab.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databasePanelBaseline.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databasePanelGridClasses.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databasePartyBuildStudio.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseRadioCustomGuard.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseRecordPartialRender.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseRecordThumbnails.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseReferenceGuards.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseRequiredSurfaceAxis.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseResourcePickerDialog.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseSelectChevronGuard.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseSidebarCss.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseSidebarKeyboard.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseSidebarNav.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseSixSurfaces.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseSkillAnimationStage.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseSkillComposer.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseSkillItemForms.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseSpeciesModalRefresh.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseSpeciesSearchNavigation.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseStatesGuardEquipmentDefense.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseStudioV2.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseSystemModern.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseSystemSections.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseSystemStudio.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseSystemView.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseTabIcons.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseTerrainTab.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseTilesetFolder.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseTilesetGraphicPicker.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseTroopBattleTestModalClose.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseTroopOpenEnemy.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseTroopRecordViewNameSync.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseTypeChipMatrix.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseUtilityViews.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseViewToggle.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseVillageView.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseWave2BatchC.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseWorkbench.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseWorldCanonView.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseWorldCodexStructure.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/databaseWorldGenView.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/dbArtPrompt.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/dbConnectionChip.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/dbExtractedHouseTemplate.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/dbImageMatching.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/dbToolsIntegrity.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/debugSession.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/defaultAdventureGame.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/defaultAdventureQuality.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/defaultCatalogMinimumPerType.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/defaultDatabase.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/defaultDatabaseStarterRecords.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/defaultEquipmentBackfill.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/defaultFeatureItemRuntime.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/defaultItemCatalogQuality.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/defaultItemRecordsIntegrity.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/defaultMonsterSpeciesDiversity.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/defaultProjectAudible.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/defaults.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/demoTeach.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/densePackingPlacement.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/deterministicRng.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/detsukuruBrandStrings.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/devPlayerBundles.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/devShowcaseProjects.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/developmentOntology.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/dewVillageDialogue.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/dewVillageLiving.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/dialogue.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/dialogueFaceRuntimeCss.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/dialoguePagination.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/dialoguePresentation.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/dialoguePresentationAuthoring.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/dialoguePresentationCss.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/dialoguePreviewPresentationCss.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/dialogueTextRenderer.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/downloadBlob.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/dryTreeStack.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/dungeonRoomPipeline.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/dungeonRoomRenderQa.probe.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/dungeonTerrainAutotiles.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/dungeonTerrainQuarter.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/dungeonThemedLayouts.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/dynamicImport.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/e2ePaletteTileVisibility.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/easyrpgAssets.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/easyrpgRtpAssets.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/easyrpgRtpRuntime.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/editActivityEndpoint.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/editActivityPanel.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/editActivityRecording.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/editSceneCameraFocus.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/editSceneEventFootprint.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/editSceneHoverPreview.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/editScenePaintHistory.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/editSceneRender.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/editorAssetWarmup.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/editorAuthoredDemoQuality.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/editorCameraFocusPlan.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/editorCanvasToolbarBasicZoom.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/editorDefaultLayer.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/editorGameSuspension.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/editorHeaderTerminology.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/editorHotkeys.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/editorIcons.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/editorLayoutPersist.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/editorMenuSidebarIa.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/editorModalDirtyState.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/editorNpcSchedule.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/editorProjectE2EBridge.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/editorReferenceNavigation.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/editorUiMode.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/editorWelcome.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/editorWelcomeBootGate.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/editorZLayerOrder.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/elementRatesPartialAccept.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/emberQuestGame.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/emberQuestToolReplay.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/emoteSheet.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/encounterInBattleGuard.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/encounterRateGuarantee.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/enemyActionArchetypes.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/enemyBattleScale.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/enemyBattleTest.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/enemyElementalSkills.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/equipmentCatalogRuntimeAxes.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/equipmentSlotHistory.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eraseEventCommandBody.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/errorTrap.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/escapeSequenceProbe.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/evals.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventActions.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventBeginnerTemplates.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventCommandAssist.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventCommandAudioRepairs.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventCommandBranchesSingleSource.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventCommandDeleteSafety.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventCommandHistoryDrag.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventCommandInteractionContract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventCommandMapRepairs.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventCommandPickerAudio.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventCommandPickerHandoff.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventCommandReorder.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventCommandSchema.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventCommandSharedHostContract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventCommandSupportRepairs.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventCompileGraphic.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventDraftProjectionIntegration.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventDraftTransactions.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventDraftValidator.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventDraftVault.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventDraftVaultPersistDebounce.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventDrafts.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventEditorBalancedShell.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventEditorBrokenCommandIsolation.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventEditorCloseDocumentLifecycle.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventEditorCommandBoard.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventEditorCommandLabels.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventEditorCommitProbe.baseline.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventEditorConditionSurface.baseline.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventEditorCustomSelect.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventEditorFactionPicker.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventEditorFootprintField.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventEditorFormSurface.baseline.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventEditorHierarchyShell.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventEditorHostileUx.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventEditorInspectorSelection.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventEditorInspectorTitle.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventEditorInteractionSurface.baseline.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventEditorLayoutHierarchy.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventEditorM2CommandBody.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventEditorM2Surface.baseline.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventEditorMemoryOpeningTemplate.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventEditorModal.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventEditorModalClose.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventEditorModalDragSvgTarget.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventEditorOptions.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventEditorPagePreviewView.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventEditorPopoverDismiss.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventEditorPortalSurface.baseline.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventEditorPresentation.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventEditorRichForms.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventEditorSettingsLayout.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventEditorShellSurface.baseline.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventEditorShowAnimationPreview.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventEditorStagedState.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventEditorStoryboardBranches.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventEditorTrustLoop.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventEditorUiDensity.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventEditorValidationBell.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventEditorViewToggle.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventEditorWindowControls.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventEditorWindowing.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventLayerContextMenu.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventListCameraFocus.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventMapItemsBeginnerUx.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventMarkerTooltipPlacement.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventPageActivityLabels.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventPageConditionGroups.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventPageConditionOffValue.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventPageFlowView.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventPageManagementSurface.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventPageNormalize.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventPagePassageGroup.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventPageRequiredFields.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventPageTabsRich.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventPages.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventRailAuthoredDot.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventRailGroupComposition.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventRecordPickerMapScope.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventRecordPickerPanelBehavior.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventRecordPickerUnified.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventRuntimeExecution.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventScriptModernViews.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventTestSandbox.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventValidationFakeNavigation.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/eventValidationNavigationContract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/exportAssetResolution.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/exportBattleAssetUrls.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/exteriorDoorBackground.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/facesetFaceAssets.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/facesetMigration.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/facesetSheetSlicing.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/facesetToolSheetUpload.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/facesetUploadDimension.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/facesetUploadedSheetMigration.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/factionNpcCombat.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/factionRuntime.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/factionRuntimePersistence.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/factionStance.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/factionTargeting.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/factionsFromWorld.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/fakeDomImageGlobal.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/farmingLifeUiAssets.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/farmingRuntime.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/farmingSprites.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/fieldMonsterTemplate.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/fillRegionPreservesContent.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/findSimilarTiles.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/fixtureDefaultDatabaseDrift.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/flagLiteracy.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/followerChaseRuntime.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/followerPresets.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/fontFamilyTokenGuard.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/footprintLanding.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/forestDensity.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/forestDensityPriority.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/forestFloorMix.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/forestTrunkLayers.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/forestWrites.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/forkCommandBody.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/friendshipConditionGate.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/friendshipGiftsShop.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/friendshipPresentation.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/gen1BattleCommandDom.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/gen1CaptureGolden.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/gen1Damage.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/gen1DamageGolden.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/gen1DemoContent.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/gen1DemoStates.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/gen1EditorContracts.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/gen1IntroTypeBadge.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/gen1MonsterLifecycle.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/gen1ProjectContracts.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/gen1RuntimeExactIntegration.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/gen1RuntimeRegressions.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/gen1StatusGolden.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/gen1StrictOrder.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/gen1TypeChart.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/generateMap.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/generatedArtworkAlpha.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/generatedAssetHarness.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/generatedAssetManifest.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/generatedAssetReferences.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/generatedAssetResourceResolver.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/generatedBattleEffectInstall.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/generatedEffectSheets.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/generatedEnemyBattlers.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/generatedMonsterFieldSprites.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/generatedPictureAsset.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/genrePackReadiness.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/genrePackReceiptCli.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/genrePackRegistry.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/genrePersistence.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/gotoRetry.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/groupLayoutAuthoring.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/groupSampleBuilder.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/groupSampleJunctionOverlay.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/groupSampleRoleCapability.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/growthConnectedPresets.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/growthConnectedStudio.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/growthIntegrated.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/growthIntegratedBoundaries.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/growthIntegratedFixes.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/growthIntegratedStudio.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/growthPresetStudio.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/growthPresets.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/growthTreeArt.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/growthTreeArtExport.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/growthTreeArtSurfaces.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/growthTrees.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/haggle.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/handSlot.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/headlessTools.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/heroBattleSheetContract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/historyHotkeyFeedback.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/historyRevertTool.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/hopPersistence.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/horrorBgmAndScreenshots.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/horrorBrowserEvidenceFreshness.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/horrorCaptureRules.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/horrorExperienceQa.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/horrorMysteryPrototype.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/horrorObjectRuntime.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/horrorPhase3Scene.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/horrorSemanticScenarios.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/hostBridge.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/hotkeysTextEditingFocus.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/houseDoorOpen.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/houseKit.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/houseKitDecor.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/houseKitDomainSeam.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/houseLotTools.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/houseProtection.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/houseProtectionFill.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/houseProtectionForest.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/houseProtectionLifecycle.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/houseStructureKit.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/houseTemplateCatalog.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/houseTemplateGallery.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/houseTemplates.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/houseVariety.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/iceDiagonalTerrain.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/iceGrandAdventure.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/iceGrandExpanseGameplay.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/iceGrandExpanseGameplayProgression.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/iceGrandExpanseInstaller.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/iceGrandExpansePreflight.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/iceGrandExpanseTerrain.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/iceGrandExpanseTopology.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/iceGrandExpanseZoneFeedback.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/iceGrandPlain64.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/imageGenerationClient.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/imageGenerationQueue.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/inlineAssetStore.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/innArchitecture.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/innCommandBody.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/innConceptRebuild.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/innExploration.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/innRuntimeP1P2.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/input.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/inspectorBadges.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/intentDeclaration.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/intentDeclarationClient.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/interiorAutotile.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/interiorBench.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/interiorConceptAssemblies.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/interiorConceptRoutes.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/interiorFireRendering.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/interiorObjectCatalog.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/interiorPipelineMapReplacement.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/interiorRoomPipeline.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/interiorRoomPipelineParity.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/interiorRoomVocab.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/interiorRoomWalkabilitySeal.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/interiorTerrainAutotiles.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/interiorTileCorrections.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/interiorTransparentPropLayerRepair.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/interiorWallFrameQuarterComposition.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/interpreter.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/interpreterPartyVitals.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/interviewReask.smoke.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/investigationTools.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/io-forward-compat-command-kinds.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/io.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/ioFootprintValidation.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/itemAddPersistence.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/itemAuthorityIntegration.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/itemEquipmentAuthoringTrust.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/itemQaFixture.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/itemRuntimeUsability.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/itemTransitions.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/josa.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/keyBindingsContract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/koreanLocalizationDefaults.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/lakeAutotile.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/lakeVillageCenterRebuild.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/lakeVillageTwoMaps.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/largeProjectPerf.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/layerRouting.m1.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/layoutPlacementValidate.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/layoutRegionTools.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/learnSkillCommandBody.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/leftDockPanels.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/legacyInteriorWallContract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/lifeAuthoringReferences.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/lifeFieldInteraction.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/lifePlayerSaveFailures.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/lifeQaObservability.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/lifeRecovery.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/lifeRecoveryPersistence.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/lifeRecoveryRecordKeys.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/lifeSaveConsumers.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/lifeSaveVersion.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/lifeSkillDisabledHarvest.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/lintFootprintReach.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/lintUnplayableAudio.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/llmReasoning.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/llmRetry.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/loadNewRemoteProject.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/loop.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/lootFeedback.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/m2EventCommandCatalog.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/m2PickerPage4.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/m2ResultSummaryClassification.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/m2RuntimeSupportCompleteness.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/magicalDefenseGate.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/makerClockIntegration.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/manualCommitDiff.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/mapAnimationRuntime.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/mapBgm.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/mapBgmVariety.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/mapCanvasTexture.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/mapChoiceCancellation.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/mapClipboardBothLayers.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/mapClipboardFeedback.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/mapClone.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/mapCreateSpec.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/mapDeletionIntegrity.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/mapEditCommands.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/mapEditHistoryProjectSwitch.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/mapEditLockScratchSession.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/mapEditLocks.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/mapEncounterPanel.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/mapEventSearchModel.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/mapHistoryPanel.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/mapInspection.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/mapLayoutPlan.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/mapLinkStats.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/mapList.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/mapPanelSection.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/mapProps.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/mapPropsSpawnFaction.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/mapRegionWaterAndCompact.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/mapScreenAuthoringSurface.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/mapSurfaceFocus.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/mapToolsFieldSpawn.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/mapTravelReachability.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/mapTreeDrop.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/mapTreeMove.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/mapTreeOrphans.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/mapViewportContext.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/maptree.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/markdownRender.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/markdownTables.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/marketTown.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/materialHintFillable.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/materialPolicy.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/materialSlotBoard.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/materialSlots.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/menuWorldSurface.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/messageBudget.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/migration-v3.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/migration.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/migrationRoundTrip.m1.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/mirrorRegion.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/modalEscapeLayerGate.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/modalStack.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/modeTransitions.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/modelCatalog.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/modernNocturneGame.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/moduleLoadRecovery.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/monsterAiAccounting.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/monsterAppearanceAdversarial.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/monsterAppearanceAssetIdentity.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/monsterAppearanceEvidence.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/monsterAppearanceHttp.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/monsterAppearanceIdentity.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/monsterAppearanceSession.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/monsterAppearanceTransport.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/monsterBattleAuthoringContract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/monsterBattlerField.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/monsterCare.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/monsterCatalogCoverage.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/monsterCollection.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/monsterEvolutionTypeChart.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/monsterGraphicReliability.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/monsterMetadata.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/monsterMetadataAccounting.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/monsterMetadataFoundation.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/monsterMetadataHistory.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/monsterMetadataPersistence.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/monsterPartyFollowers.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/monsterRebalanceBands.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/monsterResourceCatalog.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/monsterResourceMetadataTools.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/monsterResourceTools.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/moveRouteCatalogPersistence.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/moveRouteDialogRich.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/movement.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/movieResourceKind.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/nameEntry.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/narrativeHorrorOneShot.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/narrativeHorrorRouting.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/narrativeHorrorTemplateTools.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/narrowForestRepro.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/naturalScatter.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/naturalScatterToolIntegration.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/naturalVillageReference.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/newProjectDialog.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/newProjectPresetHandoff.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/noLocalProjectDb.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/npcActionFacing.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/npcActivitySuggestions.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/npcAuditRepair.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/npcBattleLifecycle.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/npcBehaviorAuthoring.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/npcCast.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/npcCastSession.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/npcCastTools.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/npcCommandContract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/npcEncounterBoundaries.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/npcEncounterOwnershipBoundaries.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/npcGraphicPickerRich.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/npcMovementSelection.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/npcPlayerCollision.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/npcPursuitBoundaries.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/npcPursuitRegression.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/npcRewardAcceptance.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/npcRewardSession.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/npcSchedule.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/npcScheduleReferenceIntegrity.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/npcScheduledBattle.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/npcTrainerEncounter.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/oauthCredentials.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/ohMyPiProviders.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/operatorIntent.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/operatorMode.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/oprnDeckElevation.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/oprnFidelityMatrix.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/oprnGameFile.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/originalContext.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/orphanFkAuthority.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/overInsertionCancel.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/overInsertionReview.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/p0Bundles.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/p0CommerceFinalSafety.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/p0DayTransitionSceneFailure.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/p0EconomySafetyFollowup.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/p0Energy.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/p0LifeLedgerUi.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/p0LifeSkillProgress.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/p0Makers.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/p0ProjectSchema.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/p0RuntimeIntegration.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/p0SafetyHardening.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/p0SessionPersistence.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/p0Shipping.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/p0ToolCapability.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/p0TransitionControlFlow.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/p1DayTransitionIntegration.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/p1FarmAnimals.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/p1FoundationSchema.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/p1HostileAudit.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/p1LifeEditorAuthoring.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/p1ReferenceIntegrity.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/p1RuntimeHud.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/p1RuntimeUi.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/p1SessionPersistence.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/p1WeatherCalendar.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/p1WeatherDayTransition.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/p2DayTransition.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/p2EditorAuthoring.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/p2HostileAudit.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/p2LifeLedgerUi.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/p2LifeRuntime.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/p2ProjectSchema.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/p2ReferenceLifecycle.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/p2SessionPersistence.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/p2SpatialEditorAuthoring.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/p2SpatialPersistence.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/p2SpatialPlayIntegration.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/p2SpatialReferenceIntegrity.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/p2SpatialRuntimeUi.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/p2SpatialSchema.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/p2SpatialTransactions.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/page3CommandBodies.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/page3SystemEffectPreviews.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/pageConditionAuthoringIntegrity.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/pageConditionSentence.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/pageConditionValidationTargets.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/pageConditionsGuarantee.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/pageItemCondition.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/partialApplyCompose.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/passabilityTraps.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/pendingRegionApply.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/persistedMessageSettings.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/persistenceRoundTrip.m1.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/phase4Extras.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/phase8aGrowthRuntime.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/phase8bHuntingRuntime.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/phaserRuntime.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/pictureTween.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/pictureWeatherDom.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/pkmnBalanceB6.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/pkmnCoreUnlock.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/placeChestSavepoint.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/placeConceptAssistant.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/placeConceptRender.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/placeConceptTool.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/placeNpcGraphicQuery.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/placeNpcMalformedPage.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/placePropsAdversarialHardening.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/placePropsRejectsFloorMaterial.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/placePropsZeroPlacement.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/placementScoring.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/placementStructure.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/placementSurface.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/planToolExposure.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playAudioCommandBody.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playBootDiagnostics.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playBootRecovery.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playInputBlocker.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playLoadingOverlay.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playLoadingOverlayRecovery.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playMovieEditorBody.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playMovieRuntime.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playMovieSchema.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playPreflight.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playResolution.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playSceneAssetResilience.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playSceneBattleCancellation.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playSceneCamera.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playSceneEmotes.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playSceneFarmFeedback.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playSceneFarmOverlay.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playSceneInterpreterCutsceneSkip.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playScenePlaceableOverlay.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playSceneTileCulling.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playSurfaceKeyboardOwnership.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playSurfaceScale.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playSurfaceScaleMode.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playerAudioQaLifecycle.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playerBootFactory.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playerBuild.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playerCinematics.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playerEquipmentRules.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playerFootprint.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playerInputCss.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playerItemUse.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playerKeydownSessionGuard.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playerLoadPanel.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playerManifestContract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playerMenuItemPreview.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playerMenuItemTargets.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playerOpenSaveMenu.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playerRunControls.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playerRuntimeAudioIds.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playerRuntimeCss.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playerSaveSlotLegacyFace.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playerSaveSlotLoadGuard.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playerSpriteResources.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playerStatusMenu.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playerStatusMenuClosingGuard.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playerStatusMenuEdgeDock.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playerStatusMenuEntryIcons.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playerStatusMenuMotion.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/playerStatusMenuPortrait.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/pokemonChipsetPreset.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/popupPosition.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/postTileVerify.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/preferenceDistiller.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/preferenceMemory.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/preferenceSignals.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/previewHouse.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/previewSimulation.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/projectCommitLogging.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/projectLint.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/projectPackage.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/projectResetTool.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/projectUrl.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/projectWiki.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/projectWikiApplication.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/projectWikiClient.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/projectWikiCodex.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/projectWikiCombat.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/projectWikiContext.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/projectWikiDomain.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/projectWikiManualEdit.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/projectWikiPatch.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/projectWikiRouting.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/projectWikiSession.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/proposalApplyMode.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/proposalCompleteness.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/proposalInlineApproval.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/questCompiler.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/questGraph.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/questLog.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/questToolContract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/quickAuthoringPreviewIdentity.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/quickAuthoringSurface.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/quickBattleAuthoringGate.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/railIcons.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/randomBattleTestToolbar.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/recentInstructions.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/recollectionBeats.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/recordPickerSharedControls.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/refactorTools.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/referenceIntegrityRepair.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/regionAiHouseTreeNpc.probe.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/regionAiPlacementHarness.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/regionBlend.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/regionChangeGroups.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/regionChangeSummary.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/regionContextSuggestions.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/regionPolish.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/regionRightDrag.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/regionRightDragNotifications.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/regionSelectionPastePreview.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/regionSnapshot.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/regionSurroundings.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/regionTaskApplyFlow.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/regionTaskClip.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/regionTaskClipNotice.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/regionTaskCompletedHouse.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/regionTaskCssTokens.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/regionTaskGateExcluded.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/regionTaskHouseProtection.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/regionTaskIcons.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/regionTaskLogExport.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/regionTaskMenu.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/regionTaskModal.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/regionTaskModalEnhancements.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/regionTaskPendingNotice.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/regionTaskPolishModal.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/regionTaskRun.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/regionTaskSelectionClear.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/regionTaskStatus.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/regionTaskUiAudit.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/regionTaskWideReview.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/regionTileStats.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/relationshipAuthoring.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/relationshipBattleWriteBack.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/relationshipPersistence.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/relationshipState.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/remoteProjectCertificate.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/renderFootprintCenter.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/renderGroupSampleTool.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/repairTreePairs.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/repeatableBlockGrammar.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/requestBudgetFromModel.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/resourceManagerImageImport.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/resourceProfiles.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/resourceSearch.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/revealPaletteTileFromMap.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/rightDragPanelRebuilds.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/rm2003DatabaseUiEvidence.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/rm2003DatabaseUtilityRecords.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/rmTypeExpanderV3.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/roadObstacleAvoidance.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/roguelikeRooms.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/roguelikeRun.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/roguelikeRunEditor.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/roleNameComparisonGate.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/roomHarnessEngine.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/roomHarnessOverwriteGuard.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/roundLakeStamp.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/rowArrangementV3.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/ruleApprovalGate.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/ruleAuditPanel.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/runRecap.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/runtimeAdversarialDefects.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/runtimeAnimationTypeDirectionFix.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/runtimeAudioIndicator.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/runtimeCharacterHop.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/runtimeCursorMenu.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/runtimeDebugPanel.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/runtimeDemoVillageMovement.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/runtimeDomMarkers.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/runtimeDomMissingResource.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/runtimeDomTitleGuard.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/runtimeEventFootprint.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/runtimeEventMenus.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/runtimeEventPageGraphics.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/runtimeEventPageMovement.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/runtimeEventState.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/runtimeEventTouchPlayerCollision.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/runtimeInputEditableTargets.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/runtimeJuice.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/runtimeJuiceSelectCss.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/runtimeKeyboardMenu.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/runtimeLighting.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/runtimeMoveRouteCommands.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/runtimeMovementStability.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/runtimeNpcLivingTravel.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/runtimeNpcMapTransfer.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/runtimePageMovementAfterCommandRoute.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/runtimePerfHotPaths.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/runtimePictureStacking.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/runtimePlayWindowSkins.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/runtimePlayerHop.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/runtimeQaAudioContract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/runtimeQaGate.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/runtimeQaInstrumentationBoundary.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/runtimeQaReport.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/runtimeSchedulePageMovementCoexist.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/runtimeSession.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/runtimeSpawnedEventMovement.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/sampleAdventureLayoutGate.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/sampleAdventureNeedsNoBackfill.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/saveActions.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/saveAndReferences.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/saveSkipLocation.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/saveStatusVisibility.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/scarloxyIndoorFurnitureBlocks.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/scarloxyPokemonDemo.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/scarloxyPokemonInteriors.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/scatterObject.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/sceneTestRunner.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/sceneVerificationRepair.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/scratchConceptTab.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/screenEffectAuthoring.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/screenEffectFields.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/screenEffectPlan.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/screenEffects.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/screenEffectsDom.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/screenSaveRestore.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/scriptCutsceneIntegration.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/scriptCutsceneReplace.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/seCatalog.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/seVariety.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/seasonalForage.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/selectedEventTestModal.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/selectionActionChips.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/selectionChipHint.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/selfSwitch.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/serializeCompact.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/sessionLogExport.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/sessionStartState.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/setClusterRule.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/setGroupLayout.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/setLightingPercent.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/setVariableCommandBody.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/sha256.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/sharedPickers.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/sheetRangeSelect.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/shopCommandBodyUx.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/shopCommandFullscreenUi.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/shopEconomyValidationAndKey.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/shopFeedbackJuice.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/shopHaggleRuntime.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/shopMerchantGold.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/shopNpcTableRegionFix.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/shopPrice.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/shopProcessingCommand.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/shopRuntimeUx.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/shopkeeper.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/showEmoteCommand.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/showEmoteCommandBody.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/showMapRegion.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/showPictureForm.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/showcaseProjectReferences.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/sidebarBrushUi.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/sidebarFocus.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/sidebarFocusModes.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/sidebarKeyboardNav.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/sidebarModeWorkflow.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/skillSystem.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/skyStairGame.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/skyStairNpcLooks.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/skyStairWalkthrough.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/smallHouseVariants.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/snowGateTerrain.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/snowMountain60.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/snowMountain60Project.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/socialTalk.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/softConfirmUxFixes.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/soundResourceCatalog.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/spriteProcess.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/standaloneCli.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/standaloneExport.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/standaloneHtml.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/stardewAuthoringTools.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/stardewDemo.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/stardewSupabaseRoundtrip.live.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/starterDoorTransfer.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/starterMapShowcase.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/starterVillage.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/stoneHearth.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/storeEventDraftPreserve.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/storeFlushShaEvidence.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/storeMutationInstrumentation.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/storePersistence.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/storePersistenceLineage.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/storePersistenceProof.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/storeUpdateMap.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/storyArcQualityTools.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/storyFlags.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/structureKitBrushConditions.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/structureKitDbActions.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/structureKitDbTab.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/structureKitEditorDialog.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/structureKitFile.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/structureKitFromSelection.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/structureKitGrowth.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/structureKitPartKindMenu.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/structureKitPlacementConditions.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/structureKitRasterModel.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/structureKitTools.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/structurePlacements.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/structureRuleTools.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/studioBarActions.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/suggestGroupFromRange.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/suggestedCommands.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/supabaseCanonicalRoundtrip.live.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/supabaseFixtureLoad.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/supabaseProjectConfig.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/supabaseProjectSync.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/supabaseProxyPath.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/supabaseRecoveryLocation.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/supabaseResourceCache.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/surfaceGateSupport.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/switchVariableModalTrigger.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/syncFixtureDefaultDatabase.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/system2Sheet.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/systemFontTheme.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/systemGraphics.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/systemOptInLint.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/systemPromptEnvelope.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/systemShell.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/teamWorkflowUi.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/termsRuntime.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/terrainEncounterScaling.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/terrainQuarterAutotile.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/terrainRecordAt.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/terrainStep.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/testPlayRunControls.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/textCommandAuthoring.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/textLegacyLines.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/themeCapabilityRoles.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/threeAxisRedTeam.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/threeAxisVerticalSlice.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tileActions.m1.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tileBrushState.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tileBrushTools.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tileFlowApprovalExpansion.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tileGrafts.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tileLayerClassification.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tileMetadataDb.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tileMetadataTools.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tilePaletteChip.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tilePaletteGrid.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tilePaletteGridRoving.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tilePaletteSelection.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tilePaletteStamp.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tilePassabilityComponents.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tilePassabilityStaleIndexRuntime.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tilePicking.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tileQueryTool.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tileRectToClientRect.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tileRoleCapabilities.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tileSemanticsDuplicateSheetConsistency.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tileSemanticsReauditEvidence.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tileSemanticsSixChipsets.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tileShapeTools.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tileToolbar.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tileToolbarAria.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tileToolbarMapModeClickWiring.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tileToolbarMapModeParity.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tileToolbarOverflowDismiss.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tileToolbarOverflowReach.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tileToolbarToolAffordance.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tileToolsV2.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tileVocabAutotileCapability.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tileVocabularyV3.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tilemapHarnessOverhaul.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tilemapHarnessSafetyBlockers.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tilesetAiConversationSession.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tilesetAiCpenClient.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tilesetAiMappingRules.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tilesetAiMetadataNormalizer.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tilesetAiNativeAnalysis.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tilesetAiNativeReviewApply.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tilesetAiNativeReviewInbox.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tilesetAiNativeReviewModel.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tilesetAiSetupMapping.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tilesetAiTerrainExample.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tilesetAiWorkspaceModal.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tilesetAutotileEditor.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tilesetAutotileLayout.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tilesetDirectionalPassage.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tilesetGridSelection.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tilesetHarness.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tilesetKind.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tilesetKnowledgeContract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tilesetKnowledgeTemplates.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tilesetKnowledgeWorkspace.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tilesetPaletteLintPassage.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tilesetPaletteT1a.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tilesetSectionTabs.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tilesetSemanticChecker.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tilesetSpacesTab.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tilesetT1bReviewUi.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tilesetTabActivation.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tilesetTransparentColor.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tilesetWave2Undo.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/timeSystem.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tintModel.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/titleLogoAsset.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/titleParticles.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/titleScreen.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/titleScreenMenuLabels.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/titleScreenMusic.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/titleScreenSettingsNormalize.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/toastStack.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tokenBudget.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/tokensContrast.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/toolActionAuthoringParity.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/toolArgCoercion.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/toolCatalog.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/toolCursor.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/toolDomainScoping.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/toolExposureQuota.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/toolHostileArgs.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/toolHouseProtection.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/toolReason.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/toolRegistry.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/toolSchemaProviderCompat.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/toolbarOverflow.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/toolsAuthoringMisc.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/toolsDbRecordReach.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/toolsExtended.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/toolsFarmSpatial.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/toolsGameSystemToggles.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/toolsHouseAndRules.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/toolsLifeCollections.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/toolsLifeEconomy.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/toolsMapManagement.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/toolsMapRegionCopy.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/toolsTilesetAtlas.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/topbarPopoverEscapeLayer.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/touchPad.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/touchPadModalVisibility.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/townArchitectureCity.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/townArchitectureTest.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/townBench.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/townShowcase.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/transactionalNewRemoteProject.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/transferCommandBody.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/transferGateOccupied.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/transientEditorChrome.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/transitionModel.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/transparentColorKeyAuto.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/transparentTileLayerRouting.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/treasureChestPlacement.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/troopBattlePageTools.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/troopSkinPlacement.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/uiCopy.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/uiModal.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/undoHistory.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/unsavedChangesGuard.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/upperLayerBlankPick.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/userFacingToolNames.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/uxcEditorShell.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/uxcLoadFailure.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/viewFocusTool.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/viewRelativeLocation.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/villageArchetypePreviews.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/villageArchetypes.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/villageAuthoredValidation.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/villageAuthoringData.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/villageBoulevard.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/villageBuilder.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/villageBuilderSeam.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/villageCrossRoad.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/villageDesign.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/villageDesignRebuild.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/villageEvaluateUngated.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/villageFirstPlanHardGate.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/villageHousePreview.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/villageHouseProtection.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/villageHouseSigns.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/villageLandscape.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/villageLookAuditSurfaced.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/villageOwnedRoadClassification.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/villagePipelineMapPrune.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/villagePresetExplicitPriority.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/villagePresetPreview.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/villageProducerProtection.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/villageSketch.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/villageTerrainBounds.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/villageTreePlacement.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/villageWingGeometry.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/villageWrites.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/villagerRoomKit.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/viteConfig.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/viteDevServerFreeze.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/viteInvocation.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/vitePreviewProxy.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/vocabCardEditV3.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/vocabScenarios.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/vocabSoftConfirm.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/volumeContract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/waitCommandBody.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/walkEncounterAuthoring.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/walkEncounterModal.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/walkEncounterOptions.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/walkthroughRunner.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/wallFlush.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/weatherModel.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/webExport.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/webExportBattleDependencies.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/webExportCatalogAudio.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/webExportFacesetFaces.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/webExportRuntimeAssets.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/webExportUsagePruning.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/webExportZipPruning.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/weightedBranchUx.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/welcomeGenrePresets.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/welcomeGenreSystemPresetAction.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/windowControls.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/windowSkinAsset.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/workItemOutcome.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/workItemOutcomeTargetMap.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/workPlan.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/workPlanSize.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/workspaceLayout.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/worldAiExclusion.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/worldAuthoringRegression.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/worldCanon.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/worldCanonConsumers.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/worldCoastMapping.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/worldCodexJump.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/worldDocumentWorkspace.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/worldEntries.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/worldGenRules.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/worldGraphPhase12a.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/worldLoreDisambiguation.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/worldPanel.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/worldPanelLintMemo.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/worldStructureTools.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/worldSystem.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/worldTerrainAutotiles.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/worldTileDescriptions.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/worldviewCopy.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/yieldToUi.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/zz-qa-fixes.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/addLight.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/breakLoop.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/callCommonEvent.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/callMapEvent.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/changeFace.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/changeFactionStance.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/changeFriendship.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/changeLifeSkillExp.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/choices.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/coverage.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/cutsceneControl.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/despawnFieldEnemy.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/displayTextSettings.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/enterHeroName.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/evolveMonster.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/fork.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/getFriendship.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/giveMonster.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/gotoLabel.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/harness.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/inputNumber.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/inputWait.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/label.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/learnSkill.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/loop.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/m2Command.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/moveMonster.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/openSaveMenu.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/playMovie.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/promoteActor.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/registry.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/removeLight.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/runControl.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/setLighting.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/setRelationship.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/setSelfSwitch.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/setSwitch.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/setVariable.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/setWeather.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/showAnimation.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/showEmote.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/spawnFieldEnemy.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/text.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/timer.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/commandContracts/wait.contract.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/editor/editSceneEventMarkers.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/parity/dataIntegrityRoundTrip.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/parity/dbActorClassParity.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/parity/dbBattleParity.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/parity/goldenProjectParity.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/parity/mapEventSceneParity.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/parity/parityMatrix.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/parity/parityRig.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/parity/playerBootValidation.test.ts"
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/parity/t6ActorParity.test.ts"
+  }
+]
