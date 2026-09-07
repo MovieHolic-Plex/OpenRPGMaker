@@ -991,6 +991,17 @@ export class AssistantSession {
   private acceptanceRepairAttempts = 0;
   private resultReview: ResultReview | null = null;
   private approvedReviewIdentity: string | null = null;
+  /**
+   * Revision whose approval was consumed by a successful apply (subscribed
+   * autonomous milestone path and panel proposal path). Reporting only: the
+   * recorded approved verdict survives the consumed one-shot authority so a
+   * successful accepted application is not rewritten to unapproved. Never
+   * authority — every apply path still requires a live isDraftReviewApproved().
+   * Cleared wherever a new edit, review attempt, failure or turn retires the
+   * recorded verdict; never by the R1 latch or rebase, which both fire on the
+   * session's own apply.
+   */
+  private consumedApprovedRevision: number | null = null;
   /** Approval belongs to this loop attempt, never to a replaceable UI signal. */
   private reviewTurn: { readonly signal: AbortSignal | undefined } | null = null;
   private reviewRevision = 0;
@@ -1217,9 +1228,11 @@ export class AssistantSession {
 
   getResultReview(): ResultReview | null {
     if (!this.resultReview) return null;
-    return this.resultReview.status === "approved" && !this.isDraftReviewApproved()
-      ? { ...this.resultReview, status: "unapproved", summary: "Draft changed or cancelled after review" }
-      : structuredClone(this.resultReview);
+    if (this.resultReview.status === "approved" && !this.isDraftReviewApproved()
+      && this.consumedApprovedRevision !== this.resultReview.revision) {
+      return { ...this.resultReview, status: "unapproved", summary: "Draft changed or cancelled after review" };
+    }
+    return structuredClone(this.resultReview);
   }
 
   getProposedProject(): Project {
@@ -1857,6 +1870,7 @@ export class AssistantSession {
       this.resultReview = null;
       this.approvedReviewIdentity = null;
       this.approvedAuthoredIdentity = null;
+      this.consumedApprovedRevision = null;
       this.reviewAttempts = 0;
       this.lastReviewFailure = null;
     }
@@ -2735,6 +2749,7 @@ export class AssistantSession {
         this.draftBaselineCurrent = false;
         this.approvedReviewIdentity = null;
         this.approvedAuthoredIdentity = null;
+        this.consumedApprovedRevision = null;
         this.resultReview = { status: "error", revision: this.reviewRevision, findings: [], summary: applied.issue ?? applied.reason };
       }
       // 커밋 게이트 차단 — 저장소는 그대로 두고 현재 자율 런만 중단한다.
@@ -2898,6 +2913,10 @@ export class AssistantSession {
 
   /** Keep only metadata from the actual apply, never a newest-commit query. */
   recordAppliedProject(applied: Extract<ApplyProposedProjectResult, { ok: true }>): void {
+    // The approval consumed by this successful apply keeps its recorded verdict
+    // (revision included). This never grants authority: it is only read back by
+    // getResultReview, while every apply path requires isDraftReviewApproved().
+    if (this.resultReview?.status === "approved") this.consumedApprovedRevision = this.resultReview.revision;
     this.lastAppliedProject = applied.commitProject
       ? { project: applied.commitProject, commitId: applied.commit.commitId }
       : null;
@@ -3280,6 +3299,7 @@ export class AssistantSession {
   private upsertProposal(proposedByKey: Map<string, ProposedCall>, proposal: ProposedCall): void {
     this.approvedReviewIdentity = null;
     this.approvedAuthoredIdentity = null;
+    this.consumedApprovedRevision = null;
     this.reviewRevision += 1;
     const move = moveEventTarget(proposal);
     if (move !== null) {
@@ -3631,6 +3651,7 @@ export class AssistantSession {
     let revision = this.reviewRevision;
     this.approvedReviewIdentity = null;
     this.approvedAuthoredIdentity = null;
+    this.consumedApprovedRevision = null;
     const owner = this.reviewTurn;
     const outputAtStart = this.estimatedOutputTotal;
     let candidate: { identity: string; acceptance: AcceptanceSnapshot | null } | null = null;
