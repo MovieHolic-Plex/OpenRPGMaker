@@ -208,8 +208,13 @@ export class ToolVerificationEvidence {
         this.findings.delete(id);
       }
     } else {
-      const existing = [...this.findings.values()].find(f => f.name === name && key(f.args) === key(candidate));
-      const id = existing?.checkId ?? matching[0]?.requirement.checkId ?? `finding-${++this.sequence}`;
+      const existing = [...this.findings.values()].find(f => f.name === name && key(f.args) === key(candidate)
+        && key(f.initialState) === key(initialState)
+        && (name !== "run_scene_test" || key(sceneTargets(f.args, f.result)) === key(sceneTargets(candidate, result))));
+      // Identical input can visit distinct map-owned targets after a write.
+      // Sharing a requirement must not overwrite another unresolved finding.
+      const requirementId = matching[0]?.requirement.checkId;
+      const id = existing?.checkId ?? (requirementId && !this.findings.has(requirementId) ? requirementId : `finding-${++this.sequence}`);
       if (!this.findings.has(id)) this.findings.set(id, structuredClone({ checkId: id, ownerId, name, args: candidate, result, verdict, initialState }));
     }
     return verdict;
