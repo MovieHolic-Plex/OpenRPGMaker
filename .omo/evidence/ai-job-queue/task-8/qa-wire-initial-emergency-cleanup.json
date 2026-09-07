@@ -1,0 +1,9 @@
+{
+  "reason": "Outer tool timeout killed runner during new fixture receipt failure; exact known server descendant tree reclaimed by pidfd",
+  "pids": [
+    41064,
+    41374
+  ],
+  "portFree": true,
+  "temporaryRemoved": true
+}

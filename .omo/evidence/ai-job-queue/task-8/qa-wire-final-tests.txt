@@ -1,0 +1,26 @@
+✔ runtime assembly cannot select the forbidden default provider, even for unknown Node operations (2.043893ms)
+✔ machine plan examples cover six families and all seven tileset operation variants with exact pins (6.090547ms)
+✔ real HTTP ledger: registered reached signal, held release, exact response, exhausted plan fails closed (239.402259ms)
+✔ cancel + real HTTP retry reuses a completed late controlled response without redispatch (130.366872ms)
+✔ controlled failure retries and wrong Node key never consumes a configured response (226.115512ms)
+✔ opaque image response is byte-exact and abort-mode cancellation releases the scheduler (138.242086ms)
+✔ control validates pins and unknown selectors; closing resolves exact-event waiters (0.91772ms)
+✔ canonical persistence is uninitialized/foreign fail-closed and isolates project CAS from map-row overlay (2.651636ms)
+✔ HTTP rejects a foreign Origin rather than admitting paid work (44.50792ms)
+✔ real HTTP admission, immutable host blobs, live SSE, disconnect replay, inbox and manifest-only artifacts (172.226667ms)
+✔ exact Host/Origin, local session CSRF, JSON-only mutations and secret rejection precede any admission (60.615906ms)
+✔ executor unavailable is explicit 503, with read access but no admission or browser fallback (20.12621ms)
+✔ oversized and malformed JSON get HTTP errors without admitting work or destroying the response socket (29.147239ms)
+✔ HTTP cancel/retry with unknown cost is explicit and fenced while old request remains physically active (138.527113ms)
+✔ atomic application claim rejects other project/tab; receipt replay is idempotent and unsaved is distinct (101.594621ms)
+✔ HTTP admission failure returns 503 and publishes no durable event or physical dispatch (40.308612ms)
+✔ save-only retry moves applied+failed to applied+saved for the same receipt and exact applied hash (92.257276ms)
+✔ application snapshot upload is immutable, receipt-bound and visible only in its job manifest (73.31335ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 902.184131

@@ -97,8 +97,9 @@ def port_free(port):
 
 
 async def run(label, command):
-    evidence = Path('.omo/evidence/ai-job-queue/task-7').resolve()
-    port = int(os.environ.get('TASK7_PORT', '19841'))
+    task8 = os.environ.get('TASK8_QA') == '1'
+    evidence = Path(f'.omo/evidence/ai-job-queue/task-{8 if task8 else 7}').resolve()
+    port = 0 if task8 else int(os.environ.get('TASK7_PORT', '19841'))
     deadline = float(os.environ.get('TASK7_SHUTDOWN_TIMEOUT', '180'))
     escalation = float(os.environ.get('TASK7_ESCALATION_TIMEOUT', '10'))
     run_id = str(uuid.uuid4())
@@ -156,11 +157,25 @@ async def run(label, command):
             receipt['serverPid'] = server.pid
             save(receipt_path, receipt)
             async def drain():
+                nonlocal port
                 async for line in server.stdout:
                     text = line.decode(errors='replace')
                     log.write(text)
                     log.flush()
-                    if text.strip() == 'TASK7_EDITOR_READY' and not ready.done():
+                    if task8 and text.startswith('TASK8_EDITOR_READY ') and not ready.done():
+                        info = json.loads(text.split(' ', 1)[1])
+                        if info['runId'] != run_id:
+                            raise RuntimeError('Task8 readiness identity mismatch')
+                        from urllib.parse import urlparse
+                        address = urlparse(info['origin'])
+                        if address.scheme != 'http' or address.hostname != '127.0.0.1' or not address.port or address.port in (9841, 19841):
+                            raise RuntimeError('Invalid Task8 owned origin')
+                        port = address.port
+                        receipt['port'] = port
+                        env.update(DEV_SERVER_PORT=str(port), TASK8_ORIGIN=info['origin'], TASK8_RUN_ID=run_id)
+                        save(receipt_path, receipt)
+                        ready.set_result(True)
+                    elif not task8 and text.strip() == 'TASK7_EDITOR_READY' and not ready.done():
                         ready.set_result(True)
                 if not ready.done():
                     ready.set_result(False)
@@ -178,7 +193,8 @@ async def run(label, command):
             finally:
                 if ready.done() and not ready.cancelled() and ready.result() is True and server.returncode is None:
                     def shutdown():
-                        request = urllib.request.Request(f'http://127.0.0.1:{port}/__task7/shutdown', data=b'{}', headers={'Content-Type': 'application/json'})
+                        route = '__task8' if task8 else '__task7'
+                        request = urllib.request.Request(f'http://127.0.0.1:{port}/{route}/shutdown', data=b'{}', headers={'Content-Type': 'application/json', **({'X-Task8-Run-Id': run_id} if task8 else {})})
                         try:
                             with urllib.request.urlopen(request, timeout=min(30, deadline)) as response:
                                 return response.status

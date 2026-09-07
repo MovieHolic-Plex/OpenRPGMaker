@@ -815,3 +815,38 @@ Chromium local network 검사만 캡처 실행 인자로 끈다. 일반 출하 �
 ## 실내 조립·형상 검증 (2026-09-05)
 
 `test/interiorConceptAssemblies.test.ts`가 19시설×3seed 시공, 상판 소품의 전체 셀, 벽시계 위치, 장소 shape 직렬화·검증, 메타/통행 사용자 오버라이드 보존을 검사한다. 관련 13파일·253테스트 및 앱 타입 게이트가 통과했다. 이번 전체 gates 실행은 최종 리포트를 남기기 전 exit 143으로 종료되어 전체 기준선 비교를 완료하지 못했다. 원인 미확정이며 전체 통과로 보고하지 않는다. 로컬 증거는 `output/evidence/concept-v2/validation.json` 및 `focused-tests.log`.
+
+## 서버 소유 AI 작업의 제공자·저장 QA 경계 (2026-09-07)
+
+`page.route`는 Node 제공자 SDK 호출을 가로채지 않는다. 작업 생성이나
+E2E가 실패했어도 제공자 작업은 이미 성공했을 수 있다. 일반 Vite 서버에
+가족별 생성 테스트를 연결하지 말고 아래의 명시적 제어 fixture를 사용한다.
+과거 호출 소유권은 요청의 정확한 Idempotency-Key와 저장소 작업 기록으로
+대조하며, 실패한 테스트만으로 호출·청구가 0이라고 판단하지 않는다.
+
+- 구현과 사용 계약:
+  `.omo/evidence/ai-job-queue/task-8/QA-WIRE-HANDOFF.md`.
+  `TASK8_QA=1`로 Task7 `run-owned.py`를 실행하면 커널 배정 포트와
+  UUID를 가진 Task8 서버를 띄운다. 9841·19841이나 기존 서버를 재사용하지 않는다.
+- 실제 HTTP 서비스·스케줄러·저장소·제공자 원장·실행기·보고서·Apply는
+  그대로 사용한다. Node 제공자 전송은 미리 등록한 정확한 응답 계획만
+  반환한다. 미등록 작업과 레거시 제공자 HTTP 요청은 차단하고 기록한다.
+  일반 Vite 설정·환경 파일·실 제공자 핸들러는 로드하지 않는다.
+- Supabase 전송은 `task8-disposable-qa`만 허용하는 로컬 제어 wire다.
+  최초 직렬화 바이트와 SHA-256으로 초기화하고 프로젝트 정본, 맵 행,
+  타일셋 행을 따로 보존한다. 브라우저 재로드 검증용이며 실제 Supabase
+  RLS·서비스 내구성 검증을 대신하지 않는다.
+- 대기는 `/__task8/wait`의 정확한 이벤트와 등록 확인을 사용한다.
+  생성 클릭 전에 관찰자를 등록하고 도달한 작업만 release한다.
+  폴링·고정 sleep·가짜 완성 결과 주입은 사용하지 않는다.
+- 기본 backend 검증:
+  `TASK8_QA=1 python3 .omo/evidence/ai-job-queue/task-7/run-owned.py <고유-label> node .omo/evidence/ai-job-queue/task-8/verify-qa-wire.mjs`.
+  zod 해석이 빠진 보정 워크트리에서는 이미 설치된 패키지의
+  `TASK8_ZOD_ENTRY`만 명시한다. 설치나 출하 설정 변경으로 우회하지 않는다.
+- UI는 전용 `grok-family.config.mjs`와 제어 API를 연결해야 한다.
+  입장 POST만으로 완료를 주장하지 않는다. 실제 제어 응답·결과 이미지·
+  올바른 대상·Apply·저장 실패 후 재시도·정상 재로드를 각각 확인한다.
+  HTTP 저장 예외의 실제 상태는 `save: unknown`이며 성공 저장이 아니다.
+- 명령 성공과 정리는 별개다. 현재 UUID의 명령/서버 exit, 자연 종료,
+  잔여 PID·브라우저·대기자·held 작업, 포트 반환과 임시 저장소 삭제를
+  cleanup receipt에서 확인한다. 이미지 의미·적합성은 UI 검증자가 확인한다.

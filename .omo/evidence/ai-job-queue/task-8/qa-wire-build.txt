@@ -1,0 +1,63 @@
+vite v6.4.3 building for production...
+transforming...
+✓ 1493 modules transformed.
+Export "openRecordPickerPanel" of module "src/editor/panels/eventEditor/recordPickerPanel.ts" was reexported through module "src/editor/panels/eventEditor/recordPickerDialog.ts" while both modules are dependencies of each other and will end up in different chunks by current Rollup settings. This scenario is not well supported at the moment as it will produce a circular dependency between chunks and will likely lead to broken execution order.
+Either change the import in "src/editor/panels/databaseEnemyActionDialog.ts" to point directly to the exporting module or reconfigure "output.manualChunks" to ensure these modules end up in the same chunk.
+rendering chunks...
+[plugin vite:reporter]
+(!) /dev/shm/task8-qa-wire-MyjYVp/src/player/playSceneInterpreter.ts is dynamically imported by /dev/shm/task8-qa-wire-MyjYVp/src/player/PlayScene.ts but also statically imported by /dev/shm/task8-qa-wire-MyjYVp/src/player/PlayScene.ts, /dev/shm/task8-qa-wire-MyjYVp/src/player/playSceneMapRuntime.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter]
+(!) /dev/shm/task8-qa-wire-MyjYVp/src/editor/editorUiMode.ts is dynamically imported by /dev/shm/task8-qa-wire-MyjYVp/src/app/mode.ts but also statically imported by /dev/shm/task8-qa-wire-MyjYVp/src/editor/coachMarks.ts, /dev/shm/task8-qa-wire-MyjYVp/src/editor/commandRegistry.ts, /dev/shm/task8-qa-wire-MyjYVp/src/editor/panels/aiAgentBrief.ts, /dev/shm/task8-qa-wire-MyjYVp/src/editor/panels/aiChatPanel.ts, /dev/shm/task8-qa-wire-MyjYVp/src/editor/panels/aiConversationLog.ts, /dev/shm/task8-qa-wire-MyjYVp/src/editor/panels/aiProposalCard.ts, /dev/shm/task8-qa-wire-MyjYVp/src/editor/panels/basicLeftRail.ts, /dev/shm/task8-qa-wire-MyjYVp/src/editor/panels/database.ts, /dev/shm/task8-qa-wire-MyjYVp/src/editor/panels/editor.ts, /dev/shm/task8-qa-wire-MyjYVp/src/editor/panels/editorZoomToolbar.ts, /dev/shm/task8-qa-wire-MyjYVp/src/editor/panels/menu.ts, /dev/shm/task8-qa-wire-MyjYVp/src/editor/panels/tilePalette.ts, /dev/shm/task8-qa-wire-MyjYVp/src/editor/panels/tileToolbar.ts, /dev/shm/task8-qa-wire-MyjYVp/src/editor/panels/tileToolbarMenus.ts, /dev/shm/task8-qa-wire-MyjYVp/src/editor/panels/workspaceBar.ts, /dev/shm/task8-qa-wire-MyjYVp/src/editor/workspace/workspaceStore.ts, /dev/shm/task8-qa-wire-MyjYVp/src/main.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter]
+(!) /dev/shm/task8-qa-wire-MyjYVp/src/project/devProjectPersistence.ts is dynamically imported by /dev/shm/task8-qa-wire-MyjYVp/src/app/mode.ts but also statically imported by /dev/shm/task8-qa-wire-MyjYVp/src/editor/panels/editor.ts, /dev/shm/task8-qa-wire-MyjYVp/src/project/store.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter]
+(!) /dev/shm/task8-qa-wire-MyjYVp/src/player/audio/index.ts is dynamically imported by /dev/shm/task8-qa-wire-MyjYVp/src/app/mode.ts but also statically imported by /dev/shm/task8-qa-wire-MyjYVp/src/editor/panels/audioTestDialog.ts, /dev/shm/task8-qa-wire-MyjYVp/src/editor/panels/databaseResourcePickerDialog.ts, /dev/shm/task8-qa-wire-MyjYVp/src/editor/panels/databaseSystemView.ts, /dev/shm/task8-qa-wire-MyjYVp/src/editor/panels/eventEditor/commandBodyAdvanced.ts, /dev/shm/task8-qa-wire-MyjYVp/src/player/PlayScene.ts, /dev/shm/task8-qa-wire-MyjYVp/src/player/battleAudio.ts, /dev/shm/task8-qa-wire-MyjYVp/src/player/characterHopRuntime.ts, /dev/shm/task8-qa-wire-MyjYVp/src/player/mapBgm.ts, /dev/shm/task8-qa-wire-MyjYVp/src/player/playSceneActionCombat.ts, /dev/shm/task8-qa-wire-MyjYVp/src/player/playSceneBattle.ts, /dev/shm/task8-qa-wire-MyjYVp/src/player/playSceneInterpreter.ts, /dev/shm/task8-qa-wire-MyjYVp/src/player/playSceneMapAnimations.ts, /dev/shm/task8-qa-wire-MyjYVp/src/player/playSceneSchedulers.ts, /dev/shm/task8-qa-wire-MyjYVp/src/player/player.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter]
+(!) /dev/shm/task8-qa-wire-MyjYVp/src/player/player.ts is dynamically imported by /dev/shm/task8-qa-wire-MyjYVp/src/app/mode.ts, /dev/shm/task8-qa-wire-MyjYVp/src/app/mode.ts but also statically imported by /dev/shm/task8-qa-wire-MyjYVp/src/editor/panels/testPlayModal.ts, dynamic import will not move module into another chunk.
+
+computing gzip size...
+../task8-build-zyzGxX/dist/index.html                                             0.73 kB │ gzip:     0.45 kB
+../task8-build-zyzGxX/dist/assets/phaser.min-CwlHMuXa.js                      1,196.12 kB
+../task8-build-zyzGxX/dist/assets/databaseModal-DLdoxeTO.css                    119.86 kB │ gzip:    13.84 kB
+../task8-build-zyzGxX/dist/assets/index-CKym7J8o.css                          1,883.68 kB │ gzip:   270.08 kB
+../task8-build-zyzGxX/dist/assets/pwa-CRridmjp.js                                 0.25 kB │ gzip:     0.20 kB
+../task8-build-zyzGxX/dist/assets/welcomeGenreSystemPresetAction-CwogOKEJ.js      0.40 kB │ gzip:     0.27 kB
+../task8-build-zyzGxX/dist/assets/mapSelection-Du0XaENZ.js                        0.58 kB │ gzip:     0.35 kB
+../task8-build-zyzGxX/dist/assets/welcomeGenrePresetApply-Cw1GS_0K.js             0.71 kB │ gzip:     0.46 kB
+../task8-build-zyzGxX/dist/assets/aiBootIntent-DSaTXbsX.js                        0.96 kB │ gzip:     0.46 kB
+../task8-build-zyzGxX/dist/assets/mapUrlSync-Tq8A1V4B.js                          1.22 kB │ gzip:     0.64 kB
+../task8-build-zyzGxX/dist/assets/eventSpriteResources-C0nGg06t.js                1.46 kB │ gzip:     0.69 kB
+../task8-build-zyzGxX/dist/assets/worldEntries-BOR8Afnr.js                        1.72 kB │ gzip:     0.90 kB
+../task8-build-zyzGxX/dist/assets/tileShapeTools-DYnECOow.js                      3.30 kB │ gzip:     1.31 kB
+../task8-build-zyzGxX/dist/assets/workspaceStore-BtXpSZvQ.js                      3.60 kB │ gzip:     1.59 kB
+../task8-build-zyzGxX/dist/assets/defaults-DoVjCJcL.js                            4.55 kB │ gzip:     2.05 kB
+../task8-build-zyzGxX/dist/assets/playSceneBattle-Y_VXuq_B.js                     5.05 kB │ gzip:     1.96 kB
+../task8-build-zyzGxX/dist/assets/coachMarks-BpMOvlqq.js                          5.43 kB │ gzip:     2.42 kB
+../task8-build-zyzGxX/dist/assets/applyChangesetToStore-BvGkoXrr.js               6.61 kB │ gzip:     2.83 kB
+../task8-build-zyzGxX/dist/assets/teamWorkflowUi-5R2fTHlI.js                      9.69 kB │ gzip:     3.50 kB
+../task8-build-zyzGxX/dist/assets/transientEditorChrome-DrLLctKW.js              11.97 kB │ gzip:     4.34 kB
+../task8-build-zyzGxX/dist/assets/dbConnectionSettings-B0qlv29O.js               13.27 kB │ gzip:     4.98 kB
+../task8-build-zyzGxX/dist/assets/helpModal-BhnlWYja.js                          14.38 kB │ gzip:     5.69 kB
+../task8-build-zyzGxX/dist/assets/databaseAiGenerateDialog-DV0gOJ9F.js           17.03 kB │ gzip:     7.47 kB
+../task8-build-zyzGxX/dist/assets/structureKitEditorDialog-8en_---O.js           42.81 kB │ gzip:    14.67 kB
+../task8-build-zyzGxX/dist/assets/aiStudioMode-CWEeRiXE.js                       54.30 kB │ gzip:    18.44 kB
+../task8-build-zyzGxX/dist/assets/menu-CDbyoWrO.js                               94.45 kB │ gzip:    30.81 kB
+../task8-build-zyzGxX/dist/assets/EditScene-B8s7M73C.js                         105.02 kB │ gzip:    31.74 kB
+../task8-build-zyzGxX/dist/assets/tilePalette-DFlSoAHX.js                       172.50 kB │ gzip:    54.47 kB
+../task8-build-zyzGxX/dist/assets/editor-DMW3jeci.js                            211.69 kB │ gzip:    70.28 kB
+../task8-build-zyzGxX/dist/assets/PlayScene-BFqO_h6a.js                         241.93 kB │ gzip:    75.60 kB
+../task8-build-zyzGxX/dist/assets/saveActions-BJz5sKNZ.js                       334.00 kB │ gzip:   117.72 kB
+../task8-build-zyzGxX/dist/assets/databaseModal-C5_iFjGv.js                   1,150.70 kB │ gzip:   346.28 kB
+../task8-build-zyzGxX/dist/assets/index-DygqxpUE.js                           7,205.86 kB │ gzip: 1,616.03 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 23.64s
+TASK8_SAFE_APP_BUILD_GREEN
+TASK8_BUILD_TEMPORARY_REMOVED /dev/shm/task8-build-zyzGxX

@@ -1,0 +1,36 @@
+✖ runtime assembly cannot select the forbidden default provider, even for unknown Node operations (4.011723ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 211.624082
+
+✖ failing tests:
+
+test at .omo/evidence/ai-job-queue/task-8/qa-wire.test.mjs:5:1
+✖ runtime assembly cannot select the forbidden default provider, even for unknown Node operations (4.011723ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+  + Comparison {}
+  - Comparison {
+  -   code: 'PROVIDER_NOT_DISPATCHED'
+  - }
+
+      at async TestContext.<anonymous> (file:///dev/shm/task8-qa-wire-MyjYVp/.omo/evidence/ai-job-queue/task-8/qa-wire.test.mjs:11:3)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: FORBIDDEN_LIVE_SENTINEL
+        at Object.forbidden [as dispatchProvider] (file:///dev/shm/task8-qa-wire-MyjYVp/.omo/evidence/ai-job-queue/task-8/qa-wire.test.mjs:7:59)
+        at TestContext.<anonymous> (file:///dev/shm/task8-qa-wire-MyjYVp/.omo/evidence/ai-job-queue/task-8/qa-wire.test.mjs:11:32)
+        at async Test.run (node:internal/test_runner/test:1113:7)
+        at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3),
+    expected: { code: 'PROVIDER_NOT_DISPATCHED' },
+    operator: 'rejects',
+    diff: 'simple'
+  }

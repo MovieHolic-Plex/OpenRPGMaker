@@ -1,0 +1,135 @@
+{
+  "runId": "a0db790e-fe82-49ea-be19-31598058beba",
+  "origin": "http://127.0.0.1:46553",
+  "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+  "applied": {
+    "application": "applied",
+    "save": "unsaved",
+    "receiptId": "f3d34cd3-48dc-4f2b-8259-b2257d374d1f"
+  },
+  "failedSave": {
+    "application": "applied",
+    "save": "unknown",
+    "receiptId": "f3d34cd3-48dc-4f2b-8259-b2257d374d1f"
+  },
+  "saved": {
+    "application": "applied",
+    "save": "saved",
+    "receiptId": "f3d34cd3-48dc-4f2b-8259-b2257d374d1f"
+  },
+  "readback": {
+    "item": {
+      "id": "item_ai_task8-controlled-potion",
+      "name": "Task8 Controlled Potion",
+      "scope": "ally",
+      "price": 37,
+      "description": "",
+      "type": "normalGoods",
+      "occasion": "always",
+      "consumable": true,
+      "stateEffects": [],
+      "consumptionLimit": "noLimit",
+      "usableActorIds": [],
+      "usableClassIds": [],
+      "healStateIds": [],
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "onlyUsableInMenu": false,
+      "onlyEffectiveOnDeadActors": false,
+      "usageMessage": "normal",
+      "occasionField": false,
+      "occasionBattle": false,
+      "seedParameterBonuses": {
+        "attack": 0,
+        "defense": 0,
+        "mind": 0,
+        "agility": 0
+      },
+      "equipmentProfile": {
+        "statBonuses": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "equippableActorIds": [],
+        "equippableClassIds": [],
+        "twoHanded": false,
+        "mpCost": 0,
+        "accuracy": 90,
+        "criticalRate": 0,
+        "attackElementIds": [],
+        "stateInflictIds": [],
+        "stateInflictionChance": 100,
+        "effectFlags": {
+          "preemptive": false,
+          "doubleAttack": false,
+          "attackAll": false,
+          "ignoreDodge": false,
+          "preventCriticalHits": false,
+          "increasePhysicalDodge": false,
+          "halfMpCost": false,
+          "negateTerrainDamage": false,
+          "fixedEquipment": false
+        },
+        "elementalDefenseIds": [],
+        "stateDefenseIds": [],
+        "stateDefenseMode": "resist",
+        "stateResistanceChance": 0
+      }
+    },
+    "mapIds": [
+      "map_blank_start"
+    ]
+  },
+  "mapProof": {
+    "kind": "saved",
+    "id": "map_blank_start",
+    "name": "Task8 Canonical Map Readback"
+  },
+  "expectedNegativeViolations": [
+    {
+      "kind": "legacy-http",
+      "method": "POST",
+      "path": "/v1/chat/completions"
+    },
+    {
+      "kind": "legacy-http",
+      "method": "POST",
+      "path": "/v1/images/generations"
+    },
+    {
+      "kind": "legacy-http",
+      "method": "POST",
+      "path": "/api/ai/chat/completions"
+    },
+    {
+      "kind": "legacy-http",
+      "method": "POST",
+      "path": "/api/qwen/chat/completions"
+    },
+    {
+      "kind": "legacy-http",
+      "method": "POST",
+      "path": "/api/cpen/chat/completions"
+    },
+    {
+      "kind": "foreign-project",
+      "method": "GET",
+      "table": "projects"
+    }
+  ],
+  "controlledCalls": 1,
+  "jobCount": 1,
+  "operationCount": 1,
+  "externalBrowserOrigins": [],
+  "pageErrors": [],
+  "persistenceReads": 19,
+  "persistenceWrites": 5
+}

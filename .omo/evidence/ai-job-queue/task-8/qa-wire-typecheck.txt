@@ -1,0 +1,5 @@
+src/editor/tools/worldStructureTools.ts(1,19): error TS2307: Cannot find module 'zod' or its corresponding type declarations.
+src/editor/tools/worldStructureTools.ts(42,56): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/editor/tools/worldStructureTools.ts(199,17): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ readonly grass: 78; readonly dirt: 81; readonly snow: 168; }'.
+src/editor/tools/worldStructureTools.ts(212,25): error TS7006: Parameter 'n' implicitly has an 'any' type.
+src/editor/tools/worldStructureTools.ts(212,28): error TS7006: Parameter 'i' implicitly has an 'any' type.

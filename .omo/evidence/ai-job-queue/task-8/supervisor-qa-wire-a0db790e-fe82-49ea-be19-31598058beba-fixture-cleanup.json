@@ -1,0 +1,1259 @@
+{
+  "runId": "a0db790e-fe82-49ea-be19-31598058beba",
+  "temporary": "/dev/shm/task7-editor-60kmvx23",
+  "removed": true,
+  "serviceClosed": true,
+  "serverClosed": true,
+  "cleanupErrors": [],
+  "stage": "complete",
+  "origin": "http://127.0.0.1:46553",
+  "plans": [
+    {
+      "id": "real-database",
+      "match": {
+        "family": "database",
+        "projectId": "task8-disposable-qa",
+        "payload": {
+          "brief": "Disposable controlled potion"
+        }
+      },
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "cursor": 1,
+      "expectedOperations": 1,
+      "remaining": 0
+    }
+  ],
+  "calls": [
+    {
+      "planId": "real-database",
+      "index": 0,
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "attemptId": "91c3351c-a964-476c-a417-8d559ea76474",
+      "operationId": "32aa4766-d66b-4e09-8eae-fdf91e5a002a",
+      "key": "database/text",
+      "requestSha256": "7ec24870478ddee810babd16bf8b28a1f6dc32dd9c89b639aa5edfe390889070",
+      "status": "responded",
+      "responseSha256": "b6828c8658e56520e2bb35c83487d989f63eb8bbcdae9917c07288b032ac94ac"
+    }
+  ],
+  "logicalCalls": [
+    {
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "attemptId": "91c3351c-a964-476c-a417-8d559ea76474",
+      "key": "database/text",
+      "status": "returned",
+      "reused": false
+    }
+  ],
+  "logicalRequests": 1,
+  "reusedResponses": 0,
+  "violations": [
+    {
+      "kind": "legacy-http",
+      "method": "POST",
+      "path": "/v1/chat/completions"
+    },
+    {
+      "kind": "legacy-http",
+      "method": "POST",
+      "path": "/v1/images/generations"
+    },
+    {
+      "kind": "legacy-http",
+      "method": "POST",
+      "path": "/api/ai/chat/completions"
+    },
+    {
+      "kind": "legacy-http",
+      "method": "POST",
+      "path": "/api/qwen/chat/completions"
+    },
+    {
+      "kind": "legacy-http",
+      "method": "POST",
+      "path": "/api/cpen/chat/completions"
+    },
+    {
+      "kind": "foreign-project",
+      "method": "GET",
+      "table": "projects"
+    }
+  ],
+  "events": [
+    {
+      "seq": 1,
+      "type": "persistence-initialized",
+      "sha256": "749dc2187af8fdbd1588cd4e526b410422c43b85e225993e10f3a281229eec64"
+    },
+    {
+      "seq": 2,
+      "type": "persistence-read",
+      "table": "projects"
+    },
+    {
+      "seq": 3,
+      "type": "persistence-read",
+      "table": "maps"
+    },
+    {
+      "seq": 4,
+      "type": "persistence-read",
+      "table": "project_commits"
+    },
+    {
+      "seq": 5,
+      "type": "plan-registered",
+      "planId": "real-database"
+    },
+    {
+      "seq": 6,
+      "type": "local-mirror-write",
+      "path": "/__oprn/edit-activity"
+    },
+    {
+      "seq": 7,
+      "type": "waiter-registered",
+      "waitType": "waiter-registered",
+      "planId": "real-database"
+    },
+    {
+      "seq": 8,
+      "type": "waiter-registered",
+      "waitType": "operation-reached",
+      "planId": "real-database",
+      "index": 0
+    },
+    {
+      "seq": 9,
+      "type": "job-event",
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "event": {
+        "seq": 1,
+        "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+        "kind": "admitted",
+        "createdAt": 1788755473780,
+        "states": {
+          "generation": "queued",
+          "report": "pending",
+          "application": "not-requested",
+          "save": "not-requested"
+        }
+      }
+    },
+    {
+      "seq": 10,
+      "type": "job-event",
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "event": {
+        "seq": 2,
+        "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+        "kind": "updated",
+        "createdAt": 1788755473793,
+        "states": {
+          "generation": "running",
+          "report": "pending",
+          "application": "not-requested",
+          "save": "not-requested"
+        }
+      }
+    },
+    {
+      "seq": 11,
+      "type": "job-event",
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "event": {
+        "seq": 3,
+        "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+        "kind": "updated",
+        "createdAt": 1788755483410,
+        "states": {
+          "generation": "running",
+          "report": "pending",
+          "application": "not-requested",
+          "save": "not-requested"
+        }
+      }
+    },
+    {
+      "seq": 12,
+      "type": "job-event",
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "event": {
+        "seq": 4,
+        "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+        "kind": "updated",
+        "createdAt": 1788755483438,
+        "states": {
+          "generation": "running",
+          "report": "pending",
+          "application": "not-requested",
+          "save": "not-requested"
+        }
+      }
+    },
+    {
+      "seq": 13,
+      "type": "operation-reached",
+      "planId": "real-database",
+      "index": 0,
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "attemptId": "91c3351c-a964-476c-a417-8d559ea76474",
+      "operationId": "32aa4766-d66b-4e09-8eae-fdf91e5a002a",
+      "key": "database/text",
+      "requestSha256": "7ec24870478ddee810babd16bf8b28a1f6dc32dd9c89b639aa5edfe390889070",
+      "status": "reached"
+    },
+    {
+      "seq": 14,
+      "type": "waiter-registered",
+      "waitType": "job-event"
+    },
+    {
+      "seq": 15,
+      "type": "waiter-registered",
+      "waitType": "job-event"
+    },
+    {
+      "seq": 16,
+      "type": "operation-released",
+      "planId": "real-database",
+      "index": 0
+    },
+    {
+      "seq": 17,
+      "type": "operation-responded",
+      "planId": "real-database",
+      "index": 0,
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "attemptId": "91c3351c-a964-476c-a417-8d559ea76474",
+      "operationId": "32aa4766-d66b-4e09-8eae-fdf91e5a002a",
+      "key": "database/text",
+      "requestSha256": "7ec24870478ddee810babd16bf8b28a1f6dc32dd9c89b639aa5edfe390889070",
+      "status": "responded",
+      "responseSha256": "b6828c8658e56520e2bb35c83487d989f63eb8bbcdae9917c07288b032ac94ac"
+    },
+    {
+      "seq": 18,
+      "type": "job-event",
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "event": {
+        "seq": 5,
+        "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+        "kind": "updated",
+        "createdAt": 1788755483502,
+        "states": {
+          "generation": "running",
+          "report": "pending",
+          "application": "not-requested",
+          "save": "not-requested"
+        }
+      }
+    },
+    {
+      "seq": 19,
+      "type": "job-event",
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "event": {
+        "seq": 6,
+        "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+        "kind": "updated",
+        "createdAt": 1788755483540,
+        "states": {
+          "generation": "running",
+          "report": "pending",
+          "application": "not-requested",
+          "save": "not-requested"
+        }
+      }
+    },
+    {
+      "seq": 20,
+      "type": "job-event",
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "event": {
+        "seq": 7,
+        "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+        "kind": "updated",
+        "createdAt": 1788755487242,
+        "states": {
+          "generation": "running",
+          "report": "pending",
+          "application": "not-requested",
+          "save": "not-requested"
+        }
+      }
+    },
+    {
+      "seq": 21,
+      "type": "job-event",
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "event": {
+        "seq": 8,
+        "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+        "kind": "outcome",
+        "createdAt": 1788755487440,
+        "states": {
+          "generation": "succeeded",
+          "report": "pending",
+          "application": "awaiting-review",
+          "save": "unsaved"
+        }
+      }
+    },
+    {
+      "seq": 22,
+      "type": "job-event",
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "event": {
+        "seq": 9,
+        "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+        "kind": "updated",
+        "createdAt": 1788755487463,
+        "states": {
+          "generation": "succeeded",
+          "report": "running",
+          "application": "awaiting-review",
+          "save": "unsaved"
+        }
+      }
+    },
+    {
+      "seq": 23,
+      "type": "job-event",
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "event": {
+        "seq": 10,
+        "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+        "kind": "updated",
+        "createdAt": 1788755487488,
+        "states": {
+          "generation": "succeeded",
+          "report": "running",
+          "application": "awaiting-review",
+          "save": "unsaved"
+        }
+      }
+    },
+    {
+      "seq": 24,
+      "type": "job-event",
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "event": {
+        "seq": 11,
+        "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+        "kind": "updated",
+        "createdAt": 1788755496106,
+        "states": {
+          "generation": "succeeded",
+          "report": "running",
+          "application": "awaiting-review",
+          "save": "unsaved"
+        }
+      }
+    },
+    {
+      "seq": 25,
+      "type": "job-event",
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "event": {
+        "seq": 12,
+        "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+        "kind": "updated",
+        "createdAt": 1788755496415,
+        "states": {
+          "generation": "succeeded",
+          "report": "running",
+          "application": "awaiting-review",
+          "save": "unsaved"
+        }
+      }
+    },
+    {
+      "seq": 26,
+      "type": "job-event",
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "event": {
+        "seq": 13,
+        "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+        "kind": "updated",
+        "createdAt": 1788755496471,
+        "states": {
+          "generation": "succeeded",
+          "report": "ready",
+          "application": "awaiting-review",
+          "save": "unsaved"
+        }
+      }
+    },
+    {
+      "seq": 27,
+      "type": "job-event",
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "event": {
+        "seq": 14,
+        "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+        "kind": "updated",
+        "createdAt": 1788755502918,
+        "states": {
+          "generation": "succeeded",
+          "report": "pending",
+          "application": "applying",
+          "save": "unsaved"
+        }
+      }
+    },
+    {
+      "seq": 28,
+      "type": "job-event",
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "event": {
+        "seq": 15,
+        "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+        "kind": "updated",
+        "createdAt": 1788755502946,
+        "states": {
+          "generation": "succeeded",
+          "report": "running",
+          "application": "applying",
+          "save": "unsaved"
+        }
+      }
+    },
+    {
+      "seq": 29,
+      "type": "job-event",
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "event": {
+        "seq": 16,
+        "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+        "kind": "updated",
+        "createdAt": 1788755502996,
+        "states": {
+          "generation": "succeeded",
+          "report": "running",
+          "application": "applying",
+          "save": "unsaved"
+        }
+      }
+    },
+    {
+      "seq": 30,
+      "type": "persistence-write",
+      "table": "project_commits",
+      "method": "POST"
+    },
+    {
+      "seq": 31,
+      "type": "persistence-write",
+      "table": "project_changes",
+      "method": "POST"
+    },
+    {
+      "seq": 32,
+      "type": "local-mirror-write",
+      "path": "/__oprn/edit-activity"
+    },
+    {
+      "seq": 33,
+      "type": "job-event",
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "event": {
+        "seq": 17,
+        "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+        "kind": "updated",
+        "createdAt": 1788755507292,
+        "states": {
+          "generation": "succeeded",
+          "report": "running",
+          "application": "applying",
+          "save": "unsaved"
+        }
+      }
+    },
+    {
+      "seq": 34,
+      "type": "job-event",
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "event": {
+        "seq": 18,
+        "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+        "kind": "outcome",
+        "createdAt": 1788755507392,
+        "states": {
+          "generation": "succeeded",
+          "report": "running",
+          "application": "applied",
+          "save": "unsaved"
+        }
+      }
+    },
+    {
+      "seq": 35,
+      "type": "persistence-read",
+      "table": "projects"
+    },
+    {
+      "seq": 36,
+      "type": "persistence-write-failed",
+      "table": "projects"
+    },
+    {
+      "seq": 37,
+      "type": "persistence-read",
+      "table": "projects"
+    },
+    {
+      "seq": 38,
+      "type": "job-event",
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "event": {
+        "seq": 19,
+        "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+        "kind": "updated",
+        "createdAt": 1788755512203,
+        "states": {
+          "generation": "succeeded",
+          "report": "running",
+          "application": "applied",
+          "save": "unsaved"
+        }
+      }
+    },
+    {
+      "seq": 39,
+      "type": "job-event",
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "event": {
+        "seq": 20,
+        "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+        "kind": "updated",
+        "createdAt": 1788755512522,
+        "states": {
+          "generation": "succeeded",
+          "report": "running",
+          "application": "applied",
+          "save": "unsaved"
+        }
+      }
+    },
+    {
+      "seq": 40,
+      "type": "job-event",
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "event": {
+        "seq": 21,
+        "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+        "kind": "updated",
+        "createdAt": 1788755512540,
+        "states": {
+          "generation": "succeeded",
+          "report": "pending",
+          "application": "applied",
+          "save": "unsaved"
+        }
+      }
+    },
+    {
+      "seq": 41,
+      "type": "job-event",
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "event": {
+        "seq": 22,
+        "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+        "kind": "updated",
+        "createdAt": 1788755512563,
+        "states": {
+          "generation": "succeeded",
+          "report": "running",
+          "application": "applied",
+          "save": "unsaved"
+        }
+      }
+    },
+    {
+      "seq": 42,
+      "type": "persistence-write-failed",
+      "table": "projects"
+    },
+    {
+      "seq": 43,
+      "type": "job-event",
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "event": {
+        "seq": 23,
+        "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+        "kind": "updated",
+        "createdAt": 1788755512600,
+        "states": {
+          "generation": "succeeded",
+          "report": "running",
+          "application": "applied",
+          "save": "unsaved"
+        }
+      }
+    },
+    {
+      "seq": 44,
+      "type": "job-event",
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "event": {
+        "seq": 24,
+        "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+        "kind": "outcome",
+        "createdAt": 1788755513311,
+        "states": {
+          "generation": "succeeded",
+          "report": "running",
+          "application": "applied",
+          "save": "unknown"
+        }
+      }
+    },
+    {
+      "seq": 45,
+      "type": "waiter-registered",
+      "waitType": "waiter-registered"
+    },
+    {
+      "seq": 46,
+      "type": "waiter-registered",
+      "waitType": "job-event"
+    },
+    {
+      "seq": 47,
+      "type": "persistence-read",
+      "table": "projects"
+    },
+    {
+      "seq": 48,
+      "type": "persistence-write",
+      "table": "projects",
+      "method": "PATCH"
+    },
+    {
+      "seq": 49,
+      "type": "persistence-read",
+      "table": "projects"
+    },
+    {
+      "seq": 50,
+      "type": "persistence-read",
+      "table": "maps"
+    },
+    {
+      "seq": 51,
+      "type": "persistence-read",
+      "table": "project_commits"
+    },
+    {
+      "seq": 52,
+      "type": "job-event",
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "event": {
+        "seq": 25,
+        "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+        "kind": "outcome",
+        "createdAt": 1788755522783,
+        "states": {
+          "generation": "succeeded",
+          "report": "running",
+          "application": "applied",
+          "save": "saved"
+        }
+      }
+    },
+    {
+      "seq": 53,
+      "type": "job-event",
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "event": {
+        "seq": 26,
+        "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+        "kind": "updated",
+        "createdAt": 1788755526691,
+        "states": {
+          "generation": "succeeded",
+          "report": "running",
+          "application": "applied",
+          "save": "saved"
+        }
+      }
+    },
+    {
+      "seq": 54,
+      "type": "job-event",
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "event": {
+        "seq": 27,
+        "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+        "kind": "updated",
+        "createdAt": 1788755526986,
+        "states": {
+          "generation": "succeeded",
+          "report": "running",
+          "application": "applied",
+          "save": "saved"
+        }
+      }
+    },
+    {
+      "seq": 55,
+      "type": "job-event",
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "event": {
+        "seq": 28,
+        "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+        "kind": "updated",
+        "createdAt": 1788755527006,
+        "states": {
+          "generation": "succeeded",
+          "report": "pending",
+          "application": "applied",
+          "save": "saved"
+        }
+      }
+    },
+    {
+      "seq": 56,
+      "type": "job-event",
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "event": {
+        "seq": 29,
+        "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+        "kind": "updated",
+        "createdAt": 1788755527023,
+        "states": {
+          "generation": "succeeded",
+          "report": "running",
+          "application": "applied",
+          "save": "saved"
+        }
+      }
+    },
+    {
+      "seq": 57,
+      "type": "job-event",
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "event": {
+        "seq": 30,
+        "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+        "kind": "updated",
+        "createdAt": 1788755527049,
+        "states": {
+          "generation": "succeeded",
+          "report": "running",
+          "application": "applied",
+          "save": "saved"
+        }
+      }
+    },
+    {
+      "seq": 58,
+      "type": "job-event",
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "event": {
+        "seq": 31,
+        "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+        "kind": "updated",
+        "createdAt": 1788755538592,
+        "states": {
+          "generation": "succeeded",
+          "report": "running",
+          "application": "applied",
+          "save": "saved"
+        }
+      }
+    },
+    {
+      "seq": 59,
+      "type": "job-event",
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "event": {
+        "seq": 32,
+        "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+        "kind": "updated",
+        "createdAt": 1788755538855,
+        "states": {
+          "generation": "succeeded",
+          "report": "running",
+          "application": "applied",
+          "save": "saved"
+        }
+      }
+    },
+    {
+      "seq": 60,
+      "type": "job-event",
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "event": {
+        "seq": 33,
+        "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+        "kind": "updated",
+        "createdAt": 1788755538878,
+        "states": {
+          "generation": "succeeded",
+          "report": "ready",
+          "application": "applied",
+          "save": "saved"
+        }
+      }
+    },
+    {
+      "seq": 61,
+      "type": "persistence-read",
+      "table": "projects"
+    },
+    {
+      "seq": 62,
+      "type": "persistence-read",
+      "table": "maps"
+    },
+    {
+      "seq": 63,
+      "type": "persistence-read",
+      "table": "project_commits"
+    },
+    {
+      "seq": 64,
+      "type": "persistence-read",
+      "table": "projects"
+    },
+    {
+      "seq": 65,
+      "type": "persistence-read",
+      "table": "maps"
+    },
+    {
+      "seq": 66,
+      "type": "persistence-read",
+      "table": "project_commits"
+    },
+    {
+      "seq": 67,
+      "type": "persistence-read",
+      "table": "projects"
+    },
+    {
+      "seq": 68,
+      "type": "persistence-write",
+      "table": "projects",
+      "method": "PATCH"
+    },
+    {
+      "seq": 69,
+      "type": "persistence-write",
+      "table": "maps",
+      "method": "POST"
+    },
+    {
+      "seq": 70,
+      "type": "persistence-read",
+      "table": "projects"
+    },
+    {
+      "seq": 71,
+      "type": "persistence-read",
+      "table": "maps"
+    },
+    {
+      "seq": 72,
+      "type": "violation",
+      "kind": "legacy-http",
+      "method": "POST",
+      "path": "/v1/chat/completions"
+    },
+    {
+      "seq": 73,
+      "type": "persistence-read",
+      "table": "project_commits"
+    },
+    {
+      "seq": 74,
+      "type": "violation",
+      "kind": "legacy-http",
+      "method": "POST",
+      "path": "/v1/images/generations"
+    },
+    {
+      "seq": 75,
+      "type": "violation",
+      "kind": "legacy-http",
+      "method": "POST",
+      "path": "/api/ai/chat/completions"
+    },
+    {
+      "seq": 76,
+      "type": "violation",
+      "kind": "legacy-http",
+      "method": "POST",
+      "path": "/api/qwen/chat/completions"
+    },
+    {
+      "seq": 77,
+      "type": "violation",
+      "kind": "legacy-http",
+      "method": "POST",
+      "path": "/api/cpen/chat/completions"
+    },
+    {
+      "seq": 78,
+      "type": "violation",
+      "kind": "foreign-project",
+      "method": "GET",
+      "table": "projects"
+    },
+    {
+      "seq": 79,
+      "type": "closing"
+    }
+  ],
+  "held": [],
+  "waiters": 0,
+  "jobs": [
+    {
+      "id": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "idempotencyKey": "real-database",
+      "family": "database",
+      "project": {
+        "backend": "task8-local:a0db790e-fe82-49ea-be19-31598058beba",
+        "projectId": "task8-disposable-qa"
+      },
+      "inputRef": {
+        "sha256": "7233d5d508da3581e8d95c28d7dd8e8e4c6a39515ee602a41cb3c15c1cb73c74",
+        "byteLength": 606,
+        "mediaType": "application/json"
+      },
+      "createdAt": 1788755473780,
+      "updatedAt": 1788755538878,
+      "generation": "succeeded",
+      "report": "ready",
+      "application": "applied",
+      "save": "saved",
+      "activeAttemptId": null,
+      "resultRef": {
+        "sha256": "52f1aa79ea88f728f57c75c3c48278949458698296e78dca83d6dd42678e4a87",
+        "byteLength": 1940,
+        "mediaType": "application/json"
+      },
+      "reportRef": {
+        "sha256": "04962bf8428a782f38570428880d6e2e1253db47e6bfce1b0f5c669fdce649b1",
+        "byteLength": 10211,
+        "mediaType": "application/json"
+      },
+      "checkpointRef": {
+        "sha256": "ce6f65d9c4501908013caf8d36324f61cf0985bf71c1f700054e268bf73083f3",
+        "byteLength": 2060,
+        "mediaType": "application/json"
+      },
+      "applicationEvidence": {
+        "claim": {
+          "claimId": "2e4b7990-d24a-4c1d-81f8-16a7d8150949",
+          "receiptId": "f3d34cd3-48dc-4f2b-8259-b2257d374d1f",
+          "project": {
+            "backend": "task8-local:a0db790e-fe82-49ea-be19-31598058beba",
+            "projectId": "task8-disposable-qa"
+          },
+          "resultSha256": "52f1aa79ea88f728f57c75c3c48278949458698296e78dca83d6dd42678e4a87",
+          "baselineSha256": "1706f9c60d94436b9f903329822d42665fa70d16e378650e1376e8afc307bd69"
+        },
+        "receipt": {
+          "claimId": "2e4b7990-d24a-4c1d-81f8-16a7d8150949",
+          "receiptId": "f3d34cd3-48dc-4f2b-8259-b2257d374d1f",
+          "project": {
+            "backend": "task8-local:a0db790e-fe82-49ea-be19-31598058beba",
+            "projectId": "task8-disposable-qa"
+          },
+          "resultSha256": "52f1aa79ea88f728f57c75c3c48278949458698296e78dca83d6dd42678e4a87",
+          "application": "applied",
+          "save": "unsaved",
+          "evidence": {
+            "appliedSnapshotSha256": "812adec9037e4379e37349388091c510bb128acf84dc441aaab5af6f2116e4f3",
+            "appliedArtifact": {
+              "sha256": "812adec9037e4379e37349388091c510bb128acf84dc441aaab5af6f2116e4f3",
+              "byteLength": 2452103,
+              "mediaType": "application/json"
+            },
+            "beforeSnapshotSha256": "1706f9c60d94436b9f903329822d42665fa70d16e378650e1376e8afc307bd69",
+            "noChanges": false,
+            "hashScheme": "project-canonical-json-no-event-drafts-v1",
+            "scope": "project"
+          },
+          "saveEvidence": null
+        },
+        "artifact": {
+          "receiptId": "f3d34cd3-48dc-4f2b-8259-b2257d374d1f",
+          "resultSha256": "52f1aa79ea88f728f57c75c3c48278949458698296e78dca83d6dd42678e4a87",
+          "ref": {
+            "sha256": "812adec9037e4379e37349388091c510bb128acf84dc441aaab5af6f2116e4f3",
+            "byteLength": 2452103,
+            "mediaType": "application/json"
+          }
+        }
+      },
+      "saveEvidence": {
+        "updates": [
+          {
+            "saveAttemptId": "initial",
+            "save": "unsaved",
+            "evidence": null
+          },
+          {
+            "saveAttemptId": "6cc0cd22-3700-4b44-a428-0125843dc3c2",
+            "save": "unknown",
+            "evidence": {
+              "method": "reload",
+              "reason": "{\"error\":\"Controlled publication failure\",\"code\":\"PROVIDER_NOT_DISPATCHED\"}"
+            }
+          },
+          {
+            "saveAttemptId": "9507791e-738a-4b3b-aa03-20912f86ea8a",
+            "save": "saved",
+            "evidence": {
+              "method": "reload",
+              "hashScheme": "project-canonical-json-no-event-drafts-v1",
+              "confirmedSnapshotSha256": "812adec9037e4379e37349388091c510bb128acf84dc441aaab5af6f2116e4f3"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "operations": [
+    {
+      "id": "32aa4766-d66b-4e09-8eae-fdf91e5a002a",
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "attemptId": "91c3351c-a964-476c-a417-8d559ea76474",
+      "kind": "database/text",
+      "status": "succeeded",
+      "requestRef": {
+        "sha256": "7ec24870478ddee810babd16bf8b28a1f6dc32dd9c89b639aa5edfe390889070",
+        "byteLength": 1536,
+        "mediaType": "application/json"
+      },
+      "responseRef": {
+        "sha256": "b6828c8658e56520e2bb35c83487d989f63eb8bbcdae9917c07288b032ac94ac",
+        "byteLength": 133,
+        "mediaType": "application/json"
+      },
+      "error": null
+    }
+  ],
+  "attempts": [
+    {
+      "id": "91c3351c-a964-476c-a417-8d559ea76474",
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "stage": "generation",
+      "status": "succeeded",
+      "startedAt": 1788755473792,
+      "finishedAt": 1788755487439,
+      "error": null
+    },
+    {
+      "id": "eced3c4a-4c65-4e44-8519-89a6f0ceeaa3",
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "stage": "report",
+      "status": "succeeded",
+      "startedAt": 1788755487462,
+      "finishedAt": 1788755496471,
+      "error": null
+    },
+    {
+      "id": "8cdc4567-341b-4aba-b9f9-004db8f92486",
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "stage": "report",
+      "status": "succeeded",
+      "startedAt": 1788755502945,
+      "finishedAt": 1788755512539,
+      "error": null
+    },
+    {
+      "id": "483b65ca-bf79-4cbe-a171-07a64c0c8d3d",
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "stage": "report",
+      "status": "succeeded",
+      "startedAt": 1788755512562,
+      "finishedAt": 1788755527005,
+      "error": null
+    },
+    {
+      "id": "14739414-5d06-47b2-9a28-22b62aeafe74",
+      "jobId": "7f395e55-71f8-43b8-97c3-e46b9892d90c",
+      "stage": "report",
+      "status": "succeeded",
+      "startedAt": 1788755527022,
+      "finishedAt": 1788755538877,
+      "error": null
+    }
+  ],
+  "jobCount": 1,
+  "operationCount": 1,
+  "controlledCalls": 1,
+  "persistence": {
+    "initialized": true,
+    "projectId": "task8-disposable-qa",
+    "reads": 19,
+    "writes": 5,
+    "rejectedWrites": 2,
+    "failWrites": 0,
+    "blockWrites": false,
+    "requests": [
+      {
+        "method": "GET",
+        "table": "projects",
+        "projectId": "task8-disposable-qa"
+      },
+      {
+        "method": "GET",
+        "table": "maps",
+        "projectId": "task8-disposable-qa"
+      },
+      {
+        "method": "GET",
+        "table": "project_commits",
+        "projectId": "task8-disposable-qa"
+      },
+      {
+        "method": "POST",
+        "table": "project_commits",
+        "projectId": "task8-disposable-qa"
+      },
+      {
+        "method": "POST",
+        "table": "project_changes",
+        "projectId": "task8-disposable-qa"
+      },
+      {
+        "method": "GET",
+        "table": "projects",
+        "projectId": "task8-disposable-qa"
+      },
+      {
+        "method": "PATCH",
+        "table": "projects",
+        "projectId": "task8-disposable-qa"
+      },
+      {
+        "method": "GET",
+        "table": "projects",
+        "projectId": "task8-disposable-qa"
+      },
+      {
+        "method": "PATCH",
+        "table": "projects",
+        "projectId": "task8-disposable-qa"
+      },
+      {
+        "method": "GET",
+        "table": "projects",
+        "projectId": "task8-disposable-qa"
+      },
+      {
+        "method": "PATCH",
+        "table": "projects",
+        "projectId": "task8-disposable-qa"
+      },
+      {
+        "method": "GET",
+        "table": "projects",
+        "projectId": "task8-disposable-qa"
+      },
+      {
+        "method": "GET",
+        "table": "maps",
+        "projectId": "task8-disposable-qa"
+      },
+      {
+        "method": "GET",
+        "table": "project_commits",
+        "projectId": "task8-disposable-qa"
+      },
+      {
+        "method": "GET",
+        "table": "projects",
+        "projectId": "task8-disposable-qa"
+      },
+      {
+        "method": "GET",
+        "table": "maps",
+        "projectId": "task8-disposable-qa"
+      },
+      {
+        "method": "GET",
+        "table": "project_commits",
+        "projectId": "task8-disposable-qa"
+      },
+      {
+        "method": "GET",
+        "table": "projects",
+        "projectId": "task8-disposable-qa"
+      },
+      {
+        "method": "GET",
+        "table": "maps",
+        "projectId": "task8-disposable-qa"
+      },
+      {
+        "method": "GET",
+        "table": "project_commits",
+        "projectId": "task8-disposable-qa"
+      },
+      {
+        "method": "GET",
+        "table": "projects",
+        "projectId": "task8-disposable-qa"
+      },
+      {
+        "method": "PATCH",
+        "table": "projects",
+        "projectId": "task8-disposable-qa"
+      },
+      {
+        "method": "POST",
+        "table": "maps",
+        "projectId": "task8-disposable-qa"
+      },
+      {
+        "method": "GET",
+        "table": "projects",
+        "projectId": "task8-disposable-qa"
+      },
+      {
+        "method": "GET",
+        "table": "maps",
+        "projectId": "task8-disposable-qa"
+      },
+      {
+        "method": "GET",
+        "table": "project_commits",
+        "projectId": "task8-disposable-qa"
+      }
+    ],
+    "rowCounts": {
+      "projects": 1,
+      "maps": 1,
+      "tilesets": 13,
+      "project_commits": 1,
+      "project_changes": 1,
+      "ai_activity_logs": 0,
+      "ai_analysis_runs": 0,
+      "ai_conversations": 0,
+      "map_edit_locks": 0
+    },
+    "currentSha256": "7f7a036b81d4f9d3def550f7c952a73c3b5dea2f454d6444b98f2ebde5a25213"
+  },
+  "mirrorWrites": 2,
+  "activeBrowsers": 0,
+  "errors": [],
+  "browserEvents": [
+    "launched",
+    "closed",
+    "launched",
+    "closed",
+    "launched",
+    "closed",
+    "launched",
+    "closed",
+    "launched",
+    "closed"
+  ]
+}

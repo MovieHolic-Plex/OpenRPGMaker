@@ -1,0 +1,44 @@
+TASK8_EDITOR_READY {"origin":"http://127.0.0.1:39147","runId":"57c843d9-b3d5-41f0-b6b1-8347b1c10207"}
+Error: The following dependencies are imported but could not be resolved:
+
+  zod (imported by /dev/shm/task8-qa-wire-MyjYVp/src/editor/tools/worldStructureTools.ts)
+
+Are they installed?
+    at file:///home/main/z-project/rpg-zzu/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14849:15
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async file:///home/main/z-project/rpg-zzu/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:47144:28
+12:57:42 PM [vite] (client) Pre-transform error: Failed to resolve import "zod" from "src/editor/tools/worldStructureTools.ts". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /dev/shm/task8-qa-wire-MyjYVp/src/editor/tools/worldStructureTools.ts:1:18
+  1  |  import { z } from "zod";
+     |                     ^
+  2  |  import { canMove, tilePassability } from "@/project/collision";
+  3  |  import { clearTileStack } from "@/project/mapOverlayTiles";
+12:57:44 PM [vite] Internal server error: Failed to resolve import "zod" from "src/editor/tools/worldStructureTools.ts". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /dev/shm/task8-qa-wire-MyjYVp/src/editor/tools/worldStructureTools.ts:1:18
+  1  |  import { z } from "zod";
+     |                     ^
+  2  |  import { canMove, tilePassability } from "@/project/collision";
+  3  |  import { clearTileStack } from "@/project/mapOverlayTiles";
+      at TransformPluginContext._formatLog (file:///home/main/z-project/rpg-zzu/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:42658:41)
+      at TransformPluginContext.error (file:///home/main/z-project/rpg-zzu/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:42655:16)
+      at normalizeUrl (file:///home/main/z-project/rpg-zzu/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:40634:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async file:///home/main/z-project/rpg-zzu/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:40753:37
+      at async Promise.all (index 0)
+      at async TransformPluginContext.transform (file:///home/main/z-project/rpg-zzu/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:40680:7)
+      at async EnvironmentPluginContainer.transform (file:///home/main/z-project/rpg-zzu/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:42453:18)
+      at async loadAndTransform (file:///home/main/z-project/rpg-zzu/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:35845:27)
+      at async viteTransformMiddleware (file:///home/main/z-project/rpg-zzu/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:37369:24)
+12:59:10 PM [vite] (client) page reload .omo/evidence/ai-job-queue/task-8/qa-wire-proof-57c843d9-b3d5-41f0-b6b1-8347b1c10207-fixture-cleanup.json
+AiJobsRepositoryError: Repository is closed
+    at available (file:///dev/shm/task8-qa-wire-MyjYVp/scripts/lib/aiJobs/repository.mjs:16:23)
+    at Object.snapshot (file:///dev/shm/task8-qa-wire-MyjYVp/scripts/lib/aiJobs/repository.mjs:124:18)
+    at Object.counts (file:///dev/shm/task8-qa-wire-MyjYVp/.omo/evidence/ai-job-queue/task-8/qa-wire.mjs:115:47)
+    at counts (file:///dev/shm/task8-qa-wire-MyjYVp/.omo/evidence/ai-job-queue/task-8/editor-fixture-server.mjs:30:50)
+    at record (file:///dev/shm/task8-qa-wire-MyjYVp/.omo/evidence/ai-job-queue/task-8/editor-fixture-server.mjs:36:83)
+    at stage (file:///dev/shm/task8-qa-wire-MyjYVp/.omo/evidence/ai-job-queue/task-8/editor-fixture-server.mjs:40:15)
+    at async file:///dev/shm/task8-qa-wire-MyjYVp/.omo/evidence/ai-job-queue/task-8/editor-fixture-server.mjs:43:7 {
+  code: 'REPOSITORY_CLOSED'
+}

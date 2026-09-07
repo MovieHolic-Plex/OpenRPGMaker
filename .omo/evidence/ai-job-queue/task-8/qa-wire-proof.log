@@ -1,0 +1,20 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: {"error":"Exact event deadline","code":"PROVIDER_NOT_DISPATCHED"}
+
+408 !== 200
+
+    at control (file:///dev/shm/task8-qa-wire-MyjYVp/.omo/evidence/ai-job-queue/task-8/verify-qa-wire.mjs:10:47)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async file:///dev/shm/task8-qa-wire-MyjYVp/.omo/evidence/ai-job-queue/task-8/verify-qa-wire.mjs:58:17 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 408,
+  expected: 200,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.11.1

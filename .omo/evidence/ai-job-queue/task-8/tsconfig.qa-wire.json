@@ -1,0 +1,9 @@
+{
+  "extends": "../../../../tsconfig.app.json",
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["../../../../src/*"],
+      "zod": ["/home/main/node_modules/zod/index.d.ts"]
+    }
+  }
+}
