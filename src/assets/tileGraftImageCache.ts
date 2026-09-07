@@ -13,7 +13,7 @@ import {
   createTransparentColorKeyCanvas,
   isColorKeyedChipsetTextureKey,
 } from "@/assets/chipsetTransparency";
-import { activeTileGrafts, createGraftedTilesetCanvas, tileGraftsTextureSuffix } from "@/assets/tileGrafts";
+import { activeTileGrafts, createGraftedTilesetCanvas } from "@/assets/tileGrafts";
 import type { TilesetDef } from "@/project/types";
 
 export const TILE_GRAFT_IMAGE_BAKED_EVENT = "oprn:tileset-graft-image-baked";
@@ -81,14 +81,21 @@ export function awaitGraftedTilesetImageUrl(
 }
 
 function graftImageCacheKey(tileset: GraftBakeSnapshot, baseUrl: string): string {
-  // Bind every atlas input the canvas bake actually consumes.
-  return [
+  // Exact identity for ready/in-flight evidence bakes: full active graft tuples
+  // (every rendering field) plus atlas geometry and base URL. A short texture
+  // suffix hash is not equality — distinct compositions must not share a bucket.
+  const grafts = activeTileGrafts(tileset).map((graft) => ({
+    targetTile: graft.targetTile,
+    sourceChipset: graft.sourceChipset,
+    sourceTile: graft.sourceTile,
+  }));
+  return JSON.stringify({
     baseUrl,
-    tileset.count,
-    tileset.tileSize,
-    tileset.tilesPerRow,
-    tileGraftsTextureSuffix(tileset),
-  ].join("|");
+    count: tileset.count,
+    tileSize: tileset.tileSize,
+    tilesPerRow: tileset.tilesPerRow,
+    grafts,
+  });
 }
 
 function snapshotGraftBake(tileset: TilesetDef): GraftBakeSnapshot {

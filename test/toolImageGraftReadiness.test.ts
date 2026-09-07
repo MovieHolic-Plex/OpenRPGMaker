@@ -276,11 +276,10 @@ describe("tool image graft atlas readiness", () => {
       expect(pendingReviews.every((entry) => entry.imageCount === 0)).toBe(true);
 
       gate.release();
-      const draftTileset = pendingSession.getProposedProject().tilesets[tileset.id];
-      if (!draftTileset) throw new Error("draft tileset missing");
-      await waitForExactGraftBake(draftTileset);
-
-      const readyProject = structuredClone(pendingSession.getProposedProject());
+      // Fresh ungrafted baseline Session: real write must produce the changed PNG itself.
+      // Do not seed the ready Session from an already-grafted project clone.
+      const readyProject = createBlankProject();
+      const readySeed = seedBlankRegion(readyProject);
       const readyReviews: Array<{ imageCount: number }> = [];
       let readyHash: string | null = null;
       let readyRound = 0;
@@ -311,19 +310,25 @@ describe("tool image graft atlas readiness", () => {
           readyRound += 1;
           if (readyRound === 1) {
             return toolCall("set_tile_grafts", {
-              tilesetId: tileset.id,
+              tilesetId: readySeed.tileset.id,
               grafts: [{ targetTile: 0, sourceChipset: GRAFT_SOURCE, sourceTile: 100 }],
-              reason: "confirm graft still present for review",
+              reason: "write graft from ungrafted baseline",
             }, "graft-ready");
           }
           if (readyRound === 2) {
-            return toolCall("show_map_region", { ...region, reason: "review after exact bake" }, "show-ready");
+            // Allow the exact bake scheduled by the write path to finish before show.
+            const draftTileset = readySession.getProposedProject().tilesets[readySeed.tileset.id];
+            if (!draftTileset) throw new Error("ready draft tileset missing");
+            await waitForExactGraftBake(draftTileset);
+            return toolCall("show_map_region", { ...readySeed.region, reason: "review after exact bake" }, "show-ready");
           }
           return { message: { role: "assistant", content: "Done ready proof" }, finishReason: "stop" };
         },
       });
 
-      const readyResult = await readySession.sendUserMessage("Confirm graft and show the ready atlas");
+      const readyResult = await readySession.sendUserMessage("Write graft from baseline and show the ready atlas");
+      const draftTileset = readySession.getProposedProject().tilesets[readySeed.tileset.id];
+      if (!draftTileset) throw new Error("draft tileset missing");
       writeJson("session-held-release.json", {
         case: "session-pending-then-ready-bake",
         beforeHash,
@@ -374,13 +379,10 @@ describe("tool image graft atlas readiness", () => {
           tools: ["set_tile_grafts", "show_map_region"],
         }),
         renderImages: async (draft, name, data) => {
-          try {
-            const images = await renderToolImages(draft, name, data);
-            renderedCount += images.length;
-            return images;
-          } catch {
-            return [];
-          }
+          // Production Session error handling must see the raw renderer failure.
+          const images = await renderToolImages(draft, name, data);
+          renderedCount += images.length;
+          return images;
         },
         chat: async (_config, request): Promise<ChatResult> => {
           const input = independentReviewPayload(request);
@@ -506,4 +508,213 @@ describe("tool image graft atlas readiness", () => {
       restore();
     }
   });
+
+  it("does not certify a warmed colliding graft bake for a different real Session write", async () => {
+    const restore = installToolImageRasterDom();
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(null, { status: 201 })));
+    try {
+      const project = createBlankProject();
+      const { map, tileset, region } = seedBlankRegion(project);
+      const grafts = (tiles: number[]) =>
+        tiles.map((sourceTile, targetTile) => ({
+          targetTile,
+          sourceChipset: GRAFT_SOURCE,
+          sourceTile,
+        }));
+      // Deterministic interior tuples that collide under the old 32-bit texture suffix hash.
+      const firstGrafts = grafts([65, 309, 431]);
+      const secondGrafts = grafts([387, 227, 361]);
+
+      tileset.tileGrafts = firstGrafts;
+      await waitForExactGraftBake(tileset);
+      const warmedA = await renderToolImages(project, "show_map_region", regionPayload(map));
+      const warmedAHash = pngHash(requireRendered(warmedA).dataUrl);
+      // Keep warmed A in the ready cache across the Session write — do not clear.
+
+      const writeProject = createBlankProject();
+      const writeSeed = seedBlankRegion(writeProject);
+      let certifiedHash: string | null = null;
+      let renderRejected = false;
+      let round = 0;
+      const reviews: Array<{ revision: number; imageCount: number }> = [];
+      const session = new AssistantSession(writeProject, {
+        config: { ...defaultAiConfig(), agentMode: "chat", maxToolCalls: 8 },
+        declareIntent: fixedDeclarer({
+          mode: "modify",
+          targetMapId: null,
+          tools: ["set_tile_grafts", "show_map_region"],
+        }),
+        renderImages: async (draft, name, data) => {
+          try {
+            const images = await renderToolImages(draft, name, data);
+            certifiedHash = pngHash(requireRendered(images).dataUrl);
+            return images;
+          } catch (error) {
+            renderRejected = true;
+            throw error;
+          }
+        },
+        chat: async (_config, request): Promise<ChatResult> => {
+          const input = independentReviewPayload(request);
+          if (input) {
+            const imageCount = request.messages
+              .flatMap((message) => (Array.isArray(message.content) ? message.content : []))
+              .filter((part) => part.type === "image_url").length;
+            reviews.push({ revision: input.revision, imageCount });
+            return approvedReviewResponse(request)!;
+          }
+          round += 1;
+          if (round === 1) {
+            return toolCall("set_tile_grafts", {
+              tilesetId: writeSeed.tileset.id,
+              grafts: secondGrafts,
+              reason: "replace three visible grafts",
+            }, "collision-write");
+          }
+          if (round === 2) {
+            return toolCall("show_map_region", {
+              ...writeSeed.region,
+              reason: "review changed grafts",
+            }, "collision-show");
+          }
+          return { message: { role: "assistant", content: "Done" }, finishReason: "stop" };
+        },
+      });
+
+      const result = await session.sendUserMessage("Replace these grafts and review the actual current image");
+      const draft = session.getProposedProject();
+      const draftTileset = requireTileset(draft, writeSeed.tileset.id);
+      expect(draftTileset.tileGrafts).toEqual(secondGrafts);
+      expect(requiresVisualReview(createBlankProject(), draft, writeSeed.map.id)).toBe(true);
+
+      // While B is not ready under the exact key, A must not be delivered or certified.
+      expect(certifiedHash).not.toBe(warmedAHash);
+      expect(session.isDraftReviewApproved()).toBe(false);
+      expect(result.review?.status).not.toBe("approved");
+      expect(renderRejected || reviews.every((entry) => entry.imageCount === 0)).toBe(true);
+
+      // Complete B's exact bake without clearing the warmed A cache entry.
+      await waitForExactGraftBake(draftTileset);
+      const actualB = await renderToolImages(draft, "show_map_region", regionPayload(requireStartMap(draft)));
+      const actualBHash = pngHash(requireRendered(actualB).dataUrl);
+      expect(actualBHash).not.toBe(warmedAHash);
+
+      // Fresh ungrafted baseline Session with real B write admits actual B PNG + authority.
+      const releaseProject = createBlankProject();
+      const releaseSeed = seedBlankRegion(releaseProject);
+      let releaseHash: string | null = null;
+      let releaseRound = 0;
+      const releaseReviews: Array<{ imageCount: number }> = [];
+      const releaseSession = new AssistantSession(releaseProject, {
+        config: { ...defaultAiConfig(), agentMode: "chat", maxToolCalls: 8 },
+        declareIntent: fixedDeclarer({
+          mode: "modify",
+          targetMapId: null,
+          tools: ["set_tile_grafts", "show_map_region"],
+        }),
+        renderImages: async (draftProject, name, data) => {
+          const images = await renderToolImages(draftProject, name, data);
+          releaseHash = pngHash(requireRendered(images).dataUrl);
+          return images;
+        },
+        chat: async (_config, request): Promise<ChatResult> => {
+          const input = independentReviewPayload(request);
+          if (input) {
+            const imageCount = request.messages
+              .flatMap((message) => (Array.isArray(message.content) ? message.content : []))
+              .filter((part) => part.type === "image_url").length;
+            releaseReviews.push({ imageCount });
+            return approvedReviewResponse(request)!;
+          }
+          releaseRound += 1;
+          if (releaseRound === 1) {
+            return toolCall("set_tile_grafts", {
+              tilesetId: releaseSeed.tileset.id,
+              grafts: secondGrafts,
+              reason: "write B from ungrafted baseline",
+            }, "b-write");
+          }
+          if (releaseRound === 2) {
+            const baked = requireTileset(releaseSession.getProposedProject(), releaseSeed.tileset.id);
+            await waitForExactGraftBake(baked);
+            return toolCall("show_map_region", { ...releaseSeed.region, reason: "review B" }, "b-show");
+          }
+          return { message: { role: "assistant", content: "Done B" }, finishReason: "stop" };
+        },
+      });
+      const releaseResult = await releaseSession.sendUserMessage("Write B and review current image");
+      expect(releaseHash).toBe(actualBHash);
+      expect(releaseHash).not.toBe(warmedAHash);
+      expect(releaseResult.review?.status).toBe("approved");
+      expect(releaseSession.isDraftReviewApproved()).toBe(true);
+      expect(releaseReviews.some((entry) => entry.imageCount >= 1)).toBe(true);
+
+      writeJson("cache-collision-ready.json", {
+        case: "warmed-ready-collision-no-stale-authority",
+        firstGrafts,
+        secondGrafts,
+        warmedAHash,
+        certifiedHash,
+        actualBHash,
+        releaseHash,
+        pendingAuthority: session.isDraftReviewApproved(),
+        releaseAuthority: releaseSession.isDraftReviewApproved(),
+        reviews,
+        releaseReviews,
+        renderRejected,
+        stoppedReason: result.stoppedReason,
+        releaseStoppedReason: releaseResult.stoppedReason,
+      });
+    } finally {
+      restore();
+    }
+  });
+
+  it("does not alias an in-flight bake across colliding graft compositions", async () => {
+    const restore = installToolImageRasterDom();
+    try {
+      const projectA = createBlankProject();
+      const projectB = createBlankProject();
+      const seedA = seedBlankRegion(projectA);
+      const seedB = seedBlankRegion(projectB);
+      const grafts = (tiles: number[]) =>
+        tiles.map((sourceTile, targetTile) => ({
+          targetTile,
+          sourceChipset: GRAFT_SOURCE,
+          sourceTile,
+        }));
+      const firstGrafts = grafts([65, 309, 431]);
+      const secondGrafts = grafts([387, 227, 361]);
+      seedA.tileset.tileGrafts = firstGrafts;
+      seedB.tileset.tileGrafts = secondGrafts;
+
+      // Start A bake in-flight; without clearing, schedule B under the same short-hash legacy key.
+      const baseA = tilesetBaseImageUrl(seedA.tileset);
+      const baseB = tilesetBaseImageUrl(seedB.tileset);
+      const inflightA = awaitGraftedTilesetImageUrl(seedA.tileset, baseA);
+      // B must not share A's in-flight promise: peek stays empty until B's own bake completes.
+      expect(peekGraftedTilesetImageUrl(seedB.tileset, baseB)).toBeNull();
+      const startedB = awaitGraftedTilesetImageUrl(seedB.tileset, baseB);
+      const [urlA, urlB] = await Promise.all([inflightA, startedB]);
+      expect(urlA).not.toBeNull();
+      expect(urlB).not.toBeNull();
+      expect(urlA).not.toBe(urlB);
+      expect(pngHash(urlA!)).not.toBe(pngHash(urlB!));
+      expect(peekGraftedTilesetImageUrl(seedA.tileset, baseA)).toBe(urlA);
+      expect(peekGraftedTilesetImageUrl(seedB.tileset, baseB)).toBe(urlB);
+
+      writeJson("cache-collision-inflight.json", {
+        case: "in-flight-alias-separated",
+        firstGrafts,
+        secondGrafts,
+        hashA: pngHash(urlA!),
+        hashB: pngHash(urlB!),
+        urlsDiffer: urlA !== urlB,
+        hashesDiffer: pngHash(urlA!) !== pngHash(urlB!),
+      });
+    } finally {
+      restore();
+    }
+  });
+
 });

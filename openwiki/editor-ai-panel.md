@@ -66,9 +66,12 @@ also remains an observable error. Contracts: `toolImageEventRender`,
 captures pixel changes for movement, graphic selection and later-page visuals.
 
 Grafted tileset atlases used by `show_map_region` / `toolImageCanvas` require a
-complete bake bound to base URL, geometry and graft identity
-(`peekGraftedTilesetImageUrl` / `tileGraftImageCache.ts`) before a reviewable
-image is returned. While pending, evidence schedules the bake and fails closed
+complete bake bound to base URL, geometry (`count` / `tileSize` / `tilesPerRow`),
+and the **canonical complete active graft tuples** (every rendering field:
+`targetTile`, `sourceChipset`, `sourceTile`) before a reviewable image is
+returned. Ready and in-flight evidence cache keys use that exact identity — not
+a short texture-suffix hash — so distinct compositions cannot share a bake or
+authority. While pending, evidence schedules the bake and fails closed
 immediately with `tileset-graft-rendering-unavailable` (no Session hang on held
 I/O, no base-atlas receipt). Missing/failed sources stay unapproved. Ordinary
 editor `tilesetImageUrl` may still show the transient ungrafted sheet until bake
