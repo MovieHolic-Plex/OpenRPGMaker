@@ -24,7 +24,7 @@ import {
 } from "./intentDeclaration";
 import { chatCompletion, configForLiteModel, loadAiConfig, type AiConfig, type ChatRequest, type ChatResult } from "./llmClient";
 import { projectWikiContext } from "./projectWikiContext";
-import { parseRequestCoverage, REQUEST_COVERAGE_AUDIT, unresolvedRequestCoverage } from "./requestCoverage";
+import { parseRequestCoverageResult, REQUEST_COVERAGE_AUDIT, unresolvedRequestCoverage } from "./requestCoverage";
 
 /** 한 문장을 JSON 으로 옮기는 데 허용하는 벽시계. 넘기면 끊고 폴백으로 떨어진다. */
 export const INTENT_DECLARATION_TIMEOUT_MS = 20_000;
@@ -104,8 +104,8 @@ export function createLlmIntentDeclarer(
     const onOuterAbort = (): void => controller.abort();
     signal?.addEventListener("abort", onOuterAbort, { once: true });
     let invalidIntent: IntentDeclaration | undefined;
-    const assessed = async (intent: IntentDeclaration): Promise<IntentDeclaration> => {
-      if (intent.mode !== "create" && intent.mode !== "modify") return intent;
+    const assessed = async (intent: IntentDeclaration, error?: string): Promise<IntentDeclarationOutcome> => {
+      if (intent.mode !== "create" && intent.mode !== "modify") return { intent, elapsedMs: Date.now() - started, error };
       // This call sees the original request/facts, not the planner or authored draft.
       const result = await (options.audit ?? chat)(configForLiteModel(getConfig()), {
         messages: [{ role: "system", content: REQUEST_COVERAGE_AUDIT },
@@ -113,8 +113,10 @@ export function createLlmIntentDeclarer(
         response_format: { type: "json_object" }, temperature: 0.1,
         signal: controller.signal, disableTransientRetry: true,
       });
-      return { ...intent, requestRequirements: parseRequestCoverage(contentText(result), facts,
-        (intent.functionalRefinements ?? []).map(refinement => refinement.requirementId)) };
+      const coverage = parseRequestCoverageResult(contentText(result), facts,
+        (intent.functionalRefinements ?? []).map(refinement => refinement.requirementId));
+      return { intent: { ...intent, requestRequirements: coverage.requirements }, elapsedMs: Date.now() - started,
+        error: error ?? coverage.error };
     };
     try {
       const config = configForLiteModel(getConfig());
@@ -135,7 +137,7 @@ export function createLlmIntentDeclarer(
         const error = invalidNpcRewardReason(parsed.intent);
         if (!error) {
           invalidIntent = parsed.intent;
-          return { intent: await assessed(parsed.intent), elapsedMs: Date.now() - started };
+          return await assessed(parsed.intent);
         }
         invalidIntent = parsed.intent;
         const repaired = await chat(config, {
@@ -148,12 +150,9 @@ export function createLlmIntentDeclarer(
         });
         const correction = parseIntentDeclaration(contentText(repaired), facts);
         if (correction.intent?.npcRewards !== undefined && !invalidNpcRewardReason(correction.intent)) {
-          return {
-            intent: await assessed({ ...invalidIntent, npcRewards: correction.intent.npcRewards }),
-            elapsedMs: Date.now() - started,
-          };
+          return await assessed({ ...invalidIntent, npcRewards: correction.intent.npcRewards });
         }
-        return { intent: invalidIntent, elapsedMs: Date.now() - started, error: correction.error ?? error };
+        return await assessed(invalidIntent, correction.error ?? error);
       }
       return { intent: { ...fallbackIntentDeclaration(facts), requestRequirements: unresolvedRequestCoverage(parsed.error ?? "Intent extraction failed") }, elapsedMs: Date.now() - started, error: parsed.error ?? "해석 실패" };
     } catch (cause) {

@@ -300,6 +300,17 @@ Ask/non-authoring and synthetic continuation retain their prior semantics; worke
 repair/replan/skip cannot weaken these checks. Explicit host withdrawal/new-goal
 remain the only scope-exclusion authority. Canonical save proof is unchanged.
 
+Failed NPC shape repair still runs the independent audit in the shared deadline;
+if unavailable, it retains a separate unresolved coverage obligation alongside
+the NPC error. An NPC-only clarification therefore cannot certify omitted original
+constraints, through either ordinary follow-up or explicit host resume.
+`parseRequestCoverageResult` returns requirements plus structural extraction error
+status; the adapter propagates that error so the 90-second cache cannot suppress
+an immediate retry. Malformed JSON, invalid envelopes/links/criteria and empty
+non-clarification audits fail this way. Valid model-declared unsupported checks
+remain distinct and cacheable. `parseRequestCoverage` keeps its array-returning
+replay API and the same fail-closed obligations.
+
 Declaration and audit share the existing 20-second budget. A live Codex audit
 timed out and correctly stayed unverified while authoring still produced a saved
 draft. Live evidence and limitations, including model-selected overly strict

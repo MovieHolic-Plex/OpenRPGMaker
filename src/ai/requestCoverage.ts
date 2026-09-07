@@ -26,9 +26,18 @@ export function unresolvedRequestCoverage(reason: string): readonly RequestRequi
 
 /** Malformed/empty extraction never becomes a vacuously satisfied contract. */
 export function parseRequestCoverage(raw: string, facts: IntentFacts, refinementIds: readonly string[]): readonly RequestRequirement[] {
+  return parseRequestCoverageResult(raw, facts, refinementIds).requirements;
+}
+
+/** Keep extraction failure distinct from a valid audit declaring unsupported work. */
+export function parseRequestCoverageResult(raw: string, facts: IntentFacts, refinementIds: readonly string[]): {
+  readonly requirements: readonly RequestRequirement[];
+  readonly error?: string;
+} {
+  const failed = (error: string) => ({ requirements: unresolvedRequestCoverage(error), error });
   let value: unknown;
-  try { value = JSON.parse(extractJsonObject(raw) ?? ""); } catch { return unresolvedRequestCoverage("Request coverage extraction was not JSON"); }
-  if (!acceptanceRecord(value) || !Array.isArray(value.requirements)) return unresolvedRequestCoverage("Request coverage extraction omitted requirements");
+  try { value = JSON.parse(extractJsonObject(raw) ?? ""); } catch { return failed("Request coverage extraction was not JSON"); }
+  if (!acceptanceRecord(value) || !Array.isArray(value.requirements)) return failed("Request coverage extraction omitted requirements");
   const clarifies = value.clarifies ?? [];
   const covered = new Uint8Array(facts.userText.length);
   const link = (text: unknown): text is string => {
@@ -41,14 +50,17 @@ export function parseRequestCoverage(raw: string, facts: IntentFacts, refinement
   if (!Array.isArray(clarifies) || clarifies.some(entry => !acceptanceRecord(entry) || typeof entry.requirementId !== "string"
     || !refinementIds.includes(entry.requirementId) || !facts.unresolvedFunctional?.some(requirement => requirement.requirementId === entry.requirementId)
     || !link(entry.text))) {
-    return unresolvedRequestCoverage("Request coverage claimed an unrecognized clarification");
+    return failed("Request coverage claimed an unrecognized clarification");
   }
-  if (value.requirements.length === 0 && clarifies.length === 0) return unresolvedRequestCoverage("Request coverage extraction was empty");
+  if (value.requirements.length === 0 && clarifies.length === 0) return failed("Request coverage extraction was empty");
+  let error: string | undefined;
   const requirements: RequestRequirement[] = value.requirements.map(entry => {
     if (!acceptanceRecord(entry) || !link(entry.text)) {
-      return unresolvedRequestCoverage("Extracted requirement is not linked to an exact original request clause")[0];
+      error = "Extracted requirement is not linked to an exact original request clause";
+      return unresolvedRequestCoverage(error)[0];
     }
     const criteria = parseAcceptanceCriteria(entry.criteria);
+    if (!criteria) error = "Request coverage extraction included invalid criteria";
     return { text: entry.text, criteria: criteria ?? [{ kind: "functionalUnresolved" as const, reason: `No supported check for requested clause: ${entry.text}` }] };
   });
   // Structural span coverage only. No keyword/grammar planner, inferred targets,
@@ -62,5 +74,5 @@ export function parseRequestCoverage(raw: string, facts: IntentFacts, refinement
       gap = "";
     }
   }
-  return requirements;
+  return { requirements, ...(error ? { error } : {}) };
 }

@@ -172,3 +172,16 @@ Language interpretation remains model-owned. Exact quote coverage catches omitte
 text, but cannot prove that a model-selected criterion semantically covers every
 meaning of a quoted sentence. Unsupported checks remain unverified. The canonical
 requirement ledger is session-local, not a new durable recovery/completion system.
+
+## Review repair: coverage failure semantics
+
+The R1 failed-NPC-repair and R2 malformed/empty-audit cache regressions are repaired
+at the canonical parser/adapter boundaries. See
+[`coverage-repair/README.md`](coverage-repair/README.md) for exact red/green cases,
+commands, direct exit codes and the retained interrupted validation attempt.
+Post-repair verification passed 184 tests in 17 serial suites, application
+typecheck/build and the existing mock-model Firefox public-session smoke.
+This did not rerun live authoring or change the owned saved project, canonical
+handoff, model provenance or lead graphical-player comparison above. Final lead
+checks, complete baseline/candidate gate comparison and reviewer approval remain
+pending; the focused repair verification is not a full-gate approval claim.

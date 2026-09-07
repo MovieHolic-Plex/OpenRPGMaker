@@ -1,0 +1,111 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/requestCoverage.test.ts test/intentDeclarationClient.test.ts --maxWorkers=1 --no-file-parallelism
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-acceptance-live-qa
+
+ ❯ test/requestCoverage.test.ts (14 tests | 4 failed) 8122ms
+   × independent request coverage enters the canonical ledger > keeps the original goal incomplete after failed NPC repair and NPC-only clarification ({"resume":false,"auditUnavailable":false}) 689ms
+     → expected 'verified' to be 'blocked' // Object.is equality
+   × independent request coverage enters the canonical ledger > keeps the original goal incomplete after failed NPC repair and NPC-only clarification ({"resume":true,"auditUnavailable":false}) 512ms
+     → expected 'verified' to be 'blocked' // Object.is equality
+   × independent request coverage enters the canonical ledger > keeps the original goal incomplete after failed NPC repair and NPC-only clarification ({"resume":false,"auditUnavailable":true}) 590ms
+     → expected 'verified' to be 'blocked' // Object.is equality
+   × independent request coverage enters the canonical ledger > keeps the original goal incomplete after failed NPC repair and NPC-only clarification ({"resume":true,"auditUnavailable":true}) 481ms
+     → expected 'verified' to be 'blocked' // Object.is equality
+   ✓ independent request coverage enters the canonical ledger > accepts the JSON fence returned by the live companion without dropping any clauses 1ms
+   ✓ independent request coverage enters the canonical ledger > retains words omitted even by the independent extractor as an unverified canonical obligation  601ms
+   ✓ independent request coverage enters the canonical ledger > cannot satisfy a partial plan after omission coverage  704ms
+   ✓ independent request coverage enters the canonical ledger > cannot satisfy a partial plan after empty coverage  708ms
+   ✓ independent request coverage enters the canonical ledger > cannot satisfy a partial plan after invalid coverage  667ms
+   ✓ independent request coverage enters the canonical ledger > cannot satisfy a partial plan after network coverage  799ms
+   ✓ independent request coverage enters the canonical ledger > links every independently extracted clause to real immutable checks  771ms
+   ✓ independent request coverage enters the canonical ledger > does not create obligations or run an audit for genuine questions 227ms
+   ✓ independent request coverage enters the canonical ledger > keeps grouped R2 clarification and resume coverage distinct (audit failure=false)  638ms
+   ✓ independent request coverage enters the canonical ledger > keeps grouped R2 clarification and resume coverage distinct (audit failure=true)  732ms
+ ❯ test/intentDeclarationClient.test.ts (17 tests | 2 failed) 141ms
+   ✓ createLlmIntentDeclarer > repairs an invalid reward declaration before returning an executable intent 6ms
+   ✓ createLlmIntentDeclarer > keeps an invalid reward contract blocking when repair is invalid 1ms
+   ✓ createLlmIntentDeclarer > keeps an invalid reward contract blocking when repair is omitted 0ms
+   ✓ createLlmIntentDeclarer > keeps an invalid reward contract blocking when repair is network 1ms
+   ✓ createLlmIntentDeclarer > does not cache an invalid reward declaration after its repair attempt 1ms
+   ✓ createLlmIntentDeclarer > carries request reward contracts through the actual JSON consumer and cache without final commands 3ms
+   ✓ createLlmIntentDeclarer > lite 모델·json_object·낮은 온도로 한 번 부르고 선언을 돌려준다 2ms
+   ✓ createLlmIntentDeclarer > 모델이 형식을 어기면 중립 폴백으로 떨어지고 사유를 남긴다 1ms
+   ✓ createLlmIntentDeclarer > 호출이 던지거나 시간을 넘기면 폴백이다 23ms
+   ✓ createLlmIntentDeclarer > 빈 문장은 부르지 않고, 진행 중 계획이 있을 때의 「계속」은 모델 없이 continuation 이다 1ms
+   × declareIntentCached > immediately retries malformed coverage and caches the recovered audit 20ms
+     → expected [ { …(2) } ] to deeply equal [ { text: '여관 지어줘', …(1) } ]
+   × declareIntentCached > immediately retries empty coverage and caches the recovered audit 3ms
+     → expected [ { …(2) } ] to deeply equal [ { text: '여관 지어줘', …(1) } ]
+   ✓ declareIntentCached > immediately retries network coverage and caches the recovered audit 4ms
+   ✓ declareIntentCached > caches valid model-declared unsupported obligations without treating them as extraction failures 1ms
+   ✓ declareIntentCached > 같은 문장·같은 사실은 한 번만 부른다(러너와 세션이 연달아 읽는다) 1ms
+   ✓ declareIntentCached > 폴백(모델 실패)은 캐시하지 않아 다음 호출이 다시 시도한다 0ms
+   ✓ buildIntentFacts > 코드가 아는 사실만 모은다 — 열린 맵·선택·맵 목록·개념 시설 라벨·활성 툴 이름 71ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/intentDeclarationClient.test.ts > declareIntentCached > immediately retries malformed coverage and caches the recovered audit
+ FAIL  test/intentDeclarationClient.test.ts > declareIntentCached > immediately retries empty coverage and caches the recovered audit
+AssertionError: expected [ { …(2) } ] to deeply equal [ { text: '여관 지어줘', …(1) } ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[2m    {[22m
+[2m      "criteria": [[22m
+[2m        {[22m
+[32m-         "count": 1,[39m
+[32m-         "kind": "mapCount",[39m
+[32m-         "targets": [[39m
+[32m-           {[39m
+[32m-             "mapId": "map_start",[39m
+[32m-           },[39m
+[32m-         ],[39m
+[31m+         "kind": "functionalUnresolved",[39m
+[31m+         "reason": "Request coverage extraction was not JSON",[39m
+[2m        },[22m
+[2m      ],[22m
+[32m-     "text": "여관 지어줘",[39m
+[31m+     "text": "Request coverage unverified",[39m
+[2m    },[22m
+[2m  ][22m
+
+ ❯ test/intentDeclarationClient.test.ts:203:50
+    201|     expect(first.intent.requestRequirements).toMatchObject([{ criteria…
+    202|     const recovered = await declareIntentCached(declarer, FACTS);
+    203|     expect(recovered.intent.requestRequirements).toEqual(requirements);
+       |                                                  ^
+    204|     expect(first.error).toBeDefined();
+    205|     expect(recovered.error).toBeUndefined();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  test/requestCoverage.test.ts > independent request coverage enters the canonical ledger > keeps the original goal incomplete after failed NPC repair and NPC-only clarification ({"resume":false,"auditUnavailable":false})
+ FAIL  test/requestCoverage.test.ts > independent request coverage enters the canonical ledger > keeps the original goal incomplete after failed NPC repair and NPC-only clarification ({"resume":true,"auditUnavailable":false})
+ FAIL  test/requestCoverage.test.ts > independent request coverage enters the canonical ledger > keeps the original goal incomplete after failed NPC repair and NPC-only clarification ({"resume":false,"auditUnavailable":true})
+ FAIL  test/requestCoverage.test.ts > independent request coverage enters the canonical ledger > keeps the original goal incomplete after failed NPC repair and NPC-only clarification ({"resume":true,"auditUnavailable":true})
+AssertionError: expected 'verified' to be 'blocked' // Object.is equality
+
+Expected: [32m"[7mblock[27med"[39m
+Received: [31m"[7mverifi[27med"[39m
+
+ ❯ test/requestCoverage.test.ts:49:31
+     47|       source: { requestId: "request-1", text: firstText }, refinements…
+     48|     expect(JSON.parse(clarified!.items[0].evidence[0].expected)).toEqu…
+     49|     expect(clarified?.status).toBe("blocked");
+       |                               ^
+     50|     expect(session.getRunOutcome()?.goal).toBe("incomplete");
+     51|     expect(clarified?.id).toBe(original?.id);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  6 failed | 25 passed (31)
+   Start at  04:28:54
+   Duration  27.18s (transform 11.16s, setup 0ms, collect 17.93s, tests 8.26s, environment 1ms, prepare 230ms)
+

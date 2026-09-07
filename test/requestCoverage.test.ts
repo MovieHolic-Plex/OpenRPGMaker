@@ -10,6 +10,52 @@ const reply = (value: unknown): ChatResult => ({ message: { role: "assistant", c
 afterEach(resetIntentDeclarationCache);
 
 describe("independent request coverage enters the canonical ledger", () => {
+  it.each([
+    { resume: false, auditUnavailable: false }, { resume: true, auditUnavailable: false },
+    { resume: false, auditUnavailable: true }, { resume: true, auditUnavailable: true },
+  ])("keeps the original goal incomplete after failed NPC repair and NPC-only clarification (%j)", async ({ resume, auditUnavailable }) => {
+    const { project, reward } = functionalFixture();
+    const firstText = "Make test_reward give two potions only once; do not add combat.";
+    const nextText = "The NPC reward is two item_potion from test_reward, only once.";
+    const requirementId = "request-1:functional:0";
+    const criterion = { kind: "npcReward", requirement: { target: { eventId: reward.id },
+      grants: [{ kind: "item", id: "item_potion", count: 2 }], oneTime: true } };
+    let declarations = 0, audits = 0;
+    const declarer = createLlmIntentDeclarer({ getConfig: () => config,
+      chat: async () => reply(++declarations <= 2 ? { mode: "modify", needsPlan: false, npcRewards: [{}] }
+        : { mode: "modify", needsPlan: false, functionalRefinements: [{ requirementId, criterion }] }),
+      audit: async () => {
+        audits++;
+        if (declarations <= 2) {
+          if (auditUnavailable) throw new Error("coverage unavailable");
+          return reply({ requirements: [
+            { text: "Make test_reward give two potions only once;", criteria: [criterion] },
+            { text: "do not add combat.", criteria: [{ kind: "functionalUnresolved", reason: "No combat-exclusion evaluator" }] },
+          ] });
+        }
+        return reply({ requirements: [], clarifies: [{ requirementId, text: nextText }] });
+      },
+    });
+    const session = new AssistantSession(project, { config, declareIntent: declarer, chat: async () => reply("COMPLETE") });
+    await session.sendUserMessage(firstText, () => {});
+    const original = session.getAcceptanceSnapshot();
+    expect(original?.items[0]).toMatchObject({ id: requirementId, required: true, evidence: [{ passed: false }] });
+    expect(JSON.parse(original!.items[0].evidence[0].expected).kind).toBe("functionalUnresolved");
+    await session.sendUserMessage(nextText, () => {}, undefined, resume ? { goalAction: "resume" } : undefined);
+    const clarified = session.getAcceptanceSnapshot();
+    expect(clarified?.items[0]).toMatchObject({ id: requirementId, status: "verified",
+      source: { requestId: "request-1", text: firstText }, refinements: [{ requestId: "request-2", text: nextText }] });
+    expect(JSON.parse(clarified!.items[0].evidence[0].expected)).toEqual(criterion);
+    expect(clarified?.status).toBe("blocked");
+    expect(session.getRunOutcome()?.goal).toBe("incomplete");
+    expect(clarified?.id).toBe(original?.id);
+    expect(clarified?.items.find(item => item.id === `request-1:coverage:${auditUnavailable ? 0 : 1}:0`)).toMatchObject({
+      required: true, source: { requestId: "request-1", text: firstText }, evidence: [{ passed: false }],
+    });
+    expect(declarations).toBe(3);
+    expect(audits).toBe(2);
+  });
+
   it("accepts the JSON fence returned by the live companion without dropping any clauses", () => {
     const facts = { userText: "Keep the sunset time undecided", currentMap: null, selection: null, maps: [], facilityLabels: [], toolNames: [], hasActivePlan: false };
     const requirements = [{ text: facts.userText, criteria: [{ kind: "functionalUnresolved", reason: "No sunset evaluator" }] }];

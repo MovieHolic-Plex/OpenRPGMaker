@@ -38,10 +38,10 @@ function reply(content: string): ChatResult {
 
 // These tests isolate routing/repair calls. The audit still returns through the
 // production parser; invalid coverage remains blocked rather than bypassed.
-const createLlmIntentDeclarer = (options: Parameters<typeof productionDeclarer>[0] = {}) => productionDeclarer({
-  ...options, audit: async () => reply(JSON.stringify({ requirements: [{ text: FACTS.userText,
+const createLlmIntentDeclarer = (options: Parameters<typeof productionDeclarer>[0] = {}): IntentDeclarer => (facts, signal) => productionDeclarer({
+  ...options, audit: async () => reply(JSON.stringify({ requirements: [{ text: facts.userText,
     criteria: [{ kind: "functionalUnresolved", reason: "This routing test does not assess authored construction" }] }] })),
-});
+})(facts, signal);
 
 afterEach(() => resetIntentDeclarationCache());
 
@@ -183,6 +183,54 @@ describe("createLlmIntentDeclarer", () => {
 });
 
 describe("declareIntentCached", () => {
+  it.each(["malformed", "empty", "missing-requirements", "unlinked", "invalid-criteria", "invalid-clarification", "network"] as const)("immediately retries %s coverage and caches the recovered audit", async failure => {
+    let declarations = 0, audits = 0;
+    const requirements = [{ text: FACTS.userText,
+      criteria: [{ kind: "mapCount", targets: [{ mapId: "map_start" }], count: 1 }] }];
+    const declarer = productionDeclarer({ getConfig: () => CONFIG,
+      chat: async () => { declarations++; return reply(JSON.stringify({ mode: "modify", needsPlan: false })); },
+      audit: async () => {
+        if (++audits === 1) {
+          if (failure === "network") throw new Error("coverage unavailable");
+          if (failure === "missing-requirements") return reply("{}");
+          if (failure === "unlinked") return reply(JSON.stringify({ requirements: [{ ...requirements[0], text: "not in the request" }] }));
+          if (failure === "invalid-criteria") return reply(JSON.stringify({ requirements: [{ text: FACTS.userText, criteria: [] }] }));
+          if (failure === "invalid-clarification") return reply(JSON.stringify({ requirements: [], clarifies: [{ requirementId: "unknown", text: FACTS.userText }] }));
+          return reply(failure === "malformed" ? "{" : JSON.stringify({ requirements: [] }));
+        }
+        return reply(JSON.stringify({ requirements }));
+      },
+    });
+    const first = await declareIntentCached(declarer, FACTS);
+    expect(first.intent.requestRequirements).toHaveLength(failure === "unlinked" ? 2 : 1);
+    expect(first.intent.requestRequirements?.map(requirement => requirement.criteria.map(criterion => criterion.kind)))
+      .toEqual(failure === "unlinked" ? [["functionalUnresolved"], ["functionalUnresolved"]] : [["functionalUnresolved"]]);
+    const recovered = await declareIntentCached(declarer, FACTS);
+    expect(recovered.intent.requestRequirements).toEqual(requirements);
+    expect(first.error).toBeDefined();
+    expect(recovered.error).toBeUndefined();
+    expect((await declareIntentCached(declarer, FACTS)).intent.requestRequirements).toEqual(requirements);
+    expect(declarations).toBe(2);
+    expect(audits).toBe(2);
+  });
+
+  it("caches valid model-declared unsupported obligations without treating them as extraction failures", async () => {
+    let declarations = 0, audits = 0;
+    const requirements = [{ text: FACTS.userText,
+      criteria: [{ kind: "functionalUnresolved", reason: "No evaluator for requested construction" }] }];
+    const declarer = productionDeclarer({ getConfig: () => CONFIG,
+      chat: async () => { declarations++; return reply(JSON.stringify({ mode: "create", needsPlan: false })); },
+      audit: async () => { audits++; return reply(JSON.stringify({ requirements })); },
+    });
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const outcome = await declareIntentCached(declarer, FACTS);
+      expect(outcome.intent.requestRequirements).toEqual(requirements);
+      expect(outcome.error).toBeUndefined();
+    }
+    expect(declarations).toBe(1);
+    expect(audits).toBe(1);
+  });
+
   it("같은 문장·같은 사실은 한 번만 부른다(러너와 세션이 연달아 읽는다)", async () => {
     let calls = 0;
     const declarer: IntentDeclarer = async (facts) => {
