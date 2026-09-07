@@ -39,6 +39,8 @@ wire API is `collectReleaseDependencies(originalProjectJson)` returning
 repair, reserialization, network access or mutable public-asset lookup. Authored
 resource fields, sprite/image indirection, tile grafts, nested commands, frozen
 M2 resource aliases/legacy value fields and orientation graphics must resolve.
+Logical resource IDs are opaque, including editor-accepted spaces and non-ASCII
+characters; local-path restrictions apply to resolved payload paths, not IDs.
 Blank command resources retain clear/no-resource semantics. Unused audio catalog
 rows remain availability metadata, not mandatory playback dependencies. Embedded
 media requires an allowed base64 MIME and matching binary media signature; a URL

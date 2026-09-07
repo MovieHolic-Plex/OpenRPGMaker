@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "../src/project/defaults";
+import { deserialize } from "../src/project/io";
 import { collectWebExportAssets } from "../src/project/webExportAssets";
 import { createGameRelease, createRuntimeManifest, jsonBytes } from "../src/project/gameRelease";
 import { validateReleaseArchive } from "../community-site/lib/releaseArchive";
@@ -67,6 +68,22 @@ describe("retained authored dependency closure", () => {
     const result = await validateReleaseArchive(release.bytes, async () => f.trusted);
     expect(Buffer.from(result.entries.get("project.json") ?? []).equals(Buffer.from(release.projectBytes))).toBe(true);
   });
+  it.each(["portrait friendly", "초상화 친구", "portrait\u00a0friendly", "portrait:친구/one"])
+    ("accepts editor-valid logical asset ID %s through the frozen collector and complete archive", async id => {
+      const f = await fixture();
+      const dataUrl = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=";
+      f.project.assets.uploaded[id] = { id, name: "Portrait", kind: "picture", dataUrl, meta: { width: 1, height: 1 } };
+      f.project.system.titleResourceId = id;
+      const release = await f.release();
+      const projectJson = new TextDecoder().decode(release.projectBytes);
+      const editorAccepted = deserialize(projectJson);
+      expect(editorAccepted.system.titleResourceId).toBe(id);
+      expect(editorAccepted.assets.uploaded[id]?.id).toBe(id);
+      expect(f.trusted.collectDependencies?.(projectJson)).toContainEqual(expect.objectContaining({ dataUrl }));
+      const result = await validateReleaseArchive(release.bytes, async () => f.trusted);
+      expect(Buffer.from(result.entries.get("project.json") ?? []).equals(Buffer.from(release.projectBytes))).toBe(true);
+      expect(result.bytes.equals(release.bytes)).toBe(true);
+    });
   it("does not require unused audio catalog rows", async () => {
     const f = await fixture();
     f.project.resourceProfiles.push({ kind: "music", name: "Unavailable catalog choice", assetId: "uninstalled-unused-track" });

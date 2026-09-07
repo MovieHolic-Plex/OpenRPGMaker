@@ -23,7 +23,7 @@ export function collectReleaseDependencies(projectJson: string): readonly Releas
       validateOptionalCommandResource("release command", id, known);
       if (id.trim().length === 0) return;
     } else validateOptionalResource("release resource", id, known);
-    if (!id || id.trim() !== id || /[\s:/\\?#%]/u.test(id)) throw new Error("Invalid authored resource reference");
+    // Logical IDs are opaque; locality and path safety belong to the resolved payload below.
     if (resolving.has(id)) throw new Error("Cyclic sprite reference");
     const sprite = Object.hasOwn(project.assets.sprites, id) ? project.assets.sprites[id] : undefined;
     if (sprite) {
