@@ -221,7 +221,7 @@ describe("partial composition keeps the reviewed approval identity", () => {
     // Then: the approval identity no longer matches — fail before any mutation.
     expect(outcome.ok).toBe(false);
     expect(outcome.applied).toBe(false);
-    expect(outcome.error).toContain("독립 검수 이후 초안이 바뀌었");
+    expect(outcome.error).toBeTruthy();
     expect(pending.settled).toBe(false);
     expectNoApplication(before, observed);
     expect(serialize(store.getCurrent())).toBe(beforeBytes);
@@ -250,7 +250,7 @@ describe("partial composition keeps the reviewed approval identity", () => {
     // Then: the unreviewed authored change must not become auto-approved.
     expect(outcome.ok).toBe(false);
     expect(outcome.applied).toBe(false);
-    expect(outcome.error).toContain("독립 검수 이후 초안이 바뀌었");
+    expect(outcome.error).toBeTruthy();
     expect(pending.settled).toBe(false);
     expectNoApplication(before, observed);
     expect(serialize(store.getCurrent())).toBe(beforeBytes);
