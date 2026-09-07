@@ -5,6 +5,7 @@ import { extname, join, relative, resolve, sep } from "node:path";
 import { writePlayerDeploymentManifest } from "./playerDeploymentManifest.mjs";
 import { readCurrentRetainedRuntime, retainRuntime, RUNTIME_ARCHIVE_FOLDER } from "./runtimeArchive";
 import { runtimeArchiveMiddleware } from "./runtimeArchiveMiddleware";
+import { writeReleaseCollector } from "./releaseCollectorBuild.mjs";
 
 /** Build the two shipped players on first export, never serve Vite's SPA fallback. */
 export function devPlayerBundlesPlugin(): Plugin {
@@ -35,7 +36,7 @@ export function devPlayerBundlesPlugin(): Plugin {
 
       const changed = (file: string) => {
         const name = relative(root, file).split(sep).join("/");
-        if (/^(src\/|public\/|scripts\/lib\/player|vite\.(player|standalone)\.config\.ts$|player\.html$|package(-lock)?\.json$)/.test(name)) revision++;
+        if (/^(src\/|public\/|scripts\/lib\/(?:player|releaseCollector)|vite\.(player|standalone)\.config\.ts$|player\.html$|package(-lock)?\.json$)/.test(name)) revision++;
       };
       server.watcher.on("add", changed).on("change", changed).on("unlink", changed);
       unwatch = () => {
@@ -64,6 +65,7 @@ export function devPlayerBundlesPlugin(): Plugin {
               });
             }
             // Use exactly the production SDK writer, including source/secret/closure checks.
+            await writeReleaseCollector(root, join(playerRoot, "export-player"));
             await writePlayerDeploymentManifest({ artifactRoot: join(playerRoot, "export-player"), repoRoot: root });
             builtRevision = current;
           }

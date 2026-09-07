@@ -2,12 +2,14 @@ import { describe, expect, it } from "vitest";
 import { createGameRelease, createRuntimeManifest, jsonBytes, parseRuntimeManifest } from "../src/project/gameRelease";
 import { sha256HexText } from "../src/util/sha256";
 import { writeStoredZip } from "../src/project/packageZip";
-import { validateReleaseArchive } from "../community-site/lib/releaseArchive";
+import { operatorRuntimeWithCollector, validateReleaseArchive } from "../community-site/lib/releaseArchive";
 
 async function fixture() {
   const runtime = [{ name: "web/player.html", bytes: jsonBytes("trusted html") },
-    { name: "web/player.js", bytes: jsonBytes("trusted code") }];
-  const trusted = await createRuntimeManifest(runtime, []);
+    { name: "web/player.js", bytes: jsonBytes("trusted code") },
+    // This narrow trusted fixture runtime does not load any project media.
+    { name: "web/dependency-collector.js", bytes: new TextEncoder().encode("var OPRN_RELEASE_COLLECTOR={collectReleaseDependencies:()=>[]};") }];
+  const trusted = await operatorRuntimeWithCollector(await createRuntimeManifest(runtime, []), runtime[2].bytes);
   const publication = { gameId: "fixture", versionLabel: "1.0", runtimeTarget: trusted.runtimeTarget,
     saveCompatibilityId: "fixture-save", acceptedSaveCompatibilityIds: [] };
   const entries = [...runtime.map(entry => ({ ...entry, name: entry.name.slice(4) })),
@@ -34,7 +36,7 @@ describe("community release archive boundary", () => {
   it("parses old manifests honestly but rejects their unsafe runtimes for new community uploads", async () => {
     const f = await fixture();
     const body = { sentinel: f.trusted.sentinel, format: f.trusted.format, projectSchema: f.trusted.projectSchema,
-      saveSchemas: f.trusted.saveSchemas, collectorVersion: f.trusted.collectorVersion,
+      saveSchemas: f.trusted.saveSchemas, collectorVersion: 1 as const,
       files: f.trusted.files, requiredAssets: f.trusted.requiredAssets };
     const old = { ...body, runtimeTarget: await sha256HexText(JSON.stringify(body)) };
     expect(await parseRuntimeManifest(old)).toEqual(old);

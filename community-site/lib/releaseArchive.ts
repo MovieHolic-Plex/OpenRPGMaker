@@ -2,7 +2,9 @@ import { crc32 } from "node:zlib";
 import { createHash } from "node:crypto";
 import { open } from "node:fs/promises";
 import path from "node:path";
-import { COMMUNITY_SAVE_ISOLATION_CAPABILITY, parseReleaseManifest, parseRuntimeManifest, verifyGameRelease, type GameReleaseManifest, type RuntimeManifest } from "../../src/project/gameRelease";
+import { runInNewContext } from "node:vm";
+import { COMMUNITY_SAVE_ISOLATION_CAPABILITY, PROJECT_DEPENDENCY_CLOSURE_CAPABILITY, parseReleaseManifest, parseRuntimeManifest, verifyGameRelease, type GameReleaseManifest, type RuntimeManifest } from "../../src/project/gameRelease";
+import { RELEASE_COLLECTOR_FILE, type ReleaseDependencyCollector } from "../../src/project/releaseDependencies";
 import { assertUniquePaths, contractPath, isRecord } from "../../src/project/playerDeploymentPaths";
 
 export const MAX_RELEASE_BYTES = 96 * 1024 * 1024;
@@ -70,7 +72,25 @@ export type RetainedRelease = {
   readonly entries: ReadonlyMap<string, Uint8Array>;
 };
 
-export async function loadOperatorRuntime(target: string): Promise<RuntimeManifest> {
+export interface OperatorRuntime extends RuntimeManifest {
+  readonly collectDependencies?: ReleaseDependencyCollector;
+}
+
+/** Call only with operator-controlled bytes. The upload is never a code source. */
+export async function operatorRuntimeWithCollector(manifest: RuntimeManifest, collectorBytes: Uint8Array): Promise<OperatorRuntime> {
+  await parseRuntimeManifest(manifest);
+  const proof = manifest.files.find(file => file.path === `web/${RELEASE_COLLECTOR_FILE}`);
+  if (!proof || collectorBytes.length !== proof.bytes || collectorBytes.length > 4 * 1024 * 1024
+    || createHash("sha256").update(collectorBytes).digest("hex") !== proof.sha256) throw new ReleaseUploadError("runtime-unavailable");
+  const source = decoder.decode(collectorBytes);
+  return { ...manifest, collectDependencies: projectJson => runInNewContext(
+    `${source}\nOPRN_RELEASE_COLLECTOR.collectReleaseDependencies(projectJson)`,
+    { projectJson, TextEncoder, TextDecoder, atob },
+    { timeout: 5000, contextCodeGeneration: { strings: false, wasm: false } },
+  ) };
+}
+
+export async function loadOperatorRuntime(target: string): Promise<OperatorRuntime> {
   if (!/^[a-f0-9]{64}$/.test(target)) throw new ReleaseUploadError("runtime-unavailable");
   const root = process.env.COMMUNITY_RUNTIME_ARCHIVE_ROOT ?? path.resolve(process.cwd(), "..", ".runtime-archive");
   const file = await open(path.join(root, target, "runtime.json"), "r");
@@ -82,18 +102,28 @@ export async function loadOperatorRuntime(target: string): Promise<RuntimeManife
     if (bytesRead !== stat.size) throw new ReleaseUploadError("runtime-unavailable");
     const manifest = await parseRuntimeManifest(JSON.parse(decoder.decode(bytes.subarray(0, bytesRead))));
     if (manifest.runtimeTarget !== target) throw new ReleaseUploadError("runtime-unavailable");
-    return manifest;
+    if (manifest.collectorVersion !== 2) return manifest;
+    const collector = await open(path.join(root, target, "web", RELEASE_COLLECTOR_FILE), "r");
+    try {
+      const stat = await collector.stat();
+      if (!stat.isFile() || stat.size > 4 * 1024 * 1024) throw new ReleaseUploadError("runtime-unavailable");
+      const bytes = Buffer.alloc(stat.size + 1);
+      const { bytesRead } = await collector.read(bytes, 0, bytes.length, 0);
+      if (bytesRead !== stat.size) throw new ReleaseUploadError("runtime-unavailable");
+      return await operatorRuntimeWithCollector(manifest, bytes.subarray(0, bytesRead));
+    } finally { await collector.close(); }
   } finally { await file.close(); }
 }
 
 export async function validateReleaseArchive(bytes: Buffer, loadRuntime = loadOperatorRuntime): Promise<RetainedRelease> {
   const entries = readReleaseEntries(bytes);
   const manifest = await manifestFromEntries(entries);
-  let trusted: RuntimeManifest;
+  let trusted: OperatorRuntime;
   try { trusted = await loadRuntime(manifest.publication.runtimeTarget); }
   catch { throw new ReleaseUploadError("runtime-unavailable"); }
-  await verifyGameRelease(bytes, trusted);
-  if (!trusted.capabilities?.includes(COMMUNITY_SAVE_ISOLATION_CAPABILITY)) throw new ReleaseUploadError("runtime-unavailable");
+  if (!trusted.capabilities?.includes(COMMUNITY_SAVE_ISOLATION_CAPABILITY)
+    || !trusted.capabilities.includes(PROJECT_DEPENDENCY_CLOSURE_CAPABILITY) || trusted.collectorVersion !== 2) throw new ReleaseUploadError("runtime-unavailable");
+  await verifyGameRelease(bytes, trusted, trusted.collectDependencies);
   const project: unknown = JSON.parse(decoder.decode(entries.get("project.json")));
   if (!isRecord(project) || project.version !== trusted.projectSchema) throw new ReleaseUploadError("invalid-release");
   return { bytes, manifest, entries };

@@ -22,7 +22,7 @@ Next.js 16 companion site for sharing OpenRPGMaker assets and games. Lives in `c
 - `lib/releaseUpload.ts` owns the bounded JSON/base64 ingress; `lib/releaseArchive.ts` strictly preflights the complete editor stored-ZIP format, then invokes `verifyGameRelease`. Duplicate/case-colliding paths, traversal, local/central disagreement, CRC mismatch, symlink attributes, compression, extra files and untrusted executable bytes are rejected before persistence.
 - Trust root: `COMMUNITY_RUNTIME_ARCHIVE_ROOT`, default `../.runtime-archive` relative to the community process working directory. Each `<runtimeTarget>/runtime.json` must come from the operator's retained runtime build (`scripts/lib/runtimeArchive.ts`), never from an upload. The bounded reader uses the same `parseRuntimeManifest` contract and digest verification. Runtime manifests are limited to 8 MiB; run on Node.js 24 LTS.
 - Every anonymous upload creates a new listing in one PostgreSQL transaction (`lib/releaseStore.ts`). An upload's `publication.gameId`, title, slug-like fields or author text confer no ownership and cannot update another listing. Publishing a new version means a new listing; identical releases may also be listed independently.
-- New shared-origin uploads require `community-save-isolation-v1` in the **operator-trusted** runtime manifest's digest-bound `capabilities` list. Old manifests parse without inventing this field/capability and remain usable for retained offline exports, but are rejected with 422 for new community publication before either database row is inserted. Never edit retained runtime bytes/manifests to claim support. Rebuild and retain a new runtime from protected sources instead. This gate is upload-only; it does not rewrite or upgrade existing releases.
+- New shared-origin uploads require both `community-save-isolation-v1` and `project-dependency-closure-v1` in the **operator-trusted** runtime manifest's digest-bound `capabilities` list, plus `collectorVersion: 2`. Old manifests preserve their original version, absent capabilities and digest semantics; offline retention remains readable, but unsafe runtimes are rejected with 422 before either database row is inserted. Never edit retained runtime bytes/manifests to claim support. Rebuild and retain a new runtime from protected sources instead. This gate is upload-only; it does not rewrite or upgrade existing releases.
 - Community manual/autosave keys and Save6 snapshots include the listing-derived isolation scope. Identical public game/lineage IDs cannot expose or overwrite another listing's saves. Accepted-predecessor controls discover only within the current listing. Cross-listing transfer requires the player to export a source save file and explicitly select it in the destination load panel; compatibility is checked, only an empty slot is written, and source bytes stay untouched. See `runtime-project-schema.md` for the save/API contract.
 - `/play/<slug>/` redirects pinned listings to `/play/<slug>/releases/<releaseId>/player.html`. The qualified directory also redirects to that explicit entry, avoiding Next's slash stripping without changing the HTML. Every file request checks the visible listing's exact release association, including on cache hits. Missing files/wrong associations return 404; no `public/player-static`, `/assets`, `/generated` or current editor fallback is consulted.
 - The route serves the retained HTML, project, runtime and assets byte-for-byte. `nosniff`, MIME types and a release-directory-scoped CSP prevent uploaded passive files from becoming same-origin executable code and block mutable root asset URLs. The producer must emit relative release URLs. CSP uses the validated public Host authority, not Next's internal localhost URL; reverse proxies must preserve public Host/protocol. SVG responses are sandboxed.
@@ -30,7 +30,63 @@ Next.js 16 companion site for sharing OpenRPGMaker assets and games. Lives in `c
 - Legacy `/play/<slug>/` returns a localized 503 explaining that no retained compatibility runtime is available. GET never converts or normalizes a legacy row. `lib/playRoute.ts` remains a historical tested helper, but the shipping Next adapter uses `lib/releaseRoutes.ts` exclusively.
 - Limits: 96 MiB ZIP; 64 MiB individual file; 4096 entries; 1 MiB release manifest; JSON body capped at base64 ZIP size plus 4 MiB; 30-second body deadline; two concurrent uploads and two cold release loads. The LRU retains at most two ZIPs / 192 MiB, with entry views sharing the ZIP buffer. The existing IP rate limiter is single-instance abuse throttling, not ownership authorization.
 
+### Frozen dependency authority (P2, 2026-09-07)
+
+`scripts/lib/releaseCollectorBuild.mjs` bundles the existing export collector,
+resource validation and resource catalogs into a self-contained IIFE. Its only
+wire API is `collectReleaseDependencies(originalProjectJson)` returning
+`{ path, dataUrl? }[]`; it parses a private copy without editor deserialization,
+repair, reserialization, network access or mutable public-asset lookup. Authored
+resource fields, sprite/image indirection, tile grafts, nested commands, frozen
+M2 resource aliases/legacy value fields and orientation graphics must resolve.
+Blank command resources retain clear/no-resource semantics. Unused audio catalog
+rows remain availability metadata, not mandatory playback dependencies. Embedded
+media requires an allowed base64 MIME and matching binary media signature; a URL
+or arbitrary text disguised as an upload is not an embedded dependency.
+
+Both SDKs inventory `dependency-collector.js`; retention rejects missing or
+different web/standalone collectors. The collector build recipe and its source
+closure are covered by the existing current-source SDK guard. The runtime digest
+binds those exact collector bytes. `loadOperatorRuntime` reads the manifest and
+collector **only from the selected operator archive**, verifies the collector
+hash/size (4 MiB limit), and evaluates that verified code in a fresh Node VM with
+a five-second bound and string/Wasm code generation disabled. Only JSON text and
+encoding functions enter the VM. This is not an uploaded plugin execution path;
+`operatorRuntimeWithCollector` is a low-level operator-only adapter, not a trust
+decision based on self-consistent uploaded hashes.
+
+`verifyGameRelease(bytes, trustedManifest, trustedCollector)` requires the
+collector for version 2. Every resolved public dependency must be present in the
+verified ZIP inventory **and match the selected runtime's public file hash and
+length**, even outside `requiredAssets`. Valid embedded media may remain solely
+inside the original project JSON. Upload and persistence retain the exact input
+ZIP/project bytes. Neither a newer default runtime nor changing/deleting current
+editor/catalog/public assets changes this selected-runtime decision.
+
 ### Release QA and migration commands
+
+Focused P2 checks, with no existing retained-archive or shared DB writes:
+
+```bash
+node --test test/communityDependencyPersistence.test.mjs
+npm test -- --run test/communityDependencyClosure.test.ts test/communityReleaseArchive.test.ts test/publicationExport.test.ts test/runtimeArchive.test.ts test/devRuntimeArchive.test.ts test/playerManifestContract.test.ts
+node --input-type=module -e 'import {buildReleaseCollector} from "./scripts/lib/releaseCollectorBuild.mjs"; console.log((await buildReleaseCollector(process.cwd())).byteLength)'
+```
+
+The persistence test uses a disposable socket-only PostgreSQL cluster and the
+real upload handler. It removes used PNG/music outside fixed runtime assets,
+recomputes ZIP/manifest and checks zero listing/release rows; unresolved/external
+refs also fail. It installs two supported frozen collectors with different music
+paths, removes fixture source material, uses a working directory without current
+source/public assets, and persists the complete older release byte-for-byte.
+The ingress build graph is checked to exclude live catalogs/collector/IO modules.
+
+The lead owns the full integrated build and actual exported-game browser QA.
+Producer commands are `npm run build:player`, `npm run build:standalone:bundle`,
+then `npm run archive:runtime`; `npm run build` includes all three. Deploy the new
+retained directory into the operator trust root. `npm run build:community` checks
+the web deployment and builds the community app; it does not itself retain the
+standalone variant. Do not retrofit either capability onto old archives.
 
 P1 isolation regression (no Next/full production build, no existing runtime
 archive or shared database writes):

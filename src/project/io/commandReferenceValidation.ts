@@ -427,7 +427,7 @@ function union(left: ReadonlySet<string>, right: ReadonlySet<string>): ReadonlyS
   return merged;
 }
 
-function validateOptionalCommandResource(
+export function validateOptionalCommandResource(
   label: string,
   id: string,
   knownResourceIds: ReadonlySet<string>

@@ -8,6 +8,7 @@ import { createStandaloneHtmlExport } from "@/project/standaloneExport";
 import { verifyGameRelease } from "@/project/gameRelease";
 import { contractPath } from "@/project/playerDeploymentPaths";
 import { readTrustedRuntime, RUNTIME_ARCHIVE_FOLDER } from "./lib/runtimeArchive";
+import { operatorRuntimeWithCollector } from "../community-site/lib/releaseArchive";
 
 const archiveRoot = resolve(RUNTIME_ARCHIVE_FOLDER);
 const selected = JSON.parse(await readFile(resolve(archiveRoot, "default.json"), "utf8"));
@@ -26,7 +27,9 @@ const fetchBytes = async (url: string) => {
 };
 const zip = await createWebPlayerExportPackage(project, { fetchBytes });
 const zipBytes = new Uint8Array(await zip.blob.arrayBuffer());
-const verified = await verifyGameRelease(zipBytes, runtime);
+const operator = runtime.collectorVersion === 2 ? await operatorRuntimeWithCollector(runtime,
+  await readFile(resolve(archiveRoot, runtime.runtimeTarget, "web/dependency-collector.js"))) : undefined;
+const verified = await verifyGameRelease(zipBytes, runtime, operator?.collectDependencies);
 const html = await createStandaloneHtmlExport(project, { fetchBytes });
 await writeFile(resolve(out, "release.zip"), zipBytes);
 await writeFile(resolve(out, "release.html"), new Uint8Array(await html.blob.arrayBuffer()));

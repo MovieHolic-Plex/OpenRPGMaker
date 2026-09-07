@@ -8,6 +8,7 @@ import { retainRuntime, RUNTIME_ARCHIVE_FOLDER } from "../scripts/lib/runtimeArc
 import { PLAYER_SOURCE_INPUT_INVENTORY, writePlayerArtifactManifest } from "../scripts/lib/playerArtifactContract.mjs";
 import { PLAYER_RUNTIME_ASSET_PATHS, writePlayerDeploymentManifest } from "../scripts/lib/playerDeploymentManifest.mjs";
 import { createPipelineFixture } from "./playerArtifactPipeline.fixture.mjs";
+import { writeReleaseCollector } from "../scripts/lib/releaseCollectorBuild.mjs";
 
 const { builder } = vi.hoisted(() => ({ builder: vi.fn() }));
 vi.mock("node:child_process", async importOriginal => ({
@@ -32,6 +33,9 @@ async function fixture() {
   await mkdir(standaloneRoot, { recursive: true });
   await writeFile(join(standaloneRoot, "standalone.js"), "trusted standalone");
   await writeFile(join(standaloneRoot, "standalone.css"), "body{}");
+  await writeFile(join(source.repoRoot, "src/project/releaseDependencyCollector.ts"), "export function collectReleaseDependencies(){return []}");
+  await writeReleaseCollector(source.repoRoot, source.artifactRoot);
+  await writeReleaseCollector(source.repoRoot, standaloneRoot);
   await writePlayerDeploymentManifest({ artifactRoot: source.artifactRoot, repoRoot: source.repoRoot });
   await writePlayerArtifactManifest({ artifactRoot: standaloneRoot, repoRoot: source.repoRoot });
   const archiveRoot = join(source.repoRoot, RUNTIME_ARCHIVE_FOLDER);

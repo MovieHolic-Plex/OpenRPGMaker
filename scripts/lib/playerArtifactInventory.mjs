@@ -31,6 +31,7 @@ export const PLAYER_SOURCE_INPUT_INVENTORY = Object.freeze([
     "scripts/lib/playerDeploymentManifest.mjs",
     "scripts/lib/playerManifestAtomicWriter.mjs",
     "scripts/lib/playerViteClosure.mjs",
+    "scripts/lib/releaseCollectorBuild.mjs",
   ].map((inputPath) => Object.freeze({ kind: "file", path: inputPath })),
   ...[
     "src/app",

@@ -7,6 +7,10 @@ import { prepareWebExport, createWebPlayerExportPackage } from "@/project/webExp
 import { createStandaloneHtmlExport } from "@/project/standaloneExport";
 import { createRuntimeManifest, jsonBytes, verifyGameRelease } from "@/project/gameRelease";
 import { preparePublication } from "@/project/publication";
+import { buildReleaseCollector } from "../scripts/lib/releaseCollectorBuild.mjs";
+import { operatorRuntimeWithCollector } from "../community-site/lib/releaseArchive";
+
+const collector = await buildReleaseCollector(process.cwd());
 
 async function fixture(legacyRuntime = false) {
   const project = createBlankProject();
@@ -15,12 +19,14 @@ async function fixture(legacyRuntime = false) {
     { name: "web/player.html", bytes: new TextEncoder().encode("<html><head></head></html>") },
     { name: "web/player.js", bytes: new TextEncoder().encode("trusted web") },
     { name: "web/sdk-manifest.json", bytes: jsonBytes({ sdk: 1 }) },
+    ...(!legacyRuntime ? [{ name: "web/dependency-collector.js", bytes: collector },
+      { name: "standalone/dependency-collector.js", bytes: collector }] : []),
     { name: "standalone/standalone.js", bytes: new TextEncoder().encode("window.booted=true;") },
     { name: "standalone/standalone.css", bytes: new TextEncoder().encode("body{color:red}") },
     { name: "standalone/sdk-manifest.json", bytes: jsonBytes({ standalone: 1 }) },
     ...assets.map(asset => ({ name: `public/${asset.zipPath}`, bytes: new TextEncoder().encode(`retained:${asset.zipPath}`) })),
   ];
-  let runtime = await createRuntimeManifest(entries);
+  let runtime = await createRuntimeManifest(entries, []);
   if (legacyRuntime) {
     const { runtimeTarget: _target, capabilities: _capabilities, ...body } = runtime;
     runtime = { ...body, runtimeTarget: await sha256HexText(JSON.stringify(body)) };
@@ -37,13 +43,14 @@ async function fixture(legacyRuntime = false) {
     if (!found) throw new Error("Missing archived file");
     return found.bytes;
   };
-  return { project, runtime, fetchBytes, requests };
+  const operator = legacyRuntime ? undefined : await operatorRuntimeWithCollector(runtime, collector);
+  return { project, runtime, fetchBytes, requests, collectDependencies: operator?.collectDependencies };
 }
 describe("actual publication exports", () => {
   it("exports a verified ZIP without reading current dependencies", async () => {
-    const { project, runtime, fetchBytes } = await fixture();
+    const { project, runtime, fetchBytes, collectDependencies } = await fixture();
     const result = await createWebPlayerExportPackage(project, { fetchBytes });
-    const release = await verifyGameRelease(new Uint8Array(await result.blob.arrayBuffer()), runtime);
+    const release = await verifyGameRelease(new Uint8Array(await result.blob.arrayBuffer()), runtime, collectDependencies);
     expect(release.manifest.publication).toEqual(project.meta.publication);
     expect(new TextDecoder().decode(release.entries.get("player.js"))).toBe("trusted web");
   });
@@ -86,6 +93,29 @@ describe("actual publication exports", () => {
     if (!provenanceNode || !payloadNode) throw new Error("Missing provenance");
     const provenance = JSON.parse(provenanceNode.textContent);
     const payload = JSON.parse(payloadNode.textContent);
+    if (!legacyRuntime) {
+      const assetNode = nodes.get("oprn-standalone-assets");
+      if (!assetNode) throw new Error("Missing assets");
+      const originalAssets = assetNode.textContent;
+      const originalProvenance = provenanceNode.textContent;
+      for (const extension of [".png", ".mp3"]) {
+        const assets = JSON.parse(originalAssets);
+        const name = Object.keys(assets).find(path => path.endsWith(extension));
+        if (!name) throw new Error("Missing omission fixture");
+        expect(provenance.runtime.requiredAssets).not.toContain(name);
+        delete assets[name];
+        const { releaseId: _id, ...body } = JSON.parse(originalProvenance);
+        body.files = body.files.filter((file: { path: string }) => file.path !== name);
+        assetNode.textContent = JSON.stringify(assets);
+        provenanceNode.textContent = JSON.stringify({ ...body, releaseId: await sha256HexText(JSON.stringify(body)) });
+        errors.length = 0;
+        await run();
+        expect(appended).toEqual([]);
+        expect(errors.length).toBeGreaterThan(0);
+      }
+      assetNode.textContent = originalAssets;
+      provenanceNode.textContent = originalProvenance;
+    }
     const evil = new TextEncoder().encode("window.evil=true;");
     payload["standalone.js"] = btoa(new TextDecoder().decode(evil));
     for (const file of provenance.files) if (file.path === "standalone.js") {

@@ -136,12 +136,27 @@ without mutating the caller's seed. Regression tests:
   excludes the manifest itself. The entire selected runtime's required inventory
   is retained: current conditional pruning cannot prove an older engine's closure.
   Legacy non-publication exports keep their existing pruning tests and behavior.
+- Collector-version-2 publication exports use the selected archive's frozen
+  `dependency-collector.js`, not `prepared.assets`, to resolve authored dependency
+  closure. The self-contained bundle reuses export/resource validation logic and
+  freezes catalogs at build time. Both web and standalone SDKs inventory identical
+  collector bytes; runtime retention rejects divergence. Development builds and
+  production SDK writers emit the companion before inventory/closure verification.
+  The current-source SDK inventory includes the collector build recipe. Browser
+  and Node deployment validators include only this named companion in addition
+  to the exact Vite closure; arbitrary stale executable files remain rejected.
 - Standalone HTML keeps inert base64 script/project/style payloads, both SDKs,
   raw CSS, decoded asset hashes, runtime provenance and a release ID. Its bootstrap
   verifies the complete inventory, runtime digest, project identity and original
   versus transformed executable/style bytes before launching. Self-contained
   provenance is not operator trust: community accepts only ZIPs verified against
   its independently retained runtime manifest, never arbitrary uploaded HTML/JS.
+- Version-2 standalone provenance also carries the frozen collector, bound to
+  both runtime variants. After verifying its hash, the offline bootstrap checks
+  authored public/embedded dependencies before appending runtime script/style.
+  Coherently removing PNG/music and recomputing the standalone manifest cannot
+  bypass this closure. Version-1 standalone manifests keep their old digest and
+  bootstrap compatibility; they do not gain eligibility for new community uploads.
 - Run visible export/offline/save-load QA with
   `npm run qa:export -- --editor-url http://127.0.0.1:<worktree-port> --publication --out verify-shots/release-versioning`.
   This uses an isolated local project and blocks remote writes. It exercises real

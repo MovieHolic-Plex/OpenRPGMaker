@@ -6,6 +6,7 @@ import { dataUrlBytes, invalidExportDependencyBytes } from "./webExportAssets";
 import type { FetchBytes } from "./playerDeploymentTypes";
 import type { PreparedWebExport } from "./webExportTypes";
 import type { ZipEntry } from "./packageZip";
+import { RELEASE_COLLECTOR_FILE, type ReleaseDependencyCollector } from "./releaseDependencies";
 
 export const RUNTIME_ARCHIVE_BASE = "/runtime-archive/";
 
@@ -28,13 +29,28 @@ export async function loadPublicationRuntime(prepared: PreparedWebExport, fetchB
     if (bytes.length !== record.bytes || await sha256HexBytes(bytes) !== record.sha256) throw new ReleaseError("integrity");
     return bytes;
   };
-  return { runtime, read, publication };
+  // This URL belongs to the installed operator archive, not to a release upload.
+  const collectDependencies: ReleaseDependencyCollector | undefined = runtime.collectorVersion === 2
+    ? new Function(`${new TextDecoder().decode(await read(`web/${RELEASE_COLLECTOR_FILE}`))}\nreturn OPRN_RELEASE_COLLECTOR.collectReleaseDependencies;`)()
+    : undefined;
+  return { runtime, read, publication, collectDependencies };
 }
 
 export async function publicationAssetEntries(prepared: PreparedWebExport, archive: {
   readonly runtime: RuntimeManifest;
   readonly read: (path: string) => Promise<Uint8Array>;
+  readonly collectDependencies?: ReleaseDependencyCollector;
 }): Promise<readonly ZipEntry[]> {
+  if (archive.runtime.collectorVersion === 2) {
+    if (!archive.collectDependencies) throw new ReleaseError("untrusted-runtime");
+    const dependencies = archive.collectDependencies(prepared.projectJson);
+    const publicPaths = new Set([...archive.runtime.requiredAssets, ...dependencies.filter(item => item.dataUrl === undefined).map(item => item.path)]);
+    const entries = await Promise.all([...publicPaths].map(async name => ({ name, bytes: await archive.read(`public/${name}`) })));
+    for (const dependency of dependencies) if (dependency.dataUrl !== undefined) entries.push({ name: dependency.path, bytes: dataUrlBytes(dependency.dataUrl) });
+    assertUniquePaths(entries.map(entry => entry.name));
+    if (entries.some(entry => invalidExportDependencyBytes(entry.bytes))) throw new ReleaseError("integrity");
+    return entries;
+  }
   // Current conditional pruning cannot prove an older engine's closure. Preserve
   // its full runtime inventory; the legacy current-engine export keeps pruning.
   const publicPaths = new Set([...archive.runtime.requiredAssets,

@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import { fileURLToPath, URL } from "node:url";
 import { resolve } from "node:path";
 import { writePlayerArtifactManifest } from "./scripts/lib/playerArtifactContract.mjs";
+import { writeReleaseCollector } from "./scripts/lib/releaseCollectorBuild.mjs";
 
 /**
  * 스탠드얼론(단일 HTML) 플레이어 빌드.
@@ -25,7 +26,10 @@ export default defineConfig({
   plugins: [{
     name: "standalone-sdk",
     configResolved(config) { thisRoot = config.root; outputDirectory = resolve(config.root, config.build.outDir); },
-    async closeBundle() { await writePlayerArtifactManifest({ artifactRoot: outputDirectory, repoRoot: thisRoot }); },
+    async closeBundle() {
+      await writeReleaseCollector(thisRoot, outputDirectory);
+      await writePlayerArtifactManifest({ artifactRoot: outputDirectory, repoRoot: thisRoot });
+    },
   }],
   resolve: {
     alias: [

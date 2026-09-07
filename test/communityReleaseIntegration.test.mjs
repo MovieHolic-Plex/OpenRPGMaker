@@ -64,9 +64,10 @@ before(async () => {
   const runtime = [
     { name: "web/player.html", bytes: Buffer.from('<!doctype html><script type="module" src="./player.js"></script>') },
     { name: "web/player.js", bytes: Buffer.from('document.body.dataset.release = "retained-v1";') },
+    { name: "web/dependency-collector.js", bytes: Buffer.from('var OPRN_RELEASE_COLLECTOR={collectReleaseDependencies:()=>[]};') },
     { name: "public/assets/tile.png", bytes: Buffer.from([137, 80, 78, 71]) },
   ];
-  const trusted = await createRuntimeManifest(runtime, ["assets/tile.png"]);
+  const trusted = await workspace.api.operatorRuntimeWithCollector(await createRuntimeManifest(runtime, ["assets/tile.png"]), runtime[2].bytes);
   const publication = { gameId: "same-anonymous-identity", versionLabel: "1.0", runtimeTarget: trusted.runtimeTarget,
     saveCompatibilityId: "save-v1", acceptedSaveCompatibilityIds: [] };
   const entries = [...runtime.map(entry => ({ ...entry, name: entry.name.replace(/^(web|public)\//, "") })),
@@ -77,6 +78,8 @@ before(async () => {
   process.env.COMMUNITY_RUNTIME_ARCHIVE_ROOT = path.join(directory, "archive");
   await mkdir(path.join(process.env.COMMUNITY_RUNTIME_ARCHIVE_ROOT, trusted.runtimeTarget), { recursive: true });
   await writeFile(path.join(process.env.COMMUNITY_RUNTIME_ARCHIVE_ROOT, trusted.runtimeTarget, "runtime.json"), jsonBytes(trusted));
+  await mkdir(path.join(process.env.COMMUNITY_RUNTIME_ARCHIVE_ROOT, trusted.runtimeTarget, "web"));
+  await writeFile(path.join(process.env.COMMUNITY_RUNTIME_ARCHIVE_ROOT, trusted.runtimeTarget, "web/dependency-collector.js"), runtime[2].bytes);
   publish = createReleaseUploadHandler({ pool });
 }, { timeout: 360_000 });
 

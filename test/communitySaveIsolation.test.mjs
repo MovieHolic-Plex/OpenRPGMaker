@@ -47,6 +47,7 @@ test("same-origin listings isolate real save/load DOM and copy only player-selec
       export { createReleaseUploadHandler } from './community-site/lib/releaseUpload';
       export { createReleaseLoader } from './community-site/lib/releaseStore';
       export { createReleasePlayHandler } from './community-site/lib/releaseRoutes';
+      export { operatorRuntimeWithCollector } from './community-site/lib/releaseArchive';
     ` }, outfile: apiPath, bundle: true, platform: "node", format: "esm", target: "node24" });
     const api = await import(pathToFileURL(apiPath).href);
     const client = await build({ entryPoints: [path.join(root, "test/fixtures/communitySaveIsolationEntry.ts")], bundle: true,
@@ -55,8 +56,10 @@ test("same-origin listings isolate real save/load DOM and copy only player-selec
     const runtimeEntries = [
       { name: "web/player.html", bytes: Buffer.from('<!doctype html><html><head></head><body><div id="app"></div><script type="module" src="./player.js"></script></body></html>') },
       { name: "web/player.js", bytes: client.outputFiles[0].contents },
+      // The save-only fixture has no media loaders. Its retained collector reflects that runtime.
+      { name: "web/dependency-collector.js", bytes: Buffer.from('var OPRN_RELEASE_COLLECTOR={collectReleaseDependencies:()=>[]};') },
     ];
-    const trusted = await api.createRuntimeManifest(runtimeEntries, []);
+    const trusted = await api.operatorRuntimeWithCollector(await api.createRuntimeManifest(runtimeEntries, []), runtimeEntries[2].bytes);
     const runtimes = new Map([[trusted.runtimeTarget, trusted]]);
     const loadRuntime = async target => { const value = runtimes.get(target); if (!value) throw new Error("Unknown runtime"); return value; };
     const publish = api.createReleaseUploadHandler({ pool, loadRuntime });
@@ -93,7 +96,8 @@ test("same-origin listings isolate real save/load DOM and copy only player-selec
     const cResponse = await upload(successor); assert.equal(cResponse.status, 201); const c = await cResponse.json();
 
     // Honest retained old manifest, same trusted bytes, no capability: reject before inserting either row.
-    const { runtimeTarget: _target, capabilities: _capabilities, ...oldBody } = trusted;
+    const { runtimeTarget: _target, capabilities: _capabilities, collectDependencies: _collect, ...body } = trusted;
+    const oldBody = { ...body, collectorVersion: 1 };
     const old = { ...oldBody, runtimeTarget: await api.sha256HexText(JSON.stringify(oldBody)) }; runtimes.set(old.runtimeTarget, old);
     assert.equal((await upload(await makeRelease({ ...publication, runtimeTarget: old.runtimeTarget }))).status, 422);
     assert.equal((await pool.query("select count(*)::int as n from openrpg_games")).rows[0].n, 3);

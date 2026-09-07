@@ -33,6 +33,11 @@ async function verifyRuntimeBuild(options: RuntimeBuildOptions): Promise<readonl
   assertExactRecords({ expected: standalone.files, actual: standaloneFiles, code: "standalone-stale", message: "Standalone artifact differs from its SDK" });
   assertSecretScanClean(await scanSecretShapedFiles({ root: options.standaloneRoot, files: standaloneFiles }));
   if (!standaloneFiles.some(file => file.path === "standalone.js") || !standaloneFiles.some(file => file.path === "standalone.css")) throw new Error("Standalone variant missing");
+  const webCollector = verified.artifactFiles.find((file: DeploymentFileRecord) => file.path === "dependency-collector.js");
+  const standaloneCollector = standaloneFiles.find(file => file.path === "dependency-collector.js");
+  if (!webCollector || !standaloneCollector || webCollector.sha256 !== standaloneCollector.sha256 || webCollector.bytes !== standaloneCollector.bytes) {
+    throw new Error("Matching retained dependency collectors are required for both variants");
+  }
   return verified.runtimeAssets;
 }
 

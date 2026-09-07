@@ -39,7 +39,7 @@ export async function prepareReleaseTestWorkspace({ directory, databaseUrl, evid
     export { createReleaseUploadHandler, readBoundedJson } from "./community-site/lib/releaseUpload.ts";
     export { createReleaseLoader, insertReleaseListing } from "./community-site/lib/releaseStore.ts";
     export { createReleasePlayHandler, createReleaseDownloadHandler } from "./community-site/lib/releaseRoutes.ts";
-    export { validateReleaseArchive } from "./community-site/lib/releaseArchive.ts";
+    export { validateReleaseArchive, operatorRuntimeWithCollector } from "./community-site/lib/releaseArchive.ts";
   ` }, outfile: bundle, bundle: true, platform: "node", format: "esm", target: "node24", packages: "external" });
 
   assert.equal(existsSync(path.join(site, ".next")), false, "QA must build from clean artifacts");

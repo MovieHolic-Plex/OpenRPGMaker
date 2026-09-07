@@ -3,9 +3,12 @@ import { parsePublication, PublicationError, type Publication } from "./publicat
 import { readStoredZipEntry, readStoredZipEntryNames, writeStoredZip, type ZipEntry } from "./packageZip";
 import { assertUniquePaths, compareContractPaths, contractPath, isRecord, parseFileRecords } from "./playerDeploymentPaths";
 import type { DeploymentFileRecord } from "./playerDeploymentTypes";
+import { RELEASE_COLLECTOR_FILE, type ReleaseDependencyCollector } from "./releaseDependencies";
+export { RELEASE_COLLECTOR_FILE, type ReleaseDependency, type ReleaseDependencyCollector } from "./releaseDependencies";
 
 export const COMMUNITY_SAVE_ISOLATION_CAPABILITY = "community-save-isolation-v1";
-export const CURRENT_RUNTIME_CAPABILITIES: readonly string[] = [COMMUNITY_SAVE_ISOLATION_CAPABILITY];
+export const PROJECT_DEPENDENCY_CLOSURE_CAPABILITY = "project-dependency-closure-v1";
+export const CURRENT_RUNTIME_CAPABILITIES: readonly string[] = [COMMUNITY_SAVE_ISOLATION_CAPABILITY, PROJECT_DEPENDENCY_CLOSURE_CAPABILITY];
 
 export interface RuntimeManifest {
   readonly sentinel: "oprn/runtime-archive";
@@ -13,7 +16,7 @@ export interface RuntimeManifest {
   readonly runtimeTarget: string;
   readonly projectSchema: 4;
   readonly saveSchemas: readonly [4, 5, 6];
-  readonly collectorVersion: 1;
+  readonly collectorVersion: 1 | 2;
   readonly files: readonly DeploymentFileRecord[];
   readonly requiredAssets: readonly string[];
   /** Absent on retained older manifests. Claims are trusted only via operator provenance. */
@@ -51,27 +54,29 @@ export async function createRuntimeManifest(entries: readonly ZipEntry[], requir
 }
 
 export async function runtimeManifestForFiles(files: readonly DeploymentFileRecord[], requiredAssets?: readonly string[]): Promise<RuntimeManifest> {
+  const collectorVersion = files.some(file => file.path === `web/${RELEASE_COLLECTOR_FILE}`) ? 2 as const : 1 as const;
   const body = { sentinel: "oprn/runtime-archive" as const, format: 1 as const, projectSchema: 4 as const,
-    saveSchemas: [4, 5, 6] as const, collectorVersion: 1 as const, files: parseFileRecords(files),
+    saveSchemas: [4, 5, 6] as const, collectorVersion, files: parseFileRecords(files),
     requiredAssets: [...(requiredAssets ?? files.filter(file => file.path.startsWith("public/")).map(file => file.path.slice(7)))].sort(compareContractPaths),
-    capabilities: [...CURRENT_RUNTIME_CAPABILITIES] };
+    capabilities: collectorVersion === 2 ? [...CURRENT_RUNTIME_CAPABILITIES] : [COMMUNITY_SAVE_ISOLATION_CAPABILITY] };
   return { ...body, runtimeTarget: await sha256HexText(JSON.stringify(body)) };
 }
 
 export async function parseRuntimeManifest(value: unknown): Promise<RuntimeManifest> {
   if (!isRecord(value) || value.sentinel !== "oprn/runtime-archive" || value.format !== 1
-    || value.projectSchema !== 4 || value.collectorVersion !== 1 || JSON.stringify(value.saveSchemas) !== "[4,5,6]"
+    || value.projectSchema !== 4 || (value.collectorVersion !== 1 && value.collectorVersion !== 2) || JSON.stringify(value.saveSchemas) !== "[4,5,6]"
     || typeof value.runtimeTarget !== "string" || !Array.isArray(value.requiredAssets)) throw new ReleaseError("untrusted-runtime");
   const capabilities = value.capabilities;
   if (capabilities !== undefined && (!Array.isArray(capabilities)
     || !capabilities.every(item => typeof item === "string" && /^[a-z][a-z0-9-]*-v[1-9][0-9]*$/.test(item))
     || new Set(capabilities).size !== capabilities.length)) throw new ReleaseError("untrusted-runtime");
   const files = parseFileRecords(value.files);
+  if (value.collectorVersion === 2 && !files.some(file => file.path === `web/${RELEASE_COLLECTOR_FILE}`)) throw new ReleaseError("untrusted-runtime");
   const requiredAssets = value.requiredAssets.map(contractPath);
   assertUniquePaths(requiredAssets);
   if (requiredAssets.some(name => !files.some(file => file.path === `public/${name}`))) throw new ReleaseError("untrusted-runtime");
-  const body = { sentinel: "oprn/runtime-archive" as const, format: 1 as const, projectSchema: 4 as const,
-    saveSchemas: [4, 5, 6] as const, collectorVersion: 1 as const, files, requiredAssets,
+  const body: Omit<RuntimeManifest, "runtimeTarget"> = { sentinel: "oprn/runtime-archive", format: 1, projectSchema: 4,
+    saveSchemas: [4, 5, 6], collectorVersion: value.collectorVersion, files, requiredAssets,
     ...(capabilities === undefined ? {} : { capabilities }) };
   if (await sha256HexText(JSON.stringify(body)) !== value.runtimeTarget) throw new ReleaseError("integrity");
   return { ...body, runtimeTarget: value.runtimeTarget };
@@ -101,8 +106,9 @@ export function releaseManifestFromZip(bytes: Uint8Array): unknown {
   return JSON.parse(decoder.decode(raw));
 }
 
-/** The trusted manifest must come from operator-controlled storage, never the upload. */
-export async function verifyGameRelease(bytes: Uint8Array, trusted: RuntimeManifest | undefined) {
+/** Manifest and collector are operator authority, never upload-derived. Version 2 requires
+ * the collector bound to that retained runtime; callers must not substitute the live collector. */
+export async function verifyGameRelease(bytes: Uint8Array, trusted: RuntimeManifest | undefined, collectDependencies?: ReleaseDependencyCollector) {
   const manifest = await parseReleaseManifest(releaseManifestFromZip(bytes));
   if (!trusted || trusted.runtimeTarget !== manifest.publication.runtimeTarget) throw new ReleaseError("untrusted-runtime");
   await parseRuntimeManifest(trusted);
@@ -132,5 +138,15 @@ export async function verifyGameRelease(bytes: Uint8Array, trusted: RuntimeManif
   const project: unknown = JSON.parse(decoder.decode(projectBytes));
   if (!isRecord(project) || project.version !== trusted.projectSchema || !isRecord(project.meta)
     || JSON.stringify(parsePublication(project.meta.publication)) !== JSON.stringify(manifest.publication)) throw new PublicationError("invalid-publication");
+  if (trusted.collectorVersion === 2) {
+    if (!collectDependencies) throw new ReleaseError("untrusted-runtime");
+    for (const dependency of collectDependencies(decoder.decode(projectBytes))) {
+      const name = contractPath(dependency.path);
+      if (dependency.dataUrl !== undefined) continue; // Validated embedded media remains inside the exact project JSON.
+      const expected = trustedFiles.get(`public/${name}`);
+      const actual = manifest.files.find(file => file.path === name);
+      if (!expected || !actual || actual.bytes !== expected.bytes || actual.sha256 !== expected.sha256) throw new ReleaseError("integrity");
+    }
+  }
   return { manifest, entries };
 }

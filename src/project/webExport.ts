@@ -96,7 +96,7 @@ export async function createWebPlayerExportPackage(
     const entries = [{ name: "project.json", bytes: encoder.encode(prepared.projectJson) }, ...bundles,
       ...await publicationAssetEntries(prepared, archive)];
     const release = await createGameRelease({ publication: archive.publication, entries });
-    await verifyGameRelease(new Uint8Array(await release.blob.arrayBuffer()), archive.runtime);
+    await verifyGameRelease(new Uint8Array(await release.blob.arrayBuffer()), archive.runtime, archive.collectDependencies);
     return { blob: release.blob, summary: { ...prepared.summary, playerBundleFileCount: bundles.length, zipEntryCount: entries.length + 1 } };
   }
   const bundleBase = options.bundleBase ?? WEB_PLAYER_BUNDLE_BASE;
