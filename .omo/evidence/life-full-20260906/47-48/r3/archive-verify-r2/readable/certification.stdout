@@ -1,0 +1,41 @@
+{
+  "verdict": "confirmed",
+  "scope": "plan47/48 nonvisual correction only",
+  "head": "b87c9822f431ece4674e97a9d9cd15d1956be327",
+  "preserved_sources": 9,
+  "independent_captures": 99,
+  "full_identity_unchanged": true,
+  "source_status": "",
+  "imports": [
+    {
+      "declaration": "/home/main/z-project/rpg-zzu-life-full-spatial-rights-r3/src/project/defaults",
+      "realpath": "/home/main/z-project/rpg-zzu-life-full-spatial-rights-r3/src/project/defaults.ts",
+      "sha256": "caa13b8ae41a95cd701841c5f02a7d11ca42be1ef47390c8d9c99ef3648cdbde"
+    },
+    {
+      "declaration": "/home/main/z-project/rpg-zzu-life-full-spatial-rights-r3/src/project/session",
+      "realpath": "/home/main/z-project/rpg-zzu-life-full-spatial-rights-r3/src/project/session.ts",
+      "sha256": "d57f6ee87c19d14f47f057458502451fbb8c2d78f802beb2a84d99f548fabc32"
+    },
+    {
+      "declaration": "/home/main/z-project/rpg-zzu-life-full-spatial-rights-r3/src/project/spatialPlacementTransactions",
+      "realpath": "/home/main/z-project/rpg-zzu-life-full-spatial-rights-r3/src/project/spatialPlacementTransactions.ts",
+      "sha256": "246ea4a90c3235fe87f451e10b8463f75a54adfd52ca8100093804a84082e981"
+    },
+    {
+      "declaration": "/home/main/z-project/rpg-zzu-life-full-spatial-rights-r3/src/project/lifeRecovery",
+      "realpath": "/home/main/z-project/rpg-zzu-life-full-spatial-rights-r3/src/project/lifeRecovery.ts",
+      "sha256": "9784966b7814cdaebb36dd1ef7ee989349a0b88c3b6174442ff42823bf0e877f"
+    },
+    {
+      "declaration": "/home/main/z-project/rpg-zzu-life-full-spatial-rights-r3/src/player/saveSlots",
+      "realpath": "/home/main/z-project/rpg-zzu-life-full-spatial-rights-r3/src/player/saveSlots.ts",
+      "sha256": "2dac3eb6c6f5ef90a2cce5bdcd3c9cf79c7e587eb7262916cb82a01ace39a98b"
+    },
+    {
+      "declaration": "/home/main/z-project/rpg-zzu-life-full-spatial-rights-r3/src/project/itemQuantities",
+      "realpath": "/home/main/z-project/rpg-zzu-life-full-spatial-rights-r3/src/project/itemQuantities.ts",
+      "sha256": "41cb169e62d24376864cfe2550d492b73e75dd1cb01c870f53228fc16a52ea4f"
+    }
+  ]
+}

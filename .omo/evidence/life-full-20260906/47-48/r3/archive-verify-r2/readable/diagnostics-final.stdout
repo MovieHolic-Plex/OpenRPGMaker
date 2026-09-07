@@ -1,0 +1,38 @@
+[
+  {
+    "file": "src/project/lifeRecovery.ts",
+    "diagnostics": []
+  },
+  {
+    "file": "src/project/lifeStateReconciliation.ts",
+    "diagnostics": []
+  },
+  {
+    "file": "src/project/spatialPlacementTransactions.ts",
+    "diagnostics": []
+  },
+  {
+    "file": "src/player/saveSlotSpatialValidation.ts",
+    "diagnostics": []
+  },
+  {
+    "file": "test/spatialRecoveryRights.test.ts",
+    "diagnostics": []
+  },
+  {
+    "file": "test/spatialPaymentReceipts.test.ts",
+    "diagnostics": []
+  },
+  {
+    "file": "test/linkedAnimalHousing.test.ts",
+    "diagnostics": []
+  },
+  {
+    "file": "test/lifePlacementSafety.test.ts",
+    "diagnostics": []
+  },
+  {
+    "file": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/47-48/r3/verify-r2/independent-rights.mts",
+    "diagnostics": []
+  }
+]

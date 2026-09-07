@@ -1,0 +1,88 @@
+{
+  "status": "PREPARED_FOR_PARENT_EXACT_PATH_PUBLICATION",
+  "verified_utc": "2026-09-07T03:54:04.978884+00:00",
+  "commit_identity": "b87c9822f431ece4674e97a9d9cd15d1956be327",
+  "verdict_scope": "Existing independent VERIFY confirmed scoped nonvisual correction only; no new product validation or verdict change. Native/UI and canonical parent INDEX regeneration remain pending.",
+  "coverage": {
+    "original_files": 98,
+    "original_bytes": 20874627,
+    "gzip_decodes_byte_equal": 98,
+    "readable_byte_equal": 42,
+    "original_file_sha256_mode_mtime_size_unchanged": true,
+    "original_directory_metadata_unchanged": true,
+    "original_path_set_unchanged": true,
+    "special_entries": 0
+  },
+  "decoded_existing_archives": [
+    {
+      "original_relative_path": "public-state.final.json.gz",
+      "decoded_bytes": 136688643,
+      "decoded_sha256": "66f51971dd323c8e29f5a0230c34f19e5e9f300963d92791c1bacb84c46eb64c",
+      "indexed_capture_count": 99,
+      "json_top_level_type": "dict",
+      "json_top_level_keys": [
+        "captures",
+        "final",
+        "slots"
+      ]
+    },
+    {
+      "original_relative_path": "public-state.first.json.gz",
+      "decoded_bytes": 123967605,
+      "decoded_sha256": "3c633d5755f6d73ad2e288513031357393a79481347cb8068faa9ee45bb11202"
+    }
+  ],
+  "privacy": {
+    "candidate_count": 0,
+    "candidate_rules_by_relative_file": {},
+    "file_count": 98,
+    "existing_gzip_payloads_decoded": 2,
+    "json_documents_parsed": 53,
+    "views": [
+      "raw UTF-8 with replacement for binary scanning",
+      "whole existing gzip decoded content in memory",
+      "parsed JSON strings, keys and keyed string pairs unescaped"
+    ],
+    "rules": {
+      "private-key": "-----BEGIN (?:[A-Z0-9 ]{1,40} )?PRIVATE KEY-----",
+      "provider-token": "\\b(?:sk-(?:proj-|ant-)?[A-Za-z0-9_-]{24,}|gh[pousr]_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{30,}|AKIA[A-Z0-9]{16}|xox[baprs]-[A-Za-z0-9-]{20,})",
+      "authorization-value": "(?i)\\b(?:Bearer|Basic)\\s+[A-Za-z0-9+/_.=-]{20,}",
+      "private-reasoning-marker": "(?i)<(?:analysis|thinking|think|private_reasoning)>|\"channel\"\\s*:\\s*\"analysis\"",
+      "credential-url": "(?i)https?://[^\\s/:\"\\']{1,100}:[^\\s/@\"\\']{1,200}@",
+      "credential-assignment": "(?ix)\\b(?:[a-z0-9_]{0,64}(?:api[_-]?key|access[_-]?token|auth[_-]?token|client[_-]?secret|password|passwd|secret[_-]?key))[\"']?\\s*[:=]\\s*[\"']([^\"'\\n]{8,200})[\"']"
+    },
+    "limits": "Bounded signature inspection, not proof of absence. No arbitrary encoded/encrypted/obfuscated secret detection, unknown credential formats, unmarked private reasoning, nested serialized JSON guarantee or exhaustive personal-data detection. Local paths, task IDs and operational descriptions retained. No payload printed. Gzip is not redaction.",
+    "sensitive_retention": "Signature candidates, if any, preserved whole under private/ (0700 parent, 0600 files), excluded from public list; original mode retained in manifest. No candidate files identified."
+  },
+  "scope": {
+    "read_only_input": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/47-48/r3/verify-r2",
+    "only_write_root": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/47-48/r3/archive-verify-r2",
+    "archive_method_reference_read": "/home/main/z-project/rpg-zzu-life-full-p4/.omo/evidence/life-full-20260906/47-48/r3/archive-producer",
+    "product_tests_builds_probes_run": false,
+    "product_or_source_review": false,
+    "git_staging_commit_worktree_remote_operations": false,
+    "other_evidence_or_source_writes": false,
+    "original_or_shared_cleanup": false,
+    "large_decoded_disk_files_created": false
+  },
+  "byte_preservation": {
+    "compression": "Deterministic lossless gzip wrapper, mtime=0 and no filename, for every original including both whole existing gzip states. Decode exactly one wrapper to recover original bytes; decode a second layer only to inspect an original .gz payload.",
+    "filesystem_metadata": "Public copies preserve full permission mode and nanosecond mtime. All original modes/mtimes/sizes/hashes and directory metadata recorded. Atime is not certified. Git cannot preserve full POSIX mode or mtime: apply original.mode_octal and original.mtime_ns after decoding.",
+    "readable_selection": "Additional unchanged UTF-8 copies <=65536 bytes, no controls except LF/tab, no trailing horizontal whitespace, final LF for nonempty files and no final blank line. Nonqualifying originals remain whole in gzip.",
+    "no_trimming_rewriting_redaction": true
+  },
+  "direct_exits": {
+    "certification.exit": "0",
+    "diagnostics-final.exit": "0",
+    "diagnostics.exit": "1",
+    "interrupted.exit": "-15",
+    "interruption.exit": "241",
+    "lock-released.exit": "0",
+    "misleading-failure.exit": "7",
+    "public-rights-final.exit": "0",
+    "public-rights.exit": "0",
+    "tests.exit": "0",
+    "typecheck.exit": "0"
+  },
+  "publication": "Only literal repository-relative PUBLIC-stage-list.txt paths. No recursive staging. ARCHIVE-FILES.sha256 covers all allowlisted files except itself. Parent owns staging/commit."
+}
