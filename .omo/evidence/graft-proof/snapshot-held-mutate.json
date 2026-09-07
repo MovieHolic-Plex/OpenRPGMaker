@@ -1,0 +1,11 @@
+{
+  "case": "held-source-mutate-keeps-snapshotted-A",
+  "requestedSourceTile": 65,
+  "mutatedSourceTile": 387,
+  "hashA": "bc4f68237def470cb0aa00bebc76c41223c3b0a1f5d9efe7cc5e20cded26539f",
+  "hashB": "2eb0c2f59ea51a019a444874d3fb35b6e2dae8004fe68600475930e563da12b8",
+  "hashesDiffer": true,
+  "peekAMatchesHeld": true,
+  "peekBEmptyBeforeOwnBake": true,
+  "confirmAReusesExactKey": true
+}

@@ -243,3 +243,7 @@ verify-shots/battle-skin-trio/
 # 스튜디오 P2 — 탭 첫 등장만 전환 · 컴포저 데크 크롬.
 !.omo/evidence/studio-p2-composer/
 !.omo/evidence/studio-p2-composer/**
+
+# GRAFT-1 strict graft-image evidence (st_01a07c55).
+!.omo/evidence/graft-proof/
+!.omo/evidence/graft-proof/**

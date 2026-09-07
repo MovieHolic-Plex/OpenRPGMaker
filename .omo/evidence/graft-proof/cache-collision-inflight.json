@@ -1,0 +1,41 @@
+{
+  "case": "in-flight-alias-separated",
+  "firstGrafts": [
+    {
+      "targetTile": 0,
+      "sourceChipset": "tex_easyrpg_chipset_interior",
+      "sourceTile": 65
+    },
+    {
+      "targetTile": 1,
+      "sourceChipset": "tex_easyrpg_chipset_interior",
+      "sourceTile": 309
+    },
+    {
+      "targetTile": 2,
+      "sourceChipset": "tex_easyrpg_chipset_interior",
+      "sourceTile": 431
+    }
+  ],
+  "secondGrafts": [
+    {
+      "targetTile": 0,
+      "sourceChipset": "tex_easyrpg_chipset_interior",
+      "sourceTile": 387
+    },
+    {
+      "targetTile": 1,
+      "sourceChipset": "tex_easyrpg_chipset_interior",
+      "sourceTile": 227
+    },
+    {
+      "targetTile": 2,
+      "sourceChipset": "tex_easyrpg_chipset_interior",
+      "sourceTile": 361
+    }
+  ],
+  "hashA": "cd86c82c88d5377e165fb2aeaef328bc42f0866d54247c777769756114923c73",
+  "hashB": "9c0368646a558c60a9a6778800b894775b690c12962d34b6389ab311555590b5",
+  "urlsDiffer": true,
+  "hashesDiffer": true
+}

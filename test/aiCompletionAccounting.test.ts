@@ -1,13 +1,14 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { AssistantSession, type SessionEvent } from "@/ai/assistantSession";
-import type { ChatResult } from "@/ai/llmClient";
+import { defaultAiConfig, type AiConfig, type ChatRequest, type ChatResult } from "@/ai/llmClient";
 import * as tools from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
-import { resetMapEditHistory } from "@/editor/mapEditHistory";
+import { getMapEditHistoryEntries, resetMapEditHistory } from "@/editor/mapEditHistory";
 import { fixedDeclarer } from "./intentFixture";
+import { approvedReviewResponse } from "./independentReviewFixture";
 
-const CONFIG = { authMode: "apiKey" as const, baseUrl: "x", model: "stub-model", apiKey: "sk", maxToolCalls: 12, maxTokens: 8192 };
+const CONFIG = { ...defaultAiConfig(), agentMode: "chat", apiKey: "sk", maxToolCalls: 12, maxTokens: 8192 } satisfies AiConfig;
 const SPEC = { mapId: "m1", assets: [{ id: "terrain", kind: "terrain", x: 3, y: 3, w: 3, h: 3 }] };
 
 afterEach(() => {
@@ -35,7 +36,9 @@ function final(text = "완료했습니다."): ChatResult {
 
 function scriptedChat(steps: (ChatResult | (() => ChatResult))[]) {
   let index = 0;
-  return vi.fn(async (): Promise<ChatResult> => {
+  return vi.fn(async (_config: AiConfig, request: ChatRequest): Promise<ChatResult> => {
+    const review = approvedReviewResponse(request);
+    if (review) return review;
     const step = steps[index++];
     if (!step) throw new Error("scripted chat exhausted");
     return typeof step === "function" ? step() : step;
@@ -49,7 +52,7 @@ function paint(x: number, y: number, id: string): ChatResult {
 type ToolEvent = Extract<SessionEvent, { type: "tool_call" }>;
 
 describe("completion accounting through real assistant sessions", () => {
-  it("auto-completes a later spatial milestone using applied plus pending writes without reapplying the first", async () => {
+  it("accounts for both spatial milestones and applies each write once, only after independent review", async () => {
     const project = projectWithMap();
     vi.stubEnv("VITE_SUPABASE_ANON_KEY", "test-anon-key");
     vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "rpg-zzu-test-project");
@@ -67,25 +70,46 @@ describe("completion accounting through real assistant sessions", () => {
       { title: "둘째 구역", instruction: "둘째 구역 칠하기", successTools: ["paint_tiles"] },
     ] }] };
     const events: SessionEvent[] = [];
+    const authored = structuredClone(store.getCurrent());
+    const history = getMapEditHistoryEntries();
     const session = new AssistantSession(project, {
-      config: { ...CONFIG, agentMode: "auto", liteModel: "executor-model" },
+      config: { ...CONFIG, agentMode: "auto" },
       declareIntent: fixedDeclarer({ mode: "modify", needsPlan: true }),
+      renderImages: async () => [{ label: "Accounting map", dataUrl: "data:image/png;base64,AA==" }],
       chat: scriptedChat([
         final(JSON.stringify({ action: "new_plan", ...plan })),
         toolCall("set_work_plan", plan, "plan"),
         toolCall("set_build_spec", SPEC, "spec"),
         paint(3, 3, "first"),
-        paint(12, 12, "second"),
+        () => {
+          expect(session.getWorkPlan()?.layers[0].items.map((item) => item.status)).toEqual(["done", "in_progress"]);
+          expect(store.getCurrent()).toEqual(authored);
+          expect(getMapEditHistoryEntries()).toEqual(history);
+          return paint(12, 12, "second");
+        },
+        toolCall("show_map_region", { mapId: "m1", x: 0, y: 0, w: 20, h: 20 }, "image"),
         final(),
       ]),
     });
-    const result = await session.sendUserMessage(plan.goal, (event) => events.push(event), undefined, { autonomous: true });
+    const result = await session.sendUserMessage(plan.goal, (event) => {
+      events.push(event);
+      if (event.type === "result_review") {
+        expect(event.review.status).toBe("approved");
+        expect(store.getCurrent()).toEqual(authored);
+        expect(getMapEditHistoryEntries()).toEqual(history);
+      }
+    }, undefined, { autonomous: true });
 
     expect(session.getWorkPlan()?.layers[0].items.map((item) => item.status)).toEqual(["done", "done"]);
-    expect(result.stoppedReason).toBe("final");
+    expect(result.stoppedReason, result.error).toBe("final");
+    expect(result.review?.status).toBe("approved");
     expect(session.getAcceptanceSnapshot()).toMatchObject({ status: "verified", items: acceptance.map(({ id }) => ({ id, status: "verified", evidence: [{ passed: true }] })) });
-    expect(events.filter((event) => event.type === "acceptance").some((event) => event.snapshot?.items[0]?.status === "verified" && event.snapshot.items[1]?.status === "working")).toBe(true);
-    expect(events.filter((event) => event.type === "milestone_applied").map((event) => event.toolCount)).toEqual([1, 1]);
+    // Both criteria address one changed, unapplied map, so neither is verified early.
+    expect(events.filter((event) => event.type === "acceptance").map((event) => event.snapshot)).toContainEqual(expect.objectContaining({
+      status: "verifying", items: acceptance.map(({ id }) => expect.objectContaining({ id, status: "verifying", evidence: [expect.objectContaining({ passed: false })] })),
+    }));
+    expect(events.filter((event) => event.type === "result_review" || event.type === "milestone_applied").map((event) => event.type)).toEqual(["result_review", "milestone_applied"]);
+    expect(events.filter((event) => event.type === "milestone_applied").map((event) => event.toolCount)).toEqual([2]);
     expect(result.proposedCalls).toEqual([]);
     expect(result.appliedCalls?.map((call) => call.args.from)).toEqual([{ x: 3, y: 3 }, { x: 12, y: 12 }]);
     const map = store.getCurrent().maps.m1;
@@ -99,6 +123,10 @@ describe("completion accounting through real assistant sessions", () => {
   describe.each(["active", "implicit"] as const)("%s spec expansion", (scope) => {
     it.each(["invalid-args", "out-of-bounds", "throwing-tool"] as const)("does not retain a %s write; a successful retry expands and keeps the correct lifetime", async (failure) => {
       const project = projectWithMap();
+      store.replace(project);
+      resetMapEditHistory();
+      const authored = structuredClone(store.getCurrent());
+      const history = getMapEditHistoryEntries();
       const rect = failure === "out-of-bounds" ? { x: 12, y: 18, w: 3, h: 5 } : { x: 12, y: 12, w: 3, h: 3 };
       const retryRect = { ...rect, h: failure === "out-of-bounds" ? 1 : rect.h };
       if (failure === "throwing-tool") {
@@ -108,9 +136,9 @@ describe("completion accounting through real assistant sessions", () => {
         vi.spyOn(fillRegion, "run").mockImplementationOnce(() => { throw new Error("injected tool failure"); });
       }
       const criteria = [{ kind: "targetChange", target: { mapId: "m1" }, region: retryRect }];
-      // These turns intentionally retain drafts. Supply the real spatial contract,
-      // then answer the initial final request and all three bounded repair nudges.
-      // No model response can turn an unapplied draft into verified acceptance.
+      // Deliberately omit rendered evidence: approval-shaped reviewer JSON must
+      // still fail closed. An unrelated next request drops this rejected draft,
+      // while an explicit spec (unlike a selection) keeps its expanded lifetime.
       const pendingFinal = (status: "verifying" | "blocked") => () => {
         expect(session.getAcceptanceSnapshot()).toMatchObject({ status, items: [{
           id: "acceptance-contract", status, evidence: [{ expected: JSON.stringify(criteria[0]), passed: false }],
@@ -122,13 +150,13 @@ describe("completion accounting through real assistant sessions", () => {
         toolCall("fill_region", { mapId: "m1", rect, material: "모래", shape: failure === "invalid-args" ? "invalid-shape" : "rect" }, "failed"),
         toolCall("fill_region", { mapId: "m1", rect: retryRect, material: "모래", shape: "rect" }, "retry"),
         toolCall("repair_acceptance", { itemId: "acceptance-contract", criteria }, "repair"),
-        ...Array.from({ length: 4 }, () => pendingFinal("verifying")),
-        toolCall("paint_tiles", { mapId: "m1", from: { x: rect.x, y: rect.y }, to: { x: rect.x, y: rect.y }, mode: "rect", layer: "lower", tile: 240 }, "next-turn"),
-        // A fresh instruction does not resume the already stopped canonical goal.
-        pendingFinal("blocked"),
+        ...Array.from({ length: 2 }, () => pendingFinal("verifying")),
+        toolCall("paint_tiles", { mapId: "m1", from: { x: rect.x, y: rect.y }, to: { x: rect.x, y: rect.y }, mode: "rect", layer: "lower", tile: 281 }, "next-turn"),
+        // Arbitrary new prose cannot resume a stopped canonical requirement.
+        ...Array.from({ length: scope === "active" ? 2 : 4 }, () => pendingFinal("blocked")),
       ];
       const chat = scriptedChat(steps);
-      const session = new AssistantSession(project, { config: CONFIG, chat });
+      const session = new AssistantSession(project, { config: CONFIG, chat, declareIntent: fixedDeclarer({ mode: "modify" }) });
       const events: ToolEvent[] = [];
       let specAfterFailure: unknown;
       let mapAfterFailure: unknown;
@@ -147,11 +175,16 @@ describe("completion accounting through real assistant sessions", () => {
       expect(specAfterFailure).toEqual(scope === "active" ? SPEC : null);
       expect(fills[0].result.issues?.some((issue) => issue.code === "spec-gate-auto-expand")).toBe(false);
       expect(fills[1].result.issues ?? []).toContainEqual(expect.objectContaining({ code: "spec-gate-auto-expand" }));
-      expect(result.stoppedReason).toBe("final");
+      expect(result.stoppedReason).toBe("error");
+      expect(result.review?.status).toBe("changes_requested");
+      expect(session.isDraftReviewApproved()).toBe(false);
+      expect(result.review?.findings).toContainEqual(expect.objectContaining({ id: "required-0", target: "required-evidence" }));
       expect(chat).toHaveBeenCalledTimes(scope === "active" ? 8 : 7);
       expect(events.find((event) => event.name === "repair_acceptance")?.result.ok).toBe(true);
       expect(session.getAcceptanceSnapshot()).toMatchObject({ status: "blocked", items: [{ id: "acceptance-contract", status: "blocked", evidence: [{ passed: false }] }] });
       expect(result.appliedCalls ?? []).toEqual([]);
+      expect(store.getCurrent()).toEqual(authored);
+      expect(getMapEditHistoryEntries()).toEqual(history);
       expect(result.proposedCalls.map((call) => call.name)).toEqual(["fill_region"]);
       expect(session.getProposedProject().maps.m1.lowerTiles).not.toEqual(project.maps.m1.lowerTiles);
       if (scope === "active") {
@@ -162,10 +195,18 @@ describe("completion accounting through real assistant sessions", () => {
 
       const nextEvents: ToolEvent[] = [];
       const next = await session.sendUserMessage("다음 칸 칠해줘", (event) => { if (event.type === "tool_call") nextEvents.push(event); });
-      expect(next.stoppedReason).toBe("final");
-      expect(chat).toHaveBeenCalledTimes(steps.length);
+      expect(next.stoppedReason).toBe("error");
+      expect(session.isDraftReviewApproved()).toBe(false);
+      expect(chat).toHaveBeenCalledTimes(steps.length + (scope === "active" ? 4 : 2));
       expect(session.getAcceptanceSnapshot()).toMatchObject({ status: "blocked", items: [{ id: "acceptance-contract", evidence: [{ passed: false }] }] });
       expect(next.appliedCalls ?? []).toEqual([]);
+      expect(store.getCurrent()).toEqual(authored);
+      expect(getMapEditHistoryEntries()).toEqual(history);
+      const expected = { project: structuredClone(project) };
+      if (scope === "active") expect(tools.runTool(expected, "paint_tiles", {
+        mapId: "m1", from: { x: rect.x, y: rect.y }, to: { x: rect.x, y: rect.y }, mode: "rect", layer: "lower", tile: 281,
+      }).ok).toBe(true);
+      expect(session.getProposedProject().maps.m1).toEqual(expected.project.maps.m1);
       expect(next.proposedCalls.map((call) => call.name)).toEqual(scope === "active" ? ["paint_tiles"] : []);
       expect(nextEvents.map((event) => event.result.ok)).toEqual([scope === "active"]);
       expect(nextEvents[0].result.issues?.some((issue) => issue.code === "spec-gate-auto-expand") ?? false).toBe(false);
@@ -181,7 +222,7 @@ describe("completion accounting through real assistant sessions", () => {
       if (name === "fill_region") throw failure;
       return run(ctx, name, args, options);
     });
-    const session = new AssistantSession(project, { config: CONFIG, chat: scriptedChat([
+    const session = new AssistantSession(project, { config: CONFIG, declareIntent: fixedDeclarer({ mode: "modify" }), chat: scriptedChat([
       toolCall("set_build_spec", SPEC, "spec"),
       toolCall("fill_region", { mapId: "m1", rect: { x: 12, y: 12, w: 3, h: 3 }, material: "모래", shape: "rect" }, "throw"),
     ]) });

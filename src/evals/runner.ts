@@ -4,6 +4,7 @@
 // - llmSolver: AssistantSession으로 실제/모킹 LLM 툴콜 루프 구동.
 
 import { AssistantSession } from "@/ai/assistantSession";
+import type { ResultReview } from "@/ai/independentReview";
 import type { AiConfig, ChatRequest, ChatResult } from "@/ai/llmClient";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
@@ -18,6 +19,8 @@ export interface ToolCall {
 export interface SolveResult {
   readonly project: Project;
   readonly audit?: string;
+  readonly review?: ResultReview;
+  readonly error?: string;
 }
 
 export type Solver = (task: GoldenTask) => Promise<SolveResult> | SolveResult;
@@ -49,8 +52,10 @@ export function llmSolver(options: LlmSolverOptions): Solver {
       chat: options.chat,
       ...(task.contextOptions ? { contextOptions: task.contextOptions } : {}),
     });
-    await session.sendUserMessage(task.prompt);
-    return { project: session.getProposedProject(), audit: session.exportAudit() };
+    const turn = await session.sendUserMessage(task.prompt);
+    const unapproved = turn.proposedCalls.length > 0 && !session.isDraftReviewApproved();
+    return { project: session.getProposedProject(), audit: session.exportAudit(), review: turn.review,
+      ...((turn.stoppedReason !== "final" || unapproved) ? { error: turn.error ?? "Independent review did not approve this draft" } : {}) };
   };
 }
 
@@ -58,13 +63,16 @@ export interface EvalRunResult {
   readonly score: EvalScore;
   readonly audit?: string;
   readonly error?: string;
+  readonly review?: ResultReview;
 }
 
 // 단일 태스크 실행 + 채점.
 export async function runGoldenTask(task: GoldenTask, solve: Solver): Promise<EvalRunResult> {
   try {
     const solved = await solve(task);
-    return { score: scoreProject(solved.project, task), audit: solved.audit };
+    const score = scoreProject(solved.project, task);
+    return { score: solved.error ? { ...score, passed: false } : score, audit: solved.audit,
+      review: solved.review, error: solved.error };
   } catch (cause) {
     const error = cause instanceof Error ? cause.message : String(cause);
     // 실패도 0점 결과로 기록(러너가 죽지 않도록).

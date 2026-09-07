@@ -1,3 +1,4 @@
+import { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { reassembleSelectedProposalProject } from "@/editor/panels/aiProposalSummary";
@@ -141,6 +142,7 @@ describe("applyProposedProject shared apply path", () => {
     proposed.meta = { ...(proposed.meta ?? {}), title: "적용된 제목" };
 
     const result = await applyChangesetToStore.applyProposedProject(proposed, {
+      baseline: new AuthoredProjectBaseline(base),
       source: "agent-milestone",
       agentName: "test-agent",
       summary: "마일스톤: 제목",
@@ -167,6 +169,7 @@ describe("applyProposedProject shared apply path", () => {
     proposed.startMapId = "missing-map";
 
     const result = await applyChangesetToStore.applyProposedProject(proposed, {
+      baseline: new AuthoredProjectBaseline(base),
       source: "agent-milestone",
       summary: "깨진 마일스톤",
       toolNames: [],

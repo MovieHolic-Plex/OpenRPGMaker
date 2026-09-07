@@ -8,6 +8,7 @@ import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
 import type { ToolResult } from "@/editor/tools";
 import type { ChangeSummary } from "@/editor/tools/types";
 import { createBlankProject } from "@/project/defaults";
+import type { Project } from "@/project/types";
 import { store } from "@/project/store";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
@@ -94,6 +95,30 @@ function turn(proposedCalls: ProposedCall[], assistantText = "완료"): TurnResu
   return { assistantText, proposedCalls, stoppedReason: "final" };
 }
 
+/**
+ * 독립 검수를 통과한 후보를 모델링한다. fake 세션의 getProposedProject가 돌려주는
+ * 초안이 곧 검수 승인본이므로, 실제 적용 경로의 승인 확인(isDraftReviewApproved)과
+ * 불변 베이스라인(stale) 검사는 그대로 탄다 — 검수를 끄거나 베이스라인을
+ * 다시 캡처하지 않는다. 승인은 캡처한 후보 스냅샷과 일치할 때만 성립한다.
+ */
+function reviewedTurn(proposedCalls: ProposedCall[], assistantText = "완료"): TurnResult {
+  return {
+    ...turn(proposedCalls, assistantText),
+    review: { status: "approved", revision: 1, summary: "독립 검수 승인", findings: [] },
+  };
+}
+
+function mockReviewedDraftApproval(approved: Project): void {
+  const identity = JSON.stringify(approved);
+  vi.spyOn(AssistantSession.prototype, "isDraftReviewApproved").mockImplementation(function (
+    this: AssistantSession,
+    candidate?: Project,
+  ): boolean {
+    const current = candidate ?? this.getProposedProject();
+    return JSON.stringify(current) === identity;
+  });
+}
+
 beforeEach(() => {
   restoreDom = installFakeDom();
   installBrowserGlobals();
@@ -132,8 +157,9 @@ describe("과삽입 자동 적용", () => {
       result,
       destructive: true,
     }];
-    vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn(destructive));
+    vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(reviewedTurn(destructive));
     vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => structuredClone(drafted));
+    mockReviewedDraftApproval(drafted);
 
     const panel = renderPanel();
     const input = findByTestId(panel, "ai-input") as FakeElement;
@@ -160,8 +186,9 @@ describe("과삽입 자동 적용", () => {
       result,
       destructive: true,
     }];
-    vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn(destructive));
+    vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(reviewedTurn(destructive));
     vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => structuredClone(drafted));
+    mockReviewedDraftApproval(drafted);
     const rebaseSpy = vi.spyOn(AssistantSession.prototype, "rebaseProject");
 
     const panel = renderPanel();
