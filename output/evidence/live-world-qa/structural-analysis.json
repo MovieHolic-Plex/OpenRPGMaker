@@ -1,0 +1,73 @@
+{
+  "projectPath": "output/evidence/live-world-qa/latest-remote-project.json",
+  "dimensions": [
+    128,
+    128
+  ],
+  "mapCount": 7,
+  "houses": 10,
+  "housesPreserved": true,
+  "guides": [
+    {
+      "name": "남쪽항구",
+      "eventId": "ev_guide_south_port",
+      "present": true,
+      "preserved": true
+    },
+    {
+      "name": "초원마을",
+      "eventId": "ev_guide_grassland_village",
+      "present": true,
+      "preserved": true
+    },
+    {
+      "name": "숲속마을",
+      "eventId": "ev_guide_forest_village",
+      "present": true,
+      "preserved": true
+    },
+    {
+      "name": "호수쉼터",
+      "eventId": "ev_guide_lake_shelter",
+      "present": true,
+      "preserved": true
+    },
+    {
+      "name": "산길초소",
+      "eventId": "ev_guide_mountain_post",
+      "present": true,
+      "preserved": true
+    },
+    {
+      "name": "황야유적",
+      "eventId": "ev_guide_desert_ruins",
+      "present": true,
+      "preserved": true
+    },
+    {
+      "name": "설원마을",
+      "eventId": "ev_guide_snow_village",
+      "present": true,
+      "preserved": true
+    },
+    {
+      "name": "습지연구소",
+      "eventId": "ev_guide_wetland_lab",
+      "present": true,
+      "preserved": true
+    }
+  ],
+  "startPreserved": true,
+  "treeCanopies": 144,
+  "snowCells": 1748,
+  "waterCells": 1084,
+  "waterEdgeCells": 73,
+  "repairedCells": {
+    "forest": 269,
+    "mountain": 335,
+    "wetlands": 729,
+    "ruins": 42
+  },
+  "lintErrors": [],
+  "lintWarnings": 55
+}

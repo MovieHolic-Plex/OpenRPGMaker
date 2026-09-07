@@ -1,0 +1,71 @@
+{
+  "scenarioId": "shop-decision-economy",
+  "projectPath": "reports/shop-decision-2026-09-07/economy/qa-fixture.json",
+  "seed": 1,
+  "viewport": {
+    "width": 1024,
+    "height": 768
+  },
+  "errors": [],
+  "beats": [
+    {
+      "index": 0,
+      "id": "field-start",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_lantern_village",
+        "x": 14,
+        "y": 18,
+        "gold": 100,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Enter"
+        },
+        {
+          "kind": "waitForRuntime"
+        },
+        {
+          "kind": "seed",
+          "seed": 1
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "id": "entrance",
+      "shot": "02-entrance.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_lantern_village",
+        "x": 14,
+        "y": 18,
+        "gold": 100,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_lantern_village",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 1
+        }
+      },
+      "actions": [
+        {
+          "kind": "face",
+          "dir": "right"
+        },
+        {
+          "kind": "action"
+        }
+      ]
+    }
+  ]
+}

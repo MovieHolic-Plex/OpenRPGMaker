@@ -1,3 +1,4 @@
+import { setImmediate } from "node:timers/promises";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { AssistantSession, type AssistantSessionOptions, type SessionEvent, type SessionTurnOptions, type TurnResult } from "@/ai/assistantSession";
 import { type BuildSpec, validateBuildSpec } from "@/ai/buildSpec";
@@ -23,6 +24,8 @@ function fixture(options: Pick<AssistantSessionOptions, "declareIntent"> = {}) {
   const session = new AssistantSession(ctx.project, {
     config: { authMode: "apiKey", baseUrl: "x", model: "stub", apiKey: "test", maxToolCalls: 1, maxTokens: 8192 },
     chat, declareIntent: fixedDeclarer({ mode: "modify" }), ...options,
+    // Real task boundaries let Vitest service RPC acknowledgements between synchronous tools.
+    yieldToUi: () => setImmediate(),
   });
   let batch = 0;
   const events: ToolEvent[] = [];

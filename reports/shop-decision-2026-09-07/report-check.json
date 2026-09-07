@@ -1,0 +1,27 @@
+{
+  "passed": true,
+  "viewports": [
+    {
+      "width": 1440,
+      "images": 17,
+      "links": 87,
+      "controls": 4,
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "images": 17,
+      "links": 87,
+      "controls": 4,
+      "overflow": false
+    }
+  ],
+  "errors": [],
+  "cleanup": {
+    "pages": [
+      true,
+      true
+    ],
+    "browserClosed": true
+  }
+}

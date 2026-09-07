@@ -96,11 +96,12 @@ export class ToolVerificationEvidence {
     return this.explicitPasses.has(stableKey([name, args]));
   }
 
-  problems(scope: "all" | "required" = "all"): readonly string[] {
-    return [...new Set([...this.checks.values()].flatMap(({ name, verdict, stale, explicit }) => {
+  problems(scope: "all" | "required" | "explicit" = "all"): readonly string[] {
+    return [...new Set([...this.checks.entries()].flatMap(([key, { name, verdict, stale, explicit }]) => {
+      if (scope === "explicit" && !explicit) return [];
       if (scope === "required" && !explicit && !this.requiredTools.has(name)) return [];
       const issues = verdict.blockingIssues.map((issue) => `${name}: ${issue}`);
-      if (stale) issues.push(`${name}: 변경 후 재검증 필요`);
+      if (stale) issues.push(`${name}: 변경 후 재검증 필요 — ${key}`);
       return issues;
     }).concat(
       [...this.requiredTools].filter(name => !this.passed(name)).map(name => `${name}: 필수 검증 미통과`),

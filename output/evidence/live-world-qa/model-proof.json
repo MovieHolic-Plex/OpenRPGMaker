@@ -1,0 +1,537 @@
+{
+  "model": "gemini-3.7-flash",
+  "projectId": "rpg-zzu-qa-world-2026-09-06-f51eb3ca-final",
+  "requests": [
+    {
+      "at": "2026-09-06T21:24:37.089Z",
+      "type": "model-request",
+      "model": "gemini-3.7-flash",
+      "toolCount": 0,
+      "hasTools": false,
+      "hasPreciseTilePainting": false,
+      "reasoning": {
+        "effort": "high"
+      }
+    },
+    {
+      "at": "2026-09-06T21:24:42.050Z",
+      "type": "model-request",
+      "model": "gemini-3.7-flash",
+      "toolCount": 0,
+      "hasTools": false,
+      "hasPreciseTilePainting": false
+    },
+    {
+      "at": "2026-09-06T21:24:48.870Z",
+      "type": "model-request",
+      "model": "gemini-3.7-flash",
+      "toolCount": 203,
+      "hasTools": true,
+      "hasPreciseTilePainting": true,
+      "reasoning": {
+        "effort": "high"
+      }
+    },
+    {
+      "at": "2026-09-06T21:26:11.039Z",
+      "type": "model-request",
+      "model": "gemini-3.7-flash",
+      "toolCount": 0,
+      "hasTools": false,
+      "hasPreciseTilePainting": false,
+      "reasoning": {
+        "effort": "high"
+      }
+    },
+    {
+      "at": "2026-09-06T21:26:16.317Z",
+      "type": "model-request",
+      "model": "gemini-3.7-flash",
+      "toolCount": 203,
+      "hasTools": true,
+      "hasPreciseTilePainting": true,
+      "reasoning": {
+        "effort": "high"
+      }
+    },
+    {
+      "at": "2026-09-06T21:26:30.509Z",
+      "type": "model-request",
+      "model": "gemini-3.7-flash",
+      "toolCount": 203,
+      "hasTools": true,
+      "hasPreciseTilePainting": true,
+      "reasoning": {
+        "effort": "high"
+      }
+    }
+  ],
+  "http": [
+    {
+      "at": "2026-09-06T21:24:41.578Z",
+      "type": "model-http",
+      "status": 200
+    },
+    {
+      "at": "2026-09-06T21:24:44.475Z",
+      "type": "model-http",
+      "status": 200
+    },
+    {
+      "at": "2026-09-06T21:25:02.875Z",
+      "type": "model-http",
+      "status": 200
+    },
+    {
+      "at": "2026-09-06T21:26:15.031Z",
+      "type": "model-http",
+      "status": 200
+    },
+    {
+      "at": "2026-09-06T21:26:22.431Z",
+      "type": "model-http",
+      "status": 200
+    },
+    {
+      "at": "2026-09-06T21:26:36.816Z",
+      "type": "model-http",
+      "status": 200
+    }
+  ],
+  "inspectionWindows": [
+    {
+      "args": {
+        "y": 0,
+        "h": 24,
+        "mapId": "map_blank_start",
+        "w": 24,
+        "x": 0
+      },
+      "ok": true,
+      "summary": "맵 미리보기: (0,0) 24×24 (여섯 지역 탐험지도)",
+      "at": "2026-09-06T21:25:04.083Z"
+    },
+    {
+      "args": {
+        "mapId": "map_blank_start",
+        "h": 24,
+        "x": 24,
+        "w": 24,
+        "y": 0
+      },
+      "ok": true,
+      "summary": "맵 미리보기: (24,0) 24×24 (여섯 지역 탐험지도)",
+      "at": "2026-09-06T21:25:05.760Z"
+    },
+    {
+      "args": {
+        "h": 24,
+        "mapId": "map_blank_start",
+        "y": 0,
+        "x": 48,
+        "w": 24
+      },
+      "ok": true,
+      "summary": "맵 미리보기: (48,0) 24×24 (여섯 지역 탐험지도)",
+      "at": "2026-09-06T21:25:06.723Z"
+    },
+    {
+      "args": {
+        "y": 0,
+        "h": 24,
+        "x": 72,
+        "w": 24,
+        "mapId": "map_blank_start"
+      },
+      "ok": true,
+      "summary": "맵 미리보기: (72,0) 24×24 (여섯 지역 탐험지도)",
+      "at": "2026-09-06T21:25:07.009Z"
+    },
+    {
+      "args": {
+        "h": 24,
+        "mapId": "map_blank_start",
+        "y": 0,
+        "x": 96,
+        "w": 24
+      },
+      "ok": true,
+      "summary": "맵 미리보기: (96,0) 24×24 (여섯 지역 탐험지도)",
+      "at": "2026-09-06T21:25:07.967Z"
+    },
+    {
+      "args": {
+        "h": 24,
+        "y": 0,
+        "mapId": "map_blank_start",
+        "x": 120,
+        "w": 8
+      },
+      "ok": true,
+      "summary": "맵 미리보기: (120,0) 8×24 (여섯 지역 탐험지도)",
+      "at": "2026-09-06T21:25:09.168Z"
+    },
+    {
+      "args": {
+        "mapId": "map_blank_start",
+        "y": 24,
+        "w": 24,
+        "x": 0,
+        "h": 24
+      },
+      "ok": true,
+      "summary": "맵 미리보기: (0,24) 24×24 (여섯 지역 탐험지도)",
+      "at": "2026-09-06T21:25:10.522Z"
+    },
+    {
+      "args": {
+        "x": 24,
+        "h": 24,
+        "y": 24,
+        "mapId": "map_blank_start",
+        "w": 24
+      },
+      "ok": true,
+      "summary": "맵 미리보기: (24,24) 24×24 (여섯 지역 탐험지도)",
+      "at": "2026-09-06T21:25:11.772Z"
+    },
+    {
+      "args": {
+        "x": 48,
+        "w": 24,
+        "mapId": "map_blank_start",
+        "h": 24,
+        "y": 24
+      },
+      "ok": true,
+      "summary": "맵 미리보기: (48,24) 24×24 (여섯 지역 탐험지도)",
+      "at": "2026-09-06T21:25:13.776Z"
+    },
+    {
+      "args": {
+        "h": 24,
+        "mapId": "map_blank_start",
+        "x": 72,
+        "w": 24,
+        "y": 24
+      },
+      "ok": true,
+      "summary": "맵 미리보기: (72,24) 24×24 (여섯 지역 탐험지도)",
+      "at": "2026-09-06T21:25:14.429Z"
+    },
+    {
+      "args": {
+        "mapId": "map_blank_start",
+        "w": 24,
+        "h": 24,
+        "y": 24,
+        "x": 96
+      },
+      "ok": true,
+      "summary": "맵 미리보기: (96,24) 24×24 (여섯 지역 탐험지도)",
+      "at": "2026-09-06T21:25:15.863Z"
+    },
+    {
+      "args": {
+        "h": 24,
+        "w": 8,
+        "x": 120,
+        "y": 24,
+        "mapId": "map_blank_start"
+      },
+      "ok": true,
+      "summary": "맵 미리보기: (120,24) 8×24 (여섯 지역 탐험지도)",
+      "at": "2026-09-06T21:25:17.761Z"
+    },
+    {
+      "args": {
+        "w": 24,
+        "y": 48,
+        "h": 24,
+        "x": 0,
+        "mapId": "map_blank_start"
+      },
+      "ok": true,
+      "summary": "맵 미리보기: (0,48) 24×24 (여섯 지역 탐험지도)",
+      "at": "2026-09-06T21:25:18.624Z"
+    },
+    {
+      "args": {
+        "y": 48,
+        "h": 24,
+        "x": 24,
+        "mapId": "map_blank_start",
+        "w": 24
+      },
+      "ok": true,
+      "summary": "맵 미리보기: (24,48) 24×24 (여섯 지역 탐험지도)",
+      "at": "2026-09-06T21:25:19.776Z"
+    },
+    {
+      "args": {
+        "mapId": "map_blank_start",
+        "x": 48,
+        "w": 24,
+        "h": 24,
+        "y": 48
+      },
+      "ok": true,
+      "summary": "맵 미리보기: (48,48) 24×24 (여섯 지역 탐험지도)",
+      "at": "2026-09-06T21:25:20.659Z"
+    },
+    {
+      "args": {
+        "h": 24,
+        "y": 48,
+        "x": 72,
+        "w": 24,
+        "mapId": "map_blank_start"
+      },
+      "ok": true,
+      "summary": "맵 미리보기: (72,48) 24×24 (여섯 지역 탐험지도)",
+      "at": "2026-09-06T21:25:22.223Z"
+    },
+    {
+      "args": {
+        "mapId": "map_blank_start",
+        "y": 48,
+        "h": 24,
+        "w": 24,
+        "x": 96
+      },
+      "ok": true,
+      "summary": "맵 미리보기: (96,48) 24×24 (여섯 지역 탐험지도)",
+      "at": "2026-09-06T21:25:24.311Z"
+    },
+    {
+      "args": {
+        "h": 24,
+        "y": 48,
+        "mapId": "map_blank_start",
+        "w": 8,
+        "x": 120
+      },
+      "ok": true,
+      "summary": "맵 미리보기: (120,48) 8×24 (여섯 지역 탐험지도)",
+      "at": "2026-09-06T21:25:26.363Z"
+    },
+    {
+      "args": {
+        "w": 24,
+        "mapId": "map_blank_start",
+        "x": 0,
+        "h": 24,
+        "y": 72
+      },
+      "ok": true,
+      "summary": "맵 미리보기: (0,72) 24×24 (여섯 지역 탐험지도)",
+      "at": "2026-09-06T21:25:28.794Z"
+    },
+    {
+      "args": {
+        "y": 72,
+        "x": 24,
+        "w": 24,
+        "h": 24,
+        "mapId": "map_blank_start"
+      },
+      "ok": true,
+      "summary": "맵 미리보기: (24,72) 24×24 (여섯 지역 탐험지도)",
+      "at": "2026-09-06T21:25:32.515Z"
+    },
+    {
+      "args": {
+        "h": 24,
+        "w": 24,
+        "x": 48,
+        "y": 72,
+        "mapId": "map_blank_start"
+      },
+      "ok": true,
+      "summary": "맵 미리보기: (48,72) 24×24 (여섯 지역 탐험지도)",
+      "at": "2026-09-06T21:25:35.183Z"
+    },
+    {
+      "args": {
+        "w": 24,
+        "mapId": "map_blank_start",
+        "y": 72,
+        "h": 24,
+        "x": 72
+      },
+      "ok": true,
+      "summary": "맵 미리보기: (72,72) 24×24 (여섯 지역 탐험지도)",
+      "at": "2026-09-06T21:25:37.307Z"
+    },
+    {
+      "args": {
+        "h": 24,
+        "mapId": "map_blank_start",
+        "x": 96,
+        "w": 24,
+        "y": 72
+      },
+      "ok": true,
+      "summary": "맵 미리보기: (96,72) 24×24 (여섯 지역 탐험지도)",
+      "at": "2026-09-06T21:25:40.077Z"
+    },
+    {
+      "args": {
+        "x": 120,
+        "h": 24,
+        "y": 72,
+        "mapId": "map_blank_start",
+        "w": 8
+      },
+      "ok": true,
+      "summary": "맵 미리보기: (120,72) 8×24 (여섯 지역 탐험지도)",
+      "at": "2026-09-06T21:25:41.731Z"
+    },
+    {
+      "args": {
+        "x": 0,
+        "w": 24,
+        "mapId": "map_blank_start",
+        "y": 96,
+        "h": 24
+      },
+      "ok": true,
+      "summary": "맵 미리보기: (0,96) 24×24 (여섯 지역 탐험지도)",
+      "at": "2026-09-06T21:25:44.156Z"
+    },
+    {
+      "args": {
+        "h": 24,
+        "w": 24,
+        "x": 24,
+        "mapId": "map_blank_start",
+        "y": 96
+      },
+      "ok": true,
+      "summary": "맵 미리보기: (24,96) 24×24 (여섯 지역 탐험지도)",
+      "at": "2026-09-06T21:25:46.022Z"
+    },
+    {
+      "args": {
+        "w": 24,
+        "x": 48,
+        "h": 24,
+        "mapId": "map_blank_start",
+        "y": 96
+      },
+      "ok": true,
+      "summary": "맵 미리보기: (48,96) 24×24 (여섯 지역 탐험지도)",
+      "at": "2026-09-06T21:25:48.174Z"
+    },
+    {
+      "args": {
+        "x": 72,
+        "w": 24,
+        "mapId": "map_blank_start",
+        "h": 24,
+        "y": 96
+      },
+      "ok": true,
+      "summary": "맵 미리보기: (72,96) 24×24 (여섯 지역 탐험지도)",
+      "at": "2026-09-06T21:25:51.464Z"
+    },
+    {
+      "args": {
+        "x": 96,
+        "y": 96,
+        "mapId": "map_blank_start",
+        "h": 24,
+        "w": 24
+      },
+      "ok": true,
+      "summary": "맵 미리보기: (96,96) 24×24 (여섯 지역 탐험지도)",
+      "at": "2026-09-06T21:25:53.970Z"
+    },
+    {
+      "args": {
+        "y": 96,
+        "h": 24,
+        "x": 120,
+        "w": 8,
+        "mapId": "map_blank_start"
+      },
+      "ok": true,
+      "summary": "맵 미리보기: (120,96) 8×24 (여섯 지역 탐험지도)",
+      "at": "2026-09-06T21:25:55.269Z"
+    },
+    {
+      "args": {
+        "y": 120,
+        "h": 8,
+        "mapId": "map_blank_start",
+        "x": 0,
+        "w": 24
+      },
+      "ok": true,
+      "summary": "맵 미리보기: (0,120) 24×8 (여섯 지역 탐험지도)",
+      "at": "2026-09-06T21:25:57.176Z"
+    },
+    {
+      "args": {
+        "y": 120,
+        "w": 24,
+        "x": 24,
+        "mapId": "map_blank_start",
+        "h": 8
+      },
+      "ok": true,
+      "summary": "맵 미리보기: (24,120) 24×8 (여섯 지역 탐험지도)",
+      "at": "2026-09-06T21:25:59.376Z"
+    },
+    {
+      "args": {
+        "x": 48,
+        "w": 24,
+        "h": 8,
+        "y": 120,
+        "mapId": "map_blank_start"
+      },
+      "ok": true,
+      "summary": "맵 미리보기: (48,120) 24×8 (여섯 지역 탐험지도)",
+      "at": "2026-09-06T21:26:02.299Z"
+    },
+    {
+      "args": {
+        "h": 8,
+        "mapId": "map_blank_start",
+        "y": 120,
+        "x": 72,
+        "w": 24
+      },
+      "ok": true,
+      "summary": "맵 미리보기: (72,120) 24×8 (여섯 지역 탐험지도)",
+      "at": "2026-09-06T21:26:05.297Z"
+    },
+    {
+      "args": {
+        "y": 120,
+        "h": 8,
+        "x": 96,
+        "w": 24,
+        "mapId": "map_blank_start"
+      },
+      "ok": true,
+      "summary": "맵 미리보기: (96,120) 24×8 (여섯 지역 탐험지도)",
+      "at": "2026-09-06T21:26:07.584Z"
+    },
+    {
+      "args": {
+        "mapId": "map_blank_start",
+        "y": 120,
+        "h": 8,
+        "x": 120,
+        "w": 8
+      },
+      "ok": true,
+      "summary": "맵 미리보기: (120,120) 8×8 (여섯 지역 탐험지도)",
+      "at": "2026-09-06T21:26:09.957Z"
+    }
+  ],
+  "inspectedCells": 16384,
+  "reportedSummary": "여섯 지역 탐험지도(128×128) 전체 구역에 대한 시각 검수 및 이동 경로 도달성 검증을 완료했습니다.\n\n1. **지형 및 주요 거점 시각 검수**\n   - 36개 전체 분할 영역(6×6 그리드) 타일 조회를 통해 6대 주요 환경(초원, 침엽수림, 바위산지, 황야사막, 설원, 해안습지)과 8개 거점(남쪽항구, 초원마을, 숲속마을, 호수쉼터, 산길초소, 황야유적, 설원마을, 습지연구소)의 외관 배치와 8개 안내 표지석 배치를 확인했습니다.\n   - 10채의 야외 가옥 및 6개 연결 실내 맵 구조가 의도대로 온전하게 유지되고 있습니다.\n\n2. **도달성 및 무결성 검증 결과**\n   - **도달성 검사**: 시작 위치 `(24, 118)`에서 8개 주요 목적지 좌표 `(24, 115)`, `(24, 85)`, `(24, 28)`, `(49, 48)`, `(85, 24)`, `(105, 64)`, `(105, 19)`, `(75, 101)`로의 이동 경로가 모두 끊김 없이 정상 도달 가능함을 확인했습니다(`reachable: true`).\n   - **프로젝트 무결성 검사**: 중대한 구조적 오류(Error)는 0건으로 통과되었습니다."
+}

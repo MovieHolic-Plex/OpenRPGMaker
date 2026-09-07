@@ -19,18 +19,24 @@ export function p2Scenarios(fixture) {
     resetsContext: false, tools: ['set_title_screen'], summary: 'QA surface', action: 'direct' };
   const contractIntent = { ...baseIntent, needsPlan: true, action: 'new_plan', goal: 'QA scoped requirements',
     layers: [{ title: 'Inspect', items: [work('initial', [])] }] };
+  // Planner and generator share item IDs; only the generator adds requirements.
+  const contractFor = requirements => ({ ...contractIntent, layers: plan(requirements).layers });
   const outcome = (execution, goal, delivery) => ({ execution, goal, delivery });
   return {
     required: [
-      { id: 'required-skip', intent: contractIntent, rounds: skipped([unmet]),
+      { id: 'required-skip', intent: contractFor([unmet]), rounds: skipped([unmet]),
         expected: outcome('blocked', 'incomplete', 'no-change'), requiredIds: [unmet.id], skipped: 1 },
-      { id: 'optional-skip', intent: contractIntent, rounds: skipped([measured, optional]),
+      { id: 'optional-skip', intent: contractFor([measured, optional]), rounds: skipped([measured, optional]),
         expected: outcome('response-final', 'satisfied', 'no-change'), requiredIds: [measured.id, optional.id], skipped: 2,
         optionalId: optional.id },
-      { id: 'replan-preserves-required', intent: contractIntent, rounds: [
-        ...skipped([unmet]), ...skipped([measured]),
+      { id: 'replan-preserves-required', intent: contractFor([unmet]), rounds: [
+        ...skipped([unmet]),
+        // Same scheduler identity, no links or old declaration: the ledger must retain it.
+        [call('set_work_plan', { ...plan([measured]), layers: [
+          { title: 'Requirements', items: [work(`work-${unmet.id}`, [])] },
+        ] }), ...skip([unmet])],
       ], expected: outcome('blocked', 'incomplete', 'no-change'), requiredIds: [unmet.id, measured.id], skipped: 1 },
-      { id: 'user-withdrawal', intent: contractIntent, rounds: skipped([measured, unmet]),
+      { id: 'user-withdrawal', intent: contractFor([measured, unmet]), rounds: skipped([measured, unmet]),
         expected: outcome('blocked', 'incomplete', 'no-change'), requiredIds: [measured.id, unmet.id], skipped: 2,
         withdrawId: unmet.id },
       { id: 'blocked-ask-resume', askThenResume: true,

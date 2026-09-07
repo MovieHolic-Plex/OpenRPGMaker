@@ -14,6 +14,7 @@ import { summarizeChanges } from "./changeset";
 import {
   describeAuthorHouseChanges,
   validateAuthorHousePostconditions,
+  validateAuthorHouseTreeClearance,
 } from "./authorHousePostconditions";
 import type {
   AuthorHouseExecution,
@@ -34,6 +35,7 @@ export function executeAuthorHouse(draft: Project, rawArgs: Record<string, unkno
     throw new ToolError(`맵을 찾을 수 없습니다: ${request.mapId}`, { code: "missing-map", mapId: request.mapId });
   }
   validatePlans(request);
+  validateAuthorHouseTreeClearance(targetMap, request);
 
   const execution = buildRequestedHouses(draft, request);
   restoreStartIfHouseCovered(before, draft);
