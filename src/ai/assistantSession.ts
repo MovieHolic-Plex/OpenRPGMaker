@@ -1,3 +1,4 @@
+import { parseFunctionalRequirements, type FunctionalCriterion } from "./functionalAcceptance";
 import { missingAcceptance, type AcceptanceSnapshot, type AcceptancePromise, type AcceptanceSource, type RequirementWithdrawalAction } from "./assistantAcceptance";
 import { acceptanceFingerprint } from "./assistantAcceptanceEvaluation";
 import { deriveRunOutcome, type RunOutcome } from "./runOutcome";
@@ -1873,6 +1874,19 @@ export class AssistantSession {
       this.adventureIconRecords.clear();
       this.readEvidence.begin(intent.readBeforeWrite);
     }
+    if (!question && (newRequest || startsGoal)) {
+      const functional: FunctionalCriterion[] = intent.functionalAcceptance ? [...parseFunctionalRequirements(intent.functionalAcceptance)] : [];
+      const rewards = this.npcRewardRequirements;
+      if (rewards) {
+        if ("invalidReason" in rewards) functional.push({ kind: "functionalUnresolved", reason: rewards.invalidReason });
+        else if (rewards.length === 0) functional.push({ kind: "functionalUnresolved", reason: "npcRewards: missing requirements" });
+        else functional.push(...rewards.map((requirement): FunctionalCriterion => ({ kind: "npcReward", requirement })));
+      }
+      if (functional.length) this.adoptAcceptance(functional.map((criterion, index) => ({
+        id: `${this.acceptanceRequestSource.requestId}:functional:${index}`, title: criterion.kind,
+        required: true, criteria: [criterion],
+      })), onEvent);
+    }
     if (!question && intent.statefulNpcs === true) this.statefulNpcRequirement = true;
     if (intent.actionCombat && intent.mode !== "question") {
       this.adoptAcceptance([], onEvent);
@@ -2025,9 +2039,9 @@ export class AssistantSession {
   /** 질문 모드는 선언을 「질문·단일 단계」로 고정한다. 다른 모드는 선언 그대로. */
   private applyComposerModeToIntent(intent: IntentDeclaration): IntentDeclaration {
     if (this.turnComposerMode !== "ask") return intent;
-    if (intent.mode === "question" && !intent.needsPlan && !intent.npcRewards) return intent;
+    if (intent.mode === "question" && !intent.needsPlan && !intent.npcRewards && !intent.functionalAcceptance) return intent;
     this.pushAudit({ kind: "status", text: `composer:ask 선언 mode=${intent.mode}→question needsPlan=${intent.needsPlan}→false` });
-    return { ...intent, mode: "question", needsPlan: false, npcRewards: undefined };
+    return { ...intent, mode: "question", needsPlan: false, npcRewards: undefined, functionalAcceptance: undefined };
   }
 
   /** 계획 모드: 계획 카드를 내고 실행 없이 턴을 끝낸다. 「계속」이 다음 턴에서 resume 으로 실행한다. */
@@ -2518,7 +2532,7 @@ export class AssistantSession {
         return { ok: false, summary: `검증 항목은 건너뛸 수 없습니다: ${id}. 보고된 문제를 수정하고 필수 검증을 다시 실행하거나 막힌 이유를 보고하세요.` };
       }
       const note = typeof args.note === "string" ? args.note : undefined;
-      const rewards: WorkItemOutcomeVerdict = this.finishesWorkPlan(id) ? this.npcRewardOutcome() : { ok: true };
+      const rewards: WorkItemOutcomeVerdict = item ? this.npcRewardOutcome(item) : { ok: true };
       if (!rewards.ok) return { ok: false, summary: rewards.reason, issues: [{ severity: "error", code: "npc-reward-incomplete", message: rewards.reason }] };
       if (item) this.verificationEvidence.recordSkippedTools(id, item.successTools ?? []);
       const skipped = skipWorkItemById(this.workPlan, id, note);
@@ -2599,7 +2613,12 @@ export class AssistantSession {
   }
 
   private npcRewardOutcome(item?: WorkItem): WorkItemOutcomeVerdict {
-    const required = this.npcRewardRequirements;
+    const captured = this.npcRewardRequirements;
+    const active = this.acceptance?.getFunctionalCriteria().filter(criterion => criterion.kind === "npcReward");
+    const retained = captured && !("invalidReason" in captured) && active
+      ? captured.filter(requirement => active.some(criterion => criterion.kind === "npcReward"
+        && acceptanceFingerprint(criterion.requirement) === acceptanceFingerprint(requirement))) : captured;
+    const required = Array.isArray(retained) && retained.length === 0 ? undefined : retained;
     if (required === undefined || this.turnComposerMode === "ask" || this.lastTurnPlanOnly) return { ok: true };
     const project = this.getProposedProject();
     if (!item || this.finishesWorkPlan(item.id)) return verifyNpcRewardsPlayable(project, required);
@@ -2610,8 +2629,13 @@ export class AssistantSession {
   }
 
   private npcRewardNote(): string | null {
-    return this.turnComposerMode === "ask" || this.npcRewardRequirements === undefined ? null : formatIntentNote({
-      ...emptyIntentDeclaration(), source: "llm", npcRewards: this.npcRewardRequirements,
+    if (this.turnComposerMode === "ask") return null;
+    const functional = this.acceptance?.getFunctionalCriteria();
+    const activeRewards = functional?.flatMap(criterion => criterion.kind === "npcReward" ? [criterion.requirement] : []);
+    const npcRewards = activeRewards ? activeRewards.length ? activeRewards : undefined : this.npcRewardRequirements;
+    if (npcRewards === undefined && !functional?.length) return null;
+    return formatIntentNote({ ...emptyIntentDeclaration(), source: "llm", npcRewards,
+      ...(functional?.length ? { functionalAcceptance: functional } : {}),
     });
   }
 
@@ -3032,8 +3056,12 @@ export class AssistantSession {
     signal?: AbortSignal,
   ): Promise<RunEndProofState> {
     const outcomeOwner = this.runResult;
+    const acceptance = this.acceptance;
+    const functionalDraftPending = (): boolean => Boolean(acceptance?.getFunctionalCriteria().length && this.turnProposals.size > 0
+      && acceptanceFingerprint(this.ctx.project) !== acceptanceFingerprint(store.getCurrent()));
     const previous = this.getRunEndProof();
-    if (!signal?.aborted && previous?.verified) {
+    if (!signal?.aborted && previous?.verified && !this.acceptanceOpen() && !functionalDraftPending()
+      && (acceptance?.functionalProblems(store.getCurrent()).length ?? 0) === 0) {
       this.publishRunOutcome(onEvent);
       return previous;
     }
@@ -3053,6 +3081,7 @@ export class AssistantSession {
       return this.projectRunEndProof(this.runEndProof);
     };
     if (signal?.aborted) return fail("cancelled");
+    if (functionalDraftPending()) return fail("unapplied-functional-draft");
     if (!store.isRemotePersistenceEnabled()) {
       this.pushAudit({ kind: "status", text: "agent_run_local_only — remote persistence 비활성으로 저장 증명을 건너뜁니다" });
       return fail("disabled");
@@ -3078,7 +3107,11 @@ export class AssistantSession {
       this.emitRunEndProof(this.runEndProof = state, onEvent);
       if (this.runEndProof !== state) return this.projectRunEndProof(this.runEndProof);
       if (signal?.aborted) return fail("cancelled");
-      const proof = await store.verifyPersistedRevision(receipt, { signal });
+      const proof = await store.verifyPersistedRevision(receipt, { signal, validate: project => {
+        if (functionalDraftPending()) return "unapplied-functional-draft";
+        const problems = acceptance?.functionalProblems(project) ?? [];
+        return problems.length ? `Functional acceptance incomplete on canonical reload: ${problems.join("; ")}` : undefined;
+      } });
       if (this.runEndProof !== state) return this.projectRunEndProof(this.runEndProof);
       if (signal?.aborted) return fail("cancelled", proof);
       if (proof.kind !== "verified") return fail(proof.kind === "mismatch" ? `mismatch-${proof.reason}` : proof.kind, proof);
@@ -3088,6 +3121,7 @@ export class AssistantSession {
       // Recheck ownership before freshness: an obsolete attempt cannot replace newer state.
       if (this.runEndProof !== state) return this.projectRunEndProof(this.runEndProof);
       if (!store.isPersistenceReceiptCurrent(receipt) || signal?.aborted) return fail(signal?.aborted ? "cancelled" : "stale", proof);
+      if (functionalDraftPending()) return fail("unapplied-functional-draft", proof);
       this.pushAudit({
         kind: "status",
         text: `agent_run_saved projectId=${receipt.projectId} revision=${receipt.revisionId} contentIdentity=${receipt.contentIdentity} sha256=${receipt.sha256 ?? "none"} commit=${commitId ?? "unavailable"} verified=true`,

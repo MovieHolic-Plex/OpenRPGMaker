@@ -78,6 +78,8 @@ import { interactWithLifeField } from "@/player/lifeFieldInteraction";
 import { findChestAt } from "@/project/placeables";
 import { cropStageAt, farmIntentForHand, interactWithFarmPlot } from "@/player/farming";
 import { giveGiftToNpc } from "@/project/friendship";
+import { accrueShopLoyalty, handleShopTransaction, shopItems, type ShopStep } from "@/player/playSceneShop";
+import { beginShopVisit, endShopVisit, shopIsClosed } from "@/player/playSceneShopVisit";
 import { resolveShopStock } from "@/project/shopStock";
 import { applyMapBgmToSession, resolveMapBgm } from "@/player/mapBgm";
 import { advanceTimeAcrossDayBoundaries, setTimeWithMakers, transitionToNextDay } from "@/player/dayTransition";
@@ -104,6 +106,7 @@ export type SceneStep =
   | { kind: "move"; dir?: never; to: { x: number; y: number } }
   | { kind: "interact"; eventId?: string }
   | { kind: "snapshotRewards" }
+  | { kind: "purchase"; eventId: string; itemId: string; count: number; unitPrice: number }
   | { kind: "gift"; eventId?: string; itemId: string }
   | { kind: "choose"; index: number }
   | { kind: "retryCheckpoint" }
@@ -144,8 +147,10 @@ export type SceneExpectStep = {
   inventoryCount?: { itemId: string; count: number } | Record<string, number>;
   /** Deltas from scene start or the latest snapshotRewards step. */
   inventoryDelta?: Record<string, number | { atLeast: number }>;
+  goldDelta?: number;
   ownedMonsterDelta?: Record<string, number | { atLeast: number }>;
   interactionComplete?: boolean;
+  lastTransfer?: { fromMapId: string; eventId: string; toMapId: string };
   friendshipAtLeast?: { npcKey: string; value: number } | Record<string, number>;
   shopStock?: { eventId: string; itemIds: readonly string[]; prices?: Record<string, number>; mapId?: string };
 };
@@ -184,6 +189,7 @@ export interface SceneTestResult {
     readonly cutsceneLocked: boolean;
     readonly switchesOn: readonly string[];
     readonly variables: Record<string, number>;
+    readonly gold: number;
     readonly inventory: Record<string, number>;
     readonly ownedMonsterCounts: Record<string, number>;
     readonly monsterParty: readonly string[];
@@ -201,6 +207,7 @@ type PumpStop =
   | { stop: "done" }
   | { stop: "choices"; choiceCount: number }
   | { stop: "animation" }
+  | { stop: "shop"; step: ShopStep }
   | { stop: "failed"; reason: string };
 
 type CameraTween = {
@@ -242,10 +249,12 @@ interface RunnerState {
   readonly messages: string[];
   gameOver: boolean;
   held: ({ interp: Interpreter; currentEventId?: string } & (
-    { mode: "choices"; choiceCount: number } | { mode: "animation" }
+    { mode: "choices"; choiceCount: number } | { mode: "animation" } | { mode: "shop"; step: ShopStep }
   )) | null;
   runtimeFailure: string | null;
-  rewardBaseline: { inventory: Record<string, number>; monsters: Record<string, number> };
+  executingEventId?: string;
+  lastTransfer?: { fromMapId: string; eventId: string; toMapId: string };
+  rewardBaseline: { inventory: Record<string, number>; monsters: Record<string, number>; gold: number };
 }
 
 /** Ownership is party + box membership, resolved through instances (not actor party). */
@@ -302,8 +311,9 @@ const sceneExpectFields: Readonly<Record<keyof Omit<SceneExpectStep, "kind">, Sc
   timePhase: isTimePhase,
   cropStageAt: value => sceneShape(value, { x: sceneCount, y: sceneCount, stage: sceneCount, mapId: sceneText }, ["x", "y", "stage"]),
   inventoryCount: value => sceneNumbers(value) || sceneShape(value, { itemId: sceneText, count: sceneCount }, ["itemId", "count"]),
-  inventoryDelta: sceneRewardDeltas, ownedMonsterDelta: sceneRewardDeltas,
+  inventoryDelta: sceneRewardDeltas, ownedMonsterDelta: sceneRewardDeltas, goldDelta: sceneNumber,
   interactionComplete: sceneBoolean,
+  lastTransfer: value => sceneShape(value, { fromMapId: sceneText, eventId: sceneText, toMapId: sceneText }, ["fromMapId", "eventId", "toMapId"]),
   friendshipAtLeast: value => sceneNumbers(value) || sceneShape(value, { npcKey: sceneText, value: sceneNumber }, ["npcKey", "value"]),
   shopStock: value => sceneShape(value, { eventId: sceneText, itemIds: sceneStrings, prices: sceneNumbers, mapId: sceneText }, ["eventId", "itemIds"]),
 };
@@ -326,6 +336,9 @@ function isSceneStep(value: unknown): value is SceneStep {
     case "interact": return shape({ eventId: sceneText });
     case "snapshotRewards": case "retryCheckpoint": return shape({});
     case "gift": return shape({ eventId: sceneText, itemId: sceneText }, ["itemId"]);
+    case "purchase": return shape({ eventId: sceneText, itemId: sceneText,
+      count: entry => sceneCount(entry) && Number(entry) > 0 && Number(entry) <= 99,
+      unitPrice: sceneCount }, ["eventId", "itemId", "count", "unitPrice"]);
     case "choose": return shape({
       index: entry => typeof entry === "number" && Number.isSafeInteger(entry) && entry >= -1,
     }, ["index"]);
@@ -383,7 +396,7 @@ export function runSceneTest(project: Project, input: SceneTestInput): SceneTest
     gameOver: false,
     held: null,
     runtimeFailure: null,
-    rewardBaseline: { inventory: { ...session.inventory }, monsters: ownedMonsterCounts(session) },
+    rewardBaseline: { inventory: { ...session.inventory }, monsters: ownedMonsterCounts(session), gold: session.gold },
   };
   initializeFieldSpawnsForRunner(state);
   syncFollowCamera(state);
@@ -411,6 +424,7 @@ export function runSceneTest(project: Project, input: SceneTestInput): SceneTest
 }
 
 function runStep(state: RunnerState, step: SceneStep): string | null {
+  if (state.held && ["walk", "move", "interact", "gift"].includes(step.kind)) return `Interaction still waiting for ${state.held.mode}`;
   switch (step.kind) {
     case "wait":
       return advanceTime(state, Math.max(0, Math.trunc(step.ticks)) * TICK_MS);
@@ -426,9 +440,11 @@ function runStep(state: RunnerState, step: SceneStep): string | null {
     case "interact":
       return runInteractStep(state, step.eventId);
     case "snapshotRewards":
-      state.rewardBaseline = { inventory: { ...state.session.inventory }, monsters: ownedMonsterCounts(state.session) };
+      state.rewardBaseline = { inventory: { ...state.session.inventory }, monsters: ownedMonsterCounts(state.session), gold: state.session.gold };
       state.log.push(`reward baseline ${JSON.stringify(state.rewardBaseline)}`);
       return null;
+    case "purchase":
+      return runPurchaseStep(state, step);
     case "gift":
       return runGiftStep(state, step);
     case "choose":
@@ -709,10 +725,42 @@ function runRetryCheckpointStep(state: RunnerState): string | null {
   return null;
 }
 
+function runPurchaseStep(state: RunnerState, purchase: Extract<SceneStep, { kind: "purchase" }>): string | null {
+  const held = state.held;
+  if (held?.mode !== "shop") return "Purchase requires a shop opened by real interaction";
+  if (held.currentEventId !== purchase.eventId) return `Shop seller: expected ${purchase.eventId}, actual ${held.currentEventId}`;
+  const step = held.step;
+  if (step.shopType === "sellOnly" || step.economy?.shopkeeperEnabled || step.shopServiceKind || step.economy?.haggleEnabled) {
+    return "Purchase requires ordinary player-buy stock; shopkeeper, service and haggle modes are unsupported";
+  }
+  const closed = shopIsClosed(state.session, step);
+  if (closed) return closed;
+  const goods = shopItems(step, state.project).find(item => item.id === purchase.itemId);
+  if (!goods) return `Shop stock: expected ${purchase.itemId}, actual ${JSON.stringify(step.itemIds)}`;
+  if (goods.price !== purchase.unitPrice) return `Shop price: expected ${purchase.unitPrice}, actual ${goods.price}`;
+  const scene = { session: state.session, syncRuntimeState: () => {} };
+  const identity = { mapId: state.session.currentMapId, eventId: held.currentEventId };
+  let merchantGold = beginShopVisit(scene, step, identity);
+  const quantity = step.quantityMode === "select" ? purchase.count : 1;
+  for (let bought = 0; bought < purchase.count; bought += quantity) {
+    const transaction = handleShopTransaction(scene, goods, "buy", quantity, merchantGold);
+    if (!transaction.ok) return `Purchase failed after ${bought} items: ${transaction.status}`;
+    merchantGold = transaction.merchantGold;
+    accrueShopLoyalty(scene, step, goods.price * quantity);
+  }
+  endShopVisit(scene, step, merchantGold, identity);
+  state.log.push(`purchase ${purchase.eventId} ${purchase.itemId} count=${purchase.count} unitPrice=${goods.price}`);
+  state.executingEventId = held.currentEventId;
+  const stop = pump(state, held.interp, held.interp.resume(true));
+  updateHeldInterpreter(state, held.interp, stop, held.currentEventId);
+  return stop.stop === "failed" ? stop.reason : null;
+}
+
 function runChooseStep(state: RunnerState, index: number): string | null {
   if (!state.held || state.held.mode !== "choices") return "choose를 처리할 대기 중 선택지가 없습니다.";
   if (!Number.isInteger(index) || index < -1 || index >= state.held.choiceCount) return `Choice index ${index} is out of range (${state.held.choiceCount} options).`;
   const interp = state.held.interp;
+  state.executingEventId = state.held.currentEventId;
   const stop = pump(state, interp, interp.resume(index));
   refreshRoguelikeRoomForRunner(state);
   updateHeldInterpreter(state, interp, stop, state.held.currentEventId);
@@ -729,6 +777,7 @@ function runEventView(state: RunnerState, view: RuntimeEventView): string | null
   }
   const interp = createInterpreter([...commands], state.session, state.project, { currentEventId: view.event.id, eventPositions: state.eventPositions });
   state.log.push(`event ${view.event.id} start`);
+  state.executingEventId = view.event.id;
   const stop = pump(state, interp, interp.start());
   refreshRoguelikeRoomForRunner(state);
   updateHeldInterpreter(state, interp, stop, view.event.id);
@@ -741,9 +790,10 @@ function updateHeldInterpreter(
   stop: PumpStop,
   currentEventId: string | undefined
 ): void {
-  if (stop.stop === "choices" || stop.stop === "animation") {
+  if (stop.stop === "choices" || stop.stop === "animation" || stop.stop === "shop") {
     state.held = stop.stop === "choices"
       ? { interp, mode: "choices", currentEventId, choiceCount: stop.choiceCount }
+      : stop.stop === "shop" ? { interp, mode: "shop", currentEventId, step: stop.step }
       : { interp, mode: "animation", currentEventId };
     return;
   }
@@ -797,6 +847,7 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
         step = interp.resume(undefined);
         break;
       case "transfer":
+        state.lastTransfer = state.executingEventId ? { fromMapId: state.session.currentMapId, eventId: state.executingEventId, toMapId: step.mapId } : undefined;
         state.session.currentMapId = step.mapId;
         state.session.x = step.x;
         state.session.y = step.y;
@@ -899,8 +950,7 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
         break;
       case "shop":
         state.log.push(`shop: ${formatShopItems(step.items ?? step.itemIds.map((itemId) => ({ itemId })))}`);
-        step = interp.resume(undefined);
-        break;
+        return { stop: "shop", step };
       case "inputWait":
       case "inputNumber":
         step = interp.resume(0);
@@ -1361,6 +1411,14 @@ function cameraSessionState(
 }
 
 function runExpectStep(state: RunnerState, step: SceneExpectStep): string | null {
+  if (step.lastTransfer && (!state.lastTransfer || step.lastTransfer.fromMapId !== state.lastTransfer.fromMapId
+    || step.lastTransfer.eventId !== state.lastTransfer.eventId || step.lastTransfer.toMapId !== state.lastTransfer.toMapId)) {
+    return `Transfer: expected ${JSON.stringify(step.lastTransfer)}, actual ${JSON.stringify(state.lastTransfer ?? null)}`;
+  }
+  if (step.goldDelta !== undefined) {
+    const delta = state.session.gold - state.rewardBaseline.gold;
+    if (delta !== step.goldDelta) return `gold: expected delta ${step.goldDelta}, actual ${delta}`;
+  }
   if (step.interactionComplete !== undefined && (state.held === null) !== step.interactionComplete) {
     return "Interaction completion does not match expectation.";
   }
@@ -2061,6 +2119,7 @@ function result(
       cutsceneLocked: isCutsceneInputLocked(session),
       switchesOn: Object.entries(session.switches).filter(([, value]) => value).map(([key]) => key),
       variables: { ...session.variables },
+      gold: session.gold,
       inventory: { ...session.inventory },
       ownedMonsterCounts: ownedMonsterCounts(session),
       monsterParty: [...session.monsterParty],

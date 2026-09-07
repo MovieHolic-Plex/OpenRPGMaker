@@ -152,8 +152,8 @@ export function verifyNpcRewardsPlayable(
         ...interact,
         ...(requirement.repeatChoices ?? []).map((index): SceneStep => ({ kind: "choose", index })),
         {
-          kind: "expect", interactionComplete: true,
-          inventoryDelta: Object.fromEntries(project.database.items.map((item) => [item.id, 0])),
+          kind: "expect", interactionComplete: true, goldDelta: 0,
+          inventoryDelta: Object.fromEntries([...project.database.items, ...project.database.equipment].map((item) => [item.id, 0])),
           ownedMonsterDelta: Object.fromEntries((project.database.monsterSpecies ?? []).map((species) => [species.id, 0])),
         },
       );

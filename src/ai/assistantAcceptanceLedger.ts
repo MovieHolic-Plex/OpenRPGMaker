@@ -1,3 +1,4 @@
+import { isFunctionalCriterionKind, type FunctionalCriterion } from "./functionalAcceptance";
 import type { Project } from "@/project/types";
 import { isVerifiedActionCombatProof, type ActionCombatProofReceipt } from "@/testing/actionCombatProof";
 import {
@@ -98,6 +99,20 @@ export class AssistantAcceptanceLedger {
   stop(): void { this.stopped = true; }
   getSnapshot(): AcceptanceSnapshot { return this.snapshot; }
 
+  getFunctionalCriteria(): readonly FunctionalCriterion[] {
+    return structuredClone([...this.promises.values()].filter(promise => promise.required !== false && !promise.withdrawal)
+      .flatMap(promise => promise.criteria ?? []).filter((criterion): criterion is FunctionalCriterion => isFunctionalCriterionKind(criterion.kind)));
+  }
+
+  /** Called on the canonical reloaded snapshot inside accepted-revision proof. */
+  functionalProblems(project: Project): readonly string[] {
+    this.bind(project);
+    return [...this.promises.values()].filter(promise => promise.required !== false && !promise.withdrawal)
+      .flatMap(promise => (promise.criteria ?? []).filter(criterion => isFunctionalCriterionKind(criterion.kind)).map(criterion =>
+        evaluateAcceptanceCriterion(criterion, { project, baseline: promise.baseline, bindings: this.bindings, reviewed: () => false })))
+      .filter(evidence => !evidence.passed).map(evidence => `${evidence.expected} -> ${evidence.observed}`);
+  }
+
   private bind(project: Project): void {
     const attempted = new Set<string>();
     for (const promise of [...this.promises.values(), ...this.actionRequirements.values()]) {
@@ -162,8 +177,9 @@ export class AssistantAcceptanceLedger {
       readonly source?: AcceptanceSource;
       readonly withdrawal?: RequirementWithdrawalAction & { readonly source: "user" };
     })[] = [...this.promises.values(), ...this.actionRequirements.values()];
+    const projectBound = (kind: string): boolean => kind === "toolVerdict" || isFunctionalCriterionKind(kind);
     const toolDraftChanged = applied !== draft
-      && promises.some(promise => promise.criteria?.some(criterion => criterion.kind === "toolVerdict"))
+      && promises.some(promise => promise.criteria?.some(criterion => projectBound(criterion.kind)))
       && acceptanceFingerprint(applied) !== acceptanceFingerprint(draft);
     const items: AcceptanceItemSnapshot[] = promises.map(promise => {
       const metadata = { required: promise.required !== false, ...(promise.source ? { source: promise.source } : {}),
@@ -184,7 +200,7 @@ export class AssistantAcceptanceLedger {
         });
       });
       const maps = promise.criteria.flatMap(criterion => criterionTargets(criterion));
-      const unapplied = (toolDraftChanged && promise.criteria.some(criterion => criterion.kind === "toolVerdict")) || maps.some(target => {
+      const unapplied = (toolDraftChanged && promise.criteria.some(criterion => projectBound(criterion.kind))) || maps.some(target => {
         const before = resolveAcceptanceMap(applied, target, this.bindings), after = resolveAcceptanceMap(draft, target, this.bindings);
         return acceptanceFingerprint(before) !== acceptanceFingerprint(after);
       });
