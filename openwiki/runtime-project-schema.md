@@ -120,6 +120,48 @@ The duration contract for playback consumers is: zero means keyboard advance for
 
 `EnemyRecord.battleScalePercent?: number`는 선택적인 전투 표시 백분율이다. `normalizeEnemyRecord`는 유한 숫자를 반올림해 정수 10~300에 제한하고, 누락·비숫자·비유한 값은 100으로 처리한다. 100은 키를 생략해 기존 프로젝트를 희소하게 유지한다. 기존 editor mutation allowlist와 `upsert_enemy` 정수 스키마에 포함되며 `serialize`/`deserialize`가 비기본값을 보존한다. 기존 로드 정규화를 재사용하는 additive 필드라 스키마 버전 변경이나 SQL migration은 없다. `test/enemyBattleScale.test.ts`가 실제 편집→저장→로드→재저장과 손상된 입력/기본값 복귀를 검증한다. 원격 DB 쓰기 없이 엔진·편집기 코드만 변경한 계약이다.
 
+## Project monster metadata overrides (foundation, 2026-09-07)
+
+`Project.monsterMetadata?: Record<string, Partial<MonsterMetadata>>` stores editor-only
+`name`, `tags`, and `description` overrides by raw resource ID. The readonly metadata
+value type is exported through `@/project/types`; mutations belong to
+`@/project/monsterMetadata`. `setMonsterMetadataOverride(overrides, resourceId, patch)`
+returns a new map, trims new input, deduplicates tags, and preserves omitted fields.
+Names must be nonblank and <=120 UTF-16 units; descriptions <=4000; tags <=32 entries
+of <=64 units. Empty tags/descriptions explicitly clear defaults. Loading validates
+stored values without trimming, deduplicating, registering orphan IDs, or backfilling.
+`resetMonsterMetadataOverride(overrides, resourceId)` removes the whole resource override
+and returns `undefined` when the map becomes empty. Callers delete the optional project
+field on that result. Raw IDs such as `terrainTemplates` and `__proto__` retain identity.
+
+`applyMonsterMetadataDelta(base, local, latest)` merges per resource AND per field.
+Only locally changed fields replace latest values; local changes win same-field races.
+A local reset removes fields present in base, preserving concurrently added remote fields.
+Map-patch saves apply this delta; accepted-save reconciliation applies it again using
+submitted/current/saved snapshots. The existing content-lineage guard rejects stale
+responses after project replacement. Reconciliation preserves live maps and does not
+create authored mutation generations or extra history entries. Project snapshots already
+support undo/redo; UI Apply/reset must record one snapshot and use labeled `store.update`.
+
+`@/assets/monsterResourceCatalog` owns `listMonsterResources(project)` and
+`getMonsterResource(project, rawId)` (missing IDs return `undefined`). Entries expose
+`resourceId`, effective metadata, `origin` (`bundled`/`uploaded`/`profile`),
+`reviewStatus` (`reviewed`/`unreviewed`), and per-field `sources`
+(`project`/`catalog`/`fallback`). Promoted monster artwork includes troop previews;
+builtin enemies, EasyRPG, Scarloxy, explicit profiles and uploads are stably deduplicated.
+Explicit upload kind overrides prefixes, profiles, and bundled identity. Custom uploads
+never inherit catalog review status. Metadata-only IDs do not become resources.
+`MONSTER_CATALOG` is an intentionally empty typed scaffold in this independent foundation
+increment; the lead must supply original-artwork-reviewed values before final review.
+Fallback descriptions are empty and always unreviewed; inferred search tags are not vision evidence.
+
+Monster search (`monsterProject` option) and monster picker enumeration delegate to that
+same authority. Non-monster image/picture picking and URL resolution remain unchanged.
+`monsterMetadataChanged` counts changed resources for diff/history/commit accounting;
+legacy summaries may omit it. Editor JSON, backup and package round trips retain overrides;
+playable exports strip them and exclude their text from uploaded-asset usage accounting.
+No schema version bump, SQL table, migration, or live-project rewrite is needed.
+
 ## Project audio description overrides
 
 `Project.audioDescriptions` is an optional v4 field, defined in

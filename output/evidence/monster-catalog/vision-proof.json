@@ -1,0 +1,84 @@
+{
+  "commit": "a364b0951",
+  "endpoint": "http://127.0.0.1:11941/v1/chat/completions",
+  "provider": "google-antigravity",
+  "colorControls": [
+    {
+      "name": "red",
+      "expected": "red",
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "date": "Sun, 06 Sep 2026 18:38:03 GMT"
+      },
+      "requestedModel": "gemini-3.1-pro",
+      "actualModel": "gemini-3.1-pro",
+      "id": "oh-my-pi-1788719883415",
+      "elapsedMs": 3958,
+      "content": "red"
+    },
+    {
+      "name": "blue",
+      "expected": "blue",
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "date": "Sun, 06 Sep 2026 18:38:04 GMT"
+      },
+      "requestedModel": "gemini-3.1-pro",
+      "actualModel": "gemini-3.1-pro",
+      "id": "oh-my-pi-1788719884505",
+      "elapsedMs": 5012,
+      "content": "blue"
+    }
+  ],
+  "originalChecks": [
+    {
+      "index": 1,
+      "id": "oh-my-pi-1788719912049",
+      "sourceSha256": "22d4a49dadaf05ca84298c2ec24c4ddbd8b943594414c01b03f4bb43f9b02143",
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "date": "Sun, 06 Sep 2026 18:38:32 GMT"
+      },
+      "requestedModel": "gemini-3.1-pro",
+      "actualModel": "gemini-3.1-pro",
+      "elapsedMs": 9671,
+      "content": "```json\n{\n  \"name\": \"초록 슬라임\",\n  \"tags\": [\n    \"슬라임\",\n    \"slime\",\n    \"초록색\",\n    \"green\",\n    \"괴물\",\n    \"monster\"\n  ],\n  \"description\": \"크고 둥근 두 눈과 웃는 입을 가진 둥글고 납작한 초록색 젤리 형태의 생물입니다. 아무런 장비를 착용하지 않은 채 바닥에 자리 잡고 있는 모습입니다.\",\n  \"uncertainty\": \"정확한 종족이 명확하지 않아 둥글고 점액질 같은 외형을 바탕으로 슬라임으로 추정하여 명명했습니다.\"\n}\n```",
+      "resourceId": "generated-enemy-slime-01"
+    },
+    {
+      "index": 109,
+      "id": "oh-my-pi-1788719916536",
+      "sourceSha256": "daa3d1f9e4e440846fa1ce711e5db3a98e98e02961c19d2bee0243d99472ae99",
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "date": "Sun, 06 Sep 2026 18:38:36 GMT"
+      },
+      "requestedModel": "gemini-3.1-pro",
+      "actualModel": "gemini-3.1-pro",
+      "elapsedMs": 14189,
+      "content": "```json\n{\n  \"name\": \"몽둥이를 든 녹색 인간형 괴물\",\n  \"tags\": [\n    \"괴물\",\n    \"monster\",\n    \"인간형\",\n    \"humanoid\",\n    \"고블린\",\n    \"goblin\",\n    \"오크\",\n    \"orc\"\n  ],\n  \"description\": \"짙은 녹색 피부와 뾰족한 귀, 튀어나온 코, 날카로운 이빨을 가진 근육질의 인간형 생물입니다. 낡고 찢어진 가죽옷과 징이 박힌 방어구를 착용하고 있으며, 가시가 박힌 굵은 나무 몽둥이를 양손으로 비스듬히 들고 서 있습니다.\",\n  \"uncertainty\": \"오크나 고블린 등의 종족 특징이 혼재되어 있어 특정 종족으로 단정할 수 없으므로, 보이는 외형을 바탕으로 인간형 괴물로 명명했습니다.\"\n}\n```",
+      "resourceId": "generated-enemy-goblin-scout"
+    },
+    {
+      "index": 110,
+      "id": "oh-my-pi-1788719915606",
+      "sourceSha256": "4eab5389019ef5c7b6cf0e69518f70465cba5b2b735bbaeed96964dce2dc4354",
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "date": "Sun, 06 Sep 2026 18:38:35 GMT"
+      },
+      "requestedModel": "gemini-3.1-pro",
+      "actualModel": "gemini-3.1-pro",
+      "elapsedMs": 13270,
+      "content": "```json\n{\n  \"name\": \"가시 몽둥이를 든 녹색 몬스터\",\n  \"tags\": [\n    \"인간형\",\n    \"humanoid\",\n    \"고블린\",\n    \"goblin\",\n    \"오크\",\n    \"orc\",\n    \"몽둥이\"\n  ],\n  \"description\": \"녹색 피부에 뾰족한 귀와 튀어나온 송곳니를 가진 인간형 생물입니다. 낡은 가죽 방어구를 입고 가시가 박힌 나무 몽둥이를 들고 있습니다.\",\n  \"uncertainty\": \"오크와 고블린의 외형적 특징을 모두 가지고 있어 정확한 종족을 특정하기 어렵습니다.\"\n}\n```",
+      "resourceId": "generated-enemy-goblin-brute"
+    }
+  ],
+  "invalidPriorObservations": "All pre-fix9888 descriptions are discarded: image_url was omitted by conversion. These are not evidence of asset mismatch.",
+  "method": "Actual PNG bytes provided to corrected adapter; source hashes and returned actual models recorded. Native session image attachments unavailable; observations are tool-assisted upstream vision."
+}

@@ -41,8 +41,14 @@ resource fields, sprite/image indirection, tile grafts, nested commands, frozen
 M2 resource aliases/legacy value fields and orientation graphics must resolve.
 Logical resource IDs are opaque, including editor-accepted spaces and non-ASCII
 characters; local-path restrictions apply to resolved payload paths, not IDs.
-Blank command resources retain clear/no-resource semantics. Unused audio catalog
-rows remain availability metadata, not mandatory playback dependencies. Embedded
+Blank command resources retain clear/no-resource semantics. The exact optional map
+slots also retain editor/runtime no-selection semantics: `background.imageId: ""`
+and blank `bgm.resourceId` (including whitespace-only BGM inheritance). Nonempty
+unknown/external map references and mandatory empty sprite/tileset image definitions
+still fail. These exceptions do not normalize or rewrite the original project.
+Root `monsterMetadata`, like audio descriptions, is editorial metadata, not a
+dependency source, even when its opaque resource-ID keys resemble resource fields.
+Unused audio catalog rows remain availability metadata, not mandatory playback dependencies. Embedded
 media requires an allowed base64 MIME and matching binary media signature; a URL
 or arbitrary text disguised as an upload is not an embedded dependency.
 

@@ -57,6 +57,7 @@ export function prepareWebExport(project: Project): PreparedWebExport {
     },
   };
   delete exportProject.audioDescriptions;
+  delete exportProject.monsterMetadata;
   const projectJson = serialize(exportProject);
   deserialize(projectJson);
   const assets = collectWebExportAssets(exportProject);

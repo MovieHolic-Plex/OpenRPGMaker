@@ -52,6 +52,53 @@ describe("retained authored dependency closure", () => {
     expect(Buffer.from(result.entries.get("project.json") ?? []).equals(Buffer.from(release.projectBytes))).toBe(true);
     expect(result.bytes.equals(release.bytes)).toBe(true);
   });
+  it.each([
+    { background: { imageId: "", scrollX: 0, scrollY: 0 } },
+    { bgm: { mode: "custom" as const, resourceId: "" } },
+    { bgm: { mode: "custom" as const, resourceId: " \t" } },
+    { background: { imageId: "", scrollX: 0, scrollY: 0 }, bgm: { mode: "custom" as const, resourceId: "" } },
+  ])("validates optional map clear selections with exact original bytes: %j", async settings => {
+    const f = await fixture();
+    Object.assign(Object.values(f.project.maps)[0], settings);
+    const release = await f.release();
+    const result = await validateReleaseArchive(release.bytes, async () => f.trusted);
+    expect(Buffer.from(result.entries.get("project.json") ?? []).equals(Buffer.from(release.projectBytes))).toBe(true);
+    expect(result.bytes.equals(release.bytes)).toBe(true);
+  });
+  it("excludes editorial monster metadata even when raw IDs resemble resource fields", async () => {
+    const f = await fixture();
+    const originalDependencies = f.trusted.collectDependencies?.(JSON.stringify(f.project));
+    f.project.monsterMetadata = {
+      resourceId: { description: "unknown-editorial-resource" },
+      imageId: { tags: ["unused-upload"] },
+      bgm: { name: "Uninstalled editorial choice" },
+    };
+    f.project.assets.uploaded["unused-upload"] = { id: "unused-upload", name: "Unused", kind: "monster", dataUrl: "data:image/png;base64,AA==", meta: {} };
+    expect(f.trusted.collectDependencies?.(JSON.stringify(f.project))).toEqual(originalDependencies);
+    const release = await f.release();
+    const result = await validateReleaseArchive(release.bytes, async () => f.trusted);
+    expect(Buffer.from(result.entries.get("project.json") ?? []).equals(Buffer.from(release.projectBytes))).toBe(true);
+  });
+  it.each(["sprite", "tileset"])("still rejects mandatory empty %s image definitions", async kind => {
+    const f = await fixture();
+    if (kind === "sprite") f.project.assets.sprites.custom = { id: "custom", image: { type: "bundled", id: "" }, frames: 1, frameWidth: 16, frameHeight: 16 };
+    else Object.values(f.project.tilesets)[0].image = { type: "bundled", id: "" };
+    await expect(validateReleaseArchive((await f.release()).bytes, async () => f.trusted).then(() => "accepted")).rejects.toThrow();
+  });
+  it.each(["unknown-map-resource", "https://evil.invalid/media.png", "//evil.invalid/media.mp3"])
+    ("still rejects nonempty optional map references: %s", async resourceId => {
+      for (const settings of [{ background: { imageId: resourceId } }, { bgm: { mode: "custom" as const, resourceId } }]) {
+        const f = await fixture();
+        Object.assign(Object.values(f.project.maps)[0], settings);
+        await expect(validateReleaseArchive((await f.release()).bytes, async () => f.trusted).then(() => "accepted")).rejects.toThrow();
+      }
+    });
+  it("does not let a map clear hide a mandatory empty image", async () => {
+    const f = await fixture();
+    f.project.assets.sprites.custom = { id: "custom", image: { type: "bundled", id: "" }, frames: 1, frameWidth: 16, frameHeight: 16 };
+    Object.values(f.project.maps)[0].background = { imageId: "" };
+    await expect(validateReleaseArchive((await f.release()).bytes, async () => f.trusted).then(() => "accepted")).rejects.toThrow();
+  });
   it.each(["https://evil.invalid/picture.png", "data:image/png;base64,aHR0cHM6Ly9ldmlsLmludmFsaWQ=", "data:image/png;base64,iVBORw=="])
     ("rejects externally disguised or invalid uploaded media: %s", async dataUrl => {
       const f = await fixture();

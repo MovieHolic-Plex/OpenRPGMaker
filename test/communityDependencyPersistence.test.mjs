@@ -34,6 +34,10 @@ test("frozen dependency closure rejects coherent omissions before PostgreSQL per
     const project = (await import(pathToFileURL(projectPath).href)).createBlankProject();
     project.system.defaultBgmResourceId = "cc0-bgm-field";
     project.system.titleResourceId = "oprn-title-field";
+    Object.assign(Object.values(project.maps)[0], {
+      background: { imageId: "", scrollX: 0, scrollY: 0 },
+      bgm: { mode: "custom", resourceId: "" },
+    });
     const collector = await buildReleaseCollector(root);
     const { runInNewContext } = await import("node:vm");
     const dependencies = runInNewContext(`${Buffer.from(collector).toString()}\nOPRN_RELEASE_COLLECTOR.collectReleaseDependencies(projectJson)`,
@@ -105,6 +109,17 @@ test("frozen dependency closure rejects coherent omissions before PostgreSQL per
     for (const ref of ["unknown-authored-track", "https://external.invalid/music.mp3", "//external.invalid/music.mp3"]) {
       const changed = structuredClone(project); changed.system.defaultBgmResourceId = ref;
       assert.equal((await upload(await makeRelease(undefined, changed))).status, 422);
+      for (const slot of ["background", "bgm"]) {
+        const changed = structuredClone(project);
+        Object.values(changed.maps)[0][slot] = slot === "background" ? { imageId: ref } : { mode: "custom", resourceId: ref };
+        assert.equal((await upload(await makeRelease(undefined, changed))).status, 422);
+      }
+    }
+    for (const kind of ["sprite", "tileset"]) {
+      const changed = structuredClone(project);
+      if (kind === "sprite") changed.assets.sprites.custom = { id: "custom", image: { type: "bundled", id: "" }, frames: 1, frameWidth: 16, frameHeight: 16 };
+      else Object.values(changed.tilesets)[0].image = { type: "bundled", id: "" };
+      assert.equal((await upload(await makeRelease(undefined, changed))).status, 422);
     }
     assert.equal((await pool.query("select count(*)::int as n from openrpg_games")).rows[0].n, 0);
     assert.equal((await pool.query("select count(*)::int as n from openrpg_game_releases")).rows[0].n, 0);
@@ -120,7 +135,21 @@ test("frozen dependency closure rejects coherent omissions before PostgreSQL per
     const response = await upload(complete); assert.equal(response.status, 201, await response.clone().text());
     assert.equal((await pool.query("select count(*)::int as n from openrpg_games")).rows[0].n, 1);
     assert.deepEqual((await pool.query("select zip_bytes from openrpg_game_releases")).rows[0].zip_bytes, complete.bytes);
+    for (const slot of ["background", "bgm"]) {
+      const changed = structuredClone(project);
+      delete Object.values(changed.maps)[0][slot === "background" ? "bgm" : "background"];
+      const release = await makeRelease(undefined, changed);
+      const validated = await api.validateReleaseArchive(release.bytes);
+      assert.deepEqual(Buffer.from(validated.entries.get("project.json")), release.projectBytes);
+      const response = await upload(release);
+      assert.equal(response.status, 201, await response.clone().text());
+      const stored = await pool.query("select zip_bytes from openrpg_game_releases where release_id = $1", [validated.manifest.releaseId]);
+      assert.deepEqual(stored.rows[0].zip_bytes, release.bytes);
+    }
+    assert.equal((await pool.query("select count(*)::int as n from openrpg_games")).rows[0].n, 3);
+    assert.equal((await pool.query("select count(*)::int as n from openrpg_game_releases")).rows[0].n, 3);
     console.log(JSON.stringify({ omissionsRejectedBeforeRows: missingPaths, unresolvedExternalRejected: true,
+      optionalMapSelectionsPersisted: ["background", "custom-bgm", "both"], mandatoryEmptyImagesRejected: true,
       selectedOlderCollector: runtime.runtimeTarget, differentCurrentCollector: newer.runtimeTarget, currentSourcesUnavailable: true, exactBytesPersisted: true }));
   } finally {
     process.chdir(previousCwd);

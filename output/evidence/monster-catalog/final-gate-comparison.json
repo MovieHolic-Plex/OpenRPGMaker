@@ -1,0 +1,81 @@
+{
+  "surface": {
+    "upstream": "142db78e9",
+    "implementation": "cc09b9dd",
+    "upstreamFailures": [
+      "+   \"characterGraphics\",",
+      "FAIL  test/databaseAllTabsRenderWalk.test.ts > database all-tabs render walk > every registered tab renders a non-empty body without throwing",
+      "FAIL  test/eventEditorCommitProbe.baseline.test.ts > no-commit 래칫 > 무커밋 컨트롤 집합이 허용 목록과 정확히 일치한다",
+      "FAIL  test/eventEditorCommitProbe.baseline.test.ts > 이벤트 편집기 커밋 프로브 축 > (1) 컨트롤 조작 → 저장 커맨드 스냅샷이 기준선과 같다",
+      "FAIL  test/eventEditorFormSurface.baseline.test.ts > 이벤트에디터 폼 표면 스냅샷 > 기준선과 일치한다",
+      "FAIL  test/eventEditorInteractionSurface.baseline.test.ts > 이벤트에디터 상호작용 후 폼 표면 스냅샷 > 기준선과 일치한다",
+      "FAIL  test/eventEditorM2Surface.baseline.test.ts > M2 명령 폼 표면 스냅샷 > 기준선과 일치한다",
+      "changeFace: testid 신규 4종 [event-command-face-ai-generate, event-command-face-ai-prompt, event-command-face-ai-queue, event-command-face-ai-queue-list] | 태그 개수 [button 117→118, div 127→130, input 2→3, p 1→2] | 컨트롤 신규 2개 [event-command-face-ai-generate, event-command-face-ai-prompt] | 라벨 신규 1개 [AI로 만들기] | 클래스 신규 5개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list, page3-resource-row]",
+      "changeFace: 조작후 클래스 신규 4개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list] | 초기표면: testid 신규 2종 [event-command-face-ai-queue, event-command-face-ai-queue-list] | 태그 개수 [div 129→131, p 1→2] | 클래스 신규 4개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list]",
+      "changeFace: 컨트롤 신규 event-command-face-ai-prompt",
+      "commandPickerTab3: 태그 circle 18→16, div 60→59, path 102→101, span 118→117, svg 101→100",
+      "evolveMonster: select 선택지 변경 1개 [evolve-monster-species-select: 4→4종]",
+      "evolveMonster: 값 변경 evolve-monster-species-select: replaceCommand {\"failureBranch\":[],\"instanceId\":\"monster_1\",\"kind\":\"evolveMonster\",\"successBranch\":[],\"toSpeciesId\":\"species_cave_bat\"} → replaceCommand {\"failureBranch\":[],\"instanceId\":\"monster_1\",\"kind\":\"evolveMonster\",\"successBranch\":[],\"toSpeciesId\":\"species_aqualing\"}",
+      "evolveMonster: 초기표면: select 선택지 변경 1개 [evolve-monster-species-select: 4→4종]",
+      "giveMonster: select 선택지 변경 1개 [give-monster-species-select: 4→4종]",
+      "giveMonster: 값 변경 give-monster-species-select: replaceCommand {\"kind\":\"giveMonster\",\"level\":5,\"nickname\":\"<undefined>\",\"speciesId\":\"species_cave_bat\"} → replaceCommand {\"kind\":\"giveMonster\",\"level\":5,\"nickname\":\"<undefined>\",\"speciesId\":\"species_aqualing\"}",
+      "giveMonster: 초기표면: select 선택지 변경 1개 [give-monster-species-select: 4→4종]",
+      "m2-025-change-actor-faceset: testid 신규 2종 [change-actor-faceset-ai-queue, change-actor-faceset-ai-queue-list] | 태그 개수 [div 132→134, p 3→4] | 클래스 신규 4개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list]",
+      "m2-069-change-parallax-back: testid 신규 2종 [change-parallax-back-ai-queue, change-parallax-back-ai-queue-list] | 태그 개수 [div 15→17, p 4→5] | 클래스 신규 4개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list]: expected [ …(2) ] to deeply equal []",
+      "npcGraphic: testid 신규 5종: npc-charset-label-input, npc-charset-tags-input, npc-charset-teach, npc-charset-teach-save, npc-charset-teach-status | 클래스 신규 3종: npc-charset-teach, npc-charset-teach-heading, npc-charset-teach-status | 컨트롤 신규 3개: npc-charset-label-input, npc-charset-tags-input, npc-charset-teach-save | 라벨 소실 1종: 캐릭터 슬롯 # | 태그 button 32→33, div 15→16, input 8→10, p 0→2 | testidCount 46→51 | controlCount 40→43 | classCount 34→37: expected [ …(2) ] to deeply equal []",
+      "showPicture: testid 신규 4종 [show-picture-ai-generate, show-picture-ai-prompt, show-picture-ai-queue, show-picture-ai-queue-list] | 태그 개수 [button 6→7, div 27→32, input 8→9, p 3→4] | 컨트롤 신규 2개 [show-picture-ai-generate, show-picture-ai-prompt] | 라벨 신규 1개 [AI로 만들기] | 클래스 신규 4개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list]: expected [ …(4) ] to deeply equal []",
+      "showPicture: 조작후 클래스 신규 4개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list] | 초기표면: testid 신규 2종 [show-picture-ai-queue, show-picture-ai-queue-list] | 태그 개수 [div 31→33, p 3→4] | 클래스 신규 4개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list]: expected [ …(4) ] to deeply equal []",
+      "showPicture: 컨트롤 신규 show-picture-ai-prompt: expected [ …(4) ] to deeply equal []"
+    ],
+    "implementationFailures": [
+      "+   \"characterGraphics\",",
+      "FAIL  test/databaseAllTabsRenderWalk.test.ts > database all-tabs render walk > every registered tab renders a non-empty body without throwing",
+      "FAIL  test/eventEditorCommitProbe.baseline.test.ts > no-commit 래칫 > 무커밋 컨트롤 집합이 허용 목록과 정확히 일치한다",
+      "FAIL  test/eventEditorCommitProbe.baseline.test.ts > 이벤트 편집기 커밋 프로브 축 > (1) 컨트롤 조작 → 저장 커맨드 스냅샷이 기준선과 같다",
+      "FAIL  test/eventEditorFormSurface.baseline.test.ts > 이벤트에디터 폼 표면 스냅샷 > 기준선과 일치한다",
+      "FAIL  test/eventEditorInteractionSurface.baseline.test.ts > 이벤트에디터 상호작용 후 폼 표면 스냅샷 > 기준선과 일치한다",
+      "FAIL  test/eventEditorM2Surface.baseline.test.ts > M2 명령 폼 표면 스냅샷 > 기준선과 일치한다",
+      "changeFace: testid 신규 4종 [event-command-face-ai-generate, event-command-face-ai-prompt, event-command-face-ai-queue, event-command-face-ai-queue-list] | 태그 개수 [button 117→118, div 127→130, input 2→3, p 1→2] | 컨트롤 신규 2개 [event-command-face-ai-generate, event-command-face-ai-prompt] | 라벨 신규 1개 [AI로 만들기] | 클래스 신규 5개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list, page3-resource-row]",
+      "changeFace: 조작후 클래스 신규 4개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list] | 초기표면: testid 신규 2종 [event-command-face-ai-queue, event-command-face-ai-queue-list] | 태그 개수 [div 129→131, p 1→2] | 클래스 신규 4개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list]",
+      "changeFace: 컨트롤 신규 event-command-face-ai-prompt",
+      "commandPickerTab3: 태그 circle 18→16, div 60→59, path 102→101, span 118→117, svg 101→100",
+      "evolveMonster: select 선택지 변경 1개 [evolve-monster-species-select: 4→4종]",
+      "evolveMonster: 값 변경 evolve-monster-species-select: replaceCommand {\"failureBranch\":[],\"instanceId\":\"monster_1\",\"kind\":\"evolveMonster\",\"successBranch\":[],\"toSpeciesId\":\"species_cave_bat\"} → replaceCommand {\"failureBranch\":[],\"instanceId\":\"monster_1\",\"kind\":\"evolveMonster\",\"successBranch\":[],\"toSpeciesId\":\"species_aqualing\"}",
+      "evolveMonster: 초기표면: select 선택지 변경 1개 [evolve-monster-species-select: 4→4종]",
+      "giveMonster: select 선택지 변경 1개 [give-monster-species-select: 4→4종]",
+      "giveMonster: 값 변경 give-monster-species-select: replaceCommand {\"kind\":\"giveMonster\",\"level\":5,\"nickname\":\"<undefined>\",\"speciesId\":\"species_cave_bat\"} → replaceCommand {\"kind\":\"giveMonster\",\"level\":5,\"nickname\":\"<undefined>\",\"speciesId\":\"species_aqualing\"}",
+      "giveMonster: 초기표면: select 선택지 변경 1개 [give-monster-species-select: 4→4종]",
+      "m2-025-change-actor-faceset: testid 신규 2종 [change-actor-faceset-ai-queue, change-actor-faceset-ai-queue-list] | 태그 개수 [div 132→134, p 3→4] | 클래스 신규 4개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list]",
+      "m2-069-change-parallax-back: testid 신규 2종 [change-parallax-back-ai-queue, change-parallax-back-ai-queue-list] | 태그 개수 [div 15→17, p 4→5] | 클래스 신규 4개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list]: expected [ …(2) ] to deeply equal []",
+      "npcGraphic: testid 신규 5종: npc-charset-label-input, npc-charset-tags-input, npc-charset-teach, npc-charset-teach-save, npc-charset-teach-status | 클래스 신규 3종: npc-charset-teach, npc-charset-teach-heading, npc-charset-teach-status | 컨트롤 신규 3개: npc-charset-label-input, npc-charset-tags-input, npc-charset-teach-save | 라벨 소실 1종: 캐릭터 슬롯 # | 태그 button 32→33, div 15→16, input 8→10, p 0→2 | testidCount 46→51 | controlCount 40→43 | classCount 34→37: expected [ …(2) ] to deeply equal []",
+      "showPicture: testid 신규 4종 [show-picture-ai-generate, show-picture-ai-prompt, show-picture-ai-queue, show-picture-ai-queue-list] | 태그 개수 [button 6→7, div 27→32, input 8→9, p 3→4] | 컨트롤 신규 2개 [show-picture-ai-generate, show-picture-ai-prompt] | 라벨 신규 1개 [AI로 만들기] | 클래스 신규 4개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list]: expected [ …(4) ] to deeply equal []",
+      "showPicture: 조작후 클래스 신규 4개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list] | 초기표면: testid 신규 2종 [show-picture-ai-queue, show-picture-ai-queue-list] | 태그 개수 [div 31→33, p 3→4] | 클래스 신규 4개 [ai-image-queue, ai-image-queue-composer, ai-image-queue-empty, ai-image-queue-list]: expected [ …(4) ] to deeply equal []",
+      "showPicture: 컨트롤 신규 show-picture-ai-prompt: expected [ …(4) ] to deeply equal []"
+    ],
+    "identical": true
+  },
+  "uiInvalidName": {
+    "role": "alert",
+    "unchanged": true
+  },
+  "runtimeProject": {
+    "projectId": "qa-monster-catalog-01a077c7-20260907",
+    "saveKind": "saved",
+    "sha256": "832c36e64b1fdffede4bd00fc27ec64e4bc762ca6857c8382a4075e8c0dd917a",
+    "troopId": "troop_qa_monster_catalog",
+    "enemyId": "enemy_qa_monster_catalog_live",
+    "resourceId": "generated-enemy-goblin-scout",
+    "metadataStripped": true,
+    "projectJsonBytes": 2176555
+  },
+  "build": "PREVIEW_FINAL_BUILD_EXIT=0",
+  "css": "FINAL_FIXED_CSS_EXIT=0",
+  "fullGate": "Timed out after1800seconds; not a pass",
+  "fullTestRerun": {
+    "workers": 4,
+    "report": ".omo/monster-final-vitest.json",
+    "status": "timed_out",
+    "timeoutSeconds": 3600,
+    "reportProduced": false
+  }
+}

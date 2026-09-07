@@ -667,8 +667,17 @@ export function buildGroundedRequest(
   const windowTokens = originalContextWindow(config);
   const reserveTokens = DEFAULT_COMPACTION_SETTINGS.reserveTokens;
   const toolsTokens = tools.length ? estimateContextTokens([{ role: "system", content: JSON.stringify(tools) }]) : 0;
-  const historyChars = Math.max(0, Math.min(resolveRequestCharBudget(config), windowTokens * 4) - (toolsTokens + reserveTokens) * 4);
-  const request = compactMessagesForRequest(messages, historyChars);
+  const manifestTokens = original.minimumTokens();
+  let historyChars = Math.max(0, Math.min(resolveRequestCharBudget(config), windowTokens * 4) - (toolsTokens + reserveTokens + manifestTokens) * 4);
+  let request = compactMessagesForRequest(messages, historyChars);
+  // The character clamp omits tool-call arguments and token weighting. Reconcile its
+  // output with the actual estimator while reserving the mandatory paging manifest.
+  while (historyChars > 0) {
+    const overflow = estimateContextTokens(request) + toolsTokens + reserveTokens + manifestTokens - windowTokens;
+    if (overflow <= 0) break;
+    historyChars = Math.max(0, historyChars - overflow * 4);
+    request = compactMessagesForRequest(messages, historyChars);
+  }
   const remaining = windowTokens - reserveTokens - toolsTokens - estimateContextTokens(request);
   const grounding = original.message(remaining);
   request.push(grounding.message);

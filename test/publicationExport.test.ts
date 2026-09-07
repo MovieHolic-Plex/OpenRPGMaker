@@ -8,7 +8,7 @@ import { createStandaloneHtmlExport } from "@/project/standaloneExport";
 import { createRuntimeManifest, jsonBytes, verifyGameRelease } from "@/project/gameRelease";
 import { preparePublication } from "@/project/publication";
 import { buildReleaseCollector } from "../scripts/lib/releaseCollectorBuild.mjs";
-import { operatorRuntimeWithCollector } from "../community-site/lib/releaseArchive";
+import { operatorRuntimeWithCollector, validateReleaseArchive } from "../community-site/lib/releaseArchive";
 
 const collector = await buildReleaseCollector(process.cwd());
 
@@ -47,6 +47,35 @@ async function fixture(legacyRuntime = false) {
   return { project, runtime, fetchBytes, requests, collectDependencies: operator?.collectDependencies };
 }
 describe("actual publication exports", () => {
+  it.each([
+    { background: { imageId: "", scrollX: 0, scrollY: 0 } },
+    { bgm: { mode: "custom" as const, resourceId: "" } },
+    { bgm: { mode: "custom" as const, resourceId: " \t" } },
+    { bgm: { mode: "custom" as const } },
+    { background: { imageId: "", scrollX: 0, scrollY: 0 }, bgm: { mode: "custom" as const, resourceId: "" } },
+  ].flatMap(settings => (["zip", "html"] as const).map(format => ({ settings, format }))))
+    ("exports supported map selection $settings as $format without rewriting it", async ({ settings, format }) => {
+      const { project, runtime, fetchBytes } = await fixture();
+      Object.assign(Object.values(project.maps)[0], settings);
+      const original = structuredClone(project);
+      const prepared = prepareWebExport(project);
+      expect(Object.values(prepared.project.maps)[0]).toMatchObject(settings);
+      if (format === "zip") {
+        const result = await createWebPlayerExportPackage(project, { fetchBytes });
+        const bytes = Buffer.from(await result.blob.arrayBuffer());
+        const trusted = await operatorRuntimeWithCollector(runtime, collector);
+        const validated = await validateReleaseArchive(bytes, async () => trusted);
+        expect(Buffer.from(validated.entries.get("project.json") ?? []).toString()).toBe(prepared.projectJson);
+        expect(validated.bytes.equals(bytes)).toBe(true);
+      } else {
+        const result = await createStandaloneHtmlExport(project, { fetchBytes });
+        const html = await result.blob.text();
+        const payload = /id="oprn-release-payloads">([^<]+)<\/script>/.exec(html)?.[1];
+        expect(payload).toBeDefined();
+        expect(Buffer.from(JSON.parse(payload!)["project.json"], "base64").toString()).toBe(prepared.projectJson);
+      }
+      expect(project).toEqual(original);
+    });
   it("exports a verified ZIP without reading current dependencies", async () => {
     const { project, runtime, fetchBytes, collectDependencies } = await fixture();
     const result = await createWebPlayerExportPackage(project, { fetchBytes });

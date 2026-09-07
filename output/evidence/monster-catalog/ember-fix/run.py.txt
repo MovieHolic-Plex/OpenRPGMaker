@@ -1,0 +1,6 @@
+import subprocess,os,json,time,pathlib,sys
+out=pathlib.Path('/tmp/st_01a078fc'); label=sys.argv[1]; env={k:os.environ[k] for k in ['PATH','LANG','TZ'] if k in os.environ}
+env.update(HOME='/dev/shm/st_01a078fc/home',TMPDIR='/dev/shm/st_01a078fc/tmp',TMP='/dev/shm/st_01a078fc/tmp',TEMP='/dev/shm/st_01a078fc/tmp',NODE_OPTIONS=f'--import={out}/no-network.mjs',DIAG_SUITE_ERRORS=str(out/f'{label}-exact-errors.json'),REPLAY_TRACE=str(out/f'{label}-trace.json'))
+cmd=['node','scripts/run-vitest.mjs','run','test/emberQuestToolReplay.test.ts','--configLoader','runner','--config',str(out/'current.config.mjs'),'--no-cache','--maxWorkers','1','--reporter=json',f'--reporter={out}/exact-errors-reporter.mjs',f'--outputFile={out}/{label}.json']; t=time.monotonic()
+with (out/f'{label}.log').open('w') as f: result=subprocess.run(cmd,cwd='/home/main/z-project/rpg-zzu-monster-catalog-0907',env=env,stdout=f,stderr=subprocess.STDOUT,timeout=180)
+(out/f'{label}-exit.json').write_text(json.dumps({'command':cmd,'cwd':'/home/main/z-project/rpg-zzu-monster-catalog-0907','environment':env,'exit':result.returncode,'seconds':time.monotonic()-t},indent=2));print('exit',result.returncode,'seconds',time.monotonic()-t)

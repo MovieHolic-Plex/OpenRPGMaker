@@ -1,0 +1,1069 @@
+[
+  {
+    "ordinal": 1,
+    "name": "create_map",
+    "args": {
+      "name": "잿불 마을",
+      "width": 20,
+      "height": 16,
+      "id": "m_village"
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 2,
+    "name": "create_map",
+    "args": {
+      "name": "안개 숲",
+      "width": 18,
+      "height": 18,
+      "id": "m_forest"
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 3,
+    "name": "create_map",
+    "args": {
+      "name": "메마른 광산",
+      "width": 16,
+      "height": 14,
+      "id": "m_mine"
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 4,
+    "name": "create_map",
+    "args": {
+      "name": "잿빛 고개",
+      "width": 16,
+      "height": 12,
+      "id": "m_pass"
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 5,
+    "name": "create_map",
+    "args": {
+      "name": "화염 성소",
+      "width": 14,
+      "height": 12,
+      "id": "m_sanctum"
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 6,
+    "name": "upsert_item",
+    "args": {
+      "item": {
+        "id": "it_potion",
+        "name": "회복약",
+        "price": 20
+      }
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 7,
+    "name": "upsert_item",
+    "args": {
+      "item": {
+        "id": "it_ether",
+        "name": "에테르",
+        "price": 20
+      }
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 8,
+    "name": "upsert_item",
+    "args": {
+      "item": {
+        "id": "it_antidote",
+        "name": "해독제",
+        "price": 20
+      }
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 9,
+    "name": "upsert_item",
+    "args": {
+      "item": {
+        "id": "it_hipotion",
+        "name": "상급 회복약",
+        "price": 20
+      }
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 10,
+    "name": "upsert_item",
+    "args": {
+      "item": {
+        "id": "it_key",
+        "name": "낡은 열쇠",
+        "price": 20
+      }
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 11,
+    "name": "upsert_item",
+    "args": {
+      "item": {
+        "id": "it_talisman",
+        "name": "수호 부적",
+        "price": 20
+      }
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 12,
+    "name": "upsert_item",
+    "args": {
+      "item": {
+        "id": "it_herb",
+        "name": "달빛 약초",
+        "price": 20
+      }
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 13,
+    "name": "upsert_item",
+    "args": {
+      "item": {
+        "id": "it_core",
+        "name": "골렘의 핵",
+        "price": 20
+      }
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 14,
+    "name": "upsert_enemy",
+    "args": {
+      "enemy": {
+        "id": "en_slime",
+        "name": "슬라임",
+        "stats": {
+          "maxHp": 40,
+          "attack": 60
+        }
+      }
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 15,
+    "name": "upsert_enemy",
+    "args": {
+      "enemy": {
+        "id": "en_bee",
+        "name": "말벌",
+        "stats": {
+          "maxHp": 70,
+          "attack": 60
+        }
+      }
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": false,
+    "issues": [
+      {
+        "severity": "error",
+        "code": "monster-graphic-required",
+        "message": "enemy.monsterResourceId: \"말벌\"에 확실히 맞는 외형이 없습니다. list_resources(kind:\"monster\", query:\"*\")로 확인한 리소스 ID를 enemy.monsterResourceId에 지정하세요. 사용 가능한 monster 리소스 예시: generated-enemy-slime-01, generated-enemy-bat-01, generated-enemy-golem-01"
+      }
+    ]
+  },
+  {
+    "ordinal": 16,
+    "name": "upsert_enemy",
+    "args": {
+      "enemy": {
+        "id": "en_bat",
+        "name": "박쥐",
+        "stats": {
+          "maxHp": 100,
+          "attack": 60
+        }
+      }
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 17,
+    "name": "upsert_enemy",
+    "args": {
+      "enemy": {
+        "id": "en_golem",
+        "name": "돌 골렘",
+        "stats": {
+          "maxHp": 130,
+          "attack": 60
+        }
+      }
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 18,
+    "name": "upsert_enemy",
+    "args": {
+      "enemy": {
+        "id": "en_dragon",
+        "name": "붉은 용",
+        "stats": {
+          "maxHp": 160,
+          "attack": 60
+        }
+      }
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 19,
+    "name": "upsert_troop",
+    "args": {
+      "troop": {
+        "id": "tr_slimes",
+        "name": "슬라임 무리",
+        "enemyIds": [
+          "en_slime"
+        ]
+      }
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 20,
+    "name": "upsert_troop",
+    "args": {
+      "troop": {
+        "id": "tr_bees",
+        "name": "말벌 떼",
+        "enemyIds": [
+          "en_bee"
+        ]
+      }
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": false,
+    "issues": [
+      {
+        "severity": "error",
+        "code": "enemy-not-found",
+        "message": "존재하지 않는 enemyId: en_bee — 허용 예시: en_slime, en_bat, en_golem, en_dragon"
+      }
+    ]
+  },
+  {
+    "ordinal": 21,
+    "name": "upsert_troop",
+    "args": {
+      "troop": {
+        "id": "tr_bats",
+        "name": "박쥐 떼",
+        "enemyIds": [
+          "en_bat"
+        ]
+      }
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 22,
+    "name": "upsert_troop",
+    "args": {
+      "troop": {
+        "id": "tr_golem",
+        "name": "돌 골렘",
+        "enemyIds": [
+          "en_golem"
+        ]
+      }
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 23,
+    "name": "upsert_troop",
+    "args": {
+      "troop": {
+        "id": "tr_dragon",
+        "name": "붉은 용",
+        "enemyIds": [
+          "en_dragon"
+        ]
+      }
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 24,
+    "name": "create_quest_flags",
+    "args": {
+      "questKey": "q_furnace",
+      "steps": 3
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 25,
+    "name": "create_quest_flags",
+    "args": {
+      "questKey": "q_herbs",
+      "steps": 3
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 26,
+    "name": "create_quest_flags",
+    "args": {
+      "questKey": "q_smith",
+      "steps": 2
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 27,
+    "name": "place_npc",
+    "args": {
+      "mapId": "m_village",
+      "x": 9,
+      "y": 6,
+      "name": "촌장 로안",
+      "id": "ev_npc_1",
+      "graphic": {
+        "textureKey": "tex_easyrpg_charset_people1",
+        "characterIndex": 1
+      },
+      "pages": [
+        {
+          "lines": [
+            "마을 화로가 꺼졌네. 성소의 불씨를 되살려 주게."
+          ],
+          "choices": [
+            {
+              "text": "수락한다",
+              "commands": [
+                {
+                  "kind": "setSwitch",
+                  "switchId": "sw_q_furnace_started",
+                  "value": true
+                }
+              ]
+            },
+            {
+              "text": "나중에"
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "kind": "switch",
+              "switchId": "sw_q_furnace_started",
+              "value": true
+            }
+          ],
+          "lines": [
+            "성소로 가는 길을 서두르게."
+          ]
+        }
+      ]
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 28,
+    "name": "place_npc",
+    "args": {
+      "mapId": "m_village",
+      "x": 4,
+      "y": 4,
+      "name": "여관 주인 마사",
+      "id": "ev_npc_2",
+      "graphic": {
+        "textureKey": "tex_easyrpg_charset_people1",
+        "characterIndex": 2
+      },
+      "pages": [
+        {
+          "lines": [
+            "하룻밤 15G입니다."
+          ],
+          "commands": [
+            {
+              "kind": "inn",
+              "price": 15
+            }
+          ]
+        }
+      ]
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 29,
+    "name": "place_npc",
+    "args": {
+      "mapId": "m_village",
+      "x": 14,
+      "y": 4,
+      "name": "상점 주인 리코",
+      "id": "ev_npc_3",
+      "graphic": {
+        "textureKey": "tex_easyrpg_charset_people1",
+        "characterIndex": 3
+      },
+      "pages": [
+        {
+          "lines": [
+            "필요한 물건 있어요?"
+          ],
+          "commands": [
+            {
+              "kind": "shop",
+              "itemIds": [
+                "it_potion",
+                "it_ether"
+              ],
+              "allowSell": true
+            }
+          ]
+        }
+      ]
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 30,
+    "name": "place_npc",
+    "args": {
+      "mapId": "m_village",
+      "x": 6,
+      "y": 10,
+      "name": "대장장이 무겐",
+      "id": "ev_npc_4",
+      "graphic": {
+        "textureKey": "tex_easyrpg_charset_people1",
+        "characterIndex": 4
+      },
+      "pages": [
+        {
+          "lines": [
+            "골렘의 핵을 가져오면 부적을 주지."
+          ],
+          "choices": [
+            {
+              "text": "수락",
+              "commands": [
+                {
+                  "kind": "setSwitch",
+                  "switchId": "sw_q_smith_started",
+                  "value": true
+                }
+              ]
+            },
+            {
+              "text": "거절"
+            }
+          ]
+        }
+      ]
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 31,
+    "name": "place_npc",
+    "args": {
+      "mapId": "m_village",
+      "x": 12,
+      "y": 10,
+      "name": "꼬마 미루",
+      "id": "ev_npc_5",
+      "graphic": {
+        "textureKey": "tex_easyrpg_charset_people1",
+        "characterIndex": 5
+      },
+      "pages": [
+        {
+          "lines": [
+            "숲에 반짝이는 풀이 있대!"
+          ]
+        }
+      ]
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 32,
+    "name": "place_npc",
+    "args": {
+      "mapId": "m_village",
+      "x": 16,
+      "y": 12,
+      "name": "파수꾼 데릭",
+      "id": "ev_npc_6",
+      "graphic": {
+        "textureKey": "tex_easyrpg_charset_people1",
+        "characterIndex": 6
+      },
+      "pages": [
+        {
+          "lines": [
+            "동문 밖은 위험해."
+          ]
+        }
+      ]
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 33,
+    "name": "place_npc",
+    "args": {
+      "mapId": "m_forest",
+      "x": 5,
+      "y": 5,
+      "name": "약초꾼 세라",
+      "id": "ev_npc_7",
+      "graphic": {
+        "textureKey": "tex_easyrpg_charset_people1",
+        "characterIndex": 7
+      },
+      "pages": [
+        {
+          "lines": [
+            "달빛 약초 세 뿌리를 찾아 주세요."
+          ],
+          "choices": [
+            {
+              "text": "수락",
+              "commands": [
+                {
+                  "kind": "setSwitch",
+                  "switchId": "sw_q_herbs_started",
+                  "value": true
+                }
+              ]
+            },
+            {
+              "text": "나중에"
+            }
+          ]
+        }
+      ]
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 34,
+    "name": "place_npc",
+    "args": {
+      "mapId": "m_forest",
+      "x": 12,
+      "y": 12,
+      "name": "사냥꾼 브란",
+      "id": "ev_npc_8",
+      "graphic": {
+        "textureKey": "tex_easyrpg_charset_people1",
+        "characterIndex": 0
+      },
+      "pages": [
+        {
+          "lines": [
+            "북쪽 광산 문은 잠겨 있어."
+          ]
+        }
+      ]
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 35,
+    "name": "place_npc",
+    "args": {
+      "mapId": "m_mine",
+      "x": 5,
+      "y": 5,
+      "name": "광부 톨크",
+      "id": "ev_npc_9",
+      "graphic": {
+        "textureKey": "tex_easyrpg_charset_people1",
+        "characterIndex": 1
+      },
+      "pages": [
+        {
+          "lines": [
+            "박쥐 떼를 조심하게."
+          ]
+        }
+      ]
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 36,
+    "name": "place_npc",
+    "args": {
+      "mapId": "m_mine",
+      "x": 10,
+      "y": 8,
+      "name": "겁먹은 인부 피오",
+      "id": "ev_npc_10",
+      "graphic": {
+        "textureKey": "tex_easyrpg_charset_people1",
+        "characterIndex": 2
+      },
+      "pages": [
+        {
+          "lines": [
+            "샘물 마시고 가요."
+          ],
+          "commands": [
+            {
+              "kind": "recoverAll"
+            }
+          ]
+        }
+      ]
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 37,
+    "name": "place_npc",
+    "args": {
+      "mapId": "m_pass",
+      "x": 8,
+      "y": 5,
+      "name": "은둔자 오웬",
+      "id": "ev_npc_11",
+      "graphic": {
+        "textureKey": "tex_easyrpg_charset_people1",
+        "characterIndex": 3
+      },
+      "pages": [
+        {
+          "lines": [
+            "용 앞에서 아끼지 말게."
+          ],
+          "commands": [
+            {
+              "kind": "recoverAll"
+            }
+          ]
+        }
+      ]
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 38,
+    "name": "place_npc",
+    "args": {
+      "mapId": "m_sanctum",
+      "x": 6,
+      "y": 8,
+      "name": "성소지기의 영혼",
+      "id": "ev_npc_12",
+      "graphic": {
+        "textureKey": "tex_easyrpg_charset_people1",
+        "characterIndex": 4
+      },
+      "pages": [
+        {
+          "lines": [
+            "용을 잠재우면 화로가 타오를 것이다."
+          ],
+          "commands": [
+            {
+              "kind": "recoverAll"
+            }
+          ]
+        }
+      ]
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 39,
+    "name": "place_battle_blocker",
+    "args": {
+      "mapId": "m_forest",
+      "x": 9,
+      "y": 9,
+      "troopId": "tr_slimes",
+      "id": "ev_blk_1",
+      "graphic": {
+        "query": "몬스터"
+      },
+      "intro": [
+        "적이 길을 막았다!"
+      ],
+      "victory": [
+        "길이 열렸다."
+      ]
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 40,
+    "name": "place_battle_blocker",
+    "args": {
+      "mapId": "m_forest",
+      "x": 14,
+      "y": 6,
+      "troopId": "tr_bees",
+      "id": "ev_blk_2",
+      "graphic": {
+        "query": "몬스터"
+      },
+      "intro": [
+        "적이 길을 막았다!"
+      ],
+      "victory": [
+        "길이 열렸다."
+      ],
+      "victoryItems": [
+        {
+          "itemId": "it_key",
+          "amount": 1
+        }
+      ]
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": false,
+    "issues": [
+      {
+        "severity": "error",
+        "code": "troop-not-found",
+        "mapId": "m_forest",
+        "x": 14,
+        "y": 6,
+        "message": "존재하지 않는 troopId: tr_bees — 허용 예시: tr_slimes, tr_bats, tr_golem, tr_dragon"
+      }
+    ]
+  },
+  {
+    "ordinal": 41,
+    "name": "place_battle_blocker",
+    "args": {
+      "mapId": "m_mine",
+      "x": 8,
+      "y": 6,
+      "troopId": "tr_bats",
+      "id": "ev_blk_3",
+      "graphic": {
+        "query": "몬스터"
+      },
+      "intro": [
+        "적이 길을 막았다!"
+      ],
+      "victory": [
+        "길이 열렸다."
+      ]
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 42,
+    "name": "place_battle_blocker",
+    "args": {
+      "mapId": "m_mine",
+      "x": 12,
+      "y": 3,
+      "troopId": "tr_golem",
+      "id": "ev_blk_4",
+      "graphic": {
+        "query": "몬스터"
+      },
+      "intro": [
+        "적이 길을 막았다!"
+      ],
+      "victory": [
+        "길이 열렸다."
+      ],
+      "victoryItems": [
+        {
+          "itemId": "it_core",
+          "amount": 1
+        }
+      ]
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 43,
+    "name": "place_battle_blocker",
+    "args": {
+      "mapId": "m_sanctum",
+      "x": 7,
+      "y": 4,
+      "troopId": "tr_dragon",
+      "id": "ev_blk_5",
+      "graphic": {
+        "query": "몬스터"
+      },
+      "intro": [
+        "적이 길을 막았다!"
+      ],
+      "victory": [
+        "길이 열렸다."
+      ]
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 44,
+    "name": "create_transfer_pair",
+    "args": {
+      "a": {
+        "mapId": "m_village",
+        "x": 18,
+        "y": 8
+      },
+      "b": {
+        "mapId": "m_forest",
+        "x": 1,
+        "y": 9
+      }
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 45,
+    "name": "create_transfer_pair",
+    "args": {
+      "a": {
+        "mapId": "m_forest",
+        "x": 16,
+        "y": 9
+      },
+      "b": {
+        "mapId": "m_mine",
+        "x": 1,
+        "y": 7
+      }
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 46,
+    "name": "create_transfer_pair",
+    "args": {
+      "a": {
+        "mapId": "m_mine",
+        "x": 14,
+        "y": 7
+      },
+      "b": {
+        "mapId": "m_pass",
+        "x": 1,
+        "y": 6
+      }
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 47,
+    "name": "create_transfer_pair",
+    "args": {
+      "a": {
+        "mapId": "m_pass",
+        "x": 14,
+        "y": 6
+      },
+      "b": {
+        "mapId": "m_sanctum",
+        "x": 1,
+        "y": 6
+      }
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 48,
+    "name": "set_start_position",
+    "args": {
+      "mapId": "m_village",
+      "x": 10,
+      "y": 8
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  },
+  {
+    "ordinal": 49,
+    "name": "set_session_start",
+    "args": {
+      "gold": 100,
+      "inventory": {
+        "it_potion": 2
+      },
+      "partyActorIds": [
+        "actor_hero"
+      ]
+    },
+    "options": {
+      "dryRun": false
+    },
+    "ok": true
+  }
+]

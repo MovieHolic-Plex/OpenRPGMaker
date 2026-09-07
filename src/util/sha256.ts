@@ -74,3 +74,8 @@ export async function sha256HexBytes(bytes: Uint8Array): Promise<string> {
 export async function sha256HexText(value: string): Promise<string> {
   return sha256HexBytes(new TextEncoder().encode(value));
 }
+
+/** Synchronous boundaries use the same SHA-256 implementation without changing their execution contract. */
+export function sha256HexTextSync(value: string): string {
+  return toHex(sha256Fallback(new TextEncoder().encode(value)));
+}

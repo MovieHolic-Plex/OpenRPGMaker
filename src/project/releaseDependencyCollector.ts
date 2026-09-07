@@ -17,6 +17,13 @@ export function collectReleaseDependencies(projectJson: string): readonly Releas
   const dependencies = new Map<string, ReleaseDependency>(assets.map(asset => [asset.zipPath,
     asset.kind === "public" ? { path: asset.zipPath } : { path: asset.zipPath, dataUrl: asset.asset.dataUrl }]));
   const resolving = new Set<string>();
+  // Only these exact map slots support no selection. Never relax mandatory image
+  // definitions or similarly named fields elsewhere in the authored project.
+  const optionalMapResources = new Map<object, "imageId" | "resourceId">();
+  for (const map of Object.values(project.maps)) {
+    if (map.background) optionalMapResources.set(map.background, "imageId");
+    if (map.bgm) optionalMapResources.set(map.bgm, "resourceId");
+  }
   const resolve = (id: unknown, commandResource = false): void => {
     if (typeof id !== "string") throw new Error("Invalid authored resource reference");
     if (commandResource) {
@@ -56,6 +63,11 @@ export function collectReleaseDependencies(projectJson: string): readonly Releas
     }
     for (const [key, child] of Object.entries(value)) {
       if (key === "uploaded" || key === "audioDescriptions") continue;
+      if (value === project && key === "monsterMetadata") continue;
+      // Map BGM treats whitespace-only selection as inheritance; background's
+      // editor clear value is exactly empty. Nonempty IDs still resolve strictly.
+      if (optionalMapResources.get(value) === key && typeof child === "string"
+        && (key === "resourceId" ? child.trim() === "" : child === "")) continue;
       if (key === "resourceProfiles" && Array.isArray(child)) { walk(child.filter(row => !isAudioCatalogRow(row))); continue; }
       if (key === "orientationGraphicResourceIds" && child && typeof child === "object") {
         for (const id of Object.values(child)) resolve(id);
@@ -63,7 +75,8 @@ export function collectReleaseDependencies(projectJson: string): readonly Releas
         || (key === "id" && ["image", "sprite"].includes(parentKey))) {
         if (key === "id" && "type" in value && value.type === "uploaded"
           && (typeof child !== "string" || !Object.hasOwn(project.assets.uploaded, child))) throw new Error("Missing uploaded resource");
-        resolve(child, commandResource);
+        // Image/sprite definitions are mandatory, even under a tileset's `kind`.
+        resolve(child, key !== "id" && commandResource);
       } else walk(child, key, commandResource);
     }
   };

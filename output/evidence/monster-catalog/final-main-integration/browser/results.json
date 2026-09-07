@@ -1,0 +1,1282 @@
+{
+  "browser": "firefox",
+  "viewports": [
+    {
+      "viewport": 375,
+      "width": 351,
+      "height": 760,
+      "left": 12,
+      "top": 70,
+      "overflow": 0
+    },
+    {
+      "viewport": 768,
+      "width": 744,
+      "height": 760,
+      "left": 12,
+      "top": 70,
+      "overflow": 0
+    },
+    {
+      "viewport": 1024,
+      "width": 960,
+      "height": 752,
+      "left": 32,
+      "top": 8,
+      "overflow": 0
+    },
+    {
+      "viewport": 1280,
+      "width": 960,
+      "height": 760,
+      "left": 160,
+      "top": 20,
+      "overflow": 0
+    },
+    {
+      "viewport": 1440,
+      "width": 960,
+      "height": 760,
+      "left": 240,
+      "top": 70,
+      "overflow": 0
+    }
+  ],
+  "captures": [
+    ".omo/st_01a0793a-browser/catalog-375.png",
+    ".omo/st_01a0793a-browser/catalog-768.png",
+    ".omo/st_01a0793a-browser/catalog-1024.png",
+    ".omo/st_01a0793a-browser/catalog-1280.png",
+    ".omo/st_01a0793a-browser/catalog-1440.png",
+    ".omo/st_01a0793a-browser/dirty-empty-search.png",
+    ".omo/st_01a0793a-browser/dirty-close-confirmation.png",
+    ".omo/st_01a0793a-browser/validation-error.png",
+    ".omo/st_01a0793a-browser/applied.png",
+    ".omo/st_01a0793a-browser/project-replaced-draft-retained.png"
+  ],
+  "imageChecks": [
+    {
+      "label": "catalog-375",
+      "images": [
+        {
+          "width": 384,
+          "height": 384,
+          "complete": true,
+          "kind": "thumbnail",
+          "resourceId": "generated-enemy-totem-cursed",
+          "frame": {
+            "x": 37,
+            "y": 211,
+            "width": 24,
+            "height": 24,
+            "top": 211,
+            "right": 61,
+            "bottom": 235,
+            "left": 37
+          },
+          "image": {
+            "x": 38,
+            "y": 212,
+            "width": 22,
+            "height": 22,
+            "top": 212,
+            "right": 60,
+            "bottom": 234,
+            "left": 38
+          },
+          "objectFit": "contain"
+        },
+        {
+          "width": 384,
+          "height": 384,
+          "complete": true,
+          "kind": "thumbnail",
+          "resourceId": "generated-enemy-goblin-scout",
+          "frame": {
+            "x": 37,
+            "y": 248,
+            "width": 24,
+            "height": 24,
+            "top": 248,
+            "right": 61,
+            "bottom": 272,
+            "left": 37
+          },
+          "image": {
+            "x": 38,
+            "y": 249,
+            "width": 22,
+            "height": 22,
+            "top": 249,
+            "right": 60,
+            "bottom": 271,
+            "left": 38
+          },
+          "objectFit": "contain"
+        },
+        {
+          "width": 384,
+          "height": 384,
+          "complete": true,
+          "kind": "thumbnail",
+          "resourceId": "generated-enemy-goblin-brute",
+          "frame": {
+            "x": 37,
+            "y": 285,
+            "width": 24,
+            "height": 24,
+            "top": 285,
+            "right": 61,
+            "bottom": 309,
+            "left": 37
+          },
+          "image": {
+            "x": 38,
+            "y": 286,
+            "width": 22,
+            "height": 22,
+            "top": 286,
+            "right": 60,
+            "bottom": 308,
+            "left": 38
+          },
+          "objectFit": "contain"
+        },
+        {
+          "width": 384,
+          "height": 384,
+          "complete": true,
+          "kind": "selected",
+          "resourceId": "generated-enemy-goblin-scout",
+          "frame": {
+            "x": 29,
+            "y": 342,
+            "width": 317,
+            "height": 160,
+            "top": 342,
+            "right": 346,
+            "bottom": 502,
+            "left": 29
+          },
+          "image": {
+            "x": 29,
+            "y": 342,
+            "width": 317,
+            "height": 160,
+            "top": 342,
+            "right": 346,
+            "bottom": 502,
+            "left": 29
+          },
+          "id": {
+            "x": 29,
+            "y": 501.75,
+            "width": 182,
+            "height": 20,
+            "top": 501.75,
+            "right": 211,
+            "bottom": 521.75,
+            "left": 29
+          },
+          "objectFit": "contain"
+        }
+      ],
+      "dimensions": {
+        "width": 375,
+        "height": 900
+      },
+      "signature": "PNG"
+    },
+    {
+      "label": "catalog-768",
+      "images": [
+        {
+          "width": 384,
+          "height": 384,
+          "complete": true,
+          "kind": "thumbnail",
+          "resourceId": "generated-enemy-totem-cursed",
+          "frame": {
+            "x": 37,
+            "y": 211,
+            "width": 24,
+            "height": 24,
+            "top": 211,
+            "right": 61,
+            "bottom": 235,
+            "left": 37
+          },
+          "image": {
+            "x": 38,
+            "y": 212,
+            "width": 22,
+            "height": 22,
+            "top": 212,
+            "right": 60,
+            "bottom": 234,
+            "left": 38
+          },
+          "objectFit": "contain"
+        },
+        {
+          "width": 384,
+          "height": 384,
+          "complete": true,
+          "kind": "thumbnail",
+          "resourceId": "generated-enemy-goblin-scout",
+          "frame": {
+            "x": 37,
+            "y": 248,
+            "width": 24,
+            "height": 24,
+            "top": 248,
+            "right": 61,
+            "bottom": 272,
+            "left": 37
+          },
+          "image": {
+            "x": 38,
+            "y": 249,
+            "width": 22,
+            "height": 22,
+            "top": 249,
+            "right": 60,
+            "bottom": 271,
+            "left": 38
+          },
+          "objectFit": "contain"
+        },
+        {
+          "width": 384,
+          "height": 384,
+          "complete": true,
+          "kind": "thumbnail",
+          "resourceId": "generated-enemy-goblin-brute",
+          "frame": {
+            "x": 37,
+            "y": 285,
+            "width": 24,
+            "height": 24,
+            "top": 285,
+            "right": 61,
+            "bottom": 309,
+            "left": 37
+          },
+          "image": {
+            "x": 38,
+            "y": 286,
+            "width": 22,
+            "height": 22,
+            "top": 286,
+            "right": 60,
+            "bottom": 308,
+            "left": 38
+          },
+          "objectFit": "contain"
+        },
+        {
+          "width": 384,
+          "height": 384,
+          "complete": true,
+          "kind": "thumbnail",
+          "resourceId": "generated-enemy-orc-warrior",
+          "frame": {
+            "x": 37,
+            "y": 322,
+            "width": 24,
+            "height": 24,
+            "top": 322,
+            "right": 61,
+            "bottom": 346,
+            "left": 37
+          },
+          "image": {
+            "x": 38,
+            "y": 323,
+            "width": 22,
+            "height": 22,
+            "top": 323,
+            "right": 60,
+            "bottom": 345,
+            "left": 38
+          },
+          "objectFit": "contain"
+        },
+        {
+          "width": 384,
+          "height": 384,
+          "complete": true,
+          "kind": "selected",
+          "resourceId": "generated-enemy-goblin-scout",
+          "frame": {
+            "x": 281.66668701171875,
+            "y": 142,
+            "width": 457.33331298828125,
+            "height": 160,
+            "top": 142,
+            "right": 739,
+            "bottom": 302,
+            "left": 281.66668701171875
+          },
+          "image": {
+            "x": 281.66668701171875,
+            "y": 142,
+            "width": 457.33331298828125,
+            "height": 160,
+            "top": 142,
+            "right": 739,
+            "bottom": 302,
+            "left": 281.66668701171875
+          },
+          "id": {
+            "x": 281.66668701171875,
+            "y": 301.75,
+            "width": 182,
+            "height": 20,
+            "top": 301.75,
+            "right": 463.66668701171875,
+            "bottom": 321.75,
+            "left": 281.66668701171875
+          },
+          "objectFit": "contain"
+        }
+      ],
+      "dimensions": {
+        "width": 768,
+        "height": 900
+      },
+      "signature": "PNG"
+    },
+    {
+      "label": "catalog-1024",
+      "images": [
+        {
+          "width": 384,
+          "height": 384,
+          "complete": true,
+          "kind": "thumbnail",
+          "resourceId": "generated-enemy-totem-cursed",
+          "frame": {
+            "x": 57,
+            "y": 149,
+            "width": 24,
+            "height": 24,
+            "top": 149,
+            "right": 81,
+            "bottom": 173,
+            "left": 57
+          },
+          "image": {
+            "x": 58,
+            "y": 150,
+            "width": 22,
+            "height": 22,
+            "top": 150,
+            "right": 80,
+            "bottom": 172,
+            "left": 58
+          },
+          "objectFit": "contain"
+        },
+        {
+          "width": 384,
+          "height": 384,
+          "complete": true,
+          "kind": "thumbnail",
+          "resourceId": "generated-enemy-goblin-scout",
+          "frame": {
+            "x": 57,
+            "y": 186,
+            "width": 24,
+            "height": 24,
+            "top": 186,
+            "right": 81,
+            "bottom": 210,
+            "left": 57
+          },
+          "image": {
+            "x": 58,
+            "y": 187,
+            "width": 22,
+            "height": 22,
+            "top": 187,
+            "right": 80,
+            "bottom": 209,
+            "left": 58
+          },
+          "objectFit": "contain"
+        },
+        {
+          "width": 384,
+          "height": 384,
+          "complete": true,
+          "kind": "thumbnail",
+          "resourceId": "generated-enemy-goblin-brute",
+          "frame": {
+            "x": 57,
+            "y": 223,
+            "width": 24,
+            "height": 24,
+            "top": 223,
+            "right": 81,
+            "bottom": 247,
+            "left": 57
+          },
+          "image": {
+            "x": 58,
+            "y": 224,
+            "width": 22,
+            "height": 22,
+            "top": 224,
+            "right": 80,
+            "bottom": 246,
+            "left": 58
+          },
+          "objectFit": "contain"
+        },
+        {
+          "width": 384,
+          "height": 384,
+          "complete": true,
+          "kind": "thumbnail",
+          "resourceId": "generated-enemy-orc-warrior",
+          "frame": {
+            "x": 57,
+            "y": 260,
+            "width": 24,
+            "height": 24,
+            "top": 260,
+            "right": 81,
+            "bottom": 284,
+            "left": 57
+          },
+          "image": {
+            "x": 58,
+            "y": 261,
+            "width": 22,
+            "height": 22,
+            "top": 261,
+            "right": 80,
+            "bottom": 283,
+            "left": 58
+          },
+          "objectFit": "contain"
+        },
+        {
+          "width": 384,
+          "height": 384,
+          "complete": true,
+          "kind": "selected",
+          "resourceId": "generated-enemy-goblin-scout",
+          "frame": {
+            "x": 373.66668701171875,
+            "y": 80,
+            "width": 601.3333129882812,
+            "height": 160,
+            "top": 80,
+            "right": 975,
+            "bottom": 240,
+            "left": 373.66668701171875
+          },
+          "image": {
+            "x": 373.66668701171875,
+            "y": 80,
+            "width": 601.3333129882812,
+            "height": 160,
+            "top": 80,
+            "right": 975,
+            "bottom": 240,
+            "left": 373.66668701171875
+          },
+          "id": {
+            "x": 373.66668701171875,
+            "y": 239.75,
+            "width": 182,
+            "height": 20,
+            "top": 239.75,
+            "right": 555.6666870117188,
+            "bottom": 259.75,
+            "left": 373.66668701171875
+          },
+          "objectFit": "contain"
+        }
+      ],
+      "dimensions": {
+        "width": 1024,
+        "height": 768
+      },
+      "signature": "PNG"
+    },
+    {
+      "label": "catalog-1280",
+      "images": [
+        {
+          "width": 384,
+          "height": 384,
+          "complete": true,
+          "kind": "thumbnail",
+          "resourceId": "generated-enemy-totem-cursed",
+          "frame": {
+            "x": 185,
+            "y": 161,
+            "width": 24,
+            "height": 24,
+            "top": 161,
+            "right": 209,
+            "bottom": 185,
+            "left": 185
+          },
+          "image": {
+            "x": 186,
+            "y": 162,
+            "width": 22,
+            "height": 22,
+            "top": 162,
+            "right": 208,
+            "bottom": 184,
+            "left": 186
+          },
+          "objectFit": "contain"
+        },
+        {
+          "width": 384,
+          "height": 384,
+          "complete": true,
+          "kind": "thumbnail",
+          "resourceId": "generated-enemy-goblin-scout",
+          "frame": {
+            "x": 185,
+            "y": 198,
+            "width": 24,
+            "height": 24,
+            "top": 198,
+            "right": 209,
+            "bottom": 222,
+            "left": 185
+          },
+          "image": {
+            "x": 186,
+            "y": 199,
+            "width": 22,
+            "height": 22,
+            "top": 199,
+            "right": 208,
+            "bottom": 221,
+            "left": 186
+          },
+          "objectFit": "contain"
+        },
+        {
+          "width": 384,
+          "height": 384,
+          "complete": true,
+          "kind": "thumbnail",
+          "resourceId": "generated-enemy-goblin-brute",
+          "frame": {
+            "x": 185,
+            "y": 235,
+            "width": 24,
+            "height": 24,
+            "top": 235,
+            "right": 209,
+            "bottom": 259,
+            "left": 185
+          },
+          "image": {
+            "x": 186,
+            "y": 236,
+            "width": 22,
+            "height": 22,
+            "top": 236,
+            "right": 208,
+            "bottom": 258,
+            "left": 186
+          },
+          "objectFit": "contain"
+        },
+        {
+          "width": 384,
+          "height": 384,
+          "complete": true,
+          "kind": "thumbnail",
+          "resourceId": "generated-enemy-orc-warrior",
+          "frame": {
+            "x": 185,
+            "y": 272,
+            "width": 24,
+            "height": 24,
+            "top": 272,
+            "right": 209,
+            "bottom": 296,
+            "left": 185
+          },
+          "image": {
+            "x": 186,
+            "y": 273,
+            "width": 22,
+            "height": 22,
+            "top": 273,
+            "right": 208,
+            "bottom": 295,
+            "left": 186
+          },
+          "objectFit": "contain"
+        },
+        {
+          "width": 384,
+          "height": 384,
+          "complete": true,
+          "kind": "selected",
+          "resourceId": "generated-enemy-goblin-scout",
+          "frame": {
+            "x": 501.66668701171875,
+            "y": 92,
+            "width": 601.3333129882812,
+            "height": 160,
+            "top": 92,
+            "right": 1103,
+            "bottom": 252,
+            "left": 501.66668701171875
+          },
+          "image": {
+            "x": 501.66668701171875,
+            "y": 92,
+            "width": 601.3333129882812,
+            "height": 160,
+            "top": 92,
+            "right": 1103,
+            "bottom": 252,
+            "left": 501.66668701171875
+          },
+          "id": {
+            "x": 501.66668701171875,
+            "y": 251.75,
+            "width": 182,
+            "height": 20,
+            "top": 251.75,
+            "right": 683.6666870117188,
+            "bottom": 271.75,
+            "left": 501.66668701171875
+          },
+          "objectFit": "contain"
+        }
+      ],
+      "dimensions": {
+        "width": 1280,
+        "height": 800
+      },
+      "signature": "PNG"
+    },
+    {
+      "label": "catalog-1440",
+      "images": [
+        {
+          "width": 384,
+          "height": 384,
+          "complete": true,
+          "kind": "thumbnail",
+          "resourceId": "generated-enemy-totem-cursed",
+          "frame": {
+            "x": 265,
+            "y": 211,
+            "width": 24,
+            "height": 24,
+            "top": 211,
+            "right": 289,
+            "bottom": 235,
+            "left": 265
+          },
+          "image": {
+            "x": 266,
+            "y": 212,
+            "width": 22,
+            "height": 22,
+            "top": 212,
+            "right": 288,
+            "bottom": 234,
+            "left": 266
+          },
+          "objectFit": "contain"
+        },
+        {
+          "width": 384,
+          "height": 384,
+          "complete": true,
+          "kind": "thumbnail",
+          "resourceId": "generated-enemy-goblin-scout",
+          "frame": {
+            "x": 265,
+            "y": 248,
+            "width": 24,
+            "height": 24,
+            "top": 248,
+            "right": 289,
+            "bottom": 272,
+            "left": 265
+          },
+          "image": {
+            "x": 266,
+            "y": 249,
+            "width": 22,
+            "height": 22,
+            "top": 249,
+            "right": 288,
+            "bottom": 271,
+            "left": 266
+          },
+          "objectFit": "contain"
+        },
+        {
+          "width": 384,
+          "height": 384,
+          "complete": true,
+          "kind": "thumbnail",
+          "resourceId": "generated-enemy-goblin-brute",
+          "frame": {
+            "x": 265,
+            "y": 285,
+            "width": 24,
+            "height": 24,
+            "top": 285,
+            "right": 289,
+            "bottom": 309,
+            "left": 265
+          },
+          "image": {
+            "x": 266,
+            "y": 286,
+            "width": 22,
+            "height": 22,
+            "top": 286,
+            "right": 288,
+            "bottom": 308,
+            "left": 266
+          },
+          "objectFit": "contain"
+        },
+        {
+          "width": 384,
+          "height": 384,
+          "complete": true,
+          "kind": "thumbnail",
+          "resourceId": "generated-enemy-orc-warrior",
+          "frame": {
+            "x": 265,
+            "y": 322,
+            "width": 24,
+            "height": 24,
+            "top": 322,
+            "right": 289,
+            "bottom": 346,
+            "left": 265
+          },
+          "image": {
+            "x": 266,
+            "y": 323,
+            "width": 22,
+            "height": 22,
+            "top": 323,
+            "right": 288,
+            "bottom": 345,
+            "left": 266
+          },
+          "objectFit": "contain"
+        },
+        {
+          "width": 384,
+          "height": 384,
+          "complete": true,
+          "kind": "selected",
+          "resourceId": "generated-enemy-goblin-scout",
+          "frame": {
+            "x": 581.6666870117188,
+            "y": 142,
+            "width": 601.3333129882812,
+            "height": 160,
+            "top": 142,
+            "right": 1183,
+            "bottom": 302,
+            "left": 581.6666870117188
+          },
+          "image": {
+            "x": 581.6666870117188,
+            "y": 142,
+            "width": 601.3333129882812,
+            "height": 160,
+            "top": 142,
+            "right": 1183,
+            "bottom": 302,
+            "left": 581.6666870117188
+          },
+          "id": {
+            "x": 581.6666870117188,
+            "y": 301.75,
+            "width": 182,
+            "height": 20,
+            "top": 301.75,
+            "right": 763.6666870117188,
+            "bottom": 321.75,
+            "left": 581.6666870117188
+          },
+          "objectFit": "contain"
+        }
+      ],
+      "dimensions": {
+        "width": 1440,
+        "height": 900
+      },
+      "signature": "PNG"
+    },
+    {
+      "label": "dirty-empty-search",
+      "images": [],
+      "dimensions": {
+        "width": 1280,
+        "height": 900
+      },
+      "signature": "PNG"
+    },
+    {
+      "label": "dirty-close-confirmation",
+      "images": [],
+      "dimensions": {
+        "width": 1280,
+        "height": 900
+      },
+      "signature": "PNG"
+    },
+    {
+      "label": "validation-error",
+      "images": [],
+      "dimensions": {
+        "width": 1280,
+        "height": 900
+      },
+      "signature": "PNG"
+    },
+    {
+      "label": "applied",
+      "images": [],
+      "dimensions": {
+        "width": 1280,
+        "height": 900
+      },
+      "signature": "PNG"
+    },
+    {
+      "label": "project-replaced-draft-retained",
+      "images": [
+        {
+          "width": 384,
+          "height": 384,
+          "complete": true,
+          "kind": "thumbnail",
+          "resourceId": "generated-enemy-slime-01",
+          "frame": {
+            "x": 185,
+            "y": 226,
+            "width": 24,
+            "height": 24,
+            "top": 226,
+            "right": 209,
+            "bottom": 250,
+            "left": 185
+          },
+          "image": {
+            "x": 186,
+            "y": 227,
+            "width": 22,
+            "height": 22,
+            "top": 227,
+            "right": 208,
+            "bottom": 249,
+            "left": 186
+          },
+          "objectFit": "contain"
+        },
+        {
+          "width": 384,
+          "height": 384,
+          "complete": true,
+          "kind": "thumbnail",
+          "resourceId": "generated-enemy-bat-01",
+          "frame": {
+            "x": 185,
+            "y": 263,
+            "width": 24,
+            "height": 24,
+            "top": 263,
+            "right": 209,
+            "bottom": 287,
+            "left": 185
+          },
+          "image": {
+            "x": 186,
+            "y": 264,
+            "width": 22,
+            "height": 22,
+            "top": 264,
+            "right": 208,
+            "bottom": 286,
+            "left": 186
+          },
+          "objectFit": "contain"
+        },
+        {
+          "width": 384,
+          "height": 384,
+          "complete": true,
+          "kind": "thumbnail",
+          "resourceId": "generated-enemy-golem-01",
+          "frame": {
+            "x": 185,
+            "y": 300,
+            "width": 24,
+            "height": 24,
+            "top": 300,
+            "right": 209,
+            "bottom": 324,
+            "left": 185
+          },
+          "image": {
+            "x": 186,
+            "y": 301,
+            "width": 22,
+            "height": 22,
+            "top": 301,
+            "right": 208,
+            "bottom": 323,
+            "left": 186
+          },
+          "objectFit": "contain"
+        },
+        {
+          "width": 384,
+          "height": 384,
+          "complete": true,
+          "kind": "thumbnail",
+          "resourceId": "generated-enemy-dragon-01",
+          "frame": {
+            "x": 185,
+            "y": 337,
+            "width": 24,
+            "height": 24,
+            "top": 337,
+            "right": 209,
+            "bottom": 361,
+            "left": 185
+          },
+          "image": {
+            "x": 186,
+            "y": 338,
+            "width": 22,
+            "height": 22,
+            "top": 338,
+            "right": 208,
+            "bottom": 360,
+            "left": 186
+          },
+          "objectFit": "contain"
+        }
+      ],
+      "dimensions": {
+        "width": 1280,
+        "height": 900
+      },
+      "signature": "PNG"
+    }
+  ],
+  "controls": [
+    {
+      "viewport": 375,
+      "field": "search",
+      "width": 323,
+      "height": 32,
+      "reachable": true
+    },
+    {
+      "viewport": 375,
+      "field": "name",
+      "width": 139.5,
+      "height": 32,
+      "reachable": true
+    },
+    {
+      "viewport": 375,
+      "field": "tags",
+      "width": 139.5,
+      "height": 72,
+      "reachable": true
+    },
+    {
+      "viewport": 375,
+      "field": "description",
+      "width": 139.5,
+      "height": 113.5,
+      "reachable": true
+    },
+    {
+      "viewport": 375,
+      "field": "apply",
+      "width": 49.93333435058594,
+      "height": 32,
+      "reachable": true
+    },
+    {
+      "viewport": 375,
+      "field": "reset",
+      "width": 89.46665954589844,
+      "height": 32,
+      "reachable": true
+    },
+    {
+      "viewport": 375,
+      "field": "close",
+      "width": 49.93333435058594,
+      "height": 32,
+      "reachable": true
+    },
+    {
+      "viewport": 768,
+      "field": "search",
+      "width": 218.6666717529297,
+      "height": 32,
+      "reachable": true
+    },
+    {
+      "viewport": 768,
+      "field": "name",
+      "width": 209.6666717529297,
+      "height": 32,
+      "reachable": true
+    },
+    {
+      "viewport": 768,
+      "field": "tags",
+      "width": 209.6666717529297,
+      "height": 72,
+      "reachable": true
+    },
+    {
+      "viewport": 768,
+      "field": "description",
+      "width": 209.6666717529297,
+      "height": 113.5,
+      "reachable": true
+    },
+    {
+      "viewport": 768,
+      "field": "apply",
+      "width": 49.93333435058594,
+      "height": 32,
+      "reachable": true
+    },
+    {
+      "viewport": 768,
+      "field": "reset",
+      "width": 89.46665954589844,
+      "height": 32,
+      "reachable": true
+    },
+    {
+      "viewport": 768,
+      "field": "close",
+      "width": 49.93333435058594,
+      "height": 32,
+      "reachable": true
+    },
+    {
+      "viewport": 1024,
+      "field": "search",
+      "width": 290.66668701171875,
+      "height": 32,
+      "reachable": true
+    },
+    {
+      "viewport": 1024,
+      "field": "name",
+      "width": 281.66668701171875,
+      "height": 32,
+      "reachable": true
+    },
+    {
+      "viewport": 1024,
+      "field": "tags",
+      "width": 281.66668701171875,
+      "height": 72,
+      "reachable": true
+    },
+    {
+      "viewport": 1024,
+      "field": "description",
+      "width": 281.66668701171875,
+      "height": 113.5,
+      "reachable": true
+    },
+    {
+      "viewport": 1024,
+      "field": "apply",
+      "width": 49.93333435058594,
+      "height": 32,
+      "reachable": true
+    },
+    {
+      "viewport": 1024,
+      "field": "reset",
+      "width": 89.46665954589844,
+      "height": 32,
+      "reachable": true
+    },
+    {
+      "viewport": 1024,
+      "field": "close",
+      "width": 49.93333435058594,
+      "height": 32,
+      "reachable": true
+    },
+    {
+      "viewport": 1280,
+      "field": "search",
+      "width": 290.66668701171875,
+      "height": 32,
+      "reachable": true
+    },
+    {
+      "viewport": 1280,
+      "field": "name",
+      "width": 281.66668701171875,
+      "height": 32,
+      "reachable": true
+    },
+    {
+      "viewport": 1280,
+      "field": "tags",
+      "width": 281.66668701171875,
+      "height": 72,
+      "reachable": true
+    },
+    {
+      "viewport": 1280,
+      "field": "description",
+      "width": 281.66668701171875,
+      "height": 113.5,
+      "reachable": true
+    },
+    {
+      "viewport": 1280,
+      "field": "apply",
+      "width": 49.93333435058594,
+      "height": 32,
+      "reachable": true
+    },
+    {
+      "viewport": 1280,
+      "field": "reset",
+      "width": 89.46665954589844,
+      "height": 32,
+      "reachable": true
+    },
+    {
+      "viewport": 1280,
+      "field": "close",
+      "width": 49.93333435058594,
+      "height": 32,
+      "reachable": true
+    },
+    {
+      "viewport": 1440,
+      "field": "search",
+      "width": 290.66668701171875,
+      "height": 32,
+      "reachable": true
+    },
+    {
+      "viewport": 1440,
+      "field": "name",
+      "width": 281.66668701171875,
+      "height": 32,
+      "reachable": true
+    },
+    {
+      "viewport": 1440,
+      "field": "tags",
+      "width": 281.66668701171875,
+      "height": 72,
+      "reachable": true
+    },
+    {
+      "viewport": 1440,
+      "field": "description",
+      "width": 281.66668701171875,
+      "height": 113.5,
+      "reachable": true
+    },
+    {
+      "viewport": 1440,
+      "field": "apply",
+      "width": 49.93333435058594,
+      "height": 32,
+      "reachable": true
+    },
+    {
+      "viewport": 1440,
+      "field": "reset",
+      "width": 89.46665954589844,
+      "height": 32,
+      "reachable": true
+    },
+    {
+      "viewport": 1440,
+      "field": "close",
+      "width": 49.93333435058594,
+      "height": 32,
+      "reachable": true
+    }
+  ],
+  "remoteWrites": [],
+  "pageErrors": [],
+  "failedRequests": [
+    {
+      "path": "/v1/browser/hello",
+      "error": "NS_ERROR_DOM_BAD_URI"
+    },
+    {
+      "path": "/v1/browser/hello",
+      "error": "NS_ERROR_DOM_BAD_URI"
+    },
+    {
+      "path": "/v1/browser/hello",
+      "error": "NS_ERROR_DOM_BAD_URI"
+    },
+    {
+      "path": "/v1/browser/hello",
+      "error": "NS_ERROR_DOM_BAD_URI"
+    },
+    {
+      "path": "/v1/browser/hello",
+      "error": "NS_ERROR_DOM_BAD_URI"
+    }
+  ],
+  "browserErrors": [
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 JSHandle@object",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[JavaScript Error: \"Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://127.0.0.1:17831/v1/browser/hello. (Reason: CORS request did not succeed). Status code: (null).\"]",
+    "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 JSHandle@object",
+    "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 JSHandle@object",
+    "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 JSHandle@object",
+    "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 JSHandle@object",
+    "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 JSHandle@object"
+  ],
+  "httpErrors": [],
+  "stylesheetBytes": 7548724,
+  "behavior": "catalog, empty enemies/search, dirty cancellation, validation, apply, undo/redo, reset, project replacement and cleanup passed",
+  "serverStopped": true
+}

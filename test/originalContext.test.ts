@@ -149,6 +149,26 @@ describe("original paging, delivery and window accounting", () => {
     expect(tools).toEqual(toOpenAiTools());
   });
 
+  it("keeps the paging manifest and latest full read when history includes large tool arguments", () => {
+    const { store } = fixture();
+    const tools = toOpenAiTools();
+    const messages: ChatMessage[] = [{ role: "system", content: "system" }, { role: "user", content: "request" }];
+    for (let index = 0; index < 12; index++) {
+      const id = `paging_${index}`;
+      messages.push({ role: "assistant", content: null, tool_calls: [{ id, type: "function", function: {
+        name: "get_original_context", arguments: JSON.stringify({ entryId: "x".repeat(2000) }),
+      } }] }, { role: "tool", name: "get_original_context", tool_call_id: id,
+        content: JSON.stringify({ ok: true, data: { text: "x".repeat(24000) } }) });
+    }
+    const before = structuredClone(messages);
+    const result = buildGroundedRequest(messages, tools, { model: "unknown-window-fixture", baseUrl: "x" }, store);
+    expect(result.budget.inputTokens + result.budget.reserveTokens).toBeLessThanOrEqual(result.budget.windowTokens);
+    expect(parsed(result.messages.at(-1)!).omitted.read.args.snapshotId).toBe(store.context.snapshotId);
+    expect(result.messages.find(message => message.tool_call_id === "paging_11")).toEqual(messages.at(-1));
+    expect(messages).toEqual(before);
+    expect(tools).toEqual(toOpenAiTools());
+  });
+
   it("fails explicitly when mandatory input alone exhausts the model window", () => {
     const { store } = fixture();
     expect(() => buildGroundedRequest([{ role: "user", content: "irreducible instruction ".repeat(40000) }], toOpenAiTools(), { model: "unknown", baseUrl: "x" }, store)).toThrow("original-context-window-exceeded");
