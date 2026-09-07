@@ -4,8 +4,8 @@ Base: `e05a99b915102de113ac4634f4a06a5bb3267788`, worktree
 `rpg-zzu-ai-acceptance-live-qa`, isolated editor/API server `127.0.0.1:9860`.
 No configured default/user project was written. The exclusively owned project was
 confirmed absent before creation and retained remotely. No PR, push or merge is
-part of this handoff. Graphical-player comparison and full-gate baseline comparison
-are lead-owned; this document does not claim either has passed.
+part of the implementer handoff. The lead's graphical-player comparison now passed
+as described below. The full-gate baseline comparison remains pending.
 
 ## Canonical deliverable
 
@@ -38,6 +38,30 @@ exhaustive semantic-completion claim.
 
 ## Independent shipping-player actions
 
+The lead ran `scripts/qa/acceptance-live-player.mjs` through the real
+`player.html` / export-store-shim surface in Firefox. All eight checkpoints
+passed with exit 0 and no page errors. The final state exactly matched the
+16-step interpreter result above: `(10,8)`, 80 gold, two potions, one antidote.
+Mira, Rowan's first interaction and Rowan's repeat interaction each emitted a
+distinct handled action receipt (sequences 1, 2 and 3).
+
+The script uses actual QA direction/action inputs plus native keyboard controls
+for dialogue and purchasing; it never teleports or assigns money/inventory.
+Its input file hash is checked against the independently reloaded handoff.
+See [`lead-player-final/SUMMARY.md`](lead-player-final/SUMMARY.md) and
+[`lead-player-final/player-comparison.json`](lead-player-final/player-comparison.json).
+
+```sh
+node scripts/qa/acceptance-live-player.mjs output/evidence/acceptance-live/lead-player-final
+```
+
+Two earlier observer attempts failed and remain separate evidence under
+`lead-player` and `lead-player-r2`. Releasing direction only after a browser-host
+round trip allowed an extra tile to start. The final observer releases direction
+inside the browser's arrival callback, before the next simulation step, and
+requires movement to be settled. No product code, test state, sleep or test
+deadline was changed to obtain the passing comparison.
+
 Use the real `player.html`/export-store-shim surface, not editor Play mode. The
 existing runtime QA harness can boot this exact file (the smoke scenario is only
 a boot check, not the full comparison):
@@ -47,7 +71,7 @@ npm run qa:runtime -- --browser firefox --scenario smoke \
   --project output/evidence/acceptance-live/handoff/project.json
 ```
 
-Then independently exercise these checkpoints with the player/lead scenario:
+The verified player checkpoints are:
 
 | Action | Exact checkpoint |
 | --- | --- |
@@ -62,8 +86,9 @@ Then independently exercise these checkpoints with the player/lead scenario:
 
 Both gates use authored `playerTouch` commands and are transparent below-priority
 events. Both NPCs have fixed movement. Rowan uses self-switch A and a second page
-without a grant. The village is deliberately small/minimal. No images were read
-by this agent and no graphical-player result is asserted here.
+without a grant. The village is deliberately small/minimal. The implementer's
+handoff did not claim graphical verification; the lead's later run above supplies
+that functional comparison without claiming visual-design quality.
 
 ## Real model evidence, not mocks
 
