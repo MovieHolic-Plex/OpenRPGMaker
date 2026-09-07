@@ -304,6 +304,12 @@ Phase는 순차, phase 내부는 아래 matrix가 허용하는 작업만 병렬.
   - Scope: `/home/main/z-project/rpg-zzu-life-full-placement-core-verify`만. 완료된 독립 검증의327M 체크아웃이며 새 `spatial-rights-verify-r2`와 다르다.
   - Acceptance: 원본 VERIFY·성공/실패·공개 상태/저장 증거를 손실 없이 커밋 가능한 경로에 보관하고 해시·재독해 경로를 확인한다. 필요한 증거가 미보관이면 삭제하지 않는다. 감독자 보관 확인 후 이 소유 트리만 해제·제거하고 기존 결과를 새 코드 승인으로 재분류하지 않는다. `E/49-50/`에 실제 정리를 기록한다.
 
+- [ ] 52. 저작한 플레이어 몸과 통행 설정의 정규화 손실을 고친다
+  - Tier: HEAVY. Astra 전담 기존 Project4 직렬화/파싱 경계 수정. `resolvePlayerBody`의 저작된 system.playerFootprint/playerPassRows 계약과 달리 `databaseRecordModel.ts:normalizeSystemRecords` 화이트리스트가 두 필드를 누락한다. Task12 r2 원격 재로드에서 null, 실제 플레이1x1로 관측됐다.
+  - Work: 기존 정규화 권한을 재사용해 명시된 몸/통행 설정을 보존한다. 미설정 optional은 생성하지 않고 유효/비정규 값은 기존 몸·통행 해석과 일치시킨다. Project4/Save4→Save5와 세션 오버라이드 우선순위를 유지한다.
+  - Acceptance: 변경 전 정상 기본값 characterization, 실제 공개 Project serialize/parse 및 startSession/resolvePlayerBody 경계의 RED-first,3x3/passRows1 반복 왕복·legacy absence·정규화 안정성·오버라이드/저장 회귀 검증과 별도 Astra 판정. UI 소스는 고정한다. 이 수정과 Task12는 같은 검증된 통합 증분으로 최종 CLI/문서/커밋하며, 중간 uncommitted 인계는 명시한다.
+  - Boundary: `ProjectSession`에 authored farmPlots 계약은 없다. startSession의 빈 밭 초기화는 바꾸지 않는다. G의 native 밭 입력은 실제 경작 또는 명시한 유효 Save 입력을 사용한다. 증거 `E/52/`.
+
 - [ ] 12. live 배치 안전과 저장 복원 점유를 분리한다
   - Recommended task executor category: deep — 같은 점유 함수의 거래·복원·스폰 소비자 구별.
   - Scope/References: `spatialOccupancy.ts:28-88`, `spatialPlacementTransactions.ts`, `spatialPlacementRestore.ts`, `lifeLedger.ts:135-230`, `playerStatusMenuController.ts`, live event/body 해석 모듈, `seasonalForage.ts`.
