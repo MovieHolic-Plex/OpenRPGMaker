@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **47쪽 / 1621KB / 약 460,588 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **47쪽 / 1622KB / 약 460,996 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -22,7 +22,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-pre-edit-routing.md` | 69KB | 51KB ⚠상한 초과 — 절을 더 쪼개라 | 197 | ~19,760 |
 | `openwiki/runtime-battle.md` | 118KB | 31KB | 358 | ~33,888 |
 | `openwiki/runtime-project-schema.md` | 71KB | 42KB | 259 | ~19,205 |
-| `openwiki/runtime-sessions.md` | 79KB | 47KB | 239 | ~20,873 |
+| `openwiki/runtime-sessions.md` | 80KB | 47KB | 243 | ~21,281 |
 | `openwiki/testing.md` | 118KB | 46KB | 757 | ~32,981 |
 
 ## 한국어 산문이 깨진 페이지
@@ -48,29 +48,35 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | 페이지 | 건수 | 참조 |
 |---|---|---|
 | `openwiki/agent-worktrees.md` | 2 | `result.md`, `task.json` |
-| `openwiki/ai-workflow.md` | 2 | `src/ai/plannerSkip.ts`, `test/volumeContractSession.test.ts` |
+| `openwiki/ai-workflow.md` | 4 | `docs/2026-07-10-tool-calling-architecture-review.md`, `docs/tool-catalog.md`, `src/ai/plannerSkip.ts`, `test/volumeContractSession.test.ts` |
+| `openwiki/architecture.md` | 2 | `community-site/lib/playRoute.ts`, `community-site/lib/playerBootConfig.ts` |
 | `openwiki/bgm-catalog.md` | 1 | `catalog.raw.json` |
-| `openwiki/editor-ai-panel.md` | 32 | `.omo/evidence/assistant-glass-fold/measure.json`, `.omo/evidence/autonomous-ai-rpg/task-8-autonomous-ai-rpg.md`, `15-assistant-readable.css`, `17-assistant-modern-shell.css`, `after/measure.json`, `aiCommandBar.ts`, `aiGlassPanelWidth.test.ts`, `aiSkillDrawer.ts`, `aiVolatileController.ts`, `assistant-skills.css`, `chat-dock-switch.spec.ts`, `chatDock.ts`, `intentClarify.ts`, `newmain-after-measure.json`, `output/evidence/assistant-ui-modern/newmain-before-measure.json`, `regionIntentRouter.ts`, `scripts/qa/assistant-side-seam-hittest.mjs`, `src/ai/intentClarify.ts`, `src/ai/plannerSkip.ts`, `src/ai/skills.ts`, `src/editor/chatDock.ts`, `test/aiGlassFold.test.ts`, `test/aiGlassPanelWidth.test.ts`, `test/chatDock.test.ts`, `test/e2e/_assistant-glass-shots.spec.ts`, `test/e2e/_glass-dock-report.spec.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/plannerSkip.test.ts`, `test/regionIntentExposure.test.ts`, `test/turnGuideSharedRules.test.ts`, `test/volumeContractSession.test.ts`, `test/workspaceBarAssistantDock.test.ts` |
-| `openwiki/editor-ai-tools.md` | 4 | `aiCommandBar.ts`, `aiProposalModal.ts`, `test/intentClarify.test.ts`, `test/volumeContractSession.test.ts` |
-| `openwiki/editor-database.md` | 11 | `enemy-art-NNN.png`, `form-hierarchy-modern.css`, `output/evidence/battle-animation-ux/p1-implementation.md`, `output/evidence/battle-animation-ux/p2-implementation.md`, `output/evidence/battle-rules-ux/st_01a07318-manual-qa.md`, `output/evidence/battle-rules-ux/verification.md`, `output/evidence/system-studio/system-studio-backed-settings-1586x992.png`, `reports/generated-effect-showcase-2026-08-24.html`, `scripts/generate-default-item-icons.mts`, `scripts/lib/effectSheet/paintersMonster.mjs`, `scripts/lib/effectSheet/paintersUtility.mjs` |
-| `openwiki/editor-event-authoring.md` | 6 | `audit-before.md`, `new-editor/REPORT.html`, `output/evidence/event-ai-assist-ux/960x900-compact.png`, `scripts/generated/toolCatalog.json`, `verify-shots/page-preview-probe/02-preview-open.png`, `verify-shots/runtime-qa/cheolsu-keyboard-fixed/SUMMARY.md` |
+| `openwiki/community-site.md` | 2 | `community-site/db/0001_openrpg_community.sql`, `community-site/lib/editorPackageCheck.ts` |
+| `openwiki/editor-ai-panel.md` | 42 | `.omo/evidence/assistant-glass-fold/measure.json`, `.omo/evidence/autonomous-ai-rpg/task-8-autonomous-ai-rpg.md`, `15-assistant-readable.css`, `17-assistant-modern-shell.css`, `after/measure.json`, `aiCommandBar.ts`, `aiGlassPanelWidth.test.ts`, `aiSkillDrawer.ts`, `aiVolatileController.ts`, `assistant-skills.css`, `chat-dock-switch.spec.ts`, `chatDock.ts`, `docs/2026-09-03-ai-assistant-modern-ui-proposal.html`, `docs/superpowers/specs/2026-08-20-ai-glass-dock-design.md`, `docs/superpowers/specs/2026-09-03-ai-studio-console-design.md`, `docs/superpowers/specs/2026-09-03-assistant-deck-design.md`, `docs/superpowers/specs/2026-09-03-llm-intent-routing-design.md`, `intentClarify.ts`, `newmain-after-measure.json`, `output/evidence/assistant-ui-modern/newmain-before-measure.json`, `regionIntentRouter.ts`, `reports/region-polish/index.html`, `scripts/qa/assistant-side-seam-hittest.mjs`, `src/ai/intentClarify.ts`, `src/ai/plannerSkip.ts`, `src/ai/skills.ts`, `src/editor/chatDock.ts`, `test/aiGlassFold.test.ts`, `test/aiGlassPanelWidth.test.ts`, `test/chatDock.test.ts`, `test/e2e/_assistant-glass-shots.spec.ts`, `test/e2e/_glass-dock-report.spec.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/plannerSkip.test.ts`, `test/regionIntentExposure.test.ts`, `test/turnGuideSharedRules.test.ts`, `test/volumeContractSession.test.ts`, `test/workspaceBarAssistantDock.test.ts`, `verify-shots/ai-activity-live/02-canvas-chip-anchored.png`, `verify-shots/ai-composer-mode/do-mode-blocked-item.png`, `verify-shots/ai-dock-log-mount/matrix-after.json`, `verify-shots/aichat-bug-hunt/REPORT.md` |
+| `openwiki/editor-ai-tools.md` | 7 | `.omo/evidence/ai-editor-reach-20260827/coverage-audit.md`, `aiCommandBar.ts`, `aiProposalModal.ts`, `docs/superpowers/specs/2026-09-03-llm-intent-routing-design.md`, `reports/place-concept-inn/e2e/receipt.json`, `test/intentClarify.test.ts`, `test/volumeContractSession.test.ts` |
+| `openwiki/editor-database.md` | 18 | `docs/reviews/db-beginner-adversarial-qa-findings.md`, `docs/reviews/db-beginner-adversarial-qa.md`, `docs/superpowers/specs/2026-08-28-db-structures-editor-design.md`, `enemy-art-NNN.png`, `form-hierarchy-modern.css`, `output/evidence/battle-animation-ux/p1-implementation.md`, `output/evidence/battle-animation-ux/p2-implementation.md`, `output/evidence/battle-rules-ux/st_01a07318-manual-qa.md`, `output/evidence/battle-rules-ux/verification.md`, `output/evidence/system-studio/system-studio-backed-settings-1586x992.png`, `reports/concept-facilities/index.html`, `reports/generated-effect-showcase-2026-08-24.html`, `scripts/generate-default-item-icons.mts`, `scripts/lib/effectSheet/paintersMonster.mjs`, `scripts/lib/effectSheet/paintersUtility.mjs`, `verify-shots/db-ux/after/probe.json`, `verify-shots/db-ux/before/probe.json`, `verify-shots/db-ux/pseudo-baseline/probe.json` |
+| `openwiki/editor-event-authoring.md` | 11 | `audit-before.md`, `docs/interior-wall-frame-autotile-cases.html`, `docs/proposals/2026-08-28-event-editor-ui-improvement.html`, `docs/proposals/2026-09-03-event-editor-ux-redesign.html`, `docs/reviews/2026-09-05-event-runtime-audit.md`, `docs/specs/2026-07-14-character-id-relationship-gate.md`, `new-editor/REPORT.html`, `output/evidence/event-ai-assist-ux/960x900-compact.png`, `scripts/generated/toolCatalog.json`, `verify-shots/page-preview-probe/02-preview-open.png`, `verify-shots/runtime-qa/cheolsu-keyboard-fixed/SUMMARY.md` |
+| `openwiki/editor-event-command-fixes.md` | 1 | `docs/battle-command-ux-plan.html` |
 | `openwiki/editor-event-commands.md` | 7 | `07-identifiable-previews.css`, `choicesDialog.ts`, `command-preview.css`, `event-editor.part-2/3.css`, `messageCommandDialogs.ts`, `messageDialogControls.ts`, `textCommandDialog.ts` |
-| `openwiki/editor-interior-room-harness.md` | 1 | `player/SUMMARY.md` |
-| `openwiki/editor-pre-edit-routing.md` | 7 | `authoringTestGate.ts`, `dbConnectionAdvancedSettings.ts`, `figma-editor/10-map-tree.css`, `rm2k3.part-1.css`, `shell/editor-responsive-expert.css`, `src/editor/tools/worldTools.ts`, `worldTools.ts` |
+| `openwiki/editor-interior-room-harness.md` | 2 | `player/SUMMARY.md`, `reports/inn-freeform/index.html` |
+| `openwiki/editor-pre-edit-routing.md` | 9 | `authoringTestGate.ts`, `dbConnectionAdvancedSettings.ts`, `docs/2026-09-03-studio-bar.md`, `docs/superpowers/specs/2026-07-20-region-task-enhancements-design.md`, `figma-editor/10-map-tree.css`, `rm2k3.part-1.css`, `shell/editor-responsive-expert.css`, `src/editor/tools/worldTools.ts`, `worldTools.ts` |
 | `openwiki/editor-validation.md` | 2 | `final-layout.json`, `viewport-matrix.json` |
-| `openwiki/editor-workflows-misc.md` | 1 | `src/editor/authoringTestGate.ts` |
+| `openwiki/editor-workflows-misc.md` | 2 | `docs/village-plan-architecture-easy.md`, `src/editor/authoringTestGate.ts` |
 | `openwiki/growth-trees.md` | 1 | `verify-shots/runtime-qa/growth-tree/SUMMARY.md` |
 | `openwiki/horror-authoring.md` | 1 | `motion-sheet.png` |
 | `openwiki/large-village-generation.md` | 2 | `HANDOFF.json`, `src/project/defaults/largeRiverMarketVillageBuild.ts` |
-| `openwiki/night-monster.md` | 1 | `verify-shots/runtime-qa/night-monster/SUMMARY.md` |
-| `openwiki/runtime-battle.md` | 4 | `hero-03-battle-idle.png`, `raw.png`, `reference.png`, `starter/hires/hero-0N-battle.png` |
-| `openwiki/runtime-pre-edit-routing.md` | 1 | `verify-shots/runtime-qa/emote/SUMMARY.md` |
+| `openwiki/night-monster.md` | 4 | `.omo/evidence/night-monster-review/REPORT.md`, `.omo/evidence/night-monster-upgrade/REPORT.md`, `.omo/evidence/night-monster/sprint-escape.json`, `verify-shots/runtime-qa/night-monster/SUMMARY.md` |
+| `openwiki/quickstart.md` | 1 | `docs/superpowers/specs/2026-09-03-ai-studio-console-design.md` |
+| `openwiki/runtime-battle.md` | 5 | `docs/superpowers/specs/2026-09-03-battle-effect-hires-design.md`, `hero-03-battle-idle.png`, `raw.png`, `reference.png`, `starter/hires/hero-0N-battle.png` |
+| `openwiki/runtime-m2-flow-controls.md` | 2 | `.omo/evidence/event-runtime-adversarial/README.md`, `docs/reviews/2026-09-05-event-runtime-audit.md` |
+| `openwiki/runtime-pre-edit-routing.md` | 2 | `docs/reviews/2026-09-05-event-runtime-audit.md`, `verify-shots/runtime-qa/emote/SUMMARY.md` |
 | `openwiki/runtime-project-schema.md` | 1 | `.json` |
-| `openwiki/runtime-sessions.md` | 1 | `output/evidence/stardew/stardew-supabase.json` |
+| `openwiki/runtime-sessions.md` | 2 | `output/evidence/stardew/stardew-supabase.json`, `reports/shots/companion/gap4-follow.png` |
 | `openwiki/se-catalog.md` | 8 | `.mjs`, `audio-features.json`, `audition.html`, `cross-check.json`, `dist/se-staging/audition.html`, `inventory.json`, `labels.json`, `placed.json` |
-| `openwiki/testing.md` | 9 | `../dialogue.css`, `browser-play-start.png`, `browser-title.png`, `event-editor.command-preview/07-identifiable-previews.css`, `output/evidence/horror-mystery-prototype/browser-qa.json`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/dialogue-nameplate-clears-body.spec.ts`, `verify-shots/runtime-qa/esc-menu/SUMMARY.md`, `verify-shots/runtime-qa/status-menu-adversarial/SUMMARY.md` |
+| `openwiki/testing.md` | 16 | `../dialogue.css`, `.omo/evidence/life-full-20260906/10/VERIFY.md`, `.omo/evidence/life-full-20260906/5/q1/browser-proof.mjs`, `.omo/evidence/life-full-20260906/phase3-verification/final/VERIFY.md`, `browser-play-start.png`, `browser-title.png`, `docs/reviews/db-beginner-adversarial-qa-findings.md`, `docs/reviews/db-beginner-heuristics-rubric.md`, `event-editor.command-preview/07-identifiable-previews.css`, `output/evidence/horror-mystery-prototype/browser-qa.json`, `reports/region-polish/facts.json`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/dialogue-nameplate-clears-body.spec.ts`, `verify-shots/db-ux/pseudo-baseline/probe.json`, `verify-shots/runtime-qa/esc-menu/SUMMARY.md`, `verify-shots/runtime-qa/status-menu-adversarial/SUMMARY.md` |
 | `openwiki/town-tile-benchmark.md` | 1 | `combined-town-chipset-report.html` |
 | `openwiki/village-design.md` | 1 | `output/village-direction/index.html` |
+| `openwiki/world-generation-rules.md` | 1 | `verify-shots/recovery-database-20260905.md` |
 
 ## 페이지별 절 좌표
 
@@ -596,27 +602,27 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L250` 저장된 대사 별칭과 맵 오버레이 (2026-09-05)
 - `L254` NPC 표시 이름 (2026-09-05)
 
-### `openwiki/runtime-sessions.md` — 79KB · 239줄 · ~20,873 토큰 · 통째읽기 잘림
+### `openwiki/runtime-sessions.md` — 80KB · 243줄 · ~21,281 토큰 · 통째읽기 잘림
 
 - `L1` Task10 field input and exact forage dates (2026-09-06)
 - `L15` QA-only life observation (2026-09-06)
   - `L21` Audio QA capability and shell lifetime (2026-09-06)
 - `L27` Save5 session boundary (2026-09-06)
 - `L35` Life recovery primitives and maker evidence (2026-09-06)
-- `L43` Lossless life snapshot reconciliation (2026-09-06)
-- `L57` Esc 메뉴 작업 프레임 (2026-09-05)
-- `L87` 아이템 종류 전환과 실행 효과 (2026-09-05)
-- `L98` Roguelike run kernel and field rooms (Phase 0–3, 2026-08-24)
-- `L108` P1 daily-weather transition authority (2026-08-25)
-- `L117` Exact crop regrowth and zero yields (2026-09-06)
-- `L123` Session state & life-sim
-- `L198` Editorial title screen (2026-08-26)
-- `L204` playerTouch trigger contract (2026-08-20)
-- `L208` Selected-event runtime sandbox (2026-07-30)
-- `L214` P2 spatial runtime and saves (2026-08-25)
-- `L223` 공포 게임 제작 기능 (2026-09-05)
-  - `L227` 메뉴 PR 통합 검증 (2026-09-05)
-- `L234` Maker clock deadlines (2026-09-06)
+- `L47` Lossless life snapshot reconciliation (2026-09-06)
+- `L61` Esc 메뉴 작업 프레임 (2026-09-05)
+- `L91` 아이템 종류 전환과 실행 효과 (2026-09-05)
+- `L102` Roguelike run kernel and field rooms (Phase 0–3, 2026-08-24)
+- `L112` P1 daily-weather transition authority (2026-08-25)
+- `L121` Exact crop regrowth and zero yields (2026-09-06)
+- `L127` Session state & life-sim
+- `L202` Editorial title screen (2026-08-26)
+- `L208` playerTouch trigger contract (2026-08-20)
+- `L212` Selected-event runtime sandbox (2026-07-30)
+- `L218` P2 spatial runtime and saves (2026-08-25)
+- `L227` 공포 게임 제작 기능 (2026-09-05)
+  - `L231` 메뉴 PR 통합 검증 (2026-09-05)
+- `L238` Maker clock deadlines (2026-09-06)
 
 ### `openwiki/se-catalog.md` — 13KB · 228줄 · ~3,423 토큰
 

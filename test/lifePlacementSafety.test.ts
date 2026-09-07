@@ -181,8 +181,10 @@ describe("task12 nonvisual placement safety", () => {
     expect(session).toEqual(before);
     expect(restored.farmBuildingPlacements).toEqual({});
     const claims = Object.values(restored.lifeRecovery!.claims);
-    expect(claims).toHaveLength(1);
-    expect(claims[0]!.items).toEqual(receipt!.items);
+    expect(claims).toHaveLength(2);
+    expect(claims.filter(claim => claim.items.length > 0).flatMap(claim => claim.items)).toEqual(receipt!.items);
+    expect(claims.find(claim => claim.items.length === 0)?.unresolved?.record).toEqual(before.farmBuildingPlacements!.shed1);
+    expect(claims.find(claim => claim.items.length === 0)?.unresolved?.record).toMatchObject({ paymentReceipt: { gold: 10 } });
     expect(roundtrip(project, restored).lifeRecovery).toEqual(restored.lifeRecovery);
   });
 });

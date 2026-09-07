@@ -1,7 +1,7 @@
 import type { PlaySession } from "./session";
 import type { Project } from "./types";
 import { reconcileLinkedAnimalHousing } from "./animalHousing";
-import { isLifeRecoveryJson, isLifeRecoveryState, isSpatialPaymentReceipt, moveLifeRecoverySource, type LifeRecoverySource } from "./lifeRecovery";
+import { isDecorationRecoveryItem, isLifeRecoveryJson, isLifeRecoveryState, isSpatialPaymentReceipt, moveLifeRecoverySource, type LifeRecoverySource } from "./lifeRecovery";
 import { absoluteGameMinutes } from "./makers";
 import { resolveTimeSystem } from "./gameTime";
 import { resolveSellPrice } from "./upgrades";
@@ -100,6 +100,9 @@ export function parseLifeState(raw: Partial<Record<LifeSourceKind | "lifeRecover
           break;
         }
         case "homeDecorationPlacements": {
+          if (isRecord(original) && original.recoveryItem !== undefined && !isDecorationRecoveryItem(original.recoveryItem)) {
+            throw new LifeReconciliationError(field, id, "invalid-recovery-item");
+          }
           const parsed = parseHomeDecorationPlacementRecord({ [id]: original })?.[id];
           if (parsed && isRecord(original)) { result.homeDecorationPlacements = { ...result.homeDecorationPlacements, [id]: { ...structuredClone(original), ...parsed } }; accepted = true; }
           break;
@@ -123,7 +126,7 @@ export function reconcileLifeState(project: Project, input: PlaySession): PlaySe
   const spatial = restoreSpatialPlacementRecords(project, draft, draft);
   for (const sourceKind of ["farmBuildingPlacements", "homeDecorationPlacements"] as const) {
     for (const sourceId of Object.keys(draft[sourceKind] ?? {})) {
-      if (!Object.hasOwn(spatial[sourceKind] ?? {}, sourceId)) move({ sourceKind, sourceId, reason: "incompatible-placement", unresolvedOnly: sourceKind !== "farmBuildingPlacements" });
+      if (!Object.hasOwn(spatial[sourceKind] ?? {}, sourceId)) move({ sourceKind, sourceId, reason: "incompatible-placement" });
     }
   }
   // Spatial recovery removes invalid placements before the only linked-home derivation.

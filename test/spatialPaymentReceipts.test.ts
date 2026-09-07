@@ -130,9 +130,11 @@ describe("cumulative spatial payment receipts", () => {
     const restored = roundtrip(project, session);
     project.database.farmBuildingTypes = [];
     const recovered = reconcileLifeState(project, restored);
-    const claims = Object.values(recovered.lifeRecovery!.claims);
+    const claims = Object.values(recovered.lifeRecovery!.claims).filter(claim => claim.items.length > 0);
+    const unpaid = Object.values(recovered.lifeRecovery!.claims).filter(claim => claim.items.length === 0);
     expect(claims.map(claim => claim.items)).toEqual(Array.from({ length: 16 }, () => cost.items));
-    expect(claims[0]!.unresolved!.record).toEqual(restored.farmBuildingPlacements!.home);
+    expect(unpaid).toHaveLength(1);
+    expect(unpaid[0]!.unresolved!.record).toEqual(restored.farmBuildingPlacements!.home);
     let collected = 0;
     for (const claim of claims) {
       expect(collectLifeRecoveryClaim(project, recovered, claim.id).ok).toBe(true);
@@ -147,7 +149,9 @@ describe("cumulative spatial payment receipts", () => {
     }
     expect(collected).toBe(16 * ITEM_QUANTITY_MAX);
     expect(recovered.gold).toBe(0); // Gold remains evidence only, never an invented payout.
-    expect(recovered.lifeRecovery).toEqual({ nextSequence: 17, claims: {} });
+    expect(recovered.lifeRecovery).toEqual({ nextSequence: 18, claims: { [unpaid[0]!.id]: unpaid[0] } });
+    expect(unpaid[0]!.unresolved!.record).toMatchObject({ paymentReceipt: { gold: 16 * GOLD_MAX } });
+    roundtrip(project, recovered);
   });
 
   it("refuses a two-claim conversion with only one slot free, preserving the entire source and previous save", () => {

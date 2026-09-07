@@ -165,9 +165,10 @@ describe("linked animal housing", () => {
       expect(restored.gold).toBe(gold);
     }
     if (change === "type-deletion") {
-      const claim = Object.values(restored.lifeRecovery!.claims).find((entry) => entry.sourceId === "home1")!;
-      expect(claim.unresolved?.record).toMatchObject({ paymentReceipt: { gold: 30, items: [{ itemId: feedItemId(project), count: 5 }] } });
-      expect(claim.items).toEqual([{ itemId: feedItemId(project), count: 5 }]);
+      const claims = Object.values(restored.lifeRecovery!.claims).filter((entry) => entry.sourceId === "home1");
+      expect(claims).toHaveLength(2);
+      expect(claims.find(claim => claim.items.length === 0)?.unresolved?.record).toMatchObject({ paymentReceipt: { gold: 30, items: [{ itemId: feedItemId(project), count: 5 }] } });
+      expect(claims.flatMap(claim => claim.items)).toEqual([{ itemId: feedItemId(project), count: 5 }]);
     }
   });
 
