@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **49쪽 / 1879KB / 약 532,102 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **49쪽 / 1883KB / 약 532,968 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,10 +15,10 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/editor-ai-panel.md` | 287KB | 95KB ⚠상한 초과 — 절을 더 쪼개라 | 720 | ~83,069 |
+| `openwiki/editor-ai-panel.md` | 289KB | 95KB ⚠상한 초과 — 절을 더 쪼개라 | 731 | ~83,656 |
 | `openwiki/editor-ai-tools.md` | 114KB | 73KB ⚠상한 초과 — 절을 더 쪼개라 | 552 | ~32,193 |
 | `openwiki/editor-database.md` | 248KB | 55KB ⚠상한 초과 — 절을 더 쪼개라 | 1279 | ~71,367 |
-| `openwiki/editor-event-authoring.md` | 123KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 621 | ~35,761 |
+| `openwiki/editor-event-authoring.md` | 125KB | 75KB ⚠상한 초과 — 절을 더 쪼개라 | 626 | ~36,040 |
 | `openwiki/editor-event-commands.md` | 50KB | 32KB | 132 | ~13,431 |
 | `openwiki/editor-pre-edit-routing.md` | 80KB | 55KB ⚠상한 초과 — 절을 더 쪼개라 | 322 | ~22,660 |
 | `openwiki/editor-workflows-misc.md` | 51KB | 29KB | 279 | ~14,257 |
@@ -33,7 +33,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 | 페이지 | 깨진 줄 수 | 예시 줄 번호 |
 |---|---|---|
-| `openwiki/editor-ai-panel.md` | 25 | 428, 429, 430, 431, 432, 433, 445, 454 |
+| `openwiki/editor-ai-panel.md` | 25 | 439, 440, 441, 442, 443, 444, 456, 465 |
 | `openwiki/editor-ai-tools.md` | 6 | 347, 348, 352, 354, 356, 465 |
 | `openwiki/editor-database.md` | 7 | 489, 493, 494, 495, 504, 530, 533 |
 | `openwiki/editor-event-authoring.md` | 16 | 198, 199, 202, 207, 208, 209, 210, 211 |
@@ -231,32 +231,33 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L18` Output limits
 - `L24` Practical tips
 
-### `openwiki/editor-ai-panel.md` — 287KB · 720줄 · ~83,069 토큰 · 통째읽기 잘림 · 깨진 줄 25
+### `openwiki/editor-ai-panel.md` — 289KB · 731줄 · ~83,656 토큰 · 통째읽기 잘림 · 깨진 줄 25
 
-- `L3` World structure activity labels (2026-09-06)
-- `L12` Multi-map construction specifications (2026-09-06)
-- `L48` Plan authoring has no small-plan quota (2026-09-06)
-- `L67` Acceptance sticky note (2026-09-06)
-  - `L86` Session-owned acceptance contract
-- `L174` 자동 프로젝트 위키 (2026-09-07)
-- `L183` 브라우저 포커스와 도구 실행 대기 (2026-09-05)
-- `L190` 계획 항목의 연속 실행 증거 (2026-09-05)
-- `L196` 조회 선행·계획 완료와 실행 종료 (2026-09-05)
-- `L205` 조수 카메라 이동 수명·부드러운 줌 (2026-09-05)
-- `L221` 패널 셸 · 도크 · 접기 · 컴포저
-- `L359` 세션 수명 · 대화 컨텍스트
-- `L374` 제안 적용 · 복구 · 완성도 린트
-- `L458` 고스트 미리보기 · 활동 표시 · 청사진 · 카메라
-- `L520` 영역 작업 · 시공 · 실내/집 파이프라인
-- `L544` 툴 노출 · 프롬프트 · 의도 판정 · NPC
-- `L558` 타일셋 이해 · 검토 위저드 (T1a/T1b)
-- `L584` 저장 · 내보내기 · 프로젝트 생성
-- `L592` 제공자 · OAuth · 동반 서비스
-- `L622` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
-- `L663` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
-- `L671` 배치 의존성과 완료 멱등성 (2026-09-06)
-- `L679` 모험 완료와 실제 적용 횟수 (2026-09-05)
-- `L684` Assistant clean conversation — Phase 1 (2026-09-06)
+- `L3` Assistant control audit fixes (2026-09-07)
+- `L14` World structure activity labels (2026-09-06)
+- `L23` Multi-map construction specifications (2026-09-06)
+- `L59` Plan authoring has no small-plan quota (2026-09-06)
+- `L78` Acceptance sticky note (2026-09-06)
+  - `L97` Session-owned acceptance contract
+- `L185` 자동 프로젝트 위키 (2026-09-07)
+- `L194` 브라우저 포커스와 도구 실행 대기 (2026-09-05)
+- `L201` 계획 항목의 연속 실행 증거 (2026-09-05)
+- `L207` 조회 선행·계획 완료와 실행 종료 (2026-09-05)
+- `L216` 조수 카메라 이동 수명·부드러운 줌 (2026-09-05)
+- `L232` 패널 셸 · 도크 · 접기 · 컴포저
+- `L370` 세션 수명 · 대화 컨텍스트
+- `L385` 제안 적용 · 복구 · 완성도 린트
+- `L469` 고스트 미리보기 · 활동 표시 · 청사진 · 카메라
+- `L531` 영역 작업 · 시공 · 실내/집 파이프라인
+- `L555` 툴 노출 · 프롬프트 · 의도 판정 · NPC
+- `L569` 타일셋 이해 · 검토 위저드 (T1a/T1b)
+- `L595` 저장 · 내보내기 · 프로젝트 생성
+- `L603` 제공자 · OAuth · 동반 서비스
+- `L633` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
+- `L674` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
+- `L682` 배치 의존성과 완료 멱등성 (2026-09-06)
+- `L690` 모험 완료와 실제 적용 횟수 (2026-09-05)
+- `L695` Assistant clean conversation — Phase 1 (2026-09-06)
 
 ### `openwiki/editor-ai-tools.md` — 114KB · 552줄 · ~32,193 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
@@ -349,7 +350,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1272` 검토한 실내 기본값의 원격 반영 (2026-09-05)
 - `L1276` 특정 꾸러미의 명시적 교체 (2026-09-06)
 
-### `openwiki/editor-event-authoring.md` — 123KB · 621줄 · ~35,761 토큰 · 통째읽기 잘림 · 깨진 줄 16
+### `openwiki/editor-event-authoring.md` — 125KB · 626줄 · ~36,040 토큰 · 통째읽기 잘림 · 깨진 줄 16
 
 - `L3` Event editor window controls (2026-09-06)
 - `L50` 이벤트 편집기 가독성 — 읽는 글자와 꾸미는 글자 (2026-09-03 후속)
@@ -363,25 +364,25 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L152` 복잡한 NPC 는 조회 후 상태별 다중 페이지로 저작한다 (2026-09-01)
 - `L182` Roguelike run authoring (2026-08-24)
 - `L189` Event Authoring
-- `L404` Condition / Loop / Variable command trust fixes (2026-08-07)
-- `L414` Event draft trust loop (2026-07-30)
-- `L422` 회상 오프닝 저작 — beat 컴파일러다 (2026-09-03)
-- `L431` Guided story arc facade
-- `L435` 지도·화면 효과 탭 초보자 UX (2026-08-27)
-- `L440` 은퇴한 명령(deprecated) 레지스트리 (2026-08-28)
-- `L448` Companion roster in the command picker (2026-08-27)
-- `L454` Presentation and system M2 command bodies
-- `L461` 좌측 설정 레일 그룹 소속 (2026-08-27)
-- `L479` 페이지 조건 극성(켜짐/꺼짐) 저작 (2026-08-27)
-- `L489` 「움직임과 속도」 부피 정리 (2026-08-29)
-- `L524` 조건은 평가기가 셋이다 — 판정 일치를 테스트로 고정한다 (2026-08-29)
-  - `L558` 함정: 부재 타이머는 0초로 읽혀 조건이 참이 된다
-  - `L569` 고급 조건 목록에서 극성을 벗기지 마라 (D08 재발 방지)
-  - `L577` 참조를 비워도 조건을 삭제하지 않는다
-  - `L584` 조건 미리보기는 모르면 모른다고 말한다
-  - `L593` 조건 문구에 내부 토큰을 넣지 마라
-- `L608` 공포 게임 제작 기능 (2026-09-05)
-  - `L613` NPC 발견·추격 저작 (2026-09-06)
+- `L409` Condition / Loop / Variable command trust fixes (2026-08-07)
+- `L419` Event draft trust loop (2026-07-30)
+- `L427` 회상 오프닝 저작 — beat 컴파일러다 (2026-09-03)
+- `L436` Guided story arc facade
+- `L440` 지도·화면 효과 탭 초보자 UX (2026-08-27)
+- `L445` 은퇴한 명령(deprecated) 레지스트리 (2026-08-28)
+- `L453` Companion roster in the command picker (2026-08-27)
+- `L459` Presentation and system M2 command bodies
+- `L466` 좌측 설정 레일 그룹 소속 (2026-08-27)
+- `L484` 페이지 조건 극성(켜짐/꺼짐) 저작 (2026-08-27)
+- `L494` 「움직임과 속도」 부피 정리 (2026-08-29)
+- `L529` 조건은 평가기가 셋이다 — 판정 일치를 테스트로 고정한다 (2026-08-29)
+  - `L563` 함정: 부재 타이머는 0초로 읽혀 조건이 참이 된다
+  - `L574` 고급 조건 목록에서 극성을 벗기지 마라 (D08 재발 방지)
+  - `L582` 참조를 비워도 조건을 삭제하지 않는다
+  - `L589` 조건 미리보기는 모르면 모른다고 말한다
+  - `L598` 조건 문구에 내부 토큰을 넣지 마라
+- `L613` 공포 게임 제작 기능 (2026-09-05)
+  - `L618` NPC 발견·추격 저작 (2026-09-06)
 
 ### `openwiki/editor-event-command-fixes.md` — 13KB · 38줄 · ~3,273 토큰 · 깨진 줄 11
 
