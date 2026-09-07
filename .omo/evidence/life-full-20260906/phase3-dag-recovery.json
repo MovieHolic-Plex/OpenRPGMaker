@@ -1,0 +1,32 @@
+{
+  "event": "dag-completion-claims-rejected",
+  "run_id": "dag_3b58f987-8a5d-46e0-99aa-0c64eaf6c1c9",
+  "plan": ".omo/plans/life-systems-full-implementation.md",
+  "claimedCompleted": 4,
+  "actual": {
+    "regrowth": "Producer commit9cb85be84; parent248tests/19public scenarios passed; direct typecheck/build pending",
+    "tools": "No implementation; absent task8 handoff",
+    "field": "No implementation; absent task10 handoff",
+    "verify": "No verification; absent verify handoff"
+  },
+  "correctionAttempts": "workflow send to each incomplete node refused with node_not_continuable because run settled; completed-node retry is unsupported, so amend is the prescribed recovery.",
+  "watcherCleanup": {
+    "ownedPids": [
+      207813,
+      218637,
+      229984
+    ],
+    "identity": "Matching handoff targets/commands and uid1000 verified before TERM",
+    "stopExit": 0,
+    "remainingProcesses": 0,
+    "temporaryArtifactsRemoved": [
+      "/tmp/rpg-zzu-task8-st_01a076a9-handoff-event.json",
+      "/tmp/rpg-zzu-task8-st_01a076a9-handoff-monitor.log",
+      "/tmp/task10-handoff-watch.X9l0iv",
+      "/tmp/st_01a076ab-verify-handoff-monitor.log"
+    ]
+  },
+  "next": "After parent7 checks pass, integrate/document7, prepare task8 handoff, then amend same run to ready work plus real verification. Later task10 remains pending in plan and is added/released only after verified8; no waiting-turn counts accepted.",
+  "liveChannel": "mon_YPA90CVT7TJ81FQY / bash_42",
+  "fullObjectiveComplete": false
+}

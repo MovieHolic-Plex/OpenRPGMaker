@@ -1,0 +1,6 @@
+{
+  "scenario": "actual send click, held model response, actual abort click",
+  "sendVisible": true,
+  "inputEditable": true,
+  "abortHidden": true
+}

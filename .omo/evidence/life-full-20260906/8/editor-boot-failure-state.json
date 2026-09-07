@@ -1,0 +1,16 @@
+{
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-tools",
+  "port": 35209,
+  "nativeEditor": true,
+  "nativePlayer": false,
+  "remoteWrites": [],
+  "errors": [],
+  "actions": [],
+  "failure": "Error: page.evaluate: Error: DOM signal timeout: [data-testid=\"toolbar-database\"]\n    at <anonymous>:11:70",
+  "failureSurface": "",
+  "cleanup": {
+    "browserClosed": true,
+    "serverClosed": true,
+    "ownedCacheRemoved": "/home/main/z-project/rpg-zzu-life-full-tools/.vite-cache/task8-editor"
+  }
+}

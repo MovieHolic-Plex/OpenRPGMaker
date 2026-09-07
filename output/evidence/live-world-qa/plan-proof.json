@@ -1,0 +1,496 @@
+{
+  "original": {
+    "id": "wp_mtpywnxb",
+    "goal": "기존 빈 맵(map_blank_start)을 128x128 '여섯 지역 탐험지도'로 확장하고, 6개 고유 지형과 8개 거점(구조물+안내 이벤트) 및 통행로를 구축한 뒤 시작 위치 설정과 검수를 완료한다.",
+    "acceptance": [
+      {
+        "id": "acc_worldmap_size",
+        "title": "월드맵 128x128 크기 확인",
+        "criteria": [
+          {
+            "kind": "mapDimensions",
+            "target": {
+              "mapId": "map_blank_start"
+            },
+            "width": 128,
+            "height": 128
+          }
+        ]
+      },
+      {
+        "id": "acc_worldmap_review",
+        "title": "월드맵 전체 시각 검수",
+        "criteria": [
+          {
+            "kind": "imageReviewed",
+            "target": {
+              "mapId": "map_blank_start"
+            }
+          }
+        ]
+      }
+    ],
+    "createdAt": "2026-09-06T15:29:43.199Z",
+    "layers": [
+      {
+        "id": "L1_setup",
+        "title": "월드맵 기본 규격 및 명칭 설정",
+        "items": [
+          {
+            "id": "L1_resize_and_rename",
+            "title": "맵 128x128 확장 및 이름 변경",
+            "instruction": "map_blank_start 맵을 resize_map을 사용해 가로 128, 세로 128로 확장하고, set_map_properties를 사용해 맵 이름을 '여섯 지역 탐험지도'로 설정",
+            "doneWhen": "map_blank_start의 크기가 128x128로 변경되고 맵 이름이 '여섯 지역 탐험지도'로 갱신됨",
+            "successTools": [
+              "resize_map",
+              "set_map_properties"
+            ],
+            "status": "in_progress"
+          }
+        ]
+      },
+      {
+        "id": "L2_regions",
+        "title": "6개 대형 광역 지형 시공",
+        "items": [
+          {
+            "id": "L2_region_grassland",
+            "title": "중앙 초원 및 호수 지형 시공",
+            "instruction": "map_blank_start 중앙 권역에 fill_region, paint_tiles를 사용하여 넓은 잔디 초원과 대형 호수 수면을 구성",
+            "doneWhen": "중앙부에 초원 지형과 호수 영역이 타일로 칠해짐",
+            "successTools": [
+              "fill_region",
+              "paint_tiles"
+            ],
+            "status": "pending"
+          },
+          {
+            "id": "L2_region_forest",
+            "title": "침엽수숲 지형 시공",
+            "instruction": "map_blank_start 숲 권역에 fill_region, plant_tree_clusters 또는 place_props를 사용하여 침엽수림 밀집 지형을 구성",
+            "doneWhen": "침엽수림 지형과 나무 군락이 맵에 배치됨",
+            "successTools": [
+              "fill_region",
+              "place_props"
+            ],
+            "status": "pending"
+          },
+          {
+            "id": "L2_region_mountain",
+            "title": "바위산지 지형 시공",
+            "instruction": "map_blank_start 산악 권역에 author_world_mountain 또는 fill_region, paint_tiles를 사용하여 바위 절벽과 고지대 지형을 구성",
+            "doneWhen": "바위산지 고지대 및 절벽 지형이 맵에 배치됨",
+            "successTools": [
+              "fill_region",
+              "paint_tiles"
+            ],
+            "status": "pending"
+          },
+          {
+            "id": "L2_region_desert",
+            "title": "모래황야 지형 시공",
+            "instruction": "map_blank_start 황야 권역에 fill_region, paint_tiles를 사용하여 모래 지형, 건조 암석 지대를 넓게 시공",
+            "doneWhen": "모래 타일과 건조 지형이 구성됨",
+            "successTools": [
+              "fill_region",
+              "paint_tiles"
+            ],
+            "status": "pending"
+          },
+          {
+            "id": "L2_region_snowfield",
+            "title": "설원 지형 시공",
+            "instruction": "map_blank_start 북부 설원 권역에 fill_region, paint_tiles를 사용하여 눈 덮인 지형과 빙판 지대를 시공",
+            "doneWhen": "설원 지형이 맵 북부에 넓게 타일링됨",
+            "successTools": [
+              "fill_region",
+              "paint_tiles"
+            ],
+            "status": "pending"
+          },
+          {
+            "id": "L2_region_wetland_coast",
+            "title": "해안습지 및 남쪽 해안 지형 시공",
+            "instruction": "map_blank_start 남부 및 습지 권역에 fill_region, paint_tiles를 사용하여 남쪽 해안선, 부두 바다 및 늪지/습지 수풀 지형을 구성",
+            "doneWhen": "해안선과 습지 지형이 타일로 칠해짐",
+            "successTools": [
+              "fill_region",
+              "paint_tiles"
+            ],
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "id": "L3_settlements",
+        "title": "8대 거점 구조물 및 안내 이벤트 구축",
+        "items": [
+          {
+            "id": "L3_settlement_south_port",
+            "title": "남쪽항구 부두 및 안내 이벤트 시공",
+            "instruction": "map_blank_start 남쪽 해안에 stamp_structure 또는 place_props로 부두/선착장 구조물을 만들고, upsert_event로 '남쪽항구' 안내 표지 이벤트를 배치",
+            "doneWhen": "남쪽 해안에 부두 구조물과 남쪽항구 안내 이벤트가 배치됨",
+            "successTools": [
+              "place_props",
+              "upsert_event"
+            ],
+            "status": "pending"
+          },
+          {
+            "id": "L3_settlement_plains_village",
+            "title": "초원마을 건물군 및 안내 이벤트 시공",
+            "instruction": "map_blank_start 초원 지역에 author_house 또는 build_house를 사용하여 여러 채의 마을 가옥을 짓고, upsert_event로 '초원마을' 안내 이벤트를 배치",
+            "doneWhen": "초원마을에 실제 가옥 건물들과 초원마을 안내 이벤트가 생성됨",
+            "successTools": [
+              "author_house",
+              "upsert_event"
+            ],
+            "status": "pending"
+          },
+          {
+            "id": "L3_settlement_forest_village",
+            "title": "숲속마을 건물군 및 안내 이벤트 시공",
+            "instruction": "map_blank_start 침엽수숲 지역에 author_house 또는 build_house로 숲속 가옥들을 시공하고, upsert_event로 '숲속마을' 안내 이벤트를 배치",
+            "doneWhen": "숲속마을에 가옥들과 숲속마을 안내 이벤트가 생성됨",
+            "successTools": [
+              "author_house",
+              "upsert_event"
+            ],
+            "status": "pending"
+          },
+          {
+            "id": "L3_settlement_lake_shelter",
+            "title": "호수쉼터 구조물 및 안내 이벤트 시공",
+            "instruction": "map_blank_start 호숫가에 stamp_structure, place_props를 사용하여 정자/쉼터 구조물을 시공하고, upsert_event로 '호수쉼터' 안내 이벤트를 배치",
+            "doneWhen": "호숫가에 쉼터 구조물과 호수쉼터 안내 이벤트가 배치됨",
+            "successTools": [
+              "place_props",
+              "upsert_event"
+            ],
+            "status": "pending"
+          },
+          {
+            "id": "L3_settlement_mountain_outpost",
+            "title": "산길초소 구조물 및 안내 이벤트 시공",
+            "instruction": "map_blank_start 바위산지 길목에 build_wall 또는 stamp_structure로 망루/초소 구조물을 짓고, upsert_event로 '산길초소' 안내 이벤트를 배치",
+            "doneWhen": "산길에 초소 구조물과 산길초소 안내 이벤트가 배치됨",
+            "successTools": [
+              "build_wall",
+              "upsert_event"
+            ],
+            "status": "pending"
+          },
+          {
+            "id": "L3_settlement_desert_ruins",
+            "title": "황야유적 석재 구조물 및 안내 이벤트 시공",
+            "instruction": "map_blank_start 모래황야에 stamp_structure, place_props, build_wall을 사용하여 석재 신전/유적 파편 구조물을 시공하고, upsert_event로 '황야유적' 안내 이벤트를 배치",
+            "doneWhen": "황야에 석재 유적 구조물과 황야유적 안내 이벤트가 생성됨",
+            "successTools": [
+              "place_props",
+              "upsert_event"
+            ],
+            "status": "pending"
+          },
+          {
+            "id": "L3_settlement_snow_village",
+            "title": "설원마을 건물군 및 안내 이벤트 시공",
+            "instruction": "map_blank_start 설원 지역에 author_house 또는 build_house로 설원 가옥들을 짓고, upsert_event로 '설원마을' 안내 이벤트를 배치",
+            "doneWhen": "설원에 가옥들과 설원마을 안내 이벤트가 생성됨",
+            "successTools": [
+              "author_house",
+              "upsert_event"
+            ],
+            "status": "pending"
+          },
+          {
+            "id": "L3_settlement_wetland_lab",
+            "title": "습지연구소 건물 및 안내 이벤트 시공",
+            "instruction": "map_blank_start 해안습지에 author_house 또는 build_wall/build_roof로 연구소 건물을 시공하고, upsert_event로 '습지연구소' 안내 이벤트를 배치",
+            "doneWhen": "습지에 연구소 건물과 습지연구소 안내 이벤트가 생성됨",
+            "successTools": [
+              "author_house",
+              "upsert_event"
+            ],
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "id": "L4_connections",
+        "title": "탐험 도로망 연결 및 시작점 설정",
+        "items": [
+          {
+            "id": "L4_lay_roads",
+            "title": "전체 거점 간 탐험 도로망 포장",
+            "instruction": "map_blank_start에서 lay_path, paint_road를 사용하여 남쪽항구에서부터 초원마을, 숲속마을, 호수쉼터, 산길초소, 황야유적, 설원마을, 습지연구소까지 모든 거점을 잇는 통행 가능한 흙길/포장도로를 시공",
+            "doneWhen": "8개 거점 사이를 잇는 연속적인 도로망 타일이 시공됨",
+            "successTools": [
+              "lay_path",
+              "paint_road"
+            ],
+            "status": "pending"
+          },
+          {
+            "id": "L4_set_spawn",
+            "title": "시작 위치 남쪽항구로 지정",
+            "instruction": "map_blank_start의 남쪽항구 통행 가능 안전 좌표를 확인하고 set_start_position으로 플레이어 시작 위치를 설정",
+            "doneWhen": "남쪽항구 부두 지점이 플레이어 시작 위치로 설정됨",
+            "successTools": [
+              "set_start_position"
+            ],
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "id": "L5_qa",
+        "title": "도달성 검증 및 전구역 비주얼 QA",
+        "items": [
+          {
+            "id": "L5_check_walkability",
+            "title": "남쪽항구에서 전 거점 도달 가능성 검증",
+            "instruction": "check_reachability를 사용하여 시작점에서 8개 거점의 안내 이벤트 앞 좌표까지 끊김 없이 걸어서 도달 가능한지 정적 검증하고, 막힌 길은 paint_tiles/lay_path로 수정",
+            "doneWhen": "남쪽항구에서 8개 거점 전체로의 보행 도달 가능성이 확인됨",
+            "successTools": [
+              "check_reachability"
+            ],
+            "status": "pending"
+          },
+          {
+            "id": "L5_visual_inspection",
+            "title": "128x128 전구역 맵 이미지 검수 및 마무리",
+            "instruction": "show_map_region으로 맵의 전 영역(초원, 숲, 산지, 황야, 설원, 습지 및 거점들)을 순차적으로 캡처하여 비주얼 이상, 타일 끊김, 겹침을 검수",
+            "doneWhen": "맵 전체 구역이 이미지로 검수되고 시각적 결함이 없음이 확인됨",
+            "successTools": [
+              "show_map_region"
+            ],
+            "status": "pending"
+          }
+        ]
+      }
+    ],
+    "currentLayerIndex": 0,
+    "currentItemId": "L1_resize_and_rename",
+    "plannerNote": "신규 맵 생성이 아닌 map_blank_start 리사이즈를 수행하며, 6개 지역과 8개 거점을 독립적으로 시공한 후 전체 도로망 연결 및 check_reachability/show_map_region 검수를 거칩니다.",
+    "targetMapId": "map_blank_start"
+  },
+  "collapsed": {
+    "id": "wp_mtpyx7np",
+    "goal": "기존 빈 맵(map_blank_start)을 128x128 '여섯 지역 탐험지도'로 구성하고, 6개 고유 지형과 8개 거점(구조물+안내 이벤트) 및 통행로를 구축한 뒤 시작 위치 설정과 검수를 완료한다.",
+    "acceptance": [
+      {
+        "id": "acc_world",
+        "title": "128x128 월드맵 완성 및 전 거점 도달 가능 검증",
+        "criteria": null
+      }
+    ],
+    "createdAt": "2026-09-06T15:30:08.773Z",
+    "layers": [
+      {
+        "id": "L1",
+        "title": "기본 설정",
+        "items": [
+          {
+            "id": "L1_setup",
+            "title": "맵 규격 및 명칭 설정",
+            "instruction": "resize_map과 set_map_properties로 맵을 128x128로 설정하고 이름을 '여섯 지역 탐험지도'로 변경",
+            "doneWhen": "128x128 리사이즈 및 이름 변경 완료",
+            "successTools": [
+              "resize_map",
+              "set_map_properties"
+            ],
+            "status": "in_progress"
+          }
+        ]
+      },
+      {
+        "id": "L2",
+        "title": "지형 시공",
+        "items": [
+          {
+            "id": "L2_terrain",
+            "title": "6개 광역 지형 시공",
+            "instruction": "fill_region과 place_props로 초원/호수, 침엽수숲, 바위산지, 모래황야, 설원, 해안습지 지형을 시공",
+            "doneWhen": "6개 지형 타일 시공 완료",
+            "successTools": [
+              "fill_region",
+              "place_props"
+            ],
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "id": "L3",
+        "title": "거점 시공",
+        "items": [
+          {
+            "id": "L3_settlements",
+            "title": "8개 거점 시공",
+            "instruction": "author_house, fill_region, place_props, place_npc를 활용해 8개 거점(남쪽항구, 초원마을, 숲속마을, 호수쉼터, 산길초소, 황야유적, 설원마을, 습지연구소) 구조물 및 안내판 NPC를 시공",
+            "doneWhen": "8개 거점 구조물 및 안내 이벤트 시공 완료",
+            "successTools": [
+              "author_house",
+              "place_npc"
+            ],
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "id": "L4",
+        "title": "연결 및 시작점",
+        "items": [
+          {
+            "id": "L4_road_spawn",
+            "title": "도로망 및 시작 위치 설정",
+            "instruction": "paint_road로 남쪽항구에서 각 거점을 잇는 길을 포장하고 set_start_position으로 남쪽항구에 시작 위치 설정",
+            "doneWhen": "도로망 연결 및 시작위치 설정 완료",
+            "successTools": [
+              "paint_road",
+              "set_start_position"
+            ],
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "id": "L5",
+        "title": "품질 검증",
+        "items": [
+          {
+            "id": "L5_verify",
+            "title": "검증 및 검수",
+            "instruction": "check_reachability로 남쪽항구에서 모든 거점까지 도달 가능한지 검사하고 show_map_region으로 검수",
+            "doneWhen": "도달 가능성 및 시각 검수 완료",
+            "successTools": [
+              "check_reachability",
+              "show_map_region"
+            ],
+            "status": "pending"
+          }
+        ]
+      }
+    ],
+    "currentLayerIndex": 0,
+    "currentItemId": "L1_setup"
+  },
+  "repairLastPlan": {
+    "id": "wp_mtq7iwq1",
+    "goal": "여섯 지역 탐험지도(map_blank_start)의 해안습지 수로·식생 조성, 황야유적 석벽·기둥 잔해 시공, 산길초소 바위 능선 및 통행로 구성을 완료하고 기존 집·안내 이벤트·숲 및 도달성을 검증",
+    "createdAt": "2026-09-06T19:30:57.961Z",
+    "layers": [
+      {
+        "id": "L1",
+        "title": "해안습지 수로 및 식생 시공",
+        "items": [
+          {
+            "id": "L1-a",
+            "title": "습지연구소 주변 현황 조사 및 해안 수로·물가 지형 조성",
+            "instruction": "map_blank_start의 습지연구소(75,102) 하단 및 우측 빈 영역을 get_map_region으로 조사하고, 연구소 진입로와 안내 이벤트를 보존하면서 지도 하단/우측 가장자리로 이어지는 물 지형과 해안가를 fill_region 및 paint_tiles 등으로 조성한다.",
+            "doneWhen": "습지연구소(75,102) 하단에서 지도 경계로 이어지는 해안 수로와 물가 지형이 생성되고 진입로가 유지됨",
+            "successTools": [
+              "get_map_region",
+              "fill_region",
+              "paint_tiles"
+            ],
+            "status": "done",
+            "note": "습지연구소 하단에서 맵 하단 및 우측 경계로 이어지는 해안 수로 및 물가 지형 조성 완료"
+          },
+          {
+            "id": "L1-b",
+            "title": "습지 주변 식생 소품 배치",
+            "instruction": "map_blank_start의 해안습지 수로 주변 빈 땅에 습지 식생 소품을 place_props로 배치하되, 통행로와 건물을 가리지 않도록 구성한다.",
+            "doneWhen": "습지 주변에 식생 소품이 안정적으로 배치됨",
+            "successTools": [
+              "place_props"
+            ],
+            "status": "done",
+            "note": "습지 주변 식생 소품 배치 완료"
+          }
+        ]
+      },
+      {
+        "id": "L2",
+        "title": "황야유적 석재 구조물 시공",
+        "items": [
+          {
+            "id": "L2-a",
+            "title": "황야유적 주변 빈 부지 조사 및 석벽·기둥 잔해 시공",
+            "instruction": "map_blank_start의 황야유적(105,65) 건물 외부 빈 부지를 get_map_region으로 확인하고, tile_query로 승인된 석벽 타일을 조회한 뒤 build_wall 및 paint_tiles를 활용해 끊긴 석벽 및 돌기둥 잔해 등 실제 석재 구조물을 구축한다.",
+            "doneWhen": "황야유적 건물 외부 빈터에 끊긴 석벽과 돌기둥 잔해 등 실제 석재 구조물이 시공됨",
+            "successTools": [
+              "get_map_region",
+              "tile_query",
+              "build_wall"
+            ],
+            "status": "done",
+            "note": "황야유적 주변 끊긴 석벽 잔해 시공 완료"
+          }
+        ]
+      },
+      {
+        "id": "L3",
+        "title": "산길초소 바위산지 능선 및 산길 시공",
+        "items": [
+          {
+            "id": "L3-a",
+            "title": "산길초소 주변 빈 부지 조사 및 암석 능선·절벽 덩어리 시공",
+            "instruction": "map_blank_start의 산길초소(85,25) 주변과 설원마을(105,20) 사이 빈 영역을 get_map_region으로 파악하고, 기존 집과 눈 지형을 침범하지 않는 빈 공간에 build_wall 및 fill_region을 사용하여 웅장한 암석 능선과 절벽 덩어리를 시공한다.",
+            "doneWhen": "산길초소(85,25) 주변 빈 공간에 암석 능선/절벽 덩어리 구조물이 형성됨",
+            "successTools": [
+              "get_map_region",
+              "build_wall",
+              "fill_region"
+            ],
+            "status": "done",
+            "note": "산길초소 주변 암석 능선 및 암반 지형 구축 완료"
+          },
+          {
+            "id": "L3-b",
+            "title": "산지 통행로 및 세부 정비",
+            "instruction": "map_blank_start의 바위산지 능선 사이로 플레이어가 초소(85,25) 및 설원마을(105,20)로 원활히 이동할 수 있는 산길을 lay_path 또는 paint_tiles로 연결한다.",
+            "doneWhen": "바위 능선 사이로 통행 가능한 산길이 정상 연결됨",
+            "successTools": [
+              "lay_path",
+              "paint_tiles"
+            ],
+            "status": "done",
+            "note": "바위 능선 사이 통행 산길 연결 완료"
+          }
+        ]
+      },
+      {
+        "id": "L4",
+        "title": "전체 검증 및 시각 검토",
+        "items": [
+          {
+            "id": "L4-a",
+            "title": "맵 린트 및 주요 8개 지점 도달성 검사",
+            "instruction": "map_blank_start에 대해 run_lint를 실행하고, 시작점(24,118)에서 (24,115), (24,85), (24,28), (49,48), (85,24), (105,64), (105,19), (75,101) 전 지점으로의 도달성을 check_reachability로 검증한다.",
+            "doneWhen": "맵 린트에 결함이 없고 지정된 8개 지점 도달성 검사가 모두 통과함",
+            "successTools": [
+              "run_lint",
+              "check_reachability"
+            ],
+            "status": "in_progress"
+          },
+          {
+            "id": "L4-b",
+            "title": "세 시공 지역 시각 검토 및 최종 확인",
+            "instruction": "해안습지(75,102 부근), 황야유적(105,65 부근), 산길초소(85,25 부근) 영역을 show_map_region으로 각각 시각 검토하여 지형 및 구조물 배치가 의도대로 완성되었는지 최종 확인한다.",
+            "doneWhen": "세 시공 지역의 실제 맵 렌더링 이미지가 확인되고 결함 없음이 증명됨",
+            "successTools": [
+              "show_map_region"
+            ],
+            "status": "pending"
+          }
+        ]
+      }
+    ],
+    "currentLayerIndex": 3,
+    "currentItemId": "L4-a",
+    "plannerNote": "기존 완성 집 10채, 실내 맵 6개, 안내 이벤트 8개, 숲 수관 144칸, 시작 위치(24,118)를 엄격히 보존한다. 집 밖 빈 영역을 정확히 파악 후 시공하며, place_props 단독 실패를 피하기 위해 build_wall 등의 구조물 시공 프리미티브와 지형 채우기를 활용한다.",
+    "targetMapId": "map_blank_start"
+  }
+}

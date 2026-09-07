@@ -1,0 +1,316 @@
+{
+  "schemaVersion": 1,
+  "scenario": "required-skip",
+  "runId": "d65f595b-d29e-4844-b6d4-51a2a296b2c0",
+  "projectId": "qa-ai-surface-d65f595b-d29e-4844-b6d4-51a2a296b2c0",
+  "sourceSha": "e827eb5c8371ff87ea29231a124806f687c3aba2",
+  "mutation": null,
+  "pass": false,
+  "actions": [
+    {
+      "sequence": 1,
+      "type": "real-rest",
+      "table": "projects",
+      "method": "GET",
+      "projectId": "qa-ai-surface-d65f595b-d29e-4844-b6d4-51a2a296b2c0",
+      "status": 200,
+      "bytes": 2
+    },
+    {
+      "sequence": 2,
+      "type": "isolated-project-available",
+      "projectId": "qa-ai-surface-d65f595b-d29e-4844-b6d4-51a2a296b2c0",
+      "beforeContentQa": true
+    },
+    {
+      "sequence": 3,
+      "type": "cold-css-ready",
+      "bytes": 7490229
+    },
+    {
+      "sequence": 4,
+      "type": "state",
+      "label": "00-before",
+      "state": {
+        "proof": null,
+        "title": "새 프로젝트",
+        "metaTitle": "QA surface d65f595b-d29e-4844-b6d4-51a2a296b2c0",
+        "mapId": "map_blank_start",
+        "sameStore": true,
+        "remoteEnabled": true,
+        "dirty": true,
+        "sameLiveObject": true,
+        "sameLiveBytes": true,
+        "sessionCount": 0,
+        "toolCalls": [],
+        "savedAuditTokens": 0,
+        "sendDisabled": false
+      }
+    },
+    {
+      "sequence": 5,
+      "type": "browser-real-transport",
+      "table": "projects",
+      "method": "POST",
+      "projectId": "qa-ai-surface-d65f595b-d29e-4844-b6d4-51a2a296b2c0",
+      "path": "/supabase/rest/v1/projects",
+      "query": "?on_conflict=project_id"
+    },
+    {
+      "sequence": 6,
+      "type": "browser-real-transport",
+      "table": "maps",
+      "method": "DELETE",
+      "projectId": "qa-ai-surface-d65f595b-d29e-4844-b6d4-51a2a296b2c0",
+      "path": "/supabase/rest/v1/maps",
+      "query": "?project_id=eq.qa-ai-surface-d65f595b-d29e-4844-b6d4-51a2a296b2c0"
+    },
+    {
+      "sequence": 7,
+      "type": "browser-real-transport",
+      "table": "maps",
+      "method": "POST",
+      "projectId": "qa-ai-surface-d65f595b-d29e-4844-b6d4-51a2a296b2c0",
+      "path": "/supabase/rest/v1/maps",
+      "query": "?on_conflict=project_id%2Cmap_id"
+    },
+    {
+      "sequence": 8,
+      "type": "browser-real-transport",
+      "table": "tilesets",
+      "method": "DELETE",
+      "projectId": "qa-ai-surface-d65f595b-d29e-4844-b6d4-51a2a296b2c0",
+      "path": "/supabase/rest/v1/tilesets",
+      "query": "?project_id=eq.qa-ai-surface-d65f595b-d29e-4844-b6d4-51a2a296b2c0"
+    },
+    {
+      "sequence": 9,
+      "type": "browser-real-transport",
+      "table": "tilesets",
+      "method": "POST",
+      "projectId": "qa-ai-surface-d65f595b-d29e-4844-b6d4-51a2a296b2c0",
+      "path": "/supabase/rest/v1/tilesets",
+      "query": "?on_conflict=project_id%2Ctileset_id"
+    },
+    {
+      "sequence": 10,
+      "type": "browser-real-transport",
+      "table": "project_commits",
+      "method": "POST",
+      "projectId": "qa-ai-surface-d65f595b-d29e-4844-b6d4-51a2a296b2c0",
+      "path": "/supabase/rest/v1/project_commits",
+      "query": ""
+    },
+    {
+      "sequence": 11,
+      "type": "browser-real-transport",
+      "table": "project_changes",
+      "method": "POST",
+      "projectId": "qa-ai-surface-d65f595b-d29e-4844-b6d4-51a2a296b2c0",
+      "path": "/supabase/rest/v1/project_changes",
+      "query": ""
+    },
+    {
+      "sequence": 12,
+      "type": "real-rest",
+      "table": "projects",
+      "method": "GET",
+      "projectId": "qa-ai-surface-d65f595b-d29e-4844-b6d4-51a2a296b2c0",
+      "status": 200,
+      "bytes": 2425885
+    },
+    {
+      "sequence": 13,
+      "type": "browser-real-transport",
+      "table": "projects",
+      "method": "GET",
+      "projectId": "qa-ai-surface-d65f595b-d29e-4844-b6d4-51a2a296b2c0",
+      "path": "/supabase/rest/v1/projects",
+      "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-surface-d65f595b-d29e-4844-b6d4-51a2a296b2c0"
+    },
+    {
+      "sequence": 14,
+      "type": "browser-real-transport",
+      "table": "maps",
+      "method": "GET",
+      "projectId": "qa-ai-surface-d65f595b-d29e-4844-b6d4-51a2a296b2c0",
+      "path": "/supabase/rest/v1/maps",
+      "query": "?project_id=eq.qa-ai-surface-d65f595b-d29e-4844-b6d4-51a2a296b2c0&select=map_id%2Cmap_json"
+    },
+    {
+      "sequence": 15,
+      "type": "normalized-remote",
+      "label": "p2-fixture",
+      "projectId": "qa-ai-surface-d65f595b-d29e-4844-b6d4-51a2a296b2c0",
+      "observedIdentity": "e04df713f442b5e6401e9c9a3df78e999d609a13ac29eced7d1f85ccadd1f465",
+      "sha256": "2b2202783fcc93bf4dbd712b2896b445be1e047ac5c19a8598acb7c89433a866"
+    },
+    {
+      "sequence": 16,
+      "type": "p2-case-failed",
+      "case": "required-skip",
+      "name": "TimeoutError",
+      "message": "locator.click: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByTestId('ai-new-session')\u001b[22m\n\u001b[2m    - locator resolved to <button title=\"새 대화\" type=\"button\" aria-label=\"새 대화 시작\" data-testid=\"ai-new-session\" class=\"ai-chat-icon-btn ai-new-session\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    87 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is not visible\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n",
+      "stack": "locator.click: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByTestId('ai-new-session')\u001b[22m\n\u001b[2m    - locator resolved to <button title=\"새 대화\" type=\"button\" aria-label=\"새 대화 시작\" data-testid=\"ai-new-session\" class=\"ai-chat-icon-btn ai-new-session\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    87 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is not visible\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\n    at runCase (/home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/scripts/qa/ai-harness-p2.mjs:39:46)\n    at async Object.run (/home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/scripts/qa/ai-harness-p2.mjs:151:13)\n    at async file:///home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/scripts/qa/ai-harness-contracts.mjs:200:43"
+    },
+    {
+      "sequence": 17,
+      "type": "FAIL",
+      "error": "locator.click: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByTestId('ai-new-session')\u001b[22m\n\u001b[2m    - locator resolved to <button title=\"새 대화\" type=\"button\" aria-label=\"새 대화 시작\" data-testid=\"ai-new-session\" class=\"ai-chat-icon-btn ai-new-session\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    87 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is not visible\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\n    at runCase (/home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/scripts/qa/ai-harness-p2.mjs:39:46)\n    at async Object.run (/home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/scripts/qa/ai-harness-p2.mjs:151:13)\n    at async file:///home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/scripts/qa/ai-harness-contracts.mjs:200:43"
+    },
+    {
+      "sequence": 18,
+      "type": "real-rest",
+      "table": "projects",
+      "method": "GET",
+      "projectId": "qa-ai-surface-d65f595b-d29e-4844-b6d4-51a2a296b2c0",
+      "status": 200,
+      "bytes": 127
+    },
+    {
+      "sequence": 19,
+      "type": "real-rest",
+      "table": "projects",
+      "method": "DELETE",
+      "projectId": "qa-ai-surface-d65f595b-d29e-4844-b6d4-51a2a296b2c0",
+      "status": 200,
+      "bytes": 2426009
+    },
+    {
+      "sequence": 20,
+      "type": "real-rest",
+      "table": "projects",
+      "method": "GET",
+      "projectId": "qa-ai-surface-d65f595b-d29e-4844-b6d4-51a2a296b2c0",
+      "status": 200,
+      "bytes": 2
+    },
+    {
+      "sequence": 21,
+      "type": "real-rest",
+      "table": "maps",
+      "method": "GET",
+      "projectId": "qa-ai-surface-d65f595b-d29e-4844-b6d4-51a2a296b2c0",
+      "status": 200,
+      "bytes": 2
+    },
+    {
+      "sequence": 22,
+      "type": "real-rest",
+      "table": "tilesets",
+      "method": "GET",
+      "projectId": "qa-ai-surface-d65f595b-d29e-4844-b6d4-51a2a296b2c0",
+      "status": 200,
+      "bytes": 2
+    },
+    {
+      "sequence": 23,
+      "type": "real-rest",
+      "table": "project_commits",
+      "method": "GET",
+      "projectId": "qa-ai-surface-d65f595b-d29e-4844-b6d4-51a2a296b2c0",
+      "status": 200,
+      "bytes": 2
+    },
+    {
+      "sequence": 24,
+      "type": "real-rest",
+      "table": "project_changes",
+      "method": "GET",
+      "projectId": "qa-ai-surface-d65f595b-d29e-4844-b6d4-51a2a296b2c0",
+      "status": 200,
+      "bytes": 2
+    }
+  ],
+  "states": {
+    "00-before": {
+      "proof": null,
+      "title": "새 프로젝트",
+      "metaTitle": "QA surface d65f595b-d29e-4844-b6d4-51a2a296b2c0",
+      "mapId": "map_blank_start",
+      "sameStore": true,
+      "remoteEnabled": true,
+      "dirty": true,
+      "sameLiveObject": true,
+      "sameLiveBytes": true,
+      "sessionCount": 0,
+      "toolCalls": [],
+      "savedAuditTokens": 0,
+      "sendDisabled": false
+    }
+  },
+  "errors": [],
+  "blocked": [
+    {
+      "method": "POST",
+      "path": "/__oprn/edit-activity",
+      "reason": "non-QA write"
+    }
+  ],
+  "cleanup": {
+    "absentBeforeRun": true,
+    "pageListenersAndTimersClosed": true,
+    "browserClosed": true,
+    "serverClosed": true,
+    "cacheRemoved": true,
+    "portReleased": true,
+    "remote": {
+      "projectId": "qa-ai-surface-d65f595b-d29e-4844-b6d4-51a2a296b2c0",
+      "kind": "deleted-and-absence-verified",
+      "commitIds": [
+        "640d40c5-3505-4173-ae2c-f254f4dfa687"
+      ]
+    },
+    "remoteDeletedAndAbsent": true,
+    "reusedListener": false,
+    "activeRoutes": 0
+  },
+  "configuration": {
+    "origin": "http://dbserver:8100",
+    "anonValidated": true,
+    "configuredProjectPresent": true,
+    "configuredProjectAccessed": false,
+    "fixtureProjectId": "qa-ai-surface-d65f595b-d29e-4844-b6d4-51a2a296b2c0"
+  },
+  "contractChecks": [],
+  "fixture": {
+    "mapId": "map_blank_start",
+    "width": 20,
+    "height": 15,
+    "receipt": {
+      "revisionId": "d2beb317-ef93-4e63-a425-7dd03c418b78",
+      "projectId": "qa-ai-surface-d65f595b-d29e-4844-b6d4-51a2a296b2c0",
+      "mutationGeneration": 1,
+      "contentIdentity": "e04df713f442b5e6401e9c9a3df78e999d609a13ac29eced7d1f85ccadd1f465",
+      "sha256": "2b2202783fcc93bf4dbd712b2896b445be1e047ac5c19a8598acb7c89433a866"
+    },
+    "title": "새 프로젝트"
+  },
+  "lastAppliedTitle": "새 프로젝트",
+  "caseFailures": [
+    {
+      "case": "required-skip",
+      "name": "TimeoutError",
+      "message": "locator.click: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByTestId('ai-new-session')\u001b[22m\n\u001b[2m    - locator resolved to <button title=\"새 대화\" type=\"button\" aria-label=\"새 대화 시작\" data-testid=\"ai-new-session\" class=\"ai-chat-icon-btn ai-new-session\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    87 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is not visible\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n",
+      "stack": "locator.click: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByTestId('ai-new-session')\u001b[22m\n\u001b[2m    - locator resolved to <button title=\"새 대화\" type=\"button\" aria-label=\"새 대화 시작\" data-testid=\"ai-new-session\" class=\"ai-chat-icon-btn ai-new-session\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    87 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is not visible\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\n    at runCase (/home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/scripts/qa/ai-harness-p2.mjs:39:46)\n    at async Object.run (/home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/scripts/qa/ai-harness-p2.mjs:151:13)\n    at async file:///home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/scripts/qa/ai-harness-contracts.mjs:200:43"
+    }
+  ],
+  "failure": "locator.click: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByTestId('ai-new-session')\u001b[22m\n\u001b[2m    - locator resolved to <button title=\"새 대화\" type=\"button\" aria-label=\"새 대화 시작\" data-testid=\"ai-new-session\" class=\"ai-chat-icon-btn ai-new-session\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    87 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is not visible\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\n    at runCase (/home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/scripts/qa/ai-harness-p2.mjs:39:46)\n    at async Object.run (/home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/scripts/qa/ai-harness-p2.mjs:151:13)\n    at async file:///home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/scripts/qa/ai-harness-contracts.mjs:200:43",
+  "failureEvents": [],
+  "sourceHashes": {
+    "src/ai/assistantSession.ts": "9c73177bd6162f97b1f82b9bfd334343dc1d5f873e72ad7bbfee4c7bdd5b09e0",
+    "src/ai/workPlan.ts": "a925260074209816eec4d2f57c414ad6170dfae71e3f8d9057ff4732b9bece51",
+    "src/ai/assistantAcceptanceLedger.ts": "958ce255e3d77d5f2842f076f2555be042cb1dd03c65996c65c4118ddc844a2b",
+    "src/project/store.ts": "8d8bea0ae98fb42b4e3c1e9f0eaa71bba6176eb84475832d15395384415312b9",
+    "src/editor/panels/aiTurnRunner.ts": "0bd8f98818832d7a65d2bcf756d6eb2a66328c4e7ffc575c15dcc13b15faab5b",
+    "src/editor/aiAssistantBridge.ts": "614fb5046faab8076e9427281d7183f9bdd2f2808d42bc919133cc1d2067b51b",
+    "src/ai/activityLog.ts": "67355b6042b256320eebfdfdd3377c57326e07b623f59ed8b12f7181f052beed",
+    "src/ai/runRecap.ts": "ba3a66840b8617b5d7aba6ae27ce4824344711f197e536182ac214fcec8c6502",
+    "scripts/qa/ai-harness-contracts.mjs": "e3c8b572e0bfb2a54adff3436e28010fd5e1a6e062a90e0afd428ba9db7ec212",
+    "scripts/qa/ai-harness-browser.mjs": "23250cb08501ded63310be2214c541e56273dbc814d63cba3608f6c7a630cf74",
+    "scripts/qa/ai-harness-proof-failure.mjs": "0e2fcc85ce1d867f24c355a13999b3ab8865623e60d40630426a5d6a06c03507",
+    "scripts/qa/ai-harness-p2.mjs": "ddcdfde1248c819b865ab734a7b79a7feb9a04fa0252a542dd800f7aa85cd8aa",
+    "scripts/qa/ai-harness-p2-scenarios.mjs": "d573a98cfde135ee23adf6d4414c091c44effd332c0182d66b5259ad32fb7da4",
+    "scripts/qa/ai-harness-p2-observe.mjs": "7bfd0cd3296aeaac605e71bfe81f78171796733b3c7a1822fa537ba869b92215"
+  }
+}

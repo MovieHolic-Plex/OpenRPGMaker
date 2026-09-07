@@ -1,0 +1,16 @@
+import ts from '/home/main/z-project/rpg-zzu/node_modules/typescript/lib/typescript.js';
+import { writeFileSync } from 'node:fs';
+const root = '/home/main/z-project/rpg-zzu-monster-catalog-0907';
+const file = `${root}/test/emberQuestToolReplay.test.ts`;
+const config = ts.readConfigFile(`${root}/tsconfig.json`, ts.sys.readFile);
+if (config.error) throw new Error(ts.flattenDiagnosticMessageText(config.error.messageText, '\n'));
+const parsed = ts.parseJsonConfigFileContent(config.config, ts.sys, root);
+const program = ts.createProgram([file], { ...parsed.options, noEmit: true });
+const source = program.getSourceFile(file);
+if (!source) throw new Error(`Compiler did not load ${file}`);
+const diagnostics = [...parsed.errors, ...program.getOptionsDiagnostics(), ...program.getSyntacticDiagnostics(source), ...program.getSemanticDiagnostics(source)];
+const format = { getCanonicalFileName: p => p, getCurrentDirectory: () => root, getNewLine: () => '\n' };
+const result = { typescriptVersion: ts.version, file, scope: 'Real project compiler options; changed-file syntactic and semantic diagnostics with its full imported type graph. Not a repository-wide typecheck.', diagnostics: diagnostics.map(d => ({ code: d.code, category: ts.DiagnosticCategory[d.category], file: d.file?.fileName, message: ts.flattenDiagnosticMessageText(d.messageText, '\n') })) };
+writeFileSync('/tmp/st_01a078fc/ember-current-compiler.json', JSON.stringify(result, null, 2));
+console.log(diagnostics.length ? ts.formatDiagnostics(diagnostics, format) : `No changed-file compiler diagnostics (TypeScript ${ts.version}).`);
+process.exitCode = diagnostics.length ? 1 : 0;

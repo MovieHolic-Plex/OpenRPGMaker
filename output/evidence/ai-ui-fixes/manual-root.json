@@ -1,0 +1,43 @@
+{
+  "sourceBase": "408880121",
+  "url": "http://127.0.0.1:29843/?freshProject=1&map=map_village_30_100x100",
+  "observations": [
+    {
+      "scenario": "F1 history popup",
+      "popover": "ai-command-menu",
+      "x": 530,
+      "y": 97,
+      "w": 248,
+      "h": 278,
+      "hit": true
+    },
+    {
+      "scenario": "F1 history popup",
+      "popover": "ai-preference-popover",
+      "x": 210,
+      "y": 97,
+      "w": 536.203125,
+      "h": 148,
+      "hit": true
+    },
+    {
+      "scenario": "F1 history popup",
+      "popover": "ai-context-panel",
+      "x": 468,
+      "y": 97,
+      "w": 182.390625,
+      "h": 136.9375,
+      "hit": true
+    },
+    {
+      "scenario": "F9 empty export",
+      "feedback": true
+    },
+    {
+      "scenario": "F5 column collapse",
+      "columns": "52px 8px 1260px 8px 52px",
+      "beforeWidth": 712,
+      "afterWidth": 1260
+    }
+  ]
+}

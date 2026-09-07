@@ -1,6 +1,8 @@
 import type { Project } from "@/project/types";
 import type { ToolResult } from "@/editor/tools/types";
 import type { IntentDeclaration } from "./intentDeclaration";
+import type { ChatMessage } from "./llmClient";
+import { MonsterAppearanceEvidence, MONSTER_READ_TOOLS } from "./monsterAppearanceEvidence";
 
 type ReadContract = NonNullable<IntentDeclaration["readBeforeWrite"]>;
 const RECORD_COLLECTIONS: Readonly<Record<string, string>> = {
@@ -24,6 +26,7 @@ function fingerprint(value: unknown): string {
  * Context summaries and successful writes are deliberately not lookup evidence.
  */
 export class ToolReadEvidence {
+  private readonly monsterAppearances = new MonsterAppearanceEvidence();
   private contract: ReadContract | undefined;
   private summaryRead = false;
   private maps = new Set<string>();
@@ -34,6 +37,7 @@ export class ToolReadEvidence {
 
   begin(contract: ReadContract | undefined): void {
     this.contract = contract;
+    this.monsterAppearances.clear();
     this.summaryRead = false;
     this.maps.clear();
     this.events.clear();
@@ -43,14 +47,25 @@ export class ToolReadEvidence {
   }
 
   requiredReadTools(): readonly string[] {
-    if (!this.contract) return [];
+    if (!this.contract) return MONSTER_READ_TOOLS;
     return [
+      ...MONSTER_READ_TOOLS,
       ...(this.contract.project ? ["get_project_summary", "get_map_region", "find_events"] : []),
       ...(this.contract.references || this.contract.collections.length ? ["get_database_records"] : []),
     ];
   }
 
+  observeRequest(messages: readonly ChatMessage[]): void {
+    this.monsterAppearances.observeRequest(messages);
+  }
+
+  observeExecutedRead(read: { readonly name: string; readonly args: Record<string, unknown>; readonly result: ToolResult; readonly callId: string }): void {
+    if (MONSTER_READ_TOOLS.some(tool => tool === read.name)) this.monsterAppearances.executed(read.callId, read.result);
+    else this.observe(read.name, read.args, read.result);
+  }
+
   observe(name: string, args: Record<string, unknown>, result: ToolResult): void {
+    this.monsterAppearances.observe(name, args, result);
     if (!result.ok) return;
     if (name === "get_project_summary") this.summaryRead = true;
     if (name === "get_map_region" && typeof args.mapId === "string") this.maps.add(args.mapId);
@@ -72,6 +87,8 @@ export class ToolReadEvidence {
   }
 
   beforeWrite(project: Project, name: string, args: Record<string, unknown>): ToolResult | null {
+    const appearance = this.monsterAppearances.beforeWrite(project, name, args);
+    if (appearance) return appearance;
     const contract = this.contract;
     if (!contract) return null;
     const missing: string[] = [];

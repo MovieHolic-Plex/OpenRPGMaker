@@ -2,7 +2,7 @@ import type { ImageContent, TextContent } from "@oh-my-pi/pi-ai";
 
 export class ImageTransportError extends Error {
   readonly status = 400;
-  constructor(readonly code: string, message: string) {
+  constructor(readonly code: string, message: string, readonly partIndex?: number) {
     super(message);
     this.name = "ImageTransportError";
   }
@@ -31,17 +31,21 @@ export function convertUserContent(content: unknown, supportsImages: boolean): (
   return content.map((part, index) => {
     if (record(part) && part.type === "text" && typeof part.text === "string") return { type: "text", text: part.text };
     if (!record(part) || part.type !== "image_url" || !record(part.image_url) || typeof part.image_url.url !== "string") {
-      throw new ImageTransportError("invalid-content-part", `User content[${index}] must be text or image_url with a URL`);
+      throw new ImageTransportError("invalid-content-part", `User content[${index}] must be text or image_url with a URL`, index);
     }
     if (!supportsImages) throw new ImageTransportError("unsupported-model-image", "Selected provider model does not support image input");
     const match = /^data:(image\/(?:png|jpeg|gif|webp));base64,([A-Za-z0-9+/]+={0,2})$/.exec(part.image_url.url);
     const mimeType = match?.[1], data = match?.[2];
     if (!mimeType || !data || data.length % 4 !== 0 || Buffer.from(data, "base64").toString("base64") !== data) {
-      throw new ImageTransportError("invalid-image-url", `User content[${index}] requires a nonempty base64 PNG, JPEG, GIF or WebP data URL`);
+      throw new ImageTransportError("invalid-image-url", `User content[${index}] requires a nonempty base64 PNG, JPEG, GIF or WebP data URL`, index);
     }
     if (!matchesImageHeader(Buffer.from(data, "base64"), mimeType)) {
-      throw new ImageTransportError("invalid-image-data", `User content[${index}] bytes do not match the declared image MIME type`);
+      throw new ImageTransportError("invalid-image-data", `User content[${index}] bytes do not match the declared image MIME type`, index);
     }
-    return { type: "image", mimeType, data };
+    const detail = part.image_url.detail;
+    if (detail !== undefined && detail !== "auto" && detail !== "low" && detail !== "high") {
+      throw new ImageTransportError("invalid-image-detail", `User content[${index}] detail must be auto, low or high`, index);
+    }
+    return { type: "image", mimeType, data, ...(detail === undefined ? {} : { detail }) };
   });
 }

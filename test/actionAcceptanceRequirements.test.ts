@@ -57,7 +57,7 @@ describe("authoritative action acceptance", () => {
     evidence.adopt({ checkId: "scene", ownerId: "goal", name: "run_scene_test", args, interactionTargets: [] });
     evidence.observe("run_scene_test", args, { ok: true, data: { ok: kind !== "failed" } });
     if (kind === "stale") evidence.invalidateAfterWrite();
-    expect(ledger.evaluate(project, project, evidence.problems()).status).toBe("blocked");
+    expect(ledger.evaluate(project, project, evidence, evidence.problems()).status).toBe("blocked");
   });
 
   it("skips scheduling without waiving a required check through a replan", () => {
@@ -71,9 +71,40 @@ describe("authoritative action acceptance", () => {
     evidence.adopt({ checkId: "qa-scene", ownerId: "original-qa", name: "run_scene_test", args, interactionTargets: [] });
     skipWorkItemById(plan, "qa", "Unable to execute");
     expect(isWorkPlanComplete(plan)).toBe(true);
-    expect(ledger.evaluate(project, project, evidence.problems()).status).toBe("blocked");
+    expect(ledger.evaluate(project, project, evidence, evidence.problems()).status).toBe("blocked");
     evidence.observe("run_scene_test", args, { ok: true, data: { ok: true } });
-    expect(ledger.evaluate(project, project, evidence.problems()).status).toBe("verified");
+    expect(ledger.evaluate(project, project, evidence, evidence.problems()).status).toBe("verified");
+  });
+
+  it("retains genuine advisory failures independently of declared requirements", () => {
+    const { project, ledger } = setup();
+    const evidence = new ToolVerificationEvidence();
+    const args = { mapId: project.startMapId, start: { x: 1, y: 1 }, steps: [] };
+    evidence.observe("run_scene_test", args, { ok: true, data: { ok: false } }, "advisory");
+    expect(evidence.problems().length).toBeGreaterThan(0);
+    expect(evidence.snapshot().requirements).toEqual([]);
+    expect(ledger.evaluate(project, project, evidence, evidence.problems()).status).toBe("blocked");
+    evidence.adopt({ checkId: "scene", ownerId: "goal", name: "run_scene_test", args, interactionTargets: [] });
+    expect(ledger.evaluate(project, project, evidence, evidence.problems()).status).toBe("blocked");
+  });
+
+  it("keeps intent action and required checks open despite optionality or genuine withdrawal", () => {
+    const { project, target, ledger } = setup();
+    const evidence = new ToolVerificationEvidence();
+    ledger.adopt([{ id: "optional", title: "Optional event", required: false,
+      criteria: [{ kind: "eventCount", target, count: 1 }] },
+    { id: "withdrawn", title: "Withdrawn event", criteria: [{ kind: "eventCount", target, count: 1 }] }]);
+    expect(ledger.withdraw({ acceptanceId: "goal", requirementId: "withdrawn", reason: "User scope reduction" })).toBe(true);
+    expect(ledger.evaluate(project).status).toBe("verified");
+    ledger.requireActionCombat([target]);
+    evidence.adopt({ checkId: "action", ownerId: "goal", name: "run_action_combat_test", args: { mapId: target.mapId } });
+    const snapshot = ledger.evaluate(project, project, evidence, evidence.problems());
+    expect(snapshot.status).toBe("blocked");
+    expect(snapshot.items.find(item => item.id === "optional")).toMatchObject({ required: false, evidence: [{ passed: false }] });
+    expect(snapshot.items.find(item => item.id === "withdrawn")).toMatchObject({ source: { requestId: "goal" },
+      withdrawal: { source: "user", reason: "User scope reduction" }, evidence: [{ passed: false }] });
+    expect(snapshot.items.filter(item => item.id.startsWith("action-combat:"))).toHaveLength(1);
+    expect(snapshot.items.find(item => item.id === "required-verification")?.status).toBe("blocked");
   });
 
   it("parses structured requirements without routing prose into action or stateful NPC scope", () => {
@@ -99,10 +130,10 @@ describe("authoritative action acceptance", () => {
     const args = { ...otherArgs, mapId: project.startMapId };
     evidence.observe("run_scene_test", otherArgs, success, "explicit", "other-item");
     evidence.adopt({ checkId: "required-scene", ownerId: "original-required-owner", name: "run_scene_test", args, interactionTargets: [] });
-    expect(ledger.evaluate(project, project, evidence.problems()).status).toBe("blocked");
+    expect(ledger.evaluate(project, project, evidence, evidence.problems()).status).toBe("blocked");
     evidence.observe("run_scene_test", otherArgs, success, "explicit", "other-item");
-    expect(ledger.evaluate(project, project, evidence.problems()).status).toBe("blocked");
+    expect(ledger.evaluate(project, project, evidence, evidence.problems()).status).toBe("blocked");
     evidence.observe("run_scene_test", args, success, "explicit", "required-item");
-    expect(ledger.evaluate(project, project, evidence.problems()).status).toBe("verified");
+    expect(ledger.evaluate(project, project, evidence, evidence.problems()).status).toBe("verified");
   });
 });

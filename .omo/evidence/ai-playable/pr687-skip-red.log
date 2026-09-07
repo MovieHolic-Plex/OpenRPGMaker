@@ -1,0 +1,58 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/pr687VerificationIntegration.test.ts --maxWorkers=2 --no-file-parallelism
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86
+
+ ❯ test/pr687VerificationIntegration.test.ts (4 tests | 4 failed) 3235ms
+   × PR687 adjudicated verification scheduling through normal dispatch > rejects skip atomically with pending-specification proof and retains completion 867ms
+     → expected [ { type: 'tool_call', …(4) } ] to match object [ { result: { ok: false } } ]
+(10 matching properties omitted from actual)
+   × PR687 adjudicated verification scheduling through normal dispatch > rejects skip atomically with unverified proof and retains completion 716ms
+     → expected [ { type: 'tool_call', …(4) } ] to match object [ { result: { ok: false } } ]
+(10 matching properties omitted from actual)
+   × PR687 adjudicated verification scheduling through normal dispatch > rejects skip atomically with stale proof and retains completion 1077ms
+     → expected [ { type: 'tool_call', …(4) } ] to match object [ { result: { ok: false } } ]
+(10 matching properties omitted from actual)
+   × PR687 adjudicated verification scheduling through normal dispatch > rejects skip atomically with passed proof and retains completion 572ms
+     → expected [ { type: 'tool_call', …(4) } ] to match object [ { result: { ok: false } } ]
+(10 matching properties omitted from actual)
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/pr687VerificationIntegration.test.ts > PR687 adjudicated verification scheduling through normal dispatch > rejects skip atomically with pending-specification proof and retains completion
+ FAIL  test/pr687VerificationIntegration.test.ts > PR687 adjudicated verification scheduling through normal dispatch > rejects skip atomically with unverified proof and retains completion
+ FAIL  test/pr687VerificationIntegration.test.ts > PR687 adjudicated verification scheduling through normal dispatch > rejects skip atomically with stale proof and retains completion
+ FAIL  test/pr687VerificationIntegration.test.ts > PR687 adjudicated verification scheduling through normal dispatch > rejects skip atomically with passed proof and retains completion
+AssertionError: expected [ { type: 'tool_call', …(4) } ] to match object [ { result: { ok: false } } ]
+(10 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[2m    {[22m
+[2m      "result": {[22m
+[32m-       "ok": false,[39m
+[31m+       "ok": true,[39m
+[2m      },[22m
+[2m    },[22m
+[2m  ][22m
+
+ ❯ test/pr687VerificationIntegration.test.ts:68:19
+     66|     await f.send([skip]);
+     67|     const calls = f.events.filter(event => event.type === "tool_call" …
+     68|     expect(calls).toMatchObject([{ result: { ok: false } }]);
+       |                   ^
+     69|     expect(f.boundary().after).toEqual(f.boundary().before);
+     70|     expect(f.session.getWorkPlan()?.layers[0]?.items[0]?.status).not.t…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed (4)
+   Start at  00:56:14
+   Duration  21.27s (transform 12.43s, setup 0ms, collect 17.26s, tests 3.24s, environment 0ms, prepare 176ms)
+

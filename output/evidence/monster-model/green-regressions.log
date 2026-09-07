@@ -1,0 +1,133 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle --maxWorkers=2 --minWorkers=1 test/monsterMetadata.test.ts test/monsterMetadataFoundation.test.ts test/monsterMetadataAccounting.test.ts test/monsterMetadataPersistence.test.ts test/monsterMetadataHistory.test.ts test/monsterResourceCatalog.test.ts test/audioDescriptions.test.ts test/audioDescriptionPersistence.test.ts test/audioDescriptionConcurrentPersistence.test.ts test/audioDescriptionExport.test.ts test/audioDescriptionDiff.test.ts test/audioResourceCatalog.test.ts test/audioResourceSearchContract.test.ts test/resourceSearch.test.ts test/databaseResourcePickerDialog.test.ts test/projectCommitLogging.test.ts test/storePersistenceLineage.test.ts test/storePersistenceProof.test.ts test/headlessTools.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-monster-model-0907
+
+ ✓ test/audioDescriptionConcurrentPersistence.test.ts (22 tests) 119137ms
+   ✓ audio description concurrent persistence > keeps replacement project descriptions 'missing' while an old save completes  12401ms
+   ✓ audio description concurrent persistence > keeps replacement project descriptions 'cleared' while an old save completes  8911ms
+   ✓ audio description concurrent persistence > keeps replacement project descriptions 'authored' while an old save completes  7907ms
+   ✓ audio description concurrent persistence > cancels transport waits when already aborted is false  415ms
+   ✓ audio description concurrent persistence > cancels transport waits when already aborted is true  393ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'unchanged local key'  6294ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'remote clear'  5430ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'remote reset'  5373ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'remote addition to an absent field'  5045ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'different keys in one kind'  4947ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'same raw ID in different kinds'  5297ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'same-key local edit wins'  4969ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'same-key local clear wins'  3709ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'same-key local reset wins'  3845ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'own raw IDs and exact stored whitespa…'  3914ms
+   ✓ audio description concurrent persistence > preserves 'remote edit' through consecutive map saves without recording a user edit  5507ms
+   ✓ audio description concurrent persistence > preserves 'remote clear' through consecutive map saves without recording a user edit  5788ms
+   ✓ audio description concurrent persistence > preserves 'remote reset' through consecutive map saves without recording a user edit  6318ms
+   ✓ audio description concurrent persistence > keeps fresh map edits and a fresh description 'set' when a response arrives late  6747ms
+   ✓ audio description concurrent persistence > keeps fresh map edits and a fresh description 'clear' when a response arrives late  6159ms
+   ✓ audio description concurrent persistence > keeps fresh map edits and a fresh description 'reset' when a response arrives late  6572ms
+   ✓ audio description concurrent persistence > retains the baseline and fresh local input when a deferred write fails  3191ms
+ ✓ test/storePersistenceLineage.test.ts (8 tests) 133691ms
+   ✓ accepted receipt content lineage > does not resurrect saved authority after reload during PATCH  50088ms
+   ✓ accepted receipt content lineage > does not resurrect saved authority after load during PATCH  14819ms
+   ✓ accepted receipt content lineage > does not resurrect saved authority after reconnect during PATCH  16202ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on reload even for identical content  12367ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on load even for identical content  10736ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on reconnect even for identical content  12975ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on adopt even for identical content  9426ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on fallback even for identical content  7075ms
+ ✓ test/storePersistenceProof.test.ts (18 tests) 22098ms
+   ✓ accepted revision persistence proof > verifies the accepted content through actual save/read transport and reuses its clean-flush receipt  1695ms
+   ✓ accepted revision persistence proof > compares normalized values rather than JSONB object-key order  1083ms
+   ✓ accepted revision persistence proof > uses the ordinary normalized remote load and map-overlay contract  1330ms
+   ✓ accepted revision persistence proof > does not verify a matching projects row when the ordinary map read fails  1015ms
+   ✓ accepted revision persistence proof > binds the receipt to the accepted merged project, not the unmerged live store  1874ms
+   ✓ accepted revision persistence proof > keeps open event drafts local and out of accepted content identity  4881ms
+   ✓ accepted revision persistence proof > rejects a copied token without issuing a read  730ms
+   ✓ accepted revision persistence proof > does not verify a failed read  659ms
+   ✓ accepted revision persistence proof > does not verify a missing read  821ms
+   ✓ accepted revision persistence proof > does not verify a disabled read  783ms
+   ✓ accepted revision persistence proof > does not verify a cancelled read  773ms
+   ✓ accepted revision persistence proof > rejects wrong target even when current_sha256 is unchanged  928ms
+   ✓ accepted revision persistence proof > rejects wrong content even when current_sha256 is unchanged  961ms
+   ✓ accepted revision persistence proof > keeps a failed proof retryable for the same accepted revision  943ms
+   ✓ accepted revision persistence proof > preserves newer local edits during the read and does not attach old proof to them  875ms
+   ✓ accepted revision persistence proof > pins the original target across a configuration change during read  885ms
+   ✓ accepted revision persistence proof > does not verify when cancelled while the read is in flight  917ms
+   ✓ accepted revision persistence proof > does not verify when disabled while the read is in flight  942ms
+ ✓ test/monsterMetadataPersistence.test.ts (5 tests) 19883ms
+   ✓ monster metadata concurrent persistence > merges per-field local deltas when a real conditional save loses its first SHA race  3604ms
+   ✓ monster metadata concurrent persistence > reconciles remote fields without recording an edit when consecutive map saves complete  5156ms
+   ✓ monster metadata concurrent persistence > preserves fresh fields and live maps when a save response arrives late  5284ms
+   ✓ monster metadata concurrent persistence > does not adopt old metadata when a different project replaces the submitted lineage  3536ms
+   ✓ monster metadata concurrent persistence > retains baseline and fresh input when a deferred write fails  2300ms
+ ✓ test/audioDescriptionPersistence.test.ts (37 tests) 4863ms
+   ✓ audio description recovery snapshots > preserves description states when restoring a backup into an editor package: undefined  712ms
+   ✓ audio description recovery snapshots > preserves description states when restoring a backup into an editor package: {"music":{"orphan":" \tBACKUP_VALUE\n ","cleared":"","__proto__":"OWN_ID"},"sound":{"orphan":"SOUND_VALUE","terrainTemplates":""}}  820ms
+ ✓ test/projectCommitLogging.test.ts (3 tests) 2531ms
+   ✓ project commit logging > records an approved changeset commit and change row with identity payload  844ms
+   ✓ project commit logging > keeps the store changes when commit logging fails  774ms
+   ✓ project commit logging > dedupes manual autosave commit logging when nothing changed since the previous record  911ms
+ ✓ test/databaseResourcePickerDialog.test.ts (7 tests) 651ms
+ ✓ test/audioDescriptionExport.test.ts (30 tests) 17286ms
+   ✓ audio descriptions at export boundaries > strips editor metadata without mutating the source when exporting undefined  936ms
+   ✓ audio descriptions at export boundaries > strips editor metadata without mutating the source when exporting {}  737ms
+   ✓ audio descriptions at export boundaries > strips editor metadata without mutating the source when exporting {"music":{},"sound":{}}  586ms
+   ✓ audio descriptions at export boundaries > strips editor metadata without mutating the source when exporting {"music":{"orphan":""},"sound":{"orphan":"AUDIO_EXPORT_VALUE"}}  553ms
+   ✓ audio descriptions at export boundaries > strips editor metadata without mutating the source when exporting {"music":{"cc0-bgm-rtp-fld-003":"AUDIO_EXPORT_OVERRIDE","orphan_music":" \tAUDIO_EXPORT_ORPHAN\n ","terrainTemplates":""},"sound":{"cc0-sound-ui-confirm":"","orphan_sound":"AUDIO_EXPORT_SOUND","__proto__":"AUDIO_EXPORT_OWN_KEY"}}  628ms
+   ✓ audio descriptions at export boundaries > retains exact states in an editor package when packaging undefined  623ms
+   ✓ audio descriptions at export boundaries > retains exact states in an editor package when packaging {}  719ms
+   ✓ audio descriptions at export boundaries > retains exact states in an editor package when packaging {"music":{},"sound":{}}  618ms
+   ✓ audio descriptions at export boundaries > retains exact states in an editor package when packaging {"music":{"orphan":""},"sound":{"orphan":"AUDIO_EXPORT_VALUE"}}  683ms
+   ✓ audio descriptions at export boundaries > retains exact states in an editor package when packaging {"music":{"cc0-bgm-rtp-fld-003":"AUDIO_EXPORT_OVERRIDE","orphan_music":" \tAUDIO_EXPORT_ORPHAN\n ","terrainTemplates":""},"sound":{"cc0-sound-ui-confirm":"","orphan_sound":"AUDIO_EXPORT_SOUND","__proto__":"AUDIO_EXPORT_OWN_KEY"}}  726ms
+   ✓ audio descriptions at export boundaries > does not treat descriptions as upload usage when metadata is key-only  715ms
+   ✓ audio descriptions at export boundaries > does not treat descriptions as upload usage when metadata is value-reference  586ms
+   ✓ audio descriptions at export boundaries > retains a real upload reference when its description is cleared  408ms
+   ✓ audio descriptions at export boundaries > rejects malformed metadata when importing an editor package: null  607ms
+   ✓ audio descriptions at export boundaries > rejects malformed metadata when importing an editor package: %j  540ms
+   ✓ audio descriptions at export boundaries > rejects malformed metadata when importing an editor package: 7  515ms
+   ✓ audio descriptions at export boundaries > rejects malformed metadata when importing an editor package: {"music":null}  625ms
+   ✓ audio descriptions at export boundaries > rejects malformed metadata when importing an editor package: {"sound":[]}  521ms
+   ✓ audio descriptions at export boundaries > rejects malformed metadata when importing an editor package: {"bgm":{}}  502ms
+   ✓ audio descriptions at export boundaries > rejects malformed metadata when importing an editor package: {"music":{"orphan":7}}  550ms
+   ✓ audio descriptions at export boundaries > rejects malformed metadata when importing an editor package: {"sound":{"orphan":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}}  532ms
+   ✓ audio descriptions at export boundaries > discards irrelevant malformed metadata when exporting playable data: null  568ms
+   ✓ audio descriptions at export boundaries > discards irrelevant malformed metadata when exporting playable data: %j  511ms
+   ✓ audio descriptions at export boundaries > discards irrelevant malformed metadata when exporting playable data: 7  479ms
+   ✓ audio descriptions at export boundaries > discards irrelevant malformed metadata when exporting playable data: {"music":null}  520ms
+   ✓ audio descriptions at export boundaries > discards irrelevant malformed metadata when exporting playable data: {"sound":[]}  568ms
+   ✓ audio descriptions at export boundaries > discards irrelevant malformed metadata when exporting playable data: {"bgm":{}}  478ms
+   ✓ audio descriptions at export boundaries > discards irrelevant malformed metadata when exporting playable data: {"music":{"orphan":7}}  477ms
+   ✓ audio descriptions at export boundaries > discards irrelevant malformed metadata when exporting playable data: {"sound":{"orphan":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}}  586ms
+ ✓ test/audioResourceSearchContract.test.ts (14 tests) 940ms
+ ✓ test/resourceSearch.test.ts (22 tests) 66ms
+ ✓ test/monsterResourceCatalog.test.ts (6 tests) 43ms
+ ✓ test/audioDescriptionDiff.test.ts (10 tests) 2299ms
+   ✓ audio description change summaries > preserves tile-only safety compatibility when the audio count is undefined  454ms
+   ✓ audio description change summaries > preserves tile-only safety compatibility when the audio count is 0  384ms
+   ✓ audio description change summaries > preserves tile-only safety compatibility when the audio count is 1  388ms
+ ✓ test/headlessTools.test.ts (5 tests) 834ms
+   ✓ headless tool runner > runs write tools as dry-run diff only and preserves the original project  354ms
+ ✓ test/audioDescriptions.test.ts (32 tests) 12ms
+ ✓ test/audioResourceCatalog.test.ts (17 tests) 215ms
+ ✓ test/monsterMetadata.test.ts (19 tests) 16ms
+ ✓ test/monsterMetadataFoundation.test.ts (17 tests) 4039ms
+   ✓ monster metadata foundation > preserves exact stored overrides and raw IDs when serializing with function serializePretty(project) {
+  return JSON.stringify(project, projectJsonReplacer(project), 2);
+}  320ms
+   ✓ monster metadata foundation > preserves overrides when round-tripping an editor package  686ms
+   ✓ monster metadata foundation > strips metadata without retaining metadata-only uploads when preparing playable data  901ms
+ ✓ test/monsterMetadataAccounting.test.ts (8 tests) 2269ms
+   ✓ monster metadata accounting > preserves tile-only safety compatibility when metadata count is undefined  564ms
+   ✓ monster metadata accounting > preserves tile-only safety compatibility when metadata count is 0  536ms
+   ✓ monster metadata accounting > preserves tile-only safety compatibility when metadata count is 1  460ms
+ ✓ test/monsterMetadataHistory.test.ts (3 tests) 2213ms
+   ✓ monster metadata history > restores inherited metadata when an applied project edit is undone  683ms
+   ✓ monster metadata history > restores authored metadata when an undone edit is redone  905ms
+   ✓ monster metadata history > restores explicit clears and unknown IDs when a reset is undone  623ms
+
+ Test Files  19 passed (19)
+      Tests  283 passed (283)
+   Start at  03:34:06
+   Duration  190.74s (transform 22.92s, setup 0ms, collect 31.80s, tests 333.09s, environment 6ms, prepare 2.19s)

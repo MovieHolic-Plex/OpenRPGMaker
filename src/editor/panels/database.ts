@@ -5,6 +5,7 @@ import { renderCommonEventsTab } from "@/editor/panels/databaseCommonEventViews"
 import { renderCropTab } from "@/editor/panels/databaseCropView";
 import { renderMonsterSpeciesTab } from "@/editor/panels/databaseMonsterSpeciesView";
 import { renderCharactersTab } from "@/editor/panels/databaseCharacterView";
+import { renderCharacterGraphicsTab } from "@/editor/panels/databaseCharacterGraphicsView";
 import { renderLifeCraftingTab } from "@/editor/panels/databaseLifeCraftingView";
 import { renderDailyWeatherTab } from "@/editor/panels/databaseDailyWeatherView";
 import { renderFarmAnimalsTab } from "@/editor/panels/databaseFarmAnimalsView";
@@ -65,6 +66,7 @@ export type DatabaseTab =
   | "battleScreen"
   | "commonEvents"
   | "characters"
+  | "characterGraphics"
   | "crops"
   | "lifeCrafting"
   | "dailyWeather"
@@ -106,6 +108,7 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "items", label: "아이템·장비", testid: "db-tab-items" },
   { id: "crops", label: "농사·작물", testid: "db-tab-crops" },
   { id: "characters", label: "주민 관계", testid: "db-tab-characters" },
+  { id: "characterGraphics", label: "캐릭터·얼굴", testid: "db-tab-character-graphics" },
   { id: "lifeCrafting", label: "생활 기술·제작", testid: "db-tab-life-crafting" },
   { id: "dailyWeather", label: "계절·날씨", testid: "db-tab-daily-weather" },
   { id: "farmAnimals", label: "동물·축사", testid: "db-tab-farm-animals" },
@@ -159,7 +162,7 @@ export const TAB_GROUPS: readonly DatabaseTabGroup[] = [
   },
   { label: "생활", slug: "life", tabs: ["crops", "characters", "lifeCrafting", "dailyWeather", "farmAnimals", "farmSpatial", "lifeCollections"] },
   { label: "맵", slug: "world", tabs: ["scratchConcepts", "tilesets"] },
-  { label: "시스템", slug: "system", tabs: ["commonEvents", "system", "opening", "gameOver", "terms", "switches", "variables"] },
+  { label: "시스템", slug: "system", tabs: ["commonEvents", "system", "opening", "gameOver", "characterGraphics", "terms", "switches", "variables"] },
 ];
 
 /** Phase 1 changes navigation, not data ownership or legacy route IDs. */
@@ -835,6 +838,9 @@ function renderActiveTab(
       break;
     case "characters":
       renderCharactersTab(body, rerender);
+      break;
+    case "characterGraphics":
+      renderCharacterGraphicsTab(body, rerender);
       break;
     case "lifeCrafting":
       renderLifeCraftingTab(body, rerender);

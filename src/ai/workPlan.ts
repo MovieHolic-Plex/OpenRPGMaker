@@ -26,7 +26,8 @@ import {
   templateToolInstruction,
 } from "./narrativeHorrorWorkPlan";
 import { QUICK_REPLY_MARKER } from "@/ai/interviewPrompt";
-import { allTools, getTool } from "@/editor/tools/toolRegistry";
+import { VERIFICATION_TOOL_NAMES } from "./agentVerification";
+import { activeTools, getTool } from "@/editor/tools/toolRegistry";
 import { parseAcceptance, type AcceptancePromise } from "./assistantAcceptance";
 import { ACCEPTANCE_PLANNER_GUIDE } from "./assistantAcceptanceTools";
 import { parseWorkTargetIds, workTargetContractIssues } from "./workPlanTargets";
@@ -34,6 +35,7 @@ import { parseVerificationChecks, type VerificationCheck } from "./toolVerificat
 export type WorkItemStatus = "pending" | "in_progress" | "done" | "skipped" | "blocked";
 
 export interface WorkItem {
+  readonly requirementIds?: readonly string[];
   readonly id: string;
   readonly title: string;
   /** Concrete worker instruction (tool names + numbers preferred). */
@@ -62,6 +64,7 @@ export interface WorkLayer {
 }
 
 export interface WorkPlan {
+  readonly requirements?: readonly AcceptancePromise[];
   readonly acceptance?: readonly AcceptancePromise[];
   readonly id: string;
   readonly goal: string;
@@ -116,6 +119,7 @@ export type OrchestratorDecision =
        * 「마을=맵 1·NPC 3·상점 1」 막대를 씌우던 경로는 없다(2026-09-03 감사: 「이 마을에 상인 하나 추가」 폭주).
        */
       readonly volume?: PlannerVolumeBar;
+      readonly requirements?: readonly AcceptancePromise[];
       readonly acceptance?: readonly AcceptancePromise[];
       readonly layers: readonly {
         readonly id?: string;
@@ -128,6 +132,7 @@ export type OrchestratorDecision =
           readonly successTools?: readonly string[];
           readonly verificationChecks?: readonly VerificationCheck[];
           readonly mapTargets?: readonly string[] | null;
+          readonly requirementIds?: readonly string[];
           readonly requiresAnyWrite?: boolean;
         }[];
       }[];
@@ -236,7 +241,7 @@ export function buildOrchestratorUserPayload(input: {
   // create_map/author_village 항목으로 분해되고, successTools 에 생성툴이 박히면 그 툴이 성공할
   // 때까지 항목이 완료되지 않아 신축이 강제됐다.
   parts.push(TARGET_SELECTION_RULE);
-  parts.push(`## Canonical tool names\n${allTools().map((tool) => tool.name).join(", ")}\nUse exact names in successTools; unknown requirements block completion and require correcting the plan.`);
+  parts.push(`## Canonical tool names\n${activeTools().map((tool) => tool.name).join(", ")}\nUse exact names in successTools; unknown requirements block completion and require correcting the plan.`);
   parts.push("Respond with JSON only.");
   return parts.join("\n\n");
 }
@@ -318,13 +323,15 @@ export function parseOrchestratorDecision(raw: string): OrchestratorParseResult 
   }
   const volume = parsePlannerVolume(parsed.volume);
   let acceptance = parseAcceptance(parsed.acceptance);
-  if (acceptance) {
+  let requirements = parseAcceptance(parsed.requirements);
+  if (acceptance || requirements) {
     try {
       JSON.parse(jsonText);
     } catch (cause) {
       if (!(cause instanceof SyntaxError)) throw cause;
       // Truncation repair can recover a plan, never a partial acceptance array.
-      acceptance = acceptance.map(promise => ({ ...promise, criteria: null }));
+      acceptance = acceptance?.map(promise => ({ ...promise, criteria: null }));
+      requirements = requirements?.map(promise => ({ ...promise, required: true, criteria: null }));
     }
   }
   const decision: Extract<OrchestratorDecision, { action: "new_plan" | "replan" }> = {
@@ -332,6 +339,7 @@ export function parseOrchestratorDecision(raw: string): OrchestratorParseResult 
     ...(typeof parsed.plannerNote === "string" ? { plannerNote: parsed.plannerNote } : {}),
     ...(volume ? { volume } : {}),
     ...(acceptance ? { acceptance } : {}),
+    ...(requirements ? { requirements } : {}),
     layers,
   };
   verificationInputLayers.set(decision, layersRaw);
@@ -421,6 +429,7 @@ export function workPlanFromOrchestratorDecision(
   const plan = createWorkPlanFromLayers({
     goal: decision.goal,
     acceptance: decision.acceptance,
+    requirements: decision.requirements,
     plannerNote: decision.plannerNote,
     layers: decision.layers,
     targetMapId,
@@ -430,7 +439,7 @@ export function workPlanFromOrchestratorDecision(
   return plan;
 }
 
-/** In-loop set_work_plan tool (Claude TodoWrite-style): generator may replan via tools. */
+/** Parse an in-loop plan proposal; the session reconciles it with existing item identity. */
 export function workPlanFromSetToolArgs(args: Record<string, unknown>, now = new Date()): WorkPlan | null {
   const goal = typeof args.goal === "string" ? args.goal.trim() : "";
   if (!goal || !Array.isArray(args.layers)) return null;
@@ -441,6 +450,7 @@ export function workPlanFromSetToolArgs(args: Record<string, unknown>, now = new
   const plan = createWorkPlanFromLayers({
     goal,
     acceptance: parseAcceptance(args.acceptance),
+    requirements: parseAcceptance(args.requirements),
     plannerNote: typeof args.plannerNote === "string" ? args.plannerNote : undefined,
     layers,
     now,
@@ -449,7 +459,63 @@ export function workPlanFromSetToolArgs(args: Record<string, unknown>, now = new
   return plan;
 }
 
+/** Generator repairs keep the goal's item identities; only the main planner may replace them. */
+export function repairWorkPlan(current: WorkPlan, replacement: WorkPlan):
+  | { readonly ok: true; readonly plan: WorkPlan }
+  | { readonly ok: false; readonly reason: string } {
+  const previous = new Map(current.layers.flatMap(layer => layer.items).map(item => [item.id, item]));
+  const incoming = replacement.layers.flatMap(layer => layer.items);
+  const ids = new Set(incoming.map(item => item.id));
+  if (ids.size !== incoming.length) {
+    return { ok: false, reason: "set_work_plan requires unique item IDs. Use get_work_plan and retain every existing item ID exactly once." };
+  }
+  const missing = [...previous.keys()].filter(id => !ids.has(id));
+  if (missing.length) {
+    return { ok: false, reason: `set_work_plan cannot erase existing items: ${missing.join(", ")}. Use get_work_plan; retain all IDs, including done/skipped items. Correct instructions/successTools or add/regroup items without replacing their IDs.` };
+  }
+  for (const item of incoming) {
+    const old = previous.get(item.id);
+    if (!old || old.status === "done" || old.status === "skipped") continue;
+    const removedChecks = (old.successTools ?? []).filter(name => VERIFICATION_TOOL_NAMES.has(name) && !item.successTools?.includes(name));
+    if (removedChecks.length) {
+      return { ok: false, reason: `set_work_plan cannot remove required verification from ${item.id}: ${removedChecks.join(", ")}. Fix the reported problems and rerun those checks; a summary query is not verification.` };
+    }
+  }
+  const layers = replacement.layers.map(layer => ({
+    ...layer,
+    items: layer.items.map((item): WorkItem => {
+      const old = previous.get(item.id);
+      if (old?.status === "done" || old?.status === "skipped") {
+        // Links are scheduler metadata, never canonical requirement ownership.
+        const { requirementIds: _previousLinks, ...settled } = old;
+        const newVerification = old.status === "done"
+          && JSON.stringify(old.verificationChecks) !== JSON.stringify(item.verificationChecks);
+        return { ...settled, ...(newVerification ? { status: "pending" as const } : {}),
+          verificationChecks: item.verificationChecks, mapTargets: item.mapTargets,
+          ...(item.requirementIds ? { requirementIds: item.requirementIds } : {}) };
+      }
+      return { ...item, status: old?.status ?? "pending", note: old?.note, requiresAnyWrite: old?.requiresAnyWrite ?? item.requiresAnyWrite };
+    }),
+  }));
+  const plan: WorkPlan = {
+    ...current,
+    goal: replacement.goal,
+    plannerNote: replacement.plannerNote ?? current.plannerNote,
+    acceptance: replacement.acceptance ?? current.acceptance,
+    requirements: replacement.requirements ?? current.requirements,
+    layers,
+    currentLayerIndex: current.currentItemId
+      ? layers.findIndex(layer => layer.items.some(item => item.id === current.currentItemId))
+      : 0,
+  };
+  // Reordering must not move evidence to a different item. A finished plan can gain new items.
+  if (!plan.currentItemId) activateFirstPending(plan);
+  verificationInputLayers.set(plan, verificationInputLayers.get(replacement) ?? replacement.layers);
+  return { ok: true, plan };
+}
+
 function createWorkPlanFromLayers(input: {
+  requirements?: readonly AcceptancePromise[];
   acceptance?: readonly AcceptancePromise[];
   goal: string;
   plannerNote?: string;
@@ -464,6 +530,7 @@ function createWorkPlanFromLayers(input: {
       successTools?: readonly string[];
       verificationChecks?: readonly VerificationCheck[];
       mapTargets?: readonly string[] | null;
+      requirementIds?: readonly string[];
       requiresAnyWrite?: boolean;
     }[];
   }[];
@@ -481,6 +548,7 @@ function createWorkPlanFromLayers(input: {
       successTools: sanitizeToolNames(it.successTools),
       verificationChecks: parseVerificationChecks(it.verificationChecks),
       mapTargets: it.mapTargets,
+      ...(it.requirementIds ? { requirementIds: it.requirementIds } : {}),
       requiresAnyWrite: it.requiresAnyWrite === true || undefined,
       status: "pending" as const,
     })),
@@ -489,6 +557,7 @@ function createWorkPlanFromLayers(input: {
     id: `wp_${input.now.getTime().toString(36)}`,
     goal: input.goal,
     ...(input.acceptance ? { acceptance: input.acceptance } : {}),
+    ...(input.requirements ? { requirements: input.requirements } : {}),
     createdAt: input.now.toISOString(),
     layers,
     currentLayerIndex: 0,
@@ -514,6 +583,7 @@ function normalizeLayer(
     successTools?: readonly string[];
     verificationChecks?: readonly VerificationCheck[];
     mapTargets?: readonly string[] | null;
+    requirementIds?: readonly string[];
   }[];
 } | null {
   if (!isRecord(layer)) return null;
@@ -531,6 +601,7 @@ function normalizeLayer(
         id: typeof it.id === "string" ? it.id : `L${li + 1}-${ii + 1}`,
         title: itemTitle,
         instruction,
+        ...(Array.isArray(it.requirementIds) ? { requirementIds: it.requirementIds.filter((id): id is string => typeof id === "string" && id.trim().length > 0) } : {}),
         doneWhen: typeof it.doneWhen === "string" ? it.doneWhen : undefined,
         mapTargets: parseWorkTargetIds(it.mapTargets),
         verificationChecks: parseVerificationChecks(it.verificationChecks),
@@ -652,7 +723,7 @@ export function formatWorkPlanForOrchestration(plan: WorkPlan): string {
   }
   if (s.current) {
     lines.push(`Current layer: ${s.current.layerTitle}`);
-    lines.push(`Current item: ${s.current.itemTitle}`);
+    lines.push(`Current item: ${s.current.itemTitle} (itemId: ${plan.currentItemId})`);
     lines.push(`Worker instruction:\n${s.current.instruction}`);
     if (s.current.doneWhen) lines.push(`Done when: ${s.current.doneWhen}`);
     const item = getCurrentWorkItem(plan);
@@ -674,11 +745,13 @@ export function formatWorkPlanForOrchestration(plan: WorkPlan): string {
   lines.push(
     "When all of this item's successTools succeed, the harness may auto-complete; " +
       "or call complete_work_item only after every listed tool succeeded for this item, including its continuations. " +
-      "If blocked (wrong tileset material, out of region, etc.), call skip_work_item with a note — " +
+      "For a non-verification item blocked by its premise, call skip_work_item with a note — " +
+      "required verification cannot be removed or skipped; fix its failures or report the blocker. " +
       "do NOT complete a failed item by succeeding a different tool. " +
       "If the item's premise is wrong (e.g. it prescribes creating a new map but the user asked to fix an " +
       "existing one), call set_work_plan to correct the plan instead of satisfying the wrong successTools. " +
-      "To restructure the remaining plan, call set_work_plan (full replacement). " +
+      "To repair or regroup the plan, use get_work_plan and submit set_work_plan with every existing item ID, including done/skipped items. " +
+      "Keep independent items separate; instructions/successTools may be corrected and new items added without restarting completed work. " +
       "Do not claim the full goal is finished while items remain."
   );
   return lines.join("\n");
@@ -696,7 +769,7 @@ export function formatRalphContinueMessage(plan: WorkPlan): string {
     `Progress: ${s.itemsDone}/${s.itemsTotal} items done.`,
   ];
   if (s.current) {
-    lines.push(`Current item: ${s.current.itemTitle}`);
+    lines.push(`Current item: ${s.current.itemTitle} (itemId: ${plan.currentItemId})`);
     lines.push(`Instruction:\n${s.current.instruction}`);
     if (s.current.doneWhen) lines.push(`Done when: ${s.current.doneWhen}`);
   }
@@ -733,28 +806,35 @@ export function formatWorkPlanUserVisible(plan: WorkPlan): string {
  * Should the harness Ralph-continue (re-inject + keep looping) instead of ending the turn?
  * Code decides continuation; model does not get a silent early exit on multi-step plans.
  */
-export function shouldRalphContinue(
+export type RalphContinuationDecision = "continue" | "complete" | "blocked" | "budget-exhausted" | "awaiting-user";
+
+export function ralphContinuationDecision(
   plan: WorkPlan | null,
   opts: {
     readonly autoStepsUsed: number;
     readonly assistantText?: string;
   }
-): boolean {
-  if (!plan || isWorkPlanComplete(plan)) return false;
+): RalphContinuationDecision {
+  if (!plan || isWorkPlanComplete(plan)) return "complete";
   const current = getCurrentWorkItem(plan);
-  if (!current) return false;
+  if (!current) return "complete";
   // 막힌 항목은 사람의 판단을 기다린다 — 재주입도, 자동 계속도 하지 않는다(2026-09-03).
-  if (current.status === "blocked") return false;
-  if (opts.autoStepsUsed >= MAX_WORK_PLAN_AUTO_STEPS_PER_TURN) return false;
+  if (current.status === "blocked") return "blocked";
+  if (opts.autoStepsUsed >= MAX_WORK_PLAN_AUTO_STEPS_PER_TURN) return "budget-exhausted";
   const remaining = summarizeWorkPlan(plan).itemsTotal - summarizeWorkPlan(plan).itemsDone;
   if (remaining > MAX_WORK_PLAN_ITEMS_PER_BURST && opts.autoStepsUsed >= MAX_WORK_PLAN_AUTO_STEPS_PER_TURN) {
-    return false;
+    return "budget-exhausted";
   }
   // Incomplete plans keep looping through a trailing ?; only explicit quick-replies pause.
   if (opts.assistantText?.includes(QUICK_REPLY_MARKER)) {
-    return false;
+    return "awaiting-user";
   }
-  return true;
+  return "continue";
+}
+
+/** Boolean compatibility for existing scheduling callers; the decision remains single-source. */
+export function shouldRalphContinue(plan: WorkPlan | null, opts: Parameters<typeof ralphContinuationDecision>[1]): boolean {
+  return ralphContinuationDecision(plan, opts) === "continue";
 }
 
 /**

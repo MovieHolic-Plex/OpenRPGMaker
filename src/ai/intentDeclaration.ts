@@ -9,6 +9,7 @@
 // 경계: 「무엇을 원하나」(수정/생성, 실내/야외, 시설, 되묻기, 계획 필요, 쓸 툴)는 이 선언이 정한다.
 // 「무엇이 사실인가」(열린 모달, 선택 사각형, 현재 맵, 타일셋 라벨)와 「지켜졌나」(승인·클립·스펙·검증)는
 // 코드가 그대로 맡는다. 이 모듈은 순수 함수만 둔다 — 네트워크는 intentDeclarationClient 가 안다.
+import { parseFunctionalRequirements, parseFunctionalRefinements, type FunctionalCriterion, type FunctionalRefinement, type UnresolvedFunctionalRequirement } from "./functionalAcceptance";
 import type { AdventureRequirements } from "./adventureCompletion";
 import { ADVENTURE_AUTHORING_GUIDE } from "./adventureCompletion";
 import type { ToolDomain } from "@/editor/tools/types";
@@ -80,6 +81,8 @@ export interface IntentDeclaration {
 
   /** Only explicit create/modify NPC reward requests; never inferred from authored commands. */
   readonly npcRewards?: NpcRewardRequirements;
+  readonly functionalAcceptance?: readonly FunctionalCriterion[];
+  readonly functionalRefinements?: readonly FunctionalRefinement[];
   readonly summary: string;
   readonly source: IntentSource;
 }
@@ -102,6 +105,8 @@ export interface IntentFacts {
   readonly toolNames: readonly string[];
   readonly hasActivePlan: boolean;
   readonly wikiContext?: string;
+  readonly actualStart?: { readonly mapId: string; readonly x: number; readonly y: number };
+  readonly unresolvedFunctional?: readonly UnresolvedFunctionalRequirement[];
 }
 
 export const INTENT_MODES: readonly IntentMode[] = ["create", "modify", "question", "other"];
@@ -135,6 +140,8 @@ Fields:
 - "statefulNpcs": 사용자가 상태에 따라 달라지는 NPC 행동/대사를 명시했을 때만 true. 보통의 한 페이지 안내 NPC, 인사, 상점이라는 이유로 true를 만들지 않는다.
 
 - "npcRewards": ONLY for explicit create/modify requests to make an NPC grant currency, items or collected monsters. Omit for ordinary dialogue/NPCs, questions, and reward removal requests. Array example: [{"target":{"eventId":"known_event_id"},"grants":[{"kind":"item","id":"known_item_id","count":2}],"oneTime":true}]. Grant kind may also be "monster" or "gold". Currency uses {"kind":"gold","count":20} with NO id/name, not an inventory item. Do not reinterpret an item named gold/골드 as currency or invent a gold item to represent money. When an ID is unknown, replace target eventId with eventName, or item/monster grant id with name. Each target or item/monster reference must contain exactly ONE of those keys, never both; omit unused keys rather than writing null. Optional mapId belongs inside target. Preserve every requested grant. count is a positive integer for an explicit amount; omit count for an unspecified positive amount. oneTime=true ONLY when requested. Choices are zero-based and only declared when requested; repeatChoices describes the second interaction, normally omitted. Use IDs only when known, otherwise exact names (must resolve uniquely at completion); do not invent IDs or substitute actors/changeParty for collected monsters. If the requested target/reward cannot be identified, include an incomplete requirement so completion remains blocked, not an omitted contract. These expectations come from the REQUEST, never the eventual event commands, and must not be weakened to pass completion.
+- "functionalAcceptance": ONLY requested working purchases or map round-trip travel, not a shop decoration, map listing, genre label, question, or excluded behavior. Array of immutable expectations, never success flags/scripts. Purchase: {"kind":"shopPurchase","target":{"mapId":"actual map"},"start":{"x":1,"y":1},"seller":{"eventId":"known seller"},"item":{"id":"known item"},"count":2,"unitPrice":10}. Round trip: {"kind":"mapRoundTrip","target":{"mapId":"origin"},"start":{"x":1,"y":1},"destination":{"mapId":"destination"},"outgoing":{"eventId":"outgoing transfer"},"returning":{"eventId":"return transfer"}}. Use exact eventName/name instead of invented eventId/id; a new map uses newMapName instead of mapId. Start must be the requested actual project entry, supplied in facts, never a convenient test teleport. Preserve requested seller, stock, price/count, origin/destination and both authored transfers. For missing/ambiguous/unsupported targets or unspecified price/count include {"kind":"functionalUnresolved","reason":"Identify the missing request expectations"}; do not drop the requested behavior. Existing npcRewards already creates mandatory real-interaction acceptance. Non-requested behaviors MUST be omitted.
+- "functionalRefinements": ONLY when this USER message clarifies an unresolvedFunctional requirement supplied in facts. Read its original source.text, current typed expectations and prior user refinements together with the latest message. Output [{"requirementId":"the exact supplied id","criterion":{...concrete or partial functional criterion},"corrections":["count"]}]. Keep the original behavior/targets and known quantities; fill missing fields without inventing them. corrections is optional and names only known top-level fields explicitly corrected by this user's message; never infer a correction to make a failing check pass. A partial criterion retains known fields and stays unresolved until complete. Do not output duplicate functionalAcceptance for this clarification. Do not refine unrelated requirements or concrete contracts; there is no worker repair/replan authority here. For an initial unresolved request, preserve all known machine-checkable fields in functionalUnresolved.expectations (e.g. {"kind":"shopPurchase","seller":{"eventName":"Mira"},"item":{"name":"Potion"},"count":2}), not only in the reason string.
 - "summary": 요청을 한 문장으로.
 
 Rules:
@@ -161,7 +168,9 @@ export function buildIntentUserPayload(facts: IntentFacts): string {
   if (facts.maps.length > 0) {
     context.push(`맵 목록: ${facts.maps.slice(0, 16).map((map) => `${map.name}(${map.id})`).join(", ")}`);
   }
+  if (facts.actualStart) context.push(`Actual project entry: ${JSON.stringify(facts.actualStart)}`);
   lines.push(`## 사실\n${context.join("\n")}`);
+  if (facts.unresolvedFunctional?.length) lines.push(`## Unresolved functional requirements - original user context and known expectations\n${JSON.stringify(facts.unresolvedFunctional)}`);
   if (facts.wikiContext) lines.push(`## 프로젝트 위키 — 이전에 정한 제작 방향과 현재 맵의 예외\n${facts.wikiContext}`);
   lines.push(`## 개념 꾸러미 시설 라벨\n${facts.facilityLabels.length > 0 ? facts.facilityLabels.join(", ") : "(없음)"}`);
   lines.push(`## 툴 목록\n${facts.toolNames.join(", ")}`);
@@ -216,7 +225,9 @@ export function parseNpcRewardRequirements(raw: unknown): NpcRewardRequirements 
   const requirements: NpcRewardRequirement[] = [];
   for (const entry of raw) {
     if (!isRecord(entry) || !isRecord(entry.target)) return invalid("target is required");
+    if (Object.keys(entry).some(key => !["target", "grants", "oneTime", "choices", "repeatChoices"].includes(key))) return invalid("unknown requirement field");
     const target = entry.target;
+    if (Object.keys(target).some(key => !["mapId", "eventId", "eventName"].includes(key))) return invalid("unknown target field");
     if (target.mapId !== undefined && !text(target.mapId)) return invalid("mapId must be non-empty");
     const map = typeof target.mapId === "string" ? { mapId: target.mapId } : {};
     let reference: NpcRewardTarget;
@@ -227,6 +238,7 @@ export function parseNpcRewardRequirements(raw: unknown): NpcRewardRequirements 
     const grants: NpcRewardGrant[] = [];
     for (const grant of entry.grants) {
       if (!isRecord(grant) || (grant.kind !== "item" && grant.kind !== "monster" && grant.kind !== "gold")) return invalid("grant kind must be item, monster or gold");
+      if (Object.keys(grant).some(key => !["kind", "id", "name", "count"].includes(key))) return invalid("unknown grant field");
       if (grant.count !== undefined && (typeof grant.count !== "number" || !Number.isSafeInteger(grant.count) || grant.count <= 0)) return invalid("count must be a positive integer");
       const count = typeof grant.count === "number" ? { count: grant.count } : {};
       if (grant.kind === "gold") {
@@ -311,6 +323,8 @@ export function parseIntentDeclaration(raw: string, facts: IntentFacts): IntentP
         ? { npcRewards: parseNpcRewardRequirements(parsed.npcRewards) } : {}),
       ...(isRecord(parsed.adventure) && (mode === "create" || mode === "modify") ? { adventure: { village: parsed.adventure.village === true, dungeon: parsed.adventure.dungeon === true, party: parsed.adventure.party === true, battle: parsed.adventure.battle === true } } : {}),
       ...(actionCombat ? { actionCombat } : {}),
+      ...(authoring && parsed.functionalAcceptance !== undefined ? { functionalAcceptance: parseFunctionalRequirements(parsed.functionalAcceptance) } : {}),
+      ...(authoring && parsed.functionalRefinements !== undefined ? { functionalRefinements: parseFunctionalRefinements(parsed.functionalRefinements) } : {}),
       ...(authoring && parsed.statefulNpcs === true ? { statefulNpcs: true } : {}),
       summary: readString(parsed.summary, 200) ?? facts.userText.trim().slice(0, 200),
       source: "llm",
@@ -468,6 +482,7 @@ export function formatIntentNote(intent: IntentDeclaration, options: { readonly 
   if (intent.actionCombat) lines.push(`[액션 완료 계약] 대상 ${JSON.stringify(intent.actionCombat.targets)}의 필드 전투를 run_action_combat_test로 검증하라. wait/스폰 장면 검사와 턴제 시뮬은 액션 증거가 아니며 계획 교체·수리로 이 의무를 지울 수 없다.`);
   if (intent.statefulNpcs) lines.push("[NPC 완료 계약] 명시적으로 요청된 상태별 NPC 행동을 구현하라. 일반 안내 NPC까지 다중 페이지로 확대하지 않는다.");
 
+  if (intent.functionalAcceptance) lines.push(`[Functional acceptance contract] ${JSON.stringify(intent.functionalAcceptance)}. Immutable request expectations; real engine behavior on applied content decides completion, not images or success prose.`);
   if (intent.npcRewards) {
     lines.push(`[NPC reward contract] ${JSON.stringify(intent.npcRewards)} — preserve these request expectations. Verify real interaction goldDelta for currency and inventory/owned-monster deltas for items/monsters; inventoryDelta.gold is only an item ID, never currency. Author currency with native changeGold, not an invented gold item. Text, switches and changeParty are not grants. For oneTime, interact again in the SAME session with runtime page re-selection and prove zero additional gold/item/monster rewards. Do not remove grants or weaken this contract to complete. give_starter_monsters can author a guarded starter choice event.`);
   }

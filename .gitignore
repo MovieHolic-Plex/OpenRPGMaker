@@ -1,4 +1,6 @@
 node_modules/
+.runtime-archive/
+/verify-shots/release-artifact/
 dist/
 # The deployed root build can be a symlink to a versioned release.
 /dist
@@ -197,8 +199,13 @@ reports/left-sidebar-tools-adversarial-review.html
 !/scripts/scratch-faceset-grid.cjs
 /.playwright-cli/
 
-# CC0 BGM 카탈로그 오디오. 281곡/1.21GB 는 레포에 담지 않는다 —
-# 정본은 CDN(DigitalOcean Spaces)이고 레포에는 카탈로그(파일명+sha256)만 둔다.
+# CC0 BGM release audio: keep binaries/cache outside Git; pin assets/bgm-release-v1.json.
+# artifacts/bgm-release/ is already covered by artifacts/ above.
+/public/assets/cc0/audio/.bgm-stage-*/
+/public/assets/cc0/audio/.bgm-install.lock
+# CC0 BGM 카탈로그 오디오. 281곡/약 1.304 GB 는 일반 Git에 담지 않는다 —
+# GitHub Release 팩으로 배포하고 assets/bgm-release-v1.json에 검증 정보를 고정한다.
+# DigitalOcean CDN은 선택적 스트리밍과 관리자 팩 생성 원본으로 유지한다.
 # 예외: 기본 프로젝트가 CDN 없이도 소리를 내야 하므로 스타터 3곡은 추적한다
 # (src/assets/bgmStarterTracks.ts 와 짝이며 test/bgmCatalog.test.ts 가 존재를 검사한다).
 /public/assets/cc0/audio/catalog/*

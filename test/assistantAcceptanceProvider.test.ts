@@ -44,7 +44,7 @@ describe("acceptance at the installed Antigravity schema boundary", () => {
       if (typeof item.description !== "string") throw new Error("Canonical shapes lost in provider transport");
       const shapes = record(JSON.parse(item.description.slice(item.description.indexOf("{"))));
       expect(shapes).toEqual(ACCEPTANCE_EXAMPLES);
-      expect(parseAcceptanceCriteria(Object.values(shapes))).toHaveLength(8);
+      expect(parseAcceptanceCriteria(Object.values(shapes))).toHaveLength(13);
       expect(shapes.actionCombat).toEqual({ kind: "actionCombat", target: { mapId: "map_id" } });
       expect(shapes.mapCount).toMatchObject({ count: 2, targets: [{ mapId: "map_id" }, { newMapName: "New map" }] });
       const duplicate = { kind: "mapCount", count: 1, targets: [{ mapId: "map_id", newMapName: "New map" }] };

@@ -6,6 +6,7 @@ import LikeButton from "~/components/LikeButton";
 import ReportButton from "~/components/ReportButton";
 import { getGame, listComments } from "~/lib/db";
 import { getDict, toLang } from "~/lib/i18n";
+import { releaseDownloadPath, releasePlayPath } from "~/lib/releaseRoutes";
 
 export const dynamic = "force-dynamic";
 
@@ -24,7 +25,7 @@ export default async function GameDetailPage({ params }: { params: Promise<{ lan
   const game = await getGame(slug);
   if (!game) notFound();
   const comments = await listComments("game", slug);
-  const sizeKb = Math.round((game.package_base64.length * 3) / 4 / 1024);
+  const sizeKb = Math.round((game.release_bytes ?? ((game.package_base64?.length ?? 0) * 3) / 4) / 1024);
   return (
     <>
       <p><Link href={`/${lang}/games`} className="back-link">{dict.game.back}</Link></p>
@@ -39,6 +40,7 @@ export default async function GameDetailPage({ params }: { params: Promise<{ lan
           <div className="card-meta">
             <span>{dict.asset.by} {game.author}</span>
             <span className="license-badge">{game.license}</span>
+            {game.release_version && <span>{dict.game.release}: {game.release_version}</span>}
             <span>{game.map_count} {dict.game.maps}</span>
             <span>{game.asset_count} {dict.game.assetsInside}</span>
             <span>{game.downloads} {dict.asset.downloads}</span>
@@ -51,17 +53,17 @@ export default async function GameDetailPage({ params }: { params: Promise<{ lan
           )}
           <p className="detail-desc">{game.description}</p>
           <div className="hero-actions">
-            <a className="btn btn-primary" href={`/play/${encodeURIComponent(slug)}/`}>
+            <a className="btn btn-primary" href={game.release_id ? `${releasePlayPath(slug, game.release_id)}player.html` : `/play/${encodeURIComponent(slug)}/?lang=${lang}`}>
               ▶ {dict.common.playInBrowser}
             </a>
-            <a className="btn" href={`/api/games/${encodeURIComponent(slug)}/download`}>
-              {dict.game.dl} ({sizeKb.toLocaleString()} KB)
+            <a className="btn" href={game.release_id ? releaseDownloadPath(slug, game.release_id) : `/api/games/${encodeURIComponent(slug)}/download`}>
+              {game.release_id ? dict.game.dlRelease : dict.game.dl} ({sizeKb.toLocaleString()} KB)
             </a>
             <LikeButton type="game" id={slug} initialLikes={game.likes} label={dict.common.like} />
             <ReportButton type="game" id={slug} label={dict.common.report} doneLabel={dict.common.reported} />
           </div>
           <div className="howto">
-            <strong>{dict.game.howtoTitle}</strong> — {dict.game.howtoBody}
+            <strong>{game.release_id ? dict.game.releaseHowtoTitle : dict.game.howtoTitle}</strong> — {game.release_id ? dict.game.releaseHowtoBody : dict.game.howtoBody}
           </div>
         </div>
       </div>

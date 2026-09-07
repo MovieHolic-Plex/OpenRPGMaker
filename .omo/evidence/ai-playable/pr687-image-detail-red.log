@@ -1,0 +1,64 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/pr687ImageDetail.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86
+
+ ❯ test/pr687ImageDetail.test.ts (4 tests | 4 failed) 20ms
+   × PR687 provider image contract composition > preserves auto detail and exact validated bytes 12ms
+     → expected [ { type: 'image', …(2) } ] to deeply equal [ { type: 'image', …(3) } ]
+   × PR687 provider image contract composition > preserves low detail and exact validated bytes 2ms
+     → expected [ { type: 'image', …(2) } ] to deeply equal [ { type: 'image', …(3) } ]
+   × PR687 provider image contract composition > preserves high detail and exact validated bytes 1ms
+     → expected [ { type: 'image', …(2) } ] to deeply equal [ { type: 'image', …(3) } ]
+   × PR687 provider image contract composition > rejects invalid detail before provider transport while retaining MIME validation 3ms
+     → expected [Function] to throw an error
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/pr687ImageDetail.test.ts > PR687 provider image contract composition > preserves auto detail and exact validated bytes
+ FAIL  test/pr687ImageDetail.test.ts > PR687 provider image contract composition > preserves low detail and exact validated bytes
+ FAIL  test/pr687ImageDetail.test.ts > PR687 provider image contract composition > preserves high detail and exact validated bytes
+AssertionError: expected [ { type: 'image', …(2) } ] to deeply equal [ { type: 'image', …(3) } ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[2m    {[22m
+[2m      "data": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=",[22m
+[32m-     "detail": "auto",[39m
+[2m      "mimeType": "image/png",[22m
+[2m      "type": "image",[22m
+[2m    },[22m
+[2m  ][22m
+
+ ❯ test/pr687ImageDetail.test.ts:7:8
+      5|   it.each(["auto", "low", "high"])("preserves %s detail and exact vali…
+      6|     expect(convertUserContent([{ type: "image_url", image_url: { url: …
+      7|       .toEqual([{ type: "image", data: png, mimeType: "image/png", det…
+       |        ^
+      8|   });
+      9|   it("rejects invalid detail before provider transport while retaining…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  test/pr687ImageDetail.test.ts > PR687 provider image contract composition > rejects invalid detail before provider transport while retaining MIME validation
+AssertionError: expected [Function] to throw an error
+ ❯ test/pr687ImageDetail.test.ts:10:140
+      8|   });
+      9|   it("rejects invalid detail before provider transport while retaining…
+     10|     expect(() => convertUserContent([{ type: "image_url", image_url: {…
+       |                                                                                                                                            ^
+     11|     expect(() => convertUserContent([{ type: "image_url", image_url: {…
+     12|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed (4)
+   Start at  01:11:16
+   Duration  368ms (transform 59ms, setup 0ms, collect 54ms, tests 20ms, environment 0ms, prepare 70ms)
+

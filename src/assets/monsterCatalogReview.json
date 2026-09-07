@@ -1,0 +1,981 @@
+{
+  "version": 1,
+  "sourceCommit": "b9dec50fb6159e8be220b42eb59e526808b92b97",
+  "inspectionMethod": "Original PNG bytes through image-sensitive corrected pi-ai adapter; Gemini3.1Pro observation of each resource; lead reviews every returned caption and edits metadata; no native image visibility claim.",
+  "observerModel": "gemini-3.1-pro",
+  "reviewedBy": "lead",
+  "entries": {
+    "generated-enemy-slime-01": {
+      "url": "/assets/generated/starter/monster-slime-01.png",
+      "sha256": "22d4a49dadaf05ca84298c2ec24c4ddbd8b943594414c01b03f4bb43f9b02143",
+      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
+      "index": 1
+    },
+    "generated-enemy-bat-01": {
+      "url": "/assets/generated/starter/monster-bat-01.png",
+      "sha256": "fc38e07fb328d47480b9f27b2cc7b61f71a0f7222290c38c3bd7d9178a44dbe9",
+      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
+      "index": 2
+    },
+    "generated-enemy-golem-01": {
+      "url": "/assets/generated/starter/monster-golem-01.png",
+      "sha256": "eef07b4fcfcb4c02724d019bfdfec27a1d39a972910479a49d861054a062d733",
+      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
+      "index": 3
+    },
+    "generated-enemy-dragon-01": {
+      "url": "/assets/generated/starter/monster-dragon-01.png",
+      "sha256": "ebbff8d7c05c1ad19fab5b3bfc3d240518428acc5ca674cc067dd9ff44053cee",
+      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
+      "index": 4
+    },
+    "generated-enemy-sylph-hornet": {
+      "url": "/assets/generated/starter/sylph-hornet-transparent.png",
+      "sha256": "0dede0b45624a89af29500c9b2dd32ae775f4f465c7cb0b7f1be381de1c45e07",
+      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
+      "index": 5
+    },
+    "generated-troop-preview-slime": {
+      "url": "/assets/generated/starter/troop-preview-slime.png",
+      "sha256": "4e9419d86ad01cfb49c2b39a6f7faf55dacf11f26645d671c8f3153b0ecacd33",
+      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
+      "index": 6
+    },
+    "generated-enemy-ontology-8da61312": {
+      "url": "/assets/generated/starter/monster-ontology-8da61312.png",
+      "sha256": "bf9b207b2ffa15b1e46dbdd190b84f9526a932e4d6569f89b0d74cb3d362ada2",
+      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
+      "index": 7
+    },
+    "generated-enemy-zombie-01": {
+      "url": "/assets/generated/starter/monster-zombie-01.png",
+      "sha256": "9eba1ea6536f50647b5d5dfdcf42287059b5a5770f222db62b21df5f950275db",
+      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
+      "index": 8
+    },
+    "generated-enemy-skeleton-01": {
+      "url": "/assets/generated/starter/monster-skeleton-01.png",
+      "sha256": "5d120ed3181f8cfed50ebc84cc3fb652738f7fbd2cdab9c3a4de6c6b94c3c3c1",
+      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
+      "index": 9
+    },
+    "generated-enemy-orc-01": {
+      "url": "/assets/generated/starter/monster-orc-01.png",
+      "sha256": "dcdfe7c2867fe90e3db06b56118a747cf36853c2c2212d0d8eb866c453ec9686",
+      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
+      "index": 10
+    },
+    "generated-enemy-ghost-01": {
+      "url": "/assets/generated/starter/monster-ghost-01.png",
+      "sha256": "02eda64c530d0cc1a18392640faf41fe9f84026576e40920f6d38fe8696cd6fc",
+      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
+      "index": 11
+    },
+    "generated-enemy-crab-01": {
+      "url": "/assets/generated/starter/monster-crab-01.png",
+      "sha256": "f5baa7378dea1bf19336f20a17f2ba1b9b120968212617ac23e9283b8a7b4e02",
+      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
+      "index": 12
+    },
+    "generated-enemy-spider-01": {
+      "url": "/assets/generated/starter/monster-spider-01.png",
+      "sha256": "ab4cef4d1afe477c51bf35b0d90ca502a3f72997e4bb6433c5e83be73e4f97fc",
+      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
+      "index": 13
+    },
+    "generated-enemy-snake-01": {
+      "url": "/assets/generated/starter/monster-snake-01.png",
+      "sha256": "9c4fd8a62c9efd81da07c0317ed87f76ba287a726fb61e38f82a56b8aad3589b",
+      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
+      "index": 14
+    },
+    "generated-enemy-scorpion-01": {
+      "url": "/assets/generated/starter/monster-scorpion-01.png",
+      "sha256": "17c34d0e725e95a3e87db6eb25c68d87c5ca69536e20fe6dd4183c41704ae549",
+      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
+      "index": 15
+    },
+    "generated-enemy-wolf-01": {
+      "url": "/assets/generated/starter/monster-wolf-01.png",
+      "sha256": "c735e29afa9ce64cf01930857daf0dbee8ff817f9865f6ef8a25d2e6b8e3351f",
+      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
+      "index": 16
+    },
+    "generated-enemy-harpy-01": {
+      "url": "/assets/generated/starter/monster-harpy-01.png",
+      "sha256": "de95836c765da58df94ff48173eb34637132c6d41821b17825b0158371df5ce3",
+      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
+      "index": 17
+    },
+    "generated-enemy-centipede-01": {
+      "url": "/assets/generated/starter/monster-centipede-01.png",
+      "sha256": "55d34934540c2fa99924a5a801d889a7830b2a0be47c65c3cc56614d62b3ec19",
+      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
+      "index": 18
+    },
+    "generated-enemy-plant-01": {
+      "url": "/assets/generated/starter/monster-plant-01.png",
+      "sha256": "70c6e8c43cac858804069e1e886c7d57063f21854623e51192cd16718675304a",
+      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
+      "index": 19
+    },
+    "generated-enemy-horse-01": {
+      "url": "/assets/generated/starter/monster-horse-01.png",
+      "sha256": "04ddad19b201f28976a3ce64f3d4ab196beb354f39433e8b860d717ea514e77c",
+      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
+      "index": 20
+    },
+    "generated-enemy-unicorn-01": {
+      "url": "/assets/generated/starter/monster-unicorn-01.png",
+      "sha256": "7e4bf2fb641edd1f98016ef55111085508b337f60ffc76caa31370c4693e915f",
+      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
+      "index": 21
+    },
+    "generated-enemy-salamander-01": {
+      "url": "/assets/generated/starter/monster-salamander-01.png",
+      "sha256": "77392af9d3295ed684318e849844f5add1e3a7889c2ba98e963aae730c295eb0",
+      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
+      "index": 22
+    },
+    "generated-enemy-carbuncle-01": {
+      "url": "/assets/generated/starter/monster-carbuncle-01.png",
+      "sha256": "7edb01f4d06e1b2aceae0777d4e2f490a6eb384a8ed983030c8e5f6a5c199779",
+      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
+      "index": 23
+    },
+    "generated-enemy-cat-01": {
+      "url": "/assets/generated/starter/monster-cat-01.png",
+      "sha256": "d1e18779d2e9194ef54651c57dc56dad17ea7944b3c83370c9ea7b962c3f65b0",
+      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
+      "index": 24
+    },
+    "generated-enemy-kappa-01": {
+      "url": "/assets/generated/starter/monster-kappa-01.png",
+      "sha256": "b2048f5956ca2cf58e64b022d24a0bc07c750f29778e37da7a808d03a8025354",
+      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
+      "index": 25
+    },
+    "generated-enemy-cockatrice-01": {
+      "url": "/assets/generated/starter/monster-cockatrice-01.png",
+      "sha256": "a0596b4cf9a0fb1ea74e29fe783d860f77067f5d9f1b5d0d0ce52deedfb0f54c",
+      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
+      "index": 26
+    },
+    "generated-enemy-parasite-01": {
+      "url": "/assets/generated/starter/monster-parasite-01.png",
+      "sha256": "2f55a4d31e7eebe179b64de01d0867c64d33847cd500fdde648b3b5860e8a031",
+      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
+      "index": 27
+    },
+    "generated-enemy-mantis-01": {
+      "url": "/assets/generated/starter/monster-mantis-01.png",
+      "sha256": "f08906fd930cbf6fecf0958355329e63e672afe3ee8ca935952507b850f88e4e",
+      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
+      "index": 28
+    },
+    "generated-enemy-jackolantern-01": {
+      "url": "/assets/generated/starter/monster-jackolantern-01.png",
+      "sha256": "d0b22b4c714df39cf38b75ca2adc0ace1620d19579163bdfe6724ac7cb8f32ec",
+      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
+      "index": 29
+    },
+    "generated-enemy-fish-01": {
+      "url": "/assets/generated/starter/monster-fish-01.png",
+      "sha256": "d00278f4c80562c8c2e13eaf00c86ec4c74d06a35b631a6053f650775e1aeab8",
+      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
+      "index": 30
+    },
+    "generated-enemy-spirit-01": {
+      "url": "/assets/generated/starter/monster-spirit-01.png",
+      "sha256": "5feaf829081688f9964664351e9e14c02734eb781bac872280e79e6bb2c63d57",
+      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
+      "index": 31
+    },
+    "generated-enemy-ghoul-01": {
+      "url": "/assets/generated/starter/monster-ghoul-01.png",
+      "sha256": "73921cdf2e318b0ab7782b62ca56327dbe4bc18b8f3d0f4cf2940d16933e65f3",
+      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
+      "index": 32
+    },
+    "generated-enemy-specter-01": {
+      "url": "/assets/generated/starter/monster-specter-01.png",
+      "sha256": "d08db7a6f2e8c9f22903ec7ca7797f1289f7d1eab6e0279926e36fd8ac5494b7",
+      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
+      "index": 33
+    },
+    "generated-enemy-lemora-01": {
+      "url": "/assets/generated/starter/monster-lemora-01.png",
+      "sha256": "f6c4b46a314ff116d07f2b42f6fadeaf32cf7c78ef39ab2cdc8583100b605a49",
+      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
+      "index": 34
+    },
+    "generated-enemy-sylph-01": {
+      "url": "/assets/generated/starter/monster-sylph-01.png",
+      "sha256": "686abd282039647235b18f7d51603d1f1609eaf4a35290a0aff3b454fe76a76f",
+      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
+      "index": 35
+    },
+    "generated-enemy-leaf-fox": {
+      "url": "/assets/generated/monsters/corrected/leaf-fox.png",
+      "sha256": "d974105acb3903202057dd1d878ef509aad8c93bdfdfcf7f8f52a13760667376",
+      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
+      "index": 36
+    },
+    "generated-enemy-fire-pup": {
+      "url": "/assets/generated/monsters/corrected/fire-pup.png",
+      "sha256": "5135188c721b035932a1eb08e7bedae271f998914e351bb9413c60064a2c3ea6",
+      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
+      "index": 37
+    },
+    "generated-enemy-sparkit-fire": {
+      "url": "/assets/generated/monsters/corrected/sparkit-fire.png",
+      "sha256": "f1062d23b1c6d24439aa55384f6afd57ea31e64111c1552f17a4d9719a363bee",
+      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
+      "index": 38
+    },
+    "generated-enemy-leafling-01": {
+      "url": "/assets/generated/starter/monster-leafling-01.png",
+      "sha256": "f1ae781b821c4c7bd2ca64913e6d1962dcbdc31a6b8fb562b92e4f66a357691a",
+      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
+      "index": 39
+    },
+    "generated-enemy-sparkit-01": {
+      "url": "/assets/generated/starter/monster-sparkit-01.png",
+      "sha256": "ee700972f58f5c390b921e8b4cb98a6f33a501769ff35c0fff54e124c1843763",
+      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
+      "index": 40
+    },
+    "generated-enemy-aqualing-01": {
+      "url": "/assets/generated/starter/monster-aqualing-01.png",
+      "sha256": "1bd5a5da5e731b87276f0a643272781bd3dd426a4fb7e00f2e5c4fe945455f2e",
+      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
+      "index": 41
+    },
+    "generated-enemy-king-slime-01": {
+      "url": "/assets/generated/starter/monster-king-slime-01.png",
+      "sha256": "f506286fa16d1319c82eb4cdf33c31959dd3250efb4fc9f5b8f932d7c6cb108e",
+      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
+      "index": 42
+    },
+    "generated-enemy-slime-blue": {
+      "url": "/assets/generated/starter/monster-slime-blue.png",
+      "sha256": "113844629a9114851fed5d8f1aaf65f3de8ba26ddb1c185f7f4aab22e1aa78c8",
+      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
+      "index": 43
+    },
+    "generated-enemy-slime-red": {
+      "url": "/assets/generated/starter/monster-slime-red.png",
+      "sha256": "e9b0bd0847f36453d363b89737ecb08517083ae9d91518f47459982160979bf8",
+      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
+      "index": 44
+    },
+    "generated-enemy-slime-green": {
+      "url": "/assets/generated/starter/monster-slime-green.png",
+      "sha256": "54a649098f8f9faf65f96858fb01425c2ad90ac94f05bc46746648ea7ef6065c",
+      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
+      "index": 45
+    },
+    "generated-enemy-slime-metal": {
+      "url": "/assets/generated/starter/monster-slime-metal.png",
+      "sha256": "f03c538a440a0fd4380fc16b4f8de501c4b2edd3b24e0e47a6c3c7bb2e96375d",
+      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
+      "index": 46
+    },
+    "generated-enemy-slime-king": {
+      "url": "/assets/generated/starter/monster-slime-king.png",
+      "sha256": "f506286fa16d1319c82eb4cdf33c31959dd3250efb4fc9f5b8f932d7c6cb108e",
+      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
+      "index": 47
+    },
+    "generated-enemy-slime-cube": {
+      "url": "/assets/generated/starter/monster-slime-cube.png",
+      "sha256": "dc3b92cbd17a9408b2471a6752db383925219878c7cfa0ec3d3d1e240283645e",
+      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
+      "index": 48
+    },
+    "generated-enemy-ooze-black": {
+      "url": "/assets/generated/starter/monster-ooze-black.png",
+      "sha256": "a1683cd4234a6a6b7d0aa0b49dbccbe40b098dc85a1fc29391536992cbc9442f",
+      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
+      "index": 49
+    },
+    "generated-enemy-ooze-acid": {
+      "url": "/assets/generated/starter/monster-ooze-acid.png",
+      "sha256": "930b33d4e50950b487ce88fb79f44bdbf44880a4addd74f313689966ef8a54f7",
+      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
+      "index": 50
+    },
+    "generated-enemy-bat-cave": {
+      "url": "/assets/generated/starter/monster-bat-cave.png",
+      "sha256": "38be67d39197156b2e6d682a18ebe9e4caf29bbb825df178d2102d24bb2cd6cd",
+      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
+      "index": 51
+    },
+    "generated-enemy-bat-vampire": {
+      "url": "/assets/generated/starter/monster-bat-vampire.png",
+      "sha256": "09ad805a30220ed8e3d09e7670e7a04c042af6451b0b26e28b186637a37e16f0",
+      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
+      "index": 52
+    },
+    "generated-enemy-bee-giant": {
+      "url": "/assets/generated/starter/monster-bee-giant.png",
+      "sha256": "0fe40f155d4a7cba75dabd9c877cafe27eed924722a87e6afcad02297324370e",
+      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
+      "index": 53
+    },
+    "generated-enemy-spider-cave": {
+      "url": "/assets/generated/starter/monster-spider-cave.png",
+      "sha256": "3733e8b1667042705fd1058777ac78bc59b9b56d75f76e74ff59f70e04caf78c",
+      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
+      "index": 54
+    },
+    "generated-enemy-spider-widow": {
+      "url": "/assets/generated/starter/monster-spider-widow.png",
+      "sha256": "88357b1dbd547b58019645acaaa0bf3b39ea73d00825917454b930723855a217",
+      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
+      "index": 55
+    },
+    "generated-enemy-scorpion-sand": {
+      "url": "/assets/generated/starter/monster-scorpion-sand.png",
+      "sha256": "5517400a05677af88125c2f1774435cafc721960ec26afedece086914333b3fa",
+      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
+      "index": 56
+    },
+    "generated-enemy-beetle-horn": {
+      "url": "/assets/generated/starter/monster-beetle-horn.png",
+      "sha256": "4681ee9fef1937bc1dbc8652397b590e76f0a1dac54fa23859bf6b8f90a8cd05",
+      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
+      "index": 57
+    },
+    "generated-enemy-mantis-blade": {
+      "url": "/assets/generated/starter/monster-mantis-blade.png",
+      "sha256": "dc75536d101f411761205e6aba74dfcee154be986be2f7fa46604cd76d4fd7c5",
+      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
+      "index": 58
+    },
+    "generated-enemy-centipede-fire": {
+      "url": "/assets/generated/starter/monster-centipede-fire.png",
+      "sha256": "b994d398485435d5555950a11fec5841dee81f5a94de9c60271ae3d0db688c25",
+      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
+      "index": 59
+    },
+    "generated-enemy-moth-dust": {
+      "url": "/assets/generated/starter/monster-moth-dust.png",
+      "sha256": "29025f298867abee43d5d28ecb23bce958cdfd7d6c68619c26ab810d9b445276",
+      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
+      "index": 60
+    },
+    "generated-enemy-worm-sand": {
+      "url": "/assets/generated/starter/monster-worm-sand.png",
+      "sha256": "963d96f01a7f036efd289d61b243a9808d9fcb6fce3b9887929ccaac1234b52b",
+      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
+      "index": 61
+    },
+    "generated-enemy-ant-soldier": {
+      "url": "/assets/generated/starter/monster-ant-soldier.png",
+      "sha256": "60239109bf9ea9be0c7d54614c00b5b119d19ef9c3e658cf4c6cba72534afe38",
+      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
+      "index": 62
+    },
+    "generated-enemy-wolf-grey": {
+      "url": "/assets/generated/starter/monster-wolf-grey.png",
+      "sha256": "85181a503fec87c0574357b5c905705d6118229ff64f425af01c4f18a97b65a6",
+      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
+      "index": 63
+    },
+    "generated-enemy-wolf-dire": {
+      "url": "/assets/generated/starter/monster-wolf-dire.png",
+      "sha256": "4d6bf1f194657fb4753c21a3289c8db0e54763b1ee82fc8ed9d524fc18f65c0b",
+      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
+      "index": 64
+    },
+    "generated-enemy-boar-tusk": {
+      "url": "/assets/generated/starter/monster-boar-tusk.png",
+      "sha256": "56a63d2644d0bc422ed0e35f3d383936f0cab19a4e74e8a1eeb6fd72be2dcdbb",
+      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
+      "index": 65
+    },
+    "generated-enemy-bear-brown": {
+      "url": "/assets/generated/starter/monster-bear-brown.png",
+      "sha256": "cd4d9cedff1031a260ee363a4c1d3199e4ce4bb87c0bebc7a9830e7351f3025d",
+      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
+      "index": 66
+    },
+    "generated-enemy-tiger-saber": {
+      "url": "/assets/generated/starter/monster-tiger-saber.png",
+      "sha256": "35fb12a2be8b4f01f39cc8917dfab603840d8f6be82e02237bdef637eb51d19e",
+      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
+      "index": 67
+    },
+    "generated-enemy-rat-giant": {
+      "url": "/assets/generated/starter/monster-rat-giant.png",
+      "sha256": "e2658dd7b43114274a2c843b0acc531feaa11813fb4ab76d902e4f84c2729a11",
+      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
+      "index": 68
+    },
+    "generated-enemy-bird-hawk": {
+      "url": "/assets/generated/starter/monster-bird-hawk.png",
+      "sha256": "49693ccc36172d608fe3f0b5a68ee59a2c917810277ebb48731568754959bf2c",
+      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
+      "index": 69
+    },
+    "generated-enemy-snake-viper": {
+      "url": "/assets/generated/starter/monster-snake-viper.png",
+      "sha256": "fa7a65a08e6ebcba1922be3686c0b1f2e0ebba1bcd51952da676954eb3296139",
+      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
+      "index": 70
+    },
+    "generated-enemy-cat-shadow": {
+      "url": "/assets/generated/starter/monster-cat-shadow.png",
+      "sha256": "b837d416e3d4c68f26b255035a8155d1a42563c0ffcdc475aeb14b7358b2db2f",
+      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
+      "index": 71
+    },
+    "generated-enemy-goat-mountain": {
+      "url": "/assets/generated/starter/monster-goat-mountain.png",
+      "sha256": "3d6b652ec69ffa7395a25996260266bbf69f528205423a6a1c0a734edd84754f",
+      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
+      "index": 72
+    },
+    "generated-enemy-crab-rock": {
+      "url": "/assets/generated/starter/monster-crab-rock.png",
+      "sha256": "9e63aaf554dba436a8b558f3bde66b2a10add33c31fa15b50056bd7fd67e081a",
+      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
+      "index": 73
+    },
+    "generated-enemy-hound-hell": {
+      "url": "/assets/generated/starter/monster-hound-hell.png",
+      "sha256": "1b7eb38c6e95a936814a39b19216fceab907382001b3831564a17b194df53b17",
+      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
+      "index": 74
+    },
+    "generated-enemy-ape-stone": {
+      "url": "/assets/generated/starter/monster-ape-stone.png",
+      "sha256": "ba2fba74750a7e941b5ee9670ee549d2fa9c2457e0cc9eadd6cf7c4f1f03a36f",
+      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
+      "index": 75
+    },
+    "generated-enemy-deer-forest": {
+      "url": "/assets/generated/starter/monster-deer-forest.png",
+      "sha256": "9f0d2b75e36069a230b851646b77fc8c013bd87937d36ecc5c1ece8e7c6a5811",
+      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
+      "index": 76
+    },
+    "generated-enemy-skeleton-bone": {
+      "url": "/assets/generated/starter/monster-skeleton-bone.png",
+      "sha256": "b9ed653bcd1ccf61d646f77098e8d27958afdd42680f55aab029733dc1ba621d",
+      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
+      "index": 77
+    },
+    "generated-enemy-skeleton-archer": {
+      "url": "/assets/generated/monsters/corrected/skeleton-archer.png",
+      "sha256": "51269103b5b6bac393a287f3fb7756bbd66d972b5d09ce5fa1708abcffae9f4a",
+      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
+      "index": 78
+    },
+    "generated-enemy-skeleton-knight": {
+      "url": "/assets/generated/starter/monster-skeleton-knight.png",
+      "sha256": "13e5092396974451c400f4cd0f90bedbf186b3ac5be20b73a9382bf60e23fa07",
+      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
+      "index": 79
+    },
+    "generated-enemy-zombie-rot": {
+      "url": "/assets/generated/starter/monster-zombie-rot.png",
+      "sha256": "43af75c7d780be34aff75bb9046110396b1ee8fa4046b58e9a09bfebbf7b9e20",
+      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
+      "index": 80
+    },
+    "generated-enemy-ghoul-grave": {
+      "url": "/assets/generated/starter/monster-ghoul-grave.png",
+      "sha256": "0e1f72cf81cc2c5ea18f6d4630507043728350789d82a89e2c5c6b99ec4efb43",
+      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
+      "index": 81
+    },
+    "generated-enemy-ghost-pale": {
+      "url": "/assets/generated/starter/monster-ghost-pale.png",
+      "sha256": "2404c172bb67ba16a3b8efeab4d6e22314efa5edcdcf99d0d9f13e32aa19ea2f",
+      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
+      "index": 82
+    },
+    "generated-enemy-wraith-dark": {
+      "url": "/assets/generated/starter/monster-wraith-dark.png",
+      "sha256": "b17db0f971cad3264af2f23e322497cb51e4de7ff00c7dc143bdf37e8d40654c",
+      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
+      "index": 83
+    },
+    "generated-enemy-lich-frost": {
+      "url": "/assets/generated/starter/monster-lich-frost.png",
+      "sha256": "4ed519d841897b24b562248a530850235a6e53b9d045c299800eede094e0a363",
+      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
+      "index": 84
+    },
+    "generated-enemy-mummy-bandage": {
+      "url": "/assets/generated/starter/monster-mummy-bandage.png",
+      "sha256": "cbc824d6d9777ac38fcd7e48053f1a9f48d64ad01caad2d8d52017c14c388a21",
+      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
+      "index": 85
+    },
+    "generated-enemy-banshee-wail": {
+      "url": "/assets/generated/starter/monster-banshee-wail.png",
+      "sha256": "0fa7d1f77019e055e3e8c61e3ccf3873de4c5a2b034366c5463399b30e65dc78",
+      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
+      "index": 86
+    },
+    "generated-enemy-revenant-vengeful": {
+      "url": "/assets/generated/starter/monster-revenant-vengeful.png",
+      "sha256": "40b76529d8ffcc593c8b0d9cb1fcf9869b2761e9cea4269e882ac81c1d685276",
+      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
+      "index": 87
+    },
+    "generated-enemy-bonepile-crawler": {
+      "url": "/assets/generated/starter/monster-bonepile-crawler.png",
+      "sha256": "d67b28263492802c800b194f50d080d577f8e8a41d21f4372e915946b11ba151",
+      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
+      "index": 88
+    },
+    "generated-enemy-spirit-fire": {
+      "url": "/assets/generated/monsters/corrected/spirit-fire.png",
+      "sha256": "a8594526daef4eba373259656e96112b4168eb4f52b566858cc4f314d92c4fc8",
+      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
+      "index": 89
+    },
+    "generated-enemy-spirit-water": {
+      "url": "/assets/generated/monsters/corrected/spirit-water.png",
+      "sha256": "2884b1d4a289af9e39e2e14fb172e5f428eb64f795c17dc2b0026b4240c39763",
+      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
+      "index": 90
+    },
+    "generated-enemy-spirit-earth": {
+      "url": "/assets/generated/monsters/corrected/spirit-earth.png",
+      "sha256": "38d808de93382c5b0e31c371557318af7bcbde8737ee9c04c1d061b4bd3e8872",
+      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
+      "index": 91
+    },
+    "generated-enemy-spirit-wind": {
+      "url": "/assets/generated/starter/monster-spirit-wind.png",
+      "sha256": "342c06bef8c7fbaf5ac1bc1d206210cc04155d2673038db7701acd19fb579e03",
+      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
+      "index": 92
+    },
+    "generated-enemy-spirit-light": {
+      "url": "/assets/generated/starter/monster-spirit-light.png",
+      "sha256": "68cfa7d361880ac2b46925545f39b84b695395c6e2a705655ec736f0e74becc8",
+      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
+      "index": 93
+    },
+    "generated-enemy-spirit-dark": {
+      "url": "/assets/generated/starter/monster-spirit-dark.png",
+      "sha256": "a4637d388a937586585224154e9b280ccfa9f76f38f0eb4bd51e516769889405",
+      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
+      "index": 94
+    },
+    "generated-enemy-wisp-blue": {
+      "url": "/assets/generated/monsters/corrected/wisp-blue.png",
+      "sha256": "9cdea5ebd6e17209b07f797fc81f08afa0185f892d6e169c82aa49400c5e6fc7",
+      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
+      "index": 95
+    },
+    "generated-enemy-sylph-air": {
+      "url": "/assets/generated/starter/monster-sylph-air.png",
+      "sha256": "c2fff22669d93e9ca28f8868d36ed92ca8338769112a1930a4d4dee0c10ba1f8",
+      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
+      "index": 96
+    },
+    "generated-enemy-undine-sea": {
+      "url": "/assets/generated/starter/monster-undine-sea.png",
+      "sha256": "6f2002dcccc7ca314f16cfcc2ab69fdfc48edb243736851494abf7f8102d43ce",
+      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
+      "index": 97
+    },
+    "generated-enemy-salamander-flame": {
+      "url": "/assets/generated/starter/monster-salamander-flame.png",
+      "sha256": "90e2e4dd7f20acf7cd4ef62db61a14ee2c7dfcb3fdac2eadb2395638357273a5",
+      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
+      "index": 98
+    },
+    "generated-enemy-golem-stone": {
+      "url": "/assets/generated/starter/monster-golem-stone.png",
+      "sha256": "c43817ec110253203d65c4be9f7d4848f8073286912489db6e3c749ef23277cd",
+      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
+      "index": 99
+    },
+    "generated-enemy-golem-iron": {
+      "url": "/assets/generated/starter/monster-golem-iron.png",
+      "sha256": "04f759b35acd59d005b31aa912557814e135e5dc69fbc053d40a49fc8654e5a3",
+      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
+      "index": 100
+    },
+    "generated-enemy-golem-clay": {
+      "url": "/assets/generated/starter/monster-golem-clay.png",
+      "sha256": "d7bebc65b8975d6d2f059944f47e041f385e934a0e2ebb2e712f17f99e135320",
+      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
+      "index": 101
+    },
+    "generated-enemy-golem-crystal": {
+      "url": "/assets/generated/starter/monster-golem-crystal.png",
+      "sha256": "a214a57fa4067fb106f3826e3bf394f08bf69204029ecf82d058affdf7947451",
+      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
+      "index": 102
+    },
+    "generated-enemy-armor-living": {
+      "url": "/assets/generated/starter/monster-armor-living.png",
+      "sha256": "379f38d551c53f755cb61184eaa6f3cddf111112c7a4722cb45c613b8e7a9c99",
+      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
+      "index": 103
+    },
+    "generated-enemy-sword-flying": {
+      "url": "/assets/generated/starter/monster-sword-flying.png",
+      "sha256": "75877631937027a8f8f4e2a69079990ec3582af06d6c78b38ea4db3413a36aa5",
+      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
+      "index": 104
+    },
+    "generated-enemy-mimic-chest": {
+      "url": "/assets/generated/starter/monster-mimic-chest.png",
+      "sha256": "4922ba8fce231515c60addc9a436a2831cdd8af16b3375c98e27222af55fa021",
+      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
+      "index": 105
+    },
+    "generated-enemy-scarecrow-field": {
+      "url": "/assets/generated/starter/monster-scarecrow-field.png",
+      "sha256": "9f7c058516ca88da3892e9a4c9f9be142781fec2966015bd8cc90062d5c8f840",
+      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
+      "index": 106
+    },
+    "generated-enemy-puppet-string": {
+      "url": "/assets/generated/starter/monster-puppet-string.png",
+      "sha256": "b094c96368641d06b65b070339886527fd53c2ad089cb9095ea377ae2f81f550",
+      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
+      "index": 107
+    },
+    "generated-enemy-totem-cursed": {
+      "url": "/assets/generated/starter/monster-totem-cursed.png",
+      "sha256": "6efbd0ebde0edd379987569e7ac14a7b617d1fb86c2cf5217a064599f4da97df",
+      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
+      "index": 108
+    },
+    "generated-enemy-goblin-scout": {
+      "url": "/assets/generated/starter/monster-goblin-scout.png",
+      "sha256": "daa3d1f9e4e440846fa1ce711e5db3a98e98e02961c19d2bee0243d99472ae99",
+      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
+      "index": 109
+    },
+    "generated-enemy-goblin-brute": {
+      "url": "/assets/generated/starter/monster-goblin-brute.png",
+      "sha256": "4eab5389019ef5c7b6cf0e69518f70465cba5b2b735bbaeed96964dce2dc4354",
+      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
+      "index": 110
+    },
+    "generated-enemy-orc-warrior": {
+      "url": "/assets/generated/starter/monster-orc-warrior.png",
+      "sha256": "edae127646f35d58d7dea816fe027561eb06de9838e80389ae1c7e7097dbe426",
+      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
+      "index": 111
+    },
+    "generated-enemy-orc-shaman": {
+      "url": "/assets/generated/monsters/corrected/orc-shaman.png",
+      "sha256": "d28397017631b6b7f14e1fc5af42782debded35a05142516cff5b10bc3395ec8",
+      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
+      "index": 112
+    },
+    "generated-enemy-kobold-digger": {
+      "url": "/assets/generated/starter/monster-kobold-digger.png",
+      "sha256": "42329401f016dc4d1a59f38ca753dddd44a3fda52264b8873b8c5693e0129025",
+      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
+      "index": 113
+    },
+    "generated-enemy-bandit-mask": {
+      "url": "/assets/generated/starter/monster-bandit-mask.png",
+      "sha256": "e7a01318364d33f70567d844423a159cd1f12180250ab82cca6610f32ce23bb0",
+      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
+      "index": 114
+    },
+    "generated-enemy-mage-rogue": {
+      "url": "/assets/generated/starter/monster-mage-rogue.png",
+      "sha256": "ed47ed44de851730bf1a2ab38c93c26778ee54078c1cd56c1971752d4225995d",
+      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
+      "index": 115
+    },
+    "generated-enemy-knight-fallen": {
+      "url": "/assets/generated/starter/monster-knight-fallen.png",
+      "sha256": "f95687e9f8f8a44e7eb1d89c7191660c502102f5b80521a043d2337ab5cf4c72",
+      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
+      "index": 116
+    },
+    "generated-enemy-lizardman-spear": {
+      "url": "/assets/generated/starter/monster-lizardman-spear.png",
+      "sha256": "f567e4f034da95c48c017d72441f8eb68b29e56c02a41d7d766957dd106603f3",
+      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
+      "index": 117
+    },
+    "generated-enemy-harpy-cliff": {
+      "url": "/assets/generated/starter/monster-harpy-cliff.png",
+      "sha256": "858765c3823c9736d6cc2f7dd3de2881c7b998a1387121c83cf9a71701d9508c",
+      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
+      "index": 118
+    },
+    "generated-enemy-minotaur-maze": {
+      "url": "/assets/generated/starter/monster-minotaur-maze.png",
+      "sha256": "f275e4c11a8606ed7ecf3ebe4fb46d197d1792c45f4294aa5d3afe7b668050ac",
+      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
+      "index": 119
+    },
+    "generated-enemy-centaur-plains": {
+      "url": "/assets/generated/starter/monster-centaur-plains.png",
+      "sha256": "9603231b0bfc47aaee19b6633c4a777de33c4e837dba24a7afd93e6143777d5e",
+      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
+      "index": 120
+    },
+    "generated-enemy-troll-cave": {
+      "url": "/assets/generated/starter/monster-troll-cave.png",
+      "sha256": "1b8d21c5340ff20d5dcf218faf52479aab2ec40700285586a7fbbdae2958d000",
+      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
+      "index": 121
+    },
+    "generated-enemy-ogre-club": {
+      "url": "/assets/generated/starter/monster-ogre-club.png",
+      "sha256": "cea402396bc17ceeeeeb00bb6874340061d1a5976b67828a4304e5a8d5eb722c",
+      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
+      "index": 122
+    },
+    "generated-enemy-imp-mischief": {
+      "url": "/assets/generated/starter/monster-imp-mischief.png",
+      "sha256": "4f0e8a055e6417014849d85a24c4feaa1a508b82b89d0cc00419bc7bbe095aec",
+      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
+      "index": 123
+    },
+    "generated-enemy-fish-piranha": {
+      "url": "/assets/generated/starter/monster-fish-piranha.png",
+      "sha256": "0f5fb73bcf629c7b7897016b67a7f280f483617c142a36c8ebe5c7a94aa6bda8",
+      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
+      "index": 124
+    },
+    "generated-enemy-squid-deep": {
+      "url": "/assets/generated/starter/monster-squid-deep.png",
+      "sha256": "aad7541414437e480c0ab8b1852e5ca5b6a35d4612918955c7d84b4e9ca29e75",
+      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
+      "index": 125
+    },
+    "generated-enemy-shark-land": {
+      "url": "/assets/generated/starter/monster-shark-land.png",
+      "sha256": "a75f0c5db8d33f7c962f5b6af3182093f958ce5ee124865e4e816b6eb3606dbd",
+      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
+      "index": 126
+    },
+    "generated-enemy-eel-electric": {
+      "url": "/assets/generated/starter/monster-eel-electric.png",
+      "sha256": "f3b400f41763ba6981761cf3075c70af87eb0e09859698f1f60cfb4560a6015e",
+      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
+      "index": 127
+    },
+    "generated-enemy-griffin-sky": {
+      "url": "/assets/generated/starter/monster-griffin-sky.png",
+      "sha256": "f14d449fc666ca4c91a883f6152cb85ad35fd00caafc80b1120db4b106f37e31",
+      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
+      "index": 128
+    },
+    "generated-enemy-wyvern-cliff": {
+      "url": "/assets/generated/starter/monster-wyvern-cliff.png",
+      "sha256": "3c4a8d634412a7dcd5597c54ac7230a91408278b6c0d0f41888aa87d051a7026",
+      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
+      "index": 129
+    },
+    "generated-enemy-roc-giant": {
+      "url": "/assets/generated/starter/monster-roc-giant.png",
+      "sha256": "b1602fe6ab3bc63d20ce27dc0fed23c5834693a2d38e925f686712852eacefa7",
+      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
+      "index": 130
+    },
+    "generated-enemy-gargoyle-stone": {
+      "url": "/assets/generated/starter/monster-gargoyle-stone.png",
+      "sha256": "be6f26e80c7e4ba149305a280404871ec9b5fa824b22994f7995b9455a18eefa",
+      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
+      "index": 131
+    },
+    "generated-enemy-phoenix-rebirth": {
+      "url": "/assets/generated/starter/monster-phoenix-rebirth.png",
+      "sha256": "57cedab653a43b46bda0ab6cb8d653ed271b21cd2c00849668b64e1e9b890cb9",
+      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
+      "index": 132
+    },
+    "generated-enemy-dragon-whelp": {
+      "url": "/assets/generated/starter/monster-dragon-whelp.png",
+      "sha256": "037483d3c09f3165b3f4b6f5345fe7e06cce71617545c39768ec814563e30cbf",
+      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
+      "index": 133
+    },
+    "generated-enemy-dragon-red": {
+      "url": "/assets/generated/starter/monster-dragon-red.png",
+      "sha256": "a2d46b5113ac04e2fc57782de685f9d9ecee81aabd2dc2fbb76613f0292c7a03",
+      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
+      "index": 134
+    },
+    "generated-enemy-dragon-blue": {
+      "url": "/assets/generated/starter/monster-dragon-blue.png",
+      "sha256": "8528bde03f60607840ecc0a762c8f214c5b38d4dcb25e3851b41f0161809825c",
+      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
+      "index": 135
+    },
+    "generated-enemy-dragon-bone": {
+      "url": "/assets/generated/starter/monster-dragon-bone.png",
+      "sha256": "1c557a14cf769d1ee2bd150dfa95d5f75c052dae3f05f366f4858d61a6a1fc3f",
+      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
+      "index": 136
+    },
+    "generated-enemy-hydra-three": {
+      "url": "/assets/generated/starter/monster-hydra-three.png",
+      "sha256": "87c4c8c629efa56b05632be6abbc856586eb1be39d643be416154e084749e328",
+      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
+      "index": 137
+    },
+    "generated-enemy-behemoth-horn": {
+      "url": "/assets/generated/starter/monster-behemoth-horn.png",
+      "sha256": "5f128550ae2f54274324345af9d8bd859d87c9fb5e1e5a7e803e875adc57db53",
+      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
+      "index": 138
+    },
+    "generated-enemy-demon-lord": {
+      "url": "/assets/generated/starter/monster-demon-lord.png",
+      "sha256": "5c483c5c479167e8c6a44ea4fece8ba9f2a5e323af71e74a0d76604f9c804e4d",
+      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
+      "index": 139
+    },
+    "generated-enemy-angel-fallen": {
+      "url": "/assets/generated/starter/monster-angel-fallen.png",
+      "sha256": "6d9ffd11334d0159c7abb263e7a4f23e8e52c5509c81f991935fb4f320309027",
+      "observation": "output/evidence/monster-catalog/visual/observations-07.json",
+      "index": 140
+    },
+    "generated-enemy-eye-floating": {
+      "url": "/assets/generated/starter/monster-eye-floating.png",
+      "sha256": "df2a4af87d86cbb686dfaf191c2cbe3d74d700d0719ceb63f45c78d22a4c4501",
+      "observation": "output/evidence/monster-catalog/visual/observations-07.json",
+      "index": 141
+    },
+    "generated-enemy-plant-carnivore": {
+      "url": "/assets/generated/starter/monster-plant-carnivore.png",
+      "sha256": "3b281214c36d051050a6ae7a869715c26420096b6a4db28b7c74419c64cf17e8",
+      "observation": "output/evidence/monster-catalog/visual/observations-07.json",
+      "index": 142
+    },
+    "easyrpg-monster-hornet": {
+      "url": "/assets/easyrpg/monster/Hornet.png",
+      "sha256": "d4160b37014263d7a7b8e4f849e37e8a04b57ea9c25c8da184b96c29d51cb1ed",
+      "observation": "output/evidence/monster-catalog/visual/observations-07.json",
+      "index": 143
+    },
+    "scarloxy-monster-atrox": {
+      "url": "/assets/scarloxy/scarloxy-monster-atrox.png",
+      "sha256": "54fd48b7ca3e0a67b1c7b5c7d459caeb3687661c8e0f02496d61a020852c132a",
+      "observation": "output/evidence/monster-catalog/visual/observations-07.json",
+      "index": 144
+    },
+    "scarloxy-monster-charmadillo": {
+      "url": "/assets/scarloxy/scarloxy-monster-charmadillo.png",
+      "sha256": "61a091b82f612a8729a7cd2697e978bb52902f818ab3db3db1551bccc748a22a",
+      "observation": "output/evidence/monster-catalog/visual/observations-07.json",
+      "index": 145
+    },
+    "scarloxy-monster-cindrill": {
+      "url": "/assets/scarloxy/scarloxy-monster-cindrill.png",
+      "sha256": "b89bf95e0a50760a760b9b1f422d0096142da7c4b9077d47f5706bfbb4af9989",
+      "observation": "output/evidence/monster-catalog/visual/observations-07.json",
+      "index": 146
+    },
+    "scarloxy-monster-cleaf": {
+      "url": "/assets/scarloxy/scarloxy-monster-cleaf.png",
+      "sha256": "d46420cfa87bfa1870e504b95536ac7398228dcd67e5a4a56f6935f0145f0d49",
+      "observation": "output/evidence/monster-catalog/visual/observations-07.json",
+      "index": 147
+    },
+    "scarloxy-monster-draem": {
+      "url": "/assets/scarloxy/scarloxy-monster-draem.png",
+      "sha256": "db30dff1aaae347bc67c23cd392cbd284435d24109948cf6996109719d5761aa",
+      "observation": "output/evidence/monster-catalog/visual/observations-07.json",
+      "index": 148
+    },
+    "scarloxy-monster-emberkit": {
+      "url": "/assets/scarloxy/scarloxy-monster-emberkit.png",
+      "sha256": "90108d6da9de880b10c48f6502c65ef1ac192c696c261b45e83f349b53fb1332",
+      "observation": "output/evidence/monster-catalog/visual/observations-07.json",
+      "index": 149
+    },
+    "scarloxy-monster-finiette": {
+      "url": "/assets/scarloxy/scarloxy-monster-finiette.png",
+      "sha256": "35d44f4191b02c3d761571e7a604467d664f92c06dfdc7ec93359eb3602b3178",
+      "observation": "output/evidence/monster-catalog/visual/observations-07.json",
+      "index": 150
+    },
+    "scarloxy-monster-finsta": {
+      "url": "/assets/scarloxy/scarloxy-monster-finsta.png",
+      "sha256": "780da22c7443af3363fa487e393f3041674b42585a26f5fdb8603e96a0dc9e75",
+      "observation": "output/evidence/monster-catalog/visual/observations-07.json",
+      "index": 151
+    },
+    "scarloxy-monster-friolera": {
+      "url": "/assets/scarloxy/scarloxy-monster-friolera.png",
+      "sha256": "b984a6312f9f0c1e0b07286b8c280f969248e36645967fbe6bd0f31d73078c06",
+      "observation": "output/evidence/monster-catalog/visual/observations-07.json",
+      "index": 152
+    },
+    "scarloxy-monster-gulfin": {
+      "url": "/assets/scarloxy/scarloxy-monster-gulfin.png",
+      "sha256": "352700991b945775eb988e55d590ad2671a7dc5b14a6b11ce882666885d71708",
+      "observation": "output/evidence/monster-catalog/visual/observations-07.json",
+      "index": 153
+    },
+    "scarloxy-monster-ivieron": {
+      "url": "/assets/scarloxy/scarloxy-monster-ivieron.png",
+      "sha256": "52c7c8fbd536240434768443e2812886781d5f0b4b2734107a949b16bca463f0",
+      "observation": "output/evidence/monster-catalog/visual/observations-07.json",
+      "index": 154
+    },
+    "scarloxy-monster-jacana": {
+      "url": "/assets/scarloxy/scarloxy-monster-jacana.png",
+      "sha256": "02c6e7fe6d0a0113b41432cd0cb7e3c2779db70347b13475a89cbfbd852c0c45",
+      "observation": "output/evidence/monster-catalog/visual/observations-07.json",
+      "index": 155
+    },
+    "scarloxy-monster-larvea": {
+      "url": "/assets/scarloxy/scarloxy-monster-larvea.png",
+      "sha256": "2a6548d19b28fe668f2cd92b405f20fbfc5a4aef993f459911afb4e055fc5dce",
+      "observation": "output/evidence/monster-catalog/visual/observations-07.json",
+      "index": 156
+    },
+    "scarloxy-monster-mossling": {
+      "url": "/assets/scarloxy/scarloxy-monster-mossling.png",
+      "sha256": "4a00a487dcd63cfda19fa16890b42a62472847d6b464a04643420fb8f8da4253",
+      "observation": "output/evidence/monster-catalog/visual/observations-07.json",
+      "index": 157
+    },
+    "scarloxy-monster-pluma": {
+      "url": "/assets/scarloxy/scarloxy-monster-pluma.png",
+      "sha256": "07342aa89f3d76dbb4d010a722c628c683679840a0242611708a01b6393f53db",
+      "observation": "output/evidence/monster-catalog/visual/observations-07.json",
+      "index": 158
+    },
+    "scarloxy-monster-plumette": {
+      "url": "/assets/scarloxy/scarloxy-monster-plumette.png",
+      "sha256": "d9eb593b2db7216dca3c65601360d3e5a1cd0466c3c67510e71703aa362a3400",
+      "observation": "output/evidence/monster-catalog/visual/observations-07.json",
+      "index": 159
+    },
+    "scarloxy-monster-pouch": {
+      "url": "/assets/scarloxy/scarloxy-monster-pouch.png",
+      "sha256": "3ef52cc99e6ce108d649b9b17b729d574c15261fcf02471b071c549838fe6c54",
+      "observation": "output/evidence/monster-catalog/visual/observations-07.json",
+      "index": 160
+    },
+    "scarloxy-monster-puddlup": {
+      "url": "/assets/scarloxy/scarloxy-monster-puddlup.png",
+      "sha256": "b4d201db77d8bc9b08a4b832fbf182084153a4b9fe184a1e4ca15c39932b7adb",
+      "observation": "output/evidence/monster-catalog/visual/observations-07.json",
+      "index": 161
+    },
+    "scarloxy-monster-sparchu": {
+      "url": "/assets/scarloxy/scarloxy-monster-sparchu.png",
+      "sha256": "6ca146a7fd061197c1141272b433e8c99da6c0bc682a529dc52b7a6ef5bc9149",
+      "observation": "output/evidence/monster-catalog/visual/observations-07.json",
+      "index": 162
+    }
+  }
+}

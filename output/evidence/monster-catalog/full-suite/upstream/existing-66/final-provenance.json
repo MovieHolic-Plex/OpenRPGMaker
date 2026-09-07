@@ -1,0 +1,25 @@
+{
+  "baselineRevision": "142db78e9eb3cd762bacd63cb0324c709392f6ed",
+  "frozenRevision": "d932aa66b322412929d04a43af9f7f2b228f2884",
+  "selectedTestsUnchangedBetweenRevisions": 66,
+  "postRunSourceAudits": {
+    "/tmp/st_01a07849-upstream": {
+      "verifiedFileCount": 4982,
+      "modified": [],
+      "missing": []
+    },
+    "/dev/shm/st_01a079-existing/pristine": {
+      "verifiedFileCount": 4982,
+      "modified": [],
+      "missing": []
+    }
+  },
+  "supportingFilesUnchangedBetweenRevisions": {
+    "src/editor/editActivityLog.ts": true,
+    "src/editor/panels/eventEditor/modal.ts": true,
+    "src/project/supabaseProjectConfig.ts": true,
+    "src/editor/panels/aiStickyChecklist.ts": true,
+    "test/fakeDom.ts": true
+  },
+  "frozenAggregateSHA256": "8602e04554739db68bb932b1309e08dbd53fd1447c81cc9485d8245060eb11eb"
+}

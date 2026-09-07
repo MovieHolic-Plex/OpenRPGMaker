@@ -1,0 +1,107 @@
+{
+  "scenarioId": "monster-catalog",
+  "projectPath": "output/evidence/monster-catalog/runtime-project.json",
+  "seed": 1,
+  "viewport": {
+    "width": 1024,
+    "height": 768
+  },
+  "errors": [],
+  "beats": [
+    {
+      "index": 0,
+      "id": "title",
+      "note": "Load the exported, remotely saved monster QA project.",
+      "shot": null,
+      "failures": [],
+      "state": null,
+      "actions": []
+    },
+    {
+      "index": 1,
+      "id": "goblin-battle",
+      "note": "The real saved goblin enemy appears through player.html, without editor metadata or shell.",
+      "shot": "02-goblin-battle.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 10,
+        "y": 8,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Enter"
+        },
+        {
+          "kind": "waitForRuntime"
+        },
+        {
+          "kind": "waitFor",
+          "testid": "battle-scene",
+          "state": "present"
+        },
+        {
+          "kind": "waitFor",
+          "testid": "actor-command-attack",
+          "state": "present",
+          "timeoutMs": 30000
+        }
+      ],
+      "battlers": {
+        "skin": "rm2000",
+        "directorStep": "command",
+        "field": {
+          "top": 24,
+          "bottom": 564,
+          "left": 32,
+          "right": 992,
+          "width": 960,
+          "height": 540
+        },
+        "enemyGroup": {
+          "top": 96,
+          "bottom": 564,
+          "left": 32,
+          "right": 992,
+          "width": 960,
+          "height": 468
+        },
+        "enemies": [
+          {
+            "id": "enemy-1",
+            "node": {
+              "top": 99,
+              "bottom": 459,
+              "left": 362,
+              "right": 662,
+              "width": 300,
+              "height": 360
+            },
+            "image": {
+              "top": 100,
+              "bottom": 459,
+              "left": 362,
+              "right": 662,
+              "width": 301,
+              "height": 359
+            },
+            "name": {
+              "top": 0,
+              "bottom": 0,
+              "left": 0,
+              "right": 0,
+              "width": 0,
+              "height": 0
+            }
+          }
+        ],
+        "allies": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+[
+  {
+    "resource": "/home/main/.herdr/worktrees/rpg-zzu/worktree-clear-harbor-3da2/.vite-cache/shop-decision-player-5JheJp",
+    "registeredAt": "2026-09-06T21:27:13.144Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:28:08.652Z"
+  },
+  {
+    "resource": "http://127.0.0.1:39657",
+    "registeredAt": "2026-09-06T21:27:39.308Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:28:08.643Z"
+  },
+  {
+    "resource": "chromium",
+    "registeredAt": "2026-09-06T21:27:39.657Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:28:08.641Z"
+  },
+  {
+    "resource": "economy-1024x768:context",
+    "registeredAt": "2026-09-06T21:27:39.914Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:28:08.456Z"
+  },
+  {
+    "resource": "economy-1024x768:page",
+    "registeredAt": "2026-09-06T21:27:40.068Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:28:08.418Z"
+  },
+  {
+    "resource": "economy-1024x768:cdp",
+    "registeredAt": "2026-09-06T21:27:48.943Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:28:08.296Z"
+  },
+  {
+    "resource": "economy-1024x768:heap-read-handle",
+    "registeredAt": "2026-09-06T21:27:52.279Z",
+    "closed": true,
+    "closedAt": "2026-09-06T21:28:08.181Z"
+  }
+]

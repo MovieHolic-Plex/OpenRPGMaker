@@ -1,0 +1,169 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiAskRetainedDraft.test.ts test/aiNewGoalDraftRetirement.test.ts test/aiNewGoalEarlyOwnership.test.ts test/aiOutcomeApplyPolicy.test.ts test/toolSchemaProviderCompat.test.ts test/verificationPlanAtomicity.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86
+
+ ✓ test/toolSchemaProviderCompat.test.ts (73 tests) 172ms
+ ✓ test/aiNewGoalDraftRetirement.test.ts (13 tests) 22035ms
+   ✓ new goal with wiki entry failure must not apply the cancelled prior goal draft  1025ms
+   ✓ new goal with intent entry failure must not apply the cancelled prior goal draft  1137ms
+   ✓ retires payload before wiki entry and cannot carry it through resume or a disjoint write  2108ms
+   ✓ retires payload before intent entry and cannot carry it through resume or a disjoint write  2012ms
+   ✓ retires payload before success entry and cannot carry it through resume or a disjoint write  1965ms
+   ✓ cancels the new owner at wiki without retaining prior authority or payload  1873ms
+   ✓ cancels the new owner at intent without retaining prior authority or payload  1912ms
+   ✓ uses the authoritative baseline, detached=false, not the retired draft or an unrelated store  1117ms
+   ✓ uses the authoritative baseline, detached=true, not the retired draft or an unrelated store  1060ms
+   ✓ keeps explicit Ask precedence over new-goal and genuinely resumes the retained draft exactly once  1476ms
+   ✓ archives applied-plus-pending history before rebase, preserves applied content and only applies new disjoint work  3745ms
+   ✓ still applies current successful proposals on a new-goal authoring error exactly once  1504ms
+   ✓ retires the old draft but preserves an actual current-owner wiki apply before checkpoint failure  1101ms
+ ✓ test/aiNewGoalEarlyOwnership.test.ts (16 tests) 13766ms
+   ✓ host new-goal early ownership > wiki boundary > archives real satisfaction before failure  762ms
+   ✓ host new-goal early ownership > wiki boundary > archives real satisfaction before cancel-in-boundary  763ms
+   ✓ host new-goal early ownership > wiki boundary > archives real satisfaction before already-aborted  784ms
+   ✓ host new-goal early ownership > intent boundary > archives real satisfaction before failure  767ms
+   ✓ host new-goal early ownership > intent boundary > archives real satisfaction before cancel-in-boundary  822ms
+   ✓ host new-goal early ownership > intent boundary > archives real satisfaction before already-aborted  803ms
+   ✓ host new-goal early ownership > archives once across repeated failed entries and keeps history immutable through later assessment and withdrawal  1839ms
+   ✓ host new-goal early ownership > captures the failed new owner's pre-await baseline rather than the old request or a later resume  1356ms
+   ✓ host new-goal early ownership > retains the current assessment for ask without new host authority  550ms
+   ✓ host new-goal early ownership > retains the current assessment for inferred-question without new host authority  566ms
+   ✓ host new-goal early ownership > retains the current assessment for model-reset without new host authority  618ms
+   ✓ host new-goal early ownership > retains the current assessment for model-continuation without new host authority  539ms
+   ✓ host new-goal early ownership > retains the current assessment for ask-new-goal without new host authority  507ms
+   ✓ host new-goal early ownership > does not let a model question classification undo explicit host new-goal ownership  737ms
+   ✓ host new-goal early ownership > retains genuine satisfaction and owned delivery as appropriate on same-goal failure  1230ms
+   ✓ host new-goal early ownership > retains genuine satisfaction and owned delivery as appropriate on resume failure  1121ms
+ ✓ test/aiAskRetainedDraft.test.ts (8 tests) 12889ms
+   ✓ does not apply a cancelled successful draft during explicit Ask, then resumes once  2102ms
+   ✓ does not apply a cancelled successful draft during inferred Ask, then resumes once  1855ms
+   ✓ does not apply a cancelled successful draft during inferred-plan Ask, then resumes once  1720ms
+   ✓ keeps ordinary Do auto-apply and pending/applied coexistence without replay  2587ms
+   ✓ guards ordinary Ask apply even when an executor returns retained proposal calls  743ms
+   ✓ does not milestone-apply retained acceptance work in autonomous explicit Ask  1681ms
+   ✓ does not milestone-apply retained acceptance work in autonomous inferred Ask  1654ms
+   ✓ keeps retained calls unauthorized when explicit Ask fails before intent  545ms
+ ✓ test/aiOutcomeApplyPolicy.test.ts (6 tests) 6327ms
+   ✓ settles the same verified requirement with milestone=false  1682ms
+   ✓ settles the same verified requirement with milestone=true  1153ms
+   ✓ preserves genuine blocked execution when an applied draft later verifies  1213ms
+   ✓ preserves genuine failed execution when an applied draft later verifies  1029ms
+   ✓ preserves genuine cancelled execution when an applied draft later verifies  1060ms
+ ✓ test/verificationPlanAtomicity.test.ts (108 tests) 105862ms
+   ✓ atomic verification adoption via tool > 'check_reachability' rejects changed specified args while 'passed'  727ms
+   ✓ atomic verification adoption via tool > 'check_reachability' rejects changed specified args while 'unverified'  566ms
+   ✓ atomic verification adoption via tool > 'check_reachability' rejects changed specified args while 'stale'  1008ms
+   ✓ atomic verification adoption via tool > 'run_lint' rejects changed specified args while 'passed'  685ms
+   ✓ atomic verification adoption via tool > 'run_lint' rejects changed specified args while 'unverified'  533ms
+   ✓ atomic verification adoption via tool > 'run_lint' rejects changed specified args while 'stale'  1142ms
+   ✓ atomic verification adoption via tool > 'run_scene_test' rejects changed specified args while 'passed'  579ms
+   ✓ atomic verification adoption via tool > 'run_scene_test' rejects changed specified args while 'unverified'  582ms
+   ✓ atomic verification adoption via tool > 'run_scene_test' rejects changed specified args while 'stale'  1061ms
+   ✓ atomic verification adoption via tool > 'play_walkthrough' rejects changed specified args while 'passed'  933ms
+   ✓ atomic verification adoption via tool > 'play_walkthrough' rejects changed specified args while 'unverified'  566ms
+   ✓ atomic verification adoption via tool > 'play_walkthrough' rejects changed specified args while 'stale'  1706ms
+   ✓ atomic verification adoption via tool > 'simulate_battle' rejects changed specified args while 'passed'  519ms
+   ✓ atomic verification adoption via tool > 'simulate_battle' rejects changed specified args while 'unverified'  610ms
+   ✓ atomic verification adoption via tool > 'simulate_battle' rejects changed specified args while 'stale'  1090ms
+   ✓ atomic verification adoption via tool > 'verify_quest' rejects changed specified args while 'passed'  784ms
+   ✓ atomic verification adoption via tool > 'verify_quest' rejects changed specified args while 'unverified'  830ms
+   ✓ atomic verification adoption via tool > 'verify_quest' rejects changed specified args while 'stale'  1438ms
+   ✓ atomic verification adoption via tool > 'evaluate_game_quality' rejects changed specified args while 'passed'  1482ms
+   ✓ atomic verification adoption via tool > 'evaluate_game_quality' rejects changed specified args while 'unverified'  589ms
+   ✓ atomic verification adoption via tool > 'evaluate_game_quality' rejects changed specified args while 'stale'  1885ms
+   ✓ atomic verification adoption via tool > rejects criterion-reference replacement while passed  603ms
+   ✓ atomic verification adoption via tool > rejects criterion-reference replacement while unverified  635ms
+   ✓ atomic verification adoption via tool > rejects criterion-reference replacement while stale  1192ms
+   ✓ atomic verification adoption via tool > check_reachability exact reuse preserves ownership and proof  696ms
+   ✓ atomic verification adoption via tool > run_lint exact reuse preserves ownership and proof  789ms
+   ✓ atomic verification adoption via tool > run_scene_test exact reuse preserves ownership and proof  653ms
+   ✓ atomic verification adoption via tool > run_action_combat_test exact reuse preserves ownership and proof  587ms
+   ✓ atomic verification adoption via tool > check_reachability distinct scope needs fresh proof and invalid mixed candidates add nothing  1038ms
+   ✓ atomic verification adoption via tool > run_lint distinct scope needs fresh proof and invalid mixed candidates add nothing  1299ms
+   ✓ atomic verification adoption via tool > rejects contradictory pending resolutions across same-item before either applies  568ms
+   ✓ atomic verification adoption via tool > rejects contradictory pending resolutions across later-layer before either applies  592ms
+   ✓ atomic verification adoption via tool > rejects contradictory pending resolutions across criterion before either applies  577ms
+   ✓ atomic verification adoption via tool > raw retained ID cannot bypass preflight via omitted  607ms
+   ✓ atomic verification adoption via tool > raw retained ID cannot bypass preflight via changed  632ms
+   ✓ atomic verification adoption via tool > raw retained ID cannot bypass preflight via wrong-tool  702ms
+   ✓ atomic verification adoption via tool > raw retained ID cannot bypass preflight via malformed-args  630ms
+   ✓ atomic verification adoption via tool > raw retained ID cannot bypass preflight via malformed-sibling  690ms
+   ✓ atomic verification adoption via tool > raw retained ID cannot bypass preflight via unknown-id  597ms
+   ✓ atomic verification adoption via tool > raw retained ID cannot bypass preflight via not-required  621ms
+   ✓ atomic verification adoption via tool > a resolved new sibling cannot conceal an unresolved declaration  598ms
+   ✓ atomic verification adoption via tool > compatible repeated pending resolution preserves ID, owner and targets but needs fresh execution  834ms
+   ✓ atomic verification adoption via tool > specified retained targets cannot be omitted at any proof status  4870ms
+   ✓ atomic verification adoption via tool > specified retained targets cannot be changed at any proof status  5092ms
+   ✓ atomic verification adoption via tool > exact reference reuses an accepted criterion without losing independent declarations  943ms
+   ✓ atomic verification adoption via tool > exact exact-args reuses an accepted criterion without losing independent declarations  847ms
+   ✓ atomic verification adoption via tool > rejection preserves an existing negative finding and its exact proof history  776ms
+   ✓ atomic verification adoption via tool > exact stale scene reuse retains its original initial-state ownership  1286ms
+   ✓ atomic verification adoption via tool > pending criterion-reference resolution retains owner and needs new exact execution  1078ms
+   ✓ atomic verification adoption via tool > raw declaration preflight survives invalid-id normalization  714ms
+   ✓ atomic verification adoption via tool > raw declaration preflight survives discarded-item normalization  663ms
+   ✓ atomic verification adoption via tool > raw declaration preflight survives alias-array normalization  604ms
+   ✓ atomic verification adoption via tool > a malformed new scope cannot silently reuse an unrelated accepted criterion  710ms
+   ✓ atomic verification adoption via tool > scene interaction ownership is immutable even with identical executable args  714ms
+   ✓ atomic verification adoption via planner > 'check_reachability' rejects changed specified args while 'passed'  557ms
+   ✓ atomic verification adoption via planner > 'check_reachability' rejects changed specified args while 'unverified'  582ms
+   ✓ atomic verification adoption via planner > 'check_reachability' rejects changed specified args while 'stale'  1170ms
+   ✓ atomic verification adoption via planner > 'run_lint' rejects changed specified args while 'passed'  747ms
+   ✓ atomic verification adoption via planner > 'run_lint' rejects changed specified args while 'unverified'  541ms
+   ✓ atomic verification adoption via planner > 'run_lint' rejects changed specified args while 'stale'  1239ms
+   ✓ atomic verification adoption via planner > 'run_scene_test' rejects changed specified args while 'passed'  1642ms
+   ✓ atomic verification adoption via planner > 'run_scene_test' rejects changed specified args while 'unverified'  745ms
+   ✓ atomic verification adoption via planner > 'run_scene_test' rejects changed specified args while 'stale'  1149ms
+   ✓ atomic verification adoption via planner > 'play_walkthrough' rejects changed specified args while 'passed'  923ms
+   ✓ atomic verification adoption via planner > 'play_walkthrough' rejects changed specified args while 'unverified'  568ms
+   ✓ atomic verification adoption via planner > 'play_walkthrough' rejects changed specified args while 'stale'  1783ms
+   ✓ atomic verification adoption via planner > 'simulate_battle' rejects changed specified args while 'passed'  491ms
+   ✓ atomic verification adoption via planner > 'simulate_battle' rejects changed specified args while 'unverified'  580ms
+   ✓ atomic verification adoption via planner > 'simulate_battle' rejects changed specified args while 'stale'  1157ms
+   ✓ atomic verification adoption via planner > 'verify_quest' rejects changed specified args while 'passed'  734ms
+   ✓ atomic verification adoption via planner > 'verify_quest' rejects changed specified args while 'unverified'  732ms
+   ✓ atomic verification adoption via planner > 'verify_quest' rejects changed specified args while 'stale'  1299ms
+   ✓ atomic verification adoption via planner > 'evaluate_game_quality' rejects changed specified args while 'passed'  1400ms
+   ✓ atomic verification adoption via planner > 'evaluate_game_quality' rejects changed specified args while 'unverified'  581ms
+   ✓ atomic verification adoption via planner > 'evaluate_game_quality' rejects changed specified args while 'stale'  2006ms
+   ✓ atomic verification adoption via planner > rejects criterion-reference replacement while passed  624ms
+   ✓ atomic verification adoption via planner > rejects criterion-reference replacement while unverified  591ms
+   ✓ atomic verification adoption via planner > rejects criterion-reference replacement while stale  1234ms
+   ✓ atomic verification adoption via planner > check_reachability exact reuse preserves ownership and proof  710ms
+   ✓ atomic verification adoption via planner > run_lint exact reuse preserves ownership and proof  766ms
+   ✓ atomic verification adoption via planner > run_scene_test exact reuse preserves ownership and proof  627ms
+   ✓ atomic verification adoption via planner > run_action_combat_test exact reuse preserves ownership and proof  597ms
+   ✓ atomic verification adoption via planner > check_reachability distinct scope needs fresh proof and invalid mixed candidates add nothing  917ms
+   ✓ atomic verification adoption via planner > run_lint distinct scope needs fresh proof and invalid mixed candidates add nothing  1322ms
+   ✓ atomic verification adoption via planner > rejects contradictory pending resolutions across same-item before either applies  562ms
+   ✓ atomic verification adoption via planner > rejects contradictory pending resolutions across later-layer before either applies  533ms
+   ✓ atomic verification adoption via planner > rejects contradictory pending resolutions across criterion before either applies  545ms
+   ✓ atomic verification adoption via planner > raw retained ID cannot bypass preflight via omitted  520ms
+   ✓ atomic verification adoption via planner > raw retained ID cannot bypass preflight via changed  557ms
+   ✓ atomic verification adoption via planner > raw retained ID cannot bypass preflight via wrong-tool  568ms
+   ✓ atomic verification adoption via planner > raw retained ID cannot bypass preflight via malformed-args  779ms
+   ✓ atomic verification adoption via planner > raw retained ID cannot bypass preflight via malformed-sibling  1303ms
+   ✓ atomic verification adoption via planner > raw retained ID cannot bypass preflight via unknown-id  570ms
+   ✓ atomic verification adoption via planner > raw retained ID cannot bypass preflight via not-required  545ms
+   ✓ atomic verification adoption via planner > a resolved new sibling cannot conceal an unresolved declaration  502ms
+   ✓ atomic verification adoption via planner > compatible repeated pending resolution preserves ID, owner and targets but needs fresh execution  713ms
+   ✓ atomic verification adoption via planner > specified retained targets cannot be omitted at any proof status  4341ms
+   ✓ atomic verification adoption via planner > specified retained targets cannot be changed at any proof status  4518ms
+   ✓ atomic verification adoption via planner > exact reference reuses an accepted criterion without losing independent declarations  870ms
+   ✓ atomic verification adoption via planner > exact exact-args reuses an accepted criterion without losing independent declarations  778ms
+   ✓ atomic verification adoption via planner > rejection preserves an existing negative finding and its exact proof history  654ms
+   ✓ atomic verification adoption via planner > exact stale scene reuse retains its original initial-state ownership  2418ms
+   ✓ atomic verification adoption via planner > pending criterion-reference resolution retains owner and needs new exact execution  863ms
+   ✓ atomic verification adoption via planner > raw declaration preflight survives invalid-id normalization  533ms
+   ✓ atomic verification adoption via planner > raw declaration preflight survives discarded-item normalization  579ms
+   ✓ atomic verification adoption via planner > raw declaration preflight survives alias-array normalization  609ms
+   ✓ atomic verification adoption via planner > a malformed new scope cannot silently reuse an unrelated accepted criterion  685ms
+   ✓ atomic verification adoption via planner > scene interaction ownership is immutable even with identical executable args  545ms
+
+ Test Files  6 passed (6)
+      Tests  224 passed (224)
+   Start at  01:51:39
+   Duration  116.15s (transform 9.22s, setup 0ms, collect 26.70s, tests 161.05s, environment 2ms, prepare 532ms)
+

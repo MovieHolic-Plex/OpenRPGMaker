@@ -321,8 +321,10 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     previewHost.hidden = !isPreview;
     flowHost.hidden = !isFlow;
     const nextToggle = renderViewToggle(currentMode, changeMode);
+    const restoreTabFocus = viewToggle.contains(document.activeElement);
     viewToggle.replaceWith(nextToggle);
     viewToggle = nextToggle;
+    if (restoreTabFocus) viewToggle.querySelector<HTMLElement>('[aria-selected="true"]')?.focus();
     if (isStoryboard) {
       const fresh = makeStoryboard();
       storyboardEl.replaceWith(fresh);

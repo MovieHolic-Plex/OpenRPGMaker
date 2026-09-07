@@ -1,0 +1,29 @@
+{
+  "lsp": {
+    "openwiki/editor-ai-panel.md": "no server configured for Markdown",
+    "openwiki/editor-ai-tools.md": "no server configured for Markdown",
+    "scripts/qa/ai-harness-contracts.mjs": "No diagnostics found",
+    "src/ai/assistantAcceptance.ts": "No diagnostics found",
+    "src/ai/assistantAcceptanceEvaluation.ts": "No diagnostics found",
+    "src/ai/assistantAcceptanceLedger.ts": "No diagnostics found",
+    "src/ai/assistantAcceptanceTools.ts": "No diagnostics found",
+    "src/ai/assistantSession.ts": "fresh diagnostics timed out at fixed 3000ms; application compiler passed in verified-build",
+    "src/ai/toolVerificationEvidence.ts": "No diagnostics found",
+    "test/actionAcceptanceRequirements.test.ts": "No diagnostics found",
+    "test/aiCompletionAccounting.test.ts": "No diagnostics found",
+    "test/aiOutcomeApplyPolicy.test.ts": "No diagnostics found",
+    "test/assistantDependencyRetry.test.ts": "No diagnostics found",
+    "test/assistantMultiMapSpec.test.ts": "No diagnostics found",
+    "test/assistantSessionIntent.test.ts": "No diagnostics found",
+    "test/projectWikiSession.test.ts": "No diagnostics found",
+    "test/sceneVerificationRepair.test.ts": "No diagnostics found",
+    "test/toolSchemaProviderCompat.test.ts": "No diagnostics found"
+  },
+  "verifiedAppCompiler": {
+    "command": "npm run build (first command: tsc --noEmit -p tsconfig.app.json)",
+    "exit": 0,
+    "receipt": "verified-build.receipt.json"
+  },
+  "markdownValidation": "scoped git diff --check; source/API review; no prose tests",
+  "visualReview": "image attachments unavailable to this child model; no pixel verdict"
+}

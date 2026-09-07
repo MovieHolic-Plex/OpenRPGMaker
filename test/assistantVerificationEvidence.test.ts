@@ -73,7 +73,10 @@ describe("필수 검증의 실행 성공과 통과는 별도 계약", () => {
     expect(call?.type === "tool_call" && call.result.ok).toBe(true);
     expect(result.assistantText).toContain("검증이 아직 통과되지 않았습니다");
     expect(result.assistantText).toContain(name);
-    expect(events.at(-2)).toMatchObject({ type: "assistant_message", content: result.assistantText });
+    const finalMessage = events.filter((event) => event.type === "assistant_message").at(-1);
+    expect(finalMessage).toMatchObject({ type: "assistant_message", content: result.assistantText });
+    expect(result.runOutcome).toBeDefined();
+    expect(events.at(-1)).toEqual({ type: "run_outcome", runOutcome: result.runOutcome });
   }, 30000);
 
   it("run_lint 실제 실행 결과도 ok:true를 유지한다", () => {
@@ -227,6 +230,21 @@ describe("verification ownership regression", () => {
 });
 
 describe("검증 근거의 대상과 변경 수명", () => {
+  it("reports the exact stale scope when a different destination is rechecked", () => {
+    const evidence = new ToolVerificationEvidence();
+    const frontage = { mapId: "world", targets: [{ x: 24, y: 115 }] };
+    const guide = { mapId: "world", targets: [{ x: 24, y: 116 }] };
+    const passing = { ok: true, data: { reachable: true } };
+    evidence.observe("check_reachability", frontage, passing);
+    evidence.invalidateAfterWrite();
+    evidence.observe("check_reachability", guide, passing);
+    expect(evidence.passed("check_reachability")).toBe(false);
+    expect(evidence.problems().join("\n")).toContain(JSON.stringify(["check_reachability", frontage]));
+    expect(evidence.problems().join("\n")).not.toContain(JSON.stringify(["check_reachability", guide]));
+    evidence.observe("check_reachability", frontage, passing);
+    expect(evidence.problems()).toEqual([]);
+  });
+
   it("실제 advisory 실패는 보고하며 같은 대상의 자동 재통과로 해소한다", () => {
     const evidence = new ToolVerificationEvidence();
     evidence.observe("run_lint", {}, { ok: true, ...broken }, "advisory");

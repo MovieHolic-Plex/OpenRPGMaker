@@ -146,6 +146,16 @@ describe("player deployment manifest", () => {
     });
   });
 
+  it("includes the digest-bound collector companion in browser deployment closure", async () => {
+    const fixture = await deploymentFixture({ extraArtifact: ["dependency-collector.js", "retained collector"] });
+    const files = await discoverWebPlayerBundleFiles(BUNDLE_BASE, fixture.fetchBytes);
+    expect(files.map(file => file.zipPath)).toContain("dependency-collector.js");
+    const tampered = await deploymentFixture({ extraArtifact: ["dependency-collector.js", "retained collector"], tamperedPath: "dependency-collector.js" });
+    await expect(discoverWebPlayerBundleFiles(BUNDLE_BASE, tampered.fetchBytes)).rejects.toMatchObject({ code: "bundle-integrity-mismatch" });
+    const absent = await deploymentFixture({ extraArtifact: ["dependency-collector.js", "retained collector"], unavailablePath: "dependency-collector.js" });
+    await expect(discoverWebPlayerBundleFiles(BUNDLE_BASE, absent.fetchBytes)).rejects.toMatchObject({ code: "bundle-unavailable" });
+  });
+
   it("rejects an undeclared stale chunk in the exact artifact set", async () => {
     const fixture = await deploymentFixture({ extraArtifact: ["assets/stale.js", "stale"] });
 

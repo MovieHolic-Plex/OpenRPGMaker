@@ -6,8 +6,10 @@ import type { ToolContext, ToolResult } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
 import { TILE } from "@/project/defaults/constants";
 import type { ChatResult } from "@/ai/llmClient";
+import { fixedDeclarer } from "./intentFixture";
 
 const CONFIG = {
+  authMode: "apiKey" as const,
   baseUrl: "x",
   model: "stub-model",
   liteModel: "stub-model",
@@ -189,24 +191,35 @@ describe("assistant proposal assembly move_event squash", () => {
 
 
 describe("assistant WorkPlan evidence isolation", () => {
-  it("clears successful-tool evidence when set_work_plan replaces a same-id item", () => {
+  it("clears successful-tool evidence when the main planner adopts a new goal with a same-id item", async () => {
     const project = createBlankProject();
-    const session = new AssistantSession(project, { config: CONFIG, chat: scriptedChat([]) });
+    const planArgs = {
+      goal: "타일 작업",
+      layers: [{ title: "L", items: [{ title: "A", instruction: "paint", successTools: ["paint_tiles"], mapTargets: [project.startMapId] }] }],
+    };
+    const session = new AssistantSession(project, {
+      config: CONFIG,
+      declareIntent: fixedDeclarer(),
+      chat: scriptedChat([
+        finalMsg("Context prepared."),
+        finalMsg(JSON.stringify({ action: "replan", ...planArgs, goal: "다른 맵 작업" })),
+      ]),
+    });
+    // Capture real original context before exercising the planner seam. Prime old
+    // evidence afterwards so only planner adoption, not request setup, can clear it.
+    await session.sendUserMessage("Prepare the current project context.");
     const probe = session as unknown as {
       applyWorkPlanTool(name: string, args: Record<string, unknown>): ToolResult;
       ctx: ToolContext;
       recordToolResult(name: string, args: Record<string, unknown>, result: ToolResult): void;
-    };
-    const planArgs = {
-      goal: "타일 작업",
-      layers: [{ title: "L", items: [{ title: "A", instruction: "paint", successTools: ["paint_tiles"], mapTargets: [project.startMapId] }] }],
     };
 
     expect(probe.applyWorkPlanTool("set_work_plan", planArgs).ok).toBe(true);
     const args = { mapId: project.startMapId, mode: "rect", layer: "lower", tile: TILE.PATH, from: { x: 2, y: 2 }, to: { x: 7, y: 2 } };
     const result = runTool(probe.ctx, "paint_tiles", args);
     probe.recordToolResult("paint_tiles", args, result);
-    expect(probe.applyWorkPlanTool("set_work_plan", planArgs).ok).toBe(true);
+    await session["runOrchestratorPlanner"]("다른 맵 작업", () => {});
+    expect(session.getWorkPlan()?.goal).toBe("다른 맵 작업");
 
     const completed = probe.applyWorkPlanTool("complete_work_item", { itemId: "L1-1" });
     expect(completed.ok).toBe(false);

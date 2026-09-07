@@ -1,0 +1,91 @@
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-monster-catalog-0907
+
+ ❯ test/assistantDependencyRetry.test.ts (16 tests | 2 failed) 30416ms
+   ✓ batch prerequisites through AssistantSession > defers failed-map writes without poisoning successTools or retries (old spec=false)  1963ms
+   ✓ batch prerequisites through AssistantSession > defers failed-map writes without poisoning successTools or retries (old spec=true)  1836ms
+   ✓ batch prerequisites through AssistantSession > a corrected spec resumes spatial execution (later batch=false)  1525ms
+   ✓ batch prerequisites through AssistantSession > a corrected spec resumes spatial execution (later batch=true)  1706ms
+   ✓ batch prerequisites through AssistantSession > failed record creation defers only ID dependents, then creation/read/correction succeeds (read contract=false)  2102ms
+   ✓ batch prerequisites through AssistantSession > failed record creation defers only ID dependents, then creation/read/correction succeeds (read contract=true)  1964ms
+   × batch prerequisites through AssistantSession > defers new-record dependents transitively without charging their retries (read contract=false) 1719ms
+     → expected { ok: false, …(2) } to match object { ok: false, data: { …(3) } }
+(2 matching properties omitted from actual)
+   × batch prerequisites through AssistantSession > defers new-record dependents transitively without charging their retries (read contract=true) 1500ms
+     → expected { ok: false, …(3) } to match object { ok: false, data: { …(3) } }
+(2 matching properties omitted from actual)
+   ✓ batch prerequisites through AssistantSession > keeps an existing record available after its update is deferred  1639ms
+   ✓ batch prerequisites through AssistantSession > keeps an existing record available after its update is failed  1576ms
+   ✓ batch prerequisites through AssistantSession > keeps the failed-read whole-batch contract and excludes deferred writes from the failure budget  1056ms
+   ✓ stable target retry budgets through AssistantSession > bounds fresh-batch lookup refusals without claiming they executed  1359ms
+   ✓ stable target retry budgets through AssistantSession > does not charge downstream same-batch refusals against their independent retry target  1813ms
+   ✓ stable target retry budgets through AssistantSession > bounds spelling and page-path variations despite unrelated writes and synthetic continuations, then rearms for a real user  4578ms
+   ✓ stable target retry budgets through AssistantSession > successful correction resets that target's accumulated failures  2445ms
+   ✓ stable target retry budgets through AssistantSession > does not execute attempts beyond the bound even within one model batch  1634ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/assistantDependencyRetry.test.ts > batch prerequisites through AssistantSession > defers new-record dependents transitively without charging their retries (read contract=false)
+AssertionError: expected { ok: false, …(2) } to match object { ok: false, data: { …(3) } }
+(2 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "data": {
+-     "code": "tool-deferred",
+-     "executed": false,
+-     "reason": "record-dependency-failed",
+-   },
+    "ok": false,
+  }
+
+ ❯ expectDeferred test/assistantDependencyRetry.test.ts:69:24
+     67|
+     68| function expectDeferred(event: ToolEvent, reason: string): void {
+     69|   expect(event.result).toMatchObject({ ok: false, data: { code: "tool-…
+       |                        ^
+     70| }
+     71|
+ ❯ test/assistantDependencyRetry.test.ts:155:43
+ ❯ test/assistantDependencyRetry.test.ts:155:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  test/assistantDependencyRetry.test.ts > batch prerequisites through AssistantSession > defers new-record dependents transitively without charging their retries (read contract=true)
+AssertionError: expected { ok: false, …(3) } to match object { ok: false, data: { …(3) } }
+(2 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+    "data": {
+      "code": "tool-deferred",
+      "executed": false,
+-     "reason": "record-dependency-failed",
++     "reason": "read-before-write-required",
+    },
+    "ok": false,
+  }
+
+ ❯ expectDeferred test/assistantDependencyRetry.test.ts:69:24
+     67|
+     68| function expectDeferred(event: ToolEvent, reason: string): void {
+     69|   expect(event.result).toMatchObject({ ok: false, data: { code: "tool-…
+       |                        ^
+     70| }
+     71|
+ ❯ test/assistantDependencyRetry.test.ts:155:43
+ ❯ test/assistantDependencyRetry.test.ts:155:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 14 passed (16)
+   Start at  08:16:17
+   Duration  43.59s (transform 8.93s, setup 0ms, collect 12.66s, tests 30.42s, environment 0ms, prepare 105ms)
+
+JSON report written to /home/main/z-project/rpg-zzu-monster-catalog-0907/output/evidence/monster-catalog/dependency-fix/red-contract.json

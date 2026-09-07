@@ -1,0 +1,2461 @@
+{
+  "head": "e0a5e8a67c48c739fc2b9e16eb48abc2ee85f854",
+  "cwd": "/home/main/z-project/rpg-zzu-life-full-tools-verify",
+  "port": 35219,
+  "surface": "native Firefox, dedicated player.html, exportProjectStoreShim",
+  "runs": [
+    {
+      "scenario": "outside-held-hoe",
+      "fixtureSha256": "a2820223ff30c52551592632c2559b8ea21641eef1433f5c0f0326a8785ed43c",
+      "rules": [
+        {
+          "id": "special",
+          "action": "till",
+          "itemId": "qa-hoe",
+          "farmTool": "axe",
+          "requiresFarmable": false
+        },
+        {
+          "id": "legacy-hoe-till",
+          "farmTool": "hoe",
+          "requiresFarmable": true,
+          "action": "till"
+        },
+        {
+          "id": "legacy-can-water",
+          "farmTool": "wateringCan",
+          "requiresFarmable": true,
+          "action": "water"
+        },
+        {
+          "id": "legacy-axe-chop",
+          "farmTool": "axe",
+          "requiresFarmable": false,
+          "targetPlaceableKind": "tree",
+          "action": "chop"
+        },
+        {
+          "id": "legacy-pick-mine",
+          "farmTool": "pickaxe",
+          "requiresFarmable": false,
+          "targetPlaceableKind": "rock",
+          "action": "mine"
+        }
+      ],
+      "errors": [],
+      "failedRequests": [],
+      "actions": [
+        {
+          "receipt": {
+            "kind": "action",
+            "mapId": "map_blank_start",
+            "handled": true,
+            "farmAttempts": [
+              {
+                "kind": "tilled",
+                "x": 2,
+                "y": 3,
+                "itemId": "qa-hoe",
+                "energySpent": 1,
+                "xpAwarded": {},
+                "affectedTiles": [
+                  {
+                    "x": 2,
+                    "y": 3,
+                    "kind": "tilled"
+                  }
+                ]
+              }
+            ],
+            "sequence": 1
+          },
+          "state": {
+            "farmPlots": {
+              "map_blank_start": {
+                "2,3": {
+                  "tilled": true,
+                  "watered": false
+                }
+              }
+            },
+            "energy": 9,
+            "makerInstances": {},
+            "actionReceipt": {
+              "kind": "action",
+              "mapId": "map_blank_start",
+              "handled": true,
+              "farmAttempts": [
+                {
+                  "kind": "tilled",
+                  "x": 2,
+                  "y": 3,
+                  "itemId": "qa-hoe",
+                  "energySpent": 1,
+                  "xpAwarded": {},
+                  "affectedTiles": [
+                    {
+                      "x": 2,
+                      "y": 3,
+                      "kind": "tilled"
+                    }
+                  ]
+                }
+              ],
+              "sequence": 1
+            },
+            "eventLocations": {},
+            "currentMapId": "map_blank_start",
+            "x": 2,
+            "y": 2,
+            "gold": 0,
+            "switches": {
+              "sw_0001": false,
+              "sw_0002": false,
+              "sw_0003": false,
+              "sw_0004": false,
+              "sw_0005": false,
+              "sw_0006": false,
+              "sw_0007": false,
+              "sw_0008": false,
+              "sw_0009": false,
+              "sw_0010": false,
+              "sw_0011": false,
+              "sw_0012": false,
+              "sw_0013": false,
+              "sw_0014": false,
+              "sw_0015": false,
+              "sw_0016": false,
+              "sw_0017": false,
+              "sw_0018": false,
+              "sw_0019": false,
+              "sw_0020": false
+            },
+            "variables": {
+              "var_0001": 0,
+              "var_0002": 0,
+              "var_0003": 0,
+              "var_0004": 0,
+              "var_0005": 0,
+              "var_0006": 0,
+              "var_0007": 0,
+              "var_0008": 0,
+              "var_0009": 0,
+              "var_0010": 0,
+              "var_0011": 0,
+              "var_0012": 0,
+              "var_0013": 0,
+              "var_0014": 0,
+              "var_0015": 0,
+              "var_0016": 0,
+              "var_0017": 0,
+              "var_0018": 0,
+              "var_0019": 0,
+              "var_0020": 0
+            },
+            "selfSwitches": {},
+            "timers": {},
+            "inventory": {
+              "qa-hoe": 1,
+              "verify-seed": 3
+            },
+            "partyActorIds": [
+              "actor_hero"
+            ],
+            "npcActivities": {},
+            "friendship": {},
+            "rng": {
+              "seed": 3416779056,
+              "streams": {
+                "encounter": {
+                  "seed": 3463238110,
+                  "state": 3463238110
+                },
+                "battle": {
+                  "seed": 1482391643,
+                  "state": 1482391643
+                },
+                "movement": {
+                  "seed": 65421708,
+                  "state": 65421708
+                },
+                "fishing": {
+                  "seed": 4252224921,
+                  "state": 4252224921
+                },
+                "misc": {
+                  "seed": 2561210261,
+                  "state": 2561210261
+                }
+              }
+            }
+          },
+          "mirror": {
+            "farmPlots": {
+              "map_blank_start": {
+                "2,3": {
+                  "tilled": true,
+                  "watered": false
+                }
+              }
+            },
+            "energy": 9,
+            "makerInstances": {},
+            "actionReceipt": {
+              "kind": "action",
+              "mapId": "map_blank_start",
+              "handled": true,
+              "farmAttempts": [
+                {
+                  "kind": "tilled",
+                  "x": 2,
+                  "y": 3,
+                  "itemId": "qa-hoe",
+                  "energySpent": 1,
+                  "xpAwarded": {},
+                  "affectedTiles": [
+                    {
+                      "x": 2,
+                      "y": 3,
+                      "kind": "tilled"
+                    }
+                  ]
+                }
+              ],
+              "sequence": 1
+            },
+            "mapId": "map_blank_start",
+            "inputEnabled": true,
+            "running": false,
+            "player": {
+              "x": 2,
+              "y": 2
+            },
+            "switches": {
+              "sw_0001": false,
+              "sw_0002": false,
+              "sw_0003": false,
+              "sw_0004": false,
+              "sw_0005": false,
+              "sw_0006": false,
+              "sw_0007": false,
+              "sw_0008": false,
+              "sw_0009": false,
+              "sw_0010": false,
+              "sw_0011": false,
+              "sw_0012": false,
+              "sw_0013": false,
+              "sw_0014": false,
+              "sw_0015": false,
+              "sw_0016": false,
+              "sw_0017": false,
+              "sw_0018": false,
+              "sw_0019": false,
+              "sw_0020": false
+            },
+            "variables": {
+              "var_0001": 0,
+              "var_0002": 0,
+              "var_0003": 0,
+              "var_0004": 0,
+              "var_0005": 0,
+              "var_0006": 0,
+              "var_0007": 0,
+              "var_0008": 0,
+              "var_0009": 0,
+              "var_0010": 0,
+              "var_0011": 0,
+              "var_0012": 0,
+              "var_0013": 0,
+              "var_0014": 0,
+              "var_0015": 0,
+              "var_0016": 0,
+              "var_0017": 0,
+              "var_0018": 0,
+              "var_0019": 0,
+              "var_0020": 0
+            },
+            "timers": {},
+            "timerActive": {},
+            "flags": {},
+            "mapOverrides": {},
+            "gold": 0,
+            "inventory": {
+              "qa-hoe": 1,
+              "verify-seed": 3
+            },
+            "partyActorIds": [
+              "actor_hero"
+            ],
+            "actorSkillIds": {},
+            "actorExperience": {
+              "actor_hero": 0
+            },
+            "actorLevels": {
+              "actor_hero": 1,
+              "actor_guardian": 1,
+              "actor_mage": 1,
+              "actor_scout": 1,
+              "actor_cleric": 1,
+              "actor_ranger": 1
+            },
+            "actorVitals": {
+              "actor_hero": {
+                "hp": 514,
+                "mp": 43,
+                "maxHp": 514,
+                "maxMp": 43
+              }
+            },
+            "eventLocations": {},
+            "followers": [],
+            "followerTrail": [],
+            "removedEventIds": {},
+            "spawnedEvents": {},
+            "camera": {
+              "mode": "follow",
+              "target": {
+                "kind": "player"
+              }
+            },
+            "lighting": {
+              "ambient": 0,
+              "sources": []
+            },
+            "actorEquipment": {
+              "actor_hero": {
+                "weapon": "equip_sword",
+                "shield": "equip_oak_shield",
+                "armor": "equip_leather_armor",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              },
+              "actor_guardian": {
+                "weapon": "equip_sword",
+                "shield": "equip_oak_shield",
+                "armor": "equip_leather_armor",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              },
+              "actor_mage": {
+                "weapon": "equip_mage_staff",
+                "armor": "equip_mystic_robe",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              },
+              "actor_scout": {
+                "weapon": "equip_scout_dagger",
+                "armor": "equip_leather_armor",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              },
+              "actor_cleric": {
+                "weapon": "equip_mage_staff",
+                "shield": "equip_oak_shield",
+                "armor": "equip_mystic_robe",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              },
+              "actor_ranger": {
+                "weapon": "equip_scout_dagger",
+                "armor": "equip_leather_armor",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              }
+            },
+            "actorRows": {
+              "actor_hero": "front"
+            },
+            "classOverrides": {},
+            "audio": {
+              "bgm": {
+                "resourceId": "cc0-bgm-rtp-fld-003",
+                "loop": true
+              }
+            },
+            "pictures": {},
+            "events": {},
+            "movers": {}
+          }
+        },
+        {
+          "receipt": {
+            "kind": "action",
+            "mapId": "map_blank_start",
+            "handled": true,
+            "farmAttempts": [
+              {
+                "kind": "ignored",
+                "x": 2,
+                "y": 3,
+                "reason": "wrong-tool-for-plot"
+              },
+              {
+                "kind": "tilled",
+                "x": 2,
+                "y": 2,
+                "itemId": "qa-hoe",
+                "energySpent": 1,
+                "xpAwarded": {},
+                "affectedTiles": [
+                  {
+                    "x": 2,
+                    "y": 2,
+                    "kind": "tilled"
+                  }
+                ]
+              }
+            ],
+            "sequence": 2
+          },
+          "state": {
+            "farmPlots": {
+              "map_blank_start": {
+                "2,3": {
+                  "tilled": true,
+                  "watered": false
+                },
+                "2,2": {
+                  "tilled": true,
+                  "watered": false
+                }
+              }
+            },
+            "energy": 8,
+            "makerInstances": {},
+            "actionReceipt": {
+              "kind": "action",
+              "mapId": "map_blank_start",
+              "handled": true,
+              "farmAttempts": [
+                {
+                  "kind": "ignored",
+                  "x": 2,
+                  "y": 3,
+                  "reason": "wrong-tool-for-plot"
+                },
+                {
+                  "kind": "tilled",
+                  "x": 2,
+                  "y": 2,
+                  "itemId": "qa-hoe",
+                  "energySpent": 1,
+                  "xpAwarded": {},
+                  "affectedTiles": [
+                    {
+                      "x": 2,
+                      "y": 2,
+                      "kind": "tilled"
+                    }
+                  ]
+                }
+              ],
+              "sequence": 2
+            },
+            "eventLocations": {},
+            "currentMapId": "map_blank_start",
+            "x": 2,
+            "y": 2,
+            "gold": 0,
+            "switches": {
+              "sw_0001": false,
+              "sw_0002": false,
+              "sw_0003": false,
+              "sw_0004": false,
+              "sw_0005": false,
+              "sw_0006": false,
+              "sw_0007": false,
+              "sw_0008": false,
+              "sw_0009": false,
+              "sw_0010": false,
+              "sw_0011": false,
+              "sw_0012": false,
+              "sw_0013": false,
+              "sw_0014": false,
+              "sw_0015": false,
+              "sw_0016": false,
+              "sw_0017": false,
+              "sw_0018": false,
+              "sw_0019": false,
+              "sw_0020": false
+            },
+            "variables": {
+              "var_0001": 0,
+              "var_0002": 0,
+              "var_0003": 0,
+              "var_0004": 0,
+              "var_0005": 0,
+              "var_0006": 0,
+              "var_0007": 0,
+              "var_0008": 0,
+              "var_0009": 0,
+              "var_0010": 0,
+              "var_0011": 0,
+              "var_0012": 0,
+              "var_0013": 0,
+              "var_0014": 0,
+              "var_0015": 0,
+              "var_0016": 0,
+              "var_0017": 0,
+              "var_0018": 0,
+              "var_0019": 0,
+              "var_0020": 0
+            },
+            "selfSwitches": {},
+            "timers": {},
+            "inventory": {
+              "qa-hoe": 1,
+              "verify-seed": 3
+            },
+            "partyActorIds": [
+              "actor_hero"
+            ],
+            "npcActivities": {},
+            "friendship": {},
+            "rng": {
+              "seed": 3416779056,
+              "streams": {
+                "encounter": {
+                  "seed": 3463238110,
+                  "state": 3463238110
+                },
+                "battle": {
+                  "seed": 1482391643,
+                  "state": 1482391643
+                },
+                "movement": {
+                  "seed": 65421708,
+                  "state": 65421708
+                },
+                "fishing": {
+                  "seed": 4252224921,
+                  "state": 4252224921
+                },
+                "misc": {
+                  "seed": 2561210261,
+                  "state": 2561210261
+                }
+              }
+            }
+          },
+          "mirror": {
+            "farmPlots": {
+              "map_blank_start": {
+                "2,3": {
+                  "tilled": true,
+                  "watered": false
+                },
+                "2,2": {
+                  "tilled": true,
+                  "watered": false
+                }
+              }
+            },
+            "energy": 8,
+            "makerInstances": {},
+            "actionReceipt": {
+              "kind": "action",
+              "mapId": "map_blank_start",
+              "handled": true,
+              "farmAttempts": [
+                {
+                  "kind": "ignored",
+                  "x": 2,
+                  "y": 3,
+                  "reason": "wrong-tool-for-plot"
+                },
+                {
+                  "kind": "tilled",
+                  "x": 2,
+                  "y": 2,
+                  "itemId": "qa-hoe",
+                  "energySpent": 1,
+                  "xpAwarded": {},
+                  "affectedTiles": [
+                    {
+                      "x": 2,
+                      "y": 2,
+                      "kind": "tilled"
+                    }
+                  ]
+                }
+              ],
+              "sequence": 2
+            },
+            "mapId": "map_blank_start",
+            "inputEnabled": true,
+            "running": false,
+            "player": {
+              "x": 2,
+              "y": 2
+            },
+            "switches": {
+              "sw_0001": false,
+              "sw_0002": false,
+              "sw_0003": false,
+              "sw_0004": false,
+              "sw_0005": false,
+              "sw_0006": false,
+              "sw_0007": false,
+              "sw_0008": false,
+              "sw_0009": false,
+              "sw_0010": false,
+              "sw_0011": false,
+              "sw_0012": false,
+              "sw_0013": false,
+              "sw_0014": false,
+              "sw_0015": false,
+              "sw_0016": false,
+              "sw_0017": false,
+              "sw_0018": false,
+              "sw_0019": false,
+              "sw_0020": false
+            },
+            "variables": {
+              "var_0001": 0,
+              "var_0002": 0,
+              "var_0003": 0,
+              "var_0004": 0,
+              "var_0005": 0,
+              "var_0006": 0,
+              "var_0007": 0,
+              "var_0008": 0,
+              "var_0009": 0,
+              "var_0010": 0,
+              "var_0011": 0,
+              "var_0012": 0,
+              "var_0013": 0,
+              "var_0014": 0,
+              "var_0015": 0,
+              "var_0016": 0,
+              "var_0017": 0,
+              "var_0018": 0,
+              "var_0019": 0,
+              "var_0020": 0
+            },
+            "timers": {},
+            "timerActive": {},
+            "flags": {},
+            "mapOverrides": {},
+            "gold": 0,
+            "inventory": {
+              "qa-hoe": 1,
+              "verify-seed": 3
+            },
+            "partyActorIds": [
+              "actor_hero"
+            ],
+            "actorSkillIds": {},
+            "actorExperience": {
+              "actor_hero": 0
+            },
+            "actorLevels": {
+              "actor_hero": 1,
+              "actor_guardian": 1,
+              "actor_mage": 1,
+              "actor_scout": 1,
+              "actor_cleric": 1,
+              "actor_ranger": 1
+            },
+            "actorVitals": {
+              "actor_hero": {
+                "hp": 514,
+                "mp": 43,
+                "maxHp": 514,
+                "maxMp": 43
+              }
+            },
+            "eventLocations": {},
+            "followers": [],
+            "followerTrail": [],
+            "removedEventIds": {},
+            "spawnedEvents": {},
+            "camera": {
+              "mode": "follow",
+              "target": {
+                "kind": "player"
+              }
+            },
+            "lighting": {
+              "ambient": 0,
+              "sources": []
+            },
+            "actorEquipment": {
+              "actor_hero": {
+                "weapon": "equip_sword",
+                "shield": "equip_oak_shield",
+                "armor": "equip_leather_armor",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              },
+              "actor_guardian": {
+                "weapon": "equip_sword",
+                "shield": "equip_oak_shield",
+                "armor": "equip_leather_armor",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              },
+              "actor_mage": {
+                "weapon": "equip_mage_staff",
+                "armor": "equip_mystic_robe",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              },
+              "actor_scout": {
+                "weapon": "equip_scout_dagger",
+                "armor": "equip_leather_armor",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              },
+              "actor_cleric": {
+                "weapon": "equip_mage_staff",
+                "shield": "equip_oak_shield",
+                "armor": "equip_mystic_robe",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              },
+              "actor_ranger": {
+                "weapon": "equip_scout_dagger",
+                "armor": "equip_leather_armor",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              }
+            },
+            "actorRows": {
+              "actor_hero": "front"
+            },
+            "classOverrides": {},
+            "audio": {
+              "bgm": {
+                "resourceId": "cc0-bgm-rtp-fld-003",
+                "loop": true
+              }
+            },
+            "pictures": {},
+            "events": {},
+            "movers": {}
+          }
+        },
+        {
+          "receipt": {
+            "kind": "action",
+            "mapId": "map_blank_start",
+            "handled": false,
+            "farmAttempts": [
+              {
+                "kind": "ignored",
+                "x": 2,
+                "y": 3,
+                "reason": "wrong-tool-for-plot"
+              },
+              {
+                "kind": "ignored",
+                "x": 2,
+                "y": 2,
+                "reason": "wrong-tool-for-plot"
+              }
+            ],
+            "sequence": 3
+          },
+          "state": {
+            "farmPlots": {
+              "map_blank_start": {
+                "2,3": {
+                  "tilled": true,
+                  "watered": false
+                },
+                "2,2": {
+                  "tilled": true,
+                  "watered": false
+                }
+              }
+            },
+            "energy": 8,
+            "makerInstances": {},
+            "actionReceipt": {
+              "kind": "action",
+              "mapId": "map_blank_start",
+              "handled": false,
+              "farmAttempts": [
+                {
+                  "kind": "ignored",
+                  "x": 2,
+                  "y": 3,
+                  "reason": "wrong-tool-for-plot"
+                },
+                {
+                  "kind": "ignored",
+                  "x": 2,
+                  "y": 2,
+                  "reason": "wrong-tool-for-plot"
+                }
+              ],
+              "sequence": 3
+            },
+            "eventLocations": {},
+            "currentMapId": "map_blank_start",
+            "x": 2,
+            "y": 2,
+            "gold": 0,
+            "switches": {
+              "sw_0001": false,
+              "sw_0002": false,
+              "sw_0003": false,
+              "sw_0004": false,
+              "sw_0005": false,
+              "sw_0006": false,
+              "sw_0007": false,
+              "sw_0008": false,
+              "sw_0009": false,
+              "sw_0010": false,
+              "sw_0011": false,
+              "sw_0012": false,
+              "sw_0013": false,
+              "sw_0014": false,
+              "sw_0015": false,
+              "sw_0016": false,
+              "sw_0017": false,
+              "sw_0018": false,
+              "sw_0019": false,
+              "sw_0020": false
+            },
+            "variables": {
+              "var_0001": 0,
+              "var_0002": 0,
+              "var_0003": 0,
+              "var_0004": 0,
+              "var_0005": 0,
+              "var_0006": 0,
+              "var_0007": 0,
+              "var_0008": 0,
+              "var_0009": 0,
+              "var_0010": 0,
+              "var_0011": 0,
+              "var_0012": 0,
+              "var_0013": 0,
+              "var_0014": 0,
+              "var_0015": 0,
+              "var_0016": 0,
+              "var_0017": 0,
+              "var_0018": 0,
+              "var_0019": 0,
+              "var_0020": 0
+            },
+            "selfSwitches": {},
+            "timers": {},
+            "inventory": {
+              "qa-hoe": 1,
+              "verify-seed": 3
+            },
+            "partyActorIds": [
+              "actor_hero"
+            ],
+            "npcActivities": {},
+            "friendship": {},
+            "rng": {
+              "seed": 3416779056,
+              "streams": {
+                "encounter": {
+                  "seed": 3463238110,
+                  "state": 3463238110
+                },
+                "battle": {
+                  "seed": 1482391643,
+                  "state": 1482391643
+                },
+                "movement": {
+                  "seed": 65421708,
+                  "state": 65421708
+                },
+                "fishing": {
+                  "seed": 4252224921,
+                  "state": 4252224921
+                },
+                "misc": {
+                  "seed": 2561210261,
+                  "state": 2561210261
+                }
+              }
+            }
+          },
+          "mirror": {
+            "farmPlots": {
+              "map_blank_start": {
+                "2,3": {
+                  "tilled": true,
+                  "watered": false
+                },
+                "2,2": {
+                  "tilled": true,
+                  "watered": false
+                }
+              }
+            },
+            "energy": 8,
+            "makerInstances": {},
+            "actionReceipt": {
+              "kind": "action",
+              "mapId": "map_blank_start",
+              "handled": false,
+              "farmAttempts": [
+                {
+                  "kind": "ignored",
+                  "x": 2,
+                  "y": 3,
+                  "reason": "wrong-tool-for-plot"
+                },
+                {
+                  "kind": "ignored",
+                  "x": 2,
+                  "y": 2,
+                  "reason": "wrong-tool-for-plot"
+                }
+              ],
+              "sequence": 3
+            },
+            "mapId": "map_blank_start",
+            "inputEnabled": true,
+            "running": false,
+            "player": {
+              "x": 2,
+              "y": 2
+            },
+            "switches": {
+              "sw_0001": false,
+              "sw_0002": false,
+              "sw_0003": false,
+              "sw_0004": false,
+              "sw_0005": false,
+              "sw_0006": false,
+              "sw_0007": false,
+              "sw_0008": false,
+              "sw_0009": false,
+              "sw_0010": false,
+              "sw_0011": false,
+              "sw_0012": false,
+              "sw_0013": false,
+              "sw_0014": false,
+              "sw_0015": false,
+              "sw_0016": false,
+              "sw_0017": false,
+              "sw_0018": false,
+              "sw_0019": false,
+              "sw_0020": false
+            },
+            "variables": {
+              "var_0001": 0,
+              "var_0002": 0,
+              "var_0003": 0,
+              "var_0004": 0,
+              "var_0005": 0,
+              "var_0006": 0,
+              "var_0007": 0,
+              "var_0008": 0,
+              "var_0009": 0,
+              "var_0010": 0,
+              "var_0011": 0,
+              "var_0012": 0,
+              "var_0013": 0,
+              "var_0014": 0,
+              "var_0015": 0,
+              "var_0016": 0,
+              "var_0017": 0,
+              "var_0018": 0,
+              "var_0019": 0,
+              "var_0020": 0
+            },
+            "timers": {},
+            "timerActive": {},
+            "flags": {},
+            "mapOverrides": {},
+            "gold": 0,
+            "inventory": {
+              "qa-hoe": 1,
+              "verify-seed": 3
+            },
+            "partyActorIds": [
+              "actor_hero"
+            ],
+            "actorSkillIds": {},
+            "actorExperience": {
+              "actor_hero": 0
+            },
+            "actorLevels": {
+              "actor_hero": 1,
+              "actor_guardian": 1,
+              "actor_mage": 1,
+              "actor_scout": 1,
+              "actor_cleric": 1,
+              "actor_ranger": 1
+            },
+            "actorVitals": {
+              "actor_hero": {
+                "hp": 514,
+                "mp": 43,
+                "maxHp": 514,
+                "maxMp": 43
+              }
+            },
+            "eventLocations": {},
+            "followers": [],
+            "followerTrail": [],
+            "removedEventIds": {},
+            "spawnedEvents": {},
+            "camera": {
+              "mode": "follow",
+              "target": {
+                "kind": "player"
+              }
+            },
+            "lighting": {
+              "ambient": 0,
+              "sources": []
+            },
+            "actorEquipment": {
+              "actor_hero": {
+                "weapon": "equip_sword",
+                "shield": "equip_oak_shield",
+                "armor": "equip_leather_armor",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              },
+              "actor_guardian": {
+                "weapon": "equip_sword",
+                "shield": "equip_oak_shield",
+                "armor": "equip_leather_armor",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              },
+              "actor_mage": {
+                "weapon": "equip_mage_staff",
+                "armor": "equip_mystic_robe",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              },
+              "actor_scout": {
+                "weapon": "equip_scout_dagger",
+                "armor": "equip_leather_armor",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              },
+              "actor_cleric": {
+                "weapon": "equip_mage_staff",
+                "shield": "equip_oak_shield",
+                "armor": "equip_mystic_robe",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              },
+              "actor_ranger": {
+                "weapon": "equip_scout_dagger",
+                "armor": "equip_leather_armor",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              }
+            },
+            "actorRows": {
+              "actor_hero": "front"
+            },
+            "classOverrides": {},
+            "audio": {
+              "bgm": {
+                "resourceId": "cc0-bgm-rtp-fld-003",
+                "loop": true
+              }
+            },
+            "pictures": {},
+            "events": {},
+            "movers": {}
+          }
+        }
+      ],
+      "initial": {
+        "farmPlots": {},
+        "energy": 10,
+        "makerInstances": {},
+        "eventLocations": {},
+        "currentMapId": "map_blank_start",
+        "x": 2,
+        "y": 2,
+        "gold": 0,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {},
+        "timers": {},
+        "inventory": {
+          "qa-hoe": 1,
+          "verify-seed": 3
+        },
+        "partyActorIds": [
+          "actor_hero"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 3416779056,
+          "streams": {
+            "encounter": {
+              "seed": 3463238110,
+              "state": 3463238110
+            },
+            "battle": {
+              "seed": 1482391643,
+              "state": 1482391643
+            },
+            "movement": {
+              "seed": 65421708,
+              "state": 65421708
+            },
+            "fishing": {
+              "seed": 4252224921,
+              "state": 4252224921
+            },
+            "misc": {
+              "seed": 2561210261,
+              "state": 2561210261
+            }
+          }
+        }
+      },
+      "pass": true,
+      "contextClosed": true
+    },
+    {
+      "scenario": "conditionless-seed-refused",
+      "fixtureSha256": "481b53ccd45616a1a002a00b45940a4b9ef282299f5968f4967df7c97bbb7858",
+      "rules": [
+        {
+          "id": "any-tool",
+          "action": "till",
+          "requiresFarmable": false
+        }
+      ],
+      "errors": [],
+      "failedRequests": [],
+      "actions": [
+        {
+          "receipt": {
+            "kind": "action",
+            "mapId": "map_blank_start",
+            "handled": false,
+            "farmAttempts": [
+              {
+                "kind": "ignored",
+                "x": 2,
+                "y": 3,
+                "reason": "not-farmable"
+              },
+              {
+                "kind": "ignored",
+                "x": 2,
+                "y": 2,
+                "reason": "not-farmable"
+              }
+            ],
+            "sequence": 1
+          },
+          "state": {
+            "farmPlots": {},
+            "energy": 10,
+            "makerInstances": {},
+            "actionReceipt": {
+              "kind": "action",
+              "mapId": "map_blank_start",
+              "handled": false,
+              "farmAttempts": [
+                {
+                  "kind": "ignored",
+                  "x": 2,
+                  "y": 3,
+                  "reason": "not-farmable"
+                },
+                {
+                  "kind": "ignored",
+                  "x": 2,
+                  "y": 2,
+                  "reason": "not-farmable"
+                }
+              ],
+              "sequence": 1
+            },
+            "eventLocations": {},
+            "currentMapId": "map_blank_start",
+            "x": 2,
+            "y": 2,
+            "gold": 0,
+            "switches": {
+              "sw_0001": false,
+              "sw_0002": false,
+              "sw_0003": false,
+              "sw_0004": false,
+              "sw_0005": false,
+              "sw_0006": false,
+              "sw_0007": false,
+              "sw_0008": false,
+              "sw_0009": false,
+              "sw_0010": false,
+              "sw_0011": false,
+              "sw_0012": false,
+              "sw_0013": false,
+              "sw_0014": false,
+              "sw_0015": false,
+              "sw_0016": false,
+              "sw_0017": false,
+              "sw_0018": false,
+              "sw_0019": false,
+              "sw_0020": false
+            },
+            "variables": {
+              "var_0001": 0,
+              "var_0002": 0,
+              "var_0003": 0,
+              "var_0004": 0,
+              "var_0005": 0,
+              "var_0006": 0,
+              "var_0007": 0,
+              "var_0008": 0,
+              "var_0009": 0,
+              "var_0010": 0,
+              "var_0011": 0,
+              "var_0012": 0,
+              "var_0013": 0,
+              "var_0014": 0,
+              "var_0015": 0,
+              "var_0016": 0,
+              "var_0017": 0,
+              "var_0018": 0,
+              "var_0019": 0,
+              "var_0020": 0
+            },
+            "selfSwitches": {},
+            "timers": {},
+            "inventory": {
+              "qa-hoe": 1,
+              "verify-seed": 3
+            },
+            "partyActorIds": [
+              "actor_hero"
+            ],
+            "npcActivities": {},
+            "friendship": {},
+            "rng": {
+              "seed": 351800296,
+              "streams": {
+                "encounter": {
+                  "seed": 1233853034,
+                  "state": 1233853034
+                },
+                "battle": {
+                  "seed": 1110582695,
+                  "state": 1110582695
+                },
+                "movement": {
+                  "seed": 4270862728,
+                  "state": 4270862728
+                },
+                "fishing": {
+                  "seed": 1300061669,
+                  "state": 1300061669
+                },
+                "misc": {
+                  "seed": 2110832729,
+                  "state": 2110832729
+                }
+              }
+            }
+          },
+          "mirror": {
+            "farmPlots": {},
+            "energy": 10,
+            "makerInstances": {},
+            "actionReceipt": {
+              "kind": "action",
+              "mapId": "map_blank_start",
+              "handled": false,
+              "farmAttempts": [
+                {
+                  "kind": "ignored",
+                  "x": 2,
+                  "y": 3,
+                  "reason": "not-farmable"
+                },
+                {
+                  "kind": "ignored",
+                  "x": 2,
+                  "y": 2,
+                  "reason": "not-farmable"
+                }
+              ],
+              "sequence": 1
+            },
+            "mapId": "map_blank_start",
+            "inputEnabled": true,
+            "running": false,
+            "player": {
+              "x": 2,
+              "y": 2
+            },
+            "switches": {
+              "sw_0001": false,
+              "sw_0002": false,
+              "sw_0003": false,
+              "sw_0004": false,
+              "sw_0005": false,
+              "sw_0006": false,
+              "sw_0007": false,
+              "sw_0008": false,
+              "sw_0009": false,
+              "sw_0010": false,
+              "sw_0011": false,
+              "sw_0012": false,
+              "sw_0013": false,
+              "sw_0014": false,
+              "sw_0015": false,
+              "sw_0016": false,
+              "sw_0017": false,
+              "sw_0018": false,
+              "sw_0019": false,
+              "sw_0020": false
+            },
+            "variables": {
+              "var_0001": 0,
+              "var_0002": 0,
+              "var_0003": 0,
+              "var_0004": 0,
+              "var_0005": 0,
+              "var_0006": 0,
+              "var_0007": 0,
+              "var_0008": 0,
+              "var_0009": 0,
+              "var_0010": 0,
+              "var_0011": 0,
+              "var_0012": 0,
+              "var_0013": 0,
+              "var_0014": 0,
+              "var_0015": 0,
+              "var_0016": 0,
+              "var_0017": 0,
+              "var_0018": 0,
+              "var_0019": 0,
+              "var_0020": 0
+            },
+            "timers": {},
+            "timerActive": {},
+            "flags": {},
+            "mapOverrides": {},
+            "gold": 0,
+            "inventory": {
+              "qa-hoe": 1,
+              "verify-seed": 3
+            },
+            "partyActorIds": [
+              "actor_hero"
+            ],
+            "actorSkillIds": {},
+            "actorExperience": {
+              "actor_hero": 0
+            },
+            "actorLevels": {
+              "actor_hero": 1,
+              "actor_guardian": 1,
+              "actor_mage": 1,
+              "actor_scout": 1,
+              "actor_cleric": 1,
+              "actor_ranger": 1
+            },
+            "actorVitals": {
+              "actor_hero": {
+                "hp": 514,
+                "mp": 43,
+                "maxHp": 514,
+                "maxMp": 43
+              }
+            },
+            "eventLocations": {},
+            "followers": [],
+            "followerTrail": [],
+            "removedEventIds": {},
+            "spawnedEvents": {},
+            "camera": {
+              "mode": "follow",
+              "target": {
+                "kind": "player"
+              }
+            },
+            "lighting": {
+              "ambient": 0,
+              "sources": []
+            },
+            "actorEquipment": {
+              "actor_hero": {
+                "weapon": "equip_sword",
+                "shield": "equip_oak_shield",
+                "armor": "equip_leather_armor",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              },
+              "actor_guardian": {
+                "weapon": "equip_sword",
+                "shield": "equip_oak_shield",
+                "armor": "equip_leather_armor",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              },
+              "actor_mage": {
+                "weapon": "equip_mage_staff",
+                "armor": "equip_mystic_robe",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              },
+              "actor_scout": {
+                "weapon": "equip_scout_dagger",
+                "armor": "equip_leather_armor",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              },
+              "actor_cleric": {
+                "weapon": "equip_mage_staff",
+                "shield": "equip_oak_shield",
+                "armor": "equip_mystic_robe",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              },
+              "actor_ranger": {
+                "weapon": "equip_scout_dagger",
+                "armor": "equip_leather_armor",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              }
+            },
+            "actorRows": {
+              "actor_hero": "front"
+            },
+            "classOverrides": {},
+            "audio": {
+              "bgm": {
+                "resourceId": "cc0-bgm-rtp-fld-003",
+                "loop": true
+              }
+            },
+            "pictures": {},
+            "events": {},
+            "movers": {}
+          }
+        }
+      ],
+      "initial": {
+        "farmPlots": {},
+        "energy": 10,
+        "makerInstances": {},
+        "eventLocations": {},
+        "currentMapId": "map_blank_start",
+        "x": 2,
+        "y": 2,
+        "gold": 0,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {},
+        "timers": {},
+        "inventory": {
+          "qa-hoe": 1,
+          "verify-seed": 3
+        },
+        "partyActorIds": [
+          "actor_hero"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 351800296,
+          "streams": {
+            "encounter": {
+              "seed": 1233853034,
+              "state": 1233853034
+            },
+            "battle": {
+              "seed": 1110582695,
+              "state": 1110582695
+            },
+            "movement": {
+              "seed": 4270862728,
+              "state": 4270862728
+            },
+            "fishing": {
+              "seed": 1300061669,
+              "state": 1300061669
+            },
+            "misc": {
+              "seed": 2110832729,
+              "state": 2110832729
+            }
+          }
+        }
+      },
+      "pass": true,
+      "contextClosed": true
+    },
+    {
+      "scenario": "wall-protected",
+      "fixtureSha256": "fa0e076241b4ddb7de6dd391c3311a9c732a47850b4397f46e79016dca1407a2",
+      "rules": [
+        {
+          "id": "any-tool",
+          "action": "till",
+          "requiresFarmable": false
+        }
+      ],
+      "errors": [],
+      "failedRequests": [],
+      "actions": [
+        {
+          "receipt": {
+            "kind": "action",
+            "mapId": "map_blank_start",
+            "handled": true,
+            "farmAttempts": [
+              {
+                "kind": "ignored",
+                "x": 2,
+                "y": 3,
+                "reason": "not-farmable"
+              },
+              {
+                "kind": "tilled",
+                "x": 2,
+                "y": 2,
+                "itemId": "qa-hoe",
+                "energySpent": 1,
+                "xpAwarded": {},
+                "affectedTiles": [
+                  {
+                    "x": 2,
+                    "y": 2,
+                    "kind": "tilled"
+                  }
+                ]
+              }
+            ],
+            "sequence": 1
+          },
+          "state": {
+            "farmPlots": {
+              "map_blank_start": {
+                "2,2": {
+                  "tilled": true,
+                  "watered": false
+                }
+              }
+            },
+            "energy": 9,
+            "makerInstances": {},
+            "actionReceipt": {
+              "kind": "action",
+              "mapId": "map_blank_start",
+              "handled": true,
+              "farmAttempts": [
+                {
+                  "kind": "ignored",
+                  "x": 2,
+                  "y": 3,
+                  "reason": "not-farmable"
+                },
+                {
+                  "kind": "tilled",
+                  "x": 2,
+                  "y": 2,
+                  "itemId": "qa-hoe",
+                  "energySpent": 1,
+                  "xpAwarded": {},
+                  "affectedTiles": [
+                    {
+                      "x": 2,
+                      "y": 2,
+                      "kind": "tilled"
+                    }
+                  ]
+                }
+              ],
+              "sequence": 1
+            },
+            "eventLocations": {},
+            "currentMapId": "map_blank_start",
+            "x": 2,
+            "y": 2,
+            "gold": 0,
+            "switches": {
+              "sw_0001": false,
+              "sw_0002": false,
+              "sw_0003": false,
+              "sw_0004": false,
+              "sw_0005": false,
+              "sw_0006": false,
+              "sw_0007": false,
+              "sw_0008": false,
+              "sw_0009": false,
+              "sw_0010": false,
+              "sw_0011": false,
+              "sw_0012": false,
+              "sw_0013": false,
+              "sw_0014": false,
+              "sw_0015": false,
+              "sw_0016": false,
+              "sw_0017": false,
+              "sw_0018": false,
+              "sw_0019": false,
+              "sw_0020": false
+            },
+            "variables": {
+              "var_0001": 0,
+              "var_0002": 0,
+              "var_0003": 0,
+              "var_0004": 0,
+              "var_0005": 0,
+              "var_0006": 0,
+              "var_0007": 0,
+              "var_0008": 0,
+              "var_0009": 0,
+              "var_0010": 0,
+              "var_0011": 0,
+              "var_0012": 0,
+              "var_0013": 0,
+              "var_0014": 0,
+              "var_0015": 0,
+              "var_0016": 0,
+              "var_0017": 0,
+              "var_0018": 0,
+              "var_0019": 0,
+              "var_0020": 0
+            },
+            "selfSwitches": {},
+            "timers": {},
+            "inventory": {
+              "qa-hoe": 1,
+              "verify-seed": 3
+            },
+            "partyActorIds": [
+              "actor_hero"
+            ],
+            "npcActivities": {},
+            "friendship": {},
+            "rng": {
+              "seed": 1451295476,
+              "streams": {
+                "encounter": {
+                  "seed": 1458102032,
+                  "state": 1458102032
+                },
+                "battle": {
+                  "seed": 1808870089,
+                  "state": 1808870089
+                },
+                "movement": {
+                  "seed": 2865144322,
+                  "state": 2865144322
+                },
+                "fishing": {
+                  "seed": 947270631,
+                  "state": 947270631
+                },
+                "misc": {
+                  "seed": 593507727,
+                  "state": 593507727
+                }
+              }
+            }
+          },
+          "mirror": {
+            "farmPlots": {
+              "map_blank_start": {
+                "2,2": {
+                  "tilled": true,
+                  "watered": false
+                }
+              }
+            },
+            "energy": 9,
+            "makerInstances": {},
+            "actionReceipt": {
+              "kind": "action",
+              "mapId": "map_blank_start",
+              "handled": true,
+              "farmAttempts": [
+                {
+                  "kind": "ignored",
+                  "x": 2,
+                  "y": 3,
+                  "reason": "not-farmable"
+                },
+                {
+                  "kind": "tilled",
+                  "x": 2,
+                  "y": 2,
+                  "itemId": "qa-hoe",
+                  "energySpent": 1,
+                  "xpAwarded": {},
+                  "affectedTiles": [
+                    {
+                      "x": 2,
+                      "y": 2,
+                      "kind": "tilled"
+                    }
+                  ]
+                }
+              ],
+              "sequence": 1
+            },
+            "mapId": "map_blank_start",
+            "inputEnabled": true,
+            "running": false,
+            "player": {
+              "x": 2,
+              "y": 2
+            },
+            "switches": {
+              "sw_0001": false,
+              "sw_0002": false,
+              "sw_0003": false,
+              "sw_0004": false,
+              "sw_0005": false,
+              "sw_0006": false,
+              "sw_0007": false,
+              "sw_0008": false,
+              "sw_0009": false,
+              "sw_0010": false,
+              "sw_0011": false,
+              "sw_0012": false,
+              "sw_0013": false,
+              "sw_0014": false,
+              "sw_0015": false,
+              "sw_0016": false,
+              "sw_0017": false,
+              "sw_0018": false,
+              "sw_0019": false,
+              "sw_0020": false
+            },
+            "variables": {
+              "var_0001": 0,
+              "var_0002": 0,
+              "var_0003": 0,
+              "var_0004": 0,
+              "var_0005": 0,
+              "var_0006": 0,
+              "var_0007": 0,
+              "var_0008": 0,
+              "var_0009": 0,
+              "var_0010": 0,
+              "var_0011": 0,
+              "var_0012": 0,
+              "var_0013": 0,
+              "var_0014": 0,
+              "var_0015": 0,
+              "var_0016": 0,
+              "var_0017": 0,
+              "var_0018": 0,
+              "var_0019": 0,
+              "var_0020": 0
+            },
+            "timers": {},
+            "timerActive": {},
+            "flags": {},
+            "mapOverrides": {},
+            "gold": 0,
+            "inventory": {
+              "qa-hoe": 1,
+              "verify-seed": 3
+            },
+            "partyActorIds": [
+              "actor_hero"
+            ],
+            "actorSkillIds": {},
+            "actorExperience": {
+              "actor_hero": 0
+            },
+            "actorLevels": {
+              "actor_hero": 1,
+              "actor_guardian": 1,
+              "actor_mage": 1,
+              "actor_scout": 1,
+              "actor_cleric": 1,
+              "actor_ranger": 1
+            },
+            "actorVitals": {
+              "actor_hero": {
+                "hp": 514,
+                "mp": 43,
+                "maxHp": 514,
+                "maxMp": 43
+              }
+            },
+            "eventLocations": {},
+            "followers": [],
+            "followerTrail": [],
+            "removedEventIds": {},
+            "spawnedEvents": {},
+            "camera": {
+              "mode": "follow",
+              "target": {
+                "kind": "player"
+              }
+            },
+            "lighting": {
+              "ambient": 0,
+              "sources": []
+            },
+            "actorEquipment": {
+              "actor_hero": {
+                "weapon": "equip_sword",
+                "shield": "equip_oak_shield",
+                "armor": "equip_leather_armor",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              },
+              "actor_guardian": {
+                "weapon": "equip_sword",
+                "shield": "equip_oak_shield",
+                "armor": "equip_leather_armor",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              },
+              "actor_mage": {
+                "weapon": "equip_mage_staff",
+                "armor": "equip_mystic_robe",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              },
+              "actor_scout": {
+                "weapon": "equip_scout_dagger",
+                "armor": "equip_leather_armor",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              },
+              "actor_cleric": {
+                "weapon": "equip_mage_staff",
+                "shield": "equip_oak_shield",
+                "armor": "equip_mystic_robe",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              },
+              "actor_ranger": {
+                "weapon": "equip_scout_dagger",
+                "armor": "equip_leather_armor",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              }
+            },
+            "actorRows": {
+              "actor_hero": "front"
+            },
+            "classOverrides": {},
+            "audio": {
+              "bgm": {
+                "resourceId": "cc0-bgm-rtp-fld-003",
+                "loop": true
+              }
+            },
+            "pictures": {},
+            "events": {},
+            "movers": {}
+          }
+        }
+      ],
+      "initial": {
+        "farmPlots": {},
+        "energy": 10,
+        "makerInstances": {},
+        "eventLocations": {},
+        "currentMapId": "map_blank_start",
+        "x": 2,
+        "y": 2,
+        "gold": 0,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {},
+        "timers": {},
+        "inventory": {
+          "qa-hoe": 1,
+          "verify-seed": 3
+        },
+        "partyActorIds": [
+          "actor_hero"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 1451295476,
+          "streams": {
+            "encounter": {
+              "seed": 1458102032,
+              "state": 1458102032
+            },
+            "battle": {
+              "seed": 1808870089,
+              "state": 1808870089
+            },
+            "movement": {
+              "seed": 2865144322,
+              "state": 2865144322
+            },
+            "fishing": {
+              "seed": 947270631,
+              "state": 947270631
+            },
+            "misc": {
+              "seed": 593507727,
+              "state": 593507727
+            }
+          }
+        }
+      },
+      "pass": true,
+      "contextClosed": true
+    },
+    {
+      "scenario": "existing-fish-only",
+      "fixtureSha256": "5fb99b39a905ef13152fcfc97440067d6c93d9a452d1a2c35390bd6ba0f75e6b",
+      "rules": [
+        {
+          "id": "only-fish",
+          "action": "fish"
+        }
+      ],
+      "errors": [],
+      "failedRequests": [],
+      "actions": [
+        {
+          "receipt": {
+            "kind": "action",
+            "mapId": "map_blank_start",
+            "handled": false,
+            "farmAttempts": [
+              {
+                "kind": "ignored",
+                "x": 2,
+                "y": 3,
+                "reason": "not-farmable"
+              },
+              {
+                "kind": "ignored",
+                "x": 2,
+                "y": 2,
+                "reason": "not-farmable"
+              }
+            ],
+            "sequence": 1
+          },
+          "state": {
+            "farmPlots": {},
+            "energy": 10,
+            "makerInstances": {},
+            "actionReceipt": {
+              "kind": "action",
+              "mapId": "map_blank_start",
+              "handled": false,
+              "farmAttempts": [
+                {
+                  "kind": "ignored",
+                  "x": 2,
+                  "y": 3,
+                  "reason": "not-farmable"
+                },
+                {
+                  "kind": "ignored",
+                  "x": 2,
+                  "y": 2,
+                  "reason": "not-farmable"
+                }
+              ],
+              "sequence": 1
+            },
+            "eventLocations": {},
+            "currentMapId": "map_blank_start",
+            "x": 2,
+            "y": 2,
+            "gold": 0,
+            "switches": {
+              "sw_0001": false,
+              "sw_0002": false,
+              "sw_0003": false,
+              "sw_0004": false,
+              "sw_0005": false,
+              "sw_0006": false,
+              "sw_0007": false,
+              "sw_0008": false,
+              "sw_0009": false,
+              "sw_0010": false,
+              "sw_0011": false,
+              "sw_0012": false,
+              "sw_0013": false,
+              "sw_0014": false,
+              "sw_0015": false,
+              "sw_0016": false,
+              "sw_0017": false,
+              "sw_0018": false,
+              "sw_0019": false,
+              "sw_0020": false
+            },
+            "variables": {
+              "var_0001": 0,
+              "var_0002": 0,
+              "var_0003": 0,
+              "var_0004": 0,
+              "var_0005": 0,
+              "var_0006": 0,
+              "var_0007": 0,
+              "var_0008": 0,
+              "var_0009": 0,
+              "var_0010": 0,
+              "var_0011": 0,
+              "var_0012": 0,
+              "var_0013": 0,
+              "var_0014": 0,
+              "var_0015": 0,
+              "var_0016": 0,
+              "var_0017": 0,
+              "var_0018": 0,
+              "var_0019": 0,
+              "var_0020": 0
+            },
+            "selfSwitches": {},
+            "timers": {},
+            "inventory": {
+              "qa-hoe": 1,
+              "verify-seed": 3
+            },
+            "partyActorIds": [
+              "actor_hero"
+            ],
+            "npcActivities": {},
+            "friendship": {},
+            "rng": {
+              "seed": 4228519718,
+              "streams": {
+                "encounter": {
+                  "seed": 3494571489,
+                  "state": 3494571489
+                },
+                "battle": {
+                  "seed": 322474742,
+                  "state": 322474742
+                },
+                "movement": {
+                  "seed": 516787729,
+                  "state": 516787729
+                },
+                "fishing": {
+                  "seed": 1037642610,
+                  "state": 1037642610
+                },
+                "misc": {
+                  "seed": 4140491804,
+                  "state": 4140491804
+                }
+              }
+            }
+          },
+          "mirror": {
+            "farmPlots": {},
+            "energy": 10,
+            "makerInstances": {},
+            "actionReceipt": {
+              "kind": "action",
+              "mapId": "map_blank_start",
+              "handled": false,
+              "farmAttempts": [
+                {
+                  "kind": "ignored",
+                  "x": 2,
+                  "y": 3,
+                  "reason": "not-farmable"
+                },
+                {
+                  "kind": "ignored",
+                  "x": 2,
+                  "y": 2,
+                  "reason": "not-farmable"
+                }
+              ],
+              "sequence": 1
+            },
+            "mapId": "map_blank_start",
+            "inputEnabled": true,
+            "running": false,
+            "player": {
+              "x": 2,
+              "y": 2
+            },
+            "switches": {
+              "sw_0001": false,
+              "sw_0002": false,
+              "sw_0003": false,
+              "sw_0004": false,
+              "sw_0005": false,
+              "sw_0006": false,
+              "sw_0007": false,
+              "sw_0008": false,
+              "sw_0009": false,
+              "sw_0010": false,
+              "sw_0011": false,
+              "sw_0012": false,
+              "sw_0013": false,
+              "sw_0014": false,
+              "sw_0015": false,
+              "sw_0016": false,
+              "sw_0017": false,
+              "sw_0018": false,
+              "sw_0019": false,
+              "sw_0020": false
+            },
+            "variables": {
+              "var_0001": 0,
+              "var_0002": 0,
+              "var_0003": 0,
+              "var_0004": 0,
+              "var_0005": 0,
+              "var_0006": 0,
+              "var_0007": 0,
+              "var_0008": 0,
+              "var_0009": 0,
+              "var_0010": 0,
+              "var_0011": 0,
+              "var_0012": 0,
+              "var_0013": 0,
+              "var_0014": 0,
+              "var_0015": 0,
+              "var_0016": 0,
+              "var_0017": 0,
+              "var_0018": 0,
+              "var_0019": 0,
+              "var_0020": 0
+            },
+            "timers": {},
+            "timerActive": {},
+            "flags": {},
+            "mapOverrides": {},
+            "gold": 0,
+            "inventory": {
+              "qa-hoe": 1,
+              "verify-seed": 3
+            },
+            "partyActorIds": [
+              "actor_hero"
+            ],
+            "actorSkillIds": {},
+            "actorExperience": {
+              "actor_hero": 0
+            },
+            "actorLevels": {
+              "actor_hero": 1,
+              "actor_guardian": 1,
+              "actor_mage": 1,
+              "actor_scout": 1,
+              "actor_cleric": 1,
+              "actor_ranger": 1
+            },
+            "actorVitals": {
+              "actor_hero": {
+                "hp": 514,
+                "mp": 43,
+                "maxHp": 514,
+                "maxMp": 43
+              }
+            },
+            "eventLocations": {},
+            "followers": [],
+            "followerTrail": [],
+            "removedEventIds": {},
+            "spawnedEvents": {},
+            "camera": {
+              "mode": "follow",
+              "target": {
+                "kind": "player"
+              }
+            },
+            "lighting": {
+              "ambient": 0,
+              "sources": []
+            },
+            "actorEquipment": {
+              "actor_hero": {
+                "weapon": "equip_sword",
+                "shield": "equip_oak_shield",
+                "armor": "equip_leather_armor",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              },
+              "actor_guardian": {
+                "weapon": "equip_sword",
+                "shield": "equip_oak_shield",
+                "armor": "equip_leather_armor",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              },
+              "actor_mage": {
+                "weapon": "equip_mage_staff",
+                "armor": "equip_mystic_robe",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              },
+              "actor_scout": {
+                "weapon": "equip_scout_dagger",
+                "armor": "equip_leather_armor",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              },
+              "actor_cleric": {
+                "weapon": "equip_mage_staff",
+                "shield": "equip_oak_shield",
+                "armor": "equip_mystic_robe",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              },
+              "actor_ranger": {
+                "weapon": "equip_scout_dagger",
+                "armor": "equip_leather_armor",
+                "helmet": "equip_traveler_hat",
+                "accessory": "equip_focus_charm"
+              }
+            },
+            "actorRows": {
+              "actor_hero": "front"
+            },
+            "classOverrides": {},
+            "audio": {
+              "bgm": {
+                "resourceId": "cc0-bgm-rtp-fld-003",
+                "loop": true
+              }
+            },
+            "pictures": {},
+            "events": {},
+            "movers": {}
+          }
+        }
+      ],
+      "initial": {
+        "farmPlots": {},
+        "energy": 10,
+        "makerInstances": {},
+        "eventLocations": {},
+        "currentMapId": "map_blank_start",
+        "x": 2,
+        "y": 2,
+        "gold": 0,
+        "switches": {
+          "sw_0001": false,
+          "sw_0002": false,
+          "sw_0003": false,
+          "sw_0004": false,
+          "sw_0005": false,
+          "sw_0006": false,
+          "sw_0007": false,
+          "sw_0008": false,
+          "sw_0009": false,
+          "sw_0010": false,
+          "sw_0011": false,
+          "sw_0012": false,
+          "sw_0013": false,
+          "sw_0014": false,
+          "sw_0015": false,
+          "sw_0016": false,
+          "sw_0017": false,
+          "sw_0018": false,
+          "sw_0019": false,
+          "sw_0020": false
+        },
+        "variables": {
+          "var_0001": 0,
+          "var_0002": 0,
+          "var_0003": 0,
+          "var_0004": 0,
+          "var_0005": 0,
+          "var_0006": 0,
+          "var_0007": 0,
+          "var_0008": 0,
+          "var_0009": 0,
+          "var_0010": 0,
+          "var_0011": 0,
+          "var_0012": 0,
+          "var_0013": 0,
+          "var_0014": 0,
+          "var_0015": 0,
+          "var_0016": 0,
+          "var_0017": 0,
+          "var_0018": 0,
+          "var_0019": 0,
+          "var_0020": 0
+        },
+        "selfSwitches": {},
+        "timers": {},
+        "inventory": {
+          "qa-hoe": 1,
+          "verify-seed": 3
+        },
+        "partyActorIds": [
+          "actor_hero"
+        ],
+        "npcActivities": {},
+        "friendship": {},
+        "rng": {
+          "seed": 4228519718,
+          "streams": {
+            "encounter": {
+              "seed": 3494571489,
+              "state": 3494571489
+            },
+            "battle": {
+              "seed": 322474742,
+              "state": 322474742
+            },
+            "movement": {
+              "seed": 516787729,
+              "state": 516787729
+            },
+            "fishing": {
+              "seed": 1037642610,
+              "state": 1037642610
+            },
+            "misc": {
+              "seed": 4140491804,
+              "state": 4140491804
+            }
+          }
+        }
+      },
+      "pass": true,
+      "contextClosed": true
+    }
+  ],
+  "remoteWrites": [],
+  "browserVersion": "151.0",
+  "pass": true,
+  "cleanup": {
+    "browserClosed": true,
+    "contextsClosed": true,
+    "serverClosed": true,
+    "ownedCacheRemoved": "/home/main/z-project/rpg-zzu-life-full-tools-verify/.vite-cache/st_01a076ed-player"
+  }
+}

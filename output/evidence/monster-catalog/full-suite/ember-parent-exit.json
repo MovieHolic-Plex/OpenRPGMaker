@@ -1,0 +1,11 @@
+{
+  "revision": "d23f26ce2",
+  "monitor": "mon_2FF1JF54MH2KBK02",
+  "exitCode": 0,
+  "status": "completed",
+  "files": 1,
+  "tests": 5,
+  "failed": 0,
+  "report": "ember-parent.json",
+  "diagnostics": "Fresh LSP timed out after3000ms; child scoped strict compiler passed. No clean LSP claim."
+}

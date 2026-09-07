@@ -1,0 +1,6 @@
+src/ai/monsterAppearanceEvidence.ts 99
+src/ai/monsterResourceSnapshot.ts 9
+src/editor/tools/monsterResourceTools.ts 68
+src/util/sha256.ts 72
+test/monsterAppearanceAssetIdentity.test.ts 101
+test/sha256.test.ts 35

@@ -1,0 +1,109 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiOutcomeEntryOwnership.test.ts --maxWorkers 1 --minWorkers 1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p2-20260906
+
+ ❯ test/aiOutcomeEntryOwnership.test.ts (12 tests | 10 failed) 134961ms
+   × early cancelled entry > settles delivery for 'fresh request' before the intent transport can reject 8314ms
+     → expected { execution: 'cancelled', …(2) } to deeply equal { execution: 'cancelled', …(2) }
+   ✓ early cancelled entry > settles delivery for 'explicit continuation' before the intent transport can reject  8742ms
+   × early cancelled entry > settles delivery for 'Ask continuation token' before the intent transport can reject 9114ms
+     → expected { execution: 'cancelled', …(2) } to deeply equal { execution: 'cancelled', …(2) }
+   × early cancelled entry > settles delivery for 'new goal continuation token' before the intent transport can reject 20822ms
+     → Test timed out in 15000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+   × early cancelled entry > settles delivery for 'fresh instruction override' before the intent transport can reject 15276ms
+     → Test timed out in 15000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+   × early cancelled entry > settles delivery for 'continuation instruction override' before the intent transport can reject 18250ms
+     → Test timed out in 15000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+   × early failed entry > settles delivery for 'fresh request' before the intent transport can reject 6251ms
+     → expected { execution: 'failed', …(2) } to deeply equal { execution: 'failed', …(2) }
+   ✓ early failed entry > settles delivery for 'explicit continuation' before the intent transport can reject  8018ms
+   × early failed entry > settles delivery for 'Ask continuation token' before the intent transport can reject 5265ms
+     → expected { execution: 'failed', …(2) } to deeply equal { execution: 'failed', …(2) }
+   × early failed entry > settles delivery for 'new goal continuation token' before the intent transport can reject 8873ms
+     → expected { execution: 'failed', …(2) } to deeply equal { execution: 'failed', …(2) }
+   × early failed entry > settles delivery for 'fresh instruction override' before the intent transport can reject 8572ms
+     → expected { execution: 'failed', …(2) } to deeply equal { execution: 'failed', …(2) }
+   × early failed entry > settles delivery for 'continuation instruction override' before the intent transport can reject 17452ms
+     → Test timed out in 15000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 10 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiOutcomeEntryOwnership.test.ts > early cancelled entry > settles delivery for 'fresh request' before the intent transport can reject
+ FAIL  test/aiOutcomeEntryOwnership.test.ts > early cancelled entry > settles delivery for 'Ask continuation token' before the intent transport can reject
+AssertionError: expected { execution: 'cancelled', …(2) } to deeply equal { execution: 'cancelled', …(2) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "delivery": "no-change",[39m
+[31m+   "delivery": "persisted-verified",[39m
+[2m    "execution": "cancelled",[22m
+[2m    "goal": "unassessed",[22m
+[2m  }[22m
+
+ ❯ test/aiOutcomeEntryOwnership.test.ts:58:31
+     56|     expect(declareIntent).toHaveBeenCalledTimes(2);
+     57|     expect(result.stoppedReason).toBe(ending === "cancelled" ? "aborte…
+     58|     expect(result.runOutcome).toEqual(expected);
+       |                               ^
+     59|     expect(result.appliedCalls).toHaveLength(entry.retained ? 1 : 0);
+     60|     expect(result.proposedCalls).toHaveLength(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯
+
+ FAIL  test/aiOutcomeEntryOwnership.test.ts > early cancelled entry > settles delivery for 'new goal continuation token' before the intent transport can reject
+ FAIL  test/aiOutcomeEntryOwnership.test.ts > early cancelled entry > settles delivery for 'fresh instruction override' before the intent transport can reject
+ FAIL  test/aiOutcomeEntryOwnership.test.ts > early cancelled entry > settles delivery for 'continuation instruction override' before the intent transport can reject
+ FAIL  test/aiOutcomeEntryOwnership.test.ts > early failed entry > settles delivery for 'continuation instruction override' before the intent transport can reject
+Error: Test timed out in 15000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ test/aiOutcomeEntryOwnership.test.ts:30:18
+     28| 
+     29| describe.each(["cancelled", "failed"] as const)("early %s entry", endi…
+     30|   it.each(entries)("settles delivery for $name before the intent trans…
+       |                  ^
+     31|     // Given a genuinely applied and verified prior run in the same se…
+     32|     let faultArmed = false;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/10]⎯
+
+ FAIL  test/aiOutcomeEntryOwnership.test.ts > early failed entry > settles delivery for 'fresh request' before the intent transport can reject
+ FAIL  test/aiOutcomeEntryOwnership.test.ts > early failed entry > settles delivery for 'Ask continuation token' before the intent transport can reject
+ FAIL  test/aiOutcomeEntryOwnership.test.ts > early failed entry > settles delivery for 'new goal continuation token' before the intent transport can reject
+ FAIL  test/aiOutcomeEntryOwnership.test.ts > early failed entry > settles delivery for 'fresh instruction override' before the intent transport can reject
+AssertionError: expected { execution: 'failed', …(2) } to deeply equal { execution: 'failed', …(2) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "delivery": "no-change",[39m
+[31m+   "delivery": "persisted-verified",[39m
+[2m    "execution": "failed",[22m
+[2m    "goal": "unassessed",[22m
+[2m  }[22m
+
+ ❯ test/aiOutcomeEntryOwnership.test.ts:58:31
+     56|     expect(declareIntent).toHaveBeenCalledTimes(2);
+     57|     expect(result.stoppedReason).toBe(ending === "cancelled" ? "aborte…
+     58|     expect(result.runOutcome).toEqual(expected);
+       |                               ^
+     59|     expect(result.appliedCalls).toHaveLength(entry.retained ? 1 : 0);
+     60|     expect(result.proposedCalls).toHaveLength(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/10]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  10 failed | 2 passed (12)
+   Start at  04:41:07
+   Duration  205.09s (transform 39.48s, setup 0ms, collect 62.21s, tests 134.96s, environment 0ms, prepare 354ms)
+

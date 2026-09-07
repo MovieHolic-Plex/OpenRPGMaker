@@ -58,7 +58,7 @@ export function attachWindowFullscreen(
   const onButtonClick = (): void => toggle();
   const onHeaderDoubleClick = (event: MouseEvent): void => {
     const target = event.target;
-    if (target instanceof HTMLElement && target.closest("button, input, select, textarea, a")) return;
+    if (target instanceof Element && target.closest("button, input, select, textarea, a, summary")) return;
     event.preventDefault();
     toggle();
   };

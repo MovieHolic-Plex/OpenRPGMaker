@@ -1,0 +1,43 @@
+{
+  "baselinePath": "output/evidence/ai-harness/p2/main-compat/verified-targeted-vitest.json",
+  "baseline": {
+    "sha256": "9257a082ba2342309cbc7299adf94acf474df764fc4a6d61bb58ee741aa03199",
+    "counts": {
+      "numTotalTests": 1200,
+      "numPassedTests": 1199,
+      "numFailedTests": 1,
+      "numPendingTests": 0,
+      "numTotalTestSuites": 156
+    },
+    "failures": [
+      {
+        "file": "test/assistantSessionIntent.test.ts",
+        "fullName": "의도 선언이 세션 라우팅을 정한다 auto 모드는 같은 선언에도 멈추지 않고 진행한다(F-05)",
+        "failureMessages": [
+          "AssertionError: expected '완료 검증이 아직 미완성입니다.\\n- 집 하나 만들어줘: Missi…' to be '야외 집으로 진행합니다.' // Object.is equality\n    at /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/test/assistantSessionIntent.test.ts:114:34\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+        ]
+      }
+    ]
+  },
+  "current": {
+    "sha256": "3cc9f39bda5c00a43dbe94f7da84b649b62393c55a66c538210abb3648881227",
+    "counts": {
+      "numTotalTests": 1433,
+      "numPassedTests": 1432,
+      "numFailedTests": 1,
+      "numPendingTests": 0,
+      "numTotalTestSuites": 211
+    },
+    "failures": [
+      {
+        "file": "test/assistantSessionIntent.test.ts",
+        "fullName": "의도 선언이 세션 라우팅을 정한다 auto 모드는 같은 선언에도 멈추지 않고 진행한다(F-05)",
+        "failureMessages": [
+          "AssertionError: expected '완료 검증이 아직 미완성입니다.\\n- 집 하나 만들어줘: Missi…' to be '야외 집으로 진행합니다.' // Object.is equality\n    at /home/main/z-project/rpg-zzu-ai-harness-p2-20260906/test/assistantSessionIntent.test.ts:114:34\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+        ]
+      }
+    ]
+  },
+  "newFailureIdentities": [],
+  "missingBaselineIdentities": []
+}

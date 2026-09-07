@@ -1,0 +1,26 @@
+{
+  "scripts/qa/ai-harness-p2.mjs": {
+    "sameAsP2Head": true,
+    "sha256": "81c7b57d1cecb3c3cdc18db4e3f46aaa82ae2358af24e7c2a9b76d384cc52326"
+  },
+  "scripts/qa/ai-harness-p2-scenarios.mjs": {
+    "sameAsP2Head": true,
+    "sha256": "c20959243619beca413d44e3005f46c0b3a9f2229a860bbec7d3358cefa4ce3a"
+  },
+  "scripts/qa/ai-harness-p2-observe.mjs": {
+    "sameAsP2Head": true,
+    "sha256": "56b650dd393b9713f895144f6cbbfda687941ec60f2a34bd895a78f2260596a6"
+  },
+  "scripts/qa/ai-harness-p2-resume.mjs": {
+    "sameAsP2Head": true,
+    "sha256": "4005732b9686bb61600250ef978625dc5f3d571f0250be134b3e51813c90693f"
+  },
+  "scripts/qa/ai-harness-proof-failure.mjs": {
+    "sameAsP2Head": true,
+    "sha256": "0e2fcc85ce1d867f24c355a13999b3ab8865623e60d40630426a5d6a06c03507"
+  },
+  "scripts/qa/ai-harness-cleanup.mjs": {
+    "sameAsP2Head": true,
+    "sha256": "cca421282dda00bfb1773268c8378e00c71ab44d1aff3c42d0056ca6d5f5fa07"
+  }
+}

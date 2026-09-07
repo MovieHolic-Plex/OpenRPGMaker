@@ -1,0 +1,88 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiRequiredOutcomes.test.ts test/assistantVerificationEvidence.test.ts test/workItemOutcome.test.ts test/assistantAcceptance.test.ts test/assistantAcceptanceSession.test.ts test/assistantAcceptanceRequestBaseline.test.ts --maxWorkers 2 --minWorkers 1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p2-20260906
+
+ ✓ test/assistantAcceptanceRequestBaseline.test.ts (6 tests) 20604ms
+   ✓ per-request acceptance baselines > preserves a map created in A while B changes another map  3896ms
+   ✓ per-request acceptance baselines > does not credit A's change toward a newly accepted B change promise  2394ms
+   ✓ per-request acceptance baselines > late adoption cannot baseline away B's earlier write (applied=false)  3589ms
+   ✓ per-request acceptance baselines > late adoption cannot baseline away B's earlier write (applied=true)  3973ms
+   ✓ per-request acceptance baselines > retains B's pre-write baseline across budget-driven synthetic continuation  3574ms
+   ✓ per-request acceptance baselines > retains B's baseline when a manual continuation repairs and replans after application  3175ms
+ ✓ test/aiRequiredOutcomes.test.ts (34 tests) 30021ms
+   ✓ canonical requirements > keeps required skipped obligations when a replan tries to weaken them  1278ms
+   ✓ canonical requirements > allows optional skipped work without labeling it verified  1061ms
+   ✓ canonical requirements > fails closed for malformed declarations null  1040ms
+   ✓ canonical requirements > fails closed for malformed declarations %j  746ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":[{"kind":"mapDimensions","target":{"mapId":"map_blank_start"},"width":99,"height":99}],"required":"false"}  858ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":[{"kind":"invented","passed":true}]}  1209ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":null,"required":false}  789ms
+   ✓ canonical requirements > assesses existing explicit acceptance without requiring the new field  1031ms
+   ✓ canonical requirements > binds original text and scope at the host boundary despite fabricated source and withdrawal  927ms
+   ✓ canonical requirements > withdraws only the named current requirement through the user-only API  688ms
+   ✓ canonical requirements > keeps sibling obligations when the user withdraws just one  546ms
+   ✓ canonical requirements > rejects model tool withdrawal even with fabricated user provenance  1160ms
+   ✓ canonical requirements > rejects stale goal withdrawal actions  872ms
+   ✓ canonical requirements > does not erase old obligations on a model resetsContext claim  861ms
+   ✓ canonical requirements > archives an incomplete goal when the user explicitly starts a new goal  825ms
+   ✓ exact scoped verdict authority > evaluates explicit evidence without tool-name credit  617ms
+   ✓ exact scoped verdict authority > evaluates wrong-target evidence without tool-name credit  503ms
+   ✓ exact scoped verdict authority > evaluates stale evidence without tool-name credit  567ms
+   ✓ exact scoped verdict authority > evaluates advisory-after-stale evidence without tool-name credit  413ms
+   ✓ exact scoped verdict authority > evaluates advisory-after-explicit evidence without tool-name credit  349ms
+   ✓ exact scoped verdict authority > evaluates negative evidence without tool-name credit  383ms
+   ✓ exact scoped verdict authority > evaluates model evidence without tool-name credit  667ms
+   ✓ exact scoped verdict authority > does not verify an unapplied draft from a passing scoped verdict  840ms
+   ✓ exact scoped verdict authority > retires scoped verdicts after applied content changes even if later undone  5639ms
+   ✓ exact scoped verdict authority > credits a real scoped tool response through the session dispatcher  2893ms
+   ✓ question-safe continuation > preserves blocked work and counters for ask  328ms
+   ✓ question-safe continuation > preserves blocked work and counters for question  358ms
+   ✓ question-safe continuation > preserves repeated failure counters while answering a question  1006ms
+   ✓ question-safe continuation > reactivates blocked work only with explicit user resume  302ms
+   ✓ question-safe continuation > retains goal evidence and repair counters during ask  390ms
+ ✓ test/assistantVerificationEvidence.test.ts (20 tests) 15667ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > run_lint ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  1530ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > check_reachability ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  1114ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > verify_quest ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  797ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > play_walkthrough ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  1093ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > run_scene_test ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  1759ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > evaluate_game_quality ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  1099ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 같은 검사 재실패는 앞선 성공을 제거하고, 이후 실제 재통과는 복구한다  690ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 쓰기 이후에는 이전 검증 성공으로 완료할 수 없고 다시 검사해야 한다  586ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 재검사 없는 쓰기는 최종 보고에서도 검증 통과로 남지 않는다  736ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 실행되지 않은 잘못된 인자는 고친 호출로 복구할 수 있다  580ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > warning-only lint는 통과하며 거부된 쓰기는 성공 근거를 무효화하지 않는다  828ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 레이어의 선재 lint 오류는 자문을 유지하면서 최종 응답에 보고한다  550ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 레이어 자동 통과는 재검증 의무를 만들지 않고 명시 검사만 유지한다 (explicit=false)  1175ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 레이어 자동 통과는 재검증 의무를 만들지 않고 명시 검사만 유지한다 (explicit=true)  1248ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 다음 항목은 자기 대상의 검증으로 완료하며 이전 항목의 stale 검사는 최종 보고에 보존한다  1133ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 실패한 walkthrough 실행은 레이어의 성공 시나리오로 기록하지 않는다  519ms
+ ✓ test/assistantAcceptanceSession.test.ts (12 tests) 12015ms
+   ✓ acceptance controls actual session termination > does not schedule run-end persistence proof for a completed plan with unmet acceptance  722ms
+   ✓ acceptance controls actual session termination > does not turn a review without an explicit passing verdict into completion  867ms
+   ✓ acceptance controls actual session termination > withdraws an earlier pass when a later explicit review fails  1208ms
+   ✓ acceptance controls actual session termination > continues then blocks insufficient dimensions and quantity even after skip completes the plan  715ms
+   ✓ acceptance controls actual session termination > retains original denominator when skip and set_work_plan try to shrink promises  1098ms
+   ✓ acceptance controls actual session termination > invalidates an attributed image review after a subsequent real map write  1271ms
+   ✓ applied acceptance lifecycle through real tools > repairs exact dimensions after plan completion and invalidates on applied undo  3099ms
+   ✓ applied acceptance lifecycle through real tools > blocks and retains the ledger when aborted while the next model response is held  541ms
+   ✓ applied acceptance lifecycle through real tools > never credits a review authored in the same response as the image request  1560ms
+   ✓ applied acceptance lifecycle through real tools > requires visible contract repair for a spatial plan missing criteria  525ms
+ ✓ test/workItemOutcome.test.ts (14 tests) 2831ms
+   ✓ 산출물 게이트 — create_map 직후 상태 판별 > create_map 직후의 맵은 미저작으로 본다  385ms
+   ✓ 산출물 게이트 — create_map 직후 상태 판별 > lower 가 두 종류 이상이면 저작된 것으로 본다  376ms
+   ✓ 산출물 게이트 — create_map 직후 상태 판별 > 이벤트가 있으면 저작된 것으로 본다  422ms
+   ✓ 산출물 게이트 — create_map 직후 상태 판별 > 이 항목이 만들지 않은 맵은 비어 있어도 검사하지 않는다  351ms
+ ✓ test/assistantAcceptance.test.ts (23 tests) 2946ms
+   ✓ acceptance evaluator > keeps a malformed item visible and permits repair only before criteria become valid  306ms
+   ✓ acceptance evaluator > preserves original target baselines through replacement promises and rebasing  351ms
+   ✓ acceptance evaluator > binds new-map names only to unique newly authored IDs and never guesses/rebinds  328ms
+
+ Test Files  6 passed (6)
+      Tests  109 passed (109)
+   Start at  01:39:00
+   Duration  89.64s (transform 25.94s, setup 0ms, collect 81.98s, tests 84.08s, environment 3ms, prepare 1.37s)
+

@@ -1,0 +1,1703 @@
+{
+  "schemaVersion": 1,
+  "version": 1,
+  "repo": "MovieHolic-Plex/rpg-zzu",
+  "tag": "bgm-v1",
+  "archive": {
+    "fileName": "rpg-zzu-bgm-v1.tar",
+    "bytes": 1304157696,
+    "sha256": "615a481cb5e3be7f42eceaaecd1f1d1cce4755fd040459d54d0929793daae9e2"
+  },
+  "count": 281,
+  "totalBytes": 1303934164,
+  "license": "CC0-1.0",
+  "source": "https://bgmreview-h4zeq64k.manus.space/",
+  "tracks": [
+    {
+      "id": "cc0-bgm-rtp-air-001",
+      "fileName": "rtp-air-001-windship-deck-final_b13528b9.mp3",
+      "bytes": 3514165,
+      "sha256": "c76cc70ba306a665ebd15e4ab27fbdee4601475317988e916249b6c8dda181d6"
+    },
+    {
+      "id": "cc0-bgm-rtp-alc-001",
+      "fileName": "rtp-alc-001-blue-vial-final_50bc52fc.mp3",
+      "bytes": 3954641,
+      "sha256": "44e29a1100e17a3d7a5cae918dff015e69013e6087d537e59d307f866651136b"
+    },
+    {
+      "id": "cc0-bgm-rtp-alg-001",
+      "fileName": "rtp-q0221-rtp-alg-001-preview_5cfb4660.mp3",
+      "bytes": 3546636,
+      "sha256": "5ba0ae674e560bd1fa993ecfe8fd85bc96491607d30c2880ca9f292ae153eaed"
+    },
+    {
+      "id": "cc0-bgm-rtp-alg-003",
+      "fileName": "rtp-q0223-rtp-alg-003-preview_77a33f26.mp3",
+      "bytes": 3638169,
+      "sha256": "8f4d0940da0275b3c4c732064856f0cf90909d2e93e49a85397578f3dee59552"
+    },
+    {
+      "id": "cc0-bgm-rtp-alg-004",
+      "fileName": "rtp-q0224-rtp-alg-004-preview_76f7d84c.mp3",
+      "bytes": 3353539,
+      "sha256": "7927f88d1d7df398ae8f07022623f212ee96a881faba0774ce95e6d7eb271c1d"
+    },
+    {
+      "id": "cc0-bgm-rtp-alg-005",
+      "fileName": "rtp-q0225-rtp-alg-005-preview_34c19cde.mp3",
+      "bytes": 3473284,
+      "sha256": "2c3ea1b5ec3fac8f0cc5f4b9e09b5fda5013b30323571f31558a20bbcbb110ff"
+    },
+    {
+      "id": "cc0-bgm-rtp-api-001",
+      "fileName": "rtp-api-001-reedfield-apiary-final_7aa90f25.mp3",
+      "bytes": 3519678,
+      "sha256": "6df5eac65e6d16b9ab6f3357ad8ec1ea66b35a6f01a39179b987e4ef23d0ad0c"
+    },
+    {
+      "id": "cc0-bgm-rtp-are-001",
+      "fileName": "rtp-are-001-sand-arena-final_640ff4d8.mp3",
+      "bytes": 3587369,
+      "sha256": "8d45950e583bebe387cab25541dc9f3698f6b2de9c8ca4ce3523869c9f6f9f93"
+    },
+    {
+      "id": "cc0-bgm-rtp-aut-001",
+      "fileName": "rtp-aut-001-autumn-post-road-final_e23d7767.mp3",
+      "bytes": 3222134,
+      "sha256": "ba9416259a715502a4dfc6146ada96b46bfba96af132e0177a469423e0cc48a4"
+    },
+    {
+      "id": "cc0-bgm-rtp-bks-001",
+      "fileName": "rtp-bks-001-rainy-bookshop-final_89ebddb0.mp3",
+      "bytes": 3570460,
+      "sha256": "6fa2d97cd00d6cd44bb7a783a4ce3b9e0ef7a28d47d4fe86cac92ae33dd6740a"
+    },
+    {
+      "id": "cc0-bgm-rtp-blr-001",
+      "fileName": "rtp-q0191-rtp-blr-001-preview_59f87c03.mp3",
+      "bytes": 3512155,
+      "sha256": "6c932229b203ee0e04c9b17bde6ef3e28a132dc0d8cb02f717e9fd6a3b799fc4"
+    },
+    {
+      "id": "cc0-bgm-rtp-blr-002",
+      "fileName": "rtp-q0192-rtp-blr-002-preview_f14967b4.mp3",
+      "bytes": 3523440,
+      "sha256": "29de42d59eccafbdd4ffd8307d444d2c6266edc0e3e7f1e4cccdfec76a0c36c6"
+    },
+    {
+      "id": "cc0-bgm-rtp-blr-003",
+      "fileName": "rtp-q0193-rtp-blr-003-preview_77de1d7f.mp3",
+      "bytes": 3459492,
+      "sha256": "4228ef6c513d4687a67b211510f4194f6432d4b24730c4db73ecdd02428514e7"
+    },
+    {
+      "id": "cc0-bgm-rtp-blr-004",
+      "fileName": "rtp-q0194-rtp-blr-004-preview_16fead62.mp3",
+      "bytes": 3667635,
+      "sha256": "bb96860d3d97f9e13aad671a590726f8cc0ecc66838518f8ea421fdcc8d8b30f"
+    },
+    {
+      "id": "cc0-bgm-rtp-blr-005",
+      "fileName": "rtp-q0195-rtp-blr-005-preview_6230cd6d.mp3",
+      "bytes": 3581745,
+      "sha256": "d9d4dbda1c32dd89e36686936d677015b66a5f2bdb07917bb22d7bbbd105a942"
+    },
+    {
+      "id": "cc0-bgm-rtp-brd-001",
+      "fileName": "rtp-brd-001-starwater-bridge-final_a601242e.mp3",
+      "bytes": 3410584,
+      "sha256": "712ccc88b982f74c105c9ba218112bb87bc70c125607bbb6a9d64ecfb33aff1a"
+    },
+    {
+      "id": "cc0-bgm-rtp-bth-001",
+      "fileName": "rtp-bth-001-stone-spring-steam-final_1262b968.mp3",
+      "bytes": 3344170,
+      "sha256": "2c8ed9f9be27c6bc0ff266aa2fd91590d05755db92783cf7ec2d30fbea5538bb"
+    },
+    {
+      "id": "cc0-bgm-rtp-btl-001",
+      "fileName": "rtp-btl-001-vanguard-signal_fc54007f.mp3",
+      "bytes": 3069367,
+      "sha256": "94cc8451cdd006fc3d38daa1f47eabf367d4cf5b60cd0837efaa9e70c94f1c88"
+    },
+    {
+      "id": "cc0-bgm-rtp-btl-002",
+      "fileName": "rtp-btl-002-ashen-crown_303d8e99.mp3",
+      "bytes": 3701074,
+      "sha256": "1d7d9da36047805b7ceab06c9b9fb1dd87312ce012e21863e83bba92ad907020"
+    },
+    {
+      "id": "cc0-bgm-rtp-caf-001",
+      "fileName": "rtp-caf-001-window-tea-room-final_f102d605.mp3",
+      "bytes": 3664501,
+      "sha256": "2bfa3d2adedc2f78f1112d11abfe117afdeb39ba9b02f9520711d890192d901d"
+    },
+    {
+      "id": "cc0-bgm-rtp-cav-001",
+      "fileName": "rtp-cav-001-crystal-breath_0638ee10.mp3",
+      "bytes": 3335662,
+      "sha256": "a417a9e57b55c2ad23f97cf50140c75b07236dcbf92e65f3694ae980d0c6abb6"
+    },
+    {
+      "id": "cc0-bgm-rtp-cbr-001",
+      "fileName": "rtp-q0181-rtp-cbr-001-preview_55ef8603.mp3",
+      "bytes": 3485823,
+      "sha256": "8d0e26dd22e222c1a874aad1acbcc7ddf11e773daf49811a5f7d39714d6b5ecd"
+    },
+    {
+      "id": "cc0-bgm-rtp-cbr-002",
+      "fileName": "rtp-q0182-rtp-cbr-002-preview_7c7b47b8.mp3",
+      "bytes": 3514662,
+      "sha256": "df7845559223e00dd5ae55d8a65ddf0c78661b76c4f100a143cd695d9e2f0803"
+    },
+    {
+      "id": "cc0-bgm-rtp-cbr-003",
+      "fileName": "rtp-q0183-rtp-cbr-003-preview_0b53175d.mp3",
+      "bytes": 3442564,
+      "sha256": "dcea9c2b0b6fd18ad90328ff373d9e18aa7e5ef411c3794b9b166065852b26c1"
+    },
+    {
+      "id": "cc0-bgm-rtp-cbr-004",
+      "fileName": "rtp-q0184-rtp-cbr-004-preview_b76a0692.mp3",
+      "bytes": 3418114,
+      "sha256": "5b695e885e8ed7b3ad2b54a17177c55f063a66a654a4d2a5136177d2af750ca6"
+    },
+    {
+      "id": "cc0-bgm-rtp-cbr-005",
+      "fileName": "rtp-q0185-rtp-cbr-005-preview_bb36ccde.mp3",
+      "bytes": 3580491,
+      "sha256": "0de0a518ccd1374f9e24a7588a33fe9b237117c901e151be88359fb111979163"
+    },
+    {
+      "id": "cc0-bgm-rtp-ccp-001",
+      "fileName": "rtp-q0161-rtp-ccp-001-preview_4ce05bdd.mp3",
+      "bytes": 3735972,
+      "sha256": "c93c61484a42a1e8b862783287137141950a3cc6bf46426a9d6a0c8c34675c3b"
+    },
+    {
+      "id": "cc0-bgm-rtp-ccp-002",
+      "fileName": "rtp-q0162-rtp-ccp-002-preview_5636f0c0.mp3",
+      "bytes": 3803681,
+      "sha256": "75706148a3c0069319fefc0de3c7881dd57e4c9bbd630609860a21313be5b6f4"
+    },
+    {
+      "id": "cc0-bgm-rtp-ccp-003",
+      "fileName": "rtp-q0163-rtp-ccp-003-preview_cfd2f54c.mp3",
+      "bytes": 3446953,
+      "sha256": "4af5696170fc998ac469f3da4cb0ec78253452c705df25c83108abc5dfa061b9"
+    },
+    {
+      "id": "cc0-bgm-rtp-ccp-004",
+      "fileName": "rtp-q0164-rtp-ccp-004-preview_220da7cc.mp3",
+      "bytes": 3647573,
+      "sha256": "baddd8cd55e38683e189084dee0000b06e1487ab3e8c8c1120722cd0360bd6b6"
+    },
+    {
+      "id": "cc0-bgm-rtp-ccp-005",
+      "fileName": "rtp-q0165-rtp-ccp-005-preview_198c9f8c.mp3",
+      "bytes": 3495227,
+      "sha256": "7046b3fb8da9944d2e11a326450dc9dcc9874fe6829418b358ed167b80655e35"
+    },
+    {
+      "id": "cc0-bgm-rtp-chs-001",
+      "fileName": "rtp-chs-001-broken-railing-final_d0f14af9.mp3",
+      "bytes": 3422137,
+      "sha256": "8253d970db79ab90198b47547772e79ab5d43d594b79d28fae707efdd91abbf1"
+    },
+    {
+      "id": "cc0-bgm-rtp-clf-001",
+      "fileName": "rtp-q0201-rtp-clf-001-preview_5fe01412.mp3",
+      "bytes": 3584253,
+      "sha256": "3864853804e84e6991a59c34fbc26e6322badb41f5599863433e4ac82cd8aa36"
+    },
+    {
+      "id": "cc0-bgm-rtp-clf-002",
+      "fileName": "rtp-q0202-rtp-clf-002-preview_27b8aeaa.mp3",
+      "bytes": 3633154,
+      "sha256": "b59bda1006c5b376391b5e3a5784af039b4e900655fd13424e23deb6cc578b22"
+    },
+    {
+      "id": "cc0-bgm-rtp-clf-003",
+      "fileName": "rtp-q0203-rtp-clf-003-preview_e8efc271.mp3",
+      "bytes": 3753526,
+      "sha256": "499b1165a9239059a5a43a3fbcf39f1554be15ba92cb4adf7aa6880826c9a9e9"
+    },
+    {
+      "id": "cc0-bgm-rtp-clf-004",
+      "fileName": "rtp-q0204-rtp-clf-004-preview_2f141706.mp3",
+      "bytes": 3413725,
+      "sha256": "fd147fabb20bef8769932cdeb91ee2484571d70bdd8613289baa2cf6e0dd130b"
+    },
+    {
+      "id": "cc0-bgm-rtp-clf-005",
+      "fileName": "rtp-q0205-rtp-clf-005-preview_8c6d238b.mp3",
+      "bytes": 3359809,
+      "sha256": "423411a9e475f47b00ae900c476dcabe3cffdb85127b7f74615a1ff90adbcd6f"
+    },
+    {
+      "id": "cc0-bgm-rtp-cln-001",
+      "fileName": "rtp-cln-001-herbal-clinic-final_6037e7c3.mp3",
+      "bytes": 3426264,
+      "sha256": "7f8e35978121ae2783d3fbdd36fd94c75314bbecd72acbf2041d409c6909e2ef"
+    },
+    {
+      "id": "cc0-bgm-rtp-cny-001",
+      "fileName": "rtp-cny-001-canyon-echo-final_b404dfa7.mp3",
+      "bytes": 3367734,
+      "sha256": "f273bc38a00dee57f332360f2f8941ee64d37c082defd7f42a0a085cacd2fd1c"
+    },
+    {
+      "id": "cc0-bgm-rtp-coa-001",
+      "fileName": "rtp-coa-001-whitewave-shore-final_029e77b2.mp3",
+      "bytes": 3742241,
+      "sha256": "901de2d5764167760c7359cb9f5c2fbf28f53485beb4a646334e3d7348234084"
+    },
+    {
+      "id": "cc0-bgm-rtp-com-001",
+      "fileName": "rtp-com-001-pranksters-cart-final_cfd4f1d6.mp3",
+      "bytes": 3773674,
+      "sha256": "41f6780b073358ab1869091eb0499ef47468d0179e29872c8707cf214cf5d523"
+    },
+    {
+      "id": "cc0-bgm-rtp-crf-001",
+      "fileName": "rtp-q0256-rtp-crf-001-preview_f090e74b.mp3",
+      "bytes": 3795531,
+      "sha256": "dbfd7579314fff31637126ef2cc97600f2b8bc930aa5fcc892ea898a27ca2bb3"
+    },
+    {
+      "id": "cc0-bgm-rtp-crf-002",
+      "fileName": "rtp-q0257-rtp-crf-002-preview_698eb9d1.mp3",
+      "bytes": 3483942,
+      "sha256": "62f8bf0ea11d6f2549c1a8b51eb0806d3d4924ae91df3be7e520bec655c3a577"
+    },
+    {
+      "id": "cc0-bgm-rtp-crf-003",
+      "fileName": "rtp-q0258-rtp-crf-003-preview_388b70ba.mp3",
+      "bytes": 3682682,
+      "sha256": "1d3a5a5e4664e36c2a8c8d25faf0e1ab4471e286d3637c5ac905726030162e40"
+    },
+    {
+      "id": "cc0-bgm-rtp-crf-004",
+      "fileName": "rtp-q0259-rtp-crf-004-preview_722f7b54.mp3",
+      "bytes": 3653216,
+      "sha256": "c08704fa36e2306b240c1a8105af7c57635967a44c92ce000707d800e28bdc0a"
+    },
+    {
+      "id": "cc0-bgm-rtp-crf-005",
+      "fileName": "rtp-q0260-rtp-crf-005-preview_8a234153.mp3",
+      "bytes": 3497735,
+      "sha256": "c2e47ea64163b3e8c2c7e29f7b051d21dd2bdb945453df1084a1082220b5121b"
+    },
+    {
+      "id": "cc0-bgm-rtp-crv-001",
+      "fileName": "rtp-crv-001-crown-corridor-final_f4f4ba4f.mp3",
+      "bytes": 3710327,
+      "sha256": "83dcd5c0f252bf94b36af9937321e596b9535b6fadccb476c553260500ef547d"
+    },
+    {
+      "id": "cc0-bgm-rtp-crx-001",
+      "fileName": "rtp-crx-001-beyond-crossing-final_e8b66cde.mp3",
+      "bytes": 3291472,
+      "sha256": "0898ed9bb95045ad09d77893312d0b5a54d68cdc708051a418df543afeea7be1"
+    },
+    {
+      "id": "cc0-bgm-rtp-dep-001",
+      "fileName": "rtp-dep-001-dawn-departure-final_06232dcf.mp3",
+      "bytes": 3547263,
+      "sha256": "2fc980f3d11829d13fedc4e5ebe211cabc6cf35cc8e644464ba1bc134f42d6e8"
+    },
+    {
+      "id": "cc0-bgm-rtp-dep-002",
+      "fileName": "rtp-dep-002-horizon-route-final_47311be6.mp3",
+      "bytes": 3523440,
+      "sha256": "097b899c06f6b8841bd1e9f0aedb524656dda3b183dddf9b321eb0c407729a4e"
+    },
+    {
+      "id": "cc0-bgm-rtp-dft-001",
+      "fileName": "rtp-dft-001-tie-again-final_5ab6e810.mp3",
+      "bytes": 3783171,
+      "sha256": "13f97d0ff728b687190377616e38bc86e71d1cc25f759c5a0255721002b749d7"
+    },
+    {
+      "id": "cc0-bgm-rtp-dng-001",
+      "fileName": "rtp-dng-001-mosslight-corridor_693a18e2.mp3",
+      "bytes": 3161357,
+      "sha256": "c03fbc84a5c0a86d02baec002c22a529ec75535e9e23075868270d84581c3471"
+    },
+    {
+      "id": "cc0-bgm-rtp-dre-001",
+      "fileName": "rtp-dre-001-moon-glass-lake-final_79dced5d.mp3",
+      "bytes": 3456357,
+      "sha256": "7117e18656218ca4c4560fc332ee4c1c7e16bb547c2905f24c1809db141e2fcd"
+    },
+    {
+      "id": "cc0-bgm-rtp-dst-001",
+      "fileName": "rtp-dst-001-glass-sand-road-final_2513e335.mp3",
+      "bytes": 3134111,
+      "sha256": "23decc05ca538841d03a4da48ee9d489a49512787548a1fe22fc29880566027a"
+    },
+    {
+      "id": "cc0-bgm-rtp-emo-001",
+      "fileName": "rtp-emo-001-unspoken-letter_8c371184.mp3",
+      "bytes": 3263254,
+      "sha256": "c6bb01122f0b4718cc9260bd40a6218cbb0acbf625dbcd4c16288db8017a7aae"
+    },
+    {
+      "id": "cc0-bgm-rtp-emo-002",
+      "fileName": "rtp-emo-002-returning-room-final_63c3cc26.mp3",
+      "bytes": 3504004,
+      "sha256": "553b10f641d3d2f116a2ef929fe88dd9e4b2b94bb4b61688c3b1a0498df44861"
+    },
+    {
+      "id": "cc0-bgm-rtp-fis-001",
+      "fileName": "rtp-q0241-rtp-fis-001-preview_a3ae438a.mp3",
+      "bytes": 3474538,
+      "sha256": "6fd04e22c3f57601f61b733ca552de81b3a42db14c892f6fc01cec86c0b4e24a"
+    },
+    {
+      "id": "cc0-bgm-rtp-fis-002",
+      "fileName": "rtp-q0242-rtp-fis-002-preview_c13b27de.mp3",
+      "bytes": 3487704,
+      "sha256": "ec104a8f4e768c3299953e8bd862a82ff739ab3b854cf7d6f558ac020e26b5e0"
+    },
+    {
+      "id": "cc0-bgm-rtp-fis-003",
+      "fileName": "rtp-q0243-rtp-fis-003-preview_b941d958.mp3",
+      "bytes": 3626257,
+      "sha256": "9f90ca473b6c4321b8922e0fc4eb9511a22575147ff221e6455f714710a77123"
+    },
+    {
+      "id": "cc0-bgm-rtp-fis-004",
+      "fileName": "rtp-q0244-rtp-fis-004-preview_9d87b71e.mp3",
+      "bytes": 3614973,
+      "sha256": "e93d88b4b7ca1234851418a8cfff080b84f43225f03e5d8a1d2ec990bee76cf2"
+    },
+    {
+      "id": "cc0-bgm-rtp-fis-005",
+      "fileName": "rtp-q0245-rtp-fis-005-preview_2a2e091f.mp3",
+      "bytes": 3488331,
+      "sha256": "db97435f94e82cc4b6d52aefdb295c64fe57c8f56d47f95c0fc85bdba355c50e"
+    },
+    {
+      "id": "cc0-bgm-rtp-fld-001",
+      "fileName": "rtp-fld-001-meadow-guild-square_f5d3e29d.mp3",
+      "bytes": 3643812,
+      "sha256": "e4a99db6c25ba7d502799f3c618e72b077845a0d9b6981e84e73c92368812771"
+    },
+    {
+      "id": "cc0-bgm-rtp-fld-002",
+      "fileName": "rtp-fld-002-windpath-forest_52d8bf85.mp3",
+      "bytes": 3328995,
+      "sha256": "debd99b323f1112b4a4ac6c0580b4daf1c68be5d148a61c7184586771b2c53b5"
+    },
+    {
+      "id": "cc0-bgm-rtp-fld-003",
+      "fileName": "rtp-fld-003-amber-meadow-end-final_f5dafd12.mp3",
+      "bytes": 3578610,
+      "sha256": "0e6f01067f351b0029289d8498393b3a55c7a3d58a2107543f31cbc3091a7117"
+    },
+    {
+      "id": "cc0-bgm-rtp-flt-001",
+      "fileName": "rtp-q0116-first-light-loop-master_06a1969c.wav",
+      "bytes": 42845100,
+      "sha256": "d5ae2b4d306dc48cb48148444067952ee65805d9ccf254c07977fe15dea8f23a"
+    },
+    {
+      "id": "cc0-bgm-rtp-flt-002",
+      "fileName": "rtp-q0117-title-first-light-loop-master_0fd7d1a6.wav",
+      "bytes": 45861930,
+      "sha256": "07f5267c027ca2bbef6ca536649e504ac374462a52b4a35c0e84ae9b314f4137"
+    },
+    {
+      "id": "cc0-bgm-rtp-flt-003",
+      "fileName": "rtp-q0118-main-menu-memory-loop-master_26cd4b50.wav",
+      "bytes": 43484580,
+      "sha256": "8d7805a17928d1e85e73be812c7c30ac16db726bc7127f8ce4fa886267326ab3"
+    },
+    {
+      "id": "cc0-bgm-rtp-flt-004",
+      "fileName": "rtp-q0119-character-morning-loop-master_69f0d1b4.wav",
+      "bytes": 42040110,
+      "sha256": "d7c5bf871faf6ff35d3eee3c10a04b6c3a92d53af3a23c87844394dcdf9d80a3"
+    },
+    {
+      "id": "cc0-bgm-rtp-flt-005",
+      "fileName": "rtp-q0120-blue-map-loop-master_f3ba5ac0.wav",
+      "bytes": 40746108,
+      "sha256": "170d3360ebfa8db54642ffd8b1a65fb1e403d98efe97e99b5faafbb9d13c857a"
+    },
+    {
+      "id": "cc0-bgm-rtp-flt-006",
+      "fileName": "rtp-q0121-village-sun-loop-master_24aca303.wav",
+      "bytes": 42378660,
+      "sha256": "d85fc2eae7c51270f5f64d89b99c646346e8df9dec03a93c06008858c5ee2971"
+    },
+    {
+      "id": "cc0-bgm-rtp-flt-007",
+      "fileName": "rtp-q0122-lamplit-return-loop-master_62a2850d.wav",
+      "bytes": 42341040,
+      "sha256": "cf86f00f04bd11b3f8a933eca685c6ffd2d135e705ec3b1eb28a58e97b8acb80"
+    },
+    {
+      "id": "cc0-bgm-rtp-flt-008",
+      "fileName": "rtp-q0123-dawn-grass-loop-master_2aa7991d.wav",
+      "bytes": 41859552,
+      "sha256": "7d421f3b51720bff67ee01b64b3022a044a68aac0d3c58a9650954ea9865ba06"
+    },
+    {
+      "id": "cc0-bgm-rtp-flt-009",
+      "fileName": "rtp-q0124-rtp-flt-009-preview_9e25ed9f.mp3",
+      "bytes": 3357928,
+      "sha256": "f8b5333d62e0d908ea4ea034ef85b684a7f2344dfc20db23c406cbf5f6681f2e"
+    },
+    {
+      "id": "cc0-bgm-rtp-flt-010",
+      "fileName": "rtp-q0125-rtp-flt-010-preview_2a8e8218.mp3",
+      "bytes": 3591776,
+      "sha256": "282b338ad99f80762818122bda97375f74b106af0888eb3825498cbb4fd990e8"
+    },
+    {
+      "id": "cc0-bgm-rtp-flt-011",
+      "fileName": "rtp-q0126-rtp-flt-011-preview_ecdbc8d9.mp3",
+      "bytes": 3631900,
+      "sha256": "a167cde2db992cf631354dfeb1f779a6b7d260f39b9c54c7105095aa3796a018"
+    },
+    {
+      "id": "cc0-bgm-rtp-flt-012",
+      "fileName": "rtp-q0127-rtp-flt-012-preview_d89fac9b.mp3",
+      "bytes": 3560429,
+      "sha256": "9930186e2cc932385c51bc9936cd7dc2408f4ecd34ae1ecb94a573be668b321d"
+    },
+    {
+      "id": "cc0-bgm-rtp-flt-013",
+      "fileName": "rtp-q0128-rtp-flt-013-preview_db2c8dc2.mp3",
+      "bytes": 3433787,
+      "sha256": "1caa1b519f0247bd113c73991232d183398ba5e2391d00dd321778e7b857fc6f"
+    },
+    {
+      "id": "cc0-bgm-rtp-flt-014",
+      "fileName": "rtp-q0129-rtp-flt-014-preview_335a5ce1.mp3",
+      "bytes": 3419995,
+      "sha256": "b3550e350905fd7a132f5e705895960f86769058669836fda98909400aa0c024"
+    },
+    {
+      "id": "cc0-bgm-rtp-flt-015",
+      "fileName": "rtp-q0130-rtp-flt-015-preview_d088e523.mp3",
+      "bytes": 3587387,
+      "sha256": "a87726d1ab32307fee8ce6e6e274f0dba22743258e74000a8c5109c42de6e355"
+    },
+    {
+      "id": "cc0-bgm-rtp-flt-016",
+      "fileName": "rtp-q0131-rtp-flt-016-preview_f27abd19.mp3",
+      "bytes": 2902770,
+      "sha256": "62c94b8c16ab2cd909a20c4e2fde34ab2aa7ebd748bf087f71c1b9a7f9b5d95a"
+    },
+    {
+      "id": "cc0-bgm-rtp-flt-017",
+      "fileName": "rtp-q0132-rtp-flt-017-preview_9c913ac2.mp3",
+      "bytes": 3496481,
+      "sha256": "b4a97dcc4ac010722180ee8fac49b0f41619809a813cc74c8cfa3d68ae4f5071"
+    },
+    {
+      "id": "cc0-bgm-rtp-flt-018",
+      "fileName": "rtp-q0133-rtp-flt-018-preview_ac0c9ff4.mp3",
+      "bytes": 3348524,
+      "sha256": "9ab8a2b8e1d934b8add4a2e9728c6ce9871339e15d6f048118f9b116c29880d0"
+    },
+    {
+      "id": "cc0-bgm-rtp-flt-019",
+      "fileName": "rtp-q0134-rtp-flt-019-preview_224c360e.mp3",
+      "bytes": 3863867,
+      "sha256": "18197944f8b00fc9c8495f0ce66f581fb0d9686f172b05ba48fa75f992af98c8"
+    },
+    {
+      "id": "cc0-bgm-rtp-flt-020",
+      "fileName": "rtp-q0135-rtp-flt-020-preview_8e69005b.mp3",
+      "bytes": 3569833,
+      "sha256": "74056fa6c141e3a123cfdb4e073797832cd4ef68e9edf496018238006cdc03ce"
+    },
+    {
+      "id": "cc0-bgm-rtp-flt-021",
+      "fileName": "rtp-q0136-rtp-flt-021-preview_5ff749c2.mp3",
+      "bytes": 3438176,
+      "sha256": "8b8fcb851c644f5194fdab95fc9f52a85e3b77e55859dbc1e968594b572894b5"
+    },
+    {
+      "id": "cc0-bgm-rtp-flt-022",
+      "fileName": "rtp-q0137-rtp-flt-022-preview_123a166e.mp3",
+      "bytes": 3473911,
+      "sha256": "3ab266e0fa1ad582318c4baaeda6aa433359ff0b9a4af80eacd49ed1b460e441"
+    },
+    {
+      "id": "cc0-bgm-rtp-flt-023",
+      "fileName": "rtp-q0138-rtp-flt-023-preview_0509a026.mp3",
+      "bytes": 3401813,
+      "sha256": "bda7dabafefa7bdee1dd4fa42c3574f5b6465278686e7390485cc45581b9e814"
+    },
+    {
+      "id": "cc0-bgm-rtp-flt-024",
+      "fileName": "rtp-q0139-rtp-flt-024-preview_606c3a43.mp3",
+      "bytes": 3644439,
+      "sha256": "4467a3344314eef58d16364a4eed800fdda7f1ac07216f785ae160326462e13e"
+    },
+    {
+      "id": "cc0-bgm-rtp-flt-025",
+      "fileName": "rtp-q0140-rtp-flt-025-preview_ec2f578f.mp3",
+      "bytes": 3650708,
+      "sha256": "6a5e745e3f29bbb410280bd915a19b96fecf67c11309237ea705003fab4b701c"
+    },
+    {
+      "id": "cc0-bgm-rtp-flt-026",
+      "fileName": "rtp-q0141-rtp-flt-026-preview_7e3dcba4.mp3",
+      "bytes": 3727822,
+      "sha256": "3a37dc5603bc801232800cd3efd06f6a9eb040b077bf75682a013cc4270373e4"
+    },
+    {
+      "id": "cc0-bgm-rtp-flt-027",
+      "fileName": "rtp-q0142-rtp-flt-027-preview_29173c65.mp3",
+      "bytes": 3690832,
+      "sha256": "2a688b2c6c9aea271f4611925bff576ebaca54da197df7984b2493f4b9cf1766"
+    },
+    {
+      "id": "cc0-bgm-rtp-flt-028",
+      "fileName": "rtp-q0143-rtp-flt-028-preview_06acbb6b.mp3",
+      "bytes": 3451969,
+      "sha256": "9b6f4a072561c61e8e44d15d9d27025283cdbedab64fbaad07e6cb097e7cba11"
+    },
+    {
+      "id": "cc0-bgm-rtp-flt-029",
+      "fileName": "rtp-q0144-rtp-flt-029-preview_1e38c0e7.mp3",
+      "bytes": 3567952,
+      "sha256": "acdaa326b7687f7e78bada03da78e09bf641194b49e279e9af08e4dc0a4030cd"
+    },
+    {
+      "id": "cc0-bgm-rtp-flt-030",
+      "fileName": "rtp-q0145-rtp-flt-030-preview_0b47f40f.mp3",
+      "bytes": 3645066,
+      "sha256": "09c38af58e7177d12e4d2eff85ae8363573480bb5969ed7df0f3c6f163e85078"
+    },
+    {
+      "id": "cc0-bgm-rtp-fog-001",
+      "fileName": "rtp-fog-001-fog-lamp-pass-final_a1136d8c.mp3",
+      "bytes": 3387161,
+      "sha256": "0ec62644390f246ca05cac02dec34755829e2444e79fb935e2605623f5682aaf"
+    },
+    {
+      "id": "cc0-bgm-rtp-frd-001",
+      "fileName": "rtp-frd-001-morning-fish-market-final_7ba10113.mp3",
+      "bytes": 3396798,
+      "sha256": "56b83f3d23eaad8ef681a441647ba9d0dec9bea132a5c4d7563ab7f397839c22"
+    },
+    {
+      "id": "cc0-bgm-rtp-frm-001",
+      "fileName": "rtp-frm-001-preharvest-field-final_4f0b6873.mp3",
+      "bytes": 3267817,
+      "sha256": "51c4188f553079da7b5fd385dec2277efc982d21c4dc67f064bc60b608ef9461"
+    },
+    {
+      "id": "cc0-bgm-rtp-fsh-001",
+      "fileName": "rtp-fsh-001-gull-village-morning-final_464d606c.mp3",
+      "bytes": 3449461,
+      "sha256": "0948f64990eb91b30fa69585acfd830901d078100d30dfba482633bbfac7510d"
+    },
+    {
+      "id": "cc0-bgm-rtp-fst-001",
+      "fileName": "rtp-fst-001-afterglow-square-final_2d10e202.mp3",
+      "bytes": 3263260,
+      "sha256": "11e76b9c6fd58223567311fd903c09dd1b62a3d5b5f7a0d57349648b311b2edb"
+    },
+    {
+      "id": "cc0-bgm-rtp-ftw-001",
+      "fileName": "rtp-ftw-001-wave-watch-final_265025df.mp3",
+      "bytes": 3804308,
+      "sha256": "0719815cad2eb9837eab80125c618b38681addd71e894b8b205d524fced0eb06"
+    },
+    {
+      "id": "cc0-bgm-rtp-ftw-002",
+      "fileName": "rtp-ftw-002-rain-station-final_5aab97a7.mp3",
+      "bytes": 3574222,
+      "sha256": "41a3b4fa03d8c4a1b1c6c688c974d39b9d45faf670bdcf2ea1fdae289fe88fb5"
+    },
+    {
+      "id": "cc0-bgm-rtp-ftw-003",
+      "fileName": "rtp-ftw-003-river-ferry-final_c947a497.mp3",
+      "bytes": 3574222,
+      "sha256": "410ae592918a4f3a87889b756f209ee5514fe19298af06c9c02bc4b32b70a3c8"
+    },
+    {
+      "id": "cc0-bgm-rtp-ftw-004",
+      "fileName": "rtp-ftw-004-wind-bell-pass-final_c0aae39c.mp3",
+      "bytes": 3502124,
+      "sha256": "3255c06125682c4c8757df0f68e8fbc05bbaefaac0f327d53998496cd70141cf"
+    },
+    {
+      "id": "cc0-bgm-rtp-ftw-005",
+      "fileName": "rtp-ftw-005-market-afternoon-final_5303bfb6.mp3",
+      "bytes": 3493346,
+      "sha256": "7d0cb3bb1e4f4bad5c4cadae365ccbff106bc12efbd07fe618ffb66318cf663b"
+    },
+    {
+      "id": "cc0-bgm-rtp-ftw-006",
+      "fileName": "rtp-ftw-006-wet-alley-final_9b863ae6.mp3",
+      "bytes": 3470150,
+      "sha256": "23cbe3ba28aa095abf7ce6fae6711de065ddeb68596cb35807c360dc03209f03"
+    },
+    {
+      "id": "cc0-bgm-rtp-ftw-007",
+      "fileName": "rtp-ftw-007-forest-dawn-final_7125a02a.mp3",
+      "bytes": 3455103,
+      "sha256": "eaa543855f345bce2b8a40ad67d2abcd5625dba86b3eacd7eab1cdcb950d136f"
+    },
+    {
+      "id": "cc0-bgm-rtp-ftw-008",
+      "fileName": "rtp-ftw-008-canyon-camp-final_9713efd0.mp3",
+      "bytes": 3499616,
+      "sha256": "dc638d5cc84c1563fcacbc9cb38231da3f56baa90815de5b6ab40e51532726ff"
+    },
+    {
+      "id": "cc0-bgm-rtp-ftw-009",
+      "fileName": "rtp-ftw-009-bell-tower-arcade-final_cca96859.mp3",
+      "bytes": 3563564,
+      "sha256": "f8c38d78283d3b3dddf937f1a3444df1ee992fadbb59d516bae9b7f9f2c46db4"
+    },
+    {
+      "id": "cc0-bgm-rtp-ftw-010",
+      "fileName": "rtp-ftw-010-cave-spring-final_eb098228.mp3",
+      "bytes": 3413725,
+      "sha256": "6ec36057ac4419ac736e9257d3e1b0c52943922b50056ad1d4fc386342e5c68b"
+    },
+    {
+      "id": "cc0-bgm-rtp-ftw-011",
+      "fileName": "rtp-ftw-011-rain-village-eaves-final_228ae8c8.mp3",
+      "bytes": 3479554,
+      "sha256": "1e21db1933a0024eee6982be31f716d3cbef60cda821cefd0974cb5b9e80272c"
+    },
+    {
+      "id": "cc0-bgm-rtp-ftw-012",
+      "fileName": "rtp-ftw-012-night-harbor-lines-final_be1e91ca.mp3",
+      "bytes": 3504004,
+      "sha256": "037909a80220762a4426aa48b55e0c71a0506faf001e565b5d12a3a3acb89a56"
+    },
+    {
+      "id": "cc0-bgm-rtp-gat-001",
+      "fileName": "rtp-gat-001-beyond-stone-gate-final_db3ebcd5.mp3",
+      "bytes": 3456183,
+      "sha256": "d585f8da9c1d6ad3b4ff7aec7cd58922409d32311e93589d637cb4f18f9afcd4"
+    },
+    {
+      "id": "cc0-bgm-rtp-gfn-001",
+      "fileName": "rtp-q0236-rtp-gfn-001-preview_e0436f7c.mp3",
+      "bytes": 3608076,
+      "sha256": "11891275f31d7b5555f4714eaffb7128dd3b259339b9c823073049821eee4d51"
+    },
+    {
+      "id": "cc0-bgm-rtp-gfn-002",
+      "fileName": "rtp-q0237-rtp-gfn-002-preview_5576c9db.mp3",
+      "bytes": 3460746,
+      "sha256": "f5259fbd886b48a2f83ca63600beca26ebc4d25d8b6750c1315f3cf7e3d68ef7"
+    },
+    {
+      "id": "cc0-bgm-rtp-gfn-003",
+      "fileName": "rtp-q0238-rtp-gfn-003-preview_feb0a18f.mp3",
+      "bytes": 3736599,
+      "sha256": "c10cabd73ebbb639c9075d429f2c6024d1ca98d6905cfd3a96680de0def7955f"
+    },
+    {
+      "id": "cc0-bgm-rtp-gfn-004",
+      "fileName": "rtp-q0239-rtp-gfn-004-preview_90848029.mp3",
+      "bytes": 3385513,
+      "sha256": "a76419f31893a8b0ad1f8766fe593a94498a6f4f77157aa06c33eaaa7ea07a05"
+    },
+    {
+      "id": "cc0-bgm-rtp-gfn-005",
+      "fileName": "rtp-q0240-rtp-gfn-005-preview_8cd84aeb.mp3",
+      "bytes": 3342254,
+      "sha256": "1f5d133d8f2084860d6de3f8cf9fe096aaf867d21abc26aced9b10f2dcc67629"
+    },
+    {
+      "id": "cc0-bgm-rtp-glc-001",
+      "fileName": "rtp-glc-001-blue-glacier-rift-final_bab121d3.mp3",
+      "bytes": 3544250,
+      "sha256": "bc8e8745b0d81651511a2ac9b48880c0f7d9695d71dff7471c8ae1f0da589491"
+    },
+    {
+      "id": "cc0-bgm-rtp-gld-001",
+      "fileName": "rtp-gld-001-guild-bulletin-yard-final_0286bb0f.mp3",
+      "bytes": 3316550,
+      "sha256": "30d9fc5d772be1eb3d095d6cd5bce977b11f3ea9ff473bd22bf92f010c8b75bf"
+    },
+    {
+      "id": "cc0-bgm-rtp-grd-001",
+      "fileName": "rtp-grd-001-mirror-garden-final_f7b30454.mp3",
+      "bytes": 3556667,
+      "sha256": "69703122efaebb82e95dad8d671489d0cbbfaed879719c595ced6188e0cfadee"
+    },
+    {
+      "id": "cc0-bgm-rtp-grg-001",
+      "fileName": "rtp-grg-001-after-rain-garage-final_790e82ee.mp3",
+      "bytes": 3482062,
+      "sha256": "4610533fbf5a809dd2807695b9ee2105c9b24cd26d46db56e1ff0a064011c2bb"
+    },
+    {
+      "id": "cc0-bgm-rtp-grn-001",
+      "fileName": "rtp-grn-001-rain-washed-greenhouse-final_b698219d.mp3",
+      "bytes": 3396171,
+      "sha256": "42167735e386573f188679fe089c0b2d596c2fc154a6176e2aae972852760cd4"
+    },
+    {
+      "id": "cc0-bgm-rtp-gwr-001",
+      "fileName": "rtp-q0261-rtp-gwr-001-preview_889a14e3.mp3",
+      "bytes": 3537232,
+      "sha256": "2e85090c114e95fd444c1af09642edd979c1af05139c1cde88ae4a395b2a7631"
+    },
+    {
+      "id": "cc0-bgm-rtp-gwr-002",
+      "fileName": "rtp-q0262-rtp-gwr-002-preview_76835bfc.mp3",
+      "bytes": 3408083,
+      "sha256": "12fd3dabf05dec2aa229b1a08cc49597ed8af04f5168524a1fe56f026f8ed536"
+    },
+    {
+      "id": "cc0-bgm-rtp-gwr-003",
+      "fileName": "rtp-q0263-rtp-gwr-003-preview_e9074848.mp3",
+      "bytes": 3812458,
+      "sha256": "f6fab6d3a9cd535378e44cdcea78227e1bbb77a872fee7fc8dca954ff88061dd"
+    },
+    {
+      "id": "cc0-bgm-rtp-gwr-004",
+      "fileName": "rtp-q0264-rtp-gwr-004-preview_2efdfa2b.mp3",
+      "bytes": 3442564,
+      "sha256": "113e0aa48195c956cd1bd7827d599a388d1513782eae733390c6a51b38d4353e"
+    },
+    {
+      "id": "cc0-bgm-rtp-gwr-005",
+      "fileName": "rtp-q0265-rtp-gwr-005-preview_daaa5df0.mp3",
+      "bytes": 3463880,
+      "sha256": "c4bfc3b488af19e8f3fca6491194b776396702392ae378d527634d5e0ea85f82"
+    },
+    {
+      "id": "cc0-bgm-rtp-hal-001",
+      "fileName": "rtp-hal-001-community-hall-final_c96a0631.mp3",
+      "bytes": 3331596,
+      "sha256": "af26fb344349be3b6533b6910fcf34fe78b1ccc1f8bb9fcbdca384d3c7184256"
+    },
+    {
+      "id": "cc0-bgm-rtp-hbr-001",
+      "fileName": "rtp-hbr-001-lantern-harbor-tide-final_22b1134a.mp3",
+      "bytes": 3367959,
+      "sha256": "beb3d8f9d35ca361cbc0599a9573c6267d3914c15d27845ba0e81d96808a3f01"
+    },
+    {
+      "id": "cc0-bgm-rtp-hlc-001",
+      "fileName": "rtp-q0166-rtp-hlc-001-preview_54d9ea6c.mp3",
+      "bytes": 3625004,
+      "sha256": "be786f0efd7a5d8b4812f9ac818a41ff4aaeb11fa85b649d5e35ef5027b6c7fe"
+    },
+    {
+      "id": "cc0-bgm-rtp-hlc-002",
+      "fileName": "rtp-q0167-rtp-hlc-002-preview_9547ab77.mp3",
+      "bytes": 3519678,
+      "sha256": "dc31cc9922b487e706849281d96a046626ca6a1fa19bf4d9397d367a99a5b434"
+    },
+    {
+      "id": "cc0-bgm-rtp-hlc-003",
+      "fileName": "rtp-q0168-rtp-hlc-003-preview_8bf7c246.mp3",
+      "bytes": 3312788,
+      "sha256": "b93cf6b7767d83e66f82bbedf0bd9e9d07e26c86ff5dfb4edb55ed82f98af6bc"
+    },
+    {
+      "id": "cc0-bgm-rtp-hlc-004",
+      "fileName": "rtp-q0169-rtp-hlc-004-preview_5fa82caa.mp3",
+      "bytes": 3563564,
+      "sha256": "d992543ab7d0948340b342abe5dc25ad9844cf92b883c6190735dbe8bce305f1"
+    },
+    {
+      "id": "cc0-bgm-rtp-hlc-005",
+      "fileName": "rtp-q0170-rtp-hlc-005-preview_a40b7521.mp3",
+      "bytes": 3549771,
+      "sha256": "9ccaa35a744021e169626b9c26dcb101d87fe0018cca1b7ce64270f20031b12e"
+    },
+    {
+      "id": "cc0-bgm-rtp-hom-001",
+      "fileName": "rtp-hom-001-campfire-order-final_7823e4a0.mp3",
+      "bytes": 3456357,
+      "sha256": "bc20bc2d2c153c9fde48fb5637a1ce7a00664010a3036d984a1464c6459e7625"
+    },
+    {
+      "id": "cc0-bgm-rtp-hrb-001",
+      "fileName": "rtp-q0246-rtp-hrb-001-preview_f3f0839a.mp3",
+      "bytes": 3557294,
+      "sha256": "5330d0431a379edfdddfd2a87e071a657fafb715c9476c4e2b8cce567eb057f2"
+    },
+    {
+      "id": "cc0-bgm-rtp-hrb-002",
+      "fileName": "rtp-q0247-rtp-hrb-002-preview_ed7332ef.mp3",
+      "bytes": 3604942,
+      "sha256": "c92680d7dc4c78c10858a95b8d6418d19d2edd53201c8c0116e787b94e88fa23"
+    },
+    {
+      "id": "cc0-bgm-rtp-hrb-003",
+      "fileName": "rtp-q0248-rtp-hrb-003-preview_6da4a352.mp3",
+      "bytes": 3771707,
+      "sha256": "5d09afd6adff179b8342416b820520381817dcdc571e4bc2d1f88a40f5708ff3"
+    },
+    {
+      "id": "cc0-bgm-rtp-hrb-004",
+      "fileName": "rtp-q0249-rtp-hrb-004-preview_29cec541.mp3",
+      "bytes": 3372974,
+      "sha256": "761b74e3e0d745fe7a708872292b8d33f7bb718b1662e4b9649ee3f485589496"
+    },
+    {
+      "id": "cc0-bgm-rtp-hrb-005",
+      "fileName": "rtp-q0250-rtp-hrb-005-preview_6ad88e00.mp3",
+      "bytes": 3399306,
+      "sha256": "6977e16da85ea8eb75bc1f04920bbf8a748cd85e1cccfcdcd22e5543a8cb9205"
+    },
+    {
+      "id": "cc0-bgm-rtp-ihp-001",
+      "fileName": "rtp-q0176-rtp-ihp-001-preview_5314cdce.mp3",
+      "bytes": 3601180,
+      "sha256": "0fb8a193f8f3195e339d39c11e2c165a37940ca9552da4826586d2cea45e93c2"
+    },
+    {
+      "id": "cc0-bgm-rtp-ihp-002",
+      "fileName": "rtp-q0177-rtp-ihp-002-preview_2f9e51ec.mp3",
+      "bytes": 3561683,
+      "sha256": "fe7090110e19f3370071065b401dadeaa55047c0ff8237f06382b76b4acde0ab"
+    },
+    {
+      "id": "cc0-bgm-rtp-ihp-003",
+      "fileName": "rtp-q0178-rtp-ihp-003-preview_b57e0148.mp3",
+      "bytes": 3492720,
+      "sha256": "e25f460338793fca283ce5536588959a4ab2f99d55ed9bad98a3be31b12a7bd6"
+    },
+    {
+      "id": "cc0-bgm-rtp-ihp-004",
+      "fileName": "rtp-q0179-rtp-ihp-004-preview_ae15ffef.mp3",
+      "bytes": 3638796,
+      "sha256": "7818d1b7340cda35f612e802bcabd31abfb677604679ca346d26f2ee1754572b"
+    },
+    {
+      "id": "cc0-bgm-rtp-ihp-005",
+      "fileName": "rtp-q0180-rtp-ihp-005-preview_019f2a14.mp3",
+      "bytes": 3644439,
+      "sha256": "3b4685995e2c0e33b56b30bd35d300d6d2e5fc05e8468f16e00ea381321cc561"
+    },
+    {
+      "id": "cc0-bgm-rtp-isl-001",
+      "fileName": "rtp-isl-001-drifting-island-field-final_c628ae31.mp3",
+      "bytes": 3228313,
+      "sha256": "163db154f6f3f1341c5103f6cc3ddbacd15e3aed8583e6a751ee0f3ef6d56b1e"
+    },
+    {
+      "id": "cc0-bgm-rtp-lft-001",
+      "fileName": "rtp-lft-001-wind-climbing-lift-final_246607d2.mp3",
+      "bytes": 3464315,
+      "sha256": "ffcc9e37f846c2556b7968164704c18dd4285ed8d8248824d780ecab66c6427d"
+    },
+    {
+      "id": "cc0-bgm-rtp-lgs-001",
+      "fileName": "rtp-q0186-rtp-lgs-001-preview_c33c5f2d.mp3",
+      "bytes": 3602434,
+      "sha256": "307b4421ef4246d0cf050e0caebdc5fc45a78743d9c98a3a95f4b368693503d3"
+    },
+    {
+      "id": "cc0-bgm-rtp-lgs-002",
+      "fileName": "rtp-q0187-rtp-lgs-002-preview_746f6bc8.mp3",
+      "bytes": 3487077,
+      "sha256": "fa680941cf7bc21e8f3e140fb87eacd599d2aebf4bb821898f3a60bb427e6888"
+    },
+    {
+      "id": "cc0-bgm-rtp-lgs-003",
+      "fileName": "rtp-q0188-rtp-lgs-003-preview_52ea5ee5.mp3",
+      "bytes": 3473911,
+      "sha256": "23f2baaa6d491909d83186b95585b2e53b85ddb779138680c9c59628d441f03a"
+    },
+    {
+      "id": "cc0-bgm-rtp-lgs-004",
+      "fileName": "rtp-q0189-rtp-lgs-004-preview_6cb27e2f.mp3",
+      "bytes": 3582372,
+      "sha256": "d154e543c9b26c64127fb0b180430a5c15ca77ddf7554127e50db9453cf8b7de"
+    },
+    {
+      "id": "cc0-bgm-rtp-lgs-005",
+      "fileName": "rtp-q0190-rtp-lgs-005-preview_35035233.mp3",
+      "bytes": 3525947,
+      "sha256": "8e9cf84a095a11fb73a6b4c8ecca35b058dcadf9d8faaec07a83d8c1e5076778"
+    },
+    {
+      "id": "cc0-bgm-rtp-lib-001",
+      "fileName": "rtp-lib-001-rootbound-stacks-final_81f4be14.mp3",
+      "bytes": 3545382,
+      "sha256": "f5a3693c0f2b022881e379d2aa34b94b21edca24e98bf8fa3999310974ca62f4"
+    },
+    {
+      "id": "cc0-bgm-rtp-lnd-001",
+      "fileName": "rtp-lnd-001-laundry-rooftop-final_22c42eb4.mp3",
+      "bytes": 3413098,
+      "sha256": "51bfdb21ef77af8ea857f930f086d760eff1bbbc385b298b4907749078330234"
+    },
+    {
+      "id": "cc0-bgm-rtp-map-001",
+      "fileName": "rtp-map-001-voyage-chart_3d85e6fb.mp3",
+      "bytes": 3243536,
+      "sha256": "df483b122f3b22ca1b45c13156f15cb751bd25a0bf978220766475e193028dbd"
+    },
+    {
+      "id": "cc0-bgm-rtp-mch-001",
+      "fileName": "rtp-mch-001-still-clockwork-room-final_2432d802.mp3",
+      "bytes": 4028684,
+      "sha256": "16e91ce7ca349b61730e834c7385cd82eacd78f62045a03bb98204b1e00e6ccf"
+    },
+    {
+      "id": "cc0-bgm-rtp-mgv-001",
+      "fileName": "rtp-q0206-rtp-mgv-001-preview_35c7a638.mp3",
+      "bytes": 3619988,
+      "sha256": "dba53ad30df747c2711c6ae9b169c93c221f1ab72b4800736b19084ae540d999"
+    },
+    {
+      "id": "cc0-bgm-rtp-mgv-002",
+      "fileName": "rtp-q0207-rtp-mgv-002-preview_225effe8.mp3",
+      "bytes": 3797412,
+      "sha256": "b58381a44794b5ab6aa1b84e1f7b113ac9271cad8d587952dc5260114677ace7"
+    },
+    {
+      "id": "cc0-bgm-rtp-mgv-003",
+      "fileName": "rtp-q0208-rtp-mgv-003-preview_3a49a404.mp3",
+      "bytes": 3793650,
+      "sha256": "e22867c703c3ab7dc9700dc906522550c7c4ebae60ef6a96aefe5bc65ec6db9f"
+    },
+    {
+      "id": "cc0-bgm-rtp-mgv-004",
+      "fileName": "rtp-q0209-rtp-mgv-004-preview_a0e5abfd.mp3",
+      "bytes": 3371093,
+      "sha256": "469d3fb1e0325bb2518843ec7125e27b24c8aeb32f77527b74b4bf3d1a073b3f"
+    },
+    {
+      "id": "cc0-bgm-rtp-mgv-005",
+      "fileName": "rtp-q0210-rtp-mgv-005-preview_4b20d4b7.mp3",
+      "bytes": 3546636,
+      "sha256": "49f265e91e3555c60c53444bfdcfadd4dfaf2f3ecc1fa826252190bce78efb2f"
+    },
+    {
+      "id": "cc0-bgm-rtp-mln-001",
+      "fileName": "rtp-mln-001-windmill-hill-final_aea63037.mp3",
+      "bytes": 3447580,
+      "sha256": "b5f8b374cf714309fceb8aab69291cdb4e2135214fadf1bf2999fa16b189fbb2"
+    },
+    {
+      "id": "cc0-bgm-rtp-mne-001",
+      "fileName": "rtp-q0281-rtp-mne-001-preview_21804d28.mp3",
+      "bytes": 3797412,
+      "sha256": "a78eece7d77f58a8719eee7326fda9381acca4b29232bb33620dff3fd8c312cc"
+    },
+    {
+      "id": "cc0-bgm-rtp-mne-002",
+      "fileName": "rtp-q0282-rtp-mne-002-preview_5d80b098.mp3",
+      "bytes": 3491466,
+      "sha256": "6825ec84165ac9e6d8bb6c9820fab0eeba4fc81ae864d76b5105f6b0253ec073"
+    },
+    {
+      "id": "cc0-bgm-rtp-mtn-001",
+      "fileName": "rtp-mtn-001-red-cliff-road-final_86d302d7.mp3",
+      "bytes": 3485404,
+      "sha256": "34a78f13dfa9b05f93117409f57d0418e9e434cef8a742d5ddaafefe23aa1ccb"
+    },
+    {
+      "id": "cc0-bgm-rtp-mys-001",
+      "fileName": "rtp-mys-001-rain-soaked-sanctuary_32e515d4.mp3",
+      "bytes": 3311991,
+      "sha256": "fadbc3095beac32b8f8027448f48e5a2e62c4db166781a91c2b23bfec54aebe4"
+    },
+    {
+      "id": "cc0-bgm-rtp-mys-002",
+      "fileName": "rtp-mys-002-sleeping-belltower-final_74d57baf.mp3",
+      "bytes": 3679547,
+      "sha256": "167c875d41dffb4626e3c4929409bd973ad7b2974379e3c87a2d363571efe887"
+    },
+    {
+      "id": "cc0-bgm-rtp-nav-001",
+      "fileName": "rtp-q0151-rtp-nav-001-preview_96982a79.mp3",
+      "bytes": 3530963,
+      "sha256": "ceeee615c057ac97c58157e67eac5348c3740e61df74346861b765793327dd4e"
+    },
+    {
+      "id": "cc0-bgm-rtp-nav-002",
+      "fileName": "rtp-q0152-rtp-nav-002-preview_616239d0.mp3",
+      "bytes": 3968566,
+      "sha256": "443cb25ada9c0dd6a8eb4bb4050e3d69312abe803aa56cea08755a226dc1e2e8"
+    },
+    {
+      "id": "cc0-bgm-rtp-nav-003",
+      "fileName": "rtp-q0153-rtp-nav-003-preview_fc63ea02.mp3",
+      "bytes": 3406202,
+      "sha256": "58012197a58e4e5ec2ec45d1a57eaf64752d272017a1f409e025e0c5476f0df8"
+    },
+    {
+      "id": "cc0-bgm-rtp-nav-004",
+      "fileName": "rtp-q0154-rtp-nav-004-preview_9182394b.mp3",
+      "bytes": 3567952,
+      "sha256": "d0243c1d8de056d5faa3309111de6062dfe7e9c46b45391aea22610f81ed51e5"
+    },
+    {
+      "id": "cc0-bgm-rtp-nav-005",
+      "fileName": "rtp-q0155-rtp-nav-005-preview_8e676cd7.mp3",
+      "bytes": 3633154,
+      "sha256": "57559de48a5f41bebf5dcd3b1e5c90f96d023d04f0bdf6a9a6fd41bc4907296a"
+    },
+    {
+      "id": "cc0-bgm-rtp-nfs-001",
+      "fileName": "rtp-nfs-001-night-forest-campfire-final_6215c66e.mp3",
+      "bytes": 3593030,
+      "sha256": "a0fd8a229540ba8134fef2f7065d7f6e0d608a961c7967f5653372ed5758ff4c"
+    },
+    {
+      "id": "cc0-bgm-rtp-ngt-001",
+      "fileName": "rtp-ngt-001-moonlit-waystation_483283c4.mp3",
+      "bytes": 3142949,
+      "sha256": "466cd15f9955bed35cd4513973db004c92e39a1206a4662dd201254e780627f9"
+    },
+    {
+      "id": "cc0-bgm-rtp-oas-001",
+      "fileName": "rtp-q0171-rtp-oas-001-preview_b14eb386.mp3",
+      "bytes": 3609957,
+      "sha256": "33566d1dc78f08109a5ead1b62df64d4d4b5d138e053477a64c916fd5900c9c3"
+    },
+    {
+      "id": "cc0-bgm-rtp-oas-002",
+      "fileName": "rtp-q0172-rtp-oas-002-preview_5f4956c5.mp3",
+      "bytes": 3542875,
+      "sha256": "d28c6a05ba7f472dd38498c84284d0a5979f023fee839d748acf55b07e01d228"
+    },
+    {
+      "id": "cc0-bgm-rtp-oas-003",
+      "fileName": "rtp-q0173-rtp-oas-003-preview_5e21c366.mp3",
+      "bytes": 3409337,
+      "sha256": "f2f58c98bf169a0490253f8540563e0196416a76bca9a31dcc189b9c011e6626"
+    },
+    {
+      "id": "cc0-bgm-rtp-oas-004",
+      "fileName": "rtp-q0174-rtp-oas-004-preview_b750d365.mp3",
+      "bytes": 3630646,
+      "sha256": "4149bf2a7fca05d8505584941c40e6ccd788941793a721eb0cbe783033898884"
+    },
+    {
+      "id": "cc0-bgm-rtp-oas-005",
+      "fileName": "rtp-q0175-rtp-oas-005-preview_267b4c90.mp3",
+      "bytes": 3549771,
+      "sha256": "e5730acbc26520b8d4aa9e12294b897052a83d43d418ff779809aa2621315fec"
+    },
+    {
+      "id": "cc0-bgm-rtp-orc-001",
+      "fileName": "rtp-orc-001-dawn-orchard-final_1264db4b.mp3",
+      "bytes": 3601807,
+      "sha256": "66a749e3bf170db18ecfa61b34fe0d851d37d0d236f683d857eb6d58b1984989"
+    },
+    {
+      "id": "cc0-bgm-rtp-pik-001",
+      "fileName": "rtp-q0251-rtp-pik-001-preview_050a69fa.mp3",
+      "bytes": 3731583,
+      "sha256": "686e827a87eb83a47923204cbb7ce19cc8b01187fbd177e39399613bbdd7f15d"
+    },
+    {
+      "id": "cc0-bgm-rtp-pik-002",
+      "fileName": "rtp-q0252-rtp-pik-002-preview_120becd3.mp3",
+      "bytes": 3794277,
+      "sha256": "e95814c3771fdc190daea3b61ea6b71ce0ff87c3a1136d357edf1d45169cab71"
+    },
+    {
+      "id": "cc0-bgm-rtp-pik-003",
+      "fileName": "rtp-q0253-rtp-pik-003-preview_67a77d52.mp3",
+      "bytes": 3483315,
+      "sha256": "f7337e13bee8550e95db8d09917d4e74b0d3e951d75fa4b35fe3acbc4583c724"
+    },
+    {
+      "id": "cc0-bgm-rtp-pik-004",
+      "fileName": "rtp-q0254-rtp-pik-004-preview_1c8d2488.mp3",
+      "bytes": 3677666,
+      "sha256": "326593dc947130db9e1d2633d5b3ecdb73488871555030f2432cfcd9996ffc7c"
+    },
+    {
+      "id": "cc0-bgm-rtp-pik-005",
+      "fileName": "rtp-q0255-rtp-pik-005-preview_0d8dbb88.mp3",
+      "bytes": 3539113,
+      "sha256": "09a2548a9318605ae65e424e2ee17a86187cd035c48e9e85b3779bba27922d3d"
+    },
+    {
+      "id": "cc0-bgm-rtp-plz-001",
+      "fileName": "rtp-plz-001-sundown-plaza-final_3d9fe372.mp3",
+      "bytes": 3549144,
+      "sha256": "cebf4e1efc662c7bea3e1259e17cc763d0e135fd1b3841bc0d16f240e39a0a1e"
+    },
+    {
+      "id": "cc0-bgm-rtp-pon-001",
+      "fileName": "rtp-pon-001-pond-afternoon-final_5006d840.mp3",
+      "bytes": 3505885,
+      "sha256": "2bae869b9da1ef3c184414bc157104f347aba0427e89165a33b8c90cf5eb8478"
+    },
+    {
+      "id": "cc0-bgm-rtp-prk-001",
+      "fileName": "rtp-prk-001-evening-park-bench-final_3396f399.mp3",
+      "bytes": 3644439,
+      "sha256": "29a6b34e17c1554240156fdf06af420b836b7eab5b92a75c6dbacdbcdf3b9262"
+    },
+    {
+      "id": "cc0-bgm-rtp-prt-001",
+      "fileName": "rtp-prt-001-before-star-gate-final_49ad0927.mp3",
+      "bytes": 4229937,
+      "sha256": "48862af9eeb4607e7a3c79e9598ea3746d96dbfc7c0fed0286d5f3e64c8ab737"
+    },
+    {
+      "id": "cc0-bgm-rtp-prx-001",
+      "fileName": "rtp-prx-001-submerged-ruins-final_f5b43256.mp3",
+      "bytes": 3521559,
+      "sha256": "29802858de2d1ddf078fedf27d5b0a0d8e77cc7e1b0dce4850935c1e4550ccfc"
+    },
+    {
+      "id": "cc0-bgm-rtp-prx-002",
+      "fileName": "rtp-prx-002-cliff-lift-final_5343b778.mp3",
+      "bytes": 3485196,
+      "sha256": "0c1b6333fcdd60f6e0292e035372e6dca0cbda45e693f9653e9a426b9aefdf62"
+    },
+    {
+      "id": "cc0-bgm-rtp-prx-003",
+      "fileName": "rtp-prx-003-morning-fieldwork-final_4cc1dfac.mp3",
+      "bytes": 3550398,
+      "sha256": "0c9a6fbf36605a4c1c323af8f929c782c2f4b5d6bffe1a3bbd7f0ac5522b3774"
+    },
+    {
+      "id": "cc0-bgm-rtp-prx-004",
+      "fileName": "rtp-prx-004-caravan-rest-final_314dd4b9.mp3",
+      "bytes": 3502124,
+      "sha256": "1d18075c21edfbebed4362a22c988a083914163348073eeadee8e9fb85241aa0"
+    },
+    {
+      "id": "cc0-bgm-rtp-prx-005",
+      "fileName": "rtp-prx-005-canal-dusk-final_10d3bf5e.mp3",
+      "bytes": 3488331,
+      "sha256": "3928c94a619a6beabdc86f047159c3665f57674553304c760ae1b1f270c53817"
+    },
+    {
+      "id": "cc0-bgm-rtp-prx-006",
+      "fileName": "rtp-prx-006-fog-lighthouse-final_318b5a5a.mp3",
+      "bytes": 3530336,
+      "sha256": "b4cd435895373371b88a9a969bafa17192ddb447857e066733bd98b8b303cb30"
+    },
+    {
+      "id": "cc0-bgm-rtp-pty-001",
+      "fileName": "rtp-pty-001-party-portrait-final_d049208f.mp3",
+      "bytes": 4126772,
+      "sha256": "b99612b16cbcfe70d5ad44de17c3d5e06913db10771f230d24baef3b85c2379b"
+    },
+    {
+      "id": "cc0-bgm-rtp-qui-001",
+      "fileName": "rtp-qui-001-morning-button-final_ca2615a6.mp3",
+      "bytes": 3439430,
+      "sha256": "cf750072bea39bc1d6df712bd37b1392373070e30862536b31c381daac615310"
+    },
+    {
+      "id": "cc0-bgm-rtp-qui-002",
+      "fileName": "rtp-qui-002-tea-steps-final_2eac45d3.mp3",
+      "bytes": 3416233,
+      "sha256": "91ad970add567cc9db8d0cc19c28f2ff1889480b824ec5c0d5e76e5781412642"
+    },
+    {
+      "id": "cc0-bgm-rtp-rad-001",
+      "fileName": "rtp-rad-001-attic-radio-final_3afaff5d.mp3",
+      "bytes": 3585506,
+      "sha256": "7045817ec3ac8bb9dd59013ccec91906c73686988a3be31c04632addebe00ff6"
+    },
+    {
+      "id": "cc0-bgm-rtp-rad-002",
+      "fileName": "rtp-rad-002-porch-broadcast-final_1b45dec5.mp3",
+      "bytes": 3559175,
+      "sha256": "af3674c5ea0a2ddf11c388e17aef2ddf94f799a1bf23cf208f9d37bcf8116d9c"
+    },
+    {
+      "id": "cc0-bgm-rtp-ran-001",
+      "fileName": "rtp-ran-001-umbrella-less-rain-final_96027300.mp3",
+      "bytes": 3365266,
+      "sha256": "c971346615355b93d45a1bb5f448cf42da273bd77e5ce605b837dcbe1f58fb85"
+    },
+    {
+      "id": "cc0-bgm-rtp-rdm-001",
+      "fileName": "rtp-q0156-rtp-rdm-001-preview_2c0989c0.mp3",
+      "bytes": 3605569,
+      "sha256": "103475c2bd1c4b9da88a87945d7fdd5a24555c2c9043180f0ec0f66b7d7bc735"
+    },
+    {
+      "id": "cc0-bgm-rtp-rdm-002",
+      "fileName": "rtp-q0157-rtp-rdm-002-preview_8c1fb80d.mp3",
+      "bytes": 3541621,
+      "sha256": "73ca725462eda6a51139fe23160b164dc3ba868d3d5dc61a1cbab95a640f915e"
+    },
+    {
+      "id": "cc0-bgm-rtp-rdm-003",
+      "fileName": "rtp-q0158-rtp-rdm-003-preview_ddd55a04.mp3",
+      "bytes": 3473911,
+      "sha256": "3c79b2a92e1385d165987c49fa1a5e753a0df530e81f9ab12b9bc3bf9292146a"
+    },
+    {
+      "id": "cc0-bgm-rtp-rdm-004",
+      "fileName": "rtp-q0159-rtp-rdm-004-preview_86334a38.mp3",
+      "bytes": 3409964,
+      "sha256": "1e223a352d33620b818c6660cae888fabaaa9f75d2791fea3b457d61eb62b4ff"
+    },
+    {
+      "id": "cc0-bgm-rtp-rdm-005",
+      "fileName": "rtp-q0160-rtp-rdm-005-preview_8b08f8a7.mp3",
+      "bytes": 3560429,
+      "sha256": "1ac0b240de8a0f2bb593380c60d6d3ea2875ff744bb57c280ef99ba2194b4119"
+    },
+    {
+      "id": "cc0-bgm-rtp-rdt-001",
+      "fileName": "rtp-q0266-rtp-rdt-001-preview_b6d9c745.mp3",
+      "bytes": 3457611,
+      "sha256": "968d61e81e20a7fbd817037a2cef83ca2f261b0bb010290716a5980ca8ac47e1"
+    },
+    {
+      "id": "cc0-bgm-rtp-rdt-002",
+      "fileName": "rtp-q0267-rtp-rdt-002-preview_a15ccc8a.mp3",
+      "bytes": 3379244,
+      "sha256": "aacf7edb732b5db5bfca813608ec1c9605ab8e45f9255a448c655cea0fdc06ff"
+    },
+    {
+      "id": "cc0-bgm-rtp-rdt-003",
+      "fileName": "rtp-q0268-rtp-rdt-003-preview_35e2cf39.mp3",
+      "bytes": 3643812,
+      "sha256": "aa3c3b362b11d2f78147aa1b389ca5ceffcefe3cbc1e6cc201233961cbc23413"
+    },
+    {
+      "id": "cc0-bgm-rtp-rdt-004",
+      "fileName": "rtp-q0269-rtp-rdt-004-preview_44f10ea4.mp3",
+      "bytes": 3596791,
+      "sha256": "e52b5fd74e38c4fdee43e4d4f241a97c6a4f7b39d3d55a3b4858e69cc7e19d32"
+    },
+    {
+      "id": "cc0-bgm-rtp-rdt-005",
+      "fileName": "rtp-q0270-rtp-rdt-005-preview_967fc042.mp3",
+      "bytes": 3509020,
+      "sha256": "92453c8ebd0e73003705ac3cbf16fcc3dfd1fbb932fd7b543e2a8bec09dc6167"
+    },
+    {
+      "id": "cc0-bgm-rtp-rel-001",
+      "fileName": "rtp-rel-001-candle-chapel-final_97145f48.mp3",
+      "bytes": 3727195,
+      "sha256": "f2dfbc26c90f179f9063303b28012988be4d5c9051b175a46871e8519fe1be3f"
+    },
+    {
+      "id": "cc0-bgm-rtp-res-001",
+      "fileName": "rtp-res-001-new-map_9db3b750.mp3",
+      "bytes": 2932554,
+      "sha256": "b3e635009bca1893a88fd04b43dfbc9421a1f35d263442e7973a5d9371017c5e"
+    },
+    {
+      "id": "cc0-bgm-rtp-res-002",
+      "fileName": "rtp-res-002-sunrise-return-final_39da5a96.mp3",
+      "bytes": 3504631,
+      "sha256": "2da35e12d59ca1ca1ac73bbd0c97ffc1b18c06f8b032b8814da0858b8b3be334"
+    },
+    {
+      "id": "cc0-bgm-rtp-rin-001",
+      "fileName": "rtp-rin-001-rain-window-final_3333f9ab.mp3",
+      "bytes": 3487704,
+      "sha256": "8478461f70ffb101f8bff23682e18aa46ffd40173d2e9084dc16faaab92d6e9b"
+    },
+    {
+      "id": "cc0-bgm-rtp-rin-002",
+      "fileName": "rtp-rin-002-riverside-rain-final_95206d81.mp3",
+      "bytes": 3521559,
+      "sha256": "90335a234b4a8e58b3d29f5d0d0905aa426d5d887c92c477fc596815370a0fb0"
+    },
+    {
+      "id": "cc0-bgm-rtp-riv-001",
+      "fileName": "rtp-riv-001-dawn-ferry-final_31406e29.mp3",
+      "bytes": 3522186,
+      "sha256": "09ffb5d3161a1c2025b0753beaaa40dfa3b1ca68ac13d2ff317d73697de37aaa"
+    },
+    {
+      "id": "cc0-bgm-rtp-rst-001",
+      "fileName": "rtp-rst-001-lamplit-rest-stop-final_5d3bb1cd.mp3",
+      "bytes": 3561056,
+      "sha256": "86997280bd4f20c1105ba47e06e7e30e4a3a95b00b6a4fda0e6475e03e68a9ef"
+    },
+    {
+      "id": "cc0-bgm-rtp-rst-002",
+      "fileName": "rtp-rst-002-window-nap-final_e35bac6b.mp3",
+      "bytes": 3460119,
+      "sha256": "ce3be54f69f22aff1a6b06bca75a92f04a486c8c43af50eb89d6949ea033dae3"
+    },
+    {
+      "id": "cc0-bgm-rtp-rst-003",
+      "fileName": "rtp-rst-003-candle-library-final_3569e705.mp3",
+      "bytes": 3496481,
+      "sha256": "ffb8db5b348348ddf295bb72589007c08c4d885d077d5b0bd9a5339a0e9d76b6"
+    },
+    {
+      "id": "cc0-bgm-rtp-rui-001",
+      "fileName": "rtp-rui-001-sunken-observatory-final_032ffa35.mp3",
+      "bytes": 3826878,
+      "sha256": "4606147e2978e2d86de7d73cd34821ccb4f5617e4e9ea711251072f1473a60f0"
+    },
+    {
+      "id": "cc0-bgm-rtp-rvr-001",
+      "fileName": "rtp-q0271-rtp-rvr-001-preview_6fcf6354.mp3",
+      "bytes": 3471404,
+      "sha256": "045824b347facb2cf0a9f7226916d184ccef115fd3006a36d92c118dc1e491e7"
+    },
+    {
+      "id": "cc0-bgm-rtp-rvr-002",
+      "fileName": "rtp-q0272-rtp-rvr-002-preview_ae04a3c4.mp3",
+      "bytes": 3539740,
+      "sha256": "e745f5033207e53168770683bf214f011f5ae9e8231881048a8d94b493aac706"
+    },
+    {
+      "id": "cc0-bgm-rtp-rvr-003",
+      "fileName": "rtp-q0273-rtp-rvr-003-preview_78d80fe8.mp3",
+      "bytes": 3485196,
+      "sha256": "1085cf0a237f99e1336d4bd13f6e654c4d12c1b462ab4c7a2a0b5a5e33414cb8"
+    },
+    {
+      "id": "cc0-bgm-rtp-rvr-004",
+      "fileName": "rtp-q0274-rtp-rvr-004-preview_68f05bc2.mp3",
+      "bytes": 3499616,
+      "sha256": "d6efb1303063a140bd84b87e9f6f84dd5da1b9dbf7121095340761c4a34174ef"
+    },
+    {
+      "id": "cc0-bgm-rtp-rvr-005",
+      "fileName": "rtp-q0275-rtp-rvr-005-preview_afd16434.mp3",
+      "bytes": 3476419,
+      "sha256": "37c8a217db2674220b8f062a676273e266cc7a24d20a0a5b133b1edbcd1b5a13"
+    },
+    {
+      "id": "cc0-bgm-rtp-sbd-001",
+      "fileName": "rtp-q0216-rtp-sbd-001-preview_bf10d409.mp3",
+      "bytes": 3769200,
+      "sha256": "728616e4513759198e5e5758df896237d9ca0314d6f4f3549e89757aa2d9ad9b"
+    },
+    {
+      "id": "cc0-bgm-rtp-sbd-002",
+      "fileName": "rtp-q0217-rtp-sbd-002-preview_b65781ec.mp3",
+      "bytes": 3483315,
+      "sha256": "675dd8d7619952ed344865f252ab2e32a3768570e4d5856591e7ce12ecb679a8"
+    },
+    {
+      "id": "cc0-bgm-rtp-sbd-003",
+      "fileName": "rtp-q0218-rtp-sbd-003-preview_e5b9cfe9.mp3",
+      "bytes": 3478300,
+      "sha256": "ee382ad77401756c560b48c222503152c3f6616b2d9f6125d6fbb78e12edd491"
+    },
+    {
+      "id": "cc0-bgm-rtp-sbd-004",
+      "fileName": "rtp-q0219-rtp-sbd-004-preview_4b76d2c2.mp3",
+      "bytes": 3582999,
+      "sha256": "54597c89580f4a5e1e6fa1f1d75d7e1f7773f265e5112cd2c2217421c5e25ef8"
+    },
+    {
+      "id": "cc0-bgm-rtp-sbd-005",
+      "fileName": "rtp-q0220-rtp-sbd-005-preview_c830fd66.mp3",
+      "bytes": 3443818,
+      "sha256": "50f02db010414484576a1643f5f327eeec3aa198c3a00cd3796b30f116b2c942"
+    },
+    {
+      "id": "cc0-bgm-rtp-sea-001",
+      "fileName": "rtp-sea-001-violet-sea-final_1b0c64aa.mp3",
+      "bytes": 3846940,
+      "sha256": "605ab3727fbe9ae44f7ec5d3dda70b9dec7a430b2fc308ed98667c586c430d6d"
+    },
+    {
+      "id": "cc0-bgm-rtp-shp-001",
+      "fileName": "rtp-shp-001-market-lane_a2907446.mp3",
+      "bytes": 2524915,
+      "sha256": "bdcefd6e38c22df0530a4d6fe3ab33b729c70d0de65713fa3bd5a900b98dbac6"
+    },
+    {
+      "id": "cc0-bgm-rtp-skt-001",
+      "fileName": "rtp-skt-001-hidden-footsteps-final_20497c42.mp3",
+      "bytes": 3306085,
+      "sha256": "899a174aa2e710c30302121283a33f55e150ebcd53907bdb667e3e7491f3b048"
+    },
+    {
+      "id": "cc0-bgm-rtp-sky-001",
+      "fileName": "rtp-sky-001-cloud-stair-final_aaeef135.mp3",
+      "bytes": 3787381,
+      "sha256": "8e2a733b12ac2d5f3e9192d5b85bcb0f346a9a2c0eaaf8de93fc2ffdf63c365a"
+    },
+    {
+      "id": "cc0-bgm-rtp-slp-001",
+      "fileName": "rtp-slp-001-moon-blanket-final_831dea83.mp3",
+      "bytes": 3589895,
+      "sha256": "4d89a186c8f7224442d7ebaf2edb15fb3322af8f8103491e2df8cc848941b673"
+    },
+    {
+      "id": "cc0-bgm-rtp-slp-002",
+      "fileName": "rtp-slp-002-deep-river-sleep-final_7e055dd3.mp3",
+      "bytes": 3555413,
+      "sha256": "7b4d0bffeeb22e8c6c1efb181d38ec7c9e6edb17f7bb9c3f19eec8f06ae1f115"
+    },
+    {
+      "id": "cc0-bgm-rtp-sno-001",
+      "fileName": "rtp-sno-001-windward-ridge_65ff2e68.mp3",
+      "bytes": 3698198,
+      "sha256": "d53a41b8eca3f293b54787dae0ede6f7b3c0c066be2d4dd418da9e71c8377ea5"
+    },
+    {
+      "id": "cc0-bgm-rtp-spr-001",
+      "fileName": "rtp-spr-001-petal-spring-final_58b1d755.mp3",
+      "bytes": 3256999,
+      "sha256": "5680761ae123c699e0fe97ce987316c91ebcf2b49d59e099a794ace09750749b"
+    },
+    {
+      "id": "cc0-bgm-rtp-stm-001",
+      "fileName": "rtp-stm-001-after-storm-field-final_0a0037a2.mp3",
+      "bytes": 3730480,
+      "sha256": "221ea9858dd440ef55df80f78ebd2ad9c9b6cf9ac3151cae4cb03914fb3afd5f"
+    },
+    {
+      "id": "cc0-bgm-rtp-svn-001",
+      "fileName": "rtp-q0211-rtp-svn-001-preview_d9aa2018.mp3",
+      "bytes": 3823116,
+      "sha256": "5612584140bed9a58bd04cf73480409010bd8a1f5f119a732046046f18a9a50d"
+    },
+    {
+      "id": "cc0-bgm-rtp-svn-002",
+      "fileName": "rtp-q0212-rtp-svn-002-preview_8a3d084b.mp3",
+      "bytes": 3491466,
+      "sha256": "217aa61c871b2e6a4e80725ad55d3ec8d3c319febbe96f6d9c1393e38182dd79"
+    },
+    {
+      "id": "cc0-bgm-rtp-svn-003",
+      "fileName": "rtp-q0213-rtp-svn-003-preview_61044084.mp3",
+      "bytes": 3483315,
+      "sha256": "7a572ded5ffae868c3d83a41053aed130993eaff3f1d5a8b1e3f3cffd63153b9"
+    },
+    {
+      "id": "cc0-bgm-rtp-svn-004",
+      "fileName": "rtp-q0214-rtp-svn-004-preview_4993d5b6.mp3",
+      "bytes": 3628765,
+      "sha256": "6e778b12541b06f121ffaa0bef2eff42b957b3230856ec312de9a36aac514072"
+    },
+    {
+      "id": "cc0-bgm-rtp-svn-005",
+      "fileName": "rtp-q0215-rtp-svn-005-preview_68424999.mp3",
+      "bytes": 3549771,
+      "sha256": "5d6ad78dea0a9d55cfcb2eec30c067046c31bae8d4875cf846a763f6992f8ae8"
+    },
+    {
+      "id": "cc0-bgm-rtp-swm-001",
+      "fileName": "rtp-swm-001-firefly-marsh-final_5678bc52.mp3",
+      "bytes": 3567952,
+      "sha256": "592a871dcc307e8ec50e9e1155691015ee54c0c2202fba8fc19f66414224ebe4"
+    },
+    {
+      "id": "cc0-bgm-rtp-tav-001",
+      "fileName": "rtp-tav-001-low-ceiling-tavern-final_93e6c36d.mp3",
+      "bytes": 3111244,
+      "sha256": "eb1ff5f5554abab86bd698c85bb07c322cde9ef8aa0acfa60c0adf1f2c0d2580"
+    },
+    {
+      "id": "cc0-bgm-rtp-tcf-001",
+      "fileName": "rtp-q0196-rtp-tcf-001-preview_897a261d.mp3",
+      "bytes": 3557921,
+      "sha256": "1b494d33e07f9be8dfe2b3206d26eb4789e6123b691ae3c7a26a1d27f9cd5461"
+    },
+    {
+      "id": "cc0-bgm-rtp-tcf-002",
+      "fileName": "rtp-q0197-rtp-tcf-002-preview_5e607d68.mp3",
+      "bytes": 3544755,
+      "sha256": "caad72a03cb1fa0cd8ece0ed54656c56f816f8002d22c0e8e117f29a59d6c1bc"
+    },
+    {
+      "id": "cc0-bgm-rtp-tcf-003",
+      "fileName": "rtp-q0198-rtp-tcf-003-preview_a74fcb01.mp3",
+      "bytes": 3822489,
+      "sha256": "646966e2e9392c6a3cc4bbd5b65d7bd9c20acca620954b0c30c8d7d0c6ef1fe5"
+    },
+    {
+      "id": "cc0-bgm-rtp-tcf-004",
+      "fileName": "rtp-q0199-rtp-tcf-004-preview_02dc1b22.mp3",
+      "bytes": 3352285,
+      "sha256": "3285300f1709c881268a0ba9c355cfa32c24551e70928b7e2aa97f6583eec5dc"
+    },
+    {
+      "id": "cc0-bgm-rtp-tcf-005",
+      "fileName": "rtp-q0200-rtp-tcf-005-preview_7c96fa12.mp3",
+      "bytes": 3325954,
+      "sha256": "a97a08878cf8c4120d70abb3ba9050acd4a35fa261a45de52da2900b23ffd91b"
+    },
+    {
+      "id": "cc0-bgm-rtp-thr-001",
+      "fileName": "rtp-thr-001-throne-less-hall-final_3319c4e7.mp3",
+      "bytes": 4066815,
+      "sha256": "b7feec903a301e4d553ce17aa96edf98567941aced7b1ce40b98a72539c6227f"
+    },
+    {
+      "id": "cc0-bgm-rtp-tid-001",
+      "fileName": "rtp-q0231-rtp-tid-001-preview_acf21fd6.mp3",
+      "bytes": 3564817,
+      "sha256": "7914009a089c673d7c96887a9466859f5f319e0ad2d6f9246652fb827a116330"
+    },
+    {
+      "id": "cc0-bgm-rtp-tid-002",
+      "fileName": "rtp-q0232-rtp-tid-002-preview_19f156f7.mp3",
+      "bytes": 3499616,
+      "sha256": "a36477e6a6265c74ecf6405cb52cba745a043af9956ee8e1e4215983e3378cc5"
+    },
+    {
+      "id": "cc0-bgm-rtp-tid-003",
+      "fileName": "rtp-q0233-rtp-tid-003-preview_4d51f67f.mp3",
+      "bytes": 3433787,
+      "sha256": "13fbe2a3b757c2b4e2277ef5c0a120d17e4c4f1794d80bb578ef744bafba9d9f"
+    },
+    {
+      "id": "cc0-bgm-rtp-tid-004",
+      "fileName": "rtp-q0234-rtp-tid-004-preview_e47d7633.mp3",
+      "bytes": 3344135,
+      "sha256": "15e0d52b89a874dd25495851027d578f4c79f633684184720890aa64a033b3a9"
+    },
+    {
+      "id": "cc0-bgm-rtp-tid-005",
+      "fileName": "rtp-q0235-rtp-tid-005-preview_233a20d7.mp3",
+      "bytes": 3614973,
+      "sha256": "a3d6d48d2f2f1beceecc786693822142b01d3bf48408cab10345e1652e673f62"
+    },
+    {
+      "id": "cc0-bgm-rtp-trm-001",
+      "fileName": "rtp-trm-001-first-tram-final_10f9e5cf.mp3",
+      "bytes": 3505258,
+      "sha256": "bcf73f697271e325e2c1959cecc96a2248b0684db7b10a872310dbacbd07aace"
+    },
+    {
+      "id": "cc0-bgm-rtp-trn-001",
+      "fileName": "rtp-trn-001-last-platform-final_6eb1e069.mp3",
+      "bytes": 3068282,
+      "sha256": "9dfd1a5c883d8d9744d707807783979495c4aa0aefce2ba5b97b36ca1c8fc87f"
+    },
+    {
+      "id": "cc0-bgm-rtp-ttl-001",
+      "fileName": "rtp-ttl-001-dawn-guild-ledger_cab8051a.mp3",
+      "bytes": 3267073,
+      "sha256": "723d2bb7308e917553673de5c23fe1b7f252ac6a97bfb7e4312a6fde55e7d3a1"
+    },
+    {
+      "id": "cc0-bgm-rtp-twn-001",
+      "fileName": "rtp-twn-001-lantern-street_9fdb11f6.mp3",
+      "bytes": 3019436,
+      "sha256": "9769d1c58717dc59a835656750ca4c57069337352e483d312a92155b456102c7"
+    },
+    {
+      "id": "cc0-bgm-rtp-uix-001",
+      "fileName": "rtp-q0146-rtp-uix-001-preview_5f17f256.mp3",
+      "bytes": 3895214,
+      "sha256": "1ee17226f37d10793a0e54a7a238464dca00cba1d84678dd231636c4a06441d4"
+    },
+    {
+      "id": "cc0-bgm-rtp-uix-002",
+      "fileName": "rtp-q0147-rtp-uix-002-preview_d1bd0bad.mp3",
+      "bytes": 3445699,
+      "sha256": "a764bd0d50f4bdc02d88f29969da9575690d45c8f020d1509dd5c2d51c243df9"
+    },
+    {
+      "id": "cc0-bgm-rtp-uix-003",
+      "fileName": "rtp-q0148-rtp-uix-003-preview_4b0d632e.mp3",
+      "bytes": 3586760,
+      "sha256": "a586d4629bde0875e386f69b6848fea59369b1977bc7c6811aeaaafb311c0861"
+    },
+    {
+      "id": "cc0-bgm-rtp-uix-004",
+      "fileName": "rtp-q0149-rtp-uix-004-preview_b9d30d04.mp3",
+      "bytes": 3904618,
+      "sha256": "9c8b29b82fca37d4fd907beec3ce9c20555e82e46b53e5a4081af784d2a69c0a"
+    },
+    {
+      "id": "cc0-bgm-rtp-uix-005",
+      "fileName": "rtp-q0150-rtp-uix-005-preview_1a88e66e.mp3",
+      "bytes": 3603688,
+      "sha256": "5a9eac7dac72226e7727c0627d23f9ca0c0de9c070af5f35cabf8c1bbca2fa52"
+    },
+    {
+      "id": "cc0-bgm-rtp-und-001",
+      "fileName": "rtp-und-001-breathless-coral-palace-final_2cac529d.mp3",
+      "bytes": 3536609,
+      "sha256": "481d253d6f4043362896157eb517ca749b6ac5df05a1d5ccb39158092d87b54b"
+    },
+    {
+      "id": "cc0-bgm-rtp-vgt-001",
+      "fileName": "rtp-q0226-rtp-vgt-001-preview_78196416.mp3",
+      "bytes": 3545382,
+      "sha256": "429ac3a01d00d4dcbffdbccccb60cba88596d4e6b32df1bdbdc9672732ef4662"
+    },
+    {
+      "id": "cc0-bgm-rtp-vgt-002",
+      "fileName": "rtp-q0227-rtp-vgt-002-preview_dacd07f1.mp3",
+      "bytes": 3500243,
+      "sha256": "fddcf6ec945b7d8e4f4a55ac7a44e8c1b68e89de002fab9accd23fd1dc4a61cb"
+    },
+    {
+      "id": "cc0-bgm-rtp-vgt-003",
+      "fileName": "rtp-q0228-rtp-vgt-003-preview_d44f4c3e.mp3",
+      "bytes": 3616853,
+      "sha256": "38a6c25015c7e1c20c25b2335f793092d8e27e707fa24e6b11e6552795482a2c"
+    },
+    {
+      "id": "cc0-bgm-rtp-vgt-004",
+      "fileName": "rtp-q0229-rtp-vgt-004-preview_dcd1846c.mp3",
+      "bytes": 3422502,
+      "sha256": "69faf4997d4a8d3f8f9bc80a9fd88ba84fc5fafde64bc477e060be2c8ee2a3bf"
+    },
+    {
+      "id": "cc0-bgm-rtp-vgt-005",
+      "fileName": "rtp-q0230-rtp-vgt-005-preview_6d0a508b.mp3",
+      "bytes": 3631900,
+      "sha256": "e233a271961a925f7dce31f4dd6c3b2448d88f37ff227a29988ae5a810626e14"
+    },
+    {
+      "id": "cc0-bgm-rtp-vlc-001",
+      "fileName": "rtp-vlc-001-ash-crater-final_4eae378a.mp3",
+      "bytes": 3489661,
+      "sha256": "fabc157e360bf8c54752b65ed1c059bc0b23f24d64f9052e37eed419e35dd9b9"
+    },
+    {
+      "id": "cc0-bgm-rtp-vrt-001",
+      "fileName": "rtp-q0276-rtp-vrt-001-preview_f15262a2.mp3",
+      "bytes": 3637542,
+      "sha256": "011e8f8fe58e14877d76547da532e5534647658e4e1d4cf058e6bc0154b21ad1"
+    },
+    {
+      "id": "cc0-bgm-rtp-vrt-002",
+      "fileName": "rtp-q0277-rtp-vrt-002-preview_67ea1aaf.mp3",
+      "bytes": 3673278,
+      "sha256": "53d361cdef300ccf1dff086ff3e3d4283915bf875c774448fdbe88690f2754e1"
+    },
+    {
+      "id": "cc0-bgm-rtp-vrt-003",
+      "fileName": "rtp-q0278-rtp-vrt-003-preview_b8d18b3c.mp3",
+      "bytes": 3525947,
+      "sha256": "8af807e44e2c1b1f38ea523c78bf25e5a0a1131ac5e0c6fc8485fcccf1cb8ca3"
+    },
+    {
+      "id": "cc0-bgm-rtp-vrt-004",
+      "fileName": "rtp-q0279-rtp-vrt-004-preview_24552091.mp3",
+      "bytes": 3414352,
+      "sha256": "fbd869c0ada81a0d56263219d8fc5a28ab823fbd2c204a4bd7db3df0533edf39"
+    },
+    {
+      "id": "cc0-bgm-rtp-vrt-005",
+      "fileName": "rtp-q0280-rtp-vrt-005-preview_48815901.mp3",
+      "bytes": 3650081,
+      "sha256": "3e4b98e0a4d9ec6c66ac30095b0446ab6a36916f4b9706a874f424c8ca966c26"
+    },
+    {
+      "id": "cc0-bgm-rtp-wch-001",
+      "fileName": "rtp-wch-001-pigeons-on-ramparts-final_f36e924b.mp3",
+      "bytes": 3539740,
+      "sha256": "db64fe63465855bc1521c6aeaf51017222568197e84c6e2f5b7e367420005b8c"
+    },
+    {
+      "id": "cc0-bgm-rtp-wks-001",
+      "fileName": "rtp-wks-001-hammer-and-sawdust-final_94f1f031.mp3",
+      "bytes": 3213595,
+      "sha256": "68f6893c0c770a946b76938f8ed337c59ef759fa2599b5f3474e5f854008d9f6"
+    }
+  ]
+}

@@ -7,7 +7,7 @@ import {
   readOprnGameFile,
 } from "@/player/oprnGameFile";
 import { exportedProjectId } from "@/player/exportProjectStoreShim";
-import { resolveExportSaveNamespace } from "@/player/exportSaveNamespace";
+import { resolveCommunitySaveScope, resolveExportSaveNamespace } from "@/player/exportSaveNamespace";
 import { describe, expect, it } from "vitest";
 
 function fileStub(name: string, type = ""): Pick<File, "name" | "type"> {
@@ -15,6 +15,13 @@ function fileStub(name: string, type = ""): Pick<File, "name" | "type"> {
 }
 
 describe("oprn game file", () => {
+  it("derives publication isolation from listing paths, independently of legacy host/file namespaces", () => {
+    expect(resolveCommunitySaveScope("/play/listing-a/releases/" + "a".repeat(64) + "/player.html")).toBe("listing-a");
+    expect(resolveCommunitySaveScope("/play/listing-b/releases/" + "a".repeat(64) + "/player.html")).toBe("listing-b");
+    expect(resolveCommunitySaveScope("/play/encoded%20listing/player.html")).toBe("encoded listing");
+    expect(resolveCommunitySaveScope("/renamed-standalone.html")).toBeUndefined();
+    expect(resolveCommunitySaveScope("/other/renamed-standalone.html")).toBeUndefined();
+  });
   it("accepts the .oprn extension and the package mime types", () => {
     expect(isOprnGameFile(fileStub("my-game.oprn"))).toBe(true);
     expect(isOprnGameFile(fileStub("MY-GAME.OPRN"))).toBe(true);

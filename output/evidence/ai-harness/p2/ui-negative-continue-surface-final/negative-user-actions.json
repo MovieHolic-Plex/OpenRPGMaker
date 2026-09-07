@@ -1,0 +1,236 @@
+{
+  "instrumentPath": "test/aiContinueNegativeSurface.mjs",
+  "instrumentHash": "32d5611dd27747258fba0a7b064c6604c279be0228174f6f5dcdf8bd760b3d2d",
+  "observations": [
+    {
+      "entry": "typed-composer",
+      "before": {
+        "composerMode": "ask",
+        "actualOptions": {
+          "autonomous": true,
+          "instruction": "계속",
+          "scope": null,
+          "composerMode": "do"
+        },
+        "outcome": {
+          "execution": "blocked",
+          "goal": "incomplete",
+          "delivery": "no-change"
+        },
+        "work": [
+          {
+            "id": "blocked-resume-work",
+            "status": "in_progress"
+          }
+        ],
+        "acceptance": {
+          "id": "acceptance-1",
+          "goal": "QA scoped requirements",
+          "status": "blocked",
+          "items": [
+            {
+              "required": true,
+              "source": {
+                "requestId": "request-1",
+                "text": "qa-ai-surface-62da0cce-4589-4e10-a625-cf60a204c959/blocked-ask-resume: inspect only the scripted scope.",
+                "scope": null
+              },
+              "id": "blocked-resume-event",
+              "title": "Required event",
+              "status": "blocked",
+              "evidence": [
+                {
+                  "expected": "{\"kind\":\"eventCount\",\"target\":{\"mapId\":\"map_blank_start\"},\"count\":1}",
+                  "observed": "0 scoped events",
+                  "passed": false
+                }
+              ],
+              "reason": "Acceptance incomplete; execution stopped",
+              "mapId": "map_blank_start"
+            }
+          ]
+        },
+        "events": [],
+        "ui": [
+          {
+            "testid": "ai-run-outcome",
+            "execution": "blocked",
+            "goal": "incomplete",
+            "delivery": "no-change"
+          }
+        ]
+      },
+      "after": {
+        "composerMode": "ask",
+        "actualOptions": {
+          "autonomous": true,
+          "instruction": "계속",
+          "scope": null,
+          "composerMode": "ask"
+        },
+        "outcome": {
+          "execution": "response-final",
+          "goal": "incomplete",
+          "delivery": "no-change"
+        },
+        "work": [
+          {
+            "id": "blocked-resume-work",
+            "status": "in_progress"
+          }
+        ],
+        "acceptance": {
+          "id": "acceptance-1",
+          "goal": "QA scoped requirements",
+          "status": "blocked",
+          "items": [
+            {
+              "required": true,
+              "source": {
+                "requestId": "request-1",
+                "text": "qa-ai-surface-62da0cce-4589-4e10-a625-cf60a204c959/blocked-ask-resume: inspect only the scripted scope.",
+                "scope": null
+              },
+              "id": "blocked-resume-event",
+              "title": "Required event",
+              "status": "blocked",
+              "evidence": [
+                {
+                  "expected": "{\"kind\":\"eventCount\",\"target\":{\"mapId\":\"map_blank_start\"},\"count\":1}",
+                  "observed": "0 scoped events",
+                  "passed": false
+                }
+              ],
+              "reason": "Acceptance incomplete; execution stopped",
+              "mapId": "map_blank_start"
+            }
+          ]
+        },
+        "events": [],
+        "ui": [
+          {
+            "testid": "ai-run-outcome",
+            "execution": "response-final",
+            "goal": "incomplete",
+            "delivery": "no-change"
+          }
+        ]
+      }
+    },
+    {
+      "entry": "registered-bridge",
+      "before": {
+        "composerMode": "ask",
+        "actualOptions": {
+          "autonomous": true,
+          "instruction": "계속",
+          "scope": null,
+          "composerMode": "ask"
+        },
+        "outcome": {
+          "execution": "response-final",
+          "goal": "incomplete",
+          "delivery": "no-change"
+        },
+        "work": [
+          {
+            "id": "blocked-resume-work",
+            "status": "in_progress"
+          }
+        ],
+        "acceptance": {
+          "id": "acceptance-1",
+          "goal": "QA scoped requirements",
+          "status": "blocked",
+          "items": [
+            {
+              "required": true,
+              "source": {
+                "requestId": "request-1",
+                "text": "qa-ai-surface-62da0cce-4589-4e10-a625-cf60a204c959/blocked-ask-resume: inspect only the scripted scope.",
+                "scope": null
+              },
+              "id": "blocked-resume-event",
+              "title": "Required event",
+              "status": "blocked",
+              "evidence": [
+                {
+                  "expected": "{\"kind\":\"eventCount\",\"target\":{\"mapId\":\"map_blank_start\"},\"count\":1}",
+                  "observed": "0 scoped events",
+                  "passed": false
+                }
+              ],
+              "reason": "Acceptance incomplete; execution stopped",
+              "mapId": "map_blank_start"
+            }
+          ]
+        },
+        "events": [],
+        "ui": [
+          {
+            "testid": "ai-run-outcome",
+            "execution": "response-final",
+            "goal": "incomplete",
+            "delivery": "no-change"
+          }
+        ]
+      },
+      "after": {
+        "composerMode": "ask",
+        "actualOptions": {
+          "autonomous": true,
+          "instruction": "계속",
+          "scope": null,
+          "composerMode": "ask"
+        },
+        "outcome": {
+          "execution": "response-final",
+          "goal": "incomplete",
+          "delivery": "no-change"
+        },
+        "work": [
+          {
+            "id": "blocked-resume-work",
+            "status": "in_progress"
+          }
+        ],
+        "acceptance": {
+          "id": "acceptance-1",
+          "goal": "QA scoped requirements",
+          "status": "blocked",
+          "items": [
+            {
+              "required": true,
+              "source": {
+                "requestId": "request-1",
+                "text": "qa-ai-surface-62da0cce-4589-4e10-a625-cf60a204c959/blocked-ask-resume: inspect only the scripted scope.",
+                "scope": null
+              },
+              "id": "blocked-resume-event",
+              "title": "Required event",
+              "status": "blocked",
+              "evidence": [
+                {
+                  "expected": "{\"kind\":\"eventCount\",\"target\":{\"mapId\":\"map_blank_start\"},\"count\":1}",
+                  "observed": "0 scoped events",
+                  "passed": false
+                }
+              ],
+              "reason": "Acceptance incomplete; execution stopped",
+              "mapId": "map_blank_start"
+            }
+          ]
+        },
+        "events": [],
+        "ui": [
+          {
+            "testid": "ai-run-outcome",
+            "execution": "response-final",
+            "goal": "incomplete",
+            "delivery": "no-change"
+          }
+        ]
+      }
+    }
+  ]
+}

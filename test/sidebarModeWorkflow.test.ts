@@ -9,6 +9,7 @@ import { renderTilePalette } from "@/editor/panels/tilePalette";
 import { resetTileToolbarMenusForTests } from "@/editor/panels/tileToolbarMenus";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
+import { resetInspectionPinsForTests, SIDEBAR_PINS_KEY } from '@/editor/panels/sidebarInspectionPins';
 
 const advanced = [
   ["oprn-tool-inspector", "tile-inspector-dropdown"],
@@ -55,6 +56,8 @@ describe("mode-specific sidebar painting workflow", () => {
     vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout", "requestAnimationFrame", "cancelAnimationFrame"] });
     resetBasicLeftRailForTests();
     resetTileToolbarMenusForTests();
+    localStorage.removeItem(SIDEBAR_PINS_KEY + 'expert');
+    resetInspectionPinsForTests();
     resetEditorUiModeForTests("beginner");
     store.replace(createBlankProject());
     await historyChange(() => resetMapEditHistory());
@@ -157,9 +160,12 @@ describe("mode-specific sidebar painting workflow", () => {
   it("keeps standard daily tools direct and advanced actions reachable once through More", () => {
     resetEditorUiModeForTests("standard");
     renderTilePalette(host);
-    for (const id of ["tool-paint", "tool-erase", "tool-fill", "tool-select", "tool-eyedropper", "oprn-tool-undo"]) {
+    for (const id of ["tool-paint", "tool-erase", "tool-fill", "tool-select", "oprn-tool-undo"]) {
       control(id);
     }
+    control('sidebar-tools-menu').click();
+    control('tool-eyedropper').click();
+    expect(editorState.get().tool).toBe('eyedropper');
     for (const [id] of advanced) expect(find(id)).toBeNull();
     control("oprn-tool-overflow").click();
     for (const [id] of advanced) {
@@ -168,9 +174,13 @@ describe("mode-specific sidebar painting workflow", () => {
     }
   });
 
-  it.each(advanced)("opens expert %s directly and returns Escape focus to its own trigger", (id, panelId) => {
+  it.each(advanced)("pins expert %s for direct access and returns Escape focus to its own trigger", (id, panelId) => {
     resetEditorUiModeForTests("expert");
     renderTilePalette(host);
+    const pin = { 'oprn-tool-inspector': 'inspector', 'toolbar-toggle-ruleAudit': 'ruleAudit', 'toolbar-toggle-history': 'history' }[id];
+    control('oprn-tool-overflow').click();
+    control(`sidebar-pin-${pin}`).click();
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
     const trigger = control(id);
     expect(trigger.textContent?.trim().length).toBeGreaterThan(0);
     trigger.focus();
@@ -183,7 +193,7 @@ describe("mode-specific sidebar painting workflow", () => {
     control("oprn-tool-overflow").click();
     for (const [advancedId] of advanced) {
       expect(host.querySelectorAll(`[data-testid="${advancedId}"]`)).toHaveLength(1);
-      expect(find("toolbar-overflow-dropdown")?.contains(control(advancedId))).toBe(false);
+      expect(find("toolbar-overflow-dropdown")?.contains(control(advancedId))).toBe(advancedId !== id);
     }
   });
 

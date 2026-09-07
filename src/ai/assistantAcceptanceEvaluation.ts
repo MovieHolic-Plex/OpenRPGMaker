@@ -1,7 +1,11 @@
+import { evaluateFunctionalCriterion } from "./functionalAcceptanceEvaluation";
+import type { NpcRewardRequirement } from "./intentDeclaration";
+import type { WorkItemOutcomeVerdict } from "./workItemOutcome";
 import { canMove, inBounds, isPassable } from "@/project/collision";
 import { passageBounds } from "@/project/footprint";
 import type { GameMap, Project } from "@/project/types";
 import { ACCEPTANCE_EXAMPLES, type AcceptanceIssue, type AcceptanceCriterion, type AcceptanceItemSnapshot, type AcceptanceRegion, type AcceptanceTarget } from "./assistantAcceptance";
+import type { ToolVerificationEvidence } from "./toolVerificationEvidence";
 
 type Evidence = AcceptanceItemSnapshot["evidence"][number];
 export function acceptanceFingerprint(value: unknown): string {
@@ -20,6 +24,38 @@ export function contains(region: AcceptanceRegion, point: { readonly x: number; 
 export function validRegion(map: GameMap, region: AcceptanceRegion): boolean {
   return inBounds(map, region.x, region.y) && inBounds(map, region.x + region.w - 1, region.y + region.h - 1);
 }
+
+/** A requested image review cannot exclude cells this request actually changed. */
+export function acceptanceReviewRegion(map: GameMap, before: GameMap | undefined, requested?: AcceptanceRegion): AcceptanceRegion {
+  const full = { x: 0, y: 0, w: map.width, h: map.height };
+  if (!requested) return full;
+  if (!validRegion(map, requested)) return requested;
+  if (!before || before.width !== map.width || before.height !== map.height
+    || before.tilesetId !== map.tilesetId || before.tileSize !== map.tileSize) return full;
+  let left = requested.x, top = requested.y, right = left + requested.w, bottom = top + requested.h;
+  const include = (x: number, y: number): void => {
+    if (!inBounds(map, x, y)) return;
+    left = Math.min(left, x); top = Math.min(top, y);
+    right = Math.max(right, x + 1); bottom = Math.max(bottom, y + 1);
+  };
+  for (let i = 0; i < map.width * map.height; i += 1) {
+    if (map.lowerTiles[i] !== before.lowerTiles[i] || map.upperTiles[i] !== before.upperTiles[i]
+      || acceptanceFingerprint(map.lowerTileStacks?.[i] ?? []) !== acceptanceFingerprint(before.lowerTileStacks?.[i] ?? [])
+      || acceptanceFingerprint(map.upperTileStacks?.[i] ?? []) !== acceptanceFingerprint(before.upperTileStacks?.[i] ?? [])) {
+      include(i % map.width, Math.floor(i / map.width));
+    }
+  }
+  const oldEvents = new Map(before.events.map(event => [event.id, event]));
+  const newEvents = new Map(map.events.map(event => [event.id, event]));
+  for (const id of new Set([...oldEvents.keys(), ...newEvents.keys()])) {
+    const oldEvent = oldEvents.get(id), newEvent = newEvents.get(id);
+    if (acceptanceFingerprint(oldEvent) === acceptanceFingerprint(newEvent)) continue;
+    if (oldEvent) include(oldEvent.x, oldEvent.y);
+    if (newEvent) include(newEvent.x, newEvent.y);
+  }
+  return { x: left, y: top, w: right - left, h: bottom - top };
+}
+
 export function scopedMapContent(map: GameMap, region?: AcceptanceRegion): unknown {
   if (!region) return map;
   const cells = [];
@@ -35,9 +71,19 @@ export function visualFingerprint(project: Project, map: GameMap): string {
   return acceptanceFingerprint([map, project.tilesets[map.tilesetId], project.assets]);
 }
 export function criterionTargets(criterion: AcceptanceCriterion): readonly AcceptanceTarget[] {
-  return criterion.kind === "mapCount" ? criterion.targets : [criterion.target];
+  switch (criterion.kind) {
+    case "toolVerdict": case "npcReward": case "functionalUnresolved": return [];
+    case "shopPurchase": return [criterion.target];
+    case "mapRoundTrip": return [criterion.target, criterion.destination];
+    case "mapCount": return criterion.targets;
+    case "mapDimensions": case "eventCount": case "targetChange": case "preserve": case "imageReviewed": case "reachability": case "actionCombat": return [criterion.target];
+    default: return assertNever(criterion);
+  }
 }
 export interface AcceptanceEvaluation {
+  readonly npcRewardProof?: (project: Project, requirement: NpcRewardRequirement) => WorkItemOutcomeVerdict;
+  readonly verification?: ToolVerificationEvidence;
+  readonly verificationCheckId?: string;
   readonly project: Project;
   readonly baseline: Project;
   readonly bindings: ReadonlyMap<string, string>;
@@ -46,10 +92,19 @@ export interface AcceptanceEvaluation {
 }
 export function evaluateAcceptanceCriterion(criterion: AcceptanceCriterion, input: AcceptanceEvaluation): Evidence {
   const expected = JSON.stringify(criterion);
-  if (criterion.kind === "mapCount") {
-    const maps = criterion.targets.map(target => resolveAcceptanceMap(input.project, target, input.bindings));
-    const count = new Set(maps.filter(map => map !== undefined).map(map => map.id)).size;
-    return { expected, observed: `${count} scoped maps`, passed: count === criterion.count };
+  switch (criterion.kind) {
+    case "shopPurchase": case "mapRoundTrip": case "npcReward": case "functionalUnresolved": return evaluateFunctionalCriterion(criterion, input);
+    case "toolVerdict": {
+      const passed = input.verification?.passedScope(criterion.tool, criterion.args, input.verificationCheckId) === true;
+      return { expected, observed: passed ? "Current explicit scoped tool verdict" : "Current explicit scoped tool verdict required", passed };
+    }
+    case "mapCount": {
+      const maps = criterion.targets.map(target => resolveAcceptanceMap(input.project, target, input.bindings));
+      const count = new Set(maps.filter(map => map !== undefined).map(map => map.id)).size;
+      return { expected, observed: `${count} scoped maps`, passed: count === criterion.count };
+    }
+    case "mapDimensions": case "eventCount": case "targetChange": case "preserve": case "imageReviewed": case "reachability": case "actionCombat": break;
+    default: return assertNever(criterion);
   }
   const map = resolveAcceptanceMap(input.project, criterion.target, input.bindings);
   if (!map) return { expected, observed: "Target map missing or new-map binding unresolved", passed: false };
@@ -82,8 +137,13 @@ export function evaluateAcceptanceCriterion(criterion: AcceptanceCriterion, inpu
         passed: issues.length === 0, issues: Object.freeze(issues) };
     }
     case "imageReviewed": {
-      const passed = input.reviewed(map, region ?? { x: 0, y: 0, w: map.width, h: map.height });
-      return { expected, observed: passed ? "Delivered image coverage explicitly reviewed for current content" : "Current image coverage and attributed review required", passed };
+      const requiredRegion = acceptanceReviewRegion(map, input.baseline.maps[map.id], region);
+      const passed = input.reviewed(map, requiredRegion);
+      return {
+        expected: JSON.stringify({ ...criterion, region: requiredRegion }),
+        observed: passed ? "Delivered image coverage explicitly reviewed for current content" : "Current image coverage and attributed review required",
+        passed,
+      };
     }
     default: return assertNever(criterion);
   }

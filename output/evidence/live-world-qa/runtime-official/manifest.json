@@ -1,0 +1,46 @@
+{
+  "scenarioId": "live-world-start",
+  "projectPath": "output/evidence/live-world-qa/final-review-project.json",
+  "seed": 1,
+  "viewport": {
+    "width": 1024,
+    "height": 768
+  },
+  "errors": [],
+  "beats": [
+    {
+      "index": 0,
+      "id": "title",
+      "note": "The actual authored project reaches the shipped player title.",
+      "shot": "01-title.png",
+      "failures": [],
+      "state": null,
+      "actions": []
+    },
+    {
+      "index": 1,
+      "id": "authored-start",
+      "note": "Start at the authored harbor position without teleporting.",
+      "shot": "02-authored-start.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 24,
+        "y": 118,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Enter"
+        },
+        {
+          "kind": "waitForRuntime"
+        }
+      ]
+    }
+  ]
+}

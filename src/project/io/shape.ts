@@ -1,5 +1,7 @@
 import { assertGrowthShape } from "@/project/growth/validation";
 import { validateAudioDescriptions } from "../audioDescriptions";
+import { validateMonsterMetadata } from "../monsterMetadata";
+import { validateCharacterGraphicsProject } from "../characterGraphics";
 import { villageDesignIssue } from "../villageDesign";
 import type { Project, ProjectV1, ProjectV2 } from "../types";
 import { normalizeDatabaseRecords, normalizeSystemRecords } from "../databaseRecordModel";
@@ -69,6 +71,7 @@ export function validateProjectV2(data: JsonRecord): ProjectV2 {
 /** 현재(v4) 프로젝트 셰이프 검증. v3 저장본은 migrateV3toV4 가 얼굴 짝을 바꾼 뒤 여기로 들어온다. */
 export function validateProjectV4(data: JsonRecord): Project {
   validateAudioDescriptions(data.audioDescriptions);
+  validateMonsterMetadata(data.monsterMetadata);
   assertGrowthShape(data.growth);
   validateMeta(data.meta);
   validateAssets(data.assets);
@@ -123,6 +126,7 @@ export function validateProjectV4(data: JsonRecord): Project {
   project.mapTree = mapTree;
   project.mapConnections ??= [];
   project.villageInfoDocuments ??= [];
+  validateCharacterGraphicsProject(project);
   dropLegacyTerrainTemplates(project);
   normalizeEndings(project);
   normalizeStoryFlags(project);

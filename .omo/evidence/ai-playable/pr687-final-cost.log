@@ -1,0 +1,42 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/assistantAcceptanceCost.test.ts --maxWorkers=1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86
+
+ ❯ test/assistantAcceptanceCost.test.ts (6 tests | 2 failed) 3774ms
+   ✓ bounded canonical project comparisons > compares shared project content once for same-reference 173ms
+   ✓ bounded canonical project comparisons > compares shared project content once for same-content  414ms
+   ✓ bounded canonical project comparisons > compares shared project content once for changed-content  352ms
+   ✓ bounded canonical project comparisons > does not compare or clone an unrelated editor update without authority or verifier evidence 254ms
+   × bounded canonical project comparisons > preserves late-adoption freshness when content changed=false 1344ms
+     → {"acceptance":{"id":"acceptance-1","goal":"Map contract","status":"blocked","items":[{"required":true,"source":{"requestId":"request-2","text":"Inspect this map","scope":null},"id":"route","title":"Route","status":"blocked","evidence":[{"expected":"{\"kind\":\"toolVerdict\",\"tool\":\"check_reachability\",\"args\":{\"mapId\":\"map_blank_start\",\"from\":{\"x\":0,\"y\":0},\"targets\":[{\"x\":1,\"y\":0}]}}","observed":"Current explicit scoped tool verdict required","passed":false}],"reason":"Acceptance incomplete; execution stopped"},{"id":"required-verification","title":"Required verification","status":"blocked","reason":"check_reachability: 필수 검증 미통과 [acceptance-1:route:0]","evidence":[{"expected":"Every required check passes against current content","observed":"check_reachability: 필수 검증 미통과 [acceptance-1:route:0]","passed":false}]}]},"verification":{"requirements":[{"checkId":"acceptance-1:route:0","ownerId":"acceptance-1:route","name":"check_reachability","args":{"mapId":"map_blank_start","from":{"x":0,"y":0},"targets":[{"x":1,"y":0}]},"acceptedCriterion":{"kind":"toolVerdict","tool":"check_reachability","args":{"mapId":"map_blank_start","from":{"x":0,"y":0},"targets":[{"x":1,"y":0}]}},"status":"unverified"}],"findings":[],"attempts":[{"attemptId":"attempt-1","revision":0,"name":"check_reachability","args":{"mapId":"map_blank_start","from":{"x":0,"y":0},"targets":[{"x":1,"y":0}]},"result":{"ok":true,"summary":"도달성: 전부 도달 가능","data":{"reachable":true,"unreachable":[]}},"status":"passed"}]}}: expected 'blocked' to be 'verified' // Object.is equality
+   × bounded canonical project comparisons > preserves late-adoption freshness when content changed=true 1235ms
+     → {"acceptance":{"id":"acceptance-1","goal":"Map contract","status":"blocked","items":[{"required":true,"source":{"requestId":"request-2","text":"Inspect this map","scope":null},"id":"route","title":"Route","status":"blocked","evidence":[{"expected":"{\"kind\":\"toolVerdict\",\"tool\":\"check_reachability\",\"args\":{\"mapId\":\"map_blank_start\",\"from\":{\"x\":0,\"y\":0},\"targets\":[{\"x\":1,\"y\":0}]}}","observed":"Current explicit scoped tool verdict required","passed":false}],"reason":"Acceptance incomplete; execution stopped"},{"id":"required-verification","title":"Required verification","status":"blocked","reason":"check_reachability: 필수 검증 미통과 [acceptance-1:route:0]","evidence":[{"expected":"Every required check passes against current content","observed":"check_reachability: 필수 검증 미통과 [acceptance-1:route:0]","passed":false}]}]},"verification":{"requirements":[{"checkId":"acceptance-1:route:0","ownerId":"acceptance-1:route","name":"check_reachability","args":{"mapId":"map_blank_start","from":{"x":0,"y":0},"targets":[{"x":1,"y":0}]},"acceptedCriterion":{"kind":"toolVerdict","tool":"check_reachability","args":{"mapId":"map_blank_start","from":{"x":0,"y":0},"targets":[{"x":1,"y":0}]}},"status":"unverified"}],"findings":[],"attempts":[{"attemptId":"attempt-1","revision":0,"name":"check_reachability","args":{"mapId":"map_blank_start","from":{"x":0,"y":0},"targets":[{"x":1,"y":0}]},"result":{"ok":true,"summary":"도달성: 전부 도달 가능","data":{"reachable":true,"unreachable":[]}},"status":"passed"}]}}: expected 'blocked' to be 'verified' // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/assistantAcceptanceCost.test.ts > bounded canonical project comparisons > preserves late-adoption freshness when content changed=false
+ FAIL  test/assistantAcceptanceCost.test.ts > bounded canonical project comparisons > preserves late-adoption freshness when content changed=true
+AssertionError: {"acceptance":{"id":"acceptance-1","goal":"Map contract","status":"blocked","items":[{"required":true,"source":{"requestId":"request-2","text":"Inspect this map","scope":null},"id":"route","title":"Route","status":"blocked","evidence":[{"expected":"{\"kind\":\"toolVerdict\",\"tool\":\"check_reachability\",\"args\":{\"mapId\":\"map_blank_start\",\"from\":{\"x\":0,\"y\":0},\"targets\":[{\"x\":1,\"y\":0}]}}","observed":"Current explicit scoped tool verdict required","passed":false}],"reason":"Acceptance incomplete; execution stopped"},{"id":"required-verification","title":"Required verification","status":"blocked","reason":"check_reachability: 필수 검증 미통과 [acceptance-1:route:0]","evidence":[{"expected":"Every required check passes against current content","observed":"check_reachability: 필수 검증 미통과 [acceptance-1:route:0]","passed":false}]}]},"verification":{"requirements":[{"checkId":"acceptance-1:route:0","ownerId":"acceptance-1:route","name":"check_reachability","args":{"mapId":"map_blank_start","from":{"x":0,"y":0},"targets":[{"x":1,"y":0}]},"acceptedCriterion":{"kind":"toolVerdict","tool":"check_reachability","args":{"mapId":"map_blank_start","from":{"x":0,"y":0},"targets":[{"x":1,"y":0}]}},"status":"unverified"}],"findings":[],"attempts":[{"attemptId":"attempt-1","revision":0,"name":"check_reachability","args":{"mapId":"map_blank_start","from":{"x":0,"y":0},"targets":[{"x":1,"y":0}]},"result":{"ok":true,"summary":"도달성: 전부 도달 가능","data":{"reachable":true,"unreachable":[]}},"status":"passed"}]}}: expected 'blocked' to be 'verified' // Object.is equality
+
+Expected: [32m"[7mverifi[27med"[39m
+Received: [31m"[7mblock[27med"[39m
+
+ ❯ test/assistantAcceptanceCost.test.ts:65:173
+     63|     expect(f.session.getVerificationSnapshot().requirements[0]?.status…
+     64|     await f.run([[{ name: "check_reachability", args }]], { goalAction…
+     65|     expect(f.session.getAcceptanceSnapshot()?.status, JSON.stringify({…
+       |                                                                                                                                                                             ^
+     66|   });
+     67| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 4 passed (6)
+   Start at  02:02:51
+   Duration  14.72s (transform 7.45s, setup 0ms, collect 10.57s, tests 3.77s, environment 0ms, prepare 62ms)
+

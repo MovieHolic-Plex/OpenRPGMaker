@@ -436,6 +436,7 @@ const listResources: ToolDefinition = {
       tileset: project.tilesets[DEFAULT_TILESET_ID],
       charsetLabels: project.charsetLabels,
       audioProject: project,
+      monsterProject: project,
     });
     const matches = all.slice(offset, offset + limit).map(match =>
       match.description === undefined
@@ -547,7 +548,9 @@ const runLint: ToolDefinition = {
     const errors = issues.filter((issue) => issue.severity === "error").length;
     const warnings = issues.filter((issue) => issue.severity === "warning").length;
     const infos = issues.filter((issue) => issue.severity === "info").length;
-    return { summary: `lint: error ${errors}건 / warning ${warnings}건 / info ${infos}건`, data: { counts: { errors, infos, warnings }, issues } };
+    return { summary: `lint: error ${errors}건 / warning ${warnings}건 / info ${infos}건`,
+      issues: issues.filter(issue => issue.relocation !== undefined),
+      data: { counts: { errors, infos, warnings }, issues } };
   },
 };
 

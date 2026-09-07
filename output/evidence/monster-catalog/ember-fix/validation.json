@@ -1,0 +1,46 @@
+{
+  "startingRevision": "19625c8587f8b41d487bac2fdb830cd3b24299d3",
+  "lspBeforeEdit": "No diagnostics found",
+  "lspAfterEdit": "Timed out waiting for fresh diagnostics within 3000ms; replaced by executed scoped TypeScript compiler validation.",
+  "compilerExit": 0,
+  "redExit": 1,
+  "greenExit": 0,
+  "tokens": {
+    "red.json": {
+      "ENOSPC": 0,
+      "ENOENT": 0,
+      "real network disabled": 0,
+      "credential file read prohibited": 0
+    },
+    "red.log": {
+      "ENOSPC": 0,
+      "ENOENT": 0,
+      "real network disabled": 0,
+      "credential file read prohibited": 0
+    },
+    "red-exact-errors.json": {
+      "ENOSPC": 0,
+      "ENOENT": 0,
+      "real network disabled": 0,
+      "credential file read prohibited": 0
+    },
+    "green.json": {
+      "ENOSPC": 0,
+      "ENOENT": 0,
+      "real network disabled": 0,
+      "credential file read prohibited": 0
+    },
+    "green.log": {
+      "ENOSPC": 0,
+      "ENOENT": 0,
+      "real network disabled": 0,
+      "credential file read prohibited": 0
+    },
+    "green-exact-errors.json": {
+      "ENOSPC": 0,
+      "ENOENT": 0,
+      "real network disabled": 0,
+      "credential file read prohibited": 0
+    }
+  }
+}

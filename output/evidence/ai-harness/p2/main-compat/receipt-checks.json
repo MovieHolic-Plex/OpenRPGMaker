@@ -1,0 +1,92 @@
+{
+  "build.receipt.json": {
+    "exit": 0,
+    "indexTree": "b0e1cc08fb8e1a6b0923ab4f69db727a4522bbc4",
+    "unchanged": true
+  },
+  "catalog-bun.receipt.json": {
+    "exit": 0,
+    "indexTree": "b0e1cc08fb8e1a6b0923ab4f69db727a4522bbc4",
+    "unchanged": true
+  },
+  "final-targeted.receipt.json": {
+    "exit": 1,
+    "indexTree": "b0e1cc08fb8e1a6b0923ab4f69db727a4522bbc4",
+    "unchanged": true
+  },
+  "targeted.receipt.json": {
+    "exit": 1,
+    "indexTree": "9037111448159b838a3400cddbcb73d4d902a8f2",
+    "unchanged": true
+  },
+  "verified-native-required.receipt.json": {
+    "exit": 0,
+    "indexTree": "93601a27eac5f0c1451358201fdcaea6574c7441",
+    "unchanged": true
+  },
+  "final-build.receipt.json": {
+    "exit": 0,
+    "indexTree": "021179c8ed15fb753f92a41ea4b252881c152387",
+    "unchanged": true
+  },
+  "native-required-skip.receipt.json": {
+    "exit": 0,
+    "indexTree": "021179c8ed15fb753f92a41ea4b252881c152387",
+    "unchanged": true
+  },
+  "native-proof-failure.receipt.json": {
+    "exit": 0,
+    "indexTree": "021179c8ed15fb753f92a41ea4b252881c152387",
+    "unchanged": true
+  },
+  "milestone-red.receipt.json": {
+    "exit": 1,
+    "indexTree": "078099f03a42e66ecb82f136543bd3ee417aeee3",
+    "unchanged": true
+  },
+  "verified-native-proof.receipt.json": {
+    "exit": 0,
+    "indexTree": "93601a27eac5f0c1451358201fdcaea6574c7441",
+    "unchanged": true
+  },
+  "interacting.receipt.json": {
+    "exit": 1,
+    "indexTree": "daed5b068d375baf266ae6bb89441788b322a109",
+    "unchanged": true
+  },
+  "native-outcome-matrix.receipt.json": {
+    "exit": 1,
+    "indexTree": "b0e1cc08fb8e1a6b0923ab4f69db727a4522bbc4",
+    "unchanged": true
+  },
+  "native-outcome-matrix-compatible.receipt.json": {
+    "exit": 0,
+    "indexTree": "021179c8ed15fb753f92a41ea4b252881c152387",
+    "unchanged": true
+  },
+  "verified-targeted.receipt.json": {
+    "exit": 1,
+    "indexTree": "93601a27eac5f0c1451358201fdcaea6574c7441",
+    "unchanged": true
+  },
+  "exact-invocations-red.receipt.json": {
+    "exit": 1,
+    "indexTree": "1ed11ef35826d3027ef91464a1bbda23ac6295e3",
+    "unchanged": true
+  },
+  "verified-native-matrix.receipt.json": {
+    "exit": 0,
+    "indexTree": "93601a27eac5f0c1451358201fdcaea6574c7441",
+    "unchanged": true
+  },
+  "verified-build.receipt.json": {
+    "exit": 0,
+    "indexTree": "93601a27eac5f0c1451358201fdcaea6574c7441",
+    "unchanged": true
+  },
+  "typecheck.receipt.json": {
+    "exit": 0,
+    "indexTree": "9037111448159b838a3400cddbcb73d4d902a8f2",
+    "unchanged": true
+  }
+}

@@ -32,7 +32,8 @@ import {
   saveAiFontSize,
   type AiFontSize,
 } from "@/editor/panels/aiPanelLayout";
-import { registerModal } from "@/editor/ui/modalStack";
+import { isTopModal, registerModal } from "@/editor/ui/modalStack";
+import { installAiModalFocus } from "./aiModalFocus";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 import { renderAiAuthSettings } from "./aiAuthSettings";
@@ -59,6 +60,17 @@ export type OpenAiSettingsModalOptions = {
 };
 
 let activeAiSettingsClose: (() => void) | null = null;
+let panelSettings: (() => OpenAiSettingsModalOptions) | null = null;
+
+/** The single mounted chat panel supplies the same settings context to every entry. */
+export function registerAiSettingsPanel(getOptions: () => OpenAiSettingsModalOptions): () => void {
+  panelSettings = getOptions;
+  return () => {
+    if (panelSettings !== getOptions) return;
+    closeAiSettingsModal();
+    panelSettings = null;
+  };
+}
 
 export function closeAiSettingsModal(): void {
   if (activeAiSettingsClose) {
@@ -70,19 +82,27 @@ export function closeAiSettingsModal(): void {
 
 export function openAiSettingsModal(options: OpenAiSettingsModalOptions = {}): HTMLElement {
   closeAiSettingsModal();
+  const panelOptions = panelSettings?.();
+  const extraSections = options.extraSections ?? panelOptions?.extraSections;
   const form = renderAiSettingsForm({
-    onSaved: options.onSaved,
+    onSaved: (config) => {
+      panelOptions?.onSaved?.(config);
+      options.onSaved?.(config);
+    },
     onBackgroundOpacityChange: (value) => {
       // Topbar settings has no injected panel; update mounted roots as well.
       const roots = new Set(document.querySelectorAll<HTMLElement>(".ai-chat-panel"));
+      if (panelOptions?.fontRoot) roots.add(panelOptions.fontRoot);
       if (options.fontRoot) roots.add(options.fontRoot);
       for (const root of roots) applyAiBackgroundOpacity(root, value);
     },
     onFontSizeChange: (size) => {
+      panelOptions?.onFontSizeChange?.(size);
       options.onFontSizeChange?.(size);
+      if (panelOptions?.fontRoot) applyAiFontSize(panelOptions.fontRoot, size);
       if (options.fontRoot) applyAiFontSize(options.fontRoot, size);
     },
-    ...(options.extraSections ? { extraSections: options.extraSections } : {}),
+    ...(extraSections ? { extraSections } : {}),
   });
 
   const closeButton = el("button", {
@@ -118,6 +138,7 @@ export function openAiSettingsModal(options: OpenAiSettingsModalOptions = {}): H
   // 네이티브 select 는 이 모달에서 OS 크롬 그대로 떠서 주변 카드·입력과 어긋났다. 이벤트
   // 편집기와 같은 커스텀 리스트박스로 올린다 — 네이티브 요소는 값·change 원천으로 남는다.
   const customSelects = installEventEditorCustomSelects(backdrop);
+  const restoreFocus = installAiModalFocus(backdrop);
 
   const close = registerModal(backdrop, () => {
     // 인증 패널은 기기 로그인 폴링 타이머를 들고 있다 — 정리하지 않으면 모달이 닫힌 뒤에도
@@ -126,11 +147,12 @@ export function openAiSettingsModal(options: OpenAiSettingsModalOptions = {}): H
     form.dispose();
     backdrop.remove();
     if (activeAiSettingsClose === close) activeAiSettingsClose = null;
+    restoreFocus();
   });
   activeAiSettingsClose = close;
   closeButton.addEventListener("click", close);
   backdrop.addEventListener("mousedown", (event) => {
-    if (event.target === backdrop) close();
+    if (event.target === backdrop && isTopModal(backdrop)) close();
   });
   document.body.append(backdrop);
 

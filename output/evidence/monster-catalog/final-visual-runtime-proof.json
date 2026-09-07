@@ -1,0 +1,150 @@
+{
+  "commit": "29dfcf3d1",
+  "geometry": [
+    {
+      "width": 1024,
+      "height": 768,
+      "path": "/home/main/z-project/rpg-zzu-monster-catalog-0907/output/evidence/monster-catalog/final-ui-fixed-1024.png",
+      "frame": {
+        "x": 373.66668701171875,
+        "y": 80,
+        "width": 601.3333129882812,
+        "height": 160
+      },
+      "image": {
+        "x": 373.66668701171875,
+        "y": 80,
+        "width": 601.3333129882812,
+        "height": 160,
+        "naturalWidth": 384,
+        "naturalHeight": 384,
+        "fit": "contain"
+      },
+      "idTop": 239.75,
+      "contained": true
+    },
+    {
+      "width": 1280,
+      "height": 800,
+      "path": "/home/main/z-project/rpg-zzu-monster-catalog-0907/output/evidence/monster-catalog/final-ui-fixed-1280.png",
+      "frame": {
+        "x": 501.66668701171875,
+        "y": 92,
+        "width": 601.3333129882812,
+        "height": 160
+      },
+      "image": {
+        "x": 501.66668701171875,
+        "y": 92,
+        "width": 601.3333129882812,
+        "height": 160,
+        "naturalWidth": 384,
+        "naturalHeight": 384,
+        "fit": "contain"
+      },
+      "idTop": 251.75,
+      "contained": true
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "path": "/home/main/z-project/rpg-zzu-monster-catalog-0907/output/evidence/monster-catalog/final-ui-fixed-1440.png",
+      "frame": {
+        "x": 581.6666870117188,
+        "y": 142,
+        "width": 601.3333129882812,
+        "height": 160
+      },
+      "image": {
+        "x": 581.6666870117188,
+        "y": 142,
+        "width": 601.3333129882812,
+        "height": 160,
+        "naturalWidth": 384,
+        "naturalHeight": 384,
+        "fit": "contain"
+      },
+      "idTop": 301.75,
+      "contained": true
+    }
+  ],
+  "visualReviews": [
+    {
+      "kind": "editor",
+      "width": 1024,
+      "path": "/home/main/z-project/rpg-zzu-monster-catalog-0907/output/evidence/monster-catalog/final-ui-fixed-1024.png",
+      "sha256": "259a9211958ffb0274b3d835c47942b021b66589ce10a409820b1fc80fcc121b",
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "date": "Sun, 06 Sep 2026 21:15:31 GMT"
+      },
+      "requestedModel": "gemini-3.1-pro",
+      "actualModel": "gemini-3.1-pro",
+      "id": "oh-my-pi-1788729331828",
+      "elapsedMs": 9106,
+      "content": "```json\n{\n  \"verdict\": \"pass\",\n  \"observed\": \"Monster material UI. Left shows search and goblin list. Right displays goblin image and ID.\",\n  \"findings\": [\n    \"No image/text overlap.\",\n    \"Image fits container.\",\n    \"Text is readable and fully visible.\"\n  ]\n}\n```"
+    },
+    {
+      "kind": "editor",
+      "width": 1280,
+      "path": "/home/main/z-project/rpg-zzu-monster-catalog-0907/output/evidence/monster-catalog/final-ui-fixed-1280.png",
+      "sha256": "bdc8fffeb1de1bca22654f2f263b66950c61fe807de18d3f2b7559253b240401",
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "date": "Sun, 06 Sep 2026 21:15:33 GMT"
+      },
+      "requestedModel": "gemini-3.1-pro",
+      "actualModel": "gemini-3.1-pro",
+      "id": "oh-my-pi-1788729333241",
+      "elapsedMs": 10448,
+      "content": "```json\n{\n  \"verdict\": \"pass\",\n  \"observed\": \"몬스터 소재 팝업창입니다. 좌측에 목록, 우측에 몬스터 이미지와 ID 텍스트가 정상적으로 표시됩니다.\",\n  \"findings\": [\n    \"이미지와 텍스트 겹침 없음\",\n    \"이미지 넘침 없음\",\n    \"텍스트 잘림 현상 없음\"\n  ]\n}\n```"
+    },
+    {
+      "kind": "editor",
+      "width": 1440,
+      "path": "/home/main/z-project/rpg-zzu-monster-catalog-0907/output/evidence/monster-catalog/final-ui-fixed-1440.png",
+      "sha256": "1617f21e39e6c29a5e7dcf22b4ae367cce30315f77ba1a78fa878be68ed9b7c3",
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "date": "Sun, 06 Sep 2026 21:15:34 GMT"
+      },
+      "requestedModel": "gemini-3.1-pro",
+      "actualModel": "gemini-3.1-pro",
+      "id": "oh-my-pi-1788729334205",
+      "elapsedMs": 11431,
+      "content": "```json\n{\n  \"verdict\": \"pass\",\n  \"observed\": \"Shows monster edit UI for Goblin. Image is displayed with ID text cleanly below it. Layout appears standard.\",\n  \"findings\": [\n    \"No image and ID overlap.\",\n    \"Image contained within bounds.\",\n    \"No horizontal text clipping.\",\n    \"All fields readable.\"\n  ]\n}\n```"
+    },
+    {
+      "kind": "runtime",
+      "path": "/home/main/z-project/rpg-zzu-monster-catalog-0907/output/evidence/monster-catalog/runtime/02-goblin-battle.png",
+      "sha256": "bc52e5773e746e4308af666c14bbbf79d1b9b54ef56c7080712b1fe1711679e2",
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "date": "Sun, 06 Sep 2026 21:15:32 GMT"
+      },
+      "requestedModel": "gemini-3.1-pro",
+      "actualModel": "gemini-3.1-pro",
+      "id": "oh-my-pi-1788729332860",
+      "elapsedMs": 10104,
+      "content": "```json\n{\n  \"verdict\": \"pass\",\n  \"enemyAppearance\": \"녹색 피부의 인간형 몬스터로, 징이 박힌 가죽 방어구를 착용하고 가시가 박힌 나무 몽둥이를 들고 있습니다.\",\n  \"editorChromePresent\": false,\n  \"findings\": [\n    \"하단에 공격, 스킬 등의 메뉴와 주인공의 HP/MP 상태창이 존재하는 전투 화면입니다.\",\n    \"적 몬스터의 이미지는 화면 중앙에 온전하게 표시되어 있으며, 잘린 부분이 없습니다.\",\n    \"적 몬스터가 하단의 UI와 겹치지 않습니다.\",\n    \"화면 상단이나 측면에 게임 에디터의 톱바나 사이드바 같은 UI 요소는 보이지 않습니다.\"\n  ]\n}\n```"
+    }
+  ],
+  "runtimeProject": {
+    "projectId": "qa-monster-catalog-01a077c7-20260907",
+    "saveKind": "saved",
+    "sha256": "832c36e64b1fdffede4bd00fc27ec64e4bc762ca6857c8382a4075e8c0dd917a",
+    "troopId": "troop_qa_monster_catalog",
+    "enemyId": "enemy_qa_monster_catalog_live",
+    "resourceId": "generated-enemy-goblin-scout",
+    "metadataStripped": true,
+    "projectJsonBytes": 2176555
+  },
+  "runtimeReport": "output/evidence/monster-catalog/runtime/SUMMARY.md",
+  "functionalProof": "output/evidence/monster-catalog/ui-functional-proof.json",
+  "imageOverflowRed": "output/evidence/monster-catalog/preview-overlap-red.json",
+  "errors": []
+}

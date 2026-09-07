@@ -1,8 +1,6 @@
 // ai/planToolExposure.ts
-// 자율 런(todo 8 실측): 도메인 게이트 + 40툴 상한이 계획 항목의 successTools 와 지시문에
-// 적힌 툴을 노출에서 떨어뜨렸다(plan_world/play_walkthrough 등). 모델이 "툴이 없다"고
-// 항목을 스킵해 전체 DAG 가 수행 불가능해졌다. 계획이 활성이면 계획에 명시된 툴을
-// 도메인 상한과 무관하게 반드시 노출한다(CPEN 128툴 상한 내 — 40+α).
+// Helpers for explicitly scoped consumers and plan validation. AssistantSession now
+// exposes every active schema from the first request, independent of plan contents.
 import { activeTools, getTool, toOpenAiTools, type ToolDefinition } from "@/editor/tools";
 import type { OpenAiToolSchema } from "./llmClient";
 import type { WorkPlan } from "./workPlan";

@@ -1,4 +1,5 @@
 import type { AuditEntry } from "@/ai/assistantSession";
+import type { RunOutcome } from "./runOutcome";
 import type { AiUiEvent } from "@/ai/uiEventTypes";
 import type { ConstructionAuditRecord } from "@/editor/construction/constructionAudit";
 
@@ -21,6 +22,7 @@ export type AiActivityToolCall = {
 };
 
 export type AiActivityResult = {
+  readonly runOutcome?: RunOutcome;
   readonly ok: boolean;
   readonly applied?: boolean;
   readonly error?: string;
@@ -46,6 +48,7 @@ export type AiActivityResult = {
   readonly commitIds?: readonly string[];
   /** 이 목표가 태운 토큰·경과·과정. 있으면 로그 요약에 그대로 싣는다. */
   readonly recap?: {
+    readonly runOutcome?: RunOutcome;
     readonly elapsedMs: number;
     readonly promptTokens: number;
     readonly completionTokens: number;

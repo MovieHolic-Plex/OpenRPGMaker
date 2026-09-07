@@ -58,7 +58,7 @@ export function materialForYardDecor(kind: YardDecorKind): string {
     case "bench_v":
       return "세로 의자";
     case "flowers":
-      return "꽃";
+      return "꽃/자연 소품";
     case "fruit_box":
       return "과일박스";
     case "wood_box":

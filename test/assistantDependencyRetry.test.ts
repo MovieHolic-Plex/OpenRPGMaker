@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AssistantSession, type SessionEvent, type AssistantSessionOptions } from "@/ai/assistantSession";
-import type { ChatResult } from "@/ai/llmClient";
+import type { ChatRequest, ChatResult } from "@/ai/llmClient";
 import { resetIntentDeclarationCache } from "@/ai/intentDeclarationClient";
 import { parseRunRecapPayload, serializeRunRecap } from "@/ai/runRecap";
 import { runTool } from "@/editor/tools";
@@ -40,8 +40,10 @@ function setup(rounds: Call[][], options: { planned?: boolean; maxToolCalls?: nu
   resetMapEditHistory();
   const plan = { goal: "도구 실행 확인", layers: [{ title: "작업", items: [{ title: "실행 확인", instruction: "도구 실행 후 조회", successTools: options.successTools ?? ["get_map_region"], ...(options.mapTargets ? { mapTargets: options.mapTargets } : {}) }] }] };
   const state = { batches: 0, planners: 0 };
+  const requests: ChatRequest[] = [];
   const chat: AssistantSessionOptions["chat"] = async (_config, request): Promise<ChatResult> => {
     if (!request.tools?.length) return { message: { role: "assistant", content: JSON.stringify(state.planners++ === 0 ? { action: "new_plan", ...plan } : { action: "resume" }) }, finishReason: "stop" };
+    requests.push(request);
     const batch = rounds[state.batches++];
     if (!batch) return { message: { role: "assistant", content: "작업을 확인했습니다." }, finishReason: "stop" };
     return { message: { role: "assistant", content: null, tool_calls: batch.map((c, i) => ({ id: `batch_${state.batches}_${i}`, type: "function", function: { name: c.name, arguments: JSON.stringify(c.args) } })) }, finishReason: "tool_calls" };
@@ -52,7 +54,7 @@ function setup(rounds: Call[][], options: { planned?: boolean; maxToolCalls?: nu
   });
   const events: ToolEvent[] = [];
   const collect = (event: SessionEvent): void => { if (event.type === "tool_call") events.push(event); };
-  return { session, events, collect, state, project: ctx.project };
+  return { session, events, collect, state, requests, project: ctx.project };
 }
 
 function expectResponses(session: AssistantSession): void {
@@ -68,6 +70,15 @@ function expectDeferred(event: ToolEvent, reason: string): void {
 }
 
 const readMap = call("get_map_region", { mapId: "m1", x: 0, y: 0, w: 12, h: 8 });
+const readSlime = call("get_monster_resource", { resourceId: "generated-enemy-slime-01" });
+
+function expectSlimeReadDelivered(request: ChatRequest, event: ToolEvent): void {
+  expect(event.name).toBe("get_monster_resource");
+  expect(event.result).toMatchObject({ ok: true, data: { resource: { resourceId: "generated-enemy-slime-01", tags: expect.arrayContaining(["slime"]) } } });
+  const response = request.messages.find((message) => message.role === "tool" && message.name === "get_monster_resource");
+  expect(response).toBeDefined();
+  expect(JSON.parse(response!.content as string)).toMatchObject({ ok: true, data: event.result.data });
+}
 
 describe("batch prerequisites through AssistantSession", () => {
   it.each([false, true])("defers failed-map writes without poisoning successTools or retries (old spec=%s)", async (oldSpec) => {
@@ -125,23 +136,88 @@ describe("batch prerequisites through AssistantSession", () => {
   });
 
   it.each([false, true])("failed record creation defers only ID dependents, then creation/read/correction succeeds (read contract=%s)", async (references) => {
-    const enemy = call("upsert_enemy", { enemy: { id: "enemy_dependency", name: "Dependency", monsterResourceId: "generated-enemy-slime-01" } });
+    const enemy = call("upsert_enemy", { enemy: { id: "enemy_dependency", name: "Dependency", monsterResourceId: "generated-enemy-slime-01" }, appearanceTags: ["slime"] });
     const troop = call("upsert_troop", { troop: { id: "troop_dependency", name: "Dependency troop", enemyIds: ["enemy_dependency"] } });
-    const { session, events, collect } = setup([
-      [call("upsert_enemy", { enemy: { id: "enemy_dependency", name: "Dependency", monsterResourceId: "generated-enemy-slime-01", invalidField: true } }), troop, title(1), call("get_project_summary"), enemy, troop],
+    const { session, events, collect, requests } = setup([
+      [readSlime],
+      [call("upsert_enemy", { enemy: { id: "enemy_dependency", name: "Dependency", monsterResourceId: "generated-enemy-slime-01", invalidField: true }, appearanceTags: ["slime"] }), troop, title(1), call("get_project_summary"), enemy, troop],
       [call("get_database_records", { collection: "enemies", ids: ["enemy_dependency"] })],
       [troop],
     ], { references });
     await session.sendUserMessage("적과 트룹을 등록해줘", collect);
-    expect(events[0].result.ok).toBe(false);
-    expectDeferred(events[1], "record-dependency-failed");
-    expect(events[2].result.ok).toBe(true);
-    expect(events[3].result.ok).toBe(true);
-    expect(events[4].result.ok).toBe(true);
-    if (references) expectDeferred(events[5], "read-before-write-required");
-    else expect(events[5].result.ok).toBe(true);
+    expectSlimeReadDelivered(requests[1], events[0]);
+    const afterRead = events.slice(1);
+    expect(afterRead[0].result.ok).toBe(false);
+    expect(afterRead[0].result.issues?.[0]?.code).toBe("unknown-db-field");
+    expectDeferred(afterRead[1], "record-dependency-failed");
+    expect(afterRead[2].result.ok).toBe(true);
+    expect(afterRead[3].result.ok).toBe(true);
+    expect(afterRead[4].result.ok).toBe(true);
+    if (references) expectDeferred(afterRead[5], "read-before-write-required");
+    else expect(afterRead[5].result.ok).toBe(true);
     expect(events.at(-1)?.result.ok).toBe(true);
     expect(session.getProposedProject().database.troops.find((entry) => entry.id === "troop_dependency")?.enemyIds).toEqual(["enemy_dependency"]);
+    expectResponses(session);
+  });
+
+  it.each([false, true])("defers new-record dependents transitively without charging their retries (read contract=%s)", async (references) => {
+    const enemy = call("upsert_enemy", { enemy: { id: "enemy_deferred", name: "Deferred slime", monsterResourceId: "generated-enemy-slime-01" }, appearanceTags: ["slime"] });
+    const troop = call("upsert_troop", { troop: { id: "troop_deferred", name: "Deferred troop", enemyIds: ["enemy_deferred"] } });
+    const encounter = call("set_encounter_table", { mapId: "m1", entries: [{ troopId: "troop_deferred", weight: 1 }] });
+    const { session, events, collect, requests } = setup([
+      // No appearance read yet: the new enemy is unavailable, not an independent troop failure.
+      [enemy, troop, troop, troop, troop, troop, encounter, title(1)],
+      [readSlime],
+      [enemy, call("get_database_records", { collection: "enemies", ids: ["enemy_deferred"] })],
+      [troop, call("get_database_records", { collection: "troops", ids: ["troop_deferred"] })],
+      [encounter],
+    ], { planned: true, references, successTools: ["set_encounter_table"] });
+    const result = await session.sendUserMessage("소재를 조회한 다음 적과 트룹, 인카운터를 복구", collect);
+    expectDeferred(events[0], "read-before-write-required");
+    expect(events[0].result.issues?.[0]?.code).toBe("monster-resource-read-required");
+    const troops = events.filter((event) => event.name === "upsert_troop");
+    troops.slice(0, 5).forEach((event) => expectDeferred(event, "record-dependency-failed"));
+    expect(troops).toHaveLength(6);
+    expect(troops[5].result.ok).toBe(true);
+    const encounters = events.filter((event) => event.name === "set_encounter_table");
+    expect(encounters).toHaveLength(2);
+    expectDeferred(encounters[0], "record-dependency-failed");
+    expect(encounters[1].result.ok).toBe(true);
+    expect(events[7].name).toBe("set_title_screen");
+    expect(events[7].result.ok).toBe(true);
+    expectSlimeReadDelivered(requests[2], events[8]);
+    expect(events.filter((event) => event.name === "upsert_enemy").map((event) => event.result.ok)).toEqual([false, true]);
+    expect(session.getProposedProject().maps.m1.encounterTable).toMatchObject([{ troopId: "troop_deferred", weight: 1 }]);
+    expect(result.workPlan?.layers[0].items[0].status).toBe("done");
+    expect(result.recap).toMatchObject({ toolFailures: 0, deferredToolCalls: 7 });
+    expect(session.getAuditEntries().filter((entry) => entry.kind === "tool" && entry.name === "upsert_troop").slice(0, 5))
+      .toEqual(Array.from({ length: 5 }, () => expect.objectContaining({ ok: false, deferred: true, issueCodes: ["record-dependency-failed"] })));
+    expectResponses(session);
+  });
+
+  it.each(["deferred", "failed"] as const)("keeps an existing record available after its update is %s", async (outcome) => {
+    const rounds: Call[][] = [];
+    const { session, events, collect, project } = setup(rounds, { references: true });
+    const existing = project.database.enemies[0];
+    const resourceId = existing.monsterResourceId === "generated-enemy-slime-01" ? "generated-enemy-goblin-scout" : "generated-enemy-slime-01";
+    rounds.push(
+      [call("get_database_records", { collection: "enemies", ids: [existing.id], include: "full" })],
+      [call("upsert_enemy", { enemy: { id: existing.id, ...(outcome === "deferred" ? { monsterResourceId: resourceId, transparent: false } : { invalidField: true }) } }),
+        call("upsert_troop", { troop: { id: "troop_existing", name: "Existing enemy", enemyIds: [existing.id] } }), title(2)],
+    );
+    await session.sendUserMessage("기존 적의 수정 실패는 참조를 없애지 않는다", collect);
+    expect(events[0].result.ok).toBe(true);
+    if (outcome === "deferred") {
+      expectDeferred(events[1], "read-before-write-required");
+      expect(events[1].result.issues?.[0]?.code).toBe("monster-resource-read-required");
+    } else {
+      expect(events[1].result.ok).toBe(false);
+      expect(events[1].result.issues?.[0]?.code).toBe("unknown-db-field");
+    }
+    expect(events[2].result.ok).toBe(true);
+    expect(events[3].result.ok).toBe(true);
+    expect(session.getProposedProject().database.enemies.find((entry) => entry.id === existing.id)).toEqual(existing);
+    expect(session.getProposedProject().database.troops.find((entry) => entry.id === "troop_existing")?.enemyIds).toEqual([existing.id]);
     expectResponses(session);
   });
 
@@ -175,15 +251,17 @@ describe("stable target retry budgets through AssistantSession", () => {
   });
 
   it("does not charge downstream same-batch refusals against their independent retry target", async () => {
-    const failedEnemy = call("upsert_enemy", { enemy: { id: "enemy_budget", name: "Budget", monsterResourceId: "generated-enemy-slime-01", invalidField: true } });
-    const enemy = call("upsert_enemy", { enemy: { id: "enemy_budget", name: "Budget", monsterResourceId: "generated-enemy-slime-01" } });
+    const failedEnemy = call("upsert_enemy", { enemy: { id: "enemy_budget", name: "Budget", monsterResourceId: "generated-enemy-slime-01", invalidField: true }, appearanceTags: ["slime"] });
+    const enemy = call("upsert_enemy", { enemy: { id: "enemy_budget", name: "Budget", monsterResourceId: "generated-enemy-slime-01" }, appearanceTags: ["slime"] });
     const troop = call("upsert_troop", { troop: { id: "troop_budget", name: "Budget troop", enemyIds: ["enemy_budget"] } });
-    const { session, events, collect } = setup([
+    const { session, events, collect, requests } = setup([
+      [readSlime],
       ...Array.from({ length: 3 }, () => [failedEnemy, troop, troop, troop, troop]),
       [enemy, call("get_database_records", { collection: "enemies", ids: ["enemy_budget"] })],
       [troop],
     ], { planned: true, references: true, successTools: ["upsert_troop"] });
     const result = await session.sendUserMessage("실패한 적 뒤 트룹 호출을 보류하고 복구", collect);
+    expectSlimeReadDelivered(requests[1], events[0]);
     const troops = events.filter((event) => event.name === "upsert_troop");
     expect(troops).toHaveLength(13);
     troops.slice(0, 12).forEach((event) => expectDeferred(event, "record-dependency-failed"));
@@ -211,13 +289,19 @@ describe("stable target retry budgets through AssistantSession", () => {
     rounds.push([badNpc(0)], [badNpc(1)], [badNpc(2)], [correctedNpc(1), readMap,
       call("repair_acceptance", { itemId: "acceptance-contract", criteria }),
     ]);
-    const second = await session.sendUserMessage("같은 주민 명령을 다시 고쳐줘", collect, undefined, { autonomous: true });
+    // P2 requires the host's explicit resume action, not arbitrary new prose.
+    const second = await session.sendUserMessage("같은 주민 명령을 다시 고쳐줘", collect, undefined, { autonomous: true, goalAction: "resume" });
     expect(second.workPlan?.layers[0].items[0].status).toBe("done");
     expect(state.batches).toBe(8);
     expect(events.find((event) => event.name === "repair_acceptance")?.result).toMatchObject({ ok: true, data: { acceptance: { status: "verifying", items: [{ evidence: [{ passed: false }] }] } } });
     expect(session.getAcceptanceSnapshot()).toMatchObject({ status: "verified", items: [{ id: "acceptance-contract", evidence: [{ expected: JSON.stringify(criteria[0]), passed: true }] }] });
     expect(second.proposedCalls).toEqual([]);
-    expect(second.appliedCalls?.map((entry) => entry.name)).toEqual(["place_npc"]);
+    // Resume retains previously pending independent writes; none were applied in
+    // the blocked first run, so they must be delivered once rather than erased.
+    expect(first.appliedCalls).toEqual([]);
+    expect(second.appliedCalls?.slice(0, -1)).toEqual(first.proposedCalls);
+    expect(second.appliedCalls?.at(-1)).toMatchObject({ name: "place_npc", args: { id: "npc_target" } });
+    expect(second.appliedCalls?.filter(entry => entry.name === "place_npc" && entry.args.id === "npc_other")).toHaveLength(1);
     expect(events.filter((event) => event.name === "place_npc" && event.args.id === "npc_target").map((event) => event.result.ok)).toEqual([false, false, false, false, false, false, false, true]);
     expect(events.filter((event) => event.name === "place_npc" && event.args.id === "npc_target").at(-1)?.result.ok).toBe(true);
     expectResponses(session);

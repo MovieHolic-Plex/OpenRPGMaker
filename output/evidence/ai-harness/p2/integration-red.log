@@ -1,0 +1,243 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiRunOutcomeIntegration.test.ts test/aiRunOutcomeApply.test.ts --maxWorkers 2 --minWorkers 1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p2-20260906
+
+ ❯ test/aiRunOutcomeIntegration.test.ts (7 tests | 6 failed) 1583ms
+   × run outcome session boundaries > publishes one unassessed projection when a query returns 373ms
+     → expected { assistantText: 'RESULT', …(3) } to have property "runOutcome" with value { execution: 'response-final', …(2) }
+   × run outcome session boundaries > captures blocked execution when required work is skipped 547ms
+     → expected { …(5) } to have property "runOutcome" with value { execution: 'blocked', …(2) }
+   × run outcome session boundaries > captures awaiting user when plan mode stops before execution 321ms
+     → expected { …(5) } to have property "runOutcome" with value { execution: 'awaiting-user', …(2) }
+   × run outcome session boundaries > captures cancellation when the entry signal is already aborted 333ms
+     → expected { assistantText: '', …(4) } to have property "runOutcome" with value { execution: 'cancelled', …(2) }
+   × run outcome serialization > retains outcome and recap when activity crosses JSON serialization 4ms
+     → expected { …(10) } to have property "result.runOutcome" with value { execution: 'cancelled', …(2) }
+   × run outcome serialization > roundtrips outcome when recap crosses its compact audit format 2ms
+     → expected { Object (elapsedMs, usage, ...) } to have property "runOutcome" with value { execution: 'failed', …(2) }
+   ✓ run outcome serialization > preserves absence when legacy activity and recap have no outcome 1ms
+ ❯ test/aiRunOutcomeApply.test.ts (4 tests | 4 failed) 10195ms
+   × run outcome actual application > settles the returned result when ordinary proof is verified 3115ms
+     → expected { assistantText: 'RESULT', …(3) } to have property "runOutcome" with value { execution: 'response-final', …(2) }
+   × run outcome actual application > settles the returned result when ordinary proof is failed 2349ms
+     → expected { assistantText: 'RESULT', …(3) } to have property "runOutcome" with value { execution: 'response-final', …(2) }
+   × run outcome actual application > settles the returned result when ordinary proof is cancelled 1985ms
+     → expected { assistantText: 'RESULT', …(3) } to have property "runOutcome" with value { execution: 'cancelled', …(2) }
+   × run outcome actual application > does not credit an old receipt when another user run only queries 2742ms
+     → expected { assistantText: 'RESULT', …(3) } to have property "runOutcome.delivery" with value 'persisted-verified'
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 10 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiRunOutcomeApply.test.ts > run outcome actual application > settles the returned result when ordinary proof is verified
+ FAIL  test/aiRunOutcomeApply.test.ts > run outcome actual application > settles the returned result when ordinary proof is failed
+AssertionError: expected { assistantText: 'RESULT', …(3) } to have property "runOutcome" with value { execution: 'response-final', …(2) }
+
+[32m- Expected:[39m 
+{
+  "delivery": "persisted-verified",
+  "execution": "response-final",
+  "goal": "unassessed",
+}
+
+[31m+ Received:[39m 
+undefined
+
+ ❯ test/aiRunOutcomeApply.test.ts:35:20
+     33|     const expected = { execution: proof === "cancelled" ? "cancelled" …
+     34|       delivery: proof === "verified" ? "persisted-verified" : "persist…
+     35|     expect(result).toHaveProperty("runOutcome", expected);
+       |                    ^
+     36|     expect(result.recap).toHaveProperty("runOutcome", expected);
+     37|     expect(result.proposedCalls).toHaveLength(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯
+
+ FAIL  test/aiRunOutcomeApply.test.ts > run outcome actual application > settles the returned result when ordinary proof is cancelled
+AssertionError: expected { assistantText: 'RESULT', …(3) } to have property "runOutcome" with value { execution: 'cancelled', …(2) }
+
+[32m- Expected:[39m 
+{
+  "delivery": "persisted",
+  "execution": "cancelled",
+  "goal": "unassessed",
+}
+
+[31m+ Received:[39m 
+undefined
+
+ ❯ test/aiRunOutcomeApply.test.ts:35:20
+     33|     const expected = { execution: proof === "cancelled" ? "cancelled" …
+     34|       delivery: proof === "verified" ? "persisted-verified" : "persist…
+     35|     expect(result).toHaveProperty("runOutcome", expected);
+       |                    ^
+     36|     expect(result.recap).toHaveProperty("runOutcome", expected);
+     37|     expect(result.proposedCalls).toHaveLength(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/10]⎯
+
+ FAIL  test/aiRunOutcomeApply.test.ts > run outcome actual application > does not credit an old receipt when another user run only queries
+AssertionError: expected { assistantText: 'RESULT', …(3) } to have property "runOutcome.delivery" with value 'persisted-verified'
+
+[32m- Expected:[39m 
+"persisted-verified"
+
+[31m+ Received:[39m 
+undefined
+
+ ❯ test/aiRunOutcomeApply.test.ts:53:19
+     51|     const next = await f.run();
+     52|     // Then the prior result stays historical and the new result owns …
+     53|     expect(first).toHaveProperty("runOutcome.delivery", "persisted-ver…
+       |                   ^
+     54|     expect(next).toHaveProperty("runOutcome", { execution: "response-f…
+     55|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/10]⎯
+
+ FAIL  test/aiRunOutcomeIntegration.test.ts > run outcome session boundaries > publishes one unassessed projection when a query returns
+AssertionError: expected { assistantText: 'RESULT', …(3) } to have property "runOutcome" with value { execution: 'response-final', …(2) }
+
+[32m- Expected:[39m 
+{
+  "delivery": "no-change",
+  "execution": "response-final",
+  "goal": "unassessed",
+}
+
+[31m+ Received:[39m 
+undefined
+
+ ❯ test/aiRunOutcomeIntegration.test.ts:19:20
+     17|     // Then every backend publication agrees without crediting project…
+     18|     const expected = { execution: "response-final", goal: "unassessed"…
+     19|     expect(result).toHaveProperty("runOutcome", expected);
+       |                    ^
+     20|     expect(f.session.getHarnessSnapshot()).toHaveProperty("runOutcome"…
+     21|     expect(result.recap).toHaveProperty("runOutcome", expected);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/10]⎯
+
+ FAIL  test/aiRunOutcomeIntegration.test.ts > run outcome session boundaries > captures blocked execution when required work is skipped
+AssertionError: expected { …(5) } to have property "runOutcome" with value { execution: 'blocked', …(2) }
+
+[32m- Expected:[39m 
+{
+  "delivery": "no-change",
+  "execution": "blocked",
+  "goal": "incomplete",
+}
+
+[31m+ Received:[39m 
+undefined
+
+ ❯ test/aiRunOutcomeIntegration.test.ts:32:20
+     30|     // Then final compatibility does not imply completion.
+     31|     expect(result.stoppedReason).toBe("final");
+     32|     expect(result).toHaveProperty("runOutcome", { execution: "blocked"…
+       |                    ^
+     33|   });
+     34| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/10]⎯
+
+ FAIL  test/aiRunOutcomeIntegration.test.ts > run outcome session boundaries > captures awaiting user when plan mode stops before execution
+AssertionError: expected { …(5) } to have property "runOutcome" with value { execution: 'awaiting-user', …(2) }
+
+[32m- Expected:[39m 
+{
+  "delivery": "no-change",
+  "execution": "awaiting-user",
+  "goal": "unassessed",
+}
+
+[31m+ Received:[39m 
+undefined
+
+ ❯ test/aiRunOutcomeIntegration.test.ts:41:20
+     39|     const result = await f.run([[plan()]], { composerMode: "plan" });
+     40|     // Then final is a wait rather than a completed goal.
+     41|     expect(result).toHaveProperty("runOutcome", { execution: "awaiting…
+       |                    ^
+     42|   });
+     43| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/10]⎯
+
+ FAIL  test/aiRunOutcomeIntegration.test.ts > run outcome session boundaries > captures cancellation when the entry signal is already aborted
+AssertionError: expected { assistantText: '', …(4) } to have property "runOutcome" with value { execution: 'cancelled', …(2) }
+
+[32m- Expected:[39m 
+{
+  "delivery": "no-change",
+  "execution": "cancelled",
+  "goal": "unassessed",
+}
+
+[31m+ Received:[39m 
+undefined
+
+ ❯ test/aiRunOutcomeIntegration.test.ts:50:20
+     48|     const result = await f.session.sendUserMessage("Inspect", event =>…
+     49|     // Then cancellation is typed independently of legacy stoppedReaso…
+     50|     expect(result).toHaveProperty("runOutcome", { execution: "cancelle…
+       |                    ^
+     51|   });
+     52| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/10]⎯
+
+ FAIL  test/aiRunOutcomeIntegration.test.ts > run outcome serialization > retains outcome and recap when activity crosses JSON serialization
+AssertionError: expected { …(10) } to have property "result.runOutcome" with value { execution: 'cancelled', …(2) }
+
+[32m- Expected:[39m 
+{
+  "delivery": "persisted",
+  "execution": "cancelled",
+  "goal": "incomplete",
+}
+
+[31m+ Received:[39m 
+undefined
+
+ ❯ test/aiRunOutcomeIntegration.test.ts:64:24
+     62|     const serialized: unknown = JSON.parse(serializeAiActivityLog(buil…
+     63|     // Then neither typed projection is dropped.
+     64|     expect(serialized).toHaveProperty("result.runOutcome", runOutcome);
+       |                        ^
+     65|     expect(serialized).toHaveProperty("result.recap.runOutcome", runOu…
+     66|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/10]⎯
+
+ FAIL  test/aiRunOutcomeIntegration.test.ts > run outcome serialization > roundtrips outcome when recap crosses its compact audit format
+AssertionError: expected { Object (elapsedMs, usage, ...) } to have property "runOutcome" with value { execution: 'failed', …(2) }
+
+[32m- Expected:[39m 
+{
+  "delivery": "draft",
+  "execution": "failed",
+  "goal": "unassessed",
+}
+
+[31m+ Received:[39m 
+undefined
+
+ ❯ test/aiRunOutcomeIntegration.test.ts:75:20
+     73|     const parsed = parseRunRecapPayload(serializeRunRecap(buildRunReca…
+     74|     // Then the projection survives without prose inference.
+     75|     expect(parsed).toHaveProperty("runOutcome", runOutcome);
+       |                    ^
+     76|   });
+     77| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/10]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  10 failed | 1 passed (11)
+   Start at  02:32:28
+   Duration  32.58s (transform 14.31s, setup 0ms, collect 42.38s, tests 11.78s, environment 8ms, prepare 618ms)
+

@@ -1,0 +1,237 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/toolActionAuthoringParity.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-tools
+
+ ❯ test/toolActionAuthoringParity.test.ts (31 tests | 21 failed) 4103ms
+   ✓ authored tool authority > keeps all four real defaults for absent and empty tables  945ms
+   ✓ authored tool authority > does not merge defaults into an existing one-row table on load  434ms
+   × authored tool authority > matches a conditionless rule with a valid hoe 142ms
+     → expected undefined to match object { itemId: 'tool', …(2) }
+   × authored tool authority > matches a conditionless rule with a valid wateringCan 79ms
+     → expected undefined to match object { itemId: 'tool', …(2) }
+   × authored tool authority > matches a conditionless rule with a valid axe 66ms
+     → expected undefined to match object { itemId: 'tool', …(2) }
+   × authored tool authority > matches a conditionless rule with a valid pickaxe 72ms
+     → expected undefined to match object { itemId: 'tool', …(2) }
+   ✓ authored tool authority > does not treat item_potato_seed as any farm tool or fall through an occupied hand 109ms
+   ✓ authored tool authority > does not treat item_potion as any farm tool or fall through an occupied hand 209ms
+   ✓ authored tool authority > does not treat missing as any farm tool or fall through an occupied hand 264ms
+   × authored tool authority > resolves any tool from inventory when hand is empty 91ms
+     → expected undefined to be 'item_hoe' // Object.is equality
+   ✓ authored tool authority > honors itemId over a contradictory kind, without reordering rows 58ms
+   × authored tool authority > preserves explicit false through serialization and tills outside the region 290ms
+     → expected 'ignored' to be 'tilled' // Object.is equality
+   ✓ authored tool authority > refuses till outside the region when requiresFarmable is undefined 75ms
+   ✓ authored tool authority > refuses till outside the region when requiresFarmable is true 50ms
+   × authored tool authority > lets the authored water action override the held hoe's legacy intent 48ms
+     → expected 'ignored' to be 'watered' // Object.is equality
+   × authored tool authority > refuses mature crop harvest with item_hoe when the authored rule requires a can 59ms
+     → expected { kind: 'harvested', x: 4, y: 5, …(7) } to match object { kind: 'ignored', …(1) }
+(10 matching properties omitted from actual)
+   × authored tool authority > refuses mature crop harvest with item_potato_seed when the authored rule requires a can 96ms
+     → expected { kind: 'harvested', x: 4, y: 5, …(7) } to match object { kind: 'ignored', …(1) }
+(10 matching properties omitted from actual)
+   × authored tool authority > harvests with a matching authored rule outside the region 66ms
+     → expected 'ignored' to be 'harvested' // Object.is equality
+   ✓ authored tool authority > keeps legacy mature harvesting with a seed when no harvest rule exists 93ms
+   ✓ authored tool authority > does not allow seeds to plant outside farmable regions via a false tool rule 51ms
+   × authored tool authority > refuses invalid origin -1,5 even for a wide unrestricted tool 67ms
+     → expected { itemId: 'item_hoe', …(3) } to be undefined
+   × authored tool authority > refuses invalid origin 4,-1 even for a wide unrestricted tool 91ms
+     → expected { itemId: 'item_hoe', …(3) } to be undefined
+   × authored tool authority > refuses invalid origin 999,5 even for a wide unrestricted tool 78ms
+     → expected { itemId: 'item_hoe', …(3) } to be undefined
+   × authored tool authority > refuses invalid origin 4,999 even for a wide unrestricted tool 94ms
+     → expected { itemId: 'item_hoe', …(3) } to be undefined
+   × authored tool authority > refuses invalid origin 4.5,5 even for a wide unrestricted tool 95ms
+     → expected { itemId: 'item_hoe', …(3) } to be undefined
+   × authored tool authority > refuses invalid origin NaN,5 even for a wide unrestricted tool 115ms
+     → expected { itemId: 'item_hoe', …(3) } to be undefined
+   × authored tool authority > does not let false bypass wall occupancy or terrain 56ms
+     → expected 'tilled' to be 'ignored' // Object.is equality
+   × authored tool authority > does not let false bypass chest occupancy or terrain 52ms
+     → expected 'tilled' to be 'ignored' // Object.is equality
+   × authored tool authority > does not let false bypass placeable occupancy or terrain 66ms
+     → expected 'tilled' to be 'ignored' // Object.is equality
+   × authored tool authority > does not let false bypass building occupancy or terrain 45ms
+     → expected 'tilled' to be 'ignored' // Object.is equality
+   × authored tool authority > does not let false bypass decoration occupancy or terrain 37ms
+     → expected 'tilled' to be 'ignored' // Object.is equality
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 21 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/toolActionAuthoringParity.test.ts > authored tool authority > matches a conditionless rule with a valid hoe
+ FAIL  test/toolActionAuthoringParity.test.ts > authored tool authority > matches a conditionless rule with a valid wateringCan
+ FAIL  test/toolActionAuthoringParity.test.ts > authored tool authority > matches a conditionless rule with a valid axe
+ FAIL  test/toolActionAuthoringParity.test.ts > authored tool authority > matches a conditionless rule with a valid pickaxe
+AssertionError: expected undefined to match object { itemId: 'tool', …(2) }
+
+[32m- Expected:[39m 
+{
+  "farmTool": "hoe",
+  "itemId": "tool",
+  "ruleId": "any",
+}
+
+[31m+ Received:[39m 
+undefined
+
+ ❯ test/toolActionAuthoringParity.test.ts:48:71
+     46|     session.equippedToolItemId = "tool";
+     47|     project.system.toolActions = [{ id: "any", action: "fish" }];
+     48|     expect(resolveToolUseOnTile(project, session, map, 4, 5, "fish")).…
+       |                                                                       ^
+     49|   });
+     50| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/21]⎯
+
+ FAIL  test/toolActionAuthoringParity.test.ts > authored tool authority > resolves any tool from inventory when hand is empty
+AssertionError: expected undefined to be 'item_hoe' // Object.is equality
+
+[32m- Expected:[39m 
+"item_hoe"
+
+[31m+ Received:[39m 
+undefined
+
+ ❯ test/toolActionAuthoringParity.test.ts:63:79
+     61|     delete session.equippedToolItemId;
+     62|     project.system.toolActions = [{ id: "any", action: "fish" }];
+     63|     expect(resolveToolUseOnTile(project, session, map, 4, 5, "fish")?.…
+       |                                                                               ^
+     64|   });
+     65| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/21]⎯
+
+ FAIL  test/toolActionAuthoringParity.test.ts > authored tool authority > preserves explicit false through serialization and tills outside the region
+AssertionError: expected 'ignored' to be 'tilled' // Object.is equality
+
+Expected: [32m"[7mtill[27med"[39m
+Received: [31m"[7mignor[27med"[39m
+
+ ❯ test/toolActionAuthoringParity.test.ts:84:69
+     82|     const restored = deserialize(serialize(project));
+     83|     expect(restored.system.toolActions?.[0]?.requiresFarmable).toBe(fa…
+     84|     expect(interactWithFarmPlot(restored, session, map, 1, 1).kind).to…
+       |                                                                     ^
+     85|   });
+     86| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/21]⎯
+
+ FAIL  test/toolActionAuthoringParity.test.ts > authored tool authority > lets the authored water action override the held hoe's legacy intent
+AssertionError: expected 'ignored' to be 'watered' // Object.is equality
+
+Expected: [32m"[7mwate[27mred"[39m
+Received: [31m"[7migno[27mred"[39m
+
+ ❯ test/toolActionAuthoringParity.test.ts:99:105
+     97|     project.system.toolActions = [{ id: "water-hoe", action: "water", …
+     98|     session.farmPlots = { [map.id]: { "1,1": { tilled: true, watered: …
+     99|     expect(interactWithFarmPlot(project, session, map, 1, 1, farmInten…
+       |                                                                                                         ^
+    100|   });
+    101| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/21]⎯
+
+ FAIL  test/toolActionAuthoringParity.test.ts > authored tool authority > refuses mature crop harvest with item_hoe when the authored rule requires a can
+ FAIL  test/toolActionAuthoringParity.test.ts > authored tool authority > refuses mature crop harvest with item_potato_seed when the authored rule requires a can
+AssertionError: expected { kind: 'harvested', x: 4, y: 5, …(7) } to match object { kind: 'ignored', …(1) }
+(10 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "kind": "ignored",[39m
+[32m-   "reason": "wrong-tool-for-plot",[39m
+[31m+   "kind": "harvested",[39m
+[2m  }[22m
+
+ ❯ test/toolActionAuthoringParity.test.ts:108:100
+    106|     session.farmPlots = { [map.id]: { "4,5": { tilled: true, watered: …
+    107|     const before = structuredClone(session);
+    108|     expect(interactWithFarmPlot(project, session, map, 4, 5, farmInten…
+       |                                                                                                    ^
+    109|     expect(session).toEqual(before);
+    110|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/21]⎯
+
+ FAIL  test/toolActionAuthoringParity.test.ts > authored tool authority > harvests with a matching authored rule outside the region
+AssertionError: expected 'ignored' to be 'harvested' // Object.is equality
+
+Expected: [32m"[7mharvest[27med"[39m
+Received: [31m"[7mignor[27med"[39m
+
+ ❯ test/toolActionAuthoringParity.test.ts:116:105
+    114|     project.system.toolActions = [{ id: "harvest-hoe", action: "harves…
+    115|     session.farmPlots = { [map.id]: { "1,1": { tilled: true, watered: …
+    116|     expect(interactWithFarmPlot(project, session, map, 1, 1, farmInten…
+       |                                                                                                         ^
+    117|     expect(session.inventory.item_potato).toBe(1);
+    118|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/21]⎯
+
+ FAIL  test/toolActionAuthoringParity.test.ts > authored tool authority > refuses invalid origin -1,5 even for a wide unrestricted tool
+ FAIL  test/toolActionAuthoringParity.test.ts > authored tool authority > refuses invalid origin 4,-1 even for a wide unrestricted tool
+ FAIL  test/toolActionAuthoringParity.test.ts > authored tool authority > refuses invalid origin 999,5 even for a wide unrestricted tool
+ FAIL  test/toolActionAuthoringParity.test.ts > authored tool authority > refuses invalid origin 4,999 even for a wide unrestricted tool
+ FAIL  test/toolActionAuthoringParity.test.ts > authored tool authority > refuses invalid origin 4.5,5 even for a wide unrestricted tool
+ FAIL  test/toolActionAuthoringParity.test.ts > authored tool authority > refuses invalid origin NaN,5 even for a wide unrestricted tool
+AssertionError: expected { itemId: 'item_hoe', …(3) } to be undefined
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+{
+  "action": "till",
+  "farmTool": "hoe",
+  "itemId": "item_hoe",
+  "ruleId": "anywhere",
+}
+
+ ❯ test/toolActionAuthoringParity.test.ts:143:63
+    141|     project.system.itemUpgrades = [{ id: "wide", fromItemId: "item_wat…
+    142|     const before = structuredClone(session);
+    143|     expect(resolveToolUseOnTile(project, session, map, x, y)).toBeUnde…
+       |                                                               ^
+    144|     expect(interactWithFarmPlot(project, session, map, x, y).kind).toB…
+    145|     expect(session).toEqual(before);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/21]⎯
+
+ FAIL  test/toolActionAuthoringParity.test.ts > authored tool authority > does not let false bypass wall occupancy or terrain
+ FAIL  test/toolActionAuthoringParity.test.ts > authored tool authority > does not let false bypass chest occupancy or terrain
+ FAIL  test/toolActionAuthoringParity.test.ts > authored tool authority > does not let false bypass placeable occupancy or terrain
+ FAIL  test/toolActionAuthoringParity.test.ts > authored tool authority > does not let false bypass building occupancy or terrain
+ FAIL  test/toolActionAuthoringParity.test.ts > authored tool authority > does not let false bypass decoration occupancy or terrain
+AssertionError: expected 'tilled' to be 'ignored' // Object.is equality
+
+Expected: [32m"[7mignor[27med"[39m
+Received: [31m"[7mtill[27med"[39m
+
+ ❯ test/toolActionAuthoringParity.test.ts:160:68
+    158|     }
+    159|     const before = structuredClone(session);
+    160|     expect(interactWithFarmPlot(project, session, map, 1, 1).kind).toB…
+       |                                                                    ^
+    161|     expect(session).toEqual(before);
+    162|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/21]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  21 failed | 10 passed (31)
+   Start at  22:01:21
+   Duration  24.16s (transform 12.14s, setup 0ms, collect 18.44s, tests 4.10s, environment 0ms, prepare 525ms)
+

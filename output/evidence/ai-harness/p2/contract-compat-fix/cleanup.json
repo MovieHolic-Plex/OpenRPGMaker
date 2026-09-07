@@ -1,0 +1,21 @@
+{
+  "diagnosticWorkers": [
+    {
+      "pid": 772113,
+      "command": "/usr/local/bin/node /home/main/z-project/rpg-zzu-ai-harness-p2-event-contract-20260906/node_modules/typescript/lib/tsserver.js --serverMode partialSemantic --useInferredProjectPerProjectRoot --disableAutomaticTypingAcquisition --cancellationPipeName /tmp/93bec863f128820a9f67907d33fb5425/tscancellation* --locale en --validateDefaultNpmLocation --useNodeIpc ",
+      "signal": "SIGTERM",
+      "exitObserved": true
+    },
+    {
+      "pid": 772114,
+      "command": "/usr/local/bin/node /home/main/z-project/rpg-zzu-ai-harness-p2-event-contract-20260906/node_modules/typescript/lib/tsserver.js --useInferredProjectPerProjectRoot --cancellationPipeName /tmp/8acdf35163f89b2ee045851012a8d0d0/tscancellation* --locale en --validateDefaultNpmLocation --useNodeIpc ",
+      "signal": "SIGTERM",
+      "exitObserved": true
+    }
+  ],
+  "testAndCompilerCommands": "synchronous commands completed; no background test process launched",
+  "browserOrServer": "none launched",
+  "privateTmpdir": "/dev/shm/rpg-zzu-ai-harness-p2-01a07564",
+  "privateTmpdirPreserved": true,
+  "remoteContentWrites": "none; related persistence tests use scripted local transport"
+}

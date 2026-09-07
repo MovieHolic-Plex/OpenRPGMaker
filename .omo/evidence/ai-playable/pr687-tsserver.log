@@ -1,0 +1,280 @@
+{
+  "files": 198,
+  "missing": 0,
+  "diagnostics": [
+    {
+      "seq": 0,
+      "type": "event",
+      "event": "suggestionDiag",
+      "body": {
+        "file": "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/databaseMonsterResourceEditor.ts",
+        "diagnostics": [
+          {
+            "start": {
+              "line": 39,
+              "offset": 55
+            },
+            "end": {
+              "line": 39,
+              "offset": 66
+            },
+            "text": "'returnValue' is deprecated.",
+            "code": 6385,
+            "category": "suggestion",
+            "reportsDeprecated": true,
+            "relatedInformation": [
+              {
+                "span": {
+                  "start": {
+                    "line": 4325,
+                    "offset": 8
+                  },
+                  "end": {
+                    "line": 4328,
+                    "offset": 6
+                  },
+                  "file": "/home/main/z-project/rpg-zzu/node_modules/typescript/lib/lib.dom.d.ts"
+                },
+                "message": "The declaration was marked as deprecated here.",
+                "category": "error",
+                "code": 2798
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "seq": 0,
+      "type": "event",
+      "event": "suggestionDiag",
+      "body": {
+        "file": "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/eventEditor/modal.ts",
+        "diagnostics": [
+          {
+            "start": {
+              "line": 114,
+              "offset": 10
+            },
+            "end": {
+              "line": 114,
+              "offset": 28
+            },
+            "text": "This may be converted to an async function.",
+            "code": 80006,
+            "category": "suggestion"
+          }
+        ]
+      }
+    },
+    {
+      "seq": 0,
+      "type": "event",
+      "event": "suggestionDiag",
+      "body": {
+        "file": "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/player/playSceneShop.ts",
+        "diagnostics": [
+          {
+            "start": {
+              "line": 62,
+              "offset": 17
+            },
+            "end": {
+              "line": 62,
+              "offset": 25
+            },
+            "text": "This may be converted to an async function.",
+            "code": 80006,
+            "category": "suggestion"
+          }
+        ]
+      }
+    },
+    {
+      "seq": 0,
+      "type": "event",
+      "event": "suggestionDiag",
+      "body": {
+        "file": "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/player/playSceneTime.ts",
+        "diagnostics": [
+          {
+            "start": {
+              "line": 230,
+              "offset": 17
+            },
+            "end": {
+              "line": 230,
+              "offset": 47
+            },
+            "text": "This may be converted to an async function.",
+            "code": 80006,
+            "category": "suggestion"
+          }
+        ]
+      }
+    },
+    {
+      "seq": 0,
+      "type": "event",
+      "event": "suggestionDiag",
+      "body": {
+        "file": "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/session.ts",
+        "diagnostics": [
+          {
+            "start": {
+              "line": 6,
+              "offset": 262
+            },
+            "end": {
+              "line": 6,
+              "offset": 279
+            },
+            "text": "'ProjectStartState' is deprecated.",
+            "code": 6385,
+            "category": "suggestion",
+            "reportsDeprecated": true,
+            "relatedInformation": [
+              {
+                "span": {
+                  "start": {
+                    "line": 375,
+                    "offset": 4
+                  },
+                  "end": {
+                    "line": 378,
+                    "offset": 2
+                  },
+                  "file": "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/types/project.ts"
+                },
+                "message": "The declaration was marked as deprecated here.",
+                "category": "error",
+                "code": 2798
+              }
+            ]
+          },
+          {
+            "start": {
+              "line": 370,
+              "offset": 49
+            },
+            "end": {
+              "line": 370,
+              "offset": 66
+            },
+            "text": "'ProjectStartState' is deprecated.",
+            "code": 6385,
+            "category": "suggestion",
+            "reportsDeprecated": true,
+            "relatedInformation": [
+              {
+                "span": {
+                  "start": {
+                    "line": 375,
+                    "offset": 4
+                  },
+                  "end": {
+                    "line": 378,
+                    "offset": 2
+                  },
+                  "file": "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/types/project.ts"
+                },
+                "message": "The declaration was marked as deprecated here.",
+                "category": "error",
+                "code": 2798
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "seq": 0,
+      "type": "event",
+      "event": "semanticDiag",
+      "body": {
+        "file": "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/test/sceneVerificationRepair.test.ts",
+        "diagnostics": [
+          {
+            "start": {
+              "line": 63,
+              "offset": 41
+            },
+            "end": {
+              "line": 63,
+              "offset": 42
+            },
+            "text": "Cannot assign to 'x' because it is a read-only property.",
+            "code": 2540,
+            "category": "error"
+          }
+        ]
+      }
+    },
+    {
+      "seq": 0,
+      "type": "event",
+      "event": "semanticDiag",
+      "body": {
+        "file": "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/test/verificationFindingOwnership.test.ts",
+        "diagnostics": [
+          {
+            "start": {
+              "line": 106,
+              "offset": 5
+            },
+            "end": {
+              "line": 106,
+              "offset": 27
+            },
+            "text": "'f.project.session.gold' is possibly 'undefined'.",
+            "code": 18048,
+            "category": "error"
+          }
+        ]
+      }
+    },
+    {
+      "seq": 0,
+      "type": "event",
+      "event": "semanticDiag",
+      "body": {
+        "file": "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/test/ohMyPiVision.bun.test.ts",
+        "diagnostics": [
+          {
+            "start": {
+              "line": 1,
+              "offset": 40
+            },
+            "end": {
+              "line": 1,
+              "offset": 50
+            },
+            "text": "Cannot find module 'bun:test' or its corresponding type declarations.",
+            "code": 2307,
+            "category": "error"
+          }
+        ]
+      }
+    }
+  ],
+  "responses": [
+    {
+      "seq": 0,
+      "type": "response",
+      "command": "configure",
+      "request_seq": 1,
+      "success": true
+    },
+    {
+      "seq": 0,
+      "type": "response",
+      "command": "updateOpen",
+      "request_seq": 2,
+      "success": true,
+      "performanceData": {
+        "updateGraphDurationMs": 19223.966238
+      },
+      "body": true
+    }
+  ]
+}

@@ -4,11 +4,9 @@
 import { listAudioResources } from "@/assets/audioResourceCatalog";
 import type { AudioDescriptionSource, AudioResourceProject } from "@/assets/audioResourceCatalog";
 import { applyCharsetLabelOverrides, CHARSET_SEMANTICS } from "@/assets/charsetSemantics";
-import { builtinGeneratedResourceIds } from "@/assets/generatedAssetResourceResolver";
-import { charsetFrameIndex, EASYRPG_BACKDROP_ASSETS, EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
-import { koreanMonsterTags } from "@/assets/monsterResourceSemantics";
-import { GENERATED_ASSET_PLAN } from "@/assets/oprnGeneratedAssetPlan";
-import { SCARLOXY_BACKDROP_ASSETS, SCARLOXY_MONSTER_ASSETS } from "@/assets/scarloxyPack";
+import { charsetFrameIndex, EASYRPG_BACKDROP_ASSETS } from "@/assets/easyrpgRtp";
+import { listMonsterResources, type MonsterResourceProject } from "@/assets/monsterResourceCatalog";
+import { SCARLOXY_BACKDROP_ASSETS } from "@/assets/scarloxyPack";
 import { moodTagsForAsset } from "@/assets/resourceMoodTags";
 import { COMBINED_TOWN_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsCombinedTown";
 import { DUNGEON_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsDungeon";
@@ -39,6 +37,7 @@ export interface ResourceSearchOptions {
   readonly tileset?: TilesetDef;
   readonly charsetLabels?: readonly CharsetLabelOverride[];
   readonly audioProject?: AudioResourceProject;
+  readonly monsterProject?: MonsterResourceProject;
 }
 
 export interface ResourceSearchResult {
@@ -131,53 +130,6 @@ function idWords(id: string): string[] {
     .filter((part) => part.length > 0);
 }
 
-function monsterCandidates(): ResourceCandidate[] {
-  const generated = GENERATED_ASSET_PLAN.assets
-    .filter((asset) => asset.status === "promoted" && asset.resourceKind === "monster")
-    .map((asset) => ({
-      id: asset.resourceId,
-      label: asset.id.replace(/-/g, " "),
-      tags: [
-        "monster",
-        "enemy",
-        "몬스터",
-        "적",
-        asset.id,
-        asset.resourceId,
-        ...idWords(asset.id),
-        ...idWords(asset.resourceId),
-        ...koreanMonsterTags(asset.id, asset.resourceId),
-        asset.prompt,
-      ],
-    }));
-  const builtin = builtinGeneratedResourceIds()
-    .filter((id) => id.startsWith("generated-enemy-") && !generated.some((asset) => asset.id === id))
-    .map((id) => ({
-      id,
-      label: id.replace(/^generated-enemy-/, "").replace(/-/g, " "),
-      tags: ["monster", "enemy", "몬스터", "적", id, ...idWords(id), ...koreanMonsterTags(id)],
-    }));
-  const rtpMonsters = EASYRPG_RTP_ASSETS
-    .filter((asset) => asset.category === "monster")
-    .map((asset) => ({
-      id: asset.id,
-      label: asset.name,
-      tags: [
-        ...moodTagsForAsset(asset),
-        asset.id,
-        ...idWords(asset.id),
-        ...idWords(asset.name),
-        ...koreanMonsterTags(asset.id, asset.name),
-      ],
-    }));
-  const scarloxyMonsters = SCARLOXY_MONSTER_ASSETS.map((asset) => ({
-    id: asset.id,
-    label: asset.name,
-    tags: ["monster", "enemy", "scarloxy", ...asset.tags, asset.id, ...idWords(asset.id)],
-  }));
-  return [...generated, ...builtin, ...rtpMonsters, ...scarloxyMonsters];
-}
-
 // 타일셋 텍스처에 맞는 번들 시맨틱 테이블 선택.
 // 타일 인덱스는 칩셋마다 의미가 다르므로 combined_town 테이블을 다른 칩셋에 적용하면 오답이 된다.
 // 이전에는 interior/dungeon 이외의 모든 번들 칩셋이 폴백으로 combined_town 을 받았다 —
@@ -264,7 +216,13 @@ function candidatesForKind(kind: ResourceSearchKind, options: ResourceSearchOpti
         },
       }));
     case "monster":
-      return monsterCandidates();
+      return listMonsterResources(options.monsterProject ?? { resourceProfiles: [], assets: { uploaded: {} } }).map(resource => ({
+        id: resource.resourceId,
+        resourceId: resource.resourceId,
+        label: resource.name,
+        tags: resource.tags,
+        description: resource.description,
+      }));
     case "backdrop":
       return [
         ...EASYRPG_BACKDROP_ASSETS.map((asset) => ({

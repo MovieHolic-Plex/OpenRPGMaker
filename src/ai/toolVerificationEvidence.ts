@@ -26,7 +26,7 @@ export interface VerificationRequirement {
   readonly initialState?: unknown;
   readonly interactionTargets?: readonly SceneInteractionReceipt[];
 }
-interface RequirementState { requirement: VerificationRequirement; pass: boolean; stale: boolean; criterionPassed: boolean }
+interface RequirementState { requirement: VerificationRequirement; pass: boolean; stale: boolean; criterionPassed: boolean; inactive?: boolean }
 interface Finding {
   readonly checkId: string;
   readonly initialState?: unknown;
@@ -153,6 +153,12 @@ export class ToolVerificationEvidence {
     this.requirements.set(requirement.checkId, { requirement: structuredClone(requirement), pass: false, stale: false, criterionPassed: !requirement.criterion });
   }
 
+  /** Only the host-owned acceptance ledger may change optional/withdrawn authority. */
+  setRequirementActive(checkId: string, active: boolean): void {
+    const state = this.requirements.get(checkId);
+    if (state) state.inactive = !active;
+  }
+
   setCriterionPassed(checkId: string, passed: boolean): void {
     const state = this.requirements.get(checkId);
     if (state?.requirement.criterion) state.criterionPassed = passed;
@@ -178,6 +184,8 @@ export class ToolVerificationEvidence {
     return { name: stored.name, args };
   }
 
+  hasChecks(): boolean { return this.requirements.size > 0 || this.findings.size > 0 || this.attempts.length > 0; }
+
   clear(): void { this.requirements.clear(); this.findings.clear(); this.attempts.length = 0; }
 
   observe(name: string, raw: Record<string, unknown>, result: ToolResultLike, source: "explicit" | "advisory" = "explicit", ownerId?: string, checkId?: string, initialState?: unknown, ownedCheckIds: readonly string[] = []): Verdict | null {
@@ -190,7 +198,8 @@ export class ToolVerificationEvidence {
     const candidate = args ?? raw;
     const matching = [...this.requirements.values()].filter(({ requirement }) => requirement.name === name
       && (checkId === undefined || requirement.checkId === checkId)
-      && requirement.args !== null && compatible(name, requirement.args, candidate));
+      && requirement.args !== null && (requirement.acceptedCriterion?.kind === "toolVerdict"
+        ? key(requirement.args) === key(candidate) : compatible(name, requirement.args, candidate)));
     const invalidProbe = !unsuccessful && matching.length === 0 && setup.kind === "no-interaction-target"
       && isSceneTestInput(candidate) && !candidate.steps.some(step => step.kind === "expect" || (step.kind === "interact" && step.eventId !== undefined))
       && Array.isArray(data.interactions) && !data.interactions.some(entry => acceptanceRecord(entry) && entry.stepIndex === setup.stepIndex);
@@ -203,6 +212,7 @@ export class ToolVerificationEvidence {
       if (!matching.includes(state)) continue;
       const traceMatches = name !== "run_scene_test" || matchingTrace(requirement.args!, requirement.interactionTargets ?? [], candidate, result);
       state.pass = !unsuccessful && verdict.pass && traceMatches
+        && (requirement.acceptedCriterion?.kind !== "toolVerdict" || source === "explicit" || (state.pass && !state.stale))
         && (requirement.initialState === undefined || key(requirement.initialState) === key(initialState));
       state.stale = false;
     }
@@ -237,7 +247,7 @@ export class ToolVerificationEvidence {
   }
 
   passed(name: string, checkIds?: readonly string[], ownerId?: string): boolean {
-    const states = [...this.requirements.values()].filter(state => state.requirement.name === name
+    const states = [...this.requirements.values()].filter(state => !state.inactive && state.requirement.name === name
       && (checkIds === undefined || checkIds.includes(state.requirement.checkId)));
     if (states.length) return states.every(state => state.requirement.args !== null && state.pass && !state.stale && state.criterionPassed)
       && ![...this.findings.values()].some(f => f.name === name && (checkIds === undefined || states.some(s => s.requirement.ownerId === f.ownerId)));
@@ -245,10 +255,21 @@ export class ToolVerificationEvidence {
       && this.attempts.some(attempt => attempt.name === name && attempt.status === "passed" && attempt.revision === this.revision && (ownerId === undefined || attempt.ownerId === ownerId));
   }
 
+  /** Canonical proof reads adopted exact scopes, never exploratory invocation history. */
+  passedScope(name: string, args: Readonly<Record<string, unknown>>, checkId?: string): boolean {
+    const states = [...this.requirements.values()].filter(state => state.requirement.name === name
+      && state.requirement.acceptedCriterion?.kind === "toolVerdict"
+      && (checkId === undefined || state.requirement.checkId === checkId)
+      && key(state.requirement.args) === key(args));
+    return states.length > 0 && states.every(state => state.pass && !state.stale)
+      && ![...this.findings.values()].some(finding => finding.name === name && key(finding.args) === key(args));
+  }
+
   problems(): readonly string[] {
     return [...new Set([
       ...[...this.findings.values()].flatMap(f => f.verdict.blockingIssues.map(issue => `${f.name}: ${issue} [${f.checkId}]`)),
-      ...[...this.requirements.values()].flatMap(({ requirement, pass, stale, criterionPassed }) => {
+      ...[...this.requirements.values()].flatMap(({ requirement, pass, stale, criterionPassed, inactive }) => {
+        if (inactive) return [];
         const problem = requirement.args === null ? "pending specification" : stale ? "변경 후 재검증 필요" : !pass || !criterionPassed ? "필수 검증 미통과" : null;
         return problem ? [`${requirement.name}: ${problem} [${requirement.checkId}]`] : [];
       }),

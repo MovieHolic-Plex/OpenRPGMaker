@@ -42,7 +42,11 @@ function toolArgumentsOf(value: unknown): Record<string, unknown> {
   }
 }
 
-function openaiToContext(provider: string, body: Record<string, unknown>, supportsImages: boolean) {
+export function openaiToContext(provider: string, body: Record<string, unknown>) {
+  return openaiToContextWithDelivery(provider, body, true).context;
+}
+
+function openaiToContextWithDelivery(provider: string, body: Record<string, unknown>, supportsImages: boolean) {
   const messages = Array.isArray(body.messages) ? body.messages : [];
   const systemPrompt: string[] = [];
   const converted: unknown[] = [];
@@ -204,7 +208,7 @@ export async function completeProvider(
     (err as Error & { status?: number }).status = 400;
     throw err;
   }
-  const { context, imageDelivery } = openaiToContext(provider, body, model.input.includes("image"));
+  const { context, imageDelivery } = openaiToContextWithDelivery(provider, body, model.input.includes("image"));
   if (testStub()) {
     return {
       stream: false,

@@ -26,7 +26,7 @@ describe("run_scene_test", () => {
     evidence.observe("run_scene_test", { ...f.a }, failed);
     evidence.observe("run_scene_test", { ...f.b }, passed);
     expect(evidence.correction("routeA", f.b)).toBeNull();
-    expect(acceptance.evaluate(f.project, f.project, evidence.problems()).status).toBe("blocked");
+    expect(acceptance.evaluate(f.project, f.project, evidence, evidence.problems()).status).toBe("blocked");
     // Even the same input must not alias after a project edit reroutes the transfer.
     f.root.events[0]!.pages![0]!.commands = [{ kind: "transfer", mapId: "mapB", x: 2, y: 2 }];
     const rerouted = runTool({ project: f.project }, "run_scene_test", { ...f.a });
@@ -34,7 +34,7 @@ describe("run_scene_test", () => {
     evidence.observe("run_scene_test", { ...f.a }, rerouted, "explicit", "accepted", "routeA");
     expect(evidence.snapshot().requirements[0]?.status).toBe("unverified");
     expect(evidence.snapshot().findings).toHaveLength(1);
-    expect(acceptance.evaluate(f.project, f.project, evidence.problems()).status).toBe("blocked");
+    expect(acceptance.evaluate(f.project, f.project, evidence, evidence.problems()).status).toBe("blocked");
   });
 
   it("missing early-interaction trace is not evidence for changed navigation or facing", () => {

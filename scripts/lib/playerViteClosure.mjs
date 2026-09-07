@@ -13,6 +13,7 @@ export function verifyViteDeploymentClosure({ artifactFiles, viteManifestValue, 
   const expectedPaths = [...new Set([
     normalizeRelativePath(entryHtml),
     normalizeRelativePath(viteManifest),
+    ...safeArtifactFiles.filter(file => file.path === "dependency-collector.js").map(file => file.path),
     ...outputPaths,
   ])].sort(compareContractPaths);
   assertUniquePlayerPaths(expectedPaths, "Vite output closure");

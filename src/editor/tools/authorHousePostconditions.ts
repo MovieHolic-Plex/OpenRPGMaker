@@ -1,5 +1,9 @@
 import type { AuthorHouseRequest, HouseWing } from "@/editor/construction/contracts";
-import type { GameEvent, MapTreeNode, Project } from "@/project/types";
+import type { GameEvent, GameMap, MapTreeNode, Project } from "@/project/types";
+import { LAYOUT_TREE_CANOPY_IDS, LAYOUT_TREE_TRUNK_IDS } from "@/project/lint/layoutPlacementValidate";
+
+import { houseBBox } from "./houseLotDecor";
+import { houseFootprintCells } from "./houseProtection";
 
 import type { ChangeSummary } from "./types";
 import { ToolError } from "./types";
@@ -9,6 +13,26 @@ import type {
   ConstructionCellChange,
   HouseInteriorEvidence,
 } from "./authorHouseTypes";
+
+/** Reject before any lot is stamped or sealed: lower writes preserve occupied upper cells. */
+export function validateAuthorHouseTreeClearance(map: GameMap, request: AuthorHouseRequest): void {
+  const plans = request.kind === "single" ? [request] : request.houses;
+  for (const plan of plans) {
+    // Include unchanged ridge/gap cells that completion will protect. Clearing a whole
+    // tree may cross this footprint, so require explicit clearance instead of erasing.
+    for (const cell of houseFootprintCells(houseBBox(plan.wings), map)) {
+      const index = cell.y * map.width + cell.x;
+      const tree = [map.lowerTiles[index], map.upperTiles[index]].find((tile) =>
+        LAYOUT_TREE_CANOPY_IDS.has(tile) || LAYOUT_TREE_TRUNK_IDS.has(tile));
+      if (tree !== undefined) {
+        throw new ToolError(
+          `집 부지 (${cell.x},${cell.y})에 나무 타일 ${tree}이 있습니다. 시공 전에 수관과 밑동 전체를 명시적으로 정리하거나 다른 부지를 선택하세요.`,
+          { code: "house-tree-clearance-required", mapId: map.id, ...cell },
+        );
+      }
+    }
+  }
+}
 
 export function describeAuthorHouseChanges(before: Project, after: Project): AuthorHouseChanges {
   const beforeMapIds = new Set(Object.keys(before.maps));
@@ -154,6 +178,7 @@ function hasForbiddenDiff(diff: ChangeSummary): boolean {
     || diff.variablesAdded !== 0 || diff.worldEntitiesAdded !== 0 || diff.worldEntitiesModified !== 0
     || diff.palettePresetsAdded !== 0 || diff.palettePresetsModified !== 0 || diff.endingsChanged !== 0
     || (diff.audioDescriptionsChanged ?? 0) !== 0
+    || (diff.monsterMetadataChanged ?? 0) !== 0
     || diff.sessionChanged || diff.systemChanged;
 }
 

@@ -1,0 +1,226 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/monsterMetadataPersistence.test.ts test/monsterMetadataAccounting.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-monster-model-0907
+
+ ❯ test/monsterMetadataAccounting.test.ts (8 tests | 5 failed) 5644ms
+   × monster metadata accounting > keeps metadata-only changes visible when presenting proposal and commit summaries 482ms
+     → expected [] to have a length of 1 but got +0
+   ✓ monster metadata accounting > preserves tile-only safety compatibility when metadata count is undefined  2374ms
+   × monster metadata accounting > preserves tile-only safety compatibility when metadata count is 0 1463ms
+     → expected false to be true // Object.is equality
+   ✓ monster metadata accounting > preserves tile-only safety compatibility when metadata count is 1  619ms
+   × monster metadata accounting > parses optional metadata totals when a construction outcome count is undefined 211ms
+     → expected { tilesChanged: +0, …(18) } to match object { monsterMetadataChanged: +0 }
+(19 matching properties omitted from actual)
+   × monster metadata accounting > parses optional metadata totals when a construction outcome count is 0 361ms
+     → constructionOutcome.diff.monsterMetadataChanged is not allowed. Allowed keys here: tilesChanged, eventsAdded, eventsModified, eventsRemoved, mapsAdded, mapsRemoved, dbRecordsChanged, tilesetsChanged, switchesAdded, variablesAdded, worldEntitiesAdded, worldEntitiesModified, palettePresetsAdded, palettePresetsModified, endingsChanged, mapPropertiesChanged, audioDescriptionsChanged, sessionChanged, systemChanged.
+   × monster metadata accounting > parses optional metadata totals when a construction outcome count is 1 127ms
+     → constructionOutcome.diff.monsterMetadataChanged is not allowed. Allowed keys here: tilesChanged, eventsAdded, eventsModified, eventsRemoved, mapsAdded, mapsRemoved, dbRecordsChanged, tilesetsChanged, switchesAdded, variablesAdded, worldEntitiesAdded, worldEntitiesModified, palettePresetsAdded, palettePresetsModified, endingsChanged, mapPropertiesChanged, audioDescriptionsChanged, sessionChanged, systemChanged.
+   ✓ monster metadata accounting > ignores record and field insertion order when override states remain equal 1ms
+ ❯ test/monsterMetadataPersistence.test.ts (5 tests | 3 failed) 39649ms
+   × monster metadata concurrent persistence > merges per-field local deltas when a real conditional save loses its first SHA race 6273ms
+     → expected { raw: { name: 'L', tags: [ 'B' ] } } to deeply equal { raw: { name: 'L', …(2) }, …(1) }
+   × monster metadata concurrent persistence > reconciles remote fields without recording an edit when consecutive map saves complete 10669ms
+     → expected [ { raw: { name: 'B' } }, …(1) ] to deeply equal [ { raw: { name: 'R', …(1) } }, …(1) ]
+   × monster metadata concurrent persistence > preserves fresh fields and live maps when a save response arrives late 10398ms
+     → expected { raw: { name: 'S', description: '' } } to deeply equal { raw: { name: 'S', …(2) } }
+   ✓ monster metadata concurrent persistence > does not adopt old metadata when a different project replaces the submitted lineage  7269ms
+   ✓ monster metadata concurrent persistence > retains baseline and fresh input when a deferred write fails  5022ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/monsterMetadataAccounting.test.ts > monster metadata accounting > keeps metadata-only changes visible when presenting proposal and commit summaries
+AssertionError: expected [] to have a length of 1 but got +0
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 0[39m
+
+ ❯ test/monsterMetadataAccounting.test.ts:23:19
+     21|     const chips = changePreviewChips(diff);
+     22|     // Then
+     23|     expect(chips).toHaveLength(1);
+       |                   ^
+     24|     expect(fallbackDiffParts([call])).toHaveLength(1);
+     25|     expect(summaryForDiff(diff)).not.toBe(summaryForDiff(summarizeChan…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  test/monsterMetadataAccounting.test.ts > monster metadata accounting > preserves tile-only safety compatibility when metadata count is 0
+AssertionError: expected false to be true // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+ ❯ test/monsterMetadataAccounting.test.ts:42:18
+     40|     const safe = canAutoApplyProposal({ calls: [call], before, after, …
+     41|     // Then
+     42|     expect(safe).toBe(count !== 1);
+       |                  ^
+     43|   });
+     44|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  test/monsterMetadataAccounting.test.ts > monster metadata accounting > parses optional metadata totals when a construction outcome count is undefined
+AssertionError: expected { tilesChanged: +0, …(18) } to match object { monsterMetadataChanged: +0 }
+(19 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "monsterMetadataChanged": 0,[39m
+[31m+   "audioDescriptionsChanged": 0,[39m
+[31m+   "dbRecordsChanged": 0,[39m
+[31m+   "endingsChanged": 0,[39m
+[31m+   "eventsAdded": 0,[39m
+[31m+   "eventsModified": 0,[39m
+[31m+   "eventsRemoved": 0,[39m
+[31m+   "mapPropertiesChanged": 0,[39m
+[31m+   "mapsAdded": 0,[39m
+[31m+   "mapsRemoved": 0,[39m
+[31m+   "palettePresetsAdded": 0,[39m
+[31m+   "palettePresetsModified": 0,[39m
+[31m+   "sessionChanged": false,[39m
+[31m+   "switchesAdded": 0,[39m
+[31m+   "systemChanged": false,[39m
+[31m+   "tilesChanged": 0,[39m
+[31m+   "tilesetsChanged": 0,[39m
+[31m+   "variablesAdded": 0,[39m
+[31m+   "worldEntitiesAdded": 0,[39m
+[31m+   "worldEntitiesModified": 0,[39m
+[2m  }[22m
+
+ ❯ test/monsterMetadataAccounting.test.ts:61:25
+     59|     const parsed = parseConstructionOutcome(outcome);
+     60|     // Then
+     61|     expect(parsed.diff).toMatchObject({ monsterMetadataChanged: count …
+       |                         ^
+     62|     const audit = constructionAuditFromResult({ resultData: { construc…
+     63|     if (count === 1) expect(audit).toBeNull();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  test/monsterMetadataAccounting.test.ts > monster metadata accounting > parses optional metadata totals when a construction outcome count is 0
+ FAIL  test/monsterMetadataAccounting.test.ts > monster metadata accounting > parses optional metadata totals when a construction outcome count is 1
+ToolError: constructionOutcome.diff.monsterMetadataChanged is not allowed. Allowed keys here: tilesChanged, eventsAdded, eventsModified, eventsRemoved, mapsAdded, mapsRemoved, dbRecordsChanged, tilesetsChanged, switchesAdded, variablesAdded, worldEntitiesAdded, worldEntitiesModified, palettePresetsAdded, palettePresetsModified, endingsChanged, mapPropertiesChanged, audioDescriptionsChanged, sessionChanged, systemChanged.
+ ❯ rejectUnknownKeys src/editor/construction/boundary.ts:25:11
+     23|   const unknownKey = Object.keys(record).find((key) => !keys.includes(…
+     24|   if (unknownKey !== undefined) {
+     25|     throw new ToolError(
+       |           ^
+     26|       `${scope}.${unknownKey} is not allowed. Allowed keys here: ${key…
+     27|       { code: "invalid-args" },
+ ❯ parseDiff src/editor/construction/parseConstructionOutcome.ts:176:3
+ ❯ parseConstructionOutcome src/editor/construction/parseConstructionOutcome.ts:67:11
+ ❯ test/monsterMetadataAccounting.test.ts:59:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  test/monsterMetadataPersistence.test.ts > monster metadata concurrent persistence > merges per-field local deltas when a real conditional save loses its first SHA race
+AssertionError: expected { raw: { name: 'L', tags: [ 'B' ] } } to deeply equal { raw: { name: 'L', …(2) }, …(1) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "orphan": {[39m
+[32m-     "description": "ORPHAN",[39m
+[32m-   },[39m
+[2m    "raw": {[22m
+[32m-     "description": "REMOTE",[39m
+[2m      "name": "L",[22m
+[2m      "tags": [[22m
+[32m-       "R",[39m
+[31m+       "B",[39m
+[2m      ],[22m
+[2m    },[22m
+[2m  }[22m
+
+ ❯ test/monsterMetadataPersistence.test.ts:60:70
+     58|     expect(result.kind).toBe("saved");
+     59|     expect(transport.rejectedCas).toBe(1);
+     60|     expect((await loadProjectFromSupabase(CONFIG))?.monsterMetadata).t…
+       |                                                                      ^
+     61|   }, 30_000);
+     62|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  test/monsterMetadataPersistence.test.ts > monster metadata concurrent persistence > reconciles remote fields without recording an edit when consecutive map saves complete
+AssertionError: expected [ { raw: { name: 'B' } }, …(1) ] to deeply equal [ { raw: { name: 'R', …(1) } }, …(1) ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[2m    {[22m
+[2m      "raw": {[22m
+[32m-       "name": "R",[39m
+[32m-       "tags": [[39m
+[32m-         "R",[39m
+[32m-       ],[39m
+[31m+       "name": "B",[39m
+[2m      },[22m
+[2m    },[22m
+[2m    {[22m
+[2m      "raw": {[22m
+[32m-       "name": "R",[39m
+[32m-       "tags": [[39m
+[32m-         "R",[39m
+[32m-       ],[39m
+[31m+       "name": "B",[39m
+[2m      },[22m
+[2m    },[22m
+[2m  ][22m
+
+ ❯ test/monsterMetadataPersistence.test.ts:82:72
+     80|     stop();
+     81|     // Then
+     82|     expect(transport.accepted.map(project => project.monsterMetadata))…
+       |                                                                        ^
+     83|     expect(store.getCurrent().monsterMetadata).toEqual(remote.monsterM…
+     84|     expect(generations).toHaveLength(2);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+ FAIL  test/monsterMetadataPersistence.test.ts > monster metadata concurrent persistence > preserves fresh fields and live maps when a save response arrives late
+AssertionError: expected { raw: { name: 'S', description: '' } } to deeply equal { raw: { name: 'S', …(2) } }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "raw": {[22m
+[2m      "description": "",[22m
+[2m      "name": "S",[22m
+[32m-     "tags": [[39m
+[32m-       "R",[39m
+[32m-     ],[39m
+[2m    },[22m
+[2m  }[22m
+
+ ❯ test/monsterMetadataPersistence.test.ts:113:40
+    111|     // Then
+    112|     expect(reconciled.maps).toBe(fresh.maps);
+    113|     expect(reconciled.monsterMetadata).toEqual({ raw: { name: "S", tag…
+       |                                        ^
+    114|     expect((await loadProjectFromSupabase(CONFIG))?.monsterMetadata).t…
+    115|     expect(store.hasUnsavedChanges()).toBe(false);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  8 failed | 5 passed (13)
+   Start at  03:24:32
+   Duration  53.51s (transform 25.40s, setup 0ms, collect 45.95s, tests 45.29s, environment 1ms, prepare 765ms)

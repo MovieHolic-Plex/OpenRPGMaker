@@ -1,0 +1,76 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/shopDecisionInput.test.ts
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-clear-harbor-3da2
+
+ ✓ test/shopDecisionInput.test.ts (18 tests) 6631ms
+   ✓ mounted shop decision focus and comparison > cycles exact stock focus groups in both directions without trading  507ms
+   ✓ mounted shop decision focus and comparison > moves mode/category focus without committing until confirm and never buys  364ms
+   ✓ mounted shop decision focus and comparison > uses horizontal arrows for 1D row navigation when single mode has no quantity input  750ms
+   ✓ mounted shop decision focus and comparison > renders four truthful downgrade totals, +0, displacement and effect data without mutation  303ms
+   ✓ mounted shop decision focus and comparison > supports custom slots and unavailable non-equipment/legacy/no-party states  885ms
+   ✓ mounted shop decision focus and comparison > retains real selection after last-copy sale, skips absent groups and empty-list confirm  881ms
+   ✓ mounted shop decision focus and comparison > aborts old stock/detail listeners on rerender and close without document-wide capture  737ms
+
+ Test Files  1 passed (1)
+      Tests  18 passed (18)
+   Start at  05:36:59
+   Duration  29.42s (transform 13.22s, setup 0ms, collect 19.31s, tests 6.63s, environment 1.04s, prepare 489ms)
+
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/shopDecisionInput.test.ts test/shopEquipmentPreview.test.ts test/keyBindingsContract.test.ts test/shopRuntimeUx.test.ts test/runtimeCursorMenu.test.ts test/playInputBlocker.test.ts
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-clear-harbor-3da2
+
+ ✓ test/playInputBlocker.test.ts (5 tests) 110ms
+ ✓ test/runtimeCursorMenu.test.ts (6 tests) 177ms
+ ✓ test/keyBindingsContract.test.ts (16 tests) 180ms
+ ✓ test/shopEquipmentPreview.test.ts (29 tests) 6118ms
+   ✓ pure actor-specific shop equipment preview > shows authorable positive-bonus downgrades and lost zero-bonus stats without negative authored bonuses  626ms
+   ✓ pure actor-specific shop equipment preview > handles the runtime-only negative-bonus edge with all four truthful totals  576ms
+   ✓ pure actor-specific shop equipment preview > returns same-equipment zero deltas without displacing or inventing inventory  479ms
+   ✓ pure actor-specific shop equipment preview > preserves the requested dual-wield shield slot granted by actor  375ms
+   ✓ pure actor-specific shop equipment preview > preserves the requested dual-wield shield slot granted by class  333ms
+   ✓ pure actor-specific shop equipment preview > uses the authored charm catalog slot and replaces an incompatible previous slot default  323ms
+   ✓ pure actor-specific shop equipment preview > retains readable actor and current stats when cursed blocks replacement  377ms
+   ✓ pure actor-specific shop equipment preview > never mutates deeply frozen project, session or goods, on ready or blocked paths  506ms
+ ✓ test/shopRuntimeUx.test.ts (23 tests) 8250ms
+   ✓ 상점 도움말·통화 표시 > 도움말 창이 첫 물건의 설명을 보여주고 커서 이동에 따라 바뀐다  419ms
+   ✓ 상점 도움말·통화 표시 > 설명이 없으면 목록 안내문으로 되돌린다 — 아이템 효과 문장을 머리글에 박지 않는다  494ms
+   ✓ 상점 구매 가능 표시 > 거래 후 행 표시가 제자리에서 갱신된다  1019ms
+   ✓ 상점 수량 입력 > 수량 입력과 합계가 목록이 아니라 프롬프트 줄에 있다  474ms
+   ✓ 상점 수량 입력 > 합계가 선택 행의 단가 × 수량으로 갱신된다  316ms
+   ✓ 상점 수량 입력 > 수량 모드가 아니면 입력칸을 만들지 않는다  529ms
+   ✓ 상점 사이드 패널 > 파티 칸이 에디터 밝은 회색 빈 박스가 아니다  674ms
+   ✓ 상점 사이드 패널 > '장비' 줄은 장비 종류에만 뜨고 실제 착용 수를 센다  641ms
+   ✓ 상점 접근성·제자리 갱신 > 상태 문구가 live region 이고 제자리에서 바뀐다  347ms
+   ✓ 상점 빈 목록 > 모드에 맞는 빈 목록 안내가 한국어로 뜬다  310ms
+   ✓ post-trade quantity synchronization > clamps the selected buy quantity and refreshes every row after spending gold  334ms
+   ✓ post-trade quantity synchronization > reselects the surviving row using its new capacity after selling the last copies  603ms
+ ✓ test/shopDecisionInput.test.ts (18 tests) 14333ms
+   ✓ mounted shop decision focus and comparison > cycles exact stock focus groups in both directions without trading  463ms
+   ✓ mounted shop decision focus and comparison > confirms only rows/transaction buttons with "e"; ignores repeats  357ms
+   ✓ mounted shop decision focus and comparison > confirms only rows/transaction buttons with "z"; ignores repeats  397ms
+   ✓ mounted shop decision focus and comparison > confirms only rows/transaction buttons with "Enter"; ignores repeats  1051ms
+   ✓ mounted shop decision focus and comparison > confirms only rows/transaction buttons with " "; ignores repeats  1540ms
+   ✓ mounted shop decision focus and comparison > moves actual row focus, preserves horizontal quantity and updates balance  955ms
+   ✓ mounted shop decision focus and comparison > keeps moving actual row focus while ArrowDown repeats  682ms
+   ✓ mounted shop decision focus and comparison > keeps increasing selected quantity while ArrowRight repeats without trading  781ms
+   ✓ mounted shop decision focus and comparison > keeps held detail arrow/page scrolling while repeated confirm/cancel remain inert  307ms
+   ✓ mounted shop decision focus and comparison > uses horizontal arrows for 1D row navigation when single mode has no quantity input  643ms
+   ✓ mounted shop decision focus and comparison > renders four truthful downgrade totals, +0, displacement and effect data without mutation  395ms
+   ✓ mounted shop decision focus and comparison > exposes all six actors, immediate dual-wield slots, scroll ring and exact opener restoration  994ms
+   ✓ mounted shop decision focus and comparison > shows blocked current totals without fabricated next, and same-equipment status  938ms
+   ✓ mounted shop decision focus and comparison > supports custom slots and unavailable non-equipment/legacy/no-party states  2049ms
+   ✓ mounted shop decision focus and comparison > retains real selection after last-copy sale, skips absent groups and empty-list confirm  1251ms
+   ✓ mounted shop decision focus and comparison > aborts old stock/detail listeners on rerender and close without document-wide capture  683ms
+   ✓ mounted shop decision focus and comparison > closes the real empty-stock notice  532ms
+
+ Test Files  6 passed (6)
+      Tests  97 passed (97)
+   Start at  05:37:43
+   Duration  66.65s (transform 65.74s, setup 0ms, collect 236.30s, tests 29.17s, environment 2.63s, prepare 3.72s)

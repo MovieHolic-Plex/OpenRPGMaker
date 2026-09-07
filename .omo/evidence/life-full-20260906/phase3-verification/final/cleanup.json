@@ -1,0 +1,222 @@
+{
+  "checks": [
+    {
+      "command": [
+        "git",
+        "diff",
+        "--exit-code"
+      ],
+      "cwd": "/home/main/z-project/rpg-zzu-life-full-field-verify",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--cached",
+        "--exit-code"
+      ],
+      "cwd": "/home/main/z-project/rpg-zzu-life-full-field-verify",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "48195f575^..HEAD",
+        "--",
+        "src",
+        "test"
+      ],
+      "cwd": "/home/main/z-project/rpg-zzu-life-full-field-verify",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "status",
+        "--short"
+      ],
+      "cwd": "/home/main/z-project/rpg-zzu-life-full-field-verify",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "status",
+        "--short"
+      ],
+      "cwd": "/home/main/z-project/rpg-zzu-life-full-field-input",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD",
+        "HEAD^{tree}"
+      ],
+      "cwd": "/home/main/z-project/rpg-zzu-life-full-field-verify",
+      "exit": 0,
+      "stdout": "bbaf9464cad3768da057ef9909338b5cfb25aa8c\nc62153444c0e05855be01628c534c4e0f9f15bbe\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD",
+        "HEAD^{tree}"
+      ],
+      "cwd": "/home/main/z-project/rpg-zzu-life-full-field-input",
+      "exit": 0,
+      "stdout": "bbaf9464cad3768da057ef9909338b5cfb25aa8c\nc62153444c0e05855be01628c534c4e0f9f15bbe\n",
+      "stderr": ""
+    }
+  ],
+  "ancestors": [
+    {
+      "command": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "48195f5753556572db0c13e40f6945b9547bbea3",
+        "HEAD"
+      ],
+      "cwd": "/home/main/z-project/rpg-zzu-life-full-field-verify",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "9cb85be84746d84789497a1d4297d0c8416d86c8",
+        "HEAD"
+      ],
+      "cwd": "/home/main/z-project/rpg-zzu-life-full-field-verify",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "98b099f8d73a3d36be96fef17746f48fe5f027fe",
+        "HEAD"
+      ],
+      "cwd": "/home/main/z-project/rpg-zzu-life-full-field-verify",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "27db0af0021fb49414723b64141a0e1c568b8069",
+        "HEAD"
+      ],
+      "cwd": "/home/main/z-project/rpg-zzu-life-full-field-verify",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "038ff8b47b127e604dad6a5c5cb50597ef543c20",
+        "HEAD"
+      ],
+      "cwd": "/home/main/z-project/rpg-zzu-life-full-field-verify",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "removed": [
+    {
+      "path": "dist",
+      "files": 1981,
+      "bytes": 244586321,
+      "removed": true
+    },
+    {
+      "path": "output/edit-activity",
+      "files": 3,
+      "bytes": 3169,
+      "removed": true
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/phase3-verification/final/native-storage",
+      "files": 1,
+      "bytes": 24576,
+      "removed": true
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/phase3-verification/final/build-cache",
+      "absent": true
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/phase3-verification/final/editor-cache",
+      "absent": true
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/phase3-verification/final/probe-cache",
+      "absent": true
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/phase3-verification/final/priority-cache",
+      "absent": true
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/phase3-verification/final/ssr-cache",
+      "absent": true
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/phase3-verification/final/forage-date-cache",
+      "absent": true
+    },
+    {
+      "path": ".omo/evidence/life-full-20260906/phase3-verification/final/native/player-cache",
+      "absent": true
+    }
+  ],
+  "listener": {
+    "command": [
+      "ss",
+      "-ltnp",
+      "sport = :58163"
+    ],
+    "exit": 0,
+    "output": "State Recv-Q Send-Q Local Address:Port Peer Address:PortProcess\n"
+  },
+  "remainingOwnedRuntimeProcesses": [],
+  "parentProbeCopyIdentical": true,
+  "imageReadResult": "Current model does not support images; no image-level approval",
+  "preserved": [
+    "tracked .vite-cache/deps",
+    "shared node_modules and caches",
+    "ignored .env.local",
+    "all inherited/parent evidence",
+    "detached locked verification worktree; parent owns archival/removal"
+  ]
+}

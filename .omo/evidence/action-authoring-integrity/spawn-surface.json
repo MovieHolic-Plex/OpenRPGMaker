@@ -1,0 +1,280 @@
+{
+  "projectId": "oprn-1a8ac23163",
+  "rejections": [
+    {
+      "input": {
+        "enemyId": "qa_enemy",
+        "actionProfile": {
+          "aggroRange": 12
+        },
+        "spawnMode": "update",
+        "spawn": {
+          "mapId": "map_blank_start",
+          "troopId": "qa_troop",
+          "id": "qa_missing",
+          "area": {
+            "x": 6,
+            "y": 5,
+            "w": 2,
+            "h": 2
+          }
+        }
+      },
+      "ok": false,
+      "codes": [
+        "spawn-not-found"
+      ],
+      "unchanged": true
+    },
+    {
+      "input": {
+        "enemyId": "qa_enemy",
+        "actionProfile": {
+          "contactDamage": 19
+        },
+        "spawnMode": "add",
+        "spawn": {
+          "mapId": "map_blank_start",
+          "troopId": "qa_troop",
+          "id": "qa_spawn_1",
+          "area": {
+            "x": 6,
+            "y": 5,
+            "w": 2,
+            "h": 2
+          }
+        }
+      },
+      "ok": false,
+      "codes": [
+        "spawn-already-exists"
+      ],
+      "unchanged": true
+    },
+    {
+      "input": {
+        "enemyId": "qa_enemy",
+        "actionProfile": {
+          "aggroRange": 12
+        },
+        "spawnMode": "udpate",
+        "spawn": {
+          "mapId": "map_blank_start",
+          "troopId": "qa_troop",
+          "id": "qa_spawn_1",
+          "area": {
+            "x": 6,
+            "y": 5,
+            "w": 2,
+            "h": 2
+          }
+        }
+      },
+      "ok": false,
+      "codes": [
+        "invalid-args"
+      ],
+      "unchanged": true
+    }
+  ],
+  "add": {
+    "ok": true,
+    "data": {
+      "enemyId": "qa_enemy",
+      "actionProfile": {
+        "contactDamage": 3,
+        "moveIntervalMs": 700,
+        "aggroRange": 7,
+        "attack": {
+          "kind": "projectile",
+          "windupMs": 600,
+          "recoverMs": 400,
+          "damage": 5,
+          "range": 8,
+          "cooldownMs": 1600,
+          "projectileSpeedTilesPerSec": 7
+        }
+      },
+      "mapId": "map_blank_start",
+      "spawnId": "qa_temporary_spawn",
+      "spawnOutcome": "added"
+    },
+    "spawns": [
+      {
+        "id": "spawn_enemy_slime_0",
+        "area": {
+          "h": 4,
+          "w": 4,
+          "x": 4,
+          "y": 4
+        },
+        "chase": true,
+        "troopId": "troop_slime",
+        "maxAlive": 2,
+        "respawnSec": 5
+      },
+      {
+        "id": "qa_spawn_1",
+        "area": {
+          "h": 2,
+          "w": 2,
+          "x": 6,
+          "y": 5
+        },
+        "chase": true,
+        "troopId": "qa_troop",
+        "maxAlive": 1,
+        "respawnSec": 600
+      },
+      {
+        "id": "qa_temporary_spawn",
+        "troopId": "qa_troop",
+        "area": {
+          "x": 11,
+          "y": 5,
+          "w": 2,
+          "h": 2
+        },
+        "chase": true
+      }
+    ]
+  },
+  "update": {
+    "ok": true,
+    "data": {
+      "enemyId": "qa_enemy",
+      "actionProfile": {
+        "contactDamage": 3,
+        "moveIntervalMs": 700,
+        "aggroRange": 7,
+        "attack": {
+          "kind": "projectile",
+          "windupMs": 600,
+          "recoverMs": 400,
+          "damage": 5,
+          "range": 8,
+          "cooldownMs": 1600,
+          "projectileSpeedTilesPerSec": 7
+        }
+      },
+      "mapId": "map_blank_start",
+      "spawnId": "qa_spawn_1",
+      "spawnOutcome": "modified"
+    }
+  },
+  "preserve": {
+    "ok": true,
+    "spawn": {
+      "id": "qa_spawn_1",
+      "area": {
+        "x": 6,
+        "y": 5,
+        "w": 2,
+        "h": 2
+      },
+      "chase": false,
+      "troopId": "qa_troop",
+      "maxAlive": 1,
+      "respawnSec": 600
+    }
+  },
+  "remove": {
+    "ok": true,
+    "data": {
+      "mapId": "map_blank_start",
+      "spawnId": "qa_temporary_spawn"
+    },
+    "databasePreserved": true
+  },
+  "enemyPreserved": true,
+  "save": "saved",
+  "reloadedSpawns": [
+    {
+      "id": "spawn_enemy_slime_0",
+      "area": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 4
+      },
+      "chase": true,
+      "troopId": "troop_slime",
+      "maxAlive": 2,
+      "respawnSec": 5
+    },
+    {
+      "id": "qa_spawn_1",
+      "area": {
+        "h": 2,
+        "w": 2,
+        "x": 6,
+        "y": 5
+      },
+      "chase": false,
+      "troopId": "qa_troop",
+      "maxAlive": 1,
+      "respawnSec": 600
+    }
+  ],
+  "reloadedEnemy": {
+    "id": "qa_enemy",
+    "name": "무결성 검증 슬라임",
+    "monsterResourceId": "generated-enemy-slime-01",
+    "graphicHue": 0,
+    "transparent": false,
+    "flying": false,
+    "criticalHit": {
+      "enabled": false,
+      "oneIn": 30
+    },
+    "attackOptions": {
+      "normalAttacksMiss": false
+    },
+    "skillIds": [],
+    "stats": {
+      "maxHp": 40,
+      "maxMp": 0,
+      "attack": 10,
+      "defense": 10,
+      "mind": 10,
+      "agility": 10
+    },
+    "rewards": {
+      "exp": 0,
+      "gold": 0,
+      "dropRatePercent": 0
+    },
+    "actions": [],
+    "actionProfile": {
+      "contactDamage": 3,
+      "moveIntervalMs": 700,
+      "aggroRange": 7,
+      "attack": {
+        "kind": "projectile",
+        "windupMs": 600,
+        "recoverMs": 400,
+        "damage": 5,
+        "range": 8,
+        "cooldownMs": 1600,
+        "projectileSpeedTilesPerSec": 7
+      }
+    },
+    "stateRates": {
+      "state_death": "C"
+    },
+    "elementRates": {
+      "sword": "C",
+      "spear": "C",
+      "hit": "C",
+      "bow": "C",
+      "fire": "C",
+      "ice": "C",
+      "thunder": "C",
+      "water": "C",
+      "earth": "C",
+      "wind": "C",
+      "holy": "C",
+      "dark": "C"
+    }
+  }
+}

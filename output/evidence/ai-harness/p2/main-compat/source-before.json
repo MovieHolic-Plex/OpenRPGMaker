@@ -1,0 +1,13 @@
+{
+  "head": "86b39ac178ba111d863b84eabf5d7835125b5ccd",
+  "mergeHead": "147218a2dcfd5d5996e666395e53626706904a60",
+  "branch": "agent/ai-harness-p2-main-compat-20260906",
+  "files": {
+    "openwiki/editor-ai-panel.md": "a7957c80cdeb204835b6817fcf90b0ae92ad13095354de9be1a22ad81d1ae9e1",
+    "src/ai/assistantAcceptance.ts": "86344f2ef623a8acea7d996f189271ec7c2076b9026130b5b6ad2d7a084d7436",
+    "src/ai/assistantAcceptanceLedger.ts": "069b096812e01f649824ddc6d1165e98f085e16adf27136004341097a03be5e3",
+    "src/ai/assistantAcceptanceTools.ts": "9cb55bbeaa362048fbc9fa1a700d35f276121781b5f37fa27eb12b6aabe19687",
+    "src/ai/assistantSession.ts": "7c85833f824253394522d4a2fce8aa85d83493fabfd2b9f136a67f930a79b411",
+    "src/ai/toolVerificationEvidence.ts": "fb5c7faf1c8dda8732b2b17011446fabaaeb750a9f5fec506450f210c98bf8f9"
+  }
+}

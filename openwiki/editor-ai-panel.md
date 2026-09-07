@@ -1,5 +1,206 @@
 # Editor AI Panel & Tools
 
+## P2 run outcomes and user scope actions (2026-09-06)
+
+The session publishes three independent facts, not a single completion badge:
+
+| Axis | Values | Meaning |
+| --- | --- | --- |
+| `execution` | `response-final`, `awaiting-user`, `blocked`, `cancelled`, `budget-exhausted`, `failed` | Actual execution decision; `response-final` means the response ended, not that the goal passed. |
+| `goal` | `unassessed`, `incomplete`, `satisfied` | Canonical acceptance: null, assessed but not verified, or verified. |
+| `delivery` | `no-change`, `draft`, `applied`, `persisted`, `persisted-verified` | This run's pending/applied work and accepted save/current proof. |
+
+[runOutcome.ts](../src/ai/runOutcome.ts) exports `RunOutcome`, `RunOutcomeFacts`
+and `deriveRunOutcome(facts)`. The pure function returns a frozen value from
+`execution`, `acceptance`, `hasPendingDraft`, `hasApplied` and `persistence`
+(`none | accepted | verified-current`). It owns no evidence or evaluator.
+Pending draft takes precedence over earlier applied milestones; otherwise no
+applied work means `no-change`, then current proof, accepted save and actual apply
+select the remaining delivery states. Applied work includes owned coordinator wiki
+writes, even without tool calls. Both pending and applied call collections
+survive this display precedence. Only authorized pending calls are candidates for
+application; proof retry doesn't replay already-applied tools.
+
+[AssistantSession](../src/ai/assistantSession.ts) owns the normalized facts.
+`getRunOutcome(): RunOutcome | null` is read-only and returns null before a result
+exists. It rechecks live receipt and assessed-revision freshness without saving,
+proving or changing canonical evidence. Actual settlement updates the original
+`TurnResult.runOutcome`, recap and `{ type: "run_outcome", runOutcome }` event.
+`getHarnessSnapshot().runOutcome`, bridge send results and serialized activity
+carry the same settled projection. See [publication boundaries](editor-observability.md#p2-outcome-publication-2026-09-06),
+including legacy omissions and historical-record limits.
+
+P1 remains the save/proof authority: this run's actual apply and correlated flush
+receipt can establish `persisted`; only its current passing proof establishes
+`persisted-verified`. `commit.persisted`, an old global receipt and model flags
+can't establish delivery. Failed or stale proof retains accepted persistence.
+Cancellation doesn't roll back applied milestones. Fresh sends clear prior applied
+delivery before fallible context/intent awaits; Ask also clears delivery ownership,
+not the retained goal evidence. Trusted continuation retains already-owned delivery.
+Auto-apply, undo, separate region approval and advisory checks keep their policies.
+
+Retained cancelled pending work is session context, not current Ask proposal
+authority (R1, 2026-09-07). Explicit Ask and model-declared questions, including
+questions inferred under Plan, publish `proposedCalls: []` and set the outcome
+fact `hasPendingDraft: false`; the question doesn't claim the draft as delivery.
+The internal proposal map and detached project remain available for an authorized
+Do/resume. `syncBaselineFromStoreIfClean` still refuses to discard that draft.
+
+`maybeAutoApplyMilestone` refuses Ask at the shared acceptance-milestone boundary.
+The runner also blocks ordinary application in explicit host Ask even if an
+executor supplies calls; inferred questions rely on session normalization and
+publication, not host mode alone. Explicit Ask owns publication before fallible
+preparation too. Authorized Do/resume still applies the pending work once without
+replaying its tool, and real undo restores the pre-draft project. See the
+[R1 regression and native scenario](testing.md#p2-r1-retained-draft-ask-2026-09-07).
+
+### Canonical requirements and genuine user actions
+
+`WorkPlan.requirements?: readonly AcceptancePromise[]` and
+`WorkItem.requirementIds?: readonly string[]` reuse the existing ledger. Definitions
+are `{ id, title, required?, criteria }`, with required defaulting true. Existing
+explicit `acceptance` is still assessed without either new field. When both fields
+reuse an ID, acceptance is adopted first and later definitions can't weaken it.
+Bare scheduler plans without an assessed contract remain unassessed; inferred
+missing-spatial-contract repair remains fail-closed. Malformed declarations are
+repair obligations, not satisfied legacy plans. Item links don't own requirements:
+skip, replan or dropping every link can't erase an adopted obligation.
+
+Only active required items enter the canonical denominator. Optional skipped work
+can remain unverified while the required goal is satisfied. Withdrawal also changes
+that denominator, not the item's observed evidence or status. Original IDs, target
+bindings and per-request pre-write baselines remain. Runtime-owned `source` records
+`requestId`, normalized original user `text`, and host `scope` (map ID plus
+`{ x, y, width, height }`, or null). Model source/evidence/withdrawal claims grant
+no authority. Structural criterion regions still use `{ x, y, w, h }`.
+
+`session.withdrawRequirement({ acceptanceId, requirementId, reason }, onEvent?)`
+is synchronous and returns boolean. Stale goal IDs, missing/already-withdrawn items
+and blank reasons return false. Success retains the original source and evidence,
+adds `{ acceptanceId, requirementId, reason, source: "user" }` withdrawal metadata,
+and publishes acceptance/outcome through the session's existing seams. The local
+`withdrawAiRequirement(action)` bridge export delegates to the current idle,
+non-disposed Panel host. It isn't an HTTP/MCP command, window API or LLM tool.
+
+The sticky's real `ai-requirement-withdraw` button carries `data-requirement-id`
+and submits the displayed acceptance ID, item ID and user-exclusion reason. Busy
+or withdrawn actions disable; verified items need no exclusion action. Original
+request and withdrawal reason remain in the disclosure. The terminal outcome node
+is outside folded transcript history, above the composer, with test ID
+`ai-run-outcome` and `data-execution`, `data-goal`, `data-delivery`. Korean labels
+keep response ending separate from goal satisfaction.
+
+Questions preserve blocked items, retry counters and relevant goal evidence,
+including after read-only tools or refused scheduling mutations. Explicit host
+`SessionTurnOptions.goalAction: "resume"` or a manual continuation token outside
+Ask authorizes reactivation only after the intent decision. The existing
+`ai-continue-run` button is available for blocked work as well as budget stops;
+its click passes `AiRunSurface.sendText("계속", undefined, { userResume: true })`.
+Only that UI action changes both Panel mode ownership and the displayed composer
+to Do. Typed, bridge and ordinary RunSurface continuation text in Ask stays Ask.
+Synthetic driver continuation and model intent claims aren't new authorization.
+A resumed read-only run with unmet required work still ends blocked/incomplete/no-change.
+
+Host `goalAction: "new-goal"` archives the prior immutable canonical snapshot at
+public send entry, before context/image, wiki or intent awaits. Archival does not
+re-evaluate the retired snapshot or rewrite its original result. The new owner has
+no assessment until canonical adoption/evaluation; failed or cancelled entry stays
+unassessed, and repeating a failed entry does not archive the same old goal twice.
+At that same boundary, `rebaseProject` retires pending calls and their detached
+project payload, before preparation can fail or cancel. Store-backed sessions use
+current applied store content; detached sessions use their own accepted baseline.
+Already-applied content survives, but a later resume or disjoint write cannot carry
+an old goal's abandoned draft. Errors with successful current-owner proposals still
+apply normally. Regression: `test/aiNewGoalDraftRetirement.test.ts`.
+Its request text, scope and pre-await baseline are retained for a later host resume.
+`getAcceptanceHistory()` returns session-local frozen history, not durable recovery.
+Explicit composer Ask overrides this action; model question/source/reset claims do
+not undo host new-goal ownership or authorize retirement on their own. Ordinary Ask
+retains the active goal's assessment, and a same-goal failure can legitimately remain
+satisfied. Regressions: `test/aiNewGoalEarlyOwnership.test.ts`.
+Exact tool-verdict requirements reuse [the existing verification store](editor-ai-tools.md#p2-requirement-and-exact-verdict-inputs-2026-09-06).
+[P2 evidence index](../output/evidence/ai-harness/p2/README.md) distinguishes producer
+verification, independent surface evidence and pending lead gates. This section
+records implemented contracts, not Phase approval or checkpoint/boot recovery.
+
+## Live large-world QA: plan repair and final audit (2026-09-07)
+
+The actual 128x128/six-region/eight-landmark run initially produced 19 independent
+items, then generator `set_work_plan` collapsed them to five aggregate items after
+a tool mismatch. `repairWorkPlan` now retains every existing item ID, completed/
+skipped state, notes and current-item evidence during in-loop repair. Adding a distinct
+verification declaration to a done item reopens that item's verification, without
+removing its prior owned checks. Unchanged declarations retain their proof owner. Missing or
+duplicate IDs reject the replacement atomically. Pending instructions/tools,
+regrouping and additions remain editable; main-planner adoption owns new goals.
+Orchestration and Ralph context expose the actual current `itemId`.
+Required verification tools cannot be removed during repair or skipped; a
+`run_lint` requirement cannot become `get_project_summary` after lint fails.
+
+P2 compatibility keeps `requirements` adoption alongside legacy `acceptance` on
+these identity-preserving repairs. New declarations reach the same canonical
+ledger; original obligations cannot be overwritten. `requirementIds` remain
+editable scheduler links even on done/skipped items, without resetting their
+progress, tool evidence or authoritative obligations. Plan repair is a Do action;
+Ask cannot mutate scheduling. Regression: `aiWorkPlanRequirementRepair`, alongside
+unchanged required-outcome and question-dispatch assertions.
+
+The same run exposed a reporting split: live final messages correctly said
+incomplete, but the latest audited message still contained the model's raw success
+claim. `finishRunRecap` now appends its authoritative final text when it differs.
+Bridge/history consumers therefore receive the same final verdict as the panel.
+`getHarnessSnapshot().acceptance` exposes structured completion state; bridge
+`ok` only means the RPC completed, not that the authored goal was verified.
+Failed final verification replaces a model success claim rather than appending
+contradictory failure text below it.
+The PR687 adjudication retains bounded final repair, driven by adopted pending,
+unverified or stale requirements and genuine unresolved findings, including findings
+without an acceptance declaration. Successful unadopted exploratory probes never
+create rerun obligations after a write or dummy removal. Malformed/execution failures
+remain attempts, with only the narrow unowned assertion-free no-target setup exception.
+Questions report retained verification negatives without executing repair or changing
+scheduling; normal execution and budget-terminal assessment cannot
+publish false completion. Budget exhaustion does not grant extra tool calls.
+Run-end proof waits for authoritative blockers to clear. An unfinished declared
+verification item (including pending scope or current passed proof) cannot be skipped:
+rejection preserves plan position, acceptance, requirements, findings and proof. Ordinary
+optional/non-verification skips remain usable. Regression: `pr687VerificationIntegration`.
+Stale-check feedback includes the exact canonical tool/argument identity. A new
+check of guide cells does not silently replace an earlier frontage check; the
+executor can see which original coordinates remain pending after compaction.
+
+`paint_tiles` is active again: replacing it with semantic `fill_region` removed
+numeric-tile rect/line/cell painting, leaving planned snow terrain impossible for
+the executor even though the primitive existed. The planner's canonical tool
+list now uses active tools, not hidden legacy names. Spec, read and house-protection
+gates still apply to raw painting.
+
+Explicit autonomous/max settings now retain the saved reasoning effort during
+execution. Balanced retains its existing fast executor policy. This honors the
+chosen setting; it does not remove execution budgets or force high effort over a
+manual override.
+
+An image-review crop must also cover the request's actual tile/stack changes and
+changed event positions, measured against the immutable request baseline. New or
+resized maps require whole-map review. The effective rectangle appears in evidence
+so the model can request missing images; an unchanged local inspection stays local.
+
+Regression seams: `workPlanIdentity`, `assistantFinalAudit`,
+`assistantAcceptanceRequestBaseline`, `assistantProposalAssembly`. Live evidence
+is under `output/evidence/live-world-qa/`; do not mistake saved partial output for
+completed content.
+
+## Assistant control audit fixes (2026-09-07)
+
+- Composer menu, preference and context popovers use `anchoredPopupPosition` and rail-relative coordinates; the glass deck establishes a containing block, so viewport `fixed` coordinates are not interchangeable. Open content/deck resize and viewport/scroll changes reposition the popup. Dispose removes observers/listeners. Suggestion content stays in normal flow.
+- Full history is a visible toggle: both menu variants update their label and `aria-expanded`. Collapsing history returns to float before hiding the deck; entering studio removes the history CSS class before reparenting. Preserve the separate studio log-mount state without leaving both surface classes active.
+- Export actions call the shared export operation, not a disabled hidden button. Empty export shows feedback; the native hidden-button disabled contract remains intact. `aiEmptyExportFeedback.test.ts` uses real DOM semantics because FakeDom.click does not enforce native disabled behavior.
+- A saved/user-resized width overrides the idle compact default. `aiChatResizeChrome` observes the actual deck width to keep separator ARIA values correct through focus, viewport and animated size changes.
+- Studio splitters persist expanded `--studio-scenes-col` / `--studio-chat-col` values. Collapse classes own effective `--studio-*-w` tracks at 52px; never write the effective tracks inline or collapse loses the CSS cascade.
+- The mounted panel registers settings bindings with `registerAiSettingsPanel`. Every settings opener receives the same font root, live-session/model/effort callbacks and temperature section; explicit standalone caller options remain supported. Panel teardown unregisters ownership and closes its settings.
+- Settings/history use scoped `installAiModalFocus`: live Tab boundaries exclude hidden/inert/disabled controls and yield to newer modal layers. Closing restores the attached opener. Settings saves can replace the topbar button, so that one stable entry resolves its replacement; other detached openers remain unfocused. Nested custom-select Escape continues through the existing modal stack.
+- Regression surfaces: `test/aiPanelChrome.test.ts`, `test/aiEmptyExportFeedback.test.ts`, `test/e2e/ai-ui-audit-fixes.spec.ts`; original findings remain in `docs/qa/2026-09-06-ai-assistant-ui-audit.md`.
+
 ## World structure activity labels (2026-09-06)
 
 `author_world_bridge` and `author_world_mountain` explicitly use the world activity
@@ -97,8 +298,9 @@ prose is reviewed rather than pinned by string tests.
 
 ## Acceptance sticky note (2026-09-06)
 
-`aiStickyChecklist.ts` is a body-mounted read-only projection of backend
-`AcceptanceSnapshot`, separate from ephemeral work-plan/book chrome. The runner
+`aiStickyChecklist.ts` is a body-mounted projection of backend
+`AcceptanceSnapshot`, separate from ephemeral work-plan/book chrome. P2 adds only
+the scoped user withdrawal action described above; the ledger still owns assessment. The runner
 forwards acceptance events only from its current non-aborted owner and publishes
 the backend terminal snapshot after the existing `ownsTurn(true)` finalization
 guard, so abort retains blocked evidence without reviving retired conversations.
@@ -115,6 +317,66 @@ headless DOM contract. The PR637/638 integration exposed twelve
 restores those contracts without changing browser checklist ownership.
 
 ### Session-owned acceptance contract
+
+Request-bound functional acceptance (2026-09-07): the live lite declaration accepts
+`functionalAcceptance` for requested `shopPurchase` and `mapRoundTrip` expectations;
+existing `npcRewards` becomes mandatory `npcReward` criteria in the same
+`AssistantAcceptanceLedger`. IDs are host-owned `request-N:functional:index`, with
+original request source and baseline. Planner/native-plan schemas expose the same
+narrow criteria, but replan, skip, optional replacement and `repair_acceptance`
+cannot weaken an adopted criterion. Only the existing host `withdrawRequirement`
+action withdraws it; ordinary follow-ups retain the ledger and explicit host
+`new-goal` starts a new one. Missing/unsupported semantic targets become
+`functionalUnresolved` evidence with typed known `expectations`, not a silent
+opt-out or an easy static substitute. Review repair (2026-09-07): a later genuine
+user clarification can resolve that placeholder without discarding the goal.
+`IntentFacts.unresolvedFunctional` supplies its exact requirement ID, original
+source text, known expectations and prior user refinement sources to the lite
+declarer. `functionalRefinements:[{requirementId,criterion,corrections?}]` is consumed
+only at the actual user-declaration boundary, including host `resume`, never by
+worker tools or synthetic continuations. `AssistantAcceptanceLedger.refineFunctional`
+keeps the original ID, source and baseline and appends frozen `refinements` source
+metadata. Omitted known fields are retained; conflicts require explicit typed
+user-correction fields. Partial/ambiguous refinements remain unresolved. Once
+concrete, a contract cannot be refined or repaired into an easier one; existing
+host withdrawal/new-goal actions remain the scope-change authority.
+
+`functionalAcceptanceEvaluation.ts` runs the real scene interpreter on current
+applied content. Purchase walks to and triggers the exact seller, resolves runtime
+stock/pricing, calls production `handleShopTransaction` (including normal visit
+and loyalty semantics), and checks exact gold AND inventory deltas. Single-quantity
+shops use repeated real transactions. Round trip walks through both exact authored
+transfers in one session, checks interpreter-owned source/destination evidence,
+then walks back to the original start. Walking checks held-interpreter ownership
+at every tile, not just at the SceneStep boundary: a mandatory touch shop cannot
+be walked through or replaced by the next transfer. The same event resumes after
+a purchase. Purchase, choice and animation completion consume the old hold BEFORE
+resuming, keeping interpreter/event ownership locally. A non-suspending arrival
+autorun can therefore run after transfer; a new hold is installed only if execution
+suspends again. Unsupported nested autorun suspension still fails closed without
+replacing the newly held interpreter. Both require the declared actual project
+entry; no convenience teleport or injected gold/switch state. NPC rewards reuse
+`verifyNpcRewardsPlayable`: exact requested first grants, then zero item/equipment,
+monster and gold reward deltas on the second interaction in that same session.
+Without a selected request-bound witness, the NPC check remains local interaction
+evidence. Once `verify_npc_reward` selects a prerequisite program, both functional
+acceptance and accepted-revision reload proof replay that same private witness against
+current content; a failed/replaced witness never falls back to easier local proof.
+The claim/repeat protection, early-reward rejection and immutable target binding remain.
+
+No worker-provided pass flag, script, tool name or image can supply these verdicts.
+All project changes, including DB/session-default changes, keep drafts unverified;
+functional evaluation reruns rather than reviving stale receipts. Run-end persistence
+uses `verifyPersistedRevision`'s trusted `validate` callback to rerun the immutable
+checks on the canonical reload AFTER it matches the accepted content identity.
+The remote proof path remains read-only and retains currentness/cancellation checks.
+No persisted project-schema change or parallel evidence ledger was introduced.
+
+Scope: ordinary player-buy shops and authored action/touch transfers from the
+actual project start; shopkeeper, haggle, service modes, ambiguous triggers and
+missing prerequisites fail closed with expected/observed diagnostics. Unrequested
+behaviors impose no requirement. Natural-language extraction is still performed by
+the declarer model, not proven exhaustive by the engine or scripted-model tests.
 
 Field-action acceptance (2026-09-07): `IntentDeclaration.actionCombat` carries
 `{ targets: AcceptanceTarget[] }`, with exact existing `mapId` or authored
@@ -305,6 +567,30 @@ Regression entry points: `test/assistantAcceptance.test.ts`,
 전체 기록 복구, 오류·경합 처리, 실제 전투 수락 검증은
 [프로젝트 위키](project-wiki.md)를 따른다. 아래의 과거 세계관 AI 배제 기록은
 일반 CRUD·무조건 다이제스트에만 남으며, 이 제한된 위키 경로에는 적용하지 않는다.
+
+R3 delivery accounting (2026-09-07) uses the real coordinator's
+`WikiTurnInput.onDelivery` callbacks: `applied` after a changed patch reaches the
+store, then `persisted` only for its correlated accepted remote-save receipt.
+This covers awaited history backfill and current extraction. Without an accepted
+owned save, checkpoint failure or cancellation after apply still reports `applied`.
+Empty extraction doesn't claim a historical wiki write or its clean-flush receipt.
+Explicit Ask/Plan preparation remains read-only. No wiki milestone invents proposed
+or applied tool calls.
+
+The session captures the current run-result owner for these callbacks and ignores
+late callbacks from an older run. Intent-time delivery cleanup preserves this
+run's already-applied wiki work, not another run's context. Accepted persistence
+survives a later edit or cancellation, including during proof retry; only a
+passing, still-current proof promotes `persisted` to `persisted-verified`.
+
+Post-tool progress writes use the same coordinator through `observe`.
+`applyProposedProject` returns the actual `wikiDelivery` milestone, and
+`recordAppliedProject` uses that later wiki revision for save/proof correlation,
+not the earlier tool commit's project. Its proof has `commitId: null` rather than
+borrowing the tool commit ID. A progress-save failure preserves the actual apply
+and existing optional `wikiWarning` policy. See
+[receipt ownership](editor-observability.md#p2-outcome-publication-2026-09-06) and
+[wiki delivery QA](testing.md#p2-r3-wiki-delivery-2026-09-07).
 
 ## 브라우저 포커스와 도구 실행 대기 (2026-09-05)
 

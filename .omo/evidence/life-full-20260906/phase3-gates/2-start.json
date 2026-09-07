@@ -1,0 +1,14 @@
+{
+  "id": 2,
+  "command": "node",
+  "args": [
+    "scripts/run-vitest.mjs",
+    "run",
+    "--configLoader",
+    "bundle",
+    "--reporter=json",
+    "--outputFile",
+    "/home/main/z-project/rpg-zzu-life-full-p3/.omo/gates-vitest-report.json"
+  ],
+  "started": "2026-09-06T16:19:25.682Z"
+}

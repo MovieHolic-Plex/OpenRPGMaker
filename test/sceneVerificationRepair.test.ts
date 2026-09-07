@@ -41,14 +41,14 @@ describe("corrected scene navigation retains the same verification obligation", 
     expect(pass180).toMatchObject({ ok: true, data: { ok: true } });
     evidence.observe("run_scene_test", { ...f.wire181 }, pass180);
     expect(evidence.snapshot().findings.map(finding => finding.checkId)).toEqual([ids[0]]);
-    expect(acceptance.evaluate(f.project, f.project, evidence.problems()).status).toBe("blocked");
+    expect(acceptance.evaluate(f.project, f.project, evidence, evidence.problems()).status).toBe("blocked");
     const correction = evidence.correction(ids[0], f.corrected171);
     expect(correction).not.toBeNull();
     const pass171 = runTool({ project: f.project }, correction!.name, correction!.args);
     expect(pass171).toMatchObject({ ok: true, data: { ok: true } });
     evidence.observe(correction!.name, correction!.args, pass171, "explicit", undefined, ids[0]);
     expect(evidence.snapshot().findings).toEqual([]);
-    expect(acceptance.evaluate(f.project, f.project, evidence.problems()).status).toBe("verified");
+    expect(acceptance.evaluate(f.project, f.project, evidence, evidence.problems()).status).toBe("verified");
   });
 
   it.each(["drop-repeat", "weaker", "target", "start", "snapshot", "choice", "state", "navigation"])("rejects %s as a correction without deleting the original", variant => {
@@ -93,6 +93,51 @@ describe("corrected scene navigation retains the same verification obligation", 
     evidence.observe("run_scene_test", corrected, passed);
     expect(evidence.passed("run_scene_test")).toBe(true);
     expect(evidence.problems()).toEqual([]);
+  });
+
+  it("keeps exact canonical proof separate from corrected navigation and advisory checks", () => {
+    const { context, args } = rewardScene();
+    const evidence = new ToolVerificationEvidence();
+    const corrected = { ...args, steps: [{ kind: "face", dir: "up" }, ...args.steps] };
+    evidence.adopt({ checkId: "canonical", ownerId: "goal", name: "run_scene_test", args: corrected,
+      acceptedCriterion: { kind: "toolVerdict", tool: "run_scene_test", args: corrected } });
+    evidence.observe("run_scene_test", args, runTool(context, "run_scene_test", args));
+    evidence.observe("run_scene_test", corrected, runTool(context, "run_scene_test", corrected));
+    expect(evidence.problems()).toEqual([]);
+    expect(evidence.passedScope("run_scene_test", corrected)).toBe(true);
+    expect(evidence.passedScope("run_scene_test", args)).toBe(false);
+
+    // Same normalized NPC/assertion obligation, different exact navigation args.
+    const otherNavigation = { ...args, steps: [{ kind: "set", x: 10, y: 8 }, ...corrected.steps] };
+    const otherResult = runTool(context, "run_scene_test", otherNavigation);
+    expect(otherResult.data).toMatchObject({ ok: true });
+    evidence.observe("run_scene_test", otherNavigation, otherResult, "advisory");
+    expect(evidence.passed("run_scene_test")).toBe(true);
+    expect(evidence.passedScope("run_scene_test", otherNavigation)).toBe(false);
+    evidence.observe("run_scene_test", corrected, runTool(context, "run_scene_test", corrected));
+    evidence.invalidateAfterWrite();
+    evidence.observe("run_scene_test", corrected, runTool(context, "run_scene_test", corrected), "advisory");
+    expect(evidence.passedScope("run_scene_test", corrected)).toBe(false);
+  });
+
+  it("retains independently passing exact invocations of the same normalized scene", () => {
+    const { context, args } = rewardScene();
+    const evidence = new ToolVerificationEvidence();
+    const first = { ...args, steps: [{ kind: "face", dir: "up" }, ...args.steps] };
+    const second = { ...args, steps: [{ kind: "set", x: 10, y: 8 }, ...first.steps] };
+    for (const [index, exact] of [first, second].entries()) {
+      evidence.adopt({ checkId: `canonical-${index}`, ownerId: "goal", name: "run_scene_test", args: exact,
+        acceptedCriterion: { kind: "toolVerdict", tool: "run_scene_test", args: exact } });
+      const result = runTool(context, "run_scene_test", exact);
+      expect(result.data).toMatchObject({ ok: true });
+      evidence.observe("run_scene_test", exact, result);
+    }
+    expect(evidence.passedScope("run_scene_test", first)).toBe(true);
+    expect(evidence.passedScope("run_scene_test", second)).toBe(true);
+    evidence.invalidateAfterWrite();
+    evidence.observe("run_scene_test", first, runTool(context, "run_scene_test", first), "advisory");
+    expect(evidence.passedScope("run_scene_test", first)).toBe(false);
+    expect(evidence.passedScope("run_scene_test", second)).toBe(false);
   });
 
   it("cannot erase a different assertion by weakening its expected reward", () => {

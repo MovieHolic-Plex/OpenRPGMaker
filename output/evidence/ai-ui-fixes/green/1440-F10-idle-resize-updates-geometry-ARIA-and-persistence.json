@@ -1,0 +1,10 @@
+{
+  "panelClass": "ai-chat-panel is-assistant-idle chat-dock-float",
+  "panelStyle": "--ai-font-scale: 1; --ai-background-opacity: 82%; --ai-float-bar-width: 568px; --ai-command-bar-clearance: 167px;",
+  "focus": null,
+  "viewport": [
+    1440,
+    900
+  ],
+  "errors": []
+}

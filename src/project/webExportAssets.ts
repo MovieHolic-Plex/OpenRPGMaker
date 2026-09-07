@@ -108,7 +108,7 @@ const USAGE_WALK_CATALOG_KEY = "resourceProfiles";
 
 function collectProjectStrings(project: Project): Set<string> {
   const values = new Set<string>();
-  collectStrings({ ...project, audioDescriptions: undefined }, values);
+  collectStrings({ ...project, audioDescriptions: undefined, monsterMetadata: undefined }, values);
   // 소스에 박힌 재생 — 프로젝트 문자열에는 없지만 플레이어가 반드시 읽는다.
   for (const id of PLAYER_RUNTIME_AUDIO_RESOURCE_IDS) values.add(id);
   const skinId = resolveSkinId(project.system.battleUiStyle);
@@ -125,7 +125,7 @@ function collectProjectStrings(project: Project): Set<string> {
   return values;
 }
 
-function isAudioCatalogRow(row: unknown): boolean {
+export function isAudioCatalogRow(row: unknown): boolean {
   if (typeof row !== "object" || row === null) return false;
   const kind = (row as { readonly kind?: unknown }).kind;
   // 모르는 kind 는 getResourceProfileSpec 이 이미지 스펙으로 떨어뜨린다 — 안전한 쪽 기본값.

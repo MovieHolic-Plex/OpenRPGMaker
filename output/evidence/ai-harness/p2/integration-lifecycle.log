@@ -1,0 +1,22 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiRunOutcomeOwnership.test.ts test/aiRunOutcomeLifecycle.test.ts --maxWorkers 2 --minWorkers 1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p2-20260906
+
+ ✓ test/aiRunOutcomeOwnership.test.ts (2 tests) 7193ms
+   ✓ does not settle a newer query when an old run's proof is cancelled  4153ms
+   ✓ rechecks a canonical no-write pass when the live assessed map changes  3039ms
+ ✓ test/aiRunOutcomeLifecycle.test.ts (5 tests) 11037ms
+   ✓ projects budget exhaustion when the tools limit ends execution  1207ms
+   ✓ projects budget exhaustion when the tokens limit ends execution  1226ms
+   ✓ projects a recovered retry without inventing application  1636ms
+   ✓ retains both applied milestones and pending calls when a later transport fails  5072ms
+   ✓ routes an explicit user withdrawal to the sole session authority  1886ms
+
+ Test Files  2 passed (2)
+      Tests  7 passed (7)
+   Start at  02:46:03
+   Duration  39.65s (transform 19.25s, setup 0ms, collect 54.95s, tests 18.23s, environment 0ms, prepare 273ms)
+

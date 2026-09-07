@@ -1,0 +1,347 @@
+[
+  {
+    "index": 140,
+    "resourceId": "generated-enemy-angel-fallen",
+    "sourceSha256": "6d9ffd11334d0159c7abb263e7a4f23e8e52c5509c81f991935fb4f320309027",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:46:22 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720382355",
+    "elapsedMs": 14293,
+    "content": "```json\n{\n  \"name\": \"검은 날개의 흑기사\",\n  \"tags\": [\n    \"인간형\",\n    \"humanoid\",\n    \"날개\",\n    \"wing\",\n    \"기사\",\n    \"knight\",\n    \"검\",\n    \"sword\"\n  ],\n  \"description\": \"창백한 피부와 은발을 가진 인간형 생물이 거대한 검은 깃털 날개를 펴고 공중에 떠 있습니다. 어두운 색의 전신 갑옷과 찢어진 옷자락을 두르고, 오른손에는 붉은 장식이 있는 검을 들고 있습니다.\",\n  \"uncertainty\": \"타락천사, 악마, 조인 등 정확한 종족이 불분명하여 겉으로 보이는 형태와 장비를 바탕으로 이름을 지정했습니다.\"\n}\n```"
+  },
+  {
+    "index": 141,
+    "resourceId": "generated-enemy-eye-floating",
+    "sourceSha256": "df2a4af87d86cbb686dfaf191c2cbe3d74d700d0719ceb63f45c78d22a4c4501",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:46:26 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720386453",
+    "elapsedMs": 12090,
+    "content": "```json\n{\n  \"name\": \"뿔 달린 거대 핏빛 눈알\",\n  \"tags\": [\n    \"눈알\",\n    \"eye\",\n    \"괴물\",\n    \"monster\",\n    \"촉수\",\n    \"tentacle\",\n    \"뿔\",\n    \"horn\"\n  ],\n  \"description\": \"거대한 안구 하나로 이루어진 형태의 괴물로, 보라색과 노란색이 섞인 홍채를 띠고 있습니다. 눈을 감싸는 붉은 근육 조직과 핏줄이 뒤쪽으로 촉수처럼 뻗어 있으며 주변에 여러 개의 갈색 뿔이 돋아 있습니다.\",\n  \"uncertainty\": \"정확한 종족명이나 세계관 내 고유 명칭을 알 수 없어, 겉으로 보이는 신체적 특징(눈알, 핏줄, 뿔)을 조합하여 직관적으로 이름을 지었습니다.\"\n}\n```"
+  },
+  {
+    "index": 142,
+    "resourceId": "generated-enemy-plant-carnivore",
+    "sourceSha256": "3b281214c36d051050a6ae7a869715c26420096b6a4db28b7c74419c64cf17e8",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:46:30 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720390633",
+    "elapsedMs": 15322,
+    "content": "```json\n{\n  \"name\": \"거대 육식 식물\",\n  \"tags\": [\n    \"식물\",\n    \"plant\",\n    \"육식식물\",\n    \"carnivorous_plant\",\n    \"녹색\",\n    \"green\",\n    \"점액\",\n    \"slime\"\n  ],\n  \"description\": \"날카로운 이빨이 가득한 거대한 입을 벌리고 녹색 점액을 흘리는 육식 식물 형태의 몬스터입니다. 가시가 돋친 줄기 중간에도 두 눈과 입이 달린 작은 얼굴이 관찰됩니다.\",\n  \"uncertainty\": \"특정 세계관의 고유 명칭을 알 수 없어, 겉으로 보이는 뚜렷한 특징인 '육식 식물'의 형태를 바탕으로 일반적인 이름을 붙였습니다.\"\n}\n```"
+  },
+  {
+    "index": 143,
+    "resourceId": "easyrpg-monster-hornet",
+    "sourceSha256": "d4160b37014263d7a7b8e4f849e37e8a04b57ea9c25c8da184b96c29d51cb1ed",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:46:25 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720385897",
+    "elapsedMs": 9177,
+    "content": "```json\n{\n  \"name\": \"붉은 벌\",\n  \"tags\": [\n    \"벌\",\n    \"곤충\",\n    \"bee\",\n    \"insect\",\n    \"wasp\"\n  ],\n  \"description\": \"노란색과 붉은색 줄무늬가 있는 둥근 배와 여러 개의 흰색 날개를 가진 벌 형태의 몬스터입니다. 붉은 겹눈과 더듬이가 돋보이며, 공중에 비행하고 있는 자세를 취하고 있습니다.\",\n  \"uncertainty\": \"해상도가 낮은 픽셀 아트이므로 정확한 곤충의 종(꿀벌, 말벌 등)과 날개의 정확한 개수를 특정하기 어렵습니다.\"\n}\n```"
+  },
+  {
+    "index": 144,
+    "resourceId": "scarloxy-monster-atrox",
+    "sourceSha256": "54fd48b7ca3e0a67b1c7b5c7d459caeb3687661c8e0f02496d61a020852c132a",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:46:33 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720393942",
+    "elapsedMs": 11593,
+    "content": "```json\n{\n  \"name\": \"보라색 뿔뱀\",\n  \"tags\": [\n    \"뱀\",\n    \"snake\",\n    \"파충류\",\n    \"reptile\"\n  ],\n  \"description\": \"보라색 바탕에 짙은 반점이 있고 배는 연한 색을 띠는 뱀 형태의 생물입니다. 머리에는 노란색 뿔이 솟아 있고, 꼬리 끝 역시 노란색으로 각진 형태를 띠며 똬리를 튼 자세를 하고 있습니다.\",\n  \"uncertainty\": \"가상의 몬스터이므로 정확한 생물학적 종이나 모티브는 불명확하며, 관찰된 외형적 특징만을 바탕으로 이름을 부여했습니다.\"\n}\n```"
+  },
+  {
+    "index": 145,
+    "resourceId": "scarloxy-monster-charmadillo",
+    "sourceSha256": "61a091b82f612a8729a7cd2697e978bb52902f818ab3db3db1551bccc748a22a",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:46:38 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720398688",
+    "elapsedMs": 12759,
+    "content": "```json\n{\n  \"name\": \"용암 무늬 바위 거북\",\n  \"tags\": [\n    \"거북\",\n    \"turtle\",\n    \"파충류\",\n    \"reptile\",\n    \"바위\",\n    \"불꽃\",\n    \"괴수\",\n    \"monster\"\n  ],\n  \"description\": \"가시가 돋친 검은 등껍질과 끝에 불꽃이 타오르는 긴 꼬리를 가진 두 발로 걷는 괴수입니다. 갈색 바위 같은 피부 틈새로 용암처럼 붉고 노란 무늬가 빛나고 있습니다.\",\n  \"uncertainty\": \"거북과 유사한 등껍질을 가졌으나, 두 발로 걷는 공룡이나 파충류의 체형도 띠고 있어 정확한 세부 종족은 알 수 없습니다.\"\n}\n```"
+  },
+  {
+    "index": 146,
+    "resourceId": "scarloxy-monster-cindrill",
+    "sourceSha256": "b89bf95e0a50760a760b9b1f422d0096142da7c4b9077d47f5706bfbb4af9989",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:46:36 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720396390",
+    "elapsedMs": 9939,
+    "content": "```json\n{\n  \"name\": \"불꽃꼬리 갑옷 파충류\",\n  \"tags\": [\n    \"파충류\",\n    \"거북\",\n    \"불꽃\",\n    \"reptile\",\n    \"turtle\",\n    \"fire\"\n  ],\n  \"description\": \"머리와 등에 단단한 조각으로 이루어진 주황색과 베이지색 껍질을 두르고 두 발로 서 있는 파충류 형태의 몬스터입니다. 붉은빛이 도는 갈색 몸체를 가졌으며, 꼬리 끝에는 타오르는 불꽃이 달려 있습니다.\",\n  \"uncertainty\": \"거북이, 공룡, 혹은 아르마딜로 중 어느 생물을 기반으로 한 형태인지 정확한 종족을 확정하기 어렵습니다.\"\n}\n```"
+  },
+  {
+    "index": 147,
+    "resourceId": "scarloxy-monster-cleaf",
+    "sourceSha256": "d46420cfa87bfa1870e504b95536ac7398228dcd67e5a4a56f6935f0145f0d49",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:46:43 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720403635",
+    "elapsedMs": 12988,
+    "content": "```json\n{\n  \"name\": \"나뭇잎 뿔벌레\",\n  \"tags\": [\n    \"곤충\",\n    \"insect\",\n    \"잎사귀\",\n    \"leaf\",\n    \"뿔\",\n    \"horn\",\n    \"딱정벌레\",\n    \"beetle\"\n  ],\n  \"description\": \"머리에 크고 굽은 노란색 뿔이 달린 녹색 곤충 형태의 생물입니다. 붉은색 등딱지 위로 잎사귀 모양의 커다란 초록색 날개를 활짝 펼치고 있는 모습입니다.\",\n  \"uncertainty\": \"장수풍뎅이와 식물의 잎이 결합된 듯한 외형이나 정확한 생물학적 분류를 확정할 수 없어, 눈에 띄는 특징인 나뭇잎 날개와 뿔을 바탕으로 이름을 지었습니다.\"\n}\n```"
+  },
+  {
+    "index": 148,
+    "resourceId": "scarloxy-monster-draem",
+    "sourceSha256": "db30dff1aaae347bc67c23cd392cbd284435d24109948cf6996109719d5761aa",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:46:42 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720402519",
+    "elapsedMs": 8573,
+    "content": "```json\n{\n  \"name\": \"별무늬 맥\",\n  \"tags\": [\n    \"동물\",\n    \"맥\",\n    \"짐승\",\n    \"보라색\",\n    \"별\",\n    \"animal\",\n    \"tapir\",\n    \"beast\"\n  ],\n  \"description\": \"짙은 보라색 몸에 얼굴과 배가 흰색인 네 발 짐승입니다. 주둥이가 길쭉하며, 몸통 뒤쪽과 갈라진 꼬리 끝부분에 분홍색 별 모양 무늬가 있습니다.\",\n  \"uncertainty\": \"정확한 동물 종을 알 수 없어 가장 유사한 형태인 맥을 기준으로 이름을 지었습니다.\"\n}\n```"
+  },
+  {
+    "index": 149,
+    "resourceId": "scarloxy-monster-emberkit",
+    "sourceSha256": "90108d6da9de880b10c48f6502c65ef1ac192c696c261b45e83f349b53fb1332",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:46:44 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720404847",
+    "elapsedMs": 8459,
+    "content": "```json\n{\n  \"name\": \"불꽃 꼬리 여우\",\n  \"tags\": [\n    \"여우\",\n    \"fox\",\n    \"주황색\",\n    \"orange\",\n    \"불꽃\",\n    \"fire\"\n  ],\n  \"description\": \"주황색 몸통에 발과 귀 끝이 짙은 색인 여우 형태의 생물입니다. 네 발로 바닥에 앉아 있으며, 꼬리 끝부분이 타오르는 불꽃 형태를 하고 있습니다.\",\n  \"uncertainty\": \"꼬리 끝의 불꽃 형태가 실제 불인지 털의 무늬나 모양인지 명확하지 않아 보이는 그대로 명명했습니다.\"\n}\n```"
+  },
+  {
+    "index": 150,
+    "resourceId": "scarloxy-monster-finiette",
+    "sourceSha256": "35d44f4191b02c3d761571e7a604467d664f92c06dfdc7ec93359eb3602b3178",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:46:49 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720409056",
+    "elapsedMs": 10367,
+    "content": "```json\n{\n  \"name\": \"파란 돌고래 몬스터\",\n  \"tags\": [\n    \"돌고래\",\n    \"dolphin\",\n    \"바다생물\",\n    \"marine\",\n    \"파란색\",\n    \"blue\"\n  ],\n  \"description\": \"파란색 바탕에 크림색 배와 분홍색 무늬를 가진 돌고래 형태의 생물입니다. 긴 몸통을 둥글게 말고 고개를 돌려 등 쪽을 향하고 있는 자세를 취하고 있습니다.\",\n  \"uncertainty\": \"돌고래의 주둥이와 지느러미를 가졌지만 일반적인 돌고래보다 목과 몸통이 길고 유연해 보여, 수장룡이나 해룡과 같은 환상종일 가능성이 있어 보이는 형태로 이름을 붙였습니다.\"\n}\n```"
+  },
+  {
+    "index": 151,
+    "resourceId": "scarloxy-monster-finsta",
+    "sourceSha256": "780da22c7443af3363fa487e393f3041674b42585a26f5fdb8603e96a0dc9e75",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:46:50 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720410892",
+    "elapsedMs": 8372,
+    "content": "```json\n{\n  \"name\": \"파란 돌고래\",\n  \"tags\": [\n    \"돌고래\",\n    \"바다생물\",\n    \"파란색\",\n    \"dolphin\",\n    \"marine\",\n    \"blue\"\n  ],\n  \"description\": \"앞지느러미로 바닥을 짚고 상체를 세운 자세의 파란색 돌고래 형태 생물입니다. 배 부분은 연한 색상이며, 이마 쪽에 주황색 무늬와 볼에 분홍색 홍조가 있습니다.\",\n  \"uncertainty\": \"고유한 종족 이름을 알 수 없어 외형적 특징인 '파란 돌고래'로 명명했습니다.\"\n}\n```"
+  },
+  {
+    "index": 152,
+    "resourceId": "scarloxy-monster-friolera",
+    "sourceSha256": "b984a6312f9f0c1e0b07286b8c280f969248e36645967fbe6bd0f31d73078c06",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:46:52 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720412785",
+    "elapsedMs": 9147,
+    "content": "```json\n{\n  \"name\": \"푸른 뿔 흰 사슴\",\n  \"tags\": [\n    \"사슴\",\n    \"deer\",\n    \"네발짐승\",\n    \"quadruped\",\n    \"뿔\",\n    \"horn\",\n    \"흰색\",\n    \"white\"\n  ],\n  \"description\": \"화려한 하늘색 뿔과 커다란 꼬리를 가진 하얀 사슴 형태의 생물입니다. 네 발로 서서 앞을 바라보고 있으며, 목 주변에 풍성한 털 장식이 있습니다.\",\n  \"uncertainty\": \"꼬리의 재질이 얼음인지 털 뭉치인지 시각적으로 명확하지 않아 보이는 형태를 바탕으로 이름을 붙였습니다.\"\n}\n```"
+  },
+  {
+    "index": 153,
+    "resourceId": "scarloxy-monster-gulfin",
+    "sourceSha256": "352700991b945775eb988e55d590ad2671a7dc5b14a6b11ce882666885d71708",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:46:55 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720415369",
+    "elapsedMs": 10514,
+    "content": "```json\n{\n  \"name\": \"분홍 무늬 돌고래\",\n  \"tags\": [\n    \"돌고래\",\n    \"dolphin\",\n    \"해양생물\",\n    \"marine animal\",\n    \"파란색\",\n    \"blue\"\n  ],\n  \"description\": \"하늘색 몸과 연한 노란색 배를 가진 돌고래 형태의 생물입니다. 두 앞지느러미로 몸을 지탱하여 상체를 세우고 있으며, 지느러미 끝과 머리 부분에 분홍색 무늬가 돋보입니다.\",\n  \"uncertainty\": \"머리에 뿔이나 볏 같은 독특한 분홍색 구조물이 뻗어 있어 실존하는 특정 돌고래 종으로 단정하기 어렵습니다.\"\n}\n```"
+  },
+  {
+    "index": 154,
+    "resourceId": "scarloxy-monster-ivieron",
+    "sourceSha256": "52c7c8fbd536240434768443e2812886781d5f0b4b2734107a949b16bca463f0",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:47:00 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720420148",
+    "elapsedMs": 11089,
+    "content": "```json\n{\n  \"name\": \"덩굴 꼬리 고양이\",\n  \"tags\": [\n    \"고양이\",\n    \"cat\",\n    \"짐승\",\n    \"beast\",\n    \"초록색\",\n    \"점박이\"\n  ],\n  \"description\": \"밝은 초록색 몸에 짙은 반점 무늬가 있는 네 발로 서 있는 짐승입니다. 머리 위에 풀잎 형태의 갈기가 있으며, 꼬리는 잎이 달린 덩굴처럼 둥글게 말려 있습니다.\",\n  \"uncertainty\": \"고양이, 삵, 표범 등 정확한 고양이과 생물의 세부 종족은 외형만으로 구분하기 어렵습니다.\"\n}\n```"
+  },
+  {
+    "index": 155,
+    "resourceId": "scarloxy-monster-jacana",
+    "sourceSha256": "02c6e7fe6d0a0113b41432cd0cb7e3c2779db70347b13475a89cbfbd852c0c45",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:46:57 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720417770",
+    "elapsedMs": 6874,
+    "content": "```json\n{\n  \"name\": \"작은 삼색 새\",\n  \"tags\": [\n    \"새\",\n    \"bird\",\n    \"녹색\",\n    \"green\",\n    \"분홍색\",\n    \"pink\",\n    \"노란색\",\n    \"yellow\"\n  ],\n  \"description\": \"녹색, 분홍색, 노란색 깃털이 섞인 둥글고 작은 체형의 새입니다. 양 날개를 위로 펼치고 서 있는 자세를 취하고 있습니다.\",\n  \"uncertainty\": \"실제 존재하는 특정 새의 종인지 가상의 생물인지 명확하지 않아 깃털 색상과 크기를 바탕으로 이름을 지었습니다.\"\n}\n```"
+  },
+  {
+    "index": 156,
+    "resourceId": "scarloxy-monster-larvea",
+    "sourceSha256": "2a6548d19b28fe668f2cd92b405f20fbfc5a4aef993f459911afb4e055fc5dce",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:47:01 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720421369",
+    "elapsedMs": 8585,
+    "content": "```json\n{\n  \"name\": \"새싹거북\",\n  \"tags\": [\n    \"거북\",\n    \"turtle\",\n    \"초록색\",\n    \"green\",\n    \"새싹\",\n    \"sprout\",\n    \"식물\",\n    \"plant\"\n  ],\n  \"description\": \"머리 위에 두 장의 나뭇잎 모양 구조가 솟아 있는 둥글고 작은 초록색 거북 형태의 생물입니다. 등은 잎맥 무늬가 있는 연두색 껍질로 덮여 있고, 배와 주둥이 부분은 갈색과 노란색을 띱니다.\",\n  \"uncertainty\": \"유명 게임의 특정 캐릭터(포켓몬스터 모부기)로 강하게 추정되나, 지시사항에 따라 시각적 외형만을 바탕으로 '새싹거북'이라는 묘사형 이름을 부여했습니다.\"\n}\n```"
+  },
+  {
+    "index": 157,
+    "resourceId": "scarloxy-monster-mossling",
+    "sourceSha256": "4a00a487dcd63cfda19fa16890b42a62472847d6b464a04643420fb8f8da4253",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:47:05 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720425821",
+    "elapsedMs": 10443,
+    "content": "```json\n{\n  \"name\": \"꽃머리 풀고슴도치\",\n  \"tags\": [\n    \"고슴도치\",\n    \"hedgehog\",\n    \"동물\",\n    \"animal\",\n    \"식물\",\n    \"plant\",\n    \"꽃\",\n    \"flower\"\n  ],\n  \"description\": \"연두색 몸통에 잎사귀 모양의 가시가 덮여 있는 둥근 형태의 생물입니다. 머리 위에는 흰 꽃이 피어 있는 짙은 녹색 수풀을 얹고 있으며 나뭇잎 모양의 꼬리를 가지고 있습니다.\",\n  \"uncertainty\": \"실제 고슴도치인지 식물과 결합된 가상의 생물인지 명확하지 않아, 외형적으로 가장 유사한 고슴도치와 식물의 특징을 조합하여 이름을 붙였습니다.\"\n}\n```"
+  },
+  {
+    "index": 158,
+    "resourceId": "scarloxy-monster-pluma",
+    "sourceSha256": "07342aa89f3d76dbb4d010a722c628c683679840a0242611708a01b6393f53db",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:47:10 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720430218",
+    "elapsedMs": 12441,
+    "content": "```json\n{\n  \"name\": \"초록 갈기 점박이 맹수\",\n  \"tags\": [\n    \"맹수\",\n    \"beast\",\n    \"사자\",\n    \"lion\",\n    \"표범\",\n    \"leopard\",\n    \"식물\",\n    \"plant\"\n  ],\n  \"description\": \"연한 바탕에 짙은 색 반점이 있는 네발짐승으로, 목 주변과 꼬리, 발목에 나뭇잎 모양의 풍성한 초록색 털이 나 있습니다. 네 다리로 서서 고개를 돌려 앞을 응시하고 있으며, 얼굴 양옆으로는 길고 휘어진 흰색 수염이 뻗어 있습니다.\",\n  \"uncertainty\": \"목 주변의 갈기는 사자와 유사하지만 몸의 반점은 표범이나 치타의 특징과 같아, 정확히 어떤 고양이과 동물을 모티브로 했는지 단정하기 어렵습니다.\"\n}\n```"
+  },
+  {
+    "index": 159,
+    "resourceId": "scarloxy-monster-plumette",
+    "sourceSha256": "d9eb593b2db7216dca3c65601360d3e5a1cd0466c3c67510e71703aa362a3400",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:47:10 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720430885",
+    "elapsedMs": 10737,
+    "content": "```json\n{\n  \"name\": \"잎사귀 표범\",\n  \"tags\": [\n    \"고양이과\",\n    \"feline\",\n    \"표범\",\n    \"leopard\",\n    \"짐승\",\n    \"beast\"\n  ],\n  \"description\": \"연두색 몸에 짙은 색의 점무늬가 있는 네 발 달린 짐승입니다. 머리 위와 꼬리 끝이 잎사귀처럼 뾰족하게 모인 형태를 띠고 있습니다.\",\n  \"uncertainty\": \"모티브가 된 정확한 고양이과 동물의 종과, 머리 및 꼬리의 녹색 뾰족한 부분이 실제 식물인지 단순히 털의 형태인지 확실하지 않습니다.\"\n}\n```"
+  },
+  {
+    "index": 160,
+    "resourceId": "scarloxy-monster-pouch",
+    "sourceSha256": "3ef52cc99e6ce108d649b9b17b729d574c15261fcf02471b071c549838fe6c54",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:47:16 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720436305",
+    "elapsedMs": 14936,
+    "content": "```json\n{\n  \"name\": \"두 발로 선 갈색 설치류\",\n  \"tags\": [\n    \"설치류\",\n    \"rodent\",\n    \"카피바라\",\n    \"capybara\",\n    \"포유류\",\n    \"mammal\"\n  ],\n  \"description\": \"연한 갈색 털과 네모난 회갈색 주둥이를 가진 통통한 체형의 생물입니다. 하얀 배를 드러내고 짧은 앞발을 가슴 쪽에 든 채 두 발로 서 있습니다.\",\n  \"uncertainty\": \"카피바라와 매우 유사한 외형을 지녔으나, 시각적인 특징만으로는 정확한 동물 종을 확정할 수 없어 일반적인 설치류 형태로 이름을 지정했습니다.\"\n}\n```"
+  },
+  {
+    "index": 161,
+    "resourceId": "scarloxy-monster-puddlup",
+    "sourceSha256": "b4d201db77d8bc9b08a4b832fbf182084153a4b9fe184a1e4ca15c39932b7adb",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:47:15 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720435902",
+    "elapsedMs": 10080,
+    "content": "```json\n{\n  \"name\": \"물방울 뿔 청록색 꼬마 공룡\",\n  \"tags\": [\n    \"공룡\",\n    \"dinosaur\",\n    \"파충류\",\n    \"reptile\",\n    \"청록색\",\n    \"cyan\"\n  ],\n  \"description\": \"청록색 몸과 굵은 꼬리를 가진 둥글둥글한 공룡 형태의 생물입니다. 머리 위에 물방울 모양의 밝은 파란색 뿔을 달고 짧은 팔다리를 벌린 채 앉아 있습니다.\",\n  \"uncertainty\": \"정확한 생물학적 분류(공룡, 도마뱀 등)와 머리 위 장식의 정확한 정체(물방울, 뿔, 보석 등)를 알 수 없어 보이는 형태를 바탕으로 이름을 지었습니다.\"\n}\n```"
+  },
+  {
+    "index": 162,
+    "resourceId": "scarloxy-monster-sparchu",
+    "sourceSha256": "6ca146a7fd061197c1141272b433e8c99da6c0bc682a529dc52b7a6ef5bc9149",
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Sun, 06 Sep 2026 18:47:21 GMT"
+    },
+    "requestedModel": "gemini-3.1-pro",
+    "actualModel": "gemini-3.1-pro",
+    "id": "oh-my-pi-1788720441963",
+    "elapsedMs": 11750,
+    "content": "```json\n{\n  \"name\": \"불꽃꼬리 장갑수\",\n  \"tags\": [\n    \"아르마딜로\",\n    \"armadillo\",\n    \"짐승\",\n    \"beast\",\n    \"불꽃\",\n    \"flame\"\n  ],\n  \"description\": \"노란색과 갈색이 섞인 단단한 등딱지를 메고 두 발로 서 있는 주황색 짐승입니다. 머리에 긴 귀가 솟아 있으며 꼬리 끝부분이 불꽃 모양을 띠고 있습니다.\",\n  \"uncertainty\": \"아르마딜로의 등딱지, 포유류의 귀, 불꽃 모양 꼬리 등 다양한 특징이 혼합되어 정확한 생물종을 특정하기 어려워 눈에 띄는 외형을 바탕으로 이름을 붙였습니다.\"\n}\n```"
+  }
+]

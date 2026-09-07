@@ -114,10 +114,208 @@ Verification receipt for task `st_01a079e9`, exact base
 기존 제한 개수 탐색을 유지하며, 빈 검색에서만 설명 전용 타일의 전체 스캔 폴백을 허용한다.
 의미 매칭·통행·카탈로그 라벨은 변경하지 않는다. 회귀: `test/tileQueryBoundaries.test.ts`
 (시작/대상/명시 타일셋 분리, 잘못된 선택자, 검색 실패와 빈 검색 탐색).
+## Action enemy profile edits (2026-09-07)
+
+`make_action_enemy` patches an existing enemy's `actionProfile`: omitted fields,
+including `attack`, retain their authored values. A supplied `attack` replaces
+that attack and must contain its complete required fields. Existing stats,
+rewards and other enemy fields are not reset by a profile edit. New contact-only
+enemies remain supported.
+
+The tool validates the profile and its nested attack before preparing any
+mutation. Unknown keys (including a literal quoted `"attack"` key), unsupported
+attack kinds, missing attack fields, wrong value types and non-finite numbers
+return `invalid-args` rather than becoming a successful lossy normalization.
+The shared project-load normalizer retains its legacy behavior; this stricter
+contract belongs to the authoring boundary.
+
+Regression seam: `test/actionTools.test.ts`, through the real `runTool` path and
+the canonical serialize/deserialize round trip.
+
+## Explicit field-spawn mutations (2026-09-07)
+
+New AI authoring should specify top-level `spawnMode` on `make_action_enemy`.
+`"add"` requires a spawn and rejects an ID already present on the selected map.
+`"update"` requires a nonblank existing `spawn.id` on that exact map; an unknown
+ID fails with `spawn-not-found` without changing the enemy or adding a spawn.
+Both operations retain the existing required map, troop and area payload.
+Successful results include `mapId`, `spawnId` and `spawnOutcome`.
+
+Omitting `spawnMode` deliberately preserves legacy upsert/append behavior.
+That compatibility path is not duplicate-proof: use explicit modes for new
+creation and correction. Deliberate multiple spawns remain supported, including
+multiple spawns of the same enemy or troop.
+
+`remove_field_spawn({mapId, spawnId})` removes only that authored map entry.
+It never deletes enemy records, rewards, troops or other spawns. Missing targets
+fail, and references from `roguelikeRoom.encounterSlots` block removal with
+`spawn-in-use`; callers must update those references explicitly.
+
+Regression seam: `test/actionAuthoringPrerequisites.test.ts`, including direct
+handler rejection without mutation, real runner results and published schemas.
+
+## Monster resource discovery and AI appearance evidence (2026-09-07)
+
+`list_monster_resources({})` returns the entire current monster index, without a default
+20/50-entry cap. Optional `query`, exact `ids`, `include: "index" | "full"`, `offset`
+and `limit` allow filtered/paged reads. The response contains `resources`, `include`,
+`total`, `returned`, `nextOffset`, `complete` and `unknownIds`. `complete` means the
+response covers the entire filtered result (offset zero and no next page); it does
+not claim that unknown requested IDs exist. Index entries omit description; full
+entries preserve the entire effective description. `get_monster_resource({resourceId})`
+returns `{resource}` with the exact current full entry or fails, never a substitute.
+All entries come from `assets/monsterResourceCatalog`, including project metadata
+overrides. Metadata-only stored keys do not register resources; explicit non-monster
+uploads cannot masquerade as monsters through prefixes or profiles.
+
+The three appearance writers (`upsert_enemy`, `define_monster_species`,
+`make_action_enemy`) accept root-level, tool-only `appearanceTags`. For a new/changed
+visible AI selection, use a raw exact monster ID, read its full current metadata,
+then declare 1-32 desired visible identity tags (each 1-64 characters). Every declared
+tag must match an effective resource tag after NFKC/case/outer-whitespace
+normalization. Tags are whole values, not fuzzy queries, substrings or enemy names.
+At least one matched tag must also contain a letter-bearing identity word outside
+`GENERIC_APPEARANCE_WORDS` in `ai/monsterAppearanceEvidence.ts`. This bounded exclusion
+set covers common creature/class labels (monster/enemy/creature/beast/animal/humanoid/
+undead/boss/minion and Korean counterparts), basic English/Korean colors, broad
+size/appearance words and asset-origin words. Whitespace/hyphen/underscore-separated
+combinations of these words do not evade the rule; numbers alone do not count.
+Specific user-authored tags remain legal: there is no closed species-name catalog.
+An arbitrary boss display name with goblin art is valid; declared goblin identity
+with slime art is not. The envelope is never persisted in enemy/species records.
+Existing unchanged art/stat edits and intentional transparency remain valid.
+Non-AI explicit-art/rename and reliable legacy identity-query behavior are preserved.
+
+`ToolReadEvidence` enforces this independently of the generic read-before-write
+contract. The session registers current-request read call IDs, then consumes only
+full successful results actually present in the post-compaction model request.
+Index pages, missing/failed results, unreturned IDs, stale metadata, historical user
+requests and same-batch unobserved reads cannot authorize a new selection. Budget
+compaction cannot turn an executed-but-undelivered full read into permission.
+`monsterAppearanceSession` tests the actual model-facing serialized catalog, not
+only the read tool; `monsterAppearanceTransport` tests budget loss explicitly.
+
+An appearance-read refusal leaves a newly declared record unavailable even though
+the producer did not execute. `AssistantSession` tracks that absent ID for the
+current batch, so dependent troops and transitive encounter writes receive
+`record-dependency-failed` deferrals rather than consuming their own retry targets.
+Unrelated writes continue. A successful creation clears the unavailable ID;
+a failed/deferred update does not invalidate a record that already exists.
+`assistantDependencyRetry` covers both generic-read modes, delivered appearance
+reads, transitive recovery and existing-record references.
+
+Full entries also include `assetIdentity`, a compact SHA-256 digest shared by the
+read response and current authorization snapshot (`ai/monsterResourceSnapshot.ts`).
+It hashes the raw resource ID plus the upload's encoded image source and render
+metadata, never returning base64. Replacing `assets.uploaded[id].dataUrl` at the
+same ID invalidates old evidence for new/changed assignments even when effective
+name/tags/description are unchanged; a fresh full read restores eligibility.
+The index remains compact and unchanged. Existing unchanged-art/stat-only edits
+still bypass selection evidence deliberately: this is not a gate on upload editing.
+Bundled/profile image sources are assumed fixed within the running asset build;
+this token does not fetch/revalidate remote bytes behind an unchanged URL.
+`monsterAppearanceAssetIdentity` covers replacement/reread across all three writers,
+both full-read paths, and the actual assistant session.
+
+**Limits of this check:** tags are the assistant's declared visible identity, not
+machine vision and not proof of the user's intent. Generic/shared tags may match
+many resources. The finite generic-word policy rejects known generic-only declarations,
+not every synonym, compound or invented vague phrase; a nonexcluded tag is not a
+semantic proof. Incorrect or adversarially edited metadata may be internally
+consistent but visually wrong. The guard cannot prove that a model honestly chose
+tags from the user request rather than retrofitting them to an arbitrary resource.
+Names, tags and descriptions (including prompt-like text) are untrusted reference
+data, never instructions or a permission to change the user's request. Human/vision
+review of actual artwork is separate; reviewed status is owned by the catalog lane,
+not inferred by these tools. Provider image delivery is a separate transport gate.
+
+## House-site tree clearance before ownership (2026-09-07)
+
+`author_house` checks all requested lots before stamping or sealing any house.
+Canopy/trunk tiles in the completed-house footprint, including the north ridge
+and gaps between wings, return `house-tree-clearance-required` with coordinates.
+Clear the entire tree atom explicitly before construction or choose another site.
+The producer does not erase beyond its requested footprint or bypass completed
+house protection. Unrelated trees/errors outside the requested sites do not block
+construction. Real facade and `runTool` atomicity, batch, clear-then-build and
+ownership controls are in `test/authorHouseTreeClearance.test.ts`.
+
+## Flower-yard material in house lots (2026-09-07)
+
+The high-level `author_house` lots path translates `yard:"flowers"` to the
+canonical bundled material label `꽃/자연 소품`. The former bare `꽃` did not resolve
+in the shipped catalog and caused the entire construction to fail. This does not
+ignore yard shortfalls or bypass structure protection. The actual producer path
+is covered by `test/houseLotFlowerMaterial.test.ts`.
+
 Generated `place_npc({guide:"action-controls"})` guides omit automatic portraits;
 an explicit `face` still uses the normal authoring contract. This avoids shipping
 an inferred faceset ID absent from the project while preserving the canonical
 controls, existing guide identity and position.
+
+## Pre-write original grounding (2026-09-06)
+
+`originalContext.ts` exports a detached authored-state extractor reusable for before/after
+review. The session captures it before planning or tools, retains its snapshot ID across
+continuations, and recaptures on a new request (including a fresh Ask). Retaining P2
+canonical goal evidence across questions does not freeze the question's original-data
+snapshot. Target selection uses structured intent,
+actual selection and current map, never new natural-language keyword routing. A missing
+explicit target is reported, not replaced with the start map. Target map metadata, complete
+tile layers/stacks, complete events/pages/commands, authored system settings and relevant
+full database records are included. Actual record IDs are followed transitively, including
+common-event cycles; declared database/battle/system and quest/world tasks broaden the
+authored context. Runtime session, credentials/configuration and asset transport blobs are
+outside this projection. Existing resource tools remain the resource lookup surface.
+
+`buildGroundedRequest` appends JSON `originalContext` after history compaction, so the
+first writer sees its original values even with `budgetChars: 1`. It accounts for complete
+native schemas, history, originals and the existing 16,384-token response reserve against
+the actual supported bundled model window. The small browser-safe capacity table is
+checked against installed pi-catalog; the 9 MB provider catalog/runtime is not bundled.
+History compaction also reserves the original paging manifest and reconciles its character
+clamp with token-weighted messages and tool-call arguments. An expanded native catalog must
+not strand otherwise pageable originals at a nearly full history boundary.
+Unknown native IDs use the companion's provider-default fallback; injected unknown models
+retain the conservative legacy estimate. Token counting remains an estimate, not a tokenizer.
+
+Whole entries that do not fit remain explicitly omitted with a `get_original_context`
+list/read route, stable entry paths, snapshot ID and UTF-16 offsets. Concatenate exact JSON
+pages before parsing. Only successfully delivered whole originals or fully covered page
+ranges count at the existing `ToolReadEvidence` seam; partial/omitted/failed reads do not.
+Original receipts cannot replace a subsequent fresh read; existing fingerprint/reference
+checks and ask-mode refusal remain. Irreducible mandatory requests fail explicitly without
+pruning tools. A huge latest write result may still exceed a small window; paging originals
+does not claim arbitrary tool-result paging. Task recipes accompany the catalog for NPC,
+map/interior, database/battle, quest/world and life read-write-verify work. Tests:
+`originalContext`, `assistantOriginalContext`, `assistantReadContract`, `aiToolDiscoveryEscalation`.
+
+## Full native tool exposure (2026-09-06)
+
+`AssistantSession.runTurnLoop` sends every active editor tool's complete native description
+and input schema from the first working request. It no longer uses UI/intent domains,
+40-tool quotas, natural-language promotion slots, or a global 128-tool tail clamp to choose
+capabilities. `toolRegistry.toOpenAiTools` still honors an explicit domain filter for scoped
+callers, but retains **every** eligible definition in registry order. There is no pin list.
+Deprecated tools remain hidden; ask mode removes registry and session write schemas and
+still rejects attempted writes at execution. WorkPlan and acceptance tools retain their
+existing lifecycle gates. Schema validation, read-evidence gates, detached drafts,
+cancellation and usage accounting stay in the existing execution pipeline.
+
+The capability index is navigation alongside native schemas, not a promise to unlock
+missing tools later. `find_tools` is optional search, not an exposure prerequisite.
+The supported subscription adapters have no local function-count clipping: Antigravity
+uses Cloud Code Assist `functionDeclarations`; Codex uses a zstd Responses request with
+`input` entries of type `additional_tools`. Do not impose old CPEN/Chat Completions/Vertex
+limits on these transports. Lead evidence accepted 198 native definitions on Antigravity
+with HTTP 200; Codex live acceptance remains unverified without connected credentials.
+An upstream rejection is surfaced unchanged, never retried with a smaller capability set.
+No domain delegation is needed for the supported, observed full-native path.
+
+Regression seams: `aiToolDiscoveryEscalation`, `toolExposureQuota`, `toolDomainScoping`,
+`aiToolCapabilityIndex`, `aiComposerModeSession`, and `ohMyPiFullCatalog.bun.test.ts`.
+The transport fixture crosses counts 40/41, 127/128/129 and 198/207 using the installed
+adapters and verifies names, descriptions, nested schemas and explicit upstream errors.
 
 ## Audio description tools and event candidates
 
@@ -190,7 +388,10 @@ The callback refreshes only the detached session's world documents.
 Ordinary `applyProposedProject` calls retain the live `project.world`, because a
 map/title proposal does not own codex edits made after its preview. Explicit
 `resetProject` keeps its replacement semantics. Tests:
-`projectWikiSession.test.ts` and `projectWikiApplication.test.ts`.
+`projectWikiSession.test.ts` and `projectWikiApplication.test.ts`. P2 projects checkpoint
+failure/cancellation as `failed`/`cancelled`, never successful response completion.
+Explicit Ask/Plan retains the coordinator's read-only path; intent is still selected
+after the wiki checkpoint, and blocked-work reactivation remains after that decision.
 
 ## Completed-house transaction protection - Phase 1 (2026-09-05)
 
@@ -428,6 +629,61 @@ Soft-confirm vocabulary, region task routing, AI visual polish, dock modes, tool
 - `build_village`는 집을 찍기 전에 스케치 프리패스를 먼저 돌린다 (2026-09-04): `build_village`가 `buildHouses` 전에 `sketchHouseSites`를 뽑고, 스케치 후보를 분수 슬롯·격자보다 먼저 시도한다. 사이트 간격은 8폭+마진(10). 격자는 폴백이다. `villageArteryRoutes`는 다리당 내부 경유점 하나를 더 넣되 `host[1]` T-join과 4변 출구는 그대로 둔다. Tests: `test/villageSketch.test.ts`.
 - `build_village` 대형 맵 대로 골격은 이제 곡선이다 (2026-09-05): `villageBoulevardPath`가 시드 고정 경유점으로 동서·남북 곡선을 그리고, 예약과 시공은 `boulevardCells` 한 칸 함수를 같이 쓴다. Tests: `test/villageBoulevard.test.ts`.
 
+## P2 requirement and exact-verdict inputs (2026-09-06)
+
+Planner output and native `set_work_plan` accept optional `requirements` using
+`{ id, title, required?, criteria }` and item `requirementIds`. They feed the same
+`AssistantAcceptanceLedger` as existing explicit `acceptance`; item scheduling
+isn't satisfaction authority. Required defaults true. Malformed criteria or
+required flags remain required repair obligations, even if the model claims
+optionality or supplies evidence. `repair_acceptance` can't replace valid original
+criteria. See [requirement lifecycle and user actions](editor-ai-panel.md#canonical-requirements-and-genuine-user-actions).
+
+The additional structural criterion is:
+
+```ts
+{ kind: "toolVerdict", tool: "check_reachability", args: {
+  mapId, from: { x: 0, y: 0 }, targets: [{ x: 1, y: 0 }]
+} }
+```
+
+`tool` must belong to the existing verification family. `args` is the full native
+invocation object, not a tool-name-only claim. For this native tool the field is
+`targets`; the separate structural `reachability` criterion uses `to`.
+[Acceptance parsing](../src/ai/assistantAcceptance.ts) reuses custom fail-closed
+parsing, and [ToolVerificationEvidence.passedScope](../src/ai/toolVerificationEvidence.ts)
+reads only previously adopted canonical scopes with exact native arguments and
+`parseToolVerdict`. The acceptance ledger binds those scopes before execution;
+a later declaration cannot borrow an earlier exploratory pass. Only a current
+host-observed explicit pass satisfies that exact scope. Wrong targets, negative
+verdicts, stale checks, model `passed` claims and advisory-only success don't.
+A clean advisory check can retain an already-current explicit canonical pass,
+but cannot renew it after a write. Writes stale passing required evidence; successful
+unadopted probes do not become persistent obligations. Undo does not revive retired
+proof. A passing verdict cannot verify an unapplied draft.
+
+Scene finding correction preserves exact start, movement, debug state, ordered
+assertions, choices, reward checkpoints and map-qualified host-observed ownership.
+Only facing may change compatibly; never strip move/walk/position-only set or map
+guards to equate scripts. `correct_verification` resolves a session-owned ID and
+executes its original registered tool. A compatible passing rerun clears only its
+own finding. Canonical `toolVerdict` still requires its exact invocation. Both `toolVerdict` and incoming `actionCombat`
+are exposed in the flattened provider-safe criterion schema; runtime parsing still
+requires each kind's exact fields and exclusive target.
+
+Name-level scheduler queries and advisory reporting retain their existing roles.
+Canonical acceptance also receives authoritative verification problems: adopted
+requirements and genuine unresolved negatives remain blocking. Malformed/execution
+failures are attempts, not artifact findings. Findings need not invent a goal item
+to block false completion. Optional/host-withdrawn criteria retain their evidence
+without becoming required scopes; item-declared verification remains independent.
+Intent action obligations and current map-bound
+runtime receipts remain independent of planner replacement and optional promises.
+The ledger's existing evaluation receives the goal evidence store; absence of that
+store fails tool-verdict criteria closed. No new verification ledger or dependency
+was added. Withdrawal is a local user action, never a `withdraw_requirement` tool,
+model note, `skip_work_item` effect or `resetsContext` permission.
+
 ## Project-wide quality evaluation
 
 `evaluate_game_quality` is read-only. It combines project lint and tileset-palette findings with structural coverage across legacy event commands, event pages, common events, troop battle pages, and every nested command branch. It also reports quest/battle/ending/content counts, story-flag reads and writes, and optional caller-supplied walkthrough results. Objective project errors, unauthored secondary maps, and uninvoked ending definitions block its verdict; palette findings and caller-supplied walkthrough results remain explicit evidence. It never emits a numeric score and cannot measure fun, originality, emotional impact, pacing quality, or preferred difficulty.
@@ -642,3 +898,17 @@ NPC 고수준 commands의 `text.lines`는 실제 줄바꿈을 포함한 `text.bo
 선언된 adventure 계약의 도구는 `adventureToolNames`에서 실제 호출 스키마로 승격되어 첫 실행부터 노출된다. 안내문에서 언급만 하고 도메인 쿼터에 숨기는 것을 금지한다. 조건 kind 누락 오류는 실행 가능한 selfSwitch/switch 예시를 반환한다.
 
 시각 재검증에서 장비 아이콘 누락이 발견돼 모험 완료 검사의 저작 레코드 추적을 items와 equipment로 확장했다. 두 컬렉션의 동일 ID도 따로 추적한다. 그림 없는 장비를 생성하고 완료라고 답하는 통합 회귀를 유지한다.
+
+## 실제 이미지 입력 보존 (2026-09-07)
+
+`scripts/lib/ohMyPiPiAiRuntime.ts`의 `openaiToContext`는 사용자 메시지의 텍스트와
+`image_url` 순서를 보존한다. PNG/JPEG/WebP base64 data URL을 pi-ai의 이미지 블록으로
+변환하며 바이트를 텍스트 요약으로 대체하지 않는다. 잘못된 base64, 지원하지 않는 MIME,
+원격 이미지 URL과 잘못된 detail 값은 HTTP 400 입력 오류로 거부한다.
+
+이전 구현은 `textOf`로 이미지 부분을 버렸다. HTTP 200과 그럴듯한 외형 설명만으로는
+이미지를 실제로 전달했다는 증거가 아니다. `test/ohMyPiVision.bun.test.ts`가 바이트·순서,
+실제 pi-ai 직렬화와 worker의 잘못된 입력 거부를 검증한다. 실제 제공자 검증에서는
+서로 다른 단색 이미지가 구분되는지 먼저 확인한 뒤 원본 그림을 전달한다.
+몬스터 카탈로그의 원본 해시와 관측 근거는 `src/assets/monsterCatalogReview.json` 및
+`output/evidence/monster-catalog/README.md`를 참조한다.

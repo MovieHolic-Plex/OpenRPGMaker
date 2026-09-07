@@ -1,0 +1,308 @@
+{
+  "command": [
+    "env",
+    "QA_PORT=39842",
+    "EVIDENCE_DIR=output/evidence/ai-harness/p2/main-increment/native-required",
+    "xvfb-run",
+    "-a",
+    "node",
+    "scripts/qa/ai-harness-contracts.mjs",
+    "--scenario",
+    "required-skip"
+  ],
+  "cwd": "/home/main/z-project/rpg-zzu-ai-harness-p2-20260906",
+  "TMPDIR": "/dev/shm/rpg-zzu-ai-harness-p2-01a07564",
+  "start": "2026-09-07T02:18:53.751681+00:00",
+  "before": {
+    "head": "898740f18dec669ad862dc806e8f8f6c341b5dca",
+    "mergeHead": "83bd6098d94dd6d7082d2ded6d557be928592623",
+    "indexTree": "234192958b210f6290c4fa7f2aea9f1dfe8e16f6",
+    "subtrees": {
+      "src": "faefee85c07e7ccd07623eea19ab89cde3c8b646",
+      "test": "c852d396f63d820a258a52fda269085d34b54087",
+      "scripts": "9018fdd59f3b38d703bb933dad3d0f725cb8c7de"
+    },
+    "workingVersusIndex": "clean",
+    "files": {
+      "src/ai/assistantSession.ts": {
+        "sha256": "67c3384516f31807ea155b05c35cf7f85060b62a4eb241af928db0d7d01dd934",
+        "indexBlob": "415bc2571a620454c4ccde0de13bbaff59396026"
+      },
+      "src/ai/assistantAcceptanceLedger.ts": {
+        "sha256": "ec16adfda050f7bb0613791bada71027eecb28f61f2e13868a2cf0ac2cea5f50",
+        "indexBlob": "fec71697dafe0c148e0f0fd9fbf14a2e9f2a8a3e"
+      },
+      "src/ai/runOutcome.ts": {
+        "sha256": "b5c44e295d3de495a728a33c9f122babe81ee47b61f31dc848234348ef35fa7f",
+        "indexBlob": "46f28e402e06b8d342d6eab58293e458dad05daa"
+      },
+      "src/ai/toolVerificationEvidence.ts": {
+        "sha256": "3c36de8eee9aeb67293fde44b5946d25ee18bc03445290d9da8e7d67badd55ae",
+        "indexBlob": "eb329eed6b4b6e3f728629400c21e65eb91d91d8"
+      },
+      "src/ai/contextBuilder.ts": {
+        "sha256": "64bd6b7dd43ed95460dd303c3d26260922e6eed9182ee5ace9e268984c74ec12",
+        "indexBlob": "a49d2234aff36bcea82823346a4d9337a985f585"
+      },
+      "src/ai/originalContext.ts": {
+        "sha256": "5c9c58c03ec7f1397ef663034bdfcfe7185709c581848c8668091193fa72b606",
+        "indexBlob": "da0fa1f444553f3220cf44f076b4fc09fe2e7085"
+      },
+      "src/ai/toolReadEvidence.ts": {
+        "sha256": "74a098ced2accf3007854bd8bb22b670bd367b8da41ad62c74c3d8a569207429",
+        "indexBlob": "69bbd8ea38dfc4a8968bdc7b8b4968eeb1ccfc3b"
+      },
+      "src/ai/monsterAppearanceEvidence.ts": {
+        "sha256": "2825e6b93e3ab0b90cfc261b7eb61bad874c37a68487026b697bab79c7a9332a",
+        "indexBlob": "4bae56720c629c6c4bbcecb4b14e778cd6df10f4"
+      },
+      "src/ai/monsterResourceSnapshot.ts": {
+        "sha256": "2a715fe556464c8707a0ad76519fb774fbc58d06d95903e66b2a9f72021b4bfb",
+        "indexBlob": "730e10906f5f5aa936b5b30a163d7fcf9421246f"
+      },
+      "src/ai/proposalCompleteness.ts": {
+        "sha256": "35f24f3fe34ed31fb615177f25e2d179fb9fbb8bd81ced7f1b161449dfe6bb84",
+        "indexBlob": "a920926eb44d571c001ca8907ecf5f82f1f6a261"
+      },
+      "src/ai/runRecap.ts": {
+        "sha256": "bfde5bab024e4edce60ddedcc9ce2882741ca798ba976dc4fe388d60f303e1c7",
+        "indexBlob": "0626e5c13009d3bf5ec222a6c1e083a08a19377c"
+      },
+      "src/project/store.ts": {
+        "sha256": "c6563b2a159e6a33959b23d66323c025130eab3e35fe093b0b54dc0953b1ccfa",
+        "indexBlob": "23858a9f3e51b1a8178742006a4d627381689301"
+      },
+      "src/project/supabaseProjectSync.ts": {
+        "sha256": "97ba91f8c7b7c2a9e4563d5c7e81c5e83dcc9f11c14b22f9b0e9261dd23dc626",
+        "indexBlob": "6936655d9e1a3d40d646fba572fa2f0ad4025653"
+      },
+      "src/project/io/serialize.ts": {
+        "sha256": "7344ecde0d28171b8efba3e706e662d00cfd53e9c3497e101ca52383e2530f74",
+        "indexBlob": "44e0c6f3416a755474f89d0957dbab36cf7c79ed"
+      },
+      "src/project/monsterMetadata.ts": {
+        "sha256": "d8f7a00de456414001b519268cfc422943016a3fc921d5e8c5c6dffcb857458e",
+        "indexBlob": "02e1e87c3980abd3c590b325e6e9fa4d823056dc"
+      },
+      "src/assets/monsterResourceCatalog.ts": {
+        "sha256": "eca166f40c3815088dabb15570b6047e507de4e8c9cb64c79d85fa28f780af38",
+        "indexBlob": "f887a1469a20a8930b312280a29f7df92b988822"
+      },
+      "src/assets/monsterCatalogData.json": {
+        "sha256": "a8bdf00d55d7e92fb0a2fa3f76539eaf7656cfd92e28f6934febfb0ab76bd7bc",
+        "indexBlob": "96e4a1457aede9edfa7d903466aa2a818f435b84"
+      },
+      "src/editor/tools/toolRegistry.ts": {
+        "sha256": "ac95e1b3091f3d9cea27e8fc481d939946a92ca24871573d6ca5c3052c14ded6",
+        "indexBlob": "40911f1e3e7319897228fa0760a6a74097a91a5c"
+      },
+      "src/editor/tools/monsterResourceTools.ts": {
+        "sha256": "dd7bfcfe1d2fcd973404bd1c45665757252815159a2a5b7fa799ed2d639ad8b6",
+        "indexBlob": "9403180f3518608d809053aaaa1dcd065d7a6b82"
+      },
+      "src/editor/tools/changeset.ts": {
+        "sha256": "f4517b8602c20060ea325f36276263ea31a12a28502b24c3998bcc167e6671be",
+        "indexBlob": "8de237ac6d9ef4a87e57fdad8c930e9763dc1c5b"
+      },
+      "src/editor/panels/aiTurnRunner.ts": {
+        "sha256": "0994e5a20c603ab629abc3074e758503df258d39f113de6c027a34f7578fccb7",
+        "indexBlob": "332f5cf86eb2428f2362cd6b694765da2745fc51"
+      },
+      "scripts/lib/ohMyPiPiAiRuntime.ts": {
+        "sha256": "b46a7387a8ded9fc9c616bde472565f104862df4c9f4c40c10a140be6a8e0952",
+        "indexBlob": "13c76241e33f6f6c28d07ef388e406f7885dc540"
+      },
+      "scripts/qa/ai-harness-contracts.mjs": {
+        "sha256": "c0e1992649c5cdf2b0e48efa58bc816fad5b24fbda4f62fcbe46d9c445ac37da",
+        "indexBlob": "b0621a149c5075422c9d17498397bde388c770fb"
+      },
+      "scripts/qa/ai-harness-p2.mjs": {
+        "sha256": "81c7b57d1cecb3c3cdc18db4e3f46aaa82ae2358af24e7c2a9b76d384cc52326",
+        "indexBlob": "dd9403cbb92ca4b3b1213dc825e08cd99b3ade71"
+      },
+      "scripts/qa/ai-harness-p2-scenarios.mjs": {
+        "sha256": "c20959243619beca413d44e3005f46c0b3a9f2229a860bbec7d3358cefa4ce3a",
+        "indexBlob": "161bd8a3a65963dbb6b1ea5225a7d9dd0ba83235"
+      },
+      "scripts/qa/ai-harness-p2-observe.mjs": {
+        "sha256": "56b650dd393b9713f895144f6cbbfda687941ec60f2a34bd895a78f2260596a6",
+        "indexBlob": "6543f0d7caac5f8a237babd0d4d6b2cc3e5c5a9a"
+      },
+      "scripts/qa/ai-harness-p2-resume.mjs": {
+        "sha256": "4005732b9686bb61600250ef978625dc5f3d571f0250be134b3e51813c90693f",
+        "indexBlob": "27ea48e5f89eb6fba9d48b69d821dce88f05e411"
+      },
+      "scripts/qa/ai-harness-proof-failure.mjs": {
+        "sha256": "0e2fcc85ce1d867f24c355a13999b3ab8865623e60d40630426a5d6a06c03507",
+        "indexBlob": "a5d7f15dd3c39a2db53d810772ca023240d16b3d"
+      },
+      "test/assistantDependencyRetry.test.ts": {
+        "sha256": "f19a5e9fd09a6466bb34f1ce181235d651fe4c37bf525eae661a4a2c1def024f",
+        "indexBlob": "8f00bfb380aa28cda137b0fd8560a3b98aa34db9"
+      },
+      "test/monsterAppearanceSession.test.ts": {
+        "sha256": "144f0ba2518239a973d4b8296c344f6b8eee4ac66cbe0ee3c9e7ac8431ec0bd7",
+        "indexBlob": "a4c9408a7273e3d99db315c6c2fd73262f6f0dfb"
+      },
+      "test/monsterMetadataPersistence.test.ts": {
+        "sha256": "5ce2d72258dad2f36cb7982609cb9bf8797c813882ac30dcc294cee2188871ff",
+        "indexBlob": "257f22a1c98f30bda5dc82acd83e0ae26f8e5e20"
+      },
+      "test/ohMyPiVision.bun.test.ts": {
+        "sha256": "c96a6647cc493717ceddf992fc489b4136f2f406aee38b09c8f6ad0a3a3e2a8a",
+        "indexBlob": "74b196bf771e05768102c30345ff0341376d3408"
+      },
+      "test/wikiTransportFixture.ts": {
+        "sha256": "84dfdd56b6ac819c04329c484a103bf0143186c962cc329381b21b41a2bff7ba",
+        "indexBlob": "af365e83ae4253ffae2b67c71ffbcab38fc75744"
+      }
+    }
+  },
+  "exit": 0,
+  "end": "2026-09-07T02:19:41.935861+00:00",
+  "after": {
+    "head": "898740f18dec669ad862dc806e8f8f6c341b5dca",
+    "mergeHead": "83bd6098d94dd6d7082d2ded6d557be928592623",
+    "indexTree": "234192958b210f6290c4fa7f2aea9f1dfe8e16f6",
+    "subtrees": {
+      "src": "faefee85c07e7ccd07623eea19ab89cde3c8b646",
+      "test": "c852d396f63d820a258a52fda269085d34b54087",
+      "scripts": "9018fdd59f3b38d703bb933dad3d0f725cb8c7de"
+    },
+    "workingVersusIndex": "clean",
+    "files": {
+      "src/ai/assistantSession.ts": {
+        "sha256": "67c3384516f31807ea155b05c35cf7f85060b62a4eb241af928db0d7d01dd934",
+        "indexBlob": "415bc2571a620454c4ccde0de13bbaff59396026"
+      },
+      "src/ai/assistantAcceptanceLedger.ts": {
+        "sha256": "ec16adfda050f7bb0613791bada71027eecb28f61f2e13868a2cf0ac2cea5f50",
+        "indexBlob": "fec71697dafe0c148e0f0fd9fbf14a2e9f2a8a3e"
+      },
+      "src/ai/runOutcome.ts": {
+        "sha256": "b5c44e295d3de495a728a33c9f122babe81ee47b61f31dc848234348ef35fa7f",
+        "indexBlob": "46f28e402e06b8d342d6eab58293e458dad05daa"
+      },
+      "src/ai/toolVerificationEvidence.ts": {
+        "sha256": "3c36de8eee9aeb67293fde44b5946d25ee18bc03445290d9da8e7d67badd55ae",
+        "indexBlob": "eb329eed6b4b6e3f728629400c21e65eb91d91d8"
+      },
+      "src/ai/contextBuilder.ts": {
+        "sha256": "64bd6b7dd43ed95460dd303c3d26260922e6eed9182ee5ace9e268984c74ec12",
+        "indexBlob": "a49d2234aff36bcea82823346a4d9337a985f585"
+      },
+      "src/ai/originalContext.ts": {
+        "sha256": "5c9c58c03ec7f1397ef663034bdfcfe7185709c581848c8668091193fa72b606",
+        "indexBlob": "da0fa1f444553f3220cf44f076b4fc09fe2e7085"
+      },
+      "src/ai/toolReadEvidence.ts": {
+        "sha256": "74a098ced2accf3007854bd8bb22b670bd367b8da41ad62c74c3d8a569207429",
+        "indexBlob": "69bbd8ea38dfc4a8968bdc7b8b4968eeb1ccfc3b"
+      },
+      "src/ai/monsterAppearanceEvidence.ts": {
+        "sha256": "2825e6b93e3ab0b90cfc261b7eb61bad874c37a68487026b697bab79c7a9332a",
+        "indexBlob": "4bae56720c629c6c4bbcecb4b14e778cd6df10f4"
+      },
+      "src/ai/monsterResourceSnapshot.ts": {
+        "sha256": "2a715fe556464c8707a0ad76519fb774fbc58d06d95903e66b2a9f72021b4bfb",
+        "indexBlob": "730e10906f5f5aa936b5b30a163d7fcf9421246f"
+      },
+      "src/ai/proposalCompleteness.ts": {
+        "sha256": "35f24f3fe34ed31fb615177f25e2d179fb9fbb8bd81ced7f1b161449dfe6bb84",
+        "indexBlob": "a920926eb44d571c001ca8907ecf5f82f1f6a261"
+      },
+      "src/ai/runRecap.ts": {
+        "sha256": "bfde5bab024e4edce60ddedcc9ce2882741ca798ba976dc4fe388d60f303e1c7",
+        "indexBlob": "0626e5c13009d3bf5ec222a6c1e083a08a19377c"
+      },
+      "src/project/store.ts": {
+        "sha256": "c6563b2a159e6a33959b23d66323c025130eab3e35fe093b0b54dc0953b1ccfa",
+        "indexBlob": "23858a9f3e51b1a8178742006a4d627381689301"
+      },
+      "src/project/supabaseProjectSync.ts": {
+        "sha256": "97ba91f8c7b7c2a9e4563d5c7e81c5e83dcc9f11c14b22f9b0e9261dd23dc626",
+        "indexBlob": "6936655d9e1a3d40d646fba572fa2f0ad4025653"
+      },
+      "src/project/io/serialize.ts": {
+        "sha256": "7344ecde0d28171b8efba3e706e662d00cfd53e9c3497e101ca52383e2530f74",
+        "indexBlob": "44e0c6f3416a755474f89d0957dbab36cf7c79ed"
+      },
+      "src/project/monsterMetadata.ts": {
+        "sha256": "d8f7a00de456414001b519268cfc422943016a3fc921d5e8c5c6dffcb857458e",
+        "indexBlob": "02e1e87c3980abd3c590b325e6e9fa4d823056dc"
+      },
+      "src/assets/monsterResourceCatalog.ts": {
+        "sha256": "eca166f40c3815088dabb15570b6047e507de4e8c9cb64c79d85fa28f780af38",
+        "indexBlob": "f887a1469a20a8930b312280a29f7df92b988822"
+      },
+      "src/assets/monsterCatalogData.json": {
+        "sha256": "a8bdf00d55d7e92fb0a2fa3f76539eaf7656cfd92e28f6934febfb0ab76bd7bc",
+        "indexBlob": "96e4a1457aede9edfa7d903466aa2a818f435b84"
+      },
+      "src/editor/tools/toolRegistry.ts": {
+        "sha256": "ac95e1b3091f3d9cea27e8fc481d939946a92ca24871573d6ca5c3052c14ded6",
+        "indexBlob": "40911f1e3e7319897228fa0760a6a74097a91a5c"
+      },
+      "src/editor/tools/monsterResourceTools.ts": {
+        "sha256": "dd7bfcfe1d2fcd973404bd1c45665757252815159a2a5b7fa799ed2d639ad8b6",
+        "indexBlob": "9403180f3518608d809053aaaa1dcd065d7a6b82"
+      },
+      "src/editor/tools/changeset.ts": {
+        "sha256": "f4517b8602c20060ea325f36276263ea31a12a28502b24c3998bcc167e6671be",
+        "indexBlob": "8de237ac6d9ef4a87e57fdad8c930e9763dc1c5b"
+      },
+      "src/editor/panels/aiTurnRunner.ts": {
+        "sha256": "0994e5a20c603ab629abc3074e758503df258d39f113de6c027a34f7578fccb7",
+        "indexBlob": "332f5cf86eb2428f2362cd6b694765da2745fc51"
+      },
+      "scripts/lib/ohMyPiPiAiRuntime.ts": {
+        "sha256": "b46a7387a8ded9fc9c616bde472565f104862df4c9f4c40c10a140be6a8e0952",
+        "indexBlob": "13c76241e33f6f6c28d07ef388e406f7885dc540"
+      },
+      "scripts/qa/ai-harness-contracts.mjs": {
+        "sha256": "c0e1992649c5cdf2b0e48efa58bc816fad5b24fbda4f62fcbe46d9c445ac37da",
+        "indexBlob": "b0621a149c5075422c9d17498397bde388c770fb"
+      },
+      "scripts/qa/ai-harness-p2.mjs": {
+        "sha256": "81c7b57d1cecb3c3cdc18db4e3f46aaa82ae2358af24e7c2a9b76d384cc52326",
+        "indexBlob": "dd9403cbb92ca4b3b1213dc825e08cd99b3ade71"
+      },
+      "scripts/qa/ai-harness-p2-scenarios.mjs": {
+        "sha256": "c20959243619beca413d44e3005f46c0b3a9f2229a860bbec7d3358cefa4ce3a",
+        "indexBlob": "161bd8a3a65963dbb6b1ea5225a7d9dd0ba83235"
+      },
+      "scripts/qa/ai-harness-p2-observe.mjs": {
+        "sha256": "56b650dd393b9713f895144f6cbbfda687941ec60f2a34bd895a78f2260596a6",
+        "indexBlob": "6543f0d7caac5f8a237babd0d4d6b2cc3e5c5a9a"
+      },
+      "scripts/qa/ai-harness-p2-resume.mjs": {
+        "sha256": "4005732b9686bb61600250ef978625dc5f3d571f0250be134b3e51813c90693f",
+        "indexBlob": "27ea48e5f89eb6fba9d48b69d821dce88f05e411"
+      },
+      "scripts/qa/ai-harness-proof-failure.mjs": {
+        "sha256": "0e2fcc85ce1d867f24c355a13999b3ab8865623e60d40630426a5d6a06c03507",
+        "indexBlob": "a5d7f15dd3c39a2db53d810772ca023240d16b3d"
+      },
+      "test/assistantDependencyRetry.test.ts": {
+        "sha256": "f19a5e9fd09a6466bb34f1ce181235d651fe4c37bf525eae661a4a2c1def024f",
+        "indexBlob": "8f00bfb380aa28cda137b0fd8560a3b98aa34db9"
+      },
+      "test/monsterAppearanceSession.test.ts": {
+        "sha256": "144f0ba2518239a973d4b8296c344f6b8eee4ac66cbe0ee3c9e7ac8431ec0bd7",
+        "indexBlob": "a4c9408a7273e3d99db315c6c2fd73262f6f0dfb"
+      },
+      "test/monsterMetadataPersistence.test.ts": {
+        "sha256": "5ce2d72258dad2f36cb7982609cb9bf8797c813882ac30dcc294cee2188871ff",
+        "indexBlob": "257f22a1c98f30bda5dc82acd83e0ae26f8e5e20"
+      },
+      "test/ohMyPiVision.bun.test.ts": {
+        "sha256": "c96a6647cc493717ceddf992fc489b4136f2f406aee38b09c8f6ad0a3a3e2a8a",
+        "indexBlob": "74b196bf771e05768102c30345ff0341376d3408"
+      },
+      "test/wikiTransportFixture.ts": {
+        "sha256": "84dfdd56b6ac819c04329c484a103bf0143186c962cc329381b21b41a2bff7ba",
+        "indexBlob": "af365e83ae4253ffae2b67c71ffbcab38fc75744"
+      }
+    }
+  }
+}

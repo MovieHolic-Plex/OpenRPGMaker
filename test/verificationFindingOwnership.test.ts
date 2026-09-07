@@ -36,7 +36,7 @@ function fixture(adopted = false) {
     evidence.observe(scene, args, result, "explicit", "owner", checkId, seed);
     return result;
   };
-  const terminal = () => acceptance.evaluate(f.project, f.project, evidence.problems()).status;
+  const terminal = () => acceptance.evaluate(f.project, f.project, evidence, evidence.problems()).status;
   return { ...f, args, criteria, initialState, evidence, route, repair, observe, terminal };
 }
 

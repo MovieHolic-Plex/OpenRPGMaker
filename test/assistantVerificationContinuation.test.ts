@@ -31,7 +31,7 @@ function rig() {
       criterion: { promiseId: binding.promiseId, criterionIndex: binding.criterionIndex }, acceptedCriterion: binding.criterion });
     evidence.setCriterionPassed(binding.promiseId, binding.passed);
   }
-  const terminal = () => acceptance.evaluate(f.project, f.project, evidence.problems());
+  const terminal = () => acceptance.evaluate(f.project, f.project, evidence, evidence.problems());
   return { ...f, acceptance, evidence, villageRoute, cellarRoute, terminal };
 }
 
@@ -204,10 +204,20 @@ describe("normal session ownership through skip, replan and continuation", () =>
         return { message: { role: "assistant", content: "Checks recorded." }, finishReason: "stop" };
       },
     });
-    const first = await session.sendUserMessage("Inspect the retained route.", event => events.push(event));
+    const snapshots = () => ({ plan: session.getWorkPlan(), acceptance: session.getAcceptanceSnapshot(), verification: session.getVerificationSnapshot() });
+    let beforeSkip: ReturnType<typeof snapshots> | undefined;
+    const first = await session.sendUserMessage("Inspect the retained route.", event => {
+      events.push(event);
+      if (event.type === "tool_call" && event.name === reach) beforeSkip = snapshots();
+      if (event.type === "tool_call" && event.name === "skip_work_item") {
+        expect(event.result.ok).toBe(false);
+        expect(snapshots()).toEqual(beforeSkip);
+      }
+    });
     const original = session.getVerificationSnapshot().requirements[0]!;
     expect(original.status).toBe("pending-specification");
-    expect(first.workPlan?.layers[0]?.items[0]?.status).toBe("skipped");
+    expect(first.workPlan?.layers[0]?.items[0]?.status).not.toBe("skipped");
+    expect(events.filter(e => e.type === "tool_call" && e.name === "skip_work_item").map(e => e.type === "tool_call" && e.result.ok)).toEqual([false]);
     expect(session.getAcceptanceSnapshot()?.status).toBe("blocked");
     stage = 2;
     await session.sendUserMessage("Continue.", event => events.push(event));
@@ -267,5 +277,47 @@ describe("normal session ownership through skip, replan and continuation", () =>
     expect(session.getVerificationSnapshot().findings).toEqual([]);
     expect(session.getVerificationSnapshot().attempts.map(a => a.status)).toEqual(["negative", "unsuccessful", "passed"]);
     expect(session.getAcceptanceSnapshot()?.status).toBe("verified");
+  });
+});
+
+describe("authoring revalidates explicit checks before finalizing", () => {
+  it("continues after a final claim when a real write made the prior lint stale", async () => {
+    const project = createBlankProject();
+    const item = project.database.items[0];
+    const events: SessionEvent[] = [];
+    const calls = [
+      { name: "set_work_plan", args: { goal: "Required lint",
+        layers: [{ title: "Check", items: [{ title: "Price", instruction: "Change price and revalidate", successTools: ["run_lint"],
+          verificationChecks: [{ tool: "run_lint", args: {} }] }] }] } },
+      { name: "run_lint", args: {} },
+      { name: "upsert_item", args: { item: { id: item.id, price: 321 } } },
+      null,
+      { name: "run_lint", args: {} },
+    ];
+    let round = 0;
+    const session = new AssistantSession(project, {
+      config: { ...defaultAiConfig(), agentMode: "chat", model: "test", liteModel: "test", apiKey: "test", maxToolCalls: 8 },
+      declareIntent: fixedDeclarer({ mode: "modify", space: "none", targetMapId: null, needsPlan: false, tools: ["run_lint", "upsert_item"] }),
+      chat: async (): Promise<ChatResult> => {
+        const index = round++, call = calls[index];
+        return call
+          ? { finishReason: "tool_calls", message: { role: "assistant", content: null, tool_calls: [{
+            id: `call-${index}`, type: "function", function: { name: call.name, arguments: JSON.stringify(call.args) },
+          }] } }
+          : { finishReason: "stop", message: { role: "assistant", content: index < 5 ? "EARLY_FINAL" : "REVALIDATED_FINAL" } };
+      },
+    });
+    const result = await session.sendUserMessage("Change the item price and verify it", event => events.push(event));
+    expect(events.filter(event => event.type === "tool_call" && event.name === "run_lint")).toHaveLength(2);
+    expect(result.assistantText).toBe("REVALIDATED_FINAL");
+    expect(session.getProposedProject().database.items.find(record => record.id === item.id)?.price).toBe(321);
+  });
+
+  it("retains genuine advisory findings without inventing adopted requirements", () => {
+    const evidence = new ToolVerificationEvidence();
+    evidence.observe("run_lint", {}, { ok: true, data: { issues: [{ severity: "error", message: "existing advisory finding" }] } }, "advisory");
+    expect(evidence.problems()).toHaveLength(1);
+    expect(evidence.snapshot().requirements).toEqual([]);
+    expect(evidence.snapshot().findings).toHaveLength(1);
   });
 });

@@ -1,0 +1,479 @@
+{
+  "files": [
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/ai/actionArenaAuthoring.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/ai/activityLog.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/ai/activityLogTypes.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/ai/assistantAcceptance.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/ai/assistantAcceptanceEvaluation.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/ai/assistantAcceptanceLedger.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/ai/assistantAcceptanceTools.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/ai/assistantSession.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/ai/capabilityEscalation.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/ai/contextBuilder.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/ai/functionalAcceptance.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/ai/functionalAcceptanceEvaluation.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/ai/intentDeclaration.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/ai/intentDeclarationClient.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/ai/monsterAppearanceEvidence.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/ai/monsterResourceSnapshot.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/ai/originalContext.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/ai/planToolExposure.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/ai/proposalCompleteness.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/ai/runOutcome.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/ai/runRecap.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/ai/toolCapabilityIndex.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/ai/toolReadEvidence.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/ai/toolVerificationEvidence.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/ai/workItemOutcome.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/ai/workPlan.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/assets/monsterCatalog.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/assets/monsterResourceCatalog.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/assets/resourceSearch.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/aiActivityNarration.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/aiAssistantBridge.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/commandRegistry.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/construction/constructionAudit.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/construction/contracts.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/construction/parseConstructionOutcome.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/databaseReferences.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/editorUiMode.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/hotkeys.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/aiActionMenu.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/aiChangePreview.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/aiChatPanel.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/aiChatRenderers.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/aiChatResizeChrome.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/aiComposer.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/aiConversationHistoryModal.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/aiModalFocus.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/aiProposalCard.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/aiProposalSummary.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/aiRunSurface.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/aiSettingsModal.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/aiStickyChecklist.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/aiStudioShell.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/aiTurnRunner.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/database.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/databaseCharacterGraphicsView.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/databaseEnemyRecordView.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/databaseLifeCraftingView.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/databaseModal.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/databaseMonsterResourceEditor.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/databaseRecordViews.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/databaseResourcePickerDialog.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/databaseTabIcons.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/editor.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/eventEditor/commandPreview.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/eventEditor/content.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/eventEditor/editorIcons.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/eventEditor/eventScriptModernViews.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/eventEditor/modal.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/eventEditor/modalFullscreen.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/mapContextMenu.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/mapList.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/menu.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/monsterResourcePresentation.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/publishingDialog.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/sidebarInspectionPins.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/sidebarMapHeader.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/sidebarSurface.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/testPlayModal.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/tilePalette.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/tilePaletteStampStatus.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/tileToolOptions.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/tileToolbar.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/tileToolbarMenus.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/walkEncounterModal.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/walkEncounterOptions.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/projectWikiCoordinator.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/proposalSafety.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/tools/actionTools.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/tools/applyChangesetToStore.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/tools/authorHouseExecution.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/tools/authorHouseFacade.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/tools/authorHousePostconditions.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/tools/authorVillageSupport.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/tools/authorVillageTool.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/tools/changeset.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/tools/eventTools.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/tools/houseLotDecor.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/tools/monsterAppearanceTools.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/tools/monsterGraphicAssignment.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/tools/monsterResourceTools.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/tools/playTools.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/tools/queryTools.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/tools/toolRegistry.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/tools/v2/index.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/walkEncounterAuthoring.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/workspace/leftDockPanels.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/headless/index.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/player/dayTransition.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/player/exportEntry.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/player/exportSaveNamespace.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/player/exportStorageBoot.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/player/farming.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/player/keyBindings.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/player/lifeFieldInteraction.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/player/playSceneFarming.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/player/playSceneMapRuntime.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/player/playSceneMovement.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/player/playScenePlaceables.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/player/playSceneShop.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/player/playSceneShopDom.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/player/playSceneShopParts.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/player/playSceneShopVisit.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/player/playSceneTime.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/player/player.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/player/playerLoadPanel.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/player/playerStatusMenuDetailRenderer.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/player/playerStatusMenuDetailTypes.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/player/playerStatusMenuDetails.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/player/predecessorSaveImports.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/player/saveFileTransfers.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/player/savePublication.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/player/saveSlotValidation.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/player/saveSlots.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/player/shopComparisonDom.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/player/shopDecisionInput.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/player/shopEquipmentPreview.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/characterGraphics.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/eventPlacementRecovery.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/fishing.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/gameRelease.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/io/commandReferenceValidation.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/io/serialize.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/io/shape.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/io/shapeEventFields.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/io/shapeResourceFields.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/lint/projectLint.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/lint/reachability.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/makers.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/monsterMetadata.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/packageZip.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/playerDeploymentPaths.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/playerViteDeployment.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/projectCommitLog.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/publication.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/publicationExport.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/releaseDependencies.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/releaseDependencyCollector.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/seasonalForage.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/session.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/shopPrice.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/shopStock.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/standaloneExport.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/standaloneRelease.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/store.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/supabaseProjectSync.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/toolActions.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/types/base.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/types/events.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/types/project.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/webExport.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/webExportAssets.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/testing/actionCombatProof.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/testing/sceneTestRunner.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/util/sha256.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/scripts/lib/ohMyPiPiAiRuntime.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/scripts/lib/ohMyPiUserContent.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/test/pr687VerificationIntegration.test.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/test/pr687ImageDetail.test.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/test/fixtures/offlineChatResponse.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/test/assistantVerificationContinuation.test.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/test/sceneVerificationRepair.test.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/test/actionAcceptanceRequirements.test.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/test/assistantProposalAssembly.test.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/test/aiToolDiscoveryEscalation.test.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/test/aiRequiredOutcomes.test.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/test/workPlanIdentity.test.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/test/functionalAcceptance.test.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/test/verificationFindingOwnership.test.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/test/sceneTestRunner.test.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/test/npcPrerequisiteSession.test.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/test/npcRewardSession.test.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/test/ohMyPiVision.bun.test.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/test/monsterMetadataPersistence.test.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/test/toolSchemaProviderCompat.test.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/test/runOutcomeApplyFixture.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/test/requiredOutcomeFixture.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/test/assistantAcceptanceCost.test.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/test/assistantAcceptanceProvider.test.ts"
+  ],
+  "missing": [],
+  "diagnostics": [
+    {
+      "seq": 0,
+      "type": "event",
+      "event": "suggestionDiag",
+      "body": {
+        "file": "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/databaseMonsterResourceEditor.ts",
+        "diagnostics": [
+          {
+            "start": {
+              "line": 39,
+              "offset": 55
+            },
+            "end": {
+              "line": 39,
+              "offset": 66
+            },
+            "text": "'returnValue' is deprecated.",
+            "code": 6385,
+            "category": "suggestion",
+            "reportsDeprecated": true,
+            "relatedInformation": [
+              {
+                "span": {
+                  "start": {
+                    "line": 4325,
+                    "offset": 8
+                  },
+                  "end": {
+                    "line": 4328,
+                    "offset": 6
+                  },
+                  "file": "/home/main/z-project/rpg-zzu/node_modules/typescript/lib/lib.dom.d.ts"
+                },
+                "message": "The declaration was marked as deprecated here.",
+                "category": "error",
+                "code": 2798
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "seq": 0,
+      "type": "event",
+      "event": "suggestionDiag",
+      "body": {
+        "file": "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/editor/panels/eventEditor/modal.ts",
+        "diagnostics": [
+          {
+            "start": {
+              "line": 114,
+              "offset": 10
+            },
+            "end": {
+              "line": 114,
+              "offset": 28
+            },
+            "text": "This may be converted to an async function.",
+            "code": 80006,
+            "category": "suggestion"
+          }
+        ]
+      }
+    },
+    {
+      "seq": 0,
+      "type": "event",
+      "event": "suggestionDiag",
+      "body": {
+        "file": "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/player/playSceneShop.ts",
+        "diagnostics": [
+          {
+            "start": {
+              "line": 62,
+              "offset": 17
+            },
+            "end": {
+              "line": 62,
+              "offset": 25
+            },
+            "text": "This may be converted to an async function.",
+            "code": 80006,
+            "category": "suggestion"
+          }
+        ]
+      }
+    },
+    {
+      "seq": 0,
+      "type": "event",
+      "event": "suggestionDiag",
+      "body": {
+        "file": "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/player/playSceneTime.ts",
+        "diagnostics": [
+          {
+            "start": {
+              "line": 230,
+              "offset": 17
+            },
+            "end": {
+              "line": 230,
+              "offset": 47
+            },
+            "text": "This may be converted to an async function.",
+            "code": 80006,
+            "category": "suggestion"
+          }
+        ]
+      }
+    },
+    {
+      "seq": 0,
+      "type": "event",
+      "event": "suggestionDiag",
+      "body": {
+        "file": "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/session.ts",
+        "diagnostics": [
+          {
+            "start": {
+              "line": 6,
+              "offset": 262
+            },
+            "end": {
+              "line": 6,
+              "offset": 279
+            },
+            "text": "'ProjectStartState' is deprecated.",
+            "code": 6385,
+            "category": "suggestion",
+            "reportsDeprecated": true,
+            "relatedInformation": [
+              {
+                "span": {
+                  "start": {
+                    "line": 375,
+                    "offset": 4
+                  },
+                  "end": {
+                    "line": 378,
+                    "offset": 2
+                  },
+                  "file": "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/types/project.ts"
+                },
+                "message": "The declaration was marked as deprecated here.",
+                "category": "error",
+                "code": 2798
+              }
+            ]
+          },
+          {
+            "start": {
+              "line": 370,
+              "offset": 49
+            },
+            "end": {
+              "line": 370,
+              "offset": 66
+            },
+            "text": "'ProjectStartState' is deprecated.",
+            "code": 6385,
+            "category": "suggestion",
+            "reportsDeprecated": true,
+            "relatedInformation": [
+              {
+                "span": {
+                  "start": {
+                    "line": 375,
+                    "offset": 4
+                  },
+                  "end": {
+                    "line": 378,
+                    "offset": 2
+                  },
+                  "file": "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/types/project.ts"
+                },
+                "message": "The declaration was marked as deprecated here.",
+                "category": "error",
+                "code": 2798
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "seq": 0,
+      "type": "event",
+      "event": "semanticDiag",
+      "body": {
+        "file": "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/test/sceneVerificationRepair.test.ts",
+        "diagnostics": [
+          {
+            "start": {
+              "line": 63,
+              "offset": 41
+            },
+            "end": {
+              "line": 63,
+              "offset": 42
+            },
+            "text": "Cannot assign to 'x' because it is a read-only property.",
+            "code": 2540,
+            "category": "error"
+          }
+        ]
+      }
+    },
+    {
+      "seq": 0,
+      "type": "event",
+      "event": "semanticDiag",
+      "body": {
+        "file": "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/test/verificationFindingOwnership.test.ts",
+        "diagnostics": [
+          {
+            "start": {
+              "line": 106,
+              "offset": 5
+            },
+            "end": {
+              "line": 106,
+              "offset": 27
+            },
+            "text": "'f.project.session.gold' is possibly 'undefined'.",
+            "code": 18048,
+            "category": "error"
+          }
+        ]
+      }
+    },
+    {
+      "seq": 0,
+      "type": "event",
+      "event": "semanticDiag",
+      "body": {
+        "file": "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/test/ohMyPiVision.bun.test.ts",
+        "diagnostics": [
+          {
+            "start": {
+              "line": 1,
+              "offset": 40
+            },
+            "end": {
+              "line": 1,
+              "offset": 50
+            },
+            "text": "Cannot find module 'bun:test' or its corresponding type declarations.",
+            "code": 2307,
+            "category": "error"
+          }
+        ]
+      }
+    }
+  ],
+  "responses": [
+    {
+      "seq": 0,
+      "type": "response",
+      "command": "configure",
+      "request_seq": 1,
+      "success": true
+    },
+    {
+      "seq": 0,
+      "type": "response",
+      "command": "updateOpen",
+      "request_seq": 2,
+      "success": true,
+      "performanceData": {
+        "updateGraphDurationMs": 19223.966238
+      },
+      "body": true
+    }
+  ]
+}

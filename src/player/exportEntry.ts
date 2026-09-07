@@ -1,6 +1,6 @@
 import "@/player/player.css";
-// 세이브 슬롯 키(oprn:save-slot:*)를 읽기 전에 구 접두사를 옮긴다. src/storageBoot.ts 참고.
-import "@/storageBoot";
+// Standalone legacy migration only; community boot never scans global save storage.
+import "@/player/exportStorageBoot";
 import { installVitePreloadRecovery } from "@/app/moduleLoadRecovery";
 
 installVitePreloadRecovery();
@@ -15,6 +15,7 @@ import { setSaveSlotStorageNamespace } from "@/player/saveSlots";
 import { setExportedProject } from "@/player/exportProjectStoreShim";
 import {
   resolveExportSaveNamespace,
+  resolveCommunitySaveScope,
   type ExportProjectSource,
 } from "@/player/exportSaveNamespace";
 import { hostExitReturnUrl, parseHostBridge, type HostBridge } from "@/player/hostBridge";
@@ -112,6 +113,7 @@ function startPlayer(
     const host = parseHostBridge(boot);
     const probe = boot.qaInstrumentation === true ? boot.actionCombatProbe : undefined;
     renderPlayer(root, {
+      saveIsolationScope: resolveCommunitySaveScope(window.location.pathname),
       qaInstrumentation: boot.qaInstrumentation === true,
       hostBridge: host,
       onExit: () => exitToHost(root, host),

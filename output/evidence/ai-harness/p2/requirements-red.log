@@ -1,0 +1,373 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiRequiredOutcomes.test.ts --maxWorkers 2 --minWorkers 1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p2-20260906
+
+ ❯ test/aiRequiredOutcomes.test.ts (26 tests | 21 failed) 14557ms
+   × canonical requirements > keeps required skipped obligations when a replan tries to weaken them 833ms
+     → expected { id: 'edit', title: 'Edit', …(5) } to match object { status: 'skipped', …(1) }
+(6 matching properties omitted from actual)
+   × canonical requirements > allows optional skipped work without labeling it verified 400ms
+     → expected null to match object { status: 'verified', …(1) }
+   × canonical requirements > fails closed for malformed declarations null 1078ms
+     → expected null to match object { status: 'blocked', …(1) }
+   × canonical requirements > fails closed for malformed declarations %j 385ms
+     → expected null to match object { status: 'blocked', …(1) }
+   × canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":[{"kind":"mapDimensions","target":{"mapId":"map_blank_start"},"width":99,"height":99}],"required":"false"} 762ms
+     → expected null to match object { status: 'blocked', …(1) }
+   × canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":[{"kind":"invented","passed":true}]} 864ms
+     → expected null to match object { status: 'blocked', …(1) }
+   × canonical requirements > preserves requirements and item links through the planner parser 48ms
+     → expected { id: 'wp_mtq0w9ll', …(7) } to match object { requirements: [ { …(2) } ], …(1) }
+(16 matching properties omitted from actual)
+   ✓ canonical requirements > keeps a bare legacy scheduler plan unassessed  1297ms
+   ✓ canonical requirements > assesses existing explicit acceptance without requiring the new field  2111ms
+   × canonical requirements > binds original text and scope at the host boundary despite fabricated source and withdrawal 342ms
+     → expected null to match object { status: 'blocked', …(1) }
+   × canonical requirements > withdraws only the named current requirement through the user-only API 401ms
+     → Expected assessment
+   × canonical requirements > rejects stale goal withdrawal actions 398ms
+     → f.session.withdrawRequirement is not a function
+   × canonical requirements > does not erase old obligations on a model resetsContext claim 737ms
+     → expected undefined to be 'size' // Object.is equality
+   × canonical requirements > archives an incomplete goal when the user explicitly starts a new goal 456ms
+     → f.session.getAcceptanceHistory is not a function
+   × exact scoped verdict authority > evaluates explicit evidence without tool-name credit 422ms
+     → expected false to be true // Object.is equality
+   × exact scoped verdict authority > evaluates wrong-target evidence without tool-name credit 233ms
+     → expected undefined to be false // Object.is equality
+   × exact scoped verdict authority > evaluates stale evidence without tool-name credit 140ms
+     → expected undefined to be false // Object.is equality
+   × exact scoped verdict authority > evaluates advisory evidence without tool-name credit 212ms
+     → expected undefined to be false // Object.is equality
+   × exact scoped verdict authority > evaluates advisory-after-stale evidence without tool-name credit 131ms
+     → expected undefined to be false // Object.is equality
+   × exact scoped verdict authority > evaluates negative evidence without tool-name credit 176ms
+     → expected undefined to be false // Object.is equality
+   × exact scoped verdict authority > evaluates model evidence without tool-name credit 155ms
+     → expected undefined to be false // Object.is equality
+   × exact scoped verdict authority > credits a real scoped tool response through the session dispatcher 501ms
+     → expected { type: 'tool_call', …(4) } to match object { result: { ok: true } }
+(9 matching properties omitted from actual)
+   × question-safe continuation > preserves blocked work and counters for ask 682ms
+     → expected 'in_progress' to be 'blocked' // Object.is equality
+   ✓ question-safe continuation > preserves blocked work and counters for question  622ms
+   ✓ question-safe continuation > reactivates blocked work only with explicit user resume  628ms
+   ✓ question-safe continuation > retains goal evidence and repair counters during ask  523ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 21 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiRequiredOutcomes.test.ts > canonical requirements > keeps required skipped obligations when a replan tries to weaken them
+AssertionError: expected { id: 'edit', title: 'Edit', …(5) } to match object { status: 'skipped', …(1) }
+(6 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "requirementIds": [[39m
+[32m-     "size",[39m
+[32m-   ],[39m
+[2m    "status": "skipped",[22m
+[2m  }[22m
+
+ ❯ test/aiRequiredOutcomes.test.ts:18:58
+     16|     await f.run([[plan([size]), skip], [plan([{ ...size, required: fal…
+     17|     // Then scheduler completion cannot replace the original denominat…
+     18|     expect(f.session.getWorkPlan()?.layers[0]?.items[0]).toMatchObject…
+       |                                                          ^
+     19|     expect(f.session.getAcceptanceSnapshot()).toMatchObject({ status: …
+     20|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/21]⎯
+
+ FAIL  test/aiRequiredOutcomes.test.ts > canonical requirements > allows optional skipped work without labeling it verified
+AssertionError: expected null to match object { status: 'verified', …(1) }
+
+[32m- Expected:[39m 
+{
+  "items": [
+    {
+      "evidence": [
+        {
+          "passed": false,
+        },
+      ],
+      "required": false,
+      "status": "working",
+    },
+  ],
+  "status": "verified",
+}
+
+[31m+ Received:[39m 
+null
+
+ ❯ test/aiRequiredOutcomes.test.ts:28:47
+     26|     await f.run([[plan([{ ...size, required: false }]), skip]]);
+     27|     // Then the required denominator is satisfied, not the optional ev…
+     28|     expect(f.session.getAcceptanceSnapshot()).toMatchObject({ status: …
+       |                                               ^
+     29|   });
+     30| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/21]⎯
+
+ FAIL  test/aiRequiredOutcomes.test.ts > canonical requirements > fails closed for malformed declarations null
+ FAIL  test/aiRequiredOutcomes.test.ts > canonical requirements > fails closed for malformed declarations %j
+ FAIL  test/aiRequiredOutcomes.test.ts > canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":[{"kind":"mapDimensions","target":{"mapId":"map_blank_start"},"width":99,"height":99}],"required":"false"}
+ FAIL  test/aiRequiredOutcomes.test.ts > canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":[{"kind":"invented","passed":true}]}
+AssertionError: expected null to match object { status: 'blocked', …(1) }
+
+[32m- Expected:[39m 
+{
+  "items": [
+    {
+      "required": true,
+      "status": "blocked",
+    },
+  ],
+  "status": "blocked",
+}
+
+[31m+ Received:[39m 
+null
+
+ ❯ test/aiRequiredOutcomes.test.ts:35:47
+     33|     const f = fixture();
+     34|     await f.run([[plan(requirements), skip]]);
+     35|     expect(f.session.getAcceptanceSnapshot()).toMatchObject({ status: …
+       |                                               ^
+     36|   });
+     37| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/21]⎯
+
+ FAIL  test/aiRequiredOutcomes.test.ts > canonical requirements > preserves requirements and item links through the planner parser
+AssertionError: expected { id: 'wp_mtq0w9ll', …(7) } to match object { requirements: [ { …(2) } ], …(1) }
+(16 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "layers": [[22m
+[2m      {[22m
+[2m        "items": [[22m
+[2m          {[22m
+[32m-           "requirementIds": [[39m
+[32m-             "size",[39m
+[32m-           ],[39m
+[32m-         },[39m
+[32m-       ],[39m
+[31m+           "doneWhen": undefined,[39m
+[31m+           "id": "edit",[39m
+[31m+           "instruction": "Inspect map",[39m
+[31m+           "requiresAnyWrite": undefined,[39m
+[31m+           "status": "in_progress",[39m
+[31m+           "successTools": undefined,[39m
+[31m+           "title": "Edit",[39m
+[2m          },[22m
+[2m        ],[22m
+[32m-   "requirements": [[39m
+[32m-     {[39m
+[32m-       "id": "size",[39m
+[32m-       "required": true,[39m
+[2m      },[22m
+[2m    ],[22m
+[2m  }[22m
+
+ ❯ test/aiRequiredOutcomes.test.ts:46:20
+     44|     const result = workPlanFromOrchestratorDecision(parsed);
+     45|     // Then the independent requirement contract survives normalizatio…
+     46|     expect(result).toMatchObject({ requirements: [{ id: "size", requir…
+       |                    ^
+     47|   });
+     48| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/21]⎯
+
+ FAIL  test/aiRequiredOutcomes.test.ts > canonical requirements > binds original text and scope at the host boundary despite fabricated source and withdrawal
+AssertionError: expected null to match object { status: 'blocked', …(1) }
+
+[32m- Expected:[39m 
+{
+  "items": [
+    {
+      "required": true,
+      "source": {
+        "scope": {
+          "mapId": "map_blank_start",
+          "region": {
+            "height": 4,
+            "width": 3,
+            "x": 1,
+            "y": 2,
+          },
+        },
+        "text": "ORIGINAL",
+      },
+    },
+  ],
+  "status": "blocked",
+}
+
+[31m+ Received:[39m 
+null
+
+ ❯ test/aiRequiredOutcomes.test.ts:70:47
+     68|     await f.run([[plan([{ ...size, source: { text: "FORGED", requestId…
+     69|     // Then only host facts own provenance and the requirement remains…
+     70|     expect(f.session.getAcceptanceSnapshot()).toMatchObject({ status: …
+       |                                               ^
+     71|     expect(f.session.getAcceptanceSnapshot()?.items[0]?.withdrawal).to…
+     72|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/21]⎯
+
+ FAIL  test/aiRequiredOutcomes.test.ts > canonical requirements > withdraws only the named current requirement through the user-only API
+Error: Expected assessment
+ ❯ test/aiRequiredOutcomes.test.ts:79:26
+     77|     await f.run([[plan([size]), skip]]);
+     78|     const snapshot = f.session.getAcceptanceSnapshot();
+     79|     if (!snapshot) throw new Error("Expected assessment");
+       |                          ^
+     80|     // When the user explicitly removes that requirement from this goa…
+     81|     const accepted = f.session.withdrawRequirement({ acceptanceId: sna…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/21]⎯
+
+ FAIL  test/aiRequiredOutcomes.test.ts > canonical requirements > rejects stale goal withdrawal actions
+TypeError: f.session.withdrawRequirement is not a function
+ ❯ test/aiRequiredOutcomes.test.ts:93:22
+     91|     await f.run([[plan([size]), skip]]);
+     92|     // When an old UI action is dispatched; then the active denominato…
+     93|     expect(f.session.withdrawRequirement({ acceptanceId: "old-goal", r…
+       |                      ^
+     94|     expect(f.session.getAcceptanceSnapshot()?.status).toBe("blocked");
+     95|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/21]⎯
+
+ FAIL  test/aiRequiredOutcomes.test.ts > canonical requirements > does not erase old obligations on a model resetsContext claim
+AssertionError: expected undefined to be 'size' // Object.is equality
+
+[32m- Expected:[39m 
+"size"
+
+[31m+ Received:[39m 
+undefined
+
+ ❯ test/aiRequiredOutcomes.test.ts:107:61
+    105|     // Then only a host action can retire the active goal.
+    106|     expect(f.session.getAcceptanceSnapshot()?.id).toBe(before?.id);
+    107|     expect(f.session.getAcceptanceSnapshot()?.items[0]?.id).toBe("size…
+       |                                                             ^
+    108|   });
+    109| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/21]⎯
+
+ FAIL  test/aiRequiredOutcomes.test.ts > canonical requirements > archives an incomplete goal when the user explicitly starts a new goal
+TypeError: f.session.getAcceptanceHistory is not a function
+ ❯ test/aiRequiredOutcomes.test.ts:119:22
+    117|     // Then old history is retained, not rewritten as satisfied.
+    118|     expect(f.session.getAcceptanceSnapshot()).toBeNull();
+    119|     expect(f.session.getAcceptanceHistory()).toEqual([before]);
+       |                      ^
+    120|   });
+    121| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/21]⎯
+
+ FAIL  test/aiRequiredOutcomes.test.ts > exact scoped verdict authority > evaluates explicit evidence without tool-name credit
+AssertionError: expected false to be true // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+ ❯ test/aiRequiredOutcomes.test.ts:138:44
+    136|     // When the canonical ledger evaluates actual evidence; then only …
+    137|     const snapshot = ledger.evaluate(project, project, evidence);
+    138|     expect(snapshot.status === "verified").toBe(source === "explicit");
+       |                                            ^
+    139|     expect(snapshot.items[0]?.evidence[0]?.passed).toBe(source === "ex…
+    140|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/21]⎯
+
+ FAIL  test/aiRequiredOutcomes.test.ts > exact scoped verdict authority > evaluates wrong-target evidence without tool-name credit
+ FAIL  test/aiRequiredOutcomes.test.ts > exact scoped verdict authority > evaluates stale evidence without tool-name credit
+ FAIL  test/aiRequiredOutcomes.test.ts > exact scoped verdict authority > evaluates advisory evidence without tool-name credit
+ FAIL  test/aiRequiredOutcomes.test.ts > exact scoped verdict authority > evaluates advisory-after-stale evidence without tool-name credit
+ FAIL  test/aiRequiredOutcomes.test.ts > exact scoped verdict authority > evaluates negative evidence without tool-name credit
+ FAIL  test/aiRequiredOutcomes.test.ts > exact scoped verdict authority > evaluates model evidence without tool-name credit
+AssertionError: expected undefined to be false // Object.is equality
+
+[32m- Expected:[39m 
+false
+
+[31m+ Received:[39m 
+undefined
+
+ ❯ test/aiRequiredOutcomes.test.ts:139:52
+    137|     const snapshot = ledger.evaluate(project, project, evidence);
+    138|     expect(snapshot.status === "verified").toBe(source === "explicit");
+    139|     expect(snapshot.items[0]?.evidence[0]?.passed).toBe(source === "ex…
+       |                                                    ^
+    140|   });
+    141| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/21]⎯
+
+ FAIL  test/aiRequiredOutcomes.test.ts > exact scoped verdict authority > credits a real scoped tool response through the session dispatcher
+AssertionError: expected { type: 'tool_call', …(4) } to match object { result: { ok: true } }
+(9 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "result": {[22m
+[32m-     "ok": true,[39m
+[31m+     "ok": false,[39m
+[2m    },[22m
+[2m  }[22m
+
+ ❯ test/aiRequiredOutcomes.test.ts:149:103
+    147|     await f.run([[plan([{ id: "route", title: "Route", criteria: [{ ki…
+    148|     // Then the real result supplies the canonical verdict.
+    149|     expect(f.events.find(event => event.type === "tool_call" && event.…
+       |                                                                                                       ^
+    150|     expect(f.session.getAcceptanceSnapshot()?.status).toBe("verified");
+    151|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/21]⎯
+
+ FAIL  test/aiRequiredOutcomes.test.ts > question-safe continuation > preserves blocked work and counters for ask
+AssertionError: expected 'in_progress' to be 'blocked' // Object.is equality
+
+Expected: [32m"blocked"[39m
+Received: [31m"in_progress"[39m
+
+ ❯ test/aiRequiredOutcomes.test.ts:166:66
+    164|     await f.run([], mode === "ask" ? { composerMode: "ask" } : {}, "Wh…
+    165|     // Then the question leaves scheduling and retry state intact.
+    166|     expect(f.session.getWorkPlan()?.layers[0]?.items[0]?.status).toBe(…
+       |                                                                  ^
+    167|     expect([...f.session["ralphAttemptsByItemId"]]).toEqual(attempts);
+    168|     expect([...f.session["lastBlockReasonByItemId"]]).toEqual(reasons);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/21]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  21 failed | 5 passed (26)
+   Start at  01:24:39
+   Duration  54.45s (transform 25.74s, setup 0ms, collect 38.54s, tests 14.56s, environment 0ms, prepare 179ms)
+

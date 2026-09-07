@@ -1,0 +1,27 @@
+{
+  "baselineReport": "/home/main/z-project/rpg-zzu-ai-harness-p2-outcome-20260906/.omo/gates-vitest-report.json",
+  "baselineReportSha256": "085c0e6c60b05a3ee365acc33b28f46d1e9f4dc4c4ff3c351731e04676e7fcf1",
+  "baseline": {
+    "numTotalTests": 16960,
+    "numPassedTests": 16735,
+    "numFailedTests": 202,
+    "numPendingTests": 23
+  },
+  "verified": {
+    "numTotalTests": 1200,
+    "numPassedTests": 1199,
+    "numFailedTests": 1,
+    "numPendingTests": 0
+  },
+  "remainingFailures": [
+    {
+      "file": "assistantSessionIntent.test.ts",
+      "name": "의도 선언이 세션 라우팅을 정한다 auto 모드는 같은 선언에도 멈추지 않고 진행한다(F-05)",
+      "messages": [
+        "AssertionError: expected '완료 검증이 아직 미완성입니다.\\n- 집 하나 만들어줘: Missi…' to be '야외 집으로 진행합니다.' // Object.is equality\n    at /home/main/z-project/rpg-zzu-ai-harness-p2-qa-20260906/test/assistantSessionIntent.test.ts:114:34\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+      ]
+    }
+  ],
+  "newFailedCaseIdentities": [],
+  "indexTree": "93601a27eac5f0c1451358201fdcaea6574c7441"
+}

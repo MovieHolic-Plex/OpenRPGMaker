@@ -1,0 +1,97 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/pr687VerificationIntegration.test.ts test/workPlanIdentity.test.ts test/verificationRouteDeclaration.test.ts test/assistantVerificationContinuation.test.ts test/aiRequiredOutcomes.test.ts test/functionalAcceptance.test.ts test/aiToolDiscoveryEscalation.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86
+
+ ✓ test/assistantVerificationContinuation.test.ts (15 tests) 6341ms
+   ✓ immutable requirements, findings and attempts at both ledgers > retains both original exact routes, later adoption and original owners independently  374ms
+   ✓ normal session ownership through skip, replan and continuation > reused scheduling IDs cannot waive pending scopes; late specification needs a fresh execution  1952ms
+   ✓ normal session ownership through skip, replan and continuation > normal session correction executes the registered original tool; unknown IDs and execution errors cannot clear a finding  947ms
+   ✓ authoring revalidates explicit checks before finalizing > continues after a final claim when a real write made the prior lint stale  1469ms
+ ✓ test/verificationRouteDeclaration.test.ts (9 tests) 7886ms
+   ✓ normal session exact route declaration adoption > retains a later same-map declaration after replacing a passed criterion plan  1383ms
+   ✓ normal session exact route declaration adoption > reuses exact criterion ownership without duplicate requirements for reference  750ms
+   ✓ normal session exact route declaration adoption > reuses exact criterion ownership without duplicate requirements for exact-args  1077ms
+   ✓ normal session exact route declaration adoption > reuses exact criterion ownership without duplicate requirements for mixed  789ms
+   ✓ normal session exact route declaration adoption > does not let an exact criterion reference conceal another explicit declaration  633ms
+   ✓ normal session exact route declaration adoption > requires fresh proof after late adoption and retains that scope across skip and reused scheduling IDs  1077ms
+   ✓ normal session exact route declaration adoption > does not treat a conflicting retained checkId as a successfully adopted replacement scope  802ms
+   ✓ normal session exact route declaration adoption > retains a late-specified check's distinct ownership even when its args match a passed criterion  818ms
+   ✓ normal session exact route declaration adoption > leaves an unresolved criterion reference pending instead of substituting a same-tool criterion  554ms
+ ✓ test/aiRequiredOutcomes.test.ts (39 tests) 22104ms
+   ✓ canonical requirements > keeps required skipped obligations when a replan tries to weaken them  843ms
+   ✓ canonical requirements > allows optional skipped work without labeling it verified  637ms
+   ✓ canonical requirements > fails closed for malformed declarations null  876ms
+   ✓ canonical requirements > fails closed for malformed declarations %j  721ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":[{"kind":"mapDimensions","target":{"mapId":"map_blank_start"},"width":99,"height":99}],"required":"false"}  733ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":[{"kind":"invented","passed":true}]}  651ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":null,"required":false}  699ms
+   ✓ canonical requirements > keeps a bare legacy scheduler plan unassessed  365ms
+   ✓ canonical requirements > assesses existing explicit acceptance without requiring the new field  638ms
+   ✓ canonical requirements > retains an unlinked required obligation when replan drops links=false  677ms
+   ✓ canonical requirements > retains an unlinked required obligation when replan drops links=true  664ms
+   ✓ canonical requirements > binds original text and scope at the host boundary despite fabricated source and withdrawal  650ms
+   ✓ canonical requirements > retains only the original user utterance through replan with instruction override=false  804ms
+   ✓ canonical requirements > retains only the original user utterance through replan with instruction override=true  760ms
+   ✓ canonical requirements > withdraws only the named current requirement through the user-only API  749ms
+   ✓ canonical requirements > keeps sibling obligations when the user withdraws just one  728ms
+   ✓ canonical requirements > rejects model tool withdrawal even with fabricated user provenance  708ms
+   ✓ canonical requirements > rejects stale goal withdrawal actions  611ms
+   ✓ canonical requirements > does not erase old obligations on a model resetsContext claim  743ms
+   ✓ canonical requirements > archives an incomplete goal when the user explicitly starts a new goal  988ms
+   ✓ exact scoped verdict authority > does not verify an unapplied draft from a passing scoped verdict  309ms
+   ✓ exact scoped verdict authority > retires scoped verdicts after applied content changes even if later undone  1112ms
+   ✓ exact scoped verdict authority > rejects pre-declaration evidence after an external rebase  1232ms
+   ✓ exact scoped verdict authority > credits a real scoped tool response through the session dispatcher  558ms
+   ✓ question-safe continuation > preserves blocked work and counters for ask  468ms
+   ✓ question-safe continuation > preserves blocked work and counters for question  491ms
+   ✓ question-safe continuation > preserves repeated failure counters while answering a question  961ms
+   ✓ question-safe continuation > does not reactivate from fabricated continuation source  506ms
+   ✓ question-safe continuation > reactivates blocked work only with explicit user resume  605ms
+   ✓ question-safe continuation > retains goal evidence and repair counters during ask  625ms
+ ✓ test/workPlanIdentity.test.ts (13 tests) 3810ms
+   ✓ in-loop WorkPlan identity > does not replace an existing verification requirement with a summary query  405ms
+   ✓ in-loop WorkPlan identity > rejects 'aggregation' without changing the original plan  358ms
+   ✓ in-loop WorkPlan identity > preserves original artifact evidence so repair cannot bypass the outcome gate  333ms
+   ✓ in-loop WorkPlan identity > repairs a failed requirement through the real session loop without repeating the successful tool  773ms
+ ✓ test/functionalAcceptance.test.ts (19 tests) 3364ms
+   ✓ immutable engine-evaluated functional acceptance > verifies purchase, real outgoing/return traversal and one-time reward without model evidence  382ms
+   ✓ immutable engine-evaluated functional acceptance > does not verify an unapplied draft or reuse applied proof after a database-only write  567ms
+ ✓ test/aiToolDiscoveryEscalation.test.ts (7 tests) 2325ms
+   ✓ AI tool discovery escalation > exposes every active native schema on the first google-antigravity request without evicting core reads  324ms
+   ✓ AI tool discovery escalation > retains build, plan and acceptance schemas alongside the full catalog under a minimal prompt budget  631ms
+   ✓ AI tool discovery escalation > reports provider rejection instead of retrying with a pruned catalog  455ms
+   ✓ AI tool discovery escalation > keeps discovered schemas available without changing the complete working catalog  307ms
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/pr687VerificationIntegration.test.ts [ test/pr687VerificationIntegration.test.ts ]
+Error: Transform failed with 1 error:
+/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/test/pr687VerificationIntegration.test.ts:71:131: ERROR: Expected "]" but found "}"
+  Plugin: vite:esbuild
+  File: /home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/test/pr687VerificationIntegration.test.ts:71:131
+  
+  Expected "]" but found "}"
+  69 |      const declare: Call = { name: "set_work_plan", args: { goal: "Dummy check", layers: [{ title: "Checks", items: [{ id: "verify",
+  70 |        title: "Verify", instruction: "Inspect", successTools: ["run_scene_test", "get_project_summary"], mapTargets: [mapId],
+  71 |        verificationChecks: [{ tool: "run_scene_test", args, interactionTargets: [{ stepIndex: 0, mapId, eventId: "dummy" }] }] }] } };
+     |                                                                                                                                     ^
+  72 |      const result = await f.send([...(kind === "adopted" ? [declare] : []), probe(args), { name: "remove_event", args: { mapId, eventId: "dummy" } }]);
+  73 |      expect(f.session.getProposedProject().maps[mapId]!.events.some(event => event.id === "dummy")).toBe(false);
+  
+ ❯ failureErrorWithLog ../rpg-zzu/node_modules/esbuild/lib/main.js:1467:15
+ ❯ ../rpg-zzu/node_modules/esbuild/lib/main.js:736:50
+ ❯ responseCallbacks.<computed> ../rpg-zzu/node_modules/esbuild/lib/main.js:603:9
+ ❯ handleIncomingPacket ../rpg-zzu/node_modules/esbuild/lib/main.js:658:12
+ ❯ Socket.readFromStdout ../rpg-zzu/node_modules/esbuild/lib/main.js:581:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 6 passed (7)
+      Tests  102 passed (102)
+   Start at  01:25:00
+   Duration  46.47s (transform 12.52s, setup 0ms, collect 34.10s, tests 45.83s, environment 3ms, prepare 954ms)
+

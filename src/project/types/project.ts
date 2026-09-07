@@ -2,6 +2,7 @@ import type {
   AssetSet,
   ActorId,
   AudioDescriptionOverrides,
+  MonsterMetadataOverrides,
   CharacterFootprint,
   Dir,
   FlagName,
@@ -484,7 +485,7 @@ export interface Project {
   /** Independent skill graphs; promotion edges remain ClassRecord.promotions. */
   growth?: import("../growth/types").GrowthDefinition;
   version: number;
-  meta: { title: string; author: string; terms: Terms };
+  meta: { title: string; author: string; terms: Terms; publication?: import("../publication").Publication };
   assets: AssetSet;
   resourceProfiles: ResourceProfile[];
   tilesets: Record<TilesetId, TilesetDef>;
@@ -534,6 +535,8 @@ export interface Project {
   charsetLabels?: CharsetLabelOverride[];
   /** Project-authored audio overrides only; catalog defaults are never stored here. */
   audioDescriptions?: AudioDescriptionOverrides;
+  /** Editor-only monster overrides, keyed by raw resource ID. */
+  monsterMetadata?: MonsterMetadataOverrides;
   mapTree: MapTreeNode;
   startMapId: MapId;
   startPos: { x: number; y: number };
@@ -620,6 +623,7 @@ export interface ChangeSummary {
   mapPropertiesChanged?: number;
   /** 설명 override 상태가 바뀐 오디오 kind/raw ID 키 수. 구 저장본의 부재는 0. */
   audioDescriptionsChanged?: number;
+  monsterMetadataChanged?: number;
   eventsAdded: number;
   eventsModified: number;
   eventsRemoved: number;

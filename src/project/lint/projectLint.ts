@@ -11,7 +11,8 @@ import { lintHorrorAuthoring } from "./horrorAuthoringLint";
 //  - transfer-impassable   (error)   transfer 목적지 타일이 통행 불가
 //  - transfer-retrigger    (warning) transfer 목적지에 playerTouch 이벤트(무한 재전이 위험)
 //  - playerTouch-impassable (warning) 밟기형(priority≠same) touch/playerTouch 이벤트가 통행 불가 타일 위(영구 미발동)
-//  - event-unreachable       (warning) 자신의 몸 칸과 그 4방향 이웃이 전부 통행 불가라 접근 불가능한 이벤트
+//  - event-unreachable     (warning) 도달 가능한 상호작용 위치가 없는 이벤트
+//  - event-immobile        (warning) 몸·방향별 통행 조건상 한 칸도 이동할 수 없는 이동형 이벤트
 //  - event-page-shadowed   (warning) 뒤 페이지가 항상 덮어 절대 발동하지 않는 이벤트 페이지
 //  - event-selfswitch-gate-unwritten (warning) selfSwitch 로 잠긴 페이지인데 그것을 켜는 커맨드가 없음
 //  - event-footprint-impassable (warning) 다중 타일 이벤트의 통행 사각이 통행 불가 칸을 덮음(걸어서 닿을 수 없는 자리)
@@ -39,6 +40,7 @@ import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import { inBounds, isPassable } from "../collision";
 import { eventBodyRect, eventCoversPoint, eventPassageRect, overlappingEventPairs } from "../eventFootprintQuery";
 import { rectCells } from "../footprint";
+import { createEventPlacementAnalysis, eventIsMovable, eventRequiresPassableTile, type EventRelocation } from "../eventPlacementRecovery";
 import { playerPassageRect, resolvePlayerBody } from "../playerFootprint";
 import { deserialize, serialize } from "../io";
 import { collectProjectReferenceIssues } from "../io/references";
@@ -49,7 +51,7 @@ import { buildStoryFlagUsageIndex, declaredStoryFlagTargets, usageBucketFor } fr
 import type { Command, GameEvent, GameMap, LintSeverity, Project, Trigger } from "../types";
 import { lintWorldGraph } from "../worldGraph";
 import { validateClusterRules, type ClusterRuleViolation } from "./clusterRuleValidators";
-import { checkReachability, type ReachabilitySpec } from "./reachability";
+import { checkReachability, isAdjacentOrOn, type ReachabilitySpec } from "./reachability";
 import { activeTileGrafts } from "@/assets/tileGrafts";
 
 export type { LintSeverity } from "../types";
@@ -58,6 +60,8 @@ export interface LintIssue {
   readonly severity: LintSeverity;
   readonly code: string;
   readonly mapId?: string;
+  readonly eventId?: string;
+  readonly relocation?: EventRelocation;
   readonly x?: number;
   readonly y?: number;
   readonly message: string;
@@ -69,14 +73,15 @@ export interface LintOptions {
 
 export function projectLint(project: Project, opts: LintOptions = {}): LintIssue[] {
   const issues: LintIssue[] = [];
+  const analysis = createEventPlacementAnalysis(project);
   checkRoundtrip(project, issues);
   checkReferences(project, issues);
   checkStartPosition(project, issues);
   checkTransfers(project, issues);
-  checkPlayerTouchTilePassability(project, issues);
-  checkEventUnreachable(project, issues);
+  checkPlayerTouchTilePassability(project, issues, analysis);
+  checkEventUnreachable(project, issues, analysis);
   checkEventPageShadow(project, issues);
-  checkEventFootprintPassability(project, issues);
+  checkEventFootprintPassability(project, issues, analysis);
   checkDuplicateEventPositions(project, issues);
   checkMapSizes(project, issues);
   checkRuntimeSupportCommands(project, issues);
@@ -87,7 +92,7 @@ export function projectLint(project: Project, opts: LintOptions = {}): LintIssue
   issues.push(...lintHorrorAuthoring(project));
   checkCharacterIdSocial(project, issues);
   checkUnplayableAudio(project, issues);
-  checkReachabilitySpecs(project, opts.reachability ?? [], issues);
+  checkReachabilitySpecs(project, opts.reachability ?? [], issues, analysis);
   checkTileGrafts(project, issues);
   checkSystemOptInConsistency(project, issues);
   checkShopIntegrity(project, issues);
@@ -280,7 +285,9 @@ function checkTransfers(project: Project, issues: LintIssue[]): void {
 // priority가 "same"이 아닌(=차단하지 않고 밟아서 발동하는) 페이지는 절대 실행될 수 없다.
 // priority "same"(차단형)은 부딪힘(bump)으로 발동하므로 이 규칙 대상이 아니다.
 // RM2K3 정합 동작이라 런타임을 고치지 않고 저작 함정으로만 잡는다.
-function checkPlayerTouchTilePassability(project: Project, issues: LintIssue[]): void {
+type PlacementAnalysis = ReturnType<typeof createEventPlacementAnalysis>;
+
+function checkPlayerTouchTilePassability(project: Project, issues: LintIssue[], analysis: PlacementAnalysis): void {
   for (const map of Object.values(project.maps)) {
     for (const event of map.events) {
       const steppablePage = (event.pages ?? []).find(
@@ -295,6 +302,8 @@ function checkPlayerTouchTilePassability(project: Project, issues: LintIssue[]):
         severity: "warning",
         code: "playerTouch-impassable",
         mapId: map.id,
+        eventId: event.id,
+        relocation: analysis(map).candidates(event),
         x: event.x,
         y: event.y,
         message:
@@ -306,33 +315,35 @@ function checkPlayerTouchTilePassability(project: Project, issues: LintIssue[]):
   }
 }
 
-// (f) 같은 맵 내 이벤트 좌표 중복.
-// 밟기형 여부와 무관하게, 자신의 몸 칸과 그 4방향 이웃이 전부 통행 불가인 이벤트는 플레이어가
-// 어떻게도 접근할 수 없다(부딪힘 발동도 이웃 칸에서 시도해야 하므로). warning 으로만 잡는다:
-// playerTouch-impassable 과 대상이 겹칠 수 있지만 메시지/의미가 다르고 둘 다 울려도 무방하다.
-function checkEventUnreachable(project: Project, issues: LintIssue[]): void {
+// Movement and interaction accessibility are distinct. A passable anchor does not
+// prove either; wall objects only need an approach, while moving bodies need a step.
+// These remain advisory warnings, including disconnection from a known entry.
+function checkEventUnreachable(project: Project, issues: LintIssue[], analysis: PlacementAnalysis): void {
   for (const map of Object.values(project.maps)) {
     for (const event of map.events) {
-      // 몸 사각 전 칸과 그 칸들의 4방향 이웃을 본다. 1x1 이면 앵커 + 4방 이웃이라 예전과 같다.
-      const body = rectCells(eventBodyRect(event));
-      if (body.some((cell) => isPassable(project, map, cell.x, cell.y))) continue;
-      const neighbourPassable = body
-        .flatMap((cell) => [
-          { x: cell.x, y: cell.y - 1 },
-          { x: cell.x, y: cell.y + 1 },
-          { x: cell.x - 1, y: cell.y },
-          { x: cell.x + 1, y: cell.y },
-        ])
-        .some((cell) => inBounds(map, cell.x, cell.y) && isPassable(project, map, cell.x, cell.y));
-      if (neighbourPassable) continue;
+      const placement = analysis(map);
+      if (eventRequiresPassableTile(event)
+        && !placement.passageOpen(event)) {
+        issues.push({
+          severity: "warning", code: "event-character-impassable", mapId: map.id, eventId: event.id,
+          x: event.x, y: event.y,
+          message: `캐릭터 ${event.id}가 통행 불가 타일 위에 있습니다. 지형이나 충돌을 바꾸기 전에 move_event로 위치 이동을 검토하세요.`,
+          relocation: placement.candidates(event),
+        });
+        continue;
+      }
+      const immobile = eventIsMovable(event) && !placement.hasMovementStep(event);
+      if (!immobile && placement.hasInteractionPosition(event)) continue;
       issues.push({
         severity: "warning",
-        code: "event-unreachable",
+        code: immobile ? "event-immobile" : "event-unreachable",
         mapId: map.id,
+        eventId: event.id,
+        relocation: placement.candidates(event),
         x: event.x,
         y: event.y,
         message:
-          `이벤트에 도달할 수 없습니다 — 자신의 칸과 4방향 이웃이 모두 통행 불가입니다: ` +
+          (immobile ? "이벤트의 몸이 한 칸도 이동할 수 없습니다: " : "이벤트의 상호작용 위치에 도달할 수 없습니다: ") +
           `${map.id} ${event.id} (${event.x}, ${event.y}) — 통행 가능한 칸으로 옮기세요.`,
       });
     }
@@ -382,7 +393,7 @@ function checkEventPageShadow(project: Project, issues: LintIssue[]): void {
  * 겹치는데, 그래도 무해하다 — 메시지가 다르고 셋 다 warning 이다. 이 검사만 통행 사각을 쓰는
  * 이유: passRows 로 열어 둔 상체 칸은 벽과 겹쳐도 정상이다(벽을 스치고 지나가는 것이 목적).
  */
-function checkEventFootprintPassability(project: Project, issues: LintIssue[]): void {
+function checkEventFootprintPassability(project: Project, issues: LintIssue[], analysis: PlacementAnalysis): void {
   for (const map of Object.values(project.maps)) {
     for (const event of map.events) {
       const rect = eventPassageRect(event);
@@ -398,6 +409,8 @@ function checkEventFootprintPassability(project: Project, issues: LintIssue[]): 
         severity: "warning",
         code: "event-footprint-impassable",
         mapId: map.id,
+        eventId: event.id,
+        relocation: analysis(map).candidates(event),
         x: event.x,
         y: event.y,
         message:
@@ -632,7 +645,8 @@ function clusterRuleMessage(violation: ClusterRuleViolation): string {
 function checkReachabilitySpecs(
   project: Project,
   specs: readonly ReachabilitySpec[],
-  issues: LintIssue[]
+  issues: LintIssue[],
+  analysis: PlacementAnalysis,
 ): void {
   for (const spec of specs) {
     const map = project.maps[spec.mapId];
@@ -645,9 +659,13 @@ function checkReachabilitySpecs(
       });
       continue;
     }
-    const result = checkReachability(project, spec.mapId, spec.from, spec.targets);
-    for (const point of result.unreachable) {
+    const seen = analysis(map).reachable(spec.from);
+    const unreachable = seen ? spec.targets.filter(point => !isAdjacentOrOn(seen, point.x, point.y))
+      : checkReachability(project, spec.mapId, spec.from, spec.targets).unreachable;
+    for (const point of unreachable) {
+      const event = map.events.find(entry => entry.x === point.x && entry.y === point.y);
       issues.push({
+        ...(event ? { eventId: event.id, relocation: analysis(map).candidates(event, spec.from) } : {}),
         severity: "error",
         code: "reachability",
         mapId: spec.mapId,

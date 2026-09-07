@@ -1,0 +1,298 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiBlockedContinue.test.ts test/aiToolCallSessionProtocol.test.ts test/assistantSessionIntent.test.ts test/databaseSpeciesModalRefresh.test.ts test/toolSchemaProviderCompat.test.ts --maxWorkers 1 --minWorkers 1 --reporter default --reporter json --outputFile /home/main/z-project/rpg-zzu/.omo/evidence/ai-harness-implementation/p2-residual-current-vitest.json
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p2-20260906
+
+ ❯ test/assistantSessionIntent.test.ts (12 tests | 3 failed) 14337ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 선언이 질문을 냈으면 chat 모드는 모델을 부르지 않고 그 질문으로 턴을 끝낸다  8286ms
+   × 의도 선언이 세션 라우팅을 정한다 > auto 모드는 같은 선언에도 멈추지 않고 진행한다(F-05) 622ms
+     → expected '완료 검증이 아직 미완성입니다.\n- 집 하나 만들어줘: Missi…' to be '야외 집으로 진행합니다.' // Object.is equality
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 선언자가 없으면 폴백 선언이다 — 되묻지 않고, 계획 여부는 플래너(direct)에게 넘긴다  725ms
+   × 의도 선언이 세션 라우팅을 정한다 > 질문 선언은 플래너를 건너뛰고, 계획 필요 선언은 플래너를 돈다 184ms
+     → expected [ …(6) ] to include 'planner:skip question'
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 플래너의 direct 는 존중한다 — 「마을」이라도 코드가 계획을 강제하지 않는다  579ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 플래너가 volume 을 선언한 계획만 막대를 세우고, 막대 미달로 끝내면 재주입한다  955ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > volume 없는 계획은 막대가 없다  559ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 선언한 툴은 도메인 상한과 무관하게 이번 라운드 스키마에 실린다 297ms
+   × 의도 선언이 세션 라우팅을 정한다 > 툴 이름 언급은 사용자 발화(instruction)에서만 읽고 footer 는 보지 않는다 243ms
+     → expected [ 'get_world_structure_rules', …(13) ] to include 'define_ending'
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 선택 영역은 사실로 붙고 선언에 따라 경계 또는 참고용 노트가 된다  693ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 수정 선언은 계획의 대상 맵을 현재 맵으로 고정하고, 생성 선언은 고정하지 않는다  873ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 「계속」은 모델을 부르지 않고 진행 중 계획을 이어간다(continuation)  319ms
+ ❯ test/toolSchemaProviderCompat.test.ts (6 tests | 3 failed) 44ms
+   × 툴 스키마 프로바이더 호환(Gemini 엄격 검증) > 전 툴 파라미터가 union type/비객체 properties/비배열 items 를 쓰지 않는다 22ms
+     → expected [ …(12) ] to deeply equal []
+   × 툴 스키마 프로바이더 호환(Gemini 엄격 검증) > 객체 타입 파라미터는 properties 를 선언한다 (모델이 {} 만 보내는 벽 방지) 6ms
+     → expected [ …(2) ] to deeply equal []
+   × 툴 스키마 프로바이더 호환(Gemini 엄격 검증) > 노출 스키마 어디에도 provider 금지 oneOf/anyOf 가 없다 8ms
+     → expected [ …(12) ] to deeply equal []
+   ✓ 툴 스키마 프로바이더 호환(Gemini 엄격 검증) > 실측 회귀: set_work_plan.layers 와 set_build_spec.assets 가 항목 필드를 노출한다 3ms
+   ✓ 툴 스키마 프로바이더 호환(Gemini 엄격 검증) > 실측 회귀: 검증기가 재제출을 요구하는 필드(SPEC_REMEDY_FIELDS)가 set_build_spec.assets 에 선언돼 있다 0ms
+   ✓ 툴 스키마 프로바이더 호환(Gemini 엄격 검증) > overExisting 은 clear|keep 로 열거돼 모델이 값까지 정확히 낼 수 있다 1ms
+ ❯ test/aiBlockedContinue.test.ts (4 tests | 1 failed) 2886ms
+   × offers the real Continue control when required work blocks without a budget stop 785ms
+     → expected "spy" to be called once with arguments: [ '계속' ][90m
+
+Received: 
+
+[1m  1st spy call:
+
+[22m[2m  [[22m
+[2m    "계속",[22m
+[31m+   undefined,[90m
+[31m+   {[90m
+[31m+     "userResume": true,[90m
+[31m+   },[90m
+[2m  ][22m
+[39m[90m
+
+Number of calls: [1m1[22m
+[39m
+   ✓ keeps one Continue control when a question follows blocked work  578ms
+   ✓ does not publish a Continue control when the blocked owner is retired  604ms
+   ✓ publishes the resumed unfinished result instead of the preceding question outcome  917ms
+ ❯ test/aiToolCallSessionProtocol.test.ts (2 tests | 1 failed) 1027ms
+   ✓ 툴 인자 JSON 파싱 실패 > 잘린 JSON 은 잘렸다고 알린다 — 인자 누락으로 위장하지 않는다  331ms
+   × 툴 루프 예외 > 예외가 나도 그 호출의 tool 응답이 남아 세션이 오염되지 않는다 693ms
+     → promise resolved "{ assistantText: '', …(6) }" instead of rejecting
+ ✓ test/databaseSpeciesModalRefresh.test.ts (8 tests) 9703ms
+   ✓ species scroll through real deferred database modal refresh > counts batched workspace additions even when only the final workspace remains attached  883ms
+   ✓ species scroll through real deferred database modal refresh > retains an edited-enemy navigation reveal through pending refresh without navigation writes  1424ms
+   ✓ species scroll through real deferred database modal refresh > add retains the new reveal after pending refresh and undoes atomically  1382ms
+   ✓ species scroll through real deferred database modal refresh > duplicate retains the new reveal after pending refresh and undoes atomically  1331ms
+   ✓ species scroll through real deferred database modal refresh > create-from-enemy retains the new reveal after pending refresh and undoes atomically  1590ms
+   ✓ species scroll through real deferred database modal refresh > respects user scrolling before and after the queued refresh, including zero, until another explicit reveal  1726ms
+   ✓ species scroll through real deferred database modal refresh > keeps search recovery's reveal through a pending edit refresh  964ms
+   ✓ species scroll through real deferred database modal refresh > does not carry a closed modal's scroll into a new modal host  400ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiBlockedContinue.test.ts > offers the real Continue control when required work blocks without a budget stop
+AssertionError: expected "spy" to be called once with arguments: [ '계속' ][90m
+
+Received: 
+
+[1m  1st spy call:
+
+[22m[2m  [[22m
+[2m    "계속",[22m
+[31m+   undefined,[90m
+[31m+   {[90m
+[31m+     "userResume": true,[90m
+[31m+   },[90m
+[2m  ][22m
+[39m[90m
+
+Number of calls: [1m1[22m
+[39m
+ ❯ test/aiBlockedContinue.test.ts:70:22
+     68|   expect(button).not.toBeNull();
+     69|   button?.click();
+     70|   expect(f.sendText).toHaveBeenCalledExactlyOnceWith("계속");
+       |                      ^
+     71| });
+     72| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  test/aiToolCallSessionProtocol.test.ts > 툴 루프 예외 > 예외가 나도 그 호출의 tool 응답이 남아 세션이 오염되지 않는다
+AssertionError: promise resolved "{ assistantText: '', …(6) }" instead of rejecting
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- Error {[39m
+[32m-   "message": "rejected promise",[39m
+[31m+ {[39m
+[31m+   "appliedCalls": [],[39m
+[31m+   "assistantText": "",[39m
+[31m+   "error": "후처리 폭발",[39m
+[31m+   "proposedCalls": [],[39m
+[31m+   "recap": {[39m
+[31m+     "elapsedMs": 423,[39m
+[31m+     "process": [],[39m
+[31m+     "proposedWrites": 0,[39m
+[31m+     "ralphContinues": 0,[39m
+[31m+     "runOutcome": {[39m
+[31m+       "delivery": "no-change",[39m
+[31m+       "execution": "failed",[39m
+[31m+       "goal": "unassessed",[39m
+[31m+     },[39m
+[31m+     "stoppedReason": "error",[39m
+[31m+     "toolCalls": 0,[39m
+[31m+     "toolFailures": 0,[39m
+[31m+     "usage": {[39m
+[31m+       "byModel": [[39m
+[31m+         {[39m
+[31m+           "calls": 1,[39m
+[31m+           "callsWithoutUsage": 1,[39m
+[31m+           "completionTokens": 0,[39m
+[31m+           "model": "minimax/minimax-m3",[39m
+[31m+           "promptTokens": 0,[39m
+[31m+         },[39m
+[31m+       ],[39m
+[31m+       "calls": 1,[39m
+[31m+       "callsWithoutUsage": 1,[39m
+[31m+       "completionTokens": 0,[39m
+[31m+       "promptTokens": 0,[39m
+[31m+     },[39m
+[31m+     "volumeContinues": 0,[39m
+[31m+   },[39m
+[31m+   "runOutcome": {[39m
+[31m+     "delivery": "no-change",[39m
+[31m+     "execution": "failed",[39m
+[31m+     "goal": "unassessed",[39m
+[31m+   },[39m
+[31m+   "stoppedReason": "error",[39m
+[2m  }[22m
+
+ ❯ test/aiToolCallSessionProtocol.test.ts:80:62
+     78|     };
+     79| 
+     80|     await expect(session.sendUserMessage("타이틀 바꿔줘", () => {})).rejects…
+       |                                                              ^
+     81| 
+     82|     const messages = session.getMessages();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  test/assistantSessionIntent.test.ts > 의도 선언이 세션 라우팅을 정한다 > auto 모드는 같은 선언에도 멈추지 않고 진행한다(F-05)
+AssertionError: expected '완료 검증이 아직 미완성입니다.\n- 집 하나 만들어줘: Missi…' to be '야외 집으로 진행합니다.' // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 야외 집으로 진행합니다.[39m
+[31m+ 완료 검증이 아직 미완성입니다.[39m
+[31m+ - 집 하나 만들어줘: Missing or malformed criteria: repair_acceptance required[39m
+[31m+[39m
+
+ ❯ test/assistantSessionIntent.test.ts:110:34
+    108|     const result = await session.sendUserMessage("집 하나 만들어줘", () => {}…
+    109|     expect(seen.length).toBeGreaterThan(0);
+    110|     expect(result.assistantText).toBe("야외 집으로 진행합니다.");
+       |                                  ^
+    111|     expect(statuses(session).some((text) => text.startsWith("의도 확인 건너뜀…
+    112|   }, 30000);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  test/assistantSessionIntent.test.ts > 의도 선언이 세션 라우팅을 정한다 > 질문 선언은 플래너를 건너뛰고, 계획 필요 선언은 플래너를 돈다
+AssertionError: expected [ …(6) ] to include 'planner:skip question'
+ ❯ test/assistantSessionIntent.test.ts:144:32
+    142|     });
+    143|     await question.sendUserMessage("여관이 뭐야", () => {});
+    144|     expect(statuses(question)).toContain("planner:skip question");
+       |                                ^
+    145|     expect(statuses(question)).not.toContain("planner:start");
+    146| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  test/assistantSessionIntent.test.ts > 의도 선언이 세션 라우팅을 정한다 > 툴 이름 언급은 사용자 발화(instruction)에서만 읽고 footer 는 보지 않는다
+AssertionError: expected [ 'get_world_structure_rules', …(13) ] to include 'define_ending'
+ ❯ test/assistantSessionIntent.test.ts:256:19
+    254|     );
+    255|     const names = (seen[0]!.tools ?? []).map((tool) => tool.function.n…
+    256|     expect(names).toContain("define_ending");
+       |                   ^
+    257|     expect(names).not.toContain("set_type_chart");
+    258|   }, 30000);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  test/toolSchemaProviderCompat.test.ts > 툴 스키마 프로바이더 호환(Gemini 엄격 검증) > 전 툴 파라미터가 union type/비객체 properties/비배열 items 를 쓰지 않는다
+AssertionError: expected [ …(12) ] to deeply equal []
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   "set_work_plan.acceptance[].criteria[]: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.acceptance[].criteria[].oneOf[1].target: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.acceptance[].criteria[].oneOf[2].targets[]: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.acceptance[].criteria[].oneOf[3].target: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.acceptance[].criteria[].oneOf[4].target: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.acceptance[].criteria[].oneOf[5].target: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.requirements[].criteria[]: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.requirements[].criteria[].oneOf[1].target: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.requirements[].criteria[].oneOf[2].targets[]: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.requirements[].criteria[].oneOf[3].target: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.requirements[].criteria[].oneOf[4].target: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.requirements[].criteria[].oneOf[5].target: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+ ][39m
+
+ ❯ test/toolSchemaProviderCompat.test.ts:76:72
+     74|     const violations: string[] = [];
+     75|     for (const { name, parameters } of exposedSchemas()) walk(paramete…
+     76|     expect(violations.filter((v) => !v.includes("properties 가 없습니다")))…
+       |                                                                        ^
+     77|   });
+     78| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+ FAIL  test/toolSchemaProviderCompat.test.ts > 툴 스키마 프로바이더 호환(Gemini 엄격 검증) > 객체 타입 파라미터는 properties 를 선언한다 (모델이 {} 만 보내는 벽 방지)
+AssertionError: expected [ …(2) ] to deeply equal []
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   "set_work_plan.acceptance[].criteria[].oneOf[0].args: type:\"object\" 인데 properties 가 없습니다 — 모델이 {} 밖에 보낼 수 없습니다. 허용 필드를 properties 로 선언하거나(유니온은 키 합집합을 선택 필드로), 진짜 동적 키 맵이면 additionalProperties:true 를 명시하세요.",[39m
+[31m+   "set_work_plan.requirements[].criteria[].oneOf[0].args: type:\"object\" 인데 properties 가 없습니다 — 모델이 {} 밖에 보낼 수 없습니다. 허용 필드를 properties 로 선언하거나(유니온은 키 합집합을 선택 필드로), 진짜 동적 키 맵이면 additionalProperties:true 를 명시하세요.",[39m
+[31m+ ][39m
+
+ ❯ test/toolSchemaProviderCompat.test.ts:82:71
+     80|     const violations: string[] = [];
+     81|     for (const { name, parameters } of exposedSchemas()) walk(paramete…
+     82|     expect(violations.filter((v) => v.includes("properties 가 없습니다"))).…
+       |                                                                       ^
+     83|   });
+     84| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯
+
+ FAIL  test/toolSchemaProviderCompat.test.ts > 툴 스키마 프로바이더 호환(Gemini 엄격 검증) > 노출 스키마 어디에도 provider 금지 oneOf/anyOf 가 없다
+AssertionError: expected [ …(12) ] to deeply equal []
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   "set_work_plan.acceptance[].criteria[]: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.acceptance[].criteria[].oneOf[1].target: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.acceptance[].criteria[].oneOf[2].targets[]: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.acceptance[].criteria[].oneOf[3].target: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.acceptance[].criteria[].oneOf[4].target: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.acceptance[].criteria[].oneOf[5].target: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.requirements[].criteria[]: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.requirements[].criteria[].oneOf[1].target: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.requirements[].criteria[].oneOf[2].targets[]: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.requirements[].criteria[].oneOf[3].target: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.requirements[].criteria[].oneOf[4].target: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+   "set_work_plan.requirements[].criteria[].oneOf[5].target: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다",[39m
+[31m+ ][39m
+
+ ❯ test/toolSchemaProviderCompat.test.ts:88:65
+     86|     const violations: string[] = [];
+     87|     for (const { name, parameters } of exposedSchemas()) walk(paramete…
+     88|     expect(violations.filter((v) => v.includes("oneOf/anyOf"))).toEqua…
+       |                                                                 ^
+     89|   });
+     90| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯
+
+
+ Test Files  4 failed | 1 passed (5)
+      Tests  8 failed | 24 passed (32)
+   Start at  07:42:58
+   Duration  66.16s (transform 27.15s, setup 0ms, collect 35.60s, tests 28.00s, environment 347ms, prepare 449ms)
+
+JSON report written to /home/main/z-project/rpg-zzu/.omo/evidence/ai-harness-implementation/p2-residual-current-vitest.json

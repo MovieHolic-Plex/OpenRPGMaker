@@ -5,11 +5,11 @@ import { requireNumber, requireRecord } from "./guards";
 import { migrateV1toV3, migrateV2toV3, migrateV3toV4 } from "./migration";
 import { validateProjectV1, validateProjectV2, validateProjectV4 } from "./shape";
 
-/** Retired fields are omitted, but raw audio resource IDs are not field names. */
+/** Retired fields are omitted, but raw metadata resource IDs are not field names. */
 function projectJsonReplacer(project: Project) {
   const descriptions = project.audioDescriptions;
   return function (this: unknown, key: string, value: unknown): unknown {
-    return key === "terrainTemplates" && this !== descriptions?.music && this !== descriptions?.sound
+    return key === "terrainTemplates" && this !== descriptions?.music && this !== descriptions?.sound && this !== project.monsterMetadata
       ? undefined
       : value;
   };

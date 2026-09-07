@@ -1,0 +1,39 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/lifeSkillDisabledHarvest.test.ts test/cropRegrowthContract.test.ts test/toolActionAuthoringParity.test.ts test/makerClockIntegration.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-tools-verify
+
+ ✓ test/lifeSkillDisabledHarvest.test.ts (49 tests) 5788ms
+   ✓ crop automatic harvest XP > keeps the real reward when skillSystem is disabled  855ms
+   ✓ crop automatic harvest XP > keeps the real reward when skillSystem is omitted  418ms
+   ✓ crop automatic harvest XP > keeps the real reward when skillSystem is enabled  464ms
+   ✓ crop automatic harvest XP > rolls back the entire active transaction for an invalid switch reward  330ms
+ ✓ test/toolActionAuthoringParity.test.ts (44 tests) 4850ms
+   ✓ authored tool authority > keeps all four real defaults for absent and empty tables  641ms
+   ✓ authored tool authority > does not merge defaults into an existing one-row table on load  1496ms
+   ✓ authored tool authority > preserves explicit false through serialization and tills outside the region  315ms
+ ✓ test/cropRegrowthContract.test.ts (30 tests) 7233ms
+   ✓ exact crop regrowth contract > zero yield with inventory undefined > treats zero yield as a successful harvest (regrow=0)  685ms
+   ✓ exact crop regrowth contract > zero yield with inventory undefined > treats zero yield as a successful harvest (regrow=10)  380ms
+   ✓ exact crop regrowth contract > zero yield with inventory 9999999 > treats zero yield as a successful harvest (regrow=0)  334ms
+   ✓ exact crop regrowth contract > zero yield with inventory 9999999 > treats zero yield as a successful harvest (regrow=10)  304ms
+   ✓ exact crop regrowth contract > requires ten qualifying ticks after a two-day crop's harvest, including every displayed stage  596ms
+   ✓ exact crop regrowth contract > preserves remaining seven through actual Storage write/read/apply and resumes on the seventh tick  450ms
+   ✓ exact crop regrowth contract > rolls back a qualifying tick when a later date stage refuses  365ms
+   ✓ exact crop regrowth contract > zero-item harvest retains automatic XP policy when disabled  323ms
+   ✓ exact crop regrowth contract > rejects malformed countdown -1 without rewriting Storage  308ms
+ ✓ test/makerClockIntegration.test.ts (28 tests) 5947ms
+   ✓ maker game-clock integration > executes actual updateGameTime at minute 29 then 30, including split fixed frames  346ms
+   ✓ maker game-clock integration > has identical deadline readiness through natural  330ms
+   ✓ maker game-clock integration > has identical deadline readiness through sleep  374ms
+   ✓ maker game-clock integration > discards a ready draft and recovery prefix when capacity refuses set-time  838ms
+   ✓ maker game-clock integration > rolls back the whole large natural frame if a later day stage fails  381ms
+   ✓ maker game-clock integration > uses the pre-change original clock at minute 29 for cancellation, not the new target  340ms
+
+ Test Files  4 passed (4)
+      Tests  151 passed (151)
+   Start at  22:37:06
+   Duration  45.64s (transform 46.50s, setup 0ms, collect 113.77s, tests 23.82s, environment 1.60s, prepare 2.03s)
+

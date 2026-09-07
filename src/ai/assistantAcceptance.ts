@@ -1,4 +1,6 @@
 import type { Point } from "@/project/lint/reachability";
+import { isFunctionalCriterionKind, parseFunctionalCriterion, type FunctionalCriterion } from "./functionalAcceptance";
+import { VERIFICATION_TOOL_NAMES } from "./agentVerification";
 
 export type AcceptanceStatus = "pending" | "working" | "verifying" | "verified" | "blocked";
 export interface AcceptanceSnapshot {
@@ -7,7 +9,24 @@ export interface AcceptanceSnapshot {
   readonly status: AcceptanceStatus;
   readonly items: readonly AcceptanceItemSnapshot[];
 }
+export interface AcceptanceSource {
+  readonly requestId: string;
+  readonly text: string;
+  readonly scope: {
+    readonly mapId: string;
+    readonly region: { readonly x: number; readonly y: number; readonly width: number; readonly height: number };
+  } | null;
+}
+export interface RequirementWithdrawalAction {
+  readonly acceptanceId: string;
+  readonly requirementId: string;
+  readonly reason: string;
+}
 export interface AcceptanceItemSnapshot {
+  readonly required?: boolean;
+  readonly source?: AcceptanceSource;
+  readonly refinements?: readonly AcceptanceSource[];
+  readonly withdrawal?: RequirementWithdrawalAction & { readonly source: "user" };
   readonly id: string;
   readonly title: string;
   readonly status: AcceptanceStatus;
@@ -21,6 +40,8 @@ export interface AcceptanceRegion { readonly x: number; readonly y: number; read
 export type AcceptanceTarget = { readonly mapId: string } | { readonly newMapName: string };
 type ScopedTarget = { readonly target: AcceptanceTarget; readonly region?: AcceptanceRegion };
 export type AcceptanceCriterion =
+  | FunctionalCriterion
+  | { readonly kind: "toolVerdict"; readonly tool: string; readonly args: Readonly<Record<string, unknown>> }
   | { readonly kind: "mapDimensions"; readonly target: AcceptanceTarget; readonly width: number; readonly height: number }
   | { readonly kind: "mapCount"; readonly targets: readonly AcceptanceTarget[]; readonly count: number }
   | (ScopedTarget & { readonly kind: "eventCount"; readonly count: number })
@@ -28,6 +49,7 @@ export type AcceptanceCriterion =
   | { readonly kind: "actionCombat"; readonly target: AcceptanceTarget }
   | { readonly kind: "reachability"; readonly target: AcceptanceTarget; readonly from: Point; readonly to: readonly Point[] };
 export interface AcceptancePromise {
+  readonly required?: boolean;
   readonly id: string;
   readonly title: string;
   /** null means the entire criterion array failed parsing; repair is required. */
@@ -55,6 +77,14 @@ export const ACCEPTANCE_EXAMPLES: Readonly<Record<AcceptanceCriterion["kind"], A
   preserve: Object.freeze({ kind: "preserve", target: exampleTarget }),
   imageReviewed: Object.freeze({ kind: "imageReviewed", target: exampleTarget }),
   actionCombat: Object.freeze({ kind: "actionCombat", target: exampleTarget }),
+  toolVerdict: Object.freeze({ kind: "toolVerdict", tool: "run_lint", args: Object.freeze({}) }),
+  shopPurchase: Object.freeze({ kind: "shopPurchase", target: exampleTarget, start: examplePoint,
+    seller: Object.freeze({ eventId: "seller_id" }), item: Object.freeze({ id: "item_id" }), count: 1, unitPrice: 10 }),
+  mapRoundTrip: Object.freeze({ kind: "mapRoundTrip", target: exampleTarget, start: examplePoint,
+    destination: Object.freeze({ newMapName: "Destination" }), outgoing: Object.freeze({ eventId: "outgoing_id" }), returning: Object.freeze({ eventId: "returning_id" }) }),
+  npcReward: Object.freeze({ kind: "npcReward", requirement: Object.freeze({ target: Object.freeze({ eventId: "npc_id" }),
+    grants: Object.freeze([{ kind: "gold" as const, count: 20 }]), oneTime: true }) }),
+  functionalUnresolved: Object.freeze({ kind: "functionalUnresolved", reason: "Identify missing request expectations" }),
   reachability: Object.freeze({ kind: "reachability", target: exampleTarget, from: examplePoint, to: Object.freeze([Object.freeze({ x: 1, y: 0 })]) }),
 });
 export interface AcceptanceParseResult {
@@ -102,18 +132,23 @@ function criterion(value: unknown, index: number, issues: AcceptanceIssue[]): Ac
     const parsed = target(entry);
     return parsed ?? fail(field, entry === undefined ? "missing-field" : "invalid-selector", "object with exactly one nonempty selector: {mapId} OR {newMapName}");
   };
+  if (typeof value.kind === "string" && isFunctionalCriterionKind(value.kind)) return parseFunctionalCriterion(value) ?? fail("", "invalid-field", "complete functional criterion");
   // Evidence is generated only by the harness. Unknown fields fail closed.
   const keys: Record<string, readonly string[]> = {
     mapDimensions: ["kind", "target", "width", "height"], mapCount: ["kind", "targets", "count"],
     eventCount: ["kind", "target", "region", "count"], targetChange: ["kind", "target", "region"],
     preserve: ["kind", "target", "region"], imageReviewed: ["kind", "target", "region"],
-    reachability: ["kind", "target", "from", "to"],
+    reachability: ["kind", "target", "from", "to"], toolVerdict: ["kind", "tool", "args"],
     actionCombat: ["kind", "target"],
   };
   const allowed = typeof value.kind === "string" && Object.hasOwn(keys, value.kind) ? keys[value.kind] : undefined;
   if (!allowed) return invalid("kind", Object.keys(ACCEPTANCE_EXAMPLES).join(" | "));
   const extra = Object.keys(value).find(key => !allowed.includes(key));
   if (extra) return fail(extra, "unknown-field", `only ${allowed.join(", ")}`);
+  if (value.kind === "toolVerdict") {
+    return text(value.tool) && VERIFICATION_TOOL_NAMES.has(value.tool) && acceptanceRecord(value.args)
+      ? { kind: "toolVerdict", tool: value.tool, args: structuredClone(value.args) } : null;
+  }
   if (value.kind === "mapCount") {
     if (!Array.isArray(value.targets) || value.targets.length === 0) return invalid("targets", "nonempty array of explicit scoped map selectors; never a project total");
     if (!integer(value.count)) return invalid("count", "nonnegative safe integer");
@@ -172,8 +207,9 @@ export function parseAcceptance(value: unknown): readonly AcceptancePromise[] | 
       continue;
     }
     ids.add(entry.id);
-    const parsed = parseAcceptanceCriteriaResult(entry.criteria);
-    promises.push({ id: entry.id, title: entry.title, criteria: parsed.criteria, ...(parsed.issues.length ? { issues: parsed.issues } : {}) });
+    const validRequired = entry.required === undefined || typeof entry.required === "boolean";
+    const parsed = parseAcceptanceCriteriaResult(validRequired ? entry.criteria : undefined);
+    promises.push({ id: entry.id, title: entry.title, required: parsed.criteria === null || entry.required !== false, criteria: parsed.criteria, ...(parsed.issues.length ? { issues: parsed.issues } : {}) });
   }
   if (needsRepair) {
     let id = "acceptance-contract";

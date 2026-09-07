@@ -1,5 +1,8 @@
 ﻿import { heldToolItemId, resolveToolUseOnTile } from "@/project/toolActions";
 import { spendEnergy } from "@/project/energy";
+import { hasAuthoredToolActions } from "@/project/toolActions";
+import { inBounds, isPassable } from "@/project/collision";
+import { canOccupySpatialFootprint } from "@/project/spatialOccupancy";
 import { awardLifeSkillXp } from "@/project/lifeSkillProgress";
 import { resolveToolCapability } from "@/project/upgrades";
 import {
@@ -136,6 +139,7 @@ export function interactWithFarmPlot(
   y: number,
   intent?: FarmIntent
 ): FarmInteractionResult {
+  if (!isIntegerTile(x, y) || !inBounds(map, x, y)) return ignored(x, y, "not-farmable");
   const tileX = Math.trunc(x);
   const tileY = Math.trunc(y);
   const heldItemId = heldToolItemId(session);
@@ -183,24 +187,44 @@ function interactWithFarmPlotSingle(
   const tileX = Math.trunc(x);
   const tileY = Math.trunc(y);
 
+  if (!isPassable(project, map, tileX, tileY)) return ignored(tileX, tileY, "not-farmable");
+  // Only the tree/rock being harvested is exempt from occupancy, not overlapping assets.
+  const placeables = { ...session.placeables };
+  const targetKey = placeableKey(map.id, tileX, tileY);
+  const target = placeables[targetKey];
+  if (target?.kind === "tree" || target?.kind === "rock") delete placeables[targetKey];
+  if (!canOccupySpatialFootprint(project, { ...session, placeables },
+    { mapId: map.id, x: tileX, y: tileY, orientation: "down" }, { width: 1, height: 1 })) {
+    return ignored(tileX, tileY, "not-farmable");
+  }
   // 도끼/곡괭이는 의도와 무관하게 항상 먼저 처리한다 (설치물 채집 경로).
   const placeableHit = tryPlaceableToolHarvest(project, session, map, tileX, tileY);
   if (placeableHit) return placeableHit;
-
-  if (!isTileFarmable(map, tileX, tileY)) return ignored(tileX, tileY, "not-farmable");
+  if (!isTileFarmable(map, tileX, tileY)
+    && !(["till", "water", "harvest"] as const).some((action) =>
+      resolveToolUseOnTile(project, session, map, tileX, tileY, action))) {
+    return ignored(tileX, tileY, "not-farmable");
+  }
   const plots = ensureMapPlots(session, map.id);
   const key = farmPlotKey(tileX, tileY);
   const existing = plots[key];
 
+  // Resolve authored hand actions at the target tile; preserve the empty-hand cascade.
+  const handUse = heldToolItemId(session) && hasAuthoredToolActions(project)
+    ? resolveToolUseOnTile(project, session, map, tileX, tileY) : undefined;
+  if (handUse?.action === "till" || handUse?.action === "water" || handUse?.action === "harvest") {
+    return interactWithIntent(project, session, map, tileX, tileY, plots, key, existing, handUse.action);
+  }
   if (intent) return interactWithIntent(project, session, map, tileX, tileY, plots, key, existing, intent);
 
   // 죽은 작물과 DB 에서 사라진 작물은 다른 분기보다 먼저 처리해야 밭이 영구히 잠기지 않는다.
   // 괭이질로 초기화한다.
   if (needsClearing(project, existing)) return tillPlot(project, session, map, plots, key, tileX, tileY);
-  const harvested = tryHarvestPlot(project, session, plots, key, existing, tileX, tileY);
+  const harvested = tryHarvestPlot(project, session, map, plots, key, existing, tileX, tileY);
   if (harvested) return harvested;
   if (!existing?.tilled) return tillPlot(project, session, map, plots, key, tileX, tileY);
   if (!existing.cropId) {
+    if (!isTileFarmable(map, tileX, tileY)) return ignored(tileX, tileY, "not-farmable");
     const crop = firstPlantableCrop(project, session, currentSeason(session));
     if (!crop) return ignored(tileX, tileY, "missing-seed");
     return plantPlot(session, plots, key, tileX, tileY, crop);
@@ -232,6 +256,7 @@ function awardInteractionXp(
   session: PlaySession,
   results: readonly FarmInteractionResult[],
 ): Readonly<Partial<Record<"farming" | "mining" | "foraging", number>>> | undefined {
+  if (project.system.skillSystem?.enabled !== true) return {};
   const amounts = {
     farming: results.filter((result) => result.source === "crop").length * 10,
     mining: results.filter((result) => result.source === "rock").length * 10,
@@ -267,9 +292,8 @@ function interactWithIntent(
     if (intent === "till") return tillPlot(project, session, map, plots, key, tileX, tileY);
     return ignored(tileX, tileY, existing?.dead ? "plot-needs-clearing" : "missing-crop");
   }
-  // 다 자란 작물은 손에 무엇을 들었든 수확된다. 의도만 따르면 farmIntentForHand 가 'harvest' 를
-  // 만들지 않으므로 씨앗·괭이·물뿌리개를 든 동안 수확 경로가 사라져 밭이 소프트락된다.
-  const harvested = tryHarvestPlot(project, session, plots, key, existing, tileX, tileY);
+  // Legacy harvest ignores hand intent; an authored harvest rule must still authorize it.
+  const harvested = tryHarvestPlot(project, session, map, plots, key, existing, tileX, tileY);
   if (harvested) return harvested;
 
   switch (intent) {
@@ -279,6 +303,7 @@ function interactWithIntent(
       if (!existing?.tilled) return tillPlot(project, session, map, plots, key, tileX, tileY);
       return ignored(tileX, tileY, "wrong-tool-for-plot");
     case "plant": {
+      if (!isTileFarmable(map, tileX, tileY)) return ignored(tileX, tileY, "not-farmable");
       // 괭이를 가지고 있어도 갈지 않은 밭에는 심을 수 없다 — 도구가 없다는 안내는 거짓이다.
       if (!existing?.tilled) return ignored(tileX, tileY, "plot-needs-tilling");
       if (existing.cropId) return ignored(tileX, tileY, "wrong-tool-for-plot");
@@ -311,6 +336,7 @@ function handSeedCrop(project: Project, session: PlaySession): CropRecord | "out
 function tryHarvestPlot(
   project: Project,
   session: PlaySession,
+  map: GameMap,
   plots: Record<string, FarmPlotState>,
   key: string,
   existing: FarmPlotState | undefined,
@@ -321,7 +347,14 @@ function tryHarvestPlot(
   // 고사/DB 미등록 작물은 호출자가 `needsClearing` 으로 먼저 걸러낸다 — 여기선 정상 작물만 본다.
   const crop = cropById(project, existing.cropId);
   if (!crop || existing.dead || !isCropReady(crop, existing)) return undefined;
-  const count = Math.max(1, Math.trunc(crop.harvestCount || 1));
+  if (project.system.toolActions?.some((rule) => rule.action === "harvest")) {
+    if (!resolveToolUseOnTile(project, session, map, tileX, tileY, "harvest")) {
+      return ignored(tileX, tileY, "wrong-tool-for-plot");
+    }
+  } else if (!isTileFarmable(map, tileX, tileY)) {
+    return ignored(tileX, tileY, "not-farmable");
+  }
+  const count = Math.max(0, Math.trunc(crop.harvestCount ?? 1));
   if (!changeItem(session, crop.harvestItemId, "+=", count)) return ignored(tileX, tileY, "inventory-full");
   plots[key] = harvestNextPlotState(crop, existing);
   return { kind: "harvested", x: tileX, y: tileY, cropId: crop.id, itemId: crop.harvestItemId, count, source: "crop" };
@@ -478,6 +511,12 @@ export function cropStageForGrowthDays(crop: CropRecord, growthDays: number): nu
   return crop.stages.length;
 }
 
+/** Regrowth projects onto the existing stages without letting initial growth shorten its timer. */
+export function cropStageForPlot(crop: CropRecord, plot: FarmPlotState): number {
+  if (plot.regrowDaysRemaining === undefined) return plot.stage ?? 0;
+  return cropStageForGrowthDays(crop, totalGrowthDays(crop) - plot.regrowDaysRemaining);
+}
+
 function advanceFarmPlotsOneDay(project: Project, session: PlaySession, season: Season): void {
   const maps = session.farmPlots ?? {};
   for (const [mapId, plots] of Object.entries(maps)) {
@@ -496,11 +535,16 @@ function advanceFarmPlotsOneDay(project: Project, session: PlaySession, season: 
         nextPlots[key] = plot.watered ? { ...plot, watered: false } : plot;
         continue;
       }
-      const growthDays = Math.max(0, Math.trunc(plot.growthDays ?? 0)) + 1;
+      const regrowDaysRemaining = plot.regrowDaysRemaining === undefined
+        ? undefined : Math.max(0, plot.regrowDaysRemaining - 1);
+      const growthDays = regrowDaysRemaining === undefined
+        ? Math.max(0, Math.trunc(plot.growthDays ?? 0)) + 1
+        : Math.max(0, totalGrowthDays(crop) - regrowDaysRemaining);
       nextPlots[key] = {
         ...plot,
         watered: false,
         dead: false,
+        ...(regrowDaysRemaining === undefined ? {} : { regrowDaysRemaining }),
         growthDays,
         stage: cropStageForGrowthDays(crop, growthDays),
       };
@@ -514,20 +558,22 @@ function harvestNextPlotState(crop: CropRecord, plot: FarmPlotState): FarmPlotSt
   if (!crop.regrow) {
     return { tilled: true, watered: false };
   }
-  const total = totalGrowthDays(crop);
-  const growthDays = Math.max(0, total - Math.max(1, Math.trunc(crop.regrow.days)));
+  const regrowDaysRemaining = Math.max(1, Math.trunc(crop.regrow.days));
+  const growthDays = Math.max(0, totalGrowthDays(crop) - regrowDaysRemaining);
   return {
     ...plot,
     tilled: true,
     watered: false,
     dead: false,
     cropId: crop.id,
+    regrowDaysRemaining,
     growthDays,
     stage: cropStageForGrowthDays(crop, growthDays),
   };
 }
 
 function isCropReady(crop: CropRecord, plot: FarmPlotState): boolean {
+  if (plot.regrowDaysRemaining !== undefined) return plot.regrowDaysRemaining === 0;
   return (plot.stage ?? 0) >= crop.stages.length || (plot.growthDays ?? 0) >= totalGrowthDays(crop);
 }
 

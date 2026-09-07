@@ -1,0 +1,31 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle --maxWorkers=2 --minWorkers=1 test/databaseMonsterMetadata.test.ts test/databaseEnemyResourceSlot.test.ts test/databaseResourcePickerDialog.test.ts test/monsterMetadataHistory.test.ts test/monsterCatalogCoverage.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-monster-ui-0907
+
+ ✓ test/monsterMetadataHistory.test.ts (3 tests) 3236ms
+   ✓ monster metadata history > restores inherited metadata when an applied project edit is undone  1153ms
+   ✓ monster metadata history > restores authored metadata when an undone edit is redone  1543ms
+   ✓ monster metadata history > restores explicit clears and unknown IDs when a reset is undone  538ms
+ ✓ test/databaseEnemyResourceSlot.test.ts (2 tests) 860ms
+   ✓ 몬스터 그래픽 미리보기 슬롯 > generated 리소스를 해석할 수 없으면 클릭 불가능한 정적 라벨을 보여준다 (데드 버튼 금지)  593ms
+ ✓ test/databaseMonsterMetadata.test.ts (11 tests) 11394ms
+   ✓ monster metadata through the database > opens editable resource controls when the enemy collection is empty  885ms
+   ✓ monster metadata through the database > commits all edited fields atomically when Apply is clicked  1923ms
+   ✓ monster metadata through the database > refreshes clean controls when the metadata edit is undone and redone  2637ms
+   ✓ monster metadata through the database > restores inherited values when reset is clicked  1923ms
+   ✓ monster metadata through the database > preserves mounted dirty controls when search hides the selected artwork  682ms
+   ✓ monster metadata through the database > keeps dirty fields and merges unrelated metadata when the store refreshes  1057ms
+   ✓ monster metadata through the database > retains Escape ownership when a dirty close is cancelled repeatedly  353ms
+   ✓ monster metadata through the database > moves list focus without changing selection when an arrow key is pressed  610ms
+   ✓ monster metadata through the database > blocks invalid metadata when Apply is clicked  565ms
+   ✓ monster metadata through the database > revokes stale writes while retaining draft text when the project is replaced  451ms
+ ✓ test/databaseResourcePickerDialog.test.ts (7 tests) 1444ms
+ ✓ test/monsterCatalogCoverage.test.ts (2 tests) 319ms
+
+ Test Files  5 passed (5)
+      Tests  25 passed (25)
+   Start at  04:06:57
+   Duration  102.48s (transform 110.35s, setup 0ms, collect 176.74s, tests 17.25s, environment 767ms, prepare 1.78s)

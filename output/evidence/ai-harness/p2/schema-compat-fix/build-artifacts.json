@@ -1,0 +1,7 @@
+{
+  "dist/index.html": "735bcd41317eedf6448b58b471ffa1d8846dcd14f149659d059b49d6d546dc8c",
+  "dist/export-player/player.js": "d6dea5b2f31079912b5052bc94a816eae66f701dfe796a90dd329665990064f6",
+  "dist/export-player/player-manifest.json": "8da5c9417431464fe2dcb5c40796e839e716eceae021ae78fa25b865ec79a7d5",
+  "dist/standalone-player/standalone.js": "3f44df703bb96462bb39b7e9dd4ac3759345d495102c69c9e7484a66e7aa7be9",
+  "dist/standalone-player/standalone.css": "2716c7681ed108c199b9c38ab4e779a9699c805b056fd34517dcd41df0be4c7f"
+}

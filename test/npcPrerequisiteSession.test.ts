@@ -5,6 +5,7 @@ import { resetIntentDeclarationCache } from "@/ai/intentDeclarationClient";
 import { verifyNpcRewardsPlayable } from "@/ai/workItemOutcome";
 import { fixedDeclarer } from "./intentFixture";
 import { CHIEF, prerequisiteFixture } from "./npcPrerequisiteFixture";
+import { offlineChatResponse } from "./fixtures/offlineChatResponse";
 
 const COMPLETE = "NPC_PREREQUISITE_COMPLETION_SENTINEL";
 const final = (): ChatResult => ({ message: { role: "assistant", content: COMPLETE }, finishReason: "stop" });
@@ -15,7 +16,7 @@ function harness(f: ReturnType<typeof prerequisiteFixture>, replies: (ChatResult
   const session = new AssistantSession(f.project, {
     config: { ...defaultAiConfig(), agentMode: "chat", model: "test", liteModel: "test", apiKey: "test", maxToolCalls: 18, maxTokens: 32000 },
     declareIntent: fixedDeclarer({ mode: "modify", npcRewards: [f.requirement] }),
-    chat: async (_config, request) => { requests.push(request); const next = replies.shift(); if (next instanceof Error) throw next; return next ?? final(); },
+    chat: async (_config, request) => { requests.push(request); const next = replies.shift(); if (next instanceof Error) throw next; return offlineChatResponse(next ?? final()); },
   });
   const onEvent = (e: SessionEvent) => events.push(e);
   const results = (name = "verify_npc_reward") => events.filter((e): e is Extract<SessionEvent, { type: "tool_call" }> => e.type === "tool_call" && e.name === name).map(e => e.result);

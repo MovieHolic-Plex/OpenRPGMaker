@@ -8,6 +8,7 @@ import { defaultSkillRecords } from "./defaults/defaultDatabaseStarterRecords";
 import { collectProjectItemReferenceIds } from "./io/references";
 import { projectWithoutEventDrafts } from "./eventDrafts";
 import { applyAudioDescriptionDelta } from "./audioDescriptions";
+import { applyMonsterMetadataDelta } from "./monsterMetadata";
 import { supabaseProjectConfig, type SupabaseProjectConfig } from "./supabaseProjectConfig";
 import { sha256HexText } from "../util/sha256";
 import { randomUuid } from "../util/id";
@@ -319,6 +320,13 @@ export async function saveProjectMapPatchToSupabase(
     // mergeProjectMaps returns a detached root; never mutate any input snapshot.
     if (audioDescriptions === undefined) delete mergedProject.audioDescriptions;
     else mergedProject.audioDescriptions = audioDescriptions;
+    const monsterMetadata = applyMonsterMetadataDelta(
+      baseProject.monsterMetadata,
+      persistedProject.monsterMetadata,
+      latestProject.monsterMetadata,
+    );
+    if (monsterMetadata === undefined) delete mergedProject.monsterMetadata;
+    else mergedProject.monsterMetadata = monsterMetadata;
     const wire = await projectWire(mergedProject);
     const saved = await saveProjectSnapshotToSupabase(config, mergedProject, latestSha, wire);
     if (!saved) continue;

@@ -1,0 +1,23 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiRunOutcomeIntegration.test.ts test/aiRunOutcomeApply.test.ts --maxWorkers 2 --minWorkers 1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p2-20260906
+
+ ✓ test/aiRunOutcomeIntegration.test.ts (7 tests) 2070ms
+   ✓ run outcome session boundaries > publishes one unassessed projection when a query returns  585ms
+   ✓ run outcome session boundaries > captures blocked execution when required work is skipped  682ms
+   ✓ run outcome session boundaries > captures awaiting user when plan mode stops before execution  407ms
+   ✓ run outcome session boundaries > captures cancellation when the entry signal is already aborted  387ms
+ ✓ test/aiRunOutcomeApply.test.ts (4 tests) 12839ms
+   ✓ run outcome actual application > settles the returned result when ordinary proof is verified  4206ms
+   ✓ run outcome actual application > settles the returned result when ordinary proof is failed  2534ms
+   ✓ run outcome actual application > settles the returned result when ordinary proof is cancelled  2406ms
+   ✓ run outcome actual application > does not credit an old receipt when another user run only queries  3683ms
+
+ Test Files  2 passed (2)
+      Tests  11 passed (11)
+   Start at  02:36:21
+   Duration  30.44s (transform 11.76s, setup 0ms, collect 34.12s, tests 14.91s, environment 1ms, prepare 302ms)
+

@@ -1,0 +1,236 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/shopDecisionInput.test.ts test/shopEquipmentPreview.test.ts test/keyBindingsContract.test.ts test/shopRuntimeUx.test.ts test/runtimeCursorMenu.test.ts test/playInputBlocker.test.ts
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-clear-harbor-3da2
+
+ ✓ test/playInputBlocker.test.ts (5 tests) 34ms
+ ✓ test/runtimeCursorMenu.test.ts (6 tests) 54ms
+ ✓ test/keyBindingsContract.test.ts (16 tests) 220ms
+ ✓ test/shopEquipmentPreview.test.ts (29 tests) 7188ms
+   ✓ pure actor-specific shop equipment preview > shows authorable positive-bonus downgrades and lost zero-bonus stats without negative authored bonuses  469ms
+   ✓ pure actor-specific shop equipment preview > handles the runtime-only negative-bonus edge with all four truthful totals  335ms
+   ✓ pure actor-specific shop equipment preview > counts a two-hand mirror once, displaces both hands, and compares derived effects  306ms
+   ✓ pure actor-specific shop equipment preview > preserves the requested dual-wield shield slot granted by class  383ms
+   ✓ pure actor-specific shop equipment preview > retains readable actor and current stats when cursed blocks replacement  368ms
+   ✓ pure actor-specific shop equipment preview > does not bypass transition permission for same-item cursed  310ms
+   ✓ pure actor-specific shop equipment preview > passes raw hand occupancy to authority, so a hidden cursed shield still blocks displacement  320ms
+   ✓ pure actor-specific shop equipment preview > never mutates deeply frozen project, session or goods, on ready or blocked paths  882ms
+ ✓ test/shopDecisionInput.test.ts (14 tests) 12610ms
+   ✓ mounted shop decision focus and comparison > cycles exact stock focus groups in both directions without trading  1757ms
+   ✓ mounted shop decision focus and comparison > moves mode/category focus without committing until confirm and never buys  1071ms
+   ✓ mounted shop decision focus and comparison > confirms only rows/transaction buttons with "e"; ignores repeats  758ms
+   ✓ mounted shop decision focus and comparison > confirms only rows/transaction buttons with "z"; ignores repeats  1096ms
+   ✓ mounted shop decision focus and comparison > confirms only rows/transaction buttons with "Enter"; ignores repeats  1281ms
+   ✓ mounted shop decision focus and comparison > confirms only rows/transaction buttons with " "; ignores repeats  766ms
+   ✓ mounted shop decision focus and comparison > renders four truthful downgrade totals, +0, displacement and effect data without mutation  542ms
+   ✓ mounted shop decision focus and comparison > exposes all six actors, immediate dual-wield slots, scroll ring and exact opener restoration  1049ms
+   ✓ mounted shop decision focus and comparison > shows blocked current totals without fabricated next, and same-equipment status  527ms
+   ✓ mounted shop decision focus and comparison > supports custom slots and unavailable non-equipment/legacy/no-party states  1727ms
+   ✓ mounted shop decision focus and comparison > retains real selection after last-copy sale, skips absent groups and empty-list confirm  964ms
+   ✓ mounted shop decision focus and comparison > aborts old stock/detail listeners on rerender and close without document-wide capture  736ms
+ ❯ test/shopRuntimeUx.test.ts (23 tests | 1 failed) 16570ms
+   ✓ 상점 도움말·통화 표시 > 도움말 창이 첫 물건의 설명을 보여주고 커서 이동에 따라 바뀐다  1320ms
+   ✓ 상점 도움말·통화 표시 > 설명이 없으면 목록 안내문으로 되돌린다 — 아이템 효과 문장을 머리글에 박지 않는다  1750ms
+   ✓ 상점 도움말·통화 표시 > 가격에 통화 단위가 붙고 소지금·상인 소지금 모두 라벨이 있다  1285ms
+   ✓ 상점 구매 가능 표시 > 소지금으로 못 사는 행에 표시와 이유가 붙는다  965ms
+   ✓ 상점 구매 가능 표시 > 판매에서는 상인이 못 사주는 행에 표시가 붙는다  1064ms
+   ✓ 상점 구매 가능 표시 > 거래 후 행 표시가 제자리에서 갱신된다  936ms
+   ✓ 상점 수량 입력 > 수량 입력과 합계가 목록이 아니라 프롬프트 줄에 있다  876ms
+   ✓ 상점 수량 입력 > 합계가 선택 행의 단가 × 수량으로 갱신된다  641ms
+   ✓ 상점 수량 입력 > 수량 모드가 아니면 입력칸을 만들지 않는다  532ms
+   × 상점 사이드 패널 > 파티 칸이 에디터 밝은 회색 빈 박스가 아니다 894ms
+     → expected +0 to be 2 // Object.is equality
+   ✓ 상점 사이드 패널 > '장비' 줄은 장비 종류에만 뜨고 실제 착용 수를 센다  1166ms
+   ✓ 상점 접근성·제자리 갱신 > 오버레이가 모달 대화창 시맨틱을 갖는다 1ms
+   ✓ 상점 접근성·제자리 갱신 > 상태 문구가 live region 이고 제자리에서 바뀐다  571ms
+   ✓ 상점 접근성·제자리 갱신 > 목록에 list 시맨틱이 있다 178ms
+   ✓ 상점 접근성·제자리 갱신 > 다 팔린 행은 목록에서 빠진다 141ms
+   ✓ 상점 빈 목록 > 모드에 맞는 빈 목록 안내가 한국어로 뜬다  516ms
+   ✓ 상점 빈 목록 > 거래할 게 없는 상점도 닫을 수 있는 안내 창을 띄운다 158ms
+   ✓ post-trade quantity synchronization > clamps the selected buy quantity and refreshes every row after spending gold  849ms
+   ✓ post-trade quantity synchronization > clamps sell quantity to the remaining merchant budget and updates other rows  465ms
+   ✓ post-trade quantity synchronization > clamps sell quantity to remaining inventory when the merchant can afford more 262ms
+   ✓ post-trade quantity synchronization > reselects the surviving row using its new capacity after selling the last copies  706ms
+   ✓ post-trade quantity synchronization > keeps a zero-capacity row inspectable at quantity one and rejects another trade  793ms
+   ✓ 상점 거래 메시지 > 성공·실패 메시지가 모두 한국어이고 금액을 알려준다  418ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/shopRuntimeUx.test.ts > 상점 사이드 패널 > 파티 칸이 에디터 밝은 회색 빈 박스가 아니다
+AssertionError: expected +0 to be 2 // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 2[39m
+[31m+ 0[39m
+
+ ❯ test/shopRuntimeUx.test.ts:186:28
+    184|     const overlay = render();
+    185|     const sprites = overlay.querySelectorAll<HTMLElement>(".runtime-sh…
+    186|     expect(sprites.length).toBe(2);
+       |                            ^
+    187|     for (const sprite of sprites) {
+    188|       expect(sprite.style.background).not.toContain("--bg-inset");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 5 passed (6)
+      Tests  1 failed | 92 passed (93)
+   Start at  05:22:18
+   Duration  66.50s (transform 57.36s, setup 0ms, collect 215.43s, tests 36.68s, environment 3.32s, prepare 4.07s)
+
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/shopDecisionInput.test.ts test/shopEquipmentPreview.test.ts test/keyBindingsContract.test.ts test/shopRuntimeUx.test.ts test/runtimeCursorMenu.test.ts test/playInputBlocker.test.ts
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-clear-harbor-3da2
+
+ ✓ test/playInputBlocker.test.ts (5 tests) 180ms
+ ✓ test/runtimeCursorMenu.test.ts (6 tests) 61ms
+ ✓ test/keyBindingsContract.test.ts (16 tests) 76ms
+ ✓ test/shopEquipmentPreview.test.ts (29 tests) 5995ms
+   ✓ pure actor-specific shop equipment preview > returns real raw-state displaced objects even when the stat projection hides a shield  455ms
+   ✓ pure actor-specific shop equipment preview > does not fabricate targets for an empty or missing party actor  584ms
+   ✓ pure actor-specific shop equipment preview > never mutates deeply frozen project, session or goods, on ready or blocked paths  1972ms
+ ✓ test/shopDecisionInput.test.ts (14 tests) 8775ms
+   ✓ mounted shop decision focus and comparison > cycles exact stock focus groups in both directions without trading  1858ms
+   ✓ mounted shop decision focus and comparison > moves mode/category focus without committing until confirm and never buys  768ms
+   ✓ mounted shop decision focus and comparison > confirms only rows/transaction buttons with "e"; ignores repeats  684ms
+   ✓ mounted shop decision focus and comparison > confirms only rows/transaction buttons with "z"; ignores repeats  301ms
+   ✓ mounted shop decision focus and comparison > confirms only rows/transaction buttons with " "; ignores repeats  392ms
+   ✓ mounted shop decision focus and comparison > exposes all six actors, immediate dual-wield slots, scroll ring and exact opener restoration  605ms
+   ✓ mounted shop decision focus and comparison > shows blocked current totals without fabricated next, and same-equipment status  660ms
+   ✓ mounted shop decision focus and comparison > supports custom slots and unavailable non-equipment/legacy/no-party states  1631ms
+   ✓ mounted shop decision focus and comparison > retains real selection after last-copy sale, skips absent groups and empty-list confirm  824ms
+ ✓ test/shopRuntimeUx.test.ts (23 tests) 8050ms
+   ✓ 상점 도움말·통화 표시 > 도움말 창이 첫 물건의 설명을 보여주고 커서 이동에 따라 바뀐다  1025ms
+   ✓ 상점 도움말·통화 표시 > 설명이 없으면 목록 안내문으로 되돌린다 — 아이템 효과 문장을 머리글에 박지 않는다  880ms
+   ✓ 상점 도움말·통화 표시 > 가격에 통화 단위가 붙고 소지금·상인 소지금 모두 라벨이 있다  494ms
+   ✓ 상점 구매 가능 표시 > 판매에서는 상인이 못 사주는 행에 표시가 붙는다  575ms
+   ✓ 상점 구매 가능 표시 > 거래 후 행 표시가 제자리에서 갱신된다  301ms
+   ✓ 상점 사이드 패널 > '장비' 줄은 장비 종류에만 뜨고 실제 착용 수를 센다  402ms
+   ✓ 상점 빈 목록 > 모드에 맞는 빈 목록 안내가 한국어로 뜬다  550ms
+   ✓ post-trade quantity synchronization > keeps a zero-capacity row inspectable at quantity one and rejects another trade  365ms
+   ✓ 상점 거래 메시지 > 성공·실패 메시지가 모두 한국어이고 금액을 알려준다  917ms
+
+ Test Files  6 passed (6)
+      Tests  93 passed (93)
+   Start at  05:25:00
+   Duration  65.52s (transform 65.51s, setup 0ms, collect 248.49s, tests 23.14s, environment 4.56s, prepare 3.24s)
+
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/shopDecisionInput.test.ts test/shopEquipmentPreview.test.ts test/keyBindingsContract.test.ts test/shopRuntimeUx.test.ts test/runtimeCursorMenu.test.ts test/playInputBlocker.test.ts test/shopPrice.test.ts test/shopMerchantGold.test.ts test/shopFeedbackJuice.test.ts test/shopHaggleRuntime.test.ts
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-clear-harbor-3da2
+
+ ✓ test/playInputBlocker.test.ts (5 tests) 116ms
+ ✓ test/shopPrice.test.ts (6 tests) 8646ms
+   ✓ shop price unification > uses the equipment database price when stock has no override  4756ms
+   ✓ shop price unification > keeps equipment discount floors and explicit seasonal price priority  2438ms
+   ✓ shop price unification > applies the social discount to equipment without an override  1060ms
+ ✓ test/keyBindingsContract.test.ts (16 tests) 491ms
+ ✓ test/runtimeCursorMenu.test.ts (6 tests) 908ms
+ ✓ test/shopEquipmentPreview.test.ts (29 tests) 9800ms
+   ✓ pure actor-specific shop equipment preview > shows authorable positive-bonus downgrades and lost zero-bonus stats without negative authored bonuses  472ms
+   ✓ pure actor-specific shop equipment preview > handles the runtime-only negative-bonus edge with all four truthful totals  441ms
+   ✓ pure actor-specific shop equipment preview > returns same-equipment zero deltas without displacing or inventing inventory  497ms
+   ✓ pure actor-specific shop equipment preview > counts a two-hand mirror once, displaces both hands, and compares derived effects  557ms
+   ✓ pure actor-specific shop equipment preview > retains shared derived effects instead of claiming that every removed item's effect was lost  611ms
+   ✓ pure actor-specific shop equipment preview > keeps all six actual party actors selectable and uses their distinct current totals and session names  576ms
+   ✓ pure actor-specific shop equipment preview > uses the authored charm catalog slot and replaces an incompatible previous slot default  360ms
+   ✓ pure actor-specific shop equipment preview > preserves level, current class curves, invested growth, earned promotion lineage and permanent bonuses  350ms
+   ✓ pure actor-specific shop equipment preview > retains readable actor and current stats when classFixed blocks replacement  1036ms
+   ✓ pure actor-specific shop equipment preview > retains readable actor and current stats when classRestricted blocks replacement  1581ms
+   ✓ pure actor-specific shop equipment preview > never mutates deeply frozen project, session or goods, on ready or blocked paths  1610ms
+ ✓ test/shopHaggleRuntime.test.ts (3 tests) 1851ms
+   ✓ haggle runtime invariants > Given / When / Then an agreed buy stays in [floor, list] and changes gold once  754ms
+   ✓ haggle runtime invariants > Given / When / Then an agreed sell stays below buy and above the list sell  519ms
+   ✓ haggle runtime invariants > Given / When / Then a broken visit state survives save/load  574ms
+ ✓ test/shopFeedbackJuice.test.ts (19 tests) 7923ms
+   ✓ 수량 상한 — RM2003 std::min(max, gold / price) > 행에 상한이 실려서 오버레이가 읽어간다  1247ms
+   ✓ 수량 상한 — RM2003 std::min(max, gold / price) > 한 개도 못 사는 행에서도 수량칸은 1을 보인다(거절은 결정 시점의 몫)  372ms
+   ✓ 수량 스테퍼가 상한에 부딪히면 버저 > 상한을 넘기려 하면 값이 그대로고 버저가 울린다  1589ms
+   ✓ 수량 스테퍼가 상한에 부딪히면 버저 > 1에서 더 줄이려 하면 버저가 울린다  1771ms
+   ✓ 수량 스테퍼가 상한에 부딪히면 버저 > input 의 max 속성과 안내 문구가 상한을 따라간다  1340ms
+   ✓ 수량 스테퍼가 상한에 부딪히면 버저 > 마운트 전에도 라벨이 있다 — 첫 렌더에 aria-label 이 비지 않는다  1070ms
+ ✓ test/shopRuntimeUx.test.ts (23 tests) 8943ms
+   ✓ 상점 도움말·통화 표시 > 도움말 창이 첫 물건의 설명을 보여주고 커서 이동에 따라 바뀐다  813ms
+   ✓ 상점 도움말·통화 표시 > 설명이 없으면 목록 안내문으로 되돌린다 — 아이템 효과 문장을 머리글에 박지 않는다  748ms
+   ✓ 상점 도움말·통화 표시 > 가격에 통화 단위가 붙고 소지금·상인 소지금 모두 라벨이 있다  343ms
+   ✓ 상점 구매 가능 표시 > 소지금으로 못 사는 행에 표시와 이유가 붙는다  469ms
+   ✓ 상점 구매 가능 표시 > 판매에서는 상인이 못 사주는 행에 표시가 붙는다  430ms
+   ✓ 상점 구매 가능 표시 > 거래 후 행 표시가 제자리에서 갱신된다  1069ms
+   ✓ 상점 수량 입력 > 수량 입력과 합계가 목록이 아니라 프롬프트 줄에 있다  692ms
+   ✓ 상점 수량 입력 > 합계가 선택 행의 단가 × 수량으로 갱신된다  386ms
+   ✓ 상점 사이드 패널 > '장비' 줄은 장비 종류에만 뜨고 실제 착용 수를 센다  545ms
+   ✓ 상점 빈 목록 > 모드에 맞는 빈 목록 안내가 한국어로 뜬다  377ms
+   ✓ post-trade quantity synchronization > clamps sell quantity to the remaining merchant budget and updates other rows  321ms
+   ✓ post-trade quantity synchronization > clamps sell quantity to remaining inventory when the merchant can afford more  307ms
+   ✓ post-trade quantity synchronization > keeps a zero-capacity row inspectable at quantity one and rejects another trade  333ms
+   ✓ 상점 거래 메시지 > 성공·실패 메시지가 모두 한국어이고 금액을 알려준다  475ms
+ ✓ test/shopMerchantGold.test.ts (4 tests) 458ms
+ ✓ test/shopDecisionInput.test.ts (14 tests) 12577ms
+   ✓ mounted shop decision focus and comparison > cycles exact stock focus groups in both directions without trading  3491ms
+   ✓ mounted shop decision focus and comparison > moves mode/category focus without committing until confirm and never buys  1904ms
+   ✓ mounted shop decision focus and comparison > confirms only rows/transaction buttons with "e"; ignores repeats  825ms
+   ✓ mounted shop decision focus and comparison > confirms only rows/transaction buttons with "z"; ignores repeats  1174ms
+   ✓ mounted shop decision focus and comparison > confirms only rows/transaction buttons with "Enter"; ignores repeats  800ms
+   ✓ mounted shop decision focus and comparison > confirms only rows/transaction buttons with " "; ignores repeats  825ms
+   ✓ mounted shop decision focus and comparison > moves actual row focus, preserves horizontal quantity and updates balance  720ms
+   ✓ mounted shop decision focus and comparison > renders four truthful downgrade totals, +0, displacement and effect data without mutation  1071ms
+   ✓ mounted shop decision focus and comparison > supports custom slots and unavailable non-equipment/legacy/no-party states  670ms
+
+ Test Files  10 passed (10)
+      Tests  125 passed (125)
+   Start at  05:27:59
+   Duration  99.71s (transform 152.70s, setup 0ms, collect 650.96s, tests 51.71s, environment 8.69s, prepare 8.99s)
+
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/shopDecisionInput.test.ts test/shopEquipmentPreview.test.ts test/keyBindingsContract.test.ts test/shopRuntimeUx.test.ts test/runtimeCursorMenu.test.ts test/playInputBlocker.test.ts
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-clear-harbor-3da2
+
+ ✓ test/playInputBlocker.test.ts (5 tests) 98ms
+ ✓ test/runtimeCursorMenu.test.ts (6 tests) 150ms
+ ✓ test/keyBindingsContract.test.ts (16 tests) 110ms
+ ✓ test/shopEquipmentPreview.test.ts (29 tests) 4392ms
+   ✓ pure actor-specific shop equipment preview > shows authorable positive-bonus downgrades and lost zero-bonus stats without negative authored bonuses  539ms
+   ✓ pure actor-specific shop equipment preview > never mutates deeply frozen project, session or goods, on ready or blocked paths  668ms
+ ✓ test/shopRuntimeUx.test.ts (23 tests) 9076ms
+   ✓ 상점 도움말·통화 표시 > 설명이 없으면 목록 안내문으로 되돌린다 — 아이템 효과 문장을 머리글에 박지 않는다  513ms
+   ✓ 상점 도움말·통화 표시 > 가격에 통화 단위가 붙고 소지금·상인 소지금 모두 라벨이 있다  864ms
+   ✓ 상점 구매 가능 표시 > 소지금으로 못 사는 행에 표시와 이유가 붙는다  727ms
+   ✓ 상점 구매 가능 표시 > 판매에서는 상인이 못 사주는 행에 표시가 붙는다  1029ms
+   ✓ 상점 구매 가능 표시 > 거래 후 행 표시가 제자리에서 갱신된다  557ms
+   ✓ 상점 사이드 패널 > '장비' 줄은 장비 종류에만 뜨고 실제 착용 수를 센다  381ms
+   ✓ post-trade quantity synchronization > clamps sell quantity to the remaining merchant budget and updates other rows  337ms
+   ✓ post-trade quantity synchronization > clamps sell quantity to remaining inventory when the merchant can afford more  555ms
+   ✓ post-trade quantity synchronization > reselects the surviving row using its new capacity after selling the last copies  571ms
+   ✓ post-trade quantity synchronization > keeps a zero-capacity row inspectable at quantity one and rejects another trade  454ms
+   ✓ 상점 거래 메시지 > 성공·실패 메시지가 모두 한국어이고 금액을 알려준다  705ms
+ ✓ test/shopDecisionInput.test.ts (14 tests) 9636ms
+   ✓ mounted shop decision focus and comparison > cycles exact stock focus groups in both directions without trading  1514ms
+   ✓ mounted shop decision focus and comparison > moves mode/category focus without committing until confirm and never buys  1442ms
+   ✓ mounted shop decision focus and comparison > confirms only rows/transaction buttons with "e"; ignores repeats  1452ms
+   ✓ mounted shop decision focus and comparison > confirms only rows/transaction buttons with "z"; ignores repeats  836ms
+   ✓ mounted shop decision focus and comparison > confirms only rows/transaction buttons with "Enter"; ignores repeats  581ms
+   ✓ mounted shop decision focus and comparison > confirms only rows/transaction buttons with " "; ignores repeats  512ms
+   ✓ mounted shop decision focus and comparison > moves actual row focus, preserves horizontal quantity and updates balance  410ms
+   ✓ mounted shop decision focus and comparison > renders four truthful downgrade totals, +0, displacement and effect data without mutation  506ms
+   ✓ mounted shop decision focus and comparison > exposes all six actors, immediate dual-wield slots, scroll ring and exact opener restoration  632ms
+   ✓ mounted shop decision focus and comparison > supports custom slots and unavailable non-equipment/legacy/no-party states  848ms
+   ✓ mounted shop decision focus and comparison > retains real selection after last-copy sale, skips absent groups and empty-list confirm  370ms
+
+ Test Files  6 passed (6)
+      Tests  93 passed (93)
+   Start at  05:30:54
+   Duration  61.63s (transform 62.72s, setup 0ms, collect 223.19s, tests 23.46s, environment 7.66s, prepare 4.20s)

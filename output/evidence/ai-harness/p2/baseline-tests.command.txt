@@ -1,0 +1,5 @@
+cwd: /home/main/z-project/rpg-zzu-ai-harness-p2-20260906
+source HEAD: e827eb5c8371ff87ea29231a124806f687c3aba2
+command: npm test -- test/assistantVerificationEvidence.test.ts test/workItemOutcome.test.ts --maxWorkers 2 --minWorkers 1
+stdout/stderr: baseline-tests.log (unmodified combined process output)
+Scope: existing tests only; no new behavior tests or source changes.

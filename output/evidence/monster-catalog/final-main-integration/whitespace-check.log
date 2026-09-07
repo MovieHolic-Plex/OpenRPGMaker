@@ -1,0 +1,78 @@
+output/evidence/monster-catalog/final-main-integration/build.log:14: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/monster-catalog/final-main-integration/build.log:17: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/monster-catalog/final-main-integration/build.log:20: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/monster-catalog/final-main-integration/build.log:23: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/monster-catalog/final-main-integration/build.log:26: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/monster-catalog/final-main-integration/build.log:29: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/monster-catalog/final-main-integration/build.log:91: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/monster-catalog/final-main-integration/focused.log:182: trailing whitespace.
++[32m- Expected:[39m 
+output/evidence/monster-catalog/final-main-integration/focused.log:185: trailing whitespace.
++[31m+ Received:[39m 
+output/evidence/monster-catalog/final-main-integration/focused.log:213: trailing whitespace.
++    168| 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:8: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:11: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:29: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:37: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:51: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:54: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:73: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:75: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:79: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:82: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:127: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:129: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:133: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:136: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:155: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:157: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:159: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:162: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:186: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:188: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:192: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:195: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:208: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:210: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:214: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:217: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:228: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:230: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:230: new blank line at EOF.
+output/evidence/monster-catalog/final-main-integration/typecheck-app.log:4: new blank line at EOF.

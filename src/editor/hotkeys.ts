@@ -70,7 +70,7 @@ export function shouldIgnoreEditorShortcut(event: KeyboardEvent): boolean {
     if (document.querySelector("[data-testid='world-panel-modal']")) return true;
     if (document.querySelector("[data-testid='event-command-catalog-modal']")) return true;
     // 이벤트 에디터 모달은 자체 undo/redo 핸들러를 두므로 EditScene 단축키가 새지 않게 가드.
-    if (document.querySelector("[data-testid='event-editor-modal']")) return true;
+    if (document.querySelector("[data-testid='event-editor-modal']:not([hidden])")) return true;
   }
   // 플레이 서피스가 떠 있으면 키보드는 게임의 것이다.
   if (isPlaySurfaceOwningKeyboard()) return true;
@@ -140,7 +140,7 @@ export function historyHotkeyOwnedByPanel(): boolean {
   if (document.querySelector(WALK_ENCOUNTER_DIALOG_SELECTOR)) return true;
   if (document.querySelector("[data-testid='database-modal']")) return true;
   if (document.querySelector("[data-testid='resource-modal']")) return true;
-  return Boolean(document.querySelector("[data-testid='event-editor-modal']"));
+  return Boolean(document.querySelector("[data-testid='event-editor-modal']:not([hidden])"));
 }
 
 /**

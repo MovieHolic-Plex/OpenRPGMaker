@@ -1,0 +1,1 @@
+QA_PORT=37025 EVIDENCE_DIR=output/evidence/ai-harness/p2/verified-outcome-matrix xvfb-run -a node scripts/qa/ai-harness-contracts.mjs --scenario outcome-matrix

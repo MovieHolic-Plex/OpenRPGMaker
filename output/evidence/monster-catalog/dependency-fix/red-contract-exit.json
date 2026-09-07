@@ -1,0 +1,29 @@
+{
+  "command": [
+    "node",
+    "scripts/run-vitest.mjs",
+    "run",
+    "test/assistantDependencyRetry.test.ts",
+    "--config",
+    "output/evidence/monster-catalog/dependency-fix/vitest.config.mjs",
+    "--configLoader",
+    "runner",
+    "--no-cache",
+    "--maxWorkers",
+    "2",
+    "--minWorkers",
+    "1",
+    "--reporter",
+    "default",
+    "--reporter",
+    "json",
+    "--outputFile.json",
+    "output/evidence/monster-catalog/dependency-fix/red-contract.json"
+  ],
+  "cwd": "/home/main/z-project/rpg-zzu-monster-catalog-0907",
+  "exitCode": 1,
+  "timedOut": false,
+  "timeoutSeconds": 240,
+  "elapsedSeconds": 44.49805129598826,
+  "TMPDIR": "/dev/shm/st_01a078e1-dependency-fix/red-contract"
+}

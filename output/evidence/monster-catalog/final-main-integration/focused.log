@@ -1,0 +1,242 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/monsterAiAccounting.test.ts test/monsterAppearanceAdversarial.test.ts test/monsterAppearanceAssetIdentity.test.ts test/monsterAppearanceEvidence.test.ts test/monsterAppearanceHttp.test.ts test/monsterAppearanceIdentity.test.ts test/monsterAppearanceSession.test.ts test/monsterAppearanceTransport.test.ts test/monsterBattleAuthoringContract.test.ts test/monsterBattlerField.test.ts test/monsterCare.test.ts test/monsterCatalogCoverage.test.ts test/monsterCollection.test.ts test/monsterEvolutionTypeChart.test.ts test/monsterGraphicReliability.test.ts test/monsterMetadata.test.ts test/monsterMetadataAccounting.test.ts test/monsterMetadataFoundation.test.ts test/monsterMetadataHistory.test.ts test/monsterMetadataPersistence.test.ts test/monsterPartyFollowers.test.ts test/monsterRebalanceBands.test.ts test/monsterResourceCatalog.test.ts test/monsterResourceMetadataTools.test.ts test/monsterResourceTools.test.ts test/databaseMonsterMetadata.test.ts test/assistantDependencyRetry.test.ts test/assistantReadContract.test.ts test/emberQuestToolReplay.test.ts test/originalContext.test.ts test/sha256.test.ts test/aiBlockedEventRelocation.test.ts test/bgmCatalog.test.ts test/eventEditorPagePreviewView.test.ts test/eventPagePreviewTransport.test.ts test/sidebarFocusModes.test.ts test/sidebarFocusR1.test.ts --maxWorkers=2 --no-file-parallelism --no-cache --reporter=default --reporter=json --outputFile=output/evidence/monster-catalog/final-main-integration/focused.json
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-monster-catalog-0907
+
+ ✓ test/aiBlockedEventRelocation.test.ts (48 tests) 18038ms
+   ✓ AI blocked entity relocation > uses traversal blockers, not body reservations, for a wall sign's sole approach (below)  495ms
+   ✓ AI blocked entity relocation > uses traversal blockers, not body reservations, for a wall sign's sole approach (overlap-allowed)  410ms
+   ✓ AI blocked entity relocation > uses traversal blockers, not body reservations, for a wall sign's sole approach (overhang)  355ms
+   ✓ AI blocked entity relocation > uses traversal blockers, not body reservations, for a wall sign's sole approach (solid)  366ms
+   ✓ AI blocked entity relocation > recovers a steppable touch through the public API without recommending an unreachable directional tile  717ms
+   ✓ AI blocked entity relocation > recovers a steppable playerTouch through the public API without recommending an unreachable directional tile  726ms
+   ✓ AI blocked entity relocation > reports npc enclosed without painting its own tile through AssistantSession  1127ms
+   ✓ AI blocked entity relocation > reports floor-object enclosed without painting its own tile through AssistantSession  963ms
+   ✓ AI blocked entity relocation > reports disconnected enclosed without painting its own tile through AssistantSession  1017ms
+   ✓ AI blocked entity relocation > revalidates recommendations consumed in one assistant batch against current occupancy  936ms
+   ✓ AI blocked entity relocation > retains fixed NPC semantics after uploaded graphics and a serialized reload  762ms
+   ✓ AI blocked entity relocation > diagnoses a movable wide NPC's local immobility even with a reachable player approach  361ms
+   ✓ AI blocked entity relocation > shares event candidates between duplicate diagnostics and reuses an explicit entry flood  313ms
+   ✓ AI blocked entity relocation > shares lazy flood and body scans within lint, but refreshes after mutations  435ms
+   ✓ AI blocked entity relocation > delivers relocation after terrain strands an NPC, without forcing the choice (relocate=true)  1281ms
+   ✓ AI blocked entity relocation > delivers relocation after terrain strands an NPC, without forcing the choice (relocate=false)  1080ms
+   ✓ AI blocked entity relocation > offers a real move for a sealed wall object while lint itself leaves authored data untouched  460ms
+   ✓ AI blocked entity relocation > preserves an explicit reachability origin through the real move and scene interaction  637ms
+   ✓ AI blocked entity relocation > preserves completed-house tiles and metadata when recovering an existing NPC  399ms
+ ✓ test/assistantDependencyRetry.test.ts (16 tests) 30933ms
+   ✓ batch prerequisites through AssistantSession > defers failed-map writes without poisoning successTools or retries (old spec=false)  1932ms
+   ✓ batch prerequisites through AssistantSession > defers failed-map writes without poisoning successTools or retries (old spec=true)  1735ms
+   ✓ batch prerequisites through AssistantSession > a corrected spec resumes spatial execution (later batch=false)  1546ms
+   ✓ batch prerequisites through AssistantSession > a corrected spec resumes spatial execution (later batch=true)  1518ms
+   ✓ batch prerequisites through AssistantSession > failed record creation defers only ID dependents, then creation/read/correction succeeds (read contract=false)  2029ms
+   ✓ batch prerequisites through AssistantSession > failed record creation defers only ID dependents, then creation/read/correction succeeds (read contract=true)  1911ms
+   ✓ batch prerequisites through AssistantSession > defers new-record dependents transitively without charging their retries (read contract=false)  2280ms
+   ✓ batch prerequisites through AssistantSession > defers new-record dependents transitively without charging their retries (read contract=true)  2370ms
+   ✓ batch prerequisites through AssistantSession > keeps an existing record available after its update is deferred  1665ms
+   ✓ batch prerequisites through AssistantSession > keeps an existing record available after its update is failed  1567ms
+   ✓ batch prerequisites through AssistantSession > keeps the failed-read whole-batch contract and excludes deferred writes from the failure budget  1066ms
+   ✓ stable target retry budgets through AssistantSession > bounds fresh-batch lookup refusals without claiming they executed  1362ms
+   ✓ stable target retry budgets through AssistantSession > does not charge downstream same-batch refusals against their independent retry target  1873ms
+   ✓ stable target retry budgets through AssistantSession > bounds spelling and page-path variations despite unrelated writes and synthetic continuations, then rearms for a real user  4250ms
+   ✓ stable target retry budgets through AssistantSession > successful correction resets that target's accumulated failures  2227ms
+   ✓ stable target retry budgets through AssistantSession > does not execute attempts beyond the bound even within one model batch  1601ms
+ ✓ test/originalContext.test.ts (19 tests) 1205ms
+ ❯ test/monsterEvolutionTypeChart.test.ts (9 tests | 1 failed) 862ms
+   ✓ monster evolution > checks level, item consumption, and friendship requirements deterministically 204ms
+   ✓ monster evolution > preserves nickname, HP ratio, level, and learns current-level skills on evolution 45ms
+   ✓ monster evolution > auto-evolves after victory EXP raises the monster level 50ms
+   ✓ monster evolution > runs failure branches for evolveMonster when requirements are not met 45ms
+   ✓ type chart damage > computes single, dual, STAB, immunity, and missing-chart multipliers 44ms
+   ✓ type chart damage > simulateBattle reports higher favorable typed damage than unfavorable typed damage 92ms
+   ✓ type chart damage > simulateBattle reward can drive level-up into automatic evolution 36ms
+   ✓ type chart damage > ships starter trio plus five wild species and the slime evolution demo fixture 31ms
+   × monster type editor tools > writes type charts and species type/evolution data through database tools 310ms
+     → 'define_monster_species' 실행 실패: species.graphic.monsterResourceId: "도구 슬라임"에 확실히 맞는 외형이 없습니다. list_resources(kind:"monster", query:"*")로 확인한 리소스 ID를 species.graphic.monsterResourceId에 지정하세요. 사용 가능한 monster 리소스 예시: generated-enemy-sl…: expected false to be true // Object.is equality
+ ✓ test/bgmCatalog.test.ts (24 tests) 221ms
+ ✓ test/emberQuestToolReplay.test.ts (5 tests) 172ms
+ ✓ test/monsterCare.test.ts (12 tests) 569ms
+ ❯ test/monsterCollection.test.ts (7 tests | 2 failed) 453ms
+   ✓ monster collection core > ships demo starter species and wild slime species fixture 121ms
+   ✓ monster collection core > calculates capture formula boundaries and item multiplier 1ms
+   ✓ monster collection core > creates deterministic IVs and routes party overflow to box 67ms
+   ✓ monster collection core > roundtrips saves and accepts legacy saves without monster fields 78ms
+   × monster collection core > blocks uncapturable troops and excludes captured enemies from EXP 82ms
+     → expected undefined to be 'victory' // Object.is equality
+   × monster collection core > simulateBattle strict script captures a weakened slime and fails at full HP 60ms
+     → expected +0 to be 1 // Object.is equality
+   ✓ monster collection core > give_starter_monsters creates a three-choice event that gives one monster 42ms
+ ✓ test/monsterAppearanceAssetIdentity.test.ts (21 tests) 10759ms
+   ✓ 'upsert_enemy' image identity authorization > rejects stale 'get_monster_resource' evidence when image bytes change at the same ID  498ms
+   ✓ 'upsert_enemy' image identity authorization > rejects stale 'list_monster_resources' evidence when image bytes change at the same ID  395ms
+   ✓ 'upsert_enemy' image identity authorization > rejects a changed assignment using an old image read  536ms
+   ✓ 'upsert_enemy' image identity authorization > accepts a fresh full 'get_monster_resource' read after image replacement  442ms
+   ✓ 'upsert_enemy' image identity authorization > accepts a fresh full 'list_monster_resources' read after image replacement  390ms
+   ✓ 'upsert_enemy' image identity authorization > preserves unchanged art edits even after the underlying upload changes  623ms
+   ✓ 'define_monster_species' image identity authorization > rejects stale 'get_monster_resource' evidence when image bytes change at the same ID  485ms
+   ✓ 'define_monster_species' image identity authorization > rejects stale 'list_monster_resources' evidence when image bytes change at the same ID  420ms
+   ✓ 'define_monster_species' image identity authorization > rejects a changed assignment using an old image read  532ms
+   ✓ 'define_monster_species' image identity authorization > accepts a fresh full 'get_monster_resource' read after image replacement  357ms
+   ✓ 'define_monster_species' image identity authorization > accepts a fresh full 'list_monster_resources' read after image replacement  375ms
+   ✓ 'define_monster_species' image identity authorization > preserves unchanged art edits even after the underlying upload changes  566ms
+   ✓ 'make_action_enemy' image identity authorization > rejects stale 'get_monster_resource' evidence when image bytes change at the same ID  370ms
+   ✓ 'make_action_enemy' image identity authorization > rejects stale 'list_monster_resources' evidence when image bytes change at the same ID  383ms
+   ✓ 'make_action_enemy' image identity authorization > rejects a changed assignment using an old image read  571ms
+   ✓ 'make_action_enemy' image identity authorization > accepts a fresh full 'get_monster_resource' read after image replacement  376ms
+   ✓ 'make_action_enemy' image identity authorization > accepts a fresh full 'list_monster_resources' read after image replacement  386ms
+   ✓ 'make_action_enemy' image identity authorization > preserves unchanged art edits even after the underlying upload changes  558ms
+   ✓ keeps stat-only updates valid without image evidence  795ms
+   ✓ rejects stale image identity and recovers after a new full read in the actual session  1469ms
+ ✓ test/monsterMetadataPersistence.test.ts (5 tests) 15944ms
+   ✓ monster metadata concurrent persistence > merges per-field local deltas when a real conditional save loses its first SHA race  2851ms
+   ✓ monster metadata concurrent persistence > reconciles remote fields without recording an edit when consecutive map saves complete  3924ms
+   ✓ monster metadata concurrent persistence > preserves fresh fields and live maps when a save response arrives late  4367ms
+   ✓ monster metadata concurrent persistence > does not adopt old metadata when a different project replaces the submitted lineage  2907ms
+   ✓ monster metadata concurrent persistence > retains baseline and fresh input when a deferred write fails  1893ms
+ ✓ test/assistantReadContract.test.ts (5 tests) 2234ms
+   ✓ 실제 도구 결과에 기반한 조회 선행 > 조회 실패 응답의 후속 쓰기는 실행하지 않고, 다음 응답에서 재조회 후 복구한다  711ms
+   ✓ 실제 도구 결과에 기반한 조회 선행 > 전달된 원본은 첫 쓰기를 허용하고, 변경 뒤 재조회는 다음 응답에서만 현재 값 근거가 된다  1026ms
+ ✓ test/monsterGraphicReliability.test.ts (78 tests) 12211ms
+   ✓ 'upsert_enemy' reliable graphics > never repeats the leaf-fox -> skeleton hash assignment  311ms
+   ✓ 'upsert_enemy' reliable graphics > accepts reliable explicit queries and preserves explicit art on partial edits  755ms
+   ✓ 'upsert_enemy' reliable graphics > preserves intentional transparency including later partial edits  419ms
+   ✓ 'define_monster_species' reliable graphics > accepts reliable explicit queries and preserves explicit art on partial edits  757ms
+   ✓ 'define_monster_species' reliable graphics > preserves intentional transparency including later partial edits  412ms
+   ✓ 'make_action_enemy' reliable graphics > accepts reliable explicit queries and preserves explicit art on partial edits  719ms
+   ✓ 'make_action_enemy' reliable graphics > preserves intentional transparency including later partial edits  439ms
+ ✓ test/monsterAppearanceAdversarial.test.ts (40 tests) 2764ms
+ ✓ test/monsterPartyFollowers.test.ts (8 tests) 410ms
+ ✓ test/monsterAppearanceSession.test.ts (7 tests) 7510ms
+   ✓ 'upsert_enemy' actual assistant appearance flow > blocks unseen same-batch reads then accepts an observed full read with a custom boss name  1231ms
+   ✓ 'upsert_enemy' actual assistant appearance flow > rejects goblin intent paired with observed slime art  978ms
+   ✓ 'define_monster_species' actual assistant appearance flow > blocks unseen same-batch reads then accepts an observed full read with a custom boss name  1162ms
+   ✓ 'define_monster_species' actual assistant appearance flow > rejects goblin intent paired with observed slime art  992ms
+   ✓ 'make_action_enemy' actual assistant appearance flow > blocks unseen same-batch reads then accepts an observed full read with a custom boss name  1100ms
+   ✓ 'make_action_enemy' actual assistant appearance flow > rejects goblin intent paired with observed slime art  967ms
+   ✓ delivers the complete index and full metadata through actual model-facing serialization  1076ms
+ ✓ test/monsterMetadataFoundation.test.ts (17 tests) 2821ms
+   ✓ monster metadata foundation > preserves overrides when round-tripping an editor package  513ms
+   ✓ monster metadata foundation > strips metadata without retaining metadata-only uploads when preparing playable data  590ms
+ ✓ test/monsterResourceCatalog.test.ts (6 tests) 28ms
+ ✓ test/monsterAppearanceHttp.test.ts (1 test) 1060ms
+   ✓ carries the entire index and full selected metadata over the real HTTP completion transport  1058ms
+ ✓ test/monsterMetadata.test.ts (19 tests) 9ms
+ ✓ test/monsterResourceTools.test.ts (18 tests) 1146ms
+ ✓ test/monsterMetadataAccounting.test.ts (8 tests) 1632ms
+   ✓ monster metadata accounting > preserves tile-only safety compatibility when metadata count is undefined  366ms
+   ✓ monster metadata accounting > preserves tile-only safety compatibility when metadata count is 0  342ms
+   ✓ monster metadata accounting > preserves tile-only safety compatibility when metadata count is 1  336ms
+ ✓ test/monsterBattleAuthoringContract.test.ts (10 tests) 90ms
+ ✓ test/monsterRebalanceBands.test.ts (4 tests) 219ms
+ ✓ test/monsterResourceMetadataTools.test.ts (6 tests) 478ms
+ ✓ test/monsterAppearanceTransport.test.ts (3 tests) 180ms
+ ✓ test/monsterMetadataHistory.test.ts (3 tests) 1464ms
+   ✓ monster metadata history > restores inherited metadata when an applied project edit is undone  445ms
+   ✓ monster metadata history > restores authored metadata when an undone edit is redone  597ms
+   ✓ monster metadata history > restores explicit clears and unknown IDs when a reset is undone  420ms
+ ✓ test/monsterAppearanceIdentity.test.ts (24 tests) 978ms
+ ✓ test/monsterAppearanceEvidence.test.ts (12 tests) 567ms
+ ✓ test/sha256.test.ts (6 tests) 9ms
+ ✓ test/monsterCatalogCoverage.test.ts (2 tests) 175ms
+ ✓ test/monsterAiAccounting.test.ts (3 tests) 344ms
+ ✓ test/databaseMonsterMetadata.test.ts (11 tests) 4058ms
+   ✓ monster metadata through the database > commits all edited fields atomically when Apply is clicked  646ms
+   ✓ monster metadata through the database > refreshes clean controls when the metadata edit is undone and redone  807ms
+   ✓ monster metadata through the database > restores inherited values when reset is clicked  642ms
+   ✓ monster metadata through the database > keeps dirty fields and merges unrelated metadata when the store refreshes  500ms
+ ✓ test/sidebarFocusModes.test.ts (12 tests) 7212ms
+   ✓ focused standard and expert sidebar > opens a real map tree from the current map without reserving a standard dock  523ms
+   ✓ focused standard and expert sidebar > changes the actual brush through one select and hides it for inapplicable tools  775ms
+   ✓ focused standard and expert sidebar > uses the event layer as the single event entry with no tile controls on its surface  305ms
+   ✓ focused standard and expert sidebar > returns focus from map search Escape without changing the selected map  407ms
+   ✓ focused standard and expert sidebar > selects rect from Standard Tools and keeps the shape when closing  698ms
+   ✓ focused standard and expert sidebar > selects round from Standard Tools and keeps the shape when closing  630ms
+   ✓ focused standard and expert sidebar > filters real tiles through the native category selector without changing the picked tile  502ms
+   ✓ focused standard and expert sidebar > persists expert inspection pins without exposing or resetting them in Standard  1162ms
+   ✓ focused standard and expert sidebar > opens inspection through the command registry and restores the menu trigger on Escape  365ms
+   ✓ focused standard and expert sidebar > does not reopen auxiliary work when returning to a mode  583ms
+   ✓ focused standard and expert sidebar > keeps an outside pointer target mounted so the same click can activate it  860ms
+   ✓ focused standard and expert sidebar > keeps a map surface behind a child modal and lets Escape close only the child  400ms
+ ✓ test/sidebarFocusR1.test.ts (11 tests) 6136ms
+   ✓ sidebar R1 real renderer ownership > removes the mounted open surface when the renderer subscribed before its lifecycle  904ms
+   ✓ sidebar R1 real renderer ownership > routes one Escape to the actual map context menu and then restores the map row  444ms
+   ✓ sidebar R1 real renderer ownership > keeps the map explorer attached while its body-mounted Rename action handles a pointer  507ms
+   ✓ sidebar R1 real renderer ownership > reveals the real Expert dock through its renderer rather than only changing collapse state  317ms
+   ✓ sidebar R1 real renderer ownership > does not commit a cancelled Rename when removing its focused input emits blur  455ms
+   ✓ sidebar R1 real renderer ownership > activates the real dock registry for inspector with pinned=false  579ms
+   ✓ sidebar R1 real renderer ownership > activates the real dock registry for ruleAudit with pinned=false  594ms
+   ✓ sidebar R1 real renderer ownership > activates the real dock registry for history with pinned=false  504ms
+   ✓ sidebar R1 real renderer ownership > activates the real dock registry for inspector with pinned=true  480ms
+   ✓ sidebar R1 real renderer ownership > activates the real dock registry for ruleAudit with pinned=true  765ms
+   ✓ sidebar R1 real renderer ownership > activates the real dock registry for history with pinned=true  587ms
+ ✓ test/eventPagePreviewTransport.test.ts (7 tests) 803ms
+ ✓ test/eventEditorPagePreviewView.test.ts (6 tests) 1025ms
+ ✓ test/monsterBattlerField.test.ts (2 tests) 274ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/monsterCollection.test.ts > monster collection core > blocks uncapturable troops and excludes captured enemies from EXP
+AssertionError: expected undefined to be 'victory' // Object.is equality
+
+[32m- Expected:[39m 
+"victory"
+
+[31m+ Received:[39m 
+undefined
+
+ ❯ test/monsterCollection.test.ts:125:29
+    123|     runtime.performActorCommand({ kind: "capture", captureItemId: "ite…
+    124|     const snapshot = runtime.snapshot();
+    125|     expect(snapshot.result).toBe("victory");
+       |                             ^
+    126|     expect(snapshot.capturedMonsters).toHaveLength(1);
+    127|     expect(snapshot.timeline.some((entry) => entry.kind === "capture" …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  test/monsterCollection.test.ts > monster collection core > simulateBattle strict script captures a weakened slime and fails at full HP
+AssertionError: expected +0 to be 1 // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 0[39m
+
+ ❯ test/monsterCollection.test.ts:166:35
+    164|       maxSteps: 20,
+    165|     });
+    166|     expect(success.capturedCount).toBe(1);
+       |                                   ^
+    167|     expect(success.capturedMonsters[0]?.speciesId).toBe("species_wild_…
+    168| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  test/monsterEvolutionTypeChart.test.ts > monster type editor tools > writes type charts and species type/evolution data through database tools
+AssertionError: 'define_monster_species' 실행 실패: species.graphic.monsterResourceId: "도구 슬라임"에 확실히 맞는 외형이 없습니다. list_resources(kind:"monster", query:"*")로 확인한 리소스 ID를 species.graphic.monsterResourceId에 지정하세요. 사용 가능한 monster 리소스 예시: generated-enemy-sl…: expected false to be true // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+ ❯ test/monsterEvolutionTypeChart.test.ts:223:53
+    221|       },
+    222|     });
+    223|     expect(speciesResult.ok, speciesResult.summary).toBe(true);
+       |                                                     ^
+    224|     const species = context.project.database.monsterSpecies?.find((rec…
+    225|     expect(species?.types).toEqual(["fire", "water"]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  2 failed | 35 passed (37)
+      Tests  3 failed | 492 passed (495)
+   Start at  09:20:21
+   Duration  233.00s (transform 24.14s, setup 0ms, collect 84.37s, tests 134.99s, environment 1.59s, prepare 2.67s)
+
+JSON report written to /home/main/z-project/rpg-zzu-monster-catalog-0907/output/evidence/monster-catalog/final-main-integration/focused.json

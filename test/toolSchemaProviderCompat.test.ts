@@ -20,9 +20,15 @@
 import { describe, expect, it } from "vitest";
 import { allTools } from "@/editor/tools/toolRegistry";
 import { SET_BUILD_SPEC_TOOL, SPEC_REMEDY_FIELDS, WORK_PLAN_TOOLS } from "@/ai/assistantSession";
+import { ACCEPTANCE_CRITERIA_SCHEMA, ACCEPTANCE_SCHEMA, ACCEPTANCE_TOOLS } from "@/ai/assistantAcceptanceTools";
+import { parseAcceptance, parseAcceptanceCriteria, type AcceptanceCriterion } from "@/ai/assistantAcceptance";
+import { workPlanFromSetToolArgs } from "@/ai/workPlan";
 type SchemaNode = {
   readonly type?: unknown;
   readonly enum?: readonly unknown[];
+  readonly required?: readonly string[];
+  readonly minimum?: number;
+  readonly minItems?: number;
   readonly properties?: Record<string, SchemaNode>;
   readonly items?: SchemaNode;
   readonly additionalProperties?: unknown;
@@ -33,7 +39,7 @@ type SchemaNode = {
 /** 모델에 노출되는 전체 파라미터 스키마 — 레지스트리 툴 + 세션 전용 툴. */
 function exposedSchemas(): { name: string; parameters: SchemaNode }[] {
   const registry = allTools().map((tool) => ({ name: tool.name, parameters: tool.parameters as SchemaNode }));
-  const session = [SET_BUILD_SPEC_TOOL, ...WORK_PLAN_TOOLS].map((tool) => ({
+  const session = [SET_BUILD_SPEC_TOOL, ...WORK_PLAN_TOOLS, ...ACCEPTANCE_TOOLS].map((tool) => ({
     name: tool.function.name,
     parameters: tool.function.parameters as SchemaNode,
   }));
@@ -114,5 +120,133 @@ describe("툴 스키마 프로바이더 호환(Gemini 엄격 검증)", () => {
     const overExisting = assetItem?.properties?.overExisting;
     expect(overExisting?.type).toBe("string");
     expect(overExisting?.enum).toEqual(["clear", "keep"]);
+  });
+});
+
+// Every runtime variant must be expressible without a union or invented wrapper.
+const criterionCases: AcceptanceCriterion[] = [
+  { kind: "toolVerdict", tool: "run_lint", args: {} },
+  { kind: "toolVerdict", tool: "play_walkthrough", args: {
+    mapId: "map_start", scenario: [{ do: "setVariable", id: "progress", value: 0 },
+      { expect: "variable", id: "progress", value: 0 }],
+    runtimeKeys: { "authored-id": [null, false, 0, "0", { nested: {} }] },
+  } },
+  ...[{ mapId: "map_start" }, { newMapName: "New room" }].flatMap((target): AcceptanceCriterion[] => [
+    { kind: "actionCombat", target },
+    { kind: "mapDimensions", target, width: 20, height: 15 },
+    { kind: "mapCount", targets: [target], count: 1 },
+    { kind: "reachability", target, from: { x: 0, y: 0 }, to: [{ x: 1, y: 0 }] },
+    ...[undefined, { x: 0, y: 1, w: 2, h: 3 }].flatMap((region): AcceptanceCriterion[] => [
+      { kind: "eventCount", target, count: 0, ...(region ? { region } : {}) },
+      ...(["targetChange", "preserve", "imageReviewed"] as const).map(kind => ({ kind, target, ...(region ? { region } : {}) })),
+    ]),
+  ]),
+  { kind: "mapCount", targets: [{ mapId: "map_start" }, { newMapName: "New room" }], count: 2 },
+];
+
+function expectRepresentable(schema: SchemaNode | undefined, value: unknown): void {
+  expect(schema).toBeDefined();
+  if (!schema) throw new Error("Missing exposed schema field");
+  if (schema.enum) expect(schema.enum).toContain(value);
+  if (Array.isArray(value)) {
+    expect(schema.type).toBe("array");
+    if (schema.minItems !== undefined) expect(value.length).toBeGreaterThanOrEqual(schema.minItems);
+    for (const entry of value) expectRepresentable(schema.items, entry);
+  } else if (typeof value === "object" && value !== null) {
+    expect(schema.type).toBe("object");
+    for (const key of schema.required ?? []) expect(value).toHaveProperty(key);
+    for (const [key, entry] of Object.entries(value)) {
+      const child = schema.properties?.[key];
+      if (child) expectRepresentable(child, entry);
+      else expect(schema.additionalProperties).toBe(true);
+    }
+  } else {
+    expect(schema.type).toBe(typeof value === "number" ? "integer" : typeof value);
+    if (typeof value === "number") {
+      expect(Number.isSafeInteger(value)).toBe(true);
+      if (schema.minimum !== undefined) expect(value).toBeGreaterThanOrEqual(schema.minimum);
+    }
+  }
+}
+
+describe("acceptance and requirement schema/runtime contract", () => {
+  it.each(criterionCases)("represents and roundtrips $kind %j on every exposed surface", criterion => {
+    const setPlanTool = exposedSchemas().find(schema => schema.name === "set_work_plan");
+    const repairTool = exposedSchemas().find(schema => schema.name === "repair_acceptance");
+    if (!setPlanTool || !repairTool) throw new Error("Missing exposed acceptance tool");
+    const setPlan = setPlanTool.parameters;
+    const repair = repairTool.parameters;
+    const criteria: unknown = JSON.parse(JSON.stringify([criterion]));
+    for (const field of ["acceptance", "requirements"] as const) {
+      expect(setPlan.properties?.[field]).toBe(ACCEPTANCE_SCHEMA);
+      expect(setPlan.properties?.[field]?.items?.properties?.criteria).toBe(ACCEPTANCE_CRITERIA_SCHEMA);
+      const args = { goal: "Schema roundtrip", [field]: [{ id: "promise", title: "Promise", criteria }],
+        layers: [{ title: "Verify", items: [{ title: "Verify", instruction: "Check the promise" }] }] };
+      expectRepresentable(setPlan, args);
+      expect(workPlanFromSetToolArgs(args)?.[field]).toEqual([{ id: "promise", title: "Promise", required: true, criteria }]);
+    }
+    expect(repair.properties?.criteria).toBe(ACCEPTANCE_CRITERIA_SCHEMA);
+    expectRepresentable(repair, { itemId: "promise", criteria });
+    expect(parseAcceptanceCriteria(criteria)).toEqual([criterion]);
+  });
+
+  it("keeps the shared discriminator, closed structural keys and genuine dynamic args", () => {
+    const schema: SchemaNode = ACCEPTANCE_CRITERIA_SCHEMA;
+    const item = schema.items;
+    expect(item?.type).toBe("object");
+    expect(item?.required).toEqual(["kind"]);
+    expect(item?.additionalProperties).toBe(false);
+    expect(item?.properties?.kind).toEqual({ type: "string", enum: [
+      "mapCount", "mapDimensions", "eventCount", "targetChange", "preserve", "imageReviewed", "actionCombat",
+      "toolVerdict", "shopPurchase", "mapRoundTrip", "npcReward", "functionalUnresolved", "reachability",
+    ] });
+    expect(Object.keys(item?.properties ?? {}).sort()).toEqual([
+      "args", "count", "destination", "expectations", "from", "height", "item", "kind", "outgoing", "reason", "region", "requirement",
+      "returning", "seller", "start", "target", "targets", "to", "tool", "unitPrice", "width",
+    ]);
+    expect(item?.properties?.args).toMatchObject({ type: "object", additionalProperties: true });
+    expect(item?.properties?.target).toMatchObject({ type: "object", additionalProperties: false,
+      properties: { mapId: { type: "string" }, newMapName: { type: "string" } } });
+    expect(item?.properties?.targets?.items?.properties).toBe(item?.properties?.target?.properties);
+    expect(item?.properties?.targets?.items).toMatchObject({ type: "object", additionalProperties: false });
+    expect(item?.properties?.from?.required).toEqual(["x", "y"]);
+    expect(item?.properties?.region?.required).toEqual(["x", "y", "w", "h"]);
+    for (const key of ["width", "height"]) expect(item?.properties?.[key]?.minimum).toBe(1);
+    expect(item?.properties?.count?.minimum).toBe(0);
+    for (const key of ["targets", "to"]) expect(item?.properties?.[key]?.minItems).toBe(1);
+  });
+
+  it.each(criterionCases)("retains runtime requiredness and rejects extra fields for $kind %j", criterion => {
+    const valid: Record<string, unknown> = { ...criterion };
+    for (const key of Object.keys(valid).filter(key => key !== "region")) {
+      const missing = { ...valid };
+      delete missing[key];
+      expect(parseAcceptanceCriteria([criterion, missing]), `missing ${key}`).toBeNull();
+    }
+    for (const extra of ["source", "evidence", "passed", "withdrawal", "fingerprint", "evidenceId",
+      ...(criterion.kind === "toolVerdict" ? ["target"] : ["args"])]) {
+      expect(parseAcceptanceCriteria([criterion, { ...valid, [extra]: {} }]), `extra ${extra}`).toBeNull();
+    }
+  });
+
+  it.each([{}, { mapId: "map_start", newMapName: "New room" }, { mapId: "" }, { newMapName: " " },
+    { mapId: "map_start", passed: true }])("rejects malformed or ambiguous target %j", target => {
+    expect(parseAcceptanceCriteria([{ kind: "preserve", target }])).toBeNull();
+    expect(parseAcceptanceCriteria([{ kind: "mapCount", targets: [target], count: 1 }])).toBeNull();
+  });
+
+  it.each([undefined, null, [], "{}", 0, false])("rejects non-object exact args %j", args => {
+    expect(parseAcceptanceCriteria([{ kind: "toolVerdict", tool: "run_lint", args }])).toBeNull();
+  });
+
+  it("preserves required defaults and never accepts an unregistered verification tool", () => {
+    const criteria = [criterionCases[0]];
+    for (const required of [undefined, true, false, "false"]) {
+      const promise = { id: "promise", title: "Promise", criteria, ...(required === undefined ? {} : { required }) };
+      expect(parseAcceptance([promise])).toEqual([{ id: "promise", title: "Promise",
+        required: required !== false, criteria: required === "false" ? null : criteria,
+        ...(required === "false" ? { issues: [expect.objectContaining({ field: "criteria", code: "missing-field" })] } : {}) }]);
+    }
+    expect(parseAcceptanceCriteria([{ kind: "toolVerdict", tool: "set_map_properties", args: {} }])).toBeNull();
   });
 });

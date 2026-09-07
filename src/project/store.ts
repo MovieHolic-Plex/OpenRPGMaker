@@ -18,6 +18,7 @@ import {
 } from "./supabaseProjectSync";
 import { projectWithoutEventDrafts } from "./eventDrafts";
 import { applyAudioDescriptionDelta } from "./audioDescriptions";
+import { applyMonsterMetadataDelta } from "./monsterMetadata";
 import { serialize, serializeForComparison } from "./io";
 import {
   applyEventDraftVault,
@@ -233,6 +234,7 @@ class ProjectStore {
   private readonly persistenceTargets = new WeakMap<ProjectPersistenceReceipt, {
     readonly target: SupabaseProjectConfig;
     readonly contentLineage: number;
+    readonly projectAtSubmit: Project;
   }>();
   private persistInFlight: Promise<ProjectFlushResult> | null = null;
   private persistInFlightLineage = 0;
@@ -848,6 +850,11 @@ class ProjectStore {
     this.persistedBaseline = project;
   }
 
+  /** Historical acceptance belongs to its actual submitted owner, not the latest live revision. */
+  isPersistenceReceiptForProject(receipt: ProjectPersistenceReceipt, project: Project): boolean {
+    return this.persistenceTargets.get(receipt)?.projectAtSubmit === project;
+  }
+
   /** Recheck at consumption time: proof can outlive the editor revision it describes. */
   isPersistenceReceiptCurrent(receipt: ProjectPersistenceReceipt): boolean {
     const authority = this.persistenceTargets.get(receipt);
@@ -864,7 +871,7 @@ class ProjectStore {
   /** Read-only verification of a store-issued save receipt. Failed attempts are always retryable. */
   async verifyPersistedRevision(
     receipt: ProjectPersistenceReceipt,
-    options: { readonly signal?: AbortSignal } = {},
+    options: { readonly signal?: AbortSignal; readonly validate?: (project: Project) => string | undefined } = {},
   ): Promise<ProjectPersistenceProof> {
     const target = this.persistenceTargets.get(receipt)?.target;
     if (!target) return { kind: "failed", receipt, message: "Unknown accepted revision" };
@@ -880,6 +887,10 @@ class ProjectStore {
       if (options.signal?.aborted) return { kind: "cancelled", receipt };
       if (!this.remotePersistenceEnabled) return { kind: "disabled", receipt };
       if (observedIdentity !== receipt.contentIdentity) return { kind: "mismatch", receipt, reason: "content" };
+      // Trusted run-end validators see only the canonical read that matched this receipt.
+      const validationProblem = options.validate?.(read.project);
+      if (options.signal?.aborted) return { kind: "cancelled", receipt };
+      if (validationProblem) return { kind: "failed", receipt, message: validationProblem };
       return { kind: "verified", receipt, isCurrent: this.isPersistenceReceiptCurrent(receipt) };
     } catch (error) {
       if (options.signal?.aborted || (error instanceof Error && error.name === "AbortError")) {
@@ -1239,7 +1250,8 @@ class ProjectStore {
     const target = Object.freeze({ ...config });
     const generationAtSubmit = this.mutationGeneration;
     const lineageAtSubmit = this.contentLineage;
-    const submittedProject = projectWithoutEventDrafts(this.current);
+    const projectAtSubmit = this.current;
+    const submittedProject = projectWithoutEventDrafts(projectAtSubmit);
     // 커밋 로그가 쓸 diff baseline — **이 저장 직전에 서버가 갖고 있던 내용**이다.
     // 아래에서 `this.persistedBaseline` 을 저장 결과로 갈아치우므로 여기서 잡아두지 않으면
     // 커밋 diff 가 "자기 자신과의 비교"(=빈 diff)로 무너진다. await 앞에서 읽는 이유는
@@ -1265,7 +1277,7 @@ class ProjectStore {
         contentIdentity: await sha256HexText(acceptedContent),
         ...(result.sha256 ? { sha256: result.sha256 } : {}),
       });
-      this.persistenceTargets.set(receipt, { target, contentLineage: lineageAtSubmit });
+      this.persistenceTargets.set(receipt, { target, contentLineage: lineageAtSubmit, projectAtSubmit });
     } catch (error) {
       // Intermediate projects may save but cannot supply normalized proof. Preserve flush compatibility.
       log.warn("Accepted project could not produce a persistence receipt", error);
@@ -1281,10 +1293,18 @@ class ProjectStore {
       this.current.audioDescriptions,
       savedProject.audioDescriptions,
     );
-    if (JSON.stringify(audioDescriptions) !== JSON.stringify(this.current.audioDescriptions)) {
+    const monsterMetadata = applyMonsterMetadataDelta(
+      submittedProject.monsterMetadata,
+      this.current.monsterMetadata,
+      savedProject.monsterMetadata,
+    );
+    if (JSON.stringify(audioDescriptions) !== JSON.stringify(this.current.audioDescriptions)
+      || JSON.stringify(monsterMetadata) !== JSON.stringify(this.current.monsterMetadata)) {
       const reconciledProject = { ...this.current };
       if (audioDescriptions === undefined) delete reconciledProject.audioDescriptions;
       else reconciledProject.audioDescriptions = structuredClone(audioDescriptions);
+      if (monsterMetadata === undefined) delete reconciledProject.monsterMetadata;
+      else reconciledProject.monsterMetadata = structuredClone(monsterMetadata);
       this.current = reconciledProject;
       // Synchronization is observable, but is not a new authored mutation.
       this.emit({ scope: "project", origin: "system", projectSwitch: false });

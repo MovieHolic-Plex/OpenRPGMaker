@@ -1,5 +1,6 @@
 import { ruleToolRejectionText, type ProposedCall } from "@/ai/assistantSession";
 import { AGENT_RUN_MAX_TOTAL_STEPS } from "@/ai/assistantSession";
+import type { RunOutcome } from "@/ai/runOutcome";
 import type { WorkItem, WorkPlan } from "@/ai/workPlan";
 import { isItemFinished, layerItems, planLayers } from "./aiWorkPlanPages";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
@@ -9,6 +10,28 @@ import type { Project, TilesetDef } from "@/project/types";
 import { el } from "@/util/dom";
 import { deckIcon } from "./aiDeckIcons";
 import { toolIconKey, toolLabel } from "./aiToolLabels";
+
+const EXECUTION_LABEL: Readonly<Record<RunOutcome["execution"], string>> = {
+  "response-final": "응답 종료", "awaiting-user": "사용자 응답 대기", blocked: "진행 막힘",
+  cancelled: "사용자 중단", "budget-exhausted": "실행 한도 도달", failed: "실행 실패",
+};
+const GOAL_LABEL: Readonly<Record<RunOutcome["goal"], string>> = {
+  unassessed: "목표 미평가", incomplete: "목표 미충족", satisfied: "목표 충족",
+};
+const DELIVERY_LABEL: Readonly<Record<RunOutcome["delivery"], string>> = {
+  "no-change": "변경 없음", draft: "미적용 초안", applied: "적용됨",
+  persisted: "온라인 저장됨", "persisted-verified": "온라인 저장·검증됨",
+};
+
+/** Presentation only: every axis is supplied by the session's canonical projection. */
+export function renderRunOutcome(outcome: RunOutcome): HTMLElement {
+  return el("p", {
+    class: "ai-run-outcome",
+    dataset: { testid: "ai-run-outcome", execution: outcome.execution, goal: outcome.goal, delivery: outcome.delivery },
+    attrs: { role: "status", "aria-live": "polite", "aria-atomic": "true" },
+    text: `${EXECUTION_LABEL[outcome.execution]} · ${GOAL_LABEL[outcome.goal]} · ${DELIVERY_LABEL[outcome.delivery]}`,
+  });
+}
 
 const AI_PROGRESS_TOOL_LIMIT = 30;
 const DRAFT_DESTRUCTIVE_TOOL_NAMES = new Set(["remove_map", "remove_event", "clear_region", "delete_tile_group", "reset_project"]);
