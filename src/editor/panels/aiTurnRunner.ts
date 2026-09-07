@@ -515,7 +515,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
       const currentMapId = editorState.get().currentMapId ?? beforeProject.startMapId ?? null;
       // 승인 카드는 없다 — 쓰기가 있으면 그대로 적용하고, 복구는 되돌리기다(approvalPolicy 머리말).
       const applyMode = resolveProposalApplyMode({ callCount: result.proposedCalls.length });
-      if (applyMode === "apply-now") {
+      if (runOpts?.composerMode !== "ask" && applyMode === "apply-now") {
         // 적용을 먼저 하고 그 결과를 기다린 다음에 로그를 붙인다 — 배치 검증·커밋 게이트가 적용을
         // 거부하면 store 는 그대로이므로 "적용됨 N건" 은 거짓이 된다(사유는 deps.applyProposal 이
         // 이미 ❌ 버블로 남긴다).

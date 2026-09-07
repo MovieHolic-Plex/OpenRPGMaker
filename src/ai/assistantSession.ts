@@ -1584,6 +1584,8 @@ export class AssistantSession {
     this.runResult = { current: null };
     this.runSubscriber = onEvent;
     this.runRecapAuditIndex = null;
+    // Explicit Ask owns publication even if preparation fails before intent is declared.
+    this.turnComposerMode = opts?.composerMode ?? "do";
     const entryInstruction = (opts?.instruction ?? stripContextFooter(text)).trim();
     const retainsAppliedDelivery = opts?.composerMode !== "ask" && opts?.goalAction !== "new-goal"
       && (opts?.goalAction === "resume" || isContinuationText(entryInstruction));
@@ -1786,7 +1788,7 @@ export class AssistantSession {
     // 질문 모드는 사용자가 직접 고른 사실이라 선언의 create/modify 를 덮어쓴다 — 안 그러면 플래너·쓰기 기대가 문장 판정으로 돈다.
     const intent = this.applyComposerModeToIntent(await this.declareTurnIntent(instruction, onEvent, signal));
     this.turnIntent = intent;
-    if (intent.mode === "question" && this.turnComposerMode === "do") this.turnComposerMode = "ask";
+    if (intent.mode === "question") this.turnComposerMode = "ask";
     const question = this.turnComposerMode === "ask";
     const userAction = !this.turnIsDriverContinue && !question;
     const startsGoal = userAction && options.goalAction === "new-goal";
@@ -2703,7 +2705,7 @@ export class AssistantSession {
    * (커밋 게이트 차단) 하나뿐이다.
    */
   private async maybeAutoApplyMilestone(completed: WorkItem, onEvent: (event: SessionEvent) => void): Promise<void> {
-    if (!this.milestoneAutoApply) return;
+    if (!this.milestoneAutoApply || this.turnComposerMode === "ask") return;
     // 같은 턴에서 적용 실패 뒤 후속 완료 신호가 와도 조용히 누락하지 않고 감사로 남긴다.
     if (this.milestoneApplyFailed) {
       this.pushAudit({
@@ -2924,7 +2926,7 @@ export class AssistantSession {
     return deriveRunOutcome({
       execution: this.runExecution,
       acceptance: assessment ? assessment.status === "verified" && !assessmentCurrent ? "verifying" : assessment.status : null,
-      hasPendingDraft: this.turnProposals.size > 0,
+      hasPendingDraft: this.turnComposerMode !== "ask" && this.turnProposals.size > 0,
       hasApplied: this.turnAppliedMilestoneCalls.length > 0,
       persistence: this.runReceipt === null ? "none"
         : proof?.receipt === this.runReceipt && proof.verified ? "verified-current" : "accepted",
@@ -2936,7 +2938,9 @@ export class AssistantSession {
     const result = this.runResult.current;
     const runOutcome = this.getRunOutcome();
     if (!result || !runOutcome) return;
-    result.proposedCalls = this.finalizeProposals(this.turnProposals);
+    // Retention is not authorization: questions keep the draft for a later resume,
+    // but must not offer its calls to ordinary apply or claim it as query delivery.
+    result.proposedCalls = this.turnComposerMode === "ask" ? [] : this.finalizeProposals(this.turnProposals);
     result.appliedCalls = [...this.turnAppliedMilestoneCalls];
     result.runOutcome = runOutcome;
     if (result.recap) {

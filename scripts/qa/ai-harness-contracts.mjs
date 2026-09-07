@@ -14,11 +14,12 @@ import { loadEnv } from 'vite';
 import { installBrowserProbe, browserSurface } from './ai-harness-browser.mjs';
 import { proofFailureResponse, runProofFailure } from './ai-harness-proof-failure.mjs';
 import { createP2Contracts } from './ai-harness-p2.mjs';
+import { createR1AskContracts } from './ai-harness-r1-ask.mjs';
 import { deleteOwnedFixture } from './ai-harness-cleanup.mjs';
 import { isWikiExtraction } from '../../test/wikiTransportFixture.ts';
 
 const { values } = parseArgs({ options: { scenario: { type: 'string' } } });
-assert.ok(['proof-failure', 'required-skip', 'outcome-matrix'].includes(values.scenario), 'Unknown contract scenario');
+assert.ok(['proof-failure', 'required-skip', 'outcome-matrix', 'retained-draft-ask'].includes(values.scenario), 'Unknown contract scenario');
 const root = fileURLToPath(new URL('../../', import.meta.url));
 const port = Number(process.env.QA_PORT ?? 19847);
 const base = `http://127.0.0.1:${port}`;
@@ -166,8 +167,9 @@ try {
   report.cleanup.absentBeforeRun = true;
   record('isolated-project-available', { projectId, beforeContentQa: true });
   await portFree();
-  await mkdir(resolve(root, '.vite-cache'), { recursive: true });
-  cacheDir = await mkdtemp(resolve(root, '.vite-cache/ai-harness-p1-'));
+  const cacheRoot = resolve(root, process.env.QA_CACHE_ROOT ?? '.vite-cache');
+  await mkdir(cacheRoot, { recursive: true });
+  cacheDir = await mkdtemp(resolve(cacheRoot, 'ai-harness-p1-'));
   const ready = deferred();
   server = spawn(process.execPath, ['node_modules/vite/bin/vite.js', '--configLoader', 'runner', '--config', 'scripts/qa/ai-harness-vite.config.mjs',
     '--host', '127.0.0.1', '--port', String(port), '--strictPort'], {
@@ -206,7 +208,10 @@ try {
     armProof, bounded, observeRemote, rest, deferred, clearProofGate: () => { gate?.release.resolve(); gate = null; } };
   await surface.capture('00-before');
   if (values.scenario === 'proof-failure') await runProofFailure(harness);
-  else { p2 = createP2Contracts(harness); await p2.run(values.scenario); }
+  else {
+    p2 = values.scenario === 'retained-draft-ask' ? createR1AskContracts(harness) : createP2Contracts(harness);
+    await p2.run(values.scenario);
+  }
 } catch (error) {
   report.failure = safeError(error); process.exitCode = 1; record('FAIL', { error: report.failure });
   if (page && !page.isClosed()) {
@@ -251,7 +256,8 @@ try {
   report.sourceHashes = Object.fromEntries(await Promise.all(['src/ai/assistantSession.ts', 'src/ai/workPlan.ts', 'src/ai/assistantAcceptanceLedger.ts', 'src/project/store.ts',
     'src/editor/panels/aiTurnRunner.ts', 'src/editor/aiAssistantBridge.ts', 'src/ai/activityLog.ts', 'src/ai/runRecap.ts',
     'scripts/qa/ai-harness-contracts.mjs', 'scripts/qa/ai-harness-browser.mjs', 'scripts/qa/ai-harness-proof-failure.mjs',
-    'scripts/qa/ai-harness-cleanup.mjs', 'scripts/qa/ai-harness-p2.mjs', 'scripts/qa/ai-harness-p2-scenarios.mjs', 'scripts/qa/ai-harness-p2-observe.mjs', 'scripts/qa/ai-harness-p2-resume.mjs'].map(async path => [path, hash(await readFile(resolve(root, path)))])));
+    'scripts/qa/ai-harness-cleanup.mjs', 'scripts/qa/ai-harness-p2.mjs', 'scripts/qa/ai-harness-p2-scenarios.mjs', 'scripts/qa/ai-harness-p2-observe.mjs', 'scripts/qa/ai-harness-p2-resume.mjs', 'scripts/qa/ai-harness-r1-ask.mjs',
+    'src/editor/panels/aiProposalCard.ts', 'src/editor/tools/applyChangesetToStore.ts'].map(async path => [path, hash(await readFile(resolve(root, path)))])));
   await writeFile(`${out}/server.log`, serverLog.replaceAll(config?.anonKey || '\0', '[REDACTED]'));
   await writeFile(`${out}/actions.json`, JSON.stringify(report, null, 2) + '\n');
   record('cleanup', report.cleanup);
