@@ -1,5 +1,45 @@
 # Editor AI Tools & Vocabulary
 
+## Action enemy profile edits (2026-09-07)
+
+`make_action_enemy` patches an existing enemy's `actionProfile`: omitted fields,
+including `attack`, retain their authored values. A supplied `attack` replaces
+that attack and must contain its complete required fields. Existing stats,
+rewards and other enemy fields are not reset by a profile edit. New contact-only
+enemies remain supported.
+
+The tool validates the profile and its nested attack before preparing any
+mutation. Unknown keys (including a literal quoted `"attack"` key), unsupported
+attack kinds, missing attack fields, wrong value types and non-finite numbers
+return `invalid-args` rather than becoming a successful lossy normalization.
+The shared project-load normalizer retains its legacy behavior; this stricter
+contract belongs to the authoring boundary.
+
+Regression seam: `test/actionTools.test.ts`, through the real `runTool` path and
+the canonical serialize/deserialize round trip.
+
+## Explicit field-spawn mutations (2026-09-07)
+
+New AI authoring should specify top-level `spawnMode` on `make_action_enemy`.
+`"add"` requires a spawn and rejects an ID already present on the selected map.
+`"update"` requires a nonblank existing `spawn.id` on that exact map; an unknown
+ID fails with `spawn-not-found` without changing the enemy or adding a spawn.
+Both operations retain the existing required map, troop and area payload.
+Successful results include `mapId`, `spawnId` and `spawnOutcome`.
+
+Omitting `spawnMode` deliberately preserves legacy upsert/append behavior.
+That compatibility path is not duplicate-proof: use explicit modes for new
+creation and correction. Deliberate multiple spawns remain supported, including
+multiple spawns of the same enemy or troop.
+
+`remove_field_spawn({mapId, spawnId})` removes only that authored map entry.
+It never deletes enemy records, rewards, troops or other spawns. Missing targets
+fail, and references from `roguelikeRoom.encounterSlots` block removal with
+`spawn-in-use`; callers must update those references explicitly.
+
+Regression seam: `test/actionAuthoringPrerequisites.test.ts`, including direct
+handler rejection without mutation, real runner results and published schemas.
+
 ## Monster resource discovery and AI appearance evidence (2026-09-07)
 
 `list_monster_resources({})` returns the entire current monster index, without a default

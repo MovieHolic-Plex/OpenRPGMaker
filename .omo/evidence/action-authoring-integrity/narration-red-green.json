@@ -1,0 +1,17 @@
+{
+  "red": {
+    "source": "full npm run gates",
+    "failure": {
+      "file": "aiActivityNarration.test.ts",
+      "name": "AI 도구 활동 문장 레지스트리에 등록된 모든 도구에서 내부 이름을 노출하지 않는다",
+      "message": "AssertionError: remove_field_spawn 도구의 활동 문구 패밀리를 명시적으로 결정해야 함: expected false to be true // Object.is equality"
+    }
+  },
+  "green": {
+    "command": "npm test -- test/aiActivityNarration.test.ts plus the seven action/tool suites",
+    "total": 107,
+    "passed": 107,
+    "failed": 0
+  },
+  "fix": "Register remove_field_spawn in the existing editMap narration family."
+}

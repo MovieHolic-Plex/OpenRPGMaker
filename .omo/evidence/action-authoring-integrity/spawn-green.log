@@ -1,0 +1,2 @@
+Exit 0; 98 related tests passed, 0 failed.
+Command: npm test -- test/actionEnemyAuthoring.test.ts test/actionAuthoringPrerequisites.test.ts test/actionTools.test.ts test/actionArenaAuthoring.test.ts test/actionGenreAuthoring.test.ts test/toolActionAuthoringParity.test.ts test/toolCatalog.test.ts

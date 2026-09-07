@@ -2,6 +2,30 @@ import { describe, expect, it } from "vitest";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
 import { createBlankProject } from "@/project/defaults";
+import { deserialize, serialize } from "@/project/io";
+
+function authoredEnemyFixture() {
+  const context: ToolContext = { project: createBlankProject() };
+  const enemy = context.project.database.enemies[0];
+  if (!enemy) throw new Error("enemy fixture missing");
+  enemy.actionProfile = {
+    contactDamage: 9,
+    moveIntervalMs: 730,
+    aggroRange: 4,
+    knockbackResist: 0.3,
+    attack: {
+      kind: "projectile",
+      windupMs: 620,
+      recoverMs: 430,
+      damage: 17,
+      range: 9,
+      cooldownMs: 1700,
+      projectileSpeedTilesPerSec: 8,
+    },
+  };
+  enemy.rewards = { ...enemy.rewards, exp: 23, gold: 19 };
+  return { context, enemy };
+}
 
 describe("action combat AI tools", () => {
   it("set_action_combat writes system config and map opt-in", () => {
@@ -84,5 +108,87 @@ describe("action combat AI tools", () => {
         spawn: { mapId, troopId: "troop_ghost", area: { x: 0, y: 0, w: 2, h: 2 } },
       }).ok
     ).toBe(false);
+  });
+
+  it("preserves authored attacks during partial action profile edits", () => {
+    const { context, enemy } = authoredEnemyFixture();
+    const before = structuredClone(enemy);
+
+    const result = runTool(context, "make_action_enemy", {
+      enemyId: enemy.id,
+      actionProfile: { aggroRange: 7 },
+    });
+
+    expect(result.ok, result.summary).toBe(true);
+    const expected = { ...before, actionProfile: { ...before.actionProfile, aggroRange: 7 } };
+    expect(context.project.database.enemies.find((entry) => entry.id === enemy.id)).toEqual(expected);
+    const loaded = deserialize(serialize(context.project));
+    expect(loaded.database.enemies.find((entry) => entry.id === enemy.id)).toEqual(expected);
+  });
+
+  it("replaces a supplied attack without discarding other authored profile fields", () => {
+    const { context, enemy } = authoredEnemyFixture();
+    const before = structuredClone(enemy);
+    const attack = { kind: "dash", windupMs: 400, recoverMs: 300, damage: 21, range: 5 } as const;
+
+    const result = runTool(context, "make_action_enemy", {
+      enemyId: enemy.id,
+      actionProfile: { attack },
+    });
+
+    expect(result.ok, result.summary).toBe(true);
+    expect(context.project.database.enemies.find((entry) => entry.id === enemy.id)).toEqual({
+      ...before,
+      actionProfile: { ...before.actionProfile, attack },
+    });
+  });
+
+  it.each([
+    { name: "quoted attack key", profile: { contactDamage: 8, '"attack"': { kind: "melee" } } },
+    { name: "unknown profile key", profile: { contactDamage: 8, aggroRnage: 7 } },
+    { name: "unknown attack kind", profile: { contactDamage: 8, attack: { kind: "beam", windupMs: 500, recoverMs: 300, damage: 8, range: 4 } } },
+    { name: "missing attack fields", profile: { contactDamage: 8, attack: { kind: "projectile", damage: 8 } } },
+    { name: "unknown attack key", profile: { attack: { kind: "projectile", windupMs: 500, recoverMs: 300, damage: 8, range: 4, projectileSpeed: 9 } } },
+    { name: "invalid movement value", profile: { contactDamage: 8, moveIntervalMs: "fast" } },
+    { name: "non-finite damage", profile: { contactDamage: Number.NaN } },
+    { name: "non-object attack", profile: { contactDamage: 8, attack: [] } },
+  ])("rejects malformed action profiles without mutation: $name", ({ profile }) => {
+    const { context, enemy } = authoredEnemyFixture();
+    const before = serialize(context.project);
+
+    const result = runTool(context, "make_action_enemy", {
+      enemyId: enemy.id,
+      actionProfile: profile,
+    });
+
+    expect(result.ok).toBe(false);
+    expect(result.issues?.some((issue) => issue.code === "invalid-args")).toBe(true);
+    expect(serialize(context.project)).toBe(before);
+  });
+
+  it.each(["melee", "projectile", "dash"] as const)("accepts a complete %s attack", (kind) => {
+    const { context, enemy } = authoredEnemyFixture();
+
+    const result = runTool(context, "make_action_enemy", {
+      enemyId: enemy.id,
+      actionProfile: { attack: { kind, windupMs: 500, recoverMs: 300, damage: 8, range: 4 } },
+    });
+
+    expect(result.ok, result.summary).toBe(true);
+    expect(context.project.database.enemies.find((entry) => entry.id === enemy.id)?.actionProfile?.attack?.kind).toBe(kind);
+  });
+
+  it("retains contact-only enemy creation", () => {
+    const context: ToolContext = { project: createBlankProject() };
+
+    const result = runTool(context, "make_action_enemy", {
+      enemyId: "contact_only_enemy",
+      name: "Contact-only enemy",
+      monsterResourceId: "generated-enemy-slime-01",
+      actionProfile: { contactDamage: 6 },
+    });
+
+    expect(result.ok, result.summary).toBe(true);
+    expect(context.project.database.enemies.find((entry) => entry.id === "contact_only_enemy")?.actionProfile).toEqual({ contactDamage: 6 });
   });
 });

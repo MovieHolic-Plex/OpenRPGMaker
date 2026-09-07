@@ -1,0 +1,460 @@
+{
+  "baseCommit": "f22d64f7c2d95247189e8dacbffecc90dd0721d7",
+  "failures": [
+    {
+      "file": "actionRpgAuthoringAcceptance.test.ts",
+      "name": "action authoring acceptance through the real session keeps a failed mandatory scene unverified even when spatial criteria pass and work is skipped",
+      "message": "AssertionError: expected 'in_progress' to be 'skipped' // Object.is equality"
+    },
+    {
+      "file": "aiAssistantSession.test.ts",
+      "name": "AssistantSession 툴콜 루프 자가수정: 커밋/검증 실패 → issues 반환 → 재시도 → 성공",
+      "message": "AssertionError: expected 'error' to be 'final' // Object.is equality"
+    },
+    {
+      "file": "aiAssistantSession.test.ts",
+      "name": "AssistantSession 툴콜 루프 쓰기 툴이 시작되면 이후 호출은 실행 모델로 전환하고 검수는 감독 모델로 돌아온다",
+      "message": "AssertionError: expected 'error' to be 'final' // Object.is equality"
+    },
+    {
+      "file": "aiAssistantSession.test.ts",
+      "name": "AssistantSession 툴콜 루프 검수가 미이행을 발견하면 실행 모델로 한 번 재투입한 뒤 감독 모델이 최종 응답한다",
+      "message": "AssertionError: expected '완료 검증이 아직 미완성입니다.\\n- 이 작업을 단계로 진행해줘. …' to be '길과 꽃을 모두 제안했습니다.' // Object.is equality"
+    },
+    {
+      "file": "aiAssistantSession.test.ts",
+      "name": "AssistantSession 툴콜 루프 검수 응답이 raw 툴콜 마크업이면 원문 노출 없이 1회 재투입한다",
+      "message": "AssertionError: expected '완료 검증이 아직 미완성입니다.\\n- 이 작업을 단계로 진행해줘. …' to be '타이틀 변경을 제안했습니다.' // Object.is equality"
+    },
+    {
+      "file": "aiAssistantSession.test.ts",
+      "name": "AssistantSession 툴콜 루프 집 3채 NPC 5명 요청에서 집 1채만 제안되면 검수가 완료라고 답해도 missingWarnings로 재투입한다",
+      "message": "AssertionError: expected [ 'plan', 'execute', 'execute', …(2) ] to deeply equal [ 'plan', 'execute', 'review', …(2) ]"
+    },
+    {
+      "file": "aiAssistantSession.test.ts",
+      "name": "AssistantSession 툴콜 루프 오케스트레이션에서 변경 기대 요청이 0건 비질문으로 끝나면 한 번 재킥해 실행한다",
+      "message": "AssertionError: expected 'error' to be 'final' // Object.is equality"
+    },
+    {
+      "file": "aiAssistantSession.test.ts",
+      "name": "하네스 관측 오케스트레이션 주입 원문이 감사 로그에 남고 턴 종료 라인에 출력 토큰이 붙는다",
+      "message": "AssertionError: expected undefined to be 'status' // Object.is equality"
+    },
+    {
+      "file": "aiEditorCapabilityParity.test.ts",
+      "name": "AI editor capability parity returns full database record fields when include=full",
+      "message": "AssertionError: 'upsert_enemy' 실행 실패: enemy.monsterResourceId: \"패리티 슬라임\"에 확실히 맞는 외형이 없습니다. list_resources(kind:\"monster\", query:\"*\")로 확인한 리소스 ID를 enemy.monsterResourceId에 지정하세요. 사용 가능한 monster 리소스 예시: generated-enemy-slime-01, generated-e…: expected false to be true // Object.is equality"
+    },
+    {
+      "file": "aiEditorFullToolCoverage.test.ts",
+      "name": "AI assistant editor-wide project mutation coverage changes project identity, terms, display, resources, and battle defaults",
+      "message": "AssertionError: 'upsert_enemy' 실행 실패: enemy.monsterResourceId: \"설정용 적\"에 확실히 맞는 외형이 없습니다. list_resources(kind:\"monster\", query:\"*\")로 확인한 리소스 ID를 enemy.monsterResourceId에 지정하세요. 사용 가능한 monster 리소스 예시: generated-enemy-slime-01, generated-ene…: expected false to be true // Object.is equality"
+    },
+    {
+      "file": "aiImageGenerateField.test.ts",
+      "name": "aiImageGenerateField 종류별 프롬프트 접두사를 붙여 요청한다",
+      "message": "AssertionError: expected +0 to be 1 // Object.is equality"
+    },
+    {
+      "file": "aiImageGenerateQueue.test.ts",
+      "name": "aiImageGenerateField queue 프롬프트를 비우지 않고 여러 작업을 쌓는다",
+      "message": "AssertionError: expected '프롬프트를 입력하면 여기에 쌓입니다. 만드는 동안에도 계속 추가할 …' to contain '고블린'"
+    },
+    {
+      "file": "aiImageGenerateQueue.test.ts",
+      "name": "aiImageGenerateField queue 끝난 작업은 에셋으로 등록하고 onInserted 를 부른다",
+      "message": "AssertionError: expected [] to have a length of 1 but got +0"
+    },
+    {
+      "file": "aiImageGenerateQueue.test.ts",
+      "name": "aiImageGenerateField queue 실패한 작업은 목록에 남고 다시 시도할 수 있다",
+      "message": "AssertionError: expected '프롬프트를 입력하면 여기에 쌓입니다. 만드는 동안에도 계속 추가할 …' to contain '서버 불량'"
+    },
+    {
+      "file": "aiImageGenerateQueue.test.ts",
+      "name": "aiImageGenerateField queue 대기 중인 작업은 목록에서 취소할 수 있다",
+      "message": "AssertionError: expected '프롬프트를 입력하면 여기에 쌓입니다. 만드는 동안에도 계속 추가할 …' to contain '취소됨'"
+    },
+    {
+      "file": "aiImageGenerateQueue.test.ts",
+      "name": "aiImageGenerateField queue store 재진입 리마운트에도 에셋 등록은 한 번만 한다",
+      "message": "AssertionError: expected +0 to be 1 // Object.is equality"
+    },
+    {
+      "file": "aiImageGenerateQueue.test.ts",
+      "name": "aiImageGenerateField queue 레코드를 바꾸면 진행 중 작업의 완료가 새 레코드에 닿지 않는다",
+      "message": "TypeError: Cannot set property isConnected of #<FakeNode> which has only a getter"
+    },
+    {
+      "file": "aiMapContextPassabilityWiring.test.ts",
+      "name": "통행 그리드는 항상 최신 턴 컨텍스트에만 실린다 AssistantSession 이 턴마다 붙이는 뷰포트 블록도 그리드를 담는다",
+      "message": "AssertionError: expected '{\"originalContext\":{\"snapshotId\":\"ori…' to contain 'pass:'"
+    },
+    {
+      "file": "aiSpecGateHardening.test.ts",
+      "name": "암묵 스펙 — 선택 영역 선택 영역 암묵 스펙은 그 턴에만 유효하고 다음 턴으로 승격되지 않는다",
+      "message": "AssertionError: expected undefined to be false // Object.is equality"
+    },
+    {
+      "file": "aiWorkItemStall.test.ts",
+      "name": "진행이 멈춘 항목은 사람에게 넘긴다 (a)(b) 같은 항목에서 연속 3번 헛되이 나가면 blocked 로 표시하고 턴을 끝낸다 — 드라이버도 멈춘다",
+      "message": "AssertionError: expected 'in_progress' to be 'blocked' // Object.is equality"
+    },
+    {
+      "file": "aiWorkItemStall.test.ts",
+      "name": "진행이 멈춘 항목은 사람에게 넘긴다 (a-2) 같은 쓰기 툴이 같은 이유로 반복 실패하면 Ralph 신호 없이도 막힌다",
+      "message": "AssertionError: expected '완료 검증이 아직 미완성입니다.\\n- 연못 만들기: Missing …' to contain '막혔습니다'"
+    },
+    {
+      "file": "aiWorkItemStall.test.ts",
+      "name": "진행이 멈춘 항목은 사람에게 넘긴다 (c) 사용자의 다음 메시지가 막힌 항목을 되살린다",
+      "message": "AssertionError: expected 'in_progress' to be 'blocked' // Object.is equality"
+    },
+    {
+      "file": "assistantSessionIntent.test.ts",
+      "name": "의도 선언이 세션 라우팅을 정한다 auto 모드는 같은 선언에도 멈추지 않고 진행한다(F-05)",
+      "message": "AssertionError: expected '완료 검증이 아직 미완성입니다.\\n- 집 하나 만들어줘: Missi…' to be '야외 집으로 진행합니다.' // Object.is equality"
+    },
+    {
+      "file": "communityDependencyClosure.test.ts",
+      "name": "retained authored dependency closure still rejects nonempty optional map references: https://evil.invalid/media.png",
+      "message": "Error: STACK_TRACE_ERROR"
+    },
+    {
+      "file": "databaseAllTabsRenderWalk.test.ts",
+      "name": "database all-tabs render walk every registered tab renders a non-empty body without throwing",
+      "message": "AssertionError: expected Set{ 'overview', 'worldCanon', …(33) } to deeply equal Set{ 'overview', 'worldCanon', …(32) }"
+    },
+    {
+      "file": "databaseAnimationPreview.test.ts",
+      "name": "database animation preview autoplays visible frames in a loop and restores the editing frame on stop",
+      "message": "AssertionError: expected 'false' to be 'true' // Object.is equality"
+    },
+    {
+      "file": "databaseItemInspector.test.ts",
+      "name": "database item inspector form weapon type shows an equipment-tab door instead of the legacy equipment form",
+      "message": "AssertionError: expected '⚔착용 장비는 별도 항목으로 만듭니다이 항목은 이전 형식의 비착용 …' to contain '장비 탭'"
+    },
+    {
+      "file": "databaseOverviewDashboard.test.ts",
+      "name": "database overview dashboard renders stat chips immediately with counts from the project data",
+      "message": "Error: STACK_TRACE_ERROR"
+    },
+    {
+      "file": "databaseOverviewDashboard.test.ts",
+      "name": "database overview dashboard lazy compute: charts container is empty before idle callback, populated after flush",
+      "message": "Error: STACK_TRACE_ERROR"
+    },
+    {
+      "file": "databaseOverviewDashboard.test.ts",
+      "name": "database overview dashboard curve chart renders two non-empty SVG paths with gridlines and Lv1..Lv50 labels",
+      "message": "Error: STACK_TRACE_ERROR"
+    },
+    {
+      "file": "databaseOverviewDashboard.test.ts",
+      "name": "database overview dashboard scatter chart draws one circle per enemy with a <title> tooltip and boss styling",
+      "message": "Error: STACK_TRACE_ERROR"
+    },
+    {
+      "file": "databaseOverviewDashboard.test.ts",
+      "name": "database overview dashboard renders issue cards matching the detector output with jump buttons",
+      "message": "Error: STACK_TRACE_ERROR"
+    },
+    {
+      "file": "databaseOverviewDashboard.test.ts",
+      "name": "database overview dashboard jump button switches to the target tab via switchDatabaseActiveTab (G006)",
+      "message": "Error: STACK_TRACE_ERROR"
+    },
+    {
+      "file": "databaseOverviewDashboard.test.ts",
+      "name": "database overview dashboard attack-stagnation jump opens the classes tab, not skills",
+      "message": "Error: STACK_TRACE_ERROR"
+    },
+    {
+      "file": "databaseOverviewDashboard.test.ts",
+      "name": "database overview dashboard AI 분석 button dispatches the modal's database-ai-toggle click (aria-expanded)",
+      "message": "Error: STACK_TRACE_ERROR"
+    },
+    {
+      "file": "databaseOverviewDashboard.test.ts",
+      "name": "database overview dashboard clean project shows empty-state cards instead of blank canvases",
+      "message": "Error: STACK_TRACE_ERROR"
+    },
+    {
+      "file": "databaseOverviewTab.test.ts",
+      "name": "database overview tab shell summarizes the authored game across world, story, cast, systems, and readiness",
+      "message": "Error: STACK_TRACE_ERROR"
+    },
+    {
+      "file": "databaseOverviewTab.test.ts",
+      "name": "database overview tab shell empty project renders chips with 0 counts without crashing",
+      "message": "Error: STACK_TRACE_ERROR"
+    },
+    {
+      "file": "databaseOverviewTab.test.ts",
+      "name": "database overview tab shell default open tab after modal open is the stored last tab, NOT overview unless stored",
+      "message": "Error: STACK_TRACE_ERROR"
+    },
+    {
+      "file": "databaseOverviewTab.test.ts",
+      "name": "database overview tab shell persists across hard reload: stored 'overview' lands on the overview tab",
+      "message": "Error: STACK_TRACE_ERROR"
+    },
+    {
+      "file": "databaseOverviewTab.test.ts",
+      "name": "database overview tab shell databaseTabLabel resolves the overview label for the AI footer",
+      "message": "Error: STACK_TRACE_ERROR"
+    },
+    {
+      "file": "databaseSkillAnimationStage.test.ts",
+      "name": "스킬 탭 애니메이션 스테이지 프레임을 자동 반복 재생하고 프레임 카운터가 따라간다",
+      "message": "AssertionError: expected '1' to be '2' // Object.is equality"
+    },
+    {
+      "file": "editorProjectE2EBridge.test.ts",
+      "name": "mounted project E2E bridge denies missing/wrong capability before invoking either remote store method",
+      "message": "Error: STACK_TRACE_ERROR"
+    },
+    {
+      "file": "editorProjectE2EBridge.test.ts",
+      "name": "mounted project E2E bridge maps authorized initialization and reload to the mounted singleton with exact proof",
+      "message": "Error: STACK_TRACE_ERROR"
+    },
+    {
+      "file": "editorProjectE2EBridge.test.ts",
+      "name": "mounted project E2E bridge cleanup removes only the bridge and remount consumes no stale capability",
+      "message": "Error: STACK_TRACE_ERROR"
+    },
+    {
+      "file": "editorProjectE2EBridge.test.ts",
+      "name": "mounted project E2E bridge does not install without WebDriver",
+      "message": "Error: STACK_TRACE_ERROR"
+    },
+    {
+      "file": "elementRatesPartialAccept.test.ts",
+      "name": "elementRates 부분 수용 DB에 없는 속성 키만 버리고 유효한 등급은 유지한다",
+      "message": "AssertionError: expected false to be true // Object.is equality"
+    },
+    {
+      "file": "evals.test.ts",
+      "name": "evals 모든 골든 태스크가 정답 시퀀스로 통과한다(오프라인)",
+      "message": "AssertionError: tough-enemy: []: expected false to be true // Object.is equality"
+    },
+    {
+      "file": "eventEditorCommitProbe.baseline.test.ts",
+      "name": "이벤트 편집기 커밋 프로브 축 (1) 컨트롤 조작 → 저장 커맨드 스냅샷이 기준선과 같다",
+      "message": "AssertionError: [커밋 프로브] 표면이 기준선과 다르다 (4건)"
+    },
+    {
+      "file": "eventEditorCommitProbe.baseline.test.ts",
+      "name": "no-commit 래칫 무커밋 컨트롤 집합이 허용 목록과 정확히 일치한다",
+      "message": "AssertionError: 무커밋 컨트롤이 새로 생겼다 — 커밋 배선이 죽었는지 확인하고, 의도적이면 test/fixtures/commitProbeNoCommitAllowlist.json 의 intentional 에 근거와 함께 추가하라: expected [ …(2) ] to deeply equal []"
+    },
+    {
+      "file": "eventEditorFormSurface.baseline.test.ts",
+      "name": "이벤트에디터 폼 표면 스냅샷 기준선과 일치한다",
+      "message": "AssertionError: [폼(kind)] 표면이 기준선과 다르다 (4건)"
+    },
+    {
+      "file": "eventEditorInteractionSurface.baseline.test.ts",
+      "name": "이벤트에디터 상호작용 후 폼 표면 스냅샷 기준선과 일치한다",
+      "message": "AssertionError: [상호작용 후 폼] 표면이 기준선과 다르다 (4건)"
+    },
+    {
+      "file": "eventEditorM2Surface.baseline.test.ts",
+      "name": "M2 명령 폼 표면 스냅샷 기준선과 일치한다",
+      "message": "AssertionError: [M2(commandId)] 표면이 기준선과 다르다 (2건)"
+    },
+    {
+      "file": "eventEditorPortalSurface.baseline.test.ts",
+      "name": "포털(피커/모달) 표면 스냅샷 기준선과 일치한다",
+      "message": "AssertionError: [포털(피커/모달)] 표면이 기준선과 다르다 (2건)"
+    },
+    {
+      "file": "eventEditorShowAnimationPreview.test.ts",
+      "name": "showAnimation 본문 애니메이션 표시면 반복 재생은 마지막 프레임 다음에 0으로 돌아가 계속 전진한다",
+      "message": "AssertionError: expected '1' to be '2' // Object.is equality"
+    },
+    {
+      "file": "eventEditorShowAnimationPreview.test.ts",
+      "name": "showAnimation 본문 애니메이션 표시면 프레임 콜백은 첫 렌더와 매 틱의 인덱스와 전체 프레임 수를 알린다",
+      "message": "AssertionError: expected [ [ +0, 2 ], [ 1, 2 ] ] to deeply equal [ Array(4) ]"
+    },
+    {
+      "file": "eventEditorShowAnimationPreview.test.ts",
+      "name": "showAnimation 본문 애니메이션 표시면 기존 1회 재생은 끝에서 멈추고 첫 프레임으로 돌아간다",
+      "message": "AssertionError: expected '1' to be '0' // Object.is equality"
+    },
+    {
+      "file": "eventValidationNavigationContract.test.ts",
+      "name": "validation navigation at the rendered modal seam removes its document listener and layer immediately when the parent closes",
+      "message": "AssertionError: expected 2 to be +0 // Object.is equality"
+    },
+    {
+      "file": "forestDensity.test.ts",
+      "name": "plant_tree_clusters 기본(dense)이 선언한 커버리지에 닿고 그 지대를 실제로 막는다",
+      "message": "AssertionError: 영역의 30% 가 아직 걸어서 통과된다: expected 0.3003472222222222 to be less than 0.3"
+    },
+    {
+      "file": "forestDensity.test.ts",
+      "name": "place_props density — 모델이 실제로 닿는 라이브 툴 활엽수 density=dense 가 count 없이도 숲을 만든다",
+      "message": "AssertionError: expected 0.3003472222222222 to be less than 0.3"
+    },
+    {
+      "file": "gen1DemoContent.test.ts",
+      "name": "Scarloxy Gen1 authored content authors persistent major statuses, finite PP, a Poke Ball, and trainer semantics",
+      "message": "TypeError: actual value must be number or bigint, received \"undefined\""
+    },
+    {
+      "file": "houseProtectionForest.test.ts",
+      "name": "direct forest composition writers rejects an entire puddle footprint touching a house and uses the other clearing",
+      "message": "TypeError: Cannot read properties of undefined (reading 'type')"
+    },
+    {
+      "file": "interiorBench.test.ts",
+      "name": "interior benchmark scoring schemes 정본 답변은 모든 태스크에서 만점에 가깝다",
+      "message": "AssertionError: t3-floor composite: expected 0.9333333333333332 to be greater than or equal to 0.999"
+    },
+    {
+      "file": "interiorTerrainAutotiles.test.ts",
+      "name": "interior terrain autotiles (RM2k3 blocks ×6) 블랭크 프로젝트의 실내 타일셋에 지형/카펫 그룹 9종이 시드된다 (재적용은 idempotent)",
+      "message": "AssertionError: expected true to be false // Object.is equality"
+    },
+    {
+      "file": "mapSurfaceFocus.test.ts",
+      "name": "historyHotkeyOwnedByPanel is true while a panel with its own history listener is mounted",
+      "message": "AssertionError: expected false to be true // Object.is equality"
+    },
+    {
+      "file": "modalEscapeLayerGate.test.ts",
+      "name": "Escape 계층 게이트 body 에 오버레이를 붙이는 파일은 modalStack 에 참여하거나 이유와 함께 면제된다",
+      "message": "AssertionError: body 에 띄운 새 오버레이가 Escape 계층에 참여하지 않는다. registerModal/unregisterModal 을 짝지어 쓰거나, 정말 계층이 아니면 EXEMPT 에 이유를 적어라.: expected [ 'panels/aiStickyChecklist.ts', …(1) ] to deeply equal []"
+    },
+    {
+      "file": "modalEscapeLayerGate.test.ts",
+      "name": "Escape 계층 게이트 이번에 고친 표면들은 면제가 아니라 실제로 등록한다",
+      "message": "AssertionError: 회귀: 이 표면들은 modalStack 에 등록되어 있어야 한다: expected [ 'panels/worldPanel.ts' ] to deeply equal []"
+    },
+    {
+      "file": "npcCastSession.test.ts",
+      "name": "캐스트 라이터 세션 훅 대사 없는 NPC 3명이 놓인 라운드 뒤 캐스트 시트가 적용되고 세계관에 주민이 등록된다",
+      "message": "Error: STACK_TRACE_ERROR"
+    },
+    {
+      "file": "npcCastSession.test.ts",
+      "name": "캐스트 라이터 세션 훅 시트가 두 번 연속 깨지면 대체 문구 없이 모델에게 대사를 직접 쓰라고 재킥한다",
+      "message": "Error: STACK_TRACE_ERROR"
+    },
+    {
+      "file": "npcRewardSession.test.ts",
+      "name": "NPC reward request lifetime in AssistantSession cannot erase the obligation by replanning into an unrelated skipped plan",
+      "message": "AssertionError: expected true to be false // Object.is equality"
+    },
+    {
+      "file": "publicationExport.test.ts",
+      "name": "actual publication exports boots verified payloads (legacy runtime: false) but rejects coherent executable tampering",
+      "message": "Error: STACK_TRACE_ERROR"
+    },
+    {
+      "file": "questGraph.test.ts",
+      "name": "quest graph 전투 승리 write site는 manualHint set 폴백으로 생성한다",
+      "message": "AssertionError: expected false to be true // Object.is equality"
+    },
+    {
+      "file": "refactorTools.test.ts",
+      "name": "prune_unused 미참조 아이템/트룹을 발견한다(보고 모드)",
+      "message": "AssertionError: expected [] to include 'tr_orphan'"
+    },
+    {
+      "file": "refactorTools.test.ts",
+      "name": "prune_unused 어떤 트룹도 참조하지 않는 적을 미사용으로 잡는다",
+      "message": "AssertionError: expected [] to include 'en_lonely'"
+    },
+    {
+      "file": "regionSelectionPastePreview.test.ts",
+      "name": "북여넣기 미리보기 모드 복사 후 enterPastePreview → confirmPastePreview로 실제 붙여넣기",
+      "message": "Error: STACK_TRACE_ERROR"
+    },
+    {
+      "file": "regionSelectionPastePreview.test.ts",
+      "name": "renderSelectionActionChips — 복사/붙여넣기/지우기/해제 버튼 AI 작업이 첫 버튼이고, 크기 텍스트는 바에 없다",
+      "message": "Error: STACK_TRACE_ERROR"
+    },
+    {
+      "file": "regionSelectionPastePreview.test.ts",
+      "name": "renderSelectionActionChips — 복사/붙여넣기/지우기/해제 버튼 클립보드가 없으면 붙여넣기 버튼이 없다",
+      "message": "Error: STACK_TRACE_ERROR"
+    },
+    {
+      "file": "roleNameComparisonGate.test.ts",
+      "name": "A-2 게이트 — 역할 이름 비교 잔여 허용 목록 밖에서 타일 역할 이름을 직접 비교하지 않는다",
+      "message": "AssertionError: expected [ …(2) ] to deeply equal []"
+    },
+    {
+      "file": "runtimePlayWindowSkins.test.ts",
+      "name": "runtime play window skins — 상점 shop.css 의 가게 창 표면은 두 경로 모두 윈도스킨 칠 없이 유리 토큰을 쓴다",
+      "message": "AssertionError: expected '.runtime-shop-panel { min-height: 0; ' to match /var\\(--runtime-glass-|var\\(--shop-(su…/"
+    },
+    {
+      "file": "showPictureForm.test.ts",
+      "name": "그림 표시 폼 프롬프트로 그림을 만들면 업로드 리소스가 커맨드에 실린다",
+      "message": "AssertionError: expected 0 to be greater than 0"
+    },
+    {
+      "file": "softConfirmUxFixes.test.ts",
+      "name": "soft-confirm UX fixes second identical place_props in a turn is skipped (no double scatter)",
+      "message": "AssertionError: expected 'error' to be 'final' // Object.is equality"
+    },
+    {
+      "file": "storeEventDraftPreserve.test.ts",
+      "name": "store preserves open event drafts across remote autosave autosave submits canonical linked profiles and preserves the staged name for Apply",
+      "message": "Error: STACK_TRACE_ERROR"
+    },
+    {
+      "file": "storePersistenceLineage.test.ts",
+      "name": "accepted receipt content lineage does not resurrect saved authority after reload during PATCH",
+      "message": "Error: STACK_TRACE_ERROR"
+    },
+    {
+      "file": "studioBarActions.test.ts",
+      "name": "스튜디오 바 — 한 줄, 집 하나 프로젝트 메뉴에 저장 항목은 없고, 새 프로젝트·열기·저장본·가져오기·내보내기 3종이 있다",
+      "message": "AssertionError: expected [ 'menu-project-new', …(8) ] to deeply equal [ 'menu-project-new', …(7) ]"
+    },
+    {
+      "file": "tilesetAiWorkspaceModal.test.ts",
+      "name": "AI tileset workspace three-step flow shows the summary step with a confirmed list and applies to the project",
+      "message": "TypeError: matching.matches is not a function"
+    },
+    {
+      "file": "uxcLoadFailure.test.ts",
+      "name": "UXC D01 프로젝트 로드 실패 폴백 오류 원문을 숨기고 안전한 복구 방법과 예제/새 프로젝트 CTA를 제공한다",
+      "message": "Error: STACK_TRACE_ERROR"
+    },
+    {
+      "file": "uxcLoadFailure.test.ts",
+      "name": "UXC D01 프로젝트 로드 실패 폴백 예제 프로젝트 폴백은 저장본을 폐기하지 않고 메모리 프로젝트로 부팅한다",
+      "message": "TypeError: Cannot read properties of undefined (reading 'name')"
+    },
+    {
+      "file": "webExportBattleDependencies.test.ts",
+      "name": "export runtime-selected party battle dependencies ships the static and idle URLs actually rendered by rm2000",
+      "message": "AssertionError: expected null not to be null"
+    },
+    {
+      "file": "webExportBattleDependencies.test.ts",
+      "name": "export runtime-selected party battle dependencies keeps a runtime-selected uploaded back sprite through preparation",
+      "message": "AssertionError: expected undefined to deeply equal { …(5) }"
+    },
+    {
+      "file": "webExportBattleDependencies.test.ts",
+      "name": "export runtime-selected party battle dependencies embeds actual party render dependencies in the standalone asset table",
+      "message": "AssertionError: expected null not to be null"
+    },
+    {
+      "file": "worldAiExclusion.test.ts",
+      "name": "세계관 AI 컨텍스트·경고 배제 세계관이 있어도 villageInfoDocuments는 기존 발췌 경로를 그대로 쓴다",
+      "message": "AssertionError: expected '당신은 브라우저 기반 2D RPG 에디터의 개발 어시스턴트입니다.\\…' to contain '## 게임 스타일 문서(발췌)'"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "browserClosed": true,
+  "editorSession": "bash_78",
+  "signalServerStopped": true,
+  "cacheCleanupExit": 0,
+  "ports": [
+    {
+      "port": 45991,
+      "closed": true
+    },
+    {
+      "port": 45993,
+      "closed": true
+    }
+  ],
+  "userProfilesCleared": false
+}

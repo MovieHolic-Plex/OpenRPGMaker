@@ -1,0 +1,35 @@
+{
+  "ports": [
+    {
+      "port": 45991,
+      "closed": true
+    },
+    {
+      "port": 45992,
+      "closed": true
+    },
+    {
+      "port": 45993,
+      "closed": true
+    },
+    {
+      "port": 45994,
+      "closed": true
+    }
+  ],
+  "stoppedSessions": [
+    "bash_92",
+    "bash_100",
+    "bash_97"
+  ],
+  "signalServerStopped": true,
+  "deletedOwnedPaths": [
+    "/tmp/oprn-action-integrity-final-vite-45991",
+    "/tmp/oprn-action-integrity-player-vite-45992",
+    "/tmp/oprn-integrity-chrome.eMsFDi",
+    "/tmp/db-surface-z07IEM"
+  ],
+  "cleanupExit": 0,
+  "userProfilesCleared": false,
+  "normalPlayerContextClosedByDriver": true
+}
