@@ -1,0 +1,30 @@
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p4
+
+ ✓ test/linkedAnimalHousing.test.ts (20 tests) 2936ms
+   ✓ linked animal housing > roundtrips authored Project4 homes and rejects dual references, missing capacity and unknown species  854ms
+   ✓ linked animal housing > voluntary demolition at 4096 recovery claims preserves the whole herd and refunds nothing  782ms
+ ✓ test/p1ReferenceIntegrity.test.ts (5 tests) 553ms
+ ✓ test/p2SpatialReferenceIntegrity.test.ts (4 tests) 911ms
+   ✓ P2 spatial project reference integrity > reports definition FKs, placement FKs, bounds, duplicates, and footprint collisions with exact paths  301ms
+ ✓ test/p2SpatialEditorAuthoring.test.ts (4 tests) 3784ms
+   ✓ P2 spatial editor authoring > omits the zero badge after deletion and restores counts through undo and redo  933ms
+   ✓ P2 spatial editor authoring > creates structured building/decor definitions and independent authored placements  994ms
+   ✓ P2 spatial editor authoring > edits footprint, capacity, level upgrades, placement orientation, and blocks referenced type deletion  1625ms
+ ✓ test/p0LifeLedgerUi.test.ts (5 tests) 490ms
+ ✓ test/p2LifeLedgerUi.test.ts (3 tests) 314ms
+ ✓ test/animalHousingAuthoringUi.test.ts (5 tests) 8425ms
+   ✓ animal housing authoring UI > authors opt-in housing and per-level animalCapacity distinct from generic capacity through serialize/parse  1515ms
+   ✓ animal housing authoring UI > start animal home picker is mutually exclusive with opaque legacy/placement ids including equal spellings and colons  1496ms
+   ✓ animal housing authoring UI > ledger assign/care path: unassigned reason before activation, collect while unassigned, refuse full/species/stale, preserve care on reassignment  1321ms
+   ✓ animal housing authoring UI > demolition and capacity shrink show only newly unassigned counts, preserve animals, and keep undo/reference integrity  2333ms
+   ✓ animal housing authoring UI > preserves type-delete placement guards without cascading animal deletion and keeps first inspector delete button  1758ms
+ ✓ test/p1LifeEditorAuthoring.test.ts (3 tests) 1164ms
+   ✓ P1 life editor authoring > seeds a usable four-season weather table instead of leaving an empty shell  343ms
+   ✓ P1 life editor authoring > creates connected species, building, and starting-animal records from the empty state  563ms
+
+ Test Files  8 passed (8)
+      Tests  49 passed (49)
+   Start at  02:30:06
+   Duration  42.80s (transform 22.06s, setup 0ms, collect 55.69s, tests 18.58s, environment 2ms, prepare 1.03s)
+

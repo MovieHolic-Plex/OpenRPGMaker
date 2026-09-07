@@ -1,0 +1,123 @@
+{
+  "allowedPaths": [
+    ".omo/evidence/life-full-20260906/54/TARGETS.json",
+    ".omo/evidence/life-full-20260906/54/recovery/candidates/src/editor/databaseReferences.ts",
+    ".omo/evidence/life-full-20260906/54/recovery/candidates/src/editor/panels/databaseFarmAnimalsView.ts",
+    ".omo/evidence/life-full-20260906/54/recovery/candidates/src/editor/panels/databaseFarmSpatialView.ts",
+    ".omo/evidence/life-full-20260906/54/recovery/candidates/src/player/lifeLedger.ts",
+    ".omo/evidence/life-full-20260906/54/recovery/candidates/src/player/playerStatusMenuDetailRenderer.ts",
+    ".omo/evidence/life-full-20260906/54/recovery/candidates/test/animalHousingAuthoringUi.test.ts",
+    ".omo/evidence/life-full-20260906/54/recovery/current-preserved/src/editor/databaseReferences.ts",
+    ".omo/evidence/life-full-20260906/54/recovery/current-preserved/src/editor/panels/databaseFarmAnimalsView.ts",
+    ".omo/evidence/life-full-20260906/54/recovery/current-preserved/src/editor/panels/databaseFarmSpatialView.ts",
+    ".omo/evidence/life-full-20260906/54/recovery/current-preserved/src/player/lifeLedger.ts",
+    ".omo/evidence/life-full-20260906/54/recovery/current-preserved/src/player/playerStatusMenuDetailRenderer.ts",
+    ".omo/evidence/life-full-20260906/54/recovery/current-preserved/test/animalHousingAuthoringUi.test.ts",
+    ".omo/evidence/life-full-20260906/54/restoration/CHARACTERIZATION.json",
+    ".omo/evidence/life-full-20260906/54/restoration/CHECKPOINT.json",
+    ".omo/evidence/life-full-20260906/54/restoration/SAFE-ALLOWLIST.json",
+    ".omo/evidence/life-full-20260906/54/restoration/SOURCE-PROVENANCE.json",
+    ".omo/evidence/life-full-20260906/54/restoration/characterization.exit",
+    ".omo/evidence/life-full-20260906/54/restoration/characterization.stderr",
+    ".omo/evidence/life-full-20260906/54/restoration/characterization.stdout"
+  ],
+  "review": "Source snapshots checked byte-for-byte against accepted candidates and preserved current hashes. JSON records restricted to identities, operation provenance, commands, timestamps and cleanup. Direct test stdout/stderr inspected; no raw transcript content included.",
+  "precommitIdentities": {
+    ".omo/evidence/life-full-20260906/54/TARGETS.json": {
+      "sha256": "8b3e0a9608a8ceec2b1871ef067197711e58bda211ff007cb41df168f2327fae",
+      "bytes": 1549,
+      "gitBlob": "cfb48659b88c4f3c85d405ce42303e8e7a0dfc4a"
+    },
+    ".omo/evidence/life-full-20260906/54/recovery/candidates/src/editor/panels/databaseFarmSpatialView.ts": {
+      "sha256": "4d4eadf4a013ba482c8cf998f8bed9a8aed866cf522cc5697ebc7129f25b512b",
+      "bytes": 74832,
+      "gitBlob": "1889dfa064aa3b8216f1f22fbfd10aabdf19ccc1"
+    },
+    ".omo/evidence/life-full-20260906/54/recovery/candidates/src/editor/panels/databaseFarmAnimalsView.ts": {
+      "sha256": "388b4aefd015c7667d569ba480378b2e7691bfb01f0a12098529d860a5b5978a",
+      "bytes": 47741,
+      "gitBlob": "38c09c4640590ce1e1ae47f769d4e8b497dff385"
+    },
+    ".omo/evidence/life-full-20260906/54/recovery/candidates/src/player/lifeLedger.ts": {
+      "sha256": "a03f5b685a3c73c8dc36564ed8931e787ef70d7684bf4a5a96b3cc3a80d6ae63",
+      "bytes": 37882,
+      "gitBlob": "84b1924770fe5148f46a3d0878d97365b8c2f9dc"
+    },
+    ".omo/evidence/life-full-20260906/54/recovery/candidates/src/player/playerStatusMenuDetailRenderer.ts": {
+      "sha256": "a8d70df065f7e9a253c2ff7a2a4cc3b260c0e76e66ed0d3e06458e76e22da152",
+      "bytes": 15055,
+      "gitBlob": "c18e579a2bf55e90ffa30764d456b678ee6d9d1b"
+    },
+    ".omo/evidence/life-full-20260906/54/recovery/candidates/src/editor/databaseReferences.ts": {
+      "sha256": "2cdfe84ee1baf30c03918b3c59a0a864210b0062a803346231d9dbddff7700b1",
+      "bytes": 23564,
+      "gitBlob": "617ec70159ae95385efa31b448f6d13c5f73b899"
+    },
+    ".omo/evidence/life-full-20260906/54/recovery/candidates/test/animalHousingAuthoringUi.test.ts": {
+      "sha256": "7e04a73086d13d846836622d31813f92b0d773e3e7e743aa278d1cf3a7ecacc1",
+      "bytes": 23315,
+      "gitBlob": "54c144bab5f143a9e41038d5bdf8c722ba9a2107"
+    },
+    ".omo/evidence/life-full-20260906/54/recovery/current-preserved/src/editor/panels/databaseFarmSpatialView.ts": {
+      "sha256": "3b4c21d3ceb82ddfb3fd98914e3e5a3f8689b04ab58205a0c403ceb67841ac34",
+      "bytes": 80704,
+      "gitBlob": "fd41d9f14804c1c93300cbb2f516895b95ef8112"
+    },
+    ".omo/evidence/life-full-20260906/54/recovery/current-preserved/src/editor/panels/databaseFarmAnimalsView.ts": {
+      "sha256": "388b4aefd015c7667d569ba480378b2e7691bfb01f0a12098529d860a5b5978a",
+      "bytes": 47741,
+      "gitBlob": "38c09c4640590ce1e1ae47f769d4e8b497dff385"
+    },
+    ".omo/evidence/life-full-20260906/54/recovery/current-preserved/src/player/lifeLedger.ts": {
+      "sha256": "cb3d60e6b22a1711a0442627a45f2c95d6b33c29b89554bbc755d7adb4d2dbb5",
+      "bytes": 38437,
+      "gitBlob": "e70b7773cf087f8737e5d38c5e10a434c690d6f7"
+    },
+    ".omo/evidence/life-full-20260906/54/recovery/current-preserved/src/player/playerStatusMenuDetailRenderer.ts": {
+      "sha256": "a8d70df065f7e9a253c2ff7a2a4cc3b260c0e76e66ed0d3e06458e76e22da152",
+      "bytes": 15055,
+      "gitBlob": "c18e579a2bf55e90ffa30764d456b678ee6d9d1b"
+    },
+    ".omo/evidence/life-full-20260906/54/recovery/current-preserved/src/editor/databaseReferences.ts": {
+      "sha256": "2cdfe84ee1baf30c03918b3c59a0a864210b0062a803346231d9dbddff7700b1",
+      "bytes": 23564,
+      "gitBlob": "617ec70159ae95385efa31b448f6d13c5f73b899"
+    },
+    ".omo/evidence/life-full-20260906/54/recovery/current-preserved/test/animalHousingAuthoringUi.test.ts": {
+      "sha256": "0cd53c3d17b8d1c8a84fb30442e70bb9e3dc46e3e2b29feec5a26c52dfc49b78",
+      "bytes": 36257,
+      "gitBlob": "cbd264199a99d89e79ada71616d66943baf95b0d"
+    },
+    ".omo/evidence/life-full-20260906/54/restoration/SOURCE-PROVENANCE.json": {
+      "sha256": "21ab039d29e8967d108bb78eae78a8640e13b05f960b2fe7cf21446b6f1c01d3",
+      "bytes": 21738,
+      "gitBlob": "1343d4e070bf8ae775505150432a26f22a819f95"
+    },
+    ".omo/evidence/life-full-20260906/54/restoration/CHECKPOINT.json": {
+      "sha256": "b7753a195d900054e1a292ee4cabb49abdea7050cf9f2c7cc121b0ba2db595bf",
+      "bytes": 5868,
+      "gitBlob": "5160fc00097c6460a509e6e28a6ff17a2002831d"
+    },
+    ".omo/evidence/life-full-20260906/54/restoration/CHARACTERIZATION.json": {
+      "sha256": "e192e82f2d89f924b9d5315aa57918700a0a81e4b5b4a4a1b156ed4070749799",
+      "bytes": 1608,
+      "gitBlob": "eeed04a4f44681c3921df87982a82a4839fb509f"
+    },
+    ".omo/evidence/life-full-20260906/54/restoration/characterization.stdout": {
+      "sha256": "441a6f750b410213ebc5f1edc397b314a4564aa6cf6445d3a96727af23937385",
+      "bytes": 2581,
+      "gitBlob": "5eea07db64b50c8dd13d70addbad3ee8337a4bf0"
+    },
+    ".omo/evidence/life-full-20260906/54/restoration/characterization.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    ".omo/evidence/life-full-20260906/54/restoration/characterization.exit": {
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "bytes": 2,
+      "gitBlob": "573541ac9702dd3969c9bc859d2b91ec1f7e6e56"
+    }
+  },
+  "selfIdentity": "Recorded after commit in RESTORED.json to avoid self-reference"
+}
