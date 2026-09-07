@@ -1,5 +1,5 @@
 // V3C 채팅 관측성 회귀: 글자 크기 3단(영속) / 병합 추론 원문 전체 / 도구 호출 상세 아코디언.
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, assert, beforeEach, describe, expect, it, vi } from "vitest";
 import { AI_FONT_SIZE_KEY, applyAiFontSize, loadAiFontSize, renderAiChatPanel, renderToolActivityEntry, saveAiFontSize, teardownAiChatPanel, whenAiChatPanelSettled } from "@/editor/panels/aiChatPanel";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
 
@@ -76,17 +76,27 @@ function nextTerminalActivity(): Promise<activityLog.AiActivityLogInput> {
   });
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
 /** 독립 검수 요청인가 — 작성자 본문과 분리해 검수 verdict 로 답한다. */
 function reviewRequestText(messages: { role: string; content?: unknown }[]): string | null {
   const content = messages[1]?.content;
-  const first = Array.isArray(content) ? content.find((part) => (part as { type: string }).type === "text") : null;
-  const text = first !== null && first !== undefined ? String((first as { text: string }).text) : "";
+  const first = Array.isArray(content)
+    ? content.find((part): part is { type: "text"; text: string } =>
+        isRecord(part) && part.type === "text" && typeof part.text === "string")
+    : undefined;
+  const text = first?.text ?? "";
   if (!text) return null;
+  let parsed: unknown;
   try {
-    return (JSON.parse(text) as { kind?: string }).kind === "independent-review" ? text : null;
-  } catch {
-    return null;
+    parsed = JSON.parse(text);
+  } catch (error) {
+    if (error instanceof SyntaxError) return null;
+    throw error;
   }
+  return isRecord(parsed) && parsed.kind === "independent-review" ? text : null;
 }
 
 /**
@@ -94,20 +104,45 @@ function reviewRequestText(messages: { role: string; content?: unknown }[]): str
  * stream:false 로 오므로(5cab5e2c1), 같은 대본을 비스트리밍 chat-completion
  * 본문으로 낸다 — 스트리밍 케이스의 SSE 본문은 손대지 않는다.
  */
+function sseDeltaOf(line: string): { content?: string; reasoning?: string; toolCalls: { name: string; args: string; id: string }[] } | null {
+  const text = line.startsWith("data: ") ? line.slice("data: ".length) : "";
+  if (!text || text === "[DONE]") return null;
+  const payload: unknown = JSON.parse(text);
+  if (!isRecord(payload)) return null;
+  const choices = payload.choices;
+  if (!Array.isArray(choices)) return null;
+  const firstChoice = choices[0];
+  if (!isRecord(firstChoice)) return null;
+  const delta = firstChoice.delta;
+  if (!isRecord(delta)) return null;
+  const toolCalls: { name: string; args: string; id: string }[] = [];
+  const rawCalls = delta.tool_calls;
+  if (Array.isArray(rawCalls)) {
+    for (const rawCall of rawCalls) {
+      if (!isRecord(rawCall)) continue;
+      const fn = rawCall.function;
+      if (!isRecord(fn) || typeof fn.name !== "string" || typeof fn.arguments !== "string") continue;
+      toolCalls.push({ name: fn.name, args: fn.arguments, id: typeof rawCall.id === "string" ? rawCall.id : "" });
+    }
+  }
+  return {
+    ...(typeof delta.content === "string" ? { content: delta.content } : {}),
+    ...(typeof delta.reasoning === "string" ? { reasoning: delta.reasoning } : {}),
+    toolCalls,
+  };
+}
+
 function sseToJsonResponse(body: string): string {
   const toolCalls: { id: string; type: "function"; function: { name: string; arguments: string } }[] = [];
   const contents: string[] = [];
   const reasonings: string[] = [];
   for (const line of body.split("\n")) {
-    const text = line.startsWith("data: ") ? line.slice("data: ".length) : "";
-    if (!text || text === "[DONE]") continue;
-    const payload = JSON.parse(text) as { choices?: { delta?: { content?: string; reasoning?: string; tool_calls?: { index: number; id: string; type: string; function: { name: string; arguments: string } }[] } }[] };
-    const delta = payload.choices?.[0]?.delta;
+    const delta = sseDeltaOf(line);
     if (!delta) continue;
-    if (typeof delta.content === "string") contents.push(delta.content);
-    if (typeof delta.reasoning === "string") reasonings.push(delta.reasoning);
-    for (const call of delta.tool_calls ?? []) {
-      toolCalls.push({ id: call.id, type: "function", function: { name: call.function.name, arguments: call.function.arguments } });
+    if (delta.content !== undefined) contents.push(delta.content);
+    if (delta.reasoning !== undefined) reasonings.push(delta.reasoning);
+    for (const call of delta.toolCalls) {
+      toolCalls.push({ id: call.id, type: "function", function: { name: call.name, arguments: call.args } });
     }
   }
   const message: Record<string, unknown> = { role: "assistant", content: contents.length > 0 ? contents.join("") : null };
@@ -124,11 +159,17 @@ function sseToJsonResponse(body: string): string {
  * 비어 있지 않으면 프로덕션이 changes_requested 로 뒤집으므로 fake 승인이
  * 될 수 없다(아래 고스트 케이스는 show_map_region 영수증으로 비운다).
  */
+function reviewRevisionOf(text: string): number {
+  const input: unknown = JSON.parse(text);
+  assert.isTrue(isRecord(input) && typeof input.revision === "number", "review payload carries a numeric revision");
+  return input.revision;
+}
+
 function approvedReviewResponse(text: string): Response {
-  const input = JSON.parse(text) as { revision: number };
+  const revision = reviewRevisionOf(text);
   return new Response(JSON.stringify({ choices: [{ message: {
     role: "assistant",
-    content: JSON.stringify({ revision: input.revision, verdict: "approved", summary: "Fixture review", findings: [] }),
+    content: JSON.stringify({ revision, verdict: "approved", summary: "Fixture review", findings: [] }),
   }, finish_reason: "stop" }] }), { headers: { "Content-Type": "application/json" } });
 }
 
@@ -389,10 +430,9 @@ describe("실시간 고스트 프리뷰 연결", () => {
     // 같은 사실을 independently 증명한다).
     const reviewEntry = (result.audit ?? []).find((entry): entry is Extract<typeof entry, { kind: "status" }> =>
       entry.kind === "status" && entry.text.startsWith("independent-review "));
-    expect(reviewEntry).toBeTruthy();
-    const review = JSON.parse(reviewEntry!.text.slice("independent-review ".length)) as { status: string; findings: unknown[] };
-    expect(review.status).toBe("approved");
-    expect(review.findings).toEqual([]);
+    assert.isDefined(reviewEntry, "production recorded an independent-review audit entry");
+    const review: unknown = JSON.parse(reviewEntry.text.slice("independent-review ".length));
+    expect(review).toMatchObject({ status: "approved", findings: [] });
     expect(result.toolCalls).toEqual(expect.arrayContaining([
       expect.objectContaining({ name: "create_map", ok: true }),
       // 쓰기 뒤 새 맵 전체를 실제로 조회해야 검수 커버리지가 빈다.
