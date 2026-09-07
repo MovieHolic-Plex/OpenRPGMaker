@@ -1,0 +1,151 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/storeSaveOrdering.test.ts test/storeDeferredLineage.test.ts test/storeLifecycleReentrancy.test.ts test/storePersistenceLineage.test.ts test/storePersistenceProof.test.ts test/storeFlushShaEvidence.test.ts test/interiorLoadConsistency.test.ts test/audioDescriptionConcurrentPersistence.test.ts test/audioDescriptionPersistence.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-interior-load-consistency-0907
+
+ ✓ test/audioDescriptionConcurrentPersistence.test.ts (22 tests) 76228ms
+   ✓ audio description concurrent persistence > keeps replacement project descriptions 'missing' while an old save completes  4575ms
+   ✓ audio description concurrent persistence > keeps replacement project descriptions 'cleared' while an old save completes  4298ms
+   ✓ audio description concurrent persistence > keeps replacement project descriptions 'authored' while an old save completes  4161ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'unchanged local key'  3569ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'remote clear'  3403ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'remote reset'  3345ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'remote addition to an absent field'  3263ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'different keys in one kind'  3246ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'same raw ID in different kinds'  3072ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'same-key local edit wins'  3184ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'same-key local clear wins'  2993ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'same-key local reset wins'  3552ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'own raw IDs and exact stored whitespa…'  3292ms
+   ✓ audio description concurrent persistence > preserves 'remote edit' through consecutive map saves without recording a user edit  4684ms
+   ✓ audio description concurrent persistence > preserves 'remote clear' through consecutive map saves without recording a user edit  4536ms
+   ✓ audio description concurrent persistence > preserves 'remote reset' through consecutive map saves without recording a user edit  4309ms
+   ✓ audio description concurrent persistence > keeps fresh map edits and a fresh description 'set' when a response arrives late  4601ms
+   ✓ audio description concurrent persistence > keeps fresh map edits and a fresh description 'clear' when a response arrives late  4781ms
+   ✓ audio description concurrent persistence > keeps fresh map edits and a fresh description 'reset' when a response arrives late  4703ms
+   ✓ audio description concurrent persistence > retains the baseline and fresh local input when a deferred write fails  2342ms
+ ✓ test/storeDeferredLineage.test.ts (13 tests) 41558ms
+   ✓ deferred store persistence owns its scheduling lineage > ignores A's migration callback on clean B before any state or persistence access  3815ms
+   ✓ deferred store persistence owns its scheduling lineage > ignores A's retry callback on clean B before any state or persistence access  3284ms
+   ✓ deferred store persistence owns its scheduling lineage > ignores A's health callback on clean B before any state or persistence access  3365ms
+   ✓ deferred store persistence owns its scheduling lineage > A's migration callback cannot save dirty B or steal B's newer timer  3294ms
+   ✓ deferred store persistence owns its scheduling lineage > A's retry callback cannot save dirty B or steal B's newer timer  3323ms
+   ✓ deferred store persistence owns its scheduling lineage > A's health callback cannot save dirty B or steal B's newer timer  3237ms
+   ✓ deferred store persistence owns its scheduling lineage > a superseded same-lineage migration timer cannot consume the newer edit timer  2603ms
+   ✓ deferred store persistence owns its scheduling lineage > the current migration callback persists migration and catches up concurrent edits  3327ms
+   ✓ deferred store persistence owns its scheduling lineage > the current retry callback persists migration and catches up concurrent edits  3470ms
+   ✓ deferred store persistence owns its scheduling lineage > the current health callback persists migration and catches up concurrent edits  3432ms
+   ✓ deferred store persistence owns its scheduling lineage > a pending subscriber's replacement keeps its own timer registration  2333ms
+   ✓ deferred store persistence owns its scheduling lineage > an error subscriber's replacement does not acquire the old failed save's retry  2733ms
+   ✓ deferred store persistence owns its scheduling lineage > an in-flight A health response cannot clear B's retry or persist B  3340ms
+ ✓ test/storeSaveOrdering.test.ts (8 tests) 26327ms
+   ✓ explicit store flush transport ordering > serializes an explicit B flush behind held A with 'missing' descriptions  3511ms
+   ✓ explicit store flush transport ordering > serializes an explicit B flush behind held A with 'cleared' descriptions  3573ms
+   ✓ explicit store flush transport ordering > serializes an explicit B flush behind held A with 'authored' descriptions  3331ms
+   ✓ explicit store flush transport ordering > A alone cannot authorize B even after A has settled  2576ms
+   ✓ explicit store flush transport ordering > queued B cannot write C (C requests its own flush: false)  2619ms
+   ✓ explicit store flush transport ordering > queued B cannot write C (C requests its own flush: true)  3564ms
+   ✓ explicit store flush transport ordering > A's failure remains visible to A callers without rejecting an owned queued B save  2981ms
+   ✓ explicit store flush transport ordering > preserves same-lineage coalescing and immediate map catch-up  4170ms
+ ✓ test/interiorLoadConsistency.test.ts (30 tests) 16138ms
+   ✓ interior authoring/load fixed point > preserves exact IDs and complete user-source group records  300ms
+   ✓ interior authoring/load fixed point > preserves exact IDs and complete ambiguous-bundled group records  300ms
+   ✓ interior authoring/load fixed point > constructs an upper cabinet retaining floor 72 before any load repair  689ms
+   ✓ interior authoring/load fixed point > constructs an upper cabinet retaining floor 102 before any load repair  579ms
+   ✓ interior authoring/load fixed point > repairs the complete untouched legacy kit before it can regain writer precedence  458ms
+   ✓ interior authoring/load fixed point > keeps graphic title and authored nondefaults identity-significant  1050ms
+   ✓ interior authoring/load fixed point > keeps both title and authored nondefaults identity-significant  984ms
+   ✓ real editor load/save migration lifecycle > room pipeline -> save -> fresh store has equal existing canonical identity and stays clean  3327ms
+   ✓ real editor load/save migration lifecycle > load marks migration pending after active load, retains dirty on failure, and catches up concurrent edits  2171ms
+   ✓ real editor load/save migration lifecycle > reconnect marks migration pending after active load, retains dirty on failure, and catches up concurrent edits  2206ms
+   ✓ real editor load/save migration lifecycle > reload marks migration pending after active load, retains dirty on failure, and catches up concurrent edits  2263ms
+ ✓ test/storePersistenceProof.test.ts (18 tests) 15968ms
+   ✓ accepted revision persistence proof > verifies the accepted content through actual save/read transport and reuses its clean-flush receipt  1251ms
+   ✓ accepted revision persistence proof > compares normalized values rather than JSONB object-key order  781ms
+   ✓ accepted revision persistence proof > uses the ordinary normalized remote load and map-overlay contract  878ms
+   ✓ accepted revision persistence proof > does not verify a matching projects row when the ordinary map read fails  589ms
+   ✓ accepted revision persistence proof > binds the receipt to the accepted merged project, not the unmerged live store  1337ms
+   ✓ accepted revision persistence proof > keeps open event drafts local and out of accepted content identity  3133ms
+   ✓ accepted revision persistence proof > rejects a copied token without issuing a read  539ms
+   ✓ accepted revision persistence proof > does not verify a failed read  570ms
+   ✓ accepted revision persistence proof > does not verify a missing read  586ms
+   ✓ accepted revision persistence proof > does not verify a disabled read  557ms
+   ✓ accepted revision persistence proof > does not verify a cancelled read  575ms
+   ✓ accepted revision persistence proof > rejects wrong target even when current_sha256 is unchanged  647ms
+   ✓ accepted revision persistence proof > rejects wrong content even when current_sha256 is unchanged  861ms
+   ✓ accepted revision persistence proof > keeps a failed proof retryable for the same accepted revision  759ms
+   ✓ accepted revision persistence proof > preserves newer local edits during the read and does not attach old proof to them  836ms
+   ✓ accepted revision persistence proof > pins the original target across a configuration change during read  711ms
+   ✓ accepted revision persistence proof > does not verify when cancelled while the read is in flight  662ms
+   ✓ accepted revision persistence proof > does not verify when disabled while the read is in flight  694ms
+ ✓ test/storeLifecycleReentrancy.test.ts (6 tests) 15173ms
+   ✓ store lifecycle callback ownership > still marks and persists a faceset repair when its target stays current  3087ms
+   ✓ store lifecycle callback ownership > a detached faceset repair cannot dirty or save the current switch target  2819ms
+   ✓ store lifecycle callback ownership > a detached faceset repair cannot dirty or save the current edit target  2831ms
+   ✓ store lifecycle callback ownership > a saving subscriber's replacement is not authorized by the old flush (own flush: false)  2190ms
+   ✓ store lifecycle callback ownership > a saving subscriber's replacement is not authorized by the old flush (own flush: true)  2065ms
+   ✓ store lifecycle callback ownership > keeps same-lineage edits from a saving subscriber in the submitted snapshot  2179ms
+ ✓ test/audioDescriptionPersistence.test.ts (37 tests) 4364ms
+   ✓ audio description serialization > preserves absent overrides when loading legacy v4  319ms
+   ✓ audio description recovery snapshots > preserves description states when restoring a backup into an editor package: undefined  672ms
+   ✓ audio description recovery snapshots > preserves description states when restoring a backup into an editor package: {"music":{"orphan":" \tBACKUP_VALUE\n ","cleared":"","__proto__":"OWN_ID"},"sound":{"orphan":"SOUND_VALUE","terrainTemplates":""}}  578ms
+ ✓ test/storeFlushShaEvidence.test.ts (2 tests) 1740ms
+   ✓ Project store flush sha256 evidence > 전체 저장 경로: saveProjectToSupabase 의 sha256 이 flush 결과(saved.sha256)로 흘러든다  1326ms
+   ✓ Project store flush sha256 evidence > 변경 없음 fast path 는 saved(sha256 없음) — sha256 은 선택 필드 계약 그대로  412ms
+ ❯ test/storePersistenceLineage.test.ts (8 tests | 4 failed) 209756ms
+   × accepted receipt content lineage > does not resurrect saved authority after reload during PATCH 60014ms
+     → Test timed out in 60000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+   × accepted receipt content lineage > does not resurrect saved authority after load during PATCH 60034ms
+     → Test timed out in 60000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+   × accepted receipt content lineage > does not resurrect saved authority after reconnect during PATCH 60044ms
+     → Test timed out in 60000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+   × accepted receipt content lineage > invalidates an already published receipt on reload even for identical content 6933ms
+     → expected '5f48c6fdb7e7c217cb4ea29210726b31f983e…' to be '59f530849fb578f88fbb5ef0dd37a55c22233…' // Object.is equality
+   ✓ accepted receipt content lineage > invalidates an already published receipt on load even for identical content  6408ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on reconnect even for identical content  6506ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on adopt even for identical content  5383ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on fallback even for identical content  4431ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/storePersistenceLineage.test.ts > accepted receipt content lineage > does not resurrect saved authority after reload during PATCH
+ FAIL  test/storePersistenceLineage.test.ts > accepted receipt content lineage > does not resurrect saved authority after load during PATCH
+ FAIL  test/storePersistenceLineage.test.ts > accepted receipt content lineage > does not resurrect saved authority after reconnect during PATCH
+Error: Test timed out in 60000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ test/storePersistenceLineage.test.ts:124:42
+    122|   });
+    123|
+    124|   it.each(["reload", "load", "reconnect"])("does not resurrect saved a…
+       |                                          ^
+    125|     const f = await fixture();
+    126|     f.store.update((draft) => { draft.meta.title = "accepted-pending-s…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  test/storePersistenceLineage.test.ts > accepted receipt content lineage > invalidates an already published receipt on reload even for identical content
+AssertionError: expected '5f48c6fdb7e7c217cb4ea29210726b31f983e…' to be '59f530849fb578f88fbb5ef0dd37a55c22233…' // Object.is equality
+
+Expected: [32m"5[7m9f530849fb578f88fbb5ef0dd37a55c2223372f856d4754c58c7a54f9a5dd38[27m"[39m
+Received: [31m"5[7mf48c6fdb7e7c217cb4ea29210726b31f983eb43af8cc001435801ea39e8b643[27m"[39m
+
+ ❯ test/storePersistenceLineage.test.ts:195:52
+    193|     else if (replacement === "adopt") await f.store.loadNewRemoteProje…
+    194|     else await f.store.loadFallbackProject(project);
+    195|     expect(await f.identity(f.store.getCurrent())).toBe(receipt.conten…
+       |                                                    ^
+    196|     expect(f.store.isPersistenceReceiptCurrent(receipt)).toBe(false);
+    197|     if (replacement !== "fallback") {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+
+ Test Files  1 failed | 8 passed (9)
+      Tests  4 failed | 140 passed (144)
+   Start at  09:19:34
+   Duration  210.54s (transform 11.31s, setup 0ms, collect 8.55s, tests 407.25s, environment 2ms, prepare 667ms)

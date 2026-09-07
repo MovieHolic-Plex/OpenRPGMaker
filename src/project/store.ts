@@ -1152,6 +1152,19 @@ class ProjectStore {
     // Coalesce concurrent flush calls onto one network round-trip, then re-run
     // if the user painted more tiles while that round-trip was in flight.
     const lineage = this.contentLineage;
+    if (this.persistInFlight && this.persistInFlightLineage !== lineage) {
+      // A replacement's explicit request waits for the older transport, but
+      // neither inherits its result nor gives that old save catch-up authority.
+      try {
+        await this.persistInFlight;
+      } catch (error) {
+        // The original promise still rejects to its callers. Only this separate
+        // owner's request may proceed after the failed transport has settled.
+        log.warn("Earlier project save failed before queued replacement flush", error);
+      }
+      if (this.contentLineage !== lineage) return { kind: "disabled" };
+      return await this.saveCurrentWithAutoSaveState();
+    }
     if (this.persistInFlight && this.persistInFlightLineage === lineage) {
       const inFlightResult = await this.persistInFlight;
       if (this.contentLineage === lineage && this.dirtySinceLastPersist && this.loaded && this.remotePersistenceEnabled) {
