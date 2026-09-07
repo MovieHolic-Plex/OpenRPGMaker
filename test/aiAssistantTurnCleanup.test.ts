@@ -120,11 +120,16 @@ describe("assistant owner-turn presentation cleanup", () => {
     const h = setup();
     h.deps.applyProposal.mockResolvedValue(outcome);
     const proof = vi.spyOn(h.session, "proveAppliedRevision");
+    const approvedIdentity = JSON.stringify(h.session.getProposedProject());
+    vi.spyOn(h.session, "isDraftReviewApproved").mockImplementation((project = h.session.getProposedProject()) =>
+      JSON.stringify(project) === approvedIdentity
+    );
     const result: TurnResult = {
       assistantText: "answer", stoppedReason: "final",
+      review: { status: "approved", revision: 1, summary: "Fixture review", findings: [] },
       proposedCalls: [{ name: "set_title_screen", args: { title: "title" }, destructive: false, summary: "title", result: { ok: true, summary: "title" } }],
     };
-    await h.runner.executeTurn(h.session, "title", async () => result, { composerMode: "ask" });
+    await h.runner.executeTurn(h.session, "title", async () => result, { composerMode: "do" });
     expect(getAgentBlueprintState().entries).toHaveLength(0);
     expect(h.deps.applyProposal).toHaveBeenCalledWith(result.proposedCalls, expect.anything());
     expect(proof).toHaveBeenCalledTimes(outcome === "applied" ? 1 : 0);
