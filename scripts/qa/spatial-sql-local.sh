@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+# Only creates a private, socket-only PostgreSQL cluster. Never consumes an admin URL.
+set -euo pipefail
+cd "$(dirname "$0")/../.."
+evidence="$PWD/output/evidence/tile-to-world/task-5"
+mkdir -p "$evidence"
+owned=$(mktemp -d /tmp/spatial-sql-st_01a07acd.XXXXXX)
+pg=/usr/lib/postgresql/16/bin
+started=false
+cleanup() {
+  status=$?
+  trap - EXIT
+  if $started; then
+    "$pg/pg_ctl" -D "$owned/data" -m immediate -w stop >> "$evidence/cluster.log" 2>&1 || exit 1
+  fi
+  rm -rf -- "$owned"
+  printf 'Private socket-only cluster stopped; owned temporary directory removed.\nNo production connection or protected-row cleanup bypass used.\nRun exit: %s\n' "$status" > "$evidence/cleanup.md"
+  exit "$status"
+}
+# Teardown is registered before initdb/startup, including interrupted runs.
+trap cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
+"$pg/initdb" -D "$owned/data" --no-locale --encoding=UTF8 --auth-local=trust --auth-host=reject > "$evidence/cluster.log" 2>&1
+mkdir "$owned/socket"
+started=true
+"$pg/pg_ctl" -D "$owned/data" -l "$owned/postgres.log" -o "-k $owned/socket -c listen_addresses='' -c max_connections=12" -w start >> "$evidence/cluster.log" 2>&1
+export SPATIAL_TEST_DATABASE_URL="host=$owned/socket dbname=postgres user=$(id -un)"
+psql "$SPATIAL_TEST_DATABASE_URL" -X -v ON_ERROR_STOP=1 > "$evidence/bootstrap.log" <<'SQL'
+CREATE ROLE anon NOLOGIN;
+CREATE ROLE authenticated NOLOGIN;
+CREATE ROLE authenticator LOGIN NOINHERIT;
+CREATE ROLE service_role NOLOGIN BYPASSRLS;
+GRANT anon, authenticated, service_role TO authenticator;
+CREATE SCHEMA extensions;
+CREATE EXTENSION pgcrypto WITH SCHEMA extensions;
+SQL
+for migration in supabase/migrations/2026*.sql; do
+  # Public benchmark RLS is unrelated; all applicable rpg_zzu migrations run unmodified.
+  case "$migration" in
+    *20260814000000*|*20260907000000*) continue ;;
+  esac
+  psql "$SPATIAL_TEST_DATABASE_URL" -X -v ON_ERROR_STOP=1 -f "$migration" >> "$evidence/bootstrap.log" 2>&1
+done
+set +e
+psql "$SPATIAL_TEST_DATABASE_URL" -X -v ON_ERROR_STOP=1 -v red=1 -f test/integration/spatial-publication.sql > "$evidence/red.log" 2>&1
+red=$?
+set -e
+printf '\nexit=%s (expected 3)\n' "$red" >> "$evidence/red.log"
+[[ "$red" == 3 ]]
+grep -q 'SPATIAL_OLD_WRITER_DATA_LOSS' "$evidence/red.log"
+if [[ "${1:-}" == red ]]; then exit 0; fi
+psql "$SPATIAL_TEST_DATABASE_URL" -X -v ON_ERROR_STOP=1 -f supabase/migrations/20260907000000_spatial_authoring_cas.sql > "$evidence/migration.log" 2>&1
+psql "$SPATIAL_TEST_DATABASE_URL" -X -v ON_ERROR_STOP=1 -f test/integration/spatial-publication.sql > "$evidence/green.log" 2>&1
+printf '\nexit=0\n' >> "$evidence/green.log"
+npx tsx scripts/qa/spatial-sql-races.mts > "$evidence/races.json"
