@@ -1,0 +1,37 @@
+{
+  "flush": {
+    "kind": "saved",
+    "sha256": "b03e73c068b972a35221b3e84447f296f54986552da1743997a1f32e452ce30c",
+    "receipt": {
+      "revisionId": "799d55e1-77a9-49ed-839e-05b977a5954c",
+      "projectId": "oprn-qa-functional-48c68b5f-2d4",
+      "mutationGeneration": 1,
+      "contentIdentity": "e2c46e107c26e5d0ed8a6ed4286869fb90b11bcd1e2eac38ea2ef8a78cb1127e",
+      "sha256": "b03e73c068b972a35221b3e84447f296f54986552da1743997a1f32e452ce30c"
+    }
+  },
+  "proof": {
+    "kind": "verified",
+    "receipt": {
+      "revisionId": "799d55e1-77a9-49ed-839e-05b977a5954c",
+      "projectId": "oprn-qa-functional-48c68b5f-2d4",
+      "mutationGeneration": 1,
+      "contentIdentity": "e2c46e107c26e5d0ed8a6ed4286869fb90b11bcd1e2eac38ea2ef8a78cb1127e",
+      "sha256": "b03e73c068b972a35221b3e84447f296f54986552da1743997a1f32e452ce30c"
+    },
+    "isCurrent": true
+  },
+  "commit": {
+    "commitId": null,
+    "persisted": false,
+    "reviewStatus": "approved",
+    "summary": "Real-model functional verification village",
+    "toolNames": [
+      "upsert_item",
+      "upsert_item"
+    ],
+    "recordedAt": "2026-09-07T18:34:11.183Z"
+  },
+  "projectId": "oprn-qa-functional-48c68b5f-2d4",
+  "sha256": "b03e73c068b972a35221b3e84447f296f54986552da1743997a1f32e452ce30c"
+}

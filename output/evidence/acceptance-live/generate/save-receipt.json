@@ -1,0 +1,54 @@
+{
+  "flush": {
+    "kind": "saved",
+    "sha256": "fbf60a54e40494a6ac7dcae156248591a2e9e9fe1a2f7b6801897f38b25bc13d",
+    "receipt": {
+      "revisionId": "23221ca3-fa7f-4ea2-921d-7f4c874820f0",
+      "projectId": "oprn-qa-functional-48c68b5f-2d4",
+      "mutationGeneration": 1,
+      "contentIdentity": "8658f9f1ac7fa99c47949eb26143a0d61636e7bc34ae103e5355bb1ee330c123",
+      "sha256": "fbf60a54e40494a6ac7dcae156248591a2e9e9fe1a2f7b6801897f38b25bc13d"
+    }
+  },
+  "proof": {
+    "kind": "verified",
+    "receipt": {
+      "revisionId": "23221ca3-fa7f-4ea2-921d-7f4c874820f0",
+      "projectId": "oprn-qa-functional-48c68b5f-2d4",
+      "mutationGeneration": 1,
+      "contentIdentity": "8658f9f1ac7fa99c47949eb26143a0d61636e7bc34ae103e5355bb1ee330c123",
+      "sha256": "fbf60a54e40494a6ac7dcae156248591a2e9e9fe1a2f7b6801897f38b25bc13d"
+    },
+    "isCurrent": true
+  },
+  "commit": {
+    "commitId": null,
+    "persisted": false,
+    "reviewStatus": "approved",
+    "summary": "Real-model functional verification village",
+    "toolNames": [
+      "set_map_properties",
+      "set_session_start",
+      "set_start_position",
+      "create_map",
+      "fill_region",
+      "place_props",
+      "fill_region",
+      "upsert_event",
+      "paint_road",
+      "upsert_event",
+      "set_shop_stock",
+      "create_transfer_pair",
+      "remove_event",
+      "remove_event",
+      "upsert_event",
+      "upsert_event",
+      "place_npc",
+      "set_shop_stock",
+      "place_npc"
+    ],
+    "recordedAt": "2026-09-07T18:14:43.177Z"
+  },
+  "projectId": "oprn-qa-functional-48c68b5f-2d4",
+  "sha256": "fbf60a54e40494a6ac7dcae156248591a2e9e9fe1a2f7b6801897f38b25bc13d"
+}

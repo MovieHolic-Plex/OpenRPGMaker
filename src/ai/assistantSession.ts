@@ -1331,7 +1331,8 @@ export class AssistantSession {
       ? [...(plan.acceptance ?? []), ...(plan.requirements ?? [])] : undefined, onEvent);
   }
 
-  private adoptAcceptance(promises: readonly AcceptancePromise[] | undefined, onEvent?: (event: SessionEvent) => void): void {
+  private adoptAcceptance(promises: readonly AcceptancePromise[] | undefined, onEvent?: (event: SessionEvent) => void,
+    request?: { readonly baseline: Project; readonly source: AcceptanceSource }): void {
     if (this.workPlan) this.verificationEvidence.requireTools(
       this.workPlan.layers.flatMap(layer => layer.items.flatMap(item => item.successTools ?? [])));
     if (!promises && (this.acceptance || !this.spatialAcceptanceRequired())) return;
@@ -1340,7 +1341,7 @@ export class AssistantSession {
       this.acceptance = new AssistantAcceptanceLedger(`acceptance-${++this.acceptanceSequence}`, goal, this.acceptanceRequestBaseline, this.imageEvidence);
       this.acceptanceAppliedProject = structuredClone(this.baselineProject);
     }
-    this.acceptance.adopt(promises ?? missingAcceptance(goal), this.acceptanceRequestBaseline, this.acceptanceRequestSource);
+    this.acceptance.adopt(promises ?? missingAcceptance(goal), request?.baseline ?? this.acceptanceRequestBaseline, request?.source ?? this.acceptanceRequestSource);
     this.publishAcceptance(onEvent);
   }
 
@@ -1883,8 +1884,9 @@ export class AssistantSession {
       }
       this.publishAcceptance(onEvent);
     }
+    const functional: FunctionalCriterion[] = [];
     if (!question && (newRequest || startsGoal)) {
-      const functional: FunctionalCriterion[] = intent.functionalAcceptance ? [...parseFunctionalRequirements(intent.functionalAcceptance)] : [];
+      if (intent.functionalAcceptance) functional.push(...parseFunctionalRequirements(intent.functionalAcceptance));
       const rewards = this.npcRewardRequirements;
       if (rewards) {
         if ("invalidReason" in rewards) functional.push({ kind: "functionalUnresolved", reason: rewards.invalidReason });
@@ -1895,6 +1897,21 @@ export class AssistantSession {
         id: `${this.acceptanceRequestSource.requestId}:functional:${index}`, title: criterion.kind,
         required: true, criteria: [criterion],
       })), onEvent);
+    }
+    if (userAction && intent.requestRequirements?.length) {
+      // Reuse the canonical functional promise when the independent audit agrees;
+      // missing clauses add obligations, never a second completion system.
+      const source: AcceptanceSource = { requestId: `request-${this.currentTurnIndex + 1}`, text: instruction,
+        scope: this.turnScope ? structuredClone(this.turnScope) : null };
+      const declared = new Set(functional.map(criterion => acceptanceFingerprint(criterion)));
+      const coverage = intent.requestRequirements?.flatMap((requirement, index) => requirement.criteria
+        .flatMap((criterion, criterionIndex) => declared.has(acceptanceFingerprint(criterion)) ? [] : [{
+          id: `${source.requestId}:coverage:${index}:${criterionIndex}`, title: requirement.text,
+          required: true, criteria: [criterion],
+        }]));
+      if (coverage?.length) this.adoptAcceptance(coverage, onEvent, {
+        source, baseline: newRequest || startsGoal ? this.acceptanceRequestBaseline : this.baselineProject,
+      });
     }
     if (!question && intent.statefulNpcs === true) this.statefulNpcRequirement = true;
     if (intent.actionCombat && intent.mode !== "question") {
@@ -2048,9 +2065,9 @@ export class AssistantSession {
   /** 질문 모드는 선언을 「질문·단일 단계」로 고정한다. 다른 모드는 선언 그대로. */
   private applyComposerModeToIntent(intent: IntentDeclaration): IntentDeclaration {
     if (this.turnComposerMode !== "ask") return intent;
-    if (intent.mode === "question" && !intent.needsPlan && !intent.npcRewards && !intent.functionalAcceptance && !intent.functionalRefinements) return intent;
+    if (intent.mode === "question" && !intent.needsPlan && !intent.npcRewards && !intent.functionalAcceptance && !intent.functionalRefinements && !intent.requestRequirements) return intent;
     this.pushAudit({ kind: "status", text: `composer:ask 선언 mode=${intent.mode}→question needsPlan=${intent.needsPlan}→false` });
-    return { ...intent, mode: "question", needsPlan: false, npcRewards: undefined, functionalAcceptance: undefined, functionalRefinements: undefined };
+    return { ...intent, mode: "question", needsPlan: false, npcRewards: undefined, functionalAcceptance: undefined, functionalRefinements: undefined, requestRequirements: undefined };
   }
 
   /** 계획 모드: 계획 카드를 내고 실행 없이 턴을 끝낸다. 「계속」이 다음 턴에서 resume 으로 실행한다. */

@@ -1,10 +1,10 @@
 // ai/intentDeclarationClient.ts
 // 의도 선언의 LLM 어댑터. 선언 본체(intentDeclaration.ts)는 순수하게 두고, 네트워크·레지스트리·프로젝트는 여기만 안다.
 //
-// 보통 한 번, JSON 하나다. 잘못된 보상 선언만 같은 시간 예산 안에서 한 번 교정한다.
-// 도구 루프도 스트리밍도 없다. llmClient 의 response_format:"json_object"
-// 경로를 쓴다(operatorIntentClient 와 같은 자리). 벽시계 상한을 넘기거나 응답을 읽지 못하면 중립 폴백으로
-// 떨어지고 그 사실을 감사 로그에 남긴다 — 되묻지 않고, 툴은 UI 도메인·핀·이름 언급·능력 승격으로만 노출된다.
+// Authoring uses declaration JSON plus an independent request-coverage audit,
+// within the same bounded deadline. Invalid rewards get one shape repair.
+// Routing failure remains neutral; coverage failure adds an immutable unresolved
+// obligation instead of allowing a partial plan to certify the original request.
 //
 // 같은 문장을 영역 작업 러너와 세션이 연달아 읽으므로 짧은 캐시를 둔다(선언 두 번 = 호출 두 번).
 import { listLiveConceptFacilityLabels } from "@/editor/conceptBundleResolve";
@@ -24,6 +24,7 @@ import {
 } from "./intentDeclaration";
 import { chatCompletion, configForLiteModel, loadAiConfig, type AiConfig, type ChatRequest, type ChatResult } from "./llmClient";
 import { projectWikiContext } from "./projectWikiContext";
+import { parseRequestCoverage, REQUEST_COVERAGE_AUDIT, unresolvedRequestCoverage } from "./requestCoverage";
 
 /** 한 문장을 JSON 으로 옮기는 데 허용하는 벽시계. 넘기면 끊고 폴백으로 떨어진다. */
 export const INTENT_DECLARATION_TIMEOUT_MS = 20_000;
@@ -86,7 +87,7 @@ function invalidNpcRewardReason(intent: IntentDeclaration): string | undefined {
  * 빈 문장은 부르지 않고, 진행 중 계획을 이어가는 한 마디(계속/이어서)는 continuation 으로 선언한다.
  */
 export function createLlmIntentDeclarer(
-  options: { readonly chat?: ChatFn; readonly getConfig?: () => AiConfig; readonly timeoutMs?: number } = {},
+  options: { readonly chat?: ChatFn; readonly audit?: ChatFn; readonly getConfig?: () => AiConfig; readonly timeoutMs?: number } = {},
 ): IntentDeclarer {
   const chat = options.chat ?? chatCompletion;
   const getConfig = options.getConfig ?? loadAiConfig;
@@ -103,6 +104,18 @@ export function createLlmIntentDeclarer(
     const onOuterAbort = (): void => controller.abort();
     signal?.addEventListener("abort", onOuterAbort, { once: true });
     let invalidIntent: IntentDeclaration | undefined;
+    const assessed = async (intent: IntentDeclaration): Promise<IntentDeclaration> => {
+      if (intent.mode !== "create" && intent.mode !== "modify") return intent;
+      // This call sees the original request/facts, not the planner or authored draft.
+      const result = await (options.audit ?? chat)(configForLiteModel(getConfig()), {
+        messages: [{ role: "system", content: REQUEST_COVERAGE_AUDIT },
+          { role: "user", content: buildIntentUserPayload(facts) }],
+        response_format: { type: "json_object" }, temperature: 0.1,
+        signal: controller.signal, disableTransientRetry: true,
+      });
+      return { ...intent, requestRequirements: parseRequestCoverage(contentText(result), facts,
+        (intent.functionalRefinements ?? []).map(refinement => refinement.requirementId)) };
+    };
     try {
       const config = configForLiteModel(getConfig());
       const request: ChatRequest = {
@@ -120,7 +133,10 @@ export function createLlmIntentDeclarer(
       const parsed = parseIntentDeclaration(contentText(result), facts);
       if (parsed.intent) {
         const error = invalidNpcRewardReason(parsed.intent);
-        if (!error) return { intent: parsed.intent, elapsedMs: Date.now() - started };
+        if (!error) {
+          invalidIntent = parsed.intent;
+          return { intent: await assessed(parsed.intent), elapsedMs: Date.now() - started };
+        }
         invalidIntent = parsed.intent;
         const repaired = await chat(config, {
           ...request,
@@ -133,18 +149,18 @@ export function createLlmIntentDeclarer(
         const correction = parseIntentDeclaration(contentText(repaired), facts);
         if (correction.intent?.npcRewards !== undefined && !invalidNpcRewardReason(correction.intent)) {
           return {
-            intent: { ...invalidIntent, npcRewards: correction.intent.npcRewards },
+            intent: await assessed({ ...invalidIntent, npcRewards: correction.intent.npcRewards }),
             elapsedMs: Date.now() - started,
           };
         }
         return { intent: invalidIntent, elapsedMs: Date.now() - started, error: correction.error ?? error };
       }
-      return { intent: fallbackIntentDeclaration(facts), elapsedMs: Date.now() - started, error: parsed.error ?? "해석 실패" };
+      return { intent: { ...fallbackIntentDeclaration(facts), requestRequirements: unresolvedRequestCoverage(parsed.error ?? "Intent extraction failed") }, elapsedMs: Date.now() - started, error: parsed.error ?? "해석 실패" };
     } catch (cause) {
       const reason = controller.signal.aborted && !signal?.aborted
         ? `시간 초과(${timeoutMs}ms)`
         : cause instanceof Error ? cause.message : String(cause);
-      return { intent: invalidIntent ?? fallbackIntentDeclaration(facts), elapsedMs: Date.now() - started, error: reason };
+      return { intent: { ...(invalidIntent ?? fallbackIntentDeclaration(facts)), requestRequirements: unresolvedRequestCoverage(reason) }, elapsedMs: Date.now() - started, error: reason };
     } finally {
       clearTimeout(timer);
       signal?.removeEventListener("abort", onOuterAbort);
@@ -176,7 +192,7 @@ export async function declareIntentCached(
   const outcome = await declarer(facts, signal);
   // 폴백(모델 실패)은 캐시하지 않는다 — 다음 호출이 다시 시도할 수 있어야 한다.
   if ((outcome.intent.source === "llm" || outcome.intent.source === "continuation")
-    && !invalidNpcRewardReason(outcome.intent)) {
+    && !outcome.error && !invalidNpcRewardReason(outcome.intent)) {
     cache.set(key, { outcome, at: now });
     while (cache.size > CACHE_MAX) {
       const oldest = cache.keys().next().value;

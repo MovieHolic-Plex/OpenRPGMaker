@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import type { IntentFacts } from "@/ai/intentDeclaration";
 import {
   buildIntentFacts,
-  createLlmIntentDeclarer,
+  createLlmIntentDeclarer as productionDeclarer,
   declareIntentCached,
   resetIntentDeclarationCache,
   type IntentDeclarer,
@@ -35,6 +35,13 @@ const FACTS: IntentFacts = {
 function reply(content: string): ChatResult {
   return { message: { role: "assistant", content }, finishReason: "stop" } as ChatResult;
 }
+
+// These tests isolate routing/repair calls. The audit still returns through the
+// production parser; invalid coverage remains blocked rather than bypassed.
+const createLlmIntentDeclarer = (options: Parameters<typeof productionDeclarer>[0] = {}) => productionDeclarer({
+  ...options, audit: async () => reply(JSON.stringify({ requirements: [{ text: FACTS.userText,
+    criteria: [{ kind: "functionalUnresolved", reason: "This routing test does not assess authored construction" }] }] })),
+});
 
 afterEach(() => resetIntentDeclarationCache());
 

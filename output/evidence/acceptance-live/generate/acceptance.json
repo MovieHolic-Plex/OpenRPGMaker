@@ -1,0 +1,189 @@
+{
+  "id": "acceptance-1",
+  "goal": "Author a small playable two-map verification village. Rename the existing 20x15 map map_blank_start to Cedar Village and keep the actual player start at (10,8). Start the player with exactly 100 gold. Place an actual merchant named Mira at (10,7) who sells item_potion (catalog potion) for 10 gold each; the player must be able to buy two potions for 20 gold. Place a separate reward NPC named Rowan at (12,7) who gives exactly one item_antidote (catalog antidote) only on the first interaction and gives nothing on a second interaction. Create a second 20x15 outdoor map named Meadow. Author a reachable exit event named East Gate at (18,8) on Cedar Village that transfers to Meadow (2,8), and an authored return event named Village Gate at Meadow (1,8) that returns to Cedar Village (17,8). All routes from the real start to both NPCs and the exit, and from arrival to the return, must be walkable. Use ordinary action or touch transfers and an ordinary player-buy shop. Use existing queried assets, such as [{\"id\":\"charset:tex_easyrpg_charset_monster1:0\",\"label\":\"슬라임\",\"tags\":[\"슬라임\",\"몬스터\",\"약함\",\"젤리\",\"monster1\",\"monster\",\"monster\",\"enemy\",\"몬스터\",\"적\"],\"score\":1},{\"id\":\"charset:tex_easyrpg_charset_monster1:1\",\"label\":\"붉은 악마\",\"tags\":[\"악마\",\"붉은\",\"몬스터\",\"뿔\",\"monster1\",\"monster\",\"monster\",\"enemy\",\"몬스터\",\"적\"],\"score\":1},{\"id\":\"charset:tex_easyrpg_charset_monster1:2\",\"label\":\"오크\",\"tags\":[\"오크\",\"몬스터\",\"아인\",\"근접\",\"monster1\",\"monster\",\"monster\",\"enemy\",\"몬스터\",\"적\"],\"score\":1}]. Query records and tool schemas as needed; author the real event commands and map content. A minimal flat grassy village square is enough. This is a functional verification project, not a visual showcase. Keep names and coordinates exact.",
+  "status": "blocked",
+  "items": [
+    {
+      "required": true,
+      "source": {
+        "requestId": "request-1",
+        "text": "Author a small playable two-map verification village. Rename the existing 20x15 map map_blank_start to Cedar Village and keep the actual player start at (10,8). Start the player with exactly 100 gold. Place an actual merchant named Mira at (10,7) who sells item_potion (catalog potion) for 10 gold each; the player must be able to buy two potions for 20 gold. Place a separate reward NPC named Rowan at (12,7) who gives exactly one item_antidote (catalog antidote) only on the first interaction and gives nothing on a second interaction. Create a second 20x15 outdoor map named Meadow. Author a reachable exit event named East Gate at (18,8) on Cedar Village that transfers to Meadow (2,8), and an authored return event named Village Gate at Meadow (1,8) that returns to Cedar Village (17,8). All routes from the real start to both NPCs and the exit, and from arrival to the return, must be walkable. Use ordinary action or touch transfers and an ordinary player-buy shop. Use existing queried assets, such as [{\"id\":\"charset:tex_easyrpg_charset_monster1:0\",\"label\":\"슬라임\",\"tags\":[\"슬라임\",\"몬스터\",\"약함\",\"젤리\",\"monster1\",\"monster\",\"monster\",\"enemy\",\"몬스터\",\"적\"],\"score\":1},{\"id\":\"charset:tex_easyrpg_charset_monster1:1\",\"label\":\"붉은 악마\",\"tags\":[\"악마\",\"붉은\",\"몬스터\",\"뿔\",\"monster1\",\"monster\",\"monster\",\"enemy\",\"몬스터\",\"적\"],\"score\":1},{\"id\":\"charset:tex_easyrpg_charset_monster1:2\",\"label\":\"오크\",\"tags\":[\"오크\",\"몬스터\",\"아인\",\"근접\",\"monster1\",\"monster\",\"monster\",\"enemy\",\"몬스터\",\"적\"],\"score\":1}]. Query records and tool schemas as needed; author the real event commands and map content. A minimal flat grassy village square is enough. This is a functional verification project, not a visual showcase. Keep names and coordinates exact.",
+        "scope": null
+      },
+      "id": "request-1:functional:0",
+      "title": "shopPurchase",
+      "status": "blocked",
+      "evidence": [
+        {
+          "expected": "{\"kind\":\"shopPurchase\",\"target\":{\"mapId\":\"map_blank_start\"},\"start\":{\"x\":10,\"y\":8},\"seller\":{\"eventName\":\"Mira\"},\"item\":{\"id\":\"item_potion\"},\"count\":2,\"unitPrice\":10}",
+          "passed": false,
+          "observed": "Step 3: Shop price: expected 10, actual 25; actual map=map_blank_start position=(10,8) gold=100"
+        }
+      ],
+      "reason": "Acceptance incomplete; execution stopped",
+      "mapId": "map_blank_start"
+    },
+    {
+      "required": true,
+      "source": {
+        "requestId": "request-1",
+        "text": "Author a small playable two-map verification village. Rename the existing 20x15 map map_blank_start to Cedar Village and keep the actual player start at (10,8). Start the player with exactly 100 gold. Place an actual merchant named Mira at (10,7) who sells item_potion (catalog potion) for 10 gold each; the player must be able to buy two potions for 20 gold. Place a separate reward NPC named Rowan at (12,7) who gives exactly one item_antidote (catalog antidote) only on the first interaction and gives nothing on a second interaction. Create a second 20x15 outdoor map named Meadow. Author a reachable exit event named East Gate at (18,8) on Cedar Village that transfers to Meadow (2,8), and an authored return event named Village Gate at Meadow (1,8) that returns to Cedar Village (17,8). All routes from the real start to both NPCs and the exit, and from arrival to the return, must be walkable. Use ordinary action or touch transfers and an ordinary player-buy shop. Use existing queried assets, such as [{\"id\":\"charset:tex_easyrpg_charset_monster1:0\",\"label\":\"슬라임\",\"tags\":[\"슬라임\",\"몬스터\",\"약함\",\"젤리\",\"monster1\",\"monster\",\"monster\",\"enemy\",\"몬스터\",\"적\"],\"score\":1},{\"id\":\"charset:tex_easyrpg_charset_monster1:1\",\"label\":\"붉은 악마\",\"tags\":[\"악마\",\"붉은\",\"몬스터\",\"뿔\",\"monster1\",\"monster\",\"monster\",\"enemy\",\"몬스터\",\"적\"],\"score\":1},{\"id\":\"charset:tex_easyrpg_charset_monster1:2\",\"label\":\"오크\",\"tags\":[\"오크\",\"몬스터\",\"아인\",\"근접\",\"monster1\",\"monster\",\"monster\",\"enemy\",\"몬스터\",\"적\"],\"score\":1}]. Query records and tool schemas as needed; author the real event commands and map content. A minimal flat grassy village square is enough. This is a functional verification project, not a visual showcase. Keep names and coordinates exact.",
+        "scope": null
+      },
+      "id": "request-1:functional:1",
+      "title": "mapRoundTrip",
+      "status": "verified",
+      "evidence": [
+        {
+          "expected": "{\"kind\":\"mapRoundTrip\",\"target\":{\"mapId\":\"map_blank_start\"},\"start\":{\"x\":10,\"y\":8},\"destination\":{\"newMapName\":\"Meadow\"},\"outgoing\":{\"eventName\":\"East Gate\"},\"returning\":{\"eventName\":\"Village Gate\"}}",
+          "passed": true,
+          "observed": "{\"mapId\":\"map_blank_start\",\"x\":10,\"y\":8,\"gold\":100,\"inventory\":{},\"stepsRun\":6,\"log\":[\"event ev_east_gate start\",\"walk map_blank_start -> map_meadow (8 steps)\",\"event ev_village_gate start\",\"walk map_meadow -> map_blank_start (1 steps)\",\"walk map_blank_start (17,8) -> (10,8) (7 steps)\"]}"
+        }
+      ],
+      "mapId": "map_blank_start"
+    },
+    {
+      "required": true,
+      "source": {
+        "requestId": "request-1",
+        "text": "Author a small playable two-map verification village. Rename the existing 20x15 map map_blank_start to Cedar Village and keep the actual player start at (10,8). Start the player with exactly 100 gold. Place an actual merchant named Mira at (10,7) who sells item_potion (catalog potion) for 10 gold each; the player must be able to buy two potions for 20 gold. Place a separate reward NPC named Rowan at (12,7) who gives exactly one item_antidote (catalog antidote) only on the first interaction and gives nothing on a second interaction. Create a second 20x15 outdoor map named Meadow. Author a reachable exit event named East Gate at (18,8) on Cedar Village that transfers to Meadow (2,8), and an authored return event named Village Gate at Meadow (1,8) that returns to Cedar Village (17,8). All routes from the real start to both NPCs and the exit, and from arrival to the return, must be walkable. Use ordinary action or touch transfers and an ordinary player-buy shop. Use existing queried assets, such as [{\"id\":\"charset:tex_easyrpg_charset_monster1:0\",\"label\":\"슬라임\",\"tags\":[\"슬라임\",\"몬스터\",\"약함\",\"젤리\",\"monster1\",\"monster\",\"monster\",\"enemy\",\"몬스터\",\"적\"],\"score\":1},{\"id\":\"charset:tex_easyrpg_charset_monster1:1\",\"label\":\"붉은 악마\",\"tags\":[\"악마\",\"붉은\",\"몬스터\",\"뿔\",\"monster1\",\"monster\",\"monster\",\"enemy\",\"몬스터\",\"적\"],\"score\":1},{\"id\":\"charset:tex_easyrpg_charset_monster1:2\",\"label\":\"오크\",\"tags\":[\"오크\",\"몬스터\",\"아인\",\"근접\",\"monster1\",\"monster\",\"monster\",\"enemy\",\"몬스터\",\"적\"],\"score\":1}]. Query records and tool schemas as needed; author the real event commands and map content. A minimal flat grassy village square is enough. This is a functional verification project, not a visual showcase. Keep names and coordinates exact.",
+        "scope": null
+      },
+      "id": "request-1:functional:2",
+      "title": "npcReward",
+      "status": "verified",
+      "evidence": [
+        {
+          "expected": "{\"kind\":\"npcReward\",\"requirement\":{\"target\":{\"eventName\":\"Rowan\",\"mapId\":\"map_blank_start\"},\"grants\":[{\"kind\":\"item\",\"id\":\"item_antidote\",\"count\":1}],\"oneTime\":true}}",
+          "observed": "Real NPC interaction: requested first delta and same-session repeat delta verified",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "required": true,
+      "source": {
+        "requestId": "request-1",
+        "text": "Author a small playable two-map verification village. Rename the existing 20x15 map map_blank_start to Cedar Village and keep the actual player start at (10,8). Start the player with exactly 100 gold. Place an actual merchant named Mira at (10,7) who sells item_potion (catalog potion) for 10 gold each; the player must be able to buy two potions for 20 gold. Place a separate reward NPC named Rowan at (12,7) who gives exactly one item_antidote (catalog antidote) only on the first interaction and gives nothing on a second interaction. Create a second 20x15 outdoor map named Meadow. Author a reachable exit event named East Gate at (18,8) on Cedar Village that transfers to Meadow (2,8), and an authored return event named Village Gate at Meadow (1,8) that returns to Cedar Village (17,8). All routes from the real start to both NPCs and the exit, and from arrival to the return, must be walkable. Use ordinary action or touch transfers and an ordinary player-buy shop. Use existing queried assets, such as [{\"id\":\"charset:tex_easyrpg_charset_monster1:0\",\"label\":\"슬라임\",\"tags\":[\"슬라임\",\"몬스터\",\"약함\",\"젤리\",\"monster1\",\"monster\",\"monster\",\"enemy\",\"몬스터\",\"적\"],\"score\":1},{\"id\":\"charset:tex_easyrpg_charset_monster1:1\",\"label\":\"붉은 악마\",\"tags\":[\"악마\",\"붉은\",\"몬스터\",\"뿔\",\"monster1\",\"monster\",\"monster\",\"enemy\",\"몬스터\",\"적\"],\"score\":1},{\"id\":\"charset:tex_easyrpg_charset_monster1:2\",\"label\":\"오크\",\"tags\":[\"오크\",\"몬스터\",\"아인\",\"근접\",\"monster1\",\"monster\",\"monster\",\"enemy\",\"몬스터\",\"적\"],\"score\":1}]. Query records and tool schemas as needed; author the real event commands and map content. A minimal flat grassy village square is enough. This is a functional verification project, not a visual showcase. Keep names and coordinates exact.",
+        "scope": null
+      },
+      "id": "request-1:coverage:0",
+      "title": "Rename the existing 20x15 map map_blank_start to Cedar Village",
+      "status": "verified",
+      "evidence": [
+        {
+          "expected": "{\"kind\":\"mapDimensions\",\"target\":{\"mapId\":\"map_blank_start\"},\"width\":20,\"height\":15}",
+          "observed": "20x15",
+          "passed": true
+        }
+      ],
+      "mapId": "map_blank_start"
+    },
+    {
+      "required": true,
+      "source": {
+        "requestId": "request-1",
+        "text": "Author a small playable two-map verification village. Rename the existing 20x15 map map_blank_start to Cedar Village and keep the actual player start at (10,8). Start the player with exactly 100 gold. Place an actual merchant named Mira at (10,7) who sells item_potion (catalog potion) for 10 gold each; the player must be able to buy two potions for 20 gold. Place a separate reward NPC named Rowan at (12,7) who gives exactly one item_antidote (catalog antidote) only on the first interaction and gives nothing on a second interaction. Create a second 20x15 outdoor map named Meadow. Author a reachable exit event named East Gate at (18,8) on Cedar Village that transfers to Meadow (2,8), and an authored return event named Village Gate at Meadow (1,8) that returns to Cedar Village (17,8). All routes from the real start to both NPCs and the exit, and from arrival to the return, must be walkable. Use ordinary action or touch transfers and an ordinary player-buy shop. Use existing queried assets, such as [{\"id\":\"charset:tex_easyrpg_charset_monster1:0\",\"label\":\"슬라임\",\"tags\":[\"슬라임\",\"몬스터\",\"약함\",\"젤리\",\"monster1\",\"monster\",\"monster\",\"enemy\",\"몬스터\",\"적\"],\"score\":1},{\"id\":\"charset:tex_easyrpg_charset_monster1:1\",\"label\":\"붉은 악마\",\"tags\":[\"악마\",\"붉은\",\"몬스터\",\"뿔\",\"monster1\",\"monster\",\"monster\",\"enemy\",\"몬스터\",\"적\"],\"score\":1},{\"id\":\"charset:tex_easyrpg_charset_monster1:2\",\"label\":\"오크\",\"tags\":[\"오크\",\"몬스터\",\"아인\",\"근접\",\"monster1\",\"monster\",\"monster\",\"enemy\",\"몬스터\",\"적\"],\"score\":1}]. Query records and tool schemas as needed; author the real event commands and map content. A minimal flat grassy village square is enough. This is a functional verification project, not a visual showcase. Keep names and coordinates exact.",
+        "scope": null
+      },
+      "id": "request-1:coverage:1",
+      "title": "Start the player with exactly 100 gold.",
+      "status": "blocked",
+      "evidence": [
+        {
+          "expected": "{\"kind\":\"functionalUnresolved\",\"reason\":\"Starting money cannot be verified by static map checks or purchase deltas alone.\"}",
+          "observed": "Starting money cannot be verified by static map checks or purchase deltas alone.",
+          "passed": false
+        }
+      ],
+      "reason": "Acceptance incomplete; execution stopped"
+    },
+    {
+      "required": true,
+      "source": {
+        "requestId": "request-1",
+        "text": "Author a small playable two-map verification village. Rename the existing 20x15 map map_blank_start to Cedar Village and keep the actual player start at (10,8). Start the player with exactly 100 gold. Place an actual merchant named Mira at (10,7) who sells item_potion (catalog potion) for 10 gold each; the player must be able to buy two potions for 20 gold. Place a separate reward NPC named Rowan at (12,7) who gives exactly one item_antidote (catalog antidote) only on the first interaction and gives nothing on a second interaction. Create a second 20x15 outdoor map named Meadow. Author a reachable exit event named East Gate at (18,8) on Cedar Village that transfers to Meadow (2,8), and an authored return event named Village Gate at Meadow (1,8) that returns to Cedar Village (17,8). All routes from the real start to both NPCs and the exit, and from arrival to the return, must be walkable. Use ordinary action or touch transfers and an ordinary player-buy shop. Use existing queried assets, such as [{\"id\":\"charset:tex_easyrpg_charset_monster1:0\",\"label\":\"슬라임\",\"tags\":[\"슬라임\",\"몬스터\",\"약함\",\"젤리\",\"monster1\",\"monster\",\"monster\",\"enemy\",\"몬스터\",\"적\"],\"score\":1},{\"id\":\"charset:tex_easyrpg_charset_monster1:1\",\"label\":\"붉은 악마\",\"tags\":[\"악마\",\"붉은\",\"몬스터\",\"뿔\",\"monster1\",\"monster\",\"monster\",\"enemy\",\"몬스터\",\"적\"],\"score\":1},{\"id\":\"charset:tex_easyrpg_charset_monster1:2\",\"label\":\"오크\",\"tags\":[\"오크\",\"몬스터\",\"아인\",\"근접\",\"monster1\",\"monster\",\"monster\",\"enemy\",\"몬스터\",\"적\"],\"score\":1}]. Query records and tool schemas as needed; author the real event commands and map content. A minimal flat grassy village square is enough. This is a functional verification project, not a visual showcase. Keep names and coordinates exact.",
+        "scope": null
+      },
+      "id": "request-1:coverage:4",
+      "title": "Create a second 20x15 outdoor map named Meadow.",
+      "status": "verified",
+      "evidence": [
+        {
+          "expected": "{\"kind\":\"mapDimensions\",\"target\":{\"newMapName\":\"Meadow\"},\"width\":20,\"height\":15}",
+          "observed": "20x15",
+          "passed": true
+        }
+      ],
+      "mapId": "map_meadow"
+    },
+    {
+      "required": true,
+      "source": {
+        "requestId": "request-1",
+        "text": "Author a small playable two-map verification village. Rename the existing 20x15 map map_blank_start to Cedar Village and keep the actual player start at (10,8). Start the player with exactly 100 gold. Place an actual merchant named Mira at (10,7) who sells item_potion (catalog potion) for 10 gold each; the player must be able to buy two potions for 20 gold. Place a separate reward NPC named Rowan at (12,7) who gives exactly one item_antidote (catalog antidote) only on the first interaction and gives nothing on a second interaction. Create a second 20x15 outdoor map named Meadow. Author a reachable exit event named East Gate at (18,8) on Cedar Village that transfers to Meadow (2,8), and an authored return event named Village Gate at Meadow (1,8) that returns to Cedar Village (17,8). All routes from the real start to both NPCs and the exit, and from arrival to the return, must be walkable. Use ordinary action or touch transfers and an ordinary player-buy shop. Use existing queried assets, such as [{\"id\":\"charset:tex_easyrpg_charset_monster1:0\",\"label\":\"슬라임\",\"tags\":[\"슬라임\",\"몬스터\",\"약함\",\"젤리\",\"monster1\",\"monster\",\"monster\",\"enemy\",\"몬스터\",\"적\"],\"score\":1},{\"id\":\"charset:tex_easyrpg_charset_monster1:1\",\"label\":\"붉은 악마\",\"tags\":[\"악마\",\"붉은\",\"몬스터\",\"뿔\",\"monster1\",\"monster\",\"monster\",\"enemy\",\"몬스터\",\"적\"],\"score\":1},{\"id\":\"charset:tex_easyrpg_charset_monster1:2\",\"label\":\"오크\",\"tags\":[\"오크\",\"몬스터\",\"아인\",\"근접\",\"monster1\",\"monster\",\"monster\",\"enemy\",\"몬스터\",\"적\"],\"score\":1}]. Query records and tool schemas as needed; author the real event commands and map content. A minimal flat grassy village square is enough. This is a functional verification project, not a visual showcase. Keep names and coordinates exact.",
+        "scope": null
+      },
+      "id": "request-1:coverage:6",
+      "title": "All routes from the real start to both NPCs and the exit, and from arrival to the return, must be walkable.",
+      "status": "blocked",
+      "evidence": [
+        {
+          "expected": "{\"kind\":\"reachability\",\"target\":{\"mapId\":\"map_blank_start\"},\"from\":{\"x\":10,\"y\":8},\"to\":[{\"x\":10,\"y\":7},{\"x\":12,\"y\":7},{\"x\":18,\"y\":8}]}",
+          "observed": "Route blocked, out of bounds, or conditional movement unsupported",
+          "passed": false
+        },
+        {
+          "expected": "{\"kind\":\"reachability\",\"target\":{\"newMapName\":\"Meadow\"},\"from\":{\"x\":2,\"y\":8},\"to\":[{\"x\":1,\"y\":8}]}",
+          "observed": "All targets reachable with conservative event blockers",
+          "passed": true
+        }
+      ],
+      "reason": "Acceptance incomplete; execution stopped",
+      "mapId": "map_blank_start"
+    },
+    {
+      "id": "required-verification",
+      "title": "Required verification",
+      "status": "blocked",
+      "reason": "check_reachability: 변경 후 재검증 필요 — [\"check_reachability\",{\"from\":{\"x\":10,\"y\":8},\"mapId\":\"map_blank_start\",\"targets\":[{\"x\":10,\"y\":7},{\"x\":12,\"y\":7},{\"x\":18,\"y\":8},{\"x\":19,\"y\":8}]}]; check_reachability: 변경 후 재검증 필요 — [\"check_reachability\",{\"from\":{\"x\":2,\"y\":8},\"mapId\":\"map_meadow\",\"targets\":[{\"x\":1,\"y\":8},{\"x\":0,\"y\":8}]}]; check_reachability: 변경 후 재검증 필요 — [\"check_reachability\",{\"from\":{\"x\":10,\"y\":8},\"mapId\":\"map_blank_start\",\"targets\":[{\"x\":10,\"y\":7},{\"x\":12,\"y\":7},{\"x\":18,\"y\":8}]}]; check_reachability: 변경 후 재검증 필요 — [\"check_reachability\",{\"from\":{\"x\":2,\"y\":8},\"mapId\":\"map_meadow\",\"targets\":[{\"x\":1,\"y\":8}]}]; run_lint: 변경 후 재검증 필요 — [\"run_lint\",{}]; run_scene_test: 변경 후 재검증 필요 — [\"run_scene_test\",{\"mapId\":\"map_blank_start\",\"start\":{\"x\":10,\"y\":8},\"steps\":[{\"kind\":\"move\",\"to\":{\"x\":18,\"y\":8}},{\"kind\":\"expect\",\"mapId\":\"map_meadow\",\"playerAt\":{\"x\":2,\"y\":8}},{\"kind\":\"move\",\"to\":{\"x\":1,\"y\":8}},{\"kind\":\"expect\",\"mapId\":\"map_blank_start\",\"playerAt\":{\"x\":17,\"y\":8}}]}]; check_reachability: 필수 검증 미통과",
+      "evidence": [
+        {
+          "expected": "Every required check passes against current content",
+          "observed": "check_reachability: 변경 후 재검증 필요 — [\"check_reachability\",{\"from\":{\"x\":10,\"y\":8},\"mapId\":\"map_blank_start\",\"targets\":[{\"x\":10,\"y\":7},{\"x\":12,\"y\":7},{\"x\":18,\"y\":8},{\"x\":19,\"y\":8}]}]",
+          "passed": false
+        },
+        {
+          "expected": "Every required check passes against current content",
+          "observed": "check_reachability: 변경 후 재검증 필요 — [\"check_reachability\",{\"from\":{\"x\":2,\"y\":8},\"mapId\":\"map_meadow\",\"targets\":[{\"x\":1,\"y\":8},{\"x\":0,\"y\":8}]}]",
+          "passed": false
+        },
+        {
+          "expected": "Every required check passes against current content",
+          "observed": "check_reachability: 변경 후 재검증 필요 — [\"check_reachability\",{\"from\":{\"x\":10,\"y\":8},\"mapId\":\"map_blank_start\",\"targets\":[{\"x\":10,\"y\":7},{\"x\":12,\"y\":7},{\"x\":18,\"y\":8}]}]",
+          "passed": false
+        },
+        {
+          "expected": "Every required check passes against current content",
+          "observed": "check_reachability: 변경 후 재검증 필요 — [\"check_reachability\",{\"from\":{\"x\":2,\"y\":8},\"mapId\":\"map_meadow\",\"targets\":[{\"x\":1,\"y\":8}]}]",
+          "passed": false
+        },
+        {
+          "expected": "Every required check passes against current content",
+          "observed": "run_lint: 변경 후 재검증 필요 — [\"run_lint\",{}]",
+          "passed": false
+        },
+        {
+          "expected": "Every required check passes against current content",
+          "observed": "run_scene_test: 변경 후 재검증 필요 — [\"run_scene_test\",{\"mapId\":\"map_blank_start\",\"start\":{\"x\":10,\"y\":8},\"steps\":[{\"kind\":\"move\",\"to\":{\"x\":18,\"y\":8}},{\"kind\":\"expect\",\"mapId\":\"map_meadow\",\"playerAt\":{\"x\":2,\"y\":8}},{\"kind\":\"move\",\"to\":{\"x\":1,\"y\":8}},{\"kind\":\"expect\",\"mapId\":\"map_blank_start\",\"playerAt\":{\"x\":17,\"y\":8}}]}]",
+          "passed": false
+        },
+        {
+          "expected": "Every required check passes against current content",
+          "observed": "check_reachability: 필수 검증 미통과",
+          "passed": false
+        }
+      ]
+    }
+  ]
+}

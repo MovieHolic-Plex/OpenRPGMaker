@@ -1,0 +1,43 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/requestCoverage.test.ts --maxWorkers=1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-acceptance-live-qa
+
+ ❯ test/requestCoverage.test.ts (10 tests | 1 failed) 6690ms
+   ✓ independent request coverage enters the canonical ledger > accepts the JSON fence returned by the live companion without dropping any clauses 5ms
+   ✓ independent request coverage enters the canonical ledger > retains words omitted even by the independent extractor as an unverified canonical obligation  813ms
+   ✓ independent request coverage enters the canonical ledger > cannot satisfy a partial plan after omission coverage  877ms
+   ✓ independent request coverage enters the canonical ledger > cannot satisfy a partial plan after empty coverage  761ms
+   ✓ independent request coverage enters the canonical ledger > cannot satisfy a partial plan after invalid coverage  825ms
+   ✓ independent request coverage enters the canonical ledger > cannot satisfy a partial plan after network coverage  912ms
+   ✓ independent request coverage enters the canonical ledger > links every independently extracted clause to real immutable checks  918ms
+   ✓ independent request coverage enters the canonical ledger > does not create obligations or run an audit for genuine questions 236ms
+   ✓ independent request coverage enters the canonical ledger > keeps grouped R2 clarification and resume coverage distinct (audit failure=false)  634ms
+   × independent request coverage enters the canonical ledger > keeps grouped R2 clarification and resume coverage distinct (audit failure=true) 707ms
+     → expected 'verified' to be 'blocked' // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/requestCoverage.test.ts > independent request coverage enters the canonical ledger > keeps grouped R2 clarification and resume coverage distinct (audit failure=true)
+AssertionError: expected 'verified' to be 'blocked' // Object.is equality
+
+Expected: [32m"[7mblock[27med"[39m
+Received: [31m"[7mverifi[27med"[39m
+
+ ❯ test/requestCoverage.test.ts:124:53
+    122|     await session.sendUserMessage(nextText, () => {}, undefined, { goa…
+    123|     expect(factsSeen[1]).toMatchObject({ unresolvedFunctional: [{ requ…
+    124|     expect(session.getAcceptanceSnapshot()?.status).toBe(auditFailure …
+       |                                                     ^
+    125|     expect(session.getAcceptanceSnapshot()?.items.slice(0, 2)).toMatch…
+    126|       { evidence: [{ passed: true }] }, { id: requirementId, source: {…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 9 passed (10)
+   Start at  03:14:04
+   Duration  25.30s (transform 12.51s, setup 0ms, collect 17.87s, tests 6.69s, environment 0ms, prepare 130ms)
