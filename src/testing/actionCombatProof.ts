@@ -1,4 +1,5 @@
 import { isActionCombatMap } from "@/project/actionCombat";
+import { randomUuid } from "@/util/id";
 import type { Project } from "@/project/types";
 
 export const ACTION_COMBAT_OUTCOMES = [
@@ -92,7 +93,7 @@ export async function runActionCombatTest(
 ): Promise<ActionCombatProofReceipt> {
   const snapshot: Project = structuredClone(project);
   const projectFingerprint = actionCombatProjectFingerprint(snapshot);
-  const runId = crypto.randomUUID();
+  const runId = randomUuid();
   const controller = new AbortController();
   const cancel = (): void => controller.abort(options.signal?.reason);
   options.signal?.addEventListener("abort", cancel, { once: true });
