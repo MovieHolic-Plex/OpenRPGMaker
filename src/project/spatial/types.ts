@@ -88,10 +88,12 @@ export type SpatialKitSnapshot = SpatialGraphic & {
  * kitCells is keyed by the owning object or exterior place design ID, never a live kit.
  * Concrete ports have fresh occurrence-owned IDs. Atlas pixels/passage metadata stay shared.
  */
-export type SpatialCompositionSnapshot = {
+export type SpatialOccurrencePort = SpatialPort & { readonly localPortId: SpatialId };
+export type SpatialParentSlot = { readonly slotId: SpatialId; readonly index: number };
+export type SpatialCompositionSnapshot<P extends SpatialPort = SpatialPort> = {
   readonly root: SpatialSource; readonly library: SpatialLibrary;
   readonly kitCells: Readonly<Record<string, SpatialKitSnapshot>>;
-  readonly ports: readonly SpatialPort[];
+  readonly ports: readonly P[];
 };
 export type SpatialCompiledBinding = {
   readonly mapId: string; readonly rect: SpatialRect; readonly eventIds: readonly string[];
@@ -99,14 +101,26 @@ export type SpatialCompiledBinding = {
   readonly ports: readonly (SpatialPoint & { readonly portId: SpatialId })[];
   readonly contentDigest: string;
 };
-export type SpatialOccurrence = {
+type SpatialOccurrenceBase = {
   readonly [K in SpatialKind]: SpatialPoint & {
-    readonly id: SpatialId; readonly kind: K; readonly parentId: SpatialId | null;
+    readonly id: SpatialId; readonly kind: K;
     readonly source: SpatialSource<K>; readonly level: number; readonly seed: number;
-    readonly snapshot: SpatialCompositionSnapshot; readonly generatorVersion: string;
-    readonly bindings: readonly SpatialCompiledBinding[];
+    readonly generatorVersion: string; readonly bindings: readonly SpatialCompiledBinding[];
   }
 }[SpatialKind];
+/** Presence of parentSlot requires complete frozen local-port associations, even for roots. */
+export type SpatialAssociatedOccurrence = SpatialOccurrenceBase & {
+  readonly snapshot: SpatialCompositionSnapshot<SpatialOccurrencePort>;
+} & (
+  | { readonly parentId: null; readonly parentSlot: null }
+  | { readonly parentId: SpatialId; readonly parentSlot: SpatialParentSlot }
+);
+/** Readable historical v1 data; IO never guesses associations or rewrites the archive. */
+export type SpatialLegacyOccurrence = SpatialOccurrenceBase & {
+  readonly parentId: SpatialId | null; readonly parentSlot?: never;
+  readonly snapshot: SpatialCompositionSnapshot<SpatialPort & { readonly localPortId?: never }>;
+};
+export type SpatialOccurrence = SpatialLegacyOccurrence | SpatialAssociatedOccurrence;
 export type SpatialConnection = {
   readonly id: SpatialId;
   readonly from: { readonly occurrenceId: SpatialId; readonly portId: SpatialId };

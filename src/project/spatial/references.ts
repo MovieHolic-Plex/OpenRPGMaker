@@ -1,5 +1,6 @@
 import { assert } from "../io/guards";
 import { resolveSpatialGraphic } from "./assets";
+import { validateOccurrencePorts, validateParentSlot } from "./associations";
 import type * as S from "./types";
 
 type Design = S.ObjectDesign | S.SpaceDesign | S.PlaceDesign | S.RegionDesign | S.WorldDesign;
@@ -128,6 +129,7 @@ function validateSnapshot(occurrence: S.SpatialOccurrence, assets: S.SpatialAsse
   const snapshot = occurrence.snapshot;
   const edges = validateLibrary(snapshot.library, { assets, frozen: true, path: `${path}.library` });
   const root = design(snapshot.library, snapshot.root, `${path}.root`);
+  validateOccurrencePorts(occurrence, designPorts(root));
   assert(root.revision === snapshot.root.revision, `${path}.root.revision: snapshot revision mismatch`);
   assert(snapshot.root.kind === occurrence.source.kind && snapshot.root.id === occurrence.source.id && snapshot.root.revision === occurrence.source.revision, `${path}.root: occurrence source mismatch`);
   const reachable = new Set<S.SpatialId>([root.id]);
@@ -168,6 +170,13 @@ export function validateSpatialReferences(document: S.SpatialAuthoringDocument, 
     for (const port of occurrence.snapshot.ports) register(port.id, `${path}.snapshot.ports`);
   }
   acyclic(containment);
+  const occupied = new Set<string>();
+  for (const occurrence of Object.values(document.occurrences)) {
+    if (occurrence.parentSlot === undefined || occurrence.parentId === null) continue;
+    const path = `${p}.occurrences.${occurrence.id}.parentSlot`;
+    const parent = own(document.occurrences, occurrence.parentId, path);
+    validateParentSlot(occurrence, design(parent.snapshot.library, parent.snapshot.root, path), occupied);
+  }
   document.connections.forEach((connection, i) => {
     const path = `${p}.connections[${i}]`;
     register(connection.id, `${path}.id`);

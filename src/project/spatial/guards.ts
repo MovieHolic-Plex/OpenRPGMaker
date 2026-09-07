@@ -60,6 +60,10 @@ const port: Parser<S.SpatialPort> = (v, p) => {
   const r = record(v, p, "id name x y");
   return { ...point(r, p), id: id(r.id, `${p}.id`), name: text(r.name, `${p}.name`) };
 };
+const occurrencePort: Parser<S.SpatialOccurrencePort> = (v, p) => {
+  const r = record(v, p, "id name x y localPortId");
+  return { ...port({ id: r.id, name: r.name, x: r.x, y: r.y }, p), localPortId: id(r.localPortId, `${p}.localPortId`) };
+};
 const ports: Parser<readonly S.SpatialPort[]> = (v, p) => list(v, p, port);
 const graphic: Parser<S.SpatialGraphic> = (v, p) => {
   const r = record(v, p, "tilesetId kitId");
@@ -171,9 +175,9 @@ const kit: Parser<S.SpatialKitSnapshot> = (v, p) => {
   });
   return { ...graphic({ tilesetId: r.tilesetId, kitId: r.kitId }, p), width: size(r.width, `${p}.width`), height: size(r.height, `${p}.height`), cells };
 };
-const snapshot: Parser<S.SpatialCompositionSnapshot> = (v, p) => {
+const snapshot = <P extends S.SpatialPort>(parsePort: Parser<P>): Parser<S.SpatialCompositionSnapshot<P>> => (v, p) => {
   const r = record(v, p, "root library kitCells ports");
-  return { root: source(kind)(r.root, `${p}.root`), library: library(r.library, `${p}.library`), kitCells: dictionary(r.kitCells, `${p}.kitCells`, kit), ports: ports(r.ports, `${p}.ports`) };
+  return { root: source(kind)(r.root, `${p}.root`), library: library(r.library, `${p}.library`), kitCells: dictionary(r.kitCells, `${p}.kitCells`, kit), ports: list(r.ports, `${p}.ports`, parsePort) };
 };
 const binding: Parser<S.SpatialCompiledBinding> = (v, p) => {
   const r = record(v, p, "mapId rect eventIds connectionIds ports contentDigest");
@@ -181,10 +185,21 @@ const binding: Parser<S.SpatialCompiledBinding> = (v, p) => {
   return { mapId: id(r.mapId, `${p}.mapId`), rect: rect(r.rect, `${p}.rect`), eventIds: texts(r.eventIds, `${p}.eventIds`), connectionIds: ids(r.connectionIds, `${p}.connectionIds`), ports: boundPorts, contentDigest: digest(r.contentDigest, `${p}.contentDigest`) };
 };
 const occurrence: Parser<S.SpatialOccurrence> = (v, p) => {
-  const r = record(v, p, "id kind parentId source x y level seed snapshot generatorVersion bindings");
-  const common = { ...point(r, p), id: id(r.id, `${p}.id`), parentId: nullableId(r.parentId, `${p}.parentId`), level: coordinate(r.level, `${p}.level`), seed: coordinate(r.seed, `${p}.seed`), snapshot: snapshot(r.snapshot, `${p}.snapshot`), generatorVersion: id(r.generatorVersion, `${p}.generatorVersion`), bindings: list(r.bindings, `${p}.bindings`, binding) };
+  const r = record(v, p, "id kind parentId parentSlot source x y level seed snapshot generatorVersion bindings");
+  const common = { ...point(r, p), id: id(r.id, `${p}.id`), level: coordinate(r.level, `${p}.level`), seed: coordinate(r.seed, `${p}.seed`), generatorVersion: id(r.generatorVersion, `${p}.generatorVersion`), bindings: list(r.bindings, `${p}.bindings`, binding) };
+  const parentId = nullableId(r.parentId, `${p}.parentId`);
   const occurrenceKind = kind(r.kind, `${p}.kind`);
-  const typed = <K extends S.SpatialKind>(k: K) => ({ ...common, kind: k, source: source(choice([k]))(r.source, `${p}.source`) });
+  const typed = <K extends S.SpatialKind>(k: K) => {
+    const base = { ...common, kind: k, source: source(choice([k]))(r.source, `${p}.source`) };
+    if (!Object.hasOwn(r, "parentSlot")) return { ...base, parentId, snapshot: snapshot(port)(r.snapshot, `${p}.snapshot`) };
+    if (parentId === null) {
+      assert(r.parentSlot === null, `${p}.parentSlot: root requires null`);
+      return { ...base, parentId, parentSlot: null, snapshot: snapshot(occurrencePort)(r.snapshot, `${p}.snapshot`) };
+    }
+    const slot = record(r.parentSlot, `${p}.parentSlot`, "slotId index");
+    const parentSlot = { slotId: id(slot.slotId, `${p}.parentSlot.slotId`), index: integer([0, Number.MAX_SAFE_INTEGER])(slot.index, `${p}.parentSlot.index`) };
+    return { ...base, parentId, parentSlot, snapshot: snapshot(occurrencePort)(r.snapshot, `${p}.snapshot`) };
+  };
   switch (occurrenceKind) {
     case "object": return typed("object"); case "space": return typed("space"); case "place": return typed("place");
     case "region": return typed("region"); case "world": return typed("world"); default: return assertNever(occurrenceKind);
