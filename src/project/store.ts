@@ -220,6 +220,7 @@ class ProjectStore {
   private readonly autoSaveRetryMaxDelayMs = 120_000;
   private autoSaveRetryCount = 0;
   private healthCheckTimer: ReturnType<typeof setInterval> | null = null;
+  private healthCheckLineage = 0;
   private readonly healthCheckIntervalMs = 30_000;
   private boundOnlineHandler: (() => void) | null = null;
   private loaded = false;
@@ -1037,13 +1038,18 @@ class ProjectStore {
     }
     if (this.autoSaveTimer) clearTimeout(this.autoSaveTimer);
     this.clearAutoSaveRetry();
-    this.setAutoSaveState({ kind: "pending" });
-    this.autoSaveTimer = setTimeout(() => {
+    const lineage = this.contentLineage;
+    const timer = setTimeout(() => {
+      // A queued callback cannot consume a replacement's timer or save its content.
+      if (this.contentLineage !== lineage || this.autoSaveTimer !== timer) return;
       this.autoSaveTimer = null;
       void this.saveCurrentWithAutoSaveState().catch((error) => {
         log.error("Supabase auto-save failed", error);
       });
     }, this.autoSaveDelayMs);
+    this.autoSaveTimer = timer;
+    // Publish after registration: a synchronous subscriber may schedule its own save.
+    this.setAutoSaveState({ kind: "pending" });
   }
 
   private clearAutoSaveRetry(): void {
@@ -1052,30 +1058,34 @@ class ProjectStore {
     this.autoSaveRetryTimer = null;
   }
 
-  private scheduleAutoSaveRetry(): void {
-    if (this.autoSaveRetryTimer) return;
+  private scheduleAutoSaveRetry(lineage: number): void {
+    // The error-state subscriber may have replaced the failed save's project.
+    if (this.contentLineage !== lineage || this.autoSaveRetryTimer) return;
     const delay = Math.min(
       this.autoSaveRetryBaseDelayMs * 2 ** this.autoSaveRetryCount,
       this.autoSaveRetryMaxDelayMs,
     );
-    this.autoSaveRetryTimer = setTimeout(() => {
+    const timer = setTimeout(() => {
+      if (this.contentLineage !== lineage || this.autoSaveRetryTimer !== timer) return;
       this.autoSaveRetryTimer = null;
       void this.saveCurrentWithAutoSaveState().catch((error) => {
         log.error("Supabase auto-save retry failed", error);
       });
     }, delay);
-    this.startHealthCheck();
+    this.autoSaveRetryTimer = timer;
+    this.startHealthCheck(lineage);
   }
 
   /**
    * Periodic lightweight probe while in error state. If the DB responds we
    * immediately attempt a flush instead of waiting for the next backoff tick.
    */
-  private startHealthCheck(): void {
-    if (this.healthCheckTimer) return;
-    this.healthCheckTimer = setInterval(() => {
-      void this.runHealthCheck();
-    }, this.healthCheckIntervalMs);
+  private startHealthCheck(lineage: number): void {
+    if (this.healthCheckTimer && this.healthCheckLineage === lineage) return;
+    this.stopHealthCheck();
+    const timer = setInterval(() => this.runHealthCheck(lineage, timer), this.healthCheckIntervalMs);
+    this.healthCheckTimer = timer;
+    this.healthCheckLineage = lineage;
   }
 
   private stopHealthCheck(): void {
@@ -1084,7 +1094,8 @@ class ProjectStore {
     this.healthCheckTimer = null;
   }
 
-  private async runHealthCheck(): Promise<void> {
+  private async runHealthCheck(lineage: number, timer: ReturnType<typeof setInterval>): Promise<void> {
+    if (this.contentLineage !== lineage || this.healthCheckTimer !== timer) return;
     if (!this.loaded || !this.remotePersistenceEnabled) {
       this.stopHealthCheck();
       return;
@@ -1108,6 +1119,7 @@ class ProjectStore {
         },
         signal: AbortSignal.timeout(8000),
       });
+      if (this.contentLineage !== lineage || this.healthCheckTimer !== timer) return;
       if (response.ok) {
         log.info(`Health check: DB reachable (${response.status}), attempting flush`);
         this.stopHealthCheck();
@@ -1181,7 +1193,7 @@ class ProjectStore {
         if (this.contentLineage === lineage) {
           this.autoSaveRetryCount += 1;
           this.setAutoSaveState({ kind: "error", message: autoSaveErrorMessage(error), retryCount: this.autoSaveRetryCount });
-          this.scheduleAutoSaveRetry();
+          this.scheduleAutoSaveRetry(lineage);
         }
         throw error;
       } finally {

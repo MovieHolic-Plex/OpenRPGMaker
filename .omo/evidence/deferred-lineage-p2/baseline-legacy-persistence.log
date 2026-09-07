@@ -1,0 +1,145 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/storePersistence.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /tmp/st_01a07921-base
+
+ ❯ test/storePersistence.test.ts (11 tests | 5 failed) 12118ms
+   × Project store remote persistence > does not write to Supabase before the canonical project has loaded 5157ms
+     → expected "spy" to not be called at all, but actually been called 1 times[90m
+
+Received:
+
+[1m  1st spy call:
+
+[22m    Array [
+      "/__oprn/edit-activity",
+      Object {
+        "body": "{"entries":[{"seq":0,"at":"2026-09-07T00:01:04.182Z","scope":"project","label":null,"origin":"human","generation":1,"reason":"사람이 편집"}]}",
+        "headers": Object {
+          "Content-Type": "application/json",
+        },
+        "method": "POST",
+      },
+    ]
+[39m[90m
+
+Number of calls: [1m1[22m
+[39m
+   × Project store remote persistence > does not auto-save local dev showcase projects to Supabase 456ms
+     → Cannot read properties of undefined (reading 'ok')
+   × Project store remote persistence > always creates a new fresh project instead of reloading local dev overrides 785ms
+     → Cannot read properties of undefined (reading 'ok')
+   × Project store remote persistence > saves and reloads local edits for dev showcase projects without Supabase 376ms
+     → Cannot read properties of undefined (reading 'ok')
+   × Project store remote persistence > reports why DB persistence is unavailable for local dev showcase projects 356ms
+     → fetch failed
+   ✓ Project store remote persistence > requires DB configuration before opening a project  390ms
+   ✓ Project store remote persistence > marks the project loaded when reconnect recovers a blocked first boot  1249ms
+   ✓ Project store remote persistence > does not create a DB project when the selected project row is missing  384ms
+   ✓ Project store remote persistence > skips remote flush when there are no unsaved changes  311ms
+   ✓ Project store remote persistence > keeps local map paint when remote save finishes with a stale snapshot  1236ms
+   ✓ Project store remote persistence > does not apply stale map-patch response over newer local paint  1416ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/storePersistence.test.ts > Project store remote persistence > does not write to Supabase before the canonical project has loaded
+AssertionError: expected "spy" to not be called at all, but actually been called 1 times[90m
+
+Received:
+
+[1m  1st spy call:
+
+[22m    Array [
+      "/__oprn/edit-activity",
+      Object {
+        "body": "{"entries":[{"seq":0,"at":"2026-09-07T00:01:04.182Z","scope":"project","label":null,"origin":"human","generation":1,"reason":"사람이 편집"}]}",
+        "headers": Object {
+          "Content-Type": "application/json",
+        },
+        "method": "POST",
+      },
+    ]
+[39m[90m
+
+Number of calls: [1m1[22m
+[39m
+ ❯ test/storePersistence.test.ts:35:26
+     33|
+     34|     expect(saveResult).toEqual({ kind: "not-loaded" });
+     35|     expect(fetchSpy).not.toHaveBeenCalled();
+       |                          ^
+     36|   });
+     37|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  test/storePersistence.test.ts > Project store remote persistence > does not auto-save local dev showcase projects to Supabase
+TypeError: Cannot read properties of undefined (reading 'ok')
+ ❯ loadProjectSnapshotFromSupabase src/project/supabaseProjectSync.ts:233:17
+    231|     signal: options.signal,
+    232|   });
+    233|   if (!response.ok) {
+       |                 ^
+    234|     throw new SupabaseProjectSyncError(await response.text(), response…
+    235|   }
+ ❯ loadProjectFromSupabase src/project/supabaseProjectSync.ts:154:20
+ ❯ ProjectStore.load src/project/store.ts:282:27
+ ❯ test/storePersistence.test.ts:55:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  test/storePersistence.test.ts > Project store remote persistence > always creates a new fresh project instead of reloading local dev overrides
+TypeError: Cannot read properties of undefined (reading 'ok')
+ ❯ loadProjectSnapshotFromSupabase src/project/supabaseProjectSync.ts:233:17
+    231|     signal: options.signal,
+    232|   });
+    233|   if (!response.ok) {
+       |                 ^
+    234|     throw new SupabaseProjectSyncError(await response.text(), response…
+    235|   }
+ ❯ loadProjectFromSupabase src/project/supabaseProjectSync.ts:154:20
+ ❯ ProjectStore.load src/project/store.ts:282:27
+ ❯ test/storePersistence.test.ts:91:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  test/storePersistence.test.ts > Project store remote persistence > saves and reloads local edits for dev showcase projects without Supabase
+TypeError: Cannot read properties of undefined (reading 'ok')
+ ❯ loadProjectSnapshotFromSupabase src/project/supabaseProjectSync.ts:233:17
+    231|     signal: options.signal,
+    232|   });
+    233|   if (!response.ok) {
+       |                 ^
+    234|     throw new SupabaseProjectSyncError(await response.text(), response…
+    235|   }
+ ❯ loadProjectFromSupabase src/project/supabaseProjectSync.ts:154:20
+ ❯ ProjectStore.load src/project/store.ts:282:27
+ ❯ test/storePersistence.test.ts:119:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  test/storePersistence.test.ts > Project store remote persistence > reports why DB persistence is unavailable for local dev showcase projects
+TypeError: fetch failed
+ ❯ loadProjectSnapshotFromSupabase src/project/supabaseProjectSync.ts:229:20
+    227| ): Promise<SupabaseProjectSnapshot | null> {
+    228|   if (!config) return null;
+    229|   const response = await fetch(supabaseProjectUrl(config, options.incl…
+       |                    ^
+    230|     headers: supabaseJsonHeaders(config, "read"),
+    231|     signal: options.signal,
+ ❯ loadProjectFromSupabase src/project/supabaseProjectSync.ts:154:20
+ ❯ ProjectStore.load src/project/store.ts:282:27
+ ❯ test/storePersistence.test.ts:151:5
+
+Caused by: Error: getaddrinfo EAI_AGAIN dbserver
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { errno: -3001, code: 'EAI_AGAIN', syscall: 'getaddrinfo', hostname: 'dbserver' }
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed | 6 passed (11)
+   Start at  09:01:03
+   Duration  12.57s (transform 3.49s, setup 0ms, collect 81ms, tests 12.12s, environment 0ms, prepare 66ms)

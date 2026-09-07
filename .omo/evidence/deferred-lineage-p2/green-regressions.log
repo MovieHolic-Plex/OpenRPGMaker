@@ -1,0 +1,221 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/storeDeferredLineage.test.ts test/storeLifecycleReentrancy.test.ts test/storePersistence.test.ts test/storePersistenceProof.test.ts test/storePersistenceLineage.test.ts test/storeFlushShaEvidence.test.ts test/interiorLoadConsistency.test.ts test/interiorTransparentPropLayerRepair.test.ts test/interiorRoomPipelineParity.test.ts test/interiorRoomPipeline.test.ts test/interiorRoomVocab.test.ts test/interiorPipelineMapReplacement.test.ts test/storeEventDraftPreserve.test.ts test/storeUpdateMap.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-interior-load-consistency-0907
+
+ ❯ test/storePersistence.test.ts (11 tests | 5 failed) 11481ms
+   × Project store remote persistence > does not write to Supabase before the canonical project has loaded 4675ms
+     → expected "spy" to not be called at all, but actually been called 1 times[90m
+
+Received:
+
+[1m  1st spy call:
+
+[22m    Array [
+      "/__oprn/edit-activity",
+      Object {
+        "body": "{"entries":[{"seq":0,"at":"2026-09-06T23:57:56.428Z","scope":"project","label":null,"origin":"human","generation":1,"reason":"사람이 편집"}]}",
+        "headers": Object {
+          "Content-Type": "application/json",
+        },
+        "method": "POST",
+      },
+    ]
+[39m[90m
+
+Number of calls: [1m1[22m
+[39m
+   × Project store remote persistence > does not auto-save local dev showcase projects to Supabase 404ms
+     → Cannot read properties of undefined (reading 'ok')
+   × Project store remote persistence > always creates a new fresh project instead of reloading local dev overrides 648ms
+     → Cannot read properties of undefined (reading 'ok')
+   × Project store remote persistence > saves and reloads local edits for dev showcase projects without Supabase 368ms
+     → Cannot read properties of undefined (reading 'ok')
+   × Project store remote persistence > reports why DB persistence is unavailable for local dev showcase projects 386ms
+     → {
+  "message":"Invalid authentication credentials"
+}
+   ✓ Project store remote persistence > requires DB configuration before opening a project  347ms
+   ✓ Project store remote persistence > marks the project loaded when reconnect recovers a blocked first boot  1269ms
+   ✓ Project store remote persistence > does not create a DB project when the selected project row is missing  325ms
+   ✓ Project store remote persistence > skips remote flush when there are no unsaved changes  342ms
+   ✓ Project store remote persistence > keeps local map paint when remote save finishes with a stale snapshot  1279ms
+   ✓ Project store remote persistence > does not apply stale map-patch response over newer local paint  1438ms
+ ✓ test/interiorPipelineMapReplacement.test.ts (7 tests) 3223ms
+   ✓ 시작 맵을 교체하는 원샷 파이프라인 > 시작 위치를 방 안으로 옮기고 커밋을 통과한다  470ms
+   ✓ 인바운드 transfer 착지점 > 교체로 착지점이 통행 불가가 되면 가장 가까운 통행 가능 칸으로 옮긴다  389ms
+   ✓ 멀티턴 경로도 같은 보정을 받는다 > 마지막 레이어까지 끝내면 착지점이 되살아난다  1395ms
+ ✓ test/storeDeferredLineage.test.ts (13 tests) 41286ms
+   ✓ deferred store persistence owns its scheduling lineage > ignores A's migration callback on clean B before any state or persistence access  3725ms
+   ✓ deferred store persistence owns its scheduling lineage > ignores A's retry callback on clean B before any state or persistence access  3230ms
+   ✓ deferred store persistence owns its scheduling lineage > ignores A's health callback on clean B before any state or persistence access  3232ms
+   ✓ deferred store persistence owns its scheduling lineage > A's migration callback cannot save dirty B or steal B's newer timer  3201ms
+   ✓ deferred store persistence owns its scheduling lineage > A's retry callback cannot save dirty B or steal B's newer timer  3514ms
+   ✓ deferred store persistence owns its scheduling lineage > A's health callback cannot save dirty B or steal B's newer timer  3304ms
+   ✓ deferred store persistence owns its scheduling lineage > a superseded same-lineage migration timer cannot consume the newer edit timer  2590ms
+   ✓ deferred store persistence owns its scheduling lineage > the current migration callback persists migration and catches up concurrent edits  3353ms
+   ✓ deferred store persistence owns its scheduling lineage > the current retry callback persists migration and catches up concurrent edits  3490ms
+   ✓ deferred store persistence owns its scheduling lineage > the current health callback persists migration and catches up concurrent edits  3489ms
+   ✓ deferred store persistence owns its scheduling lineage > a pending subscriber's replacement keeps its own timer registration  2008ms
+   ✓ deferred store persistence owns its scheduling lineage > an error subscriber's replacement does not acquire the old failed save's retry  2713ms
+   ✓ deferred store persistence owns its scheduling lineage > an in-flight A health response cannot clear B's retry or persist B  3435ms
+ ✓ test/interiorLoadConsistency.test.ts (30 tests) 16979ms
+   ✓ interior authoring/load fixed point > preserves exact IDs and complete user-source group records  304ms
+   ✓ interior authoring/load fixed point > constructs an upper cabinet retaining floor 72 before any load repair  633ms
+   ✓ interior authoring/load fixed point > constructs an upper cabinet retaining floor 102 before any load repair  610ms
+   ✓ interior authoring/load fixed point > repairs the complete untouched legacy kit before it can regain writer precedence  495ms
+   ✓ interior authoring/load fixed point > keeps graphic title and authored nondefaults identity-significant  1043ms
+   ✓ interior authoring/load fixed point > keeps both title and authored nondefaults identity-significant  1026ms
+   ✓ real editor load/save migration lifecycle > room pipeline -> save -> fresh store has equal existing canonical identity and stays clean  3810ms
+   ✓ real editor load/save migration lifecycle > load marks migration pending after active load, retains dirty on failure, and catches up concurrent edits  2273ms
+   ✓ real editor load/save migration lifecycle > reconnect marks migration pending after active load, retains dirty on failure, and catches up concurrent edits  2262ms
+   ✓ real editor load/save migration lifecycle > reload marks migration pending after active load, retains dirty on failure, and catches up concurrent edits  2413ms
+ ✓ test/storePersistenceProof.test.ts (18 tests) 16343ms
+   ✓ accepted revision persistence proof > verifies the accepted content through actual save/read transport and reuses its clean-flush receipt  1328ms
+   ✓ accepted revision persistence proof > compares normalized values rather than JSONB object-key order  805ms
+   ✓ accepted revision persistence proof > uses the ordinary normalized remote load and map-overlay contract  942ms
+   ✓ accepted revision persistence proof > does not verify a matching projects row when the ordinary map read fails  666ms
+   ✓ accepted revision persistence proof > binds the receipt to the accepted merged project, not the unmerged live store  1373ms
+   ✓ accepted revision persistence proof > keeps open event drafts local and out of accepted content identity  3064ms
+   ✓ accepted revision persistence proof > rejects a copied token without issuing a read  582ms
+   ✓ accepted revision persistence proof > does not verify a failed read  593ms
+   ✓ accepted revision persistence proof > does not verify a missing read  597ms
+   ✓ accepted revision persistence proof > does not verify a disabled read  574ms
+   ✓ accepted revision persistence proof > does not verify a cancelled read  531ms
+   ✓ accepted revision persistence proof > rejects wrong target even when current_sha256 is unchanged  695ms
+   ✓ accepted revision persistence proof > rejects wrong content even when current_sha256 is unchanged  851ms
+   ✓ accepted revision persistence proof > keeps a failed proof retryable for the same accepted revision  772ms
+   ✓ accepted revision persistence proof > preserves newer local edits during the read and does not attach old proof to them  762ms
+   ✓ accepted revision persistence proof > pins the original target across a configuration change during read  807ms
+   ✓ accepted revision persistence proof > does not verify when cancelled while the read is in flight  677ms
+   ✓ accepted revision persistence proof > does not verify when disabled while the read is in flight  722ms
+ ✓ test/storePersistenceLineage.test.ts (8 tests) 59552ms
+   ✓ accepted receipt content lineage > does not resurrect saved authority after reload during PATCH  11085ms
+   ✓ accepted receipt content lineage > does not resurrect saved authority after load during PATCH  9416ms
+   ✓ accepted receipt content lineage > does not resurrect saved authority after reconnect during PATCH  9122ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on reload even for identical content  7026ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on load even for identical content  6398ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on reconnect even for identical content  6309ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on adopt even for identical content  5574ms
+   ✓ accepted receipt content lineage > invalidates an already published receipt on fallback even for identical content  4619ms
+ ✓ test/storeEventDraftPreserve.test.ts (2 tests) 2901ms
+   ✓ store preserves open event drafts across remote autosave > autosave submits canonical linked profiles and preserves the staged name for Apply  1797ms
+   ✓ store preserves open event drafts across remote autosave > keeps a new event draft after map-patch save returns a draft-stripped project  1103ms
+ ✓ test/storeFlushShaEvidence.test.ts (2 tests) 1730ms
+   ✓ Project store flush sha256 evidence > 전체 저장 경로: saveProjectToSupabase 의 sha256 이 flush 결과(saved.sha256)로 흘러든다  1390ms
+   ✓ Project store flush sha256 evidence > 변경 없음 fast path 는 saved(sha256 없음) — sha256 은 선택 필드 계약 그대로  338ms
+ ✓ test/storeUpdateMap.test.ts (4 tests) 789ms
+ ✓ test/interiorRoomPipeline.test.ts (29 tests) 627ms
+ ✓ test/interiorTransparentPropLayerRepair.test.ts (1 test) 100ms
+ ✓ test/interiorRoomPipelineParity.test.ts (8 tests) 52ms
+ ✓ test/interiorRoomVocab.test.ts (7 tests) 26ms
+ ✓ test/storeLifecycleReentrancy.test.ts (6 tests) 14406ms
+   ✓ store lifecycle callback ownership > still marks and persists a faceset repair when its target stays current  3085ms
+   ✓ store lifecycle callback ownership > a detached faceset repair cannot dirty or save the current switch target  2649ms
+   ✓ store lifecycle callback ownership > a detached faceset repair cannot dirty or save the current edit target  2652ms
+   ✓ store lifecycle callback ownership > a saving subscriber's replacement is not authorized by the old flush (own flush: false)  2018ms
+   ✓ store lifecycle callback ownership > a saving subscriber's replacement is not authorized by the old flush (own flush: true)  1914ms
+   ✓ store lifecycle callback ownership > keeps same-lineage edits from a saving subscriber in the submitted snapshot  2086ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/storePersistence.test.ts > Project store remote persistence > does not write to Supabase before the canonical project has loaded
+AssertionError: expected "spy" to not be called at all, but actually been called 1 times[90m
+
+Received:
+
+[1m  1st spy call:
+
+[22m    Array [
+      "/__oprn/edit-activity",
+      Object {
+        "body": "{"entries":[{"seq":0,"at":"2026-09-06T23:57:56.428Z","scope":"project","label":null,"origin":"human","generation":1,"reason":"사람이 편집"}]}",
+        "headers": Object {
+          "Content-Type": "application/json",
+        },
+        "method": "POST",
+      },
+    ]
+[39m[90m
+
+Number of calls: [1m1[22m
+[39m
+ ❯ test/storePersistence.test.ts:35:26
+     33|
+     34|     expect(saveResult).toEqual({ kind: "not-loaded" });
+     35|     expect(fetchSpy).not.toHaveBeenCalled();
+       |                          ^
+     36|   });
+     37|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  test/storePersistence.test.ts > Project store remote persistence > does not auto-save local dev showcase projects to Supabase
+TypeError: Cannot read properties of undefined (reading 'ok')
+ ❯ loadProjectSnapshotFromSupabase src/project/supabaseProjectSync.ts:233:17
+    231|     signal: options.signal,
+    232|   });
+    233|   if (!response.ok) {
+       |                 ^
+    234|     throw new SupabaseProjectSyncError(await response.text(), response…
+    235|   }
+ ❯ loadProjectFromSupabase src/project/supabaseProjectSync.ts:154:20
+ ❯ ProjectStore.load src/project/store.ts:283:27
+ ❯ test/storePersistence.test.ts:55:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  test/storePersistence.test.ts > Project store remote persistence > always creates a new fresh project instead of reloading local dev overrides
+TypeError: Cannot read properties of undefined (reading 'ok')
+ ❯ loadProjectSnapshotFromSupabase src/project/supabaseProjectSync.ts:233:17
+    231|     signal: options.signal,
+    232|   });
+    233|   if (!response.ok) {
+       |                 ^
+    234|     throw new SupabaseProjectSyncError(await response.text(), response…
+    235|   }
+ ❯ loadProjectFromSupabase src/project/supabaseProjectSync.ts:154:20
+ ❯ ProjectStore.load src/project/store.ts:283:27
+ ❯ test/storePersistence.test.ts:91:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  test/storePersistence.test.ts > Project store remote persistence > saves and reloads local edits for dev showcase projects without Supabase
+TypeError: Cannot read properties of undefined (reading 'ok')
+ ❯ loadProjectSnapshotFromSupabase src/project/supabaseProjectSync.ts:233:17
+    231|     signal: options.signal,
+    232|   });
+    233|   if (!response.ok) {
+       |                 ^
+    234|     throw new SupabaseProjectSyncError(await response.text(), response…
+    235|   }
+ ❯ loadProjectFromSupabase src/project/supabaseProjectSync.ts:154:20
+ ❯ ProjectStore.load src/project/store.ts:283:27
+ ❯ test/storePersistence.test.ts:119:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  test/storePersistence.test.ts > Project store remote persistence > reports why DB persistence is unavailable for local dev showcase projects
+SupabaseProjectSyncError: {
+  "message":"Invalid authentication credentials"
+}
+ ❯ loadProjectSnapshotFromSupabase src/project/supabaseProjectSync.ts:234:11
+    232|   });
+    233|   if (!response.ok) {
+    234|     throw new SupabaseProjectSyncError(await response.text(), response…
+       |           ^
+    235|   }
+    236|   const rows = await parseProjectRows(response);
+ ❯ loadProjectFromSupabase src/project/supabaseProjectSync.ts:154:20
+ ❯ ProjectStore.load src/project/store.ts:283:27
+ ❯ test/storePersistence.test.ts:151:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  1 failed | 13 passed (14)
+      Tests  5 failed | 141 passed (146)
+   Start at  08:57:55
+   Duration  96.18s (transform 8.90s, setup 0ms, collect 15.27s, tests 169.49s, environment 4ms, prepare 970ms)

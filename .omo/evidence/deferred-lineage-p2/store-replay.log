@@ -1,0 +1,10 @@
+{
+  "migrationScheduled": true,
+  "cleanReplacementPreserved": true,
+  "obsoleteCallbackWrites": 0,
+  "newerTimerOwnershipPreserved": true,
+  "explicitReplacementWrites": [
+    "B's explicit edit"
+  ],
+  "finalDirty": false
+}

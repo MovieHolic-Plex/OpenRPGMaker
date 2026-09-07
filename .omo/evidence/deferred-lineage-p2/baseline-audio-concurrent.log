@@ -1,0 +1,64 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/audioDescriptionConcurrentPersistence.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /tmp/st_01a07921-base
+
+ ❯ test/audioDescriptionConcurrentPersistence.test.ts (22 tests | 3 failed) 64695ms
+   × audio description concurrent persistence > keeps replacement project descriptions 'missing' while an old save completes 2983ms
+     → expected [ 'PROJECT_A' ] to deeply equal [ 'PROJECT_A', 'PROJECT_B' ]
+   × audio description concurrent persistence > keeps replacement project descriptions 'cleared' while an old save completes 2365ms
+     → expected [ 'PROJECT_A' ] to deeply equal [ 'PROJECT_A', 'PROJECT_B' ]
+   × audio description concurrent persistence > keeps replacement project descriptions 'authored' while an old save completes 2107ms
+     → expected [ 'PROJECT_A' ] to deeply equal [ 'PROJECT_A', 'PROJECT_B' ]
+   ✓ audio description concurrent persistence > cancels transport waits when already aborted is false 123ms
+   ✓ audio description concurrent persistence > cancels transport waits when already aborted is true 116ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'unchanged local key'  2918ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'remote clear'  3042ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'remote reset'  3019ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'remote addition to an absent field'  3210ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'different keys in one kind'  2831ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'same raw ID in different kinds'  2868ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'same-key local edit wins'  2838ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'same-key local clear wins'  3040ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'same-key local reset wins'  3165ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'own raw IDs and exact stored whitespa…'  2831ms
+   ✓ audio description concurrent persistence > preserves 'remote edit' through consecutive map saves without recording a user edit  4144ms
+   ✓ audio description concurrent persistence > preserves 'remote clear' through consecutive map saves without recording a user edit  4133ms
+   ✓ audio description concurrent persistence > preserves 'remote reset' through consecutive map saves without recording a user edit  4229ms
+   ✓ audio description concurrent persistence > keeps fresh map edits and a fresh description 'set' when a response arrives late  4512ms
+   ✓ audio description concurrent persistence > keeps fresh map edits and a fresh description 'clear' when a response arrives late  4080ms
+   ✓ audio description concurrent persistence > keeps fresh map edits and a fresh description 'reset' when a response arrives late  4025ms
+   ✓ audio description concurrent persistence > retains the baseline and fresh local input when a deferred write fails  2114ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/audioDescriptionConcurrentPersistence.test.ts > audio description concurrent persistence > keeps replacement project descriptions 'missing' while an old save completes
+ FAIL  test/audioDescriptionConcurrentPersistence.test.ts > audio description concurrent persistence > keeps replacement project descriptions 'cleared' while an old save completes
+ FAIL  test/audioDescriptionConcurrentPersistence.test.ts > audio description concurrent persistence > keeps replacement project descriptions 'authored' while an old save completes
+AssertionError: expected [ 'PROJECT_A' ] to deeply equal [ 'PROJECT_A', 'PROJECT_B' ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[2m    "PROJECT_A",[22m
+[32m-   "PROJECT_B",[39m
+[2m  ][22m
+
+ ❯ test/audioDescriptionConcurrentPersistence.test.ts:73:67
+     71|     expect(store.getCurrent().meta.title).toBe("PROJECT_B");
+     72|     expect(store.getCurrent().audioDescriptions).toEqual(descriptions);
+     73|     expect(transport.accepted.map(project => project.meta.title)).toEq…
+       |                                                                   ^
+     74|     expect(transport.accepted[1]?.audioDescriptions).toEqual(descripti…
+     75|     expect((await loadProjectFromSupabase(CONFIG))?.audioDescriptions)…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 19 passed (22)
+   Start at  09:01:42
+   Duration  68.98s (transform 3.16s, setup 0ms, collect 3.86s, tests 64.69s, environment 0ms, prepare 66ms)
