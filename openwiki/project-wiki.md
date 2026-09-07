@@ -24,7 +24,12 @@ prove an explicit user request.
   documents and supersede them using new IDs.
 - `src/ai/projectWikiClient.ts` uses the existing OAuth-aware LLM configuration.
   Extraction errors and cancellation propagate; an empty patch means the model
-  found no new facts, not that a failed call succeeded.
+  found no new facts, not that a failed call succeeded. The patch boundary accepts
+  bare JSON or one JSON/unlabelled code fence with optional surrounding prose.
+  Surrounding braces, brackets or backticks reject the envelope rather than
+  selecting among competing objects, arrays or fences. The entire payload still
+  passes JSON parsing and the existing strict schema/provenance validation;
+  missing `upserts`, malformed records and unknown fields are not empty results.
 - `src/ai/projectWikiContext.ts` selects at most eight relevant documents within
   a 6,000-character context budget. Map-scoped explicit combat decisions take
   precedence over global explicit decisions; inferred defaults stay in context.
@@ -44,6 +49,22 @@ Chat, region and cluster sessions inject its preparation callback. A changed
 project identity, locked document, concurrent manual edit, malformed extraction,
 or unsuccessful save stops authoring with a visible error. Temporary projects
 may save locally, but the status does not claim a remote save.
+
+Extraction parsing runs in the browser, not the provider worker:
+`AssistantSession.sendUserMessage` -> injected coordinator `prepare` ->
+`extractProjectWiki` -> `parseProjectWikiPatch`. An HTTP 200/stop response can
+therefore fail preparation before intent selection. A valid `{"upserts":[]}`
+preserves the whole project and completes preparation; existing wiki records
+still take the coordinator's normal awaited flush path.
+
+Integrate parser fixes into the editor source/bundle through normal deployment.
+A worker restart alone cannot update a loaded browser module. Existing sessions
+retain their preparation callback from construction; do not assume a build or
+HMR replaces that callback. A normal editor reload/recreated session loads the
+new code, but conversation restoration restores audit/transcript context, not
+private acceptance ledgers or request baselines. It is not a continuity proof for
+an open acceptance run. Preserve such a run until its owner authorizes a lifecycle
+transition; do not hotpatch callbacks or manually reconstruct private ledgers.
 
 For projects without wiki records, available same-project local conversations
 are recovered chronologically in batches of 16 sources before the current
@@ -80,7 +101,13 @@ Domain tests: `projectWikiDomain.test.ts`, `projectWikiPatch.test.ts`,
 `projectWikiClient.test.ts`, and `projectWikiContext.test.ts`.
 Session/application tests: `projectWikiSession.test.ts` and
 `projectWikiApplication.test.ts`. Manual edit races:
-`projectWikiManualEdit.test.ts`.
+`projectWikiManualEdit.test.ts`. `projectWikiPreparation.test.ts` exercises the
+real coordinator/extraction/parser seam and the session's pre-intent barrier,
+including the captured Round11 wire100 response in
+`test/fixtures/project-wiki/wire-response-100.json`. Assertions cover parsed
+values, complete-project preservation, valid record application and atomic
+rejection, not the explanatory prose or the user's continuation wording. These
+are offline tests, not renewed gameplay or acceptance evidence.
 
 Live evidence uses a separate Supabase QA project and the user's existing OAuth
 provider. A successful model reply is not evidence of wiki persistence; require
