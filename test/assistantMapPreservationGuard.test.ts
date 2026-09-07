@@ -13,13 +13,14 @@ import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
 import type { ToolResult } from "@/editor/tools/types";
 import { fixedDeclarer } from "./intentFixture";
+import { approvedReviewResponse } from "./independentReviewFixture";
+import { defaultAiConfig, type AiConfig, type ChatRequest } from "@/ai/llmClient";
 
 type ChatResult = import("@/ai/llmClient").ChatResult;
 
 const CONFIG: import("@/ai/llmClient").AiConfig = {
-  authMode: "apiKey",
-  baseUrl: "x",
-  model: "stub-model",
+  ...defaultAiConfig(),
+  agentMode: "chat",
   apiKey: "sk",
   maxToolCalls: 12,
   maxTokens: 8192,
@@ -28,9 +29,11 @@ const BEDROOM_ID = "map_bedroom";
 
 function scriptedChat(steps: readonly ChatResult[]) {
   let index = 0;
-  return async (): Promise<ChatResult> => {
+  return async (_config: AiConfig, request: ChatRequest): Promise<ChatResult> => {
+    const review = approvedReviewResponse(request);
+    if (review) return review;
     if (index >= steps.length) throw new Error("scripted chat exhausted");
-    return steps[index++]!;
+    return steps[index++];
   };
 }
 
@@ -72,6 +75,7 @@ async function runSession(project: Project, steps: readonly ChatResult[], text =
     config: CONFIG,
     chat: scriptedChat(steps),
     contextOptions: { currentMapId: BEDROOM_ID },
+    declareIntent: fixedDeclarer({ mode: "modify", targetMapId: BEDROOM_ID }),
   });
   const events: { name: string; ok: boolean; summary: string }[] = [];
   await session.sendUserMessage(text, (event) => {
@@ -109,11 +113,18 @@ describe("completed houses cannot be overwritten through session permissions", (
         steps.push(toolCallMsg("set_build_spec", { mapId, assets: [{ id: "house", kind: "house", x: 1, y: 1, w: 8, h: 8 }] }, "plan"));
         steps.push(toolCallMsg("author_house", houseArgs, "build"));
       }
-      if (scenario === "same-session") steps.push(finalMsg("Done"));
+      if (scenario === "same-session") steps.push(
+        toolCallMsg("repair_acceptance", { itemId: "acceptance-contract", criteria: [
+          { kind: "targetChange", target: { mapId }, region: { x: 2, y: 2, w: 6, h: 6 } },
+        ] }, "acceptance"),
+        toolCallMsg("show_map_region", { mapId, x: 0, y: 0, w: 20, h: 15 }, "image"),
+        finalMsg("Done"),
+      );
       if (asset) steps.push(toolCallMsg("set_build_spec", { mapId, assets: [{ id: "permit", x: 1, y: 1, w: 8, h: 8, ...asset }] }, "permit"));
       steps.push(toolCallMsg("tile_erase", { mapId, rect: { x: 2, y: 2, w: 6, h: 6 } }, "erase"), finalMsg("Done"));
       const session = new AssistantSession(ctx.project, {
         config: CONFIG, chat: scriptedChat(steps), contextOptions: { currentMapId: mapId },
+        renderImages: async () => [{ label: "House map", dataUrl: "data:image/png;base64,AA==" }],
         declareIntent: fixedDeclarer({ mode: "create", targetMapId: mapId }),
       });
       const results: { name: string; result: ToolResult }[] = [];
@@ -123,8 +134,13 @@ describe("completed houses cannot be overwritten through session permissions", (
         if (event.name === "author_house" && event.result.ok) builtMap = structuredClone(session.getProposedProject().maps[mapId]);
       };
       const request = `author_house tile_erase 집을 짓고 정리해줘\n\n[컨텍스트] 현재 맵: 집 (${mapId}) · 사용자 선택 영역: (1,1) 8×8`;
-      await session.sendUserMessage(request, collect);
-      if (scenario === "same-session") await session.sendUserMessage(request, collect);
+      const first = await session.sendUserMessage(request, collect);
+      if (scenario === "same-session") {
+        expect(first.stoppedReason, first.error).toBe("final");
+        expect(first.review?.status).toBe("approved");
+        expect(session.isDraftReviewApproved()).toBe(true);
+        await session.sendUserMessage(request, collect);
+      }
       expect(builtMap).toBeDefined();
       if (scenario !== "accepted") expect(results.find((entry) => entry.name === "author_house")?.result.ok, JSON.stringify(results)).toBe(true);
       if (asset) expect(results.filter((entry) => entry.name === "set_build_spec").at(-1)?.result.ok).toBe(true);
