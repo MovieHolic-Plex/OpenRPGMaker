@@ -216,6 +216,85 @@ describe("모달 렌더", () => {
     expect(opened).toHaveLength(0);
   });
 
+  it.each([new Error("ARCHIVE_READ_FAILURE"), null])("keeps a failed archive open recoverable after listing: %s", async (failure) => {
+    const target = record("read-failure", 1_000, "mine", "READ_FAILURE_TARGET");
+    await saveConversation(target);
+    const onOpen = vi.fn();
+    const backdrop = openModal({ currentConversationId: "active-conversation", onOpen });
+    await whenAiConversationHistoryModalSettled();
+    const open = findByTestId(backdrop, "ai-history-open")!;
+    expect(open).not.toBeNull();
+    // Listing succeeds; only the subsequent full-record read fails once.
+    vi.spyOn(conversations, "loadConversationForScope").mockRejectedValueOnce(failure);
+
+    click(backdrop, "ai-history-open");
+    await whenAiConversationHistoryModalSettled();
+
+    expect(onOpen).not.toHaveBeenCalled();
+    expect(backdrop.parentElement).not.toBeNull();
+    const status = findByTestId(backdrop, "ai-history-recover-status")!;
+    expect(status.dataset.state).toBe("error");
+    expect(status.hidden).toBe(false);
+    expect(status.textContent?.trim().length).toBeGreaterThan(0);
+    if (failure instanceof Error) expect(status.textContent).toContain(failure.message);
+    expect(findByTestId(backdrop, "ai-history-open")).toBe(open);
+    expect(findByTestId(backdrop, "ai-history-recover")!.disabled).toBe(false);
+
+    // The same control retries the real store read without dismissing the error first.
+    click(backdrop, "ai-history-open");
+    await whenAiConversationHistoryModalSettled();
+    expect(onOpen).toHaveBeenCalledTimes(1);
+    expect(onOpen).toHaveBeenCalledWith(expect.objectContaining({ id: target.id, entries: target.entries }));
+    expect(backdrop.parentElement).toBeNull();
+  });
+
+  it("reports a record removed after listing without adopting or silently losing it", async () => {
+    await saveConversation(record("removed-after-list", 1_000, "mine"));
+    const onOpen = vi.fn();
+    const backdrop = openModal({ currentConversationId: "active-conversation", onOpen });
+    await whenAiConversationHistoryModalSettled();
+    await conversations.deleteConversationForScope("removed-after-list", "mine");
+
+    click(backdrop, "ai-history-open");
+    await whenAiConversationHistoryModalSettled();
+
+    expect(onOpen).not.toHaveBeenCalled();
+    expect(backdrop.parentElement).not.toBeNull();
+    const status = findByTestId(backdrop, "ai-history-recover-status")!;
+    expect(status.dataset.state).toBe("error");
+    expect(status.hidden).toBe(false);
+    expect(status.textContent?.trim().length).toBeGreaterThan(0);
+    expect(findByTestId(backdrop, "ai-history-open")).toBeNull();
+    expect(findByTestId(backdrop, "ai-history-empty")).not.toBeNull();
+    expect(findByTestId(backdrop, "ai-history-recover")!.disabled).toBe(false);
+  });
+
+  it.each(["close", "replace"] as const)("suppresses a late archive read failure after modal %s", async (boundary) => {
+    await saveConversation(record("late-failure", 1_000, "mine"));
+    const onOpen = vi.fn();
+    const backdrop = openModal({ onOpen });
+    await whenAiConversationHistoryModalSettled();
+    let rejectLoad!: (reason: Error) => void;
+    const load = new Promise<ConversationRecord | null>((_resolve, reject) => { rejectLoad = reject; });
+    const read = vi.spyOn(conversations, "loadConversationForScope").mockReturnValueOnce(load);
+    click(backdrop, "ai-history-open");
+    expect(read).toHaveBeenCalledWith("late-failure", "mine");
+    const replacement = boundary === "replace" ? openModal({ scopeKey: "other", onOpen }) : null;
+    if (boundary === "close") closeAiConversationHistoryModal();
+    rejectLoad(new Error("STALE_ARCHIVE_READ_FAILURE"));
+    await whenAiConversationHistoryModalSettled();
+
+    expect(onOpen).not.toHaveBeenCalled();
+    expect(backdrop.parentElement).toBeNull();
+    for (const root of replacement ? [backdrop, replacement] : [backdrop]) {
+      const status = findByTestId(root, "ai-history-recover-status")!;
+      expect(status.dataset.state).toBe("idle");
+      expect(status.hidden).toBe(true);
+      expect(status.textContent).not.toContain("STALE_ARCHIVE_READ_FAILURE");
+    }
+    if (replacement) expect(replacement.parentElement).not.toBeNull();
+  });
+
   it("Given 다른 프로젝트의 대화 When 모든 필터 Then 나열되지 않는다", async () => {
     await saveConversation(record("foreign", 1_000, "other"));
     const backdrop = openModal();
@@ -294,6 +373,33 @@ describe("모달 렌더", () => {
     await whenAiConversationHistoryModalSettled();
     expect(findByTestId(backdrop, "ai-history-list")!.textContent).toContain("허물어진 다리");
     expect(findByTestId(backdrop, "ai-history-list")!.textContent).not.toContain("옛 기록");
+  });
+
+  it("selects an older deleted map from the complete 201-record archive before paging", async () => {
+    const target = record("old-deleted-map", 1, "mine", "OLDER_DELETED_MAP", "map_gone");
+    expect((await saveConversation(target)).ok).toBe(true);
+    for (let index = 0; index < 200; index += 1) {
+      expect((await saveConversation(record(`new-a-${index}`, 1_000 + index, "mine"))).ok).toBe(true);
+    }
+    expect((await conversations.queryConversationArchive({ projectContextKey: "mine" })).total).toBe(201);
+    const onOpen = vi.fn();
+    const backdrop = openModal({ onOpen });
+    await whenAiConversationHistoryModalSettled();
+    expect(findByTestId(backdrop, "ai-history-filter-current")!.getAttribute("aria-pressed")).toBe("true");
+    expect(findByTestId(backdrop, "ai-history-list")!.querySelectorAll("[data-testid=ai-history-row]")).toHaveLength(
+      AI_HISTORY_ARCHIVE_PAGE_SIZE,
+    );
+    const gone = backdrop.querySelector('[data-map-id="map_gone"]');
+    expect(gone).not.toBeNull();
+    (gone as unknown as HTMLElement).click();
+    await whenAiConversationHistoryModalSettled();
+    expect(findByTestId(backdrop, "ai-history-list")!.querySelectorAll("[data-testid=ai-history-row]")).toHaveLength(1);
+    expect(findByTestId(backdrop, "ai-history-list")!.textContent).toContain("OLDER_DELETED_MAP");
+    expect(onOpen).not.toHaveBeenCalled();
+    click(backdrop, "ai-history-open");
+    await whenAiConversationHistoryModalSettled();
+    expect(onOpen).toHaveBeenCalledTimes(1);
+    expect(onOpen).toHaveBeenCalledWith(expect.objectContaining({ id: target.id, entries: target.entries }));
   });
 
   it("Given 페이지 크기보다 많은 기록 When 더 보기 Then 다음 페이지가 붙는다", async () => {

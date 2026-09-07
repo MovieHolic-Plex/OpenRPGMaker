@@ -334,7 +334,14 @@ export function openAiConversationHistoryModal(options: {
       on: {
         click: () => void modalPendingWork.track((async () => {
           if (isCurrent) return;
-          const record = await loadConversationForScope(row.id, capturedScope);
+          let record: ConversationRecord | null;
+          try {
+            record = await loadConversationForScope(row.id, capturedScope);
+          } catch (error) {
+            if (!isCurrentModal()) return;
+            setRecover("error", errorMessage(error, "대화를 읽지 못했습니다. 다시 열어 주세요."));
+            return;
+          }
           if (!isCurrentModal()) return;
           if (!record) {
             recordAiUiEvent({
@@ -343,6 +350,7 @@ export function openAiConversationHistoryModal(options: {
               testid: "ai-history-open",
               detail: { conversationId: row.id, kind: "missing" },
             });
+            setRecover("error", "이 대화를 찾을 수 없습니다. 목록을 새로 확인하거나 서버 기록을 가져와 주세요.");
             await fetchPage(false);
             return;
           }
@@ -440,7 +448,8 @@ export function openAiConversationHistoryModal(options: {
     try {
       const catalog = await queryConversationArchive({
         projectContextKey: capturedScope,
-        limit: 200,
+        // Map choices cover the whole scoped archive, not just its newest rows.
+        limit: Number.MAX_SAFE_INTEGER,
       });
       if (!isCurrentModal()) return;
       const ids = new Set<string>();

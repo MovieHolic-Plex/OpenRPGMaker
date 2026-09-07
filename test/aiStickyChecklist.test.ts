@@ -482,6 +482,8 @@ it("clamps a primary captured drag and resets position, disclosure and hiding on
 });
 
 it.each(["live", "terminal"] as const)("manual saved-history adoption retires outgoing %s acceptance through real controls", async publication => {
+  // clearConversations tombstones prior records; each case owns its saved ID.
+  const savedConversationId = `saved-history-target-${publication}`;
   const held = signal(); const release = signal(); const outgoingTerminal = signal(); const restoredTerminal = signal();
   const outgoing = { ...snapshot("verified"), id: "OUTGOING_OWNER", goal: "OUTGOING_OWNER" };
   let publish: ((event: SessionEvent) => void) | undefined;
@@ -507,7 +509,7 @@ it.each(["live", "terminal"] as const)("manual saved-history adoption retires ou
     return { assistantText: "RESTORED_RESPONSE", proposedCalls: [], stoppedReason: "final" };
   });
   document.body.append(renderAiChatPanel()); await bounded(whenAiChatPanelSettled());
-  expect((await saveConversation({ id: "saved-history-target", title: "HISTORY_TARGET", model: "fixture", savedAt: 1,
+  expect((await saveConversation({ id: savedConversationId, title: "HISTORY_TARGET", model: "fixture", savedAt: 1,
     projectContextKey: conversationScopeKey(store.getProjectIdentity(), store.getCurrent()),
     entries: [{ kind: "user", text: "SAVED_REQUEST" }, { kind: "assistant", text: "SAVED_RESPONSE" }],
   })).ok).toBe(true);
@@ -517,6 +519,8 @@ it.each(["live", "terminal"] as const)("manual saved-history adoption retires ou
     node<HTMLTextAreaElement>("ai-input").value = "QUEUED_OUTGOING_REQUEST";
     node("ai-input").dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }));
     node("ai-open-conversations").click(); await bounded(whenAiConversationHistoryModalSettled());
+    // This saved fixture has no map attribution; explicitly browse the whole project.
+    node("ai-history-filter-all").click(); await bounded(whenAiConversationHistoryModalSettled());
     const search = node<HTMLInputElement>("ai-history-search"); search.value = "HISTORY_TARGET";
     search.dispatchEvent(new Event("input", { bubbles: true })); await bounded(whenAiConversationHistoryModalSettled());
     node("ai-history-open").click(); await bounded(whenAiConversationHistoryModalSettled());
@@ -536,7 +540,7 @@ it.each(["live", "terminal"] as const)("manual saved-history adoption retires ou
   expect(sent).toEqual(["OUTGOING_REQUEST", "RESTORED_REQUEST"]);
   expect(document.querySelector("[data-testid='ai-sticky-checklist']")).toBeNull();
   expect(node("ai-chat-log").textContent).not.toContain("OUTGOING_TERMINAL");
-  const restored = await loadConversation("saved-history-target");
+  const restored = await loadConversation(savedConversationId);
   expect(restored?.entries.some(entry => entry.kind === "assistant" && entry.text === "SAVED_RESPONSE")).toBe(true);
   expect(restored?.entries.some(entry => entry.kind === "assistant" && entry.text === "OUTGOING_TERMINAL")).toBe(false);
 });
