@@ -1053,8 +1053,14 @@ describe("레이어 검증(자문) + run-end 저장 증명 (todo 5)", () => {
     expect(result.stoppedReason).toBe("final");
     expect(flushSpy).toHaveBeenCalledTimes(1);
     expect(reloadSpy).not.toHaveBeenCalled();
-    expect(verifySpy).toHaveBeenCalledExactlyOnceWith(receipt, { signal: undefined });
+    const [verifiedReceipt, options] = verifySpy.mock.calls[0]!;
+    const validate = options?.validate;
+    if (!validate) throw new Error("Missing canonical validation callback");
+    expect(verifySpy).toHaveBeenCalledExactlyOnceWith(receipt, { signal: undefined, validate });
+    expect(verifiedReceipt).toBe(receipt);
+    expect(validate(structuredClone(store.getCurrent()))).toBeUndefined();
     expect(session.getRunEndProof()).toMatchObject({ status: "succeeded", verified: true, receipt });
+    expect(session.getRunEndProof()?.receipt).toBe(receipt);
     const audits = gateStatusTexts(session);
     expect(audits.filter((t) => t.split(" ")[0] === "agent_run_saved")).toHaveLength(1);
     // 드라이버 계속 턴은 플래너 왕복을 태우지 않는다 — 플래너는 사용자 턴에서 한 번만 돈다.

@@ -77,8 +77,28 @@ describe("functional acceptance on accepted canonical reload", () => {
     const f = await fixture();
     expect(f.session.getAcceptanceSnapshot()?.status).toBe("verified");
     store.update(project => { project.session.gold = 1; });
+    const verifySpy = vi.spyOn(store, "verifyPersistedRevision");
+    const reloadSpy = vi.spyOn(store, "reloadFromRemote");
+    const evaluationSpy = vi.spyOn(functionalEvaluation, "evaluateFunctionalCriterion");
     const proof = await f.session.proveAppliedRevision();
     expect(proof.verified).toBe(false);
+    expect(proof).toMatchObject({ status: "failed", reason: "failed" });
+    expect(f.read()).toBe(true);
+    expect(reloadSpy).not.toHaveBeenCalled();
+    const [receipt, options] = verifySpy.mock.calls[0]!;
+    const validate = options?.validate;
+    if (!validate) throw new Error("Missing canonical validation callback");
+    expect(verifySpy).toHaveBeenCalledExactlyOnceWith(receipt, { signal: undefined, validate });
+    expect(proof.receipt).toBe(receipt);
+    // The real store invokes the validator on the identity-matched canonical read.
+    const canonical = evaluationSpy.mock.calls[0]![1].project;
+    expect(canonical).not.toBe(store.getCurrent());
+    expect(canonical.session.gold).toBe(1);
+    expect(validate(f.project)).toBeUndefined();
+    const problem = validate(canonical);
+    expect(problem).toBeTypeOf("string");
+    expect(problem).not.toBe("");
+    expect(proof.proof).toEqual({ kind: "failed", receipt, message: problem });
     expect(f.session.getAuditEntries().some(entry => entry.kind === "status" && entry.text.startsWith("agent_run_saved "))).toBe(false);
   });
   it("cannot publish functional proof while a newer proposal remains unapplied", async () => {
