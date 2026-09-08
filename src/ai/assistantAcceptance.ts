@@ -43,6 +43,7 @@ export type AcceptanceTarget = { readonly mapId: string } | { readonly newMapNam
 type ScopedTarget = { readonly target: AcceptanceTarget; readonly region?: AcceptanceRegion };
 export type AcceptanceCriterion =
   | FunctionalCriterion
+  | { readonly kind: "gameTitle"; readonly title: string }
   | { readonly kind: "toolVerdict"; readonly tool: string; readonly args: Readonly<Record<string, unknown>>;
       readonly interactionTargets?: readonly SceneInteractionReceipt[] }
   | { readonly kind: "mapDimensions"; readonly target: AcceptanceTarget; readonly width: number; readonly height: number }
@@ -95,6 +96,7 @@ export const ACCEPTANCE_EXAMPLES: Readonly<Record<AcceptanceCriterion["kind"], A
     grants: Object.freeze([{ kind: "gold" as const, count: 20 }]), oneTime: true }) }),
   functionalUnresolved: Object.freeze({ kind: "functionalUnresolved", reason: "Identify missing request expectations" }),
   reachability: Object.freeze({ kind: "reachability", target: exampleTarget, from: examplePoint, to: Object.freeze([Object.freeze({ x: 1, y: 0 })]) }),
+  gameTitle: Object.freeze({ kind: "gameTitle", title: "작은 열쇠" }),
 });
 export interface AcceptanceParseResult {
   readonly criteria: readonly AcceptanceCriterion[] | null;
@@ -148,12 +150,16 @@ function criterion(value: unknown, index: number, issues: AcceptanceIssue[]): Ac
     eventCount: ["kind", "target", "region", "count"], targetChange: ["kind", "target", "region"],
     preserve: ["kind", "target", "region"], imageReviewed: ["kind", "target", "region"],
     reachability: ["kind", "target", "from", "to"], toolVerdict: ["kind", "tool", "args", "interactionTargets"],
-    actionCombat: ["kind", "target"],
+    actionCombat: ["kind", "target"], gameTitle: ["kind", "title"],
   };
   const allowed = typeof value.kind === "string" && Object.hasOwn(keys, value.kind) ? keys[value.kind] : undefined;
   if (!allowed) return invalid("kind", Object.keys(ACCEPTANCE_EXAMPLES).join(" | "));
   const extra = Object.keys(value).find(key => !allowed.includes(key));
   if (extra) return fail(extra, "unknown-field", `only ${allowed.join(", ")}`);
+  if (value.kind === "gameTitle") {
+    return text(value.title) ? { kind: "gameTitle", title: value.title }
+      : invalid("title", "nonempty literal displayed game title; exact Unicode string, not project metadata or a verdict");
+  }
   if (value.kind === "toolVerdict") {
     if (!text(value.tool) || !VERIFICATION_TOOL_NAMES.has(value.tool)) return invalid("tool", "registered verification tool");
     const args = verificationInput(value.tool, value.args);

@@ -1,4 +1,5 @@
 import { evaluateFunctionalCriterion } from "./functionalAcceptanceEvaluation";
+import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import type { NpcRewardRequirement } from "./intentDeclaration";
 import type { WorkItemOutcomeVerdict } from "./workItemOutcome";
 import { canMove, inBounds, isPassable } from "@/project/collision";
@@ -72,7 +73,7 @@ export function visualFingerprint(project: Project, map: GameMap): string {
 }
 export function criterionTargets(criterion: AcceptanceCriterion): readonly AcceptanceTarget[] {
   switch (criterion.kind) {
-    case "toolVerdict": case "npcReward": case "functionalUnresolved": return [];
+    case "gameTitle": case "toolVerdict": case "npcReward": case "functionalUnresolved": return [];
     case "shopPurchase": return [criterion.target];
     case "mapRoundTrip": return [criterion.target, criterion.destination];
     case "mapCount": return criterion.targets;
@@ -94,6 +95,14 @@ export function evaluateAcceptanceCriterion(criterion: AcceptanceCriterion, inpu
   const expected = JSON.stringify(criterion);
   switch (criterion.kind) {
     case "shopPurchase": case "mapRoundTrip": case "npcReward": case "functionalUnresolved": return evaluateFunctionalCriterion(criterion, input);
+    case "gameTitle": {
+      // Match titleScreen.renderTitleScreen/renderTitleNodes without importing DOM
+      // or asset rendering. Metadata is not a fallback; graphic-only text is hidden.
+      const settings = input.project.system.titleScreen ?? defaultTitleScreenSettings();
+      const hidden = settings.titleGraphic?.mode === "graphic" && Boolean(settings.titleGraphic.resourceId);
+      return { expected, observed: JSON.stringify({ title: hidden ? null : settings.title }),
+        passed: !hidden && settings.title === criterion.title };
+    }
     case "toolVerdict": {
       const passed = input.verification?.passedScope(criterion.tool, criterion.args, input.verificationCheckId) === true;
       return { expected, observed: passed ? "Current explicit scoped tool verdict" : "Current explicit scoped tool verdict required", passed };

@@ -515,6 +515,34 @@ before planning/tools; milestone rebases, repairs, duplicate IDs, replans and
 manual/synthetic continuations cannot move it. New requests may add promises
 against newer applied content without replacing earlier promises or baselines.
 
+Literal displayed-title acceptance (2026-09-08): `gameTitle` is the narrow named
+criterion for an exact requested title, not a generic JSON-path check:
+
+```json
+{"itemId":"req_title","criteria":[{"kind":"gameTitle","title":"작은 열쇠"}]}
+```
+
+Use this shape in `repair_acceptance` only for missing/malformed criteria, or put
+its criteria in normal planner/native `acceptance` or `requirements` declarations.
+Valid original declarations, owners, sources, request baselines and valid sibling
+promises remain immutable; this does not authorize restoring a private ledger from
+conversation history. `set_title_screen` is the existing authoring tool.
+The parser requires a nonblank string, preserves its exact Unicode/whitespace,
+and rejects unknown kinds and extra fields. The provider-safe schema exposes
+`title` and the canonical example; worker review/pass claims cannot verify it.
+Evaluation follows `titleScreen.renderTitleScreen/renderTitleNodes`: use
+`system.titleScreen.title`, or `defaultTitleScreenSettings().title` when the settings
+object is absent, **never `meta.title`**. Graphic-only mode with a resource ID has
+no literal text and fails, including an unresolved resource; graphic mode without
+an ID falls back to text, and text/both modes check the displayed title string.
+This is literal text proof, not logo OCR or visual layout QA. Evaluation imports
+no renderer/DOM code. Title criteria are project-bound: unapplied drafts cannot
+verify them, and the existing accepted-revision `validate` callback reruns them
+on identity-matched canonical reload. Wrong visible text fails even with correct
+metadata and a completed plan. Regression seams: `gameTitleAcceptance`,
+`gameTitlePersistenceProof`, and the unchanged strict schema-discriminator contract
+extended only with the new kind/field.
+
 Acceptance repair diagnostics (R7): provider schemas expose a union-free field
 superset plus canonical per-kind examples; Google-to-Antigravity normalization
 cannot erase those examples. `mapCount` requires explicit nonempty `targets`,

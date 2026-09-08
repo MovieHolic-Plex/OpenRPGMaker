@@ -141,6 +141,7 @@ const criterionCases: AcceptanceCriterion[] = [
     ]),
   ]),
   { kind: "mapCount", targets: [{ mapId: "map_start" }, { newMapName: "New room" }], count: 2 },
+  { kind: "gameTitle", title: "작은 열쇠" },
 ];
 
 function expectRepresentable(schema: SchemaNode | undefined, value: unknown): void {
@@ -197,11 +198,11 @@ describe("acceptance and requirement schema/runtime contract", () => {
     expect(item?.additionalProperties).toBe(false);
     expect(item?.properties?.kind).toEqual({ type: "string", enum: [
       "mapCount", "mapDimensions", "eventCount", "targetChange", "preserve", "imageReviewed", "actionCombat",
-      "toolVerdict", "shopPurchase", "mapRoundTrip", "npcReward", "functionalUnresolved", "reachability",
+      "toolVerdict", "shopPurchase", "mapRoundTrip", "npcReward", "functionalUnresolved", "reachability", "gameTitle",
     ] });
     expect(Object.keys(item?.properties ?? {}).sort()).toEqual([
       "args", "count", "destination", "expectations", "from", "height", "interactionTargets", "item", "kind", "outgoing", "reason", "region", "requirement",
-      "returning", "seller", "start", "target", "targets", "to", "tool", "unitPrice", "width",
+      "returning", "seller", "start", "target", "targets", "title", "to", "tool", "unitPrice", "width",
     ]);
     expect(item?.properties?.args).toMatchObject({ type: "object", additionalProperties: true });
     expect(item?.properties?.target).toMatchObject({ type: "object", additionalProperties: false,

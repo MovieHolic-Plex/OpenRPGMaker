@@ -3483,7 +3483,7 @@ export class AssistantSession {
   ): Promise<RunEndProofState> {
     const outcomeOwner = this.runResult;
     const acceptance = this.acceptance;
-    const functionalDraftPending = (): boolean => Boolean(acceptance?.getFunctionalCriteria().length && this.turnProposals.size > 0
+    const functionalDraftPending = (): boolean => Boolean(acceptance?.hasReloadCriteria() && this.turnProposals.size > 0
       && acceptanceFingerprint(this.ctx.project) !== acceptanceFingerprint(store.getCurrent()));
     const previous = this.getRunEndProof();
     if (!signal?.aborted && previous?.verified && !this.acceptanceOpen() && !functionalDraftPending()

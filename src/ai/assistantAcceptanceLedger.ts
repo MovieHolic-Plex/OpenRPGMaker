@@ -21,6 +21,9 @@ export interface AcceptanceToolResult {
   readonly issues: readonly AcceptanceIssue[];
 }
 
+/** Content checks replayed by the existing accepted-revision validation callback. */
+const isReloadCriterionKind = (kind: string): boolean => kind === "gameTitle" || isFunctionalCriterionKind(kind);
+
 /** Session-owned ledger. Plans never own or replace its promises/baselines. */
 export class AssistantAcceptanceLedger {
   private readonly baseline: Project;
@@ -227,11 +230,16 @@ export class AssistantAcceptanceLedger {
       .flatMap(promise => promise.criteria ?? []).filter((criterion): criterion is FunctionalCriterion => isFunctionalCriterionKind(criterion.kind)));
   }
 
-  /** Called on the canonical reloaded snapshot inside accepted-revision proof. */
+  hasReloadCriteria(): boolean {
+    return [...this.promises.values()].some(promise => promise.required !== false && !promise.withdrawal
+      && promise.criteria?.some(criterion => isReloadCriterionKind(criterion.kind)));
+  }
+
+  /** Called on the canonical reloaded snapshot inside accepted-revision proof, including literal titles. */
   functionalProblems(project: Project): readonly string[] {
     this.bind(project);
     return [...this.promises.values()].filter(promise => promise.required !== false && !promise.withdrawal)
-      .flatMap(promise => (promise.criteria ?? []).filter(criterion => isFunctionalCriterionKind(criterion.kind)).map(criterion =>
+      .flatMap(promise => (promise.criteria ?? []).filter(criterion => isReloadCriterionKind(criterion.kind)).map(criterion =>
         evaluateAcceptanceCriterion(criterion, { project, baseline: promise.baseline, bindings: this.bindings, reviewed: () => false, npcRewardProof: this.npcRewardProof })))
       .filter(evidence => !evidence.passed).map(evidence => `${evidence.expected} -> ${evidence.observed}`);
   }
@@ -335,7 +343,7 @@ export class AssistantAcceptanceLedger {
       readonly refinements?: readonly AcceptanceSource[];
       readonly withdrawal?: RequirementWithdrawalAction & { readonly source: "user" };
     })[] = [...this.promises.values(), ...this.actionRequirements.values()];
-    const projectBound = (kind: string): boolean => kind === "toolVerdict" || isFunctionalCriterionKind(kind);
+    const projectBound = (kind: string): boolean => kind === "toolVerdict" || isReloadCriterionKind(kind);
     const toolDraftChanged = applied !== draft
       && promises.some(promise => promise.criteria?.some(criterion => projectBound(criterion.kind)))
       && acceptanceFingerprint(applied) !== acceptanceFingerprint(draft);
