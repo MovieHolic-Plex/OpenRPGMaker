@@ -18,6 +18,12 @@ coordinates. Changed diagnostic payloads were inspected separately.
 Original full results: candidate 18,571 passed / 329 failed / 135 failed files;
 main 18,425 passed / 324 failed / 136 failed files.
 
+The original candidate input pathname was reused by a later full gate run.
+The hashes and paired assertion records here describe this historical comparison,
+not the file's later contents. The final f528644/main input copies and hashes are
+recorded in `../final-verification.md`; do not validate this old candidate hash
+against the reused pathname or present the historical comparison as a later run.
+
 | Candidate failure disposition | Assertions |
 | --- | ---: |
 | Same primary diagnostic and full stack modulo coordinates | 301 |

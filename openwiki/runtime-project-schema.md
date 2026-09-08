@@ -363,6 +363,15 @@ imports instead publish nothing until the explicit save-copy is verified.
 `ProjectStorageQuotaError` classifies native Web Storage quota errors with export/
 cleanup guidance; local failures do not start the remote network retry loop.
 
+Transaction ownership is the captured `contentLineage`, authored
+`mutationGeneration` and project identity, not root-object reference equality.
+A normal source flush may reconcile accepted audio/monster metadata into a new
+root without an authored mutation. That synchronization must not reject the
+transition. Real edits (even if subsequently saved), same-ID reload/replacement,
+and cancellation still invalidate it at flush, target-save and target-reload
+boundaries. `transactionalRemoteSourceLineage.test.ts` exercises the actual
+flush/reconciliation and save/load pipeline with only the transport replaced.
+
 Focused contracts: `devMediaPromotion.test.ts`, `mediaImportDurability.test.ts`.
 Real browser script: `scripts/qa/issue693-media.mjs`; default runs actual showcase
 quota/cancel/network-denial paths with all remote writes blocked. Only a lead with
