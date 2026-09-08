@@ -8,6 +8,7 @@ import {
   newProjectPackLabel,
   showNewProjectDialog,
 } from "@/editor/ui/newProjectDialog";
+import { WELCOME_GENRE_PRESETS } from "@/editor/welcomeGenrePresets";
 import { createBlankProject } from "@/project/defaults";
 
 afterEach(() => {
@@ -80,6 +81,24 @@ describe("새 프로젝트 다이얼로그", () => {
     monster!.dispatchEvent(new Event("change", { bubbles: true }));
     document.querySelector<HTMLButtonElement>("[data-testid='new-project-confirm']")?.click();
     await expect(pending).resolves.toEqual({ title: "달빛 항구", packId: "monster-collect" });
+  });
+
+  it("공식 팩 선택지는 첫 화면 포스터와 같은 그림을 실어 보여 준다", async () => {
+    const pending = showNewProjectDialog({ defaultValue: "달빛 항구" });
+    for (const packId of GENRE_PACK_IDS) {
+      const radio = document.querySelector(`[data-testid='${newProjectGenreOptionTestId(packId)}']`);
+      const image = radio?.parentElement?.querySelector("img");
+      const expected = WELCOME_GENRE_PRESETS.find((preset) => preset.packId === packId)?.thumb;
+      expect(expected, `${packId} preset thumb`).toBeTruthy();
+      expect(image?.getAttribute("src"), `${packId} row image`).toBe(expected);
+      expect(image?.getAttribute("alt")).toBe("");
+    }
+    const blankRow = document
+      .querySelector(`[data-testid='${newProjectGenreOptionTestId(null)}']`)?.parentElement;
+    expect(blankRow?.querySelector("img")).toBeNull();
+    expect(blankRow?.querySelector(".new-project-genre-placeholder")?.textContent).toBe("+");
+    document.querySelector<HTMLButtonElement>("[data-testid='new-project-cancel']")?.click();
+    await expect(pending).resolves.toBeNull();
   });
 
   it("빈 이름은 기본값으로 대체된다", async () => {

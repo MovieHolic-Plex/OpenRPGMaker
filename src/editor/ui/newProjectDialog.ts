@@ -3,6 +3,7 @@
 // 확인 → { title, packId }, 취소 → null. 헤드리스에서는 기본값으로 즉시 resolve.
 
 import { GENRE_PACK_IDS, type GenrePackId } from "@/project/genrePackId";
+import { WELCOME_GENRE_PRESETS } from "@/editor/welcomeGenrePresets";
 import { el } from "@/util/dom";
 import { registerModal, unregisterModal } from "./modalStack";
 
@@ -114,10 +115,25 @@ export function showNewProjectDialog(opts: NewProjectDialogOptions = {}): Promis
       radio.addEventListener("change", () => {
         if (radio.checked) selectedPackId = option.id;
       });
+      // 장르 그림은 첫 화면 포스터와 같은 자산을 쓴다. 빈 프로젝트는 그림이 없으므로 +.
+      // 자산이 없으면 img 를 떼어 격자 배경만 남긴다 — 깨진 그림 아이콘을 보여 주지 않는다.
+      const thumb = WELCOME_GENRE_PRESETS.find((preset) => preset.packId === option.id)?.thumb;
+      const art = el("span", {
+        class: "new-project-genre-art",
+        attrs: { "aria-hidden": "true" },
+        children: [el("span", { class: "new-project-genre-placeholder", text: option.id ? option.label : "+" })],
+      });
+      if (thumb) {
+        art.append(el("img", {
+          attrs: { src: thumb, alt: "", decoding: "async", draggable: "false" },
+          on: { error: (event) => (event.currentTarget as HTMLElement).remove() },
+        }));
+      }
       return el("label", {
         class: "new-project-genre-row",
         children: [
           radio,
+          art,
           el("span", {
             class: "new-project-genre-text",
             children: [
