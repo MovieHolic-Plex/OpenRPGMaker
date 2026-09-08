@@ -137,7 +137,8 @@ describe("manual retry work-plan ownership", () => {
       expect(carriedVisible).toBe(!completed);
       expect(getPlan.mock.results.some((result) => result.value === savedPlan)).toBe(true);
       const budget = panel.querySelector("[data-testid='ai-autonomous-budget']");
-      if (agentMode === "auto" && composerMode === "do") expect(budget?.textContent).toContain("0/16");
+      // Do enters the autonomous driver regardless of agentMode (C1). Ask/plan-preview do not.
+      if (composerMode === "do") expect(budget?.textContent).toContain("0/16");
       else expect(budget).toBeNull();
       expect(store.getCurrent()).toBe(beforeRetry);
     } finally {
