@@ -351,15 +351,29 @@ describe("AssistantSession.retryLastTurn — 수동 재시도", () => {
   });
 
   it("오류가 없던 세션에서 retryLastTurn은 아무것도 하지 않는다", async () => {
-    const chat = async (): Promise<ChatResult> => ({
+    const chat = vi.fn(async (): Promise<ChatResult> => ({
       message: { role: "assistant", content: "네.", tool_calls: undefined },
       finishReason: "stop",
-    });
+    }));
     const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
-    await session.sendUserMessage("안녕", () => {});
+    const first = await session.sendUserMessage("안녕", () => {});
+    const messages = structuredClone(session.getMessages());
+    const audits = structuredClone(session.getAuditEntries());
+    const harness = structuredClone(session.getHarnessSnapshot());
+    const calls = chat.mock.calls.length;
+    const events: SessionEvent[] = [];
     expect(session.canRetryLastTurn()).toBe(false);
-    const noop = await session.retryLastTurn(() => {});
+    const noop = await session.retryLastTurn(event => events.push(event));
+    expect(noop).toBe(first);
     expect(noop.stoppedReason).toBe("final");
-    expect(noop.assistantText).toBe("");
+    expect(noop.assistantText).toBe(first.assistantText);
+    expect(chat).toHaveBeenCalledTimes(calls);
+    expect(events).toEqual([]);
+    expect(session.getMessages()).toEqual(messages);
+    expect(session.getAuditEntries()).toEqual(audits);
+    expect(session.getHarnessSnapshot()).toEqual(harness);
+    expect(noop.proposedCalls).toEqual([]);
+    expect(noop.appliedCalls ?? []).toEqual([]);
+    expect(session.getRunEndProof()).toBeNull();
   });
 });

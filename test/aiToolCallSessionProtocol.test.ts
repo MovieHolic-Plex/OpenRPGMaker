@@ -79,9 +79,14 @@ describe("툴 루프 예외", () => {
       throw new Error("후처리 폭발");
     };
 
-    const failed = await session.sendUserMessage("타이틀 바꿔줘", event => events.push(event));
-    internals.recordSuccessfulTool = recordSuccessfulTool;
-    const failureOutcome = { execution: "failed", goal: "unassessed", delivery: "no-change" };
+    let failed;
+    try { failed = await session.sendUserMessage("타이틀 바꿔줘", event => events.push(event)); }
+    finally { internals.recordSuccessfulTool = recordSuccessfulTool; }
+    const failureOutcome = { execution: "failed", goal: "incomplete", delivery: "no-change" };
+    expect(session.getHarnessSnapshot().requests).toMatchObject([{ requestId: "request-1", rawInstruction: "타이틀 바꿔줘", units: [{
+      id: "request-1:source:0", source: { start: 0, end: "타이틀 바꿔줘".length, quote: "타이틀 바꿔줘" }, coverage: "uncovered", criteria: null,
+    }] }]);
+    expect(session.getAcceptanceSnapshot()?.items).toMatchObject([{ id: "request-1:source:0", required: true }]);
     expect(failed.error).toBe("후처리 폭발");
     expect(failed.stoppedReason).toBe("error");
     expect(failed.runOutcome).toEqual(failureOutcome);
@@ -118,7 +123,9 @@ describe("툴 루프 예외", () => {
     expect(orphanCallIds(session.getMessages())).toEqual([]);
     expect(recovered.error).toBeUndefined();
     expect(recovered.stoppedReason).toBe("final");
-    const recoveredOutcome = { execution: "response-final", goal: "unassessed", delivery: "no-change" };
+    expect(recovered.proposedCalls).toEqual([]);
+    expect(recovered.appliedCalls ?? []).toEqual([]);
+    const recoveredOutcome = { execution: "response-final", goal: "incomplete", delivery: "no-change" };
     expect(recovered.runOutcome).toEqual(recoveredOutcome);
     expect(recovered.recap?.runOutcome).toEqual(recoveredOutcome);
     expect(session.getHarnessSnapshot().runOutcome).toEqual(recoveredOutcome);

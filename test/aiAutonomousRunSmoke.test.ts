@@ -6,11 +6,34 @@
 // plan → build → verify → apply → save-audit 전체 생명주기가 발화함을 증명한다.
 // 라이브 LLM/API 키는 사용하지 않는다(결정적, CI-safe, 타이밍 대기 없음).
 import { fixedDeclarer } from "./intentFixture";
+import { clearTimeout, setTimeout } from "node:timers";
+import { setImmediate } from "node:timers/promises";
+import * as sync from "@/project/supabaseProjectSync";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
-import type { SessionEvent } from "@/ai/assistantSession";
+import type { AssistantSession, SessionEvent } from "@/ai/assistantSession";
+
+const pendingRuns = new Map<Promise<unknown>, AbortController>();
+let commitWrites: (() => Promise<unknown>[]) | undefined;
+
+async function bounded<T>(pending: Promise<T>, abort: () => void): Promise<T> {
+  let deadline: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([pending, new Promise<never>((_, reject) => {
+      deadline = setTimeout(() => { abort(); reject(new Error("Smoke fixture operation deadline")); }, 25_000);
+    })]);
+  } finally { clearTimeout(deadline); }
+}
+
+async function runOwned(session: AssistantSession, goal: string, events: SessionEvent[]) {
+  const controller = new AbortController();
+  const pending = session.sendUserMessage(goal, event => events.push(event), controller.signal, { autonomous: true });
+  pendingRuns.set(pending, controller);
+  try { return await bounded(pending, () => controller.abort()); }
+  finally { controller.abort(); await bounded(pending, () => controller.abort()); pendingRuns.delete(pending); }
+}
 
 const SMOKE_TEST_ENV = {
   VITE_SUPABASE_ANON_KEY: "test-anon-key",
@@ -33,10 +56,16 @@ function installHermeticEnv(project: Project): void {
   resetMapEditHistory();
 }
 
-afterEach(() => {
+afterEach(async () => {
+  for (const controller of pendingRuns.values()) controller.abort();
+  await bounded(Promise.all([...pendingRuns.keys()]), () => {});
+  pendingRuns.clear();
+  if (commitWrites) await bounded(Promise.all(commitWrites()), () => {});
+  commitWrites = undefined;
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
   vi.unstubAllEnvs();
+  vi.useRealTimers();
 });
 
 type ChatResult = import("@/ai/llmClient").ChatResult;
@@ -110,6 +139,10 @@ const HOUSE_KIT = "blue-stone";
 function housePlan(mapId: string): Record<string, unknown> {
   return {
     goal: `빈 맵에 야외 집 하나 지어줘`,
+    acceptance: [
+      { id: "house-region", title: "House footprint", criteria: [{ kind: "targetChange", target: { mapId }, region: { x: 2, y: 1, w: 5, h: 6 } }] },
+      { id: "house-title", title: "Final title", criteria: [{ kind: "valueEquals", subject: { kind: "project" }, path: ["meta", "title"], value: HOUSE_TITLE }] },
+    ],
     layers: [
       {
         title: "집 짓기",
@@ -121,6 +154,14 @@ function housePlan(mapId: string): Record<string, unknown> {
       },
     ],
   };
+}
+
+function houseDeclarer(mapId: string) {
+  const raw = "빈 맵에 야외 집 하나 지어줘";
+  return fixedDeclarer({ mode: "create", needsPlan: true, requestRequirements: { entries: [{
+    source: [{ start: 0, end: raw.length, quote: raw }], bindings: [],
+    criteria: [{ kind: "targetChange", target: { mapId }, region: { x: 2, y: 1, w: 5, h: 6 } }],
+  }] } });
 }
 
 function houseSteps(plan: Record<string, unknown>, mapId: string): ChatResult[] {
@@ -189,11 +230,11 @@ describe("자율 런 통합 스모크 (todo 7)", () => {
       if (index >= steps.length) exhausted();
       return steps[index++]!;
     };
-    const session = new AssistantSession(project, { config: ORCH_CONFIG, chat });
+    const session = new AssistantSession(project, { config: ORCH_CONFIG, chat, declareIntent: houseDeclarer(mapId), yieldToUi: () => setImmediate() });
     const events: SessionEvent[] = [];
     const goal = houseGoal(mapId, project.maps[mapId]!.name);
 
-    const result = await session.sendUserMessage(goal, (event) => { events.push(event); }, undefined, { autonomous: true });
+    const result = await runOwned(session, goal, events);
 
     // 1) 플래너: new_plan → 계획 등록(emitWorkPlan 이벤트 + set_work_plan 실행).
     expect(events.some((e) => e.type === "work_plan")).toBe(true);
@@ -236,10 +277,16 @@ describe("자율 런 통합 스모크 (todo 7)", () => {
     const afterTiles = store.getCurrent().maps[mapId]!.lowerTiles.join(",");
     expect(afterTiles).not.toBe(beforeTiles);
     // 결정성: 스크립트가 정확히 소진됐다(자동 계속/추가 호출 없음).
-    expect(index).toBe(steps.length);
+    expect(index).toBe(steps.length - 1);
+    expect(result.appliedCalls?.map(call => call.name)).toEqual(["author_house", "set_title_screen"]);
+    expect(result.proposedCalls).toEqual([]);
+    expect(session.getAcceptanceSnapshot()?.items.map(item => [item.id, item.status])).toEqual([
+      ["request-1:source:0", "verified"], ["house-region", "verified"], ["house-title", "verified"],
+    ]);
+    expect(session.getHarnessSnapshot().requests).toMatchObject([{ rawInstruction: "빈 맵에 야외 집 하나 지어줘", units: [{ coverage: "declared" }] }]);
   }, 60000);
 
-  it("remote enabled(mocked) → run-end 저장 증명 agent_run_saved(projectId+sha256), flush/reload 1회씩", async () => {
+  it("remote enabled(wire fixture) → run-end 저장 증명 agent_run_saved, flush/verify 1회씩", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const project = createBlankProject();
     installHermeticEnv(project);
@@ -251,34 +298,82 @@ describe("자율 런 통합 스모크 (todo 7)", () => {
       if (index >= steps.length) exhausted();
       return steps[index++]!;
     };
-    const flushSpy = vi.spyOn(store, "flush").mockResolvedValue({ kind: "saved", sha256: "sha-smoke-123" });
-    const reloadSpy = vi.spyOn(store, "reloadFromRemote").mockResolvedValue({
-      kind: "reloaded",
-      projectId: SMOKE_TEST_ENV.VITE_SUPABASE_PROJECT_ID,
-      title: HOUSE_TITLE,
+    vi.useFakeTimers(); // Native proof drives saving; unrelated autosave must not race the assertion.
+    vi.stubEnv("VITE_SUPABASE_USE_PROXY", "0");
+    vi.stubGlobal("window", { location: { hostname: "127.0.0.1", pathname: "/", search: "" },
+      localStorage: { getItem: () => null, setItem: () => {}, removeItem: () => {} } });
+    let row = "";
+    const projectTraffic: string[] = [];
+    vi.stubGlobal("fetch", vi.fn<typeof fetch>(async (input, init) => {
+      const path = new URL(String(input)).pathname;
+      const method = init?.method ?? "GET";
+      if (path === "/rest/v1/projects") {
+        projectTraffic.push(method);
+        if (method === "GET") return new Response(row ? `[${row}]` : "[]");
+        if (method !== "POST" && method !== "PATCH") throw new Error(`Unexpected project method: ${method}`);
+        row = String(init?.body);
+        return new Response(method === "PATCH" ? `[${row}]` : "[]");
+      }
+      if (["/rest/v1/maps", "/rest/v1/tilesets", "/rest/v1/project_commits", "/rest/v1/project_changes"].includes(path)) return Response.json([]);
+      throw new Error(`Unexpected transport: ${method} ${path}`);
+    }));
+    const commits = vi.spyOn(sync, "recordProjectCommitToSupabase");
+    commitWrites = () => commits.mock.results.map(result => {
+      if (result.type !== "return") throw new Error("Commit writer did not return completion");
+      return result.value;
     });
-    vi.spyOn(store, "isRemotePersistenceEnabled").mockReturnValue(true);
-    const session = new AssistantSession(project, { config: ORCH_CONFIG, chat });
+    store._setPersistedBaselineForTest(null);
+    store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: true, disabledReason: null });
+    const flushSpy = vi.spyOn(store, "flush");
+    const verifySpy = vi.spyOn(store, "verifyPersistedRevision");
+    const reloadSpy = vi.spyOn(store, "reloadFromRemote");
+    const session = new AssistantSession(project, { config: ORCH_CONFIG, chat, declareIntent: houseDeclarer(mapId), yieldToUi: () => setImmediate() });
     const goal = houseGoal(mapId, project.maps[mapId]!.name);
+    const events: SessionEvent[] = [];
 
-    const result = await session.sendUserMessage(goal, () => {}, undefined, { autonomous: true });
+    const result = await runOwned(session, goal, events);
 
-    expect(result.stoppedReason).toBe("final");
-    // run-end 게이트: flush → reloadFromRemote 순서로 정확히 1회씩.
+    expect(result.stoppedReason, result.error).toBe("final");
+    // Native flush issues the accepted receipt; verification reads it without replacing the store.
     expect(flushSpy).toHaveBeenCalledTimes(1);
-    expect(reloadSpy).toHaveBeenCalledTimes(1);
+    expect(verifySpy).toHaveBeenCalledTimes(1);
+    expect(reloadSpy).not.toHaveBeenCalled();
+    expect(flushSpy.mock.invocationCallOrder[0]).toBeLessThan(verifySpy.mock.invocationCallOrder[0]);
+    expect(projectTraffic).toEqual(["POST", "GET"]);
+    const proof = session.getRunEndProof();
+    expect(proof).toMatchObject({ status: "succeeded", verified: true, proof: { kind: "verified", isCurrent: true } });
+    const receipt = proof?.receipt;
+    if (!receipt) throw new Error("Native accepted receipt missing");
+    expect(store.isPersistenceReceiptForProject(receipt, store.getCurrent())).toBe(true);
+    expect(store.isPersistenceReceiptCurrent(receipt)).toBe(true);
+    expect(verifySpy.mock.calls[0]?.[0]).toBe(receipt);
+    const persisted = JSON.parse(row);
+    expect(persisted.project_id).toBe(receipt.projectId);
+    expect(persisted.current_sha256).toBe(receipt.sha256);
+    expect(persisted.current_json.meta.title).toBe(HOUSE_TITLE);
+    expect(Object.keys(persisted.current_json.tilesets)).toEqual(Object.keys(project.tilesets));
     const audits = statusTexts(session);
     const saved = audits.find((t) => t.includes("agent_run_saved"));
     expect(saved).toBeTruthy();
     expect(saved!).toContain(`projectId=${SMOKE_TEST_ENV.VITE_SUPABASE_PROJECT_ID}`);
-    expect(saved!).toContain("sha256=sha-smoke-123");
-    // commitId 증거 경로: list_project_commits 는 브라우저 전용 툴 — node 에선 우아하게 기록된다.
-    expect(audits.some((t) => t.includes("agent_run:commit-evidence-unavailable"))).toBe(true);
+    expect(saved!).toContain(`sha256=${receipt.sha256 ?? "none"}`);
+    expect(saved!).toContain(`revision=${receipt.revisionId}`);
+    expect(saved!).toContain(`contentIdentity=${receipt.contentIdentity}`);
+    expect(saved!).toContain(`commit=${proof?.commitId ?? "unavailable"}`);
     // 전체 생명주기도 동일하게 발화했다(remote 모드에서도).
     const statuses = statusTexts(session);
     expect(statuses.filter((t) => t.includes("agent_run:verification-pass")).length).toBe(2);
     expect(statuses.filter((t) => t.includes("agent_run:milestone-applied")).length).toBe(2);
-    expect(index).toBe(steps.length);
+    expect(index).toBe(steps.length - 1);
+    expect(events.filter(event => event.type === "tool_call").map(event => event.name)).toEqual([
+      "set_work_plan", "author_house", "run_lint", "evaluate_game_quality", "set_title_screen", "run_lint",
+    ]);
+    expect(events.filter(event => event.type === "milestone_applied").map(event => event.toolCount)).toEqual([1, 1]);
+    expect(result.appliedCalls?.map(call => call.name)).toEqual(["author_house", "set_title_screen"]);
+    expect(result.proposedCalls).toEqual([]);
+    expect(store.getCurrent().meta.title).toBe(HOUSE_TITLE);
+    expect(store.getCurrent().maps[mapId].lowerTiles).not.toEqual(project.maps[mapId].lowerTiles);
+    expect(result.runOutcome).toEqual({ execution: "response-final", goal: "satisfied", delivery: "persisted-verified" });
   }, 60000);
 });
 

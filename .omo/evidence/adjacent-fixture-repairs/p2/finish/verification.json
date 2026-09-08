@@ -1,0 +1,114 @@
+{
+  "kind": "hash-pinned complete-file evidence manifest; not a synthetic Vitest report",
+  "head": "2294496e33c9da64d242a0bda23cdc9861a6ddf0",
+  "branch": "agent/unbounded-core-fixtures-p2-01a07570",
+  "model": "gpt-6-astra",
+  "allCurrentFilesPass": true,
+  "singleCombinedRun": false,
+  "currentFileCount": 11,
+  "passingAssertionCount": 88,
+  "newCompleteFileRun": {
+    "report": "../finish-frozen-green.json",
+    "exit": 0,
+    "files": 2,
+    "tests": 8,
+    "failed": 0,
+    "skipped": 0
+  },
+  "unchangedPriorFiles": 9,
+  "unchangedPriorPassingAssertions": 80,
+  "files": [
+    {
+      "file": "test/aiCompletionAccounting.test.ts",
+      "sha256": "ae078f830d7f4db9a8a203cd17a4e245b7e2f43635d7fbada9d6c9402fed30f5",
+      "tests": 8,
+      "status": "passed",
+      "report": "../G04-frozen.json",
+      "changedThisFollowup": false
+    },
+    {
+      "file": "test/aiAppliedBudgetStop.test.ts",
+      "sha256": "2bae800221235efe15e5288f8675ef27f1fe9b8485283c7d71b54976dd8fb40c",
+      "tests": 3,
+      "status": "passed",
+      "report": "../finish-frozen-green.json",
+      "changedThisFollowup": true
+    },
+    {
+      "file": "test/assistantMultiMapSpec.test.ts",
+      "sha256": "b62006e570262032daa84a29570bca3cd52a562eb5aaf17561805fee44bc6a7c",
+      "tests": 18,
+      "status": "passed",
+      "report": "../G04-frozen.json",
+      "changedThisFollowup": false
+    },
+    {
+      "file": "test/aiWorkItemOutcomeGateSmoke.test.ts",
+      "sha256": "dfe7f9d2f0a9741502f7b4efc5175444990fa55cdcb31ec6709b0b7331aa17f6",
+      "tests": 5,
+      "status": "passed",
+      "report": "../finish-frozen-green.json",
+      "changedThisFollowup": true
+    },
+    {
+      "file": "test/assistantOriginalContext.test.ts",
+      "sha256": "9763d5fc9a799c024c43b8977bf4c942c7c8cf78ce0bd8b9835bb9c1f01ceb6f",
+      "tests": 5,
+      "status": "passed",
+      "report": "../G05-attempt1.json",
+      "changedThisFollowup": false
+    },
+    {
+      "file": "test/aiToolCallSessionProtocol.test.ts",
+      "sha256": "c0af3403d70d5b79ecc3d47a70384162943f4178842463a0aa8a3db31a88b4dc",
+      "tests": 2,
+      "status": "passed",
+      "report": "../G05-attempt1.json",
+      "changedThisFollowup": false
+    },
+    {
+      "file": "test/autonomyHarness.test.ts",
+      "sha256": "8605b3250db85c1711038e19bebc626df16f2bd8444690247d50a0b74881a61b",
+      "tests": 7,
+      "status": "passed",
+      "report": "../G05-attempt1.json",
+      "changedThisFollowup": false
+    },
+    {
+      "file": "test/assistantSessionIntent.test.ts",
+      "sha256": "5750e7ee9757fbe1a32042ac4564ab3afbdd64a35274917d33720012df8aa978",
+      "tests": 15,
+      "status": "passed",
+      "report": "../G05-attempt1.json",
+      "changedThisFollowup": false
+    },
+    {
+      "file": "test/aiToolDiscoveryEscalation.test.ts",
+      "sha256": "771f4e02b2e325665b4817bb99b1ca3566873a54780089f5a26022cd0ac7bbc7",
+      "tests": 7,
+      "status": "passed",
+      "report": "../G05-attempt1.json",
+      "changedThisFollowup": false
+    },
+    {
+      "file": "test/llmRetry.test.ts",
+      "sha256": "d82217a31270bb0c117d6af29abfb0557b735af3b51b9eddaaeab6adcaf4a9be",
+      "tests": 14,
+      "status": "passed",
+      "report": "../G05-attempt1.json",
+      "changedThisFollowup": false
+    },
+    {
+      "file": "test/aiAutonomousRunSmoke.test.ts",
+      "sha256": "8034b08721f71f71e87e0bfd546607c67a21f4ce1e696179186df8ae1ee0d72f",
+      "tests": 4,
+      "status": "passed",
+      "report": "../G06-attempt2.json",
+      "changedThisFollowup": false
+    }
+  ],
+  "patchHashes": {
+    "two-file-final.patch": "a9bc685852e4ab536778fe2ee4b9d679c3d5681b79b3bb8103b691dcae412855",
+    "all-eleven-final.patch": "0807eea98ff5c4ab5349dad4597d8c1cf99272489ef3477b1f3745860297b3c7"
+  }
+}

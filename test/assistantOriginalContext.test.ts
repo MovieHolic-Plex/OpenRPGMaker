@@ -80,6 +80,7 @@ describe("session original snapshot lifecycle", () => {
     // oversized record cannot itself fit the narrow model; that is an explicit window error,
     // not permission for this input-pipeline component to discard arbitrary tool output.
     const maxToolCalls = Math.ceil(JSON.stringify(originalData).length / 24000) + 2;
+    const raw = "기존 설명은 보존하고 가격만 321로 수정";
     let offset = 0;
     let received = "";
     let totalChars = Infinity;
@@ -91,7 +92,15 @@ describe("session original snapshot lifecycle", () => {
     const write = { name: "upsert_item", args: { item: { id: item.id, price: 321 } } };
     const session = new AssistantSession(project, {
       config: { ...defaultAiConfig(), authMode: "apiKey", model: "unknown-window-fixture", agentMode: "chat", maxToolCalls },
-      declareIntent: fixedDeclarer({ mode: "modify", tools: ["upsert_item"], readBeforeWrite: { project: false, collections: ["items"], references: true } }),
+      declareIntent: fixedDeclarer({ mode: "modify", tools: ["upsert_item"], readBeforeWrite: { project: false, collections: ["items"], references: true },
+        requestRequirements: { entries: [{ source: [{ start: 0, end: raw.length, quote: raw }], criteria: [
+          { kind: "entityPreserve", subject: { kind: "database", collection: "items", id: item.id }, path: ["description"] },
+          { kind: "valueEquals", subject: { kind: "database", collection: "items", id: item.id }, path: ["price"], value: 321 },
+        ], bindings: [
+          { source: { start: raw.indexOf("보존"), end: raw.indexOf("보존") + 2, quote: "보존" }, role: "preserve", criterionIndex: 0, fieldPath: [] },
+          { source: { start: raw.indexOf("321"), end: raw.indexOf("321") + 3, quote: "321" }, role: "value", criterionIndex: 1, fieldPath: ["value"] },
+        ] }] },
+      }),
       chat: async (_config, request) => {
         round++;
         const context = original(request);
@@ -118,7 +127,7 @@ describe("session original snapshot lifecycle", () => {
           ...(offset + 24000 >= totalChars ? [write] : [])]);
       },
     });
-    const result = await session.sendUserMessage("기존 설명은 보존하고 가격만 수정");
+    const result = await session.sendUserMessage(raw);
     expect(result.stoppedReason, result.error).toBe("max-tool-calls");
     expect(session.getAuditEntries().filter(entry => entry.kind === "tool" && entry.name === "upsert_item").map(entry => entry.ok)).toEqual([false, false, true]);
     expect(session.getProposedProject().database.items.find(item => item.id === expected.id)).toEqual({ ...expected, price: 321 });

@@ -82,27 +82,44 @@ describe("자율성 다이얼 — 설정 round-trip", () => {
 describe("자율성 다이얼 — 하네스 동작", () => {
   it("confirm 은 턴루프 상한을 6으로 깎는다", async () => {
     // Break: 레벨 상한이 없으면 maxToolCalls=2000 그대로 2000회가 아니라 chat 소진(401)으로 죽는다.
-    // confirm 은 플래너를 먼저 돌리므로(planOnly) 대본 첫 응답은 플래너용 direct — 툴콜 6회만 센다.
+    // Confirm respects direct as a preview; only explicit host Resume authorizes the six rounds.
     const DIRECT_JSON = JSON.stringify({ action: "direct", reason: "한 턴으로 충분" });
     let toolCalls = 0;
     let plannerCalls = 0;
     const chat = async (_config: unknown, req: { tools?: readonly unknown[] }): Promise<ChatResult> => {
       if ((req.tools ?? []).length === 0) {
         plannerCalls += 1;
-        return finalResult(DIRECT_JSON);
+        return finalResult(plannerCalls === 1 ? DIRECT_JSON : JSON.stringify({ action: "resume" }));
       }
       toolCalls += 1;
       return toolCallResult("get_project_summary", {}, `c${toolCalls}`);
     };
-    const session = new AssistantSession(createBlankProject(), {
+    const project = createBlankProject();
+    const session = new AssistantSession(project, {
       config: { ...BASE, autonomyLevel: "confirm" as AutonomyLevel },
       chat,
       declareIntent: fixedDeclarer({ mode: "create", needsPlan: true }),
     });
     const result = await session.sendUserMessage("계속 조회해", () => {});
-    expect(result.stoppedReason).toBe("max-tool-calls");
+    expect(result.stoppedReason).toBe("final");
+    expect(result.runOutcome).toEqual({ execution: "awaiting-user", goal: "incomplete", delivery: "no-change" });
+    expect(result.execution?.state).toBe("preview");
+    expect(result.workPlan?.layers).toHaveLength(1);
     expect(plannerCalls).toBe(1);
+    expect(toolCalls).toBe(0);
+    expect(result.proposedCalls).toEqual([]);
+    expect(result.appliedCalls ?? []).toEqual([]);
+    expect(session.getProposedProject()).toEqual(project);
+    expect(resolveAutonomy("confirm").budgetCap).toBe(6);
+    const resumed = await session.sendUserMessage("계속", () => {}, undefined, { goalAction: "resume", autonomous: false });
+    expect(resumed.stoppedReason).toBe("max-tool-calls");
+    expect(plannerCalls).toBe(2);
     expect(toolCalls).toBe(resolveAutonomy("confirm").budgetCap);
+    expect(resumed.proposedCalls).toEqual([]);
+    expect(resumed.appliedCalls ?? []).toEqual([]);
+    expect(session.getProposedProject()).toEqual(project);
+    expect(session.getHarnessSnapshot().requests).toMatchObject([{ rawInstruction: "계속 조회해", units: [{ coverage: "uncovered" }] }]);
+    expect(session.getMessages().filter(message => message.role === "tool").map(message => message.tool_call_id)).toEqual(["c1", "c2", "c3", "c4", "c5", "c6"]);
   });
 
   it("max 는 같은 대본을 48회까지 돌린다", async () => {

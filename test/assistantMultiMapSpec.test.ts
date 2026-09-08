@@ -65,10 +65,17 @@ describe("map-owned construction contracts through AssistantSession", () => {
     expect(h.events.find(event => event.name === "set_build_spec" && !event.result.ok)?.result.issues).toContainEqual(expect.objectContaining({ code: "spec-invalid" }));
     expect(h.session.getActiveSpec("a")).toEqual(spec("a"));
     expect(h.session.getActiveSpec("b")).toEqual(spec("b"));
+    const eventOffset = h.events.length;
     const result = await h.send([paint("a"), paint("b", 4), paint("a", 4)]);
-    expect(result.proposedCalls).toHaveLength(3);
-    const warnings = result.proposedCalls.flatMap(entry => (entry.result.diff?.warnings ?? []).filter(warning => warning.startsWith(PROPOSAL_SCOPE_WARNING_PREFIX)).map(warning => ({ mapId: entry.args.mapId, warning })));
+    expect(result.proposedCalls.map(entry => [entry.args.mapId, entry.args.from])).toEqual([
+      ["b", { x: 3, y: 3 }], ["a", { x: 3, y: 3 }], ["b", { x: 4, y: 3 }], ["a", { x: 4, y: 3 }],
+    ]);
+    const currentBatch = result.proposedCalls.filter(entry => h.events.slice(eventOffset).some(event => event.args === entry.args));
+    expect(currentBatch).toHaveLength(3);
+    const warnings = currentBatch.flatMap(entry => (entry.result.diff?.warnings ?? []).filter(warning => warning.startsWith(PROPOSAL_SCOPE_WARNING_PREFIX)).map(warning => ({ mapId: entry.args.mapId, warning })));
     expect(warnings.map(entry => entry.mapId)).toEqual(["a", "b"]);
+    expect(result.proposedCalls.flatMap(entry => (entry.result.diff?.warnings ?? [])
+      .filter(warning => warning.startsWith(PROPOSAL_SCOPE_WARNING_PREFIX)).map(() => entry.args.mapId))).toEqual(["b", "a", "b"]);
     expect(h.session.getCompletionSpecs(result.proposedCalls)).toEqual([spec("a"), spec("b")]);
   });
 
@@ -107,7 +114,9 @@ describe("map-owned construction contracts through AssistantSession", () => {
     const result = await h.send([paint("a", 12, 12), paint("b")]);
     expect(h.events.slice(-2).map(event => event.result.ok)).toEqual([false, true]);
     expect(h.events.at(-2)?.result.issues).toContainEqual(expect.objectContaining({ code: "spec-gate" }));
-    expect(result.proposedCalls.map(entry => entry.args.mapId)).toEqual(["b"]);
+    expect(result.proposedCalls.map(entry => [entry.name, entry.args.mapId])).toEqual([["fill_region", "a"], ["paint_tiles", "b"]]);
+    const currentBatch = result.proposedCalls.filter(entry => h.events.slice(-2).some(event => event.args === entry.args));
+    expect(currentBatch.map(entry => entry.args.mapId)).toEqual(["b"]);
     expect(h.session.getActiveSpec("b")).toEqual(spec("b"));
   });
 

@@ -3,7 +3,7 @@ import { AssistantSession, isWriteToolName, SET_BUILD_SPEC_TOOL, WORK_PLAN_TOOLS
 import { activeTools, allTools, runTool, toOpenAiTools } from "@/editor/tools";
 import { LlmError, type ChatRequest, type ChatResult } from "@/ai/llmClient";
 import { createBlankProject } from "@/project/defaults/defaultProject";
-import { ACCEPTANCE_TOOLS } from "@/ai/assistantAcceptanceTools";
+import { ACCEPTANCE_TOOLS, REQUEST_CONTRACT_TOOL } from "@/ai/assistantAcceptanceTools";
 import { GET_ORIGINAL_CONTEXT_TOOL } from "@/ai/originalContext";
 import { injectToolReasonIntoOpenAiTool } from "@/ai/toolReason";
 import { fixedDeclarer } from "./intentFixture";
@@ -76,7 +76,7 @@ describe("AI tool discovery escalation", () => {
     expect(result.stoppedReason).toBe("error");
     expect(session.getAcceptanceSnapshot()).not.toBeNull();
     const firstWorkingRequest = requests.find((request) => request.tools?.length);
-    const expected = [...toOpenAiTools(), GET_ORIGINAL_CONTEXT_TOOL, SET_BUILD_SPEC_TOOL, ...WORK_PLAN_TOOLS, ...ACCEPTANCE_TOOLS]
+    const expected = [...toOpenAiTools(), GET_ORIGINAL_CONTEXT_TOOL, SET_BUILD_SPEC_TOOL, ...WORK_PLAN_TOOLS, ...ACCEPTANCE_TOOLS, REQUEST_CONTRACT_TOOL]
       .map(injectToolReasonIntoOpenAiTool);
     expect(firstWorkingRequest?.tools).toEqual(expected);
     expect(new Set(firstWorkingRequest?.tools?.map((tool) => tool.function.name)).size).toBe(expected.length);
@@ -88,6 +88,7 @@ describe("AI tool discovery escalation", () => {
     const askRequest = requests.slice(beforeAsk).find((request) => request.tools?.length);
     expect(askRequest).toBeDefined();
     expect(askRequest?.tools?.filter((tool) => isWriteToolName(tool.function.name))).toEqual([]);
+    expect(askRequest?.tools).toContainEqual(injectToolReasonIntoOpenAiTool(REQUEST_CONTRACT_TOOL));
     expect(session.getProposedProject()).toEqual(project);
   });
 

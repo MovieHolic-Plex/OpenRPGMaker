@@ -1,3 +1,5 @@
+import { clearTimeout, setTimeout } from "node:timers";
+import { setImmediate } from "node:timers/promises";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { AssistantSession, type SessionEvent } from "@/ai/assistantSession";
 import type { ChatResult } from "@/ai/llmClient";
@@ -48,6 +50,15 @@ function paint(x: number, y: number, id: string): ChatResult {
 
 type ToolEvent = Extract<SessionEvent, { type: "tool_call" }>;
 
+async function bounded<T>(pending: Promise<T>, controller: AbortController): Promise<T> {
+  let deadline: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([pending, new Promise<never>((_, reject) => {
+      deadline = setTimeout(() => { controller.abort(); reject(new Error("Milestone fixture deadline")); }, 10_000);
+    })]);
+  } finally { clearTimeout(deadline); }
+}
+
 describe("completion accounting through real assistant sessions", () => {
   it("auto-completes a later spatial milestone using applied plus pending writes without reapplying the first", async () => {
     const project = projectWithMap();
@@ -67,31 +78,50 @@ describe("completion accounting through real assistant sessions", () => {
       { title: "둘째 구역", instruction: "둘째 구역 칠하기", successTools: ["paint_tiles"] },
     ] }] };
     const events: SessionEvent[] = [];
+    const chat = scriptedChat([
+      final(JSON.stringify({ action: "new_plan", ...plan })),
+      toolCall("set_work_plan", plan, "plan"),
+      toolCall("set_build_spec", SPEC, "spec"),
+      paint(3, 3, "first"),
+      paint(12, 12, "second"),
+    ]);
     const session = new AssistantSession(project, {
       config: { ...CONFIG, agentMode: "auto", liteModel: "executor-model" },
-      declareIntent: fixedDeclarer({ mode: "modify", needsPlan: true }),
-      chat: scriptedChat([
-        final(JSON.stringify({ action: "new_plan", ...plan })),
-        toolCall("set_work_plan", plan, "plan"),
-        toolCall("set_build_spec", SPEC, "spec"),
-        paint(3, 3, "first"),
-        paint(12, 12, "second"),
-        final(),
-      ]),
+      declareIntent: fixedDeclarer({ mode: "modify", needsPlan: true, requestRequirements: { entries: [{
+        source: [{ start: 0, end: plan.goal.length, quote: plan.goal }],
+        criteria: acceptance.flatMap(item => item.criteria), bindings: [],
+      }] } }),
+      yieldToUi: () => setImmediate(),
+      chat,
     });
-    const result = await session.sendUserMessage(plan.goal, (event) => events.push(event), undefined, { autonomous: true });
+    const controller = new AbortController();
+    const pending = session.sendUserMessage(plan.goal, event => events.push(event), controller.signal, { autonomous: true });
+    let result;
+    try { result = await bounded(pending, controller); }
+    finally { controller.abort(); await bounded(pending, controller); }
 
     expect(session.getWorkPlan()?.layers[0].items.map((item) => item.status)).toEqual(["done", "done"]);
-    expect(result.stoppedReason).toBe("final");
-    expect(session.getAcceptanceSnapshot()).toMatchObject({ status: "verified", items: acceptance.map(({ id }) => ({ id, status: "verified", evidence: [{ passed: true }] })) });
-    expect(events.filter((event) => event.type === "acceptance").some((event) => event.snapshot?.items[0]?.status === "verified" && event.snapshot.items[1]?.status === "working")).toBe(true);
+    expect(result.stoppedReason, JSON.stringify({ error: result.error, acceptance: session.getAcceptanceSnapshot() })).toBe("final");
+    expect(chat).toHaveBeenCalledTimes(5);
+    const snapshot = session.getAcceptanceSnapshot();
+    expect(snapshot?.status).toBe("verified");
+    expect(snapshot?.items.map(item => item.id)).toEqual(["request-1:source:0", "region-0", "region-1"]);
+    expect(snapshot?.items.filter(item => acceptance.some(({ id }) => id === item.id))).toMatchObject(acceptance.map(({ id }) => ({ id, status: "verified", evidence: [{ passed: true }] })));
+    expect(session.getHarnessSnapshot().requests).toMatchObject([{ rawInstruction: plan.goal, units: [{
+      id: "request-1:source:0", coverage: "declared", source: { start: 0, end: plan.goal.length, quote: plan.goal },
+      criteria: acceptance.flatMap(item => item.criteria),
+    }] }]);
+    expect(events.filter((event) => event.type === "acceptance").some((event) => event.snapshot?.items.find(item => item.id === "region-0")?.status === "verified" && event.snapshot.items.find(item => item.id === "region-1")?.status === "working")).toBe(true);
     expect(events.filter((event) => event.type === "milestone_applied").map((event) => event.toolCount)).toEqual([1, 1]);
     expect(result.proposedCalls).toEqual([]);
     expect(result.appliedCalls?.map((call) => call.args.from)).toEqual([{ x: 3, y: 3 }, { x: 12, y: 12 }]);
     const map = store.getCurrent().maps.m1;
     // Applying a map normalizes autotile variants; accounting must preserve both changed regions.
     for (const [x, y] of [[3, 3], [12, 12]]) {
-      expect(map.lowerTiles[y * map.width + x]).not.toBe(project.maps.m1.lowerTiles[y * map.width + x]);
+      for (let dy = 0; dy < 3; dy++) for (let dx = 0; dx < 3; dx++) {
+        const index = (y + dy) * map.width + x + dx;
+        expect(map.lowerTiles[index]).not.toBe(project.maps.m1.lowerTiles[index]);
+      }
     }
     expect(map.lowerTiles).toEqual(session.getProposedProject().maps.m1.lowerTiles);
   });
@@ -108,13 +138,19 @@ describe("completion accounting through real assistant sessions", () => {
         vi.spyOn(fillRegion, "run").mockImplementationOnce(() => { throw new Error("injected tool failure"); });
       }
       const criteria = [{ kind: "targetChange", target: { mapId: "m1" }, region: retryRect }];
+      const raw = "지형 칠해줘";
+      const planCall = toolCall("set_work_plan", { goal: raw,
+        acceptance: [{ id: "acceptance-contract", title: "Paint the retry region", criteria: null }],
+        layers: [{ title: "Terrain", items: [{ title: "Fill", instruction: raw, successTools: ["fill_region"] }] }],
+      }, "plan");
       // These turns intentionally retain drafts. Supply the real spatial contract,
       // then answer the initial final request and all three bounded repair nudges.
       // No model response can turn an unapplied draft into verified acceptance.
-      const pendingFinal = (status: "verifying" | "blocked") => () => {
-        expect(session.getAcceptanceSnapshot()).toMatchObject({ status, items: [{
-          id: "acceptance-contract", status, evidence: [{ expected: JSON.stringify(criteria[0]), passed: false }],
-        }] });
+      const pendingFinal = (status: "verifying" | "blocked", itemStatus = status) => () => {
+        expect(session.getAcceptanceSnapshot()?.status).toBe(status);
+        expect(session.getAcceptanceSnapshot()?.items.filter(item => item.id === "acceptance-contract")).toMatchObject([{
+          id: "acceptance-contract", status: itemStatus, evidence: [{ expected: JSON.stringify(criteria[0]), passed: false }],
+        }]);
         return final("DRAFT_AWAITING_APPLICATION");
       };
       const steps = [
@@ -124,25 +160,46 @@ describe("completion accounting through real assistant sessions", () => {
         toolCall("repair_acceptance", { itemId: "acceptance-contract", criteria }, "repair"),
         ...Array.from({ length: 4 }, () => pendingFinal("verifying")),
         toolCall("paint_tiles", { mapId: "m1", from: { x: rect.x, y: rect.y }, to: { x: rect.x, y: rect.y }, mode: "rect", layer: "lower", tile: 240 }, "next-turn"),
-        // A fresh instruction does not resume the already stopped canonical goal.
-        pendingFinal("blocked"),
+        // The real resume starts a fresh detached repair cycle, without discarding the first draft.
+        ...Array.from({ length: 4 }, () => pendingFinal("blocked", "verifying")),
       ];
+      // Register an actual ordinary missing-criteria promise, without adding a working round.
+      const first = steps[0];
+      if (typeof first === "function") throw new Error("First working response must be a tool batch");
+      first.message.tool_calls!.unshift(...planCall.message.tool_calls!);
       const chat = scriptedChat(steps);
-      const session = new AssistantSession(project, { config: CONFIG, chat });
+      let nextEntry = false;
+      const planner = vi.fn(async () => final(JSON.stringify({ action: "resume" })));
+      const session = new AssistantSession(project, { config: CONFIG,
+        declareIntent: fixedDeclarer({ mode: "modify", requestRequirements: { entries: [{
+          source: [{ start: 0, end: raw.length, quote: raw }], criteria, bindings: [],
+        }] } }),
+        chat: async (_config, request) => {
+          if (nextEntry && !request.tools?.length) {
+            expect(planner).not.toHaveBeenCalled();
+            expect(JSON.stringify(request.messages)).toContain("다음 칸 칠해줘");
+            return planner();
+          }
+          return chat();
+        },
+      });
       const events: ToolEvent[] = [];
       let specAfterFailure: unknown;
       let mapAfterFailure: unknown;
-      const result = await session.sendUserMessage("지형 칠해줘", (event) => {
+      let failedFills = 0;
+      const result = await session.sendUserMessage(raw, (event) => {
         if (event.type !== "tool_call") return;
         events.push(event);
-        if (!event.result.ok) {
+        if (event.name === "fill_region" && JSON.stringify(event.args.rect) === JSON.stringify(rect) && !event.result.ok) {
+          failedFills++;
           specAfterFailure = structuredClone(session.getActiveSpec());
-          mapAfterFailure = session.getProposedProject().maps.m1;
+          mapAfterFailure = structuredClone(session.getProposedProject().maps.m1);
         }
       }, undefined, scope === "implicit" ? { scope: { mapId: "m1", region: { x: 3, y: 3, width: 3, height: 3 } } } : {});
 
       const fills = events.filter((event) => event.name === "fill_region");
       expect(fills.map((event) => event.result.ok)).toEqual([false, true]);
+      expect(failedFills).toBe(1);
       expect(mapAfterFailure).toEqual(project.maps.m1);
       expect(specAfterFailure).toEqual(scope === "active" ? SPEC : null);
       expect(fills[0].result.issues?.some((issue) => issue.code === "spec-gate-auto-expand")).toBe(false);
@@ -150,7 +207,10 @@ describe("completion accounting through real assistant sessions", () => {
       expect(result.stoppedReason).toBe("final");
       expect(chat).toHaveBeenCalledTimes(scope === "active" ? 8 : 7);
       expect(events.find((event) => event.name === "repair_acceptance")?.result.ok).toBe(true);
-      expect(session.getAcceptanceSnapshot()).toMatchObject({ status: "blocked", items: [{ id: "acceptance-contract", status: "blocked", evidence: [{ passed: false }] }] });
+      expect(session.getAcceptanceSnapshot()?.status).toBe("blocked");
+      expect(session.getAcceptanceSnapshot()?.items.map(item => item.id)).toEqual(["request-1:source:0", "acceptance-contract"]);
+      expect(session.getAcceptanceSnapshot()?.items.find(item => item.id === "acceptance-contract")).toMatchObject({ status: "blocked", evidence: [{ passed: false }] });
+      expect(session.getHarnessSnapshot().requests).toMatchObject([{ rawInstruction: raw, units: [{ coverage: "declared", criteria }] }]);
       expect(result.appliedCalls ?? []).toEqual([]);
       expect(result.proposedCalls.map((call) => call.name)).toEqual(["fill_region"]);
       expect(session.getProposedProject().maps.m1.lowerTiles).not.toEqual(project.maps.m1.lowerTiles);
@@ -161,12 +221,19 @@ describe("completion accounting through real assistant sessions", () => {
       }
 
       const nextEvents: ToolEvent[] = [];
+      nextEntry = true;
       const next = await session.sendUserMessage("다음 칸 칠해줘", (event) => { if (event.type === "tool_call") nextEvents.push(event); });
-      expect(next.stoppedReason).toBe("final");
+      expect(next.stoppedReason, JSON.stringify({ error: next.error, plannerCalls: planner.mock.calls.length,
+        workingCalls: chat.mock.calls.length, events: nextEvents, acceptance: session.getAcceptanceSnapshot() })).toBe("final");
       expect(chat).toHaveBeenCalledTimes(steps.length);
-      expect(session.getAcceptanceSnapshot()).toMatchObject({ status: "blocked", items: [{ id: "acceptance-contract", evidence: [{ passed: false }] }] });
+      expect(planner).toHaveBeenCalledTimes(1);
+      expect(session.getAcceptanceSnapshot()?.status).toBe("blocked");
+      expect(session.getAcceptanceSnapshot()?.items.map(item => item.id)).toEqual(["request-1:source:0", "acceptance-contract", "request-2:source:0"]);
+      expect(session.getAcceptanceSnapshot()?.items.find(item => item.id === "acceptance-contract")).toMatchObject({ evidence: [{ passed: false }] });
       expect(next.appliedCalls ?? []).toEqual([]);
-      expect(next.proposedCalls.map((call) => call.name)).toEqual(scope === "active" ? ["paint_tiles"] : []);
+      expect(next.proposedCalls.map((call) => call.name)).toEqual(scope === "active" ? ["fill_region", "paint_tiles"] : ["fill_region"]);
+      const nextBatch = next.proposedCalls.filter(call => nextEvents.some(event => event.args === call.args));
+      expect(nextBatch.map(call => call.name)).toEqual(scope === "active" ? ["paint_tiles"] : []);
       expect(nextEvents.map((event) => event.result.ok)).toEqual([scope === "active"]);
       expect(nextEvents[0].result.issues?.some((issue) => issue.code === "spec-gate-auto-expand") ?? false).toBe(false);
       if (scope === "implicit") expect(nextEvents[0].result.issues).toContainEqual(expect.objectContaining({ code: "spec-gate" }));

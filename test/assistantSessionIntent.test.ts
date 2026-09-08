@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Project } from "@/project/types";
 import { store } from "@/project/store";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
-import type { ChatRequest, ChatResult } from "@/ai/llmClient";
+import { LlmError, type ChatRequest, type ChatResult } from "@/ai/llmClient";
 import type { SessionEvent } from "@/ai/assistantSession";
 import { resetIntentDeclarationCache } from "@/ai/intentDeclarationClient";
 import { declaredIntent, fixedDeclarer } from "./intentFixture";
@@ -104,14 +104,31 @@ describe("의도 선언이 세션 라우팅을 정한다", () => {
   it("auto 모드는 같은 선언에도 멈추지 않고 진행한다(F-05)", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const seen: ChatRequest[] = [];
+    const events: SessionEvent[] = [];
+    const sentinel = "F05_WORKING_RESPONSE";
     const session = new AssistantSession(createBlankProject(), {
       config: AUTO_CONFIG,
-      chat: scriptedChat([finalResult("야외 집으로 진행합니다.")], seen),
+      chat: async (_config, request) => {
+        seen.push(request);
+        if (seen.length > 1) throw new LlmError("F05 working response observed; no authored output scripted", 401);
+        request.onToken?.(sentinel);
+        return finalResult(sentinel);
+      },
       declareIntent: fixedDeclarer({ space: "unclear", clarify: "실내인가요 야외인가요?", needsPlan: false }),
     });
-    const result = await session.sendUserMessage("집 하나 만들어줘", () => {});
-    expect(seen.length).toBeGreaterThan(0);
-    expect(result.assistantText).toBe("야외 집으로 진행합니다.");
+    const result = await session.sendUserMessage("집 하나 만들어줘", event => events.push(event));
+    expect(seen).toHaveLength(2);
+    expect(seen[0].tools?.length).toBeGreaterThan(0);
+    expect(events).toContainEqual({ type: "assistant_token", delta: sentinel });
+    expect(session.getMessages()).toContainEqual(expect.objectContaining({ role: "assistant", content: sentinel }));
+    expect(result.stoppedReason).toBe("error");
+    expect(result.error).toContain("F05 working response observed");
+    expect(result.runOutcome).toEqual({ execution: "failed", goal: "incomplete", delivery: "no-change" });
+    expect(result.proposedCalls).toEqual([]);
+    expect(result.appliedCalls ?? []).toEqual([]);
+    expect(session.getRunEndProof()).toBeNull();
+    expect(session.getAcceptanceSnapshot()?.items).toMatchObject([{ id: "request-1:source:0", required: true }]);
+    expect(session.getHarnessSnapshot().requests).toMatchObject([{ rawInstruction: "집 하나 만들어줘", units: [{ coverage: "uncovered", criteria: null }] }]);
     expect(statuses(session).some((text) => text.startsWith("의도 확인 건너뜀"))).toBe(true);
   }, 30000);
 
