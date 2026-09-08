@@ -17,6 +17,8 @@ import { clearConversations, conversationScopeKey, loadLatestConversation, saveC
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
+import { bounded, deferred } from "./aiEpochFixture";
+import { getMapEditHistoryEntries } from "@/editor/mapEditHistory";
 
 let restoreDom: (() => void) | null = null;
 let storage: Map<string, string>;
@@ -209,26 +211,78 @@ describe("진행 상태와 중단", () => {
 
   it("AssistantSession은 AbortSignal을 LLM 호출에 전달하고 중단 결과로 종료한다", async () => {
     const controller = new AbortController();
-    let receivedSignal: AbortSignal | undefined;
-    const chat = async (_config: unknown, req: ChatRequest): Promise<ChatResult> => {
-      receivedSignal = req.signal;
+    const entered = deferred<AbortSignal>();
+    const aborted = deferred<void>();
+    const chat = vi.fn(async (_config: unknown, req: ChatRequest): Promise<ChatResult> => {
+      const signal = req.signal;
+      if (!signal) throw new Error("LLM request missing owned cancellation signal");
       return await new Promise((_resolve, reject) => {
-        req.signal?.addEventListener("abort", () => reject(new LlmAbortError()));
+        signal.addEventListener("abort", () => {
+          aborted.resolve();
+          reject(new LlmAbortError());
+        }, { once: true });
+        entered.resolve(signal);
       });
-    };
-    const session = new AssistantSession(createBlankProject(), {
+    });
+    const project = createBlankProject();
+    const canonical = structuredClone(store.getCurrent());
+    const history = getMapEditHistoryEntries();
+    const session = new AssistantSession(project, {
       config: { ...defaultAiConfig(), apiKey: "sk-test" },
       chat,
     });
 
     const pending = session.sendUserMessage("길 깔아줘", () => {}, controller.signal);
-    await Promise.resolve();
-    controller.abort();
-    const result = await pending;
+    try {
+      // Subscribe inside the actual request before aborting, not after an arbitrary microtask.
+      const receivedSignal = await bounded(entered.promise);
+      expect(receivedSignal).not.toBe(controller.signal);
+      expect(receivedSignal.aborted).toBe(false);
+      controller.abort();
+      await bounded(aborted.promise);
+      const result = await bounded(pending);
 
-    expect(receivedSignal).toBe(controller.signal);
+      expect(receivedSignal.aborted).toBe(true);
+      expect(chat).toHaveBeenCalledTimes(1);
+      expect(result.stoppedReason).toBe("aborted");
+      expect(result.runOutcome?.execution).toBe("cancelled");
+      expect(result.proposedCalls).toEqual([]);
+      expect(result.appliedCalls ?? []).toEqual([]);
+      expect(session.getProposedProject()).toEqual(project);
+      expect(store.getCurrent()).toEqual(canonical);
+      expect(getMapEditHistoryEntries()).toEqual(history);
+      expect(session.getMessages().filter(message => message.role === "assistant" || message.role === "tool")).toEqual([]);
+      expect(session.canRetryLastTurn()).toBe(false);
+    } finally {
+      controller.abort();
+      await bounded(pending);
+    }
+  });
+
+  it.each(["pre-aborted", "before-dispatch"])("AssistantSession does not dispatch an LLM request when cancelled %s", async boundary => {
+    const controller = new AbortController();
+    const chat = vi.fn(async (): Promise<ChatResult> => { throw new Error("Cancelled request dispatched"); });
+    const project = createBlankProject();
+    const canonical = structuredClone(store.getCurrent());
+    const history = getMapEditHistoryEntries();
+    const session = new AssistantSession(project, {
+      config: { ...defaultAiConfig(), apiKey: "sk-test" },
+      chat,
+    });
+    if (boundary === "pre-aborted") controller.abort();
+    const pending = session.sendUserMessage("길 깔아줘", () => {}, controller.signal);
+    if (boundary === "before-dispatch") controller.abort();
+    const result = await bounded(pending);
+
+    expect(chat).not.toHaveBeenCalled();
     expect(result.stoppedReason).toBe("aborted");
-    expect(result.error).toBe("사용자가 중단했습니다");
+    expect(result.runOutcome?.execution).toBe("cancelled");
+    expect(result.proposedCalls).toEqual([]);
+    expect(result.appliedCalls ?? []).toEqual([]);
+    expect(session.getProposedProject()).toEqual(project);
+    expect(store.getCurrent()).toEqual(canonical);
+    expect(getMapEditHistoryEntries()).toEqual(history);
+    expect(session.getMessages().filter(message => message.role === "assistant" || message.role === "tool")).toEqual([]);
     expect(session.canRetryLastTurn()).toBe(false);
   });
 });

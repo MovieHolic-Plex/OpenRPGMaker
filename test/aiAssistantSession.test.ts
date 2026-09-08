@@ -968,12 +968,17 @@ describe("레이어 검증(자문) + run-end 저장 증명 (todo 5)", () => {
     };
     const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 4 }, chat });
 
-    const result = await session.sendUserMessage("타이틀을 3단계로 개선해줘", () => {}, undefined, { autonomous: true });
+    const controller = new AbortController();
+    const pending = session.sendUserMessage("타이틀을 3단계로 개선해줘", () => {}, controller.signal, { autonomous: true });
+    const ownedSignal = session.getRunOperation().signal;
+    const result = await pending;
 
+    expect(ownedSignal).not.toBe(controller.signal);
+    expect(ownedSignal.aborted).toBe(false);
     expect(result.stoppedReason).toBe("final");
     expect(flushSpy).toHaveBeenCalledTimes(1);
     expect(reloadSpy).not.toHaveBeenCalled();
-    expect(verifySpy).toHaveBeenCalledExactlyOnceWith(receipt, { signal: undefined });
+    expect(verifySpy).toHaveBeenCalledExactlyOnceWith(receipt, { signal: ownedSignal });
     expect(session.getRunEndProof()).toMatchObject({ status: "succeeded", verified: true, receipt });
     const audits = gateStatusTexts(session);
     expect(audits.filter((t) => t.split(" ")[0] === "agent_run_saved")).toHaveLength(1);
@@ -983,6 +988,11 @@ describe("레이어 검증(자문) + run-end 저장 증명 (todo 5)", () => {
     expect(audits.some((t) => t.includes("agent_run:auto-continue"))).toBe(true);
     // 정상 진행 중인 항목은 막히지 않는다(쓰기가 성공하면 항목별 시도 수가 0으로 돌아간다).
     expect(audits.some((t) => t.includes("ralph:stalled"))).toBe(false);
+    // The caller still cancels the owned boundary; proof never receives a detached dummy signal.
+    controller.abort();
+    expect(ownedSignal.aborted).toBe(true);
+    expect(verifySpy).toHaveBeenCalledTimes(1);
+    expect(reloadSpy).not.toHaveBeenCalled();
   }, 120000);
 
   it("(c-2) remote 비활성 → agent_run_local_only 감사, flush 호출 없음, 오류 없음", async () => {
