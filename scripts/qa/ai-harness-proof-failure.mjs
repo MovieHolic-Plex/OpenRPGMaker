@@ -10,9 +10,7 @@ export function proofFailureResponse(titleToken) {
         && typeof message.content === 'string' && message.content.includes(instruction)),
       'Coverage must belong to the exact P1 request');
       return { role: 'assistant', content: JSON.stringify({ requirements: [{ text: instruction,
-        criteria: [{ kind: 'functionalUnresolved',
-          reason: 'The requested exact title value has no evaluator in the current coverage schema',
-        }],
+        criteria: [{ kind: 'projectTitle', title: titleToken }],
       }] }) };
     }
     if (!body.tools?.length) return { role: 'assistant', content: JSON.stringify({

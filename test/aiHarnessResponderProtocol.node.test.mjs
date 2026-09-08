@@ -30,7 +30,7 @@ const toolRequest = calls => ({ tools: [...new Set(calls.map(call => call.name))
   type: 'function', function: { name, parameters: { type: 'object' } },
 })) });
 
-async function assertAudit(respond, text) {
+async function assertAudit(respond, text, criteria = [{ kind: 'projectTitle', title: titleToken }]) {
   const message = await respond(auditRequest(text));
   assert.equal(message.role, 'assistant');
   assert.equal(message.tool_calls, undefined);
@@ -42,8 +42,7 @@ async function assertAudit(respond, text) {
   assert.deepEqual(parsed.requirements, raw.requirements);
   assert.equal(parsed.requirements.length, 1);
   assert.equal(parsed.requirements[0].text, text);
-  assert.deepEqual(parsed.requirements[0].criteria.map(criterion => criterion.kind), ['functionalUnresolved']);
-  assert.ok(parsed.requirements[0].criteria[0].reason.trim().length > 0);
+  assert.deepEqual(parsed.requirements[0].criteria, criteria);
 }
 
 async function assertForeignRejected(respond, text) {
@@ -101,7 +100,7 @@ async function armP2(t, group, id, hold = false) {
       getByTestId: () => ({ click: async () => {} }),
       evaluate: async (_callback, argument) => {
         if (typeof argument === 'string') {
-          assert.equal(argument, `${projectId}/${id}: inspect only the scripted scope.`);
+          assert.equal(argument, `${projectId}/${id}: ${specs[index].instruction}`);
           ready.resolve(); await stop.promise; throw stopped;
         }
         return fixture;
@@ -118,7 +117,7 @@ async function armP2(t, group, id, hold = false) {
   assert.deepEqual(report.caseFailures.map(failure => failure.case), specs.slice(0, index).map(spec => spec.id));
   assert.ok(report.caseFailures.every(failure => failure.message === advance.message));
   return { ...contracts, spec: specs[index], records, gates, holdWait,
-    text: `${projectId}/${id}: inspect only the scripted scope.` };
+    text: `${projectId}/${id}: ${specs[index].instruction}` };
 }
 
 function assertRound(message, spec, round) {
@@ -149,18 +148,18 @@ test('P1 intent then audit uses the production coverage parser without consuming
   assert.equal(respond(tools).tool_calls, undefined);
 });
 
-for (const id of ['required-skip', 'replan-preserves-required']) {
+for (const id of cases.required.map(spec => spec.id)) {
   test(`P2 ${id}: intent/audit and rejected foreign requests preserve original tool rounds`, async t => {
     const h = await armP2(t, 'required', id);
     assert.deepEqual(JSON.parse((await h.respond(intentRequest(h.text))).content), h.spec.intent);
-    await assertAudit(h.respond, h.text);
+    await assertAudit(h.respond, h.text, h.spec.criteria);
     await assertForeignRejected(h.respond, h.text);
     for (const [round, calls] of h.spec.rounds.entries()) {
       assert.deepEqual(JSON.parse((await h.respond(intentRequest(h.text))).content), h.spec.intent);
-      await assertAudit(h.respond, h.text);
+      await assertAudit(h.respond, h.text, h.spec.criteria);
       assertRound(await h.respond(toolRequest(calls)), h.spec, round);
     }
-    await assertAudit(h.respond, h.text);
+    await assertAudit(h.respond, h.text, h.spec.criteria);
     assert.equal((await h.respond(toolRequest(h.spec.rounds.flat()))).content, 'QA_FINAL');
     assert.deepEqual(h.records.filter(record => record.type === 'p2-scripted-tools').map(record => record.round),
       h.spec.rounds.map((_, round) => round + 1));
@@ -171,7 +170,7 @@ test('P2 audits neither consume nor release the original post-tool hold', async 
   const h = await armP2(t, 'matrix', 'rejected-apply', true);
   assert.equal(h.gates.length, 2);
   assert.deepEqual(JSON.parse((await h.respond(intentRequest(h.text))).content), h.spec.intent);
-  await assertAudit(h.respond, h.text);
+  await assertAudit(h.respond, h.text, h.spec.criteria);
   await assertForeignRejected(h.respond, h.text);
   assert.equal(h.gates[0].resolved, false);
   assert.equal(h.gates[1].resolved, false);
@@ -185,7 +184,7 @@ test('P2 audits neither consume nor release the original post-tool hold', async 
   t.after(async () => { h.release(); await bounded(final); });
   await waiting;
   assert.equal(h.gates[0].resolved, true);
-  await assertAudit(h.respond, h.text);
+  await assertAudit(h.respond, h.text, h.spec.criteria);
   assert.deepEqual(JSON.parse((await h.respond(intentRequest(h.text))).content), h.spec.intent);
   await assertForeignRejected(h.respond, h.text);
   assert.equal(h.gates[1].resolved, false);
@@ -194,4 +193,38 @@ test('P2 audits neither consume nor release the original post-tool hold', async 
   assert.equal((await bounded(final)).content, 'QA_FINAL');
   assert.equal((await h.respond(tools)).content, 'QA_FINAL');
   assert.deepEqual(h.records.filter(record => record.type === 'p2-scripted-tools').map(record => record.round), [1]);
+});
+
+for (const id of ['legacy-unassessed', 'legacy-assessed']) {
+  test(`P2 ${id}: scheduler-only legacy input remains outside authoring audit`, async t => {
+    const h = await armP2(t, 'matrix', id);
+    const declared = JSON.parse((await h.respond(intentRequest(h.text))).content);
+    assert.equal(declared.mode, 'other');
+    assert.deepEqual(declared.tools, []);
+    assert.equal(h.spec.criteria, undefined);
+    assert.deepEqual(h.spec.coverageIds, []);
+    await assert.rejects(() => h.respond(auditRequest(h.text)), assert.AssertionError);
+    assertRound(await h.respond(toolRequest(h.spec.rounds[0])), h.spec, 0);
+    assert.equal(h.spec.rounds[0][0].name, 'skip_work_item');
+    if (id === 'legacy-unassessed') assert.equal(declared.acceptance, undefined);
+    else assert.deepEqual(declared.acceptance[0].criteria,
+      [{ kind: 'mapDimensions', target: { mapId: fixture.mapId }, width: fixture.width, height: fixture.height }]);
+  });
+}
+
+test('P2 host IDs reuse matching required planner criteria without duplicating withdrawal', () => {
+  const spec = cases.required.find(spec => spec.id === 'user-withdrawal');
+  assert.deepEqual(spec.requiredIds, spec.coverageIds);
+  assert.equal(spec.withdrawId, 'request-1:coverage:0:1');
+  const requirements = spec.rounds[0][0].args.requirements;
+  assert.deepEqual(requirements.map(requirement => requirement.id), spec.coverageIds);
+  assert.deepEqual(requirements.map(requirement => requirement.criteria[0]), spec.criteria);
+  assert.deepEqual(spec.rounds[0][0].args.layers[0].items.map(item => item.id),
+    ['work-existing-size', 'work-required-events']);
+  assert.deepEqual(spec.rounds[0].slice(1).map(call => call.args.itemId),
+    ['work-existing-size', 'work-required-events']);
+  const optional = cases.required.find(spec => spec.id === 'optional-skip');
+  const optionalRequirement = optional.rounds[0][0].args.requirements.find(requirement => requirement.id === optional.optionalId);
+  assert.equal(optionalRequirement.required, false);
+  assert.equal(optional.coverageIds.includes(optional.optionalId), false);
 });

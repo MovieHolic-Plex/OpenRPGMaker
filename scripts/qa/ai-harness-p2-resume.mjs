@@ -5,11 +5,14 @@ export async function runBlockedAskResume(harness, transport, initial) {
   const itemId = 'blocked-resume-work';
   const items = state => state.harness.workPlan.layers.flatMap(layer => layer.items);
   const authority = snapshot => ({ id: snapshot?.id, status: snapshot?.status,
-    items: snapshot?.items.map(item => ({ id: item.id, status: item.status, mapId: item.mapId,
+    items: snapshot?.items.map(item => ({ id: item.id, status: item.status, mapId: item.mapId, source: item.source, required: item.required,
       passed: item.evidence.map(evidence => evidence.passed) })) });
   // Given: real repeated tool failures blocked work with canonical unmet acceptance.
   assert.equal(items(initial).find(item => item.id === itemId)?.status, 'blocked');
-  assert.deepEqual(initial.acceptance?.items.map(item => item.id), ['blocked-resume-event']);
+  assert.deepEqual(initial.acceptance?.items.map(item => item.id), ['request-1:coverage:0:0']);
+  assert.equal(initial.acceptance.items[0].required, true);
+  assert.equal(initial.acceptance.items[0].source.requestId, 'request-1');
+  assert.deepEqual(initial.acceptance.items[0].evidence.map(evidence => evidence.passed), [false]);
   assert.equal(initial.acceptance.status, 'blocked');
   assert.equal(initial.events.filter(event => event.type === 'tool_call' && event.name === 'resize_map' && !event.result.ok).length, 4);
   const retained = initial.acceptance;

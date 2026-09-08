@@ -12,15 +12,14 @@ export function createP2Contracts(harness) {
     assert.ok(current, 'LLM request must belong to an armed case');
     const system = body.messages?.[0]?.content;
     if (typeof system === 'string' && system.startsWith('REQUEST_COVERAGE_AUDIT\n')) {
-      const instruction = `${projectId}/${current.id}: inspect only the scripted scope.`;
+      const instruction = `${projectId}/${current.id}: ${current.instruction}`;
       assert.ok(body.messages.some(message => message.role === 'user'
         && typeof message.content === 'string' && message.content.includes(instruction)),
       'Coverage must belong to the exact armed P2 request');
-      return { role: 'assistant', content: JSON.stringify({ requirements: [{ text: instruction,
-        criteria: [{ kind: 'functionalUnresolved',
-          reason: 'The request does not specify an independently evaluable scripted scope or an exact inspection-only preservation check',
-        }],
-      }] }) };
+      assert.ok(current.criteria?.length, 'Only an armed authoring case may request an audit');
+      const requirements = [{ text: instruction, criteria: current.criteria }];
+      record('p2-request-coverage', { case: current.id, instruction, requirements });
+      return { role: 'assistant', content: JSON.stringify({ requirements }) };
     }
     if (!body.tools?.length) return { role: 'assistant', content: JSON.stringify(current.intent) };
     if (held?.beforeTools && !held.used) {
@@ -63,7 +62,7 @@ export function createP2Contracts(harness) {
         agentMode: spec.agentMode ?? 'auto', maxToolCalls: spec.maxToolCalls ?? 24 });
       qa.events = []; qa.result = undefined; qa.bridgeResult = undefined; qa.activity = undefined;
     }, spec);
-    const instruction = `${projectId}/${spec.id}: inspect only the scripted scope.`;
+    const instruction = `${projectId}/${spec.id}: ${spec.instruction}`;
     await observations.armActivity(instruction);
     let proofGate;
     switch (spec.action) {
@@ -127,6 +126,26 @@ export function createP2Contracts(harness) {
     // Then: actual observed contracts, never fallback/fabricated outcome objects.
     const observed = await observations.capture(spec.id);
     observations.agreement(spec, observed);
+    if (spec.coverageIds.length) observations.check(`${spec.id}: source-bound request facts`, () => {
+      for (const [index, id] of spec.coverageIds.entries()) {
+        const item = observed.acceptance?.items.find(item => item.id === id);
+        assert.ok(item, `Host obligation retained: ${id}`);
+        assert.equal(item.required, true);
+        assert.deepEqual(item.source, { requestId: 'request-1', text: instruction, scope: null });
+        assert.deepEqual(item.evidence.map(evidence => evidence.passed), [spec.coverageFacts[index]]);
+        assert.equal(item.status === 'verified', spec.coverageFacts[index]);
+      }
+    });
+    if (spec.id.startsWith('legacy-')) observations.check(`${spec.id}: genuine legacy scheduler contract`, () => {
+      assert.equal(observed.events.some(event => event.type === 'tool_call' && event.name === 'set_title_screen'), false);
+      assert.equal(observed.harness.workPlan.layers.flatMap(layer => layer.items).filter(item => item.status === 'skipped').length, 1);
+      if (spec.id === 'legacy-unassessed') assert.equal(observed.acceptance, null);
+      else {
+        assert.deepEqual(observed.acceptance.items.map(item => item.id), ['existing-size']);
+        assert.equal(observed.acceptance.items[0].status, 'verified');
+        assert.deepEqual(observed.acceptance.items[0].evidence.map(evidence => evidence.passed), [true]);
+      }
+    });
     if (spec.action === 'protect-live-house') {
       observations.check(`${spec.id}: stale apply preserved live bytes`, () => assert.equal(observed.live.title, report.lastAppliedTitle));
       observations.check(`${spec.id}: pending draft retained`, () => assert.equal(observed.proposedCalls?.length, 1));
@@ -160,6 +179,9 @@ export function createP2Contracts(harness) {
       observations.check(`${spec.id}: withdrawal retains unsatisfied history`, () => {
         const item = withdrawn.acceptance?.items.find(item => item.id === spec.withdrawId);
         assert.ok(item); assert.notEqual(item.status, 'verified');
+        assert.equal(item.withdrawal?.source, 'user');
+        assert.equal(item.withdrawal?.requirementId, spec.withdrawId);
+        assert.equal(item.source.text, instruction);
       });
       observations.check(`${spec.id}: UI reflects user withdrawal`, () => assert.equal(withdrawn.ui[0]?.goal, 'satisfied'));
     }

@@ -29,13 +29,19 @@ export function createEpochContracts(harness) {
     const system = body.messages?.[0]?.content;
     if (typeof system === 'string' && system.startsWith('REQUEST_COVERAGE_AUDIT\n')) {
       assert.equal(typeof script.instruction, 'string');
-      assert.ok(body.messages.some(message => typeof message.content === 'string'
+      assert.ok(body.messages.some(message => message.role === 'user' && typeof message.content === 'string'
         && message.content.includes(script.instruction)), 'Coverage must belong to the exact armed request');
-      // Current coverage has no exact title/item/wiki-policy evaluator. Report
-      // that missing authority honestly rather than approving unrelated criteria.
-      const requirements = [{ text: script.instruction, criteria: [{ kind: 'functionalUnresolved',
-        reason: `Native ${script.id}: exact ${script.tool} value/preservation requirements have no evaluator in the current coverage schema`,
-      }] }];
+      assert.ok(['set_title_screen', 'upsert_item'].includes(script.tool), 'Read-only controls do not request authoring coverage');
+      const criteria = script.tool === 'set_title_screen'
+        ? [{ kind: 'projectTitle', title: script.args.title },
+          { kind: 'projectPreserve', scope: 'authored', allowedChanges: [{ kind: 'projectTitle' }] }]
+        : [{ kind: 'itemValues', itemId: script.args.item.id, name: script.args.item.name, price: script.args.item.price },
+          { kind: 'projectPreserve', scope: 'authored', allowedChanges: [{ kind: 'itemAddition', itemId: script.args.item.id }] }];
+      if (script.id === 'commit-A') criteria.push({ kind: 'wikiDeclaration',
+        documentId: 'w_p3_native_epoch', combatMode: 'contact',
+        sourceQuote: 'Record my preference for contact battles with visible monsters as an explicit wiki declaration, not implemented combat.',
+      });
+      const requirements = [{ text: script.instruction, criteria }];
       record('epoch-request-coverage', { owner: script.id, requirements });
       return { role: 'assistant', content: JSON.stringify({ requirements }) };
     }
@@ -269,7 +275,7 @@ export function createEpochContracts(harness) {
 
     // Positive control: cancelled fetch cannot authorize a late draft application.
     const controlGate = arm('control-A', 'set_title_screen', { title: `${ownerTitle} never-applied` }, 'llm');
-    const controlA = await start('control-A', 'Change the title only.');
+    const controlA = await start('control-A', `Set the title to ${ownerTitle} never-applied; preserve all other authored content, allowing coordinator wiki bookkeeping.`);
     await arrived(controlGate, controlA);
     const controlDraft = await snapshot('01-control-A-draft');
     assert.ok(controlDraft.sessions['control-A'].events.some(event => event.type === 'tool_call' && event.name === 'set_title_screen' && event.result.ok));
@@ -297,17 +303,25 @@ export function createEpochContracts(harness) {
     await page.getByTestId('ai-new-chat').click();
     await page.evaluate(() => { qa.epochs.phase = 'commit-A'; });
     const commitGate = arm('commit-A', 'set_title_screen', { title }, 'commit');
-    const commitA = await start('commit-A', 'Use contact battles with visible monsters. Change only the title.');
+    const commitA = await start('commit-A', `Record my preference for contact battles with visible monsters as an explicit wiki declaration, not implemented combat. Set the title to ${title}; preserve all other authored content, allowing coordinator wiki bookkeeping.`);
     await arrived(commitGate, commitA);
     const appliedA = await snapshot('04-A-applied-commit-held');
     assert.equal(appliedA.title, title, 'A content really applied before cancel');
     assert.ok(appliedA.world.entities.some(entity => entity.id === 'w_p3_native_epoch'));
+    const declarations = appliedA.world.entities.filter(entity => entity.id === 'w_p3_native_epoch');
+    assert.equal(declarations.length, 1);
+    const declaration = declarations[0];
+    assert.equal(declaration.wiki.kind, 'declaration');
+    assert.equal(declaration.wiki.basis, 'explicit');
+    assert.equal(declaration.wiki.combatMode, 'contact');
+    assert.ok(declaration.wiki.sources.some(source => source.kind === 'user' && source.text === commitA));
+    assert.equal(appliedA.world.entities.some(entity => entity.wiki?.supersedes?.includes(declaration.id)), false);
     assert.equal(appliedA.sessions['commit-A'].returned, true, 'Ordinary apply is after real session return');
     await completion('A-commit-held-before-abort', 'pending');
     await replace();
     await page.evaluate(() => { qa.epochs.phase = 'replacement-B'; });
     arm('commit-B', 'upsert_item', { item: { id: itemId, name: 'Replacement B', price: 37 } });
-    const commitB = await start('commit-B', 'Add only the replacement item.');
+    const commitB = await start('commit-B', `Add item ${itemId} named Replacement B with price 37; preserve all other authored content, allowing coordinator wiki bookkeeping.`);
     await harness.settled(); await terminal(commitB);
     const before = await snapshot('05-B-persisted-before-late-A');
     assert.equal(before.sessions['commit-A'].aborted, true, 'Real Abort signal reached A');
