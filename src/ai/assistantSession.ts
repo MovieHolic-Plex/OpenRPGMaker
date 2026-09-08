@@ -350,6 +350,14 @@ const VOCAB_SOFT_CONFIRM_APPROVAL_WARNING =
   "🖼 맵 배치와 함께 재료를 합의했습니다(origin:user). 되돌리면 배치와 합의가 함께 원복됩니다.";
 const HARD_CLUSTER_RULE_WARNING = "⚠️ 강한 규칙: 이 타일셋을 쓰는 모든 맵의 저장(커밋)이 규칙 위반 시 거부됩니다.";
 export const TOKEN_BUDGET_STATUS_TEXT = "요청이 커서 이번 턴에는 일부만 제안합니다. 이어서 요청해 주세요.";
+/**
+ * 예산 안내를 낼 종료 사유 — 사용자에게 "이어서 요청해 주세요" 라고 말할 자격이 있는 것만.
+ *
+ * 이 안내는 **런 경계**(finishRunRecap)에서만 나간다. 한 턴 안의 라운드/토큰 상한은 자율
+ * 드라이버가 스스로 다음 턴을 여는 흔한 중간 사건이라, 턴 루프에서 내보내면 자동 계속마다
+ * 같은 문장이 채팅에 쌓인다(사용자는 이어서 요청한 적이 없는데 계속 그러라는 말을 듣는다).
+ */
+const BUDGET_STOP_REASONS: ReadonlySet<TurnResult["stoppedReason"]> = new Set(["token-budget", "max-tool-calls"]);
 
 // 예산 소진으로 모델의 마무리가 없으면 실제 적용분과 아직 적용 전인 제안을 함께 알린다.
 // 마일스톤은 제안 큐를 비우므로 pending=0만으로 "변경 없음"을 판단하면 안 된다.
@@ -3406,6 +3414,8 @@ export class AssistantSession {
     auditFrom: number,
     onEvent: (event: SessionEvent) => void,
   ): TurnResult {
+    // 예산으로 멈춘 런은 여기서 딱 한 번 안내한다(턴 루프는 내지 않는다 — BUDGET_STOP_REASONS).
+    if (BUDGET_STOP_REASONS.has(result.stoppedReason)) onEvent({ type: "status", text: TOKEN_BUDGET_STATUS_TEXT });
     this.publishAcceptance(onEvent);
     if (this.acceptanceOpen() && !this.lastTurnPlanOnly && this.turnComposerMode !== "ask" && !this.isDraftReviewApproved()) {
       this.acceptance?.stop();
@@ -4904,11 +4914,8 @@ export class AssistantSession {
       }
 
       // 출력 토큰 예산 확인(라운드의 툴 실행까지 마친 뒤). 예산 소진이 유일한 사용자 제한.
+      // 사용자용 안내는 여기서 내지 않는다 — 런이 실제로 멈출 때 finishRunRecap 이 한 번 낸다.
       if (spentOutputTokens >= this.config.maxTokens) {
-        onEvent({
-          type: "status",
-          text: TOKEN_BUDGET_STATUS_TEXT,
-        });
         this.runExecution = "budget-exhausted";
         this.pushAudit({ kind: "status", text: `턴 종료(token-budget) — 제안 ${proposedByKey.size}건 · 출력 토큰 ~${spentOutputTokens}` });
         return {
@@ -4920,7 +4927,7 @@ export class AssistantSession {
     }
 
     // 라운드 안전핀 도달(기본 200 — 정상 작업에선 도달하지 않음) — 현재까지의 changeset을 제시.
-    onEvent({ type: "status", text: TOKEN_BUDGET_STATUS_TEXT });
+    // 자율 런은 이 상한을 턴마다 만난다. 안내는 런 경계에서만(finishRunRecap).
     this.runExecution = "budget-exhausted";
     this.pushAudit({ kind: "status", text: `턴 종료(max-tool-calls) — 제안 ${proposedByKey.size}건 · 출력 토큰 ~${spentOutputTokens}` });
     return {
