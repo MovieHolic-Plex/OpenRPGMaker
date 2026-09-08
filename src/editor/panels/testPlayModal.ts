@@ -1,3 +1,4 @@
+import { getAudioEngine } from "@/player/audio";
 import { advanceBattleRuntime } from "@/battle/battleRuntimeAdvance";
 import { PRODUCT_BRAND } from "@/brand";
 import { createBattleRuntime } from "@/battle/runtime";
@@ -304,6 +305,8 @@ function openTestPlayShell(
   shellOptions: { readonly runControls?: boolean; readonly nestedEnemyTest?: boolean } = {},
 ): HTMLElement {
   closeTestPlayModal();
+  // Claim the initiating click/key before persistence and bootstrap yield.
+  getAudioEngine().unlock();
   if (shellOptions.nestedEnemyTest && document.activeElement instanceof HTMLElement) {
     returnFocusAfterEnemyTest = document.activeElement;
   }

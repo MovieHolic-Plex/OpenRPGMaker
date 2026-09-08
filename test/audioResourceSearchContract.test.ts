@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { searchResources } from "@/assets/resourceSearch";
 import { runTool } from "@/editor/tools/toolRunner";
 import {
@@ -7,6 +7,9 @@ import {
   audioSearchProject,
   catalogDescriptionProbe,
 } from "./support/audioSearchFixture";
+
+// Preserve creative-brief fallback contracts; real AI draft search is covered unmocked.
+vi.mock("@/assets/audioAiDescriptions", () => ({ getAudioAiDescription: () => undefined }));
 
 describe("effective audio description search", () => {
   it.each([

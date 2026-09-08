@@ -974,7 +974,7 @@ footer {
 
 .event-editor .event-editor-workbench,
 .event-editor .event-editor-workbench:not(.has-command-inspector) {
-  grid-template-columns: var(--balanced-settings-width) minmax(0, 1fr) !important;
+  grid-template-columns: var(--balanced-settings-width) minmax(0, 1fr) var(--event-inspector-reserved-track, 0px) !important;
 }
 
 .event-editor .event-editor-workbench.has-command-inspector {
@@ -986,6 +986,33 @@ footer {
    (1024 기준 236 + 464 + 324). 닫혀 있을 때의 268px 설정 폭은 그대로 둔다. */
 @media (max-width: 1180px) {
   .event-editor .event-editor-workbench.has-command-inspector {
+    --balanced-settings-width: 236px;
+    --balanced-inspector-width: 324px;
+  }
+}
+
+/* Selecting a command must not rewrap the toolbar or move rows between the two
+   clicks of a double-click. Authoring views keep the existing inspector slot;
+   preview/flow and staged proposals can still use the full command column. */
+@media (min-width: 721px) {
+  .event-editor .event-editor-workbench:has(.event-contents-fieldset > .cmd-list:not([hidden]), .event-storyboard-host > .event-storyboard:not([hidden])) {
+    --event-inspector-reserved-track: var(--balanced-inspector-width);
+  }
+
+  .event-editor .event-editor-workbench:not(.has-command-inspector):has(.event-contents-fieldset > .cmd-list:not([hidden]), .event-storyboard-host > .event-storyboard:not([hidden]))::after {
+    content: "명령을 선택하면 여기에서 편집합니다";
+    grid-column: 3;
+    grid-row: 1;
+    padding: var(--space-4);
+    border-left: 1px solid var(--border);
+    background: var(--bg-raised);
+    color: var(--text-2);
+    font: 400 13px/1.5 var(--font-ui);
+  }
+}
+
+@media (min-width: 721px) and (max-width: 1180px) {
+  .event-editor .event-editor-workbench:has(.event-contents-fieldset > .cmd-list:not([hidden]), .event-storyboard-host > .event-storyboard:not([hidden])) {
     --balanced-settings-width: 236px;
     --balanced-inspector-width: 324px;
   }
@@ -1757,6 +1784,14 @@ footer {
   font: 700 10px/1 var(--font-ui);
   padding: 4px 0;
   text-align: center;
+}
+
+.event-editor-modal-header .event-draft-validation-message > span {
+  display: block;
+}
+
+.event-editor-modal-header .event-draft-validation-head {
+  flex-wrap: wrap;
 }
 
 .event-editor-modal-header .event-draft-validation-message {

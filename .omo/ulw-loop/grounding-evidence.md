@@ -104,3 +104,28 @@ npm test -- test/assistantSessionIntent.test.ts
 - Full build/repository gates, browser/live provider QA, generated wiki INDEX, independent
   review/repair loop and final merge remain lead-owned per component handoff. This component
   adds no review orchestration, push, PR, merge or authored user content.
+
+
+## Lead follow-up: rewritten delivery receipts
+
+- The committed map recipe already uses canonical active `tile_query`, not deprecated
+  `get_tile_info`. The actual-active-name recipe test remains and passes.
+- Audited actual `messageBudget` rewriting: compacted tool results retain JSON but remove
+  data; summary compaction emits a user summary rather than a tool receipt. Neither earns
+  original read credit. Malformed/truncated historical tool strings were an unsafe boundary:
+  `JSON.parse` could throw after a successful model response.
+- Added boundary parsing and exact receipt validation (boolean success, snapshot/path,
+  safe nonnegative offset, original total length, next offset and exact text slice).
+  Malformed, redacted or inconsistent receipts are refused as evidence without aborting the
+  response. An intact later receipt still works; no snapshot poisoning or weakened ID gate.
+- Red: `npm test -- test/originalContext.test.ts` -> 5 failed / 21 passed.
+  `/tmp/grounding-delivery-red.log`. Failures were truncated JSON, null, altered total/next
+  offsets and nonboolean success. The real-compaction regression already passed.
+- Final green:
+  `npm test -- test/originalContext.test.ts test/assistantOriginalContext.test.ts test/assistantSessionCompaction.test.ts test/messageBudget.test.ts`
+  -> 4 files / 44 tests passed in one run. `/tmp/grounding-delivery-green.log`.
+- LSP diagnostics on both changed TS files: none before typecheck.
+  `npm run typecheck:app` -> exit 0 (`/tmp/grounding-delivery-typecheck.log`).
+- Confirmed lead baseline report already records 259 failures / 16154 passes, app exit 0,
+  pre-existing CSS-count and surface failures in `lead-baseline-and-provider.md`; it was not
+  duplicated or edited. The final lead QA matrix remains the integration acceptance surface.

@@ -18,6 +18,9 @@ import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import { MAX_RALPH_ATTEMPTS_PER_ITEM } from "@/ai/workPlan";
 import { fixedDeclarer } from "./intentFixture";
+import type { SessionEvent } from "@/ai/assistantSession";
+import type { ReviewInput } from "@/ai/independentReview";
+import { approvedReviewResponse, independentReviewPayload } from "./independentReviewFixture";
 
 type ChatResult = import("@/ai/llmClient").ChatResult;
 type ToolEvent = Extract<import("@/ai/assistantSession").SessionEvent, { type: "tool_call" }>;
@@ -209,32 +212,76 @@ describe("진행이 멈춘 항목은 사람에게 넘긴다", () => {
     const { AssistantSession, createBlankProject } = await load();
     const project = createBlankProject();
     installHermeticEnv(project);
+    const baseline = structuredClone(store.getCurrent());
+    const requestText = "타이틀 좀 다듬고 시작 골드는 200으로 해줘";
+    const events: SessionEvent[] = [];
+    const reviews: ReviewInput[] = [];
     const plan = {
       goal: "타이틀 다듬기",
       layers: [
         {
           title: "타이틀",
-          items: [{ title: "제목 확정", instruction: "set_title_screen", successTools: ["set_title_screen"] }],
+          items: [{ title: "제목 확정", instruction: "set_title_screen 후 set_session_start", successTools: ["set_title_screen", "set_session_start"] }],
         },
       ],
     };
-    // 헛된 종료 2회 → 쓰기 성공(시도 수 리셋) → 헛된 종료 2회 → 쓰기로 완료.
-    const { chat } = scriptedChat([
+    // 실제 초안 쓰기 후 Ralph 2회 → 쓰기 성공(리셋) → Ralph 2회 → 마지막 필수 쓰기.
+    // 처음부터 쓰기가 없는 종료는 별도의 acceptance 게이트이므로 여기서는 구분한다.
+    const writer = scriptedChat([
       final(JSON.stringify({ action: "new_plan", ...plan })),
       toolCall("set_work_plan", plan, "c_plan"),
+      toolCall("set_title_screen", { title: "초안" }, "c_first"),
       final("끝났습니다."),
       final("끝났습니다."),
       toolCall("set_title_screen", { title: "중간" }, "c_mid"),
+      final("끝났습니다."),
+      final("끝났습니다."),
+      toolCall("set_session_start", { gold: 200 }, "c_gold"),
       final("모두 끝났습니다."),
     ]);
-    const session = new AssistantSession(project, { config: CONFIG, chat, declareIntent: planDeclarer });
+    const session = new AssistantSession(project, {
+      // Writer rounds and the separate reviewer share this budget.
+      config: { ...CONFIG, maxToolCalls: 16, maxTokens: 16000 },
+      declareIntent: planDeclarer,
+      chat: async (_config, request) => {
+        const review = independentReviewPayload(request);
+        const approval = approvedReviewResponse(request);
+        if (review && approval) {
+          expect(request.tools).toEqual([]);
+          expect(request.tool_choice).toBe("none");
+          expect(store.getCurrent()).toEqual(baseline);
+          expect(session.getProposedProject().meta.title).toBe("중간");
+          expect(session.getProposedProject().session.gold).toBe(200);
+          expect(session.isDraftReviewApproved()).toBe(false);
+          reviews.push(review);
+          return approval;
+        }
+        return writer.chat();
+      },
+    });
 
-    const result = await session.sendUserMessage("타이틀 좀 다듬어줘", () => {}, undefined, { autonomous: true });
+    const result = await session.sendUserMessage(requestText, event => events.push(event), undefined, { autonomous: true });
 
     const audits = statusTexts(session);
     expect(audits.some((t) => t.startsWith("ralph:stalled"))).toBe(false);
+    expect(audits.filter(t => t.startsWith("ralph:continue"))).toHaveLength(4);
+    expect(result.stoppedReason, result.error).toBe("final");
     expect(result.workPlan?.layers[0]?.items[0]?.status).toBe("done");
+    expect(result.review?.status).toBe("approved");
+    expect(reviews).toHaveLength(1);
+    expect(reviews[0]?.originalRequest).toBe(requestText);
+    expect(reviews[0]?.requiredProblems).toEqual([]);
+    expect(reviews[0]?.toolResults).toEqual(expect.arrayContaining([
+      expect.objectContaining({ name: "set_title_screen", args: { title: "초안" }, result: expect.objectContaining({ ok: true }) }),
+      expect.objectContaining({ name: "set_title_screen", args: { title: "중간" }, result: expect.objectContaining({ ok: true }) }),
+      expect.objectContaining({ name: "set_session_start", args: { gold: 200 }, result: expect.objectContaining({ ok: true }) }),
+    ]));
+    expect(events.filter(event => event.type === "result_review" || event.type === "milestone_applied")
+      .map(event => event.type)).toEqual(["result_review", "milestone_applied"]);
+    expect(result.appliedCalls?.map(call => call.name)).toEqual(["set_title_screen", "set_title_screen", "set_session_start"]);
+    expect(result.proposedCalls).toEqual([]);
     expect(store.getCurrent().meta?.title).toBe("중간");
+    expect(store.getCurrent().session.gold).toBe(200);
   }, 30000);
 
   it("(e) 다른 쓰기가 성공해도 필수 도구를 실행하지 않은 항목은 완료할 수 없다", async () => {
@@ -273,5 +320,9 @@ describe("진행이 멈춘 항목은 사람에게 넘긴다", () => {
     const completion = session.getAuditEntries().find((entry) => entry.kind === "tool" && entry.name === "complete_work_item");
     expect(completion).toMatchObject({ ok: false, issueCodes: ["work-item-incomplete"] });
     expect(completion?.kind === "tool" ? completion.summary : undefined).toContain("fill_region");
+    expect(session.getProposedProject().meta.title).toBe("연못 광장");
+    expect(store.getCurrent().meta.title).toBe(project.meta.title);
+    expect(session.isDraftReviewApproved()).toBe(false);
+    expect(result.appliedCalls ?? []).toEqual([]);
   }, 30000);
 });

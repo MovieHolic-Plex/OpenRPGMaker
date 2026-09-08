@@ -19,6 +19,7 @@ import { createBlankProject } from "@/project/defaults";
 import { TILE } from "@/project/defaults/constants";
 import { createIcePlain64Project } from "@/project/defaults/defaultProject";
 import type { GameMap, Project } from "@/project/types";
+import { independentReviewPayload } from "./independentReviewFixture";
 import { fixedDeclarer } from "./intentFixture";
 
 type ChatResult = import("@/ai/llmClient").ChatResult;
@@ -26,7 +27,17 @@ const CONFIG = { authMode: "apiKey" as const, baseUrl: "x", model: "stub-model",
 
 function scriptedChat(steps: readonly ChatResult[]) {
   let index = 0;
-  return async (): Promise<ChatResult> => {
+  return async (_config: unknown, request: import("@/ai/llmClient").ChatRequest): Promise<ChatResult> => {
+    // The independent reviewer is not part of these scripts — this file gates blueprints and
+    // spec scope, not the review protocol. Approve it without consuming a writer step so the
+    // steps stay a writer script. Until the review envelope stopped repeating the whole
+    // project payload per map, even a blank project with one 20x20 map overflowed the
+    // reviewer window, so reviews were refused before being sent and never reached here.
+    const review = independentReviewPayload(request);
+    if (review) {
+      return { message: { role: "assistant", content: JSON.stringify({ revision: review.revision,
+        verdict: "approved", summary: "스크립트 검수 승인", findings: [] }) }, finishReason: "stop" } as ChatResult;
+    }
     if (index >= steps.length) throw new Error("scripted chat exhausted");
     return steps[index++];
   };
@@ -303,17 +314,33 @@ describe("암묵 스펙 — 선택 영역", () => {
   it("선택 영역 암묵 스펙은 그 턴에만 유효하고 다음 턴으로 승격되지 않는다", async () => {
     // break: expandSpecWithRegions 가 암묵 스펙을 activeSpec 으로 승격하면 다음 턴의 쓰기가 밑그림 없이 통과한다.
     const project = mkProject();
-    const chat = scriptedChat([
-      toolCallMsg("paint_tiles", { mapId: "m1", layer: "lower", mode: "rect", tile: TILE.SAND, from: { x: 10, y: 10 }, to: { x: 12, y: 12 } }, "c1"),
-      finalMsg("깔았습니다"),
-      toolCallMsg("paint_tiles", { mapId: "m1", layer: "lower", mode: "rect", tile: TILE.SAND, from: { x: 15, y: 15 }, to: { x: 16, y: 16 } }, "c2"),
-      finalMsg("깔았습니다"),
-    ]);
+    // Two turns, one writer script each. A turn that paints tiles without rendered coverage
+    // gets an unmet required check back from the independent review and is asked to repair,
+    // so a single positional script would let turn 1's repair round consume turn 2's steps.
+    const turns = [
+      [toolCallMsg("paint_tiles", { mapId: "m1", layer: "lower", mode: "rect", tile: TILE.SAND, from: { x: 10, y: 10 }, to: { x: 12, y: 12 } }, "c1"),
+        finalMsg("깔았습니다")],
+      [toolCallMsg("paint_tiles", { mapId: "m1", layer: "lower", mode: "rect", tile: TILE.SAND, from: { x: 15, y: 15 }, to: { x: 16, y: 16 } }, "c2"),
+        finalMsg("깔았습니다")],
+    ];
+    let turn = 0;
+    let step = 0;
+    const chat = async (_config: unknown, request: import("@/ai/llmClient").ChatRequest): Promise<ChatResult> => {
+      const review = independentReviewPayload(request);
+      if (review) {
+        return { message: { role: "assistant", content: JSON.stringify({ revision: review.revision,
+          verdict: "approved", summary: "스크립트 검수 승인", findings: [] }) }, finishReason: "stop" } as ChatResult;
+      }
+      const steps = turns[turn]!;
+      return step < steps.length ? steps[step++]! : finalMsg("끝");
+    };
     const session = new AssistantSession(project, { config: CONFIG, chat });
     const first: Ev[] = [];
     await session.sendUserMessage("여기 모래 깔아줘\n[컨텍스트] 현재 맵: 게이트 (m1) · 사용자 선택 영역: (2,2) 4×4", collect(first));
     expect(first[0]?.ok).toBe(true);
     expect(session.getActiveSpec()).toBeNull();
+    turn = 1;
+    step = 0;
     const second: Ev[] = [];
     await session.sendUserMessage("(15,15)에도 모래 깔아줘", collect(second));
     expect(second[0]?.ok).toBe(false);

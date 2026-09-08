@@ -11,7 +11,7 @@ vi.mock("@/app/mode", () => modeMocks);
 vi.mock("@/assets/bundledAssetWarmup", () => ({ warmBundledPlayAssets: vi.fn() }));
 vi.mock("@/player/runtimeJuice", () => ({ emitRuntimeJuice: vi.fn(() => ({})) }));
 vi.mock("@/player/audio", () => ({
-  getAudioEngine: vi.fn(() => ({ setQaInstrumentation: vi.fn() })),
+  getAudioEngine: vi.fn(() => ({ setQaInstrumentation: vi.fn(), unlock: vi.fn() })),
   playAudioCommand: vi.fn(),
   stopAudioCommand: vi.fn(),
 }));
@@ -98,8 +98,13 @@ function deferred<T>(): {
 }
 
 function nextBootSuccess(): Promise<void> {
-  return new Promise((resolve) => {
-    window.addEventListener(AUTHORING_TEST_BOOT_SUCCESS_EVENT, () => resolve(), { once: true });
+  return new Promise((resolve, reject) => {
+    const ready = () => { realClearTimeout(timeout); resolve(); };
+    const timeout = realSetTimeout(() => {
+      window.removeEventListener(AUTHORING_TEST_BOOT_SUCCESS_EVENT, ready);
+      reject(new Error("Boot success signal missing"));
+    }, 5_000);
+    window.addEventListener(AUTHORING_TEST_BOOT_SUCCESS_EVENT, ready, { once: true });
   });
 }
 
@@ -182,14 +187,19 @@ describe("test play boot recovery", () => {
   });
 
   it("reloads once when PlayScene's hashed chunk fails to fetch", async () => {
-    const reload = vi.fn();
+    const reloaded = deferred<void>();
+    const timeout = realSetTimeout(() => reloaded.reject(new Error("Reload signal missing")), 5_000);
+    const reload = vi.fn(() => reloaded.resolve());
     vi.spyOn(window.location, "reload").mockImplementation(reload);
     modeMocks.startPlayGame.mockRejectedValueOnce(
       new TypeError("Failed to fetch dynamically imported module: http://mdc-server:9888/assets/PlayScene-Dga2dGc8.js"),
     );
 
-    await openTestPlayModal();
-    await vi.waitFor(() => expect(reload).toHaveBeenCalledOnce());
+    try {
+      await openTestPlayModal();
+      await reloaded.promise;
+    } finally { realClearTimeout(timeout); }
+    expect(reload).toHaveBeenCalledOnce();
 
     expect(window.sessionStorage.getItem(STALE_MODULE_RELOAD_KEY)).toBe("1");
     expect(document.querySelector("[data-testid='play-recovery-panel']")).toBeNull();
@@ -214,9 +224,8 @@ describe("test play boot recovery", () => {
     modeMocks.startPlayGame.mockResolvedValueOnce(fakeGame(0));
     const recovery = nextRecoveryPanel();
 
-    const opening = openTestPlayModal();
-    await vi.advanceTimersByTimeAsync(100);
-    await opening;
+    vi.spyOn(window, "requestAnimationFrame").mockImplementation(callback => { callback(0); return 1; });
+    await openTestPlayModal();
     await vi.advanceTimersByTimeAsync(30_000);
     await recovery;
 
@@ -317,9 +326,16 @@ describe("test play boot recovery", () => {
     const booted = nextBootSuccess();
     document.querySelector<HTMLButtonElement>("[data-testid='test-play-restart']")?.click();
     await booted;
-    firstBoot.reject(new Error("늦게 도착한 실패"));
-    await Promise.resolve();
-    await Promise.resolve();
+    const lateError = new Error("늦게 도착한 실패");
+    const caught = deferred<void>();
+    const timeout = realSetTimeout(() => caught.reject(new Error("Late rejection was not handled")), 5_000);
+    const originalError = console.error;
+    vi.spyOn(console, "error").mockImplementation((...args) => {
+      originalError(...args);
+      if (args.includes(lateError)) caught.resolve();
+    });
+    firstBoot.reject(lateError);
+    try { await caught.promise; } finally { realClearTimeout(timeout); }
 
     expect(modeMocks.startPlayGame).toHaveBeenCalledTimes(2);
     expect(document.querySelector("[data-testid='play-recovery-panel']")).toBeNull();

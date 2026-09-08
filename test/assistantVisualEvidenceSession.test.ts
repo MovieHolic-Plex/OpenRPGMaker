@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { AssistantSession, type SessionEvent, type ToolImageRenderer } from "@/ai/assistantSession";
 import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
 import { createBlankProject } from "@/project/defaults";
+import { approvedReviewResponse } from "./independentReviewFixture";
 import { fixedDeclarer } from "./intentFixture";
 import { resetIntentDeclarationCache } from "@/ai/intentDeclarationClient";
 
@@ -34,6 +35,8 @@ function fixture(options: { readonly stop?: Stop; readonly render?: ToolImageRen
     chat: async (_config, request): Promise<ChatResult> => {
       const imageDelivery = request.messages.flatMap((message, messageIndex) => Array.isArray(message.content)
         ? message.content.flatMap((part, partIndex) => part.type === "image_url" ? [{ messageIndex, partIndex }] : []) : []);
+      const review = approvedReviewResponse(request);
+      if (review) return { ...review, imageDelivery };
       deliveredImages = request.messages.flatMap(message => Array.isArray(message.content) ? message.content : []).filter(part => part.type === "image_url").length;
       const batch = rounds[round++];
       return batch ? { imageDelivery, message: { role: "assistant", content: null, tool_calls: batch.map((call, index) => ({ id: `c${round}_${index}`, type: "function", function: { name: call.name, arguments: JSON.stringify(call.args) } })) }, finishReason: "tool_calls",
@@ -58,7 +61,7 @@ describe("one visual evidence lifecycle", () => {
     expect(f.session.getAcceptanceSnapshot()?.status).toBe("verified");
     expect(f.session["adventureProblems"]()).toEqual([]);
     expect(result.stoppedReason).toBe(stop);
-    if (stop === "final") expect(result.assistantText).toBe("SCRIPTED_FINAL");
+    if (stop === "final") expect(result.review?.status).toBe("approved");
   });
 
   it.each(["empty", "failed"])("does not credit metadata when rendering is %s", async mode => {

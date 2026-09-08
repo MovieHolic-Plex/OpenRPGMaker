@@ -387,6 +387,7 @@ describe("host-confirmed canonical interaction approach", () => {
     await h.fail();
     const dom = new Window();
     vi.stubGlobal("document", dom.document); vi.stubGlobal("window", dom); vi.stubGlobal("Node", dom.Node);
+    vi.stubGlobal("HTMLElement", dom.HTMLElement);
     const actions = { onReviewApproach: vi.fn((checkId: string) => h.session.previewApproachCorrection(checkId)),
       onConfirmApproach: vi.fn((preview: NonNullable<ReturnType<typeof h.session.previewApproachCorrection>>) => h.session.confirmApproachCorrection(preview)) };
     const note = createAiStickyChecklist(actions);

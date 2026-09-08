@@ -16,7 +16,8 @@ import { FACESET_FACE_ASSETS, LEGACY_FACESET_SHEET_IDS } from "@/assets/facesetF
 import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
 import { listAudioResources } from "@/assets/audioResourceCatalog";
 import { listMonsterResources } from "@/assets/monsterResourceCatalog";
-import { audioDescriptionView, audioPlayback } from "./audioResourcePresentation";
+import { audioPlayback } from "./audioResourcePresentation";
+import { createAudioResourcePreview, releaseAudioPreviewOnRemoval } from "./audioResourcePreview";
 import { monsterResourceSummary } from "./monsterResourcePresentation";
 import {
   SCARLOXY_BACKDROP_ASSETS,
@@ -25,7 +26,6 @@ import {
 } from "@/assets/scarloxyPack";
 import { builtinGeneratedResourceIds, resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { GENERATED_EFFECT_SHEET_ASSETS } from "@/assets/generatedEffectSheets";
-import { getAudioEngine, playAudioCommand, stopAudioCommand } from "@/player/audio";
 import { GENERATED_ASSET_PLAN } from "@/assets/oprnGeneratedAssetPlan";
 import { openDialog } from "@/editor/panels/databaseEnemyRecordSupport";
 import { aiImageGenerateField } from "@/editor/panels/aiImageGenerateField";
@@ -41,6 +41,7 @@ export type DatabaseResourcePickerKind =
   | "icon"
   | "image"
   | "movie"
+  | "picture"
   | "monster"
   | "faceset"
   | "charset"
@@ -96,6 +97,9 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
     : catalog[0]?.id ?? options.currentId ?? "";
   let characterIndex = clampIndex(options.currentCharacterIndex ?? 0, CHARSET_CHARACTER_COUNT - 1);
   let hue = clampHue(options.currentHue ?? 0);
+  let confirmButton: HTMLButtonElement | null = null;
+  const isUnsupportedAudio = (id: string): boolean =>
+    (options.kind === "music" || options.kind === "sound") && audioPlayback(id, store.getCurrent()).midi;
 
   const search = el("input", {
     class: "db-resource-picker-search",
@@ -105,6 +109,11 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
   const list = el("div", { class: "db-resource-picker-list", dataset: { testid: `${prefix}-list` } });
   const preview = el("div", { class: "db-resource-picker-preview", dataset: { testid: `${prefix}-preview` } });
   const indexPanel = el("div", { class: "db-resource-picker-index-panel" });
+  const audioPreview = options.kind === "music" || options.kind === "sound" ? createAudioResourcePreview() : undefined;
+  if (audioPreview) {
+    preview.classList.add("db-resource-picker-audio-detail");
+    preview.append(audioPreview.element);
+  }
 
   const refreshList = (): void => {
     const project = store.getCurrent();
@@ -120,6 +129,7 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
     list.replaceChildren(
       ...filtered.map((entry) =>
         resourceButton(entry, selectedId, options.kind, project, characterIndex, () => {
+          if (isUnsupportedAudio(entry.id)) return;
           selectedId = entry.id;
           refreshList();
           refreshPreview();
@@ -134,6 +144,11 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
 
   const refreshPreview = (): void => {
     const project = store.getCurrent();
+    if (confirmButton) confirmButton.disabled = !selectedId || isUnsupportedAudio(selectedId);
+    if (audioPreview && (options.kind === "music" || options.kind === "sound")) {
+      audioPreview.update(listAudioResources(options.kind, project).find(entry => entry.id === selectedId));
+      return;
+    }
     preview.replaceChildren(
       resourceVisual(selectedId, options.kind, project, "선택 리소스", "db-resource-picker-preview-visual", {
         characterIndex,
@@ -188,7 +203,7 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
       label: "선택",
       testid: `${prefix}-ok`,
       action: () => {
-        if (!selectedId) return;
+        if (!selectedId || isUnsupportedAudio(selectedId)) return;
         options.onConfirm({
           resourceId: selectedId,
           characterIndex: options.kind === "charset" ? characterIndex : undefined,
@@ -217,7 +232,9 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
     search,
     el("div", { class: "db-resource-picker-grid", children: [list, preview] }),
     indexPanel,
-  ], actions, undefined, () => unsubscribe?.());
+  ], actions, undefined, () => { unsubscribe?.(); audioPreview?.dispose(); });
+  confirmButton = preview.closest('[role="dialog"]')?.querySelector<HTMLButtonElement>(`[data-testid="${prefix}-ok"]`) ?? null;
+  if (confirmButton) confirmButton.disabled = !selectedId || isUnsupportedAudio(selectedId);
   if (options.kind === "music" || options.kind === "sound" || options.kind === "monster") {
     unsubscribe = store.subscribe((_project, change) => {
       if (change.projectSwitch) {
@@ -270,7 +287,7 @@ export function resourcePickerControl(input: {
   const optionName = listDatabaseResourceOptions(input.kind, project).find((option) => option.id === input.resourceId)?.name;
   const rawName = optionName ?? (input.resourceId ? prettyId(input.resourceId) : "");
   const graphic = input.presentation === "graphic";
-  const displayName = graphic ? rawName || "선택한 그래픽이 없습니다" : input.resourceId ? "설정됨" : "(미설정)";
+  const displayName = graphic ? rawName || "선택한 그래픽이 없습니다" : input.kind === "music" || input.kind === "sound" ? rawName || "(미설정)" : input.resourceId ? "설정됨" : "(미설정)";
   // Keep a real text input with the historical testid so e2e/unit fill() paths stay compatible.
   const idInput = el("input", {
     class: "db-resource-picker-inline-id db-authoring-id",
@@ -278,16 +295,22 @@ export function resourcePickerControl(input: {
     value: input.resourceId ?? "",
     dataset: { testid: input.testid },
   }) as HTMLInputElement;
-  const commitText = (): void => {
+  const commitText = (): boolean => {
+    const resourceId = idInput.value.trim();
+    if ((input.kind === "music" || input.kind === "sound") && audioPlayback(resourceId, store.getCurrent()).midi) return false;
     input.onChange({
-      resourceId: idInput.value.trim(),
+      resourceId,
       characterIndex: input.currentCharacterIndex,
       graphicHue: input.currentHue,
     });
+    return true;
   };
   idInput.addEventListener("input", commitText);
   idInput.addEventListener("change", () => {
-    commitText();
+    if (!commitText()) {
+      idInput.value = input.resourceId ?? "";
+      return;
+    }
     input.rerender();
   });
   const pick = (): void => {
@@ -364,7 +387,10 @@ function resourceButton(
 ): HTMLElement {
   return el("button", {
     class: option.id === selectedId ? "active" : "",
-    attrs: { type: "button", title: `${option.name} (${option.id})` },
+    attrs: {
+      type: "button", title: `${option.name} (${option.id})`,
+      ...((kind === "music" || kind === "sound") && audioPlayback(option.id, project).midi ? { disabled: "" } : {}),
+    },
     dataset: { resourceId: option.id, testid: `${prefix}-option-${option.id}` },
     children: [
       resourceVisual(option.id, kind, project, option.name, "db-resource-picker-option-thumb", { characterIndex }),
@@ -439,6 +465,7 @@ export function listDatabaseResourceOptions(
       for (const asset of SCARLOXY_UI_ICON_ASSETS) add(asset.id, asset.name);
       break;
     case "battleCharset":
+    case "picture":
       break;
   }
 
@@ -461,6 +488,7 @@ export function listDatabaseResourceOptions(
 
 function matchesGeneratedKind(kind: DatabaseResourcePickerKind, resourceKind: ResourceKind | undefined, id: string): boolean {
   if (kind === "movie") return resourceKind === "movie";
+  if (kind === "picture") return resourceKind === "picture" || id === "generated-face-actor1-bust" || id === "generated-face-actor1-full";
   if (kind === "faceset") {
     // 분할 전 4×4 시트는 얼굴 한 장이 아니다 — 등록만 남기고 피커 목록에서는 제외한다.
     if (LEGACY_FACESET_SHEET_IDS.includes(id)) return false;
@@ -516,6 +544,7 @@ function uploadedMatchesKind(
 ): boolean {
   if (!uploadedKind) return matchesGeneratedKind(kind, undefined, id);
   if (kind === "movie") return uploadedKind === "movie";
+  if (kind === "picture") return uploadedKind === "picture";
   if (kind === "icon" || kind === "image") {
     return uploadedKind === "picture" || uploadedKind === "monster" || uploadedKind === "system" || matchesGeneratedKind(kind, undefined, id);
   }
@@ -555,35 +584,11 @@ function resourceVisual(
   const url = resolveAssetResourceUrl(resourceId, { project });
 
   if (kind === "music" || kind === "sound") {
-    const playback = audioPlayback(resourceId, project);
-    const { playable, midi } = playback;
-    const play = el("button", {
-      class: "btn",
-      text: playable ? "미리 듣기" : midi ? "MIDI 비재생" : "미리 듣기 불가",
-      attrs: playable ? { type: "button" } : { type: "button", disabled: "" },
-      dataset: { testid: "db-resource-picker-audio-play" },
-      on: playable ? {
-        click: () => {
-          getAudioEngine().installUnlockListeners();
-          getAudioEngine().unlock();
-          stopAudioCommand();
-          playAudioCommand({ resourceId, loop: kind === "music" }, project);
-        },
-      } : undefined,
-    });
-    return el("div", {
-      class: className + " db-resource-picker-audio",
-      children: [
-        el("div", { class: "db-resource-picker-audio-title", text: kind === "music" ? "BGM" : "SE" }),
-        el("div", { class: "db-resource-picker-audio-id", text: resourceId }),
-        el("div", { class: "db-resource-picker-audio-url", text: playback.url ?? "" }),
-        // List thumbnails stay compact; selected and inline previews show full metadata.
-        ...(className.includes("option-thumb") ? [] : [
-          audioDescriptionView(listAudioResources(kind, project).find(entry => entry.id === resourceId)),
-        ]),
-        play,
-      ],
-    });
+    if (className.includes("option-thumb")) return el("span", { class: className, text: kind === "music" ? "BGM" : "SE", attrs: { "aria-hidden": "true" } });
+    const view = createAudioResourcePreview();
+    view.update(listAudioResources(kind, project).find(entry => entry.id === resourceId));
+    releaseAudioPreviewOnRemoval(view);
+    return view.element;
   }
 
   if (!url) return resourceFailureVisual(className, label);

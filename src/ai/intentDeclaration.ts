@@ -13,6 +13,7 @@ import { parseFunctionalRequirements, parseFunctionalRefinements, type Functiona
 import type { AdventureRequirements } from "./adventureCompletion";
 import { ADVENTURE_AUTHORING_GUIDE } from "./adventureCompletion";
 import type { ToolDomain } from "@/editor/tools/types";
+import type { RequestRequirement } from "./requestCoverage";
 import { QUICK_REPLY_MARKER } from "./interviewPrompt";
 import { parseActionCombatRequirements, type AcceptanceTarget } from "./assistantAcceptance";
 
@@ -83,6 +84,8 @@ export interface IntentDeclaration {
   readonly npcRewards?: NpcRewardRequirements;
   readonly functionalAcceptance?: readonly FunctionalCriterion[];
   readonly functionalRefinements?: readonly FunctionalRefinement[];
+  /** Host adapter's independent extraction, never accepted from worker/declaration JSON. */
+  readonly requestRequirements?: readonly RequestRequirement[];
   readonly summary: string;
   readonly source: IntentSource;
 }
@@ -182,7 +185,7 @@ export interface IntentParseResult {
   readonly error?: string;
 }
 
-function extractJsonObject(raw: string): string | null {
+export function extractJsonObject(raw: string): string | null {
   const trimmed = raw.trim();
   if (trimmed.startsWith("{") && trimmed.endsWith("}")) return trimmed;
   const fence = trimmed.match(/```(?:json)?\s*([\s\S]*?)```/i);

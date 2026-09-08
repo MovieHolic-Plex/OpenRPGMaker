@@ -64,7 +64,12 @@ try {
         })] : [];
         let cursor = 0;
         const session = new AssistantSession(f.project, { config,
-          declareIntent: createLlmIntentDeclarer({ getConfig: () => config, chat: async () => ({
+          declareIntent: createLlmIntentDeclarer({ getConfig: () => config,
+            audit: async () => ({ message: { role: "assistant", content: JSON.stringify({ requirements: [{
+              text: "Buy two potions from the seller for ten gold each, walk to the other map and back, and give two potions from the NPC only once",
+              criteria: [...declaration.functionalAcceptance, ...declaration.npcRewards.map(requirement => ({ kind: "npcReward", requirement }))],
+            }] }) }, finishReason: "stop" }),
+            chat: async () => ({
             message: { role: "assistant", content: JSON.stringify(declaration) }, finishReason: "stop",
           }) }), chat: async () => scripted[cursor++] ?? complete(),
         });
@@ -117,8 +122,13 @@ try {
         { functionalRefinements: [{ requirementId, criterion: { kind: "shopPurchase", unitPrice: 10 } }] },
       ];
       let declarationIndex = 0, repairAttempted = false, workerRepairRejected = false;
+      let clarificationText = "";
       const clarificationSession = new AssistantSession(f.project, { config,
-        declareIntent: createLlmIntentDeclarer({ getConfig: () => config, chat: async () => ({ message: { role: "assistant", content: JSON.stringify({ mode: "modify", needsPlan: false, ...declarations[declarationIndex++] }) }, finishReason: "stop" }) }),
+        declareIntent: createLlmIntentDeclarer({ getConfig: () => config,
+          audit: async () => ({ message: { role: "assistant", content: JSON.stringify(declarationIndex === 1
+            ? { requirements: [{ text: "Let test_seller sell two potions, but the price and entry are not decided.", criteria: declarations[0].functionalAcceptance }] }
+            : { requirements: [], clarifies: [{ requirementId, text: clarificationText }] }) }, finishReason: "stop" }),
+          chat: async () => ({ message: { role: "assistant", content: JSON.stringify({ mode: "modify", needsPlan: false, ...declarations[declarationIndex++] }) }, finishReason: "stop" }) }),
         chat: async () => {
           if (declarationIndex === 3 && !repairAttempted) {
             repairAttempted = true;
@@ -129,6 +139,7 @@ try {
       });
       const clarificationStatuses = [];
       for (const text of ["Let test_seller sell two potions, but the price and entry are not decided.", "Use the actual project entry.", "Set the price to ten gold each."]) {
+        clarificationText = text;
         await clarificationSession.sendUserMessage(text, event => { if (event.type === "tool_call" && event.name === "repair_acceptance") workerRepairRejected = !event.result.ok; }, AbortSignal.timeout(30000));
         clarificationStatuses.push(clarificationSession.getAcceptanceSnapshot().status);
       }

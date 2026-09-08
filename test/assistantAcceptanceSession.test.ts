@@ -18,6 +18,7 @@ describe("session acceptance ownership", () => {
 
 import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
 import type { SessionEvent } from "@/ai/assistantSession";
+import { approvedReviewResponse } from "./independentReviewFixture";
 import { fixedDeclarer } from "./intentFixture";
 
 type Call = { readonly name: string; readonly args: Record<string, unknown> };
@@ -33,6 +34,8 @@ function script(rounds: readonly (readonly Call[])[], acknowledgeImages = true) 
     chat: async (_config, request): Promise<ChatResult> => {
       const imageDelivery = acknowledgeImages ? request.messages.flatMap((message, messageIndex) => Array.isArray(message.content)
         ? message.content.flatMap((part, partIndex) => part.type === "image_url" ? [{ messageIndex, partIndex }] : []) : []) : undefined;
+      const review = approvedReviewResponse(request);
+      if (review) return { ...review, imageDelivery };
       const batch = rounds[calls++];
       return batch ? { imageDelivery, message: { role: "assistant", content: null, tool_calls: batch.map((call, i) => ({ id: `c${calls}_${i}`, type: "function", function: { name: call.name, arguments: JSON.stringify(call.args) } })) }, finishReason: "tool_calls" }
         : { imageDelivery, message: { role: "assistant", content: "SCRIPTED_SUCCESS" }, finishReason: "stop" };
@@ -152,15 +155,17 @@ describe("applied acceptance lifecycle through real tools", () => {
     const fixture = script([
       [{ name: "set_work_plan", args: { ...work, acceptance: [{ id: "size", title: "Required size", criteria: [{ kind: "mapDimensions", target, width: 22, height: 17 }] }] } }, { name: "skip_work_item", args: {} }],
       [],
-      [{ name: "resize_map", args: { mapId: target.mapId, width: 21, height: 17 } }],
+      [{ name: "resize_map", args: { mapId: target.mapId, width: 21, height: 17 } },
+        { name: "show_map_region", args: { mapId: target.mapId, x: 0, y: 0, w: 21, h: 17 } }],
       [],
-      [{ name: "resize_map", args: { mapId: target.mapId, width: 22, height: 17 } }],
+      [{ name: "resize_map", args: { mapId: target.mapId, width: 22, height: 17 } },
+        { name: "show_map_region", args: { mapId: target.mapId, x: 0, y: 0, w: 22, h: 17 } }],
     ]);
     // When the plan is already done but the first resize is insufficient.
     await fixture.run(true);
     // Then final verification follows the applied map rather than the finished plan.
     expect(fixture.session.getAcceptanceSnapshot()).toMatchObject({ status: "verified", items: [{ id: "size", status: "verified" }] });
-    expect(fixture.events.filter(event => event.type === "acceptance").some(event => event.type === "acceptance" && event.snapshot?.items[0]?.evidence[0]?.observed === "21x17" && event.snapshot.status !== "verified")).toBe(true);
+    expect(fixture.events.some(event => event.type === "result_review" && event.review.status === "changes_requested")).toBe(true);
     fixture.session.refreshAcceptance(fixture.project, event => fixture.events.push(event));
     expect(fixture.session.getAcceptanceSnapshot()?.status).not.toBe("verified");
     expect(fixture.events.at(-1)).toMatchObject({ type: "acceptance", snapshot: { items: [{ evidence: [{ observed: "20x15", passed: false }] }] } });

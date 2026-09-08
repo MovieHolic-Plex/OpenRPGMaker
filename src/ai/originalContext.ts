@@ -1,6 +1,7 @@
 import { getTool, runTool } from "@/editor/tools";
 import type { ToolResult } from "@/editor/tools";
 import type { Project } from "@/project/types";
+import { startStateOf } from "@/project/session";
 import type { IntentDeclaration, IntentSelectionFact } from "./intentDeclaration";
 import type { ChatMessage, OpenAiToolSchema } from "./llmClient";
 import { estimateContextTokens, resolveContextWindow } from "./contextCompaction";
@@ -79,11 +80,35 @@ export interface OriginalContextOptions {
   currentMapId?: string;
   selection?: IntentSelectionFact | null;
   intent?: IntentDeclaration | null;
+  /** Review roots include maps as evidence, not traversal roots. Omission retains writer transitive closure. */
+  readonly mapReferenceRoots?: readonly unknown[];
 }
 
 const pointer = (id: string): string => id.replaceAll("~", "~0").replaceAll("/", "~1");
 const path = (...ids: string[]): string => `/${ids.map(pointer).join("/")}`;
 const object = (value: unknown): value is Record<string, unknown> => value !== null && typeof value === "object" && !Array.isArray(value);
+
+/** An entry's contribution to reference relevance. The entry keeps its complete value.
+ *
+ * Two entries enumerate the switch/variable declaration space wholesale rather than
+ * referencing part of it: `/summary` lists every named declaration, and the authored start
+ * state holds a key per declared id. Their ids appear in the closure by construction, so
+ * following them pulled every switch and variable record into every context — measured on a
+ * 1,000-flag village project, 2,000 records cost 47K of the 116K tokens per context, on both
+ * sides of every review. An authored non-default seed value is a real reference and stays.
+ */
+function closureProjection(id: string, value: unknown): unknown {
+  if (!object(value)) return value;
+  if (id === "/summary") {
+    const { switches, variables, ...referenced } = value;
+    return referenced;
+  }
+  if (id !== "/session") return value;
+  const authored = (map: unknown, isDefault: (value: unknown) => boolean): unknown => object(map)
+    ? Object.fromEntries(Object.entries(map).filter(([, entry]) => !isDefault(entry))) : map;
+  return { ...value, switches: authored(value.switches, entry => entry === false),
+    variables: authored(value.variables, entry => entry === 0) };
+}
 
 /** Pure, detached authored-state projection shared by writer grounding and before/after review.
  * No store, configuration, environment, runtime session, resource URLs or binary assets are read.
@@ -108,10 +133,17 @@ export function extractOriginalContext(project: Project, options: OriginalContex
   add("/project", { version: project.version, meta: project.meta, startMapId: project.startMapId,
     startPos: project.startPos, mapTree: project.mapTree, flags: project.flags });
   addRead("/summary", "get_project_summary", {});
-  const map = project.maps[mapId];
-  if (!map) missing.push({ kind: "map", id: mapId });
+  const includedMaps = new Set<string>();
+  const includedTilesets = new Set<string>();
   // Complete events precede bulky tile arrays. A selection prioritizes, never slices, a page tree.
-  if (map) {
+  const addMap = (mapId: string): void => {
+    if (includedMaps.has(mapId)) return;
+    includedMaps.add(mapId);
+    const map = project.maps[mapId];
+    if (!map) {
+      missing.push({ kind: "map", id: mapId });
+      return;
+    }
     const { events, lowerTiles, upperTiles, lowerTileStacks, upperTileStacks, ...metadata } = map;
     add(path("maps", mapId), metadata);
     addRead(path("maps", mapId, "region"), "get_map_region", {
@@ -128,12 +160,17 @@ export function extractOriginalContext(project: Project, options: OriginalContex
       lowerTiles, upperTiles, lowerTileStacks, upperTileStacks });
     const tileset = project.tilesets[map.tilesetId];
     if (tileset) {
+      if (includedTilesets.has(tileset.id)) return;
+      includedTilesets.add(tileset.id);
       // Deliberately select authored tile knowledge, not resource transport locations.
       add(path("tilesets", tileset.id), { id: tileset.id, name: tileset.name, tileMeta: tileset.tileMeta,
         tileGroups: tileset.tileGroups, palettePresets: tileset.palettePresets, structureKits: tileset.structureKits });
     } else missing.push({ kind: "tileset", id: map.tilesetId });
-  }
+  };
+  addMap(mapId);
   add("/system", project.system);
+  add("/session", startStateOf(project));
+  add("/testPresets", project.testPresets);
   add("/storyFlags", project.storyFlags);
   add("/worldCanon", project.worldCanon);
   add("/mapConnections", project.mapConnections);
@@ -177,7 +214,11 @@ export function extractOriginalContext(project: Project, options: OriginalContex
   const byId = new Map<string, typeof candidates>();
   for (const candidate of candidates) byId.set(candidate.id, [...(byId.get(candidate.id) ?? []), candidate]);
   const selected = new Set<string>();
-  const queue: unknown[] = entries.map(entry => entry.value);
+  // Review scopes map expansion without removing authored values or record references.
+  // Summary/mapTree remain navigation, not map relevance.
+  const queue: unknown[] = [...(options.mapReferenceRoots
+    ?? [closureProjection("/session", startStateOf(project)), project.testPresets])];
+  const followedMaps = new Set<string>();
   const include = (candidate: typeof candidates[number]): void => {
     if (selected.has(candidate.entryId)) return;
     selected.add(candidate.entryId);
@@ -186,13 +227,23 @@ export function extractOriginalContext(project: Project, options: OriginalContex
       addRead(candidate.entryId, "get_database_records", { collection: candidate.collection, ids: [candidate.id], include: "full" });
     } else add(candidate.entryId, candidate.value);
   };
-  for (const candidate of candidates) if (candidate.collection && (broadDatabase || requiredCollections.has(candidate.collection))) include(candidate);
-  const visit = (value: unknown): void => {
-    if (typeof value === "string") for (const candidate of byId.get(value) ?? []) include(candidate);
-    else if (Array.isArray(value)) value.forEach(visit);
-    else if (object(value)) for (const [key, child] of Object.entries(value)) { visit(key); visit(child); }
+  const visit = (value: unknown, followMaps: boolean): void => {
+    if (typeof value === "string") {
+      for (const candidate of byId.get(value) ?? []) include(candidate);
+      const referencedMap = project.maps[value];
+      if (followMaps && referencedMap && !followedMaps.has(value)) {
+        followedMaps.add(value);
+        addMap(value);
+        if (options.mapReferenceRoots === undefined) queue.push(referencedMap);
+      }
+    } else if (Array.isArray(value)) for (const child of value) visit(child, followMaps);
+    else if (object(value)) for (const [key, child] of Object.entries(value)) { visit(key, followMaps); visit(child, followMaps); }
   };
-  for (let i = 0; i < queue.length; i++) visit(queue[i]);
+  for (let i = 0; i < queue.length; i++) visit(queue[i], true);
+  queue.length = 0;
+  for (const entry of entries) queue.push(closureProjection(entry.id, entry.value));
+  for (const candidate of candidates) if (candidate.collection && (broadDatabase || requiredCollections.has(candidate.collection))) include(candidate);
+  for (let i = 0; i < queue.length; i++) visit(queue[i], false);
   return structuredClone({ snapshotId: options.snapshotId, target: { mapId, selection }, entries, missing });
 }
 
@@ -247,12 +298,23 @@ export class OriginalContextStore {
     const complete = new Set(includedIds);
     for (const message of messages) {
       if (message.role !== "tool" || message.name !== "get_original_context" || typeof message.content !== "string") continue;
-      const result = JSON.parse(message.content) as ToolResult;
+      let result: unknown;
+      try {
+        result = JSON.parse(message.content);
+      } catch {
+        // Rewritten/truncated history is not a receipt. Refuse evidence, not the model response.
+        continue;
+      }
+      if (!object(result) || result.ok !== true) continue;
       const data = result.data;
-      if (!result.ok || !object(data) || data.snapshotId !== this.context.snapshotId || typeof data.entryId !== "string"
-        || typeof data.offset !== "number" || typeof data.text !== "string") continue;
+      if (!object(data) || data.snapshotId !== this.context.snapshotId || typeof data.entryId !== "string"
+        || typeof data.offset !== "number" || !Number.isSafeInteger(data.offset) || data.offset < 0
+        || typeof data.text !== "string") continue;
       const text = this.texts.get(data.entryId);
-      if (text === undefined || text.slice(data.offset, data.offset + data.text.length) !== data.text) continue;
+      const endOffset = data.offset + data.text.length;
+      if (text === undefined || data.totalChars !== text.length || endOffset > text.length
+        || data.nextOffset !== (endOffset < text.length ? endOffset : null)
+        || text.slice(data.offset, endOffset) !== data.text) continue;
       const ranges = [...(this.ranges.get(data.entryId) ?? []), [data.offset, data.offset + data.text.length] as [number, number]]
         .sort((a, b) => a[0] - b[0]);
       let end = 0;

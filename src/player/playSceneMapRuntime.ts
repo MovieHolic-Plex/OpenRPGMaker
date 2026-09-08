@@ -1,4 +1,5 @@
 import { resetDetectionForMap } from "./npcDetectionEncounter";
+import { dialogueUi } from "./playSceneDom";
 import { evalCondition } from "@/project/session";
 import { clearFurniturePush, furniturePushPosition } from './furniturePushAnimation';
 import { chipsetAnimationKey, TILE_SIZE } from "@/assets/bundled";
@@ -707,6 +708,9 @@ export function rebindEventFollowCamera(scene: PlaySceneContext): void {
 }
 
 export async function fireAutoTriggers(scene: PlaySceneContext): Promise<void> {
+  // Map refresh can run before player.ts installs dialogue. Do not consume the
+  // one-shot key before runEvent/runCommands can actually accept this event.
+  if (!dialogueUi(scene) || scene.sys?.isActive() === false) return;
   const events = activeRuntimeEvents(scene, "auto");
   for (const event of events) {
     const key = `${scene.getMapId()}:${event.event.id}:${event.pageId ?? "legacy"}`;

@@ -3,7 +3,7 @@ import { renderPage3M2CommandBody } from "./commandBodyM2Page3";
 import { renderWeightedBranchCommandBody } from "./commandBodyWeightedBranch";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { listAudioResources } from "@/assets/audioResourceCatalog";
-import { audioDescriptionView, audioPlaybackBadge } from "@/editor/panels/audioResourcePresentation";
+import { audioDescriptionView, audioPlayback, audioPlaybackBadge } from "@/editor/panels/audioResourcePresentation";
 import { m2CommandById, type M2CommandFieldSpec } from "@/project/eventCommands/m2Catalog";
 import { SCREEN_COLOR_OPTIONS } from "@/project/eventCommands/m2ModernCatalog";
 import { screenColorToRgb } from "@/player/interpreter/commandCatalog";
@@ -517,7 +517,16 @@ function resourcePickerControl(request: ResourcePickerRequest): HTMLElement {
     select.append(el("option", { text: `${item.name} (${item.id})`, attrs: { value: item.id } }));
   }
   select.value = request.value;
+  let selectedId = request.value;
+  if (audio) {
+    for (const option of select.querySelectorAll<HTMLOptionElement>("option")) option.disabled = audioPlayback(option.value, project).midi;
+  }
   select.addEventListener("change", () => {
+    if (audio && audioPlayback(select.value, store.getCurrent()).midi) {
+      select.value = selectedId;
+      return;
+    }
+    selectedId = select.value;
     updateField(request.context, request.cmd, request.key, select.value);
     if (!audio) return;
     const current = store.getCurrent();

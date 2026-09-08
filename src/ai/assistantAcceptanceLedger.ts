@@ -324,8 +324,16 @@ export class AssistantAcceptanceLedger {
     }
   }
 
+  /** Read-only draft evidence for the independent reviewer, not applied verification. */
+  evaluateForReview(draft: Project, verification?: ToolVerificationEvidence): AcceptanceSnapshot {
+    const previous = this.snapshot;
+    const result = this.evaluate(draft, draft, verification, [], true);
+    this.snapshot = previous;
+    return result;
+  }
+
   evaluate(applied: Project, draft = applied, verification?: ToolVerificationEvidence,
-    blockingProblems: readonly string[] = []): AcceptanceSnapshot {
+    blockingProblems: readonly string[] = [], deliveredImagesOnly = false): AcceptanceSnapshot {
     this.bind(draft);
     this.bindVerificationRequirements(verification, draft);
     // Retirement is permanent: an edit followed by undo cannot revive old proof.
@@ -360,8 +368,9 @@ export class AssistantAcceptanceLedger {
         const result = evaluateAcceptanceCriterion(criterion, {
           project: applied, baseline: promise.baseline, bindings: this.bindings, verification,
           verificationCheckId: `${this.id}:${promise.id}:${criterionIndex}`, npcRewardProof: this.npcRewardProof,
-          reviewed: (map, region) => review?.passed === true
-            && coveredByImages(this.currentReceipts(review.receipts, applied), map, region),
+          reviewed: (map, region) => deliveredImagesOnly
+            ? coveredByImages(this.images.matching(applied), map, region)
+            : review?.passed === true && coveredByImages(this.currentReceipts(review.receipts, applied), map, region),
           actionProven: map => isVerifiedActionCombatProof(this.actionProofs.get(map.id), applied, map.id),
         });
         const approachCheckId = `${this.id}:${promise.id}:${criterionIndex}`;

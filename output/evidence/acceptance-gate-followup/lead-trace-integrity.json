@@ -1,0 +1,17 @@
+{
+  "head": "0798a67b36f8416c4f3526be40712c5fb31f51fc",
+  "capturedBeforeRecoverySha256": "96aa4f42eaf8bbb082f1dbaaf0b97321a5eb6fa25518e819761017f1864bc3f1",
+  "afterRecoveryDiskSha256": "96aa4f42eaf8bbb082f1dbaaf0b97321a5eb6fa25518e819761017f1864bc3f1",
+  "recordedRecoverySha256": "96aa4f42eaf8bbb082f1dbaaf0b97321a5eb6fa25518e819761017f1864bc3f1",
+  "allEqual": true,
+  "expectedFiles": 1829,
+  "rawReportedFiles": 1829,
+  "queuedFiles": 1829,
+  "endedFiles": 1829,
+  "terminalFiles": 1829,
+  "affectedModule": "test/undoHistory.test.ts",
+  "affectedModuleCases": 15,
+  "affectedModuleStatus": "passed",
+  "lostOptionalCollectedDiagnostics": 1,
+  "rawTracePreserved": true
+}

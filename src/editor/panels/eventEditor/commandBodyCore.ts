@@ -1,3 +1,4 @@
+import { fieldSpawnBody } from "./commandBodyFieldSpawn";
 import { openDatabaseResourcePickerDialog } from "@/editor/panels/databaseResourcePickerDialog";
 import { showConfirm } from "@/editor/ui/modal";
 import { clearChildren, el } from "@/util/dom";
@@ -28,6 +29,8 @@ import { store } from "@/project/store";
 import { editorState } from "@/editor/editorState";
 import { hasCharacterId } from "@/project/socialKey";
 import type { CommandEditContext } from "./types";
+import { appearanceBindingControl } from "../appearanceBindingControl";
+import { resolveAppearancePortrait } from "@/project/characterAppearances";
 
 const MESSAGE_WINDOW_FORMAT_OPTIONS = [
   { value: "normal", label: "일반" },
@@ -81,6 +84,7 @@ const coreCommandBodyHandlers: CoreCommandBodyHandlers = {
   timer: timerBody,
   inputWait: inputWaitBody,
   inputNumber: inputNumberBody,
+  spawnFieldEnemy: fieldSpawnBody,
   label: labelBody,
   gotoLabel: labelBody,
   loop: loopBody,
@@ -440,6 +444,14 @@ function wrapSelection(body: HTMLTextAreaElement, prefix: string, suffix: string
 }
 
 function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kind: "changeFace" }>): HTMLElement {
+  let appearanceId = cmd.appearanceId;
+  const presentation = selectWithOptions([
+    { value: "face", label: "얼굴" }, { value: "bust", label: "흉상 (없으면 얼굴)" },
+  ] as const, cmd.presentation ?? "face", "event-command-face-presentation");
+  const appearance = appearanceBindingControl(appearanceId, "event-command-face-appearance", (id) => {
+    appearanceId = id;
+    apply();
+  });
   // RM-style face picker: selected face card + resource actions on top,
   // a flat standalone-face gallery as the main work surface, position/flip chips below.
   const wrap = el("div", {
@@ -480,6 +492,7 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
 
   const readDraft = (): Extract<Command, { kind: "changeFace" }> => ({
     kind: "changeFace",
+    ...(appearanceId ? { appearanceId, presentation: presentation.value === "bust" ? "bust" : "face" } : {}),
     resourceId: resource.value.trim(),
     position: position.value === "right" ? "right" : "left",
     flipHorizontally: flip.checked,
@@ -487,10 +500,14 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
 
   const refreshPreview = (): void => {
     const draft = readDraft();
+    const resolved = draft.appearanceId
+      ? resolveAppearancePortrait(store.getCurrent(), draft.appearanceId, draft.presentation ?? "face")
+      : undefined;
     clearChildren(previewHost);
     previewHost.append(
       renderFacesetPreview({
-        resourceId: draft.resourceId,
+        resourceId: draft.appearanceId ? resolved?.resourceId ?? "" : draft.resourceId,
+        presentation: draft.appearanceId ? resolved?.presentation : undefined,
         position: draft.position,
         flipHorizontally: draft.flipHorizontally,
         displaySize: 96,
@@ -539,6 +556,12 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
   const refreshAll = (): void => {
     refreshPreview();
     refreshGallery();
+    const linked = Boolean(appearanceId);
+    resource.disabled = linked;
+    resourceActions.hidden = linked;
+    gridHost.hidden = linked;
+    directGeneration.hidden = linked;
+    presentation.disabled = !linked;
   };
 
   const apply = (): void => {
@@ -552,6 +575,7 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
     refreshAll();
   });
   position.addEventListener("change", apply);
+  presentation.addEventListener("change", apply);
   flip.addEventListener("change", apply);
 
   const openPicker = (): void => {
@@ -570,11 +594,10 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
   };
 
   const clearResource = (): void => {
+    appearanceId = undefined;
     resource.value = "";
     apply();
   };
-
-  refreshAll();
 
   const resourceActions = el("div", {
     class: "event-command-face-resource-actions",
@@ -652,7 +675,15 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
     ],
   });
 
+  const directGeneration = aiImageGenerateField({
+    kind: "faceset",
+    testidPrefix: "event-command-face-ai",
+    queueKey: `event-command-face:${context.path.join(".")}`,
+    onInserted: (id) => { resource.value = id; apply(); },
+  });
   wrap.append(
+    appearance,
+    fieldControl("공유 외형 표시", presentation),
     selectedCard,
     el("div", {
       class: "event-command-face-grid-section",
@@ -665,21 +696,14 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
         gridHost,
       ],
     }),
-    aiImageGenerateField({
-      kind: "faceset",
-      testidPrefix: "event-command-face-ai",
-      queueKey: `event-command-face:${context.path.join(".")}`,
-      onInserted: (id) => {
-        resource.value = id;
-        apply();
-      },
-    }),
+    directGeneration,
     optionsRow,
     el("p", {
       class: "event-command-face-hint",
       text: "얼굴은 그림 한 장을 고릅니다. 흉상 그림을 고르면 대사 창 위 큰 얼굴로 보이며 갤러리는 숨깁니다.",
     })
   );
+  refreshAll();
   return wrap;
 }
 

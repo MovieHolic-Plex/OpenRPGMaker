@@ -12,6 +12,7 @@ import { _resetEditActivityForTest } from "@/editor/editActivityLog";
 import { fixedDeclarer } from "./intentFixture";
 import { verificationEvent } from "./fixtures/verificationOwnership";
 import { offlineChatResponse } from "./fixtures/offlineChatResponse";
+import { approvedReviewResponse } from "./independentReviewFixture";
 
 const brokenEvent = (switchId: string) => verificationEvent("ev_broken", 2, 2, [{ kind: "setSwitch", switchId, value: true }]);
 function errors(result: ReturnType<typeof runTool>) {
@@ -62,6 +63,8 @@ async function titleRun(kind: "unchanged" | "adopted" | "introduced" | "differen
     config: { ...defaultAiConfig(), agentMode: "auto", model: "test", liteModel: "test", apiKey: "test", maxToolCalls: 8 },
     declareIntent: fixedDeclarer({ mode: "modify", needsPlan: true }),
     chat: async (_config, request): Promise<ChatResult> => {
+      const review = approvedReviewResponse(request);
+      if (review) return offlineChatResponse(review);
       if (continuing) return offlineChatResponse(final(request.tools?.length ? "CONTINUED" : JSON.stringify({ action: "resume" })));
       const next = responses[index++];
       if (next) return offlineChatResponse(next);
@@ -83,7 +86,10 @@ async function titleRun(kind: "unchanged" | "adopted" | "introduced" | "differen
   }, undefined, { autonomous: true });
   expect(network.mock.calls.every(([input]) => String(input) === "/__oprn/edit-activity")).toBe(true);
   expect(baselineCapture).toHaveBeenCalledTimes(1);
-  expect(store.getCurrent().meta.title).toBe("TITLE_APPLIED");
+  expect(session.getProposedProject().meta.title).toBe("TITLE_APPLIED");
+  expect(store.getCurrent().meta.title).toBe(kind === "unchanged" ? "TITLE_APPLIED" : project.meta.title);
+  expect(result.review?.status).toBe(kind === "unchanged" ? "approved" : "changes_requested");
+  expect(result.appliedCalls ?? []).toHaveLength(kind === "unchanged" ? 1 : 0);
   expect(session.getWorkPlan()?.layers[0]?.items[0]?.status).toBe("done");
   const lintCalls = events.filter((event): event is Extract<SessionEvent, { type: "tool_call" }> => event.type === "tool_call" && event.name === "run_lint");
   expect(lintCalls).toHaveLength(kind === "explicit" ? 2 : 1);
@@ -125,7 +131,7 @@ describe("pre-write provenance of automatic lint findings", () => {
     if (kind === "introduced") { expect(f.before).toEqual([]); expect(f.after).toHaveLength(2); }
     if (kind === "adopted" || kind === "explicit") expect(f.after).toEqual(f.before);
     expect(f.result.runOutcome?.execution).toBe("blocked");
-    expect(f.result.stoppedReason).toBe("final");
+    expect(f.result.stoppedReason).toBe("error");
     expect(f.result.completionAssessment?.blockingVerification?.length).toBeGreaterThan(0);
     expect(f.requests).toBeLessThanOrEqual(8);
     if (kind === "adopted") expect(f.session.getAcceptanceSnapshot()?.status).toBe("blocked");

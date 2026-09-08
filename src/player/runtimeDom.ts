@@ -1,4 +1,5 @@
 import { TILE_SIZE } from "@/assets/bundled";
+import { diagnosticObserved, publishDiagnostic } from "@/util/diagnosticObserver";
 import type { BattleResult } from "@/battle/runtime";
 import { takePendingPictureTransition, type AudioCommandState, type PictureState, type PlaySession } from "@/project/session";
 import type { ActorVitals } from "@/project/sessionVitals";
@@ -347,6 +348,7 @@ export class RuntimeDomOverlay {
   }
 
   syncMissingResourceError(missingResources: ReadonlySet<string>): void {
+    if (missingResources.size && diagnosticObserved("asset")) publishDiagnostic({ category: "asset", phase: "missing", count: missingResources.size });
     const host = this.host();
     if (!host) return;
     host.querySelector("[data-testid='missing-resource-error']")?.remove();

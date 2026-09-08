@@ -158,6 +158,7 @@ function createHarness(options?: {
         },
       },
     },
+    scale: { off: () => undefined },
     // 캔버스/오버레이 기하학은 씬의 실제 경로(game.canvas.getBoundingClientRect + 오버레이 조회)를 탄다.
     // 진짜 DOMRect 는 left/top 을 갖는다 — 씬이 그 필드를 읽으니 하네스도 같이 넣어 주어야 한다.
     game: canvasRect
@@ -779,5 +780,84 @@ describe("camera motion adversarial cases", () => {
     } finally {
       delete (window as unknown as Record<string, unknown>).matchMedia;
     }
+  });
+});
+
+
+describe("issue 693 navigation gesture ownership", () => {
+  it("only an unoccupied select target outside the map is neutral", () => {
+    const scene = createHarness() as CameraFocusHarness & { shouldPan(pointer: unknown): boolean };
+    editorState.set({ tool: "select", selection: null, activePaletteStamp: null });
+    expect(scene.shouldPan(pointerAt(-2, -2))).toBe(true);
+    expect(scene.shouldPan(pointerAt(2, 2))).toBe(false);
+    editorState.set({ tool: "paint" });
+    expect(scene.shouldPan(pointerAt(-2, -2))).toBe(false);
+    editorState.set({ tool: "event", layer: "event" });
+    expect(scene.shouldPan(pointerAt(-2, -2))).toBe(false);
+    editorState.set({ tool: "select", selection: { mapId: store.getCurrent().startMapId, x: 1, y: 1, width: 2, height: 2 } });
+    expect(scene.shouldPan(pointerAt(-2, -2))).toBe(false);
+    editorState.set({ selection: null, pastePreview: { x: 0, y: 0 } });
+    expect(scene.shouldPan(pointerAt(-2, -2))).toBe(false);
+  });
+
+  it("Ctrl wheel preserves the pointer world coordinate and all six zoom limits", () => {
+    const scene = createHarness({ canvas: { x: 100, y: 80, width: 320, height: 256 } }) as CameraFocusHarness & { zoomAtWheel(event: WheelEvent): void };
+    const camera = scene.cameras.main as CameraFocusHarness["cameras"]["main"] & { setZoom(zoom: number): void; preRender(): void };
+    const unsubscribe = editorState.subscribe(state => { camera.setZoom(state.zoom); camera.preRender(); });
+    try {
+      const wheel = (deltaY: number) => ({ ctrlKey: true, cancelable: true, deltaY, clientX: 180, clientY: 144, preventDefault: vi.fn(), stopImmediatePropagation: vi.fn() });
+      const point = () => ({ x: camera.worldView.x + 80 / camera.zoom, y: camera.worldView.y + 64 / camera.zoom });
+      const before = point();
+      for (const zoom of [3, 4, 6, 8, 8]) {
+        const event = wheel(-120);
+        scene.zoomAtWheel(event as unknown as WheelEvent);
+        expect(editorState.get().zoom).toBe(zoom);
+        expect(point().x).toBeCloseTo(before.x);
+        expect(point().y).toBeCloseTo(before.y);
+        expect(event.preventDefault).toHaveBeenCalledOnce();
+      }
+      for (const zoom of [6, 4, 3, 2, 1, 1]) {
+        scene.zoomAtWheel(wheel(120) as unknown as WheelEvent);
+        expect(editorState.get().zoom).toBe(zoom);
+      }
+      scene.isPainting = true;
+      scene.zoomAtWheel(wheel(-120) as unknown as WheelEvent);
+      expect(editorState.get().zoom).toBe(1);
+      const plain = { ...wheel(120), ctrlKey: false };
+      scene.zoomAtWheel(plain as unknown as WheelEvent);
+      expect(plain.preventDefault).not.toHaveBeenCalled();
+    } finally { unsubscribe(); }
+  });
+});
+
+
+describe("issue 693 assistant layout preservation", () => {
+  it("defers layout recentering until painting ends, then preserves the visible focus", () => {
+    const overlays: CanvasRect[] = [];
+    const scene = createHarness({ canvas: { x: 100, y: 80, width: 800, height: 600 }, overlays }) as CameraFocusHarness & {
+      syncNavigationGeometry(): void;
+      overlayGeometryReadAtMs: number;
+      cameraVisibleArea(): { worldView: CanvasRect; canvas: CanvasRect; unoccluded: CanvasRect; zoom: number };
+    };
+    Object.assign(scene, {
+      cameraScrollbars: { sync: vi.fn() }, navigationGeometry: null,
+      cachedCanvasRect: null, overlayGeometryReadAtMs: 0,
+    });
+    Object.assign(scene.cameras.main, { setBounds: vi.fn() });
+    scene.syncNavigationGeometry();
+    const before = scene.cameraVisibleArea();
+    overlays.push({ x: 500, y: 80, width: 400, height: 600 });
+    scene.overlayGeometryReadAtMs = 0;
+    scene.isPainting = true;
+    scene.syncNavigationGeometry();
+    expect(scene.cameras.main.worldView).toEqual(before.worldView);
+    scene.isPainting = false;
+    scene.syncNavigationGeometry();
+    const after = scene.cameraVisibleArea();
+    const center = (area: ReturnType<typeof scene.cameraVisibleArea>) => ({
+      x: area.worldView.x + (area.unoccluded.x - area.canvas.x + area.unoccluded.width / 2) / area.zoom,
+      y: area.worldView.y + (area.unoccluded.y - area.canvas.y + area.unoccluded.height / 2) / area.zoom,
+    });
+    expect(center(after)).toEqual(center(before));
   });
 });

@@ -1390,6 +1390,7 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
   });
 
   const apply = (): void => {
+    if (audioPlayback(resourceId, store.getCurrent()).midi) return;
     context.actions.replaceCommand(context.path, {
       kind: "playAudio",
       resourceId,
@@ -1439,7 +1440,7 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
               // Prefer a sensible default when switching channel with empty/wrong-kind id.
               const catalog = catalogFor(channel, store.getCurrent());
               if (!resourceId || !catalog.some((entry) => entry.id === resourceId)) {
-                resourceId = catalog[0]?.id ?? "";
+                resourceId = catalog.find(entry => !entry.midi)?.id ?? "";
               }
               rebuildChannelButtons();
               refreshChannelCopy();
@@ -1484,9 +1485,15 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
       list.append(el("option", { text: resourceId, attrs: { value: resourceId } }));
       list.value = resourceId;
     }
+    // Keep legacy IDs visible (including search fallbacks), but inspection cannot author MIDI.
+    for (const option of list.querySelectorAll<HTMLOptionElement>("option")) option.disabled = audioPlayback(option.value, project).midi;
   };
 
   list.addEventListener("change", () => {
+    if (audioPlayback(list.value.trim(), store.getCurrent()).midi) {
+      list.value = resourceId;
+      return;
+    }
     resourceId = list.value.trim();
     apply();
   });

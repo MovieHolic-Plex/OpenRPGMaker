@@ -1,5 +1,6 @@
 /** @vitest-environment happy-dom */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { registerAiBootIntentTarget } from "@/editor/aiBootIntent";
 import { editorState } from "@/editor/editorState";
 import { validateEventDraft } from "@/editor/eventDraftValidator";
 import { clearCommandInspector, selectedCommandPath } from "@/editor/panels/eventEditor/commandInspector";
@@ -72,6 +73,59 @@ afterEach(() => {
 });
 
 describe("validation navigation at the rendered modal seam", () => {
+  it("targets nested condition siblings rather than the first repeated field", () => {
+    // Given: two repeated switch fields in a fork's nested conditions.
+    store.update(project => {
+      const page = project.maps[mapId]?.events.find(event => event.id === "validation")?.pages?.[1];
+      if (!page) throw new Error("Missing page");
+      page.conditions = [];
+      page.commands = [{ kind: "fork", condition: { kind: "all", conditions: [
+        { kind: "switch", switchId: "missing-first", value: true },
+        { kind: "not", condition: { kind: "switch", switchId: "missing-second", value: false } },
+      ] }, then: [] }];
+    });
+    // When: the deeper sibling's diagnostic is selected.
+    clickIssue("reference.switch.missing", 1);
+    // Then: the exact condition form owns the focused picker.
+    expect(document.activeElement?.closest("[data-condition-path]")?.getAttribute("data-condition-path")).toBe("[1,0]");
+    expect(document.activeElement?.classList.contains("event-record-picker-trigger")).toBe(true);
+  });
+
+  it("prepares an editable unsent handoff and retains the event editor draft", () => {
+    // Given: an existing composer draft behind the event editor.
+    const input = document.createElement("textarea");
+    input.value = "Existing instructions";
+    document.body.append(input);
+    const send = vi.fn();
+    registerAiBootIntentTarget({ open: () => {}, getDraft: () => input.value,
+      prefill: text => { input.value = text; input.focus(); }, send });
+    // When: the user explicitly asks the local assistant from the bell.
+    openBell();
+    control("event-validation-ask-assistant").click();
+    // Then: the editor is retained, the user's bytes survive, and no turn starts.
+    expect(control("event-editor-modal").hidden).toBe(true);
+    expect(document.activeElement).toBe(input);
+    expect(input.value.startsWith("Existing instructions\n\n")).toBe(true);
+    expect(input.value).toContain('"status": "UNSENT"');
+    expect(send).not.toHaveBeenCalled();
+    registerAiBootIntentTarget(null);
+  });
+
+  it("focuses the exact command field after navigation instead of stopping on the row", () => {
+    // Given: two invalid fields in a nested command, on a different page.
+    store.update(project => {
+      const page = project.maps[mapId]?.events.find(event => event.id === "validation")?.pages?.[1];
+      if (!page) throw new Error("Missing page");
+      page.commands = [{ kind: "loop", body: [{ kind: "changeFactionStance", a: "missing-a", b: "missing-b", op: "=", value: 0 }] }];
+    });
+    // When: selecting the second field's diagnostic.
+    clickIssue("reference.faction.missing", 1);
+    // Then: the inspector and exact editable field agree.
+    expect(selectedCommandPath()).toEqual([0, -5, 0]);
+    expect(document.activeElement?.getAttribute("data-custom-select-for")
+      ?? document.activeElement?.getAttribute("data-testid")).toBe("event-command-faction-b");
+  });
+
   it.each([
     ["reference.switch.missing", 0, "event-page-switch-condition-input", "event-page-switch-condition-picker-open"],
     ["reference.switch.missing", 1, "event-page-switch2-condition-input", "event-page-switch2-condition-picker-open"],
@@ -112,7 +166,7 @@ describe("validation navigation at the rendered modal seam", () => {
     expect(element(".cmd-list").hidden).toBe(false);
     expect(selectedCommandPath()).toEqual([0, -5, 0]);
     expect(control("event-editor-inspector").dataset.commandPath).toBe("[0,-5,0]");
-    expect(document.activeElement).toBe(element('.cmd-list [data-cmd-path="[0,-5,0]"] > .cmd-head'));
+    expect(document.activeElement).toBe(control("event-command-goto-label-name"));
     const currentSearch = control("event-command-search");
     expect(currentSearch instanceof HTMLInputElement && currentSearch.value).toBe("");
   });

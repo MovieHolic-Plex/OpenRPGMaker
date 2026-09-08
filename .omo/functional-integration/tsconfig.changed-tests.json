@@ -1,0 +1,22 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": [
+    "../../src/vite-env.d.ts",
+    "../../test/assistantFunctionalReviewIntegration.test.ts",
+    "../../test/fixtures/functionalAcceptance.ts",
+    "../../test/functionalAcceptance.test.ts",
+    "../../test/functionalAcceptanceSession.test.ts",
+    "../../test/functionalClarification.test.ts",
+    "../../test/functionalInterpreterResume.test.ts",
+    "../../test/functionalPersistenceProof.test.ts",
+    "../../test/functionalScenePurchase.test.ts",
+    "../../test/functionalWalkSuspension.test.ts",
+    "../../test/npcRewardSession.test.ts",
+    "../../test/playerStatusMenuItemShowcase.test.ts",
+    "../../test/toolSchemaProviderCompat.test.ts"
+  ],
+  "exclude": [
+    "../../node_modules",
+    "../../dist"
+  ]
+}

@@ -60,6 +60,8 @@ import {
 } from "./eventEditorOpenState";
 
 import { relationshipStateName } from "@/project/relationshipState";
+import { appearanceBindingControl } from "../appearanceBindingControl";
+import { getCharacterAppearance } from "@/project/characterAppearances";
 export function renderEventNameControl(
   mapId: MapId,
   eventId: string,
@@ -1446,11 +1448,14 @@ function movementSpeedLabel(speed: number): string {
 
 function graphicControl(mapId: MapId, eventId: string, page: EventPage): HTMLElement {
   const control = el("div", { class: "event-graphic-control", dataset: { testid: "event-page-graphic-control" } });
+  const linked = getCharacterAppearance(store.getCurrent(), page.graphic.appearanceId);
   const spriteInput = el("input", {
     attrs: { type: "text", placeholder: "모습" },
     value: page.graphic.sprite?.id ?? "",
     dataset: { testid: "event-page-sprite-input" },
   });
+  spriteInput.disabled = Boolean(linked?.charset);
+  if (linked?.charset) spriteInput.title = "공유 외형에서 걷기 그림을 사용 중입니다. 연결 해제 후 직접 지정하세요.";
   spriteInput.addEventListener("change", () => {
     const id = spriteInput.value.trim();
     updateEventPage(mapId, eventId, page.id, {
@@ -1463,6 +1468,15 @@ function graphicControl(mapId: MapId, eventId: string, page: EventPage): HTMLEle
     updateEventPage(mapId, eventId, page.id, { graphic: { ...page.graphic, transparent: transparent.checked } });
   });
   control.append(
+    appearanceBindingControl(page.graphic.appearanceId, "event-page-appearance-select", (appearanceId) => {
+      control.querySelector<HTMLButtonElement>('[data-custom-select-for="event-page-appearance-select"]')?.focus({ preventScroll: true });
+      const graphic = { ...page.graphic, appearanceId };
+      page = { ...page, graphic };
+      updateEventPage(mapId, eventId, page.id, { graphic });
+      control.replaceWith(graphicControl(mapId, eventId, page));
+    }),
+    ...(linked ? [el("p", { class: "empty-hint", dataset: { testid: "event-page-appearance-linked" },
+      text: `${linked.name} 연결됨 · 직접 지정 그림은 보관됩니다. 대사에 별도 얼굴 명령이 없으면 이 외형의 초상을 사용합니다.` })] : []),
     renderEventGraphicPreview(page.graphic, page.movement.type),
     el("div", {
       class: "event-graphic-control-actions",
@@ -1470,6 +1484,7 @@ function graphicControl(mapId: MapId, eventId: string, page: EventPage): HTMLEle
         el("button", {
           class: "btn",
           text: "이미지 선택",
+          attrs: { type: "button", ...(linked?.charset ? { disabled: "true", title: "공유 외형의 걷기 그림을 사용 중입니다." } : {}) },
           dataset: { testid: "event-page-graphic-set" },
           on: { click: () => openNpcGraphicDialog(mapId, eventId, page) },
         }),
@@ -1482,6 +1497,11 @@ function graphicControl(mapId: MapId, eventId: string, page: EventPage): HTMLEle
 }
 
 function graphicWithoutSprite(page: EventPage): EventPage["graphic"] {
+  if (page.graphic.appearanceId) {
+    const graphic = { ...page.graphic };
+    delete graphic.sprite;
+    return graphic;
+  }
   return page.graphic.transparent === undefined ? {} : { transparent: page.graphic.transparent };
 }
 

@@ -5,6 +5,7 @@ import { createBlankProject } from "@/project/defaults";
 import { fixedDeclarer } from "./intentFixture";
 import { verificationEvent, verificationJourney } from "./fixtures/verificationOwnership";
 import { offlineChatResponse } from "./fixtures/offlineChatResponse";
+import { approvedReviewResponse, imageDeliveryForRequest } from "./independentReviewFixture";
 import { getTool } from "@/editor/tools";
 import type { SceneStep } from "@/testing/sceneTestRunner";
 
@@ -25,14 +26,19 @@ function rig(maxToolCalls = 4, project = createBlankProject()) {
   const session = new AssistantSession(project, {
     config: { ...defaultAiConfig(), agentMode: "chat", model: "test", liteModel: "test", apiKey: "test", maxToolCalls },
     declareIntent: fixedDeclarer({ mode: "modify", needsPlan: false, source: "continuation" }),
+    renderImages: async () => [{ label: "Current map", dataUrl: "data:image/png;base64,AA==" }],
     chat: async (_config, request): Promise<ChatResult> => {
+      const review = approvedReviewResponse(request);
+      if (review) return { ...review, message: { ...review.message,
+        content: String(review.message.content).replace("Fixture review", "FINAL_SENTINEL") } };
       if (!request.tools?.length) return { message: { role: "assistant", content: JSON.stringify({ action: "resume" }) }, finishReason: "stop" };
       modelRequests++;
       const calls = batches.shift() ?? [];
       if (calls.some(call => call.name === "skip_work_item")) before = snapshot();
-      return offlineChatResponse(calls.length ? { message: { role: "assistant", content: null, tool_calls: calls.map(call => ({
+      const imageDelivery = imageDeliveryForRequest(request);
+      return offlineChatResponse(calls.length ? { imageDelivery, message: { role: "assistant", content: null, tool_calls: calls.map(call => ({
         id: `integration-${++sequence}`, type: "function", function: { name: call.name, arguments: JSON.stringify(call.args) },
-      })) }, finishReason: "tool_calls" } : { message: { role: "assistant", content: "FINAL_SENTINEL" }, finishReason: "stop" });
+      })) }, finishReason: "tool_calls" } : { imageDelivery, message: { role: "assistant", content: "FINAL_SENTINEL" }, finishReason: "stop" });
     },
   });
   function snapshot() { return { plan: session.getWorkPlan(), acceptance: session.getAcceptanceSnapshot(), verification: session.getVerificationSnapshot() }; }
@@ -69,7 +75,8 @@ describe("PR687 adjudicated verification scheduling through normal dispatch", ()
     const declare: Call = { name: "set_work_plan", args: { goal: "Dummy check", layers: [{ title: "Checks", items: [{ id: "verify",
       title: "Verify", instruction: "Inspect", successTools: ["run_scene_test", "get_project_summary"], mapTargets: [mapId],
       verificationChecks: [{ tool: "run_scene_test", args, interactionTargets: [{ stepIndex: 0, mapId, eventId: "dummy" }] }] }] }] } };
-    const result = await f.send([...(kind === "adopted" ? [declare] : []), probe(args), { name: "remove_event", args: { mapId, eventId: "dummy" } }]);
+    const result = await f.send([...(kind === "adopted" ? [declare] : []), probe(args), { name: "remove_event", args: { mapId, eventId: "dummy" } },
+      { name: "show_map_region", args: { mapId, x: 0, y: 0, w: project.maps[mapId]!.width, h: project.maps[mapId]!.height } }]);
     expect(f.session.getProposedProject().maps[mapId]!.events.some(event => event.id === "dummy")).toBe(false);
     expect(f.snapshot().verification.findings).toHaveLength(kind === "negative" ? 1 : 0);
     expect(f.snapshot().verification.requirements).toHaveLength(kind === "adopted" ? 1 : 0);

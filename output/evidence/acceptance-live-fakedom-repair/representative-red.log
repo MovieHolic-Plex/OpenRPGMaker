@@ -1,0 +1,169 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/eventEditorTrustLoop.test.ts --maxWorkers=1 --testNamePattern=routes quick command --reporter=default --reporter=json --outputFile=output/evidence/acceptance-live-fakedom-repair/representative-red.json
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-acceptance-live-qa
+
+ ❯ test/eventEditorTrustLoop.test.ts (45 tests | 33 failed | 12 skipped) 4131ms
+   × event editor trust loop > routes quick command 'command-add-text' to the active page 217ms
+     → Cannot read properties of undefined (reading 'undefined')
+   × event editor trust loop > routes quick command 'command-add-choice' to the active page 170ms
+     → Cannot read properties of undefined (reading 'undefined')
+   × event editor trust loop > routes quick command 'command-add-switch' to the active page 174ms
+     → Cannot read properties of undefined (reading 'undefined')
+   × event editor trust loop > routes quick command 'command-add-variable' to the active page 136ms
+     → Cannot read properties of undefined (reading 'undefined')
+   × event editor trust loop > routes quick command 'command-add-branch' to the active page 103ms
+     → Cannot read properties of undefined (reading 'undefined')
+   × event editor trust loop > routes quick command 'command-add-timer' to the active page 112ms
+     → Cannot read properties of undefined (reading 'undefined')
+   × event editor trust loop > routes quick command 'command-add-advance-time' to the active page 119ms
+     → Cannot read properties of undefined (reading 'undefined')
+   × event editor trust loop > routes quick command 'command-add-advance-crop-growth' to the active page 93ms
+     → Cannot read properties of undefined (reading 'undefined')
+   × event editor trust loop > routes quick command 'command-add-transfer' to the active page 101ms
+     → Cannot read properties of undefined (reading 'undefined')
+   × event editor trust loop > routes quick command 'command-add-move-route' to the active page 133ms
+     → Cannot read properties of undefined (reading 'undefined')
+   × event editor trust loop > routes quick command 'command-add-picture' to the active page 120ms
+     → Cannot read properties of undefined (reading 'undefined')
+   × event editor trust loop > routes quick command 'command-add-audio' to the active page 286ms
+     → Cannot read properties of undefined (reading 'undefined')
+   × event editor trust loop > routes quick command 'command-add-battle' to the active page 135ms
+     → Cannot read properties of undefined (reading 'undefined')
+   × event editor trust loop > routes quick command 'command-add-gold' to the active page 99ms
+     → Cannot read properties of undefined (reading 'undefined')
+   × event editor trust loop > routes quick command 'command-add-item' to the active page 99ms
+     → Cannot read properties of undefined (reading 'undefined')
+   × event editor trust loop > routes quick command 'command-add-craft' to the active page 114ms
+     → Cannot read properties of undefined (reading 'undefined')
+   × event editor trust loop > routes quick command 'command-add-upgrade' to the active page 82ms
+     → Cannot read properties of undefined (reading 'undefined')
+   × event editor trust loop > routes quick command 'command-add-equip-tool' to the active page 104ms
+     → Cannot read properties of undefined (reading 'undefined')
+   × event editor trust loop > routes quick command 'command-add-open-chest' to the active page 123ms
+     → Cannot read properties of undefined (reading 'undefined')
+   × event editor trust loop > routes quick command 'command-add-friendship' to the active page 102ms
+     → Cannot read properties of undefined (reading 'undefined')
+   × event editor trust loop > routes quick command 'command-add-party' to the active page 122ms
+     → Cannot read properties of undefined (reading 'undefined')
+   × event editor trust loop > routes quick command 'command-add-give-monster' to the active page 86ms
+     → Cannot read properties of undefined (reading 'undefined')
+   × event editor trust loop > routes quick command 'command-add-evolve-monster' to the active page 123ms
+     → Cannot read properties of undefined (reading 'undefined')
+   × event editor trust loop > routes quick command 'command-add-follower' to the active page 91ms
+     → Cannot read properties of undefined (reading 'undefined')
+   × event editor trust loop > routes quick command 'command-add-set-lighting' to the active page 99ms
+     → Cannot read properties of undefined (reading 'undefined')
+   × event editor trust loop > routes quick command 'command-add-set-weather' to the active page 140ms
+     → Cannot read properties of undefined (reading 'undefined')
+   × event editor trust loop > routes quick command 'command-add-show-animation' to the active page 117ms
+     → window is not defined
+   × event editor trust loop > routes quick command 'command-add-checkpoint-save' to the active page 118ms
+     → Cannot read properties of undefined (reading 'undefined')
+   × event editor trust loop > routes quick command 'command-add-run-control' to the active page 80ms
+     → Cannot read properties of undefined (reading 'undefined')
+   × event editor trust loop > routes quick command 'command-add-kill-player' to the active page 160ms
+     → Cannot read properties of undefined (reading 'undefined')
+   × event editor trust loop > routes quick command 'command-add-trigger-ending' to the active page 157ms
+     → Cannot read properties of undefined (reading 'undefined')
+   × event editor trust loop > routes quick command 'command-add-ending' to the active page 109ms
+     → Cannot read properties of undefined (reading 'undefined')
+   × event editor trust loop > routes quick command 'command-add-game-over' to the active page 103ms
+     → Cannot read properties of undefined (reading 'undefined')
+   ↓ event editor trust loop > blocks Apply on fatal validation, keeps the draft open, and navigates to its command
+   ↓ event editor trust loop > blocks OK on fatal validation, keeps the draft open, and navigates to its command
+   ↓ event editor trust loop > blocks Test on fatal validation, keeps the draft open, and navigates to its command
+   ↓ event editor trust loop > navigates fatal event-position and schedule issues to editable controls
+   ↓ event editor trust loop > discards a working edit on Cancel without changing the canonical event
+   ↓ event editor trust loop > shows the real event test action, honest local/remote status, and opens the picker with Ctrl/Cmd+K
+   ↓ event editor trust loop > restores focus to the parent editor when a subdialog opener rerenders away
+   ↓ event editor trust loop > renders all beginner empty-state actions and inserts a factory-created dialogue command
+   ↓ event editor trust loop > uses strict roving tabs, preserves command focus, and keeps recents newest-first
+   ↓ event editor trust loop > traps focus inside subdialogs and labels the close control in Korean
+   ↓ event editor trust loop > restores focus, caret, open details, and scroll across reactive rerenders
+   ↓ event editor trust loop > labels script browsing as non-runtime simulation with loop/choice/goto caveats
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 33 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/eventEditorTrustLoop.test.ts > event editor trust loop > routes quick command 'command-add-text' to the active page
+ FAIL  test/eventEditorTrustLoop.test.ts > event editor trust loop > routes quick command 'command-add-choice' to the active page
+ FAIL  test/eventEditorTrustLoop.test.ts > event editor trust loop > routes quick command 'command-add-switch' to the active page
+ FAIL  test/eventEditorTrustLoop.test.ts > event editor trust loop > routes quick command 'command-add-variable' to the active page
+ FAIL  test/eventEditorTrustLoop.test.ts > event editor trust loop > routes quick command 'command-add-branch' to the active page
+ FAIL  test/eventEditorTrustLoop.test.ts > event editor trust loop > routes quick command 'command-add-timer' to the active page
+ FAIL  test/eventEditorTrustLoop.test.ts > event editor trust loop > routes quick command 'command-add-advance-time' to the active page
+ FAIL  test/eventEditorTrustLoop.test.ts > event editor trust loop > routes quick command 'command-add-advance-crop-growth' to the active page
+ FAIL  test/eventEditorTrustLoop.test.ts > event editor trust loop > routes quick command 'command-add-transfer' to the active page
+ FAIL  test/eventEditorTrustLoop.test.ts > event editor trust loop > routes quick command 'command-add-move-route' to the active page
+ FAIL  test/eventEditorTrustLoop.test.ts > event editor trust loop > routes quick command 'command-add-picture' to the active page
+ FAIL  test/eventEditorTrustLoop.test.ts > event editor trust loop > routes quick command 'command-add-audio' to the active page
+ FAIL  test/eventEditorTrustLoop.test.ts > event editor trust loop > routes quick command 'command-add-battle' to the active page
+ FAIL  test/eventEditorTrustLoop.test.ts > event editor trust loop > routes quick command 'command-add-gold' to the active page
+ FAIL  test/eventEditorTrustLoop.test.ts > event editor trust loop > routes quick command 'command-add-item' to the active page
+ FAIL  test/eventEditorTrustLoop.test.ts > event editor trust loop > routes quick command 'command-add-craft' to the active page
+ FAIL  test/eventEditorTrustLoop.test.ts > event editor trust loop > routes quick command 'command-add-upgrade' to the active page
+ FAIL  test/eventEditorTrustLoop.test.ts > event editor trust loop > routes quick command 'command-add-equip-tool' to the active page
+ FAIL  test/eventEditorTrustLoop.test.ts > event editor trust loop > routes quick command 'command-add-open-chest' to the active page
+ FAIL  test/eventEditorTrustLoop.test.ts > event editor trust loop > routes quick command 'command-add-friendship' to the active page
+ FAIL  test/eventEditorTrustLoop.test.ts > event editor trust loop > routes quick command 'command-add-party' to the active page
+ FAIL  test/eventEditorTrustLoop.test.ts > event editor trust loop > routes quick command 'command-add-give-monster' to the active page
+ FAIL  test/eventEditorTrustLoop.test.ts > event editor trust loop > routes quick command 'command-add-evolve-monster' to the active page
+ FAIL  test/eventEditorTrustLoop.test.ts > event editor trust loop > routes quick command 'command-add-follower' to the active page
+ FAIL  test/eventEditorTrustLoop.test.ts > event editor trust loop > routes quick command 'command-add-set-lighting' to the active page
+ FAIL  test/eventEditorTrustLoop.test.ts > event editor trust loop > routes quick command 'command-add-set-weather' to the active page
+ FAIL  test/eventEditorTrustLoop.test.ts > event editor trust loop > routes quick command 'command-add-checkpoint-save' to the active page
+ FAIL  test/eventEditorTrustLoop.test.ts > event editor trust loop > routes quick command 'command-add-run-control' to the active page
+ FAIL  test/eventEditorTrustLoop.test.ts > event editor trust loop > routes quick command 'command-add-kill-player' to the active page
+ FAIL  test/eventEditorTrustLoop.test.ts > event editor trust loop > routes quick command 'command-add-trigger-ending' to the active page
+ FAIL  test/eventEditorTrustLoop.test.ts > event editor trust loop > routes quick command 'command-add-ending' to the active page
+ FAIL  test/eventEditorTrustLoop.test.ts > event editor trust loop > routes quick command 'command-add-game-over' to the active page
+TypeError: Cannot read properties of undefined (reading 'undefined')
+ ❯ sync src/editor/panels/eventEditor/customSelect.ts:407:31
+    405|     let instance!: SelectInstance;
+    406|     const sync = (): void => {
+    407|       const selected = select.options[select.selectedIndex] ?? select.…
+       |                               ^
+    408|       const text = selected?.label || selected?.textContent || select.…
+    409|       valueLabel.textContent = text;
+ ❯ enhanceSelect src/editor/panels/eventEditor/customSelect.ts:450:5
+ ❯ refresh src/editor/panels/eventEditor/customSelect.ts:455:44
+ ❯ installEventEditorCustomSelects src/editor/panels/eventEditor/customSelect.ts:511:3
+ ❯ openEventSubdialog src/editor/panels/eventEditor/subdialog.ts:88:25
+ ❯ openEventCommandEditDialog src/editor/panels/eventEditor/commandEditDialog.ts:31:3
+ ❯ openNewEventCommandDialog src/editor/panels/eventEditor/commandEditDialog.ts:228:3
+ ❯ openNewEventCommandKindDialog src/editor/panels/eventEditor/commandEditDialog.ts:237:3
+ ❯ click src/editor/panels/eventEditor/pageProps.ts:573:13
+ ❯ FakeElement.dispatchEvent test/fakeDom.ts:252:9
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/33]⎯
+
+ FAIL  test/eventEditorTrustLoop.test.ts > event editor trust loop > routes quick command 'command-add-show-animation' to the active page
+ReferenceError: window is not defined
+ ❯ play src/editor/panels/eventEditor/showAnimationPlayback.ts:138:5
+    136|     frameIndex = 0;
+    137|     render(0);
+    138|     timer = window.setInterval(tick, SHOW_ANIMATION_FRAME_MS);
+       |     ^
+    139|   };
+    140| 
+ ❯ playShowAnimation src/editor/panels/eventEditor/showAnimationPlayback.ts:141:3
+ ❯ playShowAnimationOnce src/editor/panels/eventEditor/showAnimationPlayback.ts:155:10
+ ❯ play src/editor/panels/eventEditor/showAnimationPlayback.ts:179:15
+ ❯ bindShowAnimationPlayback src/editor/panels/eventEditor/showAnimationPlayback.ts:195:3
+ ❯ renderStage src/editor/panels/eventEditor/commandBodyPage3Native.ts:914:9
+ ❯ renderPreview src/editor/panels/eventEditor/commandBodyPage3Native.ts:948:55
+ ❯ showAnimationBody src/editor/panels/eventEditor/commandBodyPage3Native.ts:964:3
+ ❯ renderAdvancedCommandBody src/editor/panels/eventEditor/commandBodyAdvanced.ts:152:14
+ ❯ renderCommandBody src/editor/panels/eventEditor/commandBody.ts:38:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/33]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  33 failed | 12 skipped (45)
+   Start at  14:02:12
+   Duration  26.73s (transform 16.20s, setup 0ms, collect 22.03s, tests 4.13s, environment 0ms, prepare 88ms)
+
+JSON report written to /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/output/evidence/acceptance-live-fakedom-repair/representative-red.json

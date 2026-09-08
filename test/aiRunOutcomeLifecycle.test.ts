@@ -69,16 +69,19 @@ it("retains both applied milestones and pending calls when a later transport fai
     tool_calls: [{ id: name, type: "function", function: { name, arguments: JSON.stringify(args) } }] }, finishReason: "tool_calls" });
   const responses = [tool("set_work_plan", { goal: "Titles", layers: [{ title: "Titles", items: [
     { title: "First", instruction: "First title", successTools: ["set_title_screen"] },
-    { title: "Second", instruction: "Draft only", successTools: ["upsert_item"] },
-  ] }] }), tool("set_title_screen", { title: "Applied first" }), tool("set_title_screen", { title: "Pending second" })];
+  ] }] }), tool("set_title_screen", { title: "Applied first" }),
+    { message: { role: "assistant", content: "RESULT" }, finishReason: "stop" } satisfies ChatResult,
+    tool("set_title_screen", { title: "Pending second" })];
   let round = 0;
   const f = applyFixture(async () => {
     const response = responses[round++];
     if (!response) throw Object.assign(new Error("Transport fixture"), { name: "LlmError", status: 401 });
     return response;
   });
-  // When a later failure ends the actual autonomous run.
-  const result = await f.session.sendUserMessage("Set titles", undefined, undefined, { autonomous: true });
+  const first = await f.session.sendUserMessage("Set title", undefined, undefined, { autonomous: true });
+  expect(first.review?.status).toBe("approved");
+  // When a later authorized continuation fails after its pending write.
+  const result = await f.session.sendUserMessage("Continue", undefined, undefined, { autonomous: true, goalAction: "resume" });
   // Then draft precedence neither erases nor replays the first milestone.
   expect(result.runOutcome).toEqual({ execution: "failed", goal: "unassessed", delivery: "draft" });
   expect(result.appliedCalls?.map(call => call.args.title)).toEqual(["Applied first"]);

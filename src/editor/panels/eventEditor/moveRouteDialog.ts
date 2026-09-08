@@ -36,6 +36,8 @@ export function openPageMoveRouteDialog(request: PageMoveRouteDialogRequest): vo
 function renderMoveRouteDialog(body: HTMLElement, close: () => void, request: PageMoveRouteDialogRequest): void {
   let moves = [...(request.movement.route?.moves ?? [])];
   let selectedIndex = moves.length > 0 ? moves.length - 1 : -1;
+  // Initial/appended selection remains an insertion template until a row is explicitly selected.
+  let editedIndex = -1;
   let frequency = clampFrequency(request.movement.frequency);
   // 프로젝트에 실재하는 스위치를 기본값으로 (원시 문자열 "sw_route_seen" 은 없는 id 일 수 있다).
   let switchId = store.getCurrent().switches[0]?.id ?? "";
@@ -89,84 +91,117 @@ function renderMoveRouteDialog(body: HTMLElement, close: () => void, request: Pa
     renderCommandList(commandList, moves, selectedIndex, selectCommand);
     updateDeleteState(deleteButton, deleteAllButton, moves, selectedIndex);
     renderPreview();
+    const legend = topBar.querySelector(".event-page-move-route-parameters legend");
+    if (legend) legend.textContent = editedIndex < 0 ? "이 단계 값" : `선택한 ${editedIndex + 1}번 단계 값`;
+  };
+  const editSelected = (edit: (move: MoveCommand) => MoveCommand): void => {
+    const current = moves[editedIndex];
+    if (!current) return;
+    const next = edit(current);
+    if (next === current) return;
+    moves = moves.map((move, index) => index === editedIndex ? next : move);
+    renderAndSyncList();
   };
   const selectCommand = (index: number) => {
     selectedIndex = index;
+    editedIndex = -1;
+    const move = moves[index];
+    if (move?.kind === "setSwitch") { switchId = move.switchId; editedIndex = index; }
+    else if (move?.kind === "changeGraphic") { spriteId = move.spriteId; editedIndex = index; }
+    else if (move?.kind === "playSe") { soundId = move.resourceId; editedIndex = index; }
+    else if (move?.kind === "npcTransfer") {
+      npcTargetMapId = move.mapId; npcTargetX = move.x; npcTargetY = move.y;
+      npcTargetDirection = move.direction ?? "down"; editedIndex = index;
+    }
+    topBar.replaceChildren(...Array.from(renderTop().children));
     renderAndSyncList();
   };
   const appendCommand = (command: MoveCommand) => {
+    editedIndex = -1;
     moves = [...moves, command];
     selectedIndex = moves.length - 1;
     renderAndSyncList();
   };
   deleteButton.addEventListener("click", () => {
     if (selectedIndex < 0 || selectedIndex >= moves.length) return;
+    editedIndex = -1;
     moves = moves.filter((_, index) => index !== selectedIndex);
     selectedIndex = Math.min(selectedIndex, moves.length - 1);
     renderAndSyncList();
   });
   deleteAllButton.addEventListener("click", () => {
+    editedIndex = -1;
     moves = [];
     selectedIndex = -1;
     renderAndSyncList();
   });
 
+  const renderTop = () => renderTopBar(
+    frequency,
+    (next) => {
+      frequency = next;
+    },
+    {
+      switchId,
+      spriteId,
+      soundId,
+      onSwitchId: (next) => {
+        switchId = next;
+        editSelected(move => move.kind === "setSwitch" ? { ...move, switchId: next } : move);
+      },
+      onSpriteId: (next) => {
+        spriteId = next;
+        editSelected(move => move.kind === "changeGraphic" ? { ...move, spriteId: next } : move);
+      },
+      onSoundId: (next) => {
+        soundId = next;
+        editSelected(move => move.kind === "playSe" ? { ...move, resourceId: next } : move);
+      },
+      npcTargetMapId,
+      npcTargetX,
+      npcTargetY,
+      npcTargetDirection,
+      onNpcTargetMapId: (next) => {
+        npcTargetMapId = next;
+        editSelected(move => move.kind === "npcTransfer" ? { ...move, mapId: next } : move);
+      },
+      onNpcTargetX: (next) => {
+        npcTargetX = next;
+        editSelected(move => move.kind === "npcTransfer" ? { ...move, x: next } : move);
+      },
+      onNpcTargetY: (next) => {
+        npcTargetY = next;
+        editSelected(move => move.kind === "npcTransfer" ? { ...move, y: next } : move);
+      },
+      onNpcTargetDirection: (next) => {
+        npcTargetDirection = next;
+        editSelected(move => move.kind === "npcTransfer" ? { ...move, direction: next } : move);
+      },
+      hopDx,
+      hopDy,
+      hopHeightPx,
+      hopDurationMs,
+      onHopDx: (next) => {
+        hopDx = next;
+      },
+      onHopDy: (next) => {
+        hopDy = next;
+      },
+      onHopHeightPx: (next) => {
+        hopHeightPx = next;
+      },
+      onHopDurationMs: (next) => {
+        hopDurationMs = next;
+      },
+    }
+  );
+  const topBar = renderTop();
+
   body.append(
     el("div", {
       class: "event-page-move-route",
       children: [
-        renderTopBar(
-          frequency,
-          (next) => {
-            frequency = next;
-          },
-          {
-            switchId,
-            spriteId,
-            soundId,
-            onSwitchId: (next) => {
-              switchId = next;
-            },
-            onSpriteId: (next) => {
-              spriteId = next;
-            },
-            onSoundId: (next) => {
-              soundId = next;
-            },
-            npcTargetMapId,
-            npcTargetX,
-            npcTargetY,
-            npcTargetDirection,
-            onNpcTargetMapId: (next) => {
-              npcTargetMapId = next;
-            },
-            onNpcTargetX: (next) => {
-              npcTargetX = next;
-            },
-            onNpcTargetY: (next) => {
-              npcTargetY = next;
-            },
-            onNpcTargetDirection: (next) => {
-              npcTargetDirection = next;
-            },
-            hopDx,
-            hopDy,
-            hopHeightPx,
-            hopDurationMs,
-            onHopDx: (next) => {
-              hopDx = next;
-            },
-            onHopDy: (next) => {
-              hopDy = next;
-            },
-            onHopHeightPx: (next) => {
-              hopHeightPx = next;
-            },
-            onHopDurationMs: (next) => {
-              hopDurationMs = next;
-            },
-          }
-        ),
+        topBar,
         el("div", {
           class: "event-page-move-route-main",
           children: [

@@ -286,13 +286,16 @@
    "event-command-face-ai-prompt": "no-change",
    "event-command-face-flip-horizontal": "컨트롤 값 변경 1개 [event-command-face-flip-horizontal: input[checkbox]{}→input[checkbox]{checked}] | 클래스 신규 1개 [flipped]",
    "event-command-face-position": "no-change",
-   "event-command-face-resource": "검증텍스트 변경 2개 [event-command-face-preview: \"res#미리보기를 찾을 수 없습니다.\"→\"__probe__미리보기를 찾을 수 없습니다.\", event-command-face-preview-host: \"res#미리보기를 찾을 수 없습니다.\"→\"__probe__미리보기를 찾을 수 없습니다.\"]"
+   "event-command-face-resource": "검증텍스트 변경 2개 [event-command-face-preview: \"res#미리보기를 찾을 수 없습니다.\"→\"__probe__미리보기를 찾을 수 없습니다.\", event-command-face-preview-host: \"res#미리보기를 찾을 수 없습니다.\"→\"__probe__미리보기를 찾을 수 없습니다.\"]",
+   "event-command-face-appearance": "single-option",
+   "event-command-face-presentation": "no-change"
   },
   "initial": {
    "testids": [
     "event-command-edit-summary",
     "event-command-face-ai-generate",
     "event-command-face-ai-prompt",
+    "event-command-face-appearance",
     "event-command-face-bust-preset",
     "event-command-face-crop",
     "event-command-face-editor",
@@ -415,6 +418,7 @@
     "event-command-face-option-generated-actor-hero-02-face-15",
     "event-command-face-option-generated-actor-hero-03-face",
     "event-command-face-position",
+    "event-command-face-presentation",
     "event-command-face-preview",
     "event-command-face-preview-host",
     "event-command-face-resource",
@@ -425,6 +429,7 @@
    "classes": [
     "btn",
     "cream-command-form-head",
+    "db-field",
     "event-command-face-bust-preset",
     "event-command-face-clear",
     "event-command-face-crop",
@@ -576,16 +581,27 @@
     "event-command-face-position": "select{}",
     "event-command-face-resource": "input[text]{}",
     "event-command-face-resource-clear": "button{}",
-    "event-command-face-resource-set": "button{}"
+    "event-command-face-resource-set": "button{}",
+    "event-command-face-appearance": "select{}",
+    "event-command-face-presentation": "select{disabled}"
    },
    "selectOptions": {
     "event-command-face-position": [
      "left",
      "right"
+    ],
+    "event-command-face-appearance": [
+     ""
+    ],
+    "event-command-face-presentation": [
+     "face",
+     "bust"
     ]
    },
    "labels": [
     "AI로 만들기",
+    "공유 외형 표시얼굴흉상 (없으면 얼굴)",
+    "공유 캐릭터 외형연결 안 함 · 직접 지정한 그림",
     "얼굴 고르기…",
     "전신",
     "좌우 반전",
@@ -598,11 +614,11 @@
     "div": 129,
     "img": 113,
     "input": 3,
-    "label": 2,
-    "option": 2,
+    "label": 4,
+    "option": 5,
     "p": 1,
-    "select": 1,
-    "span": 3,
+    "select": 3,
+    "span": 5,
     "strong": 1
    },
    "tagByTestid": {
@@ -736,19 +752,22 @@
     "event-command-face-resource": "input",
     "event-command-face-resource-clear": "button",
     "event-command-face-resource-set": "button",
-    "faceset-crop-sheet": "img"
+    "faceset-crop-sheet": "img",
+    "event-command-face-appearance": "select",
+    "event-command-face-presentation": "select"
    },
    "texts": {
     "event-command-edit-summary": "얼굴 바꾸기",
     "event-command-face-preview": "res#미리보기를 찾을 수 없습니다.",
     "event-command-face-preview-host": "res#미리보기를 찾을 수 없습니다."
    },
-   "testidCount": 131,
-   "controlCount": 122
+   "testidCount": 133,
+   "controlCount": 124
   },
   "classes": [
    "btn",
    "cream-command-form-head",
+   "db-field",
    "event-command-face-bust-preset",
    "event-command-face-clear",
    "event-command-face-crop",
@@ -779,7 +798,7 @@
    "page3-resource-row",
    "small"
   ],
-  "probeCount": 4,
+  "probeCount": 6,
   "reactingCount": 2
  },
  "choices": {
@@ -3536,8 +3555,8 @@
    "battle-processing-flow-select": "no-change",
    "battle-processing-lose-checkbox": "컨트롤 값 변경 1개 [battle-processing-lose-checkbox: input[checkbox]{hidden}→input[checkbox]{checked,hidden}] | 검증텍스트 변경 1개 [battle-processing-preview: \"⚔(적 그룹 선택)·도망 가능지면 게임 끝확인 시 전투 시작 → batt\"→\"⚔(적 그룹 선택)·도망 가능패배 허용확인 시 전투 시작 → battle\"]",
    "battle-processing-lose-select": "컨트롤 값 변경 1개 [battle-processing-lose-checkbox: input[checkbox]{hidden}→input[checkbox]{checked,hidden}] | 검증텍스트 변경 1개 [battle-processing-preview: \"⚔(적 그룹 선택)·도망 가능지면 게임 끝확인 시 전투 시작 → batt\"→\"⚔(적 그룹 선택)·도망 가능패배 허용확인 시 전투 시작 → battle\"]",
-   "battle-processing-troop-select": "태그 개수 [img 등장(1), span 17→19] | 검증텍스트 변경 1개 [battle-processing-preview: \"⚔(적 그룹 선택)·도망 가능지면 게임 끝확인 시 전투 시작 → batt\"→\"⚔슬라임 정찰대·도망 가능지면 게임 끝EXP # · Gold #확인 시 \"] | 클래스 소실 3개 [empty, is-empty, rich-record-initial] | 클래스 신규 4개 [record-picker-card-copy, record-picker-card-subtitle, rich-preview-caption-in…(절단: 총 323자)",
-   "battle-processing-troop-source": "testid 소실 2종 [battle-processing-troop-select, battle-processing-troop-select-card] | testid 신규 3종 [battle-processing-troop-variable, battle-processing-troop-variable-browse, battle-processing-troop-variable-empty-hint] | 태그 개수 [button 12→13, option 13→10, span 17→15] | 컨트롤 소실 1개 [battle-processing-t…(절단: 총 969자)"
+   "battle-processing-troop-select": "태그 개수 [img 등장(1), span 17→19] | 검증텍스트 변경 2개 [battle-processing-preview: \"⚔(적 그룹 선택)·도망 가능지면 게임 끝확인 시 전투 시작 → batt\"→\"⚔슬라임 정찰대·도망 가능지면 게임 끝EXP # · Gold #확인 시 \", battle-processing-warning: \"전투를 시작할 수 없습니다. 적 그룹을 선택하세요.\"→\"\"] | 클래스 소실 3개 [empty, is-empty, rich-record-initial] | 클래스 신규 4개 [record-picker-c…(절단: 총 385자)",
+   "battle-processing-troop-source": "testid 소실 2종 [battle-processing-troop-select, battle-processing-troop-select-card] | testid 신규 3종 [battle-processing-troop-variable, battle-processing-troop-variable-browse, battle-processing-troop-variable-empty-hint] | 태그 개수 [button 12→13, option 13→10, span 17→15] | 컨트롤 소실 1개 [battle-processing-t…(절단: 총 1061자)"
   },
   "initial": {
    "testids": [
@@ -3723,7 +3742,7 @@
     "battle-processing-branch-hint": "켜면 명령 리스트에 승리·패배·도망 마커가 생깁니다. 본문은 마커 아래에서 편집하세요.",
     "battle-processing-intent": "이 이벤트에서 전투를 시작합니다",
     "battle-processing-preview": "⚔(적 그룹 선택)·도망 가능지면 게임 끝확인 시 전투 시작 → battleResult 저장",
-    "battle-processing-warning": "적 그룹을 선택하세요. 빈 전투는 실행 시 실패합니다.",
+    "battle-processing-warning": "전투를 시작할 수 없습니다. 적 그룹을 선택하세요.",
     "event-command-edit-summary": "전투"
    },
    "testidCount": 31,
@@ -4281,34 +4300,167 @@
   "reactingCount": 1
  },
  "changeLifeSkillExp": {
-  "reactions": {},
+  "reactions": {
+   "change-life-skill-exp-amount-input": "no-change",
+   "change-life-skill-exp-amount-mode": "컨트롤 값 변경 5개 [change-life-skill-exp-amount-input: input[number]{}→input[number]{hidden}, change-life-skill-exp-amount-minus: button{}→button{hidden}, change-life-skill-exp-amount-plus: button{}→button{hidden}, change-life-skill-exp-amount-select: select{hidden}→select{}, event-variable-picker-open: b…(절단: 총 323자)",
+   "change-life-skill-exp-amount-select": "라벨 소실 1개 [(선택)] | 라벨 신규 1개 [(이름 없음)]",
+   "change-life-skill-exp-op-select": "no-change",
+   "change-life-skill-exp-skill-id-input": "no-change"
+  },
   "initial": {
    "testids": [
-    "event-command-edit-summary"
+    "change-life-skill-exp-amount-input",
+    "change-life-skill-exp-amount-minus",
+    "change-life-skill-exp-amount-mode",
+    "change-life-skill-exp-amount-mode-segment-number",
+    "change-life-skill-exp-amount-mode-segment-variable",
+    "change-life-skill-exp-amount-plus",
+    "change-life-skill-exp-amount-select",
+    "change-life-skill-exp-amount-variable",
+    "change-life-skill-exp-editor",
+    "change-life-skill-exp-op-select",
+    "change-life-skill-exp-op-select-segment-dec",
+    "change-life-skill-exp-op-select-segment-inc",
+    "change-life-skill-exp-op-select-segment-set",
+    "change-life-skill-exp-skill-id-input",
+    "event-command-edit-summary",
+    "event-variable-picker-open"
    ],
    "classes": [
-    "cream-command-form-head"
+    "btn",
+    "cream-command-form",
+    "cream-command-form-head",
+    "event-record-modal-select",
+    "event-record-picker-trigger",
+    "event-record-select",
+    "rich-command-form",
+    "rich-form-row",
+    "rich-native-select",
+    "rich-segment",
+    "rich-segment-group",
+    "rich-stepper",
+    "rich-stepper-button",
+    "schema-command-form",
+    "schema-field",
+    "schema-field-label",
+    "schema-operand",
+    "selected",
+    "small"
    ],
-   "controls": {},
-   "selectOptions": {},
-   "labels": [],
+   "controls": {
+    "change-life-skill-exp-amount-input": "input[number]{}",
+    "change-life-skill-exp-amount-minus": "button{}",
+    "change-life-skill-exp-amount-mode": "select{hidden}",
+    "change-life-skill-exp-amount-mode-segment-number": "button{}",
+    "change-life-skill-exp-amount-mode-segment-variable": "button{}",
+    "change-life-skill-exp-amount-plus": "button{}",
+    "change-life-skill-exp-amount-select": "select{hidden}",
+    "change-life-skill-exp-op-select": "select{hidden}",
+    "change-life-skill-exp-op-select-segment-dec": "button{}",
+    "change-life-skill-exp-op-select-segment-inc": "button{}",
+    "change-life-skill-exp-op-select-segment-set": "button{}",
+    "change-life-skill-exp-skill-id-input": "input[text]{}",
+    "event-variable-picker-open": "button{hidden}"
+   },
+   "selectOptions": {
+    "change-life-skill-exp-amount-mode": [
+     "number",
+     "variable"
+    ],
+    "change-life-skill-exp-amount-select": [
+     "",
+     "var_0001",
+     "var_0002",
+     "var_0003",
+     "var_0004",
+     "var_0005",
+     "var_0006",
+     "var_0007",
+     "var_0008",
+     "var_0009",
+     "var_0010",
+     "var_0011",
+     "var_0012",
+     "var_0013",
+     "var_0014",
+     "var_0015",
+     "var_0016",
+     "var_0017",
+     "var_0018",
+     "var_0019",
+     "var_0020"
+    ],
+    "change-life-skill-exp-op-select": [
+     "=",
+     "+=",
+     "-="
+    ]
+   },
+   "labels": [
+    "(선택)",
+    "+",
+    "−",
+    "더하기",
+    "변수",
+    "빼기",
+    "숫자",
+    "이 값으로"
+   ],
    "tags": {
-    "div": 3
+    "button": 8,
+    "div": 3,
+    "input": 2,
+    "option": 26,
+    "select": 3,
+    "span": 13
    },
    "tagByTestid": {
-    "event-command-edit-summary": "div"
+    "change-life-skill-exp-amount-input": "input",
+    "change-life-skill-exp-amount-minus": "button",
+    "change-life-skill-exp-amount-mode": "select",
+    "change-life-skill-exp-amount-mode-segment-number": "button",
+    "change-life-skill-exp-amount-mode-segment-variable": "button",
+    "change-life-skill-exp-amount-plus": "button",
+    "change-life-skill-exp-amount-select": "select",
+    "change-life-skill-exp-amount-variable": "span",
+    "change-life-skill-exp-editor": "span",
+    "change-life-skill-exp-op-select": "select",
+    "change-life-skill-exp-op-select-segment-dec": "button",
+    "change-life-skill-exp-op-select-segment-inc": "button",
+    "change-life-skill-exp-op-select-segment-set": "button",
+    "change-life-skill-exp-skill-id-input": "input",
+    "event-command-edit-summary": "div",
+    "event-variable-picker-open": "button"
    },
    "texts": {
     "event-command-edit-summary": "생활 스킬 숙련도 변경"
    },
-   "testidCount": 1,
-   "controlCount": 0
+   "testidCount": 16,
+   "controlCount": 13
   },
   "classes": [
-   "cream-command-form-head"
+   "btn",
+   "cream-command-form",
+   "cream-command-form-head",
+   "event-record-modal-select",
+   "event-record-picker-trigger",
+   "event-record-select",
+   "rich-command-form",
+   "rich-form-row",
+   "rich-native-select",
+   "rich-segment",
+   "rich-segment-group",
+   "rich-stepper",
+   "rich-stepper-button",
+   "schema-command-form",
+   "schema-field",
+   "schema-field-label",
+   "schema-operand",
+   "selected",
+   "small"
   ],
-  "probeCount": 0,
-  "reactingCount": 0
+  "probeCount": 5,
+  "reactingCount": 2
  },
  "promoteActor": {
   "reactions": {
@@ -9592,34 +9744,129 @@
   "reactingCount": 0
  },
  "spawnFieldEnemy": {
-  "reactions": {},
+  "reactions": {
+   "event-command-spawn-area-h": "no-change",
+   "event-command-spawn-area-w": "no-change",
+   "event-command-spawn-area-x": "no-change",
+   "event-command-spawn-area-y": "no-change",
+   "event-command-spawn-graphic": "no-change",
+   "event-command-spawn-switch": "태그 개수 [span 15→16] | 클래스 신규 1개 [record-picker-card-copy]",
+   "event-command-spawn-troop": "태그 개수 [span 15→16] | 라벨 소실 1개 [적 그룹(적 그룹 선택)슬라임 정찰대초원 슬라임 둘동굴 박쥐 떼?(적 그룹 선택)] | 라벨 신규 1개 [적 그룹(적 그룹 선택)슬라임 정찰대초원 슬라임 둘동굴 박쥐 떼슬슬라임 정찰대] | 클래스 신규 1개 [record-picker-card-copy]"
+  },
   "initial": {
    "testids": [
-    "event-command-edit-summary"
+    "event-command-edit-summary",
+    "event-command-spawn-area-h",
+    "event-command-spawn-area-w",
+    "event-command-spawn-area-x",
+    "event-command-spawn-area-y",
+    "event-command-spawn-form",
+    "event-command-spawn-graphic",
+    "event-command-spawn-switch",
+    "event-command-spawn-switch-card",
+    "event-command-spawn-troop",
+    "event-command-spawn-troop-card"
    ],
    "classes": [
-    "cream-command-form-head"
+    "cream-command-form",
+    "cream-command-form-head",
+    "empty",
+    "inline-field",
+    "record-picker",
+    "record-picker-card",
+    "record-picker-card-name",
+    "rich-command-form",
+    "rich-record-initial"
    ],
-   "controls": {},
-   "selectOptions": {},
-   "labels": [],
+   "controls": {
+    "event-command-spawn-area-h": "input[number]{required}",
+    "event-command-spawn-area-w": "input[number]{required}",
+    "event-command-spawn-area-x": "input[number]{required}",
+    "event-command-spawn-area-y": "input[number]{required}",
+    "event-command-spawn-graphic": "input[text]{}",
+    "event-command-spawn-switch": "select{}",
+    "event-command-spawn-troop": "select{}"
+   },
+   "selectOptions": {
+    "event-command-spawn-switch": [
+     "",
+     "sw_0001",
+     "sw_0002",
+     "sw_0003",
+     "sw_0004",
+     "sw_0005",
+     "sw_0006",
+     "sw_0007",
+     "sw_0008",
+     "sw_0009",
+     "sw_0010",
+     "sw_0011",
+     "sw_0012",
+     "sw_0013",
+     "sw_0014",
+     "sw_0015",
+     "sw_0016",
+     "sw_0017",
+     "sw_0018",
+     "sw_0019",
+     "sw_0020"
+    ],
+    "event-command-spawn-troop": [
+     "",
+     "troop_slime",
+     "troop_slime_pair",
+     "troop_bat_swarm"
+    ]
+   },
+   "labels": [
+    "그래픽 리소스 ID (선택)",
+    "영역 X",
+    "영역 Y",
+    "영역 너비",
+    "영역 높이",
+    "적 그룹(적 그룹 선택)슬라임 정찰대초원 슬라임 둘동굴 박쥐 떼?(적 그룹 선택)"
+   ],
    "tags": {
-    "div": 3
+    "div": 4,
+    "input": 5,
+    "label": 7,
+    "option": 25,
+    "select": 2,
+    "span": 15
    },
    "tagByTestid": {
-    "event-command-edit-summary": "div"
+    "event-command-edit-summary": "div",
+    "event-command-spawn-area-h": "input",
+    "event-command-spawn-area-w": "input",
+    "event-command-spawn-area-x": "input",
+    "event-command-spawn-area-y": "input",
+    "event-command-spawn-form": "div",
+    "event-command-spawn-graphic": "input",
+    "event-command-spawn-switch": "select",
+    "event-command-spawn-switch-card": "span",
+    "event-command-spawn-troop": "select",
+    "event-command-spawn-troop-card": "span"
    },
    "texts": {
     "event-command-edit-summary": "필드 몬스터 등장"
    },
-   "testidCount": 1,
-   "controlCount": 0
+   "testidCount": 11,
+   "controlCount": 7
   },
   "classes": [
-   "cream-command-form-head"
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty",
+   "inline-field",
+   "record-picker",
+   "record-picker-card",
+   "record-picker-card-copy",
+   "record-picker-card-name",
+   "rich-command-form",
+   "rich-record-initial"
   ],
-  "probeCount": 0,
-  "reactingCount": 0
+  "probeCount": 7,
+  "reactingCount": 2
  },
  "despawnFieldEnemy": {
   "reactions": {},

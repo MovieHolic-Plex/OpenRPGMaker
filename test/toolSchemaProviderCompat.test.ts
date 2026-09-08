@@ -131,6 +131,10 @@ const criterionCases: AcceptanceCriterion[] = [
       { expect: "variable", variableId: "progress", op: ">=", value: 0 }], seed: 0,
   } },
   ...[{ mapId: "map_start" }, { newMapName: "New room" }].flatMap((target): AcceptanceCriterion[] => [
+    { kind: "shopPurchase", target, start: { x: 1, y: 1 }, seller: { eventId: "seller" },
+      item: { id: "item_potion" }, count: 2, unitPrice: 10 },
+    { kind: "mapRoundTrip", target, start: { x: 1, y: 1 }, destination: { mapId: "interior" },
+      outgoing: { eventName: "Exit" }, returning: { eventId: "return" } },
     { kind: "actionCombat", target },
     { kind: "mapDimensions", target, width: 20, height: 15 },
     { kind: "mapCount", targets: [target], count: 1 },
@@ -142,6 +146,12 @@ const criterionCases: AcceptanceCriterion[] = [
   ]),
   { kind: "mapCount", targets: [{ mapId: "map_start" }, { newMapName: "New room" }], count: 2 },
   { kind: "gameTitle", title: "작은 열쇠" },
+  { kind: "npcReward", requirement: { target: { mapId: "map_start", eventName: "Mira" },
+    grants: [{ kind: "item", name: "Potion", count: 2 }, { kind: "monster", id: "species_leafling" }],
+    oneTime: true, choices: [0], repeatChoices: [1] } },
+  { kind: "functionalUnresolved", reason: "Specify the requested price" },
+  { kind: "functionalUnresolved", reason: "Specify the requested price", expectations: {
+    kind: "shopPurchase", seller: { eventName: "Mira" }, item: { name: "Potion" }, count: 2 } },
 ];
 
 function expectRepresentable(schema: SchemaNode | undefined, value: unknown): void {
@@ -218,7 +228,7 @@ describe("acceptance and requirement schema/runtime contract", () => {
 
   it.each(criterionCases)("retains runtime requiredness and rejects extra fields for $kind %j", criterion => {
     const valid: Record<string, unknown> = { ...criterion };
-    for (const key of Object.keys(valid).filter(key => key !== "region")) {
+    for (const key of Object.keys(valid).filter(key => key !== "region" && !(criterion.kind === "functionalUnresolved" && key === "expectations"))) {
       const missing = { ...valid };
       delete missing[key];
       expect(parseAcceptanceCriteria([criterion, missing]), `missing ${key}`).toBeNull();

@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { resetAiRecordDbForTest } from "@/ai/aiRecordDb";
 import { clearConversations, conversationScopeKey, saveConversation } from "@/ai/conversationStore";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
 import { buildAiActivityLogRecord } from "@/ai/activityLog";
@@ -31,8 +32,23 @@ function button(root: ParentNode, testid: string): HTMLButtonElement {
   return found;
 }
 
+async function restoreFromHistory(panel: HTMLElement): Promise<void> {
+  button(panel, "ai-open-conversations").click();
+  await whenAiConversationHistoryModalSettled();
+  button(document, "ai-history-filter-all").click();
+  await whenAiConversationHistoryModalSettled();
+  const open = document.querySelector<HTMLButtonElement>('[data-testid="ai-history-open"]');
+  if (!open) {
+    const empty = document.querySelector('[data-testid="ai-history-empty"], [data-testid="ai-history-error"]');
+    throw new Error(`Missing button: ai-history-open (${empty?.textContent ?? "no empty state"})`);
+  }
+  open.click();
+  await whenAiConversationHistoryModalSettled();
+}
+
 let restoreDom: (() => void) | undefined;
 beforeEach(async () => {
+  vi.restoreAllMocks();
   restoreDom = installFakeDom();
   const storage = new Map<string, string>();
   vi.stubGlobal("localStorage", {
@@ -49,6 +65,7 @@ beforeEach(async () => {
   clearAgentGhostPreview();
   setAgentGhostDraftMapProvider(null);
   clearAgentBlueprint();
+  resetAiRecordDbForTest();
   await clearConversations();
 });
 
@@ -105,10 +122,17 @@ function approve(region: ReturnType<typeof pendingRegion>): void {
 }
 
 async function saveHistory(id: string): Promise<void> {
+  const project = store.getCurrent();
+  const mapId = editorState.get().currentMapId ?? project.startMapId;
+  const map = project.maps[mapId];
   await saveConversation({
     id, title: id, model: "test", savedAt: 100,
     projectContextKey: conversationScopeKey(store.getProjectIdentity(), store.getCurrent()),
-    entries: [{ kind: "user", text: id }, { kind: "assistant", text: "answer" }],
+    entries: [{
+      kind: "user",
+      text: id,
+      context: { mapId, mapName: map?.name ?? mapId, mapWidth: map?.width ?? 20, mapHeight: map?.height ?? 15 },
+    }, { kind: "assistant", text: "answer" }],
   });
 }
 
@@ -190,10 +214,9 @@ describe("independent region presentation at chat boundaries", () => {
     await whenAiChatPanelSettled();
     if (mode === "manual") {
       button(panel, "ai-new-chat").click();
-      button(panel, "ai-open-conversations").click();
-      await whenAiConversationHistoryModalSettled();
-      button(document, "ai-history-open").click();
-      await whenAiConversationHistoryModalSettled();
+      await whenAiChatPanelSettled();
+      await saveHistory("saved-chat-manual");
+      await restoreFromHistory(panel);
     }
     expect(panel.dataset.aiConversation).toBe("active");
     expectPending(region);
@@ -213,10 +236,7 @@ describe("independent region presentation at chat boundaries", () => {
     button(panel, "ai-new-chat").click();
     expect(getAgentGhostPreviewState().previews).toEqual([]);
     expect(getAgentGhostDraftMap(regionA.mapId)).toBeUndefined();
-    button(panel, "ai-open-conversations").click();
-    await whenAiConversationHistoryModalSettled();
-    button(document, "ai-history-open").click();
-    await whenAiConversationHistoryModalSettled();
+    await restoreFromHistory(panel);
     expect(panel.dataset.aiConversation).toBe("active");
     expect(getAgentGhostPreviewState().previews).toEqual([]);
     expect(getAgentGhostDraftMap(regionA.mapId)).toBeUndefined();
@@ -242,10 +262,7 @@ describe("independent region presentation at chat boundaries", () => {
     expectPending(regionB);
     button(panel, "ai-new-chat").click();
     expectPending(regionB);
-    button(panel, "ai-open-conversations").click();
-    await whenAiConversationHistoryModalSettled();
-    button(document, "ai-history-open").click();
-    await whenAiConversationHistoryModalSettled();
+    await restoreFromHistory(panel);
     expectPending(regionB);
     approve(regionB);
     expect(regionA.onApply).not.toHaveBeenCalled();

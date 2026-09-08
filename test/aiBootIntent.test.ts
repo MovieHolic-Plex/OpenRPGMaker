@@ -70,6 +70,26 @@ describe("aiBootIntent", () => {
     expect(prefill).toHaveBeenCalledWith("모험 JRPG");
   });
 
+  it("appends an unsent handoff without overwriting existing draft bytes", () => {
+    // Given: a mounted composer with unfinished user instructions and a send hook.
+    let draft = "  original instructions\n";
+    const send = vi.fn();
+    const open = vi.fn();
+    registerAiBootIntentTarget({ open, getDraft: () => draft, prefill: text => { draft = text; }, send });
+    // When: a diagnostic is explicitly prepared with draft preservation.
+    expect(prefillAiAssistantInput("UNSENT", { preserveDraft: true })).toBe(true);
+    // Then: both blocks remain editable and no turn was sent.
+    expect(draft).toBe("  original instructions\n\n\nUNSENT");
+    expect(send).not.toHaveBeenCalled();
+    expect(open).toHaveBeenCalledOnce();
+  });
+
+  it("refuses preserving handoff when the target cannot read its draft", () => {
+    const prefill = vi.fn();
+    registerAiBootIntentTarget({ open: vi.fn(), prefill });
+    expect(prefillAiAssistantInput("UNSENT", { preserveDraft: true })).toBe(false);
+    expect(prefill).not.toHaveBeenCalled();
+  });
   it("does not auto-apply on register (focus order owned by finishEditorBoot)", () => {
     setPendingAiBootIntent("대기", { autoSend: true });
     const open = vi.fn();

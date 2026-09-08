@@ -27,6 +27,11 @@ const ANIMATION_NODES: readonly SvgNodeSpec[] = [
 ];
 
 const TAB_ICONS: Record<DatabaseTab, readonly SvgNodeSpec[]> = {
+  characterAppearances: [
+    { tag: "rect", attrs: { x: "3", y: "3", width: "16", height: "16", rx: "2" } },
+    { tag: "circle", attrs: { cx: "11", cy: "8", r: "3" } },
+    { tag: "path", attrs: { d: "M6 17c0-5 10-5 10 0" } },
+  ],
   characterGraphics: [
     { tag: "rect", attrs: { x: "3", y: "3", width: "16", height: "16", rx: "3" } },
     { tag: "circle", attrs: { cx: "11", cy: "9", r: "3" } },

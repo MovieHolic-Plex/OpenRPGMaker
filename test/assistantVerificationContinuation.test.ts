@@ -6,6 +6,8 @@ import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
 import { parseOrchestratorDecision, workPlanFromOrchestratorDecision, workPlanFromSetToolArgs } from "@/ai/workPlan";
 import { createBlankProject } from "@/project/defaults";
 import { getTool, runTool } from "@/editor/tools";
+import type { ReviewInput } from "@/ai/independentReview";
+import { independentReviewPayload } from "./independentReviewFixture";
 import { fixedDeclarer } from "./intentFixture";
 import { verificationEvent, verificationJourney } from "./fixtures/verificationOwnership";
 
@@ -285,6 +287,7 @@ describe("authoring revalidates explicit checks before finalizing", () => {
     const project = createBlankProject();
     const item = project.database.items[0];
     const events: SessionEvent[] = [];
+    const reviews: ReviewInput[] = [];
     const calls = [
       { name: "set_work_plan", args: { goal: "Required lint",
         layers: [{ title: "Check", items: [{ title: "Price", instruction: "Change price and revalidate", successTools: ["run_lint"],
@@ -298,7 +301,16 @@ describe("authoring revalidates explicit checks before finalizing", () => {
     const session = new AssistantSession(project, {
       config: { ...defaultAiConfig(), agentMode: "chat", model: "test", liteModel: "test", apiKey: "test", maxToolCalls: 8 },
       declareIntent: fixedDeclarer({ mode: "modify", space: "none", targetMapId: null, needsPlan: false, tools: ["run_lint", "upsert_item"] }),
-      chat: async (): Promise<ChatResult> => {
+      chat: async (_config, request): Promise<ChatResult> => {
+        const review = independentReviewPayload(request);
+        if (review) {
+          reviews.push(review);
+          // The model pass cannot override a stale explicit check. The real
+          // review parser must request repair before accepting the rechecked draft.
+          return { finishReason: "stop", message: { role: "assistant", content: JSON.stringify({
+            revision: review.revision, verdict: "approved", summary: "REVALIDATED_FINAL", findings: [],
+          }) } };
+        }
         const index = round++, call = calls[index];
         return call
           ? { finishReason: "tool_calls", message: { role: "assistant", content: null, tool_calls: [{
@@ -309,6 +321,16 @@ describe("authoring revalidates explicit checks before finalizing", () => {
     });
     const result = await session.sendUserMessage("Change the item price and verify it", event => events.push(event));
     expect(events.filter(event => event.type === "tool_call" && event.name === "run_lint")).toHaveLength(2);
+    expect(reviews).toHaveLength(2);
+    const ownedLint = session.getVerificationSnapshot().requirements.find(requirement => requirement.name === "run_lint");
+    expect(ownedLint).toMatchObject({ name: "run_lint", args: {} });
+    expect(reviews[0]?.requiredProblems.join("\n")).toContain(`[${ownedLint!.checkId}]`);
+    expect(reviews[1]?.requiredProblems).toEqual([]);
+    expect(events.filter(event => event.type === "result_review").map(event => event.review.status))
+      .toEqual(["changes_requested", "approved"]);
+    expect(result.stoppedReason).toBe("final");
+    expect(result.review?.status).toBe("approved");
+    expect(session.isDraftReviewApproved()).toBe(true);
     expect(result.assistantText).toBe("REVALIDATED_FINAL");
     expect(session.getProposedProject().database.items.find(record => record.id === item.id)?.price).toBe(321);
   });

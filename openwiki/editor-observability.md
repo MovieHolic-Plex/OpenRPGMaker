@@ -18,6 +18,59 @@
 | `scripts/list-edit-activity.mjs` | `npm run edit:log` (라이브 세션 — 디스크 미러 조회) |
 | `scripts/list-project-commits.mjs` | `npm run commit:log` (저장된 것 — DB 커밋 + 실린 행위 조회) |
 
+## Opt-in local diagnostics (issue 693 OUT-009 / OUT-010)
+
+- The assistant export menu opens `localDiagnosticsDialog`, not raw audit JSON.
+  Empty conversation is not disabled: explicit consent and category choices precede
+  collection. Prior conversation/log history is never backfilled.
+- `LocalDiagnosticSession` retains at most 500 projected receipts for 30 minutes
+  from consent, in memory only. Stop detaches sources; clear, expiry, project switch
+  and reload discard the session. Its persistent indicator survives the closed report
+  and Test Play. Starting another session requires fresh category choices.
+- Categories: conversation role/character count (no text), authoring/save generation,
+  completed movement, terrain/event collision, interpreter lifecycle, transfer,
+  asset readiness/missing count and boolean boot outcome, warning/error occurrence. Every retained string is
+  an enum, except the locally generated session UUID. IDs, names, prompts, reasoning,
+  log text, credentials, paths and URLs are excluded instead of best-effort redacted.
+  No QA/debug mutation capability is enabled.
+- `diagnosticObserver` performs no payload work while off. The editor adapter
+  subscribes to existing edit activity/logger sources only during consent; it adds
+  no disk/AI-activity sink, console interception, or changes to existing telemetry.
+- Store integration is additive in `persistCurrent`: successful local override
+  publishes `storage: local`; an accepted remote receipt publishes `storage: remote`
+  and captured submitted mutation generation, after the lineage guard and only if
+  its diagnostic-session token still matches. No target, hash, content, generation
+  or persistence policy changes. Late event/transfer/assistant completions also
+  cannot join a newly consented session.
+- Native battle recovery ends the interpreter without a fabricated result or
+  continuation. Its handled failure still emits the token-gated event `failed`
+  receipt, not `cancelled`; stopped/replaced or initially disabled diagnostic
+  sessions receive no late receipt. `eventBattleFailure` covers this integration.
+- Boot callbacks capture `diagnosticToken()` when `bootPlayGame` starts; loader
+  failure callbacks capture it when `PlayScene.preload` starts. The local boot
+  projection requires that same nonempty token and asset-category consent at
+  publication. An initially disabled operation cannot join a later session.
+  Asset receipts retain `ok: false` even when fallback textures let play reach
+  `ready` afterward; ready is not proof that all assets loaded successfully.
+  Raw boot logs and host sinks are unchanged and do not require this token.
+  `scripts/qa/issue693-boot-diagnostics.mjs` replays four real Test Play cases;
+  it defers Phaser's asset XHR, not the earlier editor Image warmup.
+- `savedGeneration` means the latest observed accepted save in this session, not
+  proof that every running scene executes that revision. Null means unknown.
+  Runtime receipts prove only the recorded operation; written/observed/unverified
+  remain distinct and the report never declares overall goal success.
+- Section choices create a frozen Markdown/JSON preview. Native clipboard/file
+  output each requires the shared explicit confirmation; cancellation or project
+  replacement before confirmation creates no artifact or transcript. No network send.
+- Focused tests: `localDiagnosticSession`, `localDiagnosticsWorkflow`,
+  `localDiagnosticSources`, and local-diagnostics cases in movement, interpreter,
+  house transfer, persistence proof and AI-panel suites. Browser replay:
+  `scripts/qa/issue693-diagnostics.mjs` (Firefox, real editor/Test Play, isolated
+  local dev showcase, non-origin traffic blocked). Port 38425;
+  `VITE_CACHE_DIR=/dev/shm/rpg-zzu-issue693-diagnostics/vite`. Captures and confirmed
+  file default to `/dev/shm/rpg-zzu-issue693-diagnostics/evidence`.
+  Full gates/build and independent visual approval remain lead-owned.
+
 ## 계측 초크포인트는 `store.markLocalMutation` 하나다
 
 `ProjectStore` 에서 상태를 바꾸는 메서드는 5개고, 전부 `markLocalMutation` 을 지난다.

@@ -1,0 +1,60 @@
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-issue-693
+
+ ❯ test/eventBattleFailure.test.ts (24 tests | 1 failed | 20 skipped) 840ms
+   ↓ variable troop resolution > rejects invalid value undefined instead of the stale fixed troop
+   ↓ variable troop resolution > rejects invalid value  instead of the stale fixed troop
+   ↓ variable troop resolution > rejects invalid value    instead of the stale fixed troop
+   ↓ variable troop resolution > rejects invalid value removed instead of the stale fixed troop
+   ↓ variable troop resolution > rejects invalid value 999999 instead of the stale fixed troop
+   ↓ variable troop resolution > rejects invalid value NaN instead of the stale fixed troop
+   ↓ variable troop resolution > rejects invalid value Infinity instead of the stale fixed troop
+   ↓ variable troop resolution > rejects variable mode with no variable id even when the fixed troop is valid
+   ↓ variable troop resolution > preserves legitimate compatibility for 0
+   ↓ variable troop resolution > preserves legitimate compatibility for 1
+   ↓ variable troop resolution > preserves legitimate compatibility for 1.9
+   ↓ variable troop resolution > preserves legitimate compatibility for id
+   × native event battle failure ownership > preserves handled-failure receipts with active diagnostic consent 448ms
+     → expected [ 'started', 'cancelled' ] to deeply equal [ 'started', 'failed' ]
+   ✓ native event battle failure ownership > preserves handled-failure receipts with disabled diagnostic consent 126ms
+   ✓ native event battle failure ownership > preserves handled-failure receipts with replaced diagnostic consent 87ms
+   ✓ native event battle failure ownership > preserves handled-failure receipts with enabled-late diagnostic consent 175ms
+   ↓ native event battle failure ownership > defers autorun admission until Phaser emits create instead of treating boot as cancellation
+   ↓ native event battle failure ownership > does not consume an autorun battle before the dialogue host is ready
+   ↓ native event battle failure ownership > reports initialization failure and stops action commands without an outcome
+   ↓ native event battle failure ownership > reports initialization failure and stops auto commands without an outcome
+   ↓ native event battle failure ownership > reports initialization failure and stops parallel commands without an outcome
+   ↓ native event battle failure ownership > reports empty monster-party admission through the existing random caller
+   ↓ native event battle failure ownership > reports empty monster-party admission through the existing field caller
+   ↓ native event battle failure ownership > ignores a late rejection after cancellation without reporting into a new session
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/eventBattleFailure.test.ts > native event battle failure ownership > preserves handled-failure receipts with active diagnostic consent
+AssertionError: expected [ 'started', 'cancelled' ] to deeply equal [ 'started', 'failed' ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[2m    "started",[22m
+[32m-   "failed",[39m
+[31m+   "cancelled",[39m
+[2m  ][22m
+
+ ❯ test/eventBattleFailure.test.ts:65:8
+     63|     await bounded(pending);
+     64|     expect(diagnostics.snapshot().receipts.map(receipt => receipt.phas…
+     65|       .toEqual(consent === "active" ? ["started", "failed"] : []);
+       |        ^
+     66|     expect(JSON.stringify(diagnostics.snapshot())).not.toContain("priv…
+     67|     expect(f.scene.running).toBe(false);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 passed | 20 skipped (24)
+   Start at  19:53:35
+   Duration  22.52s (transform 13.36s, setup 0ms, collect 19.44s, tests 840ms, environment 851ms, prepare 329ms)
+

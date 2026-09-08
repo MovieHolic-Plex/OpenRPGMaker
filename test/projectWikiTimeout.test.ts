@@ -9,6 +9,7 @@ import { createBlankProject } from "@/project/defaults";
 import { getMapEditHistoryEntries, peekPreviousProject, recordProjectSnapshot, resetMapEditHistory } from "@/editor/mapEditHistory";
 import { store } from "@/project/store";
 import { fixedDeclarer } from "./intentFixture";
+import { approvedReviewResponse } from "./independentReviewFixture";
 
 function signal<T>() {
   let resolve!: (value: T) => void;
@@ -118,6 +119,8 @@ function fixture(testSignal: AbortSignal, overrides: Partial<WikiCoordinatorDepe
   });
   let authorRound = 0;
   const authored = vi.fn(async (_config: unknown, request: ChatRequest): Promise<ChatResult> => {
+    const review = approvedReviewResponse(request);
+    if (review) return review;
     if (!request.tools?.length) {
       order.push("planner");
       return response(JSON.stringify({ action: "new_plan", goal: requestText,

@@ -11,6 +11,8 @@ import { createBlankProject } from "@/project/defaults";
 import type { Command, GameEvent } from "@/project/types";
 import { declaredIntent, fixedDeclarer } from "./intentFixture";
 import { offlineChatResponse } from "./fixtures/offlineChatResponse";
+import { approvedReviewResponse, independentReviewPayload, imageDeliveryForRequest } from "./independentReviewFixture";
+import type { ReviewInput } from "@/ai/independentReview";
 
 const COMPLETE = "MODEL_COMPLETION_SENTINEL";
 const NPC = "ev_reward_session";
@@ -20,7 +22,7 @@ const REQUIRED: NpcRewardRequirements = [{
   grants: rewardKind === "gold" ? [{ kind: "gold", count: 20 }]
     : [{ kind: "item", id: "item_potion", count: 2 }, { kind: "monster", id: "species_leafling", count: 1 }],
 }];
-const config = { ...defaultAiConfig(), agentMode: "chat" as const, model: "test", liteModel: "test", apiKey: "test", maxToolCalls: 18, maxTokens: 32000 };
+const config = { ...defaultAiConfig(), agentMode: "chat", apiKey: "test", maxToolCalls: 18, maxTokens: 32000 } satisfies import("@/ai/llmClient").AiConfig;
 const final = (): ChatResult => ({ message: { role: "assistant", content: COMPLETE }, finishReason: "stop" });
 function call(name: string, args: unknown): ChatResult {
   return { message: { role: "assistant", content: null, tool_calls: [{ id: `${name}_call`, type: "function", function: { name, arguments: JSON.stringify(args) } }] }, finishReason: "tool_calls" };
@@ -47,20 +49,35 @@ function harness(steps: readonly (ChatResult | Error)[], options: { required?: N
   project.session.gold = 37;
   project.maps[project.startMapId].events = [];
   const requests: ChatRequest[] = [];
+  const reviews: ReviewInput[] = [];
   const events: SessionEvent[] = [];
+  const map = project.maps[project.startMapId];
+  const region = { mapId: map.id, x: 0, y: 0, w: map.width, h: map.height };
+  // Real read and image tools keep successive NPC replacements grounded. The
+  // acceptance checks creation; the separate reward verifier checks the grants.
+  const groundedSteps = steps.flatMap((step) => !(step instanceof Error)
+    && step.message.tool_calls?.some((tool) => tool.function.name === "upsert_event")
+    ? [call("get_map_region", region), step, call("show_map_region", region),
+      call("repair_acceptance", { itemId: "acceptance-contract", criteria: [
+        { kind: "eventCount", target: { mapId: map.id }, count: 1 },
+      ] })] : [step]);
   let index = 0;
   const session = new AssistantSession(project, {
     config: { ...config, ...(options.maxToolCalls ? { maxToolCalls: options.maxToolCalls } : {}) },
     declareIntent: options.declarer ?? fixedDeclarer({ mode: "modify", npcRewards: options.noContract ? undefined : options.required ?? REQUIRED }),
     peekPendingUserMessage: options.pause,
+    renderImages: async () => [{ label: "Reward NPC map", dataUrl: "data:image/png;base64,AA==" }],
     chat: async (_config, request) => {
+      const review = independentReviewPayload(request);
+      const approval = approvedReviewResponse(request);
+      if (review && approval) { reviews.push(review); return approval; }
       requests.push(request);
-      const next = steps[index++];
+      const next = groundedSteps[index++];
       if (next instanceof Error) throw next;
-      return offlineChatResponse(next ?? final());
+      return offlineChatResponse({ ...(next ?? final()), imageDelivery: imageDeliveryForRequest(request) });
     },
   });
-  return { session, project, requests, events, onEvent: (event: SessionEvent) => events.push(event) };
+  return { session, project, requests, reviews, events, onEvent: (event: SessionEvent) => events.push(event) };
 }
 const writeNpc = (mapId: string, variant: "text" | "once" | "repeat") => call("upsert_event", { mapId, event: npc(variant) });
 const tools = (events: SessionEvent[], name: string) => events.filter((event): event is Extract<SessionEvent, { type: "tool_call" }> => event.type === "tool_call" && event.name === name);
@@ -73,7 +90,8 @@ async function applyAndVerify(h: ReturnType<typeof harness>) {
   store.replace(h.project);
   // Only the external history write is replaced; the real commit gate and store apply run.
   vi.spyOn(commitLog, "recordProjectCommit").mockResolvedValue({ commitId: null, persisted: false, reviewStatus: "approved", summary: "test", toolNames: [], recordedAt: "2026-09-07T00:00:00.000Z" });
-  const applied = await applyProposedProject(h.session.getProposedProject(), { source: "agent", summary: "Requested reward", toolNames: ["upsert_event"] });
+  expect(h.session.isDraftReviewApproved()).toBe(true);
+  const applied = await applyProposedProject(h.session.getProposedProject(), { baseline: h.session.getDraftBaseline(), source: "agent", summary: "Requested reward", toolNames: ["upsert_event"] });
   expect(applied.ok).toBe(true);
   h.session.refreshAcceptance(store.getCurrent());
   expect(h.session.getAcceptanceSnapshot()?.status).toBe("verified");
@@ -103,9 +121,12 @@ describe("NPC reward request lifetime in AssistantSession", () => {
     const result = await h.session.sendUserMessage("Create the requested reward NPC", h.onEvent);
     expect(tools(h.events, "upsert_event")[0]?.result.ok).toBe(true);
     expect(verifyNpcRewardsPlayable(h.session.getProposedProject(), noContract ? undefined : REQUIRED).ok).toBe(pass);
-    expect(result.assistantText === COMPLETE).toBe(pass && noContract);
+    expect(result.stoppedReason).toBe(pass ? "final" : "error");
+    expect(result.review?.status).toBe(pass ? "approved" : "changes_requested");
+    expect(h.session.isDraftReviewApproved()).toBe(pass);
+    expect(h.events.filter((event) => event.type === "assistant_message").some((event) => event.content.includes(COMPLETE))).toBe(false);
+    expect(h.reviews.length).toBe(pass ? 1 : 2);
     if (pass && !noContract) await applyAndVerify(h);
-    if (!pass) expect(h.events.filter((event) => event.type === "assistant_message").some((event) => event.content.includes(COMPLETE))).toBe(false);
     expect(h.requests.length).toBeLessThanOrEqual(7);
   });
 
@@ -121,6 +142,9 @@ describe("NPC reward request lifetime in AssistantSession", () => {
     const h = harness([writeNpc(mapId, "text"), final(), writeNpc(mapId, "once"), final()]);
     const result = await h.session.sendUserMessage("Create the requested reward NPC", h.onEvent);
     expect(tools(h.events, "upsert_event")).toHaveLength(2);
+    expect(result.stoppedReason, result.error).toBe("final");
+    expect(result.review?.status).toBe("approved");
+    expect(h.events.filter((event) => event.type === "result_review").map((event) => event.review.status)).toEqual(["changes_requested", "approved"]);
     expect(result.assistantText).not.toBe(COMPLETE);
     expect(verifyNpcRewardsPlayable(h.session.getProposedProject(), REQUIRED).ok).toBe(true);
     await applyAndVerify(h);
@@ -175,6 +199,8 @@ describe("NPC reward request lifetime in AssistantSession", () => {
     const result = await h.session.sendUserMessage("Create the requested reward NPC", h.onEvent);
     expect(tools(h.events, "complete_work_item")[0]?.result.ok).toBe(true);
     expect(h.session.getWorkPlan()?.layers[0]?.items[0]?.status).toBe("done");
+    expect(result.stoppedReason, result.error).toBe("final");
+    expect(result.review?.status).toBe("approved");
     expect(result.assistantText).not.toBe(COMPLETE);
     await applyAndVerify(h);
   });

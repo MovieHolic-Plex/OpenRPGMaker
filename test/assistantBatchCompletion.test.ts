@@ -1,12 +1,13 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { AssistantSession, type SessionEvent } from "@/ai/assistantSession";
-import type { ChatResult } from "@/ai/llmClient";
+import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
 import { resetIntentDeclarationCache } from "@/ai/intentDeclarationClient";
 import { runTool } from "@/editor/tools";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { fixedDeclarer } from "./intentFixture";
+import { approvedReviewResponse } from "./independentReviewFixture";
 
 type Call = { name: string; args: Record<string, unknown> };
 type ToolEvent = Extract<SessionEvent, { type: "tool_call" }>;
@@ -37,9 +38,11 @@ function harness(rounds: Call[][]) {
   resetMapEditHistory();
   let next = 0;
   const session = new AssistantSession(context.project, {
-    config: { authMode: "apiKey", agentMode: "chat", baseUrl: "x", model: "test", apiKey: "test", maxTokens: 8192, maxToolCalls: 12 },
+    config: { ...defaultAiConfig(), agentMode: "chat", maxTokens: 8192, maxToolCalls: 12 },
     declareIntent: fixedDeclarer({ mode: "modify", needsPlan: false }),
-    chat: async (): Promise<ChatResult> => {
+    chat: async (_config, request): Promise<ChatResult> => {
+      const review = approvedReviewResponse(request);
+      if (review) return review;
       const batch = rounds[next++];
       return batch
         ? { message: { role: "assistant", content: null, tool_calls: batch.map((entry, index) => ({

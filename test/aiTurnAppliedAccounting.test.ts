@@ -9,6 +9,9 @@ import { createProposalHost } from "@/editor/panels/aiProposalCard";
 import type { AiRunSurface } from "@/editor/panels/aiRunSurface";
 import { createBlankProject } from "@/project/defaults";
 import { proposalCompletenessWarnings } from "@/ai/proposalCompleteness";
+import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
+import { approvedReviewResponse, imageDeliveryForRequest } from "./independentReviewFixture";
+import { approvedReview } from "./independentReviewFixture";
 import { fixedDeclarer } from "./intentFixture";
 import { runTool } from "@/editor/tools/toolRunner";
 import { store } from "@/project/store";
@@ -51,6 +54,8 @@ function setup(sessionOverride?: AssistantSession) {
     const bubble = document.createElement("div"); bubble.textContent = text; log.append(bubble); return bubble;
   });
   const session = sessionOverride ?? {
+    isDraftReviewApproved: () => true,
+    proveAppliedRevision: vi.fn(),
     getCompletionSpecs: () => [],
     getWorkPlan: () => null,
     getActiveSpec: () => null, getAuditEntries: () => [], getProposedProject: () => store.getCurrent(),
@@ -83,13 +88,22 @@ describe("panel map completeness selection", () => {
       { name: "paint_tiles", args: FLOOR_PAINT_ARGS },
       { name: "paint_tiles", args: { ...WALL_PAINT_ARGS, cells: coverage === "partial" ? WALL_PAINT_ARGS.cells.slice(1) : WALL_PAINT_ARGS.cells } },
       ...(coverage === "invalidated" ? [{ name: "paint_tiles", args: { ...WALL_PAINT_ARGS, tile: 342, cells: [{ x: 0, y: 0 }] } }] : []),
+      { name: "repair_acceptance", args: { itemId: "acceptance-contract", criteria: [
+        { kind: "targetChange", target: { mapId: "map_basement" }, region: { x: 1, y: 1, w: 10, h: 8 } },
+      ] } },
+      { name: "show_map_region", args: { mapId: "map_basement", x: 0, y: 0, w: 12, h: 10 } },
     ];
+    let writer = 0;
     const session = new AssistantSession(ctx.project, {
-      config: { authMode: "apiKey", baseUrl: "x", model: "stub", apiKey: "test", maxToolCalls: 1, maxTokens: 8192 },
+      config: { authMode: "apiKey", baseUrl: "x", model: "stub", apiKey: "test", maxToolCalls: 8, maxTokens: 32768 },
       declareIntent: fixedDeclarer({ mode: "modify" }),
-      chat: async () => ({ message: { role: "assistant", content: null, tool_calls: entries.map((entry, index) => ({
-        id: `p7-${index}`, type: "function", function: { name: entry.name, arguments: JSON.stringify(entry.args) },
-      })) }, finishReason: "tool_calls" }),
+      renderImages: async () => [{ label: "Native basement", dataUrl: "data:image/png;base64,AA==" }],
+      chat: async (_config, request) => approvedReviewResponse(request) ?? {
+        imageDelivery: imageDeliveryForRequest(request),
+        message: writer++ === 0 ? { role: "assistant", content: null, tool_calls: entries.map((entry, index) => ({
+          id: `p7-${index}`, type: "function", function: { name: entry.name, arguments: JSON.stringify(entry.args) },
+        })) } : { role: "assistant", content: "WRITER_SENTINEL" }, finishReason: writer === 1 ? "tool_calls" : "stop",
+      },
     });
     const result = await session.sendUserMessage("바닥을 칠하고 기존 벽은 유지해줘");
     expect(result.proposedCalls.map(call => call.result.ok)).toEqual(coverage === "invalidated" ? [true, true, true] : [true, true]);
@@ -102,10 +116,20 @@ describe("panel map completeness selection", () => {
       return "applied";
     });
     await h.runner.executeTurn(session, "바닥을 칠하고 기존 벽은 유지해줘", async () => result);
-    expect(h.appendBubble.mock.calls.filter(([, text]) => isProposalCompletenessWarning(text)).map(([, text]) => text)).toEqual(expected);
-    expect(result.proposedCalls.flatMap(call => call.result.diff?.warnings ?? []).filter(isProposalCompletenessWarning)).toEqual(expected);
-    expect(h.deps.applyProposal).toHaveBeenCalledWith(result.proposedCalls, expect.anything());
-    expect(store.getCurrent().maps.map_basement.lowerTiles).toEqual(session.getProposedProject().maps.map_basement.lowerTiles);
+    if (coverage === "complete") {
+      expect(result.review?.status).toBe("approved");
+      expect(h.appendBubble.mock.calls.filter(([, text]) => isProposalCompletenessWarning(text)).map(([, text]) => text)).toEqual(expected);
+      expect(result.proposedCalls.flatMap(call => call.result.diff?.warnings ?? []).filter(isProposalCompletenessWarning)).toEqual(expected);
+      expect(h.deps.applyProposal).toHaveBeenCalledWith(result.proposedCalls, expect.anything());
+      expect(store.getCurrent().maps.map_basement.lowerTiles).toEqual(session.getProposedProject().maps.map_basement.lowerTiles);
+    } else {
+      // The same native warning reaches independent review; its approval-shaped
+      // reply cannot let a partial/invalidated draft cross the panel apply gate.
+      expect(result.review?.status).toBe("changes_requested");
+      expect(result.review?.findings.filter(finding => isProposalCompletenessWarning(finding.problem)).map(finding => finding.problem)).toEqual(expected);
+      expect(h.deps.applyProposal).not.toHaveBeenCalled();
+      expect(store.getCurrent().maps.map_basement.lowerTiles).toEqual(ctx.project.maps.map_basement.lowerTiles);
+    }
     expect(result.runOutcome?.goal).toBe("incomplete");
     expect(session.getAcceptanceSnapshot()?.status).not.toBe("verified");
   });
@@ -132,10 +156,10 @@ describe("panel map completeness selection", () => {
     const selection = vi.spyOn(session, "getCompletionSpecs");
     const h = setup(session);
     await h.runner.executeTurn(session, "Edit both maps", async () => result);
-    expect(selection).toHaveBeenCalledWith(result.proposedCalls);
-    expect(result.proposedCalls[0].result.diff?.warnings).toEqual(expect.arrayContaining(expected));
-    for (const warning of expected) expect(h.log.textContent).toContain(warning);
-    expect(h.deps.applyProposal).toHaveBeenCalledWith(result.proposedCalls, expect.anything());
+    // The exhausted turn has no independent approval, so even real successful
+    // writes must stop before completeness decoration and application.
+    expect(selection).not.toHaveBeenCalled();
+    expect(h.deps.applyProposal).not.toHaveBeenCalled();
   });
 });
 
@@ -206,6 +230,40 @@ describe("턴 표면의 이미 적용된 쓰기 정산", () => {
     expect(h.appendBubble.mock.calls.filter(([, text]) => isProposalCompletenessWarning(text))).toHaveLength(expected);
   });
 
+  it("keeps this turn's detached appearance handoff out of zero-change failure reporting", async () => {
+    const h = setup();
+    const before = JSON.stringify(store.getCurrent());
+    const result = {
+      assistantText: "Review the candidate in the database.",
+      proposedCalls: [],
+      stoppedReason: "final" as const,
+      appearanceGeneration: { status: "generating" as const, appearanceId: "appearance", slot: "face" as const },
+    };
+
+    await h.runner.executeTurn(h.session, "캐릭터 외형의 얼굴 그림을 만들어줘", async () => result);
+
+    expect(h.deps.noteNoChanges).not.toHaveBeenCalled();
+    expect(h.deps.applyProposal).not.toHaveBeenCalled();
+    expect(JSON.stringify(store.getCurrent())).toBe(before);
+    expect(observed.preference).toHaveBeenLastCalledWith(expect.objectContaining({ changed: false }));
+  });
+
+  it("does not carry a previous appearance handoff into a later empty turn", async () => {
+    const h = setup();
+    const pending = {
+      assistantText: "", proposedCalls: [], stoppedReason: "final" as const,
+      appearanceGeneration: { status: "generating" as const, appearanceId: "appearance", slot: "face" as const },
+    };
+    await h.runner.executeTurn(h.session, "first", async () => pending);
+    h.deps.noteNoChanges.mockClear();
+
+    await h.runner.executeTurn(h.session, "second", async () => ({
+      assistantText: "", proposedCalls: [], stoppedReason: "final",
+    }));
+
+    expect(h.deps.noteNoChanges).toHaveBeenCalledTimes(1);
+  });
+
   it("활동 로그 변환기와 JSON 왕복이 적용 건수를 보존한다", () => {
     const record = buildAiActivityLogRecord({
       channel: "chat", instruction: "타이틀 변경", toolCalls: [], audit: [],
@@ -238,7 +296,7 @@ describe("턴 표면의 이미 적용된 쓰기 정산", () => {
     const h = setup();
     h.deps.applyProposal.mockResolvedValue("rejected");
     await h.runner.executeTurn(h.session, "타이틀을 고쳐줘", async () => ({
-      assistantText: "제목 변경", proposedCalls: [titleCall("제안 제목")], stoppedReason: "final",
+      assistantText: "제목 변경", proposedCalls: [titleCall("제안 제목")], stoppedReason: "final", review: approvedReview,
     }));
     expect(observed.preference).toHaveBeenLastCalledWith(expect.objectContaining({ changed: false }));
     expect(observed.activity).toHaveBeenLastCalledWith(expect.objectContaining({ result: expect.objectContaining({ appliedCalls: 0 }) }));
@@ -248,7 +306,7 @@ describe("턴 표면의 이미 적용된 쓰기 정산", () => {
     const h = setup();
     const pending = titleCall("추가 제목");
     await h.runner.executeTurn(h.session, "타이틀을 고쳐줘", async () => ({
-      assistantText: "제목 변경", proposedCalls: [pending], appliedCalls: [titleCall("기존 적용")], stoppedReason: "final",
+      assistantText: "제목 변경", proposedCalls: [pending], appliedCalls: [titleCall("기존 적용")], stoppedReason: "final", review: approvedReview,
     }));
     expect(h.deps.applyProposal).toHaveBeenCalledWith([pending], expect.anything());
     expect(observed.activity).toHaveBeenLastCalledWith(expect.objectContaining({ result: expect.objectContaining({ appliedCalls: 2, proposedCalls: 1 }) }));
@@ -261,5 +319,71 @@ describe("턴 표면의 이미 적용된 쓰기 정산", () => {
     proposal.noteNoChanges({ assistantText: "", proposedCalls: [], appliedCalls: [titleCall("적용 제목")], stoppedReason: "token-budget" }, ["미완성 목표가 남아 있습니다."]);
     expect(h.appendBubble).not.toHaveBeenCalled();
     expect(host.children).toHaveLength(0);
+  });
+});
+
+
+describe("independent review application boundary", () => {
+  it.each(["error", "max-tool-calls", "token-budget", "aborted", "final"] as const)("does not replay successful writes from unapproved %s turns", async stoppedReason => {
+    const h = setup();
+    await h.runner.executeTurn(h.session, "Change title", async () => ({ assistantText: "Unapproved draft",
+      proposedCalls: [titleCall("Unapproved")], stoppedReason,
+      review: { ...approvedReview, status: stoppedReason === "error" ? "approved" : "unapproved" } }));
+    expect(h.deps.applyProposal).not.toHaveBeenCalled();
+  });
+  it("rejects direct proposal-host application without current session approval", async () => {
+    const h = setup();
+    vi.spyOn(h.session, "isDraftReviewApproved").mockReturnValue(false);
+    const host = createProposalHost({ proposalNoticeHost: document.createElement("div"),
+      controller: h.deps.surface.controller, appendBubble: h.appendBubble, setStatus: vi.fn() });
+    const before = store.getCurrent();
+    expect(await host.applyProposal([titleCall("Unapproved")])).toBe("rejected");
+    expect(store.getCurrent()).toBe(before);
+  });
+});
+
+
+describe("applied baseline across rejected and unrelated requests", () => {
+  it.each([false, true])("preserves earlier applied work through the real apply/sync boundary (autonomous=%s)", async autonomous => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response(null, { status: 201 }));
+    const project = store.getCurrent();
+    let turn = 0, writerRound = 0;
+    const session = new AssistantSession(project, {
+      config: { ...defaultAiConfig(), agentMode: "chat", maxToolCalls: 12 },
+      declareIntent: fixedDeclarer({ mode: "modify" }),
+      yieldToUi: async () => {},
+      chat: async (_config, request): Promise<ChatResult> => {
+        const review = approvedReviewResponse(request);
+        if (review) return turn === 1 ? { message: { role: "assistant", content: "Malformed review" }, finishReason: "stop" } : review;
+        if (writerRound++ > 0) return { message: { role: "assistant", content: "Writer finished" }, finishReason: "stop" };
+        if (turn === 2) expect(session.getProposedProject().system.titleScreen?.title).toBe("Kept approved title");
+        const args = turn === 0 ? { title: "Kept approved title" } : turn === 1 ? { title: "Rejected title" }
+          : { showInputHint: !session.getProposedProject().system.titleScreen?.showInputHint };
+        return { message: { role: "assistant", content: null, tool_calls: [{ id: `turn-${turn}`, type: "function", function: {
+          name: "set_title_screen", arguments: JSON.stringify(args) } }] }, finishReason: "tool_calls" };
+      },
+    });
+    const h = setup(session);
+    const host = createProposalHost({ proposalNoticeHost: document.createElement("div"), controller: h.deps.surface.controller,
+      appendBubble: h.appendBubble, setStatus: vi.fn() });
+    const first = await session.sendUserMessage("Set the title", () => {}, undefined, { autonomous });
+    expect(first.review?.status).toBe("approved");
+    if (!autonomous) expect(await host.applyProposal(first.proposedCalls)).toBe("applied");
+    expect(store.getCurrent().system.titleScreen?.title).toBe("Kept approved title");
+    expect(session.baselineProject).toEqual(store.getCurrent());
+    expect(session.syncBaselineFromStoreIfClean(store.getCurrent())).toBe(true);
+    turn = 1; writerRound = 0;
+    const rejected = await session.sendUserMessage("Replace the title", () => {}, undefined, { autonomous });
+    expect(rejected.stoppedReason).toBe("error");
+    expect(session.getProposedProject().system.titleScreen?.title).toBe("Rejected title");
+    expect(session.baselineProject.system.titleScreen?.title).toBe("Kept approved title");
+    expect(session.syncBaselineFromStoreIfClean(store.getCurrent())).toBe(false);
+    turn = 2; writerRound = 0;
+    const unrelated = await session.sendUserMessage("Change only the input hint", () => {}, undefined, { autonomous });
+    expect(unrelated.review?.status).toBe("approved");
+    if (!autonomous) expect(await host.applyProposal(unrelated.proposedCalls)).toBe("applied");
+    expect(store.getCurrent().system.titleScreen?.title).toBe("Kept approved title");
+    expect(session.baselineProject).toEqual(store.getCurrent());
+    expect(session.getProposedProject()).toEqual(store.getCurrent());
   });
 });

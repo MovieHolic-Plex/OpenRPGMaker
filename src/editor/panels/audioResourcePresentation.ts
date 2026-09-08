@@ -1,5 +1,6 @@
 import {
   AUDIO_DESCRIPTION_SOURCE_LABELS,
+  isCatalogBgmAvailable,
   type AudioResource,
 } from "@/assets/audioResourceCatalog";
 import { resolveAudioSource } from "@/player/audio/audioResources";
@@ -24,13 +25,29 @@ export function audioDescriptionView(resource: AudioResource | undefined): HTMLE
   });
 }
 
+export function audioResourceDocument(resource: AudioResource, project: Pick<Project, "assets">): HTMLElement {
+  return el("div", {
+    class: "audio-preview-document",
+    children: [
+      el("h3", { text: resource.name }),
+      el("div", { class: "audio-preview-tags", text: resource.tags.join(" · ") }),
+      audioDescriptionView(resource),
+      el("details", { class: "audio-preview-meta", children: [
+        el("summary", { text: `${resource.kind === "music" ? "음악" : "효과음"} · 파일 정보` }),
+        el("div", { text: resource.id }),
+        el("div", { text: resolveAudioSource(resource.id, project) ?? "파일 없음" }),
+      ] }),
+    ],
+  });
+}
+
 export function audioPlayback(
   resourceId: string,
   project: Pick<Project, "assets">,
 ): { readonly url: string | null; readonly playable: boolean; readonly midi: boolean } {
   const url = resolveAudioSource(resourceId, project);
   const midi = url !== null && /\.midi?(?:[?#]|$)/iu.test(url);
-  const playable = url !== null && !midi && (
+  const playable = url !== null && !midi && isCatalogBgmAvailable(resourceId) && (
     /\.(?:wav|ogg|mp3|m4a)(?:[?#]|$)/iu.test(url)
     || /^data:audio\//iu.test(url)
     || url.startsWith("blob:")

@@ -6,8 +6,6 @@ type PanStart = {
   readonly screenY: number;
   readonly scrollX: number;
   readonly scrollY: number;
-  readonly shellScrollLeft: number;
-  readonly shellScrollTop: number;
 };
 
 type SceneWithCamera = Phaser.Scene & {
@@ -130,8 +128,6 @@ export class CameraPanController {
       screenY,
       scrollX: camera.scrollX,
       scrollY: camera.scrollY,
-      shellScrollLeft: this.canvasScrollShell()?.scrollLeft ?? 0,
-      shellScrollTop: this.canvasScrollShell()?.scrollTop ?? 0,
     };
     this.bindWindowGuards();
   }
@@ -147,10 +143,6 @@ export class CameraPanController {
       start.scrollY - dy / camera.zoom
     );
     this.options.onPanMove();
-    const shell = this.canvasScrollShell();
-    if (!shell) return;
-    shell.scrollLeft = start.shellScrollLeft - dx;
-    shell.scrollTop = start.shellScrollTop - dy;
   }
 
   private bindWindowGuards(): void {
@@ -167,12 +159,6 @@ export class CameraPanController {
     window.removeEventListener("pointerup", this.handleWindowPanEnd, { capture: true });
     window.removeEventListener("pointercancel", this.handleWindowPanEnd, { capture: true });
     window.removeEventListener("mouseup", this.handleWindowPanEnd, { capture: true });
-  }
-
-  private canvasScrollShell(): HTMLElement | null {
-    const canvas = this.scene.game.canvas;
-    const shell = canvas.closest("[data-testid='editor-canvas-scroll-shell']");
-    return shell instanceof HTMLElement ? shell : null;
   }
 
   private isMiddleButtonEvent(event: MouseEvent | PointerEvent): boolean {

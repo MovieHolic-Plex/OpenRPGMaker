@@ -1,5 +1,6 @@
 import { deserialize, serialize } from "./io";
 import type { Project } from "./types";
+import { isStorageQuotaError, ProjectStorageQuotaError } from "./storageQuota";
 
 const DEV_PROJECT_STORAGE_PREFIX = "oprn:dev-project:";
 
@@ -49,7 +50,12 @@ export function saveDevProjectOverride(project: Project): boolean {
   if (isFreshProjectLocation()) return false;
   const key = devProjectStorageKey();
   if (!key) return false;
-  window.localStorage.setItem(key, serialize(project));
+  try {
+    window.localStorage.setItem(key, serialize(project));
+  } catch (error) {
+    if (isStorageQuotaError(error)) throw new ProjectStorageQuotaError(error);
+    throw error;
+  }
   return true;
 }
 

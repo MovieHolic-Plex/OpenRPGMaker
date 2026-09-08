@@ -85,8 +85,13 @@ transition; do not hotpatch callbacks or manually reconstruct private ledgers.
 For projects without wiki records, available same-project local conversations
 are recovered chronologically in batches of 16 sources before the current
 request. The shared AI action menu also exposes `이전 대화로 설정집 정리`.
-This reads the locally available conversation store; it is not a promise to
-recover remote transcripts that are no longer available locally.
+This reads the full same-project local conversation archive, not the recent-50
+list. `projectWikiHistorySources` preserves `history:<conversation-id>:<entry-index>`
+source IDs and the existing text conversion. The archive may contain compressed
+transcripts, so deleted middle entries cannot be recovered by this reader.
+Explicit map-history remote hydration can make additional local sources available;
+browsing or importing history itself never invokes wiki extraction or saves wiki
+documents. Wiki backfill remains a separate, editor-owned action.
 
 Intent selection and normal authoring receive the same relevant wiki context.
 The intent cache includes that context, so a correction invalidates the earlier

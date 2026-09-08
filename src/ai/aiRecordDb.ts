@@ -11,12 +11,16 @@
 // 산다. 호출자는 `writeAiRecords` 가 돌려주는 backend 종류로 «새로 고침 뒤에도 남는가» 를 안다.
 
 export const AI_RECORD_DB_NAME = "oprn-ai-records";
-export const AI_RECORD_DB_VERSION = 1;
+export const AI_RECORD_DB_VERSION = 2;
 export const AI_RECORD_STORES = { conversations: "conversations" } as const;
 export type AiRecordStoreName = (typeof AI_RECORD_STORES)[keyof typeof AI_RECORD_STORES];
 export type AiRecordBackendKind = "indexeddb" | "memory";
 
 interface AiRecordRow { readonly id: string }
+interface ScopedAiRecordRow extends AiRecordRow { readonly projectContextKey?: string; readonly savedAt: number }
+const TOMBSTONES = "conversationTombstones";
+const memoryTombstones = new Set<string>();
+const tombstoneKey = (id: string, scope: string | null): string => JSON.stringify([scope, id]);
 
 let dbPromise: Promise<IDBDatabase | null> | null = null;
 let openFailureWarned = false;
@@ -48,6 +52,7 @@ function transactionDone(transaction: IDBTransaction): Promise<void> {
 }
 
 function upgrade(db: IDBDatabase): void {
+  if (!db.objectStoreNames.contains(TOMBSTONES)) db.createObjectStore(TOMBSTONES, { keyPath: "id" });
   if (!db.objectStoreNames.contains(AI_RECORD_STORES.conversations)) {
     const store = db.createObjectStore(AI_RECORD_STORES.conversations, { keyPath: "id" });
     store.createIndex("savedAt", "savedAt");
@@ -136,12 +141,84 @@ export async function deleteAiRecords(store: AiRecordStoreName, ids: readonly st
 export async function clearAiRecords(store: AiRecordStoreName): Promise<void> {
   const db = await openDatabase();
   if (!db) {
+    for (const row of memoryStore(store).values()) {
+      const scoped = row as ScopedAiRecordRow;
+      memoryTombstones.add(tombstoneKey(scoped.id, scoped.projectContextKey ?? null));
+    }
     memoryStore(store).clear();
     return;
   }
-  const transaction = db.transaction(store, "readwrite");
-  transaction.objectStore(store).clear();
+  const transaction = db.transaction([store, TOMBSTONES], "readwrite");
+  const cursor = transaction.objectStore(store).openCursor();
+  cursor.onsuccess = () => {
+    const current = cursor.result;
+    if (!current) return;
+    const row = current.value as ScopedAiRecordRow;
+    transaction.objectStore(TOMBSTONES).put({ id: tombstoneKey(row.id, row.projectContextKey ?? null) });
+    current.delete();
+    current.continue();
+  };
   await transactionDone(transaction);
+}
+
+/** Compare/write and deletion suppression share one readwrite transaction, including across tabs. */
+export async function mutateScopedAiRecord<T extends ScopedAiRecordRow>(
+  key: { readonly store: AiRecordStoreName; readonly id: string; readonly scope: string | null; readonly replaceEqual?: boolean;
+    /** Synchronous admission against the value read inside this same transaction. */
+    readonly admit?: (current: T | null) => boolean },
+  update: ((current: T | null) => T) | null,
+): Promise<{ readonly backend: AiRecordBackendKind; readonly written: boolean }> {
+  const db = await openDatabase();
+  const deletedKey = tombstoneKey(key.id, key.scope);
+  const decide = (current: T | null, deleted: boolean): T | null | undefined => {
+    if (update && key.admit && !key.admit(current)) return undefined;
+    if (current && (current.projectContextKey ?? null) !== key.scope) return undefined;
+    if (!update) return null;
+    if (deleted) return undefined;
+    const next = update(current);
+    if (current && (current.savedAt > next.savedAt || (current.savedAt === next.savedAt && !key.replaceEqual))) return undefined;
+    return next;
+  };
+  if (!db) {
+    const rows = memoryStore(key.store);
+    const next = decide((rows.get(key.id) as T | undefined) ?? null, memoryTombstones.has(deletedKey));
+    if (next === null) { memoryTombstones.add(deletedKey); rows.delete(key.id); }
+    else if (next) rows.set(key.id, structuredClone(next));
+    return { backend: "memory", written: next !== undefined };
+  }
+  const transaction = db.transaction([key.store, TOMBSTONES], "readwrite");
+  const done = transactionDone(transaction);
+  const rows = transaction.objectStore(key.store);
+  const tombstones = transaction.objectStore(TOMBSTONES);
+  const currentRequest = rows.get(key.id) as IDBRequest<T | undefined>;
+  const deletedRequest = tombstones.get(deletedKey);
+  let written = false;
+  // Requests execute in creation order; decide synchronously in the last callback to keep the transaction active.
+  deletedRequest.onsuccess = () => {
+    try {
+      const next = decide(currentRequest.result ?? null, deletedRequest.result !== undefined);
+      if (next === null) { tombstones.put({ id: deletedKey }); rows.delete(key.id); }
+      else if (next) rows.put(next);
+      written = next !== undefined;
+    } catch (error) {
+      transaction.abort();
+      callbackError = error;
+    }
+  };
+  let callbackError: unknown;
+  try { await done; } catch (error) { throw callbackError ?? error; }
+  return { backend: "indexeddb", written };
+}
+
+export async function isScopedAiRecordDeleted(id: string, scope: string | null): Promise<boolean> {
+  const db = await openDatabase();
+  const key = tombstoneKey(id, scope);
+  if (!db) return memoryTombstones.has(key);
+  const transaction = db.transaction(TOMBSTONES, "readonly");
+  const done = transactionDone(transaction);
+  const row = await requestToPromise(transaction.objectStore(TOMBSTONES).get(key));
+  await done;
+  return row !== undefined;
 }
 
 /** 저장소 모듈이 세션 단위 상태(이관 표식 등)를 리셋 때 함께 비우도록 등록한다. */
@@ -155,6 +232,7 @@ export function resetAiRecordDbForTest(): void {
   dbPromise = null;
   openFailureWarned = false;
   memoryStores.clear();
+  memoryTombstones.clear();
   for (const hook of resetHooks) hook();
   void pending?.then((db) => db?.close()).catch(() => undefined);
 }

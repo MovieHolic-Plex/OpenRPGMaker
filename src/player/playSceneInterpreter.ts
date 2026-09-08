@@ -52,6 +52,7 @@ import { applyAdvanceTimeStep, applySetTimeStep } from "@/player/playSceneTime";
 import { formatFriendshipFeedback, isGiftableEvent, isGiftSystemEnabled, isTalkFriendshipEnabled, trySocialTalk } from "@/project/friendship";
 import { playGiftSelection } from "@/player/playSceneGift";
 import { completeDetectionEncounter } from "@/project/npcBehavior";
+import { diagnosticObserved, diagnosticToken, publishDiagnostic } from "@/util/diagnosticObserver";
 
 export type RunCommandsOptions = {
   readonly allowNested?: boolean;
@@ -212,19 +213,27 @@ export async function runCommands(
   // An awaited UI result must never resume commands after its owner/page/session was cancelled.
   const interpreter: Interpreter = { ...base, resume: value => current() ? base.resume(value) : { kind: "done" } };
   const skipController = createCutsceneSkipController(scene, interpreter);
+  const diagnosticOwner = diagnosticToken();
+  const observe = (phase: "started" | "completed" | "cancelled" | "failed") => {
+    if (diagnosticOwner && diagnosticOwner === diagnosticToken() && diagnosticObserved("event")) publishDiagnostic({ category: "event", phase, count: commands.length });
+  };
+  observe("started");
   try {
-    let result = interpreter.start(), normalCompletion = true;
+    let result = interpreter.start(), normalCompletion = true, handledFailure = false;
     scene.refreshRuntimeSurfaces();
     while (result.kind !== "done" && current()) {
       if (isCutsceneSkippable(activeSession)) scene.showRuntimeOverlay("cutscene-skip-hint", "Esc Esc: 컷신 건너뛰기");
       const step = result;
-      result = await consumeBlockingStep(scene, interpreter, step, currentEventId, skipController, current);
+      result = await consumeBlockingStep(scene, interpreter, step, currentEventId, skipController, current, () => { handledFailure = true; });
       if (step.kind === "battleProcessing" && !step.canLose && activeSession.battleResult === "defeat") normalCompletion = false;
     }
-    if (result.kind === "done" && base.isDone() && normalCompletion && current()) options.onComplete?.();
+    if (result.kind === "done" && base.isDone() && normalCompletion && current()) {
+      observe("completed"); options.onComplete?.();
+    } else observe(handledFailure ? "failed" : "cancelled");
   } catch (error) {
     if (error instanceof DOMException && error.name === "AbortError"
-      && (!current() || scene.sys?.isActive() === false)) return;
+      && (!current() || scene.sys?.isActive() === false)) { observe("cancelled"); return; }
+    observe("failed");
     throw error;
   } finally {
     skipController.dispose(); releaseCutsceneControlForOwner(activeSession, currentEventId);
@@ -298,7 +307,8 @@ async function consumeBlockingStep(
   step: Exclude<StepResult, { kind: "done" }>,
   currentEventId: string | undefined,
   skipController: CutsceneSkipController,
-  isCurrent: () => boolean
+  isCurrent: () => boolean,
+  onHandledFailure: () => void
 ): Promise<StepResult> {
   const dialogue = dialogueUi(scene);
   if (!dialogue) return { kind: "done" };
@@ -460,9 +470,16 @@ async function consumeBlockingStep(
       stopCommandMovement(scene);
       return resumeAfterSurface(scene, interpreter);
     case "battleProcessing": {
-      const result = await playCommandBattle(scene, step, isCurrent);
-      if (result === null || (result === "defeat" && !step.canLose)) return { kind: "done" };
-      return resumeWithValue(scene, interpreter, result);
+      try {
+        const result = await playCommandBattle(scene, step, isCurrent);
+        if (result === null || (result === "defeat" && !step.canLose)) return { kind: "done" };
+        return resumeWithValue(scene, interpreter, result);
+      } catch (error) {
+        onHandledFailure();
+        console.error("[player] event battle failed", error);
+        scene.showRuntimeOverlay("runtime-error", error instanceof Error ? error.message : "전투를 시작할 수 없습니다. 전투 설정을 확인하세요.");
+        return { kind: "done" }; // Do not resume the interpreter or invent a battle result.
+      }
     }
     case "showPicture":
       showPictureState(scene.session, step);

@@ -8,6 +8,7 @@ import * as applyStore from "@/editor/tools/applyChangesetToStore";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { fixedDeclarer } from "./intentFixture";
+import { approvedReviewResponse } from "./independentReviewFixture";
 
 type Call = { name: string; args: Record<string, unknown> };
 const lint: Call = { name: "run_lint", args: {} };
@@ -37,7 +38,9 @@ function scriptedSession(required: string[], rounds: Call[][], nextRequired?: st
   const session = new AssistantSession(createBlankProject(), {
     config: { ...defaultAiConfig(), agentMode: "chat", model: "test", liteModel: "test", apiKey: "test", maxToolCalls: 12 },
     declareIntent: fixedDeclarer({ mode: "modify", needsPlan: false }),
-    chat: async (): Promise<ChatResult> => {
+    chat: async (_config, request): Promise<ChatResult> => {
+      const review = approvedReviewResponse(request);
+      if (review) return review;
       const calls = steps[cursor++];
       return calls ? {
         message: { role: "assistant", content: null, tool_calls: calls.map((call, i) => ({

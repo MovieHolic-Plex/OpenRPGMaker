@@ -17,10 +17,15 @@ function harness(options: { invalid?: boolean; ordinary?: boolean; noRewards?: b
     { kind: "mapRoundTrip", target: { mapId: origin.id }, start: project.startPos, destination: { mapId: destination.id }, outgoing: { eventId: outgoing.id }, returning: { eventId: returning.id } },
   ];
   const npcRewards = [{ target: { eventId: reward.id }, grants: [{ kind: "item", id: "item_potion", count: 2 }], oneTime: true }];
-  const declaration = { mode: "modify", space: "none", needsPlan: options.planner === true,
+  const declaration = { mode: options.ordinary ? "question" : "modify", space: "none", needsPlan: options.planner === true,
     ...(options.ordinary ? {} : { functionalAcceptance: options.invalid ? [{ kind: "shopPurchase" }] : functionalAcceptance,
       ...(options.noRewards ? {} : { npcRewards }) }) };
-  const intent = createLlmIntentDeclarer({ getConfig: () => config, chat: async () => ({ message: { role: "assistant", content: JSON.stringify(declaration) }, finishReason: "stop" }) });
+  const intent = createLlmIntentDeclarer({ getConfig: () => config,
+    audit: async () => ({ message: { role: "assistant", content: JSON.stringify({ requirements: [{
+      text: "Allow buying two potions at ten gold, round-trip travel, and Mira's two-potion one-time reward",
+      criteria: [...functionalAcceptance, ...(options.noRewards ? [] : npcRewards.map(requirement => ({ kind: "npcReward", requirement })))],
+    }] }) }, finishReason: "stop" }),
+    chat: async () => ({ message: { role: "assistant", content: JSON.stringify(declaration) }, finishReason: "stop" }) });
   const events: SessionEvent[] = [];
   let index = 0;
   let plannerCalls = 0;

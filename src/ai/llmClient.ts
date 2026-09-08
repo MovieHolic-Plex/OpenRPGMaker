@@ -12,6 +12,7 @@ import { AUTONOMY_LEVEL_IDS } from "@/ai/autonomyLevels";
 import { PRODUCT_BRAND } from "@/brand";
 import { DEFAULT_OH_MY_PI_PROVIDER, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
 import { parseImageDelivery, type ImageDelivery } from "./imageDelivery";
+import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID } from "@/ai/imageModelCatalog";
 
 // OpenAI 메시지 규약(우리가 쓰는 필드만).
 export interface ToolCall { id: string; type: "function"; function: { name: string; arguments: string } }
@@ -39,6 +40,9 @@ export interface AiConfig {
   authMode: "chatgpt" | "apiKey";
   /** oh-my-pi 제공자 id. 토큰/키는 브라우저에 두지 않고 동반 서비스가 보관한다. */
   providerId?: string;
+  /** Image output selection is independent of both chat models; credentials remain server-side. */
+  imageProviderId?: string;
+  imageModel?: string;
   baseUrl: string;
   // 감독 모델: 계획/공간추론/스펙 작성/검수 AssistantSession 대화 루프.
   model: string;
@@ -119,6 +123,8 @@ export function defaultAiConfig(): AiConfig {
   return {
     authMode: "chatgpt",
     providerId: DEFAULT_OH_MY_PI_PROVIDER,
+    imageProviderId: DEFAULT_IMAGE_PROVIDER_ID,
+    imageModel: DEFAULT_IMAGE_MODEL,
     baseUrl: DEFAULT_BASE_URL,
     model: DEFAULT_MODEL,
     liteModel: DEFAULT_LITE_MODEL,
@@ -229,6 +235,11 @@ export function loadAiConfig(): AiConfig {
     return {
       authMode,
       providerId,
+      // Preserve explicit image choices, even unsupported ones; never silently demote them.
+      imageProviderId: typeof parsed.imageProviderId === "string" && parsed.imageProviderId.trim()
+        ? parsed.imageProviderId.trim() : DEFAULT_IMAGE_PROVIDER_ID,
+      imageModel: typeof parsed.imageModel === "string" && parsed.imageModel.trim()
+        ? parsed.imageModel.trim() : DEFAULT_IMAGE_MODEL,
       // 저장된 baseUrl 은 버린다. OAuth 는 동반 서비스 경로가 고정이고(endpoint() 가
       // usesOhMyPiCompanion 이면 DEFAULT_CHATGPT_BASE_URL 을 쓴다), 죽은 게이트웨이 URL 을
       // 남겨 두면 설정 화면·가용성 검지가 그것을 계속 진실처럼 보여 준다.

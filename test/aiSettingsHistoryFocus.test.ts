@@ -41,7 +41,13 @@ afterEach(async () => {
 
 async function open(kind: "settings" | "history"): Promise<HTMLElement> {
   if (kind === "settings") return openAiSettingsModal();
-  const modal = openAiConversationHistoryModal({ scopeKey: "test", currentConversationId: "none", onOpen: () => undefined });
+  const modal = openAiConversationHistoryModal({
+    scopeKey: "test",
+    currentConversationId: "none",
+    currentMapId: "map_a",
+    knownMaps: [{ id: "map_a", name: "광장" }],
+    onOpen: () => undefined,
+  });
   await whenAiConversationHistoryModalSettled();
   return modal;
 }
@@ -152,7 +158,14 @@ it("restores the replacement topbar settings button after the toolbar rerenders"
 });
 
 it("uses the newly rendered history row as the Tab boundary after async listing", async () => {
-  await saveConversation({ id: "saved", title: "Saved", savedAt: 1000, model: "fixture", entries: [{ kind: "user", text: "Fixture" }], projectContextKey: "test" });
+  await saveConversation({
+    id: "saved",
+    title: "Saved",
+    savedAt: 1000,
+    model: "fixture",
+    entries: [{ kind: "user", text: "Fixture", context: { mapId: "map_a", mapName: "광장", mapWidth: 20, mapHeight: 15 } }],
+    projectContextKey: "test",
+  });
   await open("history");
   const first = control("ai-history-close");
   first.focus();

@@ -1,0 +1,471 @@
+{
+  "inputs": [
+    {
+      "file": "output/evidence/agy-desc-bgm.jsonl",
+      "sha256": "dea10dcb6f59e0d0581b63a722ff7c7fcde8a4d9bc9786bf886cc6e24a6916b3",
+      "records": 281,
+      "statuses": {
+        "ok": 281
+      }
+    },
+    {
+      "file": "output/evidence/agy-desc-se.jsonl",
+      "sha256": "7186c6adf347f6615e6716aa403fdef5399297e7cb9b61bfa28585df8097d66d",
+      "records": 634,
+      "statuses": {
+        "ok": 632,
+        "no-audio": 2
+      }
+    },
+    {
+      "file": "output/evidence/agy-desc-extra.jsonl",
+      "sha256": "683770fdfa6dcb6d5e0c5051ea646cf498bd84e89ef652cf0d3a701f8ae3e50f",
+      "records": 133,
+      "statuses": {
+        "fail": 30,
+        "ok": 102,
+        "no-audio": 1
+      }
+    },
+    {
+      "file": "output/evidence/agy-desc-recovery-233-se.jsonl",
+      "sha256": "a44d7c347280434ec37ffcf695b2b9a5befce7e59e4fd44f319abbb123be8f0f",
+      "records": 1,
+      "statuses": {
+        "ok": 1
+      }
+    },
+    {
+      "file": "output/evidence/agy-desc-recovery-359-se.jsonl",
+      "sha256": "20f91aca10933ed0ddcdef241e1ca92ac7bbed83c19ad950303f84279074b0a7",
+      "records": 1,
+      "statuses": {
+        "ok": 1
+      }
+    },
+    {
+      "file": "output/evidence/agy-desc-recovery-100-extra.jsonl",
+      "sha256": "fa051e745f89e71058e8c9058bd260b7fa5738e9bdb99eb0d27e38f7d02c1c14",
+      "records": 1,
+      "statuses": {
+        "ok": 1
+      }
+    }
+  ],
+  "published": 1016,
+  "publishedByKind": {
+    "music": 284,
+    "sound": 732
+  },
+  "publishedByModel": {
+    "gemini-3.8-flash-high": 1012,
+    "gemini-3.1-pro-high": 4
+  },
+  "missingIds": [],
+  "withheldIds": [
+    "cc0-bgm-rtp-lft-001",
+    "cc0-bgm-rtp-prx-006",
+    "cc0-bgm-rtp-rad-001"
+  ],
+  "exclusions": [
+    {
+      "id": "cc0-bgm-rtp-btl-001",
+      "kind": "music",
+      "model": "gemini-3.8-flash-high",
+      "reason": "replaced-by-human-corrected-pro-draft",
+      "evidence": {
+        "file": "output/evidence/agy-desc-bgm.jsonl",
+        "line": 6
+      }
+    },
+    {
+      "id": "cc0-bgm-rtp-lft-001",
+      "kind": "music",
+      "model": "gemini-3.8-flash-high",
+      "reason": "withheld-vocal-claim",
+      "evidence": {
+        "file": "output/evidence/agy-desc-bgm.jsonl",
+        "line": 72
+      }
+    },
+    {
+      "id": "cc0-bgm-rtp-rad-001",
+      "kind": "music",
+      "model": "gemini-3.8-flash-high",
+      "reason": "withheld-vocal-claim",
+      "evidence": {
+        "file": "output/evidence/agy-desc-bgm.jsonl",
+        "line": 90
+      }
+    },
+    {
+      "id": "cc0-bgm-rtp-prx-006",
+      "kind": "music",
+      "model": "gemini-3.8-flash-high",
+      "reason": "withheld-vocal-claim",
+      "evidence": {
+        "file": "output/evidence/agy-desc-bgm.jsonl",
+        "line": 115
+      }
+    },
+    {
+      "id": "cc0-se-orp-npc-slime-slime8",
+      "kind": "sound",
+      "model": "gemini-3.8-flash-high",
+      "reason": "no-audio",
+      "evidence": {
+        "file": "output/evidence/agy-desc-se.jsonl",
+        "line": 233
+      }
+    },
+    {
+      "id": "cc0-se-kis-footstep-carpet-003",
+      "kind": "sound",
+      "model": "gemini-3.8-flash-high",
+      "reason": "no-audio",
+      "evidence": {
+        "file": "output/evidence/agy-desc-se.jsonl",
+        "line": 359
+      }
+    },
+    {
+      "id": "easyrpg-music-battle-1",
+      "kind": "music",
+      "model": "gemini-3.8-flash-high",
+      "reason": "fail",
+      "evidence": {
+        "file": "output/evidence/agy-desc-extra.jsonl",
+        "line": 1
+      }
+    },
+    {
+      "id": "easyrpg-music-boss-3",
+      "kind": "music",
+      "model": "gemini-3.8-flash-high",
+      "reason": "fail",
+      "evidence": {
+        "file": "output/evidence/agy-desc-extra.jsonl",
+        "line": 2
+      }
+    },
+    {
+      "id": "easyrpg-music-castle-1",
+      "kind": "music",
+      "model": "gemini-3.8-flash-high",
+      "reason": "fail",
+      "evidence": {
+        "file": "output/evidence/agy-desc-extra.jsonl",
+        "line": 3
+      }
+    },
+    {
+      "id": "easyrpg-music-church",
+      "kind": "music",
+      "model": "gemini-3.8-flash-high",
+      "reason": "fail",
+      "evidence": {
+        "file": "output/evidence/agy-desc-extra.jsonl",
+        "line": 4
+      }
+    },
+    {
+      "id": "easyrpg-music-dungeon-1",
+      "kind": "music",
+      "model": "gemini-3.8-flash-high",
+      "reason": "fail",
+      "evidence": {
+        "file": "output/evidence/agy-desc-extra.jsonl",
+        "line": 5
+      }
+    },
+    {
+      "id": "easyrpg-music-ending-2",
+      "kind": "music",
+      "model": "gemini-3.8-flash-high",
+      "reason": "fail",
+      "evidence": {
+        "file": "output/evidence/agy-desc-extra.jsonl",
+        "line": 6
+      }
+    },
+    {
+      "id": "easyrpg-music-field-1",
+      "kind": "music",
+      "model": "gemini-3.8-flash-high",
+      "reason": "fail",
+      "evidence": {
+        "file": "output/evidence/agy-desc-extra.jsonl",
+        "line": 7
+      }
+    },
+    {
+      "id": "easyrpg-music-game-over-1",
+      "kind": "music",
+      "model": "gemini-3.8-flash-high",
+      "reason": "fail",
+      "evidence": {
+        "file": "output/evidence/agy-desc-extra.jsonl",
+        "line": 8
+      }
+    },
+    {
+      "id": "easyrpg-music-jdoubt",
+      "kind": "music",
+      "model": "gemini-3.8-flash-high",
+      "reason": "fail",
+      "evidence": {
+        "file": "output/evidence/agy-desc-extra.jsonl",
+        "line": 9
+      }
+    },
+    {
+      "id": "easyrpg-music-jend-of-battle-1",
+      "kind": "music",
+      "model": "gemini-3.8-flash-high",
+      "reason": "fail",
+      "evidence": {
+        "file": "output/evidence/agy-desc-extra.jsonl",
+        "line": 10
+      }
+    },
+    {
+      "id": "easyrpg-music-jend-of-battle-2",
+      "kind": "music",
+      "model": "gemini-3.8-flash-high",
+      "reason": "fail",
+      "evidence": {
+        "file": "output/evidence/agy-desc-extra.jsonl",
+        "line": 11
+      }
+    },
+    {
+      "id": "easyrpg-music-jend-of-battle-3",
+      "kind": "music",
+      "model": "gemini-3.8-flash-high",
+      "reason": "fail",
+      "evidence": {
+        "file": "output/evidence/agy-desc-extra.jsonl",
+        "line": 12
+      }
+    },
+    {
+      "id": "easyrpg-music-jend-of-battle-4",
+      "kind": "music",
+      "model": "gemini-3.8-flash-high",
+      "reason": "fail",
+      "evidence": {
+        "file": "output/evidence/agy-desc-extra.jsonl",
+        "line": 13
+      }
+    },
+    {
+      "id": "easyrpg-music-jfanfare-1",
+      "kind": "music",
+      "model": "gemini-3.8-flash-high",
+      "reason": "fail",
+      "evidence": {
+        "file": "output/evidence/agy-desc-extra.jsonl",
+        "line": 14
+      }
+    },
+    {
+      "id": "easyrpg-music-jfanfare-2",
+      "kind": "music",
+      "model": "gemini-3.8-flash-high",
+      "reason": "fail",
+      "evidence": {
+        "file": "output/evidence/agy-desc-extra.jsonl",
+        "line": 15
+      }
+    },
+    {
+      "id": "easyrpg-music-jfanfare-3",
+      "kind": "music",
+      "model": "gemini-3.8-flash-high",
+      "reason": "fail",
+      "evidence": {
+        "file": "output/evidence/agy-desc-extra.jsonl",
+        "line": 16
+      }
+    },
+    {
+      "id": "easyrpg-music-jfanfare-4",
+      "kind": "music",
+      "model": "gemini-3.8-flash-high",
+      "reason": "fail",
+      "evidence": {
+        "file": "output/evidence/agy-desc-extra.jsonl",
+        "line": 17
+      }
+    },
+    {
+      "id": "easyrpg-music-jfanfare-5",
+      "kind": "music",
+      "model": "gemini-3.8-flash-high",
+      "reason": "fail",
+      "evidence": {
+        "file": "output/evidence/agy-desc-extra.jsonl",
+        "line": 18
+      }
+    },
+    {
+      "id": "easyrpg-music-jfanfare-6",
+      "kind": "music",
+      "model": "gemini-3.8-flash-high",
+      "reason": "fail",
+      "evidence": {
+        "file": "output/evidence/agy-desc-extra.jsonl",
+        "line": 19
+      }
+    },
+    {
+      "id": "easyrpg-music-jinn-1",
+      "kind": "music",
+      "model": "gemini-3.8-flash-high",
+      "reason": "fail",
+      "evidence": {
+        "file": "output/evidence/agy-desc-extra.jsonl",
+        "line": 20
+      }
+    },
+    {
+      "id": "easyrpg-music-jinn-2",
+      "kind": "music",
+      "model": "gemini-3.8-flash-high",
+      "reason": "fail",
+      "evidence": {
+        "file": "output/evidence/agy-desc-extra.jsonl",
+        "line": 21
+      }
+    },
+    {
+      "id": "easyrpg-music-jitem",
+      "kind": "music",
+      "model": "gemini-3.8-flash-high",
+      "reason": "fail",
+      "evidence": {
+        "file": "output/evidence/agy-desc-extra.jsonl",
+        "line": 22
+      }
+    },
+    {
+      "id": "easyrpg-music-jjoke-1",
+      "kind": "music",
+      "model": "gemini-3.8-flash-high",
+      "reason": "fail",
+      "evidence": {
+        "file": "output/evidence/agy-desc-extra.jsonl",
+        "line": 23
+      }
+    },
+    {
+      "id": "easyrpg-music-jjoke-2",
+      "kind": "music",
+      "model": "gemini-3.8-flash-high",
+      "reason": "fail",
+      "evidence": {
+        "file": "output/evidence/agy-desc-extra.jsonl",
+        "line": 24
+      }
+    },
+    {
+      "id": "easyrpg-music-jmystery",
+      "kind": "music",
+      "model": "gemini-3.8-flash-high",
+      "reason": "fail",
+      "evidence": {
+        "file": "output/evidence/agy-desc-extra.jsonl",
+        "line": 25
+      }
+    },
+    {
+      "id": "easyrpg-music-mystery-1",
+      "kind": "music",
+      "model": "gemini-3.8-flash-high",
+      "reason": "fail",
+      "evidence": {
+        "file": "output/evidence/agy-desc-extra.jsonl",
+        "line": 26
+      }
+    },
+    {
+      "id": "easyrpg-music-opening-2",
+      "kind": "music",
+      "model": "gemini-3.8-flash-high",
+      "reason": "fail",
+      "evidence": {
+        "file": "output/evidence/agy-desc-extra.jsonl",
+        "line": 27
+      }
+    },
+    {
+      "id": "easyrpg-music-sorrow",
+      "kind": "music",
+      "model": "gemini-3.8-flash-high",
+      "reason": "fail",
+      "evidence": {
+        "file": "output/evidence/agy-desc-extra.jsonl",
+        "line": 28
+      }
+    },
+    {
+      "id": "easyrpg-music-town-1",
+      "kind": "music",
+      "model": "gemini-3.8-flash-high",
+      "reason": "fail",
+      "evidence": {
+        "file": "output/evidence/agy-desc-extra.jsonl",
+        "line": 29
+      }
+    },
+    {
+      "id": "easyrpg-music-vehicle-1",
+      "kind": "music",
+      "model": "gemini-3.8-flash-high",
+      "reason": "fail",
+      "evidence": {
+        "file": "output/evidence/agy-desc-extra.jsonl",
+        "line": 30
+      }
+    },
+    {
+      "id": "easyrpg-sound-ice9",
+      "kind": "sound",
+      "model": "gemini-3.8-flash-high",
+      "reason": "no-audio",
+      "evidence": {
+        "file": "output/evidence/agy-desc-extra.jsonl",
+        "line": 101
+      }
+    }
+  ],
+  "notes": [
+    "Counts are record counts, not acoustic measurements.",
+    "Three original no-audio records recovered as unverified Pro drafts with lead approval.",
+    "Original first SE restored verbatim from successful Flash smoke transcript after original temporary JSONL was deleted. Both later Pro access attempts failed; neither supplied its description. No timestamp invented; numerical acoustic claims remain AI assertions.",
+    "30 failed MIDI inputs retain metadata; no new playback support.",
+    "Vanguard Flash description replaced by lead-supplied human-corrected Pro draft, not blanket human verification."
+  ],
+  "restoredSmoke": {
+    "id": "cc0-se-orp-interface-interface1",
+    "evidence": "output/evidence/agy-interface-smoke-transcript.json",
+    "model": "gemini-3.8-flash-high"
+  },
+  "failedSmokeRetries": [
+    {
+      "model": "gemini-3.1-pro-high",
+      "status": "no-audio",
+      "audio_available": false,
+      "evidence": "output/evidence/agy-desc-recovery-0-se.jsonl",
+      "cwd": "repository"
+    },
+    {
+      "model": "gemini-3.1-pro-high",
+      "status": "no-audio",
+      "audio_available": false,
+      "evidence": "output/evidence/agy-interface-pro-recovery.txt",
+      "cwd": "isolated",
+      "receipt": "Lead confirmed audio_available=false; no further retries."
+    }
+  ]
+}

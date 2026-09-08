@@ -1,5 +1,68 @@
 # Editor Event Authoring
 
+## Native battle confirmation admission (2026-09-08)
+
+`commandEditDialog.ts` validates native battle commands before its button-based
+Confirm. `commandBodyDatabase.ts` rechecks the current project records, shows the
+existing `battle-processing-warning` as a focusable alert, and retains the mounted
+staged draft when the fixed troop is empty/missing, its effective composition is
+empty, or variable mode has no existing variable selected. Rule/preset and branch
+edits survive rejection and correction; changing the troop source still swaps one
+picker slot rather than mounting two. An unused fixed reference is not required
+in variable mode; the runtime variable value is validated when the battle starts.
+
+The aggregate event validator also blocks Apply/Test for empty fixed composition,
+using `battle.troop.empty` and the troop picker locator. Existing missing-reference
+rules remain. Nonempty legacy enemyIds and hidden members are legitimate runtime
+composition, not empty battles. No command draft is committed or discarded by a
+failed Confirm. Tests: `eventBattleAdmission` and `battleProcessingCommandBody`.
+Lead browser checks should use the real picker/Confirm controls, verify that the
+same dialog remains open with its prior rule edits, then correct and save/reopen.
+
+## Character graphic no-match recovery (OUT-007, 2026-09-08)
+
+- Reproduced surface: Event editor > graphic picker > advanced direct ID. An
+  unavailable ID formerly closed the picker and entered a dangling sprite ID
+  into the event draft. `npcGraphicPicker.ts` now checks the current shared
+  `projectCharsetAssets` catalog at confirmation, returning a local typed
+  `no-match` instead of a graphic. The request stays editable and the live
+  status names the searched bundled/uploaded sources and recovery choices.
+- Manual catalog selection retries normally. Cancel writes nothing. Explicit
+  `그림 없이 계속` removes only the sprite reference, preserving the separate
+  authored `transparent` flag. No sprite already means no map image; setting
+  transparency here would leave later manual selections invisibly hidden.
+  Reopening and confirming restores visible graphics without unhiding an
+  intentionally hidden page. Commands, identity and conditions remain intact.
+  An empty catalog uses those same actions rather than throwing during render.
+  Lookup does not catch or reclassify image, transport, generation or save errors.
+- The shared AI query boundary already uses `ToolError(graphic-not-found)` with
+  candidates; `place_npc` rejection is atomic and explicit manual/transparent
+  retries work. No broad AI data-loss defect or new resolver abstraction is claimed.
+- Regressions: `test/npcGraphicRecovery.test.ts`; real-browser driver:
+  `node scripts/qa/character-asset-recovery.mjs` (`BASE_URL`, `QA_WIDTH`, `QA_OUTPUT`).
+  It uses a local-only editor draft, never remote project writes or mocked assets.
+
+## Page preview state follows the current script (2026-09-08)
+
+- `previewSimulation.ts` carries the active face (resource, side, flip) in each
+  transient state snapshot. A face-clear command removes it. Skipped branches
+  do not apply it, and choice-local state does not leak into sibling/outer steps.
+- `eventScriptModernViews.ts` reads the step snapshot instead of scanning prior
+  commands or keeping a page-keyed face cache. Editing a face while a later
+  dialogue step is selected therefore updates immediately, including clear.
+- `commandPreview.ts` uses those face options and simulated variable values for
+  dialogue rendering. List-to-inspector/edit-dialog face context uses the same
+  `ActiveFace` shape so right-side and flipped faces are not lost.
+- Authoring views reserve the inspector track before selection. Otherwise the
+  first click opens the inspector, wraps the toolbar and moves the command row
+  under a view tab before the second click. Preview/flow and staged proposals
+  can still expand when no inspector is open; closing an inspector in a list
+  must not move the row. The browser regression checks cold and reopened cases.
+- Regression: `test/eventPreviewState.test.ts`; real UI edit/clear/side/flip,
+  variable interpolation, skipped branches and view/transport transitions:
+  `test/e2e/event-preview-state.spec.ts`. A worktree-only pass is not deployment:
+  confirm the actual served bundle and repeat edits on the production preview.
+
 ## Event editor window controls (2026-09-06)
 
 - `eventEditor/modal.ts` retains one mounted editor while minimized, rather than
@@ -300,6 +363,8 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
   - Transport uses natural-width 13px labels, 30px minimum height, existing refresh/arrow SVGs and local play/pause specs. Supporting text is at least 12px; the non-wrapping tabular counter reserves seven characters. No change to resource-manager/global `.btn.small` consumers. Disabling a focused boundary control falls back to Next, Previous, then Play; enabled controls keep focus.
   - Compact context wraps to two lines; a native details/summary exposes the full caption and branch/skipped context in a bounded scroll area. A visible hint names stage scrolling. One persistent polite atomic status shares the counter render and includes command kind plus at most 60 branch characters, never unbounded command bodies. DOM tests are not a screen-reader speech pass.
   - `content.ts:applyViewMode` restores focus to the replacement selected tab only when focus was in the old toggle. Arrow/Home/End remain one uninterrupted roving-tab sequence; non-tab refreshes do not steal focus. Regression seams: `test/eventEditorPagePreviewView.test.ts`, `test/eventPagePreviewTransport.test.ts`, existing simulation/Flow/command-preview/icon suites. Firefox local-only browser receipts and the reusable capture script are under `output/evidence/event-preview-ux/`; use only port 29841 for this worktree, block write requests, and preserve the before evidence.
+  - **Preview paint (2026-09-07):** generic nameplate background must consume `--runtime-dialogue-glass-surface-strong` as an image layer (not a nested color-stop). Result gameover/title/ending and audio play/stop use distinct semantic fills/ink. `--shadow-pop` is a complete shadow list — do not prefix extra lengths. Guard: `test/eventPreviewPaintCssom.test.ts` (Chromium CSSOM + glyph-vs-hidden pixels). Do not repair washed Hangul with overflow/font.
+
 
 - **미리보기는 「이 페이지가 하는 일」 컬럼의 세 번째 보기 (2026-08-28, 아래 2026-08-31 항목이 툴바 부분을 갱신한다):** 보기 토글은 `목록 / 스토리 / 미리보기`(`event-view-toggle-list|storyboard|preview`) 세 칸이고, 미리보기를 고르면 `event-page-preview-host` > `event-page-preview` 가 명령 컬럼 전체 폭·높이를 그대로 쓴다. 미리보기 모드는 `oprn:storyboard-mode` 에 **저장되지 않는다**(저작 보기 = 목록/스토리만 남는다).
 - **분기 열거는 `eventCommandBranches` 가 정본이다 (2026-08-31):** `src/editor/eventCommandBranches.ts` 의 `eventCommandBranches(command)` 가 분기 목록·라벨·경로 칸(`branchIndex`)·목록 마커 톤(`tone`)을 **한 곳에서** 준다. 뷰는 자기 목록을 갖지 않는다 — 네 뷰와 두 비-뷰 호출부가 전부 얇은 어댑터다: `commandList.ts:appendCommandChildren`(목록), `storyboardView.ts:branchesOf`(스토리), `previewSimulation.ts:branchesOf` + `walkWithSimulation`(미리보기·플로우), `tools/commandTraversal.ts:commandBranches`(프로젝트 순회), `eventDraftValidator.ts:commandBranches`(검증). **분기를 새로 만들면 정본에만 추가한다.** 왜 강제인가 (실측): 예전에는 열거 함수가 다섯 벌이었고 그중 셋이 상점 실패 분기(`failedTransactionBranch`)를 빠뜨렸다 — 런타임 `player/interpreter/resume.ts:38-40` 은 실행하는데 목록·플로우·미리보기에는 줄이 안 났고 검증도 그 안에 못 들어갔다(화면에 없는 분기는 모르고 지워진다). `commandList.ts` 는 `SHOP_FAILED_TRANSACTION_BRANCH_INDEX`(-12) 를 import 조차 안 해서 주소를 매길 수도 없었고, `previewSimulation` 의 `inn` 은 거울상으로 정상 분기를 빠뜨렸다. 라벨 규약은 **「언제 실행되나」를 답하는 `~때` 꼴**이다 (`조건이 맞을 때` / `조건이 맞지 않을 때` / `취소했을 때` / `반복할 내용` / `거래했을 때` / `거래하지 못했을 때` / `골드가 부족할 때` / `이겼을 때` / `성공했을 때` …). 예전에는 같은 조건 분기가 뷰마다 `참` / `참일 때` / `조건이 맞을 때` / `조건을 만족함` 네 이름이었다. 분기 «있음» 판정은 **배열이 있으면 있음**(빈 배열 포함) 또는 플래그가 켜져 있으면 있음 — 빈 분기를 찾아 명령을 밀어 넣는 호출부가 있으므로 «비어 있지 않음» 으로 좁히지 말 것. 목록 뷰의 묶음 끝 마커는 `branchGroupEndLabel`. 계약: `test/eventCommandBranchesSingleSource.test.ts`.

@@ -1,0 +1,9 @@
+
+Running 4 tests using 1 worker
+
+  ✓  1 [chromium] › test/e2e/oprn-audio-test-dialog.spec.ts:101:1 › audio dialog uses the canonical 음악·효과음 title and modern control layout (30.1s)
+  ✓  2 [chromium] › test/e2e/oprn-audio-test-dialog.spec.ts:151:1 › moving the sliders changes the values actually applied to playback (26.1s)
+  ✓  3 [chromium] › test/e2e/oprn-audio-test-dialog.spec.ts:202:1 › list filter keeps (꺼짐) first and MIDI rows are marked unplayable (18.3s)
+  ✓  4 [chromium] › test/e2e/oprn-audio-test-dialog.spec.ts:224:1 › Escape closes the audio dialog through the shared modal stack (14.8s)
+
+  4 passed (1.5m)

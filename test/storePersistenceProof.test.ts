@@ -157,6 +157,17 @@ describe("accepted revision persistence proof", () => {
     }
   });
 
+  it("local diagnostics correlate accepted save generation without exporting target or content", async () => {
+    const { LocalDiagnosticSession } = await import("@/util/localDiagnosticSession");
+    const diagnostics = new LocalDiagnosticSession();
+    diagnostics.start(true, ["authoring"]);
+    try {
+      const f = await fixture();
+      expect(diagnostics.snapshot().receipts).toContainEqual(expect.objectContaining({ category: "authoring", phase: "saved", generation: f.receipt.mutationGeneration, savedGeneration: f.receipt.mutationGeneration }));
+      expect(JSON.stringify(diagnostics.snapshot())).not.toContain(projectId);
+    } finally { diagnostics.clear(); }
+  });
+
   it("verifies the accepted content through actual save/read transport and reuses its clean-flush receipt", async () => {
     const f = await fixture();
     expect(f.receipt).toMatchObject({ projectId, mutationGeneration: 1 });

@@ -1,0 +1,24 @@
+{
+  "command": "python3 validate.py",
+  "exitCode": 0,
+  "at": 1788853257.3684313,
+  "checks": "17 exact indexes/multiplicity/dispositions; six presentation equivalences; raw inventory and recovered trace counts; locked clean heads; test/config/fixture identity; exact single-run narrow exits/counts; 11 authoritative full native-contract passes",
+  "artifactSha256": {
+    "REPORT.md": "3ad1ee5d0bc434abcb22080a7dc943f394e037370e59b2c6ef1173661dfb8596",
+    "case-level.json": "f898e82af2e73339245402116e90653e0019610a36b4969d75f2a5765f071c84",
+    "identity.cjs": "79c3c2f600bbd405b602f4d08c0ed19876d735d883deecf02e239e2747903926",
+    "runtime-source-identity.json": "8d52f6e98e3fb20194ef5e97112553a813fd2dfa8fb3b23679b7f64b72119b37",
+    "probe.py": "513ac18a3971ca5bcfbdbfe7595fcc14d9a9a3e8aeb056402228fa0f2386fa1b",
+    "summarize.py": "3e53a59bc9a98b870632206e03aff6cdf9bb2e00c301098f5df4df11df5461ab",
+    "classify.py": "06cdc82895f146ec2b8328077ff5c539587e288881231155c226b9481302eee6",
+    "validate.py": "3bdf3aaf7f9c553cb375121509f5b798158b4e87abb9d41ae4f0cd6df84242e5",
+    "classification.log": "52d758264af9a910b1298b7ecef12607a958b4e1181e7041adf502a213853db5",
+    "reconciliation.log": "415d0de1fa07e4b3e58276f75d27acc075ece43218706029e9b25248a65a747f",
+    "baseline/receipt.json": "c750d6dcb2ffa02d76283f2aad6f0a12b88b00bc9dc5a31a6cfccc2a73be652b",
+    "baseline/vitest.json": "9f027784ea3b85121af73d44a4c71187eac42e434a73a18d5bfbc1a12b51b88c",
+    "baseline/probe.log": "cfd3669da17a92e7a0a1ea0aee8a622b996c530d01cc5a87597b8e56bfd80f95",
+    "candidate/receipt.json": "38691d8a2994ad451b064dc7817337bfb2bc959c6c905ac1f7fa11138c7f4cea",
+    "candidate/vitest.json": "5f6740ac7c5d31de39162ab63d208e329870051ffd0478e228791fb2f46df870",
+    "candidate/probe.log": "838a5919191467885ab7cda73f8001d5f97ccfd66a5885a2fd0412eb7542ff25"
+  }
+}

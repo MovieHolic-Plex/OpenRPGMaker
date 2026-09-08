@@ -27,8 +27,9 @@ describe("run outcome session boundaries", () => {
     const f = fixture();
     // When scheduling is finished by skipping.
     const result = await f.run([[plan([size]), skip]]);
-    // Then final compatibility does not imply completion.
-    expect(result.stoppedReason).toBe("final");
+    // Bounded no-write acceptance repair fails closed; the typed goal stays incomplete.
+    expect(result.stoppedReason).toBe("error");
+    expect(result.error).toBeDefined();
     expect(result).toHaveProperty("runOutcome", { execution: "blocked", goal: "incomplete", delivery: "no-change" });
   });
 

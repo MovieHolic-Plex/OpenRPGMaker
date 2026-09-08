@@ -1,16 +1,10 @@
-import { companionCompletionsBaseUrl, type AiConfig } from "@/ai/llmClient";
-import { ANTIGRAVITY_PROVIDER_ID } from "@/ai/oauth/credentials";
+import { companionCompletionsBaseUrl, loadAiConfig, type AiConfig } from "@/ai/llmClient";
+import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID } from "@/ai/imageModelCatalog";
+import { parseImageReferences, type ImageReference } from "@/ai/imageReferences";
 
-/**
- * 이미지 생성이 실측으로 통과하는 제공자는 Antigravity 하나다. Codex(Responses) 는
- * 호스팅 `image_generation` 툴을 요청할 경로가 pi-ai 에 없다(`Tool.native` 가 computer 만
- * 받는다). 그래서 텍스트 제공자가 무엇이든 그림은 이 제공자로 넘긴다.
- *
- * 요청 모델은 gemini-3.8-flash. 동반 서비스 카탈로그에 없으면
- * getBundledModel 이 gemini-3.1-flash-image 로 떨어진다(IMAGE 모달리티 실측 ID).
- */
-export const IMAGE_GENERATION_PROVIDER_ID = ANTIGRAVITY_PROVIDER_ID;
-export const IMAGE_GENERATION_MODEL = "gemini-3.8-flash";
+/** Legacy exports name the defaults, not the current user selection. */
+export const IMAGE_GENERATION_PROVIDER_ID = DEFAULT_IMAGE_PROVIDER_ID;
+export const IMAGE_GENERATION_MODEL = DEFAULT_IMAGE_MODEL;
 
 const IMAGE_REQUEST_TIMEOUT_MS = 180_000;
 
@@ -24,7 +18,9 @@ export interface GeneratedImageAsset {
 export interface GenerateAiImageRequest {
   readonly prompt: string;
   readonly model?: string;
+  readonly providerId?: string;
   readonly signal?: AbortSignal;
+  readonly referenceImages?: readonly ImageReference[];
 }
 
 export interface GenerateAiImageDeps {
@@ -45,10 +41,10 @@ export function imageGenerationEndpoint(): string {
 }
 
 export function imageGenerationUsesOtherProvider(config: AiConfig): boolean {
-  return config.providerId !== IMAGE_GENERATION_PROVIDER_ID;
+  return config.providerId !== (config.imageProviderId ?? IMAGE_GENERATION_PROVIDER_ID);
 }
 
-function parseImage(payload: unknown): GeneratedImageAsset {
+function parseImage(payload: unknown, model: string, provider: string): GeneratedImageAsset {
   const image = (payload as { image?: unknown })?.image;
   if (!image || typeof image !== "object") {
     throw new ImageGenerationError("이미지 응답 형식이 올바르지 않습니다.");
@@ -61,8 +57,8 @@ function parseImage(payload: unknown): GeneratedImageAsset {
   return {
     dataUrl,
     mimeType: typeof record.mimeType === "string" ? record.mimeType : "image/png",
-    model: typeof record.model === "string" ? record.model : IMAGE_GENERATION_MODEL,
-    provider: typeof record.provider === "string" ? record.provider : IMAGE_GENERATION_PROVIDER_ID,
+    model: typeof record.model === "string" ? record.model : model,
+    provider: typeof record.provider === "string" ? record.provider : provider,
   };
 }
 
@@ -72,6 +68,10 @@ export async function generateAiImage(
 ): Promise<GeneratedImageAsset> {
   const prompt = request.prompt.trim();
   if (!prompt) throw new ImageGenerationError("그림 설명(prompt)이 비어 있습니다.");
+  const referenceImages = parseImageReferences(request.referenceImages);
+  const config = loadAiConfig();
+  const providerId = request.providerId ?? config.imageProviderId ?? IMAGE_GENERATION_PROVIDER_ID;
+  const model = request.model ?? config.imageModel ?? IMAGE_GENERATION_MODEL;
 
   const doFetch = deps.fetch ?? fetch;
   const timeout = AbortSignal.timeout(IMAGE_REQUEST_TIMEOUT_MS);
@@ -83,9 +83,13 @@ export async function generateAiImage(
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-Rpgzzu-Provider": IMAGE_GENERATION_PROVIDER_ID,
+        "X-Rpgzzu-Provider": providerId,
       },
-      body: JSON.stringify({ prompt, model: request.model ?? IMAGE_GENERATION_MODEL }),
+      body: JSON.stringify({
+        prompt,
+        model,
+        ...(referenceImages.length > 0 ? { referenceImages } : {}),
+      }),
       signal,
     });
   } catch (cause) {
@@ -112,5 +116,5 @@ export async function generateAiImage(
     const message = typeof detail === "string" && detail ? detail : `이미지 생성 실패 (HTTP ${response.status})`;
     throw new ImageGenerationError(message, response.status);
   }
-  return parseImage(payload);
+  return parseImage(payload, model, providerId);
 }

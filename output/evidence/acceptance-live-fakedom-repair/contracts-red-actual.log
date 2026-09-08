@@ -1,0 +1,1166 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/fakeDomSelectContracts.test.ts --maxWorkers=1 --reporter=default --reporter=json --outputFile=output/evidence/acceptance-live-fakedom-repair/contracts-red-actual.json
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-acceptance-live-qa
+
+ ❯ test/fakeDomSelectContracts.test.ts (16 tests | 14 failed) 145ms
+   × fake DOM select/adoption contracts > flattens optgroups and aligns value, selectedIndex, selected and option.index 9ms
+     → undefined is not iterable (cannot read property Symbol(Symbol.iterator))
+   × fake DOM select/adoption contracts > clears invalid selections, chooses one duplicate value, and recovers on insertion 8ms
+     → expected [ undefined, undefined, undefined ] to deeply equal [ +0, true, false ]
+   × fake DOM select/adoption contracts > honors selected options, disabled defaults and removal of the selected optgroup 2ms
+     → expected [ '', undefined, true ] to deeply equal [ 'second', false, true ]
+   × fake DOM select/adoption contracts > uses option text as fallback value and label, preserving explicit empty values 2ms
+     → expected [ '', undefined ] to deeply equal [ 'Text label', 'Text label' ]
+   × fake DOM select/adoption contracts > adopts into enhanced wrappers and unwraps without duplicate ownership 28ms
+     → expected [ …(3) ] to deeply equal [ …(2) ]
+   × fake DOM select/adoption contracts > replaces with adopted siblings and descendants, including self replacement 27ms
+     → expected [ <span></span>, <span></span>, …(3) ] to deeply equal [ <span></span>, <span></span>, …(1) ]
+   × fake DOM select/adoption contracts > clears parent links on removal, text replacement and replaceChildren 3ms
+     → expected undefined to be <select><option></option>
+…(1)</select> // Object.is equality
+   × happy DOM select/adoption contracts > flattens optgroups and aligns value, selectedIndex, selected and option.index 17ms
+     → expected [ 'first', 1, +0, 1 ] to deeply equal [ 'second', +0, +0, 1 ]
+   × happy DOM select/adoption contracts > clears invalid selections, chooses one duplicate value, and recovers on insertion 14ms
+     → expected [ 1, true, true ] to deeply equal [ +0, true, false ]
+   × happy DOM select/adoption contracts > honors selected options, disabled defaults and removal of the selected optgroup 6ms
+     → expected [ 'first', +0, -1 ] to deeply equal [ 'first', +0, +0 ]
+   × happy DOM select/adoption contracts > uses option text as fallback value and label, preserving explicit empty values 4ms
+     → expected [ '  Text\n label  ', undefined ] to deeply equal [ 'Text label', 'Text label' ]
+   ✓ happy DOM select/adoption contracts > adopts into enhanced wrappers and unwraps without duplicate ownership 5ms
+   × happy DOM select/adoption contracts > replaces with adopted siblings and descendants, including self replacement 5ms
+     → expected [ HTMLSpanElement{ …(47) }, …(1) ] to deeply equal [ HTMLSpanElement{ …(47) }, …(2) ]
+   ✓ happy DOM select/adoption contracts > clears parent links on removal, text replacement and replaceChildren 6ms
+   × recognizes only SELECT elements and exposes current selectedOptions 1ms
+     → expected true to be false // Object.is equality
+   × runs real select refresh, native change and disposal without wrapping the dialog root 4ms
+     → Cannot read properties of undefined (reading 'undefined')
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 14 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/fakeDomSelectContracts.test.ts > fake DOM select/adoption contracts > flattens optgroups and aligns value, selectedIndex, selected and option.index
+TypeError: undefined is not iterable (cannot read property Symbol(Symbol.iterator))
+ ❯ test/fakeDomSelectContracts.test.ts:33:18
+     31|   it("flattens optgroups and aligns value, selectedIndex, selected and…
+     32|     const { select, first, second, group } = fixture();
+     33|     expect(Array.from(select.options)).toEqual([first, second]);
+       |                  ^
+     34|     expect([select.value, select.selectedIndex, first.index, second.in…
+     35|     select.value = "second";
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/14]⎯
+
+ FAIL  test/fakeDomSelectContracts.test.ts > fake DOM select/adoption contracts > clears invalid selections, chooses one duplicate value, and recovers on insertion
+AssertionError: expected [ undefined, undefined, undefined ] to deeply equal [ +0, true, false ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[32m-   0,[39m
+[32m-   true,[39m
+[32m-   false,[39m
+[31m+   undefined,[39m
+[31m+   undefined,[39m
+[31m+   undefined,[39m
+[2m  ][22m
+
+ ❯ test/fakeDomSelectContracts.test.ts:47:69
+     45|     second.value = first.value;
+     46|     select.value = first.value;
+     47|     expect([select.selectedIndex, first.selected, second.selected]).to…
+       |                                                                     ^
+     48|     select.value = "missing";
+     49|     expect([select.value, select.selectedIndex, first.selected, second…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/14]⎯
+
+ FAIL  test/fakeDomSelectContracts.test.ts > fake DOM select/adoption contracts > honors selected options, disabled defaults and removal of the selected optgroup
+AssertionError: expected [ '', undefined, true ] to deeply equal [ 'second', false, true ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[32m-   "second",[39m
+[32m-   false,[39m
+[31m+   "",[39m
+[31m+   undefined,[39m
+[2m    true,[22m
+[2m  ][22m
+
+ ❯ test/fakeDomSelectContracts.test.ts:61:61
+     59|     const { doc, select, first, second, group } = fixture();
+     60|     second.selected = true;
+     61|     expect([select.value, first.selected, second.selected]).toEqual(["…
+       |                                                             ^
+     62|     group.remove();
+     63|     expect([select.value, select.selectedIndex, second.index]).toEqual…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/14]⎯
+
+ FAIL  test/fakeDomSelectContracts.test.ts > fake DOM select/adoption contracts > uses option text as fallback value and label, preserving explicit empty values
+AssertionError: expected [ '', undefined ] to deeply equal [ 'Text label', 'Text label' ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[32m-   "Text label",[39m
+[32m-   "Text label",[39m
+[31m+   "",[39m
+[31m+   undefined,[39m
+[2m  ][22m
+
+ ❯ test/fakeDomSelectContracts.test.ts:82:42
+     80|     const option = doc.createElement("option");
+     81|     option.textContent = "  Text\n label  ";
+     82|     expect([option.value, option.label]).toEqual(["Text label", "Text …
+       |                                          ^
+     83|     option.setAttribute("label", "Display");
+     84|     option.value = "";
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/14]⎯
+
+ FAIL  test/fakeDomSelectContracts.test.ts > fake DOM select/adoption contracts > adopts into enhanced wrappers and unwraps without duplicate ownership
+AssertionError: expected [ …(3) ] to deeply equal [ …(2) ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -391,10 +391,260 @@[39m
+[2m      "value": "",[22m
+[2m    },[22m
+[2m    FakeElement {[22m
+[2m      "attrs": {},[22m
+[2m      "checked": false,[22m
+[31m+     "childNodes": [[39m
+[31m+       FakeElement {[39m
+[31m+         "attrs": {},[39m
+[31m+         "checked": false,[39m
+[31m+         "childNodes": [],[39m
+[31m+         "classList": {[39m
+[31m+           "add": [Function add],[39m
+[31m+           "contains": [Function contains],[39m
+[31m+           "remove": [Function remove],[39m
+[31m+           "toggle": [Function toggle],[39m
+[31m+         },[39m
+[31m+         "className": "",[39m
+[31m+         "dataset": {},[39m
+[31m+         "disabled": false,[39m
+[31m+         "hidden": false,[39m
+[31m+         "inert": false,[39m
+[31m+         "innerHTML": "",[39m
+[31m+         "isContentEditable": false,[39m
+[31m+         "listeners": {},[39m
+[31m+         "max": "",[39m
+[31m+         "min": "",[39m
+[31m+         "ownText": "",[39m
+[31m+         "parentNode": [Circular],[39m
+[31m+         "scrollLeft": 0,[39m
+[31m+         "scrollTop": 0,[39m
+[31m+         "selectionEnd": 0,[39m
+[31m+         "selectionStart": 0,[39m
+[31m+         "style": {[39m
+[31m+           "getPropertyValue": [Function anonymous],[39m
+[31m+           "removeProperty": [Function anonymous],[39m
+[31m+           "setProperty": [Function anonymous],[39m
+[31m+         },[39m
+[31m+         "tagName": "OPTION",[39m
+[31m+         "type": "",[39m
+[31m+         "value": "first",[39m
+[31m+       },[39m
+[31m+       FakeElement {[39m
+[31m+         "attrs": {},[39m
+[31m+         "checked": false,[39m
+[31m+         "childNodes": [[39m
+[31m+           FakeElement {[39m
+[31m+             "attrs": {},[39m
+[31m+             "checked": false,[39m
+[31m+             "childNodes": [],[39m
+[31m+             "classList": {[39m
+[31m+               "add": [Function add],[39m
+[31m+               "contains": [Function contains],[39m
+[31m+               "remove": [Function remove],[39m
+[31m+               "toggle": [Function toggle],[39m
+[31m+             },[39m
+[31m+             "className": "",[39m
+[31m+             "dataset": {},[39m
+[31m+             "disabled": false,[39m
+[31m+             "hidden": false,[39m
+[31m+             "inert": false,[39m
+[31m+             "innerHTML": "",[39m
+[31m+             "isContentEditable": false,[39m
+[31m+             "listeners": {},[39m
+[31m+             "max": "",[39m
+[31m+             "min": "",[39m
+[31m+             "ownText": "",[39m
+[31m+             "parentNode": [Circular],[39m
+[31m+             "scrollLeft": 0,[39m
+[31m+             "scrollTop": 0,[39m
+[31m+             "selectionEnd": 0,[39m
+[31m+             "selectionStart": 0,[39m
+[31m+             "style": {[39m
+[31m+               "getPropertyValue": [Function anonymous],[39m
+[31m+               "removeProperty": [Function anonymous],[39m
+[31m+               "setProperty": [Function anonymous],[39m
+[31m+             },[39m
+[31m+             "tagName": "OPTION",[39m
+[31m+             "type": "",[39m
+[31m+             "value": "second",[39m
+[31m+           },[39m
+[31m+         ],[39m
+[31m+         "classList": {[39m
+[31m+           "add": [Function add],[39m
+[31m+           "contains": [Function contains],[39m
+[31m+           "remove": [Function remove],[39m
+[31m+           "toggle": [Function toggle],[39m
+[31m+         },[39m
+[31m+         "className": "",[39m
+[31m+         "dataset": {},[39m
+[31m+         "disabled": false,[39m
+[31m+         "hidden": false,[39m
+[31m+         "inert": false,[39m
+[31m+         "innerHTML": "",[39m
+[31m+         "isContentEditable": false,[39m
+[31m+         "listeners": {},[39m
+[31m+         "max": "",[39m
+[31m+         "min": "",[39m
+[31m+         "ownText": "",[39m
+[31m+         "parentNode": [Circular],[39m
+[31m+         "scrollLeft": 0,[39m
+[31m+         "scrollTop": 0,[39m
+[31m+         "selectionEnd": 0,[39m
+[31m+         "selectionStart": 0,[39m
+[31m+         "style": {[39m
+[31m+           "getPropertyValue": [Function anonymous],[39m
+[31m+           "removeProperty": [Function anonymous],[39m
+[31m+           "setProperty": [Function anonymous],[39m
+[31m+         },[39m
+[31m+         "tagName": "OPTGROUP",[39m
+[31m+         "type": "",[39m
+[31m+         "value": "",[39m
+[31m+       },[39m
+[31m+     ],[39m
+[31m+     "classList": {[39m
+[31m+       "add": [Function add],[39m
+[31m+       "contains": [Function contains],[39m
+[31m+       "remove": [Function remove],[39m
+[31m+       "toggle": [Function toggle],[39m
+[31m+     },[39m
+[31m+     "className": "",[39m
+[31m+     "dataset": {},[39m
+[31m+     "disabled": false,[39m
+[31m+     "hidden": false,[39m
+[31m+     "inert": false,[39m
+[31m+     "innerHTML": "",[39m
+[31m+     "isContentEditable": false,[39m
+[31m+     "listeners": {},[39m
+[31m+     "max": "",[39m
+[31m+     "min": "",[39m
+[31m+     "ownText": "",[39m
+[31m+     "parentNode": FakeElement {[39m
+[31m+       "attrs": {},[39m
+[31m+       "checked": false,[39m
+[31m+       "childNodes": [[39m
+[31m+         [Circular],[39m
+[31m+       ],[39m
+[31m+       "classList": {[39m
+[31m+         "add": [Function add],[39m
+[31m+         "contains": [Function contains],[39m
+[31m+         "remove": [Function remove],[39m
+[31m+         "toggle": [Function toggle],[39m
+[31m+       },[39m
+[31m+       "className": "",[39m
+[31m+       "dataset": {},[39m
+[31m+       "disabled": false,[39m
+[31m+       "hidden": false,[39m
+[31m+       "inert": false,[39m
+[31m+       "innerHTML": "",[39m
+[31m+       "isContentEditable": false,[39m
+[31m+       "listeners": {},[39m
+[31m+       "max": "",[39m
+[31m+       "min": "",[39m
+[31m+       "ownText": "",[39m
+[31m+       "parentNode": FakeElement {[39m
+[31m+         "attrs": {},[39m
+[31m+         "checked": false,[39m
+[31m+         "childNodes": [[39m
+[31m+           [Circular],[39m
+[31m+           [Circular],[39m
+[31m+           FakeElement {[39m
+[31m+             "attrs": {},[39m
+[31m+             "checked": false,[39m
+[31m+             "childNodes": [],[39m
+[31m+             "classList": {[39m
+[31m+               "add": [Function add],[39m
+[31m+               "contains": [Function contains],[39m
+[31m+               "remove": [Function remove],[39m
+[31m+               "toggle": [Function toggle],[39m
+[31m+             },[39m
+[31m+             "className": "",[39m
+[31m+             "dataset": {},[39m
+[31m+             "disabled": false,[39m
+[31m+             "hidden": false,[39m
+[31m+             "inert": false,[39m
+[31m+             "innerHTML": "",[39m
+[31m+             "isContentEditable": false,[39m
+[31m+             "listeners": {},[39m
+[31m+             "max": "",[39m
+[31m+             "min": "",[39m
+[31m+             "ownText": "",[39m
+[31m+             "parentNode": [Circular],[39m
+[31m+             "scrollLeft": 0,[39m
+[31m+             "scrollTop": 0,[39m
+[31m+             "selectionEnd": 0,[39m
+[31m+             "selectionStart": 0,[39m
+[31m+             "style": {[39m
+[31m+               "getPropertyValue": [Function anonymous],[39m
+[31m+               "removeProperty": [Function anonymous],[39m
+[31m+               "setProperty": [Function anonymous],[39m
+[31m+             },[39m
+[31m+             "tagName": "BUTTON",[39m
+[31m+             "type": "",[39m
+[31m+             "value": "",[39m
+[31m+           },[39m
+[31m+         ],[39m
+[31m+         "classList": {[39m
+[31m+           "add": [Function add],[39m
+[31m+           "contains": [Function contains],[39m
+[31m+           "remove": [Function remove],[39m
+[31m+           "toggle": [Function toggle],[39m
+[31m+         },[39m
+[31m+         "className": "",[39m
+[31m+         "dataset": {},[39m
+[31m+         "disabled": false,[39m
+[31m+         "hidden": false,[39m
+[31m+         "inert": false,[39m
+[31m+         "innerHTML": "",[39m
+[31m+         "isContentEditable": false,[39m
+[31m+         "listeners": {},[39m
+[31m+         "max": "",[39m
+[31m+         "min": "",[39m
+[31m+         "ownText": "",[39m
+[31m+         "parentNode": null,[39m
+[31m+         "scrollLeft": 0,[39m
+[31m+         "scrollTop": 0,[39m
+[31m+         "selectionEnd": 0,[39m
+[31m+         "selectionStart": 0,[39m
+[31m+         "style": {[39m
+[31m+           "getPropertyValue": [Function anonymous],[39m
+[31m+           "removeProperty": [Function anonymous],[39m
+[31m+           "setProperty": [Function anonymous],[39m
+[31m+         },[39m
+[31m+         "tagName": "DIV",[39m
+[31m+         "type": "",[39m
+[31m+         "value": "",[39m
+[31m+       },[39m
+[31m+       "scrollLeft": 0,[39m
+[31m+       "scrollTop": 0,[39m
+[31m+       "selectionEnd": 0,[39m
+[31m+       "selectionStart": 0,[39m
+[31m+       "style": {[39m
+[31m+         "getPropertyValue": [Function anonymous],[39m
+[31m+         "removeProperty": [Function anonymous],[39m
+[31m+         "setProperty": [Function anonymous],[39m
+[31m+       },[39m
+[31m+       "tagName": "SPAN",[39m
+[31m+       "type": "",[39m
+[31m+       "value": "",[39m
+[31m+     },[39m
+[31m+     "scrollLeft": 0,[39m
+[31m+     "scrollTop": 0,[39m
+[31m+     "selectionEnd": 0,[39m
+[31m+     "selectionStart": 0,[39m
+[31m+     "style": {[39m
+[31m+       "getPropertyValue": [Function anonymous],[39m
+[31m+       "removeProperty": [Function anonymous],[39m
+[31m+       "setProperty": [Function anonymous],[39m
+[31m+     },[39m
+[31m+     "tagName": "SELECT",[39m
+[31m+     "type": "",[39m
+[31m+     "value": "",[39m
+[31m+   },[39m
+[31m+   FakeElement {[39m
+[31m+     "attrs": {},[39m
+[31m+     "checked": false,[39m
+[2m      "childNodes": [],[22m
+[2m      "classList": {[22m
+[2m        "add": [Function add],[22m
+[2m        "contains": [Function contains],[22m
+[2m        "remove": [Function remove],[22m
+
+ ❯ test/fakeDomSelectContracts.test.ts:97:41
+     95|     host.insertBefore(wrapper, select);
+     96|     wrapper.append(select);
+     97|     expect(Array.from(host.childNodes)).toEqual([wrapper, tail]);
+       |                                         ^
+     98|     expect(Array.from(wrapper.childNodes)).toEqual([select]);
+     99|     host.insertBefore(select, wrapper);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/14]⎯
+
+ FAIL  test/fakeDomSelectContracts.test.ts > fake DOM select/adoption contracts > replaces with adopted siblings and descendants, including self replacement
+AssertionError: expected [ <span></span>, <span></span>, …(3) ] to deeply equal [ <span></span>, <span></span>, …(1) ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -22,10 +22,187 @@[39m
+[2m      "ownText": "",[22m
+[2m      "parentNode": FakeElement {[22m
+[2m        "attrs": {},[22m
+[2m        "checked": false,[22m
+[2m        "childNodes": [[22m
+[31m+         [Circular],[39m
+[31m+         FakeElement {[39m
+[31m+           "attrs": {},[39m
+[31m+           "checked": false,[39m
+[31m+           "childNodes": [],[39m
+[31m+           "classList": {[39m
+[31m+             "add": [Function add],[39m
+[31m+             "contains": [Function contains],[39m
+[31m+             "remove": [Function remove],[39m
+[31m+             "toggle": [Function toggle],[39m
+[31m+           },[39m
+[31m+           "className": "",[39m
+[31m+           "dataset": {},[39m
+[31m+           "disabled": false,[39m
+[31m+           "hidden": false,[39m
+[31m+           "inert": false,[39m
+[31m+           "innerHTML": "",[39m
+[31m+           "isContentEditable": false,[39m
+[31m+           "listeners": {},[39m
+[31m+           "max": "",[39m
+[31m+           "min": "",[39m
+[31m+           "ownText": "",[39m
+[31m+           "parentNode": [Circular],[39m
+[31m+           "scrollLeft": 0,[39m
+[31m+           "scrollTop": 0,[39m
+[31m+           "selectionEnd": 0,[39m
+[31m+           "selectionStart": 0,[39m
+[31m+           "style": {[39m
+[31m+             "getPropertyValue": [Function anonymous],[39m
+[31m+             "removeProperty": [Function anonymous],[39m
+[31m+             "setProperty": [Function anonymous],[39m
+[31m+           },[39m
+[31m+           "tagName": "SPAN",[39m
+[31m+           "type": "",[39m
+[31m+           "value": "",[39m
+[31m+         },[39m
+[31m+         [Circular],[39m
+[31m+         FakeElement {[39m
+[31m+           "attrs": {},[39m
+[31m+           "checked": false,[39m
+[31m+           "childNodes": [],[39m
+[31m+           "classList": {[39m
+[31m+             "add": [Function add],[39m
+[31m+             "contains": [Function contains],[39m
+[31m+             "remove": [Function remove],[39m
+[31m+             "toggle": [Function toggle],[39m
+[31m+           },[39m
+[31m+           "className": "",[39m
+[31m+           "dataset": {},[39m
+[31m+           "disabled": false,[39m
+[31m+           "hidden": false,[39m
+[31m+           "inert": false,[39m
+[31m+           "innerHTML": "",[39m
+[31m+           "isContentEditable": false,[39m
+[31m+           "listeners": {},[39m
+[31m+           "max": "",[39m
+[31m+           "min": "",[39m
+[31m+           "ownText": "",[39m
+[31m+           "parentNode": null,[39m
+[31m+           "scrollLeft": 0,[39m
+[31m+           "scrollTop": 0,[39m
+[31m+           "selectionEnd": 0,[39m
+[31m+           "selectionStart": 0,[39m
+[31m+           "style": {[39m
+[31m+             "getPropertyValue": [Function anonymous],[39m
+[31m+             "removeProperty": [Function anonymous],[39m
+[31m+             "setProperty": [Function anonymous],[39m
+[31m+           },[39m
+[31m+           "tagName": "SPAN",[39m
+[31m+           "type": "",[39m
+[31m+           "value": "",[39m
+[31m+         },[39m
+[31m+         FakeElement {[39m
+[31m+           "attrs": {},[39m
+[31m+           "checked": false,[39m
+[31m+           "childNodes": [],[39m
+[31m+           "classList": {[39m
+[31m+             "add": [Function add],[39m
+[31m+             "contains": [Function contains],[39m
+[31m+             "remove": [Function remove],[39m
+[31m+             "toggle": [Function toggle],[39m
+[31m+           },[39m
+[31m+           "className": "",[39m
+[31m+           "dataset": {},[39m
+[31m+           "disabled": false,[39m
+[31m+           "hidden": false,[39m
+[31m+           "inert": false,[39m
+[31m+           "innerHTML": "",[39m
+[31m+           "isContentEditable": false,[39m
+[31m+           "listeners": {},[39m
+[31m+           "max": "",[39m
+[31m+           "min": "",[39m
+[31m+           "ownText": "",[39m
+[31m+           "parentNode": [Circular],[39m
+[31m+           "scrollLeft": 0,[39m
+[31m+           "scrollTop": 0,[39m
+[31m+           "selectionEnd": 0,[39m
+[31m+           "selectionStart": 0,[39m
+[31m+           "style": {[39m
+[31m+             "getPropertyValue": [Function anonymous],[39m
+[31m+             "removeProperty": [Function anonymous],[39m
+[31m+             "setProperty": [Function anonymous],[39m
+[31m+           },[39m
+[31m+           "tagName": "SPAN",[39m
+[31m+           "type": "",[39m
+[31m+           "value": "",[39m
+[31m+         },[39m
+[31m+       ],[39m
+[31m+       "classList": {[39m
+[31m+         "add": [Function add],[39m
+[31m+         "contains": [Function contains],[39m
+[31m+         "remove": [Function remove],[39m
+[31m+         "toggle": [Function toggle],[39m
+[31m+       },[39m
+[31m+       "className": "",[39m
+[31m+       "dataset": {},[39m
+[31m+       "disabled": false,[39m
+[31m+       "hidden": false,[39m
+[31m+       "inert": false,[39m
+[31m+       "innerHTML": "",[39m
+[31m+       "isContentEditable": false,[39m
+[31m+       "listeners": {},[39m
+[31m+       "max": "",[39m
+[31m+       "min": "",[39m
+[31m+       "ownText": "",[39m
+[31m+       "parentNode": null,[39m
+[31m+       "scrollLeft": 0,[39m
+[31m+       "scrollTop": 0,[39m
+[31m+       "selectionEnd": 0,[39m
+[31m+       "selectionStart": 0,[39m
+[31m+       "style": {[39m
+[31m+         "getPropertyValue": [Function anonymous],[39m
+[31m+         "removeProperty": [Function anonymous],[39m
+[31m+         "setProperty": [Function anonymous],[39m
+[31m+       },[39m
+[31m+       "tagName": "DIV",[39m
+[31m+       "type": "",[39m
+[31m+       "value": "",[39m
+[31m+     },[39m
+[31m+     "scrollLeft": 0,[39m
+[31m+     "scrollTop": 0,[39m
+[31m+     "selectionEnd": 0,[39m
+[31m+     "selectionStart": 0,[39m
+[31m+     "style": {[39m
+[31m+       "getPropertyValue": [Function anonymous],[39m
+[31m+       "removeProperty": [Function anonymous],[39m
+[31m+       "setProperty": [Function anonymous],[39m
+[31m+     },[39m
+[31m+     "tagName": "SPAN",[39m
+[31m+     "type": "",[39m
+[31m+     "value": "",[39m
+[31m+   },[39m
+[31m+   FakeElement {[39m
+[31m+     "attrs": {},[39m
+[31m+     "checked": false,[39m
+[31m+     "childNodes": [],[39m
+[31m+     "classList": {[39m
+[31m+       "add": [Function add],[39m
+[31m+       "contains": [Function contains],[39m
+[31m+       "remove": [Function remove],[39m
+[31m+       "toggle": [Function toggle],[39m
+[31m+     },[39m
+[31m+     "className": "",[39m
+[31m+     "dataset": {},[39m
+[31m+     "disabled": false,[39m
+[31m+     "hidden": false,[39m
+[31m+     "inert": false,[39m
+[31m+     "innerHTML": "",[39m
+[31m+     "isContentEditable": false,[39m
+[31m+     "listeners": {},[39m
+[31m+     "max": "",[39m
+[31m+     "min": "",[39m
+[31m+     "ownText": "",[39m
+[31m+     "parentNode": FakeElement {[39m
+[31m+       "attrs": {},[39m
+[31m+       "checked": false,[39m
+[31m+       "childNodes": [[39m
+[2m          FakeElement {[22m
+[2m            "attrs": {},[22m
+[2m            "checked": false,[22m
+[2m            "childNodes": [],[22m
+[2m            "classList": {[22m
+[33m@@ -335,13 +512,144 @@[39m
+[2m          "getPropertyValue": [Function anonymous],[22m
+[2m          "removeProperty": [Function anonymous],[22m
+[2m          "setProperty": [Function anonymous],[22m
+[2m        },[22m
+[2m        "tagName": "DIV",[22m
+[31m+       "type": "",[39m
+[31m+       "value": "",[39m
+[31m+     },[39m
+[31m+     "scrollLeft": 0,[39m
+[31m+     "scrollTop": 0,[39m
+[31m+     "selectionEnd": 0,[39m
+[31m+     "selectionStart": 0,[39m
+[31m+     "style": {[39m
+[31m+       "getPropertyValue": [Function anonymous],[39m
+[31m+       "removeProperty": [Function anonymous],[39m
+[31m+       "setProperty": [Function anonymous],[39m
+[31m+     },[39m
+[31m+     "tagName": "SPAN",[39m
+[31m+     "type": "",[39m
+[31m+     "value": "",[39m
+[31m+   },[39m
+[31m+   FakeElement {[39m
+[31m+     "attrs": {},[39m
+[31m+     "checked": false,[39m
+[31m+     "childNodes": [],[39m
+[31m+     "classList": {[39m
+[31m+       "add": [Function add],[39m
+[31m+       "contains": [Function contains],[39m
+[31m+       "remove": [Function remove],[39m
+[31m+       "toggle": [Function toggle],[39m
+[31m+     },[39m
+[31m+     "className": "",[39m
+[31m+     "dataset": {},[39m
+[31m+     "disabled": false,[39m
+[31m+     "hidden": false,[39m
+[31m+     "inert": false,[39m
+[31m+     "innerHTML": "",[39m
+[31m+     "isContentEditable": false,[39m
+[31m+     "listeners": {},[39m
+[31m+     "max": "",[39m
+[31m+     "min": "",[39m
+[31m+     "ownText": "",[39m
+[31m+     "parentNode": null,[39m
+[31m+     "scrollLeft": 0,[39m
+[31m+     "scrollTop": 0,[39m
+[31m+     "selectionEnd": 0,[39m
+[31m+     "selectionStart": 0,[39m
+[31m+     "style": {[39m
+[31m+       "getPropertyValue": [Function anonymous],[39m
+[31m+       "removeProperty": [Function anonymous],[39m
+[31m+       "setProperty": [Function anonymous],[39m
+[31m+     },[39m
+[31m+     "tagName": "SPAN",[39m
+[31m+     "type": "",[39m
+[31m+     "value": "",[39m
+[31m+   },[39m
+[31m+   FakeElement {[39m
+[31m+     "attrs": {},[39m
+[31m+     "checked": false,[39m
+[31m+     "childNodes": [],[39m
+[31m+     "classList": {[39m
+[31m+       "add": [Function add],[39m
+[31m+       "contains": [Function contains],[39m
+[31m+       "remove": [Function remove],[39m
+[31m+       "toggle": [Function toggle],[39m
+[31m+     },[39m
+[31m+     "className": "",[39m
+[31m+     "dataset": {},[39m
+[31m+     "disabled": false,[39m
+[31m+     "hidden": false,[39m
+[31m+     "inert": false,[39m
+[31m+     "innerHTML": "",[39m
+[31m+     "isContentEditable": false,[39m
+[31m+     "listeners": {},[39m
+[31m+     "max": "",[39m
+[31m+     "min": "",[39m
+[31m+     "ownText": "",[39m
+[31m+     "parentNode": FakeElement {[39m
+[31m+       "attrs": {},[39m
+[31m+       "checked": false,[39m
+[31m+       "childNodes": [[39m
+[31m+         FakeElement {[39m
+[31m+           "attrs": {},[39m
+[31m+           "checked": false,[39m
+[31m+           "childNodes": [],[39m
+[31m+           "classList": {[39m
+[31m+             "add": [Function add],[39m
+[31m+             "contains": [Function contains],[39m
+[31m+             "remove": [Function remove],[39m
+[31m+             "toggle": [Function toggle],[39m
+[31m+           },[39m
+[31m+           "className": "",[39m
+[31m+           "dataset": {},[39m
+[31m+           "disabled": false,[39m
+[31m+           "hidden": false,[39m
+[31m+           "inert": false,[39m
+[31m+           "innerHTML": "",[39m
+[31m+           "isContentEditable": false,[39m
+[31m+           "listeners": {},[39m
+[31m+           "max": "",[39m
+[31m+           "min": "",[39m
+[31m+           "ownText": "",[39m
+[31m+           "parentNode": [Circular],[39m
+[31m+           "scrollLeft": 0,[39m
+[31m+           "scrollTop": 0,[39m
+[31m+           "selectionEnd": 0,[39m
+[31m+           "selectionStart": 0,[39m
+[31m+           "style": {[39m
+[31m+             "getPropertyValue": [Function anonymous],[39m
+[31m+             "removeProperty": [Function anonymous],[39m
+[31m+             "setProperty": [Function anonymous],[39m
+[31m+           },[39m
+[31m+           "tagName": "SPAN",[39m
+[2m            "type": "",[22m
+[2m            "value": "",[22m
+[2m          },[22m
+[31m+         [Circular],[39m
+[31m+         FakeElement {[39m
+[31m+           "attrs": {},[39m
+[31m+           "checked": false,[39m
+[31m+           "childNodes": [],[39m
+[31m+           "classList": {[39m
+[31m+             "add": [Function add],[39m
+[31m+             "contains": [Function contains],[39m
+[31m+             "remove": [Function remove],[39m
+[31m+             "toggle": [Function toggle],[39m
+[31m+           },[39m
+[31m+           "className": "",[39m
+[31m+           "dataset": {},[39m
+[31m+           "disabled": false,[39m
+[31m+           "hidden": false,[39m
+[31m+           "inert": false,[39m
+[31m+           "innerHTML": "",[39m
+[31m+           "isContentEditable": false,[39m
+[31m+           "listeners": {},[39m
+[31m+           "max": "",[39m
+[31m+           "min": "",[39m
+[31m+           "ownText": "",[39m
+[31m+           "parentNode": [Circular],[39m
+[2m            "scrollLeft": 0,[22m
+[2m            "scrollTop": 0,[22m
+[2m            "selectionEnd": 0,[22m
+[2m            "selectionStart": 0,[22m
+[2m            "style": {[22m
+[33m@@ -373,10 +681,56 @@[39m
+[2m            "listeners": {},[22m
+[2m            "max": "",[22m
+[2m            "min": "",[22m
+[2m            "ownText": "",[22m
+[2m            "parentNode": null,[22m
+[31m+           "scrollLeft": 0,[39m
+[31m+           "scrollTop": 0,[39m
+[31m+           "selectionEnd": 0,[39m
+[31m+           "selectionStart": 0,[39m
+[31m+           "style": {[39m
+[31m+             "getPropertyValue": [Function anonymous],[39m
+[31m+             "removeProperty": [Function anonymous],[39m
+[31m+             "setProperty": [Function anonymous],[39m
+[31m+           },[39m
+[31m+           "tagName": "SPAN",[39m
+[31m+           "type": "",[39m
+[31m+           "value": "",[39m
+[31m+         },[39m
+[31m+         [Circular],[39m
+[31m+       ],[39m
+[31m+       "classList": {[39m
+[31m+         "add": [Function add],[39m
+[31m+         "contains": [Function contains],[39m
+[31m+         "remove": [Function remove],[39m
+[31m+         "toggle": [Function toggle],[39m
+[31m+       },[39m
+[31m+       "className": "",[39m
+[31m+       "dataset": {},[39m
+[31m+       "disabled": false,[39m
+[31m+       "hidden": false,[39m
+[31m+       "inert": false,[39m
+[31m+       "innerHTML": "",[39m
+[31m+       "isContentEditable": false,[39m
+[31m+       "listeners": {},[39m
+[31m+       "max": "",[39m
+[31m+       "min": "",[39m
+[31m+       "ownText": "",[39m
+[31m+       "parentNode": null,[39m
+[31m+       "scrollLeft": 0,[39m
+[31m+       "scrollTop": 0,[39m
+[31m+       "selectionEnd": 0,[39m
+[31m+       "selectionStart": 0,[39m
+[31m+       "style": {[39m
+[31m+         "getPropertyValue": [Function anonymous],[39m
+[31m+         "removeProperty": [Function anonymous],[39m
+[31m+         "setProperty": [Function anonymous],[39m
+[31m+       },[39m
+[31m+       "tagName": "DIV",[39m
+[31m+       "type": "",[39m
+[31m+       "value": "",[39m
+[31m+     },[39m
+[2m      "scrollLeft": 0,[22m
+[2m      "scrollTop": 0,[22m
+[2m      "selectionEnd": 0,[22m
+[2m      "selectionStart": 0,[22m
+[2m      "style": {[22m
+
+ ❯ test/fakeDomSelectContracts.test.ts:115:41
+    113|     host.append(first, middle, last);
+    114|     middle.replaceWith(last, first, middle);
+    115|     expect(Array.from(host.childNodes)).toEqual([last, first, middle]);
+       |                                         ^
+    116|     const inner = doc.createElement("select");
+    117|     middle.append(inner);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/14]⎯
+
+ FAIL  test/fakeDomSelectContracts.test.ts > fake DOM select/adoption contracts > clears parent links on removal, text replacement and replaceChildren
+AssertionError: expected undefined to be <select><option></option>
+…(1)</select> // Object.is equality
+
+[32m- Expected:[39m 
+FakeElement {
+  "attrs": {},
+  "checked": false,
+  "childNodes": [
+    FakeElement {
+      "attrs": {},
+      "checked": false,
+      "childNodes": [],
+      "classList": {
+        "add": [Function add],
+        "contains": [Function contains],
+        "remove": [Function remove],
+        "toggle": [Function toggle],
+      },
+      "className": "",
+      "dataset": {},
+      "disabled": false,
+      "hidden": false,
+      "inert": false,
+      "innerHTML": "",
+      "isContentEditable": false,
+      "listeners": {},
+      "max": "",
+      "min": "",
+      "ownText": "",
+      "parentNode": [Circular],
+      "scrollLeft": 0,
+      "scrollTop": 0,
+      "selectionEnd": 0,
+      "selectionStart": 0,
+      "style": {
+        "getPropertyValue": [Function anonymous],
+        "removeProperty": [Function anonymous],
+        "setProperty": [Function anonymous],
+      },
+      "tagName": "OPTION",
+      "type": "",
+      "value": "first",
+    },
+    FakeElement {
+      "attrs": {},
+      "checked": false,
+      "childNodes": [
+        FakeElement {
+          "attrs": {},
+          "checked": false,
+          "childNodes": [],
+          "classList": {
+            "add": [Function add],
+            "contains": [Function contains],
+            "remove": [Function remove],
+            "toggle": [Function toggle],
+          },
+          "className": "",
+          "dataset": {},
+          "disabled": false,
+          "hidden": false,
+          "inert": false,
+          "innerHTML": "",
+          "isContentEditable": false,
+          "listeners": {},
+          "max": "",
+          "min": "",
+          "ownText": "",
+          "parentNode": [Circular],
+          "scrollLeft": 0,
+          "scrollTop": 0,
+          "selectionEnd": 0,
+          "selectionStart": 0,
+          "style": {
+            "getPropertyValue": [Function anonymous],
+            "removeProperty": [Function anonymous],
+            "setProperty": [Function anonymous],
+          },
+          "tagName": "OPTION",
+          "type": "",
+          "value": "second",
+        },
+      ],
+      "classList": {
+        "add": [Function add],
+        "contains": [Function contains],
+        "remove": [Function remove],
+        "toggle": [Function toggle],
+      },
+      "className": "",
+      "dataset": {},
+      "disabled": false,
+      "hidden": false,
+      "inert": false,
+      "innerHTML": "",
+      "isContentEditable": false,
+      "listeners": {},
+      "max": "",
+      "min": "",
+      "ownText": "",
+      "parentNode": [Circular],
+      "scrollLeft": 0,
+      "scrollTop": 0,
+      "selectionEnd": 0,
+      "selectionStart": 0,
+      "style": {
+        "getPropertyValue": [Function anonymous],
+        "removeProperty": [Function anonymous],
+        "setProperty": [Function anonymous],
+      },
+      "tagName": "OPTGROUP",
+      "type": "",
+      "value": "",
+    },
+  ],
+  "classList": {
+    "add": [Function add],
+    "contains": [Function contains],
+    "remove": [Function remove],
+    "toggle": [Function toggle],
+  },
+  "className": "",
+  "dataset": {},
+  "disabled": false,
+  "hidden": false,
+  "inert": false,
+  "innerHTML": "",
+  "isContentEditable": false,
+  "listeners": {},
+  "max": "",
+  "min": "",
+  "ownText": "",
+  "parentNode": FakeElement {
+    "attrs": {},
+    "checked": false,
+    "childNodes": [],
+    "classList": {
+      "add": [Function add],
+      "contains": [Function contains],
+      "remove": [Function remove],
+      "toggle": [Function toggle],
+    },
+    "className": "",
+    "dataset": {},
+    "disabled": false,
+    "hidden": false,
+    "inert": false,
+    "innerHTML": "",
+    "isContentEditable": false,
+    "listeners": {},
+    "max": "",
+    "min": "",
+    "ownText": "",
+    "parentNode": null,
+    "scrollLeft": 0,
+    "scrollTop": 0,
+    "selectionEnd": 0,
+    "selectionStart": 0,
+    "style": {
+      "getPropertyValue": [Function anonymous],
+      "removeProperty": [Function anonymous],
+      "setProperty": [Function anonymous],
+    },
+    "tagName": "DIV",
+    "type": "",
+    "value": "",
+  },
+  "scrollLeft": 0,
+  "scrollTop": 0,
+  "selectionEnd": 0,
+  "selectionStart": 0,
+  "style": {
+    "getPropertyValue": [Function anonymous],
+    "removeProperty": [Function anonymous],
+    "setProperty": [Function anonymous],
+  },
+  "tagName": "SELECT",
+  "type": "",
+  "value": "",
+}
+
+[31m+ Received:[39m 
+undefined
+
+ ❯ test/fakeDomSelectContracts.test.ts:128:38
+    126|     const host = doc.createElement("div");
+    127|     host.append(select);
+    128|     expect(host.removeChild(select)).toBe(select);
+       |                                      ^
+    129|     expect(select.parentNode).toBeNull();
+    130|     expect(() => host.removeChild(select)).toThrow();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/14]⎯
+
+ FAIL  test/fakeDomSelectContracts.test.ts > happy DOM select/adoption contracts > flattens optgroups and aligns value, selectedIndex, selected and option.index
+AssertionError: expected [ 'first', 1, +0, 1 ] to deeply equal [ 'second', +0, +0, 1 ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[32m-   "second",[39m
+[32m-   0,[39m
+[31m+   "first",[39m
+[31m+   1,[39m
+[2m    0,[22m
+[2m    1,[22m
+[2m  ][22m
+
+ ❯ test/fakeDomSelectContracts.test.ts:38:77
+     36|     expect([select.selectedIndex, first.selected, second.selected]).to…
+     37|     select.prepend(group);
+     38|     expect([select.value, select.selectedIndex, second.index, first.in…
+       |                                                                             ^
+     39|     select.selectedIndex = first.index;
+     40|     expect([select.value, first.selected, second.selected]).toEqual(["…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/14]⎯
+
+ FAIL  test/fakeDomSelectContracts.test.ts > happy DOM select/adoption contracts > clears invalid selections, chooses one duplicate value, and recovers on insertion
+AssertionError: expected [ 1, true, true ] to deeply equal [ +0, true, false ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[32m-   0,[39m
+[31m+   1,[39m
+[31m+   true,[39m
+[2m    true,[22m
+[32m-   false,[39m
+[2m  ][22m
+
+ ❯ test/fakeDomSelectContracts.test.ts:47:69
+     45|     second.value = first.value;
+     46|     select.value = first.value;
+     47|     expect([select.selectedIndex, first.selected, second.selected]).to…
+       |                                                                     ^
+     48|     select.value = "missing";
+     49|     expect([select.value, select.selectedIndex, first.selected, second…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/14]⎯
+
+ FAIL  test/fakeDomSelectContracts.test.ts > happy DOM select/adoption contracts > honors selected options, disabled defaults and removal of the selected optgroup
+AssertionError: expected [ 'first', +0, -1 ] to deeply equal [ 'first', +0, +0 ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[2m    "first",[22m
+[2m    0,[22m
+[32m-   0,[39m
+[31m+   -1,[39m
+[2m  ][22m
+
+ ❯ test/fakeDomSelectContracts.test.ts:63:64
+     61|     expect([select.value, first.selected, second.selected]).toEqual(["…
+     62|     group.remove();
+     63|     expect([select.value, select.selectedIndex, second.index]).toEqual…
+       |                                                                ^
+     64|     first.disabled = true;
+     65|     const disabledGroup = doc.createElement("optgroup");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/14]⎯
+
+ FAIL  test/fakeDomSelectContracts.test.ts > happy DOM select/adoption contracts > uses option text as fallback value and label, preserving explicit empty values
+AssertionError: expected [ '  Text\n label  ', undefined ] to deeply equal [ 'Text label', 'Text label' ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[32m-   "Text label",[39m
+[32m-   "Text label",[39m
+[31m+   "  Text[39m
+[31m+  label  ",[39m
+[31m+   undefined,[39m
+[2m  ][22m
+
+ ❯ test/fakeDomSelectContracts.test.ts:82:42
+     80|     const option = doc.createElement("option");
+     81|     option.textContent = "  Text\n label  ";
+     82|     expect([option.value, option.label]).toEqual(["Text label", "Text …
+       |                                          ^
+     83|     option.setAttribute("label", "Display");
+     84|     option.value = "";
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/14]⎯
+
+ FAIL  test/fakeDomSelectContracts.test.ts > happy DOM select/adoption contracts > replaces with adopted siblings and descendants, including self replacement
+AssertionError: expected [ HTMLSpanElement{ …(47) }, …(1) ] to deeply equal [ HTMLSpanElement{ …(47) }, …(2) ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[2m    <span />,[22m
+[2m    <span />,[22m
+[32m-   <span />,[39m
+[2m  ][22m
+
+ ❯ test/fakeDomSelectContracts.test.ts:115:41
+    113|     host.append(first, middle, last);
+    114|     middle.replaceWith(last, first, middle);
+    115|     expect(Array.from(host.childNodes)).toEqual([last, first, middle]);
+       |                                         ^
+    116|     const inner = doc.createElement("select");
+    117|     middle.append(inner);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/14]⎯
+
+ FAIL  test/fakeDomSelectContracts.test.ts > recognizes only SELECT elements and exposes current selectedOptions
+AssertionError: expected true to be false // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+ ❯ test/fakeDomSelectContracts.test.ts:145:70
+    143| it("recognizes only SELECT elements and exposes current selectedOption…
+    144|   restore = installFakeDom();
+    145|   expect(document.createElement("div") instanceof HTMLSelectElement).t…
+       |                                                                      ^
+    146|   expect(new FakeElement("select") instanceof HTMLSelectElement).toBe(…
+    147|   const select = document.createElement("select");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/14]⎯
+
+ FAIL  test/fakeDomSelectContracts.test.ts > runs real select refresh, native change and disposal without wrapping the dialog root
+TypeError: Cannot read properties of undefined (reading 'undefined')
+ ❯ sync src/editor/panels/eventEditor/customSelect.ts:407:31
+    405|     let instance!: SelectInstance;
+    406|     const sync = (): void => {
+    407|       const selected = select.options[select.selectedIndex] ?? select.…
+       |                               ^
+    408|       const text = selected?.label || selected?.textContent || select.…
+    409|       valueLabel.textContent = text;
+ ❯ enhanceSelect src/editor/panels/eventEditor/customSelect.ts:450:5
+ ❯ refresh src/editor/panels/eventEditor/customSelect.ts:455:44
+ ❯ installEventEditorCustomSelects src/editor/panels/eventEditor/customSelect.ts:511:3
+ ❯ test/fakeDomSelectContracts.test.ts:168:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/14]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  14 failed | 2 passed (16)
+   Start at  14:07:20
+   Duration  994ms (transform 134ms, setup 0ms, collect 491ms, tests 145ms, environment 0ms, prepare 72ms)
+
+JSON report written to /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/output/evidence/acceptance-live-fakedom-repair/contracts-red-actual.json

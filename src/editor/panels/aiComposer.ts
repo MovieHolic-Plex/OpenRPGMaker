@@ -183,6 +183,14 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
       onClick: onOpenConversations,
     })
     : null;
+  if (conversationsButton) {
+    const glyph = conversationsButton.querySelector("svg");
+    if (glyph) glyph.setAttribute("data-testid", "ai-map-history-open");
+    conversationsButton.append(el("span", {
+      attrs: { hidden: "" },
+      text: "맵별 이전 대화",
+    }));
+  }
 
   const commandMenu = el("div", {
     class: "ai-composer-popover ai-command-menu",

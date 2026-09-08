@@ -1,4 +1,5 @@
 import { store } from "@/project/store";
+import { BattleAdmissionError } from "@/project/battleAdmission";
 import type { FieldSpawnDef } from "@/project/types";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import {
@@ -105,6 +106,11 @@ export async function runFieldSpawnEventBattle(scene: PlaySceneContext, eventId:
       scene.registerPageMoveRoutes();
     } else if (result === "defeat") {
       applyBattleDefeat(scene);
+    }
+  } catch (error) {
+    if (!(error instanceof BattleAdmissionError)) throw error;
+    if (scene.session === session && scene.sys?.isActive() !== false) {
+      scene.showRuntimeOverlay("runtime-error", error.message);
     }
   } finally {
     if (scene.session === session && !scene.battleAbortController && scene.sys?.isActive() !== false) {

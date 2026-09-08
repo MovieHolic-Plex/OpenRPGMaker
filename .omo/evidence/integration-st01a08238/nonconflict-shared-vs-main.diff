@@ -1,0 +1,276 @@
+diff --git a/src/ai/contextBuilder.ts b/src/ai/contextBuilder.ts
+index bc1f43fd6..d1d0afcd9 100644
+--- a/src/ai/contextBuilder.ts
++++ b/src/ai/contextBuilder.ts
+@@ -148,7 +148,8 @@ const INTRO = [
+   "   결과에서 NPC/오브젝트가 움직이지 못하거나 접근 불가이면 지형을 파거나 충돌을 끄는 해결만 하지 말고 위치 이동도 검토하세요. issues.relocation.candidates는 move_event 후보이며 자동 적용 지시가 아닙니다. 기존 ID·대사·페이지·완성된 집을 보존하고, 접근 가능한 이웃이 있는 벽의 문·간판은 그대로 두세요. 후보가 비면 주변을 조회해 다른 위치나 동선 수정을 판단하세요.",
+   "5. 파괴적 작업(remove_event 등)은 꼭 필요할 때만, 이유를 먼저 설명하세요.",
+   "6. 툴 호출을 아끼지 마세요. 조회·검증·재시도에 필요한 만큼 깊게 사용하세요(제한은 토큰 예산뿐).",
+-  "   모든 툴 호출에 reason(한 줄)을 넣어라. 사용자 지시의 어느 부분을 이 호출로 처리하는지. 없으면 실행되지 않는다.",
++  "   verify_npc_reward를 제외한 모든 툴 호출에 reason(한 줄)을 넣어라. 사용자 지시의 어느 부분을 이 호출로 처리하는지. 없으면 실행되지 않는다.",
++  "   예외: verify_npc_reward는 requirementIndex와 prelude만 보내라. reason을 포함한 추가 필드는 거부되므로 넣지 마라.",
+   "7. 여러 개를 요청받으면(예: NPC 3명, 집 2채) 전부 만들 때까지 멈추지 마세요. 일부만 하고 끝내는 것은 실패입니다.",
+   "   사용자가 '진행/계속/진행해/진행하라고'라고 지시하면 추가 확인 질문 없이 끝까지 실행하세요.",
+   "8. NPC 대화는 두 층이다. 한 만남 안의 분기는 한 페이지의 choices. 상태별 NPC(퀘스트·호감·시간·재방문)는 조건이 다른 페이지 여러 장 — 아래 페이지 의미론. 조건 없는 페이지를 여러 장 만들지 마라.",
+@@ -176,19 +177,17 @@ const INTRO = [
+   "    스펙 검증기가 구조물을 덮는 clear를 거부하면, 영역을 구조물 바깥으로 좁히거나 confirmDestroy:true로 재제출하세요.",
+   "14. 타일의 규칙(레이어/통행/지면 종류)은 set_tile_rules로 설정합니다. 레이어(auto/lower/upper) 변경은",
+   "    사용자가 명시적으로 요청했을 때만 confirmedByUser=true로 호출하세요.",
+-  "15. 스펙 게이트(반드시 준수): 공간 쓰기 작업(집/마을/길/청소/NPC·전투 배치/수역·지면 채우기 등 맵에 무언가를 놓는 일)은",
+-  "    먼저 set_build_spec으로 밑그림(명세)을 제출해 검증을 통과해야 실행됩니다. 명세 체크리스트 —",
+-  "    대상 맵, 에셋 목록(종류·개수·각 영역 x,y,w,h·스타일), 통로 너비(pathWidth), 밀도(density), 배치 스타일(layoutStyle).",
++  "15. 스펙 게이트: 공간 쓰기(집/마을/길/청소/NPC·전투 배치/수역·지면)는 set_build_spec 검증 통과 후 실행하세요.",
++  "    명세: 대상 맵, 에셋(종류·개수·x,y,w,h·스타일), pathWidth(통로 너비), density(밀도), layoutStyle(배치).",
+   "    맵이 요구 구조물 대비 작으면 author_house/author_village 최소 제약을 계산해 resize_map을 먼저 호출하세요(비파괴 보정).",
+   "    수역/지면/바닥 면은 fill_region만 쓴다. 호수·연못: material=\"물\"(타일 라벨/설명, 그룹 id·vocabId 금지), 원형·둥근 요청은 shape=circle(또는 ellipse) 필수 — rect만 쓰면 네모. 나무/바위/꽃은 place_props material=\"침엽수\" 등으로 호수·물 칸 밖(통행 가능 육지)에만 산포; 물 위 place_props 금지.",
+-  "    사용자가 정하지 않은 항목은 합리적 기본값으로 채우고, 넓은 요청(마을 등)은 명세 요약을 한 줄로 보여준 뒤 진행하세요.",
+-  "    검증기가 겹침을 거부하면 좌표·buildOrder·맵 크기를 고쳐 재제출하세요. 3회 실패하면 그 계획은 폐기하고 스스로 새 배치를 설계하세요.",
++  "    미지정 값은 합리적으로 정하고 넓은 요청은 명세를 한 줄로 요약하세요. 3회 검증 실패 시 계획을 폐기하고 새 배치를 설계하세요.",
++  "    길은 kind:\"road\"로 명시하세요(id·style·재료 라벨로 추론하지 않음). road-road 교차는 허용, 같은 층 terrain-road는 buildOrder에 둘 다 넣고 terrain을 먼저 둘 때만 허용합니다. terrain-terrain 겹침·중복은 순서·overExisting으로 해결되지 않으니 비겹침 영역으로 분할하세요.",
+   "    각 빌드 툴 호출이 명세 밖 빈 영역을 쓰면 게이트가 명세를 자동 확장하고 warning으로 통과합니다.",
+   "    단, 사용자 맵의 기존 구조물·물·절벽은 밑그림 안이라도 clear+confirmDestroy 또는 overExisting 선언 없이 덮지 않습니다(tile_erase 등 v3 툴 포함).",
+   "    사용자가 맵에서 선택한 영역은 곧 암묵적 명세입니다.",
+-  "    배치 전 정리: 타일/구조물을 놓을 자리·주변에 지형이 아닌 것(벽·물·나무 등)이 있으면 스스로 판단해",
+-  "    해당 에셋에 overExisting:\"clear\"(정리하고 배치) 또는 \"keep\"(그대로 위에 배치)을 넣어 재제출하세요. 검증기가 이를 강제합니다.",
+-  "    건설 순서: 마을처럼 여러 구조물을 짓는 복합 건축은 buildOrder([\"clear\",\"terrain\",\"road\",\"house\",\"prop\"]처럼 kind 순서)를 정하고, 그 순서대로 빌드 툴을 호출하세요.",
++  "    기존 벽·물·나무 등이 자리·주변에 있으면 해당 에셋에 overExisting:\"clear\"(정리 후 배치) 또는 \"keep\"(유지 후 배치)을 판단해 선언하세요.",
++  "    복합 건축은 buildOrder([\"clear\",\"terrain\",\"road\",\"house\",\"prop\"] 등)를 정하고 그대로 시공하세요. clear와 후속 배치의 겹침도 두 kind를 넣고 clear를 먼저 두어야 합니다.",
+   "16. 비전(반드시 준수): 당신은 show_tiles/show_tile_grid로 띄운 타일·영역 이미지를 실제로 볼 수 있습니다(멀티모달).",
+   "    맵에 뭔가 깐 뒤에는 말로 단정하지 말고 show_map_region으로 결과를 눈으로 확인하세요.",
+   "    타일의 의미·라벨·용도를 단정하기 전에 반드시 그 이미지를 눈으로 확인하세요. 번호나 인접 통계만으로 '탁자/침대'처럼",
+diff --git a/src/ai/intentDeclaration.ts b/src/ai/intentDeclaration.ts
+index 33d0e7ac5..0a7ec2dd8 100644
+--- a/src/ai/intentDeclaration.ts
++++ b/src/ai/intentDeclaration.ts
+@@ -27,10 +27,11 @@ export type NpcRewardTarget = (
+ ) & { readonly mapId?: string };
+ 
+ export type NpcRewardGrant = (
+-  | { readonly id: string; readonly name?: never }
+-  | { readonly name: string; readonly id?: never }
++  | { readonly kind: "gold"; readonly id?: never; readonly name?: never }
++  | (({ readonly id: string; readonly name?: never } | { readonly name: string; readonly id?: never }) & {
++    readonly kind: "item" | "monster";
++  })
+ ) & {
+-  readonly kind: "item" | "monster";
+   /** Exact positive delta when specified; otherwise any positive delta. */
+   readonly count?: number;
+ };
+@@ -141,9 +142,9 @@ Fields:
+ - "actionCombat": 실제 필드 액션 전투(공격 적중·처치·피격·회피·스태미나·원거리 적·보상)의 작동을 요구하면 {"targets":[{"mapId":"기존 실제 ID"} 또는 {"newMapName":"새로 만들 정확한 맵 이름"}]}로 필수 검증 대상을 선언한다. 턴제 전투, 장르 질문, 액션을 제외한 요청은 생략한다. 단어가 아니라 요청한 행동으로 판단한다. 이 선언은 계획 교체나 acceptance 수리로 지울 수 없는 완료 조건이다.
+ - "statefulNpcs": 사용자가 상태에 따라 달라지는 NPC 행동/대사를 명시했을 때만 true. 보통의 한 페이지 안내 NPC, 인사, 상점이라는 이유로 true를 만들지 않는다.
+ 
+-- "npcRewards": ONLY for explicit create/modify requests to make an NPC grant items or collected monsters. Omit for ordinary dialogue/NPCs, questions, and reward removal requests. Array example: [{"target":{"eventId":"known_event_id"},"grants":[{"kind":"item","id":"known_item_id","count":2}],"oneTime":true}]. Grant kind may also be "monster". When an ID is unknown, replace target eventId with eventName, or grant id with name. Each reference must contain exactly ONE of those keys, never both; omit unused keys rather than writing null. Optional mapId belongs inside target. Preserve every requested grant. count is a positive integer for an explicit amount; omit count for an unspecified positive amount. oneTime=true ONLY when requested. Choices are zero-based and only declared when requested; repeatChoices describes the second interaction, normally omitted. Use IDs only when known, otherwise exact names (must resolve uniquely at completion); do not invent IDs or substitute actors/changeParty for collected monsters. If the requested target/reward cannot be identified, include an incomplete requirement so completion remains blocked, not an omitted contract. These expectations come from the REQUEST, never the eventual event commands, and must not be weakened to pass completion.
++- "npcRewards": ONLY for explicit create/modify requests to make an NPC grant currency, items or collected monsters. Omit for ordinary dialogue/NPCs, questions, and reward removal requests. Array example: [{"target":{"eventId":"known_event_id"},"grants":[{"kind":"item","id":"known_item_id","count":2}],"oneTime":true}]. Grant kind may also be "monster" or "gold". Currency uses {"kind":"gold","count":20} with NO id/name, not an inventory item. Do not reinterpret an item named gold/골드 as currency or invent a gold item to represent money. When an ID is unknown, replace target eventId with eventName, or item/monster grant id with name. Each target or item/monster reference must contain exactly ONE of those keys, never both; omit unused keys rather than writing null. Optional mapId belongs inside target. Preserve every requested grant. count is a positive integer for an explicit amount; omit count for an unspecified positive amount. oneTime=true ONLY when requested. Choices are zero-based and only declared when requested; repeatChoices describes the second interaction, normally omitted. Use IDs only when known, otherwise exact names (must resolve uniquely at completion); do not invent IDs or substitute actors/changeParty for collected monsters. If the requested target/reward cannot be identified, include an incomplete requirement so completion remains blocked, not an omitted contract. These expectations come from the REQUEST, never the eventual event commands, and must not be weakened to pass completion.
+ - "functionalAcceptance": ONLY requested working purchases or map round-trip travel, not a shop decoration, map listing, genre label, question, or excluded behavior. Array of immutable expectations, never success flags/scripts. Purchase: {"kind":"shopPurchase","target":{"mapId":"actual map"},"start":{"x":1,"y":1},"seller":{"eventId":"known seller"},"item":{"id":"known item"},"count":2,"unitPrice":10}. Round trip: {"kind":"mapRoundTrip","target":{"mapId":"origin"},"start":{"x":1,"y":1},"destination":{"mapId":"destination"},"outgoing":{"eventId":"outgoing transfer"},"returning":{"eventId":"return transfer"}}. Use exact eventName/name instead of invented eventId/id; a new map uses newMapName instead of mapId. Start must be the requested actual project entry, supplied in facts, never a convenient test teleport. Preserve requested seller, stock, price/count, origin/destination and both authored transfers. For missing/ambiguous/unsupported targets or unspecified price/count include {"kind":"functionalUnresolved","reason":"Identify the missing request expectations"}; do not drop the requested behavior. Existing npcRewards already creates mandatory real-interaction acceptance. Non-requested behaviors MUST be omitted.
+-- "functionalRefinements": ONLY when this USER message clarifies an unresolvedFunctional requirement supplied in facts. Read its original source.text, current typed expectations and prior user refinements together with the latest message. Output [{"requirementId":"the exact supplied id","criterion":{...concrete or partial functional criterion},"corrections":["count"]}]. Keep the original behavior/targets and known quantities; fill missing fields without inventing them. corrections is optional and names only known top-level fields explicitly corrected by this user's message; never infer a correction to make a failing check pass. A partial criterion retains known fields and stays unresolved until complete. Do not output duplicate functionalAcceptance for this clarification. Do not refine unrelated requirements or concrete contracts; there is no worker repair/replan authority here. For an initial unresolved request, preserve all known machine-checkable fields in functionalUnresolved.expectations (e.g. {"kind":"shopPurchase","seller":{"eventName":"Mira"},"item":{"name":"Potion"},"count":2}), not only in the reason string.
++- "functionalRefinements": ONLY when this USER message clarifies an unresolvedFunctional requirement supplied in facts. Read its original source.text, current typed expectations and prior user refinements together with the latest message. Output [{"requirementId":"the exact supplied stable promise id","criterionIndex":3,"criterion":{...concrete or partial functional criterion},"corrections":["count"]}]. Copy criterionIndex exactly from facts (zero-based); omission is supported only for a singleton index0. Replace only that unresolved leaf, never its valid siblings. The entire refinement batch must be valid, with unique selectors. Keep the original behavior/targets and known quantities; fill missing fields without inventing them. corrections is optional and names only known top-level fields explicitly corrected by this user's message; never infer a correction to make a failing check pass. A partial criterion retains known fields and stays unresolved until complete. Do not output duplicate functionalAcceptance for this clarification. Do not refine unrelated requirements or concrete contracts; there is no worker repair/replan authority here. For a generic ending/compound-scene placeholder with no typed expectations, a later explicit user clarification may specialize to {"kind":"toolVerdict","tool":"run_scene_test","args":{"mapId":"known map","start":{"x":1,"y":1},"steps":[...]},"interactionTargets":[{"stepIndex":2,"mapId":"known owning map","eventId":"named event"}]}. Use complete native scene input and ordered map-qualified ownership for EVERY named interact step, fixed before execution. No set/debug state, checkpoint retry, arbitrary tool, or first-probe-derived ownership. Require post-interaction outcome assertions (nonzero reward/consumption delta, actual lastTransfer, or endingReached with the exact nonempty ending-ID string, never true); wait, position, interactionComplete or zero-only checks alone are not a functional outcome. Preserve the original requested chain, quantities, repeats, transfers and ending; do not convert typed shop/travel/reward expectations into a scene. The host retains the original request initial-state contract and requires a fresh exact explicit execution after refinement. For an initial unresolved request, preserve all known machine-checkable fields in functionalUnresolved.expectations (e.g. {"kind":"shopPurchase","seller":{"eventName":"Mira"},"item":{"name":"Potion"},"count":2}), not only in the reason string.
+ - "summary": 요청을 한 문장으로.
+ 
+ Rules:
+@@ -239,10 +240,16 @@ export function parseNpcRewardRequirements(raw: unknown): NpcRewardRequirements
+     if (!Array.isArray(entry.grants) || entry.grants.length === 0) return invalid("grants are required");
+     const grants: NpcRewardGrant[] = [];
+     for (const grant of entry.grants) {
+-      if (!isRecord(grant) || (grant.kind !== "item" && grant.kind !== "monster")) return invalid("grant kind must be item or monster");
++      if (!isRecord(grant) || (grant.kind !== "item" && grant.kind !== "monster" && grant.kind !== "gold")) return invalid("grant kind must be item, monster or gold");
+       if (Object.keys(grant).some(key => !["kind", "id", "name", "count"].includes(key))) return invalid("unknown grant field");
+       if (grant.count !== undefined && (typeof grant.count !== "number" || !Number.isSafeInteger(grant.count) || grant.count <= 0)) return invalid("count must be a positive integer");
+       const count = typeof grant.count === "number" ? { count: grant.count } : {};
++      if (grant.kind === "gold") {
++        if ("id" in grant || "name" in grant) return invalid("gold grants must omit id and name");
++        if (grants.some(existing => existing.kind === "gold")) return invalid(`duplicate gold grants for target ${JSON.stringify(reference)}; declare one gold grant with the amount from the user request, preserving other grants and counts. Do not sum ambiguous amounts`);
++        grants.push({ kind: "gold", ...count });
++        continue;
++      }
+       if (text(grant.id) && grant.name === undefined) grants.push({ kind: grant.kind, id: grant.id, ...count });
+       else if (text(grant.name) && grant.id === undefined) grants.push({ kind: grant.kind, name: grant.name, ...count });
+       else return invalid("grant needs exactly one id or exact name");
+@@ -480,7 +487,7 @@ export function formatIntentNote(intent: IntentDeclaration, options: { readonly
+ 
+   if (intent.functionalAcceptance) lines.push(`[Functional acceptance contract] ${JSON.stringify(intent.functionalAcceptance)}. Immutable request expectations; real engine behavior on applied content decides completion, not images or success prose.`);
+   if (intent.npcRewards) {
+-    lines.push(`[NPC reward contract] ${JSON.stringify(intent.npcRewards)} — preserve these request expectations. Verify real interaction inventory/owned-monster deltas; text, switches and changeParty are not grants. For oneTime, interact again in the SAME session with runtime page re-selection and prove zero additional rewards. Do not remove grants or weaken this contract to complete. give_starter_monsters can author a guarded starter choice event.`);
++    lines.push(`[NPC reward contract] ${JSON.stringify(intent.npcRewards)} — preserve these request expectations. Verify real interaction goldDelta for currency and inventory/owned-monster deltas for items/monsters; inventoryDelta.gold is only an item ID, never currency. Author currency with native changeGold, not an invented gold item. Text, switches and changeParty are not grants. For oneTime, interact again in the SAME session with runtime page re-selection and prove zero additional gold/item/monster rewards. Do not remove grants or weaken this contract to complete. give_starter_monsters can author a guarded starter choice event.`);
+   }
+   if (intent.readBeforeWrite) {
+     lines.push(`[조회 선행 계약] 첫 쓰기 전에 ${intent.readBeforeWrite.project ? "get_project_summary와 대상 get_map_region, find_events, " : ""}${intent.readBeforeWrite.collections.map((name) => `get_database_records(collection:"${name}")`).join(", ")}를 성공시켜 반환값을 읽어라. 기존 DB 수정은 include:"full", ids:[실제 ID]로 원본을 확인한다. 새 레코드도 참조 전에 다시 조회한다. 조회 실패와 같은 응답의 쓰기는 실행되지 않는다.`);
+diff --git a/src/ai/intentDeclarationClient.ts b/src/ai/intentDeclarationClient.ts
+index 70377603a..acbc39dc2 100644
+--- a/src/ai/intentDeclarationClient.ts
++++ b/src/ai/intentDeclarationClient.ts
+@@ -145,7 +145,7 @@ export function createLlmIntentDeclarer(
+           messages: [
+             ...request.messages,
+             { role: "assistant", content: contentText(result) },
+-            { role: "user", content: `Correct only the npcRewards JSON shape and return the full declaration. Preserve every grant, count and one-time requirement from the user request. ${error}. Each target must use exactly one eventId or eventName; each grant exactly one id or name. Omit unused keys instead of writing null. Do not omit npcRewards to bypass this error.` },
++            { role: "user", content: `Correct only the npcRewards JSON shape and return the full declaration. Preserve every grant, count and one-time requirement from the user request. ${error}. Each target must use exactly one eventId or eventName; each item/monster grant exactly one id or name. Currency uses kind:"gold" with no id/name; do not convert named items to currency. Omit unused keys instead of writing null. Do not omit npcRewards to bypass this error.` },
+           ],
+         });
+         const correction = parseIntentDeclaration(contentText(repaired), facts);
+diff --git a/src/editor/panels/aiTurnRunner.ts b/src/editor/panels/aiTurnRunner.ts
+index 8d9897c95..c898c73d8 100644
+--- a/src/editor/panels/aiTurnRunner.ts
++++ b/src/editor/panels/aiTurnRunner.ts
+@@ -513,6 +513,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
+             assistantText: result.assistantText,
+             buildSpecs: session.getCompletionSpecs(turnWrites),
+             calls: turnWrites,
++            project: session.getProposedProject(),
+       });
+       attachCompletenessWarnings(result.proposedCalls, completenessWarnings);
+       streamedBubbles.forEach((bubble) => {
+diff --git a/src/editor/tools/queryTools.ts b/src/editor/tools/queryTools.ts
+index 7f76f8883..3e49573ce 100644
+--- a/src/editor/tools/queryTools.ts
++++ b/src/editor/tools/queryTools.ts
+@@ -4,6 +4,7 @@
+ // 읽기 툴은 project를 변형하지 않는다(runner가 read 모드로 처리).
+ 
+ import { queryNpcGraphics } from "@/assets/charsetQuery";
++import { charsetFrameIndex } from "@/assets/easyrpgRtp";
+ import { searchResources, type ResourceSearchKind } from "@/assets/resourceSearch";
+ import { isPassable } from "@/project/collision";
+ import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
+@@ -29,6 +30,7 @@ import { passageMarkForTile } from "@/project/tilesetPassage";
+ import { requireMap } from "./mapHelpers";
+ import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
+ import { COORD_SCHEMA } from "./schemaShapes";
++import { validateArgs } from "./jsonSchema";
+ 
+ /** 호수/강 등 물 지형(레거시 WATER 상수 + 타일 그림판/오토타일). */
+ export function isMapWaterTile(tile: number): boolean {
+@@ -389,6 +391,11 @@ const listNpcGraphics: ToolDefinition = {
+       gender: match.entry.gender,
+       age: match.entry.age,
+       tags: match.entry.tags,
++      nativeGraphic: {
++        sprite: { type: "bundled", id: match.entry.textureKey },
++        direction: "down",
++        pattern: charsetFrameIndex({ characterIndex: match.entry.characterIndex, direction: "down", pattern: 1 }),
++      },
+     }));
+     const label = query && query.trim().length > 0 ? `"${query}"` : "기본";
+     return { summary: `NPC 그래픽 ${matches.length}개 조회(${label})`, data: { matches } };
+@@ -510,6 +517,21 @@ function toReachSpecs(value: unknown): Array<{ mapId: string; from: ReachPoint;
+   return value as Array<{ mapId: string; from: ReachPoint; targets: ReachPoint[] }>;
+ }
+ 
++/** Shared read-only producer for the registered check and host pre-write provenance. */
++export function runProjectLint(project: Project, args: Record<string, unknown>): ToolExecResult {
++  const issues: LintIssue[] = [
++    ...projectLint(project, { reachability: toReachSpecs(args.reachability) }),
++    ...lintTilesetPalettes(project),
++    ...verifyPlacedTiles(project),
++  ];
++  const errors = issues.filter((issue) => issue.severity === "error").length;
++  const warnings = issues.filter((issue) => issue.severity === "warning").length;
++  const infos = issues.filter((issue) => issue.severity === "info").length;
++  return { summary: `lint: error ${errors}건 / warning ${warnings}건 / info ${infos}건`,
++    issues: issues.filter(issue => issue.relocation !== undefined),
++    data: { counts: { errors, infos, warnings }, issues } };
++}
++
+ const runLint: ToolDefinition = {
+   name: "run_lint",
+   description: "projectLint, 타일셋 팔레트 lint, 타일 후검증을 실행해 무결성 issue 목록(error/warning/info)을 반환한다.",
+@@ -532,19 +554,7 @@ const runLint: ToolDefinition = {
+       },
+     },
+   },
+-  run(project, args): ToolExecResult {
+-    const issues: LintIssue[] = [
+-      ...projectLint(project, { reachability: toReachSpecs(args.reachability) }),
+-      ...lintTilesetPalettes(project),
+-      ...verifyPlacedTiles(project),
+-    ];
+-    const errors = issues.filter((issue) => issue.severity === "error").length;
+-    const warnings = issues.filter((issue) => issue.severity === "warning").length;
+-    const infos = issues.filter((issue) => issue.severity === "info").length;
+-    return { summary: `lint: error ${errors}건 / warning ${warnings}건 / info ${infos}건`,
+-      issues: issues.filter(issue => issue.relocation !== undefined),
+-      data: { counts: { errors, infos, warnings }, issues } };
+-  },
++  run: runProjectLint,
+ };
+ 
+ const checkReachabilityTool: ToolDefinition = {
+@@ -563,7 +573,15 @@ const checkReachabilityTool: ToolDefinition = {
+   run(project, args): ToolExecResult {
+     const mapId = args.mapId as string;
+     if (!project.maps[mapId]) throw new ToolError(`맵을 찾을 수 없습니다: ${mapId}`, { code: "map-not-found", mapId });
+-    const result = checkReachability(project, mapId, args.from as ReachPoint, args.targets as ReachPoint[]);
++    // The runner checks only the outer shape; malformed points are argument
++    // failures, never negative artifact evidence from the reachability BFS.
++    const targets = args.targets as ReachPoint[];
++    const points = [["from", args.from], ...targets.map((point, index) => [`targets[${index}]`, point])] as const;
++    for (const [path, point] of points) {
++      const errors = validateArgs(COORD_SCHEMA, point);
++      if (errors.length > 0) throw new ToolError(`${path}: ${errors.join("; ")}`, { code: "invalid-args", mapId });
++    }
++    const result = checkReachability(project, mapId, args.from as ReachPoint, targets);
+     return {
+       summary: `도달성: ${result.reachable ? "전부 도달 가능" : `${result.unreachable.length}개 도달 불가`}`,
+       data: { reachable: result.reachable, unreachable: result.unreachable },
+diff --git a/src/player/dialogue.ts b/src/player/dialogue.ts
+index 3ae18b115..a0513bb87 100644
+--- a/src/player/dialogue.ts
++++ b/src/player/dialogue.ts
+@@ -1002,5 +1002,15 @@ function safeResourceImageUrl(url: string | null): string | null {
+   if (url === null) return null;
+   if (/^\/[A-Za-z0-9/_\-.]+\.png$/u.test(url) || /^\/[A-Za-z0-9/_\-.]+\.jpe?g$/u.test(url)) return url;
+   if (/^data:image\/(?:png|jpeg);base64,[A-Za-z0-9+/=]+$/u.test(url)) return url;
++  // The resource resolver rebases exported assets, including deployment subpaths.
++  // Keep the PNG/JPEG contract and reject characters that escape a quoted CSS URL.
++  if (/^https?:\/\//u.test(url) && !/["\\\u0000-\u001f\u007f]/u.test(url)) {
++    try {
++      if (/\.(?:png|jpe?g)$/u.test(new URL(url).pathname)) return url;
++    } catch (error) {
++      if (!(error instanceof TypeError)) throw error;
++      return null;
++    }
++  }
+   return null;
+ }
+diff --git a/src/player/interpreter.ts b/src/player/interpreter.ts
+index 36f84c0b2..784265ce7 100644
+--- a/src/player/interpreter.ts
++++ b/src/player/interpreter.ts
+@@ -27,6 +27,8 @@ export function createInterpreter(
+     ? runtimeEventViewById(project, map, session, options.eventPositions ?? {}, options.currentEventId)
+     : undefined;
+   const state: InterpreterState = {
++    beforeCommand: options?.beforeCommand,
++    onUnverified: options?.onUnverified,
+     continueAfterTransfer: options?.continueAfterTransfer,
+     currentFace: project ? resolveAppearancePortrait(project, event?.page?.graphic.appearanceId, "face") : undefined,
+     stack: [{ commands, pc: 0 }],
+@@ -61,6 +63,7 @@ export function createInterpreter(
+       const command = frame.commands[frame.pc] ?? null;
+       if (!command) return finish();
+       if (state.instructionsExecuted >= state.maxInstructions) {
++        state.onUnverified?.("Interpreter instruction budget exhausted");
+         console.warn(
+           `[interpreter:instruction-budget-exhausted] maxInstructions=${state.maxInstructions} executed=${state.instructionsExecuted}`
+         );
+diff --git a/src/player/interpreter/commandCatalog.ts b/src/player/interpreter/commandCatalog.ts
+index 00ee295f5..cfba16e9e 100644
+--- a/src/player/interpreter/commandCatalog.ts
++++ b/src/player/interpreter/commandCatalog.ts
+@@ -62,6 +62,7 @@ function callCommonEvent(state: InterpreterState, frame: Frame, commonEventId: s
+     if (pushFrame(state, commonEvent.commands)) return { kind: "continue" };
+     console.warn("[interpreter] common event recursion limit");
+   } else {
++    state.onUnverified?.(`Unsupported missing common event: ${commonEventId}`);
+     console.warn(`[interpreter] 공통 이벤트 없음: ${commonEventId}`);
+   }
+   return resumeNext(frame);
+@@ -397,6 +398,7 @@ export function executeCommand(
+   frame: Frame,
+   command: Command
+ ): CommandExecution {
++  state.beforeCommand?.(command);
+   switch (command.kind) {
+     case "changeFace": {
+       if (command.appearanceId !== undefined) {

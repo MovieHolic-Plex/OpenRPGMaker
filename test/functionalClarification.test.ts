@@ -16,12 +16,17 @@ function setup(first: unknown, next: readonly Record<string, unknown>[]) {
   const full = { kind: "shopPurchase", target: { mapId: f.origin.id }, start: f.project.startPos,
     seller: { eventId: f.seller.id }, item: { id: "item_potion" }, count: 2, unitPrice: 10 };
   let declarationIndex = 0;
+  let userText = originalText;
   const factsSeen: unknown[] = [];
-  const declarer = createLlmIntentDeclarer({ getConfig: () => config, chat: async () => ({
+  const declarer = createLlmIntentDeclarer({ getConfig: () => config,
+    audit: async () => ({ message: { role: "assistant", content: JSON.stringify(declarationIndex === 1
+      ? { requirements: [{ text: originalText, criteria: [first] }] }
+      : { requirements: [], clarifies: [{ requirementId: id, text: userText }] }) }, finishReason: "stop" }),
+    chat: async () => ({
     message: { role: "assistant", content: JSON.stringify({ mode: "modify", space: "none", needsPlan: false,
       ...(declarationIndex++ === 0 ? { functionalAcceptance: [first] } : next[declarationIndex - 2]) }) }, finishReason: "stop",
   }) });
-  const declareIntent: IntentDeclarer = async (facts, signal) => { factsSeen.push(facts); return declarer(facts, signal); };
+  const declareIntent: IntentDeclarer = async (facts, signal) => { factsSeen.push(facts); userText = facts.userText; return declarer(facts, signal); };
   const worker: ChatResult[] = [];
   const events: SessionEvent[] = [];
   const session = new AssistantSession(f.project, { config, declareIntent, chat: async () => worker.shift() ?? final() });

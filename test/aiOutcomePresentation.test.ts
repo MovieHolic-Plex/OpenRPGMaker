@@ -45,7 +45,11 @@ it("withdraws the exact real requirement only on user activation, retaining sour
   note.update(snapshot);
   expect(withdraw).not.toHaveBeenCalled();
   expect(button().dataset.requirementId).toBe(size.id);
-  expect(button().closest("summary")).not.toBeNull();
+  expect(button().closest("summary")).toBeNull();
+  const toggle = note.root.querySelector<HTMLButtonElement>("[data-testid='ai-sticky-toggle']")!;
+  if (toggle.getAttribute("aria-expanded") !== "true") toggle.click();
+  const details = button().closest("details");
+  expect(details).not.toBeNull(); details!.open = true;
   button().focus(); button().click();
   expect(withdraw).toHaveBeenCalledOnce();
   expect(withdraw).toHaveBeenCalledWith({ acceptanceId: snapshot.id, requirementId: size.id, reason: expect.any(String) });
@@ -56,6 +60,8 @@ it("withdraws the exact real requirement only on user activation, retaining sour
   expect(item?.withdrawal?.reason.trim().length).toBeGreaterThan(0);
   expect(item?.status).not.toBe("verified");
   expect(f.session.getRunOutcome()?.goal).toBe("satisfied");
+  expect(note.root.querySelector<HTMLElement>("[data-testid='ai-sticky-count']")?.hidden).toBe(true);
+  expect(note.root.querySelector(".ai-sticky-done-group [data-item-id='size']")).toBeNull();
   expect(button().disabled).toBe(true);
   expect(document.activeElement).not.toBe(document.body);
   button().click(); expect(withdraw).toHaveBeenCalledOnce();
@@ -79,4 +85,55 @@ it("does not offer a user action for legacy read-only callers", async () => {
   const f = fixture(); await f.run([[plan([size]), skip]]);
   const note = createAiStickyChecklist(); notes.push(note); note.update(f.session.getAcceptanceSnapshot());
   expect(document.querySelector("[data-testid='ai-requirement-withdraw']")).toBeNull();
+});
+
+it("counts only active required obligations while retaining optional and withdrawn failed evidence", async () => {
+  const f = fixture();
+  await f.run([[plan([
+    { id: "pass", title: "PASS", criteria: [{ kind: "eventCount", target: size.criteria[0]!.target, count: 0 }] },
+    { ...size, id: "required" }, { ...size, id: "optional", required: false }, { ...size, id: "withdrawn" },
+  ]), skip]]);
+  const before = f.session.getAcceptanceSnapshot(); if (!before) throw new Error("Missing real assessment");
+  expect(f.session.withdrawRequirement({ acceptanceId: before.id, requirementId: "withdrawn", reason: "USER_SCOPE_SENTINEL" })).toBe(true);
+  const current = f.session.getAcceptanceSnapshot();
+  const note = createAiStickyChecklist(); notes.push(note); note.update(current);
+  const count = note.root.querySelector<HTMLElement>("[data-testid='ai-sticky-count']")!;
+  expect(count.textContent).toBe("1/2");
+  expect(count.dataset).toMatchObject({ requiredCount: "2", verifiedCount: "1", optionalCount: "1", withdrawnCount: "1" });
+  expect(note.root.querySelectorAll(".ai-sticky-optional-group [data-testid='ai-sticky-item']")).toHaveLength(1);
+  expect(note.root.querySelectorAll(".ai-sticky-withdrawn-group [data-testid='ai-sticky-item']")).toHaveLength(1);
+  expect(note.root.dataset.status).toBe("blocked");
+  expect(current?.items.find(item => item.id === "optional")).toMatchObject({ required: false, status: "blocked", evidence: [{ passed: false }] });
+  expect(current?.items.find(item => item.id === "withdrawn")).toMatchObject({ withdrawal: { source: "user" }, status: "blocked", evidence: [{ passed: false }] });
+  expect(note.root.querySelector("[data-item-id='withdrawn']")?.getAttribute("data-status")).toBe("blocked");
+  expect(f.session.getAcceptanceSnapshot()).toBe(current);
+});
+
+it("reports zero required obligations without relabeling optional work as verified", async () => {
+  const f = fixture(); await f.run([[plan([{ ...size, required: false }]), skip]]);
+  const current = f.session.getAcceptanceSnapshot();
+  const note = createAiStickyChecklist(); notes.push(note); note.update(current);
+  const count = note.root.querySelector<HTMLElement>("[data-testid='ai-sticky-count']")!;
+  expect(count.hidden).toBe(true);
+  expect(count.dataset).toMatchObject({ requiredCount: "0", verifiedCount: "0", optionalCount: "1", withdrawnCount: "0" });
+  expect(note.root.dataset.status).toBe("verified");
+  expect(note.root.querySelector("[data-item-id='size']")?.getAttribute("data-status")).toBe("working");
+  expect(note.root.querySelector(".ai-sticky-done-group [data-item-id='size']")).toBeNull();
+  expect(note.root.querySelectorAll(".ai-sticky-optional-group [data-testid='ai-sticky-item']")).toHaveLength(1);
+  expect(f.session.getAcceptanceSnapshot()).toBe(current);
+});
+
+it("retains genuinely verified optional status in its own group without required credit", async () => {
+  const f = fixture(); await f.run([[plan([{ id: "optional-pass", title: "OPTIONAL_PASS", required: false,
+    criteria: [{ kind: "eventCount", target: size.criteria[0]!.target, count: 0 }] }]), skip]]);
+  const current = f.session.getAcceptanceSnapshot();
+  expect(current?.items[0]?.status).toBe("verified");
+  const note = createAiStickyChecklist(); notes.push(note); note.update(current);
+  const row = note.root.querySelector(".ai-sticky-optional-group [data-item-id='optional-pass']");
+  expect(row).not.toBeNull(); expect(row?.getAttribute("data-status")).toBe("verified");
+  expect(note.root.querySelector(".ai-sticky-done-group [data-item-id='optional-pass']")).toBeNull();
+  const count = note.root.querySelector<HTMLElement>("[data-testid='ai-sticky-count']")!;
+  expect(count.hidden).toBe(true);
+  expect(count.dataset).toMatchObject({ requiredCount: "0", verifiedCount: "0", optionalCount: "1", withdrawnCount: "0" });
+  expect(f.session.getAcceptanceSnapshot()).toBe(current);
 });

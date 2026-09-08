@@ -1,0 +1,240 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiAssistantSession.test.ts test/npcRewardSession.test.ts test/assistantVerificationContinuation.test.ts test/assistantIndependentReview.test.ts test/assistantIndependentReviewCapacity.test.ts test/assistantReviewEvidenceOverflow.test.ts test/independentReview.test.ts test/assistantTilesetVisualReview.test.ts test/projectWikiTimeout.test.ts --maxWorkers=2 --minWorkers=1 --reporter=default --reporter=json --outputFile=.omo/evidence/integration-st01a08238/migrated-fixtures.json
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-main-integration-st01a08238
+
+ ✓ test/npcRewardSession.test.ts (38 tests) 164331ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > does not dispatch authoring or planner calls for an unrepairable reward declaration  2115ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > direct 'text' NPC, contract opt-out=false  6082ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > direct 'once' NPC, contract opt-out=false  6722ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > direct 'repeat' NPC, contract opt-out=false  5673ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > direct 'text' NPC, contract opt-out=true  1895ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > does not finalize unresolved or invalid obligations {"required":[]}  834ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > does not finalize unresolved or invalid obligations {"required":{"invalidReason":"npcRewards: invalid grant"}}  1035ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > does not finalize unresolved or invalid obligations {"required":[{"target":{"eventId":"missing_npc"},"grants":[{"kind":"item","id":"item_potion","count":1}]}]}  1233ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > uses bounded repair to correct the real NPC rather than weaken the request  10123ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > allows an earlier DB item but refuses final explicit completion and skip with missing rewards  8823ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > gates a non-final item that actually authors the declared NPC  6466ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > cannot erase the obligation by replanning into an unrelated skipped plan  6405ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > rechecks a previously completed NPC after its grants are removed  8722ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > completes an actual one-time NPC plan and accepts idempotent explicit completion  7331ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > preserves the obligation through plan-only confirmation and the actual planner replan  2074ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > retains the captured requirement and context on retryLastTurn  5354ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > preserves the request across the real autonomous synthetic continuation  1458ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > host new-goal clears old obligations; ask does not enforce them: new-request  1999ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > host new-goal clears old obligations; ask does not enforce them: ask  1455ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > does not dispatch authoring or planner calls for an unrepairable reward declaration  880ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > direct 'text' NPC, contract opt-out=false  4895ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > direct 'once' NPC, contract opt-out=false  5688ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > direct 'repeat' NPC, contract opt-out=false  5390ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > direct 'text' NPC, contract opt-out=true  1705ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > does not finalize unresolved or invalid obligations {"required":[]}  825ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > does not finalize unresolved or invalid obligations {"required":{"invalidReason":"npcRewards: invalid grant"}}  932ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > does not finalize unresolved or invalid obligations {"required":[{"target":{"eventId":"missing_npc"},"grants":[{"kind":"item","id":"item_potion","count":1}]}]}  1495ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > uses bounded repair to correct the real NPC rather than weaken the request  8748ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > allows an earlier DB item but refuses final explicit completion and skip with missing rewards  8944ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > gates a non-final item that actually authors the declared NPC  6535ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > cannot erase the obligation by replanning into an unrelated skipped plan  7076ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > rechecks a previously completed NPC after its grants are removed  8080ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > completes an actual one-time NPC plan and accepts idempotent explicit completion  5999ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > preserves the obligation through plan-only confirmation and the actual planner replan  1703ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > retains the captured requirement and context on retryLastTurn  4882ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > preserves the request across the real autonomous synthetic continuation  1007ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > host new-goal clears old obligations; ask does not enforce them: new-request  2192ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > host new-goal clears old obligations; ask does not enforce them: ask  1552ms
+ ❯ test/aiAssistantSession.test.ts (63 tests | 2 failed) 184027ms
+   ✓ 자율 실행 드라이버 > (a) 3항목 계획이 자동 계속 턴으로 완료된다 — 수동 송신 0건  6693ms
+   ✓ 자율 실행 드라이버 > (b) 총 예산 48 소진 시 agent_run_budget_exhausted 감사를 남기고 멈춘다  23939ms
+   ✓ 자율 실행 드라이버 > (c) 턴이 사용자 질문으로 끝나면 드라이버는 자동 송신하지 않고 일시정지한다  3121ms
+   ✓ 자율 실행 드라이버 > (d) 런 중 중단이면 드라이버는 즉시 멈추고 추가 송신이 없다  802ms
+   ✓ 자율 실행 드라이버 > (e) peekPendingUserMessage 가 문자열을 반환하면 드라이버가 멈추고 다음 턴에 계획 완료까지 재개한다  4656ms
+   ✓ 자율 실행 드라이버 > (e-2) peek 훅이 비문자(가비지)를 반환하면 null 로 취급해 실행을 계속한다  4551ms
+   ✓ 자율 실행 드라이버 > (f) autonomous:false 로 명시적으로 끄면 드라이버 없이 종전대로 턴 1개로 끝난다  1363ms
+   ✓ 자율 실행 드라이버 > (f-2) agentMode chat + 플래그 미지정이면 드라이버가 켜지지 않는다(레거시 수동 계속)  1291ms
+   ✓ 자율 실행 드라이버 > 예산 소진 후 사용자 계속 메시지는 예산을 재가동(re-arm)한다  44324ms
+   ✓ 마일스톤 자동 적용 (todo 4) > (a) 자율 런의 마일스톤은 독립 검수 후 한 배치로 적용된다 — undo 스냅샷 1개 + 커밋 row 1개  5863ms
+   ✓ 마일스톤 자동 적용 (todo 4) > (b) 파괴적 마일스톤(remove_event)도 독립 검수 후 사용자 승인 대기 없이 자동 적용한다  4405ms
+   ✓ 마일스톤 자동 적용 (todo 4) > (b-2) clear_region의 파괴 표식은 더 이상 별도 policy 게이트를 만들지 않는다 0ms
+   ✓ 마일스톤 자동 적용 (todo 4) > (c) autonomous 플래그 없이(채팅 모드)는 종전대로 마일스톤 자동 적용이 없다  1381ms
+   ✓ 마일스톤 자동 적용 (todo 4) > (c-2) agentMode chat + autonomous 플래그도 검수된 마일스톤 배치를 자동 적용한다  5692ms
+   ✓ 마일스톤 자동 적용 (todo 4) > (c-3) 커밋 게이트 적용 실패는 현재 런만 멈추고 다음 사용자 턴의 자동 적용을 다시 허용한다  6694ms
+   × 레이어 검증(자문) + run-end 저장 증명 (todo 5) > (a) 레이어 완료마다 canonical 테이블대로 검증 툴콜이 실행된다 — map:[run_lint,evaluate_game_quality] / quest:[run_lint,verify_quest] / final:[run_lint,play_walkthrough] 6474ms
+     → expected [ [ '마을·퀘스트·최종 검증', 4 ] ] to deeply equal [ [ '마을·퀘스트·최종 검증', 3 ] ]
+   ✓ 레이어 검증(자문) + run-end 저장 증명 (todo 5) > (a-2) final 레이어에 play_walkthrough 가 없으면 verify_quest×전체 questId 폴백이 돈다  4595ms
+   ✓ 레이어 검증(자문) + run-end 저장 증명 (todo 5) > (b) 검증 지적(린트 오류)은 자문으로만 남고 런을 멈추지 않는다 — 재킥·verification_failed 없음  3932ms
+   ✓ 레이어 검증(자문) + run-end 저장 증명 (todo 5) > (c) completed remote plan verifies its accepted receipt without reloading  4099ms
+   ✓ 레이어 검증(자문) + run-end 저장 증명 (todo 5) > (c-2) remote 비활성 → agent_run_local_only 감사, flush 호출 없음, 오류 없음  3857ms
+   ✓ AssistantSession 툴콜 루프 > 메인 세션은 config.model을 그대로 chat 함수에 전달한다  738ms
+   ✓ AssistantSession 툴콜 루프 > 의도 선언이 되묻기를 냈으면 LLM 전에 그 질문을 돌려주고 툴을 호출하지 않는다  551ms
+   ✓ AssistantSession 툴콜 루프 > agentMode auto 에서는 되묻기 선언에도 멈추지 않고 LLM으로 진행한다  1028ms
+   ✓ AssistantSession 툴콜 루프 > 실내 표지가 있으면 되묻지 않고 LLM으로 진행한다  742ms
+   ✓ AssistantSession 툴콜 루프 > 연쇄 툴콜 2개(읽기→쓰기) 후 최종 응답을 반환하고 쓰기만 제안에 담는다  1120ms
+   ✓ AssistantSession 툴콜 루프 > 자가수정: 커밋/검증 실패 → issues 반환 → 재시도 → 성공  2320ms
+   ✓ AssistantSession 툴콜 루프 > 각 툴 실행 직전에 tool_started(name,index)를 tool_call 보다 먼저 내보낸다  1147ms
+   ✓ AssistantSession 툴콜 루프 > maxToolCalls 상한에 도달하면 현재까지의 제안을 반환한다  963ms
+   ✓ AssistantSession 툴콜 루프 > 예산으로 잘린 턴은 침묵하지 않는다 — 멈춘 이유를 assistantText 에 남긴다  1405ms
+   ✓ AssistantSession 툴콜 루프 > truncatedTurnText — 모델이 마무리를 냈으면 그대로 두고, 없으면 대기 중 제안 수를 알린다 1ms
+   ✓ AssistantSession 툴콜 루프 > 감사 로그를 JSON으로 내보낸다  786ms
+   ✓ AssistantSession 툴콜 루프 > 쓰기 툴이 시작되면 이후 호출은 실행 모델로 전환하고 독립 검수는 감독 모델로 돌아온다  1470ms
+   × AssistantSession 툴콜 루프 > 검수가 미이행을 발견하면 실행 모델로 한 번 재투입한 뒤 감독 모델이 최종 응답한다 2199ms
+     → expected '완료 검증이 아직 미완성입니다.\n- 이 작업을 단계로 진행해줘. …' to be 'Fixture review' // Object.is equality
+   ✓ AssistantSession 툴콜 루프 > 검수 응답이 raw 툴콜 마크업이면 원문 노출과 미검수 적용 없이 거부한다  1195ms
+   ✓ AssistantSession 툴콜 루프 > 집 3채 NPC 5명 요청에서 집 1채만 만든 실행자의 완료 주장은 독립 검수의 구조화된 부족분으로 재투입한다  2227ms
+   ✓ AssistantSession 툴콜 루프 > 최종 텍스트의 raw 툴콜 마크업은 잘라내고 안내로 대체한다  599ms
+   ✓ AssistantSession 툴콜 루프 > 오케스트레이션에서 변경 기대 요청이 0건 비질문으로 끝나면 한 번 재킥해 실행한다  1158ms
+   ✓ AssistantSession 툴콜 루프 > 오케스트레이션 0건 종료라도 질문이면 재킥하지 않는다  681ms
+   ✓ AssistantSession 툴콜 루프 > 0건 조기 종료 재킥은 한 턴에 한 번만 쓴다  659ms
+   ✓ AssistantSession 툴콜 루프 > 비오케스트레이션 세션은 0건 조기 종료 재킥을 하지 않는다  750ms
+   ✓ AssistantSession 툴콜 루프 > 단순 대화 턴은 플래너 없이 감독 모델 한 번으로 끝난다  670ms
+   ✓ agentMode 오케스트레이션 게이트 > 기본 설정(agentMode auto)이라도 단일 단계 선언은 플래너를 건너뛴다  642ms
+   ✓ agentMode 오케스트레이션 게이트 > 기본 설정(agentMode auto)은 마을 같은 다단계 요청에서 플래너 라운드를 돈다  978ms
+   ✓ agentMode 오케스트레이션 게이트 > 선택 영역 작업(스코프)은 agentMode auto여도 플래너를 건너뛴다  981ms
+   ✓ agentMode 오케스트레이션 게이트 > agentMode chat + 단일 모델은 종래대로 플래너를 돌지 않는다  589ms
+   ✓ agentMode 오케스트레이션 게이트 > agentMode chat + 이원화 모델도 단일 단계 선언은 플래너를 건너뛴다  804ms
+   ✓ agentMode 오케스트레이션 게이트 > 이원화 모델은 마을 요청에서 플래너가 돈다  926ms
+   ✓ agentMode 오케스트레이션 게이트 > 노출 증명: 짧은 auto 턴은 계획 툴을 숨기고, chat+단일 모델도 숨긴다  1511ms
+   ✓ agentMode 오케스트레이션 게이트 > quest 도메인을 여는 선언은 workPlan 없이도 define_quest와 verify_quest를 노출한다  541ms
+   ✓ 하네스 관측 > 오케스트레이션 주입 원문이 감사 로그에 남고 턴 종료 라인에 출력 토큰이 붙는다  1276ms
+   ✓ 하네스 관측 > getHarnessSnapshot은 모델 구성과 메시지·감사 로그 사본을 돌려준다  744ms
+   ✓ 밑그림만 그리고 끝내는 턴 > 단일 모델에서도 쓰기 0건 종료를 감지해 실행을 다시 요구한다  975ms
+   ✓ 밑그림만 그리고 끝내는 턴 > 밑그림 에셋을 지은 쓰기 툴이 없으면 미이행 경고를 남긴다 1ms
+   ✓ 밑그림만 그리고 끝내는 턴 > 모델이 place_npc 를 부르지 않아도 밑그림의 npc 에셋을 직접 배치해 이벤트를 만든다  998ms
+   ✓ verification declaration and correction caller boundary > adopts a frozen map-qualified scene and executes correction (changed initial state=false)  1294ms
+   ✓ verification declaration and correction caller boundary > adopts a frozen map-qualified scene and executes correction (changed initial state=true)  1911ms
+   ✓ verification declaration and correction caller boundary > retains the correct terminal contract for wire114  1227ms
+   ✓ verification declaration and correction caller boundary > retains the correct terminal contract for wire281  978ms
+   ✓ verification declaration and correction caller boundary > retains the correct terminal contract for dummy-removal  1723ms
+   ✓ verification declaration and correction caller boundary > retains the correct terminal contract for cross-map  1508ms
+   ✓ verification declaration and correction caller boundary > retains the correct terminal contract for weaker-assertion  1462ms
+   ✓ verification declaration and correction caller boundary > retains the correct terminal contract for write-after-pass  1495ms
+   ✓ verification declaration and correction caller boundary > retains the correct terminal contract for foreign-owner  1312ms
+ ✓ test/assistantIndependentReviewCapacity.test.ts (2 tests) 13829ms
+   ✓ R5+R6 review capacity through AssistantSession > delivers scoped complete review evidence for rename with five unchanged preset maps  7076ms
+   ✓ R5+R6 review capacity through AssistantSession > delivers scoped complete review evidence for preset with five unchanged preset maps  6749ms
+ ✓ test/assistantIndependentReview.test.ts (29 tests) 40651ms
+   ✓ independent result review > requests a change, repairs the same draft, and reviews the new revision without writer conversation  3285ms
+   ✓ review termination and isolation > stops honestly on malformed reviewer output  1590ms
+   ✓ review termination and isolation > stops honestly on transport reviewer output  1125ms
+   ✓ review termination and isolation > stops honestly on write reviewer output  1184ms
+   ✓ review termination and isolation > stops honestly on stale reviewer output  1126ms
+   ✓ review termination and isolation > stops on repeated unchanged findings instead of granting approval  1161ms
+   ✓ review termination and isolation > shares the existing round budget  880ms
+   ✓ review termination and isolation > shares the existing writer-tokens budget  1042ms
+   ✓ review termination and isolation > shares the existing review-tokens budget  1080ms
+   ✓ review termination and isolation > does not review or execute writes in ask mode  779ms
+   ✓ review termination and isolation > does not review a no-write direct question  706ms
+   ✓ review termination and isolation > rejects a write after cancellation during the pre-tool UI yield  854ms
+   ✓ review termination and isolation > ignores a late approval after cancellation without further mutations  1249ms
+   ✓ review termination and isolation > invalidates approval after edits, and undo cannot revive it  2064ms
+   ✓ review termination and isolation > cannot turn a failed actual scene test into approval  1654ms
+   ✓ review termination and isolation > defers autonomous milestones until the independent verdict is approved  2867ms
+   ✓ review termination and isolation > defers autonomous milestones until the independent verdict is rejected  1316ms
+   ✓ review evidence and final revision boundaries > requires actual visual evidence after spatial changes: delivered  1635ms
+   ✓ review evidence and final revision boundaries > requires actual visual evidence after spatial changes: empty  1707ms
+   ✓ review evidence and final revision boundaries > requires actual visual evidence after spatial changes: error  1682ms
+   ✓ review evidence and final revision boundaries > reviews the surface-prepared draft, not a pre-clipping revision  1337ms
+   ✓ review evidence and final revision boundaries > rejects a draft replaced while a review is in flight  1331ms
+   ✓ review evidence and final revision boundaries > cannot continue forever by paraphrasing failures without repairing  1391ms
+   ✓ review evidence and final revision boundaries > cannot apply an autonomous draft when cancelled by the approval event  939ms
+   ✓ evaluation evidence integration > retains the approved independent verdict alongside actual draft scoring  1255ms
+   ✓ evaluation evidence integration > retains the rejected independent verdict alongside actual draft scoring  1480ms
+   ✓ no-write authoring and authored start-state review > blocks a no-write authoring result with unmet acceptance requirements before publishing success  1065ms
+   ✓ no-write authoring and authored start-state review > blocks a no-write authoring result with unmet completion requirements before publishing success  986ms
+   ✓ no-write authoring and authored start-state review > reviews authored start-state party, inventory and gold as actual data  1876ms
+ ✓ test/assistantVerificationContinuation.test.ts (15 tests) 10083ms
+   ✓ immutable requirements, findings and attempts at both ledgers > retains both original exact routes, later adoption and original owners independently  329ms
+   ✓ normal session ownership through skip, replan and continuation > reused scheduling IDs cannot waive pending scopes; late specification needs a fresh execution  3012ms
+   ✓ normal session ownership through skip, replan and continuation > normal session correction executes the registered original tool; unknown IDs and execution errors cannot clear a finding  1494ms
+   ✓ authoring revalidates explicit checks before finalizing > continues after a final claim when a real write made the prior lint stale  3482ms
+ ✓ test/projectWikiTimeout.test.ts (25 tests) 21596ms
+   ✓ own extraction timeout through the normal user-turn boundary > defers, initializes original authoring and rejects late valid settlement  2665ms
+   ✓ own extraction timeout through the normal user-turn boundary > defers, initializes original authoring and rejects late malformed settlement  2366ms
+   ✓ own extraction timeout through the normal user-turn boundary > defers, initializes original authoring and rejects late rejected settlement  2320ms
+   ✓ own extraction timeout through the normal user-turn boundary > drains owned operations before reset on test-abort  585ms
+   ✓ own extraction timeout through the normal user-turn boundary > drains owned operations before reset on early-exit  634ms
+   ✓ own extraction timeout through the normal user-turn boundary > drains a turn cancelled before extraction starts  554ms
+   ✓ own extraction timeout through the normal user-turn boundary > does not defer caller invalidation  749ms
+   ✓ own extraction timeout through the normal user-turn boundary > does not defer caller-timeout invalidation  629ms
+   ✓ own extraction timeout through the normal user-turn boundary > does not defer both invalidation  685ms
+   ✓ own extraction timeout through the normal user-turn boundary > does not defer deadline-then-caller invalidation  675ms
+   ✓ own extraction timeout through the normal user-turn boundary > does not defer identity invalidation  799ms
+   ✓ own extraction timeout through the normal user-turn boundary > does not defer an ineligible world-edit checkpoint  440ms
+   ✓ own extraction timeout through the normal user-turn boundary > does not defer an ineligible map-removed checkpoint  556ms
+   ✓ own extraction timeout through the normal user-turn boundary > does not defer an ineligible no-wiki checkpoint  420ms
+   ✓ own extraction timeout through the normal user-turn boundary > does not defer an ineligible backfill checkpoint  471ms
+   ✓ own extraction timeout through the normal user-turn boundary > rejects same-ID map edit and its late patch  622ms
+   ✓ own extraction timeout through the normal user-turn boundary > rejects same-ID map replacement and its late patch  709ms
+   ✓ own extraction timeout through the normal user-turn boundary > keeps unknown-timeout errors fatal  541ms
+   ✓ own extraction timeout through the normal user-turn boundary > keeps network errors fatal  457ms
+   ✓ own extraction timeout through the normal user-turn boundary > keeps malformed errors fatal  442ms
+   ✓ own extraction timeout through the normal user-turn boundary > keeps protected errors fatal  582ms
+   ✓ own extraction timeout through the normal user-turn boundary > keeps supersession errors fatal  535ms
+   ✓ own extraction timeout through the normal user-turn boundary > keeps concurrent errors fatal  519ms
+   ✓ own extraction timeout through the normal user-turn boundary > keeps save errors fatal  458ms
+   ✓ own extraction timeout through the normal user-turn boundary > applies a timely valid patch and awaits persistence before ordinary authoring  2181ms
+ ✓ test/assistantTilesetVisualReview.test.ts (2 tests) 5403ms
+   ✓ assistant tileset visual review > does not approve a used tileset column change without current map images  2416ms
+   ✓ assistant tileset visual review > approves the same tileset column change once current map images are delivered  2985ms
+ ✓ test/assistantReviewEvidenceOverflow.test.ts (2 tests) 5105ms
+   ✓ independent review evidence overflow > reports why the draft could not be reviewed instead of its own refusal string  1891ms
+   ✓ independent review evidence overflow > carries the deterministic problems found before the reviewer was refused  3212ms
+ ✓ test/independentReview.test.ts (23 tests) 475ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiAssistantSession.test.ts > 레이어 검증(자문) + run-end 저장 증명 (todo 5) > (a) 레이어 완료마다 canonical 테이블대로 검증 툴콜이 실행된다 — map:[run_lint,evaluate_game_quality] / quest:[run_lint,verify_quest] / final:[run_lint,play_walkthrough]
+AssertionError: expected [ [ '마을·퀘스트·최종 검증', 4 ] ] to deeply equal [ [ '마을·퀘스트·최종 검증', 3 ] ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[2m    [[22m
+[2m      "마을·퀘스트·최종 검증",[22m
+[32m-     3,[39m
+[31m+     4,[39m
+[2m    ],[22m
+[2m  ][22m
+
+ ❯ test/aiAssistantSession.test.ts:929:8
+    927|     expect(result.workPlan?.layers.flatMap(layer => layer.items.map(it…
+    928|     expect(events.filter(event => event.type === "milestone_applied").…
+    929|       .toEqual([[GATE_PLAN.goal, 3]]);
+       |        ^
+    930|     expect(apply.mock.calls.map(([, options]) => options.toolNames))
+    931|       .toEqual([["set_title_screen", "upsert_event", "define_quest"]]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  test/aiAssistantSession.test.ts > AssistantSession 툴콜 루프 > 검수가 미이행을 발견하면 실행 모델로 한 번 재투입한 뒤 감독 모델이 최종 응답한다
+AssertionError: expected '완료 검증이 아직 미완성입니다.\n- 이 작업을 단계로 진행해줘. …' to be 'Fixture review' // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- Fixture review[39m
+[31m+ 완료 검증이 아직 미완성입니다.[39m
+[31m+ - 이 작업을 단계로 진행해줘. 길과 꽃을 칠해줘: Draft is not yet applied[39m
+[31m+   {"kind":"targetChange","target":{"mapId":"map_blank_start"},"region":{"x":1,"y":1,"w":2,"h":2}} → Unchanged from original baseline[39m
+[31m+   {"kind":"targetChange","target":{"mapId":"map_blank_start"},"region":{"x":4,"y":1,"w":2,"h":2}} → Unchanged from original baseline[39m
+[31m+ [7m  {"kind":"imageReviewed","target":{"mapId":"map_blank_start"},"region":{"x":0,"y":0,"w":20,"h":15}} → Current image coverage and attributed review required: [27mFixture review[39m
+
+ ❯ test/aiAssistantSession.test.ts:1597:34
+    1595|       reviews: reviews.map(({ revision, requiredProblems }) => ({ revi…
+    1596|     expect(result.review?.status).toBe("approved");
+    1597|     expect(result.assistantText).toBe(result.review?.summary);
+       |                                  ^
+    1598|     expect(result.proposedCalls.map((call) => call.name)).toEqual(["pa…
+    1599|     expect(result.proposedCalls.every(call => (call.result.diff?.tiles…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed | 8 passed (9)
+      Tests  2 failed | 197 passed (199)
+   Start at  04:20:06
+   Duration  257.72s (transform 14.98s, setup 0ms, collect 58.31s, tests 445.50s, environment 3ms, prepare 1.34s)
+
+JSON report written to /home/main/z-project/rpg-zzu-ai-main-integration-st01a08238/.omo/evidence/integration-st01a08238/migrated-fixtures.json

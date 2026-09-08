@@ -112,8 +112,8 @@
   "commitCount": 3
  },
  "changeLifeSkillExp": {
-  "probeCount": 0,
-  "commitCount": 0
+  "probeCount": 5,
+  "commitCount": 5
  },
  "promoteActor": {
   "probeCount": 2,
@@ -264,8 +264,8 @@
   "commitCount": 0
  },
  "spawnFieldEnemy": {
-  "probeCount": 0,
-  "commitCount": 0
+  "probeCount": 7,
+  "commitCount": 7
  },
  "despawnFieldEnemy": {
   "probeCount": 0,

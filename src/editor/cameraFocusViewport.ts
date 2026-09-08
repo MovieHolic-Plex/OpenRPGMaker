@@ -247,3 +247,26 @@ function intersect(a: CanvasRect, b: CanvasRect): CanvasRect | null {
   if (x1 <= x0 || y1 <= y0) return null;
   return { x: x0, y: y0, width: x1 - x0, height: y1 - y0 };
 }
+
+/** Inspection room beyond an edge, in CSS pixels at every zoom. */
+export const CAMERA_INSPECTION_PADDING = 32;
+
+/** Bounds for the existing camera: either map edge can reach the unobstructed center. */
+export function editorCameraBounds(input: {
+  readonly mapWidth: number;
+  readonly mapHeight: number;
+  readonly canvas: CanvasRect;
+  readonly unoccluded: CanvasRect;
+  readonly zoom: number;
+}): CanvasRect {
+  const { canvas, unoccluded, zoom } = input;
+  const cx = unoccluded.x - canvas.x + unoccluded.width / 2;
+  const cy = unoccluded.y - canvas.y + unoccluded.height / 2;
+  const padding = CAMERA_INSPECTION_PADDING;
+  return {
+    x: -(cx + padding) / zoom,
+    y: -(cy + padding) / zoom,
+    width: input.mapWidth + (canvas.width + padding * 2) / zoom,
+    height: input.mapHeight + (canvas.height + padding * 2) / zoom,
+  };
+}

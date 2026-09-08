@@ -133,14 +133,13 @@ import { changePreviewChips, renderChangePreviewCard, type ChangePreviewInput } 
 import { createStudioShell, type StudioShell } from "./aiStudioShell";
 import { proposalHumanSummaryLine } from "./aiProposalSummary";
 import { createAiTurnRunner } from "./aiTurnRunner";
+import { openLocalDiagnosticsDialog } from "./localDiagnosticsDialog";
 import { createAiRegionTaskRunner } from "./aiRegionTaskRunner";
 import type { AiRunSurface, ConversationPersistTarget as ConversationPersistTargetContract } from "./aiRunSurface";
 import {
   backupProjectSnapshot,
   displayUserAuditText,
-  downloadJson,
   dropSession,
-  exportCombinedAudit,
   isAiAssistDetail,
   isAiConfigReady,
   statusToneOf,
@@ -309,6 +308,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const outcome = controller.session?.getRunOutcome();
     outcomeSlot.replaceChildren(...(outcome ? [renderRunOutcome(outcome)] : []));
   };
+  let refreshAcceptanceMenus: () => void = () => {};
   const stickyChecklist = createAiStickyChecklist({
     onWithdraw: withdrawAiRequirement,
     onReviewApproach: checkId => {
@@ -324,6 +324,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       stickyChecklist.update(session.getAcceptanceSnapshot());
       refreshRunOutcome();
       return accepted;
+    },
+    onChange: () => refreshAcceptanceMenus(),
+    onHide: () => {
+      const opener = moreMenuToggle.isConnected && !moreMenuToggle.closest("[hidden]")
+        && moreMenuToggle.getClientRects().length > 0 ? moreMenuToggle : input;
+      if (opener.isConnected) opener.focus();
     },
   });
   let disposed = false;
@@ -400,7 +406,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 않아 testid 로 세면 복원된 로그를 숨긴다. `:empty` 로도 못 잡는다 — 껍데기 안에 빈
   // .ai-chat-log 엘리먼트가 실제로 들어 있다.
   const syncConversationState = (): void => {
-    if (panelRoot) panelRoot.dataset.aiConversation = log.childElementCount > 0 ? "active" : "empty";
+    if (!panelRoot) return;
+    panelRoot.dataset.aiConversation = log.childElementCount > 0 ? "active" : "empty";
+    panelRoot.dataset.aiConversationId = conversationId;
   };
   // 변경 0건 알림 전용 호스트 — 쓰기가 있는 턴은 승인 없이 바로 적용되므로 결정 카드·핀·모달이 없다.
   const proposalNoticeHost = el("div", { class: "ai-proposal-notice-host" });
@@ -450,13 +458,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 휘발 존(ai-rising-volatile-zone)은 사이드 도크 전용 오버레이였다. 도크가 하나가
   // 되면서 마운트되는 곳이 없어져 이 두 훅은 아무 데도 닿지 않는다 — 계약만 남긴다.
   let exportButton: HTMLButtonElement | null = null;
-  const hasExportableConversation = (): boolean =>
-    [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])].length > 0;
   const refreshExportButton = (): void => {
     if (!exportButton) return;
-    const disabled = !hasExportableConversation();
-    exportButton.disabled = disabled;
-    exportButton.setAttribute("aria-disabled", String(disabled));
+    exportButton.disabled = false;
+    exportButton.setAttribute("aria-disabled", "false");
   };
 
   const input = el("textarea", {
@@ -793,7 +798,23 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     proposalApi.lastAppliedProposalMessage = value;
   };
 
+  const retireConversationTurn = (): void => {
+    activeAbortController?.abort();
+    activeAbortController = null;
+    activeSelectionRegionController = null;
+    activeSelectionRegionKey = null;
+    pendingSends.length = 0;
+    refreshQueueIndicator();
+    turnBusy = false;
+    endTurnProgress();
+    refreshAbortButton();
+  };
+
   const restoreConversationRecord = (record: ConversationRecord, source: "auto" | "manual" | "project-switch"): void => {
+    if (source === "manual") {
+      retireConversationTurn();
+      persistConversation();
+    }
     dropSession(controller, getPendingRegionApply());
     clearWorkPlanSurface(); // 대화 전환 — 다른 대화의 할 일 목록이 남으면 안 된다(스테일 상태 방지).
     // 화면만 복원하면 사용자는 이어졌다고 믿고 모델은 아무것도 모른다 — 다음 세션에 기록 요약을
@@ -858,15 +879,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     });
     // 먼저 ownership을 끊고 abort한 뒤 큐를 버린다. 새 대화는 이유와 무관하게 진행 중인 턴을
     // 포기하며, 늦은 finally는 시작 당시 캡처한 대화와 감사 항목에만 저장한다.
-    activeAbortController?.abort();
-    activeAbortController = null;
-    activeSelectionRegionController = null;
-    activeSelectionRegionKey = null;
-    pendingSends.length = 0;
-    refreshQueueIndicator();
-    turnBusy = false;
-    endTurnProgress();
-    refreshAbortButton();
+    retireConversationTurn();
     persistConversation();
     dropSession(controller, getPendingRegionApply());
     clearWorkPlanSurface(); // 새 대화 — 이전 대화의 할 일 목록/예산/피드를 버린다.
@@ -950,16 +963,26 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 지금 대화를 먼저 보관한다 — 열기 직후 dropSession 이 세션을 버리므로 여기서 저장하지
     // 않으면 방금까지의 턴이 어디에도 남지 않는다.
     persistConversation();
+    const capturedScope = conversationScope;
+    const capturedIdentityId = projectIdentityId;
     const historyIdentity = store.getProjectIdentity().id;
-    const historyScope = conversationScope;
     const historyConversationId = conversationId;
+    const project = store.getCurrent();
+    const stateMapId = editorState.get().currentMapId;
+    const currentMapId = stateMapId && project.maps[stateMapId] ? stateMapId : project.startMapId;
     openAiConversationHistoryModal({
-      scopeKey: historyScope,
+      scopeKey: capturedScope,
       currentConversationId: historyConversationId,
+      currentMapId,
+      knownMaps: Object.values(project.maps).map((map) => ({ id: map.id, name: map.name })),
       isCurrent: () => !disposed && store.getProjectIdentity().id === historyIdentity &&
-        conversationScopeKey(store.getProjectIdentity(), store.getCurrent()) === historyScope &&
+        conversationScopeKey(store.getProjectIdentity(), store.getCurrent()) === capturedScope &&
         conversationId === historyConversationId,
       onOpen: (record) => {
+        if (disposed) return;
+        if (projectIdentityId !== capturedIdentityId) return;
+        if (conversationScope !== capturedScope) return;
+        if ((record.projectContextKey ?? null) !== capturedScope) return;
         restoreConversationRecord(record, "manual");
       },
     });
@@ -1853,7 +1876,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (identity.id === projectIdentityId) {
       const session = controller.session;
       const owner = activeAbortController;
-      if (session && stickyChecklist.root.isConnected && !disposed && !owner?.signal.aborted) {
+      if (session && stickyChecklist.hasSnapshot() && !disposed && !owner?.signal.aborted) {
         session.refreshAcceptance(store.getCurrent(), (event) => {
           if (!disposed && controller.session === session && activeAbortController === owner
             && !owner?.signal.aborted && event.type === "acceptance") stickyChecklist.update(event.snapshot);
@@ -1870,8 +1893,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     }
     // 스토어가 로드 중 여러 번 알리므로 표식을 먼저 갱신해 같은 전환이 여러 번 채택되지 않게 한다.
     projectIdentityId = identity.id;
+    closeAiConversationHistoryModal();
     // Settle the outgoing owner before async history loading. A new project's draft may
     // arrive during that lookup and must survive the later chat reset/restore.
+    activeAbortController?.abort();
+    activeAbortController = null;
     getPendingRegionApply()?.discard();
     void panelPendingWork.track(adoptConversationForCurrentProject());
   });
@@ -1960,28 +1986,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 테스트가 "어디에 붙었나"를 읽는 단일 창구다.
   // z-layers: panel 30 / bar 40 / overlay 41 / palette 80 — 56/50/62 난장 정리
   const exportAudit = (): void => {
-    const json = exportCombinedAudit(controller);
-    if (!json) {
-      toast("내보낼 대화가 없습니다.", "info");
-      recordAiUiEvent({ surface: "panel", action: AI_UI_ACTIONS.conversationExport, testid: "ai-export", disabled: true, detail: { entries: 0 } });
-      return;
-    }
-    downloadJson("ai-session-audit.json", json);
-    recordAiUiEvent({
-      surface: "panel",
-      action: AI_UI_ACTIONS.conversationExport,
-      testid: "ai-export",
-      detail: {
-        format: "json",
-        bytes: json.length,
-        entries: [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])].length,
-      },
-    });
+    openLocalDiagnosticsDialog();
   };
   exportButton = el("button", {
     class: "ai-assistant-action ai-export-button",
     text: "내보내기",
-    attrs: { type: "button", hidden: "", "aria-hidden": "true", title: "대화 감사 로그 내보내기", "aria-label": "대화 내보내기" },
+    attrs: { type: "button", hidden: "", "aria-hidden": "true", title: "로컬 진단 보고서", "aria-label": "로컬 진단 보고서" },
     dataset: { testid: "ai-export" },
     on: { click: exportAudit },
   }) as HTMLButtonElement;
@@ -2169,6 +2179,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   }
   // 두 메뉴가 공유하는 항목의 유일한 구현(aiActionMenu.ts). 컨테이너·열림 상태만 표면마다 다르다.
   const sharedMenuActions: AiActionMenuActions = {
+    showAcceptanceChecklist: () => stickyChecklist.show(),
     refreshWiki: () => {
       if (turnBusy) { toast("현재 작업이 끝난 뒤 기록을 정리해주세요.", "info"); return; }
       const coordinator = createProjectWikiCoordinator({
@@ -2753,6 +2764,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     close: closeCommandMenu,
     actions: sharedMenuActions,
   });
+  refreshAcceptanceMenus = () => {
+    const available = stickyChecklist.hasSnapshot();
+    const hidden = stickyChecklist.root.hidden;
+    headerMenu.setAcceptanceState(available, hidden);
+    composerMenu.setAcceptanceState(available, hidden);
+  };
+  refreshAcceptanceMenus();
   // 대기 화면 3분기(추천 함께 / 조수만 / 입력창만)는 취향 설정이다 — ☰ 메뉴 최상단이 아니라 설정 모달의
   // 한 절로 옮겼다(제안서 D6). testid(ai-command-temperature-*)와 동작은 그대로다.
   const composerTemperatureSection = createAssistantTemperatureMenuSection({
@@ -2982,8 +3000,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // Welcome boot target — prefill and optional auto-send (writes still proposal-gated).
   registerAiBootIntentTarget({
     open: () => restoreCollapsed(),
+    getDraft: () => input.value,
     prefill: (text: string) => {
       input.value = text;
+      syncInputHeight();
+      refreshComposerPlaceholder();
+      refreshSendEnabled();
       try {
         input.focus();
       } catch {

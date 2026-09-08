@@ -1,3 +1,106 @@
+## Issue 693 verification contracts (2026-09-08)
+
+The commit probe's fake DOM implements number-input `valueAsNumber` and numeric
+constraint validation, including required, range and step rejection. Keep native
+production numeric APIs intact; do not add optional validation fallbacks for test
+doubles. `fakeDomNumericInput.test.ts` and `eventSpawnNumericProbe.test.ts` cover
+invalid/no-commit and valid/commit behavior, including the existing faction
+consumer. The gate-repair evidence also compares these semantics to native Chromium.
+
+Spawn and life-skill recovery fields have explicit form, interaction and commit
+fixtures with raised floors. Update only their entries, not unrelated snapshot
+drift. All no-commit and crash gates remain active. Local diagnostic entry works
+with an empty conversation and opens a registered consent layer; it does not emit
+the historical `conversation-export` event or export a transcript. The modal gate's
+narrow exemption covers only the persistent indicator/download anchor; actual
+Escape routing is exercised through the visible assistant menu.
+
+Focused contracts: `npm test -- test/fakeDomNumericInput.test.ts
+ test/eventSpawnNumericProbe.test.ts test/aiEmptyExportFeedback.test.ts
+ test/aiUiEventContract.test.ts test/playBootRecovery.test.ts
+ test/selectedEventTestModal.test.ts test/databaseSystemView.test.ts --maxWorkers=1`.
+Full gates and production build remain lead-owned; the exhaustive main/candidate
+failure disposition is in `.omo/evidence/issue-693/gate-repairs/`.
+
+## Request-coverage gate follow-up (2026-09-08)
+
+The complete immutable control at `e05a99b91` accounted for 1,826 files / 18,328
+cases (18,089 passed, 216 failed, 23 skipped). The repaired `0798a67b` run accounted
+for 1,829 files / 18,363 cases (18,128 passed, 212 failed, 23 skipped). Both are
+**red** results. A 1,200-second observer deadline did not establish a hung runner:
+the four-thread instrumented runs took 2,511 and 4,250 seconds. Keep collection,
+case, module-end, child-exit and unhandled-error evidence separate.
+
+Adding a shared fake-DOM capability can activate more production code. In this
+case `insertBefore` enabled custom selects, exposing missing options/index/value
+semantics, overbroad `HTMLSelectElement` identity and duplicate node ownership.
+Preserve the enhancement and model its real contracts instead of removing the
+capability. Seed actual selectable records in fixtures (`roll`, `event-a/b`);
+native selects cannot select nonexistent IDs. Checklist tests must respect
+working-before-pending priority while still proving keyed nodes actually reorder
+when their statuses change.
+
+AI transport fixtures must distinguish intent, independent request coverage,
+author execution and independent review. Author execution may be non-streaming.
+Observe request/response and terminal events before Send; retain real forwarding
+callbacks, full-map image receipts, approval before apply, actual ghost bounds,
+one apply and cleanup. Never raise a deadline to hide a fixture-rejected request.
+
+The final full-run diagnostic stream lost one optional `collected` record for
+`undoHistory.test.ts`; its intact appended `start` record was recoverable. The
+original trace hash was unchanged, all 1,829 independently reported/queued/ended
+file identities and the terminal inventory matched, and that module's 15 cases
+passed in the untouched JSON report. Recovery retained the damaged bytes and
+did not invent a test outcome or missing diagnostic. A separate derived
+summarizer records that limitation; never silently skip malformed evidence.
+
+Bind every result to its executed source. The later selector-fixture repair and
+main integration were validated with focused tests, build and shipping-player
+checks; they are not relabeled as another full run of `0798a67b`. Preserve raw
+failure values, multiplicity, source skips, timing-sensitive cases and the red
+surface gate. Some normally included legacy tests attempt remote authoring or
+filesystem writes: keep the scoped sandbox restrictions explicit rather than
+running them against a user's configured project to make a gate green.
+
+The compact result/disposition index is
+[`output/evidence/acceptance-gate-followup/README.md`](../output/evidence/acceptance-gate-followup/README.md).
+
+## Native event battle reliability QA (2026-09-08)
+
+Focused regressions are `eventBattleAdmission.test.ts` (actual command modal and
+aggregate draft validation), `eventBattleFailure.test.ts` (real foreground,
+autorun readiness, parallel, random/field admission and stale-owner handling),
+and `battleInitializationAdmission.test.ts` (real constructor/audio, transition
+failure, empty monster party and corrected starter retry). Domain runtime and
+interpreter behavior stay real; only Phaser I/O, result presentation or a specific
+transition fault are adapted. New async tests subscribe before triggering and
+await completion/lease release with bounded deadlines, never fixed sleeps.
+
+Reproducible exported-player matrix (no DB writes, scratch/evidence in worktree):
+
+```bash
+mkdir -p .scratch/battle-reliability
+TMPDIR=$PWD/.scratch/battle-reliability QA_BROWSER=firefox \
+  node scripts/qa/runtime/event-battle-reliability.probe.mjs
+```
+
+The probe owns an ephemeral `startPlayerQaServer` unless `QA_BASE_URL` is supplied.
+`QA_OUT_DIR` selects evidence output; `QA_CASES` selects comma-separated case IDs.
+It uses diagnostic copies of the historical battle fixture through `player.html`
+and the export-store shim, not editor Play mode. It covers invalid-variable and
+valid action/auto/parallel starts, empty troops/monster parties, hidden enemies,
+legacy enemyIds, numeric 0, and a real correction event followed by retry.
+Observers subscribe before input and watch DOM/state changes; no polling/sleeps.
+Valid starts must expose the actor command menu after transition removal. Error
+cases must retain a nonzero, nontransparent notice entirely inside the viewport;
+DOM presence alone previously passed while every error sat below the canvas.
+Read `SUMMARY.md`, `results.json`, and the named screenshots. Page errors fail;
+console errors are retained because reported admission faults intentionally log.
+Chromium on the shared host can fail with `ERR_NETWORK_CHANGED`; the browser
+selector permits Firefox without weakening the scenario's assertions. This is
+behavioral evidence, not independent visual approval. The lead still owns the
+real editor picker/Confirm/reopen checks, full gates/build and final browser QA.
+
 ## Real large-world player QA (2026-09-07)
 
 `npm run qa:runtime -- --scenario live-world-start --project <saved-project.json>`
@@ -844,6 +947,7 @@ Evidence expectations:
   `playSurface.css` 의 inset 목록에 든 것은 cover/crop 모드가 생길 때를 위한 대비다.
   측정 함정 하나: 디밍은 `--dialogue-scrim-ms`(140~260ms) 전이라서 창이 뜬 **직후**에 읽으면
   `::before` opacity 가 `0.26` 처럼 중간값으로 잡힌다. 정착값을 볼 거면 400ms 쯤 기다려라.
+- `test/eventPreviewPaintCssom.test.ts` — 명령 미리보기 페인트. Chromium `getComputedStyle` 로 이름표 `backgroundImage`/그림자 리스트를 읽고, 글자만 `color: transparent` 로 숨긴 샷과 비교해 글리프 대 실제 배경(그라디언트 포함) 대비를 잰다. 테두리·그림자를 전역 min/max 로 통과시키지 않는다. `EVENT_PREVIEW_PAINT_FROM=HEAD` 는 수정 전 CSS 를 `git show` 로 주입한다.
 - `test/dialoguePreviewPresentationCss.test.ts` — 에디터 프리뷰와 게임의 감정→keyframe 짝을
   두 CSS 파일에서 뽑아 대조한다. 프리뷰 창은 `.ecp-message-window`, 게임 창은 `.dialogue-box` 라
   규칙을 두 번 적어야 하고, 그 중복은 조용히 어긋난다 — 프리뷰만 옛 곡선으로 튀어도 예외가 없고,
@@ -1081,6 +1185,38 @@ Unhandled Rejection 은 그 순간 실행 중이던 아무 파일에 귀속되�
 **비결정적 오귀속**의 원인이 된다. 새 브라우저 전역을 프로덕션이 쓰기 시작하면 `fakeDom` 의
 `DomGlobalName` 유니온·save/restore 목록·`defineDomGlobal` 세 곳을 같이 늘려야 한다.
 
+### Shared fake DOM enhancement contracts (2026-09-08)
+
+Adding `insertBefore` enables the real event-editor custom-select controller; it
+is not only a checklist capability. `HTMLSelectElement` identity must match the
+SELECT tag (including directly constructed `FakeElement("select")`), never every
+fake element. Single-select option state now covers direct options and optgroups,
+index/value/selected synchronization, disabled defaults and invalid selections.
+Collections are fresh arrays on access, not a complete live HTMLCollection API;
+multi-select, layout and MutationObserver simulation remain outside this fake.
+
+All insertion/replacement paths adopt nodes from their previous parent. Removal
+and text/children replacement clear parent links; wrapper disposal must restore
+exactly one select without leaving the dialog root in a wrapper. Keep the real
+enhancement enabled. `fakeDomSelectContracts` exercises actual menu selection,
+input/change bubbling, subscribed focus restoration, disposal and checklist row
+identity. Happy DOM verifies supported reference operations; Firefox additionally
+checks edge contracts where the installed Happy DOM differs (duplicate values,
+option text/label, detached index, optgroup reordering and self replacement).
+Fixtures selecting an ID must create the actual option/record first; the focused
+weighted-branch fixture now creates its `roll` variable without changing assertions.
+
+`aiChatObservability` distinguishes the `REQUEST_COVERAGE_AUDIT` sentinel from
+intent JSON and streams. Manual chat retains drafts until settlement: the bounded
+acceptance-repair execute requests are non-streaming JSON. Reply with valid audit
+requirements linked to the original request and count execute requests separately;
+do not answer audits with intent JSON or reject execute requests as bad streams.
+Subscribe before Send to transport, session and post-apply refresh events, plus
+terminal activity. Preserve the actual ghost bounds, single apply and cleanup
+assertions. The 10-second terminal deadline is unchanged; no polling or retries
+were added to tests. Exact red traces and focused/affected evidence are in
+`output/evidence/acceptance-live-fakedom-repair/`; the final full gate is lead-owned.
+
 ## bugfix-sweep 실제 표면 하네스 (2026-08-29)
 
 `node scripts/qa-bugfix-sweep-evidence.mjs` 는 **프로젝트의 Vite SSR 모듈 파이프라인**으로
@@ -1124,6 +1260,29 @@ Chromium local network 검사만 캡처 실행 인자로 끈다. 일반 출하 �
 - 세션 증거: `output/evidence/concept-expansion/README.md`, 원격 저장 직후 증명 `supabase-proof-first-save.json`. 후속 저장에서는 CAS가 동시 변경을 감지해 덮어쓰기를 거절했다. 실 콘텐츠 작업과 전체 검사를 같은 공유 프로젝트에서 병행하지 말고, 외부 쓰기가 끝난 뒤 최신 스냅샷으로 추가하고 재로드하라.
 
 ## Request-bound functional acceptance verification (2026-09-07)
+
+Live followup: `requestCoverage` exercises independent omission, exact-quote gaps,
+empty/malformed/failed audits, immutable worker replacement, Ask, grouped R2
+refinement and failed resume audit provenance. `fakeDomInsertBefore` supplies the
+real row-move semantics now needed when fail-closed fallback exposes the sticky
+in existing panel tests; the actual `agentBlueprintTurnEnd` suite remains intact.
+The focused serial command in `output/evidence/acceptance-live/README.md` passed
+153 assertions in 14 suites. A concurrent-build run had all assertions pass but
+exited nonzero on Vitest's `onTaskUpdate` IPC timeout; it is retained, not counted
+as green. No assertion, timeout, test or warning was suppressed.
+
+`scripts/qa/acceptance-live.mjs` uses real companion models, declaration/parser,
+planner/session and the actual apply/store/Supabase save/reload path, with an
+exclusively owned project ID and collision/revision checks. Its before/negative
+cases do not write. Authored features come only from model tools. The initial
+10-gold potion stock hit the production half-catalog-price floor (50 -> 25), not
+a scene/player pricing divergence; a real Codex tool call set the catalog price
+to 10. `acceptance-live-check.mjs` independently reloads the exact final revision,
+evaluates the captured original live criteria through the canonical ledger and
+runs a combined 16-step real-interpreter scenario. It is not a fresh model call,
+not a fabricated declaration, and not graphical-player evidence. The latter and
+full-gate baseline comparison are separate lead-owned gates. See the evidence
+README for the canonical JSON, model IDs, receipt, hashes and player checkpoints.
 
 Focused suites: `functionalScenePurchase`, `functionalAcceptance`,
 `functionalAcceptanceSession`, `functionalPersistenceProof`, `npcRewardSession`,

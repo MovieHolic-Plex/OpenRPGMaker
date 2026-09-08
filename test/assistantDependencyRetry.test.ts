@@ -1,17 +1,19 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AssistantSession, type SessionEvent, type AssistantSessionOptions } from "@/ai/assistantSession";
-import type { ChatRequest, ChatResult } from "@/ai/llmClient";
+import { defaultAiConfig, type AiConfig, type ChatRequest, type ChatResult } from "@/ai/llmClient";
 import { resetIntentDeclarationCache } from "@/ai/intentDeclarationClient";
 import { parseRunRecapPayload, serializeRunRecap } from "@/ai/runRecap";
 import { runTool } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
-import { resetMapEditHistory } from "@/editor/mapEditHistory";
+import { getMapEditHistoryEntries, resetMapEditHistory } from "@/editor/mapEditHistory";
+import * as commits from "@/project/projectCommitLog";
 import { fixedDeclarer } from "./intentFixture";
+import { approvedReviewResponse } from "./independentReviewFixture";
 
 type Call = { name: string; args: Record<string, unknown> };
 type ToolEvent = Extract<SessionEvent, { type: "tool_call" }>;
-const CONFIG = { authMode: "apiKey" as const, agentMode: "auto" as const, baseUrl: "x", model: "stub", liteModel: "executor", apiKey: "test", maxToolCalls: 24, maxTokens: 32768 };
+const CONFIG: AiConfig = { ...defaultAiConfig(), maxToolCalls: 24, maxTokens: 32768 };
 const call = (name: string, args: Record<string, unknown> = {}): Call => ({ name, args });
 const spec = (mapId = "m1", valid = true): Call => call("set_build_spec", { mapId, assets: [{ id: "terrain", kind: "terrain", x: 2, y: 2, w: valid ? 6 : 40, h: 6 }] });
 const fill = (mapId = "m1"): Call => call("fill_region", { mapId, rect: { x: 3, y: 3, w: 3, h: 3 }, material: "모래", shape: "rect" });
@@ -39,9 +41,11 @@ function setup(rounds: Call[][], options: { planned?: boolean; maxToolCalls?: nu
   store.replace(ctx.project);
   resetMapEditHistory();
   const plan = { goal: "도구 실행 확인", layers: [{ title: "작업", items: [{ title: "실행 확인", instruction: "도구 실행 후 조회", successTools: options.successTools ?? ["get_map_region"], ...(options.mapTargets ? { mapTargets: options.mapTargets } : {}) }] }] };
-  const state = { batches: 0, planners: 0 };
+  const state = { batches: 0, planners: 0, reviews: 0 };
   const requests: ChatRequest[] = [];
   const chat: AssistantSessionOptions["chat"] = async (_config, request): Promise<ChatResult> => {
+    const review = approvedReviewResponse(request);
+    if (review) { state.reviews += 1; return review; }
     if (!request.tools?.length) return { message: { role: "assistant", content: JSON.stringify(state.planners++ === 0 ? { action: "new_plan", ...plan } : { action: "resume" }) }, finishReason: "stop" };
     requests.push(request);
     const batch = rounds[state.batches++];
@@ -77,7 +81,8 @@ function expectSlimeReadDelivered(request: ChatRequest, event: ToolEvent): void 
   expect(event.result).toMatchObject({ ok: true, data: { resource: { resourceId: "generated-enemy-slime-01", tags: expect.arrayContaining(["slime"]) } } });
   const response = request.messages.find((message) => message.role === "tool" && message.name === "get_monster_resource");
   expect(response).toBeDefined();
-  expect(JSON.parse(response!.content as string)).toMatchObject({ ok: true, data: event.result.data });
+  if (typeof response?.content !== "string") throw new Error("Missing serialized monster read");
+  expect(JSON.parse(response.content)).toMatchObject({ ok: true, data: event.result.data });
 }
 
 describe("batch prerequisites through AssistantSession", () => {
@@ -100,7 +105,8 @@ describe("batch prerequisites through AssistantSession", () => {
     expect(session.getProposedProject().maps.m1).toEqual(project.maps.m1);
     expect(session.getProposedProject().maps.m2).not.toEqual(project.maps.m2);
     expect(result.recap).toMatchObject({ toolFailures: 1, deferredToolCalls: 5 });
-    expect(parseRunRecapPayload(serializeRunRecap(result.recap!))).toMatchObject({ toolFailures: 1, deferredToolCalls: 5 });
+    if (!result.recap) throw new Error("Expected a run recap");
+    expect(parseRunRecapPayload(serializeRunRecap(result.recap))).toMatchObject({ toolFailures: 1, deferredToolCalls: 5 });
     expect(state.batches).toBe(1);
     // Keep the one-round budget: a real continuation requests completion in a
     // separate batch, after m1 was read and the failed-spec batch has ended.
@@ -119,6 +125,7 @@ describe("batch prerequisites through AssistantSession", () => {
     expect(result.recap!.toolFailures + completionResult.recap!.toolFailures).toBe(2);
     expect(session.getAuditEntries().filter((entry) => entry.kind === "tool" && !entry.ok && !entry.deferred)).toHaveLength(2);
     expect(session.getAuditEntries().filter((entry) => entry.kind === "tool" && entry.deferred)).toHaveLength(5);
+
     expect(session.getAuditEntries().filter((entry) => entry.kind === "tool" && entry.name === "fill_region" && entry.args.mapId === "m1")).toEqual(deferred.map(() => expect.objectContaining({ ok: false, deferred: true, issueCodes: ["build-spec-dependency-failed"] })));
     expectResponses(session);
   });
@@ -274,12 +281,19 @@ describe("stable target retry budgets through AssistantSession", () => {
   it("bounds spelling and page-path variations despite unrelated writes and synthetic continuations, then rearms for a real user", async () => {
     const rounds = Array.from({ length: 4 }, (_, i) => [badNpc(i), title(i), npc(GOOD_PAGES, "npc_other")]);
     const { session, events, collect, state } = setup(rounds, { planned: true, maxToolCalls: 1 });
+    const authored = structuredClone(store.getCurrent());
+    const commit = vi.spyOn(commits, "recordProjectCommit");
     const first = await session.sendUserMessage("주민 명령 수정", collect, undefined, { autonomous: true });
     expect(first.workPlan?.layers[0].items[0].status).toBe("blocked");
     expect(state.batches).toBe(4);
     expect(events.filter((event) => event.name === "place_npc" && event.args.id === "npc_target").map((event) => event.result.issues?.[0]?.code)).toEqual(Array(4).fill("invalid-args"));
     expect(first.stoppedReason).toBe("final");
     expect(first.recap?.ralphContinues).toBe(0);
+    expect(first.recap?.process.filter(step => step.kind === "continue")).toHaveLength(3);
+    expect(first.appliedCalls ?? []).toEqual([]);
+    expect(store.getCurrent()).toEqual(authored);
+    expect(getMapEditHistoryEntries()).toEqual([]);
+    expect(commit).not.toHaveBeenCalled();
     expectResponses(session);
 
     expect(session.getAcceptanceSnapshot()).toMatchObject({ status: "blocked", items: [{ id: "acceptance-contract", evidence: [] }] });
@@ -289,19 +303,30 @@ describe("stable target retry budgets through AssistantSession", () => {
     rounds.push([badNpc(0)], [badNpc(1)], [badNpc(2)], [correctedNpc(1), readMap,
       call("repair_acceptance", { itemId: "acceptance-contract", criteria }),
     ]);
+    // Final writer response + independent review require two rounds. A one-round
+    // budget can test failure bounds, but cannot admit even a corrected draft.
+    session.updateConfig({ ...CONFIG, maxToolCalls: 2 });
     // P2 requires the host's explicit resume action, not arbitrary new prose.
     const second = await session.sendUserMessage("같은 주민 명령을 다시 고쳐줘", collect, undefined, { autonomous: true, goalAction: "resume" });
     expect(second.workPlan?.layers[0].items[0].status).toBe("done");
-    expect(state.batches).toBe(8);
+    expect(state.batches).toBe(9); // Eight tool batches plus the terminal writer response.
+    expect(state.reviews).toBe(1);
+    expect(second.stoppedReason).toBe("final");
+    expect(second.recap?.process.filter(step => step.kind === "continue")).toHaveLength(2);
     expect(events.find((event) => event.name === "repair_acceptance")?.result).toMatchObject({ ok: true, data: { acceptance: { status: "verifying", items: [{ evidence: [{ passed: false }] }] } } });
     expect(session.getAcceptanceSnapshot()).toMatchObject({ status: "verified", items: [{ id: "acceptance-contract", evidence: [{ expected: JSON.stringify(criteria[0]), passed: true }] }] });
     expect(second.proposedCalls).toEqual([]);
     // Resume retains previously pending independent writes; none were applied in
-    // the blocked first run, so they must be delivered once rather than erased.
+    // the blocked first run, so they must be reviewed and delivered once rather than erased.
     expect(first.appliedCalls).toEqual([]);
     expect(second.appliedCalls?.slice(0, -1)).toEqual(first.proposedCalls);
     expect(second.appliedCalls?.at(-1)).toMatchObject({ name: "place_npc", args: { id: "npc_target" } });
     expect(second.appliedCalls?.filter(entry => entry.name === "place_npc" && entry.args.id === "npc_other")).toHaveLength(1);
+    expect(getMapEditHistoryEntries()).toHaveLength(1);
+    expect(commit).toHaveBeenCalledTimes(1);
+    expect(store.getCurrent().meta.title).toBe(session.getProposedProject().meta.title);
+    expect(store.getCurrent().maps.m1.events.find(event => event.id === "npc_target")?.name).toBe("Corrected 1");
+    expect(store.getCurrent().maps.m1.events.find(event => event.id === "npc_other")).toEqual(session.getProposedProject().maps.m1.events.find(event => event.id === "npc_other"));
     expect(events.filter((event) => event.name === "place_npc" && event.args.id === "npc_target").map((event) => event.result.ok)).toEqual([false, false, false, false, false, false, false, true]);
     expect(events.filter((event) => event.name === "place_npc" && event.args.id === "npc_target").at(-1)?.result.ok).toBe(true);
     expectResponses(session);

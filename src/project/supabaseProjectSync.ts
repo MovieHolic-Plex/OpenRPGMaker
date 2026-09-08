@@ -502,6 +502,8 @@ async function fetchJsonArray(url: string, config: SupabaseProjectConfig, signal
 // ── AI 대화 기록 미러 (로컬 정본, 여기는 기기 간 복원/검색용) ────────────────
 export type SupabaseConversationInput = {
   readonly conversationId: string;
+  /** Captured before local persistence. No credentials are serialized into the outbox. */
+  readonly destinationProjectId?: string | null;
   readonly title: string;
   readonly model: string;
   readonly projectContextKey?: string;
@@ -514,12 +516,14 @@ export async function recordSupabaseConversation(
   input: SupabaseConversationInput,
   config = supabaseProjectConfig(),
 ): Promise<SupabaseSaveResult> {
-  if (!config) return { kind: "not-configured" };
+  if (!config || input.destinationProjectId === null) return { kind: "not-configured" };
+  const projectId = input.destinationProjectId ?? (input.projectContextKey?.startsWith("remote:") ? input.projectContextKey.slice(7) : config.projectId);
+  const destination = { ...config, projectId };
   try {
-    await upsertRows(config, "ai_conversations", "conversation_id", [
+    await upsertRows(destination, "ai_conversations", "conversation_id", [
       {
         conversation_id: input.conversationId,
-        project_id: config.projectId,
+        project_id: destination.projectId,
         title: input.title.slice(0, 200),
         model: input.model,
         project_context_key: input.projectContextKey ?? null,
@@ -541,39 +545,40 @@ export async function recordSupabaseConversation(
 
 /** 대화 요약 목록 — query가 있으면 제목 부분일치(ilike) 검색. entries_json은 내리지 않는다. */
 export async function listSupabaseConversations(
-  opts: { readonly query?: string; readonly limit?: number; readonly scopeKey?: string } = {},
+  opts: { readonly query?: string; readonly limit?: number; readonly offset?: number; readonly signal?: AbortSignal; readonly includeEntries?: boolean; readonly projectContextKey?: string } = {},
   config = supabaseProjectConfig(),
 ): Promise<readonly Record<string, unknown>[]> {
-  if (!config) return [];
+  if (!config) throw new Error("Conversation recovery is not configured");
+  opts.signal?.throwIfAborted();
   const n = Math.max(1, Math.min(100, Math.floor(opts.limit ?? 50)));
   const params = new URLSearchParams({
     project_id: `eq.${config.projectId}`,
-    select: "conversation_id,project_id,title,model,project_context_key,saved_at",
-    order: "saved_at.desc",
+    select: `project_id,conversation_id,title,model,project_context_key,saved_at${opts.includeEntries ? ",entries_json" : ""}`,
+    order: "saved_at.desc,conversation_id.asc",
     limit: String(n),
-    ...(opts.scopeKey ? { project_context_key: `eq.${opts.scopeKey}` } : {}),
+    offset: String(Math.max(0, Math.floor(opts.offset ?? 0))),
   });
   const query = opts.query?.trim();
   if (query) params.set("title", `ilike.*${query.replaceAll("*", "").replaceAll(",", "")}*`);
-  // History distinguishes failed reads from a genuinely empty remote list.
-  return fetchJsonArray(`${config.url}/rest/v1/ai_conversations?${params.toString()}`, config, undefined, true);
+  if (opts.projectContextKey !== undefined) params.set("project_context_key", `eq.${opts.projectContextKey}`);
+  return fetchJsonArray(`${config.url}/rest/v1/ai_conversations?${params.toString()}`, config, opts.signal, true);
 }
 
 /** 대화 1건 전체(entries_json 포함) — 로컬에 없는 대화를 다른 기기에서 복원할 때. */
 export async function loadSupabaseConversation(
   conversationId: string,
   config = supabaseProjectConfig(),
-  options: { readonly scopeKey?: string } = {},
+  signal?: AbortSignal,
 ): Promise<Record<string, unknown> | null> {
-  if (!config) return null;
+  if (!config) throw new Error("Conversation recovery is not configured");
+  signal?.throwIfAborted();
   const params = new URLSearchParams({
     project_id: `eq.${config.projectId}`,
     conversation_id: `eq.${conversationId}`,
-    select: "conversation_id,project_id,title,model,project_context_key,entries_json,saved_at",
+    select: "project_id,conversation_id,title,model,project_context_key,entries_json,saved_at",
     limit: "1",
-    ...(options.scopeKey ? { project_context_key: `eq.${options.scopeKey}` } : {}),
   });
-  const rows = await fetchJsonArray(`${config.url}/rest/v1/ai_conversations?${params.toString()}`, config, undefined, true);
+  const rows = await fetchJsonArray(`${config.url}/rest/v1/ai_conversations?${params.toString()}`, config, signal, true);
   return rows[0] ?? null;
 }
 

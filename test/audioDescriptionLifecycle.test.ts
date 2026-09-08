@@ -2,6 +2,7 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
+import * as projectSync from "@/project/supabaseProjectSync";
 import { getMapEditHistoryState, resetMapEditHistory, undoMapEdit } from "@/editor/mapEditHistory";
 import { modalStackDepthForTest } from "@/editor/ui/modalStack";
 import {
@@ -10,7 +11,10 @@ import {
 } from "./helpers/audioDescriptionManager";
 
 beforeEach(setupAudioManager);
-afterEach(cleanupAudioManager);
+afterEach(() => {
+  cleanupAudioManager();
+  vi.unstubAllEnvs();
+});
 
 it.each(["row", "kind", "close", "escape", "backdrop"] as const)(
   "preserves the draft when a dirty %s transition is canceled",
@@ -74,10 +78,16 @@ it.each(["save", "discard"] as const)("honors %s before changing the selected ro
     .toBe(decision === "save" ? "decision sentinel" : undefined);
 });
 
-it("selects a newly imported audio row after the real file read completes", async () => {
+it("selects a newly imported audio row after its durable save completes", async () => {
   // Given:
   chooseKind("music");
   const before = new Set(Object.keys(store.getCurrent().assets.uploaded));
+  store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: true, disabledReason: null });
+  vi.stubEnv("VITE_SUPABASE_URL", "http://db.test");
+  vi.stubEnv("VITE_SUPABASE_ANON_KEY", "test-anon");
+  vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "audio-test-target");
+  // Keep flush's timer cancellation, mutation generations and callbacks real.
+  vi.spyOn(projectSync, "saveProjectToSupabase").mockImplementation(async project => ({ kind: "saved", project }));
   // When:
   await readFileThroughManager(new File(["OggS"], "new-track.ogg", { type: "audio/ogg" }));
   // Then:

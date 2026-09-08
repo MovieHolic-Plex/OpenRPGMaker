@@ -26,7 +26,9 @@ it.each(cases)("preserves delivery ownership for $action with verified=$verified
   // Given actual ordinary application and a real accepted receipt in this session.
   const f = applyFixture();
   const first = await f.run();
-  const applied = await applyProposedProject(f.session.getProposedProject(), { source: "agent", summary: "Title", toolNames: ["set_title_screen"] });
+  expect(first.review?.status).toBe("approved");
+  expect(f.session.isDraftReviewApproved()).toBe(true);
+  const applied = await applyProposedProject(f.session.getProposedProject(), { baseline: f.session.getDraftBaseline(), source: "agent", summary: "Title", toolNames: ["set_title_screen"] });
   if (!applied.ok) throw new Error(applied.issue);
   f.session.recordAppliedProject(applied); f.session.rebaseProject(store.getCurrent());
   if (!spec.verified) f.setProofResponse(() => Response.json([], { status: 503 }));

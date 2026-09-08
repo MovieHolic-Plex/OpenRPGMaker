@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
-import type { ChatResult } from "@/ai/llmClient";
+import type { ChatRequest, ChatResult } from "@/ai/llmClient";
 import { getTool, runTool } from "@/editor/tools";
 import { canMoveFootprint, isPassable } from "@/project/collision";
 import { EventPlacementAnalysis, eventRelocationCandidates } from "@/project/eventPlacementRecovery";
@@ -14,6 +14,22 @@ import { createBlankProject } from "@/project/defaults";
 import { TILE } from "@/project/defaults/constants";
 import type { GameEvent } from "@/project/types";
 import { completedHouseProject } from "./fixtures/completedHouse";
+import { approvedReviewResponse, independentReviewPayload } from "./independentReviewFixture";
+
+// Renderer endpoint double: exercises capture/delivery/currentness, not pixel quality.
+const reviewImage = { label: "Relocation map render", dataUrl: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGNgYGD4DwABBAEAX+XDSwAAAABJRU5ErkJggg==" };
+
+function relocationReviewResponse(request: ChatRequest): ChatResult | null {
+  const input = independentReviewPayload(request);
+  if (!input) return null;
+  expect(request.tools).toEqual([]);
+  expect(input.requiredProblems, JSON.stringify(input.requiredProblems)).toEqual([]);
+  const parts = request.messages.flatMap(message => Array.isArray(message.content) ? message.content : []);
+  expect(parts.filter(part => part.type === "image_url")).toEqual([
+    { type: "image_url", image_url: { url: reviewImage.dataUrl } },
+  ]);
+  return approvedReviewResponse(request);
+}
 
 function fixture() {
   const project = createBlankProject();
@@ -170,7 +186,10 @@ describe("AI blocked entity relocation", () => {
     let round = 0, observed = false;
     const session = new AssistantSession(context.project, {
       config: { authMode: "apiKey", baseUrl: "x", model: "stub", liteModel: "stub", apiKey: "sk", maxToolCalls: 8, maxTokens: 2048 },
-      chat: async (_config, request) => {
+      renderImages: async () => [reviewImage],
+      chat: async (_config, request): Promise<ChatResult> => {
+        const review = relocationReviewResponse(request);
+        if (review) return review;
         if (round++ === 0) return call("set_build_spec", { mapId, title: "Enclosure", assets: [{ id: "walls", kind: "terrain", x: 0, y: 0, w: map.width, h: map.height }] }, "spec");
         if (round === 2) return call("paint_tiles", { mapId, layer: "lower", mode: "cells", tile: TILE.WALL, cells }, "paint");
         const response = request.messages.find(message => message.role === "tool" && message.tool_call_id === "paint");
@@ -183,11 +202,17 @@ describe("AI blocked entity relocation", () => {
         expect(payload.issues?.some((entry: { eventId?: string }) => entry.eventId === sign.id)).toBe(false);
         expect(request.tools?.some(tool => tool.function.name === "move_event")).toBe(true);
         observed = true;
+        if (round === 3) return call("repair_acceptance", {
+          itemId: session.getAcceptanceSnapshot()!.items[0].id,
+          criteria: [{ kind: "targetChange", target: { mapId } }, { kind: "imageReviewed", target: { mapId } }],
+        }, "criteria");
+        if (round === 4) return call("show_map_region", { mapId, x: 0, y: 0, w: map.width, h: map.height }, "image");
         return { message: { role: "assistant", content: "Done." }, finishReason: "stop" };
       },
     });
     const result = await session.sendUserMessage("벽 타일을 지정한 영역에 칠해줘");
     expect(result.stoppedReason, result.error).not.toBe("error");
+    expect(result.review?.status).toBe("approved");
     expect(observed).toBe(true);
     expect(result.proposedCalls.map(proposal => proposal.name)).toEqual(["paint_tiles"]);
     const after = session.getProposedProject().maps[mapId];
@@ -252,7 +277,10 @@ describe("AI blocked entity relocation", () => {
     let round = 0;
     const session = new AssistantSession(context.project, {
       config: { authMode: "apiKey", baseUrl: "x", model: "stub", liteModel: "stub", apiKey: "sk", maxToolCalls: 8, maxTokens: 2048 },
+      renderImages: async () => [reviewImage],
       chat: async (_config, request) => {
+        const review = relocationReviewResponse(request);
+        if (review) return review;
         if (round++ === 0) return call("run_lint", {}, "lint");
         if (round === 2) {
           const response = request.messages.find(m => m.role === "tool" && m.tool_call_id === "lint");
@@ -264,11 +292,15 @@ describe("AI blocked entity relocation", () => {
           expect(shared).toBeDefined();
           return { message: { role: "assistant", content: null, tool_calls: [first, shared].map((c, i) => ({ id: `move${i}`, type: "function" as const, function: { name: c.name, arguments: JSON.stringify(c.args) } })) }, finishReason: "tool_calls" };
         }
+        // The explicit pre-move lint check is stale after either relocation.
+        if (round === 3) return call("run_lint", {}, "relint");
+        if (round === 4) return call("show_map_region", { mapId, x: 0, y: 0, w: map.width, h: map.height }, "image");
         return { message: { role: "assistant", content: "Done." }, finishReason: "stop" };
       },
     });
     const result = await session.sendUserMessage("막힌 NPC 둘의 위치를 이동해줘");
     expect(result.stoppedReason, result.error).not.toBe("error");
+    expect(result.review?.status).toBe("approved");
     expect(result.proposedCalls.filter(c => c.name === "move_event")).toHaveLength(2);
     const [a, b] = session.getProposedProject().maps[mapId].events;
     expect(rectsOverlap(footprintQuery.eventBodyRect(a), footprintQuery.eventBodyRect(b))).toBe(false);
@@ -420,7 +452,10 @@ describe("AI blocked entity relocation", () => {
     let paintedTiles: { lowerTiles: number[]; upperTiles: number[] } | undefined;
     const session = new AssistantSession(context.project, {
       config: { authMode: "apiKey", baseUrl: "x", model: "stub", liteModel: "stub", apiKey: "sk", maxToolCalls: 8, maxTokens: 2048 },
-      chat: async (_config, request) => {
+      renderImages: async () => [reviewImage],
+      chat: async (_config, request): Promise<ChatResult> => {
+        const review = relocationReviewResponse(request);
+        if (review) return review;
         if (round++ === 0) return call("set_build_spec", {
           mapId, title: "Wall", assets: [{ id: "wall", kind: "terrain", x: 5, y: 5, w: 1, h: 1 }],
         }, "spec");
@@ -442,6 +477,14 @@ describe("AI blocked entity relocation", () => {
           paintedTiles = { lowerTiles: [...painted.lowerTiles], upperTiles: [...painted.upperTiles] };
           if (relocate) return call(candidate.name, candidate.args, "relocate");
         }
+        if (round === (relocate ? 4 : 3)) return call("repair_acceptance", {
+          itemId: session.getAcceptanceSnapshot()!.items[0].id,
+          criteria: [{ kind: "targetChange", target: { mapId } }, { kind: "imageReviewed", target: { mapId } }],
+        }, "criteria");
+        if (round === (relocate ? 5 : 4)) {
+          const map = session.getProposedProject().maps[mapId];
+          return call("show_map_region", { mapId, x: 0, y: 0, w: map.width, h: map.height }, "image");
+        }
         return { message: { role: "assistant", content: "Done." }, finishReason: "stop" };
       },
     });
@@ -449,6 +492,7 @@ describe("AI blocked entity relocation", () => {
     const result = await session.sendUserMessage("벽 타일을 (5,5)에 칠해줘");
     // Then: recovery is a real proposal, not a silent mutation of terrain or source data.
     expect(result.stoppedReason, result.error).not.toBe("error");
+    expect(result.review?.status).toBe("approved");
     expect(result.proposedCalls.map(proposal => proposal.name)).toEqual(relocate ? ["paint_tiles", "move_event"] : ["paint_tiles"]);
     const after = session.getProposedProject().maps[mapId];
     expect(after.events.find(event => event.id === npc.id)).toEqual(destination ? { ...npc, x: destination.x, y: destination.y } : npc);

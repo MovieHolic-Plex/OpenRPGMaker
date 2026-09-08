@@ -1,0 +1,65 @@
+Auto-merging docs/tool-catalog.md
+Auto-merging openwiki/INDEX.md
+CONFLICT (content): Merge conflict in openwiki/INDEX.md
+Auto-merging openwiki/editor-ai-panel.md
+CONFLICT (content): Merge conflict in openwiki/editor-ai-panel.md
+Auto-merging openwiki/editor-ai-tools.md
+Auto-merging openwiki/editor-observability.md
+Auto-merging openwiki/editor-pre-edit-routing.md
+Auto-merging openwiki/project-wiki.md
+Auto-merging openwiki/runtime-project-schema.md
+Auto-merging src/ai/assistantAcceptanceLedger.ts
+CONFLICT (content): Merge conflict in src/ai/assistantAcceptanceLedger.ts
+Auto-merging src/ai/assistantSession.ts
+CONFLICT (content): Merge conflict in src/ai/assistantSession.ts
+Auto-merging src/ai/contextBuilder.ts
+Auto-merging src/ai/conversationStore.ts
+CONFLICT (content): Merge conflict in src/ai/conversationStore.ts
+Auto-merging src/ai/intentDeclaration.ts
+Auto-merging src/ai/intentDeclarationClient.ts
+Auto-merging src/ai/llmClient.ts
+CONFLICT (content): Merge conflict in src/ai/llmClient.ts
+Auto-merging src/editor/panels/aiChatPanel.ts
+CONFLICT (content): Merge conflict in src/editor/panels/aiChatPanel.ts
+Auto-merging src/editor/panels/aiConversationHistoryModal.ts
+CONFLICT (content): Merge conflict in src/editor/panels/aiConversationHistoryModal.ts
+Auto-merging src/editor/panels/aiStickyChecklist.ts
+CONFLICT (content): Merge conflict in src/editor/panels/aiStickyChecklist.ts
+Auto-merging src/editor/panels/aiTurnRunner.ts
+Auto-merging src/editor/projectWikiCoordinator.ts
+CONFLICT (content): Merge conflict in src/editor/projectWikiCoordinator.ts
+Auto-merging src/editor/tools/queryTools.ts
+Auto-merging src/player/dialogue.ts
+Auto-merging src/player/interpreter.ts
+Auto-merging src/player/interpreter/commandCatalog.ts
+Auto-merging src/project/store.ts
+CONFLICT (content): Merge conflict in src/project/store.ts
+Auto-merging src/project/supabaseProjectSync.ts
+CONFLICT (content): Merge conflict in src/project/supabaseProjectSync.ts
+Auto-merging test/aiAssistantSession.test.ts
+CONFLICT (content): Merge conflict in test/aiAssistantSession.test.ts
+Auto-merging test/aiCompletionAccounting.test.ts
+CONFLICT (content): Merge conflict in test/aiCompletionAccounting.test.ts
+Auto-merging test/aiRunEndProof.test.ts
+CONFLICT (content): Merge conflict in test/aiRunEndProof.test.ts
+Auto-merging test/aiTurnAppliedAccounting.test.ts
+Auto-merging test/aiWorkItemStall.test.ts
+CONFLICT (content): Merge conflict in test/aiWorkItemStall.test.ts
+Auto-merging test/assistantAcceptanceSession.test.ts
+CONFLICT (content): Merge conflict in test/assistantAcceptanceSession.test.ts
+Auto-merging test/assistantBatchCompletion.test.ts
+Auto-merging test/assistantDependencyRetry.test.ts
+CONFLICT (content): Merge conflict in test/assistantDependencyRetry.test.ts
+Auto-merging test/assistantSessionIntent.test.ts
+Auto-merging test/assistantVerificationContinuation.test.ts
+CONFLICT (content): Merge conflict in test/assistantVerificationContinuation.test.ts
+Auto-merging test/assistantVisualEvidenceSession.test.ts
+CONFLICT (content): Merge conflict in test/assistantVisualEvidenceSession.test.ts
+Auto-merging test/intentDeclarationClient.test.ts
+Auto-merging test/npcRewardSession.test.ts
+CONFLICT (content): Merge conflict in test/npcRewardSession.test.ts
+Auto-merging test/runOutcomeApplyFixture.ts
+CONFLICT (content): Merge conflict in test/runOutcomeApplyFixture.ts
+Auto-merging test/toolSchemaProviderCompat.test.ts
+CONFLICT (content): Merge conflict in test/toolSchemaProviderCompat.test.ts
+Automatic merge failed; fix conflicts and then commit the result.
