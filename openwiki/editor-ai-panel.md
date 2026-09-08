@@ -48,6 +48,17 @@ Applied A content stays in the project. Cancelled pending work remains inspectab
 for authorized same-goal resume; explicit new-goal entry discards its detached
 payload and authority, not already-applied content or immutable goal history.
 
+On a normal same-session replacement send, capture the exact approved draft's
+content identity **before** retiring the predecessor operation. Retirement aborts
+the signal used by `isDraftReviewApproved()`; checking retention afterward mistakes
+valid reviewed content for an unreviewed draft and resets it to the accepted base.
+This snapshot preserves content only: the new owner still clears prior review/apply
+authority and must earn a fresh review. Already-cancelled or stale reviews do not
+qualify, and explicit `new-goal` still discards the old detached payload. The
+`assistantMapPreservationGuard` same-session cases verify that the second writer
+sees the built house without old approval, reaches real `protected-house-write`,
+and retains its lower tiles, upper tiles and layout under all four permissions.
+
 A proposal rejected as `stale-base` or `stale-baseline` remains inspectable through Ask, but Ask
 publishes no apply calls. After intent selection, the next authorized non-question
 user authoring turn rebases from current live data and performs new work. It doesn't

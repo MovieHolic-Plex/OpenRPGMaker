@@ -1729,6 +1729,8 @@ export class AssistantSession {
     signal?: AbortSignal,
     opts?: SessionTurnOptions,
   ): Promise<TurnResult> {
+    // Capture content eligibility before replacement retires the previous review's signal.
+    const reviewedDraftAtEntry = this.isDraftReviewApproved() ? this.approvedReviewIdentity : null;
     const operation = this.beginRunOperation(signal);
     if (!operation) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted",
       runOutcome: deriveRunOutcome({ execution: "cancelled", acceptance: null, hasPendingDraft: false, hasApplied: false, persistence: "none" }) };
@@ -1746,7 +1748,6 @@ export class AssistantSession {
     // 사용자의 수동 진입(새 sendUserMessage 호출)은 예산 카운터를 0으로 되돌린다(re-arm).
     // 마일스톤 자동 적용도 같은 명시 플래그로만 켠다. 직전 턴의 커밋 게이트 실패는
     // 현재 자율 런만 중단하는 상태이므로 새 사용자 메시지에서 반드시 재가동한다.
-    const reviewedDraftAtEntry = this.isDraftReviewApproved() ? this.approvedReviewIdentity : null;
     this.activeTurnSignal = signal;
     // A send owns a new attempt even when preparation fails before the writer loop.
     // Keep detached work/evidence for authorized resume, never prior apply authority.
