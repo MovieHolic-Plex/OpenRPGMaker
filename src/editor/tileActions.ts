@@ -151,7 +151,7 @@ export function paintTilesBulk(
       });
     }
     if (repairTrees) {
-      repairTreePairsOnMap(m, {
+      repairTreePairsOnMap(m, tileset, {
         canopyReplacementExemptTileIds: resolveForestCanopyReplacementExemptTileIds(current),
       });
     }
@@ -271,7 +271,7 @@ export function eraseTilesBulk(
       });
     }
     // 의도적으로 짝을 지운 뒤에는 수관을 다시 심지 않도록, 남은 고아 밑동만 정리
-    repairTreePairsOnMap(m, {
+    repairTreePairsOnMap(m, tileset, {
       canopyReplacementExemptTileIds: resolveForestCanopyReplacementExemptTileIds(current),
     });
   }, {
@@ -333,8 +333,8 @@ function planEraseWrites(
 /** 하위 슬롯을 차지하면 안 되는 칩 — 밑동(하위 홈이지만 투명) + 상위 전용 소품. */
 function isSpriteOccupyingLower(tileset: TilesetDef | undefined, tile: number | undefined): boolean {
   if (tile === undefined || tile < 0 || tile === TILE.EMPTY) return false;
-  if (isTreeTrunkTileId(tile)) return true;
   if (!tileset) return false;
+  if (isCombinedTownTileset(tileset) && isTreeTrunkTileId(tile)) return true;
   return tileLayerHome(tileset, tile) === "upper";
 }
 
@@ -380,6 +380,7 @@ function expandEraseCompanions(
   strokes: readonly EraseStroke[],
   clusterExpand: boolean,
 ): EraseStroke[] {
+  const town = tileset !== undefined && isCombinedTownTileset(tileset);
   const out = new Map<string, EraseStroke>();
   const add = (layer: TileLayer, x: number, y: number): void => {
     if (!inMap(map, x, y)) return;
@@ -407,7 +408,7 @@ function expandEraseCompanions(
           const other: TileLayer = edit.layer === "upper" ? "lower" : "upper";
           const otherTile = tileAt(map, other, edit.x, edit.y);
           if (otherTile !== undefined && otherTile !== TILE.EMPTY && otherTile >= 0) {
-            if (isTreeTrunkTileId(otherTile) || isTreeCanopyTileId(otherTile) || otherTile === edit.tile) {
+            if (otherTile === edit.tile || (town && (isTreeTrunkTileId(otherTile) || isTreeCanopyTileId(otherTile)))) {
               add(other, edit.x, edit.y);
             }
           }
@@ -415,6 +416,8 @@ function expandEraseCompanions(
       }
     }
 
+    // Foreign authored hard groups above still apply; numeric tree pairs do not.
+    if (!town) continue;
     // 나무 짝 명시 (클러스터 규칙이 한쪽만 있어도 복구 방지)
     if (isTreeCanopyTileId(tile) && stroke.layer === "upper") {
       const trunk = CANOPY_TO_TRUNK[tile];
@@ -523,7 +526,7 @@ export function fillTile(mapId: MapId, layer: TileLayer, x: number, y: number, n
     });
     // 하위 지형 채우기는 상위(수관 등)를 재작성하지 않는다.
     if (targetLayer === "upper" || !isLowerTerrainTile(tileset, newTile)) {
-      repairTreePairsOnMap(m, {
+      repairTreePairsOnMap(m, tileset, {
         canopyReplacementExemptTileIds: resolveForestCanopyReplacementExemptTileIds(current),
       });
     }
