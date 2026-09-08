@@ -93,10 +93,15 @@
 
 - Reuse the Phaser camera, existing visible-area/assistant occlusion model, native
   scroll containers and `el`. No new docking mode, dependency or parallel offsets.
-- Native X/Y scrollbars sit at the unobstructed canvas edges, using 16px tracks
-  (`--space-4`), existing inset/scrollbar tokens and `--focus-outline`. Their
-  extents include half a visible viewport plus 32px inspection padding per edge.
+- Native X/Y scrollbars sit at the **canvas** edges, using 16px tracks
+  (`--space-4`), existing inset/scrollbar tokens and `--focus-outline`. A track is
+  editor furniture, so opening, resizing or collapsing the assistant must never
+  move or resize one; only the thumb reports the unobstructed span. Their extents
+  include half a visible viewport plus 32px inspection padding per edge.
   Native keyboard scrolling owns navigation keys while focused.
+- The float deck stands just inside those tracks (`--ai-deck-inset`), never over
+  them, and stays within the edge-flush tolerance that makes the occlusion model
+  read it as an edge column.
 - Ctrl+wheel over the canvas steps the existing 1/2/3/4/6/8 zoom marks about the
   pointer on Linux, Windows and macOS (including Ctrl-style trackpad pinch).
   Unmodified wheel remains pan; Command-only wheel is not editor zoom. Accepted
