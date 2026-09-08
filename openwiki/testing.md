@@ -1082,6 +1082,38 @@ Unhandled Rejection 은 그 순간 실행 중이던 아무 파일에 귀속되�
 **비결정적 오귀속**의 원인이 된다. 새 브라우저 전역을 프로덕션이 쓰기 시작하면 `fakeDom` 의
 `DomGlobalName` 유니온·save/restore 목록·`defineDomGlobal` 세 곳을 같이 늘려야 한다.
 
+### Shared fake DOM enhancement contracts (2026-09-08)
+
+Adding `insertBefore` enables the real event-editor custom-select controller; it
+is not only a checklist capability. `HTMLSelectElement` identity must match the
+SELECT tag (including directly constructed `FakeElement("select")`), never every
+fake element. Single-select option state now covers direct options and optgroups,
+index/value/selected synchronization, disabled defaults and invalid selections.
+Collections are fresh arrays on access, not a complete live HTMLCollection API;
+multi-select, layout and MutationObserver simulation remain outside this fake.
+
+All insertion/replacement paths adopt nodes from their previous parent. Removal
+and text/children replacement clear parent links; wrapper disposal must restore
+exactly one select without leaving the dialog root in a wrapper. Keep the real
+enhancement enabled. `fakeDomSelectContracts` exercises actual menu selection,
+input/change bubbling, subscribed focus restoration, disposal and checklist row
+identity. Happy DOM verifies supported reference operations; Firefox additionally
+checks edge contracts where the installed Happy DOM differs (duplicate values,
+option text/label, detached index, optgroup reordering and self replacement).
+Fixtures selecting an ID must create the actual option/record first; the focused
+weighted-branch fixture now creates its `roll` variable without changing assertions.
+
+`aiChatObservability` distinguishes the `REQUEST_COVERAGE_AUDIT` sentinel from
+intent JSON and streams. Manual chat retains drafts until settlement: the bounded
+acceptance-repair execute requests are non-streaming JSON. Reply with valid audit
+requirements linked to the original request and count execute requests separately;
+do not answer audits with intent JSON or reject execute requests as bad streams.
+Subscribe before Send to transport, session and post-apply refresh events, plus
+terminal activity. Preserve the actual ghost bounds, single apply and cleanup
+assertions. The 10-second terminal deadline is unchanged; no polling or retries
+were added to tests. Exact red traces and focused/affected evidence are in
+`output/evidence/acceptance-live-fakedom-repair/`; the final full gate is lead-owned.
+
 ## bugfix-sweep 실제 표면 하네스 (2026-08-29)
 
 `node scripts/qa-bugfix-sweep-evidence.mjs` 는 **프로젝트의 Vite SSR 모듈 파이프라인**으로

@@ -1,0 +1,23 @@
+{"directCustomSelectReasonRecords": 95, "directCustomSelectReasonsStillPresent": 0, "remainingIntroducedFailuresInAffectedScope": []}
+Restored: 119 Remaining baseline failures: 7
+{'file': 'test/aiAssistantUxP0P2.test.ts', 'baseline': {'passed': 3}, 'candidate': {'failed': 2, 'passed': 1}, 'final': {'passed': 3}, 'candidateFailuresNowPassing': 2}
+{'file': 'test/aiAutonomyDialSettings.test.ts', 'baseline': {'passed': 4}, 'candidate': {'failed': 4}, 'final': {'passed': 4}, 'candidateFailuresNowPassing': 4}
+{'file': 'test/aiBackgroundOpacity.test.ts', 'baseline': {'passed': 25}, 'candidate': {'passed': 22, 'failed': 3}, 'final': {'passed': 25}, 'candidateFailuresNowPassing': 3}
+{'file': 'test/aiChatObservability.test.ts', 'baseline': {'passed': 9}, 'candidate': {'passed': 7, 'failed': 2}, 'final': {'passed': 9}, 'candidateFailuresNowPassing': 2}
+{'file': 'test/aiChatPanelSettings.test.ts', 'baseline': {'passed': 25}, 'candidate': {'passed': 8, 'failed': 17}, 'final': {'passed': 25}, 'candidateFailuresNowPassing': 17}
+{'file': 'test/aiChatPanelTransportError.test.ts', 'baseline': {'passed': 2}, 'candidate': {'failed': 2}, 'final': {'passed': 2}, 'candidateFailuresNowPassing': 2}
+{'file': 'test/aiChatPanelUxRepairs.test.ts', 'baseline': {'passed': 19, 'failed': 2}, 'candidate': {'passed': 18, 'failed': 3}, 'final': {'passed': 19, 'failed': 2}, 'candidateFailuresNowPassing': 1}
+{'file': 'test/aiDockMetaReach.test.ts', 'baseline': {'passed': 4}, 'candidate': {'passed': 3, 'failed': 1}, 'final': {'passed': 4}, 'candidateFailuresNowPassing': 1}
+{'file': 'test/aiSettingsModalLayout.test.ts', 'baseline': {'passed': 6}, 'candidate': {'failed': 6}, 'final': {'passed': 6}, 'candidateFailuresNowPassing': 6}
+{'file': 'test/commandEditModalPreview.test.ts', 'baseline': {'passed': 30}, 'candidate': {'passed': 27, 'failed': 3}, 'final': {'passed': 30}, 'candidateFailuresNowPassing': 3}
+{'file': 'test/eventDraftTransactions.test.ts', 'baseline': {'passed': 16}, 'candidate': {'passed': 13, 'failed': 3}, 'final': {'passed': 16}, 'candidateFailuresNowPassing': 3}
+{'file': 'test/eventEditorCloseDocumentLifecycle.test.ts', 'baseline': {'passed': 2}, 'candidate': {'failed': 2}, 'final': {'passed': 2}, 'candidateFailuresNowPassing': 2}
+{'file': 'test/eventEditorInspectorSelection.test.ts', 'baseline': {'passed': 5}, 'candidate': {'passed': 4, 'failed': 1}, 'final': {'passed': 5}, 'candidateFailuresNowPassing': 1}
+{'file': 'test/eventEditorModal.test.ts', 'baseline': {'passed': 29}, 'candidate': {'failed': 11, 'passed': 18}, 'final': {'passed': 29}, 'candidateFailuresNowPassing': 11}
+{'file': 'test/eventEditorModalClose.test.ts', 'baseline': {'passed': 12}, 'candidate': {'failed': 7, 'passed': 5}, 'final': {'passed': 12}, 'candidateFailuresNowPassing': 7}
+{'file': 'test/eventEditorTrustLoop.test.ts', 'baseline': {'passed': 41, 'failed': 4}, 'candidate': {'failed': 44, 'passed': 1}, 'final': {'passed': 41, 'failed': 4}, 'candidateFailuresNowPassing': 40}
+{'file': 'test/eventValidationFakeNavigation.test.ts', 'baseline': {'passed': 1}, 'candidate': {'failed': 1}, 'final': {'passed': 1}, 'candidateFailuresNowPassing': 1}
+{'file': 'test/moveRouteDialogRich.test.ts', 'baseline': {'passed': 5}, 'candidate': {'failed': 5}, 'final': {'passed': 5}, 'candidateFailuresNowPassing': 5}
+{'file': 'test/shopCommandBodyUx.test.ts', 'baseline': {'passed': 7}, 'candidate': {'passed': 5, 'failed': 2}, 'final': {'passed': 7}, 'candidateFailuresNowPassing': 2}
+{'file': 'test/uxcEditorShell.test.ts', 'baseline': {'passed': 10, 'failed': 1}, 'candidate': {'passed': 10, 'failed': 1}, 'final': {'passed': 10, 'failed': 1}, 'candidateFailuresNowPassing': 0}
+{'file': 'test/weightedBranchUx.test.ts', 'baseline': {'passed': 19}, 'candidate': {'passed': 13, 'failed': 6}, 'final': {'passed': 19}, 'candidateFailuresNowPassing': 6}

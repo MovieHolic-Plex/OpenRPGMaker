@@ -1,0 +1,33 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiChatObservability.test.ts test/requestCoverage.test.ts --maxWorkers=1 --reporter=default --reporter=json --outputFile=output/evidence/acceptance-live-fakedom-repair/coverage-observability-green.json
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-acceptance-live-qa
+
+ ✓ test/aiChatObservability.test.ts (9 tests) 11603ms
+   ✓ 글자 크기 3단 (V3C ①) > 기본값은 '보통'이고 저장하면 localStorage(oprn:ai-font-size)에 영속된다 — 무효값은 보통으로 방어  384ms
+   ✓ 도구 호출 상세 아코디언 (V3C ③) > 복원된 대화의 도구 로그는 한 줄 요약으로 남고 JSON 상세는 숨긴다  1083ms
+   ✓ 병합 추론 원문 전체 열람 (V3C ②) > 도구 사이 추론이 한 블록으로 병합돼도 각 추론의 원문 전체가 아이템으로 남고 토글은 횟수를 표시한다  900ms
+   ✓ 실시간 고스트 프리뷰 연결 > 채팅 턴의 성공한 쓰기 tool_call 뒤 세션 draft diff 고스트를 발행한다  8239ms
+ ✓ test/requestCoverage.test.ts (14 tests) 19301ms
+   ✓ independent request coverage enters the canonical ledger > keeps the original goal incomplete after failed NPC repair and NPC-only clarification ({"resume":false,"auditUnavailable":false})  1404ms
+   ✓ independent request coverage enters the canonical ledger > keeps the original goal incomplete after failed NPC repair and NPC-only clarification ({"resume":true,"auditUnavailable":false})  1259ms
+   ✓ independent request coverage enters the canonical ledger > keeps the original goal incomplete after failed NPC repair and NPC-only clarification ({"resume":false,"auditUnavailable":true})  1461ms
+   ✓ independent request coverage enters the canonical ledger > keeps the original goal incomplete after failed NPC repair and NPC-only clarification ({"resume":true,"auditUnavailable":true})  2146ms
+   ✓ independent request coverage enters the canonical ledger > retains words omitted even by the independent extractor as an unverified canonical obligation  2637ms
+   ✓ independent request coverage enters the canonical ledger > cannot satisfy a partial plan after omission coverage  683ms
+   ✓ independent request coverage enters the canonical ledger > cannot satisfy a partial plan after empty coverage  902ms
+   ✓ independent request coverage enters the canonical ledger > cannot satisfy a partial plan after invalid coverage  1050ms
+   ✓ independent request coverage enters the canonical ledger > cannot satisfy a partial plan after network coverage  2460ms
+   ✓ independent request coverage enters the canonical ledger > links every independently extracted clause to real immutable checks  1918ms
+   ✓ independent request coverage enters the canonical ledger > does not create obligations or run an audit for genuine questions  539ms
+   ✓ independent request coverage enters the canonical ledger > keeps grouped R2 clarification and resume coverage distinct (audit failure=false)  1444ms
+   ✓ independent request coverage enters the canonical ledger > keeps grouped R2 clarification and resume coverage distinct (audit failure=true)  1390ms
+
+ Test Files  2 passed (2)
+      Tests  23 passed (23)
+   Start at  14:27:31
+   Duration  136.87s (transform 65.13s, setup 0ms, collect 103.07s, tests 30.90s, environment 1ms, prepare 467ms)
+
+JSON report written to /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/output/evidence/acceptance-live-fakedom-repair/coverage-observability-green.json

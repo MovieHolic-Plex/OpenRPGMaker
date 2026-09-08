@@ -14,6 +14,9 @@ import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
 
 import * as activityLog from "@/ai/activityLog";
 import { resetIntentDeclarationCache } from "@/ai/intentDeclarationClient";
+import { AssistantSession } from "@/ai/assistantSession";
+import type { RequestRequirement } from "@/ai/requestCoverage";
+import { MAX_RALPH_ATTEMPTS_PER_ITEM } from "@/ai/workPlan";
 import { emptyWikiResponse, isWikiExtraction } from "./wikiTransportFixture";
 
 let restoreDom: (() => void) | null = null;
@@ -62,11 +65,12 @@ afterEach(async () => {
 
 // Subscribe before clicking. The runner publishes this after terminal UI cleanup;
 // storage/restore settlement alone does not mean the chat turn has completed.
-function nextTerminalActivity(): Promise<activityLog.AiActivityLogInput> {
+function nextTerminalActivity(trace: unknown[] = []): Promise<activityLog.AiActivityLogInput> {
   return new Promise((resolve, reject) => {
-    const timeout = setTimeout(() => reject(new Error("Chat turn did not publish terminal activity")), 10_000);
+    const timeout = setTimeout(() => reject(new Error(`Chat turn did not publish terminal activity: ${JSON.stringify(trace)}`)), 10_000);
     vi.mocked(activityLog.recordAiActivity).mockImplementation(async (entry) => {
       if (entry.channel === "chat" && entry.result.pending !== true) {
+        trace.push({ type: "terminal", result: entry.result });
         clearTimeout(timeout);
         resolve(entry);
       }
@@ -84,29 +88,54 @@ const toolCallLine = (id: string, name: string, args = "{}"): string =>
   JSON.stringify({ choices: [{ delta: { tool_calls: [{ index: 0, id, type: "function", function: { name, arguments: args } }] } }] });
 const reasoningLine = (text: string): string => JSON.stringify({ choices: [{ delta: { reasoning: text } }] });
 
-function stubChat(tools: readonly string[], bodies: readonly string[]): { intent: number; chat: number } {
-  const requests = { intent: 0, chat: 0 };
+function stubChat(tools: readonly string[], bodies: readonly string[], trace: unknown[] = [], requirements: readonly RequestRequirement[] = [], executeReply?: string) {
+  const requests = { intent: 0, coverage: 0, chat: 0, execute: 0 };
   // OAuth is the shipped config contract. agentMode:chat alone no longer disables
   // planning: the balanced autonomy dial enables it unless intent says single-step.
   storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), agentMode: "chat" }));
   vi.stubGlobal("fetch", vi.fn(async (url: unknown, init?: RequestInit) => {
     if (!String(url).endsWith("/v1/chat/completions")) return new Response("{}");
     const payload: { stream: boolean; response_format?: { type: string }; messages: { role: string; content?: unknown }[] } = JSON.parse(String(init?.body));
+    const kind = payload.messages.some(message => message.role === "system" && typeof message.content === "string"
+      && message.content.startsWith("REQUEST_COVERAGE_AUDIT\n")) ? "coverage" : payload.response_format?.type === "json_object" ? "intent" : payload.stream ? "chat" : "execute";
     if (isWikiExtraction(payload.messages)) return emptyWikiResponse();
+    trace.push({ type: "request", kind, stream: payload.stream, toolResults: payload.messages.filter(message => message.role === "tool").length });
+    if (kind === "coverage") {
+      requests.coverage += 1;
+      expect(payload.stream).toBe(false);
+      expect(requirements.length).toBeGreaterThan(0);
+      trace.push({ type: "response", kind, requirements });
+      return new Response(JSON.stringify({ choices: [{ message: {
+        role: "assistant", content: JSON.stringify({ requirements }),
+      }, finish_reason: "stop" }] }), { headers: { "Content-Type": "application/json" } });
+    }
     if (payload.response_format?.type === "json_object") {
       requests.intent += 1;
       expect(payload.stream).toBe(false);
+      trace.push({ type: "response", kind, requirements: false });
       return new Response(JSON.stringify({ choices: [{ message: {
         role: "assistant", content: JSON.stringify({ mode: tools.includes("create_map") ? "create" : "question", space: "none", needsPlan: false, tools }),
       }, finish_reason: "stop" }] }), { headers: { "Content-Type": "application/json" } });
     }
-    requests.chat += 1;
-    expect(payload.stream).toBe(true);
     // Route by actual tool results, not by a shared fetch queue. Intent/persistence
     // traffic cannot steal a chat response; unexpected extra rounds fail loudly.
     const completedTools = payload.messages.filter((message) => message.role === "tool").length;
+    if (kind === "execute") {
+      requests.execute += 1;
+      expect(payload.stream).toBe(false);
+      expect(completedTools).toBe(1);
+      expect(executeReply).toBeDefined();
+      expect(requests.execute).toBeLessThanOrEqual(MAX_RALPH_ATTEMPTS_PER_ITEM);
+      trace.push({ type: "response", kind, toolResults: completedTools });
+      return new Response(JSON.stringify({ choices: [{ message: {
+        role: "assistant", content: executeReply,
+      }, finish_reason: "stop" }] }), { headers: { "Content-Type": "application/json" } });
+    }
+    requests.chat += 1;
+    expect(payload.stream).toBe(true);
     const body = bodies[completedTools];
     if (body === undefined) throw new Error(`Unexpected chat round after ${completedTools} tools`);
+    trace.push({ type: "response", kind, toolResults: completedTools });
     return new Response(body, { headers: { "Content-Type": "text/event-stream" } });
   }));
   return requests;
@@ -248,7 +277,7 @@ describe("병합 추론 원문 전체 열람 (V3C ②)", () => {
     (findByTestId(panel, "ai-send") as unknown as HTMLElement).click();
     const result = await terminal;
     expect(result.result).toMatchObject({ ok: true, stoppedReason: "final" });
-    expect(requests).toEqual({ intent: 1, chat: 3 });
+    expect(requests).toEqual({ intent: 1, coverage: 0, chat: 3, execute: 0 });
     expect(result.toolCalls).toMatchObject([
       { name: "get_project_summary", ok: true },
       { name: "get_map_region", ok: true },
@@ -280,15 +309,29 @@ describe("병합 추론 원문 전체 열람 (V3C ②)", () => {
 
 describe("실시간 고스트 프리뷰 연결", () => {
   it("채팅 턴의 성공한 쓰기 tool_call 뒤 세션 draft diff 고스트를 발행한다", async () => {
+    const trace: unknown[] = [];
+    const send = AssistantSession.prototype.sendUserMessage;
+    vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockImplementation(function (this: AssistantSession, text, onEvent, signal, options) {
+      return send.call(this, text, event => {
+        if (["acceptance", "run_outcome", "phase", "tool_started", "tool_call", "proposal_paused"].includes(event.type)) trace.push(event);
+        onEvent?.(event);
+      }, signal, options);
+    });
+    // Store-driven post-apply refresh has its own panel subscriber, not send's.
+    const refresh = AssistantSession.prototype.refreshAcceptance;
+    vi.spyOn(AssistantSession.prototype, "refreshAcceptance").mockImplementation(function (this: AssistantSession, project, onEvent) {
+      return refresh.call(this, project, onEvent ? event => { trace.push(event); onEvent(event); } : undefined);
+    });
     const createMapArgs = { id: "map_live_ghost", name: "라이브 고스트", width: 6, height: 5 };
+    const requestText = "라이브 고스트라는 6x5 새 맵 만들어줘";
     const requests = stubChat(["create_map"], [
       sse([toolCallLine("c_live", "create_map", JSON.stringify(createMapArgs))]),
       sse([JSON.stringify({ choices: [{ delta: { content: "draft-complete-sentinel" }, finish_reason: "stop" }] })]),
-    ]);
+    ], trace, [{ text: requestText, criteria: [{ kind: "mapDimensions", target: { newMapName: createMapArgs.name }, width: 6, height: 5 }] }], "draft-complete-sentinel");
 
     const panel = renderPanel();
     await whenAiChatPanelSettled();
-    const terminal = nextTerminalActivity();
+    const terminal = nextTerminalActivity(trace);
     // 턴 **도중** 발행된 초안 고스트를 구독으로 잡는다. 턴이 정상 종료되면 적용 경로가
     // 고스트를 걷어내므로(aiProposalCard.ts:277 clearAgentGhostPreview → applyProposedProject)
     // 턴이 끝난 뒤의 상태로는 이 배선을 관측할 수 없다.
@@ -299,7 +342,7 @@ describe("실시간 고스트 프리뷰 연결", () => {
       }
     });
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
-    input.value = "새 맵 만들어줘";
+    input.value = requestText;
     (findByTestId(panel, "ai-send") as unknown as HTMLElement).click();
     let result: activityLog.AiActivityLogInput;
     try {
@@ -308,7 +351,16 @@ describe("실시간 고스트 프리뷰 연결", () => {
       unsubscribe();
     }
     expect(result.result).toMatchObject({ ok: true, stoppedReason: "final", appliedCalls: 1 });
-    expect(requests).toEqual({ intent: 1, chat: 2 });
+    // Manual chat applies after settlement: drafts cannot satisfy the audit, so the
+    // bounded execute rounds must return valid non-streaming replies before apply.
+    expect(requests).toEqual({ intent: 1, coverage: 1, chat: 2, execute: MAX_RALPH_ATTEMPTS_PER_ITEM });
+    expect(trace).toEqual(expect.arrayContaining([
+      expect.objectContaining({ type: "request", kind: "coverage", stream: false }),
+      expect.objectContaining({ type: "response", kind: "coverage" }),
+      { type: "acceptance", snapshot: expect.objectContaining({ status: "verified" }) },
+      { type: "run_outcome", runOutcome: expect.objectContaining({ goal: "satisfied", delivery: "applied" }) },
+      { type: "terminal", result: expect.objectContaining({ ok: true, appliedCalls: 1 }) },
+    ]));
     expect(result.toolCalls).toEqual(expect.arrayContaining([expect.objectContaining({ name: "create_map", ok: true })]));
     expect(store.getCurrent().maps.map_live_ghost).toMatchObject(createMapArgs);
 
