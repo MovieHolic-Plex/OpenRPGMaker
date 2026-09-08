@@ -1,0 +1,33 @@
+{
+  "sourceCommit": "9fcc293073ebaf4ae2be4240071c5acf180673ab",
+  "incomingMain": "1e3b59f7ff043ac2b05b7501d71fadab5e5fd3d4",
+  "approvedPatchCommit": "751ed157c0a782c29124aec6622ad5e4ac47e686",
+  "approvedOwnedPatchSha256": "89cd7bf5234084577c5f06c21d96501170da099a0b73201509c75242f601a6ab",
+  "publicationOwnedPatchSha256": "89cd7bf5234084577c5f06c21d96501170da099a0b73201509c75242f601a6ab",
+  "ownedTestPatchByteIdentical": true,
+  "productionDiffAgainstIncomingMain": [],
+  "leadChecks": {
+    "monitor": "mon_RAM6ANZGSSQC5WFQ",
+    "files": 9,
+    "passed": 131,
+    "failed": 0,
+    "chainExitCode": 0,
+    "applicationTypecheck": "passed",
+    "fullProductionBuild": "passed"
+  },
+  "player": {
+    "monitor": "mon_Q17MDCNDJQX4W0KQ",
+    "exitCode": 0,
+    "checkpoints": 8,
+    "evidence": "publication-player.json"
+  },
+  "environmentRecovery": {
+    "failedMonitor": "mon_SPB9A243JGGCAFP1",
+    "failure": "Firefox executable revision1532 missing; browser launch failed before any gameplay checks",
+    "command": "PLAYWRIGHT_SKIP_BROWSER_GC=1 npx --no-install playwright install firefox",
+    "exitCode": 0,
+    "preservedOlderBrowserCaches": true,
+    "applicationCodeChanged": false
+  },
+  "boundary": "Earlier complete full-suite and surface-pair results retain their recorded sources. This supplement is not a full-suite run of the publication source."
+}

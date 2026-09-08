@@ -1,0 +1,36 @@
+.omo/evidence/graft-proof/HANDOFF.md:136: new blank line at EOF.
+.omo/evidence/graft-proof/focused-related-final.log:27: new blank line at EOF.
+.omo/evidence/graft-proof/followup-related-final.log:29: new blank line at EOF.
+.omo/evidence/graft-proof/followup-vitest.log:17: new blank line at EOF.
+.omo/evidence/graft-proof/graft-readiness-vitest.log:16: new blank line at EOF.
+.omo/evidence/graft-proof/st_01a07c55-manual-qa.md:3: trailing whitespace.
++Attempt evidence root: `.omo/evidence/graft-proof`  
+.omo/evidence/graft-proof/st_01a07c55-manual-qa.md:4: trailing whitespace.
++Worktree: `/home/main/z-project/rpg-zzu-ai-full-context-graft-proof`  
+.omo/evidence/graft-proof/st_01a07c55-manual-qa.md:66: new blank line at EOF.
+openwiki/editor-ai-panel.md:1319: new blank line at EOF.
+output/evidence/acceptance-merge-resolution-st_01a07ff5/composed-red.log:39: new blank line at EOF.
+output/evidence/acceptance-merge-resolution-st_01a07ff5/focused.log:200: new blank line at EOF.
+output/evidence/acceptance-merge-resolution-st_01a07ff5/resolution.diff:5: trailing whitespace.
++@@@ -14,9 -14,7 +14,10 @@@ import { findByTestId, installFakeDom, 
+output/evidence/acceptance-merge-resolution-st_01a07ff5/resolution.diff:6: trailing whitespace.
++  
+output/evidence/acceptance-merge-resolution-st_01a07ff5/resolution.diff:14: trailing whitespace.
++  
+output/evidence/acceptance-merge-resolution-st_01a07ff5/resolution.diff:19: trailing whitespace.
++  
+output/evidence/acceptance-merge-resolution-st_01a07ff5/resolution.diff:123: trailing whitespace.
++  
+output/evidence/acceptance-merge-resolution-st_01a07ff5/resolution.diff:161: trailing whitespace.
++  
+output/evidence/acceptance-merge-resolution-st_01a07ff5/resolution.diff:212: trailing whitespace.
++  
+output/evidence/acceptance-merge-resolution-st_01a07ff5/unrelated-checklist-delta.diff:6: trailing whitespace.
++ 
+output/evidence/acceptance-merge-resolution-st_01a07ff5/unrelated-checklist-delta.diff:12: trailing whitespace.
++ 
+output/evidence/acceptance-merge-resolution-st_01a07ff5/unrelated-checklist-delta.diff:62: trailing whitespace.
++ 
+output/evidence/acceptance-merge-resolution-st_01a07ff5/unrelated-checklist-delta.diff:220: trailing whitespace.
++ 
+src/ai/toolImageEventSprites.ts:232: new blank line at EOF.

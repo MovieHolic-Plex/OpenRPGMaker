@@ -1,0 +1,96 @@
+
+> rpg-zzu@0.1.0 build:app
+> vite build --configLoader runner --outDir /tmp/st_01a07f64-build-pRrdbS
+
+[rpg-zzu] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] QWENCLOUD_API_KEY 가 없어 /api/qwen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] CPENROUTER_API_KEY 가 없어 /api/cpen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+vite v6.4.3 building for production...
+
+(!) outDir /tmp/st_01a07f64-build-pRrdbS is not inside project root and will not be emptied.
+Use --emptyOutDir to override.
+
+transforming...
+../rpg-zzu/node_modules/zod/v4/core/util.js (330:0): A comment
+
+"// Wrapped in a `@__PURE__` IIFE: esbuild never tree-shakes a top-level initializer that contains a member access on `Number`, so the bare object literal survived into every bundle."
+
+in "../rpg-zzu/node_modules/zod/v4/core/util.js" contains an annotation that Rollup cannot interpret due to the position of the comment. The comment will be removed to avoid issues.
+../rpg-zzu/node_modules/zod/v4/core/regexes.js (70:0): A comment
+
+"/** Anchors a pattern source. The interpolation lives here rather than at the call site because
+ * esbuild will not drop a `@__PURE__` call whose own argument interpolates a variable, but it
+ * will drop `anchor(dateSource)`. Keeping it inline pinned `date` into every bundle. */"
+
+in "../rpg-zzu/node_modules/zod/v4/core/regexes.js" contains an annotation that Rollup cannot interpret due to the position of the comment. The comment will be removed to avoid issues.
+✓ 1568 modules transformed.
+Export "openRecordPickerPanel" of module "src/editor/panels/eventEditor/recordPickerPanel.ts" was reexported through module "src/editor/panels/eventEditor/recordPickerDialog.ts" while both modules are dependencies of each other and will end up in different chunks by current Rollup settings. This scenario is not well supported at the moment as it will produce a circular dependency between chunks and will likely lead to broken execution order.
+Either change the import in "src/editor/panels/databaseEnemyActionDialog.ts" to point directly to the exporting module or reconfigure "output.manualChunks" to ensure these modules end up in the same chunk.
+rendering chunks...
+[plugin vite:reporter] 
+(!) /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/player/playSceneInterpreter.ts is dynamically imported by /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/player/PlayScene.ts but also statically imported by /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/player/PlayScene.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/player/npcDetectionEncounter.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/player/playSceneMapRuntime.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter] 
+(!) /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/editorUiMode.ts is dynamically imported by /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/app/mode.ts but also statically imported by /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/coachMarks.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/commandRegistry.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/aiAgentBrief.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/aiChatPanel.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/aiConversationLog.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/aiProposalCard.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/basicLeftRail.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/database.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/editor.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/editorZoomToolbar.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/mapContextMenu.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/menu.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/sidebarInspectionPins.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/sidebarMapHeader.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/sidebarSurface.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/tilePalette.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/tilePaletteStampStatus.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/tileToolOptions.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/tileToolbar.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/tileToolbarMenus.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/workspaceBar.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/workspace/workspaceStore.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/main.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter] 
+(!) /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/project/devProjectPersistence.ts is dynamically imported by /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/app/mode.ts but also statically imported by /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/editor.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/project/store.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter] 
+(!) /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/player/audio/index.ts is dynamically imported by /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/app/mode.ts but also statically imported by /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/audioTestDialog.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/databaseResourcePickerDialog.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/databaseSystemView.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/eventEditor/commandBodyAdvanced.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/player/PlayScene.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/player/battleAudio.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/player/characterHopRuntime.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/player/mapBgm.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/player/playSceneActionCombat.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/player/playSceneBattle.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/player/playSceneInterpreter.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/player/playSceneMapAnimations.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/player/playSceneSchedulers.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/player/player.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter] 
+(!) /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/mapSelection.ts is dynamically imported by /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/app/mode.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/dbConnectionSettings.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/menu.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/menu.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/saveActions.ts but also statically imported by /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/agentFocus.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/commandRegistry.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/editorReferenceNavigation.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/editorToolHook.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/mapUrlSync.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/aiStudioShell.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/databaseCharacterView.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/databaseCropView.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/databaseFactionPreview.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/databaseMonsterSpeciesView.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/editor.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/eventEditor/modal.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/mapCreateDialog.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/mapEventSearchModal.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/mapList.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/mapPropertiesDialog.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/worldManager.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/welcomeGenreSystemPresetAction.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter] 
+(!) /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/player/player.ts is dynamically imported by /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/app/mode.ts, /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/app/mode.ts but also statically imported by /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/src/editor/panels/testPlayModal.ts, dynamic import will not move module into another chunk.
+
+computing gzip size...
+../../../../tmp/st_01a07f64-build-pRrdbS/benchmark.html                                         0.77 kB │ gzip:     0.47 kB
+../../../../tmp/st_01a07f64-build-pRrdbS/index.html                                             0.82 kB │ gzip:     0.49 kB
+../../../../tmp/st_01a07f64-build-pRrdbS/assets/windowskin-warm-CcYC0PVf.png                   10.02 kB
+../../../../tmp/st_01a07f64-build-pRrdbS/assets/neodgm-CYAlbkIQ.woff2                          44.35 kB
+../../../../tmp/st_01a07f64-build-pRrdbS/assets/Galmuri11-Bold-QdFGsJ3v.woff2                 166.63 kB
+../../../../tmp/st_01a07f64-build-pRrdbS/assets/Galmuri9-B9HMP827.woff2                       429.61 kB
+../../../../tmp/st_01a07f64-build-pRrdbS/assets/Galmuri11-DfQIlyDK.woff2                      504.74 kB
+../../../../tmp/st_01a07f64-build-pRrdbS/assets/phaser.min-CwlHMuXa.js                      1,196.12 kB
+../../../../tmp/st_01a07f64-build-pRrdbS/assets/benchmark-CNDwkXV0.css                          6.54 kB │ gzip:     2.15 kB
+../../../../tmp/st_01a07f64-build-pRrdbS/assets/databaseModal-DNnKfsLC.css                    118.22 kB │ gzip:    13.65 kB
+../../../../tmp/st_01a07f64-build-pRrdbS/assets/main-DKGc9oHJ.css                           1,902.14 kB │ gzip:   279.01 kB
+../../../../tmp/st_01a07f64-build-pRrdbS/assets/pwa-CRridmjp.js                                 0.25 kB │ gzip:     0.20 kB
+../../../../tmp/st_01a07f64-build-pRrdbS/assets/welcomeGenreSystemPresetAction-D7Z6JFC7.js      0.39 kB │ gzip:     0.28 kB
+../../../../tmp/st_01a07f64-build-pRrdbS/assets/modulepreload-polyfill-B5Qt9EMX.js              0.71 kB │ gzip:     0.40 kB
+../../../../tmp/st_01a07f64-build-pRrdbS/assets/welcomeGenrePresetApply-Be4kjWc1.js             0.78 kB │ gzip:     0.50 kB
+../../../../tmp/st_01a07f64-build-pRrdbS/assets/aiBootIntent-Gq1lbJuN.js                        0.83 kB │ gzip:     0.40 kB
+../../../../tmp/st_01a07f64-build-pRrdbS/assets/mapUrlSync-Bo_Y66dh.js                          1.17 kB │ gzip:     0.61 kB
+../../../../tmp/st_01a07f64-build-pRrdbS/assets/eventSpriteResources-3hXYsz9x.js                1.39 kB │ gzip:     0.66 kB
+../../../../tmp/st_01a07f64-build-pRrdbS/assets/worldEntries-CIqB4y4u.js                        1.73 kB │ gzip:     0.89 kB
+../../../../tmp/st_01a07f64-build-pRrdbS/assets/databaseRecordViewSession-C3iigit6.js           2.78 kB │ gzip:     1.06 kB
+../../../../tmp/st_01a07f64-build-pRrdbS/assets/tileShapeTools-B4Gr7dTk.js                      3.25 kB │ gzip:     1.31 kB
+../../../../tmp/st_01a07f64-build-pRrdbS/assets/workspaceStore-BoPA-t01.js                      3.53 kB │ gzip:     1.56 kB
+../../../../tmp/st_01a07f64-build-pRrdbS/assets/defaults-BDLDWILk.js                            4.60 kB │ gzip:     2.08 kB
+../../../../tmp/st_01a07f64-build-pRrdbS/assets/actionCombatRuntimeProbe-CckRzdx3.js            4.76 kB │ gzip:     2.30 kB
+../../../../tmp/st_01a07f64-build-pRrdbS/assets/playSceneBattle-NoYiHOfd.js                     6.45 kB │ gzip:     2.56 kB
+../../../../tmp/st_01a07f64-build-pRrdbS/assets/benchmark-BdOMv0KF.js                           7.03 kB │ gzip:     2.47 kB
+../../../../tmp/st_01a07f64-build-pRrdbS/assets/teamWorkflowUi-2ubrOogi.js                      9.51 kB │ gzip:     3.44 kB
+../../../../tmp/st_01a07f64-build-pRrdbS/assets/transientEditorChrome-Pp3H0TWT.js              11.90 kB │ gzip:     4.35 kB
+../../../../tmp/st_01a07f64-build-pRrdbS/assets/dbConnectionSettings-cz9Uy4dw.js               13.30 kB │ gzip:     4.99 kB
+../../../../tmp/st_01a07f64-build-pRrdbS/assets/helpModal-C64TIfKP.js                          14.36 kB │ gzip:     5.68 kB
+../../../../tmp/st_01a07f64-build-pRrdbS/assets/applyChangesetToStore-BFB5a-Uf.js              16.04 kB │ gzip:     6.84 kB
+../../../../tmp/st_01a07f64-build-pRrdbS/assets/databaseAiGenerateDialog-DtZYlGnW.js           16.09 kB │ gzip:     7.06 kB
+../../../../tmp/st_01a07f64-build-pRrdbS/assets/structureKitEditorDialog-Bjwd94rH.js           41.91 kB │ gzip:    14.35 kB
+../../../../tmp/st_01a07f64-build-pRrdbS/assets/menu-DinJ6Gic.js                               47.09 kB │ gzip:    15.85 kB
+../../../../tmp/st_01a07f64-build-pRrdbS/assets/aiStudioMode-ByitVrl1.js                       62.29 kB │ gzip:    20.83 kB
+../../../../tmp/st_01a07f64-build-pRrdbS/assets/EditScene-BwCN3wFp.js                         102.89 kB │ gzip:    31.25 kB
+../../../../tmp/st_01a07f64-build-pRrdbS/assets/tilePalette-B4XvZudQ.js                       174.93 kB │ gzip:    54.95 kB
+../../../../tmp/st_01a07f64-build-pRrdbS/assets/PlayScene-DBkQq6cG.js                         202.08 kB │ gzip:    64.47 kB
+../../../../tmp/st_01a07f64-build-pRrdbS/assets/editor-BpvIl8XT.js                            216.92 kB │ gzip:    72.24 kB
+../../../../tmp/st_01a07f64-build-pRrdbS/assets/saveActions-VczDniie.js                       404.08 kB │ gzip:   140.00 kB
+../../../../tmp/st_01a07f64-build-pRrdbS/assets/databaseModal-DsEPsfJa.js                   1,181.82 kB │ gzip:   357.14 kB
+../../../../tmp/st_01a07f64-build-pRrdbS/assets/main-CLlU7YCN.js                            7,456.37 kB │ gzip: 1,696.70 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 1m 5s

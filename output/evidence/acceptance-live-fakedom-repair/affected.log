@@ -1,0 +1,1197 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/eventEditorTrustLoop.test.ts test/aiChatPanelSettings.test.ts test/eventEditorModal.test.ts test/eventEditorModalClose.test.ts test/aiSettingsModalLayout.test.ts test/weightedBranchUx.test.ts test/moveRouteDialogRich.test.ts test/aiAutonomyDialSettings.test.ts test/aiBackgroundOpacity.test.ts test/commandEditModalPreview.test.ts test/eventDraftTransactions.test.ts test/aiAssistantUxP0P2.test.ts test/aiChatObservability.test.ts test/aiChatPanelTransportError.test.ts test/eventEditorCloseDocumentLifecycle.test.ts test/shopCommandBodyUx.test.ts test/aiChatPanelUxRepairs.test.ts test/aiDockMetaReach.test.ts test/eventEditorInspectorSelection.test.ts test/eventValidationFakeNavigation.test.ts --maxWorkers=1 --reporter=default --reporter=json --outputFile=output/evidence/acceptance-live-fakedom-repair/affected.json
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-acceptance-live-qa
+
+ ❯ test/aiChatPanelUxRepairs.test.ts (21 tests | 2 failed) 18675ms
+   ✓ 선택 영역 AI 직결 칩 > 드래그 완료 신호로 칩을 붙이고 선택 변경/X/Escape/선택 해제를 반영한다 190ms
+   ✓ 선택 영역 AI 직결 칩 > 칩이 붙은 상태에서 Enter 제출은 runRegionTask 러너로 선택 영역을 넘긴다 190ms
+   ✓ 진행 상태와 중단 > 진행 배지는 경과초와 도구 카운터를 함께 표시한다 96ms
+   ✓ 진행 상태와 중단 > 오케스트레이션 phase가 있으면 진행 배지에 phase 라벨을 합쳐 표시한다 122ms
+   ✓ 진행 상태와 중단 > 진행 배지는 음수 경과시간을 0초로 보정한다 98ms
+   ✓ 진행 상태와 중단 > 패널에 중단 버튼이 있고 기본 상태에서는 비활성화되어 있다 108ms
+   × 진행 상태와 중단 > AssistantSession은 AbortSignal을 LLM 호출에 전달하고 중단 결과로 종료한다 15106ms
+     → Test timed out in 15000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+   ✓ 도구 로그와 추론 표시 > 파괴적 도구 성공 로그에는 초안 접두를 붙인다 134ms
+   ✓ 도구 로그와 추론 표시 > 실패 도구 요약은 원문과 첫 issue를 노출하고 내부 재시도 횟수를 덧붙인다 124ms
+   ✓ 도구 로그와 추론 표시 > 실패 도구 행은 details로 접히고 원시 실패 문구를 기본 문구에 드러낸다 92ms
+   ✓ 도구 로그와 추론 표시 > 연속 추론 토글 문구는 병합 횟수를 표시한다 105ms
+   ✓ 대화 복원과 내보내기 > 같은 프로젝트 컨텍스트의 직전 대화는 부팅 시 자동 복원된다 121ms
+   × 대화 복원과 내보내기 > 다른 프로젝트 컨텍스트의 직전 대화는 자동 복원하지 않고 빈 키트도 안 붙인다 132ms
+     → expected null to be truthy
+   ✓ 대화 복원과 내보내기 > 내보내기는 빈 대화에서 비활성화되고 라벨은 내보내기다 122ms
+   ✓ 키 온보딩과 설정 접근성 > 하단 커맨드 바에 입력과 확장 메뉴를 마운트한다 94ms
+   ✓ 키 온보딩과 설정 접근성 > OAuth 는 전송 전에 'API 키' 안내로 막지 않는다 (키 온보딩 개념 자체가 없다)  487ms
+   ✓ 키 온보딩과 설정 접근성 > 401 오류 버블에도 설정 열기 버튼을 붙인다  548ms
+   ✓ 키 온보딩과 설정 접근성 > ☰ 의 설정 항목은 전용 모달을 열고 첫 입력에 포커스한다 268ms
+   ✓ 키 온보딩과 설정 접근성 > AI 패널의 아이콘 버튼에는 aria-label이 있다 270ms
+   ✓ 키 온보딩과 설정 접근성 > 설정 준비 판정은 API 키까지 확인한다 129ms
+   ✓ 현재 맵 칩 > 스토어에서 현재 맵 이름이 바뀌면 컨텍스트 칩도 즉시 갱신된다 138ms
+ ❯ test/eventEditorTrustLoop.test.ts (45 tests | 4 failed) 11383ms
+   ✓ event editor trust loop > routes quick command 'command-add-text' to the active page 252ms
+   ✓ event editor trust loop > routes quick command 'command-add-choice' to the active page 216ms
+   ✓ event editor trust loop > routes quick command 'command-add-switch' to the active page 185ms
+   ✓ event editor trust loop > routes quick command 'command-add-variable' to the active page 160ms
+   ✓ event editor trust loop > routes quick command 'command-add-branch' to the active page 142ms
+   ✓ event editor trust loop > routes quick command 'command-add-timer' to the active page 139ms
+   ✓ event editor trust loop > routes quick command 'command-add-advance-time' to the active page 137ms
+   ✓ event editor trust loop > routes quick command 'command-add-advance-crop-growth' to the active page 137ms
+   ✓ event editor trust loop > routes quick command 'command-add-transfer' to the active page 147ms
+   ✓ event editor trust loop > routes quick command 'command-add-move-route' to the active page 186ms
+   ✓ event editor trust loop > routes quick command 'command-add-picture' to the active page 172ms
+   ✓ event editor trust loop > routes quick command 'command-add-audio' to the active page 296ms
+   ✓ event editor trust loop > routes quick command 'command-add-battle' to the active page 141ms
+   ✓ event editor trust loop > routes quick command 'command-add-gold' to the active page 130ms
+   ✓ event editor trust loop > routes quick command 'command-add-item' to the active page 164ms
+   ✓ event editor trust loop > routes quick command 'command-add-craft' to the active page 150ms
+   ✓ event editor trust loop > routes quick command 'command-add-upgrade' to the active page 151ms
+   ✓ event editor trust loop > routes quick command 'command-add-equip-tool' to the active page 152ms
+   ✓ event editor trust loop > routes quick command 'command-add-open-chest' to the active page 150ms
+   ✓ event editor trust loop > routes quick command 'command-add-friendship' to the active page 161ms
+   ✓ event editor trust loop > routes quick command 'command-add-party' to the active page 221ms
+   ✓ event editor trust loop > routes quick command 'command-add-give-monster' to the active page 180ms
+   ✓ event editor trust loop > routes quick command 'command-add-evolve-monster' to the active page 223ms
+   ✓ event editor trust loop > routes quick command 'command-add-follower' to the active page 176ms
+   ✓ event editor trust loop > routes quick command 'command-add-set-lighting' to the active page 180ms
+   ✓ event editor trust loop > routes quick command 'command-add-set-weather' to the active page 147ms
+   × event editor trust loop > routes quick command 'command-add-show-animation' to the active page 126ms
+     → window is not defined
+   ✓ event editor trust loop > routes quick command 'command-add-checkpoint-save' to the active page 159ms
+   ✓ event editor trust loop > routes quick command 'command-add-run-control' to the active page 167ms
+   ✓ event editor trust loop > routes quick command 'command-add-kill-player' to the active page 157ms
+   ✓ event editor trust loop > routes quick command 'command-add-trigger-ending' to the active page 153ms
+   ✓ event editor trust loop > routes quick command 'command-add-ending' to the active page 146ms
+   ✓ event editor trust loop > routes quick command 'command-add-game-over' to the active page 162ms
+   ✓ event editor trust loop > blocks Apply on fatal validation, keeps the draft open, and navigates to its command  438ms
+   ✓ event editor trust loop > blocks OK on fatal validation, keeps the draft open, and navigates to its command  321ms
+   ✓ event editor trust loop > blocks Test on fatal validation, keeps the draft open, and navigates to its command  331ms
+   × event editor trust loop > navigates fatal event-position and schedule issues to editable controls 3178ms
+     → expected <span tabindex="-1"></span> to be null // Object.is equality
+   ✓ event editor trust loop > discards a working edit on Cancel without changing the canonical event  341ms
+   ✓ event editor trust loop > shows the real event test action, honest local/remote status, and opens the picker with Ctrl/Cmd+K  301ms
+   × event editor trust loop > restores focus to the parent editor when a subdialog opener rerenders away 379ms
+     → KeyboardEvent is not defined
+   ✓ event editor trust loop > renders all beginner empty-state actions and inserts a factory-created dialogue command 161ms
+   ✓ event editor trust loop > uses strict roving tabs, preserves command focus, and keeps recents newest-first 70ms
+   ✓ event editor trust loop > traps focus inside subdialogs and labels the close control in Korean 48ms
+   × event editor trust loop > restores focus, caret, open details, and scroll across reactive rerenders 201ms
+     → expected event editor interaction surfaces
+   ✓ event editor trust loop > labels script browsing as non-runtime simulation with loop/choice/goto caveats 46ms
+ ✓ test/aiChatPanelTransportError.test.ts (2 tests) 10438ms
+   ✓ transport failure paints recovery CTA and keeps Send mounted > refused fetch: is-turn-running cleared, system error bubble + ai-error-open-settings, ai-send stays disabled with ai-abort visible  9738ms
+   ✓ transport failure paints recovery CTA and keeps Send mounted > 401 also mounts settings opener  698ms
+ ✓ test/eventEditorModal.test.ts (29 tests) 6861ms
+   ✓ event editor modal close draft cleanup > asks before discarding dirty drafts on cancel, then discards on confirm  352ms
+   ✓ event editor modal close draft cleanup > asks before discarding dirty drafts on escape, then discards on confirm  303ms
+   ✓ event editor modal close draft cleanup > asks before discarding dirty drafts on backdrop, then discards on confirm  403ms
+   ✓ event editor modal close draft cleanup > keeps Apply changes as the new draft baseline and discards only later edits  494ms
+   ✓ RPG Maker style event editor entry points > wires the command toolbar copy, cut, undo, and redo actions  410ms
+   ✓ RPG Maker style event editor entry points > 헤더 이름 상자는 활성 페이지를 따라가고, 그 페이지 이름만 고친다  312ms
+ ✓ test/eventDraftTransactions.test.ts (16 tests) 6856ms
+   ✓ linked authored draft transactions > keeps a new event and new profile atomic on save  893ms
+   ✓ linked authored draft transactions > keeps a new event and new profile atomic on cancel  523ms
+   ✓ linked authored draft transactions > preserves concurrent profile fields and project edits on save  351ms
+   ✓ linked authored draft transactions > preserves concurrent profile fields and project edits on cancel  342ms
+   ✓ linked authored draft transactions > removes an empty profile on Apply and restores it on undo  532ms
+   ✓ linked authored draft transactions > commits template pages and a recovered switch together, with undo/redo  897ms
+   ✓ linked authored draft transactions > discards a newly created profile without removing unrelated project edits  313ms
+   ✓ linked authored draft transactions > retains name-only edits through durable vault recovery and global replacement  433ms
+   ✓ linked authored draft transactions > commits both character keys and the event in one undoable Apply  713ms
+   ✓ linked authored draft transactions > Cancel after Apply retains the applied name and only one history entry  350ms
+   ✓ linked authored draft transactions > field template stages switch definitions without session writes (existing=false)  378ms
+   ✓ linked authored draft transactions > field template stages switch definitions without session writes (existing=true)  427ms
+ ❯ test/aiChatObservability.test.ts (9 tests | 1 failed) 11841ms
+   ✓ 글자 크기 3단 (V3C ①) > 기본값은 '보통'이고 저장하면 localStorage(oprn:ai-font-size)에 영속된다 — 무효값은 보통으로 방어 113ms
+   ✓ 글자 크기 3단 (V3C ①) > 설정의 글자 크기 select(ai-font-size)를 바꾸면 즉시 패널에 반영·영속되고, 재부팅 시 다시 적용된다 209ms
+   ✓ 글자 크기 3단 (V3C ①) > applyAiFontSize는 data 속성과 CSS 변수(--ai-font-scale)를 함께 설정한다 109ms
+   ✓ 글자 크기 3단 (V3C ①) > 기록 줌 스테퍼는 없다 — Ctrl+휠이 글자 크기를 바꾸고 영속한다 121ms
+   ✓ 도구 호출 상세 아코디언 (V3C ③) > 성공 라인은 한 줄 요약만 보여 JSON 인자/결과 원문 노이즈를 숨긴다 92ms
+   ✓ 도구 호출 상세 아코디언 (V3C ③) > 실패 라인은 기존 testid를 유지하면서 아코디언 안에 오류 원문(summary/issues)을 그대로 담는다 95ms
+   ✓ 도구 호출 상세 아코디언 (V3C ③) > 복원된 대화의 도구 로그는 한 줄 요약으로 남고 JSON 상세는 숨긴다  376ms
+   ✓ 병합 추론 원문 전체 열람 (V3C ②) > 도구 사이 추론이 한 블록으로 병합돼도 각 추론의 원문 전체가 아이템으로 남고 토글은 횟수를 표시한다  621ms
+   × 실시간 고스트 프리뷰 연결 > 채팅 턴의 성공한 쓰기 tool_call 뒤 세션 draft diff 고스트를 발행한다 10104ms
+     → Chat turn did not publish terminal activity
+ ✓ test/aiChatPanelSettings.test.ts (25 tests) 4092ms
+   ✓ 감사 로그 내보내기 > 세션 폐기 후에도 누적 히스토리로 내보내기가 가능하다  475ms
+   ✓ 감사 로그 내보내기 > 현재 세션과 히스토리를 합쳐 내보낸다  757ms
+ ✓ test/eventEditorModalClose.test.ts (12 tests) 3304ms
+   ✓ event editor modal close draft cleanup > dispatches the close cleanup event before removing the modal  410ms
+   ✓ event editor modal close draft cleanup > asks before discarding dirty drafts on cancel, then discards on confirm  327ms
+   ✓ event editor modal close draft cleanup > asks before discarding dirty drafts on backdrop, then discards on confirm  325ms
+   ✓ event editor modal close draft cleanup > keeps Apply changes as the new draft baseline and discards only later edits  479ms
+ ✓ test/commandEditModalPreview.test.ts (30 tests) 3395ms
+ ❯ test/weightedBranchUx.test.ts (19 tests | 1 failed) 1744ms
+   ✓ weighted branch storage > matches runtime numeric-field parsing when names are blank or contain extra separators 4ms
+   ✓ weighted branch storage > keeps one runtime outcome when a name contains separators or newlines 2ms
+   ✓ weighted branch storage > does not round tiny positive odds to zero 1ms
+   ✓ weighted branch command UX > initializes percentages, row bars and zero-based mapping without writing on open 165ms
+   ✓ weighted branch command UX > redistributes the remainder proportionally when one percentage changes 170ms
+   × weighted branch command UX > preserves exact authored table when only the destination changes 115ms
+     → expected '' to be 'roll' // Object.is equality
+   ✓ weighted branch command UX > preserves exact weight precision and focused name node while composing 115ms
+   ✓ weighted branch command UX > leaves the committed table unchanged for incomplete and out-of-range percentages 124ms
+   ✓ weighted branch command UX > keeps zero-chance rows editable but excludes them from runtime mapping 107ms
+   ✓ weighted branch command UX > focuses the new name on add and the nearest remaining name on removal 95ms
+   ✓ weighted branch command UX > shows a nonzero display and proportional meter for sub-percent outcomes 100ms
+   ✓ weighted branch command UX > blocks modal Confirm with invalid chance "" and focuses the field 103ms
+   ✓ weighted branch command UX > blocks modal Confirm with invalid chance "-1" and focuses the field 119ms
+   ✓ weighted branch command UX > blocks modal Confirm with invalid chance "101" and focuses the field 89ms
+   ✓ weighted branch command UX > retains named zero rows through actual Confirm and reopen with positive-only mapping 82ms
+   ✓ weighted branch command UX > blocks an authored all-zero table without silently seeding positive chances 83ms
+   ✓ weighted branch command UX > keeps the last positive row when removing it would enable zero-chance outcomes 92ms
+   ✓ weighted branch command UX > does not show certainty for the counterpart of a tiny positive chance 90ms
+   ✓ weighted branch command UX > keeps a lone result at 100 percent and prevents removing it 85ms
+ ✓ test/shopCommandBodyUx.test.ts (7 tests) 1000ms
+ ✓ test/eventEditorCloseDocumentLifecycle.test.ts (2 tests) 839ms
+   ✓ event editor asynchronous close document ownership > finishes pending close after the global document is removed  495ms
+   ✓ event editor asynchronous close document ownership > finishes pending close after the global document is replaced  342ms
+ ✓ test/eventEditorInspectorSelection.test.ts (5 tests) 714ms
+ ✓ test/moveRouteDialogRich.test.ts (5 tests) 776ms
+ ✓ test/aiDockMetaReach.test.ts (4 tests) 607ms
+ ✓ test/aiAssistantUxP0P2.test.ts (3 tests) 482ms
+ ✓ test/eventValidationFakeNavigation.test.ts (1 test) 397ms
+   ✓ uses the shared navigation contract in the lightweight rendered host  395ms
+ ✓ test/aiSettingsModalLayout.test.ts (6 tests) 173ms
+ ✓ test/aiAutonomyDialSettings.test.ts (4 tests) 142ms
+ ✓ test/aiBackgroundOpacity.test.ts (25 tests) 59ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiChatObservability.test.ts > 실시간 고스트 프리뷰 연결 > 채팅 턴의 성공한 쓰기 tool_call 뒤 세션 draft diff 고스트를 발행한다
+Error: Chat turn did not publish terminal activity
+ ❯ Timeout._onTimeout test/aiChatObservability.test.ts:67:45
+     65| function nextTerminalActivity(): Promise<activityLog.AiActivityLogInpu…
+     66|   return new Promise((resolve, reject) => {
+     67|     const timeout = setTimeout(() => reject(new Error("Chat turn did n…
+       |                                             ^
+     68|     vi.mocked(activityLog.recordAiActivity).mockImplementation(async (…
+     69|       if (entry.channel === "chat" && entry.result.pending !== true) {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  test/aiChatPanelUxRepairs.test.ts > 진행 상태와 중단 > AssistantSession은 AbortSignal을 LLM 호출에 전달하고 중단 결과로 종료한다
+Error: Test timed out in 15000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ test/aiChatPanelUxRepairs.test.ts:210:3
+    208|   });
+    209| 
+    210|   it("AssistantSession은 AbortSignal을 LLM 호출에 전달하고 중단 결과로 종료한다", async …
+       |   ^
+    211|     const controller = new AbortController();
+    212|     let receivedSignal: AbortSignal | undefined;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  test/aiChatPanelUxRepairs.test.ts > 대화 복원과 내보내기 > 다른 프로젝트 컨텍스트의 직전 대화는 자동 복원하지 않고 빈 키트도 안 붙인다
+AssertionError: expected null to be truthy
+
+[32m- Expected:[39m 
+true
+
+[31m+ Received:[39m 
+null
+
+ ❯ test/aiChatPanelUxRepairs.test.ts:309:54
+    307|     expect(findByTestId(panel, "ai-start-visual-gallery")).toBeNull();
+    308|     expect(findByTestId(panel, "ai-resume-conversation")).toBeNull();
+    309|     expect(findByTestId(panel, "ai-composer-chips")).toBeTruthy();
+       |                                                      ^
+    310|     expect((findByTestId(panel, "ai-chat-log")?.textContent ?? "")).no…
+    311|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  test/eventEditorTrustLoop.test.ts > event editor trust loop > routes quick command 'command-add-show-animation' to the active page
+ReferenceError: window is not defined
+ ❯ play src/editor/panels/eventEditor/showAnimationPlayback.ts:138:5
+    136|     frameIndex = 0;
+    137|     render(0);
+    138|     timer = window.setInterval(tick, SHOW_ANIMATION_FRAME_MS);
+       |     ^
+    139|   };
+    140| 
+ ❯ playShowAnimation src/editor/panels/eventEditor/showAnimationPlayback.ts:141:3
+ ❯ playShowAnimationOnce src/editor/panels/eventEditor/showAnimationPlayback.ts:155:10
+ ❯ play src/editor/panels/eventEditor/showAnimationPlayback.ts:179:15
+ ❯ bindShowAnimationPlayback src/editor/panels/eventEditor/showAnimationPlayback.ts:195:3
+ ❯ renderStage src/editor/panels/eventEditor/commandBodyPage3Native.ts:914:9
+ ❯ renderPreview src/editor/panels/eventEditor/commandBodyPage3Native.ts:948:55
+ ❯ showAnimationBody src/editor/panels/eventEditor/commandBodyPage3Native.ts:964:3
+ ❯ renderAdvancedCommandBody src/editor/panels/eventEditor/commandBodyAdvanced.ts:152:14
+ ❯ renderCommandBody src/editor/panels/eventEditor/commandBody.ts:38:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  test/eventEditorTrustLoop.test.ts > event editor trust loop > navigates fatal event-position and schedule issues to editable controls
+AssertionError: expected <span tabindex="-1"></span> to be null // Object.is equality
+
+[32m- Expected:[39m 
+null
+
+[31m+ Received:[39m 
+FakeElement {
+  "attrs": {
+    "tabindex": "-1",
+  },
+  "checked": false,
+  "childNodes": [],
+  "classList": {
+    "add": [Function add],
+    "contains": [Function contains],
+    "remove": [Function remove],
+    "toggle": [Function toggle],
+  },
+  "className": "",
+  "dataset": {
+    "testid": "event-editor-coords",
+  },
+  "disabled": false,
+  "hidden": false,
+  "inert": false,
+  "innerHTML": "",
+  "inputValue": "",
+  "isContentEditable": false,
+  "listeners": {},
+  "max": "",
+  "min": "",
+  "optionSelected": false,
+  "ownText": "20, 3",
+  "parentNode": FakeElement {
+    "attrs": {},
+    "checked": false,
+    "childNodes": [
+      FakeElement {
+        "attrs": {},
+        "checked": false,
+        "childNodes": [],
+        "classList": {
+          "add": [Function add],
+          "contains": [Function contains],
+          "remove": [Function remove],
+          "toggle": [Function toggle],
+        },
+        "className": "event-editor-map-name",
+        "dataset": {
+          "testid": "event-editor-map-name",
+        },
+        "disabled": false,
+        "hidden": false,
+        "inert": false,
+        "innerHTML": "",
+        "inputValue": "",
+        "isContentEditable": false,
+        "listeners": {},
+        "max": "",
+        "min": "",
+        "optionSelected": false,
+        "ownText": "빈 맵",
+        "parentNode": [Circular],
+        "scrollLeft": 0,
+        "scrollTop": 0,
+        "selectionEnd": 0,
+        "selectionStart": 0,
+        "style": {
+          "getPropertyValue": [Function anonymous],
+          "removeProperty": [Function anonymous],
+          "setProperty": [Function anonymous],
+        },
+        "tagName": "SPAN",
+        "type": "",
+      },
+      FakeElement {
+        "attrs": {},
+        "checked": false,
+        "childNodes": [],
+        "classList": {
+          "add": [Function add],
+          "contains": [Function contains],
+          "remove": [Function remove],
+          "toggle": [Function toggle],
+        },
+        "className": "dot-sep",
+        "dataset": {},
+        "disabled": false,
+        "hidden": false,
+        "inert": false,
+        "innerHTML": "",
+        "inputValue": "",
+        "isContentEditable": false,
+        "listeners": {},
+        "max": "",
+        "min": "",
+        "optionSelected": false,
+        "ownText": "",
+        "parentNode": [Circular],
+        "scrollLeft": 0,
+        "scrollTop": 0,
+        "selectionEnd": 0,
+        "selectionStart": 0,
+        "style": {
+          "getPropertyValue": [Function anonymous],
+          "removeProperty": [Function anonymous],
+          "setProperty": [Function anonymous],
+        },
+        "tagName": "SPAN",
+        "type": "",
+      },
+      [Circular],
+    ],
+    "classList": {
+      "add": [Function add],
+      "contains": [Function contains],
+      "remove": [Function remove],
+      "toggle": [Function toggle],
+    },
+    "className": "meta",
+    "dataset": {},
+    "disabled": false,
+    "hidden": false,
+    "inert": false,
+    "innerHTML": "",
+    "inputValue": "",
+    "isContentEditable": false,
+    "listeners": {},
+    "max": "",
+    "min": "",
+    "optionSelected": false,
+    "ownText": "",
+    "parentNode": FakeElement {
+      "attrs": {},
+      "checked": false,
+      "childNodes": [
+        FakeElement {
+          "attrs": {
+            "aria-label": "이벤트 이름",
+            "placeholder": "페이지 이름",
+            "title": "페이지 1 이름입니다. 이벤트 이름은 마지막으로 이름 붙인 페이지를 따릅니다 — 지금은 \"신뢰 테스트\".",
+            "type": "text",
+          },
+          "checked": false,
+          "childNodes": [],
+          "classList": {
+            "add": [Function add],
+            "contains": [Function contains],
+            "remove": [Function remove],
+            "toggle": [Function toggle],
+          },
+          "className": "event-name",
+          "dataset": {
+            "pageId": "page-1",
+            "testid": "event-editor-name",
+          },
+          "disabled": false,
+          "hidden": false,
+          "inert": false,
+          "innerHTML": "",
+          "inputValue": "신뢰 테스트",
+          "isContentEditable": false,
+          "listeners": {
+            "change": [
+              [Function change],
+            ],
+          },
+          "max": "",
+          "min": "",
+          "optionSelected": false,
+          "ownText": "",
+          "parentNode": [Circular],
+          "scrollLeft": 0,
+          "scrollTop": 0,
+          "selectionEnd": 0,
+          "selectionStart": 0,
+          "style": {
+            "getPropertyValue": [Function anonymous],
+            "removeProperty": [Function anonymous],
+            "setProperty": [Function anonymous],
+          },
+          "tagName": "INPUT",
+          "title": "이벤트 이름",
+          "type": "",
+        },
+        [Circular],
+        FakeElement {
+          "attrs": {
+            "style": "display: none;",
+          },
+          "checked": false,
+          "childNodes": [],
+          "classList": {
+            "add": [Function add],
+            "contains": [Function contains],
+            "remove": [Function remove],
+            "toggle": [Function toggle],
+          },
+          "className": "event-editor-header-save-state",
+          "dataset": {
+            "localState": "session",
+            "remoteState": "idle",
+            "testid": "event-editor-header-save-state",
+          },
+          "disabled": false,
+          "hidden": false,
+          "inert": false,
+          "innerHTML": "",
+          "inputValue": "",
+          "isContentEditable": false,
+          "listeners": {},
+          "max": "",
+          "min": "",
+          "optionSelected": false,
+          "ownText": "변경 없음 · 저장 준비",
+          "parentNode": [Circular],
+          "scrollLeft": 0,
+          "scrollTop": 0,
+          "selectionEnd": 0,
+          "selectionStart": 0,
+          "style": {
+            "getPropertyValue": [Function anonymous],
+            "removeProperty": [Function anonymous],
+            "setProperty": [Function anonymous],
+          },
+          "tagName": "DIV",
+          "title": "현재 이벤트에 미적용 변경이 없습니다.
+저장 준비",
+          "type": "",
+        },
+        FakeElement {
+          "attrs": {},
+          "checked": false,
+          "childNodes": [
+            FakeElement {
+              "attrs": {},
+              "checked": false,
+              "childNodes": [
+                [FakeElement],
+                [FakeElement],
+              ],
+              "classList": {
+                "add": [Function add],
+                "contains": [Function contains],
+                "remove": [Function remove],
+                "toggle": [Function toggle],
+              },
+              "className": "event-draft-validation",
+              "dataset": {
+                "count": "2",
+                "severity": "error",
+                "testid": "event-draft-validation",
+              },
+              "disabled": false,
+              "hidden": false,
+              "inert": false,
+              "innerHTML": "",
+              "inputValue": "",
+              "isContentEditable": false,
+              "listeners": {
+                "toggle": [Array],
+              },
+              "max": "",
+              "min": "",
+              "open": false,
+              "optionSelected": false,
+              "ownText": "",
+              "parentNode": [Circular],
+              "scrollLeft": 0,
+              "scrollTop": 0,
+              "selectionEnd": 0,
+              "selectionStart": 0,
+              "style": {
+                "getPropertyValue": [Function anonymous],
+                "removeProperty": [Function anonymous],
+                "setProperty": [Function anonymous],
+              },
+              "tagName": "DETAILS",
+              "type": "",
+            },
+            FakeElement {
+              "attrs": {
+                "type": "button",
+              },
+              "checked": false,
+              "childNodes": [],
+              "classList": {
+                "add": [Function add],
+                "contains": [Function contains],
+                "remove": [Function remove],
+                "toggle": [Function toggle],
+              },
+              "className": "btn ghost event-editor-header-test",
+              "dataset": {
+                "testid": "event-editor-test",
+              },
+              "disabled": false,
+              "hidden": false,
+              "inert": false,
+              "innerHTML": "",
+              "inputValue": "",
+              "isContentEditable": false,
+              "listeners": {
+                "click": [Array],
+              },
+              "max": "",
+              "min": "",
+              "optionSelected": false,
+              "ownText": "테스트",
+              "parentNode": [Circular],
+              "scrollLeft": 0,
+              "scrollTop": 0,
+              "selectionEnd": 0,
+              "selectionStart": 0,
+              "style": {
+                "getPropertyValue": [Function anonymous],
+                "removeProperty": [Function anonymous],
+                "setProperty": [Function anonymous],
+              },
+              "tagName": "BUTTON",
+              "type": "",
+            },
+            FakeElement {
+              "attrs": {
+                "style": "display: none;",
+                "type": "button",
+              },
+              "checked": false,
+              "childNodes": [],
+              "classList": {
+                "add": [Function add],
+                "contains": [Function contains],
+                "remove": [Function remove],
+                "toggle": [Function toggle],
+              },
+              "className": "",
+              "dataset": {
+                "testid": "event-editor-ok",
+              },
+              "disabled": false,
+              "hidden": false,
+              "inert": false,
+              "innerHTML": "",
+              "inputValue": "",
+              "isContentEditable": false,
+              "listeners": {
+                "click": [Array],
+              },
+              "max": "",
+              "min": "",
+              "optionSelected": false,
+              "ownText": "",
+              "parentNode": [Circular],
+              "scrollLeft": 0,
+              "scrollTop": 0,
+              "selectionEnd": 0,
+              "selectionStart": 0,
+              "style": {
+                "getPropertyValue": [Function anonymous],
+                "removeProperty": [Function anonymous],
+                "setProperty": [Function anonymous],
+              },
+              "tagName": "BUTTON",
+              "type": "",
+            },
+            FakeElement {
+              "attrs": {
+                "aria-label": "이벤트 편집 창",
+                "role": "group",
+              },
+              "checked": false,
+              "childNodes": [
+                [FakeElement],
+                [FakeElement],
+                [FakeElement],
+              ],
+              "classList": {
+                "add": [Function add],
+                "contains": [Function contains],
+                "remove": [Function remove],
+                "toggle": [Function toggle],
+              },
+              "className": "event-editor-window-controls",
+              "dataset": {},
+              "disabled": false,
+              "hidden": false,
+              "inert": false,
+              "innerHTML": "",
+              "inputValue": "",
+              "isContentEditable": false,
+              "listeners": {
+                "pointerdown": [Array],
+              },
+              "max": "",
+              "min": "",
+              "optionSelected": false,
+              "ownText": "",
+              "parentNode": [Circular],
+              "scrollLeft": 0,
+              "scrollTop": 0,
+              "selectionEnd": 0,
+              "selectionStart": 0,
+              "style": {
+                "getPropertyValue": [Function anonymous],
+                "removeProperty": [Function anonymous],
+                "setProperty": [Function anonymous],
+              },
+              "tagName": "DIV",
+              "type": "",
+            },
+          ],
+          "classList": {
+            "add": [Function add],
+            "contains": [Function contains],
+            "remove": [Function remove],
+            "toggle": [Function toggle],
+          },
+          "className": "header-actions",
+          "dataset": {},
+          "disabled": false,
+          "hidden": false,
+          "inert": false,
+          "innerHTML": "",
+          "inputValue": "",
+          "isContentEditable": false,
+          "listeners": {},
+          "max": "",
+          "min": "",
+          "optionSelected": false,
+          "ownText": "",
+          "parentNode": [Circular],
+          "scrollLeft": 0,
+          "scrollTop": 0,
+          "selectionEnd": 0,
+          "selectionStart": 0,
+          "style": {
+            "getPropertyValue": [Function anonymous],
+            "removeProperty": [Function anonymous],
+            "setProperty": [Function anonymous],
+          },
+          "tagName": "DIV",
+          "type": "",
+        },
+      ],
+      "classList": {
+        "add": [Function add],
+        "contains": [Function contains],
+        "remove": [Function remove],
+        "toggle": [Function toggle],
+      },
+      "className": "event-editor-modal-header",
+      "dataset": {
+        "testid": "event-editor-titlebar",
+      },
+      "disabled": false,
+      "hidden": false,
+      "inert": false,
+      "innerHTML": "",
+      "inputValue": "",
+      "isContentEditable": false,
+      "listeners": {
+        "dblclick": [
+          [Function onHeaderDoubleClick],
+        ],
+        "pointercancel": [
+          [Function stopDrag],
+        ],
+        "pointerdown": [
+          [Function anonymous],
+        ],
+        "pointermove": [
+          [Function anonymous],
+        ],
+        "pointerup": [
+          [Function stopDrag],
+        ],
+      },
+      "max": "",
+      "min": "",
+      "optionSelected": false,
+      "ownText": "",
+      "parentNode": FakeElement {
+        "attrs": {
+          "aria-label": "이벤트 에디터",
+          "aria-modal": "true",
+          "role": "dialog",
+        },
+        "checked": false,
+        "childNodes": [
+          [Circular],
+          FakeElement {
+            "attrs": {},
+            "checked": false,
+            "childNodes": [
+              FakeElement {
+                "attrs": [Object],
+                "checked": false,
+                "childNodes": [Array],
+                "classList": [Object],
+                "className": "event-editor-modal-dynamic",
+                "dataset": [Object],
+                "disabled": false,
+                "hidden": false,
+                "inert": false,
+                "innerHTML": "",
+                "inputValue": "",
+                "isContentEditable": false,
+                "listeners": [Object],
+                "max": "",
+                "min": "",
+                "optionSelected": false,
+                "ownText": "",
+                "parentNode": [Circular],
+                "scrollLeft": 0,
+                "scrollTop": 0,
+                "selectionEnd": 0,
+                "selectionStart": 0,
+                "style": [Object],
+                "tagName": "DIV",
+                "type": "",
+              },
+              FakeElement {
+                "attrs": [Object],
+                "checked": false,
+                "childNodes": [Array],
+                "classList": [Object],
+                "className": "event-editor-modal-stable",
+                "dataset": [Object],
+                "disabled": false,
+                "hidden": false,
+                "inert": false,
+                "innerHTML": "",
+                "inputValue": "",
+                "isContentEditable": false,
+                "listeners": [Object],
+                "max": "",
+                "min": "",
+                "optionSelected": false,
+                "ownText": "",
+                "parentNode": [Circular],
+                "scrollLeft": 0,
+                "scrollTop": 0,
+                "selectionEnd": 0,
+                "selectionStart": 0,
+                "style": [Object],
+                "tagName": "DIV",
+                "type": "",
+              },
+            ],
+            "classList": {
+              "add": [Function add],
+              "contains": [Function contains],
+              "remove": [Function remove],
+              "toggle": [Function toggle],
+            },
+            "className": "event-editor-modal-body",
+            "dataset": {},
+            "disabled": false,
+            "hidden": false,
+            "inert": false,
+            "innerHTML": "",
+            "inputValue": "",
+            "isContentEditable": false,
+            "listeners": {},
+            "max": "",
+            "min": "",
+            "optionSelected": false,
+            "ownText": "",
+            "parentNode": [Circular],
+            "scrollLeft": 0,
+            "scrollTop": 0,
+            "selectionEnd": 0,
+            "selectionStart": 0,
+            "style": {
+              "getPropertyValue": [Function anonymous],
+              "removeProperty": [Function anonymous],
+              "setProperty": [Function anonymous],
+            },
+            "tagName": "DIV",
+            "type": "",
+          },
+          FakeElement {
+            "attrs": {},
+            "checked": false,
+            "childNodes": [
+              FakeElement {
+                "attrs": [Object],
+                "checked": false,
+                "childNodes": [Array],
+                "classList": [Object],
+                "className": "event-editor-footer-leading",
+                "dataset": [Object],
+                "disabled": false,
+                "hidden": false,
+                "inert": false,
+                "innerHTML": "",
+                "inputValue": "",
+                "isContentEditable": false,
+                "listeners": [Object],
+                "max": "",
+                "min": "",
+                "optionSelected": false,
+                "ownText": "",
+                "parentNode": [Circular],
+                "scrollLeft": 0,
+                "scrollTop": 0,
+                "selectionEnd": 0,
+                "selectionStart": 0,
+                "style": [Object],
+                "tagName": "DIV",
+                "type": "",
+              },
+              FakeElement {
+                "attrs": [Object],
+                "checked": false,
+                "childNodes": [Array],
+                "classList": [Object],
+                "className": "actions event-editor-footer-actions",
+                "dataset": [Object],
+                "disabled": false,
+                "hidden": false,
+                "inert": false,
+                "innerHTML": "",
+                "inputValue": "",
+                "isContentEditable": false,
+                "listeners": [Object],
+                "max": "",
+                "min": "",
+                "optionSelected": false,
+                "ownText": "",
+                "parentNode": [Circular],
+                "scrollLeft": 0,
+                "scrollTop": 0,
+                "selectionEnd": 0,
+                "selectionStart": 0,
+                "style": [Object],
+                "tagName": "DIV",
+                "type": "",
+              },
+            ],
+            "classList": {
+              "add": [Function add],
+              "contains": [Function contains],
+              "remove": [Function remove],
+              "toggle": [Function toggle],
+            },
+            "className": "event-editor-modal-footer",
+            "dataset": {},
+            "disabled": false,
+            "hidden": false,
+            "inert": false,
+            "innerHTML": "",
+            "inputValue": "",
+            "isContentEditable": false,
+            "listeners": {},
+            "max": "",
+            "min": "",
+            "optionSelected": false,
+            "ownText": "",
+            "parentNode": [Circular],
+            "scrollLeft": 0,
+            "scrollTop": 0,
+            "selectionEnd": 0,
+            "selectionStart": 0,
+            "style": {
+              "getPropertyValue": [Function anonymous],
+              "removeProperty": [Function anonymous],
+              "setProperty": [Function anonymous],
+            },
+            "tagName": "FOOTER",
+            "type": "",
+          },
+          FakeElement {
+            "attrs": {
+              "aria-label": "이벤트 에디터 창 크기 조절",
+              "role": "separator",
+              "tabindex": "0",
+              "title": "창 크기 조절",
+            },
+            "checked": false,
+            "childNodes": [],
+            "classList": {
+              "add": [Function add],
+              "contains": [Function contains],
+              "remove": [Function remove],
+              "toggle": [Function toggle],
+            },
+            "className": "event-editor-modal-resize-handle",
+            "dataset": {
+              "testid": "event-editor-modal-resize-handle",
+            },
+            "disabled": false,
+            "hidden": false,
+            "inert": false,
+            "innerHTML": "",
+            "inputValue": "",
+            "isContentEditable": false,
+            "listeners": {
+              "keydown": [
+                [Function anonymous],
+              ],
+              "pointercancel": [
+                [Function stopResize],
+              ],
+              "pointerdown": [
+                [Function anonymous],
+              ],
+              "pointermove": [
+                [Function anonymous],
+              ],
+              "pointerup": [
+                [Function stopResize],
+              ],
+            },
+            "max": "",
+            "min": "",
+            "optionSelected": false,
+            "ownText": "",
+            "parentNode": [Circular],
+            "scrollLeft": 0,
+            "scrollTop": 0,
+            "selectionEnd": 0,
+            "selectionStart": 0,
+            "style": {
+              "getPropertyValue": [Function anonymous],
+              "removeProperty": [Function anonymous],
+              "setProperty": [Function anonymous],
+            },
+            "tagName": "DIV",
+            "type": "",
+          },
+        ],
+        "classList": {
+          "add": [Function add],
+          "contains": [Function contains],
+          "remove": [Function remove],
+          "toggle": [Function toggle],
+        },
+        "className": "event-editor-modal-window",
+        "dataset": {},
+        "disabled": false,
+        "hidden": false,
+        "inert": false,
+        "innerHTML": "",
+        "inputValue": "",
+        "isContentEditable": false,
+        "listeners": {},
+        "max": "",
+        "min": "",
+        "optionSelected": false,
+        "ownText": "",
+        "parentNode": FakeElement {
+          "attrs": {},
+          "checked": false,
+          "childNodes": [
+            [Circular],
+          ],
+          "classList": {
+            "add": [Function add],
+            "contains": [Function contains],
+            "remove": [Function remove],
+            "toggle": [Function toggle],
+          },
+          "className": "event-editor-modal-backdrop",
+          "dataset": {
+            "eventId": "event-1",
+            "mapId": "map_blank_start",
+            "testid": "event-editor-modal",
+          },
+          "disabled": false,
+          "hidden": false,
+          "inert": false,
+          "innerHTML": "",
+          "inputValue": "",
+          "isContentEditable": false,
+          "listeners": {
+            "click": [
+              [Function anonymous],
+            ],
+            "dblclick": [
+              [Function anonymous],
+            ],
+            "focusin": [
+              [Function anonymous],
+            ],
+            "keydown": [
+              [Function onRootKeyDown],
+              [Function onKeyDown],
+              [Function anonymous],
+              [Function trap],
+            ],
+            "oprn:event-editor-close": [
+              [Function anonymous],
+            ],
+            "oprn:event-editor-restore": [
+              [Function restoreWindow],
+            ],
+            "pointerdown": [
+              [Function onRootPointerDown],
+            ],
+            "scroll": [
+              [Function positionMenu],
+            ],
+          },
+          "max": "",
+          "min": "",
+          "optionSelected": false,
+          "ownText": "",
+          "parentNode": FakeElement {
+            "attrs": {},
+            "checked": false,
+            "childNodes": [
+              [Circular],
+            ],
+            "classList": {
+              "add": [Function add],
+              "contains": [Function contains],
+              "remove": [Function remove],
+              "toggle": [Function toggle],
+            },
+            "className": "event-editor-modal-open",
+            "dataset": {},
+            "disabled": false,
+            "hidden": false,
+            "inert": false,
+            "innerHTML": "",
+            "inputValue": "",
+            "isContentEditable": false,
+            "listeners": {},
+            "max": "",
+            "min": "",
+            "optionSelected": false,
+            "ownText": "",
+            "parentNode": null,
+            "scrollLeft": 0,
+            "scrollTop": 0,
+            "selectionEnd": 0,
+            "selectionStart": 0,
+            "style": {
+              "getPropertyValue": [Function anonymous],
+              "removeProperty": [Function anonymous],
+              "setProperty": [Function anonymous],
+            },
+            "tagName": "BODY",
+            "type": "",
+          },
+          "scrollLeft": 0,
+          "scrollTop": 0,
+          "selectionEnd": 0,
+          "selectionStart": 0,
+          "style": {
+            "getPropertyValue": [Function anonymous],
+            "removeProperty": [Function anonymous],
+            "setProperty": [Function anonymous],
+          },
+          "tagName": "DIV",
+          "type": "",
+        },
+        "scrollLeft": 0,
+        "scrollTop": 0,
+        "selectionEnd": 0,
+        "selectionStart": 0,
+        "style": {
+          "getPropertyValue": [Function anonymous],
+          "removeProperty": [Function anonymous],
+          "setProperty": [Function anonymous],
+        },
+        "tagName": "SECTION",
+        "type": "",
+      },
+      "scrollLeft": 0,
+      "scrollTop": 0,
+      "selectionEnd": 0,
+      "selectionStart": 0,
+      "style": {
+        "getPropertyValue": [Function anonymous],
+        "removeProperty": [Function anonymous],
+        "setProperty": [Function anonymous],
+      },
+      "tagName": "HEADER",
+      "type": "",
+    },
+    "scrollLeft": 0,
+    "scrollTop": 0,
+    "selectionEnd": 0,
+    "selectionStart": 0,
+    "style": {
+      "getPropertyValue": [Function anonymous],
+      "removeProperty": [Function anonymous],
+      "setProperty": [Function anonymous],
+    },
+    "tagName": "DIV",
+    "type": "",
+  },
+  "scrollLeft": 0,
+  "scrollTop": 0,
+  "selectionEnd": 0,
+  "selectionStart": 0,
+  "style": {
+    "getPropertyValue": [Function anonymous],
+    "removeProperty": [Function anonymous],
+    "setProperty": [Function anonymous],
+  },
+  "tagName": "SPAN",
+  "type": "",
+}
+
+ ❯ test/eventEditorTrustLoop.test.ts:156:36
+    154| 
+    155|     document.querySelector<HTMLElement>('[data-issue-code="event.posit…
+    156|     expect(document.activeElement).toBe(document.querySelector('[data-…
+       |                                    ^
+    157| 
+    158|     document.querySelector<HTMLElement>('[data-issue-code="reference.m…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  test/eventEditorTrustLoop.test.ts > event editor trust loop > restores focus to the parent editor when a subdialog opener rerenders away
+ReferenceError: KeyboardEvent is not defined
+ ❯ handlePageTabKeydown src/editor/panels/eventEditor/pageProps.ts:340:26
+    338|   index: number
+    339| ): void {
+    340|   if (!(event instanceof KeyboardEvent)) return;
+       |                          ^
+    341|   const reorder = event.ctrlKey || event.metaKey;
+    342|   let nextIndex: number | null = null;
+ ❯ keydown src/editor/panels/eventEditor/pageProps.ts:282:29
+ ❯ FakeElement.dispatchEvent test/fakeDom.ts:319:9
+ ❯ test/eventEditorTrustLoop.test.ts:235:29
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+ FAIL  test/eventEditorTrustLoop.test.ts > event editor trust loop > restores focus, caret, open details, and scroll across reactive rerenders
+Error: expected event editor interaction surfaces
+ ❯ test/eventEditorTrustLoop.test.ts:358:55
+    356|     const details = document.querySelector<HTMLDetailsElement>('[data-…
+    357|     const commandList = document.querySelector<HTMLElement>(".cmd-list…
+    358|     if (!nameInput || !details || !commandList) throw new Error("expec…
+       |                                                       ^
+    359|     nameInput.focus();
+    360|     nameInput.setSelectionRange(2, 5);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯
+
+ FAIL  test/weightedBranchUx.test.ts > weighted branch command UX > preserves exact authored table when only the destination changes
+AssertionError: expected '' to be 'roll' // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- roll[39m
+
+ ❯ test/weightedBranchUx.test.ts:94:39
+     92|     change(picker, "roll", "change");
+     93|     expect(fields().table).toBe(table);
+     94|     expect(fields().resultVariableId).toBe("roll");
+       |                                       ^
+     95|     expect(control(body, "weighted-branch-destination").dataset.variab…
+     96|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯
+
+
+ Test Files  4 failed | 16 passed (20)
+      Tests  8 failed | 262 passed (270)
+   Start at  14:11:00
+   Duration  160.40s (transform 18.02s, setup 0ms, collect 68.41s, tests 83.78s, environment 6ms, prepare 2.09s)
+
+JSON report written to /home/main/z-project/rpg-zzu-ai-acceptance-live-qa/output/evidence/acceptance-live-fakedom-repair/affected.json

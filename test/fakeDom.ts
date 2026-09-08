@@ -57,20 +57,21 @@ export class FakeNode {
   }
 
   set textContent(value: string) {
+    this.replaceChildren();
     this.ownText = value;
-    this.childNodes.length = 0;
   }
 
   append(...children: FakeNode[]): void {
-    for (const child of children) {
-      child.parentNode = this;
-      this.childNodes.push(child);
-    }
+    for (const child of children) this.insertBefore(child, null);
   }
 
-  removeChild(child: FakeNode): void {
+  removeChild(child: FakeNode): FakeNode {
     const index = this.childNodes.indexOf(child);
-    if (index >= 0) this.childNodes.splice(index, 1);
+    if (index < 0) throw new DOMException("Node is not a child", "NotFoundError");
+    this.childNodes.splice(index, 1);
+    child.parentNode = null;
+    this.childrenChanged();
+    return child;
   }
 
   insertBefore(child: FakeNode, reference: FakeNode | null): FakeNode {
@@ -80,6 +81,7 @@ export class FakeNode {
     const index = reference === null ? this.childNodes.length : this.childNodes.indexOf(reference);
     this.childNodes.splice(index, 0, child);
     child.parentNode = this;
+    this.childrenChanged(child);
     return child;
   }
 
@@ -91,24 +93,28 @@ export class FakeNode {
   replaceWith(...nodes: FakeNode[]): void {
     const parent = this.parentNode;
     if (!parent) return;
-    const index = parent.childNodes.indexOf(this);
-    if (index < 0) return;
-    for (const node of nodes) node.parentNode = parent;
-    parent.childNodes.splice(index, 1, ...nodes);
-    this.parentNode = null;
+    const reference = parent.childNodes.slice(parent.childNodes.indexOf(this) + 1)
+      .find((node) => !nodes.includes(node)) ?? null;
+    for (const node of nodes) node.remove();
+    this.remove();
+    for (const node of nodes) parent.insertBefore(node, reference);
   }
 
   prepend(...children: FakeNode[]): void {
-    for (const child of children.slice().reverse()) {
-      child.parentNode = this;
-      this.childNodes.unshift(child);
-    }
+    const reference = this.childNodes.find((node) => !children.includes(node)) ?? null;
+    for (const child of children) this.insertBefore(child, reference);
   }
 
   replaceChildren(...children: FakeNode[]): void {
+    this.ownText = "";
     for (const child of this.childNodes) child.parentNode = null;
     this.childNodes.length = 0;
+    this.childrenChanged();
     this.append(...children);
+  }
+
+  protected childrenChanged(inserted?: FakeNode): void {
+    this.parentNode?.childrenChanged(inserted);
   }
 
   contains(node: unknown): boolean {
@@ -136,7 +142,8 @@ export class FakeElement extends FakeNode {
   // "호출할 수 없는 식" 이 된다 — 런타임에는 있는 함수를 타입만 없다고 말하는 셈이다.
   style: FakeStyle = createFakeStyle();
   type = "";
-  value = "";
+  private inputValue = "";
+  private optionSelected = false;
   isContentEditable = false;
   readonly attrs: Record<string, string> = {};
   readonly tagName: string;
@@ -147,10 +154,68 @@ export class FakeElement extends FakeNode {
   get children(): FakeElement[] {
     return this.childNodes.filter((child): child is FakeElement => child instanceof FakeElement);
   }
-  get selectedOptions(): FakeElement[] {
+  get options(): FakeElement[] {
     if (this.tagName !== "SELECT") return [];
-    const options = this.children.filter((child) => child.tagName === "OPTION");
-    return options.filter((option, index) => option.value === this.value || (this.value === "" && index === 0));
+    return this.children.flatMap((child) => child.tagName === "OPTION" ? [child]
+      : child.tagName === "OPTGROUP" ? child.children.filter((option) => option.tagName === "OPTION") : []);
+  }
+  get selectedOptions(): FakeElement[] {
+    return this.options.filter((option) => option.optionSelected);
+  }
+  get selectedIndex(): number {
+    return this.options.findIndex((option) => option.optionSelected);
+  }
+  set selectedIndex(index: number) {
+    this.options.forEach((option, optionIndex) => { option.optionSelected = optionIndex === index; });
+  }
+  get value(): string {
+    if (this.tagName === "SELECT") return this.options[this.selectedIndex]?.value ?? "";
+    if (this.tagName === "OPTION") return this.attrs.value ?? this.optionText;
+    return this.inputValue;
+  }
+  set value(value: string) {
+    if (this.tagName === "SELECT") this.selectedIndex = this.options.findIndex((option) => option.value === value);
+    else if (this.tagName === "OPTION") this.attrs.value = value;
+    else this.inputValue = value;
+  }
+  private get optionText(): string {
+    return this.textContent.replace(/[\t\n\f\r ]+/gu, " ").trim();
+  }
+  get label(): string {
+    return this.attrs.label ?? (this.tagName === "OPTION" ? this.optionText : "");
+  }
+  set label(value: string) {
+    this.attrs.label = value;
+  }
+  private get owningSelect(): FakeElement | null {
+    const parent = this.parentElement?.tagName === "OPTGROUP" ? this.parentElement.parentElement : this.parentElement;
+    return parent?.tagName === "SELECT" ? parent : null;
+  }
+  get index(): number {
+    return this.owningSelect?.options.indexOf(this) ?? 0;
+  }
+  get selected(): boolean {
+    return this.optionSelected;
+  }
+  set selected(value: boolean) {
+    this.optionSelected = value;
+    const select = this.owningSelect;
+    if (value && select) select.selectedIndex = this.index;
+    else select?.childrenChanged();
+  }
+  protected override childrenChanged(inserted?: FakeNode): void {
+    if (this.tagName !== "SELECT") {
+      super.childrenChanged(inserted);
+      return;
+    }
+    const options = this.options;
+    // A selected option being adopted wins over the old single-select default.
+    const selected = options.findLast((option) => option.optionSelected && inserted?.contains(option))
+      ?? options.findLast((option) => option.optionSelected)
+      ?? options.find((option) => !option.disabled && option.getAttribute("disabled") === null
+        && !(option.parentElement?.tagName === "OPTGROUP"
+          && (option.parentElement.disabled || option.parentElement.getAttribute("disabled") !== null)));
+    this.selectedIndex = selected ? options.indexOf(selected) : -1;
   }
   private readonly listeners: Partial<Record<string, EventListenerOrEventListenerObject[]>> = {};
   readonly classList = {
@@ -193,6 +258,7 @@ export class FakeElement extends FakeNode {
     this.attrs[name] = value;
     // HTMLOptionElement / input 호환: attribute value 는 .value 프로퍼티와 동기화.
     if (name === "value") this.value = value;
+    if (name === "selected" && this.tagName === "OPTION") this.selected = true;
     if (name.startsWith("data-")) {
       const camelKey = name
         .slice(5)
@@ -217,6 +283,7 @@ export class FakeElement extends FakeNode {
 
   removeAttribute(name: string): void {
     delete this.attrs[name];
+    if (name === "selected" && this.tagName === "OPTION") this.selected = false;
   }
 
   // <canvas> 2D 컨텍스트는 흉내내지 않는다 — 호출부는 이미 null을 정상 처리하도록
@@ -348,6 +415,14 @@ export class FakeElement extends FakeNode {
   }
 }
 
+// Tests also construct FakeElement("select") directly; identity follows the tag.
+class FakeSelectElement extends FakeElement {
+  constructor() { super("select"); }
+  static [Symbol.hasInstance](value: unknown): boolean {
+    return value instanceof FakeElement && value.tagName === "SELECT";
+  }
+}
+
 type FakeStyle = Record<string, string> & {
   setProperty: (name: string, value: string) => void;
   removeProperty: (name: string) => void;
@@ -409,10 +484,9 @@ export function installFakeDom(options: FakeDomOptions = {}): () => void {
   defineDomGlobal("Node", FakeNode);
   defineDomGlobal("HTMLElement", FakeElement);
   defineDomGlobal("HTMLButtonElement", FakeElement);
-  // 몬스터/장비 뷰 등이 `instanceof HTMLInputElement`(또는 Image/Select/TextArea)로 타입을
-  // 좁히는 패턴을 쓴다 — FakeElement가 그 전부를 흉내내므로 같은 클래스를 매핑해둔다.
+  // Inputs/images/textareas retain their shared fake; select identity is tag-specific.
   defineDomGlobal("HTMLInputElement", FakeElement);
-  defineDomGlobal("HTMLSelectElement", FakeElement);
+  defineDomGlobal("HTMLSelectElement", FakeSelectElement);
   defineDomGlobal("HTMLImageElement", FakeElement);
   // `new Image()` 는 프로덕션 코드(chromaKey.getAutoKeyedDataUrl 등)가 직접 쓰는 생성자다.
   // HTMLImageElement 만 매핑해두면 생성자 전역이 없어 ReferenceError 가 난다.

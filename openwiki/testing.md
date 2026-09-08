@@ -1,3 +1,46 @@
+## Request-coverage gate follow-up (2026-09-08)
+
+The complete immutable control at `e05a99b91` accounted for 1,826 files / 18,328
+cases (18,089 passed, 216 failed, 23 skipped). The repaired `0798a67b` run accounted
+for 1,829 files / 18,363 cases (18,128 passed, 212 failed, 23 skipped). Both are
+**red** results. A 1,200-second observer deadline did not establish a hung runner:
+the four-thread instrumented runs took 2,511 and 4,250 seconds. Keep collection,
+case, module-end, child-exit and unhandled-error evidence separate.
+
+Adding a shared fake-DOM capability can activate more production code. In this
+case `insertBefore` enabled custom selects, exposing missing options/index/value
+semantics, overbroad `HTMLSelectElement` identity and duplicate node ownership.
+Preserve the enhancement and model its real contracts instead of removing the
+capability. Seed actual selectable records in fixtures (`roll`, `event-a/b`);
+native selects cannot select nonexistent IDs. Checklist tests must respect
+working-before-pending priority while still proving keyed nodes actually reorder
+when their statuses change.
+
+AI transport fixtures must distinguish intent, independent request coverage,
+author execution and independent review. Author execution may be non-streaming.
+Observe request/response and terminal events before Send; retain real forwarding
+callbacks, full-map image receipts, approval before apply, actual ghost bounds,
+one apply and cleanup. Never raise a deadline to hide a fixture-rejected request.
+
+The final full-run diagnostic stream lost one optional `collected` record for
+`undoHistory.test.ts`; its intact appended `start` record was recoverable. The
+original trace hash was unchanged, all 1,829 independently reported/queued/ended
+file identities and the terminal inventory matched, and that module's 15 cases
+passed in the untouched JSON report. Recovery retained the damaged bytes and
+did not invent a test outcome or missing diagnostic. A separate derived
+summarizer records that limitation; never silently skip malformed evidence.
+
+Bind every result to its executed source. The later selector-fixture repair and
+main integration were validated with focused tests, build and shipping-player
+checks; they are not relabeled as another full run of `0798a67b`. Preserve raw
+failure values, multiplicity, source skips, timing-sensitive cases and the red
+surface gate. Some normally included legacy tests attempt remote authoring or
+filesystem writes: keep the scoped sandbox restrictions explicit rather than
+running them against a user's configured project to make a gate green.
+
+The compact result/disposition index is
+[`output/evidence/acceptance-gate-followup/README.md`](../output/evidence/acceptance-gate-followup/README.md).
+
 ## Native event battle reliability QA (2026-09-08)
 
 Focused regressions are `eventBattleAdmission.test.ts` (actual command modal and
@@ -1117,6 +1160,38 @@ resolve 하고 error 분기는 원본 URL 을 캐시·반환한다. 그래서 `F
 Unhandled Rejection 은 그 순간 실행 중이던 아무 파일에 귀속되므로, 이 종류의 누락은
 **비결정적 오귀속**의 원인이 된다. 새 브라우저 전역을 프로덕션이 쓰기 시작하면 `fakeDom` 의
 `DomGlobalName` 유니온·save/restore 목록·`defineDomGlobal` 세 곳을 같이 늘려야 한다.
+
+### Shared fake DOM enhancement contracts (2026-09-08)
+
+Adding `insertBefore` enables the real event-editor custom-select controller; it
+is not only a checklist capability. `HTMLSelectElement` identity must match the
+SELECT tag (including directly constructed `FakeElement("select")`), never every
+fake element. Single-select option state now covers direct options and optgroups,
+index/value/selected synchronization, disabled defaults and invalid selections.
+Collections are fresh arrays on access, not a complete live HTMLCollection API;
+multi-select, layout and MutationObserver simulation remain outside this fake.
+
+All insertion/replacement paths adopt nodes from their previous parent. Removal
+and text/children replacement clear parent links; wrapper disposal must restore
+exactly one select without leaving the dialog root in a wrapper. Keep the real
+enhancement enabled. `fakeDomSelectContracts` exercises actual menu selection,
+input/change bubbling, subscribed focus restoration, disposal and checklist row
+identity. Happy DOM verifies supported reference operations; Firefox additionally
+checks edge contracts where the installed Happy DOM differs (duplicate values,
+option text/label, detached index, optgroup reordering and self replacement).
+Fixtures selecting an ID must create the actual option/record first; the focused
+weighted-branch fixture now creates its `roll` variable without changing assertions.
+
+`aiChatObservability` distinguishes the `REQUEST_COVERAGE_AUDIT` sentinel from
+intent JSON and streams. Manual chat retains drafts until settlement: the bounded
+acceptance-repair execute requests are non-streaming JSON. Reply with valid audit
+requirements linked to the original request and count execute requests separately;
+do not answer audits with intent JSON or reject execute requests as bad streams.
+Subscribe before Send to transport, session and post-apply refresh events, plus
+terminal activity. Preserve the actual ghost bounds, single apply and cleanup
+assertions. The 10-second terminal deadline is unchanged; no polling or retries
+were added to tests. Exact red traces and focused/affected evidence are in
+`output/evidence/acceptance-live-fakedom-repair/`; the final full gate is lead-owned.
 
 ## bugfix-sweep 실제 표면 하네스 (2026-08-29)
 

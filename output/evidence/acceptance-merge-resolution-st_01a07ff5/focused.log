@@ -1,0 +1,200 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiChatObservability.test.ts test/requestCoverage.test.ts test/fakeDomSelectContracts.test.ts test/eventEditorStagedState.test.ts test/independentReview.test.ts test/assistantIndependentReview.test.ts test/assistantReviewApprovalLifecycle.test.ts --maxWorkers=1 --minWorkers=1 --no-file-parallelism
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-acceptance-live-qa
+
+ ✓ test/aiChatObservability.test.ts (9 tests) 15807ms
+   ✓ 글자 크기 3단 (V3C ①) > 기본값은 '보통'이고 저장하면 localStorage(oprn:ai-font-size)에 영속된다 — 무효값은 보통으로 방어  452ms
+   ✓ 글자 크기 3단 (V3C ①) > 설정의 글자 크기 select(ai-font-size)를 바꾸면 즉시 패널에 반영·영속되고, 재부팅 시 다시 적용된다  663ms
+   ✓ 글자 크기 3단 (V3C ①) > applyAiFontSize는 data 속성과 CSS 변수(--ai-font-scale)를 함께 설정한다  496ms
+   ✓ 글자 크기 3단 (V3C ①) > 기록 줌 스테퍼는 없다 — Ctrl+휠이 글자 크기를 바꾸고 영속한다  378ms
+   ✓ 도구 호출 상세 아코디언 (V3C ③) > 실패 라인은 기존 testid를 유지하면서 아코디언 안에 오류 원문(summary/issues)을 그대로 담는다  702ms
+   ✓ 도구 호출 상세 아코디언 (V3C ③) > 복원된 대화의 도구 로그는 한 줄 요약으로 남고 JSON 상세는 숨긴다  1555ms
+   ✓ 병합 추론 원문 전체 열람 (V3C ②) > 도구 사이 추론이 한 블록으로 병합돼도 각 추론의 원문 전체가 아이템으로 남고 토글은 횟수를 표시한다  1823ms
+   ✓ 실시간 고스트 프리뷰 연결 > 채팅 턴의 성공한 쓰기 tool_call 뒤 세션 draft diff 고스트를 발행한다  9499ms
+ ❯ test/fakeDomSelectContracts.test.ts (11 tests | 1 failed) 254ms
+   ✓ fake DOM select/adoption contracts > flattens optgroups and aligns value, selectedIndex, selected and option.index 10ms
+   ✓ fake DOM select/adoption contracts > clears invalid selections, chooses one duplicate value, and recovers on insertion 4ms
+   ✓ fake DOM select/adoption contracts > honors selected options, disabled defaults and removal of the selected optgroup 5ms
+   ✓ fake DOM select/adoption contracts > uses option text as fallback value and label, preserving explicit empty values 8ms
+   ✓ fake DOM select/adoption contracts > adopts into enhanced wrappers and unwraps without duplicate ownership 2ms
+   ✓ fake DOM select/adoption contracts > replaces with adopted siblings and descendants, including self replacement 2ms
+   ✓ fake DOM select/adoption contracts > clears parent links on removal, text replacement and replaceChildren 11ms
+   ✓ matches Happy DOM for grouped selection, wrapper adoption and cleanup 44ms
+   ✓ recognizes only SELECT elements and exposes current selectedOptions 1ms
+   ✓ runs real select refresh, menu selection and disposal without wrapping the dialog root 14ms
+   × keeps real acceptance checklist row identity while reordering, removing and clearing 149ms
+     → expected [ <details>…(2)</details>, …(1) ] to deeply equal [ <details>…(2)</details>, …(1) ]
+ ✓ test/assistantIndependentReview.test.ts (29 tests) 55917ms
+   ✓ independent result review > requests a change, repairs the same draft, and reviews the new revision without writer conversation  6226ms
+   ✓ review termination and isolation > stops honestly on malformed reviewer output  1559ms
+   ✓ review termination and isolation > stops honestly on transport reviewer output  1549ms
+   ✓ review termination and isolation > stops honestly on write reviewer output  1346ms
+   ✓ review termination and isolation > stops honestly on stale reviewer output  1655ms
+   ✓ review termination and isolation > stops on repeated unchanged findings instead of granting approval  3317ms
+   ✓ review termination and isolation > shares the existing round budget  1501ms
+   ✓ review termination and isolation > shares the existing writer-tokens budget  1711ms
+   ✓ review termination and isolation > shares the existing review-tokens budget  1869ms
+   ✓ review termination and isolation > does not review or execute writes in ask mode  1075ms
+   ✓ review termination and isolation > does not review a no-write direct question  689ms
+   ✓ review termination and isolation > rejects a write after cancellation during the pre-tool UI yield  780ms
+   ✓ review termination and isolation > ignores a late approval after cancellation without further mutations  1572ms
+   ✓ review termination and isolation > invalidates approval after edits, and undo cannot revive it  2618ms
+   ✓ review termination and isolation > cannot turn a failed actual scene test into approval  2022ms
+   ✓ review termination and isolation > defers autonomous milestones until the independent verdict is approved  3639ms
+   ✓ review termination and isolation > defers autonomous milestones until the independent verdict is rejected  2030ms
+   ✓ review evidence and final revision boundaries > requires actual visual evidence after spatial changes: delivered  2185ms
+   ✓ review evidence and final revision boundaries > requires actual visual evidence after spatial changes: empty  1594ms
+   ✓ review evidence and final revision boundaries > requires actual visual evidence after spatial changes: error  1996ms
+   ✓ review evidence and final revision boundaries > reviews the surface-prepared draft, not a pre-clipping revision  1374ms
+   ✓ review evidence and final revision boundaries > rejects a draft replaced while a review is in flight  1679ms
+   ✓ review evidence and final revision boundaries > cannot continue forever by paraphrasing failures without repairing  1467ms
+   ✓ review evidence and final revision boundaries > cannot apply an autonomous draft when cancelled by the approval event  914ms
+   ✓ evaluation evidence integration > retains the approved independent verdict alongside actual draft scoring  1279ms
+   ✓ evaluation evidence integration > retains the rejected independent verdict alongside actual draft scoring  1817ms
+   ✓ no-write authoring and authored start-state review > blocks a no-write authoring result with unmet acceptance requirements before publishing success  1483ms
+   ✓ no-write authoring and authored start-state review > blocks a no-write authoring result with unmet completion requirements before publishing success  2174ms
+   ✓ no-write authoring and authored start-state review > reviews authored start-state party, inventory and gold as actual data  2784ms
+ ✓ test/requestCoverage.test.ts (14 tests) 15842ms
+   ✓ independent request coverage enters the canonical ledger > keeps the original goal incomplete after failed NPC repair and NPC-only clarification ({"resume":false,"auditUnavailable":false})  1819ms
+   ✓ independent request coverage enters the canonical ledger > keeps the original goal incomplete after failed NPC repair and NPC-only clarification ({"resume":true,"auditUnavailable":false})  925ms
+   ✓ independent request coverage enters the canonical ledger > keeps the original goal incomplete after failed NPC repair and NPC-only clarification ({"resume":false,"auditUnavailable":true})  1585ms
+   ✓ independent request coverage enters the canonical ledger > keeps the original goal incomplete after failed NPC repair and NPC-only clarification ({"resume":true,"auditUnavailable":true})  1399ms
+   ✓ independent request coverage enters the canonical ledger > retains words omitted even by the independent extractor as an unverified canonical obligation  1198ms
+   ✓ independent request coverage enters the canonical ledger > cannot satisfy a partial plan after omission coverage  1504ms
+   ✓ independent request coverage enters the canonical ledger > cannot satisfy a partial plan after empty coverage  983ms
+   ✓ independent request coverage enters the canonical ledger > cannot satisfy a partial plan after invalid coverage  853ms
+   ✓ independent request coverage enters the canonical ledger > cannot satisfy a partial plan after network coverage  1278ms
+   ✓ independent request coverage enters the canonical ledger > links every independently extracted clause to real immutable checks  1271ms
+   ✓ independent request coverage enters the canonical ledger > does not create obligations or run an audit for genuine questions  501ms
+   ✓ independent request coverage enters the canonical ledger > keeps grouped R2 clarification and resume coverage distinct (audit failure=false)  1382ms
+   ✓ independent request coverage enters the canonical ledger > keeps grouped R2 clarification and resume coverage distinct (audit failure=true)  1141ms
+ ✓ test/assistantReviewApprovalLifecycle.test.ts (9 tests) 32364ms
+   ✓ review approval ownership > requires fresh review after approval-event cancellation ({"autonomous":false,"freshSignal":false})  5030ms
+   ✓ review approval ownership > requires fresh review after approval-event cancellation ({"autonomous":false,"freshSignal":true})  4351ms
+   ✓ review approval ownership > requires fresh review after approval-event cancellation ({"autonomous":true,"freshSignal":false})  5003ms
+   ✓ review approval ownership > requires fresh review after approval-event cancellation ({"autonomous":true,"freshSignal":true})  3808ms
+   ✓ review approval ownership > does not admit approval inside a review event before checking its output budget  2148ms
+   ✓ review approval ownership > retires approval when the result_review subscriber throws  1994ms
+   ✓ review approval ownership > retires approval when the assistant_message subscriber throws  2099ms
+   ✓ review approval ownership > keeps a completed approval bound to its original signal on retry  2391ms
+   ✓ review approval ownership > retries an already-applied persistence proof without replaying writes or review  5537ms
+ ✓ test/eventEditorStagedState.test.ts (14 tests) 4264ms
+   ✓ event command staged-state regressions > keeps consecutive shop settings instead of restoring the render-time command  361ms
+   ✓ event command staged-state regressions > keeps prompt, option text, and cancel behavior across consecutive choice edits  727ms
+   ✓ event command staged-state regressions > keeps a changed fork condition when enabling else  709ms
+   ✓ event command staged-state regressions > keeps consecutive child edits in all/any condition groups  518ms
+   ✓ event command staged-state regressions > renders an added group child and keeps consecutive sibling edits  490ms
+ ✓ test/independentReview.test.ts (23 tests) 617ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/fakeDomSelectContracts.test.ts > keeps real acceptance checklist row identity while reordering, removing and clearing
+AssertionError: expected [ <details>…(2)</details>, …(1) ] to deeply equal [ <details>…(2)</details>, …(1) ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -157,11 +157,11 @@[39m
+[2m              "isContentEditable": false,[22m
+[2m              "listeners": {},[22m
+[2m              "max": "",[22m
+[2m              "min": "",[22m
+[2m              "optionSelected": false,[22m
+[32m-             "ownText": "second",[39m
+[31m+             "ownText": "first",[39m
+[2m              "parentNode": [Circular],[22m
+[2m              "scrollLeft": 0,[22m
+[2m              "scrollTop": 0,[22m
+[2m              "selectionEnd": 0,[22m
+[2m              "selectionStart": 0,[22m
+[33m@@ -193,11 +193,11 @@[39m
+[2m              "isContentEditable": false,[22m
+[2m              "listeners": {},[22m
+[2m              "max": "",[22m
+[2m              "min": "",[22m
+[2m              "optionSelected": false,[22m
+[32m-             "ownText": "대기",[39m
+[31m+             "ownText": "작업 중",[39m
+[2m              "parentNode": [Circular],[22m
+[2m              "scrollLeft": 0,[22m
+[2m              "scrollTop": 0,[22m
+[2m              "selectionEnd": 0,[22m
+[2m              "selectionStart": 0,[22m
+[33m@@ -684,13 +684,13 @@[39m
+[2m        "remove": [Function remove],[22m
+[2m        "toggle": [Function toggle],[22m
+[2m      },[22m
+[2m      "className": "ai-sticky-item",[22m
+[2m      "dataset": {[22m
+[32m-       "itemId": "second",[39m
+[31m+       "itemId": "first",[39m
+[2m        "required": "true",[22m
+[32m-       "status": "pending",[39m
+[31m+       "status": "working",[39m
+[2m        "testid": "ai-sticky-item",[22m
+[2m        "withdrawn": "false",[22m
+[2m      },[22m
+[2m      "disabled": false,[22m
+[2m      "hidden": false,[22m
+[33m@@ -874,11 +874,11 @@[39m
+[2m              "isContentEditable": false,[22m
+[2m              "listeners": {},[22m
+[2m              "max": "",[22m
+[2m              "min": "",[22m
+[2m              "optionSelected": false,[22m
+[32m-             "ownText": "first",[39m
+[31m+             "ownText": "second",[39m
+[2m              "parentNode": [Circular],[22m
+[2m              "scrollLeft": 0,[22m
+[2m              "scrollTop": 0,[22m
+[2m              "selectionEnd": 0,[22m
+[2m              "selectionStart": 0,[22m
+[33m@@ -910,11 +910,11 @@[39m
+[2m              "isContentEditable": false,[22m
+[2m              "listeners": {},[22m
+[2m              "max": "",[22m
+[2m              "min": "",[22m
+[2m              "optionSelected": false,[22m
+[32m-             "ownText": "작업 중",[39m
+[31m+             "ownText": "대기",[39m
+[2m              "parentNode": [Circular],[22m
+[2m              "scrollLeft": 0,[22m
+[2m              "scrollTop": 0,[22m
+[2m              "selectionEnd": 0,[22m
+[2m              "selectionStart": 0,[22m
+[33m@@ -1401,13 +1401,13 @@[39m
+[2m        "remove": [Function remove],[22m
+[2m        "toggle": [Function toggle],[22m
+[2m      },[22m
+[2m      "className": "ai-sticky-item",[22m
+[2m      "dataset": {[22m
+[32m-       "itemId": "first",[39m
+[31m+       "itemId": "second",[39m
+[2m        "required": "true",[22m
+[32m-       "status": "working",[39m
+[31m+       "status": "pending",[39m
+[2m        "testid": "ai-sticky-item",[22m
+[2m        "withdrawn": "false",[22m
+[2m      },[22m
+[2m      "disabled": false,[22m
+[2m      "hidden": false,[22m
+
+ ❯ test/fakeDomSelectContracts.test.ts:248:76
+    246|     const rows = Array.from(checklist.root.querySelectorAll<HTMLElemen…
+    247|     checklist.update({ ...snapshot, items: [...snapshot.items].reverse…
+    248|     expect(Array.from(checklist.root.querySelectorAll(".ai-sticky-item…
+       |                                                                            ^
+    249|     checklist.update({ ...snapshot, items: [snapshot.items[1]!] });
+    250|     expect(rows[0]!.parentNode).toBeNull();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 6 passed (7)
+      Tests  1 failed | 108 passed (109)
+   Start at  16:44:07
+   Duration  213.29s (transform 37.58s, setup 0ms, collect 81.12s, tests 125.07s, environment 4ms, prepare 2.08s)
+

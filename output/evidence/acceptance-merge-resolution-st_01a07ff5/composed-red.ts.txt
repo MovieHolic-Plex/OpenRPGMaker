@@ -187,16 +187,14 @@ const toolCallLine = (id: string, name: string, args = "{}"): string =>
 const reasoningLine = (text: string): string => JSON.stringify({ choices: [{ delta: { reasoning: text } }] });
 
 function stubChat(tools: readonly string[], bodies: readonly string[], trace: unknown[] = [], requirements: readonly RequestRequirement[] = [], executeReply?: string) {
-  const requests = { intent: 0, coverage: 0, review: 0, chat: 0, execute: 0 };
-  const stageRequests = new Map<number, number>();
+  const requests = { intent: 0, coverage: 0, chat: 0, execute: 0 };
   // OAuth is the shipped config contract. agentMode:chat alone no longer disables
   // planning: the balanced autonomy dial enables it unless intent says single-step.
   storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), agentMode: "chat" }));
   vi.stubGlobal("fetch", vi.fn(async (url: unknown, init?: RequestInit) => {
     if (!String(url).endsWith("/v1/chat/completions")) return new Response("{}");
     const payload: { stream: boolean; response_format?: { type: string }; messages: { role: string; content?: unknown }[] } = JSON.parse(String(init?.body));
-    const reviewText = reviewRequestText(payload.messages);
-    const kind = reviewText !== null ? "review" : payload.messages.some(message => message.role === "system" && typeof message.content === "string"
+    const kind = payload.messages.some(message => message.role === "system" && typeof message.content === "string"
       && message.content.startsWith("REQUEST_COVERAGE_AUDIT\n")) ? "coverage" : payload.response_format?.type === "json_object" ? "intent" : payload.stream ? "chat" : "execute";
     if (isWikiExtraction(payload.messages)) return emptyWikiResponse();
     trace.push({ type: "request", kind, stream: payload.stream, toolResults: payload.messages.filter(message => message.role === "tool").length });
@@ -209,18 +207,9 @@ function stubChat(tools: readonly string[], bodies: readonly string[], trace: un
         role: "assistant", content: JSON.stringify({ requirements }),
       }, finish_reason: "stop" }] }), { headers: { "Content-Type": "application/json" } });
     }
-    if (reviewText !== null) {
-      requests.review += 1;
-      expect(payload.stream).toBe(false);
-      expect(payload.messages.map(message => message.role)).toEqual(["system", "user"]);
-      expect(JSON.parse(reviewText)).toMatchObject({ requiredProblems: [], imageEvidence: expect.any(Array) });
-      expect(payload.messages[1]?.content).toEqual(expect.arrayContaining([
-        expect.objectContaining({ type: "image_url", image_url: { url: "data:image/png;base64,AA==" } }),
-      ]));
-      trace.push({ type: "response", kind });
-      return approvedReviewResponse(reviewText);
-    }
-    if (kind === "intent") {
+    const reviewText = reviewRequestText(payload.messages);
+    if (reviewText !== null) return approvedReviewResponse(reviewText);
+    if (payload.response_format?.type === "json_object") {
       requests.intent += 1;
       expect(payload.stream).toBe(false);
       trace.push({ type: "response", kind, requirements: false });
@@ -231,20 +220,21 @@ function stubChat(tools: readonly string[], bodies: readonly string[], trace: un
     // Route by actual tool results, not by a shared fetch queue. Intent/persistence
     // traffic cannot steal a chat response; unexpected extra rounds fail loudly.
     const completedTools = payload.messages.filter((message) => message.role === "tool").length;
-    requests[kind] += 1;
-    const stageRequest = (stageRequests.get(completedTools) ?? 0) + 1;
-    stageRequests.set(completedTools, stageRequest);
-    const finalStage = completedTools === bodies.length - 1;
-    expect(stageRequest).toBeLessThanOrEqual(finalStage && executeReply !== undefined ? 1 + MAX_RALPH_ATTEMPTS_PER_ITEM : 1);
-    let body = bodies[completedTools];
-    if (body === undefined) throw new Error(`Unexpected author round after ${completedTools} tools`);
-    // Non-streaming create rounds still need their actual tool-call bodies.
-    // Only final-stage acceptance/review continuations may reuse the final reply.
-    if (stageRequest > 1) {
+    if (kind === "execute") {
+      requests.execute += 1;
       expect(payload.stream).toBe(false);
+      expect(completedTools).toBe(1);
       expect(executeReply).toBeDefined();
-      body = sse([JSON.stringify({ choices: [{ delta: { content: executeReply }, finish_reason: "stop" }] })]);
+      expect(requests.execute).toBeLessThanOrEqual(MAX_RALPH_ATTEMPTS_PER_ITEM);
+      trace.push({ type: "response", kind, toolResults: completedTools });
+      return new Response(JSON.stringify({ choices: [{ message: {
+        role: "assistant", content: executeReply,
+      }, finish_reason: "stop" }] }), { headers: { "Content-Type": "application/json" } });
     }
+    requests.chat += 1;
+    expect(payload.stream).toBe(true);
+    const body = bodies[completedTools];
+    if (body === undefined) throw new Error(`Unexpected chat round after ${completedTools} tools`);
     trace.push({ type: "response", kind, toolResults: completedTools });
     // question 턴의 스트리밍 SSE 본문은 그대로 둔다. create 턴은 토큰 방출이 꺼져
     // stream:false 로 오므로 같은 대본을 비스트리밍 JSON 본문으로 번역한다.
@@ -392,7 +382,7 @@ describe("병합 추론 원문 전체 열람 (V3C ②)", () => {
     (findByTestId(panel, "ai-send") as unknown as HTMLElement).click();
     const result = await terminal;
     expect(result.result).toMatchObject({ ok: true, stoppedReason: "final" });
-    expect(requests).toEqual({ intent: 1, coverage: 0, review: 0, chat: 3, execute: 0 });
+    expect(requests).toEqual({ intent: 1, coverage: 0, chat: 3, execute: 0 });
     expect(result.toolCalls).toMatchObject([
       { name: "get_project_summary", ok: true },
       { name: "get_map_region", ok: true },
@@ -428,11 +418,7 @@ describe("실시간 고스트 프리뷰 연결", () => {
     const send = AssistantSession.prototype.sendUserMessage;
     vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockImplementation(function (this: AssistantSession, text, onEvent, signal, options) {
       return send.call(this, text, event => {
-        if (["acceptance", "run_outcome", "phase", "tool_started", "tool_call", "proposal_paused", "result_review"].includes(event.type)) trace.push(event);
-        if (event.type === "result_review") {
-          expect(event.review).toMatchObject({ status: "approved", findings: [] });
-          expect(store.getCurrent().maps.map_live_ghost).toBeUndefined();
-        }
+        if (["acceptance", "run_outcome", "phase", "tool_started", "tool_call", "proposal_paused"].includes(event.type)) trace.push(event);
         onEvent?.(event);
       }, signal, options);
     });
@@ -480,22 +466,12 @@ describe("실시간 고스트 프리뷰 연결", () => {
       unsubscribe();
     }
     expect(result.result).toMatchObject({ ok: true, stoppedReason: "final", appliedCalls: 1 });
-    // Create -> full-map image read -> final are three non-streaming author rounds.
-    // Coverage and draft review are independent requests, not author executions.
-    // Review now checks the draft before apply; no acceptance repair is needed.
-    expect(requests).toEqual({ intent: 1, coverage: 1, review: 1, chat: 0, execute: 3 });
-    expect(trace.filter(entry => isRecord(entry) && entry.type === "request")).toMatchObject([
-      { kind: "intent", stream: false },
-      { kind: "coverage", stream: false },
-      { kind: "execute", stream: false, toolResults: 0 },
-      { kind: "execute", stream: false, toolResults: 1 },
-      { kind: "execute", stream: false, toolResults: 2 },
-      { kind: "review", stream: false },
-    ]);
+    // Manual chat applies after settlement: drafts cannot satisfy the audit, so the
+    // bounded execute rounds must return valid non-streaming replies before apply.
+    expect(requests).toEqual({ intent: 1, coverage: 1, chat: 2, execute: MAX_RALPH_ATTEMPTS_PER_ITEM });
     expect(trace).toEqual(expect.arrayContaining([
       expect.objectContaining({ type: "request", kind: "coverage", stream: false }),
       expect.objectContaining({ type: "response", kind: "coverage" }),
-      { type: "result_review", review: expect.objectContaining({ status: "approved", findings: [] }) },
       { type: "acceptance", snapshot: expect.objectContaining({ status: "verified" }) },
       { type: "run_outcome", runOutcome: expect.objectContaining({ goal: "satisfied", delivery: "applied" }) },
       { type: "terminal", result: expect.objectContaining({ ok: true, appliedCalls: 1 }) },
