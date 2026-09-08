@@ -434,6 +434,11 @@ keydown 을 document **캡처** 단계에서 잡아 `stopPropagation` 하므로(
   inspection padding; corner subtraction scales track content and position alike.
   Native notifications may follow an engine frame: do not overwrite pending input.
   No idle-frame DOM writes, shell scroll offsets or parallel viewport state.
+  The projection cache includes both canvas dimensions: assistant breakpoints can
+  keep the unobstructed span and world origin unchanged during a canvas-only
+  resize. Tracks must still move to the new canvas edges and recompute their
+  content/position ratios. Width-only and height-only regressions retain the same
+  view/worldView objects and verify subsequent native input is converted once.
 - Canvas-only cancelable Ctrl+wheel consumes browser zoom and steps existing
   1/2/3/4/6/8 levels around the pointer, including trackpad Ctrl-style pinch on
   Linux/Windows/macOS. Command-only and ordinary wheel retain their previous

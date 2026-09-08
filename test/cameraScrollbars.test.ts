@@ -55,6 +55,48 @@ describe("native camera scrollbar projection", () => {
     bars.destroy();
   });
 
+  it.each([
+    { width: 1120, height: 700 },
+    { width: 1000, height: 820 },
+  ])("reprojects canvas-only resize to $width x $height without changing the visible world", dimensions => {
+    const pan = vi.fn();
+    const bars = new CameraScrollbars(document.body, pan);
+    bars.sync(area, 1600, 1200);
+    const resized = { ...area, canvas: { ...area.canvas, ...dimensions } };
+    // Keep both view objects, their origins and zoom unchanged: canvas size alone
+    // must invalidate the projection even when assistant occlusion holds steady.
+    bars.sync(resized, 1600, 1200);
+    const x = document.querySelector<HTMLElement>('[data-testid="editor-camera-scroll-x"]')!;
+    const y = document.querySelector<HTMLElement>('[data-testid="editor-camera-scroll-y"]')!;
+    expect(x.style.top).toBe(`${dimensions.height - 16}px`);
+    expect(x.style.width).toBe(`${dimensions.width - 16}px`);
+    expect(y.style.left).toBe(`${dimensions.width - 16}px`);
+    expect(y.style.height).toBe(`${dimensions.height - 16}px`);
+    for (const [node, span, track, content, position, horizontal] of [
+      [x, 600, dimensions.width - 16, 3864, 832, true],
+      [y, 500, dimensions.height - 16, 2964, 682, false],
+    ] as const) {
+      const ratio = track / span;
+      const spacer = node.firstElementChild as HTMLElement;
+      const key = horizontal ? "scrollLeft" : "scrollTop";
+      expect(Number(node.dataset.trackRatio)).toBeCloseTo(ratio);
+      expect(parseFloat(horizontal ? spacer.style.width : spacer.style.height)).toBeCloseTo(content * ratio);
+      expect(node[key]).toBeCloseTo(position * ratio);
+      node.dispatchEvent(new Event("scroll"));
+      expect(pan).not.toHaveBeenCalled();
+      node[key] += 80;
+      const pending = node[key];
+      bars.sync(resized, 1600, 1200);
+      expect(node[key]).toBe(pending);
+      node.dispatchEvent(new Event("scroll"));
+      expect(pan).toHaveBeenCalledExactlyOnceWith(horizontal ? 80 / 2 / ratio : 0, horizontal ? 0 : 80 / 2 / ratio);
+      node.dispatchEvent(new Event("scroll"));
+      expect(pan).toHaveBeenCalledTimes(1);
+      pan.mockClear();
+    }
+    bars.destroy();
+  });
+
   it("does not erase native input before its scroll event; converts track pixels once", () => {
     const pan = vi.fn();
     const bars = new CameraScrollbars(document.body, pan);
