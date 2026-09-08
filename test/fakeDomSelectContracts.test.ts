@@ -244,8 +244,22 @@ it("keeps real acceptance checklist row identity while reordering, removing and 
   try {
     checklist.update(snapshot);
     const rows = Array.from(checklist.root.querySelectorAll<HTMLElement>(".ai-sticky-item"));
+    expect(rows.map(row => row.dataset.itemId)).toEqual(["first", "second"]);
+    // Input order cannot override working-before-pending priority.
     checklist.update({ ...snapshot, items: [...snapshot.items].reverse() });
-    expect(Array.from(checklist.root.querySelectorAll(".ai-sticky-item"))).toEqual([...rows].reverse());
+    const priorityRows = Array.from(checklist.root.querySelectorAll(".ai-sticky-item"));
+    expect(priorityRows).toHaveLength(2);
+    expect(priorityRows[0]).toBe(rows[0]);
+    expect(priorityRows[1]).toBe(rows[1]);
+    // Swap priorities in the original input order: the existing keyed rows must move.
+    checklist.update({ ...snapshot, items: [
+      { ...snapshot.items[0]!, status: "pending" },
+      { ...snapshot.items[1]!, status: "working" },
+    ] });
+    const reordered = Array.from(checklist.root.querySelectorAll(".ai-sticky-item"));
+    expect(reordered).toEqual([...rows].reverse());
+    expect(reordered[0]).toBe(rows[1]);
+    expect(reordered[1]).toBe(rows[0]);
     checklist.update({ ...snapshot, items: [snapshot.items[1]!] });
     expect(rows[0]!.parentNode).toBeNull();
     expect(Array.from(checklist.root.querySelectorAll(".ai-sticky-item"))).toEqual([rows[1]]);
