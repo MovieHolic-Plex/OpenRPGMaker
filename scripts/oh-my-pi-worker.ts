@@ -7,6 +7,8 @@
 
 import { completeProvider } from "./lib/ohMyPiPiAiRuntime.ts";
 import { generateProviderImage } from "./lib/ohMyPiImageRuntime.ts";
+import { generateCodexImage } from "./lib/codexImageRuntime.ts";
+import { CODEX_PROVIDER_ID } from "../src/ai/oauth/credentials.ts";
 
 const port = Number(process.env.RPG_ZZU_OH_MY_PI_WORKER_PORT || 0);
 
@@ -35,7 +37,9 @@ const server = Bun.serve({
         const provider = typeof body.provider === "string" ? body.provider : "google-antigravity";
         const payload = body.body && typeof body.body === "object" ? body.body as Record<string, unknown> : body;
         const apiKey = typeof body.apiKey === "string" ? body.apiKey : undefined;
-        return json(await generateProviderImage(provider, payload, { apiKey }));
+        return json(await (provider === CODEX_PROVIDER_ID
+          ? generateCodexImage(payload, { apiKey })
+          : generateProviderImage(provider, payload, { apiKey })));
       }
       return json({ error: "Not found" }, 404);
     } catch (error) {

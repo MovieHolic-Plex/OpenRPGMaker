@@ -105,7 +105,7 @@ export function findBundledImageAsset(textureKey: string): BundledImageAsset | u
 }
 
 const RAW_CHARSET_TEXTURE_SUFFIX = "__raw";
-export function loadBundledAssets(scene: Phaser.Scene, project?: Project): void {
+export function loadBundledAssets(scene: { readonly load: Pick<Phaser.Loader.LoaderPlugin, "image" | "on"> }, project?: Project): void {
   const usedTextures = project ? projectBundledTextureKeys(project) : null;
   scene.load.image(TEX_TILESET, withInlineAsset(ASSET_TILESET));
   for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
@@ -115,6 +115,9 @@ export function loadBundledAssets(scene: Phaser.Scene, project?: Project): void 
   for (const asset of BUNDLED_EASYRPG_CHARSET_ASSETS) {
     if (usedTextures && !usedTextures.has(asset.textureKey)) continue;
     scene.load.image(rawCharsetTextureKey(asset.textureKey), withInlineAsset(asset.path));
+  }
+  for (const asset of Object.values(project?.assets.uploaded ?? {})) {
+    if (asset.kind === "charset") scene.load.image(asset.id, asset.dataUrl);
   }
   for (const asset of FARMING_CROP_SPRITE_ASSETS) {
     if (usedTextures && !usedTextures.has(asset.id)) continue;
@@ -169,6 +172,17 @@ export function registerBundledFrames(scene: Phaser.Scene, project?: Project): v
       .map((asset) => asset.textureKey),
   ]);
   registerEasyRpgCharsetTextures(scene, usedTextures);
+  for (const asset of Object.values(project?.assets.uploaded ?? {})) {
+    if (asset.kind !== "charset" || !scene.textures.exists(asset.id)) continue;
+    const texture = scene.textures.get(asset.id);
+    const source = texture.getSourceImage();
+    if (!isTransparentColorKeySourceImage(source)) continue;
+    if (source.width !== RESOURCE_SLICING.charset.sheetWidth || source.height !== RESOURCE_SLICING.charset.sheetHeight) {
+      console.error(`[assets] Unsupported charset dimensions: ${asset.id} (${source.width}x${source.height})`);
+      continue;
+    }
+    registerCharsetTextureFrames(texture);
+  }
   registerFarmingCropFrames(scene, usedTextures);
   registerEmoteFrames(scene);
 }

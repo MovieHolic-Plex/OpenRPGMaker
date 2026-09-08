@@ -104,9 +104,10 @@ function makeTilesetFromUpload(asset: UploadedAsset): TilesetDef {
   };
 }
 
-export function renderResourceManager(container: HTMLElement): void {
+export function renderResourceManager(container: HTMLElement, initialKind?: ResourceKind): void {
   const focused = document.activeElement;
   const editor = audioEditorFor(container);
+  if (initialKind) editor.selectKind(initialKind);
   const selectedResourceKind = editor.kind;
   clearChildren(container);
   const project = store.getCurrent();

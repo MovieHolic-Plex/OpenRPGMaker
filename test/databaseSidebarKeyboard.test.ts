@@ -20,6 +20,7 @@ const TAB_TESTID: Record<string, string> = {
   worldCanon: "db-tab-world-canon",
   worldCodex: "db-tab-world-codex",
   actors: "db-tab-actors",
+  characterAppearances: "db-tab-character-appearances",
   classes: "db-tab-classes",
   promotionTree: "db-tab-promotion-tree",
   skills: "db-tab-skills",

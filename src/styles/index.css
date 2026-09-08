@@ -71,6 +71,7 @@
 @import "./database/studio-v2.css";
 /* DB AI 표면(바·생성 대화상자)은 studio-v2 뒤에 읽어 같은 특이성의 옛 오버라이드를 소스 순서로 이긴다. */
 @import "./database/ai-bar.css";
+@import "./database/character-appearances.css";
 @import "./resources/resource-manager.css";
 @import "./editor/event-editor.css";
 @import "./editor/event-editor-rich-forms.css";

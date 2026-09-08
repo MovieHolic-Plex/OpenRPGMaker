@@ -41,6 +41,7 @@ export type DatabaseResourcePickerKind =
   | "icon"
   | "image"
   | "movie"
+  | "picture"
   | "monster"
   | "faceset"
   | "charset"
@@ -439,6 +440,7 @@ export function listDatabaseResourceOptions(
       for (const asset of SCARLOXY_UI_ICON_ASSETS) add(asset.id, asset.name);
       break;
     case "battleCharset":
+    case "picture":
       break;
   }
 
@@ -461,6 +463,7 @@ export function listDatabaseResourceOptions(
 
 function matchesGeneratedKind(kind: DatabaseResourcePickerKind, resourceKind: ResourceKind | undefined, id: string): boolean {
   if (kind === "movie") return resourceKind === "movie";
+  if (kind === "picture") return resourceKind === "picture" || id === "generated-face-actor1-bust" || id === "generated-face-actor1-full";
   if (kind === "faceset") {
     // 분할 전 4×4 시트는 얼굴 한 장이 아니다 — 등록만 남기고 피커 목록에서는 제외한다.
     if (LEGACY_FACESET_SHEET_IDS.includes(id)) return false;
@@ -516,6 +519,7 @@ function uploadedMatchesKind(
 ): boolean {
   if (!uploadedKind) return matchesGeneratedKind(kind, undefined, id);
   if (kind === "movie") return uploadedKind === "movie";
+  if (kind === "picture") return uploadedKind === "picture";
   if (kind === "icon" || kind === "image") {
     return uploadedKind === "picture" || uploadedKind === "monster" || uploadedKind === "system" || matchesGeneratedKind(kind, undefined, id);
   }
