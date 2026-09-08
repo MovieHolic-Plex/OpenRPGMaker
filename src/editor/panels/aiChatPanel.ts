@@ -84,6 +84,7 @@ import { buildClusterEditKickoff, buildUnclassifiedAnalysisKickoff, type Cluster
 import { resolveSurfaceAiConfig } from "@/ai/assistantEndpoint";
 import { AI_STUDIO_TOGGLE_EVENT, publishAiStudioChange } from "@/editor/aiStudioMode";
 import { createAiActionMenuItems, type AiActionMenuActions } from "./aiActionMenu";
+import { downloadAiUsageLogText } from "./aiUsageLogDownload";
 import { createAssistantTemperatureMenuSection } from "./aiTemperatureMenu";
 import { createComposerElements, type ComposerElements, type ComposerMode, type ComposerPopover, type ComposerReasoningEffort } from "./aiComposer";
 import { deckIcon } from "./aiDeckIcons";
@@ -2176,6 +2177,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     },
     openSettings: () => openAiSettings("first"),
     exportAudit,
+    downloadUsageLog: () => {
+      downloadAiUsageLogText();
+    },
     openHistory: () => {
       historyButton.click();
     },

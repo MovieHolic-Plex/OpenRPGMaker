@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **51쪽 / 2059KB / 약 578,410 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **51쪽 / 2062KB / 약 579,205 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,7 +15,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/editor-ai-panel.md` | 332KB | 95KB ⚠상한 초과 — 절을 더 쪼개라 | 1339 | ~94,545 |
+| `openwiki/editor-ai-panel.md` | 334KB | 97KB ⚠상한 초과 — 절을 더 쪼개라 | 1341 | ~95,094 |
 | `openwiki/editor-ai-tools.md` | 136KB | 73KB ⚠상한 초과 — 절을 더 쪼개라 | 876 | ~37,907 |
 | `openwiki/editor-database.md` | 251KB | 55KB ⚠상한 초과 — 절을 더 쪼개라 | 1327 | ~72,118 |
 | `openwiki/editor-event-authoring.md` | 130KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 691 | ~37,249 |
@@ -33,7 +33,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 | 페이지 | 깨진 줄 수 | 예시 줄 번호 |
 |---|---|---|
-| `openwiki/editor-ai-panel.md` | 25 | 1032, 1033, 1034, 1035, 1036, 1037, 1049, 1058 |
+| `openwiki/editor-ai-panel.md` | 25 | 1034, 1035, 1036, 1037, 1038, 1039, 1051, 1060 |
 | `openwiki/editor-ai-tools.md` | 6 | 609, 610, 614, 616, 618, 775 |
 | `openwiki/editor-database.md` | 7 | 537, 541, 542, 543, 552, 578, 581 |
 | `openwiki/editor-event-authoring.md` | 16 | 261, 262, 265, 270, 271, 272, 273, 274 |
@@ -238,7 +238,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L18` Output limits
 - `L24` Practical tips
 
-### `openwiki/editor-ai-panel.md` — 332KB · 1339줄 · ~94,545 토큰 · 통째읽기 잘림 · 깨진 줄 25
+### `openwiki/editor-ai-panel.md` — 334KB · 1341줄 · ~95,094 토큰 · 통째읽기 잘림 · 깨진 줄 25
 
 - `L3` Map-scoped conversation archive (2026-09-08)
   - `L53` Editor history surface
@@ -261,20 +261,20 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L800` 조회 선행·계획 완료와 실행 종료 (2026-09-05)
 - `L809` 조수 카메라 이동 수명·부드러운 줌 (2026-09-05)
 - `L825` 패널 셸 · 도크 · 접기 · 컴포저
-- `L963` 세션 수명 · 대화 컨텍스트
-- `L978` 제안 적용 · 복구 · 완성도 린트
-- `L1062` 고스트 미리보기 · 활동 표시 · 청사진 · 카메라
-- `L1124` 영역 작업 · 시공 · 실내/집 파이프라인
-- `L1148` 툴 노출 · 프롬프트 · 의도 판정 · NPC
-- `L1162` 타일셋 이해 · 검토 위저드 (T1a/T1b)
-- `L1188` 저장 · 내보내기 · 프로젝트 생성
-- `L1196` 제공자 · OAuth · 동반 서비스
-- `L1226` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
-- `L1269` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
-- `L1277` 배치 의존성과 완료 멱등성 (2026-09-06)
-- `L1285` 모험 완료와 실제 적용 횟수 (2026-09-05)
-- `L1290` Assistant clean conversation — Phase 1 (2026-09-06)
-- `L1327` Assistant deck width resize (2026-09-07)
+- `L965` 세션 수명 · 대화 컨텍스트
+- `L980` 제안 적용 · 복구 · 완성도 린트
+- `L1064` 고스트 미리보기 · 활동 표시 · 청사진 · 카메라
+- `L1126` 영역 작업 · 시공 · 실내/집 파이프라인
+- `L1150` 툴 노출 · 프롬프트 · 의도 판정 · NPC
+- `L1164` 타일셋 이해 · 검토 위저드 (T1a/T1b)
+- `L1190` 저장 · 내보내기 · 프로젝트 생성
+- `L1198` 제공자 · OAuth · 동반 서비스
+- `L1228` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
+- `L1271` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
+- `L1279` 배치 의존성과 완료 멱등성 (2026-09-06)
+- `L1287` 모험 완료와 실제 적용 횟수 (2026-09-05)
+- `L1292` Assistant clean conversation — Phase 1 (2026-09-06)
+- `L1329` Assistant deck width resize (2026-09-07)
 
 ### `openwiki/editor-ai-tools.md` — 136KB · 876줄 · ~37,907 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
@@ -459,7 +459,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L153` 여관 외 시설의 공간 구성 (2026-09-05)
 - `L163` PR618 통합: 큰 탁자와 기존 시설 구성 (2026-09-06)
 
-### `openwiki/editor-observability.md` — 32KB · 383줄 · ~9,094 토큰 · 깨진 줄 1
+### `openwiki/editor-observability.md` — 32KB · 391줄 · ~9,340 토큰 · 깨진 줄 1
 
 - `L21` Opt-in local diagnostics (issue 693 OUT-009 / OUT-010)
 - `L74` 계측 초크포인트는 `store.markLocalMutation` 하나다
@@ -469,11 +469,11 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L217` 되돌리기 스택과 감사 로그는 다르다
 - `L238` Toolbar history confirmation lifetime (PR716, 2026-09-09)
 - `L257` 디버깅 레시피
-  - `L291` 저장된 것 — DB 커밋에 실린 행위 (`npm run commit:log`)
-- `L320` 로거
-- `L334` 알려진 남은 공백 (여기 손대는 사람이 이어서 하라)
-- `L367` AI 툴·액션 이유 (2026-09-02)
-- `L377` 검증
+  - `L299` 저장된 것 — DB 커밋에 실린 행위 (`npm run commit:log`)
+- `L328` 로거
+- `L342` 알려진 남은 공백 (여기 손대는 사람이 이어서 하라)
+- `L375` AI 툴·액션 이유 (2026-09-02)
+- `L385` 검증
 
 ### `openwiki/editor-pre-edit-routing.md` — 81KB · 323줄 · ~22,944 토큰 · 통째읽기 잘림 · 깨진 줄 5
 

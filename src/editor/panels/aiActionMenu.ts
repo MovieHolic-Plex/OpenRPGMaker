@@ -21,6 +21,8 @@ export type AiActionMenuVariant = "header" | "composer";
 
 export interface AiActionMenuActions {
   readonly exportAudit: () => void;
+  /** 사용 로그(src/ai/activityLog.ts)를 .txt 로 바로 내려받는다. */
+  readonly downloadUsageLog: () => void;
   readonly openHistory: () => void;
   readonly openTools: () => void;
   readonly openInstructions: () => void;
@@ -41,7 +43,7 @@ export interface AiActionMenuItems {
 export type AiActionMenuMeta = Partial<Record<"compact" | "instructions" | "tools" | "settings", () => string | null>>;
 
 interface ItemSpec {
-  readonly key: keyof AiActionMenuMeta | "export" | "history" | "wiki" | "acceptance";
+  readonly key: keyof AiActionMenuMeta | "export" | "usage-log" | "history" | "wiki" | "acceptance";
   readonly label: string;
   readonly icon: DeckIconName;
   readonly testid: string | null;
@@ -60,7 +62,7 @@ export function createAiActionMenuItems(options: {
   const itemClass = header ? "ai-more-menu-item" : "ai-command-menu-item";
   // 데크(2026-09-03): 아이콘 + 라벨 + 오른쪽 메타. 텍스트만 있던 6줄 목록이 640px 팝오버의 절반을 비웠다.
   const build = (spec: ItemSpec): HTMLButtonElement => {
-    const metaText = spec.key === "export" || spec.key === "history" || spec.key === "wiki" || spec.key === "acceptance" ? null : options.meta?.[spec.key]?.() ?? null;
+    const metaText = spec.key === "export" || spec.key === "usage-log" || spec.key === "history" || spec.key === "wiki" || spec.key === "acceptance" ? null : options.meta?.[spec.key]?.() ?? null;
     return el("button", {
       class: itemClass,
       attrs: {
@@ -107,6 +109,16 @@ export function createAiActionMenuItems(options: {
     testid: header ? "ai-more-export" : "ai-command-menu-export",
     title: "동의 후 로컬 진단 수집 및 보고서 미리보기",
     run: options.actions.exportAudit,
+  });
+  // 「로컬 진단 보고서」와 다른 것이다: 저쪽은 동의를 받고 지금 환경을 수집하는 버그 신고서,
+  // 이쪽은 이미 쌓여 있는 조수 사용 기록을 그 자리에서 .txt 로 떨어뜨리는 것이다.
+  const usageLog = build({
+    key: "usage-log",
+    icon: "list",
+    label: "사용 로그 내려받기",
+    testid: header ? "ai-more-usage-log" : "ai-command-menu-usage-log",
+    title: "조수가 한 일(지시·도구·결과) 전체를 txt 파일로 저장",
+    run: options.actions.downloadUsageLog,
   });
   const history = build({
     key: "history",
@@ -160,7 +172,7 @@ export function createAiActionMenuItems(options: {
         testid: header ? "ai-more-wiki" : "ai-command-menu-wiki",
         run: options.actions.refreshWiki,
       })] : []),
-      exportItem, history, tools, settings, ...(acceptance ? [acceptance] : []),
+      exportItem, usageLog, history, tools, settings, ...(acceptance ? [acceptance] : []),
     ],
   };
 }
