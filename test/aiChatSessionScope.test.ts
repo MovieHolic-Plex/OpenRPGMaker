@@ -85,10 +85,11 @@ function stubChat(): { chat: (config: AiConfig, req: ChatRequest) => Promise<Cha
  * 쓰기까지 함께 잡혀(실측: 첫 전송 직후 2건) 라운드 수 단정이 무너지고, 그 resolver 가
  * 대기 큐에 섞여 `settle` 이 엉뚱한 요청을 깨운다. 채팅 요청은 본문에 messages 가 있다.
  */
-function stubLlmFetch(): { readonly rounds: readonly unknown[]; settleNext: (content: string) => void; waitForRound: (count: number) => Promise<void> } {
+function stubLlmFetch(): { readonly rounds: readonly unknown[]; settleNext: (content: string) => void; waitForRound: (count: number) => Promise<void>; autoSettle(content: string): void } {
   const rounds: unknown[] = [];
   const pending: Array<(response: Response) => void> = [];
   const roundListeners = new Set<() => void>();
+  let autoSettleContent: string | null = null;
   // 턴 시작의 의도 선언(의도 라우터)은 모델 호출 1회다 — 본문 라운드가 아니라 즉시 유효 JSON 으로
   // 답해 라운드 계측·대기열에 섞이지 않게 한다. 본문에 messages 가 있다는 이유만으로 세면
   // 선언 호출까지 잡혀 턴 수 단정이 무너진다.
@@ -105,12 +106,20 @@ function stubLlmFetch(): { readonly rounds: readonly unknown[]; settleNext: (con
     }
     if (isWikiExtraction(body.messages)) return Promise.resolve(emptyWikiResponse());
     if (body.response_format !== undefined) {
+      const intent = autoSettleContent !== null
+        ? { mode: "question", needsPlan: false }
+        : JSON.parse(INTENT_JSON);
       return Promise.resolve(new Response(JSON.stringify({
-        choices: [{ message: { role: "assistant", content: INTENT_JSON }, finish_reason: "stop" }],
+        choices: [{ message: { role: "assistant", content: JSON.stringify(intent) }, finish_reason: "stop" }],
       }), { status: 200, headers: { "Content-Type": "application/json" } }));
     }
     rounds.push(body);
     for (const notify of roundListeners) notify();
+    if (autoSettleContent !== null) {
+      return Promise.resolve(new Response(JSON.stringify({
+        choices: [{ message: { role: "assistant", content: autoSettleContent }, finish_reason: "stop" }],
+      }), { status: 200, headers: { "Content-Type": "application/json" } }));
+    }
     return new Promise<Response>((resolve) => pending.push(resolve));
   }));
   return {
@@ -131,6 +140,7 @@ function stubLlmFetch(): { readonly rounds: readonly unknown[]; settleNext: (con
         choices: [{ message: { role: "assistant", content }, finish_reason: "stop" }],
       }), { status: 200, headers: { "Content-Type": "application/json" } }));
     },
+    autoSettle: (content: string) => { autoSettleContent = content; },
   };
 }
 
@@ -175,6 +185,7 @@ describe("대화 저장 범위", () => {
     expect(conversationScopeKey({ kind: "remote", id: "project-b" }, project)).toBe("remote:project-b");
   });
 });
+
 
 describe("새 대화 진입점", () => {
   it("Given any dock When the action menus render Then 새 대화는 ☰ 가 아니라 ＋ 에 있다", async () => {
@@ -241,13 +252,16 @@ describe("새 대화 진입점", () => {
     // 중단된 턴도, 버려진 대기 메시지도 새 라운드를 열지 않는다.
     expect(llm.rounds).toHaveLength(1);
 
+    // New-conversation Do is still autonomous. Extra driver rounds must complete natively;
+    // the in-flight hold applies only to the previous conversation's pending fetch.
+    llm.autoSettle("새 대화 응답");
     input.value = "새 대화 요청";
     const nextStarted = llm.waitForRound(2);
     const nextTurn = sendAiTurn(panel);
     await nextStarted;
     expect(llm.rounds).toHaveLength(2);
-    llm.settleNext("새 대화 응답");
     await nextTurn;
+    expect(llm.rounds).toHaveLength(2);
 
     const logText = findByTestId(panel, "ai-chat-log")?.textContent ?? "";
     expect(logText).toContain("새 대화 요청");
