@@ -23,11 +23,29 @@ Leaving the set/tab/modal disposes UI subscriptions and cancels its candidate.
 
 The image request carries at most two bounded raster references: a read-only
 crop of the selected manual charset cell and an existing face when present.
+Appearance generation uses full-sentence paragraphs rather than keyword lists.
+The prompt separates the character brief from composition/background rules:
+explicit written traits take priority, then detailed face identity, then walking
+sprite clothing/palette. Reference backgrounds and occupation-related scenery
+must not be copied. It requests a square dialogue asset, complete headwear and
+shoulders with safety margins, restrained cel shading, and an opaque uniform
+sRGB #D9D9D9 background without scenery, texture, gradients or cast shadows.
+These are model instructions, not an alpha-channel or exact-pixel guarantee;
+judge generated images separately and do not pin prompt prose with unit tests.
 `imageReferences.ts` validates the external payload;
 `ohMyPiImageRuntime.ts` sends real SDK image parts and marks this image-generation
 model as vision-capable so the SDK does not replace them with omission text.
-The existing Antigravity route and model fallback remain. Client cancellation
-discards output; it does not claim upstream provider work has stopped.
+Image provider/model selections are independent AI settings. Antigravity uses
+the selected catalog model and rejects unknown explicit IDs without a fallback;
+response metadata identifies the resolved model. Its default is
+gemini-3.1-flash-image. Pro Image is unavailable on the tested subscription routes.
+The worker also dispatches openai-codex / codex-image-default to
+codexImageRuntime.ts, using the existing server-side Codex OAuth credentials.
+That native route is text-only: nonempty references fail explicitly with 409,
+not silently omitted. The internal selection ID is never sent upstream; the
+provider does not report its image-model version. Original raster bytes remain
+unchanged, with a 180-second request/body deadline and no provider fallback.
+Client cancellation discards output; it does not claim upstream work has stopped.
 
 `TurnResult.appearanceGeneration` is a per-turn handoff receipt, not an applied
 write. `aiTurnRunner` uses it to report the DB request without false zero-change

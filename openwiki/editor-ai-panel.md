@@ -1,5 +1,37 @@
 # Editor AI Panel & Tools
 
+## Independent image generation settings (2026-09-07)
+
+- Existing AI settings (aiSettingsModal.ts) has separate image provider/model
+  selects. AiConfig.imageProviderId/imageModel are optional, stored in the same
+  oprn:ai-config blob, and independent of providerId/model/liteModel.
+- Old configurations default to google-antigravity / gemini-3.1-flash-image,
+  the actual image-output model, not the old gemini-3.8-flash fallback alias.
+  Explicit saved image choices are never corrected by the chat model catalog.
+- imageGenerationClient reads this selection for X-Rpgzzu-Provider and the model
+  body field on the existing /v1/images/generations endpoint. Explicit request
+  providerId/model overrides win without changing storage. Reference validation,
+  AbortSignal propagation and server error reporting retain their existing path.
+- imageModelCatalog contains only image-output routes. Pro is disabled: sibling
+  subscription probe returned exact-model 404 on both authenticated endpoints.
+  Codex image generation uses the internal codex-image-default sentinel, enabled
+  after the sibling probe's 2/2 success on the Codex images endpoint. The upstream
+  omits a model field and does not report a version; never label it GPT Image 1/2.
+  Login guidance follows the selected provider. The native Codex route is
+  text-only and rejects nonempty references with 409 instead of omitting them.
+  Named saved GPT models remain visible, disabled and unchanged, not normalized
+  to the sentinel. codexImageRuntime.ts reuses resolved server-side OAuth tokens;
+  oh-my-pi-worker.ts dispatches the selected provider without changing chat.
+- Unknown provider change events preserve the saved image model without throwing.
+  databaseAiGenerateDialog uses selected imageProviderId in its other-provider
+  notice, defaulting only for legacy configurations without the image field.
+- Tests: test/aiImageSettings.test.ts, test/imageGenerationClient.test.ts.
+  scripts/qa/image-options-settings.mjs mounts the real modal/styles in Firefox
+  without booting a project. Auth and image responses are intercepted; this is
+  UI/routing evidence, not a live generation probe. Native transport/dispatch is
+  covered by test/codexImageWorker.node.test.mjs; explicit Antigravity model
+  selection is covered by test/ohMyPiImageModelResolution.bun.test.ts.
+
 ## 브라우저 포커스와 도구 실행 대기 (2026-09-05)
 
 - 도구 실행 직전의 `AssistantSession.yieldForUi` → `src/ai/yieldToUi.ts`가 이벤트 루프를 양보한다. 포커스가 있는 보이는 문서는 rAF를 기다려 라이브 행·고스트가 그려질 틈을 준다. `document.visibilityState === "hidden"` 또는 `document.hasFocus() === false`이면 `MessageChannel` 태스크로 양보한다. `Promise.resolve()`만 쓰면 입력·중단 이벤트가 굶으므로 대체하지 않는다.

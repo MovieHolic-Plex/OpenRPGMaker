@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **48쪽 / 1681KB / 약 478,991 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **48쪽 / 1684KB / 약 479,925 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,8 +15,8 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/editor-ai-panel.md` | 268KB | 95KB ⚠상한 초과 — 절을 더 쪼개라 | 521 | ~77,917 |
-| `openwiki/editor-ai-tools.md` | 97KB | 69KB ⚠상한 초과 — 절을 더 쪼개라 | 392 | ~27,912 |
+| `openwiki/editor-ai-panel.md` | 270KB | 95KB ⚠상한 초과 — 절을 더 쪼개라 | 553 | ~78,502 |
+| `openwiki/editor-ai-tools.md` | 99KB | 69KB ⚠상한 초과 — 절을 더 쪼개라 | 410 | ~28,261 |
 | `openwiki/editor-database.md` | 236KB | 54KB ⚠상한 초과 — 절을 더 쪼개라 | 1180 | ~68,076 |
 | `openwiki/editor-event-authoring.md` | 119KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 564 | ~34,648 |
 | `openwiki/editor-pre-edit-routing.md` | 72KB | 55KB ⚠상한 초과 — 절을 더 쪼개라 | 210 | ~20,571 |
@@ -31,8 +31,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 | 페이지 | 깨진 줄 수 | 예시 줄 번호 |
 |---|---|---|
-| `openwiki/editor-ai-panel.md` | 25 | 248, 249, 250, 251, 252, 253, 265, 274 |
-| `openwiki/editor-ai-tools.md` | 6 | 244, 245, 249, 251, 253, 315 |
+| `openwiki/editor-ai-panel.md` | 25 | 280, 281, 282, 283, 284, 285, 297, 306 |
+| `openwiki/editor-ai-tools.md` | 6 | 262, 263, 267, 269, 271, 333 |
 | `openwiki/editor-database.md` | 7 | 391, 395, 396, 397, 406, 431, 434 |
 | `openwiki/editor-event-authoring.md` | 16 | 151, 152, 155, 160, 161, 162, 163, 164 |
 | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
@@ -229,41 +229,42 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L18` Output limits
 - `L24` Practical tips
 
-### `openwiki/editor-ai-panel.md` — 268KB · 521줄 · ~77,917 토큰 · 통째읽기 잘림 · 깨진 줄 25
+### `openwiki/editor-ai-panel.md` — 270KB · 553줄 · ~78,502 토큰 · 통째읽기 잘림 · 깨진 줄 25
 
-- `L3` 브라우저 포커스와 도구 실행 대기 (2026-09-05)
-- `L10` 계획 항목의 연속 실행 증거 (2026-09-05)
-- `L16` 조회 선행·계획 완료와 실행 종료 (2026-09-05)
-- `L25` 조수 카메라 이동 수명·부드러운 줌 (2026-09-05)
-- `L41` 패널 셸 · 도크 · 접기 · 컴포저
-- `L179` 세션 수명 · 대화 컨텍스트
-- `L194` 제안 적용 · 복구 · 완성도 린트
-- `L278` 고스트 미리보기 · 활동 표시 · 청사진 · 카메라
-- `L340` 영역 작업 · 시공 · 실내/집 파이프라인
-- `L364` 툴 노출 · 프롬프트 · 의도 판정 · NPC
-- `L378` 타일셋 이해 · 검토 위저드 (T1a/T1b)
-- `L404` 저장 · 내보내기 · 프로젝트 생성
-- `L412` 제공자 · OAuth · 동반 서비스
-- `L442` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
-- `L476` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
-- `L480` 모험 완료와 실제 적용 횟수 (2026-09-05)
-- `L485` Assistant clean conversation — Phase 1 (2026-09-06)
+- `L3` Independent image generation settings (2026-09-07)
+- `L35` 브라우저 포커스와 도구 실행 대기 (2026-09-05)
+- `L42` 계획 항목의 연속 실행 증거 (2026-09-05)
+- `L48` 조회 선행·계획 완료와 실행 종료 (2026-09-05)
+- `L57` 조수 카메라 이동 수명·부드러운 줌 (2026-09-05)
+- `L73` 패널 셸 · 도크 · 접기 · 컴포저
+- `L211` 세션 수명 · 대화 컨텍스트
+- `L226` 제안 적용 · 복구 · 완성도 린트
+- `L310` 고스트 미리보기 · 활동 표시 · 청사진 · 카메라
+- `L372` 영역 작업 · 시공 · 실내/집 파이프라인
+- `L396` 툴 노출 · 프롬프트 · 의도 판정 · NPC
+- `L410` 타일셋 이해 · 검토 위저드 (T1a/T1b)
+- `L436` 저장 · 내보내기 · 프로젝트 생성
+- `L444` 제공자 · OAuth · 동반 서비스
+- `L474` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
+- `L508` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
+- `L512` 모험 완료와 실제 적용 횟수 (2026-09-05)
+- `L517` Assistant clean conversation — Phase 1 (2026-09-06)
 
-### `openwiki/editor-ai-tools.md` — 97KB · 392줄 · ~27,912 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-ai-tools.md` — 99KB · 410줄 · ~28,261 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
 - `L3` Character appearance image candidates v1 (2026-09-06)
-- `L39` Completed-house transaction protection - Phase 1 (2026-09-05)
-- `L113` Completed-house construction protection - Phase 2 (2026-09-06)
-- `L152` 퀘스트 입력과 완주 증거 계약 (2026-09-05)
-- `L162` DB 조회 페이지와 마을 전체 범위 (2026-09-05)
-- `L269` Project-wide quality evaluation
-- `L277` prune_unused 의 참조 수집은 variableId 를 가진 명령 전부를 세야 한다 (2026-08-29 실측 결함 수정)
-- `L313` NPC 대사는 코드가 지어내지 않는다 — 캐스트 라이터 계약 (2026-09-03)
-- `L344` 「이 세계」 캐논은 문장 3채널에 강제된다 (2026-09-04)
-- `L359` 마을 설계서 (2026-09-05)
-- `L363` 저수준 이벤트 입력은 명령 위치를 검증한다 (2026-09-05)
-- `L370` 보물상자는 노출된 수면을 거부한다 (2026-09-05)
-- `L377` 모험 저작 완료와 재시도 (2026-09-05)
+- `L57` Completed-house transaction protection - Phase 1 (2026-09-05)
+- `L131` Completed-house construction protection - Phase 2 (2026-09-06)
+- `L170` 퀘스트 입력과 완주 증거 계약 (2026-09-05)
+- `L180` DB 조회 페이지와 마을 전체 범위 (2026-09-05)
+- `L287` Project-wide quality evaluation
+- `L295` prune_unused 의 참조 수집은 variableId 를 가진 명령 전부를 세야 한다 (2026-08-29 실측 결함 수정)
+- `L331` NPC 대사는 코드가 지어내지 않는다 — 캐스트 라이터 계약 (2026-09-03)
+- `L362` 「이 세계」 캐논은 문장 3채널에 강제된다 (2026-09-04)
+- `L377` 마을 설계서 (2026-09-05)
+- `L381` 저수준 이벤트 입력은 명령 위치를 검증한다 (2026-09-05)
+- `L388` 보물상자는 노출된 수면을 거부한다 (2026-09-05)
+- `L395` 모험 저작 완료와 재시도 (2026-09-05)
 
 ### `openwiki/editor-database.md` — 236KB · 1180줄 · ~68,076 토큰 · 통째읽기 잘림 · 깨진 줄 7
 

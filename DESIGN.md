@@ -1,5 +1,24 @@
 # RPG ZZU Design System
 
+## Independent image options (2026-09-07)
+
+- Existing AI settings adds an Image generation section between Model and Behavior.
+  Reuse settingsSection/settingsRow, ai-config-select, ai-config-help and the
+  existing keyboard-capable custom select; no CSS, typography, token or modal
+  geometry changes. Existing settings-body remains the vertical scroll owner.
+- Image provider/model are separately labelled and autosaved without changing
+  the chat provider, supervisor model or execution model. Chat changes preserve
+  image choices, including saved unsupported choices.
+- Only image-output models belong in this list. Unsupported models stay visibly
+  disabled; a status explanation distinguishes route support from actual login.
+  No connected state is inferred from the catalog; credentials stay server-side.
+- Codex uses the labelled default image route, not an asserted GPT Image version;
+  the provider does not report one. Login help follows the image provider and
+  calls out unverified reference-image support without claiming it works.
+- Firefox isolated real-settings checks cover 1024x768 and 1440x900, keyboard
+  provider selection, reopen persistence and no horizontal overflow. Screenshots
+  are in output/evidence/image-options; final editor visual review is lead-owned.
+
 ## Character appearance workspace (2026-09-06)
 
 - Party navigation adds `캐릭터 외형`. This is a visual catalog, not a metrics

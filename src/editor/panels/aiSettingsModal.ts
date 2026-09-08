@@ -21,6 +21,7 @@ import {
 import { AUTONOMY_LEVELS, resolveAutonomy, type AutonomyLevel } from "@/ai/autonomyLevels";
 import { defaultModelForAuthMode, isModelValidForAuthMode, modelCatalogForAuthMode } from "@/ai/modelCatalog";
 import { parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
+import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID, IMAGE_MODEL_CATALOG } from "@/ai/imageModelCatalog";
 import {
   AI_BACKGROUND_OPACITY_LIMITS,
   applyAiBackgroundOpacity,
@@ -151,6 +152,49 @@ export function renderAiSettingsForm(options: {
   const config = loadAiConfig();
   let authMode = config.authMode;
   let providerId = parseOhMyPiProvider(config.providerId);
+  const imageProvider = el("select", {
+    class: "ai-config-select",
+    attrs: { "aria-label": "이미지 생성 제공자" },
+    dataset: { testid: "ai-config-image-provider" },
+    children: [...new Map(IMAGE_MODEL_CATALOG.map((entry) => [entry.providerId, entry.providerLabel]))]
+      .map(([id, label]) => el("option", { attrs: { value: id }, text: label })),
+  }) as HTMLSelectElement;
+  const initialImageProvider = config.imageProviderId ?? DEFAULT_IMAGE_PROVIDER_ID;
+  if (!IMAGE_MODEL_CATALOG.some((entry) => entry.providerId === initialImageProvider)) {
+    imageProvider.append(el("option", { attrs: { value: initialImageProvider, disabled: "" }, text: initialImageProvider + " · 지원 미확인" }));
+  }
+  imageProvider.value = initialImageProvider;
+  const imageModel = el("select", {
+    class: "ai-config-select",
+    attrs: { "aria-label": "이미지 생성 모델", "aria-describedby": "ai-config-image-status" },
+    dataset: { testid: "ai-config-image-model" },
+  }) as HTMLSelectElement;
+  const imageStatus = el("p", {
+    class: "ai-config-help",
+    attrs: { id: "ai-config-image-status", role: "status", "aria-live": "polite" },
+    dataset: { testid: "ai-config-image-status" },
+  });
+  const refreshImageStatus = (): void => {
+    const entry = IMAGE_MODEL_CATALOG.find((entry) => entry.providerId === imageProvider.value && entry.model === imageModel.value);
+    imageStatus.dataset.availability = entry?.supported ? "supported" : "unsupported";
+    imageStatus.textContent = entry?.supported
+      ? entry.providerLabel + " 로그인이 필요합니다. 인증 정보는 동반 서비스에만 보관하며 실제 생성 시 확인합니다."
+        + (entry.providerId === DEFAULT_IMAGE_PROVIDER_ID ? "" : " 실제 모델 버전은 제공자가 알려 주지 않습니다. 현재 텍스트 설명만 지원합니다. 참조 그림이 있는 생성은 Gemini를 선택해 주세요.")
+      : "이 이미지 경로는 현재 미지원 또는 검증 전입니다. 저장된 선택은 유지하며 다른 모델로 자동 전환하지 않습니다.";
+  };
+  const refreshImageModels = (selected: string): void => {
+    const entries = IMAGE_MODEL_CATALOG.filter((entry) => entry.providerId === imageProvider.value);
+    imageModel.replaceChildren(...entries.map((entry) => el("option", {
+      attrs: { value: entry.model, ...(!entry.supported ? { disabled: "" } : {}) }, text: entry.label,
+    })));
+    if (!entries.some((entry) => entry.model === selected)) {
+      imageModel.append(el("option", { attrs: { value: selected, disabled: "" }, text: selected + " · 지원 미확인" }));
+    }
+    imageModel.value = selected;
+    imageModel.dispatchEvent(new Event("input", { bubbles: true }));
+    refreshImageStatus();
+  };
+  refreshImageModels(config.imageModel ?? DEFAULT_IMAGE_MODEL);
   const model = modelField("감독 모델(계획·검수)", config.model, "ai-config-model", "ai-config-model-preset", authMode, DEFAULT_MODEL, providerId);
   const liteModel = modelField(
     "실행 모델(툴 작업)",
@@ -311,6 +355,8 @@ export function renderAiSettingsForm(options: {
   const collect = (): AiConfig => ({
     authMode,
     providerId,
+    imageProviderId: imageProvider.value,
+    imageModel: imageModel.value,
     // 에디터는 동반 서비스 전송만 쓴다 — baseUrl 은 endpoint() 가 무시하고, 키는 동반 서비스가
     // 들고 있다. 여기서 빈 값으로 고정해 브라우저 저장소에 비밀·죽은 주소가 남지 않게 한다.
     baseUrl: DEFAULT_BASE_URL,
@@ -344,6 +390,20 @@ export function renderAiSettingsForm(options: {
     }
   };
   persistAuthMode = () => persist(false);
+  imageProvider.addEventListener("change", () => {
+    const entries = IMAGE_MODEL_CATALOG.filter((entry) => entry.providerId === imageProvider.value);
+    const chosen = entries.find((entry) => entry.supported) ?? entries[0];
+    if (!chosen) {
+      refreshImageStatus();
+      return;
+    }
+    refreshImageModels(chosen.model);
+    persist(false);
+  });
+  imageModel.addEventListener("change", () => {
+    refreshImageStatus();
+    persist(false);
+  });
   const scheduleAutoSave = (): void => {
     if (typeof window === "undefined") {
       persist(false);
@@ -478,6 +538,16 @@ export function renderAiSettingsForm(options: {
           [model.row, liteModel.row],
         )],
       }),
+      settingsSection(
+        "image",
+        "이미지 생성",
+        "대화의 감독·실행 모델과 별도로 그림을 만들 모델을 선택합니다.",
+        [
+          settingsRow("이미지 생성 제공자", "대화 제공자를 바꿔도 이 선택은 유지됩니다.", imageProvider),
+          settingsRow("이미지 생성 모델", "이미지를 출력하는 모델만 표시합니다. 지원 미확인 모델은 선택할 수 없습니다.", imageModel),
+          imageStatus,
+        ],
+      ),
       settingsSection(
         "behavior",
         "동작",

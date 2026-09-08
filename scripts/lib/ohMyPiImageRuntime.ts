@@ -169,9 +169,8 @@ export async function generateProviderImage(
     return { provider, model: modelId, mimeType: "image/png", base64: TRANSPARENT_PNG_BASE64 };
   }
 
-  const model = getBundledModel(IMAGE_PROVIDER_ID as never, modelId)
-    ?? getBundledModel(IMAGE_PROVIDER_ID as never, DEFAULT_IMAGE_MODEL);
-  if (!model) throw statusError(`oh-my-pi 카탈로그에 ${IMAGE_PROVIDER_ID} 이미지 모델이 없습니다.`, 400);
+  const model = getBundledModel(IMAGE_PROVIDER_ID as never, modelId);
+  if (!model) throw statusError(`oh-my-pi 카탈로그에 ${IMAGE_PROVIDER_ID} 이미지 모델 ${modelId}이 없습니다. 다른 이미지 모델을 선택해 주세요.`, 400);
 
   // 로그인이 아예 없으면(resolveRequestApiKey → undefined) pi-ai 가 HTTP 요청을 만들기 전에
   // MissingApiKeyError 로 끊는다. 그러면 상류 상태가 없어 아래 판별이 닿지 못하고 영어 원문이
@@ -218,5 +217,5 @@ export async function generateProviderImage(
     if (isCredentialFailure(upstreamFailure.status, reason)) throw statusError(IMAGE_AUTH_MESSAGE, 401);
     throw statusError(`이미지 생성 실패: ${reason.slice(0, 400)}`, 502);
   }
-  return { provider: IMAGE_PROVIDER_ID, model: modelId, mimeType: image.mimeType, base64: image.base64 };
+  return { provider: IMAGE_PROVIDER_ID, model: model.id, mimeType: image.mimeType, base64: image.base64 };
 }
