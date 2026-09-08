@@ -3,12 +3,15 @@ import {
   proposalCompletenessWarningLines,
   proposalCompletenessWarnings,
   proposalHasChangedMap,
+  proposalChangedRegions,
+  proposalCallChangedSomething,
   type ProposalCompletenessCall,
 } from "@/ai/proposalCompleteness";
 import type { BuildSpec } from "@/ai/buildSpec";
 import { declaredIntent } from "./intentFixture";
 import type { ChangeSummary } from "@/editor/tools/types";
 import { HISTORICAL_PLACEMENT_CORRECTION } from "./fixtures/placementRequests";
+import { FLOOR_PAINT_ARGS, WALL_PAINT_ARGS, PRESERVED_PAINT_SPEC, nativePaintCall, preservedPaintContext } from "./fixtures/preservedPaint";
 
 function changeSummary(overrides: Partial<ChangeSummary> = {}): ChangeSummary {
   return {
@@ -51,6 +54,100 @@ const SPEC: BuildSpec = {
     { id: "꽃장식", kind: "decor", x: 8, y: 3, w: 5, h: 4 },
   ],
 };
+
+describe("native preserved paint completeness", () => {
+  it("covers P7's 80 changed floor cells and 24 already-correct walls across three assets", () => {
+    const ctx = preservedPaintContext();
+    const floor = nativePaintCall(ctx, FLOOR_PAINT_ARGS);
+    const walls = nativePaintCall(ctx, WALL_PAINT_ARGS);
+    expect(floor.result).toMatchObject({ ok: true, diff: { tilesChanged: 80 }, data: { tilesTouched: 80, skippedClusterCells: 0 } });
+    expect(walls.result).toMatchObject({ ok: true, diff: { tilesChanged: 0 }, data: { tilesTouched: 24, skippedClusterCells: 0 } });
+    expect(proposalHasChangedMap([walls], "map_basement")).toBe(false);
+    expect(proposalCallChangedSomething(walls)).toBe(false);
+    expect(proposalChangedRegions([walls])).toEqual([]);
+    expect(proposalChangedRegions([floor, walls])).toHaveLength(80);
+    expect(proposalCompletenessWarnings({ buildSpec: PRESERVED_PAINT_SPEC, calls: [floor, walls], project: ctx.project })).toEqual([]);
+    expect(proposalCompletenessWarnings({ buildSpec: PRESERVED_PAINT_SPEC, calls: [floor, walls] })).toHaveLength(1);
+  });
+
+  it.each(["missing", "failed", "missing-diff", "missing-receipt", "short-receipt", "skipped", "wrong-tile", "wrong-map"] as const)("retains the warning for %s operation evidence", (failure) => {
+    const ctx = preservedPaintContext();
+    const floor = nativePaintCall(ctx, FLOOR_PAINT_ARGS);
+    const walls = nativePaintCall(ctx, WALL_PAINT_ARGS);
+    const invalid: ProposalCompletenessCall = {
+      ...walls,
+      args: { ...walls.args, ...(failure === "wrong-tile" ? { tile: 342 } : {}), ...(failure === "wrong-map" ? { mapId: "elsewhere" } : {}) },
+      result: {
+        ...walls.result, ok: failure !== "failed",
+        diff: failure === "missing-diff" ? undefined : walls.result.diff,
+        data: failure === "missing-receipt" ? undefined : {
+          tilesTouched: failure === "short-receipt" ? 23 : 24, skippedClusterCells: failure === "skipped" ? 1 : 0,
+        },
+      },
+    };
+    expect(proposalCompletenessWarnings({ buildSpec: PRESERVED_PAINT_SPEC, calls: failure === "missing" ? [floor] : [floor, invalid], project: ctx.project })).toHaveLength(1);
+  });
+
+  it.each(["partial", "duplicate", "out-of-bounds", "failed-args"] as const)("does not discharge full coverage with a native %s paint", (failure) => {
+    const ctx = preservedPaintContext();
+    const floor = nativePaintCall(ctx, FLOOR_PAINT_ARGS);
+    const cells = failure === "out-of-bounds" ? [...WALL_PAINT_ARGS.cells, { x: 12, y: 0 }]
+      : failure === "partial" ? WALL_PAINT_ARGS.cells.slice(1)
+      : [WALL_PAINT_ARGS.cells[1], ...WALL_PAINT_ARGS.cells.slice(1)];
+    const walls = nativePaintCall(ctx, { ...WALL_PAINT_ARGS, cells, ...(failure === "failed-args" ? { layer: "invalid" } : {}) });
+    expect(walls.result.ok).toBe(failure !== "failed-args");
+    if (failure === "out-of-bounds") expect(walls.result.data).toMatchObject({ tilesTouched: 24, skippedClusterCells: 1 });
+    expect(proposalCompletenessWarnings({ buildSpec: PRESERVED_PAINT_SPEC, calls: [floor, walls], project: ctx.project })).toHaveLength(1);
+  });
+
+  it("uses the native effective layer and requires that exact asset layer", () => {
+    const ctx = preservedPaintContext();
+    const walls = nativePaintCall(ctx, { ...WALL_PAINT_ARGS, layer: "upper" });
+    // Tile 306 is lower-only: the requested upper is not the effective layer.
+    expect(walls.result).toMatchObject({ ok: true, diff: { tilesChanged: 0 }, data: { tilesTouched: 24 } });
+    const wallSpec = { ...PRESERVED_PAINT_SPEC, assets: PRESERVED_PAINT_SPEC.assets.slice(1) };
+    expect(proposalCompletenessWarnings({ buildSpec: wallSpec, calls: [walls], project: ctx.project })).toEqual([]);
+    expect(proposalCompletenessWarnings({ buildSpec: { ...wallSpec, assets: wallSpec.assets.map(asset => ({ ...asset, layer: "upper" })) }, calls: [walls], project: ctx.project })).toHaveLength(1);
+  });
+
+  it("checks the current applied cells after later native edits, not the old success or the invalidating diff", () => {
+    const ctx = preservedPaintContext();
+    const floor = nativePaintCall(ctx, FLOOR_PAINT_ARGS);
+    const walls = nativePaintCall(ctx, WALL_PAINT_ARGS);
+    const overwrite = nativePaintCall(ctx, { ...WALL_PAINT_ARGS, cells: [{ x: 0, y: 0 }], tile: 342 });
+    expect(overwrite.result).toMatchObject({ ok: true, diff: { tilesChanged: 1 } });
+    const calls = [floor, walls, overwrite];
+    const perAsset = PRESERVED_PAINT_SPEC.assets.map(asset => proposalCompletenessWarnings({
+      buildSpec: { ...PRESERVED_PAINT_SPEC, assets: [asset] }, calls, project: ctx.project,
+    }).length);
+    expect(perAsset).toEqual([0, 1, 0]);
+  });
+
+  it.each([false, true])("never substitutes the sparse cells bounding box for interior coverage (changed=%s)", (changed) => {
+    const ctx = preservedPaintContext();
+    const walls = nativePaintCall(ctx, { ...WALL_PAINT_ARGS, tile: changed ? 342 : 306 });
+    expect(walls.result).toMatchObject({ ok: true, diff: { tilesChanged: changed ? 24 : 0 } });
+    expect(proposalCompletenessWarnings({ buildSpec: { ...PRESERVED_PAINT_SPEC, assets: [PRESERVED_PAINT_SPEC.assets[0]] }, calls: [walls], project: ctx.project })).toHaveLength(1);
+  });
+
+  it("does not let unrelated no-ops discharge terrain or non-terrain obligations", () => {
+    const ctx = preservedPaintContext();
+    const floor = nativePaintCall(ctx, FLOOR_PAINT_ARGS);
+    const unrelated = nativePaintCall(ctx, { ...WALL_PAINT_ARGS, tile: 112, cells: [{ x: 0, y: 1 }] });
+    expect(unrelated.result).toMatchObject({ ok: true, diff: { tilesChanged: 0 } });
+    expect(proposalCompletenessWarnings({ buildSpec: PRESERVED_PAINT_SPEC, calls: [floor, unrelated], project: ctx.project })).toHaveLength(1);
+    const walls = nativePaintCall(ctx, WALL_PAINT_ARGS);
+    expect(proposalCompletenessWarnings({ buildSpec: { ...PRESERVED_PAINT_SPEC, assets: PRESERVED_PAINT_SPEC.assets.slice(1).map(asset => ({ ...asset, kind: "house" })) }, calls: [walls], project: ctx.project })).toHaveLength(1);
+  });
+
+  it("cannot use preserved cells as new quantity or genuine change", () => {
+    const ctx = preservedPaintContext();
+    const floor = nativePaintCall(ctx, FLOOR_PAINT_ARGS);
+    const walls = nativePaintCall(ctx, WALL_PAINT_ARGS);
+    expect(proposalCompletenessWarnings({ requestText: "타일 160개 추가해줘", calls: [floor, walls], project: ctx.project })).toHaveLength(1);
+    expect(proposalCompletenessWarnings({ requestText: "벽을 바꿔줘", calls: [walls], project: ctx.project })).toHaveLength(1);
+  });
+});
 
 describe("proposal completeness lint", () => {
   it.each([

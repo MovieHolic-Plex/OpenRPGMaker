@@ -3130,7 +3130,7 @@ export class AssistantSession {
         requestText: item.instruction,
         intent: this.turnIntent,
         calls: itemCalls,
-      }), ...buildSpecs.flatMap(spec => buildSpecCompletenessWarnings(spec, spatialCalls, true)),
+      }), ...buildSpecs.flatMap(spec => buildSpecCompletenessWarnings(spec, spatialCalls, true, this.ctx.project)),
       ...this.inferredViewWarnings(spatialCalls, item)])];
       if (warnings.length === 0) return { ok: true };
       return {
@@ -4250,6 +4250,7 @@ export class AssistantSession {
       intent: this.turnIntent,
       buildSpecs: this.getCompletionSpecs(calls),
       calls,
+      project: this.ctx.project,
     });
     const diffWarnings = calls.flatMap((call) => call.result.diff?.warnings ?? []);
     const allWarnings = [...new Set([...lintWarnings, ...this.inferredViewWarnings(calls), ...diffWarnings])];

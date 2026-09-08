@@ -1163,6 +1163,23 @@ AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, 
 
 완료 회계 보강(2026-09-06): `autoCompleteGate`의 밑그림 완성도 검사는 최종 검수와 동일하게 `turnWriteLedger(applied + pending)`를 사용한다. 첫 마일스톤 적용이 pending을 비워도 다음 항목은 이미 칠한 영역을 미이행으로 다시 요구하지 않는다. 적용 루프는 계속 pending만 소비하므로 앞선 쓰기를 재적용하지 않는다.
 
+P7 preserved-wall accounting (2026-09-08): `proposalCompleteness` separately verifies
+already-satisfied `paint_tiles(mode:"cells")` maintenance for rectangular `terrain`
+assets with an explicit layer. Session automatic completion/review and `aiTurnRunner`
+supply the host's current tool-applied project (including pending drafts and applied
+milestones). A native successful zero-diff operation needs a non-skipped touch receipt,
+exact requested cells, effective layer (`tileLayerHome`), and matching current tile
+content covering every asset cell. Missing/partial/wrong/stale evidence stays a warning;
+a later changed rectangle cannot hide invalidated maintenance. `cells` never borrows
+its optional `from/to` bounding box, including in ordinary changed-region accounting.
+No prose, asset style, or overwrite policy grants preservation authority. This only
+satisfies spatial placement coverage: meaningful diffs, new quantity, canonical
+`targetChange`, scene verification, acceptance and delivery remain separate. Other
+asset kinds and paint modes retain existing behavior. P7's independent blocked result
+and original scene evidence are unchanged. Contracts: `proposalCompleteness`,
+`aiCompletionAccounting`, `aiTurnAppliedAccounting`; fixtures use native paint with
+80 changed floor cells and 24 unchanged wall cells, not live game content.
+
 공간 게이트는 확장을 준비만 하고, `runTool`이 `ok:true`를 반환한 뒤 `commitExpansion`으로 반영한다. 인자 거절·맵 밖 좌표·실행 예외는 밑그림에 유령 `auto:*` 에셋을 남기지 않는다. 성공한 확장의 경고는 유지되며, 명시 스펙은 턴 간 유지하고 선택 영역 암묵 스펙은 해당 턴에만 유지한다. 회귀: `test/aiCompletionAccounting.test.ts`는 실제 세션·툴 실행·마일스톤 저장소 적용과 실패 후 재시도/다음 턴 수명을 검사한다.
 
 ## 배치 의존성과 완료 멱등성 (2026-09-06)

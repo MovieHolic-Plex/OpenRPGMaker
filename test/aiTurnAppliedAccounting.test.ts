@@ -15,6 +15,7 @@ import { store } from "@/project/store";
 import { installFakeDom } from "./fakeDom";
 import { HISTORICAL_PLACEMENT_CORRECTION } from "./fixtures/placementRequests";
 import { isProposalCompletenessWarning } from "@/ai/proposalCompleteness";
+import { FLOOR_PAINT_ARGS, WALL_PAINT_ARGS, PRESERVED_PAINT_SPEC, preservedPaintContext } from "./fixtures/preservedPaint";
 
 const observed = vi.hoisted(() => ({
   activity: vi.fn(async () => ({})),
@@ -74,6 +75,41 @@ function setup(sessionOverride?: AssistantSession) {
 }
 
 describe("panel map completeness selection", () => {
+  it.each(["complete", "partial", "invalidated"] as const)("uses current native maintenance facts at terminal UI (%s)", async (coverage) => {
+    const ctx = preservedPaintContext();
+    store.replace(ctx.project);
+    const entries = [
+      { name: "set_build_spec", args: PRESERVED_PAINT_SPEC },
+      { name: "paint_tiles", args: FLOOR_PAINT_ARGS },
+      { name: "paint_tiles", args: { ...WALL_PAINT_ARGS, cells: coverage === "partial" ? WALL_PAINT_ARGS.cells.slice(1) : WALL_PAINT_ARGS.cells } },
+      ...(coverage === "invalidated" ? [{ name: "paint_tiles", args: { ...WALL_PAINT_ARGS, tile: 342, cells: [{ x: 0, y: 0 }] } }] : []),
+    ];
+    const session = new AssistantSession(ctx.project, {
+      config: { authMode: "apiKey", baseUrl: "x", model: "stub", apiKey: "test", maxToolCalls: 1, maxTokens: 8192 },
+      declareIntent: fixedDeclarer({ mode: "modify" }),
+      chat: async () => ({ message: { role: "assistant", content: null, tool_calls: entries.map((entry, index) => ({
+        id: `p7-${index}`, type: "function", function: { name: entry.name, arguments: JSON.stringify(entry.args) },
+      })) }, finishReason: "tool_calls" }),
+    });
+    const result = await session.sendUserMessage("바닥을 칠하고 기존 벽은 유지해줘");
+    expect(result.proposedCalls.map(call => call.result.ok)).toEqual(coverage === "invalidated" ? [true, true, true] : [true, true]);
+    const expected = proposalCompletenessWarnings({ calls: result.proposedCalls,
+      buildSpecs: session.getCompletionSpecs(result.proposedCalls), project: session.getProposedProject() });
+    expect(expected).toHaveLength(coverage === "complete" ? 0 : 1);
+    const h = setup(session);
+    h.deps.applyProposal.mockImplementation(async () => {
+      store.replace(session.getProposedProject());
+      return "applied";
+    });
+    await h.runner.executeTurn(session, "바닥을 칠하고 기존 벽은 유지해줘", async () => result);
+    expect(h.appendBubble.mock.calls.filter(([, text]) => isProposalCompletenessWarning(text)).map(([, text]) => text)).toEqual(expected);
+    expect(result.proposedCalls.flatMap(call => call.result.diff?.warnings ?? []).filter(isProposalCompletenessWarning)).toEqual(expected);
+    expect(h.deps.applyProposal).toHaveBeenCalledWith(result.proposedCalls, expect.anything());
+    expect(store.getCurrent().maps.map_basement.lowerTiles).toEqual(session.getProposedProject().maps.map_basement.lowerTiles);
+    expect(result.runOutcome?.goal).toBe("incomplete");
+    expect(session.getAcceptanceSnapshot()?.status).not.toBe("verified");
+  });
+
   it("uses the real session's plural selection instead of the most recent spec", async () => {
     const ctx = { project: store.getCurrent() };
     for (const id of ["a", "b"]) expect(runTool(ctx, "create_map", { id, name: id, width: 20, height: 20 }).ok).toBe(true);
