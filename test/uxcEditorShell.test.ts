@@ -264,17 +264,20 @@ describe("UXC D30 새 이벤트 모달 상태", () => {
 
     openNewEventEditorModal(mapId, 2, 2);
 
-    expect(findByTestId(fakeBody(), "event-editor-titlebar")?.textContent).toContain("새 이벤트 (저장 전)");
-    const draftStatus = findByTestId(fakeBody(), "event-editor-draft-status")?.textContent;
-    expect(draftStatus).toContain("취소 시 삭제");
-    expect(draftStatus).toContain("자동 저장");
-    const cancel = findByTestId(fakeBody(), "event-editor-cancel");
-    expect(cancel?.textContent).toContain("취소(삭제)");
-    expect(cancel?.getAttribute("aria-label")).toContain("새 이벤트 삭제");
+    const header = findByTestId(fakeBody(), "event-editor-header-save-state");
+    const draftStatus = findByTestId(fakeBody(), "event-editor-draft-status");
+    const remoteStatus = findByTestId(fakeBody(), "event-editor-remote-status");
+    expect(header?.dataset.localState).toBe("new-pristine");
+    expect(draftStatus?.dataset.state).toBe("new-pristine");
+    expect(header?.dataset.remoteState).toBe(remoteStatus?.dataset.state);
+    expect(header?.textContent).toBe(`${draftStatus?.textContent} · ${remoteStatus?.textContent}`);
+    expect(projectWithoutEventDrafts(store.getCurrent()).maps[mapId].events).toHaveLength(0);
 
     findByTestId(fakeBody(), "event-editor-apply")?.click();
-    expect(cancel?.textContent).toBe("취소");
-    expect(cancel?.getAttribute("aria-label")).not.toContain("새 이벤트 삭제");
+    expect(draftStatus?.dataset.state).toBe("applied");
+    expect(projectWithoutEventDrafts(store.getCurrent()).maps[mapId].events).toHaveLength(1);
+    findByTestId(fakeBody(), "event-editor-cancel")?.click();
+    expect(store.getCurrent().maps[mapId].events).toHaveLength(1);
   });
 
   it("새 이벤트 모달 취소는 이벤트를 남기지 않는다", () => {
