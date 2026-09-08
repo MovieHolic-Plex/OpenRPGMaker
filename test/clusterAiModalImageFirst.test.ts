@@ -245,8 +245,13 @@ function makeFenceGroup(): TileGroupMetadata {
 }
 
 async function flushAsync(): Promise<void> {
-  await Promise.resolve();
-  await Promise.resolve();
+  const turn = mocks.instances[0]?.sendUserMessage.mock.results.at(-1);
+  if (!turn || turn.type !== "return") throw new Error("Missing cluster turn promise");
+  const images = mocks.renderToolImages.mock.results.map(result => {
+    if (result.type !== "return") throw new Error("Image producer did not return its completion");
+    return result.value;
+  });
+  await Promise.all([turn.value, ...images]);
 }
 
 function assistantBubbles(): HTMLElement[] {

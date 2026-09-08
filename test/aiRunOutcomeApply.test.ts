@@ -22,7 +22,7 @@ describe("run outcome actual application", () => {
     expect(result.review?.status).toBe("approved");
     expect(f.session.isDraftReviewApproved()).toBe(true);
     const applied = await applyProposedProject(f.session.getProposedProject(), {
-      baseline: f.session.getDraftBaseline(), source: "agent", summary: "Title", toolNames: result.proposedCalls.map(call => call.name),
+      base: f.session.getProposalBase(), baseline: f.session.getDraftBaseline(), source: "agent", summary: "Title", toolNames: result.proposedCalls.map(call => call.name),
     });
     if (!applied.ok) throw new Error(applied.issue);
     f.session.recordAppliedProject(applied);
@@ -50,7 +50,7 @@ describe("run outcome actual application", () => {
     const result = await f.run();
     expect(result.review?.status).toBe("approved");
     expect(f.session.isDraftReviewApproved()).toBe(true);
-    const applied = await applyProposedProject(f.session.getProposedProject(), { baseline: f.session.getDraftBaseline(), source: "agent", summary: "Title", toolNames: ["set_title_screen"] });
+    const applied = await applyProposedProject(f.session.getProposedProject(), { base: f.session.getProposalBase(), baseline: f.session.getDraftBaseline(), source: "agent", summary: "Title", toolNames: ["set_title_screen"] });
     if (!applied.ok) throw new Error(applied.issue);
     f.session.recordAppliedProject(applied); f.session.rebaseProject(store.getCurrent());
     // When proof finishes after the original session return.
@@ -82,7 +82,7 @@ describe("run outcome actual application", () => {
     const result = await f.run();
     expect(result.review?.status).toBe("approved");
     expect(f.session.isDraftReviewApproved()).toBe(true);
-    const applied = await applyProposedProject(f.session.getProposedProject(), { baseline: f.session.getDraftBaseline(), source: "agent", summary: "Title", toolNames: ["set_title_screen"] });
+    const applied = await applyProposedProject(f.session.getProposedProject(), { base: f.session.getProposalBase(), baseline: f.session.getDraftBaseline(), source: "agent", summary: "Title", toolNames: ["set_title_screen"] });
     if (!applied.ok) throw new Error(applied.issue);
     f.session.recordAppliedProject(applied); f.session.rebaseProject(store.getCurrent());
     await f.session.proveAppliedRevision();
@@ -102,7 +102,7 @@ describe("run outcome actual application", () => {
     const first = await f.run();
     expect(first.review?.status).toBe("approved");
     expect(f.session.isDraftReviewApproved()).toBe(true);
-    const applied = await applyProposedProject(f.session.getProposedProject(), { baseline: f.session.getDraftBaseline(), source: "agent", summary: "Title", toolNames: ["set_title_screen"] });
+    const applied = await applyProposedProject(f.session.getProposedProject(), { base: f.session.getProposalBase(), baseline: f.session.getDraftBaseline(), source: "agent", summary: "Title", toolNames: ["set_title_screen"] });
     if (!applied.ok) throw new Error(applied.issue);
     f.session.recordAppliedProject(applied); f.session.rebaseProject(store.getCurrent());
     await f.session.proveAppliedRevision();

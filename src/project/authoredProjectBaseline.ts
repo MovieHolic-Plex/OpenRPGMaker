@@ -1,4 +1,11 @@
 import type { Project } from "./types";
+import { canonicalJsonString } from "./supabaseProjectSync";
+
+// Same JSON value semantics as proposal bases and remote JSONB: object key order
+// is not authored drift. Array order and every authored value remain significant.
+function contentIdentity(value: unknown): string {
+  return canonicalJsonString(JSON.parse(JSON.stringify(value)));
+}
 
 /** Wiki documents have an independent editor checkpoint owner. World graph
  * registrations and relations do not: concurrent NPC/place edits invalidate a draft.
@@ -7,7 +14,7 @@ import type { Project } from "./types";
  * this; wiki-only drift (checkpoint receipts, manual notes) never invalidates it. */
 export function authoredIdentity(project: Project): string {
   const { world, ...authored } = project;
-  return JSON.stringify({ ...authored, world: {
+  return contentIdentity({ ...authored, world: {
     entities: world?.entities.filter(entity => !entity.wiki && entity.type !== "guideline") ?? [],
     relations: world?.relations ?? [],
   } });
@@ -21,11 +28,11 @@ export class AuthoredProjectBaseline {
 
   constructor(project: Project) {
     this.authored = authoredIdentity(project);
-    this.complete = JSON.stringify(project);
+    this.complete = contentIdentity(project);
     Object.freeze(this);
   }
 
   matches(project: Project, includeWiki = false): boolean {
-    return includeWiki ? this.complete === JSON.stringify(project) : this.authored === authoredIdentity(project);
+    return includeWiki ? this.complete === contentIdentity(project) : this.authored === authoredIdentity(project);
   }
 }

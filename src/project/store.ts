@@ -646,6 +646,11 @@ class ProjectStore {
     return this.readOnlyProjectSnapshot ?? this.current;
   }
 
+  /** Client-local authored revision, not a save receipt or a remote writer lease. */
+  getVersionToken(): Readonly<{ lineage: number; generation: number }> {
+    return Object.freeze({ lineage: this.contentLineage, generation: this.mutationGeneration });
+  }
+
   getProjectIdentity(): ProjectIdentity {
     return this.loadedRemoteProjectId
       ? { kind: "remote", id: this.loadedRemoteProjectId }
@@ -808,7 +813,12 @@ class ProjectStore {
    */
   replace(
     project: Project,
-    options: { readonly preserveEventDrafts?: boolean; readonly change?: ProjectChangeAnnotation } = {},
+    options: {
+      readonly preserveEventDrafts?: boolean;
+      readonly change?: ProjectChangeAnnotation;
+      /** Account the actual mutation before any synchronous observers can retire its owner. */
+      readonly onApplied?: (project: Project) => void;
+    } = {},
   ): Project {
     ensureSwitchVariableSlots(project);
     removeLegacySpriteReferences(project);
@@ -829,14 +839,18 @@ class ProjectStore {
       syncEventDraftVaultFromProject(this.current);
     }
     const applied = this.current;
-    this.markLocalMutation({ scope: "project", ...(options.change ?? {}) });
-    this.emit({ scope: "project", ...(options.change ?? {}) });
-    this.scheduleAutoSave();
+    try {
+      this.markLocalMutation({ scope: "project", ...(options.change ?? {}) }, options.onApplied);
+    } finally {
+      // The project is already live even if application accounting's observer throws.
+      this.emit({ scope: "project", ...(options.change ?? {}) });
+      this.scheduleAutoSave();
+    }
     return applied;
   }
 
   /** Full project switch (new/import/sample). Drops event-draft vault for the previous project. */
-  replaceProject(project: Project, change?: ProjectChangeAnnotation): Project {
+  replaceProject(project: Project, change?: ProjectChangeAnnotation, onApplied?: (project: Project) => void): Project {
     clearEventDraftVault();
     clearCopiedEventPage();
     persistEventDraftVaultNow();
@@ -844,6 +858,7 @@ class ProjectStore {
     return this.replace(project, {
       preserveEventDrafts: false,
       change: { label: "프로젝트 교체", projectSwitch: true, ...(change ?? {}) },
+      onApplied,
     });
   }
 
@@ -1011,10 +1026,14 @@ class ProjectStore {
    * 외부 파일 수정 없이 계측된다. 호출자는 전부 이 클래스 안에 있다 — 이 성질을
    * test/storeMutationInstrumentation.test.ts 가 고정한다.
    */
-  private markLocalMutation(change: ProjectChangeDescriptor): void {
+  private markLocalMutation(change: ProjectChangeDescriptor, onApplied?: (project: Project) => void): void {
     this.mutationGeneration += 1;
     this.dirtySinceLastPersist = true;
-    this.recordChangeActivity(change);
+    try {
+      onApplied?.(this.current);
+    } finally {
+      this.recordChangeActivity(change);
+    }
   }
 
   /**

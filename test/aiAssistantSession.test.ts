@@ -1,3 +1,4 @@
+import { cooperativeNodeYield } from "./cooperativeNodeYield";
 import { fixedDeclarer } from "./intentFixture";
 import { approvedReviewResponse, independentReviewPayload, imageDeliveryForRequest } from "./independentReviewFixture";
 import type { ReviewInput } from "@/ai/independentReview";
@@ -131,7 +132,7 @@ describe("자율 실행 드라이버", () => {
     // 검수된 자율 배치만 적용되며 실제 Supabase 대신 세션·store를 같은 fixture로 초기화한다.
     const project = createBlankProject();
     installMilestoneHermeticEnv(project);
-    const session = new AssistantSession(project, { config: ORCH_AUTO, chat });
+    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield, config: ORCH_AUTO, chat });
 
     const result = await session.sendUserMessage("타이틀을 3단계로 개선해줘", () => {}, undefined, { autonomous: true });
 
@@ -170,7 +171,7 @@ describe("자율 실행 드라이버", () => {
       if (bodyTurns % 4 === 1) return titleWrite(`c_b${bodyTurns}`, `진행 ${bodyTurns}`);
       return finalResult(`아직 진행 중입니다(턴 ${bodyTurns}). 계속 진행이 필요합니다.`);
     };
-    const session = new AssistantSession(createBlankProject(), { config: ORCH_AUTO, chat });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: ORCH_AUTO, chat });
 
     await session.sendUserMessage(`${ORCH_GOAL}끝나지 않는 목표를 처리해줘`, () => {}, undefined, { autonomous: true });
 
@@ -242,7 +243,7 @@ describe("자율 실행 드라이버", () => {
     // 질문으로 멈추기 전 검수된 t1만 적용할 수 있도록 헤르메틱 env 설치.
     const project = createBlankProject();
     installMilestoneHermeticEnv(project);
-    const session = new AssistantSession(project, { config: ORCH_AUTO, chat });
+    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield, config: ORCH_AUTO, chat });
 
     const result = await session.sendUserMessage("타이틀을 3단계로 개선해줘", () => {}, undefined, { autonomous: true });
 
@@ -277,7 +278,7 @@ describe("자율 실행 드라이버", () => {
     };
     const project = createBlankProject();
     installMilestoneHermeticEnv(project);
-    const session = new AssistantSession(project, { config: ORCH_AUTO, chat });
+    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield, config: ORCH_AUTO, chat });
     let autoContinued = false;
 
     const promise = session.sendUserMessage(
@@ -318,7 +319,7 @@ describe("자율 실행 드라이버", () => {
     // 훅 주입(생성자 옵션) — peek 만 하고 dequeue 하지 않는다.
     const project = createBlankProject();
     installMilestoneHermeticEnv(project);
-    const session = new AssistantSession(project, {
+    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield,
       config: ORCH_AUTO,
       peekPendingUserMessage: () => pending,
       chat,
@@ -381,7 +382,7 @@ describe("자율 실행 드라이버", () => {
     };
     const project = createBlankProject();
     installMilestoneHermeticEnv(project);
-    const session = new AssistantSession(project, {
+    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield,
       config: ORCH_AUTO,
       peekPendingUserMessage: () => (gi < garbage.length ? (garbage[gi++] as string) : null),
       chat,
@@ -411,7 +412,7 @@ describe("자율 실행 드라이버", () => {
       if (index >= steps.length) exhausted();
       return steps[index++]!;
     };
-    const session = new AssistantSession(createBlankProject(), { config: ORCH_AUTO, chat });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: ORCH_AUTO, chat });
 
     // 플래그 미지정(기존 호출처)도 종전대로 턴 1개 — 자율 드라이버는 명시 진입만 켠다.
     await session.sendUserMessage("타이틀을 3단계로 개선해줘", () => {});
@@ -438,7 +439,7 @@ describe("자율 실행 드라이버", () => {
       return steps[index++]!;
     };
     // agentMode "chat" — 패널은 autonomous:false 를 주므로(설정 기준) 같은 계약을 세션에서 직접 고정한다.
-    const session = new AssistantSession(createBlankProject(), {
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield,
       config: { ...ORCH_AUTO, agentMode: "chat" as const },
       chat,
     });
@@ -467,7 +468,7 @@ describe("자율 실행 드라이버", () => {
       if (bodyTurns % 4 === 1) return titleWrite(`c_r${bodyTurns}`, `재가동 ${bodyTurns}`);
       return finalResult(`이어서 진행합니다(${bodyTurns}).`);
     };
-    const session = new AssistantSession(createBlankProject(), { config: ORCH_AUTO, chat });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: ORCH_AUTO, chat });
 
     await session.sendUserMessage(`${ORCH_GOAL}끝나지 않는 목표를 처리해줘`, () => {}, undefined, { autonomous: true });
     let statuses = statusTexts(session);
@@ -573,7 +574,7 @@ describe("마일스톤 자동 적용 (todo 4)", () => {
       if (index >= steps.length) milestoneExhausted();
       return steps[index++]!;
     };
-    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 4 }, chat });
+    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield, config: { ...ORCH_CONFIG, maxToolCalls: 4 }, chat });
     const events: SessionEvent[] = [];
 
     const result = await session.sendUserMessage("타이틀을 3단계로 개선해줘", (event) => {
@@ -644,7 +645,7 @@ describe("마일스톤 자동 적용 (todo 4)", () => {
       return steps[index++]!;
     };
     // Three writer tool rounds, final, and the separate review need five rounds.
-    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 5 }, chat });
+    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield, config: { ...ORCH_CONFIG, maxToolCalls: 5 }, chat });
     const events: SessionEvent[] = [];
 
     const result = await session.sendUserMessage(`${ORCH_GOAL}이벤트 영역을 정리해줘`, (event) => { events.push(event); }, undefined, { autonomous: true });
@@ -686,7 +687,7 @@ describe("마일스톤 자동 적용 (todo 4)", () => {
       if (index >= steps.length) milestoneExhausted();
       return steps[index++]!;
     };
-    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 4 }, chat });
+    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield, config: { ...ORCH_CONFIG, maxToolCalls: 4 }, chat });
     const events: SessionEvent[] = [];
 
     // 플래그 미지정(기존 호출처) — 턴 1개로 끝나고(자동 계속 없음) 자동 적용도 없다.
@@ -713,7 +714,7 @@ describe("마일스톤 자동 적용 (todo 4)", () => {
       return steps[index++]!;
     };
     // agentMode는 대화/자율 실행 선택이지 승인 설정이 아니다.
-    const session = new AssistantSession(project, {
+    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield,
       config: { ...ORCH_CONFIG, maxToolCalls: 4, agentMode: "chat" as const },
       chat,
     });
@@ -762,7 +763,7 @@ describe("마일스톤 자동 적용 (todo 4)", () => {
       if (index >= steps.length) milestoneExhausted();
       return steps[index++]!;
     };
-    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 4 }, chat });
+    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield, config: { ...ORCH_CONFIG, maxToolCalls: 4 }, chat });
     const firstEvents: SessionEvent[] = [];
     // Prepare the invalid draft before review, not after approval (which would
     // correctly invalidate its identity before reaching the commit gate).
@@ -916,7 +917,7 @@ describe("레이어 검증(자문) + run-end 저장 증명 (todo 5)", () => {
       if (index === steps.length - 1) layerEventCount = events.length;
       return { ...steps[index++]!, imageDelivery: imageDeliveryForRequest(request) };
     };
-    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 8 }, chat, renderImages: renderLifecycleImages, yieldToUi: async () => {} });
+    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield, config: { ...ORCH_CONFIG, maxToolCalls: 8 }, chat, renderImages: renderLifecycleImages });
 
     const result = await session.sendUserMessage("마을·퀘스트·최종 검증을 진행해줘", (event) => { events.push(event); }, undefined, { autonomous: true });
 
@@ -1018,7 +1019,7 @@ describe("레이어 검증(자문) + run-end 저장 증명 (todo 5)", () => {
       if (index === steps.length - 1) layerEventCount = events.length;
       return { ...steps[index++]!, imageDelivery: imageDeliveryForRequest(request) };
     };
-    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 8 }, chat, renderImages: renderLifecycleImages, yieldToUi: async () => {} });
+    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield, config: { ...ORCH_CONFIG, maxToolCalls: 8 }, chat, renderImages: renderLifecycleImages });
 
     const result = await session.sendUserMessage("퀘스트를 등록하고 마무리해줘", (event) => { events.push(event); }, undefined, { autonomous: true });
 
@@ -1109,7 +1110,7 @@ describe("레이어 검증(자문) + run-end 저장 증명 (todo 5)", () => {
       if (index >= steps.length) gateExhausted();
       return steps[index++]!;
     };
-    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 8 }, chat });
+    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield, config: { ...ORCH_CONFIG, maxToolCalls: 8 }, chat });
     const events: SessionEvent[] = [];
 
     const result = await session.sendUserMessage(`${ORCH_GOAL}타이틀을 바꿔줘`, (event) => { events.push(event); }, undefined, { autonomous: true });
@@ -1166,17 +1167,22 @@ describe("레이어 검증(자문) + run-end 저장 증명 (todo 5)", () => {
       if (index >= steps.length) gateExhausted();
       return steps[index++]!;
     };
-    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 4 }, chat });
+    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield, config: { ...ORCH_CONFIG, maxToolCalls: 4 }, chat });
 
-    const result = await session.sendUserMessage("타이틀을 3단계로 개선해줘", () => {}, undefined, { autonomous: true });
+    const controller = new AbortController();
+    const pending = session.sendUserMessage("타이틀을 3단계로 개선해줘", () => {}, controller.signal, { autonomous: true });
+    const ownedSignal = session.getRunOperation().signal;
+    const result = await pending;
 
+    expect(ownedSignal).not.toBe(controller.signal);
+    expect(ownedSignal.aborted).toBe(false);
     expect(result.stoppedReason).toBe("final");
     expect(flushSpy).toHaveBeenCalledTimes(1);
     expect(reloadSpy).not.toHaveBeenCalled();
-    const [verifiedReceipt, options] = verifySpy.mock.calls[0]!;
+    const [verifiedReceipt, options] = verifySpy.mock.calls[0] ?? [];
     const validate = options?.validate;
     if (!validate) throw new Error("Missing canonical validation callback");
-    expect(verifySpy).toHaveBeenCalledExactlyOnceWith(receipt, { signal: undefined, validate });
+    expect(verifySpy).toHaveBeenCalledExactlyOnceWith(receipt, { signal: ownedSignal, validate });
     expect(verifiedReceipt).toBe(receipt);
     expect(validate(structuredClone(store.getCurrent()))).toBeUndefined();
     expect(session.getRunEndProof()).toMatchObject({ status: "succeeded", verified: true, receipt });
@@ -1189,6 +1195,11 @@ describe("레이어 검증(자문) + run-end 저장 증명 (todo 5)", () => {
     expect(audits.some((t) => t.includes("agent_run:auto-continue"))).toBe(true);
     // 정상 진행 중인 항목은 막히지 않는다(쓰기가 성공하면 항목별 시도 수가 0으로 돌아간다).
     expect(audits.some((t) => t.includes("ralph:stalled"))).toBe(false);
+    // The caller still cancels the owned boundary; proof never receives a detached dummy signal.
+    controller.abort();
+    expect(ownedSignal.aborted).toBe(true);
+    expect(verifySpy).toHaveBeenCalledTimes(1);
+    expect(reloadSpy).not.toHaveBeenCalled();
   }, 120000);
 
   it("(c-2) remote 비활성 → agent_run_local_only 감사, flush 호출 없음, 오류 없음", async () => {
@@ -1204,7 +1215,7 @@ describe("레이어 검증(자문) + run-end 저장 증명 (todo 5)", () => {
       if (index >= steps.length) gateExhausted();
       return steps[index++]!;
     };
-    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 4 }, chat });
+    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield, config: { ...ORCH_CONFIG, maxToolCalls: 4 }, chat });
 
     const result = await session.sendUserMessage("타이틀을 3단계로 개선해줘", () => {}, undefined, { autonomous: true });
 
@@ -1303,7 +1314,7 @@ describe("AssistantSession 툴콜 루프", () => {
       seenModels.push(config.model);
       return assistantFinal("완료");
     };
-    const session = new AssistantSession(createBlankProject(), {
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield,
       config: { ...CONFIG, model: "main-session-model", liteModel: "lite-session-model" },
       chat,
       declareIntent: fixedDeclarer({ mode: "other", needsPlan: false }),
@@ -1323,7 +1334,7 @@ describe("AssistantSession 툴콜 루프", () => {
       chatCalls += 1;
       return assistantFinal("이 응답은 나오면 안 됨");
     };
-    const session = new AssistantSession(createBlankProject(), {
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield,
       config: CONFIG,
       chat,
       declareIntent: fixedDeclarer({ space: "unclear", clarify: "집을 실내 맵으로 만들까요, 야외 외장으로 만들까요?", clarifyOptions: ["실내 맵으로", "야외 집(외장)으로"] }),
@@ -1344,7 +1355,7 @@ describe("AssistantSession 툴콜 루프", () => {
       chatCalls += 1;
       return assistantFinal('{"action":"direct","reason":"한 턴으로 충분"}');
     };
-    const session = new AssistantSession(createBlankProject(), {
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield,
       config: AUTO_SINGLE_CONFIG,
       chat,
       declareIntent: fixedDeclarer({ space: "unclear", clarify: "실내인가요 야외인가요?", needsPlan: true }),
@@ -1363,7 +1374,7 @@ describe("AssistantSession 툴콜 루프", () => {
       chatCalls += 1;
       return assistantFinal("실내 준비");
     };
-    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: CONFIG, chat });
     const result = await session.sendUserMessage("연금술사의 집 이라는 실내 를 하나 만드렁줘", () => {});
     expect(chatCalls).toBe(1);
     expect(result.assistantText).toBe("실내 준비");
@@ -1377,7 +1388,7 @@ describe("AssistantSession 툴콜 루프", () => {
       inspectMap("m1", 6, 6),
       assistantFinal("맵을 만들었습니다."),
     ]);
-    const session = new AssistantSession(createBlankProject(), { config: CONFIG, reviewConfig: LARGE_REVIEW_CONFIG,
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: CONFIG, reviewConfig: LARGE_REVIEW_CONFIG,
       chat, renderImages: renderLifecycleImages });
 
     const events: string[] = [];
@@ -1411,7 +1422,7 @@ describe("AssistantSession 툴콜 루프", () => {
       inspectMap("m1", 5, 5),
       assistantFinal("시작 위치를 고쳤습니다."),
     ]);
-    const session = new AssistantSession(createBlankProject(), { config: CONFIG, reviewConfig: LARGE_REVIEW_CONFIG,
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: CONFIG, reviewConfig: LARGE_REVIEW_CONFIG,
       chat, renderImages: renderLifecycleImages });
 
     const toolEvents: { name: string; ok: boolean }[] = [];
@@ -1446,7 +1457,7 @@ describe("AssistantSession 툴콜 루프", () => {
       assistantToolCall("create_map", { id: "m1", name: "새 맵", width: 6, height: 6 }, "c_create_map"),
       assistantFinal("맵을 만들었습니다."),
     ]);
-    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: CONFIG, chat });
 
     const observed: string[] = [];
     await session.sendUserMessage("맵 하나 만들어줘", (event: SessionEvent) => {
@@ -1470,7 +1481,7 @@ describe("AssistantSession 툴콜 루프", () => {
       n += 1;
       return assistantToolCall("get_project_summary", {}, `c${n}`);
     };
-    const session = new AssistantSession(createBlankProject(), { config: { ...CONFIG, maxToolCalls: 3 }, chat });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: { ...CONFIG, maxToolCalls: 3 }, chat });
     const result = await session.sendUserMessage("계속 조회해", () => {});
     expect(result.stoppedReason).toBe("max-tool-calls");
     expect(n).toBe(3);
@@ -1486,7 +1497,7 @@ describe("AssistantSession 툴콜 루프", () => {
       n += 1;
       return assistantToolCall("get_project_summary", {}, `c${n}`);
     };
-    const session = new AssistantSession(createBlankProject(), { config: { ...CONFIG, maxToolCalls: 2 }, chat });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: { ...CONFIG, maxToolCalls: 2 }, chat });
     const result = await session.sendUserMessage("계속 조회해", () => {});
     expect(result.stoppedReason).toBe("max-tool-calls");
     expect(result.assistantText.trim()).not.toBe("");
@@ -1514,7 +1525,7 @@ describe("AssistantSession 툴콜 루프", () => {
   it("감사 로그를 JSON으로 내보낸다", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const chat = scriptedChat([assistantFinal("안녕하세요.")]);
-    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: CONFIG, chat });
     await session.sendUserMessage("안녕", () => {});
     const audit = JSON.parse(session.exportAudit());
     expect(audit.model).toBe(CONFIG.model);
@@ -1542,7 +1553,7 @@ describe("AssistantSession 툴콜 루프", () => {
       if (index >= steps.length) throw new Error("scripted chat exhausted");
       return steps[index++];
     };
-    const session = new AssistantSession(createBlankProject(), { config: ORCH_CONFIG, chat });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: ORCH_CONFIG, chat });
     const phases: string[] = [];
 
     const result = await session.sendUserMessage(`${ORCH_GOAL}타이틀을 새 제목으로 바꿔줘`, (event) => {
@@ -1625,7 +1636,7 @@ describe("AssistantSession 툴콜 루프", () => {
       if (index >= steps.length) throw new Error("scripted chat exhausted");
       return { ...steps[index++]!, imageDelivery: imageDeliveryForRequest(request) };
     };
-    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 16, maxTokens: 8192 }, chat,
+    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield, config: { ...ORCH_CONFIG, maxToolCalls: 16, maxTokens: 8192 }, chat,
       renderImages: renderLifecycleImages });
     const phases: string[] = [];
 
@@ -1665,7 +1676,7 @@ describe("AssistantSession 툴콜 루프", () => {
     };
     const project = createBlankProject();
     installMilestoneHermeticEnv(project);
-    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 24 }, chat: (config, request) => {
+    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield, config: { ...ORCH_CONFIG, maxToolCalls: 24 }, chat: (config, request) => {
       if (independentReviewPayload(request)) {
         requests.push(request);
         return Promise.resolve(assistantFinal(RAW_TOOL_MARKUP_FIXTURE));
@@ -1726,7 +1737,7 @@ describe("AssistantSession 툴콜 루프", () => {
     const findings = spec.assets.slice(1).map(asset => ({ id: asset.id, target: `/maps/m1/assets/${asset.id}`,
       problem: `Missing ${asset.kind}: ${asset.id}`, requestedChange: `Build ${asset.id} at ${asset.x},${asset.y}`,
       validation: `Inspect ${asset.id} in the current draft and capture its map region` }));
-    const session = new AssistantSession(createBlankProject(), { config: { ...ORCH_CONFIG, maxToolCalls: 32, maxTokens: 8192 },
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: { ...ORCH_CONFIG, maxToolCalls: 32, maxTokens: 8192 },
       reviewConfig: LARGE_REVIEW_CONFIG,
       chat: (config, request) => {
         const review = independentReviewPayload(request);
@@ -1768,7 +1779,7 @@ describe("AssistantSession 툴콜 루프", () => {
     expect(hasRawToolCallMarkup(RAW_TOOL_MARKUP_FIXTURE)).toBe(true);
     expect(sanitizeAssistantText(RAW_TOOL_MARKUP_FIXTURE)).toBe("적용됨이어서 길을 깐 뒤 NPC 5명을 배치하겠습니다...…(형식 오류로 일부 생략)");
 
-    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat: scriptedChat([assistantFinal(RAW_TOOL_MARKUP_FIXTURE)]) });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: CONFIG, chat: scriptedChat([assistantFinal(RAW_TOOL_MARKUP_FIXTURE)]) });
     const result = await session.sendUserMessage("이어 진행해", () => {});
 
     expect(result.assistantText).toContain("형식 오류로 일부 생략");
@@ -1791,7 +1802,7 @@ describe("AssistantSession 툴콜 루프", () => {
       if (index >= steps.length) throw new Error("scripted chat exhausted");
       return steps[index++];
     };
-    const session = new AssistantSession(createBlankProject(), { config: ORCH_CONFIG, chat: (config, request) => {
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: ORCH_CONFIG, chat: (config, request) => {
       const approval = approvedReviewResponse(request);
       return approval ? Promise.resolve(approval) : chat(config, request);
     } });
@@ -1819,7 +1830,7 @@ describe("AssistantSession 툴콜 루프", () => {
       if (calls === 1) return assistantFinal('{"action":"direct","reason":"단순 요청"}');
       return assistantFinal("어떤 제목으로 바꿀까요?\n[선택지] 숲 | 바다");
     };
-    const session = new AssistantSession(createBlankProject(), { config: ORCH_CONFIG, chat });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: ORCH_CONFIG, chat });
 
     const result = await session.sendUserMessage(`${ORCH_GOAL}타이틀을 바꿔줘`, () => {});
 
@@ -1842,7 +1853,7 @@ describe("AssistantSession 툴콜 루프", () => {
       if (index >= steps.length) throw new Error("scripted chat exhausted");
       return steps[index++];
     };
-    const session = new AssistantSession(createBlankProject(), { config: ORCH_CONFIG, chat });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: ORCH_CONFIG, chat });
 
     const result = await session.sendUserMessage("던전 입구 타일만 칠해줘", () => {});
 
@@ -1860,7 +1871,7 @@ describe("AssistantSession 툴콜 루프", () => {
       calls += 1;
       return assistantFinal("먼저 확인하겠습니다.");
     };
-    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: CONFIG, chat });
 
     const result = await session.sendUserMessage(`${ORCH_GOAL}타이틀을 바꿔줘`, () => {});
 
@@ -1877,7 +1888,7 @@ describe("AssistantSession 툴콜 루프", () => {
       seenModels.push(config.model);
       return assistantFinal("안녕하세요.");
     };
-    const session = new AssistantSession(createBlankProject(), { config: ORCH_CONFIG, chat, declareIntent: fixedDeclarer({ mode: "other", needsPlan: false }) });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: ORCH_CONFIG, chat, declareIntent: fixedDeclarer({ mode: "other", needsPlan: false }) });
     const phases: string[] = [];
 
     const result = await session.sendUserMessage("안녕", (event) => {
@@ -1905,7 +1916,7 @@ describe("agentMode 오케스트레이션 게이트", () => {
     const chat = scriptedChat([
       assistantFinal("완료했습니다."),
     ]);
-    const session = new AssistantSession(createBlankProject(), { config: llm.defaultAiConfig(), chat, declareIntent: fixedDeclarer({ mode: "other", needsPlan: false }) });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: llm.defaultAiConfig(), chat, declareIntent: fixedDeclarer({ mode: "other", needsPlan: false }) });
 
     await session.sendUserMessage("타이틀 화면 안내만 해줘", () => {});
 
@@ -1921,7 +1932,7 @@ describe("agentMode 오케스트레이션 게이트", () => {
       assistantFinal("완료했습니다."),
       assistantFinal("완료했습니다."),
     ]);
-    const session = new AssistantSession(createBlankProject(), {
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield,
       config: { ...llm.defaultAiConfig(), maxToolCalls: 4 },
       chat,
       declareIntent: fixedDeclarer({ space: "outdoor", needsPlan: true }),
@@ -1942,7 +1953,7 @@ describe("agentMode 오케스트레이션 게이트", () => {
       assistantFinal("집을 시공합니다."),
     ]);
     const project = createBlankProject();
-    const session = new AssistantSession(project, { config: llm.defaultAiConfig(), chat, declareIntent: fixedDeclarer({ space: "outdoor", useSelection: true, needsPlan: true }) });
+    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield, config: llm.defaultAiConfig(), chat, declareIntent: fixedDeclarer({ space: "outdoor", useSelection: true, needsPlan: true }) });
 
     await session.sendUserMessage(
       "선택 영역 안에 야외 집 한 채를 지어 주세요.\n\n[컨텍스트] 현재 맵: 빈 맵 (map_blank_start) · 사용자 선택 영역: (2,2) 8×6",
@@ -1959,7 +1970,7 @@ describe("agentMode 오케스트레이션 게이트", () => {
     const { AssistantSession, createBlankProject } = await load();
     const chat = scriptedChat([assistantFinal("완료했습니다.")]);
     // CONFIG 는 model === liteModel 단일 모델.
-    const session = new AssistantSession(createBlankProject(), { config: { ...CONFIG, authMode: "apiKey" as const, agentMode: "chat" as const }, chat });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: { ...CONFIG, authMode: "apiKey" as const, agentMode: "chat" as const }, chat });
 
     await session.sendUserMessage("타이틀 화면 안내만 해줘", () => {});
 
@@ -1969,7 +1980,7 @@ describe("agentMode 오케스트레이션 게이트", () => {
   it("agentMode chat + 이원화 모델도 단일 단계 선언은 플래너를 건너뛴다", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const chat = scriptedChat([assistantFinal("완료했습니다.")]);
-    const session = new AssistantSession(createBlankProject(), { config: { ...ORCH_CONFIG, authMode: "apiKey" as const, agentMode: "chat" as const }, chat, declareIntent: fixedDeclarer({ mode: "question", needsPlan: false }) });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: { ...ORCH_CONFIG, authMode: "apiKey" as const, agentMode: "chat" as const }, chat, declareIntent: fixedDeclarer({ mode: "question", needsPlan: false }) });
 
     await session.sendUserMessage("타이틀 화면 안내만 해줘", () => {});
 
@@ -1984,7 +1995,7 @@ describe("agentMode 오케스트레이션 게이트", () => {
       assistantFinal("완료했습니다."),
       assistantFinal("완료했습니다."),
     ]);
-    const session = new AssistantSession(createBlankProject(), {
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield,
       config: { ...ORCH_CONFIG, maxToolCalls: 4 },
       chat,
       declareIntent: fixedDeclarer({ space: "outdoor", needsPlan: true }),
@@ -2007,7 +2018,7 @@ describe("agentMode 오케스트레이션 게이트", () => {
         if (names.length === 0) return assistantFinal('{"action":"direct","reason":"한 턴으로 충분"}');
         return assistantFinal("완료했습니다.");
       };
-      const session = new AssistantSession(createBlankProject(), {
+      const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield,
         config: config as never,
         chat,
         declareIntent: fixedDeclarer({ mode: "question", needsPlan: false }),
@@ -2030,7 +2041,7 @@ describe("agentMode 오케스트레이션 게이트", () => {
       for (const tool of req.tools ?? []) names.push(tool.function.name);
       return assistantFinal("완료했습니다.");
     };
-    const session = new AssistantSession(createBlankProject(), {
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield,
       config: { ...CONFIG, authMode: "apiKey" as const, agentMode: "chat" as const },
       chat,
       declareIntent: fixedDeclarer({ tools: ["create_quest"] }),
@@ -2051,7 +2062,7 @@ describe("하네스 관측", () => {
       assistantToolCall("set_title_screen", { title: "새 제목" }, "c_title"),
       assistantFinal("실행 완료"),
     ];
-    const session = new AssistantSession(createBlankProject(), { config: ORCH_CONFIG, chat: scriptedChat(steps) });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: ORCH_CONFIG, chat: scriptedChat(steps) });
 
     await session.sendUserMessage(`${ORCH_GOAL}타이틀을 새 제목으로 바꿔줘`, () => {});
 
@@ -2078,7 +2089,7 @@ describe("하네스 관측", () => {
       assistantFinal("실행 완료"),
       assistantFinal("완료: 타이틀을 바꿨습니다."),
     ];
-    const session = new AssistantSession(createBlankProject(), { config: ORCH_CONFIG, chat: scriptedChat(steps) });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: ORCH_CONFIG, chat: scriptedChat(steps) });
     await session.sendUserMessage(`${ORCH_GOAL}타이틀을 새 제목으로 바꿔줘`, () => {});
 
     const snapshot = session.getHarnessSnapshot();
@@ -2124,7 +2135,7 @@ describe("밑그림만 그리고 끝내는 턴", () => {
       assistantFinal("잡화점 상인 NPC 1명을 배치할 예정입니다. 실제 배치는 사용자 승인 후 진행됩니다."),
       assistantFinal("다시 확인했습니다."),
     ]);
-    const session = new AssistantSession(createBlankProject(), { config: { ...CONFIG, authMode: "apiKey" as const }, chat });
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: { ...CONFIG, authMode: "apiKey" as const }, chat });
 
     await session.sendUserMessage("이 자리에 잡화점 상인 NPC 하나 배치해줘", () => {});
 
@@ -2157,7 +2168,7 @@ describe("밑그림만 그리고 끝내는 턴", () => {
       assistantFinal("잡화점 상인을 배치할 예정입니다. 사용자 승인 후 진행됩니다."),
       assistantFinal("밑그림은 이미 확정했습니다. 승인해 주세요."),
     ]);
-    const session = new AssistantSession(createBlankProject(), {
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield,
       config: { ...CONFIG, authMode: "apiKey" as const },
       chat,
     });

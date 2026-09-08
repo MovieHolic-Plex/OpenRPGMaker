@@ -1,3 +1,5 @@
+import { RunOperation } from "@/ai/runOperation";
+import { captureProposalBase, type ProposalBase } from "@/editor/tools/applyChangesetToStore";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { SessionEvent, TurnResult } from "@/ai/assistantSession";
 import { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
@@ -14,6 +16,9 @@ import type { Project } from "@/project/types";
 import { installFakeDom } from "./fakeDom";
 
 type MockSession = {
+  readonly getRunOperation: () => RunOperation;
+  readonly getProposalBase: () => ProposalBase;
+  readonly recordApplyRejected: () => void;
   readonly sendUserMessage: ReturnType<typeof vi.fn<(text: string, onEvent: (event: SessionEvent) => void, signal?: AbortSignal) => Promise<TurnResult>>>;
   readonly getProposedProject: ReturnType<typeof vi.fn<() => Project>>;
   readonly isDraftReviewApproved: ReturnType<typeof vi.fn<(candidate: Project) => boolean>>;
@@ -47,7 +52,12 @@ vi.mock("@/ai/assistantSession", () => ({
     // matches the captured baseline.
     let baseline = new AuthoredProjectBaseline(project);
     let approvedIdentity: string | null = null;
+    const operation = new RunOperation();
+    const base = captureProposalBase(project);
     const session: MockSession = {
+      getRunOperation: () => operation,
+      getProposalBase: () => base,
+      recordApplyRejected: vi.fn(),
       sendUserMessage: vi.fn(async (_text: string, onEvent: (event: SessionEvent) => void) => {
         const nextTurn = mocks.turns.shift();
         const result = nextTurn ? await nextTurn(onEvent) : emptyTurn;
@@ -266,7 +276,9 @@ describe("cluster AI range-classify modal", () => {
     await rebased;
 
     expect(recordProjectSnapshot).toHaveBeenCalledWith("클러스터 수정: 범위 분류 — 4개 타일", store.getCurrent().startMapId);
-    expect(replaceSpy).toHaveBeenCalledExactlyOnceWith(proposed, { change: expect.objectContaining({ origin: "ai" }) });
+    expect(replaceSpy).toHaveBeenCalledExactlyOnceWith(proposed, {
+      change: expect.objectContaining({ origin: "ai" }), onApplied: expect.any(Function),
+    });
     expect(mocks.instances[0]?.rebaseProject).toHaveBeenCalledWith(store.getCurrent());
   });
 

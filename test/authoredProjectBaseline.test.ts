@@ -3,7 +3,7 @@ import { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
 import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
 import { store } from "@/project/store";
-import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
+import { applyProposedProject, captureProposalBase } from "@/editor/tools/applyChangesetToStore";
 import * as history from "@/editor/mapEditHistory";
 import * as commits from "@/project/projectCommitLog";
 
@@ -25,10 +25,11 @@ const edits: readonly { readonly name: string; readonly edit: (project: Project)
   { name: "world relation", edit: project => { project.world = { entities: [], relations: [{ a: "npc", b: "place", kind: "locatedIn" }] }; } },
 ];
 
-it.each(edits)("rejects stale $name at the shared boundary without history, commits or store mutation", async ({ edit }) => {
+it.each(edits)("rejects stale $name at the shared boundary without history, commits or store mutation", async ({ name, edit }) => {
   const original = createBlankProject();
   store.replace(original);
   const baseline = new AuthoredProjectBaseline(original);
+  const base = captureProposalBase(original);
   const proposed = structuredClone(original);
   proposed.meta.title = "Detached draft";
   store.update(edit);
@@ -38,8 +39,8 @@ it.each(edits)("rejects stale $name at the shared boundary without history, comm
   const commit = vi.spyOn(commits, "recordProjectCommit");
   const replace = vi.spyOn(store, "replace");
   const manualBaseline = vi.spyOn(commits, "resetManualProjectCommitBaseline");
-  expect(await applyProposedProject(proposed, { baseline, source: "agent", summary: "Detached draft", toolNames: [] }))
-    .toMatchObject({ ok: false, reason: "stale-baseline" });
+  expect(await applyProposedProject(proposed, { base, baseline, source: "agent", summary: "Detached draft", toolNames: [] }))
+    .toMatchObject({ ok: false, reason: name.startsWith("world") ? "stale-baseline" : "stale-base" });
   expect(store.getCurrent()).toEqual(live);
   expect(history.getMapEditHistoryEntries()).toEqual([]);
   for (const spy of [snapshot, commit, replace, manualBaseline]) expect(spy).not.toHaveBeenCalled();
@@ -59,13 +60,14 @@ it.each([false, true])("keeps the wiki exception explicit and does not let reset
   const original = createBlankProject();
   store.replace(original);
   const baseline = new AuthoredProjectBaseline(original);
+  const base = captureProposalBase(original);
   const proposed = structuredClone(original);
   proposed.meta.title = "Reviewed title";
   store.update(project => { project.world = { entities: [{ id: "w_wiki", type: "concept", name: "Manual wiki", summary: "Keep me", origin: "user", locked: true,
     wiki: { kind: "knowledge", basis: "explicit", sources: [{ id: "manual", kind: "manual", text: "Keep me", at: 1 }] } }], relations: [] }; });
   const world = structuredClone(store.getCurrent().world);
   history.resetMapEditHistory();
-  const result = await applyProposedProject(proposed, { baseline, source: "agent", summary: "Title", toolNames: ["set_title_screen"], resetProject });
+  const result = await applyProposedProject(proposed, { base, baseline, source: "agent", summary: "Title", toolNames: ["set_title_screen"], resetProject });
   expect(result.ok).toBe(!resetProject);
   expect(store.getCurrent().world?.entities).toEqual(expect.arrayContaining(world?.entities ?? []));
   expect(history.getMapEditHistoryEntries()).toHaveLength(resetProject ? 0 : 2); // authoring plus the coordinator's observed receipt

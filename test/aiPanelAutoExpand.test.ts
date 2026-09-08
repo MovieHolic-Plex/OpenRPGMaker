@@ -1,3 +1,5 @@
+import { RunOperation } from "@/ai/runOperation";
+import { teardownAiChatPanel, whenAiChatPanelSettled } from "@/editor/panels/aiChatPanel";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
 import {
@@ -12,6 +14,9 @@ const assistantMock = vi.hoisted(() => {
   const sentMessages: string[] = [];
 
   class MockAssistantSession {
+    private operation = new RunOperation();
+    getRunOperation(): RunOperation { return this.operation; }
+    retireRun(): void { this.operation.retire(); }
     constructor(_project: unknown, _options: unknown) {}
 
     async sendUserMessage(text: string, _onEvent: (event: unknown) => void): Promise<{
@@ -19,9 +24,13 @@ const assistantMock = vi.hoisted(() => {
       proposedCalls: [];
       stoppedReason: "final";
     }> {
+      this.operation.retire();
+      this.operation = new RunOperation();
       sentMessages.push(text);
       return { assistantText: "완료.", proposedCalls: [], stoppedReason: "final" };
     }
+
+    getRunOutcome(): null { return null; }
 
     getAuditEntries(): [] {
       return [];
@@ -128,9 +137,6 @@ function installFakeWindow(): () => void {
   };
 }
 
-async function flushAsync(): Promise<void> {
-  for (let i = 0; i < 20; i += 1) await Promise.resolve();
-}
 
 // 접힘 축은 하나다: 패널 전체 칩 접힘(`is-collapsed`). glass 도크의 본문 접힘(fold)이
 // 두 번째 축이었고 도크 삭제와 함께 사라졌다 — 이제 도크 인자도 없다.
@@ -154,7 +160,9 @@ beforeEach(() => {
   storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), apiKey: "sk-or-test" }));
 });
 
-afterEach(() => {
+afterEach(async () => {
+  teardownAiChatPanel();
+  await whenAiChatPanelSettled();
   vi.useRealTimers();
   restoreWindow?.();
   restoreWindow = null;
@@ -183,14 +191,14 @@ describe("AI 패널 자동 펼침/접기", () => {
     const bridge = (globalThis.window as unknown as { __oprnAiBridge?: { send: (text: string) => Promise<unknown> } }).__oprnAiBridge;
     expect(bridge).toBeTruthy();
     await bridge!.send("안녕");
-    await flushAsync();
+    await whenAiChatPanelSettled();
 
     expect(panel.classList.contains("is-collapsed")).toBe(false);
     expect(storage.get("oprn:ai-panel-collapsed")).toBe("1");
     expect(assistantMock.sentMessages).toHaveLength(1);
 
     await vi.advanceTimersByTimeAsync(AUTO_COLLAPSE_AFTER_AI_MS + 50);
-    await flushAsync();
+    await whenAiChatPanelSettled();
 
     expect(panel.classList.contains("is-collapsed")).toBe(false);
     expect(storage.get("oprn:ai-panel-collapsed")).toBe("1");
@@ -205,10 +213,10 @@ describe("AI 패널 자동 펼침/접기", () => {
 
     const bridge = (globalThis.window as unknown as { __oprnAiBridge?: { send: (text: string) => Promise<unknown> } }).__oprnAiBridge;
     await bridge!.send("지도 그려줘");
-    await flushAsync();
+    await whenAiChatPanelSettled();
 
     await vi.advanceTimersByTimeAsync(AUTO_COLLAPSE_AFTER_AI_MS + 50);
-    await flushAsync();
+    await whenAiChatPanelSettled();
 
     expect(panel.classList.contains("is-collapsed")).toBe(false);
     expect(storage.has("oprn:ai-panel-collapsed")).toBe(false);
@@ -224,7 +232,7 @@ describe("AI 패널 자동 펼침/접기", () => {
         detail: { kind: "cluster-edit", tilesetId: "ts_default", groupId: "wall_group" },
       })
     );
-    await flushAsync();
+    await whenAiChatPanelSettled();
 
     expect(panel.classList.contains("is-collapsed")).toBe(false);
   });

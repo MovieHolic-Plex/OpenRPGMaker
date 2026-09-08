@@ -1,3 +1,4 @@
+import { cooperativeNodeYield } from "./cooperativeNodeYield";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AssistantSession, type SessionEvent, type SessionTurnOptions, type TurnResult } from "@/ai/assistantSession";
 import type { AcceptanceSnapshot } from "@/ai/assistantAcceptance";
@@ -42,7 +43,7 @@ function goalFixture() {
   const boundaries: string[] = [];
   const session = new AssistantSession(project, {
     config: { ...defaultAiConfig(), agentMode: "chat", model: "test", liteModel: "test", apiKey: "test", maxToolCalls: 8 },
-    yieldToUi: async () => {},
+    yieldToUi: cooperativeNodeYield,
     prepareProjectWiki: async input => { boundaries.push("wiki"); boundaryHook("wiki", input.signal); return undefined; },
     declareIntent: async (facts, signal) => { boundaries.push("intent"); boundaryHook("intent", signal); return fixedDeclarer(intent)(facts); },
     chat: async () => { const next = response; response = final; return next; },
@@ -113,9 +114,17 @@ describe("host new-goal early ownership", () => {
       expect(next.stoppedReason).toBe(ending === "failure" ? "error" : "aborted");
       agreement(f.session, next, f.events, expected);
       expect(atEntry).toBeNull();
-      expect(atBoundary).toBeNull();
-      expect(boundaryHistory).toEqual([old.snapshot]);
-      expect(f.boundaries).toEqual(boundary === "wiki" ? ["wiki"] : ["wiki", "intent"]);
+      // P3 retires execution before dispatch when the signal is already aborted.
+      // The public goal/archive assertions below still run for every entry.
+      if (ending === "already-aborted") {
+        expect(atBoundary).toBeUndefined();
+        expect(boundaryHistory).toEqual([]);
+        expect(f.boundaries).toEqual([]);
+      } else {
+        expect(atBoundary).toBeNull();
+        expect(boundaryHistory).toEqual([old.snapshot]);
+        expect(f.boundaries).toEqual(boundary === "wiki" ? ["wiki"] : ["wiki", "intent"]);
+      }
       expect(f.session.getWorkPlan()).toBeNull();
       expect(f.session.getAcceptanceSnapshot()).toBeNull();
       expect(f.session.getAcceptanceHistory()).toEqual([old.snapshot]);
@@ -218,11 +227,11 @@ describe("host new-goal early ownership", () => {
     }, async facts => {
       if (fault) throw new Error("intent-entry-failure");
       return fixedDeclarer({ mode: "other" })(facts);
-    });
+    }, undefined, cooperativeNodeYield);
     const first = await f.run();
     expect(first.review?.status).toBe("approved");
     expect(f.session.isDraftReviewApproved()).toBe(true);
-    const applied = await applyProposedProject(f.session.getProposedProject(), { baseline: f.session.getDraftBaseline(), source: "agent", summary: "Title", toolNames: ["set_title_screen"] });
+    const applied = await applyProposedProject(f.session.getProposedProject(), { base: f.session.getProposalBase(), baseline: f.session.getDraftBaseline(), source: "agent", summary: "Title", toolNames: ["set_title_screen"] });
     if (!applied.ok) throw new Error(applied.issue);
     f.session.recordAppliedProject(applied); f.session.rebaseProject(store.getCurrent());
     await f.session.proveAppliedRevision();

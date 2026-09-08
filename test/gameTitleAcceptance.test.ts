@@ -31,7 +31,7 @@ describe("literal displayed game-title acceptance", () => {
     expect(parsed.issues).toMatchObject([{ criterionIndex: 0, field: "criteria[0].title", example: { kind: "gameTitle" } }]);
   });
 
-  it.each([{ ...criterion, passed: true }, { ...criterion, path: "meta.title" }, { ...criterion, target: { mapId: "map_id" } }, { kind: "projectTitle", title }])("rejects unknown kinds/fields atomically: %j", value => {
+  it.each([{ ...criterion, passed: true }, { ...criterion, path: "meta.title" }, { ...criterion, target: { mapId: "map_id" } }, { kind: "unknownTitleCriterion", title }])("rejects unknown kinds/fields atomically: %j", value => {
     expect(parseAcceptanceCriteriaResult([criterion, value]).criteria).toBeNull();
   });
 

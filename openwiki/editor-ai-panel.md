@@ -1,5 +1,85 @@
 # Editor AI Panel & Tools
 
+## P3 run retirement and stale drafts (2026-09-07)
+
+P3 adds client-local execution ownership and a captured proposal base to the P1/P2
+contracts below. The [P3 evidence index](../output/evidence/ai-harness/p3/README.md)
+binds these contracts to repaired source `34d5b672ad30c2dec5a3d58fa761f83781a6ee35`.
+The earlier integration passed its named controls, but independent review of
+`450a1bbfb` found an accounting defect and an incomplete human race. Both corrections
+now pass integrated controls; independent re-verification, lead gates and delivery
+remain separate. The original needs-fix verdict stays historical, not relabelled.
+The overall goal isn't complete.
+
+`AssistantSession.getRunOperation()` returns the in-memory `RunOperation` to capture
+before asynchronous work. `retireRun()` settles pending cancellation and revokes
+that operation; a replacement send retires its predecessor before taking ownership.
+`RunOperation.wait(promise)` releases the caller on retirement without waiting for
+an uncooperative producer. It doesn't stop the producer itself. Captured-owner checks
+prevent its late model/tool/verification/apply/save/proof continuation from publishing
+through the replacement session. Already-aborted entry starts no preparation or
+tools, while genuine new-goal entry still retires the old goal and detached payload.
+
+Terminal result, recap and outcome are prepared before synchronous subscribers can
+accept B. Successful tool/protocol bookkeeping also precedes callbacks, so cancelling
+at a successful write doesn't lose that genuine draft. Normal authoring settlement
+isn't cancellation, but current-main independent review also gates application:
+an unreviewed draft stays detached until an authorized retry earns a fresh approval.
+An already-approved exact draft remains applicable after an authoring error only
+while its review, run owner and captured base are current; error status alone is
+not cancellation. Review-loop failures still revoke approval, and budget/cancelled
+results cannot apply. Applied content and its later P1 proof remain available. Repeated retirement returns the
+prepared result rather than manufacturing another terminal result.
+
+Actual local application is also credited before synchronous mutation observers.
+The shared adapter passes its existing owner-bound `onApplied` callback into
+`ProjectStore.replace` or `replaceProject`. The store invokes it after installing
+the project and updating mutation counters, before activity observers or store
+subscribers can retire A and start B. A's prepared cancellation result therefore
+retains `appliedCalls`, no pending copy of that application, and delivery `applied`.
+B gets no A application or proof. This is local accounting, not a save receipt.
+
+The actual Panel Abort calls `aiTurnRunner.abortTurn()` and releases A's live slot
+without making B wait for A's delayed transport. Backend ownership and the physical
+runner slot are distinct. If only the session/operation changes, A releases its own
+busy/controller/presentation slot without retiring B; if another runner owns the
+controller, A leaves B's slot alone. Real next-send controls cover both cases.
+Applied A content stays in the project. Cancelled pending work remains inspectable
+for authorized same-goal resume; explicit new-goal entry discards its detached
+payload and authority, not already-applied content or immutable goal history.
+
+On a normal same-session replacement send, capture the exact approved draft's
+content identity **before** retiring the predecessor operation. Retirement aborts
+the signal used by `isDraftReviewApproved()`; checking retention afterward mistakes
+valid reviewed content for an unreviewed draft and resets it to the accepted base.
+This snapshot preserves content only: the new owner still clears prior review/apply
+authority and must earn a fresh review. Already-cancelled or stale reviews do not
+qualify, and explicit `new-goal` still discards the old detached payload. The
+`assistantMapPreservationGuard` same-session cases verify that the second writer
+sees the built house without old approval, reaches real `protected-house-write`,
+and retains its lower tiles, upper tiles and layout under all four permissions.
+
+A proposal rejected as `stale-base` or `stale-baseline` remains inspectable through Ask, but Ask
+publishes no apply calls. After intent selection, the next authorized non-question
+user authoring turn rebases from current live data and performs new work. It doesn't
+replay the rejected snapshot or its tools. The review baseline and original-context
+read credits are rebuilt for that recalculation, so intervening human changes are
+not misattributed to the new AI draft. Explicit same-goal Continue retains real
+applied calls and P1 delivery; detached appearance generation remains turn-scoped.
+The native unassessed stale-title case
+settles `failed / unassessed / draft`; other goal assessments still use P2's independent
+axis. See the [required base and write boundary](editor-ai-tools.md#p3-captured-proposal-base-2026-09-07).
+
+Auto-apply, undo, separate region approval, advisory diagnostics, canonical requirements,
+exact-scope verdicts, user-only withdrawal/new-goal/Continue, wiki ownership and current
+proof semantics remain intact. No durable checkpoints, remote schema, distributed or
+two-tab writer guarantee, generic DAG/code runner, or P4/P5 behavior is added.
+
+Sources: [operation](../src/ai/runOperation.ts), [session](../src/ai/assistantSession.ts),
+[runner](../src/editor/panels/aiTurnRunner.ts), [Panel](../src/editor/panels/aiChatPanel.ts).
+See [publication boundaries](editor-observability.md#p3-owner-bound-publication-2026-09-07)
+and [verification commands and limits](testing.md#p3-ownership-and-stale-base-verification-2026-09-07).
+
 ## Map-scoped conversation archive (2026-09-08)
 
 This supersedes the older 50-record retention and current-config mirror notes below.
@@ -185,7 +265,7 @@ expose the outcome. `isDraftReviewApproved(project?)` checks the exact current
 revision and cancellation state; mutation/undo cannot revive invalidated approval.
 Milestones are batched until approval, then use the existing commit/undo/persistence
 path. `aiTurnRunner`, the direct proposal host, cluster acceptance and region
-application reject unapproved/error/budget/cancelled drafts, even when successful
+application reject unapproved/budget/cancelled drafts, even when successful
 writes remain in the proposal ledger. Evaluation retains draft measurements and
 review evidence, but an unapproved solver result cannot pass the task.
 The real proposal-host and autonomous apply boundaries call `rebaseProject` after
@@ -351,8 +431,11 @@ At that same boundary, `rebaseProject` retires pending calls and their detached
 project payload, before preparation can fail or cancel. Store-backed sessions use
 current applied store content; detached sessions use their own accepted baseline.
 Already-applied content survives, but a later resume or disjoint write cannot carry
-an old goal's abandoned draft. Successful current-owner proposals from errors remain detached and cannot apply
-until a subsequent authorized run independently reviews the exact current draft. Regression: `test/aiNewGoalDraftRetirement.test.ts`.
+an old goal's abandoned draft. Unreviewed current-owner proposals from errors remain detached
+until a subsequent authorized run independently reviews the exact current draft.
+An error result with already-current independent approval retains the ordinary apply
+path, including P3 owner/base rejection and undo. Regressions:
+`test/aiNewGoalDraftRetirement.test.ts`, `test/aiApprovedErrorComposition.test.ts`.
 Its request text, scope and pre-await baseline are retained for a later host resume.
 `getAcceptanceHistory()` returns session-local frozen history, not durable recovery.
 Explicit composer Ask overrides this action; model question/source/reset claims do
@@ -1543,7 +1626,7 @@ AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, 
 - **Verification is advisory (2026-08-30):** each completed layer still runs `src/ai/agentVerification.ts` canonical calls (map/world → `run_lint` + `evaluate_game_quality`; quest/story → `run_lint` + `verify_quest` with the run's most recent authored questId; final → `run_lint` + `play_walkthrough` with the layer's own authored scenario, falling back to `verify_quest` × all questIds), but the verdict only produces audit rows: `agent_run:verification-pass` when clean, `agent_run:verification-advisory` + `agent_run:verification-note` when blocking issues exist. A layer is checked **once** (`markLayerVerified`). There is no retry budget, no repair re-kick and no `verification_failed` stop — `MAX_REPAIR_REKICKS`/`MAX_VERIFICATION_ATTEMPTS`/`STOP_REASON`/`evaluateRetry` were deleted. 근거(실측 2026-08-30): 부팅 정규화기가 넣은 선재 참조 위반 54건이 매 시도 동일하게 잡혀, 에이전트가 만들지도 않았고 고칠 수도 없는 손상으로 3회 예산을 태우고 217초에 런이 죽었다 — 48턴 예산은 손도 대지 못했다. `evaluate_game_quality` reports blocking on its own error-severity 객관 이슈뿐이다 — 이 글을 쓸 때는 projectLint 오류가 전부였으나 이후 빈 맵(`99081a0b1`, 2026-08-28)과 미호출 엔딩(`419e067fa`, 2026-09-06)이 error 로 합류했다. 패널 라벨과 요약도 「완성도 평가 / 게임 품질 평가 통과」 대신 「무결성 점검(참조·빈 맵·미호출 엔딩)」으로 적는다: 이 툴은 재미·독창성·페이싱을 채점하지 않고 게이트도 아니라, "통과" 라는 말이 없는 판정을 있는 것처럼 읽히게 했다.
 - **P1 accepted-revision proof (2026-09-06):** `AssistantSession.proveAppliedRevision(onEvent?, signal?)` calls `store.flush()` and requires its actual `saved.receipt`, then awaits `store.verifyPersistedRevision(receipt, { signal })`. It never calls `reloadFromRemote()` or queries the newest commit. Autonomous completion uses this path after a complete plan with no pending writes or apply failure; `aiTurnRunner` also uses it after an ordinary proposal is actually applied. Existing auto-apply, undo, separate region approval, ask/plan/resume and explicit/advisory verification policies remain unchanged.
   - `RunEndProofState` carries `status: attempted | failed | succeeded`, `verified`, optional `receipt`, `proof`, `reason` and correlated `commitId`. Read it through `getRunEndProof()`, `getHarnessSnapshot().runEndProof`, or the `persistence_proof` event. The getters recheck currentness: a historical `succeeded` state can have `verified:false` after a newer edit. A matching read overtaken by an edit is session `failed/stale`, while its embedded store proof remains `kind:verified, isCurrent:false`. Proof doesn't replace the live editor or roll back changes.
-  - Failed, cancelled, disabled, missing-receipt, target/content-mismatch and stale results cannot emit `agent_run_saved`. That audit sentinel includes project id, accepted revision, normalized content identity, optional wire hash and optional commit id only after a current matching proof. Each proof attempt owns only its last published state object. Identity checks after proof callbacks and awaits, including the catch path, stop a superseded attempt from replacing newer proof state or publishing its own saved sentinel. The succeeded `persistence_proof` callback runs before the sentinel: a callback edit or abort blocks it, and a reentrant attempt that publishes new state takes publication ownership. The final success `status` callback runs after the sentinel; an edit there makes the returned projection `verified:false` without retracting the historical sentinel. This is proof-publication ownership, not global run ownership. Plan completion and storage proof are separate facts, not a new whole-goal completion verdict.
+  - Failed, cancelled, disabled, missing-receipt, target/content-mismatch and stale results cannot emit `agent_run_saved`. That audit sentinel includes project id, accepted revision, normalized content identity, optional wire hash and optional commit id only after a current matching proof. Each proof attempt owns only its last published state object. Identity checks after proof callbacks and awaits, including the catch path, stop a superseded attempt from replacing newer proof state or publishing its own saved sentinel. The succeeded `persistence_proof` callback runs before the sentinel: a callback edit or abort blocks it, and a reentrant attempt that publishes new state takes publication ownership. The final success `status` callback runs after the sentinel; an edit there makes the returned projection `verified:false` without retracting the historical sentinel. P1 owns proof publication; P3 adds the client-local run retirement boundary described above without replacing that authority. Plan completion and storage proof are separate facts, not a new whole-goal completion verdict.
   - A successful current proof avoids another read. Failures remain retryable for the same accepted receipt; explicit `retryLastTurn()` can retry proof without replaying LLM/tools when no draft writes remain, except ask/plan-only turns. `canRetryLastTurn()` still means an LLM-error retry is available, not a new persistence retry button. The real editor evidence uses existing composer continuation.
   - Commit metadata comes only from the actual apply result. `store.replace()` captures and returns the applied project before synchronous mutation subscribers run; `replaceProject()` forwards that return. `applyChangesetToStore.ts` uses this return as `commitProject`, not a later `getCurrent()` read after subscribers or the awaited commit log. The session associates its `commitId` only if that object still matches the current store and the receipt is current at flush consumption. Subscriber edits therefore can't borrow the earlier apply's commit id. Commit-log `persisted:false` isn't project-save failure, and proof can succeed without a commit id.
   - Sources: [session](../src/ai/assistantSession.ts), [apply adapter](../src/editor/tools/applyChangesetToStore.ts), [proposal adapter](../src/editor/panels/aiProposalCard.ts), [turn runner](../src/editor/panels/aiTurnRunner.ts). See the [store contract](runtime-project-schema.md#p1-accepted-save-receipts-and-read-only-proof-2026-09-06) and [P1 evidence report](../output/evidence/ai-harness/p1/README.md) for exact commands, failure evidence and limits.

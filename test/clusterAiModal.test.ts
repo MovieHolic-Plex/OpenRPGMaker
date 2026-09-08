@@ -1,3 +1,5 @@
+import { RunOperation } from "@/ai/runOperation";
+import { captureProposalBase, type ProposalBase } from "@/editor/tools/applyChangesetToStore";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { SessionEvent, TurnResult } from "@/ai/assistantSession";
 import { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
@@ -14,6 +16,9 @@ import type { Project, TileGroupMetadata } from "@/project/types";
 import { installFakeDom } from "./fakeDom";
 
 type MockSession = {
+  readonly getRunOperation: () => RunOperation;
+  readonly getProposalBase: () => ProposalBase;
+  readonly recordApplyRejected: () => void;
   readonly sendUserMessage: ReturnType<typeof vi.fn<(text: string, onEvent: (event: SessionEvent) => void, signal?: AbortSignal) => Promise<TurnResult>>>;
   readonly getProposedProject: ReturnType<typeof vi.fn<() => Project>>;
   readonly isDraftReviewApproved: ReturnType<typeof vi.fn<(candidate: Project) => boolean>>;
@@ -38,6 +43,8 @@ const mocks = vi.hoisted<{
 vi.mock("@/ai/assistantSession", () => ({
   AssistantSession: vi.fn().mockImplementation(function MockAssistantSession(project: Project, options: unknown) {
     mocks.constructorOptions.push(options);
+    const operation = new RunOperation();
+    const base = captureProposalBase(store.getCurrent());
     // Captured immutable baseline plus review approval bound to the exact draft
     // candidate, mirroring the production contract without its LLM reviewer:
     // only the reviewed candidate applies, and only while the live store still
@@ -45,6 +52,9 @@ vi.mock("@/ai/assistantSession", () => ({
     let baseline = new AuthoredProjectBaseline(project);
     let approvedIdentity: string | null = null;
     const session: MockSession = {
+      getRunOperation: () => operation,
+      getProposalBase: () => base,
+      recordApplyRejected: vi.fn(),
       sendUserMessage: vi.fn(async (_text: string, onEvent: (event: SessionEvent) => void) => {
         onEvent({ type: "assistant_token", delta: "확인했습니다. " });
         const result = mocks.nextResult ?? { assistantText: "완료", proposedCalls: [], stoppedReason: "final" };
@@ -172,7 +182,7 @@ afterEach(() => {
 describe("cluster AI modal", () => {
   it("opens a focused cluster dialog and sends the cluster-edit kickoff", async () => {
     openClusterAiModal({ kind: "cluster-edit", tilesetId: DEFAULT_TILESET_ID, groupId: "fence-main" });
-    await Promise.resolve();
+    await finishTurn();
 
     const modal = requireTestId(document, "cluster-ai-modal");
     expect(requireTestId(modal, "cluster-ai-dialog").getAttribute("role")).toBe("dialog");
@@ -230,7 +240,7 @@ describe("cluster AI modal", () => {
     replaceSpy = vi.spyOn(store, "replace");
 
     openClusterAiModal({ kind: "cluster-edit", tilesetId: DEFAULT_TILESET_ID, groupId: "fence-main" });
-    await Promise.resolve();
+    await finishTurn();
     const rebased = new Promise<void>((resolve, reject) => {
       const timeout = setTimeout(() => reject(new Error("Cluster session did not rebase")), 5000);
       mocks.instances[0].rebaseProject.mockImplementationOnce(() => {
@@ -242,7 +252,9 @@ describe("cluster AI modal", () => {
     await rebased;
 
     expect(recordProjectSnapshot).toHaveBeenCalledWith("클러스터 수정: 울타리", store.getCurrent().startMapId);
-    expect(replaceSpy).toHaveBeenCalledExactlyOnceWith(proposed, { change: expect.objectContaining({ origin: "ai" }) });
+    expect(replaceSpy).toHaveBeenCalledExactlyOnceWith(proposed, {
+      change: expect.objectContaining({ origin: "ai" }), onApplied: expect.any(Function),
+    });
     expect(mocks.instances[0].rebaseProject).toHaveBeenCalledWith(store.getCurrent());
   });
 
@@ -262,7 +274,7 @@ describe("cluster AI modal", () => {
 
   it("opens unclassified analysis mode and sends that kickoff", async () => {
     openClusterAiModal({ kind: "unclassified-analysis", tilesetId: DEFAULT_TILESET_ID, sampleTiles: [4, 5, 6], total: 14 });
-    await Promise.resolve();
+    await finishTurn();
 
     const modal = requireTestId(document, "cluster-ai-modal");
     expect(modal.textContent).toContain("미분류 타일 분석");
@@ -277,6 +289,12 @@ describe("cluster AI modal", () => {
     expect(analysisKickoff).toContain("render_group_sample");
   });
 });
+
+async function finishTurn(): Promise<void> {
+  const turn = mocks.instances[0]?.sendUserMessage.mock.results.at(-1);
+  if (!turn || turn.type !== "return") throw new Error("Missing cluster turn promise");
+  await turn.value;
+}
 
 function makeFenceGroup(): TileGroupMetadata {
   return {

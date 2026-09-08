@@ -16,12 +16,15 @@ import { proofFailureResponse, runProofFailure } from './ai-harness-proof-failur
 import { createP2Contracts } from './ai-harness-p2.mjs';
 import { createR1AskContracts } from './ai-harness-r1-ask.mjs';
 import { createNewGoalDraftContracts } from './ai-harness-r21-new-goal.mjs';
+import { createEpochContracts } from './ai-harness-p3-epochs.mjs';
 import { createWikiContracts } from './ai-harness-wiki.mjs';
+import { createHumanEditRaceContracts } from './ai-harness-p3-stale.mjs';
 import { deleteOwnedFixture } from './ai-harness-cleanup.mjs';
 import { isWikiExtraction } from '../../test/wikiTransportFixture.ts';
+import { independentReviewPayload } from '../../test/independentReviewFixture.ts';
 
 const { values } = parseArgs({ options: { scenario: { type: 'string' } } });
-assert.ok(['proof-failure', 'required-skip', 'outcome-matrix', 'retained-draft-ask', 'wiki-delivery', 'new-goal-draft'].includes(values.scenario), 'Unknown contract scenario');
+assert.ok(['proof-failure', 'required-skip', 'outcome-matrix', 'retained-draft-ask', 'wiki-delivery', 'new-goal-draft', 'late-cancel', 'human-edit-race'].includes(values.scenario), 'Unknown contract scenario');
 const root = fileURLToPath(new URL('../../', import.meta.url));
 const port = Number(process.env.QA_PORT ?? 19847);
 const base = `http://127.0.0.1:${port}`;
@@ -33,6 +36,7 @@ const titleToken = ownerTitle;
 const hash = text => createHash('sha256').update(text).digest('hex');
 const report = { schemaVersion: 1, scenario: values.scenario, runId, projectId,
   sourceSha: execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim(),
+  sourceIndex: execFileSync('git', ['ls-files', '--stage', 'src', 'test', 'scripts/qa'], { cwd: root, encoding: 'utf8' }).trim(),
   sourceTree: execFileSync('git', ['rev-parse', 'HEAD^{tree}', 'HEAD:src'], { cwd: root, encoding: 'utf8' }).trim().split('\n'),
   mutation: process.env.AI_HARNESS_MUTATION ?? null, pass: false, actions: [], states: {}, errors: [], blocked: [], cleanup: {} };
 let config, server, browser, context, page, cacheDir, serverLog = '', gate, created = false, closing = false;
@@ -102,10 +106,17 @@ async function runRoute(route) {
     // Incoming main adds a separate tool-free wiki checkpoint before intent.
     // These scoped contract instructions introduce no lasting wiki facts.
     const wikiExtraction = isWikiExtraction(body.messages);
-    const message = wikiExtraction ? wiki ? wiki.extract(body) : { role: 'assistant', content: JSON.stringify({ upserts: [] }) }
+    const review = !body.tools?.length && !wikiExtraction ? independentReviewPayload(body) : null;
+    if (review) record('scripted-independent-review', { revision: review.revision,
+      changedPaths: review.changes.map(change => change.path), requiredProblems: review.requiredProblems });
+    const findings = review?.requiredProblems.map((problem, index) => ({ id: `required-${index}`,
+      target: 'draft', problem, requestedChange: 'Resolve the required problem', validation: problem })) ?? [];
+    const message = review ? { role: 'assistant', content: JSON.stringify({ revision: review.revision,
+      verdict: findings.length ? 'changes_requested' : 'approved', summary: 'Scoped native review', findings }) }
+      : wikiExtraction ? p2?.extract ? p2.extract(body) : wiki ? wiki.extract(body) : { role: 'assistant', content: JSON.stringify({ upserts: [] }) }
       : p2 ? await p2.respond(body) : p1Response(body);
     record('scripted-llm-http', { round: ++llmRound, hasTools: !!body.tools?.length, wikiExtraction, tool: message.tool_calls?.[0]?.function.name ?? null });
-    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ choices: [{ message }] }) });
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ choices: [{ message, finish_reason: message.tool_calls?.length ? "tool_calls" : "stop" }] }) });
     return;
   }
   if (url.pathname.includes('/rest/v1/')) {
@@ -179,6 +190,7 @@ try {
     '--host', '127.0.0.1', '--port', String(port), '--strictPort'], {
     cwd: root, detached: true, stdio: ['ignore', 'pipe', 'pipe'],
     env: { ...process.env, DEV_SERVER_NO_TLS: '1', E2E_FREEZE_DEV_SERVER: '1', DEV_SERVER_PORT: String(port),
+      QA_SCENARIO: values.scenario,
       VITE_CACHE_DIR: cacheDir, VITE_SUPABASE_PROJECT_ID: projectId, VITE_SUPABASE_USE_PROXY: '1',
       SUPABASE_ANON_KEY: anonKey, SUPABASE_UPSTREAM_URL: config.url, NO_COLOR: '1' },
   });
@@ -214,11 +226,14 @@ try {
   if (values.scenario === 'proof-failure') await runProofFailure(harness);
   else if (values.scenario === 'wiki-delivery') { wiki = createWikiContracts(harness); await wiki.run(); }
   else {
-    p2 = values.scenario === 'new-goal-draft' ? createNewGoalDraftContracts(harness)
+    p2 = values.scenario === 'late-cancel' ? createEpochContracts(harness)
+      : values.scenario === 'human-edit-race' ? createHumanEditRaceContracts(harness)
+      : values.scenario === 'new-goal-draft' ? createNewGoalDraftContracts(harness)
       : values.scenario === 'retained-draft-ask' ? createR1AskContracts(harness) : createP2Contracts(harness);
     await p2.run(values.scenario);
   }
 } catch (error) {
+  if (values.scenario === 'late-cancel' && !report.behaviorVerdict) report.behaviorVerdict = 'SETUP-FAILURE';
   report.failure = safeError(error); process.exitCode = 1; record('FAIL', { error: report.failure });
   if (page && !page.isClosed()) {
     try { await page.screenshot({ path: `${out}/failure.png` }); report.failureEvents = await page.evaluate(() => window.qa?.events ?? []); }
@@ -233,14 +248,14 @@ try {
     catch (error) { report.cleanup[name] = safeError(error); process.exitCode = 1; }
   };
   await cleanupStep('pageListenersAndTimersClosed', async () => {
-    if (page && !page.isClosed()) await page.evaluate(async () => {
+    if (page && !page.isClosed()) await bounded(page.evaluate(async () => {
       if (!window.qa) return;
       qa.disposers.forEach(dispose => dispose());
       qa.store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: false });
       await qa.store.flush();
       const [activity, vault] = await Promise.all([import('/src/editor/editActivityLog.ts'), import('/src/project/eventDraftVault.ts')]);
       activity._resetEditActivityForTest(); vault._resetEventDraftVaultForTest();
-    });
+    }), 'page listener and persistence cleanup');
     await bounded(Promise.all([...routes]), 'pending browser routes');
   });
   await cleanupStep('browserClosed', async () => { await context?.close(); await browser?.close(); });
@@ -256,14 +271,16 @@ try {
     if (!created) { report.cleanup.remote = 'not-created'; return; }
     report.cleanup.remote = await deleteOwnedFixture({ rest, projectId, commits, ownsTitle });
   });
+  report.directExit = process.exitCode ?? 0;
   report.pass = report.assertionsPassed === true && !process.exitCode;
   report.cleanup.reusedListener = false;
   report.cleanup.activeRoutes = routes.size;
   report.sourceHashes = Object.fromEntries(await Promise.all(['src/editor/projectWikiCoordinator.ts', 'src/editor/tools/applyChangesetToStore.ts', 'src/editor/panels/aiChatPanel.ts', 'scripts/qa/ai-harness-wiki.mjs', 'src/ai/assistantSession.ts', 'src/ai/workPlan.ts', 'src/ai/assistantAcceptanceLedger.ts', 'src/project/store.ts',
     'src/editor/panels/aiTurnRunner.ts', 'src/editor/aiAssistantBridge.ts', 'src/ai/activityLog.ts', 'src/ai/runRecap.ts',
     'scripts/qa/ai-harness-contracts.mjs', 'scripts/qa/ai-harness-browser.mjs', 'scripts/qa/ai-harness-proof-failure.mjs',
-    'scripts/qa/ai-harness-cleanup.mjs', 'scripts/qa/ai-harness-p2.mjs', 'scripts/qa/ai-harness-p2-scenarios.mjs', 'scripts/qa/ai-harness-p2-observe.mjs', 'scripts/qa/ai-harness-p2-resume.mjs', 'scripts/qa/ai-harness-r1-ask.mjs', 'scripts/qa/ai-harness-r21-new-goal.mjs',
-    'src/editor/panels/aiProposalCard.ts'].map(async path => [path, hash(await readFile(resolve(root, path)))])));
+    'scripts/qa/ai-harness-cleanup.mjs', 'scripts/qa/ai-harness-p3-epochs.mjs', 'scripts/qa/ai-harness-p2.mjs', 'scripts/qa/ai-harness-p2-scenarios.mjs', 'scripts/qa/ai-harness-p2-observe.mjs', 'scripts/qa/ai-harness-p2-resume.mjs', 'scripts/qa/ai-harness-r1-ask.mjs', 'scripts/qa/ai-harness-r21-new-goal.mjs',
+    'scripts/qa/ai-harness-p3-completion.mjs', 'scripts/qa/ai-harness-vite.config.mjs',
+    'scripts/qa/ai-harness-p3-stale.mjs', 'src/editor/panels/aiProposalCard.ts'].map(async path => [path, hash(await readFile(resolve(root, path)))])));
   await writeFile(`${out}/server.log`, serverLog.replaceAll(config?.anonKey || '\0', '[REDACTED]'));
   await writeFile(`${out}/actions.json`, JSON.stringify(report, null, 2) + '\n');
   record('cleanup', report.cleanup);

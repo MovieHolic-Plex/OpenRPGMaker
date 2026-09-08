@@ -51,7 +51,7 @@ it.each([false, true])("settles the same verified requirement with milestone=%s"
   // When the ordinary path applies its actual pending result; milestone already used that same adapter.
   if (!autonomous) {
     expect(f.session.isDraftReviewApproved()).toBe(true);
-    const applied = await applyProposedProject(f.session.getProposedProject(), { baseline: f.session.getDraftBaseline(), source: "agent", summary: "Resize", toolNames: ["resize_map"] });
+    const applied = await applyProposedProject(f.session.getProposedProject(), { base: f.session.getProposalBase(), baseline: f.session.getDraftBaseline(), source: "agent", summary: "Resize", toolNames: ["resize_map"] });
     if (!applied.ok) throw new Error(applied.issue);
     f.session.recordAppliedProject(applied);
     f.session.rebaseProject(store.getCurrent());
@@ -107,7 +107,7 @@ it.each(["blocked", "failed", "cancelled"] as const)("preserves genuine %s histo
   const resumed = await f.session.sendUserMessage("Continue", undefined, undefined, { goalAction: "resume" });
   expect(resumed.review?.status).toBe("approved");
   expect(f.session.isDraftReviewApproved()).toBe(true);
-  const applied = await applyProposedProject(f.session.getProposedProject(), { baseline: f.session.getDraftBaseline(), source: "agent", summary: "Resize", toolNames: ["resize_map"] });
+  const applied = await applyProposedProject(f.session.getProposedProject(), { base: f.session.getProposalBase(), baseline: f.session.getDraftBaseline(), source: "agent", summary: "Resize", toolNames: ["resize_map"] });
   if (!applied.ok) throw new Error(applied.issue);
   f.session.recordAppliedProject(applied); f.session.rebaseProject(store.getCurrent());
   await f.session.proveAppliedRevision();

@@ -3,9 +3,23 @@ import assert from 'node:assert/strict';
 export function proofFailureResponse(titleToken) {
   let wrote = false;
   return body => {
+    const system = body.messages?.[0]?.content;
+    if (typeof system === 'string' && system.startsWith('REQUEST_COVERAGE_AUDIT\n')) {
+      const instruction = `Use set_title_screen to set the title to ${titleToken}.`;
+      assert.ok(body.messages.some(message => message.role === 'user'
+        && typeof message.content === 'string' && message.content.includes(instruction)),
+      'Coverage must belong to the exact P1 request');
+      return { role: 'assistant', content: JSON.stringify({ requirements: [{ text: instruction,
+        criteria: [{ kind: 'projectTitle', title: titleToken }],
+      }] }) };
+    }
+    // Only the current exact Continue after the write is verification, not title authoring.
+    const currentUser = body.messages?.findLast(message => message.role === 'user')?.content;
+    const retry = wrote && typeof currentUser === 'string'
+      && currentUser.startsWith('## 요청\n계속\n\n## 사실\n');
     if (!body.tools?.length) return { role: 'assistant', content: JSON.stringify({
-      mode: 'modify', space: 'none', needsPlan: true, useSelection: false, clarify: null,
-      tools: ['set_title_screen'], summary: 'P1 title proof', action: wrote ? 'resume' : 'new_plan',
+      mode: retry ? 'other' : 'modify', space: 'none', needsPlan: !retry, useSelection: false, clarify: null,
+      tools: retry ? [] : ['set_title_screen'], summary: 'P1 title proof', action: wrote ? 'resume' : 'new_plan',
       goal: 'Set the title screen', layers: [{ title: 'Title', items: [{ title: 'Title', instruction: 'set_title_screen', successTools: ['set_title_screen'] }] }],
     }) };
     if (!wrote) {

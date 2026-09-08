@@ -41,7 +41,7 @@ describe.each(["cancelled", "failed"] as const)("early %s entry", ending => {
     expect(first.review?.status).toBe("approved");
     expect(f.session.isDraftReviewApproved()).toBe(true);
     const applied = await applyProposedProject(f.session.getProposedProject(), {
-      baseline: f.session.getDraftBaseline(), source: "agent", summary: "Title", toolNames: ["set_title_screen"],
+      base: f.session.getProposalBase(), baseline: f.session.getDraftBaseline(), source: "agent", summary: "Title", toolNames: ["set_title_screen"],
     });
     if (!applied.ok) throw new Error(applied.issue);
     f.session.recordAppliedProject(applied); f.session.rebaseProject(store.getCurrent());
@@ -50,12 +50,12 @@ describe.each(["cancelled", "failed"] as const)("early %s entry", ending => {
     const receipt = f.session.getRunEndProof()?.receipt;
     expect(receipt).toBeDefined();
     faultArmed = true;
-    // When the new public entry fails in the real intent boundary before post-intent resets.
+    // Cancellation at entry retires before dispatch; a live failed entry still reaches intent.
     const result = await f.session.sendUserMessage(entry.text, event => f.events.push(event),
       ending === "cancelled" ? AbortSignal.abort() : undefined, entry.options);
     // Then only trusted continuation retains the old owned work, never fresh failed/cancelled requests.
     const expected = { execution: ending, goal: "unassessed", delivery: entry.retained ? "persisted-verified" : "no-change" };
-    expect(declareIntent).toHaveBeenCalledTimes(2);
+    expect(declareIntent).toHaveBeenCalledTimes(ending === "cancelled" ? 1 : 2);
     expect(result.stoppedReason).toBe(ending === "cancelled" ? "aborted" : "error");
     expect(result.runOutcome).toEqual(expected);
     expect(result.appliedCalls).toHaveLength(entry.retained ? 1 : 0);

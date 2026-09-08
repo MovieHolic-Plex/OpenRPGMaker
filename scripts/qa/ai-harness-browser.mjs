@@ -68,22 +68,27 @@ export function browserSurface(harness) {
     assert.equal(state.remoteEnabled, true);
     return state;
   }
-  async function send(text) {
+  async function send(text, { deferDeadline = false } = {}) {
     // Subscribe to the exact busy->idle transition before the click, not timer polling.
-    await page.evaluate(() => {
+    await page.evaluate(deferDeadline => {
       qa.settled = new Promise((resolve, reject) => {
         const send = document.querySelector('[data-testid="ai-send"]');
-        let busy = false;
-        const timer = setTimeout(() => { observer.disconnect(); reject(new Error('Turn settle deadline')); }, 60000);
+        let busy = false, timer, done = false;
+        qa.startSettleDeadline = () => {
+          if (!done && timer === undefined) timer = setTimeout(() => {
+            done = true; observer.disconnect(); reject(new Error('Turn settle deadline'));
+          }, 60000);
+        };
         const observer = new MutationObserver(() => {
           if (send.disabled) busy = true;
-          if (busy && !send.disabled) { clearTimeout(timer); observer.disconnect(); resolve(); }
+          if (busy && !send.disabled) { done = true; clearTimeout(timer); observer.disconnect(); resolve(); }
         });
         observer.observe(send, { attributes: true, attributeFilter: ['disabled'] });
-        qa.disposers.push(() => { clearTimeout(timer); observer.disconnect(); resolve(); });
+        if (!deferDeadline) qa.startSettleDeadline();
+        qa.disposers.push(() => { done = true; clearTimeout(timer); observer.disconnect(); resolve(); });
       });
       void qa.settled.catch(() => {});
-    });
+    }, deferDeadline);
     record('composer-send', { text });
     await page.getByTestId('ai-input').fill(text);
     await page.getByTestId('ai-send').click();

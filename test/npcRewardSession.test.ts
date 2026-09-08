@@ -1,3 +1,4 @@
+import { cooperativeNodeYield } from "./cooperativeNodeYield";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
 import * as commitLog from "@/project/projectCommitLog";
@@ -62,7 +63,7 @@ function harness(steps: readonly (ChatResult | Error)[], options: { required?: N
         { kind: "eventCount", target: { mapId: map.id }, count: 1 },
       ] })] : [step]);
   let index = 0;
-  const session = new AssistantSession(project, {
+  const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield,
     config: { ...config, ...(options.maxToolCalls ? { maxToolCalls: options.maxToolCalls } : {}) },
     declareIntent: options.declarer ?? fixedDeclarer({ mode: "modify", npcRewards: options.noContract ? undefined : options.required ?? REQUIRED }),
     peekPendingUserMessage: options.pause,
@@ -91,7 +92,7 @@ async function applyAndVerify(h: ReturnType<typeof harness>) {
   // Only the external history write is replaced; the real commit gate and store apply run.
   vi.spyOn(commitLog, "recordProjectCommit").mockResolvedValue({ commitId: null, persisted: false, reviewStatus: "approved", summary: "test", toolNames: [], recordedAt: "2026-09-07T00:00:00.000Z" });
   expect(h.session.isDraftReviewApproved()).toBe(true);
-  const applied = await applyProposedProject(h.session.getProposedProject(), { baseline: h.session.getDraftBaseline(), source: "agent", summary: "Requested reward", toolNames: ["upsert_event"] });
+  const applied = await applyProposedProject(h.session.getProposedProject(), { base: h.session.getProposalBase(), baseline: h.session.getDraftBaseline(), source: "agent", summary: "Requested reward", toolNames: ["upsert_event"] });
   expect(applied.ok).toBe(true);
   h.session.refreshAcceptance(store.getCurrent());
   expect(h.session.getAcceptanceSnapshot()?.status).toBe("verified");

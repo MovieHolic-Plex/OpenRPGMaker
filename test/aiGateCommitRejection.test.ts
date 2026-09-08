@@ -6,7 +6,7 @@ import { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
 // 반려와 무관한 문장이 사유로 나갔다 — 예: 시작 위치가 원래 깨져 있던 프로젝트에서 이벤트를
 // 지우다 막히면 "시작 위치가 맵 경계 밖입니다" 가 사유로 표시됐다.
 import { describe, expect, it, vi } from "vitest";
-import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
+import { applyProposedProject, captureProposalBase } from "@/editor/tools/applyChangesetToStore";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -41,6 +41,7 @@ describe("커밋 게이트 반려 사유", () => {
       store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
       store.replaceProject(before);
       resetMapEditHistory();
+      const base = captureProposalBase(store.getCurrent());
 
       // 제안: 선재 오류를 그대로 두고, transfer 목적지가 맵 밖인 이벤트 두 개를 새로 만든다.
       const proposed = structuredClone(before);
@@ -51,6 +52,7 @@ describe("커밋 게이트 반려 사유", () => {
       );
 
       const result = await applyProposedProject(proposed, {
+        base,
         baseline: new AuthoredProjectBaseline(before),
         source: "agent",
         summary: "이벤트 추가",

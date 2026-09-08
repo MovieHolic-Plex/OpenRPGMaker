@@ -122,8 +122,18 @@ describe("completed houses cannot be overwritten through session permissions", (
       );
       if (asset) steps.push(toolCallMsg("set_build_spec", { mapId, assets: [{ id: "permit", x: 1, y: 1, w: 8, h: 8, ...asset }] }, "permit"));
       steps.push(toolCallMsg("tile_erase", { mapId, rect: { x: 2, y: 2, w: 6, h: 6 } }, "erase"), finalMsg("Done"));
+      const chat = scriptedChat(steps);
+      let awaitingSecondTurn = false;
+      let secondTurnEntry: { readonly project: Project; readonly approved: boolean } | undefined;
       const session = new AssistantSession(ctx.project, {
-        config: CONFIG, chat: scriptedChat(steps), contextOptions: { currentMapId: mapId },
+        config: CONFIG, contextOptions: { currentMapId: mapId },
+        chat: async (config, input) => {
+          if (awaitingSecondTurn) {
+            awaitingSecondTurn = false;
+            secondTurnEntry = { project: session.getProposedProject(), approved: session.isDraftReviewApproved() };
+          }
+          return chat(config, input);
+        },
         renderImages: async () => [{ label: "House map", dataUrl: "data:image/png;base64,AA==" }],
         declareIntent: fixedDeclarer({ mode: "create", targetMapId: mapId }),
       });
@@ -139,7 +149,12 @@ describe("completed houses cannot be overwritten through session permissions", (
         expect(first.stoppedReason, first.error).toBe("final");
         expect(first.review?.status).toBe("approved");
         expect(session.isDraftReviewApproved()).toBe(true);
+        // When a replacement turn starts, retain content but require fresh approval.
+        awaitingSecondTurn = true;
         await session.sendUserMessage(request, collect);
+        // Then the writer sees the reviewed house, never a silently reset blank map.
+        expect(secondTurnEntry?.approved).toBe(false);
+        expect(secondTurnEntry?.project.maps[mapId]).toEqual(builtMap);
       }
       expect(builtMap).toBeDefined();
       if (scenario !== "accepted") expect(results.find((entry) => entry.name === "author_house")?.result.ok, JSON.stringify(results)).toBe(true);

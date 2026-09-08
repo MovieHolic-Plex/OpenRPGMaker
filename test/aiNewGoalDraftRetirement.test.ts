@@ -1,3 +1,4 @@
+import { cooperativeNodeYield } from "./cooperativeNodeYield";
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { AssistantSession, type SessionTurnOptions, type TurnResult } from '@/ai/assistantSession';
 import { defaultAiConfig, type ChatResult } from '@/ai/llmClient';
@@ -42,7 +43,7 @@ function runnerFor(session: AssistantSession) {
   const applyProposal = vi.fn<AiTurnRunnerDeps['applyProposal']>(async calls => {
     expect(session.isDraftReviewApproved()).toBe(true);
     const applied = await apply.applyProposedProject(session.getProposedProject(), {
-      baseline: session.getDraftBaseline(), source: 'agent', summary: 'Reviewer owned isolated title', toolNames: calls.map(call => call.name),
+      base: session.getProposalBase(), baseline: session.getDraftBaseline(), source: 'agent', summary: 'Reviewer owned isolated title', toolNames: calls.map(call => call.name),
     });
     if (!applied.ok) throw new Error(applied.issue);
     session.recordAppliedProject(applied); session.rebaseProject(store.getCurrent()); return 'applied';
@@ -80,7 +81,7 @@ function runnerFor(session: AssistantSession) {
 }
 it.each(['wiki', 'intent'] as const)('new goal with %s entry failure must not apply the cancelled prior goal draft', async boundary => {
   let failing = false; let round = 0;
-  const session = new AssistantSession(store.getCurrent(), { config,
+  const session = new AssistantSession(store.getCurrent(), { yieldToUi: cooperativeNodeYield, config,
     prepareProjectWiki: async () => { if (failing && boundary === 'wiki') throw new Error('OWNED_NEW_GOAL_WIKI_FAILURE'); return undefined; },
     declareIntent: async facts => { if (failing && boundary === 'intent') throw new Error('OWNED_NEW_GOAL_INTENT_FAILURE'); return fixedDeclarer({ mode: 'other' })(facts); },
     chat: async () => round++ === 0 ? { message: { role: 'assistant', content: null,
@@ -111,7 +112,7 @@ function draftFixture(detached = false) {
   const project = detached ? structuredClone(store.getCurrent()) : store.getCurrent();
   let responses = [tool('set_title_screen', { title: 'CANCELLED_OLD_GOAL' })];
   let hook: (boundary: 'wiki' | 'intent', signal?: AbortSignal) => void = () => {};
-  const session = new AssistantSession(project, { config,
+  const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield, config,
     prepareProjectWiki: async input => { hook('wiki', input.signal); return undefined; },
     declareIntent: async (facts, signal) => { hook('intent', signal); return fixedDeclarer({ mode: 'other' })(facts); },
     chat: async (_config, request) => approvedReviewResponse(request)
@@ -249,7 +250,7 @@ it('archives applied-plus-pending history before rebase, preserves applied conte
 it('retains current successful proposals on a new-goal error and applies once only after resumed review', async () => {
   let round = 0;
   let failed = true;
-  const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: 'other' }),
+  const session = new AssistantSession(store.getCurrent(), { yieldToUi: cooperativeNodeYield, config, declareIntent: fixedDeclarer({ mode: 'other' }),
     chat: async (_config, request) => {
       const review = approvedReviewResponse(request);
       if (review) return review;
@@ -280,7 +281,7 @@ it('retires the old draft but preserves an actual current-owner wiki apply befor
     upserts: newOwner ? [{ id: 'w_new_owner', type: 'guideline', name: 'New owner rule', summary: 'Contact combat',
       wiki: { kind: 'declaration', basis: 'explicit', combatMode: 'contact', sourceIds: input.sources.map(source => source.id) } }] : [],
   }) });
-  const session = new AssistantSession(store.getCurrent(), { config, prepareProjectWiki: coordinator.prepare,
+  const session = new AssistantSession(store.getCurrent(), { yieldToUi: cooperativeNodeYield, config, prepareProjectWiki: coordinator.prepare,
     declareIntent: fixedDeclarer({ mode: 'other' }),
     chat: async () => round++ === 0 ? tool('set_title_screen', { title: 'CANCELLED_OLD_GOAL' }) : final });
   const f = runnerFor(session); const before = structuredClone(store.getCurrent());

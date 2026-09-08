@@ -1,3 +1,6 @@
+import { cooperativeNodeYield } from "./cooperativeNodeYield";
+import { reviewingChat } from "./aiEpochFixture";
+import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AssistantSession, type ProposedCall, type TurnResult } from "@/ai/assistantSession";
 import { buildAiActivityLogRecord } from "@/ai/activityLog";
@@ -48,18 +51,23 @@ function titleCall(title: string): ProposedCall {
   expect(result.ok, result.summary).toBe(true);
   return { name: "set_title_screen", args, result, summary: result.summary };
 }
+function reviewedTitleSession() {
+  let round = 0;
+  return new AssistantSession(store.getCurrent(), {
+    config: { ...defaultAiConfig(), model: "test", liteModel: "test", maxToolCalls: 4 },
+    declareIntent: fixedDeclarer({ mode: "other" }), yieldToUi: cooperativeNodeYield,
+    chat: reviewingChat(async () => round++ % 2 === 0 ? {
+      message: { role: "assistant", content: null, tool_calls: [{ id: `title-${round}`, type: "function",
+        function: { name: "set_title_screen", arguments: JSON.stringify({ title: `Title ${round}` }) } }] }, finishReason: "tool_calls",
+    } : { message: { role: "assistant", content: "RESULT" }, finishReason: "stop" }),
+  });
+}
 function setup(sessionOverride?: AssistantSession) {
   const log = document.createElement("div");
   const appendBubble = vi.fn((_role: unknown, text: string) => {
     const bubble = document.createElement("div"); bubble.textContent = text; log.append(bubble); return bubble;
   });
-  const session = sessionOverride ?? {
-    isDraftReviewApproved: () => true,
-    proveAppliedRevision: vi.fn(),
-    getCompletionSpecs: () => [],
-    getWorkPlan: () => null,
-    getActiveSpec: () => null, getAuditEntries: () => [], getProposedProject: () => store.getCurrent(),
-  } as unknown as AssistantSession;
+  const session = sessionOverride ?? new AssistantSession(store.getCurrent(), { yieldToUi: cooperativeNodeYield });
   const controller = { session, auditHistory: [] };
   const surface = {
     panel: document.createElement("div"), log, sendButton: document.createElement("button"), controller,
@@ -142,7 +150,7 @@ describe("panel map completeness selection", () => {
       { id: "paint", kind: "terrain", x: 3, y: 3, w: 3, h: 3 },
       { id: "missing", kind: "prop", x: 15, y: 15, w: 1, h: 1 },
     ] } })), ...["a", "b"].map(mapId => ({ name: "paint_tiles", args: { mapId, from: { x: 3, y: 3 }, to: { x: 4, y: 4 }, mode: "rect", layer: "lower", tile: 281 } }))];
-    const session = new AssistantSession(ctx.project, {
+    const session = new AssistantSession(ctx.project, { yieldToUi: cooperativeNodeYield,
       config: { authMode: "apiKey", baseUrl: "x", model: "stub", apiKey: "test", maxToolCalls: 1, maxTokens: 8192 },
       declareIntent: fixedDeclarer({ mode: "modify" }),
       chat: async () => ({ message: { role: "assistant", content: null, tool_calls: calls.map((entry, index) => ({
@@ -293,21 +301,33 @@ describe("턴 표면의 이미 적용된 쓰기 정산", () => {
   });
 
   it("적용이 거부된 제안은 실제 변경으로 세지 않는다", async () => {
-    const h = setup();
+    const session = reviewedTitleSession();
+    const result = await session.sendUserMessage("Change title");
+    expect(session.isDraftReviewApproved()).toBe(true);
+    const h = setup(session);
     h.deps.applyProposal.mockResolvedValue("rejected");
-    await h.runner.executeTurn(h.session, "타이틀을 고쳐줘", async () => ({
-      assistantText: "제목 변경", proposedCalls: [titleCall("제안 제목")], stoppedReason: "final", review: approvedReview,
-    }));
+    await h.runner.executeTurn(h.session, "타이틀을 고쳐줘", async () => result);
+    expect(h.deps.applyProposal).toHaveBeenCalledTimes(1);
     expect(observed.preference).toHaveBeenLastCalledWith(expect.objectContaining({ changed: false }));
     expect(observed.activity).toHaveBeenLastCalledWith(expect.objectContaining({ result: expect.objectContaining({ appliedCalls: 0 }) }));
   });
 
   it("원장과 종료 시 적용한 제안을 모두 세되 원장은 다시 적용하지 않는다", async () => {
-    const h = setup();
-    const pending = titleCall("추가 제목");
-    await h.runner.executeTurn(h.session, "타이틀을 고쳐줘", async () => ({
-      assistantText: "제목 변경", proposedCalls: [pending], appliedCalls: [titleCall("기존 적용")], stoppedReason: "final", review: approvedReview,
-    }));
+    const session = reviewedTitleSession();
+    await session.sendUserMessage("Change title");
+    expect(session.isDraftReviewApproved()).toBe(true);
+    const applied = await applyProposedProject(session.getProposedProject(), {
+      base: session.getProposalBase(), baseline: session.getDraftBaseline(), source: "agent",
+      summary: "First title", toolNames: ["set_title_screen"],
+    });
+    if (!applied.ok) throw new Error(applied.issue);
+    session.recordAppliedProject(applied); session.rebaseProject(store.getCurrent());
+    const result = await session.sendUserMessage("Continue", undefined, undefined, { goalAction: "resume" });
+    expect(session.isDraftReviewApproved()).toBe(true);
+    const pending = result.proposedCalls[0];
+    if (!pending) throw new Error("Second reviewed proposal missing");
+    const h = setup(session);
+    await h.runner.executeTurn(h.session, "타이틀을 고쳐줘", async () => result);
     expect(h.deps.applyProposal).toHaveBeenCalledWith([pending], expect.anything());
     expect(observed.activity).toHaveBeenLastCalledWith(expect.objectContaining({ result: expect.objectContaining({ appliedCalls: 2, proposedCalls: 1 }) }));
   });
@@ -351,7 +371,7 @@ describe("applied baseline across rejected and unrelated requests", () => {
     const session = new AssistantSession(project, {
       config: { ...defaultAiConfig(), agentMode: "chat", maxToolCalls: 12 },
       declareIntent: fixedDeclarer({ mode: "modify" }),
-      yieldToUi: async () => {},
+      yieldToUi: cooperativeNodeYield,
       chat: async (_config, request): Promise<ChatResult> => {
         const review = approvedReviewResponse(request);
         if (review) return turn === 1 ? { message: { role: "assistant", content: "Malformed review" }, finishReason: "stop" } : review;

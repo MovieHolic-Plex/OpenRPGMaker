@@ -11,22 +11,28 @@ export function p2Observations(harness) {
       report.contractChecks.push(failure); record('contract-violation', failure);
     }
   }
-  async function armActivity(instruction) {
-    await page.evaluate(instruction => {
+  async function armActivity(instruction, { deferDeadline = false } = {}) {
+    await page.evaluate(({ instruction, deferDeadline }) => {
       // Observe the real serialized local activity publication, retaining its exact bytes.
       const original = Storage.prototype.setItem;
       qa.activityDone = new Promise((resolve, reject) => {
-        const timer = setTimeout(() => { Storage.prototype.setItem = original; reject(new Error('Terminal activity deadline')); }, 60000);
+        let timer, done = false;
+        qa.startActivityDeadline = () => {
+          if (!done && timer === undefined) timer = setTimeout(() => {
+            done = true; Storage.prototype.setItem = original; reject(new Error('Terminal activity deadline'));
+          }, 60000);
+        };
         Storage.prototype.setItem = function(key, value) {
           original.call(this, key, value);
           if (this !== localStorage || key !== 'oprn:ai-activity-logs') return;
           const row = JSON.parse(value).find(row => row.instruction.includes(instruction) && row.result.stoppedReason && !row.result.pending);
-          if (row) { clearTimeout(timer); Storage.prototype.setItem = original; qa.activity = row; resolve(row); }
+          if (row) { done = true; clearTimeout(timer); Storage.prototype.setItem = original; qa.activity = row; resolve(row); }
         };
-        qa.disposers.push(() => { clearTimeout(timer); Storage.prototype.setItem = original; resolve(); });
+        if (!deferDeadline) qa.startActivityDeadline();
+        qa.disposers.push(() => { done = true; clearTimeout(timer); Storage.prototype.setItem = original; resolve(); });
       });
       void qa.activityDone.catch(() => {});
-    }, instruction);
+    }, { instruction, deferDeadline });
   }
   async function capture(label) {
     const observed = await page.evaluate(async () => {

@@ -1,3 +1,4 @@
+import { cooperativeNodeYield } from "./cooperativeNodeYield";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { AssistantSession, type SessionTurnOptions, type TurnResult } from "@/ai/assistantSession";
 import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
@@ -49,7 +50,7 @@ function runnerFor(session: AssistantSession) {
   const applyProposal = vi.fn<AiTurnRunnerDeps["applyProposal"]>(async calls => {
     expect(session.isDraftReviewApproved()).toBe(true);
     const applied = await apply.applyProposedProject(session.getProposedProject(), {
-      baseline: session.getDraftBaseline(), source: "agent", summary: "R1 title", toolNames: calls.map(call => call.name),
+      base: session.getProposalBase(), baseline: session.getDraftBaseline(), source: "agent", summary: "R1 title", toolNames: calls.map(call => call.name),
     });
     if (!applied.ok) throw new Error(applied.issue);
     session.recordAppliedProject(applied);
@@ -93,7 +94,7 @@ it.each(["explicit", "inferred", "inferred-plan"] as const)("does not apply a ca
   // Given: a successful real tool in the detached draft, cancelled at its subscribed result event.
   let round = 0;
   let asking = false;
-  const session = new AssistantSession(store.getCurrent(), { config,
+  const session = new AssistantSession(store.getCurrent(), { yieldToUi: cooperativeNodeYield, config,
     declareIntent: facts => fixedDeclarer({ mode: asking && mode !== "explicit" ? "question" : "other" })(facts),
     chat: async (_config, request) => approvedReviewResponse(request) ?? (round++ === 0 ? tool("set_title_screen", { title: "CANCELLED_DRAFT" }) : final) });
   const f = runnerFor(session);
@@ -138,7 +139,7 @@ it("keeps ordinary Do auto-apply and pending/applied coexistence without replay"
     { title: "First", instruction: "First title", successTools: ["set_title_screen"] },
   ] }] }), tool("set_title_screen", { title: "APPLIED_FIRST" }), final, tool("set_title_screen", { title: "PENDING_SECOND" })];
   let round = 0;
-  const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }),
+  const session = new AssistantSession(store.getCurrent(), { yieldToUi: cooperativeNodeYield, config, declareIntent: fixedDeclarer({ mode: "other" }),
     chat: async (_config, request) => approvedReviewResponse(request)
       ?? (!request.tools?.length ? { message: { role: "assistant", content: JSON.stringify({ action: "resume" }) }, finishReason: "stop" }
         : responses[round++] ?? final) });
@@ -163,7 +164,7 @@ it("keeps ordinary Do auto-apply and pending/applied coexistence without replay"
 
 it("guards ordinary Ask apply even when an executor returns retained proposal calls", async () => {
   // Given: the real session's unapplied write, supplied by an executor without question filtering.
-  const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }),
+  const session = new AssistantSession(store.getCurrent(), { yieldToUi: cooperativeNodeYield, config, declareIntent: fixedDeclarer({ mode: "other" }),
     chat: async () => tool("set_title_screen", { title: "UNAUTHORIZED" }) });
   session.updateConfig({ ...config, maxToolCalls: 1 });
   const draft = await session.sendUserMessage("Set title");
@@ -186,7 +187,7 @@ it.each(["explicit", "inferred"] as const)("does not milestone-apply retained ac
   }), tool("skip_work_item", {}), tool("set_title_screen", { title: "ACCEPTANCE_DRAFT" })];
   let round = 0;
   let asking = false;
-  const session = new AssistantSession(store.getCurrent(), { config,
+  const session = new AssistantSession(store.getCurrent(), { yieldToUi: cooperativeNodeYield, config,
     declareIntent: facts => fixedDeclarer({ mode: asking && mode === "inferred" ? "question" : "other" })(facts),
     chat: async () => responses[round++] ?? final });
   const f = runnerFor(session);
@@ -211,7 +212,7 @@ it.each(["explicit", "inferred"] as const)("does not milestone-apply retained ac
 it("keeps retained calls unauthorized when explicit Ask fails before intent", async () => {
   // Given: a cancelled draft and a fallible preparation boundary on the next send.
   let fail = false;
-  const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }),
+  const session = new AssistantSession(store.getCurrent(), { yieldToUi: cooperativeNodeYield, config, declareIntent: fixedDeclarer({ mode: "other" }),
     prepareProjectWiki: async () => { if (fail) throw new Error("R1_PREPARATION_FAULT"); return undefined; },
     chat: async () => tool("set_title_screen", { title: "EARLY_DRAFT" }) });
   const f = runnerFor(session);

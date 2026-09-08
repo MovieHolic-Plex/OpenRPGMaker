@@ -1,8 +1,10 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { AssistantSession, isWriteToolName, type SessionEvent } from "@/ai/assistantSession";
+import { AssistantSession, isWriteToolName, type SessionEvent, type TurnResult } from "@/ai/assistantSession";
 import type { ChatRequest, ChatResult } from "@/ai/llmClient";
 import { appearanceGenerationController, registerAppearanceGenerationUI, startAppearanceGenerationFromAssistant } from "@/editor/characterAppearanceGeneration";
 import { runTool } from "@/editor/tools";
+import { ToolError } from "@/editor/tools/types";
+import { bounded, deferred } from "./aiEpochFixture";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { fixedDeclarer } from "./intentFixture";
@@ -25,6 +27,94 @@ afterEach(() => {
 });
 
 describe("appearance assistant handoff", () => {
+  it("keeps replacement B unchanged after cancelled A's held UI opener rejects with ToolError", async () => {
+    store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
+    const project = projectFixture();
+    const entered = deferred<void>();
+    const opening = deferred<void>();
+    const aProducerSettled = deferred<PromiseSettledResult<TurnResult>>();
+    const unregister = registerAppearanceGenerationUI(() => {
+      entered.resolve();
+      return opening.promise;
+    });
+    const steps: ChatResult[] = [
+      { message: { role: "assistant", content: null, tool_calls: [{
+        id: "A-appearance-call", type: "function", function: {
+          name: toolName, arguments: JSON.stringify({ appearanceId: "appearance", slot: "face" }),
+        },
+      }] }, finishReason: "tool_calls" },
+      { message: { role: "assistant", content: "B_READ_ONLY" }, finishReason: "stop" },
+    ];
+    const session = new AssistantSession(project, {
+      config,
+      declareIntent: fixedDeclarer({ mode: "modify", needsPlan: false }),
+      yieldToUi: async () => {},
+      chat: async () => {
+        const step = steps.shift();
+        if (!step) throw new Error("Unexpected model call");
+        return step;
+      },
+    });
+    // Observe the real producer, not sendUserMessage's cancellation race.
+    // Return its original promise unchanged, including its rejection behavior.
+    const execute = session["executeTurnLoop"];
+    let observedA = false;
+    session["executeTurnLoop"] = function (...args) {
+      const producer = execute.apply(this, args);
+      if (!observedA) {
+        observedA = true;
+        void producer.then(
+          value => aProducerSettled.resolve({ status: "fulfilled", value }),
+          reason => aProducerSettled.resolve({ status: "rejected", reason }),
+        );
+      }
+      return producer;
+    };
+    const abort = new AbortController();
+    const a = session.sendUserMessage(toolName, undefined, abort.signal);
+    try {
+      await bounded(entered.promise);
+      abort.abort();
+      expect((await bounded(a)).stoppedReason).toBe("aborted");
+      const b = await bounded(session.sendUserMessage("B inspect only", undefined, undefined, {
+        goalAction: "new-goal", composerMode: "ask",
+      }));
+      expect(b.runOutcome).toMatchObject({ execution: "response-final", goal: "unassessed", delivery: "no-change" });
+      const before = {
+        audit: JSON.stringify(session.getAuditEntries()),
+        messages: JSON.stringify(session.getHarnessSnapshot().messages),
+        harness: JSON.stringify(session.getHarnessSnapshot()),
+        project: JSON.stringify(store.getCurrent()),
+      };
+      opening.reject(new ToolError("UI_OPEN_FAILURE", { code: "appearance-ui-open-failure" }));
+      await bounded(aProducerSettled.promise);
+      expect({
+        audit: JSON.stringify(session.getAuditEntries()),
+        messages: JSON.stringify(session.getHarnessSnapshot().messages),
+        harness: JSON.stringify(session.getHarnessSnapshot()),
+        project: JSON.stringify(store.getCurrent()),
+      }).toEqual(before);
+      const messages = session.getHarnessSnapshot().messages;
+      expect(messages.flatMap(message => message.tool_calls ?? [])
+        .filter(call => call.id === "A-appearance-call")).toHaveLength(1);
+      const responses = messages.filter(message => message.role === "tool" && message.tool_call_id === "A-appearance-call");
+      expect(responses).toHaveLength(1);
+      const response = responses[0];
+      if (typeof response?.content !== "string") throw new Error("Missing A protocol response");
+      expect(JSON.parse(response.content)).toMatchObject({ ok: false, code: "run-cancelled" });
+      expect(steps).toHaveLength(0);
+    } finally {
+      abort.abort();
+      opening.resolve();
+      unregister();
+      await bounded(a);
+      if (observedA) await bounded(aProducerSettled.promise);
+      session["executeTurnLoop"] = execute;
+      appearanceGenerationController.cancel();
+      await store.flush();
+    }
+  });
+
   it("does not open another DB record over an already active candidate", async () => {
     const project = projectFixture();
     vi.spyOn(appearanceGenerationController, "getState").mockReturnValue({ status: "candidate" });

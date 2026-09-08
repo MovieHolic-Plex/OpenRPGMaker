@@ -1,3 +1,5 @@
+import type { Project, ItemRecord } from "@/project/types";
+import { WIKI_COMBAT_MODES, type WikiCombatMode } from "@/project/world/types";
 import type { Point } from "@/project/lint/reachability";
 import { isFunctionalCriterionKind, parseFunctionalCriterion, type FunctionalCriterion } from "./functionalAcceptance";
 import { VERIFICATION_TOOL_NAMES } from "./agentVerification";
@@ -41,7 +43,20 @@ export interface AcceptanceItemSnapshot {
 export interface AcceptanceRegion { readonly x: number; readonly y: number; readonly w: number; readonly h: number }
 export type AcceptanceTarget = { readonly mapId: string } | { readonly newMapName: string };
 type ScopedTarget = { readonly target: AcceptanceTarget; readonly region?: AcceptanceRegion };
+/** Finite authored changes, not arbitrary paths or executable checks. */
+export type ProjectPreservationChange =
+  | { readonly kind: "projectTitle" }
+  | { readonly kind: "itemName" | "itemPrice" | "itemAddition"; readonly itemId: ItemRecord["id"] };
+export type ProjectAcceptanceCriterion =
+  | { readonly kind: "wikiDeclaration"; readonly documentId: string; readonly combatMode: WikiCombatMode; readonly sourceQuote: string }
+  | { readonly kind: "projectTitle"; readonly title: Project["meta"]["title"] }
+  | { readonly kind: "itemValues"; readonly itemId: ItemRecord["id"]; readonly name?: ItemRecord["name"]; readonly price?: ItemRecord["price"] }
+  | { readonly kind: "projectPreserve"; readonly scope: "project" | "authored"; readonly allowedChanges: readonly ProjectPreservationChange[] };
+export function isProjectAcceptanceKind(kind: string): boolean {
+  return kind === "projectTitle" || kind === "itemValues" || kind === "projectPreserve" || kind === "wikiDeclaration";
+}
 export type AcceptanceCriterion =
+  | ProjectAcceptanceCriterion
   | FunctionalCriterion
   | { readonly kind: "gameTitle"; readonly title: string }
   | { readonly kind: "toolVerdict"; readonly tool: string; readonly args: Readonly<Record<string, unknown>>;
@@ -97,6 +112,10 @@ export const ACCEPTANCE_EXAMPLES: Readonly<Record<AcceptanceCriterion["kind"], A
   functionalUnresolved: Object.freeze({ kind: "functionalUnresolved", reason: "Identify missing request expectations" }),
   reachability: Object.freeze({ kind: "reachability", target: exampleTarget, from: examplePoint, to: Object.freeze([Object.freeze({ x: 1, y: 0 })]) }),
   gameTitle: Object.freeze({ kind: "gameTitle", title: "작은 열쇠" }),
+  projectTitle: Object.freeze({ kind: "projectTitle", title: "Exact title" }),
+  itemValues: Object.freeze({ kind: "itemValues", itemId: "item_id", name: "Potion", price: 37.5 }),
+  projectPreserve: Object.freeze({ kind: "projectPreserve", scope: "project", allowedChanges: Object.freeze([Object.freeze({ kind: "projectTitle" as const })]) }),
+  wikiDeclaration: Object.freeze({ kind: "wikiDeclaration", documentId: "w_combat_preference", combatMode: "contact", sourceQuote: "Record my contact battle preference." }),
 });
 export interface AcceptanceParseResult {
   readonly criteria: readonly AcceptanceCriterion[] | null;
@@ -128,6 +147,15 @@ export function parseAcceptanceRegion(value: unknown): AcceptanceRegion | null {
     || value.w === 0 || value.h === 0) return null;
   return { x: value.x, y: value.y, w: value.w, h: value.h };
 }
+function preservationChange(value: unknown): ProjectPreservationChange | null {
+  if (!acceptanceRecord(value)) return null;
+  if (value.kind === "projectTitle") return Object.keys(value).length === 1 ? { kind: value.kind } : null;
+  if ((value.kind === "itemName" || value.kind === "itemPrice" || value.kind === "itemAddition")
+    && text(value.itemId) && Object.keys(value).every(key => key === "kind" || key === "itemId")) {
+    return { kind: value.kind, itemId: value.itemId };
+  }
+  return null;
+}
 function criterion(value: unknown, index: number, issues: AcceptanceIssue[]): AcceptanceCriterion | null {
   const example = acceptanceRecord(value) && typeof value.kind === "string"
     ? Object.entries(ACCEPTANCE_EXAMPLES).find(([kind]) => kind === value.kind)?.[1] ?? ACCEPTANCE_EXAMPLES.mapCount
@@ -151,11 +179,44 @@ function criterion(value: unknown, index: number, issues: AcceptanceIssue[]): Ac
     preserve: ["kind", "target", "region"], imageReviewed: ["kind", "target", "region"],
     reachability: ["kind", "target", "from", "to"], toolVerdict: ["kind", "tool", "args", "interactionTargets"],
     actionCombat: ["kind", "target"], gameTitle: ["kind", "title"],
+    projectTitle: ["kind", "title"], itemValues: ["kind", "itemId", "name", "price"],
+    projectPreserve: ["kind", "scope", "allowedChanges"],
+    wikiDeclaration: ["kind", "documentId", "combatMode", "sourceQuote"],
   };
   const allowed = typeof value.kind === "string" && Object.hasOwn(keys, value.kind) ? keys[value.kind] : undefined;
   if (!allowed) return invalid("kind", Object.keys(ACCEPTANCE_EXAMPLES).join(" | "));
   const extra = Object.keys(value).find(key => !allowed.includes(key));
   if (extra) return fail(extra, "unknown-field", `only ${allowed.join(", ")}`);
+  if (value.kind === "wikiDeclaration") {
+    if (!text(value.documentId)) return invalid("documentId", "nonempty exact declaration document ID");
+    const combatMode = WIKI_COMBAT_MODES.find(mode => mode === value.combatMode);
+    if (!combatMode) return invalid("combatMode", WIKI_COMBAT_MODES.join(" | "));
+    if (!text(value.sourceQuote)) return invalid("sourceQuote", "nonempty unique exact quote from the original host request");
+    return { kind: value.kind, documentId: value.documentId, combatMode, sourceQuote: value.sourceQuote };
+  }
+  if (value.kind === "projectTitle") {
+    return typeof value.title === "string" ? { kind: value.kind, title: value.title }
+      : invalid("title", "exact string for both meta.title and system.titleScreen.title; empty strings are allowed");
+  }
+  if (value.kind === "itemValues") {
+    if (!text(value.itemId)) return invalid("itemId", "nonempty exact unique item ID");
+    if (value.name === undefined && value.price === undefined) return invalid("name", "at least one requested item value: name or price");
+    if (value.name !== undefined && typeof value.name !== "string") return invalid("name", "exact item name string");
+    if (value.price !== undefined && (typeof value.price !== "number" || !Number.isFinite(value.price) || value.price < 0)) {
+      return invalid("price", "finite nonnegative number; fractional prices are allowed");
+    }
+    return { kind: value.kind, itemId: value.itemId,
+      ...(typeof value.name === "string" ? { name: value.name } : {}),
+      ...(typeof value.price === "number" ? { price: value.price } : {}) };
+  }
+  if (value.kind === "projectPreserve") {
+    if (value.scope !== "project" && value.scope !== "authored") return invalid("scope", "project | authored");
+    if (!Array.isArray(value.allowedChanges)) return invalid("allowedChanges", "array of finite allowed title/item changes; empty array is allowed");
+    const changes = value.allowedChanges.map((entry, changeIndex) => preservationChange(entry)
+      ?? fail(`allowedChanges[${changeIndex}]`, "invalid-field", "projectTitle with only kind, or itemName/itemPrice/itemAddition with only kind and a nonempty itemId"));
+    return changes.every((change): change is ProjectPreservationChange => change !== null)
+      ? { kind: value.kind, scope: value.scope, allowedChanges: changes } : null;
+  }
   if (value.kind === "gameTitle") {
     return text(value.title) ? { kind: "gameTitle", title: value.title }
       : invalid("title", "nonempty literal displayed game title; exact Unicode string, not project metadata or a verdict");

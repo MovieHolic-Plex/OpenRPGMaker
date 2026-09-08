@@ -21,7 +21,7 @@ import { describe, expect, it } from "vitest";
 import { allTools } from "@/editor/tools/toolRegistry";
 import { SET_BUILD_SPEC_TOOL, SPEC_REMEDY_FIELDS, WORK_PLAN_TOOLS } from "@/ai/assistantSession";
 import { ACCEPTANCE_CRITERIA_SCHEMA, ACCEPTANCE_SCHEMA, ACCEPTANCE_TOOLS } from "@/ai/assistantAcceptanceTools";
-import { parseAcceptance, parseAcceptanceCriteria, type AcceptanceCriterion } from "@/ai/assistantAcceptance";
+import { parseAcceptance, parseAcceptanceCriteria, parseAcceptanceCriteriaResult, type AcceptanceCriterion } from "@/ai/assistantAcceptance";
 import { workPlanFromSetToolArgs } from "@/ai/workPlan";
 type SchemaNode = {
   readonly type?: unknown;
@@ -152,6 +152,20 @@ const criterionCases: AcceptanceCriterion[] = [
   { kind: "functionalUnresolved", reason: "Specify the requested price" },
   { kind: "functionalUnresolved", reason: "Specify the requested price", expectations: {
     kind: "shopPurchase", seller: { eventName: "Mira" }, item: { name: "Potion" }, count: 2 } },
+  { kind: "projectTitle", title: "Exact title" },
+  { kind: "projectTitle", title: "" },
+  { kind: "projectTitle", title: " \t" },
+  { kind: "itemValues", itemId: "item_potion", name: "Potion" },
+  { kind: "itemValues", itemId: "item_potion", price: 37.5 },
+  { kind: "itemValues", itemId: "item_potion", name: "" },
+  { kind: "itemValues", itemId: "item_potion", price: 0 },
+  { kind: "projectPreserve", scope: "project", allowedChanges: [] },
+  { kind: "projectPreserve", scope: "authored", allowedChanges: [
+    { kind: "projectTitle" }, { kind: "itemName", itemId: "item_potion" },
+    { kind: "itemPrice", itemId: "item_potion" }, { kind: "itemAddition", itemId: "item_new" },
+  ] },
+  { kind: "wikiDeclaration", documentId: "w_combat_preference", combatMode: "contact",
+    sourceQuote: "Record my contact battle preference." },
 ];
 
 function expectRepresentable(schema: SchemaNode | undefined, value: unknown): void {
@@ -170,12 +184,13 @@ function expectRepresentable(schema: SchemaNode | undefined, value: unknown): vo
       if (child) expectRepresentable(child, entry);
       else expect(schema.additionalProperties).toBe(true);
     }
+  } else if (typeof value === "number") {
+    expect(["integer", "number"]).toContain(schema.type);
+    expect(Number.isFinite(value)).toBe(true);
+    if (schema.type === "integer") expect(Number.isSafeInteger(value)).toBe(true);
+    if (schema.minimum !== undefined) expect(value).toBeGreaterThanOrEqual(schema.minimum);
   } else {
-    expect(schema.type).toBe(typeof value === "number" ? "integer" : typeof value);
-    if (typeof value === "number") {
-      expect(Number.isSafeInteger(value)).toBe(true);
-      if (schema.minimum !== undefined) expect(value).toBeGreaterThanOrEqual(schema.minimum);
-    }
+    expect(schema.type).toBe(typeof value);
   }
 }
 
@@ -209,10 +224,12 @@ describe("acceptance and requirement schema/runtime contract", () => {
     expect(item?.properties?.kind).toEqual({ type: "string", enum: [
       "mapCount", "mapDimensions", "eventCount", "targetChange", "preserve", "imageReviewed", "actionCombat",
       "toolVerdict", "shopPurchase", "mapRoundTrip", "npcReward", "functionalUnresolved", "reachability", "gameTitle",
+      "projectTitle", "itemValues", "projectPreserve", "wikiDeclaration",
     ] });
     expect(Object.keys(item?.properties ?? {}).sort()).toEqual([
-      "args", "count", "destination", "expectations", "from", "height", "interactionTargets", "item", "kind", "outgoing", "reason", "region", "requirement",
-      "returning", "seller", "start", "target", "targets", "title", "to", "tool", "unitPrice", "width",
+      "allowedChanges", "args", "combatMode", "count", "destination", "documentId", "expectations", "from", "height", "interactionTargets", "item", "itemId",
+      "kind", "name", "outgoing", "price", "reason", "region", "requirement", "returning", "scope", "seller", "sourceQuote",
+      "start", "target", "targets", "title", "to", "tool", "unitPrice", "width",
     ]);
     expect(item?.properties?.args).toMatchObject({ type: "object", additionalProperties: true });
     expect(item?.properties?.target).toMatchObject({ type: "object", additionalProperties: false,
@@ -237,6 +254,24 @@ describe("acceptance and requirement schema/runtime contract", () => {
       ...(criterion.kind === "toolVerdict" ? ["target"] : ["args"])]) {
       expect(parseAcceptanceCriteria([criterion, { ...valid, [extra]: {} }]), `extra ${extra}`).toBeNull();
     }
+  });
+
+  it.each([
+    { criterion: { kind: "projectTitle", title: 3 }, field: "title", code: "invalid-field" },
+    { criterion: { kind: "itemValues", itemId: "item" }, field: "name", code: "missing-field" },
+    { criterion: { kind: "itemValues", itemId: "item", price: Infinity }, field: "price", code: "invalid-field" },
+    { criterion: { kind: "projectPreserve", scope: "project", allowedChanges: [{ kind: "projectTitle", itemId: "mixed" }] }, field: "allowedChanges[0]", code: "invalid-field" },
+    { criterion: { kind: "wikiDeclaration", documentId: "doc", combatMode: "invented", sourceQuote: "quote" }, field: "combatMode", code: "invalid-field" },
+  ])("retains atomic field diagnostics for added project criterion $criterion.kind", ({ criterion, field, code }) => {
+    const result = parseAcceptanceCriteriaResult([criterionCases[0], criterion]);
+    expect(result.criteria).toBeNull();
+    expect(result.issues).toMatchObject([{ criterionIndex: 1, field: `criteria[1].${field}`, code, example: { kind: criterion.kind } }]);
+  });
+
+  it.each(["", " \t"])("keeps displayed-title validity distinct from exact stored title %j", title => {
+    expect(parseAcceptanceCriteria([{ kind: "projectTitle", title }])).toEqual([{ kind: "projectTitle", title }]);
+    expect(parseAcceptanceCriteriaResult([{ kind: "gameTitle", title }])).toMatchObject({ criteria: null,
+      issues: [{ field: "criteria[0].title", code: "invalid-field", example: { kind: "gameTitle" } }] });
   });
 
   it("rejects unsupported native arguments even when the dynamic provider envelope can represent them", () => {

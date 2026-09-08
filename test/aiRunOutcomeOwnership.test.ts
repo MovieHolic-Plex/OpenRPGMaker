@@ -21,7 +21,7 @@ it("does not settle a newer query when an old run's proof is cancelled", async (
   const result = await f.run();
   expect(result.review?.status).toBe("approved");
   expect(f.session.isDraftReviewApproved()).toBe(true);
-  const applied = await applyProposedProject(f.session.getProposedProject(), { baseline: f.session.getDraftBaseline(), source: "agent", summary: "Title", toolNames: ["set_title_screen"] });
+  const applied = await applyProposedProject(f.session.getProposedProject(), { base: f.session.getProposalBase(), baseline: f.session.getDraftBaseline(), source: "agent", summary: "Title", toolNames: ["set_title_screen"] });
   if (!applied.ok) throw new Error(applied.issue);
   f.session.recordAppliedProject(applied); f.session.rebaseProject(store.getCurrent());
   const controller = new AbortController();

@@ -1,3 +1,4 @@
+import { authoredIdentity } from "@/project/authoredProjectBaseline";
 import { evaluateFunctionalCriterion } from "./functionalAcceptanceEvaluation";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import type { NpcRewardRequirement } from "./intentDeclaration";
@@ -5,7 +6,7 @@ import type { WorkItemOutcomeVerdict } from "./workItemOutcome";
 import { canMove, inBounds, isPassable } from "@/project/collision";
 import { passageBounds } from "@/project/footprint";
 import type { GameMap, Project } from "@/project/types";
-import { ACCEPTANCE_EXAMPLES, type AcceptanceIssue, type AcceptanceCriterion, type AcceptanceItemSnapshot, type AcceptanceRegion, type AcceptanceTarget } from "./assistantAcceptance";
+import { ACCEPTANCE_EXAMPLES, type AcceptanceIssue, type AcceptanceCriterion, type AcceptanceItemSnapshot, type AcceptanceRegion, type AcceptanceTarget, type ProjectAcceptanceCriterion, type AcceptanceSource } from "./assistantAcceptance";
 import type { ToolVerificationEvidence } from "./toolVerificationEvidence";
 
 type Evidence = AcceptanceItemSnapshot["evidence"][number];
@@ -73,6 +74,7 @@ export function visualFingerprint(project: Project, map: GameMap): string {
 }
 export function criterionTargets(criterion: AcceptanceCriterion): readonly AcceptanceTarget[] {
   switch (criterion.kind) {
+    case "wikiDeclaration": case "projectTitle": case "itemValues": case "projectPreserve":
     case "gameTitle": case "toolVerdict": case "npcReward": case "functionalUnresolved": return [];
     case "shopPurchase": return [criterion.target];
     case "mapRoundTrip": return [criterion.target, criterion.destination];
@@ -82,6 +84,7 @@ export function criterionTargets(criterion: AcceptanceCriterion): readonly Accep
   }
 }
 export interface AcceptanceEvaluation {
+  readonly source?: AcceptanceSource;
   readonly npcRewardProof?: (project: Project, requirement: NpcRewardRequirement) => WorkItemOutcomeVerdict;
   readonly verification?: ToolVerificationEvidence;
   readonly verificationCheckId?: string;
@@ -91,10 +94,67 @@ export interface AcceptanceEvaluation {
   readonly reviewed: (map: GameMap, region: AcceptanceRegion) => boolean;
   readonly actionProven?: (map: GameMap) => boolean;
 }
+/** Restore only explicitly allowed fields on a detached copy, then compare with
+ * the immutable request baseline. IDs, array order and all other values survive. */
+function projectPreserved(criterion: Extract<ProjectAcceptanceCriterion, { kind: "projectPreserve" }>, input: AcceptanceEvaluation): boolean {
+  const current = structuredClone(input.project);
+  for (const change of criterion.allowedChanges) {
+    if (change.kind === "projectTitle") {
+      current.meta.title = input.baseline.meta.title;
+      // Creating/removing a title-screen settings object is not only a title edit.
+      if (Boolean(current.system.titleScreen) !== Boolean(input.baseline.system.titleScreen)) return false;
+      if (current.system.titleScreen && input.baseline.system.titleScreen) current.system.titleScreen.title = input.baseline.system.titleScreen.title;
+      continue;
+    }
+    const before = input.baseline.database.items.filter(item => item.id === change.itemId);
+    const after = current.database.items.filter(item => item.id === change.itemId);
+    if (change.kind === "itemAddition") {
+      // The allowance cannot erase an existing record or hide duplicate IDs.
+      if (before.length !== 0 || after.length > 1) return false;
+      current.database.items = current.database.items.filter(item => item.id !== change.itemId);
+    } else {
+      if (before.length !== 1 || after.length !== 1) return false;
+      if (change.kind === "itemName") after[0].name = before[0].name;
+      else after[0].price = before[0].price;
+    }
+  }
+  // Explicit authored scope reuses the product's existing wiki ownership split.
+  // It is NOT proof of wiki preservation or of a declared combat behavior.
+  const identity = criterion.scope === "authored" ? authoredIdentity : acceptanceFingerprint;
+  return identity(current) === identity(input.baseline);
+}
 export function evaluateAcceptanceCriterion(criterion: AcceptanceCriterion, input: AcceptanceEvaluation): Evidence {
   const expected = JSON.stringify(criterion);
   switch (criterion.kind) {
     case "shopPurchase": case "mapRoundTrip": case "npcReward": case "functionalUnresolved": return evaluateFunctionalCriterion(criterion, input);
+    case "wikiDeclaration": {
+      const documents = input.project.world?.entities ?? [];
+      const matches = documents.filter(document => document.id === criterion.documentId);
+      const wiki = matches.length === 1 ? matches[0].wiki : undefined;
+      const request = input.source?.text;
+      const quoteAt = request?.indexOf(criterion.sourceQuote) ?? -1;
+      const sourceLinked = request !== undefined && quoteAt >= 0 && quoteAt === request.lastIndexOf(criterion.sourceQuote)
+        && wiki?.sources.some(source => source.kind === "user" && source.text === request) === true;
+      const superseded = documents.some(document => document.wiki?.supersedes?.includes(criterion.documentId));
+      const passed = wiki?.kind === "declaration" && wiki.basis === "explicit"
+        && wiki.combatMode === criterion.combatMode && sourceLinked && !superseded;
+      return { expected, observed: JSON.stringify({ matches: matches.length, kind: wiki?.kind, basis: wiki?.basis,
+        combatMode: wiki?.combatMode, sourceLinked, superseded, proves: "stored preference only" }), passed };
+    }
+    case "projectTitle": {
+      const observed = { metaTitle: input.project.meta.title, titleScreenTitle: input.project.system.titleScreen?.title };
+      return { expected, observed: JSON.stringify(observed), passed: observed.metaTitle === criterion.title && observed.titleScreenTitle === criterion.title };
+    }
+    case "itemValues": {
+      const matches = input.project.database.items.filter(item => item.id === criterion.itemId);
+      const item = matches.length === 1 ? matches[0] : undefined;
+      return { expected, observed: JSON.stringify({ matches: matches.length, name: item?.name, price: item?.price }),
+        passed: !!item && (criterion.name === undefined || item.name === criterion.name) && (criterion.price === undefined || item.price === criterion.price) };
+    }
+    case "projectPreserve": {
+      const passed = projectPreserved(criterion, input);
+      return { expected, observed: passed ? "Original baseline preserved outside allowed changes" : "Unallowed change or invalid baseline target", passed };
+    }
     case "gameTitle": {
       // Match titleScreen.renderTitleScreen/renderTitleNodes without importing DOM
       // or asset rendering. Metadata is not a fallback; graphic-only text is hidden.

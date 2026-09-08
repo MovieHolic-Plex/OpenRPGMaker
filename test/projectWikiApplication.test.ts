@@ -2,7 +2,7 @@ import { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
-import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
+import { applyProposedProject, captureProposalBase } from "@/editor/tools/applyChangesetToStore";
 import { applyRegionProjectWithHistory } from "@/editor/regionTask/runRegionTask";
 
 vi.mock("@/project/projectCommitLog", async (importOriginal) => ({
@@ -49,9 +49,12 @@ describe("wiki ownership at authoring application", () => {
       relations: [],
     };
     store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
+    store.replace(baseline);
+    const base = captureProposalBase(store.getCurrent());
     store.replace(live);
 
     const result = await applyProposedProject(proposed, {
+      base,
       baseline: new AuthoredProjectBaseline(baseline),
       source: "agent", summary: "Title edit", toolNames: ["set_title_screen"],
     });

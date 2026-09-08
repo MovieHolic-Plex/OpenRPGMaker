@@ -2,7 +2,7 @@ import { isFunctionalCriterionKind, parseCanonicalFunctionalScene, parseFunction
 import type { Project } from "@/project/types";
 import { isVerifiedActionCombatProof, type ActionCombatProofReceipt } from "@/testing/actionCombatProof";
 import {
-  ACCEPTANCE_EXAMPLES, parseAcceptanceCriteriaResult, pendingCanonicalScene,
+  ACCEPTANCE_EXAMPLES, parseAcceptanceCriteriaResult, pendingCanonicalScene, isProjectAcceptanceKind,
   type AcceptancePromise, type AcceptanceSnapshot, type AcceptanceItemSnapshot, type AcceptanceIssue, type AcceptanceCriterion,
   acceptanceRecord, type AcceptanceTarget,
   type AcceptanceSource, type RequirementWithdrawalAction,
@@ -352,7 +352,7 @@ export class AssistantAcceptanceLedger {
       readonly refinements?: readonly AcceptanceSource[];
       readonly withdrawal?: RequirementWithdrawalAction & { readonly source: "user" };
     })[] = [...this.promises.values(), ...this.actionRequirements.values()];
-    const projectBound = (kind: string): boolean => kind === "toolVerdict" || isReloadCriterionKind(kind);
+    const projectBound = (kind: string): boolean => kind === "toolVerdict" || isReloadCriterionKind(kind) || isProjectAcceptanceKind(kind);
     const toolDraftChanged = applied !== draft
       && promises.some(promise => promise.criteria?.some(criterion => projectBound(criterion.kind)))
       && acceptanceFingerprint(applied) !== acceptanceFingerprint(draft);
@@ -366,7 +366,7 @@ export class AssistantAcceptanceLedger {
       const review = this.reviews.get(promise.id);
       const evidence = promise.criteria.map((criterion, criterionIndex) => {
         const result = evaluateAcceptanceCriterion(criterion, {
-          project: applied, baseline: promise.baseline, bindings: this.bindings, verification,
+          project: applied, baseline: promise.baseline, bindings: this.bindings, verification, source: promise.source,
           verificationCheckId: `${this.id}:${promise.id}:${criterionIndex}`, npcRewardProof: this.npcRewardProof,
           reviewed: (map, region) => deliveredImagesOnly
             ? coveredByImages(this.images.matching(applied), map, region)

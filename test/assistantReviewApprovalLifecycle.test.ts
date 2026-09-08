@@ -1,3 +1,4 @@
+import { cooperativeNodeYield } from "./cooperativeNodeYield";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { clearTimeout, setTimeout } from "node:timers";
 import { AssistantSession, type ProposedCall, type SessionEvent } from "@/ai/assistantSession";
@@ -48,7 +49,7 @@ function fixture(reviewer: (revision: number, attempt: number) => ChatResult | P
   const session = new AssistantSession(store.getCurrent(), {
     config: { ...defaultAiConfig(), agentMode: "chat", maxToolCalls: 12, maxTokens: 16000 },
     declareIntent: fixedDeclarer({ mode: "modify", tools: [] }),
-    yieldToUi: async () => {},
+    yieldToUi: cooperativeNodeYield,
     chat: async (_config, request) => {
       const input = independentReviewPayload(request);
       if (input) return reviewer(input.revision, ++reviewCalls);

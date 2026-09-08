@@ -30,6 +30,7 @@ export function applyFixture(
   chat?: AssistantSessionOptions["chat"],
   declareIntent: AssistantSessionOptions["declareIntent"] = fixedDeclarer({ mode: "other" }),
   renderImages?: AssistantSessionOptions["renderImages"],
+  yieldToUi: AssistantSessionOptions["yieldToUi"] = async () => {},
 ) {
   vi.useFakeTimers(); // Autosave is unrelated; flush and exact callbacks drive every operation.
   const commits = vi.spyOn(sync, "recordProjectCommitToSupabase"); // Call through, never replace the writer.
@@ -87,7 +88,7 @@ export function applyFixture(
   const session = new AssistantSession(store.getCurrent(), {
     config: { ...defaultAiConfig(), model: "test", liteModel: "test", apiKey: "test", agentMode: "chat", maxToolCalls: 4 },
     declareIntent, renderImages,
-    yieldToUi: async () => {},
+    yieldToUi,
     chat: async (config, request) => approvedReviewResponse(request)
       ?? (!request.tools?.length ? { message: { role: "assistant", content: JSON.stringify({ action: "resume" }) }, finishReason: "stop" }
         : writer(config, request)),

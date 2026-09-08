@@ -1,9 +1,10 @@
+import { cooperativeNodeYield } from "./cooperativeNodeYield";
 import { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
 import { afterEach, assert, beforeEach, describe, expect, it, vi } from "vitest";
 import { AssistantSession, type SessionEvent } from "@/ai/assistantSession";
 import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
 import * as history from "@/editor/mapEditHistory";
-import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
+import { applyProposedProject, captureProposalBase } from "@/editor/tools/applyChangesetToStore";
 import { serialize } from "@/project/io";
 import * as commits from "@/project/projectCommitLog";
 import { store } from "@/project/store";
@@ -26,13 +27,14 @@ afterEach(() => {
   vi.unstubAllEnvs();
 });
 
-function previewRename(): { proposed: Project; baseline: AuthoredProjectBaseline } {
+function previewRename() {
+  const base = captureProposalBase(store.getCurrent());
   const baseline = new AuthoredProjectBaseline(store.getCurrent());
   const ctx = { project: store.getCurrent() };
   const result = mutateProject(ctx, (draft) => { houseMap(draft).name = "AI rename"; });
   expect(result.ok, JSON.stringify(result.issues)).toBe(true);
   expect(ctx.project).not.toBe(store.getCurrent());
-  return { proposed: ctx.project, baseline };
+  return { proposed: ctx.project, base, baseline };
 }
 
 const HUMAN_EDITS = ["lowerTiles", "upperTiles", "lowerTileStacks", "upperTileStacks"] as const;
@@ -64,34 +66,33 @@ function expectNoApplication(observed: ReturnType<typeof observeApplication>, ac
 for (const source of ["agent", "agent-milestone"] as const) {
   describe(`${source} live house baseline`, () => {
     it.each(HUMAN_EDITS)("atomically rejects a stale preview after human %s edits", async (layer) => {
-      const { proposed, baseline } = previewRename();
+      const { proposed, base, baseline } = previewRename();
       const previewBytes = serialize(proposed);
       store.update((draft) => editHouse(draft, layer), { scope: "project", origin: "human" });
       const accepted = store.getCurrent();
       const acceptedBytes = serialize(accepted);
       const observed = observeApplication();
 
-      const result = await applyProposedProject(proposed, { baseline, source, summary: "Rename", toolNames: [] });
+      const result = await applyProposedProject(proposed, { base, baseline, source, summary: "Rename", toolNames: [] });
 
       expect(result.ok).toBe(false);
       if (result.ok) throw new Error("Stale house preview was applied");
-      expect(result.reason).toBe("stale-baseline");
+      expect(result.reason).toBe("stale-base");
       expect(result.issue).toBeTruthy();
-      expect(result.issues).toEqual([result.issue]);
       expectNoApplication(observed, accepted, acceptedBytes);
       expect(serialize(proposed)).toBe(previewBytes);
     });
 
     it.each([false, true])("retains a house completed after preview, including resetProject=%s", async (resetProject) => {
       store.update((draft) => { delete houseMap(draft).layoutPlan; });
-      const { proposed, baseline } = previewRename();
+      const { proposed, base, baseline } = previewRename();
       store.update((draft) => { houseMap(draft).layoutPlan = houseMap(completedHouseProject()).layoutPlan; },
         { scope: "project", origin: "human" });
       const accepted = store.getCurrent();
       const acceptedBytes = serialize(accepted);
       const observed = observeApplication();
 
-      const result = await applyProposedProject(proposed, { baseline, source, summary: "Rename", toolNames: [], resetProject });
+      const result = await applyProposedProject(proposed, { base, baseline, source, summary: "Rename", toolNames: [], resetProject });
 
       expect(result.ok).toBe(false);
       expectNoApplication(observed, accepted, acceptedBytes);
@@ -99,10 +100,10 @@ for (const source of ["agent", "agent-milestone"] as const) {
     });
 
     it("applies an unchanged-store preview with one undo entry and one commit", async () => {
-      const { proposed, baseline } = previewRename();
+      const { proposed, base, baseline } = previewRename();
       const observed = observeApplication();
 
-      const result = await applyProposedProject(proposed, { baseline, source, summary: "Rename", toolNames: [] });
+      const result = await applyProposedProject(proposed, { base, baseline, source, summary: "Rename", toolNames: [] });
 
       expect(result.ok).toBe(true);
       expect(houseMap(store.getCurrent()).name).toBe("AI rename");
@@ -114,9 +115,9 @@ for (const source of ["agent", "agent-milestone"] as const) {
     it("uses current human tile and stack edits as the next accepted baseline", async () => {
       store.update((draft) => { for (const layer of HUMAN_EDITS) editHouse(draft, layer); },
         { scope: "project", origin: "human" });
-      const { proposed, baseline } = previewRename();
+      const { proposed, base, baseline } = previewRename();
 
-      const result = await applyProposedProject(proposed, { baseline, source, summary: "Rename", toolNames: [] });
+      const result = await applyProposedProject(proposed, { base, baseline, source, summary: "Rename", toolNames: [] });
 
       expect(result.ok).toBe(true);
       const map = houseMap(store.getCurrent());
@@ -128,22 +129,35 @@ for (const source of ["agent", "agent-milestone"] as const) {
       expect(map.upperTileStacks?.[index]).toEqual([199, 322]);
     });
 
-    it("also protects intervening authored edits outside completed houses", async () => {
+    it("preserves human edits in raw walls and non-house regions against stale proposals", async () => {
       store.update((draft) => {
         const region = houseMap(draft).layoutPlan?.regions[0];
         if (!region) throw new Error("Missing fixture region");
         region.role = "custom";
       });
-      const { proposed, baseline } = previewRename();
+      const { proposed, base, baseline } = previewRename();
       store.update((draft) => editHouse(draft, "upperTiles"), { scope: "project", origin: "human" });
 
-      const result = await applyProposedProject(proposed, { baseline, source, summary: "Rename", toolNames: [] });
+      const result = await applyProposedProject(proposed, { base, baseline, source, summary: "Rename", toolNames: [] });
 
-      expect(result).toMatchObject({ ok: false, reason: "stale-baseline" });
+      expect(result).toMatchObject({ ok: false, reason: "stale-base" });
       const map = houseMap(store.getCurrent());
       expect(map.upperTiles[4 * map.width + 5]).toBe(322);
       expect(map.name).not.toBe("AI rename");
       expect(history.getMapEditHistoryEntries()).toHaveLength(0);
+    });
+
+    it("still rejects a current-base proposal that changes a completed house", async () => {
+      const { proposed, base, baseline } = previewRename();
+      editHouse(proposed, "upperTiles");
+      const accepted = store.getCurrent();
+      const bytes = serialize(accepted);
+      const observed = observeApplication();
+      const result = await applyProposedProject(proposed, { base, baseline, source, summary: "House edit", toolNames: [] });
+      expect(result).toMatchObject({ ok: false, reason: "commit-rejected" });
+      if (result.ok) throw new Error("House protection failed");
+      expect(result.issues).toEqual([result.issue]);
+      expectNoApplication(observed, accepted, bytes);
     });
   });
 }
@@ -163,7 +177,7 @@ describe("real autonomous milestone application", () => {
     const session = new AssistantSession(project, {
       config: { ...defaultAiConfig(), agentMode: "auto", maxToolCalls: 4, maxTokens: 16000 },
       declareIntent: fixedDeclarer({ mode: "modify", needsPlan: true, tools: ["set_title_screen"] }),
-      yieldToUi: async () => {},
+      yieldToUi: cooperativeNodeYield,
       chat: async (_config, request): Promise<ChatResult> => {
         const review = independentReviewPayload(request);
         if (review) {

@@ -234,7 +234,7 @@ it.each([true, false])("carries the actual observed wiki apply through the ordin
   expect(f.session.isDraftReviewApproved()).toBe(true);
   if (!save) store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
   const applied = await applyProposedProject(f.session.getProposedProject(), {
-    baseline: f.session.getDraftBaseline(), source: "agent", summary: "Title edit", toolNames: ["set_title_screen"],
+    base: f.session.getProposalBase(), baseline: f.session.getDraftBaseline(), source: "agent", summary: "Title edit", toolNames: ["set_title_screen"],
   });
   if (!applied.ok) throw new Error(applied.issue);
   expect(store.getCurrent().world?.entities.some(entity => entity.wiki?.kind === "progress")).toBe(true);
