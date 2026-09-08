@@ -13,9 +13,13 @@ export function proofFailureResponse(titleToken) {
         criteria: [{ kind: 'projectTitle', title: titleToken }],
       }] }) };
     }
+    // Only the current exact Continue after the write is verification, not title authoring.
+    const currentUser = body.messages?.findLast(message => message.role === 'user')?.content;
+    const retry = wrote && typeof currentUser === 'string'
+      && currentUser.startsWith('## 요청\n계속\n\n## 사실\n');
     if (!body.tools?.length) return { role: 'assistant', content: JSON.stringify({
-      mode: 'modify', space: 'none', needsPlan: true, useSelection: false, clarify: null,
-      tools: ['set_title_screen'], summary: 'P1 title proof', action: wrote ? 'resume' : 'new_plan',
+      mode: retry ? 'other' : 'modify', space: 'none', needsPlan: !retry, useSelection: false, clarify: null,
+      tools: retry ? [] : ['set_title_screen'], summary: 'P1 title proof', action: wrote ? 'resume' : 'new_plan',
       goal: 'Set the title screen', layers: [{ title: 'Title', items: [{ title: 'Title', instruction: 'set_title_screen', successTools: ['set_title_screen'] }] }],
     }) };
     if (!wrote) {

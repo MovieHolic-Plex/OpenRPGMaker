@@ -6,10 +6,11 @@ import { proofFailureResponse } from '../scripts/qa/ai-harness-proof-failure.mjs
 import { createP2Contracts } from '../scripts/qa/ai-harness-p2.mjs';
 import { p2Scenarios } from '../scripts/qa/ai-harness-p2-scenarios.mjs';
 
-let coverage, intent;
+let coverage, intent, intentClient;
 before(async () => {
   await withTsModule(resolve('src/ai/requestCoverage.ts'), 'coverage.mjs', module => { coverage = module; });
   await withTsModule(resolve('src/ai/intentDeclaration.ts'), 'intent.mjs', module => { intent = module; });
+  await withTsModule(resolve('src/ai/intentDeclarationClient.ts'), 'intent-client.mjs', module => { intentClient = module; });
 });
 
 const projectId = 'qa-protocol';
@@ -145,6 +146,73 @@ test('P1 intent then audit uses the production coverage parser without consuming
   await assertAudit(respond, text);
   assert.equal(JSON.parse(respond(intentRequest(text)).content).action, 'resume');
   assert.equal(respond(tools).content, 'QA_FINAL');
+  assert.equal(respond(tools).tool_calls, undefined);
+});
+
+test('P1 completed-plan Continue reaches the actual declarer without a new authoring audit', async () => {
+  const respond = proofFailureResponse(titleToken);
+  const text = `Use set_title_screen to set the title to ${titleToken}.`;
+  const requests = [];
+  const declare = intentClient.createLlmIntentDeclarer({
+    getConfig: () => ({ model: 'qa-protocol', liteModel: 'qa-protocol' }),
+    chat: async (_config, body) => {
+      requests.push(body);
+      return { message: respond(body), finishReason: 'stop' };
+    },
+  });
+  const audits = () => requests.filter(body => body.messages[0].content.startsWith('REQUEST_COVERAGE_AUDIT\n')).length;
+  assert.equal(JSON.parse(respond(intentRequest('계속')).content).mode, 'modify');
+  const originalPlan = JSON.parse(respond(intentRequest(text)).content);
+  const initial = await declare(facts(text));
+  assert.equal(initial.error, undefined);
+  assert.equal(initial.intent.mode, 'modify');
+  assert.equal(audits(), 1);
+  assert.deepEqual(initial.intent.requestRequirements, [{ text,
+    criteria: [{ kind: 'projectTitle', title: titleToken }],
+  }]);
+  const tools = toolRequest([{ name: 'set_title_screen' }]);
+  const write = respond(tools);
+  assert.equal(write.tool_calls.length, 1);
+  assert.equal(write.tool_calls[0].function.name, 'set_title_screen');
+  assert.equal(JSON.parse(write.tool_calls[0].function.arguments).title, titleToken);
+
+  const continuation = facts('계속');
+  assert.equal(continuation.hasActivePlan, false);
+  const beforeRetry = requests.length;
+  const retry = await declare(continuation);
+  assert.equal(retry.error, undefined);
+  assert.equal(retry.intent.source, 'llm');
+  assert.equal(retry.intent.mode, 'other');
+  assert.equal(retry.intent.requestRequirements, undefined);
+  assert.equal(requests.length, beforeRetry + 1);
+  assert.equal(audits(), 1);
+  const resumedPlan = JSON.parse(respond(intentRequest('계속')).content);
+  assert.equal(resumedPlan.action, 'resume');
+  assert.equal(resumedPlan.goal, originalPlan.goal);
+  assert.deepEqual(resumedPlan.layers, originalPlan.layers);
+  assert.equal(respond(tools).content, 'QA_FINAL');
+  assert.equal(respond(tools).tool_calls, undefined);
+
+  // A post-write authoring request still incurs real coverage extraction.
+  const authoring = await declare(facts(text));
+  assert.equal(authoring.error, undefined);
+  assert.equal(authoring.intent.mode, 'modify');
+  assert.deepEqual(authoring.intent.requestRequirements, initial.intent.requestRequirements);
+  assert.equal(audits(), 2);
+  await assertForeignRejected(respond, text);
+  for (const userText of [text.replace(titleToken, 'Another title'), 'A different request.', '계속해서 다른 제목으로 바꿔줘']) {
+    const beforeForeign = audits();
+    const rejected = await declare({ ...facts(userText), wikiContext: '계속' });
+    assert.ok(rejected.error);
+    assert.equal(rejected.intent.mode, 'modify');
+    assert.equal(audits(), beforeForeign + 1);
+    assert.ok(rejected.intent.requestRequirements.length > 0);
+    assert.ok(rejected.intent.requestRequirements.some(requirement =>
+      requirement.criteria.some(criterion => criterion.kind === 'functionalUnresolved')));
+  }
+  const misplaced = intentRequest('A different request.');
+  misplaced.messages.push({ role: 'assistant', content: intent.buildIntentUserPayload(continuation) });
+  assert.equal(JSON.parse(respond(misplaced).content).mode, 'modify');
   assert.equal(respond(tools).tool_calls, undefined);
 });
 
