@@ -103,6 +103,63 @@
   width: 3px;
 }
 
+/* 이벤트 ID 칩(OPRN-OUT-014, variant="chip").
+ * 제목 줄은 48px 고정 높이 flex 라 카드 변형의 grid(라벨/값/복사/도움말 2줄)를 그대로
+ * 쓰면 헤더를 넘친다. 여기서는 NPC 칩과 같은 pill 로 눌러 담고, 값이 길면(레거시 `EV003`
+ * ~ `ev_`+UUID 39자) 줄임표로 자른다 — 전체 값은 input value·title·복사 버튼에 남는다.
+ * 이 시트는 index.css 에서 event-editor.css(modern/mockup/modernize 포함)보다 **뒤에**
+ * import 되므로, 같은 특이도로도 여기 규칙이 이긴다. */
+.event-editor-modal-header .event-id-readout {
+  align-items: center;
+  background: var(--bg-inset);
+  border-radius: 999px;
+  display: inline-flex;
+  flex: 0 1 auto;
+  gap: 4px;
+  /* 실측(1440×900 / 1024×768): 이 칩은 224~241px 로 놓이고 39자 UUID 는 109~126px 잘린다.
+   * 상한을 280px 로 두는 이유는 «더 넓히려면 `.meta` 를 flex:1 1 auto 로 바꿔야 하고, 그건
+   * 이름·맵·좌표·NPC 칩이 공유하는 줄 배치를 건드린다»는 것이다 — 실측에서 flex-basis
+   * 360px 을 줘도 `.meta` 가 늘지 않아 2px 밖에 얻지 못했다. 전체 값은 왼쪽 패널의 카드
+   * 변형과 이 상자의 value·title·복사 버튼이 보존한다. */
+  max-width: 280px;
+  min-width: 0;
+  padding: 2px 4px 2px 8px;
+}
+
+.event-editor-modal-header .event-id-readout-label {
+  color: var(--text-3);
+  flex: 0 0 auto;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.event-editor-modal-header input.event-id-readout-value {
+  background: transparent;
+  border: 0;
+  color: var(--text-2);
+  font: 400 11px/1.4 var(--mono);
+  min-width: 0;
+  overflow: hidden;
+  padding: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.event-editor-modal-header input.event-id-readout-value:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: 1px;
+}
+
+.event-editor-modal-header .event-id-readout-copy {
+  border: 0;
+  flex: 0 0 auto;
+  font-size: 10px;
+  min-height: 18px;
+  padding: 1px 6px;
+}
+
 .event-editor-modal-header .npc {
   align-items: center;
   background: var(--bg-inset);
