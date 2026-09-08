@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { AssistantSession, type SessionEvent } from "@/ai/assistantSession";
+import { clearTimeout as clearDrainTimeout, setTimeout as setDrainTimeout } from "node:timers";
+import { AssistantSession, type SessionEvent, type TurnResult } from "@/ai/assistantSession";
 import { extractProjectWiki } from "@/ai/projectWikiClient";
 import { defaultAiConfig, type ChatRequest, type ChatResult } from "@/ai/llmClient";
 import { resetIntentDeclarationCache } from "@/ai/intentDeclarationClient";
@@ -20,16 +21,32 @@ const call = (name: string, args: unknown): ChatResult => ({ message: { role: "a
   tool_calls: [{ id: name, type: "function", function: { name, arguments: JSON.stringify(args) } }] }, finishReason: "tool_calls" });
 const requestText = "Display the requested title without changing the map or project records";
 
-function fixture(overrides: Partial<WikiCoordinatorDependencies> = {}) {
-  vi.useFakeTimers();
-  // Node's native AbortSignal.timeout is not driven by Vitest's clock. Replace only
-  // its scheduler, retaining real AbortControllers, any(), reasons and event order.
+const disposals: (() => Promise<void>)[] = [];
+
+function fixture(testSignal: AbortSignal, overrides: Partial<WikiCoordinatorDependencies> = {}) {
+  vi.useFakeTimers(); // Freeze unrelated autosave/edit-log jobs; never advance them to trigger extraction.
   const deadline = new AbortController();
+  let timeoutMs: number | undefined;
   const timeout = vi.spyOn(AbortSignal, "timeout").mockImplementation(ms => {
-    setTimeout(() => deadline.abort(new DOMException("Extraction deadline", "TimeoutError")), ms);
+    timeoutMs = ms;
     return deadline.signal;
   });
+  const expireExtraction = () => {
+    if (timeoutMs === undefined) throw new Error("Extraction deadline was not scheduled");
+    vi.setSystemTime(Date.now() + timeoutMs);
+    deadline.abort(new DOMException("Extraction deadline", "TimeoutError"));
+  };
   const project = createBlankProject();
+  const map = project.maps[project.startMapId];
+  const tileset = project.tilesets[map.tilesetId];
+  // The blank map needs one passable tile, not every bundled chipset's metadata.
+  // Retain real map/database/system data, lint, registered tools and store writers.
+  map.lowerTiles.fill(0);
+  project.tilesets = { [map.tilesetId]: {
+    id: map.tilesetId, name: "Wiki fixture tileset", image: tileset.image, kind: "custom",
+    tileSize: map.tileSize, tilesPerRow: 1, count: 1,
+    passability: [{ up: true, down: true, left: true, right: true }], priority: ["lower"], terrain: [0],
+  } };
   project.meta.title = "Before authoring";
   project.worldCanon = { name: "Canon", body: "Manually maintained" };
   project.world = { entities: [
@@ -51,12 +68,35 @@ function fixture(overrides: Partial<WikiCoordinatorDependencies> = {}) {
   const transport = signal<ChatResult>();
   const settled = signal<void>();
   const extracted = signal<void>();
+  const cancellation = new AbortController();
+  const onTestAbort = () => cancellation.abort(testSignal.reason);
+  testSignal.addEventListener("abort", onTestAbort, { once: true });
+  if (testSignal.aborted) onTestAbort();
+  const turns: Promise<TurnResult>[] = [];
+  const children: Promise<unknown>[] = [transport.promise];
+  let disposal: Promise<void> | undefined;
+  const dispose = () => disposal ??= (async () => {
+    cancellation.abort();
+    // Abort wins first. Settle even a transport that ignores cancellation, including
+    // when an assertion exited before the test supplied its scripted response.
+    transport.resolve(response('{"upserts":[]}'));
+    const results = await Promise.allSettled(turns);
+    // Child rejections are consumed by their real session/coordinator callers.
+    // Collect after turns settle: preparation may have started after disposal began.
+    await Promise.allSettled(children);
+    testSignal.removeEventListener("abort", onTestAbort);
+    const failures = results.flatMap(result => result.status === "rejected" ? [result.reason] : []);
+    if (failures.length) throw new AggregateError(failures, "Wiki fixture turn rejected during disposal");
+  })();
+  disposals.push(dispose);
   const order: string[] = [];
   const chat = vi.fn((_config: unknown, request: ChatRequest) => {
     order.push("extraction");
     request.signal!.addEventListener("abort", () => aborted.resolve(request.signal!.reason), { once: true });
     started.resolve(request);
-    return transport.promise.finally(() => settled.resolve());
+    const pending = transport.promise.finally(() => settled.resolve());
+    children.push(pending);
+    return pending;
   });
   const history = vi.fn(async () => [{ id: "history", kind: "user" as const, text: "Earlier conversation", at: 0 }]);
   const flush = vi.fn(async () => { order.push("saved-local"); return { kind: "saved-local" as const }; });
@@ -64,7 +104,11 @@ function fixture(overrides: Partial<WikiCoordinatorDependencies> = {}) {
   const outcomes: unknown[] = [];
   const coordinator = createProjectWikiCoordinator({
     getConfig: defaultAiConfig, history, flush,
-    extract: (input, options) => extractProjectWiki(input, { ...options, chat }).finally(() => extracted.resolve()),
+    extract: (input, options) => {
+      const pending = extractProjectWiki(input, { ...options, chat }).finally(() => extracted.resolve());
+      children.push(pending);
+      return pending;
+    },
     ...overrides,
   });
   const events: SessionEvent[] = [];
@@ -105,7 +149,12 @@ function fixture(overrides: Partial<WikiCoordinatorDependencies> = {}) {
     },
   });
   const scope = null;
-  const run = (caller?: AbortSignal) => session.sendUserMessage(requestText, event => events.push(event), caller, { scope, goalAction: "new-goal" });
+  const run = (caller?: AbortSignal) => {
+    const signal = caller ? AbortSignal.any([caller, cancellation.signal]) : cancellation.signal;
+    const pending = session.sendUserMessage(requestText, event => events.push(event), signal, { scope, goalAction: "new-goal" });
+    turns.push(pending);
+    return pending;
+  };
   const unchanged = () => {
     expect(store.getCurrent()).toEqual(before);
     expect(getMapEditHistoryEntries()).toEqual(historyBefore);
@@ -117,22 +166,32 @@ function fixture(overrides: Partial<WikiCoordinatorDependencies> = {}) {
     expect(deliveries).toEqual([]);
   };
   return { before, project, scope, session, coordinator, order, chat, authored, declareIntent, flush, history,
-    outcomes, deliveries, events, started, aborted, transport, settled, extracted, deadline, timeout, run, unchanged };
+    outcomes, deliveries, events, started, aborted, transport, settled, extracted, deadline, timeout, run, unchanged, dispose, expireExtraction };
 }
 function patch(request: ChatRequest, change: Record<string, unknown> = {}) {
   const payload = JSON.parse(String(request.messages.find(message => message.role === "user")!.content));
   return JSON.stringify({ upserts: [{ id: "w_new", type: "concept", name: "Archive rule", summary: "New fact",
     wiki: { kind: "knowledge", basis: "explicit", topic: "archive", sourceIds: [payload.sources[0].id] }, ...change }] });
 }
-afterEach(() => {
+afterEach(async () => {
+  let timer: ReturnType<typeof setDrainTimeout> | undefined;
+  try {
+    const results = await Promise.race([
+      Promise.allSettled(disposals.splice(0).map(dispose => dispose())),
+      new Promise<never>((_, reject) => { timer = setDrainTimeout(() => reject(new Error("Wiki fixture disposal did not settle")), 5_000); }),
+    ]);
+    const failures = results.flatMap(result => result.status === "rejected" ? [result.reason] : []);
+    if (failures.length) throw new AggregateError(failures, "Wiki fixture disposal failed");
+  } finally { clearDrainTimeout(timer); }
+  // Never restore shared globals while an owned operation is still running.
   store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
   resetMapEditHistory(); resetIntentDeclarationCache();
   vi.clearAllTimers(); vi.useRealTimers(); vi.restoreAllMocks();
 });
 
 describe("own extraction timeout through the normal user-turn boundary", () => {
-  it.each(["valid", "malformed", "rejected"])("defers, initializes original authoring and rejects late %s settlement", async late => {
-    const h = fixture();
+  it.for(["valid", "malformed", "rejected"])("defers, initializes original authoring and rejects late %s settlement", async (late, context) => {
+    const h = fixture(context.signal);
     const pending = h.run();
     const request = await h.started.promise;
     expect(h.timeout).toHaveBeenCalledExactlyOnceWith(45_000);
@@ -141,7 +200,7 @@ describe("own extraction timeout through the normal user-turn boundary", () => {
     const payload = JSON.parse(String(request.messages.find(message => message.role === "user")!.content));
     expect(payload.userText).toBe(requestText);
     expect(payload.sources).toEqual([expect.objectContaining({ kind: "user", text: requestText })]);
-    await vi.advanceTimersByTimeAsync(45_000);
+    h.expireExtraction();
     expect(await h.aborted.promise).toBe(h.deadline.signal.reason);
     const result = await pending;
     expect(h.outcomes).toEqual([{ kind: "deferred", reason: "extraction-timeout" }]);
@@ -173,16 +232,54 @@ describe("own extraction timeout through the normal user-turn boundary", () => {
     expect(h.chat).toHaveBeenCalledTimes(1);
   });
 
-  it.each(["caller", "caller-timeout", "both", "deadline-then-caller", "identity"])("does not defer %s invalidation", async invalidation => {
+  it.for(["test-abort", "early-exit"])("drains owned operations before reset on %s", async (exit, context) => {
+    const lifecycle = new AbortController();
+    const h = fixture(AbortSignal.any([context.signal, lifecycle.signal]));
+    const pending = h.run();
+    const request = await h.started.promise;
+    const completed = { turn: false, extraction: false, transport: false };
+    void pending.then(() => { completed.turn = true; });
+    void h.extracted.promise.then(() => { completed.extraction = true; });
+    void h.settled.promise.then(() => { completed.transport = true; });
+    const failure = new Error("Simulated test failure");
+    if (exit === "test-abort") {
+      lifecycle.abort(failure); // Same signal path Vitest aborts on test-budget expiry.
+      expect(await h.aborted.promise).toBe(failure);
+      await h.dispose();
+    } else {
+      await expect((async () => {
+        try { throw failure; } // Early assertion/exception before scripted settlement.
+        finally { await h.dispose(); }
+      })()).rejects.toBe(failure);
+    }
+    expect(completed).toEqual({ turn: true, extraction: true, transport: true });
+    expect((await pending).stoppedReason).toBe("aborted");
+    expect(h.authored).not.toHaveBeenCalled();
+    h.unchanged();
+    h.transport.resolve(response(patch(request))); // Cannot resurrect disposed work.
+    h.unchanged();
+  });
+
+  it("drains a turn cancelled before extraction starts", async context => {
+    const h = fixture(context.signal);
+    const pending = h.run();
+    await h.dispose();
+    expect((await pending).stoppedReason).toBe("aborted");
+    expect(h.chat).not.toHaveBeenCalled();
+    expect(h.authored).not.toHaveBeenCalled();
+    h.unchanged();
+  });
+
+  it.for(["caller", "caller-timeout", "both", "deadline-then-caller", "identity"])("does not defer %s invalidation", async (invalidation, context) => {
     const identity = { value: "project/scope-1" };
-    const h = fixture({ getIdentity: () => identity.value });
+    const h = fixture(context.signal, { getIdentity: () => identity.value });
     const caller = new AbortController();
     const pending = h.run(caller.signal);
     await h.started.promise;
     if (invalidation === "identity") identity.value = "project/scope-2";
     else if (invalidation === "deadline-then-caller") void h.aborted.promise.then(() => caller.abort());
     else caller.abort(invalidation === "caller-timeout" ? new DOMException("Caller deadline", "TimeoutError") : undefined);
-    if (["identity", "both", "deadline-then-caller"].includes(invalidation)) await vi.advanceTimersByTimeAsync(45_000);
+    if (["identity", "both", "deadline-then-caller"].includes(invalidation)) h.expireExtraction();
     await h.aborted.promise;
     const result = await pending;
     expect(result.stoppedReason).toBe(invalidation === "identity" ? "error" : "aborted");
@@ -195,8 +292,8 @@ describe("own extraction timeout through the normal user-turn boundary", () => {
     h.unchanged();
   });
 
-  it.each(["world-edit", "map-removed", "no-wiki", "backfill"])("does not defer an ineligible %s checkpoint", async change => {
-    const h = fixture(change === "no-wiki" ? { history: async () => [] } : {});
+  it.for(["world-edit", "map-removed", "no-wiki", "backfill"])("does not defer an ineligible %s checkpoint", async (change, context) => {
+    const h = fixture(context.signal, change === "no-wiki" ? { history: async () => [] } : {});
     if (change === "no-wiki" || change === "backfill") store.update(project => { delete project.world; });
     const pending = h.run();
     await h.started.promise;
@@ -206,7 +303,7 @@ describe("own extraction timeout through the normal user-turn boundary", () => {
     if (change === "map-removed") store.update(project => { delete project.maps[project.startMapId]; });
     const beforeTimeout = structuredClone(store.getCurrent());
     const history = getMapEditHistoryEntries();
-    await vi.advanceTimersByTimeAsync(45_000);
+    h.expireExtraction();
     await h.aborted.promise;
     expect((await pending).stoppedReason).toBe("error");
     expect(h.outcomes).toEqual([]);
@@ -219,8 +316,38 @@ describe("own extraction timeout through the normal user-turn boundary", () => {
     expect(getMapEditHistoryEntries()).toEqual(history);
   });
 
-  it.each(["unknown-timeout", "network", "malformed", "protected", "supersession", "concurrent", "save"])("keeps %s errors fatal", async failure => {
-    const h = fixture(failure === "save" ? { flush: async () => { throw new Error("Persistence failure"); } } : {});
+  it.for(["edit", "replacement"])("rejects same-ID map %s and its late patch", async (change, context) => {
+    const h = fixture(context.signal);
+    const pending = h.run();
+    const request = await h.started.promise;
+    const mapId = h.project.startMapId;
+    store.update(project => {
+      const map = project.maps[mapId];
+      if (change === "edit") map.name = "Edited while extracting";
+      else project.maps[mapId] = { ...map, encounterRate: (map.encounterRate ?? 0) + 1 };
+    });
+    const current = structuredClone(store.getCurrent());
+    const history = getMapEditHistoryEntries();
+    h.expireExtraction();
+    await h.aborted.promise;
+    const result = await pending;
+    h.transport.resolve(response(patch(request)));
+    await h.settled.promise;
+    await h.extracted.promise;
+    expect(result.stoppedReason).toBe("error");
+    expect(h.outcomes).toEqual([]);
+    expect(h.declareIntent).not.toHaveBeenCalled();
+    expect(h.authored).not.toHaveBeenCalled();
+    expect(h.deliveries).toEqual([]);
+    expect(h.flush).not.toHaveBeenCalled();
+    expect(store.getCurrent()).toEqual(current);
+    expect(getMapEditHistoryEntries()).toEqual(history);
+    expect(h.session.baselineProject).toEqual(h.before);
+    expect(h.session.getProposedProject()).toEqual(h.before);
+  });
+
+  it.for(["unknown-timeout", "network", "malformed", "protected", "supersession", "concurrent", "save"])("keeps %s errors fatal", async (failure, context) => {
+    const h = fixture(context.signal, failure === "save" ? { flush: async () => { throw new Error("Persistence failure"); } } : {});
     const pending = h.run();
     const request = await h.started.promise;
     if (failure === "unknown-timeout") h.transport.reject(new DOMException("Unknown deadline", "TimeoutError"));
@@ -256,8 +383,8 @@ describe("own extraction timeout through the normal user-turn boundary", () => {
     }
   });
 
-  it("applies a timely valid patch and awaits persistence before ordinary authoring", async () => {
-    const h = fixture();
+  it("applies a timely valid patch and awaits persistence before ordinary authoring", async context => {
+    const h = fixture(context.signal);
     const pending = h.run();
     const request = await h.started.promise;
     h.transport.resolve(response(patch(request)));

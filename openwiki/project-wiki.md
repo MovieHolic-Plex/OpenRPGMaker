@@ -61,7 +61,8 @@ still take the coordinator's normal awaited flush path.
 Only a current-turn extraction's own deadline may return the typed preparation
 outcome `{kind: "deferred", reason: "extraction-timeout"}`. This requires an
 existing wiki before preparation, unchanged world records, the same project
-identity, an extant requested map, and no caller cancellation. Backfill and
+identity, unchanged requested-map content (including same-ID replacements), and
+no caller cancellation. Backfill and
 initial extraction remain fatal on timeout. Unknown/provider/caller timeouts,
 parsing/provenance/protected/supersession conflicts, and save errors remain
 failures. Deferral applies no patch, records no history, emits no delivery or
@@ -125,7 +126,12 @@ rejection, not the explanatory prose or the user's continuation wording. These
 are offline tests, not renewed gameplay or acceptance evidence.
 `projectWikiTimeout.test.ts` uses controlled deadline scheduling and exact abort
 and transport-settlement signals through the real session/coordinator/parser
-and in-memory store/history path. It checks preserved records, normal planner
+and in-memory store/history path. Test-context cancellation aborts the original
+turn; failure-path teardown settles ignored transports and drains all owned
+turn/extraction/transport operations before restoring shared state. Only the
+extraction's own deadline is advanced; unrelated background jobs remain frozen.
+A one-tile tileset removes irrelevant bundled metadata, not real authority or
+persistence checks. It checks preserved records, normal planner
 and original-context initialization, real acceptance authority rejection,
 detached title authoring, no late writes, fatal non-exempt errors, and timely
 application with truthful local-save delivery. No live project is exercised.

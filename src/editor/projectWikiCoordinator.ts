@@ -172,7 +172,7 @@ export function createProjectWikiCoordinator(overrides: Partial<WikiCoordinatorD
         if (!(cause instanceof ProjectWikiExtractionTimeoutError) || !existingWiki) throw cause;
         // Deferral must not let a detached session author against changed records/scope.
         const current = deps.getProject();
-        if (input.mapId && !current.maps[input.mapId]) {
+        if (input.mapId && JSON.stringify(current.maps[input.mapId]) !== JSON.stringify(base.maps[input.mapId])) {
           throw new ProjectWikiCheckpointError("project-changed", "기록을 읽는 동안 요청 대상 맵이 바뀌었습니다.");
         }
         if (JSON.stringify(current.world) !== JSON.stringify(base.world)) {
