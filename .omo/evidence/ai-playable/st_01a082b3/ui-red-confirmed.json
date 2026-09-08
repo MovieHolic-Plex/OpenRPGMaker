@@ -1,0 +1,185 @@
+{
+  "config": {
+    "argv": [
+      "/usr/local/bin/node",
+      "/home/main/z-project/rpg-zzu-history-correction-st01a082b3/node_modules/.bin/playwright",
+      "test",
+      "test/e2e/ai-map-history.spec.ts",
+      "--grep",
+      "startup catalog",
+      "--output=.omo/evidence/ai-playable/st_01a082b3/ui-red-confirmed",
+      "--reporter=list,json"
+    ],
+    "configFile": "/home/main/z-project/rpg-zzu-history-correction-st01a082b3/playwright.config.ts",
+    "rootDir": "/home/main/z-project/rpg-zzu-history-correction-st01a082b3/test/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/home/main/z-project/rpg-zzu-history-correction-st01a082b3/.omo/evidence/ai-playable/st_01a082b3/ui-red-confirmed",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/home/main/z-project/rpg-zzu-history-correction-st01a082b3/test/e2e",
+        "testIgnore": [
+          "**/_*.spec.ts"
+        ],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list"
+      ],
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.61.0",
+    "workers": 1,
+    "webServer": {
+      "command": "npm run dev -- --host 127.0.0.1 --port 9283 --strictPort",
+      "env": {
+        "DEV_SERVER_NO_TLS": "1",
+        "E2E_FREEZE_DEV_SERVER": "1"
+      },
+      "url": "http://127.0.0.1:9283",
+      "reuseExistingServer": true,
+      "timeout": 30000
+    }
+  },
+  "suites": [
+    {
+      "title": "ai-map-history.spec.ts",
+      "file": "ai-map-history.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "map-scoped AI conversation history",
+          "file": "ai-map-history.spec.ts",
+          "line": 28,
+          "column": 6,
+          "specs": [
+            {
+              "title": "startup catalog cannot cancel Recover through the shipped clock",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 56186,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\nExpected: \u001b[32m[{\"context\": {\"mapHeight\": 15, \"mapId\": \"map_blank_start\", \"mapName\": \"빈 맵\", \"mapWidth\": 20}, \"kind\": \"user\", \"text\": \"STARTUP-RECOVER-REQUEST\"}, {\"kind\": \"assistant\", \"text\": \"STARTUP-RECOVER-ANSWER\"}]\u001b[39m\nReceived: \u001b[31mundefined\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\nExpected: \u001b[32m[{\"context\": {\"mapHeight\": 15, \"mapId\": \"map_blank_start\", \"mapName\": \"빈 맵\", \"mapWidth\": 20}, \"kind\": \"user\", \"text\": \"STARTUP-RECOVER-REQUEST\"}, {\"kind\": \"assistant\", \"text\": \"STARTUP-RECOVER-ANSWER\"}]\u001b[39m\nReceived: \u001b[31mundefined\u001b[39m\n    at startupRecoverRegression (/home/main/z-project/rpg-zzu-history-correction-st01a082b3/test/e2e/aiHistoryStartupRecoverHarness.ts:133:38)",
+                        "location": {
+                          "file": "/home/main/z-project/rpg-zzu-history-correction-st01a082b3/test/e2e/aiHistoryStartupRecoverHarness.ts",
+                          "column": 38,
+                          "line": 133
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39maiHistoryStartupRecoverHarness.ts:133\n\n  131 |     await testInfo.attach(\"startup-recover-receipt\", { body: JSON.stringify({ stateAfterStartup,\n  132 |       state: await status.getAttribute(\"data-state\"), retained, historyRequests, forbidden }, null, 2), contentType: \"application/json\" });\n> 133 |     expect(retained.record?.entries).toEqual(entries);\n      |                                      ^\n  134 |     expect(retained.backend).toBe(\"indexeddb\");\n  135 |     expect(stateAfterStartup).toBe(\"loading\");\n  136 |     expect(await status.getAttribute(\"data-state\")).toBe(\"ok\");"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/home/main/z-project/rpg-zzu-history-correction-st01a082b3/test/e2e/aiHistoryStartupRecoverHarness.ts",
+                            "column": 38,
+                            "line": 133
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\nExpected: \u001b[32m[{\"context\": {\"mapHeight\": 15, \"mapId\": \"map_blank_start\", \"mapName\": \"빈 맵\", \"mapWidth\": 20}, \"kind\": \"user\", \"text\": \"STARTUP-RECOVER-REQUEST\"}, {\"kind\": \"assistant\", \"text\": \"STARTUP-RECOVER-ANSWER\"}]\u001b[39m\nReceived: \u001b[31mundefined\u001b[39m\n\n   at aiHistoryStartupRecoverHarness.ts:133\n\n  131 |     await testInfo.attach(\"startup-recover-receipt\", { body: JSON.stringify({ stateAfterStartup,\n  132 |       state: await status.getAttribute(\"data-state\"), retained, historyRequests, forbidden }, null, 2), contentType: \"application/json\" });\n> 133 |     expect(retained.record?.entries).toEqual(entries);\n      |                                      ^\n  134 |     expect(retained.backend).toBe(\"indexeddb\");\n  135 |     expect(stateAfterStartup).toBe(\"loading\");\n  136 |     expect(await status.getAttribute(\"data-state\")).toBe(\"ok\");\n    at startupRecoverRegression (/home/main/z-project/rpg-zzu-history-correction-st01a082b3/test/e2e/aiHistoryStartupRecoverHarness.ts:133:38)"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-08T20:39:43.465Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "startup-recover-receipt",
+                          "contentType": "application/json",
+                          "body": "ewogICJzdGF0ZUFmdGVyU3RhcnR1cCI6ICJpZGxlIiwKICAic3RhdGUiOiAiaWRsZSIsCiAgInJldGFpbmVkIjogewogICAgInJlY29yZCI6IG51bGwsCiAgICAiYmFja2VuZCI6ICJpbmRleGVkZGIiCiAgfSwKICAiaGlzdG9yeVJlcXVlc3RzIjogWwogICAgIkdFVCIKICBdLAogICJmb3JiaWRkZW4iOiBbCiAgICAiR0VUIGh0dHA6Ly8xMjcuMC4wLjE6MTc4MzEvdjEvYnJvd3Nlci9uZXh0IiwKICAgICJHRVQgaHR0cDovLzEyNy4wLjAuMToxNzgzMS92MS9icm93c2VyL25leHQiLAogICAgIkdFVCBodHRwOi8vMTI3LjAuMC4xOjE3ODMxL3YxL2Jyb3dzZXIvbmV4dCIKICBdCn0="
+                        },
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/home/main/z-project/rpg-zzu-history-correction-st01a082b3/.omo/evidence/ai-playable/st_01a082b3/ui-red-confirmed/ai-map-history-map-scoped--e8c24-r-through-the-shipped-clock-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/home/main/z-project/rpg-zzu-history-correction-st01a082b3/.omo/evidence/ai-playable/st_01a082b3/ui-red-confirmed/ai-map-history-map-scoped--e8c24-r-through-the-shipped-clock-chromium/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/home/main/z-project/rpg-zzu-history-correction-st01a082b3/.omo/evidence/ai-playable/st_01a082b3/ui-red-confirmed/ai-map-history-map-scoped--e8c24-r-through-the-shipped-clock-chromium/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/home/main/z-project/rpg-zzu-history-correction-st01a082b3/test/e2e/aiHistoryStartupRecoverHarness.ts",
+                        "column": 38,
+                        "line": 133
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "7fad2a72ec69d62f062d-c7a128aadfae894a315e",
+              "file": "ai-map-history.spec.ts",
+              "line": 31,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-09-08T20:39:38.381Z",
+    "duration": 65750.606,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

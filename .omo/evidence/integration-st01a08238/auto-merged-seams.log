@@ -1,0 +1,110 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/assistantP2ReviewIntegration.test.ts test/toolImageEventAcceptanceSession.test.ts test/assistantMergedReadDelivery.test.ts test/assistantNativeReadDelivery.test.ts test/requestCoverage.test.ts test/intentDeclarationClient.test.ts test/assistantBatchCompletion.test.ts test/assistantSessionIntent.test.ts test/characterAppearanceAssistant.test.ts --maxWorkers=2 --minWorkers=1 --reporter=default --reporter=json --outputFile=.omo/evidence/integration-st01a08238/auto-merged-seams.json
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-main-integration-st01a08238
+
+ ✓ test/assistantBatchCompletion.test.ts (10 tests) 20087ms
+   ✓ audit batch dependency and completion lifecycle > defers same-map spec-free props after a rejected spec but allows another map  1781ms
+   ✓ audit batch dependency and completion lifecycle > defers premature completion, then accepts correction of the failed write in the same batch  2616ms
+   ✓ audit batch dependency and completion lifecycle > acknowledges an already completed plan without an item ID or another application  2601ms
+   ✓ audit batch dependency and completion lifecycle > does not acknowledge a missing plan  744ms
+   ✓ audit batch dependency and completion lifecycle > does not acknowledge an explicitly unknown item  2859ms
+   ✓ audit batch dependency and completion lifecycle > does not acknowledge skipped work as already completed  1069ms
+   ✓ audit batch dependency and completion lifecycle > does not bypass open acceptance when every work item is done  1997ms
+   ✓ audit batch dependency and completion lifecycle > records malformed optional lint as unsuccessful without inventing a completion-blocking finding  3127ms
+   ✓ audit batch dependency and completion lifecycle > does not acknowledge completion after a later explicit verification failure  1995ms
+   ✓ audit batch dependency and completion lifecycle > keeps declared verification required when malformed lint produces no finding  1296ms
+ ✓ test/assistantP2ReviewIntegration.test.ts (12 tests) 20568ms
+   ✓ P2 projection composed with independent review > does not turn optional requirements into independent-review blockers  1821ms
+   ✓ P2 projection composed with independent review > does not turn withdrawn requirements into independent-review blockers  1541ms
+   ✓ P2 projection composed with independent review > keeps exact explicit draft verification and applied satisfaction distinct (autonomous=false)  2345ms
+   ✓ P2 projection composed with independent review > keeps exact explicit draft verification and applied satisfaction distinct (autonomous=true)  3471ms
+   ✓ P2 projection composed with independent review > answers ask without reviewing or authorizing a retained cancelled draft  881ms
+   ✓ P2 projection composed with independent review > answers plan-question without reviewing or authorizing a retained cancelled draft  844ms
+   ✓ P2 projection composed with independent review > projects rejected review execution honestly without authorizing the draft  1125ms
+   ✓ P2 projection composed with independent review > projects budget review execution honestly without authorizing the draft  760ms
+   ✓ P2 projection composed with independent review > resumes a failed new goal from its pre-await review baseline and fresh original context  3730ms
+   ✓ P2 projection composed with independent review > retires approval before a fresh send can fail in intent preparation  1211ms
+   ✓ P2 projection composed with independent review > cannot keep apply authority when the host publishes rejection  1224ms
+   ✓ P2 projection composed with independent review > retires old review ownership synchronously at new-goal entry before fallible preparation  1612ms
+ ✓ test/assistantSessionIntent.test.ts (15 tests) 13692ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 선언이 질문을 냈으면 chat 모드는 모델을 부르지 않고 그 질문으로 턴을 끝낸다  717ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > auto 모드는 되묻기를 건너뛰지만 미완성 acceptance 를 성공으로 게시하지 않는다(F-05)  1042ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 선언자가 없으면 폴백 선언이다 — 되묻지 않고, 계획 여부는 플래너(direct)에게 넘긴다  1268ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 질문 선언은 플래너를 건너뛰고, 계획 필요 선언은 플래너를 돈다  1038ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 플래너의 direct 는 존중한다 — 「마을」이라도 코드가 계획을 강제하지 않는다  769ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 플래너가 volume 을 선언한 계획만 막대를 세우고, 막대 미달로 끝내면 재주입한다  1271ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > volume 없는 계획은 막대가 없다  876ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 선언한 툴은 도메인 상한과 무관하게 이번 라운드 스키마에 실린다  474ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 지시 모드의 툴 이름 언급은 사용자 발화에서만 읽고 footer 는 보지 않는다 (explicit instruction=false)  594ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 지시 모드의 툴 이름 언급은 사용자 발화에서만 읽고 footer 는 보지 않는다 (explicit instruction=true)  546ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > ask 는 언급·선언된 쓰기도 노출하거나 실행하지 않고 조회는 허용한다  804ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > question 는 언급·선언된 쓰기도 노출하거나 실행하지 않고 조회는 허용한다  813ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 선택 영역은 사실로 붙고 선언에 따라 경계 또는 참고용 노트가 된다  1236ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 수정 선언은 계획의 대상 맵을 현재 맵으로 고정하고, 생성 선언은 고정하지 않는다  1518ms
+   ✓ 의도 선언이 세션 라우팅을 정한다 > 「계속」은 모델을 부르지 않고 진행 중 계획을 이어간다(continuation)  723ms
+ ✓ test/requestCoverage.test.ts (14 tests) 14133ms
+   ✓ independent request coverage enters the canonical ledger > keeps the original goal incomplete after failed NPC repair and NPC-only clarification ({"resume":false,"auditUnavailable":false})  2428ms
+   ✓ independent request coverage enters the canonical ledger > keeps the original goal incomplete after failed NPC repair and NPC-only clarification ({"resume":true,"auditUnavailable":false})  1527ms
+   ✓ independent request coverage enters the canonical ledger > keeps the original goal incomplete after failed NPC repair and NPC-only clarification ({"resume":false,"auditUnavailable":true})  1561ms
+   ✓ independent request coverage enters the canonical ledger > keeps the original goal incomplete after failed NPC repair and NPC-only clarification ({"resume":true,"auditUnavailable":true})  892ms
+   ✓ independent request coverage enters the canonical ledger > retains words omitted even by the independent extractor as an unverified canonical obligation  775ms
+   ✓ independent request coverage enters the canonical ledger > cannot satisfy a partial plan after omission coverage  920ms
+   ✓ independent request coverage enters the canonical ledger > cannot satisfy a partial plan after empty coverage  829ms
+   ✓ independent request coverage enters the canonical ledger > cannot satisfy a partial plan after invalid coverage  862ms
+   ✓ independent request coverage enters the canonical ledger > cannot satisfy a partial plan after network coverage  952ms
+   ✓ independent request coverage enters the canonical ledger > links every independently extracted clause to real immutable checks  1091ms
+   ✓ independent request coverage enters the canonical ledger > does not create obligations or run an audit for genuine questions  439ms
+   ✓ independent request coverage enters the canonical ledger > keeps grouped R2 clarification and resume coverage distinct (audit failure=false)  897ms
+   ✓ independent request coverage enters the canonical ledger > keeps grouped R2 clarification and resume coverage distinct (audit failure=true)  956ms
+ ✓ test/characterAppearanceAssistant.test.ts (12 tests) 3862ms
+   ✓ appearance assistant handoff > advertises generation for portrait intent: 캐릭터 외형의 빈 얼굴 그림을 만들어줘  649ms
+   ✓ appearance assistant handoff > advertises generation for portrait intent: 캐릭터 외형의 상반신 그림 후보를 만들어줘  555ms
+   ✓ appearance assistant handoff > advertises generation for portrait intent: Generate a face portrait for this character appearance  546ms
+   ✓ appearance assistant handoff > routes do through the real client without auto-accepting  620ms
+   ✓ appearance assistant handoff > routes ask through the real client without auto-accepting  437ms
+   ✓ appearance assistant handoff > routes switched through the real client without auto-accepting  606ms
+ ✓ test/assistantNativeReadDelivery.test.ts (2 tests) 4474ms
+   ✓ native read delivery credit > carries an intact pending live read across a genuine continuation, not into its own response  1526ms
+   ✓ native read delivery credit > refuses a native full read stripped before its first writer delivery, then permits complete original paging  2946ms
+ ❯ test/toolImageEventAcceptanceSession.test.ts (1 test | 1 failed) 1265ms
+   × session acceptance refuses unrepresentative multi-page event imagery > cannot verify imageReviewed after a page2-only graphic change without representable coverage 1264ms
+     → expected [ false, false ] to deeply equal [ true, false ]
+ ✓ test/assistantMergedReadDelivery.test.ts (2 tests) 3415ms
+   ✓ does not grant monster or native read credit after a failed writer delivery  1762ms
+   ✓ does not grant monster or native read credit after a cancelled writer delivery  1650ms
+ ✓ test/intentDeclarationClient.test.ts (27 tests) 112ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/toolImageEventAcceptanceSession.test.ts > session acceptance refuses unrepresentative multi-page event imagery > cannot verify imageReviewed after a page2-only graphic change without representable coverage
+AssertionError: expected [ false, false ] to deeply equal [ true, false ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[32m-   true,[39m
+[31m+   false,[39m
+[2m    false,[22m
+[2m  ][22m
+
+ ❯ test/toolImageEventAcceptanceSession.test.ts:106:89
+    104| 
+    105|     const reviews = events.filter((event) => event.type === "tool_call…
+    106|     expect(reviews.map((event) => event.type === "tool_call" ? event.r…
+       |                                                                                         ^
+    107|     expect(session.getAcceptanceSnapshot()?.status).not.toBe("verified…
+    108|     expect(session.getAcceptanceSnapshot()?.items[0]?.status).not.toBe…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 8 passed (9)
+      Tests  1 failed | 94 passed (95)
+   Start at  04:54:41
+   Duration  63.42s (transform 8.74s, setup 0ms, collect 37.65s, tests 81.61s, environment 3ms, prepare 642ms)
+
+JSON report written to /home/main/z-project/rpg-zzu-ai-main-integration-st01a08238/.omo/evidence/integration-st01a08238/auto-merged-seams.json

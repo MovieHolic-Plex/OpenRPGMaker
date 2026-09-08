@@ -132,6 +132,8 @@ export function openAiConversationHistoryModal(options: {
   readonly scopeKey: string;
   /** 지금 화면에 열려 있는 대화 id — 목록에서 「현재」로 표시하고 열기를 막는다. */
   readonly currentConversationId: string;
+  /** Live panel/project/conversation ownership, not only this modal's identity. */
+  readonly isCurrent?: () => boolean;
   /** 열 때 캡처한 현재 맵. 없으면 현재-맵 필터는 빈 목록이다. */
   readonly currentMapId: string | null;
   readonly knownMaps: readonly HistoryKnownMap[];
@@ -149,6 +151,7 @@ export function openAiConversationHistoryModal(options: {
   let archiveMapIds: readonly string[] = [];
   let listError: string | null = null;
   let renderGeneration = 0;
+  let selectionGeneration = 0;
   let inspectGeneration = 0;
   let expandedId: string | null = null;
   let expandedRecord: ConversationRecord | null = null;
@@ -203,7 +206,7 @@ export function openAiConversationHistoryModal(options: {
     text: "서버에서 이 프로젝트 기록 가져오기",
     attrs: {
       type: "button",
-      title: "이 브라우저에 없는 서버 쪽 대화를 가져옵니다. 모델을 부르지 않습니다.",
+      title: "없는 기록을 가져오고, 가져오기 시작 후 바뀌지 않은 이전 로컬 기록만 더 최신 서버 기록으로 갱신합니다. 모델을 부르지 않습니다.",
     },
     dataset: { testid: "ai-history-recover" },
     on: { click: () => void modalPendingWork.track(runRecover()) },
@@ -214,7 +217,7 @@ export function openAiConversationHistoryModal(options: {
   });
   recoverStatus.hidden = true;
 
-  const isCurrentModal = (): boolean => openBackdrop === backdrop;
+  const isCurrentModal = (): boolean => openBackdrop === backdrop && (options.isCurrent?.() ?? true);
 
   const historyNote = el("p", {
     class: "ai-history-note",
@@ -377,16 +380,17 @@ export function openAiConversationHistoryModal(options: {
         click: () => void modalPendingWork.track((async () => {
           if (isCurrent || !isCurrentModal() || filter === "legacy") return;
           const generation = renderGeneration;
+          const selection = ++selectionGeneration;
           let record: ConversationRecord | null;
           try {
             record = await loadConversationForScope(row.id, capturedScope);
           } catch (error) {
-            if (!isCurrentModal() || generation !== renderGeneration) return;
+            if (!isCurrentModal() || generation !== renderGeneration || selection !== selectionGeneration) return;
             setRecover("error", errorMessage(error, "대화를 읽지 못했습니다. 다시 열어 주세요."));
             return;
           }
-          if (!isCurrentModal() || generation !== renderGeneration) return;
-          if (!record) {
+          if (!isCurrentModal() || generation !== renderGeneration || selection !== selectionGeneration) return;
+          if (!record || record.id !== row.id || record.projectContextKey !== capturedScope) {
             recordAiUiEvent({
               surface: "history-modal",
               action: AI_UI_ACTIONS.conversationRestore,
@@ -425,6 +429,7 @@ export function openAiConversationHistoryModal(options: {
       on: {
         click: () => void modalPendingWork.track((async () => {
           if (!isCurrentModal() || filter === "legacy") return;
+          ++selectionGeneration;
           recordAiUiEvent({
             surface: "history-modal",
             action: AI_UI_ACTIONS.conversationDelete,
@@ -531,6 +536,7 @@ export function openAiConversationHistoryModal(options: {
 
   const fetchPage = async (append: boolean): Promise<void> => {
     const generation = ++renderGeneration;
+    if (recoverStatus.dataset.state === "loading") setRecover("idle", "");
     listError = null;
     if (!append) loaded = [];
     if (filter === "current" && !options.currentMapId) {
@@ -566,35 +572,39 @@ export function openAiConversationHistoryModal(options: {
   };
 
   const refreshArchiveMapIds = async (): Promise<void> => {
+    const generation = renderGeneration;
     try {
       const catalog = await queryConversationArchive({
         projectContextKey: capturedScope,
         // Map choices cover the whole scoped archive, not just its newest rows.
         limit: Number.MAX_SAFE_INTEGER,
       });
-      if (!isCurrentModal()) return;
+      if (!isCurrentModal() || generation !== renderGeneration) return;
       const ids = new Set<string>();
       for (const row of catalog.records) {
         for (const id of row.mapIds) ids.add(id);
       }
       archiveMapIds = [...ids];
     } catch (error) {
-      if (!isCurrentModal()) return;
-      if (!(error instanceof Error)) throw error;
+      if (!isCurrentModal() || generation !== renderGeneration) return;
+      setRecover("error", errorMessage(error, "대화 맵 목록을 읽지 못했습니다."));
     }
     renderMapSelect();
   };
 
   const runRecover = async (): Promise<void> => {
     if (!isCurrentModal() || recoverButton.disabled || filter === "legacy") return;
+    const generation = ++renderGeneration;
+    ++selectionGeneration;
+    const isRecoveryCurrent = () => isCurrentModal() && generation === renderGeneration;
     setRecover("loading", "가져오는 중…");
     try {
       const result = await hydrateConversationArchive({
         projectContextKey: capturedScope,
         signal: hydrateAbort.signal,
-        isCurrent: isCurrentModal,
+        isCurrent: isRecoveryCurrent,
       });
-      if (!isCurrentModal()) return;
+      if (!isRecoveryCurrent()) return;
       const incomplete = result.rejected > 0;
       setRecover(
         incomplete ? "error" : "ok",
@@ -608,10 +618,13 @@ export function openAiConversationHistoryModal(options: {
       );
       if (incomplete) recoverStatus.dataset.state = "incomplete";
       await refreshArchiveMapIds();
-      await fetchPage(false);
+      if (isRecoveryCurrent()) await fetchPage(false);
     } catch (error) {
-      if (!isCurrentModal() || isAbortError(error)) return;
+      if (!isRecoveryCurrent() || isAbortError(error)) return;
       setRecover("error", errorMessage(error, "서버 기록을 가져오지 못했습니다."));
+      // A failed GET can still have been overtaken by a valid local save.
+      await refreshArchiveMapIds();
+      if (isRecoveryCurrent()) await fetchPage(false);
     }
   };
 
@@ -676,7 +689,9 @@ export function openAiConversationHistoryModal(options: {
   document.body.append(backdrop);
   openBackdrop = backdrop;
   void modalPendingWork.track((async () => {
+    const generation = renderGeneration;
     await refreshArchiveMapIds();
+    if (generation !== renderGeneration || !isCurrentModal()) return;
     await fetchPage(false);
   })());
   search.focus?.();

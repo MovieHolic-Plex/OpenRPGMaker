@@ -1,0 +1,239 @@
+$ npm test -- test/ohMyPiNumericEnumLocal.test.ts test/toolSchemaProviderCompat.test.ts test/assistantAcceptance.test.ts test/assistantAcceptanceDiagnostics.test.ts test/assistantAcceptanceProvider.test.ts test/assistantAcceptanceSession.test.ts test/assistantAcceptancePromiseBaseline.test.ts test/assistantAcceptanceRequestBaseline.test.ts test/assistantSpatialObligations.test.ts test/viewRelativeLocation.test.ts test/proposalCompleteness.test.ts test/workPlanMapOutcomes.test.ts test/workItemOutcomeTargetMap.test.ts test/assistantImageTransport.test.ts test/assistantImageEvidence.test.ts test/assistantVisualEvidenceSession.test.ts test/aiNativePageContract.test.ts test/aiCommandSchemaContract.test.ts test/aiEndingCompletionRegression.test.ts test/eventPageRequiredFields.test.ts test/toolsMapManagement.test.ts test/aiGraphicAutofill.test.ts test/tileQueryBoundaries.test.ts test/tileQueryTool.test.ts test/findSimilarTiles.test.ts test/tileMetadataTools.test.ts test/tileVocabularyV3.test.ts test/dialogueImageUrls.test.ts test/aiLlmClient.test.ts test/llmReasoning.test.ts test/llmRetry.test.ts --maxWorkers=2 --minWorkers=1
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/ohMyPiNumericEnumLocal.test.ts test/toolSchemaProviderCompat.test.ts test/assistantAcceptance.test.ts test/assistantAcceptanceDiagnostics.test.ts test/assistantAcceptanceProvider.test.ts test/assistantAcceptanceSession.test.ts test/assistantAcceptancePromiseBaseline.test.ts test/assistantAcceptanceRequestBaseline.test.ts test/assistantSpatialObligations.test.ts test/viewRelativeLocation.test.ts test/proposalCompleteness.test.ts test/workPlanMapOutcomes.test.ts test/workItemOutcomeTargetMap.test.ts test/assistantImageTransport.test.ts test/assistantImageEvidence.test.ts test/assistantVisualEvidenceSession.test.ts test/aiNativePageContract.test.ts test/aiCommandSchemaContract.test.ts test/aiEndingCompletionRegression.test.ts test/eventPageRequiredFields.test.ts test/toolsMapManagement.test.ts test/aiGraphicAutofill.test.ts test/tileQueryBoundaries.test.ts test/tileQueryTool.test.ts test/findSimilarTiles.test.ts test/tileMetadataTools.test.ts test/tileVocabularyV3.test.ts test/dialogueImageUrls.test.ts test/aiLlmClient.test.ts test/llmReasoning.test.ts test/llmRetry.test.ts --maxWorkers=2 --minWorkers=1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-provider-enum-0907
+
+ ✓ test/aiGraphicAutofill.test.ts (15 tests) 6337ms
+   ✓ upsert_enemy 외형 자동 부여 > monsterResourceId 를 생략하면 이름에 맞는 리소스를 붙이고 경고한다  764ms
+   ✓ upsert_enemy 외형 자동 부여 > 같은 적을 다시 저장하면 이미 붙은 외형을 유지한다  659ms
+   ✓ upsert_enemy 외형 자동 부여 > 명시한 외형을 자동 부여가 덮지 않는다  540ms
+   ✓ define_monster_species 외형 자동 부여 > graphic.monsterResourceId 를 생략하면 이름으로 붙인다  422ms
+   ✓ make_action_enemy 외형 자동 부여 > 생성 적과 그 적의 사냥터 필드 스폰이 모두 보이는 외형을 가진다  639ms
+   ✓ 몬스터 이벤트 기본 외형 > place_battle_blocker 는 graphic 생략 시 monster charset 과 경고를 붙인다  341ms
+   ✓ upsert_event NPC 외형 자동 부여 > 대화가 있는 action 이벤트는 투명하게 저장되지 않는다  342ms
+   ✓ upsert_event NPC 외형 자동 부여 > 두 페이지 NPC는 비어 있는 뒷 페이지에 앞 페이지 외형을 그대로 재사용한다  305ms
+   ✓ upsert_event NPC 외형 자동 부여 > priority below 인 action 대화 마커는 주민 그래픽을 세우지 않는다  435ms
+   ✓ upsert_event NPC 외형 자동 부여 > 투명을 명시한 이벤트와 컷신용 auto 이벤트는 그대로 둔다  550ms
+   ✓ add_companion actor 합류 이벤트 외형 > upsert_actor 로 만든 charset 없는 액터는 주민 charset 으로 폴백한다  505ms
+ ✓ test/toolsMapManagement.test.ts (21 tests) 17520ms
+   ✓ find_events catalog > 페이지 수·조건·이름을 돌려 새 NPC의 템플릿을 고를 수 있다  1268ms
+   ✓ get_event > 이벤트 전체 정의를 돌려주고, 없으면 보유 목록을 안내한다  581ms
+   ✓ get_event > place_npc가 런타임 지원 제한 페이지 명령 warning을 ToolResult.issues에 담는다  575ms
+   ✓ get_event > upsert_event가 런타임 지원 제한 페이지 명령 warning과 요약 count를 담는다  606ms
+   ✓ get_event > upsert_event pages[].commands 단수 객체 입력은 배열로 승격하고 warning을 남긴다  678ms
+   ✓ get_event > upsert_event 부분 수정은 기존 NPC의 대사·그래픽·위치를 보존한다  1402ms
+   ✓ get_event > upsert_event 후속 수정은 place_chest의 50G 보상 페이지를 보존한다  1408ms
+   ✓ get_event > upsert_event는 event trigger 안에 잘못 넣은 명령을 거부하고 기존 귀환을 보존한다  1385ms
+   ✓ get_event > upsert_event는 page trigger 안에 잘못 넣은 명령을 거부하고 기존 귀환을 보존한다  873ms
+   ✓ get_event > upsert_event commands kind 오류는 인덱스와 기대 형식을 invalid-args에 담는다  449ms
+   ✓ get_event > upsert_event 인자 누락은 NPC 배치용 place_npc 힌트를 돌려준다  373ms
+   ✓ set_map_properties > 이름/인카운트율/트룹을 설정하고, 없는 트룹은 거부한다  740ms
+   ✓ resize_map > 확장부는 잔디로 채우고 기존 타일은 보존한다  865ms
+   ✓ resize_map > 축소로 이벤트가 밖에 나가면 거부한다  1005ms
+   ✓ resize_map > 256x256 초과 확장은 거부하고 분할 맵 대안을 안내한다  560ms
+   ✓ create_map > 기본 생성은 돌벽 테두리 없이 잔디 평지로 만든다  631ms
+   ✓ create_map > border:'wall'을 지정하면 기존처럼 외곽을 돌벽으로 두른다  382ms
+   ✓ remove_map > 일반 맵은 삭제되고 맵 트리에서도 사라진다  1777ms
+   ✓ remove_map > 시작 맵은 삭제를 거부한다  338ms
+   ✓ rename_variable > 정의·세션·커맨드·조건의 변수 참조를 일괄 치환한다  1473ms
+ ✓ test/aiLlmClient.test.ts (24 tests) 1630ms
+   ✓ chatCompletion 오류 처리 > HTTP 429를 사람이 읽을 메시지로 바꾼다  1513ms
+ ✓ test/assistantAcceptanceSession.test.ts (21 tests) 20611ms
+   ✓ acceptance controls actual session termination > does not credit frontend insertion without a provider delivery acknowledgement  906ms
+   ✓ acceptance controls actual session termination > does not schedule run-end persistence proof for a completed plan with unmet acceptance  731ms
+   ✓ acceptance controls actual session termination > does not turn a review without an explicit passing verdict into completion  1043ms
+   ✓ acceptance controls actual session termination > withdraws an earlier pass when a later explicit review fails  1689ms
+   ✓ acceptance controls actual session termination > continues then blocks insufficient dimensions and quantity even after skip completes the plan  900ms
+   ✓ acceptance controls actual session termination > retains original denominator when skip and set_work_plan try to shrink promises  816ms
+   ✓ acceptance controls actual session termination > invalidates an attributed image review after a subsequent real map write  1626ms
+   ✓ applied acceptance lifecycle through real tools > repairs exact dimensions after plan completion and invalidates on applied undo  3463ms
+   ✓ applied acceptance lifecycle through real tools > blocks and retains the ledger when aborted while the next model response is held  839ms
+   ✓ applied acceptance lifecycle through real tools > never credits a review authored in the same response as the image request  997ms
+   ✓ applied acceptance lifecycle through real tools > requires visible contract repair for a spatial plan missing criteria  538ms
+   ✓ recorded provider acceptance repair failures (R7) > identifies the missing scope atomically in recorded repair 0  661ms
+   ✓ recorded provider acceptance repair failures (R7) > identifies the missing scope atomically in recorded repair 1  593ms
+   ✓ recorded provider acceptance repair failures (R7) > identifies the missing scope atomically in recorded repair 2  1070ms
+   ✓ recorded provider acceptance repair failures (R7) > identifies the missing scope atomically in recorded repair 3  1093ms
+   ✓ recorded provider acceptance repair failures (R7) > identifies the missing scope atomically in recorded repair 4  1034ms
+   ✓ returns distinct repair and review diagnostics through the actual session handler  880ms
+   ✓ exposes planner acceptance diagnostics before the first generation response (undefined)  371ms
+   ✓ exposes planner acceptance diagnostics before the first generation response ({"id":"bad","title":"Bad","criteria":[{"kind":"mapCount","count":2}]})  832ms
+ ✓ test/assistantSpatialObligations.test.ts (24 tests) 18674ms
+   ✓ placement instructions, not game facts, own inferred viewport obligations > preserves the captured exact sign through the real session authoring path: 안내 표지판 하나의 문구는 정확히 「우물은 북쪽, 지하실은 동쪽」으로 해 줘.  1335ms
+   ✓ placement instructions, not game facts, own inferred viewport obligations > preserves the captured exact sign through the real session authoring path: 이 새 리뷰 프로젝트만 사용해서 3분 정도 플레이할 작은 모험 게임 「작은 열쇠」를 만들어 줘. 맵은 정확히 2개: 20×15 마을과 12×10 지하실. 현재 빈 맵은 마을로 활용해도 돼. 마을에서 시작해 촌장에게 부탁을 받고, 지하실에서 황동 열쇠를 얻고, 마을의 잠긴 북쪽 출구를 열면 엔딩이 나와야 해. 열쇠 없이는 출구를 통과할 수 없고, 열쇠는 한 번만 획득하며 출구에서 1개 소비해. 촌장 보상은 20골드이고 반복 대화로 중복 지급되면 안 돼. 안내 표지판 하나의 문구는 정확히 「우물은 북쪽, 지하실은 동쪽」으로 해 줘. 전투나 추가 맵은 필요 없어. 걷기 가능한 연결과 NPC/열쇠/출구 이벤트를 실제로 구현하고 두 맵의 그림을 확인해 줘. 구현한 것과 확인하지 못한 것을 구분해서 말해 줘.  990ms
+   ✓ spatial milestone completion evidence > does not count prior NPCs toward the next item's quantity (true, false)  3408ms
+   ✓ spatial milestone completion evidence > does not count prior NPCs toward the next item's quantity (true, true)  3090ms
+   ✓ spatial milestone completion evidence > does not count prior NPCs toward the next item's quantity (false, false)  2119ms
+   ✓ spatial milestone completion evidence > does not count prior NPCs toward the next item's quantity (false, true)  2265ms
+   ✓ spatial milestone completion evidence > does not bind an unrelated ground-fill instruction to a later viewport pond  560ms
+   ✓ spatial milestone completion evidence > keeps the captured viewport and applied evidence across a manual continuation  466ms
+   ✓ spatial milestone completion evidence > uses real milestone application evidence after pending calls are cleared  1968ms
+   ✓ spatial milestone completion evidence > keeps a genuine viewport placement bounded and protected (kind=selection)  494ms
+   ✓ spatial milestone completion evidence > binds a viewport obligation to the spatial item that uses it, not another NPC item  587ms
+   ✓ spatial milestone completion evidence > retains a fulfilled pond milestone when a later NPC item changes the same map  897ms
+ ✓ test/aiEndingCompletionRegression.test.ts (13 tests) 14841ms
+   ✓ AI-authored ending completion at the tool/save/runtime seam > reproduces the saved correction: item consumed, switch retained, no ending, exit relocked  1116ms
+   ✓ AI-authored ending completion at the tool/save/runtime seam > control: an explicit invocation undefined executes the persisted epilogue and ending  1336ms
+   ✓ AI-authored ending completion at the tool/save/runtime seam > control: an explicit invocation 'ending_regression' executes the persisted epilogue and ending  1267ms
+   ✓ AI-authored ending completion at the tool/save/runtime seam > does not certify completion when the sole defined ending has no invocation anywhere  891ms
+   ✓ AI-authored ending completion at the tool/save/runtime seam > permits defining an ending before authoring its invocation  940ms
+   ✓ AI-authored ending completion at the tool/save/runtime seam > does not impose an ending on a open-ended game  427ms
+   ✓ AI-authored ending completion at the tool/save/runtime seam > does not impose an ending on a legacy-no-registry game  454ms
+   ✓ AI-authored ending completion at the tool/save/runtime seam > does not impose an ending on a native-ending game  421ms
+   ✓ AI-authored ending completion at the tool/save/runtime seam > matches each defined ending against named invocations  1214ms
+   ✓ AI-authored ending completion at the tool/save/runtime seam > matches each defined ending against condition-selected invocations  1348ms
+   ✓ AI-authored ending completion at the tool/save/runtime seam > does not mistake obsolete root commands for invocations when pages own execution  2210ms
+   ✓ AI-authored ending completion at the tool/save/runtime seam > accepts a nested common-event invocation and executes it through the exit  2273ms
+   ✓ AI-authored ending completion at the tool/save/runtime seam > accepts legacy root invocations when no pages replace them  915ms
+ ✓ test/aiNativePageContract.test.ts (20 tests) 16566ms
+   ✓ native upsert page contract > rejects the recorded successful-but-inert exit atomically for a existing event  1279ms
+   ✓ native upsert page contract > rejects the recorded successful-but-inert exit atomically for a new event  954ms
+   ✓ native upsert page contract > rejects uncompiled page input {"lines":["LOST"]} without applying valid siblings  695ms
+   ✓ native upsert page contract > rejects uncompiled page input {"showText":["LOST"]} without applying valid siblings  705ms
+   ✓ native upsert page contract > rejects uncompiled page input {"messages":["LOST"]} without applying valid siblings  1084ms
+   ✓ native upsert page contract > rejects uncompiled page input {"text":"LOST"} without applying valid siblings  710ms
+   ✓ native upsert page contract > rejects uncompiled page input {"face":{"resourceId":"LOST"}} without applying valid siblings  606ms
+   ✓ native upsert page contract > rejects uncompiled page input {"choices":[]} without applying valid siblings  364ms
+   ✓ native upsert page contract > rejects uncompiled page input {"graphic":{"query":"villager"}} without applying valid siblings  1055ms
+   ✓ native upsert page contract > rejects uncompiled page input {"graphic":{"textureKey":"LOST","characterIndex":1}} without applying valid siblings  807ms
+   ✓ native upsert page contract > does not normalize omitted pages during a coordinate-only patch  790ms
+   ✓ native upsert page contract > persists the repaired exit, presents choices, removes exactly one of 1 keys and runs the recorded epilogue  1092ms
+   ✓ native upsert page contract > persists the repaired exit, presents choices, removes exactly one of 2 keys and runs the recorded epilogue  1452ms
+   ✓ native upsert page contract > returns an executable canonical repair example, including a no-effect cancel option  852ms
+   ✓ native upsert page contract > rejects invalid nested command 'removeItem' atomically  501ms
+   ✓ native upsert page contract > rejects invalid nested command 'switch' atomically  509ms
+   ✓ native upsert page contract > rejects invalid nested command 'setSwitch' atomically  1117ms
+   ✓ native upsert page contract > keeps SimplePage choice compilation in place_npc  888ms
+   ✓ native upsert page contract > keeps SimplePage choice compilation in make_villager  1070ms
+ ✓ test/tileMetadataTools.test.ts (16 tests) 10323ms
+   ✓ set_tile_metadata > 라벨/설명/태그를 기록하고 기본 source는 ai다  761ms
+   ✓ set_tile_metadata > confirmedByUser=true sets canonical and compatibility confirmation fields  895ms
+   ✓ set_tile_metadata > 잠긴 타일은 confirmedByUser 없이는 덮어쓰지 못한다(건너뜀 경고)  1285ms
+   ✓ set_tile_metadata > LLM 별칭 키(tileId/index/name)도 수용한다 — 라이브 스모크 실패 패턴 회귀  399ms
+   ✓ get_tile_info > 기록된 라벨/태그/통행성/레이어/그룹 규칙을 돌려준다  1940ms
+   ✓ upsert_tile_group > 그룹을 생성하고 defaultLayer를 priority에서 추론한다  777ms
+   ✓ analyze_map_tile_usage > 클러스터 bbox·인접 통계·설명 없는 타일 우선 정렬을 제공한다  317ms
+   ✓ analyze_map_tile_usage > 사용자가 가르친 타일은 described=true, knownVia=user로 바뀐다  674ms
+   ✓ highlight_map_region > 범위를 맵 안으로 클램프해 강조 영역을 돌려준다  598ms
+   ✓ 타일 지식 배선(검색·시스템 프롬프트) > 가르친 라벨이 list_resources(tile) 검색에 히트한다  579ms
+   ✓ 타일 지식 배선(검색·시스템 프롬프트) > 그룹 이름이 소속 타일의 검색 태그가 된다  637ms
+   ✓ 타일 지식 배선(검색·시스템 프롬프트) > 사용자가 가르친 타일이 있으면 시스템 프롬프트에 타일 지식 섹션이 실린다  803ms
+ ✓ test/tileVocabularyV3.test.ts (17 tests) 4747ms
+   ✓ propose_tile_vocabulary (v3 write 툴) > 기존 그룹 승인 제안: 커밋되면 origin:'user' 마킹 + layerHome 저장 + 카드 데이터 반환  502ms
+   ✓ propose_tile_vocabulary (v3 write 툴) > 기존 9slice 그룹 재제안에 부분 tileIds가 섞여도 기존 구성을 유지하고 warning으로 통과한다  434ms
+   ✓ propose_tile_vocabulary (v3 write 툴) > 기존 그룹 재제안의 tileIds가 기존과 동일하면 경고 없이 현행 승인 마킹만 수행한다  336ms
+   ✓ propose_tile_vocabulary (v3 write 툴) > 낱개 타일(소품) 승인 제안: tileMeta origin:'user' + userLocked + 승인 어휘 편입  889ms
+   ✓ propose_tile_vocabulary (v3 write 툴) > 사실 배지 모순: 엔진 분류 'upper' 타일에 layerHome:'lower'를 제안하면 경고를 동봉한다  328ms
+   ✓ propose_tile_vocabulary (v3 write 툴) > 신규 그룹 9slice tileIds 미달은 해당 item만 issues로 보고하고 나머지 item 카드는 유지한다  657ms
+   ✓ tile_query ask:'unapproved' + 문법 프로파일 > 미승인 그룹/타일 요약(수량+대표 id)을 주고, 승인하면 수량이 줄어든다  416ms
+   ✓ assistantSession 어휘 제안 > propose_tile_vocabulary 커밋이 그룹을 origin:user 로 합의 표시한다  325ms
+ ✓ test/assistantAcceptance.test.ts (23 tests) 2987ms
+   ✓ acceptance evaluator > keeps a malformed item visible and permits repair only before criteria become valid  507ms
+   ✓ acceptance evaluator > preserves original target baselines through replacement promises and rebasing  385ms
+   ✓ acceptance evaluator > detects scoped tile-stack changes and does not claim drafts are applied  317ms
+   ✓ acceptance evaluator > binds new-map names only to unique newly authored IDs and never guesses/rebinds  358ms
+ ✓ test/workPlanMapOutcomes.test.ts (14 tests) 19951ms
+   ✓ target-scoped work outcomes > does not discharge the captured failed cellar fill (failure first=false)  2312ms
+   ✓ target-scoped work outcomes > does not discharge the captured failed cellar fill (failure first=true)  1642ms
+   ✓ target-scoped work outcomes > repairs only the cellar after another map succeeds (failure first=false)  3148ms
+   ✓ target-scoped work outcomes > repairs only the cellar after another map succeeds (failure first=true)  3621ms
+   ✓ target-scoped work outcomes > requires declared structure work even after a road or transfer succeeds  1632ms
+   ✓ target-scoped work outcomes > retains a target's no-op outcome through a real continuation and explicit completion  1284ms
+   ✓ target-scoped work outcomes > rejects malformed target declarations atomically: 'invalid-map-targets' []  987ms
+   ✓ target-scoped work outcomes > rejects malformed target declarations atomically: 'invalid-map-targets' [ 'a', 'a' ]  939ms
+   ✓ target-scoped work outcomes > rejects malformed target declarations atomically: 'invalid-map-targets' [ 'a', 3 ]  936ms
+   ✓ target-scoped work outcomes > rejects malformed target declarations atomically: 'mixed-map-authoring' [ 'a', 'b' ]  1232ms
+   ✓ target-scoped work outcomes > does not restore a failed target with another map's later success  1320ms
+   ✓ target-scoped work outcomes > rejects mixed linking and authoring even with explicit map targets  870ms
+ ✓ test/assistantAcceptanceRequestBaseline.test.ts (6 tests) 21199ms
+   ✓ per-request acceptance baselines > preserves a map created in A while B changes another map  2893ms
+   ✓ per-request acceptance baselines > does not credit A's change toward a newly accepted B change promise  2667ms
+   ✓ per-request acceptance baselines > late adoption cannot baseline away B's earlier write (applied=false)  3162ms
+   ✓ per-request acceptance baselines > late adoption cannot baseline away B's earlier write (applied=true)  4493ms
+   ✓ per-request acceptance baselines > retains B's pre-write baseline across budget-driven synthetic continuation  3755ms
+   ✓ per-request acceptance baselines > retains B's baseline when a manual continuation repairs and replans after application  4228ms
+ ✓ test/assistantImageTransport.test.ts (7 tests) 9972ms
+   ✓ session to companion image delivery > delivers multiple labeled map images through the real conversion before accepting review  1312ms
+   ✓ session to companion image delivery > keeps dropped delivery blocked on later turns and retries  1223ms
+   ✓ session to companion image delivery > keeps partial delivery blocked on later turns and retries  1647ms
+   ✓ session to companion image delivery > keeps rejected delivery blocked on later turns and retries  1982ms
+   ✓ session to companion image delivery > keeps malformed delivery blocked on later turns and retries  975ms
+   ✓ session to companion image delivery > keeps compacted delivery blocked on later turns and retries  1671ms
+   ✓ session to companion image delivery > keeps aborted delivery blocked on later turns and retries  1160ms
+ ✓ test/assistantVisualEvidenceSession.test.ts (12 tests) 28594ms
+   ✓ one visual evidence lifecycle > preserves delivered reviewed maps after a DB-only write at final termination  2405ms
+   ✓ one visual evidence lifecycle > preserves delivered reviewed maps after a DB-only write at max-tool-calls termination  2855ms
+   ✓ one visual evidence lifecycle > preserves delivered reviewed maps after a DB-only write at token-budget termination  2102ms
+   ✓ one visual evidence lifecycle > does not credit metadata when rendering is empty  1649ms
+   ✓ one visual evidence lifecycle > does not credit metadata when rendering is failed  2185ms
+   ✓ visual evidence invalidation and review boundaries > invalidates only the changed map after a real resize and does not revive it on undo  3127ms
+   ✓ visual evidence invalidation and review boundaries > retains current images across a follow-up without a new render  3489ms
+   ✓ visual evidence invalidation and review boundaries > does not verify missing explicit review  1378ms
+   ✓ visual evidence invalidation and review boundaries > does not verify same-response explicit review  1728ms
+   ✓ visual evidence invalidation and review boundaries > does not verify fail explicit review  2501ms
+   ✓ visual evidence invalidation and review boundaries > requires coverage of every promised map  2027ms
+   ✓ visual evidence invalidation and review boundaries > does not turn verified map images into game-completion proof  3124ms
+ ✓ test/tileQueryBoundaries.test.ts (43 tests) 4566ms
+   ✓ tile_query 'similar' selectors > uses the target map's distinct tileset without an explicit tileset  557ms
+   ✓ tile_query 'unclassified' selectors > uses the target map's distinct tileset without an explicit tileset  327ms
+ ✓ test/llmRetry.test.ts (14 tests) 3970ms
+   ✓ AssistantSession.retryLastTurn — 수동 재시도 > 오류로 끊긴 턴을 재개하면 이전 제안이 유지된 채 완주한다  956ms
+   ✓ AssistantSession.retryLastTurn — 수동 재시도 > 일시 LLM 오류는 같은 턴에서 자동 재시도해 수동 재시도 없이 완주한다  472ms
+   ✓ AssistantSession.retryLastTurn — 수동 재시도 > oh-my-pi worker crash 500은 한 번만 재시도하고 멈춘다  446ms
+   ✓ AssistantSession.retryLastTurn — 수동 재시도 > 토큰 일부 수신 후 스트림이 끊기면 부분 출력을 초기화하고 같은 라운드를 재시도한다  443ms
+   ✓ AssistantSession.retryLastTurn — 수동 재시도 > 스트림 절단이 재시도 3회를 모두 소진하면 오류로 종료하고 수동 재시도를 허용한다  442ms
+   ✓ AssistantSession.retryLastTurn — 수동 재시도 > 사용자 중단은 스트리밍 후에도 재시도하지 않는다  519ms
+   ✓ AssistantSession.retryLastTurn — 수동 재시도 > 오류가 없던 세션에서 retryLastTurn은 아무것도 하지 않는다  556ms
+ ✓ test/assistantAcceptancePromiseBaseline.test.ts (13 tests) 3048ms
+   ✓ immutable baselines for newly adopted promises > detects protected 'tileset metadata' changes in B  324ms
+ ✓ test/aiCommandSchemaContract.test.ts (17 tests) 7505ms
+   ✓ canonical commands through authoring and persistence > compiles and serializes item removal, typed values, item presence and both ending invocations  1890ms
+   ✓ canonical commands through authoring and persistence > rejects invalid command 'switch' atomically rather than dropping effects  563ms
+   ✓ canonical commands through authoring and persistence > rejects invalid command 'removeItem' atomically rather than dropping effects  818ms
+   ✓ canonical commands through authoring and persistence > rejects invalid command 'setSwitch' atomically rather than dropping effects  414ms
+   ✓ canonical commands through authoring and persistence > rejects invalid command 'setVariable' atomically rather than dropping effects  431ms
+   ✓ canonical commands through authoring and persistence > rejects missing or mistyped condition values for 'switch' atomically  405ms
+   ✓ canonical commands through authoring and persistence > rejects missing or mistyped condition values for 'variable' atomically  522ms
+   ✓ canonical commands through authoring and persistence > rejects missing or mistyped condition values for 'item' atomically  612ms
+   ✓ canonical commands through authoring and persistence > rejects missing or mistyped condition values for 'item' atomically  634ms
+   ✓ canonical commands through authoring and persistence > still requires reference reads before the canonical item-removal write  821ms
+ ✓ test/assistantImageEvidence.test.ts (8 tests) 5701ms
+   ✓ retains reviewed draft images until their exact content is applied  998ms
+   ✓ render-input currentness > retires 'lower tile' evidence for applicable maps without undo revival  756ms
+   ✓ render-input currentness > retires 'upper tile' evidence for applicable maps without undo revival  1232ms
+   ✓ render-input currentness > retires 'sparse stack' evidence for applicable maps without undo revival  421ms
+   ✓ render-input currentness > retires 'event' evidence for applicable maps without undo revival  497ms
+   ✓ render-input currentness > retires 'tileset image' evidence for applicable maps without undo revival  868ms
+   ✓ render-input currentness > retires 'shared assets' evidence for applicable maps without undo revival  654ms
+ ✓ test/assistantAcceptanceDiagnostics.test.ts (13 tests) 2844ms
+   ✓ actionable atomic acceptance diagnostics > rejects recorded repair 0 without adopting a valid prefix or moving baselines  573ms
+   ✓ actionable atomic acceptance diagnostics > rejects recorded repair 2 without adopting a valid prefix or moving baselines  300ms
+   ✓ actionable atomic acceptance diagnostics > rejects recorded repair 3 without adopting a valid prefix or moving baselines  381ms
+   ✓ actionable atomic acceptance diagnostics > rejects recorded repair 4 without adopting a valid prefix or moving baselines  619ms
+   ✓ actionable atomic acceptance diagnostics > distinguishes unknown items, malformed criteria, immutable promises and unavailable reviews  386ms
+ ✓ test/ohMyPiNumericEnumLocal.test.ts (10 tests) 61ms
+ ✓ test/eventPageRequiredFields.test.ts (3 tests) 1887ms
+   ✓ upsert_event 페이지 필수 필드 보완 > trigger/graphic/movement 누락 페이지가 TypeError 없이 처리된다  549ms
+   ✓ upsert_event 페이지 필수 필드 보완 > 복합 조건(all)이 붙은 페이지도 크래시 대신 읽을 수 있는 사유를 돌려준다  936ms
+   ✓ upsert_event 페이지 필수 필드 보완 > 발명한 trigger 값에는 허용 목록을 실어 준다  394ms
+ ✓ test/tileQueryTool.test.ts (4 tests) 822ms
+ ✓ test/proposalCompleteness.test.ts (44 tests) 75ms
+ ✓ test/llmReasoning.test.ts (9 tests) 55ms
+ ✓ test/findSimilarTiles.test.ts (2 tests) 519ms
+ ✓ test/viewRelativeLocation.test.ts (11 tests) 24ms
+ ✓ test/toolSchemaProviderCompat.test.ts (6 tests) 55ms
+ ✓ test/workItemOutcomeTargetMap.test.ts (12 tests) 27ms
+ ✓ test/assistantAcceptanceProvider.test.ts (1 test) 612ms
+   ✓ acceptance at the installed Antigravity schema boundary > retains every scoped canonical shape and selector through Google then CCA normalization  610ms
+ ✓ test/dialogueImageUrls.test.ts (18 tests) 387ms
+
+ Test Files  31 passed (31)
+      Tests  461 passed (461)
+   Start at  01:30:40
+   Duration  213.08s (transform 27.80s, setup 0ms, collect 158.47s, tests 226.11s, environment 543ms, prepare 6.74s)
+
+
+EXIT_STATUS=0

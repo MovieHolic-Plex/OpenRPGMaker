@@ -127,9 +127,8 @@ describe("툴 스키마 프로바이더 호환(Gemini 엄격 검증)", () => {
 const criterionCases: AcceptanceCriterion[] = [
   { kind: "toolVerdict", tool: "run_lint", args: {} },
   { kind: "toolVerdict", tool: "play_walkthrough", args: {
-    mapId: "map_start", scenario: [{ do: "setVariable", id: "progress", value: 0 },
-      { expect: "variable", id: "progress", value: 0 }],
-    runtimeKeys: { "authored-id": [null, false, 0, "0", { nested: {} }] },
+    scenario: [{ do: "moveTo", mapId: "map_start", x: 0, y: 0 },
+      { expect: "variable", variableId: "progress", op: ">=", value: 0 }], seed: 0,
   } },
   ...[{ mapId: "map_start" }, { newMapName: "New room" }].flatMap((target): AcceptanceCriterion[] => [
     { kind: "shopPurchase", target, start: { x: 1, y: 1 }, seller: { eventId: "seller" },
@@ -146,6 +145,7 @@ const criterionCases: AcceptanceCriterion[] = [
     ]),
   ]),
   { kind: "mapCount", targets: [{ mapId: "map_start" }, { newMapName: "New room" }], count: 2 },
+  { kind: "gameTitle", title: "작은 열쇠" },
   { kind: "npcReward", requirement: { target: { mapId: "map_start", eventName: "Mira" },
     grants: [{ kind: "item", name: "Potion", count: 2 }, { kind: "monster", id: "species_leafling" }],
     oneTime: true, choices: [0], repeatChoices: [1] } },
@@ -207,17 +207,18 @@ describe("acceptance and requirement schema/runtime contract", () => {
     expect(item?.required).toEqual(["kind"]);
     expect(item?.additionalProperties).toBe(false);
     expect(item?.properties?.kind).toEqual({ type: "string", enum: [
-      "toolVerdict", "mapDimensions", "mapCount", "eventCount", "targetChange", "preserve", "imageReviewed", "reachability", "actionCombat",
-      "shopPurchase", "mapRoundTrip", "npcReward", "functionalUnresolved",
+      "mapCount", "mapDimensions", "eventCount", "targetChange", "preserve", "imageReviewed", "actionCombat",
+      "toolVerdict", "shopPurchase", "mapRoundTrip", "npcReward", "functionalUnresolved", "reachability", "gameTitle",
     ] });
     expect(Object.keys(item?.properties ?? {}).sort()).toEqual([
-      "args", "count", "destination", "expectations", "from", "height", "item", "kind", "outgoing", "reason", "region", "requirement",
-      "returning", "seller", "start", "target", "targets", "to", "tool", "unitPrice", "width",
+      "args", "count", "destination", "expectations", "from", "height", "interactionTargets", "item", "kind", "outgoing", "reason", "region", "requirement",
+      "returning", "seller", "start", "target", "targets", "title", "to", "tool", "unitPrice", "width",
     ]);
     expect(item?.properties?.args).toMatchObject({ type: "object", additionalProperties: true });
     expect(item?.properties?.target).toMatchObject({ type: "object", additionalProperties: false,
       properties: { mapId: { type: "string" }, newMapName: { type: "string" } } });
-    expect(item?.properties?.targets?.items).toBe(item?.properties?.target);
+    expect(item?.properties?.targets?.items?.properties).toBe(item?.properties?.target?.properties);
+    expect(item?.properties?.targets?.items).toMatchObject({ type: "object", additionalProperties: false });
     expect(item?.properties?.from?.required).toEqual(["x", "y"]);
     expect(item?.properties?.region?.required).toEqual(["x", "y", "w", "h"]);
     for (const key of ["width", "height"]) expect(item?.properties?.[key]?.minimum).toBe(1);
@@ -238,6 +239,14 @@ describe("acceptance and requirement schema/runtime contract", () => {
     }
   });
 
+  it("rejects unsupported native arguments even when the dynamic provider envelope can represent them", () => {
+    const args = { mapId: "map_start", scenario: [{ do: "setVariable", id: "progress", value: 0 },
+      { expect: "variable", id: "progress", value: 0 }], runtimeKeys: { "authored-id": [null, false, 0, "0", { nested: {} }] } };
+    expect(parseAcceptanceCriteria([{ kind: "toolVerdict", tool: "play_walkthrough", args }])).toBeNull();
+    const scene = { mapId: "map_start", start: { x: 0, y: 0 }, steps: [{ kind: "interact" }] };
+    expect(parseAcceptanceCriteria([{ kind: "toolVerdict", tool: "run_scene_test", args: scene }])).toBeNull();
+  });
+
   it.each([{}, { mapId: "map_start", newMapName: "New room" }, { mapId: "" }, { newMapName: " " },
     { mapId: "map_start", passed: true }])("rejects malformed or ambiguous target %j", target => {
     expect(parseAcceptanceCriteria([{ kind: "preserve", target }])).toBeNull();
@@ -253,7 +262,8 @@ describe("acceptance and requirement schema/runtime contract", () => {
     for (const required of [undefined, true, false, "false"]) {
       const promise = { id: "promise", title: "Promise", criteria, ...(required === undefined ? {} : { required }) };
       expect(parseAcceptance([promise])).toEqual([{ id: "promise", title: "Promise",
-        required: required !== false, criteria: required === "false" ? null : criteria }]);
+        required: required !== false, criteria: required === "false" ? null : criteria,
+        ...(required === "false" ? { issues: [expect.objectContaining({ field: "criteria", code: "missing-field" })] } : {}) }]);
     }
     expect(parseAcceptanceCriteria([{ kind: "toolVerdict", tool: "set_map_properties", args: {} }])).toBeNull();
   });

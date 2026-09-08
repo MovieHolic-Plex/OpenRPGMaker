@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { AssistantSession, isWriteToolName, SET_BUILD_SPEC_TOOL, WORK_PLAN_TOOLS } from "@/ai/assistantSession";
+import { AssistantSession, isWriteToolName, SET_BUILD_SPEC_TOOL, WORK_PLAN_TOOLS, CORRECT_VERIFICATION_TOOL } from "@/ai/assistantSession";
 import { activeTools, allTools, runTool, toOpenAiTools } from "@/editor/tools";
 import { LlmError, type ChatRequest, type ChatResult } from "@/ai/llmClient";
+import { getTool } from "@/editor/tools/toolRegistry";
 import { createBlankProject } from "@/project/defaults/defaultProject";
 import { ACCEPTANCE_TOOLS } from "@/ai/assistantAcceptanceTools";
 import { GET_ORIGINAL_CONTEXT_TOOL } from "@/ai/originalContext";
@@ -76,7 +77,7 @@ describe("AI tool discovery escalation", () => {
     expect(result.stoppedReason).toBe("error");
     expect(session.getAcceptanceSnapshot()).not.toBeNull();
     const firstWorkingRequest = requests.find((request) => request.tools?.length);
-    const expected = [...toOpenAiTools(), GET_ORIGINAL_CONTEXT_TOOL, SET_BUILD_SPEC_TOOL, ...WORK_PLAN_TOOLS, ...ACCEPTANCE_TOOLS]
+    const expected = [...toOpenAiTools(), GET_ORIGINAL_CONTEXT_TOOL, CORRECT_VERIFICATION_TOOL, SET_BUILD_SPEC_TOOL, ...WORK_PLAN_TOOLS, ...ACCEPTANCE_TOOLS]
       .map(injectToolReasonIntoOpenAiTool);
     expect(firstWorkingRequest?.tools).toEqual(expected);
     expect(new Set(firstWorkingRequest?.tools?.map((tool) => tool.function.name)).size).toBe(expected.length);
@@ -149,6 +150,26 @@ describe("AI tool discovery escalation", () => {
     const secondNames = requests[1]?.tools?.map((tool) => tool.function.name) ?? [];
     expect(firstNames).toContain("find_tools");
     expect(firstNames).toEqual(expect.arrayContaining(activeTools().map((tool) => tool.name)));
+    const sessionControls = new Set(["correct_verification"]);
+    expect(getTool("correct_verification")).toBeUndefined();
+    expect(requests).toHaveLength(2);
+    for (const request of requests) {
+      const controls = request.tools?.filter((tool) => sessionControls.has(tool.function.name)) ?? [];
+      expect(controls).toHaveLength(1);
+      expect(controls[0]).toMatchObject({ type: "function", function: {
+        name: "correct_verification",
+        parameters: {
+          type: "object", additionalProperties: false,
+          required: ["checkId", "args", "reason"],
+          properties: {
+            checkId: { type: "string" },
+            args: { type: "object", additionalProperties: true },
+            reason: { type: "string", minLength: 1 },
+          },
+        },
+      } });
+      expect(request.tools!.length).toBeGreaterThanOrEqual(activeTools().length);
+    }
     expect(secondNames).toContain("define_ending");
     expect(secondNames).toEqual(firstNames);
     const statusTexts = session.getAuditEntries().flatMap((entry) => entry.kind === "status" ? [entry.text] : []);

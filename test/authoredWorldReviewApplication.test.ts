@@ -9,7 +9,7 @@ import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import * as history from "@/editor/mapEditHistory";
 import { applyRegionProjectWithHistory } from "@/editor/regionTask/runRegionTask";
-import { independentReviewPayload } from "./independentReviewFixture";
+import { independentReviewPayload, imageDeliveryForRequest } from "./independentReviewFixture";
 import { fixedDeclarer } from "./intentFixture";
 import type { ChatResult } from "@/ai/llmClient";
 
@@ -87,10 +87,10 @@ function makeSession(project: Project, mapId: string, state: ScriptState,
     chat: async (_config, request) => {
       const review = independentReviewPayload(request);
       if (review) {
-        if (onReview) return onReview(review.revision) as ChatResult;
-        return approval(review.revision);
+        const response = onReview ? await onReview(review.revision) as ChatResult : approval(review.revision);
+        return { ...response, imageDelivery: imageDeliveryForRequest(request) };
       }
-      return writerRound(mapId, state) as ChatResult;
+      return { ...writerRound(mapId, state) as ChatResult, imageDelivery: imageDeliveryForRequest(request) };
     },
   });
 }

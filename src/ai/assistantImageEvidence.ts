@@ -24,7 +24,7 @@ export class AssistantImageEvidence {
     return receipt;
   }
 
-  /** Only after successful rendering and insertion into the next model input. */
+  /** Only after a successful image-bearing provider request acknowledges delivery. */
   deliver(receipts: readonly AcceptanceImageReceipt[]): void {
     for (const receipt of receipts) if (this.captured.has(receipt)) this.delivered.add(receipt);
   }

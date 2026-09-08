@@ -6,7 +6,7 @@ import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
 import { charsetGraphic } from "@/editor/tools/eventCompile";
 import { createBlankProject } from "@/project/defaults";
 import type { EventPage, EventPageGraphic, GameEvent, GameMap, Project } from "@/project/types";
-import { approvedReviewResponse } from "./independentReviewFixture";
+import { approvedReviewResponse, imageDeliveryForRequest } from "./independentReviewFixture";
 import { fixedDeclarer } from "./intentFixture";
 import { installToolImageRasterDom } from "./toolImageRasterDom";
 
@@ -41,7 +41,9 @@ describe("session acceptance refuses unrepresentative multi-page event imagery",
     let round = 0;
     let divergePage2 = false;
     const session = new AssistantSession(project, {
-      config: { ...defaultAiConfig(), agentMode: "chat", model: "test", liteModel: "test", apiKey: "test", maxToolCalls: 16 },
+      // Real raster bytes plus the full native catalog need a catalogued context window.
+      // The unknown test model drops this PNG before delivery; do not fabricate its receipt.
+      config: { ...defaultAiConfig(), agentMode: "chat", model: "gemini-2.5-flash", liteModel: "gemini-2.5-flash", apiKey: "test", maxToolCalls: 16 },
       declareIntent: fixedDeclarer({ mode: "modify", targetMapId: map.id }),
       renderImages: async (proj, toolName, data) => {
         // Mutate the live session draft (proj), not the outer fixture clone.
@@ -64,6 +66,8 @@ describe("session acceptance refuses unrepresentative multi-page event imagery",
       chat: async (_config, request): Promise<ChatResult> => {
         const review = approvedReviewResponse(request);
         if (review) return review;
+        // Establish actual outbound image delivery before the first passing review.
+        if (round === 2) expect(imageDeliveryForRequest(request)).toHaveLength(1);
         // After the first pass, page2-only graphic change diverges claimed visuals.
         if (round === 3) divergePage2 = true;
         const scripted: readonly (readonly Call[])[] = [
@@ -81,8 +85,9 @@ describe("session acceptance refuses unrepresentative multi-page event imagery",
         ];
         const batch = scripted[round];
         round += 1;
-        if (!batch) return { message: { role: "assistant", content: "done" }, finishReason: "stop" };
+        if (!batch) return { imageDelivery: imageDeliveryForRequest(request), message: { role: "assistant", content: "done" }, finishReason: "stop" };
         return {
+          imageDelivery: imageDeliveryForRequest(request),
           message: {
             role: "assistant",
             content: null,
@@ -103,7 +108,9 @@ describe("session acceptance refuses unrepresentative multi-page event imagery",
     expect(deliveredCounts, JSON.stringify({ deliveredCounts, snapshot: session.getAcceptanceSnapshot() })).toEqual([1, 0]);
 
     const reviews = events.filter((event) => event.type === "tool_call" && event.name === "review_acceptance");
-    expect(reviews.map((event) => event.type === "tool_call" ? event.result.ok : null)).toEqual([true, false]);
+    expect(reviews.map((event) => event.type === "tool_call" ? event.result.ok : null), JSON.stringify({
+      reviews, status: events.filter(event => event.type === "status"), acceptance: session.getAcceptanceSnapshot(),
+    })).toEqual([true, false]);
     expect(session.getAcceptanceSnapshot()?.status).not.toBe("verified");
     expect(session.getAcceptanceSnapshot()?.items[0]?.status).not.toBe("verified");
   });

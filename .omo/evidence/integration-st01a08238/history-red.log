@@ -1,0 +1,189 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/historyRecoveryAdmission.test.ts --maxWorkers=1 --minWorkers=1 --reporter=default --reporter=json --outputFile=.omo/evidence/integration-st01a08238/history-red.json
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-main-integration-st01a08238
+
+ ❯ test/historyRecoveryAdmission.test.ts (32 tests | 20 failed) 142ms
+   × explicit recovery admission on indexeddb > preserves created changed during retrieval, even below the remote timestamp 32ms
+     → expected { imported: 1, skipped: +0, …(2) } to match object { imported: +0, skipped: 1, …(2) }
+   × explicit recovery admission on indexeddb > preserves entries changed during retrieval, even below the remote timestamp 5ms
+     → expected { imported: 1, skipped: +0, …(2) } to match object { imported: +0, skipped: 1, …(2) }
+   × explicit recovery admission on indexeddb > preserves nested changed during retrieval, even below the remote timestamp 4ms
+     → expected { imported: 1, skipped: +0, …(2) } to match object { imported: +0, skipped: 1, …(2) }
+   × explicit recovery admission on indexeddb > preserves title changed during retrieval, even below the remote timestamp 3ms
+     → expected { imported: 1, skipped: +0, …(2) } to match object { imported: +0, skipped: 1, …(2) }
+   × explicit recovery admission on indexeddb > preserves model changed during retrieval, even below the remote timestamp 3ms
+     → expected { imported: 1, skipped: +0, …(2) } to match object { imported: +0, skipped: 1, …(2) }
+   × explicit recovery admission on indexeddb > preserves mapIndex changed during retrieval, even below the remote timestamp 3ms
+     → expected { imported: 1, skipped: +0, …(2) } to match object { imported: +0, skipped: 1, …(2) }
+   × explicit recovery admission on indexeddb > preserves undefined-property changed during retrieval, even below the remote timestamp 12ms
+     → expected { imported: 1, skipped: +0, …(2) } to match object { imported: +0, skipped: 1, …(2) }
+   × explicit recovery admission on indexeddb > captures memory-backed records by value rather than retaining aliases 3ms
+     → expected { imported: 1, skipped: +0, …(2) } to match object { imported: +0, skipped: 1 }
+(2 matching properties omitted from actual)
+   ✓ explicit recovery admission on indexeddb > replaces only an unchanged strictly older baseline (remote=50), then is idempotent 5ms
+   ✓ explicit recovery admission on indexeddb > replaces only an unchanged strictly older baseline (remote=100), then is idempotent 3ms
+   ✓ explicit recovery admission on indexeddb > replaces only an unchanged strictly older baseline (remote=900), then is idempotent 2ms
+   × explicit recovery admission on indexeddb > keeps one baseline across all remote pages 29ms
+     → expected { imported: 101, skipped: +0, …(2) } to match object { imported: 100, skipped: 1 }
+(2 matching properties omitted from actual)
+   ✓ explicit recovery admission on indexeddb > preserves a pending tombstone decision 3ms
+   ✓ explicit recovery admission on indexeddb > preserves a pending foreign decision 2ms
+   ✓ explicit recovery admission on indexeddb > preserves a pending owner decision 2ms
+   × explicit recovery admission on indexeddb > checks the complete baseline at transactional admission, not before it 3ms
+     → expected { imported: 1, skipped: +0, …(2) } to match object { imported: +0, skipped: 1 }
+(2 matching properties omitted from actual)
+   × explicit recovery admission on memory > preserves created changed during retrieval, even below the remote timestamp 2ms
+     → expected { imported: 1, skipped: +0, …(2) } to match object { imported: +0, skipped: 1, …(2) }
+   × explicit recovery admission on memory > preserves entries changed during retrieval, even below the remote timestamp 1ms
+     → expected { imported: 1, skipped: +0, …(2) } to match object { imported: +0, skipped: 1, …(2) }
+   × explicit recovery admission on memory > preserves nested changed during retrieval, even below the remote timestamp 1ms
+     → expected { imported: 1, skipped: +0, …(2) } to match object { imported: +0, skipped: 1, …(2) }
+   × explicit recovery admission on memory > preserves title changed during retrieval, even below the remote timestamp 1ms
+     → expected { imported: 1, skipped: +0, …(2) } to match object { imported: +0, skipped: 1, …(2) }
+   × explicit recovery admission on memory > preserves model changed during retrieval, even below the remote timestamp 1ms
+     → expected { imported: 1, skipped: +0, …(2) } to match object { imported: +0, skipped: 1, …(2) }
+   × explicit recovery admission on memory > preserves mapIndex changed during retrieval, even below the remote timestamp 1ms
+     → expected { imported: 1, skipped: +0, …(2) } to match object { imported: +0, skipped: 1, …(2) }
+   × explicit recovery admission on memory > preserves undefined-property changed during retrieval, even below the remote timestamp 1ms
+     → expected { imported: 1, skipped: +0, …(2) } to match object { imported: +0, skipped: 1, …(2) }
+   × explicit recovery admission on memory > captures memory-backed records by value rather than retaining aliases 1ms
+     → expected { imported: 1, skipped: +0, …(2) } to match object { imported: +0, skipped: 1 }
+(2 matching properties omitted from actual)
+   ✓ explicit recovery admission on memory > replaces only an unchanged strictly older baseline (remote=50), then is idempotent 1ms
+   ✓ explicit recovery admission on memory > replaces only an unchanged strictly older baseline (remote=100), then is idempotent 1ms
+   ✓ explicit recovery admission on memory > replaces only an unchanged strictly older baseline (remote=900), then is idempotent 1ms
+   × explicit recovery admission on memory > keeps one baseline across all remote pages 5ms
+     → expected { imported: 101, skipped: +0, …(2) } to match object { imported: 100, skipped: 1 }
+(2 matching properties omitted from actual)
+   ✓ explicit recovery admission on memory > preserves a pending tombstone decision 1ms
+   ✓ explicit recovery admission on memory > preserves a pending foreign decision 1ms
+   ✓ explicit recovery admission on memory > preserves a pending owner decision 1ms
+   × explicit recovery admission on memory > checks the complete baseline at transactional admission, not before it 2ms
+     → expected { imported: 1, skipped: +0, …(2) } to match object { imported: +0, skipped: 1 }
+(2 matching properties omitted from actual)
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 20 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/historyRecoveryAdmission.test.ts > explicit recovery admission on indexeddb > preserves created changed during retrieval, even below the remote timestamp
+ FAIL  test/historyRecoveryAdmission.test.ts > explicit recovery admission on indexeddb > preserves entries changed during retrieval, even below the remote timestamp
+ FAIL  test/historyRecoveryAdmission.test.ts > explicit recovery admission on indexeddb > preserves nested changed during retrieval, even below the remote timestamp
+ FAIL  test/historyRecoveryAdmission.test.ts > explicit recovery admission on indexeddb > preserves title changed during retrieval, even below the remote timestamp
+ FAIL  test/historyRecoveryAdmission.test.ts > explicit recovery admission on indexeddb > preserves model changed during retrieval, even below the remote timestamp
+ FAIL  test/historyRecoveryAdmission.test.ts > explicit recovery admission on indexeddb > preserves mapIndex changed during retrieval, even below the remote timestamp
+ FAIL  test/historyRecoveryAdmission.test.ts > explicit recovery admission on indexeddb > preserves undefined-property changed during retrieval, even below the remote timestamp
+ FAIL  test/historyRecoveryAdmission.test.ts > explicit recovery admission on memory > preserves created changed during retrieval, even below the remote timestamp
+ FAIL  test/historyRecoveryAdmission.test.ts > explicit recovery admission on memory > preserves entries changed during retrieval, even below the remote timestamp
+ FAIL  test/historyRecoveryAdmission.test.ts > explicit recovery admission on memory > preserves nested changed during retrieval, even below the remote timestamp
+ FAIL  test/historyRecoveryAdmission.test.ts > explicit recovery admission on memory > preserves title changed during retrieval, even below the remote timestamp
+ FAIL  test/historyRecoveryAdmission.test.ts > explicit recovery admission on memory > preserves model changed during retrieval, even below the remote timestamp
+ FAIL  test/historyRecoveryAdmission.test.ts > explicit recovery admission on memory > preserves mapIndex changed during retrieval, even below the remote timestamp
+ FAIL  test/historyRecoveryAdmission.test.ts > explicit recovery admission on memory > preserves undefined-property changed during retrieval, even below the remote timestamp
+AssertionError: expected { imported: 1, skipped: +0, …(2) } to match object { imported: +0, skipped: 1, …(2) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "durable": true,[22m
+[32m-   "imported": 0,[39m
+[31m+   "imported": 1,[39m
+[2m    "rejected": 0,[22m
+[32m-   "skipped": 1,[39m
+[31m+   "skipped": 0,[39m
+[2m  }[22m
+
+ ❯ test/historyRecoveryAdmission.test.ts:57:28
+     55|     await put(changed);
+     56|     response.resolve(Response.json([wire()]));
+     57|     expect(await recovery).toMatchObject({ imported: 0, skipped: 1, re…
+       |                            ^
+     58|     expect(await read()).toEqual(changed);
+     59|     expect(transport).toHaveBeenCalledOnce();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/20]⎯
+
+ FAIL  test/historyRecoveryAdmission.test.ts > explicit recovery admission on indexeddb > captures memory-backed records by value rather than retaining aliases
+ FAIL  test/historyRecoveryAdmission.test.ts > explicit recovery admission on memory > captures memory-backed records by value rather than retaining aliases
+AssertionError: expected { imported: 1, skipped: +0, …(2) } to match object { imported: +0, skipped: 1 }
+(2 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "imported": 0,[39m
+[32m-   "skipped": 1,[39m
+[31m+   "imported": 1,[39m
+[31m+   "skipped": 0,[39m
+[2m  }[22m
+
+ ❯ test/historyRecoveryAdmission.test.ts:72:28
+     70|     await put(changed);
+     71|     response.resolve(Response.json([wire()]));
+     72|     expect(await recovery).toMatchObject({ imported: 0, skipped: 1 });
+       |                            ^
+     73|     expect(await read()).toEqual(changed);
+     74|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/20]⎯
+
+ FAIL  test/historyRecoveryAdmission.test.ts > explicit recovery admission on indexeddb > keeps one baseline across all remote pages
+ FAIL  test/historyRecoveryAdmission.test.ts > explicit recovery admission on memory > keeps one baseline across all remote pages
+AssertionError: expected { imported: 101, skipped: +0, …(2) } to match object { imported: 100, skipped: 1 }
+(2 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "imported": 100,[39m
+[32m-   "skipped": 1,[39m
+[31m+   "imported": 101,[39m
+[31m+   "skipped": 0,[39m
+[2m  }[22m
+
+ ❯ test/historyRecoveryAdmission.test.ts:102:28
+    100|     await page2.promise;
+    101|     response.resolve(Response.json([wire(local("later", 900))]));
+    102|     expect(await recovery).toMatchObject({ imported: 100, skipped: 1 }…
+       |                            ^
+    103|     expect(await read("later")).toEqual(local("later", 1));
+    104|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/20]⎯
+
+ FAIL  test/historyRecoveryAdmission.test.ts > explicit recovery admission on indexeddb > checks the complete baseline at transactional admission, not before it
+ FAIL  test/historyRecoveryAdmission.test.ts > explicit recovery admission on memory > checks the complete baseline at transactional admission, not before it
+AssertionError: expected { imported: 1, skipped: +0, …(2) } to match object { imported: +0, skipped: 1 }
+(2 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "imported": 0,[39m
+[32m-   "skipped": 1,[39m
+[31m+   "imported": 1,[39m
+[31m+   "skipped": 0,[39m
+[2m  }[22m
+
+ ❯ test/historyRecoveryAdmission.test.ts:145:90
+    143|     }
+    144|     vi.stubGlobal("fetch", async () => Response.json([wire()]));
+    145|     expect(await conversations.hydrateConversationArchive({ projectCon…
+       |                                                                                          ^
+    146|     expect(intercepted).toBe(true);
+    147|     expect(await read()).toEqual(changed);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/20]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  20 failed | 12 passed (32)
+   Start at  03:53:40
+   Duration  5.30s (transform 3.39s, setup 0ms, collect 4.76s, tests 142ms, environment 0ms, prepare 80ms)
+
+JSON report written to /home/main/z-project/rpg-zzu-ai-main-integration-st01a08238/.omo/evidence/integration-st01a08238/history-red.json

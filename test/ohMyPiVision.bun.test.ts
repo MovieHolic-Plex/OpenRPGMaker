@@ -24,9 +24,12 @@ describe("oh-my-pi user image conversion", () => {
     }]);
   });
 
-  test.each(["image/png", "image/jpeg", "image/webp"])("preserves data and ordering when the MIME type is %s", (mimeType: string) => {
-    // Given: the converter transports bytes; image decoding belongs to the provider.
-    const data = Buffer.from([0, 1, 127, 128, 254, 255]).toString("base64");
+  test.each(["image/png", "image/jpeg", "image/webp"])("preserves data and ordering when the MIME type is %s", async (mimeType: string) => {
+    // The merged boundary validates MIME headers as well as transporting exact bytes.
+    const Jimp = (await import("jimp")).default;
+    const data = mimeType === "image/png" ? png : mimeType === "image/webp"
+      ? "UklGRiIAAABXRUJQVlA4IBYAAAAwAQCdASoBAAEADsD+JaQAA3AAAAAA"
+      : (await new Jimp(1, 1, 0xff0000ff).getBufferAsync(Jimp.MIME_JPEG)).toString("base64");
     const body = { messages: [{ role: "user", content: [
       { type: "text", text: "before" },
       { type: "image_url", image_url: { url: `data:${mimeType};base64,${data}`, detail: "low" } },
@@ -108,7 +111,7 @@ describe("oh-my-pi user image conversion", () => {
     // When
     const convert = () => openaiToContext("google-antigravity", body);
     // Then
-    expect(convert).toThrow(expect.objectContaining({ name: "UserContentInputError", status: 400, partIndex: 1 }));
+    expect(convert).toThrow(expect.objectContaining({ name: "ImageTransportError", status: 400, partIndex: 1 }));
   });
 
   test("sends image bytes through pi-ai when completing a mixed user message", async () => {
@@ -158,7 +161,7 @@ describe("oh-my-pi user image conversion", () => {
       },
     });
     // Then
-    await expect(result).rejects.toMatchObject({ name: "UserContentInputError", status: 400 });
+    await expect(result).rejects.toMatchObject({ name: "ImageTransportError", status: 400 });
     expect(requests).toBe(0);
   });
 

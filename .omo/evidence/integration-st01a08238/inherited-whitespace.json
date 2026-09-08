@@ -1,0 +1,94 @@
+[
+  {
+    "path": ".omo/evidence/graft-proof/HANDOFF.md",
+    "blob": "050a0993bfbb07c427ec0171629cd35bae2f6dae"
+  },
+  {
+    "path": ".omo/evidence/graft-proof/focused-related-final.log",
+    "blob": "8624b1d0e0bf5a9823f06e2294f05bdd45608869"
+  },
+  {
+    "path": ".omo/evidence/graft-proof/followup-related-final.log",
+    "blob": "8805a3619e1a2acb70d16dc98fc7e96238c4ac2c"
+  },
+  {
+    "path": ".omo/evidence/graft-proof/followup-vitest.log",
+    "blob": "1db0d55460e38f90cdedf364ab0272c97e226ee9"
+  },
+  {
+    "path": ".omo/evidence/graft-proof/graft-readiness-vitest.log",
+    "blob": "6dda26c8ad69fff6f442df01813167d40ea25c4f"
+  },
+  {
+    "path": ".omo/evidence/graft-proof/st_01a07c55-manual-qa.md",
+    "blob": "2f3959aece177d0414ca27267c79e3cf8dc38e87"
+  },
+  {
+    "path": ".omo/evidence/issue-693/final-integration-9c/diagnostic-red.log",
+    "blob": "071c308eda24454f2fc6bb7bcd0bdd07eac7f82f"
+  },
+  {
+    "path": "output/evidence/acceptance-checklist-priority-st_01a07ff5/focused.log",
+    "blob": "bdb709cc2842764278948d8ee867a15c62e08419"
+  },
+  {
+    "path": "output/evidence/acceptance-checklist-priority-st_01a07ff5/typecheck-app.log",
+    "blob": "84e36f4a2d1b2dcf9c1099a6fa5a160da701b235"
+  },
+  {
+    "path": "output/evidence/acceptance-live-fakedom-repair/affected-final.log",
+    "blob": "b36a78e7bb09199efb71888e1e70c86fd07b4680"
+  },
+  {
+    "path": "output/evidence/acceptance-live-fakedom-repair/affected.log",
+    "blob": "3c315a8d2ee6c4a4445edaebc62fb820516ab73e"
+  },
+  {
+    "path": "output/evidence/acceptance-live-fakedom-repair/build-app.log",
+    "blob": "4ee1d3ebf8c11c65d1c7aef082929264bf5cd286"
+  },
+  {
+    "path": "output/evidence/acceptance-live-fakedom-repair/contracts-red-actual.log",
+    "blob": "2d0a8a7637b52bdca648fb2b5fff853ee690be05"
+  },
+  {
+    "path": "output/evidence/acceptance-live-fakedom-repair/observability-uxc.log",
+    "blob": "01e077ac83774f3b66eb60ec1a3a3e7a94e8140f"
+  },
+  {
+    "path": "output/evidence/acceptance-live-fakedom-repair/representative-red.log",
+    "blob": "a2766004dad59ed7ff1570a73b7dd463e0d37963"
+  },
+  {
+    "path": "output/evidence/acceptance-live-fakedom-repair/typecheck-app.log",
+    "blob": "84e36f4a2d1b2dcf9c1099a6fa5a160da701b235"
+  },
+  {
+    "path": "output/evidence/acceptance-merge-resolution-st_01a07ff5/composed-red.log",
+    "blob": "0137e8b298c976f876b4a1d4584531de662a8c11"
+  },
+  {
+    "path": "output/evidence/acceptance-merge-resolution-st_01a07ff5/focused.log",
+    "blob": "3756fd8400c0429240dfecd7efde6475c75f5b52"
+  },
+  {
+    "path": "output/evidence/acceptance-merge-resolution-st_01a07ff5/resolution.diff",
+    "blob": "4ef9b9081d49bd152436aded144acfcbd3569eaa"
+  },
+  {
+    "path": "output/evidence/acceptance-merge-resolution-st_01a07ff5/staged-whitespace.log",
+    "blob": "e9e93189e4bcf208e52d74ef3327bfc660a97cc2"
+  },
+  {
+    "path": "output/evidence/acceptance-merge-resolution-st_01a07ff5/typecheck-app.log",
+    "blob": "84e36f4a2d1b2dcf9c1099a6fa5a160da701b235"
+  },
+  {
+    "path": "output/evidence/acceptance-merge-resolution-st_01a07ff5/unrelated-checklist-delta.diff",
+    "blob": "d19d8c73cfbcf65a10be14435fb9103f7e3eeca1"
+  },
+  {
+    "path": "src/ai/toolImageEventSprites.ts",
+    "blob": "560ec9539a09f43a1ccdc1be11376ad080f78acf"
+  }
+]

@@ -1,0 +1,16 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/toolImageEventAcceptanceSession.test.ts --maxWorkers=1 --minWorkers=1 --reporter=default --reporter=json --outputFile=.omo/evidence/integration-st01a08238/image-event-final.json
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-main-integration-st01a08238
+
+ ✓ test/toolImageEventAcceptanceSession.test.ts (1 test) 1348ms
+   ✓ session acceptance refuses unrepresentative multi-page event imagery > cannot verify imageReviewed after a page2-only graphic change without representable coverage  1346ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  04:59:03
+   Duration  13.85s (transform 8.42s, setup 0ms, collect 12.11s, tests 1.35s, environment 0ms, prepare 69ms)
+
+JSON report written to /home/main/z-project/rpg-zzu-ai-main-integration-st01a08238/.omo/evidence/integration-st01a08238/image-event-final.json

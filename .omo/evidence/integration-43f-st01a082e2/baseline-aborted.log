@@ -1,0 +1,5 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/assistantImageTransport.test.ts -t keeps aborted --maxWorkers=1 --minWorkers=1 --no-file-parallelism --no-cache --reporter=json --outputFile=../baseline-aborted.json
+
+JSON report written to /home/main/z-project/rpg-zzu-integration-43f-st01a082e2/.omo/integration-st01a082e2/baseline-aborted.json

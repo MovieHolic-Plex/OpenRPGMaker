@@ -1,8 +1,11 @@
 import { evaluateFunctionalCriterion } from "./functionalAcceptanceEvaluation";
+import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
+import type { NpcRewardRequirement } from "./intentDeclaration";
+import type { WorkItemOutcomeVerdict } from "./workItemOutcome";
 import { canMove, inBounds, isPassable } from "@/project/collision";
 import { passageBounds } from "@/project/footprint";
 import type { GameMap, Project } from "@/project/types";
-import type { AcceptanceCriterion, AcceptanceItemSnapshot, AcceptanceRegion, AcceptanceTarget } from "./assistantAcceptance";
+import { ACCEPTANCE_EXAMPLES, type AcceptanceIssue, type AcceptanceCriterion, type AcceptanceItemSnapshot, type AcceptanceRegion, type AcceptanceTarget } from "./assistantAcceptance";
 import type { ToolVerificationEvidence } from "./toolVerificationEvidence";
 
 type Evidence = AcceptanceItemSnapshot["evidence"][number];
@@ -70,7 +73,7 @@ export function visualFingerprint(project: Project, map: GameMap): string {
 }
 export function criterionTargets(criterion: AcceptanceCriterion): readonly AcceptanceTarget[] {
   switch (criterion.kind) {
-    case "toolVerdict": case "npcReward": case "functionalUnresolved": return [];
+    case "gameTitle": case "toolVerdict": case "npcReward": case "functionalUnresolved": return [];
     case "shopPurchase": return [criterion.target];
     case "mapRoundTrip": return [criterion.target, criterion.destination];
     case "mapCount": return criterion.targets;
@@ -79,7 +82,9 @@ export function criterionTargets(criterion: AcceptanceCriterion): readonly Accep
   }
 }
 export interface AcceptanceEvaluation {
+  readonly npcRewardProof?: (project: Project, requirement: NpcRewardRequirement) => WorkItemOutcomeVerdict;
   readonly verification?: ToolVerificationEvidence;
+  readonly verificationCheckId?: string;
   readonly project: Project;
   readonly baseline: Project;
   readonly bindings: ReadonlyMap<string, string>;
@@ -90,8 +95,16 @@ export function evaluateAcceptanceCriterion(criterion: AcceptanceCriterion, inpu
   const expected = JSON.stringify(criterion);
   switch (criterion.kind) {
     case "shopPurchase": case "mapRoundTrip": case "npcReward": case "functionalUnresolved": return evaluateFunctionalCriterion(criterion, input);
+    case "gameTitle": {
+      // Match titleScreen.renderTitleScreen/renderTitleNodes without importing DOM
+      // or asset rendering. Metadata is not a fallback; graphic-only text is hidden.
+      const settings = input.project.system.titleScreen ?? defaultTitleScreenSettings();
+      const hidden = settings.titleGraphic?.mode === "graphic" && Boolean(settings.titleGraphic.resourceId);
+      return { expected, observed: JSON.stringify({ title: hidden ? null : settings.title }),
+        passed: !hidden && settings.title === criterion.title };
+    }
     case "toolVerdict": {
-      const passed = input.verification?.passedScope(criterion.tool, criterion.args) === true;
+      const passed = input.verification?.passedScope(criterion.tool, criterion.args, input.verificationCheckId) === true;
       return { expected, observed: passed ? "Current explicit scoped tool verdict" : "Current explicit scoped tool verdict required", passed };
     }
     case "mapCount": {
@@ -118,14 +131,19 @@ export function evaluateAcceptanceCriterion(criterion: AcceptanceCriterion, inpu
     }
     case "targetChange": case "preserve": {
       const before = input.baseline.maps[map.id];
+      if (!before && criterion.kind === "targetChange" && "newMapName" in criterion.target) {
+        return { expected, observed: "Uniquely bound map created since original baseline", passed: true };
+      }
       const same = Boolean(before && (!region || validRegion(before, region))
         && acceptanceFingerprint(scopedMapContent(before, region)) === acceptanceFingerprint(scopedMapContent(map, region)));
       const passed = criterion.kind === "preserve" ? same : Boolean(before && !same);
       return { expected, observed: !before ? "No original target baseline" : same ? "Unchanged from original baseline" : "Changed from original baseline", passed };
     }
     case "reachability": {
-      const passed = conservativeReachability(input.project, map, criterion);
-      return { expected, observed: passed ? "All targets reachable with conservative event blockers" : "Route blocked, out of bounds, or conditional movement unsupported", passed };
+      const issues = conservativeReachability(input.project, map, criterion);
+      return { expected, observed: issues.length === 0 ? "All exact destination cells reachable with conservative event blockers"
+        : issues.map(issue => `${issue.field} (${issue.cell?.x},${issue.cell?.y}): ${issue.code}${issue.blocker?.eventId ? ` event ${issue.blocker.eventId}` : ""}. ${issue.expected}`).join("; "),
+        passed: issues.length === 0, issues: Object.freeze(issues) };
     }
     case "imageReviewed": {
       const requiredRegion = acceptanceReviewRegion(map, input.baseline.maps[map.id], region);
@@ -141,20 +159,35 @@ export function evaluateAcceptanceCriterion(criterion: AcceptanceCriterion, inpu
 }
 function assertNever(value: never): never { throw new Error(`Unhandled acceptance criterion: ${String(value)}`); }
 
-function conservativeReachability(project: Project, map: GameMap, criterion: Extract<AcceptanceCriterion, { kind: "reachability" }>): boolean {
-  const points = [criterion.from, ...criterion.to];
-  if (points.some(point => !inBounds(map, point.x, point.y) || !isPassable(project, map, point.x, point.y))) return false;
+function conservativeReachability(project: Project, map: GameMap, criterion: Extract<AcceptanceCriterion, { kind: "reachability" }>): AcceptanceIssue[] {
+  const points = [{ field: "from", cell: criterion.from }, ...criterion.to.map((cell, index) => ({ field: `to[${index}]`, cell }))];
+  const failure = (point: typeof points[number], code: string, blocker: NonNullable<AcceptanceIssue["blocker"]>): AcceptanceIssue => Object.freeze({
+    ...point, cell: Object.freeze({ ...point.cell }), code, mapId: map.id, blocker: Object.freeze(blocker),
+    expected: "exact walkable cell under conservative static passage; for interactions use an approach cell, not the solid event cell. Conditional movement is not proven",
+    example: ACCEPTANCE_EXAMPLES.reachability,
+  });
   // Never assume a switch/page/route will open a path. Every potentially solid
   // authored page blocks its passage footprint; no runtime state is fabricated.
   const blockers = map.events.flatMap(event => {
-    if (!event.pages?.length) return [passageBounds(event.x, event.y, { width: 1, height: 1 }, 1)];
-    return event.pages.filter(page => page.priority === "same" && page.overlapForbidden !== false)
-      .map(page => passageBounds(event.x, event.y, page.footprint ?? { width: 1, height: 1 }, page.passRows ?? page.footprint?.height ?? 1));
+    const bounds = !event.pages?.length ? [passageBounds(event.x, event.y, { width: 1, height: 1 }, 1)]
+      : event.pages.filter(page => page.priority === "same" && page.overlapForbidden !== false)
+        .map(page => passageBounds(event.x, event.y, page.footprint ?? { width: 1, height: 1 }, page.passRows ?? page.footprint?.height ?? 1));
+    return bounds.map(rect => ({ ...rect, eventId: event.id }));
   });
-  if (map.events.some(event => event.moveRoute || event.pages?.some(page => page.priority === "same"
-    && page.overlapForbidden !== false && page.movement.type !== "fixed"))) return false;
-  const blocked = (x: number, y: number): boolean => blockers.some(rect => x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom);
-  if (points.some(point => blocked(point.x, point.y))) return false;
+  const blocked = (x: number, y: number) => blockers.find(rect => x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom);
+  const issues: AcceptanceIssue[] = [];
+  for (const point of points) {
+    if (!inBounds(map, point.cell.x, point.cell.y)) issues.push(failure(point, "cell-out-of-bounds", { kind: "bounds" }));
+    else if (!isPassable(project, map, point.cell.x, point.cell.y)) issues.push(failure(point, "cell-tile-blocked", { kind: "tile" }));
+    else {
+      const event = blocked(point.cell.x, point.cell.y);
+      if (event) issues.push(failure(point, "cell-event-blocked", { kind: "event", eventId: event.eventId }));
+    }
+  }
+  if (issues.length) return issues;
+  const moving = map.events.find(event => event.moveRoute || event.pages?.some(page => page.priority === "same"
+    && page.overlapForbidden !== false && page.movement.type !== "fixed"));
+  if (moving) return [failure({ field: "from", cell: criterion.from }, "conditional-movement-unsupported", { kind: "event", eventId: moving.id })];
   const seen = new Set<string>([`${criterion.from.x},${criterion.from.y}`]);
   const queue = [criterion.from];
   for (let head = 0; head < queue.length; head += 1) {
@@ -167,5 +200,6 @@ function conservativeReachability(project: Project, map: GameMap, criterion: Ext
       queue.push({ x, y });
     }
   }
-  return criterion.to.every(point => seen.has(`${point.x},${point.y}`));
+  return points.filter(point => !seen.has(`${point.cell.x},${point.cell.y}`))
+    .map(point => failure(point, "cell-unreachable", { kind: "route" }));
 }

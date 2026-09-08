@@ -1,0 +1,36 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/audioDescriptionConcurrentPersistence.test.ts test/audioDescriptionPersistence.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-interior-load-consistency-0907
+
+ ✓ test/audioDescriptionPersistence.test.ts (37 tests) 4493ms
+   ✓ audio description recovery snapshots > preserves description states when restoring a backup into an editor package: undefined  721ms
+   ✓ audio description recovery snapshots > preserves description states when restoring a backup into an editor package: {"music":{"orphan":" \tBACKUP_VALUE\n ","cleared":"","__proto__":"OWN_ID"},"sound":{"orphan":"SOUND_VALUE","terrainTemplates":""}}  584ms
+ ✓ test/audioDescriptionConcurrentPersistence.test.ts (22 tests) 68927ms
+   ✓ audio description concurrent persistence > keeps replacement project descriptions 'missing' while an old save completes  4415ms
+   ✓ audio description concurrent persistence > keeps replacement project descriptions 'cleared' while an old save completes  3253ms
+   ✓ audio description concurrent persistence > keeps replacement project descriptions 'authored' while an old save completes  3541ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'unchanged local key'  2885ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'remote clear'  2849ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'remote reset'  2953ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'remote addition to an absent field'  3063ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'different keys in one kind'  2816ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'same raw ID in different kinds'  2781ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'same-key local edit wins'  2761ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'same-key local clear wins'  2771ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'same-key local reset wins'  2874ms
+   ✓ audio description concurrent persistence > merges descriptions after a conditional-write race when 'own raw IDs and exact stored whitespa…'  2824ms
+   ✓ audio description concurrent persistence > preserves 'remote edit' through consecutive map saves without recording a user edit  4084ms
+   ✓ audio description concurrent persistence > preserves 'remote clear' through consecutive map saves without recording a user edit  4639ms
+   ✓ audio description concurrent persistence > preserves 'remote reset' through consecutive map saves without recording a user edit  4596ms
+   ✓ audio description concurrent persistence > keeps fresh map edits and a fresh description 'set' when a response arrives late  4247ms
+   ✓ audio description concurrent persistence > keeps fresh map edits and a fresh description 'clear' when a response arrives late  4716ms
+   ✓ audio description concurrent persistence > keeps fresh map edits and a fresh description 'reset' when a response arrives late  4407ms
+   ✓ audio description concurrent persistence > retains the baseline and fresh local input when a deferred write fails  2190ms
+
+ Test Files  2 passed (2)
+      Tests  59 passed (59)
+   Start at  09:07:41
+   Duration  73.45s (transform 3.55s, setup 0ms, collect 8.20s, tests 73.42s, environment 1ms, prepare 161ms)

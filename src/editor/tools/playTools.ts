@@ -10,7 +10,9 @@ import { COORD_SCHEMA } from "./schemaShapes";
 const playWalkthrough: ToolDefinition = {
   name: "play_walkthrough",
   description:
-    "시나리오 스텝을 브라우저 없이 실행해 완주 가능성/막힘 지점을 검증한다. 스텝: " +
+    "브라우저 없이 명령 흐름을 검사하며 실제 키보드 플레이 증거는 아니다. " +
+    "moveTo는 좌표 이동만 하고 playerTouch/eventTouch를 자동 실행하지 않는다. " +
+    "이동문은 interact로 해당 이벤트를 실행한 뒤 mapId를 검사한다. 실제 터치 발동은 플레이어에서 별도 확인한다. 스텝: " +
     "{do:'interact',eventId} / {do:'choose',index} / {do:'moveTo',mapId,x,y} / {do:'battle',expect:'victory'|'defeat'} / " +
     "{expect:'switch'|'item'|'variable'|'mapId'|'gold'|'ended', ...}. 도달 스텝/실패 지점/최종 상태를 반환한다.",
   mode: "read",
@@ -81,9 +83,9 @@ const runSceneTestTool: ToolDefinition = {
   description:
     "브라우저 없이 장면을 고정 tick으로 실행해 컷신/카메라/스폰/픽처/오디오 상태를 검증한다. 입력: " +
     "{mapId,start:{x,y},steps:[{kind:'wait',ticks}|{kind:'face',dir}|{kind:'set',switches?,variables?,inventory?,mapId?,x?,y?}|{kind:'move',dir|to}|{kind:'interact',eventId?}|{kind:'snapshotRewards'}|{kind:'gift',eventId?,itemId}|{kind:'choose',index}|{kind:'retryCheckpoint'}|{kind:'advanceDays',days}|{kind:'expect',...}]}." +
-    " expect는 playerAt, switchOn/Off, variableEquals, variableAtLeast, eventAt, eventOnMap, eventDistanceToPlayerLessThan, followerCount, followerAt, cameraAt, lightingAmbient, lightAt, lightCount, weatherKind, animationPlaying, fieldSpawnCount, spawnedCount, pictureVisible, bgmPlaying, gameOver, endingReached, cutsceneLocked, mapId, gameTimeAt, timePhase, cropStageAt, inventoryCount, inventoryDelta, ownedMonsterDelta, interactionComplete, friendshipAtLeast, shopStock를 지원한다. " +
+    " expect는 playerAt, switchOn/Off, variableEquals, variableAtLeast, eventAt, eventOnMap, eventDistanceToPlayerLessThan, followerCount, followerAt, cameraAt, lightingAmbient, lightAt, lightCount, weatherKind, animationPlaying, fieldSpawnCount, spawnedCount, pictureVisible, bgmPlaying, gameOver, endingReached, cutsceneLocked, mapId, gameTimeAt, timePhase, cropStageAt, inventoryCount, goldDelta, inventoryDelta, ownedMonsterDelta, interactionComplete, friendshipAtLeast, shopStock를 지원한다. " +
     "Purchase proof: walk to/interact with the intended seller, then purchase {eventId,itemId,count,unitPrice}; assert goldDelta and inventoryDelta. Opens a real pending shop; no transaction means interactionComplete:false. Ordinary player-buy stock only, not haggle/shopkeeper/services. lastTransfer:{fromMapId,eventId,toMapId} asserts the last actual interpreter transfer. " +
-    "NPC reward proof: snapshotRewards immediately before interacting; expect inventoryDelta:{itemId:count} / ownedMonsterDelta:{speciesId:count} (or {atLeast:1}) and interactionComplete:true. For one-time rewards, snapshot again and interact twice in the SAME steps array, then expect zero deltas. eventId checks the physically selected NPC, never directly executes its commands. finalState includes ownedMonsterCounts across party+box, monsterParty and monsterBox." +
+    "NPC reward proof: snapshotRewards immediately before interacting; expect goldDelta:20 for currency, inventoryDelta:{itemId:count} / ownedMonsterDelta:{speciesId:count} (or {atLeast:1}) and interactionComplete:true. inventoryDelta.gold is an inventory item ID, never currency. For one-time rewards, snapshot again and interact twice in the SAME steps array, then expect zero gold/item/monster deltas. eventId checks the physically selected NPC, never directly executes its commands. finalState includes gold, ownedMonsterCounts across party+box, monsterParty and monsterBox." +
     " 필드 액션 전투는 실행하지 않으며, wait/스폰 성공은 전투 증거가 아니다. 액션 전투는 run_action_combat_test로 검증한다.",
   mode: "read",
   parameters: {
@@ -110,10 +112,11 @@ const runSceneTestTool: ToolDefinition = {
             itemId: { type: "string" },
             count: { type: "integer", minimum: 1, maximum: 99 },
             unitPrice: { type: "integer", minimum: 0 },
-            goldDelta: { type: "integer" },
             lastTransfer: { type: "object", properties: { fromMapId: { type: "string" }, eventId: { type: "string" }, toMapId: { type: "string" } }, required: ["fromMapId", "eventId", "toMapId"], additionalProperties: false },
             text: { type: "string" },
             interactionComplete: { type: "boolean" },
+            endingReached: { type: "string", minLength: 1, pattern: "\\S", description: "Exact ending ID reached by the scene (e.g. ending_escape), never a boolean." },
+            goldDelta: { description: "Currency delta: exact signed safe integer (e.g. 20 or 0), or {atLeast:1}. Relative to snapshotRewards, scene start by default. Not an inventory item." },
             inventoryDelta: {
               type: "object", description: "Item ID to exact delta or {atLeast:number}, relative to snapshotRewards (scene start by default).",
               additionalProperties: true,
@@ -145,6 +148,9 @@ const runSceneTestTool: ToolDefinition = {
         failedStep: result.failedStep,
         failureReason: result.failureReason,
         finalState: result.finalState,
+        interactions: result.interactions,
+        ...(result.setupFailure ? { setupFailure: result.setupFailure } : {}),
+        ...(result.failedSelection ? { failedSelection: result.failedSelection } : {}),
         log: result.log,
       },
     };

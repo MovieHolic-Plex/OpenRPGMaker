@@ -11,11 +11,7 @@
  * 이들은 파이프라인에도 상수 이름이 없는 원본 세트다.
  */
 import type { InteriorRoomTheme, InteriorSemanticTileRole } from "@/editor/interiorRoomPipeline";
-import { interiorVocabTiles } from "@/editor/interiorRoomPipeline";
-
-// 파이프라인과 서로 순환 초기화되므로 `VR` 상수를 직수입해 쓰면 TDZ에 걸린다.
-// 호이십되는 생성자 함수를 통해 동일한 어휘 사전을 얻는다(값·타입 동일).
-const VR = interiorVocabTiles();
+import { VR } from "@/project/tilesetHarness/interiorRoomGroups";
 
 /** 배치 스냅 규약 — 북벽 밀착 / 임의 벽면 / 바닥 / 자유. */
 export type InteriorObjectSnap = "wall-north" | "wall-any" | "floor" | "free";
@@ -178,7 +174,7 @@ export const INTERIOR_OBJECT_CATALOG: readonly InteriorObjectDef[] = [
   def("bust", "흉상", [[VR.BUST_T], [VR.BUST_B]], "upper", ["corridor", "study"], "wall-north"),
   def("mirror", "대형 거울", [[VR.MIRROR_T], [VR.MIRROR_B]], "upper", ["bedroom", "dining"], "wall-north"),
   def("display", "검 진열 박스", [[VR.DISPLAY_T], [VR.DISPLAY_B]], "upper", ["tavern", "dining"], "wall-north"),
-  def("cabinet", "캐비닛", [[VR.CABINET_U], [VR.CABINET_L]], "lower", ["bedroom", "dining"], "wall-north"),
+  def("cabinet", "캐비닛", [[VR.CABINET_U], [VR.CABINET_L]], "upper", ["bedroom", "dining"], "wall-north"),
   def("rug", "러그", RUG_TEAL_ROWS, "lower", ["bedroom", "dining", "study"], "floor"),
   def("hearth", "벽난로 아궁이", [[VR.HEARTH]], "lower", ["kitchen", "tavern"], "wall-any"),
   def("cauldron", "가마솥", [[VR.CAULDRON]], "upper", ["kitchen"], "floor"),

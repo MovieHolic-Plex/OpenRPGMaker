@@ -22,6 +22,7 @@ describe("bounded canonical project comparisons", () => {
       id, title: id, criteria: [{ kind: "toolVerdict", tool: "run_lint", args: {} }],
     }))) ?? []);
     const evidence = new ToolVerificationEvidence();
+    ledger.bindVerificationRequirements(evidence);
     evidence.observe("run_lint", {}, { ok: true, data: { counts: { errors: 0 } } });
     const fingerprints = vi.spyOn(evaluation, "acceptanceFingerprint");
     // When the real canonical ledger evaluates all promises.
@@ -57,7 +58,10 @@ describe("bounded canonical project comparisons", () => {
     // When a detached applied refresh precedes late adoption, with no new verification call.
     f.session.rebaseProject(project);
     await f.run([[plan([{ id: "route", title: "Route", criteria: [{ kind: "toolVerdict", tool: "check_reachability", args }] }]), skip]]);
-    // Then equal content preserves proof while changed content retires it.
-    expect(f.session.getAcceptanceSnapshot()?.status).toBe(changed ? "blocked" : "verified");
+    // Neither equality nor a rebase can grant pre-declaration proof authority.
+    expect(f.session.getAcceptanceSnapshot()?.status).toBe("blocked");
+    expect(f.session.getVerificationSnapshot().requirements[0]?.status).toBe("unverified");
+    await f.run([[{ name: "check_reachability", args }]], { goalAction: "resume" }, "Continue route verification");
+    expect(f.session.getAcceptanceSnapshot()?.status, JSON.stringify({ acceptance: f.session.getAcceptanceSnapshot(), verification: f.session.getVerificationSnapshot() })).toBe("verified");
   });
 });

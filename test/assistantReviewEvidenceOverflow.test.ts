@@ -53,7 +53,11 @@ describe("independent review evidence overflow", () => {
         if (payload(request)) return text("{}");
         writerCalls++;
         if (writerCalls === 1) return { message: { role: "assistant", content: null, tool_calls: [{
-          id: "lint", type: "function", function: { name: "run_lint", arguments: "{}" } }] }, finishReason: "tool_calls" };
+          id: "declare-lint", type: "function", function: { name: "set_work_plan", arguments: JSON.stringify({
+            goal: "Change price with required lint", layers: [{ title: "Check", items: [{ title: "Lint", instruction: "Revalidate lint",
+              successTools: ["run_lint"], verificationChecks: [{ tool: "run_lint", args: {} }] }] }],
+          }) },
+        }, { id: "lint", type: "function", function: { name: "run_lint", arguments: "{}" } }] }, finishReason: "tool_calls" };
         if (writerCalls === 2) return write(321);
         return text("Done");
       },

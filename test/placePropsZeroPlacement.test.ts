@@ -21,6 +21,7 @@ describe("place_props zero placement", () => {
     const { ctx, mapId } = preparedProject();
     expect(runTool(ctx, "fill_region", { mapId, rect: FOREST, material: "키큰 풀" }).ok).toBe(true);
 
+    const before = structuredClone(ctx.project);
     const result = runTool(ctx, "place_props", {
       mapId,
       area: FOREST,
@@ -33,8 +34,16 @@ describe("place_props zero placement", () => {
 
     expect(result.ok).toBe(false);
     expect(result.issues?.[0]?.code).toBe("placement-zero");
-    expect(`${result.summary}`).toMatch(/한 개도 놓지 못했습니다/);
-    expect(`${result.summary}`).toMatch(/tile_erase/);
+    // The real fill writes lower vegetation, not occupied upper tiles. The old
+    // prose assertion required ineffective upper erase. Pin measured fields.
+    const record = result.issues![0]!.message.split("\n").find((line) => line.startsWith("placement_diagnostics: "));
+    expect(record).toBeDefined();
+    expect(JSON.parse(record!.slice("placement_diagnostics: ".length))).toEqual({
+      unit: "candidate-origin", scope: "area-candidate-origins", footprint: { w: 1, h: 2 },
+      candidateOrigins: 870, rejectedOrigins: 870, eligibleOrigins: 0,
+      rejectedBy: { lowerIncompatible: 870 }, upperErase: { recommended: false, upperOnlyOrigins: 0 },
+    });
+    expect(ctx.project).toEqual(before);
   });
 
   it("still succeeds on an open region and reports partial placement as success", () => {

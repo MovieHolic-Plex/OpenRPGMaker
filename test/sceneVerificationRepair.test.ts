@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import { ToolVerificationEvidence } from "@/ai/toolVerificationEvidence";
 import { runTool } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
+import { AssistantAcceptanceLedger } from "@/ai/assistantAcceptanceLedger";
+import { verificationJourney } from "./fixtures/verificationOwnership";
 
 function rewardScene() {
   const context = { project: createBlankProject() };
@@ -23,6 +25,49 @@ function rewardScene() {
 }
 
 describe("corrected scene navigation retains the same verification obligation", () => {
+  it("wire180->181 and corrected171 discharge distinct real-runner findings at terminal acceptance", () => {
+    const f = verificationJourney();
+    const evidence = new ToolVerificationEvidence();
+    const acceptance = new AssistantAcceptanceLedger("goal", "Journey", f.project);
+    acceptance.adopt([{ id: "preserve", title: "Existing content", criteria: [{ kind: "preserve", target: { mapId: f.village.id } }] }]);
+    for (const input of [f.wire171, f.wire180]) {
+      const result = runTool({ project: f.project }, "run_scene_test", { ...input });
+      expect(result).toMatchObject({ ok: true, data: { ok: false, setupFailure: { kind: "no-interaction-target", mapId: f.cellar.id } } });
+      evidence.observe("run_scene_test", { ...input }, result);
+    }
+    const ids = evidence.snapshot().findings.map(finding => finding.checkId);
+    expect(new Set(ids).size).toBe(2);
+    const pass180 = runTool({ project: f.project }, "run_scene_test", { ...f.wire181 });
+    expect(pass180).toMatchObject({ ok: true, data: { ok: true } });
+    evidence.observe("run_scene_test", { ...f.wire181 }, pass180);
+    expect(evidence.snapshot().findings.map(finding => finding.checkId)).toEqual([ids[0]]);
+    expect(acceptance.evaluate(f.project, f.project, evidence, evidence.problems()).status).toBe("blocked");
+    const correction = evidence.correction(ids[0], f.corrected171);
+    expect(correction).not.toBeNull();
+    const pass171 = runTool({ project: f.project }, correction!.name, correction!.args);
+    expect(pass171).toMatchObject({ ok: true, data: { ok: true } });
+    evidence.observe(correction!.name, correction!.args, pass171, "explicit", undefined, ids[0]);
+    expect(evidence.snapshot().findings).toEqual([]);
+    expect(acceptance.evaluate(f.project, f.project, evidence, evidence.problems()).status).toBe("verified");
+  });
+
+  it.each(["drop-repeat", "weaker", "target", "start", "snapshot", "choice", "state", "navigation"])("rejects %s as a correction without deleting the original", variant => {
+    const f = verificationJourney();
+    const evidence = new ToolVerificationEvidence();
+    evidence.observe("run_scene_test", { ...f.wire180 }, runTool({ project: f.project }, "run_scene_test", { ...f.wire180 }));
+    const checkId = evidence.snapshot().findings[0]!.checkId;
+    const args = structuredClone({ ...f.wire181, steps: [...f.wire181.steps] });
+    if (variant === "drop-repeat") args.steps.splice(-3);
+    if (variant === "weaker") args.steps = args.steps.map(step => step.kind === "expect" && step.goldDelta === 20 ? { ...step, goldDelta: { atLeast: 1 } } : step);
+    if (variant === "target") args.steps = args.steps.map(step => step.kind === "interact" ? { ...step, eventId: "other" } : step);
+    if (variant === "start") args.start.x++;
+    if (variant === "snapshot") args.steps = args.steps.filter(step => step.kind !== "snapshotRewards");
+    if (variant === "choice") args.steps.push({ kind: "choose", index: 0 });
+    if (variant === "state") args.steps.unshift({ kind: "set", gold: 100 });
+    if (variant === "navigation") args.steps = args.steps.filter(step => step.kind !== "move");
+    expect(evidence.correction(checkId, args)).toBeNull();
+    expect(evidence.snapshot().findings.map(finding => finding.checkId)).toEqual([checkId]);
+  });
   it.each([
     { setup: [], malformed: false },
     { setup: [{ kind: "face", text: "up" }], malformed: true },
@@ -42,7 +87,7 @@ describe("corrected scene navigation retains the same verification obligation", 
     }
     evidence.observe("run_scene_test", failedArgs, failed);
     evidence.invalidateAfterWrite();
-    const corrected = { ...args, steps: [{ kind: "face", dir: "up" }, ...args.steps] };
+    const corrected = { ...args, steps: [...(malformed ? [] : setup), { kind: "face", dir: "up" }, ...args.steps] };
     const passed = runTool(context, "run_scene_test", corrected);
     expect(passed.data).toMatchObject({ ok: true });
     evidence.observe("run_scene_test", corrected, passed);
@@ -54,6 +99,8 @@ describe("corrected scene navigation retains the same verification obligation", 
     const { context, args } = rewardScene();
     const evidence = new ToolVerificationEvidence();
     const corrected = { ...args, steps: [{ kind: "face", dir: "up" }, ...args.steps] };
+    evidence.adopt({ checkId: "canonical", ownerId: "goal", name: "run_scene_test", args: corrected,
+      acceptedCriterion: { kind: "toolVerdict", tool: "run_scene_test", args: corrected } });
     evidence.observe("run_scene_test", args, runTool(context, "run_scene_test", args));
     evidence.observe("run_scene_test", corrected, runTool(context, "run_scene_test", corrected));
     expect(evidence.problems()).toEqual([]);
@@ -78,7 +125,9 @@ describe("corrected scene navigation retains the same verification obligation", 
     const evidence = new ToolVerificationEvidence();
     const first = { ...args, steps: [{ kind: "face", dir: "up" }, ...args.steps] };
     const second = { ...args, steps: [{ kind: "set", x: 10, y: 8 }, ...first.steps] };
-    for (const exact of [first, second]) {
+    for (const [index, exact] of [first, second].entries()) {
+      evidence.adopt({ checkId: `canonical-${index}`, ownerId: "goal", name: "run_scene_test", args: exact,
+        acceptedCriterion: { kind: "toolVerdict", tool: "run_scene_test", args: exact } });
       const result = runTool(context, "run_scene_test", exact);
       expect(result.data).toMatchObject({ ok: true });
       evidence.observe("run_scene_test", exact, result);

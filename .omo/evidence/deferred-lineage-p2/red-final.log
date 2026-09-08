@@ -1,0 +1,290 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/storeDeferredLineage.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-interior-load-consistency-0907
+
+ ❯ test/storeDeferredLineage.test.ts (12 tests | 10 failed) 34992ms
+   × deferred store persistence owns its scheduling lineage > ignores A's migration callback on clean B before any state or persistence access 3777ms
+     → expected [ { version: 4, …(17) } ] to have a length of +0 but got 1
+   × deferred store persistence owns its scheduling lineage > ignores A's retry callback on clean B before any state or persistence access 3009ms
+     → expected [ { version: 4, …(17) }, …(1) ] to have a length of 1 but got 2
+   × deferred store persistence owns its scheduling lineage > ignores A's health callback on clean B before any state or persistence access 2608ms
+     → expected "spy" to not be called at all, but actually been called 1 times[90m
+
+Received:
+
+[1m  1st spy call:
+
+[22m    Array [
+      "https://deferred-lineage.invalid/rest/v1/projects?limit=0",
+      Object {
+        "headers": Object {
+          "Accept": "application/json",
+          "Accept-Profile": "rpg_zzu",
+          "Authorization": "Bearer test-only",
+          "apikey": "test-only",
+        },
+        "signal": AbortSignal {
+          Symbol(kEvents): Map {},
+          Symbol(events.maxEventTargetListeners): 0,
+          Symbol(events.maxEventTargetListenersWarned): false,
+          Symbol(kHandlers): Map {},
+          Symbol(kAborted): false,
+          Symbol(kReason): undefined,
+          Symbol(kComposite): false,
+          Symbol(kTimeout): true,
+        },
+      },
+    ]
+[39m[90m
+
+Number of calls: [1m1[22m
+[39m
+   × deferred store persistence owns its scheduling lineage > A's migration callback cannot save dirty B or steal B's newer timer 3060ms
+     → expected [ { version: 4, …(17) } ] to have a length of +0 but got 1
+   × deferred store persistence owns its scheduling lineage > A's retry callback cannot save dirty B or steal B's newer timer 3635ms
+     → expected [ { version: 4, …(17) }, …(2) ] to have a length of 2 but got 3
+   × deferred store persistence owns its scheduling lineage > A's health callback cannot save dirty B or steal B's newer timer 2974ms
+     → expected { refed: true, …(4), …(1) } not to be { refed: true, …(4), …(1) } // Object.is equality
+   × deferred store persistence owns its scheduling lineage > a superseded same-lineage migration timer cannot consume the newer edit timer 2532ms
+     → expected [ { version: 4, …(17) } ] to have a length of +0 but got 1
+   ✓ deferred store persistence owns its scheduling lineage > the current migration callback persists migration and catches up concurrent edits  3452ms
+   ✓ deferred store persistence owns its scheduling lineage > the current retry callback persists migration and catches up concurrent edits  3122ms
+   × deferred store persistence owns its scheduling lineage > a pending subscriber's replacement keeps its own timer registration 1935ms
+     → expected "clearTimeout" to be called with arguments: [ { refed: true, …(4), …(1) } ][90m
+
+Received:
+
+[1m  1st clearTimeout call:
+
+[22m[2mCompared values have no visual difference.[22m
+[39m[90m
+
+Number of calls: [1m1[22m
+[39m
+   × deferred store persistence owns its scheduling lineage > an error subscriber's replacement does not acquire the old failed save's retry 1945ms
+     → expected [Function] to throw an error
+   × deferred store persistence owns its scheduling lineage > an in-flight A health response cannot clear B's retry or persist B 2942ms
+     → expected [ { version: 4, …(17) }, …(2) ] to have a length of 2 but got 3
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 10 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/storeDeferredLineage.test.ts > deferred store persistence owns its scheduling lineage > ignores A's migration callback on clean B before any state or persistence access
+AssertionError: expected [ { version: 4, …(17) } ] to have a length of +0 but got 1
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 0[39m
+[31m+ 1[39m
+
+ ❯ test/storeDeferredLineage.test.ts:127:29
+    125|       // callbacks must be harmless, not just absent from the timer re…
+    126|       await obsolete.callback();
+    127|       expect(remote.writes).toHaveLength(writes);
+       |                             ^
+    128|       expect(fetch).not.toHaveBeenCalled();
+    129|       expect(states).toEqual([]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯
+
+ FAIL  test/storeDeferredLineage.test.ts > deferred store persistence owns its scheduling lineage > ignores A's retry callback on clean B before any state or persistence access
+AssertionError: expected [ { version: 4, …(17) }, …(1) ] to have a length of 1 but got 2
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 2[39m
+
+ ❯ test/storeDeferredLineage.test.ts:127:29
+    125|       // callbacks must be harmless, not just absent from the timer re…
+    126|       await obsolete.callback();
+    127|       expect(remote.writes).toHaveLength(writes);
+       |                             ^
+    128|       expect(fetch).not.toHaveBeenCalled();
+    129|       expect(states).toEqual([]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/10]⎯
+
+ FAIL  test/storeDeferredLineage.test.ts > deferred store persistence owns its scheduling lineage > ignores A's health callback on clean B before any state or persistence access
+AssertionError: expected "spy" to not be called at all, but actually been called 1 times[90m
+
+Received:
+
+[1m  1st spy call:
+
+[22m    Array [
+      "https://deferred-lineage.invalid/rest/v1/projects?limit=0",
+      Object {
+        "headers": Object {
+          "Accept": "application/json",
+          "Accept-Profile": "rpg_zzu",
+          "Authorization": "Bearer test-only",
+          "apikey": "test-only",
+        },
+        "signal": AbortSignal {
+          Symbol(kEvents): Map {},
+          Symbol(events.maxEventTargetListeners): 0,
+          Symbol(events.maxEventTargetListenersWarned): false,
+          Symbol(kHandlers): Map {},
+          Symbol(kAborted): false,
+          Symbol(kReason): undefined,
+          Symbol(kComposite): false,
+          Symbol(kTimeout): true,
+        },
+      },
+    ]
+[39m[90m
+
+Number of calls: [1m1[22m
+[39m
+ ❯ test/storeDeferredLineage.test.ts:128:25
+    126|       await obsolete.callback();
+    127|       expect(remote.writes).toHaveLength(writes);
+    128|       expect(fetch).not.toHaveBeenCalled();
+       |                         ^
+    129|       expect(states).toEqual([]);
+    130|       expect(f.store.getAutoSaveState()).toBe(state);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/10]⎯
+
+ FAIL  test/storeDeferredLineage.test.ts > deferred store persistence owns its scheduling lineage > A's migration callback cannot save dirty B or steal B's newer timer
+AssertionError: expected [ { version: 4, …(17) } ] to have a length of +0 but got 1
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 0[39m
+[31m+ 1[39m
+
+ ❯ test/storeDeferredLineage.test.ts:160:27
+    158|     const state = f.store.getAutoSaveState();
+    159|     await obsolete.callback();
+    160|     expect(remote.writes).toHaveLength(writes);
+       |                           ^
+    161|     expect(fetch).not.toHaveBeenCalled();
+    162|     expect(f.store.hasUnsavedChanges()).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/10]⎯
+
+ FAIL  test/storeDeferredLineage.test.ts > deferred store persistence owns its scheduling lineage > A's retry callback cannot save dirty B or steal B's newer timer
+AssertionError: expected [ { version: 4, …(17) }, …(2) ] to have a length of 2 but got 3
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 2[39m
+[31m+ 3[39m
+
+ ❯ test/storeDeferredLineage.test.ts:160:27
+    158|     const state = f.store.getAutoSaveState();
+    159|     await obsolete.callback();
+    160|     expect(remote.writes).toHaveLength(writes);
+       |                           ^
+    161|     expect(fetch).not.toHaveBeenCalled();
+    162|     expect(f.store.hasUnsavedChanges()).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/10]⎯
+
+ FAIL  test/storeDeferredLineage.test.ts > deferred store persistence owns its scheduling lineage > A's health callback cannot save dirty B or steal B's newer timer
+AssertionError: expected { refed: true, …(4), …(1) } not to be { refed: true, …(4), …(1) } // Object.is equality
+
+[2mCompared values have no visual difference.[22m
+
+ ❯ test/storeDeferredLineage.test.ts:156:32
+    154|       if (kind === "health") current = f.registered(30_000, true);
+    155|     }
+    156|     expect(current.handle).not.toBe(obsolete.handle);
+       |                                ^
+    157|     const writes = remote.writes.length;
+    158|     const state = f.store.getAutoSaveState();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/10]⎯
+
+ FAIL  test/storeDeferredLineage.test.ts > deferred store persistence owns its scheduling lineage > a superseded same-lineage migration timer cannot consume the newer edit timer
+AssertionError: expected [ { version: 4, …(17) } ] to have a length of +0 but got 1
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 0[39m
+[31m+ 1[39m
+
+ ❯ test/storeDeferredLineage.test.ts:179:27
+    177|     expect(current.handle).not.toBe(obsolete.handle);
+    178|     await obsolete.callback();
+    179|     expect(remote.writes).toHaveLength(0);
+       |                           ^
+    180|     expect(f.store.hasUnsavedChanges()).toBe(true);
+    181|     const saved = f.saved();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/10]⎯
+
+ FAIL  test/storeDeferredLineage.test.ts > deferred store persistence owns its scheduling lineage > a pending subscriber's replacement keeps its own timer registration
+AssertionError: expected "clearTimeout" to be called with arguments: [ { refed: true, …(4), …(1) } ][90m
+
+Received:
+
+[1m  1st clearTimeout call:
+
+[22m[2mCompared values have no visual difference.[22m
+[39m[90m
+
+Number of calls: [1m1[22m
+[39m
+ ❯ test/storeDeferredLineage.test.ts:231:25
+    229|       expect(replacementTimer).toBeDefined();
+    230|       expect((await f.store.flush()).kind).toBe("saved");
+    231|       expect(f.cleared).toHaveBeenCalledWith(replacementTimer!.handle);
+       |                         ^
+    232|       expect(remote.writes).toHaveLength(1);
+    233|       expect(remote.writes[0]!.meta.title).toBe(f.clean.meta.title);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/10]⎯
+
+ FAIL  test/storeDeferredLineage.test.ts > deferred store persistence owns its scheduling lineage > an error subscriber's replacement does not acquire the old failed save's retry
+AssertionError: expected [Function] to throw an error
+
+[32m- Expected:[39m
+null
+
+[31m+ Received:[39m
+undefined
+
+ ❯ test/storeDeferredLineage.test.ts:246:40
+    244|     try { await expect(f.store.flush()).rejects.toThrow("Controlled sa…
+    245|     finally { unsubscribe(); remote.save = null; }
+    246|     expect(() => f.registered(20_000)).toThrow("Missing registered");
+       |                                        ^
+    247|     expect(() => f.registered(30_000, true)).toThrow("Missing register…
+    248|     expect(f.store.hasUnsavedChanges()).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/10]⎯
+
+ FAIL  test/storeDeferredLineage.test.ts > deferred store persistence owns its scheduling lineage > an in-flight A health response cannot clear B's retry or persist B
+AssertionError: expected [ { version: 4, …(17) }, …(2) ] to have a length of 2 but got 3
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 2[39m
+[31m+ 3[39m
+
+ ❯ test/storeDeferredLineage.test.ts:270:27
+    268|     response.resolve(new Response(null, { status: 200 }));
+    269|     await bounded(Promise.resolve(checking));
+    270|     expect(remote.writes).toHaveLength(writes);
+       |                           ^
+    271|     expect(f.store.getAutoSaveState()).toBe(state);
+    272|     expect(f.cleared).not.toHaveBeenCalledWith(retry.handle);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/10]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  10 failed | 2 passed (12)
+   Start at  08:55:20
+   Duration  39.38s (transform 3.22s, setup 0ms, collect 3.86s, tests 34.99s, environment 0ms, prepare 66ms)

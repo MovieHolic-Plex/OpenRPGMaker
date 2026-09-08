@@ -311,6 +311,20 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   let refreshAcceptanceMenus: () => void = () => {};
   const stickyChecklist = createAiStickyChecklist({
     onWithdraw: withdrawAiRequirement,
+    onReviewApproach: checkId => {
+      if (disposed || turnBusy || !controller.session) return null;
+      controller.session.refreshAcceptance(store.getCurrent());
+      return controller.session.previewApproachCorrection(checkId);
+    },
+    onConfirmApproach: preview => {
+      if (disposed || turnBusy || !controller.session) return false;
+      const session = controller.session;
+      session.refreshAcceptance(store.getCurrent());
+      const accepted = session.confirmApproachCorrection(preview);
+      stickyChecklist.update(session.getAcceptanceSnapshot());
+      refreshRunOutcome();
+      return accepted;
+    },
     onChange: () => refreshAcceptanceMenus(),
     onHide: () => {
       const opener = moreMenuToggle.isConnected && !moreMenuToggle.closest("[hidden]")
@@ -845,6 +859,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
      */
     resumeTarget: ConversationRecord | null = null,
   ): boolean => {
+    closeAiConversationHistoryModal();
     // 버릴 것이 있었는지를 보관 전에 재다 — 부팅 지연 로드도 프로젝트 전환으로 보이므로,
     // 할 이야기가 없는 전환은 조용하게 재스코프만 한다.
     const discardedEntries = [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])].length;
@@ -921,6 +936,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
    */
   let adoptGeneration = 0;
   const adoptConversationForCurrentProject = async (): Promise<void> => {
+    closeAiConversationHistoryModal();
     // 새 스코프를 먼저 읽어 이어받을 대화를 정한다 — 리셋이 그 사실을 알아야 버릴 id·시작 화면·
     // 거짓 계측을 만들지 않는다. 리셋 자체는 여전히 **옛** scope/id 로 닫히는 대화를 보관한다.
     // 조회는 비동기(IndexedDB)다. 그 사이 또 전환됐으면 뒤의 전환이 처리한다 — 낡은 결과로 리셋하지 않는다.
@@ -949,14 +965,19 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     persistConversation();
     const capturedScope = conversationScope;
     const capturedIdentityId = projectIdentityId;
+    const historyIdentity = store.getProjectIdentity().id;
+    const historyConversationId = conversationId;
     const project = store.getCurrent();
     const stateMapId = editorState.get().currentMapId;
     const currentMapId = stateMapId && project.maps[stateMapId] ? stateMapId : project.startMapId;
     openAiConversationHistoryModal({
       scopeKey: capturedScope,
-      currentConversationId: conversationId,
+      currentConversationId: historyConversationId,
       currentMapId,
       knownMaps: Object.values(project.maps).map((map) => ({ id: map.id, name: map.name })),
+      isCurrent: () => !disposed && store.getProjectIdentity().id === historyIdentity &&
+        conversationScopeKey(store.getProjectIdentity(), store.getCurrent()) === capturedScope &&
+        conversationId === historyConversationId,
       onOpen: (record) => {
         if (disposed) return;
         if (projectIdentityId !== capturedIdentityId) return;

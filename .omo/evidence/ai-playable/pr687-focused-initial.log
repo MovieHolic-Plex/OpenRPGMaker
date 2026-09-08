@@ -1,0 +1,156 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/pr687VerificationIntegration.test.ts test/pr687ImageDetail.test.ts test/assistantVerificationContinuation.test.ts test/sceneVerificationRepair.test.ts test/verificationPlanAtomicity.test.ts test/verificationNativeScopes.test.ts test/verificationRouteDeclaration.test.ts test/verificationSelectionOwnership.test.ts test/verificationFindingOwnership.test.ts test/npcPrerequisiteSession.test.ts test/npcPrerequisite.test.ts test/npcRewardSession.test.ts test/npcRewardAcceptance.test.ts test/functionalAcceptance.test.ts test/functionalAcceptanceSession.test.ts test/functionalPersistenceProof.test.ts test/functionalClarification.test.ts test/workPlanIdentity.test.ts test/aiRequiredOutcomes.test.ts test/actionAcceptanceRequirements.test.ts test/assistantProposalAssembly.test.ts test/aiToolDiscoveryEscalation.test.ts --maxWorkers=2 --no-file-parallelism
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86
+
+ ✓ test/pr687ImageDetail.test.ts (4 tests) 6ms
+ ✓ test/verificationPlanAtomicity.test.ts (108 tests) 100599ms
+   ✓ atomic verification adoption via tool > 'check_reachability' rejects changed specified args while 'passed'  714ms
+   ✓ atomic verification adoption via tool > 'check_reachability' rejects changed specified args while 'unverified'  630ms
+   ✓ atomic verification adoption via tool > 'check_reachability' rejects changed specified args while 'stale'  1063ms
+   ✓ atomic verification adoption via tool > 'run_lint' rejects changed specified args while 'passed'  715ms
+   ✓ atomic verification adoption via tool > 'run_lint' rejects changed specified args while 'unverified'  606ms
+   ✓ atomic verification adoption via tool > 'run_lint' rejects changed specified args while 'stale'  1188ms
+   ✓ atomic verification adoption via tool > 'run_scene_test' rejects changed specified args while 'passed'  552ms
+   ✓ atomic verification adoption via tool > 'run_scene_test' rejects changed specified args while 'unverified'  636ms
+   ✓ atomic verification adoption via tool > 'run_scene_test' rejects changed specified args while 'stale'  1088ms
+   ✓ atomic verification adoption via tool > 'play_walkthrough' rejects changed specified args while 'passed'  1049ms
+   ✓ atomic verification adoption via tool > 'play_walkthrough' rejects changed specified args while 'unverified'  579ms
+   ✓ atomic verification adoption via tool > 'play_walkthrough' rejects changed specified args while 'stale'  1702ms
+   ✓ atomic verification adoption via tool > 'simulate_battle' rejects changed specified args while 'passed'  568ms
+   ✓ atomic verification adoption via tool > 'simulate_battle' rejects changed specified args while 'unverified'  644ms
+   ✓ atomic verification adoption via tool > 'simulate_battle' rejects changed specified args while 'stale'  1078ms
+   ✓ atomic verification adoption via tool > 'verify_quest' rejects changed specified args while 'passed'  901ms
+   ✓ atomic verification adoption via tool > 'verify_quest' rejects changed specified args while 'unverified'  817ms
+   ✓ atomic verification adoption via tool > 'verify_quest' rejects changed specified args while 'stale'  1284ms
+   ✓ atomic verification adoption via tool > 'evaluate_game_quality' rejects changed specified args while 'passed'  1452ms
+   ✓ atomic verification adoption via tool > 'evaluate_game_quality' rejects changed specified args while 'unverified'  583ms
+   ✓ atomic verification adoption via tool > 'evaluate_game_quality' rejects changed specified args while 'stale'  1871ms
+   ✓ atomic verification adoption via tool > rejects criterion-reference replacement while passed  660ms
+   ✓ atomic verification adoption via tool > rejects criterion-reference replacement while unverified  590ms
+   ✓ atomic verification adoption via tool > rejects criterion-reference replacement while stale  1078ms
+   ✓ atomic verification adoption via tool > check_reachability exact reuse preserves ownership and proof  531ms
+   ✓ atomic verification adoption via tool > run_lint exact reuse preserves ownership and proof  714ms
+   ✓ atomic verification adoption via tool > run_scene_test exact reuse preserves ownership and proof  563ms
+   ✓ atomic verification adoption via tool > run_action_combat_test exact reuse preserves ownership and proof  538ms
+   ✓ atomic verification adoption via tool > check_reachability distinct scope needs fresh proof and invalid mixed candidates add nothing  869ms
+   ✓ atomic verification adoption via tool > run_lint distinct scope needs fresh proof and invalid mixed candidates add nothing  1189ms
+   ✓ atomic verification adoption via tool > rejects contradictory pending resolutions across same-item before either applies  579ms
+   ✓ atomic verification adoption via tool > rejects contradictory pending resolutions across later-layer before either applies  605ms
+   ✓ atomic verification adoption via tool > rejects contradictory pending resolutions across criterion before either applies  595ms
+   ✓ atomic verification adoption via tool > raw retained ID cannot bypass preflight via omitted  605ms
+   ✓ atomic verification adoption via tool > raw retained ID cannot bypass preflight via changed  581ms
+   ✓ atomic verification adoption via tool > raw retained ID cannot bypass preflight via wrong-tool  586ms
+   ✓ atomic verification adoption via tool > raw retained ID cannot bypass preflight via malformed-args  565ms
+   ✓ atomic verification adoption via tool > raw retained ID cannot bypass preflight via malformed-sibling  558ms
+   ✓ atomic verification adoption via tool > raw retained ID cannot bypass preflight via unknown-id  529ms
+   ✓ atomic verification adoption via tool > raw retained ID cannot bypass preflight via not-required  586ms
+   ✓ atomic verification adoption via tool > a resolved new sibling cannot conceal an unresolved declaration  543ms
+   ✓ atomic verification adoption via tool > compatible repeated pending resolution preserves ID, owner and targets but needs fresh execution  788ms
+   ✓ atomic verification adoption via tool > specified retained targets cannot be omitted at any proof status  4404ms
+   ✓ atomic verification adoption via tool > specified retained targets cannot be changed at any proof status  4400ms
+   ✓ atomic verification adoption via tool > exact reference reuses an accepted criterion without losing independent declarations  726ms
+   ✓ atomic verification adoption via tool > exact exact-args reuses an accepted criterion without losing independent declarations  719ms
+   ✓ atomic verification adoption via tool > rejection preserves an existing negative finding and its exact proof history  714ms
+   ✓ atomic verification adoption via tool > exact stale scene reuse retains its original initial-state ownership  1095ms
+   ✓ atomic verification adoption via tool > pending criterion-reference resolution retains owner and needs new exact execution  911ms
+   ✓ atomic verification adoption via tool > raw declaration preflight survives invalid-id normalization  598ms
+   ✓ atomic verification adoption via tool > raw declaration preflight survives discarded-item normalization  615ms
+   ✓ atomic verification adoption via tool > raw declaration preflight survives alias-array normalization  584ms
+   ✓ atomic verification adoption via tool > a malformed new scope cannot silently reuse an unrelated accepted criterion  650ms
+   ✓ atomic verification adoption via tool > scene interaction ownership is immutable even with identical executable args  584ms
+   ✓ atomic verification adoption via planner > 'check_reachability' rejects changed specified args while 'passed'  532ms
+   ✓ atomic verification adoption via planner > 'check_reachability' rejects changed specified args while 'unverified'  536ms
+   ✓ atomic verification adoption via planner > 'check_reachability' rejects changed specified args while 'stale'  1091ms
+   ✓ atomic verification adoption via planner > 'run_lint' rejects changed specified args while 'passed'  698ms
+   ✓ atomic verification adoption via planner > 'run_lint' rejects changed specified args while 'unverified'  570ms
+   ✓ atomic verification adoption via planner > 'run_lint' rejects changed specified args while 'stale'  1538ms
+   ✓ atomic verification adoption via planner > 'run_scene_test' rejects changed specified args while 'passed'  812ms
+   ✓ atomic verification adoption via planner > 'run_scene_test' rejects changed specified args while 'unverified'  563ms
+   ✓ atomic verification adoption via planner > 'run_scene_test' rejects changed specified args while 'stale'  1092ms
+   ✓ atomic verification adoption via planner > 'play_walkthrough' rejects changed specified args while 'passed'  971ms
+   ✓ atomic verification adoption via planner > 'play_walkthrough' rejects changed specified args while 'unverified'  538ms
+   ✓ atomic verification adoption via planner > 'play_walkthrough' rejects changed specified args while 'stale'  2419ms
+   ✓ atomic verification adoption via planner > 'simulate_battle' rejects changed specified args while 'passed'  494ms
+   ✓ atomic verification adoption via planner > 'simulate_battle' rejects changed specified args while 'unverified'  499ms
+   ✓ atomic verification adoption via planner > 'simulate_battle' rejects changed specified args while 'stale'  1008ms
+   ✓ atomic verification adoption via planner > 'verify_quest' rejects changed specified args while 'passed'  722ms
+   ✓ atomic verification adoption via planner > 'verify_quest' rejects changed specified args while 'unverified'  710ms
+   ✓ atomic verification adoption via planner > 'verify_quest' rejects changed specified args while 'stale'  1307ms
+   ✓ atomic verification adoption via planner > 'evaluate_game_quality' rejects changed specified args while 'passed'  1453ms
+   ✓ atomic verification adoption via planner > 'evaluate_game_quality' rejects changed specified args while 'unverified'  490ms
+   ✓ atomic verification adoption via planner > 'evaluate_game_quality' rejects changed specified args while 'stale'  1839ms
+   ✓ atomic verification adoption via planner > rejects criterion-reference replacement while passed  497ms
+   ✓ atomic verification adoption via planner > rejects criterion-reference replacement while unverified  534ms
+   ✓ atomic verification adoption via planner > rejects criterion-reference replacement while stale  1030ms
+   ✓ atomic verification adoption via planner > check_reachability exact reuse preserves ownership and proof  556ms
+   ✓ atomic verification adoption via planner > run_lint exact reuse preserves ownership and proof  674ms
+   ✓ atomic verification adoption via planner > run_scene_test exact reuse preserves ownership and proof  580ms
+   ✓ atomic verification adoption via planner > run_action_combat_test exact reuse preserves ownership and proof  499ms
+   ✓ atomic verification adoption via planner > check_reachability distinct scope needs fresh proof and invalid mixed candidates add nothing  844ms
+   ✓ atomic verification adoption via planner > run_lint distinct scope needs fresh proof and invalid mixed candidates add nothing  1171ms
+   ✓ atomic verification adoption via planner > rejects contradictory pending resolutions across same-item before either applies  495ms
+   ✓ atomic verification adoption via planner > rejects contradictory pending resolutions across later-layer before either applies  512ms
+   ✓ atomic verification adoption via planner > rejects contradictory pending resolutions across criterion before either applies  535ms
+   ✓ atomic verification adoption via planner > raw retained ID cannot bypass preflight via omitted  567ms
+   ✓ atomic verification adoption via planner > raw retained ID cannot bypass preflight via changed  546ms
+   ✓ atomic verification adoption via planner > raw retained ID cannot bypass preflight via wrong-tool  611ms
+   ✓ atomic verification adoption via planner > raw retained ID cannot bypass preflight via malformed-args  570ms
+   ✓ atomic verification adoption via planner > raw retained ID cannot bypass preflight via malformed-sibling  558ms
+   ✓ atomic verification adoption via planner > raw retained ID cannot bypass preflight via unknown-id  546ms
+   ✓ atomic verification adoption via planner > raw retained ID cannot bypass preflight via not-required  533ms
+   ✓ atomic verification adoption via planner > a resolved new sibling cannot conceal an unresolved declaration  491ms
+   ✓ atomic verification adoption via planner > compatible repeated pending resolution preserves ID, owner and targets but needs fresh execution  747ms
+   ✓ atomic verification adoption via planner > specified retained targets cannot be omitted at any proof status  5619ms
+   ✓ atomic verification adoption via planner > specified retained targets cannot be changed at any proof status  4329ms
+   ✓ atomic verification adoption via planner > exact reference reuses an accepted criterion without losing independent declarations  801ms
+   ✓ atomic verification adoption via planner > exact exact-args reuses an accepted criterion without losing independent declarations  790ms
+   ✓ atomic verification adoption via planner > rejection preserves an existing negative finding and its exact proof history  660ms
+   ✓ atomic verification adoption via planner > exact stale scene reuse retains its original initial-state ownership  1108ms
+   ✓ atomic verification adoption via planner > pending criterion-reference resolution retains owner and needs new exact execution  834ms
+   ✓ atomic verification adoption via planner > raw declaration preflight survives invalid-id normalization  1639ms
+   ✓ atomic verification adoption via planner > raw declaration preflight survives discarded-item normalization  538ms
+   ✓ atomic verification adoption via planner > raw declaration preflight survives alias-array normalization  556ms
+   ✓ atomic verification adoption via planner > a malformed new scope cannot silently reuse an unrelated accepted criterion  645ms
+   ✓ atomic verification adoption via planner > scene interaction ownership is immutable even with identical executable args  517ms
+ ✓ test/npcRewardSession.test.ts (38 tests) 105225ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > does not dispatch authoring or planner calls for an unrepairable reward declaration  482ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > direct 'text' NPC, contract opt-out=false  4106ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > direct 'once' NPC, contract opt-out=false  4529ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > direct 'repeat' NPC, contract opt-out=false  3669ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > direct 'text' NPC, contract opt-out=true  541ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > does not finalize unresolved or invalid obligations {"required":[]}  373ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > does not finalize unresolved or invalid obligations {"required":{"invalidReason":"npcRewards: invalid grant"}}  461ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > does not finalize unresolved or invalid obligations {"required":[{"target":{"eventId":"missing_npc"},"grants":[{"kind":"item","id":"item_potion","count":1}]}]}  942ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > uses bounded repair to correct the real NPC rather than weaken the request  4945ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > allows an earlier DB item but refuses final explicit completion and skip with missing rewards  6122ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > gates a non-final item that actually authors the declared NPC  4321ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > cannot erase the obligation by replanning into an unrelated skipped plan  5038ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > rechecks a previously completed NPC after its grants are removed  4868ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > completes an actual one-time NPC plan and accepts idempotent explicit completion  5112ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > preserves the obligation through plan-only confirmation and the actual planner replan  971ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > retains the captured requirement and context on retryLastTurn  3999ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > preserves the request across the real autonomous synthetic continuation  558ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > host new-goal clears old obligations; ask does not enforce them: new-request  1135ms
+   ✓ items-monsters reward lifecycle > NPC reward request lifetime in AssistantSession > host new-goal clears old obligations; ask does not enforce them: ask  832ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > does not dispatch authoring or planner calls for an unrepairable reward declaration  403ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > direct 'text' NPC, contract opt-out=false  3687ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > direct 'once' NPC, contract opt-out=false  4126ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > direct 'repeat' NPC, contract opt-out=false  3925ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > direct 'text' NPC, contract opt-out=true  522ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > does not finalize unresolved or invalid obligations {"required":[]}  368ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > does not finalize unresolved or invalid obligations {"required":{"invalidReason":"npcRewards: invalid grant"}}  372ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > does not finalize unresolved or invalid obligations {"required":[{"target":{"eventId":"missing_npc"},"grants":[{"kind":"item","id":"item_potion","count":1}]}]}  821ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > uses bounded repair to correct the real NPC rather than weaken the request  4834ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > allows an earlier DB item but refuses final explicit completion and skip with missing rewards  6045ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > gates a non-final item that actually authors the declared NPC  4335ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > cannot erase the obligation by replanning into an unrelated skipped plan  5068ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > rechecks a previously completed NPC after its grants are removed  4981ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > completes an actual one-time NPC plan and accepts idempotent explicit completion  5185ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > preserves the obligation through plan-only confirmation and the actual planner replan  1045ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > retains the captured requirement and context on retryLastTurn  4050ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > preserves the request across the real autonomous synthetic continuation  565ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > host new-goal clears old obligations; ask does not enforce them: new-request  1071ms
+   ✓ gold reward lifecycle > NPC reward request lifetime in AssistantSession > host new-goal clears old obligations; ask does not enforce them: ask  816ms

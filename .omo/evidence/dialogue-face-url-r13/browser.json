@@ -1,0 +1,184 @@
+{
+  "snapshotPath": "/home/main/z-project/rpg-zzu-ai-playable-adversarial-0906/output/evidence/ai-playable-final/round3/final-player-project.json",
+  "snapshotSha256": "a3ef0e998d28d0eb22b9c79479fd4a48e4dc1bb2d7f969a5330e1f00df7db713",
+  "projectResponseStatus": 200,
+  "projectBodyEquality": true,
+  "playerUrl": "http://127.0.0.1:36069/player.html",
+  "steps": [
+    {
+      "key": "ArrowRight",
+      "x": 11,
+      "y": 8
+    },
+    {
+      "key": "ArrowDown",
+      "x": 11,
+      "y": 9
+    },
+    {
+      "key": "ArrowDown",
+      "x": 11,
+      "y": 10
+    },
+    {
+      "key": "ArrowDown",
+      "x": 11,
+      "y": 11
+    },
+    {
+      "key": "ArrowDown",
+      "x": 11,
+      "y": 12
+    },
+    {
+      "key": "ArrowDown",
+      "x": 11,
+      "y": 13
+    },
+    {
+      "key": "ArrowLeft",
+      "x": 10,
+      "y": 13
+    },
+    {
+      "key": "ArrowLeft",
+      "x": 9,
+      "y": 13
+    },
+    {
+      "key": "ArrowLeft",
+      "x": 8,
+      "y": 13
+    },
+    {
+      "key": "ArrowLeft",
+      "x": 7,
+      "y": 13
+    },
+    {
+      "key": "ArrowLeft",
+      "x": 6,
+      "y": 13
+    },
+    {
+      "key": "ArrowLeft",
+      "x": 5,
+      "y": 13
+    },
+    {
+      "key": "ArrowLeft",
+      "x": 4,
+      "y": 13
+    }
+  ],
+  "qaFaceHook": "up",
+  "portrait": {
+    "className": "dialogue-face dialogue-face-image",
+    "backgroundImage": "url(\"http://127.0.0.1:36069/assets/easyrpg/faceset/People1/06.png\")",
+    "url": "http://127.0.0.1:36069/assets/easyrpg/faceset/People1/06.png",
+    "width": 48,
+    "height": 48,
+    "pageReady": true,
+    "state": {
+      "farmPlots": {},
+      "makerInstances": {},
+      "actionReceipt": {
+        "kind": "action",
+        "mapId": "map_blank_start",
+        "handled": true,
+        "farmAttempts": [],
+        "sequence": 1
+      },
+      "eventLocations": {},
+      "currentMapId": "map_blank_start",
+      "x": 4,
+      "y": 13,
+      "gold": 0,
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false
+      },
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0
+      },
+      "selfSwitches": {},
+      "timers": {},
+      "inventory": {},
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "npcActivities": {},
+      "friendship": {},
+      "rng": {
+        "seed": 746271168,
+        "streams": {
+          "encounter": {
+            "seed": 4015093888,
+            "state": 4015093888
+          },
+          "battle": {
+            "seed": 3487619961,
+            "state": 3487619961
+          },
+          "movement": {
+            "seed": 3681199282,
+            "state": 3681199282
+          },
+          "fishing": {
+            "seed": 2069615767,
+            "state": 2069615767
+          },
+          "misc": {
+            "seed": 875699935,
+            "state": 875699935
+          }
+        }
+      }
+    }
+  },
+  "image": {
+    "status": 200,
+    "contentType": "image/png",
+    "bytes": 4826,
+    "shippedEquality": true,
+    "sha256": "d50d1b3a6ae84f56508ae59fe0db6602367f7906543a2ff424ae26ff593a4f02"
+  },
+  "pageErrors": []
+}

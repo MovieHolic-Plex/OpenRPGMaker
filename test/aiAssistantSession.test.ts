@@ -1,11 +1,13 @@
 import { fixedDeclarer } from "./intentFixture";
-import { approvedReviewResponse, independentReviewPayload } from "./independentReviewFixture";
+import { approvedReviewResponse, independentReviewPayload, imageDeliveryForRequest } from "./independentReviewFixture";
 import type { ReviewInput } from "@/ai/independentReview";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { getMapEditHistoryEntries, resetMapEditHistory } from "@/editor/mapEditHistory";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import type { SessionEvent, ToolImageRenderer } from "@/ai/assistantSession";
+import { getTool } from "@/editor/tools";
+import * as applyStore from "@/editor/tools/applyChangesetToStore";
 
 const MILESTONE_TEST_ENV = {
   VITE_SUPABASE_ANON_KEY: "test-anon-key",
@@ -899,20 +901,27 @@ describe("레이어 검증(자문) + run-end 저장 증명 (todo 5)", () => {
       inspectMap(project.startMapId, project.maps[project.startMapId]!.width, project.maps[project.startMapId]!.height),
       gateFinal("모든 레이어를 완료했습니다."),
     ];
+    const lintTool = getTool("run_lint");
+    if (!lintTool) throw new Error("run_lint is not registered");
+    // Call-through spies: real checks and the real milestone/undo path remain exercised.
+    const lint = vi.spyOn(lintTool, "run");
+    const apply = vi.spyOn(applyStore, "applyProposedProject");
+    const events: SessionEvent[] = [];
+    let layerEventCount = 0;
     let index = 0;
     const chat = async (_config: unknown, request: ChatRequest): Promise<ChatResult> => {
       const approval = approvedReviewResponse(request);
       if (approval) return approval;
       if (index >= steps.length) gateExhausted();
-      return steps[index++]!;
+      if (index === steps.length - 1) layerEventCount = events.length;
+      return { ...steps[index++]!, imageDelivery: imageDeliveryForRequest(request) };
     };
-    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 8 }, chat, renderImages: renderLifecycleImages });
-    const events: SessionEvent[] = [];
+    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 8 }, chat, renderImages: renderLifecycleImages, yieldToUi: async () => {} });
 
     const result = await session.sendUserMessage("마을·퀘스트·최종 검증을 진행해줘", (event) => { events.push(event); }, undefined, { autonomous: true });
 
     // 모델 툴콜 + 게이트 툴콜이 순서대로 관측된다: 레이어 1(map) → 레이어 2(quest) → 레이어 3(final).
-    const toolCalls = events.filter((event): event is Extract<SessionEvent, { type: "tool_call" }> => event.type === "tool_call");
+    const toolCalls = events.slice(0, layerEventCount).filter((event): event is Extract<SessionEvent, { type: "tool_call" }> => event.type === "tool_call");
     expect(toolCalls.map((e) => e.name)).toEqual([
       "set_work_plan",
       "set_title_screen",
@@ -935,11 +944,40 @@ describe("레이어 검증(자문) + run-end 저장 증명 (todo 5)", () => {
     expect(verifyQuestCall.args).toEqual({ questId: "q1" });
     const gateWalkthrough = toolCalls.filter(call => call.name === "play_walkthrough").at(-1)!;
     expect(gateWalkthrough.args).toEqual({ scenario });
+    // Completion has its own two boundaries: model final response, then returned recap.
+    // Neither boundary is another layer sweep or permission to replay authored writes.
+    const completionEvents = events.slice(layerEventCount);
+    const assessments = completionEvents.filter(event => event.type === "completion_assessment");
+    expect(assessments).toHaveLength(2);
+    for (const { assessment } of assessments) {
+      expect(assessment.checks.map(check => check.name)).toEqual(["run_lint", "evaluate_game_quality", "play_walkthrough"]);
+    }
+    const completionCalls = completionEvents.filter(event => event.type === "tool_call");
+    expect(completionCalls.map(({ name, result }) => ({ name, result })))
+      .toEqual(assessments.flatMap(({ assessment }) => assessment.checks));
+    expect(completionCalls.filter(call => call.name === "play_walkthrough").map(call => call.args))
+      .toEqual([{ scenario }, { scenario }]);
+    expect(result.completionAssessment).toEqual(assessments.at(-1)?.assessment);
+    expect(lint.mock.calls.map(([checkedProject]) => checkedProject.meta.title)).toEqual(["t1", "t1", "t2", "t2", "t2"]);
+    expect(lint.mock.calls.at(-1)?.[0]).toEqual(store.getCurrent());
     const audits = gateStatusTexts(session);
     expect(audits.filter((t) => t.includes("agent_run:verification-pass")).length).toBe(3);
-    // Layer checks remain per-layer; application happens once after current-image review.
+    expect(audits.filter(t => t.startsWith("agent_run:completion-check-pass "))).toHaveLength(2);
+    expect(index).toBe(steps.length);
+    expect(result.stoppedReason).toBe("final");
+    expect(result.workPlan?.layers.flatMap(layer => layer.items.map(item => item.status))).toEqual(["done", "done", "done"]);
+    expect(events.filter(event => event.type === "milestone_applied").map(event => [event.title, event.toolCount]))
+      .toEqual([[GATE_PLAN.goal, 4]]);
+    expect(apply.mock.calls.map(([, options]) => options.toolNames))
+      .toEqual([["set_title_screen", "upsert_event", "define_quest", "set_title_screen"]]);
+    expect(result.appliedCalls?.map(call => call.name)).toEqual(["set_title_screen", "upsert_event", "define_quest", "set_title_screen"]);
+    expect(result.proposedCalls).toEqual([]);
+    expect(getMapEditHistoryEntries()).toHaveLength(1);
+    // Layer checks remain per-layer; the final title replaces the earlier draft title.
+    // Application happens once after current-image review, never at item completion.
     expect(result.review?.status).toBe("approved");
-    expect(events.filter(event => event.type === "milestone_applied")).toHaveLength(1);
+    expect(events.filter(event => event.type === "result_review" || event.type === "milestone_applied").map(event => event.type))
+      .toEqual(["result_review", "milestone_applied"]);
     expect(store.getCurrent().meta?.title).toBe("t2");
   }, 60000);
 
@@ -965,28 +1003,69 @@ describe("레이어 검증(자문) + run-end 저장 증명 (todo 5)", () => {
       inspectMap(project.startMapId, project.maps[project.startMapId]!.width, project.maps[project.startMapId]!.height),
       gateFinal("완료했습니다."),
     ];
+    const lintTool = getTool("run_lint");
+    if (!lintTool) throw new Error("run_lint is not registered");
+    // Call-through spies: real checks and the real milestone/undo path remain exercised.
+    const lint = vi.spyOn(lintTool, "run");
+    const apply = vi.spyOn(applyStore, "applyProposedProject");
+    const events: SessionEvent[] = [];
+    let layerEventCount = 0;
     let index = 0;
     const chat = async (_config: unknown, request: ChatRequest): Promise<ChatResult> => {
       const approval = approvedReviewResponse(request);
       if (approval) return approval;
       if (index >= steps.length) gateExhausted();
-      return steps[index++]!;
+      if (index === steps.length - 1) layerEventCount = events.length;
+      return { ...steps[index++]!, imageDelivery: imageDeliveryForRequest(request) };
     };
-    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 8 }, chat, renderImages: renderLifecycleImages });
-    const events: SessionEvent[] = [];
+    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 8 }, chat, renderImages: renderLifecycleImages, yieldToUi: async () => {} });
 
     const result = await session.sendUserMessage("퀘스트를 등록하고 마무리해줘", (event) => { events.push(event); }, undefined, { autonomous: true });
 
-    const toolCalls = events.filter((event): event is Extract<SessionEvent, { type: "tool_call" }> => event.type === "tool_call");
+    const toolCalls = events.slice(0, layerEventCount).filter((event): event is Extract<SessionEvent, { type: "tool_call" }> => event.type === "tool_call");
     const verifyQuestCalls = toolCalls.filter((e) => e.name === "verify_quest");
-    // 퀘스트 레이어 1회 + final 레이어 폴백 1회 — 둘 다 런 히스토리의 q1.
+    // Layer scope: quest once + final fallback once, both using the authored q1.
     expect(verifyQuestCalls).toHaveLength(2);
-    expect(verifyQuestCalls.every((e) => JSON.stringify(e.args) === JSON.stringify({ questId: "q1" }))).toBe(true);
+    expect(verifyQuestCalls.map(call => call.args)).toEqual([{ questId: "q1" }, { questId: "q1" }]);
     // final 레이어 폴백: play_walkthrough 는 실행되지 않는다.
     expect(toolCalls.filter((e) => e.name === "play_walkthrough")).toHaveLength(0);
-    expect(gateStatusTexts(session).filter((t) => t.includes("agent_run:verification-pass")).length).toBe(2);
+    expect(toolCalls.map(call => call.name)).toEqual([
+      "set_work_plan", "upsert_event", "define_quest", "run_lint", "verify_quest",
+      "set_title_screen", "run_lint", "verify_quest", "show_map_region",
+    ]);
+    const completionEvents = events.slice(layerEventCount);
+    const assessments = completionEvents.filter(event => event.type === "completion_assessment");
+    expect(assessments).toHaveLength(2);
+    for (const { assessment } of assessments) {
+      expect(assessment.checks.map(check => check.name)).toEqual(["run_lint", "verify_quest"]);
+      expect(assessment.checks.find(check => check.name === "verify_quest")?.result.data)
+        .toMatchObject({ ok: true, verificationStatus: "verified", verifiedNodeIds: ["n1"] });
+    }
+    const completionCalls = completionEvents.filter(event => event.type === "tool_call");
+    expect(completionCalls.map(({ name, result }) => ({ name, result })))
+      .toEqual(assessments.flatMap(({ assessment }) => assessment.checks));
+    expect(completionCalls.filter(call => call.name === "verify_quest").map(call => call.args))
+      .toEqual([{ questId: "q1" }, { questId: "q1" }]);
+    expect(result.completionAssessment).toEqual(assessments.at(-1)?.assessment);
+    expect(lint.mock.calls.map(([checkedProject]) => checkedProject.meta.title)).toEqual([project.meta.title, "t2", "t2", "t2"]);
+    expect(lint.mock.calls.at(-1)?.[0]).toEqual(store.getCurrent());
+    const audits = gateStatusTexts(session);
+    expect(audits.filter(t => t.startsWith("agent_run:verification-pass "))).toHaveLength(2);
+    expect(audits.filter(t => t.startsWith("agent_run:completion-check-pass "))).toHaveLength(2);
+    expect(index).toBe(steps.length);
+    expect(result.stoppedReason).toBe("final");
+    expect(result.workPlan?.layers.flatMap(layer => layer.items.map(item => item.status))).toEqual(["done", "done"]);
+    expect(events.filter(event => event.type === "milestone_applied").map(event => [event.title, event.toolCount]))
+      .toEqual([[FALLBACK_PLAN.goal, 3]]);
+    expect(apply.mock.calls.map(([, options]) => options.toolNames)).toEqual([["upsert_event", "define_quest", "set_title_screen"]]);
+    expect(result.appliedCalls?.map(call => call.name)).toEqual(["upsert_event", "define_quest", "set_title_screen"]);
+    expect(result.proposedCalls).toEqual([]);
+    expect(getMapEditHistoryEntries()).toHaveLength(1);
+    expect(store.getCurrent().meta.title).toBe("t2");
     expect(result.stoppedReason, result.error).toBe("final");
     expect(result.review?.status).toBe("approved");
+    expect(events.filter(event => event.type === "result_review" || event.type === "milestone_applied").map(event => event.type))
+      .toEqual(["result_review", "milestone_applied"]);
   }, 60000);
 
   it("(b) 검증 지적(린트 오류)은 자문으로만 남고 런을 멈추지 않는다 — 재킥·verification_failed 없음", async () => {
@@ -1180,7 +1259,7 @@ function scriptedChat(steps: readonly ChatResult[]) {
     const approval = approvedReviewResponse(request);
     if (approval) return approval;
     if (i >= steps.length) throw new Error("scripted chat exhausted");
-    return steps[i++]!;
+    return { ...steps[i++]!, imageDelivery: imageDeliveryForRequest(request) };
   };
 }
 
@@ -1328,6 +1407,7 @@ describe("AssistantSession 툴콜 루프", () => {
         { kind: "reachability", target: { mapId: "m1" }, from: { x: 2, y: 2 }, to: [{ x: 3, y: 2 }] },
         { kind: "imageReviewed", target: { mapId: "m1" } },
       ] }),
+      assistantToolCall("check_reachability", { mapId: "m1", from: { x: 2, y: 2 }, targets: [{ x: 3, y: 2 }] }),
       inspectMap("m1", 5, 5),
       assistantFinal("시작 위치를 고쳤습니다."),
     ]);
@@ -1535,14 +1615,15 @@ describe("AssistantSession 툴콜 루프", () => {
       if (review) {
         expect(config.model).toBe("supervisor-model");
         reviews.push(review);
-        if (reviews.length === 1) return assistantFinal(JSON.stringify({ revision: review.revision,
+        if (reviews.length === 1) return { ...assistantFinal(JSON.stringify({ revision: review.revision,
           verdict: "changes_requested", summary: "Flower area is missing", findings: [{ id: "flowers", target: `/maps/${mapId}`,
-            problem: "Flower area is still empty", requestedChange: "Paint flowers at (4,1)-(5,2)", validation: "Inspect the changed region on the new revision" }] }));
+            problem: "Flower area is still empty", requestedChange: "Paint flowers at (4,1)-(5,2)", validation: "Inspect the changed region on the new revision" }] })),
+          imageDelivery: imageDeliveryForRequest(request) };
         return approvedReviewResponse(request)!;
       }
       if (reviews.length > 0) expect(config.model).toBe("executor-model");
       if (index >= steps.length) throw new Error("scripted chat exhausted");
-      return steps[index++]!;
+      return { ...steps[index++]!, imageDelivery: imageDeliveryForRequest(request) };
     };
     const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 16, maxTokens: 8192 }, chat,
       renderImages: renderLifecycleImages });
@@ -1555,7 +1636,10 @@ describe("AssistantSession 툴콜 루프", () => {
     expect(result.stoppedReason, JSON.stringify({ error: result.error,
       reviews: reviews.map(({ revision, requiredProblems }) => ({ revision, requiredProblems })) })).toBe("final");
     expect(result.review?.status).toBe("approved");
-    expect(result.assistantText).toBe(result.review?.summary);
+    expect(result.assistantText).toContain(result.review!.summary);
+    // Independent draft approval does not erase the canonical unapplied status.
+    expect(result.completionAssessment?.acceptance?.status).toBe("verifying");
+    expect(result.runOutcome).toMatchObject({ goal: "incomplete", delivery: "draft" });
     expect(result.proposedCalls.map((call) => call.name)).toEqual(["paint_tiles", "paint_tiles"]);
     expect(result.proposedCalls.every(call => (call.result.diff?.tilesChanged ?? 0) > 0)).toBe(true);
     expect(reviews).toHaveLength(2);
@@ -2093,4 +2177,105 @@ describe("밑그림만 그리고 끝내는 턴", () => {
     expect(diff).toBeTruthy();
     expect(diff?.eventsAdded ?? 0).toBe(1);
   }, 30000);
+});
+
+describe("verification declaration and correction caller boundary", () => {
+  it.each([false, true])("adopts a frozen map-qualified scene and executes correction (changed initial state=%s)", async changedSeed => {
+    const { AssistantSession } = await load();
+    const { verificationJourney } = await import("./fixtures/verificationOwnership");
+    const f = verificationJourney();
+    const map = f.village;
+    const declaration = { tool: "run_scene_test", args: f.wire180, interactionTargets: [
+      { stepIndex: 2, mapId: f.cellar.id, eventId: f.chest.id }, { stepIndex: 6, mapId: map.id, eventId: f.chief.id },
+      { stepIndex: 9, mapId: map.id, eventId: f.chief.id },
+    ] };
+    let round = 0;
+    let session: InstanceType<typeof AssistantSession>;
+    const events: SessionEvent[] = [];
+    session = new AssistantSession(f.project, { config: { ...CONFIG, maxToolCalls: 12, maxTokens: 8192 }, declareIntent: fixedDeclarer({ mode: "modify", needsPlan: false }),
+      chat: async (_config, request) => {
+        const review = approvedReviewResponse(request);
+        if (review) return review;
+        round++;
+        if (round === 1) return assistantToolCall("set_work_plan", { goal: "Frozen journey", acceptance: [{ id: "size", title: "Map", criteria: [
+          { kind: "mapDimensions", target: { mapId: map.id }, width: map.width, height: map.height },
+        ] }], layers: [{ title: "QA", items: [{ title: "Journey", instruction: "Check", successTools: ["run_scene_test"], verificationChecks: [declaration] }] }] });
+        if (round === 2) return assistantToolCall("run_scene_test", f.wire180);
+        const id = session.getVerificationSnapshot().requirements[0]!.checkId;
+        if (round === 3) return assistantToolCall("correct_verification", { checkId: id, args: f.wire181, verdict: "pass" });
+        if (round === 4) return assistantToolCall("correct_verification", { checkId: id, args: f.wire181 });
+        if (round === 5 && changedSeed) return assistantToolCall("set_session_start", { gold: 100 });
+        if (round === 6 && changedSeed) return assistantToolCall("correct_verification", { checkId: id, args: f.wire181 });
+        return assistantFinal("Checks recorded.");
+      } });
+    const result = await session.sendUserMessage("Inspect the frozen scene.", event => events.push(event));
+    expect(result.stoppedReason, result.error).toBe(changedSeed ? "error" : "final");
+    if (changedSeed) {
+      expect(result.review?.status).toBe("changes_requested");
+      expect(session.isDraftReviewApproved()).toBe(false);
+    }
+    expect(session.getVerificationSnapshot().requirements).toHaveLength(1);
+    expect(events.filter(e => e.type === "tool_call" && e.name === "correct_verification").map(e => e.type === "tool_call" && e.result.ok)).toEqual(changedSeed ? [false, true, true] : [false, true]);
+    const snapshot = session.getVerificationSnapshot();
+    expect(snapshot.requirements).toHaveLength(1);
+    expect(snapshot.requirements[0]?.args).toEqual(f.wire180);
+    expect(snapshot.requirements[0]?.interactionTargets).toEqual(declaration.interactionTargets);
+    expect(snapshot.requirements[0]?.status).toBe(changedSeed ? "unverified" : "passed");
+    expect(snapshot.findings).toEqual([]);
+    expect(session.getAcceptanceSnapshot()?.status).toBe(changedSeed ? "blocked" : "verified");
+  });
+  it.each(["wire114", "wire281", "dummy-removal", "cross-map", "weaker-assertion", "write-after-pass", "foreign-owner"])("retains the correct terminal contract for %s", async variant => {
+    const { AssistantSession } = await load();
+    const { verificationJourney, crossMapVerification, verificationEvent } = await import("./fixtures/verificationOwnership");
+    const f = verificationJourney();
+    const cross = crossMapVerification();
+    const project = variant === "cross-map" ? cross.project : f.project;
+    const map = project.maps[project.startMapId]!;
+    const route = { mapId: map.id, from: { x: 10, y: 12 }, targets: [{ x: 5, y: 8 }] };
+    const calls: Array<{ name: string; args: Record<string, unknown> }> = [];
+    const checks: unknown[] = [];
+    const required = ["get_project_summary"];
+    const sceneCall = (args: Record<string, unknown>) => ({ name: "run_scene_test", args });
+    if (variant === "wire114") calls.push({ name: "check_reachability", args: { mapId: map.id, from: { x: 10, y: 8 }, targets: [{ newMapName: "지하실", mapId: map.id }] } }, { name: "check_reachability", args: route });
+    if (variant === "wire281") calls.push(sceneCall({ mapId: f.cellar.id, start: { x: 6, y: 3 }, steps: [{ kind: "face", dir: "down" }, { kind: "interact" }] }),
+      sceneCall({ mapId: f.cellar.id, start: { x: 6, y: 3 }, steps: [{ kind: "face", dir: "up" }, { kind: "interact" }] }));
+    if (variant === "dummy-removal") {
+      f.cellar.events.push(verificationEvent("ev_dummy_fix", 6, 4, []));
+      calls.push(sceneCall({ mapId: f.cellar.id, start: { x: 6, y: 3 }, steps: [{ kind: "interact", eventId: "ev_dummy_fix" }] }),
+        { name: "remove_event", args: { mapId: f.cellar.id, eventId: "ev_dummy_fix" } });
+    }
+    if (variant === "cross-map") calls.push(sceneCall({ ...cross.a }), sceneCall({ ...cross.b }));
+    if (variant === "weaker-assertion") calls.push(sceneCall({ ...f.wire180 }), sceneCall({ ...f.corrected171 }));
+    if (variant === "write-after-pass" || variant === "foreign-owner") {
+      required.push("check_reachability");
+      checks.push({ tool: "check_reachability", args: route });
+      calls.push({ name: "check_reachability", args: route }, { name: "set_title_screen", args: { title: "Changed after proof" } });
+    }
+    if (variant === "foreign-owner") calls.push({ name: "run_scene_test", args: { ...f.wire180, ownerId: "forged-owner" } });
+    const plan = { goal: "Scoped checks", acceptance: [{ id: "size", title: "Map", criteria: [{ kind: "mapDimensions", target: { mapId: map.id }, width: map.width, height: map.height }] }],
+      layers: [{ title: "Check", items: [{ id: "qa", title: "Inspect", instruction: "Inspect", successTools: required, verificationChecks: checks }] }] };
+    const rounds = [{ name: "set_work_plan", args: plan }, ...calls, { name: "get_project_summary", args: {} }];
+    let cursor = 0;
+    const events: SessionEvent[] = [];
+    const session = new AssistantSession(project, { config: { ...CONFIG, maxToolCalls: 12 }, declareIntent: fixedDeclarer({ mode: "modify", needsPlan: false }),
+      chat: async () => {
+        const call = rounds[cursor++];
+        return call ? assistantToolCall(call.name, call.args, `ownership-${cursor}`) : assistantFinal("Checks recorded.");
+      } });
+    await session.sendUserMessage("Inspect the scoped checks.", event => events.push(event));
+    const blocked = ["cross-map", "weaker-assertion", "write-after-pass", "foreign-owner"].includes(variant);
+    expect(session.getAcceptanceSnapshot()?.status).toBe(blocked ? "blocked" : "verified");
+    if (variant === "wire114") {
+      expect(session.getVerificationSnapshot().attempts[0]?.status).toBe("unsuccessful");
+      expect(session.getVerificationSnapshot().findings).toEqual([]);
+    }
+    if (variant === "wire281") expect(session.getVerificationSnapshot().attempts.map(a => a.status)).toEqual(["setup-failure", "passed"]);
+    if (variant === "dummy-removal") {
+      expect(session.getProposedProject().maps[f.cellar.id]?.events.some(e => e.id === "ev_dummy_fix")).toBe(false);
+      expect(events.find(e => e.type === "tool_call" && e.name === "remove_event")).toMatchObject({ result: { ok: true } });
+      expect(session.getVerificationSnapshot().requirements).toEqual([]);
+    }
+    if (variant === "cross-map" || variant === "weaker-assertion") expect(session.getVerificationSnapshot().findings).toHaveLength(1);
+    if (variant === "foreign-owner") expect(session.getVerificationSnapshot().attempts.at(-1)?.status).toBe("unsuccessful");
+  });
 });

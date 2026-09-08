@@ -1,54 +1,42 @@
-import { appendTileToStack, tileStackAt } from "@/project/mapOverlayTiles";
-import { INTERIOR_HARNESS_PREFIX } from "@/project/tilesetHarness";
 import type { GameMap, TilesetDef } from "../types";
+import { LEGACY_INTERIOR_CABINET } from "./interiorCabinetLegacy";
+import { structuralJson } from "@/util/structuralJson";
 
-export function repairInteriorTransparentPropLayers(project: { readonly maps: Record<string, GameMap>; readonly tilesets: Record<string, TilesetDef> }): boolean {
+export function hasInteriorCabinetOverride(tileset: TilesetDef): boolean {
+  const tiles = [148, 178];
+  return tiles.some(tile => {
+    const meta = tileset.tileMeta?.[tile];
+    return meta?.source === "user" || meta?.origin === "user" || meta?.locked === true
+      || meta?.userLocked === true || meta?.defaultLayer === "lower"
+      || (meta?.defaultLayer === "upper" && tileset.priority[tile] === "lower")
+      || tileset.tileGrafts?.some(graft => graft.targetTile === tile);
+  }) || (tileset.tileGroups ?? []).some(group =>
+    group.tileIds.some(tile => tiles.includes(tile))
+    && (group.layerHome === "lower" || group.defaultLayer === "lower"));
+}
+
+export function repairLegacyInteriorCabinetKit(tileset: TilesetDef): boolean {
+  if (tileset.image.type !== "bundled" || tileset.image.id !== "tex_easyrpg_chipset_interior"
+    || hasInteriorCabinetOverride(tileset)) return false;
+  const legacy = structuralJson(LEGACY_INTERIOR_CABINET);
   let changed = false;
-  for (const map of Object.values(project.maps)) {
-    const tileset = project.tilesets[map.tilesetId];
-    const transparentProps = interiorTransparentPropTiles(tileset);
-    if (transparentProps.size === 0) continue;
-    for (let index = 0; index < map.lowerTiles.length; index++) {
-      const tile = map.lowerTiles[index];
-      if (!transparentProps.has(tile)) continue;
-      placeUpperTransparentProp(map, index, tile);
-      map.lowerTiles[index] = replacementInteriorFloor(map, index, transparentProps);
-      changed = true;
-    }
+  for (const kit of tileset.structureKits ?? []) {
+    if (kit.kind !== "section" || structuralJson(kit) !== legacy) continue;
+    kit.rows = [{ tiles: [-1], upperTiles: [148] }, { tiles: [-1], upperTiles: [178] }];
+    changed = true;
   }
   return changed;
 }
 
-function interiorTransparentPropTiles(tileset: TilesetDef | undefined): ReadonlySet<number> {
-  const group = tileset?.tileGroups?.find((candidate) => candidate.id === `${INTERIOR_HARNESS_PREFIX}transparent-props`);
-  return new Set(group?.tileIds ?? []);
-}
-
-function placeUpperTransparentProp(map: GameMap, index: number, tile: number): void {
-  if (map.upperTiles[index] === tile || tileStackAt(map, "upper", index).includes(tile)) return;
-  if (map.upperTiles[index] === undefined || map.upperTiles[index] < 0) {
-    map.upperTiles[index] = tile;
-    return;
+/**
+ * Only known seed records have enough provenance to repair automatically.
+ * Map tile membership (even beside a room plan or an untouched kit) cannot prove
+ * per-cell authorship or recover the original floor. Keep those placed layers intact.
+ */
+export function repairInteriorTransparentPropLayers(project: { readonly maps: Record<string, GameMap>; readonly tilesets: Record<string, TilesetDef> }): boolean {
+  let changed = false;
+  for (const tileset of Object.values(project.tilesets)) {
+    changed = repairLegacyInteriorCabinetKit(tileset) || changed;
   }
-  appendTileToStack(map, "upper", index, tile);
-}
-
-function replacementInteriorFloor(map: GameMap, index: number, transparentProps: ReadonlySet<number>): number {
-  for (const neighbor of neighboringTileIndexes(map, index)) {
-    const tile = map.lowerTiles[neighbor];
-    if (tile >= 0 && !transparentProps.has(tile)) return tile;
-  }
-  // 이웃이 전부 소품이면 실내 기본 나무 바닥(72)으로 복구한다 — 270은 현재 타일 그림판에서 잔디.
-  return 72;
-}
-
-function neighboringTileIndexes(map: GameMap, index: number): readonly number[] {
-  const x = index % map.width;
-  const y = Math.floor(index / map.width);
-  const neighbors: number[] = [];
-  if (x > 0) neighbors.push(index - 1);
-  if (x < map.width - 1) neighbors.push(index + 1);
-  if (y > 0) neighbors.push(index - map.width);
-  if (y < map.height - 1) neighbors.push(index + map.width);
-  return neighbors;
+  return changed;
 }

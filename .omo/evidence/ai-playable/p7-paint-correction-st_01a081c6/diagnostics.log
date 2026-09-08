@@ -1,0 +1,10 @@
+{"file":"src/ai/proposalCompleteness.ts","event":"syntaxDiag","diagnostics":[]}
+{"file":"src/ai/proposalCompleteness.ts","event":"semanticDiag","diagnostics":[]}
+{"file":"src/ai/proposalCompleteness.ts","event":"suggestionDiag","diagnostics":[]}
+{"file":"src/editor/tools/mapTools.ts","event":"syntaxDiag","diagnostics":[]}
+{"file":"src/editor/tools/mapTools.ts","event":"semanticDiag","diagnostics":[]}
+{"file":"src/editor/tools/mapTools.ts","event":"suggestionDiag","diagnostics":[]}
+{"file":"test/proposalCompleteness.test.ts","event":"syntaxDiag","diagnostics":[]}
+{"file":"test/proposalCompleteness.test.ts","event":"semanticDiag","diagnostics":[]}
+{"file":"test/proposalCompleteness.test.ts","event":"suggestionDiag","diagnostics":[]}
+{"completed":true,"files":3,"diagnostics":0,"missing":[]}

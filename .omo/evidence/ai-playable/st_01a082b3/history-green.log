@@ -1,0 +1,40 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiConversationHistoryStartup.test.ts test/aiConversationHistoryModal.test.ts test/aiConversationRemoteHistory.test.ts test/historyRecoveryAdmission.test.ts test/mapConversationRemote.test.ts test/mapConversationStore.test.ts test/conversationStore.test.ts test/aiChatSessionScope.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-history-correction-st01a082b3
+
+ ✓ test/mapConversationStore.test.ts (14 tests) 391ms
+ ✓ test/conversationStore.test.ts (25 tests) 496ms
+ ✓ test/aiConversationHistoryModal.test.ts (32 tests) 487ms
+ ✓ test/aiConversationHistoryStartup.test.ts (4 tests) 57ms
+ ✓ test/historyRecoveryAdmission.test.ts (32 tests) 529ms
+ ✓ test/mapConversationRemote.test.ts (18 tests) 572ms
+   ✓ Given 101 remote rows When explicitly hydrated twice Then the older B record is recovered once with zero mirror writes  374ms
+ ✓ test/aiConversationRemoteHistory.test.ts (41 tests) 1601ms
+   ✓ public history with separate explicit recovery > restores through shipped clock, Recover, All and Open without reconstructing a private session  547ms
+ ✓ test/aiChatSessionScope.test.ts (18 tests) 19298ms
+   ✓ 대화 저장 범위 > Given local sessions across reloads When the project shape is unchanged Then the scope is stable  722ms
+   ✓ 대화 저장 범위 > Given remote projects with identical shapes When scoped Then each durable row id stays distinct  706ms
+   ✓ 새 대화 진입점 > Given any dock When the action menus render Then 새 대화는 ☰ 가 아니라 ＋ 에 있다  473ms
+   ✓ 새 대화 진입점 > Given an in-flight turn with a queued send When 새 대화 is clicked Then the outgoing turn cannot contaminate or replay into the new chat  5865ms
+   ✓ 새 대화 진입점 > Given a live blueprint When 새 대화 is clicked Then the plan overlay is dropped with the session  363ms
+   ✓ 새 대화 진입점 > Given a restored conversation When 새 대화 is clicked Then the log empties and the panel reports empty  313ms
+   ✓ 이전 대화 진입점 > Given an open conversation When the current map changes Then the conversation id is unchanged  405ms
+   ✓ 프로젝트 전환 > Given an open conversation When the project identity changes Then the chat resets and the old chat keeps its own scope  329ms
+   ✓ 프로젝트 전환 > Given an in-flight turn When the project identity changes Then it can only persist to its captured scope  3153ms
+   ✓ 프로젝트 전환 > Given another project's newer conversation When the panel mounts Then this project's own latest is still resumed  341ms
+   ✓ 프로젝트 전환 > Given the switch resumes a saved conversation When it is recorded Then the UI event says resumed  414ms
+   ✓ 프로젝트 전환 > Given the new project has its own saved conversation When the identity changes Then it is resumed instead of blanked  1234ms
+   ✓ 턴 상황 스냅샷 > Given a turn on a map When it is recorded Then the audit entry carries map, viewport and selection  1370ms
+   ✓ 턴 상황 스냅샷 > Given the user moves to another map When the next turn runs Then the transition is recorded and the system prompt follows  1821ms
+   ✓ 턴 상황 스냅샷 > Given the same map across turns When turns run Then no transition noise is recorded  1068ms
+
+ Test Files  8 passed (8)
+      Tests  184 passed (184)
+   Start at  05:42:11
+   Duration  78.38s (transform 50.46s, setup 0ms, collect 183.25s, tests 23.43s, environment 3ms, prepare 7.53s)
+
+
+EXIT=0

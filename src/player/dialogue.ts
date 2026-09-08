@@ -1002,5 +1002,15 @@ function safeResourceImageUrl(url: string | null): string | null {
   if (url === null) return null;
   if (/^\/[A-Za-z0-9/_\-.]+\.png$/u.test(url) || /^\/[A-Za-z0-9/_\-.]+\.jpe?g$/u.test(url)) return url;
   if (/^data:image\/(?:png|jpeg);base64,[A-Za-z0-9+/=]+$/u.test(url)) return url;
+  // The resource resolver rebases exported assets, including deployment subpaths.
+  // Keep the PNG/JPEG contract and reject characters that escape a quoted CSS URL.
+  if (/^https?:\/\//u.test(url) && !/["\\\u0000-\u001f\u007f]/u.test(url)) {
+    try {
+      if (/\.(?:png|jpe?g)$/u.test(new URL(url).pathname)) return url;
+    } catch (error) {
+      if (!(error instanceof TypeError)) throw error;
+      return null;
+    }
+  }
   return null;
 }

@@ -513,6 +513,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
             assistantText: result.assistantText,
             buildSpecs: session.getCompletionSpecs(turnWrites),
             calls: turnWrites,
+            project: session.getProposedProject(),
       });
       attachCompletenessWarnings(result.proposedCalls, completenessWarnings);
       streamedBubbles.forEach((bubble) => {

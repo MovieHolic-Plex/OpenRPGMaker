@@ -30,7 +30,8 @@ export function evaluateFunctionalCriterion(criterion: FunctionalCriterion, inpu
   const fail = (observed: string) => ({ expected, observed, passed: false });
   if (criterion.kind === "functionalUnresolved") return fail(criterion.reason);
   if (criterion.kind === "npcReward") {
-    const verdict = verifyNpcRewardsPlayable(input.project, [criterion.requirement]);
+    const verdict = input.npcRewardProof ? input.npcRewardProof(input.project, criterion.requirement)
+      : verifyNpcRewardsPlayable(input.project, [criterion.requirement]);
     return verdict.ok ? { expected, observed: "Real NPC interaction: requested first delta and same-session repeat delta verified", passed: true } : fail(verdict.reason);
   }
   const { project } = input;

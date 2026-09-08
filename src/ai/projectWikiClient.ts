@@ -52,18 +52,29 @@ export function buildProjectWikiPayload(input: ExtractProjectWikiInput): string 
   });
 }
 
+/** Only the extraction-owned abort path emits this; provider TimeoutErrors are not equivalent. */
+export class ProjectWikiExtractionTimeoutError extends Error {
+  constructor() {
+    super("Project wiki extraction deadline exceeded");
+    this.name = "ProjectWikiExtractionTimeoutError";
+  }
+}
+
 /** Uses the existing OAuth-aware transport/config; no stores, credentials, tools, or silent fallback. */
 export async function extractProjectWiki(input: ExtractProjectWikiInput, options: { readonly chat?: typeof chatCompletion; readonly getConfig?: () => AiConfig } = {}): Promise<ProjectWikiPatch> {
   input.signal?.throwIfAborted();
   const payload = buildProjectWikiPayload(input);
-  const signal = input.signal ? AbortSignal.any([input.signal, AbortSignal.timeout(45_000)]) : AbortSignal.timeout(45_000);
+  const deadline = AbortSignal.timeout(45_000);
+  const signal = input.signal ? AbortSignal.any([input.signal, deadline]) : deadline;
+  const abortReason = () => !input.signal?.aborted && deadline.aborted && signal.reason === deadline.reason
+    ? new ProjectWikiExtractionTimeoutError() : signal.reason;
   let onAbort: () => void = () => {};
   const aborted = new Promise<never>((_resolve, reject) => {
-    onAbort = () => reject(signal.reason);
+    onAbort = () => reject(abortReason());
     signal.addEventListener("abort", onAbort, { once: true });
   });
   try {
-    signal.throwIfAborted();
+    if (signal.aborted) throw abortReason();
     const result = await Promise.race([
       (options.chat ?? chatCompletion)((options.getConfig ?? loadAiConfig)(), {
         messages: [{ role: "system", content: WIKI_EXTRACTION_PROMPT }, { role: "user", content: payload }],
@@ -71,7 +82,7 @@ export async function extractProjectWiki(input: ExtractProjectWikiInput, options
       }),
       aborted,
     ]);
-    signal.throwIfAborted();
+    if (signal.aborted) throw abortReason();
     const content = result.message.content;
     const text = typeof content === "string" ? content : content?.filter((part) => part.type === "text").map((part) => part.text).join("") ?? "";
     return parseProjectWikiPatch(text, input.project, input.sources);

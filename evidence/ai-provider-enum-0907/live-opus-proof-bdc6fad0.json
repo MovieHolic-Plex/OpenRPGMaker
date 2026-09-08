@@ -1,0 +1,125 @@
+{
+  "startedAt": "2026-09-06T16:38:06.811Z",
+  "finishedAt": "2026-09-06T16:38:11.624Z",
+  "requestedModel": "claude-opus-4-6",
+  "sourceToolsSha256": "e251f14a564fdb3e4e5e913566fcf973f416327f28448b4574dce74b05631151",
+  "requests": [
+    {
+      "status": 200,
+      "endpoint": "https://daily-cloudcode-pa.googleapis.com",
+      "wireModel": "claude-opus-4-6-thinking",
+      "toolCount": 48,
+      "toolNames": [
+        "author_house",
+        "author_village",
+        "get_world_structure_rules",
+        "author_world_bridge",
+        "author_world_mountain",
+        "build_wall",
+        "build_roof",
+        "place_door",
+        "place_window",
+        "lay_path",
+        "arrange_rows",
+        "tile_erase",
+        "look_at_houses",
+        "evaluate_village_look",
+        "critique_village",
+        "list_village_tree_assets",
+        "get_village_session",
+        "evaluate_village_layer",
+        "start_interior_room_session",
+        "advance_interior_room_build",
+        "run_interior_room_pipeline",
+        "furnish_interior_space",
+        "evaluate_interior_room",
+        "list_interior_room_demos",
+        "list_interior_room_sessions",
+        "get_concept_facility",
+        "place_concept",
+        "start_dungeon_room_session",
+        "build_castle",
+        "tile_query",
+        "create_map",
+        "paint_road",
+        "resize_map",
+        "get_project_summary",
+        "place_props",
+        "fill_region",
+        "set_build_spec",
+        "get_work_plan",
+        "set_work_plan",
+        "complete_work_item",
+        "skip_work_item",
+        "place_npc",
+        "place_chest",
+        "set_factions",
+        "make_villager",
+        "find_layout_regions",
+        "script_cutscene",
+        "find_tools"
+      ],
+      "enumLeaves": [
+        {
+          "type": "integer",
+          "enum": [
+            "1",
+            "2",
+            "3"
+          ]
+        },
+        {
+          "type": "integer",
+          "enum": [
+            "1",
+            "2",
+            "3"
+          ]
+        },
+        {
+          "type": "integer",
+          "enum": [
+            "1",
+            "2",
+            "3"
+          ]
+        },
+        {
+          "type": "integer",
+          "enum": [
+            "1",
+            "2",
+            "3"
+          ]
+        }
+      ],
+      "bodySha256": "bde4281eea747af09e8c2d60de6e6169662cb3e2d160c8057258dde740282d33"
+    }
+  ],
+  "completion": {
+    "stream": false,
+    "completion": {
+      "id": "oh-my-pi-1788712691622",
+      "object": "chat.completion",
+      "model": "claude-opus-4-6",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "READY"
+          },
+          "finish_reason": "stop"
+        }
+      ],
+      "image_delivery": []
+    }
+  },
+  "authUnchanged": true,
+  "sourceUnchanged": true,
+  "executedToolCalls": 0,
+  "productionFiles": {
+    "scripts/lib/ohMyPiPiAiRuntime.ts": "fe6aef4c92e4597a0e5da6bab8ea398245f49b4dd681e1ebb64700acb0ed7690",
+    "scripts/lib/ohMyPiToolEnums.ts": "f75514b0fe1e7d08ffe08471e388ad28e2c319d8f511afa271e33aab5fb0d534"
+  }
+}

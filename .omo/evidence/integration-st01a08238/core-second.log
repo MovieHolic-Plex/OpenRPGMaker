@@ -1,0 +1,205 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/nonHistoryIntegrationSeams.test.ts test/approachCorrection.test.ts test/pr687VerificationIntegration.test.ts test/canonicalAcceptanceOwnership.test.ts test/sceneVerificationRepair.test.ts test/verificationSelectionOwnership.test.ts test/assistantVerificationEvidence.test.ts test/aiStickyChecklist.test.ts test/proposalCompleteness.test.ts test/aiCompletionAccounting.test.ts test/aiTurnAppliedAccounting.test.ts test/transparentTileLayerRouting.test.ts --maxWorkers=2 --minWorkers=1 --reporter=default --reporter=json --outputFile=.omo/evidence/integration-st01a08238/core-second.json
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-main-integration-st01a08238
+
+ ✓ test/nonHistoryIntegrationSeams.test.ts (5 tests) 8159ms
+   ✓ non-history integration contracts > independent review retains native preserved-wall accounting: complete  2420ms
+   ✓ non-history integration contracts > independent review retains native preserved-wall accounting: partial  2333ms
+   ✓ non-history integration contracts > independent review retains native preserved-wall accounting: review-image-undelivered  1689ms
+   ✓ non-history integration contracts > owned wiki timeout preserves world and cannot bypass authored-baseline drift (false)  1160ms
+   ✓ non-history integration contracts > owned wiki timeout preserves world and cannot bypass authored-baseline drift (true)  556ms
+ ✓ test/aiTurnAppliedAccounting.test.ts (29 tests) 24500ms
+   ✓ panel map completeness selection > uses current native maintenance facts at terminal UI (complete)  2415ms
+   ✓ panel map completeness selection > uses current native maintenance facts at terminal UI (partial)  1984ms
+   ✓ panel map completeness selection > uses current native maintenance facts at terminal UI (invalidated)  2310ms
+   ✓ panel map completeness selection > uses the real session's plural selection instead of the most recent spec  1518ms
+   ✓ 턴 표면의 이미 적용된 쓰기 정산 > max-tool-calls 이후 원장만 남아도 변경 없음으로 기록하지 않는다  455ms
+   ✓ 턴 표면의 이미 적용된 쓰기 정산 > token-budget 이후 원장만 남아도 변경 없음으로 기록하지 않는다  456ms
+   ✓ 턴 표면의 이미 적용된 쓰기 정산 > error 이후 원장만 남아도 변경 없음으로 기록하지 않는다  433ms
+   ✓ 턴 표면의 이미 적용된 쓰기 정산 > 원장과 종료 시 적용한 제안을 모두 세되 원장은 다시 적용하지 않는다  426ms
+   ✓ applied baseline across rejected and unrelated requests > preserves earlier applied work through the real apply/sync boundary (autonomous=false)  5563ms
+   ✓ applied baseline across rejected and unrelated requests > preserves earlier applied work through the real apply/sync boundary (autonomous=true)  5267ms
+ ✓ test/aiCompletionAccounting.test.ts (12 tests) 29388ms
+   ✓ completion accounting through real assistant sessions > auto-completes verified maintenance without waiving a new quantity (quantity=false)  2027ms
+   ✓ completion accounting through real assistant sessions > auto-completes verified maintenance without waiving a new quantity (quantity=true)  1525ms
+   ✓ completion accounting through real assistant sessions > applies maintenance once but retains canonical preserve semantics  3651ms
+   ✓ completion accounting through real assistant sessions > applies maintenance once but retains canonical targetChange semantics  2299ms
+   ✓ completion accounting through real assistant sessions > accounts for both spatial milestones and applies each write once, only after independent review  3820ms
+   ✓ completion accounting through real assistant sessions > active spec expansion > does not retain a invalid-args write; a successful retry expands and keeps the correct lifetime  2895ms
+   ✓ completion accounting through real assistant sessions > active spec expansion > does not retain a out-of-bounds write; a successful retry expands and keeps the correct lifetime  3123ms
+   ✓ completion accounting through real assistant sessions > active spec expansion > does not retain a throwing-tool write; a successful retry expands and keeps the correct lifetime  2787ms
+   ✓ completion accounting through real assistant sessions > implicit spec expansion > does not retain a invalid-args write; a successful retry expands and keeps the correct lifetime  2155ms
+   ✓ completion accounting through real assistant sessions > implicit spec expansion > does not retain a out-of-bounds write; a successful retry expands and keeps the correct lifetime  2198ms
+   ✓ completion accounting through real assistant sessions > implicit spec expansion > does not retain a throwing-tool write; a successful retry expands and keeps the correct lifetime  2007ms
+   ✓ completion accounting through real assistant sessions > does not commit expansion when the runner itself throws, and preserves the failed tool response  898ms
+ ✓ test/approachCorrection.test.ts (61 tests) 85004ms
+   ✓ host-confirmed canonical interaction approach > retains the full recorded bundle, fails natively, rejects movement without approval, and offers the missing action  1312ms
+   ✓ host-confirmed canonical interaction approach > appends confirmation and exact owned proof without changing original check, siblings, or failed attempts  2043ms
+   ✓ host-confirmed canonical interaction approach > never reuses pre-approval or ordinary unowned passes  1751ms
+   ✓ host-confirmed canonical interaction approach > atomically rejects changed start after approval  1266ms
+   ✓ host-confirmed canonical interaction approach > atomically rejects changed state after approval  1355ms
+   ✓ host-confirmed canonical interaction approach > atomically rejects changed choice after approval  1316ms
+   ✓ host-confirmed canonical interaction approach > atomically rejects changed assertion after approval  1551ms
+   ✓ host-confirmed canonical interaction approach > atomically rejects changed reward after approval  1309ms
+   ✓ host-confirmed canonical interaction approach > atomically rejects changed repeat after approval  1416ms
+   ✓ host-confirmed canonical interaction approach > atomically rejects changed move after approval  1508ms
+   ✓ host-confirmed canonical interaction approach > atomically rejects changed target after approval  1353ms
+   ✓ host-confirmed canonical interaction approach > atomically rejects changed extra-facing after approval  1459ms
+   ✓ host-confirmed canonical interaction approach > rejects sibling without amendment  1289ms
+   ✓ host-confirmed canonical interaction approach > rejects assistant-permission without amendment  1238ms
+   ✓ host-confirmed canonical interaction approach > rejects tampered-preview without amendment  1226ms
+   ✓ host-confirmed canonical interaction approach > rejects wrong-check without amendment  1122ms
+   ✓ host-confirmed canonical interaction approach > rejects wrong-owner without amendment  1057ms
+   ✓ host-confirmed canonical interaction approach > rejects stale-turn without amendment  1166ms
+   ✓ host-confirmed canonical interaction approach > rejects stale-write without amendment  1873ms
+   ✓ host-confirmed canonical interaction approach > rejects write-undo without amendment  2241ms
+   ✓ host-confirmed canonical interaction approach > rejects wrong-session without amendment  1233ms
+   ✓ host-confirmed canonical interaction approach > rejects wrong-project without amendment  1656ms
+   ✓ host-confirmed canonical interaction approach > rejects withdrawal without amendment  1196ms
+   ✓ host-confirmed canonical interaction approach > rejects new-goal without amendment  1602ms
+   ✓ host-confirmed canonical interaction approach > rejects encounter-capable previews despite a native passing scene with unreceipted battle events  1202ms
+   ✓ host-confirmed canonical interaction approach > rejects execution and credit after encounter-enabling applied write: rate  1930ms
+   ✓ host-confirmed canonical interaction approach > rejects execution and credit after encounter-enabling applied write: legacy-troop  1989ms
+   ✓ host-confirmed canonical interaction approach > rejects execution and credit after encounter-enabling applied write: table-weight  2011ms
+   ✓ host-confirmed canonical interaction approach > rejects execution and credit after encounter-enabling applied write: table-added  2046ms
+   ✓ host-confirmed canonical interaction approach > rejects execution and credit after encounter-enabling applied write: after-proof  3257ms
+   ✓ host-confirmed canonical interaction approach > uses native encounter selection semantics for preview: low-rate  1089ms
+   ✓ host-confirmed canonical interaction approach > uses native encounter selection semantics for preview: weighted-table  1088ms
+   ✓ host-confirmed canonical interaction approach > uses native encounter selection semantics for preview: conditional-switch  1302ms
+   ✓ host-confirmed canonical interaction approach > uses native encounter selection semantics for preview: conditional-region  1107ms
+   ✓ host-confirmed canonical interaction approach > uses native encounter selection semantics for preview: conditional-time  1010ms
+   ✓ host-confirmed canonical interaction approach > uses native encounter selection semantics for preview: missing-troop  1023ms
+   ✓ host-confirmed canonical interaction approach > uses native encounter selection semantics for preview: zero-rate  1519ms
+   ✓ host-confirmed canonical interaction approach > uses native encounter selection semantics for preview: no-candidates  2054ms
+   ✓ host-confirmed canonical interaction approach > uses native encounter selection semantics for preview: zero-weight-table  1449ms
+   ✓ host-confirmed canonical interaction approach > uses native encounter selection semantics for preview: noninteger-weight-table  1419ms
+   ✓ host-confirmed canonical interaction approach > uses native encounter selection semantics for preview: negative-weight-table  1295ms
+   ✓ host-confirmed canonical interaction approach > expires confirmation when applied content becomes encounter-capable after preview  1505ms
+   ✓ host-confirmed canonical interaction approach > refuses approach-only credit when inserted walk causes reward  1425ms
+   ✓ host-confirmed canonical interaction approach > refuses approach-only credit when inserted walk causes transfer  1429ms
+   ✓ host-confirmed canonical interaction approach > refuses approach-only credit when inserted walk causes interrupted  1359ms
+   ✓ host-confirmed canonical interaction approach > refuses approach-only credit when inserted walk causes last-cell-transfer  1346ms
+   ✓ host-confirmed canonical interaction approach > refuses approach-only credit when inserted walk causes empty-touch  1451ms
+   ✓ host-confirmed canonical interaction approach > does not credit verification of an unapplied draft through the real dispatcher  2458ms
+   ✓ host-confirmed canonical interaction approach > write then undo never resurrects revised proof, and unrelated findings keep their own obligation  2576ms
+   ✓ host-confirmed canonical interaction approach > restored public transcript cannot recover an old ledger or pending confirmation  1061ms
+   ✓ host-confirmed canonical interaction approach > retains a failed revised execution and appends its eventual fresh resolution  2750ms
+   ✓ host-confirmed canonical interaction approach > does not offer unsupported missing-owner  1151ms
+   ✓ host-confirmed canonical interaction approach > does not offer unsupported missing-target  915ms
+   ✓ host-confirmed canonical interaction approach > does not offer unsupported moving-target  896ms
+   ✓ host-confirmed canonical interaction approach > does not offer unsupported earlier-gameplay  871ms
+   ✓ host-confirmed canonical interaction approach > real checklist uses distinct review/confirmation and blocks busy, disposed and ownerless actions  2120ms
+ ✓ test/pr687VerificationIntegration.test.ts (26 tests) 22837ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > dummy removal retains only authoritative obligations: unadopted  1054ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > dummy removal retains only authoritative obligations: adopted  832ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > dummy removal retains only authoritative obligations: negative  966ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > facing-only correction clears its finding but not a distinct checkpoint assertion  618ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed set through normal correction dispatch  565ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed move through normal correction dispatch  542ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed walk through normal correction dispatch  577ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed start through normal correction dispatch  572ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed state through normal correction dispatch  572ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed choice through normal correction dispatch  617ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed checkpoint through normal correction dispatch  755ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed reward through normal correction dispatch  613ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed repeat through normal correction dispatch  579ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > classifies malformed without waiving a required scope  982ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > classifies execution without waiving a required scope  842ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > classifies no-target without waiving a required scope  828ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > classifies missing-target without waiving a required scope  746ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > optional criterion authority does not turn ordinary optional scheduling into required verification  565ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > canonical tool verdict binds before execution and late adoption cannot reuse an exploratory pass  2504ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > normal final repair is bounded by authoritative findings without an acceptance declaration  609ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > budget-terminal assessment retains the finding without exceeding execution budget  468ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > successful exploratory checks do not become repair obligations after a write  897ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects skip atomically with pending-specification proof and retains completion  1376ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects skip atomically with unverified proof and retains completion  1138ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects skip atomically with stale proof and retains completion  1794ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects skip atomically with passed proof and retains completion  1226ms
+ ✓ test/assistantVerificationEvidence.test.ts (24 tests) 19499ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > run_lint ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  1036ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > check_reachability ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  916ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > verify_quest ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  950ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > play_walkthrough ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  928ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > run_scene_test ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  903ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > evaluate_game_quality ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  1504ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 같은 검사 재실패는 앞선 성공을 제거하고, 이후 실제 재통과는 복구한다  1081ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 쓰기 이후에는 이전 검증 성공으로 완료할 수 없고 다시 검사해야 한다  1253ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 재검사 없는 쓰기는 최종 보고에서도 검증 통과로 남지 않는다  1063ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 실행되지 않은 잘못된 인자는 고친 호출로 복구할 수 있다  1174ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > warning-only lint는 통과하며 거부된 쓰기는 성공 근거를 무효화하지 않는다  1032ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 레이어의 선재 lint 오류는 자문을 유지하면서 최종 응답에 보고한다  845ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > final assessment reruns earlier quality on the current artifact without replaying work (explicit=false)  2252ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > final assessment reruns earlier quality on the current artifact without replaying work (explicit=true)  2164ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 다음 항목은 자기 대상의 검증으로 완료하며 이전 항목의 stale 검사는 최종 보고에 보존한다  1296ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 실패한 walkthrough 실행은 레이어의 성공 시나리오로 기록하지 않는다  883ms
+ ✓ test/canonicalAcceptanceOwnership.test.ts (7 tests) 17334ms
+   ✓ canonical scene authority uses the ordinary pre-execution contract > cannot acquire missing ownership from the first successful scene; repair needs a fresh execution  1903ms
+   ✓ canonical scene authority uses the ordinary pre-execution contract > fills only missing interaction ownership while preserving already declared targets  2954ms
+   ✓ canonical scene authority uses the ordinary pre-execution contract > pass -> transfer write -> identical foreign execution cannot discharge the original scope  2645ms
+   ✓ canonical scene authority uses the ordinary pre-execution contract > pass -> initial-state write -> identical foreign execution cannot discharge the original scope  2794ms
+   ✓ malformed canonical input remains repairable without rewriting authority > malformed scene required=true blocks; repair retains owner/baseline and needs post-repair proof  3071ms
+   ✓ malformed canonical input remains repairable without rewriting authority > malformed scene required=false blocks; repair retains owner/baseline and needs post-repair proof  3032ms
+   ✓ malformed canonical input remains repairable without rewriting authority > valid optional canonical criteria remain optional  933ms
+ ✓ test/sceneVerificationRepair.test.ts (17 tests) 2459ms
+ ✓ test/transparentTileLayerRouting.test.ts (9 tests) 1462ms
+   ✓ paint_tiles 레이어 라우팅 > 투명 칩을 lower로 요청해도 upper에 배치하고 라우팅을 알린다  485ms
+   ✓ paint_tiles 레이어 라우팅 > 지우기(-1)와 불투명 지면 칩은 요청한 레이어를 그대로 따른다  573ms
+ ✓ test/verificationSelectionOwnership.test.ts (24 tests) 13831ms
+   ✓ normal session selection ownership via ordinary > foreign-pass stays blocked until each failed map is repaired  2088ms
+   ✓ normal session selection ownership via ordinary > two-negatives stays blocked until each failed map is repaired  2824ms
+   ✓ normal session selection ownership via ordinary > no-target-control stays blocked until each failed map is repaired  1993ms
+   ✓ normal session selection ownership via correct_verification > foreign-pass stays blocked until each failed map is repaired  1788ms
+   ✓ normal session selection ownership via correct_verification > two-negatives stays blocked until each failed map is repaired  2317ms
+   ✓ normal session selection ownership via correct_verification > no-target-control stays blocked until each failed map is repaired  1771ms
+ ✓ test/proposalCompleteness.test.ts (73 tests) 24067ms
+   ✓ native preserved paint completeness > covers P7's 80 changed floor cells and 24 already-correct walls across three assets  891ms
+   ✓ native preserved paint completeness > retains the warning for missing operation evidence  804ms
+   ✓ native preserved paint completeness > retains the warning for failed operation evidence  791ms
+   ✓ native preserved paint completeness > retains the warning for missing-diff operation evidence  783ms
+   ✓ native preserved paint completeness > retains the warning for missing-receipt operation evidence  739ms
+   ✓ native preserved paint completeness > retains the warning for missing-layer operation evidence  698ms
+   ✓ native preserved paint completeness > retains the warning for invalid-layer operation evidence  709ms
+   ✓ native preserved paint completeness > retains the warning for short-receipt operation evidence  737ms
+   ✓ native preserved paint completeness > retains the warning for skipped operation evidence  734ms
+   ✓ native preserved paint completeness > retains the warning for wrong-tile operation evidence  708ms
+   ✓ native preserved paint completeness > retains the warning for wrong-map operation evidence  695ms
+   ✓ native preserved paint completeness > does not discharge full coverage with a native partial paint  709ms
+   ✓ native preserved paint completeness > does not discharge full coverage with a native duplicate paint  706ms
+   ✓ native preserved paint completeness > does not discharge full coverage with a native out-of-bounds paint  766ms
+   ✓ native preserved paint completeness > does not discharge full coverage with a native failed-args paint  686ms
+   ✓ native preserved paint completeness > uses the native effective layer and requires that exact asset layer  728ms
+   ✓ native preserved paint completeness > checks a native complete repair after an earlier one-cell no-op  954ms
+   ✓ native preserved paint completeness > checks a native partial repair after an earlier one-cell no-op  1102ms
+   ✓ native preserved paint completeness > checks a native wrong-tile repair after an earlier one-cell no-op  1047ms
+   ✓ native preserved paint completeness > checks a native rect repair after an earlier one-cell no-op  927ms
+   ✓ native preserved paint completeness > checks a native skipped repair after an earlier one-cell no-op  899ms
+   ✓ native preserved paint completeness > checks a native failed repair after an earlier one-cell no-op  833ms
+   ✓ native preserved paint completeness > keeps historical upper execution coverage after native metadata moves the tile home to lower (lower asset)  1182ms
+   ✓ native preserved paint completeness > keeps historical upper execution coverage after native metadata moves the tile home to lower (upper asset)  1158ms
+   ✓ native preserved paint completeness > checks the current applied cells after later native edits, not the old success or the invalidating diff  940ms
+   ✓ native preserved paint completeness > never substitutes the sparse cells bounding box for interior coverage (changed=false)  605ms
+   ✓ native preserved paint completeness > never substitutes the sparse cells bounding box for interior coverage (changed=true)  655ms
+   ✓ native preserved paint completeness > does not let unrelated no-ops discharge terrain or non-terrain obligations  1029ms
+   ✓ native preserved paint completeness > cannot use preserved cells as new quantity or genuine change  831ms
+ ✓ test/aiStickyChecklist.test.ts (34 tests) 10753ms
+   ✓ renders acceptance outside chat and retains verified evidence after the turn  970ms
+   ✓ ignores late acceptance events after the real new-chat boundary  675ms
+   ✓ refreshes backend acceptance on a store mutation without manufacturing verification  737ms
+   ✓ retains the backend blocked snapshot when the actual abort button ends a held turn  692ms
+   ✓ reopens hidden fresh acceptance through the actual header AI menu  745ms
+   ✓ reopens hidden fresh acceptance through the actual composer AI menu  703ms
+   ✓ manual saved-history adoption retires outgoing live acceptance through real controls  1175ms
+   ✓ manual saved-history adoption retires outgoing terminal acceptance through real controls  1224ms
+   ✓ rejects old live and terminal acceptance immediately after project retirement  746ms
+   ✓ rejects old live and terminal acceptance immediately after dispose retirement  621ms
+
+ Test Files  12 passed (12)
+      Tests  321 passed (321)
+   Start at  03:53:40
+   Duration  192.15s (transform 25.09s, setup 0ms, collect 63.90s, tests 259.29s, environment 259ms, prepare 882ms)
+
+JSON report written to /home/main/z-project/rpg-zzu-ai-main-integration-st01a08238/.omo/evidence/integration-st01a08238/core-second.json

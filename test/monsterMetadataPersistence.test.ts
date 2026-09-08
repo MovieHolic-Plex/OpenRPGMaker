@@ -133,6 +133,13 @@ describe("monster metadata concurrent persistence", () => {
     held.release();
     await pending;
     await commits;
+    // A's historical response cannot persist B implicitly. B must own its flush.
+    expect(store.getCurrent().monsterMetadata).toEqual(replacement.monsterMetadata);
+    expect(transport.accepted.at(-1)?.monsterMetadata).toEqual(remote.monsterMetadata);
+    expect(store.hasUnsavedChanges()).toBe(true);
+    const replacementCommitted = transport.waitForCommits(2);
+    await store.flush();
+    await replacementCommitted;
     // Then
     expect(store.getCurrent().monsterMetadata).toEqual(replacement.monsterMetadata);
     expect(transport.accepted.at(-1)?.monsterMetadata).toEqual(replacement.monsterMetadata);

@@ -393,7 +393,8 @@ const paintTiles: ToolDefinition = {
     return {
       summary: `${map.name}에 타일 ${tile} 페인트(${mode}, ${layer}, ${paintResult.touched.length}칸)${routedNote ? " — 상위 전용 칩 자동 라우팅" : ""}${autoNote ? ` — ${autoNote}` : ""}${skippedNote ? ` — ${skippedNote}` : ""}`,
       warnings: warnings.length > 0 ? warnings : undefined,
-      data: { autoClusterTiles: paintResult.autoTiles, skippedClusterCells: paintResult.skipped, tilesTouched: paintResult.touched.length },
+      // Snapshot the executed layer: later tile-rule edits must not reinterpret this receipt.
+      data: Object.freeze({ effectiveLayer: layer, autoClusterTiles: paintResult.autoTiles, skippedClusterCells: paintResult.skipped, tilesTouched: paintResult.touched.length }),
     };
   },
 };

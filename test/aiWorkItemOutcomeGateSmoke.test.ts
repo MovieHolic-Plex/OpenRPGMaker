@@ -91,6 +91,7 @@ const PAINT_PLAN = {
           instruction: "create_map으로 30x30 크기의 야외 필드 맵 생성 후 지형 및 길 타일 페인팅",
           doneWhen: "새로운 야외 필드 맵이 생성되고 기본 지형이 칠해짐",
           successTools: ["create_map"],
+          mapTargets: [FIELD_MAP_ID],
         },
       ],
     },

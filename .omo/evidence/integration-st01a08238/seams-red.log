@@ -1,0 +1,5 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle --config .omo/evidence/integration-st01a08238/vitest.nonhistory.config.mjs test/nonHistoryIntegrationSeams.test.ts --maxWorkers=2 --minWorkers=1 --reporter=json --outputFile=.omo/evidence/integration-st01a08238/seams-red.json
+
+JSON report written to /home/main/z-project/rpg-zzu-ai-main-integration-st01a08238/.omo/evidence/integration-st01a08238/seams-red.json

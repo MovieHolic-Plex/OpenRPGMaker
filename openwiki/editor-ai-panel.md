@@ -32,9 +32,17 @@ of original uncompressed text or a new model-memory system.
   reads all remote pages of up to 100 rows, validates destination/scope/body and
   imports locally without mirror writes, model calls or wiki extraction. It
   returns `{imported, skipped, rejected, durable}`; `rejected > 0` is incomplete
-  recovery. Duplicate/older imports and tombstoned IDs are skipped. Pass an abort
-  signal and a captured editor-identity check; close/project switch must invalidate
-  pending UI callbacks. Transport/storage errors reject instead of masquerading as
+  recovery. Capture one immutable full stored-value baseline after legacy migration,
+  before the first GET, for the entire recovery operation. Inside the existing
+  readwrite transaction, import an absent ID only if still absent, or replace an
+  unchanged preexisting local record only when the validated remote timestamp is
+  strictly newer. Concurrently created/changed entries (including equal-ms nested
+  text, title, model and map provenance), foreign collisions and tombstones are
+  skipped. Memory-backed baseline records are cloned by value. No per-page baseline
+  refresh and no network-held transaction. This is explicitly authorized timestamp
+  replacement, not lossless reconciliation of divergent older copies. Pass an abort
+  signal and a live panel/project/conversation ownership check; close/project switch
+  and view changes invalidate pending admission and UI callbacks. Transport/storage errors reject instead of masquerading as
   empty success. Already imported pages remain if a later page fails or aborts.
 - Save captures the remote destination before awaiting local persistence. New
   outbox payloads store only `destinationProjectId`, never credentials; old payloads
@@ -48,7 +56,9 @@ not imply collision-proof project identity. Archive queries currently scan local
 records; offset-based remote pagination is deterministic on a stable remote set,
 not a transaction snapshot of concurrent remote writes. Repeated recovery is safe.
 Tests: `mapConversationStore`, `conversationStore`, `mapConversationRemote`,
-`projectWikiHistorySources`. Browser/live remote evidence is lead-owned.
+`historyRecoveryAdmission`, `aiConversationRemoteHistory`, `projectWikiHistorySources`.
+The recovery race regressions exercise native IndexedDB transactions and the memory
+backend. Browser/live remote evidence is lead-owned.
 
 ### Editor history surface
 
@@ -64,6 +74,16 @@ conversation ID and all retained entries. Earlier turns can remain visually
 collapsed using the existing turn toggle; they are not discarded. Browsing history
 and navigating A-B-A do not reset the live project conversation. Project changes
 and modal closure invalidate outstanding requests and restoration callbacks.
+Ordinary Open is local-only and never imports or selects a remote timestamp. Each
+Open click owns a distinct selection generation in addition to the view generation;
+a retired read cannot adopt or paint an error even when it settles before the newer
+selection. Owned recovery failures refresh usable local rows while retaining the
+error. Outgoing live-conversation checkpoint saves remain separate and unchanged.
+The initial catalog-to-list continuation retains its starting generation and live
+modal ownership: a delayed startup cannot retire a newer explicit Recover or clear
+its status. `aiConversationHistoryStartup` covers this ordering and normal startup;
+`ai-map-history.spec.ts` exercises it through the shipped clock and Recover with
+an offline response fixture and real browser IndexedDB transactions.
 
 The separate unscoped legacy view (`ai-history-filter-legacy`) queries with a
 null repository scope and expands retained text read-only. It does not adopt a
@@ -344,12 +364,51 @@ Exact tool-verdict requirements reuse [the existing verification store](editor-a
 verification, independent surface evidence and pending lead gates. This section
 records implemented contracts, not Phase approval or checkpoint/boot recovery.
 
+## User-confirmed interaction approach correction (CR-P7-1, 2026-09-08)
+
+The existing checklist offers `접근 보정 검토` only for a live AI-declared canonical
+`run_scene_test` with complete map/event ownership and a current failed named
+selection. This bounded release supports the first interaction after nonmoving
+setup/assertion/facing/snapshot steps, a same-map fixed action event, and no earlier
+activation. The host inserts one native adjacent `walk` (which also faces the target).
+Unsupported shapes remain blocked; no movement equivalence or model amendment tool
+was added. Review exposes the original recipe/initial state, exact insertion, all
+original assertions and effective args. A separate `이 접근 보정 승인` click uses the
+idle, live panel/session boundary; approval alone is unverified.
+
+`ToolVerificationEvidence` appends `approaches` (revision plus user confirmation) and
+`resolutions` (original check, authorized revision, fresh attempt). Original args,
+request/baselines, siblings, findings and attempts survive. `correct_verification`
+requires that original check ID and exact approved args against applied content;
+all remapped map/event receipts, original initial state and assertions must pass,
+with zero event activations during the inserted walk. Ordinary/pre-approval passes
+cannot supply credit. Writes/undo stale proof; unrelated findings remain obligations.
+Snapshots expose these links through normal verification results and the read-only
+harness. Pending previews expire on a new turn, write or owner replacement.
+
+Encounter-capable maps are unsupported (CR-P7-1-R1): native battle/troop events do
+not appear in scene interaction receipts. Preview and approved execution inspect
+current content: positive rate plus legacy troops or a positive-integer-weight
+entry in the overriding nonempty table blocks authorization, even if conditional.
+No initial-position/condition snapshot or old approval licenses later encounters.
+At 1024px, collapse chat, expand the checklist and review/confirm normally; the
+recorded-wire browser regression clicks both controls there, then restores chat.
+
+There is no private-ledger persistence/recovery. Historical P7 remains blocked.
+A fresh session reproduces and validates only the prospective amendment path; its
+baseline cannot prove P7's earlier floor edit. Physical saved-game and actual-provider
+proof remain separate. Regressions: `test/approachCorrection.test.ts` and
+`scripts/qa/p7-approach-correction.mjs` (explicitly recorded-model HTTP responses,
+normal file import/checklist/dispatcher, isolated app, all external writes fenced).
+
 ## Live large-world QA: plan repair and final audit (2026-09-07)
 
 The actual 128x128/six-region/eight-landmark run initially produced 19 independent
 items, then generator `set_work_plan` collapsed them to five aggregate items after
 a tool mismatch. `repairWorkPlan` now retains every existing item ID, completed/
-skipped state, notes and current-item evidence during in-loop repair. Missing or
+skipped state, notes and current-item evidence during in-loop repair. Adding a distinct
+verification declaration to a done item reopens that item's verification, without
+removing its prior owned checks. Unchanged declarations retain their proof owner. Missing or
 duplicate IDs reject the replacement atomically. Pending instructions/tools,
 regrouping and additions remain editable; main-planner adoption owns new goals.
 Orchestration and Ralph context expose the actual current `itemId`.
@@ -372,14 +431,40 @@ Bridge/history consumers therefore receive the same final verdict as the panel.
 `ok` only means the RPC completed, not that the authored goal was verified.
 Failed final verification replaces a model success claim rather than appending
 contradictory failure text below it.
-For authoring requests, failed or stale explicit checks now trigger the existing
-bounded final-repair loop and continuation before finalization. Advisory-only
-findings do not create automatic authoring requirements. Run-end proof waits for
-explicit revalidation after the final write.
-With an isolated write draft, those checks enter the independent review's required
-problems and structured repair loop; even a model approval cannot override them.
-Without a write draft, the bounded acceptance/completion repair loop owns explicit
-check recovery. Neither path applies a milestone before independent approval.
+The PR687 adjudication retains bounded final repair, driven by adopted pending,
+unverified or stale requirements and genuine unresolved findings, including findings
+without an acceptance declaration. The narrow pre-write lint exception below separates
+reported baseline defects from terminal blockers. Successful unadopted exploratory probes never
+create rerun obligations after a write or dummy removal. Malformed/execution failures
+remain attempts, with only the narrow unowned assertion-free no-target setup exception.
+Questions report retained verification negatives without executing repair or changing
+scheduling; normal execution and budget-terminal assessment cannot
+publish false completion. Budget exhaustion does not grant extra tool calls.
+Run-end proof waits for authoritative blockers to clear. An unfinished declared
+verification item (including pending scope or current passed proof) cannot be skipped:
+rejection preserves plan position, acceptance, requirements, findings and proof. Ordinary
+optional/non-verification skips remain usable. Regression: `pr687VerificationIntegration`.
+Before preparation or model writes, the host runs the same read-only lint producer against
+its pre-write project baseline once per goal. Rebase, repair and continuation never replace
+that provenance. An automatic default `run_lint({})` finding can be report-only only when its
+complete error records (including code, message, referenced IDs/locations and multiplicity)
+were present in that baseline, it has never been observed explicitly, and no active lint
+requirement owns the check. Unknown/incomplete provenance, new identities (even at equal
+counts), explicit negatives and adopted checks still block. Findings are retained; no pass is
+invented. `CompletionAssessment.verification` reports all problems while `blockingVerification`
+is the terminal subset. Report-only lint is appended to the completed response and remains in
+audits/snapshots without a repair loop. Regression: `advisoryLintProvenance`.
+With an isolated write draft, canonical blockers enter the independent review's
+required problems and structured repair loop; even a model approval cannot override
+them. Without a write draft, bounded acceptance/completion repair owns recovery.
+Neither path applies a milestone before independent approval. Declared BuildSpec
+placement uses the current native applied-plus-pending ledger, including valid
+unchanged maintenance cells. Generic proposal heuristics and all tool diff warnings
+remain separate `completionWarnings` in the complete reviewer envelope; they are
+not a new unconditional gate on unrelated authored record types. Writer and reviewer
+image inputs each require their own provider delivery acknowledgment. A writer's
+acknowledgment cannot prove delivery to the independent reviewer.
+Regression seams: `nonHistoryIntegrationSeams`, `assistantIndependentReviewCapacity`.
 Stale-check feedback includes the exact canonical tool/argument identity. A new
 check of guide cells does not silently replace an earlier frontage check; the
 executor can see which original coordinates remain pending after compaction.
@@ -453,9 +538,40 @@ construction specifications. The NPC fallback selects all current-turn specs,
 not historical NPC plans or only the latest map.
 
 Same-layer terrain/road overlap is allowed only with explicit `buildOrder` that
-places `terrain` before `road`. Missing/reversed order and terrain/house overlap
-remain invalid. This does not authorize overwriting existing structures, water,
-or completed houses: all existing protection gates still run.
+lists both kinds and places `terrain` before `road`. Road-road crossings need no
+order. Missing/reversed/incomplete order, terrain/house overlap, and arbitrary
+same-layer terrain/terrain intersections or duplicates remain invalid. Declare
+actual roads as `kind:"road"`; IDs, style and material labels never infer kinds.
+`overExisting` only concerns existing map content, not new-plan intersections.
+This does not authorize overwriting existing structures, water, or completed
+houses: all existing protection gates still run.
+
+**Overlap diagnostic repair (2026-09-07):** `validateBuildSpec` emits
+`spec-new-plan-overlap` for new-plan intersections, `spec-existing-content` for
+placement requiring an existing-content policy, and `spec-destroy-confirmation`
+for unconfirmed destructive clear. Other validation errors retain the session's
+`spec-invalid` fallback. `applyBuildSpec` preserves these codes through tool
+events, audit `issueCodes`, and model JSON. Recovery is code-selected, not matched
+against localized messages or asset IDs: overlap-only failures receive declared
+kind/order and nonoverlapping partition guidance, never an `overExisting` repair.
+Mixed failures also retain the actual existing-content remedies. Discard advice
+does not replace these cause-specific instructions.
+
+Failed tool `data` exposes `{rejections, repeated, discarded, recovery}`;
+`recovery` contains `newPlanOverlap` and `remedyFields`. The same selectors choose
+the guidance. The generic `spec-invalid` guidance issue remains on every rejected
+submission so alternating failure classes cannot reset the aggregate target
+retry count. Three spec rejections still trigger discard guidance; the separate
+four-failure work-item retry bound and dependency deferral accounting are unchanged.
+
+`test/buildSpecOverlapRecovery.test.ts` covers code propagation (including changed
+diagnostic prose), mixed conflicts, repeat/discard/reset and retry accounting,
+the accepted ordered terrain/crossroads tool sequence, and unchanged protection
+and geometry boundaries. `test/fixtures/buildSpecOverlapPlans.json` is the exact
+parsed set_build_spec input from the four archived Round9 attempts: still rejected
+with 5/5/5/7 validator errors. The archive itself is untouched. This is an existing
+repair-path improvement, not a terrain-material/passability proof or a guarantee
+that a subsequent P1 generation will succeed.
 
 Regression: `assistantMultiMapSpec`, `aiTurnAppliedAccounting`,
 `aiCompletionAccounting`, `assistantMapPreservationGuard`, `aiSpecGateHardening`.
@@ -583,16 +699,44 @@ action withdraws it; ordinary follow-ups retain the ledger and explicit host
 `functionalUnresolved` evidence with typed known `expectations`, not a silent
 opt-out or an easy static substitute. Review repair (2026-09-07): a later genuine
 user clarification can resolve that placeholder without discarding the goal.
-`IntentFacts.unresolvedFunctional` supplies its exact requirement ID, original
-source text, known expectations and prior user refinement sources to the lite
-declarer. `functionalRefinements:[{requirementId,criterion,corrections?}]` is consumed
-only at the actual user-declaration boundary, including host `resume`, never by
-worker tools or synthetic continuations. `AssistantAcceptanceLedger.refineFunctional`
-keeps the original ID, source and baseline and appends frozen `refinements` source
-metadata. Omitted known fields are retained; conflicts require explicit typed
-user-correction fields. Partial/ambiguous refinements remain unresolved. Once
-concrete, a contract cannot be refined or repaired into an easier one; existing
+`IntentFacts.unresolvedFunctional` enumerates every required, non-withdrawn unresolved
+leaf, including mixed arrays, with stable `requirementId` plus zero-based
+`criterionIndex`, original source, known expectations and previous refinement sources.
+`functionalRefinements:[{requirementId,criterionIndex,criterion,corrections?}]` is consumed
+only at the actual LLM-classified user-declaration boundary, including host `resume`,
+never by worker tools, Ask, synthetic/fast-path continuations or timeout/fallback.
+Omitting the index remains compatible only with an original singleton index0.
+The parser and host `refineFunctionals` validate the entire batch before mutation:
+ambiguous, duplicate, out-of-range, optional, withdrawn or concrete selectors reject
+it without accepting a valid prefix. Only selected leaves change; all siblings,
+original promise/source/baseline/required/withdrawal metadata survive, and one source
+entry is appended per affected promise. Omitted known fields are retained; conflicts
+still require explicit typed user-correction fields. Partial refinements stay unresolved.
+Once concrete, a contract cannot be refined or repaired into an easier one; existing
 host withdrawal/new-goal actions remain the scope-change authority.
+
+Round13 source repair (2026-09-07): a generic ending/compound placeholder without typed
+expectations can specialize through this same later-user route to a narrowly parsed
+`toolVerdict/run_scene_test`, not an arbitrary verification tool. The host requires
+complete native input, named interact steps and complete ordered map-qualified
+`interactionTargets` before execution; no debug `set`, checkpoint reset or first-probe
+ownership. A post-interaction ending-ID, actual transfer or nonzero reward/consumption
+assertion is required; empty scripts, positions, interaction completion and zero-only
+assertions alone are not functional outcomes. Typed shop/travel/reward expectations
+cannot be laundered into a scene. The selected index becomes the existing canonical
+check ID, with the original request's protected initial state, and requires fresh
+exact explicit execution; a prior passing probe or advisory result is not authority.
+This does not restore private ledgers from saved conversation transcripts.
+
+The registered `run_scene_test` expect-step schema exposes `endingReached` as a string
+with `minLength:1` and a non-whitespace pattern. Native input still rejects `true`,
+empty/blank IDs and unknown fields without coercion or invented endings. The installed
+Google/Antigravity SDK retains STRING on the emitted wire but spills unsupported
+length/pattern constraints into descriptions; native validation remains authoritative
+for nonempty IDs. Round13's intended ID is `ending_escape`. Offline real-session and
+installed-provider wire regressions: `functionalCompositeClarification.test.ts`,
+`functionalClarification.test.ts`, `ohMyPiEndingWire.bun.test.ts`; canonical ownership,
+advisory, functional and reward regressions remain unchanged.
 
 `functionalAcceptanceEvaluation.ts` runs the real scene interpreter on current
 applied content. Purchase walks to and triggers the exact seller, resolves runtime
@@ -611,7 +755,11 @@ replacing the newly held interpreter. Both require the declared actual project
 entry; no convenience teleport or injected gold/switch state. NPC rewards reuse
 `verifyNpcRewardsPlayable`: exact requested first grants, then zero item/equipment,
 monster and gold reward deltas on the second interaction in that same session.
-The NPC check is local interaction evidence, not a world-route/prerequisite proof.
+Without a selected request-bound witness, the NPC check remains local interaction
+evidence. Once `verify_npc_reward` selects a prerequisite program, both functional
+acceptance and accepted-revision reload proof replay that same private witness against
+current content; a failed/replaced witness never falls back to easier local proof.
+The claim/repeat protection, early-reward rejection and immutable target binding remain.
 
 No worker-provided pass flag, script, tool name or image can supply these verdicts.
 All project changes, including DB/session-default changes, keep drafts unverified;
@@ -640,16 +788,66 @@ the original object before JSON serialization and pass the requested map even
 on failed/cancelled runs, which revoke prior success. Any observed content change
 retires old receipts permanently; undo cannot revive them.
 
-`ToolVerificationEvidence.requireTools(successTools)` retains declared verification
-obligations across plan replacement and skipping. `evaluate(applied, draft,
-blockingProblems)` publishes blocked verification evidence rather than a verified
-ledger alongside failed, stale or unexecuted required checks. Scheduling still treats
-skipped items as terminal; these proof obligations must not reactivate skipped items
-or bypass the existing bounded repair limits.
-The skip boundary calls `recordSkippedTools(itemId, successTools)` before advancing;
-`observe(name, args, result, source, workItemId)` only clears that skipped obligation
-on an explicit pass from the same item. Earlier or later same-name checks for
-another item cannot waive it.
+Verification ownership (2026-09-07): `ToolVerificationEvidence` stores immutable
+adopted requirements, unresolved artifact findings, and auditable attempts separately.
+An invocation is not adoption. Session-owned check IDs, not reused scheduling IDs,
+survive skip/replan/continuation. Skipped items remain terminal scheduling entries;
+`evaluate(applied, draft, blockingProblems)` still publishes its synthetic blocker
+until every adopted scope and genuine negative finding is resolved.
+`AssistantAcceptanceLedger.verificationOwnership(project)` exposes detached accepted
+criterion/index/map bindings without changing promises, baselines or the evaluator.
+Reachability successTools bind to those exact accepted routes, including conservative
+exact-cell acceptance; the query tool's adjacent-or-on pass alone cannot substitute.
+
+A plan may declare independent `verificationChecks` even when the same tool already
+has accepted criteria. Only an exact scope match reuses a criterion; a same-map or
+same-tool sibling cannot substitute. Both planner JSON and `set_work_plan` use the
+same parser and atomic adoption preflight:
+
+```json
+{"successTools":["check_reachability"],"mapTargets":["map_id"],
+ "verificationChecks":[{"tool":"check_reachability",
+   "args":{"mapId":"map_id","from":{"x":2,"y":2},"targets":[{"x":3,"y":2}]}}]}
+```
+
+A criterion reference is `{tool,criterion:{promiseId,criterionIndex}}`. A scene uses
+its complete `SceneTestInput` as `args`, plus `interactionTargets:[{stepIndex,mapId,eventId}]`
+for every explicit interact step. This freezes start/seed state, ordered targets,
+choices, assertions and snapshot boundaries. A legitimately adopted missing/malformed
+scope stays `pending-specification`; no arbitrary first same-tool pass can fill it.
+Every unresolved new sibling remains pending or rejects the candidate atomically.
+To specify an existing pending scope in a later accepted plan, include its returned
+`checkId` with the declaration and retain its tool/mapTargets. The original owner survives,
+valid specifications are immutable, and earlier exploratory passes are not proof.
+These declarations describe only the user's accepted goals; do not invent game goals.
+
+A changed specified `checkId` rejects the whole candidate before plan, acceptance or
+verification mutation, whether expressed as args or a criterion reference and whether
+its original proof is unverified, passed or stale. Exact reuse retains owner, criterion
+linkage, frozen scene state and proof. A distinct new scope must omit the retained ID
+and needs fresh execution. Pending resolutions retain tool/owner/mapTargets (omitting
+retained targets is not preservation); contradictory same-ID resolutions anywhere in
+the candidate reject before either applies. Raw IDs are inspected before lossy parsing.
+Rejection returns `ok:false`, `data.conflicts` with item/declaration index/checkId/reason,
+and unchanged live `plan`, `acceptance`, and `verification` snapshots. Planner rejection
+publishes this same structured result in its status/context instead of installing the
+candidate. Rejection creates no extra obligation and does not invalidate genuine old
+proof. Native project/quest/troop/scenario inputs retain item map ownership without an
+invented `mapId`; the map-scope guard applies only when the tool schema declares it.
+Regression: `verificationPlanAtomicity`, `verificationRouteDeclaration`, `verificationNativeScopes`.
+
+`get_work_plan` and verification tool results return `data.verification.requirements`
+and `.findings` with ready machine check IDs. `correct_verification({checkId,args})`
+resolves that stored check, validates compatible input, executes its original registered
+tool through the session dispatcher, and records the real result. It accepts no verdict,
+delete, baseline, owner override or replacement requirement. A normal exact-compatible
+rerun also works. Corrections can change facing only: movement/walk/set-position stays
+exact. Ordered host map/event receipts must match; an early failure without ownership
+trace does not authorize navigation equivalence. Changed targets, start, choices,
+reward checkpoints or weaker/dropped assertions cannot discharge the original check.
+Successful writes stale adopted passing proof, not unowned exploratory history.
+An unowned assertion-free no-selected-target interaction records structured setup
+failure, not a promise to create an event. Genuine exploratory negatives still block.
 
 The synchronous `playTools` entry for `run_action_combat_test` fails closed unless
 the session's async browser dispatcher intercepts it. `run_scene_test` preflights
@@ -675,11 +873,68 @@ before planning/tools; milestone rebases, repairs, duplicate IDs, replans and
 manual/synthetic continuations cannot move it. New requests may add promises
 against newer applied content without replacing earlier promises or baselines.
 
+Literal displayed-title acceptance (2026-09-08): `gameTitle` is the narrow named
+criterion for an exact requested title, not a generic JSON-path check:
+
+```json
+{"itemId":"req_title","criteria":[{"kind":"gameTitle","title":"작은 열쇠"}]}
+```
+
+Use this shape in `repair_acceptance` only for missing/malformed criteria, or put
+its criteria in normal planner/native `acceptance` or `requirements` declarations.
+Valid original declarations, owners, sources, request baselines and valid sibling
+promises remain immutable; this does not authorize restoring a private ledger from
+conversation history. `set_title_screen` is the existing authoring tool.
+The parser requires a nonblank string, preserves its exact Unicode/whitespace,
+and rejects unknown kinds and extra fields. The provider-safe schema exposes
+`title` and the canonical example; worker review/pass claims cannot verify it.
+Evaluation follows `titleScreen.renderTitleScreen/renderTitleNodes`: use
+`system.titleScreen.title`, or `defaultTitleScreenSettings().title` when the settings
+object is absent, **never `meta.title`**. Graphic-only mode with a resource ID has
+no literal text and fails, including an unresolved resource; graphic mode without
+an ID falls back to text, and text/both modes check the displayed title string.
+This is literal text proof, not logo OCR or visual layout QA. Evaluation imports
+no renderer/DOM code. Title criteria are project-bound: unapplied drafts cannot
+verify them, and the existing accepted-revision `validate` callback reruns them
+on identity-matched canonical reload. Wrong visible text fails even with correct
+metadata and a completed plan. Regression seams: `gameTitleAcceptance`,
+`gameTitlePersistenceProof`, and the unchanged strict schema-discriminator contract
+extended only with the new kind/field.
+
+Acceptance repair diagnostics (R7): provider schemas expose a union-free field
+superset plus canonical per-kind examples; Google-to-Antigravity normalization
+cannot erase those examples. `mapCount` requires explicit nonempty `targets`,
+each with exactly one `mapId` or `newMapName` selector, and an exact `count`.
+Runtime parsing remains atomic across the full criterion array. Tool `data.code`
+distinguishes `malformed-criteria`, `unknown-item`, `immutable-valid`,
+`invalid-review`, and `image-review-unavailable`; `data.issues` identifies
+`criterionIndex`, `field`, `code`, `expected`, and the canonical `example`.
+Adoption immediately publishes malformed/missing criteria in the ledger and
+injects diagnostics before generation; `set_work_plan` returns that snapshot.
+Failed repairs leave all criteria, earlier promises, and baselines unchanged.
+Static reachability means exact walkable origin/destination cells, unlike
+interaction-oriented `check_reachability`. Failed evidence identifies the cell,
+map, and blocker (including solid event ID). Author approach-cell criteria for
+interactions; do not relocate NPCs/signs/chests to satisfy a misunderstood check.
+Regression seams: `assistantAcceptanceDiagnostics`, `assistantAcceptanceProvider`,
+and `assistantAcceptanceSession` replay the five round-2 repair calls.
+
 Checks inspect actual scoped map dimensions, map/event counts, original target
 changes, protected map/region content, conservative static reachability and
 explicit image review. New-map names bind once to a unique new ID relative to the
-first promise for that name; later baselines cannot resolve its ambiguity. Static route
-checks do not claim conditional transfer or runtime playthrough support.
+first promise for that name; later baselines cannot resolve its ambiguity.
+`targetChange` with explicit `newMapName` also recognizes original absence ->
+uniquely bound applied-map presence as creation, after normal region validation.
+Draft-only creation, existing same-name maps, ambiguous names and replacement IDs
+cannot verify it. Existing-map change comparisons remain scoped to original content.
+Ledger adoption and repair reject baseline-dependent targets without original
+content (`preserve`, or `targetChange` with a missing original `mapId`) atomically
+with criterion-indexed `unsupported-original-target` issues. These items remain
+repairable; valid siblings, captured baselines and bindings stay immutable. A name
+bound in an earlier request can still refer to original content in a later request's
+baseline. Regression: `assistantAcceptanceNewMapCharacterization` replays the
+captured round5 contract through both plan parsers and the real session/tool path.
+Static route checks do not claim conditional transfer or runtime playthrough support.
 Image checks require successfully rendered and delivered `show_map_region`
 coverage (actual clipped bounds, exact union), then a later explicit
 `review_acceptance({itemId, verdict:"pass"|"fail", note})`. Only an explicit pass
@@ -694,6 +949,22 @@ checks filter evidence without retiring a reviewed draft that has not yet been
 applied; draft images never verify the old applied map. Normal finalization and both
 execution-budget exits use this same currentness. Image verification remains separate
 from structural adventure checks and is not game-completion/playthrough proof.
+
+R11 transport: frontend insertion is not delivery. The companion emits
+`image_delivery: [{messageIndex, partIndex}]` only after successful provider
+completion; `llmClient` parses it atomically. The session matches acknowledgements
+against the actual post-compaction request's image parts before crediting its
+turn-local pending receipts. Missing/partial acknowledgements, errors, aborts and
+compacted-away images cannot revive on a later response, continuation or retry;
+render again to establish new evidence. Existing delivered-current receipts retain
+the R2 lifecycle above. The adapter accepts inline base64 PNG/JPEG/GIF/WebP only,
+checks canonical encoding, MIME signatures and resolved-model image capability,
+and rejects unsupported roles/parts/URLs visibly. Pixel decoding remains the
+provider's responsibility. Codex receives consecutive image-terminated user
+segments because its SDK otherwise moves all labels before all images. Default
+`gemini-3.7-flash`, tiered and fallback-low alias paths retain image capability.
+Wire/session regressions: `test/ohMyPiImageTransport.bun.test.ts` and
+`test/assistantImageTransport.test.ts`; no live credentials are needed.
 
 `AssistantSession` consults acceptance at final-response and autonomous-continuation
 boundaries even when the execution plan is finished. Existing bounded repair
@@ -790,6 +1061,21 @@ and existing optional `wikiWarning` policy. See
 - 2026-09-04의 rAF + 50ms 타이머 폴백은 타이머까지 제한되는 백그라운드에서 도구마다 지연될 수 있었다. 이제 프레임을 기다리던 중에도 `visibilitychange`/창 `blur`를 받으면 메시지 태스크로 전환한다. 완료·전환 시 프레임, 타이머, 이벤트 리스너를 정리하고 메시지 포트도 완료 즉시 닫는다. 포커스가 있는데 rAF가 멈추거나 호출이 실패한 경우의 50ms 안전망, MessageChannel 미지원 환경의 타이머 폴백, Node의 즉시 완료는 유지한다.
 - 범위는 살아 있는 문서의 스케줄링이다. 브라우저의 탭 freeze/discard, 탭 닫기, 기기 절전 중에도 작업을 계속하려면 별도의 서버 실행·복구 설계가 필요하다.
 - 회귀: `test/yieldToUi.test.ts`(프레임·타이머 정지, 중간 숨김·포커스 상실, 자원 정리, 미지원 환경), `test/assistantSessionYield.test.ts`, `test/e2e/ai-background-progress.spec.ts`(실제 패널의 도구 3개와 최종 답변). 브라우저 증거는 `output/evidence/assistant-background/`. Playwright는 기본으로 포커스를 강제하고 타이머 제한을 끄므로 해당 스펙은 그 옵션을 해제한다. 숨김·분 단위 타이머 제한은 명시적으로 주입하고, MessageChannel과 세션 실행은 실제 브라우저 경로를 쓴다.
+
+## Map-targeted work outcomes (2026-09-06)
+
+Spatial WorkPlan items declare `mapTargets` with exact stable map IDs. Author one map per
+item and submit its own single-map BuildSpec; put `create_transfer_pair` in a later item
+with both endpoint IDs. Existing layer/item order supplies the prerequisites, not a DAG.
+`workPlanTargets.ts` checks declarations and per-target tool outcomes. The session keeps
+these outcomes across continuations and resets them only with item/goal/plan evidence.
+Successful idempotent/no-change work counts for its own target; another map's success,
+a road, or a transfer cannot replace a failed declared authoring tool. Explicit completion
+uses the same target gate, and completing an already-done item remains idempotent.
+Malformed `set_work_plan` targets are rejected atomically with `data.targetIssues`; legacy
+planner items retain actionable correction instructions instead of completing by names.
+Nonspatial and map-metadata-only plans keep their existing behavior. Regression:
+`test/workPlanMapOutcomes.test.ts` replays the round2 village/cellar failure in both orders.
 
 ## 계획 항목의 연속 실행 증거 (2026-09-05)
 
@@ -966,7 +1252,9 @@ AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, 
 
 - **대화 기록 저장은 예산 안에서만 하고 절대 던지지 않는다 (2026-09-03):** 실측 결함 — 조수를 쓰다 「오류: Failed to execute 'setItem' on 'Storage': Setting the value of 'oprn:ai-conversations' exceeded the quota.」 가 말풍선으로 뜨고 그 턴이 끊겼다. `saveConversation` 은 대화 50건을 매 툴콜마다 통째로 다시 쓰는데, 툴콜 인자(맵 셀 배열·이벤트 본문)를 상한 없이 저장했고 같은 인자가 assistant 항목(`toolCalls[].args` 문자열)과 tool 항목(`args` 객체)에 두 번 들어가 오리진 한도(약 5MB)를 넘겼다. 예외는 `aiTurnRunner` 의 `tool_call` 분기와 `finally` 의 `persistConversation` 에서 터져 턴 catch 가 「오류:」 말풍선으로 그렸다. 지금 계약(`src/ai/conversationStore.ts`): (1) 툴 `args` 와 assistant `toolCalls[].args` 는 직렬화 `CONVERSATION_ARGS_MAX_CHARS`(2,000) 를 넘으면 `{ _truncated: true, preview }` 로 바꾼다 — 대화 기록의 소비자는 복원 화면의 툴 상세 `<pre>` 와 export 뿐이고 진단 원문은 활동 로그(12,000)가 든다. (2) 레코드 한 건의 entries 가 `CONVERSATION_RECORD_MAX_CHARS`(200,000) 를 넘으면 머리(첫 발화)와 꼬리(최근)를 남기고 가운데를 접어 `[conversation-trimmed] … N개 항목을 생략` status 표식 **하나**로 남긴다(다시 저장돼도 누적만 되고 표식이 쌓이지 않는다; 복원 렌더와 모델 주입은 status 를 무시한다). (3) 키 전체가 `CONVERSATION_STORE_MAX_CHARS`(1,000,000) 를 넘으면 최신부터 담고 오래된 대화를 밀어낸다 — 활동 로그·원격 outbox(150만) 와 같은 오리진을 나눠 쓰므로 그보다 작다. (4) 그래도 브라우저가 거절하면 절반씩 줄여 재시도하고, 최신 1건도 못 쓰면 `console.warn` 한 번(실패가 이어지는 동안)과 함께 `{ ok:false }` 를 돌려준다. 압축은 **읽어 온 레거시 레코드에도** 적용되므로 이미 부풀어 있던 브라우저도 다음 저장에서 한 번에 회복한다. 원격 미러(Supabase `ai_conversations`)는 로컬과 같은 압축본을 받는다 — 정본이 하나여야 하고 매 툴콜마다 수 MB 를 보내지 않는다. 패널(`aiChatPanel.persistConversation`)은 `ok:false` 일 때만 패널 수명당 한 번 「대화 기록을 이 브라우저에 저장할 수 없습니다(저장 공간 부족)」 토스트를 띄운다. Tests: `test/conversationStore.test.ts` 의 「저장 용량」 describe — 부풀린 레거시 위에서 저장 성공·인자 미리보기·머리/꼬리 접기와 표식 누적·저장소 예산 밀어내기·브라우저 한도 절반 재시도·전면 거절 시 ok:false·원격 압축본 동일.
 
-- **대화 기록의 로컬 정본은 IndexedDB 다 — localStorage 는 이관 전용 (2026-09-03, 같은 날 후속):** 위 항목의 예산은 응급 처치였다. 근본 원인인 «큰 기록을 5MB 동기 저장소 한 키에 매 툴콜마다 통째로 다시 쓴다» 는 저장소를 바꿔 없앴다. `src/ai/aiRecordDb.ts` 가 IndexedDB `oprn-ai-records`(v1, store `conversations`, keyPath `id`, 인덱스 `savedAt`·`projectContextKey`)를 열고 레코드 단위로 읽고 쓴다. `conversationStore` 의 공개 API(`saveConversation`·`listConversations`·`loadConversation`·`loadLatestConversationForScope`·`deleteConversation`·`clearConversations`)는 **전부 비동기**이며 던지지 않는다. 결과 `ConversationSaveOutcome` 은 `{ ok, durable, evicted }` — `durable:false` 는 IndexedDB 가 없거나(Node) 열기에 실패해(일부 프라이빗 모드) 메모리 폴백으로 살았다는 뜻이고, 패널은 브라우저에 IndexedDB 가 있는데 durable 이 아닐 때만 한 번 토스트한다. 옛 키 `oprn:ai-conversations`(`LEGACY_CONVERSATION_STORAGE_KEY`)는 첫 접근에 읽어 압축해 옮기고 지운다 — e2e 시드·QA 스크립트가 여전히 그 키로 대화를 심어도 그대로 복원되며, 같은 id 는 savedAt 이 큰 쪽이 남는다. 보관 상한은 50건(`CONVERSATION_MAX_RECORDS`), 인자 2,000자·레코드 200,000자 압축은 유지한다(원격 미러와 복원 렌더가 매 툴콜마다 수 MB 를 다룰 이유가 없다). **호출부 계약이 바뀐 곳:** (1) 부팅 복원은 `renderAiChatPanel` 끝의 `restoreLatestForBoot` 가 비동기로 하며, 그 사이 사용자가 입력·전송·프로젝트 전환을 했으면 복원하지 않는다. (2) 프로젝트 전환 채택(`adoptConversationForCurrentProject`)은 비동기이고 세대 번호로 낡은 조회 결과를 버린다. (3) 히스토리 모달의 목록·열기·삭제는 비동기다. 테스트·헤드리스 하네스는 «렌더 직후» 가 아니라 `whenAiChatPanelSettled()` / `whenAiConversationHistoryModalSettled()`(`src/util/pendingWork.ts` 추적기) 뒤를 본다 — setTimeout 폴링은 흔들린다. 단위 테스트는 `fake-indexeddb`(devDependency) 로 실제 IDB 의미론을 돌리고, 브라우저 증명은 `test/e2e/ai-conversation-indexeddb.spec.ts`(옛 키 이관·새로 고침 뒤 IndexedDB 복원·「오류:」 없음). 활동 로그(`oprn:ai-activity-logs`)와 세션 백업 스냅샷은 아직 localStorage 라 같은 계급의 위험이 남아 있다 — 다음 단계는 그 둘을 같은 DB 로 옮기고 Supabase `ai_conversations` 를 읽기 원본으로 배선하는 것. Tests: `test/conversationStore.test.ts`, `test/aiConversationHistoryModal.test.ts`, `test/aiChatSessionScope.test.ts`.
+- **Public remote-history successor (integration st_01a08238 adjudication):** The earlier d2be automatic summary-GET/selected-GET and selectable foreign-local UI is historical, explicitly superseded by the map-scoped archive and separate Recover action above. Browse and ordinary Open use local retained records only; Recover can import absent IDs or update strictly older unchanged local records under the single pre-request value baseline and transactional admission rule. Foreign records remain stored, not listed or adopted; legacy unscoped records remain separately read-only. Ordinary reads do not concatenate or rewrite the selected transcript. Existing outgoing-conversation checkpoints, main retention/tombstones and captured-destination outbox behavior remain. The normal restore callback still drops `AssistantSession` and restores only public audit/transcript, never private ledgers. `test/aiConversationRemoteHistory.test.ts` explicitly migrates the former GET sequence to clock -> Recover -> project filter -> Open while retaining exact entries, race/error/ownership checks and null harness; `historyRecoveryAdmission` proves bounded replacement on native IndexedDB and memory. This source integration does not perform recovery against user records or retroactively restore P7.
+
+- **대화 기록의 로컬 정본은 IndexedDB 다 — localStorage 는 이관 전용 (2026-09-03, 같은 날 후속):** 위 항목의 예산은 응급 처치였다. 근본 원인인 «큰 기록을 5MB 동기 저장소 한 키에 매 툴콜마다 통째로 다시 쓴다» 는 저장소를 바꿔 없앴다. `src/ai/aiRecordDb.ts` 가 IndexedDB `oprn-ai-records`(v1, store `conversations`, keyPath `id`, 인덱스 `savedAt`·`projectContextKey`)를 열고 레코드 단위로 읽고 쓴다. `conversationStore` 의 공개 API(`saveConversation`·`listConversations`·`loadConversation`·`loadLatestConversationForScope`·`deleteConversation`·`clearConversations`)는 **전부 비동기**이며 던지지 않는다. 결과 `ConversationSaveOutcome` 은 `{ ok, durable, evicted }` — `durable:false` 는 IndexedDB 가 없거나(Node) 열기에 실패해(일부 프라이빗 모드) 메모리 폴백으로 살았다는 뜻이고, 패널은 브라우저에 IndexedDB 가 있는데 durable 이 아닐 때만 한 번 토스트한다. 옛 키 `oprn:ai-conversations`(`LEGACY_CONVERSATION_STORAGE_KEY`)는 첫 접근에 읽어 압축해 옮기고 지운다 — e2e 시드·QA 스크립트가 여전히 그 키로 대화를 심어도 그대로 복원되며, 같은 id 는 savedAt 이 큰 쪽이 남는다. 보관 상한은 50건(`CONVERSATION_MAX_RECORDS`), 인자 2,000자·레코드 200,000자 압축은 유지한다(원격 미러와 복원 렌더가 매 툴콜마다 수 MB 를 다룰 이유가 없다). **호출부 계약이 바뀐 곳:** (1) 부팅 복원은 `renderAiChatPanel` 끝의 `restoreLatestForBoot` 가 비동기로 하며, 그 사이 사용자가 입력·전송·프로젝트 전환을 했으면 복원하지 않는다. (2) 프로젝트 전환 채택(`adoptConversationForCurrentProject`)은 비동기이고 세대 번호로 낡은 조회 결과를 버린다. (3) 히스토리 모달의 목록·열기·삭제는 비동기다. 테스트·헤드리스 하네스는 «렌더 직후» 가 아니라 `whenAiChatPanelSettled()` / `whenAiConversationHistoryModalSettled()`(`src/util/pendingWork.ts` 추적기) 뒤를 본다 — setTimeout 폴링은 흔들린다. 단위 테스트는 `fake-indexeddb`(devDependency) 로 실제 IDB 의미론을 돌리고, 브라우저 증명은 `test/e2e/ai-conversation-indexeddb.spec.ts`(옛 키 이관·새로 고침 뒤 IndexedDB 복원·「오류:」 없음). 활동 로그(`oprn:ai-activity-logs`)와 세션 백업 스냅샷은 아직 localStorage 라 같은 계급의 위험이 남아 있다. Supabase `ai_conversations` 의 수동 기록 읽기 배선은 위 2026-09-08 계약을 따른다. Tests: `test/conversationStore.test.ts`, `test/aiConversationHistoryModal.test.ts`, `test/aiChatSessionScope.test.ts`.
 
 - **맵 이동은 대화를 끊지 않고 턴에 상황을 남긴다 (2026-08-28):** 맵을 옮길 때마다 세션을 버리면 진행 중인 계획·제안·자율 런이 날아간다. 대신 두 가지를 한다. (1) 사용자 턴마다 `buildConversationTurnContext`(`src/ai/conversationTurnContext.ts`)가 맵 id·이름·크기·뷰포트·선택 영역을 구조화해 `AuditEntry{kind:"user"}.context` 에 박고, 그대로 대화 기록(localStorage + Supabase `ai_conversations.entries_json`)에 저장된다 — 예전엔 이 사실이 사용자 메시지 꼬리표 문자열에만 있어 기록에서 되읽을 수 없었다. 뷰포트·선택은 **현재 맵의 것이고 맵 범위 안**일 때만 남는다. (2) 턴 사이에 맵이 바뀌면 `mapTransitionNote` 가 `맵 이동: A → B` 를 status 감사/이벤트로 남기고 **시스템 프롬프트를 새 맵으로 다시 조립한다** — `ContextOptions.getCurrentMapId` 가 생기기 전에는 `currentMapId` 가 세션 생성 시점 값으로 고정돼, 라이브 뷰포트 블록은 새 맵을 가리키는데 타일 어휘·구조 키트·맵 요약은 세션이 시작된 맵을 설명하고 있었다. Tests: `test/aiChatSessionScope.test.ts`, `test/conversationTurnContext.test.ts`.
 
@@ -1055,6 +1343,7 @@ AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, 
 - Accepted AI changesets also run `src/editor/agentFocus.ts`: the editor selects the map with the largest visible map/event change and emits a transient `.agent-focus-highlight` overlay for changed cells or bounds. Keep this on AI acceptance paths only; manual paint/updateMap flows should not request the highlight.
 
 - AI spatial build calls are gated by `src/ai/buildSpec.ts` through `AssistantSession`: `set_build_spec` validates the outline, then spatial write tools use that outline as the starting contract. Empty-space overruns auto-expand the active BuildSpec and pass with `spec-gate-auto-expand` warnings; expansion into existing built cells is still blocked. `build_house_kit` wings are compared as individual rectangles plus the actual door-front footprint rather than one merged bounding box. Clear assets may overlap later placement assets when `buildOrder` puts `clear` first, and an explicit terrain-before-road order permits a road overlay on terrain. Other placement-vs-placement overlap remains an error. Destructive clear/overExisting/confirmDestroy structure-protection checks still come from actual map contents and must not be softened.
+- **Inferred viewport placement (2026-09-06, R8):** `viewRelativeLocation.ts` infers only a single explicit screen/viewport placement clause. Quoted dialogue/code, exact-copy text and inventory facts are inference-only exclusions; raw messages and authored dialogue remain unchanged. Separate object directions never combine into a corner, and map-relative directions require map BuildSpec coordinates. The inferred box is separate from selection specs, cannot auto-expand, and retains existing-cell protection. A planned item must itself carry the matching viewport placement instruction to use that inferred permit; unrelated ground/NPC items need their own scope. The first matching spatial gate binds its item id. Spatial coverage counts matching placement-tool evidence, not a same-cell NPC, and includes already-applied milestone calls. Ordinary quantity/diff completeness instead uses an item-owned proposal ledger, including before application; a BuildSpec cannot bypass the item's quantity check. Manual/synthetic continuations retain the original box, owner and applied ledger; new goals reset them. Regression: `test/assistantSpatialObligations.test.ts` (captured R8 request, real draft tools and milestone rebase; persistence boundary replaced only in milestone tests).
 - **밑그림 게이트 강화 — 스코프와 보호를 갈라 세운다 (2026-09-03 적대적 리뷰):** 코드 프로브 20건과 실제 조수 턴 2회(`/tmp/blueprint-shots`, 회귀 테스트 `test/aiSpecGateHardening.test.ts`·`test/agentBlueprintHardening.test.ts`)로 밑그림이 「구간 격리」라는 서술과 다르게 동작함을 확인해 고쳤다. (1) **좌표 정규화**: `set_build_spec` 은 runTool 정규화를 안 거치므로 모델이 `"2"` 문자열을 보내면 검증기는 받아주고 세션은 원본을 저장했다 — 게이트의 `x + w` 가 `"24"` 문자열 결합이 되어 밑그림 밖 벽 16칸을 `clear_region` 이 지웠다. `normalizeBuildSpec` 이 저장 직전에 정수로 굳힌다. (2) **기존 내용 보호는 제출 시점이 아니라 호출 시점, 밑그림 안팎 불문**: `protectedCellsInRegions(baseline, regions, assets, tileset)` 가 **기준선 맵**(`baselineProject`, 사용자 맵)에 있던 지어진 칸 중 에셋 선언(`clear`+`confirmDestroy`, 배치 에셋의 `overExisting`)이 덮지 않은 칸을 세고, 하나라도 있으면 차단한다. 이 세션이 초안에 그린 것은 기준선에 없으므로 다시 손댈 수 있다(재작업 허용). 종전에는 밑그림 안에 지은 집을 같은 턴 `clear` 가 무검사로 지웠고, 확정 뒤 사용자가 판 호수를 다음 턴 채우기가 덮었다. (3) **게이트 대상**: `SPATIAL_BUILD_TOOLS` 에서 레지스트리에 없는 tile_* 4종을 뺐고, 살아 있는 v3 프리미티브 7종(`tile_erase`·`place_props`·`build_wall`·`lay_path`·`place_door`·`place_window`·`build_roof`)을 `TILE_WRITE_TOOLS` 로 묶어 **밑그림 없이도 실행되되(soft-allow 유지) 기존 내용 보호는 받게** 했다 — 프롬프트가 정리용으로 권하는 `tile_erase` 가 절벽 능선 6칸을 무검사로 지운 실측이 근거다. `affectedRegions` 가 `area`·`at`·`wallRect` 를 읽고, `paint_tiles mode=fill` 은 맵 전체를 영향 영역으로 본다. (4) **지어진 칸 판정은 잔디 리터럴이 아니다**: 타일셋 그룹 역할 `terrain` 이고 통행 가능한 하위 타일이 바닥(`groundProfileFor`). 잔디(240)만 바닥이던 시절 얼음 대평원(눈 67·바닥 70)은 62×62=3844칸 전부 구조물이라 실제 턴에서 `author_house`·`author_village`·`paint_road`·`fill_region` 이 「기존 구조물 N칸」으로 5회 차단됐고 모델은 통과하려고 28×22 `clear`+`confirmDestroy` 를 선언했다. 길(흙길 오토타일도 terrain)은 이제 바닥이라 길 옆 집이 `overExisting` 을 요구받지 않는다. 최외곽 링은 전부 WALL 인 생성 테두리일 때만 제외한다(사용자가 가장자리에 세운 벽은 보호). (5) **교차 규칙**: 타일을 쓰지 않는 `npc`·`event`·`transfer` 는 길·집과 겹쳐도 교차 오류가 아니다. (6) **암묵 스펙은 프로덕션에서 죽어 있었다**: `implicitSpecFromContext` 의 `$` 앵커 정규식이 패널 footer(재료 힌트가 맵과 선택 사이)와 영역 작업 footer(힌트가 뒤)를 모두 놓쳤다 — `contextFooter.parseContextFooter` 가 항목 단위로 읽고(맵 이름의 ` · `·괄호 허용), `sendUserMessage opts.scope` 도 암묵 스펙이 된다. 암묵 스펙의 자동 확장은 `turnImplicitSpec` 에만 쓰고 `activeSpec` 으로 승격하지 않는다(승격되면 다음 턴부터 그 맵의 게이트가 밑그림 없이 열렸다). (7) **질문 턴**: 밑그림 NPC 자동 배치(`buildSpecNpcAssetsDirectly`)는 변경을 기대하는 턴이고 모델이 되묻지 않았을 때만 — 「이 위치로 진행할까요?」 뒤에 승인 카드 없이 NPC 가 맵에 들어갔다. **청사진 쪽**(`agentBlueprint.ts`·`agentBlueprintRenderer.ts`): 재제출로 에셋 id·사각형이 바뀌면 같은 종류가 새 칸을 절반 넘게 덮을 때 진행을 물려받고 정산 대상(`turnAdvanced`)도 넘긴다(다 지은 집이 planned 파랑으로 영구 잔류하던 run1 실측); 진행 귀속에 덮인 비율 하한 0.02 를 둬 집 호출의 문 앞 1칸이 맵 전체 `clear` 칸을 building 으로 올리지 않는다; 라벨은 좁은 칸(3칸 미만)·41개 이상은 순번만, 같은 자리에서 시작하는 라벨은 줄을 내려 쌓고(`blueprintLabelLayout`), 제도선 아래 어두운 halo 를 깔아 얼음 배경(대비 1.5:1)에서도 보이며, `shape` circle/ellipse 는 타원으로 그린다. 남긴 것: `fill_region` 이 벽까지 메우며 rect 밖 몇 칸을 쓰는 것(빈 틈이라 보호 무관), 모든 쓰기 커밋의 「수관 보완 3칸」이 요청 영역 밖 상위 타일을 심는 것(게이트 밖).
 
 - **실행 한도 중단도 적용 원장을 정산한다 (2026-09-05):** 마일스톤은 `turnProposals`를 비우므로 미적용 제안 0건이 변경 0건을 뜻하지 않는다. `truncatedTurnText`는 두 예산 종료 경로에서 `turnAppliedMilestoneCalls.length`를 받아 **이미 적용한 변경**과 **아직 적용 전인 제안**을 따로 안내한다. 미적용은 승인 대기를 뜻하지 않으므로 수락/승인 문구를 쓰지 않는다. `aiTurnRunner`는 마일스톤 이벤트와 반환 원장을 중복 없이 세고, 종료 시 실제 적용에 성공한 제안만 더해 활동 로그 `result.appliedCalls`와 성향 기록 `changed`에 반영한다. 원장은 재적용하지 않으며, `noteNoChanges`와 변경 0건 오류 알림도 원장을 확인한다. 합성 `driverContinue`의 의도 선언 입력은 「계속」을 유지하지만 `currentTurnInstruction`/`currentTurnRequestText`는 사용자의 원래 요청을 유지해 검수가 「계속」만 보는 일을 막는다. 다음 실제 사용자 요청에서 둘을 새로 설정한다. 회귀: `test/aiAppliedBudgetStop.test.ts`, `test/aiTurnAppliedAccounting.test.ts`, `test/aiMilestoneTurnAccounting.test.ts`.
@@ -1272,6 +1561,31 @@ AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, 
 
 완료 회계 보강(2026-09-06): `autoCompleteGate`의 밑그림 완성도 검사는 최종 검수와 동일하게 `turnWriteLedger(applied + pending)`를 사용한다. 첫 마일스톤 적용이 pending을 비워도 다음 항목은 이미 칠한 영역을 미이행으로 다시 요구하지 않는다. 적용 루프는 계속 pending만 소비하므로 앞선 쓰기를 재적용하지 않는다.
 
+P7 preserved-wall accounting (2026-09-08): `proposalCompleteness` separately verifies
+already-satisfied `paint_tiles(mode:"cells")` maintenance for rectangular `terrain`
+assets with an explicit layer. Session automatic completion/review and `aiTurnRunner`
+supply the host's current tool-applied project (including pending drafts and applied
+milestones). A native successful zero-diff operation needs a non-skipped touch receipt,
+exact requested cells, and matching current tile content covering every asset cell.
+The painter freezes `data.effectiveLayer` with its native touch metrics at execution;
+completeness consumes that historical layer, never current `tileLayerHome` metadata,
+the requested layer alone, or summary prose. Later `set_tile_rules` cannot move coverage:
+an upper-home paint requested lower remains upper coverage after a lower-home metadata
+edit with zero cell changes, even when both layers contain the same tile numbers.
+Validated changed `cells` operations for the same maintenance tile and executed asset
+layer may contribute exact currently matching cells. Thus a one-cell no-op does not
+veto a later full twelve-cell repair with eleven real changes. Missing/partial/wrong/
+skipped/failed/stale evidence stays a warning; a changed rectangle or different tile
+cannot hide invalidated maintenance. `cells` never borrows its optional `from/to`
+bounding box, including in ordinary changed-region accounting.
+No prose, asset style, or overwrite policy grants preservation authority. This only
+satisfies spatial placement coverage: meaningful diffs, new quantity, canonical
+`targetChange`, scene verification, acceptance and delivery remain separate. Other
+asset kinds and paint modes retain existing behavior. P7's independent blocked result
+and original scene evidence are unchanged. Contracts: `proposalCompleteness`,
+`aiCompletionAccounting`, `aiTurnAppliedAccounting`; fixtures use native paint with
+80 changed floor cells and 24 unchanged wall cells, not live game content.
+
 공간 게이트는 확장을 준비만 하고, `runTool`이 `ok:true`를 반환한 뒤 `commitExpansion`으로 반영한다. 인자 거절·맵 밖 좌표·실행 예외는 밑그림에 유령 `auto:*` 에셋을 남기지 않는다. 성공한 확장의 경고는 유지되며, 명시 스펙은 턴 간 유지하고 선택 영역 암묵 스펙은 해당 턴에만 유지한다. 회귀: `test/aiCompletionAccounting.test.ts`는 실제 세션·툴 실행·마일스톤 저장소 적용과 실패 후 재시도/다음 턴 수명을 검사한다.
 
 ## 배치 의존성과 완료 멱등성 (2026-09-06)
@@ -1335,4 +1649,3 @@ keep running and `getBoundingClientRect()` lagged the committed `--ai-float-bar-
 and seed pointer gestures / ARIA from the **viewport-clamped effective width** (preferred `barSize` stays in storage across viewport-only shrinks).
 Contracts: `test/aiPanelGlassResize.test.ts`, `test/aiDeckResizeTransitionCss.test.ts`,
 e2e `ai-ui-audit-fixes` F10.
-

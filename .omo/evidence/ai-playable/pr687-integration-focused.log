@@ -1,0 +1,16 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/sceneVerificationRepair.test.ts test/assistantVerificationContinuation.test.ts --maxWorkers=2 --no-file-parallelism
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86
+
+ ✓ test/assistantVerificationContinuation.test.ts (13 tests) 2978ms
+   ✓ normal session ownership through skip, replan and continuation > reused scheduling IDs cannot waive pending scopes; late specification needs a fresh execution  1089ms
+   ✓ normal session ownership through skip, replan and continuation > normal session correction executes the registered original tool; unknown IDs and execution errors cannot clear a finding  513ms
+ ✓ test/sceneVerificationRepair.test.ts (15 tests) 1854ms
+
+ Test Files  2 passed (2)
+      Tests  28 passed (28)
+   Start at  00:44:33
+   Duration  17.50s (transform 7.36s, setup 0ms, collect 12.03s, tests 4.83s, environment 0ms, prepare 131ms)

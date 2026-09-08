@@ -60,6 +60,7 @@ describe("audio description concurrent persistence", () => {
     const store = await openStore(base);
     store.updateMap(base.startMapId, map => { map.name = "A_EDIT"; });
     const held = transport.holdNextPatch();
+    const oldCommit = transport.waitForCommits(1);
     const pending = store.flush();
     await held.entered();
     const replacement = audioDescriptionProject(descriptions, base);
@@ -67,7 +68,16 @@ describe("audio description concurrent persistence", () => {
     store.replaceProject(replacement);
     held.release();
     await pending;
-    await transport.waitForCommits(1);
+    await oldCommit;
+    expect(store.getCurrent().meta.title).toBe("PROJECT_B");
+    expect(store.getCurrent().audioDescriptions).toEqual(descriptions);
+    expect(transport.accepted.map(project => project.meta.title)).toEqual(["PROJECT_A"]);
+    expect(store.hasUnsavedChanges()).toBe(true);
+    // A's completion cannot authorize B's save. Finish A before B's explicit
+    // flush so its older transport cannot land after the replacement write.
+    const replacementCommit = transport.waitForCommits(2);
+    expect((await store.flush()).kind).toBe("saved");
+    await replacementCommit;
     expect(store.getCurrent().meta.title).toBe("PROJECT_B");
     expect(store.getCurrent().audioDescriptions).toEqual(descriptions);
     expect(transport.accepted.map(project => project.meta.title)).toEqual(["PROJECT_A", "PROJECT_B"]);

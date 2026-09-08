@@ -1,18 +1,28 @@
-import { isFunctionalCriterionKind, parseFunctionalRequirements, type FunctionalCriterion, type FunctionalRefinement, type UnresolvedFunctionalRequirement } from "./functionalAcceptance";
+import { isFunctionalCriterionKind, parseCanonicalFunctionalScene, parseFunctionalRequirements, type FunctionalCriterion, type FunctionalRefinement, type UnresolvedFunctionalRequirement } from "./functionalAcceptance";
 import type { Project } from "@/project/types";
 import { isVerifiedActionCombatProof, type ActionCombatProofReceipt } from "@/testing/actionCombatProof";
 import {
-  parseAcceptanceCriteria,
+  ACCEPTANCE_EXAMPLES, parseAcceptanceCriteriaResult, pendingCanonicalScene,
+  type AcceptancePromise, type AcceptanceSnapshot, type AcceptanceItemSnapshot, type AcceptanceIssue, type AcceptanceCriterion,
   acceptanceRecord, type AcceptanceTarget,
-  type AcceptancePromise, type AcceptanceSnapshot, type AcceptanceItemSnapshot, type AcceptanceSource, type RequirementWithdrawalAction,
+  type AcceptanceSource, type RequirementWithdrawalAction,
 } from "./assistantAcceptance";
 import {
-  acceptanceFingerprint, acceptanceReviewRegion, criterionTargets, evaluateAcceptanceCriterion, resolveAcceptanceMap,
+  acceptanceFingerprint, acceptanceReviewRegion, criterionTargets, evaluateAcceptanceCriterion, resolveAcceptanceMap, type AcceptanceEvaluation,
 } from "./assistantAcceptanceEvaluation";
 
 import { AssistantImageEvidence, coveredByImages, type AcceptanceImageReceipt } from "./assistantImageEvidence";
-import type { ToolVerificationEvidence } from "./toolVerificationEvidence";
+import { verificationInput, verificationInitialState, type ToolVerificationEvidence } from "./toolVerificationEvidence";
 export type { AcceptanceImageReceipt } from "./assistantImageEvidence";
+
+export interface AcceptanceToolResult {
+  readonly ok: boolean;
+  readonly code: "repaired" | "reviewed" | "unknown-item" | "immutable-valid" | "malformed-criteria" | "invalid-review" | "image-review-unavailable";
+  readonly issues: readonly AcceptanceIssue[];
+}
+
+/** Content checks replayed by the existing accepted-revision validation callback. */
+const isReloadCriterionKind = (kind: string): boolean => kind === "gameTitle" || isFunctionalCriterionKind(kind);
 
 /** Session-owned ledger. Plans never own or replace its promises/baselines. */
 export class AssistantAcceptanceLedger {
@@ -21,6 +31,7 @@ export class AssistantAcceptanceLedger {
     readonly baseline: Project;
     readonly source: AcceptanceSource;
     readonly refinements?: readonly AcceptanceSource[];
+    readonly functionalSceneIndices?: readonly number[];
     readonly withdrawal?: RequirementWithdrawalAction & { readonly source: "user" };
   }>();
   private readonly actionRequirements = new Map<string, AcceptancePromise & { readonly baseline: Project }>();
@@ -34,7 +45,8 @@ export class AssistantAcceptanceLedger {
   private snapshot: AcceptanceSnapshot;
   private stopped = false;
 
-  constructor(readonly id: string, readonly goal: string, baseline: Project, private readonly images = new AssistantImageEvidence()) {
+  constructor(readonly id: string, readonly goal: string, baseline: Project, private readonly images = new AssistantImageEvidence(),
+    private readonly npcRewardProof?: AcceptanceEvaluation["npcRewardProof"]) {
     this.baseline = structuredClone(baseline);
     this.snapshot = Object.freeze({ id, goal, status: "pending", items: Object.freeze([]) });
   }
@@ -48,40 +60,56 @@ export class AssistantAcceptanceLedger {
     const provenance = Object.freeze({ requestId: source.requestId, text: source.text,
       scope: source.scope ? Object.freeze({ mapId: source.scope.mapId, region: Object.freeze({ ...source.scope.region }) }) : null });
     for (const promise of additions) {
-      if (!this.promises.has(promise.id)) this.promises.set(promise.id, {
-        id: promise.id, title: promise.title, criteria: structuredClone(promise.criteria),
-        required: promise.required !== false, baseline, source: provenance,
-      });
+      if (this.promises.has(promise.id)) continue;
+      const issues = promise.criteria ? this.originalTargetIssues(promise.criteria, baseline) : [];
+      this.promises.set(promise.id, { ...structuredClone(promise), baseline, required: promise.required !== false || promise.criteria?.some(pendingCanonicalScene) === true, source: provenance,
+        ...(issues.length ? { criteria: null, issues } : {}) });
     }
   }
 
   getUnresolvedFunctional(): readonly UnresolvedFunctionalRequirement[] {
-    return structuredClone([...this.promises.values()].flatMap(promise => {
-      const criterion = promise.criteria?.length === 1 ? promise.criteria[0] : undefined;
-      return !promise.withdrawal && promise.required !== false && criterion?.kind === "functionalUnresolved"
-        ? [{ requirementId: promise.id, source: promise.source, criterion, ...(promise.refinements ? { refinements: promise.refinements } : {}) }] : [];
-    }));
+    return structuredClone([...this.promises.values()].flatMap(promise =>
+      !promise.withdrawal && promise.required !== false ? (promise.criteria ?? []).flatMap((criterion, criterionIndex) =>
+        criterion.kind === "functionalUnresolved" ? [{ requirementId: promise.id, criterionIndex, source: promise.source,
+          criterion, ...(promise.refinements ? { refinements: promise.refinements } : {}) }] : []) : []));
   }
 
   /** Host-only user clarification: refine a placeholder, never a concrete accepted contract. */
   refineFunctional(refinement: FunctionalRefinement, source: AcceptanceSource): boolean {
-    const promise = this.promises.get(refinement.requirementId);
-    const original = promise?.criteria?.length === 1 ? promise.criteria[0] : undefined;
-    if (!promise || promise.withdrawal || original?.kind !== "functionalUnresolved"
-      || !source.text.trim() || source.requestId === promise.source.requestId
-      || promise.refinements?.some(entry => entry.requestId === source.requestId)) return false;
-    const incoming = refinement.criterion.kind === "functionalUnresolved" ? refinement.criterion.expectations : refinement.criterion;
-    if (!incoming || (original.expectations && original.expectations.kind !== incoming.kind)) return false;
-    const previous: Readonly<Record<string, unknown>> = original.expectations ?? {};
-    const next: Readonly<Record<string, unknown>> = incoming;
-    const corrections = new Set(refinement.corrections ?? []);
-    if ([...corrections].some(key => key === "kind" || !Object.hasOwn(previous, key) || !Object.hasOwn(next, key))) return false;
-    if (Object.entries(previous).some(([key, value]) => Object.hasOwn(next, key)
-      && acceptanceFingerprint(value) !== acceptanceFingerprint(next[key]) && !corrections.has(key))) return false;
-    const criterion = parseFunctionalRequirements([{ ...previous, ...next }])[0];
-    if (!criterion) return false;
-    this.promises.set(promise.id, { ...promise, criteria: [criterion],
-      refinements: [...(promise.refinements ?? []), structuredClone(source)] });
+    return this.refineFunctionals([refinement], source);
+  }
+
+  /** Validate the entire user declaration before publishing any replacement or provenance. */
+  refineFunctionals(refinements: readonly FunctionalRefinement[], source: AcceptanceSource): boolean {
+    const pending = new Map(this.promises);
+    const selected = new Set<string>();
+    for (const refinement of refinements) {
+      const promise = this.promises.get(refinement.requirementId);
+      const index = refinement.criterionIndex ?? (promise?.criteria?.length === 1 ? 0 : -1);
+      const original = promise?.criteria?.[index];
+      const selector = JSON.stringify([refinement.requirementId, index]);
+      if (!promise || promise.withdrawal || promise.required === false || !Number.isSafeInteger(index) || index < 0
+        || original?.kind !== "functionalUnresolved" || selected.has(selector)
+        || !source.text.trim() || source.requestId === promise.source.requestId
+        || promise.refinements?.some(entry => entry.requestId === source.requestId)) return false;
+      selected.add(selector);
+      const incoming = refinement.criterion.kind === "functionalUnresolved" ? refinement.criterion.expectations : refinement.criterion;
+      if (!incoming || (original.expectations && original.expectations.kind !== incoming.kind)) return false;
+      const previous: Readonly<Record<string, unknown>> = original.expectations ?? {};
+      const next: Readonly<Record<string, unknown>> = { ...incoming };
+      const corrections = new Set(refinement.corrections ?? []);
+      if ([...corrections].some(key => key === "kind" || !Object.hasOwn(previous, key) || !Object.hasOwn(next, key))) return false;
+      if (Object.entries(previous).some(([key, value]) => Object.hasOwn(next, key)
+        && acceptanceFingerprint(value) !== acceptanceFingerprint(next[key]) && !corrections.has(key))) return false;
+      const criterion = incoming.kind === "toolVerdict" ? parseCanonicalFunctionalScene(incoming)
+        : parseFunctionalRequirements([{ ...previous, ...next }])[0];
+      if (!criterion) return false;
+      const updated = pending.get(promise.id)!;
+      pending.set(promise.id, { ...updated, criteria: updated.criteria!.map((sibling, siblingIndex) => siblingIndex === index ? criterion : sibling),
+        ...(criterion.kind === "toolVerdict" ? { functionalSceneIndices: [...(updated.functionalSceneIndices ?? []), index] } : {}),
+        refinements: [...(promise.refinements ?? []), structuredClone(source)] });
+    }
+    for (const [id, promise] of pending) this.promises.set(id, promise);
     return true;
   }
 
@@ -109,12 +137,49 @@ export class AssistantAcceptanceLedger {
     return true;
   }
 
-  repair(itemId: unknown, criteria: unknown): boolean {
+  repair(itemId: unknown, criteria: unknown): AcceptanceToolResult {
     const promise = typeof itemId === "string" ? this.promises.get(itemId) : undefined;
-    const parsed = parseAcceptanceCriteria(criteria);
-    if (!promise || promise.criteria !== null || !parsed) return false;
-    this.promises.set(promise.id, { ...promise, criteria: parsed });
-    return true;
+    if (!promise) return this.unavailableItem();
+    const immutable = (): AcceptanceToolResult => ({ ok: false, code: "immutable-valid", issues: [{
+      field: "itemId", code: "immutable-valid", expected: "repair missing/malformed criteria, or fill only missing scene ownership; fixed arguments, known targets, sibling criteria and baselines are immutable", example: ACCEPTANCE_EXAMPLES.toolVerdict,
+    }] });
+    if (promise.criteria !== null && !promise.criteria.some(pendingCanonicalScene)) return immutable();
+    const parsed = parseAcceptanceCriteriaResult(criteria);
+    if (!parsed.criteria || parsed.criteria.some(pendingCanonicalScene)) return { ok: false, code: "malformed-criteria", issues: parsed.issues };
+    if (promise.criteria !== null) {
+      const repaired = parsed.criteria;
+      const changed = repaired.length !== promise.criteria.length || promise.criteria.some((original, index) => {
+        const next = repaired[index];
+        if (original.kind !== "toolVerdict" || !pendingCanonicalScene(original)) return acceptanceFingerprint(original) !== acceptanceFingerprint(next);
+        return next?.kind !== "toolVerdict" || next.tool !== original.tool
+          || acceptanceFingerprint(next.args) !== acceptanceFingerprint(original.args)
+          || (original.interactionTargets ?? []).some(target => !next.interactionTargets?.some(entry => acceptanceFingerprint(entry) === acceptanceFingerprint(target)));
+      });
+      if (changed) return immutable();
+    }
+    const issues = this.originalTargetIssues(parsed.criteria, promise.baseline);
+    if (issues.length) return { ok: false, code: "malformed-criteria", issues };
+    this.promises.set(promise.id, { ...promise, criteria: parsed.criteria, issues: undefined });
+    return { ok: true, code: "repaired", issues: [] };
+  }
+
+  /** Validate against the owning request, never a later draft or applied rebase. */
+  private originalTargetIssues(criteria: readonly AcceptanceCriterion[], baseline: Project): AcceptanceIssue[] {
+    return criteria.flatMap((criterion, criterionIndex) => {
+      if (criterion.kind !== "preserve" && criterion.kind !== "targetChange") return [];
+      if (criterion.kind === "targetChange" && "newMapName" in criterion.target) return [];
+      if (resolveAcceptanceMap(baseline, criterion.target, this.bindings)) return [];
+      return [{ criterionIndex, field: `criteria[${criterionIndex}].target`, code: "unsupported-original-target",
+        expected: criterion.kind === "preserve"
+          ? "target present in the original request baseline; use an existing mapId (or previously bound name). A newly created map has no original content to preserve"
+          : "mapId present in the original request baseline; for creation use an explicit newMapName selector",
+        example: ACCEPTANCE_EXAMPLES[criterion.kind] }];
+    });
+  }
+
+  private unavailableItem(): AcceptanceToolResult {
+    return { ok: false, code: "unknown-item", issues: [{ field: "itemId", code: "unknown-item",
+      expected: `existing acceptance item ID: ${[...this.promises.keys()].join(", ")}`, example: ACCEPTANCE_EXAMPLES.mapCount }] };
   }
 
   /** Host-only scope action. Never dispatched from an assistant tool. */
@@ -130,17 +195,52 @@ export class AssistantAcceptanceLedger {
   stop(): void { this.stopped = true; }
   getSnapshot(): AcceptanceSnapshot { return this.snapshot; }
 
+  /** Detached read-only ownership view. Does not adopt, rebase, bind or forge proof. */
+  verificationOwnership(project: Project, additions: readonly AcceptancePromise[] = [], requestBaseline = this.baseline) {
+    // Preview only genuinely new promises using the same first-ID-wins and map
+    // binding rules as adoption/evaluation, without mutating promises or proof.
+    const promises = new Map(this.promises);
+    for (const promise of additions) if (!promises.has(promise.id)) promises.set(promise.id, { ...promise, baseline: requestBaseline, source: { requestId: this.id, text: this.goal, scope: null },
+      criteria: promise.criteria && this.originalTargetIssues(promise.criteria, requestBaseline).length ? null : promise.criteria });
+    const all = [...promises.values(), ...this.actionRequirements.values()];
+    const bindings = new Map(this.bindings);
+    const attempted = new Set<string>();
+    for (const promise of all) for (const criterion of promise.criteria ?? []) for (const target of criterionTargets(criterion)) {
+      if (!("newMapName" in target) || bindings.has(target.newMapName) || attempted.has(target.newMapName)) continue;
+      attempted.add(target.newMapName);
+      const matches = Object.values(project.maps).filter(map => !promise.baseline.maps[map.id] && map.name === target.newMapName);
+      if (matches.length === 1 && matches[0]) bindings.set(target.newMapName, matches[0].id);
+    }
+    return all.flatMap(promise =>
+      (promise.criteria ?? []).flatMap((criterion, criterionIndex) => {
+        if (criterion.kind !== "reachability" && criterion.kind !== "actionCombat") return [];
+        const map = resolveAcceptanceMap(project, criterion.target, bindings);
+        const evidence = evaluateAcceptanceCriterion(criterion, {
+          project, baseline: promise.baseline, bindings, reviewed: () => false,
+          actionProven: target => isVerifiedActionCombatProof(this.actionProofs.get(target.id), project, target.id),
+        });
+        return [{ promiseId: promise.id, criterionIndex, criterion: structuredClone(criterion),
+          active: promise.required !== false && !("withdrawal" in promise && promise.withdrawal),
+          mapId: map?.id, passed: evidence.passed }];
+      }));
+  }
+
   getFunctionalCriteria(): readonly FunctionalCriterion[] {
     return structuredClone([...this.promises.values()].filter(promise => promise.required !== false && !promise.withdrawal)
       .flatMap(promise => promise.criteria ?? []).filter((criterion): criterion is FunctionalCriterion => isFunctionalCriterionKind(criterion.kind)));
   }
 
-  /** Called on the canonical reloaded snapshot inside accepted-revision proof. */
+  hasReloadCriteria(): boolean {
+    return [...this.promises.values()].some(promise => promise.required !== false && !promise.withdrawal
+      && promise.criteria?.some(criterion => isReloadCriterionKind(criterion.kind)));
+  }
+
+  /** Called on the canonical reloaded snapshot inside accepted-revision proof, including literal titles. */
   functionalProblems(project: Project): readonly string[] {
     this.bind(project);
     return [...this.promises.values()].filter(promise => promise.required !== false && !promise.withdrawal)
-      .flatMap(promise => (promise.criteria ?? []).filter(criterion => isFunctionalCriterionKind(criterion.kind)).map(criterion =>
-        evaluateAcceptanceCriterion(criterion, { project, baseline: promise.baseline, bindings: this.bindings, reviewed: () => false })))
+      .flatMap(promise => (promise.criteria ?? []).filter(criterion => isReloadCriterionKind(criterion.kind)).map(criterion =>
+        evaluateAcceptanceCriterion(criterion, { project, baseline: promise.baseline, bindings: this.bindings, reviewed: () => false, npcRewardProof: this.npcRewardProof })))
       .filter(evidence => !evidence.passed).map(evidence => `${evidence.expected} -> ${evidence.observed}`);
   }
 
@@ -174,20 +274,54 @@ export class AssistantAcceptanceLedger {
   }
 
   review(itemId: unknown, note: unknown, project: Project, verdict: unknown): boolean {
-    if (typeof itemId !== "string" || typeof note !== "string" || !note.trim()
-      || (verdict !== "pass" && verdict !== "fail")) return false;
+    return this.reviewResult(itemId, note, project, verdict).ok;
+  }
+
+  reviewResult(itemId: unknown, note: unknown, project: Project, verdict: unknown): AcceptanceToolResult {
+    const promise = typeof itemId === "string" ? this.promises.get(itemId) : undefined;
+    if (!promise) return this.unavailableItem();
+    if (typeof note !== "string" || !note.trim() || (verdict !== "pass" && verdict !== "fail")) return {
+      ok: false, code: "invalid-review", issues: [{ field: typeof note !== "string" || !note.trim() ? "note" : "verdict",
+        code: "invalid-field", expected: "nonempty note and explicit verdict pass|fail", example: ACCEPTANCE_EXAMPLES.imageReviewed }],
+    };
+    if (!promise.criteria) return { ok: false, code: "malformed-criteria", issues: promise.issues ?? parseAcceptanceCriteriaResult(undefined).issues };
     this.bind(project);
-    const promise = this.promises.get(itemId);
-    const criteria = promise?.criteria;
-    if (!promise || !criteria?.some(criterion => criterion.kind === "imageReviewed")) return false;
     const receipts = this.images.current(project);
-    const covered = criteria.every(criterion => {
-      if (criterion.kind !== "imageReviewed") return true;
+    const imageCriteria = promise.criteria.filter(criterion => criterion.kind === "imageReviewed");
+    const issues: AcceptanceIssue[] = [];
+    promise.criteria.forEach((criterion, criterionIndex) => {
+      if (criterion.kind !== "imageReviewed") return;
       const map = resolveAcceptanceMap(project, criterion.target, this.bindings);
-      return map && coveredByImages(receipts, map, acceptanceReviewRegion(map, promise.baseline.maps[map.id], criterion.region));
+      if (!map || !coveredByImages(receipts, map, acceptanceReviewRegion(map, promise.baseline.maps[map.id], criterion.region))) {
+        issues.push({ criterionIndex, field: `criteria[${criterionIndex}]`, code: "image-review-unavailable",
+          expected: "current delivered show_map_region image coverage for this scope, consumed in a subsequent response",
+          example: ACCEPTANCE_EXAMPLES.imageReviewed, ...(map ? { mapId: map.id } : {}) });
+      }
     });
-    if (covered) this.reviews.set(itemId, { receipts, note: note.trim(), passed: verdict === "pass" });
-    return covered;
+    if (!imageCriteria.length) issues.push({ field: "itemId", code: "image-review-unavailable",
+      expected: "an item with an imageReviewed criterion", example: ACCEPTANCE_EXAMPLES.imageReviewed });
+    if (issues.length) return { ok: false, code: "image-review-unavailable", issues };
+    this.reviews.set(promise.id, { receipts, note: note.trim(), passed: verdict === "pass" });
+    return { ok: true, code: "reviewed", issues: [] };
+  }
+
+  bindVerificationRequirements(verification?: ToolVerificationEvidence, project?: Project): void {
+    // Canonical tool consumers declare authority before execution. Evaluation can
+    // bind a late declaration, but cannot reuse the earlier exploratory attempt.
+    const existing = new Map(verification?.snapshot(false).requirements.map(requirement => [requirement.checkId, requirement]));
+    for (const promise of this.promises.values()) for (const [index, criterion] of (promise.criteria ?? []).entries()) {
+      if (criterion.kind !== "toolVerdict") continue;
+      const checkId = `${this.id}:${promise.id}:${index}`;
+      const original = existing.get(checkId);
+      verification?.adopt({ checkId, ownerId: `${this.id}:${promise.id}`, name: criterion.tool,
+        args: pendingCanonicalScene(criterion) ? null : verificationInput(criterion.tool, criterion.args),
+        acceptedCriterion: original?.acceptedCriterion ?? criterion,
+        aiDeclared: !promise.functionalSceneIndices?.includes(index),
+        interactionTargets: criterion.tool === "run_scene_test" ? criterion.interactionTargets ?? [] : undefined,
+        initialState: original ? original.initialState : verificationInitialState(criterion.tool,
+          promise.functionalSceneIndices?.includes(index) ? promise.baseline : project ?? promise.baseline) });
+      verification?.setRequirementActive(checkId, promise.required !== false && !promise.withdrawal);
+    }
   }
 
   /** Read-only draft evidence for the independent reviewer, not applied verification. */
@@ -201,6 +335,7 @@ export class AssistantAcceptanceLedger {
   evaluate(applied: Project, draft = applied, verification?: ToolVerificationEvidence,
     blockingProblems: readonly string[] = [], deliveredImagesOnly = false): AcceptanceSnapshot {
     this.bind(draft);
+    this.bindVerificationRequirements(verification, draft);
     // Retirement is permanent: an edit followed by undo cannot revive old proof.
     for (const [mapId, receipt] of this.actionProofs) {
       if (!isVerifiedActionCombatProof(receipt, draft, mapId)) this.actionProofs.delete(mapId);
@@ -217,7 +352,7 @@ export class AssistantAcceptanceLedger {
       readonly refinements?: readonly AcceptanceSource[];
       readonly withdrawal?: RequirementWithdrawalAction & { readonly source: "user" };
     })[] = [...this.promises.values(), ...this.actionRequirements.values()];
-    const projectBound = (kind: string): boolean => kind === "toolVerdict" || isFunctionalCriterionKind(kind);
+    const projectBound = (kind: string): boolean => kind === "toolVerdict" || isReloadCriterionKind(kind);
     const toolDraftChanged = applied !== draft
       && promises.some(promise => promise.criteria?.some(criterion => projectBound(criterion.kind)))
       && acceptanceFingerprint(applied) !== acceptanceFingerprint(draft);
@@ -226,18 +361,26 @@ export class AssistantAcceptanceLedger {
         ...(promise.refinements ? { refinements: Object.freeze(promise.refinements.map(source => Object.freeze({ ...source,
           scope: source.scope ? Object.freeze({ ...source.scope, region: Object.freeze({ ...source.scope.region }) }) : null }))) } : {}),
         ...(promise.withdrawal ? { withdrawal: promise.withdrawal } : {}) };
-      if (!promise.criteria) return Object.freeze({ ...metadata, id: promise.id, title: promise.title, status: "blocked", reason: "Missing or malformed criteria: repair_acceptance required", evidence: Object.freeze([]) });
+      if (!promise.criteria) return Object.freeze({ ...metadata, id: promise.id, title: promise.title, status: "blocked", reason: "Missing or malformed criteria: repair_acceptance required",
+        issues: Object.freeze((promise.issues ?? parseAcceptanceCriteriaResult(undefined).issues).map(issue => Object.freeze({ ...issue, example: ACCEPTANCE_EXAMPLES[issue.example.kind] }))), evidence: Object.freeze([]) });
       const review = this.reviews.get(promise.id);
-      const evidence = promise.criteria.map(criterion => {
+      const evidence = promise.criteria.map((criterion, criterionIndex) => {
         const result = evaluateAcceptanceCriterion(criterion, {
           project: applied, baseline: promise.baseline, bindings: this.bindings, verification,
+          verificationCheckId: `${this.id}:${promise.id}:${criterionIndex}`, npcRewardProof: this.npcRewardProof,
           reviewed: (map, region) => deliveredImagesOnly
             ? coveredByImages(this.images.matching(applied), map, region)
             : review?.passed === true && coveredByImages(this.currentReceipts(review.receipts, applied), map, region),
           actionProven: map => isVerifiedActionCombatProof(this.actionProofs.get(map.id), applied, map.id),
         });
+        const approachCheckId = `${this.id}:${promise.id}:${criterionIndex}`;
+        const approach = !toolDraftChanged && verification?.approach(approachCheckId, applied);
         return Object.freeze({
           ...result,
+          ...(approach ? { approachCheckId } : {}),
+          ...(result.issues ? { issues: Object.freeze(result.issues.map(issue => Object.freeze({ ...issue,
+            criterionIndex, field: `criteria[${criterionIndex}].${issue.field}`,
+          }))) } : {}),
           observed: criterion.kind === "imageReviewed" && review
             ? `${result.observed}: ${review.note}` : result.observed,
         });
@@ -255,6 +398,7 @@ export class AssistantAcceptanceLedger {
       const status = passed ? "verified" : this.stopped ? "blocked" : unapplied ? "verifying" : "working";
       return Object.freeze({
         ...metadata, id: promise.id, title: promise.title, status, evidence: Object.freeze(evidence),
+        ...(promise.issues?.length ? { issues: promise.issues } : {}),
         ...(!passed ? { reason: unapplied ? "Draft is not yet applied" : this.stopped ? "Acceptance incomplete; execution stopped" : "Acceptance checks remain open" } : {}),
         ...(map ? { mapId: map.id } : {}), ...(region ? { region: Object.freeze({ ...region }) } : {}),
       });

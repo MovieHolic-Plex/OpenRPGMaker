@@ -1,0 +1,97 @@
+{
+  "exitCall": {
+    "mapId": "map_blank_start",
+    "event": {
+      "commands": [
+        {
+          "kind": "text",
+          "body": "굳게 닫힌 북쪽 출구다. 지하실에서 황동 열쇠를 찾아와야 할 것 같다."
+        }
+      ],
+      "pages": [
+        {
+          "name": "기본 잠긴 상태",
+          "commands": [
+            {
+              "body": "굳게 닫힌 북쪽 출구다. 지하실에서 황동 열쇠를 찾아와야 할 것 같다.",
+              "kind": "text"
+            }
+          ],
+          "conditions": []
+        },
+        {
+          "choices": [
+            {
+              "commands": [
+                {
+                  "amount": 1,
+                  "op": "-=",
+                  "kind": "changeItem",
+                  "itemId": "item_brass_key"
+                },
+                {
+                  "body": "황동 열쇠를 사용해 문을 열었다! 철컥!",
+                  "kind": "text"
+                },
+                {
+                  "endingId": "ending_escape",
+                  "kind": "triggerEnding"
+                }
+              ],
+              "text": "황동 열쇠를 사용한다"
+            },
+            {
+              "commands": [
+                {
+                  "body": "문을 열지 않고 물러났다.",
+                  "kind": "text"
+                }
+              ],
+              "text": "그만둔다"
+            }
+          ],
+          "name": "열쇠 보유 시 문 열기",
+          "commands": [
+            {
+              "body": "굳게 잠겨 있던 문이다. 황동 열쇠가 꼭 맞을 것 같다!",
+              "kind": "text"
+            }
+          ],
+          "conditions": [
+            {
+              "itemId": "item_brass_key",
+              "present": true,
+              "kind": "item"
+            }
+          ]
+        }
+      ],
+      "y": 0,
+      "x": 10,
+      "id": "ev_north_gate"
+    }
+  },
+  "ending": {
+    "id": "ending_escape",
+    "name": "새로운 여정",
+    "epilogue": [
+      {
+        "kind": "say",
+        "text": "황동 열쇠로 단단히 잠겨 있던 마을 북쪽의 문을 열었다.",
+        "speaker": "이야기"
+      },
+      {
+        "kind": "say",
+        "text": "바깥 세상으로 향하는 새로운 모험의 길이 활짝 열렸다!",
+        "speaker": "이야기"
+      },
+      {
+        "kind": "say",
+        "text": "— 작은 열쇠 완결 —",
+        "speaker": "이야기"
+      }
+    ],
+    "priority": 0,
+    "conditions": []
+  }
+}

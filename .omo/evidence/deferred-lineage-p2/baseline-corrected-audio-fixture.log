@@ -1,0 +1,16 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/audioDescriptionConcurrentPersistence.test.ts -t keeps replacement project descriptions --maxWorkers=2
+
+
+ RUN  v3.2.4 /tmp/st_01a07921-base
+
+ ✓ test/audioDescriptionConcurrentPersistence.test.ts (22 tests | 19 skipped) 11223ms
+   ✓ audio description concurrent persistence > keeps replacement project descriptions 'missing' while an old save completes  4484ms
+   ✓ audio description concurrent persistence > keeps replacement project descriptions 'cleared' while an old save completes  3387ms
+   ✓ audio description concurrent persistence > keeps replacement project descriptions 'authored' while an old save completes  3348ms
+
+ Test Files  1 passed (1)
+      Tests  3 passed | 19 skipped (22)
+   Start at  09:07:41
+   Duration  15.82s (transform 3.44s, setup 0ms, collect 4.18s, tests 11.22s, environment 0ms, prepare 72ms)

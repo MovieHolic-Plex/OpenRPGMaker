@@ -1,0 +1,233 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiConversationRemoteHistory.test.ts --maxWorkers=1 --minWorkers=1 --reporter=default --reporter=json --outputFile=.omo/evidence/integration-st01a08238/history-ui-red.json
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-main-integration-st01a08238
+
+ ❯ test/aiConversationRemoteHistory.test.ts (36 tests | 6 failed) 272ms
+   ✓ public history with separate explicit recovery > browses locally, explicitly recovers exact retained entries, then opens without another GET or transcript mutation 33ms
+   ✓ public history with separate explicit recovery > ordinary Open keeps local authoritative without consulting remote timestamp 1000 5ms
+   ✓ public history with separate explicit recovery > ordinary Open keeps local authoritative without consulting remote timestamp 9000 4ms
+   ✓ public history with separate explicit recovery > explicit recovery replaces only unchanged older local (remote=1000) 6ms
+   ✓ public history with separate explicit recovery > explicit recovery replaces only unchanged older local (remote=5000) 5ms
+   ✓ public history with separate explicit recovery > explicit recovery replaces only unchanged older local (remote=9000) 6ms
+   ✓ public history with separate explicit recovery > shows recovery failure while keeping usable local history (local=false) 4ms
+   ✓ public history with separate explicit recovery > shows recovery failure while keeping usable local history (local=true) 4ms
+   ✓ public history with separate explicit recovery > rejects invalid recovered project_context_key without adoption 4ms
+   ✓ public history with separate explicit recovery > rejects invalid recovered project_id without adoption 4ms
+   ✓ public history with separate explicit recovery > rejects invalid recovered entries_json without adoption 3ms
+   ✓ public history with separate explicit recovery > rejects invalid recovered saved_at without adoption 3ms
+   ✓ public history with separate explicit recovery > rejects invalid recovered conversation_id without adoption 3ms
+   ✓ public history with separate explicit recovery > malformed recovery is a visible failure, not successful empty history ({}) 3ms
+   ✓ public history with separate explicit recovery > malformed recovery is a visible failure, not successful empty history (null) 2ms
+   ✓ public history with separate explicit recovery > refreshes local title, preview, deletion and entries after recovery valid 5ms
+   × public history with separate explicit recovery > refreshes local title, preview, deletion and entries after recovery 503 15ms
+     → expected [] to have a length of 1 but got +0
+   × public history with separate explicit recovery > refreshes local title, preview, deletion and entries after recovery invalid 4ms
+     → expected [] to have a length of 1 but got +0
+   ✓ public history with separate explicit recovery > excludes foreign-local history without deleting the foreign stored record 2ms
+   ✓ public history with separate explicit recovery > keeps a foreign ID collision introduced during recovery valid 3ms
+   ✓ public history with separate explicit recovery > keeps a foreign ID collision introduced during recovery 503 3ms
+   ✓ public history with separate explicit recovery > keeps a foreign ID collision introduced during recovery invalid 2ms
+   ✓ public history with separate explicit recovery > ignores pending local Open after dismiss 2ms
+   × public history with separate explicit recovery > ignores pending local Open after scope 3ms
+     → expected "spy" to not be called at all, but actually been called 1 times[90m
+
+Received: 
+
+[1m  1st spy call:
+
+[22m    Array [
+      Object {
+        "entries": Array [
+          Object {
+            "kind": "user",
+            "text": "request-remote-only",
+          },
+          Object {
+            "kind": "assistant",
+            "text": "answer-remote-only",
+          },
+        ],
+        "id": "remote-only",
+        "model": "history-model",
+        "projectContextKey": "remote:history-project",
+        "savedAt": 2000,
+        "title": "remote-only",
+      },
+    ]
+[39m[90m
+
+Number of calls: [1m1[22m
+[39m
+   ✓ public history with separate explicit recovery > ignores pending local Open after replace 3ms
+   ✓ public history with separate explicit recovery > ignores pending local Open after newer-selection 3ms
+   ✓ public history with separate explicit recovery > ignores pending local Open after legacy-roundtrip 4ms
+   ✓ public history with separate explicit recovery > refuses pending recovery admission and painting after dismiss 3ms
+   × public history with separate explicit recovery > refuses pending recovery admission and painting after scope 18ms
+     → expected [ { id: 'remote-only', …(6) } ] to deeply equal []
+   ✓ public history with separate explicit recovery > refuses pending recovery admission and painting after replace 4ms
+   × public history with separate explicit recovery > refuses pending recovery admission and painting after legacy-roundtrip 6ms
+     → expected [ { id: 'remote-only', …(6) } ] to deeply equal []
+   ✓ public history with separate explicit recovery > does not contact remote history while browsing local or differently configured scopes 3ms
+   ✓ public history with separate explicit recovery > restores through shipped clock, Recover, All and Open without reconstructing a private session 56ms
+   × public history with separate explicit recovery > real panel refuses pending recovery after scope 15ms
+     → expected [ { id: 'remote-only', …(6) } ] to deeply equal []
+   ✓ public history with separate explicit recovery > real panel refuses pending recovery after new-chat 14ms
+   ✓ public history with separate explicit recovery > real panel refuses pending recovery after teardown 15ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiConversationRemoteHistory.test.ts > public history with separate explicit recovery > refreshes local title, preview, deletion and entries after recovery 503
+ FAIL  test/aiConversationRemoteHistory.test.ts > public history with separate explicit recovery > refreshes local title, preview, deletion and entries after recovery invalid
+AssertionError: expected [] to have a length of 1 but got +0
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 0[39m
+
+ ❯ test/aiConversationRemoteHistory.test.ts:156:61
+    154|     response.resolve(outcome === "503" ? new Response("offline", { sta…
+    155|     await settled();
+    156|     expect(await read()).toEqual(local); expect(rows(root)).toHaveLeng…
+       |                                                             ^
+    157|     expect(rows(root)[0]!.textContent).toContain(local.title);
+    158|     expect(findByTestId(root, "ai-history-preview")?.textContent).toBe…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  test/aiConversationRemoteHistory.test.ts > public history with separate explicit recovery > ignores pending local Open after scope
+AssertionError: expected "spy" to not be called at all, but actually been called 1 times[90m
+
+Received: 
+
+[1m  1st spy call:
+
+[22m    Array [
+      Object {
+        "entries": Array [
+          Object {
+            "kind": "user",
+            "text": "request-remote-only",
+          },
+          Object {
+            "kind": "assistant",
+            "text": "answer-remote-only",
+          },
+        ],
+        "id": "remote-only",
+        "model": "history-model",
+        "projectContextKey": "remote:history-project",
+        "savedAt": 2000,
+        "title": "remote-only",
+      },
+    ]
+[39m[90m
+
+Number of calls: [1m1[22m
+[39m
+ ❯ test/aiConversationRemoteHistory.test.ts:203:29
+    201|     release.resolve(); await settled();
+    202|     if (action === "newer-selection") expect(onOpen).toHaveBeenCalledE…
+    203|     else expect(onOpen).not.toHaveBeenCalled();
+       |                             ^
+    204|     if (action === "legacy-roundtrip") { click(root); await settled();…
+    205|     expect(requests).toEqual([]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  test/aiConversationRemoteHistory.test.ts > public history with separate explicit recovery > refuses pending recovery admission and painting after scope
+ FAIL  test/aiConversationRemoteHistory.test.ts > public history with separate explicit recovery > refuses pending recovery admission and painting after legacy-roundtrip
+AssertionError: expected [ { id: 'remote-only', …(6) } ] to deeply equal []
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   {[39m
+[31m+     "entries": [[39m
+[31m+       {[39m
+[31m+         "kind": "user",[39m
+[31m+         "text": "request-remote-only",[39m
+[31m+       },[39m
+[31m+       {[39m
+[31m+         "kind": "assistant",[39m
+[31m+         "text": "answer-remote-only",[39m
+[31m+       },[39m
+[31m+     ],[39m
+[31m+     "id": "remote-only",[39m
+[31m+     "mapIndex": {[39m
+[31m+       "mapAttribution": "unknown",[39m
+[31m+       "targetMapIds": [],[39m
+[31m+       "viewedMapIds": [],[39m
+[31m+     },[39m
+[31m+     "model": "history-model",[39m
+[31m+     "projectContextKey": "remote:history-project",[39m
+[31m+     "savedAt": 2000,[39m
+[31m+     "title": "remote-only",[39m
+[31m+   },[39m
+[31m+ ][39m
+
+ ❯ test/aiConversationRemoteHistory.test.ts:217:89
+    215|     if (action === "legacy-roundtrip") { click(root, "ai-history-filte…
+    216|     response.resolve(json([wire()])); await settled();
+    217|     expect(onOpen).not.toHaveBeenCalled(); expect(await readAllAiRecor…
+       |                                                                                         ^
+    218|     if (replacement) expect(rows(replacement)).toHaveLength(0);
+    219|     else expect(rows(root)).toHaveLength(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  test/aiConversationRemoteHistory.test.ts > public history with separate explicit recovery > real panel refuses pending recovery after scope
+AssertionError: expected [ { id: 'remote-only', …(6) } ] to deeply equal []
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   {[39m
+[31m+     "entries": [[39m
+[31m+       {[39m
+[31m+         "kind": "user",[39m
+[31m+         "text": "request-remote-only",[39m
+[31m+       },[39m
+[31m+       {[39m
+[31m+         "kind": "assistant",[39m
+[31m+         "text": "answer-remote-only",[39m
+[31m+       },[39m
+[31m+     ],[39m
+[31m+     "id": "remote-only",[39m
+[31m+     "mapIndex": {[39m
+[31m+       "mapAttribution": "unknown",[39m
+[31m+       "targetMapIds": [],[39m
+[31m+       "viewedMapIds": [],[39m
+[31m+     },[39m
+[31m+     "model": "history-model",[39m
+[31m+     "projectContextKey": "remote:history-project",[39m
+[31m+     "savedAt": 2000,[39m
+[31m+     "title": "remote-only",[39m
+[31m+   },[39m
+[31m+ ][39m
+
+ ❯ test/aiConversationRemoteHistory.test.ts:261:50
+    259|     expect(bridge.getAiAssistantAudit()).toEqual([]);
+    260|     expect(findByTestId(panel, "ai-chat-log")?.textContent ?? "").not.…
+    261|     expect(await readAllAiRecords(recordsStore)).toEqual([]);
+       |                                                  ^
+    262|   });
+    263| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  6 failed | 30 passed (36)
+   Start at  04:01:33
+   Duration  20.82s (transform 14.86s, setup 0ms, collect 20.12s, tests 272ms, environment 0ms, prepare 84ms)
+
+JSON report written to /home/main/z-project/rpg-zzu-ai-main-integration-st01a08238/.omo/evidence/integration-st01a08238/history-ui-red.json

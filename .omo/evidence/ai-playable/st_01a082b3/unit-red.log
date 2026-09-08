@@ -1,0 +1,73 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiConversationHistoryStartup.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-history-correction-st01a082b3
+
+ ❯ test/aiConversationHistoryStartup.test.ts (4 tests | 3 failed) 216ms
+   ✓ history startup ownership > finishes normal startup and lists the current map without recovering or opening 148ms
+   × history startup ownership > does not let a held startup catalog retire a newer explicit Recover 57ms
+     → expected undefined to deeply equal [ { kind: 'user', …(2) }, …(1) ]
+   × history startup ownership > does not start a list query after startup loses close ownership 5ms
+     → expected "queryConversationArchive" to be called 1 times, but got 2 times
+   × history startup ownership > does not start a list query after startup loses owner ownership 4ms
+     → expected "queryConversationArchive" to be called 1 times, but got 2 times
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiConversationHistoryStartup.test.ts > history startup ownership > does not let a held startup catalog retire a newer explicit Recover
+AssertionError: expected undefined to deeply equal [ { kind: 'user', …(2) }, …(1) ]
+
+[32m- Expected:[39m 
+[
+  {
+    "context": {
+      "mapHeight": 10,
+      "mapId": "start",
+      "mapName": "Start",
+      "mapWidth": 10,
+    },
+    "kind": "user",
+    "text": "startup-recover-request",
+  },
+  {
+    "kind": "assistant",
+    "text": "startup-recover-answer",
+  },
+]
+
+[31m+ Received:[39m 
+undefined
+
+ ❯ test/aiConversationHistoryStartup.test.ts:108:33
+    106|       await bounded(settled());
+    107|       const retained = await conversations.loadConversationForScope("r…
+    108|       expect(retained?.entries).toEqual(entries);
+       |                                 ^
+    109|       expect(stateAfterStartup).toBe("loading");
+    110|       const status = findByTestId(root, "ai-history-recover-status")!;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  test/aiConversationHistoryStartup.test.ts > history startup ownership > does not start a list query after startup loses close ownership
+ FAIL  test/aiConversationHistoryStartup.test.ts > history startup ownership > does not start a list query after startup loses owner ownership
+AssertionError: expected "queryConversationArchive" to be called 1 times, but got 2 times
+ ❯ test/aiConversationHistoryStartup.test.ts:126:29
+    124|       if (action === "close") closeAiConversationHistoryModal(); else …
+    125|       catalog.release.resolve(); await bounded(startup);
+    126|       expect(catalog.query).toHaveBeenCalledTimes(1);
+       |                             ^
+    127|       expect(onOpen).not.toHaveBeenCalled(); expect(fetch).not.toHaveB…
+    128|     } finally { catalog.release.resolve(); await bounded(settled()); }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 1 passed (4)
+   Start at  05:30:32
+   Duration  12.98s (transform 8.05s, setup 0ms, collect 10.87s, tests 216ms, environment 0ms, prepare 356ms)
+
+
+EXIT=1

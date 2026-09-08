@@ -49,14 +49,18 @@ describe("independent review protocol", () => {
 
 it("retains advisory evidence without making it a required explicit check", () => {
   const evidence = new ToolVerificationEvidence();
-  const failure = { ok: true, data: { ok: false, failureReason: "Unmet scene expectation" } };
-  evidence.observe("run_scene_test", { mapId: "m" }, failure, "advisory");
+  const failure = { ok: true, data: { counts: { errors: 1 }, issues: [
+    { severity: "error", code: "missing-reference", message: "Existing reference", mapId: "m" },
+  ] } };
+  evidence.captureLintBaseline(failure);
+  evidence.observe("run_lint", {}, failure, "advisory");
   expect(evidence.problems().length).toBeGreaterThan(0);
-  expect(evidence.problems("explicit")).toEqual([]);
-  evidence.observe("run_scene_test", { mapId: "m" }, failure, "explicit");
-  expect(evidence.problems("explicit").length).toBeGreaterThan(0);
+  expect(evidence.problems("blocking")).toEqual([]);
+  evidence.observe("run_lint", {}, failure, "explicit");
+  expect(evidence.problems("blocking").length).toBeGreaterThan(0);
+  expect(evidence.snapshot().requirements).toEqual([]);
   evidence.invalidateAfterWrite();
-  expect(evidence.passed("run_scene_test")).toBe(false);
+  expect(evidence.passed("run_lint")).toBe(false);
 });
 
 

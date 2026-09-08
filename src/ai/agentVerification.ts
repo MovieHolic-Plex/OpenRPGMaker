@@ -12,7 +12,8 @@
 //                        play_walkthrough call args (do/expect steps, walkthroughRunner
 //                        shape)}] — or, if the layer has no such call,
 //                        [run_lint, verify_quest × ALL questIds in run history]
-// run_lint is always first; every layer adds nothing beyond the table.
+// run_lint is always first. Authored endings require quality assessment as well;
+// final assessment repeats earlier quality checks on the current artifact.
 //
 // CAUTION (verified in code): generate_walkthrough output is run_scene_test input
 // (`kind` steps), NOT play_walkthrough input (`do`/`expect` steps) — this module never
@@ -29,7 +30,7 @@
 // evaluate_game_quality still reports blocking on its own error-severity issues only (toolRegistry
 // evaluate_game_quality verdict contract: data.verdict.blocked). That error set is projectLint
 // errors + empty-map (99081a0b1, 2026-08-28) + ending-uninvoked (419e067fa, 2026-09-06) — it was
-// projectLint alone until those two landed.
+// projectLint alone until those two landed. This is not subjective quality or playthrough proof.
 
 export const RUN_LINT_TOOL = "run_lint";
 export const EVALUATE_GAME_QUALITY_TOOL = "evaluate_game_quality";
@@ -63,6 +64,8 @@ export interface LayerDescriptor {
   readonly title: string;
   readonly kind?: string;
   readonly isFinal?: boolean;
+  /** Current artifact requires quality assessment, even without authoring history. */
+  readonly assessGameQuality?: boolean;
   readonly items?: readonly {
     readonly id?: string;
     readonly title?: string;
@@ -212,6 +215,11 @@ export function selectVerificationCalls(
   if (kind === "map") {
     calls.push({ name: EVALUATE_GAME_QUALITY_TOOL, args: {} });
     return calls;
+  }
+
+  if (layer.assessGameQuality || history.some(record => record.ok &&
+    (record.name === "define_ending" || (kind === "final" && record.name === EVALUATE_GAME_QUALITY_TOOL)))) {
+    calls.push({ name: EVALUATE_GAME_QUALITY_TOOL, args: {} });
   }
 
   if (kind === "quest") {

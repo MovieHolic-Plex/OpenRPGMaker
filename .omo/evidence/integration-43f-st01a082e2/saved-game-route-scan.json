@@ -1,0 +1,24 @@
+{
+  "artifactPath": "/home/main/z-project/rpg-zzu-ai-playable-adversarial-0906/output/evidence/ai-playable-final/round13/final-player-51c9/project-export.json",
+  "artifactByteSha256": "f48f7120be899e00d3036d22a9f4c6d8920f34867bf99380520f19c15fb0aff1",
+  "maps": [
+    {
+      "id": "map_basement",
+      "size": [
+        12,
+        10
+      ],
+      "events": 2
+    },
+    {
+      "id": "map_blank_start",
+      "size": [
+        20,
+        15
+      ],
+      "events": 4
+    }
+  ],
+  "setThrough": [],
+  "moveEvent": []
+}

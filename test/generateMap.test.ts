@@ -9,6 +9,9 @@ import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
 import { BUNDLED_EASYRPG_CHIPSET_ASSETS, bundledEasyRpgTilesetId } from "@/assets/bundled";
 import { isPassable } from "@/project/collision";
+import { ensureBundledTilesets } from "@/project/defaults/defaultAssets";
+import { blockedFlag } from "@/project/tilesetPassage";
+import { markUserTileRuntimeMetadata } from "@/editor/runtimeTileMetadata";
 
 const THEMES = ["village", "forest", "cave"] as const;
 const SEEDS = [1, 99] as const;
@@ -71,7 +74,7 @@ describe("generate_map", () => {
   });
 
   // border:"wall" 로 고정한다 — 이 케이스가 검증하는 것은 프로필 디스패치와
-  // "장애물 팔레트가 통행 불가로 등록되는가"이고, 그 관측점이 외곽 (0,0)이다.
+  // "저작된 장애물 통행 규칙을 따르는가"이고, 그 관측점이 외곽 (0,0)이다.
   it("번들 프로필을 디스패치하되 실내는 개념 시공으로 안내한다", () => {
     const profileKeys = new Set<string>();
     let conceptInteriors = 0;
@@ -79,6 +82,16 @@ describe("generate_map", () => {
     for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
       const tilesetId = bundledEasyRpgTilesetId(asset.textureKey);
       const ctx: ToolContext = { project: createEmptyToolProject() };
+      // Match the editor's loaded state; generation is not a tileset normalizer.
+      ensureBundledTilesets(ctx.project);
+      if (tilesetId === "modern_exteriors_nocturne") {
+        // Modern has no bundled solid rule. Exercise dispatch with an explicitly
+        // authored obstacle; the untouched default is separately required to fail.
+        const tileset = ctx.project.tilesets[tilesetId]!;
+        tileset.passability[30] = blockedFlag();
+        markUserTileRuntimeMetadata(tileset, 30, { passage: "solid" });
+      }
+      const beforeTilesets = structuredClone(ctx.project.tilesets);
       const result = runTool(ctx, "generate_map", {
         id: `map_${tilesetId}`,
         name: asset.name,
@@ -107,6 +120,7 @@ describe("generate_map", () => {
       expect(new Set(map?.lowerTiles).size, tilesetId).toBeGreaterThanOrEqual(2);
       expect(isPassable(ctx.project, map!, 0, 0)).toBe(false);
       expect(isPassable(ctx.project, map!, 1, Math.floor(map!.height / 2))).toBe(true);
+      expect(ctx.project.tilesets).toEqual(beforeTilesets);
       profileKeys.add(data.generationProfile);
     }
 

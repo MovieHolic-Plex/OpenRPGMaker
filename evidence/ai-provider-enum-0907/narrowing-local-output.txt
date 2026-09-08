@@ -1,0 +1,18 @@
+$ npm test -- test/ohMyPiNumericEnumLocal.test.ts test/toolSchemaProviderCompat.test.ts --maxWorkers=2 --minWorkers=1
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/ohMyPiNumericEnumLocal.test.ts test/toolSchemaProviderCompat.test.ts --maxWorkers=2 --minWorkers=1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-provider-enum-0907
+
+ ✓ test/ohMyPiNumericEnumLocal.test.ts (10 tests) 62ms
+ ✓ test/toolSchemaProviderCompat.test.ts (6 tests) 29ms
+
+ Test Files  2 passed (2)
+      Tests  16 passed (16)
+   Start at  01:51:26
+   Duration  28.38s (transform 18.33s, setup 0ms, collect 53.08s, tests 91ms, environment 5ms, prepare 486ms)
+
+
+EXIT_STATUS=0

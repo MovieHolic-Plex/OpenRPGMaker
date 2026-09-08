@@ -10,7 +10,7 @@ import type { AiRunSurface } from "@/editor/panels/aiRunSurface";
 import { createBlankProject } from "@/project/defaults";
 import { proposalCompletenessWarnings } from "@/ai/proposalCompleteness";
 import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
-import { approvedReviewResponse } from "./independentReviewFixture";
+import { approvedReviewResponse, imageDeliveryForRequest } from "./independentReviewFixture";
 import { approvedReview } from "./independentReviewFixture";
 import { fixedDeclarer } from "./intentFixture";
 import { runTool } from "@/editor/tools/toolRunner";
@@ -18,6 +18,7 @@ import { store } from "@/project/store";
 import { installFakeDom } from "./fakeDom";
 import { HISTORICAL_PLACEMENT_CORRECTION } from "./fixtures/placementRequests";
 import { isProposalCompletenessWarning } from "@/ai/proposalCompleteness";
+import { FLOOR_PAINT_ARGS, WALL_PAINT_ARGS, PRESERVED_PAINT_SPEC, preservedPaintContext } from "./fixtures/preservedPaint";
 
 const observed = vi.hoisted(() => ({
   activity: vi.fn(async () => ({})),
@@ -79,6 +80,60 @@ function setup(sessionOverride?: AssistantSession) {
 }
 
 describe("panel map completeness selection", () => {
+  it.each(["complete", "partial", "invalidated"] as const)("uses current native maintenance facts at terminal UI (%s)", async (coverage) => {
+    const ctx = preservedPaintContext();
+    store.replace(ctx.project);
+    const entries = [
+      { name: "set_build_spec", args: PRESERVED_PAINT_SPEC },
+      { name: "paint_tiles", args: FLOOR_PAINT_ARGS },
+      { name: "paint_tiles", args: { ...WALL_PAINT_ARGS, cells: coverage === "partial" ? WALL_PAINT_ARGS.cells.slice(1) : WALL_PAINT_ARGS.cells } },
+      ...(coverage === "invalidated" ? [{ name: "paint_tiles", args: { ...WALL_PAINT_ARGS, tile: 342, cells: [{ x: 0, y: 0 }] } }] : []),
+      { name: "repair_acceptance", args: { itemId: "acceptance-contract", criteria: [
+        { kind: "targetChange", target: { mapId: "map_basement" }, region: { x: 1, y: 1, w: 10, h: 8 } },
+      ] } },
+      { name: "show_map_region", args: { mapId: "map_basement", x: 0, y: 0, w: 12, h: 10 } },
+    ];
+    let writer = 0;
+    const session = new AssistantSession(ctx.project, {
+      config: { authMode: "apiKey", baseUrl: "x", model: "stub", apiKey: "test", maxToolCalls: 8, maxTokens: 32768 },
+      declareIntent: fixedDeclarer({ mode: "modify" }),
+      renderImages: async () => [{ label: "Native basement", dataUrl: "data:image/png;base64,AA==" }],
+      chat: async (_config, request) => approvedReviewResponse(request) ?? {
+        imageDelivery: imageDeliveryForRequest(request),
+        message: writer++ === 0 ? { role: "assistant", content: null, tool_calls: entries.map((entry, index) => ({
+          id: `p7-${index}`, type: "function", function: { name: entry.name, arguments: JSON.stringify(entry.args) },
+        })) } : { role: "assistant", content: "WRITER_SENTINEL" }, finishReason: writer === 1 ? "tool_calls" : "stop",
+      },
+    });
+    const result = await session.sendUserMessage("바닥을 칠하고 기존 벽은 유지해줘");
+    expect(result.proposedCalls.map(call => call.result.ok)).toEqual(coverage === "invalidated" ? [true, true, true] : [true, true]);
+    const expected = proposalCompletenessWarnings({ calls: result.proposedCalls,
+      buildSpecs: session.getCompletionSpecs(result.proposedCalls), project: session.getProposedProject() });
+    expect(expected).toHaveLength(coverage === "complete" ? 0 : 1);
+    const h = setup(session);
+    h.deps.applyProposal.mockImplementation(async () => {
+      store.replace(session.getProposedProject());
+      return "applied";
+    });
+    await h.runner.executeTurn(session, "바닥을 칠하고 기존 벽은 유지해줘", async () => result);
+    if (coverage === "complete") {
+      expect(result.review?.status).toBe("approved");
+      expect(h.appendBubble.mock.calls.filter(([, text]) => isProposalCompletenessWarning(text)).map(([, text]) => text)).toEqual(expected);
+      expect(result.proposedCalls.flatMap(call => call.result.diff?.warnings ?? []).filter(isProposalCompletenessWarning)).toEqual(expected);
+      expect(h.deps.applyProposal).toHaveBeenCalledWith(result.proposedCalls, expect.anything());
+      expect(store.getCurrent().maps.map_basement.lowerTiles).toEqual(session.getProposedProject().maps.map_basement.lowerTiles);
+    } else {
+      // The same native warning reaches independent review; its approval-shaped
+      // reply cannot let a partial/invalidated draft cross the panel apply gate.
+      expect(result.review?.status).toBe("changes_requested");
+      expect(result.review?.findings.filter(finding => isProposalCompletenessWarning(finding.problem)).map(finding => finding.problem)).toEqual(expected);
+      expect(h.deps.applyProposal).not.toHaveBeenCalled();
+      expect(store.getCurrent().maps.map_basement.lowerTiles).toEqual(ctx.project.maps.map_basement.lowerTiles);
+    }
+    expect(result.runOutcome?.goal).toBe("incomplete");
+    expect(session.getAcceptanceSnapshot()?.status).not.toBe("verified");
+  });
+
   it("uses the real session's plural selection instead of the most recent spec", async () => {
     const ctx = { project: store.getCurrent() };
     for (const id of ["a", "b"]) expect(runTool(ctx, "create_map", { id, name: id, width: 20, height: 20 }).ok).toBe(true);

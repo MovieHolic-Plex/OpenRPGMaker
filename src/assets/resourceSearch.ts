@@ -4,7 +4,7 @@
 import { listAudioResources } from "@/assets/audioResourceCatalog";
 import type { AudioDescriptionSource, AudioResourceProject } from "@/assets/audioResourceCatalog";
 import { applyCharsetLabelOverrides, CHARSET_SEMANTICS } from "@/assets/charsetSemantics";
-import { EASYRPG_BACKDROP_ASSETS } from "@/assets/easyrpgRtp";
+import { charsetFrameIndex, EASYRPG_BACKDROP_ASSETS } from "@/assets/easyrpgRtp";
 import { listMonsterResources, type MonsterResourceProject } from "@/assets/monsterResourceCatalog";
 import { SCARLOXY_BACKDROP_ASSETS } from "@/assets/scarloxyPack";
 import { moodTagsForAsset } from "@/assets/resourceMoodTags";
@@ -27,7 +27,7 @@ import {
   SHIP_TEXTURE_KEY,
   WORLD_TEXTURE_KEY,
 } from "@/project/tilesetHarness";
-import type { CharsetLabelOverride, TilesetDef } from "@/project/types";
+import type { CharsetLabelOverride, EventPageGraphic, TilesetDef } from "@/project/types";
 
 export type ResourceSearchKind = "backdrop" | "bgm" | "charset" | "monster" | "se" | "tile";
 
@@ -45,6 +45,7 @@ export interface ResourceSearchResult {
   readonly label: string;
   readonly tags: readonly string[];
   readonly score: number;
+  readonly nativeGraphic?: EventPageGraphic;
   readonly resourceId?: string;
   readonly description?: string;
   readonly descriptionSource?: AudioDescriptionSource;
@@ -204,10 +205,15 @@ function candidatesForKind(kind: ResourceSearchKind, options: ResourceSearchOpti
     case "tile":
       return tileCandidates(options.tileset);
     case "charset":
-      return applyCharsetLabelOverrides(CHARSET_SEMANTICS, options.charsetLabels).map((entry) => ({
+      return applyCharsetLabelOverrides(CHARSET_SEMANTICS, options.charsetLabels).map((entry): ResourceCandidate => ({
         id: `charset:${entry.textureKey}:${entry.characterIndex}`,
         label: entry.label,
         tags: [...entry.tags, ...charsetDerivedTags(entry.textureKey)],
+        nativeGraphic: {
+          sprite: { type: "bundled", id: entry.textureKey },
+          direction: "down",
+          pattern: charsetFrameIndex({ characterIndex: entry.characterIndex, direction: "down", pattern: 1 }),
+        },
       }));
     case "monster":
       return listMonsterResources(options.monsterProject ?? { resourceProfiles: [], assets: { uploaded: {} } }).map(resource => ({

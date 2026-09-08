@@ -1,0 +1,1443 @@
+diff --git a/src/ai/assistantSession.ts b/src/ai/assistantSession.ts
+index 1e638d564..8a86512b6 100644
+--- a/src/ai/assistantSession.ts
++++ b/src/ai/assistantSession.ts
+@@ -1,11 +1,11 @@
++import { ACCEPTANCE_EXAMPLES, acceptanceRecord, missingAcceptance, type AcceptanceSnapshot, type AcceptancePromise, type AcceptanceSource, type RequirementWithdrawalAction } from "./assistantAcceptance";
+ import { diagnosticObserved, diagnosticToken, publishDiagnostic } from "@/util/diagnosticObserver";
+ import { buildIndependentReviewRequest, parseIndependentReview, reviewChanges, reviewEvidenceContexts, reviewMapReferenceRoots, requiresVisualReview, type ResultReview } from "./independentReview";
+ import { mapVisualEvidenceUnavailable } from "./mapVisualEvidence";
+ import { parseFunctionalRequirements, type FunctionalCriterion } from "./functionalAcceptance";
+-import { missingAcceptance, type AcceptanceSnapshot, type AcceptancePromise, type AcceptanceSource, type RequirementWithdrawalAction } from "./assistantAcceptance";
+-import { acceptanceFingerprint } from "./assistantAcceptanceEvaluation";
+ import { deriveRunOutcome, type RunOutcome } from "./runOutcome";
+ import { AssistantAcceptanceLedger } from "./assistantAcceptanceLedger";
++import { acceptanceFingerprint } from "./assistantAcceptanceEvaluation";
+ import { AssistantImageEvidence, coveredByImages, type AcceptanceImageReceipt } from "./assistantImageEvidence";
+ import { ACCEPTANCE_SCHEMA, ACCEPTANCE_TOOLS } from "./assistantAcceptanceTools";
+ import { adventureCompletionProblems, type AdventureRequirements } from "./adventureCompletion";
+@@ -16,10 +16,13 @@ import { buildActionArenaAuthoringGuide, selectActionArenaAuthoringRecipe } from
+ // - 커밋 게이트/인자 검증 실패 시 issues를 tool 메시지로 모델에 되돌려 자가수정을 유도(최대 maxToolCalls 왕복).
+ // - 브라우저 비의존(순수). chat 함수는 주입 가능(테스트에서 모킹).
+ 
++import { workTargetContractIssues, workTargetIssues, workToolOutcome, type WorkToolOutcome } from "./workPlanTargets";
+ import { ToolReadEvidence } from "./toolReadEvidence";
++import { ToolVerificationEvidence, parseVerificationChecks, verificationInitialState, type VerificationRequirement, type ApproachPreview } from "./toolVerificationEvidence";
++import { runProjectLint } from "@/editor/tools/queryTools";
++import { isVerifyNpcRewardInput, VERIFY_NPC_REWARD_TOOL, type NpcRewardWitness } from "./npcRewardWitness";
+ import { APPEARANCE_GENERATION_TOOL } from "@/editor/tools/characterAppearanceTools";
+ import type { AppearanceGenerationHandoff } from "@/editor/characterAppearanceGeneration";
+-import { ToolVerificationEvidence } from "./toolVerificationEvidence";
+ import { getTool, normalizeToolArgs, runTool } from "@/editor/tools";
+ import { validateArgs } from "@/editor/tools/jsonSchema";
+ import { viewportVillageBounds } from "@/editor/tools/authorVillageSupport";
+@@ -60,9 +63,10 @@ import {
+ import { buildIntentFacts, declareIntentCached, type IntentDeclarer } from "@/ai/intentDeclarationClient";
+ import type { ComposerMode } from "@/ai/composerMode";
+ import { store, type ProjectPersistenceReceipt, type ProjectPersistenceProof } from "@/project/store";
+-import type { WikiTurnInput } from "@/editor/projectWikiCoordinator";
++import type { WikiPreparationOutcome, WikiTurnInput } from "@/editor/projectWikiCoordinator";
+ import {
+   PLAY_WALKTHROUGH_TOOL,
++  EVALUATE_GAME_QUALITY_TOOL,
+   VERIFICATION_TOOL_NAMES,
+   parseLayerVerdict,
+   selectVerificationCalls,
+@@ -131,6 +135,7 @@ import {
+   type ChatRequest,
+   type ChatResult,
+   type ContentPart,
++  type ImageUrlPart,
+   type OpenAiToolSchema,
+   type ToolCall,
+ } from "./llmClient";
+@@ -153,6 +158,7 @@ import {
+ } from "./buildSpec";
+ import {
+   proposalCompletenessWarnings,
++  buildSpecCompletenessWarnings,
+   proposalHasChangedMap,
+   proposalScopeCarryoverWarning,
+   requestLikelyExpectsChange,
+@@ -182,6 +188,7 @@ import {
+   summarizeWorkPlan,
+   workPlanFromOrchestratorDecision,
+   workPlanFromSetToolArgs,
++  workPlanVerificationInputs,
+   type WorkItem,
+   type WorkItemOutcomeGate,
+   type WorkLayer,
+@@ -195,6 +202,7 @@ import {
+   verifyAuthoredBossPhases,
+   verifyAuthoredQuestsPlayable,
+   verifyNpcRewardsPlayable,
++  npcRewardTargetMatches,
+   type WorkItemOutcomeVerdict,
+   verifyCreatedMapsAuthored,
+   verifyTargetMapChanged,
+@@ -260,6 +268,7 @@ export type SessionEvent =
+   | { type: "status"; text: string }
+   | { type: "work_plan"; plan: WorkPlan }
+   | { type: "acceptance"; snapshot: AcceptanceSnapshot | null }
++  | { type: "completion_assessment"; assessment: CompletionAssessment }
+   | { type: "result_review"; review: ResultReview }
+   // ── 마일스톤 자동 적용(todo 4) ─────────────────────────────────────
+   // 자율 런에서 작업 항목 완료가 안전 검사를 통과해 스토어에 자동 적용됐다.
+@@ -285,6 +294,14 @@ export interface ProposedCall {
+   reason?: string;
+ }
+ 
++export interface CompletionAssessment {
++  readonly acceptance: AcceptanceSnapshot | null;
++  readonly adventure: readonly string[];
++  readonly verification: readonly string[];
++  readonly blockingVerification: readonly string[];
++  readonly checks: readonly LayerVerdictInput[];
++}
++
+ export interface TurnResult {
+   /** Session-owned settlement updates this value after ordinary apply/proof. Legacy callers may omit it. */
+   runOutcome?: RunOutcome;
+@@ -298,6 +315,7 @@ export interface TurnResult {
+   workPlan?: WorkPlan;
+   /** 이 사용자 목표가 태운 토큰·경과·과정. 채팅에는 토큰 줄만, 로그에는 전부. */
+   recap?: RunRecap;
++  readonly completionAssessment?: CompletionAssessment;
+   /**
+    * 이 턴에 **마일스톤으로 이미 저장소에 적용된** 쓰기 툴콜. `proposedCalls` 와 서로 배타적이다:
+    * 마일스톤 적용은 `turnProposals` 를 비우므로(maybeAutoApplyMilestone) 적용된 몫은
+@@ -331,6 +349,7 @@ export interface HarnessSnapshot {
+   readonly audit: readonly AuditEntry[];
+   readonly workPlan?: WorkPlan | null;
+   readonly acceptance?: AcceptanceSnapshot | null;
++  readonly verification?: ReturnType<ToolVerificationEvidence["snapshot"]>;
+   readonly runEndProof?: RunEndProofState | null;
+   readonly resultReview?: ResultReview | null;
+   readonly runOutcome?: RunOutcome | null;
+@@ -563,7 +582,7 @@ export const SET_BUILD_SPEC_TOOL: OpenAiToolSchema = {
+   function: {
+     name: "set_build_spec",
+     description:
+-      "공간 빌드(집/마을/길/청소/NPC 배치/지형 채우기) 전 밑그림(명세)을 제출한다. 검증(경계/겹침) 통과 후 공간 빌드 툴을 실행한다. 페인트/배치 호출이 명세 밖 빈 영역을 쓰면 명세를 자동 확장해 warning으로 통과하지만, 기존 구조물 파괴 위험은 차단된다. 에셋마다 겹치지 않는 영역(x,y,w,h)을 배정하라.",
++      "공간 빌드(집/마을/길/청소/NPC 배치/지형 채우기) 전 밑그림(명세)을 제출한다. 검증(경계/겹침) 통과 후 공간 빌드 툴을 실행한다. 명세 밖 빈 영역은 자동 확장 warning으로 통과하지만 기존 구조물 파괴 위험은 차단된다. 같은 층 영역(x,y,w,h)은 원칙적으로 겹치지 않게 배정하되 road-road 교차와 명시적 terrain-before-road 순서의 도로 덧칠은 허용한다(assets/buildOrder 참조).",
+     parameters: {
+       type: "object",
+       properties: {
+@@ -572,7 +591,8 @@ export const SET_BUILD_SPEC_TOOL: OpenAiToolSchema = {
+         assets: {
+           type: "array",
+           description:
+-            "겹치지 않는 영역을 가진 에셋 목록. kind: house|road|npc|prop|clear|terrain 등, layer: lower(기본)|upper(장식). " +
++            "에셋 목록. kind: house|road|npc|prop|clear|terrain 등, layer: lower(기본)|upper(장식). 길은 kind:\"road\"로 명시한다; id·style·재료 라벨로 kind를 추론하지 않는다. " +
++            "같은 층 road-road는 교차 가능, terrain-road는 buildOrder에 terrain과 road를 모두 넣고 terrain을 먼저 둘 때만 겹칠 수 있다. terrain-terrain은 순서나 overExisting과 무관하게 겹침·중복 불가: 영역을 비겹침으로 분할하라. 다른 층이나 타일을 쓰지 않는 npc/event/transfer는 겹칠 수 있다. " +
+             "clear 에셋이 기존 구조물(집 등)을 덮으면 confirmDestroy:true가 있어야 통과합니다 — '주변 청소'는 구조물을 피해 영역을 좁히세요. " +
+             "배치 에셋 자리·주변에 기존 타일이 있으면 overExisting:\"clear\"|\"keep\"이 있어야 통과합니다.",
+           // properties 를 선언하지 않으면(items:{type:"object"}) strict function-calling 경로에서
+@@ -587,7 +607,7 @@ export const SET_BUILD_SPEC_TOOL: OpenAiToolSchema = {
+             type: "object",
+             properties: {
+               id: { type: "string", description: "에셋 식별자(예: house_1)" },
+-              kind: { type: "string", description: "house|road|npc|prop|clear|terrain 등" },
++              kind: { type: "string", description: "house|road|npc|prop|clear|terrain 등. 도로는 road로 명시; id·style·재료 라벨은 kind를 바꾸지 않는다" },
+               x: { type: "integer", description: "영역 좌상단 타일 x(칸 좌표)" },
+               y: { type: "integer", description: "영역 좌상단 타일 y(칸 좌표)" },
+               w: { type: "integer", description: "가로 칸 수 — 차지하는 마지막 칸은 x+w-1" },
+@@ -605,7 +625,7 @@ export const SET_BUILD_SPEC_TOOL: OpenAiToolSchema = {
+                 enum: ["clear", "keep"],
+                 description:
+                   "배치(비-clear) 에셋 자리·주변에 기본 타일이 아닌 것이 있을 때의 정리 방침. " +
+-                  "clear=정리하고 배치, keep=그대로 위에 배치. 검증기가 요구하면 반드시 넣는다",
++                  "clear=정리하고 배치, keep=그대로 위에 배치. 기존 내용 충돌 때만 요구되며 새 에셋끼리의 교차를 허용하지 않는다",
+               },
+             },
+             required: ["id", "kind", "x", "y", "w", "h"],
+@@ -614,7 +634,7 @@ export const SET_BUILD_SPEC_TOOL: OpenAiToolSchema = {
+         buildOrder: {
+           type: "array",
+           items: { type: "string" },
+-          description: "건설 순서(kind 목록, 예: [\"clear\",\"terrain\",\"prop\"]). clear가 먼저 오는 buildOrder에서는 후속 배치 에셋이 clear 영역을 덮을 수 있다.",
++          description: "건설 순서(kind 목록, 예: [\"clear\",\"terrain\",\"road\",\"prop\"]). clear와 후속 kind를 모두 넣고 clear를 먼저 두면 후속 배치가 clear 영역을 덮을 수 있다. 같은 층 terrain-road 겹침도 두 kind를 모두 넣고 terrain을 먼저 둘 때만 허용한다. road-road 교차에는 순서가 필요 없다. 어떤 순서도 terrain-terrain 겹침·중복을 허용하지 않는다. 선언한 순서대로 시공하라.",
+         },
+         pathWidth: { type: "integer", description: "통로 너비(칸)" },
+         density: { type: "string", enum: ["spacious", "normal", "dense"], description: "에셋 분배(넓찍/보통/다닥)" },
+@@ -680,6 +700,16 @@ function composerAskRefusal(name: string): ToolResult {
+   };
+ }
+ 
++export const CORRECT_VERIFICATION_TOOL: OpenAiToolSchema = {
++  type: "function", function: {
++    name: "correct_verification",
++    description: "Rerun an adopted requirement or unresolved finding by its session checkId with compatible original-tool args. No verdict, deletion, baseline or weakened assertions. Only facing repairs preserve scene scripts; map-qualified host receipts must match. Read check IDs from get_work_plan or verification results.",
++    parameters: { type: "object", properties: {
++      checkId: { type: "string" }, args: { type: "object", additionalProperties: true },
++    }, required: ["checkId", "args"], additionalProperties: false },
++  },
++};
++
+ export const WORK_PLAN_TOOLS: readonly OpenAiToolSchema[] = [
+   {
+     type: "function",
+@@ -724,6 +754,22 @@ export const WORK_PLAN_TOOLS: readonly OpenAiToolSchema[] = [
+                       title: { type: "string", description: "항목 제목" },
+                       instruction: { type: "string", description: "실행 모델이 그대로 수행할 구체 지시" },
+                       doneWhen: { type: "string", description: "완료 판정 기준(선택)" },
++                      mapTargets: {
++                        type: "array", items: { type: "string" },
++                        description: "Required for spatial work: one exact map ID per authoring item. Linking declares exactly both endpoint IDs in its separate item.",
++                      },
++                      verificationChecks: {
++                        type: "array", description: "Only for verification successTools lacking a resolved accepted criterion. Immutable validated specifications; missing scope stays pending.",
++                        items: { type: "object", properties: {
++                          tool: { type: "string" },
++                          checkId: { type: "string", description: "Optional existing pending check ID to specify without changing its owner; valid scopes remain immutable." },
++                          criterion: { type: "object", properties: { promiseId: { type: "string" }, criterionIndex: { type: "integer", minimum: 0 } }, required: ["promiseId", "criterionIndex"] },
++                          args: { type: "object", additionalProperties: true },
++                          interactionTargets: { type: "array", description: "Every scene interact step's frozen map/event ownership.", items: { type: "object", properties: {
++                            stepIndex: { type: "integer", minimum: 0 }, mapId: { type: "string" }, eventId: { type: "string" },
++                          }, required: ["stepIndex", "mapId", "eventId"] } },
++                        }, required: ["tool"], additionalProperties: false },
++                      },
+                       requirementIds: { type: "array", items: { type: "string" } },
+                       successTools: {
+                         type: "array",
+@@ -825,8 +871,8 @@ export interface AssistantSessionOptions {
+    * 도메인을 문장 키워드로 추측하는 경로는 없다(2026-09-03 의도 라우터 감사).
+    */
+   declareIntent?: IntentDeclarer;
+-  /** Editor-owned, awaited wiki save. The detached session never persists wiki writes itself. */
+-  prepareProjectWiki?: (input: WikiTurnInput) => Promise<Project["world"]>;
++  /** Editor-owned checkpoint or explicit deferral. The detached session never persists wiki writes itself. */
++  prepareProjectWiki?: (input: WikiTurnInput) => Promise<WikiPreparationOutcome>;
+   /**
+    * 자율 실행 드라이버용 사용자-대기 조회 훅(peek-only). 패널의 pendingSends 큐에
+    * 메시지가 있는지 "만" 보고한다 — 드라이버는 절대 dequeue 하지 않는다(패널의 기존
+@@ -891,6 +937,10 @@ export class AssistantSession {
+   private currentTurnIndex = 0;
+   // 이번 턴 사용자 메시지의 [컨텍스트] 선택 영역에서 파생된 암묵적 명세(턴마다 재계산).
+   private turnImplicitSpec: BuildSpec | null = null;
++  // An inferred viewport placement belongs to a matching placement instruction,
++  // not every item that happens to edit its map. Its box is captured before camera moves.
++  private turnViewSpec: BuildSpec | null = null;
++  private turnViewSpecWorkItemId: string | null = null;
+   // 이번 턴 시작 전에 이미 존재하던 명시 스펙. 이 스펙으로 변경 제안이 만들어지면
+   // 카드에 이전 계획 포함 경고를 붙인다(D06).
+   private carryoverSpecsForTurn = new Map<string, BuildSpec>();
+@@ -902,6 +952,8 @@ export class AssistantSession {
+   private lastRejectedSpecFingerprint: string | null = null;
+   // 이번 턴에 누적된 제안 — 오류 후 재시도(retryLastTurn)에서도 이어진다(결함 ⑥).
+   private turnProposals = new Map<string, ProposedCall>();
++  // Quantity and diff completeness belong to one work item, even before milestone apply.
++  private readonly workItemProposals = new Map<string, ProposedCall>();
+   /**
+    * 이 턴에 마일스톤으로 저장소에 적용을 끝낸 쓰기 툴콜 원장.
+    *
+@@ -923,6 +975,8 @@ export class AssistantSession {
+   private adventureRequirements: AdventureRequirements | undefined;
+   private statefulNpcRequirement = false;
+   private npcRewardRequirements: NpcRewardRequirements | undefined;
++  /** Captured requirement object identity binds index and request lifetime; never stores verdicts. */
++  private readonly npcRewardWitnesses = new Map<NpcRewardRequirement, NpcRewardWitness>();
+   /** Only declared NPC event state, so DB/terrain items do not inherit NPC acceptance. */
+   private readonly npcRewardItemBaseline = new Map<NpcRewardRequirement, string>();
+   private readonly imageEvidence = new AssistantImageEvidence();
+@@ -932,7 +986,8 @@ export class AssistantSession {
+   private readonly readEvidence = new ToolReadEvidence();
+   private originalContext: OriginalContextStore | null = null;
+   private readonly verificationEvidence = new ToolVerificationEvidence();
+-  private readonly workItemVerificationEvidence = new ToolVerificationEvidence();
++  private readonly verificationOwners = new WeakMap<WorkItem, { ownerId: string; checkIds: string[] }>();
++  private verificationOwnerSequence = 0;
+   /** 이번 턴이 손댈 선택 사각형(있으면). 패널·영역 작업이 사실로 넘긴다. */
+   private turnScope: SessionTurnScope | null = null;
+   // 직전 턴이 LLM 오류로 끊겼는가(수동 재시도 허용 플래그).
+@@ -959,6 +1014,7 @@ export class AssistantSession {
+   // 자문 검증이 직접 실행한 툴콜은 히스토리에 기록하지 않는다(모델 저작만).
+   /** 런 누적 툴콜 히스토리(검증 선택용) — 쓰기 툴 + play_walkthrough 만 기록한다. */
+   private verificationHistory: VerificationCallRecord[] = [];
++  private completionQualityRequired = false;
+   /** 이 플랜에서 이미 자문 검증을 돌린 레이어 id(플랜 id 기준 — replan 시 자연 리셋). */
+   private verifiedPlanId: string | null = null;
+   private verifiedLayerIds = new Set<string>();
+@@ -1070,6 +1126,7 @@ export class AssistantSession {
+   private skipPlannerRoundOnly = false;
+   /** 현재 WorkItem에서 이번 사용자 메시지 동안 성공한 모든 툴 이름(읽기 포함). */
+   private turnSuccessfulTools = new Set<string>();
++  private workItemToolOutcomes: WorkToolOutcome[] = [];
+   private successfulToolsWorkItemId: string | null = null;
+   /** 현재 WorkItem 이 새로 만든 맵 id — 산출물 게이트가 "만들고 안 채운 맵"을 잡는 근거. */
+   private turnItemCreatedMapIds = new Set<string>();
+@@ -1276,6 +1333,7 @@ export class AssistantSession {
+   // 제안 수락/거부 후, 대화(메시지·감사 로그)를 유지한 채 프로젝트 기준만 store 최신 상태로 갱신한다.
+   // 세션 폐기(dropSession)와 달리 대화 기억을 잃지 않는다 — "채팅 세션 단위 전체 기억"(#6)의 핵심.
+   rebaseProject(project: Project): void {
++    if (JSON.stringify(this.ctx.project) !== JSON.stringify(project)) this.invalidateVerificationAfterWrite();
+     if (this.approvedReviewIdentity !== JSON.stringify(project)) {
+       // Coordinator receipts and manual wiki notes arrive outside the authored
+       // candidate: adopt wiki-only drift into the approval, void anything else.
+@@ -1371,8 +1429,26 @@ export class AssistantSession {
+     return accepted;
+   }
+ 
++  /** Same idle panel-owned boundary as withdrawal; no model tool or history replay. */
++  previewApproachCorrection(checkId: string): ApproachPreview | null {
++    if (!this.acceptanceAppliedProject || acceptanceFingerprint(this.ctx.project) !== acceptanceFingerprint(this.acceptanceAppliedProject)) return null;
++    return this.verificationEvidence.previewApproach(checkId, this.acceptanceAppliedProject);
++  }
++
++  confirmApproachCorrection(preview: ApproachPreview, onEvent?: (event: SessionEvent) => void): boolean {
++    if (!this.acceptanceAppliedProject || acceptanceFingerprint(this.ctx.project) !== acceptanceFingerprint(this.acceptanceAppliedProject)) return false;
++    const revision = this.verificationEvidence.confirmApproach(preview, this.acceptanceAppliedProject);
++    if (!revision) return false;
++    this.pushAudit({ kind: "status", text: `approach:user-confirmed ${JSON.stringify(revision)}` });
++    this.pushOrchestrationMessage(`사용자가 접근 보정만 승인했습니다. 아직 검증되지 않았습니다. 원래 checkId와 승인된 정확한 args로 correct_verification을 새로 실행하세요. 다른 기준과 실패는 유지됩니다.\n${JSON.stringify(revision)}`);
++    this.publishAcceptance(onEvent);
++    this.publishRunOutcome(onEvent);
++    return true;
++  }
++
+   /** Applied-state refresh for store changes/undo, including after completion. */
+   refreshAcceptance(project: Project, onEvent?: (event: SessionEvent) => void): void {
++    if (JSON.stringify(this.ctx.project) !== JSON.stringify(project)) this.invalidateVerificationAfterWrite();
+     // The exact reviewed candidate already carries checks against these values.
+     // Still retire live apply authority below; content evidence is not permission.
+     const reviewedContent = this.isDraftReviewApproved(project);
+@@ -1406,9 +1482,10 @@ export class AssistantSession {
+   private publishAcceptance(onEvent?: (event: SessionEvent) => void): void {
+     this.imageEvidence.current(this.ctx.project);
+     if (!this.acceptance || !this.acceptanceAppliedProject) return;
+-    const snapshot = this.acceptance.evaluate(this.acceptanceAppliedProject,
+-      this.turnProposals.size > 0 ? this.ctx.project : this.acceptanceAppliedProject,
+-      this.verificationEvidence, this.verificationEvidence.problems("required"));
++    const draft = this.turnProposals.size > 0 ? this.ctx.project : this.acceptanceAppliedProject;
++    this.acceptance.bindVerificationRequirements(this.verificationEvidence, this.ctx.project);
++    this.adoptVerificationRequirements();
++    const snapshot = this.acceptance.evaluate(this.acceptanceAppliedProject, draft, this.verificationEvidence, this.verificationEvidence.problems("blocking"));
+     onEvent?.({ type: "acceptance", snapshot });
+   }
+ 
+@@ -1434,16 +1511,226 @@ export class AssistantSession {
+ 
+   private adoptAcceptance(promises: readonly AcceptancePromise[] | undefined, onEvent?: (event: SessionEvent) => void,
+     request?: { readonly baseline: Project; readonly source: AcceptanceSource }): void {
+-    if (this.workPlan) this.verificationEvidence.requireTools(
+-      this.workPlan.layers.flatMap(layer => layer.items.flatMap(item => item.successTools ?? [])));
+-    if (!promises && (this.acceptance || !this.spatialAcceptanceRequired())) return;
++    if (!promises && (this.acceptance || !this.spatialAcceptanceRequired())) {
++      this.adoptVerificationRequirements();
++      return;
++    }
+     const goal = this.acceptance?.goal ?? this.workPlan?.goal ?? this.currentTurnInstruction;
+     if (!this.acceptance) {
+-      this.acceptance = new AssistantAcceptanceLedger(`acceptance-${++this.acceptanceSequence}`, goal, this.acceptanceRequestBaseline, this.imageEvidence);
++      this.acceptance = new AssistantAcceptanceLedger(`acceptance-${++this.acceptanceSequence}`, goal, this.acceptanceRequestBaseline, this.imageEvidence,
++        (project, requirement) => {
++          const captured = this.npcRewardRequirements;
++          const original = captured && !("invalidReason" in captured)
++            ? captured.find(entry => acceptanceFingerprint(entry) === acceptanceFingerprint(requirement)) : undefined;
++          return verifyNpcRewardsPlayable(project, [original ?? requirement], this.npcRewardWitnesses);
++        });
+       this.acceptanceAppliedProject = structuredClone(this.baselineProject);
+     }
+     this.acceptance.adopt(promises ?? missingAcceptance(goal), request?.baseline ?? this.acceptanceRequestBaseline, request?.source ?? this.acceptanceRequestSource);
+     this.publishAcceptance(onEvent);
++    const malformed = this.acceptance.getSnapshot().items.filter(item => item.issues?.length);
++    if (malformed.length) this.pushOrchestrationMessage(`Acceptance contract requires repair before content generation. Use repair_acceptance for these item IDs; valid promises and baselines remain unchanged.\n${JSON.stringify({ code: "malformed-criteria", items: malformed })}`);
++  }
++
++  getVerificationSnapshot(includeAttempts = true) { return this.verificationEvidence.snapshot(includeAttempts); }
++
++  private verificationInitialState(name: string): unknown {
++    return verificationInitialState(name, this.ctx.project);
++  }
++
++  /** Both authoring paths must validate the entire candidate before touching live state. */
++  private preflightWorkPlan(plan: WorkPlan): ToolResult | null {
++    const items = plan.layers.flatMap(layer => layer.items);
++    const conflicts: { itemId: string; declarationIndex: number; checkId?: unknown; reason: string }[] = [];
++    // Inspect wire input first: parseVerificationChecks deliberately rejects an
++    // entire malformed array and normalization can discard malformed items.
++    for (const input of workPlanVerificationInputs(plan)) {
++      const declarations = Array.isArray(input.checks) ? input.checks : [input.checks];
++      const parsed = parseVerificationChecks(input.checks);
++      for (const [declarationIndex, raw] of declarations.entries()) {
++        const checkId = acceptanceRecord(raw) ? raw.checkId : undefined;
++        const check = parseVerificationChecks([raw])?.[0];
++        const retained = check && items.some(item => item.id === input.itemId && item.verificationChecks?.some(entry =>
++          acceptanceFingerprint(entry) === acceptanceFingerprint(check)));
++        if ((!parsed && (checkId !== undefined || declarations.length > 1)) || (check && !retained)) {
++          conflicts.push({ itemId: input.itemId, declarationIndex, checkId, reason: "Malformed or discarded verification declaration; retain valid item fields and complete tool input." });
++        }
++      }
++    }
++    const ledger = this.acceptance ?? new AssistantAcceptanceLedger(`acceptance-${this.acceptanceSequence + 1}`,
++      plan.goal, this.acceptanceRequestBaseline);
++    const ownership = ledger.verificationOwnership(this.ctx.project, [...(plan.acceptance ?? []), ...(plan.requirements ?? [])], this.acceptanceRequestBaseline);
++    const existing = this.verificationEvidence.snapshot(false).requirements;
++    const resolutions = new Map<string, VerificationRequirement>();
++    for (const item of items) for (const [declarationIndex, check] of (item.verificationChecks ?? []).entries()) {
++      const reject = (reason: string) => conflicts.push({ itemId: item.id, declarationIndex, checkId: check.checkId, reason });
++      if (!item.successTools?.includes(check.tool)) { reject("Declare this verification tool in the item's successTools."); continue; }
++      const previous = check.checkId ? existing.find(entry => entry.checkId === check.checkId) : undefined;
++      if (check.checkId && !previous) { reject("Unknown retained checkId; use a session-owned requirement ID."); continue; }
++      if (previous && (previous.name !== check.tool
++        || acceptanceFingerprint(previous.mapTargets ?? []) !== acceptanceFingerprint(item.mapTargets ?? []))) {
++        reject("Retained requirements must preserve their tool and exact mapTargets (including when omitted)."); continue;
++      }
++      const binding = "criterion" in check ? ownership.find(entry => entry.promiseId === check.criterion.promiseId
++        && entry.criterionIndex === check.criterion.criterionIndex
++        && (entry.criterion.kind === "reachability" ? "check_reachability" : "run_action_combat_test") === check.tool) : undefined;
++      const args = "args" in check ? check.args : !binding?.mapId ? null : binding.criterion.kind === "reachability"
++        ? { mapId: binding.mapId, from: binding.criterion.from, targets: binding.criterion.to } : { mapId: binding.mapId };
++      const inScope = !args || !item.mapTargets?.length || !getTool(check.tool)?.parameters.properties?.mapId
++        || (typeof args.mapId === "string" && item.mapTargets.includes(args.mapId));
++      if (!previous) continue; // New unresolved scopes are adopted as independent pending checks.
++      if (!args || !inScope) { reject("The retained ID must resolve to valid input on its retained targets."); continue; }
++      const requirement: VerificationRequirement = { checkId: previous.checkId, ownerId: previous.ownerId, name: check.tool, args,
++        mapTargets: previous.mapTargets,
++        ...("criterion" in check ? { criterion: check.criterion, acceptedCriterion: binding?.criterion }
++          : { interactionTargets: check.interactionTargets, initialState: this.verificationInitialState(check.tool) }) };
++      if (previous.args !== null) {
++        if (acceptanceFingerprint(previous.args) !== acceptanceFingerprint(args)
++          || ("args" in check && acceptanceFingerprint(previous.interactionTargets) !== acceptanceFingerprint(check.interactionTargets))
++          || ("criterion" in check && previous.criterion && acceptanceFingerprint(previous.criterion) !== acceptanceFingerprint(check.criterion))) {
++          reject("Specified checkId has immutable scope or interaction ownership; a distinct additional check must omit checkId.");
++        }
++        continue; // Exact reuse never respecifies criterion linkage, initial state, owner or proof.
++      }
++      if (previous.acceptedCriterion && acceptanceFingerprint(previous.acceptedCriterion) !== acceptanceFingerprint(requirement.acceptedCriterion)) {
++        reject("Pending criterion resolution must preserve its accepted criterion and ownership."); continue;
++      }
++      const earlier = resolutions.get(previous.checkId);
++      if (earlier && acceptanceFingerprint(earlier) !== acceptanceFingerprint(requirement)) {
++        reject("Contradictory resolutions of the same pending checkId in this candidate; provide one compatible specification."); continue;
++      }
++      resolutions.set(previous.checkId, requirement);
++    }
++    if (conflicts.length) return { ok: false, summary: "WorkPlan rejected atomically: verification declaration conflict. Old plan and proof remain installed. Distinct checks omit checkId; pending resolutions preserve owner, tool and targets.",
++      issues: conflicts.map(conflict => ({ severity: "error", code: "verification-declaration-conflict", message: `${conflict.itemId}[${conflict.declarationIndex}] ${conflict.checkId ?? "new check"}: ${conflict.reason}` })),
++      data: { conflicts, plan: this.getWorkPlan(), acceptance: this.getAcceptanceSnapshot(), verification: this.getVerificationSnapshot() } };
++    const targetIssues = items.flatMap(item => workTargetContractIssues(item).map(issue => ({ ...issue, itemId: item.id })));
++    return targetIssues.length ? { ok: false, summary: targetIssues.map(issue => `${issue.itemId}: ${issue.message}`).join(" "),
++      issues: targetIssues.map(issue => ({ severity: "error", code: issue.code, message: issue.message })),
++      data: { targetIssues, plan: this.getWorkPlan(), acceptance: this.getAcceptanceSnapshot(), verification: this.getVerificationSnapshot() } } : null;
++  }
++
++  private adoptVerificationRequirements(): void {
++    const ownership = this.acceptance?.verificationOwnership(this.ctx.project) ?? [];
++    const accepted = ownership.map(binding => {
++      const name = binding.criterion.kind === "reachability" ? "check_reachability" : "run_action_combat_test";
++      const checkId = `${this.acceptance!.id}:${binding.promiseId}:${binding.criterionIndex}`;
++      const args = !binding.mapId ? null : binding.criterion.kind === "reachability"
++        ? { mapId: binding.mapId, from: binding.criterion.from, targets: binding.criterion.to }
++        : { mapId: binding.mapId };
++      this.verificationEvidence.adopt({ checkId, ownerId: `${this.acceptance!.id}:${binding.promiseId}`, name, args,
++        criterion: { promiseId: binding.promiseId, criterionIndex: binding.criterionIndex }, acceptedCriterion: binding.criterion });
++      this.verificationEvidence.setRequirementActive(checkId, binding.active);
++      this.verificationEvidence.setCriterionPassed(checkId, binding.passed);
++      return { ...binding, checkId, name, args };
++    });
++    for (const requirement of this.verificationEvidence.snapshot(false).requirements) {
++      if (!requirement.criterion) continue;
++      const binding = accepted.find(entry => entry.promiseId === requirement.criterion!.promiseId && entry.criterionIndex === requirement.criterion!.criterionIndex);
++      if (!binding) continue;
++      if (requirement.args === null && binding.mapId) {
++        const original = this.verificationEvidence.snapshot(false).requirements.find(entry => entry.checkId === binding.checkId)!;
++        this.verificationEvidence.adopt({ ...requirement, args: original.args });
++      }
++      this.verificationEvidence.setCriterionPassed(requirement.checkId, binding.passed);
++    }
++    const malformedItems = new Set(this.workPlan ? workPlanVerificationInputs(this.workPlan)
++      .filter(input => !parseVerificationChecks(input.checks)).map(input => input.itemId) : []);
++    for (const item of this.workPlan?.layers.flatMap(layer => layer.items) ?? []) {
++      if (this.verificationOwners.has(item)) continue;
++      const ownerId = `verification-owner-${++this.verificationOwnerSequence}`;
++      const checkIds: string[] = [];
++      for (const name of item.successTools ?? []) {
++        if (!VERIFICATION_TOOL_NAMES.has(name)) continue;
++        const criteria = accepted.filter(binding => binding.active && binding.name === name && (!item.mapTargets?.length
++          || binding.mapId === undefined || item.mapTargets.includes(binding.mapId)));
++        const declarations = (item.verificationChecks ?? []).filter(check => check.tool === name);
++        if (criteria.length && !declarations.length && !malformedItems.has(item.id)) { checkIds.push(...criteria.map(binding => binding.checkId)); continue; }
++        const adoptPending = (checkId: string) => {
++          this.verificationEvidence.adopt({ checkId, ownerId, name, args: null, mapTargets: item.mapTargets ?? undefined });
++          checkIds.push(checkId);
++        };
++        if (!declarations.length) adoptPending(`${ownerId}:${name}:pending`);
++        for (const [index, check] of declarations.entries()) {
++          const previous = check.checkId ? this.verificationEvidence.snapshot(false).requirements.find(entry => entry.checkId === check.checkId) : undefined;
++          const declarationOwner = previous?.ownerId ?? ownerId;
++          const checkId = previous?.checkId ?? `${ownerId}:${name}:${index}`;
++          // Preflight established exact reuse. Never rewrite frozen linkage,
++          // interaction/initial-state ownership or proof, even through a ref.
++          if (previous && previous.args !== null) { checkIds.push(checkId); continue; }
++          if ("criterion" in check) {
++            const binding = criteria.find(entry => entry.promiseId === check.criterion.promiseId && entry.criterionIndex === check.criterion.criterionIndex);
++            if (binding) {
++              if (previous) {
++                const requirement = this.verificationEvidence.snapshot(false).requirements.find(entry => entry.checkId === binding.checkId)!;
++                this.verificationEvidence.adopt({ ...requirement, checkId, ownerId: declarationOwner, mapTargets: item.mapTargets ?? undefined });
++                this.verificationEvidence.setCriterionPassed(checkId, binding.passed);
++              }
++              checkIds.push(previous ? checkId : binding.checkId);
++            } else adoptPending(checkId);
++          } else {
++            // Retain plan ownership without adding mapId to project/quest/troop/scenario inputs.
++            if (item.mapTargets?.length && getTool(name)?.parameters.properties?.mapId
++              && (typeof check.args.mapId !== "string" || !item.mapTargets.includes(check.args.mapId))) {
++              adoptPending(checkId);
++              continue;
++            }
++            // Only an exact criterion scope can stand in for an explicit declaration.
++            // A retained checkId keeps its own ownership, even for identical args.
++            const binding = !previous && criteria.find(entry => acceptanceFingerprint(entry.args) === acceptanceFingerprint(check.args));
++            if (binding) {
++              checkIds.push(binding.checkId);
++              continue;
++            }
++            this.verificationEvidence.adopt({ checkId, ownerId: declarationOwner, name, args: check.args,
++              mapTargets: item.mapTargets ?? undefined, interactionTargets: check.interactionTargets,
++              initialState: this.verificationInitialState(name) });
++            checkIds.push(checkId);
++          }
++        }
++      }
++      this.verificationOwners.set(item, { ownerId, checkIds });
++    }
++  }
++
++  private async executeVerificationTool(name: string, args: Record<string, unknown>, signal?: AbortSignal): Promise<ToolResult> {
++    const tool = getTool(name);
++    if (name !== "run_action_combat_test" || !tool) return runTool(this.ctx, name, args, { dryRun: false });
++    const errors = validateArgs(tool.parameters, args);
++    if (errors.length > 0 || typeof args.mapId !== "string") return {
++      ok: false, summary: "액션 전투 검증 인자 오류", issues: errors.map(message => ({ severity: "error", code: "invalid-args", message })),
++    };
++    try {
++      const { runActionCombatTest } = await import("@/editor/actionCombatRuntimeProbe");
++      const receipt = await runActionCombatTest(this.ctx.project, { mapId: args.mapId, signal });
++      this.acceptance?.captureActionProof(receipt, this.ctx.project, args.mapId);
++      return { ok: true, summary: receipt.pass ? "실제 액션 전투 검증 통과" : `실제 액션 전투 검증 미통과: ${receipt.reason ?? receipt.status}`, data: receipt };
++    } catch (cause) {
++      this.acceptance?.captureActionProof(null, this.ctx.project, args.mapId);
++      const message = cause instanceof Error ? cause.message : String(cause);
++      return { ok: false, summary: message, issues: [{ severity: "error", code: "verification-execution-failed", message }] };
++    }
++  }
++
++  private async correctVerification(args: Record<string, unknown>, signal?: AbortSignal): Promise<ToolResult> {
++    const correction = Object.keys(args).every(key => key === "checkId" || key === "args")
++      ? this.verificationEvidence.correction(args.checkId, args.args, this.ctx.project) : null;
++    if (!correction || typeof args.checkId !== "string") return { ok: false, summary: "Unknown check or incompatible correction",
++      issues: [{ severity: "error", code: "invalid-verification-correction", message: "Use an existing checkId and compatible original-tool args; accepted checks cannot be replaced." }],
++      data: { verification: this.getVerificationSnapshot(false) } };
++    const amended = this.verificationEvidence.snapshot(false).approaches.some(entry => entry.checkId === args.checkId);
++    if (amended && (signal?.aborted || !this.acceptanceAppliedProject
++      || acceptanceFingerprint(this.ctx.project) !== acceptanceFingerprint(this.acceptanceAppliedProject))) return {
++      ok: false, summary: "접근 보정은 현재 적용된 내용에서 새로 검증해야 합니다.",
++      issues: [{ severity: "error", code: "unapplied-approach-verification", message: "Apply current content before executing the approved approach." }],
++    };
++    // The bounded amendment is a synchronous native scene read. Observe its
++    // receipt before any await can interleave an applied write, undo or cancel.
++    const result = amended ? runTool(this.ctx, correction.name, correction.args, { dryRun: false })
++      : await this.executeVerificationTool(correction.name, correction.args, signal);
++    this.recordToolResult(correction.name, correction.args, result, true, args.checkId);
++    return { ...result, data: { ...(isRecord(result.data) ? result.data : {}), checkId: args.checkId,
++      tool: correction.name, verification: this.getVerificationSnapshot(false) } };
+   }
+ 
+   private acceptanceOpen(): boolean {
+@@ -1451,22 +1738,33 @@ export class AssistantSession {
+   }
+ 
+   private explicitVerificationOpen(): boolean {
+-    return this.turnExpectsChange() && this.verificationEvidence.problems("explicit").length > 0;
++    return this.turnComposerMode !== "ask" && !this.lastTurnPlanOnly && this.verificationEvidence.problems("blocking").length > 0;
+   }
+ 
+   private acceptanceIncompleteText(): string {
+     const snapshot = this.getAcceptanceSnapshot();
+     return `완료 검증이 아직 미완성입니다.\n${snapshot?.items.filter(item => item.required !== false && !item.withdrawal && item.status !== "verified")
+-      .map(item => `- ${item.title}: ${item.reason ?? "unverified"}\n${item.evidence.filter(e => !e.passed).map(e => `  ${e.expected} → ${e.observed}`).join("\n")}`).join("\n") ?? ""}`;
++      .map(item => `- ${item.title}: ${item.reason ?? "unverified"}\n${[
++        ...(item.issues ?? []).map(issue => `  ${JSON.stringify(issue)}`),
++        ...item.evidence.filter(e => !e.passed).flatMap(e => [`  ${e.expected} → ${e.observed}`, ...(e.issues ?? []).map(issue => `  ${JSON.stringify(issue)}`)]),
++      ].join("\n")}`).join("\n") ?? ""}`;
+   }
+ 
+   private applyAcceptanceTool(name: string, args: Record<string, unknown>): ToolResult {
+     const allowed = name === "repair_acceptance" ? ["itemId", "criteria"] : ["itemId", "note", "verdict"];
+-    const ok = !Object.keys(args).some(key => !allowed.includes(key)) && Boolean(this.acceptance &&
+-      (name === "repair_acceptance" ? this.acceptance.repair(args.itemId, args.criteria)
+-        : this.acceptance.review(args.itemId, args.note, this.ctx.project, args.verdict)));
++    const extra = Object.keys(args).find(key => !allowed.includes(key));
++    const result = extra ? { ok: false, code: "invalid-arguments", issues: [{ field: extra, code: "unknown-field",
++      expected: `only ${allowed.join(", ")}`, example: ACCEPTANCE_EXAMPLES.mapCount }] }
++      : !this.acceptance ? { ok: false, code: "unknown-item", issues: [{ field: "itemId", code: "unknown-item",
++        expected: "an adopted acceptance item ID", example: ACCEPTANCE_EXAMPLES.mapCount }] }
++      : name === "repair_acceptance" ? this.acceptance.repair(args.itemId, args.criteria)
++        : this.acceptance.reviewResult(args.itemId, args.note, this.ctx.project, args.verdict);
+     this.publishAcceptance();
+-    return { ok, summary: ok ? "Acceptance evidence updated" : "Acceptance unchanged: repair only missing criteria; review requires delivered current image coverage", data: { acceptance: this.getAcceptanceSnapshot() } };
++    return { ok: result.ok, summary: result.ok ? "Acceptance evidence updated"
++      : `Acceptance unchanged (${result.code}): ${result.issues.map(issue => `${issue.field}: ${issue.expected}`).join("; ")}`,
++      issues: result.issues.map(issue => ({ severity: "error", code: issue.code, message: `${issue.field}: ${issue.expected}` })),
++      data: { code: result.code, issues: result.issues, acceptance: this.getAcceptanceSnapshot() } };
++
+   }
+ 
+ 
+@@ -1481,9 +1779,14 @@ export class AssistantSession {
+       this.lastRejectedSpecFingerprint = fingerprint;
+       this.specRejections += 1;
+       const discarded = this.specRejections >= MAX_SPEC_REJECTIONS;
+-      const issues = errors.map((issue) => ({ severity: "error" as const, code: "spec-invalid", message: issue.message }));
+-      // 검증기가 이름을 부른 필드를 그대로 되돌려준다 — 산문 지시만으로는 모델이 좌표만 흔든다.
+-      const demanded = SPEC_REMEDY_FIELDS.filter((field) => errors.some((issue) => issue.message.includes(field)));
++      const issues = errors.map((issue) => ({ severity: "error" as const, code: issue.code ?? "spec-invalid", message: issue.message }));
++      // Select repairs from diagnostics, never from localized prose or model-authored asset IDs.
++      const recovery = {
++        newPlanOverlap: errors.some((issue) => issue.code === "spec-new-plan-overlap"),
++        remedyFields: SPEC_REMEDY_FIELDS.filter((field) => errors.some((issue) => issue.code ===
++          (field === "overExisting" ? "spec-existing-content" : "spec-destroy-confirmation"))),
++      };
++      const demanded = recovery.remedyFields;
+       const fieldList = demanded.join("·");
+       if (repeated) {
+         issues.push({
+@@ -1497,16 +1800,21 @@ export class AssistantSession {
+       issues.push({
+         severity: "error",
+         code: "spec-invalid",
+-        message: discarded
+-          ? `검증 ${this.specRejections}회 실패 — 이 계획은 폐기하세요. 맵 크기·좌표·buildOrder를 스스로 보정한 새 명세를 제출하세요.`
+-          : demanded.length > 0
+-            ? `지적된 에셋에 ${fieldList} 필드를 넣어 set_build_spec을 재제출하세요 — 좌표만 바꾸면 같은 이유로 또 거부됩니다.`
+-            : "겹치지 않게 좌표를 고치고 필요한 경우 overExisting을 스스로 판단해 set_build_spec을 재제출하세요.",
++        // Keep spec-invalid on every rejection: the existing target retry budget aggregates it.
++        message: [
++          ...(discarded ? [`검증 ${this.specRejections}회 실패 — 이 계획은 폐기하고 새 명세를 제출하세요.`] : []),
++          ...(demanded.length > 0 ? [`기존 내용 충돌로 지적된 에셋에 ${fieldList} 필드를 넣어 set_build_spec을 재제출하세요. 보존할 내용은 영역에서 제외하세요. 이 선언은 새 에셋 간 교차를 해결하지 않습니다.`] : []),
++          ...(recovery.newPlanOverlap ? [
++            "새 에셋 간 교차를 고치세요: 실제 도로는 kind:\"road\"로 명시하면 road-road 교차가 허용됩니다. 같은 층 terrain-road는 buildOrder에 두 kind를 모두 넣고 terrain을 먼저 두어야 합니다. id·style·재료 라벨로 kind는 바뀌지 않습니다. terrain-terrain 겹침·중복은 어떤 순서나 overExisting으로도 허용되지 않으므로 영역을 비겹침으로 분할하세요. clear와 후속 배치의 겹침은 두 kind를 모두 넣고 clear를 먼저 두세요. 수정한 set_build_spec을 재제출하세요.",
++          ] : []),
++          ...(!recovery.newPlanOverlap && demanded.length === 0 ? ["지적된 필드·맵 크기·좌표를 고쳐 set_build_spec을 재제출하세요."] : []),
++        ].join(" "),
+       });
+       return {
+         ok: false,
+         summary: `밑그림 검증 실패(${this.specRejections}회)${repeated ? " — 직전과 동일" : ""}${discarded ? " — 계획 폐기" : ""}`,
+         issues,
++        data: { rejections: this.specRejections, repeated, discarded, recovery },
+       };
+     }
+     // 검증기는 "22" 같은 숫자 문자열을 받아주지만 게이트는 저장된 값을 그대로 더한다 — 경계에서 정수로 굳혀 저장한다.
+@@ -1550,7 +1858,13 @@ export class AssistantSession {
+     if (regions.length === 0) return { warnings: [] }; // mapId 없는 인자 형태 — 현 공간 툴셋엔 없음.
+     const mapId = regions[0].mapId;
+     const activeSpec = this.getActiveSpec(mapId);
+-    const specs = [activeSpec, this.turnImplicitSpec]
++    const currentItemId = this.workPlan?.currentItemId ?? null;
++    const itemViewSpec = this.workPlan ? this.inferredViewSpecForItem(getCurrentWorkItem(this.workPlan)) : this.turnViewSpec;
++    const viewSpec = this.turnViewSpec?.mapId === mapId
++      && itemViewSpec !== null
++      && this.turnViewSpec.assets.some(asset => asset.kind === "selection" || asset.kind === autoExpandedAssetKind(name))
++      ? this.turnViewSpec : null;
++    const specs = [activeSpec, this.turnImplicitSpec, viewSpec]
+       .filter((spec): spec is BuildSpec => spec !== null && spec.mapId === mapId);
+     if (scoped && specs.length === 0) {
+       return specGateResult(`스펙 게이트: '${name}' 차단 — 이 맵의 밑그림(스펙)이 없습니다`, [
+@@ -1576,7 +1890,10 @@ export class AssistantSession {
+       const baseline = this.baselineProject.maps[mapId];
+       if (baseline) {
+         const tileset = this.baselineProject.tilesets[baseline.tilesetId];
+-        const guarded = protectedCellsInRegions(baseline, regions, assets, tileset);
++        // Inferred locations are not a user-selected overwrite permission, even for
++        // an unclassified object whose inferred asset kind falls back to selection.
++        const overwriteAssets = specs.filter(spec => spec !== viewSpec).flatMap(spec => spec.assets);
++        const guarded = protectedCellsInRegions(baseline, regions, overwriteAssets, tileset);
+         if (guarded.count > 0) {
+           const at = guarded.sample ? `, 예: (${guarded.sample.x},${guarded.sample.y})` : "";
+           return specGateResult(`스펙 게이트: '${name}' 차단 — 기존 구조물·지형 ${guarded.count}칸을 덮습니다${at}`, [
+@@ -1590,6 +1907,15 @@ export class AssistantSession {
+     }
+     if (!scoped) return { warnings: [] };
+ 
++    if (viewSpec) {
++      if (!checkRegionsAgainstSpecBoundary(viewSpec.assets, regions, 0).covered) {
++        return specGateResult(`스펙 게이트: '${name}' 차단 — 화면 배치 영역 밖입니다`, [
++          `이 배치 지시의 영역만 사용하세요: ${viewSpec.assets.map(asset => `(${asset.x},${asset.y}) ${asset.w}×${asset.h}`).join(", ")}. 다른 작업은 별도 set_build_spec을 제출하세요.`,
++        ]);
++      }
++      this.turnViewSpecWorkItemId = currentItemId;
++    }
++
+     const slackCells = boundarySlackForTool(name);
+     const coverage = checkRegionsAgainstSpecBoundary(assets, regions, slackCells);
+     if (coverage.covered) return { warnings: [] };
+@@ -1677,6 +2003,7 @@ export class AssistantSession {
+       audit: [...this.audit],
+       workPlan: this.workPlan ? structuredClone(this.workPlan) : null,
+       acceptance: this.getAcceptanceSnapshot(),
++      verification: this.getVerificationSnapshot(),
+       runEndProof: this.getRunEndProof(),
+       resultReview: this.getResultReview(),
+       runOutcome: this.getRunOutcome(),
+@@ -1695,6 +2022,7 @@ export class AssistantSession {
+     // 사용자의 수동 진입(새 sendUserMessage 호출)은 예산 카운터를 0으로 되돌린다(re-arm).
+     // 마일스톤 자동 적용도 같은 명시 플래그로만 켠다. 직전 턴의 커밋 게이트 실패는
+     // 현재 자율 런만 중단하는 상태이므로 새 사용자 메시지에서 반드시 재가동한다.
++    this.verificationEvidence.expireApproachPreview();
+     const reviewedDraftAtEntry = this.isDraftReviewApproved() ? this.approvedReviewIdentity : null;
+     this.activeTurnSignal = signal;
+     // A send owns a new attempt even when preparation fails before the writer loop.
+@@ -1762,6 +2090,18 @@ export class AssistantSession {
+           scope: turnOptions.scope ? structuredClone(turnOptions.scope) : null };
+         onEvent({ type: "acceptance", snapshot: null });
+       }
++      if (!this.verificationEvidence.hasLintBaseline()) {
++        // Pin actual host lint against the existing pre-write project baseline before
++        // preparation/model tools can mutate or rebase it. Only a new goal clears it.
++        try {
++          this.verificationEvidence.captureLintBaseline({ ok: true, ...runProjectLint(this.baselineProject, {}) });
++        } catch (cause) {
++          this.verificationEvidence.captureLintBaseline({ ok: false });
++          const text = `verification:baseline-unavailable ${cause instanceof Error ? cause.message : String(cause)}`;
++          this.pushAudit({ kind: "status", text });
++          onEvent({ type: "status", text });
++        }
++      }
+       const first = await this.executeUserTurn(text, onEvent, signal, turnOptions, reviewedDraftAtEntry);
+       const last = opts?.autonomous === true && !this.lastTurnPlanOnly && this.turnComposerMode !== "ask"
+         ? await this.runAutonomousDriver(first, onEvent, signal, turnOptions) : first;
+@@ -1933,7 +2273,11 @@ export class AssistantSession {
+             this.publishRunOutcome();
+           },
+         });
+-        if (world) {
++        if (world && "kind" in world) {
++          const text = `wiki:deferred ${world.reason} — 프로젝트 기록 갱신을 보류했습니다. 기존 기록으로 요청을 계속합니다.`;
++          this.pushAudit({ kind: "status", text });
++          onEvent({ type: "status", text });
++        } else if (world) {
+           this.baselineProject.world = structuredClone(world);
+           this.ctx.project.world = structuredClone(world);
+           this.observedLiveWorld = structuredClone(world);
+@@ -1942,8 +2286,7 @@ export class AssistantSession {
+           delete this.ctx.project.world;
+           this.observedLiveWorld = undefined;
+         }
+-        // Adopt only the independently owned pre-turn documents, never concurrent
+-        // authored changes returned with the coordinator's live world snapshot.
++        // Deferral never bypasses the live authored-baseline gate or adopts a late patch.
+         if (!this.draftBaselineCurrent || !this.draftBaseline.matches(this.baselineProject)) {
+           throw new Error("independent-review-stale-baseline: regenerate from the current project before review");
+         }
+@@ -1998,15 +2341,18 @@ export class AssistantSession {
+     if (newRequest || startsGoal) {
+       this.adventureRequirements = intent.adventure;
+       this.npcRewardRequirements = intent.npcRewards === undefined ? undefined : structuredClone(intent.npcRewards);
++      this.npcRewardWitnesses.clear();
+       this.adventureIconRecords.clear();
+       this.readEvidence.begin(intent.readBeforeWrite);
++      this.completionQualityRequired = false;
+     }
+     if (userAction && !startsGoal && intent.source === "llm") {
+       const source: AcceptanceSource = { requestId: `request-${this.currentTurnIndex + 1}`, text: instruction,
+         scope: this.turnScope ? structuredClone(this.turnScope) : null };
+-      for (const refinement of intent.functionalRefinements ?? []) {
+-        const refined = this.acceptance?.refineFunctional(refinement, source) === true;
+-        this.pushAudit({ kind: "status", text: `functional:refinement-${refined ? "accepted" : "rejected"} ${refinement.requirementId}` });
++      const refinements = intent.functionalRefinements ?? [];
++      const refined = this.acceptance?.refineFunctionals(refinements, source) === true;
++      for (const refinement of refinements) {
++        this.pushAudit({ kind: "status", text: `functional:refinement-${refined ? "accepted" : "rejected"} ${refinement.requirementId}:${refinement.criterionIndex ?? 0}` });
+       }
+       this.publishAcceptance(onEvent);
+     }
+@@ -2043,23 +2389,25 @@ export class AssistantSession {
+     if (intent.actionCombat && intent.mode !== "question") {
+       this.adoptAcceptance([], onEvent);
+       this.acceptance?.requireActionCombat(intent.actionCombat.targets, this.acceptanceRequestBaseline);
+-      this.verificationEvidence.requireTools(["run_action_combat_test"]);
+       this.publishAcceptance(onEvent);
+     }
+     beginAssistantToolDomainTurn(intent);
+ 
+     // 스펙 게이트 턴 초기화: 사용자 선택 영역([컨텍스트])은 이 턴의 암묵적 명세가 된다.
+     this.currentTurnIndex += 1;
++    const continuesGoal = !startsGoal && (question || resumesGoal || this.turnIsDriverContinue || intent.source === "continuation");
+     this.turnImplicitSpec = implicitSpecFromContext(text)
+-      ?? implicitSpecFromScope(options.scope)
+-      ?? this.implicitSpecFromViewPhrase(instruction);
++      ?? implicitSpecFromScope(options.scope);
++    if (!continuesGoal) {
++      this.turnViewSpec = this.turnImplicitSpec ? null : this.implicitSpecFromViewPhrase(instruction);
++      this.turnViewSpecWorkItemId = null;
++    }
+     this.carryoverSpecsForTurn = new Map([...this.specsByMap]
+       .filter(([, entry]) => entry.turnIndex < this.currentTurnIndex)
+       .map(([mapId, entry]) => [mapId, structuredClone(entry.spec)]));
+     this.carryoverWarningsAdded.clear();
+     this.specRejections = 0;
+     this.lastRejectedSpecFingerprint = null;
+-    const continuesGoal = !startsGoal && (question || resumesGoal || this.turnIsDriverContinue || intent.source === "continuation");
+     if (!continuesGoal) {
+       // Retain an unchanged previously reviewed draft as content, not apply authority.
+       // The entry already retired that authority; unreviewed unrelated drafts still drop.
+@@ -2086,12 +2434,9 @@ export class AssistantSession {
+     // A tool budget splits execution, not the work item. Keep unapplied calls and
+     // artifact evidence until that item completes (or a different goal starts).
+     if (!continuesGoal) this.turnProposals = new Map();
+-    // Synthetic continuations belong to the same user goal and retain its applied ledger.
+-    if (!options.driverContinue) {
+-      this.turnAppliedMilestoneCalls = [];
+-      this.turnAppearanceGeneration = undefined;
+-    }
+-
++    // Both manual and synthetic continuations retain the same goal's applied ledger.
++    if (!continuesGoal) this.turnAppliedMilestoneCalls = [];
++    if (!options.driverContinue) this.turnAppearanceGeneration = undefined;
+     this.turnWriteDedupe = new Map();
+     this.turnToolStartedCount = 0;
+     this.turnEscalatedToolNames = [];
+@@ -2398,7 +2743,16 @@ export class AssistantSession {
+     // new_plan | replan
+     // 수정 요청이면 대상 맵 id 를 계획에 박아 매 스프린트 재주입한다 — footer 가 없는
+     // 자율 계속 턴에도 대상이 남아야 한다(진단 근본원인 14).
+-    this.workPlan = workPlanFromOrchestratorDecision(decision, new Date(), this.planTargetMapId(text));
++    const plan = workPlanFromOrchestratorDecision(decision, new Date(), this.planTargetMapId(text));
++    const rejection = this.preflightWorkPlan(plan);
++    if (rejection) {
++      const text = JSON.stringify(rejection);
++      this.pushOrchestrationMessage(text);
++      onEvent({ type: "status", text });
++      this.emitWorkPlan(onEvent);
++      return;
++    }
++    this.workPlan = plan;
+     this.adoptPlanAcceptance(onEvent);
+     this.resetWorkItemEvidence();
+     this.lastMilestoneCompletionItemId = null;
+@@ -2602,9 +2956,24 @@ export class AssistantSession {
+           summary: "set_work_plan 인자 오류: goal + layers[{title, items[{title, instruction}]}] 필요",
+         };
+       }
++      const rejection = this.preflightWorkPlan(proposed);
++      if (rejection) return rejection;
+       const repair = this.workPlan ? repairWorkPlan(this.workPlan, proposed) : null;
+       if (repair && !repair.ok) return { ok: false, summary: repair.reason };
+       const plan = repair?.plan ?? proposed;
++      if (repair && this.workPlan) for (const item of plan.layers.flatMap(layer => layer.items)) {
++        const previous = findWorkItemById(this.workPlan, item.id);
++        const owner = previous && this.verificationOwners.get(previous);
++        if (previous && owner
++          && acceptanceFingerprint(workPlanVerificationInputs(this.workPlan).filter(input => input.itemId === item.id))
++            === acceptanceFingerprint(workPlanVerificationInputs(plan).filter(input => input.itemId === item.id))
++          && acceptanceFingerprint(previous.verificationChecks) === acceptanceFingerprint(item.verificationChecks)
++          && acceptanceFingerprint(previous.mapTargets) === acceptanceFingerprint(item.mapTargets)
++          && acceptanceFingerprint(previous.successTools?.filter(name => VERIFICATION_TOOL_NAMES.has(name)))
++            === acceptanceFingerprint(item.successTools?.filter(name => VERIFICATION_TOOL_NAMES.has(name)))) {
++          this.verificationOwners.set(item, owner);
++        }
++      }
+       this.workPlan = plan;
+       this.adoptPlanAcceptance();
+       if (repair) {
+@@ -2618,19 +2987,19 @@ export class AssistantSession {
+       return {
+         ok: true,
+         summary: `WorkPlan 설정: ${progress.layersTotal}레이어 / ${progress.itemsTotal}항목. 현재: ${progress.current?.itemTitle ?? "(완료)"}`,
+-        data: { plan: structuredClone(plan), progress },
++        data: { plan: structuredClone(plan), progress, acceptance: this.getAcceptanceSnapshot(), verification: this.getVerificationSnapshot(false) },
+       };
+     }
+     // 조회는 계획이 없어도 실패가 아니다 — "없음"은 정확한 답이다. ok:false 로 돌려주면 정상 상태가
+     // 실패 통계에 섞이고 모델이 교정할 것도 없는 실패를 재시도한다(2026-08-23 실측).
+     if (name === "get_work_plan") {
+       if (!this.workPlan) {
+-        return { ok: true, summary: "활성 WorkPlan 없음. 다단계 작업이면 set_work_plan으로 계획을 세우세요.", data: { plan: null } };
++        return { ok: true, summary: "활성 WorkPlan 없음. 다단계 작업이면 set_work_plan으로 계획을 세우세요.", data: { plan: null, verification: this.getVerificationSnapshot(false) } };
+       }
+       return {
+         ok: true,
+         summary: formatWorkPlanUserVisible(this.workPlan).slice(0, 500),
+-        data: { plan: structuredClone(this.workPlan), progress: summarizeWorkPlan(this.workPlan), acceptance: this.getAcceptanceSnapshot() },
++        data: { plan: structuredClone(this.workPlan), progress: summarizeWorkPlan(this.workPlan), acceptance: this.getAcceptanceSnapshot(), verification: this.getVerificationSnapshot(false) },
+       };
+     }
+     if (!this.workPlan) {
+@@ -2644,7 +3013,7 @@ export class AssistantSession {
+       if (!id && args.itemId === undefined && this.workPlan.layers.every((layer) => layer.items.every((item) => item.status === "done"))) {
+         const rewards = this.npcRewardOutcome();
+         if (!rewards.ok) return { ok: false, summary: rewards.reason, issues: [{ severity: "error", code: "npc-reward-incomplete", message: rewards.reason }] };
+-        const pending = [...this.adventureProblems(), ...this.verificationEvidence.problems()];
++        const pending = [...this.adventureProblems(), ...this.verificationEvidence.problems("blocking")];
+         if (pending.length > 0) {
+           const summary = pending.join("\n");
+           return { ok: false, summary, issues: [{ severity: "error", code: "work-item-incomplete", message: summary }] };
+@@ -2672,6 +3041,7 @@ export class AssistantSession {
+           ok: false,
+           summary: result.reason,
+           issues: [{ severity: "error", code: "work-item-incomplete", message: result.reason }],
++          data: { targetIssues: result.item ? workTargetIssues(result.item, this.workItemToolOutcomes, this.workPlan) : [] },
+         };
+       }
+       const done = result.item;
+@@ -2706,7 +3076,6 @@ export class AssistantSession {
+       const note = typeof args.note === "string" ? args.note : undefined;
+       const rewards: WorkItemOutcomeVerdict = item ? this.npcRewardOutcome(item) : { ok: true };
+       if (!rewards.ok) return { ok: false, summary: rewards.reason, issues: [{ severity: "error", code: "npc-reward-incomplete", message: rewards.reason }] };
+-      if (item) this.verificationEvidence.recordSkippedTools(id, item.successTools ?? []);
+       const skipped = skipWorkItemById(this.workPlan, id, note);
+       if (!skipped) return { ok: false, summary: `항목을 찾지 못했습니다: ${id}` };
+       const next = getCurrentWorkItem(this.workPlan);
+@@ -2727,7 +3096,8 @@ export class AssistantSession {
+ 
+   private resetWorkItemEvidence(): void {
+     this.turnSuccessfulTools.clear();
+-    this.workItemVerificationEvidence.clear();
++    this.workItemToolOutcomes = [];
++    this.workItemProposals.clear();
+     // 산출물 추적도 항목 단위다 — 이전 항목이 만든 맵을 다음 항목이 채울 책임으로 물려받지 않는다.
+     this.turnItemCreatedMapIds.clear();
+     this.turnItemAuthoredTroopIds.clear();
+@@ -2755,6 +3125,8 @@ export class AssistantSession {
+    */
+   private outcomeGate(): WorkItemOutcomeGate {
+     return (item) => {
++      const targetIssues = workTargetIssues(item, this.workItemToolOutcomes, this.workPlan ?? undefined);
++      if (targetIssues.length) return { ok: false, reason: targetIssues.map(issue => issue.message).join(" ") };
+       const project = this.getProposedProject();
+       const maps = verifyCreatedMapsAuthored(project, this.turnItemCreatedMapIds);
+       if (!maps.ok) return maps;
+@@ -2793,22 +3165,48 @@ export class AssistantSession {
+     const required = Array.isArray(retained) && retained.length === 0 ? undefined : retained;
+     if (required === undefined || this.turnComposerMode === "ask" || this.lastTurnPlanOnly) return { ok: true };
+     const project = this.getProposedProject();
+-    if (!item || this.finishesWorkPlan(item.id)) return verifyNpcRewardsPlayable(project, required);
++    if (!item || this.finishesWorkPlan(item.id)) return verifyNpcRewardsPlayable(project, required, this.npcRewardWitnesses);
+     if ("invalidReason" in required) return { ok: true }; // No resolvable item target; whole-goal closure still fails.
+     const changed = required.filter((requirement) =>
+       this.npcRewardItemBaseline.get(requirement) !== npcRewardTargetSnapshot(project, requirement));
+-    return verifyNpcRewardsPlayable(project, changed.length ? changed : undefined);
++    return verifyNpcRewardsPlayable(project, changed.length ? changed : undefined, this.npcRewardWitnesses);
+   }
+ 
+   private npcRewardNote(): string | null {
+     if (this.turnComposerMode === "ask") return null;
+-    const functional = this.acceptance?.getFunctionalCriteria();
+-    const activeRewards = functional?.flatMap(criterion => criterion.kind === "npcReward" ? [criterion.requirement] : []);
+-    const npcRewards = activeRewards ? activeRewards.length ? activeRewards : undefined : this.npcRewardRequirements;
+-    if (npcRewards === undefined && !functional?.length) return null;
+-    return formatIntentNote({ ...emptyIntentDeclaration(), source: "llm", npcRewards,
+-      ...(functional?.length ? { functionalAcceptance: functional } : {}),
+-    });
++    const functionalAcceptance = this.acceptance?.getFunctionalCriteria();
++    if (this.npcRewardRequirements === undefined) return functionalAcceptance?.length
++      ? formatIntentNote({ ...emptyIntentDeclaration(), source: "llm", functionalAcceptance }) : null;
++    return formatIntentNote({
++      ...emptyIntentDeclaration(), source: "llm", npcRewards: this.npcRewardRequirements,
++      functionalAcceptance,
++    }) + "\nNPC reward indices: " + JSON.stringify("invalidReason" in this.npcRewardRequirements ? []
++      : this.npcRewardRequirements.map((requirement, requirementIndex) => ({ requirementIndex, target: requirement.target })))
++      + "\nverify_npc_reward requirementIndex is the zero-based index in this immutable npcRewards array. "
++      + "Author prerequisite maps/chests first, transfer links in separate linking items next, then the reward NPC and its journey verification. "
++      + "Keep one-map authoring items. Supply only physical prelude actions from authored start, with mapId asserting the current map. "
++      + "Do not seed keys, change reward timing, skip obligations or reset acceptance baselines. This proves the chosen reachable route, not every game path.";
++  }
++
++  private verifyNpcRewardTool(input: unknown, signal?: AbortSignal): ToolResult {
++    const required = this.npcRewardRequirements;
++    if (!isVerifyNpcRewardInput(input) || !required || "invalidReason" in required || !required[input.requirementIndex]) {
++      return { ok: false, summary: "Invalid verify_npc_reward input or captured requirementIndex", data: { executed: false } };
++    }
++    const requirement = required[input.requirementIndex];
++    const project = this.getProposedProject();
++    const matches = npcRewardTargetMatches(project, requirement.target);
++    const match = matches[0];
++    const previous = this.npcRewardWitnesses.get(requirement);
++    if (matches.length !== 1 || !match || (previous && (previous.target.mapId !== match.map.id || previous.target.eventId !== match.event.id))) {
++      return { ok: false, summary: "NPC reward target must uniquely resolve to its original map/event pair", data: { executed: false } };
++    }
++    const witness: NpcRewardWitness = structuredClone({ target: { mapId: match.map.id, eventId: match.event.id }, prelude: input.prelude });
++    // Select before replay: a valid but failing replacement cannot inherit the old pass.
++    this.npcRewardWitnesses.set(requirement, witness);
++    const verdict = verifyNpcRewardsPlayable(project, [requirement], this.npcRewardWitnesses, signal);
++    return { ok: verdict.ok, summary: verdict.ok ? "NPC reward prerequisite replay verified" : verdict.reason,
++      data: { executed: true, requirementIndex: input.requirementIndex, target: { ...witness.target }, ...verdict } };
+   }
+ 
+   private npcRewardFinalText(text: string): string {
+@@ -2842,16 +3240,17 @@ export class AssistantSession {
+     return problems;
+   }
+ 
++  private invalidateVerificationAfterWrite(): void {
++    this.verificationEvidence.invalidateAfterWrite();
++    for (const previous of this.turnSuccessfulTools) {
++      if (VERIFICATION_TOOL_NAMES.has(previous)) this.turnSuccessfulTools.delete(previous);
++    }
++  }
++
+   private recordSuccessfulTool(name: string): void {
+     this.syncSuccessfulToolsToCurrentWorkItem();
+     this.imageEvidence.current(this.ctx.project);
+-    if (getTool(name)?.mode === "write") {
+-      this.verificationEvidence.invalidateAfterWrite();
+-      this.workItemVerificationEvidence.invalidateAfterWrite();
+-      for (const previous of this.turnSuccessfulTools) {
+-        if (VERIFICATION_TOOL_NAMES.has(previous)) this.turnSuccessfulTools.delete(previous);
+-      }
+-    }
++    if (getTool(name)?.mode === "write") this.invalidateVerificationAfterWrite();
+     this.turnSuccessfulTools.add(name);
+     // 교착 판정은 **연속** 무진행이다 — 이 항목에서 쓰기가 하나라도 성공했으면 진행이 있었으므로
+     // 시도 수를 0으로 돌린다. 그러지 않으면 여러 턴에 걸쳐 정상 진행하는 큰 항목이 누적으로 막힌다.
+@@ -2863,20 +3262,31 @@ export class AssistantSession {
+   }
+ 
+   /** Keep transport/execution ok intact; only actual passing checks satisfy successTools. */
+-  private recordToolResult(name: string, args: Record<string, unknown>, result: ToolResult, countAsSuccess = true): void {
++  private recordToolResult(name: string, args: Record<string, unknown>, result: ToolResult, countAsSuccess = true, checkId?: string): void {
+     this.reviewToolResults.push(structuredClone({ name, args, result }));
+     this.syncSuccessfulToolsToCurrentWorkItem();
++    if (name === EVALUATE_GAME_QUALITY_TOOL) this.completionQualityRequired = true;
+     if (result.ok) for (const [tool, field, collection] of [["upsert_item", "item", "items"], ["upsert_equipment", "equipment", "equipment"]] as const) {
+       const record = args[field] as { id?: unknown } | undefined;
+       if (name === tool && record && typeof record.id === "string") this.adventureIconRecords.set(`${collection}/${record.id}`, { collection, id: record.id });
+     }
+-    this.verificationEvidence.observe(name, args, result, countAsSuccess ? "explicit" : "advisory",
+-      this.workPlan?.currentItemId ?? undefined);
++    this.adoptVerificationRequirements();
++    const item = this.workPlan ? getCurrentWorkItem(this.workPlan) : null;
++    const owner = item ? this.verificationOwners.get(item) : undefined;
++    const verdict = this.verificationEvidence.observe(name, args, result, countAsSuccess ? "explicit" : "advisory", owner?.ownerId, checkId,
++      this.verificationInitialState(name), owner?.checkIds);
+     if (!countAsSuccess) return;
+-    const verdict = this.workItemVerificationEvidence.observe(name, args, result);
+-    if (verdict && !this.workItemVerificationEvidence.passed(name)) {
++    const passed = !verdict || this.verificationEvidence.passed(name, owner?.checkIds, owner?.ownerId);
++    const outcome = workToolOutcome(name, args, result.ok && passed, result.data);
++    if (outcome.mapIds.length) {
++      this.workItemToolOutcomes = this.workItemToolOutcomes.filter(previous =>
++        previous.name !== name || previous.mapIds.length !== outcome.mapIds.length
++        || previous.mapIds.some((mapId, index) => mapId !== outcome.mapIds[index]));
++      this.workItemToolOutcomes.push(outcome);
++    }
++    if (!passed) {
+       this.turnSuccessfulTools.delete(name);
+-      this.pushAudit({ kind: "status", text: `verification:unmet ${name} — ${this.workItemVerificationEvidence.problems().join("; ")}` });
++      this.pushAudit({ kind: "status", text: `verification:unmet ${name} — ${this.verificationEvidence.problems().join("; ")}` });
+     } else if (result.ok) {
+       this.recordSuccessfulTool(name);
+     }
+@@ -2896,14 +3306,16 @@ export class AssistantSession {
+     return (item) => {
+       const verdict = outcome(item);
+       if (!verdict.ok) return verdict;
+-      const calls = this.turnWriteLedger(this.finalizeProposals(this.turnProposals));
+-      if (calls.length === 0) return { ok: true };
+-      const warnings = proposalCompletenessWarnings({
+-        requestText: this.currentTurnInstruction,
++      const itemCalls = [...this.workItemProposals.values()];
++      if (itemCalls.length === 0) return { ok: true };
++      const spatialCalls = this.turnWriteLedger(this.finalizeProposals(this.turnProposals));
++      const buildSpecs = this.getCompletionSpecs(itemCalls, item);
++      const warnings = [...new Set([...proposalCompletenessWarnings({
++        requestText: item.instruction,
+         intent: this.turnIntent,
+-        buildSpecs: this.getCompletionSpecs(calls),
+-        calls,
+-      });
++        calls: itemCalls,
++      }), ...buildSpecs.flatMap(spec => buildSpecCompletenessWarnings(spec, spatialCalls, true, this.ctx.project)),
++      ...this.inferredViewWarnings(spatialCalls, item)])];
+       if (warnings.length === 0) return { ok: true };
+       return {
+         ok: false,
+@@ -3069,14 +3481,15 @@ export class AssistantSession {
+    */
+   private async executeVerificationAdvisory(
+     layer: LayerDescriptor,
+-    onEvent: (event: SessionEvent) => void
+-  ): Promise<void> {
++    onEvent: (event: SessionEvent) => void,
++    scope: "layer" | "completion" = "layer",
++  ): Promise<LayerVerdictInput[]> {
+     const calls = selectVerificationCalls(layer, this.verificationHistory);
+     const results: LayerVerdictInput[] = [];
+     for (const call of calls) {
+       this.emitToolStarted(onEvent, call.name, call.args);
+       await this.yieldForUi(this.activeTurnSignal);
+-      if (this.activeTurnSignal?.aborted) return;
++      if (this.activeTurnSignal?.aborted) return results;
+       const reason = harnessToolReason("verification", call.name);
+       const result = runTool(this.ctx, call.name, call.args);
+       // Advisory checks report problems but never donate success to another work item.
+@@ -3096,22 +3509,23 @@ export class AssistantSession {
+     const verdict = parseLayerVerdict(results);
+     const layerId = layer.id ?? "";
+     const label = layerId !== "" ? layerId : layer.title;
+-    this.markLayerVerified(layerId);
++    const auditPrefix = scope === "layer" ? "agent_run:verification" : "agent_run:completion-check";
+     if (verdict.pass) {
+       this.pushAudit({
+         kind: "status",
+-        text: `agent_run:verification-pass layer=${label} calls=${calls.map((c) => c.name).join(",")} warnings=${verdict.warnings.length}`,
++        text: `${auditPrefix}-pass layer=${label} calls=${calls.map((c) => c.name).join(",")} warnings=${verdict.warnings.length}`,
+       });
+-      return;
++      return results;
+     }
+     this.pushAudit({
+       kind: "status",
+-      text: `agent_run:verification-advisory layer=${label} blocking=${verdict.blockingIssues.length} warnings=${verdict.warnings.length} — 자문이므로 런을 중단하지 않는다`,
++      text: `${auditPrefix}-advisory layer=${label} blocking=${verdict.blockingIssues.length} warnings=${verdict.warnings.length} — 자문이므로 런을 중단하지 않는다`,
+     });
+     for (const issue of verdict.blockingIssues.slice(0, 8)) {
+-      this.pushAudit({ kind: "status", text: `agent_run:verification-note layer=${label} — ${issue}` });
++      this.pushAudit({ kind: "status", text: `${auditPrefix}-note layer=${label} — ${issue}` });
+     }
+     onEvent({ type: "status", text: `검증 지적 ${verdict.blockingIssues.length}건 (자문) — 진행은 계속합니다.` });
++    return results;
+   }
+ 
+   /**
+@@ -3129,11 +3543,40 @@ export class AssistantSession {
+         id: layer.id,
+         title: layer.title,
+         isFinal: li === plan.layers.length - 1,
++        assessGameQuality: Boolean(this.ctx.project.endings?.length),
+         items: layer.items,
+       }, onEvent);
++      this.markLayerVerified(layer.id);
+     }
+   }
+ 
++  /** Read-only final checks are independent of the once-per-layer milestone sweep. */
++  private async assessCompletion(onEvent: (event: SessionEvent) => void): Promise<CompletionAssessment> {
++    const finalLayer = this.workPlan?.layers.at(-1);
++    const layer: LayerDescriptor = {
++      id: finalLayer?.id, title: "Final artifact", isFinal: true,
++      assessGameQuality: this.completionQualityRequired || Boolean(this.ctx.project.endings?.length),
++    };
++    const checks = this.turnComposerMode !== "ask" && this.turnIntent?.mode !== "question" && !this.lastTurnPlanOnly
++      && selectVerificationCalls(layer, this.verificationHistory).length > 1
++      ? await this.executeVerificationAdvisory(layer, onEvent, "completion") : [];
++    this.publishAcceptance(onEvent);
++    const assessment: CompletionAssessment = {
++      acceptance: this.getAcceptanceSnapshot(), adventure: this.completionProblems(),
++      verification: this.verificationEvidence.problems(), blockingVerification: this.verificationEvidence.problems("blocking"), checks,
++    };
++    onEvent({ type: "completion_assessment", assessment });
++    return assessment;
++  }
++
++  private completionIncompleteText(assessment: CompletionAssessment): string {
++    return [
++      ...(assessment.acceptance && assessment.acceptance.status !== "verified" ? [this.acceptanceIncompleteText()] : []),
++      ...(assessment.adventure.length ? [`모험 구성이 아직 미완성입니다.\n${assessment.adventure.map(problem => `- ${problem}`).join("\n")}`] : []),
++      ...(assessment.blockingVerification.length ? [`검증이 아직 통과되지 않았습니다.\n${assessment.blockingVerification.map(problem => `- ${problem}`).join("\n")}`] : []),
++    ].join("\n\n");
++  }
++
+   /** Completion schedules proof only after all pending writes have actually been applied. */
+   private async maybeRunEndProof(onEvent: (event: SessionEvent) => void, signal?: AbortSignal): Promise<void> {
+     if (!this.workPlan || !this.milestoneAutoApply || this.milestoneApplyFailed) return;
+@@ -3252,7 +3695,7 @@ export class AssistantSession {
+   ): Promise<RunEndProofState> {
+     const outcomeOwner = this.runResult;
+     const acceptance = this.acceptance;
+-    const functionalDraftPending = (): boolean => Boolean(acceptance?.getFunctionalCriteria().length && this.turnProposals.size > 0
++    const functionalDraftPending = (): boolean => Boolean(acceptance?.hasReloadCriteria() && this.turnProposals.size > 0
+       && acceptanceFingerprint(this.ctx.project) !== acceptanceFingerprint(store.getCurrent()));
+     const previous = this.getRunEndProof();
+     if (!signal?.aborted && previous?.verified && !this.acceptanceOpen() && !functionalDraftPending()
+@@ -3399,36 +3842,38 @@ export class AssistantSession {
+   }
+ 
+   /** 사용자 목표가 끝날 때 토큰·경과·과정을 감사에 남기고 채팅용 한 줄을 보낸다. */
+-  private finishRunRecap(
++  private async finishRunRecap(
+     result: TurnResult,
+     startedAt: number,
+     usageBefore: SessionUsageTotals,
+     auditFrom: number,
+     onEvent: (event: SessionEvent) => void,
+-  ): TurnResult {
++  ): Promise<TurnResult> {
+     this.publishAcceptance(onEvent);
+     if (this.acceptanceOpen() && !this.lastTurnPlanOnly && this.turnComposerMode !== "ask" && !this.isDraftReviewApproved()) {
+       this.acceptance?.stop();
+-      this.publishAcceptance(onEvent);
+-      result = { ...result, assistantText: this.acceptanceIncompleteText() };
+-      onEvent({ type: "assistant_message", content: result.assistantText });
+-    }
+-    const adventureProblems = this.completionProblems();
+-    if (adventureProblems.length) {
+-      result = { ...result, assistantText: `요청한 구성이 아직 미완성입니다.\n${adventureProblems.map(p => `- ${p}`).join("\n")}` };
+-      onEvent({ type: "assistant_message", content: result.assistantText });
+     }
+-    const verificationProblems = this.verificationEvidence.problems();
+-    if (verificationProblems.length > 0) {
+-      const notice = `검증이 아직 통과되지 않았습니다.\n${verificationProblems.slice(0, 8).map((problem) => `- ${problem}`).join("\n")}`;
+-      result = { ...result, assistantText: notice };
++    // Budget termination can bypass the model's final response entirely.
++    const assessment = await this.assessCompletion(onEvent);
++    const notice = this.lastTurnPlanOnly ? "" : this.completionIncompleteText(this.turnComposerMode === "ask"
++      ? { ...assessment, acceptance: null, adventure: [] } : assessment);
++    if (notice) {
++      const prefix = result.stoppedReason === "final" ? "" : result.assistantText.trim();
++      result = { ...result, assistantText: [prefix, notice].filter(Boolean).join("\n\n") };
+       onEvent({ type: "assistant_message", content: result.assistantText });
+     }
+-    if (this.runExecution === "response-final" && this.turnComposerMode !== "ask" && this.acceptanceOpen()) this.stopForAcceptance();
+-    if (adventureProblems.length > 0) {
++    if (this.runExecution === "response-final" && this.turnComposerMode !== "ask"
++      && (this.acceptanceOpen() || this.explicitVerificationOpen())) this.stopForAcceptance();
++    if (assessment.adventure.length > 0) {
+       this.acceptanceApplyPending = false;
+       if (this.runExecution === "response-final" && this.turnComposerMode !== "ask") this.runExecution = "blocked";
+     }
++    const reportedOnly = assessment.verification.filter(problem => !assessment.blockingVerification.includes(problem));
++    if (reportedOnly.length && !this.lastTurnPlanOnly) {
++      result = { ...result, assistantText: `${result.assistantText}\n\n선재 린트 지적 (자문):\n${reportedOnly.map(problem => `- ${problem}`).join("\n")}` };
++      onEvent({ type: "assistant_message", content: result.assistantText });
++    }
++    result = { ...result, completionAssessment: assessment };
+     this.runResult.current = result;
+     this.publishRunOutcome();
+     // Bridge/history consumers read the latest audited response, not the live
+@@ -3654,6 +4099,7 @@ export class AssistantSession {
+   }
+ 
+   private upsertProposal(proposedByKey: Map<string, ProposedCall>, proposal: ProposedCall): void {
++    this.workItemProposals.set(proposalKey(proposal), proposal);
+     this.approvedReviewIdentity = null;
+     this.approvedAuthoredIdentity = null;
+     this.consumedApprovedRevision = null;
+@@ -3979,15 +4425,18 @@ export class AssistantSession {
+   /** Shared by session review/auto-completion and panel completion accounting.
+    * Only changed maps participate; precedence is applied independently per map.
+    */
+-  getCompletionSpecs(calls: readonly ProposalCompletenessCall[]): BuildSpec[] {
++  getCompletionSpecs(calls: readonly ProposalCompletenessCall[], item?: WorkItem): BuildSpec[] {
+     const mapIds = new Set([...this.specsByMap.keys(), ...this.carryoverSpecsForTurn.keys()]);
+     if (this.turnImplicitSpec) mapIds.add(this.turnImplicitSpec.mapId);
++    const viewSpec = this.turnViewSpec && (!item || this.inferredViewSpecForItem(item)) ? this.turnViewSpec : null;
++    if (viewSpec) mapIds.add(viewSpec.mapId);
+     const specs: BuildSpec[] = [];
+     for (const mapId of [...mapIds].sort()) {
+       if (!proposalHasChangedMap(calls, mapId)) continue;
+       const entry = this.specsByMap.get(mapId);
+       const spec = (entry?.turnIndex === this.currentTurnIndex ? entry.spec : null)
+         ?? (this.turnImplicitSpec?.mapId === mapId ? this.turnImplicitSpec : null)
++        ?? (viewSpec?.mapId === mapId ? viewSpec : null)
+         ?? this.carryoverSpecsForTurn.get(mapId)
+         ?? (this.turnExpectsChange() ? entry?.spec : null);
+       if (spec) specs.push(spec);
+@@ -3995,6 +4444,25 @@ export class AssistantSession {
+     return specs;
+   }
+ 
++  private inferredViewWarnings(calls: readonly ProposedCall[], item?: WorkItem): string[] {
++    const spec = this.turnViewSpec;
++    if (!spec || (item && !this.inferredViewSpecForItem(item))) return [];
++    // An NPC touching the pond's rectangle is not evidence of terrain placement.
++    return buildSpecCompletenessWarnings(spec,
++      calls.filter(call => spec.assets.some(asset =>
++        asset.kind === "selection" ? SPATIAL_BUILD_TOOLS.has(call.name) : asset.kind === autoExpandedAssetKind(call.name))),
++    );
++  }
++
++  private inferredViewSpecForItem(item: WorkItem | null): BuildSpec | null {
++    const spec = this.turnViewSpec;
++    if (!spec || !item) return null;
++    if (this.turnViewSpecWorkItemId !== null) return this.turnViewSpecWorkItemId === item.id ? spec : null;
++    const asset = spec.assets[0];
++    const placement = implicitSpecFromViewLocation({ mapId: spec.mapId, requestText: item.instruction, rect: asset });
++    return placement?.assets.some(candidate => candidate.kind === asset.kind) ? spec : null;
++  }
++
+   /**
+    * 이 턴이 실제로 만든 쓰기 전체 — 마일스톤으로 적용을 끝낸 몫 + 아직 적용 전인 제안.
+    *
+@@ -4030,8 +4498,7 @@ export class AssistantSession {
+       if (wikiSync.changed) {
+         this.ctx.project = { ...this.ctx.project, world: wikiSync.world };
+         revision = ++this.reviewRevision;
+-        this.verificationEvidence.invalidateAfterWrite();
+-        this.workItemVerificationEvidence.invalidateAfterWrite();
++        this.invalidateVerificationAfterWrite();
+         this.imageEvidence.current(this.ctx.project);
+       }
+       for (const id of wikiSync.conflicts) {
+@@ -4042,20 +4509,25 @@ export class AssistantSession {
+         if (JSON.stringify(prepared) !== JSON.stringify(this.ctx.project)) {
+           this.ctx.project = prepared;
+           revision = ++this.reviewRevision;
+-          this.verificationEvidence.invalidateAfterWrite();
+-          this.workItemVerificationEvidence.invalidateAfterWrite();
++          this.invalidateVerificationAfterWrite();
+           this.imageEvidence.current(prepared);
+         }
+       }
+       const identity = JSON.stringify(this.ctx.project);
+       this.emitPhase(onEvent, "review");
+       const draftAcceptance = this.acceptance?.evaluateForReview(this.ctx.project, this.verificationEvidence) ?? null;
+-      const requiredProblems = [...preReviewProblems, ...this.completionProblems(), ...this.verificationEvidence.problems("explicit"),
++      const calls = this.turnWriteLedger(this.finalizeProposals(this.turnProposals));
++      const specs = this.getCompletionSpecs(calls);
++      const completionWarnings = [...new Set([...proposalCompletenessWarnings({ requestText: this.currentTurnInstruction,
++        intent: this.turnIntent, buildSpecs: specs, calls, project: this.ctx.project }),
++        ...this.inferredViewWarnings(calls), ...calls.flatMap(call => call.result.diff?.warnings ?? [])])];
++      // Declared placement obligations are deterministic; generic diff/count heuristics
++      // remain reviewer evidence, not a new gate on unrelated authored record types.
++      const placementProblems = specs.flatMap(spec => buildSpecCompletenessWarnings(spec, calls, true, this.ctx.project));
++      const requiredProblems = [...preReviewProblems, ...placementProblems,
++        ...this.completionProblems(), ...this.verificationEvidence.problems("blocking"),
+         ...(draftAcceptance?.items.flatMap(item => item.required === false || item.withdrawal || item.status === "verified" ? [] :
+           [item.reason ?? item.title, ...item.evidence.filter(entry => !entry.passed).map(entry => `${entry.expected}: ${entry.observed}`)]) ?? [])];
+-      for (const name of new Set(this.workPlan?.layers.flatMap(layer => layer.items.flatMap(item => item.successTools ?? [])) ?? [])) {
+-        if (VERIFICATION_TOOL_NAMES.has(name) && !this.verificationEvidence.passed(name)) requiredProblems.push(`${name}: declared verification must pass on the current revision`);
+-      }
+       const changes = reviewChanges(this.reviewBaseline, this.ctx.project);
+       const mapReferenceRoots = reviewMapReferenceRoots(this.reviewBaseline, this.ctx.project, changes);
+       for (const change of changes) if (change.path === "/assets") {
+@@ -4087,7 +4559,7 @@ export class AssistantSession {
+       knownProblems = requiredProblems;
+       const images = receipts.flatMap(receipt => this.reviewImages.get(receipt) ?? []);
+       const build = (reviewed: Iterable<string>, target: string) => buildIndependentReviewRequest(config, { revision,
+-        originalRequest: this.currentTurnRequestText, changes, requiredProblems, images,
++        originalRequest: this.currentTurnRequestText, changes, requiredProblems, completionWarnings, images,
+         before: evidence(this.reviewBaseline, "before", reviewed, target),
+         after: evidence(this.ctx.project, "after", reviewed, target),
+         toolResults: this.reviewToolResults, acceptance: draftAcceptance }, signal);
+@@ -4111,6 +4583,10 @@ export class AssistantSession {
+       if (signal?.aborted) throw new Error("independent-review-cancelled");
+       if (identity !== JSON.stringify(this.ctx.project)) throw new Error("independent-review-stale-revision");
+       if (!this.draftBaselineCurrent || baseline !== this.draftBaseline) throw new Error("independent-review-stale-baseline: regenerate from the current project before review");
++      const undeliveredImage = request.messages.some((message, messageIndex) => Array.isArray(message.content)
++        && message.content.some((part, partIndex) => part.type === "image_url"
++          && !response.imageDelivery?.some(delivery => delivery.messageIndex === messageIndex && delivery.partIndex === partIndex)));
++      if (undeliveredImage) throw new Error("independent-review-image-delivery-unacknowledged");
+       review = parseIndependentReview(response, revision, requiredProblems);
+       if (review.status === "approved") {
+         // Deferred to the post-callback admission below: publishing the verdict
+@@ -4251,6 +4727,8 @@ export class AssistantSession {
+     const autonomyCap = this.autonomy()?.budgetCap;
+     const roundCap = autonomyCap === undefined ? this.config.maxToolCalls : Math.min(this.config.maxToolCalls, autonomyCap);
+     let spentOutputTokens = 0;
++    // Turn-local: a failed/dropped request cannot revive these captures on a later turn.
++    let pendingImages: { parts: ImageUrlPart[]; receipts: AcceptanceImageReceipt[] } | null = null;
+     const outputAtStart = this.estimatedOutputTotal;
+ 
+     for (let round = 0; round < roundCap; round += 1) {
+@@ -4270,12 +4748,14 @@ export class AssistantSession {
+       const tools = [
+         ...toOpenAiTools(),
+         GET_ORIGINAL_CONTEXT_TOOL,
++        CORRECT_VERIFICATION_TOOL,
++        ...(this.npcRewardRequirements ? [VERIFY_NPC_REWARD_TOOL] : []),
+         SET_BUILD_SPEC_TOOL,
+         ...(planToolsOn ? WORK_PLAN_TOOLS : []),
+         ...(this.acceptance ? ACCEPTANCE_TOOLS : []),
+       ]
+         .filter((tool) => this.turnComposerMode !== "ask" || !isWriteToolName(tool.function.name))
+-        .map((tool) => injectToolReasonIntoOpenAiTool(tool));
++        .map((tool) => tool.function.name === "verify_npc_reward" ? tool : injectToolReasonIntoOpenAiTool(tool));
+       const toolsChars = JSON.stringify(tools).length;
+       this.pushAudit({
+         kind: "status",
+@@ -4322,6 +4802,22 @@ export class AssistantSession {
+         this.pushAudit({ kind: "status", text: `턴 중단(error): ${error} · 출력 토큰 ~${spentOutputTokens}` });
+         return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "error", error };
+       }
++      if (pendingImages) {
++        const delivered = new Set(result.imageDelivery?.flatMap(({ messageIndex, partIndex }) => {
++          const content = requestMessages[messageIndex]?.content;
++          return Array.isArray(content) && content[partIndex]?.type === "image_url" ? [content[partIndex]] : [];
++        }));
++        if (!signal?.aborted && pendingImages.parts.every(part => delivered.has(part))) {
++          this.imageEvidence.current(this.ctx.project);
++          this.imageEvidence.deliver(pendingImages.receipts);
++        } else {
++          const text = "Image delivery was not acknowledged; render and send the map again before review_acceptance.";
++          this.pushAudit({ kind: "status", text: `acceptance:image-delivery-failed ${text}` });
++          onEvent({ type: "status", text });
++          this.pushOrchestrationMessage(text);
++        }
++        pendingImages = null;
++      }
+       spentOutputTokens = this.estimatedOutputTotal - outputAtStart;
+       // 문자↔토큰 보정 관측(usage 없으면 조용히 스킵). review 단계 요청에는 tools가 없다.
+       this.recordPromptUsage(result, toolsChars, requestMessages);
+@@ -4346,8 +4842,9 @@ export class AssistantSession {
+         // Before the first project write, retain the existing bounded acceptance
+         // repair path. There is no result for an independent reviewer yet.
+         this.adoptAcceptance(undefined, onEvent);
++        const assessment = await this.assessCompletion(onEvent);
+         const noWriteProblems = proposedByKey.size === 0
+-          ? [...this.completionProblems(), ...(this.turnExpectsChange() ? this.verificationEvidence.problems("explicit") : [])] : [];
++          ? [...assessment.adventure, ...assessment.blockingVerification] : [];
+         if (proposedByKey.size === 0 && this.turnComposerMode !== "ask" && this.turnIntent?.mode !== "question"
+           && (this.acceptanceOpen() || noWriteProblems.length > 0)) {
+           if (this.acceptanceRepairAttempts < MAX_RALPH_ATTEMPTS_PER_ITEM && spentOutputTokens < this.config.maxTokens) {
+@@ -4586,23 +5083,13 @@ export class AssistantSession {
+             toolResult = deferredToolResult("work-dependency-failed", `이 응답에서 ${[...new Set(failedWriteTargets.values())].join(", ")} 실행이 실패하여 완료 처리를 보류했습니다. 실패를 교정한 뒤 완료하세요.`);
+           } else if (this.repeatedToolFailureStall(toolRetryTarget(name, args))) {
+             toolResult = deferredToolResult("tool-retry-exhausted", `${name}: 같은 대상의 실패 상한에 도달하여 실행을 보류했습니다. 사용자 지시가 필요합니다.`);
+-          } else if (name === "run_action_combat_test" && tool) {
+-            const errors = validateArgs(tool.parameters, args);
+-            if (errors.length > 0 || typeof args.mapId !== "string") {
+-              toolResult = {
+-                ok: false, summary: "액션 전투 검증 인자 오류",
+-                issues: errors.map(message => ({ severity: "error", code: "invalid-args", message })),
+-              };
+-            } else {
+-              const { runActionCombatTest } = await import("@/editor/actionCombatRuntimeProbe");
+-              const receipt = await runActionCombatTest(this.ctx.project, { mapId: args.mapId, signal });
+-              this.acceptance?.captureActionProof(receipt, this.ctx.project, args.mapId);
+-              toolResult = {
+-                ok: true,
+-                summary: receipt.pass ? "실제 액션 전투 검증 통과" : `실제 액션 전투 검증 미통과: ${receipt.reason ?? receipt.status}`,
+-                data: receipt,
+-              };
+-            }
++          } else if (name === "correct_verification") {
++            toolResult = await this.correctVerification(args, signal);
++          } else if (VERIFICATION_TOOL_NAMES.has(name)) {
++            toolResult = await this.executeVerificationTool(name, args, signal);
++          } else if (name === "verify_npc_reward") {
++            // Validate raw args, before generic reason stripping or target normalization.
++            toolResult = this.verifyNpcRewardTool(parsedCall.args, signal);
+           } else if (name === "get_original_context") {
+             toolResult = this.originalContext!.read(args);
+           } else if (name === "repair_acceptance" || name === "review_acceptance") {
+@@ -4705,6 +5192,8 @@ export class AssistantSession {
+           // 읽기 툴도 기록한다 — 플래너가 `successTools:["get_map_region"]` 같은 확인 항목을 자주 쓰는데
+           // 쓰기만 세면 그 항목은 무슨 짓을 해도 완료할 수 없는 게이트가 된다(2026-08-23 실측: 2회 거부 후 skip).
+           this.recordToolResult(name, args, toolResult);
++          if (VERIFICATION_TOOL_NAMES.has(name)) toolResult = { ...toolResult,
++            data: { ...(isRecord(toolResult.data) ? toolResult.data : {}), verification: this.getVerificationSnapshot(false) } };
+           this.publishAcceptance(onEvent);
+           this.noteToolRetryResult(name, args, toolResult);
+           if (toolResult.ok) {
+@@ -4760,7 +5249,7 @@ export class AssistantSession {
+           if (tool && (tool.mode === "write" || name === PLAY_WALKTHROUGH_TOOL)) {
+             this.verificationHistory.push({
+               name, args,
+-              ok: toolResult.ok && (name !== PLAY_WALKTHROUGH_TOOL || this.workItemVerificationEvidence.passed(name)),
++              ok: toolResult.ok && (name !== PLAY_WALKTHROUGH_TOOL || this.turnSuccessfulTools.has(name)),
+               layerId: this.verificationLayerId(),
+             });
+           }
+@@ -4840,7 +5329,7 @@ export class AssistantSession {
+           parts.push({ type: "image_url", image_url: { url: image.dataUrl } });
+         }
+         this.messages.push({ role: "user", content: parts });
+-        this.imageEvidence.deliver(acceptanceImages);
++        pendingImages = { parts: parts.filter(part => part.type === "image_url"), receipts: acceptanceImages };
+       }
+ 
+       if (orchestrated && startsWriteThisRound && !executionStarted) {

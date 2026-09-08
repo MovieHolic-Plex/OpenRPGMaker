@@ -10,14 +10,17 @@ import { verifyNpcRewardsPlayable } from "@/ai/workItemOutcome";
 import { createBlankProject } from "@/project/defaults";
 import type { Command, GameEvent } from "@/project/types";
 import { declaredIntent, fixedDeclarer } from "./intentFixture";
-import { approvedReviewResponse, independentReviewPayload } from "./independentReviewFixture";
+import { offlineChatResponse } from "./fixtures/offlineChatResponse";
+import { approvedReviewResponse, independentReviewPayload, imageDeliveryForRequest } from "./independentReviewFixture";
 import type { ReviewInput } from "@/ai/independentReview";
 
 const COMPLETE = "MODEL_COMPLETION_SENTINEL";
 const NPC = "ev_reward_session";
+describe.each(["items-monsters", "gold"] as const)("%s reward lifecycle", rewardKind => {
 const REQUIRED: NpcRewardRequirements = [{
   target: { eventId: NPC }, oneTime: true,
-  grants: [{ kind: "item", id: "item_potion", count: 2 }, { kind: "monster", id: "species_leafling", count: 1 }],
+  grants: rewardKind === "gold" ? [{ kind: "gold", count: 20 }]
+    : [{ kind: "item", id: "item_potion", count: 2 }, { kind: "monster", id: "species_leafling", count: 1 }],
 }];
 const config = { ...defaultAiConfig(), agentMode: "chat", apiKey: "test", maxToolCalls: 18, maxTokens: 32000 } satisfies import("@/ai/llmClient").AiConfig;
 const final = (): ChatResult => ({ message: { role: "assistant", content: COMPLETE }, finishReason: "stop" });
@@ -25,7 +28,7 @@ function call(name: string, args: unknown): ChatResult {
   return { message: { role: "assistant", content: null, tool_calls: [{ id: `${name}_call`, type: "function", function: { name, arguments: JSON.stringify(args) } }] }, finishReason: "tool_calls" };
 }
 function npc(variant: "text" | "once" | "repeat"): GameEvent {
-  const grants: Command[] = variant === "text" ? [] : [
+  const grants: Command[] = variant === "text" ? [] : rewardKind === "gold" ? [{ kind: "changeGold", op: "+=", amount: 20 }] : [
     { kind: "changeItem", itemId: "item_potion", op: "+=", amount: 2 },
     { kind: "giveMonster", speciesId: "species_leafling", level: 5 },
   ];
@@ -43,6 +46,7 @@ function npc(variant: "text" | "once" | "repeat"): GameEvent {
 const plan = (tools: string[]) => ({ goal: "Reward request", layers: [{ title: "Author", items: tools.map((tool, i) => ({ title: `Item ${i}`, instruction: `Use ${tool}`, successTools: [tool] })) }] });
 function harness(steps: readonly (ChatResult | Error)[], options: { required?: NpcRewardRequirements; noContract?: boolean; declarer?: IntentDeclarer; maxToolCalls?: number; pause?: () => string | null } = {}) {
   const project = createBlankProject();
+  project.session.gold = 37;
   project.maps[project.startMapId].events = [];
   const requests: ChatRequest[] = [];
   const reviews: ReviewInput[] = [];
@@ -70,7 +74,7 @@ function harness(steps: readonly (ChatResult | Error)[], options: { required?: N
       requests.push(request);
       const next = groundedSteps[index++];
       if (next instanceof Error) throw next;
-      return next ?? final();
+      return offlineChatResponse({ ...(next ?? final()), imageDelivery: imageDeliveryForRequest(request) });
     },
   });
   return { session, project, requests, reviews, events, onEvent: (event: SessionEvent) => events.push(event) };
@@ -184,6 +188,7 @@ describe("NPC reward request lifetime in AssistantSession", () => {
     const h = harness([call("set_work_plan", plan(["upsert_event"])), writeNpc(mapId, "once"), writeNpc(mapId, "text"), call("complete_work_item", { itemId: "L1-1" })]);
     const result = await h.session.sendUserMessage("Create the requested reward NPC", h.onEvent);
     expect(tools(h.events, "upsert_event").every((event) => event.result.ok)).toBe(true);
+    expect(h.events.some(event => event.type === "work_plan" && event.plan.layers[0]?.items[0]?.status === "done")).toBe(true);
     expect(tools(h.events, "complete_work_item")[0]?.result.ok).toBe(false);
     expect(result.assistantText).not.toContain(COMPLETE);
   });
@@ -252,4 +257,5 @@ describe("NPC reward request lifetime in AssistantSession", () => {
     expect(next.assistantText).toBe(COMPLETE);
     expect(h.requests.slice(at).some(hasContract)).toBe(false);
   });
+});
 });

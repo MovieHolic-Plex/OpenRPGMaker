@@ -1,4 +1,4 @@
-import { extractProjectWiki } from "@/ai/projectWikiClient";
+import { extractProjectWiki, ProjectWikiExtractionTimeoutError } from "@/ai/projectWikiClient";
 import { conversationScopeKey, queryConversationArchive, loadConversationForScope } from "@/ai/conversationStore";
 import { loadAiConfig, type AiConfig } from "@/ai/llmClient";
 import { stripContextFooter } from "@/ai/contextFooter";
@@ -12,6 +12,10 @@ import { genId } from "@/util/id";
 export type WikiDeliveryMilestone =
   | { readonly kind: "applied"; readonly project: Project | undefined }
   | { readonly kind: "persisted"; readonly project: Project; readonly receipt: ProjectPersistenceReceipt };
+
+/** Deferred preparation neither replaces the detached world nor claims a write/save. */
+export type WikiPreparationOutcome = Project["world"]
+  | { readonly kind: "deferred"; readonly reason: "extraction-timeout" };
 
 export interface WikiTurnInput {
   readonly text: string;
@@ -148,18 +152,34 @@ export function createProjectWikiCoordinator(overrides: Partial<WikiCoordinatorD
     return (deps.getProject().world?.entities.length ?? 0) - initialCount;
   };
   return {
-    async prepare(input: WikiTurnInput): Promise<Project["world"]> {
+    async prepare(input: WikiTurnInput): Promise<WikiPreparationOutcome> {
       requireCurrent(input.signal);
       if (input.composerMode !== "do") return deps.getProject().world;
-      if (!deps.getProject().world?.entities.some((entity) => entity.wiki)) await backfill(input.signal, input.onDelivery);
+      const existingWiki = deps.getProject().world?.entities.some((entity) => entity.wiki);
+      if (!existingWiki) await backfill(input.signal, input.onDelivery);
       const base = structuredClone(deps.getProject());
       requireCurrent(input.signal);
       const source: WikiSource = { id: genId("wiki_turn"), kind: "user", text: input.text, at: Date.now() };
       deps.status("프로젝트 기록을 확인하고 있습니다");
-      const patch = await deps.extract({
-        project: base, userText: input.text, sources: [source],
-        currentMapId: input.mapId, signal: input.signal,
-      }, { getConfig: deps.getConfig });
+      let patch: ProjectWikiPatch;
+      try {
+        patch = await deps.extract({
+          project: base, userText: input.text, sources: [source],
+          currentMapId: input.mapId, signal: input.signal,
+        }, { getConfig: deps.getConfig });
+      } catch (cause) {
+        requireCurrent(input.signal);
+        if (!(cause instanceof ProjectWikiExtractionTimeoutError) || !existingWiki) throw cause;
+        // Deferral must not let a detached session author against changed records/scope.
+        const current = deps.getProject();
+        if (input.mapId && JSON.stringify(current.maps[input.mapId]) !== JSON.stringify(base.maps[input.mapId])) {
+          throw new ProjectWikiCheckpointError("project-changed", "기록을 읽는 동안 요청 대상 맵이 바뀌었습니다.");
+        }
+        if (JSON.stringify(current.world) !== JSON.stringify(base.world)) {
+          throw new ProjectWikiCheckpointError("conflict", "기록을 읽는 동안 문서가 수정되었습니다. 최신 문서를 확인해주세요.");
+        }
+        return { kind: "deferred", reason: "extraction-timeout" };
+      }
       return apply(base, patch, [source], input.signal, input.onDelivery);
     },
     backfill,

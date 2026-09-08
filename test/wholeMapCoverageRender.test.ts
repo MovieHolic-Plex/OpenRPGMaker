@@ -6,7 +6,7 @@ import { MAX_IMAGE_DIMENSION, tileDrawSize } from "@/ai/toolImageCanvas";
 import type { ReviewInput } from "@/ai/independentReview";
 import { createBlankMap, createBlankProject } from "@/project/defaults";
 import { fixedDeclarer } from "./intentFixture";
-import { independentReviewPayload, approvedReviewResponse } from "./independentReviewFixture";
+import { independentReviewPayload, approvedReviewResponse, imageDeliveryForRequest } from "./independentReviewFixture";
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -132,7 +132,7 @@ describe("review coverage of a map larger than the span cap", () => {
             finishReason: "tool_calls" };
           return call;
         }
-        return { message: { role: "assistant", content: "Done" }, finishReason: "stop" };
+        return { imageDelivery: imageDeliveryForRequest(request), message: { role: "assistant", content: "Done" }, finishReason: "stop" };
       },
     });
 

@@ -1,0 +1,172 @@
+{
+  "source": "/home/main/z-project/rpg-zzu-ai-playable-adversarial-0906/output/evidence/ai-playable-final/round5/first-harness.json",
+  "acceptedRepair": {
+    "criteria": [
+      {
+        "kind": "mapCount",
+        "targets": [
+          {
+            "mapId": "map_blank_start"
+          },
+          {
+            "newMapName": "지하실"
+          }
+        ],
+        "count": 2
+      },
+      {
+        "kind": "mapDimensions",
+        "target": {
+          "mapId": "map_blank_start"
+        },
+        "width": 20,
+        "height": 15
+      },
+      {
+        "height": 10,
+        "kind": "mapDimensions",
+        "target": {
+          "newMapName": "지하실"
+        },
+        "width": 12
+      },
+      {
+        "target": {
+          "mapId": "map_blank_start"
+        },
+        "count": 5,
+        "kind": "eventCount"
+      },
+      {
+        "target": {
+          "mapId": "map_blank_start"
+        },
+        "kind": "targetChange"
+      },
+      {
+        "kind": "targetChange",
+        "target": {
+          "newMapName": "지하실"
+        }
+      }
+    ],
+    "itemId": "acceptance-contract"
+  },
+  "planPromise": {
+    "criteria": [
+      {
+        "targets": [
+          {
+            "mapId": "map_blank_start"
+          },
+          {
+            "newMapName": "지하실"
+          }
+        ],
+        "count": 2,
+        "kind": "mapCount"
+      },
+      {
+        "height": 15,
+        "kind": "mapDimensions",
+        "target": {
+          "mapId": "map_blank_start"
+        },
+        "width": 20
+      },
+      {
+        "height": 10,
+        "kind": "mapDimensions",
+        "target": {
+          "newMapName": "지하실"
+        },
+        "width": 12
+      },
+      {
+        "kind": "eventCount",
+        "target": {
+          "mapId": "map_blank_start"
+        },
+        "count": 5
+      },
+      {
+        "kind": "targetChange",
+        "target": {
+          "mapId": "map_blank_start"
+        }
+      },
+      {
+        "kind": "targetChange",
+        "target": {
+          "newMapName": "지하실"
+        }
+      }
+    ],
+    "id": "acceptance-contract",
+    "title": "작은 열쇠 게임 완성"
+  },
+  "rejectedRepair": {
+    "itemId": "acceptance-contract",
+    "criteria": [
+      {
+        "kind": "mapCount",
+        "targets": [
+          {
+            "mapId": "map_blank_start"
+          },
+          {
+            "mapId": "map_basement"
+          }
+        ],
+        "count": 2
+      },
+      {
+        "target": {
+          "mapId": "map_blank_start"
+        },
+        "width": 20,
+        "height": 15,
+        "kind": "mapDimensions"
+      },
+      {
+        "target": {
+          "mapId": "map_basement"
+        },
+        "width": 12,
+        "height": 10,
+        "kind": "mapDimensions"
+      },
+      {
+        "kind": "eventCount",
+        "target": {
+          "mapId": "map_blank_start"
+        },
+        "count": 5
+      },
+      {
+        "target": {
+          "mapId": "map_blank_start"
+        },
+        "kind": "targetChange"
+      },
+      {
+        "kind": "targetChange",
+        "target": {
+          "mapId": "map_basement"
+        }
+      },
+      {
+        "kind": "imageReviewed",
+        "target": {
+          "mapId": "map_blank_start"
+        }
+      },
+      {
+        "kind": "imageReviewed",
+        "target": {
+          "mapId": "map_basement"
+        }
+      }
+    ]
+  }
+}

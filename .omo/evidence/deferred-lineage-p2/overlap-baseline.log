@@ -1,0 +1,27 @@
+[project-commits] 저장 baseline 이 없어 실제 diff 를 못 낸다 — 시스템 변경으로 기록한다 {
+  summary: "변경 저장: 시스템",
+}
+[edit-activity] 디스크 미러 실패 (/__oprn/edit-activity: Unexpected persistence request: POST /__oprn/edit-activity) — output/edit-activity/ 가 갱신되지 않는다.
+{
+  "root": "/tmp/st_01a07921-base",
+  "acceptedTitles": [
+    "PROJECT_B",
+    "PROJECT_A"
+  ],
+  "currentTitle": "PROJECT_B",
+  "remoteTitle": "PROJECT_A",
+  "currentMapName": "빈 맵",
+  "remoteMapName": "A_EDIT",
+  "currentDescriptions": {
+    "music": {
+      "replacement": "PROJECT_B_ONLY"
+    }
+  },
+  "remoteDescriptions": {
+    "music": {
+      "replacement": "PROJECT_B_ONLY"
+    }
+  },
+  "dirty": false,
+  "rejectedCas": 1
+}

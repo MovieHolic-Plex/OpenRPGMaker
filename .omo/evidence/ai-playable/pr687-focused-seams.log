@@ -1,0 +1,506 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/pr687VerificationIntegration.test.ts test/assistantVerificationContinuation.test.ts test/sceneVerificationRepair.test.ts test/verificationNativeScopes.test.ts test/verificationRouteDeclaration.test.ts test/verificationSelectionOwnership.test.ts test/verificationFindingOwnership.test.ts test/npcPrerequisiteSession.test.ts test/npcPrerequisite.test.ts test/npcRewardAcceptance.test.ts test/functionalAcceptance.test.ts test/functionalAcceptanceSession.test.ts test/functionalPersistenceProof.test.ts test/functionalClarification.test.ts test/workPlanIdentity.test.ts test/aiRequiredOutcomes.test.ts test/actionAcceptanceRequirements.test.ts test/assistantProposalAssembly.test.ts test/aiToolDiscoveryEscalation.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86
+
+ ❯ test/aiRequiredOutcomes.test.ts (39 tests | 2 failed) 20789ms
+   ✓ canonical requirements > keeps required skipped obligations when a replan tries to weaken them  791ms
+   ✓ canonical requirements > allows optional skipped work without labeling it verified  544ms
+   ✓ canonical requirements > fails closed for malformed declarations null  669ms
+   ✓ canonical requirements > fails closed for malformed declarations %j  638ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":[{"kind":"mapDimensions","target":{"mapId":"map_blank_start"},"width":99,"height":99}],"required":"false"}  762ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":[{"kind":"invented","passed":true}]}  620ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":null,"required":false}  666ms
+   ✓ canonical requirements > preserves requirements and item links through the planner parser 2ms
+   ✓ canonical requirements > keeps a bare legacy scheduler plan unassessed  402ms
+   ✓ canonical requirements > assesses existing explicit acceptance without requiring the new field  648ms
+   ✓ canonical requirements > retains an unlinked required obligation when replan drops links=false  707ms
+   ✓ canonical requirements > retains an unlinked required obligation when replan drops links=true  737ms
+   ✓ canonical requirements > binds original text and scope at the host boundary despite fabricated source and withdrawal  593ms
+   ✓ canonical requirements > retains only the original user utterance through replan with instruction override=false  685ms
+   ✓ canonical requirements > retains only the original user utterance through replan with instruction override=true  779ms
+   ✓ canonical requirements > withdraws only the named current requirement through the user-only API  700ms
+   ✓ canonical requirements > keeps sibling obligations when the user withdraws just one  601ms
+   ✓ canonical requirements > rejects model tool withdrawal even with fabricated user provenance  674ms
+   ✓ canonical requirements > rejects stale goal withdrawal actions  548ms
+   ✓ canonical requirements > does not erase old obligations on a model resetsContext claim  711ms
+   ✓ canonical requirements > archives an incomplete goal when the user explicitly starts a new goal  860ms
+   × exact scoped verdict authority > evaluates explicit evidence without tool-name credit 130ms
+     → expected false to be true // Object.is equality
+   ✓ exact scoped verdict authority > evaluates wrong-target evidence without tool-name credit 101ms
+   ✓ exact scoped verdict authority > evaluates stale evidence without tool-name credit 119ms
+   ✓ exact scoped verdict authority > evaluates advisory evidence without tool-name credit 110ms
+   ✓ exact scoped verdict authority > evaluates advisory-after-stale evidence without tool-name credit 107ms
+   × exact scoped verdict authority > evaluates advisory-after-explicit evidence without tool-name credit 120ms
+     → expected false to be true // Object.is equality
+   ✓ exact scoped verdict authority > evaluates negative evidence without tool-name credit 118ms
+   ✓ exact scoped verdict authority > evaluates model evidence without tool-name credit 119ms
+   ✓ exact scoped verdict authority > does not verify an unapplied draft from a passing scoped verdict  320ms
+   ✓ exact scoped verdict authority > retires scoped verdicts after applied content changes even if later undone  1088ms
+   ✓ exact scoped verdict authority > rejects pre-declaration evidence after an external rebase  1088ms
+   ✓ exact scoped verdict authority > credits a real scoped tool response through the session dispatcher  525ms
+   ✓ question-safe continuation > preserves blocked work and counters for ask  427ms
+   ✓ question-safe continuation > preserves blocked work and counters for question  433ms
+   ✓ question-safe continuation > preserves repeated failure counters while answering a question  937ms
+   ✓ question-safe continuation > does not reactivate from fabricated continuation source  499ms
+   ✓ question-safe continuation > reactivates blocked work only with explicit user resume  548ms
+   ✓ question-safe continuation > retains goal evidence and repair counters during ask  660ms
+ ✓ test/functionalPersistenceProof.test.ts (4 tests) 10109ms
+   ✓ functional acceptance on accepted canonical reload > reruns real functional criteria on reloaded content before publishing verified persistence  2279ms
+   ✓ functional acceptance on accepted canonical reload > does not certify a newer applied broken purchase using an earlier acceptance pass  2106ms
+   ✓ functional acceptance on accepted canonical reload > cannot publish functional proof while a newer proposal remains unapplied  3584ms
+   ✓ functional acceptance on accepted canonical reload > rejects a canonical read overtaken by a new applied edit  2139ms
+ ✓ test/verificationNativeScopes.test.ts (15 tests) 17060ms
+   ✓ native verification scopes through the real session and terminal acceptance > run_lint adopts native arguments with retained mapTargets and completes only after a real pass  1067ms
+   ✓ native verification scopes through the real session and terminal acceptance > evaluate_game_quality adopts native arguments with retained mapTargets and completes only after a real pass  1421ms
+   ✓ native verification scopes through the real session and terminal acceptance > verify_quest adopts native arguments with retained mapTargets and completes only after a real pass  1014ms
+   ✓ native verification scopes through the real session and terminal acceptance > simulate_battle adopts native arguments with retained mapTargets and completes only after a real pass  740ms
+   ✓ native verification scopes through the real session and terminal acceptance > play_walkthrough adopts native arguments with retained mapTargets and completes only after a real pass  1069ms
+   ✓ native verification scopes through the real session and terminal acceptance > run_lint resolves a pending checkId without changing owner or targets or borrowing a prior pass  1047ms
+   ✓ native verification scopes through the real session and terminal acceptance > evaluate_game_quality resolves a pending checkId without changing owner or targets or borrowing a prior pass  3390ms
+   ✓ native verification scopes through the real session and terminal acceptance > verify_quest resolves a pending checkId without changing owner or targets or borrowing a prior pass  990ms
+   ✓ native verification scopes through the real session and terminal acceptance > simulate_battle resolves a pending checkId without changing owner or targets or borrowing a prior pass  864ms
+   ✓ native verification scopes through the real session and terminal acceptance > play_walkthrough resolves a pending checkId without changing owner or targets or borrowing a prior pass  1153ms
+   ✓ native verification scopes through the real session and terminal acceptance > check_reachability rejects a foreign map declaration and resolves the pending ID only on its retained map  845ms
+   ✓ native verification scopes through the real session and terminal acceptance > run_scene_test rejects a foreign map declaration and resolves the pending ID only on its retained map  818ms
+   ✓ native verification scopes through the real session and terminal acceptance > run_action_combat_test rejects a foreign map declaration and resolves the pending ID only on its retained map  645ms
+   ✓ native verification scopes through the real session and terminal acceptance > a project-scoped pending owner cannot shed retained mapTargets during resolution  833ms
+   ✓ native verification scopes through the real session and terminal acceptance > native scope compatibility does not replace an already adopted project check's exact arguments  1156ms
+ ✓ test/assistantProposalAssembly.test.ts (7 tests) 6949ms
+   ✓ assistant proposal assembly scope warnings > adds a diff warning when a previous-turn build spec is used in the next proposal  1027ms
+   ✓ assistant proposal assembly scope warnings > does not add a carryover warning when the build spec is created in the same turn  700ms
+   ✓ assistant proposal assembly scope warnings > adds the carryover warning only once for multiple spatial calls  1176ms
+   ✓ assistant proposal assembly move_event squash > squashes a new NPC followed by repeated move_event calls into one final placement proposal  1337ms
+   ✓ assistant proposal assembly move_event squash > squashes repeated move_event calls for an existing event to the final move  1052ms
+   ✓ assistant proposal assembly move_event squash > does not squash move_event calls for different event targets  1046ms
+   ✓ assistant WorkPlan evidence isolation > clears successful-tool evidence when the main planner adopts a new goal with a same-id item  606ms
+ ✓ test/verificationSelectionOwnership.test.ts (24 tests) 11460ms
+   ✓ normal session selection ownership via ordinary > foreign-pass stays blocked until each failed map is repaired  1719ms
+   ✓ normal session selection ownership via ordinary > two-negatives stays blocked until each failed map is repaired  2083ms
+   ✓ normal session selection ownership via ordinary > no-target-control stays blocked until each failed map is repaired  1543ms
+   ✓ normal session selection ownership via correct_verification > foreign-pass stays blocked until each failed map is repaired  1620ms
+   ✓ normal session selection ownership via correct_verification > two-negatives stays blocked until each failed map is repaired  1974ms
+   ✓ normal session selection ownership via correct_verification > no-target-control stays blocked until each failed map is repaired  1481ms
+ ✓ test/npcPrerequisiteSession.test.ts (24 tests) 80575ms
+   ✓ request-bound verify_npc_reward session tool > R1 exposes the tool and completes through its real session boundary  1975ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"extra":true}  2990ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"passed":true}  2703ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"receipt":{}}  2475ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"reason":"Not an admitted field"}  2463ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"state":{"gold":20}}  2659ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"requirementIndex":99}  2333ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"prelude":[{"kind":"set","mapId":"map_blank_start","gold":20}]}  2609ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"prelude":[{"kind":"move","mapId":"map_blank_start","to":{"x":2,"y":2}}]}  2543ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"prelude":[{"kind":"interact","mapId":"map_blank_start"}]}  2426ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"prelude":[{"kind":"expect","goldDelta":20}]}  2506ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"prelude":[{"kind":"walk","mapId":"map_blank_start","to":{"x":2,"y":2,"extra":true}}]}  2429ms
+   ✓ request-bound verify_npc_reward session tool > R12 valid failed replacement cannot fall back to an old pass or fresh-local proof  2925ms
+   ✓ request-bound verify_npc_reward session tool > R12 preserves witness across retry and replan without weakening the requirement  3422ms
+   ✓ request-bound verify_npc_reward session tool > R13 cannot erase an unrelated failed scene check  2427ms
+   ✓ request-bound verify_npc_reward session tool > R11/12 replays current content after a pass, replan, explicit completion and final skip  10333ms
+   ✓ request-bound verify_npc_reward session tool > R12 preserves witness and immutable selections over a real user continuation  3882ms
+   ✓ request-bound verify_npc_reward session tool > R12 a new request lifetime does not inherit the earlier route  4793ms
+   ✓ request-bound verify_npc_reward session tool > R12 never falls back to an easier fresh-local pass after content changes  5754ms
+   ✓ request-bound verify_npc_reward session tool > R12 a valid replacement is run afresh and can repair a failed route  1881ms
+   ✓ request-bound verify_npc_reward session tool > R12 keeps the stored program private from observer-owned arguments  1464ms
+   ✓ request-bound verify_npc_reward session tool > R6 rejects session witness replacement after a same-named NPC moves to another map  6987ms
+   ✓ request-bound verify_npc_reward session tool > R12 preserves the witness through the milestone application rebase boundary  2490ms
+   ✓ request-bound verify_npc_reward session tool > R13 a reward proof cannot clear image or original-baseline change obligations  4103ms
+ ✓ test/npcPrerequisite.test.ts (53 tests) 6246ms
+   ✓ NPC prerequisite protected runtime replay > R1 runs chief request, physical transfers, real chest, gold +20 and repeat 0 without changing project  341ms
+   ✓ NPC prerequisite protected runtime replay > R3 rejects a stranded directional transfer beside a paying NPC  320ms
+   ✓ NPC prerequisite protected runtime replay > R9 enforces the 100000 shared instruction budget across separate interactions  681ms
+ ❯ test/pr687VerificationIntegration.test.ts (8 tests | 2 failed) 6603ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > canonical tool verdict binds before execution and late adoption cannot reuse an exploratory pass  1469ms
+   × PR687 adjudicated verification scheduling through normal dispatch > normal final repair is bounded by authoritative findings without an acceptance declaration 285ms
+     → expected [] to have a length of 1 but got +0
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > budget-terminal assessment retains the finding without exceeding execution budget 238ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > successful exploratory checks do not become repair obligations after a write  526ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects skip atomically with pending-specification proof and retains completion  1094ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects skip atomically with unverified proof and retains completion  981ms
+   × PR687 adjudicated verification scheduling through normal dispatch > rejects skip atomically with stale proof and retains completion 1186ms
+     → expected 'in_progress' to be 'done' // Object.is equality
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects skip atomically with passed proof and retains completion  822ms
+ ✓ test/functionalAcceptanceSession.test.ts (6 tests) 8708ms
+   ✓ request declaration to immutable functional session acceptance > adopts all requested checks through the actual lite declaration parser without manually injected plan criteria  1416ms
+   ✓ request declaration to immutable functional session acceptance > keeps mandatory behavior when the actual planner returns unrelated work without criteria  2525ms
+   ✓ request declaration to immutable functional session acceptance > keeps malformed functional declarations blocked instead of dropping them  1892ms
+   ✓ request declaration to immutable functional session acceptance > retains expectations across plan replacement, skip and attempted repair  954ms
+   ✓ request declaration to immutable functional session acceptance > revalidates latest canonical content and cannot retain stale success  1660ms
+ ✓ test/functionalClarification.test.ts (6 tests) 4834ms
+   ✓ trusted user clarification refines original unresolved acceptance > resolves a reason-only placeholder through the next actual user declaration, retaining source and identity  723ms
+   ✓ trusted user clarification refines original unresolved acceptance > also accepts a genuine user clarification sent through the host resume action  910ms
+   ✓ trusted user clarification refines original unresolved acceptance > retains known expectations during partial clarification, then completes when the missing price is supplied  715ms
+   ✓ trusted user clarification refines original unresolved acceptance > rejects conflicting known quantities unless the trusted declaration identifies an explicit user correction  703ms
+   ✓ trusted user clarification refines original unresolved acceptance > worker repair and replacement plans cannot resolve a placeholder or weaken its resolved contract  1048ms
+   ✓ trusted user clarification refines original unresolved acceptance > a still ambiguous or unlinked declaration cannot retire the original obligation  733ms
+ ❯ test/aiToolDiscoveryEscalation.test.ts (7 tests | 1 failed) 2888ms
+   ✓ AI tool discovery escalation > exposes every active native schema on the first google-antigravity request without evicting core reads  391ms
+   ✓ AI tool discovery escalation > exposes every active native schema on the first openai-codex request without evicting core reads  340ms
+   × AI tool discovery escalation > retains build, plan and acceptance schemas alongside the full catalog under a minimal prompt budget 1005ms
+     → expected [ { type: 'function', …(1) }, …(212) ] to deeply equal [ { type: 'function', …(1) }, …(211) ]
+   ✓ AI tool discovery escalation > exposes every active read schema and no writes in question mode 269ms
+   ✓ AI tool discovery escalation > reports provider rejection instead of retrying with a pruned catalog  409ms
+   ✓ AI tool discovery escalation > finds the project-settings facade from Korean and field-name queries 173ms
+   ✓ AI tool discovery escalation > keeps discovered schemas available without changing the complete working catalog 297ms
+ ❯ test/verificationRouteDeclaration.test.ts (9 tests | 1 failed) 6632ms
+   × normal session exact route declaration adoption > retains a later same-map declaration after replacing a passed criterion plan 864ms
+     → expected 'done' not to be 'done' // Object.is equality
+   ✓ normal session exact route declaration adoption > reuses exact criterion ownership without duplicate requirements for reference  698ms
+   ✓ normal session exact route declaration adoption > reuses exact criterion ownership without duplicate requirements for exact-args  708ms
+   ✓ normal session exact route declaration adoption > reuses exact criterion ownership without duplicate requirements for mixed  684ms
+   ✓ normal session exact route declaration adoption > does not let an exact criterion reference conceal another explicit declaration  583ms
+   ✓ normal session exact route declaration adoption > requires fresh proof after late adoption and retains that scope across skip and reused scheduling IDs  1048ms
+   ✓ normal session exact route declaration adoption > does not treat a conflicting retained checkId as a successfully adopted replacement scope  801ms
+   ✓ normal session exact route declaration adoption > retains a late-specified check's distinct ownership even when its args match a passed criterion  745ms
+   ✓ normal session exact route declaration adoption > leaves an unresolved criterion reference pending instead of substituting a same-tool criterion  498ms
+ ✓ test/verificationFindingOwnership.test.ts (6 tests) 3200ms
+   ✓ map-qualified unresolved finding ownership > normal session writes and checkId corrections retain B at the terminal boundary  2448ms
+ ❯ test/workPlanIdentity.test.ts (13 tests | 7 failed) 3472ms
+   ✓ in-loop WorkPlan identity > does not replace an existing verification requirement with a summary query 292ms
+   ✓ in-loop WorkPlan identity > cannot skip a required verification item 215ms
+   × in-loop WorkPlan identity > rejects erasing resize-original even if a replacement keeps the item count 264ms
+     → expected [] to deeply equal [ 'run_lint' ]
+   × in-loop WorkPlan identity > rejects erasing forest-original even if a replacement keeps the item count 300ms
+     → expected [] to deeply equal [ 'run_lint' ]
+   × in-loop WorkPlan identity > rejects erasing optional-original even if a replacement keeps the item count 277ms
+     → expected [] to deeply equal [ 'run_lint' ]
+   × in-loop WorkPlan identity > rejects erasing verify-original even if a replacement keeps the item count 270ms
+     → expected [] to deeply equal [ 'run_lint' ]
+   ✓ in-loop WorkPlan identity > rejects 'aggregation' without changing the original plan 254ms
+   ✓ in-loop WorkPlan identity > rejects 'duplicate IDs' without changing the original plan  314ms
+   × in-loop WorkPlan identity > retains identity, progress and the current item when instructions are repaired and items regrouped 256ms
+     → Cannot read properties of undefined (reading 'passed')
+   × in-loop WorkPlan identity > preserves original artifact evidence so repair cannot bypass the outcome gate 255ms
+     → expected [] to deeply equal [ 'run_lint' ]
+   ✓ in-loop WorkPlan identity > exposes the actual current item identifier in 'orchestration' 1ms
+   ✓ in-loop WorkPlan identity > exposes the actual current item identifier in 'Ralph' 0ms
+   × in-loop WorkPlan identity > repairs a failed requirement through the real session loop without repeating the successful tool 771ms
+     → expected 'blocked' to be 'done' // Object.is equality
+ ❯ test/functionalAcceptance.test.ts (19 tests | 1 failed) 3252ms
+   ✓ immutable engine-evaluated functional acceptance > verifies purchase, real outgoing/return traversal and one-time reward without model evidence  375ms
+   ✓ immutable engine-evaluated functional acceptance > carries outgoing interpreter state into the return interaction in the same engine session 159ms
+   ✓ immutable engine-evaluated functional acceptance > rejects round trip missing-return 178ms
+   ✓ immutable engine-evaluated functional acceptance > rejects round trip wrong-destination 185ms
+   ✓ immutable engine-evaluated functional acceptance > rejects round trip blocked-route 194ms
+   ✓ immutable engine-evaluated functional acceptance > rejects round trip wrong-start 227ms
+   ✓ immutable engine-evaluated functional acceptance > rejects round trip inactive-return 201ms
+   ✓ immutable engine-evaluated functional acceptance > rejects reward wrong-count 214ms
+   ✓ immutable engine-evaluated functional acceptance > rejects reward repeatable 197ms
+   ✓ immutable engine-evaluated functional acceptance > rejects reward wrong-target 116ms
+   ✓ immutable engine-evaluated functional acceptance > rejects reward unmet-condition 220ms
+   × immutable engine-evaluated functional acceptance > cannot replace or repair accepted expectations and recomputes after an applied edit 186ms
+     → expected { ok: false, …(2) } to be false // Object.is equality
+   ✓ immutable engine-evaluated functional acceptance > does not verify an unapplied draft or reuse applied proof after a database-only write  438ms
+   ✓ immutable engine-evaluated functional acceptance > rejects a fabricated executable or pass field inside a reward requirement 34ms
+   ✓ immutable engine-evaluated functional acceptance > does not walk out of a fabricated blocked entry 190ms
+   ✓ immutable engine-evaluated functional acceptance > keeps missing purchase count unverified 28ms
+   ✓ immutable engine-evaluated functional acceptance > keeps missing purchase unitPrice unverified 30ms
+   ✓ immutable engine-evaluated functional acceptance > keeps missing purchase seller unverified 34ms
+   ✓ immutable engine-evaluated functional acceptance > keeps missing purchase start unverified 40ms
+ ✓ test/sceneVerificationRepair.test.ts (17 tests) 2354ms
+ ❯ test/assistantVerificationContinuation.test.ts (15 tests | 1 failed) 8765ms
+   ✓ immutable requirements, findings and attempts at both ledgers > retains both original exact routes, later adoption and original owners independently 211ms
+   ✓ immutable requirements, findings and attempts at both ledgers > a changed start does not satisfy the accepted route 139ms
+   ✓ immutable requirements, findings and attempts at both ledgers > a changed subset does not satisfy the accepted route 140ms
+   ✓ immutable requirements, findings and attempts at both ledgers > a changed map does not satisfy the accepted route 121ms
+   ✓ immutable requirements, findings and attempts at both ledgers > a changed adjacency does not satisfy the accepted route 131ms
+   ✓ immutable requirements, findings and attempts at both ledgers > wire114 and execution errors are unsuccessful attempts, never artifact verdicts 166ms
+   ✓ immutable requirements, findings and attempts at both ledgers > keeps a genuine exploratory blocked route until its exact compatible rerun 170ms
+   ✓ immutable requirements, findings and attempts at both ledgers > a foreign check ID cannot discharge the original owner even with identical tool inputs 142ms
+   ✓ immutable requirements, findings and attempts at both ledgers > dummy pass then removal creates obligations only when adopted=false 145ms
+   ✓ immutable requirements, findings and attempts at both ledgers > dummy pass then removal creates obligations only when adopted=true 120ms
+   ✓ immutable requirements, findings and attempts at both ledgers > declarations pass both parsing paths; malformed and unscoped tools stay pending 127ms
+   ✓ normal session ownership through skip, replan and continuation > reused scheduling IDs cannot waive pending scopes; late specification needs a fresh execution  1771ms
+   ✓ normal session ownership through skip, replan and continuation > normal session correction executes the registered original tool; unknown IDs and execution errors cannot clear a finding  773ms
+   × authoring revalidates explicit checks before finalizing > continues after a final claim when a real write made the prior lint stale 4605ms
+     → expected '완료 검증이 아직 미완성입니다.\n- Lint: Draft is n…' to be 'REVALIDATED_FINAL' // Object.is equality
+   ✓ authoring revalidates explicit checks before finalizing > retains genuine advisory findings without inventing adopted requirements 1ms
+ ✓ test/npcRewardAcceptance.test.ts (43 tests) 2617ms
+ ✓ test/actionAcceptanceRequirements.test.ts (10 tests) 1456ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 15 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/aiRequiredOutcomes.test.ts > exact scoped verdict authority > evaluates explicit evidence without tool-name credit
+ FAIL  test/aiRequiredOutcomes.test.ts > exact scoped verdict authority > evaluates advisory-after-explicit evidence without tool-name credit
+AssertionError: expected false to be true // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+ ❯ test/aiRequiredOutcomes.test.ts:199:44
+    197|     // When the canonical ledger evaluates actual evidence; then only …
+    198|     const snapshot = ledger.evaluate(project, project, evidence);
+    199|     expect(snapshot.status === "verified").toBe(source === "explicit" …
+       |                                            ^
+    200|     expect(snapshot.items[0]?.evidence[0]?.passed).toBe(source === "ex…
+    201|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/15]⎯
+
+ FAIL  test/aiToolDiscoveryEscalation.test.ts > AI tool discovery escalation > retains build, plan and acceptance schemas alongside the full catalog under a minimal prompt budget
+AssertionError: expected [ { type: 'function', …(1) }, …(212) ] to deeply equal [ { type: 'function', …(1) }, …(211) ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -21398,10 +21398,40 @@[39m
+[2m      },[22m
+[2m      "type": "function",[22m
+[2m    },[22m
+[2m    {[22m
+[2m      "function": {[22m
+[31m+       "description": "Rerun an adopted requirement or unresolved finding by its session checkId with compatible original-tool args. No verdict, deletion, baseline or weakened assertions. Only facing repairs preserve scene scripts; map-qualified host receipts must match. Read check IDs from get_work_plan or verification results.",[39m
+[31m+       "name": "correct_verification",[39m
+[31m+       "parameters": {[39m
+[31m+         "additionalProperties": false,[39m
+[31m+         "properties": {[39m
+[31m+           "args": {[39m
+[31m+             "additionalProperties": true,[39m
+[31m+             "type": "object",[39m
+[31m+           },[39m
+[31m+           "checkId": {[39m
+[31m+             "type": "string",[39m
+[31m+           },[39m
+[31m+           "reason": {[39m
+[31m+             "description": "이 툴을 지금 호출하는 이유. 한 줄. 사용자 지시의 어느 부분을 이 호출로 처리하는지.",[39m
+[31m+             "minLength": 1,[39m
+[31m+             "type": "string",[39m
+[31m+           },[39m
+[31m+         },[39m
+[31m+         "required": [[39m
+[31m+           "checkId",[39m
+[31m+           "args",[39m
+[31m+           "reason",[39m
+[31m+         ],[39m
+[31m+         "type": "object",[39m
+[31m+       },[39m
+[31m+     },[39m
+[31m+     "type": "function",[39m
+[31m+   },[39m
+[31m+   {[39m
+[31m+     "function": {[39m
+[2m        "description": "공간 빌드(집/마을/길/청소/NPC 배치/지형 채우기) 전 밑그림(명세)을 제출한다. 검증(경계/겹침) 통과 후 공간 빌드 툴을 실행한다. 명세 밖 빈 영역은 자동 확장 warning으로 통과하지만 기존 구조물 파괴 위험은 차단된다. 같은 층 영역(x,y,w,h)은 원칙적으로 겹치지 않게 배정하되 road-road 교차와 명시적 terrain-before-road 순서의 도로 덧칠은 허용한다(assets/buildOrder 참조).",[22m
+[2m        "name": "set_build_spec",[22m
+[2m        "parameters": {[22m
+[2m          "properties": {[22m
+[2m            "assets": {[22m
+
+ ❯ test/aiToolDiscoveryEscalation.test.ts:82:40
+     80|     const expected = [...toOpenAiTools(), GET_ORIGINAL_CONTEXT_TOOL, S…
+     81|       .map(injectToolReasonIntoOpenAiTool);
+     82|     expect(firstWorkingRequest?.tools).toEqual(expected);
+       |                                        ^
+     83|     expect(new Set(firstWorkingRequest?.tools?.map((tool) => tool.func…
+     84|     expect(JSON.stringify(firstWorkingRequest?.tools).length).toBeGrea…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/15]⎯
+
+ FAIL  test/assistantVerificationContinuation.test.ts > authoring revalidates explicit checks before finalizing > continues after a final claim when a real write made the prior lint stale
+AssertionError: expected '완료 검증이 아직 미완성입니다.\n- Lint: Draft is n…' to be 'REVALIDATED_FINAL' // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- REVALIDATED_FINAL[39m
+[31m+ 완료 검증이 아직 미완성입니다.[39m
+[31m+ - Lint: Draft is not yet applied[39m
+[31m+[39m
+
+ ❯ test/assistantVerificationContinuation.test.ts:311:34
+    309|     const result = await session.sendUserMessage("Change the item pric…
+    310|     expect(events.filter(event => event.type === "tool_call" && event.…
+    311|     expect(result.assistantText).toBe("REVALIDATED_FINAL");
+       |                                  ^
+    312|     expect(session.getProposedProject().database.items.find(record => …
+    313|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/15]⎯
+
+ FAIL  test/functionalAcceptance.test.ts > immutable engine-evaluated functional acceptance > cannot replace or repair accepted expectations and recomputes after an applied edit
+AssertionError: expected { ok: false, …(2) } to be false // Object.is equality
+
+[32m- Expected:[39m 
+false
+
+[31m+ Received:[39m 
+{
+  "code": "immutable-valid",
+  "issues": [
+    {
+      "code": "immutable-valid",
+      "example": {
+        "count": 2,
+        "kind": "mapCount",
+        "targets": [
+          {
+            "mapId": "map_id",
+          },
+          {
+            "newMapName": "New map",
+          },
+        ],
+      },
+      "expected": "an item with missing/malformed criteria; valid promises and baselines are immutable",
+      "field": "itemId",
+    },
+  ],
+  "ok": false,
+}
+
+ ❯ test/functionalAcceptance.test.ts:70:63
+     68|       criteria: [{ kind: "eventCount", target: { mapId: fixture.origin…
+     69|     ledger.adopt(easier ?? []);
+     70|     expect(ledger.repair("required-0", easier?.[0].criteria)).toBe(fal…
+       |                                                               ^
+     71|     expect(ledger.evaluate(fixture.project).items[0]).toMatchObject({ …
+     72|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/15]⎯
+
+ FAIL  test/pr687VerificationIntegration.test.ts > PR687 adjudicated verification scheduling through normal dispatch > normal final repair is bounded by authoritative findings without an acceptance declaration
+AssertionError: expected [] to have a length of 1 but got +0
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 0[39m
+
+ ❯ test/pr687VerificationIntegration.test.ts:87:106
+     85|     const failed = { ...f.args, steps: [{ kind: "expect", goldDelta: 1…
+     86|     const result = await f.send([probe(failed)], [], [{ name: "get_pro…
+     87|     expect(f.events.filter(event => event.type === "tool_call" && even…
+       |                                                                                                          ^
+     88|     expect(f.snapshot().verification.findings).toHaveLength(1);
+     89|     expect(f.requests()).toBeLessThanOrEqual(6);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/15]⎯
+
+ FAIL  test/pr687VerificationIntegration.test.ts > PR687 adjudicated verification scheduling through normal dispatch > rejects skip atomically with stale proof and retains completion
+AssertionError: expected 'in_progress' to be 'done' // Object.is equality
+
+Expected: [32m"done"[39m
+Received: [31m"in_progress"[39m
+
+ ❯ test/pr687VerificationIntegration.test.ts:136:66
+    134|     }
+    135|     await f.send([probe(f.args), { name: "get_project_summary", args: …
+    136|     expect(f.session.getWorkPlan()?.layers[0]?.items[0]?.status).toBe(…
+       |                                                                  ^
+    137|     await f.send([{ name: "skip_work_item", args: { itemId: "optional"…
+    138|     expect(f.session.getWorkPlan()?.layers[0]?.items[1]?.status).toBe(…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/15]⎯
+
+ FAIL  test/verificationRouteDeclaration.test.ts > normal session exact route declaration adoption > retains a later same-map declaration after replacing a passed criterion plan
+AssertionError: expected 'done' not to be 'done' // Object.is equality
+ ❯ test/verificationRouteDeclaration.test.ts:80:70
+     78|     expect(checks.find(check => check.checkId !== original.checkId)).t…
+     79|     expect(toolResults(replacement.events, "complete_work_item").map(r…
+     80|     expect(f.session.getWorkPlan()?.layers[0]?.items[0]?.status).not.t…
+       |                                                                      ^
+     81|     expect(f.session.getAcceptanceSnapshot()?.status).toBe("blocked");
+     82|     expect(replacement.events.some(event => event.type === "acceptance…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/15]⎯
+
+ FAIL  test/workPlanIdentity.test.ts > in-loop WorkPlan identity > rejects erasing resize-original even if a replacement keeps the item count
+ FAIL  test/workPlanIdentity.test.ts > in-loop WorkPlan identity > rejects erasing forest-original even if a replacement keeps the item count
+ FAIL  test/workPlanIdentity.test.ts > in-loop WorkPlan identity > rejects erasing optional-original even if a replacement keeps the item count
+ FAIL  test/workPlanIdentity.test.ts > in-loop WorkPlan identity > rejects erasing verify-original even if a replacement keeps the item count
+AssertionError: expected [] to deeply equal [ 'run_lint' ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [[39m
+[32m-   "run_lint",[39m
+[32m- ][39m
+[31m+ [][39m
+
+ ❯ test/workPlanIdentity.test.ts:86:49
+     84|     expect(session.getWorkPlan()).toEqual(before);
+     85|     expect(session.getAcceptanceSnapshot()).toEqual(beforeAcceptance);
+     86|     expect([...session["turnSuccessfulTools"]]).toEqual(["run_lint"]);
+       |                                                 ^
+     87|     expect(session["workItemVerificationEvidence"].passed("run_lint"))…
+     88|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/15]⎯
+
+ FAIL  test/workPlanIdentity.test.ts > in-loop WorkPlan identity > retains identity, progress and the current item when instructions are repaired and items regrouped
+TypeError: Cannot read properties of undefined (reading 'passed')
+ ❯ test/workPlanIdentity.test.ts:120:52
+    118|     expect(plan?.layers[1]?.items[1]).toMatchObject({ instruction: "Us…
+    119|     expect(session["lastMilestoneCompletionItemId"]).toBe("resize-orig…
+    120|     expect(session["workItemVerificationEvidence"].passed("run_lint"))…
+       |                                                    ^
+    121|   });
+    122| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/15]⎯
+
+ FAIL  test/workPlanIdentity.test.ts > in-loop WorkPlan identity > preserves original artifact evidence so repair cannot bypass the outcome gate
+AssertionError: expected [] to deeply equal [ 'run_lint' ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [[39m
+[32m-   "run_lint",[39m
+[32m- ][39m
+[31m+ [][39m
+
+ ❯ test/workPlanIdentity.test.ts:133:49
+    131|     expect(session["applyWorkPlanTool"]("set_work_plan", repairArgs())…
+    132|     // Then prior success remains, but the original empty artifact sti…
+    133|     expect([...session["turnSuccessfulTools"]]).toEqual(["run_lint"]);
+       |                                                 ^
+    134|     expect([...session["turnItemCreatedMapIds"]]).toEqual([project.sta…
+    135|     expect(session["applyWorkPlanTool"]("complete_work_item", { itemId…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/15]⎯
+
+ FAIL  test/workPlanIdentity.test.ts > in-loop WorkPlan identity > repairs a failed requirement through the real session loop without repeating the successful tool
+AssertionError: expected 'blocked' to be 'done' // Object.is equality
+
+Expected: [32m"done"[39m
+Received: [31m"blocked"[39m
+
+ ❯ test/workPlanIdentity.test.ts:169:64
+    167|     expect(events.filter(event => event.type === "tool_call" && event.…
+    168|     expect(events.filter(event => event.type === "tool_call" && event.…
+    169|     expect(session.getWorkPlan()?.layers[0]?.items[0]?.status).toBe("d…
+       |                                                                ^
+    170|   });
+    171| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/15]⎯
+
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+
+Vitest caught 1 unhandled error during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+
+⎯⎯⎯⎯⎯⎯ Unhandled Error ⎯⎯⎯⎯⎯⎯⎯
+Error: [vitest-worker]: Timeout calling "onTaskUpdate"
+ ❯ Object.onTimeoutError ../rpg-zzu/node_modules/vitest/dist/chunks/rpc.-pEldfrD.js:53:10
+ ❯ Timeout._onTimeout ../rpg-zzu/node_modules/vitest/dist/chunks/index.B521nVV-.js:59:62
+ ❯ listOnTimeout node:internal/timers:605:17
+ ❯ processTimers node:internal/timers:541:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+
+ Test Files  7 failed | 12 passed (19)
+      Tests  15 failed | 310 passed (325)
+     Errors  1 error
+   Start at  01:17:17
+   Duration  134.56s (transform 9.98s, setup 0ms, collect 51.33s, tests 207.97s, environment 5ms, prepare 1.39s)
+

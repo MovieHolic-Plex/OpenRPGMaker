@@ -1,0 +1,221 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/canonicalAcceptanceOwnership.test.ts --maxWorkers=1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86
+
+ ❯ test/canonicalAcceptanceOwnership.test.ts (7 tests | 7 failed) 6637ms
+   × canonical scene authority uses the ordinary pre-execution contract > cannot acquire missing ownership from the first successful scene; repair needs a fresh execution 1218ms
+     → expected 'satisfied' to be 'incomplete' // Object.is equality
+   × canonical scene authority uses the ordinary pre-execution contract > fills only missing interaction ownership while preserving already declared targets 875ms
+     → expected undefined to match object { args: null, …(3) }
+   × canonical scene authority uses the ordinary pre-execution contract > pass -> transfer write -> identical foreign execution cannot discharge the original scope 655ms
+     → expected undefined to match object { args: { …(3) }, …(3) }
+   × canonical scene authority uses the ordinary pre-execution contract > pass -> initial-state write -> identical foreign execution cannot discharge the original scope 680ms
+     → expected undefined to match object { args: { …(3) }, …(3) }
+   × malformed canonical input remains repairable without rewriting authority > malformed scene required=true blocks; repair retains owner/baseline and needs post-repair proof 1757ms
+     → expected [ { ok: false, …(3) } ] to match object [ { ok: true, …(1) } ]
+(8 matching properties omitted from actual)
+   × malformed canonical input remains repairable without rewriting authority > malformed scene required=false blocks; repair retains owner/baseline and needs post-repair proof 689ms
+     → expected { required: false, …(6) } to match object { required: true, status: 'blocked' }
+(8 matching properties omitted from actual)
+   × malformed canonical input remains repairable without rewriting authority > valid optional canonical criteria remain optional 762ms
+     → expected 'incomplete' to be 'satisfied' // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/canonicalAcceptanceOwnership.test.ts > canonical scene authority uses the ordinary pre-execution contract > cannot acquire missing ownership from the first successful scene; repair needs a fresh execution
+AssertionError: expected 'satisfied' to be 'incomplete' // Object.is equality
+
+Expected: [32m"incomplete"[39m
+Received: [31m"satisfied"[39m
+
+ ❯ test/canonicalAcceptanceOwnership.test.ts:75:37
+     73|     const result = await h.send(scene(f.args), complete);
+     74|     sceneResult(h, "mapA", f.root.id);
+     75|     expect(result.runOutcome?.goal).toBe("incomplete");
+       |                                     ^
+     76|     expect(h.session.getAcceptanceSnapshot()?.status).toBe("blocked");
+     77|     expect(h.session.getWorkPlan()?.layers[0]?.items[0]?.status).toBe(…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  test/canonicalAcceptanceOwnership.test.ts > canonical scene authority uses the ordinary pre-execution contract > fills only missing interaction ownership while preserving already declared targets
+AssertionError: expected undefined to match object { args: null, …(3) }
+
+[32m- Expected:[39m 
+{
+  "args": null,
+  "initialState": {
+    "session": {
+      "gold": 37,
+    },
+  },
+  "interactionTargets": [
+    {
+      "eventId": "shared_npc",
+      "mapId": "mapA",
+      "stepIndex": 2,
+    },
+  ],
+  "status": "pending-specification",
+}
+
+[31m+ Received:[39m 
+undefined
+
+ ❯ test/canonicalAcceptanceOwnership.test.ts:102:21
+    100|     await h.send(declare([partial]), scene(args), complete);
+    101|     const pending = h.session.getVerificationSnapshot().requirements[0…
+    102|     expect(pending).toMatchObject({ args: null, interactionTargets: f.…
+       |                     ^
+    103|     await h.send(repair([{ ...full, interactionTargets: [{ ...f.intera…
+    104|     expect(h.results("repair_acceptance")).toMatchObject([{ ok: false,…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  test/canonicalAcceptanceOwnership.test.ts > canonical scene authority uses the ordinary pre-execution contract > pass -> transfer write -> identical foreign execution cannot discharge the original scope
+ FAIL  test/canonicalAcceptanceOwnership.test.ts > canonical scene authority uses the ordinary pre-execution contract > pass -> initial-state write -> identical foreign execution cannot discharge the original scope
+AssertionError: expected undefined to match object { args: { …(3) }, …(3) }
+
+[32m- Expected:[39m 
+{
+  "args": {
+    "mapId": "map_blank_start",
+    "start": {
+      "x": 2,
+      "y": 2,
+    },
+    "steps": [
+      {
+        "kind": "move",
+        "to": {
+          "x": 3,
+          "y": 2,
+        },
+      },
+      {
+        "kind": "snapshotRewards",
+      },
+      {
+        "eventId": "shared_npc",
+        "kind": "interact",
+      },
+      {
+        "kind": "move",
+        "to": {
+          "x": 4,
+          "y": 2,
+        },
+      },
+      {
+        "goldDelta": 20,
+        "interactionComplete": true,
+        "kind": "expect",
+        "mapId": "map_blank_start",
+      },
+    ],
+  },
+  "initialState": {
+    "session": {
+      "gold": 37,
+    },
+  },
+  "interactionTargets": [
+    {
+      "eventId": "shared_npc",
+      "mapId": "mapA",
+      "stepIndex": 2,
+    },
+  ],
+  "status": "unverified",
+}
+
+[31m+ Received:[39m 
+undefined
+
+ ❯ test/canonicalAcceptanceOwnership.test.ts:122:22
+    120|     await h.send(declare([f.criterion]));
+    121|     const original = h.session.getVerificationSnapshot().requirements[…
+    122|     expect(original).toMatchObject({ args: f.args, interactionTargets:…
+       |                      ^
+    123|       initialState: { session: { gold: 37 } } });
+    124|     const passed = await h.send(scene(f.args), complete);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+ FAIL  test/canonicalAcceptanceOwnership.test.ts > malformed canonical input remains repairable without rewriting authority > malformed scene required=true blocks; repair retains owner/baseline and needs post-repair proof
+AssertionError: expected [ { ok: false, …(3) } ] to match object [ { ok: true, …(1) } ]
+(8 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[2m    {[22m
+[2m      "data": {[22m
+[32m-       "code": "repaired",[39m
+[31m+       "code": "immutable-valid",[39m
+[2m      },[22m
+[32m-     "ok": true,[39m
+[31m+     "ok": false,[39m
+[2m    },[22m
+[2m  ][22m
+
+ ❯ test/canonicalAcceptanceOwnership.test.ts:169:44
+    167|     const valid = [{ kind: "toolVerdict", tool: "run_scene_test", args…
+    168|     await h.send(repair(valid), complete);
+    169|     expect(h.results("repair_acceptance")).toMatchObject([{ ok: true, …
+       |                                            ^
+    170|     expect(h.session.getAcceptanceSnapshot()?.id).toBe(original.id);
+    171|     expect(h.session.getAcceptanceSnapshot()?.items[0]).toMatchObject(…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯
+
+ FAIL  test/canonicalAcceptanceOwnership.test.ts > malformed canonical input remains repairable without rewriting authority > malformed scene required=false blocks; repair retains owner/baseline and needs post-repair proof
+AssertionError: expected { required: false, …(6) } to match object { required: true, status: 'blocked' }
+(8 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "required": true,[39m
+[32m-   "status": "blocked",[39m
+[31m+   "required": false,[39m
+[31m+   "status": "working",[39m
+[2m  }[22m
+
+ ❯ test/canonicalAcceptanceOwnership.test.ts:159:31
+    157|     await h.send(declare([{ kind: "toolVerdict", tool: "run_scene_test…
+    158|     const original = h.session.getAcceptanceSnapshot()!;
+    159|     expect(original.items[0]).toMatchObject({ required: true, status: …
+       |                               ^
+    160|     const beforeRepair = await h.send(scene(args), complete);
+    161|     expect(h.results("run_scene_test")).toMatchObject([{ ok: true, dat…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯
+
+ FAIL  test/canonicalAcceptanceOwnership.test.ts > malformed canonical input remains repairable without rewriting authority > valid optional canonical criteria remain optional
+AssertionError: expected 'incomplete' to be 'satisfied' // Object.is equality
+
+Expected: [32m"satisfied"[39m
+Received: [31m"incomplete"[39m
+
+ ❯ test/canonicalAcceptanceOwnership.test.ts:195:37
+    193|     const args = { mapId: project.startMapId, start: { x: 10, y: 12 },…
+    194|     const result = await h.send(declare([{ kind: "toolVerdict", tool: …
+    195|     expect(result.runOutcome?.goal).toBe("satisfied");
+       |                                     ^
+    196|     expect(h.session.getAcceptanceSnapshot()?.items[0]).toMatchObject(…
+    197|     expect(h.session.getWorkPlan()?.layers[0]?.items[0]?.status).toBe(…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  7 failed (7)
+   Start at  02:45:03
+   Duration  22.19s (transform 10.45s, setup 0ms, collect 14.94s, tests 6.64s, environment 0ms, prepare 115ms)
+

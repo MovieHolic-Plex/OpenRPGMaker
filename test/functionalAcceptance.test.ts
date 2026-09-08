@@ -67,7 +67,7 @@ describe("immutable engine-evaluated functional acceptance", () => {
     const easier = parseAcceptance([{ id: "required-0", title: "Skip purchase", required: false,
       criteria: [{ kind: "eventCount", target: { mapId: fixture.origin.id }, count: fixture.origin.events.length }] }]);
     ledger.adopt(easier ?? []);
-    expect(ledger.repair("required-0", easier?.[0].criteria)).toBe(false);
+    expect(ledger.repair("required-0", easier?.[0].criteria)).toMatchObject({ ok: false, code: "immutable-valid" });
     expect(ledger.evaluate(fixture.project).items[0]).toMatchObject({ required: true, evidence: [{ passed: false }] });
   });
   it("does not verify an unapplied draft or reuse applied proof after a database-only write", () => {

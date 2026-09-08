@@ -11,6 +11,7 @@ import type { AutonomyLevel } from "@/ai/autonomyLevels";
 import { AUTONOMY_LEVEL_IDS } from "@/ai/autonomyLevels";
 import { PRODUCT_BRAND } from "@/brand";
 import { DEFAULT_OH_MY_PI_PROVIDER, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
+import { parseImageDelivery, type ImageDelivery } from "./imageDelivery";
 import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID } from "@/ai/imageModelCatalog";
 
 // OpenAI 메시지 규약(우리가 쓰는 필드만).
@@ -318,7 +319,7 @@ export interface ChatRequest {
   temperature?: number;
 }
 
-export interface ChatResult { message: ChatMessage; finishReason: string | null; usage?: { prompt_tokens?: number; completion_tokens?: number; total_tokens?: number } }
+export interface ChatResult { message: ChatMessage; finishReason: string | null; imageDelivery?: readonly ImageDelivery[]; usage?: { prompt_tokens?: number; completion_tokens?: number; total_tokens?: number } }
 
 // 사람이 읽을 수 있는 LLM 오류. status로 401/402/429/5xx를 구분한다.
 export class LlmError extends Error {
@@ -753,6 +754,7 @@ function parseNonStream(json: Record<string, unknown>, requestedModel?: string):
   return {
     message,
     finishReason: typeof choice?.finish_reason === "string" ? choice.finish_reason : null,
+    imageDelivery: parseImageDelivery(json.image_delivery),
     usage: json.usage as ChatResult["usage"] | undefined,
   };
 }

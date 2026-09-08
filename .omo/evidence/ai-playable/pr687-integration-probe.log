@@ -1,0 +1,17 @@
+{
+  "candidate": "4978229453770fe0bde4b43889048b621797d577",
+  "upstream": "9a7069e685bad13cde5cbb22b9cb285e893f2356",
+  "unadoptedPassingProbeRemoved": {
+    "candidate": [],
+    "upstream": [
+      "run_scene_test: 변경 후 재검증 필요 — [\"run_scene_test\",{\"mapId\":\"map_blank_start\",\"start\":{\"x\":10,\"y\":8},\"steps\":[{\"kind\":\"snapshotRewards\"},{\"eventId\":\"reward_npc\",\"kind\":\"interact\"},{\"interactionComplete\":true,\"inventoryDelta\":{\"item_potion\":5},\"kind\":\"expect\"}]}]"
+    ]
+  },
+  "removedDebugPositioningStep": {
+    "candidate": [
+      "run_scene_test: 조사할 action 이벤트 없음: map_blank_start (10,8) facing=down [finding-2]"
+    ],
+    "upstream": []
+  },
+  "boundary": "Real candidate runTool/scene runner; exact frozen upstream evidence and verdict parser; no network, DB, model or browser execution"
+}

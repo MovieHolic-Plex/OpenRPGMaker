@@ -1,0 +1,1393 @@
+.omo/evidence/life-full-20260906/7/build.txt:14: trailing whitespace.
++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/7/build.txt:17: trailing whitespace.
++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/7/build.txt:20: trailing whitespace.
++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/7/build.txt:23: trailing whitespace.
++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/7/build.txt:26: trailing whitespace.
++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/7/build.txt:118: trailing whitespace.
++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/7/final-green.txt:48: new blank line at EOF.
+.omo/evidence/life-full-20260906/7/green.txt:43: new blank line at EOF.
+.omo/evidence/life-full-20260906/7/raw-whitespace.txt:2: trailing whitespace.
+++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/7/raw-whitespace.txt:4: trailing whitespace.
+++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/7/raw-whitespace.txt:6: trailing whitespace.
+++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/7/raw-whitespace.txt:8: trailing whitespace.
+++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/7/raw-whitespace.txt:10: trailing whitespace.
+++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/7/raw-whitespace.txt:12: trailing whitespace.
+++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/7/raw-whitespace.txt:16: trailing whitespace.
+++    195| 
+.omo/evidence/life-full-20260906/7/red.txt:331: trailing whitespace.
++    195| 
+.omo/evidence/life-full-20260906/7/red.txt:404: new blank line at EOF.
+.omo/evidence/life-full-20260906/7/setup-failure.txt:13: new blank line at EOF.
+.omo/evidence/life-full-20260906/7/setup-format-failure.txt:13: new blank line at EOF.
+.omo/evidence/life-full-20260906/7/typecheck.txt:4: new blank line at EOF.
+.omo/evidence/life-full-20260906/8/build.txt:86: trailing whitespace.
++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/8/build.txt:89: trailing whitespace.
++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/8/build.txt:92: trailing whitespace.
++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/8/build.txt:95: trailing whitespace.
++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/8/build.txt:98: trailing whitespace.
++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/8/build.txt:140: trailing whitespace.
++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/8/green-attempt1.txt:104: trailing whitespace.
++[32m- Expected:[39m 
+.omo/evidence/life-full-20260906/8/green-attempt1.txt:111: trailing whitespace.
++[31m+ Received:[39m 
+.omo/evidence/life-full-20260906/8/green-attempt1.txt:120: trailing whitespace.
++     50| 
+.omo/evidence/life-full-20260906/8/green-attempt1.txt:136: trailing whitespace.
++     86| 
+.omo/evidence/life-full-20260906/8/green-attempt1.txt:152: trailing whitespace.
++    101| 
+.omo/evidence/life-full-20260906/8/green-attempt1.txt:177: new blank line at EOF.
+.omo/evidence/life-full-20260906/8/green-final.txt:72: new blank line at EOF.
+.omo/evidence/life-full-20260906/8/green-focused.txt:15: new blank line at EOF.
+.omo/evidence/life-full-20260906/8/raw-whitespace.txt:2: trailing whitespace.
+++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/8/raw-whitespace.txt:4: trailing whitespace.
+++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/8/raw-whitespace.txt:6: trailing whitespace.
+++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/8/raw-whitespace.txt:8: trailing whitespace.
+++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/8/raw-whitespace.txt:10: trailing whitespace.
+++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/8/raw-whitespace.txt:12: trailing whitespace.
+++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/8/raw-whitespace.txt:14: trailing whitespace.
+++[32m- Expected:[39m 
+.omo/evidence/life-full-20260906/8/raw-whitespace.txt:16: trailing whitespace.
+++[31m+ Received:[39m 
+.omo/evidence/life-full-20260906/8/raw-whitespace.txt:18: trailing whitespace.
+++     50| 
+.omo/evidence/life-full-20260906/8/raw-whitespace.txt:20: trailing whitespace.
+++     86| 
+.omo/evidence/life-full-20260906/8/raw-whitespace.txt:22: trailing whitespace.
+++    101| 
+.omo/evidence/life-full-20260906/8/raw-whitespace.txt:27: trailing whitespace.
+++[32m- Expected:[39m 
+.omo/evidence/life-full-20260906/8/raw-whitespace.txt:29: trailing whitespace.
+++[31m+ Received:[39m 
+.omo/evidence/life-full-20260906/8/raw-whitespace.txt:31: trailing whitespace.
+++     50| 
+.omo/evidence/life-full-20260906/8/raw-whitespace.txt:33: trailing whitespace.
+++[32m- Expected:[39m 
+.omo/evidence/life-full-20260906/8/raw-whitespace.txt:35: trailing whitespace.
+++[31m+ Received:[39m 
+.omo/evidence/life-full-20260906/8/raw-whitespace.txt:37: trailing whitespace.
+++     65| 
+.omo/evidence/life-full-20260906/8/raw-whitespace.txt:39: trailing whitespace.
+++     86| 
+.omo/evidence/life-full-20260906/8/raw-whitespace.txt:41: trailing whitespace.
+++    101| 
+.omo/evidence/life-full-20260906/8/raw-whitespace.txt:43: trailing whitespace.
+++[32m- Expected:[39m 
+.omo/evidence/life-full-20260906/8/raw-whitespace.txt:45: trailing whitespace.
+++[31m+ Received:[39m 
+.omo/evidence/life-full-20260906/8/raw-whitespace.txt:50: trailing whitespace.
+++     65| 
+.omo/evidence/life-full-20260906/8/raw-whitespace.txt:52: trailing whitespace.
+++     69| 
+.omo/evidence/life-full-20260906/8/raw-whitespace.txt:54: trailing whitespace.
+++[32m- Expected:[39m 
+.omo/evidence/life-full-20260906/8/raw-whitespace.txt:56: trailing whitespace.
+++[31m+ Received:[39m 
+.omo/evidence/life-full-20260906/8/raw-whitespace.txt:58: trailing whitespace.
+++     51| 
+.omo/evidence/life-full-20260906/8/raw-whitespace.txt:60: trailing whitespace.
+++[32m- Expected:[39m 
+.omo/evidence/life-full-20260906/8/raw-whitespace.txt:62: trailing whitespace.
+++[31m+ Received:[39m 
+.omo/evidence/life-full-20260906/8/raw-whitespace.txt:64: trailing whitespace.
+++     66| 
+.omo/evidence/life-full-20260906/8/raw-whitespace.txt:66: trailing whitespace.
+++     65| 
+.omo/evidence/life-full-20260906/8/raw-whitespace.txt:68: trailing whitespace.
+++     69| 
+.omo/evidence/life-full-20260906/8/raw-whitespace.txt:70: trailing whitespace.
+++    102| 
+.omo/evidence/life-full-20260906/8/red-corrected-fixture.txt:72: trailing whitespace.
++[32m- Expected:[39m 
+.omo/evidence/life-full-20260906/8/red-corrected-fixture.txt:79: trailing whitespace.
++[31m+ Received:[39m 
+.omo/evidence/life-full-20260906/8/red-corrected-fixture.txt:88: trailing whitespace.
++     50| 
+.omo/evidence/life-full-20260906/8/red-corrected-fixture.txt:95: trailing whitespace.
++[32m- Expected:[39m 
+.omo/evidence/life-full-20260906/8/red-corrected-fixture.txt:98: trailing whitespace.
++[31m+ Received:[39m 
+.omo/evidence/life-full-20260906/8/red-corrected-fixture.txt:107: trailing whitespace.
++     65| 
+.omo/evidence/life-full-20260906/8/red-corrected-fixture.txt:123: trailing whitespace.
++     86| 
+.omo/evidence/life-full-20260906/8/red-corrected-fixture.txt:139: trailing whitespace.
++    101| 
+.omo/evidence/life-full-20260906/8/red-corrected-fixture.txt:191: trailing whitespace.
++[32m- Expected:[39m 
+.omo/evidence/life-full-20260906/8/red-corrected-fixture.txt:194: trailing whitespace.
++[31m+ Received:[39m 
+.omo/evidence/life-full-20260906/8/red-corrected-fixture.txt:237: new blank line at EOF.
+.omo/evidence/life-full-20260906/8/red-hand-intent.txt:84: new blank line at EOF.
+.omo/evidence/life-full-20260906/8/red-overlap.txt:80: new blank line at EOF.
+.omo/evidence/life-full-20260906/8/red.txt:117: trailing whitespace.
++     65| 
+.omo/evidence/life-full-20260906/8/red.txt:122: trailing whitespace.
++     69| 
+.omo/evidence/life-full-20260906/8/red.txt:136: trailing whitespace.
++[32m- Expected:[39m 
+.omo/evidence/life-full-20260906/8/red.txt:143: trailing whitespace.
++[31m+ Received:[39m 
+.omo/evidence/life-full-20260906/8/red.txt:152: trailing whitespace.
++     51| 
+.omo/evidence/life-full-20260906/8/red.txt:159: trailing whitespace.
++[32m- Expected:[39m 
+.omo/evidence/life-full-20260906/8/red.txt:162: trailing whitespace.
++[31m+ Received:[39m 
+.omo/evidence/life-full-20260906/8/red.txt:171: trailing whitespace.
++     66| 
+.omo/evidence/life-full-20260906/8/red.txt:179: trailing whitespace.
++     65| 
+.omo/evidence/life-full-20260906/8/red.txt:184: trailing whitespace.
++     69| 
+.omo/evidence/life-full-20260906/8/red.txt:204: trailing whitespace.
++    102| 
+.omo/evidence/life-full-20260906/8/red.txt:253: new blank line at EOF.
+.omo/evidence/life-full-20260906/8/setup-no-patch.txt:25: new blank line at EOF.
+.omo/evidence/life-full-20260906/8/typecheck.txt:4: new blank line at EOF.
+.omo/evidence/life-full-20260906/phase3-gate-triage/common-comparison.md:114: trailing whitespace.
++ 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:694: trailing whitespace.
++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:1251: trailing whitespace.
++- Expected: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:1254: trailing whitespace.
+++ Received: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:1259: trailing whitespace.
++    159| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:1343: trailing whitespace.
++    241| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:1362: trailing whitespace.
++    264| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:1402: trailing whitespace.
++    219| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:1414: trailing whitespace.
++    291| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:1467: trailing whitespace.
++- Expected: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:1470: trailing whitespace.
+++ Received: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:1474: trailing whitespace.
++    214| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:1505: trailing whitespace.
++    302| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:1516: trailing whitespace.
++- Expected: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:1519: trailing whitespace.
+++ Received: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:1537: trailing whitespace.
++    209| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:1673: trailing whitespace.
++    203| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:1731: trailing whitespace.
++     85| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:1745: trailing whitespace.
++     34| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:1761: trailing whitespace.
++    145| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:1817: trailing whitespace.
++     55| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:1832: trailing whitespace.
++     66| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:1836: trailing whitespace.
++     69| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:1863: trailing whitespace.
++- Expected: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:1866: trailing whitespace.
+++ Received: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:1907: trailing whitespace.
++     45| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:1949: trailing whitespace.
++    120| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:1987: trailing whitespace.
++    158| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:2030: trailing whitespace.
++    191| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:2042: trailing whitespace.
++- Expected: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:2045: trailing whitespace.
+++ Received: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:24897: trailing whitespace.
++    268| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:24909: trailing whitespace.
++- Expected: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:24912: trailing whitespace.
+++ Received: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:24950: trailing whitespace.
++    488| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:29293: trailing whitespace.
++    102| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:29334: trailing whitespace.
++    216| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:29366: trailing whitespace.
++    123| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:29452: trailing whitespace.
++    126| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:29469: trailing whitespace.
++     14| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:29484: trailing whitespace.
++     62| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:29694: trailing whitespace.
++    203| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:29705: trailing whitespace.
++     60| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:29721: trailing whitespace.
++     75| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:29750: trailing whitespace.
++     80| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:29761: trailing whitespace.
++     73| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:29786: trailing whitespace.
++     96| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:29791: trailing whitespace.
++    100| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:29819: trailing whitespace.
++    282| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:29870: trailing whitespace.
++    282| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:29899: trailing whitespace.
++    282| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:29924: trailing whitespace.
++    282| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:29949: trailing whitespace.
++    282| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:29962: trailing whitespace.
++    140| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:29978: trailing whitespace.
++- Expected: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:29981: trailing whitespace.
+++ Received: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:30906: trailing whitespace.
++    154| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:30910: trailing whitespace.
++    157| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:30950: trailing whitespace.
++     86| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:30957: trailing whitespace.
++- Expected: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:30960: trailing whitespace.
+++ Received: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:30976: trailing whitespace.
++- Expected: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:30979: trailing whitespace.
+++ Received: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:30995: trailing whitespace.
++- Expected: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:30998: trailing whitespace.
+++ Received: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:31006: trailing whitespace.
++    238| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:31040: trailing whitespace.
++    146| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:31059: trailing whitespace.
++    296| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:31554: trailing whitespace.
++    109| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:31569: trailing whitespace.
++    134| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:31596: trailing whitespace.
++- Expected: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:31599: trailing whitespace.
+++ Received: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:31642: trailing whitespace.
++- Expected: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:31645: trailing whitespace.
+++ Received: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:31700: trailing whitespace.
++     15| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:31752: trailing whitespace.
++    109| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:31771: trailing whitespace.
++    127| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:31797: trailing whitespace.
++     92| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:31814: trailing whitespace.
++    123| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:31829: trailing whitespace.
++    309| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:31839: trailing whitespace.
++- Expected: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:31842: trailing whitespace.
+++ Received: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:31870: trailing whitespace.
++    168| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:31887: trailing whitespace.
++     58| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:31996: trailing whitespace.
++    164| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:32015: trailing whitespace.
++    123| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:32020: trailing whitespace.
++    127| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:32032: trailing whitespace.
++     35| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:32059: trailing whitespace.
++    210| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:32085: trailing whitespace.
++     61| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:32188: trailing whitespace.
++     65| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:32193: trailing whitespace.
++     69| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:32219: trailing whitespace.
++    156| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:32276: trailing whitespace.
++    293| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:32295: trailing whitespace.
++    311| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:32300: trailing whitespace.
++    315| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:32331: trailing whitespace.
++    374| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:32348: trailing whitespace.
++    406| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:32374: trailing whitespace.
++Received: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:32393: trailing whitespace.
++     33| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:32398: trailing whitespace.
++     37| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:32468: trailing whitespace.
++    228| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:32552: trailing whitespace.
++     29| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:32557: trailing whitespace.
++     33| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:32908: trailing whitespace.
++    297| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:32920: trailing whitespace.
++    393| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:32938: trailing whitespace.
++    439| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:32943: trailing whitespace.
++    443| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:32954: trailing whitespace.
++    197| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:33104: trailing whitespace.
++    266| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:33821: trailing whitespace.
++      8| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:33923: trailing whitespace.
++- Expected: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:33926: trailing whitespace.
+++ Received: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:33930: trailing whitespace.
++     67| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stderr.txt:34013: new blank line at EOF.
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stdout.txt:1397: trailing whitespace.
++Received: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/base/stdout.txt:9645: trailing whitespace.
++[컨텍스트] 현재 맵: 프로브 (map_probe) · 사용자 선택 영역: (2,2) 12×10 · 소품·지형 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:694: trailing whitespace.
++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:1228: trailing whitespace.
++- Expected: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:1231: trailing whitespace.
+++ Received: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:1236: trailing whitespace.
++    159| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:1320: trailing whitespace.
++    241| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:1339: trailing whitespace.
++    264| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:1379: trailing whitespace.
++    219| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:1391: trailing whitespace.
++    291| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:1444: trailing whitespace.
++- Expected: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:1447: trailing whitespace.
+++ Received: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:1451: trailing whitespace.
++    214| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:1482: trailing whitespace.
++    302| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:1493: trailing whitespace.
++- Expected: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:1496: trailing whitespace.
+++ Received: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:1514: trailing whitespace.
++    209| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:1650: trailing whitespace.
++    203| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:1708: trailing whitespace.
++     85| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:1722: trailing whitespace.
++     34| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:1738: trailing whitespace.
++    145| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:1794: trailing whitespace.
++     55| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:1809: trailing whitespace.
++     66| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:1813: trailing whitespace.
++     69| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:1840: trailing whitespace.
++- Expected: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:1843: trailing whitespace.
+++ Received: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:1884: trailing whitespace.
++     45| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:1926: trailing whitespace.
++    120| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:1964: trailing whitespace.
++    158| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:2007: trailing whitespace.
++    191| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:2019: trailing whitespace.
++- Expected: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:2022: trailing whitespace.
+++ Received: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:24874: trailing whitespace.
++    268| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:24886: trailing whitespace.
++- Expected: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:24889: trailing whitespace.
+++ Received: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:24927: trailing whitespace.
++    488| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:29270: trailing whitespace.
++    102| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:29311: trailing whitespace.
++    216| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:29343: trailing whitespace.
++    123| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:29429: trailing whitespace.
++    126| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:29446: trailing whitespace.
++     14| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:29461: trailing whitespace.
++     62| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:29671: trailing whitespace.
++    203| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:29682: trailing whitespace.
++     60| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:29698: trailing whitespace.
++     75| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:29727: trailing whitespace.
++     80| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:29738: trailing whitespace.
++     73| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:29763: trailing whitespace.
++     96| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:29768: trailing whitespace.
++    100| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:29796: trailing whitespace.
++    282| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:29847: trailing whitespace.
++    282| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:29876: trailing whitespace.
++    282| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:29901: trailing whitespace.
++    282| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:29926: trailing whitespace.
++    282| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:29939: trailing whitespace.
++    140| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:29955: trailing whitespace.
++- Expected: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:29958: trailing whitespace.
+++ Received: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:30883: trailing whitespace.
++    154| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:30887: trailing whitespace.
++    157| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:30927: trailing whitespace.
++     86| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:30934: trailing whitespace.
++- Expected: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:30937: trailing whitespace.
+++ Received: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:30953: trailing whitespace.
++- Expected: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:30956: trailing whitespace.
+++ Received: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:30972: trailing whitespace.
++- Expected: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:30975: trailing whitespace.
+++ Received: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:30983: trailing whitespace.
++    238| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:31017: trailing whitespace.
++    146| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:31036: trailing whitespace.
++    296| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:31531: trailing whitespace.
++    109| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:31546: trailing whitespace.
++    134| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:31573: trailing whitespace.
++- Expected: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:31576: trailing whitespace.
+++ Received: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:31619: trailing whitespace.
++- Expected: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:31622: trailing whitespace.
+++ Received: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:31677: trailing whitespace.
++     15| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:31729: trailing whitespace.
++    109| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:31748: trailing whitespace.
++    127| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:31774: trailing whitespace.
++     92| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:31791: trailing whitespace.
++    123| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:31806: trailing whitespace.
++    309| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:31816: trailing whitespace.
++- Expected: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:31819: trailing whitespace.
+++ Received: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:31847: trailing whitespace.
++    168| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:31864: trailing whitespace.
++     58| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:31973: trailing whitespace.
++    164| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:31992: trailing whitespace.
++    123| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:31997: trailing whitespace.
++    127| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:32009: trailing whitespace.
++     35| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:32036: trailing whitespace.
++    210| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:32062: trailing whitespace.
++     61| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:32165: trailing whitespace.
++     65| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:32170: trailing whitespace.
++     69| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:32196: trailing whitespace.
++    156| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:32253: trailing whitespace.
++    293| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:32272: trailing whitespace.
++    311| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:32277: trailing whitespace.
++    315| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:32308: trailing whitespace.
++    374| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:32325: trailing whitespace.
++    406| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:32351: trailing whitespace.
++Received: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:32370: trailing whitespace.
++     33| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:32375: trailing whitespace.
++     37| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:32445: trailing whitespace.
++    228| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:32457: trailing whitespace.
++Received: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:32476: trailing whitespace.
++    252| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:32560: trailing whitespace.
++     29| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:32565: trailing whitespace.
++     33| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:32916: trailing whitespace.
++    297| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:32928: trailing whitespace.
++    393| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:32946: trailing whitespace.
++    439| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:32951: trailing whitespace.
++    443| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:32962: trailing whitespace.
++    197| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:33112: trailing whitespace.
++    266| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:33829: trailing whitespace.
++      8| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:33931: trailing whitespace.
++- Expected: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:33934: trailing whitespace.
+++ Received: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:33938: trailing whitespace.
++     67| 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stderr.txt:34021: new blank line at EOF.
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stdout.txt:1409: trailing whitespace.
++Received: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stdout.txt:1448: trailing whitespace.
++Received: 
+.omo/evidence/life-full-20260906/phase3-gate-triage/run-w9sTgj/current/stdout.txt:9674: trailing whitespace.
++[컨텍스트] 현재 맵: 프로브 (map_probe) · 사용자 선택 영역: (2,2) 12×10 · 소품·지형 
+.omo/evidence/life-full-20260906/phase3-verification/final/build.log:86: trailing whitespace.
++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/phase3-verification/final/build.log:89: trailing whitespace.
++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/phase3-verification/final/build.log:92: trailing whitespace.
++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/phase3-verification/final/build.log:95: trailing whitespace.
++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/phase3-verification/final/build.log:98: trailing whitespace.
++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/phase3-verification/final/build.log:140: trailing whitespace.
++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/phase3-verification/final/focused.log:34: new blank line at EOF.
+.omo/evidence/life-full-20260906/phase3-verification/final/typecheck.log:4: new blank line at EOF.
+.omo/evidence/life-full-20260906/phase3-verification/tools/build.log:14: trailing whitespace.
++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/phase3-verification/tools/build.log:17: trailing whitespace.
++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/phase3-verification/tools/build.log:20: trailing whitespace.
++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/phase3-verification/tools/build.log:23: trailing whitespace.
++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/phase3-verification/tools/build.log:26: trailing whitespace.
++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/phase3-verification/tools/build.log:118: trailing whitespace.
++[plugin vite:reporter] 
+.omo/evidence/life-full-20260906/phase3-verification/tools/editor-unit.log:26: new blank line at EOF.
+.omo/evidence/life-full-20260906/phase3-verification/tools/focused.log:39: new blank line at EOF.
+.omo/evidence/life-full-20260906/phase3-verification/tools/typecheck.log:4: new blank line at EOF.
+.omo/evidence/sweep7-life/focused.log:146: trailing whitespace.
++     44| 
+.omo/evidence/sweep7-life/focused.log:174: new blank line at EOF.
+.omo/evidence/sweep7-life/typecheck-serial.log:4: new blank line at EOF.
+.omo/evidence/sweep7-life/typecheck.log:4: new blank line at EOF.
+output/evidence/ai-harness/p2/baseline-tests.log:36: new blank line at EOF.
+output/evidence/ai-harness/p2/contract-compat-fix/p2-residual-base.log:89: trailing whitespace.
++     78| 
+output/evidence/ai-harness/p2/contract-compat-fix/p2-residual-base.log:115: trailing whitespace.
++     90| 
+output/evidence/ai-harness/p2/contract-compat-fix/p2-residual-current.log:38: trailing whitespace.
++Received: 
+output/evidence/ai-harness/p2/contract-compat-fix/p2-residual-current.log:75: trailing whitespace.
++Received: 
+output/evidence/ai-harness/p2/contract-compat-fix/p2-residual-current.log:96: trailing whitespace.
++     72| 
+output/evidence/ai-harness/p2/contract-compat-fix/p2-residual-current.log:153: trailing whitespace.
++     79| 
+output/evidence/ai-harness/p2/contract-compat-fix/p2-residual-current.log:156: trailing whitespace.
++     81| 
+output/evidence/ai-harness/p2/contract-compat-fix/p2-residual-current.log:190: trailing whitespace.
++    146| 
+output/evidence/ai-harness/p2/contract-compat-fix/p2-residual-current.log:234: trailing whitespace.
++     78| 
+output/evidence/ai-harness/p2/contract-compat-fix/p2-residual-current.log:256: trailing whitespace.
++     84| 
+output/evidence/ai-harness/p2/contract-compat-fix/p2-residual-current.log:288: trailing whitespace.
++     90| 
+output/evidence/ai-harness/p2/contract-compat-fix/red.log:28: trailing whitespace.
++Received: 
+output/evidence/ai-harness/p2/contract-compat-fix/red.log:56: trailing whitespace.
++Received: 
+output/evidence/ai-harness/p2/contract-compat-fix/red.log:77: trailing whitespace.
++     72| 
+output/evidence/ai-harness/p2/contract-compat-fix/red.log:134: trailing whitespace.
++     79| 
+output/evidence/ai-harness/p2/contract-compat-fix/red.log:137: trailing whitespace.
++     81| 
+output/evidence/ai-harness/p2/contract-compat-fix/red.log:171: trailing whitespace.
++    146| 
+output/evidence/ai-harness/p2/event-contract-fix/green/command.log:28: new blank line at EOF.
+output/evidence/ai-harness/p2/event-contract-fix/red/command.log:75: trailing whitespace.
++     71| 
+output/evidence/ai-harness/p2/event-contract-fix/red/command.log:84: new blank line at EOF.
+output/evidence/ai-harness/p2/event-contract-fix/source.diff:15: trailing whitespace.
++ 
+output/evidence/ai-harness/p2/integration-blocked-control-build.log:14: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/integration-blocked-control-build.log:17: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/integration-blocked-control-build.log:20: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/integration-blocked-control-build.log:23: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/integration-blocked-control-build.log:26: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/integration-blocked-control-build.log:87: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/integration-blocked-control-final-green.log:87: new blank line at EOF.
+output/evidence/ai-harness/p2/integration-blocked-control-green.log:85: new blank line at EOF.
+output/evidence/ai-harness/p2/integration-blocked-control-red.log:54: new blank line at EOF.
+output/evidence/ai-harness/p2/integration-blocked-history-red.log:22: trailing whitespace.
++[32m- Expected:[39m 
+output/evidence/ai-harness/p2/integration-blocked-history-red.log:25: trailing whitespace.
++[31m+ Received:[39m 
+output/evidence/ai-harness/p2/integration-blocked-history-red.log:719: new blank line at EOF.
+output/evidence/ai-harness/p2/integration-build.log:14: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/integration-build.log:17: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/integration-build.log:20: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/integration-build.log:23: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/integration-build.log:26: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/integration-build.log:87: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/integration-drain-build.log:14: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/integration-drain-build.log:17: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/integration-drain-build.log:20: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/integration-drain-build.log:23: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/integration-drain-build.log:26: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/integration-drain-build.log:87: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/integration-drain-green.log:53: new blank line at EOF.
+output/evidence/ai-harness/p2/integration-drain-red.log:39: new blank line at EOF.
+output/evidence/ai-harness/p2/integration-driver-red.log:38: trailing whitespace.
++     47| 
+output/evidence/ai-harness/p2/integration-driver-red.log:47: new blank line at EOF.
+output/evidence/ai-harness/p2/integration-entry-build.log:14: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/integration-entry-build.log:17: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/integration-entry-build.log:20: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/integration-entry-build.log:23: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/integration-entry-build.log:26: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/integration-entry-build.log:87: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/integration-entry-green.log:194: new blank line at EOF.
+output/evidence/ai-harness/p2/integration-entry-red-small-fixture.log:89: new blank line at EOF.
+output/evidence/ai-harness/p2/integration-entry-red.log:69: trailing whitespace.
++     28| 
+output/evidence/ai-harness/p2/integration-entry-red.log:109: new blank line at EOF.
+output/evidence/ai-harness/p2/integration-final-green.log:145: new blank line at EOF.
+output/evidence/ai-harness/p2/integration-focused-attempt.log:119: new blank line at EOF.
+output/evidence/ai-harness/p2/integration-green-attempt.log:23: new blank line at EOF.
+output/evidence/ai-harness/p2/integration-lifecycle.log:22: new blank line at EOF.
+output/evidence/ai-harness/p2/integration-ownership-red.log:60: new blank line at EOF.
+output/evidence/ai-harness/p2/integration-policy-build.log:14: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/integration-policy-build.log:17: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/integration-policy-build.log:20: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/integration-policy-build.log:23: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/integration-policy-build.log:26: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/integration-policy-build.log:87: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/integration-policy-final-green.log:182: new blank line at EOF.
+output/evidence/ai-harness/p2/integration-policy-green-attempt.log:27: new blank line at EOF.
+output/evidence/ai-harness/p2/integration-policy-red.log:70: trailing whitespace.
++     75| 
+output/evidence/ai-harness/p2/integration-policy-red.log:103: new blank line at EOF.
+output/evidence/ai-harness/p2/integration-red.log:38: trailing whitespace.
++[32m- Expected:[39m 
+output/evidence/ai-harness/p2/integration-red.log:45: trailing whitespace.
++[31m+ Received:[39m 
+output/evidence/ai-harness/p2/integration-red.log:61: trailing whitespace.
++[32m- Expected:[39m 
+output/evidence/ai-harness/p2/integration-red.log:68: trailing whitespace.
++[31m+ Received:[39m 
+output/evidence/ai-harness/p2/integration-red.log:84: trailing whitespace.
++[32m- Expected:[39m 
+output/evidence/ai-harness/p2/integration-red.log:87: trailing whitespace.
++[31m+ Received:[39m 
+output/evidence/ai-harness/p2/integration-red.log:103: trailing whitespace.
++[32m- Expected:[39m 
+output/evidence/ai-harness/p2/integration-red.log:110: trailing whitespace.
++[31m+ Received:[39m 
+output/evidence/ai-harness/p2/integration-red.log:126: trailing whitespace.
++[32m- Expected:[39m 
+output/evidence/ai-harness/p2/integration-red.log:133: trailing whitespace.
++[31m+ Received:[39m 
+output/evidence/ai-harness/p2/integration-red.log:142: trailing whitespace.
++     34| 
+output/evidence/ai-harness/p2/integration-red.log:149: trailing whitespace.
++[32m- Expected:[39m 
+output/evidence/ai-harness/p2/integration-red.log:156: trailing whitespace.
++[31m+ Received:[39m 
+output/evidence/ai-harness/p2/integration-red.log:165: trailing whitespace.
++     43| 
+output/evidence/ai-harness/p2/integration-red.log:172: trailing whitespace.
++[32m- Expected:[39m 
+output/evidence/ai-harness/p2/integration-red.log:179: trailing whitespace.
++[31m+ Received:[39m 
+output/evidence/ai-harness/p2/integration-red.log:195: trailing whitespace.
++[32m- Expected:[39m 
+output/evidence/ai-harness/p2/integration-red.log:202: trailing whitespace.
++[31m+ Received:[39m 
+output/evidence/ai-harness/p2/integration-red.log:218: trailing whitespace.
++[32m- Expected:[39m 
+output/evidence/ai-harness/p2/integration-red.log:225: trailing whitespace.
++[31m+ Received:[39m 
+output/evidence/ai-harness/p2/integration-red.log:234: trailing whitespace.
++     77| 
+output/evidence/ai-harness/p2/integration-red.log:243: new blank line at EOF.
+output/evidence/ai-harness/p2/integration-settlement-red.log:33: trailing whitespace.
++     59| 
+output/evidence/ai-harness/p2/integration-settlement-red.log:59: trailing whitespace.
++     71| 
+output/evidence/ai-harness/p2/integration-settlement-red.log:68: new blank line at EOF.
+output/evidence/ai-harness/p2/integration-typecheck.log:4: new blank line at EOF.
+output/evidence/ai-harness/p2/main-compat/build.log:14: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/main-compat/build.log:17: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/main-compat/build.log:20: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/main-compat/build.log:23: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/main-compat/build.log:26: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/main-compat/build.log:29: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/main-compat/build.log:91: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/main-compat/exact-invocations-red.log:45: new blank line at EOF.
+output/evidence/ai-harness/p2/main-compat/final-build.log:14: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/main-compat/final-build.log:17: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/main-compat/final-build.log:20: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/main-compat/final-build.log:23: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/main-compat/final-build.log:26: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/main-compat/final-build.log:29: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/main-compat/final-build.log:91: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/main-compat/initial-targeted.log:190: trailing whitespace.
++    102| 
+output/evidence/ai-harness/p2/main-compat/initial-targeted.log:206: trailing whitespace.
++    102| 
+output/evidence/ai-harness/p2/main-compat/initial-targeted.log:222: trailing whitespace.
++    102| 
+output/evidence/ai-harness/p2/main-compat/initial-targeted.log:238: trailing whitespace.
++    102| 
+output/evidence/ai-harness/p2/main-compat/initial-targeted.log:254: trailing whitespace.
++    102| 
+output/evidence/ai-harness/p2/main-compat/initial-targeted.log:305: trailing whitespace.
++    284| 
+output/evidence/ai-harness/p2/main-compat/initial-targeted.log:343: trailing whitespace.
++     43| 
+output/evidence/ai-harness/p2/main-compat/initial-targeted.log:383: new blank line at EOF.
+output/evidence/ai-harness/p2/main-compat/interacting.log:85: new blank line at EOF.
+output/evidence/ai-harness/p2/main-compat/milestone-red.log:40: new blank line at EOF.
+output/evidence/ai-harness/p2/main-compat/targeted.log:464: trailing whitespace.
++    187| 
+output/evidence/ai-harness/p2/main-compat/typecheck.log:4: new blank line at EOF.
+output/evidence/ai-harness/p2/main-compat/verified-build.log:14: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/main-compat/verified-build.log:17: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/main-compat/verified-build.log:20: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/main-compat/verified-build.log:23: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/main-compat/verified-build.log:26: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/main-compat/verified-build.log:29: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/main-compat/verified-build.log:91: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/main-increment/build.log:14: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/main-increment/build.log:17: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/main-increment/build.log:20: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/main-increment/build.log:23: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/main-increment/build.log:26: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/main-increment/build.log:29: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/main-increment/build.log:91: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/outcome-model-behavior-red.log:470: trailing whitespace.
++     89| 
+output/evidence/ai-harness/p2/outcome-model-behavior-red.log:479: new blank line at EOF.
+output/evidence/ai-harness/p2/outcome-model-green.log:14: new blank line at EOF.
+output/evidence/ai-harness/p2/outcome-model-red.log:21: trailing whitespace.
++      4| 
+output/evidence/ai-harness/p2/outcome-model-red.log:31: new blank line at EOF.
+output/evidence/ai-harness/p2/outcome-model-typecheck-complete.log:4: new blank line at EOF.
+output/evidence/ai-harness/p2/outcome-model-typecheck.log:4: new blank line at EOF.
+output/evidence/ai-harness/p2/requirements-build.log:14: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/requirements-build.log:17: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/requirements-build.log:20: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/requirements-build.log:23: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/requirements-build.log:26: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/requirements-build.log:87: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/requirements-cost-build.log:14: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/requirements-cost-build.log:17: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/requirements-cost-build.log:20: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/requirements-cost-build.log:23: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/requirements-cost-build.log:26: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/requirements-cost-build.log:87: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/requirements-cost-green.log:93: new blank line at EOF.
+output/evidence/ai-harness/p2/requirements-cost-red.log:18: trailing whitespace.
++Received: 
+output/evidence/ai-harness/p2/requirements-cost-red.log:120: trailing whitespace.
++Received: 
+output/evidence/ai-harness/p2/requirements-cost-red.log:190: new blank line at EOF.
+output/evidence/ai-harness/p2/requirements-cost-typecheck.log:4: new blank line at EOF.
+output/evidence/ai-harness/p2/requirements-edge-red.log:71: trailing whitespace.
++     40| 
+output/evidence/ai-harness/p2/requirements-edge-red.log:99: new blank line at EOF.
+output/evidence/ai-harness/p2/requirements-final-build.log:14: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/requirements-final-build.log:17: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/requirements-final-build.log:20: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/requirements-final-build.log:23: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/requirements-final-build.log:26: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/requirements-final-build.log:87: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/requirements-final-tests.log:94: new blank line at EOF.
+output/evidence/ai-harness/p2/requirements-final-typecheck.log:4: new blank line at EOF.
+output/evidence/ai-harness/p2/requirements-fixture-correction.log:35: new blank line at EOF.
+output/evidence/ai-harness/p2/requirements-green-attempt.log:143: new blank line at EOF.
+output/evidence/ai-harness/p2/requirements-green.log:88: new blank line at EOF.
+output/evidence/ai-harness/p2/requirements-late-evidence-red.log:60: trailing whitespace.
++    208| 
+output/evidence/ai-harness/p2/requirements-late-evidence-red.log:69: new blank line at EOF.
+output/evidence/ai-harness/p2/requirements-legacy-fixture-red.log:52: trailing whitespace.
++[32m- Expected:[39m 
+output/evidence/ai-harness/p2/requirements-legacy-fixture-red.log:55: trailing whitespace.
++[31m+ Received:[39m 
+output/evidence/ai-harness/p2/requirements-legacy-fixture-red.log:73: trailing whitespace.
++[32m- Expected:[39m 
+output/evidence/ai-harness/p2/requirements-legacy-fixture-red.log:76: trailing whitespace.
++[31m+ Received:[39m 
+output/evidence/ai-harness/p2/requirements-legacy-fixture-red.log:96: new blank line at EOF.
+output/evidence/ai-harness/p2/requirements-link-independence-green.log:99: new blank line at EOF.
+output/evidence/ai-harness/p2/requirements-question-dispatch-build.log:14: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/requirements-question-dispatch-build.log:17: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/requirements-question-dispatch-build.log:20: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/requirements-question-dispatch-build.log:23: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/requirements-question-dispatch-build.log:26: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/requirements-question-dispatch-build.log:87: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/requirements-question-dispatch-contract-red.log:83: new blank line at EOF.
+output/evidence/ai-harness/p2/requirements-question-dispatch-green.log:90: new blank line at EOF.
+output/evidence/ai-harness/p2/requirements-question-dispatch-read-red.log:113: new blank line at EOF.
+output/evidence/ai-harness/p2/requirements-question-dispatch-red.log:50: new blank line at EOF.
+output/evidence/ai-harness/p2/requirements-question-dispatch-typecheck.log:4: new blank line at EOF.
+output/evidence/ai-harness/p2/requirements-red-contracts.log:65: trailing whitespace.
++[32m- Expected:[39m 
+output/evidence/ai-harness/p2/requirements-red-contracts.log:81: trailing whitespace.
++[31m+ Received:[39m 
+output/evidence/ai-harness/p2/requirements-red-contracts.log:97: trailing whitespace.
++[32m- Expected:[39m 
+output/evidence/ai-harness/p2/requirements-red-contracts.log:113: trailing whitespace.
++[31m+ Received:[39m 
+output/evidence/ai-harness/p2/requirements-red-contracts.log:122: trailing whitespace.
++     30| 
+output/evidence/ai-harness/p2/requirements-red-contracts.log:132: trailing whitespace.
++[32m- Expected:[39m 
+output/evidence/ai-harness/p2/requirements-red-contracts.log:143: trailing whitespace.
++[31m+ Received:[39m 
+output/evidence/ai-harness/p2/requirements-red-contracts.log:152: trailing whitespace.
++     37| 
+output/evidence/ai-harness/p2/requirements-red-contracts.log:196: trailing whitespace.
++     48| 
+output/evidence/ai-harness/p2/requirements-red-contracts.log:203: trailing whitespace.
++[32m- Expected:[39m 
+output/evidence/ai-harness/p2/requirements-red-contracts.log:225: trailing whitespace.
++[31m+ Received:[39m 
+output/evidence/ai-harness/p2/requirements-red-contracts.log:265: trailing whitespace.
++[32m- Expected:[39m 
+output/evidence/ai-harness/p2/requirements-red-contracts.log:268: trailing whitespace.
++[31m+ Received:[39m 
+output/evidence/ai-harness/p2/requirements-red-contracts.log:277: trailing whitespace.
++    109| 
+output/evidence/ai-harness/p2/requirements-red-contracts.log:320: trailing whitespace.
++[32m- Expected:[39m 
+output/evidence/ai-harness/p2/requirements-red-contracts.log:323: trailing whitespace.
++[31m+ Received:[39m 
+output/evidence/ai-harness/p2/requirements-red-contracts.log:332: trailing whitespace.
++    141| 
+output/evidence/ai-harness/p2/requirements-red-contracts.log:339: trailing whitespace.
++[32m- Expected:[39m 
+output/evidence/ai-harness/p2/requirements-red-contracts.log:342: trailing whitespace.
++[31m+ Received:[39m 
+output/evidence/ai-harness/p2/requirements-red-contracts.log:553: new blank line at EOF.
+output/evidence/ai-harness/p2/requirements-red.log:89: trailing whitespace.
++[32m- Expected:[39m 
+output/evidence/ai-harness/p2/requirements-red.log:105: trailing whitespace.
++[31m+ Received:[39m 
+output/evidence/ai-harness/p2/requirements-red.log:114: trailing whitespace.
++     30| 
+output/evidence/ai-harness/p2/requirements-red.log:124: trailing whitespace.
++[32m- Expected:[39m 
+output/evidence/ai-harness/p2/requirements-red.log:135: trailing whitespace.
++[31m+ Received:[39m 
+output/evidence/ai-harness/p2/requirements-red.log:144: trailing whitespace.
++     37| 
+output/evidence/ai-harness/p2/requirements-red.log:188: trailing whitespace.
++     48| 
+output/evidence/ai-harness/p2/requirements-red.log:195: trailing whitespace.
++[32m- Expected:[39m 
+output/evidence/ai-harness/p2/requirements-red.log:217: trailing whitespace.
++[31m+ Received:[39m 
+output/evidence/ai-harness/p2/requirements-red.log:257: trailing whitespace.
++[32m- Expected:[39m 
+output/evidence/ai-harness/p2/requirements-red.log:260: trailing whitespace.
++[31m+ Received:[39m 
+output/evidence/ai-harness/p2/requirements-red.log:269: trailing whitespace.
++    109| 
+output/evidence/ai-harness/p2/requirements-red.log:312: trailing whitespace.
++[32m- Expected:[39m 
+output/evidence/ai-harness/p2/requirements-red.log:315: trailing whitespace.
++[31m+ Received:[39m 
+output/evidence/ai-harness/p2/requirements-red.log:324: trailing whitespace.
++    141| 
+output/evidence/ai-harness/p2/requirements-red.log:373: new blank line at EOF.
+output/evidence/ai-harness/p2/requirements-source-utterance-build.log:14: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/requirements-source-utterance-build.log:17: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/requirements-source-utterance-build.log:20: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/requirements-source-utterance-build.log:23: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/requirements-source-utterance-build.log:26: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/requirements-source-utterance-build.log:87: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/requirements-source-utterance-green.log:90: new blank line at EOF.
+output/evidence/ai-harness/p2/requirements-source-utterance-red.log:80: trailing whitespace.
++    111| 
+output/evidence/ai-harness/p2/requirements-source-utterance-red.log:89: new blank line at EOF.
+output/evidence/ai-harness/p2/requirements-source-utterance-typecheck.log:4: new blank line at EOF.
+output/evidence/ai-harness/p2/requirements-typecheck-final.log:4: new blank line at EOF.
+output/evidence/ai-harness/p2/requirements-typecheck.log:4: new blank line at EOF.
+output/evidence/ai-harness/p2/schema-compat-fix/build.log:92: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/schema-compat-fix/build.log:95: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/schema-compat-fix/build.log:98: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/schema-compat-fix/build.log:101: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/schema-compat-fix/build.log:104: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/schema-compat-fix/build.log:114: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/schema-compat-fix/diagnostics-final.log:12: new blank line at EOF.
+output/evidence/ai-harness/p2/schema-compat-fix/diagnostics-green.log:4: new blank line at EOF.
+output/evidence/ai-harness/p2/schema-compat-fix/observed-p2-residual-base.log:89: trailing whitespace.
++     78| 
+output/evidence/ai-harness/p2/schema-compat-fix/observed-p2-residual-base.log:115: trailing whitespace.
++     90| 
+output/evidence/ai-harness/p2/schema-compat-fix/observed-p2-residual-current.log:38: trailing whitespace.
++Received: 
+output/evidence/ai-harness/p2/schema-compat-fix/observed-p2-residual-current.log:75: trailing whitespace.
++Received: 
+output/evidence/ai-harness/p2/schema-compat-fix/observed-p2-residual-current.log:96: trailing whitespace.
++     72| 
+output/evidence/ai-harness/p2/schema-compat-fix/observed-p2-residual-current.log:153: trailing whitespace.
++     79| 
+output/evidence/ai-harness/p2/schema-compat-fix/observed-p2-residual-current.log:156: trailing whitespace.
++     81| 
+output/evidence/ai-harness/p2/schema-compat-fix/observed-p2-residual-current.log:190: trailing whitespace.
++    146| 
+output/evidence/ai-harness/p2/schema-compat-fix/observed-p2-residual-current.log:234: trailing whitespace.
++     78| 
+output/evidence/ai-harness/p2/schema-compat-fix/observed-p2-residual-current.log:256: trailing whitespace.
++     84| 
+output/evidence/ai-harness/p2/schema-compat-fix/observed-p2-residual-current.log:288: trailing whitespace.
++     90| 
+output/evidence/ai-harness/p2/schema-compat-fix/red-existing.log:56: trailing whitespace.
++     78| 
+output/evidence/ai-harness/p2/schema-compat-fix/red-existing.log:78: trailing whitespace.
++     84| 
+output/evidence/ai-harness/p2/schema-compat-fix/red-existing.log:110: trailing whitespace.
++     90| 
+output/evidence/ai-harness/p2/schema-compat-fix/red-existing.log:113: new blank line at EOF.
+output/evidence/ai-harness/p2/schema-compat-fix/red-regression.log:204: trailing whitespace.
++     84| 
+output/evidence/ai-harness/p2/schema-compat-fix/red-regression.log:227: trailing whitespace.
++     90| 
+output/evidence/ai-harness/p2/schema-compat-fix/red-regression.log:265: trailing whitespace.
++     96| 
+output/evidence/ai-harness/p2/schema-compat-fix/red-regression.log:296: trailing whitespace.
++[32m- Expected:[39m 
+output/evidence/ai-harness/p2/schema-compat-fix/red-regression.log:299: trailing whitespace.
++[31m+ Received:[39m 
+output/evidence/ai-harness/p2/schema-compat-fix/red-regression.log:320: trailing whitespace.
++[32m- Expected:[39m 
+output/evidence/ai-harness/p2/schema-compat-fix/red-regression.log:323: trailing whitespace.
++[31m+ Received:[39m 
+output/evidence/ai-harness/p2/schema-compat-fix/red-regression.log:335: new blank line at EOF.
+output/evidence/ai-harness/p2/ui-autonomous-attempt.log:22: new blank line at EOF.
+output/evidence/ai-harness/p2/ui-build.log:14: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/ui-build.log:17: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/ui-build.log:20: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/ui-build.log:23: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/ui-build.log:26: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/ui-build.log:87: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/ui-explicit-resume-build.log:14: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/ui-explicit-resume-build.log:17: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/ui-explicit-resume-build.log:20: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/ui-explicit-resume-build.log:23: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/ui-explicit-resume-build.log:26: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/ui-explicit-resume-build.log:87: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/ui-explicit-resume-green.log:51: new blank line at EOF.
+output/evidence/ai-harness/p2/ui-explicit-resume-red.log:35: new blank line at EOF.
+output/evidence/ai-harness/p2/ui-final-build.log:14: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/ui-final-build.log:17: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/ui-final-build.log:20: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/ui-final-build.log:23: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/ui-final-build.log:26: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/ui-final-build.log:87: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/ai-harness/p2/ui-final-green.log:51: new blank line at EOF.
+output/evidence/ai-harness/p2/ui-green-attempt.log:59: trailing whitespace.
++[32m- Expected:[39m 
+output/evidence/ai-harness/p2/ui-green-attempt.log:62: trailing whitespace.
++[31m+ Received:[39m 
+output/evidence/ai-harness/p2/ui-green-attempt.log:1334: trailing whitespace.
++[32m- Expected:[39m 
+output/evidence/ai-harness/p2/ui-green-attempt.log:1337: trailing whitespace.
++[31m+ Received:[39m 
+output/evidence/ai-harness/p2/ui-green-attempt.log:2602: trailing whitespace.
++    422| 
+output/evidence/ai-harness/p2/ui-green-attempt.log:2609: trailing whitespace.
++[32m- Expected:[39m 
+output/evidence/ai-harness/p2/ui-green-attempt.log:2612: trailing whitespace.
++[31m+ Received:[39m 
+output/evidence/ai-harness/p2/ui-green-attempt.log:3840: trailing whitespace.
++    456| 
+output/evidence/ai-harness/p2/ui-green-attempt.log:3847: trailing whitespace.
++[32m- Expected:[39m 
+output/evidence/ai-harness/p2/ui-green-attempt.log:3850: trailing whitespace.
++[31m+ Received:[39m 
+output/evidence/ai-harness/p2/ui-green-attempt.log:5078: trailing whitespace.
++    475| 
+output/evidence/ai-harness/p2/ui-green-attempt.log:5085: trailing whitespace.
++[32m- Expected:[39m 
+output/evidence/ai-harness/p2/ui-green-attempt.log:5088: trailing whitespace.
++[31m+ Received:[39m 
+output/evidence/ai-harness/p2/ui-green-attempt.log:6359: trailing whitespace.
++[32m- Expected:[39m 
+output/evidence/ai-harness/p2/ui-green-attempt.log:6362: trailing whitespace.
++[31m+ Received:[39m 
+output/evidence/ai-harness/p2/ui-green-attempt.log:7598: new blank line at EOF.
+output/evidence/ai-harness/p2/ui-red.log:328: new blank line at EOF.
+output/evidence/monster-catalog/final-main-integration/build.log:14: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/monster-catalog/final-main-integration/build.log:17: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/monster-catalog/final-main-integration/build.log:20: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/monster-catalog/final-main-integration/build.log:23: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/monster-catalog/final-main-integration/build.log:26: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/monster-catalog/final-main-integration/build.log:29: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/monster-catalog/final-main-integration/build.log:91: trailing whitespace.
++[plugin vite:reporter] 
+output/evidence/monster-catalog/final-main-integration/focused.log:182: trailing whitespace.
++[32m- Expected:[39m 
+output/evidence/monster-catalog/final-main-integration/focused.log:185: trailing whitespace.
++[31m+ Received:[39m 
+output/evidence/monster-catalog/final-main-integration/focused.log:213: trailing whitespace.
++    168| 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:8: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:11: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:29: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:37: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:51: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:54: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:73: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:75: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:79: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:82: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:127: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:129: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:133: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:136: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:155: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:157: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:159: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:162: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:186: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:188: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:192: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:195: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:208: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:210: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:214: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:217: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:228: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:230: trailing whitespace.
++ 
+output/evidence/monster-catalog/final-main-integration/index-resolution.patch:230: new blank line at EOF.
+output/evidence/monster-catalog/final-main-integration/typecheck-app.log:4: new blank line at EOF.
+output/evidence/monster-catalog/final-main-integration/whitespace-check.log:2: trailing whitespace.
+++[plugin vite:reporter] 
+output/evidence/monster-catalog/final-main-integration/whitespace-check.log:4: trailing whitespace.
+++[plugin vite:reporter] 
+output/evidence/monster-catalog/final-main-integration/whitespace-check.log:6: trailing whitespace.
+++[plugin vite:reporter] 
+output/evidence/monster-catalog/final-main-integration/whitespace-check.log:8: trailing whitespace.
+++[plugin vite:reporter] 
+output/evidence/monster-catalog/final-main-integration/whitespace-check.log:10: trailing whitespace.
+++[plugin vite:reporter] 
+output/evidence/monster-catalog/final-main-integration/whitespace-check.log:12: trailing whitespace.
+++[plugin vite:reporter] 
+output/evidence/monster-catalog/final-main-integration/whitespace-check.log:14: trailing whitespace.
+++[plugin vite:reporter] 
+output/evidence/monster-catalog/final-main-integration/whitespace-check.log:16: trailing whitespace.
+++[32m- Expected:[39m 
+output/evidence/monster-catalog/final-main-integration/whitespace-check.log:18: trailing whitespace.
+++[31m+ Received:[39m 
+output/evidence/monster-catalog/final-main-integration/whitespace-check.log:20: trailing whitespace.
+++    168| 
+output/evidence/monster-catalog/final-main-integration/whitespace-check.log:22: trailing whitespace.
+++ 
+output/evidence/monster-catalog/final-main-integration/whitespace-check.log:24: trailing whitespace.
+++ 
+output/evidence/monster-catalog/final-main-integration/whitespace-check.log:26: trailing whitespace.
+++ 
+output/evidence/monster-catalog/final-main-integration/whitespace-check.log:28: trailing whitespace.
+++ 
+output/evidence/monster-catalog/final-main-integration/whitespace-check.log:30: trailing whitespace.
+++ 
+output/evidence/monster-catalog/final-main-integration/whitespace-check.log:32: trailing whitespace.
+++ 
+output/evidence/monster-catalog/final-main-integration/whitespace-check.log:34: trailing whitespace.
+++ 
+output/evidence/monster-catalog/final-main-integration/whitespace-check.log:36: trailing whitespace.
+++ 
+output/evidence/monster-catalog/final-main-integration/whitespace-check.log:38: trailing whitespace.
+++ 
+output/evidence/monster-catalog/final-main-integration/whitespace-check.log:40: trailing whitespace.
+++ 
+output/evidence/monster-catalog/final-main-integration/whitespace-check.log:42: trailing whitespace.
+++ 
+output/evidence/monster-catalog/final-main-integration/whitespace-check.log:44: trailing whitespace.
+++ 
+output/evidence/monster-catalog/final-main-integration/whitespace-check.log:46: trailing whitespace.
+++ 
+output/evidence/monster-catalog/final-main-integration/whitespace-check.log:48: trailing whitespace.
+++ 
+output/evidence/monster-catalog/final-main-integration/whitespace-check.log:50: trailing whitespace.
+++ 
+output/evidence/monster-catalog/final-main-integration/whitespace-check.log:52: trailing whitespace.
+++ 
+output/evidence/monster-catalog/final-main-integration/whitespace-check.log:54: trailing whitespace.
+++ 
+output/evidence/monster-catalog/final-main-integration/whitespace-check.log:56: trailing whitespace.
+++ 
+output/evidence/monster-catalog/final-main-integration/whitespace-check.log:58: trailing whitespace.
+++ 
+output/evidence/monster-catalog/final-main-integration/whitespace-check.log:60: trailing whitespace.
+++ 
+output/evidence/monster-catalog/final-main-integration/whitespace-check.log:62: trailing whitespace.
+++ 
+output/evidence/monster-catalog/final-main-integration/whitespace-check.log:64: trailing whitespace.
+++ 
+output/evidence/monster-catalog/final-main-integration/whitespace-check.log:66: trailing whitespace.
+++ 
+output/evidence/monster-catalog/final-main-integration/whitespace-check.log:68: trailing whitespace.
+++ 
+output/evidence/monster-catalog/final-main-integration/whitespace-check.log:70: trailing whitespace.
+++ 
+output/evidence/monster-catalog/final-main-integration/whitespace-check.log:72: trailing whitespace.
+++ 
+output/evidence/monster-catalog/final-main-integration/whitespace-check.log:74: trailing whitespace.
+++ 
+output/evidence/monster-catalog/final-main-integration/whitespace-check.log:76: trailing whitespace.
+++ 
