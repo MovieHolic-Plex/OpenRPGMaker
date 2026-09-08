@@ -1,5 +1,5 @@
 import { diagnosticObserved, diagnosticToken, publishDiagnostic } from "@/util/diagnosticObserver";
-import { buildIndependentReviewRequest, parseIndependentReview, reviewChanges, reviewMapReferenceRoots, requiresVisualReview, type ResultReview } from "./independentReview";
+import { buildIndependentReviewRequest, parseIndependentReview, reviewChanges, reviewEvidenceContexts, reviewMapReferenceRoots, requiresVisualReview, type ResultReview } from "./independentReview";
 import { mapVisualEvidenceUnavailable } from "./mapVisualEvidence";
 import { parseFunctionalRequirements, type FunctionalCriterion } from "./functionalAcceptance";
 import { missingAcceptance, type AcceptanceSnapshot, type AcceptancePromise, type AcceptanceSource, type RequirementWithdrawalAction } from "./assistantAcceptance";
@@ -4015,6 +4015,9 @@ export class AssistantSession {
     const outputAtStart = this.estimatedOutputTotal;
     let candidate: { identity: string; acceptance: AcceptanceSnapshot | null } | null = null;
     let review: ResultReview;
+    /** Deterministic problems found before the reviewer ran, so a failure that stops the
+     * review from happening at all still reports them instead of only its own cause. */
+    let knownProblems: readonly string[] = [];
     try {
       if (signal?.aborted) throw new Error("independent-review-cancelled");
       if (!this.draftBaselineCurrent) throw new Error("independent-review-stale-baseline: regenerate from the current project before review");
@@ -4059,16 +4062,14 @@ export class AssistantSession {
         requiredProblems.push(`${change.path}: asset transport changed without reviewable original evidence`);
       }
       const targetMapId = this.originalContext!.context.target.mapId;
-      const mapIds = new Set([...Object.keys(this.reviewBaseline.maps), ...Object.keys(this.ctx.project.maps)].filter(id =>
-        id === targetMapId
-        || acceptanceFingerprint(this.reviewBaseline.maps[id]) !== acceptanceFingerprint(this.ctx.project.maps[id])
+      const changedMapIds = new Set([...Object.keys(this.reviewBaseline.maps), ...Object.keys(this.ctx.project.maps)].filter(id =>
+        acceptanceFingerprint(this.reviewBaseline.maps[id]) !== acceptanceFingerprint(this.ctx.project.maps[id])
         || requiresVisualReview(this.reviewBaseline, this.ctx.project, id)));
+      const mapIds = new Set(changedMapIds);
       if (typeof targetMapId === "string") mapIds.add(targetMapId);
-      const evidence = (project: Project, prefix: string) => [...mapIds].map(mapId => extractOriginalContext(project, {
-        snapshotId: `${prefix}-${revision}-${mapId}`, currentMapId: mapId,
-        mapReferenceRoots: [mapId, ...mapReferenceRoots],
-        intent: this.turnIntent ? { ...this.turnIntent, targetMapId: mapId, tools: this.turnIntent.tools } : null,
-      }));
+      const evidence = (project: Project, prefix: string, reviewed: Iterable<string>, target: string) =>
+        reviewEvidenceContexts(project, { snapshotId: `${prefix}-${revision}`, mapIds: reviewed,
+          targetMapId: target, mapReferenceRoots, intent: this.turnIntent ?? null });
       const receipts = this.imageEvidence.current(this.ctx.project);
       for (const mapId of mapIds) {
         const before = this.reviewBaseline.maps[mapId], after = this.ctx.project.maps[mapId];
@@ -4083,10 +4084,29 @@ export class AssistantSession {
       for (const receipt of this.reviewImages.keys()) if (!receipts.includes(receipt)) this.reviewImages.delete(receipt);
       const config = { ...(this.reviewConfig ?? this.config), maxTokens: Math.min(16384, remainingTokens) };
       if (signal?.aborted) throw new Error("independent-review-cancelled");
-      const request = buildIndependentReviewRequest(config, { revision, originalRequest: this.currentTurnRequestText,
-        before: evidence(this.reviewBaseline, "before"), after: evidence(this.ctx.project, "after"), changes,
-        toolResults: this.reviewToolResults, acceptance: draftAcceptance, requiredProblems,
-        images: receipts.flatMap(receipt => this.reviewImages.get(receipt) ?? []) }, signal);
+      knownProblems = requiredProblems;
+      const images = receipts.flatMap(receipt => this.reviewImages.get(receipt) ?? []);
+      const build = (reviewed: Iterable<string>, target: string) => buildIndependentReviewRequest(config, { revision,
+        originalRequest: this.currentTurnRequestText, changes, requiredProblems, images,
+        before: evidence(this.reviewBaseline, "before", reviewed, target),
+        after: evidence(this.ctx.project, "after", reviewed, target),
+        toolResults: this.reviewToolResults, acceptance: draftAcceptance }, signal);
+      // The reviewer is one-shot, so an oversized envelope is refused rather than truncated.
+      // Retry once judging only the changed maps: the target map is where the user is
+      // standing, and an unchanged one is surrounding context rather than the subject of this
+      // review — a large one can overflow the envelope by itself. It has to leave the context
+      // target too, which always includes its own map. Required evidence (changed maps, their
+      // renders, deterministic problems) is never dropped to make room; that would buy
+      // approval with less proof than the gate demands.
+      const [firstChangedMapId] = changedMapIds;
+      let request;
+      try {
+        request = build(mapIds, targetMapId);
+      } catch (cause) {
+        if (!(cause instanceof Error) || !cause.message.startsWith("independent-review-window-exceeded")
+          || firstChangedMapId === undefined || changedMapIds.size >= mapIds.size) throw cause;
+        request = build(changedMapIds, firstChangedMapId);
+      }
       const response = await this.chat(config, request);
       if (signal?.aborted) throw new Error("independent-review-cancelled");
       if (identity !== JSON.stringify(this.ctx.project)) throw new Error("independent-review-stale-revision");
@@ -4100,7 +4120,15 @@ export class AssistantSession {
         candidate = { identity, acceptance: draftAcceptance };
       }
     } catch (cause) {
-      review = { status: "error", revision, findings: [], summary: cause instanceof Error ? cause.message : String(cause) };
+      const message = cause instanceof Error ? cause.message : String(cause);
+      // An unreviewable draft is never approved. But `independent-review-window-exceeded`
+      // is the harness refusing its own envelope, and reporting only that string buried the
+      // deterministic problems (failed lint, unmet acceptance) the user can actually act on.
+      const summary = message.startsWith("independent-review-window-exceeded")
+        ? ["이번 변경의 검수 증거가 한 번에 들어가지 않아 초안을 검수하지 못했습니다. 변경 범위를 나눠 다시 요청하세요.",
+          ...knownProblems.map(problem => `- ${problem}`)].join("\n")
+        : message;
+      review = { status: "error", revision, findings: [], summary };
     }
     if (owner !== this.reviewTurn) return { status: "error", revision, findings: [], summary: "independent-review-superseded" };
     this.resultReview = review;
