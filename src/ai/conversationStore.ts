@@ -373,23 +373,32 @@ export async function listConversations(options: ConversationReadOptions = {}): 
     console.warn("[ai-conversation] 대화 목록을 읽지 못했습니다:", error);
     options.onError?.(error);
   }
+  let remote: ConversationSummary[] = [];
   try {
     const config = await remoteConversationConfig(options.scopeKey);
     if (!config) return local;
     const { listSupabaseConversations } = await import("@/project/supabaseProjectSync");
     const scopeKey = `remote:${config.projectId}`;
-    const remote = await listSupabaseConversations({ scopeKey }, config);
-    const byId = new Map(local.map((row) => [row.id, row]));
-    for (const row of remote) {
-      const record = decodeRemoteConversation(row, scopeKey, true);
-      if (!byId.has(record.id)) byId.set(record.id, { ...toSummary(record), source: "remote" });
-    }
-    return [...byId.values()].sort((left, right) => right.savedAt - left.savedAt);
+    remote = (await listSupabaseConversations({ scopeKey }, config)).map((row) => ({
+      ...toSummary(decodeRemoteConversation(row, scopeKey, true)), source: "remote",
+    }));
   } catch (error) {
     console.warn("[ai-conversation] 온라인 대화 목록을 읽지 못했습니다:", error);
     options.onError?.(error);
-    return local;
   }
+  // Remote success and failure can both be overtaken by a completed local save.
+  // Keep the initial usable snapshot only if the fresh local read itself fails.
+  try {
+    local = (await readAll()).map(toSummary);
+  } catch (error) {
+    console.warn("[ai-conversation] 대화 목록을 읽지 못했습니다:", error);
+    options.onError?.(error);
+  }
+  const byId = new Map(local.map((row) => [row.id, row]));
+  for (const row of remote) {
+    if (!byId.has(row.id)) byId.set(row.id, row);
+  }
+  return [...byId.values()].sort((left, right) => right.savedAt - left.savedAt);
 }
 
 /** 제목 부분일치 검색(대소문자 무시) — 대화 기록 모달용. */
@@ -405,13 +414,21 @@ export async function loadConversation(id: string, options: ConversationReadOpti
     await ensureLegacyMigrated();
     const local = await readAiRecord<ConversationRecord>(STORE, id);
     if (local) return local;
-    const config = await remoteConversationConfig(options.scopeKey);
-    if (!config) return null;
-    const { loadSupabaseConversation } = await import("@/project/supabaseProjectSync");
-    const scopeKey = `remote:${config.projectId}`;
-    const row = await loadSupabaseConversation(id, config, { scopeKey });
-    const remote = row ? decodeRemoteConversation(row, scopeKey) : null;
-    if (remote && remote.id !== id) throw new SupabaseProjectSyncError("요청한 대화 기록과 응답이 일치하지 않습니다.");
+    let remote: ConversationRecord | null = null;
+    try {
+      const config = await remoteConversationConfig(options.scopeKey);
+      if (!config) return null;
+      const { loadSupabaseConversation } = await import("@/project/supabaseProjectSync");
+      const scopeKey = `remote:${config.projectId}`;
+      const row = await loadSupabaseConversation(id, config, { scopeKey });
+      const candidate = row ? decodeRemoteConversation(row, scopeKey) : null;
+      if (candidate && candidate.id !== id) throw new SupabaseProjectSyncError("요청한 대화 기록과 응답이 일치하지 않습니다.");
+      remote = candidate;
+    } catch (error) {
+      console.warn("[ai-conversation] 대화를 읽지 못했습니다:", error);
+      options.onError?.(error);
+    }
+    // Recheck after every remote outcome, including failed GETs and invalid responses.
     // A save may have landed during the GET. Never overwrite or merge an unsynced local transcript.
     // Reads do not cache/mirror remote records: normal panel persistence owns subsequent saves.
     return (await readAiRecord<ConversationRecord>(STORE, id)) ?? remote;

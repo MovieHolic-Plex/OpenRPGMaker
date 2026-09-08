@@ -191,7 +191,8 @@ describe("public history UI with real conversation store and remote transport", 
     else expect(onOpen).not.toHaveBeenCalled();
   });
 
-  it("uses a local record created during the remote load instead of overwriting unsynced content", async () => {
+  it.each(["valid", "503", "invalid"])("uses a local record created during the remote load (%s) instead of overwriting unsynced content", async (result) => {
+    const warning = vi.spyOn(console, "warn");
     const started = deferred<void>();
     const response = deferred<Response>();
     respond = (url) => {
@@ -204,10 +205,40 @@ describe("public history UI with real conversation store and remote transport", 
     await started.promise;
     const local = { ...record(), entries: [{ kind: "user" as const, text: "new-local-content" }] };
     await writeAiRecords(recordsStore, [local]);
-    response.resolve(json([wire()]));
+    response.resolve(result === "503" ? new Response("offline", { status: 503 }) :
+      json([result === "invalid" ? { ...wire(), entries_json: "invalid" } : wire()]));
+    await whenAiConversationHistoryModalSettled();
+    expect(await loadConversation(local.id)).toEqual(local);
+    expect(onOpen).toHaveBeenCalledExactlyOnceWith(local);
+    expect(root.parentElement).toBeNull();
+    expect(requests).toHaveLength(2);
+    if (result === "valid") expect(warning).not.toHaveBeenCalled();
+    else expect(warning).toHaveBeenCalledWith(expect.any(String), expect.any(sync.SupabaseProjectSyncError));
+  });
+
+  it.each([200, 503])("refreshes local list precedence and affordances after a pending remote list settles (%i)", async (status) => {
+    const started = deferred<void>();
+    const response = deferred<Response>();
+    respond = () => { started.resolve(); return response.promise; };
+    const { root, onOpen } = open();
+    await started.promise;
+    const local = { ...record("remote-only", 9_000), title: "new-local-title",
+      entries: [{ kind: "user" as const, text: "new-unsynced-local-content" }] };
+    await writeAiRecords(recordsStore, [local]);
+    response.resolve(status === 503 ? new Response("offline", { status }) : json([wire(), wire()]));
+    await whenAiConversationHistoryModalSettled();
+    expect(await loadConversation(local.id)).toEqual(local);
+    expect(rows(root)).toHaveLength(1);
+    expect(rows(root)[0]!.textContent).toContain(local.title);
+    expect(findByTestId(root, "ai-history-preview")?.textContent).toBe(local.entries[0]!.text);
+    expect(findByTestId(root, "ai-history-delete")).not.toBeNull();
+    expect(findByTestId(root, "ai-history-empty")).toBeNull();
+    if (status === 503) expect(findByTestId(root, "ai-history-error")?.getAttribute("role")).toBe("alert");
+    else expect(findByTestId(root, "ai-history-error")).toBeNull();
+    click(root);
     await whenAiConversationHistoryModalSettled();
     expect(onOpen).toHaveBeenCalledExactlyOnceWith(local);
-    expect(await loadConversation(local.id)).toEqual(local);
+    expect(requests).toHaveLength(1);
   });
 
   it.each([{}, [null]])("reports malformed remote lists rather than successful empty history (%j)", async (payload) => {
@@ -244,7 +275,7 @@ describe("public history UI with real conversation store and remote transport", 
     expect(rows(replacement as unknown as FakeElement)).toHaveLength(0);
   });
 
-  it("refuses a foreign local collision arriving during remote open", async () => {
+  it.each(["valid", "503", "invalid"])("refuses a foreign local collision arriving during remote open (%s)", async (result) => {
     const started = deferred<void>();
     const response = deferred<Response>();
     respond = (url) => {
@@ -257,7 +288,8 @@ describe("public history UI with real conversation store and remote transport", 
     await started.promise;
     const foreign = { ...record(), projectContextKey: "remote:other" };
     await writeAiRecords(recordsStore, [foreign]);
-    response.resolve(json([wire()]));
+    response.resolve(result === "503" ? new Response("offline", { status: 503 }) :
+      json([result === "invalid" ? { ...wire(), entries_json: "invalid" } : wire()]));
     await whenAiConversationHistoryModalSettled();
     expect(onOpen).not.toHaveBeenCalled();
     expect(findByTestId(root, "ai-history-error")).not.toBeNull();
