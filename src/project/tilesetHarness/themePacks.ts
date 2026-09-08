@@ -394,8 +394,14 @@ function themePackForTileset(tileset: Pick<TilesetDef, "image">): ThemeMetadataP
 function applyThemeMetadataPack(tileset: TilesetDef, pack: ThemeMetadataPack): boolean {
   let changed = false;
   ensureTileMetaLength(tileset);
+  // Overlapping groups use the last contract. Apply it once so reseeding does
+  // not temporarily replace an identical final value with an earlier group.
+  const contracts = new Map<number, PackHarnessGroup>();
   for (const group of pack.groups) {
-    for (const tile of group.tileIds) changed = applyTileContract(tileset, group, tile) || changed;
+    for (const tile of group.tileIds) contracts.set(tile, group);
+  }
+  for (const [tile, group] of contracts) {
+    changed = applyTileContract(tileset, group, tile) || changed;
   }
 
   const groups = pack.groups.map(({ passage: _passage, repeatability: _repeatability, ...group }) => ({
