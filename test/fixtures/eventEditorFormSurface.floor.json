@@ -224,11 +224,11 @@
   "textCount": 2
  },
  "changeLifeSkillExp": {
-  "testidCount": 1,
-  "controlCount": 0,
-  "selectOptionCount": 0,
-  "classCount": 1,
-  "labelCount": 0,
+  "testidCount": 16,
+  "controlCount": 13,
+  "selectOptionCount": 26,
+  "classCount": 19,
+  "labelCount": 8,
   "textCount": 1
  },
  "promoteActor": {
@@ -528,11 +528,11 @@
   "textCount": 1
  },
  "spawnFieldEnemy": {
-  "testidCount": 1,
-  "controlCount": 0,
-  "selectOptionCount": 0,
-  "classCount": 1,
-  "labelCount": 0,
+  "testidCount": 11,
+  "controlCount": 7,
+  "selectOptionCount": 25,
+  "classCount": 9,
+  "labelCount": 6,
   "textCount": 1
  },
  "despawnFieldEnemy": {

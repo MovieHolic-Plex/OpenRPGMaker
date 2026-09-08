@@ -265,7 +265,7 @@ describe("database system view", () => {
     expect(store.getCurrent().system.battleFlow).toBe(before);
   });
 
-  it("renders title workbench preview and accepts musicResourceId", () => {
+  it("renders title workbench preview, rejects MIDI assignment and accepts playable musicResourceId", () => {
     const host = renderSystem();
     expect(findByTestId(host, "db-title-workbench")).not.toBeNull();
     expect(findByTestId(host, "db-title-workbench-preview")).not.toBeNull();
@@ -276,12 +276,16 @@ describe("database system view", () => {
 
     const music = findByTestId(host, "db-field-title-screen-music") as { value?: string } | null;
     if (!music) throw new Error("missing music field");
+    const before = store.getCurrent().system.titleScreen?.musicResourceId;
     music.value = "easyrpg-music-field-1";
     (music as FakeElement).dispatchEvent(new Event("change"));
+    expect(store.getCurrent().system.titleScreen?.musicResourceId).toBe(before);
 
-    expect(store.getCurrent().system.titleScreen?.musicResourceId).toBe("easyrpg-music-field-1");
+    music.value = "cc0-bgm-rtp-fld-003";
+    (music as FakeElement).dispatchEvent(new Event("change"));
+    expect(store.getCurrent().system.titleScreen?.musicResourceId).toBe("cc0-bgm-rtp-fld-003");
     const label = findByTestId(host, "db-title-workbench-music-id");
-    expect(label?.textContent).toBe(listDatabaseResourceOptions("music", store.getCurrent()).find((entry) => entry.id === "easyrpg-music-field-1")?.name);
+    expect(label?.textContent).toBe(listDatabaseResourceOptions("music", store.getCurrent()).find((entry) => entry.id === "cc0-bgm-rtp-fld-003")?.name);
   })
 
   it("groups title workbench into display/audio/menu fieldsets", () => {

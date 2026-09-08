@@ -19,6 +19,11 @@ vi.mock("@/player/audio", () => ({
 import { renderPlayer, teardownPlayer, type PlayerRunControls } from "@/player/player";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
+import { LocalDiagnosticSession } from "@/util/localDiagnosticSession";
+import { clearRecentPlayBootDiagnosticsForTest, listRecentPlayBootDiagnostics } from "@/player/playBootDiagnostics";
+import type { StartPlayGameOptions } from "@/app/mode";
+
+const diagnostics = new LocalDiagnosticSession();
 
 type FakeScene = {
   applySession: () => void;
@@ -88,6 +93,8 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  diagnostics.clear();
+  clearRecentPlayBootDiagnosticsForTest();
   teardownPlayer();
   main.remove();
   vi.restoreAllMocks();
@@ -105,6 +112,56 @@ function render(options: Parameters<typeof renderPlayer>[1] = {}): void {
 }
 
 describe("renderPlayer run controls", () => {
+  it.each(["same-session", "replacement", "initially-disabled"] as const)(
+    "owns deferred ready callbacks in the %s diagnostic session", async transition => {
+      if (transition !== "initially-disabled") diagnostics.start(true, ["asset"]);
+      let complete!: (game: FakeGame) => void;
+      const pending = new Promise<FakeGame>(resolve => { complete = resolve; });
+      modeMocks.startPlayGame.mockReturnValue(pending);
+      const booted = nextBoot();
+      render({ autoStartRun: true });
+      const callbacks: StartPlayGameOptions = modeMocks.startPlayGame.mock.calls[0]![2];
+      if (transition !== "same-session") { diagnostics.clear(); diagnostics.start(true, ["asset"]); }
+
+      callbacks.onPlayLoadStage?.("ready");
+      complete(fakeGame());
+      await booted;
+
+      const receipts = diagnostics.snapshot().receipts;
+      if (transition === "same-session") {
+        expect(receipts).toHaveLength(2);
+        for (const receipt of receipts) expect(receipt).toMatchObject({ category: "asset", phase: "ready", ok: true });
+      } else expect(receipts).toEqual([]);
+      expect(listRecentPlayBootDiagnostics().filter(row => row.stage === "ready")).toHaveLength(2);
+      expect(main.querySelector("[data-testid='play-loading-overlay']")).toBeNull();
+    },
+  );
+
+  it.each(["same-session", "replacement", "initially-disabled"] as const)(
+    "owns a rejected boot in the %s diagnostic session without changing raw failure delivery", async transition => {
+      if (transition !== "initially-disabled") diagnostics.start(true, ["asset"]);
+      let fail!: (error: Error) => void;
+      modeMocks.startPlayGame.mockReturnValue(new Promise((_resolve, reject) => { fail = reject; }));
+      let failureDelivered!: () => void;
+      const delivered = new Promise<void>(resolve => { failureDelivered = resolve; });
+      render({ autoStartRun: true, diagnosticSink: payload => {
+        if (payload.stage === "error") failureDelivered();
+      } });
+      if (transition !== "same-session") { diagnostics.clear(); diagnostics.start(true, ["asset"]); }
+
+      fail(new Error("private boot failure"));
+      await delivered;
+
+      const receipts = diagnostics.snapshot().receipts;
+      if (transition === "same-session") {
+        expect(receipts).toEqual([{ category: "asset", phase: "error", ok: false, sequence: 1,
+          elapsedMs: expect.any(Number), provenance: "runtime", evidence: "observed", savedGeneration: null }]);
+      } else expect(receipts).toEqual([]);
+      expect(listRecentPlayBootDiagnostics()[0]).toMatchObject({ stage: "error", ok: false, errorMessage: "private boot failure" });
+      expect(main.querySelector("[data-testid='play-recovery-panel']")).not.toBeNull();
+    },
+  );
+
   it("boots straight into a run when auto start is on", async () => {
     const booted = nextBoot();
 

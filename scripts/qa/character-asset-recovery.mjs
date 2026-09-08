@@ -80,19 +80,49 @@ try {
   await page.getByTestId('event-page-graphic-set').click();
   await page.getByTestId('event-graphic-placeholder').click();
   const placeholder = await readEvent();
-  assert.equal(placeholder.pages[0].graphic.transparent, true);
+  assert.equal(placeholder.pages[0].graphic.transparent, manual.pages[0].graphic.transparent);
   assert.equal(placeholder.pages[0].graphic.sprite, undefined);
   assert.deepEqual(placeholder.pages[0].commands, before.pages[0].commands);
   await page.screenshot({ path: `${output}/placeholder-${width}.png` });
   await page.getByTestId('event-editor-save').click();
   const saved = await readEvent();
   assert.equal(saved.draft, undefined, 'Save must commit the event draft');
-  assert.equal(saved.pages[0].graphic.transparent, true);
+  assert.deepEqual(saved.pages[0].graphic, placeholder.pages[0].graphic);
   assert.deepEqual(saved.pages[0].commands, before.pages[0].commands);
   assert.equal(saved.pages[0].name, before.pages[0].name);
+  await page.evaluate(async () => {
+    const { openEventEditorModal } = await import('/src/editor/panels/eventEditor/modal.ts');
+    const { mapId, eventId } = window.assetQa;
+    openEventEditorModal(mapId, eventId);
+  });
+  await page.getByTestId('event-page-graphic-set').click();
+  await page.getByTestId('event-graphic-resource-tex_easyrpg_charset_people1').click();
+  await page.getByTestId('npc-character-slot-3').click();
+  await page.getByTestId('event-graphic-confirm').click();
+  const recovered = await readEvent();
+  const visibility = await page.evaluate(async () => {
+    const { editorEventMarkerTexture } = await import('/src/editor/editSceneEventMarkers.ts');
+    const { store, mapId, eventId } = window.assetQa;
+    const graphic = store.getCurrent().maps[mapId].events.find(item => item.id === eventId).pages[0].graphic;
+    return {
+      hidden: document.querySelector('.event-graphic-transparent input').checked,
+      marker: editorEventMarkerTexture(store.getCurrent(), graphic),
+    };
+  });
+  await page.screenshot({ path: `${output}/roundtrip-recovered-${width}.png` });
+  await writeFile(`${output}/roundtrip-${width}.json`, JSON.stringify({ recovered: recovered.pages[0].graphic, visibility }, null, 2));
+  assert.equal(recovered.pages[0].graphic.sprite.id, 'tex_easyrpg_charset_people1');
+  assert.equal(visibility.hidden, false, 'No-image must not leave later manual selections hidden');
+  assert.notEqual(visibility.marker, null, 'Recovered graphic must resolve to an editor map sprite');
+  await page.getByTestId('event-editor-save').click();
+  const recoveredSaved = await readEvent();
+  assert.equal(recoveredSaved.draft, undefined);
+  assert.deepEqual(recoveredSaved.pages[0].graphic, manual.pages[0].graphic);
+  assert.deepEqual(recoveredSaved.pages[0].commands, before.pages[0].commands);
+  assert.equal(recoveredSaved.pages[0].name, before.pages[0].name);
   assert.deepEqual(errors, []);
-  await writeFile(`${output}/recovery-${width}.json`, JSON.stringify({ width, geometry, manual: manual.pages[0].graphic, placeholder: placeholder.pages[0].graphic, cancelPreserved: true, noMatchPreserved: true, savedDialoguePreserved: true, errors }, null, 2));
-  console.log(`PASS OUT-007: ${width}px no-match, cancel, manual retry, explicit no-image`);
+  await writeFile(`${output}/recovery-${width}.json`, JSON.stringify({ width, geometry, manual: manual.pages[0].graphic, placeholder: placeholder.pages[0].graphic, recovered: recoveredSaved.pages[0].graphic, visibility, cancelPreserved: true, noMatchPreserved: true, savedDialoguePreserved: true, errors }, null, 2));
+  console.log(`PASS OUT-007: ${width}px no-match, cancel, manual retry, explicit no-image, saved visible recovery round trip`);
 } finally {
   await context.close();
   await browser.close();

@@ -55,7 +55,8 @@ export function renderNpcGraphicPicker(
     class: "btn", text: "그림 없이 계속", attrs: { type: "button" },
     dataset: { testid: "event-graphic-placeholder" },
     on: { click: () => {
-      const graphic = { ...page.graphic, transparent: true };
+      // No sprite is already invisible; preserve the separate authored hide flag.
+      const graphic = { ...page.graphic };
       delete graphic.sprite;
       updateEventPage(mapId, eventId, page.id, { graphic });
       close();

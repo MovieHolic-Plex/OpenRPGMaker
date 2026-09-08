@@ -394,6 +394,12 @@ function safeUploadedResourceUrl(dataUrl: string): string | null {
   if (normalizedUrl.startsWith("data:image/jpeg;")) return dataUrl;
   if (normalizedUrl.startsWith("data:image/webp;")) return dataUrl;
   if (normalizedUrl.startsWith("data:image/gif;")) return dataUrl;
+  if (/^data:audio\/(?:x-wav|wave|vnd\.wave);/i.test(normalizedUrl)) {
+    return dataUrl.trim().replace(/^data:audio\/[^;]+/i, "data:audio/wav");
+  }
+  if (/^data:audio\/mp3;/i.test(normalizedUrl)) {
+    return dataUrl.trim().replace(/^data:audio\/mp3/i, "data:audio/mpeg");
+  }
   if (normalizedUrl.startsWith("data:audio/mpeg;")) return dataUrl;
   if (normalizedUrl.startsWith("data:audio/wav;")) return dataUrl;
   if (normalizedUrl.startsWith("data:audio/ogg;")) return dataUrl;

@@ -410,3 +410,41 @@ keydown 을 document **캡처** 단계에서 잡아 `stopPropagation` 하므로(
 - 타일 버튼은 pointerdown 외에 보조기기의 `click(detail=0)` 활성화도 받는다. 물리 클릭(detail>0)을 다시 처리하지 않아 중복 선택을 피한다.
 - **작은 데스크톱에서 타일과 맵을 함께 비교할 수 있어야 한다.** 표준·전문가 1024×768에서 기존 280px 타일 예약은 맵 목록을 48px(한 행)로 줄였다. `paletteSheetReserveCap`은 도크 높이 800px 미만에서 200px를 예약한다. CSS의 짧은 창 시트 최소 높이도 200px로 맞춘다. 큰 창의 280px 예약, 사용자 수동 분할과 접기 동작은 유지한다.
 - 검증: `test/e2e/left-sidebar-adversarial.spec.ts`는 실제 보기 메뉴로 3모드를 전환하고 1440×900 / 1280×800 / 1024×768에서 버튼 중심 hit-test, 맵 마지막 행 도달, 최소 3행 가시성, 키보드·검색 커서·핀·모드 복귀를 확인한다. 단위 계약은 `basicTilePalette.test.ts`, `sidebarFocus.test.ts`와 기존 레일·그리드 테스트다. 순수 에디터 변경이므로 원격 프로젝트 데이터는 변경하지 않는다.
+
+
+## Authoring viewport navigation (issue 693, 2026-09-08)
+
+- The assistant remains FLOAT. `EditScene.cameraVisibleArea` owns its actual
+  occlusion; no side-dock model or assistant diagnostics UI is introduced.
+  The published world rectangle now uses the inverse rendered camera transform
+  (`getWorldPoint`), because Phaser rounds `worldView` for culling. Camera scroll
+  stays fractional for pointer-anchored zoom; nearest-neighbor artwork is retained.
+- `EditScene.syncNavigationGeometry` preserves the unobstructed focal point on
+  assistant collapse/open/resize, keyboard zoom and canvas resize. Its previous
+  geometry is a layout snapshot, not an independent camera offset store. Resize
+  and assistant DOM observers invalidate the existing measurement cache; edit
+  gestures defer recentering until release. Map changes reset that snapshot.
+- `editorCameraBounds` in `cameraFocusViewport` grants asymmetric half-viewport
+  padding plus 32 CSS pixels so either map edge can reach the unobstructed center.
+  `panels/editor.applyEditorUiModeLayout` no longer replaces map bounds with a
+  temporary viewport box or re-applies stale offsets across animation frames.
+  `cameraStability.viewportCenterWorld` matches Phaser 3.90's `scroll + size/2`.
+- `CameraScrollbars` projects these bounds into two named native scroll regions
+  mounted beside the canvas, inside its existing host. Thumb fraction includes
+  inspection padding; corner subtraction scales track content and position alike.
+  Native notifications may follow an engine frame: do not overwrite pending input.
+  No idle-frame DOM writes, shell scroll offsets or parallel viewport state.
+- Canvas-only cancelable Ctrl+wheel consumes browser zoom and steps existing
+  1/2/3/4/6/8 levels around the pointer, including trackpad Ctrl-style pinch on
+  Linux/Windows/macOS. Command-only and ordinary wheel retain their previous
+  behavior. An in-flight edit consumes Ctrl+wheel without changing coordinates.
+- Neutral primary pan is Select on an outside-map target with no selection,
+  stamp, paste preview or active edit. Inside-map Select and paint/event tools
+  retain their editing priority. Explicit Pan, Space and middle drag are unchanged.
+- Focused regressions: `cameraStability`, `cameraFocusViewport`, `cameraScrollbars`,
+  `editSceneCameraFocus`, `editSceneRender`. Real browser driver:
+  `scripts/qa/issue693-navigation.mjs` (`BASE_URL`, `EVIDENCE_DIR`, optional
+  `QA_WIDTH`). It uses real Phaser/native input and local-only large/small projects,
+  subscribes to exact input/scroll/resize/render events, and covers all three
+  desktop sizes, assistant states, both scroll endpoints and edit alignment.
+  Full build/gates and independent screenshot review remain lead-owned.

@@ -337,18 +337,6 @@ function renderLeftDockPanels(): void {
 }
 
 export function applyEditorUiModeLayout(): void {
-  const game = getGame();
-  const scene = game?.scene?.getScene("EditScene") as
-    | { cameras?: { main?: { scrollX: number; scrollY: number; width: number; height: number; setScroll: (x: number, y: number) => unknown; setBounds: (x: number, y: number, w: number, h: number) => unknown } } }
-    | undefined;
-  const cam = scene?.cameras?.main;
-  const savedCenter = cam
-    ? { x: cam.scrollX + cam.width / 2, y: cam.scrollY + cam.height / 2 }
-    : null;
-  if (cam && savedCenter) {
-    cam.setBounds(savedCenter.x - 10000, savedCenter.y - 10000, 20000, 20000);
-  }
-
   const chrome = getEditorChrome();
   applyEditorUiModeClasses(getEditorUiMode());
 
@@ -370,31 +358,6 @@ export function applyEditorUiModeLayout(): void {
   applyLayout();
   scheduleFitCanvas();
 
-  if (cam && savedCenter) {
-    const reapply = () => {
-      const w = cam.width;
-      const h = cam.height;
-      cam.setBounds(savedCenter.x - w, savedCenter.y - h, w * 2, h * 2);
-      cam.setScroll(savedCenter.x - w / 2, savedCenter.y - h / 2);
-    };
-    let stableFrames = 0;
-    let lastW = cam.width;
-    let lastH = cam.height;
-    const poll = () => {
-      reapply();
-      if (cam.width === lastW && cam.height === lastH) {
-        stableFrames++;
-      } else {
-        stableFrames = 0;
-        lastW = cam.width;
-        lastH = cam.height;
-      }
-      if (stableFrames < 5) {
-        requestAnimationFrame(poll);
-      }
-    };
-    requestAnimationFrame(poll);
-  }
 }
 
 export function teardownEditor(): void {

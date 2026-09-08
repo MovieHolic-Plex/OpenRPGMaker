@@ -1,4 +1,5 @@
 import { carryPursuitThroughDoor } from "./horrorRuntime";
+import { diagnosticObserved, diagnosticToken, publishDiagnostic } from "@/util/diagnosticObserver";
 import { isPassable, isPassableLanding } from "@/project/collision";
 import { setMapTileOverride } from "@/project/session";
 import { runtimeMap } from "@/project/runtimeMap";
@@ -60,9 +61,11 @@ type FadeColor = {
 export const TRANSFER_FADE_DURATION_MS = 500;
 
 export async function transferTo(scene: PlaySceneContext, request: TransferRequest): Promise<void> {
+  const diagnosticOwner = diagnosticToken();
   const project = store.getCurrent();
   const targetMap = project.maps[request.mapId];
   if (!targetMap) {
+    if (diagnosticObserved("transfer")) publishDiagnostic({ category: "transfer", phase: "missing" });
     console.warn(`[player] transfer target map missing: ${request.mapId}`);
     return;
   }
@@ -93,6 +96,7 @@ export async function transferTo(scene: PlaySceneContext, request: TransferReque
   scene.tileY = landing.y;
   scene.session.x = landing.x;
   scene.session.y = landing.y;
+  if (diagnosticOwner && diagnosticOwner === diagnosticToken() && diagnosticObserved("transfer")) publishDiagnostic({ category: "transfer", phase: "completed", x: landing.x, y: landing.y });
   if (resolveCompanionRules(project.system.companions).clearOnTransfer) {
     removeFollowerFromSession(scene.session, { all: true });
   }

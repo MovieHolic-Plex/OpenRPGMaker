@@ -1,3 +1,4 @@
+import { diagnosticObserved, diagnosticToken, publishDiagnostic } from "@/util/diagnosticObserver";
 import { buildIndependentReviewRequest, parseIndependentReview, reviewChanges, reviewMapReferenceRoots, requiresVisualReview, type ResultReview } from "./independentReview";
 import { mapVisualEvidenceUnavailable } from "./mapVisualEvidence";
 import { parseFunctionalRequirements, type FunctionalCriterion } from "./functionalAcceptance";
@@ -3453,7 +3454,13 @@ export class AssistantSession {
   }
 
   // 감사 항목에 ISO 타임스탬프를 붙여 기록한다(결함 ⑬ — 타임라인 export).
+  private diagnosticAuditToken: symbol | undefined;
   private pushAudit(entry: AuditEntry): void {
+    if (entry.kind === "user") this.diagnosticAuditToken = diagnosticToken();
+    if (this.diagnosticAuditToken && this.diagnosticAuditToken === diagnosticToken() && diagnosticObserved("conversation")
+      && (entry.kind === "user" || entry.kind === "assistant")) {
+      publishDiagnostic({ category: "conversation", phase: entry.kind, count: entry.text.length });
+    }
     this.audit.push({ ...entry, at: new Date().toISOString() });
   }
 

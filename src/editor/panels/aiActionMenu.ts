@@ -103,9 +103,9 @@ export function createAiActionMenuItems(options: {
   const exportItem = build({
     key: "export",
     icon: "export",
-    label: "대화 내보내기",
+    label: "로컬 진단 보고서",
     testid: header ? "ai-more-export" : "ai-command-menu-export",
-    title: "대화 로그 내보내기",
+    title: "동의 후 로컬 진단 수집 및 보고서 미리보기",
     run: options.actions.exportAudit,
   });
   const history = build({

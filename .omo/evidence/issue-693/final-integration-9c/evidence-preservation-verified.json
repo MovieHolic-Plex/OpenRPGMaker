@@ -1,0 +1,17 @@
+[
+  {
+    "parent": "298733420c04e742e43491c02081bae522f86950",
+    "identicalFiles": 4782,
+    "preMergeIssue693ExpandedDocumentsRetained": [],
+    "newlyChangedEvidence": []
+  },
+  {
+    "parent": "9c7c88c5fe97da30b78ae32761b40f8b46281273",
+    "identicalFiles": 4876,
+    "preMergeIssue693ExpandedDocumentsRetained": [
+      ".omo/evidence/issue-693/acceptance.md",
+      "evidence/issue693-assets.md"
+    ],
+    "newlyChangedEvidence": []
+  }
+]

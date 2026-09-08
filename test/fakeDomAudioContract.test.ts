@@ -151,6 +151,27 @@ describe("fake DOM audio control contracts", () => {
     expect(observer.takeRecords()).toEqual([]);
   });
 
+  it("reports an adopted descendant replacement without leaving duplicate ownership", () => {
+    const parent = document.createElement("div");
+    const wrapper = document.createElement("section");
+    const preview = document.createElement("audio");
+    wrapper.append(preview);
+    parent.append(wrapper);
+    const observer = new MutationObserver(() => undefined);
+    observer.observe(parent, { childList: true, subtree: true });
+
+    wrapper.replaceWith(preview);
+
+    expect(Array.from(parent.childNodes)).toEqual([preview]);
+    expect(wrapper.childNodes).toHaveLength(0);
+    expect(preview.parentNode).toBe(parent);
+    expect(wrapper.parentNode).toBeNull();
+    const records = observer.takeRecords();
+    expect(records.map(record => [record.target, Array.from(record.addedNodes), Array.from(record.removedNodes)]))
+      .toEqual([[wrapper, [], [preview]], [parent, [preview], [wrapper]]]);
+    observer.disconnect();
+  });
+
   it("limits notifications to the observed target unless subtree is requested", () => {
     const parent = document.createElement("div");
     const child = document.createElement("section");

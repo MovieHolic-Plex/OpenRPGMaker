@@ -18,6 +18,7 @@ vi.mock("@/player/runtimeDebugPanel", () => ({
   renderRuntimeDebugPanel: () => document.createElement("div"),
 }));
 
+import { AudioEngine } from "@/player/audio/audioEngine";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { closeTestPlayModal, openTestPlayModal } from "@/editor/panels/testPlayModal";
@@ -79,6 +80,12 @@ afterEach(() => {
 });
 
 describe("test play window run controls", () => {
+  it("unlocks audio synchronously before the opening gesture yields to persistence", async () => {
+    const unlock = vi.spyOn(AudioEngine.prototype, "unlock");
+    const opening = openTestPlayModal();
+    expect(unlock).toHaveBeenCalled();
+    await opening;
+  });
   it("fills the window and skips the title screen by default", async () => {
     await openTestPlayModal();
 

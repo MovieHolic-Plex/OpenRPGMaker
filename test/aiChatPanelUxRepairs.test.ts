@@ -310,13 +310,12 @@ describe("대화 복원과 내보내기", () => {
     expect((findByTestId(panel, "ai-chat-log")?.textContent ?? "")).not.toContain("다른 요청");
   });
 
-  it("내보내기는 빈 대화에서 비활성화되고 라벨은 내보내기다", async () => {
+  it("local diagnostics are available before any conversation exists", async () => {
     await clearConversations();
     const panel = renderPanel();
     await whenAiChatPanelSettled();
     const button = findByTestId(panel, "ai-export");
-    expect(button?.textContent).toBe("내보내기");
-    expect(button?.disabled).toBe(true);
+    expect(button?.disabled).toBe(false);
   });
 });
 

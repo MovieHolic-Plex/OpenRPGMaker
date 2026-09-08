@@ -143,8 +143,15 @@ VITE_BGM_CDN_BASE=https://cheapcdn.sgp1.cdn.digitaloceanspaces.com
   someone else's keys. `BGM_CDN_PREFIX` in `bgmCdn.ts` and `KEY_PREFIX` in the upload script must
   stay in sync — a mismatch 404s all 281 tracks.
 - Unset (or a non-`http(s)` value) uses `/assets/cc0/audio/catalog/<file>`, including the
-  installed release pack. A missing file can return Vite's HTML fallback with HTTP 200;
-  check Content-Type and native media errors, not status alone.
+  installed release pack. `audioDeliveryPlugin` returns real missing-media 404s in Vite
+  dev and preview before SPA fallback. Other deployment hosts must keep the same rule.
+- Vite snapshots installed, nonempty pack filenames at startup/build into the existing
+  shared editor catalog. Without a CDN, only installed pack entries are advertised in
+  pickers/search; the three starters remain available on a normal checkout. Install the
+  existing Release pack and restart dev/rebuild to expose more. No runtime IDs, saved
+  references, generated catalogs, or project descriptions are deleted. Headless metadata
+  tools without a deployment snapshot still enumerate the complete catalog. Legacy MIDI
+  remains explicitly non-playable inspection metadata, not advertised playable audio.
 - Upload sets `x-amz-acl: public-read` and `Cache-Control: immutable` (file names carry a content
   hash, so they are never rewritten in place).
 - Credentials (`DO_SPACES_KEY/SECRET/BUCKET/REGION`) are non-`VITE` — they are never inlined into
@@ -153,13 +160,28 @@ VITE_BGM_CDN_BASE=https://cheapcdn.sgp1.cdn.digitaloceanspaces.com
 ## How authors reach the tracks
 
 - **Map properties → BGM tab → 지정 곡.** This used to be a bare resource-id text field; with 281
-  tracks that is unusable, so it now opens the shared resource picker. `resourcePickerControl`
-  keeps a hidden text input on the original `map-bgm-resource` testid, so existing e2e paths still
-  work.
+  tracks that is unusable, so it now opens the shared resource picker through
+  `map-bgm-resource-set`; `map-bgm-resource` displays the current resource name.
 - **Resource picker (`kind: "music"`)** lists the catalog first, then the older CC0 five, then
   EasyRPG, registered generated resources, project profiles and uploads. Search uses the effective
   project description alongside names, IDs and independent tags. The selected resource displays
   its description and source; preview playback remains available.
+- **Unsupported MIDI authoring (issue 693 R2):** shared music/sound picker rows and confirmation,
+  the shared hidden ID input, and native/M2 event audio dropdowns reject MIDI using the existing
+  `audioPlayback` resolver. Legacy rows/selected descriptions remain visible; opening, searching,
+  or cancelling does not replace the saved ID. The command dialog can retain an unchanged legacy
+  command, but cannot newly select MIDI. Supported audio and explicit clearing remain available.
+  Catalog enumeration, resource IDs, load repair and persistence are unchanged. Regression:
+  `test/unsupportedMidiAuthoring.test.ts`; native proof: `scripts/qa/issue693-midi-authoring.mjs`.
+  From the assigned worktree, use separate terminals (no remote content writes):
+
+  ```sh
+  mkdir -p /dev/shm/rpg-zzu-issue693-audio-r2/{tmp,vite}
+  TMPDIR=/dev/shm/rpg-zzu-issue693-audio-r2/tmp DEV_SERVER_PORT=38422 DEV_SERVER_NO_TLS=1 VITE_BGM_CDN_BASE='' VITE_CACHE_DIR=/dev/shm/rpg-zzu-issue693-audio-r2/vite node node_modules/vite/bin/vite.js --configLoader runner --host 127.0.0.1 --port 38422 --strictPort
+  # Second terminal: native Firefox; JSON and screenshots stay in owned /dev/shm.
+  TMPDIR=/dev/shm/rpg-zzu-issue693-audio-r2/tmp VITE_CACHE_DIR=/dev/shm/rpg-zzu-issue693-audio-r2/vite node scripts/qa/issue693-midi-authoring.mjs
+  ```
+
 - **`searchResources("bgm", query)`** exposes the same catalog to AI tools (`list_resources`).
   Labels are `title — category (m:ss)`.
 - **Default project**: map and battle BGM point at starter catalog tracks; the default title is
@@ -253,3 +275,23 @@ override/clear/reset, kind isolation, strict acceptance and absence from project
   whose file exists under `public/`.
 - Tests must resolve local paths via `bgmTrackUrl(fileName, {})` (explicit empty env). Reading the
   ambient env makes the suite fail on any machine with `VITE_BGM_CDN_BASE` set.
+
+OUT-002 playback/delivery regression (2026-09-08): Test Play unlocks the shared engine
+synchronously in its shell-opening gesture, before persistence/paint awaits. Capture-phase
+unlock listeners also work when runtime input stops bubbling. `NotAllowedError` retains
+only live tracks for the next gesture; native media errors and other play rejections warn
+with recovery guidance and release the failed track, permitting same-ID retries. Stopping
+or replacing a track cannot resurrect it via an outstanding rejection. Supported saved
+WAV MIME aliases (`x-wav`, `wave`, `vnd.wave`) and `audio/mp3` normalize at resolution,
+without changing project data or payload bytes. The PWA v2 cache bypasses Range requests
+entirely: the network owns 206/416 even after a full response is cached; partial responses
+are never cached. Offline range playback is not promised.
+
+Focused tests: `audioConnectivity`, `audioInventoryDelivery`, `audioDeliveryHttp`,
+`testPlayRunControls`. Reproducible real-browser proof: with this worktree's strict-port
+Vite running, `node scripts/qa/issue693-audio.mjs` (default origin `127.0.0.1:38422`,
+`AUDIO_QA_URL`/`AUDIO_QA_OUT` overrides). Chromium tests cold/warm/suffix/416 SW ranges
+and 404s; Firefox opens the actual local-only sample adventure, checks its first Test Play
+click via native engine-owned `playing`, compares picker inventory, fetches and decodes
+all advertised playable BGM, exercises native missing-media failure and a WAV MIME alias,
+and captures 1440x900/1024x768. No media play/fetch mocking or remote content mutation.

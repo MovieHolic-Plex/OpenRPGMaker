@@ -1,5 +1,6 @@
 import {
   AUDIO_DESCRIPTION_SOURCE_LABELS,
+  isCatalogBgmAvailable,
   type AudioResource,
 } from "@/assets/audioResourceCatalog";
 import { resolveAudioSource } from "@/player/audio/audioResources";
@@ -46,7 +47,7 @@ export function audioPlayback(
 ): { readonly url: string | null; readonly playable: boolean; readonly midi: boolean } {
   const url = resolveAudioSource(resourceId, project);
   const midi = url !== null && /\.midi?(?:[?#]|$)/iu.test(url);
-  const playable = url !== null && !midi && (
+  const playable = url !== null && !midi && isCatalogBgmAvailable(resourceId) && (
     /\.(?:wav|ogg|mp3|m4a)(?:[?#]|$)/iu.test(url)
     || /^data:audio\//iu.test(url)
     || url.startsWith("blob:")

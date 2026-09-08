@@ -44,6 +44,7 @@ import type { FarmInteractionResult } from "@/player/farming";
 import { farmIntentForHand, interactWithFarmPlot, farmIgnoreMessage } from "@/player/farming";
 import { showFarmFeedbackMessage } from "@/player/playSceneZoneFeedback";
 import { interactWithLifeField } from "@/player/lifeFieldInteraction";
+import { diagnosticObserved, publishDiagnostic } from "@/util/diagnosticObserver";
 import { tryChestInteraction } from "@/player/playSceneChest";
 import { tryActionCombatSwing, tryActionSkillCast } from "@/player/playSceneActionCombat";
 import { applyBattleDefeat } from "@/player/playSceneDefeat";
@@ -204,6 +205,7 @@ function advancePlayerStepFrame(scene: PlaySceneContext): void {
     scene.tileY = scene.movingTo.y;
     scene.session.x = scene.tileX;
     scene.session.y = scene.tileY;
+    if (diagnosticObserved("movement")) publishDiagnostic({ category: "movement", phase: "completed", x: scene.tileX, y: scene.tileY });
     recordFollowerPlayerStep(scene.session, { x: scene.movingFrom.x, y: scene.movingFrom.y, direction: scene.facing });
     const project = store.getCurrent();
     applyWalkCareTicks(project, scene.session, 1);
@@ -298,6 +300,7 @@ function tryStartMove(scene: PlaySceneContext, input: InputState): void {
   }
   const step = resolveDiagonalStep(moveX, moveY, canStep);
   if (!step) {
+    if (diagnosticObserved("collision")) publishDiagnostic({ category: "collision", phase: "terrain", x: scene.tileX + moveX, y: scene.tileY + moveY });
     // 벽을 향해도 그 방향으로 몸은 돌린다(제자리 방향 전환).
     if (input.dir) scene.facing = input.dir;
     return;
@@ -311,6 +314,7 @@ function tryStartMove(scene: PlaySceneContext, input: InputState): void {
     // Pushing is cardinal. A diagonal collision must never move the body
     // diagonally while the object slides along only one axis.
     if (step.dx !== 0 && step.dy !== 0 || !tryStartFurniturePush(scene, blockingEvent)) {
+      if (diagnosticObserved("collision")) publishDiagnostic({ category: "collision", phase: "event", x: nx, y: ny });
       firePlayerTouchEvent(scene, blockingEvent.event.id, blockingEvent.trigger.kind);
     }
     return;

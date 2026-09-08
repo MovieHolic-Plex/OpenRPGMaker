@@ -49,6 +49,10 @@
   "changeLevel": [
    "change-level-actor-select"
   ],
+  "changeLifeSkillExp": [
+   "change-life-skill-exp-amount-mode",
+   "change-life-skill-exp-amount-select"
+  ],
   "changeParty": [
    "change-party-actor-select"
   ],
@@ -175,6 +179,10 @@
    "show-picture-id-input",
    "show-picture-resource-input",
    "show-picture-rotation-input"
+  ],
+  "spawnFieldEnemy": [
+   "event-command-spawn-switch",
+   "event-command-spawn-troop"
   ],
   "text": [
    "event-command-text-body",

@@ -84,13 +84,14 @@ export class FakeNode {
 
   removeChild(child: FakeNode): FakeNode {
     const index = this.childNodes.indexOf(child);
-    if (index < 0) return;
+    if (index < 0) throw new DOMException("Node is not a child", "NotFoundError");
     const previousSibling = this.childNodes[index - 1] ?? null;
     const nextSibling = this.childNodes[index + 1] ?? null;
     this.childNodes.splice(index, 1);
     child.parentNode = null;
     notifyChildList(this, [], [child], previousSibling, nextSibling);
     this.childrenChanged();
+    return child;
   }
 
   insertBefore(child: FakeNode, reference: FakeNode | null): FakeNode {
@@ -113,13 +114,17 @@ export class FakeNode {
   replaceWith(...nodes: FakeNode[]): void {
     const parent = this.parentNode;
     if (!parent) return;
-    const index = parent.childNodes.indexOf(this);
-    if (index < 0) return;
-    for (const node of nodes) node.parentNode = parent;
-    parent.childNodes.splice(index, 1, ...nodes);
-    this.parentNode = null;
-    notifyChildList(parent, nodes, [this], parent.childNodes[index - 1] ?? null, parent.childNodes[index + nodes.length] ?? null);
-    parent.childrenChanged(nodes.at(-1));
+    const reference = parent.childNodes.slice(parent.childNodes.indexOf(this) + 1)
+      .find((node) => !nodes.includes(node)) ?? null;
+    const adopted = convertFakeNodes(nodes);
+    const replacing = this.parentNode === parent;
+    const index = replacing ? parent.childNodes.indexOf(this)
+      : reference === null ? parent.childNodes.length : parent.childNodes.indexOf(reference);
+    if (replacing) this.parentNode = null;
+    for (const node of adopted) node.parentNode = parent;
+    parent.childNodes.splice(index, replacing ? 1 : 0, ...adopted);
+    notifyChildList(parent, adopted, replacing ? [this] : [], parent.childNodes[index - 1] ?? null, parent.childNodes[index + adopted.length] ?? null);
+    parent.childrenChanged(adopted.at(-1));
   }
 
   prepend(...children: FakeNode[]): void {
@@ -271,6 +276,43 @@ export class FakeElement extends FakeNode {
   type = "";
   private inputValue = "";
   private optionSelected = false;
+  /** Number-input conversion, including HTML's rejection of blank/hex/nonfinite values. */
+  get valueAsNumber(): number {
+    if (this.tagName !== "INPUT" || (this.getAttribute("type") ?? this.type) !== "number") return NaN;
+    if (!/^-?(?:\d+(?:\.\d+)?|\.\d+)(?:[eE][+-]?\d+)?$/u.test(this.value)) return NaN;
+    const value = Number(this.value);
+    return Number.isFinite(value) ? value : NaN;
+  }
+
+  /** Numeric constraint validation; native validation bubbles are not rendered by this DOM. */
+  checkValidity(): boolean {
+    if (this.disabled || this.getAttribute("disabled") !== null || this.getAttribute("readonly") !== null) return true;
+    const value = this.valueAsNumber;
+    let valid = true;
+    if (Number.isNaN(value)) {
+      valid = this.getAttribute("required") === null;
+    } else {
+      const numberAttribute = (name: string, fallback: string): number | undefined => {
+        const raw = this.getAttribute(name) ?? fallback;
+        return raw !== "" && Number.isFinite(Number(raw)) ? Number(raw) : undefined;
+      };
+      const min = numberAttribute("min", this.min);
+      const max = numberAttribute("max", this.max);
+      const stepAttribute = this.getAttribute("step");
+      const step = numberAttribute("step", "1");
+      const unit = step !== undefined && step > 0 ? step : 1;
+      const base = min ?? numberAttribute("value", "") ?? 0;
+      const steps = (value - base) / unit;
+      valid = (min === undefined || value >= min) && (max === undefined || value <= max)
+        && (stepAttribute === "any" || Math.abs(steps - Math.round(steps)) < 1e-8);
+    }
+    if (!valid) this.dispatchEvent(new Event("invalid", { cancelable: true }));
+    return valid;
+  }
+
+  reportValidity(): boolean {
+    return this.checkValidity();
+  }
   isContentEditable = false;
   readonly attrs: Record<string, string> = {};
   readonly tagName: string;
@@ -413,6 +455,7 @@ export class FakeElement extends FakeNode {
   removeAttribute(name: string): void {
     const oldValue = this.getAttribute(name);
     delete this.attrs[name];
+    if (name === "selected" && this.tagName === "OPTION") this.selected = false;
     if (name.startsWith("data-")) delete this.dataset[name.slice(5).replace(/-([a-z])/gu, (_, ch: string) => ch.toUpperCase())];
     if (oldValue !== null) notifyValueMutation(this, "attributes", name, oldValue);
   }

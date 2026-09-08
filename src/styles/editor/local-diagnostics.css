@@ -1,0 +1,32 @@
+.local-diagnostics-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  color: var(--text-1);
+  font: 13px/1.5 var(--font-ui);
+}
+.local-diagnostics-body p { margin: 0; color: var(--text-2); }
+.local-diagnostics-body fieldset { display: grid; gap: var(--space-2); border: 1px solid var(--border-default); padding: var(--space-3); }
+.local-diagnostics-choice { display: flex; align-items: center; gap: var(--space-2); min-height: 32px; }
+.local-diagnostics-body textarea { width: 100%; font: 12px/1.5 var(--font-mono); resize: vertical; }
+.local-diagnostics-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.local-diagnostics-indicator {
+  position: fixed;
+  top: 56px;
+  right: var(--space-3);
+  z-index: var(--z-toast);
+  max-width: calc(100vw - 24px);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  background: var(--bg-raised);
+  color: var(--text-1);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-pop);
+  font: 12px/1.5 var(--font-ui);
+}
+.local-diagnostics-body button, .local-diagnostics-indicator button { min-height: 32px; }
+.local-diagnostics-body :focus-visible, .local-diagnostics-indicator :focus-visible { outline: var(--focus-outline); }

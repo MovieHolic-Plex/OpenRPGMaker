@@ -1,0 +1,324 @@
+{
+  "browser": "149.0.7827.55",
+  "checks": 28,
+  "cases": [
+    {
+      "value": "",
+      "attrs": {
+        "type": "number",
+        "required": "",
+        "step": "1"
+      },
+      "numeric": "NaN",
+      "valid": false,
+      "invalidCount": 1
+    },
+    {
+      "value": " ",
+      "attrs": {
+        "type": "number",
+        "required": "",
+        "step": "1"
+      },
+      "numeric": "NaN",
+      "valid": false,
+      "invalidCount": 1
+    },
+    {
+      "value": "NaN",
+      "attrs": {
+        "type": "number",
+        "required": "",
+        "step": "1"
+      },
+      "numeric": "NaN",
+      "valid": false,
+      "invalidCount": 1
+    },
+    {
+      "value": "Infinity",
+      "attrs": {
+        "type": "number",
+        "required": "",
+        "step": "1"
+      },
+      "numeric": "NaN",
+      "valid": false,
+      "invalidCount": 1
+    },
+    {
+      "value": "1e309",
+      "attrs": {
+        "type": "number",
+        "required": "",
+        "step": "1"
+      },
+      "numeric": "NaN",
+      "valid": false,
+      "invalidCount": 1
+    },
+    {
+      "value": "0x10",
+      "attrs": {
+        "type": "number",
+        "required": "",
+        "step": "1"
+      },
+      "numeric": "NaN",
+      "valid": false,
+      "invalidCount": 1
+    },
+    {
+      "value": "+1",
+      "attrs": {
+        "type": "number",
+        "required": "",
+        "step": "1"
+      },
+      "numeric": "NaN",
+      "valid": false,
+      "invalidCount": 1
+    },
+    {
+      "value": "1.",
+      "attrs": {
+        "type": "number",
+        "required": "",
+        "step": "1"
+      },
+      "numeric": "NaN",
+      "valid": false,
+      "invalidCount": 1
+    },
+    {
+      "value": "12px",
+      "attrs": {
+        "type": "number",
+        "required": "",
+        "step": "1"
+      },
+      "numeric": "NaN",
+      "valid": false,
+      "invalidCount": 1
+    },
+    {
+      "value": "0",
+      "attrs": {
+        "type": "number",
+        "required": "",
+        "step": "1"
+      },
+      "numeric": 0,
+      "valid": true,
+      "invalidCount": 0
+    },
+    {
+      "value": "-3",
+      "attrs": {
+        "type": "number",
+        "required": "",
+        "step": "1"
+      },
+      "numeric": -3,
+      "valid": true,
+      "invalidCount": 0
+    },
+    {
+      "value": ".5",
+      "attrs": {
+        "type": "number",
+        "required": "",
+        "step": "1"
+      },
+      "numeric": 0.5,
+      "valid": false,
+      "invalidCount": 1
+    },
+    {
+      "value": "1.25",
+      "attrs": {
+        "type": "number",
+        "required": "",
+        "step": "1"
+      },
+      "numeric": 1.25,
+      "valid": false,
+      "invalidCount": 1
+    },
+    {
+      "value": "2e2",
+      "attrs": {
+        "type": "number",
+        "required": "",
+        "step": "1"
+      },
+      "numeric": 200,
+      "valid": true,
+      "invalidCount": 0
+    },
+    {
+      "value": "",
+      "attrs": {
+        "type": "number",
+        "required": "",
+        "min": "1",
+        "max": "5",
+        "step": "2"
+      },
+      "numeric": "NaN",
+      "valid": false,
+      "invalidCount": 1
+    },
+    {
+      "value": "0",
+      "attrs": {
+        "type": "number",
+        "required": "",
+        "min": "1",
+        "max": "5",
+        "step": "2"
+      },
+      "numeric": 0,
+      "valid": false,
+      "invalidCount": 1
+    },
+    {
+      "value": "1",
+      "attrs": {
+        "type": "number",
+        "required": "",
+        "min": "1",
+        "max": "5",
+        "step": "2"
+      },
+      "numeric": 1,
+      "valid": true,
+      "invalidCount": 0
+    },
+    {
+      "value": "1.5",
+      "attrs": {
+        "type": "number",
+        "required": "",
+        "min": "1",
+        "max": "5",
+        "step": "2"
+      },
+      "numeric": 1.5,
+      "valid": false,
+      "invalidCount": 1
+    },
+    {
+      "value": "2",
+      "attrs": {
+        "type": "number",
+        "required": "",
+        "min": "1",
+        "max": "5",
+        "step": "2"
+      },
+      "numeric": 2,
+      "valid": false,
+      "invalidCount": 1
+    },
+    {
+      "value": "3",
+      "attrs": {
+        "type": "number",
+        "required": "",
+        "min": "1",
+        "max": "5",
+        "step": "2"
+      },
+      "numeric": 3,
+      "valid": true,
+      "invalidCount": 0
+    },
+    {
+      "value": "5",
+      "attrs": {
+        "type": "number",
+        "required": "",
+        "min": "1",
+        "max": "5",
+        "step": "2"
+      },
+      "numeric": 5,
+      "valid": true,
+      "invalidCount": 0
+    },
+    {
+      "value": "6",
+      "attrs": {
+        "type": "number",
+        "required": "",
+        "min": "1",
+        "max": "5",
+        "step": "2"
+      },
+      "numeric": 6,
+      "valid": false,
+      "invalidCount": 1
+    },
+    {
+      "value": "",
+      "attrs": {
+        "type": "number",
+        "step": "any"
+      },
+      "numeric": "NaN",
+      "valid": true,
+      "invalidCount": 0
+    },
+    {
+      "value": "1.25",
+      "attrs": {
+        "type": "number",
+        "step": "any"
+      },
+      "numeric": 1.25,
+      "valid": true,
+      "invalidCount": 0
+    },
+    {
+      "value": "3.75",
+      "attrs": {
+        "type": "number",
+        "step": "any"
+      },
+      "numeric": 3.75,
+      "valid": true,
+      "invalidCount": 0
+    },
+    {
+      "value": "2e2",
+      "attrs": {
+        "type": "number",
+        "step": "any"
+      },
+      "numeric": 200,
+      "valid": true,
+      "invalidCount": 0
+    },
+    {
+      "value": "1",
+      "attrs": {
+        "type": "number",
+        "value": "0.5"
+      },
+      "numeric": 1,
+      "valid": false,
+      "invalidCount": 1
+    },
+    {
+      "value": "1.5",
+      "attrs": {
+        "type": "number",
+        "value": "0.5"
+      },
+      "numeric": 1.5,
+      "valid": true,
+      "invalidCount": 0
+    }
+  ]
+}

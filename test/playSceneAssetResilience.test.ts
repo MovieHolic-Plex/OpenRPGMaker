@@ -1,10 +1,12 @@
 /** @vitest-environment happy-dom */
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const sceneHarness = vi.hoisted(() => {
   type Listener = (...args: unknown[]) => void;
 
   class FakeScene {
+    active = false;
+    readonly sys = { isActive: (): boolean => this.active };
     readonly loaderListeners = new Map<string, Listener[]>();
     readonly registryValues = new Map<string, unknown>();
     readonly textureKeys = new Set<string>();
@@ -53,7 +55,7 @@ const sceneHarness = vi.hoisted(() => {
         };
       }),
     };
-    readonly events = { once: vi.fn() };
+    readonly events = { once: vi.fn<(event: string, listener: Listener) => void>() };
   }
 
   return { FakeScene };
@@ -155,6 +157,7 @@ vi.mock("@/player/minimap", () => ({
 }));
 
 import { PlayScene } from "@/player/PlayScene";
+import { LocalDiagnosticSession } from "@/util/localDiagnosticSession";
 import {
   clearRecentPlayBootDiagnosticsForTest,
   listRecentPlayBootDiagnostics,
@@ -165,7 +168,11 @@ const initialSession = {
   mapOverrides: {}, flags: {}, audio: {}, pictures: [],
 };
 
+const diagnostics = new LocalDiagnosticSession();
+afterEach(() => { diagnostics.clear(); vi.restoreAllMocks(); });
+
 beforeEach(() => {
+  mapRuntime.fireAutoTriggers.mockClear();
   clearRecentPlayBootDiagnosticsForTest();
   vi.spyOn(console, "error").mockImplementation(() => undefined);
   Object.defineProperty(HTMLCanvasElement.prototype, "getContext", {
@@ -176,6 +183,7 @@ beforeEach(() => {
 
 describe("PlayScene asset load resilience", () => {
   it("replaces a failed texture and still reaches ready while recording the failure", () => {
+    diagnostics.start(true, ["asset"]);
     const scene = new PlayScene() as PlayScene & InstanceType<typeof sceneHarness.FakeScene>;
     const stages: string[] = [];
     const onReady = vi.fn();
@@ -189,6 +197,18 @@ describe("PlayScene asset load resilience", () => {
     scene.load.emit("loaderror", { key: "missing-texture", url: "/assets/missing.png" });
     scene.create();
 
+    expect(scene.sys.isActive()).toBe(false);
+    expect(mapRuntime.fireAutoTriggers).not.toHaveBeenCalled();
+    const createListener = scene.events.once.mock.calls.find(([event]) => event === "create")?.[1];
+    expect(createListener).toEqual(expect.any(Function));
+    if (!createListener) throw new Error("Missing deferred create listener");
+    // Phaser marks the scene running after create() returns, then emits create.
+    scene.active = true;
+    createListener(scene);
+    expect(scene.sys.isActive()).toBe(true);
+    expect(mapRuntime.fireAutoTriggers).toHaveBeenCalledOnce();
+    expect(mapRuntime.fireAutoTriggers).toHaveBeenCalledWith(scene);
+
     expect(scene.failedAssets).toEqual([
       { key: "missing-texture", url: "/assets/missing.png" },
     ]);
@@ -201,5 +221,25 @@ describe("PlayScene asset load resilience", () => {
     expect(stages).toEqual(["map", "ready"]);
     expect(onReady).toHaveBeenCalledOnce();
     expect(scene.game.events.emit).toHaveBeenCalledWith("playscene-ready");
+    expect(diagnostics.snapshot().receipts).toEqual([
+      { category: "asset", phase: "assets", ok: false, sequence: 1,
+        elapsedMs: expect.any(Number), provenance: "runtime", evidence: "observed", savedGeneration: null },
+    ]);
   });
+
+  it.each(["replacement", "initially-disabled", "stopped"] as const)(
+    "does not publish a deferred loader failure into a %s diagnostic session", transition => {
+      if (transition !== "initially-disabled") diagnostics.start(true, ["asset"]);
+      const scene = new PlayScene() as PlayScene & InstanceType<typeof sceneHarness.FakeScene>;
+      scene.preload();
+      if (transition === "stopped") diagnostics.stop();
+      else { diagnostics.clear(); diagnostics.start(true, ["asset"]); }
+
+      scene.load.emit("loaderror", { key: "missing-texture", url: "/assets/missing.png" });
+
+      expect(listRecentPlayBootDiagnostics()[0]).toMatchObject({ stage: "assets", ok: false });
+      expect(scene.textureKeys.has("missing-texture")).toBe(true);
+      expect(diagnostics.snapshot().receipts).toEqual([]);
+    },
+  );
 });

@@ -33,6 +33,7 @@ const EXEMPT: Readonly<Record<string, string>> = {
   "panels/aiChatPanelHelpers.ts": "조수 패널 셸 — 모달이 아니다",
   "panels/menu.ts": "톱바/메뉴 셸 자체 — 개별 팝오버는 각자 등록한다",
   "panels/mapList.ts": "맵 목록 패널 셸 — 모달이 아니다",
+  "panels/localDiagnosticsDialog.ts": "Body attachments are the persistent indicator and transient download anchor; the actual dialog registers through openEventSubdialog (runtime Escape contract in aiEmptyExportFeedback.test.ts).",
 
   // Escape 라우팅을 자기가 소유한다(의도된 예외).
   "panels/databaseModal.ts": "Escape 라우터 본인. 더티 프롬프트가 닫기를 거부할 수 있어 스택 API 로는 표현되지 않는다",

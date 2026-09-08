@@ -55,6 +55,86 @@
   fields survive recovery. Desktop checks cover 1024/1280/1440; independent
   screenshot interpretation and final visual approval remain lead-owned.
 
+## Showcase media durability (issue #693, 2026-09-08)
+
+- Reuse the shared `showConfirm` modal, native action buttons, existing focus
+  trap/Escape/opener behavior and toast status; no new modal design or dependency.
+- A showcase media import asks explicitly to save the current project and file
+  as a **new online copy**. Cancel keeps the source. Confirm never targets the
+  deployment's existing/shared project. Audio keeps its 8 MiB input ceiling;
+  the browser-only showcase does not promise that capacity in Web Storage.
+- Success appears only after target save, identity/content-verified reload and
+  local adoption. Failure keeps the source and previous browser recovery; quota
+  guidance offers project export and unused-copy cleanup, never automatic erasure.
+- The resource window closes on the verified project switch using its existing
+  ownership rule. Reopen Resources in the new project to edit the imported media.
+- Desktop confirmation captures: 1024x768 and 1440x900. Lead owns visual approval
+  and the separately authorized real-remote acceptance run.
+
+## Opt-in local diagnostics (2026-09-08)
+
+- Reuse the assistant export menu, existing wide `openEventSubdialog`, native
+  labelled checkboxes/select/textarea, shared `btn` and modal-stack confirmation.
+  The workflow is consent/categories, record, preview/sections, separate local
+  output confirmation. No transcript text or network submission is part of it.
+- The body owns scrolling; wrapping actions and a readonly report preview keep
+  the existing dialog geometry. Type is 13px body, 12px mono report; controls are
+  32px. Use existing `--space-*`, `--text-1/2`, `--bg-raised`, `--accent`, border,
+  radius, shadow and focus tokens. No dependency, theme or motion is added.
+- A persistent top-right local-session indicator at 56px keeps Report, Stop and
+  Clear reachable during Test Play. It uses `--z-toast`, with no new runtime
+  mutation controls. Recording/stopped labels communicate state without color.
+- Personas: author reproducing a multi-step edit, privacy-conscious exporter,
+  keyboard author. Default off and explicit consent are mandatory; cancellation
+  writes nothing. Desktop checks cover 1024/1280/1440; independent visual/CJK
+  approval and full gates remain lead-owned. No accessibility debt is accepted.
+
+## Authoring camera navigation (issue 693)
+
+- Reuse the Phaser camera, existing visible-area/assistant occlusion model, native
+  scroll containers and `el`. No new docking mode, dependency or parallel offsets.
+- Native X/Y scrollbars sit at the unobstructed canvas edges, using 16px tracks
+  (`--space-4`), existing inset/scrollbar tokens and `--focus-outline`. Their
+  extents include half a visible viewport plus 32px inspection padding per edge.
+  Native keyboard scrolling owns navigation keys while focused.
+- Ctrl+wheel over the canvas steps the existing 1/2/3/4/6/8 zoom marks about the
+  pointer on Linux, Windows and macOS (including Ctrl-style trackpad pinch).
+  Unmodified wheel remains pan; Command-only wheel is not editor zoom. Accepted
+  Ctrl gestures suppress page zoom, including at limits. No animated zoom.
+- Neutral primary drag means outside the authored map, with no selection, stamp,
+  paste preview or edit gesture. Map paint/select/event gestures retain priority;
+  explicit Pan, Space+drag and middle drag remain available.
+- Assistant float opening, collapse and resize preserve the visible focal point
+  and zoom, deferred until an editing gesture ends. Map changes reset normally.
+- Personas: painter inspecting edge cells, author using the assistant alongside
+  a map, keyboard author navigating large maps. Desktop matrix: 1024x768,
+  1280x800, 1440x900. No accepted accessibility debt; independent visual review
+  and full build/gates remain lead-owned. Native camera scrolling has no matching
+  animated catalog mechanism and intentionally adds no motion.
+
+## Event validation diagnostic rows (2026-09-08)
+
+- Reuse the titlebar validation bell, existing bounded popover/list, native `btn small`
+  actions, labelled format select and cream tokens. Rows show code, current nested path,
+  field, cause, expected value and correction hint, without a new panel or theme.
+- The existing 420px/76vw popover and 320px/46vh list cap remain; metadata wraps within
+  the current grid. Copy-format/copy/assistant controls wrap rather than expand the frame.
+- Selecting an issue focuses its actual command field after revealing the command.
+  Custom-select enhancement preserves that focus instead of stranding it on the body.
+- Spawn validation recovery uses the existing cream command form, record pickers and
+  labelled native inputs for troop, optional kill switch/graphic ID and area X/Y/W/H.
+  No additional spawn settings, new token, dependency or visual shell is introduced.
+- Page-route recovery opens the existing dialog and selects the diagnosed step. Its
+  existing parameter panel names the selected step when editing a switch, graphic,
+  sound or NPC transfer; initial/appended selection remains an insertion template.
+  Edits stay local until the existing OK action, and Cancel preserves the authored route.
+- Assistant handoff uses the existing editable composer and retains the minimized event
+  editor. It appends to existing instructions, marks the diagnostic UNSENT and never
+  submits. Copying includes only rule-owned diagnostics and generated numeric locations.
+- Personas: nested-event author, keyboard repair author, author with unfinished assistant
+  instructions. Existing severity labels and focus states remain. Browser geometry and
+  interaction evidence cover 1024x768, 1280x800 and 1440x900; lead owns visual approval.
+
 ## Monster resource metadata editor (2026-09-07)
 
 - Database > 전투 몬스터 exposes 몬스터 소재 even with no gameplay records.
