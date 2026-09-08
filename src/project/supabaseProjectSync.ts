@@ -1,11 +1,13 @@
 import { PRODUCT_BRAND } from "@/brand";
-import { deserialize, serialize } from "./io";
+import { deserialize, ProjectFormatError, serialize } from "./io";
+import { readProjectV4MapMergeSnapshot } from "./io/shape";
+import { SCHEMA_VERSION } from "./types";
 import { defaultResourceProfiles, removeLegacySpriteReferences } from "./defaults/defaultAssets";
 import { ensureBundledBattleAnimations } from "./defaults/defaultDatabase";
 import { defaultEquipmentRecords } from "./defaults/defaultDatabaseEquipmentRecords";
 import { defaultItemRecords } from "./defaults/defaultDatabaseItemRecords";
 import { defaultSkillRecords } from "./defaults/defaultDatabaseStarterRecords";
-import { collectProjectItemReferenceIds } from "./io/references";
+import { collectProjectItemReferenceIds, validateProjectReferences } from "./io/references";
 import { projectWithoutEventDrafts } from "./eventDrafts";
 import { supabaseProjectConfig, type SupabaseProjectConfig } from "./supabaseProjectConfig";
 import { sha256HexText } from "../util/sha256";
@@ -210,10 +212,9 @@ export async function loadSupabaseProjectPreview(
   };
 }
 
-async function loadProjectSnapshotFromSupabase(
+async function loadProjectRowFromSupabase(
   config = supabaseProjectConfig(),
-  options: { readonly overlayMaps?: boolean } = {},
-): Promise<SupabaseProjectSnapshot | null> {
+): Promise<SupabaseProjectRow | null> {
   if (!config) return null;
   const response = await fetch(supabaseProjectUrl(config), {
     headers: supabaseJsonHeaders(config, "read"),
@@ -222,18 +223,23 @@ async function loadProjectSnapshotFromSupabase(
     throw new SupabaseProjectSyncError(await response.text(), response.status);
   }
   const rows = await parseProjectRows(response);
-  const row = rows[0];
+  return rows[0] ?? null;
+}
+
+async function loadProjectSnapshotFromSupabase(
+  config = supabaseProjectConfig(),
+): Promise<SupabaseProjectSnapshot | null> {
+  if (!config) return null;
+  const row = await loadProjectRowFromSupabase(config);
   if (!row) return null;
   const project = deserializeSupabaseCurrentJson(row.current_json);
   // Hybrid maps SoT (editor open / public load): maps table map_json overlays current_json map bodies.
-  // Patch/conflict loads pass overlayMaps:false so concurrent merge still compares current_json.
-  if (options.overlayMaps !== false) {
-    try {
-      const mapRows = await loadMapRowsFromSupabase(config);
-      if (mapRows.length > 0) overlayMapsFromRows(project, mapRows);
-    } catch (error) {
-      if (!isOptionalTableMissingError(error)) throw error;
-    }
+  // Patch/conflict reads use the raw row separately and never overlay maps.
+  try {
+    const mapRows = await loadMapRowsFromSupabase(config);
+    if (mapRows.length > 0) overlayMapsFromRows(project, mapRows);
+  } catch (error) {
+    if (!isOptionalTableMissingError(error)) throw error;
   }
   return {
     project,
@@ -290,14 +296,18 @@ export async function saveProjectMapPatchToSupabase(
   for (let attempt = 0; attempt < MAP_PATCH_MAX_ATTEMPTS; attempt += 1) {
     // Conflict/merge against current_json only (no maps overlay). RTT cut: drop
     // saveChangedMapRowsFromCanonical's before/after full-snapshot pair.
-    const latestSnapshot = await loadProjectSnapshotFromSupabase(config, { overlayMaps: false });
-    const latestProject = latestSnapshot?.project ?? canonicalBase;
-    const latestSha = latestSnapshot?.sha256 ?? null;
+    const latestRow = await loadProjectRowFromSupabase(config);
+    const latestProject = latestRow ? readMapPatchSnapshot(latestRow.current_json) : canonicalBase;
+    const latestSha = latestRow?.current_sha256 ?? null;
 
     const conflicts = mapSaveConflicts(canonicalBase, canonicalLocal, latestProject, changedMapIds);
     if (conflicts.length > 0) return { kind: "conflict", conflicts };
 
-    const mergedProject = mergeProjectMaps(latestProject, persistedProject, changedMapIds, changedMapTreeIds);
+    const candidate = mergeProjectMaps(latestProject, persistedProject, changedMapIds, changedMapTreeIds);
+    // Do not let load repair silently discard invalid intended references. Only
+    // the fully validated merge may enter the existing SHA-conditional write.
+    validateProjectReferences(candidate);
+    const mergedProject = deserializeSupabaseCurrentJson(candidate);
     const wire = await projectWire(mergedProject);
     const saved = await saveProjectSnapshotToSupabase(config, mergedProject, latestSha, wire);
     if (!saved) continue;
@@ -1037,16 +1047,16 @@ async function sha256Hex(value: string): Promise<string> {
   return sha256HexText(value);
 }
 
-function changedMapIdsBetween(baseProject: Project, project: Project): readonly string[] {
+function changedMapIdsBetween(baseProject: Pick<Project, "maps" | "mapTree">, project: Pick<Project, "maps" | "mapTree">): readonly string[] {
   const mapIds = [...new Set([...Object.keys(baseProject.maps), ...Object.keys(project.maps)])]
     .filter((mapId) => mapSnapshot(baseProject.maps[mapId]) !== mapSnapshot(project.maps[mapId]));
   return [...new Set([...mapIds, ...changedMapTreeIdsBetween(baseProject.mapTree, project.mapTree)])];
 }
 
 function mapSaveConflicts(
-  baseProject: Project,
-  project: Project,
-  latestProject: Project,
+  baseProject: Pick<Project, "maps">,
+  project: Pick<Project, "maps">,
+  latestProject: Pick<Project, "maps">,
   changedMapIds: readonly string[],
 ): readonly SupabaseMapSaveConflict[] {
   return changedMapIds
@@ -1078,18 +1088,27 @@ function mapSaveConflicts(
  * 완전히 같은 파이프라인을 써야 대칭이다. 검증을 통과하지 못하는 중간 상태(끊긴 참조 등)는
  * 원본 그대로 폴백해 기존 conflict 동작을 유지한다(새 예외를 만들지 않는다).
  */
-function canonicalizeForMapComparison(project: Project): Project {
+function canonicalizeForMapComparison(project: Project): Pick<Project, "maps" | "mapTree"> {
   try {
-    // 로드 경로와 동일: repairSupabaseCurrentJson(row.current_json) → deserialize.
-    const asWire = JSON.parse(serialize(project)) as unknown;
-    return deserialize(JSON.stringify(repairSupabaseCurrentJson(asWire)));
+    return readMapPatchSnapshot(JSON.parse(serialize(project)) as unknown);
   } catch {
     return project;
   }
 }
 
+function readMapPatchSnapshot(value: unknown): Pick<Project, "maps" | "mapTree"> {
+  try {
+    return deserializeSupabaseCurrentJson(value);
+  } catch (error) {
+    if (!(error instanceof ProjectFormatError) || !isRecord(value) || value.version !== SCHEMA_VERSION) throw error;
+    // Only structurally valid current-schema maps/tree can participate in a
+    // merge. Never return the invalid remote roots or bypass final validation.
+    return readProjectV4MapMergeSnapshot(value);
+  }
+}
+
 function mergeProjectMaps(
-  latestProject: Project,
+  latestProject: Pick<Project, "maps" | "mapTree">,
   project: Project,
   changedMapIds: readonly string[],
   changedMapTreeIds: readonly string[],
@@ -1245,7 +1264,7 @@ function canonicalJsonString(value: unknown): string {
   return JSON.stringify(value);
 }
 
-function mapConflictName(mapId: string, project: Project, latestProject: Project, baseProject: Project): string {
+function mapConflictName(mapId: string, project: Pick<Project, "maps">, latestProject: Pick<Project, "maps">, baseProject: Pick<Project, "maps">): string {
   return project.maps[mapId]?.name ?? latestProject.maps[mapId]?.name ?? baseProject.maps[mapId]?.name ?? mapId;
 }
 

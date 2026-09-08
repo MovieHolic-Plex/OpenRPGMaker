@@ -67,6 +67,22 @@ export function validateProjectV2(data: JsonRecord): ProjectV2 {
 
 /** 현재(v4) 프로젝트 셰이프 검증. v3 저장본은 migrateV3toV4 가 얼굴 짝을 바꾼 뒤 여기로 들어온다. */
 export function validateProjectV4(data: JsonRecord): Project {
+  const project = normalizeProjectV4(data);
+  validateProjectReferences(project);
+  return project;
+}
+
+/**
+ * Map-patch comparison only: keep shape checks and load normalization, but defer
+ * cross-project references until the local roots and remote maps are merged.
+ * This is not a loadable Project; callers must validate the completed candidate.
+ */
+export function readProjectV4MapMergeSnapshot(data: JsonRecord): Pick<Project, "maps" | "mapTree"> {
+  const project = normalizeProjectV4(data);
+  return { maps: project.maps, mapTree: project.mapTree };
+}
+
+function normalizeProjectV4(data: JsonRecord): Project {
   assertGrowthShape(data.growth);
   validateMeta(data.meta);
   validateAssets(data.assets);
@@ -148,7 +164,6 @@ export function validateProjectV4(data: JsonRecord): Project {
   stampCharacterIdsForSocialEvents(project);
   normalizeShopCommands(project);
   repairProjectReferences(project);
-  validateProjectReferences(project);
   return project;
 }
 
