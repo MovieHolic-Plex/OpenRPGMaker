@@ -255,9 +255,28 @@ async function readAll(): Promise<ConversationRecord[]> {
   return records.filter(isConversationRecord).sort((left, right) => right.savedAt - left.savedAt || left.id.localeCompare(right.id));
 }
 
-async function persistLocalConversation(record: ConversationRecord & { mapIndex: ConversationMapIndex }, options: { readonly requireCurrent?: () => void; readonly replaceEqual?: boolean } = {}) {
-  return mutateScopedAiRecord<ConversationRecord>({ store: STORE, id: record.id, scope: record.projectContextKey ?? null, replaceEqual: options.replaceEqual }, current => {
-    options.requireCurrent?.();
+/** Exact stored JSON-shaped content, including own undefined fields and nested provenance.
+ * Unsupported structured-clone objects fail closed instead of comparing as empty JSON.
+ */
+function sameStoredValue(left: unknown, right: unknown): boolean {
+  if (Object.is(left, right)) return true;
+  if (!isObject(left) || !isObject(right) || Array.isArray(left) !== Array.isArray(right)) return false;
+  const supported = (value: object) => Array.isArray(value) || Object.getPrototypeOf(value) === Object.prototype || Object.getPrototypeOf(value) === null;
+  if (!supported(left) || !supported(right)) return false;
+  const keys = Reflect.ownKeys(left);
+  return keys.length === Reflect.ownKeys(right).length && keys.every(key => Object.hasOwn(right, key)
+    && sameStoredValue(Reflect.get(left, key), Reflect.get(right, key)));
+}
+
+async function persistLocalConversation(record: ConversationRecord & { mapIndex: ConversationMapIndex }, options: {
+  readonly requireCurrent?: () => void; readonly replaceEqual?: boolean; readonly recoveryBaseline?: ConversationRecord | null;
+} = {}) {
+  return mutateScopedAiRecord<ConversationRecord>({ store: STORE, id: record.id, scope: record.projectContextKey ?? null, replaceEqual: options.replaceEqual,
+    admit: current => {
+      options.requireCurrent?.();
+      return options.recoveryBaseline === undefined || sameStoredValue(current, options.recoveryBaseline);
+    },
+  }, current => {
     const prior = current && isConversationMapIndex(current.mapIndex) ? current.mapIndex : undefined;
     const viewedMapIds = [...new Set([...record.mapIndex.viewedMapIds, ...(prior?.viewedMapIds ?? [])])].sort();
     const targetMapIds = [...new Set([...record.mapIndex.targetMapIds, ...(prior?.targetMapIds ?? [])])].sort();
@@ -519,6 +538,9 @@ export async function hydrateConversationArchive(options: ConversationArchiveHyd
   };
   requireCurrent();
   await ensureLegacyMigrated();
+  // One value snapshot for the whole operation, before the first network request.
+  // Memory reads return aliases, so retaining the returned objects would lose the veto.
+  const baseline = new Map((await readAll()).map(record => [record.id, structuredClone(record)]));
   let imported = 0;
   let skipped = 0;
   let rejected = 0;
@@ -532,12 +554,13 @@ export async function hydrateConversationArchive(options: ConversationArchiveHyd
       const candidate = { id: row.conversation_id, title: row.title, model: row.model,
         projectContextKey: row.project_context_key, entries: row.entries_json,
         savedAt: typeof row.saved_at === "string" ? Date.parse(row.saved_at) : NaN };
-      if (row.project_id !== config.projectId || candidate.projectContextKey !== options.projectContextKey || !isConversationRecord(candidate)) {
+      if (row.project_id !== config.projectId || candidate.projectContextKey !== options.projectContextKey || !isConversationRecord(candidate) || !candidate.id) {
         rejected++;
         continue;
       }
       requireCurrent();
-      const result = await persistLocalConversation(compactRecord(candidate), { requireCurrent });
+      const result = await persistLocalConversation(compactRecord(candidate), { requireCurrent,
+        recoveryBaseline: baseline.get(candidate.id) ?? null });
       if (result.written) imported++; else skipped++;
     }
     if (rows.length < pageSize) break;

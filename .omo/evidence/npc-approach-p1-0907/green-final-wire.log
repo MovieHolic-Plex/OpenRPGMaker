@@ -1,0 +1,29 @@
+bun test v1.4.2 (744846f84)
+
+test/ohMyPiGoldRewardWire.bun.test.ts:
+{"requestedModel":"gemini-3.7-flash","wireModel":"gemini-3.7-flash-low","normalizedGoldDelta":{"description":"Currency delta: exact signed safe integer (e.g. 20 or 0), or {atLeast:1}. Relative to snapshotRewards, scene start by default. Not an inventory item."},"roundtripValues":[[20,0],[{"atLeast":1},{"atLeast":0}],["20","0"]],"scenePassed":[true,true,false],"controlledFetches":1}
+(pass) goldDelta at the actual installed Antigravity wire and response boundaries > gemini-3.7-flash preserves exact and atLeast currency values without STRING defaulting [140.60ms]
+{"requestedModel":"claude-opus-4-6","wireModel":"claude-opus-4-6-thinking","normalizedGoldDelta":{"description":"Currency delta: exact signed safe integer (e.g. 20 or 0), or {atLeast:1}. Relative to snapshotRewards, scene start by default. Not an inventory item."},"roundtripValues":[[20,0],[{"atLeast":1},{"atLeast":0}],["20","0"]],"scenePassed":[true,true,false],"controlledFetches":1}
+(pass) goldDelta at the actual installed Antigravity wire and response boundaries > claude-opus-4-6 preserves exact and atLeast currency values without STRING defaulting [153.35ms]
+
+test/ohMyPiImageTransport.bun.test.ts:
+(pass) companion image delivery at the real provider request seam > preserves labeled PNG bytes for the default model or alias gemini-3.7-flash [4.49ms]
+(pass) companion image delivery at the real provider request seam > preserves labeled PNG bytes for the default model or alias gemini-3.7-flash-tiered [1.95ms]
+(pass) companion image delivery at the real provider request seam > preserves labeled PNG bytes for the default model or alias gemini-3.7-flash-low [1.20ms]
+(pass) companion image delivery at the real provider request seam > preserves multiple images and label ordering on google-antigravity wire [0.98ms]
+(pass) companion image delivery at the real provider request seam > preserves multiple images and label ordering on openai-codex wire [4.08ms]
+(pass) companion image delivery at the real provider request seam > rejects malformed or unsupported image URL https://example.invalid/map.png before outbound fetch [0.45ms]
+(pass) companion image delivery at the real provider request seam > rejects malformed or unsupported image URL data:image/svg+xml;base64,PHN2Zy8+ before outbound fetch [0.06ms]
+(pass) companion image delivery at the real provider request seam > rejects malformed or unsupported image URL data:image/png;base64, before outbound fetch [0.04ms]
+(pass) companion image delivery at the real provider request seam > rejects malformed or unsupported image URL data:image/png;base64,!!!! before outbound fetch [0.03ms]
+(pass) companion image delivery at the real provider request seam > rejects malformed or unsupported image URL data:image/png;base64,YQ= before outbound fetch [0.02ms]
+(pass) companion image delivery at the real provider request seam > rejects malformed or unsupported image URL data:image/png;base64,YR== before outbound fetch [0.05ms]
+(pass) companion image delivery at the real provider request seam > rejects image roles, malformed parts and nonvision models instead of dropping them [0.31ms]
+(pass) companion image delivery at the real provider request seam > accepts JPEG/WebP MIME bytes without relabeling or transcoding [84.84ms]
+(pass) companion image delivery at the real provider request seam > rejects the completion when the image-bearing provider request fails [4.86ms]
+(pass) companion image delivery at the real provider request seam > parses acknowledgement positions atomically and refuses malformed siblings [0.08ms]
+
+ 17 pass
+ 0 fail
+ 42 expect() calls
+Ran 17 tests across 2 files. [1116.00ms]

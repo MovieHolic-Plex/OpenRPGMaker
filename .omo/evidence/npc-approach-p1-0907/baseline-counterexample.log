@@ -1,0 +1,120 @@
+{
+  "implicitHostApproach": {
+    "ok": true,
+    "evidence": [
+      {
+        "target": {
+          "mapId": "map_blank_start",
+          "eventId": "ev_chief"
+        },
+        "phase": "repeat",
+        "instructions": 4,
+        "movementSteps": 2,
+        "claim": {
+          "gold": 20,
+          "inventory": {},
+          "monsters": {}
+        },
+        "repeat": {
+          "gold": 0,
+          "inventory": {},
+          "monsters": {}
+        },
+        "final": {
+          "gold": 77,
+          "inventory": {},
+          "monsters": {}
+        }
+      }
+    ]
+  },
+  "identicalApproachExplicitPrelude": {
+    "ok": false,
+    "evidence": [
+      {
+        "target": {
+          "mapId": "map_blank_start",
+          "eventId": "ev_chief"
+        },
+        "phase": "prelude",
+        "instructions": 2,
+        "movementSteps": 2,
+        "failedStepIndex": 1,
+        "final": {
+          "gold": 57,
+          "inventory": {},
+          "monsters": {}
+        }
+      }
+    ],
+    "reason": "NPC ev_chief reward acceptance failed at step 1: Earlier reward NPC interaction paid requested rewards during prelude. Preserve the requested grants and fix the runtime interaction; author prerequisites and links first, then use verify_npc_reward. Do not remove the reward or move its timing to complete."
+  },
+  "noEarlyPaymentControl": {
+    "ok": true,
+    "evidence": [
+      {
+        "target": {
+          "mapId": "map_blank_start",
+          "eventId": "ev_chief"
+        },
+        "phase": "repeat",
+        "instructions": 4,
+        "movementSteps": 2,
+        "claim": {
+          "gold": 20,
+          "inventory": {},
+          "monsters": {}
+        },
+        "repeat": {
+          "gold": 0,
+          "inventory": {},
+          "monsters": {}
+        },
+        "final": {
+          "gold": 57,
+          "inventory": {},
+          "monsters": {}
+        }
+      }
+    ]
+  }
+}
+{
+  "nativeSessionProof": {
+    "executed": true,
+    "requirementIndex": 0,
+    "target": {
+      "mapId": "map_blank_start",
+      "eventId": "ev_chief"
+    },
+    "ok": true,
+    "evidence": [
+      {
+        "target": {
+          "mapId": "map_blank_start",
+          "eventId": "ev_chief"
+        },
+        "phase": "repeat",
+        "instructions": 4,
+        "movementSteps": 2,
+        "claim": {
+          "gold": 20,
+          "inventory": {},
+          "monsters": {}
+        },
+        "repeat": {
+          "gold": 0,
+          "inventory": {},
+          "monsters": {}
+        },
+        "final": {
+          "gold": 77,
+          "inventory": {},
+          "monsters": {}
+        }
+      }
+    ]
+  },
+  "finalCompletionAccepted": true,
+  "sourceProjectUnchanged": true
+}

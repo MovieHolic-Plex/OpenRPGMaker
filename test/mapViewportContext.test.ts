@@ -5,8 +5,10 @@ import {
   mapRegionForContext,
   mapRegionImagePayload,
 } from "@/ai/mapViewportContext";
-import { createBlankProject } from "@/project/defaults";
+import { createBlankMap, createBlankProject } from "@/project/defaults";
 import { buildSystemPrompt } from "@/ai/contextBuilder";
+import { defaultAiConfig } from "@/ai/llmClient";
+import { fixedDeclarer } from "./intentFixture";
 
 describe("computeMapViewport", () => {
   const map = { id: "map_a", width: 40, height: 30 };
@@ -179,11 +181,21 @@ describe("AssistantSession viewport user turn", () => {
     expect(String(user?.content)).toContain("여기 나무 심어줘");
   });
 
-  it("turns 오른쪽 위 into a computed box on the visible camera, not the 16-tile clip", async () => {
+  it.each([
+    { reference: "explicit viewport", requestText: "화면 오른쪽 위에 숲을깔라", hasViewSpec: true },
+    { reference: "unspecified direction", requestText: "오른쪽 위에 숲을깔라", hasViewSpec: false },
+    { reference: "map despite screen reference", requestText: "화면을 참고해서 맵 오른쪽 위에 숲을깔라", hasViewSpec: false },
+    { reference: "quoted sign text", requestText: "표지판 문구를 정확히 「화면 오른쪽 위에 숲을깔라」로 만들어 줘.", hasViewSpec: false },
+    { reference: "separate objects", requestText: "화면 오른쪽에 연못을 만들고 위에 나무를 심어 줘.", hasViewSpec: false },
+  ])("uses visible-camera geometry, not the 16-tile clip, only for $reference", async ({ requestText, hasViewSpec }) => {
     const { AssistantSession } = await import("@/ai/assistantSession");
     const project = createBlankProject();
     const mapId = project.startMapId;
+    // Keep both the visible frame and context clip inside the actual map.
+    project.maps[mapId] = { ...createBlankMap("Viewport test", 40, 30), id: mapId };
     const session = new AssistantSession(project, {
+      config: { ...defaultAiConfig(), agentMode: "chat", model: "test", liteModel: "test", apiKey: "test", maxToolCalls: 1 },
+      declareIntent: fixedDeclarer({ mode: "modify" }),
       contextOptions: {
         currentMapId: mapId,
         viewport: {
@@ -205,11 +217,18 @@ describe("AssistantSession viewport user turn", () => {
         finishReason: "stop",
       }),
     });
-    await session.sendUserMessage("오른쪽 위에 숲을깔라");
-    const user = session.getMessages().find((m) => m.role === "user");
-    const text = String(user?.content);
-    expect(text).toContain("추측 금지");
-    expect(text).toContain("(20,4) 10×6");
-    expect(text).toContain("오른쪽 위에 숲을깔라");
+    await session.sendUserMessage(requestText);
+    // Inspect the real turn's machine-consumed obligation, not prompt wording.
+    expect(session["turnImplicitSpec"]).toBeNull();
+    const spec = session["turnViewSpec"];
+    if (hasViewSpec) {
+      expect(spec?.mapId).toBe(mapId);
+      // The clip's northeast quadrant is (20,4) 8x8; the camera's is 10x6.
+      expect(spec?.assets.map(({ kind, x, y, w, h }) => ({ kind, x, y, w, h }))).toEqual([
+        { kind: "prop", x: 20, y: 4, w: 10, h: 6 },
+      ]);
+    } else {
+      expect(spec).toBeNull();
+    }
   });
 });

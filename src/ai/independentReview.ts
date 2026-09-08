@@ -29,6 +29,8 @@ export interface ReviewInput {
   readonly toolResults: readonly unknown[];
   readonly acceptance: unknown;
   readonly requiredProblems: readonly string[];
+  /** Proposal heuristics and tool warnings, distinct from canonical blockers. */
+  readonly completionWarnings?: readonly string[];
   readonly images: readonly { label: string; dataUrl: string }[];
 }
 

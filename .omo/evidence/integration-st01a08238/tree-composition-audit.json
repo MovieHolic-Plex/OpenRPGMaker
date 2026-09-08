@@ -1,0 +1,5020 @@
+{
+  "ours_only": [
+    {
+      "path": ".omo/evidence/ai-final-assessment/REPORT.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-final-assessment/diffcheck.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-final-assessment/focused-final.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-final-assessment/focused-initial.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-final-assessment/green-initial.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-final-assessment/question-red.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-final-assessment/red.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-final-assessment/related.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-final-assessment/replay.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-final-assessment/replay.mts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-final-assessment/typecheck-app.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable-r9/report.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/interior-load-consistency-0907.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/interior-load-lifecycle-followup-0907.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/main-integration-0907.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/native-pages-r10.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/new-map-acceptance.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/p7-paint-correction-st_01a081c6/README.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/p7-paint-correction-st_01a081c6/b139-cluster.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/p7-paint-correction-st_01a081c6/b139-cluster.log.gz",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/p7-paint-correction-st_01a081c6/baseline-comparison.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/p7-paint-correction-st_01a081c6/diagnostics.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/p7-paint-correction-st_01a081c6/focused-run.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/p7-paint-correction-st_01a081c6/focused-run.log.gz",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/p7-paint-correction-st_01a081c6/index-check.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/p7-paint-correction-st_01a081c6/native-green.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/p7-paint-correction-st_01a081c6/native-red.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/p7-paint-correction-st_01a081c6/preserved-receipts.sha256",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/p7-paint-correction-st_01a081c6/review-b139.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/p7-paint-correction-st_01a081c6/review-native-failures.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/p7-paint-correction-st_01a081c6/review-native-failures.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/p7-paint-correction-st_01a081c6/tests-red.log.gz",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/p7-paint-correction-st_01a081c6/typecheck.log.gz",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/p7-preserved-wall-fix-st_01a08194.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-acceptance-focused.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-adjudicated-seams.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-canonical-final.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-canonical-focused.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-canonical-green-initial.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-canonical-provider.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-canonical-recovery-red.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-canonical-red.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-canonical-repair-red.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-canonical-repair.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-canonical-tsserver.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-canonical-tsserver.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-catalog-generate.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-diff-check.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-final-authority-fixtures.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-final-cost.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-final-fixture-consumers.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-final-focused.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-final-protocol-fixtures.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-final-remaining.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-final-rewards.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-focused-initial.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-focused-seams.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-focused-source-types.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-functional-witness-red.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-gate-contract-repair.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-image-detail-red.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-initial-focused-types.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-integration-focused.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-integration-probe.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-integration-probe.mts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-integration.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-matrix.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-merge.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-optional-red.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-provenance-added1.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-provenance-focused.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-provenance-green.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-provenance-initial-green.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-provenance-red.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-provenance-title-red.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-provenance-tsserver.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-provenance-tsserver.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-provider-focused.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-runtime-persistence-focused.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-settlement-focused.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-skip-red.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-tsserver.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-tsserver.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-whitespace-provenance.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/pr687-wiki-index.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/r11-image-transport.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/r15-tile-query.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/r7-acceptance-repair.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/r8-item-quantity-followup.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-playable/r8-spatial-obligations.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/build-spec-overlap-0907/verification.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/cr-p7-1/encounter-st01a081df.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/cr-p7-1/encounter-st01a081df.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/cr-p7-1/verification.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/deferred-lineage-p2/README.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/deferred-lineage-p2/baseline-audio-concurrent.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/deferred-lineage-p2/baseline-corrected-audio-fixture.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/deferred-lineage-p2/baseline-legacy-persistence.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/deferred-lineage-p2/build-app.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/deferred-lineage-p2/candidate-legacy-persistence.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/deferred-lineage-p2/green-audio.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/deferred-lineage-p2/green-focused.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/deferred-lineage-p2/green-regressions.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/deferred-lineage-p2/overlap-baseline.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/deferred-lineage-p2/overlap-candidate.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/deferred-lineage-p2/overlap-characterization.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/deferred-lineage-p2/red-audio-concurrent.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/deferred-lineage-p2/red-final.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/deferred-lineage-p2/store-replay.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/deferred-lineage-p2/store-replay.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/deferred-lineage-p2/typecheck-app.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/dialogue-face-url-r13/README.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/dialogue-face-url-r13/browser.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/dialogue-face-url-r13/browser.mjs",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/dialogue-face-url-r13/chief-portrait.png",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/dialogue-face-url-r13/green.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/dialogue-face-url-r13/red.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/dialogue-face-url-r13/typecheck.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/explicit-flush-ordering/README.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/explicit-flush-ordering/build-app.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/explicit-flush-ordering/green-focused.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/explicit-flush-ordering/green-lineage.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/explicit-flush-ordering/green-regressions.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/explicit-flush-ordering/red.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/explicit-flush-ordering/regressions.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/explicit-flush-ordering/store-replay.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/explicit-flush-ordering/store-replay.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/explicit-flush-ordering/typecheck-app.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/native-graphic-discovery/REPORT.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/npc-approach-p1-0907/README.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/npc-approach-p1-0907/baseline-counterexample.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/npc-approach-p1-0907/build-app.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/npc-approach-p1-0907/frozen-counterexample.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/npc-approach-p1-0907/green-counterexample.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/npc-approach-p1-0907/green-final-protected.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/npc-approach-p1-0907/green-final-wire.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/npc-approach-p1-0907/intermediate-chaser-red.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/npc-approach-p1-0907/lsp.txt",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/npc-approach-p1-0907/red-final.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/npc-approach-p1-0907/repaired-counterexample.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/npc-approach-p1-0907/typecheck-app.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/npc-gold-0907/FOLLOWUP.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/npc-gold-0907/README.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/npc-gold-0907/duplicate-admission-result.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/npc-gold-0907/followup-logs.tar.gz",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/npc-gold-0907/followup-native-smoke.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/npc-gold-0907/logs.tar.gz",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/npc-gold-0907/native-tool-smoke-initial.stderr",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/npc-gold-0907/native-tool-smoke.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/npc-gold-0907/native-tool-smoke.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/npc-prerequisite-0907/README.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/npc-prerequisite-0907/TODO.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/npc-prerequisite-0907/baseline-typecheck.mjs",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/npc-prerequisite-0907/followup/README.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/npc-prerequisite-0907/followup/logs.tar.gz",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/npc-prerequisite-0907/logs.tar.gz",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/npc-prerequisite-0907/session-smoke.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/npc-prerequisite-0907/session-smoke.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/p1-selection-st_01a07c12/HANDOFF.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/p1-selection-st_01a07c12/session-proof-summary.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/p1-selection-st_01a07c12/session-proof.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/r12-regression/receipt.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "evidence/ai-provider-enum-0907/build-output.txt",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "evidence/ai-provider-enum-0907/check-types.mjs",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "evidence/ai-provider-enum-0907/diagnosis.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "evidence/ai-provider-enum-0907/focused-local-output.txt",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "evidence/ai-provider-enum-0907/focused-typecheck-output.txt",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "evidence/ai-provider-enum-0907/green-provider-output.txt",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "evidence/ai-provider-enum-0907/implementation.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "evidence/ai-provider-enum-0907/initial-provider-output.txt",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "evidence/ai-provider-enum-0907/initial-typecheck-output.txt",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "evidence/ai-provider-enum-0907/live-execution-response.txt",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "evidence/ai-provider-enum-0907/live-opus-probe.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "evidence/ai-provider-enum-0907/live-opus-proof-bdc6fad0.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "evidence/ai-provider-enum-0907/live-opus-proof.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "evidence/ai-provider-enum-0907/narrowing-followup.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "evidence/ai-provider-enum-0907/narrowing-local-output.txt",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "evidence/ai-provider-enum-0907/narrowing-provider-output.txt",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "evidence/ai-provider-enum-0907/red-test-output.txt",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "evidence/ai-provider-enum-0907/review-contract.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "openwiki/ai-workflow.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "openwiki/editor-interior-room-harness.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "openwiki/runtime-pre-edit-routing.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "scripts/lib/ohMyPiPiAiRuntime.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "scripts/lib/ohMyPiToolEnums.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "scripts/lib/ohMyPiUserContent.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "scripts/qa/p7-approach-correction.mjs",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/ai/agentVerification.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/ai/assistantAcceptance.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/ai/assistantAcceptanceEvaluation.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/ai/assistantAcceptanceTools.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/ai/assistantImageEvidence.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/ai/buildSpec.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/ai/functionalAcceptance.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/ai/functionalAcceptanceEvaluation.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/ai/imageDelivery.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/ai/mapViewportContext.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/ai/npcRewardWitness.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/ai/projectWikiClient.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/ai/proposalCompleteness.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/ai/toolVerificationEvidence.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/ai/viewRelativeLocation.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/ai/workItemOutcome.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/ai/workPlan.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/ai/workPlanTargets.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/assets/resourceSearch.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/interiorObjectCatalog.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/interiorRoomPipeline.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/interiorRoomVocab.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/tools/eventTools.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/tools/generateMapTool.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/tools/mapGenerationProfiles.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/tools/mapTools.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/tools/placePropsDomain.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/tools/placementTools.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/tools/playTools.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/tools/schemaShapes.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/tools/tileQueryTool.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/tools/types.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/tools/v2/index.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/tools/v3/constructionTools.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/tools/v3/rowArrangement.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/player/interpreter/stack.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/player/interpreter/types.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/project/defaults/interiorCabinetLegacy.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/project/defaults/interiorTransparentPropLayerRepair.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/project/lint/clusterRuleValidators.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/project/tilesetHarness/combinedTown.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/project/tilesetHarness/interiorLongTableLegacy.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/project/tilesetHarness/interiorRoomGroups.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/project/tilesetHarness/themePacks.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/project/world/wiki.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/testing/sceneTestRunner.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/util/structuralJson.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/actionAcceptanceRequirements.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/advisoryLintProvenance.test.ts",
+      "retainedExact": false,
+      "manual": true
+    },
+    {
+      "path": "test/aiConversationRemoteHistory.test.ts",
+      "retainedExact": false,
+      "manual": true
+    },
+    {
+      "path": "test/aiNativePageContract.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/aiRequiredOutcomes.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/aiToolDiscoveryEscalation.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/aiWorkItemOutcomeGateSmoke.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/approachCorrection.test.ts",
+      "retainedExact": false,
+      "manual": true
+    },
+    {
+      "path": "test/assistantAcceptance.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/assistantAcceptanceCost.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/assistantAcceptanceDiagnostics.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/assistantAcceptanceNewMapCharacterization.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/assistantAcceptancePromiseBaseline.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/assistantAcceptanceProvider.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/assistantFinalAssessment.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/assistantImageTransport.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/assistantProposalAssembly.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/assistantSpatialObligations.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/assistantVerificationEvidence.test.ts",
+      "retainedExact": false,
+      "manual": true
+    },
+    {
+      "path": "test/audioDescriptionConcurrentPersistence.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/buildSpecOverlapRecovery.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/canonicalAcceptanceOwnership.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/constructionToolsV3.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/dialogueImageUrls.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/fixtures/acceptance-round2-repairs.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/fixtures/acceptance-round5-new-map.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/fixtures/ai-native-page-round2.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/fixtures/buildSpecOverlapPlans.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/fixtures/offlineChatResponse.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/fixtures/oh-my-pi/README.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/fixtures/oh-my-pi/round4-tools.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/fixtures/p7Approach.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/fixtures/p7ApproachCriteria.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/fixtures/preservedPaint.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/fixtures/project-wiki/wire-response-100.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/fixtures/verificationOwnership.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/functionalAcceptance.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/functionalCompositeClarification.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/gameTitleAcceptance.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/gameTitlePersistenceProof.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/generateMap.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/generateMapPaletteAuthority.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/generateMapPaletteReload.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/helpers/offlineFetch.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/interiorLoadConsistency.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/interiorLongTable.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/interiorPipelineMapReplacement.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/interiorTransparentPropLayerRepair.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/mapViewportContext.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/monsterMetadataPersistence.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/nativeGraphicDiscovery.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/npcApproach.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/npcGoldReward.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/npcPrerequisite.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/npcPrerequisiteFixture.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/npcPrerequisiteSession.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/ohMyPiEndingWire.bun.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/ohMyPiGoldRewardWire.bun.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/ohMyPiImageTransport.bun.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/ohMyPiNumericEnum.bun.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/ohMyPiNumericEnumLocal.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/ohMyPiToolEnums.bun.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/ohMyPiVision.bun.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/placePropsZeroPlacement.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/pr687ImageDetail.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/pr687VerificationIntegration.test.ts",
+      "retainedExact": false,
+      "manual": true
+    },
+    {
+      "path": "test/projectWikiPreparation.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/projectWikiTimeout.test.ts",
+      "retainedExact": false,
+      "manual": true
+    },
+    {
+      "path": "test/propRejectionDiagnostics.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/proposalCompleteness.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/reachabilityArguments.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/requiredOutcomeFixture.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/sceneTestRunner.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/sceneVerificationRepair.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/storeDeferredLineage.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/storeLifecycleReentrancy.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/storePersistenceLineage.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/storeSaveOrdering.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/tileEraseGround.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/tilePassabilityExposure.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/tileQueryBoundaries.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/tilesetHarness.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/verificationFindingOwnership.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/verificationNativeScopes.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/verificationPlanAtomicity.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/verificationRouteDeclaration.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/verificationSelectionOwnership.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/viewRelativeLocation.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/walkthroughVerificationInput.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/workPlanIdentity.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/workPlanMapOutcomes.test.ts",
+      "retainedExact": true,
+      "manual": false
+    }
+  ],
+  "main_only": [
+    {
+      "path": ".gitignore",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-acceptance-compact/FINAL.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-acceptance-compact/GATES.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-acceptance-compact/RED.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/ai-acceptance-compact/REQUEST.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/audio-ai-drafts/README.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/audio-ai-drafts/coverage.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/audio-ai-drafts/provenance.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/audio-preview-ux/baseline-gates-summary.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/audio-preview-ux/browser-report.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/audio-preview-ux/cleanup.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/audio-preview-ux/e2e-audio-verified.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/audio-preview-ux/fake-dom-complete-green.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/audio-preview-ux/final-focused.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/audio-preview-ux/final-residual-check.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/audio-preview-ux/final-session.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/audio-preview-ux/red.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/audio-preview-ux/review-production.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/audio-preview-ux/review-test-delta.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/audio-preview-ux/verification.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/character-appearance-sets/verification.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/graft-proof/HANDOFF.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/graft-proof/after-graft.png",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/graft-proof/before-base.png",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/graft-proof/cache-collision-inflight.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/graft-proof/cache-collision-ready.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/graft-proof/focused-related-final.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/graft-proof/followup-related-final.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/graft-proof/followup-source-hashes.txt",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/graft-proof/followup-typecheck.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/graft-proof/followup-vitest.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/graft-proof/geometry-cache-bind.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/graft-proof/graft-readiness-vitest.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/graft-proof/held-release-renderer.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/graft-proof/missing-source-renderer.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/graft-proof/png-export.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/graft-proof/png-pixel-inspect.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/graft-proof/session-failed-source.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/graft-proof/session-held-abort.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/graft-proof/session-held-release-png-meta.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/graft-proof/session-held-release.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/graft-proof/snapshot-held-mutate.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/graft-proof/source-hashes.txt",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/graft-proof/st_01a07c55-manual-qa.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/graft-proof/typecheck-app.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/issue-693/acceptance.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/issue-693/final-integration-9c/README.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/issue-693/final-integration-9c/diagnostic-red.exit",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/issue-693/final-integration-9c/diagnostic-red.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/issue-693/final-integration-9c/diagnostics.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/issue-693/final-integration-9c/evidence-preservation-verified.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/issue-693/final-integration-9c/focused-complete.exit",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/issue-693/final-integration-9c/focused-complete.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/issue-693/final-integration-9c/focused-complete.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/issue-693/final-integration-9c/focused-timeout.txt",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/issue-693/final-integration-9c/focused.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/issue-693/final-integration-9c/index-check.exit",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/issue-693/final-integration-9c/index-check.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/issue-693/final-integration-9c/merge.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/issue-693/final-integration-9c/run-focused.sh",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/issue-693/final-integration-9c/vitest.config.mts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/issue-693/final-verification.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/issue-693/gate-repairs/README.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/issue-693/gate-repairs/disposition.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/issue-693/gate-repairs/numeric-native.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/issue-693/media-supabase-proof.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/evidence/issue-693/upstream-integration.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/functional-integration/HANDOFF.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/functional-integration/combined-red.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/functional-integration/composition-first.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/functional-integration/focused-final.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/functional-integration/incoming-first.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/functional-integration/suites.txt",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/functional-integration/tree-audit.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/functional-integration/tsconfig.changed-tests.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/functional-integration/tsconfig.tests.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/functional-integration/verification-summary.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/functional-integration/verified-final.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/receipt-fixture/HANDOFF.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/ulw-loop/grok-integration-evidence.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/ulw-loop/grok-r1-evidence.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/ulw-loop/grok-r2-evidence.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/ulw-loop/grounding-evidence.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/ulw-loop/review-linked-map-capacity-evidence.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/ulw-loop/review-linked-map-capacity-probe.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/ulw-loop/reviewloop-evidence.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/ulw-loop/st_01a078a3-evidence.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/ulw-loop/st_01a078a4-evidence.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/ulw-loop/st_01a078a5-evidence.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": ".omo/ulw-loop/st_01a078a6-evidence.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "DESIGN.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "docs/qa/issue693-navigation.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "docs/reviews/2026-09-08-event-battle-reliability-handoff.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "docs/reviews/2026-09-08-event-battle-reliability.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "evidence/issue693-assets.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "evidence/issue693-diagnostics.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "evidence/issue693-media/README.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "openwiki/bgm-catalog.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "openwiki/editor-database.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "openwiki/editor-event-authoring.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "openwiki/editor-validation.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "openwiki/editor-workflows-misc.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "openwiki/runtime-battle.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "openwiki/runtime-sessions.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "openwiki/se-catalog.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "openwiki/testing.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-checklist-priority-st_01a07ff5/README.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-checklist-priority-st_01a07ff5/focused.exit",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-checklist-priority-st_01a07ff5/focused.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-checklist-priority-st_01a07ff5/typecheck-app.exit",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-checklist-priority-st_01a07ff5/typecheck-app.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-gate-followup/README.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-gate-followup/baseline-coverage.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-gate-followup/baseline-summary.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-gate-followup/candidate-0798-comparison.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-gate-followup/candidate-0798-coverage.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-gate-followup/candidate-0798-summary.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-gate-followup/final-delta-cases.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-gate-followup/final-delta-report.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-gate-followup/final-delta-validation.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-gate-followup/integrated-player.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-gate-followup/lead-integrated-validation.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-gate-followup/lead-trace-integrity.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-gate-followup/manifest.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-gate-followup/publication-player.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-gate-followup/publication-supplement.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-gate-followup/selector-e018-receipt.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-gate-followup/surface-current-main-comparison.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-gate-followup/surface-incoming-receipt.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-gate-followup/surface-integrated-receipt.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-gate-followup/trace-recovery.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/README.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/affected-final.exit",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/affected-final.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/affected-final.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/affected.exit",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/affected.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/affected.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/build-app.exit",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/build-app.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/build-output.txt",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/contracts-first-fix.exit",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/contracts-first-fix.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/contracts-first-fix.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/contracts-red-actual.exit",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/contracts-red-actual.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/contracts-red-actual.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/contracts-red.exit",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/contracts-red.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/contracts-red.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/coverage-observability-green.exit",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/coverage-observability-green.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/coverage-observability-green.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/focused.exit",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/focused.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/focused.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/ghost-trace-red.exit",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/ghost-trace-red.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/ghost-trace-red.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/ghost-valid-audit-red.exit",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/ghost-valid-audit-red.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/ghost-valid-audit-red.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/native-reference.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/native-surface.exit",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/native-surface.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/native-surface.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/native-surface.mjs",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/observability-uxc.exit",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/observability-uxc.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/observability-uxc.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/representative-red.exit",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/representative-red.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/representative-red.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/summarize.py",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/summary.exit",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/summary.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/summary.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/typecheck-app.exit",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-fakedom-repair/typecheck-app.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-live-selector-fixture/README.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-merge-resolution-st_01a07ff5/README.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-merge-resolution-st_01a07ff5/composed-red.exit",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-merge-resolution-st_01a07ff5/composed-red.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-merge-resolution-st_01a07ff5/composed-red.ts.txt",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-merge-resolution-st_01a07ff5/diagnostics.txt",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-merge-resolution-st_01a07ff5/focused.exit",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-merge-resolution-st_01a07ff5/focused.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-merge-resolution-st_01a07ff5/previous-evidence.sha256.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-merge-resolution-st_01a07ff5/resolution.diff",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-merge-resolution-st_01a07ff5/staged-whitespace.exit",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-merge-resolution-st_01a07ff5/staged-whitespace.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-merge-resolution-st_01a07ff5/typecheck-app.exit",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-merge-resolution-st_01a07ff5/typecheck-app.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/acceptance-merge-resolution-st_01a07ff5/unrelated-checklist-delta.diff",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/map-ai-history-review/README.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/map-ai-history-review/browser-smoke.exit",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/map-ai-history-review/browser-smoke.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/map-ai-history-review/browser-smoke.mjs",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/map-ai-history-review/changed-file-diagnostics.exit",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/map-ai-history-review/changed-file-diagnostics.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/map-ai-history-review/green-tests.exit",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/map-ai-history-review/green-tests.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/map-ai-history-review/intermediate-tests.exit",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/map-ai-history-review/intermediate-tests.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/map-ai-history-review/red-inherited.exit",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/map-ai-history-review/red-inherited.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/map-ai-history-review/red-regressions.exit",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/map-ai-history-review/red-regressions.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/map-ai-history-review/typecheck-app.exit",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "output/evidence/map-ai-history-review/typecheck-app.log",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "package-lock.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "package.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "public/sw.js",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "reports/shop-stat-visibility-20260908/REVIEW.md",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "reports/shop-stat-visibility-20260908/assertion-table.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "reports/shop-stat-visibility-20260908/baseline/1024x768-inline.png",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "reports/shop-stat-visibility-20260908/baseline/320x240-inline.png",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "reports/shop-stat-visibility-20260908/baseline/640x480-inline.png",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "reports/shop-stat-visibility-20260908/shipping/00-normal-unequip-preview.png",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "reports/shop-stat-visibility-20260908/shipping/1024x768-detail-initial.png",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "reports/shop-stat-visibility-20260908/shipping/1024x768-inline.png",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "reports/shop-stat-visibility-20260908/shipping/1024x768-opener.png",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "reports/shop-stat-visibility-20260908/shipping/1024x768-return.png",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "reports/shop-stat-visibility-20260908/shipping/320x240-detail-initial.png",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "reports/shop-stat-visibility-20260908/shipping/320x240-detail-scroll-0.png",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "reports/shop-stat-visibility-20260908/shipping/320x240-detail-scroll-1.png",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "reports/shop-stat-visibility-20260908/shipping/320x240-detail-scroll-2.png",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "reports/shop-stat-visibility-20260908/shipping/320x240-detail-scroll-3.png",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "reports/shop-stat-visibility-20260908/shipping/320x240-detail-scroll-4.png",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "reports/shop-stat-visibility-20260908/shipping/320x240-detail-scroll-5.png",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "reports/shop-stat-visibility-20260908/shipping/320x240-detail-scroll-6.png",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "reports/shop-stat-visibility-20260908/shipping/320x240-inline.png",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "reports/shop-stat-visibility-20260908/shipping/320x240-opener.png",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "reports/shop-stat-visibility-20260908/shipping/320x240-return.png",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "reports/shop-stat-visibility-20260908/shipping/640x480-detail-initial.png",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "reports/shop-stat-visibility-20260908/shipping/640x480-detail-scroll-0.png",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "reports/shop-stat-visibility-20260908/shipping/640x480-inline.png",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "reports/shop-stat-visibility-20260908/shipping/640x480-opener.png",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "reports/shop-stat-visibility-20260908/shipping/640x480-return.png",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "scripts/audio-ai-descriptions-run.mjs",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "scripts/evidence-event-visual-render.mts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "scripts/lib/audioDelivery.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "scripts/lib/codexImageRuntime.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "scripts/lib/ohMyPiImageRuntime.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "scripts/oh-my-pi-worker.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "scripts/qa/acceptance-live-check.mjs",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "scripts/qa/acceptance-live-package.mjs",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "scripts/qa/acceptance-live-player.mjs",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "scripts/qa/acceptance-live.mjs",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "scripts/qa/ai-acceptance-compact.mjs",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "scripts/qa/appearance-preview-proof.mjs",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "scripts/qa/appearance-runtime-proof.mjs",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "scripts/qa/audio-preview-workbench.mjs",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "scripts/qa/character-asset-recovery.mjs",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "scripts/qa/functional-acceptance-smoke.mjs",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "scripts/qa/grok-r1-stale-approval.mjs",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "scripts/qa/grok-r2-npc-world.mjs",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "scripts/qa/image-options-settings.mjs",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "scripts/qa/issue693-audio.mjs",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "scripts/qa/issue693-boot-diagnostics.mjs",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "scripts/qa/issue693-diagnostics.mjs",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "scripts/qa/issue693-media-guard-probe.mjs",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "scripts/qa/issue693-media-guard.mjs",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "scripts/qa/issue693-media.mjs",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "scripts/qa/issue693-midi-authoring.mjs",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "scripts/qa/issue693-navigation.mjs",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "scripts/qa/issue693-validation-recovery.mjs",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "scripts/qa/issue693-validation.mjs",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "scripts/qa/runtime/character-appearance-sets.scenario.mjs",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "scripts/qa/runtime/event-battle-reliability.probe.mjs",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/ai/aiRecordDb.ts",
+      "retainedExact": false,
+      "manual": true
+    },
+    {
+      "path": "src/ai/eventAudioPrompt.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/ai/imageGenerationClient.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/ai/imageModelCatalog.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/ai/imageReferences.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/ai/independentReview.ts",
+      "retainedExact": false,
+      "manual": true
+    },
+    {
+      "path": "src/ai/mapConversationStore.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/ai/mapVisualEvidence.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/ai/originalContext.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/ai/requestCoverage.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/ai/toolImageCanvas.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/ai/toolImageEventSprites.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/ai/toolImageRenderer.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/ai/toolReadEvidence.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/assets/audioAiDescriptions.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/assets/audioAiDescriptions.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/assets/audioResourceCatalog.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/assets/bundled.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/assets/generatedAssetResourceResolver.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/assets/tileGraftImageCache.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/battle/battleBattlers.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/battle/runtime.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/CameraPanController.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/CameraScrollbars.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/EditScene.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/aiActivityNarration.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/aiBootIntent.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/cameraFocusViewport.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/cameraStability.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/characterAppearanceGeneration.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/characterAppearanceReferences.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/databaseActions.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/editSceneEventMarkers.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/editSceneRender.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/eventCommandFactory.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/eventCommands/quickAuthoringDefaults.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/eventDraftIssueDetails.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/eventDraftValidator.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/eventValidationDiagnostics.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/localDiagnosticReport.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/localDiagnostics.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/actorRecordView.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/aiActionMenu.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/aiChatResizeChrome.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/aiComposer.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/aiProposalCard.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/aiSettingsModal.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/appearanceBindingControl.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/audioDescriptionDetail.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/audioPreviewPlayer.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/audioPreviewSession.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/audioResourcePresentation.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/audioResourcePreview.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/audioTestDialog.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/clusterAiModal.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/database.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/databaseAiGenerateDialog.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/databaseAppearanceSlots.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/databaseAppearanceView.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/databaseModal.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/databaseResourcePickerDialog.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/databaseTabIcons.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/editor.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/eventEditor/commandBodyAdvanced.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/eventEditor/commandBodyCore.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/eventEditor/commandBodyDatabase.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/eventEditor/commandBodyFieldSpawn.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/eventEditor/commandBodyM2.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/eventEditor/commandEditDialog.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/eventEditor/commandInspector.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/eventEditor/commandList.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/eventEditor/commandPreview.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/eventEditor/conditionForm.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/eventEditor/customSelect.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/eventEditor/editorIcons.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/eventEditor/eventGraphicPreview.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/eventEditor/eventScriptModernViews.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/eventEditor/facesetPreview.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/eventEditor/moveRouteDialog.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/eventEditor/npcGraphicPicker.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/eventEditor/pageProps.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/eventEditor/previewAudio.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/eventEditor/previewSimulation.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/eventEditor/schemaCommandBody.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/eventEditor/types.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/eventEditor/validationActions.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/eventEditor/validationBell.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/localDiagnosticsDialog.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/mediaImportPersistence.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/resourceManager.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/resourceManagerMediaImport.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/resourceModal.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/panels/testPlayModal.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/regionTask/partialApplyCompose.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/regionTask/runRegionTask.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/tilesetImage.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/tools/applyChangesetToStore.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/tools/characterAppearanceTools.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/tools/toolRegistry.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/editor/ui/newProjectDialog.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/evals/runner.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/player/PlayScene.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/player/audio/audioEngine.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/player/commandBattle.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/player/eventSpriteResources.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/player/playBootDiagnostics.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/player/playSceneAutonomousSprites.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/player/playSceneBattle.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/player/playSceneFieldSpawns.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/player/playSceneInterpreter.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/player/playSceneMapCommands.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/player/playSceneMapRuntime.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/player/playSceneMovement.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/player/playSceneShopParts.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/player/player.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/player/playerSpriteResources.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/player/playerStatusMenuDetails.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/player/playerStatusMenuModel.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/player/runtimeDom.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/project/actorModel.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/project/authoredCommandIndex.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/project/authoredProjectBaseline.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/project/battleAdmission.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/project/characterAppearances.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/project/devProjectPersistence.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/project/io/characterAppearanceValidation.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/project/io/commandReferenceValidation.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/project/io/references.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/project/io/shapeCommandFields.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/project/io/shapeDatabaseFields.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/project/io/shapeEventFields.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/project/projectUrl.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/project/runtimeEventState.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/project/sessionActorCommands.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/project/storageQuota.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/project/types/database.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/project/types/events.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/project/world/index.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/project/world/review.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/styles/components/app-modal.css",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/styles/database/assistant-sticky-checklist.css",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/styles/database/character-appearances.css",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/styles/database/record-thumbs.css",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/styles/database/system-studio.css",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/styles/database/tabs-b-assistant-panel/05-structure-modal-overlays.css",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/styles/database/tabs-b-assistant-panel/18-assistant-deck.css",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/styles/editor/audio-test-dialog.css",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/styles/editor/event-editor.balanced.css",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/styles/editor/event-editor.command-preview.css",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/styles/editor/event-editor.command-preview/01-event-editor-modern-import.css",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/styles/editor/event-editor.command-preview/03-ecp-result-screen.css",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/styles/editor/event-editor.command-preview/04-ecp-variable-stage.css",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/styles/editor/local-diagnostics.css",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/styles/index.css",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/styles/resources/resource-manager.css",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/styles/runtime/playSurface.css",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/styles/runtime/shop.css",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/styles/shell/figma-editor/05-canvas-statusbar.css",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/util/diagnosticObserver.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "src/util/localDiagnosticSession.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/aiAppliedBudgetStop.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/aiApplyCommitCorrelation.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/aiAskRetainedDraft.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/aiAssistantAfterUx.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/aiAssistantTurnCleanup.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/aiAuthoredBaselineSurfaces.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/aiAutonomousRunSmoke.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/aiBlockedEventRelocation.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/aiBootIntent.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/aiChatObservability.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/aiChatPanelUxRepairs.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/aiChatSessionScope.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/aiComposerDeck.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/aiConversationHistoryModal.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/aiDeckResizeTransitionCss.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/aiEmptyExportFeedback.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/aiGateCommitRejection.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/aiImageSettings.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/aiMapContextPassabilityWiring.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/aiMilestoneTurnAccounting.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/aiNewGoalDraftRetirement.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/aiNewGoalEarlyOwnership.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/aiOutcomeApplyPolicy.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/aiOutcomeContinuationDelivery.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/aiOutcomeEntryOwnership.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/aiOutcomePresentation.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/aiPanelGlassResize.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/aiProposalCardUxd.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/aiRegionChatBoundary.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/aiRunOutcomeApply.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/aiRunOutcomeIntegration.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/aiRunOutcomeLifecycle.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/aiRunOutcomeOwnership.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/aiSettingsHistoryFocus.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/aiSpecGate.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/aiSpecGateHardening.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/aiStickyChecklist.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/aiUiEventContract.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/applyChangesetToStore.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/applyProposedProjectHouseProtection.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/assistantAcceptanceRequestBaseline.test.ts",
+      "retainedExact": false,
+      "manual": true
+    },
+    {
+      "path": "test/assistantAuthoredBaseline.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/assistantBackgroundReview.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/assistantFunctionalReviewIntegration.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/assistantIndependentReview.test.ts",
+      "retainedExact": false,
+      "manual": true
+    },
+    {
+      "path": "test/assistantIndependentReviewCapacity.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/assistantMapPreservationGuard.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/assistantMergedReadDelivery.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/assistantNativeReadDelivery.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/assistantOriginalContext.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/assistantP2ReviewIntegration.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/assistantReviewApprovalLifecycle.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/assistantReviewEvidenceOverflow.test.ts",
+      "retainedExact": false,
+      "manual": true
+    },
+    {
+      "path": "test/assistantTilesetVisualReview.test.ts",
+      "retainedExact": false,
+      "manual": true
+    },
+    {
+      "path": "test/audioAiDescriptionRunner.test.mjs",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/audioAiDescriptions.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/audioConnectivity.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/audioDeliveryHttp.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/audioDescriptionCommandSurfaces.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/audioDescriptionLifecycle.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/audioDescriptionPickerSurfaces.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/audioDescriptionToolStore.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/audioInventoryDelivery.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/audioPreviewSession.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/audioPreviewSurfaces.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/audioResourceCatalog.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/audioResourceSearchContract.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/authoredProjectBaseline.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/authoredSoftConfirmReviewEquality.test.ts",
+      "retainedExact": false,
+      "manual": true
+    },
+    {
+      "path": "test/authoredWorldReviewApplication.test.ts",
+      "retainedExact": false,
+      "manual": true
+    },
+    {
+      "path": "test/battleInitializationAdmission.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/battleProcessingCommandBody.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/battleResultTransitionFailure.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/cameraScrollbars.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/cameraStability.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/cc0AudioPlayback.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/characterAppearanceAssistant.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/characterAppearanceEditor.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/characterAppearanceGeneration.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/characterAppearanceLifecycle.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/characterAppearanceNarration.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/characterAppearancePreview.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/characterAppearanceReferences.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/characterAppearanceRuntime.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/characterAppearanceScenario.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/characterAppearanceSets.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/clusterAiModal.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/clusterAiModalHouseProtection.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/clusterAiModalImageFirst.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/clusterAiModalRangeClassify.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/codexImageWorker.node.test.mjs",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/codexImageWorker.preload.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/consumedApprovalReporting.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/conversationStore.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/databaseAiGenerateProviderNotice.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/databaseSidebarKeyboard.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/databaseSidebarNav.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/databaseSystemView.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/databaseTabIcons.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/devMediaPromotion.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/e2e/ai-map-history.spec.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/e2e/aiMapHistoryHarness.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/e2e/event-preview-paint-qa.spec.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/e2e/event-preview-state.spec.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/e2e/oprn-audio-test-dialog.spec.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/editSceneCameraFocus.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/evals.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/eventBattleAdmission.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/eventBattleFailure.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/eventDraftValidator.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/eventEditorFormSurface.baseline.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/eventEditorStagedState.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/eventPreviewPaintCssom.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/eventPreviewState.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/eventSpawnNumericProbe.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/eventValidationDiagnostics.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/eventValidationFieldAnchors.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/eventValidationNavigationContract.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/eventValidationRecoveryFields.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/eventValidationSelectFocus.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/fakeDom.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/fakeDomAudioContract.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/fakeDomInsertBefore.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/fakeDomNumericInput.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/fakeDomSelectContracts.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/fixtures/characterAppearanceProject.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/fixtures/eventEditorCommitProbe.baseline.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/fixtures/eventEditorCommitProbe.floor.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/fixtures/eventEditorConditionSurface.baseline.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/fixtures/eventEditorFormSurface.baseline.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/fixtures/eventEditorFormSurface.floor.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/fixtures/eventEditorInteractionSurface.baseline.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/fixtures/eventEditorInteractionSurface.floor.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/fixtures/interactionNoChangeAllowlist.json",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/functionalAcceptanceSession.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/functionalClarification.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/functionalPersistenceProof.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/helpers/audioDescriptionManager.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/houseDoorOpen.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/imageGenerationClient.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/independentReview.test.ts",
+      "retainedExact": false,
+      "manual": true
+    },
+    {
+      "path": "test/independentReviewEvidenceScale.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/independentReviewFixture.ts",
+      "retainedExact": false,
+      "manual": true
+    },
+    {
+      "path": "test/independentReviewLinkedMaps.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/independentReviewMapDeltas.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/independentReviewReferenceScope.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/issue693MediaGuard.node.test.mjs",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/llmRetry.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/localDiagnosticSession.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/localDiagnosticSources.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/localDiagnosticsWorkflow.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/mapConversationRemote.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/mapConversationStore.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/mapVisualTilesetDependency.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/mediaImportDurability.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/modalEscapeLayerGate.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/monsterAppearanceTransport.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/nameEntry.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/newProjectDialog.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/npcGraphicRecovery.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/ohMyPiComplete.bun.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/ohMyPiImageModelResolution.bun.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/originalContext.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/overInsertionCancel.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/playBootDiagnostics.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/playBootRecovery.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/playSceneAssetResilience.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/playSceneInterpreterCutsceneSkip.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/playerRunControls.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/projectResetTool.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/projectWikiApplication.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/projectWikiDelivery.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/projectWikiHistorySources.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/quickAuthoringSurface.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/regionTaskClip.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/regionTaskCompletedHouse.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/regionTaskHouseProtection.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/regionTaskLogExport.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/regionTaskRun.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/requestCoverage.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/runOutcomeApplyFixture.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/runtimeMovementStability.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/selectedEventTestModal.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/shopProcessingCommand.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/storePersistenceProof.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/studioBarActions.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/support/previewMedia.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/testPlayRunControls.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/toolImageEventAcceptanceSession.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/toolImageEventRender.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/toolImageGraftReadiness.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/toolImageRasterDom.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/toolReadDelivery.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/transactionalRemoteSourceLineage.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/unsupportedMidiAuthoring.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/uxcLoadFailure.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "test/weightedBranchUx.test.ts",
+      "retainedExact": true,
+      "manual": false
+    },
+    {
+      "path": "vite.config.ts",
+      "retainedExact": true,
+      "manual": false
+    }
+  ],
+  "shared_changes": [
+    {
+      "path": "docs/tool-catalog.md",
+      "manual": false,
+      "matchesOurs": false,
+      "matchesMain": false
+    },
+    {
+      "path": "openwiki/INDEX.md",
+      "manual": true,
+      "matchesOurs": false,
+      "matchesMain": false
+    },
+    {
+      "path": "openwiki/editor-ai-panel.md",
+      "manual": true,
+      "matchesOurs": false,
+      "matchesMain": false
+    },
+    {
+      "path": "openwiki/editor-ai-tools.md",
+      "manual": false,
+      "matchesOurs": false,
+      "matchesMain": false
+    },
+    {
+      "path": "openwiki/editor-observability.md",
+      "manual": false,
+      "matchesOurs": false,
+      "matchesMain": false
+    },
+    {
+      "path": "openwiki/editor-pre-edit-routing.md",
+      "manual": false,
+      "matchesOurs": false,
+      "matchesMain": false
+    },
+    {
+      "path": "openwiki/project-wiki.md",
+      "manual": false,
+      "matchesOurs": false,
+      "matchesMain": false
+    },
+    {
+      "path": "openwiki/runtime-project-schema.md",
+      "manual": false,
+      "matchesOurs": false,
+      "matchesMain": false
+    },
+    {
+      "path": "src/ai/assistantAcceptanceLedger.ts",
+      "manual": true,
+      "matchesOurs": false,
+      "matchesMain": false
+    },
+    {
+      "path": "src/ai/assistantSession.ts",
+      "manual": true,
+      "matchesOurs": false,
+      "matchesMain": false
+    },
+    {
+      "path": "src/ai/contextBuilder.ts",
+      "manual": false,
+      "matchesOurs": false,
+      "matchesMain": false
+    },
+    {
+      "path": "src/ai/conversationStore.ts",
+      "manual": true,
+      "matchesOurs": false,
+      "matchesMain": false
+    },
+    {
+      "path": "src/ai/intentDeclaration.ts",
+      "manual": false,
+      "matchesOurs": false,
+      "matchesMain": false
+    },
+    {
+      "path": "src/ai/intentDeclarationClient.ts",
+      "manual": false,
+      "matchesOurs": false,
+      "matchesMain": false
+    },
+    {
+      "path": "src/ai/llmClient.ts",
+      "manual": true,
+      "matchesOurs": false,
+      "matchesMain": false
+    },
+    {
+      "path": "src/editor/panels/aiChatPanel.ts",
+      "manual": true,
+      "matchesOurs": false,
+      "matchesMain": false
+    },
+    {
+      "path": "src/editor/panels/aiConversationHistoryModal.ts",
+      "manual": true,
+      "matchesOurs": false,
+      "matchesMain": false
+    },
+    {
+      "path": "src/editor/panels/aiStickyChecklist.ts",
+      "manual": true,
+      "matchesOurs": false,
+      "matchesMain": false
+    },
+    {
+      "path": "src/editor/panels/aiTurnRunner.ts",
+      "manual": false,
+      "matchesOurs": false,
+      "matchesMain": false
+    },
+    {
+      "path": "src/editor/projectWikiCoordinator.ts",
+      "manual": true,
+      "matchesOurs": false,
+      "matchesMain": false
+    },
+    {
+      "path": "src/editor/tools/queryTools.ts",
+      "manual": false,
+      "matchesOurs": false,
+      "matchesMain": false
+    },
+    {
+      "path": "src/player/dialogue.ts",
+      "manual": false,
+      "matchesOurs": false,
+      "matchesMain": false
+    },
+    {
+      "path": "src/player/interpreter.ts",
+      "manual": false,
+      "matchesOurs": false,
+      "matchesMain": false
+    },
+    {
+      "path": "src/player/interpreter/commandCatalog.ts",
+      "manual": false,
+      "matchesOurs": false,
+      "matchesMain": false
+    },
+    {
+      "path": "src/project/store.ts",
+      "manual": true,
+      "matchesOurs": false,
+      "matchesMain": false
+    },
+    {
+      "path": "src/project/supabaseProjectSync.ts",
+      "manual": true,
+      "matchesOurs": false,
+      "matchesMain": false
+    },
+    {
+      "path": "test/aiAssistantSession.test.ts",
+      "manual": true,
+      "matchesOurs": false,
+      "matchesMain": false
+    },
+    {
+      "path": "test/aiCompletionAccounting.test.ts",
+      "manual": true,
+      "matchesOurs": false,
+      "matchesMain": false
+    },
+    {
+      "path": "test/aiRunEndProof.test.ts",
+      "manual": true,
+      "matchesOurs": false,
+      "matchesMain": false
+    },
+    {
+      "path": "test/aiTurnAppliedAccounting.test.ts",
+      "manual": true,
+      "matchesOurs": false,
+      "matchesMain": false
+    },
+    {
+      "path": "test/aiWorkItemStall.test.ts",
+      "manual": true,
+      "matchesOurs": false,
+      "matchesMain": false
+    },
+    {
+      "path": "test/assistantAcceptanceSession.test.ts",
+      "manual": true,
+      "matchesOurs": false,
+      "matchesMain": false
+    },
+    {
+      "path": "test/assistantBatchCompletion.test.ts",
+      "manual": false,
+      "matchesOurs": false,
+      "matchesMain": false
+    },
+    {
+      "path": "test/assistantDependencyRetry.test.ts",
+      "manual": true,
+      "matchesOurs": false,
+      "matchesMain": false
+    },
+    {
+      "path": "test/assistantSessionIntent.test.ts",
+      "manual": false,
+      "matchesOurs": false,
+      "matchesMain": false
+    },
+    {
+      "path": "test/assistantVerificationContinuation.test.ts",
+      "manual": true,
+      "matchesOurs": false,
+      "matchesMain": false
+    },
+    {
+      "path": "test/assistantVisualEvidenceSession.test.ts",
+      "manual": true,
+      "matchesOurs": false,
+      "matchesMain": false
+    },
+    {
+      "path": "test/intentDeclarationClient.test.ts",
+      "manual": false,
+      "matchesOurs": false,
+      "matchesMain": false
+    },
+    {
+      "path": "test/npcRewardSession.test.ts",
+      "manual": true,
+      "matchesOurs": false,
+      "matchesMain": false
+    },
+    {
+      "path": "test/runOutcomeApplyFixture.ts",
+      "manual": true,
+      "matchesOurs": false,
+      "matchesMain": false
+    },
+    {
+      "path": "test/toolSchemaProviderCompat.test.ts",
+      "manual": true,
+      "matchesOurs": false,
+      "matchesMain": false
+    }
+  ],
+  "unexpected": []
+}

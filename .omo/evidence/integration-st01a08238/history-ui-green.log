@@ -1,0 +1,25 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiConversationRemoteHistory.test.ts test/aiConversationHistoryModal.test.ts test/aiChatSessionScope.test.ts test/projectWikiHistorySources.test.ts test/aiSettingsHistoryFocus.test.ts --maxWorkers=2 --minWorkers=1 --reporter=default --reporter=json --outputFile=.omo/evidence/integration-st01a08238/history-ui-green.json
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-main-integration-st01a08238
+
+ ✓ test/aiConversationRemoteHistory.test.ts (38 tests) 293ms
+ ✓ test/aiConversationHistoryModal.test.ts (32 tests) 140ms
+ ✓ test/projectWikiHistorySources.test.ts (1 test) 21ms
+ ✓ test/aiChatSessionScope.test.ts (18 tests) 7619ms
+   ✓ 새 대화 진입점 > Given an in-flight turn with a queued send When 새 대화 is clicked Then the outgoing turn cannot contaminate or replay into the new chat  2307ms
+   ✓ 프로젝트 전환 > Given an in-flight turn When the project identity changes Then it can only persist to its captured scope  1132ms
+   ✓ 프로젝트 전환 > Given the new project has its own saved conversation When the identity changes Then it is resumed instead of blanked  512ms
+   ✓ 턴 상황 스냅샷 > Given a turn on a map When it is recorded Then the audit entry carries map, viewport and selection  530ms
+   ✓ 턴 상황 스냅샷 > Given the user moves to another map When the next turn runs Then the transition is recorded and the system prompt follows  686ms
+   ✓ 턴 상황 스냅샷 > Given the same map across turns When turns run Then no transition noise is recorded  688ms
+ ✓ test/aiSettingsHistoryFocus.test.ts (18 tests) 378ms
+
+ Test Files  5 passed (5)
+      Tests  107 passed (107)
+   Start at  04:04:53
+   Duration  28.42s (transform 15.97s, setup 0ms, collect 38.23s, tests 8.45s, environment 354ms, prepare 391ms)
+
+JSON report written to /home/main/z-project/rpg-zzu-ai-main-integration-st01a08238/.omo/evidence/integration-st01a08238/history-ui-green.json

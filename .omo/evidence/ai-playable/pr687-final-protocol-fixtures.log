@@ -1,0 +1,52 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiRunOutcomeIntegration.test.ts test/assistantAcceptanceCost.test.ts test/aiRequiredOutcomes.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86
+
+ ✓ test/aiRunOutcomeIntegration.test.ts (7 tests) 1612ms
+   ✓ run outcome session boundaries > publishes one unassessed projection when a query returns  438ms
+   ✓ run outcome session boundaries > captures blocked execution when required work is skipped  677ms
+ ✓ test/assistantAcceptanceCost.test.ts (6 tests) 3914ms
+   ✓ bounded canonical project comparisons > compares shared project content once for same-content  375ms
+   ✓ bounded canonical project comparisons > compares shared project content once for changed-content  340ms
+   ✓ bounded canonical project comparisons > preserves late-adoption freshness when content changed=false  1522ms
+   ✓ bounded canonical project comparisons > preserves late-adoption freshness when content changed=true  1258ms
+ ✓ test/aiRequiredOutcomes.test.ts (39 tests) 20125ms
+   ✓ canonical requirements > keeps required skipped obligations when a replan tries to weaken them  756ms
+   ✓ canonical requirements > allows optional skipped work without labeling it verified  529ms
+   ✓ canonical requirements > fails closed for malformed declarations null  591ms
+   ✓ canonical requirements > fails closed for malformed declarations %j  599ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":[{"kind":"mapDimensions","target":{"mapId":"map_blank_start"},"width":99,"height":99}],"required":"false"}  636ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":[{"kind":"invented","passed":true}]}  645ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":null,"required":false}  659ms
+   ✓ canonical requirements > keeps a bare legacy scheduler plan unassessed  390ms
+   ✓ canonical requirements > assesses existing explicit acceptance without requiring the new field  603ms
+   ✓ canonical requirements > retains an unlinked required obligation when replan drops links=false  701ms
+   ✓ canonical requirements > retains an unlinked required obligation when replan drops links=true  636ms
+   ✓ canonical requirements > binds original text and scope at the host boundary despite fabricated source and withdrawal  604ms
+   ✓ canonical requirements > retains only the original user utterance through replan with instruction override=false  844ms
+   ✓ canonical requirements > retains only the original user utterance through replan with instruction override=true  750ms
+   ✓ canonical requirements > withdraws only the named current requirement through the user-only API  615ms
+   ✓ canonical requirements > keeps sibling obligations when the user withdraws just one  600ms
+   ✓ canonical requirements > rejects model tool withdrawal even with fabricated user provenance  626ms
+   ✓ canonical requirements > rejects stale goal withdrawal actions  602ms
+   ✓ canonical requirements > does not erase old obligations on a model resetsContext claim  701ms
+   ✓ canonical requirements > archives an incomplete goal when the user explicitly starts a new goal  803ms
+   ✓ exact scoped verdict authority > does not verify an unapplied draft from a passing scoped verdict  320ms
+   ✓ exact scoped verdict authority > retires scoped verdicts after applied content changes even if later undone  959ms
+   ✓ exact scoped verdict authority > rejects pre-declaration evidence after an external rebase  1096ms
+   ✓ exact scoped verdict authority > credits a real scoped tool response through the session dispatcher  562ms
+   ✓ question-safe continuation > preserves blocked work and counters for ask  473ms
+   ✓ question-safe continuation > preserves blocked work and counters for question  442ms
+   ✓ question-safe continuation > preserves repeated failure counters while answering a question  832ms
+   ✓ question-safe continuation > does not reactivate from fabricated continuation source  463ms
+   ✓ question-safe continuation > reactivates blocked work only with explicit user resume  555ms
+   ✓ question-safe continuation > retains goal evidence and repair counters during ask  581ms
+
+ Test Files  3 passed (3)
+      Tests  52 passed (52)
+   Start at  02:07:25
+   Duration  30.51s (transform 9.55s, setup 0ms, collect 21.70s, tests 25.65s, environment 1ms, prepare 363ms)
+

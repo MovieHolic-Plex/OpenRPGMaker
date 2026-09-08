@@ -25,7 +25,9 @@ function sourceMap(sources: readonly WikiSource[]): ReadonlyMap<string, WikiSour
 
 /** Parse the model boundary once. No model-supplied origin, locks, or source excerpts are accepted. */
 export function parseProjectWikiPatch(value: unknown, project: Project, sources: readonly WikiSource[]): ProjectWikiPatch {
-  const json = typeof value === "string" ? value.trim().replace(/^```(?:json)?\s*\n([\s\S]*?)\n```$/u, "$1") : value;
+  // Accept prose around one fence, but never discard competing objects, arrays or fences.
+  // Parse the entire payload below; malformed JSON and invalid records still fail atomically.
+  const json = typeof value === "string" ? value.trim().replace(/^[^`{}\[\]]*```(?:json)?\s*\n([\s\S]*?)\n```[^`{}\[\]]*$/u, "$1") : value;
   const root = record(typeof json === "string" ? JSON.parse(json) : json);
   onlyKeys(root, ["upserts"]);
   if (!Array.isArray(root.upserts) || root.upserts.length > 32) throw new ProjectFormatError("Wiki upserts must be an array of at most 32 documents");

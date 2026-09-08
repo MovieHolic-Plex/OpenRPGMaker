@@ -180,6 +180,9 @@ export interface Frame {
 }
 
 export interface InterpreterState {
+  /** Host-owned proof hooks. Absent in ordinary game execution. */
+  beforeCommand?: (command: Command) => void;
+  onUnverified?: (reason: string) => never;
   continueAfterTransfer?: boolean;
   stack: Frame[];
   waitUntil?: { elapsedMs: number; intervalMs: number };
@@ -200,6 +203,8 @@ export interface InterpreterState {
 }
 
 export interface InterpreterOptions {
+  readonly beforeCommand?: (command: Command) => void;
+  readonly onUnverified?: (reason: string) => never;
   /** An admitted detection command list may continue after its own transfer; legacy callers still terminate. */
   readonly continueAfterTransfer?: boolean;
   readonly getEventPositions?: () => import("@/project/runtimeEventState").RuntimeEventPositions;

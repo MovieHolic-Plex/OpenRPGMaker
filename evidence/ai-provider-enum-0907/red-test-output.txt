@@ -1,0 +1,134 @@
+$ bun test test/ohMyPiNumericEnum.bun.test.ts test/ohMyPiImageTransport.bun.test.ts
+bun test v1.4.2 (744846f84)
+
+test/ohMyPiNumericEnum.bun.test.ts:
+(pass) numeric tool enums at the real Antigravity SDK wire boundary > captured enum paths match the live registry and retain strict numeric membership [3.77ms]
+(pass) numeric tool enums at the real Antigravity SDK wire boundary > Opus text-only control reaches the real fetch and response parser [12.74ms]
+[
+  {
+    "model": "gemini-3.7-flash",
+    "result": "fulfilled",
+    "requests": 1,
+    "wireModel": "gemini-3.7-flash-low",
+    "toolCount": 48,
+    "enums": [
+      {
+        "path": "author_house.properties.houses.items.properties.stories",
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "path": "author_house.properties.stories",
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "path": "start_interior_room_session.properties.exterior.properties.stories",
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "path": "run_interior_room_pipeline.properties.exterior.properties.stories",
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "violations": []
+  },
+  {
+    "model": "claude-opus-4-6",
+    "result": "rejected",
+    "requests": 1,
+    "wireModel": "claude-opus-4-6-thinking",
+    "toolCount": 48,
+    "enums": [
+      {
+        "path": "author_house.properties.houses.items.properties.stories",
+        "type": "integer",
+        "enum": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "path": "author_house.properties.stories",
+        "type": "integer",
+        "enum": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "path": "start_interior_room_session.properties.exterior.properties.stories",
+        "type": "integer",
+        "enum": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "path": "run_interior_room_pipeline.properties.exterior.properties.stories",
+        "type": "integer",
+        "enum": [
+          1,
+          2,
+          3
+        ]
+      }
+    ],
+    "violations": [
+      "request.tools[0].functionDeclarations[0].parameters.properties[houses].items.properties[stories].enum[0]: expected TYPE_STRING, received 1",
+      "request.tools[0].functionDeclarations[0].parameters.properties[houses].items.properties[stories].enum[1]: expected TYPE_STRING, received 2",
+      "request.tools[0].functionDeclarations[0].parameters.properties[houses].items.properties[stories].enum[2]: expected TYPE_STRING, received 3",
+      "request.tools[0].functionDeclarations[0].parameters.properties[stories].enum[0]: expected TYPE_STRING, received 1",
+      "request.tools[0].functionDeclarations[0].parameters.properties[stories].enum[1]: expected TYPE_STRING, received 2",
+      "request.tools[0].functionDeclarations[0].parameters.properties[stories].enum[2]: expected TYPE_STRING, received 3",
+      "request.tools[0].functionDeclarations[18].parameters.properties[exterior].properties[stories].enum[0]: expected TYPE_STRING, received 1",
+      "request.tools[0].functionDeclarations[18].parameters.properties[exterior].properties[stories].enum[1]: expected TYPE_STRING, received 2",
+      "request.tools[0].functionDeclarations[18].parameters.properties[exterior].properties[stories].enum[2]: expected TYPE_STRING, received 3",
+      "request.tools[0].functionDeclarations[20].parameters.properties[exterior].properties[stories].enum[0]: expected TYPE_STRING, received 1",
+      "request.tools[0].functionDeclarations[20].parameters.properties[exterior].properties[stories].enum[1]: expected TYPE_STRING, received 2",
+      "request.tools[0].functionDeclarations[20].parameters.properties[exterior].properties[stories].enum[2]: expected TYPE_STRING, received 3"
+    ]
+  }
+]
+146 |   errorStatus?: number;
+147 |   stopReason?: string;
+148 |   model?: string;
+149 | }) {
+150 |   if (message.errorMessage || message.stopReason === "error" || message.stopReason === "aborted") {
+151 |     const err = new Error(message.errorMessage ?? `Provider completion ${message.stopReason}`) as Error & { status?: number };
+                          ^
+error: Cloud Code Assist API error (400): {"error":{"code":400,"status":"INVALID_ARGUMENT","message":"request.tools[0].functionDeclarations[0].parameters.properties[houses].items.properties[stories].enum[0]: expected TYPE_STRING, received 1\nrequest.tools[0].functionDeclarations[0].parameters.properties[houses].items.properties[stories].enum[1]: expected TYPE_STRING, received 2\nrequest.tools[0].functionDeclarations[0].parameters.properties[houses].items.properties[stories].enum[2]: expected TYPE_STRING, received 3\nrequest.tools[0].functionDeclarations[0].parameters.properties[stories].enum[0]: expected TYPE_STRING, received 1\nrequest.tools[0].functionDeclarations[0].parameters.properties[stories].enum[1]: expected TYPE_STRING, received 2\nrequest.tools[0].functionDeclarations[0].parameters.properties[stories].enum[2]: expected TYPE_STRING, received 3\nrequest.tools[0].functionDeclarations[18].parameters.properties[exterior].properties[stories].enum[0]: expected TYPE_STRING, received 1\nrequest.tools[0].functionDeclarations[18].parameters.properties[exterior].properties[stories].enum[1]: expected TYPE_STRING, received 2\nrequest.tools[0].functionDeclarations[18].parameters.properties[exterior].properties[stories].enum[2]: expected TYPE_STRING, received 3\nrequest.tools[0].functionDeclarations[20].parameters.properties[exterior].properties[stories].enum[0]: expected TYPE_STRING, received 1\nrequest.tools[0].functionDeclarations[20].parameters.properties[exterior].properties[stories].enum[1]: expected TYPE_STRING, received 2\nrequest.tools[0].functionDeclarations[20].parameters.properties[exterior].properties[stories].enum[2]: expected TYPE_STRING, received 3"}}
+ status: 400,
+
+      at assistantToOpenAI (/home/main/z-project/rpg-zzu-ai-provider-enum-0907/scripts/lib/ohMyPiPiAiRuntime.ts:151:21)
+      at completeProvider (/home/main/z-project/rpg-zzu-ai-provider-enum-0907/scripts/lib/ohMyPiPiAiRuntime.ts:228:22)
+(fail) numeric tool enums at the real Antigravity SDK wire boundary > all 48 captured tools retain numeric enum constraints in Gemini and Opus CCA requests [139.55ms]
+
+test/ohMyPiImageTransport.bun.test.ts:
+(pass) companion image delivery at the real provider request seam > preserves labeled PNG bytes for the default model or alias gemini-3.7-flash [2.51ms]
+(pass) companion image delivery at the real provider request seam > preserves labeled PNG bytes for the default model or alias gemini-3.7-flash-tiered [1.28ms]
+(pass) companion image delivery at the real provider request seam > preserves labeled PNG bytes for the default model or alias gemini-3.7-flash-low [0.84ms]
+(pass) companion image delivery at the real provider request seam > preserves multiple images and label ordering on google-antigravity wire [1.42ms]
+(pass) companion image delivery at the real provider request seam > preserves multiple images and label ordering on openai-codex wire [8.52ms]
+(pass) companion image delivery at the real provider request seam > rejects malformed or unsupported image URL https://example.invalid/map.png before outbound fetch [0.64ms]
+(pass) companion image delivery at the real provider request seam > rejects malformed or unsupported image URL data:image/svg+xml;base64,PHN2Zy8+ before outbound fetch [0.26ms]
+(pass) companion image delivery at the real provider request seam > rejects malformed or unsupported image URL data:image/png;base64, before outbound fetch [0.07ms]
+(pass) companion image delivery at the real provider request seam > rejects malformed or unsupported image URL data:image/png;base64,!!!! before outbound fetch [0.05ms]
+(pass) companion image delivery at the real provider request seam > rejects malformed or unsupported image URL data:image/png;base64,YQ= before outbound fetch [0.04ms]
+(pass) companion image delivery at the real provider request seam > rejects malformed or unsupported image URL data:image/png;base64,YR== before outbound fetch [0.05ms]
+(pass) companion image delivery at the real provider request seam > rejects image roles, malformed parts and nonvision models instead of dropping them [1.00ms]
+(pass) companion image delivery at the real provider request seam > accepts JPEG/WebP MIME bytes without relabeling or transcoding [259.33ms]
+(pass) companion image delivery at the real provider request seam > rejects the completion when the image-bearing provider request fails [10.32ms]
+(pass) companion image delivery at the real provider request seam > parses acknowledgement positions atomically and refuses malformed siblings [0.36ms]
+
+ 17 pass
+ 1 fail
+ 125 expect() calls
+Ran 18 tests across 2 files. [1.92s]
+
+EXIT_STATUS=1

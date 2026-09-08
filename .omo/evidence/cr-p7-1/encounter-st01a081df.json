@@ -1,0 +1,195 @@
+{
+  "task": "st_01a081df",
+  "base": "51eb50a9573632d7a5efa175ea92a9b2f20c2f2c",
+  "scope": "Disclosed offline recorded-model fixture, native session dispatcher; no game generation or network",
+  "red": {
+    "checkId": "acceptance-1:acceptance-contract:13",
+    "status": "passed",
+    "initialGold": 11,
+    "finalState": {
+      "farmPlots": {},
+      "makerInstances": {},
+      "mapId": "map_blank_start",
+      "x": 10,
+      "y": 1,
+      "camera": {
+        "cx": 168,
+        "cy": 32,
+        "session": {
+          "mode": "follow",
+          "target": {
+            "kind": "player"
+          }
+        }
+      },
+      "lightingAmbient": 0,
+      "lightCount": 0,
+      "weatherKind": "none",
+      "animationPlaying": false,
+      "fieldSpawnCount": 0,
+      "spawnedCount": 0,
+      "followerCount": 0,
+      "followers": [],
+      "picturesVisible": [],
+      "messages": [
+        "잠겨 있습니다."
+      ],
+      "bgm": "cc0-bgm-rtp-fld-003",
+      "gameOver": false,
+      "endingsReached": [
+        "review_extra_battle_event",
+        "ending_escape"
+      ],
+      "cutsceneLocked": false,
+      "switchesOn": [],
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0
+      },
+      "gold": 131,
+      "inventory": {},
+      "ownedMonsterCounts": {},
+      "monsterParty": [],
+      "monsterBox": [],
+      "friendship": {},
+      "playTimeSeconds": 0
+    },
+    "interactions": [
+      {
+        "stepIndex": 2,
+        "mapId": "map_blank_start",
+        "eventId": "ev_door"
+      },
+      {
+        "stepIndex": 5,
+        "mapId": "map_blank_start",
+        "eventId": "ev_door"
+      },
+      {
+        "stepIndex": 7,
+        "mapId": "map_blank_start",
+        "eventId": "ev_door"
+      }
+    ],
+    "encounters": [
+      "random encounter troop_slime: victory",
+      "random encounter troop_slime: victory",
+      "random encounter troop_slime: victory",
+      "random encounter troop_slime: victory",
+      "random encounter troop_slime: victory",
+      "random encounter troop_slime: victory",
+      "random encounter troop_slime: victory"
+    ],
+    "resolutions": [
+      {
+        "checkId": "acceptance-1:acceptance-contract:13",
+        "revisionId": "approach-revision_dfd2ba97-6992-40c1-bd32-a922ca9d0af4",
+        "attemptId": "attempt-2",
+        "contentRevision": 0
+      }
+    ]
+  },
+  "green": {
+    "success": true,
+    "files": 7,
+    "tests": 172,
+    "failed": 0,
+    "pending": 0
+  },
+  "ui": {
+    "ok": true,
+    "actions": [
+      "collapse-chat",
+      "expand-checklist",
+      "expand-original-criterion-bundle",
+      "review-approach",
+      "confirm-approach",
+      "restore-chat",
+      "send-normal-verification"
+    ],
+    "reviewHit": {
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "box": {
+        "x": 363,
+        "y": 411,
+        "width": 90.93333435058594,
+        "height": 32,
+        "top": 411,
+        "right": 453.93333435058594,
+        "bottom": 443,
+        "left": 363
+      },
+      "hit": true
+    },
+    "confirmHit": {
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "box": {
+        "x": 363,
+        "y": 411.5,
+        "width": 105.33332824707031,
+        "height": 32,
+        "top": 411.5,
+        "right": 468.3333282470703,
+        "bottom": 443.5,
+        "left": 363
+      },
+      "hit": true
+    },
+    "approvedRevisionFromNormalRequest": "approach-revision_385261eb-b376-4930-bfef-79c0584df58d",
+    "resolutions": [
+      {
+        "checkId": "acceptance-1:acceptance-contract:13",
+        "revisionId": "approach-revision_385261eb-b376-4930-bfef-79c0584df58d",
+        "attemptId": "attempt-2",
+        "contentRevision": 0
+      }
+    ],
+    "newSessionCleared": true,
+    "routeErrors": [],
+    "consoleErrors": [
+      "[autosave] 자동 저장 실패 — 톱바 저장 상태 칩에 노출한다 JSHandle@object"
+    ]
+  },
+  "sha256": {
+    "output/evidence/cr-p7-1/encounter-st01a081df/red.log": "89209d3848ee8e407b768d7cffe48cbe745d6eb2017fa3ff7f9bc91bfaa35b31",
+    "output/evidence/cr-p7-1/encounter-st01a081df/native-wrong-credit.json": "b56bf77067310b4ec43c3b3baa17076d33f021cf608abc9050fe71dbf97c976c",
+    "output/evidence/cr-p7-1/encounter-st01a081df/native-wrong-credit.log": "b32647b6eb85507d228a9b1b625da9ac9fe81883c805653ff0b6ff51acadbdd4",
+    "output/evidence/cr-p7-1/encounter-st01a081df/native-wrong-credit.probe.ts": "8842c853926cbdb1f713a65d69cd96b716d5a5161f46edd0882be8bbd001ce91",
+    "output/evidence/cr-p7-1/encounter-st01a081df/green.log": "b3f5858d546a5bc92e2c5fb51159926e3edb51f534d1cd48b9809be012496a0e",
+    "output/evidence/cr-p7-1/encounter-st01a081df/green.json": "25755d6c3e6a74858f5e22ca871a09159f3a86909f133904a98088450ae02d6b",
+    "output/evidence/cr-p7-1/encounter-st01a081df/final-green.log": "eab47639cdb28f3b4ff7bd967c89e1b82fb3ed207bcf62dacc79f1a64784f0f5",
+    "output/evidence/cr-p7-1/encounter-st01a081df/final-green.json": "3aaa98b0d9edafd799bcb96f9b8296dafa93f6179f34e57dcbdd730ec63dd6ca",
+    "output/evidence/cr-p7-1/encounter-st01a081df/typecheck.log": "9e2e881b46f10347e10261b098fd6171273d8f45b9a5d52fc81a8473a713bdfe",
+    "output/evidence/cr-p7-1/encounter-st01a081df/changed-test-types.log": "3967b3f54c7732f1573058f1b19ac75b796c583e91299551eb251bba1985ca00",
+    "output/evidence/cr-p7-1/encounter-st01a081df/changed-test-types-final.log": "6f29ef2adeaeca4d08f3df83d295fb4441e6f56c27fc09437e9aa9deddf5eb42",
+    "output/evidence/cr-p7-1/encounter-st01a081df/ui.log": "a8bb04d52abf7747e2d24b54d1a4a2d48e89910ace7cc694ef2559d6d10cb4cf",
+    "output/evidence/cr-p7-1/encounter-st01a081df/ui/browser-green/report.json": "0fbba172e9e71b10c5617a95aff9699666bb051791085881155a6f69ede2fa71",
+    "output/evidence/cr-p7-1/encounter-st01a081df/ui/browser-green/review-action-1024.png": "2b1649115f6e08d637e5010a9570e35d587d4c1e26fce24c12d5b34a348df677",
+    "output/evidence/cr-p7-1/encounter-st01a081df/ui/browser-green/preview.png": "bc09ee3085c4503033d6d3bead839e71333c7547e5307530f2f5e08ff9627c93",
+    "output/evidence/cr-p7-1/encounter-st01a081df/verified-code.diff": "cb19f824aefd190bddd49ccf84e1dd14dde73dbe01252732df516387b827235a"
+  }
+}

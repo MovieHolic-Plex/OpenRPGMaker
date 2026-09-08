@@ -1,4 +1,7 @@
 import { buildEdgeCornerVariantMap } from "@/project/defaults/autotileEngine";
+import { interiorRoomTileGroups } from "./interiorRoomGroups";
+import { hasInteriorLongTableOverride, migrateLegacyInteriorLongTable } from "./interiorLongTableLegacy";
+import { hasInteriorCabinetOverride, repairLegacyInteriorCabinetKit } from "@/project/defaults/interiorTransparentPropLayerRepair";
 import {
   createDarkWallAutotileGroup,
   DARK_WALL_AUTOTILE_GROUP_ID,
@@ -338,7 +341,9 @@ export function applyEasyRpgThemeMetadataPacks(tileset: TilesetDef): boolean {
     const terrain = seedWorldTerrainAutotiles(tileset);
     return coast || terrain || seeded;
   }
-  let changed = applyThemeMetadataPack(tileset, pack);
+  // Inspect legacy provenance before metadata seeding can obscure an override.
+  let changed = repairLegacyInteriorCabinetKit(tileset);
+  changed = applyThemeMetadataPack(tileset, pack) || changed;
   if (pack.textureKey === INTERIOR_TEXTURE_KEY) {
     // 그룹 밖 타일 시드 + 옛 팩 개정의 잔존 라벨 청소(그룹 순회는 group.tileIds만 돌기 때문).
     changed = seedInteriorUngroupedTileMeta(tileset) || changed;
@@ -403,44 +408,38 @@ function applyThemeMetadataPack(tileset: TilesetDef, pack: ThemeMetadataPack): b
     tileIds: [...group.tileIds],
     patternGrammar: clonePattern(group.patternGrammar),
   }));
+  return (pack.textureKey === INTERIOR_TEXTURE_KEY
+    ? ensureInteriorProjectGroups(tileset)
+    : ensureProjectGroups(tileset, groups)) || changed;
+}
+
+/** Records are authored state; an ID/prefix or source label is not replacement authority. */
+function ensureProjectGroups(tileset: TilesetDef, desired: readonly TileGroupMetadata[]): boolean {
   const current = tileset.tileGroups ?? [];
-  const usedGroupIds = new Set(groups.map((group) => group.id));
-  const preserved: TileGroupMetadata[] = [];
-  for (const group of current.filter((candidate) => !isPackOwnedGroup(candidate, pack))) {
-    const preservedGroup = preserveUserPrefixCollision(group, pack, usedGroupIds);
-    usedGroupIds.add(preservedGroup.id);
-    preserved.push(preservedGroup);
-  }
-  const next = [...preserved, ...groups];
-  if (JSON.stringify(current) !== JSON.stringify(next)) {
-    tileset.tileGroups = next;
-    changed = true;
-  }
-  return changed;
+  const ids = new Set(current.map(group => group.id));
+  const suppressed = new Set(tileset.suppressedHarnessGroupIds ?? []);
+  const missing = desired.filter(group => !ids.has(group.id) && !suppressed.has(group.id));
+  if (missing.length === 0) return false;
+  tileset.tileGroups = [...current, ...missing];
+  return true;
 }
 
-function isPackOwnedGroup(group: TileGroupMetadata, pack: ThemeMetadataPack): boolean {
-  return group.id.startsWith(pack.prefix) && group.source === "bundled-default";
-}
-
-function preserveUserPrefixCollision(
-  group: TileGroupMetadata,
-  pack: ThemeMetadataPack,
-  usedGroupIds: ReadonlySet<string>
-): TileGroupMetadata {
-  if (!group.id.startsWith(pack.prefix) || !usedGroupIds.has(group.id)) return group;
-  let suffix = 1;
-  let id = `${group.id}-user-preserved`;
-  while (usedGroupIds.has(id)) {
-    suffix += 1;
-    id = `${group.id}-user-preserved-${suffix}`;
-  }
-  return { ...group, id };
+/** Shared PROJECT-layer composition; supplemental records never seed per-tile runtime contracts. */
+export function ensureInteriorProjectGroups(tileset: TilesetDef): boolean {
+  if (!isInteriorPackTileset(tileset)) return false;
+  const groups = INTERIOR_HARNESS_GROUPS.map(({ passage: _passage, repeatability: _repeatability, ...group }) => ({
+    ...group, tileIds: [...group.tileIds], patternGrammar: clonePattern(group.patternGrammar),
+  }));
+  const supplemental = interiorRoomTileGroups();
+  const migrated = migrateLegacyInteriorLongTable(tileset, supplemental.find(group => group.id.endsWith("-tavern-table"))!);
+  return ensureProjectGroups(tileset, [...groups, ...supplemental]) || migrated;
 }
 
 function applyTileContract(tileset: TilesetDef, group: PackHarnessGroup, tile: number): boolean {
   if (tile < 0 || tile >= tileset.count) return false;
   const meta = tileset.tileMeta?.[tile];
+  if ((tile === 325 || tile === 326 || tile === 327) && hasInteriorLongTableOverride(tileset)) return false;
+  if (isInteriorPackTileset(tileset) && (tile === 148 || tile === 178) && hasInteriorCabinetOverride(tileset)) return false;
   if (chipsetLabelCorrection(tileset.image.id, tile) && (meta?.origin === "user" || meta?.locked || tileset.tileGrafts?.some(graft => graft.targetTile === tile))) return false;
   if (meta?.userLocked === true || meta?.source === "user") return setTileRuntimeContract(tileset, tile, group, meta);
   // 실내 팩: 라벨·태그·통행성은 타일별 큐레이션 정본에서, 레이어는 그룹에서.

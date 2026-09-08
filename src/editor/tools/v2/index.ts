@@ -10,10 +10,10 @@ export const V1_TILE_SUPERSEDED: ReadonlyMap<string, string> = new Map([
   ["scatter_object", "place_props"],
   // build_house, preview_house: construction route manifest에서 관리 (toolRegistry.ts)
   ["stamp_structure", "author_house"],
+  // set_tile_passability remains active: physical passage is not semantic vocabulary authoring.
   // 지식 쓰기: 승인 어휘
   ["set_tile_metadata", "propose_tile_vocabulary"],
   ["set_tile_rules", "propose_tile_vocabulary"],
-  ["set_tile_passability", "propose_tile_vocabulary"],
   ["upsert_tile_group", "propose_tile_vocabulary"],
   ["delete_tile_group", "propose_tile_vocabulary"],
   ["set_group_junction", "propose_tile_vocabulary"],

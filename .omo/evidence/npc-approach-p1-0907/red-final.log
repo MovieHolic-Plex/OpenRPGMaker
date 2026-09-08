@@ -1,0 +1,175 @@
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-npc-prerequisite-0907
+
+ ❯ test/npcApproach.test.ts (21 tests | 8 failed) 7716ms
+   × bound NPC interactions before the protected claim snapshot > rejects early gold equally on host and explicit approaches 276ms
+     → {"ok":true,"evidence":[{"target":{"mapId":"map_blank_start","eventId":"ev_chief"},"phase":"repeat","instructions":4,"movementSteps":2,"claim":{"gold":20,"inventory":{},"monsters":{}},"repeat":{"gold":0,"inventory":{},"monsters":{}},"final":{"gold":77,"inventory":{},"monsters":{}}}]}: expected true to be false // Object.is equality
+   × bound NPC interactions before the protected claim snapshot > rejects early item equally on host and explicit approaches 217ms
+     → {"ok":true,"evidence":[{"target":{"mapId":"map_blank_start","eventId":"ev_chief"},"phase":"repeat","instructions":4,"movementSteps":2,"claim":{"gold":0,"inventory":{"item_potion":20},"monsters":{}},"repeat":{"gold":0,"inventory":{"item_potion":0},"monsters":{}},"final":{"gold":37,"inventory":{"item_potion":40},"monsters":{}}}]}: expected true to be false // Object.is equality
+   × bound NPC interactions before the protected claim snapshot > rejects early monster equally on host and explicit approaches 197ms
+     → {"ok":true,"evidence":[{"target":{"mapId":"map_blank_start","eventId":"ev_chief"},"phase":"repeat","instructions":42,"movementSteps":2,"claim":{"gold":0,"inventory":{},"monsters":{"species_leafling":20}},"repeat":{"gold":0,"inventory":{},"monsters":{"species_leafling":0}},"final":{"gold":37,"inventory":{},"monsters":{"species_leafling":40}}}]}: expected true to be false // Object.is equality
+   ✓ bound NPC interactions before the protected claim snapshot > accepts zero early gold then exact +20 / 0 on both approaches  381ms
+   ✓ bound NPC interactions before the protected claim snapshot > accepts zero early item then exact +20 / 0 on both approaches  371ms
+   ✓ bound NPC interactions before the protected claim snapshot > accepts zero early monster then exact +20 / 0 on both approaches  345ms
+   × bound NPC interactions before the protected claim snapshot > rejects negative early gold delta, not just extra payment 167ms
+     → {"ok":true,"evidence":[{"target":{"mapId":"map_blank_start","eventId":"ev_chief"},"phase":"repeat","instructions":4,"movementSteps":2,"claim":{"gold":20,"inventory":{"item_potion":0},"monsters":{}},"repeat":{"gold":0,"inventory":{"item_potion":0},"monsters":{}},"final":{"gold":56,"inventory":{"item_potion":1},"monsters":{}}}]}: expected true to be false // Object.is equality
+   × bound NPC interactions before the protected claim snapshot > rejects negative early item delta, not just extra payment 178ms
+     → {"ok":true,"evidence":[{"target":{"mapId":"map_blank_start","eventId":"ev_chief"},"phase":"repeat","instructions":4,"movementSteps":2,"claim":{"gold":0,"inventory":{"item_potion":20},"monsters":{}},"repeat":{"gold":0,"inventory":{"item_potion":0},"monsters":{}},"final":{"gold":37,"inventory":{"item_potion":20},"monsters":{}}}]}: expected true to be false // Object.is equality
+   × bound NPC interactions before the protected claim snapshot > checks every touch within one walk, explicit=false 168ms
+     → {"ok":true,"evidence":[{"target":{"mapId":"map_blank_start","eventId":"ev_chief"},"phase":"repeat","instructions":6,"movementSteps":2,"claim":{"gold":20,"inventory":{},"monsters":{}},"repeat":{"gold":0,"inventory":{},"monsters":{}},"final":{"gold":57,"inventory":{},"monsters":{}}}]}: expected true to be false // Object.is equality
+   × bound NPC interactions before the protected claim snapshot > checks every touch within one walk, explicit=true 171ms
+     → {"ok":true,"evidence":[{"target":{"mapId":"map_blank_start","eventId":"ev_chief"},"phase":"repeat","instructions":6,"movementSteps":2,"claim":{"gold":20,"inventory":{},"monsters":{}},"repeat":{"gold":0,"inventory":{},"monsters":{}},"final":{"gold":57,"inventory":{},"monsters":{}}}]}: expected true to be false // Object.is equality
+   ✓ bound NPC interactions before the protected claim snapshot > allows an unrelated prerequisite chest's legitimate gold reward 174ms
+   ✓ bound NPC interactions before the protected claim snapshot > allows an unrelated prerequisite chest's legitimate item reward 165ms
+   ✓ bound NPC interactions before the protected claim snapshot > allows an unrelated prerequisite chest's legitimate monster reward 170ms
+   ✓ bound NPC interactions before the protected claim snapshot > does not ban unrequested components on the early bound-NPC interaction 208ms
+   ✓ bound NPC interactions before the protected claim snapshot > retains protected foreign-event denial on host approach 202ms
+   ✓ bound NPC interactions before the protected claim snapshot > retains protected transfer denial on host approach without banning legitimate prelude transfers  358ms
+   ✓ bound NPC interactions before the protected claim snapshot > keeps ordinary scene semantics: 37 +20 touch +20 claim +0 repeat =77 140ms
+   × bound NPC interactions before the protected claim snapshot > real AssistantSession rejects duplicate approach payment at tool and final closure, explicit=false 963ms
+     → {"ok":true,"summary":"NPC reward prerequisite replay verified","data":{"executed":true,"requirementIndex":0,"target":{"mapId":"map_blank_start","eventId":"ev_chief"},"ok":true,"evidence":[{"target":{"mapId":"map_blank_start","eventId":"ev_chief"},"phase":"repeat","instructions":4,"movementSteps":2,"claim":{"gold":20,"inventory":{},"monsters":{}},"repeat":{"gold":0,"inventory":{},"monsters":{}},"final":{"gold":77,"inventory":{},"monsters":{}}}]}}: expected true to be false // Object.is equality
+   ✓ bound NPC interactions before the protected claim snapshot > real AssistantSession rejects duplicate approach payment at tool and final closure, explicit=true  1203ms
+   ✓ bound NPC interactions before the protected claim snapshot > real AssistantSession accepts zero early then +20 / 0, explicit=false  830ms
+   ✓ bound NPC interactions before the protected claim snapshot > real AssistantSession accepts zero early then +20 / 0, explicit=true  832ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/npcApproach.test.ts > bound NPC interactions before the protected claim snapshot > rejects early gold equally on host and explicit approaches
+AssertionError: {"ok":true,"evidence":[{"target":{"mapId":"map_blank_start","eventId":"ev_chief"},"phase":"repeat","instructions":4,"movementSteps":2,"claim":{"gold":20,"inventory":{},"monsters":{}},"repeat":{"gold":0,"inventory":{},"monsters":{}},"final":{"gold":77,"inventory":{},"monsters":{}}}]}: expected true to be false // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+ ❯ test/npcApproach.test.ts:48:49
+     46|     for (const explicit of [false, true]) {
+     47|       const result = run(approachFixture(kind, 20, explicit));
+     48|       expect(result.ok, JSON.stringify(result)).toBe(false);
+       |                                                 ^
+     49|       expect(result.evidence?.[0]?.claim).toBeUndefined();
+     50|       expect(result.evidence?.[0]?.repeat).toBeUndefined();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  test/npcApproach.test.ts > bound NPC interactions before the protected claim snapshot > rejects early item equally on host and explicit approaches
+AssertionError: {"ok":true,"evidence":[{"target":{"mapId":"map_blank_start","eventId":"ev_chief"},"phase":"repeat","instructions":4,"movementSteps":2,"claim":{"gold":0,"inventory":{"item_potion":20},"monsters":{}},"repeat":{"gold":0,"inventory":{"item_potion":0},"monsters":{}},"final":{"gold":37,"inventory":{"item_potion":40},"monsters":{}}}]}: expected true to be false // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+ ❯ test/npcApproach.test.ts:48:49
+     46|     for (const explicit of [false, true]) {
+     47|       const result = run(approachFixture(kind, 20, explicit));
+     48|       expect(result.ok, JSON.stringify(result)).toBe(false);
+       |                                                 ^
+     49|       expect(result.evidence?.[0]?.claim).toBeUndefined();
+     50|       expect(result.evidence?.[0]?.repeat).toBeUndefined();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  test/npcApproach.test.ts > bound NPC interactions before the protected claim snapshot > rejects early monster equally on host and explicit approaches
+AssertionError: {"ok":true,"evidence":[{"target":{"mapId":"map_blank_start","eventId":"ev_chief"},"phase":"repeat","instructions":42,"movementSteps":2,"claim":{"gold":0,"inventory":{},"monsters":{"species_leafling":20}},"repeat":{"gold":0,"inventory":{},"monsters":{"species_leafling":0}},"final":{"gold":37,"inventory":{},"monsters":{"species_leafling":40}}}]}: expected true to be false // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+ ❯ test/npcApproach.test.ts:48:49
+     46|     for (const explicit of [false, true]) {
+     47|       const result = run(approachFixture(kind, 20, explicit));
+     48|       expect(result.ok, JSON.stringify(result)).toBe(false);
+       |                                                 ^
+     49|       expect(result.evidence?.[0]?.claim).toBeUndefined();
+     50|       expect(result.evidence?.[0]?.repeat).toBeUndefined();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  test/npcApproach.test.ts > bound NPC interactions before the protected claim snapshot > rejects negative early gold delta, not just extra payment
+AssertionError: {"ok":true,"evidence":[{"target":{"mapId":"map_blank_start","eventId":"ev_chief"},"phase":"repeat","instructions":4,"movementSteps":2,"claim":{"gold":20,"inventory":{"item_potion":0},"monsters":{}},"repeat":{"gold":0,"inventory":{"item_potion":0},"monsters":{}},"final":{"gold":56,"inventory":{"item_potion":1},"monsters":{}}}]}: expected true to be false // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+ ❯ test/npcApproach.test.ts:68:47
+     66|     if (kind === "item") f.chief.pages![0].commands[0] = { kind: "chan…
+     67|     const result = run(f);
+     68|     expect(result.ok, JSON.stringify(result)).toBe(false);
+       |                                               ^
+     69|     expect(result.evidence?.[0]?.claim).toBeUndefined();
+     70|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  test/npcApproach.test.ts > bound NPC interactions before the protected claim snapshot > rejects negative early item delta, not just extra payment
+AssertionError: {"ok":true,"evidence":[{"target":{"mapId":"map_blank_start","eventId":"ev_chief"},"phase":"repeat","instructions":4,"movementSteps":2,"claim":{"gold":0,"inventory":{"item_potion":20},"monsters":{}},"repeat":{"gold":0,"inventory":{"item_potion":0},"monsters":{}},"final":{"gold":37,"inventory":{"item_potion":20},"monsters":{}}}]}: expected true to be false // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+ ❯ test/npcApproach.test.ts:68:47
+     66|     if (kind === "item") f.chief.pages![0].commands[0] = { kind: "chan…
+     67|     const result = run(f);
+     68|     expect(result.ok, JSON.stringify(result)).toBe(false);
+       |                                               ^
+     69|     expect(result.evidence?.[0]?.claim).toBeUndefined();
+     70|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  test/npcApproach.test.ts > bound NPC interactions before the protected claim snapshot > checks every touch within one walk, explicit=false
+ FAIL  test/npcApproach.test.ts > bound NPC interactions before the protected claim snapshot > checks every touch within one walk, explicit=true
+AssertionError: {"ok":true,"evidence":[{"target":{"mapId":"map_blank_start","eventId":"ev_chief"},"phase":"repeat","instructions":6,"movementSteps":2,"claim":{"gold":20,"inventory":{},"monsters":{}},"repeat":{"gold":0,"inventory":{},"monsters":{}},"final":{"gold":57,"inventory":{},"monsters":{}}}]}: expected true to be false // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+ ❯ test/npcApproach.test.ts:80:47
+     78|     for (const p of f.chief.pages!) p.footprint = { width: 5, height: …
+     79|     const result = run(f);
+     80|     expect(result.ok, JSON.stringify(result)).toBe(false);
+       |                                               ^
+     81|     expect(result.evidence?.[0]).toMatchObject({ movementSteps: 1, fin…
+     82|     expect(result.evidence?.[0]?.claim).toBeUndefined();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+ FAIL  test/npcApproach.test.ts > bound NPC interactions before the protected claim snapshot > real AssistantSession rejects duplicate approach payment at tool and final closure, explicit=false
+AssertionError: {"ok":true,"summary":"NPC reward prerequisite replay verified","data":{"executed":true,"requirementIndex":0,"target":{"mapId":"map_blank_start","eventId":"ev_chief"},"ok":true,"evidence":[{"target":{"mapId":"map_blank_start","eventId":"ev_chief"},"phase":"repeat","instructions":4,"movementSteps":2,"claim":{"gold":20,"inventory":{},"monsters":{}},"repeat":{"gold":0,"inventory":{},"monsters":{}},"final":{"gold":77,"inventory":{},"monsters":{}}}]}}: expected true to be false // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+ ❯ test/npcApproach.test.ts:142:45
+    140|     const f = approachFixture("gold", 20, explicit);
+    141|     const { proof, result } = await sessionReplay(f);
+    142|     expect(proof.ok, JSON.stringify(proof)).toBe(false);
+       |                                             ^
+    143|     expect(proof.data).toMatchObject({ executed: true, ok: false, evid…
+    144|     expect(result.assistantText).not.toContain(COMPLETE);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  8 failed | 13 passed (21)
+   Start at  08:53:15
+   Duration  18.52s (transform 7.36s, setup 0ms, collect 10.38s, tests 7.72s, environment 0ms, prepare 61ms)

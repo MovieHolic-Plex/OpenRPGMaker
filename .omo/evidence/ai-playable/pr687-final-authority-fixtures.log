@@ -1,0 +1,56 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/assistantAcceptanceCost.test.ts test/aiRequiredOutcomes.test.ts test/aiRequiredQuestionDispatch.test.ts test/aiWorkPlanRequirementRepair.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86
+
+ ✓ test/assistantAcceptanceCost.test.ts (6 tests) 3682ms
+   ✓ bounded canonical project comparisons > compares shared project content once for same-content  358ms
+   ✓ bounded canonical project comparisons > compares shared project content once for changed-content  364ms
+   ✓ bounded canonical project comparisons > preserves late-adoption freshness when content changed=false  1247ms
+   ✓ bounded canonical project comparisons > preserves late-adoption freshness when content changed=true  1324ms
+ ✓ test/aiRequiredQuestionDispatch.test.ts (4 tests) 3521ms
+   ✓ question dispatch preserves blocked goal ownership > ask preserves blocked state when tools attempt mutation=false  958ms
+   ✓ question dispatch preserves blocked goal ownership > ask preserves blocked state when tools attempt mutation=true  846ms
+   ✓ question dispatch preserves blocked goal ownership > question preserves blocked state when tools attempt mutation=false  884ms
+   ✓ question dispatch preserves blocked goal ownership > question preserves blocked state when tools attempt mutation=true  832ms
+ ✓ test/aiWorkPlanRequirementRepair.test.ts (1 test) 705ms
+   ✓ identity-preserving plan repair with canonical requirements > adopts a late requirement during repair without replacing the original obligation  703ms
+ ✓ test/aiRequiredOutcomes.test.ts (39 tests) 19878ms
+   ✓ canonical requirements > keeps required skipped obligations when a replan tries to weaken them  725ms
+   ✓ canonical requirements > allows optional skipped work without labeling it verified  552ms
+   ✓ canonical requirements > fails closed for malformed declarations null  602ms
+   ✓ canonical requirements > fails closed for malformed declarations %j  628ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":[{"kind":"mapDimensions","target":{"mapId":"map_blank_start"},"width":99,"height":99}],"required":"false"}  627ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":[{"kind":"invented","passed":true}]}  553ms
+   ✓ canonical requirements > fails closed for malformed declarations {"id":"size","title":"Size","criteria":null,"required":false}  622ms
+   ✓ canonical requirements > keeps a bare legacy scheduler plan unassessed  337ms
+   ✓ canonical requirements > assesses existing explicit acceptance without requiring the new field  646ms
+   ✓ canonical requirements > retains an unlinked required obligation when replan drops links=false  653ms
+   ✓ canonical requirements > retains an unlinked required obligation when replan drops links=true  583ms
+   ✓ canonical requirements > binds original text and scope at the host boundary despite fabricated source and withdrawal  613ms
+   ✓ canonical requirements > retains only the original user utterance through replan with instruction override=false  710ms
+   ✓ canonical requirements > retains only the original user utterance through replan with instruction override=true  720ms
+   ✓ canonical requirements > withdraws only the named current requirement through the user-only API  528ms
+   ✓ canonical requirements > keeps sibling obligations when the user withdraws just one  626ms
+   ✓ canonical requirements > rejects model tool withdrawal even with fabricated user provenance  618ms
+   ✓ canonical requirements > rejects stale goal withdrawal actions  595ms
+   ✓ canonical requirements > does not erase old obligations on a model resetsContext claim  775ms
+   ✓ canonical requirements > archives an incomplete goal when the user explicitly starts a new goal  826ms
+   ✓ exact scoped verdict authority > does not verify an unapplied draft from a passing scoped verdict  309ms
+   ✓ exact scoped verdict authority > retires scoped verdicts after applied content changes even if later undone  997ms
+   ✓ exact scoped verdict authority > rejects pre-declaration evidence after an external rebase  1095ms
+   ✓ exact scoped verdict authority > credits a real scoped tool response through the session dispatcher  493ms
+   ✓ question-safe continuation > preserves blocked work and counters for ask  455ms
+   ✓ question-safe continuation > preserves blocked work and counters for question  450ms
+   ✓ question-safe continuation > preserves repeated failure counters while answering a question  819ms
+   ✓ question-safe continuation > does not reactivate from fabricated continuation source  454ms
+   ✓ question-safe continuation > reactivates blocked work only with explicit user resume  598ms
+   ✓ question-safe continuation > retains goal evidence and repair counters during ask  617ms
+
+ Test Files  4 passed (4)
+      Tests  50 passed (50)
+   Start at  02:04:19
+   Duration  29.69s (transform 8.49s, setup 0ms, collect 22.30s, tests 27.79s, environment 1ms, prepare 303ms)
+

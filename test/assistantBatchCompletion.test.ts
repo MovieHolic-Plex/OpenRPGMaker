@@ -136,11 +136,84 @@ describe("audit batch dependency and completion lifecycle", () => {
     expect(h.events.find((event) => event.name === "complete_work_item")?.result.ok).toBe(false);
   });
 
-  it("does not acknowledge completion after a later explicit verification failure", async () => {
+  it("records malformed optional lint as unsuccessful without inventing a completion-blocking finding", async () => {
     const h = harness([[plan], [title], [call("run_lint", { reachability: false })], [complete]]);
     await h.session.sendUserMessage("제목 설정 후 검증", h.collect, undefined, { autonomous: true });
     expect(h.session.getWorkPlan()?.layers[0].items[0].status).toBe("done");
-    expect(h.events.find((event) => event.name === "run_lint" && event.args.reachability === false)?.result.ok).toBe(false);
-    expect(h.events.find((event) => event.name === "complete_work_item")?.result.ok).toBe(false);
+    expect(h.events.find((event) => event.name === "run_lint" && event.args.reachability === false)?.result).toMatchObject({
+      ok: false, issues: [{ code: "invalid-args" }],
+    });
+    const verification = h.session.getVerificationSnapshot();
+    expect(verification.requirements).toEqual([]);
+    expect(verification.findings).toEqual([]);
+    expect(verification.attempts.filter((attempt) => attempt.name === "run_lint")).toMatchObject([
+      { args: {}, status: "passed", result: { ok: true } },
+      { args: { reachability: false }, status: "unsuccessful", result: { ok: false } },
+    ]);
+    expect(h.events.find((event) => event.name === "complete_work_item")?.result).toMatchObject({
+      ok: true, data: { alreadyComplete: true },
+    });
+  });
+
+  it("does not acknowledge completion after a later explicit verification failure", async () => {
+    const probe = call("run_scene_test", {
+      mapId: createBlankProject().startMapId, start: { x: 0, y: 0 },
+      steps: [{ kind: "expect", mapId: "map_other" }],
+    });
+    const h = harness([[plan], [title], [probe], [complete], [call("run_lint", { reachability: false })], [complete]]);
+    const findingsAtCompletion: ReturnType<AssistantSession["getVerificationSnapshot"]>["findings"][] = [];
+    await h.session.sendUserMessage("제목 설정 후 검증", (event) => {
+      h.collect(event);
+      if (event.type === "tool_call" && event.name === "complete_work_item") {
+        findingsAtCompletion.push(h.session.getVerificationSnapshot().findings);
+      }
+    }, undefined, { autonomous: true });
+    expect(h.session.getWorkPlan()?.layers[0].items[0].status).toBe("done");
+    expect(h.events.find((event) => event.name === "run_scene_test")?.result).toMatchObject({
+      ok: true, data: { ok: false, failedStepIndex: 0 },
+    });
+    expect(h.events.find((event) => event.name === "run_lint" && event.args.reachability === false)?.result).toMatchObject({
+      ok: false, issues: [{ code: "invalid-args" }],
+    });
+    const verification = h.session.getVerificationSnapshot();
+    expect(verification.requirements).toEqual([]);
+    expect(verification.attempts.filter((attempt) => ["run_scene_test", "run_lint"].includes(attempt.name))).toMatchObject([
+      { name: "run_lint", args: {}, status: "passed", result: { ok: true } },
+      { name: "run_scene_test", args: probe.args, status: "negative", result: { ok: true, data: { ok: false } } },
+      { name: "run_lint", args: { reachability: false }, status: "unsuccessful", result: { ok: false } },
+    ]);
+    expect(verification.findings).toHaveLength(1);
+    expect(verification.findings[0]).toMatchObject({ name: "run_scene_test", args: probe.args, verdict: { pass: false } });
+    expect(verification.findings[0].verdict.blockingIssues.length).toBeGreaterThan(0);
+    expect(findingsAtCompletion).toHaveLength(2);
+    expect(findingsAtCompletion[0]).toEqual(verification.findings);
+    expect(findingsAtCompletion[1]).toEqual(findingsAtCompletion[0]);
+    expect(h.events.filter((event) => event.name === "complete_work_item").map((event) => event.result)).toMatchObject([
+      { ok: false, issues: [{ code: "work-item-incomplete" }] },
+      { ok: false, issues: [{ code: "work-item-incomplete" }] },
+    ]);
+  });
+
+  it("keeps declared verification required when malformed lint produces no finding", async () => {
+    const requiredPlan = call("set_work_plan", {
+      ...plan.args,
+      layers: [{ title: "설정", items: [{ title: "제목 설정 및 검증", instruction: "set_title_screen, run_lint",
+        successTools: ["set_title_screen", "run_lint"], verificationChecks: [{ tool: "run_lint", args: {} }],
+      }] }],
+    });
+    const h = harness([[requiredPlan], [title], [call("run_lint", { reachability: false })], [complete]]);
+    await h.session.sendUserMessage("제목 설정 후 검증", h.collect);
+    expect(h.events.find((event) => event.name === "set_work_plan")?.result.ok).toBe(true);
+    expect(h.events.find((event) => event.name === "set_title_screen")?.result.ok).toBe(true);
+    const verification = h.session.getVerificationSnapshot();
+    expect(verification.findings).toEqual([]);
+    expect(verification.requirements).toMatchObject([{ name: "run_lint", args: {}, status: "unverified" }]);
+    expect(verification.attempts.filter((attempt) => attempt.name === "run_lint")).toMatchObject([
+      { status: "unsuccessful", result: { ok: false } },
+    ]);
+    expect(h.session.getWorkPlan()?.layers[0].items[0].status).not.toBe("done");
+    expect(h.events.find((event) => event.name === "complete_work_item")?.result).toMatchObject({
+      ok: false, issues: [{ code: "work-item-incomplete" }],
+    });
   });
 });

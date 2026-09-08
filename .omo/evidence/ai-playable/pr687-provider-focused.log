@@ -1,0 +1,78 @@
+bun test v1.4.2 (744846f84)
+
+test/ohMyPiVision.bun.test.ts:
+(pass) oh-my-pi user image conversion > preserves image bytes when user content contains a PNG data URL [0.85ms]
+(pass) oh-my-pi user image conversion > preserves data and ordering when the MIME type is image/png [316.61ms]
+(pass) oh-my-pi user image conversion > preserves data and ordering when the MIME type is image/jpeg [41.21ms]
+(pass) oh-my-pi user image conversion > preserves data and ordering when the MIME type is image/webp [0.26ms]
+(pass) oh-my-pi user image conversion > preserves text when user content is {"content":"plain text"} [0.13ms]
+(pass) oh-my-pi user image conversion > preserves text when user content is {"content":[{"type":"text","text":"plain text"}]} [0.02ms]
+(pass) oh-my-pi user image conversion > preserves tool replay when the history includes assistant calls and tool results [0.33ms]
+(pass) oh-my-pi user image conversion > rejects input when the image has remote URL [0.63ms]
+(pass) oh-my-pi user image conversion > rejects input when the image has unsupported MIME [0.05ms]
+(pass) oh-my-pi user image conversion > rejects input when the image has missing base64 marker [0.02ms]
+(pass) oh-my-pi user image conversion > rejects input when the image has empty data [0.02ms]
+(pass) oh-my-pi user image conversion > rejects input when the image has invalid alphabet [0.02ms]
+(pass) oh-my-pi user image conversion > rejects input when the image has missing padding [0.03ms]
+(pass) oh-my-pi user image conversion > rejects input when the image has extra padding [0.01ms]
+(pass) oh-my-pi user image conversion > rejects input when the image has invalid padding bits [0.03ms]
+(pass) oh-my-pi user image conversion > rejects input when the image has trailing newline [0.02ms]
+(pass) oh-my-pi user image conversion > rejects input when the image has missing URL [0.01ms]
+(pass) oh-my-pi user image conversion > rejects input when the image has non-string URL [0.01ms]
+(pass) oh-my-pi user image conversion > rejects input when the image has null image [0.01ms]
+(pass) oh-my-pi user image conversion > rejects input when the image has missing image [0.03ms]
+(pass) oh-my-pi user image conversion > rejects input when the image has invalid detail [0.05ms]
+(pass) oh-my-pi user image conversion > sends image bytes through pi-ai when completing a mixed user message [24.00ms]
+(pass) oh-my-pi user image conversion > rejects before transport when completing a message with a remote image [0.39ms]
+(pass) oh-my-pi user image conversion > returns HTTP 400 when the worker receives a malformed image [419.47ms]
+
+test/ohMyPiComplete.bun.test.ts:
+(pass) oh-my-pi complete (real pi-ai + mock fetch) > 해결된 자격이 실제 요청의 Authorization 으로 나간다 [11.06ms]
+(pass) oh-my-pi complete (real pi-ai + mock fetch) > 만료된 Antigravity 갱신은 우리 코드로 Google token URL 을 친다 [1.27ms]
+(pass) oh-my-pi complete (real pi-ai + mock fetch) > Antigravity OAuth without projectId is not reported as connected [0.52ms]
+(pass) oh-my-pi complete (real pi-ai + mock fetch) > Antigravity OAuth with projectId remains connected [0.15ms]
+(pass) oh-my-pi complete (real pi-ai + mock fetch) > Antigravity completion preserves projectId and reaches the provider [3.55ms]
+(pass) oh-my-pi complete (real pi-ai + mock fetch) > Antigravity 이미지 요청에 modality를 주입하고 SSE inlineData를 반환한다 [4.40ms]
+(pass) oh-my-pi complete (real pi-ai + mock fetch) > 로그인이 없으면 영어 원문 대신 401 한국어 로그인 안내로 끊는다 [0.35ms]
+(pass) oh-my-pi complete (real pi-ai + mock fetch) > Antigravity 빈 스트림 재시도에서도 응답 URL을 보존해 이미지를 반환한다 [505.26ms]
+(pass) oh-my-pi complete (real pi-ai + mock fetch) > Antigravity 안전 정책 차단은 로그인 오류로 오인하지 않는다 [2.96ms]
+(pass) oh-my-pi complete (real pi-ai + mock fetch) > Antigravity 상류 401은 제품 로그인 경로를 안내한다 [1.74ms]
+(pass) oh-my-pi complete (real pi-ai + mock fetch) > Antigravity follow-up sends prior tool-call arguments as an object [4.97ms]
+
+test/ohMyPiFullCatalog.bun.test.ts:
+(pass) full native catalog on supported subscription transports > google-antigravity preserves 40 full definitions and surfaces upstream rejection [22.34ms]
+(pass) full native catalog on supported subscription transports > google-antigravity preserves 41 full definitions and surfaces upstream rejection [11.63ms]
+(pass) full native catalog on supported subscription transports > google-antigravity preserves 127 full definitions and surfaces upstream rejection [22.35ms]
+(pass) full native catalog on supported subscription transports > google-antigravity preserves 128 full definitions and surfaces upstream rejection [21.02ms]
+(pass) full native catalog on supported subscription transports > google-antigravity preserves 129 full definitions and surfaces upstream rejection [15.77ms]
+(pass) full native catalog on supported subscription transports > google-antigravity preserves 198 full definitions and surfaces upstream rejection [20.33ms]
+(pass) full native catalog on supported subscription transports > google-antigravity preserves 207 full definitions and surfaces upstream rejection [35.75ms]
+(pass) full native catalog on supported subscription transports > openai-codex preserves 40 full definitions and surfaces upstream rejection [4.53ms]
+(pass) full native catalog on supported subscription transports > openai-codex preserves 41 full definitions and surfaces upstream rejection [4.05ms]
+(pass) full native catalog on supported subscription transports > openai-codex preserves 127 full definitions and surfaces upstream rejection [6.79ms]
+(pass) full native catalog on supported subscription transports > openai-codex preserves 128 full definitions and surfaces upstream rejection [7.51ms]
+(pass) full native catalog on supported subscription transports > openai-codex preserves 129 full definitions and surfaces upstream rejection [6.14ms]
+(pass) full native catalog on supported subscription transports > openai-codex preserves 198 full definitions and surfaces upstream rejection [8.31ms]
+(pass) full native catalog on supported subscription transports > openai-codex preserves 207 full definitions and surfaces upstream rejection [8.25ms]
+
+test/ohMyPiImageTransport.bun.test.ts:
+(pass) companion image delivery at the real provider request seam > preserves labeled PNG bytes for the default model or alias gemini-3.7-flash [13.70ms]
+(pass) companion image delivery at the real provider request seam > preserves labeled PNG bytes for the default model or alias gemini-3.7-flash-tiered [6.85ms]
+(pass) companion image delivery at the real provider request seam > preserves labeled PNG bytes for the default model or alias gemini-3.7-flash-low [1.18ms]
+(pass) companion image delivery at the real provider request seam > preserves multiple images and label ordering on google-antigravity wire [6.02ms]
+(pass) companion image delivery at the real provider request seam > preserves multiple images and label ordering on openai-codex wire [5.99ms]
+(pass) companion image delivery at the real provider request seam > rejects malformed or unsupported image URL https://example.invalid/map.png before outbound fetch [0.34ms]
+(pass) companion image delivery at the real provider request seam > rejects malformed or unsupported image URL data:image/svg+xml;base64,PHN2Zy8+ before outbound fetch [0.07ms]
+(pass) companion image delivery at the real provider request seam > rejects malformed or unsupported image URL data:image/png;base64, before outbound fetch [0.01ms]
+(pass) companion image delivery at the real provider request seam > rejects malformed or unsupported image URL data:image/png;base64,!!!! before outbound fetch
+(pass) companion image delivery at the real provider request seam > rejects malformed or unsupported image URL data:image/png;base64,YQ= before outbound fetch [0.01ms]
+(pass) companion image delivery at the real provider request seam > rejects malformed or unsupported image URL data:image/png;base64,YR== before outbound fetch [0.03ms]
+(pass) companion image delivery at the real provider request seam > rejects image roles, malformed parts and nonvision models instead of dropping them [3.54ms]
+(pass) companion image delivery at the real provider request seam > accepts JPEG/WebP MIME bytes without relabeling or transcoding [10.61ms]
+(pass) companion image delivery at the real provider request seam > rejects the completion when the image-bearing provider request fails [1.85ms]
+(pass) companion image delivery at the real provider request seam > parses acknowledgement positions atomically and refuses malformed siblings [3.51ms]
+
+ 64 pass
+ 0 fail
+ 137 expect() calls
+Ran 64 tests across 4 files. [2.29s]

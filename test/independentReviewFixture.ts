@@ -9,9 +9,14 @@ export function independentReviewPayload(request: ChatRequest): ReviewInput | nu
   const value = JSON.parse(first.text) as ReviewInput & { kind?: string };
   return value.kind === "independent-review" ? value : null;
 }
+/** Wire positions acknowledged by this scripted transport, never inferred by production. */
+export function imageDeliveryForRequest(request: ChatRequest) {
+  return request.messages.flatMap((message, messageIndex) => Array.isArray(message.content)
+    ? message.content.flatMap((part, partIndex) => part.type === "image_url" ? [{ messageIndex, partIndex }] : []) : []);
+}
 export function approvedReviewResponse(request: ChatRequest): ChatResult | null {
   const input = independentReviewPayload(request);
-  return input ? { message: { role: "assistant", content: JSON.stringify({ revision: input.revision,
+  return input ? { imageDelivery: imageDeliveryForRequest(request), message: { role: "assistant", content: JSON.stringify({ revision: input.revision,
     verdict: "approved", summary: "Fixture review", findings: [] }) }, finishReason: "stop" } : null;
 }
 export const approvedReview = { status: "approved", revision: 1, summary: "Fixture review", findings: [] } as const;

@@ -27,6 +27,8 @@ export function createInterpreter(
     ? runtimeEventViewById(project, map, session, options.eventPositions ?? {}, options.currentEventId)
     : undefined;
   const state: InterpreterState = {
+    beforeCommand: options?.beforeCommand,
+    onUnverified: options?.onUnverified,
     continueAfterTransfer: options?.continueAfterTransfer,
     currentFace: project ? resolveAppearancePortrait(project, event?.page?.graphic.appearanceId, "face") : undefined,
     stack: [{ commands, pc: 0 }],
@@ -61,6 +63,7 @@ export function createInterpreter(
       const command = frame.commands[frame.pc] ?? null;
       if (!command) return finish();
       if (state.instructionsExecuted >= state.maxInstructions) {
+        state.onUnverified?.("Interpreter instruction budget exhausted");
         console.warn(
           `[interpreter:instruction-budget-exhausted] maxInstructions=${state.maxInstructions} executed=${state.instructionsExecuted}`
         );

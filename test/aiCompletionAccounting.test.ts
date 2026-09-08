@@ -6,7 +6,9 @@ import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { getMapEditHistoryEntries, resetMapEditHistory } from "@/editor/mapEditHistory";
 import { fixedDeclarer } from "./intentFixture";
-import { approvedReviewResponse } from "./independentReviewFixture";
+import { FLOOR_PAINT_ARGS, WALL_PAINT_ARGS, PRESERVED_PAINT_SPEC, preservedPaintContext } from "./fixtures/preservedPaint";
+import { proposalCompletenessWarnings } from "@/ai/proposalCompleteness";
+import { approvedReviewResponse, imageDeliveryForRequest } from "./independentReviewFixture";
 
 const CONFIG = { ...defaultAiConfig(), agentMode: "chat", apiKey: "sk", maxToolCalls: 12, maxTokens: 8192 } satisfies AiConfig;
 const SPEC = { mapId: "m1", assets: [{ id: "terrain", kind: "terrain", x: 3, y: 3, w: 3, h: 3 }] };
@@ -41,7 +43,7 @@ function scriptedChat(steps: (ChatResult | (() => ChatResult))[]) {
     if (review) return review;
     const step = steps[index++];
     if (!step) throw new Error("scripted chat exhausted");
-    return typeof step === "function" ? step() : step;
+    return { ...(typeof step === "function" ? step() : step), imageDelivery: imageDeliveryForRequest(request) };
   });
 }
 
@@ -52,6 +54,83 @@ function paint(x: number, y: number, id: string): ChatResult {
 type ToolEvent = Extract<SessionEvent, { type: "tool_call" }>;
 
 describe("completion accounting through real assistant sessions", () => {
+  it.each([false, true])("auto-completes verified maintenance without waiving a new quantity (quantity=%s)", async (quantity) => {
+    const ctx = preservedPaintContext();
+    const instruction = quantity ? "타일 160개 추가해줘" : "바닥을 칠하고 기존 벽은 유지해줘";
+    const plan = { goal: instruction, acceptance: [{ id: "floor", title: "floor", criteria: [
+      { kind: "targetChange", target: { mapId: "map_basement" }, region: { x: 1, y: 1, w: 10, h: 8 } },
+      { kind: "preserve", target: { mapId: "map_basement" }, region: { x: 0, y: 0, w: 12, h: 1 } },
+    ] }], layers: [{ title: "terrain", items: [{ title: "terrain", instruction, successTools: ["paint_tiles"], mapTargets: ["map_basement"] }] }] };
+    const entries = [
+      { name: "set_work_plan", args: plan }, { name: "set_build_spec", args: PRESERVED_PAINT_SPEC },
+      { name: "paint_tiles", args: FLOOR_PAINT_ARGS }, { name: "paint_tiles", args: WALL_PAINT_ARGS },
+    ];
+    const events: SessionEvent[] = [];
+    const session = new AssistantSession(ctx.project, {
+      config: { ...CONFIG, maxToolCalls: 1 }, declareIntent: fixedDeclarer({ mode: "modify" }),
+      chat: scriptedChat([{ message: { role: "assistant", content: null, tool_calls: entries.map((entry, index) => ({
+        id: `p7-${index}`, type: "function", function: { name: entry.name, arguments: JSON.stringify(entry.args) },
+      })) }, finishReason: "tool_calls" }]),
+    });
+    const result = await session.sendUserMessage(instruction, event => events.push(event));
+    expect(events.filter((event): event is ToolEvent => event.type === "tool_call").map(event => event.result.ok)).toEqual([true, true, true, true]);
+    expect(result.proposedCalls.map(call => call.result.diff?.tilesChanged)).toEqual([80, 0]);
+    expect(session.getCompletionSpecs(result.proposedCalls)).toEqual([PRESERVED_PAINT_SPEC]);
+    expect(session.getWorkPlan()?.layers[0].items[0].status).toBe(quantity ? "in_progress" : "done");
+    expect(result.stoppedReason).toBe("max-tool-calls");
+    // Checklist progress is not canonical acceptance or delivery: these drafts are unapplied.
+    expect(session.getAcceptanceSnapshot()?.status).not.toBe("verified");
+    expect(result.runOutcome?.goal).toBe("incomplete");
+  });
+
+  it.each(["preserve", "targetChange"] as const)("applies maintenance once but retains canonical %s semantics", async (kind) => {
+    const { project } = preservedPaintContext();
+    vi.stubEnv("VITE_SUPABASE_ANON_KEY", "test-anon-key");
+    vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "rpg-zzu-test-project");
+    vi.stubEnv("VITE_SUPABASE_URL", "http://dbserver:8100");
+    vi.stubGlobal("fetch", (async () => new Response(null, { status: 201 })) satisfies typeof fetch);
+    store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
+    store.replace(project);
+    resetMapEditHistory();
+    const plan = { goal: "바닥 칠하기와 벽 유지", acceptance: [{ id: "walls", title: "walls", criteria: [
+      { kind, target: { mapId: "map_basement" }, region: { x: 0, y: 0, w: 12, h: 1 } },
+    ] }], layers: [{ title: "terrain", items: [{ title: "terrain", instruction: "바닥을 칠하고 벽은 유지해줘", successTools: ["paint_tiles"], mapTargets: ["map_basement"] }] }] };
+    const events: SessionEvent[] = [];
+    const session = new AssistantSession(project, {
+      config: { ...CONFIG, agentMode: "auto", liteModel: "executor-model" },
+      declareIntent: fixedDeclarer({ mode: "modify", needsPlan: true }),
+      renderImages: async () => [{ label: "Current basement", dataUrl: "data:image/png;base64,AA==" }],
+      chat: scriptedChat([
+        final(JSON.stringify({ action: "new_plan", ...plan })), toolCall("set_work_plan", plan, "plan"),
+        toolCall("set_build_spec", PRESERVED_PAINT_SPEC, "spec"), toolCall("paint_tiles", FLOOR_PAINT_ARGS, "floor"),
+        () => {
+          expect(session.getWorkPlan()?.layers[0].items[0].status).toBe("in_progress");
+          expect(events.filter(event => event.type === "milestone_applied")).toEqual([]);
+          return toolCall("paint_tiles", WALL_PAINT_ARGS, "walls");
+        },
+        toolCall("show_map_region", { mapId: "map_basement", x: 0, y: 0, w: 12, h: 10 }, "image"),
+        ...Array.from({ length: kind === "preserve" ? 1 : 4 }, () => final()),
+      ]),
+    });
+    const result = await session.sendUserMessage(plan.goal, event => events.push(event), undefined, { autonomous: true });
+    expect(result.stoppedReason, result.error).toBe(kind === "preserve" ? "final" : "error");
+    expect(session.getWorkPlan()?.layers[0].items[0].status).toBe("done");
+    expect(events.filter(event => event.type === "milestone_applied").map(event => event.toolCount)).toEqual(kind === "preserve" ? [2] : []);
+    expect(result.review?.status).toBe(kind === "preserve" ? "approved" : "changes_requested");
+    const writes = [...(result.appliedCalls ?? []), ...result.proposedCalls];
+    expect(result.proposedCalls).toHaveLength(kind === "preserve" ? 0 : 2);
+    expect(result.appliedCalls ?? []).toHaveLength(kind === "preserve" ? 2 : 0);
+    expect(writes.map(call => call.result.diff?.tilesChanged)).toEqual([80, 0]);
+    expect(proposalCompletenessWarnings({ buildSpecs: session.getCompletionSpecs(writes),
+      calls: writes, project: session.getProposedProject() })).toEqual([]);
+    expect(session.getAcceptanceSnapshot()).toMatchObject({ status: kind === "preserve" ? "verified" : "blocked", items: [
+      { id: "walls", evidence: [{ passed: kind === "preserve" }] },
+    ] });
+    expect(result.runOutcome?.goal).toBe(kind === "preserve" ? "satisfied" : "incomplete");
+    expect(store.getCurrent().maps.map_basement.lowerTiles).toEqual(kind === "preserve"
+      ? session.getProposedProject().maps.map_basement.lowerTiles : project.maps.map_basement.lowerTiles);
+  });
+
   it("accounts for both spatial milestones and applies each write once, only after independent review", async () => {
     const project = projectWithMap();
     vi.stubEnv("VITE_SUPABASE_ANON_KEY", "test-anon-key");
@@ -66,8 +145,8 @@ describe("completion accounting through real assistant sessions", () => {
       criteria: [{ kind: "targetChange", target: { mapId: "m1" }, region: { x, y, w: 3, h: 3 } }],
     }));
     const plan = { goal: "지형 두 구역 칠하기", acceptance, layers: [{ title: "지형", items: [
-      { title: "첫 구역", instruction: "첫 구역 칠하기", successTools: ["paint_tiles"] },
-      { title: "둘째 구역", instruction: "둘째 구역 칠하기", successTools: ["paint_tiles"] },
+      { title: "첫 구역", instruction: "첫 구역 칠하기", successTools: ["paint_tiles"], mapTargets: ["m1"] },
+      { title: "둘째 구역", instruction: "둘째 구역 칠하기", successTools: ["paint_tiles"], mapTargets: ["m1"] },
     ] }] };
     const events: SessionEvent[] = [];
     const authored = structuredClone(store.getCurrent());

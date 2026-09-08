@@ -1,3 +1,4 @@
+import recordedRepairs from "./fixtures/acceptance-round2-repairs.json";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as applyStore from "@/editor/tools/applyChangesetToStore";
 import { store } from "@/project/store";
@@ -22,7 +23,7 @@ import { fixedDeclarer } from "./intentFixture";
 
 type Call = { readonly name: string; readonly args: Record<string, unknown> };
 const work = { goal: "Authored map contract", layers: [{ title: "Edit", items: [{ id: "work", title: "Edit map", instruction: "Rename the map" }] }] };
-function script(rounds: readonly (readonly Call[])[]) {
+function script(rounds: readonly (readonly Call[])[], acknowledgeImages = true) {
   const project = createBlankProject();
   const events: SessionEvent[] = [];
   let calls = 0;
@@ -31,11 +32,13 @@ function script(rounds: readonly (readonly Call[])[]) {
     declareIntent: fixedDeclarer({ mode: "modify", targetMapId: project.startMapId }),
     renderImages: async () => [{ label: "Rendered map", dataUrl: "data:image/png;base64,AA==" }],
     chat: async (_config, request): Promise<ChatResult> => {
+      const imageDelivery = acknowledgeImages ? request.messages.flatMap((message, messageIndex) => Array.isArray(message.content)
+        ? message.content.flatMap((part, partIndex) => part.type === "image_url" ? [{ messageIndex, partIndex }] : []) : []) : undefined;
       const review = approvedReviewResponse(request);
-      if (review) return review;
+      if (review) return { ...review, imageDelivery };
       const batch = rounds[calls++];
-      return batch ? { message: { role: "assistant", content: null, tool_calls: batch.map((call, i) => ({ id: `c${calls}_${i}`, type: "function", function: { name: call.name, arguments: JSON.stringify(call.args) } })) }, finishReason: "tool_calls" }
-        : { message: { role: "assistant", content: "SCRIPTED_SUCCESS" }, finishReason: "stop" };
+      return batch ? { imageDelivery, message: { role: "assistant", content: null, tool_calls: batch.map((call, i) => ({ id: `c${calls}_${i}`, type: "function", function: { name: call.name, arguments: JSON.stringify(call.args) } })) }, finishReason: "tool_calls" }
+        : { imageDelivery, message: { role: "assistant", content: "SCRIPTED_SUCCESS" }, finishReason: "stop" };
     },
   });
   return { session, events, project, run: (autonomous = false) => session.sendUserMessage("Edit the authored map", event => events.push(event), undefined, { autonomous }), calls: () => calls };
@@ -46,6 +49,17 @@ function snapshot(session: AssistantSession): unknown {
 const target = { mapId: createBlankProject().startMapId };
 
 describe("acceptance controls actual session termination", () => {
+  it("does not credit frontend insertion without a provider delivery acknowledgement", async () => {
+    const fixture = script([
+      [{ name: "set_work_plan", args: { ...work, acceptance: [{ id: "image", title: "Review", criteria: [{ kind: "imageReviewed", target }] }] } }, { name: "skip_work_item", args: {} }],
+      [{ name: "show_map_region", args: { mapId: target.mapId, x: 0, y: 0, w: 20, h: 15 } }],
+      [{ name: "review_acceptance", args: { itemId: "image", verdict: "pass", note: "Unacknowledged image" } }],
+    ], false);
+    await fixture.run();
+    expect(fixture.events.find(event => event.type === "tool_call" && event.name === "review_acceptance")).toMatchObject({ result: { ok: false } });
+    expect(fixture.session.getAcceptanceSnapshot()?.status).toBe("blocked");
+  });
+
   it("does not schedule run-end persistence proof for a completed plan with unmet acceptance", async () => {
     const fixture = script([[{ name: "set_work_plan", args: { ...work, acceptance: [
       { id: "size", title: "Required size", criteria: [{ kind: "mapDimensions", target, width: 99, height: 99 }] },
@@ -223,4 +237,74 @@ describe("applied acceptance lifecycle through real tools", () => {
     await session.sendUserMessage("Explain this project");
     expect(session.getAcceptanceSnapshot()).toBeNull();
   });
+});
+
+
+describe("recorded provider acceptance repair failures (R7)", () => {
+  it.each(recordedRepairs)("identifies the missing scope atomically in recorded repair %#", async args => {
+    const fixture = script([
+      [{ name: "set_work_plan", args: { ...work, acceptance: [{ id: "acceptance-contract", title: "Recorded contract", criteria: args.criteria }] } }],
+      [{ name: "repair_acceptance", args }],
+      [{ name: "repair_acceptance", args: { ...args, criteria: args.criteria.map(criterion => criterion.kind === "mapCount"
+        ? { ...criterion, targets: [{ mapId: "map_blank_start" }, { mapId: "map_basement" }] } : criterion) } }],
+    ]);
+    await fixture.run();
+    const repairs = fixture.events.filter(event => event.type === "tool_call" && event.name === "repair_acceptance");
+    expect(repairs[0]).toMatchObject({ result: { ok: false, data: { code: "malformed-criteria", issues: [
+      { criterionIndex: 0, field: "criteria[0].targets", code: "missing-field", example: { kind: "mapCount", targets: expect.any(Array) } },
+    ], acceptance: { items: [{ evidence: [] }] } } } });
+    expect(repairs[1]).toMatchObject({ result: { ok: true, data: { code: "repaired" } } });
+    const adoption = fixture.events.find(event => event.type === "tool_call" && event.name === "set_work_plan");
+    expect(adoption).toMatchObject({ result: { data: { acceptance: { items: [{ issues: [
+      { field: "criteria[0].targets", code: "missing-field" },
+    ] }] } } } });
+  });
+});
+
+
+it("returns distinct repair and review diagnostics through the actual session handler", async () => {
+  const fixture = script([
+    [{ name: "set_work_plan", args: { ...work, acceptance: [
+      { id: "valid", title: "Valid", criteria: [{ kind: "preserve", target }] },
+      { id: "bad", title: "Bad", criteria: null },
+      { id: "image", title: "Image", criteria: [{ kind: "imageReviewed", target }] },
+    ] } }],
+    [{ name: "repair_acceptance", args: { itemId: "unknown", criteria: [] } },
+      { name: "repair_acceptance", args: { itemId: "valid", criteria: [] } },
+      { name: "repair_acceptance", args: { itemId: "bad", criteria: [{ kind: "preserve", target }, { kind: "mapCount", count: 1, targets: [{ ...target, newMapName: "Both" }] }] } },
+      { name: "review_acceptance", args: { itemId: "image", verdict: "pass", note: "No delivered image" } }],
+  ]);
+  await fixture.run();
+  const results = fixture.events.filter(event => event.type === "tool_call" && ["repair_acceptance", "review_acceptance"].includes(event.name));
+  expect(results).toMatchObject([
+    { result: { ok: false, data: { code: "unknown-item" } } },
+    { result: { ok: false, data: { code: "immutable-valid" } } },
+    { result: { ok: false, data: { code: "malformed-criteria", issues: [{ criterionIndex: 1, field: "criteria[1].targets[0]", code: "invalid-selector" }], acceptance: { items: [{ id: "valid", status: "verified" }, { id: "bad", evidence: [] }, { id: "image", evidence: [{ passed: false }] }] } } } },
+    { result: { ok: false, data: { code: "image-review-unavailable" } } },
+  ]);
+});
+
+it.each([undefined, [{ id: "bad", title: "Bad", criteria: [{ kind: "mapCount", count: 2 }] }]])("exposes planner acceptance diagnostics before the first generation response (%j)", async acceptance => {
+  const project = createBlankProject();
+  let generationCalls = 0;
+  const session = new AssistantSession(project, {
+    config: { ...defaultAiConfig(), agentMode: "auto", model: "test", liteModel: "test", apiKey: "test", maxToolCalls: 1 },
+    declareIntent: fixedDeclarer({ mode: "modify", targetMapId: project.startMapId }),
+    chat: async (_config, request): Promise<ChatResult> => {
+      if (!request.tools?.length) return { message: { role: "assistant", content: JSON.stringify({ action: "new_plan", ...work, acceptance }) }, finishReason: "stop" };
+      if (generationCalls++ === 0) {
+        const diagnostic = request.messages.flatMap(message => {
+          if (message.role !== "user" || typeof message.content !== "string") return [];
+          const start = message.content.indexOf('{"code":"malformed-criteria"');
+          if (start < 0) return [];
+          const value: unknown = JSON.parse(message.content.slice(start));
+          return [value];
+        });
+        expect(diagnostic).toMatchObject([{ code: "malformed-criteria", items: [{ issues: [{ field: acceptance ? "criteria[0].targets" : "criteria", code: "missing-field" }] }] }]);
+      }
+      return { message: { role: "assistant", content: "No content generated" }, finishReason: "stop" };
+    },
+  });
+  await session.sendUserMessage("Edit the authored map");
+  expect(generationCalls).toBeGreaterThan(0);
 });

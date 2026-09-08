@@ -145,7 +145,7 @@ export function createLlmIntentDeclarer(
           messages: [
             ...request.messages,
             { role: "assistant", content: contentText(result) },
-            { role: "user", content: `Correct only the npcRewards JSON shape and return the full declaration. Preserve every grant, count and one-time requirement from the user request. ${error}. Each target must use exactly one eventId or eventName; each grant exactly one id or name. Omit unused keys instead of writing null. Do not omit npcRewards to bypass this error.` },
+            { role: "user", content: `Correct only the npcRewards JSON shape and return the full declaration. Preserve every grant, count and one-time requirement from the user request. ${error}. Each target must use exactly one eventId or eventName; each item/monster grant exactly one id or name. Currency uses kind:"gold" with no id/name; do not convert named items to currency. Omit unused keys instead of writing null. Do not omit npcRewards to bypass this error.` },
           ],
         });
         const correction = parseIntentDeclaration(contentText(repaired), facts);

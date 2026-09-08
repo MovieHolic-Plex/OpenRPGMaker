@@ -4,8 +4,49 @@ import { createBlankProject } from "@/project/defaults";
 import type { GameEvent } from "@/project/types";
 import { characterSpriteX, characterSpriteY } from "@/player/characterDepth";
 import { runSceneTest, type SceneStep } from "@/testing/sceneTestRunner";
+import { ToolVerificationEvidence } from "@/ai/toolVerificationEvidence";
+import { AssistantAcceptanceLedger } from "@/ai/assistantAcceptanceLedger";
+import { crossMapVerification } from "./fixtures/verificationOwnership";
 
 describe("run_scene_test", () => {
+  it("cross-map reused event IDs and identical final map cannot discharge mapA using mapB", () => {
+    const f = crossMapVerification();
+    const evidence = new ToolVerificationEvidence();
+    const acceptance = new AssistantAcceptanceLedger("cross-map", "Frozen route", f.project);
+    acceptance.adopt([{ id: "size", title: "Map", criteria: [{ kind: "mapDimensions", target: { mapId: f.root.id }, width: f.root.width, height: f.root.height }] }]);
+    const failed = runTool({ project: f.project }, "run_scene_test", { ...f.a });
+    const passed = runTool({ project: f.project }, "run_scene_test", { ...f.b });
+    expect(failed).toMatchObject({ ok: true, data: { ok: false, finalState: { mapId: f.root.id }, interactions: [
+      { stepIndex: 0, mapId: f.root.id, eventId: "doorA" }, { stepIndex: 2, mapId: "mapA", eventId: "shared_npc" },
+      { stepIndex: 3, mapId: "mapA", eventId: "exit" },
+    ] } });
+    expect(passed).toMatchObject({ ok: true, data: { ok: true, finalState: { mapId: f.root.id } } });
+    evidence.adopt({ checkId: "routeA", ownerId: "accepted", name: "run_scene_test", args: { ...f.a },
+      interactionTargets: [{ stepIndex: 2, mapId: "mapA", eventId: "shared_npc" }] });
+    evidence.observe("run_scene_test", { ...f.a }, failed);
+    evidence.observe("run_scene_test", { ...f.b }, passed);
+    expect(evidence.correction("routeA", f.b)).toBeNull();
+    expect(acceptance.evaluate(f.project, f.project, evidence, evidence.problems()).status).toBe("blocked");
+    // Even the same input must not alias after a project edit reroutes the transfer.
+    f.root.events[0]!.pages![0]!.commands = [{ kind: "transfer", mapId: "mapB", x: 2, y: 2 }];
+    const rerouted = runTool({ project: f.project }, "run_scene_test", { ...f.a });
+    expect(rerouted).toMatchObject({ ok: true, data: { ok: true } });
+    evidence.observe("run_scene_test", { ...f.a }, rerouted, "explicit", "accepted", "routeA");
+    expect(evidence.snapshot().requirements[0]?.status).toBe("unverified");
+    expect(evidence.snapshot().findings).toHaveLength(1);
+    expect(acceptance.evaluate(f.project, f.project, evidence, evidence.problems()).status).toBe("blocked");
+  });
+
+  it("missing early-interaction trace is not evidence for changed navigation or facing", () => {
+    const f = crossMapVerification();
+    const evidence = new ToolVerificationEvidence();
+    evidence.observe("run_scene_test", { ...f.a }, { ok: true, data: { ok: false } });
+    const id = evidence.snapshot().findings[0]!.checkId;
+    const args = { ...f.a, steps: [{ kind: "face", dir: "down" }, ...f.a.steps] };
+    expect(evidence.correction(id, args)).toBeNull();
+    evidence.observe("run_scene_test", args, { ok: true, data: { ok: true } });
+    expect(evidence.snapshot().findings).toHaveLength(1);
+  });
   it("executes the existing choice cancellation branch for index minus one", () => {
     const project = createBlankProject();
     const map = project.maps[project.startMapId];

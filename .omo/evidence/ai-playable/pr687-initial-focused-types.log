@@ -1,0 +1,75 @@
+[96msrc/ai/assistantAcceptanceEvaluation.ts[0m:[93m94[0m:[93m42[0m - [91merror[0m[90m TS2339: [0mProperty 'passedScope' does not exist on type 'ToolVerificationEvidence'.
+
+[7m94[0m       const passed = input.verification?.passedScope(criterion.tool, criterion.args) === true;
+[7m  [0m [91m                                         ~~~~~~~~~~~[0m
+[96msrc/ai/assistantAcceptanceLedger.ts[0m:[93m170[0m:[93m94[0m - [91merror[0m[90m TS2345: [0mArgument of type '{ baseline: Project; criteria: readonly AcceptanceCriterion[] | null; required?: boolean; id: string; title: string; issues?: readonly AcceptanceIssue[]; }' is not assignable to parameter of type 'AcceptancePromise & { readonly baseline: Project; readonly source: AcceptanceSource; readonly refinements?: readonly AcceptanceSource[] | undefined; readonly withdrawal?: (RequirementWithdrawalAction & { ...; }) | undefined; }'.
+  Property 'source' is missing in type '{ baseline: Project; criteria: readonly AcceptanceCriterion[] | null; required?: boolean; id: string; title: string; issues?: readonly AcceptanceIssue[]; }' but required in type '{ readonly baseline: Project; readonly source: AcceptanceSource; readonly refinements?: readonly AcceptanceSource[] | undefined; readonly withdrawal?: (RequirementWithdrawalAction & { ...; }) | undefined; }'.
+
+[7m170[0m     for (const promise of additions) if (!promises.has(promise.id)) promises.set(promise.id, { ...promise, baseline: requestBaseline,
+[7m   [0m [91m                                                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[7m171[0m       criteria: promise.criteria && this.originalTargetIssues(promise.criteria, requestBaseline).length ? null : promise.criteria });
+[7m   [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  [96msrc/ai/assistantAcceptanceLedger.ts[0m:[93m29[0m:[93m14[0m
+    [7m29[0m     readonly source: AcceptanceSource;
+    [7m  [0m [96m             ~~~~~~[0m
+    'source' is declared here.
+[96msrc/ai/assistantSession.ts[0m:[93m1344[0m:[93m56[0m - [91merror[0m[90m TS2339: [0mProperty 'hasChecks' does not exist on type 'ToolVerificationEvidence'.
+
+[7m1344[0m     if (!this.acceptance && !this.verificationEvidence.hasChecks()) return;
+[7m    [0m [91m                                                       ~~~~~~~~~[0m
+[96msrc/ai/assistantSession.ts[0m:[93m2856[0m:[93m61[0m - [91merror[0m[90m TS2339: [0mProperty 'reason' does not exist on type '({ readonly ok: false; readonly reason: string; } & { readonly evidence?: readonly NpcRewardReplayEvidence[] | undefined; }) | { ok: boolean; }'.
+  Property 'reason' does not exist on type '{ ok: boolean; }'.
+
+[7m2856[0m       if (!rewards.ok) return { ok: false, summary: rewards.reason, issues: [{ severity: "error", code: "npc-reward-incomplete", message: rewards.reason }] };
+[7m    [0m [91m                                                            ~~~~~~[0m
+[96msrc/ai/assistantSession.ts[0m:[93m2856[0m:[93m147[0m - [91merror[0m[90m TS2339: [0mProperty 'reason' does not exist on type '({ readonly ok: false; readonly reason: string; } & { readonly evidence?: readonly NpcRewardReplayEvidence[] | undefined; }) | { ok: boolean; }'.
+  Property 'reason' does not exist on type '{ ok: boolean; }'.
+
+[7m2856[0m       if (!rewards.ok) return { ok: false, summary: rewards.reason, issues: [{ severity: "error", code: "npc-reward-incomplete", message: rewards.reason }] };
+[7m    [0m [91m                                                                                                                                                  ~~~~~~[0m
+[96msrc/ai/assistantSession.ts[0m:[93m3606[0m:[93m9[0m - [91merror[0m[90m TS2663: [0mCannot find name 'adventureProblems'. Did you mean the instance member 'this.adventureProblems'?
+
+[7m3606[0m     if (adventureProblems.length > 0) {
+[7m    [0m [91m        ~~~~~~~~~~~~~~~~~[0m
+[96msrc/assets/resourceSearch.ts[0m:[93m7[0m:[93m54[0m - [91merror[0m[90m TS6133: [0m'EASYRPG_RTP_ASSETS' is declared but its value is never read.
+
+[7m7[0m import { charsetFrameIndex, EASYRPG_BACKDROP_ASSETS, EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
+[7m [0m [91m                                                     ~~~~~~~~~~~~~~~~~~[0m
+[96msrc/editor/tools/playTools.ts[0m:[93m119[0m:[93m13[0m - [91merror[0m[90m TS1117: [0mAn object literal cannot have multiple properties with the same name.
+
+[7m119[0m             goldDelta: { description: "Currency delta: exact signed safe integer (e.g. 20 or 0), or {atLeast:1}. Relative to snapshotRewards, scene start by default. Not an inventory item." },
+[7m   [0m [91m            ~~~~~~~~~[0m
+[96msrc/testing/sceneTestRunner.ts[0m:[93m226[0m:[93m3[0m - [91merror[0m[90m TS2300: [0mDuplicate identifier 'goldDelta'.
+
+[7m226[0m   goldDelta?: number | { atLeast: number };
+[7m   [0m [91m  ~~~~~~~~~[0m
+[96msrc/testing/sceneTestRunner.ts[0m:[93m228[0m:[93m3[0m - [91merror[0m[90m TS2300: [0mDuplicate identifier 'goldDelta'.
+
+[7m228[0m   goldDelta?: number;
+[7m   [0m [91m  ~~~~~~~~~[0m
+[96msrc/testing/sceneTestRunner.ts[0m:[93m228[0m:[93m3[0m - [91merror[0m[90m TS2717: [0mSubsequent property declarations must have the same type.  Property 'goldDelta' must be of type 'number | { atLeast: number; } | undefined', but here has type 'number | undefined'.
+
+[7m228[0m   goldDelta?: number;
+[7m   [0m [91m  ~~~~~~~~~[0m
+
+  [96msrc/testing/sceneTestRunner.ts[0m:[93m226[0m:[93m3[0m
+    [7m226[0m   goldDelta?: number | { atLeast: number };
+    [7m   [0m [96m  ~~~~~~~~~[0m
+    'goldDelta' was also declared here.
+[96msrc/testing/sceneTestRunner.ts[0m:[93m285[0m:[93m14[0m - [91merror[0m[90m TS2300: [0mDuplicate identifier 'gold'.
+
+[7m285[0m     readonly gold: number;
+[7m   [0m [91m             ~~~~[0m
+[96msrc/testing/sceneTestRunner.ts[0m:[93m287[0m:[93m14[0m - [91merror[0m[90m TS2300: [0mDuplicate identifier 'gold'.
+
+[7m287[0m     readonly gold: number;
+[7m   [0m [91m             ~~~~[0m
+[96msrc/testing/sceneTestRunner.ts[0m:[93m1612[0m:[93m109[0m - [91merror[0m[90m TS2339: [0mProperty 'atLeast' does not exist on type 'never'.
+
+[7m1612[0m     const matches = typeof step.goldDelta === "number" ? delta === step.goldDelta : delta >= step.goldDelta.atLeast;
+[7m    [0m [91m                                                                                                            ~~~~~~~[0m
+[96msrc/testing/sceneTestRunner.ts[0m:[93m2322[0m:[93m7[0m - [91merror[0m[90m TS1117: [0mAn object literal cannot have multiple properties with the same name.
+
+[7m2322[0m       gold: session.gold,
+[7m    [0m [91m      ~~~~[0m

@@ -1,0 +1,26 @@
+merge(ai): integrate reviewed playable work with exact current main
+
+Resolve the d2be/72f integration conservatively: retain independent review
+before apply, immutable canonical verification and append-only approach
+recovery, actual image delivery, owned wiki-timeout deferral, native
+preserved-wall accounting and correlated persistence receipts.
+
+Apply the explicitly adjudicated current-project archive/explicit recovery
+policy. Compare complete immutable pre-request local values atomically in
+the existing readwrite transaction, protecting concurrent records,
+tombstones, foreign collisions and retired owners across all pages.
+Preserve incoming retention, outbox, issue693, audio and menu work.
+
+Verified app typecheck; 11 core files/316 passing tests; focused 76-file
+coverage with explicit overlays: 1276 pass, 4 unchanged baseline failures,
+no skipped coverage or new failed assertions. Native IndexedDB/memory and
+review/image/maintenance seams were red-first. Preserve raw failures and
+all19 original-failure dispositions. No full suite/build or live game,
+provider, browser or DB operations; parent owns final-source/game gates.
+
+Task-ID: st_01a08238
+Parent-Session: 01a07680-34ac-7f79-8729-1c06bf78b736
+First-Parent: d2be60d92b74e456ea4b9e54e30daafe7fc41fc8
+Second-Parent: 72f1f179b39972c3838922746c7641a57e95fce8
+Evidence: .omo/evidence/integration-st01a08238/README.md
+Historical P7/P8 remain blocked; no private-ledger restoration claimed.

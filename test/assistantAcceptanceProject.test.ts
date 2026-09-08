@@ -236,7 +236,7 @@ describe("project acceptance parser/evaluator seam", () => {
     const criteria: readonly AcceptanceCriterion[] = requirements.flatMap(entry => entry.criteria);
     const ledger = ledgerFor(project, criteria);
     expect(ledger.evaluate(project).items[0].evidence.map(e => e.passed)).toEqual([true, false]);
-    expect(ledger.repair("original", [title])).toBe(false);
+    expect(ledger.repair("original", [title])).toMatchObject({ ok: false, code: "immutable-valid" });
   });
 
   it.each([

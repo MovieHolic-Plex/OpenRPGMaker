@@ -7,6 +7,7 @@ import { stripContextFooter } from "./contextFooter";
 import type { IntentDeclaration } from "./intentDeclaration";
 import { QUICK_REPLY_MARKER } from "./interviewPrompt";
 import type { ChangeSummary } from "@/editor/tools/types";
+import type { Project } from "@/project/types";
 
 export const PROPOSAL_COMPLETENESS_WARNING_PREFIX = "⚠ 미이행:";
 export const PROPOSAL_SCOPE_WARNING_PREFIX = "⚠ 범위:";
@@ -33,6 +34,8 @@ export interface ProposalCompletenessInput {
    */
   readonly intent?: IntentDeclaration | null;
   readonly calls: readonly ProposalCompletenessCall[];
+  /** Host-owned current tool-applied project (draft + applied milestones), never model claims. */
+  readonly project?: Project;
 }
 
 export function proposalCompletenessWarnings(input: ProposalCompletenessInput): string[] {
@@ -41,7 +44,7 @@ export function proposalCompletenessWarnings(input: ProposalCompletenessInput): 
   const requestText = stripContextFooter(input.requestText ?? "");
   const specs = input.buildSpecs ?? (input.buildSpec ? [input.buildSpec] : []);
   const base = specs.length > 0
-    ? specs.flatMap(spec => buildSpecCompletenessWarnings(spec, input.calls, input.buildSpecs !== undefined))
+    ? specs.flatMap(spec => buildSpecCompletenessWarnings(spec, input.calls, input.buildSpecs !== undefined, input.project))
     : heuristicCompletenessWarnings(requestText, input.calls, input.assistantText ?? "", intent);
   return dedupe([
     ...base,
@@ -82,6 +85,7 @@ export function proposalHasChangedMap(calls: readonly ProposalCompletenessCall[]
  * 청사진 턴 정산(editor/agentBlueprintRegions.appliedBlueprintRegions)이 같은 함수를 쓴다.
  * 두 표면이 서로 다른 계산으로 "이 에셋은 지어졌나" 를 답하면 한 화면에서 채팅은 "미이행",
  * 맵은 "완료 ✓" 가 되어 사용자가 어느 쪽을 믿을지 알 수 없다.
+ * Already-satisfied maintenance is checked separately and never enters these changed regions.
  */
 export function proposalChangedRegions(calls: readonly ProposalCompletenessCall[]): AffectedRegion[] {
   return calls.flatMap(changedRegionsForCall);
@@ -99,11 +103,63 @@ export function requestLikelyExpectsChange(text: string): boolean {
   return /(해줘|해주세요|만들|생성|추가|배치|놓아|놔|꾸며|장식|칠해|그려|지어|파줘|깔아|정리|삭제|수정|바꿔|설정)/.test(normalized);
 }
 
-function buildSpecCompletenessWarnings(buildSpec: BuildSpec, calls: readonly ProposalCompletenessCall[], qualifyMap: boolean): string[] {
+export function buildSpecCompletenessWarnings(buildSpec: BuildSpec, calls: readonly ProposalCompletenessCall[], qualifyMap = false, project?: Project): string[] {
   const touchedRegions = calls.flatMap(changedRegionsForCall);
-  const missing = buildSpec.assets.filter((asset) => !assetTouched(buildSpec.mapId, asset, touchedRegions));
+  const missing = buildSpec.assets.filter((asset) => !(alreadySatisfiedPaintCoverage(buildSpec.mapId, asset, calls, project)
+    ?? assetTouched(buildSpec.mapId, asset, touchedRegions)));
   if (missing.length === 0) return [];
   return [`${PROPOSAL_COMPLETENESS_WARNING_PREFIX} ${qualifyMap ? `${buildSpec.mapId}: ` : ""}${formatMissingSpecAssets(missing)}`];
+}
+
+/**
+ * Explicit-cell terrain maintenance is placement coverage, not construction/change evidence.
+ * Matching host-verified repairs may contribute exact cells, never an unrelated changed
+ * rectangle or replacement tile. Other asset kinds and unbounded paint modes retain the old lint.
+ */
+function alreadySatisfiedPaintCoverage(mapId: string, asset: SpecAsset, calls: readonly ProposalCompletenessCall[], project?: Project): boolean | null {
+  if (!project || asset.kind !== "terrain" || !asset.layer || (asset.shape && asset.shape !== "rect")) return null;
+  const region = { mapId, x: asset.x, y: asset.y, w: asset.w, h: asset.h };
+  const candidates = calls.filter(call => call.name === "paint_tiles" && call.args.mapId === mapId
+    && call.args.mode === "cells" && call.result.diff?.tilesChanged === 0 && !hasMeaningfulDiff(call.result.diff)
+    && Array.isArray(call.args.cells) && call.args.cells.some(cell => {
+      const point = pointValue(cell);
+      return point !== null && intersects(region, { mapId, ...point, w: 1, h: 1 });
+    }));
+  if (candidates.length === 0) return null;
+  const map = project.maps[mapId];
+  if (!map) return false;
+  const repairs = calls.filter(call => call.name === "paint_tiles" && call.args.mapId === mapId
+    && call.args.mode === "cells" && (call.result.diff?.tilesChanged ?? 0) > 0 && Array.isArray(call.args.cells));
+  const covered = new Set<string>();
+  const targets = new Set<number>();
+  // Validate maintenance targets first so a real matching repair can recover partial coverage.
+  for (const call of [...candidates, ...repairs]) {
+    const data = isRecord(call.result.data) ? call.result.data : null;
+    const tile = numberValue(call.args.tile);
+    const requestedLayer = call.args.layer;
+    if (!call.result.ok || data?.skippedClusterCells !== 0 || tile === null || !Number.isInteger(tile) || tile < 0
+      || (requestedLayer !== "lower" && requestedLayer !== "upper")) continue;
+    // Historical execution evidence, not requested layer or mutable tileset metadata.
+    const layer = data.effectiveLayer;
+    if ((layer !== "lower" && layer !== "upper") || layer !== asset.layer) continue;
+    const cells = (call.args.cells as unknown[]).map(pointValue);
+    if (cells.some(cell => cell === null || !Number.isInteger(cell.x) || !Number.isInteger(cell.y))) continue;
+    const uniqueCells = new Set(cells.flatMap(cell => cell ? [`${cell.x},${cell.y}`] : []));
+    if (typeof data.tilesTouched !== "number" || data.tilesTouched < uniqueCells.size) continue;
+    if (call.result.diff?.tilesChanged === 0) targets.add(tile);
+    else if (!targets.has(tile)) continue;
+    const tiles = layer === "lower" ? map.lowerTiles : map.upperTiles;
+    for (const cell of cells) {
+      if (cell && cell.x >= 0 && cell.y >= 0 && cell.x < map.width && cell.y < map.height
+        && tiles[cell.y * map.width + cell.x] === tile) covered.add(`${cell.x},${cell.y}`);
+    }
+  }
+  for (let y = asset.y; y < asset.y + asset.h; y += 1) {
+    for (let x = asset.x; x < asset.x + asset.w; x += 1) {
+      if (!covered.has(`${x},${y}`)) return false;
+    }
+  }
+  return true;
 }
 
 function heuristicCompletenessWarnings(
@@ -246,8 +302,14 @@ function regionsFromKnownCall(call: ProposalCompletenessCall): AffectedRegion[] 
   const mapId = stringValue(call.args.mapId);
   if (mapId === null) return null;
 
-  // paint_tiles는 from/to 두 모서리로 사각형을 친다 ([from,to] inclusive)
+  // Explicit cells win over optional from/to: sparse rows are not their bounding box.
   if (call.name === "paint_tiles") {
+    if (call.args.mode === "cells") {
+      return Array.isArray(call.args.cells) ? call.args.cells.flatMap(cell => {
+        const point = pointValue(cell);
+        return point ? [{ mapId, ...point, w: 1, h: 1 }] : [];
+      }) : [];
+    }
     const from = call.args.from as unknown as { readonly x?: unknown; readonly y?: unknown } | undefined;
     const to = call.args.to as unknown as { readonly x?: unknown; readonly y?: unknown } | undefined;
     if (from && to && typeof from.x === "number" && typeof from.y === "number" && typeof to.x === "number" && typeof to.y === "number") {

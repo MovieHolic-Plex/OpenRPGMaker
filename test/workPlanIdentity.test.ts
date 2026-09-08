@@ -11,7 +11,8 @@ import { fixedDeclarer } from "./intentFixture";
 
 const items = [
   { id: "resize-original", title: "Resize", instruction: "Resize the existing map" },
-  { id: "forest-original", title: "Forest", instruction: "Inspect the forest", successTools: ["run_lint", "invented_check"] },
+  { id: "forest-original", title: "Forest", instruction: "Inspect the forest", successTools: ["run_lint", "invented_check"],
+    verificationChecks: [{ tool: "run_lint", args: {} }] },
   { id: "optional-original", title: "Optional", instruction: "Optional decoration" },
   { id: "verify-original", title: "Verify", instruction: "Inspect the map" },
 ];
@@ -84,7 +85,7 @@ describe("in-loop WorkPlan identity", () => {
     expect(session.getWorkPlan()).toEqual(before);
     expect(session.getAcceptanceSnapshot()).toEqual(beforeAcceptance);
     expect([...session["turnSuccessfulTools"]]).toEqual(["run_lint"]);
-    expect(session["workItemVerificationEvidence"].passed("run_lint")).toBe(true);
+    expect(session["verificationEvidence"].passed("run_lint")).toBe(true);
   });
 
   it.each([
@@ -117,7 +118,7 @@ describe("in-loop WorkPlan identity", () => {
     ]);
     expect(plan?.layers[1]?.items[1]).toMatchObject({ instruction: "Use the canonical lint check", successTools: ["run_lint"] });
     expect(session["lastMilestoneCompletionItemId"]).toBe("resize-original");
-    expect(session["workItemVerificationEvidence"].passed("run_lint")).toBe(true);
+    expect(session["verificationEvidence"].passed("run_lint")).toBe(true);
   });
 
   it("preserves original artifact evidence so repair cannot bypass the outcome gate", () => {

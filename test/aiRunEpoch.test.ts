@@ -16,6 +16,8 @@ import * as commits from "@/project/projectCommitLog";
 import * as adapter from "@/editor/tools/applyChangesetToStore";
 import { clearAgentBlueprint } from "@/editor/agentBlueprint";
 import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
+import { runTool } from "@/editor/tools";
+import { ToolError } from "@/editor/tools/types";
 
 vi.mock("@/ai/preferenceSignals", () => ({ observeTurn: () => ({}), shouldDistillPreferences: () => false }));
 const final: ChatResult = { message: { role: "assistant", content: "RESULT" }, finishReason: "stop" };
@@ -200,6 +202,98 @@ it("cancellation at the actual advisory yield prevents the old verification tool
     expect(session.getHarnessSnapshot()).toEqual(snapshot);
     expect(store.getCurrent().system.titleScreen?.title).toBe("A_APPLIED");
   } finally { release.resolve(); await bounded(a); }
+});
+
+it("settles cancellation during final completion checks before held work fails and keeps replacement B isolated", async () => {
+  const ctx = { project: createBlankProject() };
+  expect(runTool(ctx, "define_ending", { id: "epoch_ending", name: "Exit", conditions: [] }).ok).toBe(true);
+  store.replace(ctx.project);
+  const entered = deferred<void>();
+  const held = deferred<void>();
+  let heldSettled = false;
+  const heldOutcome = held.promise.then(
+    () => { heldSettled = true; return { status: "fulfilled" as const }; },
+    reason => { heldSettled = true; return { status: "rejected" as const, reason }; },
+  );
+  let holdYield = false;
+  let round = 0;
+  const session = new AssistantSession(store.getCurrent(), {
+    config: { ...config, maxToolCalls: 1 }, declareIntent: fixedDeclarer({ mode: "modify", needsPlan: false }),
+    yieldToUi: () => {
+      if (!holdYield) return cooperativeNodeYield();
+      holdYield = false;
+      entered.resolve();
+      return held.promise;
+    },
+    chat: async () => {
+      round += 1;
+      if (round === 3) return { message: { role: "assistant", content: "B_READ_ONLY" }, finishReason: "stop" };
+      if (round > 3) throw new Error("Unexpected model call");
+      return { message: { role: "assistant", content: null, tool_calls: [{ id: `summary-${round}`, type: "function",
+        function: { name: "get_project_summary", arguments: "{}" } }] }, finishReason: "tool_calls" };
+    },
+  });
+  // Main's budget boundary must inspect the actual artifact even without a model final response.
+  const control = await bounded(session.sendUserMessage("Inspect the artifact"));
+  expect(control.stoppedReason).toBe("max-tool-calls");
+  expect(control.completionAssessment?.checks.find(check => check.name === "evaluate_game_quality")?.result.data)
+    .toMatchObject({ coverage: { endings: { defined: 1, uninvokedIds: ["epoch_ending"] } } });
+
+  // Observe the real completion producer unchanged, rather than the public cancellation race.
+  // With one read round and no model final, this entry belongs to finishAssessedRunRecap.
+  const completionChecks = session["completionChecks"];
+  const producerSettled = deferred<PromiseSettledResult<Awaited<ReturnType<typeof completionChecks>>>>();
+  let observedA = false;
+  session["completionChecks"] = function (...args) {
+    if (observedA) return completionChecks.apply(this, args);
+    observedA = true;
+    holdYield = true;
+    const producer = completionChecks.apply(this, args);
+    void producer.then(
+      value => producerSettled.resolve({ status: "fulfilled", value }),
+      reason => producerSettled.resolve({ status: "rejected", reason }),
+    );
+    return producer;
+  };
+  const abort = new AbortController();
+  const eventsA: SessionEvent[] = [];
+  const eventsB: SessionEvent[] = [];
+  const terminalOutcomes: ReturnType<typeof session.getRunOutcome>[] = [];
+  const a = session.sendUserMessage("Inspect again", event => {
+    eventsA.push(event);
+    if (event.type === "completion_assessment" || event.type === "run_recap") terminalOutcomes.push(session.getRunOutcome());
+  }, abort.signal, { goalAction: "new-goal" });
+  try {
+    await bounded(entered.promise);
+    expect(eventsA.filter(event => event.type === "completion_assessment")).toEqual([]);
+    abort.abort();
+    const cancelled = await bounded(a);
+    expect(heldSettled).toBe(false);
+    expect(cancelled.stoppedReason).toBe("aborted");
+    expect(cancelled.runOutcome?.execution).toBe("cancelled");
+    expect(cancelled.completionAssessment?.checks).toEqual([]);
+    expect(terminalOutcomes).toEqual([cancelled.runOutcome, cancelled.runOutcome]);
+    const b = await bounded(session.sendUserMessage("B inspect only", event => eventsB.push(event), undefined, {
+      goalAction: "new-goal", composerMode: "ask",
+    }));
+    expect(b.stoppedReason).toBe("final");
+    expect(b.assistantText).toBe("B_READ_ONLY");
+    expect(b.completionAssessment?.checks).toEqual([]);
+    const snapshot = () => structuredClone({ harness: session.getHarnessSnapshot(), project: store.getCurrent(), eventsA, eventsB, cancelled, b });
+    const before = snapshot();
+    const failure = new ToolError("Late final-check yield failure", { code: "epoch-final-check-failure" });
+    held.reject(failure);
+    expect(await bounded(heldOutcome)).toEqual({ status: "rejected", reason: failure });
+    await bounded(producerSettled.promise);
+    expect(snapshot()).toEqual(before);
+    expect(round).toBe(3);
+  } finally {
+    abort.abort();
+    held.resolve();
+    await bounded(a);
+    if (observedA) await bounded(producerSettled.promise);
+    session["completionChecks"] = completionChecks;
+  }
 });
 
 it("the actual proposal owner consumes duplicate application requests once", async () => {

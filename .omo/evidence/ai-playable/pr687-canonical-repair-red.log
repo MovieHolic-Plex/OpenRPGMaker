@@ -1,0 +1,80 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/pr687VerificationIntegration.test.ts -t canonical tool verdict|normal final repair|budget-terminal|successful exploratory --maxWorkers=2 --no-file-parallelism
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86
+
+ ❯ test/pr687VerificationIntegration.test.ts (8 tests | 2 failed | 4 skipped) 1878ms
+   × PR687 adjudicated verification scheduling through normal dispatch > canonical tool verdict binds before execution and late adoption cannot reuse an exploratory pass 811ms
+     → expected undefined to match object { Object (args, status) }
+   × PR687 adjudicated verification scheduling through normal dispatch > normal final repair is bounded by authoritative findings without an acceptance declaration 297ms
+     → expected [] to have a length of 1 but got +0
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > budget-terminal assessment retains the finding without exceeding execution budget 236ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > successful exploratory checks do not become repair obligations after a write  532ms
+   ↓ PR687 adjudicated verification scheduling through normal dispatch > rejects skip atomically with pending-specification proof and retains completion
+   ↓ PR687 adjudicated verification scheduling through normal dispatch > rejects skip atomically with unverified proof and retains completion
+   ↓ PR687 adjudicated verification scheduling through normal dispatch > rejects skip atomically with stale proof and retains completion
+   ↓ PR687 adjudicated verification scheduling through normal dispatch > rejects skip atomically with passed proof and retains completion
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/pr687VerificationIntegration.test.ts > PR687 adjudicated verification scheduling through normal dispatch > canonical tool verdict binds before execution and late adoption cannot reuse an exploratory pass
+AssertionError: expected undefined to match object { Object (args, status) }
+
+[32m- Expected:[39m 
+{
+  "args": {
+    "mapId": "map_blank_start",
+    "start": {
+      "x": 10,
+      "y": 12,
+    },
+    "steps": [
+      {
+        "kind": "expect",
+        "mapId": "map_blank_start",
+      },
+    ],
+  },
+  "status": "unverified",
+}
+
+[31m+ Received:[39m 
+undefined
+
+ ❯ test/pr687VerificationIntegration.test.ts:69:22
+     67|     await f.send([declaration]);
+     68|     const original = f.snapshot().verification.requirements.find(requi…
+     69|     expect(original).toMatchObject({ args: f.args, status: "unverified…
+       |                      ^
+     70|     expect(f.session.getAcceptanceSnapshot()?.status).toBe("blocked");
+     71|     await f.send([probe(f.args)]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  test/pr687VerificationIntegration.test.ts > PR687 adjudicated verification scheduling through normal dispatch > normal final repair is bounded by authoritative findings without an acceptance declaration
+AssertionError: expected [] to have a length of 1 but got +0
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 0[39m
+
+ ❯ test/pr687VerificationIntegration.test.ts:87:106
+     85|     const failed = { ...f.args, steps: [{ kind: "expect", goldDelta: 1…
+     86|     const result = await f.send([probe(failed)], [], [{ name: "get_pro…
+     87|     expect(f.events.filter(event => event.type === "tool_call" && even…
+       |                                                                                                          ^
+     88|     expect(f.snapshot().verification.findings).toHaveLength(1);
+     89|     expect(f.requests()).toBeLessThanOrEqual(6);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 2 passed | 4 skipped (8)
+   Start at  01:03:57
+   Duration  16.95s (transform 10.43s, setup 0ms, collect 14.54s, tests 1.88s, environment 0ms, prepare 107ms)
+

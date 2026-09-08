@@ -33,13 +33,15 @@ function fixture(options: { readonly stop?: Stop; readonly render?: ToolImageRen
     declareIntent: fixedDeclarer({ mode: "modify", targetMapId: start.id, adventure: { village: false, dungeon: false, party: false, battle: options.requireBattle ?? false } }),
     renderImages: options.render ?? (async () => [image]),
     chat: async (_config, request): Promise<ChatResult> => {
+      const imageDelivery = request.messages.flatMap((message, messageIndex) => Array.isArray(message.content)
+        ? message.content.flatMap((part, partIndex) => part.type === "image_url" ? [{ messageIndex, partIndex }] : []) : []);
       const review = approvedReviewResponse(request);
-      if (review) return review;
+      if (review) return { ...review, imageDelivery };
       deliveredImages = request.messages.flatMap(message => Array.isArray(message.content) ? message.content : []).filter(part => part.type === "image_url").length;
       const batch = rounds[round++];
-      return batch ? { message: { role: "assistant", content: null, tool_calls: batch.map((call, index) => ({ id: `c${round}_${index}`, type: "function", function: { name: call.name, arguments: JSON.stringify(call.args) } })) }, finishReason: "tool_calls",
+      return batch ? { imageDelivery, message: { role: "assistant", content: null, tool_calls: batch.map((call, index) => ({ id: `c${round}_${index}`, type: "function", function: { name: call.name, arguments: JSON.stringify(call.args) } })) }, finishReason: "tool_calls",
         usage: { prompt_tokens: 1, completion_tokens: options.stop === "token-budget" && round === rounds.length ? 10000 : 0, total_tokens: 1 } }
-        : { message: { role: "assistant", content: "SCRIPTED_FINAL" }, finishReason: "stop" };
+        : { imageDelivery, message: { role: "assistant", content: "SCRIPTED_FINAL" }, finishReason: "stop" };
     },
   });
   return { project, session, events, rounds, shows, reviews, deliveredImages: () => deliveredImages,

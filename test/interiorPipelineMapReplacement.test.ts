@@ -20,7 +20,8 @@
 // 원샷 경로와 멀티턴 완료 시점 **양쪽**에서 두 축이 보정되는 것을 고정한다.
 
 import { describe, expect, it } from "vitest";
-import { isPassable } from "@/project/collision";
+import { isPassable, tileAt } from "@/project/collision";
+import { interiorObjectById } from "@/editor/interiorObjectCatalog";
 import { commitChangeset } from "@/editor/tools/changeset";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
@@ -222,7 +223,9 @@ describe("인바운드 transfer 착지점", () => {
     ).toBe(true);
   });
 
-  it("착지점이 이미 방 안이면 좌표를 건드리지 않는다", () => {
+  // seed 미지정 시 Date.now() % 1_000_000으로 가구가 바뀐다. 같은 방 안 (5,10)도
+  // seed 1에서는 바닥, seed 4에서는 식탁이다 — 통행 가능/불가 양쪽 계약을 고정한다.
+  it("seed 1: 방 안 착지점이 가구 배치 후에도 통행 가능하면 좌표를 건드리지 않는다", () => {
     const { project, interiorId } = projectWithInboundDoor();
     // 착지점을 living 방(x 2..13, y 9..12) 안쪽으로 미리 옮겨 둔다.
     const transfer = inboundTransfers(project, interiorId)[0]!;
@@ -230,11 +233,43 @@ describe("인바운드 transfer 착지점", () => {
     transfer.y = 10;
 
     const ctx: ToolContext = { project };
-    const result = runTool(ctx, "run_interior_room_pipeline", threeRoomArgs(interiorId), { dryRun: false });
+    const result = runTool(ctx, "run_interior_room_pipeline", { ...threeRoomArgs(interiorId), seed: 1 }, { dryRun: false });
     expect(result.ok, result.summary).toBe(true);
 
-    const after = inboundTransfers(ctx.project, interiorId)[0]!;
+    const map = ctx.project.maps[interiorId]!;
+    expect(isPassable(ctx.project, map, 5, 10)).toBe(true);
+    const transfers = inboundTransfers(ctx.project, interiorId);
+    expect(transfers).toHaveLength(1);
+    const after = transfers[0]!;
     expect({ x: after.x, y: after.y }).toEqual({ x: 5, y: 10 });
+  });
+
+  it("seed 4: 방 안 착지점이 식탁으로 막히면 가장 가까운 통행 가능 칸으로 옮긴다", () => {
+    const { project, interiorId } = projectWithInboundDoor();
+    const transfer = inboundTransfers(project, interiorId)[0]!;
+    transfer.x = 5;
+    transfer.y = 10;
+
+    const ctx: ToolContext = { project };
+    const result = runTool(ctx, "run_interior_room_pipeline", { ...threeRoomArgs(interiorId), seed: 4 }, { dryRun: false });
+    expect(result.ok, result.summary).toBe(true);
+    expect(blockingCodes(ctx.project, project)).toEqual([]);
+
+    const map = ctx.project.maps[interiorId]!;
+    // (3,10)에서 시작하는 식탁 전체가 남아 있고, 원래 착지점은 실제 식탁 타일이다.
+    const table = interiorObjectById("dining_table")!;
+    for (const cell of table.cells) {
+      const tiles = cell.layer === "lower" ? map.lowerTiles : map.upperTiles;
+      expect(tiles[(10 + cell.dy) * map.width + 3 + cell.dx]).toBe(cell.tile);
+    }
+    expect(tileAt(map, 5, 10)).toEqual({ lower: 157, upper: 238 });
+    expect(isPassable(ctx.project, map, 5, 10)).toBe(false);
+
+    const transfers = inboundTransfers(ctx.project, interiorId);
+    expect(transfers).toHaveLength(1);
+    const after = transfers[0]!;
+    expect({ x: after.x, y: after.y }).toEqual({ x: 5, y: 9 });
+    expect(isPassable(ctx.project, map, after.x, after.y)).toBe(true);
   });
 
   it("맵이 줄어들어 착지점이 경계 밖이 되는 경우도 되살린다", () => {

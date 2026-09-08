@@ -70,8 +70,8 @@ describe("immutable baselines for newly adopted promises", () => {
       { id: "later", title: "Later request", criteria: [preserve] },
       { id: "later", title: "Duplicate within batch", criteria: [{ kind: "eventCount", target, count: 99 }] },
     ], project);
-    expect(ledger.repair("repair", [preserve])).toBe(true);
-    expect(ledger.repair("keep", [{ kind: "eventCount", target, count: 1 }])).toBe(false);
+    expect(ledger.repair("repair", [preserve]).ok).toBe(true);
+    expect(ledger.repair("keep", [{ kind: "eventCount", target, count: 1 }]).ok).toBe(false);
     ledger.stop(); ledger.resume();
     // Then only the genuinely new promise uses the later snapshot.
     expect(ledger.evaluate(project).items).toMatchObject([

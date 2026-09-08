@@ -1,0 +1,259 @@
+[
+  {
+    "criteria": [
+      {
+        "count": 2,
+        "kind": "mapCount"
+      },
+      {
+        "height": 15,
+        "target": {
+          "mapId": "map_blank_start"
+        },
+        "width": 20,
+        "kind": "mapDimensions"
+      },
+      {
+        "target": {
+          "mapId": "map_basement"
+        },
+        "width": 12,
+        "kind": "mapDimensions",
+        "height": 10
+      },
+      {
+        "from": {
+          "x": 10,
+          "y": 8
+        },
+        "target": {
+          "mapId": "map_blank_start"
+        },
+        "kind": "reachability",
+        "to": [
+          {
+            "x": 8,
+            "y": 8
+          },
+          {
+            "y": 8,
+            "x": 11
+          },
+          {
+            "y": 8,
+            "x": 19
+          },
+          {
+            "y": 0,
+            "x": 10
+          }
+        ]
+      },
+      {
+        "to": [
+          {
+            "y": 3,
+            "x": 6
+          }
+        ],
+        "kind": "reachability",
+        "target": {
+          "mapId": "map_basement"
+        },
+        "from": {
+          "y": 8,
+          "x": 6
+        }
+      },
+      {
+        "target": {
+          "mapId": "map_blank_start"
+        },
+        "kind": "imageReviewed",
+        "region": {
+          "w": 20,
+          "y": 0,
+          "h": 15,
+          "x": 0
+        }
+      },
+      {
+        "region": {
+          "h": 10,
+          "x": 0,
+          "w": 12,
+          "y": 0
+        },
+        "kind": "imageReviewed",
+        "target": {
+          "mapId": "map_basement"
+        }
+      }
+    ],
+    "itemId": "acceptance-contract"
+  },
+  {
+    "criteria": [
+      {
+        "kind": "mapCount",
+        "count": 2
+      },
+      {
+        "width": 20,
+        "target": {
+          "mapId": "map_blank_start"
+        },
+        "kind": "mapDimensions",
+        "height": 15
+      },
+      {
+        "target": {
+          "mapId": "map_basement"
+        },
+        "height": 10,
+        "width": 12,
+        "kind": "mapDimensions"
+      }
+    ],
+    "itemId": "acceptance-contract"
+  },
+  {
+    "criteria": [
+      {
+        "kind": "mapCount",
+        "count": 2
+      },
+      {
+        "to": [
+          {
+            "x": 8,
+            "y": 8
+          },
+          {
+            "y": 8,
+            "x": 11
+          },
+          {
+            "y": 8,
+            "x": 19
+          },
+          {
+            "y": 0,
+            "x": 10
+          }
+        ],
+        "from": {
+          "y": 8,
+          "x": 10
+        },
+        "target": {
+          "mapId": "map_blank_start"
+        },
+        "kind": "reachability"
+      },
+      {
+        "region": {
+          "h": 15,
+          "y": 0,
+          "x": 0,
+          "w": 20
+        },
+        "target": {
+          "mapId": "map_blank_start"
+        },
+        "kind": "imageReviewed"
+      },
+      {
+        "region": {
+          "h": 10,
+          "y": 0,
+          "w": 12,
+          "x": 0
+        },
+        "kind": "imageReviewed",
+        "target": {
+          "mapId": "map_basement"
+        }
+      }
+    ],
+    "itemId": "acceptance-contract"
+  },
+  {
+    "itemId": "acceptance-contract",
+    "criteria": [
+      {
+        "kind": "mapCount",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "itemId": "acceptance-contract",
+    "criteria": [
+      {
+        "kind": "mapCount",
+        "count": 2
+      },
+      {
+        "height": 15,
+        "kind": "mapDimensions",
+        "width": 20,
+        "target": {
+          "mapId": "map_blank_start"
+        }
+      },
+      {
+        "width": 12,
+        "kind": "mapDimensions",
+        "height": 10,
+        "target": {
+          "mapId": "map_basement"
+        }
+      },
+      {
+        "target": {
+          "mapId": "map_blank_start"
+        },
+        "to": [
+          {
+            "y": 8,
+            "x": 8
+          },
+          {
+            "y": 8,
+            "x": 11
+          },
+          {
+            "x": 19,
+            "y": 8
+          },
+          {
+            "y": 0,
+            "x": 10
+          }
+        ],
+        "from": {
+          "x": 10,
+          "y": 8
+        },
+        "kind": "reachability"
+      },
+      {
+        "from": {
+          "x": 6,
+          "y": 8
+        },
+        "kind": "reachability",
+        "target": {
+          "mapId": "map_basement"
+        },
+        "to": [
+          {
+            "y": 3,
+            "x": 6
+          }
+        ]
+      }
+    ]
+  }
+]

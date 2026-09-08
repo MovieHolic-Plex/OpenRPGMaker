@@ -163,12 +163,15 @@ export async function clearAiRecords(store: AiRecordStoreName): Promise<void> {
 
 /** Compare/write and deletion suppression share one readwrite transaction, including across tabs. */
 export async function mutateScopedAiRecord<T extends ScopedAiRecordRow>(
-  key: { readonly store: AiRecordStoreName; readonly id: string; readonly scope: string | null; readonly replaceEqual?: boolean },
+  key: { readonly store: AiRecordStoreName; readonly id: string; readonly scope: string | null; readonly replaceEqual?: boolean;
+    /** Synchronous admission against the value read inside this same transaction. */
+    readonly admit?: (current: T | null) => boolean },
   update: ((current: T | null) => T) | null,
 ): Promise<{ readonly backend: AiRecordBackendKind; readonly written: boolean }> {
   const db = await openDatabase();
   const deletedKey = tombstoneKey(key.id, key.scope);
   const decide = (current: T | null, deleted: boolean): T | null | undefined => {
+    if (update && key.admit && !key.admit(current)) return undefined;
     if (current && (current.projectContextKey ?? null) !== key.scope) return undefined;
     if (!update) return null;
     if (deleted) return undefined;

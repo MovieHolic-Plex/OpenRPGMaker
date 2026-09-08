@@ -2,6 +2,77 @@
 
 The LLM-harnessed interior pipeline: start session, advance build per layer, evaluate, and self-repair loop.
 
+## Interior authoring/load consistency (2026-09-07)
+
+- `project/tilesetHarness/interiorRoomGroups.ts` owns the supplemental room records
+  and shared tile vocabulary. `ensureInteriorProjectGroups` composes the 26 pack
+  records and 13 supplemental records for both room authoring and bundled load.
+  Existing records win by their exact ID, including user-origin records that retain
+  `source: bundled-default`; IDs, membership, rules, grammar and overrides are not
+  replaced or renamed, except for the complete proven legacy table factory record
+  described below. Suppressed IDs stay suppressed. A prefix is not ownership.
+- Group composition is separate from per-tile runtime seeding. Only pack groups
+  seed passage/priority/repeatability; supplemental room guidance must not overwrite
+  those contracts. Existing unknown/retired-looking groups are preserved, not deleted.
+- Default `cabinet` cells 148/178 are upper-layer; the floor beneath them remains.
+  Saved kits still take precedence. `repairLegacyInteriorCabinetKit` upgrades only
+  the complete known old catalog record on the exact bundled interior texture,
+  with no tile/graft/layer override. A changed name, AI record, row, part, ID or
+  provenance leaves it authored; `learnedFrom` alone is never sufficient.
+- The former membership-based map repair is intentionally no longer permitted.
+  A saved room plan and a matching kit do not prove per-cell authorship or recover
+  the original floor. Ambiguous already-placed lower props remain exactly as saved;
+  automatic repair is confined to proven legacy kit definitions. This preserves
+  explicit lower-layer counterexamples rather than silently choosing a new floor.
+- `test/interiorLoadConsistency.test.ts` runs the real room pipeline and editor
+  load/flush/fresh-load paths, checks canonical identity, upper cabinets over default
+  and nondefault floors, group preservation, strict legacy eligibility, and migration
+  failure/concurrent-edit behavior. No shipped demo, live DB or model is involved.
+  The archived Round8 result remains failed; these are engine regression contracts,
+  not a retrospective success label for that run.
+- Deferred migration/autosave callbacks belong to the content lineage and timer
+  handle that scheduled them. A reload makes the old callback inert before it can
+  change save state, consume a newer timer, or submit replacement content. Retry
+  timers and their health probes enforce the same ownership, including after a
+  pending probe response. `test/storeDeferredLineage.test.ts` invokes registered
+  callbacks directly and checks clean replacement preservation, normal edit/flush,
+  synchronous status-subscriber replacement, and same-lineage save catch-up.
+- An explicit replacement flush also waits for any older in-flight transport to
+  settle before saving under its own lineage. A alone never authorizes B, a queued
+  B request cannot write C, and an A failure still rejects A's callers without
+  cancelling a valid B request. `test/storeSaveOrdering.test.ts` covers this
+  ordering with held real persistence transports and unchanged audio assertions.
+
+## Closed expandable long tables (2026-09-07)
+
+- The bundled interior table is `325 | 326* | 327`: left cap, zero or more
+  repeatable middle tiles, right cap. `[325,327]` is closed; `[325,326]` is not.
+  `table_long` and `counter` retain their upper-layer three-cell catalog assembly.
+  The supplemental `harness-interior-house-v1-tavern-table` group includes all
+  three tiles, with `leftCap`, `repeatBody`, `rightCap` and minimum width 2.
+  The row painter honors that explicit minimum; its unspecified minimum remains 3.
+- Cluster adjacency lint checks both directions. `bAlt` permits alternative
+  neighbors of each `a`; `aAlt` permits alternative reverse neighbors of each `b`.
+  Alternatives do not themselves become rule anchors or disable reverse checks.
+  Without either array the original strict pair semantics remain unchanged.
+  The table's original hard rule ID is retained with
+  `{a:325,b:326,aAlt:[326],bAlt:[327],relation:"aLeftOfB"}`; a second hard rule uses
+  `{a:326,b:327,aAlt:[325],bAlt:[326],relation:"aLeftOfB"}`. Together they check both
+  caps and every middle tile. Room critique requires the same closed composition.
+- `interiorLongTableLegacy.ts` migrates only a unique, complete frozen factory
+  record, including `source:"bundled-default"`, on the exact bundled 16px/30-column/
+  480-tile interior layout. Both room authoring and bundled load use it. Matching
+  IDs or provenance alone are insufficient; customized/ambiguous records and
+  suppressed IDs remain authored state, even when their retained rules report lint.
+- Table-specific user/origin/lock metadata, grafts and lower-layer overrides block
+  migration and runtime reseeding. This includes the legacy priority-only case:
+  metadata still says `defaultLayer:"upper"`, but `tileset.priority[tile]` is
+  `"lower"`. An override on any of 325/326/327 preserves the table override
+  through authoring, load and serialized reload. No map cells or kits are migrated.
+- `test/interiorLongTable.test.ts` covers closed/broken runs, both normalizers,
+  priority-only and other overrides, painters, critique and canonical fixed points.
+  The original demo integrity assertion remains in force; demo content is unchanged.
+
 ## 사용자 타일 정정: 항아리·돌계단·석조 화로
 
 - 235는 주전자가 아니라 **항아리**다. 기존 저장물의 `kettle`/`VR.KETTLE` 식별자는 유지하지만 검색 라벨·태그·가구 이름·시설 물건 설명은 항아리로 쓴다. 141·111·171은 **돌계단**이며 목제라고 설명하지 않는다.
@@ -68,9 +139,11 @@ The LLM-harnessed interior pipeline: start session, advance build per layer, eva
 
 - `generate_map` resolves the requested `tilesetId` through `src/editor/tools/mapGenerationProfiles.ts`. Numeric tile IDs are local to that tileset and must never be reused through a global village/interior palette.
 - Bundled tilesets have explicit profile keys and layout grammars (`settlement|dungeon|rooms|ship|world|city|wilds`). `rooms` profiles require concept construction; other generated maps retain the requested `GameMap.tilesetId`.
-- A profile owns the passable floor/path tiles, blocked boundary/obstacle tile, accent tile, and topology grammar. `generate_map` applies that passage contract before its reachability repair loop.
-- The passage contract updates the project tileset record shared by every map using that `tilesetId`; floor/path/accent stay passable and the profile obstacle stays blocked consistently across those maps.
-- The passage contract updates the project tileset record shared by every map using that `tilesetId`; generation therefore treats floor/path/accent as passable and the profile obstacle as blocked consistently across those maps.
+- **Palette authority (2026-09-07):** profiles select tiles; they do not author shared passage, priority, or metadata. `resolveMapGenerationPalette` replaces the old unconditional `applyMapGenerationPassage` writer. It verifies the bundled image and 16px / 30-column / 480-cell atlas, then lazily validates each consumed palette role against runtime rules and a private copy passed through the same `ensureTilesetHarnesses` authority as load. Incompatible or stale choices fail with `incompatible-generation-palette` before project mutation; no fallback search, label/style inference, or automatic rule repair occurs.
+- Base and carved path require lower, four-direction-passable tiles. Boundary/scatter obstacles require solid passage, but may be lower terrain/trunks or upper props. Upper obstacles retain their ground backing; path carving clears their upper cell. World accent bands are not corridors and can remain solid on their authored layer. Settlement/dungeon/ship/city/wilds do not consume accent, and a zero-scatter, borderless layout without built-in obstacles does not consume obstacle. Unused palette entries remain untouched, including combined-town cave roof accent385 (upper/blocked).
+- Native numeric selections now follow their atlas rules: dungeon forest uses the existing 240/270 floor pair rather than blocked water; ship path396 and wall222 are no longer reversed; World/retro-World use passable path241 and cave base243 instead of blocked forest360/mountain-or-tree423; Scarloxy wilds uses solid trunk175 rather than canopy145 and the existing 0/60 terrain pair rather than cave water20/80. Existing valid combined-town terrain423 and lower trunk290 are retained. These are explicit profile definitions, not runtime inference or replacement of an authored override.
+- Modern's default obstacle30 has no authored solid rule, so a layout consuming it is rejected. An explicitly authored compatible solid rule permits generation; a borderless zero-obstacle city does not need it. Existing `rooms` concept routing and all passage/house/road protections are unchanged. Genuine layer/passage overrides are preserved, and incompatible ground/path overrides cause rejection rather than being silently overwritten.
+- Regression coverage: `test/generateMapPaletteAuthority.test.ts` replays the captured cave/settlement tile arrays, checks no shared tileset diff, both kinds of authored overrides, lazy unused roles, invalid atlas/rules without even direct-module mutation, 27 native profile/theme combinations, and canonical round trips. `test/generateMapPaletteReload.test.ts` exercises real tool dispatch and real store save/fresh-load with only transport/cache mocked and network forbidden. `test/generateMap.test.ts` keeps dispatch, border, lint, and reachability assertions; its cross-profile fixture now enters through the normal loaded tileset state and explicitly authors Modern's otherwise missing obstacle rule.
 - `villager-room-v1` and `dungeon-room-v1` remain the detailed layer/session pipelines for their respective authored workflows. The generic `generate_map` dispatcher does not force every tileset through the interior pipeline.
 - Uploaded or unknown tilesets do not silently inherit bundled numeric IDs; generation rejects them until a dedicated profile is authored.
 

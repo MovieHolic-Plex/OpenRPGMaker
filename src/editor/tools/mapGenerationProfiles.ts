@@ -1,5 +1,7 @@
 import type { Project } from "@/project/types";
-import { blockedFlag, passableFlag } from "@/project/tilesetPassage";
+import { DEFAULT_TILE_COUNT, DEFAULT_TILE_SIZE, DEFAULT_TILES_PER_ROW } from "@/project/defaults/constants";
+import { ensureTilesetHarnesses } from "@/project/tilesetHarness";
+import { tileMetaLocked, tileMetaOrigin } from "@/project/tilesetPalette";
 import { ToolError } from "./types";
 
 export type MapGenerationLayout =
@@ -36,7 +38,7 @@ const PROFILES = [
     layout: "dungeon",
     palettes: {
       village: { base: 240, path: 270, obstacle: 306, accent: 288 },
-      forest: { base: 60, path: 90, obstacle: 306, accent: 288 },
+      forest: { base: 240, path: 270, obstacle: 306, accent: 288 },
       cave: { base: 300, path: 330, obstacle: 366, accent: 384 },
     },
   },
@@ -52,15 +54,15 @@ const PROFILES = [
   {
     tilesetId: "easyrpg_chipset_ship",
     layout: "ship",
-    palettes: samePalette({ base: 120, path: 222, obstacle: 396, accent: 385 }),
+    palettes: samePalette({ base: 120, path: 396, obstacle: 222, accent: 385 }),
   },
   {
     tilesetId: "easyrpg_chipset_world",
     layout: "world",
     palettes: {
-      village: { base: 240, path: 360, obstacle: 306, accent: 288 },
-      forest: { base: 240, path: 360, obstacle: 290, accent: 318 },
-      cave: { base: 423, path: 360, obstacle: 306, accent: 385 },
+      village: { base: 240, path: 241, obstacle: 306, accent: 288 },
+      forest: { base: 240, path: 241, obstacle: 290, accent: 318 },
+      cave: { base: 243, path: 241, obstacle: 306, accent: 385 },
     },
   },
   {
@@ -68,7 +70,7 @@ const PROFILES = [
     layout: "dungeon",
     palettes: {
       village: { base: 240, path: 270, obstacle: 306, accent: 288 },
-      forest: { base: 180, path: 210, obstacle: 306, accent: 384 },
+      forest: { base: 240, path: 270, obstacle: 306, accent: 384 },
       cave: { base: 300, path: 330, obstacle: 366, accent: 385 },
     },
   },
@@ -103,9 +105,9 @@ const PROFILES = [
     tilesetId: "easyrpg_chipset_retro_world",
     layout: "world",
     palettes: {
-      village: { base: 240, path: 360, obstacle: 306, accent: 288 },
-      forest: { base: 240, path: 360, obstacle: 290, accent: 318 },
-      cave: { base: 423, path: 360, obstacle: 306, accent: 385 },
+      village: { base: 240, path: 241, obstacle: 306, accent: 288 },
+      forest: { base: 240, path: 241, obstacle: 290, accent: 318 },
+      cave: { base: 243, path: 241, obstacle: 306, accent: 385 },
     },
   },
   {
@@ -123,8 +125,8 @@ const PROFILES = [
     layout: "wilds",
     palettes: {
       village: { base: 0, path: 60, obstacle: 117, accent: 119 },
-      forest: { base: 10, path: 70, obstacle: 145, accent: 149 },
-      cave: { base: 20, path: 80, obstacle: 117, accent: 119 },
+      forest: { base: 10, path: 70, obstacle: 175, accent: 149 },
+      cave: { base: 0, path: 60, obstacle: 117, accent: 119 },
     },
   },
   {
@@ -149,17 +151,64 @@ export function requireMapGenerationProfile(project: Project, tilesetId: string)
   return profile;
 }
 
-export function applyMapGenerationPassage(
+export type MapGenerationTile = { readonly tile: number; readonly layer: "lower" | "upper" };
+export type MapGenerationPaletteResolver = (paletteSlot: keyof MapGenerationPalette) => MapGenerationTile;
+
+// Resolve only roles actually consumed by the algorithm. In particular, settlement
+// never consumes accent. This boundary must not author shared tileset rules.
+export function resolveMapGenerationPalette(
   project: Project,
   profile: MapGenerationProfile,
   palette: MapGenerationPalette,
-): void {
+): MapGenerationPaletteResolver {
   const tileset = project.tilesets[profile.tilesetId];
-  if (!tileset) return;
-  for (const tileId of [palette.base, palette.path, palette.accent]) {
-    tileset.passability[tileId] = passableFlag();
-    tileset.priority[tileId] = "lower";
+  const reject = (detail: string): never => {
+    throw new ToolError(`타일셋 '${profile.tilesetId}' 생성 팔레트가 현재 타일 규칙과 호환되지 않습니다: ${detail}`, {
+      code: "incompatible-generation-palette",
+    });
+  };
+  // The numeric profiles address these bundled 480-cell atlases, not an uploaded
+  // replacement that happens to retain the same tileset ID.
+  if (tileset.image.type !== "bundled" || tileset.image.id !== `tex_${profile.tilesetId}`
+    || tileset.tileSize !== DEFAULT_TILE_SIZE || tileset.tilesPerRow !== DEFAULT_TILES_PER_ROW
+    || tileset.count !== DEFAULT_TILE_COUNT) {
+    reject("atlas image / geometry");
   }
-  tileset.passability[palette.obstacle] = blockedFlag();
-  tileset.priority[palette.obstacle] = "lower";
+  // Use the same authored/default authority as reload, on a private copy. Reject
+  // stale runtime rules rather than normalizing the project's unrelated tiles.
+  const canonical = structuredClone(tileset);
+  ensureTilesetHarnesses({ tilesets: { [profile.tilesetId]: canonical } });
+  const resolved = new Map<keyof MapGenerationPalette, MapGenerationTile>();
+  return paletteSlot => {
+    const cached = resolved.get(paletteSlot);
+    if (cached) return cached;
+    const tile = palette[paletteSlot];
+    if (!Number.isInteger(tile) || tile < 0 || tile >= tileset.count) reject(`${paletteSlot}:${tile} out of atlas`);
+    const layer = tileset.priority[tile];
+    const pass = tileset.passability[tile];
+    const expected = canonical.passability[tile];
+    const directions = ["up", "down", "left", "right"] as const;
+    if ((layer !== "lower" && layer !== "upper") || !pass || !expected
+      || layer !== canonical.priority[tile] || directions.some(dir => pass[dir] !== expected[dir])) {
+      reject(`${paletteSlot}:${tile} runtime / authored rules differ`);
+    }
+    const meta = tileset.tileMeta?.[tile];
+    if (tileMetaLocked(meta) || tileMetaOrigin(meta) === "user") {
+      if ((meta?.defaultLayer === "lower" || meta?.defaultLayer === "upper") && meta.defaultLayer !== layer) {
+        reject(`${paletteSlot}:${tile} authored layer`);
+      }
+      if (meta?.passage && directions.some(dir => pass[dir] !== (meta.passage !== "solid"))) {
+        reject(`${paletteSlot}:${tile} authored passage`);
+      }
+    }
+    // Corridors are carved in both axes. Obstacles may be lower terrain/trunks or
+    // upper solid props; world accent bands need not be passable corridors.
+    if ((paletteSlot === "base" || paletteSlot === "path") && (layer !== "lower" || directions.some(dir => !pass[dir]))) {
+      reject(`${paletteSlot}:${tile} requires lower, four-direction passable ground`);
+    }
+    if (paletteSlot === "obstacle" && directions.some(dir => pass[dir])) reject(`${paletteSlot}:${tile} requires solid passage`);
+    const choice = { tile, layer };
+    resolved.set(paletteSlot, choice);
+    return choice;
+  };
 }

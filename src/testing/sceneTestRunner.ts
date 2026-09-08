@@ -1,5 +1,5 @@
 import { buildLifeRuntimeSnapshot, type LifeRuntimeSnapshot } from "@/player/runtimeDom";
-import { canMove, isPassable } from "@/project/collision";
+import { canMove, isPassable, isPassableLanding } from "@/project/collision";
 import { BattleEventInputRequiredError, createBattleRuntime, type BattleResult } from "@/battle/runtime";
 import { resolveEventPage } from "@/project/io";
 import { checkReachability } from "@/project/lint/reachability";
@@ -86,6 +86,83 @@ import { advanceTimeAcrossDayBoundaries, setTimeWithMakers, transitionToNextDay 
 
 const TICK_MS = 16;
 
+export interface RewardDelta {
+  gold: number;
+  inventory: Record<string, number>;
+  monsters: Record<string, number>;
+}
+
+/** Host-only capability, never part of the scene tool's input schema. */
+export interface SceneRewardProof {
+  readonly target: { readonly mapId: string; readonly eventId: string };
+  readonly protectedFrom: number;
+  readonly repeatFrom?: number;
+  readonly requested: SceneExpectStep;
+  readonly signal?: AbortSignal;
+  readonly report: {
+    phase: "prelude" | "claim" | "repeat";
+    instructions: number;
+    movementSteps: number;
+    claim?: RewardDelta;
+    repeat?: RewardDelta;
+  };
+}
+
+// Admit only native commands this bounded harness really executes; no UI defaults,
+// map-event delegation, M2 fallback or relocation. Ordinary execution is unchanged.
+const REWARD_PROOF_COMMANDS: ReadonlySet<Command["kind"]> = new Set([
+  "text", "changeFace", "displayTextSettings", "choices", "fork", "setSwitch", "setVariable",
+  "setSelfSwitch", "setFlag", "label", "gotoLabel", "loop", "breakLoop", "callCommonEvent",
+  "transfer", "wait", "changeGold", "changeItem", "giveMonster", "moveMonster", "changeParty",
+  "playAudio", "stopAudio", "showPicture", "erasePicture", "showEmote", "setWeather",
+  "cutsceneControl", "setEventGraphicPattern",
+]);
+
+function unverified(reason: string): never { throw new Error(`NPC reward unverified: ${reason}`); }
+
+function rewardSnapshot(session: PlaySession): RewardDelta {
+  return { gold: session.gold, inventory: { ...session.inventory }, monsters: ownedMonsterCounts(session) };
+}
+
+function rewardDelta(session: PlaySession, baseline: RewardDelta): RewardDelta {
+  const now = rewardSnapshot(session);
+  const difference = (current: Record<string, number>, before: Record<string, number>) => Object.fromEntries(
+    [...new Set([...Object.keys(current), ...Object.keys(before)])].map(id => [id, (current[id] ?? 0) - (before[id] ?? 0)]));
+  return { gold: now.gold - baseline.gold, inventory: difference(now.inventory, baseline.inventory), monsters: difference(now.monsters, baseline.monsters) };
+}
+
+function proofCommand(state: RunnerState, command: Command): void {
+  const proof = state.rewardProof;
+  if (!proof) return;
+  if (proof.signal?.aborted) unverified("Cancelled");
+  if (proof.report.instructions >= 100000) unverified("Interpreter instruction budget exhausted");
+  proof.report.instructions++;
+  if (!REWARD_PROOF_COMMANDS.has(command.kind)) unverified(`Unsupported command: ${command.kind}`);
+  if (command.kind === "transfer" && proof.report.phase !== "prelude") unverified("Protected transfer");
+  if (command.kind === "changeItem" && !state.project.database.items.some(item => item.id === command.itemId)) unverified(`Missing item: ${command.itemId}`);
+  if (command.kind === "giveMonster" && !state.project.database.monsterSpecies?.some(species => species.id === command.speciesId)) unverified(`Missing species: ${command.speciesId}`);
+}
+
+function proofPosition(state: RunnerState): string | null {
+  const { currentMapId, x, y } = state.session;
+  const map = currentMap(state);
+  return !map || !Number.isSafeInteger(x) || !Number.isSafeInteger(y)
+    || !isPassableLanding(state.project, map, x, y)
+    || findBlockingRuntimeEventAtInMap(state.project, map, state.session, state.eventPositions, x, y)
+    ? `Invalid start/transfer landing: ${currentMapId} (${x},${y})` : null;
+}
+
+function checkEarlyReward(state: RunnerState, baseline = state.earlyRewardBaseline): string | null {
+  if (!baseline || state.held) return null;
+  const delta = rewardDelta(state.session, baseline);
+  if (baseline === state.earlyRewardBaseline) state.earlyRewardBaseline = undefined;
+  const requested = state.rewardProof!.requested;
+  return (requested.goldDelta !== undefined && delta.gold !== 0)
+    || Object.keys(requested.inventoryDelta ?? {}).some(id => (delta.inventory[id] ?? 0) !== 0)
+    || Object.keys(requested.ownedMonsterDelta ?? {}).some(id => (delta.monsters[id] ?? 0) !== 0)
+    ? "Earlier reward NPC interaction changed requested rewards before the protected claim snapshot" : null;
+}
+
 export type SceneStep =
   | { kind: "wait"; ticks: number }
   | { kind: "face"; dir: Dir }
@@ -146,8 +223,8 @@ export type SceneExpectStep = {
   cropStageAt?: { x: number; y: number; stage: number; mapId?: string };
   inventoryCount?: { itemId: string; count: number } | Record<string, number>;
   /** Deltas from scene start or the latest snapshotRewards step. */
+  goldDelta?: number | { atLeast: number };
   inventoryDelta?: Record<string, number | { atLeast: number }>;
-  goldDelta?: number;
   ownedMonsterDelta?: Record<string, number | { atLeast: number }>;
   interactionComplete?: boolean;
   lastTransfer?: { fromMapId: string; eventId: string; toMapId: string };
@@ -161,7 +238,22 @@ export interface SceneTestInput {
   readonly steps: readonly SceneStep[];
 }
 
+export interface SceneInteractionReceipt {
+  readonly stepIndex: number;
+  readonly mapId: string;
+  readonly eventId: string;
+}
+export interface SceneSetupFailure {
+  readonly kind: "no-interaction-target" | "invalid-input" | "execution-failure";
+  readonly stepIndex: number;
+  readonly mapId: string;
+}
+
 export interface SceneTestResult {
+  readonly interactions: readonly SceneInteractionReceipt[];
+  readonly setupFailure?: SceneSetupFailure;
+  /** Explicit intent that failed selection, never an executed interaction. */
+  readonly failedSelection?: SceneInteractionReceipt;
   readonly ok: boolean;
   readonly stepsRun: number;
   readonly totalSteps: number;
@@ -228,6 +320,15 @@ interface CameraModel {
 }
 
 interface RunnerState {
+  stepIndex: number;
+  readonly interactions: SceneInteractionReceipt[];
+  setupFailure?: SceneSetupFailure;
+  failedSelection?: SceneInteractionReceipt;
+  readonly rewardProof?: SceneRewardProof;
+  earlyRewardBaseline?: RewardDelta;
+  /** Host approach is protected, but cannot pay before its claim snapshot. */
+  rewardClaimSnapshotTaken?: boolean;
+  proofEventActive?: boolean;
   readonly project: Project;
   readonly runtimeMaps: Record<string, GameMap>;
   session: PlaySession;
@@ -254,7 +355,7 @@ interface RunnerState {
   runtimeFailure: string | null;
   executingEventId?: string;
   lastTransfer?: { fromMapId: string; eventId: string; toMapId: string };
-  rewardBaseline: { inventory: Record<string, number>; monsters: Record<string, number>; gold: number };
+  rewardBaseline: { gold: number; inventory: Record<string, number>; monsters: Record<string, number> };
 }
 
 /** Ownership is party + box membership, resolved through instances (not actor party). */
@@ -271,6 +372,7 @@ type SceneFieldCheck = (value: unknown) => boolean;
 const sceneRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value);
 const sceneNumber: SceneFieldCheck = value => typeof value === "number" && Number.isFinite(value);
+const sceneInteger: SceneFieldCheck = value => typeof value === "number" && Number.isSafeInteger(value);
 const sceneCount: SceneFieldCheck = value => typeof value === "number" && Number.isSafeInteger(value) && value >= 0;
 const sceneText: SceneFieldCheck = value => typeof value === "string" && value.trim().length > 0;
 const sceneBoolean: SceneFieldCheck = value => typeof value === "boolean";
@@ -311,7 +413,8 @@ const sceneExpectFields: Readonly<Record<keyof Omit<SceneExpectStep, "kind">, Sc
   timePhase: isTimePhase,
   cropStageAt: value => sceneShape(value, { x: sceneCount, y: sceneCount, stage: sceneCount, mapId: sceneText }, ["x", "y", "stage"]),
   inventoryCount: value => sceneNumbers(value) || sceneShape(value, { itemId: sceneText, count: sceneCount }, ["itemId", "count"]),
-  inventoryDelta: sceneRewardDeltas, ownedMonsterDelta: sceneRewardDeltas, goldDelta: sceneNumber,
+  inventoryDelta: sceneRewardDeltas, ownedMonsterDelta: sceneRewardDeltas,
+  goldDelta: value => sceneInteger(value) || sceneShape(value, { atLeast: sceneInteger }, ["atLeast"]),
   interactionComplete: sceneBoolean,
   lastTransfer: value => sceneShape(value, { fromMapId: sceneText, eventId: sceneText, toMapId: sceneText }, ["fromMapId", "eventId", "toMapId"]),
   friendshipAtLeast: value => sceneNumbers(value) || sceneShape(value, { npcKey: sceneText, value: sceneNumber }, ["npcKey", "value"]),
@@ -357,11 +460,12 @@ export function isSceneTestInput(value: unknown): value is SceneTestInput {
   }, ["mapId", "start", "steps"]);
 }
 
-export function runSceneTest(project: Project, input: SceneTestInput): SceneTestResult {
+export function runSceneTest(project: Project, input: SceneTestInput, rewardProof?: SceneRewardProof): SceneTestResult {
   const session = startSession(project, 1);
   if (!isSceneTestInput(input)) {
     return result(false, project, session, emptyEventPositions(project), emptyCamera(session), [], [],
-      [], 0, undefined, "Malformed scene test input", null, false, false);
+      [], 0, undefined, "Malformed scene test input", null, false, false, [],
+      { kind: "invalid-input", stepIndex: 0, mapId: session.currentMapId });
   }
   const runtimeMaps = structuredClone(project.maps);
   const map = runtimeMaps[input.mapId];
@@ -375,6 +479,9 @@ export function runSceneTest(project: Project, input: SceneTestInput): SceneTest
   applyMapDefaultLighting(session, map);
   applyMapBgmToSession(session.audio, resolveMapBgm(project, input.mapId));
   const state: RunnerState = {
+    stepIndex: -1,
+    interactions: [],
+    rewardProof,
     project,
     runtimeMaps,
     session,
@@ -396,34 +503,55 @@ export function runSceneTest(project: Project, input: SceneTestInput): SceneTest
     gameOver: false,
     held: null,
     runtimeFailure: null,
-    rewardBaseline: { inventory: { ...session.inventory }, monsters: ownedMonsterCounts(session), gold: session.gold },
+    rewardBaseline: { gold: session.gold, inventory: { ...session.inventory }, monsters: ownedMonsterCounts(session) },
   };
   initializeFieldSpawnsForRunner(state);
   syncFollowCamera(state);
   applyNpcSchedulesForRunner(state);
   refreshChasers(state);
-  const autoReason = runAutoTriggers(state) ?? state.runtimeFailure;
+  let autoReason: string | null;
+  try {
+    autoReason = rewardProof ? proofPosition(state) : null;
+    if (rewardProof?.signal?.aborted) unverified("Cancelled");
+    autoReason ??= runAutoTriggers(state);
+    autoReason ??= state.runtimeFailure;
+    autoReason ??= checkEarlyReward(state);
+  } catch (cause) {
+    state.setupFailure = { kind: "execution-failure", stepIndex: -1, mapId: state.session.currentMapId };
+    autoReason = cause instanceof Error ? cause.message : String(cause);
+  }
   if (autoReason !== null) {
-    return result(false, project, state.session, state.eventPositions, state.camera, log, state.messages, input.steps, 0, input.steps[0], autoReason, state.fieldSpawnState, state.gameOver, state.activeAnimations.length > 0);
+    return result(false, project, state.session, state.eventPositions, state.camera, log, state.messages, input.steps, 0, input.steps[0], autoReason, state.fieldSpawnState, state.gameOver, state.activeAnimations.length > 0, state.interactions, state.setupFailure);
   }
 
   for (let i = 0; i < input.steps.length; i += 1) {
     const step = input.steps[i];
+    state.stepIndex = i;
     let reason: string | null;
     try {
+      if (rewardProof) {
+        if (rewardProof.signal?.aborted) unverified("Cancelled");
+        rewardProof.report.phase = i < rewardProof.protectedFrom ? "prelude"
+          : rewardProof.repeatFrom !== undefined && i >= rewardProof.repeatFrom ? "repeat" : "claim";
+        if (rewardProof.report.phase !== "prelude" && state.session.currentMapId !== rewardProof.target.mapId) unverified("Protected target map changed");
+      }
       reason = runStep(state, step) ?? state.runtimeFailure;
+      reason ??= checkEarlyReward(state);
     } catch (cause) {
+      state.setupFailure = { kind: "execution-failure", stepIndex: i, mapId: state.session.currentMapId };
       reason = `예외: ${cause instanceof Error ? cause.message : String(cause)}`;
     }
     if (reason !== null) {
-      return result(false, project, state.session, state.eventPositions, state.camera, log, state.messages, input.steps, i, step, reason, state.fieldSpawnState, state.gameOver, state.activeAnimations.length > 0);
+      return result(false, project, state.session, state.eventPositions, state.camera, log, state.messages, input.steps, i, step, reason, state.fieldSpawnState, state.gameOver, state.activeAnimations.length > 0, state.interactions, state.setupFailure, state.failedSelection);
     }
   }
 
-  return result(true, project, state.session, state.eventPositions, state.camera, log, state.messages, input.steps, input.steps.length, undefined, undefined, state.fieldSpawnState, state.gameOver, state.activeAnimations.length > 0);
+  return result(true, project, state.session, state.eventPositions, state.camera, log, state.messages, input.steps, input.steps.length, undefined, undefined, state.fieldSpawnState, state.gameOver, state.activeAnimations.length > 0, state.interactions);
 }
 
 function runStep(state: RunnerState, step: SceneStep): string | null {
+  if (state.rewardProof && state.held && step.kind !== "choose"
+    && !(step.kind === "expect" && step.mapId !== undefined && Object.keys(step).length === 2)) return "Unfinished interaction: only its pending choice may proceed";
   if (state.held && ["walk", "move", "interact", "gift"].includes(step.kind)) return `Interaction still waiting for ${state.held.mode}`;
   switch (step.kind) {
     case "wait":
@@ -440,7 +568,8 @@ function runStep(state: RunnerState, step: SceneStep): string | null {
     case "interact":
       return runInteractStep(state, step.eventId);
     case "snapshotRewards":
-      state.rewardBaseline = { inventory: { ...state.session.inventory }, monsters: ownedMonsterCounts(state.session), gold: state.session.gold };
+      state.rewardBaseline = { gold: state.session.gold, inventory: { ...state.session.inventory }, monsters: ownedMonsterCounts(state.session) };
+      if (state.rewardProof?.report.phase === "claim") state.rewardClaimSnapshotTaken = true;
       state.log.push(`reward baseline ${JSON.stringify(state.rewardBaseline)}`);
       return null;
     case "purchase":
@@ -454,6 +583,12 @@ function runStep(state: RunnerState, step: SceneStep): string | null {
     case "advanceDays":
       return advanceDaysForRunner(state, step.days);
     case "expect":
+      if (state.rewardProof && step.interactionComplete && (step.goldDelta !== undefined || step.inventoryDelta || step.ownedMonsterDelta) && state.rewardProof.report.phase !== "prelude") {
+        const phase = state.rewardProof.report.phase;
+        const delta = rewardDelta(state.session, state.rewardBaseline);
+        state.rewardProof.report[phase] = delta;
+        if (phase === "repeat" && (delta.gold !== 0 || Object.values(delta.inventory).some(n => n !== 0) || Object.values(delta.monsters).some(n => n !== 0))) return "Protected repeat paid additional rewards";
+      }
       return runExpectStep(state, step);
   }
 }
@@ -495,6 +630,11 @@ function runMoveStep(state: RunnerState, step: Extract<SceneStep, { kind: "move"
 }
 
 function movePlayerOneStep(state: RunnerState, x: number, y: number): string | null {
+  if (state.rewardProof) {
+    if (state.held) return "Unfinished interaction during walking";
+    if (state.rewardProof.report.movementSteps >= 4096) return "NPC reward movement budget exhausted";
+    state.rewardProof.report.movementSteps++;
+  }
   if (state.held) return `Interaction still waiting for ${state.held.mode}`;
   const map = currentMap(state);
   if (!map) return `현재 맵 없음: ${state.session.currentMapId}`;
@@ -672,6 +812,10 @@ function findGiftEventOverlapping(
 }
 
 function runInteractStep(state: RunnerState, expectedEventId?: string): string | null {
+  // Capture before every selection exit; clear only when the intended event is selected.
+  if (expectedEventId !== undefined) state.failedSelection = {
+    stepIndex: state.stepIndex, mapId: state.session.currentMapId, eventId: expectedEventId,
+  };
   if (state.gameOver) return "게임 오버 중에는 이벤트를 조사할 수 없습니다.";
   const map = currentMap(state);
   if (!map) return `현재 맵 없음: ${state.session.currentMapId}`;
@@ -683,6 +827,7 @@ function runInteractStep(state: RunnerState, expectedEventId?: string): string |
     const event = findRuntimeEventAtInMap(state.project, map, state.session, state.eventPositions, target.x, target.y, "action");
     if (event) {
       if (expectedEventId !== undefined && event.event.id !== expectedEventId) return `Interaction target: expected ${expectedEventId}, actual ${event.event.id}`;
+      delete state.failedSelection;
       return runEventView(state, event);
     }
     const chest = findChestAt(state.session, map.id, target.x, target.y);
@@ -704,6 +849,7 @@ function runInteractStep(state: RunnerState, expectedEventId?: string): string |
       return null;
     }
   }
+  state.setupFailure = { kind: "no-interaction-target", stepIndex: state.stepIndex, mapId: map.id };
   return `조사할 action 이벤트 없음: ${map.id} (${state.session.x},${state.session.y}) facing=${state.facing}`;
 }
 
@@ -759,6 +905,7 @@ function runPurchaseStep(state: RunnerState, purchase: Extract<SceneStep, { kind
 }
 
 function runChooseStep(state: RunnerState, index: number): string | null {
+  if (state.rewardProof && index === -1) return "NPC reward unverified: choice cancellation";
   const held = state.held;
   if (!held || held.mode !== "choices") return "choose를 처리할 대기 중 선택지가 없습니다.";
   if (!Number.isInteger(index) || index < -1 || index >= held.choiceCount) return `Choice index ${index} is out of range (${held.choiceCount} options).`;
@@ -771,21 +918,39 @@ function runChooseStep(state: RunnerState, index: number): string | null {
 }
 
 function runEventView(state: RunnerState, view: RuntimeEventView): string | null {
+  state.interactions.push({ stepIndex: state.stepIndex, mapId: state.session.currentMapId, eventId: view.event.id });
+  const proof = state.rewardProof;
+  let earlyRewardBaseline: RewardDelta | undefined;
+  if (proof) {
+    if (state.held) return "Cannot abandon a held interaction for another event";
+    if (proof.report.phase !== "prelude" && (state.proofEventActive || state.session.currentMapId !== proof.target.mapId || view.event.id !== proof.target.eventId)) return "Protected foreign map-event entry";
+    if (isFieldSpawnEventId(view.event.id)) return "NPC reward unverified: field battle";
+    if (!state.rewardClaimSnapshotTaken && state.session.currentMapId === proof.target.mapId && view.event.id === proof.target.eventId) earlyRewardBaseline = rewardSnapshot(state.session);
+  }
   if (state.held) return `Interaction still waiting for ${state.held.mode}`;
   if (isFieldSpawnEventId(view.event.id)) return runFieldSpawnBattleForRunner(state, view.event.id);
   const commands = view.page?.commands ?? resolveEventPage(view.event, state.session)?.commands ?? view.event.commands;
   if (commands.length === 0) {
     state.held = null;
     state.log.push(`event ${view.event.id}: no commands`);
-    return null;
+    return checkEarlyReward(state, earlyRewardBaseline);
   }
-  const interp = createInterpreter([...commands], state.session, state.project, { currentEventId: view.event.id, eventPositions: state.eventPositions });
+  const interp = createInterpreter([...commands], state.session, state.project, {
+    currentEventId: view.event.id, eventPositions: state.eventPositions,
+    ...(proof ? { beforeCommand: (command: Command) => proofCommand(state, command), onUnverified: unverified } : {}),
+  });
   state.log.push(`event ${view.event.id} start`);
+  const wasActive = state.proofEventActive;
+  state.proofEventActive = true;
   state.executingEventId = view.event.id;
   const stop = pump(state, interp, interp.start());
+  state.proofEventActive = wasActive;
   refreshRoguelikeRoomForRunner(state);
   updateHeldInterpreter(state, interp, stop, view.event.id);
-  return stop.stop === "failed" ? stop.reason : null;
+  // Keep synchronous baselines local across nested events; only held choices outlive this call.
+  if (earlyRewardBaseline && state.held) state.earlyRewardBaseline = earlyRewardBaseline;
+  // A walk may dispatch several touch interactions; do not net their deltas together.
+  return stop.stop === "failed" ? stop.reason : checkEarlyReward(state, earlyRewardBaseline);
 }
 
 function updateHeldInterpreter(
@@ -828,6 +993,7 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
         break;
       case "wait":
         {
+          if (state.rewardProof && (!Number.isFinite(step.ms) || step.ms < 0 || step.ms > 60000)) return { stop: "failed", reason: "Unsupported reward-proof wait duration" };
           const failure = advanceTime(state, step.ms);
           if (failure) return { stop: "failed", reason: failure };
         }
@@ -855,6 +1021,8 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
         step = interp.resume(undefined);
         break;
       case "transfer":
+        if (state.rewardProof && state.rewardProof.report.phase !== "prelude") return { stop: "failed", reason: "Protected transfer" };
+        if (state.rewardProof && step.direction && step.direction !== "retain") state.facing = step.direction;
         state.lastTransfer = state.executingEventId ? { fromMapId: state.session.currentMapId, eventId: state.executingEventId, toMapId: step.mapId } : undefined;
         state.session.currentMapId = step.mapId;
         state.session.x = step.x;
@@ -872,6 +1040,10 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
         applyNpcSchedulesForRunner(state);
         refreshChasers(state);
         syncFollowCamera(state);
+        if (state.rewardProof) {
+          const landingFailure = proofPosition(state);
+          if (landingFailure) return { stop: "failed", reason: landingFailure };
+        }
         state.autoStartedKeys.clear();
         {
           const autoReason = runAutoTriggers(state);
@@ -1324,6 +1496,7 @@ function runDayEndHookForRunner(state: RunnerState): string | null {
   const system = resolveTimeSystem(state.project);
   const hook = system?.onDayEnd ? state.project.commonEvents.find((event) => event.id === system.onDayEnd) : undefined;
   if (!hook?.commands.length) return null;
+  if (state.rewardProof) return "NPC reward unverified: calendar common-event hook";
   state.log.push(`onDayEnd ${hook.id} start`);
   const interp = createInterpreter([...hook.commands], state.session, state.project);
   const stop = pump(state, interp, interp.start());
@@ -1425,12 +1598,14 @@ function runExpectStep(state: RunnerState, step: SceneExpectStep): string | null
     || step.lastTransfer.eventId !== state.lastTransfer.eventId || step.lastTransfer.toMapId !== state.lastTransfer.toMapId)) {
     return `Transfer: expected ${JSON.stringify(step.lastTransfer)}, actual ${JSON.stringify(state.lastTransfer ?? null)}`;
   }
-  if (step.goldDelta !== undefined) {
-    const delta = state.session.gold - state.rewardBaseline.gold;
-    if (delta !== step.goldDelta) return `gold: expected delta ${step.goldDelta}, actual ${delta}`;
-  }
   if (step.interactionComplete !== undefined && (state.held === null) !== step.interactionComplete) {
     return "Interaction completion does not match expectation.";
+  }
+  if (step.goldDelta !== undefined) {
+    const delta = state.session.gold - state.rewardBaseline.gold;
+    const matches = typeof step.goldDelta === "number" ? delta === step.goldDelta : delta >= step.goldDelta.atLeast;
+    state.log.push(`reward delta gold: baseline=${state.rewardBaseline.gold}, current=${state.session.gold}, delta=${delta}`);
+    if (!matches) return `gold: expected delta ${JSON.stringify(step.goldDelta)}, actual ${delta}`;
   }
   for (const [kind, expected, current, baseline] of [
     ["inventory", step.inventoryDelta, state.session.inventory, state.rewardBaseline.inventory],
@@ -1937,6 +2112,7 @@ function runHeadlessBattle(
   state: RunnerState,
   step: Extract<StepResult, { kind: "battleProcessing" }>
 ): BattleResult {
+  if (state.rewardProof) unverified("Unsupported battle");
   const runtime = createBattleRuntime({
     project: state.project,
     troopId: step.troopId,
@@ -2096,7 +2272,10 @@ function result(
   failureReason: string | undefined,
   fieldSpawnState: FieldSpawnRuntimeState | null,
   gameOver: boolean,
-  animationPlaying: boolean
+  animationPlaying: boolean,
+  interactions: readonly SceneInteractionReceipt[] = [],
+  setupFailure?: SceneSetupFailure,
+  failedSelection?: SceneInteractionReceipt,
 ): SceneTestResult {
   void eventPositions;
   const lighting = normalizeLightingState(session.lighting);
@@ -2104,6 +2283,9 @@ function result(
     ok,
     stepsRun,
     totalSteps: steps.length,
+    interactions,
+    ...(setupFailure ? { setupFailure } : {}),
+    ...(failedSelection ? { failedSelection } : {}),
     failedStepIndex: ok ? undefined : stepsRun,
     failedStep,
     failureReason,

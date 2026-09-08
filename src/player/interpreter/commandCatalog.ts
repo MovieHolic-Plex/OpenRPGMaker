@@ -62,6 +62,7 @@ function callCommonEvent(state: InterpreterState, frame: Frame, commonEventId: s
     if (pushFrame(state, commonEvent.commands)) return { kind: "continue" };
     console.warn("[interpreter] common event recursion limit");
   } else {
+    state.onUnverified?.(`Unsupported missing common event: ${commonEventId}`);
     console.warn(`[interpreter] 공통 이벤트 없음: ${commonEventId}`);
   }
   return resumeNext(frame);
@@ -397,6 +398,7 @@ export function executeCommand(
   frame: Frame,
   command: Command
 ): CommandExecution {
+  state.beforeCommand?.(command);
   switch (command.kind) {
     case "changeFace": {
       if (command.appearanceId !== undefined) {

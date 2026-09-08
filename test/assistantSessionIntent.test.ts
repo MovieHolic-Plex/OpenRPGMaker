@@ -388,7 +388,7 @@ describe("의도 선언이 세션 라우팅을 정한다", () => {
     const plan = {
       action: "new_plan",
       goal: "담장 수정",
-      layers: [{ title: "수정", items: [{ title: "담장", instruction: "tile_erase 후 build_wall", doneWhen: "담장 정리", successTools: ["tile_erase"] }] }],
+      layers: [{ title: "수정", items: [{ title: "담장", instruction: "tile_erase 후 build_wall", doneWhen: "담장 정리", successTools: ["tile_erase"], mapTargets: ["map_blank_start"] }] }],
     };
     const modify = new AssistantSession(createBlankProject(), {
       config: AUTO_CONFIG,
@@ -397,7 +397,12 @@ describe("의도 선언이 세션 라우팅을 정한다", () => {
       declareIntent: fixedDeclarer({ mode: "modify", needsPlan: true }),
     });
     await modify.sendUserMessage("이 마을 담장 좀 손봐줘", () => {});
-    expect(modify.getWorkPlan()?.targetMapId).toBe("map_blank_start");
+    const modifyPlan = modify.getWorkPlan();
+    expect(modifyPlan).not.toBeNull();
+    expect(modifyPlan?.targetMapId).toBe("map_blank_start");
+    expect(modifyPlan?.layers[0].items[0]).toMatchObject({
+      status: "in_progress", successTools: ["tile_erase"], mapTargets: ["map_blank_start"],
+    });
 
     const create = new AssistantSession(createBlankProject(), {
       config: AUTO_CONFIG,
@@ -406,7 +411,13 @@ describe("의도 선언이 세션 라우팅을 정한다", () => {
       declareIntent: fixedDeclarer({ mode: "create", needsPlan: true }),
     });
     await create.sendUserMessage("새 마을 만들어줘", () => {});
-    expect(create.getWorkPlan()?.targetMapId).toBeUndefined();
+    const createPlan = create.getWorkPlan();
+    expect(createPlan).not.toBeNull();
+    expect(createPlan?.targetMapId).toBeUndefined();
+    expect(createPlan?.layers[0].items[0]).toMatchObject({
+      status: "in_progress", successTools: ["tile_erase"], mapTargets: ["map_blank_start"],
+    });
+    expect(modify.getWorkPlan()).toEqual(modifyPlan);
   }, 30000);
 
   it("「계속」은 모델을 부르지 않고 진행 중 계획을 이어간다(continuation)", async () => {

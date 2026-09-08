@@ -4,7 +4,7 @@ import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
 import type { ReviewInput } from "@/ai/independentReview";
 import { createBlankProject } from "@/project/defaults";
 import { fixedDeclarer } from "./intentFixture";
-import { independentReviewPayload, approvedReviewResponse } from "./independentReviewFixture";
+import { independentReviewPayload, approvedReviewResponse, imageDeliveryForRequest } from "./independentReviewFixture";
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -131,7 +131,7 @@ describe("assistant tileset visual review", () => {
             reason: "prove current tileset render",
           }, "show");
         }
-        return { message: { role: "assistant", content: "Done" }, finishReason: "stop" };
+        return { imageDelivery: imageDeliveryForRequest(request), message: { role: "assistant", content: "Done" }, finishReason: "stop" };
       },
     });
 

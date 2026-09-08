@@ -1,0 +1,331 @@
+diff --git a/openwiki/INDEX.md b/openwiki/INDEX.md
+index d90d8d60f..fd55fb54c 100644
+--- a/openwiki/INDEX.md
++++ b/openwiki/INDEX.md
+@@ -1,11 +1,7 @@
+ <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
+ # OpenWiki 항해 색인
+ 
+-<<<<<<< d86f4485b3c00b2497cd321d73f17245f34c42a7
+-이 저장소의 위키는 **50쪽 / 2116KB / 약 592,953 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+-=======
+-이 저장소의 위키는 **51쪽 / 2059KB / 약 578,410 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+->>>>>>> 43fd9355f9d2b5266d2aa18550edf9dd7a869a78
++이 저장소의 위키는 **51쪽 / 2125KB / 약 595,472 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+ 
+ ```
+ read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
+@@ -19,23 +15,13 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부
+ 
+ | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
+ |---|---|---|---|---|
+-<<<<<<< d86f4485b3c00b2497cd321d73f17245f34c42a7
+-| `openwiki/editor-ai-panel.md` | 356KB | 95KB ⚠상한 초과 — 절을 더 쪼개라 | 1650 | ~100,810 |
++| `openwiki/editor-ai-panel.md` | 357KB | 95KB ⚠상한 초과 — 절을 더 쪼개라 | 1652 | ~101,050 |
+ | `openwiki/editor-ai-tools.md` | 154KB | 77KB ⚠상한 초과 — 절을 더 쪼개라 | 1079 | ~42,716 |
+ | `openwiki/editor-database.md` | 251KB | 55KB ⚠상한 초과 — 절을 더 쪼개라 | 1327 | ~72,118 |
+ | `openwiki/editor-event-authoring.md` | 130KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 691 | ~37,249 |
+-| `openwiki/editor-event-commands.md` | 50KB | 32KB | 132 | ~13,431 |
+-| `openwiki/editor-pre-edit-routing.md` | 82KB | 57KB ⚠상한 초과 — 절을 더 쪼개라 | 323 | ~23,094 |
+-| `openwiki/editor-workflows-misc.md` | 64KB | 29KB | 451 | ~17,505 |
+-=======
+-| `openwiki/editor-ai-panel.md` | 332KB | 95KB ⚠상한 초과 — 절을 더 쪼개라 | 1339 | ~94,545 |
+-| `openwiki/editor-ai-tools.md` | 136KB | 73KB ⚠상한 초과 — 절을 더 쪼개라 | 876 | ~37,907 |
+-| `openwiki/editor-database.md` | 251KB | 55KB ⚠상한 초과 — 절을 더 쪼개라 | 1327 | ~72,118 |
+-| `openwiki/editor-event-authoring.md` | 130KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 691 | ~37,249 |
+ | `openwiki/editor-event-commands.md` | 52KB | 32KB | 152 | ~13,813 |
+-| `openwiki/editor-pre-edit-routing.md` | 81KB | 56KB ⚠상한 초과 — 절을 더 쪼개라 | 323 | ~22,944 |
++| `openwiki/editor-pre-edit-routing.md` | 82KB | 57KB ⚠상한 초과 — 절을 더 쪼개라 | 323 | ~23,094 |
+ | `openwiki/editor-workflows-misc.md` | 65KB | 29KB | 456 | ~17,604 |
+->>>>>>> 43fd9355f9d2b5266d2aa18550edf9dd7a869a78
+ | `openwiki/runtime-battle.md` | 130KB | 31KB | 493 | ~37,038 |
+ | `openwiki/runtime-project-schema.md` | 97KB | 44KB | 620 | ~25,776 |
+ | `openwiki/runtime-sessions.md` | 87KB | 49KB | 324 | ~23,210 |
+@@ -52,13 +38,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿
+ | `openwiki/editor-database.md` | 7 | 537, 541, 542, 543, 552, 578, 581 |
+ | `openwiki/editor-event-authoring.md` | 16 | 261, 262, 265, 270, 271, 272, 273, 274 |
+ | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
+-<<<<<<< d86f4485b3c00b2497cd321d73f17245f34c42a7
+-| `openwiki/editor-event-commands.md` | 6 | 39, 52, 53, 55, 58, 59 |
+-| `openwiki/editor-observability.md` | 1 | 241 |
+-=======
+ | `openwiki/editor-event-commands.md` | 6 | 59, 72, 73, 75, 78, 79 |
+-| `openwiki/editor-observability.md` | 1 | 236 |
+->>>>>>> 43fd9355f9d2b5266d2aa18550edf9dd7a869a78
++| `openwiki/editor-observability.md` | 1 | 241 |
+ | `openwiki/editor-pre-edit-routing.md` | 5 | 154, 163, 170, 172, 185 |
+ | `openwiki/state-system.md` | 2 | 3, 84 |
+ 
+@@ -258,8 +239,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿
+ - `L18` Output limits
+ - `L24` Practical tips
+ 
+-<<<<<<< d86f4485b3c00b2497cd321d73f17245f34c42a7
+-### `openwiki/editor-ai-panel.md` — 356KB · 1650줄 · ~100,810 토큰 · 통째읽기 잘림 · 깨진 줄 25
++### `openwiki/editor-ai-panel.md` — 357KB · 1652줄 · ~101,050 토큰 · 통째읽기 잘림 · 깨진 줄 25
+ 
+ - `L3` Map-scoped conversation archive (2026-09-08)
+   - `L63` Editor history surface
+@@ -293,50 +273,11 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿
+ - `L1477` 저장 · 내보내기 · 프로젝트 생성
+ - `L1485` 제공자 · OAuth · 동반 서비스
+ - `L1515` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
+-- `L1556` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
+-- `L1589` 배치 의존성과 완료 멱등성 (2026-09-06)
+-- `L1597` 모험 완료와 실제 적용 횟수 (2026-09-05)
+-- `L1602` Assistant clean conversation — Phase 1 (2026-09-06)
+-- `L1639` Assistant deck width resize (2026-09-07)
+-=======
+-### `openwiki/editor-ai-panel.md` — 332KB · 1339줄 · ~94,545 토큰 · 통째읽기 잘림 · 깨진 줄 25
+-
+-- `L3` Map-scoped conversation archive (2026-09-08)
+-  - `L53` Editor history surface
+-- `L85` Independent result review and repair (2026-09-06)
+-- `L188` Combined P2 and independent-review ownership (2026-09-07)
+-- `L222` P2 run outcomes and user scope actions (2026-09-06)
+-  - `L278` Canonical requirements and genuine user actions
+-- `L347` Live large-world QA: plan repair and final audit (2026-09-07)
+-- `L408` Assistant control audit fixes (2026-09-07)
+-- `L419` World structure activity labels (2026-09-06)
+-- `L428` Multi-map construction specifications (2026-09-06)
+-- `L464` Plan authoring has no small-plan quota (2026-09-06)
+-- `L483` Acceptance sticky note (2026-09-07)
+-  - `L533` Session-owned acceptance contract
+-- `L716` 자동 프로젝트 위키 (2026-09-07)
+-- `L748` Independent image generation settings (2026-09-07)
+-- `L749` Independent image generation settings (2026-09-08)
+-- `L787` 브라우저 포커스와 도구 실행 대기 (2026-09-05)
+-- `L794` 계획 항목의 연속 실행 증거 (2026-09-05)
+-- `L800` 조회 선행·계획 완료와 실행 종료 (2026-09-05)
+-- `L809` 조수 카메라 이동 수명·부드러운 줌 (2026-09-05)
+-- `L825` 패널 셸 · 도크 · 접기 · 컴포저
+-- `L963` 세션 수명 · 대화 컨텍스트
+-- `L978` 제안 적용 · 복구 · 완성도 린트
+-- `L1062` 고스트 미리보기 · 활동 표시 · 청사진 · 카메라
+-- `L1124` 영역 작업 · 시공 · 실내/집 파이프라인
+-- `L1148` 툴 노출 · 프롬프트 · 의도 판정 · NPC
+-- `L1162` 타일셋 이해 · 검토 위저드 (T1a/T1b)
+-- `L1188` 저장 · 내보내기 · 프로젝트 생성
+-- `L1196` 제공자 · OAuth · 동반 서비스
+-- `L1226` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
+-- `L1269` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
+-- `L1277` 배치 의존성과 완료 멱등성 (2026-09-06)
+-- `L1285` 모험 완료와 실제 적용 횟수 (2026-09-05)
+-- `L1290` Assistant clean conversation — Phase 1 (2026-09-06)
+-- `L1327` Assistant deck width resize (2026-09-07)
+->>>>>>> 43fd9355f9d2b5266d2aa18550edf9dd7a869a78
++- `L1558` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
++- `L1591` 배치 의존성과 완료 멱등성 (2026-09-06)
++- `L1599` 모험 완료와 실제 적용 횟수 (2026-09-05)
++- `L1604` Assistant clean conversation — Phase 1 (2026-09-06)
++- `L1641` Assistant deck width resize (2026-09-07)
+ 
+ ### `openwiki/editor-ai-tools.md` — 154KB · 1079줄 · ~42,716 토큰 · 통째읽기 잘림 · 깨진 줄 6
+ 
+@@ -527,8 +468,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿
+ - `L226` 여관 외 시설의 공간 구성 (2026-09-05)
+ - `L236` PR618 통합: 큰 탁자와 기존 시설 구성 (2026-09-06)
+ 
+-<<<<<<< d86f4485b3c00b2497cd321d73f17245f34c42a7
+-### `openwiki/editor-observability.md` — 31KB · 369줄 · ~8,784 토큰 · 깨진 줄 1
++### `openwiki/editor-observability.md` — 32KB · 388줄 · ~9,132 토큰 · 깨진 줄 1
+ 
+ - `L21` Opt-in local diagnostics (issue 693 OUT-009 / OUT-010)
+ - `L74` 계측 초크포인트는 `store.markLocalMutation` 하나다
+@@ -536,29 +476,13 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿
+ - `L128` AI 적용 경로 — 이쪽이 주 경로다
+ - `L159` P2 outcome publication (2026-09-06)
+ - `L222` 되돌리기 스택과 감사 로그는 다르다
+-- `L243` 디버깅 레시피
+-  - `L277` 저장된 것 — DB 커밋에 실린 행위 (`npm run commit:log`)
+-- `L306` 로거
+-- `L320` 알려진 남은 공백 (여기 손대는 사람이 이어서 하라)
+-- `L353` AI 툴·액션 이유 (2026-09-02)
+-- `L363` 검증
+-=======
+-### `openwiki/editor-observability.md` — 32KB · 383줄 · ~9,094 토큰 · 깨진 줄 1
+-
+-- `L21` Opt-in local diagnostics (issue 693 OUT-009 / OUT-010)
+-- `L74` 계측 초크포인트는 `store.markLocalMutation` 하나다
+-- `L104` 새 편집 기능을 추가할 때 — 라벨을 넣어라
+-- `L123` AI 적용 경로 — 이쪽이 주 경로다
+-- `L154` P2 outcome publication (2026-09-06)
+-- `L217` 되돌리기 스택과 감사 로그는 다르다
+-- `L238` Toolbar history confirmation lifetime (PR716, 2026-09-09)
+-- `L257` 디버깅 레시피
+-  - `L291` 저장된 것 — DB 커밋에 실린 행위 (`npm run commit:log`)
+-- `L320` 로거
+-- `L334` 알려진 남은 공백 (여기 손대는 사람이 이어서 하라)
+-- `L367` AI 툴·액션 이유 (2026-09-02)
+-- `L377` 검증
+->>>>>>> 43fd9355f9d2b5266d2aa18550edf9dd7a869a78
++- `L243` Toolbar history confirmation lifetime (PR716, 2026-09-09)
++- `L262` 디버깅 레시피
++  - `L296` 저장된 것 — DB 커밋에 실린 행위 (`npm run commit:log`)
++- `L325` 로거
++- `L339` 알려진 남은 공백 (여기 손대는 사람이 이어서 하라)
++- `L372` AI 툴·액션 이유 (2026-09-02)
++- `L382` 검증
+ 
+ ### `openwiki/editor-pre-edit-routing.md` — 82KB · 323줄 · ~23,094 토큰 · 통째읽기 잘림 · 깨진 줄 5
+ 
+diff --git a/src/ai/agentVerification.ts b/src/ai/agentVerification.ts
+index 5f3b788ca..0dd0150b9 100644
+--- a/src/ai/agentVerification.ts
++++ b/src/ai/agentVerification.ts
+@@ -27,15 +27,10 @@
+ // 54 pre-existing violations on every attempt. The gate burned its 3 attempts on damage the
+ // agent had not caused and could not repair (every cleanup commit was refused by the commit
+ // gate), killing the run at 217s with the 48-turn budget untouched.
+-<<<<<<< d86f4485b3c00b2497cd321d73f17245f34c42a7
+-// evaluate_game_quality reports objective errors, including empty maps and missing
+-// ending invocations (data.verdict.blocked), not subjective quality or playthrough proof.
+-=======
+ // evaluate_game_quality still reports blocking on its own error-severity issues only (toolRegistry
+ // evaluate_game_quality verdict contract: data.verdict.blocked). That error set is projectLint
+ // errors + empty-map (99081a0b1, 2026-08-28) + ending-uninvoked (419e067fa, 2026-09-06) — it was
+-// projectLint alone until those two landed.
+->>>>>>> 43fd9355f9d2b5266d2aa18550edf9dd7a869a78
++// projectLint alone until those two landed. This is not subjective quality or playthrough proof.
+ 
+ export const RUN_LINT_TOOL = "run_lint";
+ export const EVALUATE_GAME_QUALITY_TOOL = "evaluate_game_quality";
+diff --git a/src/ai/assistantAcceptanceTools.ts b/src/ai/assistantAcceptanceTools.ts
+index 70f70472b..30b53b026 100644
+--- a/src/ai/assistantAcceptanceTools.ts
++++ b/src/ai/assistantAcceptanceTools.ts
+@@ -60,9 +60,5 @@ Requested working purchases require shopPurchase (exact seller, stock, count, un
+ Criteria schema: ${JSON.stringify(ACCEPTANCE_CRITERIA_SCHEMA)}
+ A declared imageReviewed crop cannot exclude tiles or event positions this request changed. The effective required region is reported in evidence.expected; new/resized maps require the full map. Unchanged local inspections can remain local. Do not narrow the crop to bypass review.
+ Requested field-action combat requires actionCombat criteria for every target and run_action_combat_test. Wait/spawn scene tests, static checks, turn-based simulations and model-authored evidence never prove field-action behavior. Intent-owned action obligations survive replanning and repair. Ordinary guide NPCs may use one page unless stateful behavior or a multipage volume obligation was explicitly declared.
+-<<<<<<< d86f4485b3c00b2497cd321d73f17245f34c42a7
+-Use actual mapId for existing maps; newMapName is an exact authored name and binds only a unique newly created map. Counts are EXACT and scoped to the listed targets/region, never project totals. Preserve without region includes metadata; with region compares tiles/stacks/events. targetChange compares original baseline, never the latest plan; with explicit newMapName it also accepts creation of the uniquely bound applied map from original absence. preserve requires original content, never a newly created target. A missing original mapId for preserve/targetChange requires repair: use an existing baseline mapId, or newMapName for creation. Reachability tests exact walkable cells with conservative static tile/event passage, not adjacency to interaction targets or a runtime playthrough. Use approach-cell coordinates for NPC/sign/chest interactions; do not move solid game objects to satisfy this check. Whole-map image review requires actual delivered coverage (show_map_region clips to 24x24, so tile larger maps) then review_acceptance({itemId,verdict:"pass"|"fail",note}) in a subsequent response. Report defects with verdict:"fail"; it revokes a previous pass. No model-provided evidence IDs/fingerprints. Missing/malformed arrays fail closed and require repair_acceptance; replan/complete/skip cannot remove accepted promises.
+-=======
+-Use actual mapId for existing maps; newMapName is an exact authored name and binds only a unique newly created map. Counts are EXACT and scoped to the listed targets/region, never project totals. Preserve without region includes metadata; with region compares tiles/stacks/events. targetChange compares original baseline, never the latest plan. Reachability is conservative static tile/event passage, not a runtime playthrough. Whole-map image review requires actual delivered coverage (request show_map_region with x:0,y:0,w:map width,h:map height -- complete coverage is not clipped and arrives as one render) then review_acceptance({itemId,verdict:"pass"|"fail",note}) in a subsequent response. Report defects with verdict:"fail"; it revokes a previous pass. No model-provided evidence IDs/fingerprints. Missing/malformed arrays fail closed and require repair_acceptance; replan/complete/skip cannot remove accepted promises.
+->>>>>>> 43fd9355f9d2b5266d2aa18550edf9dd7a869a78
++Use actual mapId for existing maps; newMapName is an exact authored name and binds only a unique newly created map. Counts are EXACT and scoped to the listed targets/region, never project totals. Preserve without region includes metadata; with region compares tiles/stacks/events. targetChange compares original baseline, never the latest plan; with explicit newMapName it also accepts creation of the uniquely bound applied map from original absence. preserve requires original content, never a newly created target. A missing original mapId for preserve/targetChange requires repair: use an existing baseline mapId, or newMapName for creation. Reachability tests exact walkable cells with conservative static tile/event passage, not adjacency to interaction targets or a runtime playthrough. Use approach-cell coordinates for NPC/sign/chest interactions; do not move solid game objects to satisfy this check. Whole-map image review requires actual delivered coverage (request show_map_region with x:0,y:0,w:map width,h:map height -- complete coverage is not clipped and arrives as one render) then review_acceptance({itemId,verdict:"pass"|"fail",note}) in a subsequent response. Report defects with verdict:"fail"; it revokes a previous pass. No model-provided evidence IDs/fingerprints. Missing/malformed arrays fail closed and require repair_acceptance; replan/complete/skip cannot remove accepted promises.
+ `;
+diff --git a/src/ai/assistantSession.ts b/src/ai/assistantSession.ts
+index e22e181c0..a7cae38d0 100644
+--- a/src/ai/assistantSession.ts
++++ b/src/ai/assistantSession.ts
+@@ -3856,13 +3856,9 @@ export class AssistantSession {
+     usageBefore: SessionUsageTotals,
+     auditFrom: number,
+     onEvent: (event: SessionEvent) => void,
+-<<<<<<< d86f4485b3c00b2497cd321d73f17245f34c42a7
+   ): Promise<TurnResult> {
+-=======
+-  ): TurnResult {
+     // 예산으로 멈춘 런은 여기서 딱 한 번 안내한다(턴 루프는 내지 않는다 — BUDGET_STOP_REASONS).
+     if (BUDGET_STOP_REASONS.has(result.stoppedReason)) onEvent({ type: "status", text: TOKEN_BUDGET_STATUS_TEXT });
+->>>>>>> 43fd9355f9d2b5266d2aa18550edf9dd7a869a78
+     this.publishAcceptance(onEvent);
+     if (this.acceptanceOpen() && !this.lastTurnPlanOnly && this.turnComposerMode !== "ask" && !this.isDraftReviewApproved()) {
+       this.acceptance?.stop();
+@@ -4572,22 +4568,14 @@ export class AssistantSession {
+       const config = { ...(this.reviewConfig ?? this.config), maxTokens: Math.min(16384, remainingTokens) };
+       if (signal?.aborted) throw new Error("independent-review-cancelled");
+       knownProblems = requiredProblems;
+-<<<<<<< d86f4485b3c00b2497cd321d73f17245f34c42a7
+-      const images = receipts.flatMap(receipt => this.reviewImages.get(receipt) ?? []);
+-      const build = (reviewed: Iterable<string>, target: string) => buildIndependentReviewRequest(config, { revision,
+-        originalRequest: this.currentTurnRequestText, changes, requiredProblems, completionWarnings, images,
+-        before: evidence(this.reviewBaseline, "before", reviewed, target),
+-        after: evidence(this.ctx.project, "after", reviewed, target),
+-=======
+       const captures = receipts.map(receipt => ({ mapId: receipt.mapId, images: this.reviewImages.get(receipt) ?? [] }));
+       const build = (reviewedIds: ReadonlySet<string>, target: string) => buildIndependentReviewRequest(config, { revision,
+-        originalRequest: this.currentTurnRequestText, changes, requiredProblems,
++        originalRequest: this.currentTurnRequestText, changes, requiredProblems, completionWarnings,
+         // Scoped to the maps this envelope reviews, so the narrowing retry sheds their
+         // renders too — the dominant cost — instead of only their text.
+         images: reviewEvidenceImages(captures, reviewedIds),
+         before: evidence(this.reviewBaseline, "before", reviewedIds, target),
+         after: evidence(this.ctx.project, "after", reviewedIds, target),
+->>>>>>> 43fd9355f9d2b5266d2aa18550edf9dd7a869a78
+         toolResults: this.reviewToolResults, acceptance: draftAcceptance }, signal);
+       // The reviewer is one-shot, so an oversized envelope is refused rather than truncated.
+       // Retry once judging only the changed maps: the target map is where the user is
+diff --git a/test/assistantReviewImageBudget.test.ts b/test/assistantReviewImageBudget.test.ts
+index ea1d06a8a..cce1c5af2 100644
+--- a/test/assistantReviewImageBudget.test.ts
++++ b/test/assistantReviewImageBudget.test.ts
+@@ -1,17 +1,17 @@
+ import { afterEach, describe, expect, it, vi } from "vitest";
+ import { AssistantSession } from "@/ai/assistantSession";
+-import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
++import { defaultAiConfig, type ChatRequest, type ChatResult } from "@/ai/llmClient";
+ import { reviewEvidenceImages, type ReviewInput } from "@/ai/independentReview";
+ import { createBlankMap, createBlankProject } from "@/project/defaults";
+ import { fixedDeclarer } from "./intentFixture";
+-import { independentReviewPayload, approvedReviewResponse } from "./independentReviewFixture";
++import { independentReviewPayload, approvedReviewResponse, imageDeliveryForRequest } from "./independentReviewFixture";
+ 
+ afterEach(() => {
+   vi.unstubAllGlobals();
+ });
+ 
+-function toolCall(name: string, args: object, id = name): ChatResult {
+-  return { message: { role: "assistant", content: null,
++function toolCall(name: string, args: object, request: ChatRequest, id = name): ChatResult {
++  return { imageDelivery: imageDeliveryForRequest(request), message: { role: "assistant", content: null,
+     tool_calls: [{ id, type: "function", function: { name, arguments: JSON.stringify(args) } }] },
+     finishReason: "tool_calls" };
+ }
+@@ -79,13 +79,13 @@ describe("independent review image budget", () => {
+         writerRound += 1;
+         if (writerRound === 1) {
+           return toolCall("set_tileset_properties", { tilesetId: map.tilesetId, tilesPerRow: 31,
+-            reason: "inspect atlas layout" }, "columns");
++            reason: "inspect atlas layout" }, request, "columns");
+         }
+         if (writerRound === 2 || writerRound === 3) {
+           return toolCall("show_map_region", { mapId, x: 0, y: 0, w: map.width, h: map.height,
+-            reason: "prove current tileset render" }, `show-${writerRound}`);
++            reason: "prove current tileset render" }, request, `show-${writerRound}`);
+         }
+-        return { message: { role: "assistant", content: "Done" }, finishReason: "stop" };
++        return { imageDelivery: imageDeliveryForRequest(request), message: { role: "assistant", content: "Done" }, finishReason: "stop" };
+       },
+     });
+ 
+@@ -155,13 +155,13 @@ describe("independent review image budget", () => {
+         }
+         if (writerRound === 2) {
+           return toolCall("show_map_region", { mapId: changedId, x: 0, y: 0,
+-            w: target.width, h: target.height, reason: "changed map render" }, "show-changed");
++            w: target.width, h: target.height, reason: "changed map render" }, request, "show-changed");
+         }
+         if (writerRound === 3) {
+           return toolCall("show_map_region", { mapId: targetId, x: 0, y: 0,
+-            w: target.width, h: target.height, reason: "target map render" }, "show-target");
++            w: target.width, h: target.height, reason: "target map render" }, request, "show-target");
+         }
+-        return { message: { role: "assistant", content: "Done" }, finishReason: "stop" };
++        return { imageDelivery: imageDeliveryForRequest(request), message: { role: "assistant", content: "Done" }, finishReason: "stop" };
+       },
+     });
+ 
+diff --git a/test/wholeMapCoverageRender.test.ts b/test/wholeMapCoverageRender.test.ts
+index a11e8cbd4..ea5415944 100644
+--- a/test/wholeMapCoverageRender.test.ts
++++ b/test/wholeMapCoverageRender.test.ts
+@@ -6,7 +6,7 @@ import { MAX_IMAGE_DIMENSION, tileDrawSize } from "@/ai/toolImageCanvas";
+ import type { ReviewInput } from "@/ai/independentReview";
+ import { createBlankMap, createBlankProject } from "@/project/defaults";
+ import { fixedDeclarer } from "./intentFixture";
+-import { independentReviewPayload, approvedReviewResponse } from "./independentReviewFixture";
++import { independentReviewPayload, approvedReviewResponse, imageDeliveryForRequest } from "./independentReviewFixture";
+ 
+ afterEach(() => {
+   vi.unstubAllGlobals();
+@@ -132,7 +132,7 @@ describe("review coverage of a map larger than the span cap", () => {
+             finishReason: "tool_calls" };
+           return call;
+         }
+-        return { message: { role: "assistant", content: "Done" }, finishReason: "stop" };
++        return { imageDelivery: imageDeliveryForRequest(request), message: { role: "assistant", content: "Done" }, finishReason: "stop" };
+       },
+     });
+ 

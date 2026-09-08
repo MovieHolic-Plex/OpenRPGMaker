@@ -10,7 +10,7 @@ import { editorState } from "@/editor/editorState";
 import * as history from "@/editor/mapEditHistory";
 import { createProposalHost } from "@/editor/panels/aiProposalCard";
 import { resetAiConnectionStatusCache } from "@/editor/panels/aiConnectionStatus";
-import { approvedReviewResponse, independentReviewPayload } from "./independentReviewFixture";
+import { approvedReviewResponse, independentReviewPayload, imageDeliveryForRequest } from "./independentReviewFixture";
 import { isWikiExtraction } from "./wikiTransportFixture";
 import { fixedDeclarer } from "./intentFixture";
 
@@ -49,14 +49,14 @@ beforeEach(() => {
     }
     if (!request.tools?.length) return { message: { role: "assistant", content: JSON.stringify({
       action: "new_plan", goal: "Scatter soft props", layers: [{ title: "Props", items: [{
-        title: "Props", instruction: "Scatter soft props", successTools: ["place_props"] }] }],
+        title: "Props", instruction: "Scatter soft props", successTools: ["place_props"], mapTargets: [mapId] }] }],
       acceptance: [{ id: "props", title: "Props", criteria: [{ kind: "targetChange", target: { mapId } }] }] }) }, finishReason: "stop" };
     const tool = (name: string, args: unknown, id: string) => ({ role: "assistant", content: null,
       tool_calls: [{ id, type: "function", function: { name, arguments: JSON.stringify(args) } }] });
     if (!state.planned) {
       state.planned = true;
       return { message: tool("set_work_plan", { goal: "Scatter soft props", layers: [{ title: "Props", items: [{
-        title: "Props", instruction: "Scatter soft props", successTools: ["place_props"] }] }],
+        title: "Props", instruction: "Scatter soft props", successTools: ["place_props"], mapTargets: [mapId] }] }],
         acceptance: [{ id: "props", title: "Props", criteria: [{ kind: "targetChange", target: { mapId } }] }] }, "plan"), finishReason: "tool_calls" };
     }
     if (!state.staged) {
@@ -73,7 +73,7 @@ beforeEach(() => {
       state.shown = true;
       return { message: tool("show_map_region", { mapId, x: 0, y: 0, w: 20, h: 15 }, "show"), finishReason: "tool_calls" };
     }
-    return { message: { role: "assistant", content: "Finished" }, finishReason: "stop" };
+    return { imageDelivery: imageDeliveryForRequest(request), message: { role: "assistant", content: "Finished" }, finishReason: "stop" };
   });
 });
 afterEach(() => {
@@ -97,7 +97,7 @@ it("direct soft-confirm route reviews the normalized values and applies them equ
     renderImages: async () => [{ label: "Current map", dataUrl: "data:image/png;base64,AA==" }],
   });
   const result = await session.sendUserMessage("Scatter soft props");
-  expect(result.review?.status, result.error).toBe("approved");
+  expect(result.review?.status, JSON.stringify({ review: result.review, tools: session.getAuditEntries().filter(entry => entry.kind === "tool") })).toBe("approved");
   expect(result.appliedCalls ?? []).toEqual([]);
   // The reviewer already saw origin:user: normalization preceded review.
   expect(reviewRequests.length).toBeGreaterThanOrEqual(1);

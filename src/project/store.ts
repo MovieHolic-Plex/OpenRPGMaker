@@ -46,6 +46,7 @@ import { dbPersistenceStatus, type DbPersistenceDisabledReason, type DbPersisten
 import { recordManualProjectCommitAfterSave, resetManualProjectCommitBaseline } from "./projectCommitLog";
 import { repairMapTreeOrphans } from "@/project/mapTree";
 import { sha256HexText } from "@/util/sha256";
+import { structuralJson } from "@/util/structuralJson";
 import { randomUuid } from "@/util/id";
 import { createLogger } from "@/util/logger";
 import {
@@ -222,6 +223,7 @@ class ProjectStore {
   private readonly autoSaveRetryMaxDelayMs = 120_000;
   private autoSaveRetryCount = 0;
   private healthCheckTimer: ReturnType<typeof setInterval> | null = null;
+  private healthCheckLineage = 0;
   private readonly healthCheckIntervalMs = 30_000;
   private boundOnlineHandler: (() => void) | null = null;
   private loaded = false;
@@ -237,6 +239,7 @@ class ProjectStore {
     readonly projectAtSubmit: Project;
   }>();
   private persistInFlight: Promise<ProjectFlushResult> | null = null;
+  private persistInFlightLineage = 0;
   // 마지막 "실제 저장"(원격 업서트 또는 dev override 기록) 이후 변경이 있는가 —
   // beforeunload 미저장 경고(도그푸딩 결함 ⑧)의 근거. 저장이 스킵되는 모드(fresh/blank)
   // 에서는 flush가 saved-local을 돌려줘도 실제 기록이 없으므로 true로 남는다.
@@ -300,6 +303,7 @@ class ProjectStore {
         }
       }
       // Defer remote rewrite of normalize fixes so boot is not blocked on Tailscale/dbserver RTT.
+      this.dirtySinceLastPersist = false;
       await this.normalizeCurrentProject({ persistIfChanged: false });
       this.refreshSupabaseResourceCache();
     } catch (error) {
@@ -313,7 +317,7 @@ class ProjectStore {
       throw error;
     }
     this.loaded = true;
-    this.dirtySinceLastPersist = false;
+    if (this.dirtySinceLastPersist) this.scheduleAutoSave();
     this.emit({ scope: "project" });
     return this.current;
   }
@@ -332,8 +336,8 @@ class ProjectStore {
     this.remotePersistenceDisabledReason = "load-failed";
     this.persistedBaseline = null;
     this.loaded = true;
-    await this.normalizeCurrentProject();
     this.dirtySinceLastPersist = false;
+    await this.normalizeCurrentProject();
     this.emit({ scope: "project" });
   }
 
@@ -717,11 +721,11 @@ class ProjectStore {
         this.remotePersistenceEnabled = true;
         this.remotePersistenceDisabledReason = null;
         this.loadedRemoteProjectId = status.projectId;
-        await this.normalizeCurrentProject();
         this.loaded = true;
         this.persistedBaseline = structuredClone(projectWithoutEventDrafts(this.current));
         resetManualProjectCommitBaseline(this.current);
         this.dirtySinceLastPersist = false;
+        await this.normalizeCurrentProject();
         this.syncProjectUrlBar();
         this.emit({ scope: "project", projectSwitch: true });
         this.refreshSupabaseResourceCache();
@@ -766,10 +770,10 @@ class ProjectStore {
       this.remotePersistenceEnabled = true;
       this.remotePersistenceDisabledReason = null;
       if (projectId) this.loadedRemoteProjectId = projectId;
-      await this.normalizeCurrentProject();
       this.persistedBaseline = structuredClone(projectWithoutEventDrafts(this.current));
       resetManualProjectCommitBaseline(this.current);
       this.dirtySinceLastPersist = false;
+      await this.normalizeCurrentProject();
       this.syncProjectUrlBar();
       // 같은 projectId의 원격 저장본을 다시 읽는 경로라 의도적으로 프로젝트 전환 표시를 하지 않는다.
       this.emit({ scope: "project" });
@@ -1113,13 +1117,18 @@ class ProjectStore {
     }
     if (this.autoSaveTimer) clearTimeout(this.autoSaveTimer);
     this.clearAutoSaveRetry();
-    this.setAutoSaveState({ kind: "pending" });
-    this.autoSaveTimer = setTimeout(() => {
+    const lineage = this.contentLineage;
+    const timer = setTimeout(() => {
+      // A queued callback cannot consume a replacement's timer or save its content.
+      if (this.contentLineage !== lineage || this.autoSaveTimer !== timer) return;
       this.autoSaveTimer = null;
       void this.saveCurrentWithAutoSaveState().catch((error) => {
         log.error("Supabase auto-save failed", error);
       });
     }, this.autoSaveDelayMs);
+    this.autoSaveTimer = timer;
+    // Publish after registration: a synchronous subscriber may schedule its own save.
+    this.setAutoSaveState({ kind: "pending" });
   }
 
   private clearAutoSaveRetry(): void {
@@ -1128,30 +1137,34 @@ class ProjectStore {
     this.autoSaveRetryTimer = null;
   }
 
-  private scheduleAutoSaveRetry(): void {
-    if (this.autoSaveRetryTimer) return;
+  private scheduleAutoSaveRetry(lineage: number): void {
+    // The error-state subscriber may have replaced the failed save's project.
+    if (this.contentLineage !== lineage || this.autoSaveRetryTimer) return;
     const delay = Math.min(
       this.autoSaveRetryBaseDelayMs * 2 ** this.autoSaveRetryCount,
       this.autoSaveRetryMaxDelayMs,
     );
-    this.autoSaveRetryTimer = setTimeout(() => {
+    const timer = setTimeout(() => {
+      if (this.contentLineage !== lineage || this.autoSaveRetryTimer !== timer) return;
       this.autoSaveRetryTimer = null;
       void this.saveCurrentWithAutoSaveState().catch((error) => {
         log.error("Supabase auto-save retry failed", error);
       });
     }, delay);
-    this.startHealthCheck();
+    this.autoSaveRetryTimer = timer;
+    this.startHealthCheck(lineage);
   }
 
   /**
    * Periodic lightweight probe while in error state. If the DB responds we
    * immediately attempt a flush instead of waiting for the next backoff tick.
    */
-  private startHealthCheck(): void {
-    if (this.healthCheckTimer) return;
-    this.healthCheckTimer = setInterval(() => {
-      void this.runHealthCheck();
-    }, this.healthCheckIntervalMs);
+  private startHealthCheck(lineage: number): void {
+    if (this.healthCheckTimer && this.healthCheckLineage === lineage) return;
+    this.stopHealthCheck();
+    const timer = setInterval(() => this.runHealthCheck(lineage, timer), this.healthCheckIntervalMs);
+    this.healthCheckTimer = timer;
+    this.healthCheckLineage = lineage;
   }
 
   private stopHealthCheck(): void {
@@ -1160,7 +1173,8 @@ class ProjectStore {
     this.healthCheckTimer = null;
   }
 
-  private async runHealthCheck(): Promise<void> {
+  private async runHealthCheck(lineage: number, timer: ReturnType<typeof setInterval>): Promise<void> {
+    if (this.contentLineage !== lineage || this.healthCheckTimer !== timer) return;
     if (!this.loaded || !this.remotePersistenceEnabled) {
       this.stopHealthCheck();
       return;
@@ -1184,6 +1198,7 @@ class ProjectStore {
         },
         signal: AbortSignal.timeout(8000),
       });
+      if (this.contentLineage !== lineage || this.healthCheckTimer !== timer) return;
       if (response.ok) {
         log.info(`Health check: DB reachable (${response.status}), attempting flush`);
         this.stopHealthCheck();
@@ -1215,14 +1230,31 @@ class ProjectStore {
   private async saveCurrentWithAutoSaveState(): Promise<ProjectFlushResult> {
     // Coalesce concurrent flush calls onto one network round-trip, then re-run
     // if the user painted more tiles while that round-trip was in flight.
-    if (this.persistInFlight) {
+    const lineage = this.contentLineage;
+    if (this.persistInFlight && this.persistInFlightLineage !== lineage) {
+      // A replacement's explicit request waits for the older transport, but
+      // neither inherits its result nor gives that old save catch-up authority.
+      try {
+        await this.persistInFlight;
+      } catch (error) {
+        // The original promise still rejects to its callers. Only this separate
+        // owner's request may proceed after the failed transport has settled.
+        log.warn("Earlier project save failed before queued replacement flush", error);
+      }
+      if (this.contentLineage !== lineage) return { kind: "disabled" };
+      return await this.saveCurrentWithAutoSaveState();
+    }
+    if (this.persistInFlight && this.persistInFlightLineage === lineage) {
       const inFlightResult = await this.persistInFlight;
-      if (this.dirtySinceLastPersist && this.loaded && this.remotePersistenceEnabled) {
+      if (this.contentLineage === lineage && this.dirtySinceLastPersist && this.loaded && this.remotePersistenceEnabled) {
         return await this.saveCurrentWithAutoSaveState();
       }
       return inFlightResult;
     }
     this.setAutoSaveState({ kind: "saving" });
+    // Status subscribers run synchronously and may replace the project (and even
+    // start its own flush). This request no longer authorizes a write after that.
+    if (this.contentLineage !== lineage) return { kind: "disabled" };
     const run = (async (): Promise<ProjectFlushResult> => {
       try {
         // Local-first catch-up: if paint lands during a save RTT, persist again
@@ -1231,31 +1263,37 @@ class ProjectStore {
         let result = await this.persistCurrent();
         while (
           this.dirtySinceLastPersist
+          && this.contentLineage === lineage
           && this.loaded
           && this.remotePersistenceEnabled
           && result.kind === "saved"
         ) {
           result = await this.persistCurrent();
         }
-        this.setAutoSaveState(autoSaveStateForFlushResult(
-          result,
-          this.remotePersistenceDisabledReason === "dev-showcase"
-            && isSaveSkippedLocation()
-            && this.dirtySinceLastPersist,
-        ));
-        this.autoSaveRetryCount = 0;
-        this.stopHealthCheck();
+        if (this.contentLineage === lineage) {
+          this.setAutoSaveState(autoSaveStateForFlushResult(
+            result,
+            this.remotePersistenceDisabledReason === "dev-showcase"
+              && isSaveSkippedLocation()
+              && this.dirtySinceLastPersist,
+          ));
+          this.autoSaveRetryCount = 0;
+          this.stopHealthCheck();
+        }
         return result;
       } catch (error) {
-        this.autoSaveRetryCount += 1;
-        this.setAutoSaveState({ kind: "error", message: autoSaveErrorMessage(error), retryCount: this.autoSaveRetryCount });
-        if (this.remotePersistenceEnabled) this.scheduleAutoSaveRetry();
+        if (this.contentLineage === lineage) {
+          this.autoSaveRetryCount += 1;
+          this.setAutoSaveState({ kind: "error", message: autoSaveErrorMessage(error), retryCount: this.autoSaveRetryCount });
+          if (this.remotePersistenceEnabled) this.scheduleAutoSaveRetry(lineage);
+        }
         throw error;
       } finally {
-        this.persistInFlight = null;
+        if (this.persistInFlightLineage === lineage) this.persistInFlight = null;
       }
     })();
     this.persistInFlight = run;
+    this.persistInFlightLineage = lineage;
     return await run;
   }
 
@@ -1381,6 +1419,9 @@ class ProjectStore {
 
   private async normalizeCurrentProject(options: { readonly persistIfChanged?: boolean } = {}): Promise<void> {
     const persistIfChanged = options.persistIfChanged !== false;
+    // Helpers can report transient changes while reaching the same final structure.
+    // Compare raw records, not deserialize/canonical hashing: no authored fields are forgiven.
+    const before = structuralJson(this.current);
     // 어느 정규화기가 실제로 손을 댔는지 이름으로 남긴다.
     // 실측(2026-08-29): 이 13개는 `this.current` 를 in-place 로 고치면서 markLocalMutation 을
     // 부르지 않는다 — 프로젝트가 로드 중에 조용히 바뀌는데 그 사실이 어디에도 안 남아서
@@ -1403,11 +1444,9 @@ class ProjectStore {
       ["bundledBattleAnimations", ensureBundledBattleAnimations(this.current)],
     ];
     const appliedNormalizers = normalizers.filter(([, applied]) => applied).map(([name]) => name);
-    const changed = appliedNormalizers.length > 0;
+    const changed = before !== structuralJson(this.current);
     if (changed) {
-      // mutationGeneration 은 **올리지 않는다** — 그 값은 저장 경합 판정용이고(local-first),
-      // 로드 경로에서 올리면 in-flight 저장 응답 처리가 달라진다. 관측만 남긴다.
-      this.recordChangeActivity({
+      this.markLocalMutation({
         scope: "system",
         label: `프로젝트 정규화 (${appliedNormalizers.length}종)`,
         origin: "system",
@@ -1416,19 +1455,22 @@ class ProjectStore {
     }
     // 업로드 시트의 진짜 절단은 canvas 가 필수라 동기 보정 배열 밖에서 돌린다.
     // 쪼갤 것이 없으면 await 조차 하지 않는다 — 로드 경로에 자시합을 더하면 지속화 순서가 바뀐다.
-    const facesRepaired = hasPendingFacesetSheetRepair(this.current)
-      ? await repairUploadedFacesetSheets(this.current)
+    const repairTarget = this.current;
+    const repairLineage = this.contentLineage;
+    const facesRepaired = hasPendingFacesetSheetRepair(repairTarget)
+      ? await repairUploadedFacesetSheets(repairTarget)
       : false;
-    if (facesRepaired) this.emit();
+    // The repair mutates its captured object, not necessarily the current project.
+    // A normal edit can also replace that object without advancing load lineage.
+    if (this.current !== repairTarget || this.contentLineage !== repairLineage) return;
+    if (facesRepaired) {
+      this.markLocalMutation({ scope: "system", origin: "system", label: "Faceset sheet migration" });
+      this.emit();
+    }
     // Boot load must not block the editor on a full remote rewrite (~2MB+).
     // Schedule deferred auto-save so the shell can paint first.
-    if ((changed || facesRepaired) && this.remotePersistenceEnabled) {
-      if (persistIfChanged) await this.persistCurrent();
-      else {
-        this.dirtySinceLastPersist = true;
-        this.scheduleAutoSave();
-      }
-    }
+    if ((changed || facesRepaired) && persistIfChanged
+      && this.current === repairTarget && this.contentLineage === repairLineage) this.scheduleAutoSave();
   }
 
   private refreshSupabaseResourceCache(): void {

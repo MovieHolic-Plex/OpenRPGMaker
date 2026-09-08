@@ -99,7 +99,12 @@ grep -rnoE "store\.(update|updateMap|replace|replaceProject|clearAll|restoreEven
 - `recordChangeActivity` 는 `try/catch` 로 감싸고 실패는 `log.warn` 으로만 남긴다. 기록 실패로 편집이 죽으면 관측 계층이 결함이 된다.
 - `emit()` 은 리스너별 `try/catch` + `log.error` 다. 실측(2026-08-29): 격리가 없어서 구독자 하나가 던지면 뒤에 등록된 구독자 전부가 그 프레임에서 건너뛰어졌다(캔버스 재렌더·자동저장 예약·패널 갱신이 동시에 멈추는데 원인 로그가 없었다).
 
-`normalizeCurrentProject` 는 예외다. 어느 정규화기가 적용됐는지 이름 배열로 기록하지만 **`mutationGeneration` 은 올리지 않는다** — 그 값은 저장 경합 판정용(local-first)이라 정규화가 사용자 편집으로 보이면 안 된다.
+`normalizeCurrentProject` records candidate normalizers by name. Since 2026-09-07,
+only an actual before/after structural mutation sets dirty and advances
+`mutationGeneration`; it remains `origin: "system"`, not a human edit. This prevents
+a save in flight from clearing a newer migration and avoids autosaving forever when
+a helper reports a transient change but the final structure is unchanged. See
+`runtime-project-schema.md` for deferred migration persistence and lineage ownership.
 
 ## 새 편집 기능을 추가할 때 — 라벨을 넣어라
 

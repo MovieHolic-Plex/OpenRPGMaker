@@ -492,7 +492,9 @@ async function fetchJsonArray(url: string, config: SupabaseProjectConfig, signal
     throw new SupabaseProjectSyncError(await response.text(), response.status);
   }
   const parsed: unknown = await response.json();
-  if (strict && (!Array.isArray(parsed) || !parsed.every(isRecord))) throw new Error("Invalid conversation response");
+  if (strict && (!Array.isArray(parsed) || !parsed.every(isRecord))) {
+    throw new SupabaseProjectSyncError("Invalid conversation response");
+  }
   if (!Array.isArray(parsed)) return [];
   return parsed.filter(isRecord);
 }

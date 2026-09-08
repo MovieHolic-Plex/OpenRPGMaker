@@ -7,7 +7,7 @@ import * as commits from "@/project/projectCommitLog";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { fixedDeclarer } from "./intentFixture";
-import { approvedReviewResponse, independentReviewPayload } from "./independentReviewFixture";
+import { approvedReviewResponse, independentReviewPayload, imageDeliveryForRequest } from "./independentReviewFixture";
 import type { ReviewInput } from "@/ai/independentReview";
 
 afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); });
@@ -55,10 +55,11 @@ async function afterRequestA() {
       // New user requests are adopted by the main planner, not by resetting IDs in a generator repair.
       if (!request.tools?.length) return { message: { role: "assistant", content: JSON.stringify({ action: "replan", ...rounds[0]?.find(call => call.name === "set_work_plan")?.args }) }, finishReason: "stop" };
       const batch = rounds[index++];
-      return batch ? { message: { role: "assistant", content: null, tool_calls: batch.map((call, i) => ({
+      const imageDelivery = imageDeliveryForRequest(request);
+      return batch ? { imageDelivery, message: { role: "assistant", content: null, tool_calls: batch.map((call, i) => ({
         id: `call-${index}-${i}`, type: "function", function: { name: call.name, arguments: JSON.stringify(call.args) },
       })) }, finishReason: "tool_calls" }
-        : { message: { role: "assistant", content: "SCRIPTED_SUCCESS" }, finishReason: "stop" };
+        : { imageDelivery, message: { role: "assistant", content: "SCRIPTED_SUCCESS" }, finishReason: "stop" };
     },
   });
   const run = async (batches: readonly (readonly Call[])[], autonomous = true) => {

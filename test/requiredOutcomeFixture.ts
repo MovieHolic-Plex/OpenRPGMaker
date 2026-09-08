@@ -26,7 +26,12 @@ export function fixture() {
   const session = new AssistantSession(createBlankProject(), {
     config: { ...defaultAiConfig(), agentMode: "chat", model: "test", liteModel: "test", apiKey: "test", maxToolCalls: 16 },
     declareIntent: facts => fixedDeclarer(intent)(facts),
-    chat: async (): Promise<ChatResult> => {
+    chat: async (_config, request): Promise<ChatResult> => {
+      if (!request.tools?.length) {
+        const initial = !session.getWorkPlan() && batches[round]?.find(call => call.name === "set_work_plan");
+        if (initial) round++;
+        return { message: { role: "assistant", content: JSON.stringify(initial ? { action: "new_plan", ...initial.args } : { action: "resume" }) }, finishReason: "stop" };
+      }
       const batch = batches[round++];
       return batch ? { message: { role: "assistant", content: null, tool_calls: batch.map((call, i) => ({
         id: `call-${round}-${i}`, type: "function", function: { name: call.name, arguments: JSON.stringify(call.args) },

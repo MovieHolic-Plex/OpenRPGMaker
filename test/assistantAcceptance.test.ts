@@ -58,8 +58,8 @@ describe("acceptance evaluator", () => {
     const { ledger, project } = setup([]);
     ledger.adopt(parseAcceptance([{ id: "repair", title: "Keep this title", criteria: [{ kind: "bad" }] }]) ?? []);
     // When repairing the missing criterion; then a later weakening is refused.
-    expect(ledger.repair("repair", [{ kind: "eventCount", target: existing, count: 7 }])).toBe(true);
-    expect(ledger.repair("repair", [{ kind: "eventCount", target: existing, count: 0 }])).toBe(false);
+    expect(ledger.repair("repair", [{ kind: "eventCount", target: existing, count: 7 }]).ok).toBe(true);
+    expect(ledger.repair("repair", [{ kind: "eventCount", target: existing, count: 0 }]).ok).toBe(false);
     expect(ledger.evaluate(project).items[1]).toMatchObject({ title: "Keep this title", evidence: [{ passed: false }] });
   });
 
@@ -176,7 +176,7 @@ describe("malformed acceptance boundary", () => {
     const ledger = new AssistantAcceptanceLedger("original", "Keep every promise", project);
     ledger.adopt(parseAcceptance([{ id: "original", title: "Seven events", criteria: [{ kind: "eventCount", target: existing, count: 7 }] }, null]) ?? []);
     // When the malformed sibling is repaired with an easy condition; then it cannot erase the original.
-    expect(ledger.repair("acceptance-contract", [{ kind: "eventCount", target: existing, count: 0 }])).toBe(true);
+    expect(ledger.repair("acceptance-contract", [{ kind: "eventCount", target: existing, count: 0 }]).ok).toBe(true);
     expect(ledger.evaluate(project)).toMatchObject({ items: [{ id: "original", evidence: [{ passed: false }] }, { id: "acceptance-contract", status: "verified" }] });
   });
 });

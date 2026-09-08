@@ -26,7 +26,7 @@ describe("authoritative action acceptance", () => {
     const { project, target, ledger } = setup();
     ledger.requireActionCombat([target]);
     ledger.adopt([{ id: "missing", title: "Repair", criteria: null }]);
-    expect(ledger.repair("missing", [{ kind: "preserve", target }])).toBe(true);
+    expect(ledger.repair("missing", [{ kind: "preserve", target }])).toMatchObject({ ok: true, code: "repaired" });
     const replacement = workPlanFromSetToolArgs({
       goal: "Spatial-only replacement",
       acceptance: [{ id: "spatial", title: "No combat", criteria: [{ kind: "preserve", target }] }],
@@ -53,7 +53,9 @@ describe("authoritative action acceptance", () => {
   it.each(["failed", "stale"] as const)("cannot publish verified while a %s required check remains", kind => {
     const { project, ledger } = setup();
     const evidence = new ToolVerificationEvidence();
-    evidence.observe("run_scene_test", { mapId: project.startMapId }, { ok: true, data: { ok: kind !== "failed" } });
+    const args = { mapId: project.startMapId, start: { x: 1, y: 1 }, steps: [] };
+    evidence.adopt({ checkId: "scene", ownerId: "goal", name: "run_scene_test", args, interactionTargets: [] });
+    evidence.observe("run_scene_test", args, { ok: true, data: { ok: kind !== "failed" } });
     if (kind === "stale") evidence.invalidateAfterWrite();
     expect(ledger.evaluate(project, project, evidence, evidence.problems()).status).toBe("blocked");
   });
@@ -65,24 +67,25 @@ describe("authoritative action acceptance", () => {
       { id: "qa", title: "Scene", instruction: "Check", successTools: ["run_scene_test"] },
     ] }] });
     if (!plan) throw new Error("Fixture plan missing");
-    evidence.requireTools(plan.layers.flatMap(layer => layer.items.flatMap(item => item.successTools ?? [])));
+    const args = { mapId: project.startMapId, start: { x: 1, y: 1 }, steps: [] };
+    evidence.adopt({ checkId: "qa-scene", ownerId: "original-qa", name: "run_scene_test", args, interactionTargets: [] });
     skipWorkItemById(plan, "qa", "Unable to execute");
     expect(isWorkPlanComplete(plan)).toBe(true);
-    evidence.requireTools([]);
     expect(ledger.evaluate(project, project, evidence, evidence.problems()).status).toBe("blocked");
-    evidence.observe("run_scene_test", { mapId: project.startMapId }, { ok: true, data: { ok: true } });
+    evidence.observe("run_scene_test", args, { ok: true, data: { ok: true } });
     expect(ledger.evaluate(project, project, evidence, evidence.problems()).status).toBe("verified");
   });
 
-  it("reports advisory failures without making them required, until explicitly requested", () => {
+  it("retains genuine advisory failures independently of declared requirements", () => {
     const { project, ledger } = setup();
     const evidence = new ToolVerificationEvidence();
-    evidence.observe("run_scene_test", { mapId: project.startMapId }, { ok: true, data: { ok: false } }, "advisory");
+    const args = { mapId: project.startMapId, start: { x: 1, y: 1 }, steps: [] };
+    evidence.observe("run_scene_test", args, { ok: true, data: { ok: false } }, "advisory");
     expect(evidence.problems().length).toBeGreaterThan(0);
-    expect(evidence.problems("required")).toEqual([]);
-    expect(ledger.evaluate(project, project, evidence, evidence.problems("required")).status).toBe("verified");
-    evidence.requireTools(["run_scene_test"]);
-    expect(ledger.evaluate(project, project, evidence, evidence.problems("required")).status).toBe("blocked");
+    expect(evidence.snapshot().requirements).toEqual([]);
+    expect(ledger.evaluate(project, project, evidence, evidence.problems()).status).toBe("blocked");
+    evidence.adopt({ checkId: "scene", ownerId: "goal", name: "run_scene_test", args, interactionTargets: [] });
+    expect(ledger.evaluate(project, project, evidence, evidence.problems()).status).toBe("blocked");
   });
 
   it("keeps intent action and required checks open despite optionality or genuine withdrawal", () => {
@@ -94,7 +97,7 @@ describe("authoritative action acceptance", () => {
     expect(ledger.withdraw({ acceptanceId: "goal", requirementId: "withdrawn", reason: "User scope reduction" })).toBe(true);
     expect(ledger.evaluate(project).status).toBe("verified");
     ledger.requireActionCombat([target]);
-    evidence.requireTools(["run_action_combat_test"]);
+    evidence.adopt({ checkId: "action", ownerId: "goal", name: "run_action_combat_test", args: { mapId: target.mapId } });
     const snapshot = ledger.evaluate(project, project, evidence, evidence.problems());
     expect(snapshot.status).toBe("blocked");
     expect(snapshot.items.find(item => item.id === "optional")).toMatchObject({ required: false, evidence: [{ passed: false }] });
@@ -123,13 +126,14 @@ describe("authoritative action acceptance", () => {
     const { project, ledger } = setup();
     const evidence = new ToolVerificationEvidence();
     const success = { ok: true, data: { ok: true } };
-    evidence.observe("run_scene_test", { mapId: "other" }, success, "explicit", "other-item");
-    evidence.recordSkippedTools("required-item", ["run_scene_test"]);
-    evidence.requireTools([]);
+    const otherArgs = { mapId: "other", start: { x: 1, y: 1 }, steps: [] };
+    const args = { ...otherArgs, mapId: project.startMapId };
+    evidence.observe("run_scene_test", otherArgs, success, "explicit", "other-item");
+    evidence.adopt({ checkId: "required-scene", ownerId: "original-required-owner", name: "run_scene_test", args, interactionTargets: [] });
     expect(ledger.evaluate(project, project, evidence, evidence.problems()).status).toBe("blocked");
-    evidence.observe("run_scene_test", { mapId: "other" }, success, "explicit", "other-item");
+    evidence.observe("run_scene_test", otherArgs, success, "explicit", "other-item");
     expect(ledger.evaluate(project, project, evidence, evidence.problems()).status).toBe("blocked");
-    evidence.observe("run_scene_test", { mapId: project.startMapId }, success, "explicit", "required-item");
+    evidence.observe("run_scene_test", args, success, "explicit", "required-item");
     expect(ledger.evaluate(project, project, evidence, evidence.problems()).status).toBe("verified");
   });
 });

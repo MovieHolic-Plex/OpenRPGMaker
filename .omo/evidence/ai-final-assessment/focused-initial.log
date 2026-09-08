@@ -1,0 +1,113 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/assistantFinalAssessment.test.ts test/agentVerification.test.ts test/assistantVerificationEvidence.test.ts test/assistantAcceptanceSession.test.ts test/assistantVisualEvidenceSession.test.ts test/aiEndingCompletionRegression.test.ts --maxWorkers=2 --minWorkers=1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-final-assessment-0906
+
+ ✓ test/assistantFinalAssessment.test.ts (6 tests) 14762ms
+   ✓ current final artifact assessment > retains acceptance, structure/icon and ending defects at final termination  3803ms
+   ✓ current final artifact assessment > retains acceptance, structure/icon and ending defects at max-tool-calls termination  1589ms
+   ✓ current final artifact assessment > retains acceptance, structure/icon and ending defects at token-budget termination  1571ms
+   ✓ current final artifact assessment > exposes all categories before repair and repairing acceptance does not erase others or replay milestones  3492ms
+   ✓ current final artifact assessment > exposes all categories before repair and repairing ending does not erase others or replay milestones  4297ms
+ ✓ test/assistantVisualEvidenceSession.test.ts (12 tests) 19784ms
+   ✓ one visual evidence lifecycle > preserves delivered reviewed maps after a DB-only write at final termination  1903ms
+   ✓ one visual evidence lifecycle > preserves delivered reviewed maps after a DB-only write at max-tool-calls termination  1706ms
+   ✓ one visual evidence lifecycle > preserves delivered reviewed maps after a DB-only write at token-budget termination  1795ms
+   ✓ one visual evidence lifecycle > does not credit metadata when rendering is empty  1312ms
+   ✓ one visual evidence lifecycle > does not credit metadata when rendering is failed  1432ms
+   ✓ visual evidence invalidation and review boundaries > invalidates only the changed map after a real resize and does not revive it on undo  2349ms
+   ✓ visual evidence invalidation and review boundaries > retains current images across a follow-up without a new render  1967ms
+   ✓ visual evidence invalidation and review boundaries > does not verify missing explicit review  1083ms
+   ✓ visual evidence invalidation and review boundaries > does not verify same-response explicit review  1247ms
+   ✓ visual evidence invalidation and review boundaries > does not verify fail explicit review  1820ms
+   ✓ visual evidence invalidation and review boundaries > requires coverage of every promised map  1112ms
+   ✓ visual evidence invalidation and review boundaries > does not turn verified map images into game-completion proof  2046ms
+ ✓ test/assistantAcceptanceSession.test.ts (20 tests) 12466ms
+   ✓ acceptance controls actual session termination > does not schedule run-end persistence proof for a completed plan with unmet acceptance  616ms
+   ✓ acceptance controls actual session termination > does not turn a review without an explicit passing verdict into completion  671ms
+   ✓ acceptance controls actual session termination > withdraws an earlier pass when a later explicit review fails  750ms
+   ✓ acceptance controls actual session termination > continues then blocks insufficient dimensions and quantity even after skip completes the plan  490ms
+   ✓ acceptance controls actual session termination > retains original denominator when skip and set_work_plan try to shrink promises  652ms
+   ✓ acceptance controls actual session termination > invalidates an attributed image review after a subsequent real map write  1070ms
+   ✓ applied acceptance lifecycle through real tools > repairs exact dimensions after plan completion and invalidates on applied undo  1802ms
+   ✓ applied acceptance lifecycle through real tools > blocks and retains the ledger when aborted while the next model response is held  376ms
+   ✓ applied acceptance lifecycle through real tools > never credits a review authored in the same response as the image request  712ms
+   ✓ applied acceptance lifecycle through real tools > requires visible contract repair for a spatial plan missing criteria  570ms
+   ✓ applied acceptance lifecycle through real tools > keeps legacy nonspatial and read-only requests free of fabricated map promises  322ms
+   ✓ recorded provider acceptance repair failures (R7) > identifies the missing scope atomically in recorded repair 0  582ms
+   ✓ recorded provider acceptance repair failures (R7) > identifies the missing scope atomically in recorded repair 1  638ms
+   ✓ recorded provider acceptance repair failures (R7) > identifies the missing scope atomically in recorded repair 2  663ms
+   ✓ recorded provider acceptance repair failures (R7) > identifies the missing scope atomically in recorded repair 3  601ms
+   ✓ recorded provider acceptance repair failures (R7) > identifies the missing scope atomically in recorded repair 4  452ms
+   ✓ returns distinct repair and review diagnostics through the actual session handler  547ms
+   ✓ exposes planner acceptance diagnostics before the first generation response (undefined)  416ms
+ ✓ test/agentVerification.test.ts (41 tests) 39ms
+ ❯ test/assistantVerificationEvidence.test.ts (20 tests | 2 failed) 11416ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > run_lint ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  911ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > check_reachability ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  879ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > verify_quest ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  629ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > play_walkthrough ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  635ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > run_scene_test ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  745ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > evaluate_game_quality ok:true 실패는 명시·자동 완료 근거가 되지 않고 최종 응답에 남는다  1451ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > run_lint 실제 실행 결과도 ok:true를 유지한다 161ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 같은 검사 재실패는 앞선 성공을 제거하고, 이후 실제 재통과는 복구한다  454ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 쓰기 이후에는 이전 검증 성공으로 완료할 수 없고 다시 검사해야 한다  492ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 재검사 없는 쓰기는 최종 보고에서도 검증 통과로 남지 않는다  469ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 실행되지 않은 잘못된 인자는 고친 호출로 복구할 수 있다  530ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > warning-only lint는 통과하며 거부된 쓰기는 성공 근거를 무효화하지 않는다  674ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 레이어의 선재 lint 오류는 자문을 유지하면서 최종 응답에 보고한다  411ms
+   × 필수 검증의 실행 성공과 통과는 별도 계약 > 레이어 자동 통과는 재검증 의무를 만들지 않고 명시 검사만 유지한다 (explicit=false) 1007ms
+     → expected "run" to be called 1 times, but got 3 times
+   × 필수 검증의 실행 성공과 통과는 별도 계약 > 레이어 자동 통과는 재검증 의무를 만들지 않고 명시 검사만 유지한다 (explicit=true) 850ms
+     → expected "run" to be called 2 times, but got 4 times
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 다음 항목은 자기 대상의 검증으로 완료하며 이전 항목의 stale 검사는 최종 보고에 보존한다  766ms
+   ✓ 필수 검증의 실행 성공과 통과는 별도 계약 > 실패한 walkthrough 실행은 레이어의 성공 시나리오로 기록하지 않는다  348ms
+   ✓ 검증 근거의 대상과 변경 수명 > 실제 advisory 실패는 보고하며 같은 대상의 자동 재통과로 해소한다 0ms
+   ✓ 검증 근거의 대상과 변경 수명 > 다른 대상의 성공은 실패를 덮지 않으며, 인자 키 순서가 달라도 같은 대상을 재검증한다 0ms
+   ✓ 검증 근거의 대상과 변경 수명 > 새 프로젝트 변경 뒤 모든 검사 대상은 stale이며 각 대상을 재검사해야 한다 0ms
+ ✓ test/aiEndingCompletionRegression.test.ts (13 tests) 10749ms
+   ✓ AI-authored ending completion at the tool/save/runtime seam > reproduces the saved correction: item consumed, switch retained, no ending, exit relocked  1189ms
+   ✓ AI-authored ending completion at the tool/save/runtime seam > control: an explicit invocation undefined executes the persisted epilogue and ending  1066ms
+   ✓ AI-authored ending completion at the tool/save/runtime seam > control: an explicit invocation 'ending_regression' executes the persisted epilogue and ending  811ms
+   ✓ AI-authored ending completion at the tool/save/runtime seam > does not certify completion when the sole defined ending has no invocation anywhere  761ms
+   ✓ AI-authored ending completion at the tool/save/runtime seam > permits defining an ending before authoring its invocation  662ms
+   ✓ AI-authored ending completion at the tool/save/runtime seam > does not impose an ending on a open-ended game  311ms
+   ✓ AI-authored ending completion at the tool/save/runtime seam > matches each defined ending against named invocations  1147ms
+   ✓ AI-authored ending completion at the tool/save/runtime seam > matches each defined ending against condition-selected invocations  854ms
+   ✓ AI-authored ending completion at the tool/save/runtime seam > does not mistake obsolete root commands for invocations when pages own execution  1082ms
+   ✓ AI-authored ending completion at the tool/save/runtime seam > accepts a nested common-event invocation and executes it through the exit  1372ms
+   ✓ AI-authored ending completion at the tool/save/runtime seam > accepts legacy root invocations when no pages replace them  904ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/assistantVerificationEvidence.test.ts > 필수 검증의 실행 성공과 통과는 별도 계약 > 레이어 자동 통과는 재검증 의무를 만들지 않고 명시 검사만 유지한다 (explicit=false)
+AssertionError: expected "run" to be called 1 times, but got 3 times
+ ❯ test/assistantVerificationEvidence.test.ts:160:21
+    158|     const result = await session.sendUserMessage("프로젝트 확인 후 제목을 수정해줘",…
+    159|     expect(result.workPlan?.layers.flatMap((layer) => layer.items.map(…
+    160|     expect(quality).toHaveBeenCalledTimes(explicit ? 2 : 1);
+       |                     ^
+    161|     expect(lintRun).toHaveBeenCalledTimes(2);
+    162|     expect(result.assistantText.includes("evaluate_game_quality: 변경 후 …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  test/assistantVerificationEvidence.test.ts > 필수 검증의 실행 성공과 통과는 별도 계약 > 레이어 자동 통과는 재검증 의무를 만들지 않고 명시 검사만 유지한다 (explicit=true)
+AssertionError: expected "run" to be called 2 times, but got 4 times
+ ❯ test/assistantVerificationEvidence.test.ts:160:21
+    158|     const result = await session.sendUserMessage("프로젝트 확인 후 제목을 수정해줘",…
+    159|     expect(result.workPlan?.layers.flatMap((layer) => layer.items.map(…
+    160|     expect(quality).toHaveBeenCalledTimes(explicit ? 2 : 1);
+       |                     ^
+    161|     expect(lintRun).toHaveBeenCalledTimes(2);
+    162|     expect(result.assistantText.includes("evaluate_game_quality: 변경 후 …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed | 5 passed (6)
+      Tests  2 failed | 110 passed (112)
+   Start at  22:56:32
+   Duration  69.04s (transform 13.90s, setup 0ms, collect 48.08s, tests 69.22s, environment 2ms, prepare 824ms)

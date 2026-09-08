@@ -1,0 +1,63 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/npcPrerequisiteSession.test.ts -t R1 exposes --maxWorkers=2 --no-file-parallelism
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86
+
+ ❯ test/npcPrerequisiteSession.test.ts (24 tests | 1 failed | 23 skipped) 2903ms
+   × request-bound verify_npc_reward session tool > R1 exposes the tool and completes through its real session boundary 2901ms
+     → expected '완료 검증이 아직 미완성입니다.\n- npcReward: Accep…' to be 'NPC_PREREQUISITE_COMPLETION_SENTINEL' // Object.is equality
+   ↓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"extra":true}
+   ↓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"passed":true}
+   ↓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"receipt":{}}
+   ↓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"reason":"Not an admitted field"}
+   ↓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"state":{"gold":20}}
+   ↓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"requirementIndex":99}
+   ↓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"prelude":[{"kind":"set","mapId":"map_blank_start","gold":20}]}
+   ↓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"prelude":[{"kind":"move","mapId":"map_blank_start","to":{"x":2,"y":2}}]}
+   ↓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"prelude":[{"kind":"interact","mapId":"map_blank_start"}]}
+   ↓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"prelude":[{"kind":"expect","goldDelta":20}]}
+   ↓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"prelude":[{"kind":"walk","mapId":"map_blank_start","to":{"x":2,"y":2,"extra":true}}]}
+   ↓ request-bound verify_npc_reward session tool > R12 valid failed replacement cannot fall back to an old pass or fresh-local proof
+   ↓ request-bound verify_npc_reward session tool > R12 preserves witness across retry and replan without weakening the requirement
+   ↓ request-bound verify_npc_reward session tool > R13 cannot erase an unrelated failed scene check
+   ↓ request-bound verify_npc_reward session tool > R11/12 replays current content after a pass, replan, explicit completion and final skip
+   ↓ request-bound verify_npc_reward session tool > R12 preserves witness and immutable selections over a real user continuation
+   ↓ request-bound verify_npc_reward session tool > R12 a new request lifetime does not inherit the earlier route
+   ↓ request-bound verify_npc_reward session tool > R12 never falls back to an easier fresh-local pass after content changes
+   ↓ request-bound verify_npc_reward session tool > R12 a valid replacement is run afresh and can repair a failed route
+   ↓ request-bound verify_npc_reward session tool > R12 keeps the stored program private from observer-owned arguments
+   ↓ request-bound verify_npc_reward session tool > R6 rejects session witness replacement after a same-named NPC moves to another map
+   ↓ request-bound verify_npc_reward session tool > R12 preserves the witness through the milestone application rebase boundary
+   ↓ request-bound verify_npc_reward session tool > R13 a reward proof cannot clear image or original-baseline change obligations
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/npcPrerequisiteSession.test.ts > request-bound verify_npc_reward session tool > R1 exposes the tool and completes through its real session boundary
+AssertionError: expected '완료 검증이 아직 미완성입니다.\n- npcReward: Accep…' to be 'NPC_PREREQUISITE_COMPLETION_SENTINEL' // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- NPC_PREREQUISITE_COMPLETION_SENTINEL[39m
+[31m+ 완료 검증이 아직 미완성입니다.[39m
+[31m+ - npcReward: Acceptance incomplete; execution stopped[39m
+[31m+   {"kind":"npcReward","requirement":{"target":{"mapId":"map_blank_start","eventId":"ev_chief"},"grants":[{"kind":"gold","count":20}],"oneTime":true}} → NPC ev_chief reward acceptance failed at step 5: gold: expected delta 20, actual 0. Preserve the requested grants and fix the runtime interaction; author prerequisites and links first, then use verify_npc_reward. Do not remove the reward or move its timing to complete.[39m
+
+ ❯ test/npcPrerequisiteSession.test.ts:32:34
+     30|     const result = await h.session.sendUserMessage("Verify the chief r…
+     31|     expect(h.results()[0]?.ok).toBe(true);
+     32|     expect(result.assistantText).toBe(COMPLETE);
+       |                                  ^
+     33|     const schema = h.requests[0]?.tools?.find(t => t.function.name ===…
+     34|     expect(schema).toMatchObject({ additionalProperties: false, requir…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 23 skipped (24)
+   Start at  01:08:10
+   Duration  17.36s (transform 9.78s, setup 0ms, collect 13.96s, tests 2.90s, environment 0ms, prepare 86ms)
+

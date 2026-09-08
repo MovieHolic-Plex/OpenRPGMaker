@@ -21,7 +21,7 @@ import { describe, expect, it } from "vitest";
 import { allTools } from "@/editor/tools/toolRegistry";
 import { SET_BUILD_SPEC_TOOL, SPEC_REMEDY_FIELDS, WORK_PLAN_TOOLS } from "@/ai/assistantSession";
 import { ACCEPTANCE_CRITERIA_SCHEMA, ACCEPTANCE_SCHEMA, ACCEPTANCE_TOOLS } from "@/ai/assistantAcceptanceTools";
-import { parseAcceptance, parseAcceptanceCriteria, type AcceptanceCriterion } from "@/ai/assistantAcceptance";
+import { parseAcceptance, parseAcceptanceCriteria, parseAcceptanceCriteriaResult, type AcceptanceCriterion } from "@/ai/assistantAcceptance";
 import { workPlanFromSetToolArgs } from "@/ai/workPlan";
 type SchemaNode = {
   readonly type?: unknown;
@@ -127,9 +127,8 @@ describe("툴 스키마 프로바이더 호환(Gemini 엄격 검증)", () => {
 const criterionCases: AcceptanceCriterion[] = [
   { kind: "toolVerdict", tool: "run_lint", args: {} },
   { kind: "toolVerdict", tool: "play_walkthrough", args: {
-    mapId: "map_start", scenario: [{ do: "setVariable", id: "progress", value: 0 },
-      { expect: "variable", id: "progress", value: 0 }],
-    runtimeKeys: { "authored-id": [null, false, 0, "0", { nested: {} }] },
+    scenario: [{ do: "moveTo", mapId: "map_start", x: 0, y: 0 },
+      { expect: "variable", variableId: "progress", op: ">=", value: 0 }], seed: 0,
   } },
   ...[{ mapId: "map_start" }, { newMapName: "New room" }].flatMap((target): AcceptanceCriterion[] => [
     { kind: "shopPurchase", target, start: { x: 1, y: 1 }, seller: { eventId: "seller" },
@@ -146,6 +145,7 @@ const criterionCases: AcceptanceCriterion[] = [
     ]),
   ]),
   { kind: "mapCount", targets: [{ mapId: "map_start" }, { newMapName: "New room" }], count: 2 },
+  { kind: "gameTitle", title: "작은 열쇠" },
   { kind: "npcReward", requirement: { target: { mapId: "map_start", eventName: "Mira" },
     grants: [{ kind: "item", name: "Potion", count: 2 }, { kind: "monster", id: "species_leafling" }],
     oneTime: true, choices: [0], repeatChoices: [1] } },
@@ -153,8 +153,12 @@ const criterionCases: AcceptanceCriterion[] = [
   { kind: "functionalUnresolved", reason: "Specify the requested price", expectations: {
     kind: "shopPurchase", seller: { eventName: "Mira" }, item: { name: "Potion" }, count: 2 } },
   { kind: "projectTitle", title: "Exact title" },
+  { kind: "projectTitle", title: "" },
+  { kind: "projectTitle", title: " \t" },
   { kind: "itemValues", itemId: "item_potion", name: "Potion" },
   { kind: "itemValues", itemId: "item_potion", price: 37.5 },
+  { kind: "itemValues", itemId: "item_potion", name: "" },
+  { kind: "itemValues", itemId: "item_potion", price: 0 },
   { kind: "projectPreserve", scope: "project", allowedChanges: [] },
   { kind: "projectPreserve", scope: "authored", allowedChanges: [
     { kind: "projectTitle" }, { kind: "itemName", itemId: "item_potion" },
@@ -218,19 +222,20 @@ describe("acceptance and requirement schema/runtime contract", () => {
     expect(item?.required).toEqual(["kind"]);
     expect(item?.additionalProperties).toBe(false);
     expect(item?.properties?.kind).toEqual({ type: "string", enum: [
-      "toolVerdict", "mapDimensions", "mapCount", "eventCount", "targetChange", "preserve", "imageReviewed", "reachability", "actionCombat",
-      "shopPurchase", "mapRoundTrip", "npcReward", "functionalUnresolved",
+      "mapCount", "mapDimensions", "eventCount", "targetChange", "preserve", "imageReviewed", "actionCombat",
+      "toolVerdict", "shopPurchase", "mapRoundTrip", "npcReward", "functionalUnresolved", "reachability", "gameTitle",
       "projectTitle", "itemValues", "projectPreserve", "wikiDeclaration",
     ] });
     expect(Object.keys(item?.properties ?? {}).sort()).toEqual([
-      "allowedChanges", "args", "combatMode", "count", "destination", "documentId", "expectations", "from", "height", "item", "itemId",
+      "allowedChanges", "args", "combatMode", "count", "destination", "documentId", "expectations", "from", "height", "interactionTargets", "item", "itemId",
       "kind", "name", "outgoing", "price", "reason", "region", "requirement", "returning", "scope", "seller", "sourceQuote",
       "start", "target", "targets", "title", "to", "tool", "unitPrice", "width",
     ]);
     expect(item?.properties?.args).toMatchObject({ type: "object", additionalProperties: true });
     expect(item?.properties?.target).toMatchObject({ type: "object", additionalProperties: false,
       properties: { mapId: { type: "string" }, newMapName: { type: "string" } } });
-    expect(item?.properties?.targets?.items).toBe(item?.properties?.target);
+    expect(item?.properties?.targets?.items?.properties).toBe(item?.properties?.target?.properties);
+    expect(item?.properties?.targets?.items).toMatchObject({ type: "object", additionalProperties: false });
     expect(item?.properties?.from?.required).toEqual(["x", "y"]);
     expect(item?.properties?.region?.required).toEqual(["x", "y", "w", "h"]);
     for (const key of ["width", "height"]) expect(item?.properties?.[key]?.minimum).toBe(1);
@@ -251,6 +256,32 @@ describe("acceptance and requirement schema/runtime contract", () => {
     }
   });
 
+  it.each([
+    { criterion: { kind: "projectTitle", title: 3 }, field: "title", code: "invalid-field" },
+    { criterion: { kind: "itemValues", itemId: "item" }, field: "name", code: "missing-field" },
+    { criterion: { kind: "itemValues", itemId: "item", price: Infinity }, field: "price", code: "invalid-field" },
+    { criterion: { kind: "projectPreserve", scope: "project", allowedChanges: [{ kind: "projectTitle", itemId: "mixed" }] }, field: "allowedChanges[0]", code: "invalid-field" },
+    { criterion: { kind: "wikiDeclaration", documentId: "doc", combatMode: "invented", sourceQuote: "quote" }, field: "combatMode", code: "invalid-field" },
+  ])("retains atomic field diagnostics for added project criterion $criterion.kind", ({ criterion, field, code }) => {
+    const result = parseAcceptanceCriteriaResult([criterionCases[0], criterion]);
+    expect(result.criteria).toBeNull();
+    expect(result.issues).toMatchObject([{ criterionIndex: 1, field: `criteria[1].${field}`, code, example: { kind: criterion.kind } }]);
+  });
+
+  it.each(["", " \t"])("keeps displayed-title validity distinct from exact stored title %j", title => {
+    expect(parseAcceptanceCriteria([{ kind: "projectTitle", title }])).toEqual([{ kind: "projectTitle", title }]);
+    expect(parseAcceptanceCriteriaResult([{ kind: "gameTitle", title }])).toMatchObject({ criteria: null,
+      issues: [{ field: "criteria[0].title", code: "invalid-field", example: { kind: "gameTitle" } }] });
+  });
+
+  it("rejects unsupported native arguments even when the dynamic provider envelope can represent them", () => {
+    const args = { mapId: "map_start", scenario: [{ do: "setVariable", id: "progress", value: 0 },
+      { expect: "variable", id: "progress", value: 0 }], runtimeKeys: { "authored-id": [null, false, 0, "0", { nested: {} }] } };
+    expect(parseAcceptanceCriteria([{ kind: "toolVerdict", tool: "play_walkthrough", args }])).toBeNull();
+    const scene = { mapId: "map_start", start: { x: 0, y: 0 }, steps: [{ kind: "interact" }] };
+    expect(parseAcceptanceCriteria([{ kind: "toolVerdict", tool: "run_scene_test", args: scene }])).toBeNull();
+  });
+
   it.each([{}, { mapId: "map_start", newMapName: "New room" }, { mapId: "" }, { newMapName: " " },
     { mapId: "map_start", passed: true }])("rejects malformed or ambiguous target %j", target => {
     expect(parseAcceptanceCriteria([{ kind: "preserve", target }])).toBeNull();
@@ -266,7 +297,8 @@ describe("acceptance and requirement schema/runtime contract", () => {
     for (const required of [undefined, true, false, "false"]) {
       const promise = { id: "promise", title: "Promise", criteria, ...(required === undefined ? {} : { required }) };
       expect(parseAcceptance([promise])).toEqual([{ id: "promise", title: "Promise",
-        required: required !== false, criteria: required === "false" ? null : criteria }]);
+        required: required !== false, criteria: required === "false" ? null : criteria,
+        ...(required === "false" ? { issues: [expect.objectContaining({ field: "criteria", code: "missing-field" })] } : {}) }]);
     }
     expect(parseAcceptanceCriteria([{ kind: "toolVerdict", tool: "set_map_properties", args: {} }])).toBeNull();
   });

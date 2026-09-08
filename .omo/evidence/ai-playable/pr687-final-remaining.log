@@ -1,0 +1,87 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/assistantAcceptanceCost.test.ts test/assistantAcceptanceProvider.test.ts test/assistantFinalAudit.test.ts test/pr687VerificationIntegration.test.ts test/aiAskRetainedDraft.test.ts test/monsterMetadataPersistence.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86
+
+ ✓ test/assistantFinalAudit.test.ts (3 tests) 1399ms
+   ✓ authoritative final response audit > persists the harness verdict instead of leaving the model success as the latest response  661ms
+   ✓ authoritative final response audit > does not lead with model success when explicit verification still fails  521ms
+ ❯ test/assistantAcceptanceCost.test.ts (6 tests | 2 failed) 3509ms
+   ✓ bounded canonical project comparisons > compares shared project content once for same-reference 140ms
+   ✓ bounded canonical project comparisons > compares shared project content once for same-content  356ms
+   ✓ bounded canonical project comparisons > compares shared project content once for changed-content 289ms
+   ✓ bounded canonical project comparisons > does not compare or clone an unrelated editor update without authority or verifier evidence 218ms
+   × bounded canonical project comparisons > preserves late-adoption freshness when content changed=false 1312ms
+     → expected 'blocked' to be 'verified' // Object.is equality
+   × bounded canonical project comparisons > preserves late-adoption freshness when content changed=true 1192ms
+     → expected 'blocked' to be 'verified' // Object.is equality
+ ✓ test/assistantAcceptanceProvider.test.ts (1 test) 157ms
+ ✓ test/pr687VerificationIntegration.test.ts (26 tests) 15444ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > dummy removal retains only authoritative obligations: unadopted  659ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > dummy removal retains only authoritative obligations: adopted  659ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > dummy removal retains only authoritative obligations: negative  582ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > facing-only correction clears its finding but not a distinct checkpoint assertion  459ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed set through normal correction dispatch  399ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed move through normal correction dispatch  379ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed walk through normal correction dispatch  406ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed start through normal correction dispatch  410ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed state through normal correction dispatch  386ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed choice through normal correction dispatch  404ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed checkpoint through normal correction dispatch  426ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed reward through normal correction dispatch  425ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed repeat through normal correction dispatch  397ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > classifies malformed without waiving a required scope  676ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > classifies execution without waiving a required scope  668ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > classifies no-target without waiving a required scope  602ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > classifies missing-target without waiving a required scope  621ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > optional criterion authority does not turn ordinary optional scheduling into required verification  418ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > canonical tool verdict binds before execution and late adoption cannot reuse an exploratory pass  1365ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > normal final repair is bounded by authoritative findings without an acceptance declaration  326ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > successful exploratory checks do not become repair obligations after a write  418ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects skip atomically with pending-specification proof and retains completion  963ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects skip atomically with unverified proof and retains completion  868ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects skip atomically with stale proof and retains completion  1473ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects skip atomically with passed proof and retains completion  860ms
+ ✓ test/aiAskRetainedDraft.test.ts (8 tests) 11989ms
+   ✓ does not apply a cancelled successful draft during explicit Ask, then resumes once  2037ms
+   ✓ does not apply a cancelled successful draft during inferred Ask, then resumes once  1651ms
+   ✓ does not apply a cancelled successful draft during inferred-plan Ask, then resumes once  1592ms
+   ✓ keeps ordinary Do auto-apply and pending/applied coexistence without replay  2296ms
+   ✓ guards ordinary Ask apply even when an executor returns retained proposal calls  740ms
+   ✓ does not milestone-apply retained acceptance work in autonomous explicit Ask  1528ms
+   ✓ does not milestone-apply retained acceptance work in autonomous inferred Ask  1633ms
+   ✓ keeps retained calls unauthorized when explicit Ask fails before intent  511ms
+ ✓ test/monsterMetadataPersistence.test.ts (5 tests) 15301ms
+   ✓ monster metadata concurrent persistence > merges per-field local deltas when a real conditional save loses its first SHA race  2488ms
+   ✓ monster metadata concurrent persistence > reconciles remote fields without recording an edit when consecutive map saves complete  3571ms
+   ✓ monster metadata concurrent persistence > preserves fresh fields and live maps when a save response arrives late  4191ms
+   ✓ monster metadata concurrent persistence > does not adopt old metadata when a different project replaces the submitted lineage  2950ms
+   ✓ monster metadata concurrent persistence > retains baseline and fresh input when a deferred write fails  2101ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/assistantAcceptanceCost.test.ts > bounded canonical project comparisons > preserves late-adoption freshness when content changed=false
+ FAIL  test/assistantAcceptanceCost.test.ts > bounded canonical project comparisons > preserves late-adoption freshness when content changed=true
+AssertionError: expected 'blocked' to be 'verified' // Object.is equality
+
+Expected: [32m"[7mverifi[27med"[39m
+Received: [31m"[7mblock[27med"[39m
+
+ ❯ test/assistantAcceptanceCost.test.ts:65:55
+     63|     expect(f.session.getVerificationSnapshot().requirements[0]?.status…
+     64|     await f.run([[{ name: "check_reachability", args }]]);
+     65|     expect(f.session.getAcceptanceSnapshot()?.status).toBe("verified");
+       |                                                       ^
+     66|   });
+     67| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+
+ Test Files  1 failed | 5 passed (6)
+      Tests  2 failed | 47 passed (49)
+   Start at  01:59:14
+   Duration  45.71s (transform 7.97s, setup 0ms, collect 26.69s, tests 47.80s, environment 1ms, prepare 473ms)
+

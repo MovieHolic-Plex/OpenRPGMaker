@@ -31,8 +31,15 @@ const COMPOUND: readonly { readonly pattern: RegExp; readonly phrase: string; re
 ];
 
 export function parseSpatialPhrase(text: string): SpatialPhrase | null {
-  const raw = text.normalize("NFKC");
+  const raw = placementText(text).normalize("NFKC");
   const folded = raw.toLowerCase();
+  // A corner is one contiguous direction phrase, not two independently located objects.
+  const directions = [...folded.matchAll(/북동|북서|남동|남서|northeast|northwest|southeast|southwest|오른쪽|우측|동쪽|왼쪽|좌측|서쪽|위쪽|윗쪽|상단|북쪽|위에|위로|위(?![가-힣])|아래쪽|하단|남쪽|아래에|아래로|아래(?![가-힣])|가운데|중앙|\b(?:right|east|left|west|upper|top|north|lower|bottom|south|center|middle)\b/g)];
+  for (let i = 1; i < directions.length; i += 1) {
+    const previous = directions[i - 1];
+    const current = directions[i];
+    if (!/^[\s-]*$/.test(folded.slice(previous.index + previous[0].length, current.index))) return null;
+  }
   for (const entry of COMPOUND) {
     if (entry.pattern.test(folded)) {
       return { phrase: entry.phrase, horizontal: entry.horizontal, vertical: entry.vertical };
@@ -44,6 +51,7 @@ export function parseSpatialPhrase(text: string): SpatialPhrase | null {
   const top = /위쪽|윗쪽|상단|북쪽|위에|위로|위(?![가-힣])|\bupper\b|\btop\b|\bnorth\b/.test(folded);
   const bottom = /아래쪽|하단|남쪽|아래에|아래로|아래(?![가-힣])|\blower\b|\bbottom\b|\bsouth\b/.test(folded);
   const middle = /가운데|중앙|\bcenter\b|\bmiddle\b/.test(folded);
+  if ((right && left) || (top && bottom)) return null;
 
   const horizontal: SpatialHorizontal | null = right ? "right" : left ? "left" : null;
   const vertical: SpatialVertical | null = top ? "top" : bottom ? "bottom" : null;
@@ -103,14 +111,14 @@ export function implicitSpecFromViewLocation(input: {
   readonly requestText: string;
   readonly rect: TileRect;
 }): BuildSpec | null {
-  const parsed = parseSpatialPhrase(input.requestText);
-  if (!parsed) return null;
+  const placement = viewportPlacement(input.requestText);
+  if (!placement) return null;
   return {
     mapId: input.mapId,
-    title: `화면 기준 위치: ${parsed.phrase}`,
+    title: `화면 기준 위치: ${placement.phrase.phrase}`,
     assets: [{
       id: "위치 지시",
-      kind: assetKindFromRequest(input.requestText),
+      kind: assetKindFromRequest(placement.instruction),
       x: input.rect.x,
       y: input.rect.y,
       w: input.rect.w,
@@ -124,11 +132,36 @@ export function resolveTurnViewLocation(
   viewport: MapViewportSnapshot | null | undefined,
 ): { readonly phrase: SpatialPhrase; readonly frame: TileRect; readonly rect: TileRect } | null {
   if (!viewport) return null;
-  const parsed = parseSpatialPhrase(requestText);
-  if (!parsed) return null;
+  const placement = viewportPlacement(requestText);
+  if (!placement) return null;
   const frame = viewportVisibleFrame(viewport);
   if (frame.w < 1 || frame.h < 1) return null;
-  return { phrase: parsed, frame, rect: resolveSpatialRect(frame, parsed) };
+  return { phrase: placement.phrase, frame, rect: resolveSpatialRect(frame, placement.phrase) };
+}
+
+/** Inference only: never use this projection as authored dialogue or user-message content. */
+function placementText(text: string): string {
+  return text
+    .replace(/```[\s\S]*?```|~~~[\s\S]*?~~~/g, " ")
+    .replace(/^\s*>.*$/gm, " ")
+    .replace(/"[^"\n]*"|'[^'\n]*'|“[^”]*”|‘[^’]*’|「[^」]*」|『[^』]*』|`[^`\n]*`/g, " ");
+}
+
+function viewportPlacement(text: string): { readonly instruction: string; readonly phrase: SpatialPhrase } | null {
+  const clauses = placementText(text).split(/[.!?;,\n]|\b(?:and|then)\b|(?<=만들고|짓고|심고|놓고|하고|하며)\s*/u);
+  const placements = clauses.filter(clause =>
+    /만들|배치|설치|심어|심고|놓아|놓고|놔|깔|칠해|그려|지어|짓고|파줘|\b(?:place|build|create|plant|paint|draw|put|add|make)\b/i.test(clause)
+    && !/문구|대사|텍스트|인벤토리|소지|보유|\b(?:text|dialogue|inventory|carry|carrying)\b/i.test(clause)
+    && parseSpatialPhrase(clause) !== null,
+  );
+  // Multiple placements need separate explicit BuildSpec assets, never a merged box.
+  if (placements.length !== 1) return null;
+  const instruction = placements[0];
+  if (!/화면|뷰포트|\b(?:screen|viewport|visible view)\b/i.test(instruction)) return null;
+  // Mentioning the screen as a reference does not override an explicit map-relative target.
+  if (/(?:맵|지도)(?:의)?\s*(?:북|남|동|서|오른|왼|위|아래|상단|하단|중앙)|\bmap(?:'s)?\s+(?:north|south|east|west|top|bottom|left|right)|\b(?:north|south|east|west|top|bottom|left|right)\s+(?:of\s+)?(?:the\s+)?map\b/i.test(instruction)) return null;
+  const phrase = parseSpatialPhrase(instruction);
+  return phrase ? { instruction, phrase } : null;
 }
 
 function phraseLabel(horizontal: SpatialHorizontal, vertical: SpatialVertical): string {
@@ -152,6 +185,6 @@ function sliceAxis(origin: number, size: number, which: "start" | "mid" | "end")
 function assetKindFromRequest(text: string): string {
   if (/숲|나무|침엽|활엽|forest|tree|woods/i.test(text)) return "prop";
   if (/길|도로|path|road/i.test(text)) return "road";
-  if (/물|호수|강|연못|lake|river/i.test(text)) return "terrain";
+  if (/물|호수|강|연못|\b(?:water|lake|river|pond)\b/i.test(text)) return "terrain";
   return "selection";
 }

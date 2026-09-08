@@ -1,0 +1,13 @@
+[WebServer] [rpg-zzu] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[WebServer] [rpg-zzu] QWENCLOUD_API_KEY 가 없어 /api/qwen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[WebServer] [rpg-zzu] CPENROUTER_API_KEY 가 없어 /api/cpen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+
+Running 3 tests using 1 worker
+
+  ✓  1 [chromium] › test/e2e/ai-map-history.spec.ts:31:3 › map-scoped AI conversation history › startup catalog cannot cancel Recover through the shipped clock (1.2m)
+  ✓  2 [chromium] › test/e2e/ai-map-history.spec.ts:33:3 › map-scoped AI conversation history › clock opens history with the current-map filter active (51.2s)
+  ✓  3 [chromium] › test/e2e/ai-map-history.spec.ts:221:3 › map-scoped AI conversation history › legacy unscoped view reads the retained transcript without adopting it (57.3s)
+
+  3 passed (3.2m)
+
+EXIT=0

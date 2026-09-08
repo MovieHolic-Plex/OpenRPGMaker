@@ -1,0 +1,19 @@
+{
+  "authored": true,
+  "npc": {
+    "ok": true
+  },
+  "scene": true,
+  "gold": 57,
+  "unchangedProject": true,
+  "log": [
+    "reward baseline {\"gold\":37,\"inventory\":{},\"monsters\":{}}",
+    "event currency_smoke start",
+    "reward delta gold: baseline=37, current=57, delta=20",
+    "reward delta inventory gold: baseline=0, current=0, delta=0",
+    "reward baseline {\"gold\":57,\"inventory\":{},\"monsters\":{}}",
+    "event currency_smoke start",
+    "reward delta gold: baseline=57, current=57, delta=0",
+    "reward delta inventory gold: baseline=0, current=0, delta=0"
+  ]
+}

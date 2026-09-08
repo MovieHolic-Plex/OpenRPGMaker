@@ -2,7 +2,7 @@ import { cooperativeNodeYield } from "./cooperativeNodeYield";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
 import type { ReviewInput } from "@/ai/independentReview";
-import { independentReviewPayload as payload } from "./independentReviewFixture";
+import { independentReviewPayload as payload, imageDeliveryForRequest } from "./independentReviewFixture";
 import { defaultAiConfig, type ChatRequest, type ChatResult } from "@/ai/llmClient";
 import { createBlankProject } from "@/project/defaults";
 import { llmSolver, runGoldenTask } from "@/evals/runner";
@@ -107,10 +107,11 @@ function fixture(options: {
       const evidence = payload(request);
       if (evidence) {
         reviewRequests.push(request);
-        return options.reviewer ? options.reviewer(evidence, request) : approval(evidence.revision);
+        const response = options.reviewer ? await options.reviewer(evidence, request) : approval(evidence.revision);
+        return { ...response, imageDelivery: imageDeliveryForRequest(request) };
       }
       requests.push(request);
-      return rounds[requests.length - 1] ?? text("Writer finished");
+      return { ...(rounds[requests.length - 1] ?? text("Writer finished")), imageDelivery: imageDeliveryForRequest(request) };
     },
   });
   return { project, session, requests, reviewRequests };

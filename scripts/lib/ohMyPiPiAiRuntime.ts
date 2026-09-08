@@ -5,9 +5,11 @@
 // 싣고 오므로 Bun 에서만 로드되며, 그 Bun 의존이 인증 경로로 새지 않는 것이 이 경계의 목적이다.
 
 import { complete } from "@oh-my-pi/pi-ai";
-import type { ImageContent, TextContent } from "@oh-my-pi/pi-ai";
 import { getBundledModel, getBundledModels } from "@oh-my-pi/pi-catalog";
 import { getOhMyPiProvider } from "../../src/ai/ohMyPiProviders.ts";
+import type { ImageDelivery } from "../../src/ai/imageDelivery.ts";
+import { convertUserContent, hasImagePart, ImageTransportError } from "./ohMyPiUserContent.ts";
+import { antigravityToolEnumPayload } from "./ohMyPiToolEnums.ts";
 
 function testStub(): boolean {
   return process.env.RPG_ZZU_OH_MY_PI_TEST_STUB === "1";
@@ -40,55 +42,44 @@ function toolArgumentsOf(value: unknown): Record<string, unknown> {
   }
 }
 
-class UserContentInputError extends Error {
-  readonly name = "UserContentInputError";
-  readonly status = 400;
-  constructor(readonly partIndex: number) {
-    super(`Invalid user content part ${partIndex}: expected text or image_url with a non-empty PNG/JPEG/WebP base64 data URL and optional auto/low/high detail.`);
-  }
+export function openaiToContext(provider: string, body: Record<string, unknown>) {
+  return openaiToContextWithDelivery(provider, body, true).context;
 }
 
-export function openaiToContext(provider: string, body: Record<string, unknown>) {
+function openaiToContextWithDelivery(provider: string, body: Record<string, unknown>, supportsImages: boolean) {
   const messages = Array.isArray(body.messages) ? body.messages : [];
   const systemPrompt: string[] = [];
   const converted: unknown[] = [];
-  for (const raw of messages) {
+  const imageDelivery: ImageDelivery[] = [];
+  for (const [messageIndex, raw] of messages.entries()) {
     if (!raw || typeof raw !== "object") continue;
     const msg = raw as { role?: string; content?: unknown; tool_call_id?: string; name?: string; tool_calls?: unknown };
+    if (msg.role !== "user" && hasImagePart(msg.content)) {
+      throw new ImageTransportError("unsupported-image-role", `messages[${messageIndex}]: image parts require the user role`);
+    }
     if (msg.role === "system") {
       const text = textOf(msg.content);
       if (text) systemPrompt.push(text);
       continue;
     }
     if (msg.role === "user") {
-      const content: (TextContent | ImageContent)[] = Array.isArray(msg.content)
-        ? msg.content.map((part: unknown, index): TextContent | ImageContent => {
-            if (!part || typeof part !== "object" || !("type" in part)) throw new UserContentInputError(index);
-            switch (part.type) {
-              case "text":
-                return { type: "text", text: textOf([part]) };
-              case "image_url": {
-                const image = "image_url" in part ? part.image_url : undefined;
-                if (!image || typeof image !== "object" || !("url" in image) || typeof image.url !== "string") {
-                  throw new UserContentInputError(index);
-                }
-                const [, mimeType, data] = /^data:(image\/(?:png|jpeg|webp));base64,([A-Za-z0-9+/]+={0,2})$/.exec(image.url) ?? [];
-                // Buffer's decoder is permissive; round-trip to reject corrupt or noncanonical base64.
-                if (!mimeType || !data || Buffer.from(data, "base64").toString("base64") !== data) {
-                  throw new UserContentInputError(index);
-                }
-                const detail = "detail" in image ? image.detail : undefined;
-                if (detail !== undefined && detail !== "auto" && detail !== "low" && detail !== "high") {
-                  throw new UserContentInputError(index);
-                }
-                return { type: "image", data, mimeType, ...(detail === undefined ? {} : { detail }) };
-              }
-              default:
-                throw new UserContentInputError(index);
-            }
-          })
-        : [{ type: "text", text: textOf(msg.content) }];
-      converted.push({ role: "user", content, timestamp: Date.now() });
+      const content = convertUserContent(msg.content, supportsImages);
+      content.forEach((part, partIndex) => {
+        if (part.type === "image") imageDelivery.push({ messageIndex, partIndex });
+      });
+      if (provider === "openai-codex" && content.some(part => part.type === "image")) {
+        // Codex's SDK groups text before images within a message. End each segment
+        // at its image so labels and trailing text retain their original ordering.
+        let start = 0;
+        content.forEach((part, index) => {
+          if (part.type !== "image") return;
+          converted.push({ role: "user", content: content.slice(start, index + 1), timestamp: Date.now() });
+          start = index + 1;
+        });
+        if (start < content.length) converted.push({ role: "user", content: content.slice(start), timestamp: Date.now() });
+      } else {
+        converted.push({ role: "user", content, timestamp: Date.now() });
+      }
       continue;
     }
     if (msg.role === "assistant") {
@@ -140,7 +131,7 @@ export function openaiToContext(provider: string, body: Record<string, unknown>)
         };
       })
     : undefined;
-  return { systemPrompt, messages: converted as never[], tools };
+  return { context: { systemPrompt, messages: converted as never[], tools }, imageDelivery };
 }
 
 function resolveModel(provider: string, modelId: string) {
@@ -161,8 +152,8 @@ function assistantToOpenAI(message: {
   stopReason?: string;
   model?: string;
 }) {
-  if (message.errorMessage) {
-    const err = new Error(message.errorMessage) as Error & { status?: number };
+  if (message.errorMessage || message.stopReason === "error" || message.stopReason === "aborted") {
+    const err = new Error(message.errorMessage ?? `Provider completion ${message.stopReason}`) as Error & { status?: number };
     err.status = message.errorStatus || 500;
     throw err;
   }
@@ -217,6 +208,7 @@ export async function completeProvider(
     (err as Error & { status?: number }).status = 400;
     throw err;
   }
+  const { context, imageDelivery } = openaiToContextWithDelivery(provider, body, model.input.includes("image"));
   if (testStub()) {
     return {
       stream: false,
@@ -234,10 +226,13 @@ export async function completeProvider(
     };
   }
   const apiKey = options?.apiKey;
-  const context = openaiToContext(provider, body);
   const message = await complete(model as never, context as never, {
     ...(apiKey ? { apiKey } : {}),
     fetch: options?.fetch,
+    ...(provider === "google-antigravity" && context.tools?.length
+      ? { onPayload: antigravityToolEnumPayload(model.id, context.tools) }
+      : {}),
   } as never);
-  return { stream: false, completion: assistantToOpenAI(message) };
+  const completion = assistantToOpenAI(message);
+  return { stream: false, completion: { ...completion, image_delivery: imageDelivery } };
 }

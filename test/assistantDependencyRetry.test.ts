@@ -29,7 +29,7 @@ const badNpc = (n: number): Call => {
 beforeEach(() => resetIntentDeclarationCache());
 afterEach(() => { resetIntentDeclarationCache(); vi.restoreAllMocks(); vi.unstubAllGlobals(); vi.unstubAllEnvs(); });
 
-function setup(rounds: Call[][], options: { planned?: boolean; maxToolCalls?: number; references?: boolean; successTools?: string[] } = {}) {
+function setup(rounds: Call[][], options: { planned?: boolean; maxToolCalls?: number; references?: boolean; successTools?: string[]; mapTargets?: string[] } = {}) {
   const ctx = { project: createBlankProject() };
   for (const id of ["m1", "m2"]) expect(runTool(ctx, "create_map", { id, name: id, width: 20, height: 20 }).ok).toBe(true);
   for (const c of [npc(), npc(GOOD_PAGES, "npc_other")]) expect(runTool(ctx, c.name, c.args).ok).toBe(true);
@@ -40,7 +40,7 @@ function setup(rounds: Call[][], options: { planned?: boolean; maxToolCalls?: nu
   store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
   store.replace(ctx.project);
   resetMapEditHistory();
-  const plan = { goal: "도구 실행 확인", layers: [{ title: "작업", items: [{ title: "실행 확인", instruction: "도구 실행 후 조회", successTools: options.successTools ?? ["get_map_region"] }] }] };
+  const plan = { goal: "도구 실행 확인", layers: [{ title: "작업", items: [{ title: "실행 확인", instruction: "도구 실행 후 조회", successTools: options.successTools ?? ["get_map_region"], ...(options.mapTargets ? { mapTargets: options.mapTargets } : {}) }] }] };
   const state = { batches: 0, planners: 0, reviews: 0 };
   const requests: ChatRequest[] = [];
   const chat: AssistantSessionOptions["chat"] = async (_config, request): Promise<ChatResult> => {
@@ -87,8 +87,10 @@ function expectSlimeReadDelivered(request: ChatRequest, event: ToolEvent): void 
 
 describe("batch prerequisites through AssistantSession", () => {
   it.each([false, true])("defers failed-map writes without poisoning successTools or retries (old spec=%s)", async (oldSpec) => {
-    const batch = [...(oldSpec ? [spec()] : []), spec("m1", false), ...Array.from({ length: 5 }, () => fill()), call("get_project_summary"), spec("m2"), fill("m2"), title(1)];
-    const { session, events, collect, project } = setup([batch], { planned: true, maxToolCalls: 1, successTools: ["fill_region", "get_map_region"] });
+    const batch = [...(oldSpec ? [spec()] : []), spec("m1", false), ...Array.from({ length: 5 }, () => fill()), call("get_project_summary"), spec("m2"), fill("m2"), title(1), readMap];
+    const { session, events, collect, project, state } = setup([batch, [call("complete_work_item")]], {
+      planned: true, maxToolCalls: 1, successTools: ["fill_region", "get_map_region"], mapTargets: ["m1"],
+    });
     const result = await session.sendUserMessage("지형 작업 확인", collect);
     const deferred = events.filter((event) => event.name === "fill_region" && event.args.mapId === "m1");
     expect(deferred).toHaveLength(5);
@@ -96,11 +98,34 @@ describe("batch prerequisites through AssistantSession", () => {
     expect(events.find((event) => event.name === "get_project_summary")?.result.ok).toBe(true);
     expect(events.find((event) => event.name === "fill_region" && event.args.mapId === "m2")?.result.ok).toBe(true);
     expect(events.find((event) => event.name === "set_title_screen")?.result.ok).toBe(true);
-    expect(session.getWorkPlan()?.layers[0].items[0].status).toBe("in_progress");
+    expect(events.find((event) => event.name === "get_map_region")?.result.ok).toBe(true);
+    expect(session.getWorkPlan()?.layers[0].items[0]).toMatchObject({
+      status: "in_progress", mapTargets: ["m1"], successTools: ["fill_region", "get_map_region"],
+    });
     expect(session.getProposedProject().maps.m1).toEqual(project.maps.m1);
+    expect(session.getProposedProject().maps.m2).not.toEqual(project.maps.m2);
     expect(result.recap).toMatchObject({ toolFailures: 1, deferredToolCalls: 5 });
     if (!result.recap) throw new Error("Expected a run recap");
     expect(parseRunRecapPayload(serializeRunRecap(result.recap))).toMatchObject({ toolFailures: 1, deferredToolCalls: 5 });
+    expect(state.batches).toBe(1);
+    // Keep the one-round budget: a real continuation requests completion in a
+    // separate batch, after m1 was read and the failed-spec batch has ended.
+    const completionResult = await session.sendUserMessage("계속", collect);
+    expect(state.batches).toBe(2);
+    expect(events.at(-1)).toMatchObject({ name: "complete_work_item", result: {
+      ok: false,
+      issues: [{ code: "work-item-incomplete" }],
+      data: { targetIssues: [{ code: "missing-map-outcome", field: "mapTargets", mapId: "m1", tool: "fill_region" }] },
+    } });
+    expect(session.getWorkPlan()?.layers[0].items[0].status).toBe("in_progress");
+    expect(session.getProposedProject().maps.m1).toEqual(project.maps.m1);
+    expect(completionResult.recap?.toolFailures).toBe(1);
+    expect(completionResult.recap?.deferredToolCalls ?? 0).toBe(0);
+    expect(parseRunRecapPayload(serializeRunRecap(completionResult.recap!))?.toolFailures).toBe(1);
+    expect(result.recap!.toolFailures + completionResult.recap!.toolFailures).toBe(2);
+    expect(session.getAuditEntries().filter((entry) => entry.kind === "tool" && !entry.ok && !entry.deferred)).toHaveLength(2);
+    expect(session.getAuditEntries().filter((entry) => entry.kind === "tool" && entry.deferred)).toHaveLength(5);
+
     expect(session.getAuditEntries().filter((entry) => entry.kind === "tool" && entry.name === "fill_region" && entry.args.mapId === "m1")).toEqual(deferred.map(() => expect.objectContaining({ ok: false, deferred: true, issueCodes: ["build-spec-dependency-failed"] })));
     expectResponses(session);
   });

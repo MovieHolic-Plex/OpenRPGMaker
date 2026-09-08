@@ -1,0 +1,261 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/canonicalAcceptanceOwnership.test.ts test/pr687VerificationIntegration.test.ts test/verificationPlanAtomicity.test.ts test/verificationNativeScopes.test.ts test/verificationRouteDeclaration.test.ts test/verificationSelectionOwnership.test.ts test/verificationFindingOwnership.test.ts test/assistantVerificationContinuation.test.ts test/sceneVerificationRepair.test.ts test/toolSchemaProviderCompat.test.ts test/assistantAcceptanceProvider.test.ts test/assistantAcceptanceDiagnostics.test.ts test/assistantAcceptance.test.ts test/assistantAcceptanceCost.test.ts test/assistantAcceptancePromiseBaseline.test.ts test/functionalAcceptance.test.ts test/functionalAcceptanceSession.test.ts test/functionalPersistenceProof.test.ts test/npcPrerequisiteSession.test.ts test/npcRewardAcceptance.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86
+
+ ✓ test/npcPrerequisiteSession.test.ts (24 tests) 77075ms
+   ✓ request-bound verify_npc_reward session tool > R1 exposes the tool and completes through its real session boundary  3250ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"extra":true}  3369ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"passed":true}  2687ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"receipt":{}}  2338ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"reason":"Not an admitted field"}  2870ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"state":{"gold":20}}  2181ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"requirementIndex":99}  2087ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"prelude":[{"kind":"set","mapId":"map_blank_start","gold":20}]}  2780ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"prelude":[{"kind":"move","mapId":"map_blank_start","to":{"x":2,"y":2}}]}  2440ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"prelude":[{"kind":"interact","mapId":"map_blank_start"}]}  2834ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"prelude":[{"kind":"expect","goldDelta":20}]}  2481ms
+   ✓ request-bound verify_npc_reward session tool > R10 rejects malformed input before execution {"prelude":[{"kind":"walk","mapId":"map_blank_start","to":{"x":2,"y":2,"extra":true}}]}  2576ms
+   ✓ request-bound verify_npc_reward session tool > R12 valid failed replacement cannot fall back to an old pass or fresh-local proof  2694ms
+   ✓ request-bound verify_npc_reward session tool > R12 preserves witness across retry and replan without weakening the requirement  2895ms
+   ✓ request-bound verify_npc_reward session tool > R13 cannot erase an unrelated failed scene check  2713ms
+   ✓ request-bound verify_npc_reward session tool > R11/12 replays current content after a pass, replan, explicit completion and final skip  8553ms
+   ✓ request-bound verify_npc_reward session tool > R12 preserves witness and immutable selections over a real user continuation  3483ms
+   ✓ request-bound verify_npc_reward session tool > R12 a new request lifetime does not inherit the earlier route  4189ms
+   ✓ request-bound verify_npc_reward session tool > R12 never falls back to an easier fresh-local pass after content changes  5038ms
+   ✓ request-bound verify_npc_reward session tool > R12 a valid replacement is run afresh and can repair a failed route  1791ms
+   ✓ request-bound verify_npc_reward session tool > R12 keeps the stored program private from observer-owned arguments  1619ms
+   ✓ request-bound verify_npc_reward session tool > R6 rejects session witness replacement after a same-named NPC moves to another map  5584ms
+   ✓ request-bound verify_npc_reward session tool > R12 preserves the witness through the milestone application rebase boundary  2762ms
+   ✓ request-bound verify_npc_reward session tool > R13 a reward proof cannot clear image or original-baseline change obligations  3860ms
+ ✓ test/verificationNativeScopes.test.ts (15 tests) 23154ms
+   ✓ native verification scopes through the real session and terminal acceptance > run_lint adopts native arguments with retained mapTargets and completes only after a real pass  1591ms
+   ✓ native verification scopes through the real session and terminal acceptance > evaluate_game_quality adopts native arguments with retained mapTargets and completes only after a real pass  1853ms
+   ✓ native verification scopes through the real session and terminal acceptance > verify_quest adopts native arguments with retained mapTargets and completes only after a real pass  1425ms
+   ✓ native verification scopes through the real session and terminal acceptance > simulate_battle adopts native arguments with retained mapTargets and completes only after a real pass  1059ms
+   ✓ native verification scopes through the real session and terminal acceptance > play_walkthrough adopts native arguments with retained mapTargets and completes only after a real pass  1367ms
+   ✓ native verification scopes through the real session and terminal acceptance > run_lint resolves a pending checkId without changing owner or targets or borrowing a prior pass  1295ms
+   ✓ native verification scopes through the real session and terminal acceptance > evaluate_game_quality resolves a pending checkId without changing owner or targets or borrowing a prior pass  4249ms
+   ✓ native verification scopes through the real session and terminal acceptance > verify_quest resolves a pending checkId without changing owner or targets or borrowing a prior pass  1354ms
+   ✓ native verification scopes through the real session and terminal acceptance > simulate_battle resolves a pending checkId without changing owner or targets or borrowing a prior pass  1246ms
+   ✓ native verification scopes through the real session and terminal acceptance > play_walkthrough resolves a pending checkId without changing owner or targets or borrowing a prior pass  1526ms
+   ✓ native verification scopes through the real session and terminal acceptance > check_reachability rejects a foreign map declaration and resolves the pending ID only on its retained map  1338ms
+   ✓ native verification scopes through the real session and terminal acceptance > run_scene_test rejects a foreign map declaration and resolves the pending ID only on its retained map  1120ms
+   ✓ native verification scopes through the real session and terminal acceptance > run_action_combat_test rejects a foreign map declaration and resolves the pending ID only on its retained map  1071ms
+   ✓ native verification scopes through the real session and terminal acceptance > a project-scoped pending owner cannot shed retained mapTargets during resolution  907ms
+   ✓ native verification scopes through the real session and terminal acceptance > native scope compatibility does not replace an already adopted project check's exact arguments  1737ms
+ ✓ test/pr687VerificationIntegration.test.ts (26 tests) 23120ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > dummy removal retains only authoritative obligations: unadopted  981ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > dummy removal retains only authoritative obligations: adopted  1156ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > dummy removal retains only authoritative obligations: negative  892ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > facing-only correction clears its finding but not a distinct checkpoint assertion  585ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed set through normal correction dispatch  599ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed move through normal correction dispatch  629ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed walk through normal correction dispatch  638ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed start through normal correction dispatch  605ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed state through normal correction dispatch  557ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed choice through normal correction dispatch  487ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed checkpoint through normal correction dispatch  533ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed reward through normal correction dispatch  546ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects changed repeat through normal correction dispatch  561ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > classifies malformed without waiving a required scope  875ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > classifies execution without waiving a required scope  948ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > classifies no-target without waiving a required scope  882ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > classifies missing-target without waiving a required scope  1021ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > optional criterion authority does not turn ordinary optional scheduling into required verification  621ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > canonical tool verdict binds before execution and late adoption cannot reuse an exploratory pass  3321ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > normal final repair is bounded by authoritative findings without an acceptance declaration  450ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > successful exploratory checks do not become repair obligations after a write  599ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects skip atomically with pending-specification proof and retains completion  1087ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects skip atomically with unverified proof and retains completion  1210ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects skip atomically with stale proof and retains completion  1865ms
+   ✓ PR687 adjudicated verification scheduling through normal dispatch > rejects skip atomically with passed proof and retains completion  1217ms
+ ✓ test/verificationSelectionOwnership.test.ts (24 tests) 14736ms
+   ✓ normal session selection ownership via ordinary > foreign-pass stays blocked until each failed map is repaired  2021ms
+   ✓ normal session selection ownership via ordinary > two-negatives stays blocked until each failed map is repaired  2238ms
+   ✓ normal session selection ownership via ordinary > no-target-control stays blocked until each failed map is repaired  2058ms
+   ✓ normal session selection ownership via correct_verification > foreign-pass stays blocked until each failed map is repaired  1684ms
+   ✓ normal session selection ownership via correct_verification > two-negatives stays blocked until each failed map is repaired  2583ms
+   ✓ normal session selection ownership via correct_verification > no-target-control stays blocked until each failed map is repaired  2623ms
+ ✓ test/verificationPlanAtomicity.test.ts (108 tests) 151508ms
+   ✓ atomic verification adoption via tool > 'check_reachability' rejects changed specified args while 'passed'  1020ms
+   ✓ atomic verification adoption via tool > 'check_reachability' rejects changed specified args while 'unverified'  1675ms
+   ✓ atomic verification adoption via tool > 'check_reachability' rejects changed specified args while 'stale'  2640ms
+   ✓ atomic verification adoption via tool > 'run_lint' rejects changed specified args while 'passed'  944ms
+   ✓ atomic verification adoption via tool > 'run_lint' rejects changed specified args while 'unverified'  841ms
+   ✓ atomic verification adoption via tool > 'run_lint' rejects changed specified args while 'stale'  1827ms
+   ✓ atomic verification adoption via tool > 'run_scene_test' rejects changed specified args while 'passed'  936ms
+   ✓ atomic verification adoption via tool > 'run_scene_test' rejects changed specified args while 'unverified'  896ms
+   ✓ atomic verification adoption via tool > 'run_scene_test' rejects changed specified args while 'stale'  1351ms
+   ✓ atomic verification adoption via tool > 'play_walkthrough' rejects changed specified args while 'passed'  1261ms
+   ✓ atomic verification adoption via tool > 'play_walkthrough' rejects changed specified args while 'unverified'  809ms
+   ✓ atomic verification adoption via tool > 'play_walkthrough' rejects changed specified args while 'stale'  2268ms
+   ✓ atomic verification adoption via tool > 'simulate_battle' rejects changed specified args while 'passed'  760ms
+   ✓ atomic verification adoption via tool > 'simulate_battle' rejects changed specified args while 'unverified'  701ms
+   ✓ atomic verification adoption via tool > 'simulate_battle' rejects changed specified args while 'stale'  1273ms
+   ✓ atomic verification adoption via tool > 'verify_quest' rejects changed specified args while 'passed'  976ms
+   ✓ atomic verification adoption via tool > 'verify_quest' rejects changed specified args while 'unverified'  1290ms
+   ✓ atomic verification adoption via tool > 'verify_quest' rejects changed specified args while 'stale'  2074ms
+   ✓ atomic verification adoption via tool > 'evaluate_game_quality' rejects changed specified args while 'passed'  2520ms
+   ✓ atomic verification adoption via tool > 'evaluate_game_quality' rejects changed specified args while 'unverified'  861ms
+   ✓ atomic verification adoption via tool > 'evaluate_game_quality' rejects changed specified args while 'stale'  3018ms
+   ✓ atomic verification adoption via tool > rejects criterion-reference replacement while passed  831ms
+   ✓ atomic verification adoption via tool > rejects criterion-reference replacement while unverified  893ms
+   ✓ atomic verification adoption via tool > rejects criterion-reference replacement while stale  1611ms
+   ✓ atomic verification adoption via tool > check_reachability exact reuse preserves ownership and proof  773ms
+   ✓ atomic verification adoption via tool > run_lint exact reuse preserves ownership and proof  1115ms
+   ✓ atomic verification adoption via tool > run_scene_test exact reuse preserves ownership and proof  890ms
+   ✓ atomic verification adoption via tool > run_action_combat_test exact reuse preserves ownership and proof  809ms
+   ✓ atomic verification adoption via tool > check_reachability distinct scope needs fresh proof and invalid mixed candidates add nothing  1333ms
+   ✓ atomic verification adoption via tool > run_lint distinct scope needs fresh proof and invalid mixed candidates add nothing  1795ms
+   ✓ atomic verification adoption via tool > rejects contradictory pending resolutions across same-item before either applies  805ms
+   ✓ atomic verification adoption via tool > rejects contradictory pending resolutions across later-layer before either applies  868ms
+   ✓ atomic verification adoption via tool > rejects contradictory pending resolutions across criterion before either applies  734ms
+   ✓ atomic verification adoption via tool > raw retained ID cannot bypass preflight via omitted  764ms
+   ✓ atomic verification adoption via tool > raw retained ID cannot bypass preflight via changed  754ms
+   ✓ atomic verification adoption via tool > raw retained ID cannot bypass preflight via wrong-tool  1699ms
+   ✓ atomic verification adoption via tool > raw retained ID cannot bypass preflight via malformed-args  955ms
+   ✓ atomic verification adoption via tool > raw retained ID cannot bypass preflight via malformed-sibling  848ms
+   ✓ atomic verification adoption via tool > raw retained ID cannot bypass preflight via unknown-id  890ms
+   ✓ atomic verification adoption via tool > raw retained ID cannot bypass preflight via not-required  816ms
+   ✓ atomic verification adoption via tool > a resolved new sibling cannot conceal an unresolved declaration  698ms
+   ✓ atomic verification adoption via tool > compatible repeated pending resolution preserves ID, owner and targets but needs fresh execution  1122ms
+   ✓ atomic verification adoption via tool > specified retained targets cannot be omitted at any proof status  6187ms
+   ✓ atomic verification adoption via tool > specified retained targets cannot be changed at any proof status  6298ms
+   ✓ atomic verification adoption via tool > exact reference reuses an accepted criterion without losing independent declarations  1037ms
+   ✓ atomic verification adoption via tool > exact exact-args reuses an accepted criterion without losing independent declarations  1179ms
+   ✓ atomic verification adoption via tool > rejection preserves an existing negative finding and its exact proof history  903ms
+   ✓ atomic verification adoption via tool > exact stale scene reuse retains its original initial-state ownership  1293ms
+   ✓ atomic verification adoption via tool > pending criterion-reference resolution retains owner and needs new exact execution  1008ms
+   ✓ atomic verification adoption via tool > raw declaration preflight survives invalid-id normalization  725ms
+   ✓ atomic verification adoption via tool > raw declaration preflight survives discarded-item normalization  678ms
+   ✓ atomic verification adoption via tool > raw declaration preflight survives alias-array normalization  618ms
+   ✓ atomic verification adoption via tool > a malformed new scope cannot silently reuse an unrelated accepted criterion  1036ms
+   ✓ atomic verification adoption via tool > scene interaction ownership is immutable even with identical executable args  785ms
+   ✓ atomic verification adoption via planner > 'check_reachability' rejects changed specified args while 'passed'  693ms
+   ✓ atomic verification adoption via planner > 'check_reachability' rejects changed specified args while 'unverified'  881ms
+   ✓ atomic verification adoption via planner > 'check_reachability' rejects changed specified args while 'stale'  1205ms
+   ✓ atomic verification adoption via planner > 'run_lint' rejects changed specified args while 'passed'  755ms
+   ✓ atomic verification adoption via planner > 'run_lint' rejects changed specified args while 'unverified'  630ms
+   ✓ atomic verification adoption via planner > 'run_lint' rejects changed specified args while 'stale'  1273ms
+   ✓ atomic verification adoption via planner > 'run_scene_test' rejects changed specified args while 'passed'  754ms
+   ✓ atomic verification adoption via planner > 'run_scene_test' rejects changed specified args while 'unverified'  711ms
+   ✓ atomic verification adoption via planner > 'run_scene_test' rejects changed specified args while 'stale'  1434ms
+   ✓ atomic verification adoption via planner > 'play_walkthrough' rejects changed specified args while 'passed'  1267ms
+   ✓ atomic verification adoption via planner > 'play_walkthrough' rejects changed specified args while 'unverified'  749ms
+   ✓ atomic verification adoption via planner > 'play_walkthrough' rejects changed specified args while 'stale'  2449ms
+   ✓ atomic verification adoption via planner > 'simulate_battle' rejects changed specified args while 'passed'  615ms
+   ✓ atomic verification adoption via planner > 'simulate_battle' rejects changed specified args while 'unverified'  723ms
+   ✓ atomic verification adoption via planner > 'simulate_battle' rejects changed specified args while 'stale'  1398ms
+   ✓ atomic verification adoption via planner > 'verify_quest' rejects changed specified args while 'passed'  1039ms
+   ✓ atomic verification adoption via planner > 'verify_quest' rejects changed specified args while 'unverified'  1046ms
+   ✓ atomic verification adoption via planner > 'verify_quest' rejects changed specified args while 'stale'  2537ms
+   ✓ atomic verification adoption via planner > 'evaluate_game_quality' rejects changed specified args while 'passed'  3697ms
+   ✓ atomic verification adoption via planner > 'evaluate_game_quality' rejects changed specified args while 'unverified'  975ms
+   ✓ atomic verification adoption via planner > 'evaluate_game_quality' rejects changed specified args while 'stale'  2781ms
+   ✓ atomic verification adoption via planner > rejects criterion-reference replacement while passed  767ms
+   ✓ atomic verification adoption via planner > rejects criterion-reference replacement while unverified  1091ms
+   ✓ atomic verification adoption via planner > rejects criterion-reference replacement while stale  4069ms
+   ✓ atomic verification adoption via planner > check_reachability exact reuse preserves ownership and proof  1394ms
+   ✓ atomic verification adoption via planner > run_lint exact reuse preserves ownership and proof  1196ms
+   ✓ atomic verification adoption via planner > run_scene_test exact reuse preserves ownership and proof  856ms
+   ✓ atomic verification adoption via planner > run_action_combat_test exact reuse preserves ownership and proof  813ms
+   ✓ atomic verification adoption via planner > check_reachability distinct scope needs fresh proof and invalid mixed candidates add nothing  1393ms
+   ✓ atomic verification adoption via planner > run_lint distinct scope needs fresh proof and invalid mixed candidates add nothing  1922ms
+   ✓ atomic verification adoption via planner > rejects contradictory pending resolutions across same-item before either applies  786ms
+   ✓ atomic verification adoption via planner > rejects contradictory pending resolutions across later-layer before either applies  856ms
+   ✓ atomic verification adoption via planner > rejects contradictory pending resolutions across criterion before either applies  711ms
+   ✓ atomic verification adoption via planner > raw retained ID cannot bypass preflight via omitted  866ms
+   ✓ atomic verification adoption via planner > raw retained ID cannot bypass preflight via changed  637ms
+   ✓ atomic verification adoption via planner > raw retained ID cannot bypass preflight via wrong-tool  824ms
+   ✓ atomic verification adoption via planner > raw retained ID cannot bypass preflight via malformed-args  825ms
+   ✓ atomic verification adoption via planner > raw retained ID cannot bypass preflight via malformed-sibling  873ms
+   ✓ atomic verification adoption via planner > raw retained ID cannot bypass preflight via unknown-id  823ms
+   ✓ atomic verification adoption via planner > raw retained ID cannot bypass preflight via not-required  791ms
+   ✓ atomic verification adoption via planner > a resolved new sibling cannot conceal an unresolved declaration  883ms
+   ✓ atomic verification adoption via planner > compatible repeated pending resolution preserves ID, owner and targets but needs fresh execution  1406ms
+   ✓ atomic verification adoption via planner > specified retained targets cannot be omitted at any proof status  6268ms
+   ✓ atomic verification adoption via planner > specified retained targets cannot be changed at any proof status  8650ms
+   ✓ atomic verification adoption via planner > exact reference reuses an accepted criterion without losing independent declarations  1103ms
+   ✓ atomic verification adoption via planner > exact exact-args reuses an accepted criterion without losing independent declarations  1099ms
+   ✓ atomic verification adoption via planner > rejection preserves an existing negative finding and its exact proof history  888ms
+   ✓ atomic verification adoption via planner > exact stale scene reuse retains its original initial-state ownership  1450ms
+   ✓ atomic verification adoption via planner > pending criterion-reference resolution retains owner and needs new exact execution  1051ms
+   ✓ atomic verification adoption via planner > raw declaration preflight survives invalid-id normalization  647ms
+   ✓ atomic verification adoption via planner > raw declaration preflight survives discarded-item normalization  714ms
+   ✓ atomic verification adoption via planner > raw declaration preflight survives alias-array normalization  1425ms
+   ✓ atomic verification adoption via planner > a malformed new scope cannot silently reuse an unrelated accepted criterion  3162ms
+   ✓ atomic verification adoption via planner > scene interaction ownership is immutable even with identical executable args  959ms
+ ✓ test/verificationRouteDeclaration.test.ts (9 tests) 8909ms
+   ✓ normal session exact route declaration adoption > retains a later same-map declaration after replacing a passed criterion plan  1489ms
+   ✓ normal session exact route declaration adoption > reuses exact criterion ownership without duplicate requirements for reference  886ms
+   ✓ normal session exact route declaration adoption > reuses exact criterion ownership without duplicate requirements for exact-args  1033ms
+   ✓ normal session exact route declaration adoption > reuses exact criterion ownership without duplicate requirements for mixed  1083ms
+   ✓ normal session exact route declaration adoption > does not let an exact criterion reference conceal another explicit declaration  723ms
+   ✓ normal session exact route declaration adoption > requires fresh proof after late adoption and retains that scope across skip and reused scheduling IDs  1297ms
+   ✓ normal session exact route declaration adoption > does not treat a conflicting retained checkId as a successfully adopted replacement scope  968ms
+   ✓ normal session exact route declaration adoption > retains a late-specified check's distinct ownership even when its args match a passed criterion  849ms
+   ✓ normal session exact route declaration adoption > leaves an unresolved criterion reference pending instead of substituting a same-tool criterion  577ms
+ ✓ test/assistantVerificationContinuation.test.ts (15 tests) 7368ms
+   ✓ immutable requirements, findings and attempts at both ledgers > retains both original exact routes, later adoption and original owners independently  326ms
+   ✓ normal session ownership through skip, replan and continuation > reused scheduling IDs cannot waive pending scopes; late specification needs a fresh execution  2267ms
+   ✓ normal session ownership through skip, replan and continuation > normal session correction executes the registered original tool; unknown IDs and execution errors cannot clear a finding  1133ms
+   ✓ authoring revalidates explicit checks before finalizing > continues after a final claim when a real write made the prior lint stale  1713ms
+ ✓ test/functionalPersistenceProof.test.ts (4 tests) 11455ms
+   ✓ functional acceptance on accepted canonical reload > reruns real functional criteria on reloaded content before publishing verified persistence  2839ms
+   ✓ functional acceptance on accepted canonical reload > does not certify a newer applied broken purchase using an earlier acceptance pass  2517ms
+   ✓ functional acceptance on accepted canonical reload > cannot publish functional proof while a newer proposal remains unapplied  3287ms
+   ✓ functional acceptance on accepted canonical reload > rejects a canonical read overtaken by a new applied edit  2810ms
+ ✓ test/canonicalAcceptanceOwnership.test.ts (7 tests) 17110ms
+   ✓ canonical scene authority uses the ordinary pre-execution contract > cannot acquire missing ownership from the first successful scene; repair needs a fresh execution  1982ms
+   ✓ canonical scene authority uses the ordinary pre-execution contract > fills only missing interaction ownership while preserving already declared targets  3075ms
+   ✓ canonical scene authority uses the ordinary pre-execution contract > pass -> transfer write -> identical foreign execution cannot discharge the original scope  2508ms
+   ✓ canonical scene authority uses the ordinary pre-execution contract > pass -> initial-state write -> identical foreign execution cannot discharge the original scope  2365ms
+   ✓ malformed canonical input remains repairable without rewriting authority > malformed scene required=true blocks; repair retains owner/baseline and needs post-repair proof  3557ms
+   ✓ malformed canonical input remains repairable without rewriting authority > malformed scene required=false blocks; repair retains owner/baseline and needs post-repair proof  2963ms
+   ✓ malformed canonical input remains repairable without rewriting authority > valid optional canonical criteria remain optional  657ms
+ ✓ test/functionalAcceptanceSession.test.ts (6 tests) 8989ms
+   ✓ request declaration to immutable functional session acceptance > adopts all requested checks through the actual lite declaration parser without manually injected plan criteria  1349ms
+   ✓ request declaration to immutable functional session acceptance > keeps mandatory behavior when the actual planner returns unrelated work without criteria  2553ms
+   ✓ request declaration to immutable functional session acceptance > does not impose unrequested functional requirements  345ms
+   ✓ request declaration to immutable functional session acceptance > keeps malformed functional declarations blocked instead of dropping them  1994ms
+   ✓ request declaration to immutable functional session acceptance > retains expectations across plan replacement, skip and attempted repair  1145ms
+   ✓ request declaration to immutable functional session acceptance > revalidates latest canonical content and cannot retain stale success  1602ms
+ ✓ test/assistantAcceptanceCost.test.ts (6 tests) 4631ms
+   ✓ bounded canonical project comparisons > compares shared project content once for same-content  522ms
+   ✓ bounded canonical project comparisons > compares shared project content once for changed-content  389ms
+   ✓ bounded canonical project comparisons > does not compare or clone an unrelated editor update without authority or verifier evidence  325ms
+   ✓ bounded canonical project comparisons > preserves late-adoption freshness when content changed=false  1752ms
+   ✓ bounded canonical project comparisons > preserves late-adoption freshness when content changed=true  1457ms
+ ✓ test/functionalAcceptance.test.ts (19 tests) 4088ms
+   ✓ immutable engine-evaluated functional acceptance > verifies purchase, real outgoing/return traversal and one-time reward without model evidence  552ms
+   ✓ immutable engine-evaluated functional acceptance > rejects reward unmet-condition  335ms
+   ✓ immutable engine-evaluated functional acceptance > does not verify an unapplied draft or reuse applied proof after a database-only write  551ms
+ ✓ test/verificationFindingOwnership.test.ts (6 tests) 4200ms
+   ✓ map-qualified unresolved finding ownership > retains both negatives with identical args and seed; repeated owner deduplicates (adopted=false)  359ms
+   ✓ map-qualified unresolved finding ownership > normal session writes and checkId corrections retain B at the terminal boundary  3087ms
+ ✓ test/npcRewardAcceptance.test.ts (43 tests) 3641ms
+ ✓ test/sceneVerificationRepair.test.ts (17 tests) 3299ms
+   ✓ corrected scene navigation retains the same verification obligation > wire180->181 and corrected171 discharge distinct real-runner findings at terminal acceptance  362ms
+   ✓ corrected scene navigation retains the same verification obligation > replaces a failed navigation attempt with the passing same-target assertions: []  380ms
+   ✓ corrected scene navigation retains the same verification obligation > replaces a failed navigation attempt with the passing same-target assertions: [ { kind: 'set', x: 10, y: 8 } ]  385ms
+   ✓ corrected scene navigation retains the same verification obligation > keeps exact canonical proof separate from corrected navigation and advisory checks  310ms
+ ✓ test/assistantAcceptancePromiseBaseline.test.ts (13 tests) 2869ms
+   ✓ immutable baselines for newly adopted promises > detects protected 'lower tile' changes in B  316ms
+ ✓ test/assistantAcceptance.test.ts (23 tests) 2954ms
+   ✓ acceptance evaluator > keeps a malformed item visible and permits repair only before criteria become valid  312ms
+   ✓ image-reviewed evidence > uses actual clipped output and exact union coverage, never requested area or overlap sums  322ms
+   ✓ malformed acceptance boundary > retains valid original promises when a malformed sibling requires repair  408ms
+   ✓ does not count inherited map properties as authored maps  402ms
+ ✓ test/toolSchemaProviderCompat.test.ts (74 tests) 262ms
+ ✓ test/assistantAcceptanceDiagnostics.test.ts (13 tests) 1592ms
+ ✓ test/assistantAcceptanceProvider.test.ts (1 test) 391ms
+   ✓ acceptance at the installed Antigravity schema boundary > retains every scoped canonical shape and selector through Google then CCA normalization  388ms
+
+ Test Files  20 passed (20)
+      Tests  453 passed (453)
+   Start at  02:59:35
+   Duration  245.25s (transform 17.28s, setup 0ms, collect 100.36s, tests 371.35s, environment 6ms, prepare 3.13s)
+

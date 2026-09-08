@@ -139,7 +139,7 @@ export function formatViewportContextBlock(
     `- 화면 중앙 타일: **(${viewport.centerX}, ${viewport.centerY})**`,
     `- 가시 영역(타일): (${viewport.x},${viewport.y})~(${x1},${y1}) — ${viewport.w}×${viewport.h} (양 끝 칸 포함)`,
     "- 영역 표기 규약(툴 공통): 좌상단 기준, w/h 는 칸 수, 마지막 칸은 x+w-1 / y+h-1.",
-    "- 사용자 말의 \"여기/이 근처/화면/가운데/위/아래/왼쪽/오른쪽\"은 **지금 보고 있는 화면** 기준입니다. 맵 전체의 구석이 아닙니다.",
+    "- 명시적으로 화면/뷰포트를 기준으로 배치하라는 지시만 **지금 보고 있는 화면** 기준입니다. 맵의 북쪽/오른쪽 등은 맵 기준이며, 인용 문구·대사·소지품 설명은 배치 지시가 아닙니다. 서로 다른 물체의 방향을 한 구석으로 합치지 마세요.",
     "- 상세 타일/이벤트는 get_map_region / show_map_region으로 이 영역 또는 주변을 조회하세요.",
   ];
   const grid = formatPassabilityGrid(viewport, project);

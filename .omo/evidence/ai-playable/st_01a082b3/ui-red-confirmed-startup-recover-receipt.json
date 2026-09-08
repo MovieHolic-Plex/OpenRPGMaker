@@ -1,0 +1,16 @@
+{
+  "stateAfterStartup": "idle",
+  "state": "idle",
+  "retained": {
+    "record": null,
+    "backend": "indexeddb"
+  },
+  "historyRequests": [
+    "GET"
+  ],
+  "forbidden": [
+    "GET http://127.0.0.1:17831/v1/browser/next",
+    "GET http://127.0.0.1:17831/v1/browser/next",
+    "GET http://127.0.0.1:17831/v1/browser/next"
+  ]
+}

@@ -1,0 +1,59 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/dialogueImageUrls.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-dialogue-face-url-0907
+
+ ❯ test/dialogueImageUrls.test.ts (18 tests | 3 failed) 224ms
+   ✓ dialogue portrait resource resolution > renders the compiled chief portrait through 'editor root' 90ms
+   × dialogue portrait resource resolution > renders the compiled chief portrait through 'HTTP root export' 31ms
+     → expected false to be true // Object.is equality
+   × dialogue portrait resource resolution > renders the compiled chief portrait through 'HTTPS nested export' 8ms
+     → expected false to be true // Object.is equality
+   × dialogue portrait resource resolution > renders the compiled chief portrait through 'encoded deployment subpath' 16ms
+     → expected false to be true // Object.is equality
+   ✓ dialogue portrait resource resolution > renders the compiled chief portrait through 'inline export' 10ms
+   ✓ dialogue portrait resource resolution > keeps invalid image URLs rejected: javascript:alert(1) 4ms
+   ✓ dialogue portrait resource resolution > keeps invalid image URLs rejected: vbscript:msgbox(1) 5ms
+   ✓ dialogue portrait resource resolution > keeps invalid image URLs rejected: file:///assets/face.png 4ms
+   ✓ dialogue portrait resource resolution > keeps invalid image URLs rejected: ftp://example.test/face.png 13ms
+   ✓ dialogue portrait resource resolution > keeps invalid image URLs rejected: blob:https://example.test/face.png 6ms
+   ✓ dialogue portrait resource resolution > keeps invalid image URLs rejected: data:image/svg+xml;base64,PHN2Zy8+ 4ms
+   ✓ dialogue portrait resource resolution > keeps invalid image URLs rejected: data:audio/ogg;base64,AQ== 7ms
+   ✓ dialogue portrait resource resolution > keeps invalid image URLs rejected: https://example.test/face.svg 4ms
+   ✓ dialogue portrait resource resolution > keeps invalid image URLs rejected: https://example.test/face.ogg 4ms
+   ✓ dialogue portrait resource resolution > keeps invalid image URLs rejected: https://example.test/face.png");color:red;--x:url("face.png 4ms
+   ✓ dialogue portrait resource resolution > keeps invalid image URLs rejected: https://example.test/face\.png 3ms
+   ✓ dialogue portrait resource resolution > keeps invalid image URLs rejected: https://example.test/face
+.png 3ms
+   ✓ dialogue portrait resource resolution > keeps invalid image URLs rejected: https://[invalid/face.png 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/dialogueImageUrls.test.ts > dialogue portrait resource resolution > renders the compiled chief portrait through 'HTTP root export'
+ FAIL  test/dialogueImageUrls.test.ts > dialogue portrait resource resolution > renders the compiled chief portrait through 'HTTPS nested export'
+ FAIL  test/dialogueImageUrls.test.ts > dialogue portrait resource resolution > renders the compiled chief portrait through 'encoded deployment subpath'
+AssertionError: expected false to be true // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+ ❯ test/dialogueImageUrls.test.ts:62:61
+     60|     // Then
+     61|     expect(ready).toBe(true);
+     62|     expect(face?.classList.contains("dialogue-face-image")).toBe(true);
+       |                                                             ^
+     63|     expect(face?.classList.contains("missing")).toBe(false);
+     64|     expect(face?.style.getPropertyValue("--face-url")).toBe(`url("${ex…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 15 passed (18)
+   Start at  00:24:03
+   Duration  8.88s (transform 5.27s, setup 0ms, collect 7.72s, tests 224ms, environment 418ms, prepare 100ms)

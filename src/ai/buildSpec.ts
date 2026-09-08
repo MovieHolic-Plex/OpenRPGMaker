@@ -46,7 +46,11 @@ export interface BuildSpec {
   plannedMap?: { mapId: string; width: number; height: number };
 }
 
-export interface SpecIssue { severity: "error" | "warning"; message: string; }
+export interface SpecIssue {
+  severity: "error" | "warning";
+  code?: "spec-new-plan-overlap" | "spec-existing-content" | "spec-destroy-confirmation";
+  message: string;
+}
 
 export interface AffectedRegion {
   mapId: string; x: number; y: number; w: number; h: number;
@@ -220,7 +224,7 @@ export function validateBuildSpec(project: Project, spec: unknown): SpecIssue[] 
       if (a === undefined || b === undefined || overlapAllowed(a, b, buildOrder)) continue;
       const rect = intersection(a, b);
       if (rect === null) continue;
-      issues.push({ severity: "error", message: `에셋 '${a.id}'와 '${b.id}'가 교차합니다: (${rect.x},${rect.y}) ${rect.w}×${rect.h}.` });
+      issues.push({ severity: "error", code: "spec-new-plan-overlap", message: `에셋 '${a.id}'와 '${b.id}'가 교차합니다: (${rect.x},${rect.y}) ${rect.w}×${rect.h}.` });
     }
   }
 
@@ -239,6 +243,7 @@ export function validateBuildSpec(project: Project, spec: unknown): SpecIssue[] 
           const at = built.sample ? ` 예: (${built.sample.x},${built.sample.y})` : "";
           issues.push({
             severity: "error",
+            code: "spec-destroy-confirmation",
             message:
               `clear 에셋 '${asset.id}'가 기존 구조물·비잔디 지형(호수/물·길·나무 등)을 덮습니다(${built.count}칸${at}). ` +
               `호수·물·길을 치우는 요청이면 이 에셋에 confirmDestroy:true를 넣고 set_build_spec을 재제출하세요. ` +
@@ -254,6 +259,7 @@ export function validateBuildSpec(project: Project, spec: unknown): SpecIssue[] 
         const at = conflict.sample ? ` 예: (${conflict.sample.x},${conflict.sample.y})` : "";
         issues.push({
           severity: "error",
+          code: "spec-existing-content",
           message: `에셋 '${asset.id}' 자리·주변에 기본 타일이 아닌 것이 ${conflict.count}칸 있습니다${at}. 그 위에 그냥 놓을지 스스로 판단해 이 에셋에 overExisting:"clear"(정리하고 배치) 또는 "keep"(그대로 위에 배치)을 넣어 재제출하세요.`,
         });
       }

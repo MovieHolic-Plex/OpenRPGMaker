@@ -190,6 +190,7 @@ describe("exact scoped verdict authority", () => {
     const ledger = new AssistantAcceptanceLedger("goal", "Route", project);
     ledger.adopt(promises ?? []);
     const evidence = new ToolVerificationEvidence();
+    ledger.evaluate(project, project, evidence); // Bind the declared exact scope before executing it.
     const result = { ok: true, data: { reachable: source !== "negative" } };
     if (source !== "model") evidence.observe("check_reachability", source === "wrong-target" ? { ...args, mapId: "foreign" } : args, result, source === "advisory" ? "advisory" : "explicit");
     if (source === "stale" || source === "advisory-after-stale") evidence.invalidateAfterWrite();

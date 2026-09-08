@@ -1,0 +1,17 @@
+{
+  "files": 67,
+  "counts": {
+    "passed": 1181,
+    "failed": 4
+  },
+  "coreCounts": {
+    "passed": 316
+  },
+  "newFailedAssertions": 0,
+  "changedFileDiagnostics": {
+    "files": 40,
+    "sourceErrors": 0,
+    "inheritedTestErrors": 20,
+    "newDiagnosticSignatures": 0
+  }
+}

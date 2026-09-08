@@ -65,7 +65,8 @@ export function applyFixture(
   if (!map) throw new Error("Outcome fixture start map missing");
   const tileset = project.tilesets[map.tilesetId];
   if (!tileset) throw new Error("Outcome fixture start tileset missing");
-  // Same valid one-tile proof fixture shape as storePersistenceProof; bundled catalogs are unrelated.
+  // A passable one-tile proof fixture: outcome tests also execute real lint.
+  // Numeric legacy passage flags are not valid in-memory runtime PassFlag records.
   map.tilesetId = "outcome-tileset";
   map.lowerTiles.fill(0);
   project.tilesets = { [map.tilesetId]: {

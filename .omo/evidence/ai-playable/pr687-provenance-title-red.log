@@ -1,0 +1,40 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/advisoryLintProvenance.test.ts -t reports unchanged baseline defects --maxWorkers=1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86
+
+ ❯ test/advisoryLintProvenance.test.ts (6 tests | 1 failed | 5 skipped) 2705ms
+   × pre-write provenance of automatic lint findings > reports unchanged baseline defects without terminal repair of the real title-only change 2703ms
+     → expected 'error' to be 'final' // Object.is equality
+   ↓ pre-write provenance of automatic lint findings > keeps adopted lint defects terminally blocking
+   ↓ pre-write provenance of automatic lint findings > keeps introduced lint defects terminally blocking
+   ↓ pre-write provenance of automatic lint findings > keeps different-identity lint defects terminally blocking
+   ↓ pre-write provenance of automatic lint findings > keeps explicit lint defects terminally blocking
+   ↓ pre-write provenance of automatic lint findings > unknown provenance never exempts a genuine automatic lint finding
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/advisoryLintProvenance.test.ts > pre-write provenance of automatic lint findings > reports unchanged baseline defects without terminal repair of the real title-only change
+AssertionError: expected 'error' to be 'final' // Object.is equality
+
+Expected: [32m"final"[39m
+Received: [31m"error"[39m
+
+ ❯ test/advisoryLintProvenance.test.ts:96:36
+     94|     const f = await titleRun("unchanged");
+     95|     expect(f.after).toEqual(f.before);
+     96|     expect(f.result.stoppedReason).toBe("final");
+       |                                    ^
+     97|     expect(f.result.runOutcome).toMatchObject({ execution: "response-f…
+     98|     expect(f.requests).toBe(4);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 5 skipped (6)
+   Start at  03:35:56
+   Duration  19.10s (transform 11.42s, setup 0ms, collect 15.88s, tests 2.70s, environment 0ms, prepare 114ms)
+
