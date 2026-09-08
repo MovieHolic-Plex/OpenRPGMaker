@@ -3,7 +3,7 @@ import { firefox } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
 import assert from "node:assert/strict";
 
-const origin = "http://127.0.0.1:38422";
+const origin = process.env.AUDIO_QA_URL ?? "http://127.0.0.1:38422";
 const out = process.env.AUDIO_QA_OUT ?? "/dev/shm/rpg-zzu-issue693-audio-r2/evidence/native";
 const MIDI = "easyrpg-music-battle-1";
 const WAV = "cc0-music-field-loop";
