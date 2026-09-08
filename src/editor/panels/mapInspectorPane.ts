@@ -115,7 +115,9 @@ function makeStatList(inspection: MapInspection): HTMLElement {
     ["size", "크기", `${inspection.width}×${inspection.height} · ${inspection.tileCount.toLocaleString("ko-KR")}칸`],
     ["tileset", "타일셋", inspection.tilesetName ?? "없음"],
     ["bgm", "BGM", inspection.bgmLabel],
-    ["parent", "상위 맵", inspection.parentName ?? "루트"],
+    // parentName 이 없다 = 이 맵이 트리 최상위다(부모가 없다). 「루트」한 낱말은 어딘가에
+    // 프로젝트 루트가 따로 있는 것처럼 읽혔다 — 없음을 없음이라 쓴다(OPRN-OUT-027).
+    ["parent", "상위 맵", inspection.parentName ?? "없음(최상위)"],
     ["children", "하위 맵", inspection.childCount > 0 ? `${inspection.childCount}개` : "없음"],
   ];
   return el("dl", {

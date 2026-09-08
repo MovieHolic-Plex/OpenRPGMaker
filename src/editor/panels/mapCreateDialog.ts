@@ -11,7 +11,7 @@ import {
 import { exceedsMapDimensionLimit, mapSizeLimitMessage } from "@/project/mapSizeLimits";
 import { findParentMapId, isMapTreeFolder, mapTreeNodeLabel } from "@/project/mapTree";
 import { store } from "@/project/store";
-import type { MapId, MapTreeNode } from "@/project/types";
+import type { MapId, MapTreeNode, Project } from "@/project/types";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 
@@ -49,7 +49,11 @@ export function openMapCreateDialog(request: MapCreateRequest = {}): void {
         attrs: { "aria-label": "상위 맵" },
         dataset: { testid: "map-create-parent" },
       }) as HTMLSelectElement;
-      parent.append(el("option", { text: "(루트)", attrs: { value: "" } }));
+      // 빈 상위는 프로젝트 루트가 아니라 **트리 최상위 노드의 자식**으로 들어간다
+      // (mapTree.insertTreeNode: parentId "" → root). 이 저장소의 최상위는 언제나 실제 맵
+      // 하나라서 예전 「(루트)」는 없는 계층(형제 최상위 맵)을 약속했다 — 실제로 부모가 되는
+      // 맵을 이름으로 밝힌다(OPRN-OUT-027). 저장 구조는 그대로다.
+      parent.append(el("option", { text: `${rootParentPrefix(project)}의 하위`, attrs: { value: "" } }));
       appendTreeParentOptions(parent, project.mapTree, project.maps, 0);
       parent.value = spec.parentId;
 
@@ -111,6 +115,10 @@ export function openMapCreateDialog(request: MapCreateRequest = {}): void {
           field("상위", parent),
           el("p", {
             class: "map-create-hint",
+            text: `상위를 고르지 않은 맵은 ${rootParentPrefix(project)}의 하위로 들어갑니다. 나란히 서는 최상위 맵은 만들 수 없습니다.`,
+          }),
+          el("p", {
+            class: "map-create-hint",
             text: "상위에 넣는 것만으로는 문이 생기지 않습니다. 만든 뒤 메뉴에서 왕복 이동을 넣을 수 있습니다.",
           }),
           el("button", {
@@ -147,6 +155,15 @@ export function openMapCreateUnder(parentId: MapId): void {
     parentId,
     preset: parentOfParent === null ? "inherit-parent" : "interior",
   });
+}
+
+/**
+ * 트리 최상위 노드를 사람 말로 — 「(루트)」가 감췄던 실제 부모다.
+ * 최상위는 보통 실제 맵이지만 합성 분류가 앉을 수도 있어(mapInspection 의 같은 방어) 낱말을 가른다.
+ */
+function rootParentPrefix(project: Pick<Project, "mapTree" | "maps">): string {
+  const noun = isMapTreeFolder(project.mapTree) ? "분류" : "맵";
+  return `최상위 ${noun} 「${mapTreeNodeLabel(project.mapTree, project.maps)}」`;
 }
 
 function appendTreeParentOptions(
