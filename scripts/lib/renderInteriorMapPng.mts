@@ -1,10 +1,10 @@
 /**
  * 실내 맵 → PNG. 에디터 캔버스와 같은 규칙으로 그린다.
  *
- * 왜 따로 있나: `reports/place-concept-inn` 의 옛 보고서는 타일 번호를 시트의 원시 셀로만 환산해
- * 그렸다. 실내 칩셋의 천장(430 계열)·벽면 프레임은 **쿼터 오토타일**이라 에디터는
- * `chipsetQuarterComposition` 으로 이웃을 보고 8px 쿼터 4개를 합성한다. 원시 셀로 그리면 천장이
- * 풀밭 조각처럼 찍혀 판정을 오염시킨다(2026-09-02 실측 — 리드가 본 verdict.png 가 그랬다).
+ * `chipsetQuarterComposition` shares the editor's chipset-scoped rendering rules:
+ * Interior dark-wall 366 uses 8px quarters; 430-series ceilings are already shaped
+ * at storage time and render as whole tiles. Reusing Combined Town quarter recipes
+ * for those numeric IDs samples the wrong Interior art (including tabletops).
  *
  * `scripts/demo-assistant-interior-build.mts` 의 렌더 루프와 같은 방식이며, 알파 합성과
  * 이벤트 표식 오버레이만 더했다. 순수 Node(pngjs) — 브라우저·Phaser 불필요.

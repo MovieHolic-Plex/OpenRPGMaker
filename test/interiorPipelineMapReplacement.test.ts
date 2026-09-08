@@ -20,7 +20,7 @@
 // 원샷 경로와 멀티턴 완료 시점 **양쪽**에서 두 축이 보정되는 것을 고정한다.
 
 import { describe, expect, it } from "vitest";
-import { isPassable } from "@/project/collision";
+import { isPassable, isPassableLanding } from "@/project/collision";
 import { commitChangeset } from "@/editor/tools/changeset";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
@@ -36,6 +36,7 @@ function threeRoomArgs(mapId: string): Record<string, unknown> {
     // 시작 좌표 보정을 검사하므로 가드가 알려주는 옵트인을 그대로 켠다.
     replaceExisting: true,
     name: "3룸 주택",
+    seed: 1, // Omitted seeds use Date.now(); fixture geometry must not depend on test timing.
     width: 16,
     height: 14,
     theme: "dining",
@@ -151,6 +152,7 @@ describe("시작 맵을 교체하는 원샷 파이프라인", () => {
         // 교체 경로 검사 — #262 가드의 옵트인.
         replaceExisting: true,
         name: "넓은 집",
+        seed: 1,
         width: 20,
         height: 15,
         theme: "bedroom",
@@ -222,19 +224,51 @@ describe("인바운드 transfer 착지점", () => {
     ).toBe(true);
   });
 
-  it("착지점이 이미 방 안이면 좌표를 건드리지 않는다", () => {
+  it.each([1, 7])("가구 배치 후 열린 착지점은 보존하고 막힌 착지점만 최단 이동한다 (seed %i)", (seed) => {
     const { project, interiorId } = projectWithInboundDoor();
-    // 착지점을 living 방(x 2..13, y 9..12) 안쪽으로 미리 옮겨 둔다.
-    const transfer = inboundTransfers(project, interiorId)[0]!;
-    transfer.x = 5;
-    transfer.y = 10;
+    const args = { ...threeRoomArgs(interiorId), seed };
+    const reference: ToolContext = { project: structuredClone(project) };
+    const built = runTool(reference, "run_interior_room_pipeline", args, { dryRun: false });
+    expect(built.ok, built.summary).toBe(true);
+    const furnished = reference.project.maps[interiorId]!;
+
+    // Room bounds alone do not imply walkability: inspect the completed furniture layers.
+    const landings: { x: number; y: number }[] = [];
+    for (let y = 9; y < 13; y += 1) {
+      for (let x = 2; x < 14; x += 1) landings.push({ x, y });
+    }
+    const open = landings.filter(({ x, y }) => isPassable(reference.project, furnished, x, y));
+    expect(open.length).toBeGreaterThan(0);
+    expect(open.length).toBeLessThan(landings.length);
+    for (const { x, y } of open) expect(isPassableLanding(reference.project, furnished, x, y)).toBe(true);
+    const door = project.maps[project.startMapId]!.events.find((event) => event.id === FRONT_DOOR_EVENT)!;
+    door.commands = landings.map(({ x, y }) => ({ kind: "transfer", mapId: interiorId, x, y }));
 
     const ctx: ToolContext = { project };
-    const result = runTool(ctx, "run_interior_room_pipeline", threeRoomArgs(interiorId), { dryRun: false });
+    const result = runTool(ctx, "run_interior_room_pipeline", args, { dryRun: false });
     expect(result.ok, result.summary).toBe(true);
-
-    const after = inboundTransfers(ctx.project, interiorId)[0]!;
-    expect({ x: after.x, y: after.y }).toEqual({ x: 5, y: 10 });
+    expect(blockingCodes(ctx.project, project)).toEqual([]);
+    const map = ctx.project.maps[interiorId]!;
+    expect(map.lowerTiles).toEqual(furnished.lowerTiles);
+    expect(map.upperTiles).toEqual(furnished.upperTiles);
+    const after = inboundTransfers(ctx.project, interiorId);
+    expect(after).toHaveLength(landings.length);
+    for (const [index, landing] of landings.entries()) {
+      const moved = after[index]!;
+      expect(isPassableLanding(ctx.project, map, moved.x, moved.y)).toBe(true);
+      if (isPassable(reference.project, furnished, landing.x, landing.y)) {
+        expect({ x: moved.x, y: moved.y }).toEqual(landing);
+      } else {
+        expect({ x: moved.x, y: moved.y }).not.toEqual(landing);
+        const distances = furnished.lowerTiles.flatMap((_, cell) => {
+          const x = cell % furnished.width;
+          const y = Math.floor(cell / furnished.width);
+          return isPassable(reference.project, furnished, x, y)
+            ? [(x - landing.x) ** 2 + (y - landing.y) ** 2] : [];
+        });
+        expect((moved.x - landing.x) ** 2 + (moved.y - landing.y) ** 2).toBe(Math.min(...distances));
+      }
+    }
   });
 
   it("맵이 줄어들어 착지점이 경계 밖이 되는 경우도 되살린다", () => {
