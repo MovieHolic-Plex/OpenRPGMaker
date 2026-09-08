@@ -413,7 +413,8 @@ class ProjectStore {
     },
   ): Promise<{ readonly projectId: string }> {
     const promoteShowcase = options.source === "dev-showcase";
-    const sourceProject = this.current;
+    // Accepted metadata reconciliation can replace the root without changing ownership.
+    const sourceLineage = this.contentLineage;
     const sourceGeneration = this.mutationGeneration;
     const sourceIdentity = this.getProjectIdentity();
     const candidate = structuredClone(project);
@@ -422,7 +423,7 @@ class ProjectStore {
         throw new NewRemoteProjectTransactionError("cancelled", "온라인 사본 전환을 취소했습니다. 원본은 유지됩니다.");
       }
       const identity = this.getProjectIdentity();
-      if (this.current !== sourceProject || this.mutationGeneration !== sourceGeneration
+      if (this.contentLineage !== sourceLineage || this.mutationGeneration !== sourceGeneration
         || identity.kind !== sourceIdentity.kind || identity.id !== sourceIdentity.id) {
         throw new NewRemoteProjectTransactionError(
           "concurrent-edit", "준비 중 현재 프로젝트가 변경되어 전환을 취소했습니다. 변경 내용을 확인한 뒤 다시 시도하세요.",
