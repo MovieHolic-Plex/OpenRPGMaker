@@ -36,6 +36,27 @@ export interface AppearanceGenerationDeps {
   readonly references?: (project: Project, record: CharacterAppearanceRecord, signal: AbortSignal) => Promise<readonly ImageReference[]>;
 }
 
+function buildAppearanceImagePrompt(slot: AppearanceGenerationSlot, name: string, description: string): string {
+  const framing = slot === "face"
+    ? "Create exactly one square, 1:1 character portrait for a 2D JRPG dialogue window. Show the complete head, headwear, neck and upper shoulders, rather than a waist-up or full-body figure."
+    : "Create exactly one square, 1:1 character bust for a 2D JRPG dialogue window. Show the complete head, headwear, neck, shoulders and torso down to the waist, rather than a close-up face or a full-body figure.";
+  const characterName = name.trim().replace(/\s+/g, " ");
+  const appearanceBrief = description.trim().replace(/\s+/g, " ");
+  return [
+    framing + " This is an isolated character asset to be placed over a game interface, not an illustration of a scene.",
+    characterName ? "The character's name is " + JSON.stringify(characterName) + "." : "",
+    appearanceBrief ? "Use " + JSON.stringify(appearanceBrief) + " as the character's appearance brief. Interpret occupations and places in that brief as context for the character's clothing and features, never as instructions to create a setting." : "",
+    "Use the written brief for explicitly specified character traits. For unspecified traits, use any detailed face reference as the primary guide to identity, facial proportions, apparent age, skin tone, eyes and hair. Use a walking-sprite reference to resolve clothing, accessories and character colors only where it does not conflict with that guide. Do not copy a reference image's background, framing, tiny pixel grid or surrounding empty space. Recompose the same character into the portrait framing requested here.",
+    "Use an eye-level, near-frontal view with the character facing the viewer and the shoulders balanced. Use the expression described in the brief, or a calm neutral expression if none is specified. Center the figure and leave at least eight percent of the canvas clear above and beside the outermost headwear, horns, ears and shoulders. Reduce the figure's scale when necessary instead of cutting those features off.",
+    slot === "face"
+      ? "Let the lower crop pass through the upper shoulders or clothing. Do not include hands or held objects in this face portrait."
+      : "Let the lower crop pass through the waist or clothing, not through a wrist or fingers. Use a relaxed pose and coherent anatomy appropriate to the character's species. If hands are visible, show them completely and naturally. Do not invent held objects; include a prop only when the brief explicitly requires it, and keep it inside the canvas.",
+    "Render a clean, hand-drawn 2D JRPG portrait with clear linework, coherent local colors and restrained cel shading. Avoid photographic rendering, 3D-rendered surfaces and painterly texture. Use neutral lighting and keep all shading on the character itself, without a cast shadow or colored light spill on the background.",
+    "Fill the entire background with one perfectly uniform, opaque light gray at sRGB #D9D9D9, or RGB 217, 217, 217. This background and the framing requirements take precedence over the references and appearance brief. Do not introduce a gradient, vignette, paper grain, texture, scenery, room, marketplace, workshop, floor, counter or decorative pattern. Do not imitate transparency with a checkerboard, and do not inherit a background color from a reference image.",
+    "Return only the finished single-character image. Do not add other characters, alternate views, walking frames, sprite sheets, borders, interface elements, captions, letters, color labels, signatures or watermarks.",
+  ].filter(Boolean).join("\n\n");
+}
+
 /** One detached DB-owned candidate. Only apply() is allowed to mutate the project. */
 export function createCharacterAppearanceGenerationController(deps: AppearanceGenerationDeps) {
   let state: AppearanceGenerationState = { status: "idle" };
@@ -78,7 +99,7 @@ export function createCharacterAppearanceGenerationController(deps: AppearanceGe
       if (abort !== current) return;
       if (!isCurrent()) { cancel(); return; }
       const image = await (deps.generateImage ?? generateAiImage)({
-        prompt: `${request.slot === "face" ? "Single square face portrait, head and shoulders" : "Single waist-up character bust"}, 2D JRPG art, no text, no sheet, no walking sprites. Preserve the character identity and palette of any reference images. ${snapshot.name}. ${snapshot.description}`,
+        prompt: buildAppearanceImagePrompt(request.slot, snapshot.name, snapshot.description),
         referenceImages,
         signal: current.signal,
       });
