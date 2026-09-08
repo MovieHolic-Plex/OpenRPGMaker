@@ -47,7 +47,10 @@ describe("unsupported MIDI authoring", () => {
     const confirm = vi.fn();
     openDatabaseResourcePickerDialog({ kind: "music", title: "BGM", currentId: MIDI, onConfirm: confirm });
     expect(node("db-resource-picker-preview").textContent).toContain(MIDI);
-    expect(node("db-resource-picker-preview").querySelector<HTMLButtonElement>("button")?.disabled).toBe(true);
+    expect(node<HTMLButtonElement>("db-resource-picker-audio-play").disabled).toBe(true);
+    expect(node<HTMLButtonElement>("db-resource-picker-audio-stop").disabled).toBe(true);
+    expect(node("db-resource-picker-audio-transport").dataset.state).toBe("unavailable");
+    expect(node("db-resource-picker-preview").querySelector("audio")).toBeNull();
     expect(node<HTMLButtonElement>("db-resource-picker-ok").disabled).toBe(true);
     node<HTMLButtonElement>("db-resource-picker-ok").click();
     expect(confirm).not.toHaveBeenCalled();

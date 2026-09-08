@@ -1,0 +1,631 @@
+{
+  "outcome": "PASS",
+  "rows": [
+    {
+      "size": "1024x768",
+      "before": {
+        "attack": "fully-visible",
+        "defense": "fully-visible",
+        "mind": "fully-visible",
+        "agility": "fully-visible"
+      },
+      "after": {
+        "attack": {
+          "row": true,
+          "numericSpans": true,
+          "rect": {
+            "x": 643.3333129882812,
+            "y": 360.8999938964844,
+            "width": 287.66668701171875,
+            "height": 37.30000305175781,
+            "top": 360.8999938964844,
+            "right": 931,
+            "bottom": 398.1999969482422,
+            "left": 643.3333129882812
+          },
+          "values": {
+            "current": 45,
+            "next": 53,
+            "delta": 8
+          }
+        },
+        "defense": {
+          "row": true,
+          "numericSpans": true,
+          "rect": {
+            "x": 643.3333129882812,
+            "y": 398.20001220703125,
+            "width": 287.66668701171875,
+            "height": 37.30000305175781,
+            "top": 398.20001220703125,
+            "right": 931,
+            "bottom": 435.50001525878906,
+            "left": 643.3333129882812
+          },
+          "values": {
+            "current": 72,
+            "next": 72,
+            "delta": 0
+          }
+        },
+        "mind": {
+          "row": true,
+          "numericSpans": true,
+          "rect": {
+            "x": 643.3333129882812,
+            "y": 435.5,
+            "width": 287.66668701171875,
+            "height": 37.30000305175781,
+            "top": 435.5,
+            "right": 931,
+            "bottom": 472.8000030517578,
+            "left": 643.3333129882812
+          },
+          "values": {
+            "current": 48,
+            "next": 48,
+            "delta": 0
+          }
+        },
+        "agility": {
+          "row": true,
+          "numericSpans": true,
+          "rect": {
+            "x": 643.3333129882812,
+            "y": 472.79998779296875,
+            "width": 287.66668701171875,
+            "height": 37.30000305175781,
+            "top": 472.79998779296875,
+            "right": 931,
+            "bottom": 510.09999084472656,
+            "left": 643.3333129882812
+          },
+          "values": {
+            "current": 45,
+            "next": 45,
+            "delta": 0
+          }
+        }
+      },
+      "keyboard": {
+        "size": "1024x768",
+        "checks": [
+          {
+            "stat": "attack",
+            "row": true,
+            "numericSpans": true,
+            "label": true
+          },
+          {
+            "stat": "defense",
+            "row": true,
+            "numericSpans": true,
+            "label": true
+          },
+          {
+            "stat": "mind",
+            "row": true,
+            "numericSpans": true,
+            "label": true
+          },
+          {
+            "stat": "agility",
+            "row": true,
+            "numericSpans": true,
+            "label": true
+          }
+        ],
+        "controls": [
+          {
+            "id": "shop-sell-equip_sword",
+            "fullyVisible": true
+          },
+          {
+            "id": "shop-quantity-input",
+            "fullyVisible": true
+          },
+          {
+            "id": "shop-quantity-total",
+            "fullyVisible": true
+          },
+          {
+            "id": "shop-balance-after",
+            "fullyVisible": true
+          },
+          {
+            "id": "shop-detail-open",
+            "fullyVisible": true
+          },
+          {
+            "id": "shop-confirm",
+            "fullyVisible": true
+          },
+          {
+            "id": "shop-item-cancel",
+            "fullyVisible": true
+          }
+        ],
+        "overlaps": [],
+        "failures": [],
+        "detailReachable": [
+          "attack",
+          "defense",
+          "mind",
+          "agility"
+        ],
+        "returnFocus": "shop-detail-open",
+        "keyboardControlsReachable": true
+      },
+      "allRequiredRectsNonoverlapping": true
+    },
+    {
+      "size": "640x480",
+      "before": {
+        "attack": "fully-visible",
+        "defense": "fully-visible",
+        "mind": "partially-visible",
+        "agility": "outside-clipped-viewport"
+      },
+      "after": {
+        "attack": {
+          "row": true,
+          "numericSpans": true,
+          "rect": {
+            "x": 407.6499938964844,
+            "y": 135.60000610351562,
+            "width": 211.35000610351562,
+            "height": 34.399993896484375,
+            "top": 135.60000610351562,
+            "right": 619,
+            "bottom": 170,
+            "left": 407.6499938964844
+          },
+          "values": {
+            "current": 45,
+            "next": 53,
+            "delta": 8
+          }
+        },
+        "defense": {
+          "row": true,
+          "numericSpans": true,
+          "rect": {
+            "x": 407.6499938964844,
+            "y": 170,
+            "width": 211.35000610351562,
+            "height": 34.399993896484375,
+            "top": 170,
+            "right": 619,
+            "bottom": 204.39999389648438,
+            "left": 407.6499938964844
+          },
+          "values": {
+            "current": 72,
+            "next": 72,
+            "delta": 0
+          }
+        },
+        "mind": {
+          "row": true,
+          "numericSpans": true,
+          "rect": {
+            "x": 407.6499938964844,
+            "y": 204.39999389648438,
+            "width": 211.35000610351562,
+            "height": 34.40000915527344,
+            "top": 204.39999389648438,
+            "right": 619,
+            "bottom": 238.8000030517578,
+            "left": 407.6499938964844
+          },
+          "values": {
+            "current": 48,
+            "next": 48,
+            "delta": 0
+          }
+        },
+        "agility": {
+          "row": true,
+          "numericSpans": true,
+          "rect": {
+            "x": 407.6499938964844,
+            "y": 238.8000030517578,
+            "width": 211.35000610351562,
+            "height": 34.399993896484375,
+            "top": 238.8000030517578,
+            "right": 619,
+            "bottom": 273.1999969482422,
+            "left": 407.6499938964844
+          },
+          "values": {
+            "current": 45,
+            "next": 45,
+            "delta": 0
+          }
+        }
+      },
+      "keyboard": {
+        "size": "640x480",
+        "checks": [
+          {
+            "stat": "attack",
+            "row": true,
+            "numericSpans": true,
+            "label": true
+          },
+          {
+            "stat": "defense",
+            "row": true,
+            "numericSpans": true,
+            "label": true
+          },
+          {
+            "stat": "mind",
+            "row": true,
+            "numericSpans": true,
+            "label": true
+          },
+          {
+            "stat": "agility",
+            "row": true,
+            "numericSpans": true,
+            "label": true
+          }
+        ],
+        "controls": [
+          {
+            "id": "shop-sell-equip_sword",
+            "fullyVisible": true
+          },
+          {
+            "id": "shop-quantity-input",
+            "fullyVisible": true
+          },
+          {
+            "id": "shop-quantity-total",
+            "fullyVisible": true
+          },
+          {
+            "id": "shop-balance-after",
+            "fullyVisible": true
+          },
+          {
+            "id": "shop-detail-open",
+            "fullyVisible": true
+          },
+          {
+            "id": "shop-confirm",
+            "fullyVisible": true
+          },
+          {
+            "id": "shop-item-cancel",
+            "fullyVisible": true
+          }
+        ],
+        "overlaps": [],
+        "failures": [],
+        "detailReachable": [
+          "attack",
+          "defense",
+          "mind",
+          "agility"
+        ],
+        "returnFocus": "shop-detail-open",
+        "keyboardControlsReachable": true
+      },
+      "allRequiredRectsNonoverlapping": true
+    },
+    {
+      "size": "320x240",
+      "before": {
+        "attack": "css-hidden",
+        "defense": "css-hidden",
+        "mind": "css-hidden",
+        "agility": "css-hidden"
+      },
+      "after": {
+        "attack": {
+          "row": true,
+          "numericSpans": true,
+          "rect": {
+            "x": 13,
+            "y": 115.5,
+            "width": 70.5,
+            "height": 36,
+            "top": 115.5,
+            "right": 83.5,
+            "bottom": 151.5,
+            "left": 13
+          },
+          "values": {
+            "current": 45,
+            "next": 53,
+            "delta": 8
+          }
+        },
+        "defense": {
+          "row": true,
+          "numericSpans": true,
+          "rect": {
+            "x": 87.5,
+            "y": 115.5,
+            "width": 70.5,
+            "height": 36,
+            "top": 115.5,
+            "right": 158,
+            "bottom": 151.5,
+            "left": 87.5
+          },
+          "values": {
+            "current": 72,
+            "next": 72,
+            "delta": 0
+          }
+        },
+        "mind": {
+          "row": true,
+          "numericSpans": true,
+          "rect": {
+            "x": 162,
+            "y": 115.5,
+            "width": 70.5,
+            "height": 36,
+            "top": 115.5,
+            "right": 232.5,
+            "bottom": 151.5,
+            "left": 162
+          },
+          "values": {
+            "current": 48,
+            "next": 48,
+            "delta": 0
+          }
+        },
+        "agility": {
+          "row": true,
+          "numericSpans": true,
+          "rect": {
+            "x": 236.5,
+            "y": 115.5,
+            "width": 70.5,
+            "height": 36,
+            "top": 115.5,
+            "right": 307,
+            "bottom": 151.5,
+            "left": 236.5
+          },
+          "values": {
+            "current": 45,
+            "next": 45,
+            "delta": 0
+          }
+        }
+      },
+      "keyboard": {
+        "size": "320x240",
+        "checks": [
+          {
+            "stat": "attack",
+            "row": true,
+            "numericSpans": true,
+            "label": true
+          },
+          {
+            "stat": "defense",
+            "row": true,
+            "numericSpans": true,
+            "label": true
+          },
+          {
+            "stat": "mind",
+            "row": true,
+            "numericSpans": true,
+            "label": true
+          },
+          {
+            "stat": "agility",
+            "row": true,
+            "numericSpans": true,
+            "label": true
+          }
+        ],
+        "controls": [
+          {
+            "id": "shop-sell-equip_sword",
+            "fullyVisible": true
+          },
+          {
+            "id": "shop-quantity-input",
+            "fullyVisible": true
+          },
+          {
+            "id": "shop-quantity-total",
+            "fullyVisible": true
+          },
+          {
+            "id": "shop-balance-after",
+            "fullyVisible": true
+          },
+          {
+            "id": "shop-detail-open",
+            "fullyVisible": true
+          },
+          {
+            "id": "shop-confirm",
+            "fullyVisible": true
+          },
+          {
+            "id": "shop-item-cancel",
+            "fullyVisible": true
+          }
+        ],
+        "overlaps": [],
+        "failures": [],
+        "detailReachable": [
+          "attack",
+          "defense",
+          "mind",
+          "agility"
+        ],
+        "returnFocus": "shop-detail-open",
+        "keyboardControlsReachable": true
+      },
+      "allRequiredRectsNonoverlapping": true
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "baseline/1024x768-inline.png",
+      "width": 1024,
+      "height": 768,
+      "sha256": "c5a0da0a8608af9eb77d10ac2858e6435474d6ade1006b8ba8fa8267e3805714"
+    },
+    {
+      "path": "baseline/320x240-inline.png",
+      "width": 320,
+      "height": 240,
+      "sha256": "fcad610098189fd471fae64e4092c255d11f789df296f41eb075604b454b8fd5"
+    },
+    {
+      "path": "baseline/640x480-inline.png",
+      "width": 640,
+      "height": 480,
+      "sha256": "97d5789a16c0597c8eb5942815a2c41030734683c5a5f1555503086d4c9b6719"
+    },
+    {
+      "path": "shipping/00-normal-unequip-preview.png",
+      "width": 1024,
+      "height": 768,
+      "sha256": "f1b083510fadbfe17c5e56ec1ba7b779af1a88969fda7b2e4bdb7ef86f9f7b92"
+    },
+    {
+      "path": "shipping/1024x768-detail-initial.png",
+      "width": 1024,
+      "height": 768,
+      "sha256": "def3cd2c7fc8afae0334edb81346e6a43630b83e820a4c71a6c60eaf840e2fc6"
+    },
+    {
+      "path": "shipping/1024x768-inline.png",
+      "width": 1024,
+      "height": 768,
+      "sha256": "c5a0da0a8608af9eb77d10ac2858e6435474d6ade1006b8ba8fa8267e3805714"
+    },
+    {
+      "path": "shipping/1024x768-opener.png",
+      "width": 1024,
+      "height": 768,
+      "sha256": "57497302c0d55e4f7b5b05cbdf7e5e5fb31847a626811701982e10ca1548c7a9"
+    },
+    {
+      "path": "shipping/1024x768-return.png",
+      "width": 1024,
+      "height": 768,
+      "sha256": "57497302c0d55e4f7b5b05cbdf7e5e5fb31847a626811701982e10ca1548c7a9"
+    },
+    {
+      "path": "shipping/320x240-detail-initial.png",
+      "width": 320,
+      "height": 240,
+      "sha256": "2e2f23588c8b0e17664314dde264ede21d479e1d0fbc4fa39571d029427c9c39"
+    },
+    {
+      "path": "shipping/320x240-detail-scroll-0.png",
+      "width": 320,
+      "height": 240,
+      "sha256": "14bc6aa30bfad267101becdccf8c0db627fead986e7fd3716c22886f6eaf7958"
+    },
+    {
+      "path": "shipping/320x240-detail-scroll-1.png",
+      "width": 320,
+      "height": 240,
+      "sha256": "604cd922b288e837a7e676dd817d66fb83f94152d03f92ccff1efb1384a45ff9"
+    },
+    {
+      "path": "shipping/320x240-detail-scroll-2.png",
+      "width": 320,
+      "height": 240,
+      "sha256": "7117afc2c38760b24af46f5de763ae76a9c7650d8edc8ce2a929112f4acafe73"
+    },
+    {
+      "path": "shipping/320x240-detail-scroll-3.png",
+      "width": 320,
+      "height": 240,
+      "sha256": "737dc9d5ca12ad245a009f4288368a2e00c1be8d99b0cc30853798dad318311e"
+    },
+    {
+      "path": "shipping/320x240-detail-scroll-4.png",
+      "width": 320,
+      "height": 240,
+      "sha256": "56cb249a30a18cf334beda3b0e4c10a956c07c5521a65c7699b84fac421541ec"
+    },
+    {
+      "path": "shipping/320x240-detail-scroll-5.png",
+      "width": 320,
+      "height": 240,
+      "sha256": "a4ddba6400ede846af3d36df5ab7f4067fbd37558dff46b566a98f739033a7e4"
+    },
+    {
+      "path": "shipping/320x240-detail-scroll-6.png",
+      "width": 320,
+      "height": 240,
+      "sha256": "3a53067a469408bdf48edbad716b6babb019fc749dc92c5eb6a19b0fceb9c21f"
+    },
+    {
+      "path": "shipping/320x240-inline.png",
+      "width": 320,
+      "height": 240,
+      "sha256": "4e37f2ecc54491ac9270d5e8c38e4842920a8ce5417a1c7376b7a2238ff9e0ba"
+    },
+    {
+      "path": "shipping/320x240-opener.png",
+      "width": 320,
+      "height": 240,
+      "sha256": "d4f53fd9dd4ed692c147b43f505805051e86ea0793920955cf3cfda2b0dcfebd"
+    },
+    {
+      "path": "shipping/320x240-return.png",
+      "width": 320,
+      "height": 240,
+      "sha256": "d4f53fd9dd4ed692c147b43f505805051e86ea0793920955cf3cfda2b0dcfebd"
+    },
+    {
+      "path": "shipping/640x480-detail-initial.png",
+      "width": 640,
+      "height": 480,
+      "sha256": "0a6b5e49dcd5bee93408f1f116995396ff4c4c27fdb10f322dbae67e2ad36d95"
+    },
+    {
+      "path": "shipping/640x480-detail-scroll-0.png",
+      "width": 640,
+      "height": 480,
+      "sha256": "68be17168e5b3fb40d4ae19c0f0d1fd12ff56926bf77cd45e3255d03f383a484"
+    },
+    {
+      "path": "shipping/640x480-inline.png",
+      "width": 640,
+      "height": 480,
+      "sha256": "6e08cd9cf808a4115e6341dd0a2fca13462506cd6a307ceccf4fc3f46960512d"
+    },
+    {
+      "path": "shipping/640x480-opener.png",
+      "width": 640,
+      "height": 480,
+      "sha256": "ba582918c44e2ede9fd4c71459e84aaf45f722fcb2f35de8703297becceb5afb"
+    },
+    {
+      "path": "shipping/640x480-return.png",
+      "width": 640,
+      "height": 480,
+      "sha256": "ba582918c44e2ede9fd4c71459e84aaf45f722fcb2f35de8703297becceb5afb"
+    }
+  ],
+  "inlineRows": 12,
+  "numericSpans": 24,
+  "ancestorChecks": 1719,
+  "normalUnequipInventory": {
+    "before": {},
+    "after": {
+      "equip_sword": 1
+    }
+  }
+}

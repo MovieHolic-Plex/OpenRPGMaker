@@ -1,5 +1,47 @@
 # RPG ZZU Design System
 
+## Editor audio preview workbench (2026-09-08)
+
+- Music/Sound uses a searchable list beside a selected reading document, with
+  transport outside both scrolling panes. Title, tags and effective description
+  precede source and raw ID/URL. Resource Manager retains its description draft,
+  Save/clear/restore and AI analysis draft label; the picker shares the same player.
+- Reuse native buttons/ranges/details, shared editor SVG icons, Studio tokens
+  (bg-raised/inset, text-1/2, accent, border-default, focus-outline), font-ui,
+  12px metadata, 13px controls, 18px selected title, 4/8/12/16px spacing,
+  32px controls and existing radius-s/m. No theme, dependency or decorative media.
+- The dialog is at most 960px wide and 760px high, bounded by 32px viewport
+  insets. Zero-minimum list/document tracks independently scroll; header, search,
+  transport and close remain visible at 1024x768, 1280x800 and 1440x900, including
+  long metadata and empty search. The manager's detail body and picker document
+  scroll separately from their selected transport. No media per list thumbnail.
+  Audio-only Manager geometry uses 192px category / 240px list minima and a
+  detail rail up to 400px (40vw), with 600px shell height; other kinds stay unchanged.
+- Common preview transport exposes play/pause, immediate stop/rewind, current and
+  known duration, native seek and polite loading/buffering/error status. Selection
+  never autoplays. Only real media events establish playing/paused/ended/error;
+  rejected play and stale selection completions cannot claim playback. Unknown
+  duration is explicitly unknown and disables seek. Ended sounds replay directly.
+  Sub-second sound durations show hundredths. Music retains looping; fade uses
+  elapsed media progression across loops, excluding explicit seek jumps and pauses.
+- Preview owns an isolated media session, never getAudioEngine or gameplay audio.
+  Starting a preview releases the previous editor preview. Close, category/source
+  change and project replacement release media, listeners and WebAudio resources.
+  Cross-origin native playback stays supported; pan uses an explicitly enabled
+  CORS WebAudio route, with visible failure rather than silent unprocessed sound.
+- Advanced is a closed native disclosure: volume 100%, tempo 100%, pan centered,
+  fade-in zero; Reset restores only these preview settings. Volume/tempo/pan apply
+  to preview sound, fade-in applies on a fresh play, never to authored game values.
+  Media progression drives fade, no timer-based simulated playback. Event command
+  preview remains a static summary with honest no-autoplay status, not a waveform.
+- Interaction reference: beui action-swap's stable button with changing icon/name,
+  adapted without motion; StyleGallery list-detail plus bounded scroll-body-shell.
+  Native keyboard behavior and token focus rings remain authoritative. No global
+  Space/arrows handler steals typing, textarea, range or contenteditable input.
+  Personas: catalog-browsing author, description/IME author, keyboard-only author.
+  Parent owns real browser codec/geometry/keyboard QA and independent final review;
+  DOM tests are not visual approval. No accepted accessibility debt.
+
 ## Character graphic recovery (2026-09-08)
 
 - Keep the existing event graphic subdialog, catalog, preview, advanced input,
@@ -257,11 +299,14 @@ existing purse emblem; actual party faces remain explicitly labelled as party.
   uses a separate 2px text-color outline, also on the scroll region. Six actors and
   long authored names wrap, with focused controls scrolled into view by input code.
 - Overlay stays outside `.play-stage` scale. At 1024x768 and 640x480 the display
-  stays beside stock. At 320x240 it is an identity/description strip; the complete
-  comparison is deferred to the always-reachable detail opener, never deleted from
-  detail. Short viewports use this same compact-stock policy. Wallet, quantity,
+  stays beside stock. Compact equipment summaries prioritize all four comparison
+  values over duplicate artwork, description and ownership metadata. At 320x240
+  the summary uses four compact stat columns; the full replacement names and
+  effect ledger remain in keyboard-accessible detail. Short viewports use this
+  same compact-stock policy. Wallet, quantity,
   total, projected balance/shortage and detail/confirm/cancel remain in the footer.
-  Stock hints reduce to the focus-group hint at minimum size; detail hints wrap in
+  At minimum size, the focus-group hint shares the action row rather than taking
+  height away from the selected item and stats. Detail hints wrap in
   two compact rows and retain all scroll/return keys. Selected stock keeps mandatory
   scroll snap through resize. Explicit hidden state and menu/haggle layouts remain.
 - Keyboard purchase-decision contract: Tab/Shift+Tab traverses stock item, mode,
@@ -1022,13 +1067,13 @@ The float assistant is **one glass instrument**, `div.ai-deck` inside the transp
 #### Resource Manager audio descriptions
 
 - Preserve the existing category / resource-list / command-detail rail. The
-  audio list uses the complete shared catalog, raw resource IDs, selected native
+  audio list uses the complete shared catalog, readable names, selected native
   buttons, and an effective-empty-description checkbox. Filtering never changes
   selection or commits a draft. The list remains its own scroll owner.
-- The existing command rail contains identity, native audio preview, source,
-  labelled textarea, Save, Restore default, status and upload-only Delete.
-  The rail owns vertical overflow within the existing bounded shell. Text wraps;
-  the textarea owns its text overflow. No pane-width, theme or global CSS change.
+- The command rail contains title/tags, labelled textarea, source/ID, Save,
+  Restore default, status and upload-only Delete above the fixed editor preview.
+  Its body owns vertical overflow; the textarea owns its text overflow. Audio-only
+  rail geometry follows the preview-workbench contract above; no theme change.
 - Reuse resource command buttons, existing 12/13px typography, `--font-ui`,
   `--space-1/2`, resource command height, control/radius/focus tokens and the
   existing surface ladder. No new animation, decorative icons or audio waveform.
@@ -1044,7 +1089,7 @@ The float assistant is **one glass instrument**, `div.ai-deck` inside the transp
   Escape after cancellation. Dirty dialogs trap focus and return to the editor;
   final close restores the attached opener. Source and user text are text nodes.
 - Verification requires fresh 1024x768 / 1440x900 captures, keyboard/focus and
-  dirty-draft checks, native preview playback, and independent visual review.
+  dirty-draft checks, real preview playback, and independent visual review.
   Use real state-based readiness, not fixed sleeps or retry-based acceptance.
   The scoped `playwright.audio.config.ts` uses Firefox, zero retries and an
   isolated Vite cache for host Chromium `ERR_NETWORK_CHANGED` failures.

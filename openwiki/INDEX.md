@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **50쪽 / 2047KB / 약 575,393 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **50쪽 / 2049KB / 약 575,892 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -21,10 +21,10 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-event-authoring.md` | 130KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 691 | ~37,249 |
 | `openwiki/editor-event-commands.md` | 50KB | 32KB | 132 | ~13,431 |
 | `openwiki/editor-pre-edit-routing.md` | 81KB | 56KB ⚠상한 초과 — 절을 더 쪼개라 | 323 | ~22,944 |
-| `openwiki/editor-workflows-misc.md` | 62KB | 29KB | 425 | ~17,056 |
+| `openwiki/editor-workflows-misc.md` | 64KB | 29KB | 451 | ~17,505 |
 | `openwiki/runtime-battle.md` | 130KB | 31KB | 493 | ~37,038 |
 | `openwiki/runtime-project-schema.md` | 94KB | 44KB | 587 | ~25,195 |
-| `openwiki/runtime-sessions.md` | 87KB | 49KB | 324 | ~23,160 |
+| `openwiki/runtime-sessions.md` | 87KB | 49KB | 324 | ~23,210 |
 | `openwiki/testing.md` | 161KB | 48KB | 1343 | ~44,363 |
 
 ## 한국어 산문이 깨진 페이지
@@ -506,20 +506,20 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L219` Event editor aggregate gate (2026-07-30)
 - `L228` P2 spatial integrity (2026-08-25)
 
-### `openwiki/editor-workflows-misc.md` — 62KB · 425줄 · ~17,056 토큰 · 통째읽기 잘림
+### `openwiki/editor-workflows-misc.md` — 64KB · 451줄 · ~17,505 토큰 · 통째읽기 잘림
 
 - `L7` Other Editor Workflows
   - `L9` New-project name and player title (2026-09-07)
   - `L19` 걸을 때 적 만나기 — rectangle authoring (2026-09-06)
   - `L85` Game export delivery (2026-09-06)
   - `L196` Audio descriptions and live resource ownership
-  - `L253` Genre-neutral authoring launcher and journey (2026-08-24)
-- `L303` 편집기 z 층 밴드와 토스트 (2026-08-30, PR #308)
-- `L332` 초보 맵 사이드바 «목록 | 상세» 2단 탐색기 (2026-08-30, PR #311)
-- `L354` 커스텀 셀렉트는 열릴 때 modalStack 층이 된다 (2026-08-30)
-- `L368` 맵 설정 가독성·편집 연속성 (2026-09-05)
-- `L378` 왼쪽 사이드바 3모드 적대적 리뷰 (2026-09-05)
-- `L389` Authoring viewport navigation (issue 693, 2026-09-08)
+  - `L279` Genre-neutral authoring launcher and journey (2026-08-24)
+- `L329` 편집기 z 층 밴드와 토스트 (2026-08-30, PR #308)
+- `L358` 초보 맵 사이드바 «목록 | 상세» 2단 탐색기 (2026-08-30, PR #311)
+- `L380` 커스텀 셀렉트는 열릴 때 modalStack 층이 된다 (2026-08-30)
+- `L394` 맵 설정 가독성·편집 연속성 (2026-09-05)
+- `L404` 왼쪽 사이드바 3모드 적대적 리뷰 (2026-09-05)
+- `L415` Authoring viewport navigation (issue 693, 2026-09-08)
 
 ### `openwiki/editor-workflows.md` — 2KB · 28줄 · ~586 토큰
 
@@ -737,7 +737,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L580` 연결 실내 도면의 영속성 (2026-09-05)
 - `L584` 개념 장소 형상 (2026-09-05)
 
-### `openwiki/runtime-sessions.md` — 87KB · 324줄 · ~23,160 토큰 · 통째읽기 잘림
+### `openwiki/runtime-sessions.md` — 87KB · 324줄 · ~23,210 토큰 · 통째읽기 잘림
 
 - `L1` Opening and game-over cinematics (2026-09-06)
 - `L68` Task10 field input and exact forage dates (2026-09-06)

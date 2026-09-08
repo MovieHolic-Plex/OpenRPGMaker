@@ -1,6 +1,8 @@
 type DomGlobalName =
   | "document"
   | "Node"
+  | "Element"
+  | "MutationObserver"
   | "HTMLElement"
   | "HTMLButtonElement"
   | "HTMLInputElement"
@@ -13,6 +15,8 @@ type DomGlobalName =
 type PreviousDomGlobals = {
   readonly document: Document | undefined;
   readonly Node: typeof Node | undefined;
+  readonly Element: typeof Element | undefined;
+  readonly MutationObserver: typeof MutationObserver | undefined;
   readonly HTMLElement: typeof HTMLElement | undefined;
   readonly HTMLButtonElement: typeof HTMLButtonElement | undefined;
   readonly HTMLInputElement: typeof HTMLInputElement | undefined;
@@ -57,19 +61,35 @@ export class FakeNode {
   }
 
   set textContent(value: string) {
-    this.replaceChildren();
+    if (this instanceof FakeElement) {
+      this.replaceChildren(...(value ? [value] : []));
+      return;
+    }
+    const oldValue = this.ownText;
     this.ownText = value;
+    this.childNodes.length = 0;
+    notifyValueMutation(this, "characterData", null, oldValue);
   }
 
-  append(...children: FakeNode[]): void {
-    for (const child of children) this.insertBefore(child, null);
+  append(...children: (FakeNode | string)[]): void {
+    const nodes = convertFakeNodes(children);
+    const previousSibling = this.childNodes.at(-1) ?? null;
+    for (const node of nodes) {
+      node.parentNode = this;
+      this.childNodes.push(node);
+    }
+    notifyChildList(this, nodes, [], previousSibling, null);
+    this.childrenChanged(nodes.at(-1));
   }
 
   removeChild(child: FakeNode): FakeNode {
     const index = this.childNodes.indexOf(child);
     if (index < 0) throw new DOMException("Node is not a child", "NotFoundError");
+    const previousSibling = this.childNodes[index - 1] ?? null;
+    const nextSibling = this.childNodes[index + 1] ?? null;
     this.childNodes.splice(index, 1);
     child.parentNode = null;
+    notifyChildList(this, [], [child], previousSibling, nextSibling);
     this.childrenChanged();
     return child;
   }
@@ -81,6 +101,7 @@ export class FakeNode {
     const index = reference === null ? this.childNodes.length : this.childNodes.indexOf(reference);
     this.childNodes.splice(index, 0, child);
     child.parentNode = this;
+    notifyChildList(this, [child], [], this.childNodes[index - 1] ?? null, reference);
     this.childrenChanged(child);
     return child;
   }
@@ -95,22 +116,38 @@ export class FakeNode {
     if (!parent) return;
     const reference = parent.childNodes.slice(parent.childNodes.indexOf(this) + 1)
       .find((node) => !nodes.includes(node)) ?? null;
-    for (const node of nodes) node.remove();
-    this.remove();
-    for (const node of nodes) parent.insertBefore(node, reference);
+    const adopted = convertFakeNodes(nodes);
+    const replacing = this.parentNode === parent;
+    const index = replacing ? parent.childNodes.indexOf(this)
+      : reference === null ? parent.childNodes.length : parent.childNodes.indexOf(reference);
+    if (replacing) this.parentNode = null;
+    for (const node of adopted) node.parentNode = parent;
+    parent.childNodes.splice(index, replacing ? 1 : 0, ...adopted);
+    notifyChildList(parent, adopted, replacing ? [this] : [], parent.childNodes[index - 1] ?? null, parent.childNodes[index + adopted.length] ?? null);
+    parent.childrenChanged(adopted.at(-1));
   }
 
   prepend(...children: FakeNode[]): void {
-    const reference = this.childNodes.find((node) => !children.includes(node)) ?? null;
-    for (const child of children) this.insertBefore(child, reference);
+    const nodes = convertFakeNodes(children);
+    const nextSibling = this.firstChild;
+    for (const child of nodes.slice().reverse()) {
+      child.parentNode = this;
+      this.childNodes.unshift(child);
+    }
+    notifyChildList(this, nodes, [], null, nextSibling);
+    this.childrenChanged(nodes.at(-1));
   }
 
-  replaceChildren(...children: FakeNode[]): void {
+  replaceChildren(...children: (FakeNode | string)[]): void {
+    const nodes = convertFakeNodes(children);
+    const removed = [...this.childNodes];
     this.ownText = "";
-    for (const child of this.childNodes) child.parentNode = null;
+    for (const child of removed) child.parentNode = null;
     this.childNodes.length = 0;
-    this.childrenChanged();
-    this.append(...children);
+    for (const node of nodes) node.parentNode = this;
+    this.childNodes.push(...nodes);
+    notifyChildList(this, nodes, removed, null, null);
+    this.childrenChanged(nodes.at(-1));
   }
 
   protected childrenChanged(inserted?: FakeNode): void {
@@ -121,6 +158,101 @@ export class FakeNode {
     if (node === this) return true;
     return this.childNodes.some((child) => child.contains(node));
   }
+}
+
+function convertFakeNodes(children: readonly (FakeNode | string)[]): FakeNode[] {
+  const nodes: FakeNode[] = [];
+  for (const child of children) {
+    const node = typeof child === "string" ? new FakeNode() : child;
+    if (typeof child === "string") node.textContent = child;
+    node.remove();
+    const duplicate = nodes.indexOf(node);
+    if (duplicate >= 0) nodes.splice(duplicate, 1);
+    nodes.push(node);
+  }
+  return nodes;
+}
+
+// Mutation delivery follows a microtask checkpoint; values change through the
+// fake DOM setters, while render-only media never claims successful playback.
+const mutationObservers = new Set<FakeMutationObserver>();
+type FakeMutationRecord = {
+  readonly type: "childList" | "attributes" | "characterData";
+  readonly target: FakeNode;
+  readonly addedNodes: readonly FakeNode[];
+  readonly removedNodes: readonly FakeNode[];
+  readonly previousSibling: FakeNode | null;
+  readonly nextSibling: FakeNode | null;
+  readonly attributeName: string | null;
+  readonly attributeNamespace: null;
+  readonly oldValue: string | null;
+};
+
+class FakeMutationObserver {
+  private readonly targets = new Map<FakeNode, MutationObserverInit>();
+  private records: FakeMutationRecord[] = [];
+  private queued = false;
+
+  constructor(private readonly callback: (records: FakeMutationRecord[], observer: FakeMutationObserver) => void) {}
+
+  observe(target: FakeNode | { readonly body: FakeNode }, options: MutationObserverInit): void {
+    const normalized = { ...options,
+      attributes: options.attributes ?? (options.attributeFilter !== undefined || options.attributeOldValue === true),
+      characterData: options.characterData ?? options.characterDataOldValue === true,
+    };
+    if (!normalized.childList && !normalized.attributes && !normalized.characterData) throw new TypeError("No mutation type selected");
+    const node = target instanceof FakeNode ? target : target.body;
+    this.targets.set(node, normalized);
+    mutationObservers.add(this);
+  }
+
+  disconnect(): void {
+    this.targets.clear();
+    this.records = [];
+    mutationObservers.delete(this);
+  }
+
+  takeRecords(): FakeMutationRecord[] {
+    const records = this.records;
+    this.records = [];
+    return records;
+  }
+
+  enqueue(target: FakeNode, record: FakeMutationRecord): void {
+    const matching = [...this.targets].filter(([node, options]) => {
+      if (node !== target && !(options.subtree && node.contains(target))) return false;
+      switch (record.type) {
+        case "childList": return options.childList;
+        case "attributes": return options.attributes && (!options.attributeFilter || options.attributeFilter.includes(record.attributeName ?? ""));
+        case "characterData": return options.characterData;
+      }
+    });
+    if (matching.length === 0) return;
+    const keepOld = matching.some(([, options]) => record.type === "attributes" ? options.attributeOldValue : options.characterDataOldValue);
+    this.records.push({ ...record, oldValue: keepOld ? record.oldValue : null });
+    if (this.queued) return;
+    this.queued = true;
+    queueMicrotask(() => {
+      this.queued = false;
+      const records = this.takeRecords();
+      if (records.length > 0) this.callback(records, this);
+    });
+  }
+}
+
+function notifyChildList(target: FakeNode, added: FakeNode[], removed: FakeNode[], previousSibling: FakeNode | null, nextSibling: FakeNode | null): void {
+  if (added.length === 0 && removed.length === 0) return;
+  const record: FakeMutationRecord = {
+    type: "childList", target, addedNodes: [...added], removedNodes: [...removed],
+    previousSibling, nextSibling, attributeName: null, attributeNamespace: null, oldValue: null,
+  };
+  for (const observer of mutationObservers) observer.enqueue(target, record);
+}
+
+function notifyValueMutation(target: FakeNode, type: "attributes" | "characterData", attributeName: string | null, oldValue: string | null): void {
+  const record: FakeMutationRecord = { type, target, attributeName, oldValue,
+    addedNodes: [], removedNodes: [], previousSibling: null, nextSibling: null, attributeNamespace: null };
+  for (const observer of mutationObservers) observer.enqueue(target, record);
 }
 
 export class FakeElement extends FakeNode {
@@ -292,6 +424,7 @@ export class FakeElement extends FakeNode {
   }
 
   setAttribute(name: string, value: string): void {
+    const oldValue = this.getAttribute(name);
     this.attrs[name] = value;
     // HTMLOptionElement / input 호환: attribute value 는 .value 프로퍼티와 동기화.
     if (name === "value") this.value = value;
@@ -302,6 +435,7 @@ export class FakeElement extends FakeNode {
         .replace(/-([a-z])/gu, (_, ch: string) => ch.toUpperCase());
       this.dataset[camelKey] = value;
     }
+    notifyValueMutation(this, "attributes", name, oldValue);
   }
 
   getAttribute(name: string): string | null {
@@ -319,8 +453,11 @@ export class FakeElement extends FakeNode {
   }
 
   removeAttribute(name: string): void {
+    const oldValue = this.getAttribute(name);
     delete this.attrs[name];
     if (name === "selected" && this.tagName === "OPTION") this.selected = false;
+    if (name.startsWith("data-")) delete this.dataset[name.slice(5).replace(/-([a-z])/gu, (_, ch: string) => ch.toUpperCase())];
+    if (oldValue !== null) notifyValueMutation(this, "attributes", name, oldValue);
   }
 
   // <canvas> 2D 컨텍스트는 흉내내지 않는다 — 호출부는 이미 null을 정상 처리하도록
@@ -506,6 +643,8 @@ export function installFakeDom(options: FakeDomOptions = {}): () => void {
   const previous = {
     document: globalThis.document,
     Node: globalThis.Node,
+    Element: globalThis.Element,
+    MutationObserver: globalThis.MutationObserver,
     HTMLElement: globalThis.HTMLElement,
     HTMLButtonElement: globalThis.HTMLButtonElement,
     HTMLInputElement: globalThis.HTMLInputElement,
@@ -517,8 +656,11 @@ export function installFakeDom(options: FakeDomOptions = {}): () => void {
     cancelAnimationFrame: globalThis.cancelAnimationFrame,
   } satisfies PreviousDomGlobals;
   animationFrames.clear();
+  for (const observer of mutationObservers) observer.disconnect();
   nextAnimationFrameId = 1;
   defineDomGlobal("Node", FakeNode);
+  defineDomGlobal("Element", FakeElement);
+  defineDomGlobal("MutationObserver", FakeMutationObserver);
   defineDomGlobal("HTMLElement", FakeElement);
   defineDomGlobal("HTMLButtonElement", FakeElement);
   // Inputs/images/textareas retain their shared fake; select identity is tag-specific.
@@ -529,6 +671,8 @@ export function installFakeDom(options: FakeDomOptions = {}): () => void {
   // HTMLImageElement 만 매핑해두면 생성자 전역이 없어 ReferenceError 가 난다.
   defineDomGlobal("Image", FakeImage);
   defineDomGlobal("HTMLTextAreaElement", FakeElement);
+  // Manual frames are opt-in: do not activate optional animation paths in
+  // existing render tests merely to support cancelling an idle audio preview.
   if (options.animationFrames === "manual") {
     defineDomGlobal("requestAnimationFrame", (callback: FrameRequestCallback): number => {
       const frameId = nextAnimationFrameId;
@@ -536,6 +680,8 @@ export function installFakeDom(options: FakeDomOptions = {}): () => void {
       animationFrames.set(frameId, callback);
       return frameId;
     });
+  }
+  if (options.animationFrames === "manual" || !previous.cancelAnimationFrame) {
     defineDomGlobal("cancelAnimationFrame", (frameId: number): void => {
       animationFrames.delete(frameId);
     });
@@ -549,7 +695,7 @@ export function installFakeDom(options: FakeDomOptions = {}): () => void {
     get children(): readonly FakeElement[] {
       return body.children;
     },
-    createElement: (tagName: string) => new FakeElement(tagName),
+    createElement: (tagName: string) => tagName.toLowerCase() === "audio" ? new FakeAudio() : new FakeElement(tagName),
     // SVG 아이콘(makeSvgIcon)이 createElementNS를 쓴다 — 네임스페이스는 무시하고 일반 요소로 위임.
     createElementNS: (_ns: string, tagName: string) => new FakeElement(tagName),
     createTextNode: (text: string) => {
@@ -582,8 +728,11 @@ export function installFakeDom(options: FakeDomOptions = {}): () => void {
   });
   return () => {
     animationFrames.clear();
+    for (const observer of mutationObservers) observer.disconnect();
     restoreDomGlobal("document", previous.document);
     restoreDomGlobal("Node", previous.Node);
+    restoreDomGlobal("Element", previous.Element);
+    restoreDomGlobal("MutationObserver", previous.MutationObserver);
     restoreDomGlobal("HTMLElement", previous.HTMLElement);
     restoreDomGlobal("HTMLButtonElement", previous.HTMLButtonElement);
     restoreDomGlobal("HTMLInputElement", previous.HTMLInputElement);
@@ -594,6 +743,20 @@ export function installFakeDom(options: FakeDomOptions = {}): () => void {
     restoreDomGlobal("requestAnimationFrame", previous.requestAnimationFrame);
     restoreDomGlobal("cancelAnimationFrame", previous.cancelAnimationFrame);
   };
+}
+
+// Idle media lifecycle only. Acoustic playback belongs to the media event harness,
+// not render tests; no loaded/playing events or successful play promises are faked.
+class FakeAudio extends FakeElement {
+  readonly paused = true;
+  readonly duration = Number.NaN;
+  currentTime = 0;
+
+  constructor() { super("audio"); }
+
+  pause(): void {}
+
+  load(): void { this.currentTime = 0; }
 }
 
 /**

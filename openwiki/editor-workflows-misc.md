@@ -196,8 +196,9 @@ without mutating the caller's seed. Regression tests:
 ### Audio descriptions and live resource ownership
 
 The Resource Manager's music/sound categories use the complete shared catalog from
-`src/assets/audioResourceCatalog.ts`. Select a row to see its raw ID, native preview,
-effective description and source. Search matches names, IDs, tags and descriptions;
+`src/assets/audioResourceCatalog.ts`. Select a row to see its name/tags, editable
+effective description/source and editor-only preview. Raw ID follows description.
+Search matches names, IDs, tags and descriptions;
 the empty-description filter tests the effective value, including deliberate clears.
 `audio-description-search`, `audio-description-input` and `audio-description-save`
 are the feature's browser test controls.
@@ -242,6 +243,31 @@ latest project. Don't introduce per-surface fallback descriptions or global desc
 Reopening the audio-test dialog closes the previous instance through its modal teardown,
 including its store subscription and audio settings; removing its DOM alone leaks ownership.
 
+The three audio surfaces share `src/editor/panels/audioPreviewPlayer.ts` and the editor-only
+`src/editor/panels/audioPreviewSession.ts`, never the gameplay `getAudioEngine` singleton. Selection
+does not autoplay. Music loops, sound ends and immediately replays; play/pause,
+stop/rewind, current/duration and seek are consistent. Unknown duration disables
+seek; sub-second durations show hundredths. Media events, not fulfilled play
+promises, establish playing state. Metadata preload is loading without play intent.
+Rejected/stale requests and buffering/errors remain visible and accessible.
+
+`src/editor/panels/audioResourcePreview.ts` owns selected/inline reading views; inline removal is
+observed with MutationObserver, and project replacement disposes it. No media or
+nested play button exists per picker thumbnail. Search retains the selected player.
+Dialog/category/project/source teardown releases media listeners, WebAudio nodes
+and context. The closed Advanced disclosure owns preview volume/tempo/pan/fade and
+reset, not authored values. Native volume follows elapsed media progression for
+fade across loops, excluding seek jumps and pauses. Pan requests a CORS-enabled
+media/WebAudio route; ordinary cross-origin native playback needs no CORS header.
+A CORS error is visible; resetting pan recovers the native route.
+
+Prefixes: `audio-test-*`, `db-resource-picker-audio-*`, and
+`audio-description-preview-*` for transport/settings. Authored
+`audio-description-reset` remains exclusively Restore default. Manager audio-only
+geometry widens the reading/editing rail; its body scrolls above fixed transport.
+The event command preview is an honest static summary, never a fake waveform.
+Focused contracts: `test/audioPreviewSession.test.ts`, `test/audioPreviewSurfaces.test.ts`.
+
 Coverage includes `test/audioDescriptionEditor.test.ts`,
 `test/audioDescriptionLifecycle.test.ts`, `test/audioDescriptionPickerSurfaces.test.ts`,
 `test/audioDescriptionCommandSurfaces.test.ts`,
@@ -266,7 +292,7 @@ browser setup and separate exported-player evidence.
 
 - **Map/event search (toolbar-search):** `src/editor/panels/mapEventSearchModal.ts` + pure model `src/editor/panels/mapEventSearchModel.ts`. Styles: `src/styles/editor/map-event-search.css` (imported from `src/styles/index.css`). Centered modal with keyword (variable/switch/event name), range (selected map / common / all), and result tabs. Missing CSS previously left the dialog as raw unstyled fieldsets.
 
-- **Audio test dialog (toolbar-sound-test, 음악/효과음):** `src/editor/panels/audioTestDialog.ts`. Styles: `src/styles/editor/audio-test-dialog.css` (imported from `src/styles/index.css`). Two-pane RM2k3-style window: left 음악/효과음 tabs + resource list (CC0 playable, EasyRPG MIDI marked non-playable), right fade/volume/tempo/balance sliders + 재생/정지 + status. Missing CSS previously left the dialog as raw unstyled HTML. Tests: `test/e2e/oprn-audio-test-dialog.spec.ts` (requires expert-mode init script — classic toolbar is expert-only).
+- **Audio test dialog (toolbar-sound-test, 음악/효과음):** `src/editor/panels/audioTestDialog.ts`. Styles: `src/styles/editor/audio-test-dialog.css` (imported from `src/styles/index.css`). Studio list/document window with independent scrolls and fixed shared transport. Right document leads with name/tags/description; preview settings are a native Advanced disclosure. MIDI remains marked unplayable. Tests: `test/e2e/oprn-audio-test-dialog.spec.ts` (expert-mode toolbar, native editor media values and unchanged runtime mixer).
 
 - **Help modal (toolbar-help, 도움말):** `src/editor/panels/helpModal.ts` (`openHelpModal`). Styles: `src/styles/editor/help-modal.css` (imported from `src/styles/index.css`). In-app wiki-style editor guide: sticky TOC nav (개요/화면 구성/지도/이벤트/데이터베이스/소재·세계관·오디오/테스트 플레이/저장·공유/단축키) with scroll-spy highlighting, sectioned prose + bullets + note callouts, per-section editor screenshots (served from `public/assets/help/*.png`, regenerated via `npx playwright test capture-help-guide-images.spec.ts`), and kbd-cap shortcut cards at the end. Replaces the old `SHORTCUT_HELP` toast. Opened from the classic toolbar 도움말 button, 도움말 menu → 단축키 · 도움말, and the Ctrl+K palette command `help-shortcuts` (`commandRegistry.ts`). Esc / backdrop / 닫기 button close it. Guide content lives as `GUIDE_SECTIONS` data in the module — edit that array to change the docs. Tests: `test/e2e/oprn-help-modal.spec.ts`.
 - **Event editor help (event-editor-help, 이벤트 에디터 도움말):** `src/editor/panels/eventEditor/eventEditorHelp.ts` (`openEventEditorHelp`). Same wiki UI (sticky TOC + scroll-spy + per-section screenshots) reusing the `.help-modal-*` classes; small glyph-spacing in `src/styles/editor/event-editor-help.css` (imported from `src/styles/index.css`). Detailed sections scoped to the event editor only: 개요/이벤트와 페이지/실행 조건/명령/명령 카테고리/그래픽과 외형/이동 경로/분기와 선택지/전투·상점·여관/AI 보조/단축키. Command-category rows mirror `commandCategoryIcons.ts` glyphs. Opened from the event editor footer **도움말** button (`event-editor-help` testid) — previously a dead button with no handler. Layers above the event editor modal (z-index 290 > 120) and registers with `modalStack` so Esc closes the help first, not the event editor. Screenshots served from `public/assets/help/event-editor/*.png` (reuses `public/assets/help/event.png` for the overview); regenerated via `npx playwright test capture-event-editor-help-images.spec.ts`.
