@@ -2,7 +2,7 @@ import { isFunctionalCriterionKind, parseFunctionalRequirements, type Functional
 import type { Project } from "@/project/types";
 import { isVerifiedActionCombatProof, type ActionCombatProofReceipt } from "@/testing/actionCombatProof";
 import {
-  parseAcceptanceCriteria,
+  parseAcceptanceCriteria, isProjectAcceptanceKind,
   acceptanceRecord, type AcceptanceTarget,
   type AcceptancePromise, type AcceptanceSnapshot, type AcceptanceItemSnapshot, type AcceptanceSource, type RequirementWithdrawalAction,
 } from "./assistantAcceptance";
@@ -217,7 +217,7 @@ export class AssistantAcceptanceLedger {
       readonly refinements?: readonly AcceptanceSource[];
       readonly withdrawal?: RequirementWithdrawalAction & { readonly source: "user" };
     })[] = [...this.promises.values(), ...this.actionRequirements.values()];
-    const projectBound = (kind: string): boolean => kind === "toolVerdict" || isFunctionalCriterionKind(kind);
+    const projectBound = (kind: string): boolean => kind === "toolVerdict" || isFunctionalCriterionKind(kind) || isProjectAcceptanceKind(kind);
     const toolDraftChanged = applied !== draft
       && promises.some(promise => promise.criteria?.some(criterion => projectBound(criterion.kind)))
       && acceptanceFingerprint(applied) !== acceptanceFingerprint(draft);
@@ -230,7 +230,7 @@ export class AssistantAcceptanceLedger {
       const review = this.reviews.get(promise.id);
       const evidence = promise.criteria.map(criterion => {
         const result = evaluateAcceptanceCriterion(criterion, {
-          project: applied, baseline: promise.baseline, bindings: this.bindings, verification,
+          project: applied, baseline: promise.baseline, bindings: this.bindings, verification, source: promise.source,
           reviewed: (map, region) => deliveredImagesOnly
             ? coveredByImages(this.images.matching(applied), map, region)
             : review?.passed === true && coveredByImages(this.currentReceipts(review.receipts, applied), map, region),

@@ -1,3 +1,5 @@
+import type { Project, ItemRecord } from "@/project/types";
+import { WIKI_COMBAT_MODES, type WikiCombatMode } from "@/project/world/types";
 import type { Point } from "@/project/lint/reachability";
 import { isFunctionalCriterionKind, parseFunctionalCriterion, type FunctionalCriterion } from "./functionalAcceptance";
 import { VERIFICATION_TOOL_NAMES } from "./agentVerification";
@@ -38,7 +40,20 @@ export interface AcceptanceItemSnapshot {
 export interface AcceptanceRegion { readonly x: number; readonly y: number; readonly w: number; readonly h: number }
 export type AcceptanceTarget = { readonly mapId: string } | { readonly newMapName: string };
 type ScopedTarget = { readonly target: AcceptanceTarget; readonly region?: AcceptanceRegion };
+/** Finite authored changes, not arbitrary paths or executable checks. */
+export type ProjectPreservationChange =
+  | { readonly kind: "projectTitle" }
+  | { readonly kind: "itemName" | "itemPrice" | "itemAddition"; readonly itemId: ItemRecord["id"] };
+export type ProjectAcceptanceCriterion =
+  | { readonly kind: "wikiDeclaration"; readonly documentId: string; readonly combatMode: WikiCombatMode; readonly sourceQuote: string }
+  | { readonly kind: "projectTitle"; readonly title: Project["meta"]["title"] }
+  | { readonly kind: "itemValues"; readonly itemId: ItemRecord["id"]; readonly name?: ItemRecord["name"]; readonly price?: ItemRecord["price"] }
+  | { readonly kind: "projectPreserve"; readonly scope: "project" | "authored"; readonly allowedChanges: readonly ProjectPreservationChange[] };
+export function isProjectAcceptanceKind(kind: string): boolean {
+  return kind === "projectTitle" || kind === "itemValues" || kind === "projectPreserve" || kind === "wikiDeclaration";
+}
 export type AcceptanceCriterion =
+  | ProjectAcceptanceCriterion
   | FunctionalCriterion
   | { readonly kind: "toolVerdict"; readonly tool: string; readonly args: Readonly<Record<string, unknown>> }
   | { readonly kind: "mapDimensions"; readonly target: AcceptanceTarget; readonly width: number; readonly height: number }
@@ -80,6 +95,15 @@ export function parseAcceptanceRegion(value: unknown): AcceptanceRegion | null {
     || value.w === 0 || value.h === 0) return null;
   return { x: value.x, y: value.y, w: value.w, h: value.h };
 }
+function preservationChange(value: unknown): ProjectPreservationChange | null {
+  if (!acceptanceRecord(value)) return null;
+  if (value.kind === "projectTitle") return Object.keys(value).length === 1 ? { kind: value.kind } : null;
+  if ((value.kind === "itemName" || value.kind === "itemPrice" || value.kind === "itemAddition")
+    && text(value.itemId) && Object.keys(value).every(key => key === "kind" || key === "itemId")) {
+    return { kind: value.kind, itemId: value.itemId };
+  }
+  return null;
+}
 function criterion(value: unknown): AcceptanceCriterion | null {
   if (!acceptanceRecord(value)) return null;
   if (typeof value.kind === "string" && isFunctionalCriterionKind(value.kind)) return parseFunctionalCriterion(value);
@@ -90,9 +114,32 @@ function criterion(value: unknown): AcceptanceCriterion | null {
     preserve: ["kind", "target", "region"], imageReviewed: ["kind", "target", "region"],
     reachability: ["kind", "target", "from", "to"], toolVerdict: ["kind", "tool", "args"],
     actionCombat: ["kind", "target"],
+    projectTitle: ["kind", "title"], itemValues: ["kind", "itemId", "name", "price"],
+    projectPreserve: ["kind", "scope", "allowedChanges"],
+    wikiDeclaration: ["kind", "documentId", "combatMode", "sourceQuote"],
   };
   const allowed = typeof value.kind === "string" && Object.hasOwn(keys, value.kind) ? keys[value.kind] : undefined;
   if (!allowed || Object.keys(value).some(key => !allowed.includes(key))) return null;
+  if (value.kind === "wikiDeclaration") {
+    const combatMode = WIKI_COMBAT_MODES.find(mode => mode === value.combatMode);
+    return text(value.documentId) && combatMode && text(value.sourceQuote)
+      ? { kind: value.kind, documentId: value.documentId, combatMode, sourceQuote: value.sourceQuote } : null;
+  }
+  if (value.kind === "projectTitle") return typeof value.title === "string" ? { kind: value.kind, title: value.title } : null;
+  if (value.kind === "itemValues") {
+    if (!text(value.itemId) || (value.name === undefined && value.price === undefined)
+      || (value.name !== undefined && typeof value.name !== "string")
+      || (value.price !== undefined && (typeof value.price !== "number" || !Number.isFinite(value.price) || value.price < 0))) return null;
+    return { kind: value.kind, itemId: value.itemId,
+      ...(typeof value.name === "string" ? { name: value.name } : {}),
+      ...(typeof value.price === "number" ? { price: value.price } : {}) };
+  }
+  if (value.kind === "projectPreserve") {
+    if ((value.scope !== "project" && value.scope !== "authored") || !Array.isArray(value.allowedChanges)) return null;
+    const changes = value.allowedChanges.map(preservationChange);
+    return changes.every((change): change is ProjectPreservationChange => change !== null)
+      ? { kind: value.kind, scope: value.scope, allowedChanges: changes } : null;
+  }
   if (value.kind === "toolVerdict") {
     return text(value.tool) && VERIFICATION_TOOL_NAMES.has(value.tool) && acceptanceRecord(value.args)
       ? { kind: "toolVerdict", tool: value.tool, args: structuredClone(value.args) } : null;
