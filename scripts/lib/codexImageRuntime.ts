@@ -3,8 +3,11 @@ import { CODEX_PROVIDER_ID, decodeJwtPayload } from "../../src/ai/oauth/credenti
 import { ImageReferenceError, parseImageReferences } from "../../src/ai/imageReferences.ts";
 import type { GeneratedImage } from "./ohMyPiImageRuntime.ts";
 
-// Internal selection ID, not an upstream model/version. Native responses do not report a version.
+// Stable app selection ID; never send this sentinel upstream.
 export const CODEX_IMAGE_MODEL = "codex-image-default";
+// Requested upstream alias, not a reported dated snapshot. Pinned official request:
+// https://github.com/openai/codex/blob/3d2ee51ca2d5db578f328aa75e20aa22c0197c9a/codex-rs/ext/image-generation/src/tool.rs#L420-L429
+const CODEX_IMAGE_UPSTREAM_MODEL = "gpt-image-2";
 const IMAGE_ENDPOINT = "https://chatgpt.com/backend-api/codex/images/generations";
 const IMAGE_TIMEOUT_MS = 180_000;
 
@@ -54,8 +57,8 @@ export async function generateCodexImage(
         Accept: "application/json",
         originator: "codex_cli_rs",
       },
-      // Never send the internal sentinel as a provider model. No version or provider fallback.
-      body: JSON.stringify({ prompt, n: 1, size: "1024x1024" }),
+      // Official auto settings; explicit n preserves our single-candidate contract. No model fallback.
+      body: JSON.stringify({ prompt, model: CODEX_IMAGE_UPSTREAM_MODEL, n: 1, quality: "auto", background: "auto", size: "auto" }),
       signal: deadline,
       redirect: "manual",
     });
@@ -94,5 +97,5 @@ export async function generateCodexImage(
         ? "image/webp"
         : "";
   if (!mimeType) throw statusError("Codex 응답의 이미지 형식을 확인할 수 없습니다.", 502);
-  return { provider: CODEX_PROVIDER_ID, model: CODEX_IMAGE_MODEL, mimeType, base64 };
+  return { provider: CODEX_PROVIDER_ID, model: CODEX_IMAGE_UPSTREAM_MODEL, mimeType, base64 };
 }
