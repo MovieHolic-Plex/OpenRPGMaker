@@ -10,6 +10,18 @@ export function createP2Contracts(harness) {
   let current, round = 0, held;
   async function respond(body) {
     assert.ok(current, 'LLM request must belong to an armed case');
+    const system = body.messages?.[0]?.content;
+    if (typeof system === 'string' && system.startsWith('REQUEST_COVERAGE_AUDIT\n')) {
+      const instruction = `${projectId}/${current.id}: inspect only the scripted scope.`;
+      assert.ok(body.messages.some(message => message.role === 'user'
+        && typeof message.content === 'string' && message.content.includes(instruction)),
+      'Coverage must belong to the exact armed P2 request');
+      return { role: 'assistant', content: JSON.stringify({ requirements: [{ text: instruction,
+        criteria: [{ kind: 'functionalUnresolved',
+          reason: 'The request does not specify an independently evaluable scripted scope or an exact inspection-only preservation check',
+        }],
+      }] }) };
+    }
     if (!body.tools?.length) return { role: 'assistant', content: JSON.stringify(current.intent) };
     if (held?.beforeTools && !held.used) {
       held.used = true; held.arrived.resolve();
