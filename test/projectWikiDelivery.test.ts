@@ -230,7 +230,7 @@ it.each([true, false])("carries the actual observed wiki apply through the ordin
     .prepare({ text: "Earlier declaration", mapId: null, composerMode: "do" });
   const result = await f.run();
   if (!save) store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
-  const applied = await applyProposedProject(f.session.getProposedProject(), {
+  const applied = await applyProposedProject(f.session.getProposedProject(), { base: f.session.getProposalBase(),
     source: "agent", summary: "Title edit", toolNames: ["set_title_screen"],
   });
   if (!applied.ok) throw new Error(applied.issue);

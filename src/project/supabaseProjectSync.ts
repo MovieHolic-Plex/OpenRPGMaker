@@ -1263,7 +1263,7 @@ function mapSnapshot(map: GameMap | undefined): string {
  * 키를 재귀적으로 정렬해 문자열로 만들면 jsonb 왕복 여부와 무관하게 같은 논리 값은 같은
  * 문자열이 된다. 배열 순서·값은 그대로 유지한다(배열 순서는 의미가 있다).
  */
-function canonicalJsonString(value: unknown): string {
+export function canonicalJsonString(value: unknown): string {
   if (Array.isArray(value)) {
     return `[${value.map((entry) => canonicalJsonString(entry)).join(",")}]`;
   }

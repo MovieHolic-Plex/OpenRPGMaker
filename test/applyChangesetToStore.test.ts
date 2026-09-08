@@ -137,10 +137,12 @@ describe("applyProposedProject shared apply path", () => {
     }) satisfies typeof fetch);
     const base = createBlankProject();
     store.replace(base);
+    const proposalBase = applyChangesetToStore.captureProposalBase(store.getCurrent());
     const proposed = structuredClone(base);
     proposed.meta = { ...(proposed.meta ?? {}), title: "적용된 제목" };
 
     const result = await applyChangesetToStore.applyProposedProject(proposed, {
+      base: proposalBase,
       source: "agent-milestone",
       agentName: "test-agent",
       summary: "마일스톤: 제목",
@@ -163,10 +165,12 @@ describe("applyProposedProject shared apply path", () => {
   it("린트 차단 제안은 스토어를 건드리지 않고 commit-rejected를 돌려준다", async () => {
     const base = createBlankProject();
     store.replace(base);
+    const proposalBase = applyChangesetToStore.captureProposalBase(store.getCurrent());
     const proposed = structuredClone(base);
     proposed.startMapId = "missing-map";
 
     const result = await applyChangesetToStore.applyProposedProject(proposed, {
+      base: proposalBase,
       source: "agent-milestone",
       summary: "깨진 마일스톤",
       toolNames: [],

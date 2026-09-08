@@ -113,9 +113,17 @@ describe("host new-goal early ownership", () => {
       expect(next.stoppedReason).toBe(ending === "failure" ? "error" : "aborted");
       agreement(f.session, next, f.events, expected);
       expect(atEntry).toBeNull();
-      expect(atBoundary).toBeNull();
-      expect(boundaryHistory).toEqual([old.snapshot]);
-      expect(f.boundaries).toEqual(boundary === "wiki" ? ["wiki"] : ["wiki", "intent"]);
+      // P3 retires execution before dispatch when the signal is already aborted.
+      // The public goal/archive assertions below still run for every entry.
+      if (ending === "already-aborted") {
+        expect(atBoundary).toBeUndefined();
+        expect(boundaryHistory).toEqual([]);
+        expect(f.boundaries).toEqual([]);
+      } else {
+        expect(atBoundary).toBeNull();
+        expect(boundaryHistory).toEqual([old.snapshot]);
+        expect(f.boundaries).toEqual(boundary === "wiki" ? ["wiki"] : ["wiki", "intent"]);
+      }
       expect(f.session.getWorkPlan()).toBeNull();
       expect(f.session.getAcceptanceSnapshot()).toBeNull();
       expect(f.session.getAcceptanceHistory()).toEqual([old.snapshot]);
@@ -220,7 +228,7 @@ describe("host new-goal early ownership", () => {
       return fixedDeclarer({ mode: "other" })(facts);
     });
     const first = await f.run();
-    const applied = await applyProposedProject(f.session.getProposedProject(), { source: "agent", summary: "Title", toolNames: ["set_title_screen"] });
+    const applied = await applyProposedProject(f.session.getProposedProject(), { base: f.session.getProposalBase(), source: "agent", summary: "Title", toolNames: ["set_title_screen"] });
     if (!applied.ok) throw new Error(applied.issue);
     f.session.recordAppliedProject(applied); f.session.rebaseProject(store.getCurrent());
     await f.session.proveAppliedRevision();

@@ -49,11 +49,7 @@ function setup(sessionOverride?: AssistantSession) {
   const appendBubble = vi.fn((_role: unknown, text: string) => {
     const bubble = document.createElement("div"); bubble.textContent = text; log.append(bubble); return bubble;
   });
-  const session = sessionOverride ?? {
-    getCompletionSpecs: () => [],
-    getWorkPlan: () => null,
-    getActiveSpec: () => null, getAuditEntries: () => [], getProposedProject: () => store.getCurrent(),
-  } as unknown as AssistantSession;
+  const session = sessionOverride ?? new AssistantSession(store.getCurrent());
   const controller = { session, auditHistory: [] };
   const surface = {
     panel: document.createElement("div"), log, sendButton: document.createElement("button"), controller,

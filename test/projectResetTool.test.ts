@@ -3,7 +3,7 @@ import { AssistantSession } from "@/ai/assistantSession";
 import { reassembleSelectedProposalProject } from "@/editor/panels/aiChatPanel";
 import { resetMapEditHistory, undoMapEdit } from "@/editor/mapEditHistory";
 import { runTool, type ToolContext } from "@/editor/tools";
-import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
+import { applyProposedProject, captureProposalBase } from "@/editor/tools/applyChangesetToStore";
 import { createBlankProject } from "@/project/defaults";
 import { deserialize, serialize } from "@/project/io";
 import { store } from "@/project/store";
@@ -122,10 +122,12 @@ describe("reset_project", () => {
       store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
       store.replaceProject(before);
       resetMapEditHistory();
+      const base = captureProposalBase(store.getCurrent());
       const proposed = createBlankProject();
       proposed.meta.title = "초기화된 프로젝트";
 
       const result = await applyProposedProject(proposed, {
+        base,
         source: "agent",
         summary: "프로젝트 초기화",
         toolNames: ["reset_project"],

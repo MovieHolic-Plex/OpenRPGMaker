@@ -46,7 +46,7 @@ it.each([false, true])("settles the same verified requirement with milestone=%s"
   }
   // When the ordinary path applies its actual pending result; milestone already used that same adapter.
   if (!autonomous) {
-    const applied = await applyProposedProject(f.session.getProposedProject(), { source: "agent", summary: "Resize", toolNames: ["resize_map"] });
+    const applied = await applyProposedProject(f.session.getProposedProject(), { base: f.session.getProposalBase(), source: "agent", summary: "Resize", toolNames: ["resize_map"] });
     if (!applied.ok) throw new Error(applied.issue);
     f.session.recordAppliedProject(applied);
     f.session.rebaseProject(store.getCurrent());
@@ -92,7 +92,7 @@ it.each(["blocked", "failed", "cancelled"] as const)("preserves genuine %s execu
   }, controller.signal);
   expect(result.runOutcome?.execution).toBe(ending);
   // When actual application satisfies the requirement after the genuine stop.
-  const applied = await applyProposedProject(f.session.getProposedProject(), { source: "agent", summary: "Resize", toolNames: ["resize_map"] });
+  const applied = await applyProposedProject(f.session.getProposedProject(), { base: f.session.getProposalBase(), source: "agent", summary: "Resize", toolNames: ["resize_map"] });
   if (!applied.ok) throw new Error(applied.issue);
   f.session.recordAppliedProject(applied); f.session.rebaseProject(store.getCurrent());
   await f.session.proveAppliedRevision();

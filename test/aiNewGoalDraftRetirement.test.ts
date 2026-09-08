@@ -39,7 +39,7 @@ const config = { ...defaultAiConfig(), agentMode: 'chat', model: 'test', liteMod
 function runnerFor(session: AssistantSession) {
   const noop = () => {}; const log = document.createElement('div');
   const applyProposal = vi.fn<AiTurnRunnerDeps['applyProposal']>(async calls => {
-    const applied = await apply.applyProposedProject(session.getProposedProject(), {
+    const applied = await apply.applyProposedProject(session.getProposedProject(), { base: session.getProposalBase(),
       source: 'agent', summary: 'Reviewer owned isolated title', toolNames: calls.map(call => call.name),
     });
     if (!applied.ok) throw new Error(applied.issue);

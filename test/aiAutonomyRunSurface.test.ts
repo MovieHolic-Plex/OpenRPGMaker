@@ -1,5 +1,8 @@
+import { bounded } from "./aiEpochFixture";
 // 자율성 다이얼 런 표면 — 예산 total 과 칩 라벨이 저장된 레벨을 따른다.
 // 기계가 소비하는 값(total 숫자·칩 텍스트)만 단언한다.
+import { RunOperation } from "@/ai/runOperation";
+import { teardownAiChatPanel, whenAiChatPanelSettled } from "@/editor/panels/aiChatPanel";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
 import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
@@ -15,8 +18,13 @@ const assistantMock = vi.hoisted(() => {
   let emitter: ((onEvent: (event: unknown) => void, opts?: unknown) => void) | null = null;
   let holdNext = false;
   let heldResolve: (() => void) | null = null;
+  let held = Promise.resolve();
+  let signalHeld: (() => void) | undefined;
 
   class MockAssistantSession {
+    private operation = new RunOperation();
+    getRunOperation(): RunOperation { return this.operation; }
+    retireRun(): void { this.operation.retire(); heldResolve?.(); }
     constructor(_project: unknown, _options: unknown) {}
     async sendUserMessage(
       _text: string,
@@ -24,16 +32,21 @@ const assistantMock = vi.hoisted(() => {
       _signal: unknown,
       _opts?: unknown
     ): Promise<{ assistantText: string; proposedCalls: []; stoppedReason: "final" }> {
+      this.operation.retire();
+      this.operation = new RunOperation();
       emitter?.(onEvent, _opts);
       if (holdNext) {
         holdNext = false;
         await new Promise<void>((resolve) => {
           heldResolve = resolve;
+          signalHeld?.();
         });
         heldResolve = null;
       }
       return { assistantText: "완료.", proposedCalls: [], stoppedReason: "final" };
     }
+    getRunOutcome(): null { return null; }
+
     getAuditEntries(): [] {
       return [];
     }
@@ -65,7 +78,9 @@ const assistantMock = vi.hoisted(() => {
     },
     holdNextTurn() {
       holdNext = true;
+      held = new Promise<void>(resolve => { signalHeld = resolve; });
     },
+    whenHeld: () => held,
     releaseHeldTurn() {
       heldResolve?.();
     },
@@ -137,7 +152,7 @@ function installFakeWindow(): () => void {
 }
 
 async function flushAsync(): Promise<void> {
-  for (let i = 0; i < 20; i += 1) await Promise.resolve();
+  await bounded(assistantMock.whenHeld());
 }
 
 function renderPanel(): FakeElement {
@@ -179,7 +194,9 @@ beforeEach(() => {
   vi.useFakeTimers();
 });
 
-afterEach(() => {
+afterEach(async () => {
+  teardownAiChatPanel();
+  await whenAiChatPanelSettled();
   closeWorkPlanBook();
   resetModalStackForTest();
   vi.useRealTimers();
@@ -262,7 +279,7 @@ describe("자율성 다이얼 런 표면", () => {
       JSON.stringify({ ...defaultAiConfig(), model: "stub-model", autonomyLevel: "autonomous" })
     );
     const panel = renderPanel();
-    await flushAsync();
+    await whenAiChatPanelSettled();
 
     // autonomous 라벨은 「자율」이다(autonomyLevels AUTONOMY_LEVELS).
     expect(findByTestId(panel, "ai-composer-model")?.textContent).toContain("자율");

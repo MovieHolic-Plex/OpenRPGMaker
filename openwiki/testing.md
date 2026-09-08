@@ -48,7 +48,9 @@ about one chat loop: `agentMode: "chat"` alone does not disable the balanced
 autonomy planner. Do not restore obsolete API-key configuration to avoid this
 contract; the editor uses OAuth.
 
-Subscribe to terminal `recordAiActivity` publication before clicking Send.
+Subscribe to terminal `recordAiActivity` publication before clicking Send. For P3
+detached late-apply races, also observe the actual proposal-host promise as described
+below; terminal publication alone can precede its completion.
 `whenAiChatPanelSettled()` covers boot and persistence, not an active chat turn.
 Do not replace the terminal signal with microtask counts, sleep loops or guessed
 retry durations. Reasoning coverage uses two distinct successful query tools;
@@ -123,6 +125,113 @@ authoring tool calls. Owned remote deletion and browser/server/cache cleanup are
 checked. Native coverage is the failed checkpoint path, not successful wiki save,
 post-tool progress or edit/cancel races; those are unit contracts above. It doesn't
 establish pixel review, external MCP HTTP, remote telemetry or integrated P2 approval.
+
+## P3 ownership and stale-base verification (2026-09-07)
+
+Read the [P3 evidence index](../output/evidence/ai-harness/p3/README.md) for exact
+commands, source bindings and failure history. Repaired source
+`34d5b672ad30c2dec5a3d58fa761f83781a6ee35` passed the integrated 53-file / 883-test
+selection, 12 Node checks (11 lifetime cases plus the original completion wrapper),
+app typecheck/build and all eight native scenarios, each direct exit 0. The
+[repair report](../output/evidence/ai-harness/p3/repairs/integration/report.md) binds
+those results to committed bytes. These aren't independent re-verification,
+whole-goal approval or a substitute for the lead's full-gate comparison.
+
+The earlier `9b2782f18` integration's 52 files / 872 tests and eight native passes
+remain historical. Independent review of `450a1bbfb` returned needs-fix despite
+872 focused passes: the real mutation subscriber exposed R1, and human-race R2
+collected only 15 positive checks while 24 stale checks never ran. Neither that
+incomplete packet nor its zero failed-check count is a 39-check pass.
+
+Required real-seam regressions include `aiRunEpoch`, `aiRunEpochProof`,
+`aiRunEpochPanel`, `aiRunReentry`, `aiRunnerSlotCleanup`, `aiStaleProposal` and
+`aiMutationApplyAccounting` under `test/`. The accounting test retains the original
+real-store subscriber that retires A and starts B after A's actual title mutation.
+A must retain applied delivery, with no pending copy, replay or B application/proof.
+Keep malformed-current-argument, generation-bypass, pre-mutation cancellation,
+activity-observer, nested notification and throwing-outcome controls. Both replacement
+paths must finish notifications and autosave scheduling while preserving the thrown
+error. Keep the actual next runner send after B settles, not just no stale apply.
+Run the house/shared-adapter, cluster-modal, P1 receipt/current-proof and P2
+requirements/outcome/Ask/new-goal/Continue/wiki controls alongside them. Tests must
+subscribe to exact signals before actions, use bounded rejecting deadlines and
+release/drain owned deferred work. Don't add sleeps, polling, wider test deadlines,
+skips or tests that pin prose.
+
+Native entry: `xvfb-run -a node scripts/qa/ai-harness-contracts.mjs --scenario NAME`,
+with `TMPDIR=/dev/shm/rpg-zzu-ai-harness-p3-01a07564`, a free strict `QA_PORT`, private
+`QA_CACHE_ROOT` and fresh `EVIDENCE_DIR`. Exact recorded commands and ports are in
+the evidence index. Both scenarios use actual editor controls and fresh owned remote
+projects with real save/read and deletion/absence checks, not ambient user content.
+
+- `late-cancel`: hold A's real post-apply commit transport, click Abort and New
+  Conversation, let B apply/save/prove while A remains held, then release A. Await
+  A's original proposal-host promise and terminal activity before assertions. The
+  QA-only Vite observer preserves promise/value/error/receiver/arguments and doesn't
+  change product authority. The terminal-only apparent GREEN is an unaccepted
+  verification gap. The corrected P2 calibration retains the original eight
+  violations; integration preserves those assertions and passes all 19 checks,
+  with no late A effects.
+- `human-edit-race`: after the actual detached proposal is built, use real tile,
+  Database System width and existing Items price controls, then save/read all three
+  before releasing the model response. P2 overwrote 7/336/137 with 240/320/50;
+  integrated source retains 7/336/137, rejects the stale draft, and preserves current
+  apply/undo. Zero apply receipts and two rejection notifications aren't invocation
+  counts. All 39 collected checks pass with no page/route errors.
+
+Human-race transport waiters and retries now share the finite human edit/save/read
+owner. Only successful completion releases them. Failure, cancellation or cleanup
+rejects the hold, never returns a successful final response. Completion observers
+subscribe before Send but start this race's unchanged 60,000 ms completion timers
+immediately before release. Human actions/evaluations retain 60,000 ms bounds,
+mutation/render 10,000 ms, REST 30,000 ms, and cleanup evaluation is bounded too.
+The product request bound isn't widened; an independently terminal A fails the
+pre-release assertions. This is bounded ordering, not unlimited latency tolerance.
+`test/aiHarnessHumanLifetime.node.test.mjs` uses fake-clock advancement and exact
+events/deferred signals to cover retries, failure, cancellation, evaluation bounds
+and observer disposal beyond the old competing hold deadline.
+
+All repair validators hold the parent-owned
+`$TMPDIR/p3-independent-repair-01a07564.lock` with bounded `flock` acquisition.
+Run native scenarios serially, without competing test/build/browser jobs. This
+avoids contention but isn't the R2 fix: the original independent human race failed
+in isolation too. The first integration deadline failure and later identical-source
+isolated success both remain historical, alongside that needs-fix packet. The
+corrected QA's current/P2 calibration retains all 39 checks and the original 18 P2
+violations. No sleep, deadline increase or lucky retry establishes the correction.
+Screenshots exist, but pixel approval wasn't established by these producers.
+
+### Project history transport isolation
+
+Disabling `ProjectStore` remote persistence does **not** disable `recordProjectCommit`.
+It uses independent Supabase history transport. Pure-unit and supplementary probes
+must explicitly isolate/clear its URL/key/proxy settings before execution too;
+P1 transport fixtures supply their own isolated configuration. Native persistence
+checks instead use fresh owned remote projects for both project and history writes.
+
+The epoch preservation probe exposed six exact persisted commit/change pairs in an
+ambient project. Only those recorded IDs were deleted, then both tables were read
+back as empty, including independent confirmation. `project_commits` uses
+`commit_id`; `project_changes` is scoped by `commit_id` and has no `project_id`
+column. Don't generalize that cleanup to other rows or claim earlier unrecorded
+history writes were absent. No before/after remote project-row snapshot exists for
+that probe, so project-row impact wasn't measured. The
+[preservation report](../output/evidence/ai-harness/p3/epochs/reentry/preservation/report.md)
+retains the original HTTP 400 from the incorrect filter and the exact cleanup scope.
+
+Private Vitest results caching requires an explicit top-level `cacheDir` in a config
+that preserves repository test settings. `VITE_CACHE_DIR` alone doesn't configure
+this repository's Vitest cache, even though Vite native/build commands consume it.
+The integrated focused run used an explicit private override and four workers.
+Earlier QA supplementary unit runs and standard full gates aren't claimed privately
+cached. Never delete the shared dependency cache as owned cleanup.
+
+The frozen P2 full gate is still red: exit 1, 198 failed and 23 pending Vitest tests,
+one suite-only failure, and seven surface failures. Compare exact case/reason
+multiplicity and suite failures, not passing totals or old checked-in baseline labels.
+The initial watcher expiry has no command outcome and remains incomplete. The lead
+owns final gates, independent verification and protected delivery. No durable
+checkpoints, remote schema, distributed/two-tab writer guarantee or P4/P5 is verified.
 
 ## Canonical project storage versus AI history (2026-09-06)
 

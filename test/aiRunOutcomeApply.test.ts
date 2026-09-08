@@ -19,7 +19,7 @@ describe("run outcome actual application", () => {
     // Given a real returned title draft and the native apply response.
     const f = applyFixture();
     const result = await f.run();
-    const applied = await applyProposedProject(f.session.getProposedProject(), {
+    const applied = await applyProposedProject(f.session.getProposedProject(), { base: f.session.getProposalBase(),
       source: "agent", summary: "Title", toolNames: result.proposedCalls.map(call => call.name),
     });
     if (!applied.ok) throw new Error(applied.issue);
@@ -46,7 +46,7 @@ describe("run outcome actual application", () => {
     // Given a returned draft with an already published recap.
     const f = applyFixture();
     await f.run();
-    const applied = await applyProposedProject(f.session.getProposedProject(), { source: "agent", summary: "Title", toolNames: ["set_title_screen"] });
+    const applied = await applyProposedProject(f.session.getProposedProject(), { base: f.session.getProposalBase(), source: "agent", summary: "Title", toolNames: ["set_title_screen"] });
     if (!applied.ok) throw new Error(applied.issue);
     f.session.recordAppliedProject(applied); f.session.rebaseProject(store.getCurrent());
     // When proof finishes after the original session return.
@@ -76,7 +76,7 @@ describe("run outcome actual application", () => {
     // Given a verified applied run.
     const f = applyFixture();
     const result = await f.run();
-    const applied = await applyProposedProject(f.session.getProposedProject(), { source: "agent", summary: "Title", toolNames: ["set_title_screen"] });
+    const applied = await applyProposedProject(f.session.getProposedProject(), { base: f.session.getProposalBase(), source: "agent", summary: "Title", toolNames: ["set_title_screen"] });
     if (!applied.ok) throw new Error(applied.issue);
     f.session.recordAppliedProject(applied); f.session.rebaseProject(store.getCurrent());
     await f.session.proveAppliedRevision();
@@ -94,7 +94,7 @@ describe("run outcome actual application", () => {
     // Given an applied and verified earlier run in the same session.
     const f = applyFixture();
     const first = await f.run();
-    const applied = await applyProposedProject(f.session.getProposedProject(), { source: "agent", summary: "Title", toolNames: ["set_title_screen"] });
+    const applied = await applyProposedProject(f.session.getProposedProject(), { base: f.session.getProposalBase(), source: "agent", summary: "Title", toolNames: ["set_title_screen"] });
     if (!applied.ok) throw new Error(applied.issue);
     f.session.recordAppliedProject(applied); f.session.rebaseProject(store.getCurrent());
     await f.session.proveAppliedRevision();

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getMapEditHistoryEntries, redoMapEdit, resetMapEditHistory, undoMapEdit } from "@/editor/mapEditHistory";
-import { applyProposedProject, applyToolSequenceToStore, applyToolToStore, previewTool } from "@/editor/tools/applyChangesetToStore";
+import { applyProposedProject, captureProposalBase, applyToolSequenceToStore, applyToolToStore, previewTool } from "@/editor/tools/applyChangesetToStore";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
 import { store } from "@/project/store";
@@ -42,11 +42,13 @@ describe("audio description store adapter", () => {
     // Given
     const before = structuredClone(store.getCurrent());
     const ctx: ToolContext = { project: store.getCurrent() };
+    const base = captureProposalBase(ctx.project);
     const preview = runTool(ctx, "set_audio_description", SET_ARGS);
     expect(preview.ok, preview.summary).toBe(true);
     expect(store.getCurrent()).toEqual(before);
     // When
     const applied = await applyProposedProject(ctx.project, {
+      base,
       source: "agent", agentName: "test-agent", summary: "fixture",
       toolNames: ["set_audio_description"],
     });

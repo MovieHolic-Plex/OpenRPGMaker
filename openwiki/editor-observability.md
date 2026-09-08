@@ -98,6 +98,75 @@ AI 로 만든 편집 전량이 `{ scope: "project" }` + 라벨 없음 + `origin:
 `test/aiApplyActivityLabels.test.ts` 가 이 계약을 고정하고, 마지막 케이스가
 "AI 경로를 전부 돌려도 `unlabeledEditActivityCount() === 0` 이고 `origin: "human"` 엔트리가 없다" 를 잠근다.
 
+## P3 owner-bound publication (2026-09-07)
+
+Run/operation identity is in-memory authority, not another outcome/evidence ledger.
+The session prepares its terminal result, recap and outcome before subscriber
+reentry. Successful tool audit/protocol/proposal accounting also exists before its
+callbacks can cancel A or start B. An old stack can't acquire B's operation after
+the callback returns. Cancellation retires old authority before terminal callbacks;
+normal authoring settlement still permits valid current-owner apply and P1 proof.
+
+`recordAppliedMutation` records the adapter's actual local `onApplied` milestone
+after the live replacement and mutation counters, before synchronous activity/store
+observers can retire its owner. Calling it only after `store.replace` returned was
+too late: the independent R1 subscriber retired A and started B while A still
+reported its applied title as a pending draft. The repaired boundary credits A's
+existing ledger first; its prepared cancellation result retains delivery `applied`,
+while B remains independent. Neither replay nor B-owned accounting repairs history.
+
+The captured `commitProject` identifies the replacement object, not a later live
+edit. `recordAppliedProject` supplies normal completion metadata. These share the
+existing application ledger; they aren't two applications. Early
+`commitId:null, persisted:false` is provisional, not an accepted-save receipt.
+If the accounting outcome observer throws, `finally` still completes activity,
+store notification and autosave scheduling without swallowing the original error.
+Retiring A leaves already-applied content and accepted store history intact, but
+blocks A's late result/proof/UI publication through B.
+
+Panel bridge sends capture their result at the owner's settlement before queue
+drain. They don't wait for global idle and then read whichever session is latest.
+Retired registration send/abort closures can't act through a replacement host;
+HTTP command IDs deduplicate execution within the registration. Late hello/command
+completion can't reconnect or schedule the retired transport. The existing pending
+work tracker backs `whenAiAssistantBridgeSettled()` for actual transport teardown,
+not run success. Conversation-save and maintenance notifications also check their
+captured owners. Native bridge evidence here is the registered window surface,
+not external MCP HTTP or remote telemetry delivery.
+
+Terminal activity and actual detached application completion are different events.
+P3 intentionally lets A's terminal UI settle while its original proposal-host
+promise is still pending, so that B can run. For a late-completion race, subscribe
+before A starts and await that exact host promise plus terminal activity after
+release. HTTP continuation, a render frame, idle state, or a terminal activity
+already published before release can't prove the detached continuation finished.
+The [native completion observer](../scripts/qa/ai-harness-p3-completion.mjs) returns
+the original promise unchanged; its QA-only served transform is enabled only for
+`late-cancel`. The first terminal-only apparent GREEN remains an unaccepted gap.
+
+In the repaired human-edit race, the finite human edit/save/read owner controls
+transport release, including retries. Failure or cleanup rejects the hold instead
+of returning a final AI response. Observers subscribe before Send; only this race
+defers its unchanged completion timers until immediately before successful release.
+Human actions, evaluations, remote reads and cleanup keep rejecting bounds. This
+removes the competing hold timer, not the product request bound or latency limits.
+
+The integrated packet records tile 7, width 336 and existing `item_potion` price 137
+saved and independently read at action 74, owner completion while still held at 75,
+release at 76 and final HTTP response at 77. At 75, A has no result or terminal
+activity, no successful apply receipts and no rejection notifications. After stale
+rejection, all three values remain local and remote; successful receipts remain
+empty and two Panel/runner rejection notifications appear. Those are notifications,
+not two adapter invocations. Typed consumers agree on `failed / unassessed / draft`,
+not a prose-derived verdict. Earlier deadline failures and isolated successes stay
+historical; a faster successful run alone doesn't prove the lifetime correction.
+
+Sources: [session](../src/ai/assistantSession.ts), [runner](../src/editor/panels/aiTurnRunner.ts),
+[Panel](../src/editor/panels/aiChatPanel.ts), [bridge](../src/editor/aiAssistantBridge.ts),
+[apply boundary](../src/editor/tools/applyChangesetToStore.ts).
+See [source-bound evidence and limits](../output/evidence/ai-harness/p3/README.md).
+No durable checkpoints, remote schema or distributed/two-tab writer guarantee is implied.
+
 ## P2 outcome publication (2026-09-06)
 
 Use typed outcome fields to distinguish execution, goal assessment and current

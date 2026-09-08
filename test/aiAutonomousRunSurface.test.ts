@@ -1,8 +1,12 @@
+import { bounded } from "./aiEpochFixture";
+import { getAiAssistantStatus } from "@/editor/aiAssistantBridge";
 // 할 일 목록 표면(작업 계획 체크리스트) — AI 패널의 라이브 체크리스트/마일스톤 피드/예산 표시 DOM 테스트.
 // 패널은 fake DOM(테스트 전용) 위에서 렌더되고, 세션은 합성 이벤트(onEvent)를 흘려보내는
 // 목으로 대체된다 — emitWorkPlan/milestone_applied/proposal_paused/예산 status 이벤트가
 // 실제 패널 이벤트 핸들러를 통과해 표면에 반영되는지가 단언 대상이다(타이밍 대기 없음, 전부 동기).
 // Lifecycle: live chrome belongs to the owner turn, not to the retained session plan.
+import { RunOperation } from "@/ai/runOperation";
+import { teardownAiChatPanel, whenAiChatPanelSettled } from "@/editor/panels/aiChatPanel";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
 import {
@@ -29,6 +33,9 @@ const assistantMock = vi.hoisted(() => {
   let signalHeld: (() => void) | null = null;
 
   class MockAssistantSession {
+    private operation = new RunOperation();
+    getRunOperation(): RunOperation { return this.operation; }
+    retireRun(): void { this.operation.retire(); heldResolve?.(); }
     constructor(_project: unknown, _options: unknown) {}
 
     async sendUserMessage(
@@ -37,6 +44,8 @@ const assistantMock = vi.hoisted(() => {
       _signal: unknown,
       opts?: unknown
     ): Promise<{ assistantText: string; proposedCalls: []; stoppedReason: "final" | "max-tool-calls" | "error" }> {
+      this.operation.retire();
+      this.operation = new RunOperation();
       sentMessages.push(text);
       lastOpts = opts;
       emitter?.(onEvent, opts);
@@ -183,7 +192,7 @@ function installFakeWindow(): () => void {
 }
 
 async function flushAsync(): Promise<void> {
-  await assistantMock.whenHeld();
+  await bounded(assistantMock.whenHeld());
 }
 
 // 칩 접힘(`is-collapsed`)은 side·float 축이다 — glass 는 입력줄을 남기는 fold 로 갈라졌다
@@ -238,7 +247,9 @@ beforeEach(() => {
   storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), apiKey: "sk-or-test" }));
 });
 
-afterEach(() => {
+afterEach(async () => {
+  teardownAiChatPanel();
+  await whenAiChatPanelSettled();
   closeWorkPlanBook();
   resetModalStackForTest();
   vi.useRealTimers();
@@ -505,7 +516,7 @@ describe("할 일 목록 표면 (작업 계획 체크리스트)", () => {
     expect(abort).not.toBeNull();
     expect(abort?.disabled).toBe(false);
     abort?.click();
-    expect(findByTestId(panel, "ai-status")?.textContent).toBe("중단 중…");
+    expect(getAiAssistantStatus().turnBusy).toBe(false);
 
     assistantMock.releaseHeldTurn();
     await sending;
@@ -526,7 +537,7 @@ describe("할 일 목록 표면 (작업 계획 체크리스트)", () => {
     const stop = findByTestId(panel, "ai-run-stop");
     expect(stop).not.toBeNull();
     stop?.click();
-    expect(findByTestId(panel, "ai-status")?.textContent).toBe("중단 중…");
+    expect(getAiAssistantStatus().turnBusy).toBe(false);
     assistantMock.releaseHeldTurn();
     await sending;
     await flushAsync();

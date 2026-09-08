@@ -306,13 +306,18 @@ export function openClusterAiModal(detail: ClusterAiModalDetail): void {
   const acceptProposal = async (calls: readonly ProposedCall[]): Promise<void> => {
     const session = state.session;
     if (!session) return;
+    const operation = session.getRunOperation();
+    const base = session.getProposalBase();
+    const proposed = session.getProposedProject();
     if (calls.some((call) => call.destructive) && !(await confirmDestructive())) return;
     const warnings = proposalApprovalWarnings(calls);
     if (warnings.length > 0 && !(await confirmRuleApproval(warnings))) return;
-    const proposed = session.getProposedProject();
+    if (state.session !== session || session.getRunOperation() !== operation || operation.signal.aborted) return;
     const label = `클러스터 수정: ${model.group?.name ?? model.title}`;
     clearAgentGhostPreview();
     const applied = await applyProposedProject(proposed, {
+      base,
+      operation,
       source: "agent",
       agentName: resolveSurfaceAiConfig("cluster").model,
       summary: label,
@@ -320,7 +325,9 @@ export function openClusterAiModal(detail: ClusterAiModalDetail): void {
       snapshotLabel: label,
       snapshotMapId: currentMapId(),
     });
+    if (state.session !== session || session.getRunOperation() !== operation || operation.signal.aborted) return;
     if (!applied.ok) {
+      session.recordApplyRejected(undefined, applied.reason);
       const message = `적용 실패: ${applied.issue ?? "무결성 오류"}`;
       status.textContent = "적용 실패";
       appendBubble("system", message);

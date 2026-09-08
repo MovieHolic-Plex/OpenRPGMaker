@@ -115,6 +115,7 @@ describe.each([false, true])("actual apply commit correlation (resetProject=%s)"
     }
     try {
       const applying = applyProposedProject(proposed, {
+        base: f.session.getProposalBase(),
         source: "agent", summary: "Apply correlation", toolNames: ["set_title_screen"], resetProject,
       });
       if (scenario === "async-commit-edit") {

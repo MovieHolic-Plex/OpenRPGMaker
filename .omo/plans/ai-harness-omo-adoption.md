@@ -293,7 +293,7 @@ Phase 운영 게이트이며, 실행 순서를 강제하도록 해당 Phase 뒤�
   - P2 implementation verified, not Phase approval: the pure projection and
     actual session/apply/bridge/activity/recap/UI settlement share canonical facts.
     [P2 evidence](../../output/evidence/ai-harness/p2/README.md) binds producer
-    verification and independent surface packets; gate 12 remains unchecked.
+    verification and independent surface packets; gate 12 records final approval and landing separately.
   - Recommended task executor category: deep
   - 선행: 3. 소유: 신규 `src/ai/runOutcome.ts`, `assistantSession.ts`,
     `src/editor/panels/aiTurnRunner.ts`, `aiProposalCard.ts`,
@@ -311,7 +311,12 @@ Phase 운영 게이트이며, 실행 순서를 강제하도록 해당 Phase 뒤�
   - 증거: `output/evidence/ai-harness/p2/integration.md`, P2 README의 실표면 색인.
   - Commit: `feat(ai): project run outcomes from execution and delivery evidence`.
 
-- [ ] 12. P2를 검증하고 ultrabrain 최종 승인 뒤 PR을 병합한다
+- [x] 12. P2를 검증하고 ultrabrain 최종 승인 뒤 PR을 병합한다
+  - 완료: PR #680, 승인 HEAD `f6561f19b`, 실제 병합 `f22d64f7c`,
+    승인된 병합 tree `e97c752e`. 현재 main 조합의 추가 승인과 부모 순서를 검증했다.
+    `.omo/evidence/ai-harness-implementation/p2-merge-receipt.json` 및
+    `p2-cleanup-complete.json`에 원본 증거 보존, 7개 worktree와 소유 TMPDIR·별칭
+    제거를 기록했다. 이전 반려·실패·시간 초과는 소급 통과 처리하지 않았다.
   - Recommended task executor category: ultrabrain
   - P1 병합 기반의 새 worktree와 새 mass-ulw run을 사용한다. 최신 main의
     수락 조건 구현을 대조해 기존 원장을 중복 구현하거나 제거하지 않는다.
@@ -319,7 +324,7 @@ Phase 운영 게이트이며, 실행 순서를 강제하도록 해당 Phase 뒤�
     ultrabrain 검토 → 독립 deep 병렬 수정 → 통합 재검토를 승인까지 반복한다.
   - 리드가 승인된 현재 HEAD만 병합하고 merge SHA·정리를 기록한 뒤 P3로 진행한다.
 
-- [ ] 5. 실행 세대와 취소 경계를 늦은 결과까지 관통시킨다
+- [x] 5. 실행 세대와 취소 경계를 늦은 결과까지 관통시킨다
   - Recommended task executor category: deep
   - 선행: 4. 소유: `assistantSession.ts`, `aiTurnRunner.ts`,
     `aiChatPanel.ts`, `aiAssistantBridge.ts`, 기존 pending-work 소유 모듈.
@@ -332,8 +337,21 @@ Phase 운영 게이트이며, 실행 순서를 강제하도록 해당 Phase 뒤�
   - 실표면: 10의 `--scenario late-cancel`에서 ai-abort 클릭 후 지연 응답 해제.
   - 증거/정리: `output/evidence/ai-harness/epochs/`; 모든 deferred settle.
   - Commit: `fix(ai): reject stale results after cancellation and run replacement`.
+  - 이전 검증 증거: 구현 `5f4302f49`·`c762c6aaa`·`13a83668a`, 동일 사례 단언 보강
+    `0fa1403f`. QA `4ba538320`으로 P2 RED 8건 / 현재 late-cancel 19건 GREEN을
+    실제 proposal-host 종료 뒤 확인. 감독자 승인과 원본 해시는 공유 저장소의
+    `.omo/evidence/ai-harness-implementation/p3-late-cancel-accepted.json`.
+  - 독립 검증 R1로 재개: `450a1bbfb`의 실제 store 변경 구독자에서 취소/B 시작 시
+    이미 적용된 A가 appliedCalls에 없고 draft로 남는다. 원본 실패는
+    `../rpg-zzu-ai-harness-p3-verify-20260907/output/evidence/ai-harness/p3/independent/`.
+    동기 구독 전 실제 적용 정산을 교정하고 기존 독립 재현으로 다시 검증한다.
+  - 재검증 완료: `65b8029d1`에서 원래 독립 재현 3건이 동일한 코드로 통과.
+    883개 집중 검사·12개 Node 검사·8개 native 시나리오와 원격 정리까지
+    새 독립 검증이 `confirmed`로 판정했다. 과거 실패와 승인 철회는 보존한다.
+    현재 근거: `.omo/evidence/ai-harness-implementation/p3-independent-r1-accepted.json`
+    (공유 저장소). P3 전체 게이트·ultrabrain 승인·병합은 아직 별도 미완료다.
 
-- [ ] 6. 오래된 AI 제안이 현재 사람 편집을 덮지 못하게 한다
+- [x] 6. 오래된 AI 제안이 현재 사람 편집을 덮지 못하게 한다
   - Recommended task executor category: deep
   - 선행: 5. 소유: `applyChangesetToStore.ts`, 필요한 ProjectStore의 읽기 전용
     version-token API, session의 base identity 캡처·재동기화.
@@ -347,6 +365,11 @@ Phase 운영 게이트이며, 실행 순서를 강제하도록 해당 Phase 뒤�
     실제 map/database 값 보존. 두 탭 전역 lock 보장은 주장하지 않음.
   - 증거: `output/evidence/ai-harness/stale-proposal/`.
   - Commit: `fix(ai): preserve live edits when a proposed project becomes stale`.
+  - 완료 증거: 구현 `32b46b5c`, 키 순서 비교 교정 `21978d30f`, QA 통합
+    `9b2782f18` (tree `2fdc1dbd9ed48c3818cd24f5745560b1e3128b0a`).
+    통합 검사 872건, human-edit-race 39건과 나머지 7개 native 시나리오 통과.
+    원본·직접 종료 코드·소스 해시·실저장 재조회·정리 증거:
+    `output/evidence/ai-harness/p3/integration/report.md`.
 
 - [ ] 13. P3를 검증하고 ultrabrain 최종 승인 뒤 PR을 병합한다
   - Recommended task executor category: ultrabrain

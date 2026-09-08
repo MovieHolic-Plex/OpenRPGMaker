@@ -1,4 +1,7 @@
+import { sendAiTurn } from "./aiTurnHarness";
 // 지시줄 effort 셀렉트 — 패널 배선: 초기값·저장·세션 반영·설정모달 동기화.
+import { RunOperation } from "@/ai/runOperation";
+import { teardownAiChatPanel, whenAiChatPanelSettled } from "@/editor/panels/aiChatPanel";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
 import { resolveAutonomy } from "@/ai/autonomyLevels";
@@ -12,13 +15,20 @@ const assistantMock = vi.hoisted(() => {
   const created: unknown[] = [];
   let sent = 0;
   class MockAssistantSession {
+    private operation = new RunOperation();
+    getRunOperation(): RunOperation { return this.operation; }
+    retireRun(): void { this.operation.retire(); }
     constructor(_project: unknown, options: unknown) {
       created.push(options);
     }
     async sendUserMessage(): Promise<{ assistantText: string; proposedCalls: []; stoppedReason: "final" }> {
+      this.operation.retire();
+      this.operation = new RunOperation();
       sent += 1;
       return { assistantText: "완료.", proposedCalls: [], stoppedReason: "final" };
     }
+    getRunOutcome(): null { return null; }
+
     getAuditEntries(): [] {
       return [];
     }
@@ -92,7 +102,9 @@ beforeEach(() => {
   installFakeLocalStorage();
 });
 
-afterEach(() => {
+afterEach(async () => {
+  teardownAiChatPanel();
+  await whenAiChatPanelSettled();
   restoreDom?.();
   restoreDom = null;
   Reflect.deleteProperty(globalThis, "localStorage");
@@ -154,8 +166,8 @@ describe("지시줄 effort 셀렉트 — 패널 배선", () => {
 
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
     input.value = "짧은 질문";
-    findByTestId(panel, "ai-send")?.click();
-    await vi.waitFor(() => expect(assistantMock.sentCount()).toBe(1), { timeout: 2_000, interval: 5 });
+    await sendAiTurn(panel);
+    expect(assistantMock.sentCount()).toBe(1);
     // ensureSession 은 전송 시점 저장 설정으로 세션을 만든다 — 방금 고른 레벨이 실려야 한다.
     const created = assistantMock.created as { config?: { autonomyLevel?: unknown; reasoningEffort?: unknown } }[];
     expect(created.length).toBeGreaterThan(0);

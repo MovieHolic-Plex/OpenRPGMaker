@@ -351,7 +351,7 @@ describe("AssistantSession accepted-revision proof", () => {
     expect(f.session.getRunEndProof()).toBeNull();
     expect(result.proposedCalls.map((call) => call.name)).toEqual(["set_title_screen"]);
     const { applyProposedProject } = await import("@/editor/tools/applyChangesetToStore");
-    const applied = await applyProposedProject(f.session.getProposedProject(), { source: "agent", summary: "title", toolNames: ["set_title_screen"] });
+    const applied = await applyProposedProject(f.session.getProposedProject(), { base: f.session.getProposalBase(), source: "agent", summary: "title", toolNames: ["set_title_screen"] });
     if (!applied.ok) throw new Error(applied.issue);
     f.session.recordAppliedProject(applied);
     f.session.rebaseProject(f.store.getCurrent());
@@ -366,7 +366,7 @@ describe("AssistantSession accepted-revision proof", () => {
     const reply = Promise.withResolvers<Response>();
     f.setCommit(() => { started.resolve(); return reply.promise; });
     const { applyProposedProject } = await import("@/editor/tools/applyChangesetToStore");
-    const applying = applyProposedProject(f.session.getProposedProject(), { source: "agent", summary: "title", toolNames: ["set_title_screen"] });
+    const applying = applyProposedProject(f.session.getProposedProject(), { base: f.session.getProposalBase(), source: "agent", summary: "title", toolNames: ["set_title_screen"] });
     await started.promise;
     f.store.update((draft) => { draft.meta.title = "human-during-commit"; });
     reply.resolve(Response.json([]));

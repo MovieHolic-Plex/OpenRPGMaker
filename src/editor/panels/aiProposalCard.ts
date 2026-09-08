@@ -232,6 +232,7 @@ export function createProposalHost(options: {
 
   let pendingProposalMessage: ProposalMessageState | null = null;
   let lastAppliedProposalMessage: ProposalMessageState | null = null;
+  const applyingCalls = new WeakSet<readonly ProposedCall[]>();
 
   const applyProposal = async (
     calls: readonly ProposedCall[],
@@ -239,8 +240,13 @@ export function createProposalHost(options: {
   ): Promise<ProposalApplyOutcome> => {
     const session = controller.session;
     if (!session || calls.length === 0) return "rejected";
+    const operation = session.getRunOperation();
+    const ownsApply = () => controller.session === session && session.getRunOperation() === operation && !operation.signal.aborted;
+    if (!ownsApply() || applyingCalls.has(calls) || lastAppliedProposalMessage?.calls === calls) return "rejected";
+    applyingCalls.add(calls);
     ensureGuestIdentityForAiSurface();
     const before = store.getCurrent();
+    const base = session.getProposalBase();
     const proposed = session.getProposedProject();
     // 과삽입 검토는 기록만 남기고 적용은 멈추지 않는다 — 파괴·대량 변경도 바로 적용하고
     // 복구는 되돌리기다(2026-09: 변경 확인 팝업을 띄우지 않는 정책). 취소 분기는 없다.
@@ -291,6 +297,12 @@ export function createProposalHost(options: {
     const completionInstruction = instruction.trim();
     clearAgentGhostPreview();
     const applied = await applyProposedProject(applyProject, {
+      base,
+      operation,
+      onApplied: applied => {
+        if (controller.session !== session || session.getRunOperation() !== operation) return;
+        session.recordAppliedMutation(applied);
+      },
       source: "agent",
       agentName: loadAiConfig().model,
       summary: aiHistoryLabel(calls),
@@ -301,16 +313,22 @@ export function createProposalHost(options: {
       resetProject: calls.some((call) => call.name === "reset_project"),
       reason: calls.map((call) => call.reason).filter((value): value is string => typeof value === "string" && value.trim().length > 0).join(" · ") || `AI 제안 적용: ${aiHistoryLabel(calls)}`,
     });
+    if (!ownsApply()) return applied.ok ? "applied" : "rejected";
     if (!applied.ok) {
-      session.recordApplyRejected();
+      session.recordApplyRejected(undefined, applied.reason);
       setStatus("적용 실패");
       toast(`적용 실패: ${applied.issue ?? "무결성 오류"}`, "error");
+      if (applied.reason === "stale-base") {
+        appendBubble("system", applied.issue ?? "기준 프로젝트가 변경되었습니다. 최신 편집을 기준으로 다시 요청해주세요.");
+        return "rejected";
+      }
       // 예전에는 이 게이트만 채팅에 아무 기록도 남기지 않았다 — 토스트가 사라지면 흔적이 없다.
       appendBubble("system", `무결성 검사에 막혀 적용하지 않았습니다: ${applied.issue ?? "무결성 오류"}`);
       showAiGateNotice(commitGateNotice(applied.issues ?? (applied.issue ? [applied.issue] : [])));
       return "rejected";
     }
     session.recordAppliedProject(applied);
+    if (!ownsApply()) return "applied";
     setStatus("대기");
     setAssistantMessageBadge(assistantBubble, "applied");
     lastAppliedProposalMessage = pendingProposalMessage;
@@ -325,7 +343,7 @@ export function createProposalHost(options: {
       appendBubble("system", `재료 ${softMarked}건 합의: ${softList.map((entry) => entry.name).join(", ")}`);
     }
     toast("AI 변경안을 적용했습니다.", "ok");
-    controller.session?.rebaseProject(store.getCurrent());
+    session.rebaseProject(store.getCurrent());
     if (completionMapId && applyProject.maps[completionMapId]) {
       onApplied?.({
         mapId: completionMapId,

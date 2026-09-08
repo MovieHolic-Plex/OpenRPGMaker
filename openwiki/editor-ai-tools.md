@@ -226,6 +226,72 @@ Focused coverage: `test/audioDescriptionTools.test.ts`,
 `test/audioDescriptionPrompt.test.ts`, `test/audioDescriptionPromptTransport.test.ts`,
 `test/audioDescriptionSessionPrompt.test.ts`.
 
+## P3 captured proposal base (2026-09-07)
+
+`applyProposedProject(proposed, options)` requires `options.base: ProposalBase`.
+The proposal owner calls `captureProposalBase(project)` before authoring and carries
+that base through approval/application. Session callers use `getProposalBase()`;
+`rebaseProject()` replaces it, while context refresh and pending-draft inspection
+don't. Never capture a new live base at apply time to legitimize an old snapshot.
+
+`ProposalBase` holds frozen `version`, `identity`, `content` and `world` fields.
+`ProjectStore.getVersionToken()` is a read-only frozen `{ lineage, generation }`
+snapshot. It isn't an accepted-save receipt or remote lease. Application checks
+lineage and project identity, then the authored values that it will replace, even
+when generation hasn't changed. A generation change alone isn't rejection:
+no-op updates and own saves remain valid when content and lineage still match.
+Replacing the project invalidates old lineage even if the bytes are identical.
+
+Content comparison uses the existing `canonicalJsonString` after JSON projection,
+not remote schema normalization. Recursive object-key insertion order is ignored;
+array order and authored value changes aren't. Ordinary proposals retain the live
+`project.world` and compare the other authored fields. `resetProject:true` also
+requires the captured world to match before replacing it. The existing wiki
+document-delta coordinator keeps its independent apply/save ownership.
+
+The adapter checks at entry and again immediately before undo snapshot/replacement,
+after integrity validation and annotation preparation. The final client-local write
+section has no await or external callback between that guard, snapshot and replacement.
+Cluster approval captures operation, base and proposal before its confirmation awaits.
+Later commit/wiki awaits don't write the old whole-project snapshot again, and no
+global queue makes B wait for an uncooperative A commit response.
+
+| Adapter result | Meaning |
+| --- | --- |
+| `{ ok:false, reason:"stale-base" }` | Captured base no longer matches. No undo entry, replacement, commit or `onApplied` callback is created. Recalculation is new authorized work, not automatic replay. |
+| `{ ok:false, reason:"retired-run" }` | The supplied operation was retired before application. |
+| `{ ok:false, reason:"commit-rejected" }` | Existing house protection or integrity validation refused the proposal. |
+| `{ ok:true, ... }` | Local application occurred. Later cancellation preserves that fact; commit-history persistence and P1 project-save/current proof remain separate. |
+
+`options.operation?: RunOperation` carries the captured asynchronous owner;
+`onApplied?` reports the actual local mutation before synchronous activity/store
+observers, not merely before fallible commit/save awaits. The adapter passes that
+callback into `ProjectStore.replace` or `replaceProject`; the store invokes it
+after installing the project and updating mutation counters. If a subscriber then
+retires A and starts B, A already owns the application in the existing session ledger.
+If the accounting outcome observer throws, `finally` still records activity, emits
+the store notification and schedules autosave; the original error propagates.
+Its provisional `commitId:null, persisted:false` isn't proof of saving. A retired
+post-commit continuation starts no wiki update or replacement-session rebase.
+See [publication accounting](editor-observability.md#p3-owner-bound-publication-2026-09-07).
+
+This is conservative single-client stale-snapshot rejection, not field-level merging,
+a durable checkpoint, remote schema/version protocol, or distributed/two-tab writer
+exclusivity. Separate region approval and advisory diagnostics retain their policies.
+Non-house cells don't acquire house locks, but general stale-base rejection now also
+protects their intervening human edits. Current-base malicious house changes still
+fail the independent house guard.
+
+Sources: [adapter and base](../src/editor/tools/applyChangesetToStore.ts),
+[store token](../src/project/store.ts), [key comparator](../src/project/supabaseProjectSync.ts),
+[proposal host](../src/editor/panels/aiProposalCard.ts),
+[cluster approval](../src/editor/panels/clusterAiModal.ts).
+Controls: `test/aiMutationApplyAccounting.test.ts`, `test/aiStaleProposal.test.ts`,
+`test/applyProposedProjectHouseProtection.test.ts`,
+`test/applyChangesetToStore.test.ts`, `test/projectWikiApplication.test.ts` and
+`test/clusterAiModalHouseProtection.test.ts`. [P3 evidence](../output/evidence/ai-harness/p3/README.md)
+separates unit contracts, native races and remaining approval work.
+
 ## Project wiki application ownership (2026-09-07)
 
 `AssistantSessionOptions.prepareProjectWiki` is an awaited editor-owned checkpoint
@@ -233,7 +299,8 @@ before intent selection and authoring. Failure stops that turn before tools run.
 The callback refreshes only the detached session's world documents.
 Ordinary `applyProposedProject` calls retain the live `project.world`, because a
 map/title proposal does not own codex edits made after its preview. Explicit
-`resetProject` keeps its replacement semantics. Tests:
+`resetProject` keeps its replacement semantics, subject to the captured world/base
+check above. Tests:
 `projectWikiSession.test.ts` and `projectWikiApplication.test.ts`. P2 projects checkpoint
 failure/cancellation as `failed`/`cancelled`, never successful response completion.
 Explicit Ask/Plan retains the coordinator's read-only path; intent is still selected

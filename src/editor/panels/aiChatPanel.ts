@@ -72,6 +72,7 @@ import { noteAiChangeUndone } from "@/ai/preferenceSignals";
 import type { AuditEntry } from "@/ai/assistantSession";
 import { serializeAuditTranscript } from "@/ai/conversationReplay";
 import { createProjectWikiCoordinator } from "@/editor/projectWikiCoordinator";
+import { RunOperation } from "@/ai/runOperation";
 import { EMPTY_SESSION_USAGE } from "@/ai/sessionUsage";
 import { createAiContextMeter, type AiContextMeterHandle, type AiContextSnapshot } from "./aiContextMeter";
 import { openAiConversationHistoryModal } from "./aiConversationHistoryModal";
@@ -332,6 +333,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 저장 공간 고갈 안내는 패널 수명 동안 한 번 — 매 툴콜마다 저장하므로 그대로 두면 토스트가 쏟아진다.
   let storageFailureToasted = false;
   const persistConversation = (target?: ConversationPersistTarget): void => {
+    const owner = controller.session;
+    const operation = owner?.getRunOperation();
+    const id = target?.id ?? conversationId;
     const entries = target
       ? [...target.entries]
       : [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])];
@@ -351,6 +355,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         // IndexedDB 가 있는 브라우저인데 거기 남지 않았다 — 새로 고치면 사라진다는 사실을 한 번 알린다.
         // IndexedDB 자체가 없는 환경(Node 테스트)은 알릴 곳도, 잃을 것도 없다.
         const lostOnReload = !outcome.ok || (!outcome.durable && typeof indexedDB !== "undefined");
+        if (disposed || conversationId !== id || controller.session !== owner || owner?.getRunOperation() !== operation) {
+          if (lostOnReload) console.warn("[aiConversation] Retired owner's conversation could not be persisted", id);
+          return;
+        }
         if (lostOnReload && !storageFailureToasted) {
           storageFailureToasted = true;
           toast("대화 기록을 이 브라우저에 저장할 수 없습니다. 이번 대화는 화면에만 남고 새로 고치면 사라집니다.", "error");
@@ -389,6 +397,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 변경 0건 알림 전용 호스트 — 쓰기가 있는 턴은 승인 없이 바로 적용되므로 결정 카드·핀·모달이 없다.
   const proposalNoticeHost = el("div", { class: "ai-proposal-notice-host" });
   let turnBusy = false;
+  const idleWaiters = new Set<() => void>();
   // 전송 버튼은 "보낼 것이 있고 한가할 때"만 준버된 상태로 보이며, 이전엔 turnBusy 만 보서
   // 보낼 게 없을 때도 흔함 없이 활성이었고, 눌러도 send() 가 `if (!text) return` 으로
   // 조용하게 끝나 아무 피드백도 없었다.
@@ -702,10 +711,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       pendingPriorTranscript = null;
       controller.session = new AssistantSession(store.getCurrent(), {
         config: resolveSurfaceAiConfig("chat"),
-        prepareProjectWiki: createProjectWikiCoordinator({
+        prepareProjectWiki: input => createProjectWikiCoordinator({
           getConfig: () => resolveSurfaceAiConfig("chat"),
-          status: (text) => setStatus(text),
-        }).prepare,
+          status: (text) => { if (!disposed && !input.signal?.aborted) setStatus(text); },
+        }).prepare(input),
         // 턴 시작에 사용자 발화를 모델이 한 번 읽어 의도(수정/생성·실내/야외·시설·되묻기·계획·툴)를 선언한다.
         // 되묻기·플래너·툴 노출은 그 선언만 소비한다 — 문장 키워드 스캔은 없다(2026-09-03 의도 라우터 감사).
         declareIntent: createLlmIntentDeclarer(),
@@ -842,12 +851,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 먼저 ownership을 끊고 abort한 뒤 큐를 버린다. 새 대화는 이유와 무관하게 진행 중인 턴을
     // 포기하며, 늦은 finally는 시작 당시 캡처한 대화와 감사 항목에만 저장한다.
     activeAbortController?.abort();
+    controller.session?.retireRun();
+    retireMaintenance();
     activeAbortController = null;
     activeSelectionRegionController = null;
     activeSelectionRegionKey = null;
     pendingSends.length = 0;
     refreshQueueIndicator();
     turnBusy = false;
+    for (const resolve of idleWaiters) resolve();
     endTurnProgress();
     refreshAbortButton();
     persistConversation();
@@ -943,6 +955,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
 
   // 수동 압축은 요약 LLM 콜 1회다 — 진행 중 턴과 겹치면 같은 messages 배열을 두 곳이 만진다.
   let compacting = false;
+  let maintenance: RunOperation | null = null;
+  const retireMaintenance = () => {
+    maintenance?.retire();
+    maintenance = null;
+    compacting = false;
+  };
 
   /**
    * 세션이 그 표면을 실제로 갖췄는지 보고 부른다.
@@ -976,12 +994,16 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       return;
     }
     compacting = true;
+    const operation = new RunOperation();
+    maintenance = operation;
+    const owns = () => !disposed && maintenance === operation && controller.session === session;
     setStatus("맥락 압축 중…");
     refreshContextMeter();
     try {
       const outcome = await session.compactNow((event) => {
-        if (event.type === "status") setStatus(event.text);
-      });
+        if (owns() && event.type === "status") setStatus(event.text);
+      }, operation.signal);
+      if (!owns()) return;
       if (outcome.kind === "done") {
         appendBubble(
           "system",
@@ -1007,6 +1029,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         });
       }
     } catch (error) {
+      if (!owns()) { console.warn("[aiContext] Retired compaction settled", error); return; }
       appendBubble("system", `압축 실패: ${error instanceof Error ? error.message : String(error)}`);
       setStatus("압축 실패");
       recordAiUiEvent({
@@ -1016,9 +1039,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         detail: { kind: "error", error: error instanceof Error ? error.message : String(error) },
       });
     } finally {
-      compacting = false;
-      refreshContextMeter();
-      refreshExportButton();
+      if (owns()) {
+        retireMaintenance();
+        refreshContextMeter();
+        refreshExportButton();
+      }
     }
   };
 
@@ -1097,6 +1122,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     setLastAppliedProposalMessage(null);
     proposalNoticeHost.replaceChildren();
     pendingQuestion = false;
+    retireMaintenance();
     log.replaceChildren();
     startScreen = null;
     closeToolActivity();
@@ -1456,17 +1482,19 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
   const abortActiveTurn = (): void => {
     if (!activeAbortController || activeAbortController.signal.aborted) return;
-    activeAbortController.abort();
+    const regionOwner = activeAbortController === activeSelectionRegionController;
     // 중단 시점의 진행 정도를 함께 남긴다 — 툴 0개에서 끊긴 것과 40개 돌다 끊긴 것은 다른 사건이다.
     const toolsSoFar = (controller.session?.getAuditEntries() ?? []).filter((entry) => entry.kind === "tool").length;
     const droppedQueue = pendingSends.length;
     pendingSends.length = 0;
     refreshQueueIndicator();
+    if (regionOwner) activeAbortController.abort();
+    else turnRunner.abortTurn();
     if (!abortNoticeShown) {
       appendBubble("system", "사용자가 중단했습니다.");
       abortNoticeShown = true;
     }
-    setStatus("중단 중…");
+    setStatus(regionOwner ? "중단 중…" : "대기");
     refreshAbortButton();
     recordAiUiEvent({ surface: "panel", action: AI_UI_ACTIONS.turnAbort, detail: { toolsSoFar, droppedQueue } });
   };
@@ -1501,11 +1529,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const sendText = async (
     text: string,
     displayAs?: string,
-    opts?: { readonly replay?: boolean },
+    opts?: { readonly replay?: boolean; readonly onSettled?: () => void },
   ): Promise<void> => {
     const trimmed = text.trim();
     if (!trimmed) return;
     if (!ensureConfigReadyForSend()) return;
+    if (activeAbortController?.signal.aborted && activeAbortController !== activeSelectionRegionController) turnRunner.abortTurn();
     if (turnBusy) {
       pendingSends.push({
         text: trimmed,
@@ -1537,7 +1566,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     await executeTurn(session, trimmed, (onEvent, signal) =>
       // instruction: 사용자 발화 원문 — 의도 선언·툴 이름 언급·능력 승격은 이것만 본다.
       session.sendUserMessage(payload, onEvent, signal, { autonomous, instruction: trimmed, scope: turnScope, composerMode }),
-      { autonomous: autonomous && !planPreview, composerMode }
+      { autonomous: autonomous && !planPreview, composerMode, onSettled: opts?.onSettled }
     );
   };
 
@@ -1553,7 +1582,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     get sendButton() { return sendButton; },
     get controller() { return controller; },
     get turnBusy() { return turnBusy; },
-    set turnBusy(value) { turnBusy = value; },
+    set turnBusy(value) {
+      turnBusy = value;
+      if (!value) for (const resolve of idleWaiters) resolve();
+    },
     get disposed() { return disposed; },
     get abortNoticeShown() { return abortNoticeShown; },
     set abortNoticeShown(value) { abortNoticeShown = value; },
@@ -2147,18 +2179,25 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const sharedMenuActions: AiActionMenuActions = {
     refreshWiki: () => {
       if (turnBusy) { toast("현재 작업이 끝난 뒤 기록을 정리해주세요.", "info"); return; }
+      retireMaintenance();
+      const operation = new RunOperation();
+      maintenance = operation;
+      const session = controller.session;
+      const owns = () => !disposed && maintenance === operation && controller.session === session;
       const coordinator = createProjectWikiCoordinator({
-        getConfig: () => resolveSurfaceAiConfig("chat"), status: (text) => setStatus(text),
+        getConfig: () => resolveSurfaceAiConfig("chat"), status: (text) => { if (owns()) setStatus(text); },
       });
-      void coordinator.backfill().then((count) => {
-        controller.session?.syncBaselineFromStoreIfClean(store.getCurrent());
+      void panelPendingWork.track(coordinator.backfill(operation.signal).then((count) => {
+        if (!owns()) return;
+        session?.syncBaselineFromStoreIfClean(store.getCurrent());
         appendBubble("system", `이 프로젝트의 이전 대화에서 설정집 문서 ${count}개를 정리했습니다.`);
         setStatus("기록 정리 완료");
       }, (cause: unknown) => {
+        if (!owns()) { console.warn("[projectWiki] Retired maintenance settled", cause); return; }
         const message = cause instanceof Error ? cause.message : String(cause);
         appendBubble("system", `설정집 정리를 완료하지 못했습니다: ${message}`);
         setStatus("기록 정리 실패");
-      });
+      }).finally(() => { if (owns()) retireMaintenance(); }));
     },
     openSettings: () => openAiSettings("first"),
     exportAudit,
@@ -2827,18 +2866,18 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   }
 
   // MCP/외부 에이전트 브리지: 같은 채팅 세션으로 send·로그·하네스 공유.
-  const sleep = (ms: number): Promise<void> =>
-    new Promise((resolve) => {
-      if (typeof window !== "undefined" && typeof window.setTimeout === "function") window.setTimeout(resolve, ms);
-      else resolve();
+  const waitUntilIdle = (timeoutMs: number): Promise<boolean> => {
+    if (!turnBusy) return Promise.resolve(!disposed);
+    return new Promise(resolve => {
+      const settle = (idle: boolean) => {
+        clearTimeout(deadline);
+        idleWaiters.delete(onIdle);
+        resolve(idle && !disposed);
+      };
+      const onIdle = () => settle(true);
+      const deadline = setTimeout(() => settle(false), timeoutMs);
+      idleWaiters.add(onIdle);
     });
-  const waitUntilIdle = async (timeoutMs: number): Promise<boolean> => {
-    const started = Date.now();
-    while (turnBusy) {
-      if (Date.now() - started > timeoutMs) return false;
-      await sleep(150);
-    }
-    return true;
   };
   const collectAudit = (): readonly AiBridgeAuditEntry[] => {
     const merged = [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])];
@@ -2864,6 +2903,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   registerAiAssistantBridge({
     send: async (text: string): Promise<AiBridgeTurnResult> => {
       const trimmed = text.trim();
+      const requestedConversation = conversationId;
+      const entryStatus = { ready: true, turnBusy, configReady: isAiConfigReady(loadAiConfig()),
+        lastStatus: status.textContent ?? "대기", bridgeConnected: isAiAssistantBridgeConnected(), panelMounted: true };
       if (!trimmed) {
         return { ok: false, error: "빈 메시지", status: {
           ready: true, turnBusy, configReady: isAiConfigReady(loadAiConfig()), lastStatus: status.textContent ?? "대기",
@@ -2884,43 +2926,36 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         };
       }
       const idle = await waitUntilIdle(120_000);
-      if (!idle) {
+      if (!idle || disposed || requestedConversation !== conversationId) {
         return {
           ok: false,
           error: "이전 턴이 끝나지 않아 전송하지 못했습니다.",
-          status: {
-            ready: true, turnBusy, configReady: true, lastStatus: status.textContent ?? "대기",
-            bridgeConnected: isAiAssistantBridgeConnected(), panelMounted: true,
-          },
-          audit: collectAudit(),
-          harness: controller.session?.getHarnessSnapshot() ?? null,
+          status: { ...entryStatus, turnBusy: false }, audit: [], harness: null,
         };
       }
       try {
-        await sendText(trimmed);
-        await waitUntilIdle(300_000);
-        const audit = collectAudit();
-        return {
-          ok: true,
-          status: {
-            ready: true, turnBusy, configReady: true, lastStatus: status.textContent ?? "대기",
-            bridgeConnected: isAiAssistantBridgeConnected(), panelMounted: true,
-          },
-          audit,
-          harness: controller.session?.getHarnessSnapshot() ?? null,
-          lastAssistantText: lastAssistantFromAudit(),
-          runOutcome: controller.session?.getRunOutcome() ?? null,
-        };
+        let result: AiBridgeTurnResult | undefined;
+        await sendText(trimmed, undefined, { onSettled: () => {
+          const audit = collectAudit();
+          result = {
+            ok: true,
+            status: {
+              ready: true, turnBusy, configReady: true, lastStatus: status.textContent ?? "대기",
+              bridgeConnected: isAiAssistantBridgeConnected(), panelMounted: true,
+            },
+            audit,
+            harness: controller.session?.getHarnessSnapshot() ?? null,
+            lastAssistantText: lastAssistantFromAudit(),
+            runOutcome: controller.session?.getRunOutcome() ?? null,
+          };
+        } });
+        if (!result) throw new Error("AI turn ownership retired before publication");
+        return result;
       } catch (cause) {
         return {
           ok: false,
           error: cause instanceof Error ? cause.message : String(cause),
-          status: {
-            ready: true, turnBusy, configReady: true, lastStatus: status.textContent ?? "오류",
-            bridgeConnected: isAiAssistantBridgeConnected(), panelMounted: true,
-          },
-          audit: collectAudit(),
-          harness: controller.session?.getHarnessSnapshot() ?? null,
+          status: { ...entryStatus, turnBusy: false }, audit: [], harness: null,
         };
       }
     },
@@ -3007,11 +3042,14 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const turnController = activeAbortController;
     const regionController = activeSelectionRegionController;
     turnController?.abort();
+    controller.session?.retireRun();
+    retireMaintenance();
     if (regionController && regionController !== turnController) regionController.abort();
     activeAbortController = null;
     activeSelectionRegionController = null;
     activeSelectionRegionKey = null;
     turnBusy = false;
+    for (const resolve of idleWaiters) resolve();
     pendingSends.length = 0;
     clearWorkPlanSurface(); // 패널 해제 — 할 일 목록 정리.
     stickyChecklist.dispose();
