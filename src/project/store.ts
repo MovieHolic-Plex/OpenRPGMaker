@@ -152,10 +152,11 @@ export type TransactionalNewRemoteProjectDependencies = {
 
 export class NewRemoteProjectTransactionError extends Error {
   constructor(
-    readonly stage: "flush" | "configuration" | "save" | "reload" | "verify" | "concurrent-edit" | "commit",
+    readonly stage: "flush" | "configuration" | "save" | "reload" | "verify" | "concurrent-edit" | "commit" | "cancelled",
     message: string,
+    cause?: unknown,
   ) {
-    super(message);
+    super(message, { cause });
     this.name = "NewRemoteProjectTransactionError";
   }
 }
@@ -395,20 +396,55 @@ class ProjectStore {
    */
   async loadNewRemoteProjectTransactionally(
     project: Project,
-    options: { readonly projectId?: string; readonly title?: string } = {},
+    options: ({ readonly source?: "remote"; readonly projectId?: string }
+      | { readonly source: "dev-showcase"; readonly projectId?: never })
+      & { readonly title?: string; readonly signal?: AbortSignal } = {},
     dependencies: TransactionalNewRemoteProjectDependencies = {
       createProjectId: () => `oprn-${randomUuid().replace(/-/g, "").slice(0, 10)}`,
-      reloadTarget: (config) => loadProjectFromSupabase(config),
+      reloadTarget: async (config) => {
+        const snapshot = await loadProjectForPersistenceProof(config);
+        if (snapshot && snapshot.projectId !== config.projectId) {
+          throw new NewRemoteProjectTransactionError("reload", "재로드한 온라인 사본의 프로젝트 ID가 일치하지 않습니다.");
+        }
+        return snapshot?.project ?? null;
+      },
       saveTarget: (candidate, config) => saveProjectToSupabase(candidate, config),
     },
   ): Promise<{ readonly projectId: string }> {
-    const flushResult = await this.flush();
-    if (flushResult.kind !== "saved") {
-      throw new NewRemoteProjectTransactionError(
-        flushResult.kind === "not-configured" ? "configuration" : "flush",
-        "현재 프로젝트를 Supabase에 저장하지 못해 새 프로젝트를 시작하지 않았습니다.",
-      );
+    const promoteShowcase = options.source === "dev-showcase";
+    const sourceProject = this.current;
+    const sourceGeneration = this.mutationGeneration;
+    const sourceIdentity = this.getProjectIdentity();
+    const candidate = structuredClone(project);
+    const assertSourceCurrent = (): void => {
+      if (options.signal?.aborted) {
+        throw new NewRemoteProjectTransactionError("cancelled", "온라인 사본 전환을 취소했습니다. 원본은 유지됩니다.");
+      }
+      const identity = this.getProjectIdentity();
+      if (this.current !== sourceProject || this.mutationGeneration !== sourceGeneration
+        || identity.kind !== sourceIdentity.kind || identity.id !== sourceIdentity.id) {
+        throw new NewRemoteProjectTransactionError(
+          "concurrent-edit", "준비 중 현재 프로젝트가 변경되어 전환을 취소했습니다. 변경 내용을 확인한 뒤 다시 시도하세요.",
+        );
+      }
+    };
+    assertSourceCurrent();
+    if (promoteShowcase) {
+      if (!this.loaded || this.remotePersistenceEnabled || this.remotePersistenceDisabledReason !== "dev-showcase") {
+        throw new NewRemoteProjectTransactionError("configuration", "브라우저 쇼케이스에서만 온라인 사본을 만들 수 있습니다.");
+      }
+      // Do not flush a quota-constrained source. Its live edits and previous local
+      // recovery stay untouched; the detached candidate is the explicit new copy.
+    } else {
+      const flushResult = await this.flush();
+      if (flushResult.kind !== "saved") {
+        throw new NewRemoteProjectTransactionError(
+          flushResult.kind === "not-configured" ? "configuration" : "flush",
+          "현재 프로젝트를 Supabase에 저장하지 못해 새 프로젝트를 시작하지 않았습니다.",
+        );
+      }
     }
+    assertSourceCurrent();
 
     const baseConfig = supabaseProjectConfig();
     const draft = supabaseProjectConfigDraft();
@@ -419,12 +455,13 @@ class ProjectStore {
       );
     }
 
-    const projectId = options.projectId?.trim() || dependencies.createProjectId();
+    const projectId = promoteShowcase ? dependencies.createProjectId() : options.projectId?.trim() || dependencies.createProjectId();
+    if (promoteShowcase && projectId === baseConfig.projectId) {
+      throw new NewRemoteProjectTransactionError("configuration", "온라인 사본은 기존 작업과 다른 새 프로젝트 ID가 필요합니다.");
+    }
     const targetConfig: SupabaseProjectConfig = { ...baseConfig, projectId };
-    const candidate = structuredClone(project);
     const title = options.title?.trim();
     if (title) nameNewProject(candidate, title);
-    const generationAfterFlush = this.mutationGeneration;
 
     let saved: SupabaseSaveResult;
     try {
@@ -433,6 +470,7 @@ class ProjectStore {
       throw new NewRemoteProjectTransactionError(
         "save",
         error instanceof Error ? error.message : "새 Supabase 프로젝트 저장에 실패했습니다.",
+        error,
       );
     }
     if (saved.kind !== "saved") {
@@ -441,6 +479,7 @@ class ProjectStore {
         "새 Supabase 프로젝트 저장을 확인하지 못했습니다.",
       );
     }
+    assertSourceCurrent();
 
     let reloaded: Project | null;
     try {
@@ -449,6 +488,7 @@ class ProjectStore {
       throw new NewRemoteProjectTransactionError(
         "reload",
         error instanceof Error ? error.message : "새 Supabase 프로젝트 재로드에 실패했습니다.",
+        error,
       );
     }
     if (!reloaded) {
@@ -458,14 +498,15 @@ class ProjectStore {
       );
     }
 
-    const expected = projectWithoutEventDrafts(saved.project ?? candidate);
+    const expected = projectWithoutEventDrafts(promoteShowcase ? candidate : saved.project ?? candidate);
     if (serializeForComparison(expected) !== serializeForComparison(projectWithoutEventDrafts(reloaded))) {
       throw new NewRemoteProjectTransactionError(
         "verify",
         "새 Supabase 프로젝트의 저장본과 재로드 결과가 일치하지 않습니다.",
       );
     }
-    if (this.mutationGeneration !== generationAfterFlush || this.dirtySinceLastPersist) {
+    assertSourceCurrent();
+    if (!promoteShowcase && this.dirtySinceLastPersist) {
       throw new NewRemoteProjectTransactionError(
         "concurrent-edit",
         "준비 중 현재 프로젝트가 변경되어 전환을 취소했습니다. 변경 내용을 저장한 뒤 다시 시도하세요.",
@@ -500,6 +541,7 @@ class ProjectStore {
       throw new NewRemoteProjectTransactionError(
         "commit",
         error instanceof Error ? error.message : "새 프로젝트 설정을 브라우저에 저장하지 못했습니다.",
+        error,
       );
     }
 
@@ -514,10 +556,10 @@ class ProjectStore {
       this.dirtySinceLastPersist = false;
       this.mutationGeneration += 1;
       resetManualProjectCommitBaseline(this.current);
-      syncProjectToUrl({ projectId, projectName: reloaded.meta?.title ?? null });
-      stagedConfig.commit();
+      syncProjectToUrl({ projectId, projectName: reloaded.meta?.title ?? null, clearDevProject: promoteShowcase });
       saveSupabaseSelectedProjectId(projectId);
       this.loadedRemoteProjectId = projectId;
+      stagedConfig.commit();
     } catch (error) {
       this.current = localSnapshot.current;
       this.persistedBaseline = localSnapshot.persistedBaseline;
@@ -539,11 +581,16 @@ class ProjectStore {
       throw new NewRemoteProjectTransactionError(
         "commit",
         error instanceof Error ? error.message : "새 프로젝트의 로컬 전환을 완료하지 못했습니다.",
+        error,
       );
     }
 
     // The old draft key is removed only after the switch can no longer reject.
     persistEventDraftVaultNow(baseConfig.projectId);
+    if (promoteShowcase) {
+      this.autoSaveRetryCount = 0;
+      this.setAutoSaveState({ kind: "saved", at: Date.now() });
+    }
     try {
       this.emit({ scope: "project", projectSwitch: true });
     } catch (error) {
@@ -1181,7 +1228,7 @@ class ProjectStore {
       } catch (error) {
         this.autoSaveRetryCount += 1;
         this.setAutoSaveState({ kind: "error", message: autoSaveErrorMessage(error), retryCount: this.autoSaveRetryCount });
-        this.scheduleAutoSaveRetry();
+        if (this.remotePersistenceEnabled) this.scheduleAutoSaveRetry();
         throw error;
       } finally {
         this.persistInFlight = null;

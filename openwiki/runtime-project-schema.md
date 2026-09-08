@@ -302,6 +302,37 @@ Authored project schema, defaults, validation, migration, references, and persis
 
 `worldCanon.laws[kind].present`의 기존 optional boolean 형태를 유지하되 `false`를 압축에서 제거하지 않는다. 키 부재는 미정, false는 없음, true는 있음이다. 기존 빈 프로젝트에 법칙을 만들어 넣지 않으며 버전 마이그레이션은 필요 없다. 과거 저장 시 제거된 false 값은 복구할 근거가 없어 미정으로 남는다. 설명만 있는 법칙은 설명을 보존하며 존재 여부는 미정으로 표시한다. normalize → serialize → deserialize 왕복과 AI의 「신: 없음」 전달을 `test/worldAuthoringRegression.test.ts`에서 검증한다. 이 데이터는 저작/AI 설정이며 게임의 죽음·통화·마법 런타임 규칙을 자동으로 바꾸지 않는다.
 
+## Showcase media save-copy durability (issue #693, 2026-09-08)
+
+`mediaImportPersistence.ts` stages showcase audio/video in a detached candidate.
+The shared confirmation explicitly authorizes a NEW Supabase project before any
+remote write. `loadNewRemoteProjectTransactionally(..., { source: "dev-showcase" })`
+does not flush a quota-constrained source: it preserves live edits and previous
+local recovery, saves the candidate to a generated target, then uses the existing
+proof reader to check target identity and normalized content before adoption.
+Cancellation, concurrent source edits/switches, failed writes, mismatched reloads
+and local config/selection quota errors leave the source active. A successfully
+written but unadopted remote copy may remain; there is no automatic remote delete.
+
+Adoption removes the three showcase boot selectors from the URL so reload opens
+the new remote project, not the seed. The original local override stays available
+at its original URL. Supabase `current_json.assets.uploaded` remains the media
+root; `supabaseResourceCache` remains a cache, not canonical blob storage. No
+project schema migration, local DB fallback or new backend is introduced.
+
+Ordinary remote media import awaits store flush before success. A failed remote
+flush retains the pending edit and asks the author to restore connection and save;
+it does not erase data that other live edits may already reference. Showcase
+imports instead publish nothing until the explicit save-copy is verified.
+`ProjectStorageQuotaError` classifies native Web Storage quota errors with export/
+cleanup guidance; local failures do not start the remote network retry loop.
+
+Focused contracts: `devMediaPromotion.test.ts`, `mediaImportDurability.test.ts`.
+Real browser script: `scripts/qa/issue693-media.mjs`; default runs actual showcase
+quota/cancel/network-denial paths with all remote writes blocked. Only a lead with
+authorization may run `--permit-new-remote-project` to prove an 8 MiB file's exact
+bytes after real remote reload and Test Play. The default is not remote proof.
+
 ## Project schema & persistence
 - **Supabase schema deployment is manifest-driven (2026-08-24):** `scripts/lib/supabase-database-ops.mjs` registers every deployable file under `supabase/migrations/`; `test/supabaseDatabaseOps.node.test.mjs` fails when a non-draft SQL file is omitted. Run `npm run db:check` for an anon-key/PostgREST schema probe. An administrator sets `SUPABASE_DB_URL` in untracked `.env.local` and runs `npm run db:migrate`; the Bun runner records SHA-256 checksums in the admin-only `rpg_zzu.schema_migrations` ledger, baselines already-complete legacy migrations, rejects partially applied or checksum-changed SQL, reloads the PostgREST schema cache, and finishes with project-scoped `ai_activity_logs`/`ai_conversations` insert→reload→cleanup verification. `DRAFT_*.sql` is never deployable. Do not report DB work complete until `npm run db:verify-ai` passes and the project id is recorded.
 - **Missing AI tables are configuration errors, not successful fallbacks:** new activity writes never fall back into `ai_analysis_runs`; that table is read only for historical fallback rows. Missing `ai_activity_logs`, `ai_conversations`, or `user_skills` writes throw `SupabaseMigrationRequiredError` naming the required migration. The local conversation record (IndexedDB `oprn-ai-records` since 2026-09-03; the old `oprn:ai-conversations` localStorage key is migrated on first access) remains available, but the failed remote mirror is logged instead of silently swallowed. `scripts/list-ai-activity.mjs --remote` loads `.env` plus `.env.local` and scopes both primary and historical queries to `VITE_SUPABASE_PROJECT_ID`.

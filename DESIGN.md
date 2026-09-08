@@ -13,6 +13,22 @@
   fields survive recovery. Desktop checks cover 1024/1280/1440; independent
   screenshot interpretation and final visual approval remain lead-owned.
 
+## Showcase media durability (issue #693, 2026-09-08)
+
+- Reuse the shared `showConfirm` modal, native action buttons, existing focus
+  trap/Escape/opener behavior and toast status; no new modal design or dependency.
+- A showcase media import asks explicitly to save the current project and file
+  as a **new online copy**. Cancel keeps the source. Confirm never targets the
+  deployment's existing/shared project. Audio keeps its 8 MiB input ceiling;
+  the browser-only showcase does not promise that capacity in Web Storage.
+- Success appears only after target save, identity/content-verified reload and
+  local adoption. Failure keeps the source and previous browser recovery; quota
+  guidance offers project export and unused-copy cleanup, never automatic erasure.
+- The resource window closes on the verified project switch using its existing
+  ownership rule. Reopen Resources in the new project to edit the imported media.
+- Desktop confirmation captures: 1024x768 and 1440x900. Lead owns visual approval
+  and the separately authorized real-remote acceptance run.
+
 ## Monster resource metadata editor (2026-09-07)
 
 - Database > 전투 몬스터 exposes 몬스터 소재 even with no gameplay records.

@@ -6,7 +6,8 @@ import { store } from "@/project/store";
 import type { ResourceKind, UploadedAsset } from "@/project/types";
 import { genId } from "@/util/id";
 import { toast } from "@/util/toast";
-import { recordProjectSnapshot } from "@/editor/mapEditHistory";
+import { isStorageQuotaError, ProjectStorageQuotaError } from "@/project/storageQuota";
+import { persistMediaImport } from "./mediaImportPersistence";
 
 export type MediaImportRule = {
   readonly kind: ResourceKind;
@@ -86,7 +87,7 @@ export function importMediaResource(file: File, rule: MediaImportRule, onImporte
     reader.abort();
   });
   reader.addEventListener("loadend", unsubscribe, { once: true });
-  reader.onload = () => {
+  reader.onload = async () => {
     const currentIdentity = store.getProjectIdentity();
     if (!active || identity.kind !== currentIdentity.kind || identity.id !== currentIdentity.id) {
       toast("프로젝트가 바뀌어 가져오기를 취소했습니다.", "info");
@@ -98,22 +99,23 @@ export function importMediaResource(file: File, rule: MediaImportRule, onImporte
       return;
     }
     const id = genId(rule.idPrefix);
-    const asset: UploadedAsset = {
+    const asset: UploadedAsset & { readonly kind: ResourceKind } = {
       id,
       name: file.name.replace(/\.[^.]+$/, ""),
       kind: rule.kind,
       dataUrl,
       meta: {},
     };
-    if (rule.kind === "music" || rule.kind === "sound") recordProjectSnapshot("음원 가져오기");
-    store.update((project) => {
-      project.assets.uploaded[id] = asset;
-      if (!project.resourceProfiles.some((profile) => profile.assetId === id)) {
-        project.resourceProfiles.push({ kind: rule.kind, name: asset.name, assetId: id });
-      }
-    }, { scope: "assets", origin: "human", label: "미디어 가져오기" });
-    toast(`가져오기 완료: ${asset.name}`, "ok");
-    onImported(asset);
+    try {
+      if (!await persistMediaImport(asset)) return;
+      toast(`가져오기 완료: ${asset.name}`, "ok");
+      onImported(asset);
+    } catch (error) {
+      const message = isStorageQuotaError(error)
+        ? new ProjectStorageQuotaError(error).message
+        : error instanceof Error ? error.message : String(error);
+      toast(`미디어 저장 실패: ${message}`, "error");
+    }
   };
   reader.onerror = () => toast("파일을 읽지 못했습니다.", "error");
   reader.readAsDataURL(file);
