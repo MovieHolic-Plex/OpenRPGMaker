@@ -26,8 +26,10 @@
 // 54 pre-existing violations on every attempt. The gate burned its 3 attempts on damage the
 // agent had not caused and could not repair (every cleanup commit was refused by the commit
 // gate), killing the run at 217s with the 48-turn budget untouched.
-// evaluate_game_quality still reports blocking ONLY on projectLint errors (toolRegistry
-// evaluate_game_quality verdict contract: data.verdict.blocked).
+// evaluate_game_quality still reports blocking on its own error-severity issues only (toolRegistry
+// evaluate_game_quality verdict contract: data.verdict.blocked). That error set is projectLint
+// errors + empty-map (99081a0b1, 2026-08-28) + ending-uninvoked (419e067fa, 2026-09-06) — it was
+// projectLint alone until those two landed.
 
 export const RUN_LINT_TOOL = "run_lint";
 export const EVALUATE_GAME_QUALITY_TOOL = "evaluate_game_quality";
@@ -247,8 +249,8 @@ function issuesOf(result: ToolResultLike): readonly { readonly severity?: string
  * Parse ONE tool result into a verdict.
  * - Tool-level failure (ok !== true) always blocks (fail-closed on missing ok).
  * - Scenario checks block when data.ok === false; reachability uses data.reachable.
- * - evaluate_game_quality blocks ONLY on projectLint errors (data.verdict.blocked);
- *   its non-error issues are warnings.
+ * - evaluate_game_quality blocks on data.verdict.blocked, i.e. its error-severity objective issues
+ *   (projectLint errors + empty-map + ending-uninvoked); its non-error issues are warnings.
  * - Other tools (run_lint): error-severity issues block; warning/info issues are warnings.
  * - result.warnings never block.
  */
@@ -274,8 +276,8 @@ export function parseToolVerdict(name: string, result: ToolResultLike): Verdict 
         ? (objective.issues as readonly { readonly severity?: string; readonly message?: string }[])
         : [];
       const errors = objectiveIssues.filter((issue) => issue?.severity === "error");
-      if (errors.length > 0) blocking.push(...errors.map((issue) => issue.message || "projectLint 오류"));
-      else blocking.push("게임 품질 평가 차단: projectLint 오류");
+      if (errors.length > 0) blocking.push(...errors.map((issue) => issue.message || "객관 무결성 오류"));
+      else blocking.push("무결성 점검 차단: 객관 오류(내역 없음)");
     }
     for (const issue of issuesOf(result)) {
       if (issue?.severity !== undefined && issue.severity !== "error") warnings.push(issue.message || "경고");

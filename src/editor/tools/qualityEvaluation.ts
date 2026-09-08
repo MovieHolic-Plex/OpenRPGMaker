@@ -120,9 +120,11 @@ const evaluateGameQuality: ToolDefinition = {
       limitations: LIMITATIONS,
     };
     return {
+      // 검사한 축을 먼저 적는다 — "통과"만 남기면 보는 사람이 게임이 좋다는 판정으로 읽는다.
+      // 주관 점수를 안 만든다는 사실은 data.limitations 와 프롬프트 정책이 이미 들고 있으므로 여기서 반복하지 않는다.
       summary: objectiveErrorCount > 0
-        ? `게임 품질 평가 차단: 객관적 오류 ${objectiveErrorCount}건${emptyMaps.length > 0 ? ` (빈 맵 ${emptyMaps.length}개 포함)` : ""} (주관적 품질 점수 없음)`
-        : `게임 품질 평가 통과: 객관적 차단 오류 없음${emptyMaps.length > 0 ? ` — 다만 빈 맵 ${emptyMaps.length}개` : ""} (주관적 품질 점수 없음)`,
+        ? `무결성 점검(참조·빈 맵·미호출 엔딩): 오류 ${objectiveErrorCount}건${emptyMaps.length > 0 ? ` (빈 맵 ${emptyMaps.length}개 포함)` : ""}`
+        : `무결성 점검(참조·빈 맵·미호출 엔딩): 이상 없음${emptyMaps.length > 0 ? ` — 다만 빈 맵 ${emptyMaps.length}개` : ""}`,
       data,
       issues: objectiveIssues,
     };
