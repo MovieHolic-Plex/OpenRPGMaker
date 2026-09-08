@@ -316,6 +316,7 @@ export class AssistantAcceptanceLedger {
       verification?.adopt({ checkId, ownerId: `${this.id}:${promise.id}`, name: criterion.tool,
         args: pendingCanonicalScene(criterion) ? null : verificationInput(criterion.tool, criterion.args),
         acceptedCriterion: original?.acceptedCriterion ?? criterion,
+        aiDeclared: !promise.functionalSceneIndices?.includes(index),
         interactionTargets: criterion.tool === "run_scene_test" ? criterion.interactionTargets ?? [] : undefined,
         initialState: original ? original.initialState : verificationInitialState(criterion.tool,
           promise.functionalSceneIndices?.includes(index) ? promise.baseline : project ?? promise.baseline) });
@@ -363,8 +364,11 @@ export class AssistantAcceptanceLedger {
             && coveredByImages(this.currentReceipts(review.receipts, applied), map, region),
           actionProven: map => isVerifiedActionCombatProof(this.actionProofs.get(map.id), applied, map.id),
         });
+        const approachCheckId = `${this.id}:${promise.id}:${criterionIndex}`;
+        const approach = !toolDraftChanged && verification?.approach(approachCheckId, applied);
         return Object.freeze({
           ...result,
+          ...(approach ? { approachCheckId } : {}),
           ...(result.issues ? { issues: Object.freeze(result.issues.map(issue => Object.freeze({ ...issue,
             criterionIndex, field: `criteria[${criterionIndex}].${issue.field}`,
           }))) } : {}),

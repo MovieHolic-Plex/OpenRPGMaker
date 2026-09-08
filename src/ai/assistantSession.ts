@@ -15,7 +15,7 @@ import { buildActionArenaAuthoringGuide, selectActionArenaAuthoringRecipe } from
 
 import { workTargetContractIssues, workTargetIssues, workToolOutcome, type WorkToolOutcome } from "./workPlanTargets";
 import { ToolReadEvidence } from "./toolReadEvidence";
-import { ToolVerificationEvidence, parseVerificationChecks, verificationInitialState, type VerificationRequirement } from "./toolVerificationEvidence";
+import { ToolVerificationEvidence, parseVerificationChecks, verificationInitialState, type VerificationRequirement, type ApproachPreview } from "./toolVerificationEvidence";
 import { runProjectLint } from "@/editor/tools/queryTools";
 import { isVerifyNpcRewardInput, VERIFY_NPC_REWARD_TOOL, type NpcRewardWitness } from "./npcRewardWitness";
 import { getTool, normalizeToolArgs, runTool } from "@/editor/tools";
@@ -338,6 +338,7 @@ export interface HarnessSnapshot {
   readonly audit: readonly AuditEntry[];
   readonly workPlan?: WorkPlan | null;
   readonly acceptance?: AcceptanceSnapshot | null;
+  readonly verification?: ReturnType<ToolVerificationEvidence["snapshot"]>;
   readonly runEndProof?: RunEndProofState | null;
   readonly runOutcome?: RunOutcome | null;
 }
@@ -1338,6 +1339,23 @@ export class AssistantSession {
     return accepted;
   }
 
+  /** Same idle panel-owned boundary as withdrawal; no model tool or history replay. */
+  previewApproachCorrection(checkId: string): ApproachPreview | null {
+    if (!this.acceptanceAppliedProject || acceptanceFingerprint(this.ctx.project) !== acceptanceFingerprint(this.acceptanceAppliedProject)) return null;
+    return this.verificationEvidence.previewApproach(checkId, this.acceptanceAppliedProject);
+  }
+
+  confirmApproachCorrection(preview: ApproachPreview, onEvent?: (event: SessionEvent) => void): boolean {
+    if (!this.acceptanceAppliedProject || acceptanceFingerprint(this.ctx.project) !== acceptanceFingerprint(this.acceptanceAppliedProject)) return false;
+    const revision = this.verificationEvidence.confirmApproach(preview, this.acceptanceAppliedProject);
+    if (!revision) return false;
+    this.pushAudit({ kind: "status", text: `approach:user-confirmed ${JSON.stringify(revision)}` });
+    this.pushOrchestrationMessage(`사용자가 접근 보정만 승인했습니다. 아직 검증되지 않았습니다. 원래 checkId와 승인된 정확한 args로 correct_verification을 새로 실행하세요. 다른 기준과 실패는 유지됩니다.\n${JSON.stringify(revision)}`);
+    this.publishAcceptance(onEvent);
+    this.publishRunOutcome(onEvent);
+    return true;
+  }
+
   /** Applied-state refresh for store changes/undo, including after completion. */
   refreshAcceptance(project: Project, onEvent?: (event: SessionEvent) => void): void {
     if (JSON.stringify(this.ctx.project) !== JSON.stringify(project)) this.invalidateVerificationAfterWrite();
@@ -1594,11 +1612,20 @@ export class AssistantSession {
 
   private async correctVerification(args: Record<string, unknown>, signal?: AbortSignal): Promise<ToolResult> {
     const correction = Object.keys(args).every(key => key === "checkId" || key === "args")
-      ? this.verificationEvidence.correction(args.checkId, args.args) : null;
+      ? this.verificationEvidence.correction(args.checkId, args.args, this.ctx.project) : null;
     if (!correction || typeof args.checkId !== "string") return { ok: false, summary: "Unknown check or incompatible correction",
       issues: [{ severity: "error", code: "invalid-verification-correction", message: "Use an existing checkId and compatible original-tool args; accepted checks cannot be replaced." }],
       data: { verification: this.getVerificationSnapshot(false) } };
-    const result = await this.executeVerificationTool(correction.name, correction.args, signal);
+    const amended = this.verificationEvidence.snapshot(false).approaches.some(entry => entry.checkId === args.checkId);
+    if (amended && (signal?.aborted || !this.acceptanceAppliedProject
+      || acceptanceFingerprint(this.ctx.project) !== acceptanceFingerprint(this.acceptanceAppliedProject))) return {
+      ok: false, summary: "접근 보정은 현재 적용된 내용에서 새로 검증해야 합니다.",
+      issues: [{ severity: "error", code: "unapplied-approach-verification", message: "Apply current content before executing the approved approach." }],
+    };
+    // The bounded amendment is a synchronous native scene read. Observe its
+    // receipt before any await can interleave an applied write, undo or cancel.
+    const result = amended ? runTool(this.ctx, correction.name, correction.args, { dryRun: false })
+      : await this.executeVerificationTool(correction.name, correction.args, signal);
     this.recordToolResult(correction.name, correction.args, result, true, args.checkId);
     return { ...result, data: { ...(isRecord(result.data) ? result.data : {}), checkId: args.checkId,
       tool: correction.name, verification: this.getVerificationSnapshot(false) } };
@@ -1874,6 +1901,7 @@ export class AssistantSession {
       audit: [...this.audit],
       workPlan: this.workPlan ? structuredClone(this.workPlan) : null,
       acceptance: this.getAcceptanceSnapshot(),
+      verification: this.getVerificationSnapshot(),
       runEndProof: this.getRunEndProof(),
       runOutcome: this.getRunOutcome(),
     };
@@ -1891,6 +1919,7 @@ export class AssistantSession {
     // 사용자의 수동 진입(새 sendUserMessage 호출)은 예산 카운터를 0으로 되돌린다(re-arm).
     // 마일스톤 자동 적용도 같은 명시 플래그로만 켠다. 직전 턴의 커밋 게이트 실패는
     // 현재 자율 런만 중단하는 상태이므로 새 사용자 메시지에서 반드시 재가동한다.
+    this.verificationEvidence.expireApproachPreview();
     this.runResult = { current: null };
     this.runSubscriber = onEvent;
     this.runRecapAuditIndex = null;

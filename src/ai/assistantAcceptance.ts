@@ -34,7 +34,7 @@ export interface AcceptanceItemSnapshot {
   readonly status: AcceptanceStatus;
   readonly reason?: string;
   readonly issues?: readonly AcceptanceIssue[];
-  readonly evidence: readonly { readonly expected: string; readonly observed: string; readonly passed: boolean; readonly issues?: readonly AcceptanceIssue[] }[];
+  readonly evidence: readonly { readonly expected: string; readonly observed: string; readonly passed: boolean; readonly issues?: readonly AcceptanceIssue[]; readonly approachCheckId?: string }[];
   readonly mapId?: string;
   readonly region?: AcceptanceRegion;
 }

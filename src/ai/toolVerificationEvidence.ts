@@ -5,6 +5,7 @@ import { normalizeArgsForSchema, validateArgs } from "@/editor/tools/jsonSchema"
 import { COORD_SCHEMA } from "@/editor/tools/schemaShapes";
 import { isSceneTestInput, type SceneInteractionReceipt, type SceneTestInput } from "@/testing/sceneTestRunner";
 import type { Project } from "@/project/types";
+import { genId } from "@/util/id";
 import { validateWalkthroughScenario } from "@/testing/walkthroughRunner";
 
 function key(value: unknown): string {
@@ -23,12 +24,15 @@ export interface VerificationRequirement {
   readonly args: Record<string, unknown> | null;
   readonly criterion?: VerificationCriterionRef;
   readonly acceptedCriterion?: AcceptanceCriterion;
+  /** Host declaration provenance; user-refined executable criteria are not amendable. */
+  readonly aiDeclared?: boolean;
   readonly mapTargets?: readonly string[];
   readonly initialState?: unknown;
   readonly interactionTargets?: readonly SceneInteractionReceipt[];
 }
 interface RequirementState { requirement: VerificationRequirement; pass: boolean; stale: boolean; criterionPassed: boolean; inactive?: boolean }
 interface Finding {
+  readonly approachCheckId?: string;
   readonly source: "explicit" | "advisory";
   readonly baselineLint?: boolean;
   readonly checkId: string;
@@ -39,6 +43,24 @@ interface Finding {
   readonly result: ToolResultLike;
   readonly verdict: Verdict;
 }
+export interface ApproachPreview {
+  readonly previewId: string;
+  readonly checkId: string;
+  readonly ownerId: string;
+  readonly failedAttemptId: string;
+  readonly contentRevision: number;
+  readonly originalArgs: Record<string, unknown>;
+  readonly args: Record<string, unknown>;
+  readonly initialState: unknown;
+  readonly insertion: { readonly stepIndex: number; readonly mapId: string; readonly step: { readonly kind: "walk"; readonly to: { readonly x: number; readonly y: number }; readonly adjacent: true } };
+  readonly interactionTargets: readonly SceneInteractionReceipt[];
+}
+export interface ApproachRevision extends ApproachPreview {
+  readonly revisionId: string;
+  readonly confirmation: { readonly id: string; readonly source: "user"; readonly previewId: string };
+}
+interface ApproachResolution { readonly checkId: string; readonly revisionId: string; readonly attemptId: string; readonly contentRevision: number }
+
 export interface VerificationAttempt {
   readonly attemptId: string;
   readonly revision: number;
@@ -154,6 +176,19 @@ function matchingTrace(original: Record<string, unknown>, targets: readonly Scen
   return targets.every(target => observed.some(entry => key(entry) === key(canonicalTarget(original, target))));
 }
 
+/** Battle/troop events have no scene interaction receipts; this release cannot authorize them. */
+function encounterFreeApproach(project: Project, mapId: string): boolean {
+  const map = project.maps[mapId];
+  if (!map) return false;
+  if ((map.encounterRate ?? 0) <= 0) return true;
+  // Native encounters give a nonempty table precedence over legacy troopIds and
+  // select only positive integer weights. Treat conditional entries as possible:
+  // setup, walking position and time can enable them after the initial snapshot.
+  return map.encounterTable?.length
+    ? !map.encounterTable.some(entry => Number.isInteger(entry.weight) && entry.weight > 0)
+    : !map.troopIds?.length;
+}
+
 /** Full diagnostic records (including referenced IDs/locations), never just counts or codes. */
 function lintErrorKeys(result: ToolResultLike): string[] | null {
   if (result.ok !== true || !acceptanceRecord(result.data) || !acceptanceRecord(result.data.counts)
@@ -171,6 +206,9 @@ export class ToolVerificationEvidence {
   private readonly requirements = new Map<string, RequirementState>();
   private readonly findings = new Map<string, Finding>();
   private readonly attempts: VerificationAttempt[] = [];
+  private readonly approaches: ApproachRevision[] = [];
+  private readonly resolutions: ApproachResolution[] = [];
+  private pendingApproach: { preview: ApproachPreview; project: string } | null = null;
   private sequence = 0;
   private revision = 0;
   private lintBaseline: ReadonlyMap<string, number> | null | undefined;
@@ -223,16 +261,86 @@ export class ToolVerificationEvidence {
       requirements: [...this.requirements.values()].map(({ requirement, pass, stale, criterionPassed }) => ({ ...requirement,
         status: requirement.args === null ? "pending-specification" : stale ? "stale" : pass && criterionPassed ? "passed" : "unverified" })),
       findings: [...this.findings.values()], attempts: includeAttempts ? this.attempts : [],
+      approaches: this.approaches, resolutions: this.resolutions,
     });
   }
 
+  /** Bounded derivation, never execution: the native adjacent walk owns routing and facing. */
+  approach(checkId: string, project: Project): Omit<ApproachPreview, "previewId"> | null {
+    const state = this.requirements.get(checkId);
+    const requirement = state?.requirement;
+    const original = requirement?.args;
+    const finding = this.findings.get(checkId);
+    if (!state || state.inactive || state.pass || !requirement?.aiDeclared || requirement.acceptedCriterion?.kind !== "toolVerdict"
+      || requirement.name !== "run_scene_test" || !original || !isSceneTestInput(original)
+      || !encounterFreeApproach(project, original.mapId)
+      || this.approaches.some(entry => entry.checkId === checkId) || finding?.source !== "explicit") return null;
+    const targets = parseSceneInteractionTargets(original, requirement.interactionTargets);
+    const attempt = [...this.attempts].reverse().find(entry => entry.name === requirement.name && key(entry.args) === key(original)
+      && (entry.checkId === undefined || entry.checkId === checkId));
+    const data = attempt && acceptanceRecord(attempt.result.data) ? attempt.result.data : null;
+    const failed = data && acceptanceRecord(data.failedSelection) ? data.failedSelection : null;
+    const final = data && acceptanceRecord(data.finalState) ? data.finalState : null;
+    if (!final || final.gameOver !== false || final.mapId !== original.mapId
+      || !Array.isArray(data?.interactions) || data.interactions.length > 0) return null;
+    if (!targets || !attempt || attempt.status !== "negative" || attempt.revision !== this.revision || !failed
+      || failed.stepIndex !== data?.failedStepIndex || typeof failed.stepIndex !== "number"
+      || !targets.some(target => key(target) === key(failed)) || failed.mapId !== original.mapId
+      || key(requirement.initialState) !== key(finding.initialState)
+      || key(requirement.initialState) !== key(verificationInitialState(requirement.name, project))) return null;
+    // This release repairs the first named selection on its starting map. Earlier
+    // gameplay, relocation or deferred interpreters require a different contract.
+    if (original.steps.slice(0, failed.stepIndex).some(step => !["set", "face", "snapshotRewards", "expect"].includes(step.kind)
+      || (step.kind === "set" && (step.mapId !== undefined || step.x !== undefined || step.y !== undefined)))) return null;
+    const target = project.maps[original.mapId]?.events.find(event => event.id === failed.eventId);
+    if (!target || !target.pages?.length || target.pages.some(page => page.trigger.kind !== "action" || page.movement.type !== "fixed")) return null;
+    const insertion = { stepIndex: failed.stepIndex, mapId: original.mapId,
+      step: { kind: "walk" as const, to: { x: target.x, y: target.y }, adjacent: true as const } };
+    return structuredClone({ checkId, ownerId: requirement.ownerId, failedAttemptId: attempt.attemptId, contentRevision: this.revision,
+      originalArgs: original, initialState: requirement.initialState, insertion,
+      args: { ...original, steps: [...original.steps.slice(0, insertion.stepIndex), insertion.step, ...original.steps.slice(insertion.stepIndex)] },
+      interactionTargets: targets.map(target => ({ ...target, stepIndex: target.stepIndex >= insertion.stepIndex ? target.stepIndex + 1 : target.stepIndex })) });
+  }
+
+  previewApproach(checkId: string, project: Project): ApproachPreview | null {
+    const approach = this.approach(checkId, project);
+    if (!approach) return null;
+    const preview = { ...approach, previewId: genId("approach-preview") };
+    this.pendingApproach = { preview, project: key(project) };
+    return structuredClone(preview);
+  }
+
+  /** Host user-action capability only. Caller-supplied scripts or permission prose cannot authorize it. */
+  confirmApproach(preview: ApproachPreview, project: Project): ApproachRevision | null {
+    const pending = this.pendingApproach;
+    if (!pending || key(preview) !== key(pending.preview) || key(project) !== pending.project) return null;
+    const current = this.approach(preview.checkId, project);
+    if (!current || key({ ...current, previewId: preview.previewId }) !== key(preview)) return null;
+    const revision: ApproachRevision = { ...structuredClone(preview), revisionId: genId("approach-revision"),
+      confirmation: { id: genId("approach-confirmation"), source: "user", previewId: preview.previewId } };
+    this.approaches.push(revision);
+    this.pendingApproach = null;
+    return structuredClone(revision);
+  }
+
+  expireApproachPreview(): void { this.pendingApproach = null; }
+
+  private resolved(finding: Finding): boolean {
+    const checkId = finding.approachCheckId ?? finding.checkId;
+    const state = this.requirements.get(checkId);
+    return !!state?.pass && !state.stale && this.resolutions.some(entry => entry.checkId === checkId && entry.contentRevision === this.revision);
+  }
+
   /** Resolves only this session's stored check; caller data supplies no verdict. */
-  correction(checkId: unknown, raw: unknown): { name: string; args: Record<string, unknown> } | null {
+  correction(checkId: unknown, raw: unknown, project?: Project): { name: string; args: Record<string, unknown> } | null {
     if (typeof checkId !== "string") return null;
     const stored = this.requirements.get(checkId)?.requirement ?? this.findings.get(checkId);
     if (!stored?.args) return null;
     const args = verificationInput(stored.name, raw);
-    if (!args || !compatible(stored.name, stored.args, args)) return null;
+    const approach = this.approaches.find(entry => entry.checkId === checkId);
+    if (!args || (approach ? this.requirements.get(checkId)?.inactive || key(approach.args) !== key(args)
+      || !project || !encounterFreeApproach(project, approach.insertion.mapId)
+      : !compatible(stored.name, stored.args, args))) return null;
     if (stored.name === "run_scene_test" && "result" in stored && key(stored.args) !== key(args)
       && sceneTargets(stored.args, stored.result).length === 0) return null;
     return { name: stored.name, args };
@@ -240,7 +348,10 @@ export class ToolVerificationEvidence {
 
   hasChecks(): boolean { return this.requirements.size > 0 || this.findings.size > 0 || this.attempts.length > 0; }
 
-  clear(): void { this.requirements.clear(); this.findings.clear(); this.attempts.length = 0; this.lintBaseline = undefined; }
+  clear(): void {
+    this.requirements.clear(); this.findings.clear(); this.attempts.length = 0; this.lintBaseline = undefined;
+    this.approaches.length = 0; this.resolutions.length = 0; this.expireApproachPreview();
+  }
 
   observe(name: string, raw: Record<string, unknown>, result: ToolResultLike, source: "explicit" | "advisory" = "explicit", ownerId?: string, checkId?: string, initialState?: unknown, ownedCheckIds: readonly string[] = []): Verdict | null {
     if (!VERIFICATION_TOOL_NAMES.has(name)) return null;
@@ -250,10 +361,13 @@ export class ToolVerificationEvidence {
     const setup = acceptanceRecord(data.setupFailure) ? data.setupFailure : {};
     const unsuccessful = !args || result.ok !== true || ["invalid-input", "execution-failure"].includes(String(setup.kind));
     const candidate = args ?? raw;
-    const matching = [...this.requirements.values()].filter(({ requirement }) => requirement.name === name
-      && (checkId === undefined || requirement.checkId === checkId)
-      && requirement.args !== null && (requirement.acceptedCriterion?.kind === "toolVerdict"
-        ? key(requirement.args) === key(candidate) : compatible(name, requirement.args, candidate)));
+    const matching = [...this.requirements.values()].filter(({ requirement, inactive }) => {
+      const approach = this.approaches.find(entry => entry.checkId === requirement.checkId);
+      return requirement.name === name && (checkId === undefined || requirement.checkId === checkId)
+        && requirement.args !== null && (approach
+          ? !inactive && source === "explicit" && checkId === requirement.checkId && key(approach.args) === key(candidate)
+          : requirement.acceptedCriterion?.kind === "toolVerdict" ? key(requirement.args) === key(candidate) : compatible(name, requirement.args, candidate));
+    });
     const invalidProbe = !unsuccessful && matching.length === 0 && setup.kind === "no-interaction-target"
       && isSceneTestInput(candidate) && !candidate.steps.some(step => step.kind === "expect" || (step.kind === "interact" && step.eventId !== undefined))
       && Array.isArray(data.interactions) && !data.interactions.some(entry => acceptanceRecord(entry) && entry.stepIndex === setup.stepIndex);
@@ -264,15 +378,24 @@ export class ToolVerificationEvidence {
       if (requirement.name !== name) continue;
       if (unsuccessful && (checkId === requirement.checkId || (source === "explicit" && (ownerId === requirement.ownerId || ownedCheckIds.includes(requirement.checkId))))) state.pass = false;
       if (!matching.includes(state)) continue;
-      const traceMatches = name !== "run_scene_test" || matchingTrace(requirement.args!, requirement.interactionTargets ?? [], candidate, result);
+      const approach = this.approaches.find(entry => entry.checkId === requirement.checkId);
+      const interactions = Array.isArray(data.interactions) ? data.interactions : null;
+      const traceMatches = name !== "run_scene_test" || (approach
+        ? interactions !== null && !data.failedSelection && !data.setupFailure
+          && interactions.every(entry => acceptanceRecord(entry) && entry.stepIndex !== approach.insertion.stepIndex)
+          && approach.interactionTargets.every(target => interactions.some(entry => key(entry) === key(target)))
+        : matchingTrace(requirement.args!, requirement.interactionTargets ?? [], candidate, result));
       state.pass = !unsuccessful && verdict.pass && traceMatches
         && (requirement.acceptedCriterion?.kind !== "toolVerdict" || source === "explicit" || (state.pass && !state.stale))
         && (requirement.initialState === undefined || key(requirement.initialState) === key(initialState));
       state.stale = false;
+      if (state.pass && approach) this.resolutions.push({ checkId: requirement.checkId, revisionId: approach.revisionId,
+        attemptId: this.attempts.at(-1)!.attemptId, contentRevision: this.revision });
     }
     if (unsuccessful || invalidProbe) return verdict;
     if (verdict.pass) {
       for (const [id, finding] of this.findings) {
+        if (finding.approachCheckId || this.approaches.some(entry => entry.checkId === id)) continue; // Original failures are append-only after amendment.
         if ((checkId !== undefined && id !== checkId) || finding.name !== name || !compatible(name, finding.args, candidate)
           || (finding.initialState !== undefined && key(finding.initialState) !== key(initialState))) continue;
         const targets = sceneTargets(finding.args, finding.result);
@@ -283,7 +406,8 @@ export class ToolVerificationEvidence {
         this.findings.delete(id);
       }
     } else {
-      const existing = [...this.findings.values()].find(f => f.name === name && key(f.args) === key(candidate)
+      const approachCheckId = matching.find(state => this.approaches.some(entry => entry.checkId === state.requirement.checkId))?.requirement.checkId;
+      const existing = [...this.findings.values()].find(f => f.approachCheckId === approachCheckId && f.name === name && key(f.args) === key(candidate)
         && key(f.initialState) === key(initialState)
         && (name !== "run_lint" || key(lintErrorKeys(f.result)) === key(lintErrorKeys(result)))
         && (name !== "run_scene_test" || key(sceneTargets(f.args, f.result)) === key(sceneTargets(candidate, result))));
@@ -292,6 +416,7 @@ export class ToolVerificationEvidence {
       const requirementId = matching[0]?.requirement.checkId;
       const id = existing?.checkId ?? (requirementId && !this.findings.has(requirementId) ? requirementId : `finding-${++this.sequence}`);
       if (!this.findings.has(id)) this.findings.set(id, structuredClone({ checkId: id, ownerId, name, args: candidate, result, verdict, initialState, source,
+        ...(approachCheckId ? { approachCheckId } : {}),
         ...(name === "run_lint" ? { baselineLint: key(candidate) === key({}) && this.baselineLint(result) } : {}) }));
       else if (existing && source === "explicit" && existing.source !== "explicit") this.findings.set(id, { ...existing, source });
     }
@@ -299,6 +424,7 @@ export class ToolVerificationEvidence {
   }
 
   invalidateAfterWrite(): void {
+    this.expireApproachPreview();
     this.revision++;
     for (const state of this.requirements.values()) if (state.pass) state.stale = true;
   }
@@ -307,8 +433,8 @@ export class ToolVerificationEvidence {
     const states = [...this.requirements.values()].filter(state => !state.inactive && state.requirement.name === name
       && (checkIds === undefined || checkIds.includes(state.requirement.checkId)));
     if (states.length) return states.every(state => state.requirement.args !== null && state.pass && !state.stale && state.criterionPassed)
-      && ![...this.findings.values()].some(f => f.name === name && (checkIds === undefined || states.some(s => s.requirement.ownerId === f.ownerId)));
-    return ![...this.findings.values()].some(f => f.name === name && (ownerId === undefined || f.ownerId === ownerId))
+      && ![...this.findings.values()].some(f => !this.resolved(f) && f.name === name && (checkIds === undefined || states.some(s => s.requirement.ownerId === f.ownerId)));
+    return ![...this.findings.values()].some(f => !this.resolved(f) && f.name === name && (ownerId === undefined || f.ownerId === ownerId))
       && this.attempts.some(attempt => attempt.name === name && attempt.status === "passed" && attempt.revision === this.revision && (ownerId === undefined || attempt.ownerId === ownerId));
   }
 
@@ -319,13 +445,13 @@ export class ToolVerificationEvidence {
       && (checkId === undefined || state.requirement.checkId === checkId)
       && key(state.requirement.args) === key(args));
     return states.length > 0 && states.every(state => state.pass && !state.stale)
-      && ![...this.findings.values()].some(finding => finding.name === name && key(finding.args) === key(args));
+      && ![...this.findings.values()].some(finding => !this.resolved(finding) && finding.name === name && key(finding.args) === key(args));
   }
 
   problems(scope: "all" | "blocking" = "all"): readonly string[] {
     const requiredLint = [...this.requirements.values()].some(state => !state.inactive && state.requirement.name === "run_lint");
     return [...new Set([
-      ...[...this.findings.values()].filter(f => scope === "all" || f.source !== "advisory" || !f.baselineLint || requiredLint)
+      ...[...this.findings.values()].filter(f => !this.resolved(f) && (scope === "all" || f.source !== "advisory" || !f.baselineLint || requiredLint))
         .flatMap(f => f.verdict.blockingIssues.map(issue => `${f.name}: ${issue} [${f.checkId}]`)),
       ...[...this.requirements.values()].flatMap(({ requirement, pass, stale, criterionPassed, inactive }) => {
         if (inactive) return [];

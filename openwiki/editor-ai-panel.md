@@ -123,6 +123,43 @@ Exact tool-verdict requirements reuse [the existing verification store](editor-a
 verification, independent surface evidence and pending lead gates. This section
 records implemented contracts, not Phase approval or checkpoint/boot recovery.
 
+## User-confirmed interaction approach correction (CR-P7-1, 2026-09-08)
+
+The existing checklist offers `접근 보정 검토` only for a live AI-declared canonical
+`run_scene_test` with complete map/event ownership and a current failed named
+selection. This bounded release supports the first interaction after nonmoving
+setup/assertion/facing/snapshot steps, a same-map fixed action event, and no earlier
+activation. The host inserts one native adjacent `walk` (which also faces the target).
+Unsupported shapes remain blocked; no movement equivalence or model amendment tool
+was added. Review exposes the original recipe/initial state, exact insertion, all
+original assertions and effective args. A separate `이 접근 보정 승인` click uses the
+idle, live panel/session boundary; approval alone is unverified.
+
+`ToolVerificationEvidence` appends `approaches` (revision plus user confirmation) and
+`resolutions` (original check, authorized revision, fresh attempt). Original args,
+request/baselines, siblings, findings and attempts survive. `correct_verification`
+requires that original check ID and exact approved args against applied content;
+all remapped map/event receipts, original initial state and assertions must pass,
+with zero event activations during the inserted walk. Ordinary/pre-approval passes
+cannot supply credit. Writes/undo stale proof; unrelated findings remain obligations.
+Snapshots expose these links through normal verification results and the read-only
+harness. Pending previews expire on a new turn, write or owner replacement.
+
+Encounter-capable maps are unsupported (CR-P7-1-R1): native battle/troop events do
+not appear in scene interaction receipts. Preview and approved execution inspect
+current content: positive rate plus legacy troops or a positive-integer-weight
+entry in the overriding nonempty table blocks authorization, even if conditional.
+No initial-position/condition snapshot or old approval licenses later encounters.
+At 1024px, collapse chat, expand the checklist and review/confirm normally; the
+recorded-wire browser regression clicks both controls there, then restores chat.
+
+There is no private-ledger persistence/recovery. Historical P7 remains blocked.
+A fresh session reproduces and validates only the prospective amendment path; its
+baseline cannot prove P7's earlier floor edit. Physical saved-game and actual-provider
+proof remain separate. Regressions: `test/approachCorrection.test.ts` and
+`scripts/qa/p7-approach-correction.mjs` (explicitly recorded-model HTTP responses,
+normal file import/checklist/dispatcher, isolated app, all external writes fenced).
+
 ## Live large-world QA: plan repair and final audit (2026-09-07)
 
 The actual 128x128/six-region/eight-landmark run initially produced 19 independent
