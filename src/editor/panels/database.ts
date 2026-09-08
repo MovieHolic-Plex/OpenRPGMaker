@@ -6,6 +6,9 @@ import { renderCropTab } from "@/editor/panels/databaseCropView";
 import { renderMonsterSpeciesTab } from "@/editor/panels/databaseMonsterSpeciesView";
 import { renderCharactersTab } from "@/editor/panels/databaseCharacterView";
 import { renderCharacterGraphicsTab } from "@/editor/panels/databaseCharacterGraphicsView";
+import { renderCharacterAppearancesTab, selectCharacterAppearance } from "@/editor/panels/databaseAppearanceView";
+import { registerAppearanceGenerationUI } from "@/editor/characterAppearanceGeneration";
+import { disposeAppearanceSlots } from "@/editor/panels/databaseAppearanceSlots";
 import { renderLifeCraftingTab } from "@/editor/panels/databaseLifeCraftingView";
 import { renderDailyWeatherTab } from "@/editor/panels/databaseDailyWeatherView";
 import { renderFarmAnimalsTab } from "@/editor/panels/databaseFarmAnimalsView";
@@ -67,6 +70,7 @@ export type DatabaseTab =
   | "commonEvents"
   | "characters"
   | "characterGraphics"
+  | "characterAppearances"
   | "crops"
   | "lifeCrafting"
   | "dailyWeather"
@@ -101,6 +105,7 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "battleScreen", label: "전투 화면", testid: "db-tab-battle-screen" },
   { id: "battleCommands", label: "전투 명령", testid: "db-tab-battle-commands" },
   { id: "actors", label: "주인공", testid: "db-tab-actors" },
+  { id: "characterAppearances", label: "캐릭터 외형", testid: "db-tab-character-appearances" },
   { id: "promotionTree", label: "직업 승급 트리", testid: "db-tab-promotion-tree" },
   { id: "skillTrees", label: "스킬 트리", testid: "db-tab-skill-trees" },
   { id: "classes", label: "직업", testid: "db-tab-classes" },
@@ -153,7 +158,7 @@ export type DatabaseTabGroup = {
 // 전투 그룹 끝). 한쪽만 고치면 조용히 다시 갈라지므로 파생으로 묶는다.
 export const TAB_GROUPS: readonly DatabaseTabGroup[] = [
   { label: "세계관", slug: "lore", tabs: ["worldCanon", "worldCodex"] },
-  { label: "파티", slug: "party", tabs: ["actors", "classes", "promotionTree", "skills", "skillTrees", "items"] },
+  { label: "파티", slug: "party", tabs: ["actors", "characterAppearances", "classes", "promotionTree", "skills", "skillTrees", "items"] },
   { label: "몬스터", slug: "monster", tabs: ["enemies", "monsterSpecies", "troops", "factions"] },
   {
     label: "전투 규칙",
@@ -340,6 +345,7 @@ export function setDatabaseActiveTab(tab: DatabaseTab): void {
     && typeof document !== "undefined") {
     disposeDatabaseCinematicsIn(document.body);
   }
+  if (activeTab === "characterAppearances" && tab !== "characterAppearances") disposeAppearanceSlots();
   // Legacy shortcuts apply once per navigation, never on a renderer's own redraw.
   applyTilesetFolderFacet(tab);
   if (tab === "equipment") {
@@ -463,6 +469,8 @@ function databaseTabCount(tab: DatabaseTab): number | null {
   const project = store.getCurrent();
   const database = project.database;
   switch (tab) {
+    case "characterAppearances":
+      return database.characterAppearances?.length ?? 0;
     case "promotionTree":
       return database.classes.length;
     case "skillTrees":
@@ -762,7 +770,7 @@ function renderActiveTab(
   // Map renderers share selection/mode sessions. Detached DOM cannot represent a
   // newer session after visiting a sibling. Other domains retain their cache lifecycle.
   const mapView = groupForTab(tab)?.slug === "world";
-  if (options.forceFresh || mapView) evictDatabaseTabView(cache, tab);
+  if (options.forceFresh || mapView || tab === "characterAppearances") evictDatabaseTabView(cache, tab);
   const cached = cache.views.get(tab);
   if (cached) {
     stopSkillAnimationStagesIn(body);
@@ -790,6 +798,9 @@ function renderActiveTab(
     if (banner) body.append(banner);
   }
   switch (tab) {
+    case "characterAppearances":
+      renderCharacterAppearancesTab(body);
+      break;
     case "promotionTree":
     case "skillTrees":
       renderGrowthTreeTab(body, tab === 'promotionTree' ? 'promotion' : 'skill', undefined, target => {
@@ -915,6 +926,11 @@ function renderActiveTab(
   cache = tabRenderCacheFor(container);
   cache.views.set(tab, Array.from(body.childNodes));
 }
+
+registerAppearanceGenerationUI((appearanceId) => {
+  selectCharacterAppearance(appearanceId);
+  return import("./databaseModal").then(({ openDatabaseModal }) => openDatabaseModal("characterAppearances"));
+});
 
 function evictDatabaseTabView(cache: DatabaseTabRenderCache, tab: DatabaseTab): void {
   for (const node of cache.views.get(tab) ?? []) {

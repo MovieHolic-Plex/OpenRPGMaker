@@ -313,6 +313,11 @@ Keep description-heavy prompt imports in the prompt module, not the shared eligi
 module used by other consumers.
 
 Descriptions are JSON-escaped reference data, not instructions or proof of listening.
+Source `ai-listening` means **AI 분석 초안**, not verified acoustic facts. The static editor-only
+overlay retains model/review/evidence provenance in `src/assets/audioAiDescriptions.json`;
+instrument, vocal and numerical claims are not independent measurements. Most drafts are
+Flash outputs; the Pro recoveries and human-corrected Vanguard remain drafts. Project
+overrides, including explicit empty strings, take precedence; reset inherits the draft again.
 Escaping doesn't replace write approval or tool validation. `src/ai/contextBuilder.ts`
 directs fresh detail reads when full/current evidence is needed, including after conversation
 compaction. Each request uses the current project rather than a description cache or an
@@ -336,6 +341,59 @@ map/title proposal does not own codex edits made after its preview. Explicit
 failure/cancellation as `failed`/`cancelled`, never successful response completion.
 Explicit Ask/Plan retains the coordinator's read-only path; intent is still selected
 after the wiki checkpoint, and blocked-work reactivation remains after that decision.
+## Character appearance image candidates v1 (2026-09-06)
+
+`get_database_records` exposes `characterAppearances` for real set IDs.
+`generate_character_appearance {appearanceId,slot?}` generates only a missing
+`face` (default) or `bust`; it never generates or modifies walking charsets.
+Generic synchronous runners return an honest `ui-required` preparation result.
+The in-app assistant awaits the registered Database-opening callback, checks
+the session's actual ProjectIdentity and current record, then starts the shared
+`characterAppearanceGeneration` controller. Ask mode excludes and rejects this
+capability even though its generic preparation is read-only.
+`AssistantSession` imports the generation controller only inside this tool's
+execution branch. Ordinary sessions and load-recovery imports must not initialize
+the image UI or its history/store subscriptions.
+
+Candidates remain outside the project until explicit DB Apply. Occupied slots
+can only be replaced through the human slot action; fresh asset IDs preserve
+old images. Apply rechecks the target snapshot and project identity, updates the
+current cloned store draft atomically, and creates one undo checkpoint.
+Cancelled, late, failed and stale requests do not write project assets.
+Leaving the set/tab/modal disposes UI subscriptions and cancels its candidate.
+
+The image request carries at most two bounded raster references: a read-only
+crop of the selected manual charset cell and an existing face when present.
+Appearance generation uses full-sentence paragraphs rather than keyword lists.
+The prompt separates the character brief from composition/background rules:
+explicit written traits take priority, then detailed face identity, then walking
+sprite clothing/palette. Reference backgrounds and occupation-related scenery
+must not be copied. It requests a square dialogue asset, complete headwear and
+shoulders with safety margins, restrained cel shading, and an opaque uniform
+sRGB #D9D9D9 background without scenery, texture, gradients or cast shadows.
+These are model instructions, not an alpha-channel or exact-pixel guarantee;
+judge generated images separately and do not pin prompt prose with unit tests.
+`imageReferences.ts` validates the external payload;
+`ohMyPiImageRuntime.ts` sends real SDK image parts and marks this image-generation
+model as vision-capable so the SDK does not replace them with omission text.
+Image provider/model selections are independent AI settings. Antigravity uses
+the selected catalog model and rejects unknown explicit IDs without a fallback;
+response metadata identifies the resolved model. Its default is
+gemini-3.1-flash-image. Pro Image is unavailable on the tested subscription routes.
+The worker also dispatches openai-codex / codex-image-default to
+codexImageRuntime.ts, using the existing server-side Codex OAuth credentials.
+That native route is text-only: nonempty references fail explicitly with 409,
+not silently omitted. The internal selection ID is never sent upstream; the
+provider does not report its image-model version. Original raster bytes remain
+unchanged, with a 180-second request/body deadline and no provider fallback.
+Client cancellation discards output; it does not claim upstream work has stopped.
+
+`TurnResult.appearanceGeneration` is a per-turn handoff receipt, not an applied
+write. `aiTurnRunner` uses it to report the DB request without false zero-change
+retry warnings; global proposal auto-apply is unchanged. Contracts:
+`characterAppearanceGeneration`, `characterAppearanceReferences`,
+`characterAppearanceAssistant`, `characterAppearanceLifecycle`,
+`aiTurnAppliedAccounting`, and the existing provider SDK suite.
 
 ## Completed-house transaction protection - Phase 1 (2026-09-05)
 

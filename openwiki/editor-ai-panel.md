@@ -745,6 +745,37 @@ borrowing the tool commit ID. A progress-save failure preserves the actual apply
 and existing optional `wikiWarning` policy. See
 [receipt ownership](editor-observability.md#p2-outcome-publication-2026-09-06) and
 [wiki delivery QA](testing.md#p2-r3-wiki-delivery-2026-09-07).
+## Independent image generation settings (2026-09-07)
+
+- Existing AI settings (aiSettingsModal.ts) has separate image provider/model
+  selects. AiConfig.imageProviderId/imageModel are optional, stored in the same
+  oprn:ai-config blob, and independent of providerId/model/liteModel.
+- Old configurations default to google-antigravity / gemini-3.1-flash-image,
+  the actual image-output model, not the old gemini-3.8-flash fallback alias.
+  Explicit saved image choices are never corrected by the chat model catalog.
+- imageGenerationClient reads this selection for X-Rpgzzu-Provider and the model
+  body field on the existing /v1/images/generations endpoint. Explicit request
+  providerId/model overrides win without changing storage. Reference validation,
+  AbortSignal propagation and server error reporting retain their existing path.
+- imageModelCatalog contains only image-output routes. Pro is disabled: sibling
+  subscription probe returned exact-model 404 on both authenticated endpoints.
+  Codex image generation uses the internal codex-image-default sentinel, enabled
+  after the sibling probe's 2/2 success on the Codex images endpoint. The upstream
+  omits a model field and does not report a version; never label it GPT Image 1/2.
+  Login guidance follows the selected provider. The native Codex route is
+  text-only and rejects nonempty references with 409 instead of omitting them.
+  Named saved GPT models remain visible, disabled and unchanged, not normalized
+  to the sentinel. codexImageRuntime.ts reuses resolved server-side OAuth tokens;
+  oh-my-pi-worker.ts dispatches the selected provider without changing chat.
+- Unknown provider change events preserve the saved image model without throwing.
+  databaseAiGenerateDialog uses selected imageProviderId in its other-provider
+  notice, defaulting only for legacy configurations without the image field.
+- Tests: test/aiImageSettings.test.ts, test/imageGenerationClient.test.ts.
+  scripts/qa/image-options-settings.mjs mounts the real modal/styles in Firefox
+  without booting a project. Auth and image responses are intercepted; this is
+  UI/routing evidence, not a live generation probe. Native transport/dispatch is
+  covered by test/codexImageWorker.node.test.mjs; explicit Antigravity model
+  selection is covered by test/ohMyPiImageModelResolution.bun.test.ts.
 
 ## 브라우저 포커스와 도구 실행 대기 (2026-09-05)
 
