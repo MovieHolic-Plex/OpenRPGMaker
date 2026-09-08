@@ -1,0 +1,158 @@
+monitor_id=mon_E3S3853YMRMP6TDV
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 test"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"> node scripts/run-vitest.mjs run --configLoader bundle test/spatialAuthoringReentrancy.test.ts --maxWorkers=1 --minWorkers=1"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-authoring-actions"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":" ❯ test/spatialAuthoringReentrancy.test.ts (4 tests | 2 failed) 9379ms"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"   × rejects the same in-flight preview when a synchronous observer undoes its adoption 2149ms"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"     → expected [ { kind: 'ok', value: { …(2) } } ] to match object [ { kind: 'error', …(1) } ]"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"(3 matching properties omitted from actual)"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"   ✓ preserves distinct nested transactions when an observer accepts a different preview  3581ms"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"   ✓ allows retry of the same preview when the previous store write was rejected before adoption  1739ms"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"   × keeps an adopted preview consumed when publication is undone before a later error 1908ms"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"     → expected { kind: 'ok', value: { …(2) } } to match object { kind: 'error', …(1) }"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"(3 matching properties omitted from actual)"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":" FAIL  test/spatialAuthoringReentrancy.test.ts > rejects the same in-flight preview when a synchronous observer undoes its adoption"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"AssertionError: expected [ { kind: 'ok', value: { …(2) } } ] to match object [ { kind: 'error', …(1) } ]"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"(3 matching properties omitted from actual)"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"\u001b[32m- Expected\u001b[39m"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"\u001b[31m+ Received\u001b[39m"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"\u001b[2m  [\u001b[22m"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"\u001b[2m    {\u001b[22m"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"\u001b[32m-     \"error\": {\u001b[39m"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"\u001b[32m-       \"code\": \"already-applied\",\u001b[39m"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"\u001b[32m-     },\u001b[39m"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"\u001b[32m-     \"kind\": \"error\",\u001b[39m"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"\u001b[31m+     \"kind\": \"ok\",\u001b[39m"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"\u001b[2m    },\u001b[22m"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"\u001b[2m  ]\u001b[22m"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":" ❯ test/spatialAuthoringReentrancy.test.ts:32:21"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"     30|     expect(accepted).toMatchObject({ kind: \"ok\", value: { changed: tru…"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"     31|     expect(undoResults).toEqual([true]);"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"     32|     expect(reentry).toMatchObject([{ kind: \"error\", error: { code: \"al…"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"       |                     ^"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"     33|     expect(store.getCurrent()).toEqual(before);"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"     34|     expect(getMapEditHistoryState()).toEqual({ canUndo: false, canRedo…"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":" FAIL  test/spatialAuthoringReentrancy.test.ts > keeps an adopted preview consumed when publication is undone before a later error"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"AssertionError: expected { kind: 'ok', value: { …(2) } } to match object { kind: 'error', …(1) }"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"(3 matching properties omitted from actual)"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"\u001b[32m- Expected\u001b[39m"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"\u001b[31m+ Received\u001b[39m"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"\u001b[2m  {\u001b[22m"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"\u001b[32m-   \"error\": {\u001b[39m"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"\u001b[32m-     \"code\": \"already-applied\",\u001b[39m"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"\u001b[32m-   },\u001b[39m"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"\u001b[32m-   \"kind\": \"error\",\u001b[39m"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"\u001b[31m+   \"kind\": \"ok\",\u001b[39m"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"\u001b[2m  }\u001b[22m"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":" ❯ test/spatialAuthoringReentrancy.test.ts:111:19"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"    109|   const retried = f.controller.apply(preview);"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"    110|   // Then a later failure cannot resurrect a consumed capability."}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"    111|   expect(retried).toMatchObject({ kind: \"error\", error: { code: \"alrea…"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"       |                   ^"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"    112|   expect(getMapEditHistoryState()).toEqual({ canUndo: false, canRedo: …"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"    113| });"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":" Test Files  1 failed (1)"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"      Tests  2 failed | 2 passed (4)"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"   Start at  23:58:46"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":"   Duration  16.30s (transform 4.37s, setup 0ms, collect 6.19s, tests 9.38s, environment 257ms, prepare 94ms)"}
+{"type":"line","id":"authoring-1010150","description":"task11 scoped validation","line":""}
+{"type":"summary","id":"authoring-1010150","description":"task11 scoped validation","summary":"watcher exited_1 (exit code 1)"}
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/spatialAuthoringReentrancy.test.ts --maxWorkers=1 --minWorkers=1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-authoring-actions
+
+ ❯ test/spatialAuthoringReentrancy.test.ts (4 tests | 2 failed) 9379ms
+   × rejects the same in-flight preview when a synchronous observer undoes its adoption 2149ms
+     → expected [ { kind: 'ok', value: { …(2) } } ] to match object [ { kind: 'error', …(1) } ]
+(3 matching properties omitted from actual)
+   ✓ preserves distinct nested transactions when an observer accepts a different preview  3581ms
+   ✓ allows retry of the same preview when the previous store write was rejected before adoption  1739ms
+   × keeps an adopted preview consumed when publication is undone before a later error 1908ms
+     → expected { kind: 'ok', value: { …(2) } } to match object { kind: 'error', …(1) }
+(3 matching properties omitted from actual)
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/spatialAuthoringReentrancy.test.ts > rejects the same in-flight preview when a synchronous observer undoes its adoption
+AssertionError: expected [ { kind: 'ok', value: { …(2) } } ] to match object [ { kind: 'error', …(1) } ]
+(3 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[2m    {[22m
+[32m-     "error": {[39m
+[32m-       "code": "already-applied",[39m
+[32m-     },[39m
+[32m-     "kind": "error",[39m
+[31m+     "kind": "ok",[39m
+[2m    },[22m
+[2m  ][22m
+
+ ❯ test/spatialAuthoringReentrancy.test.ts:32:21
+     30|     expect(accepted).toMatchObject({ kind: "ok", value: { changed: tru…
+     31|     expect(undoResults).toEqual([true]);
+     32|     expect(reentry).toMatchObject([{ kind: "error", error: { code: "al…
+       |                     ^
+     33|     expect(store.getCurrent()).toEqual(before);
+     34|     expect(getMapEditHistoryState()).toEqual({ canUndo: false, canRedo…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  test/spatialAuthoringReentrancy.test.ts > keeps an adopted preview consumed when publication is undone before a later error
+AssertionError: expected { kind: 'ok', value: { …(2) } } to match object { kind: 'error', …(1) }
+(3 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "error": {[39m
+[32m-     "code": "already-applied",[39m
+[32m-   },[39m
+[32m-   "kind": "error",[39m
+[31m+   "kind": "ok",[39m
+[2m  }[22m
+
+ ❯ test/spatialAuthoringReentrancy.test.ts:111:19
+    109|   const retried = f.controller.apply(preview);
+    110|   // Then a later failure cannot resurrect a consumed capability.
+    111|   expect(retried).toMatchObject({ kind: "error", error: { code: "alrea…
+       |                   ^
+    112|   expect(getMapEditHistoryState()).toEqual({ canUndo: false, canRedo: …
+    113| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 2 passed (4)
+   Start at  23:58:46
+   Duration  16.30s (transform 4.37s, setup 0ms, collect 6.19s, tests 9.38s, environment 257ms, prepare 94ms)
+
+
+monitor_exit={"backend":"pipe-fallback","exitCode":1,"signal":null,"cancelled":false,"timedOut":false}

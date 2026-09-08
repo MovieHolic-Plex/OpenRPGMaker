@@ -1,0 +1,4 @@
+monitor_id=mon_ZJNQ04K8JM9JYCPY
+{"type":"summary","id":"authoring-1393900","description":"task11 scoped validation","summary":"watcher completed (exit code 0)"}
+
+monitor_exit={"backend":"pipe-fallback","exitCode":0,"signal":null,"cancelled":false,"timedOut":false}

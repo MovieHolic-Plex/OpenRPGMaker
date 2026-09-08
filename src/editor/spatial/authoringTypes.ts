@@ -44,6 +44,8 @@ export type SpatialAuthoringApplied = { readonly changed: boolean; readonly impa
 /** Uses the existing singleton project store and project history, not panel persistence. */
 export interface SpatialAuthoringController {
   createDraft(): SpatialAuthoringResult<SpatialAuthoringDraft>;
+  /** Continue an issued, unapplied preview without adopting it or resetting its live baseline. */
+  continueDraft(preview: SpatialAuthoringPreview): SpatialAuthoringResult<SpatialAuthoringDraft>;
   preview(draft: SpatialAuthoringDraft, request: SpatialAuthoringRequest): SpatialAuthoringResult<SpatialAuthoringPreview>;
   apply(preview: SpatialAuthoringPreview): SpatialAuthoringResult<SpatialAuthoringApplied>;
   undo(): boolean;

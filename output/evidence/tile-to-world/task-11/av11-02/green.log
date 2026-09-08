@@ -1,0 +1,40 @@
+monitor_id=mon_1R87DNQ545H9PFTG
+{"type":"line","id":"authoring-1022885","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1022885","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 test"}
+{"type":"line","id":"authoring-1022885","description":"task11 scoped validation","line":"> node scripts/run-vitest.mjs run --configLoader bundle test/spatialAuthoringReentrancy.test.ts --maxWorkers=1 --minWorkers=1"}
+{"type":"line","id":"authoring-1022885","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1022885","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1022885","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-authoring-actions"}
+{"type":"line","id":"authoring-1022885","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1022885","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringReentrancy.test.ts (4 tests) 9556ms"}
+{"type":"line","id":"authoring-1022885","description":"task11 scoped validation","line":"   ✓ rejects the same in-flight preview when a synchronous observer undoes its adoption  2076ms"}
+{"type":"line","id":"authoring-1022885","description":"task11 scoped validation","line":"   ✓ preserves distinct nested transactions when an observer accepts a different preview  3859ms"}
+{"type":"line","id":"authoring-1022885","description":"task11 scoped validation","line":"   ✓ allows retry of the same preview when the previous store write was rejected before adoption  2028ms"}
+{"type":"line","id":"authoring-1022885","description":"task11 scoped validation","line":"   ✓ keeps an adopted preview consumed when publication is undone before a later error  1591ms"}
+{"type":"line","id":"authoring-1022885","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1022885","description":"task11 scoped validation","line":" Test Files  1 passed (1)"}
+{"type":"line","id":"authoring-1022885","description":"task11 scoped validation","line":"      Tests  4 passed (4)"}
+{"type":"line","id":"authoring-1022885","description":"task11 scoped validation","line":"   Start at  23:59:53"}
+{"type":"line","id":"authoring-1022885","description":"task11 scoped validation","line":"   Duration  16.87s (transform 4.56s, setup 0ms, collect 6.52s, tests 9.56s, environment 271ms, prepare 105ms)"}
+{"type":"line","id":"authoring-1022885","description":"task11 scoped validation","line":""}
+{"type":"summary","id":"authoring-1022885","description":"task11 scoped validation","summary":"watcher completed (exit code 0)"}
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/spatialAuthoringReentrancy.test.ts --maxWorkers=1 --minWorkers=1
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-authoring-actions
+
+ ✓ test/spatialAuthoringReentrancy.test.ts (4 tests) 9556ms
+   ✓ rejects the same in-flight preview when a synchronous observer undoes its adoption  2076ms
+   ✓ preserves distinct nested transactions when an observer accepts a different preview  3859ms
+   ✓ allows retry of the same preview when the previous store write was rejected before adoption  2028ms
+   ✓ keeps an adopted preview consumed when publication is undone before a later error  1591ms
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  23:59:53
+   Duration  16.87s (transform 4.56s, setup 0ms, collect 6.52s, tests 9.56s, environment 271ms, prepare 105ms)
+
+
+monitor_exit={"backend":"pipe-fallback","exitCode":0,"signal":null,"cancelled":false,"timedOut":false}

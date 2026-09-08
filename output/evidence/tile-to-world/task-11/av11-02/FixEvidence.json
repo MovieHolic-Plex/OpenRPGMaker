@@ -1,0 +1,59 @@
+{
+  "finding": "AV11-02",
+  "status": "scoped fix verified; whole task11 remains unaccepted",
+  "baseCommit": "3a7c4a31d962023f49f57fb74f876b7e12755023",
+  "reviewInput": ["../independent/AdversarialVerify.json", "../independent/ownership.test.ts"],
+  "source": {
+    "path": "src/editor/spatial/actions.ts",
+    "scope": "apply path only",
+    "baselineSHA256": "52ff1c9c59f9054a4f932404d1eba8caf54939ad151925d1c0ec05f872b43faf",
+    "candidateSHA256": "2518ee7f8893193b0bddaec62552b1f7ec7df65b4b500a6548969255b7c2cae0",
+    "candidatePureLOC": 73,
+    "change": "Reserve the specific handle before synchronous publication. Release reservation on error only if no publication was observed and the store still has its original project reference. Always release the temporary observer; rethrow to the unchanged typed error boundary."
+  },
+  "test": {
+    "path": "test/spatialAuthoringReentrancy.test.ts",
+    "sha256": "389ea740195db5bb3e827e1248cb08b12dc0a40f2afc0d4fcab59df81f93e348",
+    "pureLOC": 96,
+    "cases": [
+      "Exact independent subscriber undo + same-handle apply reproducer; nested apply rejects already-applied and observer undo remains authoritative",
+      "Distinct nested preview remains accepted with exact two-step undo/redo ordering",
+      "Pre-adoption store rejection leaves content/history unchanged and the same handle can retry",
+      "Post-publication failure after observer undo does not resurrect the adopted handle"
+    ],
+    "seams": "Real controller/store/history. Fault controls intercept only store.replace once; the post-publication control executes the real replace and its history/observers before throwing. No compiler/history/controller mocks."
+  },
+  "red": {
+    "monitorId": "mon_E3S3853YMRMP6TDV",
+    "exitCode": 1,
+    "passed": 2,
+    "failed": 2,
+    "failure": "Same-handle reentry and post-publication retry returned kind:ok rather than already-applied",
+    "log": "red.log"
+  },
+  "green": {
+    "monitorId": "mon_1R87DNQ545H9PFTG",
+    "exitCode": 0,
+    "passed": 4,
+    "failed": 0,
+    "log": "green.log"
+  },
+  "command": "flock /home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/validation.lock timeout 120s npm test -- test/spatialAuthoringReentrancy.test.ts --maxWorkers=1 --minWorkers=1",
+  "launcher": "/home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/authoring-monitor.mjs",
+  "diagnostics": "Both changed TypeScript files: no diagnostics found. git diff --check passed. No newly observed lint issue or waiver.",
+  "review": {
+    "responsibility": "Per-handle synchronous apply consumption; no controller-wide transaction lock",
+    "boundary": "Existing deserialize and typed result boundary unchanged",
+    "variants": "No new tagged variants or discriminating branches",
+    "escapeHatches": "None added",
+    "defensiveLayers": "Publication/reference observations distinguish actual pre-adoption rejection from post-adoption failure; no speculative validation",
+    "helpers": "No helper or generic framework added",
+    "tests": "Two genuine RED failures then one GREEN run; synchronous subscriptions with finally cleanup, no waits or deadline changes",
+    "parameters": "No signature changes or parameter bloat",
+    "redundantVerification": "No production post-write query except the failure-path identity observation required to preserve retry eligibility",
+    "naming": "Positive published state; no negative-name abstraction",
+    "logging": "No log or error-suppression changes"
+  },
+  "untouched": ["draft/preview metadata and continuation", "authoringRefresh.ts / AV11-01", "AV11-03", "mapEditHistory.ts", "store.ts", "UI files", "independent reviewer evidence"],
+  "cleanup": "Temporary production/test observers released in finally; mocks restored, fake scheduling timers cleared/restored. Monitors exited and disposed. No DB/remote actions, dependency changes, merges or broad test/build reruns."
+}

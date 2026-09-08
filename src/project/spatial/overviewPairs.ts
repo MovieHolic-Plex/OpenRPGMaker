@@ -8,6 +8,7 @@ import { validateSpatialReferences } from "./references";
 import type { SpatialAuthoringDocument } from "./types";
 
 type TransferPair = { readonly id: string; readonly from: MapConnection["from"]; readonly to: MapConnection["to"] };
+export { validatePair as validateSpatialTransferPair };
 /** Generated automatic pairs have exactly one unconditional, fixed transfer page. No first-command/page inference. */
 function validatePair(project: Project, pair: TransferPair): void {
   const path = `spatialAuthoring.overviewEntries.${pair.id}`;

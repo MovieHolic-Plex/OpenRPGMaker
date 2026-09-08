@@ -81,8 +81,15 @@ export function editAuthoringDraft(
     }
   }
   if (current.preview) {
-    Object.assign(current.draft.project, structuredClone(current.preview.project));
-    current.preview = null;
+    const continued = controller.continueDraft(current.preview);
+    switch (continued.kind) {
+      case "error": return continued;
+      case "ok":
+        current.draft = continued.value;
+        current.preview = null;
+        break;
+      default: return assertNever(continued);
+    }
   }
   current.request = request;
   Object.assign(current.draft.project, mutate(structuredClone(current.draft.project)));

@@ -1,0 +1,11 @@
+monitor_id=mon_H5PY41CX0D6CQQB8
+{"type":"line","id":"authoring-1248071","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1248071","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-preview-continuation-fix"}
+{"type":"line","id":"authoring-1248071","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1248071","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringContinuation.test.ts > permits a second draft preview when the user continues after a compile preview 1679ms"}
+{"type":"line","id":"authoring-1248071","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringContinuation.test.ts > permits a second draft preview when the user continues after a delete preview 1631ms"}
+{"type":"line","id":"authoring-1248071","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringContinuation.test.ts > accepts the whole proposal with one undo when a compile preview is continued 3220ms"}
+{"type":"line","id":"authoring-1248071","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringContinuation.test.ts > accepts the whole proposal with one undo when a delete preview is continued 3379ms"}
+{"type":"line","id":"authoring-1248071","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringContinuation.test.ts > preserves the clone and prior edits when a design-clone preview is edited repeatedly 2231ms"}
+{"type":"line","id":"authoring-1248071","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringContinuationCapability.test.ts > rejects a foreign preview when another controller is asked to issue a continuation 878ms"}
+{"type":"line","id":"authoring-1248071","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringContinuationCapability.test.ts > rejects a fabricated checkpoint when copied output is modified=false 903ms"}

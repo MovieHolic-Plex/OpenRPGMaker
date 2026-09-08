@@ -1,0 +1,13 @@
+{
+  "extends": "../../../../../tsconfig.json",
+  "include": [
+    "../../../../../src/vite-env.d.ts",
+    "../../../../../src/editor/spatial/authoringTypes.ts",
+    "../../../../../src/editor/spatial/actions.ts",
+    "../../../../../src/editor/spatial/preview.ts",
+    "../../../../../src/editor/panels/spatialAuthoringAccess.ts",
+    "../../../../../test/spatialAuthoringContinuation.test.ts",
+    "../../../../../test/spatialAuthoringContinuationSafety.test.ts",
+    "../../../../../test/spatialAuthoringContinuationCapability.test.ts"
+  ]
+}

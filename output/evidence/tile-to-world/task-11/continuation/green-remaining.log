@@ -1,0 +1,58 @@
+monitor_id=mon_KRNT2XGTPGM98A1D
+{"type":"line","id":"authoring-1330199","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1330199","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-preview-continuation-fix"}
+{"type":"line","id":"authoring-1330199","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1330199","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringContinuationCapability.test.ts > rejects a foreign preview when another controller is asked to issue a continuation 836ms"}
+{"type":"line","id":"authoring-1330199","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringContinuationCapability.test.ts > rejects a fabricated checkpoint when copied output is modified=false 906ms"}
+{"type":"line","id":"authoring-1330199","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringContinuationCapability.test.ts > rejects a fabricated checkpoint when copied output is modified=true 792ms"}
+{"type":"line","id":"authoring-1330199","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringContinuationCapability.test.ts > keeps its checkpoint immutable when the issued continuation draft is mutated 1142ms"}
+{"type":"line","id":"authoring-1330199","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringContinuationCapability.test.ts > rejects a continued draft when live state changes after continuation issuance 1249ms"}
+{"type":"line","id":"authoring-1330199","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringContinuationCapability.test.ts > rejects an accepted preview when the original baseline is restored (compiled=false) 1391ms"}
+{"type":"line","id":"authoring-1330199","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringContinuationCapability.test.ts > rejects an accepted preview when the original baseline is restored (compiled=true) 1280ms"}
+{"type":"line","id":"authoring-1330199","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringContinuationCapability.test.ts > rejects continuation when the project switches to identical content under a new identity 1008ms"}
+{"type":"line","id":"authoring-1330199","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringContinuationCapability.test.ts > rejects an in-flight preview when a synchronous observer undoes adoption and continues 1278ms"}
+{"type":"line","id":"authoring-1330199","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringReentrancy.test.ts > rejects the same in-flight preview when a synchronous observer undoes its adoption 1531ms"}
+{"type":"line","id":"authoring-1330199","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringReentrancy.test.ts > preserves distinct nested transactions when an observer accepts a different preview 3217ms"}
+{"type":"line","id":"authoring-1330199","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringReentrancy.test.ts > allows retry of the same preview when the previous store write was rejected before adoption 1781ms"}
+{"type":"line","id":"authoring-1330199","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringReentrancy.test.ts > keeps an adopted preview consumed when publication is undone before a later error 1360ms"}
+{"type":"line","id":"authoring-1330199","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringContinuationSafety.test.ts > rejects forged maps when editing a compiled preview 1590ms"}
+{"type":"line","id":"authoring-1330199","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringContinuationSafety.test.ts > rejects forged bindings when editing a compiled preview 1524ms"}
+{"type":"line","id":"authoring-1330199","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringContinuationSafety.test.ts > rejects copied generated output when it is supplied through a fresh raw draft 1143ms"}
+{"type":"line","id":"authoring-1330199","description":"task11 scoped validation","line":" ✓ test/spatialAuthoringContinuationSafety.test.ts > rejects a continued proposal when live state changes after the displayed preview 1076ms"}
+{"type":"line","id":"authoring-1330199","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1330199","description":"task11 scoped validation","line":" Test Files  3 passed (3)"}
+{"type":"line","id":"authoring-1330199","description":"task11 scoped validation","line":"      Tests  17 passed (17)"}
+{"type":"line","id":"authoring-1330199","description":"task11 scoped validation","line":"   Start at  00:17:39"}
+{"type":"line","id":"authoring-1330199","description":"task11 scoped validation","line":"   Duration  34.13s (transform 5.06s, setup 0ms, collect 8.99s, tests 23.11s, environment 806ms, prepare 315ms)"}
+{"type":"line","id":"authoring-1330199","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-1330199","description":"task11 scoped validation","line":"JSON report written to /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-preview-continuation-fix/output/evidence/tile-to-world/task-11/continuation/green-remaining.json"}
+{"type":"summary","id":"authoring-1330199","description":"task11 scoped validation","summary":"watcher completed (exit code 0)"}
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-preview-continuation-fix
+
+ ✓ test/spatialAuthoringContinuationCapability.test.ts > rejects a foreign preview when another controller is asked to issue a continuation 836ms
+ ✓ test/spatialAuthoringContinuationCapability.test.ts > rejects a fabricated checkpoint when copied output is modified=false 906ms
+ ✓ test/spatialAuthoringContinuationCapability.test.ts > rejects a fabricated checkpoint when copied output is modified=true 792ms
+ ✓ test/spatialAuthoringContinuationCapability.test.ts > keeps its checkpoint immutable when the issued continuation draft is mutated 1142ms
+ ✓ test/spatialAuthoringContinuationCapability.test.ts > rejects a continued draft when live state changes after continuation issuance 1249ms
+ ✓ test/spatialAuthoringContinuationCapability.test.ts > rejects an accepted preview when the original baseline is restored (compiled=false) 1391ms
+ ✓ test/spatialAuthoringContinuationCapability.test.ts > rejects an accepted preview when the original baseline is restored (compiled=true) 1280ms
+ ✓ test/spatialAuthoringContinuationCapability.test.ts > rejects continuation when the project switches to identical content under a new identity 1008ms
+ ✓ test/spatialAuthoringContinuationCapability.test.ts > rejects an in-flight preview when a synchronous observer undoes adoption and continues 1278ms
+ ✓ test/spatialAuthoringReentrancy.test.ts > rejects the same in-flight preview when a synchronous observer undoes its adoption 1531ms
+ ✓ test/spatialAuthoringReentrancy.test.ts > preserves distinct nested transactions when an observer accepts a different preview 3217ms
+ ✓ test/spatialAuthoringReentrancy.test.ts > allows retry of the same preview when the previous store write was rejected before adoption 1781ms
+ ✓ test/spatialAuthoringReentrancy.test.ts > keeps an adopted preview consumed when publication is undone before a later error 1360ms
+ ✓ test/spatialAuthoringContinuationSafety.test.ts > rejects forged maps when editing a compiled preview 1590ms
+ ✓ test/spatialAuthoringContinuationSafety.test.ts > rejects forged bindings when editing a compiled preview 1524ms
+ ✓ test/spatialAuthoringContinuationSafety.test.ts > rejects copied generated output when it is supplied through a fresh raw draft 1143ms
+ ✓ test/spatialAuthoringContinuationSafety.test.ts > rejects a continued proposal when live state changes after the displayed preview 1076ms
+
+ Test Files  3 passed (3)
+      Tests  17 passed (17)
+   Start at  00:17:39
+   Duration  34.13s (transform 5.06s, setup 0ms, collect 8.99s, tests 23.11s, environment 806ms, prepare 315ms)
+
+JSON report written to /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-preview-continuation-fix/output/evidence/tile-to-world/task-11/continuation/green-remaining.json
+
+monitor_exit={"backend":"pipe-fallback","exitCode":0,"signal":null,"cancelled":false,"timedOut":false}

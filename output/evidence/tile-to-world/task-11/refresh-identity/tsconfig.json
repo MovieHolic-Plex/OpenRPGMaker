@@ -1,0 +1,9 @@
+{
+  "extends": "../../../../../tsconfig.json",
+  "include": [
+    "../../../../../src/vite-env.d.ts",
+    "../../../../../src/editor/spatial/authoringRefresh.ts",
+    "../../../../../test/spatialAuthoringRefreshCollision.test.ts",
+    "../../../../../test/spatialAuthoringRefresh.test.ts"
+  ]
+}

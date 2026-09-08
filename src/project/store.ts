@@ -857,7 +857,9 @@ class ProjectStore {
    */
   replace(
     project: Project,
-    options: { readonly preserveEventDrafts?: boolean; readonly change?: ProjectChangeAnnotation } = {},
+    options: { readonly preserveEventDrafts?: boolean; readonly change?: ProjectChangeAnnotation;
+      /** Trusted synchronous history commit, after adoption and before mutation observers. */
+      readonly commitHistory?: () => void } = {},
   ): Project {
     assertCanonicalReplacement(project, this.writeAuthority);
     ensureSwitchVariableSlots(project);
@@ -879,6 +881,7 @@ class ProjectStore {
       syncEventDraftVaultFromProject(this.current);
     }
     const applied = this.current;
+    options.commitHistory?.();
     this.markLocalMutation({ scope: "project", ...(options.change ?? {}) });
     this.emit({ scope: "project", ...(options.change ?? {}) });
     this.scheduleAutoSave();
