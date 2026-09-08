@@ -74,7 +74,7 @@ import { serializeAuditTranscript } from "@/ai/conversationReplay";
 import { createProjectWikiCoordinator } from "@/editor/projectWikiCoordinator";
 import { EMPTY_SESSION_USAGE } from "@/ai/sessionUsage";
 import { createAiContextMeter, type AiContextMeterHandle, type AiContextSnapshot } from "./aiContextMeter";
-import { openAiConversationHistoryModal } from "./aiConversationHistoryModal";
+import { closeAiConversationHistoryModal, openAiConversationHistoryModal } from "./aiConversationHistoryModal";
 import { openAiInstructionsModal } from "./aiInstructionsModal";
 import { aiActivityPersistenceState, extractCommitIdsFromAudit } from "@/ai/activityLog";
 import { listAiUiEvents, recordAiUiEvent } from "@/ai/uiEventLog";
@@ -822,6 +822,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
      */
     resumeTarget: ConversationRecord | null = null,
   ): boolean => {
+    closeAiConversationHistoryModal();
     // 버릴 것이 있었는지를 보관 전에 재다 — 부팅 지연 로드도 프로젝트 전환으로 보이므로,
     // 할 이야기가 없는 전환은 조용하게 재스코프만 한다.
     const discardedEntries = [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])].length;
@@ -906,6 +907,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
    */
   let adoptGeneration = 0;
   const adoptConversationForCurrentProject = async (): Promise<void> => {
+    closeAiConversationHistoryModal();
     // 새 스코프를 먼저 읽어 이어받을 대화를 정한다 — 리셋이 그 사실을 알아야 버릴 id·시작 화면·
     // 거짓 계측을 만들지 않는다. 리셋 자체는 여전히 **옛** scope/id 로 닫히는 대화를 보관한다.
     // 조회는 비동기(IndexedDB)다. 그 사이 또 전환됐으면 뒤의 전환이 처리한다 — 낡은 결과로 리셋하지 않는다.
@@ -932,9 +934,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 지금 대화를 먼저 보관한다 — 열기 직후 dropSession 이 세션을 버리므로 여기서 저장하지
     // 않으면 방금까지의 턴이 어디에도 남지 않는다.
     persistConversation();
+    const historyIdentity = store.getProjectIdentity().id;
+    const historyScope = conversationScope;
+    const historyConversationId = conversationId;
     openAiConversationHistoryModal({
-      scopeKey: conversationScope,
-      currentConversationId: conversationId,
+      scopeKey: historyScope,
+      currentConversationId: historyConversationId,
+      isCurrent: () => !disposed && store.getProjectIdentity().id === historyIdentity &&
+        conversationScopeKey(store.getProjectIdentity(), store.getCurrent()) === historyScope &&
+        conversationId === historyConversationId,
       onOpen: (record) => {
         restoreConversationRecord(record, "manual");
       },
@@ -3001,6 +3009,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   activeAiChatPanelCleanup = () => {
     if (disposed) return;
     disposed = true;
+    closeAiConversationHistoryModal();
     unregisterSettingsPanel();
     persistConversation();
 

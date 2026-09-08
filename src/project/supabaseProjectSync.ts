@@ -486,12 +486,15 @@ function mergeAiActivityLogRows(
     .slice(0, limit);
 }
 
-async function fetchJsonArray(url: string, config: SupabaseProjectConfig, signal?: AbortSignal): Promise<Record<string, unknown>[]> {
+async function fetchJsonArray(url: string, config: SupabaseProjectConfig, signal?: AbortSignal, strict = false): Promise<Record<string, unknown>[]> {
   const response = await fetch(url, { headers: supabaseJsonHeaders(config, "read"), signal });
   if (!response.ok) {
     throw new SupabaseProjectSyncError(await response.text(), response.status);
   }
   const parsed: unknown = await response.json();
+  if (strict && (!Array.isArray(parsed) || !parsed.every(isRecord))) {
+    throw new SupabaseProjectSyncError("Invalid conversation response");
+  }
   if (!Array.isArray(parsed)) return [];
   return parsed.filter(isRecord);
 }
@@ -538,44 +541,40 @@ export async function recordSupabaseConversation(
 
 /** 대화 요약 목록 — query가 있으면 제목 부분일치(ilike) 검색. entries_json은 내리지 않는다. */
 export async function listSupabaseConversations(
-  opts: { readonly query?: string; readonly limit?: number } = {},
+  opts: { readonly query?: string; readonly limit?: number; readonly scopeKey?: string } = {},
   config = supabaseProjectConfig(),
 ): Promise<readonly Record<string, unknown>[]> {
   if (!config) return [];
   const n = Math.max(1, Math.min(100, Math.floor(opts.limit ?? 50)));
   const params = new URLSearchParams({
     project_id: `eq.${config.projectId}`,
-    select: "conversation_id,title,model,project_context_key,saved_at",
+    select: "conversation_id,project_id,title,model,project_context_key,saved_at",
     order: "saved_at.desc",
     limit: String(n),
+    ...(opts.scopeKey ? { project_context_key: `eq.${opts.scopeKey}` } : {}),
   });
   const query = opts.query?.trim();
   if (query) params.set("title", `ilike.*${query.replaceAll("*", "").replaceAll(",", "")}*`);
-  try {
-    return await fetchJsonArray(`${config.url}/rest/v1/ai_conversations?${params.toString()}`, config);
-  } catch {
-    return [];
-  }
+  // History distinguishes failed reads from a genuinely empty remote list.
+  return fetchJsonArray(`${config.url}/rest/v1/ai_conversations?${params.toString()}`, config, undefined, true);
 }
 
 /** 대화 1건 전체(entries_json 포함) — 로컬에 없는 대화를 다른 기기에서 복원할 때. */
 export async function loadSupabaseConversation(
   conversationId: string,
   config = supabaseProjectConfig(),
+  options: { readonly scopeKey?: string } = {},
 ): Promise<Record<string, unknown> | null> {
   if (!config) return null;
   const params = new URLSearchParams({
     project_id: `eq.${config.projectId}`,
     conversation_id: `eq.${conversationId}`,
-    select: "conversation_id,title,model,project_context_key,entries_json,saved_at",
+    select: "conversation_id,project_id,title,model,project_context_key,entries_json,saved_at",
     limit: "1",
+    ...(options.scopeKey ? { project_context_key: `eq.${options.scopeKey}` } : {}),
   });
-  try {
-    const rows = await fetchJsonArray(`${config.url}/rest/v1/ai_conversations?${params.toString()}`, config);
-    return rows[0] ?? null;
-  } catch {
-    return null;
-  }
+  const rows = await fetchJsonArray(`${config.url}/rest/v1/ai_conversations?${params.toString()}`, config, undefined, true);
+  return rows[0] ?? null;
 }
 
 /** 원격 최신 commit tip 을 세션 맵에 심는다 — 리로드 후 parent_commit 계보 유지. */

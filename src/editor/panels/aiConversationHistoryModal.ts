@@ -75,6 +75,8 @@ export function openAiConversationHistoryModal(options: {
   readonly scopeKey: string;
   /** 지금 화면에 열려 있는 대화 id — 목록에서 「현재」로 표시하고 열기를 막는다. */
   readonly currentConversationId: string;
+  /** The owning panel/project must still be the one that opened this dialog. */
+  readonly isCurrent?: () => boolean;
   readonly onOpen: (record: ConversationRecord) => void;
 }): HTMLElement {
   closeAiConversationHistoryModal();
@@ -86,14 +88,32 @@ export function openAiConversationHistoryModal(options: {
     dataset: { testid: "ai-history-search" },
   }) as HTMLInputElement;
 
+  const feedback = el("div");
+  const showReadError = (): void => {
+    feedback.replaceChildren(el("p", {
+      class: "ai-history-note",
+      attrs: { role: "alert" },
+      dataset: { testid: "ai-history-error" },
+      text: "대화 기록을 모두 불러오지 못했습니다. 이 창을 다시 열어 시도해 주세요. 이 브라우저의 기록은 유지됩니다.",
+    }));
+  };
+  const isActive = (): boolean => openBackdrop === backdrop && (options.isCurrent?.() ?? true);
+  let selectionGeneration = 0;
   // 갱신은 비동기다 — 검색 입력이 연타되면 늦게 도착한 옛 결과가 새 결과를 덮지 않게 세대를 센다.
   let renderGeneration = 0;
   const renderList = async (): Promise<void> => {
     const generation = ++renderGeneration;
-    const all = sortConversationsForScope(await listConversations(), options.scopeKey);
-    if (generation !== renderGeneration || openBackdrop !== backdrop) return;
+    let failed = false;
+    const all = sortConversationsForScope(await listConversations({
+      scopeKey: options.scopeKey,
+      onError: () => { failed = true; },
+    }), options.scopeKey);
+    if (generation !== renderGeneration || !isActive()) return;
+    feedback.replaceChildren();
+    if (failed) showReadError();
     const rows = filterConversationsByTitle(all, search.value);
     if (rows.length === 0) {
+      if (failed) { list.replaceChildren(); return; }
       list.replaceChildren(
         el("p", {
           class: "ai-history-empty",
@@ -123,7 +143,7 @@ export function openAiConversationHistoryModal(options: {
               class: "ai-history-meta",
               text: [
                 `${formatSavedAt(row.savedAt)}`,
-                `턴 ${row.turnCount}`,
+                ...(row.source === "remote" ? ["온라인 기록"] : [`턴 ${row.turnCount}`]),
                 row.model,
                 ...(foreign ? ["다른 프로젝트"] : []),
                 ...(isCurrent ? ["현재"] : []),
@@ -132,17 +152,25 @@ export function openAiConversationHistoryModal(options: {
           ],
           on: {
             click: () => void modalPendingWork.track((async () => {
-              if (isCurrent) return;
-              const record = await loadConversation(row.id);
-              if (!record) {
+              if (isCurrent || !isActive()) return;
+              const selection = ++selectionGeneration;
+              let failed = false;
+              const record = await loadConversation(row.id, {
+                scopeKey: options.scopeKey,
+                onError: () => { failed = true; },
+              });
+              if (selection !== selectionGeneration || !isActive()) return;
+              // Local foreign-project history remains explicitly selectable. Remote rows must
+              // retain their validated current scope, including if a local save raced the GET.
+              if (!record || record.id !== row.id || record.projectContextKey !== row.projectContextKey) {
                 // 목록에는 있는데 본문이 없다 — 조용히 새로 그리면 사라진 이유가 남지 않는다.
                 recordAiUiEvent({
                   surface: "history-modal",
                   action: AI_UI_ACTIONS.conversationRestore,
                   testid: "ai-history-open",
-                  detail: { conversationId: row.id, kind: "missing" },
+                  detail: { conversationId: row.id, kind: failed ? "failed" : record ? "scope-mismatch" : "missing" },
                 });
-                await renderList();
+                showReadError();
                 return;
               }
               // 복원한 칸 수가 곧 «어디까지 이어졌는가» 다. 클릭만으로는 알 수 없다.
@@ -153,7 +181,7 @@ export function openAiConversationHistoryModal(options: {
                 detail: {
                   conversationId: row.id,
                   entries: record.entries.length,
-                  turnCount: row.turnCount,
+                  turnCount: record.entries.filter((entry) => entry.kind === "user").length,
                   foreignProject: foreign,
                 },
               });
@@ -165,10 +193,12 @@ export function openAiConversationHistoryModal(options: {
         const deleteButton = el("button", {
           class: "ai-history-delete",
           children: [deckIcon("x", { size: 15 })],
-          attrs: { type: "button", title: "이 기록을 지웁니다", "aria-label": `${row.title} 기록 삭제` },
+          attrs: { type: "button", title: "이 브라우저의 기록을 지웁니다 (온라인 기록은 유지)", "aria-label": `${row.title} 기록 삭제` },
           dataset: { testid: "ai-history-delete" },
           on: {
             click: () => void modalPendingWork.track((async () => {
+              if (!isActive()) return;
+              ++selectionGeneration;
               // 삭제는 되돌릴 수 없다 — 무엇을 지웠는지가 남아야 «없어졌다» 를 설명할 수 있다.
               recordAiUiEvent({
                 surface: "history-modal",
@@ -185,7 +215,7 @@ export function openAiConversationHistoryModal(options: {
         return el("div", {
           class: "ai-history-row",
           dataset: { testid: "ai-history-row", ...(isCurrent ? { current: "1" } : {}) },
-          children: [openButton, deleteButton],
+          children: [openButton, ...(row.source === "remote" ? [] : [deleteButton])],
         });
       }),
     );
@@ -226,6 +256,7 @@ export function openAiConversationHistoryModal(options: {
                 class: "ai-history-note",
                 text: "여는 순간 지금 대화는 기록에 저장되고, 열린 대화의 요약이 조수에게 다시 주입됩니다.",
               }),
+              feedback,
               list,
             ],
           }),

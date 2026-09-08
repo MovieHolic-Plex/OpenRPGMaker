@@ -11,11 +11,11 @@ import {
 import { isConversationTurnContext } from "@/ai/conversationTurnContext";
 import { enqueueRemoteWrite, registerRemoteOutboxSender } from "@/project/remoteOutbox";
 import type { ProjectIdentity } from "@/project/store";
-import { recordSupabaseConversation, type SupabaseConversationInput } from "@/project/supabaseProjectSync";
+import { recordSupabaseConversation, SupabaseProjectSyncError, type SupabaseConversationInput } from "@/project/supabaseProjectSync";
 import type { Project } from "@/project/types";
 
 export interface ConversationRecord { id: string; title: string; model: string; savedAt: number; entries: AuditEntry[]; projectContextKey?: string; }
-export interface ConversationSummary { id: string; title: string; model: string; savedAt: number; turnCount: number; projectContextKey?: string; /** 마지막 조수(없으면 사용자) 발화 80자 — 목록에서 고를 근거(데크 2026-09-03). */ readonly preview?: string; }
+export interface ConversationSummary { /** Remote summaries have no transcript/turn count and cannot be deleted locally. */ readonly source?: "remote"; id: string; title: string; model: string; savedAt: number; turnCount: number; projectContextKey?: string; /** 마지막 조수(없으면 사용자) 발화 80자 — 목록에서 고를 근거(데크 2026-09-03). */ readonly preview?: string; }
 /**
  * 저장 결과 — `saveConversation` 은 **던지지 않는다.**
  * - `ok`: 이 세션에서 다시 읽을 수 있게 저장됐다(메모리 폴백 포함). false 면 IndexedDB 쓰기가 실패해 어디에도 없다.
@@ -333,13 +333,62 @@ function toSummary(conversation: ConversationRecord): ConversationSummary {
   };
 }
 
-/** 최근 저장 순 요약 목록. 저장소 오류는 빈 목록으로 삼킨다(호출자는 UI 라 던져서 얻을 것이 없다). */
-export async function listConversations(): Promise<ConversationSummary[]> {
+/** No scope keeps the existing local-only API. History opts into current-scope remote reads. */
+export interface ConversationReadOptions {
+  readonly scopeKey?: string;
+  readonly onError?: (error: unknown) => void;
+}
+
+async function remoteConversationConfig(scopeKey: string | undefined) {
+  if (!scopeKey?.startsWith("remote:")) return null;
+  const { supabaseProjectConfig } = await import("@/project/supabaseProjectConfig");
+  const config = supabaseProjectConfig();
+  // Never retarget the configured connection using a history record's claimed owner.
+  if (!config || scopeKey !== `remote:${config.projectId}`) {
+    throw new SupabaseProjectSyncError("대화 기록의 온라인 연결과 현재 프로젝트가 일치하지 않습니다.");
+  }
+  return config;
+}
+
+function decodeRemoteConversation(row: Record<string, unknown>, scopeKey: string, summary = false): ConversationRecord {
+  const record = {
+    id: row.conversation_id, title: row.title, model: row.model,
+    savedAt: typeof row.saved_at === "string" ? Date.parse(row.saved_at) : NaN,
+    projectContextKey: row.project_context_key,
+    entries: summary ? [] : row.entries_json,
+  };
+  if (row.project_id !== scopeKey.slice("remote:".length) || record.projectContextKey !== scopeKey ||
+      !isConversationRecord(record) || !record.id || !Number.isFinite(record.savedAt)) {
+    throw new SupabaseProjectSyncError("대화 기록의 프로젝트 범위 또는 데이터가 올바르지 않습니다.");
+  }
+  return record;
+}
+
+/** Recent summaries, deduplicated by stable ID. Local records always win, even over a newer remote timestamp. */
+export async function listConversations(options: ConversationReadOptions = {}): Promise<ConversationSummary[]> {
+  let local: ConversationSummary[] = [];
   try {
-    return (await readAll()).map(toSummary);
+    local = (await readAll()).map(toSummary);
   } catch (error) {
     console.warn("[ai-conversation] 대화 목록을 읽지 못했습니다:", error);
-    return [];
+    options.onError?.(error);
+  }
+  try {
+    const config = await remoteConversationConfig(options.scopeKey);
+    if (!config) return local;
+    const { listSupabaseConversations } = await import("@/project/supabaseProjectSync");
+    const scopeKey = `remote:${config.projectId}`;
+    const remote = await listSupabaseConversations({ scopeKey }, config);
+    const byId = new Map(local.map((row) => [row.id, row]));
+    for (const row of remote) {
+      const record = decodeRemoteConversation(row, scopeKey, true);
+      if (!byId.has(record.id)) byId.set(record.id, { ...toSummary(record), source: "remote" });
+    }
+    return [...byId.values()].sort((left, right) => right.savedAt - left.savedAt);
+  } catch (error) {
+    console.warn("[ai-conversation] 온라인 대화 목록을 읽지 못했습니다:", error);
+    options.onError?.(error);
+    return local;
   }
 }
 
@@ -351,12 +400,24 @@ export async function searchConversations(query: string): Promise<ConversationSu
   return all.filter((conversation) => conversation.title.toLowerCase().includes(needle));
 }
 
-export async function loadConversation(id: string): Promise<ConversationRecord | null> {
+export async function loadConversation(id: string, options: ConversationReadOptions = {}): Promise<ConversationRecord | null> {
   try {
     await ensureLegacyMigrated();
-    return await readAiRecord<ConversationRecord>(STORE, id);
+    const local = await readAiRecord<ConversationRecord>(STORE, id);
+    if (local) return local;
+    const config = await remoteConversationConfig(options.scopeKey);
+    if (!config) return null;
+    const { loadSupabaseConversation } = await import("@/project/supabaseProjectSync");
+    const scopeKey = `remote:${config.projectId}`;
+    const row = await loadSupabaseConversation(id, config, { scopeKey });
+    const remote = row ? decodeRemoteConversation(row, scopeKey) : null;
+    if (remote && remote.id !== id) throw new SupabaseProjectSyncError("요청한 대화 기록과 응답이 일치하지 않습니다.");
+    // A save may have landed during the GET. Never overwrite or merge an unsynced local transcript.
+    // Reads do not cache/mirror remote records: normal panel persistence owns subsequent saves.
+    return (await readAiRecord<ConversationRecord>(STORE, id)) ?? remote;
   } catch (error) {
     console.warn("[ai-conversation] 대화를 읽지 못했습니다:", error);
+    options.onError?.(error);
     return null;
   }
 }
