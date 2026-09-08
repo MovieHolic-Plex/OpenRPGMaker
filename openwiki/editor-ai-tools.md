@@ -52,6 +52,11 @@ Keep description-heavy prompt imports in the prompt module, not the shared eligi
 module used by other consumers.
 
 Descriptions are JSON-escaped reference data, not instructions or proof of listening.
+Source `ai-listening` means **AI 분석 초안**, not verified acoustic facts. The static editor-only
+overlay retains model/review/evidence provenance in `src/assets/audioAiDescriptions.json`;
+instrument, vocal and numerical claims are not independent measurements. Most drafts are
+Flash outputs; the Pro recoveries and human-corrected Vanguard remain drafts. Project
+overrides, including explicit empty strings, take precedence; reset inherits the draft again.
 Escaping doesn't replace write approval or tool validation. `src/ai/contextBuilder.ts`
 directs fresh detail reads when full/current evidence is needed, including after conversation
 compaction. Each request uses the current project rather than a description cache or an

@@ -16,8 +16,12 @@ the empty-description filter tests the effective value, including deliberate cle
 are the feature's browser test controls.
 
 Save trims new input and writes one project override, including `""`. Restore default
-removes the override. Source labels distinguish project text, BGM creative briefs,
-metadata-derived descriptions and missing descriptions. Neither selection nor preview
+removes the override and restores the shared AI draft if available, otherwise prior metadata.
+Source labels distinguish project text, **AI 분석 초안** (`ai-listening`), BGM creative briefs,
+metadata-derived descriptions and missing descriptions. AI drafts are not independently
+verified acoustic facts; instrument, vocal and numeric claims may be wrong. The synchronous
+editor-only overlay and recovery provenance are documented in `openwiki/bgm-catalog.md`.
+Explicit empty project overrides beat drafts; no defaults are copied into saves. Neither selection nor preview
 authors metadata. Implementation lives in `src/editor/panels/audioDescriptionEditor.ts`,
 `audioDescriptionDetail.ts`, `audioDescriptionDirtyDialog.ts` and
 `audioResourcePresentation.ts` under the same panels directory.
