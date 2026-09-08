@@ -422,17 +422,24 @@ describe("감사 로그 내보내기", () => {
     const { combineAuditJson } = await import("@/editor/panels/aiChatPanel");
     const session = fakeChatSession();
     await session.sendUserMessage("npc 넣어줘", () => {});
-    expect(session.getAuditEntries().length).toBeGreaterThanOrEqual(2); // user + assistant
+    expect(session.getAuditEntries().length).toBeGreaterThanOrEqual(2); // user + assistant remain
+    expect(session.getAuditEntries().some((entry) => entry.kind === "user" && entry.text === "npc 넣어줘")).toBe(true);
+    expect(session.getAuditEntries().some((entry) => entry.kind === "assistant")).toBe(true);
 
     // 패널의 dropSession과 동일한 흐름: 세션 폐기 전 항목을 히스토리로 회수.
     const history = [...session.getAuditEntries()];
     const json = combineAuditJson(history, null, "custom/free-form-model");
     expect(json).not.toBeNull();
-    const parsed = JSON.parse(json ?? "{}");
+    const parsed = JSON.parse(json ?? "{}") as { model: string; entries: Array<{ kind: string; text?: string }> };
     expect(parsed.model).toBe("custom/free-form-model");
     expect(parsed.entries.length).toBe(history.length);
-    // at(ISO 타임스탬프)는 결함 ⑬(구조화 세션 로그)에서 추가 — 내용 필드만 고정 검증.
-    expect(parsed.entries[0]).toMatchObject({ kind: "user", text: "npc 넣어줘" });
+    // Source capture is an earlier status slot; do not require it to be the user row.
+    const userIndex = parsed.entries.findIndex((entry) => entry.kind === "user" && entry.text === "npc 넣어줘");
+    const sourceIndex = parsed.entries.findIndex((entry) => entry.kind === "status" && (entry.text ?? "").startsWith("request:source"));
+    expect(userIndex).toBeGreaterThanOrEqual(0);
+    expect(sourceIndex).toBeGreaterThanOrEqual(0);
+    expect(sourceIndex).toBeLessThan(userIndex);
+    expect(parsed.entries[sourceIndex]?.text).toContain("npc 넣어줘");
   });
 
   it("현재 세션과 히스토리를 합쳐 내보낸다", async () => {
