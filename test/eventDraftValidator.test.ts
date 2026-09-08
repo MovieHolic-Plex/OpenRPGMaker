@@ -496,7 +496,8 @@ describe("event draft aggregate validator", () => {
     const customResult = validateEventDraftBody(project, mapId, event);
     expect(customResult.issues).toContainEqual(expect.objectContaining({
       code: "reference.map.missing",
-      field: { testId: "event-page-custom-route" },
+      field: { testId: "event-page-move-route-npc-target-map", openTestId: "event-page-custom-route",
+        scopeTestId: "event-page-move-route-dialog", selectTestId: "event-page-move-route-command-1" },
     }));
   });
 

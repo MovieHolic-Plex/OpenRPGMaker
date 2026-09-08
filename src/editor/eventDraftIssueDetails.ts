@@ -71,6 +71,9 @@ export function commandReferenceField(kind: string, label: string): { readonly t
     "showEmote:이모트 대상 이벤트": "show-emote-event-id-input", "addLight:빛 위치 이벤트": "add-light-event-id-input",
     "showPicture:그림 리소스": "show-picture-resource-picker", "playAudio:오디오 리소스": "play-audio-resource-picker",
     "playMovie:동영상 리소스": "play-movie-resource-select", "triggerEnding:엔딩": "event-command-trigger-ending-id",
+    "spawnFieldEnemy:필드 적 그룹": "event-command-spawn-troop",
+    "spawnFieldEnemy:필드 적 처치 스위치": "event-command-spawn-switch",
+    "spawnFieldEnemy:필드 적 그래픽": "event-command-spawn-graphic",
     "shop:상점 아이템": "shop-add-goods", "shop:상점 재고 아이템": "shop-add-goods",
   };
   return { testId: fields[key] ?? "event-inspector-body" };

@@ -79,6 +79,13 @@
   the current grid. Copy-format/copy/assistant controls wrap rather than expand the frame.
 - Selecting an issue focuses its actual command field after revealing the command.
   Custom-select enhancement preserves that focus instead of stranding it on the body.
+- Spawn validation recovery uses the existing cream command form, record pickers and
+  labelled native inputs for troop, optional kill switch/graphic ID and area X/Y/W/H.
+  No additional spawn settings, new token, dependency or visual shell is introduced.
+- Page-route recovery opens the existing dialog and selects the diagnosed step. Its
+  existing parameter panel names the selected step when editing a switch, graphic,
+  sound or NPC transfer; initial/appended selection remains an insertion template.
+  Edits stay local until the existing OK action, and Cancel preserves the authored route.
 - Assistant handoff uses the existing editable composer and retains the minimized event
   editor. It appends to existing instructions, marks the diagnostic UNSENT and never
   submits. Copying includes only rule-owned diagnostics and generated numeric locations.

@@ -123,7 +123,8 @@ export function navigateToEventDraftIssue(issue: EventDraftIssue): void {
     editorState.set({ selectedEventPageId: issue.pageId });
   }
   if (!issue.field) return;
-  const root = (issue.commandPath
+  if (issue.field.openTestId) modal?.querySelector<HTMLElement>(`[data-testid="${issue.field.openTestId}"]`)?.click();
+  const root = issue.field.openTestId ? document.body : (issue.commandPath
     ? modal?.querySelector<HTMLElement>('[data-testid="event-editor-inspector"]') : modal) ?? document.body;
   const scope = issue.field.conditionPath
     ? Array.from(root.querySelectorAll<HTMLElement>("[data-condition-path]"))
@@ -131,6 +132,7 @@ export function navigateToEventDraftIssue(issue: EventDraftIssue): void {
     : issue.field.scopeTestId
       ? root.querySelector<HTMLElement>(`[data-testid="${issue.field.scopeTestId}"]`)
       : root;
+  if (issue.field.selectTestId) scope?.querySelector<HTMLElement>(`[data-testid="${issue.field.selectTestId}"]`)?.click();
   const findField = () => scope?.querySelector<HTMLElement>(`[data-testid="${issue.field?.testId}"]`);
   const initialField = findField();
   if (issue.field.selectBeforeFocus) initialField?.click();
@@ -167,12 +169,13 @@ function renderIssueRow(issue: EventDraftIssue, index: number, details: HTMLDeta
       severity: issue.severity,
       commandPath: JSON.stringify(issue.commandPath ?? []),
       field: issue.field?.testId ?? "",
+      selectTarget: issue.field?.selectTestId ?? "",
     },
     children: [
       el("span", { class: "event-draft-validation-severity", text: SEVERITY_LABEL[issue.severity] }),
       el("span", { class: "event-draft-validation-message", children: [
         el("span", { text: `${issue.code} · ${issue.pageId} · ${JSON.stringify(issue.commandPath ?? [])}` }),
-        el("span", { text: `${issue.field?.testId ?? ""}${issue.field?.conditionPath ? ` · 조건 ${JSON.stringify(issue.field.conditionPath)}` : ""}` }),
+        el("span", { text: `${issue.field?.testId ?? ""}${issue.field?.selectTestId ? ` · ${issue.field.selectTestId}` : ""}${issue.field?.conditionPath ? ` · 조건 ${JSON.stringify(issue.field.conditionPath)}` : ""}` }),
         el("span", { text: issue.cause ?? issue.message }),
         el("span", { text: issue.expected ? `기대값: ${issue.expected}` : "" }),
         el("span", { text: issue.hint ?? "" }),

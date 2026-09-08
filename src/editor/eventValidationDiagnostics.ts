@@ -16,6 +16,7 @@ export function eventValidationDiagnosticReport(validation: EventDraftValidation
         commandPath: [...(issue.commandPath ?? [])],
         field: issue.field?.testId ?? rule.testId,
         conditionPath: [...(issue.field?.conditionPath ?? [])],
+        ...(issue.field?.selectTestId ? { selection: issue.field.selectTestId } : {}),
         cause: rule.cause,
         expected: rule.expected,
         hint: rule.hint,

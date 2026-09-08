@@ -1,11 +1,12 @@
 import assert from "node:assert/strict";
 import { mkdir, writeFile } from "node:fs/promises";
 import { chromium } from "playwright";
+import { verifyValidationRecoveryFields } from "./issue693-validation-recovery.mjs";
 
 const base = process.env.QA_BASE_URL ?? "http://127.0.0.1:38426";
 const output = process.env.QA_OUTPUT ?? "output/evidence/issue693-validation/browser";
 await mkdir(output, { recursive: true });
-const browser = await chromium.launch({ headless: true, args: ["--no-sandbox"] });
+const browser = await chromium.launch({ channel: process.env.QA_BROWSER_CHANNEL ?? "chrome", headless: true, args: ["--no-sandbox"] });
 const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, permissions: ["clipboard-read", "clipboard-write"] });
 const page = await context.newPage();
 page.setDefaultTimeout(90000);
@@ -59,6 +60,7 @@ async function clickIssue(code, path, field) {
   await match[0].click();
 }
 const measurements = [];
+let recovery = [];
 try {
   await page.goto(`${base}/?blankProject=1`, { waitUntil: "domcontentloaded", timeout: 120000 });
   await page.evaluate(() => window.validationReady);
@@ -156,8 +158,9 @@ try {
   assert.equal(await page.evaluate(() => document.activeElement?.getAttribute("data-testid")), "ai-input");
   assert.deepEqual(sends, []);
   await page.screenshot({ path: `${output}/unsent-composer.png` });
+  recovery = await verifyValidationRecoveryFields(page, output);
 } finally {
-  await writeFile(`${output}/report.json`, JSON.stringify({ measurements, errors, sends }, null, 2));
+  await writeFile(`${output}/report.json`, JSON.stringify({ measurements, recovery, errors, sends }, null, 2));
   await page.screenshot({ path: `${output}/final.png` });
   await browser.close();
 }

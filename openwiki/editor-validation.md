@@ -16,16 +16,26 @@
 - Ask local assistant minimizes (retains) the event editor and appends an editable UNSENT
   report through `prefillAiAssistantInput(..., {preserveDraft:true})`. Existing composer
   bytes survive. No send hook is called; an unavailable target restores the editor.
-- `changeLifeSkillExp` now renders its existing schema fields rather than an empty
-  inspector, allowing its missing skill/variable references to be corrected. Commands
-  without a field editor still retain command-level navigation; this patch does not
-  introduce a new field-spawn command editor.
+- `changeLifeSkillExp` renders its existing schema fields rather than an empty inspector.
+  Native `spawnFieldEnemy` now adds only the validation-recovery fields to the existing
+  command-form chain: troop, optional kill switch/graphic ID and area X/Y/W/H. Staged
+  edits and optional clears preserve all other spawn/graphic data; rendering writes nothing.
+- Page custom-route locators carry `openTestId`, `scopeTestId` and `selectTestId`. Navigation
+  opens the existing route dialog, selects the exact current step and focuses its parameter.
+  Explicit selection of switch/graphic/sound/NPC-transfer steps populates the existing
+  parameter panel and edits only that local step. Initial/appended selection keeps the
+  insertion-template behavior; route OK/Cancel remains the only commit/discard boundary.
+  Export includes the generated step selection anchor, never its authored values.
 - Focused contracts: `eventValidationDiagnostics`, `eventValidationFieldAnchors`,
-  `eventValidationSelectFocus`, `eventValidationNavigationContract`, `aiBootIntent`.
+  `eventValidationSelectFocus`, `eventValidationNavigationContract`, `eventValidationRecoveryFields`, `aiBootIntent`.
   Replay: `QA_BASE_URL=http://127.0.0.1:<isolated-port> node scripts/qa/issue693-validation.mjs`.
   It asserts disabled remote persistence, uses real editor/store/composer surfaces, and
   captures 1024/1280/1440 geometry and identical sanitized clipboard formats. Its local
   GET relay forwards actual Vite bytes to avoid workstation Chromium network-change errors.
+  The replay includes `issue693-validation-recovery.mjs`: real spawn/route corrections,
+  Cancel, preserved unrelated data and successful Save, with 45 exact field-focus viewport
+  checks across all three sizes. It uses installed Chrome (`QA_BROWSER_CHANNEL`, default
+  `chrome`); set `QA_OUTPUT` under `/dev/shm` on disk-constrained workstations.
 
 ## AI blocked-event relocation recovery (2026-09-06)
 

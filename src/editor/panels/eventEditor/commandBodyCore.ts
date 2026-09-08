@@ -1,3 +1,4 @@
+import { fieldSpawnBody } from "./commandBodyFieldSpawn";
 import { openDatabaseResourcePickerDialog } from "@/editor/panels/databaseResourcePickerDialog";
 import { showConfirm } from "@/editor/ui/modal";
 import { clearChildren, el } from "@/util/dom";
@@ -81,6 +82,7 @@ const coreCommandBodyHandlers: CoreCommandBodyHandlers = {
   timer: timerBody,
   inputWait: inputWaitBody,
   inputNumber: inputNumberBody,
+  spawnFieldEnemy: fieldSpawnBody,
   label: labelBody,
   gotoLabel: labelBody,
   loop: loopBody,

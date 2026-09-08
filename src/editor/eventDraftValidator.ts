@@ -32,6 +32,9 @@ export type EventDraftFieldLocator = {
   readonly scopeTestId?: string;
   readonly conditionPath?: readonly number[];
   readonly selectBeforeFocus?: boolean;
+  /** Open an existing subdialog, then select its current index-based child before field focus. */
+  readonly openTestId?: string;
+  readonly selectTestId?: string;
 };
 
 export type EventDraftIssue = {
@@ -1261,11 +1264,15 @@ function validateMapRect(
     && rect.x + rect.w <= map.width
     && rect.y + rect.h <= map.height;
   if (valid) return;
+  const invalidField = !Number.isInteger(rect.x) || rect.x < 0 || rect.x >= map.width ? "x"
+    : !Number.isInteger(rect.y) || rect.y < 0 || rect.y >= map.height ? "y"
+    : !Number.isInteger(rect.w) || rect.w <= 0 || rect.x + rect.w > map.width ? "w" : "h";
   issues.push({
     severity: "error",
     code: "map.area.out-of-bounds",
     message: `${label} (${rect.x}, ${rect.y}, ${rect.w}, ${rect.h})가 '${map.name}' 맵 범위를 벗어났습니다.`,
     pageId,
+    field: { testId: `event-command-spawn-area-${invalidField}` },
     ...(commandPath ? { commandPath: [...commandPath] } : {}),
   });
 }
@@ -1280,19 +1287,21 @@ function validateMoveRoute(
   field?: EventDraftFieldLocator,
 ): void {
   for (const [index, move] of (route?.moves ?? []).entries()) {
-    const moveField = field ?? { testId: `move-route-command-${index + 1}`, selectBeforeFocus: true };
+    const pageField = (testId: string): EventDraftFieldLocator => field?.testId === "event-page-custom-route"
+      ? { testId, openTestId: field.testId, scopeTestId: "event-page-move-route-dialog", selectTestId: `event-page-move-route-command-${index + 1}` }
+      : field ?? { testId: `move-route-command-${index + 1}`, selectBeforeFocus: true };
     if (move.kind === "setSwitch") {
-      requireReference(issues, pageId, "reference.switch.missing", "이동 경로 스위치", move.switchId, refs.switches, moveField, commandPath);
+      requireReference(issues, pageId, "reference.switch.missing", "이동 경로 스위치", move.switchId, refs.switches, pageField("event-page-move-route-switch-id"), commandPath);
     }
     if (move.kind === "changeGraphic") {
-      requireReference(issues, pageId, "reference.resource.missing", "이동 경로 그래픽", move.spriteId, refs.resources, moveField, commandPath);
+      requireReference(issues, pageId, "reference.resource.missing", "이동 경로 그래픽", move.spriteId, refs.resources, pageField("event-page-move-route-graphic-id"), commandPath);
     }
     if (move.kind === "npcTransfer") {
-      requireReference(issues, pageId, "reference.map.missing", "이동 경로 목적지 맵", move.mapId, refs.maps, moveField, commandPath);
-      validateMapPosition(project, move.mapId, move.x, move.y, pageId, commandPath, "이동 경로 목적지", issues, moveField);
+      requireReference(issues, pageId, "reference.map.missing", "이동 경로 목적지 맵", move.mapId, refs.maps, pageField("event-page-move-route-npc-target-map"), commandPath);
+      validateMapPosition(project, move.mapId, move.x, move.y, pageId, commandPath, "이동 경로 목적지", issues, pageField("event-page-move-route-npc-target-x"));
     }
     if (move.kind === "playSe") {
-      requireReference(issues, pageId, "reference.resource.missing", "이동 경로 효과음", move.resourceId, refs.resources, moveField, commandPath);
+      requireReference(issues, pageId, "reference.resource.missing", "이동 경로 효과음", move.resourceId, refs.resources, pageField("event-page-move-route-sound-id"), commandPath);
     }
   }
 }
