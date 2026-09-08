@@ -111,6 +111,12 @@ function click(root: FakeElement, testId: string): void {
   (node as unknown as HTMLElement).click();
 }
 
+function deferred<T>(): { promise: Promise<T>; resolve: (value: T) => void } {
+  let resolve!: (value: T) => void;
+  const promise = new Promise<T>((done) => { resolve = done; });
+  return { promise, resolve };
+}
+
 beforeEach(async () => {
   installMemoryStorage();
   resetAiRecordDbForTest();
@@ -474,5 +480,193 @@ describe("모달 렌더", () => {
     await whenAiConversationHistoryModalSettled();
     expect(opened).toHaveLength(0);
     expect(findByTestId(backdrop, "ai-history-modal")).not.toBeNull();
+  });
+
+  it("Given an unscoped retained record When the legacy view is opened Then the transcript is readable without adopting it", async () => {
+    // Break: every modal filter queries the captured project scope, so projectContextKey-less
+    // records stay in the archive but cannot be selected or read.
+    const legacyUser = "LEGACY_UNSCOPED_USER";
+    const legacyAssist = "LEGACY_UNSCOPED_ASSIST";
+    await saveConversation({
+      id: "legacy-unscoped",
+      title: legacyUser,
+      model: "m",
+      savedAt: 500,
+      entries: [
+        { kind: "user", text: legacyUser, context: { mapId: "map_a", mapName: "옛 광장", mapWidth: 20, mapHeight: 15 } },
+        { kind: "assistant", text: legacyAssist },
+      ],
+    });
+    await saveConversation(record("mine-now", 2_000, "mine", "CURRENT_PROJECT_TURN"));
+    const onOpen = vi.fn();
+    const hydrate = vi.spyOn(conversations, "hydrateConversationArchive");
+    const backdrop = openModal({ currentConversationId: "active-now", onOpen });
+    await whenAiConversationHistoryModalSettled();
+
+    expect(findByTestId(backdrop, "ai-history-list")!.textContent).not.toContain(legacyUser);
+    click(backdrop, "ai-history-filter-all");
+    await whenAiConversationHistoryModalSettled();
+    expect(findByTestId(backdrop, "ai-history-list")!.textContent).not.toContain(legacyUser);
+
+    click(backdrop, "ai-history-filter-legacy");
+    await whenAiConversationHistoryModalSettled();
+
+    expect(findByTestId(backdrop, "ai-history-filter-legacy")!.getAttribute("aria-pressed")).toBe("true");
+    expect(findByTestId(backdrop, "ai-history-filter-all")!.getAttribute("aria-pressed")).toBe("false");
+    const list = findByTestId(backdrop, "ai-history-list")!;
+    expect(list.textContent).toContain(legacyUser);
+    expect(list.textContent).not.toContain("CURRENT_PROJECT_TURN");
+    expect(list.textContent).toContain("map_a");
+    expect(list.textContent).not.toContain("광장");
+    expect(findByTestId(backdrop, "ai-history-open")).toBeNull();
+    expect(findByTestId(backdrop, "ai-history-delete")).toBeNull();
+    expect(findByTestId(backdrop, "ai-history-recover")!.hidden).toBe(true);
+    expect(hydrate).not.toHaveBeenCalled();
+
+    click(backdrop, "ai-history-legacy-inspect");
+    await whenAiConversationHistoryModalSettled();
+    const body = findByTestId(backdrop, "ai-history-legacy-body")!;
+    expect(body.textContent).toContain(legacyUser);
+    expect(body.textContent).toContain(legacyAssist);
+    expect(onOpen).not.toHaveBeenCalled();
+    expect((await conversations.loadConversation("legacy-unscoped"))?.projectContextKey).toBeUndefined();
+    expect(backdrop.parentElement).not.toBeNull();
+  });
+
+  it.each(["open", "delete"] as const)("blocks stale scoped %s during a deferred legacy transition", async (action) => {
+    const target = record("transition-target", 1_000, "mine");
+    await saveConversation(target);
+    await saveConversation(record("transition-legacy", 500));
+    const onOpen = vi.fn();
+    const backdrop = openModal({ onOpen });
+    await whenAiConversationHistoryModalSettled();
+    const staleAction = findByTestId(backdrop, `ai-history-${action}`)!;
+    expect(staleAction).not.toBeNull();
+    const legacyResult = await conversations.queryConversationArchive({ projectContextKey: null });
+    const query = deferred<typeof legacyResult>();
+    const queried = vi.spyOn(conversations, "queryConversationArchive").mockReturnValueOnce(query.promise);
+    const read = vi.spyOn(conversations, "loadConversationForScope");
+    const remove = vi.spyOn(conversations, "deleteConversationForScope");
+
+    click(backdrop, "ai-history-filter-legacy");
+    const pendingActions = backdrop.querySelectorAll("[data-testid=ai-history-open], [data-testid=ai-history-delete]");
+    // Retained controls must also reject invocation, even after they leave the DOM.
+    (staleAction as unknown as HTMLElement).click();
+    query.resolve(legacyResult);
+    await whenAiConversationHistoryModalSettled();
+
+    expect.soft(pendingActions).toHaveLength(0);
+    expect.soft(read).not.toHaveBeenCalled();
+    expect.soft(remove).not.toHaveBeenCalled();
+    expect.soft(onOpen).not.toHaveBeenCalled();
+    expect.soft(await conversations.loadConversation(target.id)).toMatchObject(target);
+    expect(backdrop.parentElement).not.toBeNull();
+    expect(queried).toHaveBeenCalledWith(expect.objectContaining({ projectContextKey: null }));
+    expect(findByTestId(backdrop, "ai-history-filter-legacy")!.getAttribute("aria-pressed")).toBe("true");
+    expect(findByTestId(backdrop, "ai-history-legacy-inspect")).not.toBeNull();
+  });
+
+  it.each([false, true])("invalidates pending scoped Open on legacy transition (return to scoped: %s)", async (returnToScoped) => {
+    const target = record("transition-pending-open", 1_000, "mine");
+    await saveConversation(target);
+    const onOpen = vi.fn();
+    const backdrop = openModal({ onOpen });
+    await whenAiConversationHistoryModalSettled();
+    const load = deferred<ConversationRecord | null>();
+    const read = vi.spyOn(conversations, "loadConversationForScope").mockReturnValueOnce(load.promise);
+    const legacyResult = await conversations.queryConversationArchive({ projectContextKey: null });
+    const query = deferred<typeof legacyResult>();
+    const queried = vi.spyOn(conversations, "queryConversationArchive").mockReturnValueOnce(query.promise);
+
+    click(backdrop, "ai-history-open");
+    click(backdrop, "ai-history-filter-legacy");
+    if (returnToScoped) click(backdrop, "ai-history-filter-all");
+    query.resolve(legacyResult);
+    load.resolve(target);
+    await whenAiConversationHistoryModalSettled();
+
+    expect(read).toHaveBeenCalledWith(target.id, "mine");
+    expect(queried).toHaveBeenCalledWith(expect.objectContaining({ projectContextKey: null }));
+    expect(onOpen).not.toHaveBeenCalled();
+    expect(backdrop.parentElement).not.toBeNull();
+    expect(findByTestId(backdrop, "ai-history-recover-status")!.dataset.state).toBe("idle");
+    if (returnToScoped) {
+      // A fresh scoped invocation still works after the abandoned read completes.
+      click(backdrop, "ai-history-open");
+      await whenAiConversationHistoryModalSettled();
+      expect(onOpen).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ id: target.id }));
+      expect(backdrop.parentElement).toBeNull();
+    }
+  });
+
+  it("keeps a failed legacy inspect recoverable without adopting", async () => {
+    await saveConversation({
+      id: "legacy-retry",
+      title: "LEGACY_RETRY_USER",
+      model: "m",
+      savedAt: 500,
+      entries: [
+        { kind: "user", text: "LEGACY_RETRY_USER" },
+        { kind: "assistant", text: "LEGACY_RETRY_ASSIST" },
+      ],
+    });
+    const onOpen = vi.fn();
+    const backdrop = openModal({ currentConversationId: "active-now", onOpen });
+    await whenAiConversationHistoryModalSettled();
+    click(backdrop, "ai-history-filter-legacy");
+    await whenAiConversationHistoryModalSettled();
+    vi.spyOn(conversations, "loadConversationForScope").mockRejectedValueOnce(new Error("LEGACY_READ_FAILURE"));
+
+    click(backdrop, "ai-history-legacy-inspect");
+    await whenAiConversationHistoryModalSettled();
+
+    expect(onOpen).not.toHaveBeenCalled();
+    expect(backdrop.parentElement).not.toBeNull();
+    expect(findByTestId(backdrop, "ai-history-legacy-body")).toBeNull();
+    const status = findByTestId(backdrop, "ai-history-recover-status")!;
+    expect(status.dataset.state).toBe("error");
+    expect(status.textContent).toContain("LEGACY_READ_FAILURE");
+    expect(findByTestId(backdrop, "ai-history-recover")!.hidden).toBe(true);
+
+    click(backdrop, "ai-history-legacy-inspect");
+    await whenAiConversationHistoryModalSettled();
+    expect(findByTestId(backdrop, "ai-history-legacy-body")!.textContent).toContain("LEGACY_RETRY_ASSIST");
+    expect(onOpen).not.toHaveBeenCalled();
+    expect((await conversations.loadConversation("legacy-retry"))?.projectContextKey).toBeUndefined();
+  });
+
+  it("does not paint a late legacy inspect onto the current-project list", async () => {
+    await saveConversation({
+      id: "legacy-stale",
+      title: "LEGACY_STALE_USER",
+      model: "m",
+      savedAt: 500,
+      entries: [{ kind: "user", text: "LEGACY_STALE_USER" }, { kind: "assistant", text: "LEGACY_STALE_ASSIST" }],
+    });
+    await saveConversation(record("mine-now", 2_000, "mine", "CURRENT_PROJECT_TURN"));
+    const onOpen = vi.fn();
+    const backdrop = openModal({ onOpen });
+    await whenAiConversationHistoryModalSettled();
+    click(backdrop, "ai-history-filter-legacy");
+    await whenAiConversationHistoryModalSettled();
+    let resolveLoad: ((value: ConversationRecord | null) => void) | undefined;
+    vi.spyOn(conversations, "loadConversationForScope").mockImplementationOnce(
+      () => new Promise((resolve) => { resolveLoad = resolve; }),
+    );
+    click(backdrop, "ai-history-legacy-inspect");
+    click(backdrop, "ai-history-filter-all");
+    resolveLoad?.({
+      id: "legacy-stale",
+      title: "LEGACY_STALE_USER",
+      model: "m",
+      savedAt: 500,
+      entries: [{ kind: "user", text: "LEGACY_STALE_USER" }, { kind: "assistant", text: "LEGACY_STALE_ASSIST" }],
+    });
+    await whenAiConversationHistoryModalSettled();
+
+    expect(onOpen).not.toHaveBeenCalled();
+    expect(findByTestId(backdrop, "ai-history-legacy-body")).toBeNull();
+    expect(findByTestId(backdrop, "ai-history-list")!.textContent).toContain("CURRENT_PROJECT_TURN");
+    expect(findByTestId(backdrop, "ai-history-list")!.textContent).not.toContain("LEGACY_STALE_USER");
   });
 });

@@ -5,6 +5,7 @@
 // 현재 맵 보기는 그 맵에서 시작했거나 그 맵을 대상으로 한 **대화 전체**다. 턴을 잘라 잇지 않는다.
 // 삭제는 대화 전체·이 브라우저의 억제(tombstone)이며 서버 복사본 삭제를 약속하지 않는다.
 
+import type { AuditEntry } from "@/ai/assistantSession";
 import {
   deleteConversationForScope,
   hydrateConversationArchive,
@@ -29,7 +30,7 @@ export type HistoryKnownMap = {
   readonly name: string;
 };
 
-type HistoryFilter = "current" | "all" | "unknown" | "map";
+type HistoryFilter = "current" | "all" | "unknown" | "map" | "legacy";
 type RecoverStatus = "idle" | "loading" | "ok" | "error";
 
 let openBackdrop: HTMLElement | null = null;
@@ -106,8 +107,23 @@ function emptyCopy(filter: HistoryFilter, query: string, durable: boolean): stri
       return durable
         ? "이 브라우저에 이 프로젝트 대화가 없습니다. 서버에 더 있을 수 있습니다."
         : "이 세션에 이 프로젝트 대화가 없습니다. 서버에 더 있을 수 있습니다.";
+    case "legacy":
+      return "프로젝트에 묶이지 않은 옛 기록이 없습니다.";
     default:
       return assertNever(filter);
+  }
+}
+
+function legacyTurnText(entry: AuditEntry): string {
+  switch (entry.kind) {
+    case "user":
+    case "assistant":
+    case "status":
+      return entry.text;
+    case "tool":
+      return `${entry.name}: ${entry.summary}`;
+    default:
+      return assertNever(entry);
   }
 }
 
@@ -133,6 +149,9 @@ export function openAiConversationHistoryModal(options: {
   let archiveMapIds: readonly string[] = [];
   let listError: string | null = null;
   let renderGeneration = 0;
+  let inspectGeneration = 0;
+  let expandedId: string | null = null;
+  let expandedRecord: ConversationRecord | null = null;
 
   const list = el("div", { class: "ai-history-list", dataset: { testid: "ai-history-list" } });
   const search = el("input", {
@@ -162,10 +181,17 @@ export function openAiConversationHistoryModal(options: {
     dataset: { testid: "ai-history-filter-unknown" },
     on: { click: () => setFilter("unknown") },
   });
+  const filterLegacy = el("button", {
+    class: "ai-history-filter",
+    text: "스코프 없음",
+    attrs: { type: "button", "aria-pressed": "false", title: "프로젝트에 묶이지 않은 옛 기록 — 읽기만" },
+    dataset: { testid: "ai-history-filter-legacy" },
+    on: { click: () => setFilter("legacy") },
+  });
   const filters = el("div", {
     class: "ai-history-filters",
     attrs: { role: "group", "aria-label": "대화 기록 범위" },
-    children: [filterCurrent, filterAll, filterUnknown],
+    children: [filterCurrent, filterAll, filterUnknown, filterLegacy],
   });
   const mapSelect = el("div", {
     class: "ai-history-map-select",
@@ -190,10 +216,21 @@ export function openAiConversationHistoryModal(options: {
 
   const isCurrentModal = (): boolean => openBackdrop === backdrop;
 
+  const historyNote = el("p", {
+    class: "ai-history-note",
+    text: "여는 순간 지금 대화는 기록에 저장됩니다. 목록만 보면 지금 대화는 그대로입니다.",
+  });
+
   const refreshFilterChrome = (): void => {
     filterCurrent.setAttribute("aria-pressed", String(filter === "current"));
     filterAll.setAttribute("aria-pressed", String(filter === "all"));
     filterUnknown.setAttribute("aria-pressed", String(filter === "unknown"));
+    filterLegacy.setAttribute("aria-pressed", String(filter === "legacy"));
+    recoverButton.hidden = filter === "legacy";
+    mapSelect.hidden = filter === "legacy";
+    historyNote.textContent = filter === "legacy"
+      ? "프로젝트에 묶이지 않은 기록입니다. 읽기만 되며 지금 대화로 이어가지 않습니다."
+      : "여는 순간 지금 대화는 기록에 저장됩니다. 목록만 보면 지금 대화는 그대로입니다.";
     renderMapSelect();
   };
 
@@ -252,6 +289,11 @@ export function openAiConversationHistoryModal(options: {
   const setFilter = (next: HistoryFilter, mapId?: string): void => {
     filter = next;
     selectedMapId = next === "map" ? mapId ?? null : null;
+    inspectGeneration += 1;
+    expandedId = null;
+    expandedRecord = null;
+    // Scoped actions must disappear before the unscoped query can yield.
+    if (next === "legacy") list.replaceChildren();
     refreshFilterChrome();
     void modalPendingWork.track(fetchPage(false));
   };
@@ -277,7 +319,7 @@ export function openAiConversationHistoryModal(options: {
       );
       return;
     }
-    const nodes: HTMLElement[] = loaded.map(renderRow);
+    const nodes: HTMLElement[] = loaded.map((row) => filter === "legacy" ? renderLegacyRow(row) : renderRow(row));
     if (hasMore) {
       nodes.push(el("button", {
         class: "ai-history-load-more",
@@ -333,16 +375,17 @@ export function openAiConversationHistoryModal(options: {
       ],
       on: {
         click: () => void modalPendingWork.track((async () => {
-          if (isCurrent) return;
+          if (isCurrent || !isCurrentModal() || filter === "legacy") return;
+          const generation = renderGeneration;
           let record: ConversationRecord | null;
           try {
             record = await loadConversationForScope(row.id, capturedScope);
           } catch (error) {
-            if (!isCurrentModal()) return;
+            if (!isCurrentModal() || generation !== renderGeneration) return;
             setRecover("error", errorMessage(error, "대화를 읽지 못했습니다. 다시 열어 주세요."));
             return;
           }
-          if (!isCurrentModal()) return;
+          if (!isCurrentModal() || generation !== renderGeneration) return;
           if (!record) {
             recordAiUiEvent({
               surface: "history-modal",
@@ -381,6 +424,7 @@ export function openAiConversationHistoryModal(options: {
       dataset: { testid: "ai-history-delete" },
       on: {
         click: () => void modalPendingWork.track((async () => {
+          if (!isCurrentModal() || filter === "legacy") return;
           recordAiUiEvent({
             surface: "history-modal",
             action: AI_UI_ACTIONS.conversationDelete,
@@ -408,6 +452,83 @@ export function openAiConversationHistoryModal(options: {
     });
   };
 
+  const inspectLegacy = async (id: string, collapse: boolean): Promise<void> => {
+    if (collapse) {
+      expandedId = null;
+      expandedRecord = null;
+      renderRows();
+      return;
+    }
+    const generation = ++inspectGeneration;
+    try {
+      const record = await loadConversationForScope(id, null);
+      if (!isCurrentModal() || filter !== "legacy" || generation !== inspectGeneration) return;
+      if (!record) {
+        setRecover("error", "이 대화를 찾을 수 없습니다. 목록을 새로 확인하거나 서버 기록을 가져와 주세요.");
+        return;
+      }
+      expandedId = id;
+      expandedRecord = record;
+      renderRows();
+    } catch (error) {
+      if (!isCurrentModal() || filter !== "legacy" || generation !== inspectGeneration) return;
+      setRecover("error", errorMessage(error, "대화를 읽지 못했습니다. 다시 열어 주세요."));
+    }
+  };
+
+  const renderLegacyRow = (row: ConversationArchiveSummary): HTMLElement => {
+    const expanded = expandedId === row.id && expandedRecord?.id === row.id;
+    const inspect = el("button", {
+      class: "ai-history-legacy-inspect",
+      text: expanded ? "기록 접기" : "기록 읽기",
+      attrs: { type: "button", "aria-expanded": String(expanded) },
+      dataset: { testid: "ai-history-legacy-inspect" },
+      on: { click: () => void modalPendingWork.track(inspectLegacy(row.id, expanded)) },
+    });
+    const cardChildren: HTMLElement[] = [
+      el("span", { class: "ai-history-title", text: row.title }),
+      ...(row.preview ? [el("span", { class: "ai-history-preview", text: row.preview, dataset: { testid: "ai-history-preview" } })] : []),
+      el("span", {
+        class: "ai-history-meta",
+        text: [formatSavedAt(row.savedAt), `턴 ${row.turnCount}`, row.model].join(" · "),
+      }),
+      ...(row.mapIds.length > 0
+        ? [el("span", { class: "ai-history-maps", text: row.mapIds.join(" · ") })]
+        : []),
+    ];
+    if (row.mapAttribution !== "complete") {
+      cardChildren.push(el("span", {
+        class: "ai-history-flag",
+        text: row.mapAttribution === "unknown" ? "맵 출처 없음" : "맵 정보 일부",
+        dataset: { testid: "ai-history-attribution", attribution: row.mapAttribution },
+      }));
+    }
+    if (row.transcriptCompacted) {
+      cardChildren.push(el("span", {
+        class: "ai-history-flag",
+        text: "압축된 기록",
+        dataset: { testid: "ai-history-compacted" },
+      }));
+    }
+    cardChildren.push(inspect);
+    if (expanded && expandedRecord) {
+      cardChildren.push(el("div", {
+        class: "ai-history-legacy-body",
+        dataset: { testid: "ai-history-legacy-body" },
+        children: expandedRecord.entries.map((entry) => el("p", {
+          class: "ai-history-legacy-turn",
+          text: legacyTurnText(entry),
+          dataset: { kind: entry.kind },
+        })),
+      }));
+    }
+    return el("div", {
+      class: "ai-history-row",
+      dataset: { testid: "ai-history-row", unscoped: "1" },
+      children: [el("div", { class: "ai-history-legacy-card", children: cardChildren })],
+    });
+  };
+
   const fetchPage = async (append: boolean): Promise<void> => {
     const generation = ++renderGeneration;
     listError = null;
@@ -422,7 +543,7 @@ export function openAiConversationHistoryModal(options: {
     try {
       const offset = append ? loaded.length : 0;
       const result = await queryConversationArchive({
-        projectContextKey: capturedScope,
+        projectContextKey: filter === "legacy" ? null : capturedScope,
         query: search.value,
         offset,
         limit: AI_HISTORY_ARCHIVE_PAGE_SIZE,
@@ -465,7 +586,7 @@ export function openAiConversationHistoryModal(options: {
   };
 
   const runRecover = async (): Promise<void> => {
-    if (!isCurrentModal() || recoverButton.disabled) return;
+    if (!isCurrentModal() || recoverButton.disabled || filter === "legacy") return;
     setRecover("loading", "가져오는 중…");
     try {
       const result = await hydrateConversationArchive({
@@ -527,10 +648,7 @@ export function openAiConversationHistoryModal(options: {
                 class: "ai-history-recover-row",
                 children: [recoverButton, recoverStatus],
               }),
-              el("p", {
-                class: "ai-history-note",
-                text: "여는 순간 지금 대화는 기록에 저장됩니다. 목록만 보면 지금 대화는 그대로입니다.",
-              }),
+              historyNote,
               list,
             ],
           }),
@@ -543,6 +661,7 @@ export function openAiConversationHistoryModal(options: {
   const close = registerModal(backdrop, () => {
     hydrateAbort.abort();
     renderGeneration += 1;
+    inspectGeneration += 1;
     backdrop.remove();
     if (openBackdrop === backdrop) openBackdrop = null;
     if (activeHistoryClose === close) activeHistoryClose = null;
