@@ -8,9 +8,74 @@ describe("fake DOM audio control contracts", () => {
 
   beforeEach(() => {
     previousGlobals = globalNames.map(name => Object.getOwnPropertyDescriptor(globalThis, name) ?? {});
-    restore = installFakeDom();
+    restore = installFakeDom({ animationFrames: "manual" });
   });
   afterEach(() => { restore(); });
+
+  it("keeps select options, index and value consistent", () => {
+    const select = document.createElement("select");
+    const first = document.createElement("option");
+    const second = document.createElement("option");
+    first.value = "a"; second.value = "b";
+    select.append(first, second);
+    expect(Array.from(select.options)).toEqual([first, second]);
+    expect(select.selectedIndex).toBe(0);
+    expect(select.value).toBe("a");
+    select.value = "b";
+    expect(select.selectedIndex).toBe(1);
+    expect(Array.from(select.selectedOptions)).toEqual([second]);
+    expect(second.index).toBe(1);
+    select.selectedIndex = 0;
+    expect(select.value).toBe("a");
+    select.selectedIndex = -1;
+    expect(select.value).toBe("");
+    expect(select.selectedIndex).toBe(-1);
+    select.value = "b";
+    expect(select.selectedIndex).toBe(1);
+  });
+
+  it("distinguishes elements, select controls and text nodes for observers", () => {
+    const container = document.createElement("div");
+    const select = document.createElement("select");
+    const text = document.createTextNode("label");
+    expect(container).toBeInstanceOf(Element);
+    expect(select).toBeInstanceOf(HTMLSelectElement);
+    expect(container).not.toBeInstanceOf(HTMLSelectElement);
+    expect(text).not.toBeInstanceOf(Element);
+  });
+
+  it("preserves the default frame capability while allowing idle cancellation", () => {
+    restore();
+    const previousFrame = globalThis.requestAnimationFrame;
+    restore = installFakeDom();
+    expect(globalThis.requestAnimationFrame).toBe(previousFrame);
+    expect(() => cancelAnimationFrame(0)).not.toThrow();
+  });
+
+  it("delivers filtered attribute records with requested old values", () => {
+    const element = document.createElement("div");
+    const observer = new MutationObserver(() => undefined);
+    observer.observe(element, { attributes: true, attributeFilter: ["data-state"], attributeOldValue: true });
+    element.setAttribute("ignored", "value");
+    element.setAttribute("data-state", "playing");
+    element.removeAttribute("data-state");
+    expect(observer.takeRecords().map(record => [record.type, record.attributeName, record.oldValue]))
+      .toEqual([["attributes", "data-state", null], ["attributes", "data-state", "playing"]]);
+    observer.disconnect();
+  });
+
+  it("supports combined child, class and character data observations", () => {
+    const element = document.createElement("div");
+    const observer = new MutationObserver(() => undefined);
+    observer.observe(element, { childList: true, subtree: true, attributes: true, characterData: true, characterDataOldValue: true });
+    const text = document.createTextNode("before");
+    element.append(text);
+    text.textContent = "after";
+    element.setAttribute("class", "active");
+    expect(observer.takeRecords().map(record => [record.type, record.oldValue]))
+      .toEqual([["childList", null], ["characterData", "before"], ["attributes", null]]);
+    observer.disconnect();
+  });
 
   it("provides cancellable animation frames without a wall-clock timer", () => {
     const frames: number[] = [];

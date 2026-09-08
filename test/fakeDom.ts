@@ -1,6 +1,7 @@
 type DomGlobalName =
   | "document"
   | "Node"
+  | "Element"
   | "MutationObserver"
   | "HTMLElement"
   | "HTMLButtonElement"
@@ -14,6 +15,7 @@ type DomGlobalName =
 type PreviousDomGlobals = {
   readonly document: Document | undefined;
   readonly Node: typeof Node | undefined;
+  readonly Element: typeof Element | undefined;
   readonly MutationObserver: typeof MutationObserver | undefined;
   readonly HTMLElement: typeof HTMLElement | undefined;
   readonly HTMLButtonElement: typeof HTMLButtonElement | undefined;
@@ -63,8 +65,10 @@ export class FakeNode {
       this.replaceChildren(...(value ? [value] : []));
       return;
     }
+    const oldValue = this.ownText;
     this.ownText = value;
     this.childNodes.length = 0;
+    notifyValueMutation(this, "characterData", null, oldValue);
   }
 
   append(...children: (FakeNode | string)[]): void {
@@ -154,19 +158,19 @@ function convertFakeNodes(children: readonly (FakeNode | string)[]): FakeNode[] 
   return nodes;
 }
 
-// Only child-list observation is modeled; delivery uses the microtask checkpoint,
-// so mounting and removing an inline preview in one turn remains observable.
+// Mutation delivery follows a microtask checkpoint; values change through the
+// fake DOM setters, while render-only media never claims successful playback.
 const mutationObservers = new Set<FakeMutationObserver>();
 type FakeMutationRecord = {
-  readonly type: "childList";
+  readonly type: "childList" | "attributes" | "characterData";
   readonly target: FakeNode;
   readonly addedNodes: readonly FakeNode[];
   readonly removedNodes: readonly FakeNode[];
   readonly previousSibling: FakeNode | null;
   readonly nextSibling: FakeNode | null;
-  readonly attributeName: null;
+  readonly attributeName: string | null;
   readonly attributeNamespace: null;
-  readonly oldValue: null;
+  readonly oldValue: string | null;
 };
 
 class FakeMutationObserver {
@@ -177,11 +181,13 @@ class FakeMutationObserver {
   constructor(private readonly callback: (records: FakeMutationRecord[], observer: FakeMutationObserver) => void) {}
 
   observe(target: FakeNode | { readonly body: FakeNode }, options: MutationObserverInit): void {
-    if (!options.childList || options.attributes || options.characterData) {
-      throw new TypeError("Fake DOM supports childList MutationObserver options only");
-    }
+    const normalized = { ...options,
+      attributes: options.attributes ?? (options.attributeFilter !== undefined || options.attributeOldValue === true),
+      characterData: options.characterData ?? options.characterDataOldValue === true,
+    };
+    if (!normalized.childList && !normalized.attributes && !normalized.characterData) throw new TypeError("No mutation type selected");
     const node = target instanceof FakeNode ? target : target.body;
-    this.targets.set(node, options);
+    this.targets.set(node, normalized);
     mutationObservers.add(this);
   }
 
@@ -198,8 +204,17 @@ class FakeMutationObserver {
   }
 
   enqueue(target: FakeNode, record: FakeMutationRecord): void {
-    if (![...this.targets].some(([node, options]) => node === target || (options.subtree && node.contains(target)))) return;
-    this.records.push(record);
+    const matching = [...this.targets].filter(([node, options]) => {
+      if (node !== target && !(options.subtree && node.contains(target))) return false;
+      switch (record.type) {
+        case "childList": return options.childList;
+        case "attributes": return options.attributes && (!options.attributeFilter || options.attributeFilter.includes(record.attributeName ?? ""));
+        case "characterData": return options.characterData;
+      }
+    });
+    if (matching.length === 0) return;
+    const keepOld = matching.some(([, options]) => record.type === "attributes" ? options.attributeOldValue : options.characterDataOldValue);
+    this.records.push({ ...record, oldValue: keepOld ? record.oldValue : null });
     if (this.queued) return;
     this.queued = true;
     queueMicrotask(() => {
@@ -216,6 +231,12 @@ function notifyChildList(target: FakeNode, added: FakeNode[], removed: FakeNode[
     type: "childList", target, addedNodes: [...added], removedNodes: [...removed],
     previousSibling, nextSibling, attributeName: null, attributeNamespace: null, oldValue: null,
   };
+  for (const observer of mutationObservers) observer.enqueue(target, record);
+}
+
+function notifyValueMutation(target: FakeNode, type: "attributes" | "characterData", attributeName: string | null, oldValue: string | null): void {
+  const record: FakeMutationRecord = { type, target, attributeName, oldValue,
+    addedNodes: [], removedNodes: [], previousSibling: null, nextSibling: null, attributeNamespace: null };
   for (const observer of mutationObservers) observer.enqueue(target, record);
 }
 
@@ -238,7 +259,31 @@ export class FakeElement extends FakeNode {
   // "호출할 수 없는 식" 이 된다 — 런타임에는 있는 함수를 타입만 없다고 말하는 셈이다.
   style: FakeStyle = createFakeStyle();
   type = "";
-  value = "";
+  private assignedValue: string | undefined;
+  private assignedIndex: number | undefined;
+  get value(): string {
+    if (this.tagName === "SELECT") return this.options[this.selectedIndex]?.value ?? "";
+    return this.assignedValue ?? (this.tagName === "OPTION" ? this.getAttribute("value") ?? this.textContent : "");
+  }
+  set value(value: string) {
+    this.assignedValue = value;
+    this.assignedIndex = undefined;
+  }
+  get options(): FakeElement[] {
+    return this.tagName === "SELECT" ? this.querySelectorAll("option") : [];
+  }
+  get selectedIndex(): number {
+    const options = this.options;
+    if (this.assignedIndex !== undefined) return this.assignedIndex < options.length ? this.assignedIndex : -1;
+    if (this.assignedValue !== undefined) return options.findIndex(option => option.value === this.assignedValue);
+    return options.length > 0 ? 0 : -1;
+  }
+  set selectedIndex(index: number) {
+    this.assignedIndex = Number.isInteger(index) && index >= 0 && index < this.options.length ? index : -1;
+  }
+  get index(): number {
+    return this.tagName === "OPTION" ? this.closest("select")?.options.indexOf(this) ?? -1 : -1;
+  }
   isContentEditable = false;
   readonly attrs: Record<string, string> = {};
   readonly tagName: string;
@@ -251,8 +296,8 @@ export class FakeElement extends FakeNode {
   }
   get selectedOptions(): FakeElement[] {
     if (this.tagName !== "SELECT") return [];
-    const options = this.children.filter((child) => child.tagName === "OPTION");
-    return options.filter((option, index) => option.value === this.value || (this.value === "" && index === 0));
+    const selected = this.options[this.selectedIndex];
+    return selected ? [selected] : [];
   }
   private readonly listeners: Partial<Record<string, EventListenerOrEventListenerObject[]>> = {};
   readonly classList = {
@@ -292,6 +337,7 @@ export class FakeElement extends FakeNode {
   }
 
   setAttribute(name: string, value: string): void {
+    const oldValue = this.getAttribute(name);
     this.attrs[name] = value;
     // HTMLOptionElement / input 호환: attribute value 는 .value 프로퍼티와 동기화.
     if (name === "value") this.value = value;
@@ -301,6 +347,7 @@ export class FakeElement extends FakeNode {
         .replace(/-([a-z])/gu, (_, ch: string) => ch.toUpperCase());
       this.dataset[camelKey] = value;
     }
+    notifyValueMutation(this, "attributes", name, oldValue);
   }
 
   getAttribute(name: string): string | null {
@@ -318,7 +365,10 @@ export class FakeElement extends FakeNode {
   }
 
   removeAttribute(name: string): void {
+    const oldValue = this.getAttribute(name);
     delete this.attrs[name];
+    if (name.startsWith("data-")) delete this.dataset[name.slice(5).replace(/-([a-z])/gu, (_, ch: string) => ch.toUpperCase())];
+    if (oldValue !== null) notifyValueMutation(this, "attributes", name, oldValue);
   }
 
   // <canvas> 2D 컨텍스트는 흉내내지 않는다 — 호출부는 이미 null을 정상 처리하도록
@@ -496,6 +546,7 @@ export function installFakeDom(options: FakeDomOptions = {}): () => void {
   const previous = {
     document: globalThis.document,
     Node: globalThis.Node,
+    Element: globalThis.Element,
     MutationObserver: globalThis.MutationObserver,
     HTMLElement: globalThis.HTMLElement,
     HTMLButtonElement: globalThis.HTMLButtonElement,
@@ -511,26 +562,30 @@ export function installFakeDom(options: FakeDomOptions = {}): () => void {
   for (const observer of mutationObservers) observer.disconnect();
   nextAnimationFrameId = 1;
   defineDomGlobal("Node", FakeNode);
+  defineDomGlobal("Element", FakeElement);
   defineDomGlobal("MutationObserver", FakeMutationObserver);
   defineDomGlobal("HTMLElement", FakeElement);
   defineDomGlobal("HTMLButtonElement", FakeElement);
   // 몬스터/장비 뷰 등이 `instanceof HTMLInputElement`(또는 Image/Select/TextArea)로 타입을
   // 좁히는 패턴을 쓴다 — FakeElement가 그 전부를 흉내내므로 같은 클래스를 매핑해둔다.
   defineDomGlobal("HTMLInputElement", FakeElement);
-  defineDomGlobal("HTMLSelectElement", FakeElement);
+  defineDomGlobal("HTMLSelectElement", FakeSelect);
   defineDomGlobal("HTMLImageElement", FakeElement);
   // `new Image()` 는 프로덕션 코드(chromaKey.getAutoKeyedDataUrl 등)가 직접 쓰는 생성자다.
   // HTMLImageElement 만 매핑해두면 생성자 전역이 없어 ReferenceError 가 난다.
   defineDomGlobal("Image", FakeImage);
   defineDomGlobal("HTMLTextAreaElement", FakeElement);
-  // Preserve an installed frame harness; otherwise expose the manual queue.
-  if (options.animationFrames === "manual" || !previous.requestAnimationFrame || !previous.cancelAnimationFrame) {
+  // Manual frames are opt-in: do not activate optional animation paths in
+  // existing render tests merely to support cancelling an idle audio preview.
+  if (options.animationFrames === "manual") {
     defineDomGlobal("requestAnimationFrame", (callback: FrameRequestCallback): number => {
       const frameId = nextAnimationFrameId;
       nextAnimationFrameId += 1;
       animationFrames.set(frameId, callback);
       return frameId;
     });
+  }
+  if (options.animationFrames === "manual" || !previous.cancelAnimationFrame) {
     defineDomGlobal("cancelAnimationFrame", (frameId: number): void => {
       animationFrames.delete(frameId);
     });
@@ -580,6 +635,7 @@ export function installFakeDom(options: FakeDomOptions = {}): () => void {
     for (const observer of mutationObservers) observer.disconnect();
     restoreDomGlobal("document", previous.document);
     restoreDomGlobal("Node", previous.Node);
+    restoreDomGlobal("Element", previous.Element);
     restoreDomGlobal("MutationObserver", previous.MutationObserver);
     restoreDomGlobal("HTMLElement", previous.HTMLElement);
     restoreDomGlobal("HTMLButtonElement", previous.HTMLButtonElement);
@@ -595,6 +651,12 @@ export function installFakeDom(options: FakeDomOptions = {}): () => void {
 
 // Idle media lifecycle only. Acoustic playback belongs to the media event harness,
 // not render tests; no loaded/playing events or successful play promises are faked.
+class FakeSelect extends FakeElement {
+  static [Symbol.hasInstance](value: unknown): boolean {
+    return value instanceof FakeElement && value.tagName === "SELECT";
+  }
+}
+
 class FakeAudio extends FakeElement {
   readonly paused = true;
   readonly duration = Number.NaN;
