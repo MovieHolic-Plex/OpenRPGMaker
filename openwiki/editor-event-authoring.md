@@ -1,5 +1,26 @@
 # Editor Event Authoring
 
+## Page preview state follows the current script (2026-09-08)
+
+- `previewSimulation.ts` carries the active face (resource, side, flip) in each
+  transient state snapshot. A face-clear command removes it. Skipped branches
+  do not apply it, and choice-local state does not leak into sibling/outer steps.
+- `eventScriptModernViews.ts` reads the step snapshot instead of scanning prior
+  commands or keeping a page-keyed face cache. Editing a face while a later
+  dialogue step is selected therefore updates immediately, including clear.
+- `commandPreview.ts` uses those face options and simulated variable values for
+  dialogue rendering. List-to-inspector/edit-dialog face context uses the same
+  `ActiveFace` shape so right-side and flipped faces are not lost.
+- Authoring views reserve the inspector track before selection. Otherwise the
+  first click opens the inspector, wraps the toolbar and moves the command row
+  under a view tab before the second click. Preview/flow and staged proposals
+  can still expand when no inspector is open; closing an inspector in a list
+  must not move the row. The browser regression checks cold and reopened cases.
+- Regression: `test/eventPreviewState.test.ts`; real UI edit/clear/side/flip,
+  variable interpolation, skipped branches and view/transport transitions:
+  `test/e2e/event-preview-state.spec.ts`. A worktree-only pass is not deployment:
+  confirm the actual served bundle and repeat edits on the production preview.
+
 ## Event editor window controls (2026-09-06)
 
 - `eventEditor/modal.ts` retains one mounted editor while minimized, rather than

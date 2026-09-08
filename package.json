@@ -88,7 +88,8 @@
   "dependencies": {
     "jimp": "^0.16.13",
     "phaser": "^3.90.0",
-    "tar": "7.5.22"
+    "tar": "7.5.22",
+    "zod": "^4.5.4"
   },
   "devDependencies": {
     "@oh-my-pi/pi-ai": "^17.4.0",
