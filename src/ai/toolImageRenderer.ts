@@ -7,6 +7,7 @@ import {
   drawTile,
   EMPTY_TILE,
   loadTilesetImage,
+  tileDrawSize,
 } from "./toolImageCanvas";
 import {
   drawRegionEventSprites,
@@ -18,8 +19,6 @@ export type RenderedToolImage = { readonly dataUrl: string; readonly label: stri
 
 const MAX_TILE_SWATCHES = 12;
 const TILE_SWATCH_SCALE = 6;
-/** 맵 미리보기 타일 배율 — 너무 크면 base64가 컨텍스트를 잠식(16×16×3×16px ≈ 거대). */
-const TILE_GRID_SCALE = 2;
 const MIN_SWATCH_SIZE = 48;
 const MAX_SWATCH_COLUMNS = 6;
 
@@ -128,7 +127,9 @@ async function renderTileGrid(project: Project, data: unknown, label = "영역")
 
 async function renderTileGridPayload(payload: TileGridPayload, label: string): Promise<RenderedToolImage[]> {
   const image = await loadTilesetImage(payload.tileset);
-  const drawSize = payload.tileset.tileSize * TILE_GRID_SCALE;
+  // Whole-map coverage renders reach here, so the canvas is sized to the delivered
+  // image rather than drawn huge and shrunk. Small regions keep the native scale.
+  const drawSize = tileDrawSize(payload.w, payload.h, payload.tileset.tileSize);
   const canvasPair = createCanvas(payload.w * drawSize, payload.h * drawSize);
   if (!canvasPair) return [];
   const { canvas, context } = canvasPair;
@@ -196,7 +197,8 @@ function tileGridPayload(project: Project, data: unknown): TileGridPayload | nul
   if (!isRenderableTileset(tileset)) return null;
   const map = mapField(project, payload);
   const events = map
-    ? resolveRegionEventSprites(project, map, { x, y, w, h }, tileset.tileSize * TILE_GRID_SCALE)
+    // Must be the same draw size renderTileGridPayload uses, or sprites land off-grid.
+    ? resolveRegionEventSprites(project, map, { x, y, w, h }, tileDrawSize(w, h, tileset.tileSize))
     : { ok: true as const, sprites: [] };
   if (!events.ok) throw new Error(events.reason);
   return { tileset, x, y, w, h, lower, upper, events: events.sprites };

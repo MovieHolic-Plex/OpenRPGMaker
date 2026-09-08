@@ -1,5 +1,5 @@
 import { diagnosticObserved, diagnosticToken, publishDiagnostic } from "@/util/diagnosticObserver";
-import { buildIndependentReviewRequest, parseIndependentReview, reviewChanges, reviewEvidenceContexts, reviewMapReferenceRoots, requiresVisualReview, type ResultReview } from "./independentReview";
+import { buildIndependentReviewRequest, parseIndependentReview, reviewChanges, reviewEvidenceContexts, reviewEvidenceImages, reviewMapReferenceRoots, requiresVisualReview, type ResultReview } from "./independentReview";
 import { mapVisualEvidenceUnavailable } from "./mapVisualEvidence";
 import { parseFunctionalRequirements, type FunctionalCriterion } from "./functionalAcceptance";
 import { missingAcceptance, type AcceptanceSnapshot, type AcceptancePromise, type AcceptanceSource, type RequirementWithdrawalAction } from "./assistantAcceptance";
@@ -4078,18 +4078,22 @@ export class AssistantSession {
         const unavailable = visualChanged ? mapVisualEvidenceUnavailable(after, before) : null;
         if (unavailable) requiredProblems.push(unavailable);
         if (visualChanged && !coveredByImages(receipts, after, { x: 0, y: 0, w: after.width, h: after.height })) {
-          requiredProblems.push(`show_map_region: current rendered coverage of changed map ${mapId} required`);
+          requiredProblems.push(`show_map_region: current rendered coverage of changed map ${mapId} required`
+            + ` — request x:0,y:0,w:${after.width},h:${after.height} in one call; complete coverage is not clipped`);
         }
       }
       for (const receipt of this.reviewImages.keys()) if (!receipts.includes(receipt)) this.reviewImages.delete(receipt);
       const config = { ...(this.reviewConfig ?? this.config), maxTokens: Math.min(16384, remainingTokens) };
       if (signal?.aborted) throw new Error("independent-review-cancelled");
       knownProblems = requiredProblems;
-      const images = receipts.flatMap(receipt => this.reviewImages.get(receipt) ?? []);
-      const build = (reviewed: Iterable<string>, target: string) => buildIndependentReviewRequest(config, { revision,
-        originalRequest: this.currentTurnRequestText, changes, requiredProblems, images,
-        before: evidence(this.reviewBaseline, "before", reviewed, target),
-        after: evidence(this.ctx.project, "after", reviewed, target),
+      const captures = receipts.map(receipt => ({ mapId: receipt.mapId, images: this.reviewImages.get(receipt) ?? [] }));
+      const build = (reviewedIds: ReadonlySet<string>, target: string) => buildIndependentReviewRequest(config, { revision,
+        originalRequest: this.currentTurnRequestText, changes, requiredProblems,
+        // Scoped to the maps this envelope reviews, so the narrowing retry sheds their
+        // renders too — the dominant cost — instead of only their text.
+        images: reviewEvidenceImages(captures, reviewedIds),
+        before: evidence(this.reviewBaseline, "before", reviewedIds, target),
+        after: evidence(this.ctx.project, "after", reviewedIds, target),
         toolResults: this.reviewToolResults, acceptance: draftAcceptance }, signal);
       // The reviewer is one-shot, so an oversized envelope is refused rather than truncated.
       // Retry once judging only the changed maps: the target map is where the user is
