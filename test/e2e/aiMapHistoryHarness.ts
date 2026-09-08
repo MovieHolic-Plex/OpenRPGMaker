@@ -33,6 +33,12 @@ export const TURNS = {
 } as const;
 
 export const FOREIGN_SCOPE = "remote:foreign-map-history-qa";
+export const LEGACY = {
+  id: "maphist-legacy-unscoped",
+  user: "MAPHIST-LEGACY-UNSCOPED-USER",
+  assist: "MAPHIST-LEGACY-UNSCOPED-ASSIST",
+  mapId: "map_legacy_gone",
+} as const;
 export const MAP_EMPTY = "map_hist_empty";
 export const MAP_EMPTY_NAME = "빈 언덕";
 export const EVIDENCE_DIR = path.resolve("output/evidence/map-ai-history");
@@ -62,13 +68,18 @@ export async function bootEditor(page: Page): Promise<void> {
   });
   await mockRemoteAndLlm(page);
   const guest = page.getByTestId("login-guest");
+  // Hidden mounted alternatives must not mask the visible boot surface.
   const ready = guest
     .or(page.getByTestId("ai-input"))
     .or(page.getByTestId("ai-collapsed-restore"))
+    .filter({ visible: true })
     .first()
     .waitFor({ state: "visible", timeout: 90_000 });
-  await page.goto("/?blankProject=1", { waitUntil: "domcontentloaded" });
-  await ready;
+  // Own both rejections immediately, even if navigation outlasts readiness.
+  await Promise.all([
+    ready,
+    page.goto("/?blankProject=1", { waitUntil: "domcontentloaded", timeout: 90_000 }),
+  ]);
   if (await guest.isVisible()) await guest.click();
   await expect(page.getByTestId("login-modal")).toBeHidden();
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 90_000 });
@@ -380,4 +391,22 @@ export async function seedExtraCurrentMapRows(page: Page, count: number): Promis
       if (!outcome.ok) throw new Error(`saveConversation failed for page ${index}`);
     }
   }, { count, mapA: MAP_A, mapAName: MAP_A_NAME });
+}
+
+export async function seedUnscopedLegacy(page: Page): Promise<void> {
+  await page.evaluate(async (fixture) => {
+    const storePath: string = "/src/ai/conversationStore.ts";
+    const { saveConversation } = await import(/* @vite-ignore */ storePath) as typeof import("@/ai/conversationStore");
+    const outcome = await saveConversation({
+      id: fixture.id,
+      title: fixture.user,
+      model: "e2e",
+      savedAt: 1_600_000_000_000,
+      entries: [
+        { kind: "user" as const, text: fixture.user, context: { mapId: fixture.mapId, mapName: "기록된 옛 이름", mapWidth: 16, mapHeight: 16 } },
+        { kind: "assistant" as const, text: fixture.assist },
+      ],
+    });
+    if (!outcome.ok) throw new Error("saveConversation failed for unscoped legacy");
+  }, LEGACY);
 }
