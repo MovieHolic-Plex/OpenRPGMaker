@@ -21,8 +21,50 @@ isolated job directory/cache. It requires the already installed managed runtime 
 session availability plus admission validation without scheduling work. Runtime package
 loading must remain Node-owned: a deferred `import('playwright')` in `configureServer`
 uses Vite's already-closed config runner and falsely reports missing Chromium.
-Full Task9 dev/preview integration, app/player builds and final gates remain supervisor-owned.
+Full Task9 integrated UI acceptance and final app/player/standalone gates remain supervisor-owned.
 Linux checks do not establish macOS/Finder behavior.
+
+### GET-only runtime surfaces and static build closure
+
+`TMPDIR=/dev/shm node --test test/aiJobsRuntimeSurfaces.test.mjs` exercises the actual
+runner-loaded `vite.config.ts` for both dev and production preview. It requires the already
+installed project Chromium but never launches/downloads it or admits a job. The scoped build
+uses the config's real worker input and emits its actual dependency chunks into temporary
+storage; this is not the final full app build. Session availability, exact worker module bytes
+(including Vite's inline dev source map), empty durable job/operation state, a live SSE stream
+and awaited `server.close()` are checked.
+The HTTP close event must observe an already released writer lock, and the repository must
+reopen empty. Parser/allowlist negative controls reject missing/wrong worker entries and
+forbidden requests before HTTP; they do not expand or replace the queue's origin-policy tests.
+
+The test owns ephemeral loopback listeners (never 9841/19841), empty outside-root repositories,
+cache/output and an empty env-file working directory. Dev binds through Vite's public
+`httpServer.listen(0, "127.0.0.1")` initialization wrapper: this installed Vite's higher-level
+`server.listen()` substitutes its default port for zero. `envDir` alone is insufficient because
+this config explicitly calls `loadEnv(mode, process.cwd(), "")`; inherited environment is
+isolated before loading it. A GET-only ingress/egress allowlist prevents provider/DB/auth or
+mutation requests, and assertions inspect empty durable state rather than fabricating jobs.
+Cleanup diagnostics record listener/SSE closure, released/reacquired storage and removal.
+Do not point this regression at a populated user queue: startup may execute queued records
+before any test request. The older `aiJobsViteRuntime` test includes invalid admission POSTs
+and is not a substitute for this GET-only surface proof.
+
+`test/playerBuild.test.ts` builds both actual player and standalone configs in disposable roots,
+scans emitted artifacts and transformed module IDs for AI/queue/remote leakage, and injects a
+test-only virtual queue import as a discriminating standalone negative control. The original
+player coverage is preserved. Both configs already transform 28 `src/editor` modules through
+shared defaults/content imports; their exact inventory is pinned against additional edges, not
+misrepresented as an editor-free transform graph. The real editor store/app-mode modules are
+forbidden; static exports use their player shims.
+
+For shared `node_modules`, run the scoped driver with
+`TMPDIR=/dev/shm node .omo/evidence/ai-job-queue/task-9/verify-build-closure.mjs`.
+It uses the actual Vitest config with one worker, the runner config loader (avoiding shared
+`.vite-temp` writes), disabled env-file loading and an owned temporary Vitest cache that it
+removes after closure. Build cache/output is separately owned and removed by each test.
+Neither build closure nor HTTP module delivery establishes gameplay, worker execution, UI
+migration or an actual project save. Family UI tests must still use the controlled Task8 Node
+fixture described below, never ordinary Vite plus browser-only provider mocking.
 
 ## Mac onboarding Phase 1 contracts (2026-09-06)
 

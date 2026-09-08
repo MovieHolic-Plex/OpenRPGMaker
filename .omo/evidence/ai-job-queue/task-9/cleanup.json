@@ -1,0 +1,36 @@
+{
+  "ownedProcessMatchesExcludingVerifierAncestors": [],
+  "temporaryMatches": [],
+  "verifiedClosedPorts": [
+    37241,
+    45459
+  ],
+  "remainingListenersOnVerifiedPorts": [],
+  "runtimeReceipt": {
+    "temporaryRemoved": true,
+    "modes": [
+      {
+        "mode": "dev",
+        "port": 37241,
+        "streamEnded": true,
+        "listenerClosed": true,
+        "lockReleasedBeforeHttpClose": true,
+        "repositoryReopenedEmpty": true,
+        "jobs": 0,
+        "operations": 0
+      },
+      {
+        "mode": "preview",
+        "port": 45459,
+        "streamEnded": true,
+        "listenerClosed": true,
+        "lockReleasedBeforeHttpClose": true,
+        "repositoryReopenedEmpty": true,
+        "jobs": 0,
+        "operations": 0
+      }
+    ],
+    "requests": 10,
+    "violations": []
+  }
+}

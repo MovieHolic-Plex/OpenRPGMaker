@@ -1,0 +1,20 @@
+✔ runtime smoke rejects unsafe requests and missing, duplicate or foreign worker entries (5.020443ms)
+[rpg-zzu] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] QWENCLOUD_API_KEY 가 없어 /api/qwen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] CPENROUTER_API_KEY 가 없어 /api/cpen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] QWENCLOUD_API_KEY 가 없어 /api/qwen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] CPENROUTER_API_KEY 가 없어 /api/cpen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] QWENCLOUD_API_KEY 가 없어 /api/qwen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[rpg-zzu] CPENROUTER_API_KEY 가 없어 /api/cpen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+✔ actual dev and built preview expose only read-tested empty queues and await durable shutdown (32173.280302ms)
+ℹ {"temporaryRemoved":true,"modes":[{"mode":"dev","port":37241,"streamEnded":true,"listenerClosed":true,"lockReleasedBeforeHttpClose":true,"repositoryReopenedEmpty":true,"jobs":0,"operations":0},{"mode":"preview","port":45459,"streamEnded":true,"listenerClosed":true,"lockReleasedBeforeHttpClose":true,"repositoryReopenedEmpty":true,"jobs":0,"operations":0}],"requests":10,"violations":[]}
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 34485.07227

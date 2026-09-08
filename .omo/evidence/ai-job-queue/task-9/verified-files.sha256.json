@@ -1,0 +1,11 @@
+{
+  ".omo/evidence/ai-job-queue/task-9/BACKEND-HANDOFF.md": "f43db2afeafc30411993f2b11e2b957404c8ae0b58473d6455f3617a3237ba14",
+  ".omo/evidence/ai-job-queue/task-9/verify-build-closure.mjs": "32bd3b7f0f398dd00eed9c22fdc953403364b29c7ba393eaa0ef49320993ab82",
+  "README.md": "e820b653a1c62896ef7f88f3088bfb273bf6597411b1510469b1ceb3ff077c1a",
+  "openwiki/INDEX.md": "9ef9fe59ee2108f8763d610d96b27b36d82747f5c26017962bc55fde6160261a",
+  "openwiki/architecture.md": "91a63bec0cbe967dd3598c1a1f0a9cbb24b9e02d4fe7a07663a55db49d4e9451",
+  "openwiki/quickstart.md": "be49620d3a1bb689c1eaf6790a8b35c5957c9cc2cad3b0303c43ae610ec8cd1d",
+  "openwiki/testing.md": "959b0bf5dcbac4efafb637d49344b74f5cdf7c8c57e22b2b88c1952ae512ef79",
+  "test/aiJobsRuntimeSurfaces.test.mjs": "0399775c2558a5d9e1d57ec62399577c4be17c44c92f73813d4b15ee36cc6d3c",
+  "test/playerBuild.test.ts": "4a8029bc2928df17c8081f81b5a3a40906b73716d991a4ab814a0daf0658d6c0"
+}

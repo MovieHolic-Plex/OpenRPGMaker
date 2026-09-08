@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **48쪽 / 1700KB / 약 484,068 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **48쪽 / 1707KB / 약 485,863 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -23,7 +23,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/runtime-battle.md` | 119KB | 31KB | 362 | ~34,124 |
 | `openwiki/runtime-project-schema.md` | 64KB | 42KB | 242 | ~17,503 |
 | `openwiki/runtime-sessions.md` | 60KB | 45KB | 168 | ~16,122 |
-| `openwiki/testing.md` | 120KB | 45KB | 853 | ~33,798 |
+| `openwiki/testing.md` | 123KB | 45KB | 895 | ~34,598 |
 
 ## 한국어 산문이 깨진 페이지
 
@@ -161,7 +161,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L84` Live editor AI assistant MCP (same UI session)
 - `L103` Refreshing the wiki
 
-### `openwiki/architecture.md` — 25KB · 113줄 · ~6,363 토큰
+### `openwiki/architecture.md` — 26KB · 115줄 · ~6,630 토큰
 
 절 제목 없음 (평면 목록 페이지).
 
@@ -527,16 +527,17 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L88` 2026-09-05 실측
   - `L103` 사용자 플레이 후 체험 QA 정정 (2026-09-05)
 
-### `openwiki/quickstart.md` — 17KB · 188줄 · ~4,740 토큰
+### `openwiki/quickstart.md` — 20KB · 222줄 · ~5,468 토큰
 
 - `L6` 0. 여기서 에이전트가 실제로 헤매는 이유 (실측 2026-08-30)
 - `L17` 1. 환경 — 여기가 틀리면 이후 전부 헛수고
 - `L42` 1a. Mac novice launcher / private setup (Phase 1, 2026-09-06)
 - `L78` 1b. Explicit AI job browser runtime setup (2026-09-06)
-- `L105` 2. 검증 — 무엇이 진짜 게이트인가
-- `L125` 3. 어디를 고치나 — 기능 → 진입 파일
-- `L170` 4. 위키를 읽는 법
-- `L182` 5. 끝났다고 말할 수 있는 조건
+  - `L105` Local queue lifetime, storage and preview
+- `L139` 2. 검증 — 무엇이 진짜 게이트인가
+- `L159` 3. 어디를 고치나 — 기능 → 진입 파일
+- `L204` 4. 위키를 읽는 법
+- `L216` 5. 끝났다고 말할 수 있는 조건
 
 ### `openwiki/runtime-action-combat.md` — 22KB · 229줄 · ~5,617 토큰
 
@@ -689,49 +690,50 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L110` Files to inspect before editing
 - `L122` Related pages
 
-### `openwiki/testing.md` — 120KB · 853줄 · ~33,798 토큰 · 통째읽기 잘림
+### `openwiki/testing.md` — 123KB · 895줄 · ~34,598 토큰 · 통째읽기 잘림
 
 - `L1` Explicit AI runtime setup contracts (2026-09-06)
-- `L27` Mac onboarding Phase 1 contracts (2026-09-06)
-- `L55` 기존 실패 비교는 진단 내용까지 확인한다 (2026-09-05)
-- `L63` Esc 메뉴 동작·시각 검증 (2026-09-05)
-- `L79` Completed-house Phase 2 verification (2026-09-06)
-- `L110` P2 낚시·채집·도감·박물관 focused gate (2026-08-25)
-- `L117` Map-owned overlays: actual AI-turn browser regression (2026-09-05)
-- `L126` Editor e2e boot-overlay determinism (2026-08-31)
-- `L131` 영역 다듬기 focused gate (2026-08-31)
-- `L138` AI 이벤트 배치 통행성 focused gate (2026-08-30)
-- `L146` 체공(점프·낙하) focused gate (2026-08-29)
-  - `L155` 체공 런타임 QA — `npm run qa:runtime -- --scenario hop`
-  - `L185` 워크트리에 `node_modules` 가 없을 때 (2026-08-29 실측)
-- `L248` Roguelike run Phase 0–3 coverage (2026-08-24)
-  - `L259` 조건 게이트를 부하 중에 재지 마라 (실측 2026-08-29)
-- `L268` 데이터베이스 UI/UX 계측 하네스 (2026-08-30)
-  - `L292` 가상 요소 텍스트를 안 재면 `tinyFont 0` 은 "안 봤다" 는 뜻이다 (실측)
-  - `L313` 0px 이미지는 "깨진 것" 과 "접힌 것" 을 갈라야 한다 (실측)
-  - `L319` 타이밍에 취약한 e2e 가 빨간불이면 그 스펙이 단정하는 속성을 직접 재라 (실측 2026-08-30)
-  - `L342` 소스를 grep 하는 테스트는 이름만 봐서는 회귀를 못 가른다 (실측)
-- `L350` Agent validation rule
-- `L454` Event-editor trust-loop validation (2026-07-30)
-- `L459` 얼굴 바꾸기(changeFace) 폼 시각 계약 (2026-08-28 실측)
-- `L478` P2 spatial focused gate (2026-08-25)
-- `L487` 대화창 연출 focused gate (2026-08-30)
-- `L561` 워크트리 e2e 는 dev 서버가 조용히 안 뜬다 (2026-08-27 실측)
-  - `L574` `locator.click()` 은 잘림 버그를 구조적으로 못 잡는다 (2026-08-29 실측)
-  - `L586` 스크롤이 생겼다고 다 닿는 건 아니다 — 가운데 정렬 넘침 (2026-08-30 실측)
-  - `L594` 미정의 커스텀 프로퍼티는 콘솔에 아무 말도 남기지 않는다 (2026-08-30 실측)
-  - `L601` `ERR_NETWORK_CHANGED` 는 HMR 말고 호스트 인터페이스 때문에도 터진다 (2026-08-28 실측)
-- `L623` 런타임(게임) 전용 비전 QA 하네스 (2026-08-28)
-  - `L625` 메뉴 적대적 플레이 회귀 (2026-09-05)
-- `L745` sceneTestRunner 의 자율 이동 관측 공백 (2026-08-27)
-- `L752` fakeDom 은 프로덕션이 쓰는 브라우저 전역을 빠짐없이 준다 (2026-08-29)
-- `L773` bugfix-sweep 실제 표면 하네스 (2026-08-29)
-- `L786` 마을 설계서 (2026-09-05)
-- `L791` 공포 제작 개정 QA와 개발 서버 전송 (2026-09-05)
-- `L801` 상점 진열 중심 편집 검증 (2026-09-05)
-- `L809` 실제 DB로 나가는 전체 검사 요청 (2026-09-05 실측)
-- `L815` 실내 조립·형상 검증 (2026-09-05)
-- `L819` 서버 소유 AI 작업의 제공자·저장 QA 경계 (2026-09-07)
+  - `L27` GET-only runtime surfaces and static build closure
+- `L69` Mac onboarding Phase 1 contracts (2026-09-06)
+- `L97` 기존 실패 비교는 진단 내용까지 확인한다 (2026-09-05)
+- `L105` Esc 메뉴 동작·시각 검증 (2026-09-05)
+- `L121` Completed-house Phase 2 verification (2026-09-06)
+- `L152` P2 낚시·채집·도감·박물관 focused gate (2026-08-25)
+- `L159` Map-owned overlays: actual AI-turn browser regression (2026-09-05)
+- `L168` Editor e2e boot-overlay determinism (2026-08-31)
+- `L173` 영역 다듬기 focused gate (2026-08-31)
+- `L180` AI 이벤트 배치 통행성 focused gate (2026-08-30)
+- `L188` 체공(점프·낙하) focused gate (2026-08-29)
+  - `L197` 체공 런타임 QA — `npm run qa:runtime -- --scenario hop`
+  - `L227` 워크트리에 `node_modules` 가 없을 때 (2026-08-29 실측)
+- `L290` Roguelike run Phase 0–3 coverage (2026-08-24)
+  - `L301` 조건 게이트를 부하 중에 재지 마라 (실측 2026-08-29)
+- `L310` 데이터베이스 UI/UX 계측 하네스 (2026-08-30)
+  - `L334` 가상 요소 텍스트를 안 재면 `tinyFont 0` 은 "안 봤다" 는 뜻이다 (실측)
+  - `L355` 0px 이미지는 "깨진 것" 과 "접힌 것" 을 갈라야 한다 (실측)
+  - `L361` 타이밍에 취약한 e2e 가 빨간불이면 그 스펙이 단정하는 속성을 직접 재라 (실측 2026-08-30)
+  - `L384` 소스를 grep 하는 테스트는 이름만 봐서는 회귀를 못 가른다 (실측)
+- `L392` Agent validation rule
+- `L496` Event-editor trust-loop validation (2026-07-30)
+- `L501` 얼굴 바꾸기(changeFace) 폼 시각 계약 (2026-08-28 실측)
+- `L520` P2 spatial focused gate (2026-08-25)
+- `L529` 대화창 연출 focused gate (2026-08-30)
+- `L603` 워크트리 e2e 는 dev 서버가 조용히 안 뜬다 (2026-08-27 실측)
+  - `L616` `locator.click()` 은 잘림 버그를 구조적으로 못 잡는다 (2026-08-29 실측)
+  - `L628` 스크롤이 생겼다고 다 닿는 건 아니다 — 가운데 정렬 넘침 (2026-08-30 실측)
+  - `L636` 미정의 커스텀 프로퍼티는 콘솔에 아무 말도 남기지 않는다 (2026-08-30 실측)
+  - `L643` `ERR_NETWORK_CHANGED` 는 HMR 말고 호스트 인터페이스 때문에도 터진다 (2026-08-28 실측)
+- `L665` 런타임(게임) 전용 비전 QA 하네스 (2026-08-28)
+  - `L667` 메뉴 적대적 플레이 회귀 (2026-09-05)
+- `L787` sceneTestRunner 의 자율 이동 관측 공백 (2026-08-27)
+- `L794` fakeDom 은 프로덕션이 쓰는 브라우저 전역을 빠짐없이 준다 (2026-08-29)
+- `L815` bugfix-sweep 실제 표면 하네스 (2026-08-29)
+- `L828` 마을 설계서 (2026-09-05)
+- `L833` 공포 제작 개정 QA와 개발 서버 전송 (2026-09-05)
+- `L843` 상점 진열 중심 편집 검증 (2026-09-05)
+- `L851` 실제 DB로 나가는 전체 검사 요청 (2026-09-05 실측)
+- `L857` 실내 조립·형상 검증 (2026-09-05)
+- `L861` 서버 소유 AI 작업의 제공자·저장 QA 경계 (2026-09-07)
 
 ### `openwiki/town-tile-benchmark.md` — 10KB · 153줄 · ~3,010 토큰
 

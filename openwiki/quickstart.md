@@ -102,6 +102,40 @@ neither automatically provisions Chromium.
   executor state is refreshed. AI job admission/generation never downloads browsers; missing
   Chromium remains an explicit unavailable state, not a browser-owned fallback.
 
+### Local queue lifetime, storage and preview
+
+- Once admission succeeds, closing the submitting browser tab does not stop the local job.
+  Node and its machine must remain running and awake; this is not a hosted service. Stopping
+  Node interrupts active work, and sleep/power-off suspends/stops execution. Opening a browser
+  again does not restart Node. Restart the local server to reconnect to retained jobs.
+- Default storage is `~/.local/state/rpg-zzu/ai-jobs/<root-id>`, where `root-id` is the first
+  20 lowercase hex characters of SHA-256 of the **resolved absolute checkout root path**.
+  It contains job metadata, snapshots, provider results, report blobs and inbox state, not
+  the canonical project database. Treat its contents as private. There is no implicit eviction.
+- `AI_JOBS_DIRECTORY` overrides that path in the **server process environment**; putting it
+  only in a Vite `.env` file does not configure this service. Prefer an absolute local path
+  outside every served project/public/build directory. Moving a checkout changes the default
+  namespace; use the same deliberate override to retain a queue across moves, with all prior
+  owners stopped. A different path means a different queue, not lost data to auto-reset.
+- Dev and production preview from the same checkout use that same default directory. Only
+  one process may own it. Stop your own dev server before starting preview (or the reverse);
+  intentionally separate outside-root overrides allow independent queues, not shared writers.
+  Never remove a live writer's lock or kill/reuse another server to resolve a collision.
+- Back up the entire retained directory, metadata **and** blobs together, after stopping all
+  owners. Preserve corrupt/uncertain storage for investigation instead of deleting it. Queued
+  jobs can resume at startup; interrupted work and uncertain provider outcomes are not silently
+  paid-replayed. Follow the existing [architecture recovery and result-state contracts](architecture.md)
+  for lock recovery, saved-response reuse, report-only retry and application/save evidence.
+  A generated result or ready report is not an applied or remotely saved project.
+- `npm start` serves the production preview shell on its configured public host, but the job
+  API accepts only **local loopback sockets with the exact local Host/Origin**. Use the local
+  server's `127.0.0.1`/`localhost` URL and actual HTTP/HTTPS scheme for queue access. The public
+  `mdc-server:9888`/Tailscale shell URL does not grant remote queue access. This is an intentional
+  local-service boundary, not a reason to weaken authentication/origin checks.
+- Static web/standalone player exports do not start the job service or require Chromium/Bun.
+  Runtime availability is not provider authentication or proof of successful generation.
+  A missing Chromium runtime remains unavailable; follow the explicit setup/restart steps above.
+
 ## 2. 검증 — 무엇이 진짜 게이트인가
 
 | 명령 | 무엇을 재나 | 기준선 (실측) | 언제 쓰나 |

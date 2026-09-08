@@ -14,6 +14,13 @@ npm run typecheck # 타입 검사만
 
 ### AI 어시스턴트 연결
 
+Durable AI jobs also require Node 24, the checkout's locked npm dependencies, and
+**`npm run setup:ai-runtime`** before submission. This explicit command provisions/probes
+matching managed Chromium; requests never install it. Bun and a configured provider are
+needed for completions. See [runtime setup and local queue operation](openwiki/quickstart.md#1b-explicit-ai-job-browser-runtime-setup-2026-09-06)
+for server lifetime, private storage, restart/recovery and the loopback-only preview limit.
+Dev and preview share one queue per checkout: do not run both against the same storage.
+
 기본 연결은 API 키 과금 대신 로컬 Codex의 ChatGPT OAuth 로그인을 사용합니다. `npm run dev`만 띄우면 Codex 로그인 상태를 dev 서버와 **같은 포트**(same-origin)로 자동 브릿지합니다 — 별도 터미널이 필요 없습니다.
 
 ```bash

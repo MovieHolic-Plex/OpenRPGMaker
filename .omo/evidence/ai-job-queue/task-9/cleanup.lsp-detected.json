@@ -1,0 +1,53 @@
+{
+  "ownedProcessMatchesExcludingVerifierAncestors": [
+    {
+      "pid": 932769,
+      "cwd": "/dev/shm/task9-runtime-5xGq1G"
+    },
+    {
+      "pid": 932996,
+      "cwd": "/dev/shm/task9-runtime-5xGq1G"
+    },
+    {
+      "pid": 933010,
+      "cwd": "/dev/shm/task9-runtime-5xGq1G"
+    },
+    {
+      "pid": 933119,
+      "cwd": "/dev/shm/task9-runtime-5xGq1G"
+    }
+  ],
+  "temporaryMatches": [],
+  "verifiedClosedPorts": [
+    37241,
+    45459
+  ],
+  "remainingListenersOnVerifiedPorts": [],
+  "runtimeReceipt": {
+    "temporaryRemoved": true,
+    "modes": [
+      {
+        "mode": "dev",
+        "port": 37241,
+        "streamEnded": true,
+        "listenerClosed": true,
+        "lockReleasedBeforeHttpClose": true,
+        "repositoryReopenedEmpty": true,
+        "jobs": 0,
+        "operations": 0
+      },
+      {
+        "mode": "preview",
+        "port": 45459,
+        "streamEnded": true,
+        "listenerClosed": true,
+        "lockReleasedBeforeHttpClose": true,
+        "repositoryReopenedEmpty": true,
+        "jobs": 0,
+        "operations": 0
+      }
+    ],
+    "requests": 10,
+    "violations": []
+  }
+}

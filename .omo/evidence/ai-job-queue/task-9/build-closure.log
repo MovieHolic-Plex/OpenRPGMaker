@@ -1,0 +1,32 @@
+
+ RUN  v3.2.4 /dev/shm/task9-runtime-5xGq1G
+
+stdout | test/playerBuild.test.ts > player build output > builds a clean player into an OS-portable disposable directory
+{"target":"player","transformedModules":543,"scannedArtifacts":6,"forbiddenModules":0,"forbiddenArtifacts":0}
+
+stdout | test/playerBuild.test.ts > player build output > builds a clean player into an OS-portable disposable directory
+{"target":"player","temporaryRemoved":true}
+
+stdout | test/playerBuild.test.ts > player build output > builds a clean standalone into an OS-portable disposable directory
+{"target":"standalone","transformedModules":545,"scannedArtifacts":2,"forbiddenModules":0,"forbiddenArtifacts":0}
+
+stdout | test/playerBuild.test.ts > player build output > builds a clean standalone into an OS-portable disposable directory
+{"target":"standalone","temporaryRemoved":true}
+
+stdout | test/playerBuild.test.ts > player build output > detects a test-only virtual queue import in the actual standalone module and artifact closure
+{"target":"standalone-negative-control","queueModuleDetected":true,"queueArtifactDetected":true}
+
+stdout | test/playerBuild.test.ts > player build output > detects a test-only virtual queue import in the actual standalone module and artifact closure
+{"target":"standalone-negative-control","temporaryRemoved":true}
+
+ ✓ test/playerBuild.test.ts (5 tests) 90899ms
+   ✓ player build output > builds a clean player into an OS-portable disposable directory  23701ms
+   ✓ player build output > builds a clean standalone into an OS-portable disposable directory  33677ms
+   ✓ player build output > detects a test-only virtual queue import in the actual standalone module and artifact closure  33495ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  15:34:23
+   Duration  93.55s (transform 112ms, setup 0ms, collect 1.08s, tests 90.90s, environment 0ms, prepare 166ms)
+
+{"vitestClosed":true,"temporaryRemoved":true}

@@ -1,0 +1,15 @@
+{
+  "ownedLanguageServerPidsExited": [
+    932769,
+    932996,
+    933010,
+    933119
+  ],
+  "ownedEmptyCancellationDirectoriesRemoved": [
+    "/tmp/0a6ae0fb79329555dad524825bafeb5a",
+    "/tmp/3f422ecac4a3513fa72000c4428b5418"
+  ],
+  "toolingBoundaryException": "LSP tool used its default /tmp cancellation prefixes and advertised a shared typings cache; these defaults were not configurable by the diagnostics call.",
+  "sharedTypingsCachePreserved": true,
+  "sharedTypingsCacheMtimeNs": 1788757036011529885
+}

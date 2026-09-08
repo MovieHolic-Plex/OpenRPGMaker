@@ -1,0 +1,1 @@
+node --test test/aiJobsRuntimeSurfaces.test.mjs exit=0
