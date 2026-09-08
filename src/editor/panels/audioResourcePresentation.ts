@@ -24,6 +24,22 @@ export function audioDescriptionView(resource: AudioResource | undefined): HTMLE
   });
 }
 
+export function audioResourceDocument(resource: AudioResource, project: Pick<Project, "assets">): HTMLElement {
+  return el("div", {
+    class: "audio-preview-document",
+    children: [
+      el("h3", { text: resource.name }),
+      el("div", { class: "audio-preview-tags", text: resource.tags.join(" · ") }),
+      audioDescriptionView(resource),
+      el("details", { class: "audio-preview-meta", children: [
+        el("summary", { text: `${resource.kind === "music" ? "음악" : "효과음"} · 파일 정보` }),
+        el("div", { text: resource.id }),
+        el("div", { text: resolveAudioSource(resource.id, project) ?? "파일 없음" }),
+      ] }),
+    ],
+  });
+}
+
 export function audioPlayback(
   resourceId: string,
   project: Pick<Project, "assets">,

@@ -1,0 +1,39 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/fakeDomAudioContract.test.ts test/aiConnectionStatusWiring.test.ts test/editorLayoutPersist.test.ts test/eventCommandAssist.test.ts test/eventCommandDeleteSafety.test.ts test/eventEditorMemoryOpeningTemplate.test.ts test/leftDockPanels.test.ts test/pictureWeatherDom.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-audio-preview-ux
+
+ ✓ test/leftDockPanels.test.ts (9 tests) 36700ms
+   ✓ 좌측 도크 구성은 워크스페이스 레이아웃을 따른다 > Standard mounts its task host without changing a saved Expert maps-only layout  24616ms
+   ✓ 좌측 도크 구성은 워크스페이스 레이아웃을 따른다 > 맵 패널을 닫으면 맵 호스트가 좌측 도크에서 사라진다  2139ms
+   ✓ 좌측 도크 구성은 워크스페이스 레이아웃을 따른다 > 좌측 도크가 비어도 호스트가 최소 하나는 남는다 (.left-panel 은 비지 않는다)  2251ms
+   ✓ 좌측 도크 구성은 워크스페이스 레이아웃을 따른다 > 초보 모드는 레이아웃이 타일을 숨기라 해도 타일 호스트를 고정한다  1922ms
+   ✓ 좌측 도크 구성은 워크스페이스 레이아웃을 따른다 > 초보 레일의 --editor-left-safe 는 실제 레일 폭에서 파생한다  2195ms
+   ✓ 패널 메뉴는 실제로 되는 선택지만 제시한다 > 초보 모드에서는 레일 플라이아웃만 제공하고 렌더되지 않는 도크 토글은 어디에도 내놓지 않는다  3061ms
+ ✓ test/aiConnectionStatusWiring.test.ts (1 test) 3841ms
+   ✓ 에디터 하단 상태바 제거 > 맥락 정보와 액션을 포함한 하단 상태바 자체를 렌더하지 않는다  3839ms
+ ✓ test/editorLayoutPersist.test.ts (7 tests) 42881ms
+   ✓ 에디터 레이아웃 크기 저장 > 리사이저 mouseup 시 크기를 저장하고 모듈 재로드 후 복원한다 (접힘 상태·도크는 저장하지 않는다)  26855ms
+   ✓ 에디터 레이아웃 크기 저장 > 좁은 뷰포트에서도 좌측 사이드바를 접어 숨기지 않는다  2134ms
+   ✓ 에디터 레이아웃 크기 저장 > 저장된 크기를 기존 범위로 clamp해서 복원하고 잘못된 JSON은 기본값으로 무시한다  4089ms
+   ✓ 에디터 레이아웃 크기 저장 > 맵 트리 높이는 기본이 자동이고, 리사이저를 끌면 수동으로 저장되며 더블클릭이 자동으로 되돌린다  1940ms
+   ✓ 에디터 레이아웃 크기 저장 > 자동 플래그가 없는 옛 저장본은 높이가 기본값이면 자동, 다른 값이면 수동으로 읽는다  3945ms
+   ✓ 에디터 레이아웃 크기 저장 > 저장된 조수 대기 화면을 복원한다  2238ms
+   ✓ 맵 잠금 상태바 > 다른 세션이 잠근 맵이면 가져오기 버튼으로 takeover를 호출한다  1676ms
+ ✓ test/eventCommandDeleteSafety.test.ts (5 tests) 2283ms
+   ✓ event command Delete safety > Delete on a selected command removes only that command, not the event  1159ms
+   ✓ event command Delete safety > event deletion snapshots and restore undoes the delete  383ms
+ ✓ test/eventCommandAssist.test.ts (56 tests) 5875ms
+   ✓ AI Assist 패널 UI (fakeDom) > 행마다 «이건 빼기»로 골라 적용할 수 있다  331ms
+ ✓ test/pictureWeatherDom.test.ts (18 tests) 1150ms
+ ✓ test/fakeDomAudioContract.test.ts (15 tests) 59ms
+ ✓ test/eventEditorMemoryOpeningTemplate.test.ts (2 tests) 789ms
+   ✓ empty-event 회상 오프닝 template > Given an empty event page, When the 회상 오프닝 CTA is clicked, Then the page holds the memory_opening cutscene  441ms
+   ✓ empty-event 회상 오프닝 template > Given an empty event page, When the CTA is clicked, Then no command edit dialog blocks the author  346ms
+
+ Test Files  8 passed (8)
+      Tests  113 passed (113)
+   Start at  21:43:23
+   Duration  68.64s (transform 27.58s, setup 0ms, collect 36.18s, tests 93.58s, environment 2ms, prepare 1.14s)

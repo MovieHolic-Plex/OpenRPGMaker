@@ -12,13 +12,35 @@ async function setSlider(page: Page, testId: string, value: string): Promise<voi
   await page.getByTestId(testId).locator("input[type='range']").fill(value);
 }
 
-// 엔진에 적용된 실측값 + 실제 <audio> 요소의 값을 함께 읽는다.
-// 엔진이 값만 들고 있고 미디어 엘리먼트에 닿지 않는 경우를 잡기 위한 교차 검증.
+async function withPreviewEvent(page: Page, name: string, action: () => Promise<void>): Promise<void> {
+  await page.evaluate(eventName => {
+    const holder: Window & { previewEvent?: Promise<void> } = window;
+    holder.previewEvent = new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => { document.removeEventListener(eventName, done, true); reject(new Error(`Missing preview event: ${eventName}`)); }, 5000);
+      function done(event: Event): void {
+        if (!(event.target instanceof HTMLAudioElement) || !event.target.hasAttribute("data-editor-audio-preview")) return;
+        clearTimeout(timeout);
+        document.removeEventListener(eventName, done, true);
+        resolve();
+      }
+      document.addEventListener(eventName, done, true);
+    });
+  }, name);
+  await action();
+  await page.evaluate(async () => {
+    const holder: Window & { previewEvent?: Promise<void> } = window;
+    await holder.previewEvent;
+    delete holder.previewEvent;
+  });
+}
+
+// Runtime mixer is a read-only isolation oracle; media belongs to the editor.
 async function readAudio(page: Page): Promise<AudioStateSnapshot & { mediaVolume: number | null; mediaRate: number | null }> {
   return page.evaluate(() => {
-    const hook = (window as unknown as { __oprnAudioState?: () => AudioStateSnapshot }).__oprnAudioState;
+    const holder: Window & { __oprnAudioState?: () => AudioStateSnapshot } = window;
+    const hook = holder.__oprnAudioState;
     const state = hook ? hook() : { volume: { bgm: -1, se: -1 }, playbackRate: -1, pan: -1, fadeInMs: -1 };
-    const media = document.querySelector<HTMLAudioElement>("audio[data-oprn-audio]");
+    const media = document.querySelector<HTMLAudioElement>("audio[data-editor-audio-preview]");
     return {
       ...state,
       mediaVolume: media ? media.volume : null,
@@ -28,8 +50,34 @@ async function readAudio(page: Page): Promise<AudioStateSnapshot & { mediaVolume
 }
 
 test.beforeEach(async ({ page }) => {
+  // Optional local transport relay for hosts that cancel Chromium module requests.
+  // Responses still come from the real Vite server; media APIs are never mocked.
+  if (process.env.AUDIO_QA_HTTP_RELAY === "1") {
+    const origin = `http://127.0.0.1:${process.env.DEV_SERVER_PORT ?? "9173"}`;
+    let active = 0;
+    const queued: (() => void)[] = [];
+    await page.route(`${origin}/**`, async route => {
+      if (active >= 8) await new Promise<void>(resolve => queued.push(resolve));
+      else active += 1;
+      try {
+        await route.fulfill({ response: await route.fetch({ maxRetries: 2 }) });
+      } catch (error) {
+        // Chromium may complete/cancel an intercepted request during teardown.
+        // UI assertions still decide success; real fetch failures propagate.
+        if (!(error instanceof Error) || !error.message.includes("Route is already handled")) throw error;
+      } finally {
+        const next = queued.shift();
+        if (next) next();
+        else active -= 1;
+      }
+    });
+  }
   // 클래식 툴바(음악 버튼 포함)는 전문가 모드에서만 노출된다.
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
+});
+
+test.afterEach(async ({ page }) => {
+  if (process.env.AUDIO_QA_HTTP_RELAY === "1") await page.unrouteAll({ behavior: "wait" });
 });
 
 // 편집기 셸 부팅(Phaser + 프로젝트 로드)이 기본 30초 예산을 다 먹어서 단정이 시간에 쫓겼다.
@@ -63,8 +111,10 @@ test("audio dialog uses the canonical 음악·효과음 title and modern control
   await expect(page.getByTestId("audio-test-list")).toBeVisible();
   await expect(page.getByTestId("audio-test-option-off")).toHaveAttribute("aria-selected", "true");
   await expect(page.getByTestId("audio-test-filter")).toBeVisible();
+  await expect(page.getByTestId("audio-test-advanced")).not.toHaveAttribute("open");
+  await page.getByTestId("audio-test-advanced").locator("summary").click();
   await expect(page.getByTestId("audio-test-fade")).toContainText("페이드인 시간");
-  await expect(page.getByTestId("audio-test-fade")).toContainText("다음 재생부터 적용");
+  await expect(page.getByTestId("audio-test-advanced")).toContainText("다음 재생부터 적용");
   await expect(page.getByTestId("audio-test-volume")).toContainText("음량");
   await expect(page.getByTestId("audio-test-tempo")).toContainText("템포");
   await expect(page.getByTestId("audio-test-balance")).toContainText("밸런스");
@@ -82,14 +132,14 @@ test("audio dialog uses the canonical 음악·효과음 title and modern control
   await page.getByTestId("audio-test-option-1").click();
   await expect(page.getByTestId("audio-test-option-1")).toHaveAttribute("aria-selected", "true");
   await expect(page.getByTestId("audio-test-play")).toBeEnabled();
-  await page.getByTestId("audio-test-play").click();
+  await withPreviewEvent(page, "playing", () => page.getByTestId("audio-test-play").click());
   await expect(page.getByTestId("audio-test-status")).toContainText("재생 중");
   await expect(page.getByTestId("audio-test-play")).toHaveAttribute("aria-pressed", "true");
   await expect(page.getByTestId("audio-test-stop")).toBeEnabled();
 
   await page.screenshot({ path: testInfo.outputPath("audio-test-dialog.png"), fullPage: true });
 
-  await page.getByTestId("audio-test-stop").click();
+  await withPreviewEvent(page, "pause", () => page.getByTestId("audio-test-stop").click());
   await expect(page.getByTestId("audio-test-status")).toContainText("정지됨");
   await expect(page.getByTestId("audio-test-play")).toHaveAttribute("aria-pressed", "false");
   await expect(page.getByTestId("audio-test-stop")).toBeDisabled();
@@ -100,21 +150,24 @@ test("audio dialog uses the canonical 음악·효과음 title and modern control
 
 test("moving the sliders changes the values actually applied to playback", async ({ page }) => {
   await openAudioDialog(page);
+  const runtimeBefore = await readAudio(page);
+  await page.getByTestId("audio-test-advanced").locator("summary").click();
 
   // 페이드인은 다음 재생에 적용되므로 재생 전에 0 으로 두고 시작한다(즉시 목표 볼륨 도달).
   await page.getByTestId("audio-test-option-1").click();
-  await page.getByTestId("audio-test-play").click();
+  await withPreviewEvent(page, "playing", () => page.getByTestId("audio-test-play").click());
   await expect(page.getByTestId("audio-test-status")).toContainText("재생 중");
 
   const before = await readAudio(page);
-  expect(before.volume.bgm).toBeCloseTo(1, 2);
-  expect(before.playbackRate).toBeCloseTo(1, 2);
-  expect(before.pan).toBeCloseTo(0, 2);
+  expect(before.volume).toEqual(runtimeBefore.volume);
+  expect(before.mediaVolume).toBeCloseTo(1, 2);
+  expect(before.mediaRate).toBeCloseTo(1, 2);
 
   // 재생 중 즉시 적용: 음량 40% · 템포 135% · 밸런스 왼쪽 40.
   await setSlider(page, "audio-test-volume", "40");
   await setSlider(page, "audio-test-tempo", "135");
-  await setSlider(page, "audio-test-balance", "-40");
+  await withPreviewEvent(page, "playing", () => setSlider(page, "audio-test-balance", "-40"));
+  await expect(page.getByTestId("audio-test-transport")).toHaveAttribute("data-state", "playing");
   // 페이드인 4초 — 다음 재생에 적용된다.
   await setSlider(page, "audio-test-fade", "4");
 
@@ -124,17 +177,26 @@ test("moving the sliders changes the values actually applied to playback", async
   await expect(page.getByTestId("audio-test-fade-value")).toHaveText("페이드인 4초");
 
   const after = await readAudio(page);
-  expect(after.volume.bgm).toBeCloseTo(0.4, 2);
-  expect(after.playbackRate).toBeCloseTo(1.35, 2);
-  expect(after.pan).toBeCloseTo(-0.4, 2); // -40/100 — 슬라이더 범위가 -100..100 이므로 전체 행정이 pan -1..1 을 덮는다
-  expect(after.fadeInMs).toBe(4000);
+  expect(after.volume).toEqual(runtimeBefore.volume);
+  expect(after.playbackRate).toBe(runtimeBefore.playbackRate);
+  expect(after.pan).toBe(runtimeBefore.pan);
+  expect(after.fadeInMs).toBe(runtimeBefore.fadeInMs);
+  expect(await page.locator('audio[data-editor-audio-preview]').evaluate((node: HTMLAudioElement) => node.crossOrigin)).toBe("anonymous");
   // 실제 미디어 엘리먼트에 닿았는지 교차 검증 — 정지 없이 즉시 반영이다.
   expect(after.mediaVolume).not.toBeNull();
   expect(after.mediaVolume!).toBeCloseTo(0.4, 2);
   expect(after.mediaRate!).toBeCloseTo(1.35, 2);
   // 값이 실제로 변했다.
-  expect(after.playbackRate).not.toBeCloseTo(before.playbackRate, 2);
-  expect(after.pan).not.toBeCloseTo(before.pan, 2);
+  expect(after.mediaRate).not.toBeCloseTo(before.mediaRate ?? 0, 2);
+  await page.getByTestId("audio-test-reset").click();
+  const reset = await readAudio(page);
+  expect(reset.mediaVolume).toBeCloseTo(1, 2);
+  expect(reset.mediaRate).toBeCloseTo(1, 2);
+  await page.getByTestId("audio-test-close").click();
+  const closed = await readAudio(page);
+  expect(closed.volume).toEqual(runtimeBefore.volume);
+  expect(closed.pan).toBe(runtimeBefore.pan);
+  expect(closed.mediaVolume).toBeNull();
 });
 
 test("list filter keeps (꺼짐) first and MIDI rows are marked unplayable", async ({ page }) => {
@@ -152,8 +214,9 @@ test("list filter keeps (꺼짐) first and MIDI rows are marked unplayable", asy
   await expect(list.getByRole("option")).toHaveCount(optionCount);
 
   // MIDI(RTP) 항목은 목록에서 바로 구별된다 — 눌러보고 나서야 알게 하지 않는다.
-  await page.getByTestId("audio-test-filter").fill("RTP·MIDI");
+  await page.getByTestId("audio-test-filter").fill("easyrpg-music-");
   const midiRow = list.getByRole("option").nth(1);
+  await expect(midiRow).toHaveAttribute("data-resource-id", /^easyrpg-music-/);
   await expect(midiRow).toHaveAttribute("aria-disabled", "true");
   await expect(midiRow).toContainText("재생 불가");
 });
