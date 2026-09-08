@@ -40,11 +40,13 @@ import {
   statStrip,
   workspaceShell,
 } from "@/editor/panels/databaseWorkspace";
+import { reconcileLinkedAnimalHousing } from "@/project/animalHousing";
 import { canOccupySpatialFootprint } from "@/project/spatialOccupancy";
 import { startSession } from "@/project/session";
 import { store } from "@/project/store";
 import type {
   Dir,
+  FarmAnimalStartInstance,
   FarmBuildingLevelDefinition,
   FarmBuildingPlacement,
   FarmBuildingTypeRecord,
@@ -79,6 +81,55 @@ let spatialSelection: Selection | null = null;
 
 /** 2 단계 삭제 확인의 무장 상태. 재렌더로 버튼 노드가 갈려도 살아남아야 한다. */
 const armedDeletes = new Map<string, number>();
+/** Last computed impact counts for notice rendering after confirm. */
+const housingImpactNotices = new Map<string, number>();
+
+type PendingHousingChange =
+  | { readonly kind: "disable"; readonly typeId: string; readonly typeIndex: number; readonly impact: number }
+  | {
+      readonly kind: "capacity";
+      readonly typeId: string;
+      readonly typeIndex: number;
+      readonly levelIndex: number;
+      readonly level: number;
+      readonly nextCapacity: number;
+      readonly impact: number;
+    };
+/** Single pending propose — cancel/context switch replaces, never reuses unrelated arms. */
+let pendingHousingChange: PendingHousingChange | null = null;
+
+function clearPendingHousingChange(): void {
+  pendingHousingChange = null;
+}
+
+/**
+ * Drop unconfirmed housing proposals when their owning editor context ends.
+ * Called from the real database-modal close path and on projectSwitch reload/replace
+ * (including same-ID wire reloads). Ordinary same-context rerenders do not call this.
+ */
+export function invalidateFarmSpatialConfirmationContext(): void {
+  clearPendingHousingChange();
+}
+
+// Project replacement ends proposal ownership even when the modal was already closed
+// or the same typeIds reappear on the wire.
+store.subscribe((_project, change) => {
+  if (change.projectSwitch) clearPendingHousingChange();
+});
+
+function pendingDisableFor(typeId: string): Extract<PendingHousingChange, { kind: "disable" }> | null {
+  return pendingHousingChange?.kind === "disable" && pendingHousingChange.typeId === typeId
+    ? pendingHousingChange
+    : null;
+}
+
+function pendingCapacityFor(typeId: string, level: number): Extract<PendingHousingChange, { kind: "capacity" }> | null {
+  return pendingHousingChange?.kind === "capacity"
+    && pendingHousingChange.typeId === typeId
+    && pendingHousingChange.level === level
+    ? pendingHousingChange
+    : null;
+}
 
 function laterCall(callback: () => void, delayMs: number): void {
   const host = globalThis as { setTimeout?: (cb: () => void, ms: number) => unknown };
@@ -332,21 +383,36 @@ function placementRow(
     dataset: { recordId: record.instanceId },
     onSelect: () => { spatialSelection = { kind, id: record.instanceId }; rerender(); },
   });
-  // 배치는 좌표 한 쌍일 뿐이라 되돌리기 비용이 낮다 — 2 단계 확인 대신 Undo 안내를 띄운다.
   const deleteTestId = kind === "buildingPlacement"
     ? `db-spatial-delete-building-placement-${record.instanceId}`
     : `db-spatial-delete-decoration-placement-${record.instanceId}`;
+  if (kind === "buildingPlacement") {
+    const impact = countAuthoredAnimalsOnPlacement(record.instanceId);
+    if (impact > 0) {
+      const button = confirmDeleteButton(
+        deleteTestId,
+        `${typeName} 시작 배치 삭제`,
+        () => removeBuildingPlacement(record.instanceId, rerender),
+        `미배정 ${impact}마리 · ${DELETE_CONFIRM_LABEL}`,
+        `미배정 ${impact}마리`,
+      );
+      return rowWrap(row, button, matchesNameOrId(typeName, record.instanceId, spatialSearch));
+    }
+    const button = el("button", {
+      class: "db-ws-row-delete",
+      text: DELETE_IDLE_LABEL,
+      attrs: { type: "button", "aria-label": `${typeName} 시작 배치 삭제` },
+      dataset: { testid: deleteTestId },
+      on: { click: () => removeBuildingPlacement(record.instanceId, rerender) },
+    });
+    return rowWrap(row, button, matchesNameOrId(typeName, record.instanceId, spatialSearch));
+  }
   const button = el("button", {
     class: "db-ws-row-delete",
     text: DELETE_IDLE_LABEL,
     attrs: { type: "button", "aria-label": `${typeName} 시작 배치 삭제` },
     dataset: { testid: deleteTestId },
-    on: {
-      click: () => {
-        if (kind === "buildingPlacement") removeBuildingPlacement(record.instanceId, rerender);
-        else removeDecorationPlacement(record.instanceId, rerender);
-      },
-    },
+    on: { click: () => removeDecorationPlacement(record.instanceId, rerender) },
   });
   return rowWrap(row, button, matchesNameOrId(typeName, record.instanceId, spatialSearch));
 }
@@ -358,11 +424,17 @@ function rowWrap(row: HTMLElement, action: HTMLElement, matches: boolean): HTMLE
   return wrap;
 }
 
-function confirmDeleteButton(testid: string, ariaLabel: string, perform: () => void): HTMLElement {
+function confirmDeleteButton(
+  testid: string,
+  ariaLabel: string,
+  perform: () => void,
+  confirmLabel: string = DELETE_CONFIRM_LABEL,
+  idleLabel: string = DELETE_IDLE_LABEL,
+): HTMLElement {
   const armed = (armedDeletes.get(testid) ?? 0) > Date.now();
   const button = el("button", {
     class: `db-ws-row-delete${armed ? " confirming" : ""}`,
-    text: armed ? DELETE_CONFIRM_LABEL : DELETE_IDLE_LABEL,
+    text: armed ? confirmLabel : idleLabel,
     attrs: { type: "button", "aria-label": ariaLabel },
     dataset: { testid },
   });
@@ -373,12 +445,12 @@ function confirmDeleteButton(testid: string, ariaLabel: string, perform: () => v
       return;
     }
     armedDeletes.set(testid, Date.now() + DELETE_CONFIRM_WINDOW_MS);
-    button.textContent = DELETE_CONFIRM_LABEL;
+    button.textContent = confirmLabel;
     button.classList.add("confirming");
     laterCall(() => {
       if ((armedDeletes.get(testid) ?? 0) > Date.now()) return;
       armedDeletes.delete(testid);
-      button.textContent = DELETE_IDLE_LABEL;
+      button.textContent = idleLabel;
       button.classList.remove("confirming");
     }, DELETE_CONFIRM_WINDOW_MS + 80);
   });
@@ -470,6 +542,8 @@ function onboardingBoard(buildingCount: number, decorationCount: number, rerende
 
 function buildingTypeInspector(record: FarmBuildingTypeRecord, index: number, rerender: () => void): HTMLElement {
   const blocked = farmBuildingTypeReferenceMessage(record.id);
+  const housingEnabled = record.animalHousing !== undefined;
+  const pendingDisable = pendingDisableFor(record.id);
   const cards: HTMLElement[] = [
     sectionCard({
       title: "기본 정보",
@@ -485,6 +559,55 @@ function buildingTypeInspector(record: FarmBuildingTypeRecord, index: number, re
       hint: "선택하지 않으면 모든 맵",
       children: [mapChecklist(record.allowedMapIds, `db-spatial-building-map-${record.id}`, (ids) => patchBuildingType(index, { allowedMapIds: ids.length ? ids : undefined }, true, rerender))],
       testid: `db-spatial-building-maps-${record.id}`,
+    }),
+    sectionCard({
+      title: "동물 주거",
+      hint: "켜면 각 레벨에 동물 정원이 필요합니다. 범용 수용량과 별개입니다.",
+      children: [
+        toggleSwitch(
+          "동물 주거 사용",
+          `db-spatial-building-animal-housing-${record.id}`,
+          housingEnabled,
+          (enabled) => setBuildingAnimalHousing(index, enabled, rerender),
+        ),
+        ...(housingEnabled ? [housingSpeciesToggles(record, index, rerender)] : []),
+        el("p", {
+          class: "db-ws-usage",
+          text: (() => {
+            if (pendingDisable) return `미배정 ${pendingDisable.impact}마리`;
+            const housingImpact = housingImpactNotices.get(`housing:${record.id}`);
+            if (housingImpact !== undefined) {
+              return housingImpact > 0 ? `미배정 ${housingImpact}마리` : "미배정 0마리";
+            }
+            return housingEnabled
+              ? "허용 종과 레벨별 동물 정원을 설정하세요."
+              : "주거를 끄면 이 유형 배치에 연결된 시작 개체가 미배정됩니다.";
+          })(),
+          dataset: { testid: `db-spatial-building-housing-impact-${record.id}` },
+        }),
+        ...(pendingDisable
+          ? [el("div", {
+              class: "db-ws-toolbar",
+              children: [
+                el("button", {
+                  class: "db-ws-btn",
+                  text: "확인",
+                  attrs: { type: "button" },
+                  dataset: { testid: `db-spatial-building-housing-confirm-${record.id}` },
+                  on: { click: () => confirmPendingHousingChange(rerender) },
+                }),
+                el("button", {
+                  class: "db-ws-btn db-ws-btn-ghost",
+                  text: "취소",
+                  attrs: { type: "button" },
+                  dataset: { testid: `db-spatial-building-housing-cancel-${record.id}` },
+                  on: { click: () => cancelPendingHousingChange(rerender) },
+                }),
+              ],
+            })]
+          : []),
+      ],
+      testid: `db-spatial-building-housing-${record.id}`,
     }),
   ];
 
@@ -547,6 +670,49 @@ function buildingLevelCard(
     }),
     nameInput("레벨 이름", `db-spatial-building-level-name-${prefix}`, level.name ?? "", (value) => patchBuildingLevel(typeIndex, levelIndex, { name: value || undefined }, false), rerender),
     numberField("수용량", `db-spatial-building-capacity-${prefix}`, level.capacity, (value) => patchBuildingLevel(typeIndex, levelIndex, { capacity: value }, false), { min: 1, max: 9999 }),
+    ...(record.animalHousing
+      ? [
+          numberField(
+            "동물 정원",
+            `db-spatial-building-animal-capacity-${prefix}`,
+            level.animalCapacity ?? 0,
+            (value) => commitAnimalCapacity(typeIndex, levelIndex, value, rerender),
+            { min: 0, max: 9999 },
+          ),
+          el("p", {
+            class: "db-ws-usage",
+            text: (() => {
+              const pending = pendingCapacityFor(record.id, level.level);
+              if (pending) return `미배정 ${pending.impact}마리`;
+              const impact = housingImpactNotices.get(`capacity:${record.id}:${level.level}`);
+              if (impact === undefined) return "범용 수용량과 별개인 동물 슬롯입니다.";
+              return impact > 0 ? `미배정 ${impact}마리` : "미배정 0마리";
+            })(),
+            dataset: { testid: `db-spatial-building-animal-capacity-impact-${prefix}` },
+          }),
+          ...(pendingCapacityFor(record.id, level.level)
+            ? [el("div", {
+                class: "db-ws-toolbar",
+                children: [
+                  el("button", {
+                    class: "db-ws-btn",
+                    text: "확인",
+                    attrs: { type: "button" },
+                    dataset: { testid: `db-spatial-building-animal-capacity-confirm-${prefix}` },
+                    on: { click: () => confirmPendingHousingChange(rerender) },
+                  }),
+                  el("button", {
+                    class: "db-ws-btn db-ws-btn-ghost",
+                    text: "취소",
+                    attrs: { type: "button" },
+                    dataset: { testid: `db-spatial-building-animal-capacity-cancel-${prefix}` },
+                    on: { click: () => cancelPendingHousingChange(rerender) },
+                  }),
+                ],
+              })]
+            : []),
+        ]
+      : []),
     numberField("골드 비용", `db-spatial-building-gold-${prefix}`, level.cost?.gold ?? 0, (value) => patchBuildingCost(typeIndex, levelIndex, value), { min: 0, max: 9_999_999 }),
     resourcePickerControl({
       label: "기본 그래픽",
@@ -593,7 +759,9 @@ function buildingLevelCard(
 
   const card = sectionCard({
     title: level.level === 1 ? "Lv.1 건설" : `Lv.${level.level} 업그레이드`,
-    hint: `${level.footprint.width}×${level.footprint.height} · 수용량 ${level.capacity}`,
+    hint: record.animalHousing
+      ? `${level.footprint.width}×${level.footprint.height} · 수용량 ${level.capacity} · 동물 ${level.animalCapacity ?? 0}`
+      : `${level.footprint.width}×${level.footprint.height} · 수용량 ${level.capacity}`,
     children,
     testid: `db-spatial-building-level-${prefix}`,
   });
@@ -723,7 +891,11 @@ function buildingPlacementInspector(
           idInput("배치 ID", `db-spatial-building-placement-id-${record.instanceId}`, record.instanceId, (value) => renamePlacement("building", index, value, rerender)),
           chooserField("건물 유형", `db-spatial-building-placement-type-${record.instanceId}`, record.typeId, types.map(namedOption), (typeId) => patchBuildingPlacement(index, { typeId, level: 1 }, rerender)),
           numberField("시작 레벨", `db-spatial-building-placement-level-${record.instanceId}`, record.level, (value) => patchBuildingPlacement(index, { level: value }, rerender), { min: 1, max: Math.max(1, type?.levels.length ?? 1) }),
-          el("div", { class: "db-spatial-footprint-row", children: [preview.node, el("p", { class: "db-ws-usage", text: level ? `Lv.${record.level} 은 ${level.footprint.width}×${level.footprint.height} 타일, 수용량 ${level.capacity} 입니다.` : "레벨 정의를 찾을 수 없습니다." })] }),
+          el("div", { class: "db-spatial-footprint-row", children: [preview.node, el("p", { class: "db-ws-usage", text: level
+            ? (type?.animalHousing
+              ? `Lv.${record.level} 은 ${level.footprint.width}×${level.footprint.height} 타일, 수용량 ${level.capacity}, 동물 ${level.animalCapacity ?? 0} 입니다.`
+              : `Lv.${record.level} 은 ${level.footprint.width}×${level.footprint.height} 타일, 수용량 ${level.capacity} 입니다.`)
+            : "레벨 정의를 찾을 수 없습니다." })] }),
         ],
         testid: `db-spatial-building-placement-what-${record.instanceId}`,
       }),
@@ -1099,7 +1271,9 @@ function addBuildingLevel(typeIndex: number, rerender: () => void): void {
     const type = project.database.farmBuildingTypes?.[typeIndex];
     const previous = type?.levels.at(-1);
     if (!type || !previous || type.levels.length >= 16) return;
-    type.levels.push({ ...structuredClone(previous), level: previous.level + 1, name: `Lv.${previous.level + 1}`, cost: undefined });
+    const next = { ...structuredClone(previous), level: previous.level + 1, name: `Lv.${previous.level + 1}`, cost: undefined };
+    if (type.animalHousing && next.animalCapacity === undefined) next.animalCapacity = 0;
+    type.levels.push(next);
   });
   rerender();
 }
@@ -1232,14 +1406,30 @@ function renamePlacement(kind: "building" | "decoration", index: number, raw: st
   const id = cleanId(raw);
   const project = store.getCurrent();
   const rows = kind === "building" ? project.session.farmBuildingPlacements ?? [] : project.session.homeDecorationPlacements ?? [];
-  if (!id || rows.some((row, rowIndex) => rowIndex !== index && row.instanceId === id)) {
+  const current = rows[index];
+  if (!current || !id || rows.some((row, rowIndex) => rowIndex !== index && row.instanceId === id)) {
     toast("배치 ID는 같은 목록에서 고유해야 합니다.", "error");
     rerender();
     return;
   }
+  const oldId = current.instanceId;
   spatialSelection = { kind: kind === "building" ? "buildingPlacement" : "decorationPlacement", id };
-  if (kind === "building") patchBuildingPlacement(index, { instanceId: id }, rerender);
-  else patchDecorationPlacement(index, { instanceId: id }, rerender);
+  if (kind === "building") {
+    recordProjectSnapshot("시작 건물 배치 ID 변경");
+    store.update((draft) => {
+      const row = draft.session.farmBuildingPlacements?.[index];
+      if (!row) return;
+      draft.session.farmBuildingPlacements![index] = { ...row, instanceId: id };
+      if (oldId !== id && draft.session.farmAnimals) {
+        draft.session.farmAnimals = draft.session.farmAnimals.map((animal) =>
+          animal.housingPlacementId === oldId ? { ...animal, housingPlacementId: id } : animal,
+        );
+      }
+    }, { scope: "project", label: "시작 건물 배치 ID 변경" });
+    rerender();
+    return;
+  }
+  patchDecorationPlacement(index, { instanceId: id }, rerender);
 }
 
 function removeBuildingType(id: string, rerender: () => void): void {
@@ -1267,10 +1457,22 @@ function removeDecorationType(id: string, rerender: () => void): void {
 function removeBuildingPlacement(id: string, rerender: () => void): void {
   const index = (store.getCurrent().session.farmBuildingPlacements ?? []).findIndex((row) => row.instanceId === id);
   if (index < 0) return;
+  const impact = countAuthoredAnimalsOnPlacement(id);
   recordProjectSnapshot("시작 범용 농장 건물 삭제");
-  store.update((project) => { project.session.farmBuildingPlacements?.splice(index, 1); });
+  store.update((project) => {
+    project.session.farmBuildingPlacements?.splice(index, 1);
+    if (project.session.farmAnimals) {
+      project.session.farmAnimals = project.session.farmAnimals.map((animal) => {
+        if (animal.housingPlacementId !== id) return animal;
+        const { housingPlacementId: _removed, ...rest } = animal;
+        return rest;
+      });
+    }
+  });
   if (spatialSelection?.kind === "buildingPlacement" && spatialSelection.id === id) spatialSelection = null;
-  toast("시작 건물 배치를 삭제했습니다. Ctrl+Z 로 되돌릴 수 있습니다.", "ok");
+  toast(impact > 0
+    ? `시작 건물 배치를 삭제했습니다. 미배정 ${impact}마리. Ctrl+Z 로 되돌릴 수 있습니다.`
+    : "시작 건물 배치를 삭제했습니다. Ctrl+Z 로 되돌릴 수 있습니다.", "ok");
   rerender();
 }
 
@@ -1286,3 +1488,245 @@ function removeDecorationPlacement(id: string, rerender: () => void): void {
 
 function cleanId(value: string): string { return value.trim().replace(/\s+/gu, "_"); }
 function uniqueId(base: string, used: ReadonlySet<string>): string { let id = genId(base); while (used.has(id)) id = genId(base); return id; }
+
+function housingSpeciesToggles(
+  record: FarmBuildingTypeRecord,
+  index: number,
+  rerender: () => void,
+): HTMLElement {
+  const species = store.getCurrent().database.farmAnimalSpecies ?? [];
+  const allowed = new Set(record.animalHousing?.allowedSpeciesIds ?? []);
+  if (species.length === 0) {
+    return field("허용 종", el("span", { class: "db-wa-chip", text: "등록된 동물 종이 없습니다" }));
+  }
+  const box = el("div", {
+    class: "db-wa-toggles",
+    dataset: { testid: `db-spatial-building-housing-species-${record.id}` },
+  });
+  for (const entry of species) {
+    const checkbox = el("input", {
+      attrs: { type: "checkbox", ...(allowed.has(entry.id) ? { checked: "" } : {}) },
+      dataset: { testid: `db-spatial-building-housing-species-${record.id}-${entry.id}` },
+    }) as HTMLInputElement;
+    checkbox.addEventListener("change", () => {
+      const next = new Set(record.animalHousing?.allowedSpeciesIds ?? []);
+      if (checkbox.checked) next.add(entry.id);
+      else next.delete(entry.id);
+      // Allowed-species membership changes disable/shrink meaning; drop stale consent.
+      if (pendingHousingChange?.typeId === record.id) clearPendingHousingChange();
+      patchBuildingType(index, { animalHousing: { allowedSpeciesIds: [...next] } }, true, rerender);
+    });
+    box.append(el("label", { class: "db-wa-toggle", children: [checkbox, el("span", { text: entry.name })] }));
+  }
+  return field("허용 종", box);
+}
+
+function setBuildingAnimalHousing(typeIndex: number, enabled: boolean, rerender: () => void): void {
+  const project = store.getCurrent();
+  const type = project.database.farmBuildingTypes?.[typeIndex];
+  if (!type) return;
+  if (enabled) {
+    clearPendingHousingChange();
+    if (type.animalHousing) {
+      housingImpactNotices.delete(`housing:${type.id}`);
+      rerender();
+      return;
+    }
+    recordProjectSnapshot("건물 동물 주거 사용");
+    store.update((draft) => {
+      const row = draft.database.farmBuildingTypes?.[typeIndex];
+      if (!row) return;
+      draft.database.farmBuildingTypes![typeIndex] = {
+        ...row,
+        animalHousing: row.animalHousing ?? { allowedSpeciesIds: [] },
+        levels: row.levels.map((level) => ({
+          ...level,
+          animalCapacity: level.animalCapacity ?? 0,
+        })),
+      };
+    }, { scope: "project", label: "건물 동물 주거 사용" });
+    housingImpactNotices.delete(`housing:${type.id}`);
+    rerender();
+    return;
+  }
+  if (!type.animalHousing) {
+    clearPendingHousingChange();
+    rerender();
+    return;
+  }
+  const impact = previewHousingDisableImpact(typeIndex);
+  pendingHousingChange = { kind: "disable", typeId: type.id, typeIndex, impact };
+  housingImpactNotices.delete(`housing:${type.id}`);
+  rerender();
+}
+
+function commitAnimalCapacity(typeIndex: number, levelIndex: number, value: number, rerender: () => void): void {
+  const project = store.getCurrent();
+  const type = project.database.farmBuildingTypes?.[typeIndex];
+  const level = type?.levels[levelIndex];
+  if (!type || !level || !type.animalHousing) return;
+  const next = Math.max(0, Math.min(9999, Math.trunc(value)));
+  const previous = level.animalCapacity ?? 0;
+  if (next === previous) {
+    if (pendingCapacityFor(type.id, level.level)?.nextCapacity === next) return;
+    clearPendingHousingChange();
+    patchBuildingLevel(typeIndex, levelIndex, { animalCapacity: next }, false);
+    rerender();
+    return;
+  }
+  if (next > previous) {
+    clearPendingHousingChange();
+    recordCoalescedSnapshot(`db-spatial-building-level:${typeIndex}:${levelIndex}`);
+    store.update((draft) => {
+      const row = draft.database.farmBuildingTypes?.[typeIndex]?.levels[levelIndex];
+      if (!row) return;
+      draft.database.farmBuildingTypes![typeIndex]!.levels[levelIndex] = { ...row, animalCapacity: next };
+    }, { scope: "project", label: "건물 동물 정원 증가" });
+    housingImpactNotices.delete(`capacity:${type.id}:${level.level}`);
+    rerender();
+    return;
+  }
+  const impact = previewAnimalCapacityImpact(typeIndex, levelIndex, next);
+  pendingHousingChange = {
+    kind: "capacity",
+    typeId: type.id,
+    typeIndex,
+    levelIndex,
+    level: level.level,
+    nextCapacity: next,
+    impact,
+  };
+  housingImpactNotices.delete(`capacity:${type.id}:${level.level}`);
+  rerender();
+}
+
+function cancelPendingHousingChange(rerender: () => void): void {
+  clearPendingHousingChange();
+  rerender();
+}
+
+function confirmPendingHousingChange(rerender: () => void): void {
+  const pending = pendingHousingChange;
+  if (!pending) return;
+  if (pending.kind === "disable") {
+    const type = store.getCurrent().database.farmBuildingTypes?.[pending.typeIndex];
+    if (!type || type.id !== pending.typeId || !type.animalHousing) {
+      clearPendingHousingChange();
+      rerender();
+      return;
+    }
+    const impact = previewHousingDisableImpact(pending.typeIndex);
+    // Consent is bound to the impact shown at propose time; drift means re-consent.
+    if (impact !== pending.impact) {
+      clearPendingHousingChange();
+      rerender();
+      return;
+    }
+    recordProjectSnapshot("건물 동물 주거 해제");
+    store.update((draft) => {
+      const row = draft.database.farmBuildingTypes?.[pending.typeIndex];
+      if (!row || row.id !== pending.typeId) return;
+      const { animalHousing: _removed, ...rest } = row;
+      draft.database.farmBuildingTypes![pending.typeIndex] = {
+        ...rest,
+        levels: rest.levels.map((level) => {
+          const { animalCapacity: _capacity, ...levelRest } = level;
+          return levelRest;
+        }),
+      };
+      applyAuthoredHousingReconcile(draft);
+    }, { scope: "project", label: "건물 동물 주거 해제" });
+    clearPendingHousingChange();
+    housingImpactNotices.set(`housing:${pending.typeId}`, impact);
+    if (impact > 0) toast(`동물 주거를 껐습니다. 미배정 ${impact}마리.`, "ok");
+    rerender();
+    return;
+  }
+  const type = store.getCurrent().database.farmBuildingTypes?.[pending.typeIndex];
+  const level = type?.levels[pending.levelIndex];
+  if (!type || type.id !== pending.typeId || !type.animalHousing || !level || level.level !== pending.level) {
+    clearPendingHousingChange();
+    rerender();
+    return;
+  }
+  const previous = level.animalCapacity ?? 0;
+  if (pending.nextCapacity >= previous) {
+    clearPendingHousingChange();
+    rerender();
+    return;
+  }
+  const impact = previewAnimalCapacityImpact(pending.typeIndex, pending.levelIndex, pending.nextCapacity);
+  // Consent is bound to the impact shown at propose time; drift means re-consent.
+  if (impact !== pending.impact) {
+    clearPendingHousingChange();
+    rerender();
+    return;
+  }
+  recordCoalescedSnapshot(`db-spatial-building-level:${pending.typeIndex}:${pending.levelIndex}`);
+  store.update((draft) => {
+    const row = draft.database.farmBuildingTypes?.[pending.typeIndex]?.levels[pending.levelIndex];
+    if (!row) return;
+    draft.database.farmBuildingTypes![pending.typeIndex]!.levels[pending.levelIndex] = {
+      ...row,
+      animalCapacity: pending.nextCapacity,
+    };
+    applyAuthoredHousingReconcile(draft);
+  }, { scope: "project", label: "건물 동물 정원 축소" });
+  clearPendingHousingChange();
+  housingImpactNotices.set(`capacity:${pending.typeId}:${pending.level}`, impact);
+  rerender();
+}
+
+function countAuthoredAnimalsOnPlacement(instanceId: string): number {
+  return (store.getCurrent().session.farmAnimals ?? [])
+    .filter((animal) => animal.housingPlacementId === instanceId).length;
+}
+
+function previewHousingDisableImpact(typeIndex: number): number {
+  const project = structuredClone(store.getCurrent());
+  const row = project.database.farmBuildingTypes?.[typeIndex];
+  if (!row) return 0;
+  const { animalHousing: _removed, ...rest } = row;
+  project.database.farmBuildingTypes![typeIndex] = {
+    ...rest,
+    levels: rest.levels.map((level) => {
+      const { animalCapacity: _capacity, ...levelRest } = level;
+      return levelRest;
+    }),
+  };
+  return measureNewlyUnassigned(store.getCurrent(), project);
+}
+
+function previewAnimalCapacityImpact(typeIndex: number, levelIndex: number, nextCapacity: number): number {
+  const project = structuredClone(store.getCurrent());
+  const row = project.database.farmBuildingTypes?.[typeIndex]?.levels[levelIndex];
+  if (!row) return 0;
+  project.database.farmBuildingTypes![typeIndex]!.levels[levelIndex] = { ...row, animalCapacity: nextCapacity };
+  return measureNewlyUnassigned(store.getCurrent(), project);
+}
+
+function measureNewlyUnassigned(beforeProject: Project, afterProject: Project): number {
+  const before = assignedHousingIds(beforeProject.session.farmAnimals ?? []);
+  const afterAnimals = reconcileAuthoredAnimals(afterProject);
+  const after = assignedHousingIds(afterAnimals);
+  let count = 0;
+  for (const id of before) if (!after.has(id)) count += 1;
+  return count;
+}
+
+function assignedHousingIds(animals: readonly FarmAnimalStartInstance[]): Set<string> {
+  return new Set(animals.filter((animal) => animal.housingPlacementId !== undefined).map((animal) => animal.instanceId));
+}
+
+function reconcileAuthoredAnimals(project: Project): FarmAnimalStartInstance[] {
+  const animals = project.session.farmAnimals ?? [];
+  const asRecord = Object.fromEntries(animals.map((animal) => [animal.instanceId, animal]));
+  const placements = Object.fromEntries((project.session.farmBuildingPlacements ?? []).map((row) => [row.instanceId, row]));
+  const next = reconcileLinkedAnimalHousing(project, { farmBuildingPlacements: placements }, asRecord) ?? {};
+  return animals.map((animal) => next[animal.instanceId] ?? animal);
+}
+
+function applyAuthoredHousingReconcile(draft: Project): void {
+  if (!draft.session.farmAnimals) return;
+  draft.session.farmAnimals = reconcileAuthoredAnimals(draft);
+}

@@ -1,7 +1,14 @@
 import { FARMING_LIFE_UI_ASSETS } from "@/assets/farmingLifeUi";
 import { contributeBundle } from "@/project/bundles";
 import { collectionProgress } from "@/project/collections";
-import { collectFarmAnimalProduct, feedFarmAnimal, petFarmAnimal } from "@/project/farmAnimals";
+import { reconcileLinkedAnimalHousing, resolveAnimalHome } from "@/project/animalHousing";
+import {
+  assignFarmAnimalToBuilding,
+  assignFarmAnimalToHousingPlacement,
+  collectFarmAnimalProduct,
+  feedFarmAnimal,
+  petFarmAnimal,
+} from "@/project/farmAnimals";
 import { calendarDayKey } from "@/project/gameTime";
 import { absoluteGameMinutes, collectMaker, startMaker } from "@/project/makers";
 import { donateMuseumItem } from "@/project/museum";
@@ -236,9 +243,12 @@ function spatialEntries(
     const type = project.database.farmBuildingTypes?.find((candidate) => candidate.id === placement.typeId);
     const level = type?.levels.find((candidate) => candidate.level === placement.level);
     const map = project.maps[placement.mapId];
+    const animalCapacityLabel = type?.animalHousing && level?.animalCapacity !== undefined
+      ? ` · 동물 ${level.animalCapacity}`
+      : "";
     entries.push({
       label: type?.name ?? `${placement.typeId} (삭제된 유형)`,
-      value: level ? `Lv.${placement.level} · 수용량 ${level.capacity}` : `Lv.${placement.level}`,
+      value: level ? `Lv.${placement.level} · 수용량 ${level.capacity}${animalCapacityLabel}` : `Lv.${placement.level}`,
       description: `${map?.name ?? placement.mapId} (${placement.x}, ${placement.y}) · ${orientationLabel(placement.orientation)}`,
       testId: `life-ledger-space-building-${placement.instanceId}`,
       disabled: true,
@@ -255,30 +265,57 @@ function spatialEntries(
         return moveFarmBuilding(project, session, placement.instanceId, position.mapId, position.x, position.y, readLive);
       }), `${type?.name ?? placement.typeId}을(를) 이동했습니다`),
     }, {
-      label: `${type?.name ?? placement.typeId} 철거`, value: "배치에서 제거", destructive: true,
+      label: `${type?.name ?? placement.typeId} 철거`,
+      value: demolishImpactValue(session, placement.instanceId),
+      destructive: true,
       testId: `life-ledger-space-building-remove-${placement.instanceId}`,
-      onActivate: () => notify(onMutation, removeFarmBuilding(session, placement.instanceId), `${type?.name ?? placement.typeId}을(를) 철거했습니다`),
+      onActivate: () => {
+        const impact = countSessionAnimalsOnPlacement(session, placement.instanceId);
+        const key = `remove:${placement.instanceId}`;
+        if (impact > 0 && !isLedgerActionArmed(session, key)) {
+          armLedgerAction(session, key);
+          onMutation?.(true, `미배정 ${impact}마리 · 확인`);
+          return;
+        }
+        clearLedgerAction(key);
+        notify(onMutation, removeFarmBuilding(session, placement.instanceId), `${type?.name ?? placement.typeId}을(를) 철거했습니다`);
+      },
     });
     const nextLevel = type?.levels.find((candidate) => candidate.level === placement.level + 1);
     if (nextLevel) {
+      const nextAnimal = type?.animalHousing && nextLevel.animalCapacity !== undefined
+        ? ` · 동물 ${nextLevel.animalCapacity}`
+        : "";
+      const upgradeImpact = previewUpgradeUnassignCount(project, session, placement.instanceId, nextLevel);
       entries.push({
         label: `${type?.name ?? placement.typeId} 업그레이드`,
-        value: `Lv.${nextLevel.level} · 수용량 ${nextLevel.capacity}`,
+        value: upgradeImpact > 0
+          ? `Lv.${nextLevel.level} · 수용량 ${nextLevel.capacity}${nextAnimal} · 미배정 ${upgradeImpact}마리`
+          : `Lv.${nextLevel.level} · 수용량 ${nextLevel.capacity}${nextAnimal}`,
         description: spatialCostLabel(project, nextLevel.cost),
         testId: `life-ledger-space-building-upgrade-${placement.instanceId}`,
         disabled: false,
-        onActivate: () => notify(
-          onMutation,
-          applyLive(live.readLive, (readLive) => {
-            if (!nextLevel) return { ok: false, reason: "blocked" };
-            const position = {
-              mapId: placement.mapId, x: placement.x, y: placement.y, orientation: placement.orientation,
-            };
-            if (sceneVisualsBlock(live, project, position, nextLevel.footprint)) return { ok: false, reason: "blocked" };
-            return upgradeFarmBuilding(project, session, placement.instanceId, readLive);
-          }),
-          `${type?.name ?? placement.typeId}을(를) 업그레이드했습니다`,
-        ),
+        onActivate: () => {
+          const key = `upgrade:${placement.instanceId}`;
+          if (upgradeImpact > 0 && !isLedgerActionArmed(session, key)) {
+            armLedgerAction(session, key);
+            onMutation?.(true, `미배정 ${upgradeImpact}마리 · 확인`);
+            return;
+          }
+          clearLedgerAction(key);
+          notify(
+            onMutation,
+            applyLive(live.readLive, (readLive) => {
+              if (!nextLevel) return { ok: false, reason: "blocked" };
+              const position = {
+                mapId: placement.mapId, x: placement.x, y: placement.y, orientation: placement.orientation,
+              };
+              if (sceneVisualsBlock(live, project, position, nextLevel.footprint)) return { ok: false, reason: "blocked" };
+              return upgradeFarmBuilding(project, session, placement.instanceId, readLive);
+            }),
+            `${type?.name ?? placement.typeId}을(를) 업그레이드했습니다`,
+          );
+        },
       });
     }
   }
@@ -444,11 +481,13 @@ function animalEntries(
   const dayKey = session.gameTime ? calendarDayKey(session.gameTime) : undefined;
   for (const animal of Object.values(session.farmAnimals ?? {})) {
     const species = project.database.farmAnimalSpecies?.find((candidate) => candidate.id === animal.speciesId);
-    const building = project.system.farmAnimalBuildings?.find((candidate) => candidate.id === animal.buildingId);
+    const home = resolveAnimalHome(project, session, animal);
+    const homeLabel = animalHomeLabel(project, session, home);
     const progressTarget = species?.productEveryDays ?? "?";
+    const missingHome = !home;
     entries.push({
       label: animal.name,
-      value: `${species?.name ?? `${animal.speciesId} (삭제된 종)`} · ${building?.name ?? "집 미배정"}`,
+      value: `${species?.name ?? `${animal.speciesId} (삭제된 종)`} · ${homeLabel}`,
       description: `친밀도 ${animal.friendship}/1000 · 생산 ${animal.productionProgress}/${progressTarget} · 받을 물품 ${animal.readyProductCount}`,
       testId: `life-ledger-animal-summary-${animal.instanceId}`,
       disabled: true,
@@ -457,8 +496,9 @@ function animalEntries(
       label: `${animal.name} 먹이 주기`,
       value: animal.lastFedDayKey === dayKey ? "오늘 완료" : species ? `${itemName(project, species.feedItemId)} 1개` : "종 정보 없음",
       testId: `life-ledger-animal-feed-${animal.instanceId}`,
-      disabled: !dayKey || !species || animal.lastFedDayKey === dayKey,
-      onActivate: !dayKey || !species ? undefined : () => notify(
+      disabled: !species || Boolean(dayKey && animal.lastFedDayKey === dayKey),
+      unavailableReason: missingHome ? "unassigned" : undefined,
+      onActivate: !species || !dayKey ? undefined : () => notify(
         onMutation,
         feedFarmAnimal(project, session, animal.instanceId, dayKey),
         `${animal.name}에게 먹이를 주었습니다`,
@@ -468,8 +508,9 @@ function animalEntries(
       label: `${animal.name} 쓰다듬기`,
       value: animal.lastPettedDayKey === dayKey ? "오늘 완료" : `친밀도 +${species?.petFriendship ?? 0}`,
       testId: `life-ledger-animal-pet-${animal.instanceId}`,
-      disabled: !dayKey || !species || animal.lastPettedDayKey === dayKey,
-      onActivate: !dayKey || !species ? undefined : () => notify(
+      disabled: !species || Boolean(dayKey && animal.lastPettedDayKey === dayKey),
+      unavailableReason: missingHome ? "unassigned" : undefined,
+      onActivate: !species || !dayKey ? undefined : () => notify(
         onMutation,
         petFarmAnimal(project, session, animal.instanceId, dayKey),
         `${animal.name}을(를) 쓰다듬었습니다`,
@@ -488,8 +529,181 @@ function animalEntries(
         `${animal.name}의 생산물을 받았습니다`,
       ),
     });
+    for (const target of animalAssignmentTargets(project, session, animal)) {
+      entries.push({
+        label: `${animal.name} 집 배정`,
+        value: target.label,
+        testId: target.testId,
+        disabled: target.current,
+        onActivate: target.current ? undefined : () => {
+          const result = target.kind === "legacy"
+            ? assignFarmAnimalToBuilding(project, session, animal.instanceId, target.id)
+            : assignFarmAnimalToHousingPlacement(project, session, animal.instanceId, target.id);
+          notify(onMutation, result, `${animal.name}의 집을 변경했습니다`);
+        },
+      });
+    }
   }
   return { entries, emptyLabel: "돌볼 수 있는 동물이 없습니다" };
+}
+
+function animalHomeLabel(
+  project: Project,
+  session: PlaySession,
+  home: ReturnType<typeof resolveAnimalHome>,
+): string {
+  if (!home) return "집 미배정";
+  if (home.kind === "legacy") {
+    return project.system.farmAnimalBuildings?.find((entry) => entry.id === home.id)?.name ?? home.id;
+  }
+  const placement = session.farmBuildingPlacements?.[home.id];
+  const typeName = placement
+    ? project.database.farmBuildingTypes?.find((entry) => entry.id === placement.typeId)?.name
+    : undefined;
+  return typeName ?? home.id;
+}
+
+function animalAssignmentTargets(
+  project: Project,
+  session: PlaySession,
+  animal: { readonly instanceId: string; readonly speciesId: string; readonly buildingId?: string; readonly housingPlacementId?: string },
+): readonly { readonly kind: "legacy" | "placement"; readonly id: string; readonly label: string; readonly testId: string; readonly current: boolean }[] {
+  const targets: { kind: "legacy" | "placement"; id: string; label: string; testId: string; current: boolean }[] = [];
+  for (const building of project.system.farmAnimalBuildings ?? []) {
+    if (!building.allowedSpeciesIds.includes(animal.speciesId)) continue;
+    const occupants = Object.values(session.farmAnimals ?? {})
+      .filter((other) => other.instanceId !== animal.instanceId && other.buildingId === building.id).length;
+    const current = animal.buildingId === building.id && animal.housingPlacementId === undefined;
+    const full = occupants >= building.capacity;
+    targets.push({
+      kind: "legacy",
+      id: building.id,
+      label: current ? `축사 · ${building.name} (현재)` : full ? `축사 · ${building.name} (정원 참)` : `축사 · ${building.name}`,
+      testId: `life-ledger-animal-assign-legacy-${animal.instanceId}-${building.id}`,
+      current,
+    });
+  }
+  for (const placement of Object.values(session.farmBuildingPlacements ?? {})) {
+    const home = resolveAnimalHome(project, session, { housingPlacementId: placement.instanceId });
+    if (!home) continue;
+    // Species-invalid targets are offered so apply-time recheck can refuse them.
+    const occupants = Object.values(session.farmAnimals ?? {})
+      .filter((other) => other.instanceId !== animal.instanceId && other.housingPlacementId === placement.instanceId).length;
+    const current = animal.housingPlacementId === placement.instanceId;
+    const allowed = home.allowedSpeciesIds.includes(animal.speciesId);
+    const full = occupants >= home.capacity;
+    const typeName = project.database.farmBuildingTypes?.find((entry) => entry.id === placement.typeId)?.name ?? placement.typeId;
+    targets.push({
+      kind: "placement",
+      id: placement.instanceId,
+      label: current
+        ? `배치 · ${typeName} (현재)`
+        : !allowed
+          ? `배치 · ${typeName} · ${placement.instanceId} (종 불가)`
+          : full
+            ? `배치 · ${typeName} · ${placement.instanceId} (정원 참)`
+            : `배치 · ${typeName} · ${placement.instanceId}`,
+      testId: `life-ledger-animal-assign-placement-${animal.instanceId}-${placement.instanceId}`,
+      current,
+    });
+  }
+  return targets;
+}
+
+/**
+ * Per-action arm keys survive ordinary same-session menu rerenders.
+ * Ownership is the live PlaySession identity + the status-menu open span — not bare
+ * placement IDs alone (same-ID Save/Load or a closed menu must require a fresh arm).
+ */
+const armedLedgerActions = new Map<string, number>();
+const LEDGER_ARM_MS = 4000;
+let armedLedgerSession: PlaySession | null = null;
+
+function clearAllLedgerArms(): void {
+  armedLedgerActions.clear();
+  armedLedgerSession = null;
+}
+
+/** Drop runtime confirmation arms when the status menu actually closes. */
+export function invalidateLifeLedgerConfirmationContext(): void {
+  clearAllLedgerArms();
+}
+
+function ensureLedgerArmSession(session: PlaySession): void {
+  if (armedLedgerSession !== session) {
+    armedLedgerActions.clear();
+    armedLedgerSession = session;
+  }
+}
+
+function armLedgerAction(session: PlaySession, key: string): void {
+  ensureLedgerArmSession(session);
+  armedLedgerActions.clear();
+  armedLedgerActions.set(key, Date.now() + LEDGER_ARM_MS);
+  armedLedgerSession = session;
+}
+function isLedgerActionArmed(session: PlaySession, key: string): boolean {
+  if (armedLedgerSession !== session) {
+    armedLedgerActions.clear();
+    armedLedgerSession = null;
+    return false;
+  }
+  const until = armedLedgerActions.get(key) ?? 0;
+  if (until <= Date.now()) {
+    armedLedgerActions.delete(key);
+    return false;
+  }
+  return true;
+}
+function clearLedgerAction(key: string): void {
+  armedLedgerActions.delete(key);
+}
+function countSessionAnimalsOnPlacement(session: PlaySession, instanceId: string): number {
+  return Object.values(session.farmAnimals ?? {})
+    .filter((animal) => animal.housingPlacementId === instanceId).length;
+}
+function demolishImpactValue(session: PlaySession, instanceId: string): string {
+  const impact = countSessionAnimalsOnPlacement(session, instanceId);
+  const key = `remove:${instanceId}`;
+  if (isLedgerActionArmed(session, key) && impact > 0) return `미배정 ${impact}마리 · 확인`;
+  if (impact > 0) return `미배정 ${impact}마리`;
+  return "배치에서 제거";
+}
+function previewUpgradeUnassignCount(
+  project: Project,
+  session: PlaySession,
+  instanceId: string,
+  nextLevel: { readonly level: number; readonly animalCapacity?: number },
+): number {
+  if (nextLevel.animalCapacity === undefined) return 0;
+  const placement = session.farmBuildingPlacements?.[instanceId];
+  if (!placement) return 0;
+  const type = project.database.farmBuildingTypes?.find((entry) => entry.id === placement.typeId);
+  if (!type?.animalHousing) return 0;
+  const currentLevel = type.levels.find((entry) => entry.level === placement.level);
+  const currentCapacity = currentLevel?.animalCapacity ?? 0;
+  if (nextLevel.animalCapacity >= currentCapacity) return 0;
+  // Reuse core reconcile on a cloned proposed state — do not fork retention/count policy.
+  const proposedPlacements = {
+    ...(session.farmBuildingPlacements ?? {}),
+    [instanceId]: { ...placement, level: nextLevel.level },
+  };
+  const before = new Set(
+    Object.values(session.farmAnimals ?? {})
+      .filter((animal) => animal.housingPlacementId !== undefined)
+      .map((animal) => animal.instanceId),
+  );
+  if (before.size === 0) return 0;
+  const afterAnimals = reconcileLinkedAnimalHousing(
+    project,
+    { farmBuildingPlacements: proposedPlacements },
+    session.farmAnimals,
+  ) ?? {};
+  let count = 0;
+  for (const id of before) {
+    if (afterAnimals[id]?.housingPlacementId === undefined) count += 1;
+  }
+  return count;
 }
 
 function shippingEntries(

@@ -785,7 +785,75 @@ function revealActiveTab(header: HTMLElement): void {
   active.scrollIntoView({ block: "nearest", inline: "nearest" });
 }
 
+// saveAndMarkClean → refreshDatabasePanel → body.replaceChildren while a focused
+// farmSpatial name/id/capacity control still has a dirty value. Chrome then fires
+// change/blur synchronously; those handlers call rerender() → renderActiveTab again
+// → nested replaceChildren/removeChild (pageError:
+// "The node to be removed is no longer a child… blur event handler").
+// Subscribe/scheduleModalRefresh already guard editing; the save refresh path does not.
+// Before each paint, commit focus under this depth flag so change handlers queue instead
+// of nesting replaceChildren; then drain the queue until stable (no dropped commits).
+let activeTabRenderDepth = 0;
+// Box the queue so control-flow narrowing cannot erase blur/rerender writes.
+type ActiveTabRenderRequest = { body: HTMLElement; container: HTMLElement };
+let queuedActiveTabRender: ActiveTabRenderRequest | null = null;
+
+function queueActiveTabRender(body: HTMLElement, container: HTMLElement): void {
+  queuedActiveTabRender = { body, container };
+}
+
+function takeQueuedActiveTabRender(): ActiveTabRenderRequest | null {
+  const queued = queuedActiveTabRender;
+  queuedActiveTabRender = null;
+  return queued;
+}
+
+function commitFocusedControlIn(body: HTMLElement): void {
+  const active = typeof document !== "undefined" ? document.activeElement : null;
+  if (!(active instanceof HTMLElement) || !body.contains(active)) return;
+  // blur → change/commit (+ optional rerender). rerender sees depth>0 and queues.
+  active.blur();
+}
+
 function renderActiveTab(
+  body: HTMLElement,
+  container: HTMLElement,
+  options: { readonly forceFresh?: boolean } = {},
+): void {
+  if (activeTabRenderDepth > 0) {
+    queueActiveTabRender(body, container);
+    return;
+  }
+  activeTabRenderDepth += 1;
+  try {
+    let nextBody = body;
+    let nextContainer = container;
+    let nextOptions: { readonly forceFresh?: boolean } = options;
+    for (;;) {
+      takeQueuedActiveTabRender();
+      commitFocusedControlIn(nextBody);
+      // Focus commit may have queued a force-fresh; promote so list labels match model.
+      const afterCommit = takeQueuedActiveTabRender();
+      if (afterCommit) {
+        nextBody = afterCommit.body;
+        nextContainer = afterCommit.container;
+        nextOptions = { forceFresh: true };
+      }
+      renderActiveTabUnguarded(nextBody, nextContainer, nextOptions);
+      const queued = takeQueuedActiveTabRender();
+      if (!queued) break;
+      nextBody = queued.body;
+      nextContainer = queued.container;
+      nextOptions = { forceFresh: true };
+      refreshTabCounts(nextContainer);
+    }
+  } finally {
+    activeTabRenderDepth = 0;
+    queuedActiveTabRender = null;
+  }
+}
+
+function renderActiveTabUnguarded(
   body: HTMLElement,
   container: HTMLElement,
   options: { readonly forceFresh?: boolean } = {},

@@ -20,6 +20,7 @@ import { startModalDrag, stopModalDrag } from "@/editor/panels/databaseModalWind
 import { resetDatabaseRecordViewSession } from "@/editor/panels/databaseRecordViews";
 import { stopSkillAnimationStagesIn } from "@/editor/panels/databaseSkillAnimationStage";
 import { inventoryCatalogSession, selectedRecordIdForSession, setSelectedRecordId } from "@/editor/panels/databaseRecordViewSession";
+import { invalidateFarmSpatialConfirmationContext } from "@/editor/panels/databaseFarmSpatialView";
 import { isStructureKitEditorOpen } from "@/editor/panels/structureKitEditorDialog";
 import { DATABASE_APPLY_BUTTON_HINT, DATABASE_FOOTER_ACTION_TEST_IDS, databaseFooterStatusText } from "@/editor/panels/databaseWorkbench";
 import {
@@ -294,6 +295,8 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
   const close = (): void => {
     modalClosed = true;
     if (graceFlushTimer !== null) clearTimeout(graceFlushTimer);
+    // End pending housing confirmation ownership with the modal session itself.
+    invalidateFarmSpatialConfirmationContext();
     unsubscribeCodex();
     unsubscribeStore(); // 구독 해제 — 리스너 누수 금지(1파 M11 교훈).
     unsubscribeActiveTab();

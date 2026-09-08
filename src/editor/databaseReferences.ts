@@ -202,6 +202,12 @@ export function farmAnimalSpeciesReferenceMessage(speciesId: string): string | n
   if (buildings.length) {
     return namedReferenceMessage("동물 축사", buildings, "이 동물 종을 허용하고 있습니다.");
   }
+  const housingTypes = (project.database.farmBuildingTypes ?? []).filter((type) =>
+    type.animalHousing?.allowedSpeciesIds.includes(speciesId)
+  );
+  if (housingTypes.length) {
+    return namedReferenceMessage("농장 건물 유형", housingTypes, "동물 주거 허용 종으로 이 종을 사용 중입니다.");
+  }
   return null;
 }
 
