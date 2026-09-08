@@ -1,0 +1,182 @@
+{
+  "kind": "bounded-projection-not-original",
+  "original": {
+    "path": "/home/main/.herdr/worktrees/rpg-zzu/.omo/recovery/life-full-20260908/native-final/P4-NATIVE-INPUTS.json",
+    "sha256": "af94e18e1187d99e16b072f0ab207127547697f693483a78c83efc03ff80fcaf",
+    "bytes": 5046
+  },
+  "head": "1474a5d861c74e276518037bad0f673b5ab092d6",
+  "finalDeliveryCommit": "c92b2fbf0fcb8d2cf083d0ea659be1ff6366daea",
+  "finalIndependentGate": {
+    "scope": "Task13-only",
+    "verdict": "APPROVE",
+    "reviewerTask": "st_01a082bf",
+    "reportSha256": "153c823cf90bd7feda13f7998b2b1bb69640f5043af949a33292887a8036e868",
+    "wholePhaseApproved": false
+  },
+  "wholePhaseGates": {
+    "status": "failed-with-documented-comparison-limits",
+    "originalExit": 1,
+    "typecheckExit": 0,
+    "cssExit": 0,
+    "surfaceExit": 1,
+    "base": {
+      "total": 13910,
+      "passed": 13733,
+      "failed": 162,
+      "pending": 15
+    },
+    "current": {
+      "total": 14080,
+      "passed": 13899,
+      "failed": 166,
+      "pending": 15
+    },
+    "sharedFailedAssertions": 162,
+    "currentOnlyDatabaseTimeouts": 4,
+    "addedTestsPassed": 170,
+    "unhandledErrors": {
+      "base": 2,
+      "current": 3
+    },
+    "limitation": "One overview timeout during database.ts import before rendering; three view-toggle timeouts uninstrumented. Product cause not established; no clean gate or no-regression claim.",
+    "analysis": "phase4-gate-classification/representative-timeouts/bootstrap-fix/analysis/REPORT.md"
+  },
+  "manifestReadyForExecutionAtPreparation": false,
+  "changedPaths": [
+    {
+      "path": "src/editor/databaseReferences.ts",
+      "sha256": "2cdfe84ee1baf30c03918b3c59a0a864210b0062a803346231d9dbddff7700b1"
+    },
+    {
+      "path": "src/editor/panels/database.ts",
+      "sha256": "15a48924cf7b7ebe528556295182833260ced0501660024bd0407d9998968f9e"
+    },
+    {
+      "path": "src/editor/panels/databaseFarmAnimalsView.ts",
+      "sha256": "39143d7ee86e587f3c95f4748362b1b2e26a5a139669d26f3af37b8029a8e281"
+    },
+    {
+      "path": "src/editor/panels/databaseFarmSpatialView.ts",
+      "sha256": "ee161495b6a381bf58091064159efa1f1621ef236a198fa7be93802d55130084"
+    },
+    {
+      "path": "src/editor/panels/databaseModal.ts",
+      "sha256": "55d06d285b2f7984201f1715c5d3390ca1b8f6eb3ab889eb6f4432e214793cc9"
+    },
+    {
+      "path": "src/player/lifeLedger.ts",
+      "sha256": "564ee11491092ea27a4fc9a31a312a3ad31e6e717d47b6790eb1e5a54b33efac"
+    },
+    {
+      "path": "src/player/playerStatusMenuControllerDom.ts",
+      "sha256": "9abe5e150659319cc5ceb430793035d580dc246ac905689367c7ab71fea8c1c5"
+    },
+    {
+      "path": "src/player/playerStatusMenuDetailRenderer.ts",
+      "sha256": "a8d70df065f7e9a253c2ff7a2a4cc3b260c0e76e66ed0d3e06458e76e22da152"
+    },
+    {
+      "path": "test/animalHousingAuthoringUi.test.ts",
+      "sha256": "bf4d4c7098a43453aa0241bb0d6952dba6892beffe385a5cde9bc2db1a25937a"
+    },
+    {
+      "path": "test/animalHousingConfirmationLifecycle.test.ts",
+      "sha256": "7e2e645b8268a876d55b9d0194e33ddc59b59f43ae575f408c8c75c44f273ae9"
+    },
+    {
+      "path": "test/animalHousingSummaryMetrics.test.ts",
+      "sha256": "d53750677dcaf76eadb755721b4384688aee09b3ebb808642556c56f1b207527"
+    },
+    {
+      "path": "test/databaseTabRenderReentry.test.ts",
+      "sha256": "d96f2d6f1eda051e9eaf89ef54204c54852a4a673dc76dd9f33edaaf8074b889"
+    }
+  ],
+  "editorSourceHashes": {
+    "src/editor/panels/databaseFarmSpatialView.ts": "ee161495b6a381bf58091064159efa1f1621ef236a198fa7be93802d55130084",
+    "src/editor/databaseReferences.ts": "2cdfe84ee1baf30c03918b3c59a0a864210b0062a803346231d9dbddff7700b1",
+    "src/editor/panels/databaseFarmAnimalsView.ts": "39143d7ee86e587f3c95f4748362b1b2e26a5a139669d26f3af37b8029a8e281",
+    "src/editor/panels/databaseModal.ts": "55d06d285b2f7984201f1715c5d3390ca1b8f6eb3ab889eb6f4432e214793cc9",
+    "src/player/lifeLedger.ts": "564ee11491092ea27a4fc9a31a312a3ad31e6e717d47b6790eb1e5a54b33efac",
+    "src/player/playerStatusMenuControllerDom.ts": "9abe5e150659319cc5ceb430793035d580dc246ac905689367c7ab71fea8c1c5",
+    "src/player/playerStatusMenuDetailRenderer.ts": "a8d70df065f7e9a253c2ff7a2a4cc3b260c0e76e66ed0d3e06458e76e22da152",
+    "test/animalHousingAuthoringUi.test.ts": "bf4d4c7098a43453aa0241bb0d6952dba6892beffe385a5cde9bc2db1a25937a",
+    "test/animalHousingConfirmationLifecycle.test.ts": "7e2e645b8268a876d55b9d0194e33ddc59b59f43ae575f408c8c75c44f273ae9",
+    "src/project/supabaseProjectSync.ts": "27e5a0de2dbe154e65686be85a832022369503f8a8ecd25f12ab11a198aad31b",
+    "src/project/io/shape.ts": "863029e5a69fa5fd7354a965f6db636bf8ac6aca54e5ff38a0d6a4352185c376",
+    "test/supabaseMapPatchRecovery.test.ts": "020847c182a0ba5e0ce92c08b8c708b859048fcc3bfc1ab39d7dec9ad658a1df",
+    "openwiki/runtime-project-schema.md": "f394dc128fe6cc5c9ab57a0ff1ead838c869686d3527fbfe5d3f27b19ffbec48",
+    "openwiki/INDEX.md": "504765200d140cc389c732b68657d3dd87e54b3c629a22019b537f5af0ed10e1",
+    "src/editor/panels/database.ts": "15a48924cf7b7ebe528556295182833260ced0501660024bd0407d9998968f9e",
+    "test/databaseTabRenderReentry.test.ts": "d96f2d6f1eda051e9eaf89ef54204c54852a4a673dc76dd9f33edaaf8074b889",
+    "test/animalHousingSummaryMetrics.test.ts": "d53750677dcaf76eadb755721b4384688aee09b3ebb808642556c56f1b207527"
+  },
+  "existingParentStagedPaths": [
+    "src/editor/panels/database.ts",
+    "test/databaseTabRenderReentry.test.ts"
+  ],
+  "scope": "identity only, not product staging authorization",
+  "deliveredFiles": [
+    {
+      "path": "src/editor/databaseReferences.ts",
+      "sha256": "2cdfe84ee1baf30c03918b3c59a0a864210b0062a803346231d9dbddff7700b1"
+    },
+    {
+      "path": "src/editor/panels/database.ts",
+      "sha256": "15a48924cf7b7ebe528556295182833260ced0501660024bd0407d9998968f9e"
+    },
+    {
+      "path": "src/editor/panels/databaseFarmAnimalsView.ts",
+      "sha256": "39143d7ee86e587f3c95f4748362b1b2e26a5a139669d26f3af37b8029a8e281"
+    },
+    {
+      "path": "src/editor/panels/databaseFarmSpatialView.ts",
+      "sha256": "ee161495b6a381bf58091064159efa1f1621ef236a198fa7be93802d55130084"
+    },
+    {
+      "path": "src/editor/panels/databaseModal.ts",
+      "sha256": "55d06d285b2f7984201f1715c5d3390ca1b8f6eb3ab889eb6f4432e214793cc9"
+    },
+    {
+      "path": "src/player/lifeLedger.ts",
+      "sha256": "564ee11491092ea27a4fc9a31a312a3ad31e6e717d47b6790eb1e5a54b33efac"
+    },
+    {
+      "path": "src/player/playerStatusMenuControllerDom.ts",
+      "sha256": "9abe5e150659319cc5ceb430793035d580dc246ac905689367c7ab71fea8c1c5"
+    },
+    {
+      "path": "src/player/playerStatusMenuDetailRenderer.ts",
+      "sha256": "a8d70df065f7e9a253c2ff7a2a4cc3b260c0e76e66ed0d3e06458e76e22da152"
+    },
+    {
+      "path": "test/animalHousingAuthoringUi.test.ts",
+      "sha256": "bf4d4c7098a43453aa0241bb0d6952dba6892beffe385a5cde9bc2db1a25937a"
+    },
+    {
+      "path": "test/animalHousingConfirmationLifecycle.test.ts",
+      "sha256": "7e2e645b8268a876d55b9d0194e33ddc59b59f43ae575f408c8c75c44f273ae9"
+    },
+    {
+      "path": "test/animalHousingSummaryMetrics.test.ts",
+      "sha256": "d53750677dcaf76eadb755721b4384688aee09b3ebb808642556c56f1b207527"
+    },
+    {
+      "path": "test/databaseTabRenderReentry.test.ts",
+      "sha256": "d96f2d6f1eda051e9eaf89ef54204c54852a4a673dc76dd9f33edaaf8074b889"
+    },
+    {
+      "path": "openwiki/editor-database.md",
+      "sha256": "e4f3ae8ebaf1c80b42e59e8c39a77adbf1855af8750a45861ff1b7e4c930ef7d"
+    },
+    {
+      "path": "openwiki/runtime-sessions.md",
+      "sha256": "709981f089b77c2ff8e285cf4870366dbed8ccbc41a4204cecb4ab828b5de66f"
+    },
+    {
+      "path": "openwiki/INDEX.md",
+      "sha256": "d7f291b5dc99a3374f68b89c87080223ccba0d69def649e2290889bd7e5c0171"
+    }
+  ]
+}
