@@ -94,13 +94,7 @@ export function shopBrandBlock(_scene: PlaySceneContext, title: string, subtitle
 
 function merchantAvatar(): HTMLElement {
   const avatar = el("div", { class: "runtime-shop-merchant-avatar", attrs: { "aria-hidden": "true" } });
-  const project = store.getCurrent();
-  const actorId = scene.session.partyActorIds?.[0];
-  const record = project.database.actors.find((entry) => entry.id === actorId);
-  const resourceId = record ? resolveActorFaceResourceId(scene.session, record, project) ?? defaultActorFaceResourceId(record) : undefined;
-  const url = resourceId ? resolveAssetResourceUrl(resourceId, { project }) : undefined;
-  if (url) avatar.style.backgroundImage = `url("${url}")`;
-  else avatar.append(purseIcon());
+  avatar.append(purseIcon());
   return avatar;
 }
 
