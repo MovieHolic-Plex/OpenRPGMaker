@@ -8,7 +8,7 @@ import { resolveAutotile } from "../tools/v3/rmTypeExpander";
 import { SpatialCompileError } from "./compilerTypes";
 
 /** Integer cell centers define coverage; polygon boundaries are included. */
-function inArea(area: SpatialFloorArea, point: SpatialPoint): boolean {
+export function inArea(area: SpatialFloorArea, point: SpatialPoint): boolean {
   switch (area.kind) {
     case "rect": return point.x >= area.x && point.y >= area.y && point.x < area.x + area.width && point.y < area.y + area.height;
     case "polygon": {

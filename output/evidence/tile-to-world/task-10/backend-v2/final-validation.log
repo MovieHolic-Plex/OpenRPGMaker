@@ -1,0 +1,888 @@
+monitor_id=mon_9V5DGK516JWDGR51
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 typecheck:app"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"> tsc --noEmit -p tsconfig.app.json"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 test"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"> node scripts/run-vitest.mjs run --configLoader bundle test/spatialGeographyCompiler.test.ts test/spatialGeographyRecipes.test.ts test/spatialGeographySafety.test.ts test/spatialGeographyOwnership.test.ts test/spatialGeographyRepeat.test.ts --maxWorkers=1 --no-file-parallelism"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-geography-compiler"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":" ✓ test/spatialGeographyRecipes.test.ts (10 tests) 18114ms"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"   ✓ real geography contract recipes > compiles exact terrain and entry identities when lake-country is instantiated  1689ms"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"   ✓ real geography contract recipes > compiles exact terrain and entry identities when deep-forest is instantiated  1316ms"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"   ✓ real geography contract recipes > compiles exact terrain and entry identities when harbor-coast is instantiated  1304ms"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"   ✓ real geography contract recipes > compiles exact terrain and entry identities when snow-frontier is instantiated  1329ms"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"   ✓ real geography contract recipes > compiles exact terrain and entry identities when high-pass is instantiated  1292ms"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"   ✓ real geography contract recipes > compiles exact terrain and entry identities when ancient-ruins is instantiated  1275ms"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"   ✓ real geography contract recipes > compiles exact terrain and entry identities when lake-kingdom is instantiated  3854ms"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"   ✓ real geography contract recipes > compiles exact terrain and entry identities when northern-frontier is instantiated  3797ms"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"   ✓ real geography contract recipes > uses a real directional bridge when an authored route crosses lake water  1124ms"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"   ✓ real geography contract recipes > retains stair passage when the explicit high-pass route climbs the mountain  1132ms"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":" ✓ test/spatialGeographyRepeat.test.ts (1 test) 8447ms"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"   ✓ retains exact child ownership when a connected three-region world is recompiled  3953ms"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":" ✓ test/spatialGeographySafety.test.ts (14 tests) 8835ms"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"   ✓ geography acceptance safety > rejects before caller mutation when 'atlas' is invalid  370ms"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"   ✓ geography acceptance safety > rejects before caller mutation when 'material' is invalid  328ms"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"   ✓ geography acceptance safety > creates no portal when children have containment but no entry intent  1066ms"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"   ✓ geography acceptance safety > honors only the declared world entry when no crossing is authored  1962ms"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"   ✓ geography acceptance safety > recompiles identically when the loaded geography has unchanged owned content  2006ms"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"   ✓ geography acceptance safety > rejects manual raster edits when recompile would overwrite owned content  1072ms"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":" ✓ test/spatialGeographyOwnership.test.ts (4 tests) 6637ms"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"   ✓ geography scoped ownership > rejects replacement when existing ownership uses a different map identity  1747ms"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"   ✓ geography scoped ownership > preserves unmanaged events when another map reuses a generated event ID  1825ms"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"   ✓ geography scoped ownership > preserves manual overview events and shared atlas metadata when regenerated  1861ms"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"   ✓ geography scoped ownership > rejects partial child recompilation when its return pair belongs to the overview  1201ms"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":" ✓ test/spatialGeographyCompiler.test.ts (2 tests) 3005ms"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"   ✓ bounded geography public compiler > emits traversable overview entries when a region has positioned children  1270ms"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"   ✓ bounded geography public compiler > emits traversable overview entries when a world has positioned children  1733ms"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":" Test Files  5 passed (5)"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      Tests  31 passed (31)"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"   Start at  23:37:42"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"   Duration  55.57s (transform 3.66s, setup 0ms, collect 8.57s, tests 45.04s, environment 1ms, prepare 491ms)"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"{"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"  \"scenario\": \"geography\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"  \"sourceSHA\": \"8be8780e667a0784dbc7a7041a3616b026d37cfe\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"  \"sourceFiles\": {"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    \"scripts/qa/spatial-geography.mts\": \"8a128f5a0b9814083fecac01812475b4cdb74ccbe1f7f80932d9c244cfe7c5ae\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    \"src/editor/spatial/compileGeography.ts\": \"5c37fe25ebed4248b1e597421c604bc31ecf218a4b9bab904025e35d03a1031d\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    \"src/editor/spatial/compileRegions.ts\": \"20dbba041ad801f869ec3eda60e3ea5c79411f91ddd81261c68eff1637f44c99\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    \"src/editor/spatial/compileWorlds.ts\": \"01fb7b7ba89890c9ab010fc207e3db8bc1a3b6e0ed38ab50738bef1ecce6a1c5\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    \"src/editor/spatial/geographyEntries.ts\": \"618134059a7b850e8a89de836f00e15e95393505c5fb0203f1c27f0f684b9db0\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    \"src/editor/spatial/geographyStructures.ts\": \"d08f0cf10829d4d776062351e88f690b1ba6bb846fccaafb4c4b9540b4724625\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    \"src/editor/spatial/geographyTerrain.ts\": \"cd7cbc23b4e3fa3fc221cd8c0fb917863987d6f94a174f9d506404f974cb23f3\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    \"test/spatialGeographyCompiler.test.ts\": \"b7e169b070578f7a45553e89f5e4495600835d435af4262c00f01e84cbe6306a\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    \"test/spatialGeographyOwnership.test.ts\": \"983da6a1c442a5b6c59ffd80ce427d2ad30266cb4cdc2707755e6ca7e300b571\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    \"test/spatialGeographyRecipes.test.ts\": \"6e98907aa89853e922a17b24d770e926a42ef55a44603375249a7dce3c3e4353\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    \"test/spatialGeographyRepeat.test.ts\": \"f168e93d6a7811d7e7160fb8ae882fad9d9f02e8cd89794978c951d876c20808\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    \"test/spatialGeographySafety.test.ts\": \"739f6216acedf1d09420c62181a7a00993e6abd408917c5399745caf625dedd5\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    \"test/support/spatialGeographyEdits.ts\": \"acb26a6cf44c7c3714a6408be299e3121fa71cfe01b05e87a94f9ee67a381814\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    \"test/support/spatialGeographyRecipes.ts\": \"a2e30440d358e8fc852244dc65d58673875960bf31f96be902f8c95f339d5022\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    \"test/support/spatialGeographyTraversal.ts\": \"bc1a0a1581d05b38593cd408fd5a74a2af4b87481fa52e1fe1f41b61194d1511\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    \"scripts/qa/spatial-compile.mts\": \"0b4b94f49f50af6c78b2b989f33af78d8a817d64f149e5cb06e0c9fb62d8a68a\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    \"src/editor/spatial/README.md\": \"932ea496c308255772c6309dc5f27d04664288f5824a6b4daad7a067b3fe9591\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    \"src/editor/spatial/compileConnections.ts\": \"3a66525ec7101822ac5d55cce95556f9e3e067fb8a4278e0e86e466f70b4bad4\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    \"src/editor/spatial/compileObjects.ts\": \"14a561b01528592848c944821b9851fd2099fdd7ba11e82015f76119763cd7c6\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    \"src/editor/spatial/compilePlaces.ts\": \"c91e4c76d2d43dedb069c2f283a06666f9fe89f95557d62cc0f0d1b6372b42e0\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    \"src/editor/spatial/compileRequest.ts\": \"ef81f3cd31c3802264a8f2967e8d0797bd1c4ec758f90cd55dbdd0cf8d486845\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    \"src/editor/spatial/compileSpaces.ts\": \"de57ec00e88841da4f38794da98d7762669cd030fc642f1831de64ea230f4078\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    \"src/editor/spatial/compileSpatialOccurrence.ts\": \"b171bf6d718e4726475015851be7fc859c01759fd56e991f1390b007012882ab\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    \"src/editor/spatial/compileTerrain.ts\": \"e190c2d553cf111209aee39b699c2aed1c0fbc20bcfeda78b9eddd1d3bf3e2e5\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    \"src/editor/spatial/compilerTypes.ts\": \"db945f76ab5e7ec8ca38d99445f6284e78e7063c0e4b5957c537aa02456acd10\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    \"src/editor/spatial/compilerValidation.ts\": \"d1c1db95cab18de5ad731447fea1fd2d0b96bcfd1e9995881aba57af3bf30494\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    \"src/editor/spatial/overviewEntries.ts\": \"55f57a5abf961c069cd238924dc9f8efa0aee8a07126038c836b6a5834c16d4b\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    \"src/editor/spatial/placeCanvases.ts\": \"8ef71bcf549c9037822aa31a57aaf6465e9dab18cbbeaffa09ec383ab049b599\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    \"src/editor/spatial/placeLayout.ts\": \"369822c24c97e560c24593ec6b83c206cac689cc6c8df8290df8968c46005e44\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    \"src/editor/spatial/placeOwnership.ts\": \"87abdee6d647266687c6ad4eb6b3b6cad4aff430251726aa00de24c58b93adff\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    \"src/editor/spatial/spaceLayout.ts\": \"58c038b16f3b243b89a26aa20045243b463f73ad80ea27cb986b4d30b524c315\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    \"test/support/spatialConnectionSceneFixture.ts\": \"2d3cd9411c1a9d29d785169e0b4282b0b239a8dada0cec7369ef4c2a054996cf\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    \"test/support/spatialGeographyFixture.ts\": \"f07a8b473cfb38404005d5bdf08778286b4472f658e5d83e225206e9a5e79a06\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    \"test/support/spatialGeographyOutputContract.ts\": \"1fd449b1ff2d50b61c6f82e44bdae13c800eade2c49c4cd73f96f0b27a6b63cc\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    \"test/support/spatialPlaceCompilerFixture.ts\": \"2d62e060533c799dbd1946a89496eaceecad028d551870d581705045bcabb149\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    \"test/support/spatialPlaceGeometryFixture.ts\": \"705c423ef34387c1feca2f88d359bf86a4f81aa9d0029b9a8bb74dfa8ea3a1ee\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    \"test/support/spatialPlaceOutputContract.ts\": \"59614543f8c695d00669fe468f3362d8c3e3dd32a17cf1d0c51c8d0c4f7850ac\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    \"test/support/spatialPlaceTraversal.ts\": \"2b886a55235603dded9f455a6d448e471264656b1c67ca81e05730c21fb0aaa4\""}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"  },"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"  \"seeds\": ["}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    7,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    19,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    31"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"  ],"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"  \"receipts\": ["}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"seed\": 7,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"recipe\": \"lake-country\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"inputSHA256\": \"de052baee2a42675fcb4fd6be51d39b402dbc604047efe4d121409479d18af8a\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectFile\": \"lake-country-7.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectSHA256\": \"c2cef3e253ea881b55ef4e0ed23c5fa3b64636975da554ed8811e6b12e75b839\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"receiptFile\": \"lake-country-7-routes.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"maps\": 9,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"overviews\": 1,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"transfers\": 20,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"internalTransfers\": 16,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"repeatedIdentically\": true,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"callerUnchanged\": true"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"seed\": 7,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"recipe\": \"deep-forest\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"inputSHA256\": \"3f9078cf2e6564156c06494f16c0595a6c0c94fd6b90822f11b70a505a30e882\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectFile\": \"deep-forest-7.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectSHA256\": \"3bf913cad04a591466200655b0dde10ace912bf77d6b9a5ddcc8654126e13ff3\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"receiptFile\": \"deep-forest-7-routes.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"maps\": 9,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"overviews\": 1,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"transfers\": 20,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"internalTransfers\": 16,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"repeatedIdentically\": true,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"callerUnchanged\": true"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"seed\": 7,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"recipe\": \"harbor-coast\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"inputSHA256\": \"155acd8889996b2edd7a5c4d62539105c356023346928e30158186d24ba1fc6f\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectFile\": \"harbor-coast-7.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectSHA256\": \"306a5e499de90ffb3c36fb4049d5a6312bd3d60f4257eb069380e6c5c0a50e58\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"receiptFile\": \"harbor-coast-7-routes.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"maps\": 9,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"overviews\": 1,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"transfers\": 20,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"internalTransfers\": 16,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"repeatedIdentically\": true,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"callerUnchanged\": true"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"seed\": 7,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"recipe\": \"snow-frontier\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"inputSHA256\": \"d98c6e9d62e3028917dd2c97ddae46d0ae44b00766780adea5753479947855b7\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectFile\": \"snow-frontier-7.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectSHA256\": \"23812c2bf0cb4294979d69602f0b23e7bd23a164564b0a93578a3b84a6e42b95\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"receiptFile\": \"snow-frontier-7-routes.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"maps\": 9,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"overviews\": 1,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"transfers\": 20,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"internalTransfers\": 16,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"repeatedIdentically\": true,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"callerUnchanged\": true"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"seed\": 7,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"recipe\": \"high-pass\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"inputSHA256\": \"683dfdee7d7d52d257d9232304ba6882e0edc44529bd9211387c315fc4d00b06\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectFile\": \"high-pass-7.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectSHA256\": \"f94c9e9a9b0cf73cfd978be2fa149c6a5ad6ae8e4d7cfaaabfc7b1182122f8f5\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"receiptFile\": \"high-pass-7-routes.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"maps\": 9,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"overviews\": 1,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"transfers\": 20,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"internalTransfers\": 16,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"repeatedIdentically\": true,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"callerUnchanged\": true"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"seed\": 7,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"recipe\": \"ancient-ruins\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"inputSHA256\": \"1ab52321193873ab223ce40523ec45056287530cf3de8f50d31bb9c7ba7cc661\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectFile\": \"ancient-ruins-7.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectSHA256\": \"618e559dd3223f698b5fa4e3bd6acef951f1f555a627fd498ae874544dbde753\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"receiptFile\": \"ancient-ruins-7-routes.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"maps\": 9,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"overviews\": 1,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"transfers\": 20,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"internalTransfers\": 16,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"repeatedIdentically\": true,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"callerUnchanged\": true"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"seed\": 7,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"recipe\": \"lake-kingdom\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"inputSHA256\": \"5760322865701b2784187e0bc7a31a0c8b825221478912e01431e3c6e2d9fe25\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectFile\": \"lake-kingdom-7.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectSHA256\": \"9998a903ab1b079e3f330153453e31a99965db2936ee409b40981949a757e1f3\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"receiptFile\": \"lake-kingdom-7-routes.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"maps\": 28,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"overviews\": 4,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"transfers\": 66,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"internalTransfers\": 48,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"repeatedIdentically\": true,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"callerUnchanged\": true"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"seed\": 7,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"recipe\": \"northern-frontier\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"inputSHA256\": \"c1bd447059eba27d5b06497dc195c3b662f0588740823e5aa0045cbc0736777c\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectFile\": \"northern-frontier-7.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectSHA256\": \"d2948617d2facbb056799d95158d22df0368508d382b00b6ec059eec3752e466\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"receiptFile\": \"northern-frontier-7-routes.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"maps\": 28,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"overviews\": 4,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"transfers\": 66,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"internalTransfers\": 48,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"repeatedIdentically\": true,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"callerUnchanged\": true"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"seed\": 19,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"recipe\": \"lake-country\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"inputSHA256\": \"1b0e4495bef4aeaafc038a64305c1c19c3409dc5a7dc9705b35916c53597332f\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectFile\": \"lake-country-19.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectSHA256\": \"f7805dc5750b8910dd33cc257fdc4071a41870c4048b0b332f5214431eafe978\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"receiptFile\": \"lake-country-19-routes.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"maps\": 9,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"overviews\": 1,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"transfers\": 20,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"internalTransfers\": 16,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"repeatedIdentically\": true,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"callerUnchanged\": true"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"seed\": 19,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"recipe\": \"deep-forest\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"inputSHA256\": \"e25cab978765b64070496e346dfb7a95119970bf613ce08c12e63b4621809c6d\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectFile\": \"deep-forest-19.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectSHA256\": \"d43aaf0fa31fe46428c306195a640980fa7c1663a3f497e8d65e8744d2ec4843\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"receiptFile\": \"deep-forest-19-routes.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"maps\": 9,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"overviews\": 1,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"transfers\": 20,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"internalTransfers\": 16,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"repeatedIdentically\": true,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"callerUnchanged\": true"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"seed\": 19,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"recipe\": \"harbor-coast\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"inputSHA256\": \"41a91e21f60bedea1657a17454b3bb952e1c6d9f0ed40963d0afeaedfd136429\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectFile\": \"harbor-coast-19.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectSHA256\": \"47d82ebc17390f7f313a9b3badb38d715c145fad98cb5aad3e3e8a3e8fe94ad7\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"receiptFile\": \"harbor-coast-19-routes.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"maps\": 9,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"overviews\": 1,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"transfers\": 20,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"internalTransfers\": 16,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"repeatedIdentically\": true,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"callerUnchanged\": true"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"seed\": 19,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"recipe\": \"snow-frontier\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"inputSHA256\": \"a38709a87dca97d375f252c849dfe2bcfa9e9346f95f813c0625aaebf667f694\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectFile\": \"snow-frontier-19.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectSHA256\": \"bc0536dac460ff2cdef0eb417538394d92f7efbad4a41386c08a84c13397bdd2\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"receiptFile\": \"snow-frontier-19-routes.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"maps\": 9,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"overviews\": 1,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"transfers\": 20,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"internalTransfers\": 16,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"repeatedIdentically\": true,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"callerUnchanged\": true"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"seed\": 19,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"recipe\": \"high-pass\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"inputSHA256\": \"f19e069a4a6454d691dd6f768f81e166acca5c69b99329622eee192e45a70c4d\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectFile\": \"high-pass-19.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectSHA256\": \"4461a750e98e6d3bab7fd5592527704afb2afa131a43f7f949c76287a1be784e\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"receiptFile\": \"high-pass-19-routes.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"maps\": 9,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"overviews\": 1,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"transfers\": 20,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"internalTransfers\": 16,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"repeatedIdentically\": true,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"callerUnchanged\": true"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"seed\": 19,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"recipe\": \"ancient-ruins\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"inputSHA256\": \"18017a9e4aa9b7d3ae76da81281c6043a93c0616e6e794cdc9b0c45d97791d8e\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectFile\": \"ancient-ruins-19.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectSHA256\": \"163a504e34d78fd16696518e00f60f6992637f14f91cde4f54ea1ce7d00b55a9\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"receiptFile\": \"ancient-ruins-19-routes.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"maps\": 9,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"overviews\": 1,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"transfers\": 20,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"internalTransfers\": 16,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"repeatedIdentically\": true,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"callerUnchanged\": true"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"seed\": 19,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"recipe\": \"lake-kingdom\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"inputSHA256\": \"5158b199f5d5f44b981e746acd34c054f3be600ad9961b606e4e41c5262611a0\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectFile\": \"lake-kingdom-19.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectSHA256\": \"e47074a41cb75facdc2b0d7377578f4c2a1b02ab18edddc291fb669d293f733b\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"receiptFile\": \"lake-kingdom-19-routes.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"maps\": 28,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"overviews\": 4,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"transfers\": 66,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"internalTransfers\": 48,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"repeatedIdentically\": true,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"callerUnchanged\": true"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"seed\": 19,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"recipe\": \"northern-frontier\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"inputSHA256\": \"e5decda54ff232d1b253168f19d580ab0f65d99a7b9a0e6cf0f462162b0d3e2a\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectFile\": \"northern-frontier-19.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectSHA256\": \"3880f5e09a27ffaac902c9bf94a889eb6ec59d53116501e67536b421e67ac105\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"receiptFile\": \"northern-frontier-19-routes.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"maps\": 28,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"overviews\": 4,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"transfers\": 66,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"internalTransfers\": 48,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"repeatedIdentically\": true,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"callerUnchanged\": true"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"seed\": 31,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"recipe\": \"lake-country\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"inputSHA256\": \"c4fee27979bd6b87b7c6fcc48636cf0231263220c184bf5d738019f34b194058\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectFile\": \"lake-country-31.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectSHA256\": \"7218a5dd274c90f09df6e6511993884eb00159fcdc143a9f2d1b847d0d90c32a\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"receiptFile\": \"lake-country-31-routes.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"maps\": 9,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"overviews\": 1,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"transfers\": 20,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"internalTransfers\": 16,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"repeatedIdentically\": true,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"callerUnchanged\": true"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"seed\": 31,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"recipe\": \"deep-forest\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"inputSHA256\": \"3a13365bb45bcc3af2bc12d28d8c74f3c09dca5fa16a29d35b0a7ce1a2b966c6\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectFile\": \"deep-forest-31.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectSHA256\": \"4be163fd58fa0223dab9b553b3b305a783ca90b39cab2b43c99aff3af04072a9\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"receiptFile\": \"deep-forest-31-routes.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"maps\": 9,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"overviews\": 1,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"transfers\": 20,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"internalTransfers\": 16,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"repeatedIdentically\": true,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"callerUnchanged\": true"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"seed\": 31,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"recipe\": \"harbor-coast\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"inputSHA256\": \"359903e07ed92a85faac0f9f64809a6c9cac1c58f84a01b9230ecc77c3bc247d\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectFile\": \"harbor-coast-31.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectSHA256\": \"af984581aad5d566617241bbd087d82c042e13aca9ddf996c092900d73ab4829\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"receiptFile\": \"harbor-coast-31-routes.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"maps\": 9,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"overviews\": 1,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"transfers\": 20,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"internalTransfers\": 16,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"repeatedIdentically\": true,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"callerUnchanged\": true"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"seed\": 31,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"recipe\": \"snow-frontier\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"inputSHA256\": \"53898ef4d6badcb00193cf2505cefce1376e0dc3f41bfeb7b1dce66c17145c76\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectFile\": \"snow-frontier-31.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectSHA256\": \"bd12ac0a4b8fb0068142a5b4cef5b783c09f80c7bbe341dfea1da0924aa7de23\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"receiptFile\": \"snow-frontier-31-routes.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"maps\": 9,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"overviews\": 1,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"transfers\": 20,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"internalTransfers\": 16,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"repeatedIdentically\": true,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"callerUnchanged\": true"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"seed\": 31,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"recipe\": \"high-pass\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"inputSHA256\": \"cb0c7e81ec4620fa7f737e301ce66126ce05e2c2981f4ae1d51b38ddc74b0cf6\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectFile\": \"high-pass-31.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectSHA256\": \"18e1a52860f858acbcde976d3c3e50ad93dba69741855a65ae1817ba3e68eec5\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"receiptFile\": \"high-pass-31-routes.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"maps\": 9,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"overviews\": 1,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"transfers\": 20,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"internalTransfers\": 16,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"repeatedIdentically\": true,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"callerUnchanged\": true"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"seed\": 31,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"recipe\": \"ancient-ruins\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"inputSHA256\": \"b6f81f219e9c3d9f9073caedc7f90ac273d3c3fa604f860c1e70e9191d23b154\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectFile\": \"ancient-ruins-31.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectSHA256\": \"7123cc9457e985f5957ba046b5a218d0eb098df03f0d3024f4eb6717a98b7de3\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"receiptFile\": \"ancient-ruins-31-routes.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"maps\": 9,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"overviews\": 1,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"transfers\": 20,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"internalTransfers\": 16,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"repeatedIdentically\": true,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"callerUnchanged\": true"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"seed\": 31,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"recipe\": \"lake-kingdom\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"inputSHA256\": \"c9030118e92683ddd20a63deaab47391032fd0e7f403134720bc8e98e1e05aaa\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectFile\": \"lake-kingdom-31.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectSHA256\": \"b803ea9e91e3ae07ad214e283bb10c204077f7ba0cbb0018b7d9620f5a8ee467\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"receiptFile\": \"lake-kingdom-31-routes.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"maps\": 28,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"overviews\": 4,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"transfers\": 66,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"internalTransfers\": 48,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"repeatedIdentically\": true,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"callerUnchanged\": true"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"seed\": 31,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"recipe\": \"northern-frontier\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"inputSHA256\": \"8860cb2085fccee78ea294e5609263042bec72044281b07ac60c0d02d49fabf3\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectFile\": \"northern-frontier-31.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"projectSHA256\": \"0126fc4ebf2ab8d5b665f55d01342cf600be3848c3c8d1971fb45871d160f8db\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"receiptFile\": \"northern-frontier-31-routes.json\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"maps\": 28,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"overviews\": 4,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"transfers\": 66,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"internalTransfers\": 48,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"repeatedIdentically\": true,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"      \"callerUnchanged\": true"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    }"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"  ],"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"  \"errorPath\": {"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    \"code\": \"blocked\","}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"    \"callerUnchanged\": true"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"  },"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"  \"compilerImplemented\": true,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"  \"fixturesOnly\": true,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"  \"publishedSamples\": false,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"  \"remoteWrites\": 0,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"  \"storeMutations\": 0,"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"  \"visualApproved\": false"}
+{"type":"line","id":"authoring-792791","description":"task11 scoped validation","line":"}"}
+{"type":"summary","id":"authoring-792791","description":"task11 scoped validation","summary":"watcher completed (exit code 0)"}
+
+> rpg-zzu@0.1.0 typecheck:app
+> tsc --noEmit -p tsconfig.app.json
+
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/spatialGeographyCompiler.test.ts test/spatialGeographyRecipes.test.ts test/spatialGeographySafety.test.ts test/spatialGeographyOwnership.test.ts test/spatialGeographyRepeat.test.ts --maxWorkers=1 --no-file-parallelism
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-geography-compiler
+
+ ✓ test/spatialGeographyRecipes.test.ts (10 tests) 18114ms
+   ✓ real geography contract recipes > compiles exact terrain and entry identities when lake-country is instantiated  1689ms
+   ✓ real geography contract recipes > compiles exact terrain and entry identities when deep-forest is instantiated  1316ms
+   ✓ real geography contract recipes > compiles exact terrain and entry identities when harbor-coast is instantiated  1304ms
+   ✓ real geography contract recipes > compiles exact terrain and entry identities when snow-frontier is instantiated  1329ms
+   ✓ real geography contract recipes > compiles exact terrain and entry identities when high-pass is instantiated  1292ms
+   ✓ real geography contract recipes > compiles exact terrain and entry identities when ancient-ruins is instantiated  1275ms
+   ✓ real geography contract recipes > compiles exact terrain and entry identities when lake-kingdom is instantiated  3854ms
+   ✓ real geography contract recipes > compiles exact terrain and entry identities when northern-frontier is instantiated  3797ms
+   ✓ real geography contract recipes > uses a real directional bridge when an authored route crosses lake water  1124ms
+   ✓ real geography contract recipes > retains stair passage when the explicit high-pass route climbs the mountain  1132ms
+ ✓ test/spatialGeographyRepeat.test.ts (1 test) 8447ms
+   ✓ retains exact child ownership when a connected three-region world is recompiled  3953ms
+ ✓ test/spatialGeographySafety.test.ts (14 tests) 8835ms
+   ✓ geography acceptance safety > rejects before caller mutation when 'atlas' is invalid  370ms
+   ✓ geography acceptance safety > rejects before caller mutation when 'material' is invalid  328ms
+   ✓ geography acceptance safety > creates no portal when children have containment but no entry intent  1066ms
+   ✓ geography acceptance safety > honors only the declared world entry when no crossing is authored  1962ms
+   ✓ geography acceptance safety > recompiles identically when the loaded geography has unchanged owned content  2006ms
+   ✓ geography acceptance safety > rejects manual raster edits when recompile would overwrite owned content  1072ms
+ ✓ test/spatialGeographyOwnership.test.ts (4 tests) 6637ms
+   ✓ geography scoped ownership > rejects replacement when existing ownership uses a different map identity  1747ms
+   ✓ geography scoped ownership > preserves unmanaged events when another map reuses a generated event ID  1825ms
+   ✓ geography scoped ownership > preserves manual overview events and shared atlas metadata when regenerated  1861ms
+   ✓ geography scoped ownership > rejects partial child recompilation when its return pair belongs to the overview  1201ms
+ ✓ test/spatialGeographyCompiler.test.ts (2 tests) 3005ms
+   ✓ bounded geography public compiler > emits traversable overview entries when a region has positioned children  1270ms
+   ✓ bounded geography public compiler > emits traversable overview entries when a world has positioned children  1733ms
+
+ Test Files  5 passed (5)
+      Tests  31 passed (31)
+   Start at  23:37:42
+   Duration  55.57s (transform 3.66s, setup 0ms, collect 8.57s, tests 45.04s, environment 1ms, prepare 491ms)
+
+{
+  "scenario": "geography",
+  "sourceSHA": "8be8780e667a0784dbc7a7041a3616b026d37cfe",
+  "sourceFiles": {
+    "scripts/qa/spatial-geography.mts": "8a128f5a0b9814083fecac01812475b4cdb74ccbe1f7f80932d9c244cfe7c5ae",
+    "src/editor/spatial/compileGeography.ts": "5c37fe25ebed4248b1e597421c604bc31ecf218a4b9bab904025e35d03a1031d",
+    "src/editor/spatial/compileRegions.ts": "20dbba041ad801f869ec3eda60e3ea5c79411f91ddd81261c68eff1637f44c99",
+    "src/editor/spatial/compileWorlds.ts": "01fb7b7ba89890c9ab010fc207e3db8bc1a3b6e0ed38ab50738bef1ecce6a1c5",
+    "src/editor/spatial/geographyEntries.ts": "618134059a7b850e8a89de836f00e15e95393505c5fb0203f1c27f0f684b9db0",
+    "src/editor/spatial/geographyStructures.ts": "d08f0cf10829d4d776062351e88f690b1ba6bb846fccaafb4c4b9540b4724625",
+    "src/editor/spatial/geographyTerrain.ts": "cd7cbc23b4e3fa3fc221cd8c0fb917863987d6f94a174f9d506404f974cb23f3",
+    "test/spatialGeographyCompiler.test.ts": "b7e169b070578f7a45553e89f5e4495600835d435af4262c00f01e84cbe6306a",
+    "test/spatialGeographyOwnership.test.ts": "983da6a1c442a5b6c59ffd80ce427d2ad30266cb4cdc2707755e6ca7e300b571",
+    "test/spatialGeographyRecipes.test.ts": "6e98907aa89853e922a17b24d770e926a42ef55a44603375249a7dce3c3e4353",
+    "test/spatialGeographyRepeat.test.ts": "f168e93d6a7811d7e7160fb8ae882fad9d9f02e8cd89794978c951d876c20808",
+    "test/spatialGeographySafety.test.ts": "739f6216acedf1d09420c62181a7a00993e6abd408917c5399745caf625dedd5",
+    "test/support/spatialGeographyEdits.ts": "acb26a6cf44c7c3714a6408be299e3121fa71cfe01b05e87a94f9ee67a381814",
+    "test/support/spatialGeographyRecipes.ts": "a2e30440d358e8fc852244dc65d58673875960bf31f96be902f8c95f339d5022",
+    "test/support/spatialGeographyTraversal.ts": "bc1a0a1581d05b38593cd408fd5a74a2af4b87481fa52e1fe1f41b61194d1511",
+    "scripts/qa/spatial-compile.mts": "0b4b94f49f50af6c78b2b989f33af78d8a817d64f149e5cb06e0c9fb62d8a68a",
+    "src/editor/spatial/README.md": "932ea496c308255772c6309dc5f27d04664288f5824a6b4daad7a067b3fe9591",
+    "src/editor/spatial/compileConnections.ts": "3a66525ec7101822ac5d55cce95556f9e3e067fb8a4278e0e86e466f70b4bad4",
+    "src/editor/spatial/compileObjects.ts": "14a561b01528592848c944821b9851fd2099fdd7ba11e82015f76119763cd7c6",
+    "src/editor/spatial/compilePlaces.ts": "c91e4c76d2d43dedb069c2f283a06666f9fe89f95557d62cc0f0d1b6372b42e0",
+    "src/editor/spatial/compileRequest.ts": "ef81f3cd31c3802264a8f2967e8d0797bd1c4ec758f90cd55dbdd0cf8d486845",
+    "src/editor/spatial/compileSpaces.ts": "de57ec00e88841da4f38794da98d7762669cd030fc642f1831de64ea230f4078",
+    "src/editor/spatial/compileSpatialOccurrence.ts": "b171bf6d718e4726475015851be7fc859c01759fd56e991f1390b007012882ab",
+    "src/editor/spatial/compileTerrain.ts": "e190c2d553cf111209aee39b699c2aed1c0fbc20bcfeda78b9eddd1d3bf3e2e5",
+    "src/editor/spatial/compilerTypes.ts": "db945f76ab5e7ec8ca38d99445f6284e78e7063c0e4b5957c537aa02456acd10",
+    "src/editor/spatial/compilerValidation.ts": "d1c1db95cab18de5ad731447fea1fd2d0b96bcfd1e9995881aba57af3bf30494",
+    "src/editor/spatial/overviewEntries.ts": "55f57a5abf961c069cd238924dc9f8efa0aee8a07126038c836b6a5834c16d4b",
+    "src/editor/spatial/placeCanvases.ts": "8ef71bcf549c9037822aa31a57aaf6465e9dab18cbbeaffa09ec383ab049b599",
+    "src/editor/spatial/placeLayout.ts": "369822c24c97e560c24593ec6b83c206cac689cc6c8df8290df8968c46005e44",
+    "src/editor/spatial/placeOwnership.ts": "87abdee6d647266687c6ad4eb6b3b6cad4aff430251726aa00de24c58b93adff",
+    "src/editor/spatial/spaceLayout.ts": "58c038b16f3b243b89a26aa20045243b463f73ad80ea27cb986b4d30b524c315",
+    "test/support/spatialConnectionSceneFixture.ts": "2d3cd9411c1a9d29d785169e0b4282b0b239a8dada0cec7369ef4c2a054996cf",
+    "test/support/spatialGeographyFixture.ts": "f07a8b473cfb38404005d5bdf08778286b4472f658e5d83e225206e9a5e79a06",
+    "test/support/spatialGeographyOutputContract.ts": "1fd449b1ff2d50b61c6f82e44bdae13c800eade2c49c4cd73f96f0b27a6b63cc",
+    "test/support/spatialPlaceCompilerFixture.ts": "2d62e060533c799dbd1946a89496eaceecad028d551870d581705045bcabb149",
+    "test/support/spatialPlaceGeometryFixture.ts": "705c423ef34387c1feca2f88d359bf86a4f81aa9d0029b9a8bb74dfa8ea3a1ee",
+    "test/support/spatialPlaceOutputContract.ts": "59614543f8c695d00669fe468f3362d8c3e3dd32a17cf1d0c51c8d0c4f7850ac",
+    "test/support/spatialPlaceTraversal.ts": "2b886a55235603dded9f455a6d448e471264656b1c67ca81e05730c21fb0aaa4"
+  },
+  "seeds": [
+    7,
+    19,
+    31
+  ],
+  "receipts": [
+    {
+      "seed": 7,
+      "recipe": "lake-country",
+      "inputSHA256": "de052baee2a42675fcb4fd6be51d39b402dbc604047efe4d121409479d18af8a",
+      "projectFile": "lake-country-7.json",
+      "projectSHA256": "c2cef3e253ea881b55ef4e0ed23c5fa3b64636975da554ed8811e6b12e75b839",
+      "receiptFile": "lake-country-7-routes.json",
+      "maps": 9,
+      "overviews": 1,
+      "transfers": 20,
+      "internalTransfers": 16,
+      "repeatedIdentically": true,
+      "callerUnchanged": true
+    },
+    {
+      "seed": 7,
+      "recipe": "deep-forest",
+      "inputSHA256": "3f9078cf2e6564156c06494f16c0595a6c0c94fd6b90822f11b70a505a30e882",
+      "projectFile": "deep-forest-7.json",
+      "projectSHA256": "3bf913cad04a591466200655b0dde10ace912bf77d6b9a5ddcc8654126e13ff3",
+      "receiptFile": "deep-forest-7-routes.json",
+      "maps": 9,
+      "overviews": 1,
+      "transfers": 20,
+      "internalTransfers": 16,
+      "repeatedIdentically": true,
+      "callerUnchanged": true
+    },
+    {
+      "seed": 7,
+      "recipe": "harbor-coast",
+      "inputSHA256": "155acd8889996b2edd7a5c4d62539105c356023346928e30158186d24ba1fc6f",
+      "projectFile": "harbor-coast-7.json",
+      "projectSHA256": "306a5e499de90ffb3c36fb4049d5a6312bd3d60f4257eb069380e6c5c0a50e58",
+      "receiptFile": "harbor-coast-7-routes.json",
+      "maps": 9,
+      "overviews": 1,
+      "transfers": 20,
+      "internalTransfers": 16,
+      "repeatedIdentically": true,
+      "callerUnchanged": true
+    },
+    {
+      "seed": 7,
+      "recipe": "snow-frontier",
+      "inputSHA256": "d98c6e9d62e3028917dd2c97ddae46d0ae44b00766780adea5753479947855b7",
+      "projectFile": "snow-frontier-7.json",
+      "projectSHA256": "23812c2bf0cb4294979d69602f0b23e7bd23a164564b0a93578a3b84a6e42b95",
+      "receiptFile": "snow-frontier-7-routes.json",
+      "maps": 9,
+      "overviews": 1,
+      "transfers": 20,
+      "internalTransfers": 16,
+      "repeatedIdentically": true,
+      "callerUnchanged": true
+    },
+    {
+      "seed": 7,
+      "recipe": "high-pass",
+      "inputSHA256": "683dfdee7d7d52d257d9232304ba6882e0edc44529bd9211387c315fc4d00b06",
+      "projectFile": "high-pass-7.json",
+      "projectSHA256": "f94c9e9a9b0cf73cfd978be2fa149c6a5ad6ae8e4d7cfaaabfc7b1182122f8f5",
+      "receiptFile": "high-pass-7-routes.json",
+      "maps": 9,
+      "overviews": 1,
+      "transfers": 20,
+      "internalTransfers": 16,
+      "repeatedIdentically": true,
+      "callerUnchanged": true
+    },
+    {
+      "seed": 7,
+      "recipe": "ancient-ruins",
+      "inputSHA256": "1ab52321193873ab223ce40523ec45056287530cf3de8f50d31bb9c7ba7cc661",
+      "projectFile": "ancient-ruins-7.json",
+      "projectSHA256": "618e559dd3223f698b5fa4e3bd6acef951f1f555a627fd498ae874544dbde753",
+      "receiptFile": "ancient-ruins-7-routes.json",
+      "maps": 9,
+      "overviews": 1,
+      "transfers": 20,
+      "internalTransfers": 16,
+      "repeatedIdentically": true,
+      "callerUnchanged": true
+    },
+    {
+      "seed": 7,
+      "recipe": "lake-kingdom",
+      "inputSHA256": "5760322865701b2784187e0bc7a31a0c8b825221478912e01431e3c6e2d9fe25",
+      "projectFile": "lake-kingdom-7.json",
+      "projectSHA256": "9998a903ab1b079e3f330153453e31a99965db2936ee409b40981949a757e1f3",
+      "receiptFile": "lake-kingdom-7-routes.json",
+      "maps": 28,
+      "overviews": 4,
+      "transfers": 66,
+      "internalTransfers": 48,
+      "repeatedIdentically": true,
+      "callerUnchanged": true
+    },
+    {
+      "seed": 7,
+      "recipe": "northern-frontier",
+      "inputSHA256": "c1bd447059eba27d5b06497dc195c3b662f0588740823e5aa0045cbc0736777c",
+      "projectFile": "northern-frontier-7.json",
+      "projectSHA256": "d2948617d2facbb056799d95158d22df0368508d382b00b6ec059eec3752e466",
+      "receiptFile": "northern-frontier-7-routes.json",
+      "maps": 28,
+      "overviews": 4,
+      "transfers": 66,
+      "internalTransfers": 48,
+      "repeatedIdentically": true,
+      "callerUnchanged": true
+    },
+    {
+      "seed": 19,
+      "recipe": "lake-country",
+      "inputSHA256": "1b0e4495bef4aeaafc038a64305c1c19c3409dc5a7dc9705b35916c53597332f",
+      "projectFile": "lake-country-19.json",
+      "projectSHA256": "f7805dc5750b8910dd33cc257fdc4071a41870c4048b0b332f5214431eafe978",
+      "receiptFile": "lake-country-19-routes.json",
+      "maps": 9,
+      "overviews": 1,
+      "transfers": 20,
+      "internalTransfers": 16,
+      "repeatedIdentically": true,
+      "callerUnchanged": true
+    },
+    {
+      "seed": 19,
+      "recipe": "deep-forest",
+      "inputSHA256": "e25cab978765b64070496e346dfb7a95119970bf613ce08c12e63b4621809c6d",
+      "projectFile": "deep-forest-19.json",
+      "projectSHA256": "d43aaf0fa31fe46428c306195a640980fa7c1663a3f497e8d65e8744d2ec4843",
+      "receiptFile": "deep-forest-19-routes.json",
+      "maps": 9,
+      "overviews": 1,
+      "transfers": 20,
+      "internalTransfers": 16,
+      "repeatedIdentically": true,
+      "callerUnchanged": true
+    },
+    {
+      "seed": 19,
+      "recipe": "harbor-coast",
+      "inputSHA256": "41a91e21f60bedea1657a17454b3bb952e1c6d9f0ed40963d0afeaedfd136429",
+      "projectFile": "harbor-coast-19.json",
+      "projectSHA256": "47d82ebc17390f7f313a9b3badb38d715c145fad98cb5aad3e3e8a3e8fe94ad7",
+      "receiptFile": "harbor-coast-19-routes.json",
+      "maps": 9,
+      "overviews": 1,
+      "transfers": 20,
+      "internalTransfers": 16,
+      "repeatedIdentically": true,
+      "callerUnchanged": true
+    },
+    {
+      "seed": 19,
+      "recipe": "snow-frontier",
+      "inputSHA256": "a38709a87dca97d375f252c849dfe2bcfa9e9346f95f813c0625aaebf667f694",
+      "projectFile": "snow-frontier-19.json",
+      "projectSHA256": "bc0536dac460ff2cdef0eb417538394d92f7efbad4a41386c08a84c13397bdd2",
+      "receiptFile": "snow-frontier-19-routes.json",
+      "maps": 9,
+      "overviews": 1,
+      "transfers": 20,
+      "internalTransfers": 16,
+      "repeatedIdentically": true,
+      "callerUnchanged": true
+    },
+    {
+      "seed": 19,
+      "recipe": "high-pass",
+      "inputSHA256": "f19e069a4a6454d691dd6f768f81e166acca5c69b99329622eee192e45a70c4d",
+      "projectFile": "high-pass-19.json",
+      "projectSHA256": "4461a750e98e6d3bab7fd5592527704afb2afa131a43f7f949c76287a1be784e",
+      "receiptFile": "high-pass-19-routes.json",
+      "maps": 9,
+      "overviews": 1,
+      "transfers": 20,
+      "internalTransfers": 16,
+      "repeatedIdentically": true,
+      "callerUnchanged": true
+    },
+    {
+      "seed": 19,
+      "recipe": "ancient-ruins",
+      "inputSHA256": "18017a9e4aa9b7d3ae76da81281c6043a93c0616e6e794cdc9b0c45d97791d8e",
+      "projectFile": "ancient-ruins-19.json",
+      "projectSHA256": "163a504e34d78fd16696518e00f60f6992637f14f91cde4f54ea1ce7d00b55a9",
+      "receiptFile": "ancient-ruins-19-routes.json",
+      "maps": 9,
+      "overviews": 1,
+      "transfers": 20,
+      "internalTransfers": 16,
+      "repeatedIdentically": true,
+      "callerUnchanged": true
+    },
+    {
+      "seed": 19,
+      "recipe": "lake-kingdom",
+      "inputSHA256": "5158b199f5d5f44b981e746acd34c054f3be600ad9961b606e4e41c5262611a0",
+      "projectFile": "lake-kingdom-19.json",
+      "projectSHA256": "e47074a41cb75facdc2b0d7377578f4c2a1b02ab18edddc291fb669d293f733b",
+      "receiptFile": "lake-kingdom-19-routes.json",
+      "maps": 28,
+      "overviews": 4,
+      "transfers": 66,
+      "internalTransfers": 48,
+      "repeatedIdentically": true,
+      "callerUnchanged": true
+    },
+    {
+      "seed": 19,
+      "recipe": "northern-frontier",
+      "inputSHA256": "e5decda54ff232d1b253168f19d580ab0f65d99a7b9a0e6cf0f462162b0d3e2a",
+      "projectFile": "northern-frontier-19.json",
+      "projectSHA256": "3880f5e09a27ffaac902c9bf94a889eb6ec59d53116501e67536b421e67ac105",
+      "receiptFile": "northern-frontier-19-routes.json",
+      "maps": 28,
+      "overviews": 4,
+      "transfers": 66,
+      "internalTransfers": 48,
+      "repeatedIdentically": true,
+      "callerUnchanged": true
+    },
+    {
+      "seed": 31,
+      "recipe": "lake-country",
+      "inputSHA256": "c4fee27979bd6b87b7c6fcc48636cf0231263220c184bf5d738019f34b194058",
+      "projectFile": "lake-country-31.json",
+      "projectSHA256": "7218a5dd274c90f09df6e6511993884eb00159fcdc143a9f2d1b847d0d90c32a",
+      "receiptFile": "lake-country-31-routes.json",
+      "maps": 9,
+      "overviews": 1,
+      "transfers": 20,
+      "internalTransfers": 16,
+      "repeatedIdentically": true,
+      "callerUnchanged": true
+    },
+    {
+      "seed": 31,
+      "recipe": "deep-forest",
+      "inputSHA256": "3a13365bb45bcc3af2bc12d28d8c74f3c09dca5fa16a29d35b0a7ce1a2b966c6",
+      "projectFile": "deep-forest-31.json",
+      "projectSHA256": "4be163fd58fa0223dab9b553b3b305a783ca90b39cab2b43c99aff3af04072a9",
+      "receiptFile": "deep-forest-31-routes.json",
+      "maps": 9,
+      "overviews": 1,
+      "transfers": 20,
+      "internalTransfers": 16,
+      "repeatedIdentically": true,
+      "callerUnchanged": true
+    },
+    {
+      "seed": 31,
+      "recipe": "harbor-coast",
+      "inputSHA256": "359903e07ed92a85faac0f9f64809a6c9cac1c58f84a01b9230ecc77c3bc247d",
+      "projectFile": "harbor-coast-31.json",
+      "projectSHA256": "af984581aad5d566617241bbd087d82c042e13aca9ddf996c092900d73ab4829",
+      "receiptFile": "harbor-coast-31-routes.json",
+      "maps": 9,
+      "overviews": 1,
+      "transfers": 20,
+      "internalTransfers": 16,
+      "repeatedIdentically": true,
+      "callerUnchanged": true
+    },
+    {
+      "seed": 31,
+      "recipe": "snow-frontier",
+      "inputSHA256": "53898ef4d6badcb00193cf2505cefce1376e0dc3f41bfeb7b1dce66c17145c76",
+      "projectFile": "snow-frontier-31.json",
+      "projectSHA256": "bd12ac0a4b8fb0068142a5b4cef5b783c09f80c7bbe341dfea1da0924aa7de23",
+      "receiptFile": "snow-frontier-31-routes.json",
+      "maps": 9,
+      "overviews": 1,
+      "transfers": 20,
+      "internalTransfers": 16,
+      "repeatedIdentically": true,
+      "callerUnchanged": true
+    },
+    {
+      "seed": 31,
+      "recipe": "high-pass",
+      "inputSHA256": "cb0c7e81ec4620fa7f737e301ce66126ce05e2c2981f4ae1d51b38ddc74b0cf6",
+      "projectFile": "high-pass-31.json",
+      "projectSHA256": "18e1a52860f858acbcde976d3c3e50ad93dba69741855a65ae1817ba3e68eec5",
+      "receiptFile": "high-pass-31-routes.json",
+      "maps": 9,
+      "overviews": 1,
+      "transfers": 20,
+      "internalTransfers": 16,
+      "repeatedIdentically": true,
+      "callerUnchanged": true
+    },
+    {
+      "seed": 31,
+      "recipe": "ancient-ruins",
+      "inputSHA256": "b6f81f219e9c3d9f9073caedc7f90ac273d3c3fa604f860c1e70e9191d23b154",
+      "projectFile": "ancient-ruins-31.json",
+      "projectSHA256": "7123cc9457e985f5957ba046b5a218d0eb098df03f0d3024f4eb6717a98b7de3",
+      "receiptFile": "ancient-ruins-31-routes.json",
+      "maps": 9,
+      "overviews": 1,
+      "transfers": 20,
+      "internalTransfers": 16,
+      "repeatedIdentically": true,
+      "callerUnchanged": true
+    },
+    {
+      "seed": 31,
+      "recipe": "lake-kingdom",
+      "inputSHA256": "c9030118e92683ddd20a63deaab47391032fd0e7f403134720bc8e98e1e05aaa",
+      "projectFile": "lake-kingdom-31.json",
+      "projectSHA256": "b803ea9e91e3ae07ad214e283bb10c204077f7ba0cbb0018b7d9620f5a8ee467",
+      "receiptFile": "lake-kingdom-31-routes.json",
+      "maps": 28,
+      "overviews": 4,
+      "transfers": 66,
+      "internalTransfers": 48,
+      "repeatedIdentically": true,
+      "callerUnchanged": true
+    },
+    {
+      "seed": 31,
+      "recipe": "northern-frontier",
+      "inputSHA256": "8860cb2085fccee78ea294e5609263042bec72044281b07ac60c0d02d49fabf3",
+      "projectFile": "northern-frontier-31.json",
+      "projectSHA256": "0126fc4ebf2ab8d5b665f55d01342cf600be3848c3c8d1971fb45871d160f8db",
+      "receiptFile": "northern-frontier-31-routes.json",
+      "maps": 28,
+      "overviews": 4,
+      "transfers": 66,
+      "internalTransfers": 48,
+      "repeatedIdentically": true,
+      "callerUnchanged": true
+    }
+  ],
+  "errorPath": {
+    "code": "blocked",
+    "callerUnchanged": true
+  },
+  "compilerImplemented": true,
+  "fixturesOnly": true,
+  "publishedSamples": false,
+  "remoteWrites": 0,
+  "storeMutations": 0,
+  "visualApproved": false
+}
+
+monitor_exit={"backend":"pipe-fallback","exitCode":0,"signal":null,"cancelled":false,"timedOut":false}

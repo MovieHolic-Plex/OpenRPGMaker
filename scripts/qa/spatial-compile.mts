@@ -4,7 +4,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { parseArgs } from "node:util";
 import { compileSpatialOccurrence, SpatialCompileError } from "../../src/editor/spatial/compileSpatialOccurrence";
-import { own, findOccurrenceChildId, spatialId } from "../../src/project/spatial/domain";
+import { assertNever, own, findOccurrenceChildId, spatialId } from "../../src/project/spatial/domain";
 import { deleteSpatialOccurrence } from "../../src/project/spatial/ownership";
 import type { GameMap } from "../../src/project/types";
 import { sha256HexTextSync } from "../../src/util/sha256";
@@ -14,19 +14,28 @@ import { outdoorShapeFixture } from "../../test/support/spatialOutdoorShapeFixtu
 import { inspectOutdoorShape } from "../../test/support/spatialOutdoorAssertions";
 
 const { values } = parseArgs({ options: { scenario: { type: "string" }, seeds: { type: "string" }, evidence: { type: "string" }, fault: { type: "string" } }, strict: true });
-assert.ok(values.scenario === "spaces" || values.scenario === "nested-places");
+assert.ok(values.scenario === "spaces" || values.scenario === "nested-places" || values.scenario === "geography");
 assert.ok(typeof values.seeds === "string" && /^\d+(,\d+)*$/.test(values.seeds));
 const seeds = values.seeds.split(",").map(value => {
   const seed = Number(value);
   assert.ok(Number.isSafeInteger(seed) && seed >= 0 && seed <= 2147483647);
   return seed;
 });
-const directory = resolve(values.evidence ?? (values.scenario === "nested-places"
-  ? "output/evidence/tile-to-world/task-9/backend-v2" : "output/evidence/tile-to-world/task-8/backend-v3"));
-if (values.scenario === "nested-places") {
+const directories = { spaces: "output/evidence/tile-to-world/task-8/backend-v3", "nested-places": "output/evidence/tile-to-world/task-9/backend-v2",
+  geography: "output/evidence/tile-to-world/task-10/backend-v2" } as const;
+const directory = resolve(values.evidence ?? directories[values.scenario]);
+switch (values.scenario) {
+case "geography": {
+  const { runGeography } = await import("./spatial-geography.mts");
+  await runGeography(seeds, directory, values.fault);
+  break;
+}
+case "nested-places": {
   const { runNestedPlaces } = await import("./spatial-nested-places.mts");
   await runNestedPlaces(seeds, directory, values.fault);
-} else {
+  break;
+}
+case "spaces": {
 assert.equal(values.fault, undefined);
 await mkdir(`${directory}/maps`, { recursive: true });
 await mkdir(`${directory}/contract`, { recursive: true });
@@ -133,4 +142,7 @@ const report = { scenario: values.scenario, sourceSHA: sha, compilerImplemented:
   renderer: { requiredModel: "xai/grok-4.6", status: "separate approval outstanding" }, seeds, receipts, rejections };
 await writeFile(`${directory}/accessibility.json`, `${JSON.stringify(report, null, 2)}\n`);
 console.log(JSON.stringify(report, null, 2));
+break;
+}
+default: assertNever(values.scenario);
 }
