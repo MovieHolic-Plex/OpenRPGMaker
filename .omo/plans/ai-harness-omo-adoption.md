@@ -131,9 +131,11 @@ proof key는 planId가 아니라 실제 적용/수락 버전이다. attempted/fa
 
 ### D4. 실행 복원은 대화 복원과 분리한다
 
-기존 `oprn-ai-records` IndexedDB를 version 2로 올리고 `runCheckpoints` store를
+기존 `oprn-ai-records` IndexedDB를 version 3으로 올리고 `runCheckpoints` store를
 추가한다. conversations는 보존한다. 별도 원격 goal/evidence 테이블은 만들지 않는다.
 체크포인트는 **기존 원장의 직렬화된 복구본**이며 독립 완료 판정기가 아니다.
+P4 시작 기준 PR687은 이미 version 2에 대화 tombstone을 저장하므로 버전 1과 2
+양쪽에서 version 3으로 이관하고 기존 tombstone·대화 의미를 보존한다.
 
 기록: schemaVersion, conversationId/runId/epoch/projectId, base/current
 content identity, WorkPlan과 요구, 현재 항목, 남은 예산, 기존 검증 원장 snapshot,
@@ -146,7 +148,7 @@ content identity, WorkPlan과 요구, 현재 항목, 남은 예산, 기존 검�
 그 도구를 다시 호출하지 않는다. 적용 여부가 불명확하거나 현재 내용이 다르면
 자동 쓰기를 하지 않고 이유와 다음 선택을 보여준다.
 
-v1 기록이나 메모리 fallback에는 안전한 실행 복원 근거가 없다.
+체크포인트가 없는 v1/v2 기록이나 메모리 fallback에는 안전한 실행 복원 근거가 없다.
 대화는 열되 “중단 요청 자동 재전송”은 하지 않는다. 현재 실행은 계속 가능하지만
 durable resume를 약속하지 않는다. 로컬 checkpoint만으로 전 기기 exactly-once를
 보장한다고 표현하지 않는다.
@@ -408,7 +410,12 @@ Phase 운영 게이트이며, 실행 순서를 강제하도록 해당 Phase 뒤�
     현재 계약의 회귀로 명확히 분리한다. 기존 실패 기록은 보존한다.
   - 해당 파서·평가기·현재 소스 통합 회귀와 원래 네이티브 시나리오로 검증한다.
 
-- [ ] 13. P3를 검증하고 ultrabrain 최종 승인 뒤 PR을 병합한다
+- [x] 13. P3를 검증하고 ultrabrain 최종 승인 뒤 PR을 병합한다
+  - 완료: PR #697, 최종 조합 승인 `8a87642bc`, 실제 병합 `37ba21348`,
+    승인·빌드·병합 동일 tree `a593f3f5`. 공유 main도 fast-forward 확인.
+    비활성 작업트리 29개를 근거 보관 후 정리했다. 제어·출하 빌드·미커밋 계획
+    보존용 세 트리는 의도적으로 유지한다. 영수증:
+    `.omo/evidence/ai-harness-implementation/resume-01a08291/p3-{merge-receipt,cleanup}.json`.
   - Recommended task executor category: ultrabrain
   - P2 병합 기반의 새 worktree/mass-ulw에서 취소·세대·사람 편집 보존을 실제
     화면과 실패 주입으로 증명하고 감독자 gates 및 Draft PR을 준비한다.
@@ -419,7 +426,7 @@ Phase 운영 게이트이며, 실행 순서를 강제하도록 해당 Phase 뒤�
   - Recommended task executor category: deep
   - 선행: 4. 통합은 6 이후 직렬 수행. 소유: `src/ai/aiRecordDb.ts`,
     신규 `src/ai/runCheckpointStore.ts`, 기존 원장의 snapshot/load 경계.
-  - RED: `test/aiRunCheckpointStore.test.ts` 신규 예정. v1 대화 DB→v2 업그레이드
+  - RED: `test/aiRunCheckpointStore.test.ts` 신규 예정. v1/v2 대화 DB→v3 업그레이드
     뒤 대화 보존+checkpoint 왕복; 중복 run/epoch 저장; 잘못된 schemaVersion,
     projectId 불일치; memory fallback에서 durable=false.
   - GREEN 명령: `npm test -- test/aiRunCheckpointStore.test.ts test/conversationStore.test.ts`.
@@ -536,9 +543,9 @@ Phase 운영 게이트이며, 실행 순서를 강제하도록 해당 Phase 뒤�
 
 - 현재 코드를 한 번에 새 엔진으로 교체하지 않는다. 위 순서의 작은 커밋으로 통합한다.
 - 결과 필드는 추가적으로 도입하고 기존 stoppedReason/testid/원격 레코드 소비자를 유지.
-- IDB v1→v2는 additive. 모르는 checkpoint 버전은 무시/격리하며 대화는 계속 읽는다.
-  v2 배포 뒤 v1 전용 옛 바이너리를 무심코 재배포하지 않는다. rollback binary도
-  v2 conversations를 읽고 checkpoint 실행만 끄는 forward-compatible reader를 유지한다.
+- IDB v1/v2→v3는 additive. 모르는 checkpoint 버전은 무시/격리하며 대화는 계속 읽는다.
+  v3 배포 뒤 v1/v2 전용 옛 바이너리를 무심코 재배포하지 않는다. rollback binary도
+  v3 conversations를 읽고 checkpoint 실행만 끄는 forward-compatible reader를 유지한다.
 - proof/복원에 문제가 생기면 “검증되지 않음/복구 확인 필요”로 낮추고 자동 재전송을
   되살리지 않는다. 불확실성을 성공으로 치환하는 fallback은 금지.
 - 사용자 최신 변경과 원격 conflict는 보존한다. 새 DB 스키마·분산 보장이 필요해지면
