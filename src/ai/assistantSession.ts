@@ -1612,7 +1612,7 @@ export class AssistantSession {
 
   private async correctVerification(args: Record<string, unknown>, signal?: AbortSignal): Promise<ToolResult> {
     const correction = Object.keys(args).every(key => key === "checkId" || key === "args")
-      ? this.verificationEvidence.correction(args.checkId, args.args) : null;
+      ? this.verificationEvidence.correction(args.checkId, args.args, this.ctx.project) : null;
     if (!correction || typeof args.checkId !== "string") return { ok: false, summary: "Unknown check or incompatible correction",
       issues: [{ severity: "error", code: "invalid-verification-correction", message: "Use an existing checkId and compatible original-tool args; accepted checks cannot be replaced." }],
       data: { verification: this.getVerificationSnapshot(false) } };

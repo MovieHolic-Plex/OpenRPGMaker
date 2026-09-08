@@ -52,6 +52,21 @@ function harness(f = p7Approach(), priorTranscript?: string) {
   return { f, session, events, send, declare, check, correct, preview, fail };
 }
 
+function encounterFixture() {
+  const f = p7Approach();
+  f.project.session.gold = 11;
+  f.map.encounterRate = 1000;
+  f.map.troopIds = ["troop_slime"];
+  f.map.encounterTable = [];
+  f.project.database.troops.find(troop => troop.id === "troop_slime")!.battleEventPages = [{
+    id: "extra-approach-reward", name: "Regression battle event", span: "battle", conditions: [], commands: [
+      { kind: "changeGold", op: "+=", amount: 101 },
+      { kind: "setFlag", flag: "ending:review_extra_battle_event", value: true },
+    ],
+  }];
+  return f;
+}
+
 describe("host-confirmed canonical interaction approach", () => {
   it("retains the full recorded bundle, fails natively, rejects movement without approval, and offers the missing action", async () => {
     const h = harness();
@@ -162,11 +177,119 @@ describe("host-confirmed canonical interaction approach", () => {
     expect(h.session.getVerificationSnapshot().approaches).toEqual([]);
   });
 
-  it.each(["reward", "transfer", "interrupted"])("refuses approach-only credit when inserted walk causes %s", async kind => {
+  it("rejects encounter-capable previews despite a native passing scene with unreceipted battle events", async () => {
+    const f = encounterFixture();
+    const original = structuredClone(f);
+    const control = runTool({ project: f.project }, "run_scene_test", f.corrected);
+    expect(control).toMatchObject({ ok: true, data: { ok: true, finalState: {
+      gold: 131, endingsReached: expect.arrayContaining(["review_extra_battle_event", "ending_escape"]),
+    }, interactions: [2, 5, 7].map(stepIndex => ({ stepIndex, mapId: f.map.id, eventId: "ev_door" })),
+    log: expect.arrayContaining(["random encounter troop_slime: victory"]) } });
+    const h = harness(f);
+    await h.fail();
+    expect(h.session.previewApproachCorrection(h.check().checkId)).toBeNull();
+    expect(h.session.getAcceptanceSnapshot()!.items.find(item => item.id === "acceptance-contract")!.evidence[13]).not.toHaveProperty("approachCheckId");
+    const before = h.session.getVerificationSnapshot();
+    await h.send(h.correct());
+    expect(h.session.getVerificationSnapshot()).toEqual(before);
+    expect(before.approaches).toEqual([]);
+    expect(before.resolutions).toEqual([]);
+    expect(h.check().status).toBe("unverified");
+    expect(f).toEqual(original);
+  });
+
+  it.each(["rate", "legacy-troop", "table-weight", "table-added", "after-proof"])("rejects execution and credit after encounter-enabling applied write: %s", async kind => {
+    const f = encounterFixture();
+    if (kind === "legacy-troop" || kind === "table-added") f.map.troopIds = [];
+    else if (kind === "table-weight") f.map.encounterTable = [{ troopId: "troop_slime", weight: 0 }];
+    else f.map.encounterRate = 0;
+    const h = harness(f);
+    await h.fail();
+    expect(h.session.confirmApproachCorrection(h.preview())).toBe(true);
+    if (kind === "after-proof") {
+      await h.send(h.correct());
+      expect(h.check().status).toBe("passed");
+    }
+    const safe = h.session.getProposedProject();
+    const changed = structuredClone(safe);
+    const map = changed.maps[f.map.id]!;
+    if (kind === "legacy-troop") map.troopIds = ["troop_slime"];
+    else if (kind === "table-weight") map.encounterTable![0]!.weight = 1;
+    else if (kind === "table-added") map.encounterTable = [{ troopId: "troop_slime", weight: 1 }];
+    else map.encounterRate = 1000;
+    expect(h.session.syncBaselineFromStoreIfClean(changed)).toBe(true);
+    const before = h.session.getVerificationSnapshot();
+    await h.send(h.correct());
+    const after = h.session.getVerificationSnapshot();
+    expect(after.resolutions).toEqual(before.resolutions);
+    expect(after.resolutions).toHaveLength(kind === "after-proof" ? 1 : 0);
+    expect(after.attempts).toEqual(before.attempts);
+    expect(after.findings).toEqual(before.findings);
+    expect(after.approaches).toEqual(before.approaches);
+    expect(h.check().status).not.toBe("passed");
+    expect(h.events.filter(event => event.type === "tool_call" && event.name === "correct_verification").at(-1)).toMatchObject({ result: { ok: false } });
+    if (kind === "after-proof") {
+      expect(h.check().status).toBe("stale");
+      expect(h.session.syncBaselineFromStoreIfClean(safe)).toBe(true);
+      expect(h.check().status).toBe("stale");
+      await h.send(h.correct());
+      expect(h.check().status).toBe("passed");
+      expect(h.session.getVerificationSnapshot().resolutions).toHaveLength(2);
+    }
+  });
+
+  it.each([
+    "low-rate", "weighted-table", "conditional-switch", "conditional-region", "conditional-time", "missing-troop",
+    "zero-rate", "no-candidates", "zero-weight-table", "noninteger-weight-table", "negative-weight-table",
+  ])("uses native encounter selection semantics for preview: %s", async kind => {
+    const f = encounterFixture();
+    if (kind === "low-rate") f.map.encounterRate = 1;
+    if (kind === "zero-rate") f.map.encounterRate = 0;
+    if (kind === "no-candidates") f.map.troopIds = [];
+    if (kind === "missing-troop") f.map.troopIds = ["not-in-database"];
+    if (kind.includes("table") || kind.startsWith("conditional")) f.map.encounterTable = [{ troopId: "troop_slime",
+      weight: kind === "zero-weight-table" ? 0 : kind === "noninteger-weight-table" ? 0.5 : kind === "negative-weight-table" ? -1 : 1,
+      ...(kind === "conditional-switch" ? { conditions: { switchId: "not-yet-enabled" } }
+        : kind === "conditional-region" ? { conditions: { region: { x: 10, y: 1, w: 1, h: 1 } } }
+        : kind === "conditional-time" ? { conditions: { timePhase: "night" as const } } : {}),
+    }];
+    const h = harness(f);
+    await h.fail();
+    const preview = h.session.previewApproachCorrection(h.check().checkId);
+    const safe = ["zero-rate", "no-candidates", "zero-weight-table", "noninteger-weight-table", "negative-weight-table"].includes(kind);
+    if (safe) {
+      expect(preview).not.toBeNull();
+      expect(h.session.confirmApproachCorrection(preview!)).toBe(true);
+      await h.send(h.correct());
+      expect(h.check().status).toBe("passed");
+      expect(h.session.getVerificationSnapshot().attempts.at(-1)!.result).toMatchObject({ data: { finalState: { gold: 11, endingsReached: ["ending_escape"] } } });
+    } else {
+      expect(preview).toBeNull();
+      expect(h.session.getVerificationSnapshot().approaches).toEqual([]);
+      const before = h.session.getVerificationSnapshot();
+      await h.send(h.correct());
+      expect(h.session.getVerificationSnapshot()).toEqual(before);
+      expect(h.check().status).toBe("unverified");
+    }
+  });
+
+  it("expires confirmation when applied content becomes encounter-capable after preview", async () => {
+    const h = harness();
+    await h.fail();
+    const preview = h.preview();
+    const changed = h.session.getProposedProject();
+    changed.maps[h.f.map.id]!.encounterRate = 1000;
+    changed.maps[h.f.map.id]!.troopIds = ["troop_slime"];
+    expect(h.session.syncBaselineFromStoreIfClean(changed)).toBe(true);
+    expect(h.session.confirmApproachCorrection(preview)).toBe(false);
+    expect(h.session.getVerificationSnapshot().approaches).toEqual([]);
+  });
+
+  it.each(["reward", "transfer", "interrupted", "last-cell-transfer", "empty-touch"])("refuses approach-only credit when inserted walk causes %s", async kind => {
     const f = p7Approach();
-    f.map.events.push(verificationEvent("touch", 10, 5, kind === "reward" ? [{ kind: "changeGold", op: "+=", amount: 10 }]
-      : kind === "transfer" ? [{ kind: "transfer", mapId: f.map.id, x: 10, y: 5 }]
-      : [{ kind: "choices", options: [{ text: "Wait", branch: [] }] }], true));
+    f.map.events.push(verificationEvent("touch", 10, kind === "last-cell-transfer" ? 1 : 5, kind === "reward" ? [{ kind: "changeGold", op: "+=", amount: 10 }]
+      : kind === "transfer" || kind === "last-cell-transfer" ? [{ kind: "transfer", mapId: f.map.id, x: 10, y: kind === "last-cell-transfer" ? 1 : 5 }]
+      : kind === "empty-touch" ? [] : [{ kind: "choices", options: [{ text: "Wait", branch: [] }] }], true));
     const h = harness(f);
     await h.fail();
     expect(h.session.confirmApproachCorrection(h.preview())).toBe(true);
@@ -174,6 +297,7 @@ describe("host-confirmed canonical interaction approach", () => {
     const attempt = h.session.getVerificationSnapshot().attempts.at(-1)!;
     expect(attempt.result).toMatchObject({ data: { interactions: expect.arrayContaining([{ stepIndex: 1, mapId: f.map.id, eventId: "touch" }]) } });
     if (kind === "interrupted") expect(attempt).toMatchObject({ status: "negative", result: { data: { failedStepIndex: 1, finalState: { x: 10, y: 5, mapId: f.map.id } } } });
+    if (kind === "last-cell-transfer" || kind === "empty-touch") expect(attempt.status).toBe("passed");
     expect(h.check().status).toBe("unverified");
     expect(h.session.getVerificationSnapshot().resolutions).toEqual([]);
     expect(h.session.getAcceptanceSnapshot()!.items.find(item => item.id === "acceptance-contract")!.evidence[13]!.passed).toBe(false);

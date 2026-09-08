@@ -176,6 +176,19 @@ function matchingTrace(original: Record<string, unknown>, targets: readonly Scen
   return targets.every(target => observed.some(entry => key(entry) === key(canonicalTarget(original, target))));
 }
 
+/** Battle/troop events have no scene interaction receipts; this release cannot authorize them. */
+function encounterFreeApproach(project: Project, mapId: string): boolean {
+  const map = project.maps[mapId];
+  if (!map) return false;
+  if ((map.encounterRate ?? 0) <= 0) return true;
+  // Native encounters give a nonempty table precedence over legacy troopIds and
+  // select only positive integer weights. Treat conditional entries as possible:
+  // setup, walking position and time can enable them after the initial snapshot.
+  return map.encounterTable?.length
+    ? !map.encounterTable.some(entry => Number.isInteger(entry.weight) && entry.weight > 0)
+    : !map.troopIds?.length;
+}
+
 /** Full diagnostic records (including referenced IDs/locations), never just counts or codes. */
 function lintErrorKeys(result: ToolResultLike): string[] | null {
   if (result.ok !== true || !acceptanceRecord(result.data) || !acceptanceRecord(result.data.counts)
@@ -260,6 +273,7 @@ export class ToolVerificationEvidence {
     const finding = this.findings.get(checkId);
     if (!state || state.inactive || state.pass || !requirement?.aiDeclared || requirement.acceptedCriterion?.kind !== "toolVerdict"
       || requirement.name !== "run_scene_test" || !original || !isSceneTestInput(original)
+      || !encounterFreeApproach(project, original.mapId)
       || this.approaches.some(entry => entry.checkId === checkId) || finding?.source !== "explicit") return null;
     const targets = parseSceneInteractionTargets(original, requirement.interactionTargets);
     const attempt = [...this.attempts].reverse().find(entry => entry.name === requirement.name && key(entry.args) === key(original)
@@ -318,13 +332,14 @@ export class ToolVerificationEvidence {
   }
 
   /** Resolves only this session's stored check; caller data supplies no verdict. */
-  correction(checkId: unknown, raw: unknown): { name: string; args: Record<string, unknown> } | null {
+  correction(checkId: unknown, raw: unknown, project?: Project): { name: string; args: Record<string, unknown> } | null {
     if (typeof checkId !== "string") return null;
     const stored = this.requirements.get(checkId)?.requirement ?? this.findings.get(checkId);
     if (!stored?.args) return null;
     const args = verificationInput(stored.name, raw);
     const approach = this.approaches.find(entry => entry.checkId === checkId);
     if (!args || (approach ? this.requirements.get(checkId)?.inactive || key(approach.args) !== key(args)
+      || !project || !encounterFreeApproach(project, approach.insertion.mapId)
       : !compatible(stored.name, stored.args, args))) return null;
     if (stored.name === "run_scene_test" && "result" in stored && key(stored.args) !== key(args)
       && sceneTargets(stored.args, stored.result).length === 0) return null;

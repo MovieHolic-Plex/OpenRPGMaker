@@ -60,7 +60,7 @@ try {
     server.once("error", reject); server.once("exit", code => reject(new Error(`Vite exited ${code}`)));
   }), "owned Vite listen");
   browser = await firefox.launch({ headless: true });
-  page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  page = await browser.newPage({ viewport: { width: 1024, height: 768 } });
   page.on("console", message => { if (message.type() === "error") report.consoleErrors.push(message.text()); });
   page.on("pageerror", error => report.consoleErrors.push(error.message));
   let fixture, calls = [], sequence = 0;
@@ -79,7 +79,17 @@ try {
           tools: [], summary: "기록된 검증 회귀", action: "resume",
         }) };
         else {
-          const batch = calls.splice(0);
+          const batch = calls.splice(0).map(call => {
+            if (!call.useApprovedRevision) return call;
+            // Consume authorization from the normal outbound model request, not the read-only harness.
+            const revisions = body.messages.flatMap(entry => typeof entry.content === "string" ? entry.content.split("\n") : [])
+              .filter(line => line.startsWith("{") && line.endsWith("}"))
+              .map(line => JSON.parse(line))
+              .filter(value => value.revisionId && value.confirmation?.source === "user" && value.checkId === checkId && value.args);
+            assert.equal(revisions.length, 1, "Approved revision must reach the normal model request");
+            report.approvedRequestRevision = revisions[0];
+            return { name: "correct_verification", args: { checkId, args: revisions[0].args } };
+          });
           report.requests.push({ tools, calls: batch });
           message = batch.length ? { role: "assistant", content: null, tool_calls: batch.map(call => ({
             id: `recorded-p7-${++sequence}`, type: "function", function: { name: call.name, arguments: JSON.stringify({ ...call.args, reason: "기록된 모델 응답을 이용한 전용 회귀 검증입니다." }) },
@@ -181,11 +191,32 @@ try {
     report.expectedRed = "Native canonical failure and rejected movement retained; shipped correction UI action absent.";
   } else {
     assert.equal(report.reviewActionCount, 1);
+    report.smallScreenActions = [];
+    // At the supported 1024px floor the floating chat can cover the checklist.
+    // Exercise the shipped collapse/expand affordances, never forced clicks or CSS relocation.
+    await transition(page, "[data-testid=ai-collapse]", "aria-expanded", "false", () => page.getByTestId("ai-collapse").click());
+    report.smallScreenActions.push("collapse-chat");
+    await transition(page, "[data-testid=ai-sticky-toggle]", "aria-expanded", "true", () => page.getByTestId("ai-sticky-toggle").click());
+    report.smallScreenActions.push("expand-checklist");
     const row = page.locator('[data-testid=ai-sticky-item][data-item-id="acceptance-contract"]');
     await row.locator(":scope > summary").click();
+    report.smallScreenActions.push("expand-original-criterion-bundle");
+    await review.scrollIntoViewIfNeeded();
+    report.reviewHit = await review.evaluate(node => {
+      const box = node.getBoundingClientRect();
+      return { viewport: { width: innerWidth, height: innerHeight }, box: box.toJSON(), hit: node.contains(document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2)) };
+    });
+    assert.equal(report.reviewHit.hit, true);
+    await page.screenshot({ path: resolve(output, "review-action-1024.png") });
     await transition(page, "[data-testid=ai-approach-confirm]", null, null, () => review.click());
+    report.smallScreenActions.push("review-approach");
     report.preview = await page.getByTestId("ai-approach-confirm").evaluate(node => node.parentElement.textContent);
     await page.getByTestId("ai-approach-confirm").scrollIntoViewIfNeeded();
+    report.confirmHit = await page.getByTestId("ai-approach-confirm").evaluate(node => {
+      const box = node.getBoundingClientRect();
+      return { viewport: { width: innerWidth, height: innerHeight }, box: box.toJSON(), hit: node.contains(document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2)) };
+    });
+    assert.equal(report.confirmHit.hit, true);
     await page.screenshot({ path: resolve(output, "preview.png") });
     report.previewRecipes = await page.getByTestId("ai-approach-confirm").evaluate(node =>
       Array.from(node.parentElement.querySelectorAll(":scope > details > p"), entry => JSON.parse(entry.textContent)));
@@ -194,13 +225,17 @@ try {
     assert.deepEqual(report.previewRecipes[2], fixture.args.steps.filter(step => step.kind === "expect"));
     assert.deepEqual(report.previewRecipes[4], fixture.corrected);
     await transition(page, "[data-testid=ai-approach-confirm]", "absent", null, () => page.getByTestId("ai-approach-confirm").click());
+    report.smallScreenActions.push("confirm-approach");
     report.approved = await harness();
     assert.equal(report.approved.verification.approaches.length, 1);
     assert.equal(report.approved.verification.resolutions.length, 0);
     assert.equal(report.approved.verification.requirements.find(entry => entry.checkId === checkId).status, "unverified");
-    const approvedArgs = report.approved.verification.approaches[0].args;
-    assert.deepEqual(approvedArgs, fixture.corrected);
-    report.correctedTurn = await send([{ name: "correct_verification", args: { checkId, args: approvedArgs } }], "사용자가 승인한 접근 보정의 정확한 인자와 원래 기준 ID로 새 검증을 실행해 주세요.");
+    assert.deepEqual(report.approved.verification.approaches[0].args, fixture.corrected);
+    await transition(page, "[data-testid=ai-collapse]", "aria-expanded", "true", () => page.getByTestId("ai-collapsed-restore").click());
+    report.smallScreenActions.push("restore-chat");
+    report.correctedTurn = await send([{ useApprovedRevision: true }], "사용자가 승인한 접근 보정의 정확한 인자와 원래 기준 ID로 새 검증을 실행해 주세요.");
+    assert.deepEqual(report.approvedRequestRevision.args, fixture.corrected);
+    report.smallScreenActions.push("send-normal-verification");
     report.after = await harness();
     assert.equal(report.after.verification.requirements.find(entry => entry.checkId === checkId).status, "passed");
     assert.deepEqual(report.after.verification.findings, verification.findings);

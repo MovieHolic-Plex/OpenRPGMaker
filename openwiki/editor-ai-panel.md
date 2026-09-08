@@ -145,6 +145,14 @@ cannot supply credit. Writes/undo stale proof; unrelated findings remain obligat
 Snapshots expose these links through normal verification results and the read-only
 harness. Pending previews expire on a new turn, write or owner replacement.
 
+Encounter-capable maps are unsupported (CR-P7-1-R1): native battle/troop events do
+not appear in scene interaction receipts. Preview and approved execution inspect
+current content: positive rate plus legacy troops or a positive-integer-weight
+entry in the overriding nonempty table blocks authorization, even if conditional.
+No initial-position/condition snapshot or old approval licenses later encounters.
+At 1024px, collapse chat, expand the checklist and review/confirm normally; the
+recorded-wire browser regression clicks both controls there, then restores chat.
+
 There is no private-ledger persistence/recovery. Historical P7 remains blocked.
 A fresh session reproduces and validates only the prospective amendment path; its
 baseline cannot prove P7's earlier floor edit. Physical saved-game and actual-provider
