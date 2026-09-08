@@ -1,13 +1,19 @@
 import assert from "node:assert/strict";
 import { mkdir, writeFile } from "node:fs/promises";
-import { firefox } from "playwright";
+import { chromium, firefox } from "playwright";
+import { installMediaWriteGuard } from "./issue693-media-guard.mjs";
 
 // Real editor Test Play and Phaser loader. Only the asset HTTP response is controlled;
 // session replacement uses the production consent API while that request is deferred.
 const base = process.env.QA_BASE_URL ?? "http://127.0.0.1:38425";
 const output = process.env.QA_OUTPUT_DIR ?? "/dev/shm/rpg-zzu-issue693-diagnostics/r2-evidence";
 await mkdir(output, { recursive: true });
-const browser = await firefox.launch({ headless: true });
+const browserName = process.env.QA_BROWSER ?? "firefox";
+const browserType = { chromium, firefox }[browserName];
+assert(browserType, `Unsupported QA_BROWSER: ${browserName}`);
+const relayGets = process.env.QA_GET_RELAY === "1";
+const browser = await browserType.launch({ headless: true,
+  ...(process.env.QA_BROWSER_CHANNEL ? { channel: process.env.QA_BROWSER_CHANNEL } : {}) });
 const proof = [];
 
 function deferred() {
@@ -28,6 +34,10 @@ async function bounded(promise, label) {
 try {
   for (const scenario of ["same-session-success", "same-session-failure", "replacement-failure", "initially-disabled-failure"]) {
     const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+    if (relayGets) await installMediaWriteGuard(context, {
+      report: { blockedMutations: [], bodyObservations: [], remoteWrites: 0 },
+      permitRemoteCopy: false, getConfig: () => null, relayOrigin: new URL(base).origin,
+    });
     const page = await context.newPage();
     page.setDefaultTimeout(90_000);
     const requested = deferred();
@@ -35,7 +45,7 @@ try {
     try {
       // No private projects, remote reads/writes or provider traffic.
       await page.route("**/*", route => new URL(route.request().url()).origin === new URL(base).origin
-        ? route.continue() : route.abort());
+        ? route.fallback() : route.abort());
       await page.addInitScript(() => {
         localStorage.setItem("oprn:ai-panel-collapsed", "0");
         window.diagnosticEditorReady = new Promise((resolve, reject) => {
@@ -104,7 +114,7 @@ try {
         assert.equal(row.category, "asset");
         assert(Object.keys(row).every(key => keys.has(key)), "Unexpected retained field");
       }
-      proof.push({ scenario, ...result });
+      proof.push({ scenario, browser: browserName, relayGets, ...result });
       console.log(`${scenario}: PASS`);
     } finally {
       release.resolve();

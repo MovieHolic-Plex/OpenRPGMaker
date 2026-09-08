@@ -104,7 +104,7 @@ export async function verifyValidationRecoveryFields(page, output) {
       assert((await page.getByTestId(`event-page-move-route-command-${step}`).getAttribute("class")).split(" ").includes("selected"));
       assert.deepEqual(await current(), before, "opening/selecting a route step must be read-only");
       if (step === 6) {
-        await page.screenshot({ path: `${output}/route-recovery-${width}.png` });
+        await page.screenshot({ path: `${output}/route-recovery-${width}.png`, timeout: 60_000 });
         await page.getByTestId(field).fill("cancelled-repair");
         await page.getByTestId("event-page-move-route-cancel").click();
         assert.deepEqual(await current(), before, "Cancel must preserve the page");
@@ -115,7 +115,18 @@ export async function verifyValidationRecoveryFields(page, output) {
       else await page.getByTestId(field).fill(value);
       assert.deepEqual(await current(), before, "route correction remains local until OK");
       console.log(`recovery apply: ${field} ${step}`);
-      await page.getByTestId("event-page-move-route-ok").click();
+      await page.evaluate(() => {
+        const dialog = document.querySelector('[data-testid="event-page-move-route-dialog"]');
+        if (!dialog) throw new Error("Missing route dialog before apply");
+        window.validationRouteClosed = new Promise(resolve => {
+          const finish = closed => { observer.disconnect(); clearTimeout(timer); resolve(closed); };
+          const observer = new MutationObserver(() => { if (!dialog.isConnected) finish(true); });
+          const timer = setTimeout(() => finish(false), 15_000);
+          observer.observe(document.body, { childList: true, subtree: true });
+        });
+      });
+      await page.getByTestId("event-page-move-route-ok").click({ noWaitAfter: true });
+      assert.equal(await page.evaluate(() => window.validationRouteClosed), true, "Apply closes its route dialog");
     }
     const pageState = await current();
     assert.deepEqual(pageState.commands[0].body[0].spawn, valid, "route editing preserves commands");

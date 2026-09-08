@@ -1,20 +1,30 @@
 import assert from "node:assert/strict";
 import { mkdir, writeFile } from "node:fs/promises";
-import { firefox } from "playwright";
+import { chromium, firefox } from "playwright";
+import { installMediaWriteGuard } from "./issue693-media-guard.mjs";
 
 // Re-run against this worktree's real Vite/editor/Test Play surfaces. No runtime mocks.
 const base = process.env.QA_BASE_URL ?? "http://127.0.0.1:38425";
 const output = process.env.QA_OUTPUT_DIR ?? "/dev/shm/rpg-zzu-issue693-diagnostics/evidence";
 await mkdir(output, { recursive: true });
-const browser = await firefox.launch({ headless: true });
+const browserName = process.env.QA_BROWSER ?? "firefox";
+const browserType = { chromium, firefox }[browserName];
+assert(browserType, `Unsupported QA_BROWSER: ${browserName}`);
+const relayGets = process.env.QA_GET_RELAY === "1";
+const browser = await browserType.launch({ headless: true,
+  ...(process.env.QA_BROWSER_CHANNEL ? { channel: process.env.QA_BROWSER_CHANNEL } : {}) });
 const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, acceptDownloads: true });
 const page = await context.newPage();
 page.setDefaultTimeout(90_000);
-const proof = { surface: "real editor and Test Play; isolated dev-showcase local project", screenshots: [], receipts: [], downloads: 0 };
+const proof = { surface: "real editor and Test Play; isolated dev-showcase local project", browser: browserName, relayGets, screenshots: [], receipts: [], downloads: 0 };
+if (relayGets) await installMediaWriteGuard(context, {
+  report: { blockedMutations: [], bodyObservations: [], remoteWrites: 0 },
+  permitRemoteCopy: false, getConfig: () => null, relayOrigin: new URL(base).origin,
+});
 page.on("download", () => proof.downloads++);
 // Never read private live projects, provider logs, or mutate a remote service.
 await page.route("**/*", route => new URL(route.request().url()).origin === new URL(base).origin
-  ? route.continue() : route.abort());
+  ? route.fallback() : route.abort());
 await page.addInitScript(() => {
   localStorage.setItem("oprn:ai-panel-collapsed", "0");
   window.diagnosticEditorReady = new Promise((resolve, reject) => {
