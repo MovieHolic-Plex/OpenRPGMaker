@@ -33,6 +33,12 @@ export const TURNS = {
 } as const;
 
 export const FOREIGN_SCOPE = "remote:foreign-map-history-qa";
+export const LEGACY = {
+  id: "maphist-legacy-unscoped",
+  user: "MAPHIST-LEGACY-UNSCOPED-USER",
+  assist: "MAPHIST-LEGACY-UNSCOPED-ASSIST",
+  mapId: "map_legacy_gone",
+} as const;
 export const MAP_EMPTY = "map_hist_empty";
 export const MAP_EMPTY_NAME = "빈 언덕";
 export const EVIDENCE_DIR = path.resolve("output/evidence/map-ai-history");
@@ -62,13 +68,18 @@ export async function bootEditor(page: Page): Promise<void> {
   });
   await mockRemoteAndLlm(page);
   const guest = page.getByTestId("login-guest");
+  // Hidden mounted alternatives must not mask the visible boot surface.
   const ready = guest
     .or(page.getByTestId("ai-input"))
     .or(page.getByTestId("ai-collapsed-restore"))
+    .filter({ visible: true })
     .first()
     .waitFor({ state: "visible", timeout: 90_000 });
-  await page.goto("/?blankProject=1", { waitUntil: "domcontentloaded" });
-  await ready;
+  // Own both rejections immediately, even if navigation outlasts readiness.
+  await Promise.all([
+    ready,
+    page.goto("/?blankProject=1", { waitUntil: "domcontentloaded", timeout: 90_000 }),
+  ]);
   if (await guest.isVisible()) await guest.click();
   await expect(page.getByTestId("login-modal")).toBeHidden();
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 90_000 });
@@ -101,8 +112,8 @@ export async function openHistory(page: Page): Promise<void> {
   await expect(clock.getByTestId("ai-map-history-open")).toHaveCount(1);
   await expect(nested).toBeVisible();
   const appeared = page.getByTestId("ai-history-modal").waitFor({ state: "visible", timeout: 15_000 });
-  await nested.click();
-  await appeared;
+  // Own both rejections immediately, even if the click outlasts appearance.
+  await Promise.all([appeared, nested.click()]);
   await historySettled(page);
 }
 
@@ -358,15 +369,18 @@ export async function seedExtraCurrentMapRows(page: Page, count: number): Promis
       const modulePath: string = url;
       return await import(/* @vite-ignore */ modulePath) as T;
     };
-    const [{ store }, { conversationScopeKey, saveConversation }] = await Promise.all([
+    const [{ store }, { conversationScopeKey }, { AI_RECORD_STORES, writeAiRecords }] = await Promise.all([
       load<typeof import("@/project/store")>("/src/project/store.ts"),
       load<typeof import("@/ai/conversationStore")>("/src/ai/conversationStore.ts"),
+      load<typeof import("@/ai/aiRecordDb")>("/src/ai/aiRecordDb.ts"),
     ]);
     const project = store.getCurrent();
     const scope = conversationScopeKey(store.getProjectIdentity(), project);
     const map = project.maps[input.mapA];
+    // Trusted catalog fixtures, not save-path coverage: avoid unrelated remote mirrors.
+    const records: import("@/ai/conversationStore").ConversationRecord[] = [];
     for (let index = 0; index < input.count; index += 1) {
-      const outcome = await saveConversation({
+      records.push({
         id: `maphist-page-${index}`,
         title: `MAPHIST-PAGE ${index}`,
         model: "e2e",
@@ -376,8 +390,28 @@ export async function seedExtraCurrentMapRows(page: Page, count: number): Promis
           { kind: "user" as const, text: `MAPHIST-PAGE ${index}`, context: { mapId: input.mapA, mapName: input.mapAName, mapWidth: map?.width ?? 20, mapHeight: map?.height ?? 15 } },
           { kind: "assistant" as const, text: `page ${index}` },
         ],
+        mapIndex: { viewedMapIds: [input.mapA], targetMapIds: [], mapAttribution: "complete" },
       });
-      if (!outcome.ok) throw new Error(`saveConversation failed for page ${index}`);
     }
+    const backend = await writeAiRecords(AI_RECORD_STORES.conversations, records);
+    if (backend !== "indexeddb") throw new Error("bulk history fixture requires IndexedDB");
   }, { count, mapA: MAP_A, mapAName: MAP_A_NAME });
+}
+
+export async function seedUnscopedLegacy(page: Page): Promise<void> {
+  await page.evaluate(async (fixture) => {
+    const storePath: string = "/src/ai/conversationStore.ts";
+    const { saveConversation } = await import(/* @vite-ignore */ storePath) as typeof import("@/ai/conversationStore");
+    const outcome = await saveConversation({
+      id: fixture.id,
+      title: fixture.user,
+      model: "e2e",
+      savedAt: 1_600_000_000_000,
+      entries: [
+        { kind: "user" as const, text: fixture.user, context: { mapId: fixture.mapId, mapName: "기록된 옛 이름", mapWidth: 16, mapHeight: 16 } },
+        { kind: "assistant" as const, text: fixture.assist },
+      ],
+    });
+    if (!outcome.ok) throw new Error("saveConversation failed for unscoped legacy");
+  }, LEGACY);
 }

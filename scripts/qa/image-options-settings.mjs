@@ -6,10 +6,11 @@ import { firefox } from "playwright";
 
 // Isolated settings surface: real form/styles, no editor boot or project writes.
 const output = resolve("output/evidence/image-options");
+const port = Number(process.env.DEV_SERVER_PORT || 39159);
 await mkdir(output, { recursive: true });
 const server = await createServer({
   configFile: false, resolve: { alias: { "@": resolve("src") } },
-  server: { host: "127.0.0.1", port: 39159, strictPort: true },
+  server: { host: "127.0.0.1", port, strictPort: true },
 });
 let browser;
 const observations = [];
@@ -25,7 +26,7 @@ try {
   for (const [width, height] of [[1024, 768], [1440, 900]]) {
     await page.setViewportSize({ width, height });
     const ready = page.waitForEvent("console", { predicate: (message) => message.text() === "image-options-ready", timeout: 30000 });
-    await page.goto("http://127.0.0.1:39159/__image-options-qa");
+    await page.goto("http://127.0.0.1:" + port + "/__image-options-qa");
     await ready;
     const section = page.getByTestId("ai-settings-section-image");
     await section.scrollIntoViewIfNeeded();
@@ -60,7 +61,7 @@ try {
       const selection = { provider: route.request().headers()["x-rpgzzu-provider"], model: route.request().postDataJSON().model };
       wire.push(selection);
       if (selection.model === "codex-image-default") {
-        await route.fulfill({ json: { image: { dataUrl: "data:image/png;base64,AAAA", ...selection } } });
+        await route.fulfill({ json: { image: { dataUrl: "data:image/png;base64,AAAA", provider: selection.provider, model: "gpt-image-2" } } });
       } else {
         await route.fulfill({ status: 409, json: { error: "unsupported-test-route" } });
       }
@@ -70,7 +71,7 @@ try {
       const image = await generateAiImage({ prompt: "routing check" });
       return { provider: image.provider, model: image.model };
     });
-    assert.deepEqual(generated, { provider: "openai-codex", model: "codex-image-default" });
+    assert.deepEqual(generated, { provider: "openai-codex", model: "gpt-image-2" });
     await page.getByTestId("ai-settings-close").click();
     await page.evaluate(() => {
       const config = JSON.parse(localStorage.getItem("oprn:ai-config"));

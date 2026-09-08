@@ -59,11 +59,18 @@ current-map, whole-project and unknown-attribution filters, explicit map choices
 search, pagination and manual remote recovery. Known deleted-map IDs remain
 selectable rather than becoming unknown.
 
-Every view uses the captured project scope. Opening a result restores its original
+Project views use the captured project scope. Opening a result restores its original
 conversation ID and all retained entries. Earlier turns can remain visually
 collapsed using the existing turn toggle; they are not discarded. Browsing history
 and navigating A-B-A do not reset the live project conversation. Project changes
 and modal closure invalidate outstanding requests and restoration callbacks.
+
+The separate unscoped legacy view (`ai-history-filter-legacy`) queries with a
+null repository scope and expands retained text read-only. It does not adopt a
+conversation, delete records, recover remote records, or resolve unowned map IDs
+through the current project's names. Entering it immediately removes old scoped
+actions and invalidates pending scoped opens, including a round trip back to a
+project view. Retained detached controls cannot bypass the read-only transition.
 
 Recovery reports transport errors instead of an empty success; deletion removes
 the whole conversation from every local map view and explicitly remains
@@ -71,6 +78,9 @@ browser-local. Compact/partial provenance and memory-only storage are disclosed.
 Contracts: `aiConversationHistoryModal`, `aiChatSessionScope`,
 `test/e2e/ai-map-history.spec.ts`. Real local, remote and visual evidence lives under
 `output/evidence/map-ai-history/`.
+The browser harness selects visible entry alternatives and joins navigation and
+readiness immediately, so a hidden alternative cannot mask a visible entry and
+a readiness rejection cannot escape while navigation is pending.
 
 ## Independent result review and repair (2026-09-06)
 
@@ -736,6 +746,7 @@ and existing optional `wikiWarning` policy. See
 [receipt ownership](editor-observability.md#p2-outcome-publication-2026-09-06) and
 [wiki delivery QA](testing.md#p2-r3-wiki-delivery-2026-09-07).
 ## Independent image generation settings (2026-09-07)
+## Independent image generation settings (2026-09-08)
 
 - Existing AI settings (aiSettingsModal.ts) has separate image provider/model
   selects. AiConfig.imageProviderId/imageModel are optional, stored in the same
@@ -749,9 +760,15 @@ and existing optional `wikiWarning` policy. See
   AbortSignal propagation and server error reporting retain their existing path.
 - imageModelCatalog contains only image-output routes. Pro is disabled: sibling
   subscription probe returned exact-model 404 on both authenticated endpoints.
-  Codex image generation uses the internal codex-image-default sentinel, enabled
-  after the sibling probe's 2/2 success on the Codex images endpoint. The upstream
-  omits a model field and does not report a version; never label it GPT Image 1/2.
+  Codex image generation retains the internal codex-image-default selection ID,
+  labeled GPT Image 2 (Codex), but explicitly requests upstream model gpt-image-2
+  with quality/background/size auto and n: 1 for the single-candidate contract.
+  This matches the [pinned official Codex request](https://github.com/openai/codex/blob/3d2ee51ca2d5db578f328aa75e20aa22c0197c9a/codex-rs/ext/image-generation/src/tool.rs#L420-L429)
+  (official n is omitted and defaults to one). Returned GeneratedImage.model is
+  gpt-image-2, identifying the requested alias, not a dated snapshot: the native
+  response does not report that snapshot. Never send the sentinel upstream or
+  fall back to another model. Earlier model-omitted probe images/reports retain
+  their original unknown identity; do not retroactively label them GPT Image 2.
   Login guidance follows the selected provider. The native Codex route is
   text-only and rejects nonempty references with 409 instead of omitting them.
   Named saved GPT models remain visible, disabled and unchanged, not normalized

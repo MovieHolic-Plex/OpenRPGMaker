@@ -1,0 +1,38 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiConversationHistoryModal.test.ts test/aiStickyChecklist.test.ts test/aiChatSessionScope.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-map-ai-history-review-fix
+
+ ✓ test/aiConversationHistoryModal.test.ts (25 tests) 368ms
+ ✓ test/aiChatSessionScope.test.ts (18 tests) 11384ms
+   ✓ 대화 저장 범위 > Given local sessions across reloads When the project shape is unchanged Then the scope is stable  484ms
+   ✓ 대화 저장 범위 > Given remote projects with identical shapes When scoped Then each durable row id stays distinct  317ms
+   ✓ 새 대화 진입점 > Given an in-flight turn with a queued send When 새 대화 is clicked Then the outgoing turn cannot contaminate or replay into the new chat  2339ms
+   ✓ 새 대화 진입점 > Given a restored conversation When 새 대화 is clicked Then the log empties and the panel reports empty  340ms
+   ✓ 프로젝트 전환 > Given an open conversation When the project identity changes Then the chat resets and the old chat keeps its own scope  325ms
+   ✓ 프로젝트 전환 > Given an in-flight turn When the project identity changes Then it can only persist to its captured scope  1682ms
+   ✓ 프로젝트 전환 > Given the switch resumes a saved conversation When it is recorded Then the UI event says resumed  530ms
+   ✓ 프로젝트 전환 > Given the new project has its own saved conversation When the identity changes Then it is resumed instead of blanked  562ms
+   ✓ 턴 상황 스냅샷 > Given a turn on a map When it is recorded Then the audit entry carries map, viewport and selection  1173ms
+   ✓ 턴 상황 스냅샷 > Given the user moves to another map When the next turn runs Then the transition is recorded and the system prompt follows  1122ms
+   ✓ 턴 상황 스냅샷 > Given the same map across turns When turns run Then no transition noise is recorded  1201ms
+ ✓ test/aiStickyChecklist.test.ts (34 tests) 15261ms
+   ✓ renders acceptance outside chat and retains verified evidence after the turn  1500ms
+   ✓ ignores late acceptance events after the real new-chat boundary  1087ms
+   ✓ refreshes backend acceptance on a store mutation without manufacturing verification  827ms
+   ✓ retains the backend blocked snapshot when the actual abort button ends a held turn  882ms
+   ✓ ends captured checklist drag on pointercancel  331ms
+   ✓ ends captured checklist drag on lostpointercapture  403ms
+   ✓ reopens hidden fresh acceptance through the actual header AI menu  1152ms
+   ✓ reopens hidden fresh acceptance through the actual composer AI menu  1114ms
+   ✓ manual saved-history adoption retires outgoing live acceptance through real controls  1557ms
+   ✓ manual saved-history adoption retires outgoing terminal acceptance through real controls  1465ms
+   ✓ rejects old live and terminal acceptance immediately after project retirement  1137ms
+   ✓ rejects old live and terminal acceptance immediately after dispose retirement  667ms
+
+ Test Files  3 passed (3)
+      Tests  77 passed (77)
+   Start at  05:12:28
+   Duration  81.94s (transform 83.39s, setup 0ms, collect 132.81s, tests 27.01s, environment 553ms, prepare 765ms)

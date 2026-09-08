@@ -41,6 +41,42 @@ running them against a user's configured project to make a gate green.
 The compact result/disposition index is
 [`output/evidence/acceptance-gate-followup/README.md`](../output/evidence/acceptance-gate-followup/README.md).
 
+## Native event battle reliability QA (2026-09-08)
+
+Focused regressions are `eventBattleAdmission.test.ts` (actual command modal and
+aggregate draft validation), `eventBattleFailure.test.ts` (real foreground,
+autorun readiness, parallel, random/field admission and stale-owner handling),
+and `battleInitializationAdmission.test.ts` (real constructor/audio, transition
+failure, empty monster party and corrected starter retry). Domain runtime and
+interpreter behavior stay real; only Phaser I/O, result presentation or a specific
+transition fault are adapted. New async tests subscribe before triggering and
+await completion/lease release with bounded deadlines, never fixed sleeps.
+
+Reproducible exported-player matrix (no DB writes, scratch/evidence in worktree):
+
+```bash
+mkdir -p .scratch/battle-reliability
+TMPDIR=$PWD/.scratch/battle-reliability QA_BROWSER=firefox \
+  node scripts/qa/runtime/event-battle-reliability.probe.mjs
+```
+
+The probe owns an ephemeral `startPlayerQaServer` unless `QA_BASE_URL` is supplied.
+`QA_OUT_DIR` selects evidence output; `QA_CASES` selects comma-separated case IDs.
+It uses diagnostic copies of the historical battle fixture through `player.html`
+and the export-store shim, not editor Play mode. It covers invalid-variable and
+valid action/auto/parallel starts, empty troops/monster parties, hidden enemies,
+legacy enemyIds, numeric 0, and a real correction event followed by retry.
+Observers subscribe before input and watch DOM/state changes; no polling/sleeps.
+Valid starts must expose the actor command menu after transition removal. Error
+cases must retain a nonzero, nontransparent notice entirely inside the viewport;
+DOM presence alone previously passed while every error sat below the canvas.
+Read `SUMMARY.md`, `results.json`, and the named screenshots. Page errors fail;
+console errors are retained because reported admission faults intentionally log.
+Chromium on the shared host can fail with `ERR_NETWORK_CHANGED`; the browser
+selector permits Firefox without weakening the scenario's assertions. This is
+behavioral evidence, not independent visual approval. The lead still owns the
+real editor picker/Confirm/reopen checks, full gates/build and final browser QA.
+
 ## Real large-world player QA (2026-09-07)
 
 `npm run qa:runtime -- --scenario live-world-start --project <saved-project.json>`

@@ -1,0 +1,13 @@
+{
+  "backend": "indexeddb",
+  "seededRecords": 201,
+  "catalogAndWholeRecordOpen": true,
+  "readFailureAndRetry": true,
+  "staleFailureSuppression": true,
+  "missingRecordNotice": true,
+  "opened": [
+    "older-deleted-map",
+    "new-a-199"
+  ],
+  "pageErrors": []
+}
