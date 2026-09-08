@@ -1,6 +1,7 @@
-import { getMapEditHistoryState, MAP_EDIT_HISTORY_EVENT, undoMapEdit } from "@/editor/mapEditHistory";
+import { MAP_EDIT_HISTORY_EVENT } from "@/editor/mapEditHistory";
 import type { Tool } from "@/editor/editorState";
 import { el } from "@/util/dom";
+import { makeTileHistoryControls } from "@/editor/panels/tileHistoryMenu";
 import { makeSvgIcon } from "@/editor/panels/tileToolbarIcons";
 import type { SvgIconName } from "@/editor/panels/tileToolbarIcons";
 import { isTileToolbarItemActive, selectMapModeTool, selectTileTool } from "@/editor/panels/tileToolbarActions";
@@ -18,7 +19,7 @@ export {
 } from "@/editor/panels/tileToolbarActions";
 
 type TileToolbarItem = {
-  readonly id: "undo" | Exclude<TileToolId, "rect" | "round">;
+  readonly id: Exclude<TileToolId, "rect" | "round">;
   readonly label: string;
   readonly icon: SvgIconName;
   /** hotkeys.ts 의 단축키 표기 — 툴팁에 같이 적어 잘린 도구도 키보드로 부를 수 있게 한다. */
@@ -31,8 +32,9 @@ type TileToolbarItem = {
 // 채우기" 는 RM2K3 도구 스트립의 어휘를 그대로 옮긴 것이었다. 도형 채우기 자체는 어느
 // 그림 도구에나 있는 일반 기능이므로 **기능은 유지하고 이름만** 바꾼다 — 쓸 수 있는 기능을
 // 지우는 것은 상표 회피의 수단이 아니다.
+// 되돌리기/다시실행은 이 목록에 없다 — 도구를 «고르는» 것이 아니라 «실행하는» 것이고,
+// 각자 펼쳐보기 메뉴를 달고 다니므로 makeTileHistoryControls 가 한 쌍으로 낸다.
 const TOOLBAR_ITEMS: readonly TileToolbarItem[] = [
-  { id: "undo", label: "되돌리기", icon: "undo", testid: "oprn-tool-undo" },
   { id: "select", label: "영역 선택", hotkey: "V", icon: "select", testid: "tool-select" },
   // 아이콘은 초보 레일과 같은 brush 를 쓴다 — 한 행위에 두 글리프를 두지 않는다.
   { id: "pen", label: "칠하기", hotkey: "B", icon: "brush", testid: "tool-paint" },
@@ -75,14 +77,15 @@ export function makeTileToolbar(model: TileToolbarModel): HTMLElement {
     dataset: { testid: "oprn-tile-toolbar" },
   });
   const scroll = el("div", { class: "oprn-tile-toolbar-scroll" });
-  const historyState = getMapEditHistoryState();
+  // 히스토리 쌍은 이벤트 레이어에서도 남는다 — 이벤트 편집도 같은 undo 스택을 쓴다.
+  scroll.append(makeTileHistoryControls(model.rerender));
 
   for (const item of TOOLBAR_ITEMS) {
-    if (state.layer === "event" && item.id !== "undo") continue;
+    if (state.layer === "event") continue;
     if (item.id === "select") scroll.append(el("span", { class: "oprn-tile-toolbar-separator", attrs: { "aria-hidden": "true" } }));
     const active = item.id === 'pen' ? state.tool === 'paint'
-      : item.id !== "undo" && isTileToolbarItemActive(item.id, state.tool, state.paintShape);
-    const button = el("button", {
+      : isTileToolbarItemActive(item.id, state.tool, state.paintShape);
+    scroll.append(el("button", {
       class: "oprn-tile-tool" + (active ? " active" : ""),
       attrs: {
         "aria-label": item.label,
@@ -93,20 +96,11 @@ export function makeTileToolbar(model: TileToolbarModel): HTMLElement {
       dataset: { testid: item.testid },
       on: {
         click: () => {
-          if (item.id === "undo") {
-            if (undoMapEdit()) model.rerender();
-            return;
-          }
           selectTileTool(item.id);
           model.rerender();
         },
       },
-    });
-    if (item.id === "undo") {
-      button.disabled = !historyState.canUndo;
-      button.setAttribute("aria-disabled", String(!historyState.canUndo));
-    }
-    scroll.append(button);
+    }));
   }
 
   if (state.layer !== "event" && getEditorChrome().advancedSidebarControls) scroll.append(makeMapModeGroup(model));

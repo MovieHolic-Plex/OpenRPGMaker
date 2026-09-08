@@ -1,5 +1,5 @@
 type SvgIconName =
-  | "brush" | "eraser" | "fill" | "inspector" | "pen" | "rect" | "round" | "select" | "template" | "undo"
+  | "brush" | "eraser" | "fill" | "inspector" | "pen" | "rect" | "round" | "select" | "template" | "undo" | "redo"
   | "eyedropper" | "event" | "tile" | "layers" | "layerGround" | "layerOverlay" | "layerEvent"
   | "map" | "hand" | "collision" | "more"
   | "terrain" | "structure" | "polish" | "npc" | "chest" | "combat" | "mood"
@@ -63,6 +63,12 @@ const ICONS: Record<SvgIconName, readonly SvgNodeSpec[]> = {
   undo: [
     { tag: "path", attrs: { d: "M7 7H3V3" } },
     { tag: "path", attrs: { d: "M3 7c2.6-3.2 7.9-4.2 11.4-1.7 3.7 2.6 4.1 8 .8 11.1-2.3 2.1-5.7 2.5-8.4 1" } },
+  ],
+  // undo 를 세로축 대칭(x → 22-x)으로 뒤집은 것 — 나란히 놓이는 한 쌍은 굽은 정도가 같아야
+  // 같은 행위의 반대 방향으로 읽힌다. 눈금 하나라도 다르면 다른 도구처럼 보인다.
+  redo: [
+    { tag: "path", attrs: { d: "M15 7h4V3" } },
+    { tag: "path", attrs: { d: "M19 7c-2.6-3.2-7.9-4.2-11.4-1.7-3.7 2.6-4.1 8-.8 11.1 2.3 2.1 5.7 2.5 8.4 1" } },
   ],
   eyedropper: [
     { tag: "path", attrs: { d: "M14.5 3.5l4 4-2.5 2.5-4-4z" } },

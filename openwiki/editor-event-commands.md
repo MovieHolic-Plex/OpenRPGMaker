@@ -4,6 +4,26 @@
 
 Event command edit dialogs, cutscene/horror/puzzle authoring tools, place_npc/make_villager, AI event tools, and 2026-07-15 hostile-review command fixes.
 
+## Move-route target repair (PR716, 2026-09-09)
+
+- `project/eventTargetCatalog.ts` is shared by the manual picker and assistant validation.
+  Resolution order is canonical sentinels, exact current-map ID, exact foreign-map ID,
+  aliases, then local display names. A foreign ID such as `self` or `player` must be
+  rejected as `foreignMap`, not rewritten to the executing event or player. Exact
+  current-map IDs still win; opening a legacy command never rewrites its stored target.
+- `moveRouteTargetPicker.ts` keeps input focus on option `mousedown` so native
+  change/blur cannot remove the option before `click`. Click alone commits selection;
+  cancelled/outside presses do not. Blur and direct-ID change close synchronously.
+- The open list registers with `modalStack`, whose capture-phase Escape handling runs
+  before input keydown. Escape closes only the list and retains input focus; closing
+  by selection, Tab, blur or outside pointer unregisters it so the next Escape belongs
+  to the parent command dialog. Do not restore a delayed blur-close timer.
+- Regression seams: `moveRouteEventTarget.test.ts`, `moveRouteEventTargetPicker.test.ts`.
+  Local-only Chromium acceptance: `PR716_QA_URL=http://127.0.0.1:<owned-port> node scripts/qa/pr716-repair.mjs`.
+  Use a fresh owned dev server with a unique `VITE_CACHE_DIR`. The driver blocks remote
+  requests and all writes, uses `freshProject=1`, and checks disabled persistence.
+  It exercises the production command dialog and toolbar, not production game content.
+
 ## 확률로 결과 뽑기 / 가중 분기 (2026-09-06)
 
 - Integration onto `647b000e`: the staged-state regression uses the shipped percent control (75/25 replaces equivalent raw weights 3/1) and still requires the preceding name edit and unrelated staged field to survive. The CSS live-class manifest refresh is restricted to `weighted-branch-*`: 12 retired guide/legend/raw-weight classes are replaced by 10 worksheet classes, with 18 current weighted classes protected. All unrelated manifest entries and gate logic remain unchanged; this accepts the requested worksheet snapshot, not later CSS inventory phases.

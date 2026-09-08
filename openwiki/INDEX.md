@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **51쪽 / 2056KB / 약 577,681 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **51쪽 / 2059KB / 약 578,410 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -19,7 +19,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-ai-tools.md` | 136KB | 73KB ⚠상한 초과 — 절을 더 쪼개라 | 876 | ~37,907 |
 | `openwiki/editor-database.md` | 251KB | 55KB ⚠상한 초과 — 절을 더 쪼개라 | 1327 | ~72,118 |
 | `openwiki/editor-event-authoring.md` | 130KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 691 | ~37,249 |
-| `openwiki/editor-event-commands.md` | 50KB | 32KB | 132 | ~13,431 |
+| `openwiki/editor-event-commands.md` | 52KB | 32KB | 152 | ~13,813 |
 | `openwiki/editor-pre-edit-routing.md` | 81KB | 56KB ⚠상한 초과 — 절을 더 쪼개라 | 323 | ~22,944 |
 | `openwiki/editor-workflows-misc.md` | 65KB | 29KB | 456 | ~17,604 |
 | `openwiki/runtime-battle.md` | 130KB | 31KB | 493 | ~37,038 |
@@ -38,7 +38,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/editor-database.md` | 7 | 537, 541, 542, 543, 552, 578, 581 |
 | `openwiki/editor-event-authoring.md` | 16 | 261, 262, 265, 270, 271, 272, 273, 274 |
 | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
-| `openwiki/editor-event-commands.md` | 6 | 39, 52, 53, 55, 58, 59 |
+| `openwiki/editor-event-commands.md` | 6 | 59, 72, 73, 75, 78, 79 |
 | `openwiki/editor-observability.md` | 1 | 236 |
 | `openwiki/editor-pre-edit-routing.md` | 5 | 154, 163, 170, 172, 185 |
 | `openwiki/state-system.md` | 2 | 3, 84 |
@@ -421,16 +421,17 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L30` Show Picture preview opacity unit (2026-08-29)
 - `L35` 조명 백분율 입력 복구 (2026-09-05)
 
-### `openwiki/editor-event-commands.md` — 50KB · 132줄 · ~13,431 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-event-commands.md` — 52KB · 152줄 · ~13,813 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
-- `L7` 확률로 결과 뽑기 / 가중 분기 (2026-09-06)
-- `L20` 상점: 진열 상품과 상품 상세 중심 편집 (2026-09-05)
-- `L31` Roguelike run control (2026-08-24)
-- `L71` 얼굴 상자(faceset-crop-box) 페인트 계약 (2026-08-28)
-- `L102` Staged edit, history, and nested drag invariants (2026-07-30)
-- `L109` Command picker, validation, and preview trust (2026-07-30)
-- `L118` 회상 스틸과 AI 그림 (2026-09-03)
-- `L129` Recovered native emote command (2026-09-05)
+- `L7` Move-route target repair (PR716, 2026-09-09)
+- `L27` 확률로 결과 뽑기 / 가중 분기 (2026-09-06)
+- `L40` 상점: 진열 상품과 상품 상세 중심 편집 (2026-09-05)
+- `L51` Roguelike run control (2026-08-24)
+- `L91` 얼굴 상자(faceset-crop-box) 페인트 계약 (2026-08-28)
+- `L122` Staged edit, history, and nested drag invariants (2026-07-30)
+- `L129` Command picker, validation, and preview trust (2026-07-30)
+- `L138` 회상 스틸과 AI 그림 (2026-09-03)
+- `L149` Recovered native emote command (2026-09-05)
 
 ### `openwiki/editor-genre-packs.md` — 9KB · 57줄 · ~2,202 토큰
 
@@ -458,7 +459,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L153` 여관 외 시설의 공간 구성 (2026-09-05)
 - `L163` PR618 통합: 큰 탁자와 기존 시설 구성 (2026-09-06)
 
-### `openwiki/editor-observability.md` — 30KB · 364줄 · ~8,747 토큰 · 깨진 줄 1
+### `openwiki/editor-observability.md` — 32KB · 383줄 · ~9,094 토큰 · 깨진 줄 1
 
 - `L21` Opt-in local diagnostics (issue 693 OUT-009 / OUT-010)
 - `L74` 계측 초크포인트는 `store.markLocalMutation` 하나다
@@ -466,12 +467,13 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L123` AI 적용 경로 — 이쪽이 주 경로다
 - `L154` P2 outcome publication (2026-09-06)
 - `L217` 되돌리기 스택과 감사 로그는 다르다
-- `L238` 디버깅 레시피
-  - `L272` 저장된 것 — DB 커밋에 실린 행위 (`npm run commit:log`)
-- `L301` 로거
-- `L315` 알려진 남은 공백 (여기 손대는 사람이 이어서 하라)
-- `L348` AI 툴·액션 이유 (2026-09-02)
-- `L358` 검증
+- `L238` Toolbar history confirmation lifetime (PR716, 2026-09-09)
+- `L257` 디버깅 레시피
+  - `L291` 저장된 것 — DB 커밋에 실린 행위 (`npm run commit:log`)
+- `L320` 로거
+- `L334` 알려진 남은 공백 (여기 손대는 사람이 이어서 하라)
+- `L367` AI 툴·액션 이유 (2026-09-02)
+- `L377` 검증
 
 ### `openwiki/editor-pre-edit-routing.md` — 81KB · 323줄 · ~22,944 토큰 · 통째읽기 잘림 · 깨진 줄 5
 

@@ -235,6 +235,25 @@ Sources: [session settlement](../src/ai/assistantSession.ts),
 
 이벤트 편집기가 이미 이 형태다: 되돌리기 스냅샷은 **적용 시점 1건**(`saveEventDraft` → `recordProjectSnapshot(label, mapId, { kind: "map" })`), 감사 로그는 생성·편집 시작·적용·취소가 각각 1건씩. 취소도 기록한다 — "내가 고친 게 왜 없지?" 를 추적할 때 필요한 정보다.
 
+## Toolbar history confirmation lifetime (PR716, 2026-09-09)
+
+- `tileHistoryMenu.ts` binds multi-step confirmation to both the rendered stack's
+  `getMapEditHistoryRevision()` and the current project object. The revision advances
+  synchronously on history changes, before coalesced UI notifications, and never
+  resets with the entry marker. New snapshots, traversal, truncation, reset/repopulate,
+  and same-ID project replacement invalidate the pending decision. A stale Confirm
+  leaves the current project and both stacks untouched and asks for a fresh selection.
+- Disclosure clicks read live `openDirection`; a render-time expanded flag is stale
+  after outside-pointer/Escape dismissal and would require two clicks to reopen.
+- The history group uses the surrounding toolbar gap without an extra right margin.
+  The redundant 2px margin produced a measured 233/234px client/scroll width; the
+  repaired Standard toolbar measures 233/233px at 1024, 1280 and 1440px viewports.
+- Regression seams: `tileToolbarHistoryMenus.test.ts`, `mapEditRedoEntries.test.ts`,
+  `mapEditHistoryProjectSwitch.test.ts`. `scripts/qa/pr716-repair.mjs` checks the real
+  toolbar Confirm after a concurrent local edit, asserting unchanged project/stacks.
+  Test confirmation spies call through to the real modal and await its continuation
+  with a bounded deadline; no sleeps or guessed microtask counts.
+
 ## 디버깅 레시피
 
 브라우저 콘솔:
