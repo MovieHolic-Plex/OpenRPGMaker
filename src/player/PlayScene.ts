@@ -609,7 +609,13 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   // player.ts가 게임 생성 후 비동기로 dialogue를 registry에 넣기 때문에,
   // create 시점에는 아직 없을 수 있다. 준비되면 fireAutoTriggers를 호출한다.
   private async fireAutoTriggersWhenReady(): Promise<void> {
-    this.whenDialogueReady(() => void this.fireAutoTriggers());
+    this.whenDialogueReady(() => {
+      const fire = (): void => { void this.fireAutoTriggers(); };
+      // During create(), sys.isActive() is still false. A synchronous battle
+      // rejection would otherwise be mistaken for a cancelled scene.
+      if (this.sys.isActive()) fire();
+      else this.events.once("create", fire);
+    });
   }
 
   /**

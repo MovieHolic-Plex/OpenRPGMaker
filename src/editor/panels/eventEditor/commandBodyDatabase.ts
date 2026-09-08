@@ -1,4 +1,5 @@
 import { equipmentSlots, equipmentSlotLabel } from "@/project/equipmentSlots";
+import { battleTroopError } from "@/project/battleAdmission";
 ﻿import { craftRecipesOf } from "@/project/craftRecipes";
 import { openRecordPickerPanel } from "./recordPickerDialog";
 import { startStateOf } from "@/project/session";
@@ -98,6 +99,27 @@ const BATTLE_PROCESSING_PRESETS = [
 
 type ActorAmountCommand = Extract<Command, { kind: "changeExp" | "changeLevel" | "changeActorHp" | "changeActorMp" }>;
 
+function battleProcessingError(project: Project, cmd: Extract<Command, { kind: "battleProcessing" }>): string | undefined {
+  if (cmd.troopSource === "variable") {
+    return project.variables.some(variable => variable.id === cmd.troopVariableId)
+      ? undefined : "적 그룹을 정할 변수를 선택하세요. 전투 시 변수의 값이 유효한 적 그룹을 가리켜야 합니다.";
+  }
+  return battleTroopError(project, cmd.troopId)?.message;
+}
+
+/** Confirm is a button, not native form submit. Recheck live records without replacing the draft. */
+export function validateBattleProcessingForm(host: HTMLElement, command: Command): boolean {
+  if (command.kind !== "battleProcessing") return true;
+  const error = battleProcessingError(store.getCurrent(), command);
+  const warning = host.querySelector<HTMLElement>('[data-testid="battle-processing-warning"]');
+  if (warning) {
+    warning.hidden = !error;
+    warning.textContent = error ?? "";
+    if (error) warning.focus();
+  }
+  return !error;
+}
+
 export function battleProcessingBody(
   context: CommandEditContext,
   cmd: Extract<Command, { kind: "battleProcessing" }>
@@ -167,6 +189,7 @@ export function battleProcessingBody(
   const warning = el("div", {
     class: "battle-processing-warning is-empty",
     dataset: { testid: "battle-processing-warning" },
+    attrs: { role: "alert", tabindex: "-1" },
     text: "적 그룹을 선택하세요. 빈 전투는 실행 시 실패합니다.",
   });
   const hover = el("div", {
@@ -247,10 +270,10 @@ export function battleProcessingBody(
     sourceSlot.replaceChildren(fixed ? troopField : variableField);
     troopField.hidden = !fixed;
     variableField.hidden = fixed;
-    const troopId = troop.select.value.trim();
-    const empty = fixed && !troopId;
-    warning.hidden = !empty;
-    if (empty) warning.classList.add("is-empty");
+    const error = battleProcessingError(store.getCurrent(), { ...cmd, troopSource, troopVariableId, troopId: troop.select.value });
+    warning.hidden = !error;
+    warning.textContent = error ?? "";
+    if (error) warning.classList.add("is-empty");
     else warning.classList.remove("is-empty");
     branchHint.hidden = !branchOnResult;
   };

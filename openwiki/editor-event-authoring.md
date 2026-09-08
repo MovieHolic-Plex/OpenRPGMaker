@@ -1,5 +1,24 @@
 # Editor Event Authoring
 
+## Native battle confirmation admission (2026-09-08)
+
+`commandEditDialog.ts` validates native battle commands before its button-based
+Confirm. `commandBodyDatabase.ts` rechecks the current project records, shows the
+existing `battle-processing-warning` as a focusable alert, and retains the mounted
+staged draft when the fixed troop is empty/missing, its effective composition is
+empty, or variable mode has no existing variable selected. Rule/preset and branch
+edits survive rejection and correction; changing the troop source still swaps one
+picker slot rather than mounting two. An unused fixed reference is not required
+in variable mode; the runtime variable value is validated when the battle starts.
+
+The aggregate event validator also blocks Apply/Test for empty fixed composition,
+using `battle.troop.empty` and the troop picker locator. Existing missing-reference
+rules remain. Nonempty legacy enemyIds and hidden members are legitimate runtime
+composition, not empty battles. No command draft is committed or discarded by a
+failed Confirm. Tests: `eventBattleAdmission` and `battleProcessingCommandBody`.
+Lead browser checks should use the real picker/Confirm controls, verify that the
+same dialog remains open with its prior rule edits, then correct and save/reopen.
+
 ## Character graphic no-match recovery (OUT-007, 2026-09-08)
 
 - Reproduced surface: Event editor > graphic picker > advanced direct ID. An

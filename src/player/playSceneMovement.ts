@@ -1,4 +1,5 @@
 import { updateDetectionEncounters } from "./npcDetectionEncounter";
+import { BattleAdmissionError } from "@/project/battleAdmission";
 import { advanceFurniturePush, beginFurniturePush, clearFurniturePush, furniturePushFrames } from './furniturePushAnimation';
 import { advancePursuitDoors, isPlayerHiding, pushObject, toggleHiding } from "./horrorRuntime";
 import { refreshRuntimeEntities } from "./playSceneMapRuntime";
@@ -783,6 +784,11 @@ async function runRandomEncounterBattle(scene: PlaySceneContext, troopId: string
     if (result === null || scene.session !== session || scene.sys?.isActive() === false) return;
     session.battleResult = result;
     if (result === "defeat") applyBattleDefeat(scene);
+  } catch (error) {
+    if (!(error instanceof BattleAdmissionError)) throw error;
+    if (scene.session === session && scene.sys?.isActive() !== false) {
+      scene.showRuntimeOverlay("runtime-error", error.message);
+    }
   } finally {
     if (scene.session === session && !scene.battleAbortController && scene.sys?.isActive() !== false) {
       scene.running = false;

@@ -187,8 +187,8 @@ describe("battleProcessing modern form", () => {
     source.dispatchEvent(new Event("change"));
     expect(findByTestId(body, "battle-processing-troop-source")).toBeTruthy();
     const warning = findByTestId(body, "battle-processing-warning") as unknown as HTMLElement;
-    // 변수 모드에서는 빈 트룹 경고를 띄우지 않는다.
-    expect(warning.hidden).toBe(true);
+    // Variable mode requires a selected variable, not an unused fixed troop.
+    expect(warning.hidden).toBe(false);
   });
 });
 
