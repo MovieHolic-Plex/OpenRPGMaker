@@ -353,6 +353,11 @@ describe("Page 3 rich form canonical runtime fields", () => {
   });
 
   it("stores eventA/eventB and executes the selected swap", () => {
+    const project = store.getCurrent();
+    project.maps[project.startMapId]!.events.push(
+      { id: "event-a", x: 1, y: 1, trigger: { kind: "action" }, commands: [] },
+      { id: "event-b", x: 2, y: 2, trigger: { kind: "action" }, commands: [] },
+    );
     const initial: M2Command = {
       kind: "m2Command",
       commandId: "m2-041-swap-event-location",
