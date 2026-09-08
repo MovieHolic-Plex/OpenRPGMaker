@@ -522,6 +522,45 @@ restores those contracts without changing browser checklist ownership.
 
 ### Session-owned acceptance contract
 
+Live request coverage (2026-09-07 followup): `createLlmIntentDeclarer` now performs
+an independent `REQUEST_COVERAGE_AUDIT` for create/modify requests. It reads the
+original request/facts, not the planner or authored draft. `requestCoverage.ts`
+parses exact, uniquely located request quotes and existing acceptance criteria.
+Every unquoted word, invalid/empty extraction, failed transport, unsupported
+obligation or missing check remains `functionalUnresolved`. This is structural
+span accounting, not a keyword/regex language planner. Choosing the right semantic
+criterion still belongs to the model; even full text coverage is not proof that
+the model understood every constraint correctly.
+
+The adapter-owned `IntentDeclaration.requestRequirements` is not consumed from
+declaration/worker JSON. Session adoption reuses identical declared functional
+checks and gives additional checks mandatory `request-N:coverage:clause:criterion`
+IDs in the **same** canonical ledger. Each check is separate so an unresolved
+member of a multi-check clause remains visible to the existing R2 refinement path.
+Quoted `clarifies:[{requirementId,text}]` must reference an actual unresolved
+requirement and a refinement from this user declaration. A failed audit during
+host resume creates a new unresolved obligation with that message's source and
+pre-write baseline, even if its clarification resolves an earlier requirement.
+Ask/non-authoring and synthetic continuation retain their prior semantics; worker
+repair/replan/skip cannot weaken these checks. Explicit host withdrawal/new-goal
+remain the only scope-exclusion authority. Canonical save proof is unchanged.
+
+Failed NPC shape repair still runs the independent audit in the shared deadline;
+if unavailable, it retains a separate unresolved coverage obligation alongside
+the NPC error. An NPC-only clarification therefore cannot certify omitted original
+constraints, through either ordinary follow-up or explicit host resume.
+`parseRequestCoverageResult` returns requirements plus structural extraction error
+status; the adapter propagates that error so the 90-second cache cannot suppress
+an immediate retry. Malformed JSON, invalid envelopes/links/criteria and empty
+non-clarification audits fail this way. Valid model-declared unsupported checks
+remain distinct and cacheable. `parseRequestCoverage` keeps its array-returning
+replay API and the same fail-closed obligations.
+
+Declaration and audit share the existing 20-second budget. A live Codex audit
+timed out and correctly stayed unverified while authoring still produced a saved
+draft. Live evidence and limitations, including model-selected overly strict
+reachability checks, are in `output/evidence/acceptance-live/README.md`.
+
 Request-bound functional acceptance (2026-09-07): the live lite declaration accepts
 `functionalAcceptance` for requested `shopPurchase` and `mapRoundTrip` expectations;
 existing `npcRewards` becomes mandatory `npcReward` criteria in the same

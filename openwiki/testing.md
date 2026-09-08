@@ -1126,6 +1126,29 @@ Chromium local network 검사만 캡처 실행 인자로 끈다. 일반 출하 �
 
 ## Request-bound functional acceptance verification (2026-09-07)
 
+Live followup: `requestCoverage` exercises independent omission, exact-quote gaps,
+empty/malformed/failed audits, immutable worker replacement, Ask, grouped R2
+refinement and failed resume audit provenance. `fakeDomInsertBefore` supplies the
+real row-move semantics now needed when fail-closed fallback exposes the sticky
+in existing panel tests; the actual `agentBlueprintTurnEnd` suite remains intact.
+The focused serial command in `output/evidence/acceptance-live/README.md` passed
+153 assertions in 14 suites. A concurrent-build run had all assertions pass but
+exited nonzero on Vitest's `onTaskUpdate` IPC timeout; it is retained, not counted
+as green. No assertion, timeout, test or warning was suppressed.
+
+`scripts/qa/acceptance-live.mjs` uses real companion models, declaration/parser,
+planner/session and the actual apply/store/Supabase save/reload path, with an
+exclusively owned project ID and collision/revision checks. Its before/negative
+cases do not write. Authored features come only from model tools. The initial
+10-gold potion stock hit the production half-catalog-price floor (50 -> 25), not
+a scene/player pricing divergence; a real Codex tool call set the catalog price
+to 10. `acceptance-live-check.mjs` independently reloads the exact final revision,
+evaluates the captured original live criteria through the canonical ledger and
+runs a combined 16-step real-interpreter scenario. It is not a fresh model call,
+not a fabricated declaration, and not graphical-player evidence. The latter and
+full-gate baseline comparison are separate lead-owned gates. See the evidence
+README for the canonical JSON, model IDs, receipt, hashes and player checkpoints.
+
 Focused suites: `functionalScenePurchase`, `functionalAcceptance`,
 `functionalAcceptanceSession`, `functionalPersistenceProof`, `npcRewardSession`,
 `functionalWalkSuspension`, `functionalClarification`, and `functionalInterpreterResume`.
