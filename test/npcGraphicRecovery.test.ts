@@ -2,6 +2,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import * as catalog from '@/assets/charsetCatalog';
 import { renderNpcGraphicPicker } from '@/editor/panels/eventEditor/npcGraphicPicker';
+import { editorEventMarkerTexture } from '@/editor/editSceneEventMarkers';
 import { createBlankProject } from '@/project/defaults';
 import { store } from '@/project/store';
 import type { EventPage } from '@/project/types';
@@ -75,8 +76,36 @@ describe('character asset recovery', () => {
     get('event-graphic-placeholder').click();
     expect(close).toHaveBeenCalledOnce();
     expect(page().graphic.sprite).toBeUndefined();
-    expect(page().graphic.transparent).toBe(true);
+    expect(page().graphic.transparent).toBeUndefined();
+    expect(editorEventMarkerTexture(store.getCurrent(), page().graphic)).toBeNull();
     expect(page().commands).toEqual(before.maps[mapId]!.events[0]!.pages![0]!.commands);
+  });
+
+  it.each([undefined, false, true])('preserves authored transparency %s through no-image and manual recovery', (transparent) => {
+    if (transparent !== undefined) page().graphic.transparent = transparent;
+    const before = structuredClone(store.getCurrent());
+    const close = mount();
+    get('event-graphic-placeholder').click();
+    expect(close).toHaveBeenCalledOnce();
+    expect(page().graphic.sprite).toBeUndefined();
+    expect(editorEventMarkerTexture(store.getCurrent(), page().graphic)).toBeNull();
+
+    const expectedPlaceholder = { ...before.maps[mapId]!.events[0]!.pages![0]!.graphic };
+    delete expectedPlaceholder.sprite;
+    expect(page().graphic).toEqual(expectedPlaceholder);
+    const reopenedClose = mount();
+    get(`event-graphic-resource-${textureKey}`).click();
+    get('npc-character-slot-3').click();
+    get('event-graphic-confirm').click();
+    expect(reopenedClose).toHaveBeenCalledOnce();
+    expect(page().graphic.sprite?.id).toBe(textureKey);
+    expect(page().graphic.transparent).toBe(transparent);
+    const marker = editorEventMarkerTexture(store.getCurrent(), page().graphic);
+    if (transparent === true) expect(marker).toBeNull();
+    else expect(marker).not.toBeNull();
+    const originalPage = before.maps[mapId]!.events[0]!.pages![0]!;
+    expect({ ...page(), graphic: originalPage.graphic }).toEqual(originalPage);
+    expect(store.getCurrent().characters).toEqual(before.characters);
   });
 
   it('does not commit a removed upload from an already-open picker', () => {

@@ -9,8 +9,11 @@
   `no-match` instead of a graphic. The request stays editable and the live
   status names the searched bundled/uploaded sources and recovery choices.
 - Manual catalog selection retries normally. Cancel writes nothing. Explicit
-  `그림 없이 계속` removes the sprite reference and marks only the graphic
-  transparent; commands, identity, conditions and other character data remain.
+  `그림 없이 계속` removes only the sprite reference, preserving the separate
+  authored `transparent` flag. No sprite already means no map image; setting
+  transparency here would leave later manual selections invisibly hidden.
+  Reopening and confirming restores visible graphics without unhiding an
+  intentionally hidden page. Commands, identity and conditions remain intact.
   An empty catalog uses those same actions rather than throwing during render.
   Lookup does not catch or reclassify image, transport, generation or save errors.
 - The shared AI query boundary already uses `ToolError(graphic-not-found)` with
