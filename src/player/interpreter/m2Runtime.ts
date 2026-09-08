@@ -10,6 +10,7 @@ import { terrainTagAt } from "@/project/terrainAt";
 import { runtimeEventViewById, runtimeEventViewsForMap, type RuntimeEventPositions } from "@/project/runtimeEventState";
 import { normalizeWeatherParams, parseWeather, weatherToRuntimeString } from "@/player/weather/weatherModel";
 import { ensureM2Runtime } from "./m2RuntimeState";
+import { isSystemBgmCue, isSystemSeCue } from "@/project/systemAudioOverrides";
 
 type M2RuntimeCommand = {
   readonly commandId: string;
@@ -221,7 +222,22 @@ function executeByTitle(
   }
   if (title === "Change System BGM" || title === "Change System SE") {
     const key = title === "Change System BGM" ? "system_bgm" : "system_se";
-    // Configuration metadata only: no system-cue slot is specified by this command.
+    // Cue-less legacy commands remain metadata-only, including explicit empty resources.
+    if (fields.cue !== undefined) {
+      const cue = fields.cue;
+      const operation = fieldString(fields, "operation", "set");
+      if (operation !== "set" && operation !== "reset") return;
+      const volume = Math.min(100, Math.max(0, fieldNumber(fields, "volume", 100)));
+      const value = { resourceId: commandResourceId(fields), volume };
+      if (title === "Change System BGM" && isSystemBgmCue(cue)) {
+        if (operation === "reset") delete session.systemAudioOverrides?.bgm?.[cue];
+        else (session.systemAudioOverrides ??= {}).bgm = { ...session.systemAudioOverrides?.bgm, [cue]: value };
+      } else if (title === "Change System SE" && isSystemSeCue(cue)) {
+        if (operation === "reset") delete session.systemAudioOverrides?.se?.[cue];
+        else (session.systemAudioOverrides ??= {}).se = { ...session.systemAudioOverrides?.se, [cue]: value };
+      }
+      return;
+    }
     runtime.system[key] = commandResourceId(fields);
     if (fields.volume !== undefined) runtime.system[`${key}_volume`] = fieldNumber(fields, "volume", 100);
     return;

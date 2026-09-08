@@ -37,6 +37,7 @@ import {
   type Season,
 } from "@/project/gameTime";
 import {
+  isSystemAudioOverrides,
   isActorEquipmentRecord,
   isActorParamBonusRecord,
   isActorRowsRecord,
@@ -209,6 +210,7 @@ export type SaveSnapshot = {
     readonly flags: Record<string, boolean>;
     readonly battleResult?: PlaySession["battleResult"];
     readonly audio: AudioCommandState;
+    readonly systemAudioOverrides?: PlaySession["systemAudioOverrides"];
     readonly pictures: Record<string, PictureState>;
     readonly actorEquipment?: Record<string, ActorInitialEquipment>;
     readonly actorRows?: Record<string, "front" | "back">;
@@ -389,6 +391,7 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       flags: structuredClone(session.flags),
       battleResult: session.battleResult,
       audio: structuredClone(session.audio),
+      systemAudioOverrides: structuredClone(session.systemAudioOverrides),
       pictures: structuredClone(session.pictures),
       actorEquipment: structuredClone(session.actorEquipment),
       actorRows: structuredClone(session.actorRows),
@@ -612,6 +615,7 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   session.flags = structuredClone(snapshot.session.flags);
   session.battleResult = snapshot.session.battleResult;
   session.audio = structuredClone(snapshot.session.audio);
+  session.systemAudioOverrides = structuredClone(snapshot.session.systemAudioOverrides);
   session.pictures = structuredClone(snapshot.session.pictures);
   if (snapshot.session.actorEquipment) session.actorEquipment = structuredClone(snapshot.session.actorEquipment);
   if (snapshot.session.actorRows) session.actorRows = structuredClone(snapshot.session.actorRows);
@@ -833,6 +837,9 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
   if (!isRecord(session.mapOverrides)) return { ok: false, message: "Invalid map overrides" };
   if (!isBooleanRecord(session.flags)) return { ok: false, message: "Invalid flags" };
   if (!isRecord(session.audio)) return { ok: false, message: "Invalid audio" };
+  if (session.systemAudioOverrides !== undefined && !isSystemAudioOverrides(session.systemAudioOverrides)) {
+    return { ok: false, message: "Invalid system audio overrides" };
+  }
   if (!isPictureRecord(session.pictures)) return { ok: false, message: "Invalid pictures" };
   if (session.monsterInstances !== undefined && !isMonsterInstancesRecord(session.monsterInstances)) {
     return { ok: false, message: "Invalid monster instances" };
@@ -943,6 +950,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       flags: session.flags,
       battleResult,
       audio: audio.value,
+      systemAudioOverrides: session.systemAudioOverrides,
       pictures: parsePictures(session.pictures),
       actorEquipment: isActorEquipmentRecord(session.actorEquipment) ? session.actorEquipment : undefined,
       actorRows: isActorRowsRecord(session.actorRows) ? session.actorRows : undefined,

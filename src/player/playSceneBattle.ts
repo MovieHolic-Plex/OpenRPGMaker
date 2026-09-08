@@ -174,6 +174,7 @@ export function playBattle(
       if (!current()) { abort(); return; }
       battleScene = mountBattleScene({
         host, runtime,
+        audioContext: { project, session },
         showEventChoices: (request, inputSignal) => {
           if (!current()) { abort(); return Promise.reject(new DOMException("Battle cancelled", "AbortError")); }
           const dialogue = dialogueUi(scene);

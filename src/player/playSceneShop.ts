@@ -118,7 +118,7 @@ export function playShop(
         return attachCursorMenu(overlay, {
           items: Array.from(overlay.querySelectorAll<HTMLElement>(".runtime-shop-menu-choice, .runtime-shop-confirm")),
           cancelEl: overlay.querySelector<HTMLElement>("[data-testid='shop-haggle-cancel']"),
-          sound: true,
+          sound: true, audioContext: { project: store.getCurrent(), session: scene.session },
         });
       }
       if (view === "menu") {
@@ -127,7 +127,7 @@ export function playShop(
           items: Array.from(overlay.querySelectorAll<HTMLElement>(".runtime-shop-menu-choice")),
           cancelEl: overlay.querySelector<HTMLElement>("[data-testid='shop-menu-cancel']"),
           initialIndex: menuCursor,
-          sound: true,
+          sound: true, audioContext: { project: store.getCurrent(), session: scene.session },
           onSelect: (index) => {
             menuCursor = index;
           },
@@ -139,14 +139,14 @@ export function playShop(
         items: Array.from(overlay.querySelectorAll<HTMLElement>(".runtime-shop-item-row")),
         cancelEl: overlay.querySelector<HTMLElement>("[data-testid='shop-item-cancel']"),
         initialIndex: itemCursor,
-        sound: true,
+        sound: true, audioContext: { project: store.getCurrent(), session: scene.session },
         onSelect: (index) => {
           itemCursor = index;
           updateShopOwnedPanel(overlay, scene, viewItems[index]);
           updateShopHelpLine(overlay, step, viewItems[index]);
           updateShopQuantityTotal(overlay);
         },
-        onHorizontal: selectMode ? (dir) => adjustShopQuantity(overlay, dir) : undefined,
+        onHorizontal: selectMode ? (dir) => adjustShopQuantity(overlay, dir, { project: store.getCurrent(), session: scene.session }) : undefined,
       });
     };
     const renderShop = () => {
@@ -221,11 +221,11 @@ export function playShop(
     ): void => {
       const result = handleShopTransaction(scene, item, nextMode, count, merchantGold, agreed);
       if (!result.ok) {
-        emitRuntimeJuice({ event: "menu-invalid", target: shopItemRowEl(overlay, item.id, nextMode) });
+        emitRuntimeJuice({ event: "menu-invalid", target: shopItemRowEl(overlay, item.id, nextMode), project: store.getCurrent(), session: scene.session });
         setStatus(result.status);
         return;
       }
-      emitRuntimeJuice({ event: "menu-confirm" });
+      emitRuntimeJuice({ event: "menu-confirm", project: store.getCurrent(), session: scene.session });
       merchantGold = result.merchantGold;
       const qty = clampQuantity(count);
       const unit = agreed ?? (nextMode === "buy" ? item.price : sellPrice(item));
@@ -448,7 +448,7 @@ function showShopNotice(scene: PlaySceneContext, terms: ResolvedTerms, message: 
     detach = attachCursorMenu(overlay, {
       items: Array.from(overlay.querySelectorAll<HTMLElement>(".runtime-shop-menu-choice")),
       cancelEl: overlay.querySelector<HTMLElement>("[data-testid='shop-notice-close']"),
-      sound: true,
+      sound: true, audioContext: { project: store.getCurrent(), session: scene.session },
     });
   });
 }

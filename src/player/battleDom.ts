@@ -27,7 +27,7 @@ import {
 } from "@/player/battleDirectorDom";
 import { battleSkinFamily, getBattleSkin, resolveSkinId } from "@/battle/skins/registry";
 import { applyActionMotion, battleField, battlePartyStatus, findBattlerNode, playCaptureCinematic, syncBattleField, syncBattleParty, syncSceneBackdropVar } from "@/player/battleFieldDom";
-import { emitBattleJuice, flashBattleField, playBattleCue } from "@/player/battleJuice";
+import { emitBattleJuice as emitContextBattleJuice, flashBattleField, playBattleCue as playContextBattleCue, type BattleAudioContext, type BattleJuiceEvent } from "@/player/battleJuice";
 import { ensureBattleFlashFilter } from "@/player/battleFlashFilter";
 import { applyHitIntensity, battlerMaxHp } from "@/player/battleHitIntensityDom";
 import { hitIntensity } from "@/player/battleHitIntensity";
@@ -44,6 +44,7 @@ import { bindBattleStageScale } from "@/player/battleStageScale";
 export interface BattleDomOptions {
   readonly host: HTMLElement;
   readonly runtime: BattleRuntime;
+  readonly audioContext?: BattleAudioContext;
   readonly onResult: (result: BattleResult, snapshot: BattleSnapshot) => void;
   readonly introHold?: boolean;
   readonly showEventChoices?: (request: BattleEventChoiceSnapshot, signal: AbortSignal) => Promise<number>;
@@ -83,6 +84,9 @@ export function destroyBattleSceneOnHost(host: HTMLElement): void {
 }
 
 export function mountBattleScene(options: BattleDomOptions): BattleDomController {
+  const playBattleCue = (event: BattleJuiceEvent): void => playContextBattleCue(event, options.audioContext);
+  const emitBattleJuice = (event: BattleJuiceEvent, target?: HTMLElement | null): void =>
+    emitContextBattleJuice(event, target, options.audioContext);
   // 같은 host에 이전 컨트롤러가 살아있으면 먼저 정리한다.
   // DOM만 지우면 setInterval/window keydown/ResizeObserver가 중복으로 남는다(결함 1a).
   activeBattleControllers.get(options.host)?.destroy();

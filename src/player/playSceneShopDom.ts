@@ -27,7 +27,7 @@ import {
   type ShopListing,
   type ShopMode,
 } from "@/player/playSceneShopParts";
-import { emitRuntimeJuice } from "@/player/runtimeJuice";
+import { emitRuntimeJuice, type RuntimeJuiceOptions } from "@/player/runtimeJuice";
 import type { ShopStep } from "@/player/playSceneShop";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import type { ResolvedTerms } from "@/project/terms";
@@ -294,14 +294,14 @@ export function shopItemRowEl(overlay: HTMLElement, itemId: string, mode: ShopMo
  * 판매는 가진 개수와 상인 지갑). 상한에 부딪히면 버저를 울린다 — 조용히 안 움직이면
  * 키가 안 먹은 건지 상한인 건지 구분할 수 없다. 항상 소비(true).
  */
-export function adjustShopQuantity(overlay: HTMLElement, dir: -1 | 1): boolean {
+export function adjustShopQuantity(overlay: HTMLElement, dir: -1 | 1, audioContext?: Pick<RuntimeJuiceOptions, "project" | "session">): boolean {
   const input = overlay.querySelector<HTMLInputElement>("[data-testid='shop-quantity-input']");
   if (!input) return true;
   const max = shopQuantityMaxIn(overlay);
   const current = Math.max(1, Number.parseInt(input.value, 10) || 1);
   const next = Math.min(max, Math.max(1, current + dir));
   if (next === current) {
-    emitRuntimeJuice({ event: "menu-invalid", target: input });
+    emitRuntimeJuice({ ...audioContext, event: "menu-invalid", target: input });
     return true;
   }
   input.value = String(next);

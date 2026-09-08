@@ -1,5 +1,9 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { store } from "@/project/store";
+import type { PlaySession } from "@/project/session";
+import type { Project } from "@/project/types";
+import type { SystemSeCue } from "@/project/systemAudioOverrides";
+import { playAudioCommand } from "@/player/audio";
 import { animateStatusMenuFeedback } from "@/player/playerStatusMenuMotion";
 
 export type RuntimeJuiceEvent =
@@ -27,6 +31,8 @@ type RuntimeJuiceSpec = RuntimeJuiceLogEntry & {
 export type RuntimeJuiceOptions = {
   readonly event: RuntimeJuiceEvent;
   readonly target?: HTMLElement | null;
+  readonly project?: Project;
+  readonly session?: PlaySession;
   /** Optional SE override (e.g. titleScreen.sounds.cursor/confirm). */
   readonly soundResourceId?: string;
 };
@@ -47,11 +53,17 @@ const RUNTIME_JUICE_SPECS = {
 const RUNTIME_JUICE_CLASSES = Object.values(RUNTIME_JUICE_SPECS).map((spec) => spec.motionClass);
 
 const DEFAULT_VOLUME = 0.35;
+const MENU_SE_CUE: Partial<Record<RuntimeJuiceEvent, SystemSeCue>> = {
+  "menu-back": "cancel", "menu-close": "cancel", "menu-confirm": "confirm",
+  "menu-invalid": "buzzer", "menu-open": "confirm", "menu-select": "cursor",
+};
 
 export function emitRuntimeJuice(options: RuntimeJuiceOptions): RuntimeJuiceLogEntry {
   const spec = RUNTIME_JUICE_SPECS[options.event];
   const override = options.soundResourceId?.trim();
-  const soundResourceId = override || spec.soundResourceId;
+  const cue = MENU_SE_CUE[options.event];
+  const selected = cue ? options.session?.systemAudioOverrides?.se?.[cue] : undefined;
+  const soundResourceId = selected?.resourceId ?? (override || spec.soundResourceId);
   const entry: RuntimeJuiceLogEntry = {
     event: spec.event,
     soundResourceId,
@@ -59,7 +71,9 @@ export function emitRuntimeJuice(options: RuntimeJuiceOptions): RuntimeJuiceLogE
     durationMs: spec.durationMs,
   };
   writeRuntimeJuiceLog(entry);
-  playRuntimeJuiceSound(soundResourceId);
+  if (selected) {
+    if (soundResourceId) playAudioCommand({ ...selected, loop: false, channel: "se" }, options.project ?? store.getCurrent());
+  } else playRuntimeJuiceSound(soundResourceId);
   if (options.target) applyRuntimeJuiceMotion(options.target, { ...spec, soundResourceId });
   return entry;
 }
