@@ -59,11 +59,18 @@ current-map, whole-project and unknown-attribution filters, explicit map choices
 search, pagination and manual remote recovery. Known deleted-map IDs remain
 selectable rather than becoming unknown.
 
-Every view uses the captured project scope. Opening a result restores its original
+Project views use the captured project scope. Opening a result restores its original
 conversation ID and all retained entries. Earlier turns can remain visually
 collapsed using the existing turn toggle; they are not discarded. Browsing history
 and navigating A-B-A do not reset the live project conversation. Project changes
 and modal closure invalidate outstanding requests and restoration callbacks.
+
+The separate unscoped legacy view (`ai-history-filter-legacy`) queries with a
+null repository scope and expands retained text read-only. It does not adopt a
+conversation, delete records, recover remote records, or resolve unowned map IDs
+through the current project's names. Entering it immediately removes old scoped
+actions and invalidates pending scoped opens, including a round trip back to a
+project view. Retained detached controls cannot bypass the read-only transition.
 
 Recovery reports transport errors instead of an empty success; deletion removes
 the whole conversation from every local map view and explicitly remains
@@ -71,6 +78,9 @@ browser-local. Compact/partial provenance and memory-only storage are disclosed.
 Contracts: `aiConversationHistoryModal`, `aiChatSessionScope`,
 `test/e2e/ai-map-history.spec.ts`. Real local, remote and visual evidence lives under
 `output/evidence/map-ai-history/`.
+The browser harness selects visible entry alternatives and joins navigation and
+readiness immediately, so a hidden alternative cannot mask a visible entry and
+a readiness rejection cannot escape while navigation is pending.
 
 ## Independent result review and repair (2026-09-06)
 
