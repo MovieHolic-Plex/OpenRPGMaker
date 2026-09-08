@@ -15,6 +15,7 @@ import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
 import * as activityLog from "@/ai/activityLog";
 import { resetIntentDeclarationCache } from "@/ai/intentDeclarationClient";
 import { emptyWikiResponse, isWikiExtraction } from "./wikiTransportFixture";
+import * as applyStore from "@/editor/tools/applyChangesetToStore";
 
 let restoreDom: (() => void) | null = null;
 let storage: Map<string, string>;
@@ -96,8 +97,26 @@ function stubChat(tools: readonly string[], bodies: readonly string[]): { intent
     if (payload.response_format?.type === "json_object") {
       requests.intent += 1;
       expect(payload.stream).toBe(false);
+      const intent = tools.includes("create_map")
+        ? {
+            mode: "create",
+            space: "none",
+            needsPlan: false,
+            tools,
+            requestRequirements: {
+              entries: [{
+                source: [{ start: 0, end: 8, quote: "새 맵 만들어줘" }],
+                criteria: [
+                  { kind: "mapDimensions", target: { newMapName: "라이브 고스트" }, width: 6, height: 5 },
+                  { kind: "mapCount", targets: [{ newMapName: "라이브 고스트" }], count: 1 },
+                ],
+                bindings: [],
+              }],
+            },
+          }
+        : { mode: "question", space: "none", needsPlan: false, tools };
       return new Response(JSON.stringify({ choices: [{ message: {
-        role: "assistant", content: JSON.stringify({ mode: tools.includes("create_map") ? "create" : "question", space: "none", needsPlan: false, tools }),
+        role: "assistant", content: JSON.stringify(intent),
       }, finish_reason: "stop" }] }), { headers: { "Content-Type": "application/json" } });
     }
     requests.chat += 1;
@@ -283,32 +302,65 @@ describe("실시간 고스트 프리뷰 연결", () => {
     const createMapArgs = { id: "map_live_ghost", name: "라이브 고스트", width: 6, height: 5 };
     const requests = stubChat(["create_map"], [
       sse([toolCallLine("c_live", "create_map", JSON.stringify(createMapArgs))]),
-      sse([JSON.stringify({ choices: [{ delta: { content: "draft-complete-sentinel" }, finish_reason: "stop" }] })]),
     ]);
 
     const panel = renderPanel();
     await whenAiChatPanelSettled();
     const terminal = nextTerminalActivity();
-    // 턴 **도중** 발행된 초안 고스트를 구독으로 잡는다. 턴이 정상 종료되면 적용 경로가
-    // 고스트를 걷어내므로(aiProposalCard.ts:277 clearAgentGhostPreview → applyProposedProject)
-    // 턴이 끝난 뒤의 상태로는 이 배선을 관측할 수 없다.
+    // 턴 **도중** 발행된 초안 고스트를 구독으로 잡는다. 적용이 즉시 저장소를 바꾸면
+    // 초안 diff 가 사라져 관측할 수 없다 — 실제 apply 를 고스트 이벤트까지 붙잡아 둔다.
     const observed: { mapId: string; toolName: string; bounds: unknown }[] = [];
-    const unsubscribe = subscribeAgentGhostPreview((state) => {
-      for (const preview of state.previews) {
-        observed.push({ mapId: preview.mapId, toolName: preview.toolName, bounds: preview.bounds });
-      }
+    let applyReleased = false;
+    let releaseApply = (): void => undefined;
+    const applyGate = new Promise<void>((resolve) => {
+      releaseApply = () => {
+        if (applyReleased) return;
+        applyReleased = true;
+        resolve();
+      };
+    });
+    const originalApply = applyStore.applyProposedProject;
+    const applySpy = vi.spyOn(applyStore, "applyProposedProject").mockImplementation(async (proposed, options) => {
+      await applyGate;
+      return originalApply(proposed, options);
+    });
+    let unsubscribeGhost = (): void => undefined;
+    let ghostTimer: ReturnType<typeof setTimeout> | undefined;
+    const liveGhost = new Promise<void>((resolve, reject) => {
+      ghostTimer = setTimeout(() => reject(new Error("Live ghost preview did not publish")), 10_000);
+      unsubscribeGhost = subscribeAgentGhostPreview((state) => {
+        for (const preview of state.previews) {
+          observed.push({ mapId: preview.mapId, toolName: preview.toolName, bounds: preview.bounds });
+          if (preview.mapId === "map_live_ghost" && preview.toolName === "live_project_diff") resolve();
+        }
+      });
     });
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
     input.value = "새 맵 만들어줘";
     (findByTestId(panel, "ai-send") as unknown as HTMLElement).click();
-    let result: activityLog.AiActivityLogInput;
+    let result: activityLog.AiActivityLogInput | undefined;
+    let failure: unknown;
     try {
+      await liveGhost;
+      releaseApply();
       result = await terminal;
+    } catch (error) {
+      failure = error;
     } finally {
-      unsubscribe();
+      if (ghostTimer !== undefined) clearTimeout(ghostTimer);
+      unsubscribeGhost();
+      releaseApply();
+      if (failure) {
+        findByTestId(panel, "ai-abort")?.click();
+        await whenAiChatPanelSettled();
+        await Promise.resolve(terminal).then(() => undefined, () => undefined);
+      }
+      applySpy.mockRestore();
     }
+    if (failure) throw failure;
+    if (!result) throw new Error("Chat turn did not publish terminal activity");
     expect(result.result).toMatchObject({ ok: true, stoppedReason: "final", appliedCalls: 1 });
-    expect(requests).toEqual({ intent: 1, chat: 2 });
+    expect(requests).toEqual({ intent: 1, chat: 1 });
     expect(result.toolCalls).toEqual(expect.arrayContaining([expect.objectContaining({ name: "create_map", ok: true })]));
     expect(store.getCurrent().maps.map_live_ghost).toMatchObject(createMapArgs);
 
