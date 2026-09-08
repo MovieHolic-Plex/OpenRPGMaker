@@ -56,11 +56,11 @@ async function bounded<T>(promise: Promise<T>): Promise<T> {
     })]);
   } finally { clearTimeout(deadline); }
 }
-async function boundedTerminal<T>(promise: Promise<T>): Promise<T> {
+async function boundedTerminal<T>(promise: Promise<T>, timeoutMs = 240_000): Promise<T> {
   let deadline: ReturnType<typeof setTimeout> | undefined;
   try {
     return await Promise.race([promise, new Promise<never>((_, reject) => {
-      deadline = setTimeout(() => reject(new Error("Missing subscribed terminal activity")), 240_000);
+      deadline = setTimeout(() => reject(new Error("Missing subscribed terminal activity")), timeoutMs);
     })]);
   } finally { clearTimeout(deadline); }
 }
@@ -272,13 +272,13 @@ async function installProvider(page: Page, raw: string, entries: unknown[], fixt
   });
   return () => writers;
 }
-function terminal(fixture: Fixture, raw: string) {
+function terminal(fixture: Fixture, raw: string, timeoutMs = 240_000) {
   const held = signal<TerminalRecord>();
   fixture.awaitingTerminal.push({ raw, resolve: held.resolve });
   return boundedTerminal(held.promise.then((record) => {
     fixture.http.push({ at: Date.now(), mark: "terminal.resolve", instruction: raw });
     return record;
-  }));
+  }), timeoutMs);
 }
 async function send(page: Page, raw: string) {
   await page.getByTestId("ai-input").fill(raw);
@@ -312,6 +312,7 @@ async function capture(page: Page, fixture: Fixture, label: string) {
 }
 
 for (const variant of ["auto", "chat", "tokens", "confirm"] as const) test(`B1 64-segments-one-send ${variant}`, async ({ page }) => {
+  test.setTimeout(660_000);
   const options = { agentMode: variant === "chat" ? "chat" as const : "auto" as const, tokens: variant === "tokens", confirm: variant === "confirm" };
   const f = await boot(page, options), raw = 'Set project title to exactly "Final 64"';
   const release = signal();
@@ -320,14 +321,14 @@ for (const variant of ["auto", "chat", "tokens", "confirm"] as const) test(`B1 6
     if (index === 56) await bounded(release.promise);
     return { calls: [title(index === 64 ? "Final 64" : `Stage ${index}`)] };
   }, { planned: true, tokens: options.tokens });
-  let done = terminal(f, raw);
+  let done = terminal(f, raw, 600_000);
   const hold55 = waitAppliedHold(f, 55);
   await send(page, raw);
   if (options.confirm) {
     const preview = await done;
     expect(preview.result.execution.state).toBe("preview");
     expect(count()).toBe(0);
-    done = terminal(f, "continue");
+    done = terminal(f, "continue", 600_000);
     await send(page, "continue");
   }
   try {

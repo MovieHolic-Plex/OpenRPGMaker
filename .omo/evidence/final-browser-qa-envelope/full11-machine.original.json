@@ -1,0 +1,471 @@
+{
+  "config": {
+    "argv": [
+      "/usr/local/bin/node",
+      "/home/main/z-project/rpg-zzu-unbounded-ui-01a07570/node_modules/.bin/playwright",
+      "test",
+      "test/e2e/ai-unbounded-execution.spec.ts",
+      "--project=chromium",
+      "--workers=1",
+      "--trace",
+      "off",
+      "--max-failures=1",
+      "--reporter=list",
+      "--reporter=json"
+    ],
+    "configFile": "/home/main/z-project/rpg-zzu-unbounded-ui-01a07570/playwright.config.ts",
+    "rootDir": "/home/main/z-project/rpg-zzu-unbounded-ui-01a07570/test/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 1,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/home/main/z-project/rpg-zzu-unbounded-ui-01a07570/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/home/main/z-project/rpg-zzu-unbounded-ui-01a07570/test/e2e",
+        "testIgnore": [
+          "**/_*.spec.ts"
+        ],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.61.0",
+    "workers": 1,
+    "webServer": {
+      "command": "npm run dev -- --host 127.0.0.1 --port 19844 --strictPort",
+      "env": {
+        "DEV_SERVER_NO_TLS": "1",
+        "E2E_FREEZE_DEV_SERVER": "1"
+      },
+      "url": "http://127.0.0.1:19844",
+      "reuseExistingServer": true,
+      "timeout": 30000
+    }
+  },
+  "suites": [
+    {
+      "title": "ai-unbounded-execution.spec.ts",
+      "file": "ai-unbounded-execution.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "B1 64-segments-one-send auto",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 660000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 413284,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-08T11:42:40.718Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2d4aacf7cb7517cba51e-a6052c3d877b15921f1b",
+          "file": "ai-unbounded-execution.spec.ts",
+          "line": 314,
+          "column": 71
+        },
+        {
+          "title": "B1 64-segments-one-send chat",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 660000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 275404,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-08T11:49:34.363Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2d4aacf7cb7517cba51e-946c8877141a423461d9",
+          "file": "ai-unbounded-execution.spec.ts",
+          "line": 314,
+          "column": 71
+        },
+        {
+          "title": "B1 64-segments-one-send tokens",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 660000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 260852,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-08T11:54:09.833Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2d4aacf7cb7517cba51e-65fa335e09d63aeb64a3",
+          "file": "ai-unbounded-execution.spec.ts",
+          "line": 314,
+          "column": 71
+        },
+        {
+          "title": "B1 64-segments-one-send confirm",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 660000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 280366,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-08T11:58:30.709Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2d4aacf7cb7517cba51e-6fad0aa3cdea7d1230b5",
+          "file": "ai-unbounded-execution.spec.ts",
+          "line": 314,
+          "column": 71
+        },
+        {
+          "title": "B2 scope-cannot-shrink",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 39997,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-08T12:03:11.124Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2d4aacf7cb7517cba51e-b78f1a89303ba70a5f63",
+          "file": "ai-unbounded-execution.spec.ts",
+          "line": 354,
+          "column": 1
+        },
+        {
+          "title": "B3 no-write-is-not-done",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 37540,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-08T12:03:51.155Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2d4aacf7cb7517cba51e-864a0ff9020536967c5f",
+          "file": "ai-unbounded-execution.spec.ts",
+          "line": 389,
+          "column": 1
+        },
+        {
+          "title": "B4 changed-recovery-and-user-controls recover",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 39553,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-08T12:04:28.735Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2d4aacf7cb7517cba51e-28f9c4efe3d73b8f80fb",
+          "file": "ai-unbounded-execution.spec.ts",
+          "line": 410,
+          "column": 89
+        },
+        {
+          "title": "B4 changed-recovery-and-user-controls abort",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 29579,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-08T12:05:08.313Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2d4aacf7cb7517cba51e-4427e06aafe3f8a3120b",
+          "file": "ai-unbounded-execution.spec.ts",
+          "line": 410,
+          "column": 89
+        },
+        {
+          "title": "B4 changed-recovery-and-user-controls queued",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 33988,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-08T12:05:37.913Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2d4aacf7cb7517cba51e-69a60dc5cb35fb823c08",
+          "file": "ai-unbounded-execution.spec.ts",
+          "line": 410,
+          "column": 89
+        },
+        {
+          "title": "B4 changed-recovery-and-user-controls project-switch",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 29583,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-08T12:06:11.929Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2d4aacf7cb7517cba51e-73589d789066be01a570",
+          "file": "ai-unbounded-execution.spec.ts",
+          "line": 410,
+          "column": 89
+        },
+        {
+          "title": "B4 changed-recovery-and-user-controls 401",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 300000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 31037,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-08T12:06:41.530Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2d4aacf7cb7517cba51e-ff10720322e38c868b64",
+          "file": "ai-unbounded-execution.spec.ts",
+          "line": 410,
+          "column": 89
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-09-08T11:42:33.153Z",
+    "duration": 1479983.266,
+    "expected": 11,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

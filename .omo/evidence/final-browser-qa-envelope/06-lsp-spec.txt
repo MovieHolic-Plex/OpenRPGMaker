@@ -1,0 +1,6 @@
+date=2026-09-08T21:16:50+09:00
+file=/home/main/z-project/rpg-zzu-unbounded-ui-01a07570/test/e2e/ai-unbounded-execution.spec.ts
+tool=lsp_diagnostics severity=all
+result=No diagnostics found
+HEAD=8441f679dd3e701ffe76b4cf2c11e0f98e8ca23f
+spec_sha256=c415d606aa0f5a4d5b0baa29f47ae077d7bac4ca5f7ba6a43fd40b9d92a4aeaf
