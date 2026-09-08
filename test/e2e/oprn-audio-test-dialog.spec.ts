@@ -50,8 +50,34 @@ async function readAudio(page: Page): Promise<AudioStateSnapshot & { mediaVolume
 }
 
 test.beforeEach(async ({ page }) => {
+  // Optional local transport relay for hosts that cancel Chromium module requests.
+  // Responses still come from the real Vite server; media APIs are never mocked.
+  if (process.env.AUDIO_QA_HTTP_RELAY === "1") {
+    const origin = `http://127.0.0.1:${process.env.DEV_SERVER_PORT ?? "9173"}`;
+    let active = 0;
+    const queued: (() => void)[] = [];
+    await page.route(`${origin}/**`, async route => {
+      if (active >= 8) await new Promise<void>(resolve => queued.push(resolve));
+      else active += 1;
+      try {
+        await route.fulfill({ response: await route.fetch({ maxRetries: 2 }) });
+      } catch (error) {
+        // Chromium may complete/cancel an intercepted request during teardown.
+        // UI assertions still decide success; real fetch failures propagate.
+        if (!(error instanceof Error) || !error.message.includes("Route is already handled")) throw error;
+      } finally {
+        const next = queued.shift();
+        if (next) next();
+        else active -= 1;
+      }
+    });
+  }
   // 클래식 툴바(음악 버튼 포함)는 전문가 모드에서만 노출된다.
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
+});
+
+test.afterEach(async ({ page }) => {
+  if (process.env.AUDIO_QA_HTTP_RELAY === "1") await page.unrouteAll({ behavior: "wait" });
 });
 
 // 편집기 셸 부팅(Phaser + 프로젝트 로드)이 기본 30초 예산을 다 먹어서 단정이 시간에 쫓겼다.
@@ -188,8 +214,9 @@ test("list filter keeps (꺼짐) first and MIDI rows are marked unplayable", asy
   await expect(list.getByRole("option")).toHaveCount(optionCount);
 
   // MIDI(RTP) 항목은 목록에서 바로 구별된다 — 눌러보고 나서야 알게 하지 않는다.
-  await page.getByTestId("audio-test-filter").fill("RTP·MIDI");
+  await page.getByTestId("audio-test-filter").fill("easyrpg-music-");
   const midiRow = list.getByRole("option").nth(1);
+  await expect(midiRow).toHaveAttribute("data-resource-id", /^easyrpg-music-/);
   await expect(midiRow).toHaveAttribute("aria-disabled", "true");
   await expect(midiRow).toContainText("재생 불가");
 });
