@@ -5,6 +5,7 @@ import type { Command } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { renderCommandBody } from "./commandBody";
 import { validateWeightedBranchForm } from "./commandBodyWeightedBranch";
+import { validateBattleProcessingForm } from "./commandBodyDatabase";
 import { renderCommandPreview } from "./commandPreview";
 import { createPreviewSimState, type ActiveFace, type PreviewSimState } from "./previewSimulation";
 import { commandLabel } from "./commandPicker";
@@ -156,7 +157,7 @@ export function openEventCommandEditDialog(request: EventCommandEditDialogReques
         dataset: { testid: "event-command-edit-ok" },
         on: {
           click: () => {
-            if (!validateWeightedBranchForm(formHost)) return;
+            if (!validateWeightedBranchForm(formHost) || !validateBattleProcessingForm(formHost, stagedCommand)) return;
             request.onApply(structuredClone(stagedCommand));
             close();
           },

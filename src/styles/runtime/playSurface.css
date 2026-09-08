@@ -91,9 +91,33 @@
   height: min(var(--runtime-choice-panel-height, 26%), var(--play-visible-height));
   min-height: min(var(--runtime-choice-panel-height, 26%), var(--play-visible-height));
 }
-.player-layout .play-stage > .runtime-overlay:not(.game-over-panel):not(.runtime-commerce-overlay) {
+.player-layout .play-stage > .runtime-overlay:not(.game-over-panel):not(.runtime-commerce-overlay):not([data-testid="runtime-error"]) {
   inset: calc(var(--play-crop-top) + 12px) calc(var(--play-crop-right) + 12px)
     calc(var(--play-crop-bottom) + 12px) calc(var(--play-crop-left) + 12px);
+}
+/* Errors must ship with the player, not depend on editor/core.part-1.css.
+   Inverse-scale the nonmodal notice so long diagnostics remain readable in play. */
+.player-layout .play-stage > .runtime-overlay[data-testid="runtime-error"] {
+  position: absolute;
+  inset: calc(var(--play-crop-top) + 12px / var(--play-scale))
+    calc(var(--play-crop-right) + 12px / var(--play-scale)) auto
+    calc(var(--play-crop-left) + 12px / var(--play-scale));
+  display: block;
+  box-sizing: border-box;
+  padding: calc(10px / var(--play-scale)) calc(12px / var(--play-scale));
+  border: calc(1px / var(--play-scale)) solid var(--runtime-glass-hairline-strong);
+  border-radius: calc(6px / var(--play-scale));
+  background: var(--runtime-glass-panel);
+  color: var(--runtime-glass-text);
+  font-size: calc(14px / var(--play-scale));
+  font-weight: 400;
+  line-height: 1.5;
+  text-align: left;
+  text-shadow: none;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  pointer-events: none;
+  z-index: 90;
 }
 .player-layout .play-stage > .game-over-panel {
   max-width: min(90%, var(--play-visible-width));

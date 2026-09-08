@@ -1,5 +1,45 @@
 # Runtime Battle Behavior
 
+## Native event battle admission (2026-09-08)
+
+- `project/battleAdmission.ts` supplies typed missing/empty-troop errors to the
+  native editor and runtime constructor. Effective composition follows
+  `enemyBattlers`: populated members win, otherwise legacy enemyIds apply.
+  Hidden members count; an all-hidden encounter remains available for reveal
+  events. The project loader separately normalizes an explicitly authored empty
+  members array as authoritative; omit members for legacy enemyIds-only JSON.
+- `commandBattle.ts` resolves variable targets explicitly. Valid trimmed string
+  IDs and the existing numeric lookup remain compatible: truncate finite numbers,
+  try 1-based position, then zero-based position (so 0 aliases the first troop),
+  then the existing ID/suffix match. Invalid/missing values now throw instead of
+  falling back to the unused fixed troop. The actual resolved troop still goes
+  through runtime composition validation. No schema or migration was added.
+- `playSceneBattle.ts` owns initialization, audio restoration and runtime cleanup
+  across constructor, transition and mounted-host failure. Empty canonical or
+  legacy monster-party mode reports missing starters/party members instead of
+  returning escape or forcing defeat. Giving a starter permits a corrected retry.
+- Foreground event failures report `runtime-error` and end that interpreter without
+  resuming branches, subsequent commands or completion callbacks. Parallel failures
+  retain the existing stopped-process policy until page/map reactivation; they do
+  not repeatedly retry each frame. Action events can retry after correction, and
+  a new command battle clears the previous error. Existing random/field callers
+  also display typed admission errors rather than leaking their new rejections.
+- Autorun keys are claimed only after dialogue readiness and an active scene.
+  `PlayScene` waits for Phaser's `create` event when readiness occurs inside
+  `create()`: Phaser sets RUNNING after that method returns. Otherwise synchronous
+  invalid-variable errors look like shutdown cancellation and silently disappear.
+  Cancellation remains null, never a battle outcome; stale rejections do not report
+  into replacement sessions. Existing defeat and reward-writeback rules remain.
+- The `runtime-error` notice is styled in shipped `runtime/playSurface.css`,
+  not editor-only `core.part-1.css`. The old fallback was a static block below
+  the scaled canvas (browser RED: y=960 in a 960px viewport). The scoped notice
+  is absolutely positioned within crop bounds, inverse-scales its typography,
+  wraps long IDs, and does not claim pointer/input ownership. The browser probe
+  checks its viewport bounds, nonzero size/alpha, and actual menu after reveal.
+- Contracts: `eventBattleFailure`, `battleInitializationAdmission`,
+  `npcScheduledBattle`, `npcBattleLifecycle`, `playSceneBattleCancellation`,
+  `battleDefeatOutcome`. Exported-player probe and limitations: `testing.md`.
+
 ## Supported action authoring (2026-09-07)
 
 2D tile action combat remains supported alongside turn-based combat; the old
