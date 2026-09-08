@@ -133,14 +133,13 @@ import { changePreviewChips, renderChangePreviewCard, type ChangePreviewInput } 
 import { createStudioShell, type StudioShell } from "./aiStudioShell";
 import { proposalHumanSummaryLine } from "./aiProposalSummary";
 import { createAiTurnRunner } from "./aiTurnRunner";
+import { openLocalDiagnosticsDialog } from "./localDiagnosticsDialog";
 import { createAiRegionTaskRunner } from "./aiRegionTaskRunner";
 import type { AiRunSurface, ConversationPersistTarget as ConversationPersistTargetContract } from "./aiRunSurface";
 import {
   backupProjectSnapshot,
   displayUserAuditText,
-  downloadJson,
   dropSession,
-  exportCombinedAudit,
   isAiAssistDetail,
   isAiConfigReady,
   statusToneOf,
@@ -445,13 +444,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 휘발 존(ai-rising-volatile-zone)은 사이드 도크 전용 오버레이였다. 도크가 하나가
   // 되면서 마운트되는 곳이 없어져 이 두 훅은 아무 데도 닿지 않는다 — 계약만 남긴다.
   let exportButton: HTMLButtonElement | null = null;
-  const hasExportableConversation = (): boolean =>
-    [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])].length > 0;
   const refreshExportButton = (): void => {
     if (!exportButton) return;
-    const disabled = !hasExportableConversation();
-    exportButton.disabled = disabled;
-    exportButton.setAttribute("aria-disabled", String(disabled));
+    exportButton.disabled = false;
+    exportButton.setAttribute("aria-disabled", "false");
   };
 
   const input = el("textarea", {
@@ -1969,28 +1965,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 테스트가 "어디에 붙었나"를 읽는 단일 창구다.
   // z-layers: panel 30 / bar 40 / overlay 41 / palette 80 — 56/50/62 난장 정리
   const exportAudit = (): void => {
-    const json = exportCombinedAudit(controller);
-    if (!json) {
-      toast("내보낼 대화가 없습니다.", "info");
-      recordAiUiEvent({ surface: "panel", action: AI_UI_ACTIONS.conversationExport, testid: "ai-export", disabled: true, detail: { entries: 0 } });
-      return;
-    }
-    downloadJson("ai-session-audit.json", json);
-    recordAiUiEvent({
-      surface: "panel",
-      action: AI_UI_ACTIONS.conversationExport,
-      testid: "ai-export",
-      detail: {
-        format: "json",
-        bytes: json.length,
-        entries: [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])].length,
-      },
-    });
+    openLocalDiagnosticsDialog();
   };
   exportButton = el("button", {
     class: "ai-assistant-action ai-export-button",
     text: "내보내기",
-    attrs: { type: "button", hidden: "", "aria-hidden": "true", title: "대화 감사 로그 내보내기", "aria-label": "대화 내보내기" },
+    attrs: { type: "button", hidden: "", "aria-hidden": "true", title: "로컬 진단 보고서", "aria-label": "로컬 진단 보고서" },
     dataset: { testid: "ai-export" },
     on: { click: exportAudit },
   }) as HTMLButtonElement;

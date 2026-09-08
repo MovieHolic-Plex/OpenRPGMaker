@@ -31,6 +31,7 @@ import type { AutonomousMover, PlaySceneContext } from "@/player/playSceneTypes"
 import { createBlankProject, TILE } from "@/project/defaults";
 import { startSession } from "@/project/session";
 import { store } from "@/project/store";
+import { LocalDiagnosticSession } from "@/util/localDiagnosticSession";
 
 const FRAME_MS = 1000 / 60;
 
@@ -186,6 +187,21 @@ function movementHarness(): MovementHarness {
     },
   };
 }
+
+it("local diagnostics observe completed movement and actual blocked attempts without QA instrumentation", () => {
+  const harness = movementHarness();
+  const diagnostics = new LocalDiagnosticSession();
+  diagnostics.start(true, ["movement", "collision"]);
+  try {
+    harness.hold({ dir: "right", x: 1 });
+    harness.tick(10);
+    expect(diagnostics.snapshot().receipts).toContainEqual(expect.objectContaining({ category: "movement", phase: "completed", x: 6, y: 5 }));
+    harness.scene.tileX = 0;
+    harness.hold({ dir: "left", x: -1 });
+    harness.tick(1);
+    expect(diagnostics.snapshot().receipts).toContainEqual(expect.objectContaining({ category: "collision", phase: "terrain", x: -1, y: 5 }));
+  } finally { diagnostics.clear(); }
+});
 
 function walkPatternsSeen(frames: ReadonlyArray<string | number>, direction: "right"): Set<number> {
   const patterns = new Set<number>();

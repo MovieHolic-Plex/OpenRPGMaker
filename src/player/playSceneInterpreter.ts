@@ -52,6 +52,7 @@ import { applyAdvanceTimeStep, applySetTimeStep } from "@/player/playSceneTime";
 import { formatFriendshipFeedback, isGiftableEvent, isGiftSystemEnabled, isTalkFriendshipEnabled, trySocialTalk } from "@/project/friendship";
 import { playGiftSelection } from "@/player/playSceneGift";
 import { completeDetectionEncounter } from "@/project/npcBehavior";
+import { diagnosticObserved, diagnosticToken, publishDiagnostic } from "@/util/diagnosticObserver";
 
 export type RunCommandsOptions = {
   readonly allowNested?: boolean;
@@ -212,6 +213,11 @@ export async function runCommands(
   // An awaited UI result must never resume commands after its owner/page/session was cancelled.
   const interpreter: Interpreter = { ...base, resume: value => current() ? base.resume(value) : { kind: "done" } };
   const skipController = createCutsceneSkipController(scene, interpreter);
+  const diagnosticOwner = diagnosticToken();
+  const observe = (phase: "started" | "completed" | "cancelled" | "failed") => {
+    if (diagnosticOwner && diagnosticOwner === diagnosticToken() && diagnosticObserved("event")) publishDiagnostic({ category: "event", phase, count: commands.length });
+  };
+  observe("started");
   try {
     let result = interpreter.start(), normalCompletion = true;
     scene.refreshRuntimeSurfaces();
@@ -221,10 +227,13 @@ export async function runCommands(
       result = await consumeBlockingStep(scene, interpreter, step, currentEventId, skipController, current);
       if (step.kind === "battleProcessing" && !step.canLose && activeSession.battleResult === "defeat") normalCompletion = false;
     }
-    if (result.kind === "done" && base.isDone() && normalCompletion && current()) options.onComplete?.();
+    if (result.kind === "done" && base.isDone() && normalCompletion && current()) {
+      observe("completed"); options.onComplete?.();
+    } else observe("cancelled");
   } catch (error) {
     if (error instanceof DOMException && error.name === "AbortError"
-      && (!current() || scene.sys?.isActive() === false)) return;
+      && (!current() || scene.sys?.isActive() === false)) { observe("cancelled"); return; }
+    observe("failed");
     throw error;
   } finally {
     skipController.dispose(); releaseCutsceneControlForOwner(activeSession, currentEventId);

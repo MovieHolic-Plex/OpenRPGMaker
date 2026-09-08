@@ -29,6 +29,24 @@
 - Desktop confirmation captures: 1024x768 and 1440x900. Lead owns visual approval
   and the separately authorized real-remote acceptance run.
 
+## Opt-in local diagnostics (2026-09-08)
+
+- Reuse the assistant export menu, existing wide `openEventSubdialog`, native
+  labelled checkboxes/select/textarea, shared `btn` and modal-stack confirmation.
+  The workflow is consent/categories, record, preview/sections, separate local
+  output confirmation. No transcript text or network submission is part of it.
+- The body owns scrolling; wrapping actions and a readonly report preview keep
+  the existing dialog geometry. Type is 13px body, 12px mono report; controls are
+  32px. Use existing `--space-*`, `--text-1/2`, `--bg-raised`, `--accent`, border,
+  radius, shadow and focus tokens. No dependency, theme or motion is added.
+- A persistent top-right local-session indicator at 56px keeps Report, Stop and
+  Clear reachable during Test Play. It uses `--z-toast`, with no new runtime
+  mutation controls. Recording/stopped labels communicate state without color.
+- Personas: author reproducing a multi-step edit, privacy-conscious exporter,
+  keyboard author. Default off and explicit consent are mandatory; cancellation
+  writes nothing. Desktop checks cover 1024/1280/1440; independent visual/CJK
+  approval and full gates remain lead-owned. No accessibility debt is accepted.
+
 ## Monster resource metadata editor (2026-09-07)
 
 - Database > 전투 몬스터 exposes 몬스터 소재 even with no gameplay records.

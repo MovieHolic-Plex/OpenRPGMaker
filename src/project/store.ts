@@ -1,4 +1,5 @@
 import { clearCopiedEventPage } from "@/editor/eventPageClipboard";
+import { diagnosticObserved, diagnosticToken, publishDiagnostic } from "@/util/diagnosticObserver";
 import { rewriteLegacyAdvancedDialogueInProject } from "@/project/io/rewriteLegacyDialogue";
 import { createBlankProject } from "./defaults";
 import { ensureSwitchVariableSlots } from "./defaults/defaultProject";
@@ -1248,6 +1249,7 @@ class ProjectStore {
         // fresh/blank 위치에서는 기록이 스킵되므로(false 반환) dirty를 유지한다(결함 ⑧·⑩).
         if (saveDevProjectOverride(projectWithoutEventDrafts(this.current))) {
           this.dirtySinceLastPersist = false;
+          if (diagnosticObserved("authoring")) publishDiagnostic({ category: "authoring", phase: "saved", generation: this.mutationGeneration, storage: "local" });
         }
         return { kind: "saved-local" };
       }
@@ -1258,6 +1260,7 @@ class ProjectStore {
     if (!config) return { kind: "not-configured" };
     const target = Object.freeze({ ...config });
     const generationAtSubmit = this.mutationGeneration;
+    const diagnosticOwner = diagnosticToken();
     const lineageAtSubmit = this.contentLineage;
     const projectAtSubmit = this.current;
     const submittedProject = projectWithoutEventDrafts(projectAtSubmit);
@@ -1297,6 +1300,9 @@ class ProjectStore {
     if (this.contentLineage !== lineageAtSubmit) return receipt ? { ...result, receipt } : result;
     this.persistedBaseline = acceptedBaseline;
     this.lastPersistenceReceipt = receipt ?? null;
+    if (receipt && diagnosticOwner && diagnosticOwner === diagnosticToken() && diagnosticObserved("authoring")) {
+      publishDiagnostic({ category: "authoring", phase: "saved", generation: generationAtSubmit, storage: "remote" });
+    }
     const audioDescriptions = applyAudioDescriptionDelta(
       submittedProject.audioDescriptions,
       this.current.audioDescriptions,

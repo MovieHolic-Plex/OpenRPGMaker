@@ -1,3 +1,5 @@
+import { diagnosticObserved, publishDiagnostic } from "@/util/diagnosticObserver";
+
 export type PlayBootStage =
   | "engine"
   | "assets"
@@ -81,6 +83,9 @@ export function recordPlayBootDiagnostic(
   sink?: PlayBootDiagnosticSink,
 ): void {
   const payload = buildPlayBootPayload(input);
+  if (diagnosticObserved("asset") && ["assets", "ready", "error", "timeout"].includes(input.stage)) {
+    publishDiagnostic({ category: "asset", phase: input.stage });
+  }
   RECENT.unshift(payload);
   if (RECENT.length > MAX_RECENT) RECENT.length = MAX_RECENT;
 
