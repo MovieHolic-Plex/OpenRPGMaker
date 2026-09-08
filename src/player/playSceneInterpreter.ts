@@ -72,16 +72,25 @@ export async function runEvent(scene: PlaySceneContext, eventId: string): Promis
     return;
   }
   const commands = page?.commands ?? event.commands;
-  if (shouldOfferGiftMenu(event, page, store.getCurrent())) {
-    const action = await showGiftMenu(scene, event, page?.name);
-    if (action === "talk") await runTalkPath(scene, event, commands, eventId);
-    if (action === "gift") await runGiftSelection(scene, event);
-    return;
+  const activeSession = scene.session;
+  try {
+    if (shouldOfferGiftMenu(event, page, store.getCurrent())) {
+      const action = await showGiftMenu(scene, event, page?.name);
+      if (action === "talk") await runTalkPath(scene, event, commands, eventId);
+      if (action === "gift") await runGiftSelection(scene, event);
+      return;
+    }
+    await runTalkPath(scene, event, commands, eventId);
+  } catch (error) {
+    // Social feedback is outside runCommands, but has the same cancellation boundary.
+    if (error instanceof DOMException && error.name === "AbortError"
+      && (scene.session !== activeSession || scene.sys?.isActive() === false)) return;
+    throw error;
   }
-  await runTalkPath(scene, event, commands, eventId);
 }
 
 async function runGiftSelection(scene: PlaySceneContext, event: CommandSourceEvent): Promise<void> {
+  const activeSession = scene.session;
   const previousRunning = scene.running;
   const previousInputEnabled = scene.inputEnabled;
   scene.running = true;
@@ -89,12 +98,14 @@ async function runGiftSelection(scene: PlaySceneContext, event: CommandSourceEve
   try {
     await playGiftSelection(scene, event);
   } finally {
-    scene.running = previousRunning;
-    scene.lastActionTargetKey = "";
-    scene.setInputEnabled(previousInputEnabled);
-    // 대화 세션이 끝나는 자리 — 퇴장 연출을 재생하고 빠진다(transfer 만 하드 컷).
-    dialogueUi(scene)?.close();
-    scene.refreshRuntimeSurfaces();
+    if (scene.session === activeSession && !scene.battleAbortController && scene.sys?.isActive() !== false) {
+      scene.running = previousRunning;
+      scene.lastActionTargetKey = "";
+      scene.setInputEnabled(previousInputEnabled);
+      // 대화 세션이 끝나는 자리 — 퇴장 연출을 재생하고 빠진다(transfer 만 하드 컷).
+      dialogueUi(scene)?.close();
+      scene.refreshRuntimeSurfaces();
+    }
   }
 }
 
@@ -104,7 +115,10 @@ async function runTalkPath(
   commands: readonly Command[],
   eventId: string
 ): Promise<void> {
+  const activeSession = scene.session;
   await runCommands(scene, commands, eventId);
+  // An abandoned command run is not a completed social interaction.
+  if (scene.session !== activeSession || scene.sys?.isActive() === false) return;
   // Action-scoped, once per interaction (not gift path; multi-text cannot re-fire).
   if (!isTalkFriendshipEnabled(event)) return;
   const page = resolveEventPage(event, scene.session);
@@ -130,11 +144,13 @@ async function runTalkPath(
       mapHeight: scene.map.height,
     });
   } finally {
-    scene.running = previousRunning;
-    scene.lastActionTargetKey = "";
-    scene.setInputEnabled(previousInputEnabled);
-    dialogue.close();
-    scene.refreshRuntimeSurfaces();
+    if (scene.session === activeSession && !scene.battleAbortController && scene.sys?.isActive() !== false) {
+      scene.running = previousRunning;
+      scene.lastActionTargetKey = "";
+      scene.setInputEnabled(previousInputEnabled);
+      dialogue.close();
+      scene.refreshRuntimeSurfaces();
+    }
   }
 }
 
