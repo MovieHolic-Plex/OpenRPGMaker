@@ -112,8 +112,8 @@ export async function openHistory(page: Page): Promise<void> {
   await expect(clock.getByTestId("ai-map-history-open")).toHaveCount(1);
   await expect(nested).toBeVisible();
   const appeared = page.getByTestId("ai-history-modal").waitFor({ state: "visible", timeout: 15_000 });
-  await nested.click();
-  await appeared;
+  // Own both rejections immediately, even if the click outlasts appearance.
+  await Promise.all([appeared, nested.click()]);
   await historySettled(page);
 }
 
@@ -369,15 +369,18 @@ export async function seedExtraCurrentMapRows(page: Page, count: number): Promis
       const modulePath: string = url;
       return await import(/* @vite-ignore */ modulePath) as T;
     };
-    const [{ store }, { conversationScopeKey, saveConversation }] = await Promise.all([
+    const [{ store }, { conversationScopeKey }, { AI_RECORD_STORES, writeAiRecords }] = await Promise.all([
       load<typeof import("@/project/store")>("/src/project/store.ts"),
       load<typeof import("@/ai/conversationStore")>("/src/ai/conversationStore.ts"),
+      load<typeof import("@/ai/aiRecordDb")>("/src/ai/aiRecordDb.ts"),
     ]);
     const project = store.getCurrent();
     const scope = conversationScopeKey(store.getProjectIdentity(), project);
     const map = project.maps[input.mapA];
+    // Trusted catalog fixtures, not save-path coverage: avoid unrelated remote mirrors.
+    const records: import("@/ai/conversationStore").ConversationRecord[] = [];
     for (let index = 0; index < input.count; index += 1) {
-      const outcome = await saveConversation({
+      records.push({
         id: `maphist-page-${index}`,
         title: `MAPHIST-PAGE ${index}`,
         model: "e2e",
@@ -387,9 +390,11 @@ export async function seedExtraCurrentMapRows(page: Page, count: number): Promis
           { kind: "user" as const, text: `MAPHIST-PAGE ${index}`, context: { mapId: input.mapA, mapName: input.mapAName, mapWidth: map?.width ?? 20, mapHeight: map?.height ?? 15 } },
           { kind: "assistant" as const, text: `page ${index}` },
         ],
+        mapIndex: { viewedMapIds: [input.mapA], targetMapIds: [], mapAttribution: "complete" },
       });
-      if (!outcome.ok) throw new Error(`saveConversation failed for page ${index}`);
     }
+    const backend = await writeAiRecords(AI_RECORD_STORES.conversations, records);
+    if (backend !== "indexeddb") throw new Error("bulk history fixture requires IndexedDB");
   }, { count, mapA: MAP_A, mapAName: MAP_A_NAME });
 }
 
