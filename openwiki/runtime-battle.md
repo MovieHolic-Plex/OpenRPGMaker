@@ -1,5 +1,16 @@
 # Runtime Battle Behavior
 
+## Capture-only victory (2026-09-08)
+
+Successful capture hides the target and sets its HP to zero. Outcome resolution must
+therefore accept an empty visible-enemy list when the battle has captured participants;
+a troop whose members were all hidden from the start still does not auto-win.
+Other living visible enemies prevent victory, and captured enemies remain excluded
+from EXP/gold/drop rewards. `test/monsterCollection.test.ts` and
+`test/battleRuntimeDefects.test.ts` cover all three outcome distinctions.
+Scripted nonlethal capture fixtures must control actor criticals and initial equipment,
+not merely set the actor's attack curve or rely on a seeded roll.
+
 ## Event friendship and live level changes (2026-09-06)
 
 `changeFriendship` snapshots only keys written by the battle, following the

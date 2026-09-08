@@ -2382,10 +2382,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       }
     }
     const enemiesInBattle = visibleEnemies();
-    // 가시 적이 한 명도 없으면(전원 hidden 미출현) 승리로 처리하지 않는다.
-    // RM2K3: 숨겨진 적은 필드에 없는 것 — 이벤트로 reveal 되기 전까지 전투는 계속된다.
-    // 빈 배열에 every() 가 true 를 반환해 즉시 승리 처리되는 함정을 막는 가드다.
-    if (enemiesInBattle.length > 0 && enemiesInBattle.every((enemy) => enemy.hp <= 0)) {
+    // Captures hide defeated participants; they still establish that combat occurred.
+    // With no visible enemies AND no captures, all members may be unrevealed: do not auto-win.
+    if ((enemiesInBattle.length > 0 || capturedMonsters.length > 0) && enemiesInBattle.every((enemy) => enemy.hp <= 0)) {
       result = "victory";
       phase = "resolved";
       clearEndOfBattleStates();
