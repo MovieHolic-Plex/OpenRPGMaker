@@ -2,14 +2,14 @@
  "text": {
   "probeCount": 4,
   "reactingCount": 2,
-  "classCount": 49,
-  "initialTestidCount": 37
+  "classCount": 50,
+  "initialTestidCount": 38
  },
  "changeFace": {
-  "probeCount": 3,
+  "probeCount": 6,
   "reactingCount": 2,
-  "classCount": 30,
-  "initialTestidCount": 129
+  "classCount": 36,
+  "initialTestidCount": 135
  },
  "choices": {
   "probeCount": 5,
@@ -114,10 +114,10 @@
   "initialTestidCount": 17
  },
  "moveEvent": {
-  "probeCount": 12,
-  "reactingCount": 3,
-  "classCount": 45,
-  "initialTestidCount": 68
+  "probeCount": 16,
+  "reactingCount": 5,
+  "classCount": 46,
+  "initialTestidCount": 74
  },
  "setEventGraphicPattern": {
   "probeCount": 9,
@@ -251,6 +251,12 @@
   "classCount": 4,
   "initialTestidCount": 3
  },
+ "setRelationship": {
+  "probeCount": 2,
+  "reactingCount": 0,
+  "classCount": 4,
+  "initialTestidCount": 3
+ },
  "changeFactionStance": {
   "probeCount": 4,
   "reactingCount": 0,
@@ -329,11 +335,17 @@
   "classCount": 49,
   "initialTestidCount": 23
  },
+ "showEmote": {
+  "probeCount": 3,
+  "reactingCount": 0,
+  "classCount": 18,
+  "initialTestidCount": 26
+ },
  "showPicture": {
-  "probeCount": 8,
+  "probeCount": 9,
   "reactingCount": 4,
-  "classCount": 34,
-  "initialTestidCount": 22
+  "classCount": 38,
+  "initialTestidCount": 26
  },
  "erasePicture": {
   "probeCount": 1,
@@ -345,7 +357,7 @@
   "probeCount": 2,
   "reactingCount": 1,
   "classCount": 19,
-  "initialTestidCount": 14
+  "initialTestidCount": 17
  },
  "stopAudio": {
   "probeCount": 0,

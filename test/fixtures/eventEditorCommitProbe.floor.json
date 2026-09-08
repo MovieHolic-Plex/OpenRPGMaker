@@ -4,7 +4,7 @@
   "commitCount": 4
  },
  "changeFace": {
-  "probeCount": 3,
+  "probeCount": 6,
   "commitCount": 3
  },
  "choices": {
@@ -25,7 +25,7 @@
  },
  "inputNumber": {
   "probeCount": 4,
-  "commitCount": 2
+  "commitCount": 3
  },
  "label": {
   "probeCount": 1,
@@ -76,8 +76,8 @@
   "commitCount": 6
  },
  "moveEvent": {
-  "probeCount": 12,
-  "commitCount": 4
+  "probeCount": 16,
+  "commitCount": 5
  },
  "setEventGraphicPattern": {
   "probeCount": 9,
@@ -89,11 +89,11 @@
  },
  "callCommonEvent": {
   "probeCount": 1,
-  "commitCount": 1
+  "commitCount": 0
  },
  "callMapEvent": {
   "probeCount": 1,
-  "commitCount": 1
+  "commitCount": 0
  },
  "battleProcessing": {
   "probeCount": 8,
@@ -149,11 +149,11 @@
  },
  "craftRecipe": {
   "probeCount": 1,
-  "commitCount": 1
+  "commitCount": 0
  },
  "applyItemUpgrade": {
   "probeCount": 1,
-  "commitCount": 1
+  "commitCount": 0
  },
  "equipTool": {
   "probeCount": 1,
@@ -164,6 +164,10 @@
   "commitCount": 2
  },
  "changeFriendship": {
+  "probeCount": 2,
+  "commitCount": 2
+ },
+ "setRelationship": {
   "probeCount": 2,
   "commitCount": 2
  },
@@ -219,8 +223,12 @@
   "probeCount": 6,
   "commitCount": 6
  },
+ "showEmote": {
+  "probeCount": 3,
+  "commitCount": 3
+ },
  "showPicture": {
-  "probeCount": 8,
+  "probeCount": 9,
   "commitCount": 8
  },
  "erasePicture": {
@@ -237,7 +245,7 @@
  },
  "playMovie": {
   "probeCount": 3,
-  "commitCount": 3
+  "commitCount": 2
  },
  "cutsceneControl": {
   "probeCount": 2,
@@ -281,7 +289,7 @@
  },
  "triggerEnding": {
   "probeCount": 1,
-  "commitCount": 1
+  "commitCount": 0
  },
  "gameOver": {
   "probeCount": 0,
