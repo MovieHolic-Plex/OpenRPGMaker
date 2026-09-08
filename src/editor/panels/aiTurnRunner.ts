@@ -711,8 +711,9 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
       } else {
         ghostPreviewUpdater.flush();
       }
-      // A successful write is not authority to apply an errored or unreviewed draft.
-      if (result.proposedCalls.length > 0 && (result.stoppedReason !== "final"
+      // An authoring error does not revoke an already-approved current draft.
+      // Approval, live operation and captured base are still required at apply.
+      if (result.proposedCalls.length > 0 && ((result.stoppedReason !== "final" && result.stoppedReason !== "error")
         || result.review?.status !== "approved" || !session.isDraftReviewApproved())) {
         turnFailed = true;
         ghostPreviewUpdater.cancel();

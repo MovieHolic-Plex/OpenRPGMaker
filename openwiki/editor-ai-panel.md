@@ -24,8 +24,11 @@ Terminal result, recap and outcome are prepared before synchronous subscribers c
 accept B. Successful tool/protocol bookkeeping also precedes callbacks, so cancelling
 at a successful write doesn't lose that genuine draft. Normal authoring settlement
 isn't cancellation, but current-main independent review also gates application:
-an errored or unreviewed draft stays detached until an authorized retry earns a
-fresh approval. Applied content and its later P1 proof remain available. Repeated retirement returns the
+an unreviewed draft stays detached until an authorized retry earns a fresh approval.
+An already-approved exact draft remains applicable after an authoring error only
+while its review, run owner and captured base are current; error status alone is
+not cancellation. Review-loop failures still revoke approval, and budget/cancelled
+results cannot apply. Applied content and its later P1 proof remain available. Repeated retirement returns the
 prepared result rather than manufacturing another terminal result.
 
 Actual local application is also credited before synchronous mutation observers.
@@ -231,7 +234,7 @@ expose the outcome. `isDraftReviewApproved(project?)` checks the exact current
 revision and cancellation state; mutation/undo cannot revive invalidated approval.
 Milestones are batched until approval, then use the existing commit/undo/persistence
 path. `aiTurnRunner`, the direct proposal host, cluster acceptance and region
-application reject unapproved/error/budget/cancelled drafts, even when successful
+application reject unapproved/budget/cancelled drafts, even when successful
 writes remain in the proposal ledger. Evaluation retains draft measurements and
 review evidence, but an unapproved solver result cannot pass the task.
 The real proposal-host and autonomous apply boundaries call `rebaseProject` after
@@ -397,8 +400,11 @@ At that same boundary, `rebaseProject` retires pending calls and their detached
 project payload, before preparation can fail or cancel. Store-backed sessions use
 current applied store content; detached sessions use their own accepted baseline.
 Already-applied content survives, but a later resume or disjoint write cannot carry
-an old goal's abandoned draft. Successful current-owner proposals from errors remain detached and cannot apply
-until a subsequent authorized run independently reviews the exact current draft. Regression: `test/aiNewGoalDraftRetirement.test.ts`.
+an old goal's abandoned draft. Unreviewed current-owner proposals from errors remain detached
+until a subsequent authorized run independently reviews the exact current draft.
+An error result with already-current independent approval retains the ordinary apply
+path, including P3 owner/base rejection and undo. Regressions:
+`test/aiNewGoalDraftRetirement.test.ts`, `test/aiApprovedErrorComposition.test.ts`.
 Its request text, scope and pre-await baseline are retained for a later host resume.
 `getAcceptanceHistory()` returns session-local frozen history, not durable recovery.
 Explicit composer Ask overrides this action; model question/source/reset claims do
