@@ -230,8 +230,13 @@ describe("인바운드 transfer 착지점", () => {
     transfer.y = 10;
 
     const ctx: ToolContext = { project };
-    const result = runTool(ctx, "run_interior_room_pipeline", threeRoomArgs(interiorId), { dryRun: false });
+    // Being inside a furnished room does not make a cell passable. Reserve the
+    // original (5,10) as the entrance, which the real furniture pipeline keeps clear.
+    const result = runTool(ctx, "run_interior_room_pipeline", {
+      ...threeRoomArgs(interiorId), seed: 1, door: { x: 5, y: 10 },
+    }, { dryRun: false });
     expect(result.ok, result.summary).toBe(true);
+    expect(isPassable(ctx.project, ctx.project.maps[interiorId]!, 5, 10)).toBe(true);
 
     const after = inboundTransfers(ctx.project, interiorId)[0]!;
     expect({ x: after.x, y: after.y }).toEqual({ x: 5, y: 10 });
