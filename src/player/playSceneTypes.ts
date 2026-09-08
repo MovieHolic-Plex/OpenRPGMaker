@@ -131,6 +131,11 @@ export interface PlayerRouteState {
   moves: MoveCommand[];
   index: number;
   repeat: boolean;
+  /**
+   * 통과 ON/OFF(`setThrough`)의 현재 값. NPC 의 `AutonomousMover.through` 와 짝이고,
+   * **이 루트가 사는 동안만** 산다 — 수명 계약은 `clearPlayerRouteThrough`(playerRouteState) 주석.
+   */
+  through?: boolean;
 }
 
 /**
