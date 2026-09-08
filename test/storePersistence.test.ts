@@ -1,6 +1,18 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+async function importDevStore() {
+  const [module, { createDevShowcaseProjectForLocation }] = await Promise.all([
+    import("@/project/store"), import("@/editor/devShowcaseProjects"),
+  ]);
+  // Match the real editor bootstrap; the store no longer selects dev fixtures itself.
+  module.setDevProjectFactory(createDevShowcaseProjectForLocation);
+  return module;
+}
 
 describe("Project store remote persistence", () => {
+  beforeEach(() => {
+    vi.stubEnv("VITE_EDIT_ACTIVITY_DISK_MIRROR", "0");
+  });
   afterEach(() => {
     vi.restoreAllMocks();
     vi.unstubAllGlobals();
@@ -51,7 +63,7 @@ describe("Project store remote persistence", () => {
     vi.stubGlobal("fetch", fetchSpy);
     vi.resetModules();
 
-    const { store } = await import("@/project/store");
+    const { store } = await importDevStore();
     await store.load();
     store.update((draft) => {
       draft.meta.title = "must not overwrite canonical Supabase";
@@ -87,7 +99,7 @@ describe("Project store remote persistence", () => {
     storage.set("oprn:dev-project:127.0.0.1/?blankProject=1", serialize(staleProject));
 
     vi.resetModules();
-    const { store } = await import("@/project/store");
+    const { store } = await importDevStore();
     const project = await store.load();
     store.update((draft) => {
       draft.meta.title = "fresh project edits stay temporary";
@@ -115,7 +127,7 @@ describe("Project store remote persistence", () => {
     vi.stubGlobal("fetch", fetchSpy);
     vi.resetModules();
 
-    const firstModule = await import("@/project/store");
+    const firstModule = await importDevStore();
     await firstModule.store.load();
     const mapId = firstModule.store.getCurrent().startMapId;
     firstModule.store.update((draft) => {
@@ -126,7 +138,7 @@ describe("Project store remote persistence", () => {
     const saveResult = await firstModule.store.flush();
 
     vi.resetModules();
-    const secondModule = await import("@/project/store");
+    const secondModule = await importDevStore();
     await secondModule.store.load();
 
     expect(saveResult).toEqual({ kind: "saved-local" });
@@ -147,7 +159,7 @@ describe("Project store remote persistence", () => {
     });
     vi.resetModules();
 
-    const { store } = await import("@/project/store");
+    const { store } = await importDevStore();
     await store.load();
 
     expect(store.getDbPersistenceStatus()).toEqual({ kind: "disabled", reason: "dev-showcase" });
@@ -201,12 +213,23 @@ describe("Project store remote persistence", () => {
     vi.resetModules();
     const { store } = await import("@/project/store");
 
-    // When: the first-boot connection flow reconnects to the selected project.
-    const result = await store.reconnectRemotePersistence();
+    const sync = await import("@/project/supabaseProjectSync");
+    const commits = vi.spyOn(sync, "recordProjectCommitToSupabase");
+    try {
+      // When: the first-boot connection flow reconnects to the selected project.
+      const result = await store.reconnectRemotePersistence();
 
-    // Then: connected means the editor can pass its loaded gate immediately.
-    expect(result).toEqual({ kind: "connected", source: "remote" });
-    expect(store.isLoaded()).toBe(true);
+      // Then: connected means the editor can pass its loaded gate immediately.
+      expect(result).toEqual({ kind: "connected", source: "remote" });
+      expect(store.isLoaded()).toBe(true);
+    } finally {
+      // Normalization launches a real commit writer after saving. Drain its returned
+      // completion before the next test replaces fetch and the selected project.
+      await Promise.all(commits.mock.results.map(result => {
+        if (result.type !== "return") throw result.value;
+        return result.value;
+      }));
+    }
   });
 
   it("does not create a DB project when the selected project row is missing", async () => {

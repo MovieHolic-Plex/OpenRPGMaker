@@ -53,8 +53,14 @@ describe("스크래치 세션(원격 저장 비활성)의 맵 편집 락", () =>
     const { store } = await import("@/project/store");
     store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: true });
     const locks = await import("@/editor/mapEditLocks");
-    await locks.checkoutMapForEditing("map_live", "라이브");
-    expect(fetchMock).toHaveBeenCalled();
+    try {
+      await locks.checkoutMapForEditing("map_live", "라이브");
+      expect(fetchMock).toHaveBeenCalled();
+    } finally {
+      // Release the owned lock and stop its heartbeat before resetting the module/global fetch.
+      store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: false });
+      await locks.checkoutMapForEditing("map_live", "라이브");
+    }
   });
 
   it("스크래치 세션은 강제 탈취(takeover)도 원격 호출 없이 무시된다", async () => {
@@ -69,27 +75,34 @@ describe("스크래치 세션(원격 저장 비활성)의 맵 편집 락", () =>
   });
 
   it("취득 대기 중 스크래치 전환되면 잡은 락을 즉시 반납한다", async () => {
-    const pendingResolvers: ((response: Response) => void)[] = [];
-    const fetchMock = vi.fn<typeof fetch>((input, init) => {
-      if (init?.method === "DELETE") return Promise.resolve(new Response("", { status: 204 }));
-      return new Promise<Response>((resolve) => {
-        pendingResolvers.push(resolve);
-      });
+    let resolveLookup!: (response: Response) => void;
+    const lookup = new Promise<Response>(resolve => { resolveLookup = resolve; });
+    const fetchMock = vi.fn<typeof fetch>(async (_input, init) => {
+      if (init?.method === "DELETE") return new Response(null, { status: 204 });
+      if (init?.method === "POST") return new Response(null, { status: 201 });
+      return lookup;
     });
     vi.stubGlobal("fetch", fetchMock);
     const { store } = await import("@/project/store");
     store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: true });
     const locks = await import("@/editor/mapEditLocks");
     const pending = locks.checkoutMapForEditing("map_flip", "전환");
-    store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: false });
-    while (pendingResolvers.length > 0) {
-      const batch = pendingResolvers.splice(0);
-      batch.forEach((resolve) => resolve(new Response("[]", { status: 200 })));
-      await new Promise((tick) => setTimeout(tick, 0));
+    try {
+      // The lookup is held before acquisition; no timer-driven draining of later requests.
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(fetchMock.mock.calls[0]?.[1]?.method ?? "GET").toBe("GET");
+      store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: false });
+      resolveLookup(new Response("[]", { status: 200 }));
+      await pending;
+      const deleteCalls = fetchMock.mock.calls.filter(([, init]) => init?.method === "DELETE");
+      expect(deleteCalls.length, "스크래치 전환 시 락 반납 DELETE가 나가야 한다").toBeGreaterThan(0);
+      expect(fetchMock.mock.calls.map(([, init]) => init?.method ?? "GET")).toEqual(["GET", "POST", "DELETE"]);
+      expect(locks.getMapEditLockStatus().kind).toBe("idle");
+    } finally {
+      store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: false });
+      resolveLookup(new Response("[]", { status: 200 }));
+      await pending;
+      await locks.checkoutMapForEditing("map_flip", "전환");
     }
-    await pending;
-    const deleteCalls = fetchMock.mock.calls.filter(([, init]) => init?.method === "DELETE");
-    expect(deleteCalls.length, "스크래치 전환 시 락 반납 DELETE가 나가야 한다").toBeGreaterThan(0);
-    expect(locks.getMapEditLockStatus().kind).toBe("idle");
   });
 });
