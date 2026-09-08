@@ -1,5 +1,25 @@
 # Editor AI Tools & Vocabulary
 
+## Exact project values and sourced declarations (2026-09-08)
+
+The existing acceptance ledger supports `projectTitle` (exact `meta.title` and
+`system.titleScreen.title`), `itemValues` (one exact item ID, with requested
+name/price), and `projectPreserve` (the immutable request baseline outside an
+explicit finite list of title/item changes). `scope:"project"` includes wiki
+content; `scope:"authored"` reuses the existing coordinator-owned wiki exclusion
+and must not be described as whole-project or wiki preservation. Missing,
+duplicate or wrong targets and unauthorized changes fail.
+
+`wikiDeclaration` takes `documentId`, `combatMode` and `sourceQuote`. It requires
+one unsuperseded explicit declaration with that mode, a unique quote in the
+ledger-owned original request, and a canonical user source whose full text
+matches that request. This proves a stored preference, not working combat or
+visible monsters. Unresolved runtime requirements remain unresolved.
+
+All four criteria evaluate actual current data and retain the applied/draft
+distinction. Model success flags or supplied provenance are not evidence.
+Implementation: `src/ai/assistantAcceptance{,Evaluation,Ledger,Tools}.ts`.
+
 ## Action enemy profile edits (2026-09-07)
 
 `make_action_enemy` patches an existing enemy's `actionProfile`: omitted fields,

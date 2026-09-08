@@ -1,3 +1,28 @@
+## P3 request-bound fixture alignment (2026-09-08)
+
+`test/assistantAcceptanceProject.test.ts` exercises exact title/item values,
+finite preservation allowances, applied/draft state and sourced wiki declarations
+through real tool and wiki paths. Retain `context.project` after a writing tool:
+the runner replaces that object. Wiki fixture IDs must be canonical `w_` IDs.
+
+`test/aiHarnessResponderProtocol.node.test.mjs` keeps intent and
+`REQUEST_COVERAGE_AUDIT` dispatch separate without consuming tool rounds or
+releasing a held response. Native P2 requests now state their actual obligations,
+and matching planner requirements use the mandatory host coverage IDs. Assert
+their original source, required flag and real evidence, not just list length.
+Newly audited authoring is assessed; genuine legacy scheduler-only cases retain
+the legacy outcome distinction.
+
+Native commit-A requests recording a sourced preference, not implementing combat.
+Its title/wiki effects, B's item value and completion before late A, and every
+original fault/ownership assertion remain required. Preserve historical opaque
+requests and failed runs as history, not fresh passing evidence. Run
+`scripts/qa/ai-harness-contracts.mjs --scenario <name>` for `late-cancel`,
+`human-edit-race`, `proof-failure`, `required-skip` and `outcome-matrix` against the
+final combined source with isolated remote fixtures and complete cleanup.
+Reuse unchanged scoped evidence; do not rerun broad suites for documentation or
+fixture-only corrections. These commands are requirements, not a pass claim.
+
 ## Issue 693 verification contracts (2026-09-08)
 
 The commit probe's fake DOM implements number-input `valueAsNumber` and numeric
