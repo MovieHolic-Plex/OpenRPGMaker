@@ -40,7 +40,7 @@ function visitCommands(commands: readonly Command[], found: Set<CommandKind>): v
   }
 }
 
-function nestedCommandLists(command: Command): readonly (readonly Command[])[] {
+export function nestedCommandLists(command: Command): readonly (readonly Command[])[] {
   switch (command.kind) {
     case "choices":
       return [

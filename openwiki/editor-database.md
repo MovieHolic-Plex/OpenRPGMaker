@@ -76,12 +76,54 @@ until those removals have real ownership evidence.
 - 상태는 pending/mapped/no-face, 품질은 unspecified/exact/approximate다. pending 이름 편집은 검토 완료가 아니며, no-face는 명시적인 값이다. 그림으로 얼굴을 지정해도 속성을 복사하지 않고 기존 맵·이벤트 명령을 바꾸지 않는다.
 - `rpg-zzu-npc-face-mapping` v1 `mappings`를 가져올 때 label/note/status/faceResourceId를 보존하며 품질 생략은 unspecified다. v2는 같은 mappings에 attributes/quality를 더하고 `faces: [{resourceId,label,note,attributes}]`를 갖는다. 전체 검증 후 history + labeled store.update 한 번으로 적용한다. 중복·잘못된 칸·알 수 없는 얼굴은 전체 가져오기를 거부한다.
 - QA 진입: 기존 데이터베이스 → 시스템 → 캐릭터·얼굴. `db-cg-view-sprites`/`db-cg-view-faces`, `db-cg-import-file`, `db-cg-import-json`/`db-cg-import-apply`, `db-cg-export`가 공개 표면이다. 이름·속성 필터와 얼굴 후보 필터는 독립된 editor-only 상태다. 테스트: `characterGraphics.test.ts`, `characterGraphicsLoad.test.ts`, `databaseCharacterGraphics.test.ts`; 브라우저/원격 저장 검증은 별도다.
+## Character appearance catalog v1 (2026-09-06)
+
+Database > Party > `캐릭터 외형` (`characterAppearances`,
+`db-tab-character-appearances`) is a reusable visual catalog, separate from
+resident relationships. `databaseAppearanceView.ts` and
+`databaseAppearanceSlots.ts` reuse the Database Studio list/detail primitives.
+Authors create partial records, edit name/appearance description, search without
+replacing the input, duplicate independently, and see actor/page/portrait-command
+usage before deletion. Deletion is blocked while referenced and never deletes
+the underlying images.
+
+Each set has a manually chosen walking charset/cell, a standalone face and an
+optional bust. Slot upload opens the existing resource manager with the correct
+kind; the author then selects the imported resource. Actor and event-page
+selectors retain direct graphics and store only an appearance link. The existing
+portrait command can select a shared set and explicit face/bust presentation.
+
+Event-page selectors are upgraded to custom dropdown buttons. Before committing
+an appearance change, focus that logical trigger so the event modal's existing
+interaction snapshot can restore it after rerender. Keyboard QA must target
+`data-custom-select-for`, not the hidden native select's testid. Choosing an
+option through the actual popup is distinct from programmatic `selectOption`.
+
+Event previews accept both canonical charset resource IDs and legacy texture
+keys through the shared charset catalog lookup. Editor map markers also project
+the appearance before resolving their texture/frame; reading only the stored
+direct sprite would leave a linked NPC invisible in the event layer.
+`characterAppearancePreview` and `editSceneRender` tests cover both boundaries;
+`xvfb-run -a node scripts/qa/appearance-preview-proof.mjs` exercises the real UI.
+
+AI generation is limited to face/bust candidates. Walking charsets are reference
+inputs only, never generation outputs. The DB shows generated artwork before
+explicit Apply; an occupied slot has an explicit replacement action. Existing
+art remains until application, and a candidate image must load successfully
+before Apply is enabled. The shared generation controller owns stale-target and
+project-switch checks. World/lore coupling, expression variants and automatic
+cutscene insertion are not part of v1.
+
+Tests: `characterAppearanceEditor`, `characterAppearanceLifecycle`,
+`databaseTabIcons` and `databaseSidebarNav`. The supported viewport matrix is
+1024x768, 1280x800 and 1440x900; list and detail have independent bounded scrolls.
 
 ## Concept navigation integration (2026-09-06)
 
 PR617's concept-first Map rail is integrated with the current unified inventory
 catalog: 34 primary destinations including Opening and Game Over, only
 `scratchConcepts` and `tilesets` under Map,
+catalog: 33 primary destinations after adding Character appearance v1, only `scratchConcepts` and `tilesets` under Map,
 and `commonEvents` under System. Legacy Map destinations remain contextual/search
 routes. `equipment` search finds the single `items` destination; programmatic
 `equipment` navigation retains the catalog's equipment-filter/selection behavior.

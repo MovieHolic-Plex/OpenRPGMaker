@@ -219,7 +219,7 @@ export function createPlayerStatusMenuSnapshot(
       name: resolveActorName(session, actor),
       levelLabel: `L${level}`,
       condition: "정상",
-      faceResourceId: resolveActorFaceResourceId(session, actor) ?? defaultActorFaceResourceId(actor),
+      faceResourceId: resolveActorFaceResourceId(session, actor, project) ?? defaultActorFaceResourceId(actor),
       hpLabel: vitals ? `${hpTerm} ${vitals.hp}/${vitals.maxHp}` : `${hpTerm} 0/0`,
       mpLabel: vitals ? `${mpTerm} ${vitals.mp}/${vitals.maxMp}` : `${mpTerm} 0/0`,
       hpValueLabel: vitals ? `${vitals.hp}/${vitals.maxHp}` : "0/0",

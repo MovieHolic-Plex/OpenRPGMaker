@@ -3,7 +3,43 @@
 Branch: `agent/event-battle-reliability`.
 Base: `origin/main` at `1959dec2e`; scope commit: `0fe161e7d`.
 Implementation task: `st_01a07fab`. This is a candidate, not review approval.
-No content DB writes, push, PR messages, merge or deployment were performed.
+No content DB writes, push, PR messages, PR merge or deployment were performed.
+
+## Review P1 revision and main integration
+
+Ultrabrain requested changes on `68c87888e`: the result-confirm callback had
+already set `exiting` when a synchronous exit-transition factory or `exit()`
+throw escaped, leaving its promise and foreground ownership unsettled.
+
+Repair commit `6d45807d0` wraps only that synchronous invocation boundary and
+routes it to the existing `fail` handler; asynchronous rejection retains the
+same handler. `battleResultTransitionFailure.test.ts` mounts the real battle
+DOM/runtime and invokes the actual callback supplied to it through a real
+foreground event. The only injected fault is the transition adapter. It checks
+factory throw, exit throw, async rejection, and late rejection after cancellation
+or session replacement: bounded settlement, a runtime error node, no rewards,
+outcome or event continuation, and DOM/audio/input/lease cleanup.
+
+RED: two tests failed because `factory-throw` and `exit-throw` escaped the callback;
+the async rejection and two stale-owner regressions already passed. GREEN before
+merge: 31 tests across three suites. Logs are under
+`/dev/shm/st_01a07fab-event-battle-evidence/review-p1/`.
+
+Fetched and merged `origin/main` at `8ab349dfc21cb0c0c22a554f74a25bdeb05ab741`
+without rewriting history. Only `openwiki/INDEX.md` and
+`openwiki/editor-event-authoring.md` conflicted: both authoring sections were
+preserved and the index regenerated. Inspected the auto-merged validator: battle
+admission checks remain, alongside main's item-plus-equipment shop references.
+
+Final merged validation: **150 tests across 14 suites passed in one run with
+maxWorkers=2**, `typecheck:app` passed, changed-code diagnostics were clean, and
+OpenWiki verification/index checks passed. Evidence: `focused-merged.log`,
+`typecheck-merged.log`, `wiki-merged.log`, and `red.log` in the directory above.
+The lead's old-candidate editor/runtime QA and build evidence remains in
+`.scratch/lead-verification.md`; it is not a revised-candidate pass claim. The
+obsolete full-gates run was stopped, not passed. Revised full gates/build and
+ultrabrain rereview remain lead-owned. The sections below record the initial
+implementation evidence and are superseded by this revision where applicable.
 
 ## Delivered boundaries
 

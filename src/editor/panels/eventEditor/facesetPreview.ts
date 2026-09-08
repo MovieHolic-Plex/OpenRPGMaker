@@ -15,6 +15,7 @@ import { el } from "@/util/dom";
 const FACE_PREVIEW_SIZE = 96;
 
 export type FacesetPreviewOptions = {
+  readonly presentation?: "face" | "bust";
   readonly flipHorizontally: boolean;
   readonly position: "left" | "right";
   readonly resourceId: string;
@@ -27,7 +28,7 @@ export function renderFacesetPreview(options: FacesetPreviewOptions): HTMLElemen
   const resourceId = options.resourceId.trim();
   const name = facesetName(resourceId);
   const url = resolveAssetResourceUrl(resourceId, { project: store.getCurrent() });
-  const mode = faceDisplayModeOf(resourceId);
+  const mode = options.presentation === "bust" ? "bust" : options.presentation === "face" ? "chip" : faceDisplayModeOf(resourceId);
   const bust = mode !== "chip";
   const preview = el("div", {
     class: `event-command-face-preview${options.flipHorizontally ? " flipped" : ""}${bust ? " is-bust" : ""} face-mode-${mode}`,

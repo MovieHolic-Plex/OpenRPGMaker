@@ -195,6 +195,7 @@ export type MessageWindowSettings = {
 export type FaceGraphic = {
   /** 낱장 얼굴 리소스 id. 얼굴 한 칸 = 파일 한 장이라 칸 번호가 없다. */
   readonly resourceId: string;
+  readonly presentation?: "face" | "bust";
   readonly position: "left" | "right";
   readonly flipHorizontally: boolean;
 };
@@ -238,7 +239,7 @@ export type Command =
       /** true 면 키 입력 없이 다음 단계로 진행. */
       autoAdvance?: boolean;
     }
-  | ({ kind: "changeFace" } & FaceGraphic)
+  | ({ kind: "changeFace"; appearanceId?: string } & FaceGraphic)
   | {
       kind: "choices";
       prompt?: string;
@@ -439,6 +440,7 @@ export type EventAnimationType =
   | "fourFrame";
 
 export interface EventPageGraphic {
+  appearanceId?: string;
   sprite?: AssetRef;
   direction?: Dir;
   pattern?: number;

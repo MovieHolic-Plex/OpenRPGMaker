@@ -20,6 +20,9 @@ import {
   enterAudioSearch,
 } from "./support/audioSearchFixture";
 
+// Preserve baseline fallback surface coverage; audioAiDescriptions.test.ts uses real drafts.
+vi.mock("@/assets/audioAiDescriptions", () => ({ getAudioAiDescription: () => undefined }));
+
 let previous: Project;
 beforeEach(() => {
   previous = store.getCurrent();
