@@ -58,14 +58,24 @@ export class FakeNode {
 
   set textContent(value: string) {
     this.ownText = value;
+    for (const child of this.childNodes) child.parentNode = null;
     this.childNodes.length = 0;
   }
 
+  /** Native adopt: a node has one parent. insertBefore without this left the old child in both lists. */
+  private adopt(node: FakeNode): void {
+    if (node.parentNode) node.parentNode.removeChild(node);
+    node.parentNode = this;
+  }
+
   append(...children: FakeNode[]): void {
-    for (const child of children) {
-      child.parentNode = this;
-      this.childNodes.push(child);
-    }
+    for (const child of children) this.appendChild(child);
+  }
+
+  appendChild(node: FakeNode): FakeNode {
+    this.adopt(node);
+    this.childNodes.push(node);
+    return node;
   }
 
   insertBefore(node: FakeNode, ref: FakeNode | null): FakeNode {
@@ -75,8 +85,7 @@ export class FakeNode {
       throw error;
     }
     if (node === ref) return node;
-    if (node.parentNode) node.parentNode.removeChild(node);
-    node.parentNode = this;
+    this.adopt(node);
     if (ref === null) {
       this.childNodes.push(node);
       return node;
@@ -91,14 +100,20 @@ export class FakeNode {
     return node;
   }
 
-  removeChild(child: FakeNode): void {
+  removeChild(child: FakeNode): FakeNode {
     const index = this.childNodes.indexOf(child);
-    if (index >= 0) this.childNodes.splice(index, 1);
+    if (index < 0) {
+      const error = new Error("Failed to execute 'removeChild': The node to be removed is not a child of this node.");
+      error.name = "NotFoundError";
+      throw error;
+    }
+    this.childNodes.splice(index, 1);
+    child.parentNode = null;
+    return child;
   }
 
   remove(): void {
     this.parentNode?.removeChild(this);
-    this.parentNode = null;
   }
 
   replaceWith(...nodes: FakeNode[]): void {
@@ -113,7 +128,7 @@ export class FakeNode {
 
   prepend(...children: FakeNode[]): void {
     for (const child of children.slice().reverse()) {
-      child.parentNode = this;
+      this.adopt(child);
       this.childNodes.unshift(child);
     }
   }
@@ -351,6 +366,16 @@ export class FakeElement extends FakeNode {
       current = current.parentElement;
     }
     return null;
+  }
+
+  matches(selector: string): boolean {
+    const trimmed = selector.trim();
+    if (trimmed === ":disabled") {
+      return this.disabled && (this.tagName === "BUTTON" || this.tagName === "INPUT"
+        || this.tagName === "SELECT" || this.tagName === "TEXTAREA"
+        || this.tagName === "OPTION" || this.tagName === "OPTGROUP");
+    }
+    return matchesSelector(this, trimmed);
   }
 
   querySelector(selector: string): FakeElement | null {
