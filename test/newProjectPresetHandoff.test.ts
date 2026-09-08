@@ -82,19 +82,25 @@ it("New Project preset waits for project creation AND conversation adoption befo
     const body = JSON.parse(String(init?.body ?? "{}"));
     if (!Array.isArray(body.messages)) return new Response("{}");
     if (isWikiExtraction(body.messages)) return emptyWikiResponse();
-    if (!body.response_format) {
-      modelRequests.push(body);
-      requested.resolve({ body, signal: init!.signal! });
+    if (body.response_format) {
+      return Response.json({ choices: [{ message: { role: "assistant", content: '{"mode":"other","needsPlan":false}' }, finish_reason: "stop" }] });
     }
-    return Response.json({ choices: [{ message: { role: "assistant", content: body.response_format
-      ? '{"mode":"other","needsPlan":false}' : "done" }, finish_reason: "stop" }] });
+    // Ordering fixture only: first writer is a documented non-retryable provider
+    // failure so sendText settles externally blocked. Not genre-generation success.
+    modelRequests.push(body);
+    requested.resolve({ body, signal: init!.signal! });
+    return new Response(JSON.stringify({ error: { message: "unauthorized", type: "auth" } }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
   }));
+  const loadLatest = vi.spyOn(conversationStore, "loadLatestConversationForScope").mockResolvedValue(null);
   document.body.append(renderAiChatPanel());
   await signal(whenAiChatPanelSettled());
 
   const adoption = deferred<null>();
   const adoptionStarted = deferred<void>();
-  vi.spyOn(conversationStore, "loadLatestConversationForScope").mockImplementation(() => {
+  loadLatest.mockImplementation(() => {
     adoptionStarted.resolve();
     return adoption.promise;
   });
@@ -149,6 +155,8 @@ it("New Project preset waits for project creation AND conversation adoption befo
     expect(request.body.messages).toEqual(expect.arrayContaining([expect.objectContaining({ role: "user", content: expect.stringContaining(handoff.mock.calls[0]![0]) })]));
     expect(handoff).toHaveBeenCalledOnce();
     expect(store.getCurrent().system.monsterCollection).toBe(true);
+    const harness = (globalThis as { __oprnAiHarness?: () => { execution?: { state?: string } } }).__oprnAiHarness?.();
+    if (harness?.execution?.state) expect(harness.execution.state).toBe("external-blocker");
   } finally {
     creation.resolve();
     adoption.resolve(null);
