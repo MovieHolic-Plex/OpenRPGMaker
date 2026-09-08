@@ -1,0 +1,42 @@
+{
+  "url": "http://127.0.0.1:19847/?freshProject=1",
+  "browser": "Firefox isolated context",
+  "webViewFallback": "Bun.WebView rejected worker-thread execution; used installed Playwright Firefox",
+  "entry": "Current Tools menu has no menu-tools-resources item; used real toolbar-resource-manager button instead for the same resource manager.",
+  "scenarios": [
+    {
+      "kind": "music",
+      "id": "cc0-bgm-rtp-fld-001",
+      "source": "ai-listening",
+      "defaultMatches": true,
+      "overrideReopened": true,
+      "clear": true,
+      "reset": true,
+      "width": 1440,
+      "artifact": "music-reset-1440.png"
+    },
+    {
+      "kind": "sound",
+      "id": "cc0-se-orp-interface-interface1",
+      "source": "ai-listening",
+      "defaultMatches": true,
+      "overrideReopened": true,
+      "clear": true,
+      "reset": true,
+      "width": 1024,
+      "artifact": "sound-reset-1024.png"
+    }
+  ],
+  "reloadDefault": true,
+  "geometry": {
+    "x": 617,
+    "y": 308,
+    "width": 206,
+    "height": 133,
+    "viewport": 1024,
+    "overflow": false
+  },
+  "pageErrors": [],
+  "runtimeBundlesChecked": 4,
+  "playerDraftLeaks": []
+}

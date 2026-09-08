@@ -1,0 +1,46 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/audioAiDescriptions.test.ts test/audioResourceCatalog.test.ts test/audioResourceSearchContract.test.ts test/audioDescriptionCommandSurfaces.test.ts test/audioDescriptionPickerSurfaces.test.ts
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-clear-meadow-c0aa
+
+ ✓ test/audioResourceCatalog.test.ts (17 tests) 436ms
+ ✓ test/audioAiDescriptions.test.ts (31 tests) 3454ms
+   ✓ shared AI audio draft integration > ships only valid, unique, known drafts with retained model and review provenance  1478ms
+   ✓ shared AI audio draft integration > does not persist shared defaults when listing then saving a project  1065ms
+ ✓ test/audioDescriptionCommandSurfaces.test.ts (7 tests) 8050ms
+   ✓ selected command audio descriptions > finds the effective description when searching the inline play-audio editor  1335ms
+   ✓ selected command audio descriptions > reads fresh metadata when editing a selection after the project changed  1260ms
+   ✓ selected command audio descriptions > updates the actual M2 preview when selecting music  806ms
+   ✓ selected command audio descriptions > updates the actual M2 preview when selecting sound  2907ms
+   ✓ selected command audio descriptions > includes catalog-only resources when rendering an M2 audio selector  1014ms
+   ✓ selected command audio descriptions > shows the full effective description through the real command-preview dispatch  367ms
+   ✓ selected command audio descriptions > retains the stopAudio surface without adding selected-resource metadata  352ms
+ ✓ test/audioResourceSearchContract.test.ts (14 tests) 3114ms
+   ✓ effective audio description search > suppresses the old brief when the override is "AUDIO_SEARCH_ONLY_6F12C9"  306ms
+   ✓ effective audio description search > suppresses the inherited AI result when the override is ""  475ms
+   ✓ effective audio description search > suppresses the inherited AI result when the override is "AUDIO_SEARCH_ONLY_6F12C9"  365ms
+ ✓ test/audioDescriptionPickerSurfaces.test.ts (17 tests) 25048ms
+   ✓ audio picker descriptions > does not confirm a removed selected audio resource  1652ms
+   ✓ audio picker descriptions > refreshes an open picker when its project description changes  1708ms
+   ✓ audio picker descriptions > stops refreshing detached content when the picker closes  2764ms
+   ✓ audio picker descriptions > closes the old audio picker when the project is replaced  3958ms
+   ✓ audio picker descriptions > retrieves a description-only result in the music picker  2649ms
+   ✓ audio picker descriptions > retrieves a description-only result in the sound picker  1672ms
+   ✓ audio picker descriptions > refreshes catalog inheritance when reopening after cleared  2216ms
+   ✓ audio picker descriptions > refreshes catalog inheritance when reopening after reset  2544ms
+   ✓ audio picker descriptions > uses the new project when reopening the picker after a project switch  1588ms
+   ✓ audio picker descriptions > keeps the upload name and one option when a profile references the same upload  360ms
+   ✓ audio test dialog catalog > refreshes selected metadata and description-only search while open  835ms
+   ✓ audio test dialog catalog > closes an open audio test dialog on project replacement  484ms
+   ✓ audio test dialog catalog > unsubscribes when closed or replaced by a new audio test dialog  404ms
+   ✓ audio test dialog catalog > clears the selected audio-test resource when it is removed  524ms
+   ✓ audio test dialog catalog > includes the large music catalog and uploaded descriptions  606ms
+   ✓ audio test dialog catalog > includes the large sound catalog and uploaded descriptions  607ms
+   ✓ audio test dialog catalog > shows full selected upload metadata when the filtered upload is selected  428ms
+
+ Test Files  5 passed (5)
+      Tests  86 passed (86)
+   Start at  14:48:47
+   Duration  66.21s (transform 69.18s, setup 0ms, collect 172.73s, tests 40.10s, environment 2.03s, prepare 2.42s)

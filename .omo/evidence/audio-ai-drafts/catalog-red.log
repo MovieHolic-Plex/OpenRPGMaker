@@ -1,0 +1,113 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/audioAiDescriptions.test.ts
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-clear-meadow-c0aa
+
+ ❯ test/audioAiDescriptions.test.ts (8 tests | 5 failed) 287ms
+   × shared AI audio draft integration > inherits an AI draft for shipped music without a project override 107ms
+     → expected { id: 'cc0-bgm-rtp-fld-001', …(5) } to match object { id: 'cc0-bgm-rtp-fld-001', …(1) }
+(4 matching properties omitted from actual)
+   × shared AI audio draft integration > inherits an AI draft for shipped sound without a project override 22ms
+     → expected { …(6) } to match object { …(2) }
+(4 matching properties omitted from actual)
+   × shared AI audio draft integration > keeps explicit "" ahead of a draft and resets to the draft 58ms
+     → expected 'catalog-brief' to be 'ai-listening' // Object.is equality
+   × shared AI audio draft integration > keeps explicit "PROJECT_AUDIO_SENTINEL" ahead of a draft and resets to the draft 35ms
+     → expected 'catalog-brief' to be 'ai-listening' // Object.is equality
+   ✓ shared AI audio draft integration > retains the creative brief for withheld cc0-bgm-rtp-lft-001 2ms
+   ✓ shared AI audio draft integration > retains the creative brief for withheld cc0-bgm-rtp-rad-001 12ms
+   ✓ shared AI audio draft integration > retains the creative brief for withheld cc0-bgm-rtp-prx-006 1ms
+   × shared AI audio draft integration > does not mutate projects, register orphan overrides, or cross kind partitions 48ms
+     → expected 'catalog-brief' to be 'ai-listening' // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/audioAiDescriptions.test.ts > shared AI audio draft integration > inherits an AI draft for shipped music without a project override
+AssertionError: expected { id: 'cc0-bgm-rtp-fld-001', …(5) } to match object { id: 'cc0-bgm-rtp-fld-001', …(1) }
+(4 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "descriptionSource": "ai-listening",[39m
+[31m+   "descriptionSource": "catalog-brief",[39m
+[2m    "id": "cc0-bgm-rtp-fld-001",[22m
+[2m  }[22m
+
+ ❯ test/audioAiDescriptions.test.ts:18:24
+     16|     (kind, id) => {
+     17|       const resource = listAudioResources(kind, empty).find(entry => e…
+     18|       expect(resource).toMatchObject({ id, descriptionSource: "ai-list…
+       |                        ^
+     19|       expect(resource?.description.length).toBeGreaterThan(0);
+     20|     },
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  test/audioAiDescriptions.test.ts > shared AI audio draft integration > inherits an AI draft for shipped sound without a project override
+AssertionError: expected { …(6) } to match object { …(2) }
+(4 matching properties omitted from actual)
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "descriptionSource": "ai-listening",[39m
+[31m+   "descriptionSource": "metadata-derived",[39m
+[2m    "id": "cc0-se-orp-interface-interface2",[22m
+[2m  }[22m
+
+ ❯ test/audioAiDescriptions.test.ts:18:24
+     16|     (kind, id) => {
+     17|       const resource = listAudioResources(kind, empty).find(entry => e…
+     18|       expect(resource).toMatchObject({ id, descriptionSource: "ai-list…
+       |                        ^
+     19|       expect(resource?.description.length).toBeGreaterThan(0);
+     20|     },
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  test/audioAiDescriptions.test.ts > shared AI audio draft integration > keeps explicit "" ahead of a draft and resets to the draft
+ FAIL  test/audioAiDescriptions.test.ts > shared AI audio draft integration > keeps explicit "PROJECT_AUDIO_SENTINEL" ahead of a draft and resets to the draft
+AssertionError: expected 'catalog-brief' to be 'ai-listening' // Object.is equality
+
+Expected: [32m"ai-listening"[39m
+Received: [31m"catalog-brief"[39m
+
+ ❯ test/audioAiDescriptions.test.ts:33:41
+     31|     const restored = listAudioResources("music", empty).find(entry => …
+     32|     expect(restored).toEqual(inherited);
+     33|     expect(restored?.descriptionSource).toBe("ai-listening");
+       |                                         ^
+     34|   });
+     35|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  test/audioAiDescriptions.test.ts > shared AI audio draft integration > does not mutate projects, register orphan overrides, or cross kind partitions
+AssertionError: expected 'catalog-brief' to be 'ai-listening' // Object.is equality
+
+Expected: [32m"ai-listening"[39m
+Received: [31m"catalog-brief"[39m
+
+ ❯ test/audioAiDescriptions.test.ts:55:74
+     53|     const music = listAudioResources("music", project);
+     54|     const sound = listAudioResources("sound", project);
+     55|     expect(music.find(entry => entry.id === musicId)?.descriptionSourc…
+       |                                                                          ^
+     56|     expect(sound.find(entry => entry.id === musicId)).toMatchObject({
+     57|       description: "WRONG_KIND", descriptionSource: "project",
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed | 3 passed (8)
+   Start at  14:25:20
+   Duration  3.63s (transform 1.61s, setup 0ms, collect 1.87s, tests 287ms, environment 0ms, prepare 318ms)
+
+
+EXIT_CODE=1

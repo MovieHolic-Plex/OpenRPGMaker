@@ -1,0 +1,83 @@
+{
+  "baseCommit": "db895b1a5",
+  "headCommit": "76670dee6",
+  "testFiles": [
+    "test/aiActivityNarration.test.ts",
+    "test/aiChatObservability.test.ts",
+    "test/aiChatPanelTransportError.test.ts",
+    "test/aiImageGenerateField.test.ts",
+    "test/aiImageGenerateQueue.test.ts",
+    "test/aiSelectionChipScope.test.ts",
+    "test/authorVillageFacade.test.ts",
+    "test/bootLoadFailureRecovery.test.ts",
+    "test/commitEditActivityAttachment.test.ts",
+    "test/databaseActions.test.ts",
+    "test/databaseAnimationPreview.test.ts",
+    "test/databaseItemInspector.test.ts",
+    "test/databaseOverviewDashboard.test.ts",
+    "test/databaseOverviewTab.test.ts",
+    "test/databaseRadioCustomGuard.test.ts",
+    "test/databaseSkillAnimationStage.test.ts",
+    "test/editorProjectE2EBridge.test.ts",
+    "test/eventEditorM2Surface.baseline.test.ts",
+    "test/eventEditorPortalSurface.baseline.test.ts",
+    "test/eventEditorShowAnimationPreview.test.ts",
+    "test/forestDensity.test.ts",
+    "test/gen1DemoContent.test.ts",
+    "test/horrorMysteryPrototype.test.ts",
+    "test/houseProtectionForest.test.ts",
+    "test/iceGrandExpanseGameplayProgression.test.ts",
+    "test/interiorBench.test.ts",
+    "test/interiorTerrainAutotiles.test.ts",
+    "test/loadNewRemoteProject.test.ts",
+    "test/manualCommitDiff.test.ts",
+    "test/mapClipboardFeedback.test.ts",
+    "test/mapEditLockScratchSession.test.ts",
+    "test/mapEditLocks.test.ts",
+    "test/modalEscapeLayerGate.test.ts",
+    "test/moveRouteCatalogPersistence.test.ts",
+    "test/noLocalProjectDb.test.ts",
+    "test/npcCastSession.test.ts",
+    "test/playerBootFactory.test.ts",
+    "test/regionRightDragNotifications.test.ts",
+    "test/regionSelectionPastePreview.test.ts",
+    "test/roleNameComparisonGate.test.ts",
+    "test/showPictureForm.test.ts",
+    "test/storeEventDraftPreserve.test.ts",
+    "test/storeFlushShaEvidence.test.ts",
+    "test/tilesetAiWorkspaceModal.test.ts",
+    "test/transactionalNewRemoteProject.test.ts",
+    "test/uxcLoadFailure.test.ts",
+    "test/villageBuilder.test.ts",
+    "test/walkthroughRunner.test.ts",
+    "test/eventEditorCommitProbe.baseline.test.ts",
+    "test/eventEditorFormSurface.baseline.test.ts",
+    "test/eventEditorInteractionSurface.baseline.test.ts"
+  ],
+  "base": {
+    "passed": 407,
+    "failed": 46
+  },
+  "head": {
+    "passed": 409,
+    "failed": 44
+  },
+  "sharedFailureNames": 43,
+  "remainingDelta": [
+    {
+      "key": "test/regionSelectionPastePreview.test.ts::북여넣기 미리보기 모드 복사 후 enterPastePreview → confirmPastePreview로 실제 붙여넣기",
+      "durationMs": 15060.12072
+    }
+  ],
+  "interpretation": "Remaining delta is a15060ms timeout (baseline13879ms). Unmodified current code passed all12 tests in the isolated file. Full gate remains exit1; baseline snapshots and timing-sensitive suite failures were not suppressed.",
+  "audioFullGate": {
+    "files": 23,
+    "failedFiles": []
+  },
+  "isolatedCurrent": {
+    "file": "test/regionSelectionPastePreview.test.ts",
+    "passed": 12,
+    "exitCode": 0,
+    "codeChangedBetweenRuns": false
+  }
+}

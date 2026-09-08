@@ -1,0 +1,17 @@
+✔ defaults to Pro and passes the selected model to the analyzer (198.652329ms)
+✔ preserves an explicitly chosen model (178.623992ms)
+✔ rejects malformed analysis {"description":"missing flag"} (559.919644ms)
+✔ rejects malformed analysis {"audio_available":"true","description":"wrong flag type"} (328.893387ms)
+✔ rejects malformed analysis {"audio_available":true,"description":""} (388.133747ms)
+✔ rejects malformed analysis {"audio_available":true,"description":" "} (485.538366ms)
+✔ rejects malformed analysis {"audio_available":true,"description":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx (201.312969ms)
+✔ no audio is not a successful batch exit (504.547868ms)
+✔ input failure is recorded and returns nonzero (137.31343ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3369.45802
