@@ -31,7 +31,9 @@
   .app-modal-message {
     font-size: 13px;
     line-height: 1.5;
+    overflow-wrap: break-word;
     white-space: pre-wrap;
+    word-break: keep-all;
   }
   .app-modal-actions {
     display: flex;
@@ -75,6 +77,13 @@
     background: var(--danger, #C6403D);
     border-color: var(--danger, #C6403D);
     color: var(--on-accent, #fff);
+  }
+  .app-modal-button.is-danger:hover,
+  .app-modal-button.is-danger.is-confirm:hover {
+    background: var(--danger, #C6403D);
+    border-color: var(--danger, #C6403D);
+    color: var(--on-accent, #fff);
+    filter: brightness(0.92);
   }
 
   .app-modal-input {

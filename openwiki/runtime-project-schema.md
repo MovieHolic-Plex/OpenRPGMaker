@@ -33,8 +33,14 @@ must pass it when saving canonical content. The legacy force-file utility refuse
 canonical writes rather than grafting a fresh token onto old file content.
 Q7/Q8 local API scenarios use `scripts/qa/spatial-persistence.mts --local-only`;
 they prove loopback HTTP/store behavior, not SQL authorization or deployment.
-Conflict-specific UI bindings, mirror-warning display and activation/copy controls
-remain a separate Grok UI task; this backend increment is not whole-task6 completion.
+Editor save/error/status controls bind `getPersistenceRecovery()`: a canonical
+conflict or migration-required error keeps the dirty draft and offers explicit
+reload plus export-copy, never a silent retry with a new token. Mirror failure
+stays a warning beside an accepted root save, and does not hide in-flight
+`AutoSaveState`. Explicit reload captures the dialog project id and rejects a
+live target change across the async import; export-copy preserves the local draft
+and active project identity. Activation remains an explicit operation, not an
+open-time side effect.
 
 ## P1 accepted-save receipts and read-only proof (2026-09-06)
 

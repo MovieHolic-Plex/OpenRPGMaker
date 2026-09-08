@@ -4,6 +4,7 @@ import { deserialize, serialize } from "../src/project/io";
 import { createBlankProject } from "../src/project/defaults";
 import { emptySpatialDocument } from "./support/spatialSchemaFixture";
 import { spatialStoreFixture } from "./support/spatialStoreFixture";
+import { spatialStoreLifecycle } from "./support/spatialStoreLifecycle";
 
 beforeEach(() => {
   vi.resetModules();
@@ -33,30 +34,34 @@ it("adopts insert-only new project authority when its root reload verifies", asy
   ]);
 }, 60_000);
 
-it("restores old authority and recovery when local adoption rolls back after remote creation", async () => {
-  // Given an accepted old canonical root and a failure at the selected-target storage boundary.
-  await using f = await spatialStoreFixture();
+spatialStoreLifecycle(async own => {
+  // Given an accepted old canonical root, before injecting any local commit failure.
+  const f = own(await spatialStoreFixture());
   await f.store.load();
   await f.store.flush();
   const originalSHA = f.http.state.sha;
   const before = serialize(f.store.getCurrent());
   const storedConfig = f.browser.localStorage.getItem("oprn:supabase-project-config");
   const candidate = deserialize(JSON.stringify({ ...createBlankProject(), spatialAuthoring: emptySpatialDocument() }));
-  const setItem = f.browser.localStorage.setItem;
-  const failingStorage = vi.spyOn(f.browser.localStorage, "setItem").mockImplementation((key, value) => {
-    if (key === "oprn:supabase-selected-project") throw new DOMException("fixture quota", "QuotaExceededError");
-    setItem(key, value);
-  });
-  // When the new root is accepted but local commit fails after adoption began.
-  await expect(f.store.loadNewRemoteProjectTransactionally(candidate, { projectId: "rollback-new" })).rejects.toMatchObject({ stage: "commit" });
-  failingStorage.mockRestore();
-  // Then the old content/config/authority still govern subsequent saves; accepted new root is not deleted.
-  expect(serialize(f.store.getCurrent())).toBe(before);
-  expect(f.browser.localStorage.getItem("oprn:supabase-project-config")).toBe(storedConfig);
-  expect(f.http.targets.get("rollback-new")?.root).not.toBeNull();
-  f.store.update(draft => { draft.meta.title = "old target after rollback"; });
-  await f.store.flush();
-  expect(f.http.trace.filter(call => call.path.endsWith("publish_spatial_project")).at(-1)?.body).toMatchObject({ p_project_id: f.http.config.projectId, p_operation: "update", p_expected_sha256: originalSHA });
+  return { f, originalSHA, before, storedConfig, candidate };
+}, run => {
+  it("restores old authority and recovery when local adoption rolls back after remote creation", () => run(async ({ f, originalSHA, before, storedConfig, candidate }) => {
+    const setItem = f.browser.localStorage.setItem;
+    const failingStorage = vi.spyOn(f.browser.localStorage, "setItem").mockImplementation((key, value) => {
+      if (key === "oprn:supabase-selected-project") throw new DOMException("fixture quota", "QuotaExceededError");
+      setItem(key, value);
+    });
+    // When the new root is accepted but local commit fails after adoption began.
+    await expect(f.store.loadNewRemoteProjectTransactionally(candidate, { projectId: "rollback-new" })).rejects.toMatchObject({ stage: "commit" });
+    failingStorage.mockRestore();
+    // Then the old content/config/authority still govern subsequent saves; accepted new root is not deleted.
+    expect(serialize(f.store.getCurrent())).toBe(before);
+    expect(f.browser.localStorage.getItem("oprn:supabase-project-config")).toBe(storedConfig);
+    expect(f.http.targets.get("rollback-new")?.root).not.toBeNull();
+    f.store.update(draft => { draft.meta.title = "old target after rollback"; });
+    await f.store.flush();
+    expect(f.http.trace.filter(call => call.path.endsWith("publish_spatial_project")).at(-1)?.body).toMatchObject({ p_project_id: f.http.config.projectId, p_operation: "update", p_expected_sha256: originalSHA });
+  }));
 });
 
 it("retains typed collision cause and current project when transactional create hits an existing row", async () => {

@@ -24,6 +24,10 @@ type FixtureRow = {
 /** Stateful wire fixture, NOT a PostgreSQL authorization/locking implementation. */
 export async function spatialPersistenceHttp() {
   const events = new EventEmitter();
+  const lifetime = new AbortController();
+  // Multi-stage operations own their deadline; short standalone waits keep the fixture default.
+  const wait = (event: string, scope: AbortSignal = AbortSignal.timeout(5000)) =>
+    once(events, event, { signal: AbortSignal.any([scope, lifetime.signal]) });
   const trace: HttpExchange[] = [];
   const errors: Error[] = [];
   const lifecycle = { closed: false };
@@ -41,7 +45,17 @@ export async function spatialPersistenceHttp() {
   const targets = new Map<string, FixtureRow>([["transport-fixture", state]]);
   const fenced = new Set<string>();
   const server = createServer((request, response) => {
+    const cors = {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "authorization,apikey,content-type,content-profile,accept-profile,prefer,x-client-info",
+      "Access-Control-Allow-Methods": "GET,POST,PATCH,DELETE,OPTIONS",
+    };
     const handle = async () => {
+      if (request.method === "OPTIONS") {
+        response.writeHead(204, cors);
+        response.end();
+        return;
+      }
       request.setEncoding("utf8");
       let text = "";
       for await (const chunk of request) text += String(chunk);
@@ -56,7 +70,7 @@ export async function spatialPersistenceHttp() {
         targets.set(projectId, row);
       }
       if (row.root && Object.hasOwn(row.root, "spatialAuthoring")) fenced.add(projectId);
-      const release = state.heldPath === path ? once(events, "release", { signal: AbortSignal.timeout(5000) }) : undefined;
+      const release = state.heldPath === path ? wait("release") : undefined;
       events.emit("request", path);
       events.emit(`request:${path}`);
       if (release) await release;
@@ -66,7 +80,25 @@ export async function spatialPersistenceHttp() {
       if (state.enforceFences && fenced.has(projectId) && protectedWrite) {
         status = 403; result = { code: "42501", message: "Fixture canonical fence" };
       } else if (request.method === "GET" && path === "/rest/v1/projects") {
-        result = row.root ? [{ project_id: projectId, current_json: row.root, current_sha256: row.sha }] : [];
+        const filtered = url.searchParams.get("project_id");
+        if (!filtered) {
+          result = [...targets.entries()].filter(([, candidate]) => candidate.root).map(([id, candidate]) => {
+            const root = candidate.root as Record<string, unknown>;
+            const meta = root.meta && typeof root.meta === "object" ? root.meta as { title?: string } : {};
+            const maps = root.maps && typeof root.maps === "object" ? root.maps : {};
+            return {
+              project_id: id,
+              title: meta.title ?? id,
+              map_count: Object.keys(maps).length,
+              tileset_count: 0,
+              updated_at: "2026-09-08T00:00:00Z",
+              current_json: candidate.root,
+              current_sha256: candidate.sha,
+            };
+          });
+        } else {
+          result = row.root ? [{ project_id: projectId, current_json: row.root, current_sha256: row.sha }] : [];
+        }
       } else if (request.method === "GET" && path === "/rest/v1/maps") {
         const selected = url.searchParams.get("map_id");
         const maps = selected ? row.maps.filter(map => `eq.${map.map_id}` === selected) : row.maps;
@@ -132,14 +164,14 @@ export async function spatialPersistenceHttp() {
       delete headers.authorization;
       delete headers.apikey;
       trace.push({ method: request.method ?? "GET", path: request.url ?? path, headers, body, status, response: structuredClone(result) });
-      response.writeHead(status, { "Content-Type": "application/json" });
+      response.writeHead(status, { "Content-Type": "application/json", ...cors });
       response.end(status === 204 ? undefined : JSON.stringify(result));
       events.emit(`completed:${path}`);
     };
     void handle().catch(error => {
       if (!(error instanceof Error)) throw error;
       errors.push(error);
-      response.writeHead(500); response.end(JSON.stringify({ code: "fixture-error", message: error.message }));
+      response.writeHead(500, cors); response.end(JSON.stringify({ code: "fixture-error", message: error.message }));
     });
   });
   const listening = once(server, "listening", { signal: AbortSignal.timeout(5000) });
@@ -150,11 +182,12 @@ export async function spatialPersistenceHttp() {
   const config: SupabaseProjectConfig = { url: `http://127.0.0.1:${address.port}`, anonKey: "local-fixture-only", projectId: "transport-fixture" };
   return {
     config, state, trace, lifecycle, targets,
-    requested: (path?: string) => once(events, path ? `request:${path}` : "request", { signal: AbortSignal.timeout(5000) }),
-    completed: (path: string) => once(events, `completed:${path}`, { signal: AbortSignal.timeout(5000) }),
+    requested: (path?: string, signal?: AbortSignal) => wait(path ? `request:${path}` : "request", signal),
+    completed: (path: string, signal?: AbortSignal) => wait(`completed:${path}`, signal),
     release: () => events.emit("release"),
     async [Symbol.asyncDispose]() {
       events.emit("release");
+      lifetime.abort();
       const closed = new Promise<void>((resolve, reject) => server.close(error => error ? reject(error) : resolve()));
       server.closeAllConnections();
       await closed;

@@ -40,6 +40,7 @@ import { downloadBlob } from "@/util/downloadBlob";
 import { clearChildren, el } from "@/util/dom";
 import { createLogger } from "@/util/logger";
 import { toast } from "@/util/toast";
+import { persistenceSurfaceVisible } from "@/editor/persistenceRecoveryUi";
 import { reloadProjectFromDbNow, saveProjectNow } from "@/editor/saveActions";
 import { uiLabel, type UiCopyKey } from "@/editor/uiCopy";
 import { requestCommandPalette } from "@/editor/panels/commandPalette";
@@ -385,6 +386,7 @@ function renderTopbarSaveStatus(topbar: HTMLElement): HTMLElement {
 
 function paintSaveStatus(host: HTMLElement, topbar: HTMLElement): void {
   const state = store.getAutoSaveState();
+  const recovery = store.getPersistenceRecovery();
   // 평상시의 pending·saving 은 접는다 — 실측(브라우저 캡처): 칩 폭이 281px 이라 타일 한 칸
   // 칠할 때마다 pending 으로 떴다가 4초 뒤 사라지면서 바로 옆 `테스트`·`AI 설정` 버튼이 그만큼
   // 좌우로 튄다. 그리는 중에 버튼이 커서 밑에서 움직이는 건 오히려 오조작을 만든다. 진행 상황은
@@ -392,9 +394,9 @@ function paintSaveStatus(host: HTMLElement, topbar: HTMLElement): void {
   //
   // 단, **실패 에피소드가 시작된 뒤**의 pending·saving 은 계속 보여 준다. 그러지 않으면
   // `다시 저장`을 누른 직후 칩이 사라졌다가 빨간 채로 다시 나타나 사용자가 결과를 오해한다.
-  if (state.kind === "error") saveFailureEpisode = true;
+  if (state.kind === "error" || recovery.kind === "blocked") saveFailureEpisode = true;
   else if (state.kind === "saved" || state.kind === "idle") saveFailureEpisode = false;
-  const quiet = state.kind !== "error" && !saveFailureEpisode;
+  const quiet = state.kind !== "error" && !saveFailureEpisode && !persistenceSurfaceVisible(recovery);
   clearChildren(host);
   host.dataset.autosaveKind = state.kind;
   host.hidden = quiet;
