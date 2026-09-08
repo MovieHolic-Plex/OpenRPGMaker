@@ -20,6 +20,7 @@ import {
 } from "@/editor/editorCameraFocus";
 import {
   cameraLookAtForTarget,
+  editorCameraBounds,
   filterAssistantOverlayRects,
   mergeNearbyRects,
   unoccludedCanvasRect,
@@ -31,6 +32,7 @@ import { AgentBlueprintRenderer } from "@/editor/agentBlueprintRenderer";
 import { isAgentGhostPreviewHidden, subscribeAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { AgentFocusRenderer, AgentGhostPreviewRenderer } from "@/editor/agentPreviewRenderers";
 import { subscribeInlineProposalActions } from "@/editor/proposalInlineApproval";
+import { CameraScrollbars } from "@/editor/CameraScrollbars";
 import { CameraPanController, pointerScreenPosition } from "@/editor/CameraPanController";
 import { store, type ProjectChangeCell, type ProjectChangeDescriptor } from "@/project/store";
 import { editorState, EDITOR_ZOOM_LEVELS } from "@/editor/editorState";
@@ -191,6 +193,37 @@ export class EditScene extends PhaserRuntime.Scene {
   private lastCameraViewKey = "";
   private readonly tileIndex: EditSceneTileIndex = new Map();
   private cameraPanController: CameraPanController | null = null;
+  private cameraScrollbars: CameraScrollbars | null = null;
+  private navigationGeometry: { canvas: CanvasRect; unoccluded: CanvasRect; zoom: number } | null = null;
+  private navigationResizeObserver: ResizeObserver | null = null;
+  private navigationMutationObserver: MutationObserver | null = null;
+
+  private readonly handleCanvasZoomWheel = (event: WheelEvent): void => this.zoomAtWheel(event);
+
+  private zoomAtWheel(event: WheelEvent): void {
+    if (!event.ctrlKey || !event.cancelable) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    // A zoom cannot change the coordinates of an edit already in flight.
+    if (event.deltaY === 0 || shouldDeferCameraFocus(this.pointerGestureState())) return;
+    this.cancelCameraFocus();
+    const camera = this.cameras.main;
+    const canvas = this.game.canvas.getBoundingClientRect();
+    const x = (event.clientX - canvas.left) * camera.width / canvas.width;
+    const y = (event.clientY - canvas.top) * camera.height / canvas.height;
+    camera.preRender();
+    const anchor = camera.getWorldPoint(x, y);
+    const levels = EDITOR_ZOOM_LEVELS;
+    const index = levels.indexOf(editorState.get().zoom);
+    const zoom = levels[Math.max(0, Math.min(levels.length - 1, index + (event.deltaY < 0 ? 1 : -1)))];
+    editorState.set({ zoom });
+    this.syncNavigationGeometry();
+    camera.preRender();
+    const shifted = camera.getWorldPoint(x, y);
+    camera.setScroll(camera.scrollX + anchor.x - shifted.x, camera.scrollY + anchor.y - shifted.y);
+    camera.preRender();
+    this.afterCameraMoved();
+  }
   private tilePaintEngine: TilePaintEngine | null = null;
   private dragOperationHandler: DragOperationHandler | null = null;
   private rightRegionGesture: RightRegionGesture | null = null;
@@ -282,6 +315,9 @@ export class EditScene extends PhaserRuntime.Scene {
   create(): void {
     registerBundledFrames(this, store.getCurrent());
     this.cameras.main.setBackgroundColor("#E7E0D0");
+    // Round texture sampling, not world-space scroll: flooring scroll can move a
+    // wheel anchor by up to eight screen pixels at the existing maximum zoom.
+    this.cameras.main.roundPixels = false;
 
     this.tileLayer = this.add.container(0, 0);
     this.hoverPreviewLayer = this.add.container(0, 0);
@@ -308,9 +344,8 @@ export class EditScene extends PhaserRuntime.Scene {
         this.lastPaintKey = "";
       },
       onPanMove: () => {
-        this.refreshAgentGhostDomMarkers();
-        this.renderBuildPaletteOverlay();
-        this.publishMapViewport();
+        this.cameras.main.preRender();
+        this.afterCameraMoved();
       },
       onPanEnd: () => this.replayDeferredCameraFocus(),
     });
@@ -318,6 +353,11 @@ export class EditScene extends PhaserRuntime.Scene {
     this.eventClickFeedbackLayer.setDepth(12);
 
     this.bindInput();
+    const canvasHost = this.game.canvas.parentElement;
+    if (canvasHost) this.cameraScrollbars = new CameraScrollbars(canvasHost, (x, y) => {
+      if (!shouldDeferCameraFocus(this.pointerGestureState())) this.panCameraBy(x, y);
+    });
+    this.observeNavigationGeometry();
     this.redraw();
 
     // store/에디터 상태 변경 시 재렌더.
@@ -393,6 +433,12 @@ export class EditScene extends PhaserRuntime.Scene {
   private cleanup(): void {
     this.cancelCameraFocus(false);
     this.unbindCanvasPanGuards();
+    this.navigationResizeObserver?.disconnect();
+    this.navigationMutationObserver?.disconnect();
+    this.cameraScrollbars?.destroy();
+    this.cameraScrollbars = null;
+    this.navigationGeometry = null;
+    this.scale.off("resize", this.handleResize, this);
     this.unbindBrowserContextMenuGuards();
     this.rightRegionGesture = null;
     // 미뤄 둔 초점은 씬과 함께 버린다 — 아래 stopPan 이 재생을 시도하기 전에 비워야 한다.
@@ -443,6 +489,7 @@ export class EditScene extends PhaserRuntime.Scene {
   private handleResize(): void {
     // 다음 기하 읽기를 강제한다 — 캔버스 사각형이 바뀌었으므로 캐시는 낡았다.
     this.overlayGeometryReadAtMs = 0;
+    this.syncNavigationGeometry();
     this.redraw();
   }
 
@@ -453,7 +500,62 @@ export class EditScene extends PhaserRuntime.Scene {
    */
   update(): void {
     if (this.activeCameraFocus && shouldDeferCameraFocus(this.pointerGestureState())) this.cancelCameraFocus();
+    this.syncNavigationGeometry();
     this.syncPublishedViewport();
+  }
+
+  private observeNavigationGeometry(): void {
+    const invalidate = () => { this.overlayGeometryReadAtMs = 0; };
+    const host = document.querySelector(".ai-chat-float-host");
+    this.navigationResizeObserver = new ResizeObserver(invalidate);
+    this.navigationResizeObserver.observe(this.game.canvas);
+    for (const node of host?.querySelectorAll(".ai-deck, [data-testid='ai-command-bar'], [data-testid='ai-chat-body']") ?? []) {
+      this.navigationResizeObserver.observe(node);
+    }
+    if (host) {
+      this.navigationMutationObserver = new MutationObserver(invalidate);
+      this.navigationMutationObserver.observe(host, {
+        subtree: true, attributes: true, attributeFilter: ["class", "style", "hidden"],
+      });
+    }
+  }
+
+  private syncNavigationGeometry(): void {
+    if (!this.cameraScrollbars) return;
+    const camera = this.cameras.main;
+    const mapId = this.mapId();
+    const map = mapId && store.getCurrent().maps[mapId];
+    if (!map) return;
+    const area = this.cameraVisibleArea({ cachedGeometry: true });
+    if (!area) return;
+    const previous = this.navigationGeometry;
+    if (previous && shouldDeferCameraFocus(this.pointerGestureState())) {
+      camera.preRender();
+      const origin = camera.getWorldPoint(0, 0);
+      this.cameraScrollbars.sync({ ...area, worldView: { ...area.worldView, x: origin.x, y: origin.y } }, map.width * TILE_SIZE, map.height * TILE_SIZE);
+      return;
+    }
+    const offset = (geometry: { canvas: CanvasRect; unoccluded: CanvasRect }) => ({
+      x: geometry.unoccluded.x - geometry.canvas.x + (geometry.unoccluded.width - geometry.canvas.width) / 2,
+      y: geometry.unoccluded.y - geometry.canvas.y + (geometry.unoccluded.height - geometry.canvas.height) / 2,
+    });
+    const now = offset(area);
+    // Resize changes the camera width before this callback. Preserve the previous
+    // unobstructed world center, not the stale midpoint or the assistant's pixels.
+    if (previous && !this.activeCameraFocus) {
+      const before = offset(previous);
+      const dx = (previous.canvas.width - area.canvas.width) / 2 + (before.x / previous.zoom - now.x / camera.zoom);
+      const dy = (previous.canvas.height - area.canvas.height) / 2 + (before.y / previous.zoom - now.y / camera.zoom);
+      if (dx !== 0 || dy !== 0) camera.setScroll(camera.scrollX + dx, camera.scrollY + dy);
+    }
+    this.navigationGeometry = { canvas: area.canvas, unoccluded: area.unoccluded, zoom: camera.zoom };
+    const bounds = editorCameraBounds({
+      mapWidth: map.width * TILE_SIZE, mapHeight: map.height * TILE_SIZE, ...area,
+    });
+    camera.setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
+    camera.preRender();
+    const origin = camera.getWorldPoint(0, 0);
+    this.cameraScrollbars.sync({ ...area, worldView: { ...area.worldView, x: origin.x, y: origin.y } }, map.width * TILE_SIZE, map.height * TILE_SIZE);
   }
 
   private syncPublishedViewport(): void {
@@ -601,14 +703,26 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private shouldPan(ptr: Phaser.Input.Pointer): boolean {
-    return this.cameraPanController?.shouldPan(ptr) ?? false;
+    if (this.cameraPanController?.shouldPan(ptr)) return true;
+    const state = editorState.get();
+    // Select's unoccupied outside-map target is neutral. Inside-map selection,
+    // paint/event tools, existing selections and placement previews own their drag.
+    if (ptr.button !== 0 || state.tool !== "select" || state.selection || state.activePaletteStamp
+      || shouldDeferCameraFocus(this.pointerGestureState())) return false;
+    const mapId = this.mapId();
+    const map = mapId && store.getCurrent().maps[mapId];
+    if (!map) return false;
+    const { x, y } = this.pointerToTile(ptr);
+    return x < 0 || y < 0 || x >= map.width || y >= map.height;
   }
 
   private bindCanvasPanGuards(): void {
+    this.game.canvas.addEventListener("wheel", this.handleCanvasZoomWheel, { capture: true, passive: false });
     this.cameraPanController?.bindCanvasGuards();
   }
 
   private unbindCanvasPanGuards(): void {
+    this.game.canvas.removeEventListener("wheel", this.handleCanvasZoomWheel, true);
     this.cameraPanController?.unbindCanvasGuards();
   }
 
@@ -1297,6 +1411,7 @@ export class EditScene extends PhaserRuntime.Scene {
     if (!mid) return;
     const mapChanged = this.lastRenderedMapId !== mid;
     if (mapChanged) {
+      this.navigationGeometry = null;
       this.lastPointerTile = null;
       // 맵이 바뀌면 미뤄 둔 초점은 버린다 — 다른 맵의 요청이라 panCameraToTile 이 어차피 mapId 에서 버린다.
       this.deferredCameraFocus = null;
@@ -1732,6 +1847,7 @@ export class EditScene extends PhaserRuntime.Scene {
 
   /** 프로그램 팬이 끝난 뒤 카메라 좌표에 의존하는 표면을 다시 맞춘다(손 팬의 onPanMove 와 같은 몸). */
   private afterCameraMoved(): void {
+    this.syncNavigationGeometry();
     this.refreshAgentGhostDomMarkers();
     this.renderBuildPaletteOverlay();
     this.publishMapViewport();
@@ -1756,7 +1872,8 @@ export class EditScene extends PhaserRuntime.Scene {
 
   /**
    * 카메라 초점·뷰포트 스냅샷이 공유하는 단 하나의 기하학 소스.
-   * scrollX/Y 는 3.60+ 줌 규약 때문에 화면 왼쪽 위와 직접 대응하지 않으므로 렌더가 쓰는 worldView 를 쓴다.
+   * Use the inverse rendered camera transform: scrollX/Y is not the top-left,
+   * and Phaser's worldView is rounded for culling even with fractional scroll.
    * 캔버스 사각형을 못 재는 환경(단위 테스트: DOM 없음)에서는 "가림 없음 + 캔버스 = worldView×zoom" 으로
    * 떨어져 동작이 정의된 상태를 유지한다.
    *
@@ -1773,7 +1890,8 @@ export class EditScene extends PhaserRuntime.Scene {
     const view = camera?.worldView;
     if (!camera || !view || view.width <= 0 || view.height <= 0) return null;
     const zoom = Number.isFinite(camera.zoom) && camera.zoom > 0 ? camera.zoom : 1;
-    const worldView: CanvasRect = { x: view.x, y: view.y, width: view.width, height: view.height };
+    const origin = camera.getWorldPoint(0, 0);
+    const worldView: CanvasRect = { x: origin.x, y: origin.y, width: camera.width / zoom, height: camera.height / zoom };
     const geometry = options?.cachedGeometry === true
       ? this.cachedOverlayGeometry(worldView, zoom)
       : this.freshOverlayGeometry(worldView, zoom);

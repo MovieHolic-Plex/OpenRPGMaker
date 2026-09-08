@@ -3,13 +3,13 @@ import { planEditorCameraCenter, viewportCenterWorld, type CameraViewport } from
 
 /**
  * Phaser Camera.centerOn(x, y) 의 역연산:
- *   scrollX = x - (width / 2) / zoom
+ *   scrollX = x - width / 2
  * 리사이즈 후 centerOn(focal) 을 적용했을 때 새 뷰포트의 중심이 focal 과 일치하는지(= 중심 보존) 검증.
  */
-function centerOnScroll(focal: { x: number; y: number }, width: number, height: number, zoom: number) {
+function centerOnScroll(focal: { x: number; y: number }, width: number, height: number, _zoom: number) {
   return {
-    scrollX: focal.x - width / (2 * zoom),
-    scrollY: focal.y - height / (2 * zoom),
+    scrollX: focal.x - width / 2,
+    scrollY: focal.y - height / 2,
   };
 }
 
@@ -19,10 +19,10 @@ describe("cameraStability — viewport center preservation on resize", () => {
     expect(center).toEqual({ x: 500, y: 350 });
   });
 
-  it("scales the visible span by zoom (center = scroll + size/(2*zoom))", () => {
+  it("uses Phaser 3.90 centerOn inverse independently of zoom", () => {
     const center = viewportCenterWorld({ scrollX: 0, scrollY: 0, width: 800, height: 600, zoom: 2 });
-    // 800/(2*2)=200, 600/(2*2)=150
-    expect(center).toEqual({ x: 200, y: 150 });
+    // Phaser scales around the viewport center, not the scroll origin.
+    expect(center).toEqual({ x: 400, y: 300 });
   });
 
   it("guards zoom<=0 against divide-by-zero by treating it as 1", () => {

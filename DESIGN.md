@@ -47,6 +47,29 @@
   writes nothing. Desktop checks cover 1024/1280/1440; independent visual/CJK
   approval and full gates remain lead-owned. No accessibility debt is accepted.
 
+## Authoring camera navigation (issue 693)
+
+- Reuse the Phaser camera, existing visible-area/assistant occlusion model, native
+  scroll containers and `el`. No new docking mode, dependency or parallel offsets.
+- Native X/Y scrollbars sit at the unobstructed canvas edges, using 16px tracks
+  (`--space-4`), existing inset/scrollbar tokens and `--focus-outline`. Their
+  extents include half a visible viewport plus 32px inspection padding per edge.
+  Native keyboard scrolling owns navigation keys while focused.
+- Ctrl+wheel over the canvas steps the existing 1/2/3/4/6/8 zoom marks about the
+  pointer on Linux, Windows and macOS (including Ctrl-style trackpad pinch).
+  Unmodified wheel remains pan; Command-only wheel is not editor zoom. Accepted
+  Ctrl gestures suppress page zoom, including at limits. No animated zoom.
+- Neutral primary drag means outside the authored map, with no selection, stamp,
+  paste preview or edit gesture. Map paint/select/event gestures retain priority;
+  explicit Pan, Space+drag and middle drag remain available.
+- Assistant float opening, collapse and resize preserve the visible focal point
+  and zoom, deferred until an editing gesture ends. Map changes reset normally.
+- Personas: painter inspecting edge cells, author using the assistant alongside
+  a map, keyboard author navigating large maps. Desktop matrix: 1024x768,
+  1280x800, 1440x900. No accepted accessibility debt; independent visual review
+  and full build/gates remain lead-owned. Native camera scrolling has no matching
+  animated catalog mechanism and intentionally adds no motion.
+
 ## Monster resource metadata editor (2026-09-07)
 
 - Database > 전투 몬스터 exposes 몬스터 소재 even with no gameplay records.
