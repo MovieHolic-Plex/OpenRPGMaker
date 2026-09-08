@@ -196,8 +196,9 @@ without mutating the caller's seed. Regression tests:
 ### Audio descriptions and live resource ownership
 
 The Resource Manager's music/sound categories use the complete shared catalog from
-`src/assets/audioResourceCatalog.ts`. Select a row to see its raw ID, native preview,
-effective description and source. Search matches names, IDs, tags and descriptions;
+`src/assets/audioResourceCatalog.ts`. Select a row to see its name/tags, editable
+effective description/source and editor-only preview. Raw ID follows description.
+Search matches names, IDs, tags and descriptions;
 the empty-description filter tests the effective value, including deliberate clears.
 `audio-description-search`, `audio-description-input` and `audio-description-save`
 are the feature's browser test controls.
@@ -242,6 +243,31 @@ latest project. Don't introduce per-surface fallback descriptions or global desc
 Reopening the audio-test dialog closes the previous instance through its modal teardown,
 including its store subscription and audio settings; removing its DOM alone leaks ownership.
 
+The three audio surfaces share `src/editor/panels/audioPreviewPlayer.ts` and the editor-only
+`src/editor/panels/audioPreviewSession.ts`, never the gameplay `getAudioEngine` singleton. Selection
+does not autoplay. Music loops, sound ends and immediately replays; play/pause,
+stop/rewind, current/duration and seek are consistent. Unknown duration disables
+seek; sub-second durations show hundredths. Media events, not fulfilled play
+promises, establish playing state. Metadata preload is loading without play intent.
+Rejected/stale requests and buffering/errors remain visible and accessible.
+
+`src/editor/panels/audioResourcePreview.ts` owns selected/inline reading views; inline removal is
+observed with MutationObserver, and project replacement disposes it. No media or
+nested play button exists per picker thumbnail. Search retains the selected player.
+Dialog/category/project/source teardown releases media listeners, WebAudio nodes
+and context. The closed Advanced disclosure owns preview volume/tempo/pan/fade and
+reset, not authored values. Native volume follows elapsed media progression for
+fade across loops, excluding seek jumps and pauses. Pan requests a CORS-enabled
+media/WebAudio route; ordinary cross-origin native playback needs no CORS header.
+A CORS error is visible; resetting pan recovers the native route.
+
+Prefixes: `audio-test-*`, `db-resource-picker-audio-*`, and
+`audio-description-preview-*` for transport/settings. Authored
+`audio-description-reset` remains exclusively Restore default. Manager audio-only
+geometry widens the reading/editing rail; its body scrolls above fixed transport.
+The event command preview is an honest static summary, never a fake waveform.
+Focused contracts: `test/audioPreviewSession.test.ts`, `test/audioPreviewSurfaces.test.ts`.
+
 Coverage includes `test/audioDescriptionEditor.test.ts`,
 `test/audioDescriptionLifecycle.test.ts`, `test/audioDescriptionPickerSurfaces.test.ts`,
 `test/audioDescriptionCommandSurfaces.test.ts`,
@@ -266,7 +292,7 @@ browser setup and separate exported-player evidence.
 
 - **Map/event search (toolbar-search):** `src/editor/panels/mapEventSearchModal.ts` + pure model `src/editor/panels/mapEventSearchModel.ts`. Styles: `src/styles/editor/map-event-search.css` (imported from `src/styles/index.css`). Centered modal with keyword (variable/switch/event name), range (selected map / common / all), and result tabs. Missing CSS previously left the dialog as raw unstyled fieldsets.
 
-- **Audio test dialog (toolbar-sound-test, 음악/효과음):** `src/editor/panels/audioTestDialog.ts`. Styles: `src/styles/editor/audio-test-dialog.css` (imported from `src/styles/index.css`). Two-pane RM2k3-style window: left 음악/효과음 tabs + resource list (CC0 playable, EasyRPG MIDI marked non-playable), right fade/volume/tempo/balance sliders + 재생/정지 + status. Missing CSS previously left the dialog as raw unstyled HTML. Tests: `test/e2e/oprn-audio-test-dialog.spec.ts` (requires expert-mode init script — classic toolbar is expert-only).
+- **Audio test dialog (toolbar-sound-test, 음악/효과음):** `src/editor/panels/audioTestDialog.ts`. Styles: `src/styles/editor/audio-test-dialog.css` (imported from `src/styles/index.css`). Studio list/document window with independent scrolls and fixed shared transport. Right document leads with name/tags/description; preview settings are a native Advanced disclosure. MIDI remains marked unplayable. Tests: `test/e2e/oprn-audio-test-dialog.spec.ts` (expert-mode toolbar, native editor media values and unchanged runtime mixer).
 
 - **Help modal (toolbar-help, 도움말):** `src/editor/panels/helpModal.ts` (`openHelpModal`). Styles: `src/styles/editor/help-modal.css` (imported from `src/styles/index.css`). In-app wiki-style editor guide: sticky TOC nav (개요/화면 구성/지도/이벤트/데이터베이스/소재·세계관·오디오/테스트 플레이/저장·공유/단축키) with scroll-spy highlighting, sectioned prose + bullets + note callouts, per-section editor screenshots (served from `public/assets/help/*.png`, regenerated via `npx playwright test capture-help-guide-images.spec.ts`), and kbd-cap shortcut cards at the end. Replaces the old `SHORTCUT_HELP` toast. Opened from the classic toolbar 도움말 button, 도움말 menu → 단축키 · 도움말, and the Ctrl+K palette command `help-shortcuts` (`commandRegistry.ts`). Esc / backdrop / 닫기 button close it. Guide content lives as `GUIDE_SECTIONS` data in the module — edit that array to change the docs. Tests: `test/e2e/oprn-help-modal.spec.ts`.
 - **Event editor help (event-editor-help, 이벤트 에디터 도움말):** `src/editor/panels/eventEditor/eventEditorHelp.ts` (`openEventEditorHelp`). Same wiki UI (sticky TOC + scroll-spy + per-section screenshots) reusing the `.help-modal-*` classes; small glyph-spacing in `src/styles/editor/event-editor-help.css` (imported from `src/styles/index.css`). Detailed sections scoped to the event editor only: 개요/이벤트와 페이지/실행 조건/명령/명령 카테고리/그래픽과 외형/이동 경로/분기와 선택지/전투·상점·여관/AI 보조/단축키. Command-category rows mirror `commandCategoryIcons.ts` glyphs. Opened from the event editor footer **도움말** button (`event-editor-help` testid) — previously a dead button with no handler. Layers above the event editor modal (z-index 290 > 120) and registers with `modalStack` so Esc closes the help first, not the event editor. Screenshots served from `public/assets/help/event-editor/*.png` (reuses `public/assets/help/event.png` for the overview); regenerated via `npx playwright test capture-event-editor-help-images.spec.ts`.
@@ -384,3 +410,46 @@ keydown 을 document **캡처** 단계에서 잡아 `stopPropagation` 하므로(
 - 타일 버튼은 pointerdown 외에 보조기기의 `click(detail=0)` 활성화도 받는다. 물리 클릭(detail>0)을 다시 처리하지 않아 중복 선택을 피한다.
 - **작은 데스크톱에서 타일과 맵을 함께 비교할 수 있어야 한다.** 표준·전문가 1024×768에서 기존 280px 타일 예약은 맵 목록을 48px(한 행)로 줄였다. `paletteSheetReserveCap`은 도크 높이 800px 미만에서 200px를 예약한다. CSS의 짧은 창 시트 최소 높이도 200px로 맞춘다. 큰 창의 280px 예약, 사용자 수동 분할과 접기 동작은 유지한다.
 - 검증: `test/e2e/left-sidebar-adversarial.spec.ts`는 실제 보기 메뉴로 3모드를 전환하고 1440×900 / 1280×800 / 1024×768에서 버튼 중심 hit-test, 맵 마지막 행 도달, 최소 3행 가시성, 키보드·검색 커서·핀·모드 복귀를 확인한다. 단위 계약은 `basicTilePalette.test.ts`, `sidebarFocus.test.ts`와 기존 레일·그리드 테스트다. 순수 에디터 변경이므로 원격 프로젝트 데이터는 변경하지 않는다.
+
+
+## Authoring viewport navigation (issue 693, 2026-09-08)
+
+- The assistant remains FLOAT. `EditScene.cameraVisibleArea` owns its actual
+  occlusion; no side-dock model or assistant diagnostics UI is introduced.
+  The published world rectangle now uses the inverse rendered camera transform
+  (`getWorldPoint`), because Phaser rounds `worldView` for culling. Camera scroll
+  stays fractional for pointer-anchored zoom; nearest-neighbor artwork is retained.
+- `EditScene.syncNavigationGeometry` preserves the unobstructed focal point on
+  assistant collapse/open/resize, keyboard zoom and canvas resize. Its previous
+  geometry is a layout snapshot, not an independent camera offset store. Resize
+  and assistant DOM observers invalidate the existing measurement cache; edit
+  gestures defer recentering until release. Map changes reset that snapshot.
+- `editorCameraBounds` in `cameraFocusViewport` grants asymmetric half-viewport
+  padding plus 32 CSS pixels so either map edge can reach the unobstructed center.
+  `panels/editor.applyEditorUiModeLayout` no longer replaces map bounds with a
+  temporary viewport box or re-applies stale offsets across animation frames.
+  `cameraStability.viewportCenterWorld` matches Phaser 3.90's `scroll + size/2`.
+- `CameraScrollbars` projects these bounds into two named native scroll regions
+  mounted beside the canvas, inside its existing host. Thumb fraction includes
+  inspection padding; corner subtraction scales track content and position alike.
+  Native notifications may follow an engine frame: do not overwrite pending input.
+  No idle-frame DOM writes, shell scroll offsets or parallel viewport state.
+  The projection cache includes both canvas dimensions: assistant breakpoints can
+  keep the unobstructed span and world origin unchanged during a canvas-only
+  resize. Tracks must still move to the new canvas edges and recompute their
+  content/position ratios. Width-only and height-only regressions retain the same
+  view/worldView objects and verify subsequent native input is converted once.
+- Canvas-only cancelable Ctrl+wheel consumes browser zoom and steps existing
+  1/2/3/4/6/8 levels around the pointer, including trackpad Ctrl-style pinch on
+  Linux/Windows/macOS. Command-only and ordinary wheel retain their previous
+  behavior. An in-flight edit consumes Ctrl+wheel without changing coordinates.
+- Neutral primary pan is Select on an outside-map target with no selection,
+  stamp, paste preview or active edit. Inside-map Select and paint/event tools
+  retain their editing priority. Explicit Pan, Space and middle drag are unchanged.
+- Focused regressions: `cameraStability`, `cameraFocusViewport`, `cameraScrollbars`,
+  `editSceneCameraFocus`, `editSceneRender`. Real browser driver:
+  `scripts/qa/issue693-navigation.mjs` (`BASE_URL`, `EVIDENCE_DIR`, optional
+  `QA_WIDTH`). It uses real Phaser/native input and local-only large/small projects,
+  subscribes to exact input/scroll/resize/render events, and covers all three
+  desktop sizes, assistant states, both scroll endpoints and edit alignment.
+  Full build/gates and independent screenshot review remain lead-owned.

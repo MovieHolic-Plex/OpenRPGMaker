@@ -1,0 +1,322 @@
+{
+  "ok": true,
+  "projectId": "oprn-qa-functional-48c68b5f-2d4",
+  "remoteSha256": "b03e73c068b972a35221b3e84447f296f54986552da1743997a1f32e452ce30c",
+  "fileSha256": "ce9695ca460f438ffa130798d8f887257de4eba1a792a50dc91fce2c7a3380c4",
+  "surface": "player.html / export store shim",
+  "inputScope": "QA direction/action hooks plus real keyboard shop/dialogue controls; no state injection",
+  "checkpoints": [
+    {
+      "id": "01-start",
+      "expected": {
+        "mapId": "map_blank_start",
+        "x": 10,
+        "y": 8,
+        "gold": 100,
+        "inventory": {
+          "item_potion": 0,
+          "item_antidote": 0
+        }
+      },
+      "actual": {
+        "mapId": "map_blank_start",
+        "x": 10,
+        "y": 8,
+        "gold": 100,
+        "inventory": {
+          "item_potion": 0,
+          "item_antidote": 0
+        }
+      }
+    },
+    {
+      "id": "02-shop",
+      "expected": {
+        "gold": 100,
+        "inventory": {
+          "item_potion": 0,
+          "item_antidote": 0
+        }
+      },
+      "actual": {
+        "mapId": "map_blank_start",
+        "x": 10,
+        "y": 8,
+        "gold": 100,
+        "inventory": {
+          "item_potion": 0,
+          "item_antidote": 0
+        }
+      }
+    },
+    {
+      "id": "03-purchased",
+      "expected": {
+        "gold": 80,
+        "inventory": {
+          "item_potion": 2,
+          "item_antidote": 0
+        }
+      },
+      "actual": {
+        "mapId": "map_blank_start",
+        "x": 10,
+        "y": 8,
+        "gold": 80,
+        "inventory": {
+          "item_potion": 2,
+          "item_antidote": 0
+        }
+      }
+    },
+    {
+      "id": "04-reward-first",
+      "expected": {
+        "mapId": "map_blank_start",
+        "x": 12,
+        "y": 8,
+        "gold": 80,
+        "inventory": {
+          "item_potion": 2,
+          "item_antidote": 1
+        }
+      },
+      "actual": {
+        "mapId": "map_blank_start",
+        "x": 12,
+        "y": 8,
+        "gold": 80,
+        "inventory": {
+          "item_potion": 2,
+          "item_antidote": 1
+        }
+      }
+    },
+    {
+      "id": "05-reward-repeat",
+      "expected": {
+        "mapId": "map_blank_start",
+        "x": 12,
+        "y": 8,
+        "gold": 80,
+        "inventory": {
+          "item_potion": 2,
+          "item_antidote": 1
+        }
+      },
+      "actual": {
+        "mapId": "map_blank_start",
+        "x": 12,
+        "y": 8,
+        "gold": 80,
+        "inventory": {
+          "item_potion": 2,
+          "item_antidote": 1
+        }
+      }
+    },
+    {
+      "id": "06-outgoing",
+      "expected": {
+        "mapId": "map_meadow",
+        "x": 2,
+        "y": 8,
+        "gold": 80,
+        "inventory": {
+          "item_potion": 2,
+          "item_antidote": 1
+        }
+      },
+      "actual": {
+        "mapId": "map_meadow",
+        "x": 2,
+        "y": 8,
+        "gold": 80,
+        "inventory": {
+          "item_potion": 2,
+          "item_antidote": 1
+        }
+      }
+    },
+    {
+      "id": "07-returning",
+      "expected": {
+        "mapId": "map_blank_start",
+        "x": 17,
+        "y": 8
+      },
+      "actual": {
+        "mapId": "map_blank_start",
+        "x": 17,
+        "y": 8,
+        "gold": 80,
+        "inventory": {
+          "item_potion": 2,
+          "item_antidote": 1
+        }
+      }
+    },
+    {
+      "id": "08-final",
+      "expected": {
+        "mapId": "map_blank_start",
+        "x": 10,
+        "y": 8,
+        "gold": 80,
+        "inventory": {
+          "item_potion": 2,
+          "item_antidote": 1
+        }
+      },
+      "actual": {
+        "mapId": "map_blank_start",
+        "x": 10,
+        "y": 8,
+        "gold": 80,
+        "inventory": {
+          "item_potion": 2,
+          "item_antidote": 1
+        }
+      }
+    }
+  ],
+  "inputs": [
+    {
+      "kind": "face",
+      "dir": "up"
+    },
+    {
+      "kind": "key",
+      "key": "Enter",
+      "label": "Mira greeting: advance 1"
+    },
+    {
+      "kind": "key",
+      "key": "Enter",
+      "label": "Mira greeting: advance 2"
+    },
+    {
+      "kind": "key",
+      "key": "Enter",
+      "label": "select potion stock"
+    },
+    {
+      "kind": "key",
+      "key": "Enter",
+      "label": "buy first potion"
+    },
+    {
+      "kind": "key",
+      "key": "Enter",
+      "label": "buy second potion"
+    },
+    {
+      "kind": "key",
+      "key": "Escape",
+      "label": "leave stock"
+    },
+    {
+      "kind": "key",
+      "key": "Escape",
+      "label": "close shop"
+    },
+    {
+      "kind": "actionReceipt",
+      "owner": "Mira",
+      "receipt": {
+        "kind": "action",
+        "mapId": "map_blank_start",
+        "handled": true,
+        "farmAttempts": [],
+        "sequence": 1
+      }
+    },
+    {
+      "kind": "direction",
+      "dir": "right",
+      "until": {
+        "mapId": "map_blank_start",
+        "x": 12,
+        "y": 8
+      }
+    },
+    {
+      "kind": "face",
+      "dir": "up"
+    },
+    {
+      "kind": "key",
+      "key": "Enter",
+      "label": "Rowan first: advance 1"
+    },
+    {
+      "kind": "key",
+      "key": "Enter",
+      "label": "Rowan first: advance 2"
+    },
+    {
+      "kind": "actionReceipt",
+      "owner": "Rowan first",
+      "receipt": {
+        "kind": "action",
+        "mapId": "map_blank_start",
+        "handled": true,
+        "farmAttempts": [],
+        "sequence": 2
+      }
+    },
+    {
+      "kind": "face",
+      "dir": "up"
+    },
+    {
+      "kind": "key",
+      "key": "Enter",
+      "label": "Rowan repeat: advance 1"
+    },
+    {
+      "kind": "key",
+      "key": "Enter",
+      "label": "Rowan repeat: advance 2"
+    },
+    {
+      "kind": "actionReceipt",
+      "owner": "Rowan repeat",
+      "receipt": {
+        "kind": "action",
+        "mapId": "map_blank_start",
+        "handled": true,
+        "farmAttempts": [],
+        "sequence": 3
+      }
+    },
+    {
+      "kind": "direction",
+      "dir": "right",
+      "until": {
+        "mapId": "map_meadow",
+        "x": 2,
+        "y": 8
+      }
+    },
+    {
+      "kind": "direction",
+      "dir": "left",
+      "until": {
+        "mapId": "map_blank_start",
+        "x": 17,
+        "y": 8
+      }
+    },
+    {
+      "kind": "direction",
+      "dir": "left",
+      "until": {
+        "mapId": "map_blank_start",
+        "x": 10,
+        "y": 8
+      }
+    }
+  ],
+  "errors": []
+}

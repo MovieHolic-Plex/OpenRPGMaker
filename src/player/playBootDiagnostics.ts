@@ -1,3 +1,5 @@
+import { diagnosticObserved, diagnosticToken, publishDiagnostic } from "@/util/diagnosticObserver";
+
 export type PlayBootStage =
   | "engine"
   | "assets"
@@ -75,12 +77,17 @@ export function formatPlayBootDiagnosticInstruction(payload: PlayBootDiagnosticP
   return segments.filter((segment): segment is string => segment !== undefined).join(" ");
 }
 
-/** Records locally in every host and optionally forwards to a host-owned sink. */
+/** Raw logs/sinks are independent of consent; local receipts require the initiating owner's token. */
 export function recordPlayBootDiagnostic(
   input: PlayBootDiagnosticInput,
   sink?: PlayBootDiagnosticSink,
+  diagnosticOwner?: symbol,
 ): void {
   const payload = buildPlayBootPayload(input);
+  if (diagnosticOwner && diagnosticOwner === diagnosticToken() && diagnosticObserved("asset")
+    && ["assets", "ready", "error", "timeout"].includes(payload.stage)) {
+    publishDiagnostic({ category: "asset", phase: payload.stage, ok: payload.ok });
+  }
   RECENT.unshift(payload);
   if (RECENT.length > MAX_RECENT) RECENT.length = MAX_RECENT;
 

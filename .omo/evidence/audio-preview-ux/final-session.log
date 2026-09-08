@@ -1,0 +1,13 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/audioPreviewSession.test.ts --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/.herdr/worktrees/rpg-zzu/worktree-audio-preview-ux
+
+ ✓ test/audioPreviewSession.test.ts (21 tests) 125ms
+
+ Test Files  1 passed (1)
+      Tests  21 passed (21)
+   Start at  19:17:23
+   Duration  4.11s (transform 1.85s, setup 0ms, collect 2.34s, tests 125ms, environment 625ms, prepare 281ms)

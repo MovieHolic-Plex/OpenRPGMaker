@@ -1,7 +1,7 @@
 import { clearChildren, el } from "@/util/dom";
 import { store } from "@/project/store";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
-import { eventNameForSummary } from "./commandSummary";
+import { createMoveRouteTargetPicker } from "./moveRouteTargetPicker";
 import type { Command, Dir, MapId, MoveCommand } from "@/project/types";
 import type { CommandEditContext } from "./types";
 import { mapSelectElement } from "./sharedPickers";
@@ -39,31 +39,50 @@ export function moveEventBody(context: CommandEditContext, cmd: Extract<Command,
     targetSelect.append(el("option", { attrs: { value: option.value }, text: option.label }));
   }
   targetSelect.value = targetKindOf(cmd.eventId);
+  // 검색 상자 겸 값의 정본 표시. 라벨을 «어느 이벤트» 에서 검색 안내로 바꾼 이유는
+  // 이 상자에 원시 id 를 손으로 넣는 것이 더는 정상 경로가 아니기 때문이다(OPRN-OUT-012).
   const eventIdIn = el("input", {
-    attrs: { type: "text", placeholder: "어느 이벤트" },
+    attrs: {
+      type: "text",
+      placeholder: "이름 또는 ID 검색",
+      autocomplete: "off",
+      role: "combobox",
+      "aria-expanded": "false",
+    },
     value: cmd.eventId === PLAYER_MOVE_TARGET ? "" : cmd.eventId,
     dataset: { testid: "move-route-event-id-input" },
-  });
+  }) as HTMLInputElement;
   const resolvedEventId = (): string => {
     if (targetSelect.value === "player") return PLAYER_MOVE_TARGET;
     if (targetSelect.value === "this") return "";
     return eventIdIn.value.trim();
   };
   // 입력한 ID 가 어느 이벤트인지 이름으로 되읽어 준다 — 원시 ID 만 보이던 결함(2026-09-03 제안서 §6).
+  // 지금은 여기에 «(없음)» 경고까지 실어, 끊어진 참조를 목록으로 고치라고 말한다.
   const eventNameHint = el("span", {
     class: "move-route-target-name",
     attrs: { "aria-live": "polite" },
     dataset: { testid: "move-route-event-name" },
   });
-  const syncTargetName = () => {
-    const id = eventIdIn.value.trim();
-    eventNameHint.textContent = targetSelect.value === "event" && id ? eventNameForSummary(id) : "";
-  };
-  const syncTargetVisibility = () => {
-    eventIdIn.style.display = targetSelect.value === "event" ? "" : "none";
-    syncTargetName();
-  };
-  eventIdIn.addEventListener("input", syncTargetName);
+  // 조수 프롬프트·조수 출력 검증과 **같은** 카탈로그를 쓴다(project/eventTargetCatalog).
+  const targetPicker = createMoveRouteTargetPicker({
+    input: eventIdIn,
+    status: eventNameHint,
+    isEventTarget: () => targetSelect.value === "event",
+    onSelect: () => {
+      // 목록에서 고른 순간 대상 종류도 «특정 이벤트» 로 확정한다(빈 상태에서 골랐을 때).
+      targetSelect.value = "event";
+      syncTargetVisibility();
+      apply();
+      renderPreview();
+    },
+  });
+  function syncTargetVisibility(): void {
+    const isEvent = targetSelect.value === "event";
+    eventIdIn.style.display = isEvent ? "" : "none";
+    targetPicker.openButton.style.display = isEvent ? "" : "none";
+    targetPicker.sync();
+  }
   syncTargetVisibility();
 
   const repeat = el("input", {
@@ -256,6 +275,7 @@ export function moveEventBody(context: CommandEditContext, cmd: Extract<Command,
       targetSelect.value = "event";
       syncTargetVisibility();
     }
+    targetPicker.sync();
     apply();
     renderPreview();
   });
@@ -386,7 +406,10 @@ export function moveEventBody(context: CommandEditContext, cmd: Extract<Command,
             el("span", { class: "move-route-target-label", text: "누구에게" }),
             targetSelect,
             eventIdIn,
+            targetPicker.openButton,
             eventNameHint,
+            // 목록은 이 줄 안에 절대 위치로 펼친다 — 부모가 position:relative 여야 한다(part-1.css).
+            targetPicker.dropdown,
           ],
         }),
         el("div", { class: "move-route-options", children: [repeatLabel, waitLabel, skippableLabel] }),

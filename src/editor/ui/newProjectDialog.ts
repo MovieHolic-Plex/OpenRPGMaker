@@ -3,6 +3,7 @@
 // 확인 → { title, packId }, 취소 → null. 헤드리스에서는 기본값으로 즉시 resolve.
 
 import { GENRE_PACK_IDS, type GenrePackId } from "@/project/genrePackId";
+import { WELCOME_GENRE_PRESETS } from "@/editor/welcomeGenrePresets";
 import { el } from "@/util/dom";
 import { registerModal, unregisterModal } from "./modalStack";
 
@@ -37,12 +38,24 @@ type GenreOption = {
   readonly label: string;
   /** 한 줄 설명 — applyGenrePreset 가 실제로 켜는 것만 쓴다(과장 금지). */
   readonly blurb: string;
+  /**
+   * 장르 그림 — 기본은 첫 화면 포스터의 thumb 을 그대로 쓴다. 포스터가 그림을 나눠 갖는
+   * 팩만 여기서 갈라 준다: 다이얼로그는 전부를 한 화면에 깔아 보이므로, 중복이 보이면
+   * 골랐을 때 무엇이 달라지는지 읽히지 않는다.
+   */
+  readonly thumb?: string;
 };
 
 export const NEW_PROJECT_GENRE_OPTIONS: readonly GenreOption[] = [
   { id: null, label: "빈 프로젝트", blurb: "장르 설정 없이 빈 맵으로 시작합니다" },
   { id: "adventure-jrpg", label: "모험 JRPG", blurb: "파티 모험 · 던전 탐험용 기본 설정" },
-  { id: "action-rpg", label: "2D 액션 RPG", blurb: "실시간 전투 시스템을 켭니다 — 싸울 맵은 따로 지정합니다" },
+  {
+    id: "action-rpg",
+    label: "2D 액션 RPG",
+    blurb: "실시간 전투 시스템을 켭니다 — 싸울 맵은 따로 지정합니다",
+    // 포스터 원반은 모험 JRPG 와 같은 slide-04 다. 필드 조작이 보이는 그림으로 갈라 둔다.
+    thumb: "/assets/generated/welcome/slide-00-hero.png",
+  },
   { id: "monster-collect", label: "몬스터 수집", blurb: "포획 · 도감 · 몬스터 파티 전투를 켭니다" },
   { id: "horror-chase", label: "공포 추격", blurb: "탐험 호러 — 장르 표시만 지정됩니다" },
   { id: "story-cutscene", label: "스토리 컷신", blurb: "회상 · 감정 연출 중심 — 장르 표시만 지정됩니다" },
@@ -114,10 +127,26 @@ export function showNewProjectDialog(opts: NewProjectDialogOptions = {}): Promis
       radio.addEventListener("change", () => {
         if (radio.checked) selectedPackId = option.id;
       });
+      // 장르 그림은 첫 화면 포스터와 같은 자산을 쓴다. 빈 프로젝트는 그림이 없으므로 +.
+      // 자산이 없으면 img 를 떼어 격자 배경만 남긴다 — 깨진 그림 아이콘을 보여 주지 않는다.
+      const thumb = option.thumb
+        ?? WELCOME_GENRE_PRESETS.find((preset) => preset.packId === option.id)?.thumb;
+      const art = el("span", {
+        class: "new-project-genre-art",
+        attrs: { "aria-hidden": "true" },
+        children: [el("span", { class: "new-project-genre-placeholder", text: option.id ? option.label : "+" })],
+      });
+      if (thumb) {
+        art.append(el("img", {
+          attrs: { src: thumb, alt: "", decoding: "async", draggable: "false" },
+          on: { error: (event) => (event.currentTarget as HTMLElement).remove() },
+        }));
+      }
       return el("label", {
         class: "new-project-genre-row",
         children: [
           radio,
+          art,
           el("span", {
             class: "new-project-genre-text",
             children: [

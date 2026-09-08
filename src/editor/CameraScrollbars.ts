@@ -1,0 +1,82 @@
+import { el } from "@/util/dom";
+import { CAMERA_INSPECTION_PADDING, type CanvasRect } from "@/editor/cameraFocusViewport";
+
+type Area = { readonly canvas: CanvasRect; readonly unoccluded: CanvasRect; readonly worldView: CanvasRect; readonly zoom: number };
+
+/** Track thickness in CSS pixels — the `--space-4` tracks in 05-canvas-statusbar.css. */
+const TRACK_PX = 16;
+
+/** Native scroll chrome is a projection of the camera, never another viewport store. */
+export class CameraScrollbars {
+  private readonly axes;
+  private zoom = 1;
+  private projection = "";
+
+  constructor(host: HTMLElement, panBy: (x: number, y: number) => void) {
+    this.axes = (["x", "y"] as const).map(axis => {
+      const spacer = el("div", { attrs: { "aria-hidden": "true" } });
+      const node = el("div", {
+        class: `editor-camera-scroll editor-camera-scroll-${axis}`,
+        attrs: { role: "region", tabindex: "0", "aria-label": axis === "x" ? "맵 가로 이동" : "맵 세로 이동" },
+        dataset: { testid: `editor-camera-scroll-${axis}`, editorNavigationOwner: "true" },
+        children: [spacer],
+      });
+      const entry = { axis, node, spacer, position: 0, layoutKey: "", ratio: 1 };
+      node.addEventListener("scroll", () => {
+        const position = axis === "x" ? node.scrollLeft : node.scrollTop;
+        const delta = (position - entry.position) / this.zoom / entry.ratio;
+        entry.position = position;
+        if (delta !== 0) panBy(axis === "x" ? delta : 0, axis === "y" ? delta : 0);
+      });
+      host.append(node);
+      return entry;
+    });
+  }
+
+  sync(area: Area, mapWidth: number, mapHeight: number): void {
+    const { canvas, unoccluded: view, worldView, zoom } = area;
+    const projection = [mapWidth, mapHeight, canvas.x, canvas.y, canvas.width, canvas.height, view.x, view.y, view.width, view.height, worldView.x, worldView.y, zoom].join("|");
+    if (projection === this.projection) return;
+    this.projection = projection;
+    this.zoom = zoom;
+    for (const entry of this.axes) {
+      const horizontal = entry.axis === "x";
+      const span = horizontal ? view.width : view.height;
+      const mapSpan = horizontal ? mapWidth : mapHeight;
+      const offset = horizontal ? view.x - canvas.x : view.y - canvas.y;
+      const worldStart = horizontal ? worldView.x : worldView.y;
+      const position = worldStart * zoom + offset + span / 2 + CAMERA_INSPECTION_PADDING;
+      // The track belongs to the canvas edge, never the unobstructed edge. Measuring
+      // it against the assistant teleported the vertical bar into mid-canvas the
+      // moment the deck opened, and resized the horizontal one under the pointer.
+      const track = (horizontal ? canvas.width : canvas.height) - TRACK_PX;
+      const layoutKey = `${span}|${track}|${mapSpan}|${zoom}`;
+      const nativePosition = horizontal ? entry.node.scrollLeft : entry.node.scrollTop;
+      // A native scroll notification may arrive after the next engine frame.
+      // Never overwrite that input with the camera's previous position.
+      if (entry.layoutKey === layoutKey && nativePosition !== entry.position) continue;
+      entry.layoutKey = layoutKey;
+      Object.assign(entry.node.style, {
+        left: horizontal ? "0px" : `${canvas.width - TRACK_PX}px`,
+        top: horizontal ? `${canvas.height - TRACK_PX}px` : "0px",
+        width: horizontal ? `${track}px` : `${TRACK_PX}px`,
+        height: horizontal ? `${TRACK_PX}px` : `${track}px`,
+      });
+      // The track now spans the canvas while the thumb must still report the
+      // unobstructed span, so scale every metric by track/visible. Excluding the
+      // corner keeps both ratios intact, exactly as the equal-span form did.
+      const ratio = track / span;
+      const content = (mapSpan * zoom + span + CAMERA_INSPECTION_PADDING * 2) * ratio;
+      entry.spacer.style.width = horizontal ? `${content}px` : "1px";
+      entry.spacer.style.height = horizontal ? "1px" : `${content}px`;
+      // Native pixels are scaled by the track ratio; the handler reverses it below.
+      entry.ratio = ratio;
+      entry.node.dataset.trackRatio = String(ratio);
+      if (horizontal) entry.node.scrollLeft = position * ratio;
+      else entry.node.scrollTop = position * ratio;
+      entry.position = horizontal ? entry.node.scrollLeft : entry.node.scrollTop;
+    }
+  }
+
+  destroy(): void { for (const { node } of this.axes) node.remove(); }
+}

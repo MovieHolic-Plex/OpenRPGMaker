@@ -197,7 +197,7 @@ describe("스튜디오 바 — 한 줄, 집 하나", () => {
     expect(findByTestId(topbar, "menu-project")?.textContent).toContain("제목 없는 프로젝트");
   });
 
-  it("프로젝트 메뉴에 저장 항목은 없고, 새 프로젝트·열기·저장본·가져오기·내보내기 3종이 있다", () => {
+  it("프로젝트 메뉴에 저장 항목은 없고, 새 프로젝트·열기·저장본·가져오기·내보내기·배포가 있다", () => {
     // Break: 저장이 버튼과 메뉴 항목 두 자리에 놓인다.
     const topbar = render("standard");
     const popup = openMenu(topbar, "menu-project");
@@ -205,7 +205,8 @@ describe("스튜디오 바 — 한 줄, 집 하나", () => {
     expect(ids).toEqual([
       "menu-project-new", "menu-project-load", "menu-project-reload-db",
       "menu-project-samples",
-      "menu-project-import", "menu-project-export", "menu-project-export-web", "menu-project-export-standalone",
+      "menu-project-import", "menu-project-export", "menu-project-publication",
+      "menu-project-export-web", "menu-project-export-standalone",
     ]);
     expect(ids).not.toContain("menu-project-save");
   });

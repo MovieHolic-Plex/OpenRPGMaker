@@ -19,13 +19,16 @@ const INSTRUCTIONS_MODAL = read("src/editor/panels/aiInstructionsModal.ts");
 const MODE = read("src/app/mode.ts");
 const UI_EVENT_LOG = read("src/ai/uiEventLog.ts");
 
+// Retained for historical records, not emitted by the consented local diagnostic workflow.
+const HISTORICAL_ACTIONS = ["conversationExport"] as const;
+type LiveAction = Exclude<keyof typeof AI_UI_ACTIONS, typeof HISTORICAL_ACTIONS[number]>;
+
 /** 액션 키 → 그 계측이 있어야 하는 파일. 하나라도 사라지면 이 테스트가 그 이름을 말해 준다. */
-const CALL_SITES: Readonly<Record<keyof typeof AI_UI_ACTIONS, string>> = {
+const CALL_SITES: Readonly<Record<LiveAction, string>> = {
   contextCompact: PANEL,
   contextCompactUndo: PANEL,
   conversationRestore: HISTORY_MODAL,
   conversationDelete: HISTORY_MODAL,
-  conversationExport: PANEL,
   instructionsSave: INSTRUCTIONS_MODAL,
   turnRewind: PANEL,
   panelCollapse: PANEL,
@@ -37,15 +40,15 @@ const CALL_SITES: Readonly<Record<keyof typeof AI_UI_ACTIONS, string>> = {
 
 describe("ai ui event 계측 계약", () => {
   it("every named action has a live call site", () => {
-    const missing = Object.keys(AI_UI_ACTIONS).filter((key) => {
-      const source = CALL_SITES[key as keyof typeof AI_UI_ACTIONS];
+    const missing = Object.keys(CALL_SITES).filter((key) => {
+      const source = CALL_SITES[key as LiveAction];
       return !source.includes(`AI_UI_ACTIONS.${key}`);
     });
     expect(missing).toEqual([]);
   });
 
   it("covers every action name in the constant — 표를 늘리면 계측도 늘어야 한다", () => {
-    expect(Object.keys(CALL_SITES).sort()).toEqual(Object.keys(AI_UI_ACTIONS).sort());
+    expect([...Object.keys(CALL_SITES), ...HISTORICAL_ACTIONS].sort()).toEqual(Object.keys(AI_UI_ACTIONS).sort());
   });
 
   it("action names stay kebab-case and unique — DB 색인이 이 문자열을 그대로 쓴다", () => {

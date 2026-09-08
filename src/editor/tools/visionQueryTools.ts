@@ -19,7 +19,9 @@ const showMapRegion: ToolDefinition = {
   name: "show_map_region",
   description:
     "맵 영역을 하위/상위 타일 2D 배열로 반환하고 실제 타일 이미지로 보여준다. 맵에 뭔가 깐 뒤 말로 단정하지 말고 이 툴로 결과를 눈으로 확인하라. " +
-    `한 변 최대 ${SHOW_MAP_REGION_MAX_SPAN}타일(초과분은 중심 기준으로 잘림). 호수 위치는 get_map_region의 water.bounds를 쓰고, 전체 맵을 반복 스캔하지 마라.`,
+    `부분 영역은 한 변 최대 ${SHOW_MAP_REGION_MAX_SPAN}타일(초과분은 중심 기준으로 잘림). ` +
+    "맵 전체가 필요하면 x:0,y:0,w:맵너비,h:맵높이로 한 번에 요청하라 — 전체 요청은 잘리지 않고 한 장으로 축소 렌더된다. " +
+    "호수 위치는 get_map_region의 water.bounds를 쓰고, 큰 맵을 조각내어 반복 스캔하지 마라.",
   mode: "read",
   invalidArgsExample: { mapId: "map_1", x: 0, y: 0, w: 10, h: 8 },
   parameters: {
@@ -37,7 +39,14 @@ const showMapRegion: ToolDefinition = {
     const map = requireMap(project, stringArg(args, "mapId"));
     let region = clampedRegion(map, integerArg(args, "x"), integerArg(args, "y"), integerArg(args, "w"), integerArg(args, "h"));
     const warnings: string[] = [];
-    if (region.w > SHOW_MAP_REGION_MAX_SPAN || region.h > SHOW_MAP_REGION_MAX_SPAN) {
+    // Complete coverage is exempt from the span cap. The independent review gate requires
+    // a rendered (0,0)-to-(width,height) union for a changed map, and tiling that at 24
+    // costs ceil(w/24) * ceil(h/24) images -- 25 for a 100x100 village, each its own
+    // 512px PNG -- where one downscaled render carries the same coverage for roughly an
+    // eighth of the tokens. The cap still applies to oversized partial regions, which is
+    // the roaming it was added to stop.
+    const wholeMap = region.x === 0 && region.y === 0 && region.w === map.width && region.h === map.height;
+    if (!wholeMap && (region.w > SHOW_MAP_REGION_MAX_SPAN || region.h > SHOW_MAP_REGION_MAX_SPAN)) {
       const cx = region.x + Math.floor(region.w / 2);
       const cy = region.y + Math.floor(region.h / 2);
       const w = Math.min(region.w, SHOW_MAP_REGION_MAX_SPAN);

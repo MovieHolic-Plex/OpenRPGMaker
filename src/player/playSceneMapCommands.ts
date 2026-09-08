@@ -1,4 +1,5 @@
 import { carryPursuitThroughDoor } from "./horrorRuntime";
+import { diagnosticObserved, diagnosticToken, publishDiagnostic } from "@/util/diagnosticObserver";
 import { isPassable, isPassableLanding } from "@/project/collision";
 import { setMapTileOverride } from "@/project/session";
 import { runtimeMap } from "@/project/runtimeMap";
@@ -16,6 +17,8 @@ import { runTransitionPhase } from "@/player/transitions/transitionOverlay";
 import type { PlaySceneContext, TransferRequest } from "@/player/playSceneTypes";
 import { removeFollowerFromSession, resetFollowerTrailNearPlayer, resolveCompanionRules } from "@/project/followers";
 import { syncFollowerSprites } from "@/player/playSceneFollowers";
+// 잎 모듈에서 가져온다 — playSceneMovement 를 통하면 전투·농사·조우까지 끌려온다(playerRouteState 주석).
+import { clearPlayerRouteThrough } from "@/player/playerRouteState";
 import { maybeAutosave } from "@/player/autosave";
 import { abortHop } from "@/player/characterHopRuntime";
 import { clearFurniturePush, furniturePushPosition } from "@/player/furniturePushAnimation";
@@ -60,9 +63,11 @@ type FadeColor = {
 export const TRANSFER_FADE_DURATION_MS = 500;
 
 export async function transferTo(scene: PlaySceneContext, request: TransferRequest): Promise<void> {
+  const diagnosticOwner = diagnosticToken();
   const project = store.getCurrent();
   const targetMap = project.maps[request.mapId];
   if (!targetMap) {
+    if (diagnosticObserved("transfer")) publishDiagnostic({ category: "transfer", phase: "missing" });
     console.warn(`[player] transfer target map missing: ${request.mapId}`);
     return;
   }
@@ -93,6 +98,7 @@ export async function transferTo(scene: PlaySceneContext, request: TransferReque
   scene.tileY = landing.y;
   scene.session.x = landing.x;
   scene.session.y = landing.y;
+  if (diagnosticOwner && diagnosticOwner === diagnosticToken() && diagnosticObserved("transfer")) publishDiagnostic({ category: "transfer", phase: "completed", x: landing.x, y: landing.y });
   if (resolveCompanionRules(project.system.companions).clearOnTransfer) {
     removeFollowerFromSession(scene.session, { all: true });
   }
@@ -103,6 +109,9 @@ export async function transferTo(scene: PlaySceneContext, request: TransferReque
   updateCharacterDepth(scene.player, "same");
   syncFollowerSprites(scene);
   scene.moving = false;
+  // 강제 이동 루트는 전이를 넘어 살아남는다(진행 중인 걸음만 끊는다). 그 루트의 통과 설정은
+  // 출발 맵 기준으로 켠 것이라 여기서 끈다 — clearPlayerRouteThrough 주석의 수명 계약.
+  clearPlayerRouteThrough(scene);
   scene.centerCamera();
   if (host) {
     await runTransitionPhase(host, transition, "in", TRANSFER_FADE_DURATION_MS);

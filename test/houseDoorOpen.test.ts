@@ -10,6 +10,7 @@ import { store } from "@/project/store";
 import { transferTo } from "@/player/playSceneMapCommands";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { mockSprite } from "./runtimeEventPageFixtures";
+import { LocalDiagnosticSession } from "@/util/localDiagnosticSession";
 
 const G = 270;
 
@@ -126,7 +127,12 @@ describe("열린 문 기본값 — 실외 집 문은 걸어 들어가면 열린�
       getMapId: () => session.currentMapId,
       centerCamera: vi.fn(), runEvent, refreshRuntimeSurfaces: vi.fn(), syncRuntimeState: vi.fn(),
     } as unknown as PlaySceneContext;
-    await transferTo(scene, { kind: "transfer", mapId: map.id, x: doorAt.x, y: doorAt.y + 1, fade: "none" });
+    const diagnostics = new LocalDiagnosticSession();
+    diagnostics.start(true, ["transfer"]);
+    try {
+      await transferTo(scene, { kind: "transfer", mapId: map.id, x: doorAt.x, y: doorAt.y + 1, fade: "none" });
+      expect(diagnostics.snapshot().receipts).toContainEqual(expect.objectContaining({ category: "transfer", phase: "completed", x: session.x, y: session.y }));
+    } finally { diagnostics.clear(); }
     expect([session.currentMapId, session.x, session.y]).toEqual([map.id, doorAt.x, doorAt.y + 1]);
     expect(runEvent).not.toHaveBeenCalled();
     expect(map.events.find((event) => event.id === `${interior.doorEventId}_step`)!.pages![0]!.trigger.kind)

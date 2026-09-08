@@ -82,6 +82,8 @@ export class AudioEngine {
   private pan = 0;
   private fadeInMs = DEFAULT_FADE_MS;
   private unlockInstalled = false;
+  private readonly blockedTracks = new Set<ManagedTrack>();
+  private readonly mediaCleanup = new WeakMap<HTMLAudioElement, () => void>();
   private readonly warnedMissing: Set<string> = new Set();
   // WebAudio 팬 그래프는 **지연 생성**한다: pan 이 0 이 아닌 요청이 처음 올 때만 만든다.
   // AudioContext 가 없거나 createMediaElementSource 가 던지는 환경(jsdom/happy-dom)에서는
@@ -122,7 +124,7 @@ export class AudioEngine {
     if (typeof window === "undefined") return;
     this.unlockInstalled = true;
     for (const type of UNLOCK_EVENTS) {
-      window.addEventListener(type, this.onUnlockGesture, { once: false, passive: true });
+      window.addEventListener(type, this.onUnlockGesture, { capture: true, passive: true });
     }
   }
 
@@ -132,6 +134,13 @@ export class AudioEngine {
 
   // 잠금 해제 + 대기 큐 방출.
   unlock(): void {
+    if (this.audioContext?.state === "suspended") {
+      void this.audioContext.resume().catch((error: unknown) => console.warn("[audio] AudioContext resume failed", error));
+    }
+    for (const track of this.blockedTracks) {
+      this.blockedTracks.delete(track);
+      this.startPlayback(track);
+    }
     if (this.queue.unlocked) return;
     const { state, flushed } = unlockQueue(this.queue);
     this.queue = state;
@@ -334,7 +343,7 @@ export class AudioEngine {
       fadeLevel: 0,
     };
     this.loopTracks.set(request.channel, track);
-    this.startPlayback(audio, request.resourceId);
+    this.startPlayback(track);
     this.fadeTo(track, 0, 1, fadeInMs);
   }
 
@@ -352,18 +361,10 @@ export class AudioEngine {
       fadeLevel: 0,
     };
     this.oneShots.add(track);
-    const cleanup = (): void => {
-      this.clearFade(track);
-      this.oneShots.delete(track);
-      audio.removeEventListener("ended", cleanup);
-      audio.removeEventListener("error", cleanup);
-      audio.remove();
-    };
-    audio.addEventListener("ended", cleanup);
-    audio.addEventListener("error", cleanup);
+
     // Native one-shots remain immediate unless this request explicitly authors a fade.
     this.fadeTo(track, 0, 1, request.fadeInMs === undefined ? 0 : fadeInMs);
-    this.startPlayback(audio, request.resourceId);
+    this.startPlayback(track);
   }
 
   private createElement(url: string, loop: boolean, playbackRate: number, pan: number): HTMLAudioElement {
@@ -446,13 +447,36 @@ export class AudioEngine {
     }
   }
 
-  private startPlayback(audio: HTMLAudioElement, resourceId: string): void {
+  private startPlayback(track: ManagedTrack): void {
+    const { audio, resourceId } = track;
+    const active = (): boolean => this.loopTracks.get(track.channel) === track || this.oneShots.has(track);
+    const release = (): void => {
+      if (this.loopTracks.get(track.channel) === track) this.loopTracks.delete(track.channel);
+      this.oneShots.delete(track);
+      this.disposeTrack(track);
+    };
+    const failed = (): void => {
+      if (!active()) return;
+      this.warnMissing(resourceId);
+      release();
+    };
+    if (!this.mediaCleanup.has(audio)) {
+      audio.addEventListener("error", failed);
+      audio.addEventListener("ended", release);
+      this.mediaCleanup.set(audio, () => {
+        audio.removeEventListener("error", failed);
+        audio.removeEventListener("ended", release);
+      });
+    }
     const result = audio.play();
     if (result && typeof result.catch === "function") {
       void result.catch((error: unknown) => {
-        // 자동재생 차단(NotAllowedError)은 조용히 무시 — unlock 후 재요청 흐름으로 커버.
-        if (error instanceof DOMException) return;
-        this.warnMissing(resourceId);
+        if (!active()) return; // A deliberate stop/replacement can reject pending play().
+        if (error instanceof DOMException && error.name === "NotAllowedError") {
+          this.blockedTracks.add(track);
+          return;
+        }
+        failed();
       });
     }
   }
@@ -462,6 +486,7 @@ export class AudioEngine {
   }
 
   private fadeOutAndDispose(track: ManagedTrack, fadeMs: number): void {
+    this.blockedTracks.delete(track);
     if (fadeMs <= 0) {
       this.disposeTrack(track);
       return;
@@ -507,6 +532,9 @@ export class AudioEngine {
   }
 
   private disposeTrack(track: ManagedTrack): void {
+    this.blockedTracks.delete(track);
+    this.mediaCleanup.get(track.audio)?.();
+    this.mediaCleanup.delete(track.audio);
     this.fadingTracks.delete(track);
     this.clearFade(track);
     this.hardStop(track.audio);
@@ -534,6 +562,6 @@ export class AudioEngine {
   private warnMissing(resourceId: string): void {
     if (this.warnedMissing.has(resourceId)) return;
     this.warnedMissing.add(resourceId);
-    console.warn(`[audio] 오디오 리소스를 재생할 수 없습니다: ${resourceId}`);
+    console.warn(`[audio] 오디오 로드/디코딩 실패: ${resourceId}. 파일 형식과 경로를 확인하세요. 카탈로그 BGM은 npm run bgm:install 후 서버를 다시 시작하세요.`);
   }
 }

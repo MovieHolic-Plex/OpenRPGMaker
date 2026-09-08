@@ -17,7 +17,10 @@
    "shop :: shop-transaction-branch-row>select#0": "거래 성공 분기에 '무엇을 추가할지' 고르는 종류 select(commandBodyCommerce.ts:832, 렌더 873). 리스너가 없고 값은 shop-add-transaction-branch-command 버튼(840-843)만 읽는다.",
    "shop :: shop-failed-branch-row>select#0": "거래 실패 분기의 같은 구조(commandBodyCommerce.ts:849, 렌더 882, 소비 855-858).",
    "inn :: inn-not-enough-branch-controls>select#0": "숙박비 부족 분기의 같은 구조(commandBodyCommerce.ts:529, 렌더 558, 소비 535-538).",
-   "moveEvent": "hop 초안 파라미터 4종(dx/dy/height/duration). 이동 경로 «점프» 단계를 추가할 때 쓰는 값으로, 리스너는 persistParameters 로 모듈 스코프 routeParameterDrafts 에만 쓰고 context.actions 를 부르지 않는다. 값은 Add 버튼의 item.createCommand(parameterContext()) 가 소비한다 — move-route-switch-id-input 계열과 같은 구조."
+   "moveEvent": "hop 초안 파라미터 4종(dx/dy/height/duration). 이동 경로 «점프» 단계를 추가할 때 쓰는 값으로, 리스너는 persistParameters 로 모듈 스코프 routeParameterDrafts 에만 쓰고 context.actions 를 부르지 않는다. 값은 Add 버튼의 item.createCommand(parameterContext()) 가 소비한다 — move-route-switch-id-input 계열과 같은 구조.",
+   "moveEvent :: move-route-npc-target-map-input": "위 초안 파라미터와 **같은 루프**에 있다(commandBodyRoute.ts:272-287 이 switchId/graphic/sound/npcTargetMap/npcTargetX/Y/direction/hop 4종을 한 번에 persistParameters 에 묶는다). 그동안 이 목록에 없었던 이유는 배선이 달라서가 아니라 **프로브가 이 컨트롤을 조작할 수 없었기** 때문이다 — 캡처 프로젝트에 맵이 1개뿐이라 옵션이 하나(allowEmpty: false)여서 single-option 으로 건너뛰어졌다. 캡처 프로젝트가 프로브용 두 번째 맵을 심은 뒤부터 조작이 성립해 형제들과 같은 결과가 관측된다(2026-09-09).",
+   "changeFace :: event-command-face-ai-prompt": "AI 그림 생성 위젯의 프롬프트 칸(aiImageGenerateField.ts:122-125, testid `${prefix}-prompt`). 리스너가 없고 값은 형제 버튼 `${prefix}-generate` 의 click 핸들러(280-294)만 읽어 생성 큐에 넣는다. 그림이 만들어지면 onInserted 로 리소스 id 가 폼에 꽂히므로 커밋은 그 경로가 한다 — 프롬프트 타이핑 자체는 커맨드를 바꾸지 않는다.",
+   "showPicture :: show-picture-ai-prompt": "같은 위젯의 showPicture 쪽 인스턴스(showPictureAiField.ts → aiImageGenerateField, testidPrefix 'show-picture-ai')."
   },
   "UNTRIAGED 메모": {
    "(비었음)": "UNTRIAGED 로 올라왔던 2건은 2026-08-30 에 고쳤다. 기록: (1) inputNumber :: input-number-prompt — latestCmd() 가 라이브 DOM 을 읽어 commitPrompt 의 무변경 가드가 자기 자신과 비교했다. 커밋한 문구를 따로 기억하는 committedPrompt + commit() 단일 창구로 고쳤다. (2) moveEvent :: move-route-skippable-checkbox — 리스너가 아예 없었다. repeat/wait/skippable 세 체크박스를 같은 루프로 묶어 apply()+renderPreview() 를 함께 걸었다(wait 는 커밋만 하고 미리보기 배지를 안 그리던 절반 결함도 같이 닫혔다). 두 건 다 커밋 프로브가 no-commit → replaceCommand 로 잡아냈다."
@@ -26,6 +29,9 @@
  "intentional": {
   "changeEquipment": [
    "change-equipment-search"
+  ],
+  "changeFace": [
+   "event-command-face-ai-prompt"
   ],
   "inn": [
    "inn-not-enough-branch-controls>select#0"
@@ -46,6 +52,7 @@
    "move-route-hop-dy-input",
    "move-route-hop-height-input",
    "move-route-npc-target-direction-input",
+   "move-route-npc-target-map-input",
    "move-route-npc-target-x-input",
    "move-route-npc-target-y-input",
    "move-route-sound-id-input",
@@ -56,6 +63,9 @@
   ],
   "setEventGraphicPattern": [
    "set-event-graphic-pattern-frame-input"
+  ],
+  "showPicture": [
+   "show-picture-ai-prompt"
   ]
  },
  "UNTRIAGED": {}

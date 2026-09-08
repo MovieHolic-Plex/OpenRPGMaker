@@ -92,6 +92,7 @@ import {
   type MinimapRuntimeState,
 } from "@/player/minimap";
 import { recordPlayBootDiagnostic } from "@/player/playBootDiagnostics";
+import { diagnosticToken } from "@/util/diagnosticObserver";
 import { createRuntimePerfCounters, type RuntimePerfCounters } from "@/player/runtimePerfCounters";
 import { onRegistryValue } from "@/player/registryReady";
 
@@ -184,6 +185,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   }
 
   preload(): void {
+    const diagnosticOwner = diagnosticToken();
     const reportProgress = (ratio: number): void => {
       const handler: unknown = this.game.registry.get("onPlayLoadProgress");
       if (typeof handler === "function") {
@@ -200,7 +202,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
         stage: "assets",
         ok: false,
         detail: `에셋 로드 실패: ${failure.key} (${failure.url})`,
-      });
+      }, undefined, diagnosticOwner);
     });
     reportProgress(0);
     loadBundledAssets(this, store.getCurrent());

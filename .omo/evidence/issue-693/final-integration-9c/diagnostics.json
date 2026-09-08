@@ -1,0 +1,172 @@
+{
+  "typescriptFiles": [
+    "scripts/lib/codexImageRuntime.ts",
+    "src/ai/imageModelCatalog.ts",
+    "src/battle/runtime.ts",
+    "src/editor/eventDraftValidator.ts",
+    "src/editor/panels/aiConversationHistoryModal.ts",
+    "src/editor/panels/aiSettingsModal.ts",
+    "src/editor/panels/eventEditor/commandBodyDatabase.ts",
+    "src/editor/panels/eventEditor/commandEditDialog.ts",
+    "src/player/PlayScene.ts",
+    "src/player/commandBattle.ts",
+    "src/player/playSceneBattle.ts",
+    "src/player/playSceneFieldSpawns.ts",
+    "src/player/playSceneInterpreter.ts",
+    "src/player/playSceneMapRuntime.ts",
+    "src/player/playSceneMovement.ts",
+    "src/project/battleAdmission.ts",
+    "test/aiChatObservability.test.ts",
+    "test/aiConversationHistoryModal.test.ts",
+    "test/aiImageSettings.test.ts",
+    "test/aiStickyChecklist.test.ts",
+    "test/battleInitializationAdmission.test.ts",
+    "test/battleProcessingCommandBody.test.ts",
+    "test/battleResultTransitionFailure.test.ts",
+    "test/e2e/ai-map-history.spec.ts",
+    "test/e2e/aiMapHistoryHarness.ts",
+    "test/eventBattleAdmission.test.ts",
+    "test/eventBattleFailure.test.ts",
+    "test/eventEditorStagedState.test.ts",
+    "test/fakeDom.ts",
+    "test/fakeDomSelectContracts.test.ts",
+    "test/weightedBranchUx.test.ts"
+  ],
+  "count": 31,
+  "diagnostics": [
+    {
+      "file": "scripts/lib/codexImageRuntime.ts",
+      "result": "No diagnostics found"
+    },
+    {
+      "file": "src/ai/imageModelCatalog.ts",
+      "result": "No diagnostics found"
+    },
+    {
+      "file": "src/battle/runtime.ts",
+      "result": "No diagnostics found"
+    },
+    {
+      "file": "src/editor/eventDraftValidator.ts",
+      "result": "No diagnostics found"
+    },
+    {
+      "file": "src/editor/panels/aiConversationHistoryModal.ts",
+      "result": "No diagnostics found"
+    },
+    {
+      "file": "src/editor/panels/aiSettingsModal.ts",
+      "result": "No diagnostics found"
+    },
+    {
+      "file": "src/editor/panels/eventEditor/commandBodyDatabase.ts",
+      "result": "No diagnostics found"
+    },
+    {
+      "file": "src/editor/panels/eventEditor/commandEditDialog.ts",
+      "result": "No diagnostics found"
+    },
+    {
+      "file": "src/player/PlayScene.ts",
+      "result": "No diagnostics found"
+    },
+    {
+      "file": "src/player/commandBattle.ts",
+      "result": "No diagnostics found"
+    },
+    {
+      "file": "src/player/playSceneBattle.ts",
+      "result": "No diagnostics found"
+    },
+    {
+      "file": "src/player/playSceneFieldSpawns.ts",
+      "result": "No diagnostics found"
+    },
+    {
+      "file": "src/player/playSceneInterpreter.ts",
+      "result": "No diagnostics found"
+    },
+    {
+      "file": "src/player/playSceneMapRuntime.ts",
+      "result": "No diagnostics found"
+    },
+    {
+      "file": "src/player/playSceneMovement.ts",
+      "result": "No diagnostics found"
+    },
+    {
+      "file": "src/project/battleAdmission.ts",
+      "result": "No diagnostics found"
+    },
+    {
+      "file": "test/aiChatObservability.test.ts",
+      "result": "No diagnostics found"
+    },
+    {
+      "file": "test/aiConversationHistoryModal.test.ts",
+      "result": "No diagnostics found"
+    },
+    {
+      "file": "test/aiImageSettings.test.ts",
+      "result": "No diagnostics found"
+    },
+    {
+      "file": "test/aiStickyChecklist.test.ts",
+      "result": "No diagnostics found"
+    },
+    {
+      "file": "test/battleInitializationAdmission.test.ts",
+      "result": "No diagnostics found"
+    },
+    {
+      "file": "test/battleProcessingCommandBody.test.ts",
+      "result": "No diagnostics found"
+    },
+    {
+      "file": "test/battleResultTransitionFailure.test.ts",
+      "result": "No diagnostics found"
+    },
+    {
+      "file": "test/e2e/ai-map-history.spec.ts",
+      "result": "No diagnostics found"
+    },
+    {
+      "file": "test/e2e/aiMapHistoryHarness.ts",
+      "result": "No diagnostics found"
+    },
+    {
+      "file": "test/eventBattleAdmission.test.ts",
+      "result": "No diagnostics found"
+    },
+    {
+      "file": "test/eventBattleFailure.test.ts",
+      "result": "No diagnostics found"
+    },
+    {
+      "file": "test/eventEditorStagedState.test.ts",
+      "result": "error TS6133 at 261:10: resultVariableId is declared but its value is never read (file byte-identical to exact upstream)"
+    },
+    {
+      "file": "test/fakeDom.ts",
+      "result": "No diagnostics found"
+    },
+    {
+      "file": "test/fakeDomSelectContracts.test.ts",
+      "result": "No diagnostics found"
+    },
+    {
+      "file": "test/weightedBranchUx.test.ts",
+      "result": "No diagnostics found"
+    }
+  ],
+  "css": {
+    "lsp": "Unavailable: biome is not installed",
+    "fallback": "PostCSS parse passed for both upstream-only changed CSS files"
+  },
+  "javascript": "node --check passed for all five imported changed .mjs files",
+  "initialLspTimeouts": [
+    "test/eventBattleAdmission.test.ts",
+    "test/eventEditorStagedState.test.ts"
+  ],
+  "note": "The two initial fresh-diagnostic timeouts were followed by completed narrow requests recorded above. No full app typecheck/build/gates/native QA was run by this child."
+}

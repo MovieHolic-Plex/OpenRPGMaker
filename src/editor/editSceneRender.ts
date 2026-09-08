@@ -3,6 +3,7 @@ import { TILE_SIZE } from "@/assets/bundled";
 import { editorState, type Layer } from "@/editor/editorState";
 import { createChipsetTileObject } from "@/editor/chipsetTileRender";
 import { renderEventMarkers } from "@/editor/editSceneEventMarkers";
+import { editorCameraBounds } from "@/editor/cameraFocusViewport";
 import { planEditorCameraCenter, viewportCenterWorld } from "@/editor/cameraStability";
 import { tilePassability } from "@/project/collision";
 import { tileStackAt, topTileInStack } from "@/project/mapOverlayTiles";
@@ -305,9 +306,9 @@ function applyCameraView(scene: Phaser.Scene, map: GameMap, preserveLookAt: bool
   const cam = scene.cameras.main;
   const previousCenter = preserveLookAt ? readCameraLookAt(cam) : null;
   cam.setZoom(editorState.get().zoom);
-  const paddingX = Math.max(TILE_SIZE * 8, cam.width / cam.zoom / 2);
-  const paddingY = Math.max(TILE_SIZE * 8, cam.height / cam.zoom / 2);
-  cam.setBounds(-paddingX, -paddingY, mapW + paddingX * 2, mapH + paddingY * 2);
+  const canvas = { x: 0, y: 0, width: cam.width, height: cam.height };
+  const bounds = editorCameraBounds({ mapWidth: mapW, mapHeight: mapH, canvas, unoccluded: canvas, zoom: cam.zoom });
+  cam.setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
   const focus = devCameraFocusTile(map);
   const center = planEditorCameraCenter({
     mapWidthPx: mapW,
@@ -322,8 +323,6 @@ function applyCameraView(scene: Phaser.Scene, map: GameMap, preserveLookAt: bool
 }
 
 function readCameraLookAt(cam: Phaser.Cameras.Scene2D.Camera): { x: number; y: number } | null {
-  const mid = cam.midPoint;
-  if (mid && Number.isFinite(mid.x) && Number.isFinite(mid.y)) return { x: mid.x, y: mid.y };
   if (!Number.isFinite(cam.scrollX) || !Number.isFinite(cam.scrollY)) return null;
   if (!Number.isFinite(cam.width) || !Number.isFinite(cam.height) || cam.width <= 0 || cam.height <= 0) return null;
   return viewportCenterWorld({

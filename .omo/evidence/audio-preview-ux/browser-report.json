@@ -1,0 +1,348 @@
+{
+  "origin": "http://127.0.0.1:19851",
+  "browser": "Chromium",
+  "httpRelay": true,
+  "rows": [
+    {
+      "scenario": "dialog MP3 play pause seek and desktop layout",
+      "play": {
+        "event": "playing",
+        "trusted": true,
+        "current": 0,
+        "duration": 84.636725,
+        "paused": false,
+        "loop": true,
+        "volume": 1,
+        "rate": 1,
+        "src": "http://127.0.0.1:19851/assets/cc0/audio/bgm/field-of-dreams.mp3"
+      },
+      "progress": {
+        "event": "timeupdate",
+        "trusted": true,
+        "current": 0.691231,
+        "duration": 84.636725,
+        "paused": false,
+        "loop": true,
+        "volume": 1,
+        "rate": 1,
+        "src": "http://127.0.0.1:19851/assets/cc0/audio/bgm/field-of-dreams.mp3"
+      },
+      "pause": {
+        "event": "pause",
+        "trusted": true,
+        "current": 8.364318,
+        "duration": 84.636725,
+        "paused": true,
+        "loop": true,
+        "volume": 1,
+        "rate": 1,
+        "src": "http://127.0.0.1:19851/assets/cc0/audio/bgm/field-of-dreams.mp3"
+      },
+      "seek": {
+        "event": "seeked",
+        "trusted": true,
+        "current": 20,
+        "duration": 84.636725,
+        "paused": true,
+        "loop": true,
+        "volume": 1,
+        "rate": 1,
+        "src": "http://127.0.0.1:19851/assets/cc0/audio/bgm/field-of-dreams.mp3"
+      },
+      "dialogShots": [
+        {
+          "width": 1024,
+          "height": 768,
+          "horizontalOverflow": false,
+          "transport": {
+            "x": 33,
+            "y": 589.40625,
+            "width": 958,
+            "height": 109,
+            "top": 589.40625,
+            "right": 991,
+            "bottom": 698.40625,
+            "left": 33
+          },
+          "artifact": "after-dialog-1024.png"
+        },
+        {
+          "width": 1280,
+          "height": 800,
+          "horizontalOverflow": false,
+          "transport": {
+            "x": 161,
+            "y": 617.40625,
+            "width": 958,
+            "height": 109,
+            "top": 617.40625,
+            "right": 1119,
+            "bottom": 726.40625,
+            "left": 161
+          },
+          "artifact": "after-dialog-1280.png"
+        },
+        {
+          "width": 1440,
+          "height": 900,
+          "horizontalOverflow": false,
+          "transport": {
+            "x": 241,
+            "y": 667.40625,
+            "width": 958,
+            "height": 109,
+            "top": 667.40625,
+            "right": 1199,
+            "bottom": 776.40625,
+            "left": 241
+          },
+          "artifact": "after-dialog-1440.png"
+        }
+      ]
+    },
+    {
+      "scenario": "short SE ended replay and keyboard text protection",
+      "ended": {
+        "event": "ended",
+        "trusted": true,
+        "current": 0.18,
+        "duration": 0.18,
+        "paused": true,
+        "loop": false,
+        "volume": 1,
+        "rate": 1,
+        "src": "http://127.0.0.1:19851/assets/cc0/audio/ui-confirm.wav"
+      },
+      "replay": {
+        "event": "ended",
+        "trusted": true,
+        "current": 0.18,
+        "duration": 0.18,
+        "paused": true,
+        "loop": false,
+        "volume": 1,
+        "rate": 1,
+        "src": "http://127.0.0.1:19851/assets/cc0/audio/ui-confirm.wav"
+      }
+    },
+    {
+      "scenario": "real WebAudio pan fade and gameplay isolation",
+      "gameBefore": {
+        "state": {
+          "volume": {
+            "bgm": 0.37,
+            "se": 0.29
+          },
+          "playbackRate": 0.85,
+          "pan": -0.2,
+          "fadeInMs": 777
+        },
+        "playing": true
+      },
+      "fadeStart": {
+        "event": "playing",
+        "trusted": true,
+        "current": 0,
+        "duration": 1.6,
+        "paused": false,
+        "loop": true,
+        "volume": 0,
+        "rate": 1.25,
+        "src": "http://127.0.0.1:19851/assets/cc0/audio/field-loop.wav"
+      },
+      "fadeEnd": {
+        "event": "timeupdate",
+        "trusted": true,
+        "current": 1.029116,
+        "duration": 1.6,
+        "paused": false,
+        "loop": true,
+        "volume": 0.4,
+        "rate": 1.25,
+        "src": "http://127.0.0.1:19851/assets/cc0/audio/field-loop.wav"
+      },
+      "panners": [
+        {
+          "pan": -0.20000000298023224,
+          "context": "running"
+        },
+        {
+          "pan": 0.4000000059604645,
+          "context": "running"
+        }
+      ]
+    },
+    {
+      "scenario": "resource manager playback authoring and long content",
+      "rmPlay": {
+        "event": "playing",
+        "trusted": true,
+        "current": 0,
+        "duration": 84.636725,
+        "paused": false,
+        "loop": true,
+        "volume": 1,
+        "rate": 1,
+        "src": "http://127.0.0.1:19851/assets/cc0/audio/bgm/field-of-dreams.mp3"
+      },
+      "rmShots": [
+        {
+          "width": 1024,
+          "height": 768,
+          "horizontalOverflow": false,
+          "transport": {
+            "x": 479,
+            "y": 541,
+            "width": 400,
+            "height": 123,
+            "top": 541,
+            "right": 879,
+            "bottom": 664,
+            "left": 479
+          },
+          "artifact": "after-resource-long-1024.png"
+        },
+        {
+          "width": 1280,
+          "height": 800,
+          "horizontalOverflow": false,
+          "transport": {
+            "x": 583,
+            "y": 541,
+            "width": 400,
+            "height": 123,
+            "top": 541,
+            "right": 983,
+            "bottom": 664,
+            "left": 583
+          },
+          "artifact": "after-resource-long-1280.png"
+        },
+        {
+          "width": 1440,
+          "height": 900,
+          "horizontalOverflow": false,
+          "transport": {
+            "x": 663,
+            "y": 569,
+            "width": 400,
+            "height": 123,
+            "top": 569,
+            "right": 1063,
+            "bottom": 692,
+            "left": 663
+          },
+          "artifact": "after-resource-long-1440.png"
+        }
+      ]
+    },
+    {
+      "scenario": "map picker playback seek empty search and cleanup",
+      "pickerPlay": {
+        "event": "playing",
+        "trusted": true,
+        "current": 0,
+        "duration": 84.636725,
+        "paused": false,
+        "loop": true,
+        "volume": 1,
+        "rate": 1,
+        "src": "http://127.0.0.1:19851/assets/cc0/audio/bgm/field-of-dreams.mp3"
+      },
+      "pickerSeek": {
+        "event": "seeked",
+        "trusted": true,
+        "current": 15,
+        "duration": 84.636725,
+        "paused": true,
+        "loop": true,
+        "volume": 1,
+        "rate": 1,
+        "src": "http://127.0.0.1:19851/assets/cc0/audio/bgm/field-of-dreams.mp3"
+      },
+      "pickerShots": [
+        {
+          "width": 1024,
+          "height": 768,
+          "horizontalOverflow": false,
+          "transport": {
+            "x": 569.390625,
+            "y": 564,
+            "width": 340.609375,
+            "height": 118,
+            "top": 564,
+            "right": 910,
+            "bottom": 682,
+            "left": 569.390625
+          },
+          "artifact": "after-picker-1024.png"
+        },
+        {
+          "width": 1280,
+          "height": 800,
+          "horizontalOverflow": false,
+          "transport": {
+            "x": 697.390625,
+            "y": 580,
+            "width": 340.609375,
+            "height": 118,
+            "top": 580,
+            "right": 1038,
+            "bottom": 698,
+            "left": 697.390625
+          },
+          "artifact": "after-picker-1280.png"
+        },
+        {
+          "width": 1440,
+          "height": 900,
+          "horizontalOverflow": false,
+          "transport": {
+            "x": 777.390625,
+            "y": 630,
+            "width": 340.609375,
+            "height": 118,
+            "top": 630,
+            "right": 1118,
+            "bottom": 748,
+            "left": 777.390625
+          },
+          "artifact": "after-picker-1440.png"
+        }
+      ]
+    },
+    {
+      "scenario": "real media error is not false playing",
+      "mediaError": {
+        "event": "error",
+        "trusted": true,
+        "current": 0,
+        "duration": null,
+        "paused": true,
+        "loop": false,
+        "volume": 1,
+        "rate": 1,
+        "src": "http://127.0.0.1:19851/assets/cc0/audio/ui-confirm.wav"
+      }
+    }
+  ],
+  "errors": [],
+  "cleanup": true,
+  "searchDebug": [
+    {
+      "testid": "tile-search-input",
+      "value": "",
+      "connected": true,
+      "label": "타일 찾기",
+      "focused": false
+    },
+    {
+      "testid": "audio-test-filter",
+      "value": "NO_MATCH_QA",
+      "connected": true,
+      "label": "오디오 목록 좁히기",
+      "focused": true
+    }
+  ],
+  "success": true
+}

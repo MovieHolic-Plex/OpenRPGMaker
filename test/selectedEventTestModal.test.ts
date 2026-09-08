@@ -6,6 +6,9 @@ const playerMocks = vi.hoisted(() => ({
 }));
 
 vi.mock("@/player/player", () => playerMocks);
+// The shell now unlocks audio synchronously in the initiating user gesture.
+// This suite replaces the player; keep that audio boundary explicit too.
+vi.mock("@/player/audio", () => ({ getAudioEngine: () => ({ unlock: vi.fn() }) }));
 vi.mock("@/assets/bundledAssetWarmup", () => ({ warmBundledPlayAssets: vi.fn() }));
 vi.mock("@/player/playLoadingOverlay", () => ({
   mountPlayLoadingOverlay: (host: HTMLElement) => {

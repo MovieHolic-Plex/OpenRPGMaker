@@ -1,4 +1,5 @@
-import { buildIndependentReviewRequest, parseIndependentReview, reviewChanges, reviewMapReferenceRoots, requiresVisualReview, type ResultReview } from "./independentReview";
+import { diagnosticObserved, diagnosticToken, publishDiagnostic } from "@/util/diagnosticObserver";
+import { buildIndependentReviewRequest, parseIndependentReview, reviewChanges, reviewEvidenceContexts, reviewEvidenceImages, reviewMapReferenceRoots, requiresVisualReview, type ResultReview } from "./independentReview";
 import { mapVisualEvidenceUnavailable } from "./mapVisualEvidence";
 import { parseFunctionalRequirements, type FunctionalCriterion } from "./functionalAcceptance";
 import { missingAcceptance, type AcceptanceSnapshot, type AcceptancePromise, type AcceptanceSource, type RequirementWithdrawalAction } from "./assistantAcceptance";
@@ -350,6 +351,14 @@ const VOCAB_SOFT_CONFIRM_APPROVAL_WARNING =
   "🖼 맵 배치와 함께 재료를 합의했습니다(origin:user). 되돌리면 배치와 합의가 함께 원복됩니다.";
 const HARD_CLUSTER_RULE_WARNING = "⚠️ 강한 규칙: 이 타일셋을 쓰는 모든 맵의 저장(커밋)이 규칙 위반 시 거부됩니다.";
 export const TOKEN_BUDGET_STATUS_TEXT = "요청이 커서 이번 턴에는 일부만 제안합니다. 이어서 요청해 주세요.";
+/**
+ * 예산 안내를 낼 종료 사유 — 사용자에게 "이어서 요청해 주세요" 라고 말할 자격이 있는 것만.
+ *
+ * 이 안내는 **런 경계**(finishRunRecap)에서만 나간다. 한 턴 안의 라운드/토큰 상한은 자율
+ * 드라이버가 스스로 다음 턴을 여는 흔한 중간 사건이라, 턴 루프에서 내보내면 자동 계속마다
+ * 같은 문장이 채팅에 쌓인다(사용자는 이어서 요청한 적이 없는데 계속 그러라는 말을 듣는다).
+ */
+const BUDGET_STOP_REASONS: ReadonlySet<TurnResult["stoppedReason"]> = new Set(["token-budget", "max-tool-calls"]);
 
 // 예산 소진으로 모델의 마무리가 없으면 실제 적용분과 아직 적용 전인 제안을 함께 알린다.
 // 마일스톤은 제안 큐를 비우므로 pending=0만으로 "변경 없음"을 판단하면 안 된다.
@@ -3606,6 +3615,8 @@ export class AssistantSession {
     const events: SessionEvent[] = [];
     onEvent = event => events.push(event);
     if (result.stoppedReason === "aborted") this.cancelPendingProof?.(onEvent);
+    // 예산으로 멈춘 런은 여기서 딱 한 번 안내한다(턴 루프는 내지 않는다 — BUDGET_STOP_REASONS).
+    if (BUDGET_STOP_REASONS.has(result.stoppedReason)) onEvent({ type: "status", text: TOKEN_BUDGET_STATUS_TEXT });
     this.publishAcceptance(onEvent);
     if (this.acceptanceOpen() && !this.lastTurnPlanOnly && this.turnComposerMode !== "ask" && !this.isDraftReviewApproved()) {
       this.acceptance?.stop();
@@ -3661,7 +3672,13 @@ export class AssistantSession {
   }
 
   // 감사 항목에 ISO 타임스탬프를 붙여 기록한다(결함 ⑬ — 타임라인 export).
+  private diagnosticAuditToken: symbol | undefined;
   private pushAudit(entry: AuditEntry): void {
+    if (entry.kind === "user") this.diagnosticAuditToken = diagnosticToken();
+    if (this.diagnosticAuditToken && this.diagnosticAuditToken === diagnosticToken() && diagnosticObserved("conversation")
+      && (entry.kind === "user" || entry.kind === "assistant")) {
+      publishDiagnostic({ category: "conversation", phase: entry.kind, count: entry.text.length });
+    }
     this.audit.push({ ...entry, at: new Date().toISOString() });
   }
 
@@ -4234,6 +4251,9 @@ export class AssistantSession {
     const outputAtStart = this.estimatedOutputTotal;
     let candidate: { identity: string; acceptance: AcceptanceSnapshot | null } | null = null;
     let review: ResultReview;
+    /** Deterministic problems found before the reviewer ran, so a failure that stops the
+     * review from happening at all still reports them instead of only its own cause. */
+    let knownProblems: readonly string[] = [];
     try {
       if (signal?.aborted) throw new Error("independent-review-cancelled");
       if (!this.draftBaselineCurrent) throw new Error("independent-review-stale-baseline: regenerate from the current project before review");
@@ -4278,16 +4298,14 @@ export class AssistantSession {
         requiredProblems.push(`${change.path}: asset transport changed without reviewable original evidence`);
       }
       const targetMapId = this.originalContext!.context.target.mapId;
-      const mapIds = new Set([...Object.keys(this.reviewBaseline.maps), ...Object.keys(this.ctx.project.maps)].filter(id =>
-        id === targetMapId
-        || acceptanceFingerprint(this.reviewBaseline.maps[id]) !== acceptanceFingerprint(this.ctx.project.maps[id])
+      const changedMapIds = new Set([...Object.keys(this.reviewBaseline.maps), ...Object.keys(this.ctx.project.maps)].filter(id =>
+        acceptanceFingerprint(this.reviewBaseline.maps[id]) !== acceptanceFingerprint(this.ctx.project.maps[id])
         || requiresVisualReview(this.reviewBaseline, this.ctx.project, id)));
+      const mapIds = new Set(changedMapIds);
       if (typeof targetMapId === "string") mapIds.add(targetMapId);
-      const evidence = (project: Project, prefix: string) => [...mapIds].map(mapId => extractOriginalContext(project, {
-        snapshotId: `${prefix}-${revision}-${mapId}`, currentMapId: mapId,
-        mapReferenceRoots: [mapId, ...mapReferenceRoots],
-        intent: this.turnIntent ? { ...this.turnIntent, targetMapId: mapId, tools: this.turnIntent.tools } : null,
-      }));
+      const evidence = (project: Project, prefix: string, reviewed: Iterable<string>, target: string) =>
+        reviewEvidenceContexts(project, { snapshotId: `${prefix}-${revision}`, mapIds: reviewed,
+          targetMapId: target, mapReferenceRoots, intent: this.turnIntent ?? null });
       const receipts = this.imageEvidence.current(this.ctx.project);
       for (const mapId of mapIds) {
         const before = this.reviewBaseline.maps[mapId], after = this.ctx.project.maps[mapId];
@@ -4296,16 +4314,39 @@ export class AssistantSession {
         const unavailable = visualChanged ? mapVisualEvidenceUnavailable(after, before) : null;
         if (unavailable) requiredProblems.push(unavailable);
         if (visualChanged && !coveredByImages(receipts, after, { x: 0, y: 0, w: after.width, h: after.height })) {
-          requiredProblems.push(`show_map_region: current rendered coverage of changed map ${mapId} required`);
+          requiredProblems.push(`show_map_region: current rendered coverage of changed map ${mapId} required`
+            + ` — request x:0,y:0,w:${after.width},h:${after.height} in one call; complete coverage is not clipped`);
         }
       }
       for (const receipt of this.reviewImages.keys()) if (!receipts.includes(receipt)) this.reviewImages.delete(receipt);
       const config = { ...(this.reviewConfig ?? this.config), maxTokens: Math.min(16384, remainingTokens) };
       if (signal?.aborted) throw new Error("independent-review-cancelled");
-      const request = buildIndependentReviewRequest(config, { revision, originalRequest: this.currentTurnRequestText,
-        before: evidence(this.reviewBaseline, "before"), after: evidence(this.ctx.project, "after"), changes,
-        toolResults: this.reviewToolResults, acceptance: draftAcceptance, requiredProblems,
-        images: receipts.flatMap(receipt => this.reviewImages.get(receipt) ?? []) }, signal);
+      knownProblems = requiredProblems;
+      const captures = receipts.map(receipt => ({ mapId: receipt.mapId, images: this.reviewImages.get(receipt) ?? [] }));
+      const build = (reviewedIds: ReadonlySet<string>, target: string) => buildIndependentReviewRequest(config, { revision,
+        originalRequest: this.currentTurnRequestText, changes, requiredProblems,
+        // Scoped to the maps this envelope reviews, so the narrowing retry sheds their
+        // renders too — the dominant cost — instead of only their text.
+        images: reviewEvidenceImages(captures, reviewedIds),
+        before: evidence(this.reviewBaseline, "before", reviewedIds, target),
+        after: evidence(this.ctx.project, "after", reviewedIds, target),
+        toolResults: this.reviewToolResults, acceptance: draftAcceptance }, signal);
+      // The reviewer is one-shot, so an oversized envelope is refused rather than truncated.
+      // Retry once judging only the changed maps: the target map is where the user is
+      // standing, and an unchanged one is surrounding context rather than the subject of this
+      // review — a large one can overflow the envelope by itself. It has to leave the context
+      // target too, which always includes its own map. Required evidence (changed maps, their
+      // renders, deterministic problems) is never dropped to make room; that would buy
+      // approval with less proof than the gate demands.
+      const [firstChangedMapId] = changedMapIds;
+      let request;
+      try {
+        request = build(mapIds, targetMapId);
+      } catch (cause) {
+        if (!(cause instanceof Error) || !cause.message.startsWith("independent-review-window-exceeded")
+          || firstChangedMapId === undefined || changedMapIds.size >= mapIds.size) throw cause;
+        request = build(changedMapIds, firstChangedMapId);
+      }
       const response = await operation.wait(this.chat(config, request));
       if (signal?.aborted) throw new Error("independent-review-cancelled");
       if (identity !== JSON.stringify(this.ctx.project)) throw new Error("independent-review-stale-revision");
@@ -4319,7 +4360,15 @@ export class AssistantSession {
         candidate = { identity, acceptance: draftAcceptance };
       }
     } catch (cause) {
-      review = { status: "error", revision, findings: [], summary: cause instanceof Error ? cause.message : String(cause) };
+      const message = cause instanceof Error ? cause.message : String(cause);
+      // An unreviewable draft is never approved. But `independent-review-window-exceeded`
+      // is the harness refusing its own envelope, and reporting only that string buried the
+      // deterministic problems (failed lint, unmet acceptance) the user can actually act on.
+      const summary = message.startsWith("independent-review-window-exceeded")
+        ? ["이번 변경의 검수 증거가 한 번에 들어가지 않아 초안을 검수하지 못했습니다. 변경 범위를 나눠 다시 요청하세요.",
+          ...knownProblems.map(problem => `- ${problem}`)].join("\n")
+        : message;
+      review = { status: "error", revision, findings: [], summary };
     }
     if (owner !== this.reviewTurn) return { status: "error", revision, findings: [], summary: "independent-review-superseded" };
     this.resultReview = review;
@@ -5107,11 +5156,8 @@ export class AssistantSession {
       }
 
       // 출력 토큰 예산 확인(라운드의 툴 실행까지 마친 뒤). 예산 소진이 유일한 사용자 제한.
+      // 사용자용 안내는 여기서 내지 않는다 — 런이 실제로 멈출 때 finishRunRecap 이 한 번 낸다.
       if (spentOutputTokens >= this.config.maxTokens) {
-        onEvent({
-          type: "status",
-          text: TOKEN_BUDGET_STATUS_TEXT,
-        });
         this.runExecution = "budget-exhausted";
         this.pushAudit({ kind: "status", text: `턴 종료(token-budget) — 제안 ${proposedByKey.size}건 · 출력 토큰 ~${spentOutputTokens}` });
         return {
@@ -5123,7 +5169,7 @@ export class AssistantSession {
     }
 
     // 라운드 안전핀 도달(기본 200 — 정상 작업에선 도달하지 않음) — 현재까지의 changeset을 제시.
-    onEvent({ type: "status", text: TOKEN_BUDGET_STATUS_TEXT });
+    // 자율 런은 이 상한을 턴마다 만난다. 안내는 런 경계에서만(finishRunRecap).
     this.runExecution = "budget-exhausted";
     this.pushAudit({ kind: "status", text: `턴 종료(max-tool-calls) — 제안 ${proposedByKey.size}건 · 출력 토큰 ~${spentOutputTokens}` });
     return {

@@ -9,6 +9,11 @@ import {
 } from "@/assets/transparentColorKey";
 
 export const MAX_IMAGE_DIMENSION = 512;
+/** 맵 미리보기 타일 배율 — 너무 크면 base64가 컨텍스트를 잠식(16×16×3×16px ≈ 거대). */
+export const TILE_GRID_SCALE = 2;
+/** Largest canvas worth drawing before `canvasDataUrl` shrinks it. Supersampling past
+ * 2× the delivered image buys nothing a nearest-neighbour downscale keeps. */
+const SUPERSAMPLE_LIMIT = MAX_IMAGE_DIMENSION * 2;
 export const CHECKER_DARK = "#2a2a2e";
 export const CHECKER_LIGHT = "#33333a";
 export const EMPTY_TILE = -1;
@@ -46,6 +51,21 @@ export function drawTile(context: CanvasRenderingContext2D, image: HTMLImageElem
   const sourceX = (tile % tileset.tilesPerRow) * tileset.tileSize;
   const sourceY = Math.floor(tile / tileset.tilesPerRow) * tileset.tileSize;
   context.drawImage(image, sourceX, sourceY, tileset.tileSize, tileset.tileSize, targetX, targetY, targetSize, targetSize);
+}
+
+/** Per-tile draw size for a tile-grid render.
+ *
+ * `canvasDataUrl` only shrinks a canvas that is already drawn, so a whole-map render at
+ * the native scale allocates `w * h * (tileSize * TILE_GRID_SCALE)²` pixels and then
+ * throws almost all of them away: a 256×256 map is an 8192×8192 canvas (~268MB) for a
+ * 512px result. Pick a size that lands inside the delivered image up front. Small
+ * regions keep the native scale so their existing output is unchanged.
+ */
+export function tileDrawSize(tilesWide: number, tilesHigh: number, tileSize: number): number {
+  const natural = Math.max(1, tileSize * TILE_GRID_SCALE);
+  const span = Math.max(1, tilesWide, tilesHigh);
+  if (span * natural <= SUPERSAMPLE_LIMIT) return natural;
+  return Math.max(1, Math.floor(MAX_IMAGE_DIMENSION / span));
 }
 
 export function canvasDataUrl(canvas: HTMLCanvasElement): string | null {

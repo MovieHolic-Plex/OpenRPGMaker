@@ -107,3 +107,16 @@
     white-space: normal;
   }
 
+
+/* Native navigation tracks project camera bounds; the canvas itself never scrolls. */
+.editor-camera-scroll {
+  position: absolute;
+  z-index: 1;
+  background: var(--bg-inset);
+  scrollbar-color: var(--scrollbar-thumb) var(--bg-inset);
+  overscroll-behavior: contain;
+  scroll-behavior: auto;
+}
+.editor-camera-scroll-x { overflow-x: scroll; overflow-y: hidden; }
+.editor-camera-scroll-y { overflow-y: scroll; overflow-x: hidden; }
+.editor-camera-scroll:focus-visible { outline: var(--focus-outline); outline-offset: -2px; }

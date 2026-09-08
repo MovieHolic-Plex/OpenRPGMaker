@@ -36,12 +36,26 @@ export type MapEditHistoryEntry = {
   readonly mapId: string | null;
   readonly at: number;
   readonly current: boolean;
+  /**
+   * 이 항목을 고르면 몇 번의 작업을 지나가는가(가장 가까운 항목 = 1).
+   *
+   * 깊이는 **모델이** 센다. index 는 스택 좌표라 목록을 보는 쪽이 깊이를 다시 계산하려면
+   * 스택 길이를 알아야 하고, 그러면 도구막대의 간이 메뉴·기록 창·단축키가 각자 다른 산수를
+   * 갖게 된다("3단계"라고 써 놓고 2단계만 가는 종류의 불일치). 한 곳에서만 센다.
+   */
+  readonly steps: number;
 };
 
 let undoStack: HistoryEntry[] = [];
 let redoStack: HistoryEntry[] = [];
 let historyEventQueued = false;
 let seq = 0;
+// Unlike entry markers, this revision never resets or waits for a UI event.
+let historyRevision = 0;
+
+export function getMapEditHistoryRevision(): number {
+  return historyRevision;
+}
 // 마지막으로 스냅샷을 밀어넣은 undo 스택 top 의 직렬화 서명(연속 중복 스냅샷 dedup 용).
 let topSignature: string | null = null;
 // 텍스트 입력처럼 커밋 단위로 1 스냅샷만 남기기 위한 병합 키.
@@ -319,6 +333,29 @@ export function getMapEditHistoryEntries(): readonly MapEditHistoryEntry[] {
       mapId: entry.mapId,
       at: entry.at,
       current: redoStack.length === 0 && index === undoStack.length - 1,
+      steps: undoStack.length - index,
+    }))
+    .reverse();
+}
+
+/**
+ * redo 스택을 undo 목록과 **같은 모양**으로 노출한다 — 가까운 것이 먼저, index 는 스택 좌표.
+ *
+ * 이것이 없어서 되돌리기만 목록으로 볼 수 있었다(기록 창에 다시실행 단추는 있는데 «무엇이»
+ * 다시 실행될지는 어디에도 없었다). 두 방향이 같은 자료 모양을 내야 도구막대의 간이 메뉴가
+ * 방향별로 다른 렌더 경로를 갖지 않는다.
+ *
+ * `current` 는 항상 false 다: 지금 상태는 undo 스택 위에 있고 redo 는 전부 «아직 오지 않은» 것이다.
+ */
+export function getMapEditRedoEntries(): readonly MapEditHistoryEntry[] {
+  return redoStack
+    .map((entry, index) => ({
+      index,
+      label: entry.label,
+      mapId: entry.mapId,
+      at: entry.at,
+      current: false,
+      steps: redoStack.length - index,
     }))
     .reverse();
 }
@@ -369,6 +406,39 @@ export function revertToHistoryIndex(index: number): boolean {
   return true;
 }
 
+/**
+ * revertToHistoryIndex 의 다시실행 쪽 짝 — redo 스택의 index 지점까지 **한 번에** 앞으로 간다.
+ *
+ * 왜 redoMapEdit 를 N번 부르지 않는가: 그러면 undo 스택에 N개의 엔트리가 쌓여서, 감독이
+ * "3단계 앞으로" 한 번을 되돌리려면 Ctrl+Z 를 세 번 눌러야 한다. 목록에서 한 지점을 고르는
+ * 것은 사용자에게 **한 번의 결정**이므로 되돌리기도 한 번이어야 한다(되돌리기 목록의
+ * revertToHistoryIndex 가 이미 그렇게 한 redo 엔트리로 접는 것과 대칭).
+ *
+ * 스냅샷 적용 순서는 revert 와 같은 이유로 위(가까운 것)에서 아래로다: redoStack 은
+ * index 가 작아질수록 시간상 **나중** 상태라(undoMapEdit 가 최신 상태를 먼저 push 한다)
+ * 마지막에 적용되는 redoStack[index] 가 목표 상태로 남는다. 같은 맵이 여러 번 나오면
+ * 가장 나중 상태가 이긴다.
+ */
+export function redoToHistoryIndex(index: number): boolean {
+  if (!Number.isInteger(index) || index < 0 || index >= redoStack.length) return false;
+  const target = redoStack[index];
+  let project = structuredClone(store.getCurrent());
+  for (let cursor = redoStack.length - 1; cursor >= index; cursor -= 1) {
+    project = applySnapshotToProject(project, redoStack[cursor].snapshot);
+  }
+  // dedup 을 지나면 되돌릴 대상이 사라지므로 redo 경로 전용 push 를 쓴다(redoMapEdit 과 같다).
+  pushSnapshotForRedo(makeEntry(
+    { kind: "project", before: projectWithoutEventDrafts(store.getCurrent()) },
+    target.label,
+    target.mapId,
+  ));
+  redoStack = redoStack.slice(0, index);
+  lastCoalesceKey = null;
+  store.replace(project);
+  emitHistoryChange();
+  return true;
+}
+
 export function getMapEditHistoryDebugEntries(): readonly {
   readonly kind: HistorySnapshot["kind"];
   readonly mapId: string | null;
@@ -382,6 +452,7 @@ export function getMapEditHistoryDebugEntries(): readonly {
 }
 
 function emitHistoryChange(): void {
+  historyRevision += 1;
   if (typeof window === "undefined" || historyEventQueued) return;
   // 히스토리 변경 이벤트는 UI 툴바 갱신용 알림일 뿐이다. 테스트/비브라우저 스텁처럼
   // 스케줄링/디스패치 API 가 없으면 조용히 건너뛴다(실제 브라우저에는 항상 존재).

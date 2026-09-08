@@ -88,6 +88,28 @@ const pointer = (id: string): string => id.replaceAll("~", "~0").replaceAll("/",
 const path = (...ids: string[]): string => `/${ids.map(pointer).join("/")}`;
 const object = (value: unknown): value is Record<string, unknown> => value !== null && typeof value === "object" && !Array.isArray(value);
 
+/** An entry's contribution to reference relevance. The entry keeps its complete value.
+ *
+ * Two entries enumerate the switch/variable declaration space wholesale rather than
+ * referencing part of it: `/summary` lists every named declaration, and the authored start
+ * state holds a key per declared id. Their ids appear in the closure by construction, so
+ * following them pulled every switch and variable record into every context — measured on a
+ * 1,000-flag village project, 2,000 records cost 47K of the 116K tokens per context, on both
+ * sides of every review. An authored non-default seed value is a real reference and stays.
+ */
+function closureProjection(id: string, value: unknown): unknown {
+  if (!object(value)) return value;
+  if (id === "/summary") {
+    const { switches, variables, ...referenced } = value;
+    return referenced;
+  }
+  if (id !== "/session") return value;
+  const authored = (map: unknown, isDefault: (value: unknown) => boolean): unknown => object(map)
+    ? Object.fromEntries(Object.entries(map).filter(([, entry]) => !isDefault(entry))) : map;
+  return { ...value, switches: authored(value.switches, entry => entry === false),
+    variables: authored(value.variables, entry => entry === 0) };
+}
+
 /** Pure, detached authored-state projection shared by writer grounding and before/after review.
  * No store, configuration, environment, runtime session, resource URLs or binary assets are read.
  * Relevance uses actual identities in authored values, never natural-language keyword routing.
@@ -194,7 +216,8 @@ export function extractOriginalContext(project: Project, options: OriginalContex
   const selected = new Set<string>();
   // Review scopes map expansion without removing authored values or record references.
   // Summary/mapTree remain navigation, not map relevance.
-  const queue: unknown[] = [...(options.mapReferenceRoots ?? [startStateOf(project), project.testPresets])];
+  const queue: unknown[] = [...(options.mapReferenceRoots
+    ?? [closureProjection("/session", startStateOf(project)), project.testPresets])];
   const followedMaps = new Set<string>();
   const include = (candidate: typeof candidates[number]): void => {
     if (selected.has(candidate.entryId)) return;
@@ -218,7 +241,7 @@ export function extractOriginalContext(project: Project, options: OriginalContex
   };
   for (let i = 0; i < queue.length; i++) visit(queue[i], true);
   queue.length = 0;
-  for (const entry of entries) queue.push(entry.value);
+  for (const entry of entries) queue.push(closureProjection(entry.id, entry.value));
   for (const candidate of candidates) if (candidate.collection && (broadDatabase || requiredCollections.has(candidate.collection))) include(candidate);
   for (let i = 0; i < queue.length; i++) visit(queue[i], false);
   return structuredClone({ snapshotId: options.snapshotId, target: { mapId, selection }, entries, missing });

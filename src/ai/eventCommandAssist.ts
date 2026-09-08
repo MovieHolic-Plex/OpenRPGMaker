@@ -22,6 +22,13 @@ import { resolvePictureSource } from "@/player/pictures/pictureResources";
 import { COMMAND_KINDS } from "@/project/commandKindRegistry";
 import { COMMAND_GUARANTEES } from "@/project/commandGuaranteeRegistry";
 import {
+  buildEventTargetCatalog,
+  moveTargetIssueMessage,
+  moveTargetPromptSection,
+  resolveMoveTarget,
+  type EventTargetCatalog,
+} from "@/project/eventTargetCatalog";
+import {
   validateCommands,
   type ReferenceContext,
 } from "@/project/io/commandReferenceValidation";
@@ -334,6 +341,12 @@ export function buildEventAssistPrompt(context: EventAssistContext): string {
     ].join("\n")
   );
 
+  // 이동 경로 대상 프로토콜. 이 절이 없어서 모델이 `eventId:"this"` 를 냈고, 그 값은 어떤
+  // 이벤트도 가리키지 않아 테스트 플레이에서 조용히 아무 일도 일어나지 않았다(OPRN-OUT-012).
+  if (kinds.includes("moveEvent")) {
+    sections.push(moveTargetPromptSection(buildEventTargetCatalog(project, mapId)));
+  }
+
   const canonSection = worldCanonPromptSection(project.worldCanon);
   if (canonSection) sections.push(canonSection);
   sections.push(existingCommandsSection(page, scope));
@@ -378,8 +391,15 @@ function buildReferenceContext(project: Project): ReferenceContext {
 export function parseAndValidate(
   project: Project,
   text: string,
-  // "page" scope 에서 기존 명령이 있던 페이지는 빈 배열이 정당하다("전부 지워 줘").
-  options: { readonly allowEmpty?: boolean } = {},
+  options: {
+    // "page" scope 에서 기존 명령이 있던 페이지는 빈 배열이 정당하다("전부 지워 줘").
+    readonly allowEmpty?: boolean;
+    /**
+     * 이동 경로 대상을 대조할 맵. 런타임이 **이 맵**의 이벤트만 움직이므로 대상 검증에는
+     * 맵이 필수다. 생략하면 시작 맵으로 본다(구 호출자 호환).
+     */
+    readonly mapId?: string;
+  } = {},
 ): AssistParseResult {
   const jsonText = extractJsonArrayText(text);
   if (!jsonText) {
@@ -428,6 +448,11 @@ export function parseAndValidate(
     validateTransferBounds(commands, project);
     // resourceId 는 집합 소속만으로 부족하다 — 종류까지 맞지 않으면 조용히 깨진 이벤트가 된다.
     validateResourceSlots(commands, project);
+    // 이동 경로 대상: 적용 **전에** 정본화하고, 못 옮기는 값은 자가수정 루프로 되돌린다.
+    normalizeMoveEventTargets(
+      commands,
+      buildEventTargetCatalog(project, options.mapId ?? project.startMapId),
+    );
   } catch (cause) {
     return { ok: false, errors: [cause instanceof Error ? cause.message : String(cause)] };
   }
@@ -569,6 +594,36 @@ function walkResourceSlots(
   }
 }
 
+/**
+ * moveEvent 의 대상을 **적용 전에** 정본값으로 옮긴다(중첩 분기 포함).
+ *
+ * 왜 반려만 하지 않고 옮기는가: 실측 오작동은 `"this"` 하나였고 그 뜻은 모호하지 않다.
+ * 반려하면 자가수정 3회 예산을 태우고도 같은 값을 다시 낼 수 있다. 뜻이 유일하게
+ * 정해지는 값(별칭 · 이 맵에서 유일한 표시 이름)만 옮기고, 그 밖은 실행 가능한 문구로
+ * 반려해 자가수정 루프(runEventCommandAssist)가 고치게 한다.
+ *
+ * 여기서 손대는 것은 방금 파싱한 **응답 객체**뿐이다 — 저장된 프로젝트는 건드리지 않는다
+ * (옛 프로젝트의 알 수 없는 id 는 편집기가 경고 + 복구 경로로 보존한다).
+ *
+ * 알려진 대가: "page" scope 는 기존 목록을 **그대로 다시** 출력하게 하므로, 페이지에 이미
+ * 깨진 대상(예: 지워진 이벤트 id)이 있으면 모델이 그것을 되풀이해 반려된다. 그 반려 문구는
+ * 이 맵의 유효한 id 를 담고 있고 모델은 그 값을 고칠 권한이 있어 자가수정으로 수렴한다.
+ * 「기존에 있던 값이니 통과」로 완화하면, 조수가 새로 쓴 깨진 대상과 물려받은 깨진 대상을
+ * 구별할 근거(원본 페이지)를 이 함수에 들여와야 하고 그만큼 조용히 통과하는 길이 생긴다.
+ */
+function normalizeMoveEventTargets(commands: readonly Command[], catalog: EventTargetCatalog): void {
+  for (const command of commands) {
+    if (command.kind === "moveEvent") {
+      const resolved = resolveMoveTarget(command.eventId, catalog);
+      if (resolved.kind === "unresolved") {
+        throw new Error(`moveEvent: ${moveTargetIssueMessage(command.eventId, catalog)}`);
+      }
+      (command as { eventId: string }).eventId = resolved.storedValue;
+    }
+    for (const branch of commandBranches(command)) normalizeMoveEventTargets(branch.commands, catalog);
+  }
+}
+
 function validateAiAuthoringSurfaces(commands: readonly Command[]): void {
   for (const command of commands) {
     if (!COMMAND_GUARANTEES[command.kind].authoringSurfaces.includes("ai")) {
@@ -657,7 +712,8 @@ export async function runEventCommandAssist(options: {
     });
     // assistant 응답은 항상 문자열 content다(멀티모달 파트는 비전 주입 user 메시지 전용).
     const content = typeof result.message.content === "string" ? result.message.content : "";
-    const parsed = parseAndValidate(context.project, content, { allowEmpty });
+    // mapId 는 이동 경로 대상 대조에 쓰인다 — 편집 중인 맵이 아니면 판정이 틀린다.
+    const parsed = parseAndValidate(context.project, content, { allowEmpty, mapId: context.mapId });
     if (parsed.ok) return { commands: parsed.commands, scope, attempts: attempt };
 
     lastErrors = parsed.errors;

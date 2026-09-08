@@ -10,6 +10,7 @@ import { requestEditorCameraFocus } from "@/editor/editorCameraFocus";
 import type { EventPageGraphic, GameEvent, MapId } from "@/project/types";
 import { el } from "@/util/dom";
 import { renderEventGraphicIcon } from "./eventEditor/eventGraphicPreview";
+import { renderEventIdReadout } from "./eventEditor/eventIdReadout";
 import { bindEventListRowHoverTooltip, hideEventListTooltip } from "./eventListHoverTooltip";
 import { openEventEditorModal } from "./eventEditor/modal";
 
@@ -63,6 +64,9 @@ function renderSelectedEventSummary(mapId: MapId, event: GameEvent): HTMLElement
   summary.append(
     el("div", { class: "event-editor-launch-title", text: displayName }),
     el("div", { class: "event-editor-launch-meta", text: `위치 ${event.x},${event.y} / ${pageCount} 페이지` }),
+    // 이름·좌표·페이지 수만 있던 자리에 정본 ID 를 세운다. 지금까지 이 값은 목록 호버
+    // 카드와 전역 검색에만 있어서 «값을 이미 아는 사람»만 볼 수 있었다(OPRN-OUT-014).
+    renderEventIdReadout(event.id, { scope: "event-summary" }),
     el("button", {
       class: "btn primary",
       text: "이벤트 편집 열기",

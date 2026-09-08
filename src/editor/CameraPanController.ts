@@ -6,8 +6,6 @@ type PanStart = {
   readonly screenY: number;
   readonly scrollX: number;
   readonly scrollY: number;
-  readonly shellScrollLeft: number;
-  readonly shellScrollTop: number;
 };
 
 type SceneWithCamera = Phaser.Scene & {
@@ -87,6 +85,17 @@ export class CameraPanController {
     this.continueAt(point.x, point.y);
   }
 
+  /**
+   * 이미 지나간 화면 좌표를 팬 기준점으로 삼아 시작한다.
+   *
+   * 문턱을 넘은 뒤에야 팬으로 승격하는 제스처(이벤트 레이어 빈 칸 드래그)가 필요하다.
+   * `start(ptr)` 는 **지금** 포인터를 기준으로 잡으므로 눌린 자리에서 문턱까지 움직인 만큼이
+   * 통째로 사라져 손과 화면이 어긋난다. 누른 자리를 기준으로 잡아 1:1 추종을 유지한다.
+   */
+  startFromScreenPoint(screenX: number, screenY: number): void {
+    this.startAt(screenX, screenY);
+  }
+
   stop(): void {
     const wasPanning = this.isPanning;
     this.isPanning = false;
@@ -130,8 +139,6 @@ export class CameraPanController {
       screenY,
       scrollX: camera.scrollX,
       scrollY: camera.scrollY,
-      shellScrollLeft: this.canvasScrollShell()?.scrollLeft ?? 0,
-      shellScrollTop: this.canvasScrollShell()?.scrollTop ?? 0,
     };
     this.bindWindowGuards();
   }
@@ -147,10 +154,6 @@ export class CameraPanController {
       start.scrollY - dy / camera.zoom
     );
     this.options.onPanMove();
-    const shell = this.canvasScrollShell();
-    if (!shell) return;
-    shell.scrollLeft = start.shellScrollLeft - dx;
-    shell.scrollTop = start.shellScrollTop - dy;
   }
 
   private bindWindowGuards(): void {
@@ -167,12 +170,6 @@ export class CameraPanController {
     window.removeEventListener("pointerup", this.handleWindowPanEnd, { capture: true });
     window.removeEventListener("pointercancel", this.handleWindowPanEnd, { capture: true });
     window.removeEventListener("mouseup", this.handleWindowPanEnd, { capture: true });
-  }
-
-  private canvasScrollShell(): HTMLElement | null {
-    const canvas = this.scene.game.canvas;
-    const shell = canvas.closest("[data-testid='editor-canvas-scroll-shell']");
-    return shell instanceof HTMLElement ? shell : null;
   }
 
   private isMiddleButtonEvent(event: MouseEvent | PointerEvent): boolean {

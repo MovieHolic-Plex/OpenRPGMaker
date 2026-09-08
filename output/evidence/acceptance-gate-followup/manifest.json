@@ -1,0 +1,103 @@
+{
+  "executedCodeSource": "ce551ee45d5c61b02bbb13bef7b8aa5a77bb061e",
+  "fullRunSource": "0798a67b36f8416c4f3526be40712c5fb31f51fc",
+  "files": [
+    {
+      "file": "baseline-summary.json",
+      "bytes": 33576,
+      "sha256": "442c7f4500336c0134e9d7dfe45be332c31e682bf7a18b01dfc3227ae0dae513",
+      "origin": "/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/output/evidence/acceptance-live-baseline/summary.json"
+    },
+    {
+      "file": "baseline-coverage.json",
+      "bytes": 22767,
+      "sha256": "c01703e9dd24920e1acf648e14e22539e103dacfbd93f99200f7c2822db6e104",
+      "origin": "/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/output/evidence/acceptance-live-baseline/coverage-proof.json"
+    },
+    {
+      "file": "candidate-0798-summary.json",
+      "bytes": 15838,
+      "sha256": "a7df619b66ecb1db1ce436fa65e6a990bf074b3e9ef88ba0f62a842065f7244e",
+      "origin": "/home/main/z-project/rpg-zzu-ai-acceptance-live-qa/output/evidence/acceptance-live-candidate-final/summary.json"
+    },
+    {
+      "file": "candidate-0798-coverage.json",
+      "bytes": 8096,
+      "sha256": "3b39db8b9bff8fb788b247dc04cb96f4a6664a8050dbee52608486b2c736da59",
+      "origin": "/home/main/z-project/rpg-zzu-ai-acceptance-live-qa/output/evidence/acceptance-live-candidate-final/coverage-proof.json"
+    },
+    {
+      "file": "candidate-0798-comparison.json",
+      "bytes": 74480,
+      "sha256": "518a5e6f2ecf84320107301605dfd03f4a88e4e2e9011cf1a0b5748ef73b6c51",
+      "origin": "/home/main/z-project/rpg-zzu-ai-acceptance-live-qa/output/evidence/acceptance-live-candidate-final/comparison.json"
+    },
+    {
+      "file": "final-delta-report.md",
+      "bytes": 19583,
+      "sha256": "3ad1ee5d0bc434abcb22080a7dc943f394e037370e59b2c6ef1173661dfb8596",
+      "origin": "/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/output/evidence/acceptance-live-final-triage/st_01a07fe7/REPORT.md"
+    },
+    {
+      "file": "final-delta-cases.json",
+      "bytes": 419898,
+      "sha256": "f898e82af2e73339245402116e90653e0019610a36b4969d75f2a5765f071c84",
+      "origin": "/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/output/evidence/acceptance-live-final-triage/st_01a07fe7/case-level.json"
+    },
+    {
+      "file": "final-delta-validation.json",
+      "bytes": 1854,
+      "sha256": "b1c89133d68ed521a150ed8bd95a98d64cf8d67700698d955f7a46480f8bef87",
+      "origin": "/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/output/evidence/acceptance-live-final-triage/st_01a07fe7/validation.json"
+    },
+    {
+      "file": "trace-recovery.json",
+      "bytes": 932,
+      "sha256": "d2c0956f207d29a3b530c09d48f7b83dc7eff99c8000c444b5d6b95cba226b71",
+      "origin": "/home/main/z-project/rpg-zzu-ai-acceptance-live-qa/output/evidence/acceptance-live-candidate-final/trace-recovery.json"
+    },
+    {
+      "file": "lead-trace-integrity.json",
+      "bytes": 678,
+      "sha256": "794bfc81331436674ea484c352279d2c2f8877e72a07161c137ecccb2cb05fa9",
+      "origin": "/home/main/z-project/rpg-zzu-ai-acceptance-live-qa/output/evidence/acceptance-live-candidate-final/lead-trace-integrity.json"
+    },
+    {
+      "file": "selector-e018-receipt.json",
+      "bytes": 2715,
+      "sha256": "6df9cd1527ee3bb6109ef2b3c7818209bb797aa898bb3c4f7b87908ed697ed61",
+      "origin": "/home/main/z-project/rpg-zzu-ai-acceptance-live-qa/output/evidence/acceptance-live-candidate-final/selector-final.receipt.json"
+    },
+    {
+      "file": "lead-integrated-validation.json",
+      "bytes": 1272,
+      "sha256": "956629896a960493675a67bb778f5cfe0f54ce62dfa65bbe23c0a8971ac80b33",
+      "origin": "lead-recorded result"
+    },
+    {
+      "file": "surface-current-main-comparison.json",
+      "bytes": 2156,
+      "sha256": "d68e346545b5b07f0ed9e111c6f7d7803b672ac5166a0cce155f7d509a22c80c",
+      "origin": "lead-recorded result"
+    },
+    {
+      "file": "surface-integrated-receipt.json",
+      "bytes": 2043,
+      "sha256": "d5e5e35568b80ab15bc0adeace12823b1a7ef9b7117d3018a5102908df2a3326",
+      "origin": "lead-recorded result"
+    },
+    {
+      "file": "surface-incoming-receipt.json",
+      "bytes": 2037,
+      "sha256": "2581b27910d8c2f34f7ed08a05ceadf8e272419d8fcc2a336000c64cc4cbbf06",
+      "origin": "lead-recorded result"
+    },
+    {
+      "file": "integrated-player.json",
+      "bytes": 6323,
+      "sha256": "d3890f4b04060b10a550099a4eef7a296f49e427e0795c041b7dd21482389ae1",
+      "origin": "lead-recorded result"
+    }
+  ],
+  "credentialCheck": "Copied evidence contained no exact configured credential values; credentials were not serialized."
+}

@@ -3,7 +3,7 @@
 
 import { isPassable } from "@/project/collision";
 import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
-import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
+import { exceedsMapDimensionLimit, MAX_TOOL_MAP_DIMENSION, mapSizeLimitMessage } from "@/project/mapSizeLimits";
 import { DIRT_ROAD_TILE, SAND_TILE } from "@/project/defaults/chipsetMapping";
 import { autotileGroupsForTileset, DEFAULT_ROAD_AUTOTILE_GROUP, DEFAULT_SAND_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
 import { shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
@@ -86,11 +86,8 @@ function adoptStartIfNeeded(project: Project, map: GameMap): void {
 }
 
 function assertToolMapSize(width: number, height: number): void {
-  if (width > MAX_TOOL_MAP_DIMENSION || height > MAX_TOOL_MAP_DIMENSION) {
-    throw new ToolError(
-      `맵 크기는 최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}까지 가능합니다. 더 넓은 월드는 여러 맵으로 나누고 transfer 이벤트로 연결하세요.`,
-      { code: "map-too-large" }
-    );
+  if (exceedsMapDimensionLimit(width, height)) {
+    throw new ToolError(mapSizeLimitMessage(), { code: "map-too-large" });
   }
 }
 
@@ -154,14 +151,14 @@ export function assignCreatedMapBgm(
 
 const createMap: ToolDefinition = {
   name: "create_map",
-  description: "새 맵을 생성한다(기본은 테두리 없는 잔디 평지, 최대 256×256). 돌벽 테두리가 필요할 때만 border:\"wall\"을 지정한다. 시작 맵이 없으면 이 맵을 시작 맵으로 채택한다. 이름에서 테마를 읽어 BGM을 고른다(bgm/bgmResourceId가 있으면 그걸 쓴다). 실내 시설·방을 만들라는 요청에서 빈 맵만 만들고 끝내지 말 것 — 실내는 place_concept 또는 start_interior_room_session 이 새 mapId 까지 함께 시공한다.",
+  description: `새 맵을 생성한다(기본은 테두리 없는 잔디 평지, 최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}). 돌벽 테두리가 필요할 때만 border:"wall"을 지정한다. 시작 맵이 없으면 이 맵을 시작 맵으로 채택한다. 이름에서 테마를 읽어 BGM을 고른다(bgm/bgmResourceId가 있으면 그걸 쓴다). 실내 시설·방을 만들라는 요청에서 빈 맵만 만들고 끝내지 말 것 — 실내는 place_concept 또는 start_interior_room_session 이 새 mapId 까지 함께 시공한다.`,
   mode: "write",
   parameters: {
     type: "object",
     properties: {
       name: { type: "string", description: "맵 이름" },
-      width: { type: "integer", description: "가로 타일 수(3 이상, 최대 256)" },
-      height: { type: "integer", description: "세로 타일 수(3 이상, 최대 256)" },
+      width: { type: "integer", description: `가로 타일 수(3 이상, 최대 ${MAX_TOOL_MAP_DIMENSION})` },
+      height: { type: "integer", description: `세로 타일 수(3 이상, 최대 ${MAX_TOOL_MAP_DIMENSION})` },
       id: { type: "string", description: "맵 id(생략 시 자동 생성)" },
       border: { type: "string", enum: ["none", "wall"], description: "테두리 처리(기본 none, wall이면 외곽 TILE.WALL)" },
       seed: { type: "integer", description: "BGM 선택 시드(생략 시 이름 해시)" },
@@ -265,7 +262,9 @@ const manageMapTree: ToolDefinition = {
       operation: { type: "string", enum: ["create_folder", "rename_folder", "dissolve_folder", "move"] },
       folderId: { type: "string" },
       mapId: { type: "string", description: "move 대상 맵 또는 폴더 id" },
-      parentId: { type: "string", description: "상위 폴더 id. 루트는 빈 문자열" },
+      // 빈 문자열은 프로젝트 루트가 아니라 트리 최상위 맵의 자식이다 — 편집기 대화창과 같은
+      // 낱말을 쓴다(OPRN-OUT-027). 조수가 「루트」를 형제 최상위로 읽으면 안 된다.
+      parentId: { type: "string", description: "상위 맵/분류 id. 빈 문자열이면 트리 최상위 맵의 하위" },
       index: { type: "integer", minimum: 0 },
       name: { type: "string" },
     },
@@ -281,7 +280,7 @@ const manageMapTree: ToolDefinition = {
       if (draft.maps[folderId] || findTreeNode(draft.mapTree, folderId)) throw new ToolError(`이미 사용 중인 맵/폴더 id입니다: ${folderId}`, { code: "map-tree-id-exists" });
       const parentId = typeof args.parentId === "string" ? args.parentId : "";
       if (!insertTreeNode(draft.mapTree, { mapId: folderId, kind: "folder", name, children: [] }, parentId, args.index as number | undefined)) {
-        throw new ToolError(`상위 폴더를 찾을 수 없습니다: ${parentId || "(루트)"}`, { code: "map-tree-parent-not-found" });
+        throw new ToolError(`상위 맵/분류를 찾을 수 없습니다: ${parentId || "(최상위)"}`, { code: "map-tree-parent-not-found" });
       }
       return { summary: `맵 분류 '${name}' 생성`, data: { folderId } };
     }
@@ -302,16 +301,16 @@ const manageMapTree: ToolDefinition = {
     if (operation === "move") {
       const mapId = typeof args.mapId === "string" ? args.mapId : "";
       const parentId = typeof args.parentId === "string" ? args.parentId : "";
-      if (!canReparentMap(draft.mapTree, mapId, parentId)) throw new ToolError(`맵/폴더 ${mapId}을 ${parentId || "루트"} 아래로 이동할 수 없습니다.`, { code: "invalid-map-tree-move" });
+      if (!canReparentMap(draft.mapTree, mapId, parentId)) throw new ToolError(`맵/폴더 ${mapId}을 ${parentId || "최상위 맵"} 아래로 이동할 수 없습니다.`, { code: "invalid-map-tree-move" });
       const oldParentId = findParentMapId(draft.mapTree, mapId);
       const oldIndex = siblingIndex(draft.mapTree, mapId);
       const node = extractTreeNode(draft.mapTree, mapId);
       if (!node) throw new ToolError(`이동할 맵/폴더를 찾을 수 없습니다: ${mapId}`, { code: "map-tree-node-not-found" });
       if (!insertTreeNode(draft.mapTree, node, parentId, args.index as number | undefined)) {
         insertTreeNode(draft.mapTree, node, oldParentId ?? "", oldIndex);
-        throw new ToolError(`상위 폴더를 찾을 수 없습니다: ${parentId || "(루트)"}`, { code: "map-tree-parent-not-found" });
+        throw new ToolError(`상위 맵/분류를 찾을 수 없습니다: ${parentId || "(최상위)"}`, { code: "map-tree-parent-not-found" });
       }
-      return { summary: `맵/분류 ${mapId} 이동 → ${parentId || "루트"}`, data: { mapId, parentId } };
+      return { summary: `맵/분류 ${mapId} 이동 → ${parentId || "최상위 맵 하위"}`, data: { mapId, parentId } };
     }
     throw new ToolError(`지원하지 않는 map tree 작업입니다: ${String(operation)}`, { code: "invalid-args" });
   },
@@ -1692,14 +1691,14 @@ const createFarmPlot: ToolDefinition = {
 // 맵 크기 변경(좌상단 기준 유지, 확장부는 잔디/빈 칸). 이벤트가 잘려 나가는 축소는 거부한다.
 const resizeMapTool: ToolDefinition = {
   name: "resize_map",
-  description: "맵 크기를 바꾼다(좌상단 기준, 확장부는 잔디, 최대 256×256). 축소로 이벤트가 범위 밖에 나가면 거부 — 먼저 move_event/remove_event로 정리하라.",
+  description: `맵 크기를 바꾼다(좌상단 기준, 확장부는 잔디, 최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}). 축소로 이벤트가 범위 밖에 나가면 거부 — 먼저 move_event/remove_event로 정리하라.`,
   mode: "write",
   parameters: {
     type: "object",
     properties: {
       mapId: { type: "string" },
-      width: { type: "integer", description: "3 이상, 최대 256" },
-      height: { type: "integer", description: "3 이상, 최대 256" },
+      width: { type: "integer", description: `3 이상, 최대 ${MAX_TOOL_MAP_DIMENSION}` },
+      height: { type: "integer", description: `3 이상, 최대 ${MAX_TOOL_MAP_DIMENSION}` },
     },
     required: ["mapId", "width", "height"],
   },

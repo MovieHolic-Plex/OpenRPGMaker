@@ -65,19 +65,26 @@ export function chooseFile(file: File): void {
   input.dispatchEvent(new Event("change", { bubbles: true }));
 }
 
-/** Observe the real FileReader completion before initiating the UI import. */
+/** Await the real load handler, including its asynchronous durable-import work. */
 export async function readFileThroughManager(file: File): Promise<void> {
   const original = FileReader.prototype.readAsDataURL;
   let timeout: ReturnType<typeof setTimeout> | undefined;
   let complete: () => void = () => {};
+  let failed: (error: unknown) => void = () => {};
   const loaded = new Promise<void>((resolve, reject) => {
     complete = resolve;
-    timeout = setTimeout(() => reject(new Error("FileReader did not finish")), 5000);
+    failed = reject;
+    timeout = setTimeout(() => reject(new Error("File import did not finish")), 10000);
   });
   const reader = vi.spyOn(FileReader.prototype, "readAsDataURL").mockImplementation(function (
     this: FileReader, blob: Blob,
   ) {
-    this.addEventListener("loadend", complete, { once: true });
+    const onload = this.onload;
+    this.onload = event => {
+      const work = onload?.call(this, event);
+      void Promise.resolve(work).then(complete, failed);
+    };
+    this.addEventListener("error", () => failed(this.error ?? new Error("FileReader failed")), { once: true });
     original.call(this, blob);
   });
   try {

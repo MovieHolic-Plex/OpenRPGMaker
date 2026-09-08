@@ -59,15 +59,17 @@ describe("isMapWaterTile / waterBoundsInMap", () => {
 });
 
 describe("show_map_region size cap", () => {
-  it("clamps huge requests to 24×24 on a large map", () => {
+  // Complete coverage is exempt (see wholeMapCoverageRender.test.ts); the cap still
+  // stops the roaming it was added for, which is oversized *partial* slices.
+  it("clamps huge partial requests to 24×24 on a large map", () => {
     const project = createBlankProject();
     const big = createBlankMap("big", 60, 60);
     big.id = "map_big";
     project.maps[big.id] = big;
     const result = runTool({ project }, "show_map_region", {
       mapId: big.id,
-      x: 0,
-      y: 0,
+      x: 4,
+      y: 4,
       w: 80,
       h: 80,
     });

@@ -181,6 +181,47 @@ describe("자율 실행 드라이버", () => {
     expect(statuses.some((t) => t.startsWith("ralph:stalled"))).toBe(false);
   }, 300000);
 
+  // 라운드 상한은 턴마다 걸린다 — 드라이버가 스스로 다음 턴을 여는 동안 그 안내를 턴마다
+  // 내보내면 채팅에 "요청이 커서 … 이어서 요청해 주세요." 가 계속 쌓인다(사용자는 이어서
+  // 요청한 적이 없고 하니스가 알아서 계속하는 중이다). 안내는 런이 실제로 멈출 때 한 번만.
+  it("(b-3) 예산 안내는 드라이버 턴마다 반복되지 않고 런 종료 시 한 번만 나온다", async () => {
+    const { AssistantSession, createBlankProject, TOKEN_BUDGET_STATUS_TEXT } = await load();
+    const NEVER_PLAN = { goal: "끝나지 않는 목표", layers: [{ title: "L", items: [{ title: "무한", instruction: "완료 불가" }] }] };
+    const steps: ChatResult[] = [
+      finalResult(JSON.stringify({ action: "new_plan", ...NEVER_PLAN })),
+      toolCallResult("set_work_plan", NEVER_PLAN, "c_plan"),
+    ];
+    let bodyTurns = 0;
+    const chat = async (_config: unknown, req: ChatRequest): Promise<ChatResult> => {
+      if (!req.tools || req.tools.length === 0) return finalResult(RESUME_JSON);
+      if (steps.length > 0) return steps.shift()!;
+      bodyTurns += 1;
+      if (bodyTurns % 4 === 1) return titleWrite(`c_b${bodyTurns}`, `진행 ${bodyTurns}`);
+      return finalResult(`아직 진행 중입니다(턴 ${bodyTurns}). 계속 진행이 필요합니다.`);
+    };
+    // 48단계까지 돌리지 않고 자동 계속 2회 뒤 대기 사용자 메시지로 드라이버를 세운다.
+    let peeks = 0;
+    const session = new AssistantSession(createBlankProject(), {
+      config: ORCH_AUTO,
+      peekPendingUserMessage: () => (peeks++ < 2 ? null : "중간 지시"),
+      chat,
+    });
+    const emitted: string[] = [];
+
+    await session.sendUserMessage(
+      `${ORCH_GOAL}끝나지 않는 목표를 처리해줘`,
+      (event) => { if (event.type === "status") emitted.push(event.text); },
+      undefined,
+      { autonomous: true }
+    );
+
+    // 라운드 상한으로 끝난 턴이 여러 번 있었다(초기 턴 + 자동 계속 2회).
+    expect(emitted.filter((t) => t.includes("자율 실행 계속")).length).toBe(2);
+    expect(statusTexts(session).filter((t) => t.startsWith("턴 종료(max-tool-calls)")).length).toBeGreaterThan(1);
+    // 그래도 사용자에게 보이는 안내는 런 종료 시 한 번뿐이다.
+    expect(emitted.filter((t) => t === TOKEN_BUDGET_STATUS_TEXT)).toHaveLength(1);
+  }, 120000);
+
   it("(c) 턴이 사용자 질문으로 끝나면 드라이버는 자동 송신하지 않고 일시정지한다", async () => {
     const { AssistantSession, createBlankProject } = await load();
     const steps: ChatResult[] = [
@@ -1134,6 +1175,7 @@ async function load() {
     sanitizeAssistantText: assistantSession.sanitizeAssistantText,
     truncatedTurnText: assistantSession.truncatedTurnText,
     AGENT_RUN_MAX_TOTAL_STEPS: assistantSession.AGENT_RUN_MAX_TOTAL_STEPS,
+    TOKEN_BUDGET_STATUS_TEXT: assistantSession.TOKEN_BUDGET_STATUS_TEXT,
     createBlankProject: defaults.createBlankProject,
     llm,
   };

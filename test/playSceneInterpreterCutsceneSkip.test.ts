@@ -7,6 +7,7 @@ import { startSession } from "@/project/session";
 import { store } from "@/project/store";
 import type { Command, Project } from "@/project/types";
 import { installFakeDom } from "./fakeDom";
+import { LocalDiagnosticSession } from "@/util/localDiagnosticSession";
 
 const cameraControl = vi.hoisted(() => vi.fn<() => Promise<void>>());
 
@@ -117,6 +118,18 @@ afterEach(() => {
   previousProject = null;
   restoreDom?.();
   restoreDom = null;
+});
+
+it("local diagnostics distinguish interpreter start and completed commands", async () => {
+  const fixture = createFixture();
+  store.replaceProject(fixture.project);
+  const diagnostics = new LocalDiagnosticSession();
+  diagnostics.start(true, ["event"]);
+  try {
+    await runCommands(fixture.scene, [{ kind: "setSwitch", switchId: FINISHED_SWITCH, value: true }]);
+    expect(fixture.scene.session.switches[FINISHED_SWITCH]).toBe(true);
+    expect(diagnostics.snapshot().receipts.map(receipt => receipt.phase)).toEqual(["started", "completed"]);
+  } finally { diagnostics.clear(); }
 });
 
 describe("skippable cutscene skip hint", () => {

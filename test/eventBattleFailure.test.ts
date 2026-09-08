@@ -6,6 +6,7 @@ import { updateParallelEvents } from "@/player/playSceneSchedulers";
 import { foregroundOwner } from "@/player/foregroundControl";
 import { PlayScene } from "@/player/PlayScene";
 import { startSession } from "@/project/session";
+import { LocalDiagnosticSession } from "@/util/localDiagnosticSession";
 import { fireAutoTriggers } from "@/player/playSceneMapRuntime";
 import { maybeTriggerRandomEncounter, resetEncounterCounter } from "@/player/playSceneMovement";
 import { runFieldSpawnEventBattle } from "@/player/playSceneFieldSpawns";
@@ -15,7 +16,8 @@ import { bounded, encounterHarness, nextLeaseRelease, required } from "./fixture
 vi.mock("@/app/phaserRuntime", () => ({ getLoadedPhaser: () => ({ Scene: class {} }) }));
 vi.mock("@/project/store", () => ({ store: { getCurrent: vi.fn() } }));
 let fixture: ReturnType<typeof encounterHarness> | undefined;
-afterEach(() => { fixture?.dispose(); fixture = undefined; document.body.replaceChildren(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
+const diagnostics = new LocalDiagnosticSession();
+afterEach(() => { diagnostics.clear(); fixture?.dispose(); fixture = undefined; document.body.replaceChildren(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 function setup() {
   const f = fixture = encounterHarness("parallel");
   const step = required(f.page.commands[0]);
@@ -49,6 +51,25 @@ describe("variable troop resolution", () => {
 });
 
 describe("native event battle failure ownership", () => {
+  it.each(["active", "disabled", "replaced", "enabled-late"] as const)("preserves handled-failure receipts with %s diagnostic consent", async consent => {
+    const f = setup(); f.page.trigger = { kind: "action" };
+    if (consent === "active" || consent === "replaced") diagnostics.start(true, ["event"]);
+    let rejectBattle: (error: Error) => void = () => { throw new Error("Battle not started"); };
+    f.battle.mockImplementation(() => new Promise((_, reject) => { rejectBattle = reject; }));
+    const pending = runEvent(f.scene, f.event.id);
+    expect(f.battle).toHaveBeenCalledOnce();
+    if (consent === "replaced" || consent === "enabled-late") diagnostics.start(true, ["event"]);
+    rejectBattle(new Error("private-battle-failure"));
+    await bounded(pending);
+    expect(diagnostics.snapshot().receipts.map(receipt => receipt.phase))
+      .toEqual(consent === "active" ? ["started", "failed"] : []);
+    expect(JSON.stringify(diagnostics.snapshot())).not.toContain("private-battle-failure");
+    expect(f.scene.running).toBe(false);
+    expect(f.scene.inputEnabled).toBe(true);
+    expect(f.scene.session.battleResult).toBeUndefined();
+    expect(f.scene.session.flags.encounterComplete).not.toBe(true);
+  });
+
   it("defers autorun admission until Phaser emits create instead of treating boot as cancellation", async () => {
     const f = setup(); f.page.trigger = { kind: "auto" };
     f.step.troopSource = "variable"; f.step.troopVariableId = "selectedTroop";

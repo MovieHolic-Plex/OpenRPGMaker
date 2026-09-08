@@ -1,30 +1,37 @@
 {
  "page1": {
-  "testidCount": 211,
-  "controlCount": 122,
-  "classCount": 263,
-  "labelCount": 90,
+  "testidCount": 217,
+  "controlCount": 125,
+  "classCount": 267,
+  "labelCount": 95,
   "detailsConverted": 4
  },
  "page2": {
-  "testidCount": 254,
-  "controlCount": 165,
-  "classCount": 285,
-  "labelCount": 94,
+  "testidCount": 260,
+  "controlCount": 168,
+  "classCount": 289,
+  "labelCount": 99,
   "detailsConverted": 4
  },
  "bare": {
-  "testidCount": 184,
-  "controlCount": 105,
-  "classCount": 230,
-  "labelCount": 80,
+  "testidCount": 190,
+  "controlCount": 108,
+  "classCount": 234,
+  "labelCount": 85,
   "detailsConverted": 2
  },
  "flow": {
-  "testidCount": 198,
-  "controlCount": 109,
-  "classCount": 256,
-  "labelCount": 93,
+  "testidCount": 204,
+  "controlCount": 112,
+  "classCount": 260,
+  "labelCount": 98,
   "detailsConverted": 4
+ },
+ "allRows": {
+  "testidCount": 232,
+  "controlCount": 140,
+  "classCount": 257,
+  "labelCount": 97,
+  "detailsConverted": 2
  }
 }
