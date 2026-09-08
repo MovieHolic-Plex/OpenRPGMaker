@@ -7,6 +7,10 @@ import {
   type PlayBootDiagnosticPayload,
 } from "@/player/playBootDiagnostics";
 import { editorPlayBootDiagnosticSink } from "@/app/editorPlayBootDiagnostics";
+import { LocalDiagnosticSession } from "@/util/localDiagnosticSession";
+import * as observer from "@/util/diagnosticObserver";
+
+const diagnostics = new LocalDiagnosticSession();
 
 const recordAiActivityMock = vi.hoisted(() => vi.fn(async () => ({ persisted: "local" })));
 
@@ -21,12 +25,30 @@ vi.mock("@/project/store", () => ({
 }));
 
 afterEach(() => {
+  diagnostics.clear();
   clearRecentPlayBootDiagnosticsForTest();
   vi.restoreAllMocks();
   recordAiActivityMock.mockClear();
 });
 
 describe("playBootDiagnostics", () => {
+  it.each(["disabled", "unselected", "replaced", "unowned"] as const)(
+    "does no local publication or extra input reads when %s, preserving raw logs", state => {
+      if (state !== "disabled") diagnostics.start(true, state === "unselected" ? ["movement"] : ["asset"]);
+      const owner = state === "unowned" ? undefined : observer.diagnosticToken();
+      if (state === "replaced") diagnostics.start(true, ["asset"]);
+      const publish = vi.spyOn(observer, "publishDiagnostic");
+      let outcomeReads = 0;
+
+      recordPlayBootDiagnostic({ stage: "assets", get ok() { outcomeReads++; return false; } }, undefined, owner);
+
+      expect(outcomeReads).toBe(1); // Existing raw payload construction only.
+      expect(publish).not.toHaveBeenCalled();
+      expect(diagnostics.snapshot().receipts).toEqual([]);
+      expect(listRecentPlayBootDiagnostics()[0]).toMatchObject({ stage: "assets", ok: false });
+    },
+  );
+
   it("builds a bounded play-boot payload when an error reaches the local boundary", () => {
     // Given
     const oversizedDetail = "x".repeat(600);
@@ -71,12 +93,15 @@ describe("playBootDiagnostics", () => {
 
   it("delivers the local payload to an injected sink", async () => {
     // Given
-    const sink = vi.fn<(payload: PlayBootDiagnosticPayload) => Promise<void>>(async () => undefined);
+    let signal!: () => void;
+    const delivered = new Promise<void>(resolve => { signal = resolve; });
+    const sink = vi.fn<(payload: PlayBootDiagnosticPayload) => Promise<void>>(async () => { signal(); });
     vi.spyOn(console, "info").mockImplementation(() => undefined);
 
     // When
     recordPlayBootDiagnostic({ stage: "map", ok: true, mapId: "map-test" }, sink);
-    await vi.waitFor(() => expect(sink).toHaveBeenCalledOnce());
+    await delivered;
+    expect(sink).toHaveBeenCalledOnce();
 
     // Then
     expect(sink).toHaveBeenCalledWith(
@@ -86,14 +111,17 @@ describe("playBootDiagnostics", () => {
 
   it("keeps diagnostics and boot flow alive when an injected sink rejects", async () => {
     // Given
-    const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    let signal!: () => void;
+    const rejected = new Promise<void>(resolve => { signal = resolve; });
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => { signal(); });
     const sink = vi.fn<(payload: PlayBootDiagnosticPayload) => Promise<void>>(async () => {
       throw new Error("editor persistence unavailable");
     });
 
     // When
     recordPlayBootDiagnostic({ stage: "engine", ok: true, mapId: "map-test" }, sink);
-    await vi.waitFor(() => expect(warn).toHaveBeenCalledWith("[play-boot] diagnostic sink failed"));
+    await rejected;
+    expect(warn).toHaveBeenCalledWith("[play-boot] diagnostic sink failed");
 
     // Then
     expect(listRecentPlayBootDiagnostics()).toHaveLength(1);

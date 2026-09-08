@@ -3,6 +3,7 @@ import { afterEach, expect, it } from "vitest";
 import { LocalDiagnosticSession } from "@/util/localDiagnosticSession";
 import { RuntimeDomOverlay } from "@/player/runtimeDom";
 import { recordPlayBootDiagnostic } from "@/player/playBootDiagnostics";
+import { diagnosticToken } from "@/util/diagnosticObserver";
 import { AssistantSession } from "@/ai/assistantSession";
 import { defaultAiConfig } from "@/ai/llmClient";
 import { createBlankProject } from "@/project/defaults";
@@ -13,10 +14,10 @@ it("local diagnostics project asset boot and missing-resource signals without QA
   const host = document.createElement("div");
   const overlay = new RuntimeDomOverlay(() => host);
   overlay.syncMissingResourceError(new Set(["private-secret-resource"]));
-  recordPlayBootDiagnostic({ stage: "assets", ok: true });
+  recordPlayBootDiagnostic({ stage: "assets", ok: true }, undefined, diagnosticToken());
   expect(diagnostics.snapshot().receipts).toEqual(expect.arrayContaining([
     expect.objectContaining({ category: "asset", phase: "missing", count: 1 }),
-    expect.objectContaining({ category: "asset", phase: "assets" }),
+    expect.objectContaining({ category: "asset", phase: "assets", ok: true }),
   ]));
   expect(overlay.instrumented).toBe(false);
   expect(JSON.stringify(diagnostics.snapshot())).not.toContain("private-secret-resource");

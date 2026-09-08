@@ -83,6 +83,7 @@ import {
 } from "@/player/playBootDiagnostics";
 import { mountHostFullscreenToggle, type HostBridge } from "@/player/hostBridge";
 import { resolvePlayResolution } from "@/project/playResolution";
+import { diagnosticToken } from "@/util/diagnosticObserver";
 
 let teardownShell: (() => void) | null = null;
 
@@ -371,6 +372,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     repairs: readonly string[]
   ): Promise<void> => {
     let resolveReady: (() => void) | null = null;
+    const diagnosticOwner = diagnosticToken();
     const readyPromise = new Promise<void>((resolve) => {
       resolveReady = resolve;
     });
@@ -395,6 +397,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
           ...extra,
         },
         options.diagnosticSink,
+        diagnosticOwner,
       );
     };
     try {

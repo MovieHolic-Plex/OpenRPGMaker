@@ -15,7 +15,7 @@ const inputSchema = z.discriminatedUnion("category", [
   z.object({ category: z.literal("collision"), phase: z.enum(["terrain", "event"]), x: coordinate, y: coordinate }),
   z.object({ category: z.literal("event"), phase: z.enum(["started", "completed", "cancelled", "failed"]), count: count.optional() }),
   z.object({ category: z.literal("transfer"), phase: z.enum(["completed", "missing"]), x: coordinate.optional(), y: coordinate.optional() }),
-  z.object({ category: z.literal("asset"), phase: z.enum(["assets", "ready", "missing", "error", "timeout"]), count: count.optional() }),
+  z.object({ category: z.literal("asset"), phase: z.enum(["assets", "ready", "missing", "error", "timeout"]), ok: z.boolean().optional(), count: count.optional() }),
   z.object({ category: z.literal("warning"), phase: z.literal("reported") }),
   z.object({ category: z.literal("error"), phase: z.literal("reported") }),
 ]);

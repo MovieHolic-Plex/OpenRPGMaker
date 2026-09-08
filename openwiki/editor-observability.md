@@ -29,7 +29,7 @@
   and Test Play. Starting another session requires fresh category choices.
 - Categories: conversation role/character count (no text), authoring/save generation,
   completed movement, terrain/event collision, interpreter lifecycle, transfer,
-  asset readiness/missing count, warning/error occurrence. Every retained string is
+  asset readiness/missing count and boolean boot outcome, warning/error occurrence. Every retained string is
   an enum, except the locally generated session UUID. IDs, names, prompts, reasoning,
   log text, credentials, paths and URLs are excluded instead of best-effort redacted.
   No QA/debug mutation capability is enabled.
@@ -42,6 +42,15 @@
   its diagnostic-session token still matches. No target, hash, content, generation
   or persistence policy changes. Late event/transfer/assistant completions also
   cannot join a newly consented session.
+- Boot callbacks capture `diagnosticToken()` when `bootPlayGame` starts; loader
+  failure callbacks capture it when `PlayScene.preload` starts. The local boot
+  projection requires that same nonempty token and asset-category consent at
+  publication. An initially disabled operation cannot join a later session.
+  Asset receipts retain `ok: false` even when fallback textures let play reach
+  `ready` afterward; ready is not proof that all assets loaded successfully.
+  Raw boot logs and host sinks are unchanged and do not require this token.
+  `scripts/qa/issue693-boot-diagnostics.mjs` replays four real Test Play cases;
+  it defers Phaser's asset XHR, not the earlier editor Image warmup.
 - `savedGeneration` means the latest observed accepted save in this session, not
   proof that every running scene executes that revision. Null means unknown.
   Runtime receipts prove only the recorded operation; written/observed/unverified

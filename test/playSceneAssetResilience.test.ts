@@ -1,5 +1,5 @@
 /** @vitest-environment happy-dom */
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const sceneHarness = vi.hoisted(() => {
   type Listener = (...args: unknown[]) => void;
@@ -155,6 +155,7 @@ vi.mock("@/player/minimap", () => ({
 }));
 
 import { PlayScene } from "@/player/PlayScene";
+import { LocalDiagnosticSession } from "@/util/localDiagnosticSession";
 import {
   clearRecentPlayBootDiagnosticsForTest,
   listRecentPlayBootDiagnostics,
@@ -164,6 +165,9 @@ const initialSession = {
   switches: {}, variables: {}, timers: {}, currentMapId: "map-start", x: 2, y: 3,
   mapOverrides: {}, flags: {}, audio: {}, pictures: [],
 };
+
+const diagnostics = new LocalDiagnosticSession();
+afterEach(() => { diagnostics.clear(); vi.restoreAllMocks(); });
 
 beforeEach(() => {
   clearRecentPlayBootDiagnosticsForTest();
@@ -176,6 +180,7 @@ beforeEach(() => {
 
 describe("PlayScene asset load resilience", () => {
   it("replaces a failed texture and still reaches ready while recording the failure", () => {
+    diagnostics.start(true, ["asset"]);
     const scene = new PlayScene() as PlayScene & InstanceType<typeof sceneHarness.FakeScene>;
     const stages: string[] = [];
     const onReady = vi.fn();
@@ -201,5 +206,25 @@ describe("PlayScene asset load resilience", () => {
     expect(stages).toEqual(["map", "ready"]);
     expect(onReady).toHaveBeenCalledOnce();
     expect(scene.game.events.emit).toHaveBeenCalledWith("playscene-ready");
+    expect(diagnostics.snapshot().receipts).toEqual([
+      { category: "asset", phase: "assets", ok: false, sequence: 1,
+        elapsedMs: expect.any(Number), provenance: "runtime", evidence: "observed", savedGeneration: null },
+    ]);
   });
+
+  it.each(["replacement", "initially-disabled", "stopped"] as const)(
+    "does not publish a deferred loader failure into a %s diagnostic session", transition => {
+      if (transition !== "initially-disabled") diagnostics.start(true, ["asset"]);
+      const scene = new PlayScene() as PlayScene & InstanceType<typeof sceneHarness.FakeScene>;
+      scene.preload();
+      if (transition === "stopped") diagnostics.stop();
+      else { diagnostics.clear(); diagnostics.start(true, ["asset"]); }
+
+      scene.load.emit("loaderror", { key: "missing-texture", url: "/assets/missing.png" });
+
+      expect(listRecentPlayBootDiagnostics()[0]).toMatchObject({ stage: "assets", ok: false });
+      expect(scene.textureKeys.has("missing-texture")).toBe(true);
+      expect(diagnostics.snapshot().receipts).toEqual([]);
+    },
+  );
 });
