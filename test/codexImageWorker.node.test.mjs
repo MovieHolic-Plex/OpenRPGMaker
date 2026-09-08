@@ -47,18 +47,18 @@ describe("Codex native image real worker dispatch and transport", () => {
     if (worker && worker.exitCode === null) { const closed = once(worker, "close"); worker.kill(); await closed; }
     if (server) { const closed = once(server, "close"); server.close(); server.closeAllConnections(); await closed; }
   });
-  it("routes the sentinel to native OAuth image transport and preserves original bytes", async () => {
+  it("routes the sentinel to pinned GPT Image 2 transport and preserves original bytes", async () => {
     const result = await request({ prompt: "wizard", model: "codex-image-default" });
     assert.equal(result.status, 200);
-    assert.deepEqual(result.body, { provider: "openai-codex", model: "codex-image-default", mimeType: "image/png", base64 });
-    assert.deepEqual(upstreamCalls.at(-1).body, { prompt: "wizard", n: 1, size: "1024x1024" });
+    assert.deepEqual(upstreamCalls.at(-1).body, { prompt: "wizard", model: "gpt-image-2", n: 1, quality: "auto", background: "auto", size: "auto" });
+    assert.deepEqual(result.body, { provider: "openai-codex", model: "gpt-image-2", mimeType: "image/png", base64 });
     assert.equal(upstreamCalls.at(-1).headers.authorization, "Bearer " + token);
     assert.equal(upstreamCalls.at(-1).headers["chatgpt-account-id"], accountId);
   });
-  it("accepts omitted model and empty references without inventing a version", async () => {
+  it("accepts omitted selection and empty references while returning the requested upstream alias", async () => {
     const result = await request({ prompt: "wizard", referenceImages: [] });
-    assert.equal(result.status, 200); assert.equal(result.body.model, "codex-image-default");
-    assert.equal(Object.hasOwn(upstreamCalls.at(-1).body, "model"), false);
+    assert.equal(result.status, 200); assert.equal(result.body.model, "gpt-image-2");
+    assert.deepEqual(upstreamCalls.at(-1).body, { prompt: "wizard", model: "gpt-image-2", n: 1, quality: "auto", background: "auto", size: "auto" });
   });
   it("rejects every explicit nondefault model before transport", async () => {
     for (const model of ["gpt-image-2", "gpt-5.4", "", null, 42]) {
