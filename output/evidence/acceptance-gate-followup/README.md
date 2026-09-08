@@ -4,9 +4,25 @@ The requested real-model coverage investigation, canonical saved-project
 verification, shipping-player comparison and complete gate diagnosis are
 accounted for. Introduced DOM/transport-fixture regressions were repaired.
 **The repository-wide gates remain red; this packet does not claim all tests
-pass.** The final integrated code/test source is
-`ce551ee45d5c61b02bbb13bef7b8aa5a77bb061e`; a later documentation commit may contain
-this packet without changing those executable inputs.
+pass.** The earlier integrated source
+`ce551ee45d5c61b02bbb13bef7b8aa5a77bb061e` is recorded below. The publication source
+is `9fcc293073ebaf4ae2be4240071c5acf180673ab`, after synchronizing incoming main
+`1e3b59f7ff043ac2b05b7501d71fadab5e5fd3d4`.
+
+The approved owned test patch is byte-identical before and after that synchronization
+(SHA-256 `89cd7bf5234084577c5f06c21d96501170da099a0b73201509c75242f601a6ab`).
+The lead reran nine focused files: **131 passed**, app typecheck and full build
+**exit 0**, and all eight actual player checkpoints **exit 0** on the publication
+source. See `publication-supplement.json` and `publication-player.json`.
+Only wiki conflicts required manual resolution; both sections were retained and
+the shared index regenerated. The earlier full-suite/surface results retain their
+original source attribution, not a new whole-suite claim.
+
+One publication player attempt failed before browser startup because the shared
+Playwright installation expected a missing Firefox executable. The matching
+revision was installed with old-cache garbage collection disabled; the same
+application source then passed. That setup failure is not counted as gameplay
+evidence or hidden in the passing run.
 
 PR #691 was merged externally as `b9ed935bc` while gate verification was still
 underway. This session did not merge it. The repairs are on
