@@ -1,5 +1,6 @@
 import type { Command } from "@/project/types";
 import { COMMAND_GUARANTEES, type CommandSupport } from "@/project/commandGuaranteeRegistry";
+import { isSystemBgmCue, isSystemSeCue } from "@/project/systemAudioOverrides";
 import {
   M2_MAP_COMMON_FULL_IDS,
   M2_PERSISTED_BEHAVIOR_IDS,
@@ -25,7 +26,8 @@ export type M2RuntimeContext = "map" | "common" | "troop";
 
 type CommandRuntimeTarget =
   | { readonly kind: Exclude<Command["kind"], "m2Command"> }
-  | Pick<Extract<Command, { kind: "m2Command" }>, "kind" | "commandId">;
+  | (Pick<Extract<Command, { kind: "m2Command" }>, "kind" | "commandId"> &
+      Partial<Pick<Extract<Command, { kind: "m2Command" }>, "fields">>);
 
 export type CommandRuntimeSupportReason =
   | "editor-only"
@@ -87,6 +89,13 @@ const NATIVE_SUPPORT_TO_RUNTIME_SUPPORT: Readonly<Record<CommandSupport, Command
 
 export function commandRuntimeSupport(command: CommandRuntimeTarget, context?: M2RuntimeContext): CommandRuntimeSupport {
   if (command.kind !== "m2Command") return nativeCommandRuntimeSupport(command.kind, context);
+  if (context === "map" || context === "common") {
+    const cue = command.fields?.cue;
+    if (
+      (command.commandId === "m2-027-change-system-bgm" && isSystemBgmCue(cue)) ||
+      (command.commandId === "m2-028-change-system-se" && isSystemSeCue(cue))
+    ) return "runtime-full";
+  }
   return m2CommandRuntimeSupport(command.commandId, context);
 }
 
@@ -114,15 +123,6 @@ export function commandRuntimeSupportDescriptor(
   }
   if (context === "troop") {
     switch (command.kind) {
-      case "text":
-        return limited("battle-message-only", "전투 메시지 표시", "화자와 문장은 전투 메시지에 표시됩니다. 맵 대화창의 문장별 입력 대기·순차 표시와 연출 설정은 적용되지 않습니다.");
-      case "changeFace":
-      case "displayTextSettings":
-        return limited("battle-presentation-metadata-only", "표시 설정 기록만", "전투에서는 얼굴·문장 표시 설정을 로그에만 기록합니다. 얼굴 그림이나 대화창 위치·형식은 바뀌지 않습니다. 해당 연출은 맵·공통 이벤트에서 사용하세요.");
-      case "inputWait":
-        return limited("input-not-awaited", "입력을 기다리지 않음", "전투에서는 입력 대기 명령을 로그에만 기록하고 다음 명령을 실행합니다. 입력을 기다려 진행하려면 맵·공통 이벤트에서 사용하세요.");
-      case "wait":
-        return limited("non-sequential-battle-wait", "전투 연출 지연만", "전투 진행 또는 연출 타임라인에 지연을 반영하지만, 같은 이벤트의 다음 명령 실행은 멈추지 않습니다. 명령 사이의 순차 대기는 맵·공통 이벤트에서 사용하세요.");
       // Audited unsupported branches in battleEvents.ts. This is explanation
       // coverage, not an additional support/eligibility registry.
       case "m2Command":
@@ -147,8 +147,8 @@ export function commandRuntimeSupportDescriptor(
         support,
         reasonCode: "system-audio-metadata-only",
         icon: "△",
-        label: "시스템 소리 설정 기록만",
-        tooltip: `시스템 소리 설정은 메타데이터로만 기록되며, 이 명령으로 소리가 재생되거나 재생 볼륨이 적용되지는 않습니다. 실제 소리는 ${loop ? "BGM 재생(반복)" : "SE 재생(한 번)"}을 사용하세요. 채널·볼륨·페이드는 사운드 레이어에서 지정할 수 있습니다.`,
+        label: "시스템 소리 대상 필요",
+        tooltip: `올바른 시스템 소리 대상이 지정되지 않아 시스템 재생 큐에 적용되지 않습니다. 명령 설정에서 대상을 선택하세요. 즉시 소리를 재생하려면 ${loop ? "BGM 재생(반복)" : "SE 재생(한 번)"}을 사용하세요. 채널·볼륨·페이드는 사운드 레이어에서 지정할 수 있습니다.`,
         alternative: { kind: "playAudio", loop },
       };
     }

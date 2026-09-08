@@ -1,5 +1,12 @@
 # Editor Event Command Fixes (2026-07-15)
 
+## Sequential battle dialogue and explicit system cues (2026-09-08)
+
+- Native `text`, `changeFace`, `displayTextSettings`, `wait`, and `inputWait` use the completed troop contract in `commandGuaranteeRegistry.ts`. The picker reports the native representation it inserts, not the persisted M2 alias with the same catalog label. Do not promote the saved M2 aliases without separate runtime evidence.
+- System BGM/SE support is field-sensitive: map/common commands with a valid explicit `cue` use the real system consumer. Cue-less legacy commands retain the partial descriptor and are not silently assigned a new default. Troop system-audio M2 commands remain unsupported.
+- `commandPicker.ts` passes the actual `newM2Command` defaults to the shared support descriptor. New system-audio commands can therefore show full support while an old cue-less command in the list still asks for a system target. Both surfaces continue to use `runtimeSupport.ts`; there is no second cue allowlist in the editor.
+- Regression seams: `test/eventCommandCompletionSupport.test.ts`, `test/eventCommandSupportRepairs.test.ts`, and the actual picker script `node scripts/qa-event-command-editor-support.mjs --phase green`. These reporting checks supplement, not replace, sequential battle and system-audio player QA.
+
 > **Encoding note:** Some Korean descriptive text has EUC-KR→UTF-8 mojibake from the original source commit. English terms, file paths, and code references are intact. For accurate Korean, consult the referenced source files. Partial automated restoration applied; remaining garbled CJK is irreversibly corrupted.
 
 Hostile-review fixes for event command forms: fork/loop rerender, setSwitch valueSource, moveEvent route preview, changeGold/changeExp/learnSkill/battleProcessing/changeBattleCommands/changeItem UX, and Page 3 rich forms.

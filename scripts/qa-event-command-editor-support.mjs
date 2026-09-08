@@ -62,10 +62,13 @@ try {
   await page.route(requestUrl => requestUrl.origin === url && requestUrl.pathname !== "/__support-qa", async route => {
     try {
       const method = route.request().method();
-      await route.fulfill({ response: await route.fetch({ maxRetries: method === "GET" || method === "HEAD" ? 1 : 0 }) });
+      await route.fulfill({ response: await route.fetch({
+        timeout: 120_000,
+        maxRetries: method === "GET" || method === "HEAD" ? 1 : 0,
+      }) });
     } catch (error) {
       if (page.isClosed()) return;
-      report.errors.push(error instanceof Error ? error.message : String(error));
+      report.errors.push(`${route.request().url()}: ${error instanceof Error ? error.message : String(error)}`);
       try {
         await route.abort();
       } catch (abortError) {
@@ -118,19 +121,65 @@ try {
       assert.equal(row(context, id).support, "runtime-full", `${context}/${id}`);
       assert.equal(row(context, id).reason, undefined, `${context}/${id} must not show a limitation badge`);
     }
-    for (const [id, loop] of [["m2-027-change-system-bgm", "true"], ["m2-028-change-system-se", "false"]]) {
+    for (const id of ["m2-027-change-system-bgm", "m2-028-change-system-se"]) {
       const entry = row(context, id);
-      assert.equal(entry.reason, "system-audio-metadata-only");
-      assert.equal(entry.alternative, "playAudio");
-      assert.equal(entry.alternativeLoop, loop);
-      assert(entry.tooltip && entry.accessibleName);
+      assert.equal(entry.support, "runtime-full");
+      assert.equal(entry.reason, undefined);
     }
   }
   assert.equal(row("troop", "m2-040-set-event-location").reason, "not-executed-in-context");
   assert.equal(row("troop", "m2-210-sound-layer").reason, "not-executed-in-context");
-  assert.equal(row("troop", "m2-001-show-text").reason, "battle-message-only");
-  assert.equal(row("troop", "m2-060-wait").reason, "non-sequential-battle-wait");
-  assert.equal(row("troop", "m2-067-key-input-processing").reason, "input-not-awaited");
+  for (const id of [
+    "m2-001-show-text", "m2-002-display-text-settings", "m2-003-change-faceset",
+    "m2-060-wait", "m2-067-key-input-processing",
+  ]) {
+    assert.equal(row("troop", id).support, "runtime-full");
+    assert.equal(row("troop", id).reason, undefined);
+  }
+  report.authoring = [];
+  for (const [family, initialCue, selectedCue] of [
+    ["bgm", "battle", "victory"], ["se", "confirm", "cancel"],
+  ]) {
+    for (const legacy of [false, true]) {
+      const initial = await page.evaluate(async ({ family, legacy }) => {
+        const { openEventCommandEditDialog } = await import("/src/editor/panels/eventEditor/commandEditDialog.ts");
+        const { newM2Command } = await import("/src/editor/eventActions.ts");
+        const commandId = family === "bgm" ? "m2-027-change-system-bgm" : "m2-028-change-system-se";
+        const initial = legacy
+          ? { kind: "m2Command", commandId, fields: { resourceId: "" } }
+          : newM2Command(commandId);
+        let applied = null;
+        let applyCount = 0;
+        openEventCommandEditDialog({
+          initial,
+          onApply: command => { applied = command; applyCount += 1; },
+        });
+        window.__cueAuthoringState = () => ({ initial, applied, applyCount });
+        return window.__cueAuthoringState();
+      }, { family, legacy });
+      const cue = page.getByTestId("m2-command-cue-option-select");
+      assert.equal(await cue.inputValue(), legacy ? "" : initialCue);
+      assert.equal(initial.applyCount, 0);
+      await cue.selectOption(selectedCue);
+      await page.getByTestId("m2-command-operation-option-select").selectOption("reset");
+      const staged = await page.evaluate(() => window.__cueAuthoringState());
+      assert.equal(staged.applyCount, 0);
+      assert.equal(staged.applied, null);
+      assert.deepEqual(staged.initial, initial.initial);
+      const screenshot = join(out, `cue-${family}-${legacy ? "legacy" : "new"}.png`);
+      await page.screenshot({ path: screenshot });
+      report.screenshots.push(screenshot);
+      await page.getByTestId("event-command-edit-ok").click();
+      const authored = await page.evaluate(() => window.__cueAuthoringState());
+      assert.equal(authored.applied.fields.cue, selectedCue);
+      assert.equal(authored.applied.fields.operation, "reset");
+      assert.equal(authored.applied.fields.resourceId, "");
+      assert.equal(authored.applyCount, 1);
+      assert.equal(await page.getByTestId("event-command-edit-dialog").count(), 0);
+      report.authoring.push({ family, legacy, initial, authored });
+      report.actions.push({ action: "select cue and reset, then apply through actual edit dialog", family, legacy, selectedCue });
+    }
+  }
   assert.deepEqual(report.errors, []);
   assert.deepEqual(report.requests.filter(request => !["GET", "HEAD", "OPTIONS"].includes(request.method)), []);
   report.pass = true;

@@ -610,7 +610,7 @@ function renderCommandButton(
   const descriptor = commandRuntimeSupportDescriptor(
     entry.kind && entry.kind !== "m2Command"
       ? { kind: entry.kind }
-      : { kind: "m2Command", commandId: entry.commandId },
+      : newM2Command(entry.commandId),
     options.context
   );
   // 카테고리 아이콘: aria-hidden 스팬의 ::before(attr(data-glyph)) — 버튼 textContent 와

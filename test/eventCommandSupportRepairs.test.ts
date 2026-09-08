@@ -6,7 +6,6 @@ import { COMMAND_KINDS } from "@/project/commandKindRegistry";
 import { M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
 import * as runtimeSupport from "@/project/eventCommands/runtimeSupport";
 import { deserialize } from "@/project/io";
-import { battleEventDirectorState, battleMessageWindow } from "@/player/battleDirectorDom";
 import { renderDatabaseCommandListEditor } from "@/editor/panels/databaseCommandListAdapter";
 import { FORK_THEN_BRANCH_INDEX } from "@/editor/eventCommandPaths";
 import battleFixture from "./fixtures/projects/battle-v3.json";
@@ -45,13 +44,7 @@ const provenMapCommon = [
   ["m2-210-sound-layer", { channel: "ambient", resourceId: "qa_ambient", volume: 63, fadeMs: 400 }],
 ] as const satisfies readonly (readonly [string, M2CommandFields])[];
 
-const narrowerTroop = [
-  ["text", "battle-message-only"],
-  ["changeFace", "battle-presentation-metadata-only"],
-  ["displayTextSettings", "battle-presentation-metadata-only"],
-  ["inputWait", "input-not-awaited"],
-  ["wait", "non-sequential-battle-wait"],
-] as const;
+const completedTroop = ["text", "changeFace", "displayTextSettings", "inputWait", "wait"] as const;
 
 const actions: CommandListActions = {
   addCommand: () => undefined,
@@ -133,19 +126,22 @@ describe.each(["map", "common"] as const)("evidence-bounded support in %s", (con
   it.each([
     ["m2-027-change-system-bgm", "true"],
     ["m2-028-change-system-se", "false"],
-  ] as const)("keeps %s metadata-only and identifies an audible alternative", (commandId, loop) => {
+  ] as const)("keeps cue-less %s metadata-only while the picker authors a concrete cue", (commandId, loop) => {
     const command = m2(commandId, { resourceId: "qa_audio", volume: 63 });
     expect(commandRuntimeSupport(command, context)).toBe("runtime-partial");
-    const picker = pickerBadge(commandId, context);
+    const picker = pickerButton(commandId, context);
+    expect(picker.dataset.runtimeSupport).toBe("runtime-full");
+    expect(picker.querySelector(".command-runtime-badge")).toBeNull();
+    expect(listBadge(newM2Command(commandId), context)).toBeNull();
     const list = listBadge(command, context);
-    for (const badge of [picker, list]) {
-      assertReason(badge, "system-audio-metadata-only");
-      expect(badge.dataset.runtimeAlternative).toBe("playAudio");
-      expect(badge.dataset.runtimeAlternativeLoop).toBe(loop);
-    }
+    assertReason(list, "system-audio-metadata-only");
+    expect(list.dataset.runtimeAlternative).toBe("playAudio");
+    expect(list.dataset.runtimeAlternativeLoop).toBe(loop);
+    const descriptor = runtimeSupport.commandRuntimeSupportDescriptor(command, context);
+    if (descriptor.support === "runtime-full") throw new Error("Legacy command requires an explicit cue");
     // Shipped-copy equality, not prose pinning.
-    expect(list?.title).toBe(picker.title);
-    expect(list?.getAttribute("aria-label")).toBe(picker.getAttribute("aria-label"));
+    expect(list.title).toBe(descriptor.tooltip);
+    expect(list.getAttribute("aria-label")).toBe(descriptor.label);
   });
 
   it.each(["m2-023-change-actor-nickname", "m2-202-screen-effect", "m2-207-region-trigger"])(
@@ -166,34 +162,35 @@ describe("context-aware renderer explanation wiring", () => {
     expect(list.getAttribute("aria-label")).toBe(picker.getAttribute("aria-label"));
   });
 
-  it.each(narrowerTroop)("does not claim native %s has map-equivalent troop semantics", (kind) => {
+  it.each(completedTroop)("declares completed native %s in each supported context", (kind) => {
     const command = newCommand(kind);
-    expect(commandRuntimeSupport(command, "troop")).toBe("runtime-partial");
+    expect(commandRuntimeSupport(command, "troop")).toBe("runtime-full");
     expect(commandRuntimeSupport(command, "map")).toBe("runtime-full");
     expect(commandRuntimeSupport(command, "common")).toBe("runtime-full");
   });
 
-  it.each(narrowerTroop)("reports the actual troop limitation for native %s", (kind, reason) => {
-    assertReason(listBadge(newCommand(kind), "troop"), reason);
+  it.each(completedTroop)("removes the obsolete troop limitation for native %s", (kind) => {
+    expect(listBadge(newCommand(kind), "troop")).toBeNull();
   });
 
   it.each([
-    ["m2-001-show-text", "text", "battle-message-only"],
-    ["m2-003-change-faceset", "changeFace", "battle-presentation-metadata-only"],
-    ["m2-002-display-text-settings", "displayTextSettings", "battle-presentation-metadata-only"],
-    ["m2-060-wait", "wait", "non-sequential-battle-wait"],
-  ] as const)("describes inserted native semantics rather than persisted alias semantics for %s", (commandId, kind, reason) => {
-    const picker = pickerBadge(commandId, "troop");
+    ["m2-001-show-text", "text"],
+    ["m2-003-change-faceset", "changeFace"],
+    ["m2-002-display-text-settings", "displayTextSettings"],
+    ["m2-060-wait", "wait"],
+    ["m2-067-key-input-processing", "inputWait"],
+  ] as const)("describes inserted native semantics rather than persisted alias semantics for %s", (commandId, kind) => {
+    const picker = pickerButton(commandId, "troop");
     const list = listBadge(newCommand(kind), "troop");
-    assertReason(picker, reason);
-    assertReason(list, reason);
-    expect(picker.dataset.runtimeSupport).toBe("runtime-partial");
-    expect(list.title).toBe(picker.title);
+    expect(picker.dataset.runtimeSupport).toBe("runtime-full");
+    expect(picker.querySelector(".command-runtime-badge")).toBeNull();
+    expect(list).toBeNull();
+    expect(m2CommandRuntimeSupport(commandId, "troop")).toBe("runtime-partial");
   });
 
-  it("distinguishes a skipped native map command from a narrower battle message", () => {
+  it("distinguishes a skipped native map command from supported battle dialogue", () => {
     assertReason(listBadge({ kind: "playMovie", resourceId: "qa_movie", wait: true, skippable: true }, "troop"), "not-executed-in-context");
-    assertReason(listBadge({ kind: "text", body: "battle message" }, "troop"), "battle-message-only");
+    expect(listBadge({ kind: "text", body: "battle message" }, "troop")).toBeNull();
   });
 
   it("does not describe system audio metadata as executed in troop", () => {
@@ -245,14 +242,17 @@ describe("descriptor ownership and context propagation", () => {
   it.each(["map", "common", "troop"] as const)("both renderers call the same descriptor with %s", (context) => {
     const spy = vi.spyOn(runtimeSupport, "commandRuntimeSupportDescriptor");
     const command = newM2Command("m2-027-change-system-bgm");
-    const picker = pickerBadge(command.commandId, context);
+    const picker = pickerButton(command.commandId, context);
     const list = listBadge(command, context);
-    expect(spy).toHaveBeenCalledWith({ kind: "m2Command", commandId: command.commandId }, context);
     expect(spy).toHaveBeenCalledWith(command, context);
     const descriptor = runtimeSupport.commandRuntimeSupportDescriptor(command, context);
-    expect(descriptor.support).toBe("runtime-partial");
-    if (descriptor.support === "runtime-full") throw new Error("Expected a limited descriptor");
-    for (const badge of [picker, list]) {
+    expect(descriptor.support).toBe(context === "troop" ? "runtime-partial" : "runtime-full");
+    if (descriptor.support === "runtime-full") {
+      expect(picker.querySelector(".command-runtime-badge")).toBeNull();
+      expect(list).toBeNull();
+      return;
+    }
+    for (const badge of [picker.querySelector<HTMLElement>(".command-runtime-badge"), list]) {
       assertReason(badge, descriptor.reasonCode);
       expect(badge.title).toBe(descriptor.tooltip);
       expect(badge.getAttribute("aria-label")).toBe(descriptor.label);
@@ -278,7 +278,7 @@ describe("descriptor ownership and context propagation", () => {
   });
 });
 
-describe("runtime evidence for narrower troop descriptions", () => {
+describe("runtime evidence for completed troop descriptions", () => {
   function runBattle(commands: Command[], battleFlow: "gauge" | "strict") {
     const project = deserialize(JSON.stringify(battleFixture));
     const troop = project.database.troops.find((entry) => entry.id === "troop_slime");
@@ -293,29 +293,55 @@ describe("runtime evidence for narrower troop descriptions", () => {
     runtime.performActorCommand({ kind: "defend" });
     const snapshot = runtime.snapshot();
     expect(snapshot.eventLogs.some((log) => log.pageId === "support_runtime" && log.kind === "fired")).toBe(true);
-    expect(snapshot.eventState.variables.after_command).toBe(1);
-    return snapshot;
+    return runtime;
   }
 
-  it.each(["gauge", "strict"] as const)("text actually renders a battle message, without sequential input in %s", (flow) => {
+  it.each(["gauge", "strict"] as const)("text waits for its matching presentation response in %s", (flow) => {
     const command = { kind: "text", speaker: "SUPPORT_SPEAKER", body: "SUPPORT_MESSAGE" } as const;
-    const snapshot = runBattle([command], flow);
-    const director = battleEventDirectorState(snapshot, { step: "command", lines: [] });
-    const window = battleMessageWindow(director);
-    expect(window.querySelector(".battle-message-line")?.textContent).toBe("SUPPORT_SPEAKER: SUPPORT_MESSAGE");
-    expect(runtimeSupport.commandRuntimeSupportDescriptor(command, "troop")).toMatchObject({ support: "runtime-partial", reasonCode: "battle-message-only" });
+    const runtime = runBattle([command], flow);
+    const snapshot = runtime.snapshot();
+    const request = snapshot.eventPause;
+    expect(request).toMatchObject(command);
+    expect(snapshot.eventState.variables.after_command ?? 0).toBe(0);
+    if (!request) throw new Error("Expected a suspended text request");
+    expect(runtime.resumeEventPause(request.id, { kind: "wait" })).toBe(false);
+    expect(runtime.snapshot()).toEqual(snapshot);
+    expect(runtime.resumeEventPause(request.id, { kind: "text" })).toBe(true);
+    expect(runtime.snapshot().eventState.variables.after_command).toBe(1);
+    expect(runtimeSupport.commandRuntimeSupportDescriptor(command, "troop")).toEqual({ support: "runtime-full" });
+    runtime.cancel();
   });
 
-  it.each(["gauge", "strict"] as const)("face/settings/inputWait are metadata and wait does not suspend following commands in %s", (flow) => {
-    for (const [kind, reasonCode] of narrowerTroop.filter(([kind]) => kind !== "text")) {
-      const command = kind === "wait" ? { kind, ms: 10000 } as const : newCommand(kind);
-      const snapshot = runBattle([command], flow);
-      expect(snapshot.eventLogs.some((log) => log.pageId === "support_runtime" && log.kind === "message")).toBe(true);
-      const director = battleEventDirectorState(snapshot, { step: "command", lines: [] });
-      const window = battleMessageWindow(director);
-      expect(window.querySelector("img")).toBeNull();
-      expect(runtimeSupport.commandRuntimeSupportDescriptor(command, "troop")).toMatchObject({ support: "runtime-partial", reasonCode });
-    }
+  it.each(["gauge", "strict"] as const)("face/settings reach text and waits block subsequent commands in %s", (flow) => {
+    const face = { resourceId: "support_face", position: "right", flipHorizontally: true } as const;
+    const settings = {
+      format: "transparent", position: "top", preventObscuringPlayer: false,
+      allowEventMovementDuringWait: true,
+    } as const;
+    const runtime = runBattle([
+      { kind: "changeFace", ...face },
+      { kind: "displayTextSettings", ...settings },
+      { kind: "text", body: "PRESENTATION" },
+      { kind: "wait", ms: 10000 },
+      { kind: "inputWait", variableId: "support_key" },
+    ], flow);
+    const text = runtime.snapshot().eventPause;
+    expect(text).toMatchObject({ kind: "text", face, settings });
+    expect(runtime.snapshot().eventState.variables.after_command ?? 0).toBe(0);
+    if (!text) throw new Error("Expected text presentation");
+    expect(runtime.resumeEventPause(text.id, { kind: "text" })).toBe(true);
+    const wait = runtime.snapshot().eventPause;
+    expect(wait).toMatchObject({ kind: "wait", ms: 10000 });
+    expect(runtime.snapshot().eventState.variables.after_command ?? 0).toBe(0);
+    if (!wait) throw new Error("Expected authored wait");
+    expect(runtime.resumeEventPause(wait.id, { kind: "wait" })).toBe(true);
+    const input = runtime.snapshot().eventPause;
+    expect(input).toMatchObject({ kind: "inputWait", variableId: "support_key" });
+    expect(runtime.snapshot().eventState.variables.after_command ?? 0).toBe(0);
+    if (!input) throw new Error("Expected input wait");
+    expect(runtime.resumeEventPause(input.id, { kind: "inputWait", keyCode: 3 })).toBe(true);
+    expect(runtime.snapshot().eventState.variables).toMatchObject({ support_key: 3, after_command: 1 });
+    runtime.cancel();
   });
 
   it("every not-executed troop description corresponds to an actual unsupported execution", () => {
