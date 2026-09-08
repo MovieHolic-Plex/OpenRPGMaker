@@ -15,6 +15,51 @@ const titleEntry = (raw: string, value: string, quote = raw) => ({ source: [anch
 ] });
 
 describe("canonical authored source integration", () => {
+  it("captures required source in the current snapshot without reevaluating or mutating prior evidence", () => {
+    const project = createBlankProject();
+    const ledger = new AssistantAcceptanceLedger("goal", "Goal", project);
+    ledger.adopt([{ id: "title", title: "Title", criteria: [title(project.meta.title)] }]);
+    const old = ledger.evaluate(project);
+    const original = structuredClone(old);
+    const evaluate = vi.spyOn(evaluation, "evaluateAcceptanceCriterion");
+    const raw = "Inspect this map; inspect its events";
+    const scope = { mapId: project.startMapId, region: { x: 1, y: 2, width: 3, height: 4 } };
+    ledger.startRequest("next", raw, project, true, scope);
+    const current = ledger.getSnapshot();
+    expect(evaluate).not.toHaveBeenCalled();
+    expect(current.status).toBe("blocked");
+    expect(current.items.map(item => item.id)).toEqual(["title", "next:source:0", "next:source:1"]);
+    expect(current.items[0]).toBe(old.items[0]);
+    expect(current.items.slice(1)).toEqual(["Inspect this map", "inspect its events"].map(quote => ({
+      id: `next:source:${quote === "Inspect this map" ? 0 : 1}`, title: quote, required: true,
+      source: { requestId: "next", text: raw, scope }, sourceSpan: anchor(raw, quote), coverage: "uncovered",
+      status: "blocked", reason: "Request source coverage unresolved", evidence: [],
+    })));
+    expect([current, current.items, ...current.items, current.items[1]?.sourceSpan, current.items[1]?.evidence].every(Object.isFrozen)).toBe(true);
+    scope.region.x = 9;
+    expect(current.items[1]?.source?.scope?.region.x).toBe(1);
+    ledger.startRequest("next", "Duplicate capture must not replace authority", project);
+    expect(ledger.getSnapshot()).toBe(current);
+    expect(ledger.evaluate(project)).toEqual(current);
+    expect(old).toEqual(original);
+  });
+
+  it.each([{ raw: "", authoring: true }, { raw: " \n ", authoring: true }, { raw: "Explain this map", authoring: false }])(
+    "does not invent required rows for empty/non-authoring capture %j", ({ raw, authoring }) => {
+      const project = createBlankProject();
+      const ledger = new AssistantAcceptanceLedger("goal", "Goal", project);
+      const unassessed = ledger.getSnapshot();
+      ledger.startRequest("first", raw, project, authoring);
+      expect(ledger.getSnapshot()).toBe(unassessed);
+      expect(ledger.getSnapshot().items).toEqual([]);
+      ledger.adopt([{ id: "title", title: "Title", criteria: [title(project.meta.title)] }]);
+      const verified = ledger.evaluate(project);
+      ledger.startRequest("next", raw, project, authoring);
+      expect(ledger.getSnapshot()).toBe(verified);
+      expect(ledger.getSnapshot().status).toBe("verified");
+      expect(ledger.getRequests().map(request => request.authoring)).toEqual([authoring, authoring]);
+    });
+
   it("I1-authored-value-enters-existing-parser-ledger-and-host-withdrawal", () => {
     const project = createBlankProject();
     const criteria = [{ kind: "valueEquals", subject: { kind: "project" }, path: ["meta", "title"], value: "Requested title" }];

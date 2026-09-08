@@ -47,7 +47,15 @@ describe("run outcome session boundaries", () => {
     // When the real session executes its cancellation path.
     const result = await f.session.sendUserMessage("Inspect", event => f.events.push(event), AbortSignal.abort());
     // Then cancellation is typed independently of legacy stoppedReason.
-    expect(result).toHaveProperty("runOutcome", { execution: "cancelled", goal: "unassessed", delivery: "no-change" });
+    const expected = { execution: "cancelled", goal: "incomplete", delivery: "no-change" };
+    expect(result).toHaveProperty("runOutcome", expected);
+    expect(f.session.getHarnessSnapshot().runOutcome).toEqual(expected);
+    expect(result.recap?.runOutcome).toEqual(expected);
+    expect(f.events.at(-1)).toEqual({ type: "run_outcome", runOutcome: expected });
+    expect(f.session.getAcceptanceSnapshot()?.items).toMatchObject([{ id: "request-1:source:0", required: true,
+      coverage: "uncovered", status: "blocked", source: { text: "Inspect" }, sourceSpan: { start: 0, end: 7, quote: "Inspect" } }]);
+    expect(f.session.getAcceptanceSnapshot()?.items).toHaveLength(1);
+    expect(f.events.filter(event => event.type === "tool_call")).toEqual([]);
   });
 });
 

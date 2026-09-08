@@ -115,35 +115,45 @@ describe("host new-goal early ownership", () => {
       const pending = f.send("Start a completely different goal", { goalAction: "new-goal" }, controller.signal);
       const atEntry = f.session.getAcceptanceSnapshot();
       const next = await pending;
-      const expected: RunOutcome = { execution: ending === "failure" ? "failed" : "cancelled", goal: "unassessed", delivery: "no-change" };
+      const expected: RunOutcome = { execution: ending === "failure" ? "failed" : "cancelled", goal: "incomplete", delivery: "no-change" };
       console.log("R2_PUBLIC_ENTRY", JSON.stringify({ boundary, ending, dimensions: { mapId: f.map.id, width: f.map.width, height: f.map.height }, old: old.snapshot,
         atEntry, atBoundary, boundaryHistory, next: next.runOutcome, getter: f.session.getRunOutcome(), harness: f.session.getHarnessSnapshot().runOutcome,
         recap: next.recap?.runOutcome, history: f.session.getAcceptanceHistory(), events: f.events.filter(event => ["acceptance", "run_outcome", "run_recap"].includes(event.type)), oldResultUnchanged: JSON.stringify(old.result) === JSON.stringify(old.originalResult) }));
       expect(next.stoppedReason).toBe(ending === "failure" ? "error" : "aborted");
       agreement(f.session, next, f.events, expected);
-      expect(atEntry).toBeNull();
-      expect(atBoundary).toBe(ending === "already-aborted" ? undefined : null);
+      expect(atEntry).toMatchObject({ status: "blocked", items: [{ id: "request-2:source:0", required: true,
+        coverage: "uncovered", source: { requestId: "request-2", text: "Start a completely different goal", scope: null },
+        sourceSpan: { start: 0, end: 33, quote: "Start a completely different goal" }, status: "blocked", evidence: [] }] });
+      expect(atEntry?.items).toHaveLength(1);
+      expect(atBoundary).toBe(ending === "already-aborted" ? undefined : atEntry);
       expect(boundaryHistory).toEqual(ending === "already-aborted" ? [] : [old.snapshot]);
       expect(f.boundaries).toEqual(ending === "already-aborted" ? [] : boundary === "wiki" ? ["wiki"] : ["wiki", "intent"]);
       expect(f.session.getWorkPlan()).toBeNull();
-      expect(f.session.getAcceptanceSnapshot()).toBeNull();
+      expect(f.session.getAcceptanceSnapshot()).toBe(atEntry);
       expect(f.session.getAcceptanceHistory()).toEqual([old.snapshot]);
       expect(f.session.getAcceptanceHistory()[0]).toBe(old.snapshot);
-      expect(f.events.filter(event => event.type === "acceptance")).toEqual([{ type: "acceptance", snapshot: null }]);
+      expect(f.events.filter(event => event.type === "acceptance")).toEqual([
+        { type: "acceptance", snapshot: null }, { type: "acceptance", snapshot: atEntry },
+      ]);
       expect(old.result).toEqual(old.originalResult);
     });
   });
 
-  it("archives once across repeated failed entries and keeps history immutable through later assessment and withdrawal", async () => {
+  it("archives each captured owner once across repeated failed entries and keeps history immutable through later assessment and withdrawal", async () => {
     const f = goalFixture();
     const old = await assessed(f);
     const historyBefore = f.session.getAcceptanceHistory();
     const scope = { mapId: f.map.id, region: { x: 1, y: 2, width: 3, height: 4 } };
     f.atBoundary(() => { throw new Error("wiki-entry-failure"); });
+    const failedSnapshots: AcceptanceSnapshot[] = [];
     for (const instruction of ["First failed owner", "Second failed owner"]) {
       const failed = await f.send("Transport envelope", { goalAction: "new-goal", instruction, scope });
-      agreement(f.session, failed, f.events, { execution: "failed", goal: "unassessed", delivery: "no-change" });
-      expect(f.session.getAcceptanceHistory()).toEqual([old.snapshot]);
+      agreement(f.session, failed, f.events, { execution: "failed", goal: "incomplete", delivery: "no-change" });
+      expect(f.session.getAcceptanceHistory()).toEqual([old.snapshot, ...failedSnapshots]);
+      const captured = f.session.getAcceptanceSnapshot();
+      if (!captured) throw new Error("Failed owner lost its captured source");
+      expect(captured.items).toMatchObject([{ required: true, coverage: "uncovered", source: { text: instruction, scope } }]);
+      failedSnapshots.push(captured);
     }
     expect(historyBefore).toEqual([]);
     const history = f.session.getAcceptanceHistory();
@@ -169,8 +179,8 @@ describe("host new-goal early ownership", () => {
     expect(old.result).toEqual(old.originalResult);
     const completedCurrent = f.session.getAcceptanceSnapshot();
     await f.send("Third owner", { goalAction: "new-goal" });
-    expect(f.session.getAcceptanceHistory()).toEqual([old.snapshot, completedCurrent]);
-    expect(history).toEqual([old.snapshot]);
+    expect(f.session.getAcceptanceHistory()).toEqual([...history, completedCurrent]);
+    expect(history).toEqual([old.snapshot, failedSnapshots[0]]);
   });
 
   it("captures the failed new owner's pre-await baseline rather than the old request or a later resume", async () => {
@@ -246,11 +256,38 @@ describe("host new-goal early ownership", () => {
     const snapshot = f.session.getAcceptanceSnapshot();
     fault = true; f.events.length = 0;
     const result = await f.session.sendUserMessage("Continue the current assessment", event => f.events.push(event), undefined, mode === "resume" ? { goalAction: "resume" } : {});
-    const expected: RunOutcome = { execution: "failed", goal: "satisfied", delivery: mode === "resume" ? "persisted-verified" : "no-change" };
+    const expected: RunOutcome = { execution: "failed", goal: mode === "resume" ? "satisfied" : "incomplete", delivery: mode === "resume" ? "persisted-verified" : "no-change" };
     agreement(f.session, result, f.events, expected);
-    expect(f.session.getAcceptanceSnapshot()).toEqual(snapshot);
+    if (mode === "resume") expect(f.session.getAcceptanceSnapshot()).toEqual(snapshot);
+    else {
+      expect(f.session.getAcceptanceSnapshot()?.items.map(item => item.id)).toEqual(["size", "request-2:source:0"]);
+      expect(f.session.getAcceptanceSnapshot()?.items[0]).toEqual(snapshot?.items[0]);
+      expect(f.session.getAcceptanceSnapshot()?.items[1]).toMatchObject({ required: true, coverage: "uncovered", status: "blocked" });
+    }
+    expect(result.appliedCalls).toHaveLength(mode === "resume" ? 1 : 0);
+    expect(result.proposedCalls).toHaveLength(0);
     expect(f.session.getAcceptanceHistory()).toEqual([]);
     expect(first).toEqual(original);
     console.log("R2_SAME_GOAL_CONTROL", JSON.stringify({ mode, outcome: result.runOutcome, history: f.session.getAcceptanceHistory() }));
+  });
+
+  it.each([
+    { text: "", options: {}, goal: "satisfied", retires: false },
+    { text: "Transport envelope", options: { instruction: "" }, goal: "satisfied", retires: false },
+    { text: "Explain this map", options: { composerMode: "ask" }, goal: "satisfied", retires: false },
+    { text: "", options: { goalAction: "new-goal" }, goal: "unassessed", retires: true },
+    { text: "Transport envelope", options: { instruction: "", goalAction: "new-goal" }, goal: "unassessed", retires: true },
+    { text: "Explain this map", options: { composerMode: "ask", goalAction: "new-goal" }, goal: "satisfied", retires: false },
+  ] as const)("preserves the empty/non-authoring contract on pre-aborted entry %j", async spec => {
+    const f = goalFixture();
+    const old = await assessed(f);
+    const result = await f.send(spec.text, spec.options, AbortSignal.abort());
+    agreement(f.session, result, f.events, { execution: "cancelled", goal: spec.goal, delivery: "no-change" });
+    expect(f.boundaries).toEqual([]);
+    expect(f.session.getAcceptanceSnapshot()).toBe(spec.retires ? null : old.snapshot);
+    expect(f.session.getAcceptanceHistory()).toEqual(spec.retires ? [old.snapshot] : []);
+    expect(result.appliedCalls).toHaveLength(0);
+    expect(result.proposedCalls).toHaveLength(0);
+    expect(old.result).toEqual(old.originalResult);
   });
 });

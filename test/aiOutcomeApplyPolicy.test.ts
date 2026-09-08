@@ -1,11 +1,39 @@
 import { afterEach, expect, it, vi } from "vitest";
 import { applyFixture, drainOutcomeFixtures } from "./runOutcomeApplyFixture";
-import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
+import { defaultAiConfig, LlmError, type ChatResult } from "@/ai/llmClient";
+import { clearTimeout, setTimeout } from "node:timers";
 import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
 import { store } from "@/project/store";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
-import { resetIntentDeclarationCache } from "@/ai/intentDeclarationClient";
+import { resetIntentDeclarationCache, type IntentDeclarer } from "@/ai/intentDeclarationClient";
 import { QUICK_REPLY_MARKER } from "@/ai/interviewPrompt";
+import { fixedDeclarer } from "./intentFixture";
+import type { TurnResult } from "@/ai/assistantSession";
+
+const raw = "Resize map to 21x15";
+const resizeDeclarer: IntentDeclarer = (facts, signal) => fixedDeclarer({ mode: "modify", requestRequirements: { entries: [{
+  source: [{ start: 0, end: raw.length, quote: raw }],
+  criteria: [{ kind: "mapDimensions", target: { mapId: store.getCurrent().startMapId }, width: 21, height: 15 }],
+  bindings: [
+    { source: { start: raw.indexOf("21"), end: raw.indexOf("21") + 2, quote: "21" }, role: "width", criterionIndex: 0, fieldPath: ["width"] },
+    { source: { start: raw.indexOf("15"), end: raw.length, quote: "15" }, role: "height", criterionIndex: 0, fieldPath: ["height"] },
+  ],
+}] } })(facts, signal);
+const ownedRuns = new Set<{ controller: AbortController; pending: Promise<TurnResult> }>();
+async function bounded<T>(pending: Promise<T>, controller?: AbortController): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([pending, new Promise<never>((_, reject) => {
+      timer = setTimeout(() => { controller?.abort(); reject(new Error("Apply policy fixture completion deadline")); }, 10_000);
+    })]);
+  } finally { clearTimeout(timer); }
+}
+async function owned(controller: AbortController, start: () => Promise<TurnResult>): Promise<TurnResult> {
+  const run = { controller, pending: start() };
+  ownedRuns.add(run);
+  try { return await bounded(run.pending, controller); }
+  finally { controller.abort(); await bounded(run.pending); ownedRuns.delete(run); }
+}
 
 const final: ChatResult = { message: { role: "assistant", content: "RESULT" }, finishReason: "stop" };
 function tool(name: string, args: Record<string, unknown>): ChatResult {
@@ -20,7 +48,12 @@ function resizeContract() {
   });
 }
 afterEach(async () => {
-  try { await drainOutcomeFixtures(); }
+  try {
+    for (const run of ownedRuns) run.controller.abort();
+    await bounded(Promise.all([...ownedRuns].map(run => run.pending)));
+    ownedRuns.clear();
+    await drainOutcomeFixtures();
+  }
   finally {
     store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
     resetMapEditHistory(); resetIntentDeclarationCache();
@@ -35,11 +68,14 @@ it.each([false, true])("settles the same verified requirement with milestone=%s"
     switch (round++) {
       case 0: return resizeContract();
       case 1: return tool("resize_map", { mapId: store.getCurrent().startMapId, width: 21, height: 15 });
-      default: return final;
+      default:
+        if (autonomous) throw new LlmError("Unexpected resize fixture transport exhaustion", 401);
+        return final;
     }
-  });
+  }, resizeDeclarer);
   f.session.updateConfig({ ...defaultAiConfig(), model: "test", liteModel: "test", agentMode: "chat", maxToolCalls: 12, maxTokens: 8192 });
-  const result = await f.session.sendUserMessage("Resize map", event => f.events.push(event), undefined, { autonomous });
+  const controller = new AbortController();
+  const result = await owned(controller, () => f.session.sendUserMessage(raw, event => f.events.push(event), controller.signal, { autonomous }));
   if (!autonomous) {
     expect(f.session.getAcceptanceSnapshot()?.status).not.toBe("verified");
     expect(result.runOutcome?.delivery).toBe("draft");
@@ -55,6 +91,13 @@ it.each([false, true])("settles the same verified requirement with milestone=%s"
   // Then both paths use the same post-apply completion policy and P1 proof authority.
   const expected = { execution: "response-final", goal: "satisfied", delivery: "persisted-verified" };
   expect(f.session.getAcceptanceSnapshot()?.status, JSON.stringify(f.session.getAcceptanceSnapshot())).toBe("verified");
+  expect(f.session.getAcceptanceSnapshot()?.items).toMatchObject([
+    { id: "request-1:source:0", required: true, coverage: "declared", status: "verified", evidence: [{ passed: true }] },
+    { id: "size", required: true, status: "verified", evidence: [{ passed: true }] },
+  ]);
+  expect(f.session.getAcceptanceSnapshot()?.items.map(item => item.id)).toEqual(["request-1:source:0", "size"]);
+  expect(result.appliedCalls?.map(call => call.name)).toEqual(["resize_map"]);
+  expect(result.proposedCalls).toEqual([]);
   expect(result.runOutcome).toEqual(expected);
   expect(result.recap?.runOutcome).toEqual(expected);
   expect(f.session.getHarnessSnapshot().runOutcome).toEqual(expected);
@@ -84,13 +127,20 @@ it.each(["blocked", "failed", "cancelled"] as const)("preserves genuine %s execu
     });
     if (round === 2) return tool("resize_map", { mapId: store.getCurrent().startMapId, width: 21, height: 15 });
     if (ending === "blocked") return tool("resize_map", { mapId: store.getCurrent().startMapId, width: 1, height: 1 });
-    throw Object.assign(new Error("Transport fixture"), { name: "LlmError", status: 401 });
-  });
+    throw new LlmError("Transport fixture", 401);
+  }, resizeDeclarer);
   f.session.updateConfig({ ...defaultAiConfig(), model: "test", liteModel: "test", agentMode: "chat", maxToolCalls: 12, maxTokens: 8192 });
-  const result = await f.session.sendUserMessage("Resize", event => {
+  const result = await owned(controller, () => f.session.sendUserMessage(raw, event => {
+    f.events.push(event);
     if (ending === "cancelled" && event.type === "tool_call" && event.name === "resize_map" && event.result.ok) controller.abort();
-  }, controller.signal);
+  }, controller.signal));
   expect(result.runOutcome?.execution).toBe(ending);
+  if (ending === "blocked") {
+    expect(f.events.filter(event => event.type === "tool_call" && event.name === "resize_map" && !event.result.ok)).not.toHaveLength(0);
+    expect(f.events.find(event => event.type === "tool_call" && event.name === "resize_map" && !event.result.ok)).toMatchObject({
+      args: { width: 1, height: 1 }, result: { ok: false },
+    });
+  }
   // When actual application satisfies the requirement after the genuine stop.
   const applied = await applyProposedProject(f.session.getProposedProject(), { source: "agent", summary: "Resize", toolNames: ["resize_map"] });
   if (!applied.ok) throw new Error(applied.issue);
@@ -98,4 +148,7 @@ it.each(["blocked", "failed", "cancelled"] as const)("preserves genuine %s execu
   await f.session.proveAppliedRevision();
   // Then satisfaction and persistence do not erase the independent execution failure/cancellation/block.
   expect(result.runOutcome).toEqual({ execution: ending, goal: "satisfied", delivery: "persisted-verified" });
+  expect(f.session.getAcceptanceSnapshot()?.items.map(item => ({ id: item.id, required: item.required, status: item.status }))).toEqual([
+    { id: "request-1:source:0", required: true, status: "verified" }, { id: "size", required: true, status: "verified" },
+  ]);
 });

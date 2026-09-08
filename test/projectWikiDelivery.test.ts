@@ -46,6 +46,10 @@ function localStore() {
 
 // Captured world-authoring source remains uncovered: wiki delivery alone is not goal proof.
 function agreement(f: ReturnType<typeof fixture>, result: TurnResult, expected: NonNullable<TurnResult["runOutcome"]>) {
+  expect(f.session.getAcceptanceSnapshot()?.items).toMatchObject([{ id: "request-1:source:0", required: true,
+    coverage: "uncovered", status: "blocked", source: { text: "Use contact battles" },
+    sourceSpan: { start: 0, end: 19, quote: "Use contact battles" }, evidence: [] }]);
+  expect(f.session.getAcceptanceSnapshot()?.items).toHaveLength(1);
   expect(result.runOutcome).toEqual(expected);
   expect(f.session.getRunOutcome()).toEqual(expected);
   expect(f.session.getHarnessSnapshot().runOutcome).toEqual(expected);
@@ -63,7 +67,7 @@ it("a real wiki write preceding a checkpoint failure is applied, not no-change",
   expect(store.hasUnsavedChanges()).toBe(true);
   expect(f.authored).not.toHaveBeenCalled();
   expect(result.stoppedReason).toBe("error");
-  agreement(f, result, { execution: "failed", goal: "unassessed", delivery: "applied" });
+  agreement(f, result, { execution: "failed", goal: "incomplete", delivery: "applied" });
 });
 
 it("retains the real apply when cancellation happens in the live store subscriber", async () => {
@@ -75,7 +79,7 @@ it("retains the real apply when cancellation happens in the live store subscribe
     const result = await f.run(controller.signal);
     expect(store.getCurrent().world?.entities[0]?.id).toBe("w_ultra");
     expect(f.authored).not.toHaveBeenCalled();
-    agreement(f, result, { execution: "cancelled", goal: "unassessed", delivery: "applied" });
+    agreement(f, result, { execution: "cancelled", goal: "incomplete", delivery: "applied" });
   } finally { unsubscribe(); }
 });
 
@@ -86,7 +90,7 @@ it("owns history backfill even when its checkpoint fails before current extracti
   const result = await f.run();
   expect(extract).toHaveBeenCalledTimes(1);
   expect(store.getCurrent().world?.entities[0]?.wiki?.sources[0]?.id).toBe("old-user");
-  agreement(f, result, { execution: "failed", goal: "unassessed", delivery: "applied" });
+  agreement(f, result, { execution: "failed", goal: "incomplete", delivery: "applied" });
 });
 
 it("keeps empty extraction no-change without requiring an unloaded save", async () => {
@@ -128,7 +132,7 @@ it.each(["human-edit", "cancellation"])("retains the accepted wiki version when 
     return saved;
   } });
   const result = await f.run(controller.signal);
-  agreement(f, result, { execution: afterSave === "cancellation" ? "cancelled" : "blocked", goal: afterSave === "cancellation" ? "unassessed" : "incomplete", delivery: "persisted" });
+  agreement(f, result, { execution: afterSave === "cancellation" ? "cancelled" : "blocked", goal: "incomplete", delivery: "persisted" });
   expect(f.session.getRunEndProof()?.verified ?? false).toBe(false);
   if (afterSave === "human-edit") {
     expect(store.hasUnsavedChanges()).toBe(true);
@@ -157,7 +161,7 @@ it.each(["human-edit", "cancellation"])("retains an accepted wiki retry without 
   });
   const proof = await f.session.proveAppliedRevision(event => f.events.push(event), controller.signal);
   expect(proof).toMatchObject({ status: "failed", verified: false, reason: afterSave === "human-edit" ? "stale" : "cancelled" });
-  agreement(f, result, { execution: afterSave === "human-edit" ? "failed" : "cancelled", goal: "unassessed", delivery: "persisted" });
+  agreement(f, result, { execution: afterSave === "human-edit" ? "failed" : "cancelled", goal: "incomplete", delivery: "persisted" });
 });
 
 it("does not own a previous wiki write or its clean-flush receipt on empty extraction", async () => {

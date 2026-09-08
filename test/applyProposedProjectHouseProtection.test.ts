@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AssistantSession, type SessionEvent } from "@/ai/assistantSession";
-import type { ChatResult } from "@/ai/llmClient";
+import { LlmError, type ChatResult } from "@/ai/llmClient";
+import { clearTimeout, setTimeout } from "node:timers";
+import { setImmediate } from "node:timers/promises";
 import * as history from "@/editor/mapEditHistory";
 import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
 import { serialize } from "@/project/io";
@@ -19,7 +21,20 @@ beforeEach(() => {
   history.resetMapEditHistory();
 });
 
-afterEach(() => {
+const ownedRuns = new Set<{ controller: AbortController; pending: Promise<unknown> }>();
+async function bounded<T>(pending: Promise<T>, controller?: AbortController): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([pending, new Promise<never>((_, reject) => {
+      timer = setTimeout(() => { controller?.abort(); reject(new Error("House fixture completion deadline")); }, 10_000);
+    })]);
+  } finally { clearTimeout(timer); }
+}
+
+afterEach(async () => {
+  for (const run of ownedRuns) run.controller.abort();
+  await bounded(Promise.all([...ownedRuns].map(run => run.pending)));
+  ownedRuns.clear();
   vi.restoreAllMocks();
   vi.unstubAllEnvs();
 });
@@ -150,18 +165,23 @@ describe("real autonomous milestone application", () => {
     const project = store.getCurrent();
     const events: SessionEvent[] = [];
     const observed = observeApplication();
-    const goal = "Set the title";
+    const goal = 'Set the title to "AI title"';
     const plan = { action: "new_plan", goal, layers: [{ title: "Title", items: [{
       title: "Title", instruction: "set_title_screen", successTools: ["set_title_screen"],
     }] }] };
     let wrote = false;
     const session = new AssistantSession(project, {
       config: { authMode: "apiKey", agentMode: "auto", baseUrl: "x", model: "test", apiKey: "test", maxToolCalls: 4, maxTokens: 1024 },
-      declareIntent: fixedDeclarer({ mode: "modify", needsPlan: true, tools: ["set_title_screen"] }),
-      yieldToUi: async () => {},
+      declareIntent: fixedDeclarer({ mode: "modify", needsPlan: true, tools: ["set_title_screen"], requestRequirements: { entries: [{
+        source: [{ start: 0, end: goal.length, quote: goal }],
+        criteria: [{ kind: "valueEquals", subject: { kind: "project" }, path: ["meta", "title"], value: "AI title" }],
+        bindings: [{ source: { start: goal.indexOf('"'), end: goal.length, quote: '"AI title"' },
+          role: "value", criterionIndex: 0, fieldPath: ["value"] }],
+      }] } }),
+      yieldToUi: () => setImmediate(),
       chat: async (_config, request): Promise<ChatResult> => {
         if (!request.tools?.length) return { message: { role: "assistant", content: JSON.stringify(plan) }, finishReason: "stop" };
-        if (wrote) return { message: { role: "assistant", content: "Done" }, finishReason: "stop" };
+        if (wrote) throw new LlmError("Unexpected house fixture transport exhaustion", 401);
         wrote = true;
         return { message: { role: "assistant", content: null, tool_calls: [{
           id: "title", type: "function", function: { name: "set_title_screen", arguments: JSON.stringify({ title: "AI title" }) },
@@ -171,8 +191,10 @@ describe("real autonomous milestone application", () => {
     let accepted = project;
     let acceptedBytes = serialize(project);
     let successfulWrite = false;
-    const result = await session.sendUserMessage(goal, (event) => {
+    const controller = new AbortController();
+    const pending = session.sendUserMessage(goal, (event) => {
       events.push(event);
+      if (event.type === "proposal_paused" && scenario !== "unchanged") controller.abort();
       // The exact tool completion signal occurs after the detached write, before milestone apply.
       if (event.type !== "tool_call" || event.name !== "set_title_screen" || !event.result.ok) return;
       successfulWrite = true;
@@ -184,21 +206,32 @@ describe("real autonomous milestone application", () => {
       }, { scope: "project", origin: "human" });
       accepted = store.getCurrent();
       acceptedBytes = serialize(accepted);
-    }, undefined, { autonomous: true });
-
-    expect(successfulWrite).toBe(true);
-    expect(result.error).toBeUndefined();
-    if (scenario === "unchanged") {
-      expect(events.filter((event) => event.type === "milestone_applied")).toHaveLength(1);
-      expect(result.appliedCalls?.map((call) => call.name)).toEqual(["set_title_screen"]);
-      expect(store.getCurrent().meta?.title).toBe("AI title");
-      expect(observed.commit).toHaveBeenCalledTimes(1);
-      expect(history.getMapEditHistoryEntries()).toHaveLength(1);
-    } else {
-      expect(events.filter((event) => event.type === "proposal_paused")).toHaveLength(1);
-      expect(events.filter((event) => event.type === "milestone_applied")).toHaveLength(0);
-      expect(result.appliedCalls ?? []).toHaveLength(0);
-      expectNoApplication(observed, accepted, acceptedBytes);
-    }
+    }, controller.signal, { autonomous: true });
+    const run = { controller, pending };
+    ownedRuns.add(run);
+    try {
+      const result = await bounded(pending, controller);
+      expect(successfulWrite).toBe(true);
+      expect(result.error).toBeUndefined();
+      expect(events.filter(event => event.type === "tool_call" && event.name === "set_title_screen")).toHaveLength(1);
+      if (scenario === "unchanged") {
+        expect(result.runOutcome).toMatchObject({ execution: "response-final", goal: "satisfied" });
+        expect(events.filter((event) => event.type === "milestone_applied")).toHaveLength(1);
+        expect(result.appliedCalls?.map((call) => call.name)).toEqual(["set_title_screen"]);
+        expect(store.getCurrent().meta?.title).toBe("AI title");
+        expect(observed.commit).toHaveBeenCalledTimes(1);
+        expect(observed.snapshot).toHaveBeenCalledTimes(1);
+        expect(history.getMapEditHistoryEntries()).toHaveLength(1);
+      } else {
+        expect(result.stoppedReason).toBe("aborted");
+        expect(result.runOutcome?.execution).toBe("cancelled");
+        const pauses = events.filter(event => event.type === "proposal_paused");
+        expect(pauses).toHaveLength(1);
+        expect(pauses[0]?.reason).toBeTruthy();
+        expect(events.filter((event) => event.type === "milestone_applied")).toHaveLength(0);
+        expect(result.appliedCalls ?? []).toHaveLength(0);
+        expectNoApplication(observed, accepted, acceptedBytes);
+      }
+    } finally { controller.abort(); await bounded(pending); ownedRuns.delete(run); }
   });
 });

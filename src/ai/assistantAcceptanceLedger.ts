@@ -45,9 +45,20 @@ export class AssistantAcceptanceLedger {
     const request = { ...createRequestSource(requestId, rawInstruction), baseline: structuredClone(baseline), authoring, source };
     this.requests.set(requestId, request);
     if (!authoring) return;
-    for (const unit of request.units) this.promises.set(unit.id, {
-      id: unit.id, title: unit.source.quote, criteria: null, required: true,
-      baseline: request.baseline, source, sourceUnit: unit,
+    const captured = request.units.map(unit => {
+      this.promises.set(unit.id, {
+        id: unit.id, title: unit.source.quote, criteria: null, required: true,
+        baseline: request.baseline, source, sourceUnit: unit,
+      });
+      return Object.freeze({ id: unit.id, title: unit.source.quote, required: true, source,
+        sourceSpan: Object.freeze({ ...unit.source }), coverage: unit.coverage, status: "blocked" as const,
+        reason: "Request source coverage unresolved", evidence: Object.freeze([]),
+      });
+    });
+    // Capture changes the required denominator even if preparation never completes.
+    // Keep assessed evidence/history intact; only the new unresolved rows need publication.
+    if (captured.length) this.snapshot = Object.freeze({ ...this.snapshot, status: "blocked",
+      items: Object.freeze([...this.snapshot.items, ...captured]),
     });
   }
 

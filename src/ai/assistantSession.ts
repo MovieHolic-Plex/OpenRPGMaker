@@ -2032,8 +2032,9 @@ export class AssistantSession {
       this.acceptanceRequestSource = { requestId: this.currentRequestId, text: instruction,
         scope: this.requestScope ? structuredClone(this.requestScope) : null };
       this.adoptAcceptance([]);
-      this.acceptance?.startRequest(this.currentRequestId, instruction, this.acceptanceRequestBaseline, mode !== "ask", this.requestScope);
+      // Existing-work routing must not mistake this request's own new source for a continuation.
       this.requestRecoveryFacts.set(this.currentRequestId, this.captureIntentFacts(instruction, this.requestScope));
+      this.acceptance?.startRequest(this.currentRequestId, instruction, this.acceptanceRequestBaseline, mode !== "ask", this.requestScope);
       this.pushAudit({ kind: "status", text: `request:source ${JSON.stringify(this.acceptanceRequestSource)}` });
     } else {
       const request = this.acceptance?.getRequests().find(source => source.requestId === this.currentRequestId);
@@ -2060,7 +2061,10 @@ export class AssistantSession {
     };
     try {
       if (startsGoal) emit({ type: "acceptance", snapshot: null });
-      this.publishAcceptance(emit);
+      // Source capture is authoritative before preparation; domain evaluation still
+      // waits for requestPrepared. Publish the ledger's immutable captured snapshot.
+      const captured = this.getAcceptanceSnapshot();
+      if (captured) emit({ type: "acceptance", snapshot: captured });
       const first = await this.executeUserTurn(text, emit, signal, turnOptions);
       if (owner !== this.runResult) return retired();
       const last = this.milestoneAutoApply && !this.lastTurnPlanOnly && !this.isAnswerOnlyTurn()

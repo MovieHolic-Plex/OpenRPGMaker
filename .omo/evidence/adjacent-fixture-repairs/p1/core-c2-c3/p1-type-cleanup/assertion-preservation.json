@@ -1,0 +1,12 @@
+[
+  {
+    "file": "test/aiOutcomeEntryOwnership.test.ts",
+    "matcherCount": 25,
+    "allMatchersAndExpectedArgumentsUnchanged": true
+  },
+  {
+    "file": "test/assistantBatchCompletion.test.ts",
+    "matcherCount": 48,
+    "allMatchersAndExpectedArgumentsUnchanged": true
+  }
+]

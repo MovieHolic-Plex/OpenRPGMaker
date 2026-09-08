@@ -47,7 +47,10 @@ it("gives an already queued user message precedence before any tool-budget work"
   expect(result.stoppedReason).toBe("final");
   expect(result.execution?.state).toBe("queued");
   expect(session.getAuditEntries().filter(entry => entry.kind === "tool")).toEqual([]);
-  expect(result.runOutcome).toEqual({ execution: "awaiting-user", goal: "unassessed", delivery: "no-change" });
+  expect(result.runOutcome).toEqual({ execution: "awaiting-user", goal: "incomplete", delivery: "no-change" });
+  expect(session.getAcceptanceSnapshot()?.items).toMatchObject([{ id: "request-1:source:0", required: true,
+    coverage: "uncovered", status: "blocked", source: { text: "Inspect" }, sourceSpan: { start: 0, end: 7, quote: "Inspect" } }]);
+  expect(session.getAcceptanceSnapshot()?.items).toHaveLength(1);
 });
 
 it("projects a recovered retry without inventing application", async () => {

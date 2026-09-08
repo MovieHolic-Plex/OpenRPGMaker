@@ -15,8 +15,17 @@ and mutable result/recap owners. There is no second scheduler or completion ledg
   `goalAction: "new-goal"` (except explicit Ask) archives the prior immutable
   assessment and source inventory, retires its draft, domain/extraction/retry state,
   and rebases using main's store-backed versus detached accepted-baseline rule.
-  Already applied content is retained. Captured but unprepared source is not a pass:
-  a failed new-goal preparation remains unassessed and cannot schedule completion.
+  Already applied content is retained. Required source rows enter the ledger's current
+  immutable snapshot at capture, before preparation or declaration can fail or cancel
+  (including an already-aborted entry). Their unresolved coverage makes the current
+  goal incomplete; fresh entry cannot borrow an older satisfied denominator, and a
+  nonempty authoring new-goal is not unassessed. Capture appends only unresolved rows:
+  it does not reevaluate prior evidence, mutate old snapshots/results/receipts, or
+  schedule completion. Empty instructions and explicit Ask add no required rows and
+  retain their actual unassessed or prior-assessment contract. Normal domain evaluation
+  still waits for preparation; getters remain read-only. Regression:
+  `aiOutcomeEntryOwnership.test.ts`, `aiNewGoalEarlyOwnership.test.ts`, and
+  `assistantAcceptanceSourceIntegration.test.ts`.
 - Ordinary additions stay inside the active goal. Their source, volume and domain
   obligations are additive with request-owned baselines. Older uncovered source can
   recover only inside that goal. Archived requests never become a recovery queue.

@@ -1,0 +1,10 @@
+{
+  "files": {
+    "aiOutcomeEntryOwnership.test.ts": 18,
+    "assistantBatchCompletion.test.ts": 8
+  },
+  "passed": 26,
+  "failed": 0,
+  "skippedTodo": 0,
+  "exactCompleteFiles": true
+}
