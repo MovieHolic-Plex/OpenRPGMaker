@@ -1,0 +1,58 @@
+[
+  {
+    "test": "aiNewGoalDraftRetirement.test.ts::new goal with wiki entry failure must not apply the cancelled prior goal draft",
+    "baselineStatus": "failed",
+    "exactFailureMessagesEqual": true,
+    "failureMessages": [
+      "AssertionError: expected { execution: 'failed', …(2) } to deeply equal { execution: 'failed', …(2) }\n    at /home/main/z-project/rpg-zzu-unbounded-planner-owner-01a07570/test/aiNewGoalDraftRetirement.test.ts:100:36\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+    ]
+  },
+  {
+    "test": "aiNewGoalDraftRetirement.test.ts::new goal with intent entry failure must not apply the cancelled prior goal draft",
+    "baselineStatus": "failed",
+    "exactFailureMessagesEqual": true,
+    "failureMessages": [
+      "AssertionError: expected { execution: 'failed', …(2) } to deeply equal { execution: 'failed', …(2) }\n    at /home/main/z-project/rpg-zzu-unbounded-planner-owner-01a07570/test/aiNewGoalDraftRetirement.test.ts:100:36\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+    ]
+  },
+  {
+    "test": "aiNewGoalDraftRetirement.test.ts::cancels the new owner at wiki without retaining prior authority or payload",
+    "baselineStatus": "failed",
+    "exactFailureMessagesEqual": true,
+    "failureMessages": [
+      "AssertionError: expected { execution: 'cancelled', …(2) } to deeply equal { execution: 'cancelled', …(2) }\n    at /home/main/z-project/rpg-zzu-unbounded-planner-owner-01a07570/test/aiNewGoalDraftRetirement.test.ts:166:39\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+    ]
+  },
+  {
+    "test": "aiNewGoalDraftRetirement.test.ts::cancels the new owner at intent without retaining prior authority or payload",
+    "baselineStatus": "failed",
+    "exactFailureMessagesEqual": true,
+    "failureMessages": [
+      "AssertionError: expected { execution: 'cancelled', …(2) } to deeply equal { execution: 'cancelled', …(2) }\n    at /home/main/z-project/rpg-zzu-unbounded-planner-owner-01a07570/test/aiNewGoalDraftRetirement.test.ts:166:39\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+    ]
+  },
+  {
+    "test": "aiNewGoalDraftRetirement.test.ts::archives applied-plus-pending history before rebase, preserves applied content and only applies new disjoint work",
+    "baselineStatus": "failed",
+    "exactFailureMessagesEqual": true,
+    "failureMessages": [
+      "AssertionError: expected { id: 'acceptance-2', …(3) } to be null\n    at /home/main/z-project/rpg-zzu-unbounded-planner-owner-01a07570/test/aiNewGoalDraftRetirement.test.ts:234:45\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+    ]
+  },
+  {
+    "test": "aiNewGoalDraftRetirement.test.ts::retires the old draft but preserves an actual current-owner wiki apply before checkpoint failure",
+    "baselineStatus": "failed",
+    "exactFailureMessagesEqual": true,
+    "failureMessages": [
+      "AssertionError: expected { execution: 'failed', …(2) } to deeply equal { execution: 'failed', …(2) }\n    at /home/main/z-project/rpg-zzu-unbounded-planner-owner-01a07570/test/aiNewGoalDraftRetirement.test.ts:277:37\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+    ]
+  },
+  {
+    "test": "assistantCoreIntegration.test.ts::main request/apply/result seams explicit new goal retires old source/domain/draft before held preparation (fail=true)",
+    "baselineStatus": "failed",
+    "exactFailureMessagesEqual": true,
+    "failureMessages": [
+      "AssertionError: expected { execution: 'failed', …(2) } to match object { execution: 'failed', …(2) }\n    at Proxy.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/expect/dist/index.js:1155:10)\n    at Proxy.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/expect/dist/index.js:1029:14)\n    at Proxy.methodWrapper (file:///home/main/z-project/rpg-zzu/node_modules/chai/index.js:1686:25)\n    at /home/main/z-project/rpg-zzu-unbounded-planner-owner-01a07570/test/assistantCoreIntegration.test.ts:168:33\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+    ]
+  }
+]

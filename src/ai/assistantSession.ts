@@ -118,6 +118,7 @@ import {
   isOhMyPiWorkerCrash,
   isRetryableLlmError,
   LLM_RETRY_BACKOFF_MS,
+  LlmAbortError,
   LlmError,
   loadAiConfig,
   type AiConfig,
@@ -1397,6 +1398,12 @@ export class AssistantSession {
     return !this.isAnswerOnlyTurn() && (this.milestoneAutoApply || this.spatialAcceptanceRequired() || (this.workPlan?.acceptance?.length ?? 0) > 0);
   }
 
+  /** Request identity alone does not retire an older retry of the same request. */
+  private captureInvocationOwner(): () => boolean {
+    const owner = this.runResult, generation = this.executionGeneration;
+    return () => owner === this.runResult && generation === this.executionGeneration;
+  }
+
   private userBoundary(signal = this.runSignal): "aborted" | "queued" | "project-switch" | null {
     if (this.runProjectIdentity !== null && store.getProjectIdentity().id !== this.runProjectIdentity) return "project-switch";
     if (signal?.aborted) return "aborted";
@@ -1433,7 +1440,7 @@ export class AssistantSession {
   }
 
   private async recoverRequest(onEvent: (event: SessionEvent) => void, signal?: AbortSignal): Promise<void> {
-    const owner = this.runResult;
+    const owns = this.captureInvocationOwner();
     const modeConflict = this.hasQuestionAuthoringConflict();
     const requests = this.acceptance?.getRequests() ?? [];
     const uncovered = (source: RequestSource | undefined): boolean => source?.authoring !== false
@@ -1451,7 +1458,7 @@ export class AssistantSession {
         ...(pending ? { extractionRepair: pending.repair } : {}),
         ...(modeConflict ? { intentModeRepair: { requestId: request.requestId, previousMode: "question" as const,
           reason: hasUnresolvedWriteConstraint([request], true) ? "unresolved-source-constraints" as const : "authored-request-criteria" as const } } : {}) }, signal);
-      if (owner !== this.runResult || this.userBoundary(signal)) return;
+      if (!owns() || this.userBoundary(signal)) return;
       if (result.failure?.kind === "provider") throw new LlmError(result.failure.message, result.failure.status);
       this.acceptance?.adoptRequestRequirements(request.requestId, result.intent.requestRequirements);
       const rewards = result.intent.npcRewards;
@@ -1963,9 +1970,10 @@ export class AssistantSession {
       && (opts?.goalAction === "resume" || (mode === "do" && this.turnComposerMode === "do"
         && (this.executionAuthorized || (this.lastTurnPlanOnly && this.autonomy()?.planOnly === true)) && isContinuationText(instruction)));
     const retainingRequest = continuing || (rawContinuation && mode !== "do" && this.currentRequestId !== null);
-    const owner = this.runResult = { current: null };
+    this.runResult = { current: null };
     this.executionGeneration += 1;
-    const emit = (event: SessionEvent): void => { if (this.runResult === owner) onEvent(event); };
+    const owns = this.captureInvocationOwner();
+    const emit = (event: SessionEvent): void => { if (owns()) onEvent(event); };
     this.runSubscriber = emit;
     this.runRecapAuditIndex = null;
     this.turnComposerMode = mode;
@@ -2066,20 +2074,20 @@ export class AssistantSession {
       const captured = this.getAcceptanceSnapshot();
       if (captured) emit({ type: "acceptance", snapshot: captured });
       const first = await this.executeUserTurn(text, emit, signal, turnOptions);
-      if (owner !== this.runResult) return retired();
+      if (!owns()) return retired();
       const last = this.milestoneAutoApply && !this.lastTurnPlanOnly && !this.isAnswerOnlyTurn()
         ? await this.runAutonomousDriver(first, emit, signal) : first;
-      if (owner !== this.runResult) return retired();
-      return this.finishRunRecap(last, startedAt, usageBefore, auditFrom, emit, { owns: () => owner === this.runResult, retired });
+      if (!owns()) return retired();
+      return this.finishRunRecap(last, startedAt, usageBefore, auditFrom, emit, { owns, retired });
     } catch (cause) {
-      if (owner !== this.runResult) return retired();
+      if (!owns()) return retired();
       this.runExecution = this.userBoundary(signal) || isLlmAbortError(cause) ? "cancelled" : "failed";
       const error = cause instanceof Error ? cause.message : String(cause);
       this.pushAudit({ kind: "status", text: `turn-boundary-error ${error}` });
       return this.finishRunRecap(this.withTurnLedger({ assistantText: "", error,
         proposedCalls: this.finalizeProposals(this.turnProposals),
         stoppedReason: this.runExecution === "cancelled" ? "aborted" : "error",
-      }), startedAt, usageBefore, auditFrom, emit, { owns: () => owner === this.runResult, retired });
+      }), startedAt, usageBefore, auditFrom, emit, { owns, retired });
     }
   }
 
@@ -2092,12 +2100,12 @@ export class AssistantSession {
     onEvent: (event: SessionEvent) => void,
     signal?: AbortSignal,
   ): Promise<TurnResult> {
-    const owner = this.runResult;
+    const owns = this.captureInvocationOwner();
     let last = first;
     for (;;) {
       while (this.shouldAutoContinue(last, onEvent, signal)) {
         await this.yieldForUi(signal);
-        if (owner !== this.runResult) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
+        if (!owns()) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
         if (this.userBoundary(signal)) break;
         this.autoRunSteps += 1;
         this.workPlanAutoStepsThisUserMessage = 0;
@@ -2108,21 +2116,22 @@ export class AssistantSession {
           try {
             await this.recoverRequest(onEvent, signal);
           } catch (cause) {
-            if (owner !== this.runResult) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
+            if (!owns()) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
             if (this.userBoundary(signal)) break;
             this.recordProviderBlocker(cause, onEvent);
             this.lastTurnFailed = true;
             return this.withTurnLedger({ ...last, stoppedReason: "error", error: this.execution?.blocker?.evidence.details });
           }
         }
-        if (owner !== this.runResult) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
+        if (!owns()) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
         if (this.userBoundary(signal)) break;
         if (this.pendingNpcRewardExtractions.size > 0 || this.hasQuestionAuthoringConflict()) continue;
         this.injectWorkPlanOrchestration();
-        last = this.withTurnLedger(this.withWorkPlanResult(await this.runTurnLoop(onEvent, signal)));
-        if (owner !== this.runResult) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
+        const result = await this.runTurnLoop(onEvent, signal);
+        if (!owns()) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
+        last = this.withTurnLedger(this.withWorkPlanResult(result));
       }
-      if (owner !== this.runResult) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
+      if (!owns()) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
       const boundary = this.userBoundary(signal);
       if (boundary) {
         this.segmentDisposition = { kind: "user-boundary", reason: boundary };
@@ -2130,7 +2139,7 @@ export class AssistantSession {
         return this.withTurnLedger({ ...last, stoppedReason: boundary === "queued" ? "final" : "aborted" });
       }
       if (!this.isAnswerOnlyTurn() && last.stoppedReason !== "aborted" && last.stoppedReason !== "error" && !this.acceptanceOpen()) await this.maybeRunEndProof(onEvent, signal);
-      if (owner !== this.runResult) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
+      if (!owns()) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
       if (this.execution?.state === "external-blocker") return this.withTurnLedger({ ...last, stoppedReason: "error", error: this.execution.blocker?.evidence.details ?? last.error });
       if (this.shouldAutoContinue(last, onEvent, signal)) continue;
       return this.withTurnLedger(last);
@@ -2163,7 +2172,7 @@ export class AssistantSession {
     signal?: AbortSignal,
     options: SessionTurnOptions = {},
   ): Promise<TurnResult> {
-    const owner = this.runResult;
+    const owns = this.captureInvocationOwner();
     this.runExecution = "response-final";
     this.acceptanceApplyPending = false;
     // 토큰 보정: 직전 턴들의 usage 관측으로 문자 예산이 달라졌으면 시스템 프롬프트를 재조립한다.
@@ -2181,7 +2190,7 @@ export class AssistantSession {
       onEvent({ type: "status", text: transition });
     }
     const userContent = await this.buildUserTurnContent(text);
-    if (owner !== this.runResult || this.userBoundary(signal)) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
+    if (!owns() || this.userBoundary(signal)) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
     this.messages.push({ role: "user", content: userContent });
     this.pushAudit({ kind: "user", text, context: turnContext });
     // 사용자 발화만 따로 든다. `[컨텍스트]` footer 는 코드가 아는 사실이라 모델에는 그대로 가지만,
@@ -2198,7 +2207,6 @@ export class AssistantSession {
     this.lastTurnPlanOnly = false;
     this.turnIsDriverContinue = options.driverContinue === true;
     if (this.prepareProjectWiki && !this.turnIsDriverContinue) {
-      const owner = this.runResult;
       try {
         const world = await this.prepareProjectWiki({
           text: instruction,
@@ -2206,19 +2214,19 @@ export class AssistantSession {
           composerMode: this.turnComposerMode,
           signal,
           onDelivery: (milestone) => {
-            if (owner !== this.runResult) return;
+            if (!owns() || this.userBoundary(signal)) return;
             if (milestone.kind === "applied") {
-              this.wikiDelivery = { owner, project: milestone.project, receipt: null };
+              this.wikiDelivery = { owner: this.runResult, project: milestone.project, receipt: null };
               this.lastAppliedProject = null;
               this.runReceipt = null;
-            } else if (this.wikiDelivery?.owner === owner && this.wikiDelivery.project === milestone.project
+            } else if (this.wikiDelivery?.owner === this.runResult && this.wikiDelivery.project === milestone.project
               && store.isPersistenceReceiptForProject(milestone.receipt, milestone.project)) {
               this.wikiDelivery.receipt = milestone.receipt;
             }
             this.publishRunOutcome();
           },
         });
-        if (owner !== this.runResult || this.userBoundary(signal)) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
+        if (!owns() || this.userBoundary(signal)) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
         if (world) {
           this.baselineProject.world = structuredClone(world);
           this.ctx.project.world = structuredClone(world);
@@ -2228,7 +2236,7 @@ export class AssistantSession {
         }
         this.rebuildSystemPrompt();
       } catch (cause) {
-        if (owner !== this.runResult) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
+        if (!owns() || this.userBoundary(signal)) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
         const error = cause instanceof Error ? cause.message : String(cause);
         const stoppedReason = signal?.aborted ? "aborted" : "error";
         this.runExecution = signal?.aborted ? "cancelled" : "failed";
@@ -2244,7 +2252,7 @@ export class AssistantSession {
     const declared = this.turnIsDriverContinue && this.requestIntent
       ? { ...this.requestIntent, source: "continuation" as const }
       : await this.declareTurnIntent(instruction, onEvent, signal);
-    if (owner !== this.runResult || this.userBoundary(signal)) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
+    if (!owns() || this.userBoundary(signal)) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
     if (this.execution?.state === "external-blocker") return { assistantText: "", proposedCalls: [], stoppedReason: "error", error: this.execution.blocker?.evidence.details };
     const intent = this.applyComposerModeToIntent(declared);
     if (!initialDeclaration) this.pushAudit({ kind: "status", text: formatIntentAudit(intent, 0) });
@@ -2421,7 +2429,9 @@ export class AssistantSession {
     ) {
       try {
         await this.runOrchestratorPlanner(text, onEvent, signal);
+        if (!owns() || this.userBoundary(signal)) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
       } catch (cause) {
+        if (!owns() || this.userBoundary(signal)) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
         // 플래너 라운드 중 사용자 중단 — 본문 루프의 중단 계약(stoppedReason "aborted")과
         // 동일하게 반환한다. agentMode=auto 로 플래너가 상시 돌면서 이 경로가 도달 가능해졌다.
         if (isLlmAbortError(cause) || signal?.aborted) {
@@ -2446,9 +2456,10 @@ export class AssistantSession {
 
     try {
       const result = await this.runTurnLoop(onEvent, signal);
+      if (!owns()) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
       return this.withTurnLedger(this.withWorkPlanResult(result));
     } finally {
-      this.removeOrchestrationMessages();
+      if (owns()) this.removeOrchestrationMessages();
     }
   }
 
@@ -2483,6 +2494,7 @@ export class AssistantSession {
     onEvent: (event: SessionEvent) => void,
     signal?: AbortSignal,
   ): Promise<IntentDeclaration> {
+    const owns = this.captureInvocationOwner();
     if (!instruction) return emptyIntentDeclaration();
     const original = this.turnComposerMode !== "ask" ? this.requestRecoveryFacts.get(this.currentRequestId ?? "") : undefined;
     const facts = original?.userText === instruction ? original : this.captureIntentFacts(instruction, this.turnScope);
@@ -2500,6 +2512,7 @@ export class AssistantSession {
     }
     onEvent({ type: "status", text: "요청을 읽는 중…" });
     const outcome = await declareIntentCached(this.declareIntent, { ...facts, requestCoverage: this.acceptance?.getRequests() }, signal);
+    if (!owns() || this.userBoundary(signal)) return outcome.intent;
     if (!this.userBoundary(signal) && outcome.failure?.kind === "provider") {
       this.recordProviderBlocker(new LlmError(outcome.failure.message, outcome.failure.status), onEvent);
       this.lastTurnFailed = true;
@@ -2543,7 +2556,9 @@ export class AssistantSession {
     onEvent: (event: SessionEvent) => void,
     signal?: AbortSignal
   ): Promise<void> {
+    const owns = this.captureInvocationOwner();
     onEvent({ type: "status", text: "플래너(main LLM)가 작업 분해를 판단 중…" });
+    if (!owns() || this.userBoundary(signal)) return;
     this.pushAudit({ kind: "status", text: "planner:start" });
     const maps = Object.values(this.ctx.project.maps);
     // 맵 id 를 실어야 한다 — 이름만 있으면 열려 있지 않은 기존 맵을 지목할 방법이 없고,
@@ -2584,8 +2599,10 @@ export class AssistantSession {
         signal,
         false
       );
+      if (!owns() || this.userBoundary(signal)) return;
       raw = typeof result.message.content === "string" ? result.message.content : "";
     } catch (cause) {
+      if (!owns() || this.userBoundary(signal)) return;
       if (isLlmAbortError(cause) || signal?.aborted) throw cause;
       this.pushAudit({
         kind: "status",
@@ -3143,6 +3160,7 @@ export class AssistantSession {
   }
 
   private async noteSuccessfulTools(names: readonly string[], onEvent: (event: SessionEvent) => void): Promise<void> {
+    const owns = this.captureInvocationOwner();
     if (this.isAnswerOnlyTurn() || !this.workPlan || names.length === 0) return;
     const { completed, next, blocked } = advanceWorkPlanFromTools(this.workPlan, names, this.autoCompleteGate());
     const blockedKey = blocked ? `${blocked.item.id}::${blocked.reason}` : null;
@@ -3166,8 +3184,10 @@ export class AssistantSession {
       }
       // successTools 자동 완료 경로 — 마일스톤 자동 적용을 같은 단위로 트리거한다.
       await this.maybeAutoApplyMilestone(completed, onEvent);
+      if (!owns() || this.userBoundary() === "project-switch") return;
       // 레이어 검증 게이트(todo 5): 완료 항목이 속한 레이어가 끝났으면 canonical 테이블대로 검증.
       await this.sweepFinishedLayers(onEvent);
+      if (!owns() || this.userBoundary() === "project-switch") return;
       this.syncSuccessfulToolsToCurrentWorkItem();
     }
   }
@@ -3294,11 +3314,14 @@ export class AssistantSession {
     layer: LayerDescriptor,
     onEvent: (event: SessionEvent) => void
   ): Promise<void> {
+    const owns = this.captureInvocationOwner();
     const calls = selectVerificationCalls(layer, this.verificationHistory);
     const results: LayerVerdictInput[] = [];
     for (const call of calls) {
       this.emitToolStarted(onEvent, call.name, call.args);
       await this.yieldForUi();
+      // Finish the current owner's read-only batch on abort; never cross owners/projects.
+      if (!owns() || this.userBoundary() === "project-switch") return;
       const reason = harnessToolReason("verification", call.name);
       const result = runTool(this.ctx, call.name, call.args);
       // Advisory checks report problems but never donate success to another work item.
@@ -3341,6 +3364,7 @@ export class AssistantSession {
    * (markLayerVerified). 반환값이 없다 — 이 스윕은 런 제어에 관여하지 않는다.
    */
   private async sweepFinishedLayers(onEvent: (event: SessionEvent) => void): Promise<void> {
+    const owns = this.captureInvocationOwner();
     const plan = this.workPlan;
     if (!plan || !this.milestoneAutoApply) return;
     for (let li = 0; li < plan.layers.length; li += 1) {
@@ -3353,6 +3377,7 @@ export class AssistantSession {
         isFinal: li === plan.layers.length - 1,
         items: layer.items,
       }, onEvent);
+      if (!owns() || this.userBoundary() === "project-switch") return;
     }
   }
 
@@ -3635,8 +3660,9 @@ export class AssistantSession {
     this.acceptance?.resume();
     this.pushAudit({ kind: "status", text: "오류 후 재시도(retryLastTurn)" });
     try {
-      const first = this.withTurnLedger(await this.runTurnLoop(emit, signal));
+      const turn = await this.runTurnLoop(emit, signal);
       if (!owns()) return retired();
+      const first = this.withTurnLedger(turn);
       const result = this.milestoneAutoApply && !this.isAnswerOnlyTurn() && !this.lastTurnPlanOnly
         ? await this.runAutonomousDriver(first, emit, signal) : first;
       if (!owns()) return retired();
@@ -3805,6 +3831,7 @@ export class AssistantSession {
     signal: AbortSignal | undefined,
     force: boolean,
   ): Promise<CompactionOutcome> {
+    const owns = this.captureInvocationOwner();
     if (!force && this.compactionAttemptedThisTurn) {
       return { kind: "skipped", reason: "이번 턴에 요약을 이미 시도했습니다" };
     }
@@ -3835,6 +3862,7 @@ export class AssistantSession {
       const text = result.message.content;
       summary = typeof text === "string" && text.trim().length > 0 ? text.trim() : null;
     } catch (cause) {
+      if (!owns() || this.userBoundary(signal)) return { kind: "skipped", reason: "Request retired" };
       const reason = isLlmAbortError(cause) || signal?.aborted
         ? "사용자가 중단했습니다"
         : cause instanceof Error ? cause.message : String(cause);
@@ -3842,7 +3870,8 @@ export class AssistantSession {
       this.pushAudit({ kind: "status", text: `대화 압축 건너뜀: 요약 실패 — ${reason}` });
       return { kind: "skipped", reason: `요약 실패 — ${reason}` };
     }
-    if (signal?.aborted) {
+    if (!owns()) return { kind: "skipped", reason: "Request retired" };
+    if (this.userBoundary(signal)) {
       this.compactionAttemptedThisTurn = true;
       this.pushAudit({ kind: "status", text: "대화 압축 건너뜀: 사용자가 중단했습니다" });
       return { kind: "skipped", reason: "사용자가 중단했습니다" };
@@ -4304,8 +4333,10 @@ export class AssistantSession {
     signal?: AbortSignal,
     emitTokens = true
   ): Promise<ChatResult> {
+    const owns = this.captureInvocationOwner();
     let attempt = 0;
     while (true) {
+      if (!owns() || this.userBoundary(signal)) throw new LlmAbortError();
       let receivedStreamDelta = false;
       let emittedStreamDelta = false;
       const tokenGuard = emitTokens
@@ -4336,6 +4367,7 @@ export class AssistantSession {
         tokenGuard?.flush();
         return result;
       } catch (cause) {
+        if (!owns() || this.userBoundary(signal)) throw new LlmAbortError();
         const retryLimit = isOhMyPiWorkerCrash(cause) ? 1 : ASSISTANT_TURN_RETRY_ATTEMPTS;
         if (
           signal?.aborted ||
@@ -4358,7 +4390,7 @@ export class AssistantSession {
   }
 
   private async runTurnLoop(onEvent: (event: SessionEvent) => void, signal?: AbortSignal): Promise<TurnResult> {
-    const owner = this.runResult;
+    const owns = this.captureInvocationOwner();
     this.lastTurnFailed = false;
     this.runExecution = "response-final";
     this.segmentDisposition = { kind: "yield", reason: "rounds" };
@@ -4392,7 +4424,7 @@ export class AssistantSession {
     for (let round = 0; round < roundCap; round += 1) {
       if (this.execution) this.execution = { ...this.execution, rounds: round + 1 };
       if (this.milestoneAutoApply) this.emitExecution("running", onEvent);
-      if (owner !== this.runResult || this.userBoundary(signal)) {
+      if (!owns() || this.userBoundary(signal)) {
         this.runExecution = "cancelled";
         this.pushAudit({ kind: "status", text: "턴 중단(aborted): 사용자가 중단했습니다" });
         return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "aborted", error: "사용자가 중단했습니다" };
@@ -4417,6 +4449,7 @@ export class AssistantSession {
       // 컨텍스트 압축(요약)은 요청 조립보다 **먼저** 돈다: 대화 자체를 줄이지 못하면
       // 아래 문자 클램프가 오래된 assistant/tool 을 통째로 버려 기억이 소리 없이 사라진다.
       await this.maybeCompactConversation(onEvent, signal);
+      if (!owns() || this.userBoundary(signal)) return { assistantText, proposedCalls: [], stoppedReason: "aborted" };
       let requestMessages: ChatMessage[] = [];
       try {
         const rewardNote = this.npcRewardNote();
@@ -4444,16 +4477,17 @@ export class AssistantSession {
           signal,
           phase !== "execute"
         );
+        if (!owns() || this.userBoundary(signal)) return { assistantText, proposedCalls: [], stoppedReason: "aborted" };
         // Only exact originals delivered to the writer count at the existing read seam.
         this.originalContext!.observeDelivered(requestMessages, grounded.includedIds, this.readEvidence);
       } catch (cause) {
+        if (!owns()) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
         if (isLlmAbortError(cause) || signal?.aborted) {
           this.lastTurnFailed = false;
           this.pushAudit({ kind: "status", text: "턴 중단(aborted): 사용자가 중단했습니다" });
           this.runExecution = "cancelled";
           return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "aborted", error: "사용자가 중단했습니다" };
         }
-        if (owner !== this.runResult) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
         if (this.milestoneAutoApply) this.recordProviderBlocker(cause, onEvent);
         const rawError = cause instanceof Error ? cause.message : String(cause);
         const error = isRetryableLlmError(cause) && !isOhMyPiWorkerCrash(cause)
@@ -4464,7 +4498,7 @@ export class AssistantSession {
         this.pushAudit({ kind: "status", text: `턴 중단(error): ${error} · 출력 토큰 ~${spentOutputTokens}` });
         return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "error", error };
       }
-      if (owner !== this.runResult || this.userBoundary(signal)) return { assistantText, proposedCalls: [], stoppedReason: "aborted" };
+      if (!owns() || this.userBoundary(signal)) return { assistantText, proposedCalls: [], stoppedReason: "aborted" };
       spentOutputTokens += result.usage?.completion_tokens ?? estimateOutputTokens(result.message);
       // 문자↔토큰 보정 관측(usage 없으면 조용히 스킵). review 단계 요청에는 tools가 없다.
       this.recordPromptUsage(result, phase === "review" ? 0 : toolsChars, requestMessages);
@@ -4689,6 +4723,7 @@ export class AssistantSession {
       const batchReads: { name: string; args: Record<string, unknown>; result: ToolResult; callId: string }[] = [];
       // 각 tool_call 실행 → role:"tool" 메시지로 결과 반환.
       for (const call of toolCalls) {
+        if (!owns()) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
         const parsedCall = parseToolCall(call);
         const name = parsedCall.name;
         const split = splitToolCallReason(this.resolveToolCallArgs(name, parsedCall.args));
@@ -4698,13 +4733,14 @@ export class AssistantSession {
         if (typeof args.theme === "string" && args.theme.trim()) turnTheme = args.theme.trim();
         this.emitToolStarted(onEvent, name, args);
         await this.yieldForUi(signal);
+        if (!owns()) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
         if (tool?.mode === "write") writeToolAttempts += 1;
         // 프로토콜 보장: 이 호출에 대한 role:"tool" 응답을 반드시 남긴다. 응답 없이 라운드를 벗어나면
         // 세션의 영구 대화에 짝 없는 tool_calls 가 남아 **그 뒤 모든 턴**이 공급자 400 으로 죽는다
         // (실측 2026-08-30). 예외는 삼키지 않고 응답을 붙인 뒤 그대로 다시 던진다.
         let responded = false;
         const respond = (result: ToolResult): void => {
-          if (responded) return;
+          if (responded || !owns()) return;
           responded = true;
           this.messages.push({
             role: "tool",
@@ -4724,7 +4760,7 @@ export class AssistantSession {
             this.pushAudit({ kind: "status", text: `tool-args:missing-reason ${name}` });
           }
           const recordDependency = tool?.mode === "write" ? failedRecordReference(args, failedRecords) : undefined;
-          if (owner !== this.runResult || this.userBoundary(signal)) {
+          if (!owns() || this.userBoundary(signal)) {
             toolResult = deferredToolResult("user-boundary", "Request retired before execution");
           } else if (parsedCall.parseError !== null) {
             toolResult = invalidJsonArgsResult(name, call.function.arguments ?? "", parsedCall.parseError);
@@ -4755,7 +4791,9 @@ export class AssistantSession {
               };
             } else {
               const { runActionCombatTest } = await import("@/editor/actionCombatRuntimeProbe");
+              if (!owns() || this.userBoundary(signal)) return { assistantText, proposedCalls: [], stoppedReason: "aborted" };
               const receipt = await runActionCombatTest(this.ctx.project, { mapId: args.mapId, signal });
+              if (!owns() || this.userBoundary(signal)) return { assistantText, proposedCalls: [], stoppedReason: "aborted" };
               this.acceptance?.captureActionProof(receipt, this.ctx.project, args.mapId);
               toolResult = {
                 ok: true,
@@ -4799,6 +4837,7 @@ export class AssistantSession {
                 const completedId = completedWorkItemIdFromResult(toolResult);
                 const completedItem = completedId ? findWorkItemById(this.workPlan, completedId) : null;
                 if (completedItem) await this.maybeAutoApplyMilestone(completedItem, onEvent);
+                if (!owns()) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
                 // 레이어 검증 게이트(todo 5) — 명시 complete 경로도 같은 단위로 트리거한다.
                 if (completedItem) await this.sweepFinishedLayers(onEvent);
               }
@@ -4839,6 +4878,7 @@ export class AssistantSession {
               if (dedupeKey && toolResult.ok) this.turnWriteDedupe.set(dedupeKey, toolResult);
             }
           }
+          if (!owns()) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
           if (tool?.mode === "write" || name === "set_build_spec") {
             const target = toolRetryTarget(name, args);
             if (toolResult.ok) {
@@ -4970,6 +5010,7 @@ export class AssistantSession {
             }
           }
         } catch (cause) {
+          if (!owns()) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
           // 예상하지 못한 예외 — 이 호출의 응답을 먼저 남기고(짝 없는 tool_calls 로 세션을 오염하지 않는다)
           // 그대로 다시 던진다 — 턴 자체는 사용자에게 실패로 보이는 것이 맞다.
           const failure = cause instanceof Error ? cause.message : String(cause);
@@ -4984,6 +5025,7 @@ export class AssistantSession {
       }
 
       // 비전 주입: tool 메시지들 뒤에 이미지를 담은 user 메시지를 넣어 모델이 실제로 보게 한다.
+      if (!owns()) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
       // (OpenAI 순서 규약: assistant(tool_calls) → tool 응답들 → 그다음 다른 role 메시지)
       if (roundImages.length > 0) {
         const parts: ContentPart[] = [
@@ -5011,6 +5053,7 @@ export class AssistantSession {
       for (const read of batchReads) this.readEvidence.observeExecutedRead(read);
       // WorkPlan advance: successTools auto-complete OR complete/skip tools moved the cursor.
       await this.noteSuccessfulTools([...this.turnSuccessfulTools], onEvent);
+      if (!owns()) return { assistantText: "", proposedCalls: [], stoppedReason: "aborted" };
       const afterItemId = this.workPlan?.currentItemId ?? null;
       const advanced =
         Boolean(this.workPlan) &&

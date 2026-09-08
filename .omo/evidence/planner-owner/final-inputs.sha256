@@ -1,0 +1,3 @@
+c8275edc425e1a32f6b1257e1285a36d718ba4e07f06a34a130b2bbe557f60bb  src/ai/assistantSession.ts
+3cdf5a5d5ff35c92b68a4355fe012f622740ca616bc4de851709546efbb9c795  test/assistantAsyncOwnership.test.ts
+0585577d5f65bbfe7f9e9b0f094ce78c50ff74221c72b610d950dc7ac8f27a85  openwiki/assistant-async-ownership.md
