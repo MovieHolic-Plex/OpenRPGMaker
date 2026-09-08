@@ -315,8 +315,8 @@ export type Command =
   | { kind: "enterHeroName"; actorId: ActorId; maxLength: number; showInitialName: boolean }
   | { kind: "changeGold"; op: "=" | "+=" | "-="; amount: VariableOperand }
   | { kind: "changeItem"; itemId: ItemId; op: "=" | "+=" | "-="; amount: VariableOperand }
-  | { kind: "craftRecipe"; recipeId: string }
-  | { kind: "applyItemUpgrade"; upgradeId: string }
+  | { kind: "craftRecipe"; recipeId: string; resultVariableId?: string }
+  | { kind: "applyItemUpgrade"; upgradeId: string; resultVariableId?: string }
   | { kind: "equipTool"; itemId?: ItemId }
   | { kind: "openChest"; chestId?: string }
   | { kind: "changeFriendship"; npcKey?: string; delta: number }

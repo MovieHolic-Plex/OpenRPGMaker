@@ -47,7 +47,7 @@ import {
   resolveHaggleReserve,
   type HaggleSetup,
 } from "@/project/haggle";
-import { shopDayKey } from "@/project/shopPrice";
+import { resolveShopSellUnitPrice, shopDayKey } from "@/project/shopPrice";
 import type { ShopHaggleVisitState } from "@/project/economyValues";
 import type { StepResult } from "@/player/interpreter";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
@@ -513,7 +513,7 @@ export function handleShopTransaction(
       scene.syncRuntimeState();
       return { ok: false, status: "가진 개수가 부족합니다." };
     }
-    const listSell = sellPrice(item);
+    const listSell = resolveShopSellUnitPrice(store.getCurrent(), item.id, item.price);
     const unit = agreedPrice ?? listSell;
     if (unit < listSell || (item.price > listSell && unit >= item.price)) {
       scene.syncRuntimeState();

@@ -1,5 +1,5 @@
 import { changeGold, changeItemsAtomically, GOLD_MAX, setSwitch, type PlaySession } from "@/project/session";
-import { isItemQuantity, isPositiveItemQuantity, ITEM_QUANTITY_MAX, type ItemQuantityOperation } from "@/project/itemQuantities";
+import { isItemQuantity, isPositiveItemQuantity, type ItemQuantityOperation } from "@/project/itemQuantities";
 import type { BundleDefinition, BundleRewardDefinition, Project } from "@/project/types";
 
 type BundleFailureReason =
@@ -65,7 +65,7 @@ export function contributeBundle(
     [itemId]: nextContribution,
   };
   const completed = bundle.requirements.every((entry) => (nextProgress[entry.itemId] ?? 0) >= entry.count);
-  if (completed && !validBundleReward(project, session, bundle.reward)) {
+  if (completed && !validBundleReward(project, bundle.reward)) {
     return { ok: false, reason: "invalid-reward", bundleId, itemId };
   }
 
@@ -113,7 +113,7 @@ function validBundleRequirements(project: Project, bundle: BundleDefinition): bo
   });
 }
 
-function validBundleReward(project: Project, session: PlaySession, reward: BundleRewardDefinition | undefined): boolean {
+function validBundleReward(project: Project, reward: BundleRewardDefinition | undefined): boolean {
   if (!reward) return true;
   if (reward.gold !== undefined && (!isNonNegativeInteger(reward.gold) || reward.gold > GOLD_MAX)) return false;
   const itemIds = new Set(project.database.items.map((item) => item.id));
@@ -121,8 +121,7 @@ function validBundleReward(project: Project, session: PlaySession, reward: Bundl
   for (const entry of reward.itemRewards ?? []) {
     if (rewardedItemIds.has(entry.itemId) || !itemIds.has(entry.itemId) || !isPositiveItemQuantity(entry.count)) return false;
     rewardedItemIds.add(entry.itemId);
-    const current = session.inventory[entry.itemId] ?? 0;
-    if (!isItemQuantity(current) || current + entry.count > ITEM_QUANTITY_MAX) return false;
+    // Quantity preflight belongs to the atomic donation-then-reward batch above.
   }
   const switchIds = new Set(project.switches.map((entry) => entry.id));
   if (reward.switchId && !switchIds.has(reward.switchId)) return false;

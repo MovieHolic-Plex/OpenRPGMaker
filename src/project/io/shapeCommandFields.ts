@@ -100,9 +100,11 @@ function validateCommandShape(label: string, value: unknown): void {
       return;
     case "craftRecipe":
       requireString(`${label}.recipeId`, command.recipeId);
+      if (command.resultVariableId !== undefined) requireString(`${label}.resultVariableId`, command.resultVariableId);
       return;
     case "applyItemUpgrade":
       requireString(`${label}.upgradeId`, command.upgradeId);
+      if (command.resultVariableId !== undefined) requireString(`${label}.resultVariableId`, command.resultVariableId);
       return;
     case "equipTool":
       if (command.itemId !== undefined) requireString(`${label}.itemId`, command.itemId);

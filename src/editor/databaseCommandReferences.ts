@@ -284,11 +284,19 @@ function commandReferencesSwitchVariable(command: Command, kind: "switch" | "var
     case "loop":
       return commandListReferencesSwitchVariable(command.body, kind, id);
     case "shop":
-      return commandListReferencesSwitchVariable(command.transactionBranch ?? [], kind, id);
+      return commandListReferencesSwitchVariable(command.transactionBranch ?? [], kind, id)
+        || commandListReferencesSwitchVariable(command.failedTransactionBranch ?? [], kind, id);
+    case "battleProcessing":
+      return commandListReferencesSwitchVariable(command.victoryBranch ?? [], kind, id)
+        || commandListReferencesSwitchVariable(command.defeatBranch ?? [], kind, id)
+        || commandListReferencesSwitchVariable(command.escapeBranch ?? [], kind, id);
     case "inn":
       return commandListReferencesSwitchVariable(command.notEnoughBranch ?? [], kind, id);
     case "getFriendship":
       return kind === "variable" && command.variableId === id;
+    case "craftRecipe":
+    case "applyItemUpgrade":
+      return kind === "variable" && command.resultVariableId === id;
     case "promoteActor":
       return commandListReferencesSwitchVariable(command.successBranch ?? [], kind, id) || commandListReferencesSwitchVariable(command.failureBranch ?? [], kind, id);
     case "evolveMonster":
