@@ -689,7 +689,9 @@ export function openAiConversationHistoryModal(options: {
   document.body.append(backdrop);
   openBackdrop = backdrop;
   void modalPendingWork.track((async () => {
+    const generation = renderGeneration;
     await refreshArchiveMapIds();
+    if (generation !== renderGeneration || !isCurrentModal()) return;
     await fetchPage(false);
   })());
   search.focus?.();

@@ -79,6 +79,11 @@ Open click owns a distinct selection generation in addition to the view generati
 a retired read cannot adopt or paint an error even when it settles before the newer
 selection. Owned recovery failures refresh usable local rows while retaining the
 error. Outgoing live-conversation checkpoint saves remain separate and unchanged.
+The initial catalog-to-list continuation retains its starting generation and live
+modal ownership: a delayed startup cannot retire a newer explicit Recover or clear
+its status. `aiConversationHistoryStartup` covers this ordering and normal startup;
+`ai-map-history.spec.ts` exercises it through the shipped clock and Recover with
+an offline response fixture and real browser IndexedDB transactions.
 
 The separate unscoped legacy view (`ai-history-filter-legacy`) queries with a
 null repository scope and expands retained text read-only. It does not adopt a

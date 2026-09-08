@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { startupRecoverRegression } from "./aiHistoryStartupRecoverHarness";
 import {
   captureHistoryShot,
   MAP_A,
@@ -26,6 +27,8 @@ import {
 
 test.describe("map-scoped AI conversation history", () => {
   test.describe.configure({ timeout: 180_000, retries: 0 });
+
+  test("startup catalog cannot cancel Recover through the shipped clock", startupRecoverRegression);
 
   test("clock opens history with the current-map filter active", async ({ page }) => {
     await bootEditor(page);

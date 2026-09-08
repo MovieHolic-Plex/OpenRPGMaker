@@ -1,0 +1,42 @@
+[WebServer] [rpg-zzu] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[WebServer] [rpg-zzu] QWENCLOUD_API_KEY 가 없어 /api/qwen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+[WebServer] [rpg-zzu] CPENROUTER_API_KEY 가 없어 /api/cpen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+
+Running 1 test using 1 worker
+
+  ✘  1 [chromium] › test/e2e/ai-map-history.spec.ts:31:3 › map-scoped AI conversation history › startup catalog cannot cancel Recover through the shipped clock (59.9s)
+
+
+  1) [chromium] › test/e2e/ai-map-history.spec.ts:31:3 › map-scoped AI conversation history › startup catalog cannot cancel Recover through the shipped clock 
+
+    Error: History fixture signal did not settle
+
+       at aiHistoryStartupRecoverHarness.ts:23
+
+      21 |   try {
+      22 |     return await Promise.race([signal, new Promise<never>((_, reject) => {
+    > 23 |       timer = setTimeout(() => reject(new Error("History fixture signal did not settle")), 5_000);
+         |                                       ^
+      24 |     })]);
+      25 |   } finally { clearTimeout(timer); }
+      26 | }
+        at Timeout.<anonymous> (/home/main/z-project/rpg-zzu-history-correction-st01a082b3/test/e2e/aiHistoryStartupRecoverHarness.ts:23:39)
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    .omo/evidence/ai-playable/st_01a082b3/ui-red-ordering/ai-map-history-map-scoped--e8c24-r-through-the-shipped-clock-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: .omo/evidence/ai-playable/st_01a082b3/ui-red-ordering/ai-map-history-map-scoped--e8c24-r-through-the-shipped-clock-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    .omo/evidence/ai-playable/st_01a082b3/ui-red-ordering/ai-map-history-map-scoped--e8c24-r-through-the-shipped-clock-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace .omo/evidence/ai-playable/st_01a082b3/ui-red-ordering/ai-map-history-map-scoped--e8c24-r-through-the-shipped-clock-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › test/e2e/ai-map-history.spec.ts:31:3 › map-scoped AI conversation history › startup catalog cannot cancel Recover through the shipped clock 
+
+EXIT=1

@@ -1,0 +1,11 @@
+src/editor/panels/aiConversationHistoryModal.ts 0
+
+test/aiConversationHistoryStartup.test.ts 0
+
+test/e2e/ai-map-history.spec.ts 0
+
+test/e2e/aiHistoryStartupRecoverHarness.ts 0
+
+diagnostics=0
+
+EXIT=0
