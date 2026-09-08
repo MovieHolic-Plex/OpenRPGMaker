@@ -65,7 +65,13 @@ import {
   movePastePreview,
   selectTileRegion,
 } from "@/editor/mapClipboard";
+import {
+  enterPanTool,
+  escapeOwnedByTransientSurface,
+  resolveEscapeAction,
+} from "@/editor/escapeToPan";
 import { handleEditorKey, handleHistoryHotkey, historyHotkeyOwnedByPanel, isHistoryHotkeyChord, shouldIgnoreEditorShortcut } from "@/editor/hotkeys";
+import { hasOpenModalLayer } from "@/editor/ui/modalStack";
 import { copyEventAt, openEventLayerContextMenu, pasteEventAt } from "@/editor/panels/eventLayerContextMenu";
 import { isCellInsideSelection } from "@/editor/panels/mapSelectionContextMenu";
 import { openStructurePlacementContextMenu } from "@/editor/panels/structurePlacementContextMenu";
@@ -124,6 +130,15 @@ type RightRegionGesture = {
 };
 
 const EVENT_LAYER_DOUBLE_CLICK_MS = 500;
+/**
+ * 이벤트 레이어 빈 칸 좌클릭이 팬으로 승격되는 문턱(px). tilePaletteSheet 의
+ * RANGE_DRAG_THRESHOLD_PX 와 같은 값으로 맞춘다 — 클릭과 드래그의 경계는 표면마다
+ * 달라야 할 이유가 없다.
+ *
+ * 0 이면 안 된다: 눌렀다 뗀 클릭에도 트랙패드는 1~2px 를 흘리고, 그 한 픽셀이 「여기에
+ * 새 이벤트」 예약을 팬으로 바꿔 버린다(클릭이 통째로 증발한다).
+ */
+const EVENT_LAYER_PAN_THRESHOLD_PX = 4;
 /** 캔버스·조수 가림 사각형을 재는 주기. 매 프레임 DOM 을 재면 레이아웃이 흔들린다. */
 const OVERLAY_GEOMETRY_TTL_MS = 250;
 
@@ -227,6 +242,17 @@ export class EditScene extends PhaserRuntime.Scene {
   private tilePaintEngine: TilePaintEngine | null = null;
   private dragOperationHandler: DragOperationHandler | null = null;
   private rightRegionGesture: RightRegionGesture | null = null;
+  /**
+   * 이벤트 레이어 **빈 칸**에서 눌린 좌클릭. 문턱을 넘으면 카메라 팬으로 승격한다.
+   *
+   * 왜 후보를 두는가(pointerdown 에서 곧장 팬하지 않는 이유): 이벤트 레이어의 좌클릭
+   * 한 번은 「여기에 새 이벤트」 자리 예약이고 두 번은 편집기 열기다. 누른 즉시 팬을
+   * 잡으면 그 두 동작이 사라진다. 눌린 자리는 팬 기준점으로도 필요하므로 함께 들고 있는다.
+   *
+   * 이벤트 **위**에서 누른 좌클릭은 이 후보를 만들지 않는다 — 그건 DragOperationHandler 의
+   * eventDragCandidate 이고, 이벤트 이동은 지금 그대로 둔다(감독 결정).
+   */
+  private eventLayerPanCandidate: { readonly screenX: number; readonly screenY: number } | null = null;
   /**
    * 사용자 제스처 때문에 미뤄 둔 카메라 초점 요청 — **한 칸**만 둔다(새 요청이 옛 요청을 덮는다).
    * 미룬 요청을 그냥 버리면 조수가 "여기 고쳤어요" 하고도 화면은 딴 데를 보고 있다. 반대로 큐로
@@ -645,6 +671,8 @@ export class EditScene extends PhaserRuntime.Scene {
       this.lastPaintKey = "";
       // 이벤트 레이어: 눌린 칸에 이벤트가 있으면 드래그 이동 후보로 기록(클릭/더블클릭은 그대로).
       this.maybeBeginEventDragCandidate(ptr);
+      // 이벤트가 없었다면 같은 좌클릭이 카메라 팬 후보가 된다(문턱을 넘을 때만 승격).
+      this.armEventLayerPanCandidate(ptr);
       this.applyAtPointer(ptr);
     });
     this.input.on("pointermove", (ptr: Phaser.Input.Pointer) => {
@@ -668,7 +696,11 @@ export class EditScene extends PhaserRuntime.Scene {
         return;
       }
       // 이벤트를 누른 채 다른 칸으로 이동하면 드래그 이동을 시작한다.
+      // 이벤트 이동이 팬보다 **먼저**다 — 두 후보는 배타적이지만(하나는 이벤트 위, 하나는
+      // 빈 칸) 순서를 적어 두어야 나중에 읽는 사람이 소유권을 헷갈리지 않는다.
       if (ptr.isDown && this.tryPromoteEventDrag(ptr)) return;
+      // 이벤트 레이어 빈 칸에서 시작한 좌클릭이 문턱을 넘으면 카메라 팬으로 승격한다.
+      if (ptr.isDown && this.tryPromoteEventLayerPan(ptr)) return;
       this.updateHoverPreview(ptr);
       if (this.cameraPanController?.active()) {
         this.continuePan(ptr);
@@ -1048,6 +1080,43 @@ export class EditScene extends PhaserRuntime.Scene {
     return this.getDragOperationHandler().tryPromoteEventDrag(ptr);
   }
 
+  /**
+   * 이벤트 레이어 **빈 칸** 좌클릭을 팬 후보로 기록한다.
+   *
+   * "빈 칸"의 판정은 DragOperationHandler 에 맡긴다: maybeBeginEventDragCandidate 가 방금
+   * 같은 포인터로 findEventCoveringPoint(=이벤트 **몸 사각** 조회)를 돌렸으므로, 후보가
+   * 없다는 것이 곧 "이 칸에는 옮길 이벤트가 없다"는 뜻이다. 여기서 좌표 판정을 다시
+   * 구현하면 앵커만 보던 시절의 2×2 이벤트 결함이 되살아난다.
+   */
+  private armEventLayerPanCandidate(ptr: Phaser.Input.Pointer): void {
+    this.eventLayerPanCandidate = null;
+    if (editorState.get().layer !== "event") return;
+    if (ptr.button !== 0) return;
+    if (this.getDragOperationHandler().busy()) return;
+    const screen = this.pointerScreenPosition(ptr);
+    this.eventLayerPanCandidate = { screenX: screen.x, screenY: screen.y };
+  }
+
+  /** 팬 후보가 문턱을 넘었으면 카메라 팬으로 승격한다. 넘기 전에는 클릭이 살아 있다. */
+  private tryPromoteEventLayerPan(ptr: Phaser.Input.Pointer): boolean {
+    const candidate = this.eventLayerPanCandidate;
+    if (!candidate) return false;
+    const screen = this.pointerScreenPosition(ptr);
+    const dx = screen.x - candidate.screenX;
+    const dy = screen.y - candidate.screenY;
+    if (Math.hypot(dx, dy) < EVENT_LAYER_PAN_THRESHOLD_PX) return false;
+    this.eventLayerPanCandidate = null;
+    // 팬이 됐으니 이건 클릭이 아니다 — 눌린 순간 applyAtPointer 가 잡아 둔 「여기에 새
+    // 이벤트」 예약을 되돌린다. 남겨 두면 화면을 민 뒤 엉뚱한 칸의 CTA 가 떠 있다.
+    this.isPainting = false;
+    this.lastPaintKey = "";
+    editorState.set({ pendingEventCoordinate: null });
+    this.cancelCameraFocus();
+    this.cameraPanController?.startFromScreenPoint(candidate.screenX, candidate.screenY);
+    this.continuePan(ptr);
+    return true;
+  }
+
   private updateDragOperation(ptr: Phaser.Input.Pointer): void {
     this.getDragOperationHandler().update(ptr);
   }
@@ -1105,23 +1174,46 @@ export class EditScene extends PhaserRuntime.Scene {
     return handleHistoryHotkey(event);
   }
 
+  /**
+   * Esc 사슬의 **마지막** 소비자. 이 앞에 누가 있고 왜 여기가 마지막인지는
+   * editor/escapeToPan.ts 머리말이 file:line 으로 적어 둔다(Phaser 는 defaultPrevented
+   * 된 키를 발화하지 않으므로, 앞에서 preventDefault 한 표면의 Esc 는 여기 오지 않는다).
+   *
+   * 순서 판정을 resolveEscapeAction 으로 뺀 이유: Esc 회귀는 언제나 "누가 먼저
+   * 가져가는가"에서 났고, 실제 사슬(캡처/버블 + Phaser 가드)은 단위 테스트로 재현하기
+   * 어렵지만 **순서**만은 순수 함수로 잠글 수 있다.
+   */
   private handleEscapeKey(): boolean {
-    // 영역 작업 창이 떠 있으면 Esc 는 그 창의 것이다. 창이 비모달이 되면서 포커스가
-    // 캔버스에 있는 채로 Esc 가 여기까지 올 수 있게 됐는데, 그때 선택까지 지워 버리면
-    // Esc 한 번에 창과 선택이 함께 사라져 칩 바로 돌아갈 수 없다.
-    if (isRegionTaskModalOpen()) return false;
-    // 붙여넣기 미리보기 취소가 최우선.
-    if (cancelPastePreview()) {
-      this.clearPastePreviewGhost();
-      this.replayDeferredCameraFocus();
-      return true;
+    const state = editorState.get();
+    const action = resolveEscapeAction({
+      // 영역 작업 창이 떠 있으면 Esc 는 그 창의 것이다. 창이 비모달이 되면서 포커스가
+      // 캔버스에 있는 채로 Esc 가 여기까지 올 수 있게 됐는데, 그때 선택까지 지워 버리면
+      // Esc 한 번에 창과 선택이 함께 사라져 칩 바로 돌아갈 수 없다.
+      regionTaskModalOpen: isRegionTaskModalOpen(),
+      modalLayerOpen: hasOpenModalLayer(),
+      transientOwnerOpen: escapeOwnedByTransientSurface(),
+      pastePreviewActive: state.pastePreview !== null,
+      selectionActive: state.selection !== null,
+      panToolActive: state.tool === "pan",
+    });
+    switch (action) {
+      case "defer-to-owner":
+      case "none":
+        return false;
+      case "cancel-paste-preview":
+        cancelPastePreview();
+        this.clearPastePreviewGhost();
+        this.replayDeferredCameraFocus();
+        return true;
+      case "clear-selection":
+        clearSelection();
+        return true;
+      case "enter-pan":
+        // 새 팬 구현을 만들지 않는다 — 기존 「화면 밀기」 도구를 켜면 좌클릭 드래그 팬,
+        // grab 커서, 툴바 aria-pressed, 사이드바 상태 배지가 한꺼번에 따라온다.
+        enterPanTool();
+        return true;
     }
-    // 그 다음 선택 해제.
-    if (editorState.get().selection) {
-      clearSelection();
-      return true;
-    }
-    return false;
   }
 
   private handleKeyUp(event: KeyboardEvent): void {
@@ -1828,6 +1920,9 @@ export class EditScene extends PhaserRuntime.Scene {
     }
     this.finishDragOperation(ptr);
     this.getDragOperationHandler().clearEventCandidate();
+    // 승격되지 않은 팬 후보도 여기서 내려야 한다. 남으면 다음 pointermove(버튼을 뗀 뒤의
+    // 단순 호버)가 옛 기준점으로 카메라를 밀어 버린다.
+    this.eventLayerPanCandidate = null;
     this.isPainting = false;
     this.lastPaintKey = "";
     this.stopPan();

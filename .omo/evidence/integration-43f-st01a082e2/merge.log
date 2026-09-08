@@ -1,0 +1,15 @@
+Auto-merging openwiki/INDEX.md
+CONFLICT (content): Merge conflict in openwiki/INDEX.md
+Auto-merging openwiki/editor-ai-panel.md
+Auto-merging openwiki/editor-observability.md
+Auto-merging src/ai/agentVerification.ts
+CONFLICT (content): Merge conflict in src/ai/agentVerification.ts
+Auto-merging src/ai/assistantAcceptanceTools.ts
+CONFLICT (content): Merge conflict in src/ai/assistantAcceptanceTools.ts
+Auto-merging src/ai/assistantSession.ts
+CONFLICT (content): Merge conflict in src/ai/assistantSession.ts
+Auto-merging src/ai/independentReview.ts
+Auto-merging src/editor/tools/generateMapTool.ts
+Auto-merging src/editor/tools/mapTools.ts
+Auto-merging test/aiAssistantSession.test.ts
+Automatic merge failed; fix conflicts and then commit the result.

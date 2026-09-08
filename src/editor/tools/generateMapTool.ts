@@ -5,7 +5,7 @@
 
 import { computeReachableCells, isAdjacentOrOn } from "@/project/lint/reachability";
 import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
-import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
+import { exceedsMapDimensionLimit, MAX_TOOL_MAP_DIMENSION, mapSizeLimitMessage } from "@/project/mapSizeLimits";
 import { genId } from "@/util/id";
 import type { GameMap } from "@/project/types";
 import { assertMapIdAvailable, inMapBounds, lineCells, setLower, setUpper, type Point } from "./mapHelpers";
@@ -111,11 +111,8 @@ function paintLayoutGrammar(map: GameMap, layout: MapGenerationLayout, palette: 
 }
 
 function assertGeneratedMapSize(width: number, height: number): void {
-  if (width > MAX_TOOL_MAP_DIMENSION || height > MAX_TOOL_MAP_DIMENSION) {
-    throw new ToolError(
-      `생성 맵 크기는 최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}까지 가능합니다. 넓은 지역은 여러 맵으로 나누고 transfer 이벤트로 연결하세요.`,
-      { code: "map-too-large" }
-    );
+  if (exceedsMapDimensionLimit(width, height)) {
+    throw new ToolError(mapSizeLimitMessage("생성 맵 크기"), { code: "map-too-large" });
   }
 }
 
@@ -135,7 +132,7 @@ function carvePath(map: GameMap, from: Point, to: Point, floor: number, border: 
 const generateMap: ToolDefinition = {
   name: "generate_map",
   description:
-    "테마(village/forest/cave) 맵을 생성한다(기본은 테두리 없는 평지, 최대 256×256). 입구→모든 POI 도달성을 생성기가 보장(생성→검사→통로 수리 루프). "
+    `테마(village/forest/cave) 맵을 생성한다(기본은 테두리 없는 평지, 최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}). 입구→모든 POI 도달성을 생성기가 보장(생성→검사→통로 수리 루프). `
     + "테마에 맞는 BGM을 CC0 카탈로그에서 고른다(같은 seed면 같은 곡, bgm/bgmResourceId가 있으면 그걸 쓴다). "
     + "동굴/던전처럼 외곽이 막혀야 할 때만 border:\"wall\"을 지정한다 — 지정하면 맵 4변이 통행 불가 장애물로 봉인된다.",
   mode: "write",
@@ -146,8 +143,8 @@ const generateMap: ToolDefinition = {
       border: { type: "string", enum: ["none", "wall"], description: "테두리 처리(기본 none, wall이면 외곽 4변을 테마 장애물 타일로 봉인)" },
       tilesetId: { type: "string", description: "이 맵에 사용할 타일셋. 타일셋별 전용 생성 로직을 선택한다." },
       name: { type: "string" },
-      width: { type: "integer", description: "가로 타일 수(최대 256)" },
-      height: { type: "integer", description: "세로 타일 수(최대 256)" },
+      width: { type: "integer", description: `가로 타일 수(최대 ${MAX_TOOL_MAP_DIMENSION})` },
+      height: { type: "integer", description: `세로 타일 수(최대 ${MAX_TOOL_MAP_DIMENSION})` },
       entrance: { ...COORD_SCHEMA, description: "{x,y} 입구(생략 시 좌측 중앙)" },
       pois: { type: "array", description: "[{x,y}] 관심 지점", items: COORD_SCHEMA },
       chokepoints: { type: "integer", description: "장애물 밀도(0~100, 기본 12)" },

@@ -1,3 +1,4 @@
+import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import type { MapId, Project } from "@/project/types";
 
 export const INTERIOR_TILESET_ID = "easyrpg_chipset_interior";
@@ -64,7 +65,10 @@ function firstTilesetId(project: Project): string {
   return Object.keys(project.tilesets)[0] ?? "";
 }
 
+// 상한은 mapSizeLimits 한 곳에서만 선언한다 — 여기 숫자를 따로 적어 두면 생성 툴·lint 와
+// 어긋난다(OPRN-OUT-018). 이 함수는 빈칸/NaN 입력을 기본값으로 되돌리는 입력 정리용이고,
+// 상한 초과는 호출자가 명시적으로 거부한다(조용한 클램프는 왜 작아졌는지를 숨긴다).
 export function clampMapSize(value: number, fallback: number): number {
   if (!Number.isFinite(value)) return fallback;
-  return Math.max(4, Math.min(256, Math.floor(value)));
+  return Math.max(4, Math.min(MAX_TOOL_MAP_DIMENSION, Math.floor(value)));
 }

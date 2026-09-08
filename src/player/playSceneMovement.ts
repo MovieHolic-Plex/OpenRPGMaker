@@ -23,7 +23,7 @@ import { setNpcIdleFrame } from "@/player/playSceneAutonomousSprites";
 import type { AutonomousNpcSprite } from "@/player/playSceneAutonomousTypes";
 import type { Dir, InputState } from "@/player/input";
 import { facingForStep, resolveDiagonalStep } from "@/player/input";
-import { assertNever, type PlaySceneContext } from "@/player/playSceneTypes";
+import { assertNever, type PlayerRouteState, type PlaySceneContext } from "@/player/playSceneTypes";
 import { findBlockingEventOverlappingRect,
 findRuntimeEventAtInMap,
 setRuntimeEventPositionDirection, } from "@/project/runtimeEventState"
@@ -369,7 +369,7 @@ function advancePlayerRoute(scene: PlaySceneContext): void {
     }
     const command = route.moves[route.index];
     route.index += 1;
-    if (command && applyPlayerRouteCommand(scene, command)) return; // 이동 시작 → 이번 프레임 종료
+    if (command && applyPlayerRouteCommand(scene, route, command)) return; // 이동 시작 → 이번 프레임 종료
     if (command?.kind === "move" && route.stopOnBlocked) {
       scene.playerRoute = null;
       return;
@@ -378,12 +378,12 @@ function advancePlayerRoute(scene: PlaySceneContext): void {
 }
 
 // 이동을 시작하면 true(이번 프레임 종료), 아니면 false(다음 명령 계속).
-function applyPlayerRouteCommand(scene: PlaySceneContext, command: MoveCommand): boolean {
+function applyPlayerRouteCommand(scene: PlaySceneContext, route: PlayerRouteState, command: MoveCommand): boolean {
   switch (command.kind) {
     case "move":
-      return startPlayerRouteStep(scene, command.dir);
+      return startPlayerRouteStep(scene, route, command.dir);
     case "stepForward":
-      return startPlayerRouteStep(scene, scene.facing);
+      return startPlayerRouteStep(scene, route, scene.facing);
     case "jump":
       return startPlayerJump(scene, command);
     case "dropIn":
@@ -402,6 +402,12 @@ function applyPlayerRouteCommand(scene: PlaySceneContext, command: MoveCommand):
       return false;
     case "changeSpeed":
       scene.moveDurationMs = clampPlayerMoveDuration(scene.moveDurationMs, command.delta);
+      return false;
+    // 통과 ON/OFF. 상태를 **루트에** 담는다 — 씬에 담으면 루트가 끊긴 자리에 남아 일반 조작이
+    // 벽을 뚫는다(수명 계약은 clearPlayerRouteThrough 주석). 이동 경로 편집기가 주인공 대상에도
+    // 이 명령을 authoring 하게 열어 두고 있으므로 대상 종류로 효력을 없애면 안 된다.
+    case "setThrough":
+      route.through = command.enabled;
       return false;
     // 주인공에게 의미 없거나 MVP 범위 밖(그래픽/투명도/NPC상대 이동 등) → 조용히 건너뛴다.
     default:
@@ -438,11 +444,21 @@ function scaleDelta(delta: { x: number; y: number }, factor: number): { x: numbe
   return { x: delta.x * factor, y: delta.y * factor };
 }
 
-function startPlayerRouteStep(scene: PlaySceneContext, dir: Dir): boolean {
+function startPlayerRouteStep(scene: PlaySceneContext, route: PlayerRouteState, dir: Dir): boolean {
   scene.facing = dir;
   const delta = directionDelta(dir);
   const nx = scene.tileX + delta.x;
   const ny = scene.tileY + delta.y;
+  // 통과 ON: 지형·배치물·솔리드 이벤트 판정을 전부 건너뛰고 맵 경계만 본다 —
+  // NPC 의 canNpcMove(`mover.through` 분기)와 **같은 폭**이고, 앵커 한 칸으로 경계를 보는 것도
+  // 그쪽과 같다. 경계를 남기는 이유: 맵 밖 좌표는 타일·이벤트 조회가 전부 빈 값이 되어
+  // 걸음 완료 부수효과(지형 피해·인카운터·터치)가 의미를 잃는다.
+  if (route.through) {
+    if (!inBounds(scene.map, nx, ny)) return false;
+    scene.dashing = false;
+    beginPlayerStep(scene, nx, ny);
+    return true;
+  }
   const body = resolvePlayerBody(store.getCurrent(), scene.session);
   // 강제 이동 루트도 몸 크기를 존중한다 — 3x3 주인공이 커맨드로는 벽을 뚫으면 안 된다.
   if (!playerCanStep(scene, body, delta.x, delta.y)) return false; // 막히면 건너뜀

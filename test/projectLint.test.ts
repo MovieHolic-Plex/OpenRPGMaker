@@ -307,7 +307,9 @@ describe("projectLint", () => {
     });
   });
 
-  it("256x256 초과 맵을 warning으로 보고한다", () => {
+  // OPRN-OUT-018: 생성 계약이 256을 넘는 맵을 만들지 않으므로 남아 있는 초과 맵은 지원 밖
+  // 상태다. warning 이던 동안 build_world 가 만든 257 맵이 프로젝트에 그대로 남을 수 있었다.
+  it("256x256 초과 맵을 error로 보고한다", () => {
     const project = cloneProject(createBlankProject());
     const huge = createBlankMap("임포트 초대형", 257, 12);
     project.maps[huge.id] = huge;
@@ -316,11 +318,11 @@ describe("projectLint", () => {
     const issues = projectLint(project);
     expect(issues).toContainEqual(
       expect.objectContaining({
-        severity: "warning",
+        severity: "error",
         code: "map-size",
         mapId: huge.id,
       })
     );
-    expect(errorsOf(issues).some((issue) => issue.code === "map-size")).toBe(false);
+    expect(errorsOf(issues).some((issue) => issue.code === "map-size")).toBe(true);
   });
 });

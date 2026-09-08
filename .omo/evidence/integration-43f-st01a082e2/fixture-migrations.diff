@@ -1,0 +1,82 @@
+diff --git a/test/assistantReviewImageBudget.test.ts b/test/assistantReviewImageBudget.test.ts
+index ea1d06a8a..cce1c5af2 100644
+--- a/test/assistantReviewImageBudget.test.ts
++++ b/test/assistantReviewImageBudget.test.ts
+@@ -1,17 +1,17 @@
+ import { afterEach, describe, expect, it, vi } from "vitest";
+ import { AssistantSession } from "@/ai/assistantSession";
+-import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
++import { defaultAiConfig, type ChatRequest, type ChatResult } from "@/ai/llmClient";
+ import { reviewEvidenceImages, type ReviewInput } from "@/ai/independentReview";
+ import { createBlankMap, createBlankProject } from "@/project/defaults";
+ import { fixedDeclarer } from "./intentFixture";
+-import { independentReviewPayload, approvedReviewResponse } from "./independentReviewFixture";
++import { independentReviewPayload, approvedReviewResponse, imageDeliveryForRequest } from "./independentReviewFixture";
+ 
+ afterEach(() => {
+   vi.unstubAllGlobals();
+ });
+ 
+-function toolCall(name: string, args: object, id = name): ChatResult {
+-  return { message: { role: "assistant", content: null,
++function toolCall(name: string, args: object, request: ChatRequest, id = name): ChatResult {
++  return { imageDelivery: imageDeliveryForRequest(request), message: { role: "assistant", content: null,
+     tool_calls: [{ id, type: "function", function: { name, arguments: JSON.stringify(args) } }] },
+     finishReason: "tool_calls" };
+ }
+@@ -79,13 +79,13 @@ describe("independent review image budget", () => {
+         writerRound += 1;
+         if (writerRound === 1) {
+           return toolCall("set_tileset_properties", { tilesetId: map.tilesetId, tilesPerRow: 31,
+-            reason: "inspect atlas layout" }, "columns");
++            reason: "inspect atlas layout" }, request, "columns");
+         }
+         if (writerRound === 2 || writerRound === 3) {
+           return toolCall("show_map_region", { mapId, x: 0, y: 0, w: map.width, h: map.height,
+-            reason: "prove current tileset render" }, `show-${writerRound}`);
++            reason: "prove current tileset render" }, request, `show-${writerRound}`);
+         }
+-        return { message: { role: "assistant", content: "Done" }, finishReason: "stop" };
++        return { imageDelivery: imageDeliveryForRequest(request), message: { role: "assistant", content: "Done" }, finishReason: "stop" };
+       },
+     });
+ 
+@@ -155,13 +155,13 @@ describe("independent review image budget", () => {
+         }
+         if (writerRound === 2) {
+           return toolCall("show_map_region", { mapId: changedId, x: 0, y: 0,
+-            w: target.width, h: target.height, reason: "changed map render" }, "show-changed");
++            w: target.width, h: target.height, reason: "changed map render" }, request, "show-changed");
+         }
+         if (writerRound === 3) {
+           return toolCall("show_map_region", { mapId: targetId, x: 0, y: 0,
+-            w: target.width, h: target.height, reason: "target map render" }, "show-target");
++            w: target.width, h: target.height, reason: "target map render" }, request, "show-target");
+         }
+-        return { message: { role: "assistant", content: "Done" }, finishReason: "stop" };
++        return { imageDelivery: imageDeliveryForRequest(request), message: { role: "assistant", content: "Done" }, finishReason: "stop" };
+       },
+     });
+ 
+diff --git a/test/wholeMapCoverageRender.test.ts b/test/wholeMapCoverageRender.test.ts
+index a11e8cbd4..ea5415944 100644
+--- a/test/wholeMapCoverageRender.test.ts
++++ b/test/wholeMapCoverageRender.test.ts
+@@ -6,7 +6,7 @@ import { MAX_IMAGE_DIMENSION, tileDrawSize } from "@/ai/toolImageCanvas";
+ import type { ReviewInput } from "@/ai/independentReview";
+ import { createBlankMap, createBlankProject } from "@/project/defaults";
+ import { fixedDeclarer } from "./intentFixture";
+-import { independentReviewPayload, approvedReviewResponse } from "./independentReviewFixture";
++import { independentReviewPayload, approvedReviewResponse, imageDeliveryForRequest } from "./independentReviewFixture";
+ 
+ afterEach(() => {
+   vi.unstubAllGlobals();
+@@ -132,7 +132,7 @@ describe("review coverage of a map larger than the span cap", () => {
+             finishReason: "tool_calls" };
+           return call;
+         }
+-        return { message: { role: "assistant", content: "Done" }, finishReason: "stop" };
++        return { imageDelivery: imageDeliveryForRequest(request), message: { role: "assistant", content: "Done" }, finishReason: "stop" };
+       },
+     });
+ 

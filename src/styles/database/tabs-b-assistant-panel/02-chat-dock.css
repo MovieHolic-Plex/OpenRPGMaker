@@ -59,7 +59,7 @@
   background: transparent;
   border: none;
   box-shadow: none;
-  inset: auto 14px 14px auto;
+  inset: auto var(--ai-deck-inset, 16px) var(--ai-deck-inset, 16px) auto;
   padding: 0;
   pointer-events: none;
 }

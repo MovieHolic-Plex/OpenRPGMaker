@@ -10,6 +10,8 @@ type HistoryMeta = {
   readonly mapId: string | null;
   readonly at: number;
   readonly current: boolean;
+  /** 깊이는 모델이 센다(MapEditHistoryEntry.steps) — 픽스처도 실물과 같은 모양을 쓴다. */
+  readonly steps: number;
 };
 
 type TestMutationObserverCallback = (records: MutationRecord[], observer: MutationObserver) => void;
@@ -81,8 +83,8 @@ describe("map history panel", () => {
   it("renders entries, current marker, and map labels", () => {
     const mapId = store.getCurrent().startMapId;
     historyMock.entries = [
-      { index: 2, label: "AI: 집 건설", mapId, at: 2, current: true },
-      { index: 1, label: "타일 편집", mapId: "map_other", at: 1, current: false },
+      { index: 2, label: "AI: 집 건설", mapId, at: 2, current: true, steps: 1 },
+      { index: 1, label: "타일 편집", mapId: "map_other", at: 1, current: false, steps: 2 },
     ];
 
     const panel = renderPanel();
@@ -96,7 +98,7 @@ describe("map history panel", () => {
 
   it("reverts a history point after confirmation (커스텀 모달 §2.4)", async () => {
     const mapId = store.getCurrent().startMapId;
-    historyMock.entries = [{ index: 4, label: "되돌릴 지점", mapId, at: 4, current: false }];
+    historyMock.entries = [{ index: 4, label: "되돌릴 지점", mapId, at: 4, current: false, steps: 1 }];
     const panel = renderPanel();
 
     findByTestId(panel, "history-revert-4")?.click();

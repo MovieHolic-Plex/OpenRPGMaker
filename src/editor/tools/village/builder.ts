@@ -947,8 +947,8 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
         },
         mapId: { type: "string", description: "기존 맵에 시공한다. 최소 36x36 필요." },
         name: { type: "string", description: "새 맵 이름(기본: 마을 50x50)" },
-        width: { type: "integer", description: "새 맵 가로(기본 50, 36~256)" },
-        height: { type: "integer", description: "새 맵 세로(기본 50, 36~256)" },
+        width: { type: "integer", description: `새 맵 가로(기본 ${DEFAULT_SIZE}, 36~${MAX_SIZE})` },
+        height: { type: "integer", description: `새 맵 세로(기본 ${DEFAULT_SIZE}, 36~${MAX_SIZE})` },
         theme: {
           type: "string",
           description:

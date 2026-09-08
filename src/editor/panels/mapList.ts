@@ -693,9 +693,9 @@ function dragHandle(mapId: MapId, row: HTMLElement, enabled: boolean): HTMLEleme
     class: "map-tree-drag-handle" + (enabled ? "" : " is-disabled"),
     attrs: {
       "aria-hidden": enabled ? "false" : "true",
-      "aria-label": enabled ? "끌어 앞·뒤·하위로 옮기기" : "루트 맵은 옮길 수 없습니다",
+      "aria-label": enabled ? "끌어 앞·뒤·하위로 옮기기" : "최상위 맵은 옮길 수 없습니다",
       draggable: enabled ? "true" : "false",
-      title: enabled ? "끌어 앞·뒤·하위로 옮기기" : "루트 맵은 옮길 수 없습니다",
+      title: enabled ? "끌어 앞·뒤·하위로 옮기기" : "최상위 맵은 옮길 수 없습니다",
     },
     dataset: { testid: `map-drag-${mapId}` },
     on: {
@@ -814,7 +814,9 @@ function makeMapTreeHeaderActions(root: MapTreeNode, mapCount: number): HTMLElem
       treeAction({
         action: () => openMapCreateDialog({ preset: "blank" }),
         icon: "map-child",
-        label: "루트에 맵 추가",
+        // 상위 없이 만든 맵은 트리 최상위 맵의 자식이 된다 — 「루트에」는 없는 계층을
+        // 약속했다(OPRN-OUT-027). 동작은 그대로, 말만 실제 자리로 맞춘다.
+        label: "최상위 맵 아래에 맵 추가",
         primary: true,
         testId: "map-add",
         text: "새 맵",
@@ -1104,7 +1106,8 @@ function mapContextMenuItems(context: MapActionContext): readonly MapContextMenu
     disabled: !canSendToRoot,
     icon: "folder",
     id: "to-root",
-    label: "루트로 보내기",
+    // moveMapInTree(mapId, "") 는 트리 최상위 맵의 자식으로 옮긴다(형제 최상위가 되지 않는다).
+    label: "최상위 맵 아래로 보내기",
     testId: `map-menu-to-root-${context.mapId}`,
   });
   if (!context.isFolder) {

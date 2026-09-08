@@ -9,6 +9,7 @@ import type { RoomHarnessIssue, RoomSession } from "./types";
 import { ToolError, type ToolExecResult } from "@/editor/tools/types";
 import type { Command, GameMap, Project } from "@/project/types";
 import { isPassable } from "@/project/collision";
+import { exceedsMapDimensionLimit, mapSizeLimitMessage } from "@/project/mapSizeLimits";
 
 const ROOM_SESSION_BAG = "roomHarnessSessions";
 
@@ -153,6 +154,24 @@ function guardExistingMap(project: Project, mapId: string, args: Record<string, 
   ];
 }
 
+/**
+ * 지원 상한 검사 — `kit.createEmptyMap`/`kit.runPipeline` 이 셀 배열을 잡기 **전에** 건다.
+ *
+ * 킷 파서(interiorKit/dungeonKit)에는 하한만 있어서 상한이 없는 유일한 방 생성 경로였다.
+ * 킷마다 넣지 않고 엔진 한 곳에 두는 이유: 새 킷이 붙어도 자동으로 같은 계약을 받고,
+ * demo 플랜(파서를 안 타는 경로)도 같이 걸린다(OPRN-OUT-018).
+ */
+function assertRoomPlanSize(mapId: string, plan: unknown): void {
+  const record = plan as { readonly width?: unknown; readonly height?: unknown } | null;
+  const width = typeof record?.width === "number" ? record.width : 0;
+  const height = typeof record?.height === "number" ? record.height : 0;
+  if (!exceedsMapDimensionLimit(width, height)) return;
+  throw new ToolError(`${mapSizeLimitMessage("방 크기")} — 요청: ${mapId} (${width}×${height})`, {
+    code: "map-too-large",
+    mapId,
+  });
+}
+
 /** 멀티턴 세션 시작 — 빈 맵 + 체크리스트 생성. */
 export function startRoomSession(project: Project, kitId: string, args: Record<string, unknown>): ToolExecResult {
   const kit = requireKit(kitId);
@@ -165,6 +184,7 @@ export function startRoomSession(project: Project, kitId: string, args: Record<s
     kit.buildOrder.map((l) => [l, l === "plan" ? "done" : "open"]),
   );
   const replaceWarnings = guardExistingMap(project, mapId, args);
+  assertRoomPlanSize(mapId, plan);
   const map = kit.createEmptyMap(plan);
   project.maps[mapId] = map;
   stampRoomHarnessPlan(project, mapId, kit.kitId, plan);
@@ -408,6 +428,7 @@ export function runRoomPipeline(project: Project, kitId: string, args: Record<st
   plan = kit.preparePlan?.(plan, project) ?? plan;
   const mapId = kit.mapIdOf(plan);
   const replaceWarnings = guardExistingMap(project, mapId, args);
+  assertRoomPlanSize(mapId, plan);
   const result = kit.runPipeline(plan, project);
   project.maps[mapId] = result.map;
   stampRoomHarnessPlan(project, mapId, kit.kitId, plan);

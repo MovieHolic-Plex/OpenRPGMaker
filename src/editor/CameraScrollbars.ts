@@ -3,6 +3,9 @@ import { CAMERA_INSPECTION_PADDING, type CanvasRect } from "@/editor/cameraFocus
 
 type Area = { readonly canvas: CanvasRect; readonly unoccluded: CanvasRect; readonly worldView: CanvasRect; readonly zoom: number };
 
+/** Track thickness in CSS pixels — the `--space-4` tracks in 05-canvas-statusbar.css. */
+const TRACK_PX = 16;
+
 /** Native scroll chrome is a projection of the camera, never another viewport store. */
 export class CameraScrollbars {
   private readonly axes;
@@ -32,7 +35,7 @@ export class CameraScrollbars {
 
   sync(area: Area, mapWidth: number, mapHeight: number): void {
     const { canvas, unoccluded: view, worldView, zoom } = area;
-    const projection = [mapWidth, mapHeight, canvas.x, canvas.y, view.x, view.y, view.width, view.height, worldView.x, worldView.y, zoom].join("|");
+    const projection = [mapWidth, mapHeight, canvas.x, canvas.y, canvas.width, canvas.height, view.x, view.y, view.width, view.height, worldView.x, worldView.y, zoom].join("|");
     if (projection === this.projection) return;
     this.projection = projection;
     this.zoom = zoom;
@@ -43,20 +46,26 @@ export class CameraScrollbars {
       const offset = horizontal ? view.x - canvas.x : view.y - canvas.y;
       const worldStart = horizontal ? worldView.x : worldView.y;
       const position = worldStart * zoom + offset + span / 2 + CAMERA_INSPECTION_PADDING;
-      const layoutKey = `${span}|${mapSpan}|${zoom}`;
+      // The track belongs to the canvas edge, never the unobstructed edge. Measuring
+      // it against the assistant teleported the vertical bar into mid-canvas the
+      // moment the deck opened, and resized the horizontal one under the pointer.
+      const track = (horizontal ? canvas.width : canvas.height) - TRACK_PX;
+      const layoutKey = `${span}|${track}|${mapSpan}|${zoom}`;
       const nativePosition = horizontal ? entry.node.scrollLeft : entry.node.scrollTop;
       // A native scroll notification may arrive after the next engine frame.
       // Never overwrite that input with the camera's previous position.
       if (entry.layoutKey === layoutKey && nativePosition !== entry.position) continue;
       entry.layoutKey = layoutKey;
       Object.assign(entry.node.style, {
-        left: `${view.x - canvas.x + (horizontal ? 0 : view.width - 16)}px`,
-        top: `${view.y - canvas.y + (horizontal ? view.height - 16 : 0)}px`,
-        width: horizontal ? `${view.width - 16}px` : "16px",
-        height: horizontal ? "16px" : `${view.height - 16}px`,
+        left: horizontal ? "0px" : `${canvas.width - TRACK_PX}px`,
+        top: horizontal ? `${canvas.height - TRACK_PX}px` : "0px",
+        width: horizontal ? `${track}px` : `${TRACK_PX}px`,
+        height: horizontal ? `${TRACK_PX}px` : `${track}px`,
       });
-      // Track excludes the corner, so scale all metrics equally to preserve thumb ratios.
-      const ratio = (span - 16) / span;
+      // The track now spans the canvas while the thumb must still report the
+      // unobstructed span, so scale every metric by track/visible. Excluding the
+      // corner keeps both ratios intact, exactly as the equal-span form did.
+      const ratio = track / span;
       const content = (mapSpan * zoom + span + CAMERA_INSPECTION_PADDING * 2) * ratio;
       entry.spacer.style.width = horizontal ? `${content}px` : "1px";
       entry.spacer.style.height = horizontal ? "1px" : `${content}px`;

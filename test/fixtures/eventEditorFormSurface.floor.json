@@ -1,18 +1,18 @@
 {
  "text": {
-  "testidCount": 37,
+  "testidCount": 38,
   "controlCount": 26,
   "selectOptionCount": 5,
-  "classCount": 46,
+  "classCount": 47,
   "labelCount": 26,
   "textCount": 4
  },
  "changeFace": {
-  "testidCount": 129,
-  "controlCount": 120,
-  "selectOptionCount": 2,
-  "classCount": 29,
-  "labelCount": 6,
+  "testidCount": 135,
+  "controlCount": 124,
+  "selectOptionCount": 5,
+  "classCount": 35,
+  "labelCount": 9,
   "textCount": 3
  },
  "choices": {
@@ -26,7 +26,7 @@
  "fork": {
   "testidCount": 18,
   "controlCount": 5,
-  "selectOptionCount": 39,
+  "selectOptionCount": 40,
   "classCount": 30,
   "labelCount": 3,
   "textCount": 9
@@ -74,7 +74,7 @@
  "loop": {
   "testidCount": 11,
   "controlCount": 3,
-  "selectOptionCount": 77,
+  "selectOptionCount": 79,
   "classCount": 12,
   "labelCount": 2,
   "textCount": 4
@@ -152,11 +152,11 @@
   "textCount": 4
  },
  "moveEvent": {
-  "testidCount": 68,
-  "controlCount": 57,
+  "testidCount": 74,
+  "controlCount": 62,
   "selectOptionCount": 8,
-  "classCount": 43,
-  "labelCount": 56,
+  "classCount": 44,
+  "labelCount": 61,
   "textCount": 4
  },
  "setEventGraphicPattern": {
@@ -335,10 +335,18 @@
   "labelCount": 2,
   "textCount": 1
  },
+ "setRelationship": {
+  "testidCount": 3,
+  "controlCount": 2,
+  "selectOptionCount": 4,
+  "classCount": 4,
+  "labelCount": 2,
+  "textCount": 1
+ },
  "changeFactionStance": {
   "testidCount": 5,
   "controlCount": 4,
-  "selectOptionCount": 3,
+  "selectOptionCount": 7,
   "classCount": 4,
   "labelCount": 4,
   "textCount": 1
@@ -439,12 +447,20 @@
   "labelCount": 6,
   "textCount": 3
  },
+ "showEmote": {
+  "testidCount": 26,
+  "controlCount": 18,
+  "selectOptionCount": 3,
+  "classCount": 18,
+  "labelCount": 15,
+  "textCount": 2
+ },
  "showPicture": {
-  "testidCount": 22,
-  "controlCount": 14,
+  "testidCount": 26,
+  "controlCount": 16,
   "selectOptionCount": 0,
-  "classCount": 34,
-  "labelCount": 7,
+  "classCount": 38,
+  "labelCount": 8,
   "textCount": 5
  },
  "erasePicture": {
@@ -456,7 +472,7 @@
   "textCount": 3
  },
  "playAudio": {
-  "testidCount": 14,
+  "testidCount": 17,
   "controlCount": 7,
   "selectOptionCount": 734,
   "classCount": 19,
@@ -506,7 +522,7 @@
  "inn": {
   "testidCount": 24,
   "controlCount": 15,
-  "selectOptionCount": 77,
+  "selectOptionCount": 79,
   "classCount": 32,
   "labelCount": 14,
   "textCount": 4

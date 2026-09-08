@@ -52,7 +52,7 @@ function lintResult(issues: Array<{ severity: string; code?: string; message: st
 function qualityResult(blocked: boolean, objectiveIssues: Array<{ severity: string; message: string }> = []): ToolResultLike {
   return {
     ok: true,
-    summary: blocked ? "게임 품질 평가 차단" : "게임 품질 평가 통과",
+    summary: blocked ? "무결성 점검: 오류 있음" : "무결성 점검: 이상 없음",
     issues: objectiveIssues,
     data: {
       verdict: { blocked, objectiveErrorCount: blocked ? objectiveIssues.length : 0 },
@@ -282,12 +282,21 @@ describe("parseToolVerdict — tool result → {pass, blockingIssues[], warnings
     expect(verdict.warnings).toEqual(["비차단 경고"]);
   });
 
-  it("evaluate_game_quality blocks ONLY on projectLint errors (data.verdict.blocked)", () => {
+  // 차단 집합은 projectLint 오류만이 아니다 — 빈 맵(99081a0b1)·미호출 엔딩(419e067fa)도 error 로 온다.
+  it("evaluate_game_quality blocks on every error-severity objective issue (data.verdict.blocked)", () => {
     const verdict = parseToolVerdict(EVALUATE_GAME_QUALITY_TOOL, qualityResult(true, [
       { severity: "error", message: "projectLint 오류 1" },
+      { severity: "error", message: "'빈 마을'(map_2) 은 만들기만 하고 …" },
+      { severity: "error", message: "엔딩 '진엔딩'(end_1)을 실행하는 triggerEnding 명령이 없습니다." },
+      { severity: "warning", message: "비차단 경고" },
     ]));
     expect(verdict.pass).toBe(false);
-    expect(verdict.blockingIssues).toEqual(["projectLint 오류 1"]);
+    expect(verdict.blockingIssues).toEqual([
+      "projectLint 오류 1",
+      "'빈 마을'(map_2) 은 만들기만 하고 …",
+      "엔딩 '진엔딩'(end_1)을 실행하는 triggerEnding 명령이 없습니다.",
+    ]);
+    expect(verdict.warnings).toContain("비차단 경고");
   });
 
   it("evaluate_game_quality with only warnings → pass (warnings never block)", () => {

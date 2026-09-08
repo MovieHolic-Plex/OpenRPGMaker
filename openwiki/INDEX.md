@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **50쪽 / 2116KB / 약 592,953 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **51쪽 / 2125KB / 약 595,472 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,13 +15,13 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/editor-ai-panel.md` | 356KB | 95KB ⚠상한 초과 — 절을 더 쪼개라 | 1650 | ~100,810 |
+| `openwiki/editor-ai-panel.md` | 357KB | 95KB ⚠상한 초과 — 절을 더 쪼개라 | 1652 | ~101,050 |
 | `openwiki/editor-ai-tools.md` | 154KB | 77KB ⚠상한 초과 — 절을 더 쪼개라 | 1079 | ~42,716 |
 | `openwiki/editor-database.md` | 251KB | 55KB ⚠상한 초과 — 절을 더 쪼개라 | 1327 | ~72,118 |
 | `openwiki/editor-event-authoring.md` | 130KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 691 | ~37,249 |
-| `openwiki/editor-event-commands.md` | 50KB | 32KB | 132 | ~13,431 |
+| `openwiki/editor-event-commands.md` | 52KB | 32KB | 152 | ~13,813 |
 | `openwiki/editor-pre-edit-routing.md` | 82KB | 57KB ⚠상한 초과 — 절을 더 쪼개라 | 323 | ~23,094 |
-| `openwiki/editor-workflows-misc.md` | 64KB | 29KB | 451 | ~17,505 |
+| `openwiki/editor-workflows-misc.md` | 65KB | 29KB | 456 | ~17,604 |
 | `openwiki/runtime-battle.md` | 130KB | 31KB | 493 | ~37,038 |
 | `openwiki/runtime-project-schema.md` | 97KB | 44KB | 620 | ~25,776 |
 | `openwiki/runtime-sessions.md` | 87KB | 49KB | 324 | ~23,210 |
@@ -38,7 +38,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/editor-database.md` | 7 | 537, 541, 542, 543, 552, 578, 581 |
 | `openwiki/editor-event-authoring.md` | 16 | 261, 262, 265, 270, 271, 272, 273, 274 |
 | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
-| `openwiki/editor-event-commands.md` | 6 | 39, 52, 53, 55, 58, 59 |
+| `openwiki/editor-event-commands.md` | 6 | 59, 72, 73, 75, 78, 79 |
 | `openwiki/editor-observability.md` | 1 | 241 |
 | `openwiki/editor-pre-edit-routing.md` | 5 | 154, 163, 170, 172, 185 |
 | `openwiki/state-system.md` | 2 | 3, 84 |
@@ -73,22 +73,23 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/se-catalog.md` | 8 | `.mjs`, `audio-features.json`, `audition.html`, `cross-check.json`, `dist/se-staging/audition.html`, `inventory.json`, `labels.json`, `placed.json` |
 | `openwiki/testing.md` | 15 | `../dialogue.css`, `browser-play-start.png`, `browser-title.png`, `event-editor.command-preview/07-identifiable-previews.css`, `output/evidence/acceptance-live/README.md`, `output/evidence/concept-expansion/README.md`, `output/evidence/concept-v2/validation.json`, `output/evidence/functional-acceptance/public-smoke.json`, `output/evidence/horror-mystery-prototype/browser-qa.json`, `supabase-proof-first-save.json`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/dialogue-nameplate-clears-body.spec.ts`, `verify-shots/runtime-qa/action-rpg/SUMMARY.md`, `verify-shots/runtime-qa/esc-menu/SUMMARY.md`, `verify-shots/runtime-qa/status-menu-adversarial/SUMMARY.md` |
 | `openwiki/town-tile-benchmark.md` | 1 | `combined-town-chipset-report.html` |
+| `openwiki/ui-discovery-pilot.md` | 3 | `direct/RESULTS.json`, `output/evidence/ui-discovery-v2/report.html`, `trace.json` |
 | `openwiki/village-design.md` | 1 | `output/village-direction/index.html` |
 | `openwiki/world-structure-authoring.md` | 1 | `verify-shots/runtime-qa/world-structure-tools/SUMMARY.md` |
 
 ## 페이지별 절 좌표
 
-### `openwiki/PROJECT_WIKI.md` — 10KB · 120줄 · ~2,531 토큰
+### `openwiki/PROJECT_WIKI.md` — 10KB · 121줄 · ~2,551 토큰
 
 - `L5` Purpose
 - `L16` Required pre-edit read order
-- `L56` Project identity
-- `L65` Main ownership boundaries
-- `L76` How an AI should use this wiki
-- `L87` Supabase DB mandatory (see root `AGENTS.md`)
-- `L93` Desktop UI integration truth (2026-08-11)
-- `L101` Per-project wiki structure
-- `L117` Staleness rule
+- `L57` Project identity
+- `L66` Main ownership boundaries
+- `L77` How an AI should use this wiki
+- `L88` Supabase DB mandatory (see root `AGENTS.md`)
+- `L94` Desktop UI integration truth (2026-08-11)
+- `L102` Per-project wiki structure
+- `L118` Staleness rule
 
 ### `openwiki/agent-tile-benchmark.md` — 11KB · 195줄 · ~3,365 토큰
 
@@ -238,7 +239,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L18` Output limits
 - `L24` Practical tips
 
-### `openwiki/editor-ai-panel.md` — 356KB · 1650줄 · ~100,810 토큰 · 통째읽기 잘림 · 깨진 줄 25
+### `openwiki/editor-ai-panel.md` — 357KB · 1652줄 · ~101,050 토큰 · 통째읽기 잘림 · 깨진 줄 25
 
 - `L3` Map-scoped conversation archive (2026-09-08)
   - `L63` Editor history surface
@@ -272,11 +273,11 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1477` 저장 · 내보내기 · 프로젝트 생성
 - `L1485` 제공자 · OAuth · 동반 서비스
 - `L1515` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
-- `L1556` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
-- `L1589` 배치 의존성과 완료 멱등성 (2026-09-06)
-- `L1597` 모험 완료와 실제 적용 횟수 (2026-09-05)
-- `L1602` Assistant clean conversation — Phase 1 (2026-09-06)
-- `L1639` Assistant deck width resize (2026-09-07)
+- `L1558` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
+- `L1591` 배치 의존성과 완료 멱등성 (2026-09-06)
+- `L1599` 모험 완료와 실제 적용 횟수 (2026-09-05)
+- `L1604` Assistant clean conversation — Phase 1 (2026-09-06)
+- `L1641` Assistant deck width resize (2026-09-07)
 
 ### `openwiki/editor-ai-tools.md` — 154KB · 1079줄 · ~42,716 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
@@ -427,16 +428,17 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L30` Show Picture preview opacity unit (2026-08-29)
 - `L35` 조명 백분율 입력 복구 (2026-09-05)
 
-### `openwiki/editor-event-commands.md` — 50KB · 132줄 · ~13,431 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-event-commands.md` — 52KB · 152줄 · ~13,813 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
-- `L7` 확률로 결과 뽑기 / 가중 분기 (2026-09-06)
-- `L20` 상점: 진열 상품과 상품 상세 중심 편집 (2026-09-05)
-- `L31` Roguelike run control (2026-08-24)
-- `L71` 얼굴 상자(faceset-crop-box) 페인트 계약 (2026-08-28)
-- `L102` Staged edit, history, and nested drag invariants (2026-07-30)
-- `L109` Command picker, validation, and preview trust (2026-07-30)
-- `L118` 회상 스틸과 AI 그림 (2026-09-03)
-- `L129` Recovered native emote command (2026-09-05)
+- `L7` Move-route target repair (PR716, 2026-09-09)
+- `L27` 확률로 결과 뽑기 / 가중 분기 (2026-09-06)
+- `L40` 상점: 진열 상품과 상품 상세 중심 편집 (2026-09-05)
+- `L51` Roguelike run control (2026-08-24)
+- `L91` 얼굴 상자(faceset-crop-box) 페인트 계약 (2026-08-28)
+- `L122` Staged edit, history, and nested drag invariants (2026-07-30)
+- `L129` Command picker, validation, and preview trust (2026-07-30)
+- `L138` 회상 스틸과 AI 그림 (2026-09-03)
+- `L149` Recovered native emote command (2026-09-05)
 
 ### `openwiki/editor-genre-packs.md` — 9KB · 57줄 · ~2,202 토큰
 
@@ -466,7 +468,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L226` 여관 외 시설의 공간 구성 (2026-09-05)
 - `L236` PR618 통합: 큰 탁자와 기존 시설 구성 (2026-09-06)
 
-### `openwiki/editor-observability.md` — 31KB · 369줄 · ~8,784 토큰 · 깨진 줄 1
+### `openwiki/editor-observability.md` — 32KB · 388줄 · ~9,132 토큰 · 깨진 줄 1
 
 - `L21` Opt-in local diagnostics (issue 693 OUT-009 / OUT-010)
 - `L74` 계측 초크포인트는 `store.markLocalMutation` 하나다
@@ -474,12 +476,13 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L128` AI 적용 경로 — 이쪽이 주 경로다
 - `L159` P2 outcome publication (2026-09-06)
 - `L222` 되돌리기 스택과 감사 로그는 다르다
-- `L243` 디버깅 레시피
-  - `L277` 저장된 것 — DB 커밋에 실린 행위 (`npm run commit:log`)
-- `L306` 로거
-- `L320` 알려진 남은 공백 (여기 손대는 사람이 이어서 하라)
-- `L353` AI 툴·액션 이유 (2026-09-02)
-- `L363` 검증
+- `L243` Toolbar history confirmation lifetime (PR716, 2026-09-09)
+- `L262` 디버깅 레시피
+  - `L296` 저장된 것 — DB 커밋에 실린 행위 (`npm run commit:log`)
+- `L325` 로거
+- `L339` 알려진 남은 공백 (여기 손대는 사람이 이어서 하라)
+- `L372` AI 툴·액션 이유 (2026-09-02)
+- `L382` 검증
 
 ### `openwiki/editor-pre-edit-routing.md` — 82KB · 323줄 · ~23,094 토큰 · 통째읽기 잘림 · 깨진 줄 5
 
@@ -515,7 +518,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L219` Event editor aggregate gate (2026-07-30)
 - `L228` P2 spatial integrity (2026-08-25)
 
-### `openwiki/editor-workflows-misc.md` — 64KB · 451줄 · ~17,505 토큰 · 통째읽기 잘림
+### `openwiki/editor-workflows-misc.md` — 65KB · 456줄 · ~17,604 토큰 · 통째읽기 잘림
 
 - `L7` Other Editor Workflows
   - `L9` New-project name and player title (2026-09-07)
@@ -895,6 +898,14 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L125` 감독용 보고서
 - `L140` 증거 시트
 - `L147` 비용
+
+### `openwiki/ui-discovery-pilot.md` — 6KB · 108줄 · ~1,430 토큰
+
+- `L7` Contract
+- `L27` Run
+- `L54` Score and decide
+- `L69` Image capability trap
+- `L81` 2026-09-08 pilot result
 
 ### `openwiki/village-design.md` — 6KB · 60줄 · ~2,029 토큰
 

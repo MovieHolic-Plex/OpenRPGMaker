@@ -343,7 +343,7 @@ function installAnchorKeepers(): void {
  * 높이는 트리거 아래 남은 공간으로 제한하고 부족하면 위로 뒤집는다. 뷰포트가 짧아 그래도
  * 넘칠 때만 내부 스크롤을 쓴다 — 그때는 메뉴 전체가 보이므로 스크롤바도 사용자에게 보인다.
  */
-function anchorMenuToViewport(menu: HTMLElement, trigger: HTMLElement): void {
+export function anchorMenuToViewport(menu: HTMLElement, trigger: HTMLElement): void {
   if (typeof window === "undefined" || typeof menu.getBoundingClientRect !== "function") return;
   const rect = trigger.getBoundingClientRect();
   if (!rect || (rect.width === 0 && rect.height === 0)) return;

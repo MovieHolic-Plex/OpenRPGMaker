@@ -69,6 +69,42 @@ function metricTotal(metrics: Record<string, FloorMetrics>): number {
 }
 
 /**
+ * **개별 하한선이 내려가는 것을 지목한다.**
+ *
+ * 왜 총합만으로는 못 막는가 (실측된 구멍): 갱신 모드는 `checkFloor` 의 쓰기 분기를 항목별
+ * 비교보다 **먼저** 타서, 가드가 "총합 0"과 "총합이 기존의 10% 미만"뿐이었다. 지표 하나가
+ * 1 → 0 으로 내려가는 것은 두 가드를 모두 통과한다.
+ * 실제로 밟았다: 하한선을 올리려고 SURFACE_FLOOR_UPDATE=1 을 돌린 실행이 커밋 프로브 축의
+ * commitCount 를 callCommonEvent/callMapEvent/craftRecipe/applyItemUpgrade 4종에서 1 → 0 으로,
+ * playMovie 에서 3 → 2 로 조용히 낮췄다. 그 4종이 바로 지금 고치고 있는 문제를 잡고 있던
+ * 항목들이다 — 즉 이 구멍은 게이트가 자기 감지력을 스스로 지우는 경로다.
+ *
+ * 항목 자체가 사라지는 것도 드롭으로 센다. 그 항목의 하한선 전부가 파일에서 지워지는 것이라
+ * 개별 지표가 0으로 내려가는 것보다 손실이 크다.
+ *
+ * 고의로 낮추는 길은 그대로 남는다 — **하한선 파일을 직접 지우고** 다시 만들면 된다
+ * (이 파일이 이미 문서화한 탈출구다). 그 삭제가 diff 에 남아 리뷰된다.
+ */
+function floorDecreases(previous: Floor, next: Record<string, FloorMetrics>): string[] {
+  const drops: string[] = [];
+  for (const [key, wanted] of Object.entries(previous)) {
+    const now = next[key];
+    if (!now) {
+      const metrics = Object.entries(wanted)
+        .map(([metric, min]) => `${metric}=${min}`)
+        .join(", ");
+      drops.push(`${key} — 항목이 축에서 사라져 하한선이 통째로 지워진다 (${metrics || "지표 없음"})`);
+      continue;
+    }
+    for (const [metric, min] of Object.entries(wanted)) {
+      const value = now[metric] ?? 0;
+      if (value < min) drops.push(`${key}.${metric} ${min} → ${value}`);
+    }
+  }
+  return drops;
+}
+
+/**
  * 하한선 검사. 기준선과 무관하게 항상 돈다(갱신 모드 포함).
  * 하한선 파일이 없으면 현재값으로 만들되, 그 실행은 실패시킨다 — "하한선이 방금 생겼다"는
  * 사실이 조용히 통과하면 첫 실행의 열화가 그대로 하한선이 된다.
@@ -82,6 +118,8 @@ function metricTotal(metrics: Record<string, FloorMetrics>): number {
  *      정상이지만 모든 항목의 모든 지표가 0인 건 정상일 수 없다.
  *   2) 기존 하한선 총합의 10% 미만으로 떨어졌다 — 대량 열화다. 의도한 축소라면 기존 파일을
  *      직접 지우고 다시 만들어라(그 삭제가 리뷰에 남는다).
+ *   3) **개별 하한선이 하나라도 내려간다** — 총합 가드 2개를 다 통과하는 소규모 열화다.
+ *      floorDecreases() 주석에 실측 사례가 있다(commitCount 1 → 0 이 조용히 통과했다).
  */
 function checkFloor(floorPath: string, metrics: Record<string, FloorMetrics>): FloorResult {
   const update = process.env.SURFACE_FLOOR_UPDATE === "1";
@@ -98,12 +136,25 @@ function checkFloor(floorPath: string, metrics: Record<string, FloorMetrics>): F
       };
     }
     if (had) {
-      const before = metricTotal(readJson<Floor>(floorPath, {}));
+      const previous = readJson<Floor>(floorPath, {});
+      const before = metricTotal(previous);
       if (before > 0 && now < before * 0.1) {
         return {
           violations: [
             `하한선을 쓰지 않았다: 지표 총합이 ${before} → ${now} (10% 미만)으로 떨어졌다 (${floorPath}) — ` +
               `대량 열화다. 의도한 축소면 하한선 파일을 직접 삭제하고 다시 만들어라.`,
+          ],
+          notices: [],
+        };
+      }
+      const drops = floorDecreases(previous, metrics);
+      if (drops.length) {
+        return {
+          violations: [
+            `하한선을 쓰지 않았다: 개별 하한선 ${drops.length}건이 내려간다 (${floorPath}) — ` +
+              `하한선 갱신은 올리는 데만 쓴다. 낮추는 것이 의도라면 하한선 파일을 직접 삭제하고 ` +
+              `다시 만들어라(그 삭제가 리뷰에 남는다).`,
+            ...drops.map((line) => `  하한선 하락: ${line}`),
           ],
           notices: [],
         };
