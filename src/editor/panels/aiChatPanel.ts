@@ -309,7 +309,23 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const outcome = controller.session?.getRunOutcome();
     outcomeSlot.replaceChildren(...(outcome ? [renderRunOutcome(outcome)] : []));
   };
-  const stickyChecklist = createAiStickyChecklist({ onWithdraw: withdrawAiRequirement });
+  const stickyChecklist = createAiStickyChecklist({
+    onWithdraw: withdrawAiRequirement,
+    onReviewApproach: checkId => {
+      if (disposed || turnBusy || !controller.session) return null;
+      controller.session.refreshAcceptance(store.getCurrent());
+      return controller.session.previewApproachCorrection(checkId);
+    },
+    onConfirmApproach: preview => {
+      if (disposed || turnBusy || !controller.session) return false;
+      const session = controller.session;
+      session.refreshAcceptance(store.getCurrent());
+      const accepted = session.confirmApproachCorrection(preview);
+      stickyChecklist.update(session.getAcceptanceSnapshot());
+      refreshRunOutcome();
+      return accepted;
+    },
+  });
   let disposed = false;
   const initialProjectIdentity = store.getProjectIdentity();
   const currentProjectContextKey = conversationScopeKey(initialProjectIdentity, store.getCurrent());

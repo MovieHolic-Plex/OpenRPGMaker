@@ -1,0 +1,262 @@
+[
+  {
+    "kind": "gameTitle",
+    "title": "작은 열쇠"
+  },
+  {
+    "kind": "mapCount",
+    "targets": [
+      {
+        "mapId": "map_blank_start"
+      },
+      {
+        "mapId": "map_basement"
+      }
+    ],
+    "count": 2
+  },
+  {
+    "kind": "mapDimensions",
+    "target": {
+      "mapId": "map_blank_start"
+    },
+    "width": 20,
+    "height": 15
+  },
+  {
+    "kind": "mapDimensions",
+    "target": {
+      "mapId": "map_basement"
+    },
+    "width": 12,
+    "height": 10
+  },
+  {
+    "kind": "targetChange",
+    "target": {
+      "mapId": "map_basement"
+    },
+    "region": {
+      "x": 1,
+      "y": 1,
+      "w": 10,
+      "h": 8
+    }
+  },
+  {
+    "kind": "preserve",
+    "target": {
+      "mapId": "map_blank_start"
+    }
+  },
+  {
+    "kind": "preserve",
+    "target": {
+      "mapId": "map_basement"
+    },
+    "region": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 1
+    }
+  },
+  {
+    "kind": "preserve",
+    "target": {
+      "mapId": "map_basement"
+    },
+    "region": {
+      "x": 0,
+      "y": 9,
+      "w": 12,
+      "h": 1
+    }
+  },
+  {
+    "kind": "imageReviewed",
+    "target": {
+      "mapId": "map_basement"
+    },
+    "region": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 10
+    }
+  },
+  {
+    "kind": "reachability",
+    "target": {
+      "mapId": "map_basement"
+    },
+    "from": {
+      "x": 2,
+      "y": 5
+    },
+    "to": [
+      {
+        "x": 6,
+        "y": 6
+      },
+      {
+        "x": 1,
+        "y": 6
+      }
+    ]
+  },
+  {
+    "kind": "npcReward",
+    "requirement": {
+      "target": {
+        "mapId": "map_blank_start",
+        "eventId": "ev_chief"
+      },
+      "grants": [
+        {
+          "kind": "gold",
+          "count": 20
+        }
+      ],
+      "oneTime": true
+    }
+  },
+  {
+    "kind": "npcReward",
+    "requirement": {
+      "target": {
+        "mapId": "map_basement",
+        "eventId": "ev_chest_228f401f-afe8-41ce-a4f0-c6816096ccdb"
+      },
+      "grants": [
+        {
+          "kind": "item",
+          "id": "item_brass_key",
+          "count": 1
+        }
+      ],
+      "oneTime": true
+    }
+  },
+  {
+    "kind": "mapRoundTrip",
+    "target": {
+      "mapId": "map_blank_start"
+    },
+    "start": {
+      "x": 10,
+      "y": 8
+    },
+    "destination": {
+      "mapId": "map_basement"
+    },
+    "outgoing": {
+      "eventId": "ev_gate_c6ea6004-f391-4582-8c88-9bd0b02c56bd"
+    },
+    "returning": {
+      "eventId": "ev_gate_b6385938-fe58-4286-a7e8-5e8cfc1d2c95"
+    }
+  },
+  {
+    "kind": "toolVerdict",
+    "tool": "run_scene_test",
+    "args": {
+      "mapId": "map_blank_start",
+      "start": {
+        "x": 10,
+        "y": 8
+      },
+      "steps": [
+        {
+          "kind": "set",
+          "inventory": {
+            "item_brass_key": 0
+          }
+        },
+        {
+          "kind": "interact",
+          "eventId": "ev_door"
+        },
+        {
+          "kind": "expect",
+          "inventoryCount": {
+            "item_brass_key": 0
+          },
+          "interactionComplete": true
+        },
+        {
+          "kind": "set",
+          "inventory": {
+            "item_brass_key": 1
+          }
+        },
+        {
+          "kind": "interact",
+          "eventId": "ev_door"
+        },
+        {
+          "kind": "expect",
+          "inventoryCount": {
+            "item_brass_key": 0
+          },
+          "endingReached": "ending_escape",
+          "interactionComplete": true
+        },
+        {
+          "kind": "interact",
+          "eventId": "ev_door"
+        },
+        {
+          "kind": "expect",
+          "inventoryCount": {
+            "item_brass_key": 0
+          },
+          "endingReached": "ending_escape",
+          "interactionComplete": true
+        }
+      ]
+    },
+    "interactionTargets": [
+      {
+        "stepIndex": 1,
+        "mapId": "map_blank_start",
+        "eventId": "ev_door"
+      },
+      {
+        "stepIndex": 4,
+        "mapId": "map_blank_start",
+        "eventId": "ev_door"
+      },
+      {
+        "stepIndex": 6,
+        "mapId": "map_blank_start",
+        "eventId": "ev_door"
+      }
+    ]
+  },
+  {
+    "kind": "toolVerdict",
+    "tool": "run_lint",
+    "args": {
+      "reachability": [
+        {
+          "mapId": "map_basement",
+          "from": {
+            "x": 2,
+            "y": 5
+          },
+          "targets": [
+            {
+              "x": 6,
+              "y": 6
+            },
+            {
+              "x": 1,
+              "y": 6
+            }
+          ]
+        }
+      ]
+    }
+  }
+]
