@@ -1,5 +1,77 @@
 # Editor AI Panel & Tools
 
+## Map-scoped conversation archive (2026-09-08)
+
+This supersedes the older 50-record retention and current-config mirror notes below.
+`src/ai/conversationStore.ts` retains conversations in IndexedDB `oprn-ai-records`
+v2. `listConversations` still returns the latest 50; `evicted` is always zero.
+The existing 2,000-character argument and 200,000-character transcript budgets
+remain. This is a retained, possibly compressed transcript archive, not a promise
+of original uncompressed text or a new model-memory system.
+
+- `queryConversationArchive({projectContextKey, mapId?, unknownOnly?, query?, offset?, limit?})`
+  returns `{records, total, hasMore, durable}` with deterministic savedAt-desc/id-asc
+  order. Scope is mandatory; `null` explicitly selects legacy unscoped records.
+  Search covers title and preview. Map filtering returns whole conversations.
+- `loadConversationForScope(id, projectContextKey)` returns the whole retained
+  record only for that scope. Continue using its original id and all its entries;
+  map navigation does not establish a new session.
+- `deleteConversationForScope(id, projectContextKey)` returns `{durable}` and
+  atomically writes a project-qualified tombstone alongside deletion. The legacy
+  global clear tombstones all currently known records, including migrated rows.
+  Late local saves, legacy re-imports and explicit remote imports cannot resurrect
+  them. Deletion is browser-local, not cross-device Supabase deletion.
+- Archive summaries carry `mapIds`, `viewedMapIds`, `targetMapIds`,
+  `mapAttribution` (`complete | partial | unknown`) and `transcriptCompacted`.
+  Associations are collected before compaction from structured user context and
+  direct `mapId`/`toMapId` or known `a`/`b` endpoint fields only. Names, prose and
+  unrelated nested objects are not evidence. Old rows normalize lazily; malformed
+  metadata is re-derived, never assigned to the open map. Continued compacted
+  records preserve already indexed maps but may report partial attribution.
+- `hydrateConversationArchive({projectContextKey, signal?, isCurrent?})` explicitly
+  reads all remote pages of up to 100 rows, validates destination/scope/body and
+  imports locally without mirror writes, model calls or wiki extraction. It
+  returns `{imported, skipped, rejected, durable}`; `rejected > 0` is incomplete
+  recovery. Duplicate/older imports and tombstoned IDs are skipped. Pass an abort
+  signal and a captured editor-identity check; close/project switch must invalidate
+  pending UI callbacks. Transport/storage errors reject instead of masquerading as
+  empty success. Already imported pages remain if a later page fails or aborts.
+- Save captures the remote destination before awaiting local persistence. New
+  outbox payloads store only `destinationProjectId`, never credentials; old payloads
+  may derive a destination only from explicit `remote:<id>` scope. Ambiguous old
+  payloads fail visibly and remain queued. Remote `entries_json` remains an array;
+  no remote schema migration is required.
+
+Memory fallback truthfully returns `durable:false`; browser storage removal also
+removes tombstones. Existing local title/start-map scope keys can collide and do
+not imply collision-proof project identity. Archive queries currently scan local
+records; offset-based remote pagination is deterministic on a stable remote set,
+not a transaction snapshot of concurrent remote writes. Repeated recovery is safe.
+Tests: `mapConversationStore`, `conversationStore`, `mapConversationRemote`,
+`projectWikiHistorySources`. Browser/live remote evidence is lead-owned.
+
+### Editor history surface
+
+The existing assistant clock (`ai-open-conversations`) opens the same history
+modal, initially filtered to the current map. Its visible clock glyph also exposes
+`ai-map-history-open`; this is not a second toolbar button. The modal offers
+current-map, whole-project and unknown-attribution filters, explicit map choices,
+search, pagination and manual remote recovery. Known deleted-map IDs remain
+selectable rather than becoming unknown.
+
+Every view uses the captured project scope. Opening a result restores its original
+conversation ID and all retained entries. Earlier turns can remain visually
+collapsed using the existing turn toggle; they are not discarded. Browsing history
+and navigating A-B-A do not reset the live project conversation. Project changes
+and modal closure invalidate outstanding requests and restoration callbacks.
+
+Recovery reports transport errors instead of an empty success; deletion removes
+the whole conversation from every local map view and explicitly remains
+browser-local. Compact/partial provenance and memory-only storage are disclosed.
+Contracts: `aiConversationHistoryModal`, `aiChatSessionScope`,
+`test/e2e/ai-map-history.spec.ts`. Real local, remote and visual evidence lives under
+`output/evidence/map-ai-history/`.
+
 ## Independent result review and repair (2026-09-06)
 
 This supersedes older same-conversation review/9-write-threshold and unreviewed

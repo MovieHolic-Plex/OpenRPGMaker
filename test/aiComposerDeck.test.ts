@@ -64,6 +64,7 @@ describe("aiComposer — 데크 컴포저", () => {
     }
     expect(shell.newChatButton.dataset.testid).toBe("ai-new-chat");
     expect(shell.conversationsButton?.dataset.testid).toBe("ai-open-conversations");
+    expect(findByTestId(shell.conversationsButton as unknown as FakeElement, "ai-map-history-open")).not.toBeNull();
     expect(shell.menuToggle.dataset.testid).toBe("ai-command-menu-toggle");
     expect(shell.preferenceToggle?.dataset.testid).toBe("ai-preference-toggle");
     expect(collapse.parentElement).toBeNull();

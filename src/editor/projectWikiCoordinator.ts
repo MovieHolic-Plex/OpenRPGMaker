@@ -1,5 +1,5 @@
 import { extractProjectWiki } from "@/ai/projectWikiClient";
-import { conversationScopeKey, listConversations, loadConversation } from "@/ai/conversationStore";
+import { conversationScopeKey, queryConversationArchive, loadConversationForScope } from "@/ai/conversationStore";
 import { loadAiConfig, type AiConfig } from "@/ai/llmClient";
 import { stripContextFooter } from "@/ai/contextFooter";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
@@ -44,11 +44,11 @@ const emptyWorld = (): ProjectWorld => ({ entities: [], relations: [] });
 /** Same-project local history is evidence, not a remote history service. */
 export async function projectWikiHistorySources(): Promise<readonly WikiSource[]> {
   const scope = conversationScopeKey(store.getProjectIdentity(), store.getCurrent());
-  const records = (await listConversations()).filter((record) => record.projectContextKey === scope)
-    .sort((a, b) => a.savedAt - b.savedAt);
+  const records = [...(await queryConversationArchive({ projectContextKey: scope, limit: Number.MAX_SAFE_INTEGER })).records]
+    .sort((a, b) => a.savedAt - b.savedAt || a.id.localeCompare(b.id));
   const sources: WikiSource[] = [];
   for (const summary of records) {
-    const record = await loadConversation(summary.id);
+    const record = await loadConversationForScope(summary.id, scope);
     if (!record || record.projectContextKey !== scope) continue;
     record.entries.forEach((entry, index) => {
       if (entry.kind !== "user" || !entry.text.trim()) return;

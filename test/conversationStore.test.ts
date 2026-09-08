@@ -132,7 +132,7 @@ describe("conversationStore", () => {
     const outcome = await saveConversation(saved);
 
     expect(outcome).toEqual({ ok: true, durable: true, evicted: 0 });
-    expect(await loadConversation("roundtrip")).toEqual(saved);
+    expect(await loadConversation("roundtrip")).toMatchObject(saved);
   });
 
   it("Given a tool audit with reason When saved Then local load and remote payload keep the reason", async () => {
@@ -180,7 +180,7 @@ describe("conversationStore", () => {
     expect(await listConversations()).toEqual([]);
   });
 
-  it("Given more than the record cap When saved Then the oldest records are evicted and the count is reported", async () => {
+  it("Given more than the recent cap When saved Then older records remain loadable and no eviction is reported", async () => {
     let last = await saveConversation(record("c1", 1));
     for (let index = 2; index <= CONVERSATION_MAX_RECORDS + 5; index += 1) last = await saveConversation(record(`c${index}`, index));
 
@@ -189,8 +189,8 @@ describe("conversationStore", () => {
     expect(summaries).toHaveLength(CONVERSATION_MAX_RECORDS);
     expect(summaries[0]!.id).toBe(`c${CONVERSATION_MAX_RECORDS + 5}`);
     expect(summaries.at(-1)?.id).toBe("c6");
-    expect(await loadConversation("c5")).toBeNull();
-    expect(last).toEqual({ ok: true, durable: true, evicted: 1 });
+    expect((await loadConversation("c5"))?.id).toBe("c5");
+    expect(last).toEqual({ ok: true, durable: true, evicted: 0 });
   });
 
   it("Given saved conversations When searched by title Then partial case-insensitive matches return", async () => {
@@ -218,15 +218,16 @@ describe("conversationStore", () => {
 
   it("Given a remote mirror failure When saving Then the failure is visible without losing the local record", async () => {
     const failure = new Error("missing ai_conversations migration");
-    const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    const failureReported = new Promise<void>(resolve => {
+      vi.spyOn(console, "error").mockImplementation(() => resolve());
+    });
     recordSupabaseConversationMock.mockRejectedValueOnce(failure);
 
     await saveConversation(record("remote-failure", 400));
-    await Promise.resolve();
-    await Promise.resolve();
+    await failureReported;
 
     expect((await loadConversation("remote-failure"))?.id).toBe("remote-failure");
-    expect(consoleError).toHaveBeenCalledWith("[ai-conversation] Supabase mirror failed:", failure);
+    expect(console.error).toHaveBeenCalledWith("[ai-conversation] Supabase mirror failed:", failure);
   });
 });
 
