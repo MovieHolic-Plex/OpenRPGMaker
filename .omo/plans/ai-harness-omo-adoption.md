@@ -383,7 +383,13 @@ Phase 운영 게이트이며, 실행 순서를 강제하도록 해당 Phase 뒤�
     원본·직접 종료 코드·소스 해시·실저장 재조회·정리 증거:
     `output/evidence/ai-harness/p3/integration/report.md`.
 
-- [ ] 13a. 누락된 정확한 값과 보존 수락 기준을 실제 프로젝트에 연결한다
+- [x] 13a. 누락된 정확한 값과 보존 수락 기준을 실제 프로젝트에 연결한다
+  - 완료: 제품 기준 `47f361a4d`, QA 정합화 `f18a7850d`, 완료 후 증명 재시도
+    `9aa907ccc`. 감독자 기준 검사 32건 및 실제 선언자/응답 검사 11건 통과.
+    다섯 실제 편집기 시나리오와 전체 빌드 통과, 격리 원격 프로젝트 정리 확인.
+    근거: `.omo/evidence/ai-harness-implementation/resume-01a08291/`의
+    `final-verification/` 및 `proof-retry/native/`. 기존 실패 기록은 보존한다.
+    최종 전체 게이트·ultrabrain 승인·병합은 별도 항목 13에 남아 있다.
   - Recommended task executor category: deep
   - 사용자 2026-09-08 추가 승인. 기존 수락 스키마·파서·평가기에 제목·아이템 값과
     허용 변경 외 저작 내용 보존을 표현하는 최소 typed 기준을 추가한다.
