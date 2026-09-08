@@ -143,8 +143,15 @@ VITE_BGM_CDN_BASE=https://cheapcdn.sgp1.cdn.digitaloceanspaces.com
   someone else's keys. `BGM_CDN_PREFIX` in `bgmCdn.ts` and `KEY_PREFIX` in the upload script must
   stay in sync — a mismatch 404s all 281 tracks.
 - Unset (or a non-`http(s)` value) uses `/assets/cc0/audio/catalog/<file>`, including the
-  installed release pack. A missing file can return Vite's HTML fallback with HTTP 200;
-  check Content-Type and native media errors, not status alone.
+  installed release pack. `audioDeliveryPlugin` returns real missing-media 404s in Vite
+  dev and preview before SPA fallback. Other deployment hosts must keep the same rule.
+- Vite snapshots installed, nonempty pack filenames at startup/build into the existing
+  shared editor catalog. Without a CDN, only installed pack entries are advertised in
+  pickers/search; the three starters remain available on a normal checkout. Install the
+  existing Release pack and restart dev/rebuild to expose more. No runtime IDs, saved
+  references, generated catalogs, or project descriptions are deleted. Headless metadata
+  tools without a deployment snapshot still enumerate the complete catalog. Legacy MIDI
+  remains explicitly non-playable inspection metadata, not advertised playable audio.
 - Upload sets `x-amz-acl: public-read` and `Cache-Control: immutable` (file names carry a content
   hash, so they are never rewritten in place).
 - Credentials (`DO_SPACES_KEY/SECRET/BUCKET/REGION`) are non-`VITE` — they are never inlined into
@@ -211,3 +218,23 @@ continues to use `src/assets/bgmCatalogRuntime.ts`.
   whose file exists under `public/`.
 - Tests must resolve local paths via `bgmTrackUrl(fileName, {})` (explicit empty env). Reading the
   ambient env makes the suite fail on any machine with `VITE_BGM_CDN_BASE` set.
+
+OUT-002 playback/delivery regression (2026-09-08): Test Play unlocks the shared engine
+synchronously in its shell-opening gesture, before persistence/paint awaits. Capture-phase
+unlock listeners also work when runtime input stops bubbling. `NotAllowedError` retains
+only live tracks for the next gesture; native media errors and other play rejections warn
+with recovery guidance and release the failed track, permitting same-ID retries. Stopping
+or replacing a track cannot resurrect it via an outstanding rejection. Supported saved
+WAV MIME aliases (`x-wav`, `wave`, `vnd.wave`) and `audio/mp3` normalize at resolution,
+without changing project data or payload bytes. The PWA v2 cache bypasses Range requests
+entirely: the network owns 206/416 even after a full response is cached; partial responses
+are never cached. Offline range playback is not promised.
+
+Focused tests: `audioConnectivity`, `audioInventoryDelivery`, `audioDeliveryHttp`,
+`testPlayRunControls`. Reproducible real-browser proof: with this worktree's strict-port
+Vite running, `node scripts/qa/issue693-audio.mjs` (default origin `127.0.0.1:38422`,
+`AUDIO_QA_URL`/`AUDIO_QA_OUT` overrides). Chromium tests cold/warm/suffix/416 SW ranges
+and 404s; Firefox opens the actual local-only sample adventure, checks its first Test Play
+click via native engine-owned `playing`, compares picker inventory, fetches and decodes
+all advertised playable BGM, exercises native missing-media failure and a WAV MIME alias,
+and captures 1440x900/1024x768. No media play/fetch mocking or remote content mutation.

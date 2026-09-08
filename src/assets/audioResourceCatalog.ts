@@ -5,6 +5,8 @@ import type {
   UploadedAsset,
 } from "@/project/types";
 import { getAudioDescriptionOverride } from "@/project/audioDescriptions";
+import { bgmCdnBase } from "./bgmCdn";
+import { findBgmRuntimeEntry } from "./bgmCatalogRuntime";
 import { BGM_CATALOG, bgmTrackLabel } from "./bgmCatalog";
 import { CC0_AUDIO_ASSETS } from "./cc0AudioAssets";
 import { EASYRPG_MUSIC_ASSETS, EASYRPG_SOUND_ASSETS } from "./easyrpgRtp";
@@ -12,6 +14,15 @@ import { builtinGeneratedResourceIds } from "./generatedAssetResourceResolver";
 import { GENERATED_ASSET_PLAN } from "./oprnGeneratedAssetPlan";
 import { moodTagsForAsset } from "./resourceMoodTags";
 import { SE_CATALOG } from "./seCatalog";
+
+// Vite injects the installed pack filenames; headless metadata tools have no deployment.
+declare const __OPRN_INSTALLED_BGM_FILES__: readonly string[] | undefined;
+
+export function isCatalogBgmAvailable(resourceId: string): boolean {
+  const bgm = findBgmRuntimeEntry(resourceId);
+  return !bgm || bgmCdnBase() !== null || typeof __OPRN_INSTALLED_BGM_FILES__ === "undefined"
+    || __OPRN_INSTALLED_BGM_FILES__.includes(bgm.fileName);
+}
 
 export type AudioResourceProject = {
   readonly audioDescriptions?: AudioDescriptionOverrides;
@@ -77,6 +88,7 @@ export function listAudioResources(
     },
   ): void => {
     if (id.length === 0 || resources.has(id)) return;
+    if (!isCatalogBgmAvailable(id)) return;
     resources.set(id, { id, kind, name: name || id, ...metadata });
   };
 
