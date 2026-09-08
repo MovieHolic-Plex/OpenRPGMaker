@@ -1,5 +1,25 @@
 # Editor Event Authoring
 
+## Character graphic no-match recovery (OUT-007, 2026-09-08)
+
+- Reproduced surface: Event editor > graphic picker > advanced direct ID. An
+  unavailable ID formerly closed the picker and entered a dangling sprite ID
+  into the event draft. `npcGraphicPicker.ts` now checks the current shared
+  `projectCharsetAssets` catalog at confirmation, returning a local typed
+  `no-match` instead of a graphic. The request stays editable and the live
+  status names the searched bundled/uploaded sources and recovery choices.
+- Manual catalog selection retries normally. Cancel writes nothing. Explicit
+  `그림 없이 계속` removes the sprite reference and marks only the graphic
+  transparent; commands, identity, conditions and other character data remain.
+  An empty catalog uses those same actions rather than throwing during render.
+  Lookup does not catch or reclassify image, transport, generation or save errors.
+- The shared AI query boundary already uses `ToolError(graphic-not-found)` with
+  candidates; `place_npc` rejection is atomic and explicit manual/transparent
+  retries work. No broad AI data-loss defect or new resolver abstraction is claimed.
+- Regressions: `test/npcGraphicRecovery.test.ts`; real-browser driver:
+  `node scripts/qa/character-asset-recovery.mjs` (`BASE_URL`, `QA_WIDTH`, `QA_OUTPUT`).
+  It uses a local-only editor draft, never remote project writes or mocked assets.
+
 ## Page preview state follows the current script (2026-09-08)
 
 - `previewSimulation.ts` carries the active face (resource, side, flip) in each

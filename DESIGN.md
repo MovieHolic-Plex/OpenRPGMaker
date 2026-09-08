@@ -1,5 +1,18 @@
 # RPG ZZU Design System
 
+## Character graphic recovery (2026-09-08)
+
+- Keep the existing event graphic subdialog, catalog, preview, advanced input,
+  modal stack and `btn` footer. No new theme, dependency, motion or CSS primitive.
+- No-match keeps the input mounted, opens its existing disclosure, marks it
+  invalid and returns focus there. A polite status inside that input's existing
+  container explains bundled/uploaded lookup and manual/no-image/cancel recovery.
+  Reuse the existing 12px status style and native labelled input.
+- Explicit no-image is a secondary footer action, not an arbitrary replacement.
+  Empty catalogs disable Confirm and retain no-image/cancel. Existing event
+  fields survive recovery. Desktop checks cover 1024/1280/1440; independent
+  screenshot interpretation and final visual approval remain lead-owned.
+
 ## Monster resource metadata editor (2026-09-07)
 
 - Database > 전투 몬스터 exposes 몬스터 소재 even with no gameplay records.

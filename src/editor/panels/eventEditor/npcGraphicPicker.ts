@@ -8,6 +8,7 @@ import {
   type CharsetFrameSelection,
 } from "@/assets/easyrpgRtp";
 import { updateEventPage } from "@/editor/eventPages";
+import { el } from "@/util/dom";
 import { store } from "@/project/store";
 import type { EventPage, EventPageGraphic, MapId } from "@/project/types";
 import {
@@ -41,13 +42,37 @@ export function renderNpcGraphicPicker(
   page: EventPage,
   close: () => void
 ): HTMLElement {
-  let selection = initialSelection(page);
-  let directSpriteId = page.graphic.sprite?.id ?? selection.asset.textureKey;
   const root = document.createElement("div");
   root.className = "npc-graphic-picker event-graphic-rm-picker";
   root.dataset.testid = "npc-graphic-picker";
 
   const assets = currentCharsetAssets();
+  const recovery = el("p", {
+    class: "npc-charset-teach-status", attrs: { role: "status", "aria-live": "polite" },
+    dataset: { testid: "event-graphic-recovery" },
+  });
+  const placeholder = el("button", {
+    class: "btn", text: "그림 없이 계속", attrs: { type: "button" },
+    dataset: { testid: "event-graphic-placeholder" },
+    on: { click: () => {
+      const graphic = { ...page.graphic, transparent: true };
+      delete graphic.sprite;
+      updateEventPage(mapId, eventId, page.id, { graphic });
+      close();
+    } },
+  });
+  const first = assets[0];
+  if (!first) {
+    recovery.dataset.code = "graphic-not-found";
+    recovery.textContent = "기본·업로드 캐릭터 목록이 비어 있습니다. 취소한 뒤 소재에서 캐릭터 그림을 가져오거나, 그림 없이 계속할 수 있습니다. 기존 이벤트 내용은 유지됩니다.";
+    const footer = renderNpcGraphicPickerFooter(() => {}, close);
+    footer.querySelector<HTMLButtonElement>('[data-testid="event-graphic-confirm"]')!.disabled = true;
+    footer.append(placeholder);
+    root.append(recovery, footer);
+    return root;
+  }
+  let selection = initialSelection(page, assets, first);
+  let directSpriteId = page.graphic.sprite?.id ?? selection.asset.textureKey;
   const resourceList = renderGraphicResourceList(assets, (asset) => {
     applySelection({ ...selection, asset });
   });
@@ -103,10 +128,12 @@ export function renderNpcGraphicPicker(
   directInput.type = "text";
   directInput.value = directSpriteId;
   directInput.dataset.testid = "event-graphic-direct-sprite-input";
+  directInput.setAttribute("aria-label", "캐릭터 그림 ID");
   directInput.addEventListener("input", () => {
     directSpriteId = directInput.value.trim();
+    clearRecovery();
   });
-  directBox.append(directInput);
+  directBox.append(directInput, recovery);
 
   const advancedDetails = document.createElement("details");
   advancedDetails.className = "npc-advanced-sprite";
@@ -122,20 +149,36 @@ export function renderNpcGraphicPicker(
   pickerFrame.className = "event-graphic-picker-frame";
   pickerFrame.append(resourceList.root, rightPane);
 
-  root.append(pickerFrame, renderNpcGraphicPickerFooter(commitSelection, close));
+  const footer = renderNpcGraphicPickerFooter(commitSelection, close);
+  footer.append(placeholder);
+  root.append(pickerFrame, footer);
   refresh();
   return root;
 
   function applySelection(next: NpcGraphicSelection): void {
     selection = next;
     directSpriteId = next.asset.textureKey;
+    clearRecovery();
     refresh();
   }
 
+  function clearRecovery(): void {
+    recovery.textContent = "";
+    delete recovery.dataset.code;
+    directInput.removeAttribute("aria-invalid");
+  }
+
   function commitSelection(): void {
-    updateEventPage(mapId, eventId, page.id, {
-      graphic: graphicForConfirmedSelection(page.graphic, selection, directSpriteId),
-    });
+    const result = graphicForConfirmedSelection(page.graphic, selection, directSpriteId);
+    if (result.status === "no-match") {
+      recovery.dataset.code = "graphic-not-found";
+      recovery.textContent = "기본·업로드 캐릭터 목록에 입력한 ID의 그림이 없습니다. 목록에서 직접 고르거나, 그림 없이 계속 또는 취소를 선택하세요. 기존 이벤트 내용은 유지됩니다.";
+      advancedDetails.open = true;
+      directInput.setAttribute("aria-invalid", "true");
+      directInput.focus();
+      return;
+    }
+    updateEventPage(mapId, eventId, page.id, { graphic: result.graphic });
     close();
   }
 
@@ -158,21 +201,12 @@ export function renderNpcGraphicPicker(
   }
 }
 
-function initialSelection(page: EventPage): NpcGraphicSelection {
-  const assets = currentCharsetAssets();
+function initialSelection(page: EventPage, assets: readonly CharsetPickerAsset[], first: CharsetPickerAsset): NpcGraphicSelection {
   const asset = page.graphic.sprite ? assets.find((a) => a.textureKey === page.graphic.sprite?.id) : undefined;
   if (!asset) {
-    return { asset: firstCharsetAsset(assets), ...DEFAULT_SELECTION };
+    return { asset: first, ...DEFAULT_SELECTION };
   }
   return { asset, ...decodeCharsetFrameIndex(page.graphic.pattern ?? charsetFrameIndex(DEFAULT_SELECTION)) };
-}
-
-function firstCharsetAsset(assets: readonly CharsetPickerAsset[]): CharsetPickerAsset {
-  const first = assets[0];
-  if (!first) {
-    throw new Error("EasyRPG 캐릭터 그림 목록이 비어 있습니다");
-  }
-  return first;
 }
 
 function applyPreviewStyle(target: HTMLElement, selection: NpcGraphicSelection, scale: number): void {
@@ -200,17 +234,17 @@ function graphicForConfirmedSelection(
   graphic: EventPageGraphic,
   selection: NpcGraphicSelection,
   spriteId: string
-): EventPageGraphic {
+): { status: "matched"; graphic: EventPageGraphic } | { status: "no-match" } {
   const id = spriteId.trim();
-  if (!id) return graphicWithoutSprite(graphic);
+  if (!id) return { status: "matched", graphic: graphicWithoutSprite(graphic) };
   const assets = currentCharsetAssets();
-  if (!assets.some((a) => a.textureKey === id)) return { ...graphic, sprite: { type: "bundled", id } };
-  return {
+  if (!assets.some((a) => a.textureKey === id)) return { status: "no-match" };
+  return { status: "matched", graphic: {
     ...graphic,
     sprite: { type: "bundled", id },
     direction: selection.direction,
     pattern: charsetFrameIndex(selection),
-  };
+  } };
 }
 
 function graphicWithoutSprite(graphic: EventPageGraphic): EventPageGraphic {
