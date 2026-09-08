@@ -4863,8 +4863,8 @@ export class AssistantSession {
           } else if (name === "set_build_spec") {
             toolResult = this.applyBuildSpec(args);
           } else if (name === APPEARANCE_GENERATION_TOOL) {
-            const { startAppearanceGenerationFromAssistant } = await import("@/editor/characterAppearanceGeneration");
-            const handoff = await startAppearanceGenerationFromAssistant(this.ctx.project, args, this.appearanceProjectIdentity, signal);
+            const { startAppearanceGenerationFromAssistant } = await operation.wait(import("@/editor/characterAppearanceGeneration"));
+            const handoff = await operation.wait(startAppearanceGenerationFromAssistant(this.ctx.project, args, this.appearanceProjectIdentity, signal));
             toolResult = handoff;
             if (handoff.ok && handoff.data?.status === "generating") this.turnAppearanceGeneration = handoff.data;
           } else if (
