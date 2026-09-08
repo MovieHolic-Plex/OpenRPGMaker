@@ -88,11 +88,17 @@ describe("새 프로젝트 다이얼로그", () => {
     for (const packId of GENRE_PACK_IDS) {
       const radio = document.querySelector(`[data-testid='${newProjectGenreOptionTestId(packId)}']`);
       const image = radio?.parentElement?.querySelector("img");
-      const expected = WELCOME_GENRE_PRESETS.find((preset) => preset.packId === packId)?.thumb;
-      expect(expected, `${packId} preset thumb`).toBeTruthy();
+      const option = NEW_PROJECT_GENRE_OPTIONS.find((entry) => entry.id === packId);
+      const expected = option?.thumb
+        ?? WELCOME_GENRE_PRESETS.find((preset) => preset.packId === packId)?.thumb;
+      expect(expected, `${packId} thumb source`).toBeTruthy();
       expect(image?.getAttribute("src"), `${packId} row image`).toBe(expected);
       expect(image?.getAttribute("alt")).toBe("");
     }
+    const shown = Array.from(document.querySelectorAll(".new-project-genre-art img"))
+      .map((image) => image.getAttribute("src"));
+    expect(new Set(shown).size, `같은 그림을 나눠 갖으니 골랐을 때 무엇이 늬라지는지 읽힐 수 없다: ${shown}`)
+      .toBe(shown.length);
     const blankRow = document
       .querySelector(`[data-testid='${newProjectGenreOptionTestId(null)}']`)?.parentElement;
     expect(blankRow?.querySelector("img")).toBeNull();

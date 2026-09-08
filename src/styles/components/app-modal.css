@@ -210,9 +210,6 @@
     overflow: auto;
     white-space: pre-wrap;
   }
-  .new-project-card {
-    max-width: 520px;
-  }
   .new-project-starter-list {
     display: grid;
     grid-template-columns: 1fr 1fr;
