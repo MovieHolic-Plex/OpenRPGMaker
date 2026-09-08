@@ -4078,7 +4078,8 @@ export class AssistantSession {
         const unavailable = visualChanged ? mapVisualEvidenceUnavailable(after, before) : null;
         if (unavailable) requiredProblems.push(unavailable);
         if (visualChanged && !coveredByImages(receipts, after, { x: 0, y: 0, w: after.width, h: after.height })) {
-          requiredProblems.push(`show_map_region: current rendered coverage of changed map ${mapId} required`);
+          requiredProblems.push(`show_map_region: current rendered coverage of changed map ${mapId} required`
+            + ` — request x:0,y:0,w:${after.width},h:${after.height} in one call; complete coverage is not clipped`);
         }
       }
       for (const receipt of this.reviewImages.keys()) if (!receipts.includes(receipt)) this.reviewImages.delete(receipt);
