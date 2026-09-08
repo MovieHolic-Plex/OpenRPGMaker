@@ -179,13 +179,12 @@ function intentDeclarationResponse(init?: RequestInit): Response {
   return Response.json({ choices: [{ message: { role: "assistant", content: JSON.stringify(payload) }, finish_reason: "stop" }] });
 }
 
-function plannerNewPlan(): Response {
-  return Response.json({ choices: [{ message: { role: "assistant", content: JSON.stringify({
-    action: "new_plan",
-    goal: "야외에 집 짓기",
-    layers: [{ title: "시공", items: [{ title: "집", instruction: "밑그림을 정하고 집 칸을 칠한다", successTools: ["set_build_spec", "fill_region"] }] }],
-  }) }, finish_reason: "stop" }] });
+
+function chatMessages(value: unknown): readonly { readonly content?: unknown }[] | undefined {
+  if (!Array.isArray(value)) return undefined;
+  return value.filter((entry): entry is { readonly content?: unknown } => typeof entry === "object" && entry !== null);
 }
+
 function plannerDirect(): Response {
   return Response.json({ choices: [{ message: { role: "assistant", content: JSON.stringify({ action: "direct" }) }, finish_reason: "stop" }] });
 }
@@ -206,7 +205,7 @@ function scriptTurn(afterFirstRound: () => Response | never): void {
   vi.stubGlobal("fetch", vi.fn(async (input: unknown, init?: RequestInit) => {
     let request: { messages?: unknown } = {};
     try { request = JSON.parse(String(init?.body ?? "{}")); } catch { return okResponse(); }
-    if (isWikiExtraction(request.messages)) return emptyWikiResponse();
+    if (isWikiExtraction(chatMessages(request.messages))) return emptyWikiResponse();
     if (!isLlmRequest(input, init)) return nonToolLlm(input, init, plannerCalls);
     round += 1;
     if (round > 8) return new Response("script-exhausted", { status: 401 });
@@ -227,7 +226,7 @@ function scriptRounds(rounds: readonly (() => Response | never)[]): void {
   vi.stubGlobal("fetch", vi.fn(async (input: unknown, init?: RequestInit) => {
     let request: { messages?: unknown } = {};
     try { request = JSON.parse(String(init?.body ?? "{}")); } catch { return okResponse(); }
-    if (isWikiExtraction(request.messages)) return emptyWikiResponse();
+    if (isWikiExtraction(chatMessages(request.messages))) return emptyWikiResponse();
     if (!isLlmRequest(input, init)) return nonToolLlm(input, init, plannerCalls);
     round += 1;
     if (round > 8) return new Response("script-exhausted", { status: 401 });
@@ -404,6 +403,7 @@ describe.each([MAP_ID, OTHER_MAP_ID])("중단·오류로 끝난 턴의 청사진
         source: "agent", summary: "resume-retained-draft", toolNames: ["set_build_spec"],
       });
       expect(applied.ok, applied.ok ? "" : applied.issue).toBe(true);
+      if (!applied.ok) throw new Error(applied.issue ?? "apply failed");
       session.recordAppliedProject(applied);
       expect(applySpy).toHaveBeenCalledTimes(1);
       expect(store.getCurrent()).not.toBe(before);

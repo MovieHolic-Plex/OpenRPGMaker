@@ -222,7 +222,7 @@ async function boot(page: Page, options: { agentMode?: "auto" | "chat"; confirm?
       const project = store.getCurrent();
       const item = project.database.items[0];
       if (item === undefined) throw new Error("Fixture project missing item");
-      const harness = window.__oprnAiHarness?.();
+      const harness = window.__oprnAiHarness?.() as HarnessSnapshot | undefined;
       const audit: unknown[] = [];
       for (const entry of harness?.audit ?? []) {
         if (entry.kind === "user") audit.push({ kind: "user", text: entry.text });

@@ -1,39 +1,52 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { installFakeDom, type FakeElement } from "./fakeDom";
+import { installFakeDom, type FakeElement, type FakeHTMLOptionsCollection } from "./fakeDom";
 
 let restore: (() => void) | null = null;
 afterEach(() => { restore?.(); restore = null; });
 
+function el(tag: string): FakeElement {
+  return document.createElement(tag) as unknown as FakeElement;
+}
+
 function selectWithOptions(values: readonly string[], selected?: string): FakeElement {
   restore = installFakeDom();
-  const select = document.createElement("select") as unknown as FakeElement;
+  const select = el("select");
   for (const value of values) {
-    const option = document.createElement("option") as unknown as FakeElement;
+    const option = el("option");
     option.setAttribute("value", value);
     option.textContent = value;
-    select.append(option as unknown as Node);
+    select.append(option);
   }
   if (selected !== undefined) select.value = selected;
-  document.body.append(select as unknown as Node);
+  (document.body as unknown as FakeElement).append(select);
   return select;
+}
+
+function optionsOf(select: FakeElement): FakeHTMLOptionsCollection {
+  const options = select.options;
+  if (!("item" in options) || typeof options.item !== "function" || typeof options.namedItem !== "function") {
+    throw new Error("expected HTMLOptionsCollection on select");
+  }
+  return options;
 }
 
 describe("FakeElement select native indexing", () => {
   it("empty select has no options and selectedIndex -1", () => {
     restore = installFakeDom();
-    const select = document.createElement("select") as unknown as FakeElement;
-    expect(select.options).toHaveLength(0);
-    expect(select.options[0]).toBeUndefined();
-    expect(select.options.item?.(0)).toBeNull();
+    const select = el("select");
+    const options = optionsOf(select);
+    expect(options).toHaveLength(0);
+    expect(options[0]).toBeUndefined();
+    expect(options.item(0)).toBeNull();
     expect(select.selectedIndex).toBe(-1);
     expect(select.selectedOptions).toEqual([]);
   });
 
   it("defaults selectedIndex to the first option when value is empty", () => {
     const select = selectWithOptions(["alpha", "beta"]);
-    expect(select.options).toHaveLength(2);
+    expect(optionsOf(select)).toHaveLength(2);
     expect(select.selectedIndex).toBe(0);
-    expect(select.options[select.selectedIndex]?.value).toBe("alpha");
+    expect(optionsOf(select)[select.selectedIndex]?.value).toBe("alpha");
     expect(select.selectedOptions).toHaveLength(1);
     expect(select.selectedOptions[0]?.value).toBe("alpha");
   });
@@ -43,7 +56,7 @@ describe("FakeElement select native indexing", () => {
     select.selectedIndex = 2;
     expect(select.value).toBe("gamma");
     expect(select.selectedIndex).toBe(2);
-    expect(select.options.item?.(2)?.value).toBe("gamma");
+    expect(optionsOf(select).item(2)?.value).toBe("gamma");
     expect(select.selectedOptions[0]?.value).toBe("gamma");
   });
 
@@ -60,23 +73,23 @@ describe("FakeElement select native indexing", () => {
     const select = selectWithOptions(["alpha", "beta", "gamma"]);
     select.value = "beta";
     expect(select.selectedIndex).toBe(1);
-    expect(select.options[1]).toBe(select.selectedOptions[0]);
+    expect(optionsOf(select)[1]).toBe(select.selectedOptions[0]);
   });
 
   it("option.index follows live options order after insert", () => {
     const select = selectWithOptions(["keep", "tail"]);
-    const extra = document.createElement("option") as unknown as FakeElement;
+    const extra = el("option");
     extra.setAttribute("value", "head");
     extra.textContent = "head";
-    select.prepend(extra as unknown as Node);
+    select.prepend(extra);
     expect(extra.index).toBe(0);
-    expect((select.options[1] as FakeElement).index).toBe(1);
-    expect(select.options.namedItem?.("missing")).toBeNull();
+    expect(optionsOf(select)[1]?.index).toBe(1);
+    expect(optionsOf(select).namedItem("missing")).toBeNull();
   });
 
   it("non-select elements do not pretend to be option lists", () => {
     restore = installFakeDom();
-    const div = document.createElement("div") as unknown as FakeElement;
+    const div = el("div");
     expect(div.options).toEqual([]);
     expect(div.selectedIndex).toBe(-1);
     div.selectedIndex = 3;

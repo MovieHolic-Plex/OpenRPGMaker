@@ -19,7 +19,7 @@ import { isWikiExtraction } from "./wikiTransportFixture";
 
 const PRESERVATION = /\b(?:preserve|unchanged|without|never|not|no|keep|don't|cannot)\b|유지|보존|금지|말고|없이|하지\s*마/giu;
 
-function classifyKickoffIntent(facts: { readonly userText: string }) {
+async function classifyKickoffIntent(facts: { readonly userText: string }) {
   const request = createRequestSource("preview", facts.userText);
   const entries = request.units.flatMap(unit => {
     const marks = [...unit.source.quote.matchAll(PRESERVATION)];

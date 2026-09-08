@@ -145,6 +145,19 @@ export class FakeNode {
   }
 }
 
+
+function htmlOptionsCollection(list: FakeElement[]): FakeHTMLOptionsCollection {
+  const item = (index: number): FakeElement | null => list[index] ?? null;
+  const namedItem = (name: string): FakeElement | null =>
+    list.find((option) => option.getAttribute("id") === name || option.getAttribute("name") === name) ?? null;
+  return Object.assign(list, { item, namedItem });
+}
+
+export type FakeHTMLOptionsCollection = FakeElement[] & {
+  item(index: number): FakeElement | null;
+  namedItem(name: string): FakeElement | null;
+};
+
 export class FakeElement extends FakeNode {
   checked = false;
   className = "";
@@ -175,13 +188,9 @@ export class FakeElement extends FakeNode {
   get children(): FakeElement[] {
     return this.childNodes.filter((child): child is FakeElement => child instanceof FakeElement);
   }
-  get options(): FakeElement[] {
+  get options(): FakeElement[] | FakeHTMLOptionsCollection {
     if (this.tagName !== "SELECT") return [];
-    const list = this.children.filter((child) => child.tagName === "OPTION");
-    const item = (index: number): FakeElement | null => list[index] ?? null;
-    const namedItem = (name: string): FakeElement | null =>
-      list.find((option) => option.getAttribute("id") === name || option.getAttribute("name") === name) ?? null;
-    return Object.assign(list, { item, namedItem });
+    return htmlOptionsCollection(this.children.filter((child) => child.tagName === "OPTION"));
   }
   get selectedIndex(): number {
     if (this.tagName !== "SELECT") return -1;

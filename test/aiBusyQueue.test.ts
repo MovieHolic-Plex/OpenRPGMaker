@@ -88,7 +88,7 @@ describe("AI busy 입력 큐", () => {
         headers: { "Content-Type": "text/event-stream" },
       })));
     })));
-    const panel = renderAiChatPanel({ getChatDock: () => "side" }) as unknown as FakeElement;
+    const panel = renderAiChatPanel() as unknown as FakeElement;
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
     const send = findByTestId(panel, "ai-send") as unknown as HTMLElement;
     const queue = findByTestId(panel, "ai-pending-queue") as unknown as FakeElement & { hidden: boolean };
@@ -128,7 +128,7 @@ describe("AI busy 입력 큐", () => {
         headers: { "Content-Type": "text/event-stream" },
       })));
     })));
-    const panel = renderAiChatPanel({ getChatDock: () => "side" }) as unknown as FakeElement;
+    const panel = renderAiChatPanel({}) as unknown as FakeElement;
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
     const send = findByTestId(panel, "ai-send") as unknown as HTMLButtonElement;
     const queue = findByTestId(panel, "ai-pending-queue") as unknown as FakeElement & { hidden: boolean };
