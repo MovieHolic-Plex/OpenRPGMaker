@@ -18,6 +18,7 @@ import { DEFAULT_TILE_SIZE, TILE } from "@/project/defaults/constants";
 import type { Command, EventPageGraphic, GameEvent, GameMap, MapId, Project } from "@/project/types";
 import type { HouseKitId } from "./houseKit";
 import { conceptHouseFloorPlan, resolveHouseConcept } from "./interiorConceptPlan";
+import { createCanonicalHouseInterior } from "./spatial/legacyHouseInterior";
 import { conceptFacilityLevels } from "./conceptBundleResolve";
 import { convertEntranceToDescent, findConceptDescent, linkConceptTransfers, listConceptConnections } from "./interiorConceptEvents";
 
@@ -363,6 +364,7 @@ export function createHouseInteriorMap(options: {
     exterior?.stories === 3 ? 3 : exterior?.stories === 2 ? 2 : 1;
   const scale = options.scale ?? resolveHouseInteriorScale(exterior, seed);
   const program = resolveHouseInteriorProgram(exterior, seed);
+  if (options.project?.spatialAuthoring !== undefined) return createCanonicalHouseInterior({ ...options, project: options.project }, { scale, program });
   const concept = options.project ? resolveHouseConcept(options.project, program) : undefined;
   if (concept) {
     stories = Math.min(3, Math.max(stories, ...conceptFacilityLevels(concept.bundle, concept.facility))) as HouseStoryCount;
@@ -1131,7 +1133,7 @@ function placeStairTransfer(
   });
 }
 
-function createHouseInteriorExitEvent(options: {
+export function createHouseInteriorExitEvent(options: {
   readonly eventId: string;
   readonly x: number;
   readonly y: number;

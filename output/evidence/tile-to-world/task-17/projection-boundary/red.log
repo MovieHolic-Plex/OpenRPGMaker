@@ -1,0 +1,170 @@
+monitor_id=mon_TDQHWXAQNYW2V6TR
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 test"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"> node scripts/run-vitest.mjs run --configLoader bundle test/spatialToolProjectionBoundary.test.ts --maxWorkers=1 --no-file-parallelism"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-ai-projection-fix"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":" ❯ test/spatialToolProjectionBoundary.test.ts (7 tests | 3 failed) 16747ms"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"   ✓ full canonical projection at generic runner and acceptance boundaries > rejects registered NPC disabling when an invalid name already exists: false  2040ms"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"   × full canonical projection at generic runner and acceptance boundaries > rejects registered NPC disabling when an invalid name already exists: true 3008ms"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"     → expected { runner: true, accepted: true, …(8) } to deeply equal { Object (runner, accepted, ...) }"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"   ✓ full canonical projection at generic runner and acceptance boundaries > rejects event removal when the same missing-event projection error predates the write  1257ms"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"   × full canonical projection at generic runner and acceptance boundaries > rejects an issued invalid spatial-enter: proposal at acceptance without relying on runner rejection 1970ms"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"     → expected true to be false // Object.is equality"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"   × full canonical projection at generic runner and acceptance boundaries > rejects an issued invalid spatial-return: proposal at acceptance without relying on runner rejection 1961ms"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"     → expected true to be false // Object.is equality"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"   ✓ full canonical projection at generic runner and acceptance boundaries > accepts a genuine projection repair through the registered runner with exact undo and reloadable redo  3096ms"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"   ✓ full canonical projection at generic runner and acceptance boundaries > accepts an unrelated registered edit when a legacy start-position lint error already exists  3414ms"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":" FAIL  test/spatialToolProjectionBoundary.test.ts > full canonical projection at generic runner and acceptance boundaries > rejects registered NPC disabling when an invalid name already exists: true"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"AssertionError: expected { runner: true, accepted: true, …(8) } to deeply equal { Object (runner, accepted, ...) }"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"\u001b[32m- Expected\u001b[39m"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"\u001b[31m+ Received\u001b[39m"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"\u001b[2m  {\u001b[22m"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"\u001b[32m-   \"accepted\": false,\u001b[39m"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"\u001b[32m-   \"draftUnchanged\": true,\u001b[39m"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"\u001b[32m-   \"publishedReloadError\": null,\u001b[39m"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"\u001b[32m-   \"redo\": false,\u001b[39m"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"\u001b[31m+   \"accepted\": true,\u001b[39m"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"\u001b[31m+   \"draftUnchanged\": false,\u001b[39m"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"\u001b[31m+   \"publishedReloadError\": \"spatialAuthoring.overviewEntries.spatial-enter:23:geography-contract-root:55:port:40:child:23:geography-contract-root4:west:05:entry.mapConnection: missing exact enabled projection\",\u001b[39m"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"\u001b[31m+   \"redo\": true,\u001b[39m"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"\u001b[2m    \"redoExact\": true,\u001b[22m"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"\u001b[32m-   \"runner\": false,\u001b[39m"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"\u001b[31m+   \"runner\": true,\u001b[39m"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"\u001b[2m    \"spatialUnchanged\": true,\u001b[22m"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"\u001b[32m-   \"storeUnchanged\": true,\u001b[39m"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"\u001b[32m-   \"undo\": false,\u001b[39m"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"\u001b[31m+   \"storeUnchanged\": false,\u001b[39m"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"\u001b[31m+   \"undo\": true,\u001b[39m"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"\u001b[2m    \"undoNpcEnabled\": true,\u001b[22m"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"\u001b[2m  }\u001b[22m"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":" ❯ test/spatialToolProjectionBoundary.test.ts:68:8"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"     66|       spatialUnchanged: JSON.stringify(ctx.project.spatialAuthoring) =…"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"     67|       undo, undoNpcEnabled, redo, redoExact: JSON.stringify(store.getC…"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"     68|     }).toEqual({ runner: false, accepted: false, publishedReloadError:…"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"       |        ^"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"     69|       draftUnchanged: true, storeUnchanged: true, spatialUnchanged: tr…"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"     70|       undo: false, undoNpcEnabled: true, redo: false, redoExact: true …"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":" FAIL  test/spatialToolProjectionBoundary.test.ts > full canonical projection at generic runner and acceptance boundaries > rejects an issued invalid spatial-enter: proposal at acceptance without relying on runner rejection"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":" FAIL  test/spatialToolProjectionBoundary.test.ts > full canonical projection at generic runner and acceptance boundaries > rejects an issued invalid spatial-return: proposal at acceptance without relying on runner rejection"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"AssertionError: expected true to be false // Object.is equality"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"\u001b[32m- Expected\u001b[39m"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"\u001b[31m+ Received\u001b[39m"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"\u001b[32m- false\u001b[39m"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"\u001b[31m+ true\u001b[39m"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":" ❯ test/spatialToolProjectionBoundary.test.ts:101:23"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"     99|     const result = await applyProposedProject(proposed, options);"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"    100|     // Then"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"    101|     expect(result.ok).toBe(false);"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"       |                       ^"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"    102|     expect(JSON.stringify(store.getCurrent())).toBe(before);"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"    103|     expect(undoMapEdit()).toBe(false);"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":" Test Files  1 failed (1)"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"      Tests  3 failed | 4 passed (7)"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"   Start at  02:59:58"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":"   Duration  29.35s (transform 8.46s, setup 0ms, collect 12.17s, tests 16.75s, environment 0ms, prepare 63ms)"}
+{"type":"line","id":"authoring-12928","description":"task11 scoped validation","line":""}
+{"type":"summary","id":"authoring-12928","description":"task11 scoped validation","summary":"watcher exited_1 (exit code 1)"}
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/spatialToolProjectionBoundary.test.ts --maxWorkers=1 --no-file-parallelism
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-ai-projection-fix
+
+ ❯ test/spatialToolProjectionBoundary.test.ts (7 tests | 3 failed) 16747ms
+   ✓ full canonical projection at generic runner and acceptance boundaries > rejects registered NPC disabling when an invalid name already exists: false  2040ms
+   × full canonical projection at generic runner and acceptance boundaries > rejects registered NPC disabling when an invalid name already exists: true 3008ms
+     → expected { runner: true, accepted: true, …(8) } to deeply equal { Object (runner, accepted, ...) }
+   ✓ full canonical projection at generic runner and acceptance boundaries > rejects event removal when the same missing-event projection error predates the write  1257ms
+   × full canonical projection at generic runner and acceptance boundaries > rejects an issued invalid spatial-enter: proposal at acceptance without relying on runner rejection 1970ms
+     → expected true to be false // Object.is equality
+   × full canonical projection at generic runner and acceptance boundaries > rejects an issued invalid spatial-return: proposal at acceptance without relying on runner rejection 1961ms
+     → expected true to be false // Object.is equality
+   ✓ full canonical projection at generic runner and acceptance boundaries > accepts a genuine projection repair through the registered runner with exact undo and reloadable redo  3096ms
+   ✓ full canonical projection at generic runner and acceptance boundaries > accepts an unrelated registered edit when a legacy start-position lint error already exists  3414ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/spatialToolProjectionBoundary.test.ts > full canonical projection at generic runner and acceptance boundaries > rejects registered NPC disabling when an invalid name already exists: true
+AssertionError: expected { runner: true, accepted: true, …(8) } to deeply equal { Object (runner, accepted, ...) }
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "accepted": false,[39m
+[32m-   "draftUnchanged": true,[39m
+[32m-   "publishedReloadError": null,[39m
+[32m-   "redo": false,[39m
+[31m+   "accepted": true,[39m
+[31m+   "draftUnchanged": false,[39m
+[31m+   "publishedReloadError": "spatialAuthoring.overviewEntries.spatial-enter:23:geography-contract-root:55:port:40:child:23:geography-contract-root4:west:05:entry.mapConnection: missing exact enabled projection",[39m
+[31m+   "redo": true,[39m
+[2m    "redoExact": true,[22m
+[32m-   "runner": false,[39m
+[31m+   "runner": true,[39m
+[2m    "spatialUnchanged": true,[22m
+[32m-   "storeUnchanged": true,[39m
+[32m-   "undo": false,[39m
+[31m+   "storeUnchanged": false,[39m
+[31m+   "undo": true,[39m
+[2m    "undoNpcEnabled": true,[22m
+[2m  }[22m
+
+ ❯ test/spatialToolProjectionBoundary.test.ts:68:8
+     66|       spatialUnchanged: JSON.stringify(ctx.project.spatialAuthoring) =…
+     67|       undo, undoNpcEnabled, redo, redoExact: JSON.stringify(store.getC…
+     68|     }).toEqual({ runner: false, accepted: false, publishedReloadError:…
+       |        ^
+     69|       draftUnchanged: true, storeUnchanged: true, spatialUnchanged: tr…
+     70|       undo: false, undoNpcEnabled: true, redo: false, redoExact: true …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  test/spatialToolProjectionBoundary.test.ts > full canonical projection at generic runner and acceptance boundaries > rejects an issued invalid spatial-enter: proposal at acceptance without relying on runner rejection
+ FAIL  test/spatialToolProjectionBoundary.test.ts > full canonical projection at generic runner and acceptance boundaries > rejects an issued invalid spatial-return: proposal at acceptance without relying on runner rejection
+AssertionError: expected true to be false // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+ ❯ test/spatialToolProjectionBoundary.test.ts:101:23
+     99|     const result = await applyProposedProject(proposed, options);
+    100|     // Then
+    101|     expect(result.ok).toBe(false);
+       |                       ^
+    102|     expect(JSON.stringify(store.getCurrent())).toBe(before);
+    103|     expect(undoMapEdit()).toBe(false);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 4 passed (7)
+   Start at  02:59:58
+   Duration  29.35s (transform 8.46s, setup 0ms, collect 12.17s, tests 16.75s, environment 0ms, prepare 63ms)
+
+
+monitor_exit={"backend":"pipe-fallback","exitCode":1,"signal":null,"cancelled":false,"timedOut":false}

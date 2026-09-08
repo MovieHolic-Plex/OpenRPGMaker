@@ -2,6 +2,17 @@
 
 The LLM-harnessed interior pipeline: start session, advance build per layer, evaluate, and self-repair loop.
 
+Canonical room compatibility (T17-AV-4-I1): `canonicalRoomAlias` keeps existing
+`PLACE_ALIASES` shorthand among historical receipt-mapped originals, but includes
+same-atlas native user/AI/builtin name/tag matches in the ID-deduplicated ambiguity
+decision. A native `bedroom` plus converted default house/bedroom rejects with
+`spatial-ambiguous`; shorthand alone still selects house. Exact IDs (including
+layout contexts), deleted-original exclusion, and general ambiguity retain their
+existing behavior. Real-binder regressions: `test/spatialRoomNativeDefault.test.ts`
+and `test/spatialRoomQualifier.test.ts`; scoped RED/GREEN evidence:
+`output/evidence/tile-to-world/task-17/native-default-room-fix/`. This is backend
+compatibility evidence, not whole-task17 provider/UI/publication acceptance.
+
 ## 사용자 타일 정정: 항아리·돌계단·석조 화로
 
 - 235는 주전자가 아니라 **항아리**다. 기존 저장물의 `kettle`/`VR.KETTLE` 식별자는 유지하지만 검색 라벨·태그·가구 이름·시설 물건 설명은 항아리로 쓴다. 141·111·171은 **돌계단**이며 목제라고 설명하지 않는다.

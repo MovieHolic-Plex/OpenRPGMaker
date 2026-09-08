@@ -1,0 +1,132 @@
+monitor_id=mon_7XGBVKWXT2TY0J4A
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 test"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":"> node scripts/run-vitest.mjs run --configLoader bundle test/spatialLegacyTools.test.ts -t builds"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-ai-tools"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":" ❯ test/spatialLegacyTools.test.ts (7 tests | 2 failed | 5 skipped) 1964ms"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":"   ↓ legacy tools with active canonical designs > looks up the canonical source rather than retired empty catalogs"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":"   ↓ legacy tools with active canonical designs > places canonical sources without reviving retired furniture"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":"   ↓ legacy tools with active canonical designs > resolves linked house and village program content from canonical definitions"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":"   × legacy tools with active canonical designs > builds linked houses with frozen canonical occurrences through the actual facade 1562ms"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":"     → expected false to be true // Object.is equality"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":"   × legacy tools with active canonical designs > builds village-linked interiors from the same canonical frozen source 401ms"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":"     → expected false to be true // Object.is equality"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":"   ↓ legacy tools with active canonical designs > binds ordinary interior rooms to canonical selections"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":"   ↓ legacy tools with active canonical designs > preserves explicit empty legacy rejection when canonical authoring is absent"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":" FAIL  test/spatialLegacyTools.test.ts > legacy tools with active canonical designs > builds linked houses with frozen canonical occurrences through the actual facade"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":"AssertionError: expected false to be true // Object.is equality"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":"\u001b[32m- Expected\u001b[39m"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":"\u001b[31m+ Received\u001b[39m"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":"\u001b[32m- true\u001b[39m"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":"\u001b[31m+ false\u001b[39m"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":" ❯ test/spatialLegacyTools.test.ts:70:117"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":"     68|     // Then"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":"     69|     expect(result.ok, result.summary).toBe(true);"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":"     70|     expect(Object.values(ctx.project.spatialAuthoring.occurrences).som…"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":"       |                                                                                                                     ^"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":"     71|     const transfers = Object.values(ctx.project.maps).flatMap(map => m…"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":"     72|       .filter(command => command.kind === \"transfer\");"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":" FAIL  test/spatialLegacyTools.test.ts > legacy tools with active canonical designs > builds village-linked interiors from the same canonical frozen source"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":"AssertionError: expected false to be true // Object.is equality"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":"\u001b[32m- Expected\u001b[39m"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":"\u001b[31m+ Received\u001b[39m"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":"\u001b[32m- true\u001b[39m"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":"\u001b[31m+ false\u001b[39m"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":" ❯ test/spatialLegacyTools.test.ts:86:113"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":"     84|     // Then"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":"     85|     expect(refs).toHaveLength(1);"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":"     86|     expect(Object.values(project.spatialAuthoring.occurrences).some(oc…"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":"       |                                                                                                                 ^"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":"     87|     expect(refs.every(ref => Object.hasOwn(project.maps, ref.interiorM…"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":"     88|   });"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":" Test Files  1 failed (1)"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":"      Tests  2 failed | 5 skipped (7)"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":"   Start at  01:41:41"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":"   Duration  12.68s (transform 7.07s, setup 0ms, collect 10.03s, tests 1.96s, environment 0ms, prepare 143ms)"}
+{"type":"line","id":"authoring-2804538","description":"task11 scoped validation","line":""}
+{"type":"summary","id":"authoring-2804538","description":"task11 scoped validation","summary":"watcher exited_1 (exit code 1)"}
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/spatialLegacyTools.test.ts -t builds
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-ai-tools
+
+ ❯ test/spatialLegacyTools.test.ts (7 tests | 2 failed | 5 skipped) 1964ms
+   ↓ legacy tools with active canonical designs > looks up the canonical source rather than retired empty catalogs
+   ↓ legacy tools with active canonical designs > places canonical sources without reviving retired furniture
+   ↓ legacy tools with active canonical designs > resolves linked house and village program content from canonical definitions
+   × legacy tools with active canonical designs > builds linked houses with frozen canonical occurrences through the actual facade 1562ms
+     → expected false to be true // Object.is equality
+   × legacy tools with active canonical designs > builds village-linked interiors from the same canonical frozen source 401ms
+     → expected false to be true // Object.is equality
+   ↓ legacy tools with active canonical designs > binds ordinary interior rooms to canonical selections
+   ↓ legacy tools with active canonical designs > preserves explicit empty legacy rejection when canonical authoring is absent
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/spatialLegacyTools.test.ts > legacy tools with active canonical designs > builds linked houses with frozen canonical occurrences through the actual facade
+AssertionError: expected false to be true // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+ ❯ test/spatialLegacyTools.test.ts:70:117
+     68|     // Then
+     69|     expect(result.ok, result.summary).toBe(true);
+     70|     expect(Object.values(ctx.project.spatialAuthoring.occurrences).som…
+       |                                                                                                                     ^
+     71|     const transfers = Object.values(ctx.project.maps).flatMap(map => m…
+     72|       .filter(command => command.kind === "transfer");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  test/spatialLegacyTools.test.ts > legacy tools with active canonical designs > builds village-linked interiors from the same canonical frozen source
+AssertionError: expected false to be true // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+ ❯ test/spatialLegacyTools.test.ts:86:113
+     84|     // Then
+     85|     expect(refs).toHaveLength(1);
+     86|     expect(Object.values(project.spatialAuthoring.occurrences).some(oc…
+       |                                                                                                                 ^
+     87|     expect(refs.every(ref => Object.hasOwn(project.maps, ref.interiorM…
+     88|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 5 skipped (7)
+   Start at  01:41:41
+   Duration  12.68s (transform 7.07s, setup 0ms, collect 10.03s, tests 1.96s, environment 0ms, prepare 143ms)
+
+
+monitor_exit={"backend":"pipe-fallback","exitCode":1,"signal":null,"cancelled":false,"timedOut":false}

@@ -1,0 +1,192 @@
+monitor_id=mon_1322CA6Z3RG5H4NC
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 test"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"> node scripts/run-vitest.mjs run --configLoader bundle test/spatialLegacyPathIdentity.test.ts --maxWorkers=1 --no-file-parallelism --silent=false"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-legacy-path-fix"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":" ❯ test/spatialLegacyPathIdentity.test.ts (6 tests | 5 failed) 513ms"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"   × canonical legacy opaque path identity > keeps bed and hearth overlays separate when direct A/B also occurs as a nested path 169ms"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"     → expected [ [ 'bed_v', 'bed_v', …(1) ] ] to deeply equal [ [ 'bed_v', 'bed_v' ], …(1) ]"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"   × canonical legacy opaque path identity > keeps bed and hearth overlays separate when direct A/\"\\/B:2/[x] also occurs as a nested path 91ms"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"     → expected [ [ 'bed_v', 'bed_v', …(1) ] ] to deeply equal [ [ 'bed_v', 'bed_v' ], …(1) ]"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"   × canonical legacy opaque path identity > keeps bed and hearth overlays separate when direct [\"A\"]/B\\C also occurs as a nested path 64ms"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"     → expected [ [ 'bed_v', 'bed_v', …(1) ] ] to deeply equal [ [ 'bed_v', 'bed_v' ], …(1) ]"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"   × canonical legacy opaque path identity > retains separate room and thing occurrences when a canonical space is reused under colliding paths 46ms"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"     → expected 1 to be 2 // Object.is equality"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"   × canonical legacy opaque path identity > encodes the root boundary when different facilities have the same flattened room path 55ms"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"     → expected 1 to be 2 // Object.is equality"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"   ✓ canonical legacy opaque path identity > projects deterministic identities when the same canonical input is read again 86ms"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":" FAIL  test/spatialLegacyPathIdentity.test.ts > canonical legacy opaque path identity > keeps bed and hearth overlays separate when direct A/B also occurs as a nested path"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":" FAIL  test/spatialLegacyPathIdentity.test.ts > canonical legacy opaque path identity > keeps bed and hearth overlays separate when direct A/\"\\/B:2/[x] also occurs as a nested path"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":" FAIL  test/spatialLegacyPathIdentity.test.ts > canonical legacy opaque path identity > keeps bed and hearth overlays separate when direct [\"A\"]/B\\C also occurs as a nested path"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"AssertionError: expected [ [ 'bed_v', 'bed_v', …(1) ] ] to deeply equal [ [ 'bed_v', 'bed_v' ], …(1) ]"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"\u001b[32m- Expected\u001b[39m"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"\u001b[31m+ Received\u001b[39m"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"\u001b[2m  [\u001b[22m"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"\u001b[2m    [\u001b[22m"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"\u001b[2m      \"bed_v\",\u001b[22m"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"\u001b[2m      \"bed_v\",\u001b[22m"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"\u001b[32m-   ],\u001b[39m"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"\u001b[32m-   [\u001b[39m"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"\u001b[2m      \"fixture-asymmetric\",\u001b[22m"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"\u001b[2m    ],\u001b[22m"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"\u001b[2m  ]\u001b[22m"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":" ❯ test/spatialLegacyPathIdentity.test.ts:59:96"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"     57|       { id: left, source: { kind: \"place\", id: \"nested\" } },"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"     58|     ] } } });"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"     59|     expect(Object.values(overlay.rooms).map(room => room.things.map(th…"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"       |                                                                                                ^"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"     60|       [\"bed_v\", \"bed_v\"], [\"fixture-asymmetric\"],"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"     61|     ]);"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":" FAIL  test/spatialLegacyPathIdentity.test.ts > canonical legacy opaque path identity > retains separate room and thing occurrences when a canonical space is reused under colliding paths"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"AssertionError: expected 1 to be 2 // Object.is equality"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"\u001b[32m- Expected\u001b[39m"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"\u001b[31m+ Received\u001b[39m"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"\u001b[32m- 2\u001b[39m"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"\u001b[31m+ 1\u001b[39m"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":" ❯ test/spatialLegacyPathIdentity.test.ts:87:62"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"     85|     const bundle = projectedBundle(project);"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"     86|     // Then"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"     87|     expect(new Set(bundle.places.map(room => room.id)).size).toBe(2);"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"       |                                                              ^"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"     88|     expect(new Set(bundle.things.map(thing => thing.id)).size).toBe(4);"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"     89|     expect(bundle.places.map(room => bundle.things.filter(thing => thi…"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":" FAIL  test/spatialLegacyPathIdentity.test.ts > canonical legacy opaque path identity > encodes the root boundary when different facilities have the same flattened room path"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"AssertionError: expected 1 to be 2 // Object.is equality"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"\u001b[32m- Expected\u001b[39m"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"\u001b[31m+ Received\u001b[39m"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"\u001b[32m- 2\u001b[39m"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"\u001b[31m+ 1\u001b[39m"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":" ❯ test/spatialLegacyPathIdentity.test.ts:109:89"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"    107|     const bundles = canonicalConceptBundles(project, interiorAtlas);"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"    108|     // Then"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"    109|     expect(new Set(bundles.flatMap(bundle => bundle.places.map(room =>…"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"       |                                                                                         ^"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"    110|     expect(new Set(bundles.flatMap(bundle => bundle.things.map(thing =…"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"    111|   });"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":" Test Files  1 failed (1)"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"      Tests  5 failed | 1 passed (6)"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"   Start at  02:59:11"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":"   Duration  11.47s (transform 7.33s, setup 0ms, collect 10.57s, tests 513ms, environment 0ms, prepare 81ms)"}
+{"type":"line","id":"authoring-4185958","description":"task11 scoped validation","line":""}
+{"type":"summary","id":"authoring-4185958","description":"task11 scoped validation","summary":"watcher exited_1 (exit code 1)"}
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/spatialLegacyPathIdentity.test.ts --maxWorkers=1 --no-file-parallelism --silent=false
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-legacy-path-fix
+
+ ❯ test/spatialLegacyPathIdentity.test.ts (6 tests | 5 failed) 513ms
+   × canonical legacy opaque path identity > keeps bed and hearth overlays separate when direct A/B also occurs as a nested path 169ms
+     → expected [ [ 'bed_v', 'bed_v', …(1) ] ] to deeply equal [ [ 'bed_v', 'bed_v' ], …(1) ]
+   × canonical legacy opaque path identity > keeps bed and hearth overlays separate when direct A/"\/B:2/[x] also occurs as a nested path 91ms
+     → expected [ [ 'bed_v', 'bed_v', …(1) ] ] to deeply equal [ [ 'bed_v', 'bed_v' ], …(1) ]
+   × canonical legacy opaque path identity > keeps bed and hearth overlays separate when direct ["A"]/B\C also occurs as a nested path 64ms
+     → expected [ [ 'bed_v', 'bed_v', …(1) ] ] to deeply equal [ [ 'bed_v', 'bed_v' ], …(1) ]
+   × canonical legacy opaque path identity > retains separate room and thing occurrences when a canonical space is reused under colliding paths 46ms
+     → expected 1 to be 2 // Object.is equality
+   × canonical legacy opaque path identity > encodes the root boundary when different facilities have the same flattened room path 55ms
+     → expected 1 to be 2 // Object.is equality
+   ✓ canonical legacy opaque path identity > projects deterministic identities when the same canonical input is read again 86ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/spatialLegacyPathIdentity.test.ts > canonical legacy opaque path identity > keeps bed and hearth overlays separate when direct A/B also occurs as a nested path
+ FAIL  test/spatialLegacyPathIdentity.test.ts > canonical legacy opaque path identity > keeps bed and hearth overlays separate when direct A/"\/B:2/[x] also occurs as a nested path
+ FAIL  test/spatialLegacyPathIdentity.test.ts > canonical legacy opaque path identity > keeps bed and hearth overlays separate when direct ["A"]/B\C also occurs as a nested path
+AssertionError: expected [ [ 'bed_v', 'bed_v', …(1) ] ] to deeply equal [ [ 'bed_v', 'bed_v' ], …(1) ]
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[2m    [[22m
+[2m      "bed_v",[22m
+[2m      "bed_v",[22m
+[32m-   ],[39m
+[32m-   [[39m
+[2m      "fixture-asymmetric",[22m
+[2m    ],[22m
+[2m  ][22m
+
+ ❯ test/spatialLegacyPathIdentity.test.ts:59:96
+     57|       { id: left, source: { kind: "place", id: "nested" } },
+     58|     ] } } });
+     59|     expect(Object.values(overlay.rooms).map(room => room.things.map(th…
+       |                                                                                                ^
+     60|       ["bed_v", "bed_v"], ["fixture-asymmetric"],
+     61|     ]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  test/spatialLegacyPathIdentity.test.ts > canonical legacy opaque path identity > retains separate room and thing occurrences when a canonical space is reused under colliding paths
+AssertionError: expected 1 to be 2 // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 2[39m
+[31m+ 1[39m
+
+ ❯ test/spatialLegacyPathIdentity.test.ts:87:62
+     85|     const bundle = projectedBundle(project);
+     86|     // Then
+     87|     expect(new Set(bundle.places.map(room => room.id)).size).toBe(2);
+       |                                                              ^
+     88|     expect(new Set(bundle.things.map(thing => thing.id)).size).toBe(4);
+     89|     expect(bundle.places.map(room => bundle.things.filter(thing => thi…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  test/spatialLegacyPathIdentity.test.ts > canonical legacy opaque path identity > encodes the root boundary when different facilities have the same flattened room path
+AssertionError: expected 1 to be 2 // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 2[39m
+[31m+ 1[39m
+
+ ❯ test/spatialLegacyPathIdentity.test.ts:109:89
+    107|     const bundles = canonicalConceptBundles(project, interiorAtlas);
+    108|     // Then
+    109|     expect(new Set(bundles.flatMap(bundle => bundle.places.map(room =>…
+       |                                                                                         ^
+    110|     expect(new Set(bundles.flatMap(bundle => bundle.things.map(thing =…
+    111|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed | 1 passed (6)
+   Start at  02:59:11
+   Duration  11.47s (transform 7.33s, setup 0ms, collect 10.57s, tests 513ms, environment 0ms, prepare 81ms)
+
+
+monitor_exit={"backend":"pipe-fallback","exitCode":1,"signal":null,"cancelled":false,"timedOut":false}

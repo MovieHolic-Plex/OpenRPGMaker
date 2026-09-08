@@ -3,6 +3,10 @@
 // 여기서 draft 생성 / diff 요약 / 커밋 게이트(projectLint)를 순수 함수로 제공한다.
 
 import { cloneDetachedDraft } from "@/editor/detachedDraftMemory";
+import { assertSpatialToolChange } from "./spatialToolState";
+import { ToolError } from "./types";
+import { ProjectFormatError } from "@/project/io/errors";
+import { SpatialOperationError } from "@/project/spatial/domain";
 import { countAudioDescriptionChanges } from "@/project/audioDescriptionChanges";
 import { countMonsterMetadataChanges } from "@/project/monsterMetadata";
 import { projectLint, type LintIssue } from "@/project/lint/projectLint";
@@ -184,6 +188,7 @@ export function summarizeChanges(before: Project, after: Project): ChangeSummary
     summary.mapPropertiesChanged = (summary.mapPropertiesChanged ?? 0) + 1;
   }
   diffDatabase(before, after, summary);
+  if (JSON.stringify(before.spatialAuthoring) !== JSON.stringify(after.spatialAuthoring)) summary.dbRecordsChanged += 1;
   for (const [id, afterTileset] of Object.entries(after.tilesets)) {
     if (JSON.stringify(before.tilesets[id]) !== JSON.stringify(afterTileset)) summary.tilesetsChanged += 1;
   }
@@ -223,6 +228,12 @@ export interface CommitResult {
 // cluster-rule hard 위반은 배치 시점 강제 + lint 보고 대상이므로 커밋 차단에서는 제외한다.
 // warning/info와 비차단 error는 통과시키되 issues로 함께 반환한다(모델/사람이 참고).
 export function commitChangeset(draft: Project, baseline?: Project): CommitResult {
+  try { assertSpatialToolChange(draft, baseline); }
+  catch (error) {
+    if (!(error instanceof ToolError || error instanceof ProjectFormatError || error instanceof SpatialOperationError)) throw error;
+    const issue: LintIssue = { severity: "error", code: error instanceof ToolError ? error.code : "spatial-invalid", message: error.message };
+    return { ok: false, issues: [issue], blocking: [issue] };
+  }
   const issues = projectLint(draft);
   const isBlocking = (issue: LintIssue): boolean => issue.severity === "error" && !issue.code.startsWith("cluster-rule:");
   let blocking = issues.filter(isBlocking);

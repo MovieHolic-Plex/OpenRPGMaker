@@ -1,4 +1,5 @@
 import type { InteriorRoomShape } from "@/project/interiorRoomFootprint";
+import { canonicalConceptBundles, canonicalConceptLayout } from "./spatial/legacyConcepts";
 // 타일셋에 붙은 개념 꾸러미를 시공 입력으로 푼다.
 // 정본은 프로젝트가 들고 있는 값이다. 사용자가 데이터베이스에서 고친 나무가 그대로 쓰인다.
 //
@@ -88,6 +89,7 @@ export type ConceptOverlay = {
  * Phase 5: 다른 칩셋은 손대지 않는다(no-op) — liveBundlesForTileset이 미시드 실외를 []로 읽고,
  * 탭도 실외를 undefined(미시드)로 둔다. 읽기 도구의 빈 배열 쓰기는 실외 타일셋을 더럽힌다. */
 export function ensureConceptBundles(project: Project, tilesetId = INTERIOR_TILESET_ID): void {
+  if (project.spatialAuthoring !== undefined) return;
   const tileset = project.tilesets[tilesetId];
   if (!tileset) return;
   if (tileset.scratchConceptBundles !== undefined) return;
@@ -110,6 +112,7 @@ export function listLiveConceptBundles(project: Project): readonly {
 }
 
 export function liveBundlesForTileset(project: Project, tilesetId: string): readonly ConceptBundleRecord[] {
+  if (project.spatialAuthoring !== undefined) return canonicalConceptBundles(project, tilesetId);
   const tileset = project.tilesets[tilesetId];
   if (!tileset) return [];
   if (tileset.scratchConceptBundles !== undefined) return tileset.scratchConceptBundles;
@@ -268,6 +271,8 @@ export function layoutConceptFacility(
   facility: ConceptFacilityRecord,
   options: { readonly level?: number; readonly minBandWidth?: number } = {},
 ): ConceptRoomLayout {
+  const canonical = canonicalConceptLayout(bundle, options.level);
+  if (canonical) return canonical;
   if (facility.layout === "double-row") return layoutConceptFacilityDoubleRow(bundle, facility, options);
   // 층을 지정하면 그 층의 장소만 도면에 든다. 지정이 없으면 전부(한 층 시설의 종전 동작).
   // 위층엔 보통 정문 역할이 없다 — 그러면 마지막 방이 문 밴드로 승격되고(아래 promoted), 그 문 자리가

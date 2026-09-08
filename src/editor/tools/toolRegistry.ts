@@ -65,6 +65,7 @@ import { RESOURCE_TOOLS } from "./resourceTools";
 import { MONSTER_RESOURCE_TOOLS } from "./monsterResourceTools";
 import { withMonsterAppearanceEnvelope } from "./monsterAppearanceTools";
 import { WORLD_STRUCTURE_TOOLS } from "./worldStructureTools";
+import { SPATIAL_TOOLS } from "./spatialTools";
 
 export { PLACEMENT_TOOLS };
 
@@ -160,6 +161,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   AUTHOR_HOUSE_TOOL,
   AUTHOR_VILLAGE_TOOL,
   ...WORLD_STRUCTURE_TOOLS,
+  ...SPATIAL_TOOLS,
   ...withDomain(CONSTRUCTION_TOOLS_V3, "tile"),
   ...withDomain(HOUSE_VISION_TOOLS, "tile"),
   ...withDomain(VILLAGE_TOOLS, "tile"),

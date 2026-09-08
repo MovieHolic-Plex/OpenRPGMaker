@@ -7,6 +7,7 @@
 //   dryRun이면 통과해도 ctx.project를 갱신하지 않는다.
 
 import type { LintIssue } from "@/project/lint/projectLint";
+import { beginSpatialToolProposal, sealSpatialToolProposal } from "./spatialToolState";
 import { verifyPostTilePlacement } from "@/project/lint/postTileVerify";
 import { formatTreePairRepairSummary, repairTreePairsOnProject } from "@/project/lint/repairTreePairs";
 import { resolveForestCanopyReplacementExemptTileIds } from "./forestComposition";
@@ -128,6 +129,7 @@ export function runToolDefinition(
   let protectedHouses: HouseSnapshot[];
   try {
     protectedHouses = captureHouseProtection(before);
+    beginSpatialToolProposal(draft, before);
     exec = tool.run(draft, normalizedArgs);
   } catch (cause) {
     const error = cause instanceof Error ? cause : new ToolError(String(cause), { code: "tool-exception" });
@@ -137,10 +139,11 @@ export function runToolDefinition(
   try {
     const builtHouses = newlyBuiltHouseSnapshots(draft, protectedHouses);
     // 후처리: 나무 밑동 위 수관(upper) 강제 — 고아 밑동(14,5 등) 방지.
-    const treeRepair = repairTreePairsOnProject(draft, {
-      canopyReplacementExemptTileIds: resolveForestCanopyReplacementExemptTileIds(draft),
-    });
-    const treeRepairNote = formatTreePairRepairSummary(treeRepair);
+    // Canonical maps include frozen, digest-owned output. Never repair unrelated raster implicitly.
+    const treeRepairNote = draft.spatialAuthoring === undefined
+      ? formatTreePairRepairSummary(repairTreePairsOnProject(draft, {
+        canopyReplacementExemptTileIds: resolveForestCanopyReplacementExemptTileIds(draft),
+      })) : null;
     assertHouseProtection(protectedHouses, draft, builtHouses);
 
     const diff = summarizeChanges(before, draft);
@@ -159,6 +162,7 @@ export function runToolDefinition(
       };
     }
 
+    sealSpatialToolProposal(draft);
     if (!options.dryRun) ctx.project = draft;
     const postTile = verifyPostTilePlacement(draft, { name, args: normalizedArgs, data: exec.data });
     if (postTile.length > 0) diff.warnings.push(...postTile.map((issue) => issue.message));

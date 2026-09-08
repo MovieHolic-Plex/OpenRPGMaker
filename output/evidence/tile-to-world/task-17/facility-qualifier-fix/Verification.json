@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "taskId": "st_01a0822d",
+  "finding": "T17-AV-3",
+  "verdict": "fixed-scoped",
+  "baseCommit": "fc5c56e3f1f22164c12f20dc430aa281a8be72c7",
+  "worktree": "/home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-facility-qualifier-fix",
+  "originalFinding": "/home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-ai-tools/output/evidence/tile-to-world/task-17/independent/AdversarialVerify.json#/findings/2",
+  "originalProbe": "/home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-ai-tools/output/evidence/tile-to-world/task-17/independent/lookup-probes.mts",
+  "regression": "test/spatialFacilityQualifier.test.ts",
+  "scenario": {
+    "fixture": "Same preparedProject and two custom Shared Facility bundles as the independent probe, on easyrpg_chipset_interior and easyrpg_chipset_world. The permanent test invokes convertLegacySpatialSnapshot on actual legacy JSON, not handcrafted canonical output.",
+    "tool": "get_concept_facility",
+    "args": { "query": "Shared Facility", "tilesetId": "easyrpg_chipset_interior" },
+    "legacyControl": "Actual registered runner succeeds and returns template.facilityId=qualified-facility, template.tilesetId=easyrpg_chipset_interior without mutation.",
+    "red": "After actual conversion the same registered call fails: Ambiguous canonical facility; use its exact spatial id. Both label and tag direct-resolver cases also fail, ruling out runner-only qualifier loss.",
+    "green": "After actual conversion the same registered call succeeds, returns canonical.kind=place with canonical.design.id=legacy:[\"easyrpg_chipset_interior\",\"qualified-facility\",\"facility\",\"qualified-facility\"], and leaves project JSON unchanged."
+  },
+  "fix": {
+    "file": "src/editor/spatial/legacyConcepts.ts",
+    "ownedFunction": "canonicalConceptSource",
+    "mechanism": "Global exact label/tag candidates previously took precedence over the only atlas-qualified branch, receipt alias matching. All non-ID candidates now pass atlas eligibility before either label/tag or receipt alias resolution.",
+    "eligibility": "All current descendant room atlases must match the explicit qualifier. Empty imported facilities use receipt atlas scope. Receipts cannot revive a facility whose current rooms no longer match. No qualifier retains global discovery.",
+    "identity": "Exact opaque facility IDs resolve independently of discovery qualification; IDs are never decoded to infer atlas.",
+    "ambiguity": "Multiple eligible label/tag candidates or multiple eligible receipt alias candidates still raise spatial-ambiguous. No first-match guessing for discovery.",
+    "unchanged": ["roomsOf and path encoding", "canonicalRoomAlias", "all callers", "conversion", "original fixtures", "original independent and producer evidence"]
+  },
+  "validation": {
+    "runtime": { "node": "v24.11.1", "bun": "1.4.2", "runner": "Vitest 3.2.4" },
+    "monitor": "/home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/authoring-monitor.mjs",
+    "lock": "/home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/validation.lock",
+    "command": "flock /home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/validation.lock timeout 120s node scripts/run-vitest.mjs run test/spatialFacilityQualifier.test.ts --configLoader bundle --maxWorkers 1 --no-file-parallelism --silent=false",
+    "runs": [
+      { "phase": "RED", "monitorId": "mon_VA46TRNQN583AD5C", "log": "red.log.gz", "passed": 8, "failed": 7, "exitCode": 1, "timedOut": false, "note": "Initial 15-case permanent regression before production edits." },
+      { "phase": "RED-edges", "monitorId": "mon_9GPE7B2Y28YK3X7G", "log": "red-edges.log.gz", "passed": 4, "failed": 2, "notSelected": 11, "exitCode": 1, "timedOut": false, "commandSuffix": "-t \"receipt|two eligible\"", "note": "Before production edits: adds empty-import edge and makes ambiguity exercise actual receipt aliases, not tags. Nonselected tests were excluded by this focused command only; no test uses skip or suppressed assertions." },
+      { "phase": "GREEN", "monitorId": "mon_GY1CXE9JC7H75V9F", "log": "green.log.gz", "passed": 17, "failed": 0, "exitCode": 0, "timedOut": false, "durationSeconds": 34.93, "note": "Single complete narrow GREEN execution, including actual runner before/after conversion and ambiguity error paths. No retries or timeout increases." }
+    ],
+    "diagnostics": "LSP severity=all returned No diagnostics found for both changed TypeScript files after final code edits.",
+    "diffCheck": "Source diff check exited 0. Initial full staging found four trailing spaces in raw Vitest ANSI failure output; logs are packaged with lossless gzip rather than editing or dropping that evidence. Final staged diff check exited 0.",
+    "pureLOC": { "src/editor/spatial/legacyConcepts.ts": 118, "test/spatialFacilityQualifier.test.ts": 110 },
+    "sourceSHA256": {
+      "src/editor/spatial/legacyConcepts.ts": "c14be7fa0f44f897025805eb6b9fee26f77902410112e805303310fdb2c30acc",
+      "test/spatialFacilityQualifier.test.ts": "0cbef7a59fe817c113df1fc65ed5149ea884c7c8bbf1bde770b282b972c658a5"
+    }
+  },
+  "assumptions": [
+    "The explicit tilesetId scopes discovery, while an exact opaque ID remains authoritative.",
+    "Current canonical descendant rooms determine atlas eligibility, consistent with existing canonical bundle projection; empty imports use receipt eligibility. Legacy alias matching also retains its existing receipt atlas qualifier.",
+    "Mixed-atlas facilities require exact identity rather than single-atlas legacy discovery."
+  ],
+  "limitations": [
+    "Offline actual-runner and resolver evidence only, not provider, browser/UI proposal acceptance, remote publication, or full task17 acceptance.",
+    "No old80/broad suites, product build, or full typecheck rerun, per assigned validation scope.",
+    "No changes to T17-AV-1, T17-AV-2, or T17-AV-4; those have separate owners."
+  ],
+  "cleanup": {
+    "processes": "All three monitored children exited normally with explicit exit codes; monitor registries/runtimes disposed. No browser, listener, daemon, extra worker, or external service was launched.",
+    "temporaryArtifacts": "Only a local node_modules symlink and .debug-journal.md were created; removed before the scoped commit. Shared dependency contents and pre-existing .vite-cache were not deleted.",
+    "retained": "Only the scoped resolver edit, permanent regression, this report and three losslessly gzip-compressed raw monitored logs. gzip -n preserves exact decompressed bytes including ANSI output and trailing spaces; no failure output is edited.",
+    "remoteDatabaseWrites": 0,
+    "providerCalls": 0,
+    "pushPrMerge": false
+  },
+  "architecturalReview": {
+    "singleResponsibility": "Existing legacy compatibility projection and dedicated facility-qualification regression; both below 120 pure LOC.",
+    "boundaryPurity": "Existing checkedDocument and receipt tuple parser retained; no untrusted unknown value is passed into domain logic.",
+    "variantDiscrimination": "No new variant dispatch. Existing facility/place collection predicates remain selection filters; roomsOf exhaustive traversal is unchanged.",
+    "escapeHatches": "No any, assertions, non-null assertions, type suppressions or warning suppressions added.",
+    "defensiveLayers": "No redundant trusted-value checks or catch blocks added.",
+    "helpers": "No production helper added; existing roomsOf reused. Test fixture and identity builders have multiple callers.",
+    "tests": "The actual conversion runner regression and direct resolver cases were observed failing before the production fix and passing afterward.",
+    "parameters": "No function exceeds three parameters.",
+    "redundantVerification": "No destructive action followed by application-level re-query; JSON equality in tests verifies the read-only tool contract.",
+    "naming": "No negative-form names added.",
+    "logging": "No production logging or boundary error handling changes. Validation used silent=false and preserved all raw failures."
+  }
+}

@@ -1,0 +1,128 @@
+monitor_id=mon_JASJANDMPXM3QKTY
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 test"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":"> node scripts/run-vitest.mjs run --configLoader bundle test/spatialToolAcceptance.test.ts"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-ai-tools"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":" ❯ test/spatialToolAcceptance.test.ts (5 tests | 2 failed) 5298ms"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":"   ✓ spatial proposals at the actual shared acceptance boundary > accepts the authored source in one reversible transaction  1648ms"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":"   ✓ spatial proposals at the actual shared acceptance boundary > rejects a changed live source before any publication  829ms"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":"   ✓ spatial proposals at the actual shared acceptance boundary > rejects a changed live map before any publication  869ms"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":"   × spatial proposals at the actual shared acceptance boundary > rejects a changed live identity before any publication 1217ms"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":"     → expected true to be false // Object.is equality"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":"   × spatial proposals at the actual shared acceptance boundary > rejects a stale generic map proposal in canonical mode 732ms"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":"     → expected true to be false // Object.is equality"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":" FAIL  test/spatialToolAcceptance.test.ts > spatial proposals at the actual shared acceptance boundary > rejects a changed live identity before any publication"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":"AssertionError: expected true to be false // Object.is equality"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":"\u001b[32m- Expected\u001b[39m"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":"\u001b[31m+ Received\u001b[39m"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":"\u001b[32m- false\u001b[39m"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":"\u001b[31m+ true\u001b[39m"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":" ❯ test/spatialToolAcceptance.test.ts:53:23"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":"     51|     const result = await applyProposedProject(proposed, options);"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":"     52|     // Then"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":"     53|     expect(result.ok).toBe(false);"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":"       |                       ^"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":"     54|     expect(JSON.stringify(store.getCurrent())).toBe(before);"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":"     55|   });"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":" FAIL  test/spatialToolAcceptance.test.ts > spatial proposals at the actual shared acceptance boundary > rejects a stale generic map proposal in canonical mode"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":"AssertionError: expected true to be false // Object.is equality"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":"\u001b[32m- Expected\u001b[39m"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":"\u001b[31m+ Received\u001b[39m"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":"\u001b[32m- false\u001b[39m"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":"\u001b[31m+ true\u001b[39m"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":" ❯ test/spatialToolAcceptance.test.ts:66:24"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":"     64|     const applied = await applyProposedProject(ctx.project, { ...optio…"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":"     65|     // Then"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":"     66|     expect(applied.ok).toBe(false);"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":"       |                        ^"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":"     67|     expect(JSON.stringify(store.getCurrent())).toBe(before);"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":"     68|   });"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":"⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":" Test Files  1 failed (1)"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":"      Tests  2 failed | 3 passed (5)"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":"   Start at  01:38:59"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":"   Duration  16.02s (transform 7.22s, setup 0ms, collect 10.21s, tests 5.30s, environment 0ms, prepare 88ms)"}
+{"type":"line","id":"authoring-2660161","description":"task11 scoped validation","line":""}
+{"type":"summary","id":"authoring-2660161","description":"task11 scoped validation","summary":"watcher exited_1 (exit code 1)"}
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/spatialToolAcceptance.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-ai-tools
+
+ ❯ test/spatialToolAcceptance.test.ts (5 tests | 2 failed) 5298ms
+   ✓ spatial proposals at the actual shared acceptance boundary > accepts the authored source in one reversible transaction  1648ms
+   ✓ spatial proposals at the actual shared acceptance boundary > rejects a changed live source before any publication  829ms
+   ✓ spatial proposals at the actual shared acceptance boundary > rejects a changed live map before any publication  869ms
+   × spatial proposals at the actual shared acceptance boundary > rejects a changed live identity before any publication 1217ms
+     → expected true to be false // Object.is equality
+   × spatial proposals at the actual shared acceptance boundary > rejects a stale generic map proposal in canonical mode 732ms
+     → expected true to be false // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/spatialToolAcceptance.test.ts > spatial proposals at the actual shared acceptance boundary > rejects a changed live identity before any publication
+AssertionError: expected true to be false // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+ ❯ test/spatialToolAcceptance.test.ts:53:23
+     51|     const result = await applyProposedProject(proposed, options);
+     52|     // Then
+     53|     expect(result.ok).toBe(false);
+       |                       ^
+     54|     expect(JSON.stringify(store.getCurrent())).toBe(before);
+     55|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  test/spatialToolAcceptance.test.ts > spatial proposals at the actual shared acceptance boundary > rejects a stale generic map proposal in canonical mode
+AssertionError: expected true to be false // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+ ❯ test/spatialToolAcceptance.test.ts:66:24
+     64|     const applied = await applyProposedProject(ctx.project, { ...optio…
+     65|     // Then
+     66|     expect(applied.ok).toBe(false);
+       |                        ^
+     67|     expect(JSON.stringify(store.getCurrent())).toBe(before);
+     68|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 3 passed (5)
+   Start at  01:38:59
+   Duration  16.02s (transform 7.22s, setup 0ms, collect 10.21s, tests 5.30s, environment 0ms, prepare 88ms)
+
+
+monitor_exit={"backend":"pipe-fallback","exitCode":1,"signal":null,"cancelled":false,"timedOut":false}

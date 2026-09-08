@@ -5,6 +5,7 @@
 // 토큰 예산(문자 수 근사) 상한을 넘으면 조회 툴 안내로 대체한다.
 
 import { runTool } from "@/editor/tools";
+import { spatialAuthoringContext } from "./spatialContext";
 import type { ToolContext } from "@/editor/tools";
 import { HOUSE_KITS } from "@/editor/houseKit";
 import {
@@ -411,6 +412,7 @@ function structureKitSection(project: Project, mapId: string | undefined): strin
 }
 
 function conceptBundleSection(project: Project): string {
+  if (project.spatialAuthoring !== undefined) return "";
   const listed = listLiveConceptBundles(project);
   const lines = [
     "## 개념 꾸러미 (place_concept 이 읽음)",
@@ -477,6 +479,7 @@ function conceptBundleSection(project: Project): string {
 }
 
 function interiorCatalogSection(project: Project, mapId: string | undefined): string {
+  if (project.spatialAuthoring !== undefined) return "";
   const tilesetIds = new Set<string>(currentTilesetIds(project, mapId));
   tilesetIds.add(INTERIOR_ROOM_TILESET_ID);
   const lines: string[] = [
@@ -740,6 +743,8 @@ export function buildSystemPrompt(project: Project, options: ContextOptions = {}
   // 감독 지침도 능력 색인·성향 기억과 같은 **예산 밖 고정분**이다. 예산 안에 두면 tokenBudget 보정이
   // 예산을 6,000자까지 줄인 세션에서 슬라이싱에 통째로 잘려, 사용자가 박아 둔 규칙이 조용히
   // 사라진다 — 사라진 줄 아무도 모르는 것이 이 블록의 최악 실패다(색인을 예산 밖에 둔 이유와 동일).
+  const spatial = spatialAuthoringContext(project);
+  if (spatial) assembled += `\n\n${spatial}`;
   const designContract = villageDesignContext(project);
   if (designContract) assembled += `\n\n${designContract}`;
   const wiki = projectWikiContext(project, { query: options.wikiQuery ?? "", mapId: currentMapId });

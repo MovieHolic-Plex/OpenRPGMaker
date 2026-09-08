@@ -3,6 +3,7 @@ import type { GameEvent, MapTreeNode, Project } from "@/project/types";
 
 import type { ChangeSummary } from "./types";
 import { ToolError } from "./types";
+import { spatialConstructionEnvelope } from "./spatialConstructionScope";
 import type {
   AuthorHouseChanges,
   AuthorHouseExecution,
@@ -76,7 +77,8 @@ export function validateAuthorHousePostconditions(input: HousePostconditionInput
   if (after.startMapId !== before.startMapId || JSON.stringify(after.startPos) !== JSON.stringify(before.startPos)) {
     fail("집 시공이 시작 위치를 변경했습니다.", "undeclared-construction-change", request.mapId);
   }
-  if (projectEnvelope(after) !== projectEnvelope(before)) {
+  const envelope = spatialConstructionEnvelope(before, after, houses.flatMap(house => house.interior?.floorMapIds ?? []));
+  if (projectEnvelope(envelope) !== projectEnvelope(before)) {
     fail("집 시공이 선언되지 않은 프로젝트 영역을 변경했습니다.", "undeclared-construction-change", request.mapId);
   }
   validateHouseEvidence(after, request, houses);
@@ -134,7 +136,9 @@ function validateMapScope(input: MapScopeInput): void {
   if (JSON.stringify([...input.changes.addedMapIds].sort()) !== JSON.stringify(expectedAdded)) {
     fail("선언되지 않은 맵 추가가 감지되었습니다.", "undeclared-construction-change", input.targetMapId);
   }
-  if (input.diff.mapsRemoved !== 0 || input.diff.mapsAdded !== expectedAdded.length || hasForbiddenDiff(input.diff)) {
+  const spatialDelta = JSON.stringify(input.before.spatialAuthoring) === JSON.stringify(input.after.spatialAuthoring) ? 0 : 1;
+  if (input.diff.mapsRemoved !== 0 || input.diff.mapsAdded !== expectedAdded.length
+    || hasForbiddenDiff({ ...input.diff, dbRecordsChanged: input.diff.dbRecordsChanged - spatialDelta })) {
     fail("집 시공의 변경 범위를 벗어났습니다.", "undeclared-construction-change", input.targetMapId);
   }
   for (const mapId of Object.keys(input.before.maps)) {

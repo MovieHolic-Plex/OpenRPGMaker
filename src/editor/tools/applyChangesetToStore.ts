@@ -3,6 +3,10 @@
 // **이 파일만 브라우저/에디터(store, mapEditHistory)에 의존한다.** 나머지 툴 레이어는 전부 순수.
 
 import { harnessToolReason, isUsableToolReason, splitToolCallReason } from "@/ai/toolReason";
+import { transferDetachedDraftMemory } from "@/editor/detachedDraftMemory";
+import { assertSpatialToolAcceptance, finishSpatialToolAcceptance } from "./spatialToolState";
+import { ProjectFormatError } from "@/project/io/errors";
+import { SpatialOperationError } from "@/project/spatial/domain";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { focusAcceptedAgentChanges } from "@/editor/agentFocus";
 import { loadAiConfig } from "@/ai/llmClient";
@@ -108,6 +112,7 @@ export function applyToolToStore(name: string, args: Record<string, unknown>): T
   const result = runTool(ctx, name, split.args, { dryRun: false });
   // 쓰기 툴이 성공적으로 새 프로젝트를 만든 경우에만 반영(읽기 툴/거부는 무시).
   if (result.ok && ctx.project !== store.getCurrent()) {
+    finishSpatialToolAcceptance(ctx.project);
     recordToolSnapshot(name, split.args); // 변경 이전 상태를 undo 스냅샷으로 저장.
     const summary = result.summary || summaryForDiff(result.diff ?? combineDiffs([]));
     // origin 은 "tool" — 사람이 에디터에서 툴을 직접 실행한 경로다(채팅 에이전트가 아니다).
@@ -164,6 +169,7 @@ export function applyToolSequenceToStore(
     const summary = options.summary
       ?? (results.map((result) => result.summary).filter(Boolean).join(" / ") || summaryForDiff(diff));
     const byAgent = options.source === "agent";
+    finishSpatialToolAcceptance(ctx.project);
     recordProjectSnapshot();
     store.replace(ctx.project, {
       change: applyAnnotation(
@@ -242,6 +248,12 @@ export async function applyProposedProject(
   // Wiki checkpoints and human codex edits own world documents independently of
   // detached authoring previews. A title/map proposal must not restore an old wiki.
   const appliedProject = { ...proposed };
+  transferDetachedDraftMemory(proposed, appliedProject);
+  try { assertSpatialToolAcceptance(appliedProject, before); }
+  catch (error) {
+    if (!(error instanceof ToolError || error instanceof ProjectFormatError || error instanceof SpatialOperationError)) throw error;
+    return { ok: false, reason: "commit-rejected", issue: error.message, issues: [error.message] };
+  }
   if (!options.resetProject) {
     if (before.world) appliedProject.world = structuredClone(before.world);
     else delete appliedProject.world;
@@ -266,6 +278,7 @@ export async function applyProposedProject(
       issues: blocking,
     };
   }
+  finishSpatialToolAcceptance(appliedProject);
   recordProjectSnapshot(options.snapshotLabel, options.snapshotMapId);
   // diff 를 replace **전에** 계산한다 — 행위 로그 라벨이 이 시점에 확정돼야 하고,
   // summarizeChanges 는 before(교체 전 스토어)를 필요로 한다.

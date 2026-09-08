@@ -1,0 +1,40 @@
+monitor_id=mon_R4JPTD47BHBJN3KZ
+{"type":"line","id":"authoring-2582175","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2582175","description":"task11 scoped validation","line":"> rpg-zzu@0.1.0 test"}
+{"type":"line","id":"authoring-2582175","description":"task11 scoped validation","line":"> node scripts/run-vitest.mjs run --configLoader bundle test/spatialLegacyTools.test.ts"}
+{"type":"line","id":"authoring-2582175","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2582175","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2582175","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-ai-tools"}
+{"type":"line","id":"authoring-2582175","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2582175","description":"task11 scoped validation","line":" ✓ test/spatialLegacyTools.test.ts (5 tests) 3575ms"}
+{"type":"line","id":"authoring-2582175","description":"task11 scoped validation","line":"   ✓ legacy tools with active canonical designs > looks up the canonical source rather than retired empty catalogs  693ms"}
+{"type":"line","id":"authoring-2582175","description":"task11 scoped validation","line":"   ✓ legacy tools with active canonical designs > places canonical sources without reviving retired furniture  1957ms"}
+{"type":"line","id":"authoring-2582175","description":"task11 scoped validation","line":"   ✓ legacy tools with active canonical designs > resolves linked house and village program content from canonical definitions  390ms"}
+{"type":"line","id":"authoring-2582175","description":"task11 scoped validation","line":"   ✓ legacy tools with active canonical designs > binds ordinary interior rooms to canonical selections  418ms"}
+{"type":"line","id":"authoring-2582175","description":"task11 scoped validation","line":""}
+{"type":"line","id":"authoring-2582175","description":"task11 scoped validation","line":" Test Files  1 passed (1)"}
+{"type":"line","id":"authoring-2582175","description":"task11 scoped validation","line":"      Tests  5 passed (5)"}
+{"type":"line","id":"authoring-2582175","description":"task11 scoped validation","line":"   Start at  01:37:32"}
+{"type":"line","id":"authoring-2582175","description":"task11 scoped validation","line":"   Duration  14.02s (transform 6.94s, setup 0ms, collect 9.86s, tests 3.57s, environment 0ms, prepare 104ms)"}
+{"type":"line","id":"authoring-2582175","description":"task11 scoped validation","line":""}
+{"type":"summary","id":"authoring-2582175","description":"task11 scoped validation","summary":"watcher completed (exit code 0)"}
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/spatialLegacyTools.test.ts
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-ai-tools
+
+ ✓ test/spatialLegacyTools.test.ts (5 tests) 3575ms
+   ✓ legacy tools with active canonical designs > looks up the canonical source rather than retired empty catalogs  693ms
+   ✓ legacy tools with active canonical designs > places canonical sources without reviving retired furniture  1957ms
+   ✓ legacy tools with active canonical designs > resolves linked house and village program content from canonical definitions  390ms
+   ✓ legacy tools with active canonical designs > binds ordinary interior rooms to canonical selections  418ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  01:37:32
+   Duration  14.02s (transform 6.94s, setup 0ms, collect 9.86s, tests 3.57s, environment 0ms, prepare 104ms)
+
+
+monitor_exit={"backend":"pipe-fallback","exitCode":0,"signal":null,"cancelled":false,"timedOut":false}

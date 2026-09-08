@@ -1,0 +1,510 @@
+monitor_id=mon_E09FG2PGKWFSGB6Q
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"{"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"  \"custom\": true,"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"  \"aliases\": ["}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"sourceKey\": \"[\\\"easyrpg_chipset_interior\\\",\\\"qualified-facility\\\",\\\"place\\\",\\\"bedroom\\\"]\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"target\": {"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"        \"kind\": \"space\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"        \"id\": \"legacy:[\\\"easyrpg_chipset_interior\\\",\\\"qualified-facility\\\",\\\"place\\\",\\\"bedroom\\\"]\""}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      }"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"sourceKey\": \"[\\\"easyrpg_chipset_world\\\",\\\"qualified-facility\\\",\\\"place\\\",\\\"bedroom\\\"]\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"target\": {"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"        \"kind\": \"space\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"        \"id\": \"legacy:[\\\"easyrpg_chipset_world\\\",\\\"qualified-facility\\\",\\\"place\\\",\\\"bedroom\\\"]\""}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      }"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"    }"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"  ],"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"  \"spaces\": ["}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"id\": \"legacy:[\\\"easyrpg_chipset_interior\\\",\\\"qualified-facility\\\",\\\"place\\\",\\\"bedroom\\\"]\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"name\": \"Shared Room\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"revision\": 1,"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"tags\": [],"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"provenance\": {"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"        \"origin\": \"legacy\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"        \"sourceId\": \"[\\\"easyrpg_chipset_interior\\\",\\\"qualified-facility\\\",\\\"place\\\",\\\"bedroom\\\"]\""}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      },"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"tilesetId\": \"easyrpg_chipset_interior\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"shape\": \"rect\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"width\": 7,"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"height\": 4,"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"floor\": \"wood\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"wall\": \"cream\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"objectSlots\": [],"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"ports\": [],"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"environment\": \"interior\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"role\": \"room\""}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"id\": \"legacy:[\\\"easyrpg_chipset_interior\\\",\\\"qualified-facility\\\",\\\"place-context\\\",\\\"[\\\\\\\"qualified-facility\\\\\\\",1,0]\\\"]\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"name\": \"Shared Room\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"revision\": 1,"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"tags\": [],"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"provenance\": {"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"        \"origin\": \"legacy\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"        \"sourceId\": \"[\\\"easyrpg_chipset_interior\\\",\\\"qualified-facility\\\",\\\"place-context\\\",\\\"[\\\\\\\"qualified-facility\\\\\\\",1,0]\\\"]\""}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      },"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"tilesetId\": \"easyrpg_chipset_interior\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"shape\": \"rect\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"width\": 8,"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"height\": 4,"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"floor\": \"wood\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"wall\": \"cream\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"objectSlots\": [],"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"ports\": [],"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"environment\": \"interior\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"role\": \"room\""}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"id\": \"legacy:[\\\"easyrpg_chipset_world\\\",\\\"qualified-facility\\\",\\\"place\\\",\\\"bedroom\\\"]\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"name\": \"Shared Room\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"revision\": 1,"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"tags\": [],"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"provenance\": {"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"        \"origin\": \"legacy\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"        \"sourceId\": \"[\\\"easyrpg_chipset_world\\\",\\\"qualified-facility\\\",\\\"place\\\",\\\"bedroom\\\"]\""}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      },"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"tilesetId\": \"easyrpg_chipset_world\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"shape\": \"rect\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"width\": 7,"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"height\": 4,"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"floor\": \"wood\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"wall\": \"cream\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"objectSlots\": [],"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"ports\": [],"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"environment\": \"interior\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"role\": \"room\""}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"id\": \"legacy:[\\\"easyrpg_chipset_world\\\",\\\"qualified-facility\\\",\\\"place-context\\\",\\\"[\\\\\\\"qualified-facility\\\\\\\",1,0]\\\"]\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"name\": \"Shared Room\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"revision\": 1,"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"tags\": [],"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"provenance\": {"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"        \"origin\": \"legacy\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"        \"sourceId\": \"[\\\"easyrpg_chipset_world\\\",\\\"qualified-facility\\\",\\\"place-context\\\",\\\"[\\\\\\\"qualified-facility\\\\\\\",1,0]\\\"]\""}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      },"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"tilesetId\": \"easyrpg_chipset_world\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"shape\": \"rect\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"width\": 8,"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"height\": 4,"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"floor\": \"wood\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"wall\": \"cream\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"objectSlots\": [],"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"ports\": [],"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"environment\": \"interior\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"role\": \"room\""}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"    }"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"  ]"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"}"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"{"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"  \"custom\": false,"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"  \"aliases\": ["}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"sourceKey\": \"[\\\"easyrpg_chipset_interior\\\",\\\"house\\\",\\\"place\\\",\\\"bedroom\\\"]\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"target\": {"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"        \"kind\": \"space\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"        \"id\": \"legacy:[\\\"easyrpg_chipset_interior\\\",\\\"house\\\",\\\"place\\\",\\\"bedroom\\\"]\""}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      }"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"sourceKey\": \"[\\\"easyrpg_chipset_interior\\\",\\\"farmhouse\\\",\\\"place\\\",\\\"bedroom\\\"]\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"target\": {"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"        \"kind\": \"space\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"        \"id\": \"legacy:[\\\"easyrpg_chipset_interior\\\",\\\"farmhouse\\\",\\\"place\\\",\\\"bedroom\\\"]\""}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      }"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"    }"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"  ],"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"  \"spaces\": ["}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"id\": \"legacy:[\\\"easyrpg_chipset_interior\\\",\\\"house\\\",\\\"place\\\",\\\"bedroom\\\"]\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"name\": \"침방\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"revision\": 1,"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"tags\": [],"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"provenance\": {"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"        \"origin\": \"legacy\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"        \"sourceId\": \"[\\\"easyrpg_chipset_interior\\\",\\\"house\\\",\\\"place\\\",\\\"bedroom\\\"]\""}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      },"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"tilesetId\": \"easyrpg_chipset_interior\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"shape\": \"rect\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"width\": 5,"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"height\": 3,"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"floor\": \"wood\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"wall\": \"cream\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"objectSlots\": ["}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"        {"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          \"id\": \"legacy:[\\\"easyrpg_chipset_interior\\\",\\\"house\\\",\\\"slot\\\",\\\"[\\\\\\\"bedroom\\\\\\\",\\\\\\\"bed_v\\\\\\\"]\\\"]\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          \"objectDesignId\": \"legacy:[\\\"easyrpg_chipset_interior\\\",\\\"house\\\",\\\"thing\\\",\\\"bed_v\\\"]\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          \"quantity\": 1,"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          \"required\": true,"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          \"placement\": {"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"            \"mode\": \"auto\""}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          },"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          \"chipOverrides\": ["}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"            \"block\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"            \"event\""}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          ]"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"        },"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"        {"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          \"id\": \"legacy:[\\\"easyrpg_chipset_interior\\\",\\\"house\\\",\\\"slot\\\",\\\"[\\\\\\\"bedroom\\\\\\\",\\\\\\\"box\\\\\\\"]\\\"]\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          \"objectDesignId\": \"legacy:[\\\"easyrpg_chipset_interior\\\",\\\"house\\\",\\\"thing\\\",\\\"box\\\"]\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          \"quantity\": 1,"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          \"required\": false,"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          \"placement\": {"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"            \"mode\": \"auto\""}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          },"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          \"chipOverrides\": ["}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"            \"block\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"            \"loot\""}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          ]"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"        },"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"        {"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          \"id\": \"legacy:[\\\"easyrpg_chipset_interior\\\",\\\"house\\\",\\\"slot\\\",\\\"[\\\\\\\"bedroom\\\\\\\",\\\\\\\"window\\\\\\\"]\\\"]\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          \"objectDesignId\": \"legacy:[\\\"easyrpg_chipset_interior\\\",\\\"house\\\",\\\"thing\\\",\\\"window\\\"]\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          \"quantity\": 1,"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          \"required\": false,"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          \"placement\": {"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"            \"mode\": \"auto\""}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          },"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          \"chipOverrides\": ["}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"            \"wall\""}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          ]"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"        },"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"        {"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          \"id\": \"legacy:[\\\"easyrpg_chipset_interior\\\",\\\"house\\\",\\\"slot\\\",\\\"[\\\\\\\"bedroom\\\\\\\",\\\\\\\"bedroom_rug\\\\\\\"]\\\"]\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          \"objectDesignId\": \"legacy:[\\\"easyrpg_chipset_interior\\\",\\\"house\\\",\\\"thing\\\",\\\"bedroom_rug\\\"]\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          \"quantity\": 1,"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          \"required\": false,"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          \"placement\": {"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"            \"mode\": \"auto\""}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          },"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          \"chipOverrides\": ["}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"            \"pass\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"            \"floor\""}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          ]"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"        }"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      ],"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"ports\": [],"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"environment\": \"interior\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"role\": \"room\""}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"    },"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"    {"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"id\": \"legacy:[\\\"easyrpg_chipset_interior\\\",\\\"farmhouse\\\",\\\"place\\\",\\\"bedroom\\\"]\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"name\": \"소박한 침실\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"revision\": 1,"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"tags\": [],"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"provenance\": {"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"        \"origin\": \"legacy\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"        \"sourceId\": \"[\\\"easyrpg_chipset_interior\\\",\\\"farmhouse\\\",\\\"place\\\",\\\"bedroom\\\"]\""}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      },"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"tilesetId\": \"easyrpg_chipset_interior\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"shape\": \"rect\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"width\": 5,"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"height\": 3,"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"floor\": \"mat\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"wall\": \"cream\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"objectSlots\": ["}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"        {"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          \"id\": \"legacy:[\\\"easyrpg_chipset_interior\\\",\\\"farmhouse\\\",\\\"slot\\\",\\\"[\\\\\\\"bedroom\\\\\\\",\\\\\\\"bedroom_bed_v_1\\\\\\\"]\\\"]\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          \"objectDesignId\": \"legacy:[\\\"easyrpg_chipset_interior\\\",\\\"farmhouse\\\",\\\"thing\\\",\\\"bedroom_bed_v_1\\\"]\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          \"quantity\": 1,"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          \"required\": true,"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          \"placement\": {"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"            \"mode\": \"auto\""}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          },"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          \"chipOverrides\": ["}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"            \"block\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"            \"event\""}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          ]"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"        },"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"        {"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          \"id\": \"legacy:[\\\"easyrpg_chipset_interior\\\",\\\"farmhouse\\\",\\\"slot\\\",\\\"[\\\\\\\"bedroom\\\\\\\",\\\\\\\"bedroom_box_2\\\\\\\"]\\\"]\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          \"objectDesignId\": \"legacy:[\\\"easyrpg_chipset_interior\\\",\\\"farmhouse\\\",\\\"thing\\\",\\\"bedroom_box_2\\\"]\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          \"quantity\": 1,"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          \"required\": false,"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          \"placement\": {"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"            \"mode\": \"auto\""}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          },"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          \"chipOverrides\": ["}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"            \"block\""}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          ]"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"        },"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"        {"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          \"id\": \"legacy:[\\\"easyrpg_chipset_interior\\\",\\\"farmhouse\\\",\\\"slot\\\",\\\"[\\\\\\\"bedroom\\\\\\\",\\\\\\\"bedroom_rug_mat_3\\\\\\\"]\\\"]\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          \"objectDesignId\": \"legacy:[\\\"easyrpg_chipset_interior\\\",\\\"farmhouse\\\",\\\"thing\\\",\\\"bedroom_rug_mat_3\\\"]\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          \"quantity\": 1,"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          \"required\": false,"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          \"placement\": {"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"            \"mode\": \"auto\""}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          },"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          \"chipOverrides\": ["}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"            \"pass\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"            \"floor\""}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"          ]"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"        }"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      ],"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"ports\": [],"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"environment\": \"interior\","}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"      \"role\": \"room\""}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"    }"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"  ]"}
+{"type":"line","id":"authoring-81326","description":"task11 scoped validation","line":"}"}
+{"type":"summary","id":"authoring-81326","description":"task11 scoped validation","summary":"watcher completed (exit code 0)"}
+{
+  "custom": true,
+  "aliases": [
+    {
+      "sourceKey": "[\"easyrpg_chipset_interior\",\"qualified-facility\",\"place\",\"bedroom\"]",
+      "target": {
+        "kind": "space",
+        "id": "legacy:[\"easyrpg_chipset_interior\",\"qualified-facility\",\"place\",\"bedroom\"]"
+      }
+    },
+    {
+      "sourceKey": "[\"easyrpg_chipset_world\",\"qualified-facility\",\"place\",\"bedroom\"]",
+      "target": {
+        "kind": "space",
+        "id": "legacy:[\"easyrpg_chipset_world\",\"qualified-facility\",\"place\",\"bedroom\"]"
+      }
+    }
+  ],
+  "spaces": [
+    {
+      "id": "legacy:[\"easyrpg_chipset_interior\",\"qualified-facility\",\"place\",\"bedroom\"]",
+      "name": "Shared Room",
+      "revision": 1,
+      "tags": [],
+      "provenance": {
+        "origin": "legacy",
+        "sourceId": "[\"easyrpg_chipset_interior\",\"qualified-facility\",\"place\",\"bedroom\"]"
+      },
+      "tilesetId": "easyrpg_chipset_interior",
+      "shape": "rect",
+      "width": 7,
+      "height": 4,
+      "floor": "wood",
+      "wall": "cream",
+      "objectSlots": [],
+      "ports": [],
+      "environment": "interior",
+      "role": "room"
+    },
+    {
+      "id": "legacy:[\"easyrpg_chipset_interior\",\"qualified-facility\",\"place-context\",\"[\\\"qualified-facility\\\",1,0]\"]",
+      "name": "Shared Room",
+      "revision": 1,
+      "tags": [],
+      "provenance": {
+        "origin": "legacy",
+        "sourceId": "[\"easyrpg_chipset_interior\",\"qualified-facility\",\"place-context\",\"[\\\"qualified-facility\\\",1,0]\"]"
+      },
+      "tilesetId": "easyrpg_chipset_interior",
+      "shape": "rect",
+      "width": 8,
+      "height": 4,
+      "floor": "wood",
+      "wall": "cream",
+      "objectSlots": [],
+      "ports": [],
+      "environment": "interior",
+      "role": "room"
+    },
+    {
+      "id": "legacy:[\"easyrpg_chipset_world\",\"qualified-facility\",\"place\",\"bedroom\"]",
+      "name": "Shared Room",
+      "revision": 1,
+      "tags": [],
+      "provenance": {
+        "origin": "legacy",
+        "sourceId": "[\"easyrpg_chipset_world\",\"qualified-facility\",\"place\",\"bedroom\"]"
+      },
+      "tilesetId": "easyrpg_chipset_world",
+      "shape": "rect",
+      "width": 7,
+      "height": 4,
+      "floor": "wood",
+      "wall": "cream",
+      "objectSlots": [],
+      "ports": [],
+      "environment": "interior",
+      "role": "room"
+    },
+    {
+      "id": "legacy:[\"easyrpg_chipset_world\",\"qualified-facility\",\"place-context\",\"[\\\"qualified-facility\\\",1,0]\"]",
+      "name": "Shared Room",
+      "revision": 1,
+      "tags": [],
+      "provenance": {
+        "origin": "legacy",
+        "sourceId": "[\"easyrpg_chipset_world\",\"qualified-facility\",\"place-context\",\"[\\\"qualified-facility\\\",1,0]\"]"
+      },
+      "tilesetId": "easyrpg_chipset_world",
+      "shape": "rect",
+      "width": 8,
+      "height": 4,
+      "floor": "wood",
+      "wall": "cream",
+      "objectSlots": [],
+      "ports": [],
+      "environment": "interior",
+      "role": "room"
+    }
+  ]
+}
+{
+  "custom": false,
+  "aliases": [
+    {
+      "sourceKey": "[\"easyrpg_chipset_interior\",\"house\",\"place\",\"bedroom\"]",
+      "target": {
+        "kind": "space",
+        "id": "legacy:[\"easyrpg_chipset_interior\",\"house\",\"place\",\"bedroom\"]"
+      }
+    },
+    {
+      "sourceKey": "[\"easyrpg_chipset_interior\",\"farmhouse\",\"place\",\"bedroom\"]",
+      "target": {
+        "kind": "space",
+        "id": "legacy:[\"easyrpg_chipset_interior\",\"farmhouse\",\"place\",\"bedroom\"]"
+      }
+    }
+  ],
+  "spaces": [
+    {
+      "id": "legacy:[\"easyrpg_chipset_interior\",\"house\",\"place\",\"bedroom\"]",
+      "name": "침방",
+      "revision": 1,
+      "tags": [],
+      "provenance": {
+        "origin": "legacy",
+        "sourceId": "[\"easyrpg_chipset_interior\",\"house\",\"place\",\"bedroom\"]"
+      },
+      "tilesetId": "easyrpg_chipset_interior",
+      "shape": "rect",
+      "width": 5,
+      "height": 3,
+      "floor": "wood",
+      "wall": "cream",
+      "objectSlots": [
+        {
+          "id": "legacy:[\"easyrpg_chipset_interior\",\"house\",\"slot\",\"[\\\"bedroom\\\",\\\"bed_v\\\"]\"]",
+          "objectDesignId": "legacy:[\"easyrpg_chipset_interior\",\"house\",\"thing\",\"bed_v\"]",
+          "quantity": 1,
+          "required": true,
+          "placement": {
+            "mode": "auto"
+          },
+          "chipOverrides": [
+            "block",
+            "event"
+          ]
+        },
+        {
+          "id": "legacy:[\"easyrpg_chipset_interior\",\"house\",\"slot\",\"[\\\"bedroom\\\",\\\"box\\\"]\"]",
+          "objectDesignId": "legacy:[\"easyrpg_chipset_interior\",\"house\",\"thing\",\"box\"]",
+          "quantity": 1,
+          "required": false,
+          "placement": {
+            "mode": "auto"
+          },
+          "chipOverrides": [
+            "block",
+            "loot"
+          ]
+        },
+        {
+          "id": "legacy:[\"easyrpg_chipset_interior\",\"house\",\"slot\",\"[\\\"bedroom\\\",\\\"window\\\"]\"]",
+          "objectDesignId": "legacy:[\"easyrpg_chipset_interior\",\"house\",\"thing\",\"window\"]",
+          "quantity": 1,
+          "required": false,
+          "placement": {
+            "mode": "auto"
+          },
+          "chipOverrides": [
+            "wall"
+          ]
+        },
+        {
+          "id": "legacy:[\"easyrpg_chipset_interior\",\"house\",\"slot\",\"[\\\"bedroom\\\",\\\"bedroom_rug\\\"]\"]",
+          "objectDesignId": "legacy:[\"easyrpg_chipset_interior\",\"house\",\"thing\",\"bedroom_rug\"]",
+          "quantity": 1,
+          "required": false,
+          "placement": {
+            "mode": "auto"
+          },
+          "chipOverrides": [
+            "pass",
+            "floor"
+          ]
+        }
+      ],
+      "ports": [],
+      "environment": "interior",
+      "role": "room"
+    },
+    {
+      "id": "legacy:[\"easyrpg_chipset_interior\",\"farmhouse\",\"place\",\"bedroom\"]",
+      "name": "소박한 침실",
+      "revision": 1,
+      "tags": [],
+      "provenance": {
+        "origin": "legacy",
+        "sourceId": "[\"easyrpg_chipset_interior\",\"farmhouse\",\"place\",\"bedroom\"]"
+      },
+      "tilesetId": "easyrpg_chipset_interior",
+      "shape": "rect",
+      "width": 5,
+      "height": 3,
+      "floor": "mat",
+      "wall": "cream",
+      "objectSlots": [
+        {
+          "id": "legacy:[\"easyrpg_chipset_interior\",\"farmhouse\",\"slot\",\"[\\\"bedroom\\\",\\\"bedroom_bed_v_1\\\"]\"]",
+          "objectDesignId": "legacy:[\"easyrpg_chipset_interior\",\"farmhouse\",\"thing\",\"bedroom_bed_v_1\"]",
+          "quantity": 1,
+          "required": true,
+          "placement": {
+            "mode": "auto"
+          },
+          "chipOverrides": [
+            "block",
+            "event"
+          ]
+        },
+        {
+          "id": "legacy:[\"easyrpg_chipset_interior\",\"farmhouse\",\"slot\",\"[\\\"bedroom\\\",\\\"bedroom_box_2\\\"]\"]",
+          "objectDesignId": "legacy:[\"easyrpg_chipset_interior\",\"farmhouse\",\"thing\",\"bedroom_box_2\"]",
+          "quantity": 1,
+          "required": false,
+          "placement": {
+            "mode": "auto"
+          },
+          "chipOverrides": [
+            "block"
+          ]
+        },
+        {
+          "id": "legacy:[\"easyrpg_chipset_interior\",\"farmhouse\",\"slot\",\"[\\\"bedroom\\\",\\\"bedroom_rug_mat_3\\\"]\"]",
+          "objectDesignId": "legacy:[\"easyrpg_chipset_interior\",\"farmhouse\",\"thing\",\"bedroom_rug_mat_3\"]",
+          "quantity": 1,
+          "required": false,
+          "placement": {
+            "mode": "auto"
+          },
+          "chipOverrides": [
+            "pass",
+            "floor"
+          ]
+        }
+      ],
+      "ports": [],
+      "environment": "interior",
+      "role": "room"
+    }
+  ]
+}
+
+monitor_exit={"backend":"pipe-fallback","exitCode":0,"signal":null,"cancelled":false,"timedOut":false}
