@@ -213,24 +213,28 @@ export async function playBattle(
             if (!current()) { abort(); return; }
             if (exiting) return;
             exiting = true;
-            const transition = createSkinBattleTransition(host, entrySkin.transition);
-            exitTransition = transition;
-            void transition.exit().then(async () => {
-              if (!current()) { abort(); return; }
-              closingDom = true;
-              battleScene?.destroy();
-              battleScene = undefined;
-              await transition.reveal();
-              if (!current()) { abort(); return; }
-              // Commit once, after all cancellable presentation has completed.
-              exitBattleAudio(project, session, savedAudio);
-              applyBattleRewardsToSession(session,
-                { result, canLose: snapshot.canLose, rewards: snapshot.rewards, actors: [...snapshot.actors, ...snapshot.reserveActors], eventState: snapshot.eventState, participatingActorIds: snapshot.participatingActorIds, monsterPartyMode }, project);
-              if (result === "victory") maybeAutosave(project, session, "battleVictory");
-              settled = true;
-              cleanup();
-              resolve(result);
-            }).catch(fail);
+            try {
+              const transition = createSkinBattleTransition(host, entrySkin.transition);
+              exitTransition = transition;
+              void transition.exit().then(async () => {
+                if (!current()) { abort(); return; }
+                closingDom = true;
+                battleScene?.destroy();
+                battleScene = undefined;
+                await transition.reveal();
+                if (!current()) { abort(); return; }
+                // Commit once, after all cancellable presentation has completed.
+                exitBattleAudio(project, session, savedAudio);
+                applyBattleRewardsToSession(session,
+                  { result, canLose: snapshot.canLose, rewards: snapshot.rewards, actors: [...snapshot.actors, ...snapshot.reserveActors], eventState: snapshot.eventState, participatingActorIds: snapshot.participatingActorIds, monsterPartyMode }, project);
+                if (result === "victory") maybeAutosave(project, session, "battleVictory");
+                settled = true;
+                cleanup();
+                resolve(result);
+              }).catch(fail);
+            } catch (error) {
+              fail(error);
+            }
           },
         });
         markBattleEntry(startedAt);

@@ -36,6 +36,12 @@
   is absolutely positioned within crop bounds, inverse-scales its typography,
   wraps long IDs, and does not claim pointer/input ownership. The browser probe
   checks its viewport bounds, nonzero size/alpha, and actual menu after reveal.
+- Result confirmation uses the same failure boundary for a synchronous exit
+  transition factory/exit-method throw and an asynchronous exit rejection. The
+  DOM has already latched resultSent, so escaping that callback would otherwise
+  strand the battle promise and foreground lease. `battleResultTransitionFailure`
+  mounts real battle DOM/runtime and exercises that callback through the event
+  owner, including late rejection after cancellation/session replacement.
 - Contracts: `eventBattleFailure`, `battleInitializationAdmission`,
   `npcScheduledBattle`, `npcBattleLifecycle`, `playSceneBattleCancellation`,
   `battleDefeatOutcome`. Exported-player probe and limitations: `testing.md`.
