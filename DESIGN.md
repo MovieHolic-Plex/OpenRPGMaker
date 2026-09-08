@@ -177,11 +177,14 @@ existing purse emblem; actual party faces remain explicitly labelled as party.
   uses a separate 2px text-color outline, also on the scroll region. Six actors and
   long authored names wrap, with focused controls scrolled into view by input code.
 - Overlay stays outside `.play-stage` scale. At 1024x768 and 640x480 the display
-  stays beside stock. At 320x240 it is an identity/description strip; the complete
-  comparison is deferred to the always-reachable detail opener, never deleted from
-  detail. Short viewports use this same compact-stock policy. Wallet, quantity,
+  stays beside stock. Compact equipment summaries prioritize all four comparison
+  values over duplicate artwork, description and ownership metadata. At 320x240
+  the summary uses four compact stat columns; the full replacement names and
+  effect ledger remain in keyboard-accessible detail. Short viewports use this
+  same compact-stock policy. Wallet, quantity,
   total, projected balance/shortage and detail/confirm/cancel remain in the footer.
-  Stock hints reduce to the focus-group hint at minimum size; detail hints wrap in
+  At minimum size, the focus-group hint shares the action row rather than taking
+  height away from the selected item and stats. Detail hints wrap in
   two compact rows and retain all scroll/return keys. Selected stock keeps mandatory
   scroll snap through resize. Explicit hidden state and menu/haggle layouts remain.
 - Keyboard purchase-decision contract: Tab/Shift+Tab traverses stock item, mode,

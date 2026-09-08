@@ -495,6 +495,10 @@
   .runtime-shop-status { flex-basis: 100%; }
   .runtime-shop-prompt-actions { margin-left: auto; }
   .runtime-shop-keyhints { gap: var(--shop-space-2); }
+  /* Comparison must fit before optional duplicated item presentation. */
+  .runtime-shop-detail:has(.runtime-shop-comparison-stats) > :is(
+    [data-testid="shop-hero-slot"], .runtime-shop-help-line, .runtime-shop-owned-panel
+  ) { display: none; }
 }
 @media (max-width: 460px), (max-height: 360px) {
   .runtime-shop-overlay {
@@ -548,6 +552,49 @@
   .runtime-shop-comparison > .runtime-shop-keyhints { display: grid; grid-template-columns: minmax(0, 1fr) auto; }
   .runtime-shop-comparison .runtime-shop-keyhint:nth-child(2) { grid-column: 1 / -1; grid-row: 2; }
   .runtime-shop-comparison .runtime-shop-keyhint-label { display: none; }
+  .runtime-shop-detail:has(.runtime-shop-comparison-stats),
+  .runtime-shop-detail:has(.runtime-shop-comparison-stats) > [data-testid="shop-stat-slot"] { display: block; }
+  .runtime-shop-detail .runtime-shop-comparison-summary { gap: 0; }
+  .runtime-shop-detail :is(.runtime-shop-comparison-heading, .runtime-shop-preview-reason) {
+    font-size: var(--shop-text-small);
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .runtime-shop-detail :is(.runtime-shop-replacement, .runtime-shop-same-equipment) { display: none; }
+  .runtime-shop-detail .runtime-shop-comparison-stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--shop-space-1);
+  }
+  .runtime-shop-detail .runtime-shop-comparison-stats > .runtime-shop-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 0;
+    border: 0;
+    font-size: var(--shop-text-small);
+    line-height: 1.2;
+  }
+  .runtime-shop-detail .runtime-shop-comparison-stats > .runtime-shop-stat > span { text-align: center; }
+  .runtime-shop-items-shell:has(.runtime-shop-comparison-stats) .runtime-shop-prompt-panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--shop-space-1);
+    align-items: center;
+  }
+  .runtime-shop-items-shell:has(.runtime-shop-comparison-stats) .runtime-shop-prompt { display: contents; }
+  .runtime-shop-items-shell:has(.runtime-shop-comparison-stats) .runtime-shop-status { grid-column: 1 / -1; }
+  .runtime-shop-items-shell:has(.runtime-shop-comparison-stats) .runtime-shop-quantity-wrap { grid-column: 1; grid-row: 2; }
+  .runtime-shop-items-shell:has(.runtime-shop-comparison-stats) .runtime-shop-balance-after { grid-column: 2; grid-row: 2; }
+  .runtime-shop-items-shell:has(.runtime-shop-comparison-stats) .runtime-shop-prompt-actions { grid-column: 1; grid-row: 3; }
+  .runtime-shop-items-shell:has(.runtime-shop-comparison-stats) .runtime-shop-keyhints {
+    grid-column: 2;
+    grid-row: 3;
+    padding-top: 0;
+    justify-self: end;
+  }
+  .runtime-shop-items-shell:has(.runtime-shop-comparison-stats) .runtime-shop-keyhint-label { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .runtime-shop-overlay,
