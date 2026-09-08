@@ -32,6 +32,12 @@ const titleRequirements = (raw: string, value: string) => ({ entries: [{
 const isProject = (value: unknown): value is Project => typeof value === "object" && value !== null
   && "meta" in value && "maps" in value && "database" in value && "tilesets" in value;
 
+function deferred() {
+  let resolve!: () => void;
+  const promise = new Promise<void>(done => { resolve = done; });
+  return { promise, resolve };
+}
+
 async function bounded<T>(operation: Promise<T>): Promise<T> {
   let deadline: ReturnType<typeof setTimeout> | undefined;
   try {
@@ -172,8 +178,8 @@ describe("bounded canonical project comparisons", () => {
     store.replace(createBlankProject());
     resetMapEditHistory();
     const raw = 'Set project title to exactly "Final 64"';
-    const entered = Promise.withResolvers<void>(), release = Promise.withResolvers<void>();
-    const applied = Promise.withResolvers<void>(), controller = new AbortController();
+    const entered = deferred(), release = deferred();
+    const applied = deferred(), controller = new AbortController();
     const fingerprints = vi.spyOn(evaluation, "acceptanceFingerprint");
     const evaluations = vi.spyOn(AssistantAcceptanceLedger.prototype, "evaluate");
     const commits = vi.spyOn(sync, "recordProjectCommitToSupabase");
@@ -232,7 +238,9 @@ describe("bounded canonical project comparisons", () => {
         id: "request-1:source:0", required: true, coverage: "declared", sourceSpan: anchor(raw),
         source: { requestId: "request-1", text: raw }, evidence: [{ passed: false }],
       }]);
-      expect(session.getHarnessSnapshot().requests[0]?.units[0]).toMatchObject({
+      const requests = session.getHarnessSnapshot().requests;
+      if (requests === undefined) throw new Error("Applied checkpoint is missing its request sources");
+      expect(requests[0]?.units[0]).toMatchObject({
         criteria: titleRequirements(raw, "Final 64").entries[0]!.criteria,
         bindings: titleRequirements(raw, "Final 64").entries[0]!.bindings,
       });
