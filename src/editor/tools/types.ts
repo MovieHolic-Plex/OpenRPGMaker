@@ -17,6 +17,7 @@ export interface JsonSchema {
   readonly enum?: readonly (string | number)[];
   readonly minLength?: number;
   readonly maxLength?: number;
+  readonly pattern?: string;
   readonly minimum?: number;
   readonly maximum?: number;
   /** JSON Schema oneOf (툴 인자 유니온). type 없이 쓰일 수 있다. */
