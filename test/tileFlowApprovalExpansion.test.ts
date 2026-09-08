@@ -11,6 +11,8 @@ import { runTool, type ToolContext } from "@/editor/tools";
 import { derivePatternGrammar } from "@/editor/tools/v3";
 import { ToolError } from "@/editor/tools/types";
 import { createBlankProject } from "@/project/defaults";
+import { DEFAULT_AUTOTILE_GROUPS } from "@/project/defaults/autotileGroups";
+import { fixedDeclarer } from "./intentFixture";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { approvedVocabulary } from "@/project/tileVocabulary";
 import type { TilesetDef } from "@/project/types";
@@ -74,11 +76,14 @@ describe("T1 — v3 프리미티브는 스펙 게이트 제외", () => {
     approveWallGroup(ctx);
 
     const chat = scriptedChat([
-      finalMsg('{"action":"direct","reason":"single wall"}'),
       toolCallMsg("build_wall", { mapId: "m1", rect: { x: 4, y: 4, w: 5, h: 4 }, material: "테스트석벽" }, "c1"),
       finalMsg("벽을 지었습니다."),
     ]);
-    const session = new AssistantSession(ctx.project, { config: CONFIG, chat });
+    const session = new AssistantSession(ctx.project, {
+      config: CONFIG,
+      chat,
+      declareIntent: fixedDeclarer({ mode: "modify", space: "outdoor", tools: ["build_wall"] }),
+    });
     const turn = await session.sendUserMessage("벽 깔아줘");
 
     expect(turn.stoppedReason).toBe("final");
@@ -149,14 +154,17 @@ describe("T2 — 승인 시 패턴 파츠 자동 생성 불변식", () => {
 
   it("autotile_3x3 승인은 8-이웃 variantMap 오토타일 그룹을 등록하고 내장 폴백(흙길/모래)을 승계한다", () => {
     const { ctx, tileset } = contextWithMap();
-    const fallbackCount = 2; // 기본 타일셋의 내장 폴백: 흙길·모래
+    const fallbackGroups = DEFAULT_AUTOTILE_GROUPS;
     const result = runTool(ctx, "propose_tile_vocabulary", {
       items: [{ kind: "group", tileIds: NINE_TILES, name: "테스트길", role: "terrain", patternKind: "autotile_3x3", layerHome: "lower" }],
     });
     expect(result.ok).toBe(true);
     const def = tileset();
     const groups = def.autotileGroups ?? [];
-    expect(groups.length).toBe(fallbackCount + 1);
+    expect(groups.length).toBe(fallbackGroups.length + 1);
+    for (const fallback of fallbackGroups) {
+      expect(groups.find((group) => group.id === fallback.id)).toEqual(fallback);
+    }
     const registered = groups.find((group) => group.name === "테스트길")!;
     expect(registered.neighborhood).toBe(8);
     expect(Object.keys(registered.variantMap)).toHaveLength(256);

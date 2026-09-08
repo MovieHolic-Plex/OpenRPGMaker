@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { buildSystemPrompt } from "@/ai/contextBuilder";
 import { lintTilesetPalettes } from "@/editor/lint/tilesetPaletteLint";
 import { proposalSummaryLines } from "@/editor/panels/aiChatPanel";
+import { proposalHumanSummaryLine } from "@/editor/panels/aiProposalSummary";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext, ToolResult } from "@/editor/tools/types";
 import { createBlankProject } from "@/project/defaults";
@@ -281,7 +282,7 @@ describe("tileset palette lint T1a", () => {
 });
 
 describe("tileset palette AX tools T1a", () => {
-  it("contextBuilder includes tile vocabulary digest with slot counts and low confidence count", () => {
+  it("contextBuilder includes preset slot counts and query_tiles retains low confidence metadata", () => {
     const project = projectWithGrid(1, 1, [1]);
     const tileset = startTileset(project);
     tileset.palettePresets = [preset({ name: "Cave", slots: [{ role: "ground", tileIds: [1, 2] }, { role: "wall", tileIds: [3] }] })];
@@ -292,7 +293,9 @@ describe("tileset palette AX tools T1a", () => {
     expect(prompt).toContain("## 타일 어휘 다이제스트");
     expect(prompt).toContain("Cave");
     expect(prompt).toContain("ground:2");
-    expect(prompt).toContain("낮은 신뢰(confidence<0.5) 타일 1개");
+    const queried = runTool({ project }, "query_tiles", { presetId: "pp_village", role: "wall" });
+    expectOk(queried);
+    expect(queried.data).toMatchObject({ tiles: [expect.objectContaining({ tile: 3, confidenceScore: 0.4 })] });
   });
 
   it("contextBuilder omits tile vocabulary digest when presets and approved groups are both absent", () => {
@@ -389,9 +392,11 @@ describe("tileset palette AX tools T1a", () => {
       preset: { name: "Forest", slots: [{ role: "ground", tileIds: [1] }] },
     });
 
-    const lines = proposalSummaryLines([{ name: "upsert_palette_preset", args: {}, summary: result.summary, result, destructive: false }]);
+    const calls = [{ name: "upsert_palette_preset", args: {}, summary: result.summary, result, destructive: false }];
+    const lines = proposalSummaryLines(calls);
 
-    expect(lines[0]).toContain("프리셋 1건");
+    expect(result.diff?.palettePresetsAdded).toBe(1);
+    expect(lines[0]).toBe(proposalHumanSummaryLine(calls));
   });
 });
 

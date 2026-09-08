@@ -4,6 +4,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { serialize, deserialize } from "@/project/io";
 import { createBlankProject } from "@/project/defaults";
+import { normalizeSystemRecords } from "@/project/databaseRecordModel";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import { addTileGraft, removeTileGraft } from "@/editor/tilesetActions";
@@ -25,7 +26,10 @@ function tileset(): TilesetDef {
 }
 
 beforeEach(() => {
-  store.replace(createBlankProject());
+  const project = createBlankProject();
+  // Canonicalize the unrelated text-only titleGraphic before graft round trips.
+  project.system = normalizeSystemRecords(project.system);
+  store.replace(project);
 });
 
 describe("타일 이식 직렬화 검증", () => {
