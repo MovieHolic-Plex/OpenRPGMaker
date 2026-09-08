@@ -1,3 +1,4 @@
+import { cooperativeNodeYield } from "./cooperativeNodeYield";
 import { reviewingChat } from "./aiEpochFixture";
 import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -53,7 +54,7 @@ function reviewedTitleSession() {
   let round = 0;
   return new AssistantSession(store.getCurrent(), {
     config: { ...defaultAiConfig(), model: "test", liteModel: "test", maxToolCalls: 4 },
-    declareIntent: fixedDeclarer({ mode: "other" }), yieldToUi: async () => {},
+    declareIntent: fixedDeclarer({ mode: "other" }), yieldToUi: cooperativeNodeYield,
     chat: reviewingChat(async () => round++ % 2 === 0 ? {
       message: { role: "assistant", content: null, tool_calls: [{ id: `title-${round}`, type: "function",
         function: { name: "set_title_screen", arguments: JSON.stringify({ title: `Title ${round}` }) } }] }, finishReason: "tool_calls",
@@ -65,7 +66,7 @@ function setup(sessionOverride?: AssistantSession) {
   const appendBubble = vi.fn((_role: unknown, text: string) => {
     const bubble = document.createElement("div"); bubble.textContent = text; log.append(bubble); return bubble;
   });
-  const session = sessionOverride ?? new AssistantSession(store.getCurrent());
+  const session = sessionOverride ?? new AssistantSession(store.getCurrent(), { yieldToUi: cooperativeNodeYield });
   const controller = { session, auditHistory: [] };
   const surface = {
     panel: document.createElement("div"), log, sendButton: document.createElement("button"), controller,
@@ -94,7 +95,7 @@ describe("panel map completeness selection", () => {
       { id: "paint", kind: "terrain", x: 3, y: 3, w: 3, h: 3 },
       { id: "missing", kind: "prop", x: 15, y: 15, w: 1, h: 1 },
     ] } })), ...["a", "b"].map(mapId => ({ name: "paint_tiles", args: { mapId, from: { x: 3, y: 3 }, to: { x: 4, y: 4 }, mode: "rect", layer: "lower", tile: 281 } }))];
-    const session = new AssistantSession(ctx.project, {
+    const session = new AssistantSession(ctx.project, { yieldToUi: cooperativeNodeYield,
       config: { authMode: "apiKey", baseUrl: "x", model: "stub", apiKey: "test", maxToolCalls: 1, maxTokens: 8192 },
       declareIntent: fixedDeclarer({ mode: "modify" }),
       chat: async () => ({ message: { role: "assistant", content: null, tool_calls: calls.map((entry, index) => ({
@@ -315,7 +316,7 @@ describe("applied baseline across rejected and unrelated requests", () => {
     const session = new AssistantSession(project, {
       config: { ...defaultAiConfig(), agentMode: "chat", maxToolCalls: 12 },
       declareIntent: fixedDeclarer({ mode: "modify" }),
-      yieldToUi: async () => {},
+      yieldToUi: cooperativeNodeYield,
       chat: async (_config, request): Promise<ChatResult> => {
         const review = approvedReviewResponse(request);
         if (review) return turn === 1 ? { message: { role: "assistant", content: "Malformed review" }, finishReason: "stop" } : review;

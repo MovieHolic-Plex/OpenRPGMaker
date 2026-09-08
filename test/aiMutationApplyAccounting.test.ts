@@ -1,3 +1,4 @@
+import { cooperativeNodeYield } from "./cooperativeNodeYield";
 import { reviewingChat } from "./aiEpochFixture";
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { AssistantSession, type TurnResult } from '@/ai/assistantSession';
@@ -27,7 +28,7 @@ afterEach(async () => { await store.flush(); resetMapEditHistory(); _resetEditAc
 it('malformed current tool arguments and misleading completion prose grant no application or save authority', async () => {
   // Given: a malformed real tool call, followed by untrusted completion prose.
   const before = JSON.stringify(store.getCurrent()); let round = 0;
-  const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: 'other' }), yieldToUi: async () => {},
+  const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: 'other' }), yieldToUi: cooperativeNodeYield,
     chat: reviewingChat(async () => round++ === 0 ? tool('set_title_screen', '{') : final) });
   // When: the session processes that model response.
   const result = await bounded(session.sendUserMessage('Set title'));
@@ -41,7 +42,7 @@ it('malformed current tool arguments and misleading completion prose grant no ap
 it('live content changes without a generation increment still reject an old proposal', async () => {
   // Given: an authored proposal followed by an in-place human edit.
   let round = 0;
-  const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: 'other' }), yieldToUi: async () => {},
+  const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: 'other' }), yieldToUi: cooperativeNodeYield,
     chat: reviewingChat(async () => round++ === 0 ? tool('set_title_screen', JSON.stringify({ title: 'OLD_DRAFT' })) : final) });
   await bounded(session.sendUserMessage('Set title'));
   const version = store.getVersionToken();
@@ -62,7 +63,7 @@ it.each([false, true])('finishes store notification when the real applied-outcom
   const observerError = new Error('Applied outcome observer failed');
   let round = 0; let outcomeNotifications = 0;
   const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: 'other' }),
-    yieldToUi: async () => {}, chat: reviewingChat(async () => round++ === 0
+    yieldToUi: cooperativeNodeYield, chat: reviewingChat(async () => round++ === 0
       ? tool('set_title_screen', JSON.stringify({ title: 'APPLIED_BEFORE_THROW' })) : final) });
   const result = await bounded(session.sendUserMessage('Set title', event => {
     if (event.type === 'run_outcome' && event.runOutcome.delivery === 'applied') {
@@ -106,7 +107,7 @@ it.each([false, true])('finishes store notification when the real applied-outcom
 it('cancellation from the actual store mutation subscriber accounts the already-applied A milestone before B starts', async () => {
   // Given: the real autonomous title tool and a subscriber installed before mutation.
   let round = 0; let replacing = false; let b: Promise<TurnResult> | undefined; let retired: TurnResult | undefined;
-  const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: 'other' }), yieldToUi: async () => {},
+  const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: 'other' }), yieldToUi: cooperativeNodeYield,
     chat: reviewingChat(async () => {
       if (replacing) return final;
       return round++ === 0 ? tool('set_work_plan', JSON.stringify({ goal: 'Title', layers: [{ title: 'Title', items: [{ title: 'Title', instruction: 'Title', successTools: ['set_title_screen'] }] }] }))
@@ -150,7 +151,7 @@ it.each([false, true])('accounts current host application exactly once when auto
   ];
   let round = 0;
   const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: 'other' }),
-    yieldToUi: async () => {}, chat: reviewingChat(async () => responses[round++] ?? final) });
+    yieldToUi: cooperativeNodeYield, chat: reviewingChat(async () => responses[round++] ?? final) });
   const host = epochRunner(session);
   try {
     // When: the existing runner applies the current turn through the shared adapter.
@@ -172,7 +173,7 @@ it('preserves ordinary applied A through duplicate and nested mutation notificat
   let round = 0; let replacing = false; let notifications = 0;
   let b: Promise<TurnResult> | undefined; let retired: TurnResult | undefined;
   const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: 'other' }),
-    yieldToUi: async () => {}, chat: reviewingChat(async () => round++ === 0
+    yieldToUi: cooperativeNodeYield, chat: reviewingChat(async () => round++ === 0
       ? tool('set_title_screen', JSON.stringify({ title: 'ORDINARY_A' })) : final) });
   const host = epochRunner(session);
   const replaceOwner = () => {
@@ -211,7 +212,7 @@ it.each([false, true])('credits A before activity observers retire its owner whe
   // Given: a completed real proposal and the activity observer preceding store subscribers.
   let round = 0; let b: Promise<TurnResult> | undefined; let replacing = false;
   const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: 'other' }),
-    yieldToUi: async () => {}, chat: reviewingChat(async () => round++ === 0
+    yieldToUi: cooperativeNodeYield, chat: reviewingChat(async () => round++ === 0
       ? tool('set_title_screen', JSON.stringify({ title: 'ACTIVITY_A' })) : final) });
   const resultA = await bounded(session.sendUserMessage('A set title'));
   const operation = session.getRunOperation();
@@ -248,7 +249,7 @@ it('keeps a genuine draft unapplied when cancellation precedes mutation', async 
   let round = 0; let appliedNotifications = 0;
   const before = structuredClone(store.getCurrent());
   const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: 'other' }),
-    yieldToUi: async () => {}, chat: reviewingChat(async () => round++ === 0
+    yieldToUi: cooperativeNodeYield, chat: reviewingChat(async () => round++ === 0
       ? tool('set_title_screen', JSON.stringify({ title: 'CANCELLED_DRAFT' })) : final) });
   const cancelled = await bounded(session.sendUserMessage('Set title', event => {
     if (event.type === 'tool_call' && event.name === 'set_title_screen' && event.result.ok) session.retireRun();

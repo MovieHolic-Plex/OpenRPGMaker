@@ -1,3 +1,4 @@
+import { cooperativeNodeYield } from "./cooperativeNodeYield";
 import { reviewingChat } from "./aiEpochFixture";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { AssistantSession, type SessionEvent } from "@/ai/assistantSession";
@@ -60,7 +61,7 @@ function humanEdits() {
 function sessionForTitle(value = "AI_TITLE") {
   let round = 0;
   return new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }),
-    yieldToUi: async () => {}, chat: reviewingChat(async () => round++ === 0 ? title(value) : final) });
+    yieldToUi: cooperativeNodeYield, chat: reviewingChat(async () => round++ === 0 ? title(value) : final) });
 }
 
 it("refuses an old real session proposal after human non-house tile and database record edits", async () => {
@@ -245,7 +246,7 @@ it("own wiki preparation and post-tool progress retain their actual save/proof o
   }] }) });
   let round = 0;
   const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }),
-    prepareProjectWiki: coordinator.prepare, yieldToUi: async () => {}, chat: reviewingChat(async () => round++ === 0 ? title("OWNED_TITLE") : final) });
+    prepareProjectWiki: coordinator.prepare, yieldToUi: cooperativeNodeYield, chat: reviewingChat(async () => round++ === 0 ? title("OWNED_TITLE") : final) });
   const turn = await session.sendUserMessage("Set title");
   expect(turn.proposedCalls).toHaveLength(1);
   expect(store.getCurrent().world?.entities.some(entity => entity.id === "w_owned_wiki")).toBe(true);
@@ -309,7 +310,7 @@ it("the real runner rejects late authoring, retains it through Ask, then recalcu
   const entered = deferred<void>(); const release = deferred<ChatResult>();
   let round = 0; let mode = "initial";
   let freshContext: ReturnType<typeof liveValues> | undefined;
-  const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }), yieldToUi: async () => {},
+  const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }), yieldToUi: cooperativeNodeYield,
     chat: reviewingChat(async () => {
       if (mode === "ask") return final;
       if (mode === "fresh") {
@@ -358,7 +359,7 @@ it("the real runner rejects late authoring, retains it through Ask, then recalcu
 it("the real autonomous milestone rejects non-house/database edits and never reports them applied", async () => {
   const events: SessionEvent[] = [];
   let round = 0;
-  const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }), yieldToUi: async () => {},
+  const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }), yieldToUi: cooperativeNodeYield,
     chat: reviewingChat(async () => {
       if (round++ === 0) return { message: { role: "assistant", content: null, tool_calls: [{ id: "plan", type: "function", function: {
         name: "set_work_plan", arguments: JSON.stringify({ goal: "Title", layers: [{ title: "Title", items: [{ title: "Title", instruction: "Title", successTools: ["set_title_screen"] }] }] }),

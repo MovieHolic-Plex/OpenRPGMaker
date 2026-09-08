@@ -1,3 +1,4 @@
+import { cooperativeNodeYield } from "./cooperativeNodeYield";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AssistantSession, type SessionEvent, type SessionTurnOptions, type TurnResult } from "@/ai/assistantSession";
 import type { AcceptanceSnapshot } from "@/ai/assistantAcceptance";
@@ -42,7 +43,7 @@ function goalFixture() {
   const boundaries: string[] = [];
   const session = new AssistantSession(project, {
     config: { ...defaultAiConfig(), agentMode: "chat", model: "test", liteModel: "test", apiKey: "test", maxToolCalls: 8 },
-    yieldToUi: async () => {},
+    yieldToUi: cooperativeNodeYield,
     prepareProjectWiki: async input => { boundaries.push("wiki"); boundaryHook("wiki", input.signal); return undefined; },
     declareIntent: async (facts, signal) => { boundaries.push("intent"); boundaryHook("intent", signal); return fixedDeclarer(intent)(facts); },
     chat: async () => { const next = response; response = final; return next; },
@@ -226,7 +227,7 @@ describe("host new-goal early ownership", () => {
     }, async facts => {
       if (fault) throw new Error("intent-entry-failure");
       return fixedDeclarer({ mode: "other" })(facts);
-    });
+    }, undefined, cooperativeNodeYield);
     const first = await f.run();
     expect(first.review?.status).toBe("approved");
     expect(f.session.isDraftReviewApproved()).toBe(true);

@@ -1,3 +1,4 @@
+import { cooperativeNodeYield } from "./cooperativeNodeYield";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
 import * as commitLog from "@/project/projectCommitLog";
@@ -58,7 +59,7 @@ function harness(steps: readonly (ChatResult | Error)[], options: { required?: N
         { kind: "eventCount", target: { mapId: map.id }, count: 1 },
       ] })] : [step]);
   let index = 0;
-  const session = new AssistantSession(project, {
+  const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield,
     config: { ...config, ...(options.maxToolCalls ? { maxToolCalls: options.maxToolCalls } : {}) },
     declareIntent: options.declarer ?? fixedDeclarer({ mode: "modify", npcRewards: options.noContract ? undefined : options.required ?? REQUIRED }),
     peekPendingUserMessage: options.pause,

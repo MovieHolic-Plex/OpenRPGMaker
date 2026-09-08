@@ -101,6 +101,22 @@ has no exact title-screen or item-price evaluator; `functionalUnresolved` cannot
 be approved away. Such a native fixture incompatibility is an explicit producer
 blocker, not independent approval or permission to change acceptance policy.
 
+### Cooperative Node scheduling in long session fixtures (2026-09-08)
+
+Long scripted turns can pass their test deadline while starving Vitest's separate
+60-second `onTaskUpdate` ACK deadline. A traced budget case left a promptly posted
+ACK unread across subsequent cases even though all 54 file assertions passed.
+Use `test/cooperativeNodeYield.ts` through the existing `AssistantSession`
+`yieldToUi` option in the implicated fixtures: its native `setImmediate` permits
+RPC/IPC progress during tool work, including when UI/autosave timers are fake.
+This is a scheduling boundary, not a sleep or a replacement for a subscribed
+completion signal. Keep controlled/deferred yield callbacks, response scripts,
+assertions, budgets and all deadlines unchanged. Shared fixture adoption is
+explicit and opt-in; do not globally change the runner or suppress RPC errors.
+Verify ACK consumption during the original workload with a captured original
+monotonic clock, then require clean direct exits with effective four workers and
+the six-field isolation above. JSON success or an afterEach-only yield is not proof.
+
 ## AI turn observation contracts (2026-09-06)
 
 `aiChatObservability.test.ts` and `aiChatPanelTransportError.test.ts` exercise the

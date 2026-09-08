@@ -1,3 +1,4 @@
+import { cooperativeNodeYield } from "./cooperativeNodeYield";
 import { reviewingChat } from "./aiEpochFixture";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { AssistantSession, type SessionEvent, type AssistantSessionOptions, type TurnResult } from "@/ai/assistantSession";
@@ -39,7 +40,7 @@ it("cancelled A's late model tool response cannot mutate a real replacement B", 
   const eventsA: SessionEvent[] = [];
   const eventsB: SessionEvent[] = [];
   const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }),
-    yieldToUi: async () => {}, chat: reviewingChat(async () => {
+    yieldToUi: cooperativeNodeYield, chat: reviewingChat(async () => {
       if (round++ === 0) { entered.resolve(); return response.promise; }
       return round === 2 ? title("B_CURRENT") : final;
     }) });
@@ -107,7 +108,7 @@ it("the public runner ignores duplicate late events/results while B is actually 
   const releaseB = deferred<ChatResult>();
   const releaseA = deferred<TurnResult>();
   let eventsA: (event: SessionEvent) => void = () => { throw new Error("A not started"); };
-  const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }),
+  const session = new AssistantSession(store.getCurrent(), { yieldToUi: cooperativeNodeYield, config, declareIntent: fixedDeclarer({ mode: "other" }),
     chat: reviewingChat(async () => { enteredB.resolve(); return releaseB.promise; }) });
   const f = epochRunner(session);
   const a = f.runner.executeTurn(session, "A", onEvent => { eventsA = onEvent; return releaseA.promise; });
@@ -142,7 +143,7 @@ it("late viewport images cannot rebuild B's messages or start A intent/tools", a
   let first = true;
   const declare = vi.fn(fixedDeclarer({ mode: "other" }));
   const mapId = store.getCurrent().startMapId;
-  const session = new AssistantSession(store.getCurrent(), { config, declareIntent: declare,
+  const session = new AssistantSession(store.getCurrent(), { yieldToUi: cooperativeNodeYield, config, declareIntent: declare,
     contextOptions: { viewport: { mapId, x: 0, y: 0, w: 2, h: 2, centerX: 1, centerY: 1 } },
     renderImages: async () => {
       if (first) { first = false; entered.resolve(); await release.promise; completed.resolve(); }
@@ -203,7 +204,7 @@ it("cancellation at the actual advisory yield prevents the old verification tool
 
 it("the actual proposal owner consumes duplicate application requests once", async () => {
   let round = 0;
-  const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }), yieldToUi: async () => {},
+  const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }), yieldToUi: cooperativeNodeYield,
     chat: reviewingChat(async () => round++ === 0 ? title("ONCE") : final) });
   const result = await session.sendUserMessage("Apply once");
   const f = epochRunner(session);
@@ -230,7 +231,7 @@ it("late stream notifications and model responses cannot publish after a real B"
     chat: reviewingChat(async (_config, request) => {
       if (round++ === 0) { requestA = request; entered.resolve(); return response.promise; }
       return round === 2 ? title("B_CURRENT") : final;
-    }), yieldToUi: async () => {} });
+    }), yieldToUi: cooperativeNodeYield });
   const f = epochRunner(session);
   const a = f.send("A");
   try {
@@ -261,7 +262,7 @@ it("keeps an applied A milestone but starts no late application/wiki work after 
     name: "set_work_plan", arguments: JSON.stringify({ goal: "Title", layers: [{ title: "Title", items: [{ title: "Title", instruction: "Title", successTools: ["set_title_screen"] }] }] }),
   } }] }, finishReason: "tool_calls" }, title("A_APPLIED")];
   let round = 0;
-  const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }), yieldToUi: async () => {},
+  const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }), yieldToUi: cooperativeNodeYield,
     chat: reviewingChat(async () => responses[round++] ?? final) });
   const f = epochRunner(session);
   const applying = vi.spyOn(adapter, "applyProposedProject");

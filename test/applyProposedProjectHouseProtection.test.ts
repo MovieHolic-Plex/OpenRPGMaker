@@ -1,3 +1,4 @@
+import { cooperativeNodeYield } from "./cooperativeNodeYield";
 import { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
 import { afterEach, assert, beforeEach, describe, expect, it, vi } from "vitest";
 import { AssistantSession, type SessionEvent } from "@/ai/assistantSession";
@@ -176,7 +177,7 @@ describe("real autonomous milestone application", () => {
     const session = new AssistantSession(project, {
       config: { ...defaultAiConfig(), agentMode: "auto", maxToolCalls: 4, maxTokens: 16000 },
       declareIntent: fixedDeclarer({ mode: "modify", needsPlan: true, tools: ["set_title_screen"] }),
-      yieldToUi: async () => {},
+      yieldToUi: cooperativeNodeYield,
       chat: async (_config, request): Promise<ChatResult> => {
         const review = independentReviewPayload(request);
         if (review) {

@@ -1,3 +1,4 @@
+import { cooperativeNodeYield } from "./cooperativeNodeYield";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
 import type { ReviewInput } from "@/ai/independentReview";
@@ -21,7 +22,7 @@ describe("independent result review", () => {
     const project = createBlankProject();
     const reviews: ReviewInput[] = [];
     let writerCalls = 0;
-    const session = new AssistantSession(project, {
+    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield,
       config: { ...defaultAiConfig(), agentMode: "chat", maxToolCalls: 12 },
       declareIntent: fixedDeclarer({ mode: "modify", tools: ["upsert_item"],
         readBeforeWrite: { project: true, collections: ["items"], references: true } }),
@@ -97,7 +98,7 @@ function fixture(options: {
   const requests: ChatRequest[] = [];
   const reviewRequests: ChatRequest[] = [];
   const rounds = options.rounds ?? [call("set_title_screen", { title: "Reviewed title" })];
-  const session = new AssistantSession(project, {
+  const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield,
     config: { ...defaultAiConfig(), agentMode: "chat", maxToolCalls: options.maxToolCalls ?? 15,
       maxTokens: options.maxTokens ?? 16000 },
     declareIntent: fixedDeclarer({ mode: "modify", tools: [] }),
@@ -324,7 +325,7 @@ describe("no-write authoring and authored start-state review", () => {
     const project = createBlankProject();
     const events: SessionEvent[] = [];
     let writerCalls = 0, reviewCalls = 0;
-    const session = new AssistantSession(project, {
+    const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield,
       config: { ...defaultAiConfig(), agentMode: "chat", maxToolCalls: 10 },
       declareIntent: fixedDeclarer(requirement === "acceptance" ? { mode: "create", targetMapId: project.startMapId }
         : { mode: "create", adventure: { village: false, dungeon: false, party: false, battle: true } }),

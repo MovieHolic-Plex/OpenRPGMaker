@@ -1,3 +1,4 @@
+import { cooperativeNodeYield } from "./cooperativeNodeYield";
 import { reviewingChat } from "./aiEpochFixture";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { AssistantSession, type SessionEvent, type TurnResult } from "@/ai/assistantSession";
@@ -35,7 +36,7 @@ it.each(["cancelled", "response-final"])("settles A before a synchronous %s outc
   let nested: TurnResult | undefined;
   let bRound = 0;
   const abort = new AbortController();
-  const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }), yieldToUi: async () => {},
+  const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }), yieldToUi: cooperativeNodeYield,
     chat: reviewingChat(async () => {
       if (!replacing && ending === "cancelled") { entered.resolve(); return release.promise; }
       if (replacing && bRound++ === 0) return tools({ name: "set_title_screen", args: { title: "B_CURRENT" } });
@@ -74,7 +75,7 @@ it("an old successful tool callback cannot start image work or reacquire B's hel
   let cancelled: TurnResult | undefined;
   let aRound = 0; let bRound = 0;
   const images = vi.fn(async () => []);
-  const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }), yieldToUi: async () => {}, renderImages: images,
+  const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }), yieldToUi: cooperativeNodeYield, renderImages: images,
     chat: reviewingChat(async () => replacing
       ? bRound++ === 0 ? tools({ name: "set_title_screen", args: { title: "B_CURRENT" } }) : final
       : aRound++ === 0 ? tools({ name: "set_title_screen", args: { title: "A_DRAFT" } },
@@ -108,7 +109,7 @@ it("acceptance reentry retains the just-successful write and its real protocol r
   let round = 0; let replacing = false;
   let b: Promise<TurnResult> | undefined; let cancelled: TurnResult | undefined;
   let atRetirement: ReturnType<AssistantSession["getHarnessSnapshot"]> | undefined;
-  const session = new AssistantSession(project, { config, declareIntent: fixedDeclarer({ mode: "other" }), yieldToUi: async () => {},
+  const session = new AssistantSession(project, { config, declareIntent: fixedDeclarer({ mode: "other" }), yieldToUi: cooperativeNodeYield,
     chat: reviewingChat(async () => replacing ? final : round++ === 0 ? tools(plan) : tools({ name: "set_title_screen", args: { title: "A_DRAFT" } })) });
   const a = session.sendUserMessage("A", event => {
     if (event.type !== "acceptance" || replacing || session.getProposedProject().system.titleScreen?.title !== "A_DRAFT") return;
@@ -137,7 +138,7 @@ it("a replacement requested from retirement publication wins over the suspended 
   let b: Promise<TurnResult> | undefined;
   let replacing = false;
   const instructions: string[] = [];
-  const session = new AssistantSession(store.getCurrent(), { config,
+  const session = new AssistantSession(store.getCurrent(), { yieldToUi: cooperativeNodeYield, config,
     declareIntent: facts => { instructions.push(facts.userText); return fixedDeclarer({ mode: "other" })(facts); },
     chat: reviewingChat(async () => { if (!replacing) { entered.resolve(); return release.promise; } return final; }) });
   const a = session.sendUserMessage("A", event => {
@@ -160,7 +161,7 @@ it("a replacement requested from retirement publication wins over the suspended 
 it("a terminal subscriber exception after starting B cannot terminalize B on A's stack", async () => {
   let b: Promise<TurnResult> | undefined; let replacing = false;
   const fault = new Error("SUBSCRIBER_FAILURE");
-  const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }), chat: reviewingChat(async () => final) });
+  const session = new AssistantSession(store.getCurrent(), { yieldToUi: cooperativeNodeYield, config, declareIntent: fixedDeclarer({ mode: "other" }), chat: reviewingChat(async () => final) });
   const a = session.sendUserMessage("A", event => {
     if (event.type !== "run_outcome" || replacing) return;
     replacing = true;
@@ -183,7 +184,7 @@ it("duplicate same-owner retirement retains normal terminal callback delivery ex
   const events: SessionEvent[] = [];
   const retired: (TurnResult | undefined)[] = [];
   let token: ((delta: string) => void) | undefined;
-  const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }),
+  const session = new AssistantSession(store.getCurrent(), { yieldToUi: cooperativeNodeYield, config, declareIntent: fixedDeclarer({ mode: "other" }),
     chat: reviewingChat(async (_config, request) => { token = request.onToken; return final; }) });
   const result = await session.sendUserMessage("A", event => {
     events.push(event);
@@ -205,7 +206,7 @@ it("retry cancellation is settled before its recap callback synchronously starts
   let priming = true; let replacing = false;
   let b: Promise<TurnResult> | undefined; let nested: TurnResult | undefined;
   const events: SessionEvent[] = [];
-  const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }),
+  const session = new AssistantSession(store.getCurrent(), { yieldToUi: cooperativeNodeYield, config, declareIntent: fixedDeclarer({ mode: "other" }),
     chat: reviewingChat(async () => {
       if (priming) { priming = false; throw new Error("AUTHORING_FAILURE"); }
       if (!replacing) { entered.resolve(); return release.promise; }
@@ -237,7 +238,7 @@ it("retry cancellation is settled before its recap callback synchronously starts
 it("milestone callback replacement preserves actual A content and applies only B's new item", async () => {
   let replacing = false; let aRound = 0; let bRound = 0;
   let b: Promise<TurnResult> | undefined;
-  const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }), yieldToUi: async () => {},
+  const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }), yieldToUi: cooperativeNodeYield,
     chat: reviewingChat(async () => {
       if (replacing) return bRound++ === 0 ? tools({ name: "upsert_item", args: { item: { id: "item_B", name: "B item", price: 37 } } }) : final;
       if (aRound++ === 0) return tools({ name: "set_work_plan", args: { goal: "Title", layers: [{ title: "Title",
@@ -270,7 +271,7 @@ it("the runner continuation cannot apply or prove with a session operation repla
   const enteredB = deferred<void>(); const releaseB = deferred<ChatResult>();
   let replacing = false; let round = 0;
   let b: Promise<TurnResult> | undefined;
-  const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }), yieldToUi: async () => {},
+  const session = new AssistantSession(store.getCurrent(), { config, declareIntent: fixedDeclarer({ mode: "other" }), yieldToUi: cooperativeNodeYield,
     chat: reviewingChat(async () => {
       if (replacing) { enteredB.resolve(); return releaseB.promise; }
       return round++ === 0 ? tools({ name: "set_title_screen", args: { title: "A_DRAFT" } }) : final;
