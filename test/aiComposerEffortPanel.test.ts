@@ -35,7 +35,25 @@ const assistantMock = vi.hoisted(() => {
     getProposedProject(): ReturnType<typeof store.getCurrent> {
       return store.getCurrent();
     }
-    getHarnessSnapshot(): null {
+    getRunOutcome(): null {
+      return null;
+    }
+    getHarnessSnapshot() {
+      return {
+        model: "",
+        maxTokens: 0,
+        messages: [],
+        audit: [],
+        workPlan: null,
+        acceptance: null,
+        runEndProof: null,
+        runOutcome: null,
+        requests: [],
+        execution: undefined,
+      };
+    }
+
+    getAcceptanceSnapshot(): null {
       return null;
     }
     syncBaselineFromStoreIfClean(_project: unknown): boolean {

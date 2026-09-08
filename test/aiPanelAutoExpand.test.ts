@@ -48,7 +48,28 @@ const assistantMock = vi.hoisted(() => {
       return store.getCurrent();
     }
 
-    getHarnessSnapshot(): null {
+    // Native getter: no current run → null. Panel refreshRunOutcome reads this after settle.
+    getRunOutcome(): null {
+      return null;
+    }
+
+    // Native getHarnessSnapshot is a non-null object; executeTurn reads .execution/.requests.
+    getHarnessSnapshot() {
+      return {
+        model: "",
+        maxTokens: 0,
+        messages: [],
+        audit: [],
+        workPlan: null,
+        acceptance: null,
+        runEndProof: null,
+        runOutcome: null,
+        requests: [],
+        execution: undefined,
+      };
+    }
+
+    getAcceptanceSnapshot(): null {
       return null;
     }
 
