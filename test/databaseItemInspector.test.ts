@@ -10,6 +10,8 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { itemEffectStory, renderItemRecordForm } from "@/editor/panels/databaseItemRecordView";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
+import { getDatabaseActiveTab } from "@/editor/panels/database";
+import { inventoryCatalogSession } from "@/editor/panels/databaseRecordViewSession";
 import { createBlankProject } from "@/project/defaults";
 import { normalizeItemRecord } from "@/project/databaseRecordModel";
 import { deserialize, serialize } from "@/project/io";
@@ -483,7 +485,13 @@ describe("database item inspector form", () => {
 
     expect(findByTestId(form, "db-field-item-wield-type")).toBeNull();
     expect(findByTestId(form, "db-item-open-equipment-tab")).not.toBeNull();
-    expect(findByTestId(form, "db-item-equipment-redirect")?.textContent).toContain("장비 탭");
+    const catalog = inventoryCatalogSession();
+    catalog.collection = "items";
+    catalog.filter = "all";
+    findByTestId(form, "db-item-open-equipment-tab")?.click();
+    expect(getDatabaseActiveTab()).toBe("items");
+    expect(catalog.collection).toBe("equipment");
+    expect(catalog.filter).toBe("equipment");
   });
 
   it("legacy weapon item keeps its price but has no scope/capture editors", async () => {
