@@ -1,6 +1,13 @@
+/** @vitest-environment happy-dom */
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import path from "node:path";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
+import { showNewProjectDialog } from "@/editor/panels/newProjectDialog";
+import { openWorldPanel } from "@/editor/panels/worldPanel";
+import { requestDatabaseModalClose } from "@/editor/panels/databaseModal";
+import { store } from "@/project/store";
+import { createBlankProject } from "@/project/defaults";
+import { modalStackEntryCountForTest, registerModal, resetModalStackForTest } from "@/editor/ui/modalStack";
 
 // 데이터베이스 모달은 자기 document keydown 리스너로 Escape 를 잡아 통째로 닫는다
 // (databaseModal.ts). 물러서는 유일한 일반 규칙은 modalStack 에 등록된 계층이
@@ -76,7 +83,42 @@ function filesAppendingToBody(): string[] {
   return collectTsFiles(EDITOR_ROOT).filter((file) => APPEND_PATTERN.test(readFileSync(file, "utf8")));
 }
 
+afterEach(() => {
+  requestDatabaseModalClose("battleTest");
+  resetModalStackForTest();
+  document.body.replaceChildren();
+});
+
 describe("Escape 계층 게이트", () => {
+  it("new-project Escape closes only its layer and resolves cancellation", async () => {
+    const bottom = document.createElement("div");
+    document.body.append(bottom);
+    let bottomClosed = false;
+    registerModal(bottom, () => { bottomClosed = true; bottom.remove(); });
+    const pending = showNewProjectDialog("fixture-title");
+    expect(modalStackEntryCountForTest()).toBe(2);
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true }));
+    await expect(pending).resolves.toBeNull();
+    expect(bottomClosed).toBe(false);
+    expect(modalStackEntryCountForTest()).toBe(1);
+    expect(document.querySelector('[data-testid="new-project-modal"]')).toBeNull();
+  });
+
+  it("new-project confirmation unregisters its layer without cancelling the selection", async () => {
+    const pending = showNewProjectDialog("fixture-title");
+    document.querySelector<HTMLButtonElement>('[data-testid="new-project-confirm"]')?.click();
+    await expect(pending).resolves.toEqual({ title: "fixture-title", starter: { kind: "blank" } });
+    expect(modalStackEntryCountForTest()).toBe(0);
+  });
+
+  it("world entry uses the database Escape owner instead of mounting a second modal", async () => {
+    store.replace(createBlankProject());
+    await openWorldPanel();
+    expect(document.querySelector('[data-testid="database-modal"]')).not.toBeNull();
+    expect(document.querySelector('[data-testid="world-modal"]')).toBeNull();
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true }));
+    expect(document.querySelector('[data-testid="database-modal"]')).toBeNull();
+  });
   it("body 에 오버레이를 붙이는 파일은 modalStack 에 참여하거나 이유와 함께 면제된다", () => {
     const offenders = filesAppendingToBody()
       .filter((file) => !readFileSync(file, "utf8").includes("registerModal"))
@@ -114,7 +156,6 @@ describe("Escape 계층 게이트", () => {
       "panels/helpModal.ts",
       "panels/quickBattleModal.ts",
       "panels/resourceModal.ts",
-      "panels/worldPanel.ts",
     ];
     const missing = fixed.filter((relative) => {
       const source = readFileSync(path.join(EDITOR_ROOT, relative), "utf8");

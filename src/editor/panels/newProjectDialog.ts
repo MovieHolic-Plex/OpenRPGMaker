@@ -1,4 +1,5 @@
 import { el } from "@/util/dom";
+import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
 import { materializeGenreBlankProjectSystemPreset } from "@/editor/genrePacks";
@@ -53,6 +54,7 @@ export function showNewProjectDialog(defaultTitle: string): Promise<NewProjectDi
     const done = (value: NewProjectDialogResult): void => {
       if (settled) return;
       settled = true;
+      unregisterModal(overlay);
       overlay.remove();
       resolve(value);
     };
@@ -143,6 +145,7 @@ export function showNewProjectDialog(defaultTitle: string): Promise<NewProjectDi
     overlay.append(card);
     overlay.addEventListener("click", () => done(null));
     document.body.append(overlay);
+    registerModal(overlay, () => done(null));
     input.focus();
     input.select();
   });
