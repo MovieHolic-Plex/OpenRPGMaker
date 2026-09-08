@@ -3058,7 +3058,7 @@
    "battle-processing-branch-hint": "켜면 명령 리스트에 승리·패배·도망 마커가 생깁니다. 본문은 마커 아래에서 편집하세요.",
    "battle-processing-intent": "이 이벤트에서 전투를 시작합니다",
    "battle-processing-preview": "⚔(적 그룹 선택)·도망 가능지면 게임 끝확인 시 전투 시작 → battleResult 저장",
-   "battle-processing-warning": "적 그룹을 선택하세요. 빈 전투는 실행 시 실패합니다.",
+   "battle-processing-warning": "전투를 시작할 수 없습니다. 적 그룹을 선택하세요.",
    "event-command-edit-summary": "전투"
   },
   "testidCount": 31,

@@ -1,0 +1,131 @@
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-issue-693
+
+ ✓ test/runtimeMovementStability.test.ts (51 tests) 10202ms
+   ✓ 주인공 걷기 — RPG Maker 식 프레임 정량화 > 10 논리 프레임이면 정확히 한 칸을 마치고 칸 경계에 서 있다 — 다음 걸음은 다음 프레임에 시작한다  335ms
+   ✓ 걷는 중 입력은 RPG Maker 처럼 걸음이 끝나는 프레임의 눌림만 본다 > 오른쪽 유지 중 아래를 눌렀다 떼고 오른쪽도 떼면 한 칸 안에 멈춘다  305ms
+   ✓ 걷는 중 입력은 RPG Maker 처럼 걸음이 끝나는 프레임의 눌림만 본다 > 오른쪽 유지 중 한 칸 안에서 시작하고 끝난 아래 탭은 버려진다(RPG Maker 계약) — 오른쪽으로만 계속 걷는다  384ms
+   ✓ 걷는 중 입력은 RPG Maker 처럼 걸음이 끝나는 프레임의 눌림만 본다 > 오른쪽 유지 중 아래를 칸 경계를 넘기도록 누르면 그 경계에서 대각선 걸음이 시작된다  500ms
+   ✓ 걷는 중 입력은 RPG Maker 처럼 걸음이 끝나는 프레임의 눌림만 본다 > 아래 유지 중 위로 바꾼 뒤 전부 떼면 멈춘다  407ms
+   ✓ renderTiles 서명 게이트 > 타일·오버레이 입력이 그대로면 두 번째 호출은 타일을 다시 만들지 않는다  506ms
+   ✓ renderTiles 서명 게이트 > 밭 상태가 바뀌면 다시 만든다(오버레이도 타일 계층이다)  340ms
+   ✓ coordinated furniture pushing > action push left follows the chair smoothly with fixed contact spacing  414ms
+   ✓ furniture animation lifecycle > action pressed on the final movement tick does not queue another push  378ms
+   ✓ furniture animation lifecycle > map reset removes the interpolation and footprint reservation before sprites are rebuilt  502ms
+   ✓ command NPC routes while an event is running > finishes a forced turn during a blocking event while background NPCs and parallel events stay paused  456ms
+   ✓ pathfinding through the real frame dispatcher > stops this-event when an obstacle appears instead of drifting along the remaining directions  325ms
+ ❯ test/eventValidationNavigationContract.test.ts (21 tests | 1 failed) 27405ms
+   ✓ validation navigation at the rendered modal seam > targets nested condition siblings rather than the first repeated field  2318ms
+   ✓ validation navigation at the rendered modal seam > prepares an editable unsent handoff and retains the event editor draft  955ms
+   ✓ validation navigation at the rendered modal seam > focuses the exact command field after navigation instead of stopping on the row  2341ms
+   ✓ validation navigation at the rendered modal seam > focuses exact editable field for reference.switch.missing occurrence 0  1655ms
+   ✓ validation navigation at the rendered modal seam > focuses exact editable field for reference.switch.missing occurrence 1  1471ms
+   ✓ validation navigation at the rendered modal seam > focuses exact editable field for reference.variable.missing occurrence 0  1445ms
+   ✓ validation navigation at the rendered modal seam > focuses exact editable field for reference.item.missing occurrence 0  2850ms
+   ✓ validation navigation at the rendered modal seam > focuses exact editable field for reference.actor.missing occurrence 0  2394ms
+   ✓ validation navigation at the rendered modal seam > focuses exact editable field for reference.switch.missing occurrence 2  1200ms
+   ✓ validation navigation at the rendered modal seam > focuses exact editable field for reference.item.missing occurrence 1  671ms
+   ✓ validation navigation at the rendered modal seam > focuses exact editable field for reference.switch.missing occurrence 3  905ms
+   ✓ validation navigation at the rendered modal seam > reveals cross-page nested command from list with filter and inspector synchronized  1078ms
+   ✓ validation navigation at the rendered modal seam > reveals cross-page nested command from storyboard with filter and inspector synchronized  1095ms
+   ✓ validation navigation at the rendered modal seam > reveals cross-page nested command from preview with filter and inspector synchronized  1131ms
+   ✓ validation navigation at the rendered modal seam > reveals cross-page nested command from flow with filter and inspector synchronized  925ms
+   ✓ validation navigation at the rendered modal seam > dismisses only the bell on first Escape and restores summary focus  333ms
+   ✓ validation navigation at the rendered modal seam > registers once across refresh and unregisters synchronously on issue navigation  913ms
+   ✓ validation navigation at the rendered modal seam > releases its layer when refresh removes the final issue  366ms
+   ✓ validation navigation at the rendered modal seam > releases outside-dismiss resources before reopening through the summary  1323ms
+   ✓ validation navigation at the rendered modal seam > cleans detached bell resources on the exact removal notification  989ms
+   × validation navigation at the rendered modal seam > removes its document listener and layer immediately when the parent closes 1044ms
+     → expected 2 to be +0 // Object.is equality
+ ✓ test/eventValidationRecoveryFields.test.ts (17 tests) 18485ms
+   ✓ spawn validation recovery in the actual inspector > accumulates staged field edits and optional clears through the existing command dialog  303ms
+   ✓ spawn validation recovery in the actual inspector > focuses and repairs troop without losing authored spawn data  1788ms
+   ✓ spawn validation recovery in the actual inspector > focuses and repairs switch without losing authored spawn data  1336ms
+   ✓ spawn validation recovery in the actual inspector > focuses and repairs graphic without losing authored spawn data  1060ms
+   ✓ spawn validation recovery in the actual inspector > focuses and repairs x without losing authored spawn data  2011ms
+   ✓ spawn validation recovery in the actual inspector > focuses and repairs y without losing authored spawn data  1307ms
+   ✓ spawn validation recovery in the actual inspector > focuses and repairs w without losing authored spawn data  844ms
+   ✓ spawn validation recovery in the actual inspector > focuses and repairs h without losing authored spawn data  1530ms
+   ✓ page route validation recovery > keeps initial and appended parameter changes as insertion templates until explicit row selection  680ms
+   ✓ page route validation recovery > opens, selects and edits the exact 'setSwitch' step without committing until OK  681ms
+   ✓ page route validation recovery > opens, selects and edits the exact 'changeGraphic' step without committing until OK  696ms
+   ✓ page route validation recovery > opens, selects and edits the exact 'playSe' step without committing until OK  1108ms
+   ✓ page route validation recovery > focuses and repairs the NPC transfer map field in its selected step  747ms
+   ✓ page route validation recovery > focuses and repairs the NPC transfer x field in its selected step  727ms
+   ✓ page route validation recovery > focuses and repairs the NPC transfer y field in its selected step  1358ms
+   ✓ page route validation recovery > recomputes repeated route-step locations after reorder and deletion  1776ms
+   ✓ page route validation recovery > cancels route recovery without changing the page  513ms
+ ✓ test/playerBootFactory.test.ts (8 tests) 5657ms
+   ✓ player Phaser boot contract > keeps editor and export Phaser config and registry contracts identical  3538ms
+   ✓ player Phaser boot contract > installs every boot value before PlayScene preload and create can observe the registry  518ms
+   ✓ player Phaser boot contract > routes editor and export construction through the same player-owned factory  520ms
+   ✓ player Phaser boot contract > keeps an untracked modal game outside editor global destroy ownership  388ms
+ ✓ test/eventBattleFailure.test.ts (24 tests) 5215ms
+   ✓ variable troop resolution > rejects invalid value undefined instead of the stale fixed troop  497ms
+   ✓ variable troop resolution > rejects invalid value Infinity instead of the stale fixed troop  309ms
+   ✓ native event battle failure ownership > reports initialization failure and stops action commands without an outcome  1149ms
+ ✓ test/transactionalRemoteSourceLineage.test.ts (12 tests) 167674ms
+   ✓ transactional remote source ownership > accepts its own audio metadata reconciliation through real source flush  9192ms
+   ✓ transactional remote source ownership > accepts its own monster metadata reconciliation through real source flush  10342ms
+   ✓ transactional remote source ownership > accepts its own both metadata reconciliation through real source flush  10409ms
+   ✓ transactional remote source ownership > rejects flush-time edit even when the source ends clean with the same identity  9270ms
+   ✓ transactional remote source ownership > rejects save-time edit even when the source ends clean with the same identity  12658ms
+   ✓ transactional remote source ownership > rejects reload-time edit even when the source ends clean with the same identity  17565ms
+   ✓ transactional remote source ownership > rejects flush-time replacement even when the source ends clean with the same identity  17515ms
+   ✓ transactional remote source ownership > rejects save-time replacement even when the source ends clean with the same identity  29421ms
+   ✓ transactional remote source ownership > rejects reload-time replacement even when the source ends clean with the same identity  12153ms
+   ✓ transactional remote source ownership > rejects flush-time cancel even when the source ends clean with the same identity  5834ms
+   ✓ transactional remote source ownership > rejects save-time cancel even when the source ends clean with the same identity  11061ms
+   ✓ transactional remote source ownership > rejects reload-time cancel even when the source ends clean with the same identity  22247ms
+ ✓ test/battleResultTransitionFailure.test.ts (5 tests) 3007ms
+   ✓ result-confirm transition failure > settles and releases the event after factory-throw without committing victory  1380ms
+   ✓ result-confirm transition failure > settles and releases the event after exit-reject without committing victory  353ms
+   ✓ result-confirm transition failure > ignores a late exit rejection after cancel without touching a replacement owner  482ms
+   ✓ result-confirm transition failure > ignores a late exit rejection after session without touching a replacement owner  481ms
+ ✓ test/unsupportedMidiAuthoring.test.ts (10 tests) 10837ms
+   ✓ unsupported MIDI authoring > disables MIDI candidates in the shared picker but assigns supported audio  2765ms
+   ✓ unsupported MIDI authoring > keeps a legacy selection inspectable without confirming or rewriting it  1223ms
+   ✓ unsupported MIDI authoring > guards the confirmation callback even for a synthetic activation  901ms
+   ✓ unsupported MIDI authoring > blocks the shared music text-input application path  597ms
+   ✓ unsupported MIDI authoring > blocks the shared sound text-input application path  491ms
+   ✓ unsupported MIDI authoring > blocks new MIDI in native dropdowns while preserving current empty  834ms
+   ✓ unsupported MIDI authoring > blocks new MIDI in m2 dropdowns while preserving current empty  396ms
+   ✓ unsupported MIDI authoring > blocks new MIDI in native dropdowns while preserving current easyrpg-music-battle-1  595ms
+   ✓ unsupported MIDI authoring > blocks new MIDI in m2 dropdowns while preserving current easyrpg-music-battle-1  587ms
+   ✓ unsupported MIDI authoring > preserves legacy map BGM during inspection and assigns supported BGM through its picker  2439ms
+ ✓ test/eventBattleAdmission.test.ts (10 tests) 3207ms
+   ✓ native battle confirmation admission > retains the draft when empty is confirmed and allows corrected authoring  1189ms
+   ✓ native battle confirmation admission > retains the draft when empty-members is confirmed and allows corrected authoring  414ms
+   ✓ native battle confirmation admission > accepts legitimate legacy composition  339ms
+ ✓ test/playSceneBattleCancellation.test.ts (5 tests) 3670ms
+   ✓ playBattle cancellation boundary > abort during entry settles without mounting or writing a result  449ms
+   ✓ playBattle cancellation boundary > gauge uses real keyboard input and writes back only the chosen branch  1356ms
+   ✓ playBattle cancellation boundary > strict uses real keyboard input and writes back only the chosen branch  652ms
+   ✓ playBattle cancellation boundary > replacing the session while choices are open abandons the old write-back and listener  509ms
+   ✓ playBattle cancellation boundary > host teardown after accepting a result cancels before reward/state write-back  701ms
+ ✓ test/localDiagnosticsWorkflow.test.ts (6 tests) 632ms
+ ✓ test/battleInitializationAdmission.test.ts (9 tests) 1606ms
+   ✓ battle initialization admission > rejects empty effective enemy composition before opening battle  703ms
+ ✓ test/eventValidationFieldAnchors.test.ts (44 tests) 26805ms
+   ✓ native validation repair anchors > locates the real form's repair field for callMapEvent  317ms
+   ✓ native validation repair anchors > locates the real form's repair field for battleProcessing  409ms
+   ✓ native validation repair anchors > locates the real form's repair field for learnSkill  348ms
+   ✓ native validation repair anchors > locates the real form's repair field for changeLifeSkillExp  802ms
+   ✓ native validation repair anchors > locates the real form's repair field for playAudio  1482ms
+   ✓ native validation repair anchors > locates the real form's repair field for shop  720ms
+   ✓ locates existing M2 reference controls for 'Change System BGM'  1093ms
+   ✓ locates existing M2 reference controls for 'Change System SE'  5151ms
+   ✓ locates existing M2 reference controls for 'Move to Variable Location'  2411ms
+   ✓ locates existing M2 reference controls for 'Set Vehicle Location'  6928ms
+   ✓ locates existing M2 reference controls for 'Play Movie'  856ms
+   ✓ locates existing M2 reference controls for 'Change Parallax Back'  483ms
+   ✓ locates existing M2 reference controls for 'Sound Layer'  1379ms
+   ✓ locates existing M2 reference controls for 'Data Query'  348ms
+ ✓ test/aiBootIntent.test.ts (7 tests) 45ms
+ ✓ test/localDiagnosticSources.test.ts (2 tests) 1210ms
+   ✓ local diagnostics capture only newly authored user/assistant metadata at the existing audit boundary  1162ms
+ ✓ test/eventValidationSelectFocus.test.ts (1 test) 118ms
+ ✓ test/aiConversationHistoryModal.test.ts (32 tests) 199ms
+ ✓ test/eventDraftValidator.test.ts (21 tests) 2792ms
+   ✓ event draft aggregate validator > warns for a native command whose map guarantee is partial  429ms
+   ✓ event draft aggregate validator > treats every recursively nested condition leaf as an auto/parallel gate  314ms

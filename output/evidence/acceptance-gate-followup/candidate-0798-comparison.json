@@ -1,0 +1,864 @@
+{
+  "baselineHead": "e05a99b915102de113ac4634f4a06a5bb3267788",
+  "candidateHead": "0798a67b36f8416c4f3526be40712c5fb31f51fc",
+  "comparable": true,
+  "baselineCounts": {
+    "passed": 18089,
+    "failed": 216,
+    "skipped": 23
+  },
+  "candidateCounts": {
+    "passed": 18128,
+    "failed": 212,
+    "skipped": 23
+  },
+  "addedOrChangedCases": [
+    {
+      "file": "test/agentBlueprintTurnEnd.test.ts",
+      "name": "중단·오류로 끝난 턴의 청사진 정산 (viewed: map_blank_start) 다 지은 뒤의 조회 턴은 상태줄에 밑그림 확정을 다시 찍지 않는다",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/agentBlueprintTurnEnd.test.ts",
+      "name": "중단·오류로 끝난 턴의 청사진 정산 (viewed: map_blank_start) 시공 중 중단하면 짓던 칸이 planned 로 되돌아간다 — 저장소가 안 바뀌었는데 완료를 찍지 않는다",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/agentBlueprintTurnEnd.test.ts",
+      "name": "중단·오류로 끝난 턴의 청사진 정산 (viewed: map_blank_start) 일부만 지은 계획도 적용된 턴이 끝나면 물러나고, 다음 턴이 되살리지 않는다",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/agentBlueprintTurnEnd.test.ts",
+      "name": "중단·오류로 끝난 턴의 청사진 정산 (viewed: map_blank_start) 전송이 던지지 않고 정상 반환한 중단도 정산된다 — 제안이 남아 있어도 적용에 닿지 않는다",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/agentBlueprintTurnEnd.test.ts",
+      "name": "중단·오류로 끝난 턴의 청사진 정산 (viewed: map_blank_start) 정상 종료 + 적용에서만 저장소가 바뀝고 밑그림이 물러난다",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/agentBlueprintTurnEnd.test.ts",
+      "name": "중단·오류로 끝난 턴의 청사진 정산 (viewed: map_blank_start) 턴이 오류로 끝나도 남은 제안은 적용되므로 그 칸은 done 으로 확정된다",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/agentBlueprintTurnEnd.test.ts",
+      "name": "중단·오류로 끝난 턴의 청사진 정산 (viewed: map_viewed_b) 다 지은 뒤의 조회 턴은 상태줄에 밑그림 확정을 다시 찍지 않는다",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/agentBlueprintTurnEnd.test.ts",
+      "name": "중단·오류로 끝난 턴의 청사진 정산 (viewed: map_viewed_b) 시공 중 중단하면 짓던 칸이 planned 로 되돌아간다 — 저장소가 안 바뀌었는데 완료를 찍지 않는다",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/agentBlueprintTurnEnd.test.ts",
+      "name": "중단·오류로 끝난 턴의 청사진 정산 (viewed: map_viewed_b) 일부만 지은 계획도 적용된 턴이 끝나면 물러나고, 다음 턴이 되살리지 않는다",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/agentBlueprintTurnEnd.test.ts",
+      "name": "중단·오류로 끝난 턴의 청사진 정산 (viewed: map_viewed_b) 전송이 던지지 않고 정상 반환한 중단도 정산된다 — 제안이 남아 있어도 적용에 닿지 않는다",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/agentBlueprintTurnEnd.test.ts",
+      "name": "중단·오류로 끝난 턴의 청사진 정산 (viewed: map_viewed_b) 정상 종료 + 적용에서만 저장소가 바뀝고 밑그림이 물러난다",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/agentBlueprintTurnEnd.test.ts",
+      "name": "중단·오류로 끝난 턴의 청사진 정산 (viewed: map_viewed_b) 턴이 오류로 끝나도 남은 제안은 적용되므로 그 칸은 done 으로 확정된다",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/assistantDependencyRetry.test.ts",
+      "name": "stable target retry budgets through AssistantSession bounds spelling and page-path variations despite unrelated writes and synthetic continuations, then rearms for a real user",
+      "status": "failed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/autosaveStatus.test.ts",
+      "name": "autosave status notifies pending, saving, and saved around the 4 second autosave debounce",
+      "status": "failed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/databaseVillageView.test.ts",
+      "name": "데이터베이스 「마을」탭 — 그림 내장 갤러리에서 고른 형태가 규약을 통과한다",
+      "status": "failed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/eventEditorStagedState.test.ts",
+      "name": "Page 3 rich form canonical runtime fields stores eventA/eventB and executes the selected swap",
+      "status": "failed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/fakeDomInsertBefore.test.ts",
+      "name": "acceptance checklist DOM insertion detaches a row from its previous list and rejects a foreign reference",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/fakeDomInsertBefore.test.ts",
+      "name": "acceptance checklist DOM insertion moves an existing row without duplication and supports append and self insertion",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/fakeDomSelectContracts.test.ts",
+      "name": "fake DOM select/adoption contracts adopts into enhanced wrappers and unwraps without duplicate ownership",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/fakeDomSelectContracts.test.ts",
+      "name": "fake DOM select/adoption contracts clears invalid selections, chooses one duplicate value, and recovers on insertion",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/fakeDomSelectContracts.test.ts",
+      "name": "fake DOM select/adoption contracts clears parent links on removal, text replacement and replaceChildren",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/fakeDomSelectContracts.test.ts",
+      "name": "fake DOM select/adoption contracts flattens optgroups and aligns value, selectedIndex, selected and option.index",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/fakeDomSelectContracts.test.ts",
+      "name": "fake DOM select/adoption contracts honors selected options, disabled defaults and removal of the selected optgroup",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/fakeDomSelectContracts.test.ts",
+      "name": "fake DOM select/adoption contracts replaces with adopted siblings and descendants, including self replacement",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/fakeDomSelectContracts.test.ts",
+      "name": "fake DOM select/adoption contracts uses option text as fallback value and label, preserving explicit empty values",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/fakeDomSelectContracts.test.ts",
+      "name": "keeps real acceptance checklist row identity while reordering, removing and clearing",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/fakeDomSelectContracts.test.ts",
+      "name": "matches Happy DOM for grouped selection, wrapper adoption and cleanup",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/fakeDomSelectContracts.test.ts",
+      "name": "recognizes only SELECT elements and exposes current selectedOptions",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/fakeDomSelectContracts.test.ts",
+      "name": "runs real select refresh, menu selection and disposal without wrapping the dialog root",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/intentDeclarationClient.test.ts",
+      "name": "declareIntentCached caches valid model-declared unsupported obligations without treating them as extraction failures",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/intentDeclarationClient.test.ts",
+      "name": "declareIntentCached immediately retries empty coverage and caches the recovered audit",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/intentDeclarationClient.test.ts",
+      "name": "declareIntentCached immediately retries invalid-clarification coverage and caches the recovered audit",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/intentDeclarationClient.test.ts",
+      "name": "declareIntentCached immediately retries invalid-criteria coverage and caches the recovered audit",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/intentDeclarationClient.test.ts",
+      "name": "declareIntentCached immediately retries malformed coverage and caches the recovered audit",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/intentDeclarationClient.test.ts",
+      "name": "declareIntentCached immediately retries missing-requirements coverage and caches the recovered audit",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/intentDeclarationClient.test.ts",
+      "name": "declareIntentCached immediately retries network coverage and caches the recovered audit",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/intentDeclarationClient.test.ts",
+      "name": "declareIntentCached immediately retries unlinked coverage and caches the recovered audit",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/placeConceptTool.test.ts",
+      "name": "place_concept plan — 모델이 설계하고 코드가 시공한다 (2026-09-03) 어느 seed 로 지어도 초안 여관의 물건은 전부 자리를 얻는다",
+      "status": "failed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/publicationExport.test.ts",
+      "name": "actual publication exports boots verified payloads (legacy runtime: false) but rejects coherent executable tampering",
+      "status": "failed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/requestCoverage.test.ts",
+      "name": "independent request coverage enters the canonical ledger accepts the JSON fence returned by the live companion without dropping any clauses",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/requestCoverage.test.ts",
+      "name": "independent request coverage enters the canonical ledger cannot satisfy a partial plan after empty coverage",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/requestCoverage.test.ts",
+      "name": "independent request coverage enters the canonical ledger cannot satisfy a partial plan after invalid coverage",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/requestCoverage.test.ts",
+      "name": "independent request coverage enters the canonical ledger cannot satisfy a partial plan after network coverage",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/requestCoverage.test.ts",
+      "name": "independent request coverage enters the canonical ledger cannot satisfy a partial plan after omission coverage",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/requestCoverage.test.ts",
+      "name": "independent request coverage enters the canonical ledger does not create obligations or run an audit for genuine questions",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/requestCoverage.test.ts",
+      "name": "independent request coverage enters the canonical ledger keeps grouped R2 clarification and resume coverage distinct (audit failure=false)",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/requestCoverage.test.ts",
+      "name": "independent request coverage enters the canonical ledger keeps grouped R2 clarification and resume coverage distinct (audit failure=true)",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/requestCoverage.test.ts",
+      "name": "independent request coverage enters the canonical ledger keeps the original goal incomplete after failed NPC repair and NPC-only clarification ({\"resume\":false,\"auditUnavailable\":false})",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/requestCoverage.test.ts",
+      "name": "independent request coverage enters the canonical ledger keeps the original goal incomplete after failed NPC repair and NPC-only clarification ({\"resume\":false,\"auditUnavailable\":true})",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/requestCoverage.test.ts",
+      "name": "independent request coverage enters the canonical ledger keeps the original goal incomplete after failed NPC repair and NPC-only clarification ({\"resume\":true,\"auditUnavailable\":false})",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/requestCoverage.test.ts",
+      "name": "independent request coverage enters the canonical ledger keeps the original goal incomplete after failed NPC repair and NPC-only clarification ({\"resume\":true,\"auditUnavailable\":true})",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/requestCoverage.test.ts",
+      "name": "independent request coverage enters the canonical ledger links every independently extracted clause to real immutable checks",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/requestCoverage.test.ts",
+      "name": "independent request coverage enters the canonical ledger retains words omitted even by the independent extractor as an unverified canonical obligation",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/storePersistence.test.ts",
+      "name": "Project store remote persistence skips remote flush when there are no unsaved changes",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/supabaseProjectSync.test.ts",
+      "name": "Supabase project sync preserves concurrent map tree additions from separate editors",
+      "status": "failed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/villageBuilder.test.ts",
+      "name": "build_village 같은 seed는 타일과 이벤트 좌표가 같고 다른 seed는 하위 타일이 달라진다",
+      "status": "failed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/villageBuilder.test.ts",
+      "name": "build_village 대로·진입로가 집 footprint 내부를 침범하지 않는다",
+      "status": "failed",
+      "multiplicity": 1
+    }
+  ],
+  "removedOrChangedCases": [
+    {
+      "file": "test/agentBlueprintTurnEnd.test.ts",
+      "name": "중단·오류로 끝난 턴의 청사진 정산 (viewed: map_blank_start) 다 지은 뒤의 조회 턴은 상태줄에 밑그림 확정을 다시 찍지 않는다",
+      "status": "failed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/agentBlueprintTurnEnd.test.ts",
+      "name": "중단·오류로 끝난 턴의 청사진 정산 (viewed: map_blank_start) 시공 중 중단하면 짓던 칸이 planned 로 되돌아간다 — 저장소가 안 바뀌었는데 완료를 찍지 않는다",
+      "status": "failed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/agentBlueprintTurnEnd.test.ts",
+      "name": "중단·오류로 끝난 턴의 청사진 정산 (viewed: map_blank_start) 일부만 지은 계획도 적용된 턴이 끝나면 물러나고, 다음 턴이 되살리지 않는다",
+      "status": "failed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/agentBlueprintTurnEnd.test.ts",
+      "name": "중단·오류로 끝난 턴의 청사진 정산 (viewed: map_blank_start) 전송이 던지지 않고 정상 반환한 중단도 정산된다 — 제안이 남아 있어도 적용에 닿지 않는다",
+      "status": "failed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/agentBlueprintTurnEnd.test.ts",
+      "name": "중단·오류로 끝난 턴의 청사진 정산 (viewed: map_blank_start) 정상 종료 + 적용에서만 저장소가 바뀝고 밑그림이 물러난다",
+      "status": "failed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/agentBlueprintTurnEnd.test.ts",
+      "name": "중단·오류로 끝난 턴의 청사진 정산 (viewed: map_blank_start) 턴이 오류로 끝나도 남은 제안은 적용되므로 그 칸은 done 으로 확정된다",
+      "status": "failed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/agentBlueprintTurnEnd.test.ts",
+      "name": "중단·오류로 끝난 턴의 청사진 정산 (viewed: map_viewed_b) 다 지은 뒤의 조회 턴은 상태줄에 밑그림 확정을 다시 찍지 않는다",
+      "status": "failed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/agentBlueprintTurnEnd.test.ts",
+      "name": "중단·오류로 끝난 턴의 청사진 정산 (viewed: map_viewed_b) 시공 중 중단하면 짓던 칸이 planned 로 되돌아간다 — 저장소가 안 바뀌었는데 완료를 찍지 않는다",
+      "status": "failed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/agentBlueprintTurnEnd.test.ts",
+      "name": "중단·오류로 끝난 턴의 청사진 정산 (viewed: map_viewed_b) 일부만 지은 계획도 적용된 턴이 끝나면 물러나고, 다음 턴이 되살리지 않는다",
+      "status": "failed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/agentBlueprintTurnEnd.test.ts",
+      "name": "중단·오류로 끝난 턴의 청사진 정산 (viewed: map_viewed_b) 전송이 던지지 않고 정상 반환한 중단도 정산된다 — 제안이 남아 있어도 적용에 닿지 않는다",
+      "status": "failed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/agentBlueprintTurnEnd.test.ts",
+      "name": "중단·오류로 끝난 턴의 청사진 정산 (viewed: map_viewed_b) 정상 종료 + 적용에서만 저장소가 바뀝고 밑그림이 물러난다",
+      "status": "failed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/agentBlueprintTurnEnd.test.ts",
+      "name": "중단·오류로 끝난 턴의 청사진 정산 (viewed: map_viewed_b) 턴이 오류로 끝나도 남은 제안은 적용되므로 그 칸은 done 으로 확정된다",
+      "status": "failed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/assistantDependencyRetry.test.ts",
+      "name": "stable target retry budgets through AssistantSession bounds spelling and page-path variations despite unrelated writes and synthetic continuations, then rearms for a real user",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/autosaveStatus.test.ts",
+      "name": "autosave status notifies pending, saving, and saved around the 4 second autosave debounce",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/databaseVillageView.test.ts",
+      "name": "데이터베이스 「마을」탭 — 그림 내장 갤러리에서 고른 형태가 규약을 통과한다",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/eventEditorStagedState.test.ts",
+      "name": "Page 3 rich form canonical runtime fields stores eventA/eventB and executes the selected swap",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/placeConceptTool.test.ts",
+      "name": "place_concept plan — 모델이 설계하고 코드가 시공한다 (2026-09-03) 어느 seed 로 지어도 초안 여관의 물건은 전부 자리를 얻는다",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/publicationExport.test.ts",
+      "name": "actual publication exports boots verified payloads (legacy runtime: false) but rejects coherent executable tampering",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/storePersistence.test.ts",
+      "name": "Project store remote persistence skips remote flush when there are no unsaved changes",
+      "status": "failed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/supabaseProjectSync.test.ts",
+      "name": "Supabase project sync preserves concurrent map tree additions from separate editors",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/villageBuilder.test.ts",
+      "name": "build_village 같은 seed는 타일과 이벤트 좌표가 같고 다른 seed는 하위 타일이 달라진다",
+      "status": "passed",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/villageBuilder.test.ts",
+      "name": "build_village 대로·진입로가 집 footprint 내부를 침범하지 않는다",
+      "status": "passed",
+      "multiplicity": 1
+    }
+  ],
+  "newFailureReasons": [
+    {
+      "file": "test/assistantDependencyRetry.test.ts",
+      "name": "stable target retry budgets through AssistantSession bounds spelling and page-path variations despite unrelated writes and synthetic continuations, then rearms for a real user",
+      "category": "test-timeout",
+      "reason": "Error: Test timed out in 15000ms.\nIf this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".\n ❯ test/assistantDependencyRetry.test.ts:250:3\n    248|   });\n    249| \n    250|   it(\"bounds spelling and page-path variations despite unrelated write…\n       |   ^\n    251|     const rounds = Array.from({ length: 4 }, (_, i) => [badNpc(i), tit…\n    252|     const { session, events, collect, state } = setup(rounds, { planne…",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/autosaveStatus.test.ts",
+      "name": "autosave status notifies pending, saving, and saved around the 4 second autosave debounce",
+      "category": "assertion-or-suite-contract",
+      "reason": "AssertionError: expected 'saving' to be 'saved' // Object.is equality\n    at <ROOT>/test/autosaveStatus.test.ts:42:45\n    at Timeout.checkCallback (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/vi.bdSIJ99Y.js:3731:20)\n    at listOnTimeout (node:internal/timers:605:17)\n    at processTimers (node:internal/timers:541:7)",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/databaseVillageView.test.ts",
+      "name": "데이터베이스 「마을」탭 — 그림 내장 갤러리에서 고른 형태가 규약을 통과한다",
+      "category": "test-timeout",
+      "reason": "Error: Test timed out in 15000ms.\nIf this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".\n ❯ test/databaseVillageView.test.ts:255:3\n    253|   });\n    254| \n    255|   it(\"내장 갤러리에서 고른 형태가 규약을 통과한다\", () => {\n       |   ^\n    256|     const host = renderView();\n    257|     findByTestId(host, \"db-village-create\")?.click();",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/devPlayerBundles.test.ts",
+      "name": "shares an in-flight build, invalidates on source changes and never serves stale output after failure",
+      "category": "readonly-filesystem",
+      "reason": "Error: EROFS: read-only file system, mkdtemp '<ROOT>/.vite-cache/dev-player-unit-23yZ0R'\n    at Proxy.mkdtemp (node:internal/fs/promises:1186:10)\n    at <ROOT>/test/devPlayerBundles.test.ts:20:20\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/eventEditorCommitProbe.baseline.test.ts",
+      "name": "이벤트 편집기 커밋 프로브 축 (1) 컨트롤 조작 → 저장 커맨드 스냅샷이 기준선과 같다",
+      "category": "assertion-or-suite-contract",
+      "reason": "AssertionError: [커밋 프로브] 하한선 위반\n  하한선 미달: callCommonEvent.commitCount 0 < 1\n  하한선 미달: callMapEvent.commitCount 0 < 1\n  하한선 미달: craftRecipe.commitCount 0 < 1\n  하한선 미달: applyItemUpgrade.commitCount 0 < 1\n  하한선 미달: playMovie.commitCount 2 < 3\n  하한선 미달: triggerEnding.commitCount 0 < 1\n  ── 함께 관측된 표면 변화 22건 (원인은 여기 있다) ──\n  changeFace: 컨트롤 신규 event-command-face-ai-prompt\n  changeTile: 값 변경 change-tile-layer-select: replaceCommand {\"kind\":\"changeTile\",\"layer\":\"upper\",\"mapId\":\"map1\",\"tile\":1,\"x\":0,\"y\":0} → replaceCommand {\"kind\":\"changeTile\",\"layer\":\"upper\",\"mapId\":\"\",\"tile\":1,\"x\":0,\"y\":0} | 값 변경 change-tile-x-input: replaceCommand {\"kind\":\"changeTile\",\"layer\":\"lower\",\"mapId\":\"map1\",\"tile\":1,\"x\":7861,\"y\":0} → replaceCommand {\"kind\":\"changeTile\",\"layer\":\"lower\",\"mapId\":\"\",\"tile\":1,\"x\":7861,\"y\":0} | 값 변경 change-tile-y-input: replaceCommand {\"kind\":\"changeTile\",\"layer\":\"lower\",\"mapId\":\"map1\",\"tile\":1,\"x\":0,\"y\":7666} → replaceCommand {\"kind\":\"changeTile\",\"layer\":\"lower\",\"mapId\":\"\",\"tile\":1,\"x\":0,\"y\":7666} | 값 변경 change-tile-tile-input: replaceCommand {\"kind\":\"changeTile\",\"layer\":\"lower\",\"mapId\":\"map1\",\"tile\":7679,\"x\":0,\"y\":0} → replaceCommand {\"kind\":\"changeTile\",\"layer\":\"lower\",\"mapId\":\"\",\"tile\":7679,\"x\":0,\"y\":0}\n  callCommonEvent: 값 변경 event-command-call-common-event-select: replaceCommand {\"commonEventId\":\"\",\"kind\":\"callCommonEvent\"} → single-option\n  callMapEvent: 값 변경 event-command-call-map-event-select: replaceCommand {\"eventId\":\"\",\"kind\":\"callMapEvent\"} → single-option\n  battleProcessing: 값 변경 battle-processing-troop-source: replaceCommand {\"battleFlow\":\"<undefined>\",\"branchOnResult\":\"<undefined>\",\"canEscape\":true,\"canLose\":false,\"defeatBranch\":\"<undefined>\",\"escapeBranch\":\"<undefined>\",\"kind\":\"battleProcessing\",\"troopId\":\"troop1\",\"troopSource\":\"variable\",\"troopVariableId\":\"\",\"victoryBranch\":\"<undefined>\"} → replaceCommand {\"battleFlow\":\"<undefined>\",\"branchOnResult\":\"<undefined>\",\"canEscape\":true,\"canLose\":false,\"defeatBranch\":\"<undefined>\",\"escapeBranch\":\"<undefined>\",\"kind\":\"battleProcessing\",\"troopId\":\"\",\"troopSource\":\"variable\",\"troopVariableId\":\"\",\"victoryBranch\":\"<undefined>\"} | 값 변경 battle-processing-escape-select: replaceCommand {\"battleFlow\":\"<undefined>\",\"branchOnResult\":\"<undefined>\",\"canEscape\":false,\"canLose\":false,\"defeatBranch\":\"<undefined>\",\"escapeBranch\":\"<undefined>\",\"kind\":\"battleProcessing\",\"troopId\":\"troop1\",\"troopSource\":\"<undefined>\",\"troopVariableId\":\"<undefined>\",\"victoryBranch\":\"<undefined>\"} → replaceCommand {\"battleFlow\":\"<undefined>\",\"branchOnResult\":\"<undefined>\",\"canEscape\":false,\"canLose\":false,\"defeatBranch\":\"<undefined>\",\"escapeBranch\":\"<undefined>\",\"kind\":\"battleProcessing\",\"troopId\":\"\",\"troopSource\":\"<undefined>\",\"troopVariableId\":\"<undefined>\",\"victoryBranch\":\"<undefined>\"} | 값 변경 battle-processing-lose-select: replaceCommand {\"battleFlow\":\"<undefined>\",\"branchOnResult\":\"<undefined>\",\"canEscape\":true,\"canLose\":true,\"defeatBranch\":\"<undefined>\",\"escapeBranch\":\"<undefined>\",\"kind\":\"battleProcessing\",\"troopId\":\"troop1\",\"troopSource\":\"<undefined>\",\"troopVariableId\":\"<undefined>\",\"victoryBranch\":\"<undefined>\"} → replaceCommand {\"battleFlow\":\"<undefined>\",\"branchOnResult\":\"<undefined>\",\"canEscape\":true,\"canLose\":true,\"defeatBranch\":\"<undefined>\",\"escapeBranch\":\"<undefined>\",\"kind\":\"battleProcessing\",\"troopId\":\"\",\"troopSource\":\"<undefined>\",\"troopVariableId\":\"<undefined>\",\"victoryBranch\":\"<undefined>\"} | 값 변경 battle-processing-flow-select: replaceCommand {\"battleFlow\":\"strict\",\"branchOnResult\":\"<undefined>\",\"canEscape\":true,\"canLose\":false,\"defeatBranch\":\"<undefined>\",\"escapeBranch\":\"<undefined>\",\"kind\":\"battleProcessing\",\"troopId\":\"troop1\",\"troopSource\":\"<undefined>\",\"troopVariableId\":\"<undefined>\",\"victoryBranch\":\"<undefined>\"} → replaceCommand {\"battleFlow\":\"strict\",\"branchOnResult\":\"<undefined>\",\"canEscape\":true,\"canLose\":false,\"defeatBranch\":\"<undefined>\",\"escapeBranch\":\"<undefined>\",\"kind\":\"battleProcessing\",\"troopId\":\"\",\"troopSource\":\"<undefined>\",\"troopVariableId\":\"<undefined>\",\"victoryBranch\":\"<undefined>\"} | 값 변경 battle-processing-branch-on-result: replaceCommand {\"battleFlow\":\"<undefined>\",\"branchOnResult\":true,\"canEscape\":true,\"canLose\":false,\"defeatBranch\":[],\"escapeBranch\":[],\"kind\":\"battleProcessing\",\"troopId\":\"troop1\",\"troopSource\":\"<undefined>\",\"troopVariableId\":\"<undefined>\",\"victoryBranch\":[]} → replaceCommand {\"battleFlow\":\"<undefined>\",\"branchOnResult\":true,\"canEscape\":true,\"canLose\":false,\"defeatBranch\":[],\"escapeBranch\":[],\"kind\":\"battleProcessing\",\"troopId\":\"\",\"troopSource\":\"<undefined>\",\"troopVariableId\":\"<undefined>\",\"victoryBranch\":[]} | 값 변경 battle-processing-escape-checkbox: replaceCommand {\"battleFlow\":\"<undefined>\",\"branchOnResult\":\"<undefined>\",\"canEscape\":false,\"canLose\":false,\"defeatBranch\":\"<undefined>\",\"escapeBranch\":\"<undefined>\",\"kind\":\"battleProcessing\",\"troopId\":\"troop1\",\"troopSource\":\"<undefined>\",\"troopVariableId\":\"<undefined>\",\"victoryBranch\":\"<undefined>\"} → replaceCommand {\"battleFlow\":\"<undefined>\",\"branchOnResult\":\"<undefined>\",\"canEscape\":false,\"canLose\":false,\"defeatBranch\":\"<undefined>\",\"escapeBranch\":\"<undefined>\",\"kind\":\"battleProcessing\",\"troopId\":\"\",\"troopSource\":\"<undefined>\",\"troopVariableId\":\"<undefined>\",\"victoryBranch\":\"<undefined>\"} | 값 변경 battle-processing-lose-checkbox: replaceCommand {\"battleFlow\":\"<undefined>\",\"branchOnResult\":\"<undefined>\",\"canEscape\":true,\"canLose\":true,\"defeatBranch\":\"<undefined>\",\"escapeBranch\":\"<undefined>\",\"kind\":\"battleProcessing\",\"troopId\":\"troop1\",\"troopSource\":\"<undefined>\",\"troopVariableId\":\"<undefined>\",\"victoryBranch\":\"<undefined>\"} → replaceCommand {\"battleFlow\":\"<undefined>\",\"branchOnResult\":\"<undefined>\",\"canEscape\":true,\"canLose\":true,\"defeatBranch\":\"<undefined>\",\"escapeBranch\":\"<undefined>\",\"kind\":\"battleProcessing\",\"troopId\":\"\",\"troopSource\":\"<undefined>\",\"troopVariableId\":\"<undefined>\",\"victoryBranch\":\"<undefined>\"}\n  learnSkill: 값 변경 learn-skill-action-select: replaceCommand {\"action\":\"forget\",\"actorId\":\"actor1\",\"kind\":\"learnSkill\",\"skillId\":\"\"} → replaceCommand {\"action\":\"forget\",\"actorId\":\"\",\"kind\":\"learnSkill\",\"skillId\":\"\"} | 값 변경 learn-skill-skill-select: replaceCommand x2 {\"action\":\"learn\",\"actorId\":\"actor1\",\"kind\":\"learnSkill\",\"skillId\":\"skill_arcane_bolt\"} → replaceCommand x2 {\"action\":\"learn\",\"actorId\":\"\",\"kind\":\"learnSkill\",\"skillId\":\"skill_arcane_bolt\"}\n  changeExp: 값 변경 change-exp-op-select: replaceCommand {\"actorId\":\"actor1\",\"amount\":10,\"kind\":\"changeExp\",\"op\":\"-=\"} → replaceCommand {\"actorId\":\"\",\"amount\":10,\"kind\":\"changeExp\",\"op\":\"-=\"} | 값 변경 change-exp-amount-input: replaceCommand {\"actorId\":\"actor1\",\"amount\":7232,\"kind\":\"changeExp\",\"op\":\"+=\"} → replaceCommand {\"actorId\":\"\",\"amount\":7232,\"kind\":\"changeExp\",\"op\":\"+=\"}\n  changeLevel: 값 변경 change-level-op-select: replaceCommand {\"actorId\":\"actor1\",\"amount\":1,\"kind\":\"changeLevel\",\"op\":\"-=\"} → replaceCommand {\"actorId\":\"\",\"amount\":1,\"kind\":\"changeLevel\",\"op\":\"-=\"} | 값 변경 change-level-amount-input: replaceCommand {\"actorId\":\"actor1\",\"amount\":7561,\"kind\":\"changeLevel\",\"op\":\"+=\"} → replaceCommand {\"actorId\":\"\",\"amount\":7561,\"kind\":\"changeLevel\",\"op\":\"+=\"}\n  promoteActor: 값 변경 promote-actor-select: replaceCommand {\"actorId\":\"actor_mage\",\"failureBranch\":[],\"kind\":\"promoteActor\",\"successBranch\":[],\"toClassId\":\"class1\"} → replaceCommand {\"actorId\":\"actor_mage\",\"failureBranch\":[],\"kind\":\"promoteActor\",\"successBranch\":[],\"toClassId\":\"<undefined>\"} | 값 변경 promote-class-select: replaceCommand {\"actorId\":\"actor1\",\"failureBranch\":[],\"kind\":\"promoteActor\",\"successBranch\":[],\"toClassId\":\"class_mage\"} → replaceCommand {\"actorId\":\"\",\"failureBranch\":[],\"kind\":\"promoteActor\",\"successBranch\":[],\"toClassId\":\"class_mage\"}\n  changeEquipment: 값 변경 change-equipment-slot-select: replaceCommand {\"actorId\":\"actor1\",\"equipmentId\":\"\",\"kind\":\"changeEquipment\",\"slot\":\"accessory\"} → replaceCommand {\"actorId\":\"\",\"equipmentId\":\"\",\"kind\":\"changeEquipment\",\"slot\":\"accessory\"} | 값 변경 change-equipment-equipment-select: replaceCommand {\"actorId\":\"actor1\",\"equipmentId\":\"equip_scout_dagger\",\"kind\":\"changeEquipment\",\"slot\":\"weapon\"} → replaceCommand {\"actorId\":\"\",\"equipmentId\":\"equip_scout_dagger\",\"kind\":\"changeEquipment\",\"slot\":\"weapon\"}\n  changeActorHp: 값 변경 change-actor-hp-op-select: replaceCommand {\"actorId\":\"actor1\",\"amount\":10,\"kind\":\"changeActorHp\",\"op\":\"-=\"} → replaceCommand {\"actorId\":\"\",\"amount\":10,\"kind\":\"changeActorHp\",\"op\":\"-=\"} | 값 변경 change-actor-hp-amount-mode: replaceCommand {\"actorId\":\"actor1\",\"amount\":10,\"amountMode\":\"percent\",\"kind\":\"changeActorHp\",\"op\":\"+=\"} → replaceCommand {\"actorId\":\"\",\"amount\":10,\"amountMode\":\"percent\",\"kind\":\"changeActorHp\",\"op\":\"+=\"} | 값 변경 change-actor-hp-amount-input: replaceCommand {\"actorId\":\"actor1\",\"amount\":7874,\"kind\":\"changeActorHp\",\"op\":\"+=\"} → replaceCommand {\"actorId\":\"\",\"amount\":7874,\"kind\":\"changeActorHp\",\"op\":\"+=\"}\n  changeActorMp: 값 변경 change-actor-mp-op-select: replaceCommand {\"actorId\":\"actor1\",\"amount\":10,\"kind\":\"changeActorMp\",\"op\":\"-=\"} → replaceCommand {\"actorId\":\"\",\"amount\":10,\"kind\":\"changeActorMp\",\"op\":\"-=\"} | 값 변경 change-actor-mp-amount-mode: replaceCommand {\"actorId\":\"actor1\",\"amount\":10,\"amountMode\":\"percent\",\"kind\":\"changeActorMp\",\"op\":\"+=\"} → replaceCommand {\"actorId\":\"\",\"amount\":10,\"amountMode\":\"percent\",\"kind\":\"changeActorMp\",\"op\":\"+=\"} | 값 변경 change-actor-mp-amount-input: replaceCommand {\"actorId\":\"actor1\",\"amount\":7724,\"kind\":\"changeActorMp\",\"op\":\"+=\"} → replaceCommand {\"actorId\":\"\",\"amount\":7724,\"kind\":\"changeActorMp\",\"op\":\"+=\"}\n  enterHeroName: 값 변경 enter-hero-name-max-length: replaceCommand {\"actorId\":\"actor1\",\"kind\":\"enterHeroName\",\"maxLength\":7,\"showInitialName\":false} → replaceCommand {\"actorId\":\"\",\"kind\":\"enterHeroName\",\"maxLength\":7,\"showInitialName\":false} | 값 변경 enter-hero-name-show-initial: replaceCommand {\"actorId\":\"actor1\",\"kind\":\"enterHeroName\",\"maxLength\":6,\"showInitialName\":true} → replaceCommand {\"actorId\":\"\",\"kind\":\"enterHeroName\",\"maxLength\":6,\"showInitialName\":true}\n  craftRecipe: 값 변경 craft-recipe-select: replaceCommand {\"kind\":\"craftRecipe\",\"recipeId\":\"\"} → single-option\n  applyItemUpgrade: 값 변경 apply-item-upgrade-select: replaceCommand {\"kind\":\"applyItemUpgrade\",\"upgradeId\":\"\"} → single-option\n  changeParty: 값 변경 change-party-action-select: replaceCommand {\"action\":\"remove\",\"actorId\":\"actor1\",\"kind\":\"changeParty\"} → replaceCommand {\"action\":\"remove\",\"actorId\":\"\",\"kind\":\"changeParty\"}\n  giveMonster: 값 변경 give-monster-species-select: replaceCommand {\"kind\":\"giveMonster\",\"level\":5,\"nickname\":\"<undefined>\",\"speciesId\":\"species_cave_bat\"} → replaceCommand {\"kind\":\"giveMonster\",\"level\":5,\"nickname\":\"<undefined>\",\"speciesId\":\"species_aqualing\"} | 값 변경 give-monster-level-input: replaceCommand {\"kind\":\"giveMonster\",\"level\":99,\"nickname\":\"<undefined>\",\"speciesId\":\"species1\"} → replaceCommand {\"kind\":\"giveMonster\",\"level\":99,\"nickname\":\"<undefined>\",\"speciesId\":\"\"} | 값 변경 give-monster-nickname-input: replaceCommand {\"kind\":\"giveMonster\",\"level\":5,\"nickname\":\"__p_c694cb__\",\"speciesId\":\"species1\"} → replaceCommand {\"kind\":\"giveMonster\",\"level\":5,\"nickname\":\"__p_c694cb__\",\"speciesId\":\"\"}\n  evolveMonster: 값 변경 evolve-monster-instance-input: replaceCommand {\"failureBranch\":[],\"instanceId\":\"__p_b938cc__\",\"kind\":\"evolveMonster\",\"successBranch\":[],\"toSpeciesId\":\"species1\"} → replaceCommand {\"failureBranch\":[],\"instanceId\":\"__p_b938cc__\",\"kind\":\"evolveMonster\",\"successBranch\":[],\"toSpeciesId\":\"<undefined>\"} | 값 변경 evolve-monster-species-select: replaceCommand {\"failureBranch\":[],\"instanceId\":\"monster_1\",\"kind\":\"evolveMonster\",\"successBranch\":[],\"toSpeciesId\":\"species_cave_bat\"} → replaceCommand {\"failureBranch\":[],\"instanceId\":\"monster_1\",\"kind\":\"evolveMonster\",\"successBranch\":[],\"toSpeciesId\":\"species_aqualing\"}\n  addFollower: 값 변경 event-command-add-follower-name: replaceCommand {\"actorId\":\"actor1\",\"kind\":\"addFollower\",\"name\":\"__p_1435ae__\"} → replaceCommand {\"kind\":\"addFollower\",\"name\":\"__p_1435ae__\"} | 값 변경 event-command-add-follower-use-graphic: replaceCommand {\"actorId\":\"actor1\",\"graphic\":{\"direction\":\"down\",\"pattern\":25,\"transparent\":false},\"kind\":\"addFollower\",\"name\":\"동행자\"} → replaceCommand {\"graphic\":{\"direction\":\"down\",\"pattern\":25,\"transparent\":false},\"kind\":\"addFollower\",\"name\":\"동행자\"} | 값 변경 event-command-add-follower-graphic-type: replaceCommand {\"actorId\":\"actor1\",\"kind\":\"addFollower\",\"name\":\"동행자\"} → replaceCommand {\"kind\":\"addFollower\",\"name\":\"동행자\"} | 값 변경 event-command-add-follower-graphic-id: replaceCommand {\"actorId\":\"actor1\",\"kind\":\"addFollower\",\"name\":\"동행자\"} → replaceCommand {\"kind\":\"addFollower\",\"name\":\"동행자\"} | 값 변경 event-command-add-follower-graphic-direction: replaceCommand {\"actorId\":\"actor1\",\"kind\":\"addFollower\",\"name\":\"동행자\"} → replaceCommand {\"kind\":\"addFollower\",\"name\":\"동행자\"} | 값 변경 event-command-add-follower-graphic-character: replaceCommand {\"actorId\":\"actor1\",\"kind\":\"addFollower\",\"name\":\"동행자\"} → replaceCommand {\"kind\":\"addFollower\",\"name\":\"동행자\"} | 값 변경 event-command-add-follower-graphic-frame: replaceCommand {\"actorId\":\"actor1\",\"kind\":\"addFollower\",\"name\":\"동행자\"} → replaceCommand {\"kind\":\"addFollower\",\"name\":\"동행자\"} | 값 변경 event-command-add-follower-graphic-transparent: replaceCommand {\"actorId\":\"actor1\",\"kind\":\"addFollower\",\"name\":\"동행자\"} → replaceCommand {\"kind\":\"addFollower\",\"name\":\"동행자\"}\n  showPicture: 컨트롤 신규 show-picture-ai-prompt\n  … 외 2건: expected [ …(6) ] to deeply equal []\n    at assertSurfaceGate (<ROOT>/test/surfaceGateSupport.ts:272:5)\n    at <ROOT>/test/eventEditorCommitProbe.baseline.test.ts:93:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/eventEditorStagedState.test.ts",
+      "name": "Page 3 rich form canonical runtime fields stores eventA/eventB and executes the selected swap",
+      "category": "assertion-or-suite-contract",
+      "reason": "AssertionError: expected { eventA: '', eventB: '' } to match object { Object (eventA, eventB) }\n    at Proxy.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/expect/dist/index.js:1155:10)\n    at Proxy.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/expect/dist/index.js:1029:14)\n    at Proxy.methodWrapper (file:///home/main/z-project/rpg-zzu/node_modules/chai/index.js:1686:25)\n    at <ROOT>/test/eventEditorStagedState.test.ts:366:28\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop restores focus to the parent editor when a subdialog opener rerenders away",
+      "category": "assertion-or-suite-contract",
+      "reason": "ReferenceError: KeyboardEvent is not defined\n    at handlePageTabKeydown (<ROOT>/src/editor/panels/eventEditor/pageProps.ts:340:26)\n    at keydown (<ROOT>/src/editor/panels/eventEditor/pageProps.ts:282:29)\n    at FakeElement.dispatchEvent (<ROOT>/test/fakeDom.ts:319:9)\n    at <ROOT>/test/eventEditorTrustLoop.test.ts:235:29\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/placeConceptTool.test.ts",
+      "name": "place_concept plan — 모델이 설계하고 코드가 시공한다 (2026-09-03) 어느 seed 로 지어도 초안 여관의 물건은 전부 자리를 얻는다",
+      "category": "test-timeout",
+      "reason": "Error: Test timed out in 15000ms.\nIf this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".\n ❯ test/placeConceptTool.test.ts:559:3\n    557|   });\n    558| \n    559|   it(\"어느 seed 로 지어도 초안 여관의 물건은 전부 자리를 얻는다\", () => {\n       |   ^\n    560|     for (const seed of [1, 2, 3, 4, 5, 6, 7, 8, 11, 22, 33]) {\n    561|       const result = runTool(ctx(), \"place_concept\", { query: \"여관\", ma…",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/publicationExport.test.ts",
+      "name": "actual publication exports boots verified payloads (legacy runtime: false) but rejects coherent executable tampering",
+      "category": "test-timeout",
+      "reason": "Error: Test timed out in 15000ms.\nIf this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".\n ❯ test/publicationExport.test.ts:103:24\n    101|     await expect(createStandaloneHtmlExport(project, { fetchBytes })).…\n    102|   });\n    103|   it.each([false, true])(\"boots verified payloads (legacy runtime: %s)…\n       |                        ^\n    104|     const { project, fetchBytes } = await fixture(legacyRuntime);\n    105|     const html = await (await createStandaloneHtmlExport(project, { fe…",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/standaloneCli.test.ts",
+      "name": "CLI rejects missing project media without writing an HTML artifact",
+      "category": "readonly-filesystem",
+      "reason": "Error: EROFS: read-only file system, mkdtemp '<ROOT>/.vite-cache/standalone-cli-caVxGW'\n    at mkdtemp (node:internal/fs/promises:1186:10)\n    at <ROOT>/test/standaloneCli.test.ts:13:16\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/storePersistence.test.ts",
+      "name": "Project store remote persistence does not write to Supabase before the canonical project has loaded",
+      "category": "assertion-or-suite-contract",
+      "reason": "AssertionError: expected \"spy\" to not be called at all, but actually been called 1 times\n\nReceived: \n\n  1st spy call:\n\n    Array [\n      \"/__oprn/edit-activity\",\n      Object {\n        \"body\": \"{\"entries\":[{\"seq\":0,\"at\":\"2026-09-08T06:14:19.001Z\",\"scope\":\"project\",\"label\":null,\"origin\":\"human\",\"generation\":1,\"reason\":\"사람이 편집\"}]}\",\n        \"headers\": Object {\n          \"Content-Type\": \"application/json\",\n        },\n        \"method\": \"POST\",\n      },\n    ]\n\n\nNumber of calls: 1\n\n    at Proxy.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/expect/dist/index.js:1335:10)\n    at Proxy.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/expect/dist/index.js:1029:14)\n    at Proxy.methodWrapper (file:///home/main/z-project/rpg-zzu/node_modules/chai/index.js:1686:25)\n    at <ROOT>/test/storePersistence.test.ts:35:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/storePersistence.test.ts",
+      "name": "Project store remote persistence does not create a DB project when the selected project row is missing",
+      "category": "assertion-or-suite-contract",
+      "reason": "AssertionError: expected \"spy\" to be called 1 times, but got 4 times\n    at <ROOT>/test/storePersistence.test.ts:230:22\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/supabaseProjectSync.test.ts",
+      "name": "Supabase project sync preserves concurrent map tree additions from separate editors",
+      "category": "test-timeout",
+      "reason": "Error: Test timed out in 15000ms.\nIf this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".\n ❯ test/supabaseProjectSync.test.ts:907:3\n    905|   });\n    906| \n    907|   it(\"preserves concurrent map tree additions from separate editors\", …\n       |   ^\n    908|     const baseProject = createHouseTemplateGalleryProject();\n    909|     const firstEditorProject = structuredClone(baseProject);",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/teamWorkflowUi.test.ts",
+      "name": "team workflow UI renders topbar identity and allows label edits from the identity menu",
+      "category": "assertion-or-suite-contract",
+      "reason": "TypeError: window.addEventListener is not a function\n    at renderTopbarStudioButton (<ROOT>/src/editor/panels/menu.ts:340:12)\n    at Module.renderTopbar (<ROOT>/src/editor/panels/menu.ts:149:7)\n    at <ROOT>/test/teamWorkflowUi.test.ts:170:53\n    at click (<ROOT>/src/editor/teamWorkflowUi.ts:253:13)\n    at FakeElement.dispatchEvent (<ROOT>/test/fakeDom.ts:319:9)\n    at FakeElement.click (<ROOT>/test/fakeDom.ts:342:10)\n    at <ROOT>/test/teamWorkflowUi.test.ts:177:48\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/tilesetAiWorkspaceModal.test.ts",
+      "name": "AI tileset workspace three-step flow shows the summary step with a confirmed list and applies to the project",
+      "category": "assertion-or-suite-contract",
+      "reason": "TypeError: matching.matches is not a function\n    at restoreTilesetAiWorkspaceFocus (<ROOT>/src/editor/panels/tilesetAiWorkspaceAccessibility.ts:25:29)\n    at renderActiveWorkspace (<ROOT>/src/editor/panels/tilesetAiWorkspaceModal.ts:129:3)\n    at click (<ROOT>/src/editor/panels/tilesetAiWorkspaceModal.ts:525:9)\n    at FakeElement.dispatchEvent (<ROOT>/test/fakeDom.ts:319:9)\n    at FakeElement.click (<ROOT>/test/fakeDom.ts:342:10)\n    at <ROOT>/test/tilesetAiWorkspaceModal.test.ts:183:12\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/villageBuilder.test.ts",
+      "name": "build_village 같은 seed는 타일과 이벤트 좌표가 같고 다른 seed는 하위 타일이 달라진다",
+      "category": "test-timeout",
+      "reason": "Error: Test timed out in 15000ms.\nIf this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".\n ❯ test/villageBuilder.test.ts:438:3\n    436|   });\n    437| \n    438|   it(\"같은 seed는 타일과 이벤트 좌표가 같고 다른 seed는 하위 타일이 달라진다\", () => {\n       |   ^\n    439|     const first = buildVillage(7).snapshot;\n    440|     const second = buildVillage(7).snapshot;",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/villageBuilder.test.ts",
+      "name": "build_village 대로·진입로가 집 footprint 내부를 침범하지 않는다",
+      "category": "test-timeout",
+      "reason": "Error: Test timed out in 15000ms.\nIf this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".\n ❯ test/villageBuilder.test.ts:567:3\n    565| \n    566|   \n    567|   it(\"대로·진입로가 집 footprint 내부를 침범하지 않는다\", () => {\n       |   ^\n    568|     for (const seed of [1, 7, 42, 77]) {\n    569|       const { context, data } = buildVillage(seed);",
+      "multiplicity": 1
+    }
+  ],
+  "removedFailureReasons": [
+    {
+      "file": "test/agentBlueprintTurnEnd.test.ts",
+      "name": "중단·오류로 끝난 턴의 청사진 정산 (viewed: map_blank_start) 시공 중 중단하면 짓던 칸이 planned 로 되돌아간다 — 저장소가 안 바뀌었는데 완료를 찍지 않는다",
+      "category": "assertion-or-suite-contract",
+      "reason": "Error: Terminal AI activity log was not saved within 10s\n    at Timeout.<anonymous> (<ROOT>/test/agentBlueprintTurnEnd.test.ts:176:37)\n    at listOnTimeout (node:internal/timers:605:17)\n    at processTimers (node:internal/timers:541:7)",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/agentBlueprintTurnEnd.test.ts",
+      "name": "중단·오류로 끝난 턴의 청사진 정산 (viewed: map_blank_start) 턴이 오류로 끝나도 남은 제안은 적용되므로 그 칸은 done 으로 확정된다",
+      "category": "assertion-or-suite-contract",
+      "reason": "Error: Terminal AI activity log was not saved within 10s\n    at Timeout.<anonymous> (<ROOT>/test/agentBlueprintTurnEnd.test.ts:176:37)\n    at listOnTimeout (node:internal/timers:605:17)\n    at processTimers (node:internal/timers:541:7)",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/agentBlueprintTurnEnd.test.ts",
+      "name": "중단·오류로 끝난 턴의 청사진 정산 (viewed: map_blank_start) 정상 종료 + 적용에서만 저장소가 바뀝고 밑그림이 물러난다",
+      "category": "assertion-or-suite-contract",
+      "reason": "Error: Terminal AI activity log was not saved within 10s\n    at Timeout.<anonymous> (<ROOT>/test/agentBlueprintTurnEnd.test.ts:176:37)\n    at listOnTimeout (node:internal/timers:605:17)\n    at processTimers (node:internal/timers:541:7)",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/agentBlueprintTurnEnd.test.ts",
+      "name": "중단·오류로 끝난 턴의 청사진 정산 (viewed: map_blank_start) 일부만 지은 계획도 적용된 턴이 끝나면 물러나고, 다음 턴이 되살리지 않는다",
+      "category": "assertion-or-suite-contract",
+      "reason": "Error: Terminal AI activity log was not saved within 10s\n    at Timeout.<anonymous> (<ROOT>/test/agentBlueprintTurnEnd.test.ts:176:37)\n    at listOnTimeout (node:internal/timers:605:17)\n    at processTimers (node:internal/timers:541:7)",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/agentBlueprintTurnEnd.test.ts",
+      "name": "중단·오류로 끝난 턴의 청사진 정산 (viewed: map_blank_start) 전송이 던지지 않고 정상 반환한 중단도 정산된다 — 제안이 남아 있어도 적용에 닿지 않는다",
+      "category": "assertion-or-suite-contract",
+      "reason": "Error: Terminal AI activity log was not saved within 10s\n    at Timeout.<anonymous> (<ROOT>/test/agentBlueprintTurnEnd.test.ts:176:37)\n    at listOnTimeout (node:internal/timers:605:17)\n    at processTimers (node:internal/timers:541:7)",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/agentBlueprintTurnEnd.test.ts",
+      "name": "중단·오류로 끝난 턴의 청사진 정산 (viewed: map_blank_start) 다 지은 뒤의 조회 턴은 상태줄에 밑그림 확정을 다시 찍지 않는다",
+      "category": "assertion-or-suite-contract",
+      "reason": "Error: Terminal AI activity log was not saved within 10s\n    at Timeout.<anonymous> (<ROOT>/test/agentBlueprintTurnEnd.test.ts:176:37)\n    at listOnTimeout (node:internal/timers:605:17)\n    at processTimers (node:internal/timers:541:7)",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/agentBlueprintTurnEnd.test.ts",
+      "name": "중단·오류로 끝난 턴의 청사진 정산 (viewed: map_viewed_b) 시공 중 중단하면 짓던 칸이 planned 로 되돌아간다 — 저장소가 안 바뀌었는데 완료를 찍지 않는다",
+      "category": "assertion-or-suite-contract",
+      "reason": "Error: Terminal AI activity log was not saved within 10s\n    at Timeout.<anonymous> (<ROOT>/test/agentBlueprintTurnEnd.test.ts:176:37)\n    at listOnTimeout (node:internal/timers:605:17)\n    at processTimers (node:internal/timers:541:7)",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/agentBlueprintTurnEnd.test.ts",
+      "name": "중단·오류로 끝난 턴의 청사진 정산 (viewed: map_viewed_b) 턴이 오류로 끝나도 남은 제안은 적용되므로 그 칸은 done 으로 확정된다",
+      "category": "assertion-or-suite-contract",
+      "reason": "Error: Terminal AI activity log was not saved within 10s\n    at Timeout.<anonymous> (<ROOT>/test/agentBlueprintTurnEnd.test.ts:176:37)\n    at listOnTimeout (node:internal/timers:605:17)\n    at processTimers (node:internal/timers:541:7)",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/agentBlueprintTurnEnd.test.ts",
+      "name": "중단·오류로 끝난 턴의 청사진 정산 (viewed: map_viewed_b) 정상 종료 + 적용에서만 저장소가 바뀝고 밑그림이 물러난다",
+      "category": "assertion-or-suite-contract",
+      "reason": "Error: Terminal AI activity log was not saved within 10s\n    at Timeout.<anonymous> (<ROOT>/test/agentBlueprintTurnEnd.test.ts:176:37)\n    at listOnTimeout (node:internal/timers:605:17)\n    at processTimers (node:internal/timers:541:7)",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/agentBlueprintTurnEnd.test.ts",
+      "name": "중단·오류로 끝난 턴의 청사진 정산 (viewed: map_viewed_b) 일부만 지은 계획도 적용된 턴이 끝나면 물러나고, 다음 턴이 되살리지 않는다",
+      "category": "assertion-or-suite-contract",
+      "reason": "Error: Terminal AI activity log was not saved within 10s\n    at Timeout.<anonymous> (<ROOT>/test/agentBlueprintTurnEnd.test.ts:176:37)\n    at listOnTimeout (node:internal/timers:605:17)\n    at processTimers (node:internal/timers:541:7)",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/agentBlueprintTurnEnd.test.ts",
+      "name": "중단·오류로 끝난 턴의 청사진 정산 (viewed: map_viewed_b) 전송이 던지지 않고 정상 반환한 중단도 정산된다 — 제안이 남아 있어도 적용에 닿지 않는다",
+      "category": "assertion-or-suite-contract",
+      "reason": "Error: Terminal AI activity log was not saved within 10s\n    at Timeout.<anonymous> (<ROOT>/test/agentBlueprintTurnEnd.test.ts:176:37)\n    at listOnTimeout (node:internal/timers:605:17)\n    at processTimers (node:internal/timers:541:7)",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/agentBlueprintTurnEnd.test.ts",
+      "name": "중단·오류로 끝난 턴의 청사진 정산 (viewed: map_viewed_b) 다 지은 뒤의 조회 턴은 상태줄에 밑그림 확정을 다시 찍지 않는다",
+      "category": "assertion-or-suite-contract",
+      "reason": "Error: Terminal AI activity log was not saved within 10s\n    at Timeout.<anonymous> (<ROOT>/test/agentBlueprintTurnEnd.test.ts:176:37)\n    at listOnTimeout (node:internal/timers:605:17)\n    at processTimers (node:internal/timers:541:7)",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/devPlayerBundles.test.ts",
+      "name": "shares an in-flight build, invalidates on source changes and never serves stale output after failure",
+      "category": "readonly-filesystem",
+      "reason": "Error: EROFS: read-only file system, mkdtemp '<ROOT>/.vite-cache/dev-player-unit-2pvD5D'\n    at Proxy.mkdtemp (node:internal/fs/promises:1186:10)\n    at <ROOT>/test/devPlayerBundles.test.ts:20:20\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/eventEditorCommitProbe.baseline.test.ts",
+      "name": "이벤트 편집기 커밋 프로브 축 (1) 컨트롤 조작 → 저장 커맨드 스냅샷이 기준선과 같다",
+      "category": "assertion-or-suite-contract",
+      "reason": "AssertionError: [커밋 프로브] 표면이 기준선과 다르다 (4건)\n  changeFace: 컨트롤 신규 event-command-face-ai-prompt\n  giveMonster: 값 변경 give-monster-species-select: replaceCommand {\"kind\":\"giveMonster\",\"level\":5,\"nickname\":\"<undefined>\",\"speciesId\":\"species_cave_bat\"} → replaceCommand {\"kind\":\"giveMonster\",\"level\":5,\"nickname\":\"<undefined>\",\"speciesId\":\"species_aqualing\"}\n  evolveMonster: 값 변경 evolve-monster-species-select: replaceCommand {\"failureBranch\":[],\"instanceId\":\"monster_1\",\"kind\":\"evolveMonster\",\"successBranch\":[],\"toSpeciesId\":\"species_cave_bat\"} → replaceCommand {\"failureBranch\":[],\"instanceId\":\"monster_1\",\"kind\":\"evolveMonster\",\"successBranch\":[],\"toSpeciesId\":\"species_aqualing\"}\n  showPicture: 컨트롤 신규 show-picture-ai-prompt: expected [ …(4) ] to deeply equal []\n    at assertSurfaceGate (<ROOT>/test/surfaceGateSupport.ts:280:5)\n    at <ROOT>/test/eventEditorCommitProbe.baseline.test.ts:93:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/eventEditorTrustLoop.test.ts",
+      "name": "event editor trust loop restores focus to the parent editor when a subdialog opener rerenders away",
+      "category": "assertion-or-suite-contract",
+      "reason": "ReferenceError: KeyboardEvent is not defined\n    at handlePageTabKeydown (<ROOT>/src/editor/panels/eventEditor/pageProps.ts:340:26)\n    at keydown (<ROOT>/src/editor/panels/eventEditor/pageProps.ts:282:29)\n    at FakeElement.dispatchEvent (<ROOT>/test/fakeDom.ts:242:9)\n    at <ROOT>/test/eventEditorTrustLoop.test.ts:235:29\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/standaloneCli.test.ts",
+      "name": "CLI rejects missing project media without writing an HTML artifact",
+      "category": "readonly-filesystem",
+      "reason": "Error: EROFS: read-only file system, mkdtemp '<ROOT>/.vite-cache/standalone-cli-XRpaGO'\n    at mkdtemp (node:internal/fs/promises:1186:10)\n    at <ROOT>/test/standaloneCli.test.ts:13:16\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/storePersistence.test.ts",
+      "name": "Project store remote persistence does not write to Supabase before the canonical project has loaded",
+      "category": "assertion-or-suite-contract",
+      "reason": "AssertionError: expected \"spy\" to not be called at all, but actually been called 1 times\n\nReceived: \n\n  1st spy call:\n\n    Array [\n      \"/__oprn/edit-activity\",\n      Object {\n        \"body\": \"{\"entries\":[{\"seq\":0,\"at\":\"2026-09-07T18:54:19.011Z\",\"scope\":\"project\",\"label\":null,\"origin\":\"human\",\"generation\":1,\"reason\":\"사람이 편집\"}]}\",\n        \"headers\": Object {\n          \"Content-Type\": \"application/json\",\n        },\n        \"method\": \"POST\",\n      },\n    ]\n\n\nNumber of calls: 1\n\n    at Proxy.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/expect/dist/index.js:1335:10)\n    at Proxy.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/expect/dist/index.js:1029:14)\n    at Proxy.methodWrapper (file:///home/main/z-project/rpg-zzu/node_modules/chai/index.js:1686:25)\n    at <ROOT>/test/storePersistence.test.ts:35:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/storePersistence.test.ts",
+      "name": "Project store remote persistence does not create a DB project when the selected project row is missing",
+      "category": "assertion-or-suite-contract",
+      "reason": "AssertionError: expected \"spy\" to be called 1 times, but got 3 times\n    at <ROOT>/test/storePersistence.test.ts:230:22\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/storePersistence.test.ts",
+      "name": "Project store remote persistence skips remote flush when there are no unsaved changes",
+      "category": "assertion-or-suite-contract",
+      "reason": "AssertionError: expected \"spy\" to not be called at all, but actually been called 1 times\n\nReceived: \n\n  1st spy call:\n\n    Array [\n      \"/__oprn/edit-activity\",\n      Object {\n        \"body\": \"{\"entries\":[{\"seq\":0,\"at\":\"2026-09-07T18:54:23.710Z\",\"scope\":\"system\",\"label\":\"프로젝트 정규화 (1종)\",\"origin\":\"system\",\"generation\":0,\"fields\":[{\"path\":\"bundledTilesets\",\"after\":true}],\"reason\":\"사람이 편집: 프로젝트 정규화 (1종)\"}]}\",\n        \"headers\": Object {\n          \"Content-Type\": \"application/json\",\n        },\n        \"method\": \"POST\",\n      },\n    ]\n\n\nNumber of calls: 1\n\n    at Proxy.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/expect/dist/index.js:1335:10)\n    at Proxy.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/expect/dist/index.js:1029:14)\n    at Proxy.methodWrapper (file:///home/main/z-project/rpg-zzu/node_modules/chai/index.js:1686:25)\n    at <ROOT>/test/storePersistence.test.ts:254:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/teamWorkflowUi.test.ts",
+      "name": "team workflow UI renders topbar identity and allows label edits from the identity menu",
+      "category": "assertion-or-suite-contract",
+      "reason": "TypeError: window.addEventListener is not a function\n    at renderTopbarStudioButton (<ROOT>/src/editor/panels/menu.ts:340:12)\n    at Module.renderTopbar (<ROOT>/src/editor/panels/menu.ts:149:7)\n    at <ROOT>/test/teamWorkflowUi.test.ts:170:53\n    at click (<ROOT>/src/editor/teamWorkflowUi.ts:253:13)\n    at FakeElement.dispatchEvent (<ROOT>/test/fakeDom.ts:242:9)\n    at FakeElement.click (<ROOT>/test/fakeDom.ts:265:10)\n    at <ROOT>/test/teamWorkflowUi.test.ts:177:48\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20",
+      "multiplicity": 1
+    },
+    {
+      "file": "test/tilesetAiWorkspaceModal.test.ts",
+      "name": "AI tileset workspace three-step flow shows the summary step with a confirmed list and applies to the project",
+      "category": "assertion-or-suite-contract",
+      "reason": "TypeError: matching.matches is not a function\n    at restoreTilesetAiWorkspaceFocus (<ROOT>/src/editor/panels/tilesetAiWorkspaceAccessibility.ts:25:29)\n    at renderActiveWorkspace (<ROOT>/src/editor/panels/tilesetAiWorkspaceModal.ts:129:3)\n    at click (<ROOT>/src/editor/panels/tilesetAiWorkspaceModal.ts:525:9)\n    at FakeElement.dispatchEvent (<ROOT>/test/fakeDom.ts:242:9)\n    at FakeElement.click (<ROOT>/test/fakeDom.ts:265:10)\n    at <ROOT>/test/tilesetAiWorkspaceModal.test.ts:183:12\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20",
+      "multiplicity": 1
+    }
+  ],
+  "baselineScopeExits": {
+    "typecheck": 0,
+    "vitest": 1,
+    "css": 0,
+    "surface": 1
+  },
+  "candidateScopeExits": {
+    "typecheck": 0,
+    "vitest": 1,
+    "css": 0,
+    "surface": 1
+  },
+  "warning": "Review removals, new skips, infrastructure differences and reason changes. CSS/surface are unconditional ratchets; unchanged failures do not make npm run gates green.",
+  "canonicalFileSetEqual": false,
+  "addedFiles": [
+    "test/fakeDomInsertBefore.test.ts",
+    "test/fakeDomSelectContracts.test.ts",
+    "test/requestCoverage.test.ts"
+  ],
+  "removedFiles": [],
+  "newUnhandledErrors": [],
+  "removedUnhandledErrors": [
+    {
+      "error": {
+        "VITEST_TEST_NAME": "시공 중 중단하면 짓던 칸이 planned 로 되돌아간다 — 저장소가 안 바뀌었는데 완료를 찍지 않는다",
+        "VITEST_TEST_PATH": "<ROOT>/test/agentBlueprintTurnEnd.test.ts",
+        "constructor": "Function<TypeError>",
+        "message": "list.insertBefore is not a function",
+        "name": "TypeError",
+        "stack": "TypeError: list.insertBefore is not a function\n    at <ROOT>/src/editor/panels/aiStickyChecklist.ts:174:53\n    at Array.forEach (<anonymous>)\n    at Object.update (<ROOT>/src/editor/panels/aiStickyChecklist.ts:171:18)\n    at Object.showAcceptance (<ROOT>/src/editor/panels/aiChatPanel.ts:1612:51)\n    at executeTurn (<ROOT>/src/editor/panels/aiTurnRunner.ts:678:36)\n    at sendText (<ROOT>/src/editor/panels/aiChatPanel.ts:1537:5)\n    at send (<ROOT>/src/editor/panels/aiChatPanel.ts:1672:10)",
+        "toString": "Function<toString>",
+        "type": "Unhandled Rejection"
+      },
+      "multiplicity": 2
+    },
+    {
+      "error": {
+        "VITEST_TEST_NAME": "턴이 오류로 끝나도 남은 제안은 적용되므로 그 칸은 done 으로 확정된다",
+        "VITEST_TEST_PATH": "<ROOT>/test/agentBlueprintTurnEnd.test.ts",
+        "constructor": "Function<TypeError>",
+        "message": "list.insertBefore is not a function",
+        "name": "TypeError",
+        "stack": "TypeError: list.insertBefore is not a function\n    at <ROOT>/src/editor/panels/aiStickyChecklist.ts:174:53\n    at Array.forEach (<anonymous>)\n    at Object.update (<ROOT>/src/editor/panels/aiStickyChecklist.ts:171:18)\n    at Object.showAcceptance (<ROOT>/src/editor/panels/aiChatPanel.ts:1612:51)\n    at executeTurn (<ROOT>/src/editor/panels/aiTurnRunner.ts:678:36)\n    at sendText (<ROOT>/src/editor/panels/aiChatPanel.ts:1537:5)\n    at send (<ROOT>/src/editor/panels/aiChatPanel.ts:1672:10)",
+        "toString": "Function<toString>",
+        "type": "Unhandled Rejection"
+      },
+      "multiplicity": 2
+    },
+    {
+      "error": {
+        "VITEST_TEST_NAME": "정상 종료 + 적용에서만 저장소가 바뀝고 밑그림이 물러난다",
+        "VITEST_TEST_PATH": "<ROOT>/test/agentBlueprintTurnEnd.test.ts",
+        "constructor": "Function<TypeError>",
+        "message": "list.insertBefore is not a function",
+        "name": "TypeError",
+        "stack": "TypeError: list.insertBefore is not a function\n    at <ROOT>/src/editor/panels/aiStickyChecklist.ts:174:53\n    at Array.forEach (<anonymous>)\n    at Object.update (<ROOT>/src/editor/panels/aiStickyChecklist.ts:171:18)\n    at Object.showAcceptance (<ROOT>/src/editor/panels/aiChatPanel.ts:1612:51)\n    at executeTurn (<ROOT>/src/editor/panels/aiTurnRunner.ts:678:36)\n    at sendText (<ROOT>/src/editor/panels/aiChatPanel.ts:1537:5)\n    at send (<ROOT>/src/editor/panels/aiChatPanel.ts:1672:10)",
+        "toString": "Function<toString>",
+        "type": "Unhandled Rejection"
+      },
+      "multiplicity": 2
+    },
+    {
+      "error": {
+        "VITEST_TEST_NAME": "일부만 지은 계획도 적용된 턴이 끝나면 물러나고, 다음 턴이 되살리지 않는다",
+        "VITEST_TEST_PATH": "<ROOT>/test/agentBlueprintTurnEnd.test.ts",
+        "constructor": "Function<TypeError>",
+        "message": "list.insertBefore is not a function",
+        "name": "TypeError",
+        "stack": "TypeError: list.insertBefore is not a function\n    at <ROOT>/src/editor/panels/aiStickyChecklist.ts:174:53\n    at Array.forEach (<anonymous>)\n    at Object.update (<ROOT>/src/editor/panels/aiStickyChecklist.ts:171:18)\n    at Object.showAcceptance (<ROOT>/src/editor/panels/aiChatPanel.ts:1612:51)\n    at executeTurn (<ROOT>/src/editor/panels/aiTurnRunner.ts:678:36)\n    at sendText (<ROOT>/src/editor/panels/aiChatPanel.ts:1537:5)\n    at send (<ROOT>/src/editor/panels/aiChatPanel.ts:1672:10)",
+        "toString": "Function<toString>",
+        "type": "Unhandled Rejection"
+      },
+      "multiplicity": 2
+    },
+    {
+      "error": {
+        "VITEST_TEST_NAME": "전송이 던지지 않고 정상 반환한 중단도 정산된다 — 제안이 남아 있어도 적용에 닿지 않는다",
+        "VITEST_TEST_PATH": "<ROOT>/test/agentBlueprintTurnEnd.test.ts",
+        "constructor": "Function<TypeError>",
+        "message": "list.insertBefore is not a function",
+        "name": "TypeError",
+        "stack": "TypeError: list.insertBefore is not a function\n    at <ROOT>/src/editor/panels/aiStickyChecklist.ts:174:53\n    at Array.forEach (<anonymous>)\n    at Object.update (<ROOT>/src/editor/panels/aiStickyChecklist.ts:171:18)\n    at Object.showAcceptance (<ROOT>/src/editor/panels/aiChatPanel.ts:1612:51)\n    at executeTurn (<ROOT>/src/editor/panels/aiTurnRunner.ts:678:36)\n    at sendText (<ROOT>/src/editor/panels/aiChatPanel.ts:1537:5)\n    at send (<ROOT>/src/editor/panels/aiChatPanel.ts:1672:10)",
+        "toString": "Function<toString>",
+        "type": "Unhandled Rejection"
+      },
+      "multiplicity": 2
+    },
+    {
+      "error": {
+        "VITEST_TEST_NAME": "다 지은 뒤의 조회 턴은 상태줄에 밑그림 확정을 다시 찍지 않는다",
+        "VITEST_TEST_PATH": "<ROOT>/test/agentBlueprintTurnEnd.test.ts",
+        "constructor": "Function<TypeError>",
+        "message": "list.insertBefore is not a function",
+        "name": "TypeError",
+        "stack": "TypeError: list.insertBefore is not a function\n    at <ROOT>/src/editor/panels/aiStickyChecklist.ts:174:53\n    at Array.forEach (<anonymous>)\n    at Object.update (<ROOT>/src/editor/panels/aiStickyChecklist.ts:171:18)\n    at Object.showAcceptance (<ROOT>/src/editor/panels/aiChatPanel.ts:1612:51)\n    at executeTurn (<ROOT>/src/editor/panels/aiTurnRunner.ts:678:36)\n    at sendText (<ROOT>/src/editor/panels/aiChatPanel.ts:1537:5)\n    at send (<ROOT>/src/editor/panels/aiChatPanel.ts:1672:10)",
+        "toString": "Function<toString>",
+        "type": "Unhandled Rejection"
+      },
+      "multiplicity": 2
+    }
+  ]
+}

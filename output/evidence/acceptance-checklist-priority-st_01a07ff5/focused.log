@@ -1,0 +1,79 @@
+
+> rpg-zzu@0.1.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/aiChatObservability.test.ts test/requestCoverage.test.ts test/fakeDomSelectContracts.test.ts test/eventEditorStagedState.test.ts test/independentReview.test.ts test/assistantIndependentReview.test.ts test/assistantReviewApprovalLifecycle.test.ts --maxWorkers=1 --minWorkers=1 --no-file-parallelism
+
+
+ RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-acceptance-live-qa
+
+ ✓ test/aiChatObservability.test.ts (9 tests) 11196ms
+   ✓ 글자 크기 3단 (V3C ①) > 기본값은 '보통'이고 저장하면 localStorage(oprn:ai-font-size)에 영속된다 — 무효값은 보통으로 방어  511ms
+   ✓ 글자 크기 3단 (V3C ①) > 설정의 글자 크기 select(ai-font-size)를 바꾸면 즉시 패널에 반영·영속되고, 재부팅 시 다시 적용된다  777ms
+   ✓ 글자 크기 3단 (V3C ①) > applyAiFontSize는 data 속성과 CSS 변수(--ai-font-scale)를 함께 설정한다  550ms
+   ✓ 글자 크기 3단 (V3C ①) > 기록 줌 스테퍼는 없다 — Ctrl+휠이 글자 크기를 바꾸고 영속한다  355ms
+   ✓ 도구 호출 상세 아코디언 (V3C ③) > 복원된 대화의 도구 로그는 한 줄 요약으로 남고 JSON 상세는 숨긴다  831ms
+   ✓ 병합 추론 원문 전체 열람 (V3C ②) > 도구 사이 추론이 한 블록으로 병합돼도 각 추론의 원문 전체가 아이템으로 남고 토글은 횟수를 표시한다  1540ms
+   ✓ 실시간 고스트 프리뷰 연결 > 채팅 턴의 성공한 쓰기 tool_call 뒤 세션 draft diff 고스트를 발행한다  6203ms
+ ✓ test/fakeDomSelectContracts.test.ts (11 tests) 61ms
+ ✓ test/assistantIndependentReview.test.ts (29 tests) 44626ms
+   ✓ independent result review > requests a change, repairs the same draft, and reviews the new revision without writer conversation  3267ms
+   ✓ review termination and isolation > stops honestly on malformed reviewer output  1267ms
+   ✓ review termination and isolation > stops honestly on transport reviewer output  1190ms
+   ✓ review termination and isolation > stops honestly on write reviewer output  1484ms
+   ✓ review termination and isolation > stops honestly on stale reviewer output  1185ms
+   ✓ review termination and isolation > stops on repeated unchanged findings instead of granting approval  1248ms
+   ✓ review termination and isolation > shares the existing round budget  811ms
+   ✓ review termination and isolation > shares the existing writer-tokens budget  1150ms
+   ✓ review termination and isolation > shares the existing review-tokens budget  1774ms
+   ✓ review termination and isolation > does not review or execute writes in ask mode  1064ms
+   ✓ review termination and isolation > does not review a no-write direct question  616ms
+   ✓ review termination and isolation > rejects a write after cancellation during the pre-tool UI yield  936ms
+   ✓ review termination and isolation > ignores a late approval after cancellation without further mutations  1522ms
+   ✓ review termination and isolation > invalidates approval after edits, and undo cannot revive it  2318ms
+   ✓ review termination and isolation > cannot turn a failed actual scene test into approval  1751ms
+   ✓ review termination and isolation > defers autonomous milestones until the independent verdict is approved  3022ms
+   ✓ review termination and isolation > defers autonomous milestones until the independent verdict is rejected  1901ms
+   ✓ review evidence and final revision boundaries > requires actual visual evidence after spatial changes: delivered  1740ms
+   ✓ review evidence and final revision boundaries > requires actual visual evidence after spatial changes: empty  1482ms
+   ✓ review evidence and final revision boundaries > requires actual visual evidence after spatial changes: error  1943ms
+   ✓ review evidence and final revision boundaries > reviews the surface-prepared draft, not a pre-clipping revision  1340ms
+   ✓ review evidence and final revision boundaries > rejects a draft replaced while a review is in flight  1516ms
+   ✓ review evidence and final revision boundaries > cannot continue forever by paraphrasing failures without repairing  1792ms
+   ✓ review evidence and final revision boundaries > cannot apply an autonomous draft when cancelled by the approval event  1268ms
+   ✓ evaluation evidence integration > retains the approved independent verdict alongside actual draft scoring  1337ms
+   ✓ evaluation evidence integration > retains the rejected independent verdict alongside actual draft scoring  1674ms
+   ✓ no-write authoring and authored start-state review > blocks a no-write authoring result with unmet acceptance requirements before publishing success  1018ms
+   ✓ no-write authoring and authored start-state review > blocks a no-write authoring result with unmet completion requirements before publishing success  1003ms
+   ✓ no-write authoring and authored start-state review > reviews authored start-state party, inventory and gold as actual data  2004ms
+ ✓ test/requestCoverage.test.ts (14 tests) 12904ms
+   ✓ independent request coverage enters the canonical ledger > keeps the original goal incomplete after failed NPC repair and NPC-only clarification ({"resume":false,"auditUnavailable":false})  1607ms
+   ✓ independent request coverage enters the canonical ledger > keeps the original goal incomplete after failed NPC repair and NPC-only clarification ({"resume":true,"auditUnavailable":false})  1080ms
+   ✓ independent request coverage enters the canonical ledger > keeps the original goal incomplete after failed NPC repair and NPC-only clarification ({"resume":false,"auditUnavailable":true})  1227ms
+   ✓ independent request coverage enters the canonical ledger > keeps the original goal incomplete after failed NPC repair and NPC-only clarification ({"resume":true,"auditUnavailable":true})  948ms
+   ✓ independent request coverage enters the canonical ledger > retains words omitted even by the independent extractor as an unverified canonical obligation  810ms
+   ✓ independent request coverage enters the canonical ledger > cannot satisfy a partial plan after omission coverage  931ms
+   ✓ independent request coverage enters the canonical ledger > cannot satisfy a partial plan after empty coverage  980ms
+   ✓ independent request coverage enters the canonical ledger > cannot satisfy a partial plan after invalid coverage  960ms
+   ✓ independent request coverage enters the canonical ledger > cannot satisfy a partial plan after network coverage  1145ms
+   ✓ independent request coverage enters the canonical ledger > links every independently extracted clause to real immutable checks  1172ms
+   ✓ independent request coverage enters the canonical ledger > does not create obligations or run an audit for genuine questions  338ms
+   ✓ independent request coverage enters the canonical ledger > keeps grouped R2 clarification and resume coverage distinct (audit failure=false)  773ms
+   ✓ independent request coverage enters the canonical ledger > keeps grouped R2 clarification and resume coverage distinct (audit failure=true)  927ms
+ ✓ test/assistantReviewApprovalLifecycle.test.ts (9 tests) 23247ms
+   ✓ review approval ownership > requires fresh review after approval-event cancellation ({"autonomous":false,"freshSignal":false})  3938ms
+   ✓ review approval ownership > requires fresh review after approval-event cancellation ({"autonomous":false,"freshSignal":true})  3009ms
+   ✓ review approval ownership > requires fresh review after approval-event cancellation ({"autonomous":true,"freshSignal":false})  3353ms
+   ✓ review approval ownership > requires fresh review after approval-event cancellation ({"autonomous":true,"freshSignal":true})  3272ms
+   ✓ review approval ownership > does not admit approval inside a review event before checking its output budget  1167ms
+   ✓ review approval ownership > retires approval when the result_review subscriber throws  1318ms
+   ✓ review approval ownership > retires approval when the assistant_message subscriber throws  1293ms
+   ✓ review approval ownership > keeps a completed approval bound to its original signal on retry  1542ms
+   ✓ review approval ownership > retries an already-applied persistence proof without replaying writes or review  4350ms
+ ✓ test/eventEditorStagedState.test.ts (14 tests) 2274ms
+   ✓ event command staged-state regressions > keeps consecutive shop settings instead of restoring the render-time command  383ms
+ ✓ test/independentReview.test.ts (23 tests) 588ms
+
+ Test Files  7 passed (7)
+      Tests  109 passed (109)
+   Start at  16:54:49
+   Duration  164.51s (transform 34.88s, setup 0ms, collect 64.20s, tests 94.90s, environment 2ms, prepare 1.45s)
+

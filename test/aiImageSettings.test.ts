@@ -38,7 +38,7 @@ function form() {
 }
 
 describe("independent image settings", () => {
-  it("selects and routes the supported Codex default sentinel without changing chat", async () => {
+  it("routes the stored Codex sentinel and preserves returned upstream metadata without changing chat", async () => {
     const before = defaultAiConfig();
     saveAiConfig(before);
     const view = form();
@@ -51,9 +51,11 @@ describe("independent image settings", () => {
     const fetch = vi.fn(async (_url: unknown, init?: RequestInit) => {
       expect(new Headers(init?.headers).get("X-Rpgzzu-Provider")).toBe("openai-codex");
       expect(JSON.parse(String(init?.body)).model).toBe("codex-image-default");
-      return new Response(JSON.stringify({ image: { dataUrl: "data:image/png;base64,AAAA" } }));
+      return new Response(JSON.stringify({ image: { dataUrl: "data:image/png;base64,AAAA", provider: "openai-codex", model: "gpt-image-2" } }));
     });
-    await generateAiImage({ prompt: "routing check" }, { fetch });
+    const image = await generateAiImage({ prompt: "routing check" }, { fetch });
+    expect(image).toMatchObject({ provider: "openai-codex", model: "gpt-image-2" });
+    expect(loadAiConfig().imageModel).toBe("codex-image-default");
     expect(fetch).toHaveBeenCalledTimes(1);
   });
 

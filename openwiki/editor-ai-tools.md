@@ -384,7 +384,11 @@ The worker also dispatches openai-codex / codex-image-default to
 codexImageRuntime.ts, using the existing server-side Codex OAuth credentials.
 That native route is text-only: nonempty references fail explicitly with 409,
 not silently omitted. The internal selection ID is never sent upstream; the
-provider does not report its image-model version. Original raster bytes remain
+request pins model gpt-image-2, quality/background/size auto, and n: 1, following
+the [official Codex source](https://github.com/openai/codex/blob/3d2ee51ca2d5db578f328aa75e20aa22c0197c9a/codex-rs/ext/image-generation/src/tool.rs#L420-L429)
+(its omitted n defaults to one). GeneratedImage.model returns gpt-image-2 as the
+requested upstream alias, not a dated snapshot, which the provider does not
+report. Historical model-omitted images keep their original metadata. Original raster bytes remain
 unchanged, with a 180-second request/body deadline and no provider fallback.
 Client cancellation discards output; it does not claim upstream work has stopped.
 

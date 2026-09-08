@@ -1,0 +1,14 @@
+Auto-merging openwiki/INDEX.md
+CONFLICT (content): Merge conflict in openwiki/INDEX.md
+Auto-merging openwiki/editor-event-authoring.md
+Auto-merging openwiki/testing.md
+CONFLICT (content): Merge conflict in openwiki/testing.md
+Auto-merging src/editor/eventDraftValidator.ts
+Auto-merging src/player/PlayScene.ts
+Auto-merging src/player/playSceneInterpreter.ts
+Auto-merging src/player/playSceneMovement.ts
+Auto-merging test/fakeDom.ts
+CONFLICT (content): Merge conflict in test/fakeDom.ts
+Auto-merging test/fixtures/eventEditorFormSurface.baseline.json
+Auto-merging test/fixtures/eventEditorInteractionSurface.baseline.json
+Automatic merge failed; fix conflicts and then commit the result.

@@ -1,0 +1,204 @@
+{
+  "expectedFiles": 1826,
+  "reportedFiles": 1826,
+  "missing": [],
+  "unexpected": [],
+  "duplicates": [],
+  "queuedFiles": 1826,
+  "endedFiles": 1826,
+  "runEnd": {
+    "event": "run-end",
+    "at": 1788809338220,
+    "files": 1826,
+    "errors": [
+      {
+        "stack": "TypeError: list.insertBefore is not a function\n    at /home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiStickyChecklist.ts:174:53\n    at Array.forEach (<anonymous>)\n    at Object.update (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiStickyChecklist.ts:171:18)\n    at Object.showAcceptance (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1612:51)\n    at executeTurn (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiTurnRunner.ts:678:36)\n    at sendText (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1537:5)\n    at send (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1672:10)",
+        "message": "list.insertBefore is not a function",
+        "constructor": "Function<TypeError>",
+        "name": "TypeError",
+        "toString": "Function<toString>",
+        "VITEST_TEST_NAME": "시공 중 중단하면 짓던 칸이 planned 로 되돌아간다 — 저장소가 안 바뀌었는데 완료를 찍지 않는다",
+        "VITEST_TEST_PATH": "/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/test/agentBlueprintTurnEnd.test.ts",
+        "type": "Unhandled Rejection"
+      },
+      {
+        "stack": "TypeError: list.insertBefore is not a function\n    at /home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiStickyChecklist.ts:174:53\n    at Array.forEach (<anonymous>)\n    at Object.update (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiStickyChecklist.ts:171:18)\n    at Object.showAcceptance (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1612:51)\n    at executeTurn (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiTurnRunner.ts:678:36)\n    at sendText (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1537:5)\n    at send (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1672:10)",
+        "message": "list.insertBefore is not a function",
+        "constructor": "Function<TypeError>",
+        "name": "TypeError",
+        "toString": "Function<toString>",
+        "VITEST_TEST_NAME": "턴이 오류로 끝나도 남은 제안은 적용되므로 그 칸은 done 으로 확정된다",
+        "VITEST_TEST_PATH": "/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/test/agentBlueprintTurnEnd.test.ts",
+        "type": "Unhandled Rejection"
+      },
+      {
+        "stack": "TypeError: list.insertBefore is not a function\n    at /home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiStickyChecklist.ts:174:53\n    at Array.forEach (<anonymous>)\n    at Object.update (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiStickyChecklist.ts:171:18)\n    at Object.showAcceptance (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1612:51)\n    at executeTurn (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiTurnRunner.ts:678:36)\n    at sendText (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1537:5)\n    at send (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1672:10)",
+        "message": "list.insertBefore is not a function",
+        "constructor": "Function<TypeError>",
+        "name": "TypeError",
+        "toString": "Function<toString>",
+        "VITEST_TEST_NAME": "정상 종료 + 적용에서만 저장소가 바뀝고 밑그림이 물러난다",
+        "VITEST_TEST_PATH": "/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/test/agentBlueprintTurnEnd.test.ts",
+        "type": "Unhandled Rejection"
+      },
+      {
+        "stack": "TypeError: list.insertBefore is not a function\n    at /home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiStickyChecklist.ts:174:53\n    at Array.forEach (<anonymous>)\n    at Object.update (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiStickyChecklist.ts:171:18)\n    at Object.showAcceptance (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1612:51)\n    at executeTurn (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiTurnRunner.ts:678:36)\n    at sendText (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1537:5)\n    at send (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1672:10)",
+        "message": "list.insertBefore is not a function",
+        "constructor": "Function<TypeError>",
+        "name": "TypeError",
+        "toString": "Function<toString>",
+        "VITEST_TEST_NAME": "일부만 지은 계획도 적용된 턴이 끝나면 물러나고, 다음 턴이 되살리지 않는다",
+        "VITEST_TEST_PATH": "/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/test/agentBlueprintTurnEnd.test.ts",
+        "type": "Unhandled Rejection"
+      },
+      {
+        "stack": "TypeError: list.insertBefore is not a function\n    at /home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiStickyChecklist.ts:174:53\n    at Array.forEach (<anonymous>)\n    at Object.update (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiStickyChecklist.ts:171:18)\n    at Object.showAcceptance (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1612:51)\n    at executeTurn (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiTurnRunner.ts:678:36)\n    at sendText (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1537:5)\n    at send (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1672:10)",
+        "message": "list.insertBefore is not a function",
+        "constructor": "Function<TypeError>",
+        "name": "TypeError",
+        "toString": "Function<toString>",
+        "VITEST_TEST_NAME": "전송이 던지지 않고 정상 반환한 중단도 정산된다 — 제안이 남아 있어도 적용에 닿지 않는다",
+        "VITEST_TEST_PATH": "/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/test/agentBlueprintTurnEnd.test.ts",
+        "type": "Unhandled Rejection"
+      },
+      {
+        "stack": "TypeError: list.insertBefore is not a function\n    at /home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiStickyChecklist.ts:174:53\n    at Array.forEach (<anonymous>)\n    at Object.update (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiStickyChecklist.ts:171:18)\n    at Object.showAcceptance (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1612:51)\n    at executeTurn (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiTurnRunner.ts:678:36)\n    at sendText (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1537:5)\n    at send (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1672:10)",
+        "message": "list.insertBefore is not a function",
+        "constructor": "Function<TypeError>",
+        "name": "TypeError",
+        "toString": "Function<toString>",
+        "VITEST_TEST_NAME": "다 지은 뒤의 조회 턴은 상태줄에 밑그림 확정을 다시 찍지 않는다",
+        "VITEST_TEST_PATH": "/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/test/agentBlueprintTurnEnd.test.ts",
+        "type": "Unhandled Rejection"
+      },
+      {
+        "stack": "TypeError: list.insertBefore is not a function\n    at /home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiStickyChecklist.ts:174:53\n    at Array.forEach (<anonymous>)\n    at Object.update (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiStickyChecklist.ts:171:18)\n    at Object.showAcceptance (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1612:51)\n    at executeTurn (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiTurnRunner.ts:678:36)\n    at sendText (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1537:5)\n    at send (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1672:10)",
+        "message": "list.insertBefore is not a function",
+        "constructor": "Function<TypeError>",
+        "name": "TypeError",
+        "toString": "Function<toString>",
+        "VITEST_TEST_NAME": "시공 중 중단하면 짓던 칸이 planned 로 되돌아간다 — 저장소가 안 바뀌었는데 완료를 찍지 않는다",
+        "VITEST_TEST_PATH": "/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/test/agentBlueprintTurnEnd.test.ts",
+        "type": "Unhandled Rejection"
+      },
+      {
+        "stack": "TypeError: list.insertBefore is not a function\n    at /home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiStickyChecklist.ts:174:53\n    at Array.forEach (<anonymous>)\n    at Object.update (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiStickyChecklist.ts:171:18)\n    at Object.showAcceptance (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1612:51)\n    at executeTurn (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiTurnRunner.ts:678:36)\n    at sendText (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1537:5)\n    at send (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1672:10)",
+        "message": "list.insertBefore is not a function",
+        "constructor": "Function<TypeError>",
+        "name": "TypeError",
+        "toString": "Function<toString>",
+        "VITEST_TEST_NAME": "턴이 오류로 끝나도 남은 제안은 적용되므로 그 칸은 done 으로 확정된다",
+        "VITEST_TEST_PATH": "/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/test/agentBlueprintTurnEnd.test.ts",
+        "type": "Unhandled Rejection"
+      },
+      {
+        "stack": "TypeError: list.insertBefore is not a function\n    at /home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiStickyChecklist.ts:174:53\n    at Array.forEach (<anonymous>)\n    at Object.update (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiStickyChecklist.ts:171:18)\n    at Object.showAcceptance (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1612:51)\n    at executeTurn (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiTurnRunner.ts:678:36)\n    at sendText (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1537:5)\n    at send (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1672:10)",
+        "message": "list.insertBefore is not a function",
+        "constructor": "Function<TypeError>",
+        "name": "TypeError",
+        "toString": "Function<toString>",
+        "VITEST_TEST_NAME": "정상 종료 + 적용에서만 저장소가 바뀝고 밑그림이 물러난다",
+        "VITEST_TEST_PATH": "/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/test/agentBlueprintTurnEnd.test.ts",
+        "type": "Unhandled Rejection"
+      },
+      {
+        "stack": "TypeError: list.insertBefore is not a function\n    at /home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiStickyChecklist.ts:174:53\n    at Array.forEach (<anonymous>)\n    at Object.update (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiStickyChecklist.ts:171:18)\n    at Object.showAcceptance (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1612:51)\n    at executeTurn (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiTurnRunner.ts:678:36)\n    at sendText (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1537:5)\n    at send (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1672:10)",
+        "message": "list.insertBefore is not a function",
+        "constructor": "Function<TypeError>",
+        "name": "TypeError",
+        "toString": "Function<toString>",
+        "VITEST_TEST_NAME": "일부만 지은 계획도 적용된 턴이 끝나면 물러나고, 다음 턴이 되살리지 않는다",
+        "VITEST_TEST_PATH": "/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/test/agentBlueprintTurnEnd.test.ts",
+        "type": "Unhandled Rejection"
+      },
+      {
+        "stack": "TypeError: list.insertBefore is not a function\n    at /home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiStickyChecklist.ts:174:53\n    at Array.forEach (<anonymous>)\n    at Object.update (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiStickyChecklist.ts:171:18)\n    at Object.showAcceptance (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1612:51)\n    at executeTurn (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiTurnRunner.ts:678:36)\n    at sendText (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1537:5)\n    at send (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1672:10)",
+        "message": "list.insertBefore is not a function",
+        "constructor": "Function<TypeError>",
+        "name": "TypeError",
+        "toString": "Function<toString>",
+        "VITEST_TEST_NAME": "전송이 던지지 않고 정상 반환한 중단도 정산된다 — 제안이 남아 있어도 적용에 닿지 않는다",
+        "VITEST_TEST_PATH": "/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/test/agentBlueprintTurnEnd.test.ts",
+        "type": "Unhandled Rejection"
+      },
+      {
+        "stack": "TypeError: list.insertBefore is not a function\n    at /home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiStickyChecklist.ts:174:53\n    at Array.forEach (<anonymous>)\n    at Object.update (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiStickyChecklist.ts:171:18)\n    at Object.showAcceptance (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1612:51)\n    at executeTurn (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiTurnRunner.ts:678:36)\n    at sendText (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1537:5)\n    at send (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1672:10)",
+        "message": "list.insertBefore is not a function",
+        "constructor": "Function<TypeError>",
+        "name": "TypeError",
+        "toString": "Function<toString>",
+        "VITEST_TEST_NAME": "다 지은 뒤의 조회 턴은 상태줄에 밑그림 확정을 다시 찍지 않는다",
+        "VITEST_TEST_PATH": "/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/test/agentBlueprintTurnEnd.test.ts",
+        "type": "Unhandled Rejection"
+      },
+      {
+        "stack": "TypeError: controller.session?.getRunOutcome is not a function\n    at refreshRunOutcome (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:309:41)\n    at settleWorkPlanTurn (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1255:5)\n    at Object.settleWorkPlanTurn (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1609:31)\n    at executeTurn (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiTurnRunner.ts:671:12)\n    at sendText (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1537:5)",
+        "message": "controller.session?.getRunOutcome is not a function",
+        "constructor": "Function<TypeError>",
+        "name": "TypeError",
+        "toString": "Function<toString>",
+        "VITEST_TEST_PATH": "/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/test/aiClusterAssist.test.ts",
+        "type": "Unhandled Rejection"
+      },
+      {
+        "stack": "TypeError: controller.session?.getRunOutcome is not a function\n    at refreshRunOutcome (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:309:41)\n    at settleWorkPlanTurn (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1255:5)\n    at Object.settleWorkPlanTurn (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1609:31)\n    at executeTurn (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiTurnRunner.ts:671:12)\n    at sendText (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1537:5)",
+        "message": "controller.session?.getRunOutcome is not a function",
+        "constructor": "Function<TypeError>",
+        "name": "TypeError",
+        "toString": "Function<toString>",
+        "VITEST_TEST_PATH": "/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/test/aiPanelAutoExpand.test.ts",
+        "type": "Unhandled Rejection"
+      },
+      {
+        "stack": "TypeError: matching.matches is not a function\n    at restoreTilesetAiWorkspaceFocus (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/tilesetAiWorkspaceAccessibility.ts:25:29)\n    at renderActiveWorkspace (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/tilesetAiWorkspaceModal.ts:129:3)\n    at runTilesetAiReview (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/tilesetAiNativeReviewSession.ts:66:3)\n    at openTilesetAiWorkspace (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/tilesetAiWorkspaceModal.ts:54:72)\n    at /home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/test/tilesetAiWorkspaceModal.test.ts:151:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)",
+        "message": "matching.matches is not a function",
+        "constructor": "Function<TypeError>",
+        "name": "TypeError",
+        "toString": "Function<toString>",
+        "VITEST_TEST_PATH": "/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/test/tilesetAiWorkspaceModal.test.ts",
+        "type": "Unhandled Rejection"
+      },
+      {
+        "stack": "TypeError: controller.session?.getRunOutcome is not a function\n    at refreshRunOutcome (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:309:41)\n    at settleWorkPlanTurn (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1255:5)\n    at Object.settleWorkPlanTurn (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1609:31)\n    at executeTurn (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiTurnRunner.ts:671:12)\n    at sendText (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1537:5)\n    at send (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/panels/aiChatPanel.ts:1672:10)",
+        "message": "controller.session?.getRunOutcome is not a function",
+        "constructor": "Function<TypeError>",
+        "name": "TypeError",
+        "toString": "Function<toString>",
+        "VITEST_TEST_PATH": "/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/test/aiComposerEffortPanel.test.ts",
+        "type": "Unhandled Rejection"
+      },
+      {
+        "stack": "TypeError: Response constructor: Invalid response status code 204\n    at Object.webidl.errors.exception (node:internal/deps/undici/undici:4282:14)\n    at initializeResponse (node:internal/deps/undici/undici:10234:31)\n    at new Response (node:internal/deps/undici/undici:9974:9)\n    at /home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/test/mapEditLockScratchSession.test.ts:74:61\n    at mockCall (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/spy/dist/index.js:96:15)\n    at spy (file:///home/main/z-project/rpg-zzu/node_modules/tinyspy/dist/index.js:47:80)\n    at releaseMapLock (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/mapEditLocks.ts:300:26)\n    at Module.checkoutMapForEditing (/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/src/editor/mapEditLocks.ts:164:12)",
+        "message": "Response constructor: Invalid response status code 204",
+        "constructor": "Function<TypeError>",
+        "name": "TypeError",
+        "toString": "Function<toString>",
+        "VITEST_TEST_NAME": "취득 대기 중 스크래치 전환되면 잡은 락을 즉시 반납한다",
+        "VITEST_TEST_PATH": "/home/main/z-project/rpg-zzu-ai-acceptance-live-baseline/test/mapEditLockScratchSession.test.ts",
+        "type": "Unhandled Rejection"
+      }
+    ],
+    "reason": "failed"
+  },
+  "normalConfig": "vitest.config.ts",
+  "addedFilters": [],
+  "addedExclusions": [],
+  "testTimeoutMs": 15000,
+  "hookTimeoutMs": 90000,
+  "pool": "threads",
+  "maxWorkers": 4,
+  "minWorkers": 1,
+  "isolate": true,
+  "retry": 0,
+  "bail": 0,
+  "notes": [
+    "Existing source-authored skips, per-test deadline overrides and configuration exclusions remain unchanged.",
+    "Browser/network/filesystem failures remain in the raw result, never excluded."
+  ],
+  "complete": true,
+  "sandbox": {
+    "readOnlyHost": true,
+    "privateNetwork": true,
+    "privateDev": true
+  }
+}

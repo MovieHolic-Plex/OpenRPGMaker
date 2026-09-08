@@ -1,0 +1,5 @@
+
+> rpg-zzu@0.1.0 openwiki:index
+> node scripts/openwiki-index.mjs --check
+
+openwiki/INDEX.md 최신.

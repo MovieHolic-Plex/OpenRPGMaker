@@ -201,7 +201,7 @@ export function renderAiSettingsForm(options: {
     imageStatus.dataset.availability = entry?.supported ? "supported" : "unsupported";
     imageStatus.textContent = entry?.supported
       ? entry.providerLabel + " 로그인이 필요합니다. 인증 정보는 동반 서비스에만 보관하며 실제 생성 시 확인합니다."
-        + (entry.providerId === DEFAULT_IMAGE_PROVIDER_ID ? "" : " 실제 모델 버전은 제공자가 알려 주지 않습니다. 현재 텍스트 설명만 지원합니다. 참조 그림이 있는 생성은 Gemini를 선택해 주세요.")
+        + (entry.providerId === DEFAULT_IMAGE_PROVIDER_ID ? "" : " GPT Image 2(gpt-image-2)를 명시적으로 요청합니다. 날짜가 붙은 세부 스냅샷 버전은 제공자가 알려 주지 않습니다. 현재 텍스트 설명만 지원합니다. 참조 그림이 있는 생성은 Gemini를 선택해 주세요.")
       : "이 이미지 경로는 현재 미지원 또는 검증 전입니다. 저장된 선택은 유지하며 다른 모델로 자동 전환하지 않습니다.";
   };
   const refreshImageModels = (selected: string): void => {

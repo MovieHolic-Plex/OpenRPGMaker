@@ -42,6 +42,10 @@
   its diagnostic-session token still matches. No target, hash, content, generation
   or persistence policy changes. Late event/transfer/assistant completions also
   cannot join a newly consented session.
+- Native battle recovery ends the interpreter without a fabricated result or
+  continuation. Its handled failure still emits the token-gated event `failed`
+  receipt, not `cancelled`; stopped/replaced or initially disabled diagnostic
+  sessions receive no late receipt. `eventBattleFailure` covers this integration.
 - Boot callbacks capture `diagnosticToken()` when `bootPlayGame` starts; loader
   failure callbacks capture it when `PlayScene.preload` starts. The local boot
   projection requires that same nonempty token and asset-category consent at

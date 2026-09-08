@@ -3555,8 +3555,8 @@
    "battle-processing-flow-select": "no-change",
    "battle-processing-lose-checkbox": "컨트롤 값 변경 1개 [battle-processing-lose-checkbox: input[checkbox]{hidden}→input[checkbox]{checked,hidden}] | 검증텍스트 변경 1개 [battle-processing-preview: \"⚔(적 그룹 선택)·도망 가능지면 게임 끝확인 시 전투 시작 → batt\"→\"⚔(적 그룹 선택)·도망 가능패배 허용확인 시 전투 시작 → battle\"]",
    "battle-processing-lose-select": "컨트롤 값 변경 1개 [battle-processing-lose-checkbox: input[checkbox]{hidden}→input[checkbox]{checked,hidden}] | 검증텍스트 변경 1개 [battle-processing-preview: \"⚔(적 그룹 선택)·도망 가능지면 게임 끝확인 시 전투 시작 → batt\"→\"⚔(적 그룹 선택)·도망 가능패배 허용확인 시 전투 시작 → battle\"]",
-   "battle-processing-troop-select": "태그 개수 [img 등장(1), span 17→19] | 검증텍스트 변경 1개 [battle-processing-preview: \"⚔(적 그룹 선택)·도망 가능지면 게임 끝확인 시 전투 시작 → batt\"→\"⚔슬라임 정찰대·도망 가능지면 게임 끝EXP # · Gold #확인 시 \"] | 클래스 소실 3개 [empty, is-empty, rich-record-initial] | 클래스 신규 4개 [record-picker-card-copy, record-picker-card-subtitle, rich-preview-caption-in…(절단: 총 323자)",
-   "battle-processing-troop-source": "testid 소실 2종 [battle-processing-troop-select, battle-processing-troop-select-card] | testid 신규 3종 [battle-processing-troop-variable, battle-processing-troop-variable-browse, battle-processing-troop-variable-empty-hint] | 태그 개수 [button 12→13, option 13→10, span 17→15] | 컨트롤 소실 1개 [battle-processing-t…(절단: 총 969자)"
+   "battle-processing-troop-select": "태그 개수 [img 등장(1), span 17→19] | 검증텍스트 변경 2개 [battle-processing-preview: \"⚔(적 그룹 선택)·도망 가능지면 게임 끝확인 시 전투 시작 → batt\"→\"⚔슬라임 정찰대·도망 가능지면 게임 끝EXP # · Gold #확인 시 \", battle-processing-warning: \"전투를 시작할 수 없습니다. 적 그룹을 선택하세요.\"→\"\"] | 클래스 소실 3개 [empty, is-empty, rich-record-initial] | 클래스 신규 4개 [record-picker-c…(절단: 총 385자)",
+   "battle-processing-troop-source": "testid 소실 2종 [battle-processing-troop-select, battle-processing-troop-select-card] | testid 신규 3종 [battle-processing-troop-variable, battle-processing-troop-variable-browse, battle-processing-troop-variable-empty-hint] | 태그 개수 [button 12→13, option 13→10, span 17→15] | 컨트롤 소실 1개 [battle-processing-t…(절단: 총 1061자)"
   },
   "initial": {
    "testids": [
@@ -3742,7 +3742,7 @@
     "battle-processing-branch-hint": "켜면 명령 리스트에 승리·패배·도망 마커가 생깁니다. 본문은 마커 아래에서 편집하세요.",
     "battle-processing-intent": "이 이벤트에서 전투를 시작합니다",
     "battle-processing-preview": "⚔(적 그룹 선택)·도망 가능지면 게임 끝확인 시 전투 시작 → battleResult 저장",
-    "battle-processing-warning": "적 그룹을 선택하세요. 빈 전투는 실행 시 실패합니다.",
+    "battle-processing-warning": "전투를 시작할 수 없습니다. 적 그룹을 선택하세요.",
     "event-command-edit-summary": "전투"
    },
    "testidCount": 31,

@@ -85,6 +85,7 @@ describe("weighted branch command UX", () => {
     expect(fields().custom).toBe("preserved");
   });
   it("preserves exact authored table when only the destination changes", () => {
+    store.update((project) => { project.variables.push({ id: "roll", name: "Roll" }); });
     const table = " =2\r\na=3=legacy\r\nbad\r\nz=0";
     const body = render(table);
     const picker = control(body, "weighted-branch-result-variable").querySelector("select");

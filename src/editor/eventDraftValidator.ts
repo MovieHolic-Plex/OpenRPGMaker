@@ -1,5 +1,6 @@
 import { commandReferenceField, m2ReferenceField, withEventDraftIssueDetails } from "./eventDraftIssueDetails";
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
+import { battleTroopError } from "@/project/battleAdmission";
 import { commandRuntimeSupport } from "@/project/eventCommands/runtimeSupport";
 import { eventCommandBranches } from "@/editor/eventCommandBranches";
 import { LOOP_BODY_BRANCH_INDEX } from "@/editor/eventCommandPaths";
@@ -883,7 +884,14 @@ function validateCommand(
     case "callMapEvent": require("reference.event.missing", "맵 위 이벤트", command.eventId, refs.events); return;
     case "battleProcessing":
       if (command.troopSource === "variable") require("reference.variable.missing", "적 그룹 변수", command.troopVariableId, refs.variables);
-      else require("reference.troop.missing", "적 그룹", command.troopId, refs.troops);
+      else {
+        require("reference.troop.missing", "적 그룹", command.troopId, refs.troops);
+        const error = battleTroopError(project, command.troopId);
+        if (error?.code === "BATTLE_TROOP_EMPTY") issues.push({
+          severity: "error", code: "battle.troop.empty", message: error.message,
+          pageId, commandPath: path, field: { testId: "battle-processing-troop-select" },
+        });
+      }
       return;
     case "learnSkill": require("reference.actor.missing", "배우", command.actorId, refs.actors, true); require("reference.skill.missing", "스킬", command.skillId, refs.skills); return;
     case "changeExp": require("reference.actor.missing", "배우", command.actorId, refs.actors, true); variableOperand(command.amount, "경험치 변수"); return;
