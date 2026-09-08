@@ -17,7 +17,7 @@ import { lintHorrorAuthoring } from "./horrorAuthoringLint";
 //  - event-selfswitch-gate-unwritten (warning) selfSwitch 로 잠긴 페이지인데 그것을 켜는 커맨드가 없음
 //  - event-footprint-impassable (warning) 다중 타일 이벤트의 통행 사각이 통행 불가 칸을 덮음(걸어서 닿을 수 없는 자리)
 //  - duplicate-event       (warning) 같은 맵 내 이벤트 **몸 사각** 겹침
-//  - map-size              (warning) 256×256 초과 맵
+//  - map-size              (error)   256×256 초과 맵(생성 계약과 동일한 상한)
 //  - runtime-support:*     (warning) command is not fully supported by the map runtime
 //  - story-flag:*          (warning) 서사 플래그 read/write/미선언 사용 문제
 //  - quest-graph:*         (error|warning) 퀘스트 그래프 조건/도달성 문제
@@ -36,7 +36,7 @@ import {
 import { CC0_AUDIO_ASSETS, isBrowserPlayableAudioPath } from "@/assets/cc0AudioAssets";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
 import { autoCropSpriteAsset } from "@/project/farmModel";
-import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
+import { exceedsMapDimensionLimit, MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import { inBounds, isPassable } from "../collision";
 import { eventBodyRect, eventCoversPoint, eventPassageRect, overlappingEventPairs } from "../eventFootprintQuery";
 import { rectCells } from "../footprint";
@@ -442,14 +442,19 @@ function checkDuplicateEventPositions(project: Project, issues: LintIssue[]): vo
   }
 }
 
+// 생성 계약과 같은 판정을 낸다: 어떤 생성/크기변경 경로도 상한 초과를 만들지 않으므로
+// 초과 맵이 남아 있으면 그것은 "경고할 취향 문제"가 아니라 지원 밖 상태다. warning 이던 동안
+// 조수가 만든 257 맵이 프로젝트에 그대로 남을 수 있었다(OPRN-OUT-018).
+// 선재 초과 맵이 무관한 편집을 막지는 않는다 — commitChangeset 이 기준선과 대조한다.
 function checkMapSizes(project: Project, issues: LintIssue[]): void {
   for (const map of Object.values(project.maps)) {
-    if (map.width <= MAX_TOOL_MAP_DIMENSION && map.height <= MAX_TOOL_MAP_DIMENSION) continue;
+    if (!exceedsMapDimensionLimit(map.width, map.height)) continue;
     issues.push({
-      severity: "warning",
+      severity: "error",
       code: "map-size",
       mapId: map.id,
-      message: `맵이 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}을 초과합니다: ${map.id} (${map.width}×${map.height}) — 여러 맵으로 나누고 transfer 이벤트로 연결하세요.`,
+      message: `맵이 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}을 초과합니다: ${map.id} (${map.width}×${map.height})`
+        + " — 여러 맵으로 나누고 transfer 이벤트로 연결하세요. 이미 들어온 맵은 맵 목록에서 삭제할 수 있습니다.",
     });
   }
 }

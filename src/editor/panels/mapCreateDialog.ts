@@ -8,10 +8,12 @@ import {
   type MapCreatePreset,
   type MapCreateRequest,
 } from "@/project/mapCreateSpec";
+import { exceedsMapDimensionLimit, mapSizeLimitMessage } from "@/project/mapSizeLimits";
 import { findParentMapId, isMapTreeFolder, mapTreeNodeLabel } from "@/project/mapTree";
 import { store } from "@/project/store";
 import type { MapId, MapTreeNode } from "@/project/types";
 import { el } from "@/util/dom";
+import { toast } from "@/util/toast";
 
 export function openMapCreateDialog(request: MapCreateRequest = {}): void {
   const project = store.getCurrent();
@@ -78,10 +80,18 @@ export function openMapCreateDialog(request: MapCreateRequest = {}): void {
       }
 
       const submit = (): void => {
+        // 상한 초과는 조용히 줄이지 않고 여기서 거부한다 — 입력 max 속성은 직접 입력·붙여넣기로
+        // 넘길 수 있어서 값만 클램프하면 요청과 다른 크기의 맵이 말없이 생겼다(OPRN-OUT-018).
+        const requestedWidth = Number(width.value);
+        const requestedHeight = Number(height.value);
+        if (exceedsMapDimensionLimit(requestedWidth, requestedHeight)) {
+          toast(mapSizeLimitMessage(), "error");
+          return;
+        }
         const id = createMapFromSpec({
           name: name.value,
-          width: clampMapSize(Number(width.value), spec.width),
-          height: clampMapSize(Number(height.value), spec.height),
+          width: clampMapSize(requestedWidth, spec.width),
+          height: clampMapSize(requestedHeight, spec.height),
           tilesetId: tileset.value,
           parentId: parent.value as MapId | "",
           preset: spec.preset,

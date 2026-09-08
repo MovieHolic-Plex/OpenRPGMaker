@@ -7,6 +7,7 @@ import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } 
 import { appendToTree } from "@/project/mapTree";
 import { isPassable } from "@/project/collision";
 import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { exceedsMapDimensionLimit, MAX_TOOL_MAP_DIMENSION, mapSizeLimitMessage } from "@/project/mapSizeLimits";
 import { normalizeWorldGraph } from "@/project/worldGraph";
 import {
   isPointRef,
@@ -70,8 +71,8 @@ const WORLD_GRAPH_NODE_SCHEMA: JsonSchema = {
     mapId: { type: "string" },
     role: { type: "string", enum: ["town", "field", "dungeon", "interior"] },
     label: { type: "string" },
-    width: { type: "integer" },
-    height: { type: "integer" },
+    width: { type: "integer", description: `가로 타일 수(3 이상, 최대 ${MAX_TOOL_MAP_DIMENSION})` },
+    height: { type: "integer", description: `세로 타일 수(3 이상, 최대 ${MAX_TOOL_MAP_DIMENSION})` },
     size: { type: "string" },
     concept: { type: "string" },
   },
@@ -99,7 +100,7 @@ const WORLD_GRAPH_EDGE_SCHEMA: JsonSchema = {
 
 const planWorld: ToolDefinition = {
   name: "plan_world",
-  description: "선언형 worldGraph를 검증해 프로젝트에 등록한다. 맵은 만들지 않으며, edges는 nodes에 선언된 mapId만 참조할 수 있다.",
+  description: `선언형 worldGraph를 검증해 프로젝트에 등록한다. 맵은 만들지 않으며, edges는 nodes에 선언된 mapId만 참조할 수 있다. 크기 힌트는 build_world 와 같은 상한(최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION})을 지켜야 한다.`,
   mode: "write",
   parameters: {
     type: "object",
@@ -119,6 +120,8 @@ const planWorld: ToolDefinition = {
   },
   run(draft, args): ToolExecResult {
     const graph = normalizeGraphOrToolError({ nodes: args.nodes, edges: args.edges });
+    // normalizeWorldGraph 는 width/height 를 버리므로 원본 노드 레코드에서 힌트를 검사한다.
+    assertPlanNodeSizes(requireRecordArray(args.nodes, "nodes") as unknown as BuildWorldNodeInput[]);
     draft.worldGraph = graph;
     const missing = graph.nodes.filter((node) => !draft.maps[node.mapId]).map((node) => node.mapId);
     return {
@@ -181,7 +184,7 @@ const linkMaps: ToolDefinition = {
 const buildWorld: ToolDefinition = {
   name: "build_world",
   description:
-    "worldGraph 형태의 plan으로 다중 맵 월드를 만든다. 노드별 빈 맵과 역할 기본 지형만 만들고, transfer edges를 일괄 link_maps 처리한다. 마을 내부 콘텐츠(집/NPC)는 만들지 않는다.",
+    `worldGraph 형태의 plan으로 다중 맵 월드를 만든다. 노드별 빈 맵과 역할 기본 지형만 만들고, transfer edges를 일괄 link_maps 처리한다. 마을 내부 콘텐츠(집/NPC)는 만들지 않는다. 노드 맵 하나는 최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION} — 더 넓은 월드는 노드를 늘려 나눠라.`,
   mode: "write",
   parameters: {
     type: "object",
@@ -206,6 +209,7 @@ const buildWorld: ToolDefinition = {
       edges: plan.edges,
     });
     const buildNodes = requireRecordArray(plan.nodes, "plan.nodes") as unknown as BuildWorldNodeInput[];
+    assertPlanNodeSizes(buildNodes);
     const nodeHints = new Map(buildNodes.map((node) => [node.mapId, node]));
     const created: Record<string, string> = {};
     const reused: string[] = [];
@@ -332,6 +336,9 @@ function normalizeGraphOrToolError(value: unknown): WorldGraph {
 
 function createRoleMap(id: string, name: string, width: number, height: number, role: WorldGraphRole): GameMap {
   if (width < 3 || height < 3) throw new ToolError(`월드 맵 크기는 최소 3x3이어야 합니다: ${id}`, { code: "world-map-size", mapId: id });
+  // build_world 는 노드 전체를 미리 검사하지만(assertPlanNodeSizes), 이 헬퍼로 들어오는 다른
+  // 호출자가 생겨도 셀 배열 할당 전에 막히도록 여기서도 상한을 지킨다.
+  assertWorldNodeSize(id, width, height);
   const size = width * height;
   const lowerTile = roleBaseTile(role);
   const map: GameMap = {
@@ -356,6 +363,30 @@ function roleBaseTile(role: WorldGraphRole): number {
     case "town":
     case "field":
       return TILE.GRASS;
+  }
+}
+
+function assertWorldNodeSize(mapId: string, width: number, height: number): void {
+  if (!exceedsMapDimensionLimit(width, height)) return;
+  throw new ToolError(`${mapSizeLimitMessage()} — 초과 노드: ${mapId} (${width}×${height})`, {
+    code: "map-too-large",
+    mapId,
+  });
+}
+
+/**
+ * 계획 단계에서 노드 크기 힌트를 전부 검사한다.
+ *
+ * 왜 선행 검사인가: 노드를 돌면서 하나씩 만들면 초대형 노드 앞의 정상 노드는 이미 draft 에
+ * 할당된다. 툴 실패가 draft 를 버리므로 프로젝트에 남지는 않지만, 실패 전에 수만 칸을 배열로
+ * 잡는 낭비가 그대로다. 그리고 plan_world 는 맵을 만들지 않아도 build_world 가 그대로 읽는
+ * 크기 힌트를 저장하므로, 같은 검사를 계획 등록에도 걸어야 "계획은 통과했는데 시공만 거부"로
+ * 어긋나지 않는다(OPRN-OUT-018).
+ */
+function assertPlanNodeSizes(nodes: readonly BuildWorldNodeInput[]): void {
+  for (const node of nodes) {
+    const mapId = typeof node?.mapId === "string" ? node.mapId : "(mapId 없음)";
+    assertWorldNodeSize(mapId, dimensionFromHint(node, "width"), dimensionFromHint(node, "height"));
   }
 }
 
