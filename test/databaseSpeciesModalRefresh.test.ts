@@ -1,4 +1,8 @@
 // @vitest-environment happy-dom
+import { setImmediate } from "node:timers/promises";
+import { setFlagsFromString } from "node:v8";
+import { runInNewContext } from "node:vm";
+import { PropertySymbol, Node as HappyDomNode } from "happy-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getMapEditHistoryState, resetMapEditHistory, undoMapEdit } from "@/editor/mapEditHistory";
 import { openDatabaseModal, requestDatabaseModalClose } from "@/editor/panels/databaseModal";
@@ -49,12 +53,15 @@ function expectVisibleSelection(id: string): void {
 // Subscribe before triggering. Count actual workspace identities, not incidental
 // mutations: the second workspace is the real modal/store deferred refresh.
 // No mocked modal, subscriptions, rAF, timers, renderer, or fixed time advances.
-async function afterSpeciesRenders(count: number, trigger: () => void): Promise<void> {
+async function afterSpeciesRenders(count: number, trigger: () => void | Promise<void>): Promise<void> {
+  const modal = control("database-modal");
+  if (!(modal instanceof HappyDomNode)) throw new Error("Expected a happy-dom modal node");
   const initial = document.querySelector('[data-testid="db-monster-species-workspace"]');
   const seen = new Set<HTMLElement>();
+  const deliveryCallbacks: unknown[] = [];
   let observer: MutationObserver;
   let timeout: ReturnType<typeof setTimeout>;
-  const changed = new Promise<void>((resolve, reject) => {
+  const changed = new Promise<void>((resolve) => {
     observer = new MutationObserver((records) => {
       // A delivery can contain multiple replacements. The added nodes retain
       // their identities even after removal; querying only live DOM loses them.
@@ -66,11 +73,26 @@ async function afterSpeciesRenders(count: number, trigger: () => void): Promise<
       const current = document.querySelector<HTMLElement>('[data-testid="db-monster-species-workspace"]');
       if (seen.size >= count && current && seen.has(current)) resolve();
     });
-    observer.observe(control("database-modal"), { childList: true, subtree: true });
-    timeout = setTimeout(() => reject(new Error(`Expected ${count} species renders; observed ${seen.size}`)), 5000);
-    trigger();
+    observer.observe(modal, { childList: true, subtree: true });
+    // happy-dom 20.10.6 keeps its delivery closure only in a WeakRef, so GC can
+    // silence a still-connected observer between immediate and deferred renders.
+    // Retain that closure for this subscription only; do not replace delivery,
+    // fabricate mutations, or change the real modal/store/timer schedule.
+    deliveryCallbacks.push(...modal[PropertySymbol.mutationListeners]
+      .map((listener) => listener.callback.deref()));
   });
-  try { await changed; } finally { observer!.disconnect(); clearTimeout(timeout!); }
+  const deadline = new Promise<never>((_resolve, reject) => {
+    timeout = setTimeout(() => reject(new Error(`Expected ${count} species renders; observed ${seen.size}`)), 5000);
+  });
+  try {
+    // Start synchronously after subscription, but keep both completion paths
+    // under the deadline: observed renders do not imply the trigger succeeded.
+    await Promise.race([Promise.all([changed, trigger()]), deadline]);
+  } finally {
+    observer!.disconnect();
+    deliveryCallbacks.length = 0;
+    clearTimeout(timeout!);
+  }
 }
 
 beforeEach(() => {
@@ -144,6 +166,51 @@ describe("species scroll through real deferred database modal refresh", () => {
       expect(getSelectedMonsterSpeciesId()).toBe("species-2");
       expect(control("db-monster-species-row-species-2").getAttribute("aria-pressed")).toBe("true");
     } finally { observer.disconnect(); }
+  });
+
+  it("rejects when an async trigger fails after its target renders were observed", async () => {
+    openDatabaseModal("monsterSpecies");
+    const failure = new Error("Trigger failed after rendering");
+    let rejectTrigger!: (reason: Error) => void;
+    const triggerCompletion = new Promise<void>((_resolve, reject) => { rejectTrigger = reject; });
+    let completion!: Promise<void>;
+    // The outer subscription signals actual render delivery independently of
+    // the inner trigger's completion, so rejection requires no timing delay.
+    await afterSpeciesRenders(2, () => {
+      completion = afterSpeciesRenders(2, () => {
+        click("db-monster-species-row-species-1");
+        click("db-monster-species-row-species-2");
+        return triggerCompletion;
+      });
+      expect(getSelectedMonsterSpeciesId()).toBe("species-2");
+    });
+    const rejected = expect(completion).rejects.toBe(failure);
+    rejectTrigger(failure);
+    await rejected;
+  });
+
+  it("observes real workspace replacements across garbage collection between tasks", async () => {
+    // Obtain an explicit collector without requiring runner/global config changes.
+    let collectGarbage: () => void;
+    setFlagsFromString("--expose-gc");
+    try { collectGarbage = runInNewContext("gc"); }
+    finally { setFlagsFromString("--no-expose-gc"); }
+    openDatabaseModal("monsterSpecies");
+    const before = JSON.stringify(store.getCurrent());
+    const update = vi.spyOn(store, "update");
+    await afterSpeciesRenders(2, async () => {
+      click("db-monster-species-row-species-1");
+      const first = control("db-monster-species-workspace");
+      // WeakRef targets are kept alive for the current JS job. This is a job
+      // boundary for GC, not a delay to wait for a render or interaction grace.
+      await setImmediate();
+      collectGarbage();
+      click("db-monster-species-row-species-2");
+      expect(control("db-monster-species-workspace")).not.toBe(first);
+    });
+    expect(getSelectedMonsterSpeciesId()).toBe("species-2");
+    expect(update).not.toHaveBeenCalled();
+    expect(JSON.stringify(store.getCurrent())).toBe(before);
   });
 
   it("retains an edited-enemy navigation reveal through pending refresh without navigation writes", async () => {
