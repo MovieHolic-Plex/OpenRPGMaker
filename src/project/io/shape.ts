@@ -1,6 +1,6 @@
 import { assertGrowthShape } from "@/project/growth/validation";
 import { validateSpatialAuthoring } from "../spatial/guards";
-import { validateSpatialReferences } from "../spatial/references";
+import { validateSpatialProject } from "../spatial/overviewPairs";
 import { validateAudioDescriptions } from "../audioDescriptions";
 import { validateMonsterMetadata } from "../monsterMetadata";
 import { validateCharacterGraphicsProject } from "../characterGraphics";
@@ -127,7 +127,7 @@ export function validateProjectV4(data: JsonRecord): Project {
 
   const project = cloneJson<Project>(data);
   if (spatialAuthoring !== undefined) {
-    validateSpatialReferences(spatialAuthoring, project);
+    validateSpatialProject(spatialAuthoring, project);
     project.spatialAuthoring = spatialAuthoring;
   }
   project.mapTree = mapTree;

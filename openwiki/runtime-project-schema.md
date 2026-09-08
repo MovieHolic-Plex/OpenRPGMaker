@@ -1,5 +1,9 @@
 # Runtime Project Schema & Persistence
 
+[Spatial overview associations](spatial-overview-associations.md) define the task34
+optional route/entry fields, exact ownership checks, unchanged digest semantics,
+and the explicit task11 transaction boundary (project v4 / spatial v1).
+
 ## Spatial canonical routing (task6 backend increment, 2026-09-07)
 
 `ProjectWriteAuthority` is separate from `Project`: an explicit create intent, a

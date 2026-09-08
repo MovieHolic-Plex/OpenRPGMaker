@@ -1,0 +1,3 @@
+full build exit=0
+RAM dist=/dev/shm/task34-build.JmQz8a
+cleanup=EXIT trap

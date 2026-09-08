@@ -2,6 +2,8 @@ import { assert } from "../io/guards";
 import { resolveSpatialGraphic } from "./assets";
 import { validateOccurrencePorts, validateParentSlot } from "./associations";
 import { hasProjectedSpatialPort, isOwnedSpatialBinding } from "./bindings";
+import { hasOverviewRouteRepresentation, validateOverviewRoutes } from "./overview";
+import { validateOverviewEntries } from "./overviewReferences";
 import type * as S from "./types";
 
 type Design = S.ObjectDesign | S.SpaceDesign | S.PlaceDesign | S.RegionDesign | S.WorldDesign;
@@ -187,6 +189,7 @@ export function validateSpatialReferences(document: S.SpatialAuthoringDocument, 
       assert(occurrence.snapshot.ports.some(port => port.id === endpoint.portId), `${path}.${side}.portId: missing owned port`);
     }
   });
+  validateOverviewRoutes(document);
   const ownedRects = new Map<string, S.SpatialRect[]>();
   const ownedEvents = new Map<string, Set<string>>();
   for (const occurrence of Object.values(document.occurrences)) {
@@ -212,11 +215,13 @@ export function validateSpatialReferences(document: S.SpatialAuthoringDocument, 
       ownedEvents.set(map.id, events);
       unique(binding.connectionIds, `${path}.connectionIds`);
       for (const id of binding.connectionIds) assert(document.connections.some(connection => connection.id === id &&
-        [connection.from, connection.to].some(endpoint => endpoint.occurrenceId === occurrence.id ||
-          hasProjectedSpatialPort(own(document.occurrences, endpoint.occurrenceId, path), binding, endpoint.portId))),
+        (connection.overviewRoute?.occurrenceId === occurrence.id ? hasOverviewRouteRepresentation(occurrence, binding, connection) :
+          [connection.from, connection.to].some(endpoint => endpoint.occurrenceId === occurrence.id ||
+            hasProjectedSpatialPort(own(document.occurrences, endpoint.occurrenceId, path), binding, endpoint.portId)))),
       `${path}.connectionIds: missing owned connection ${id}`);
     });
   }
+  validateOverviewEntries(document, assets);
   unique(document.legacyImport.mapping.map(entry => entry.sourceKey), `${p}.legacyImport.mapping`);
 }
 function assertNever(value: never): never { throw new TypeError(`Unreachable spatial variant: ${String(value)}`); }

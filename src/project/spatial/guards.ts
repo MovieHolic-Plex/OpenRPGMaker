@@ -1,61 +1,9 @@
-import { assert, requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "../io/guards";
+import { assert } from "../io/guards";
 import type * as S from "./types";
-import { SPATIAL_SIZE_MAX } from "./types";
+import { boolean, choice, concreteEndpoint, coordinate, dictionary, digest, id, ids, integer, list, nullableId,
+  overviewEntries, overviewRoute, point, positive, record, rect, size, text, texts, vertex, type Parser } from "./guardValues";
 
-type Parser<T> = (value: unknown, path: string) => T;
-const text: Parser<string> = (v, p) => requireString(p, v);
-const boolean: Parser<boolean> = (v, p) => requireBoolean(p, v);
-const id: Parser<S.SpatialId> = (v, p) => {
-  const valid = (value: unknown): value is S.SpatialId => typeof value === "string" && value.trim().length > 0;
-  assert(valid(v), `${p}: expected nonblank opaque ID`);
-  return v;
-};
-const integer = (range: readonly [number, number]): Parser<number> => (v, p) => {
-  const n = requireNumber(p, v);
-  assert(Number.isSafeInteger(n) && n >= range[0] && n <= range[1], `${p}: expected integer in ${range.join("..")} `);
-  return n;
-};
-const coordinate = integer([-Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER]);
-const positive = integer([1, Number.MAX_SAFE_INTEGER]);
-const size = integer([1, SPATIAL_SIZE_MAX]);
-const choice = <T extends string | number>(values: readonly T[]): Parser<T> => (v, p) => {
-  const match = values.find(entry => entry === v);
-  assert(match !== undefined, `${p}: unsupported value ${String(v)}`);
-  return match;
-};
 const kind = choice(["object", "space", "place", "region", "world"] as const);
-function record(v: unknown, p: string, fields?: string): Record<string, unknown> {
-  const r = requireRecord(p, v);
-  if (fields !== undefined) {
-    const allowed = new Set(fields.split(" "));
-    for (const key of Object.keys(r)) assert(allowed.has(key), `${p}.${key}: unsupported field`);
-  }
-  // Required fields and dictionary entries must be own properties, never inherited lookups.
-  return Object.fromEntries(Object.entries(r));
-}
-function list<T>(v: unknown, p: string, parse: Parser<T>): readonly T[] {
-  return requireArray(p, v).map((entry, i) => parse(entry, `${p}[${i}]`));
-}
-function dictionary<T>(v: unknown, p: string, parse: Parser<T>): Readonly<Record<string, T>> {
-  return Object.fromEntries(Object.entries(record(v, p)).map(([key, entry]) => [key, parse(entry, `${p}.${key}`)]));
-}
-const ids: Parser<readonly S.SpatialId[]> = (v, p) => list(v, p, id);
-const texts: Parser<readonly string[]> = (v, p) => list(v, p, text);
-const nullableId: Parser<S.SpatialId | null> = (v, p) => v === null ? null : id(v, p);
-const digest: Parser<string> = (v, p) => {
-  const s = text(v, p);
-  assert(/^[a-fA-F0-9]{64}$/.test(s), `${p}: expected SHA-256 hex digest`);
-  return s;
-};
-const point: Parser<S.SpatialPoint> = (v, p) => {
-  const r = record(v, p);
-  return { x: coordinate(r.x, `${p}.x`), y: coordinate(r.y, `${p}.y`) };
-};
-const vertex: Parser<S.SpatialPoint> = (v, p) => point(record(v, p, "x y"), p);
-const rect: Parser<S.SpatialRect> = (v, p) => {
-  const r = record(v, p, "x y width height");
-  return { ...point(r, p), width: size(r.width, `${p}.width`), height: size(r.height, `${p}.height`) };
-};
 const port: Parser<S.SpatialPort> = (v, p) => {
   const r = record(v, p, "id name x y");
   return { ...point(r, p), id: id(r.id, `${p}.id`), name: text(r.name, `${p}.name`) };
@@ -187,8 +135,9 @@ const binding: Parser<S.SpatialCompiledBinding> = (v, p) => {
   switch (bindingKind) {
     case "projection": record(r, p, "kind mapId rect ports"); return { kind: bindingKind, ...extent };
     case undefined:
-      record(r, p, "mapId rect eventIds connectionIds ports contentDigest");
-      return { mapId: extent.mapId, rect: extent.rect, eventIds: texts(r.eventIds, `${p}.eventIds`), connectionIds: ids(r.connectionIds, `${p}.connectionIds`), ports: boundPorts, contentDigest: digest(r.contentDigest, `${p}.contentDigest`) };
+      record(r, p, "mapId rect eventIds connectionIds ports contentDigest overviewEntries");
+      return { mapId: extent.mapId, rect: extent.rect, eventIds: texts(r.eventIds, `${p}.eventIds`), connectionIds: ids(r.connectionIds, `${p}.connectionIds`), ports: boundPorts, contentDigest: digest(r.contentDigest, `${p}.contentDigest`),
+        ...(Object.hasOwn(r, "overviewEntries") ? { overviewEntries: overviewEntries(r.overviewEntries, `${p}.overviewEntries`) } : {}) };
     default: return assertNever(bindingKind);
   }
 };
@@ -214,9 +163,9 @@ const occurrence: Parser<S.SpatialOccurrence> = (v, p) => {
   }
 };
 const connection: Parser<S.SpatialConnection> = (v, p) => {
-  const r = record(v, p, "id from to bidirectional");
-  const end: Parser<S.SpatialConnection["from"]> = (v, p) => { const r = record(v, p, "occurrenceId portId"); return { occurrenceId: id(r.occurrenceId, `${p}.occurrenceId`), portId: id(r.portId, `${p}.portId`) }; };
-  return { id: id(r.id, `${p}.id`), from: end(r.from, `${p}.from`), to: end(r.to, `${p}.to`), bidirectional: boolean(r.bidirectional, `${p}.bidirectional`) };
+  const r = record(v, p, "id from to bidirectional overviewRoute");
+  return { id: id(r.id, `${p}.id`), from: concreteEndpoint(r.from, `${p}.from`), to: concreteEndpoint(r.to, `${p}.to`), bidirectional: boolean(r.bidirectional, `${p}.bidirectional`),
+    ...(Object.hasOwn(r, "overviewRoute") ? { overviewRoute: overviewRoute(r.overviewRoute, `${p}.overviewRoute`) } : {}) };
 };
 const roomKind: Parser<NonNullable<S.LegacySpatialImportReceipt["roomKinds"]>[number]> = (v, p) => {
   const r = record(v, p, "tilesetId record");

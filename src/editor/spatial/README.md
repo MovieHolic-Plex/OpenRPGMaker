@@ -54,11 +54,15 @@ or the editor canvas. Acceptance remains a separate operation.
   Place ports resolve through persisted local-port associations to an exact
   passable, reachable outdoor cell on their declared plane; ambiguous surfaces
   reject. Different-map interiors connect only through explicit named ports.
-- Explicit connections emit deterministic house-step events and mapConnections
+- Ordinary explicit connections emit deterministic house-step events and mapConnections
   in the requested direction(s). Transfer chips require a declared connection;
   containment never emits a transfer. Every emitting endpoint must have a raster
   owner in the requested subtree; a destination can already be compiled outside
   it. Use the encompassing place when both source owners need recompilation.
+  Overview-provenance routes are not direct child-to-child teleports; they are
+  excluded from this compiler. Entry metadata cannot authorize cross-map cleanup,
+  and partial writes to externally referenced overview landings reject.
+  See [overview associations](../../../openwiki/spatial-overview-associations.md).
 - Place recompilation checks all owned digests before releasing any pixels or
   events. Unmanaged maps, events, mapConnections, metadata and existing tree
   placement survive. Missing/edited owned transfer projections reject. Map-tree

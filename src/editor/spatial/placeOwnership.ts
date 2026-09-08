@@ -4,9 +4,11 @@ import type { SpatialAuthoringDocument, SpatialId } from "@/project/spatial/type
 import type { Project } from "@/project/types";
 import { spatialRasterDigest } from "./compilerValidation";
 import { SpatialCompileError } from "./compilerTypes";
+import { requireOverviewWriteSet } from "./overviewEntries";
 
 /** Validate the entire write set before cleanup. Projection extents never enter this set. */
 export function releasePlaceOwnership(project: Project, document: SpatialAuthoringDocument, members: ReadonlySet<SpatialId>): void {
+  requireOverviewWriteSet(document, members);
   const owned = [...members].flatMap(id => own(document.occurrences, id).bindings.filter(isOwnedSpatialBinding));
   const releasedConnections = new Set<string>();
   for (const binding of owned) {

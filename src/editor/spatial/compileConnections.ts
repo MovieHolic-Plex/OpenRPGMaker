@@ -25,6 +25,8 @@ export function compileConnections(project: Project, document: SpatialAuthoringD
   const context = { project, occurrences };
   const connections: MapConnection[] = [...project.mapConnections ?? []];
   for (const link of document.connections) {
+    // Overview routes describe walking on their owner's raster, not direct teleports.
+    if (link.overviewRoute !== undefined) continue;
     if (!members.has(link.from.occurrenceId) && !members.has(link.to.occurrenceId)) continue;
     const directions = link.bidirectional ? [[link.from, link.to], [link.to, link.from]] as const : [[link.from, link.to]] as const;
     for (const [source, target] of directions) {

@@ -60,7 +60,10 @@ export function duplicateSpatialOccurrence(input: unknown, assets: S.SpatialAsse
         default: return assertNever(request.externalConnections);
       }
     }
-    connections.push({ ...link, id: spatialId(`copy-link:${rootId.length}:${rootId}${link.id.length}:${link.id}`), from: endpoint(link.from), to: endpoint(link.to) });
+    const { overviewRoute, ...ordinary } = link;
+    connections.push({ ...ordinary, id: spatialId(`copy-link:${rootId.length}:${rootId}${link.id.length}:${link.id}`), from: endpoint(link.from), to: endpoint(link.to),
+      ...(overviewRoute !== undefined && selected.has(overviewRoute.occurrenceId)
+        ? { overviewRoute: { ...overviewRoute, occurrenceId: own(remap, overviewRoute.occurrenceId) } } : {}) });
   }
   return freezeSpatial(checkedDocument({ ...document, occurrences: { ...document.occurrences, ...Object.fromEntries(additions) },
     rootOccurrenceIds: [...document.rootOccurrenceIds, rootId], connections: [...document.connections, ...connections] }, assets));

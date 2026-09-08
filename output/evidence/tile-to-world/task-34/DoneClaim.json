@@ -1,0 +1,69 @@
+{
+  "taskId": "st_01a0802b",
+  "status": "verified-increment",
+  "commit": { "identity": "the enclosing commit", "branch": "feat/spatial-overview-associations", "base": "009771ec48ce30f571ebe8cdf6fe34d42f4a9b6c", "push": false, "pr": false, "merge": false },
+  "worktree": "/home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-overview-associations",
+  "sourceManifest": "exact-source.sha256",
+  "evidenceLogsArchive": "EvidenceLogs.tar.gz preserves the original .log bytes and relative paths; raw logs also remain in the working evidence directory. This avoids changing terminal output to satisfy source whitespace checks.",
+  "implemented": [
+    "Optional exact frozen overviewRoute provenance and owned-only nonempty overviewEntries; project4/spatial1 unchanged",
+    "Strict association/reference/geometry/exclusive ownership validation and full-project exact unconditional event/mapConnection pair checks",
+    "Fresh provenance, opaque duplicate remapping, domain-only deletion/detach pruning and exact event-level proposal/deletion impacts",
+    "Ordinary compiler guard against direct execution of overview routes, separate entry source resolver and outside-landing write-set guards",
+    "Numeric access acceptance with explicit legacy association requirement and unsupported one-way rejection",
+    "Focused regressions, real complete witness CLI, compatibility literals and wiki"
+  ],
+  "notImplemented": ["task10 geography generation or authored route rasterization", "task11 preview/apply/refresh transactions or atomic cross-owner event cleanup", "task11 full logical-baseline stale-preview rejection", "UI/CSS/images", "SQL/liveDB", "runtime rendering"],
+  "gateDisposition": "GateDisposition.json",
+  "task11OpenGates": [10, 12],
+  "verification": {
+    "relatedSuite": { "exitCode": 0, "files": 28, "tests": 676, "log": "verified-tests.log", "singleWorker": true, "nonTTY": true, "privateNetworkNamespace": true, "isolatedEphemeralCache": true },
+    "additionalWorldSelectorCoverage": { "exitCode": 0, "files": 1, "tests": 12, "log": "world-selectors-final.log", "note": "After the full run, one self-selected own-port case was added and the missing-selected-child case was moved to the actual numeric acceptance seam. No production code changed. All 12 world tests passed." },
+    "scopedTypes": { "exitCode": 0, "log": "scoped-types-complete.log", "configuration": "scoped-tsconfig.json", "note": "The temporary root config was removed; copy this configuration to the worktree root to reproduce." },
+    "applicationTypes": { "exitCode": 0, "command": "tsc --noEmit -p tsconfig.app.json", "log": "verified-build.log" },
+    "fullBuild": { "exitCode": 0, "command": "CI=1 unshare -Urn bun run build", "log": "verified-build.log", "outputs": ["app", "export-player SDK", "standalone-player"], "ramDistRemoved": true },
+    "lsp": { "errors": 0, "coverage": "Changed spatial domain/compiler directories, project IO hook, every changed/new test, support directory and witness CLI were checked with the session LSP tool." },
+    "realCompleteCli": { "exitCode": 0, "log": "cli-complete.log", "receipts": "complete/green.json", "seeds": [109, 43, 271], "numericMapsAndMapConnectionsUnchangedFromRejectedWitnesses": true, "productionCollisionAndInterpreter": true },
+    "realErrorCli": { "exitCode": 1, "log": "cli-error.log", "fault": "--incomplete-input rejects at connectionIds through real full-project IO" },
+    "oldRasterDigest": "814d71d358e58955d64e434328faba7269d67953f8b9b1f8f56952c52bbc34a1",
+    "oldDigestEvidence": "old-digest.json",
+    "sourceDiffWhitespaceCheck": "git diff --check passed"
+  },
+  "preservedFailures": [
+    { "log": "original-red.log", "reason": "Old complete task10 output rejected ownership bookkeeping" },
+    { "log": "public-red.log", "reason": "Permanent public IO/consumer tests failed before production changes: unsupported overviewEntries and generic child-port execution" },
+    { "log": "lifecycle-red.log", "reason": "Duplicate/detach/deletion/impact/write-set contract gaps before lifecycle implementation" },
+    { "log": "world-bookkeeping-red.log", "reason": "World selector could mask omitted route bookkeeping before the exact represented-route check" },
+    { "log": "landing-impact-red.log", "reason": "Same-tuple landing changes were not included in event impacts before proposal comparison was extended" },
+    { "log": "acceptance-red.log", "reason": "Old absent provenance and unsupported one-way routes were incorrectly accepted by numeric acceptance before targeted guards" },
+    { "log": "effective-event-red.log", "reason": "Draft/conditional/multi-cell automatic events were accepted before exact generated-event checks" },
+    { "log": "related-final.log", "reason": "One old exact impact expectation lacked the new empty overviewEntries field; that assertion was extended without weakening its artifact/projection checks. The same run had a Vitest worker RPC timeout. Subsequent isolated, single-worker full runs passed with unchanged timeouts." },
+    { "log": "counterexamples-first.log", "reason": "One negative test expected the later target path rather than the earlier exact bookkeeping path; corrected to the actual machine field" },
+    { "log": "scoped-types-first.log", "reason": "Test fixture snapshot unions required the existing association narrowing API; corrected without assertions or suppression" }
+  ],
+  "buildWarnings": "Retained in verified-build.log: existing dependency annotation/chunk warnings, record-picker chunk cycle, mixed dynamic/static imports and unresolved battle-reference image. No warning configuration or unrelated sources were changed.",
+  "cleanup": {
+    "completed": true,
+    "ephemeralRamDistAndCache": "Removed by registered EXIT traps; exact paths are in verified-status.txt, build-status.txt and test-status.txt",
+    "temporaryRootTypeConfig": "Removed after preserving its contents in evidence",
+    "worktreeCreationLog": "Moved from /tmp into evidence; temporary original removed",
+    "persistentNetworkServices": 0,
+    "instrumentationShipped": false,
+    "dependencyLinkRetained": "node_modules points to existing shared dependencies; no dependency/cache tree was copied",
+    "parentRecoveryChanges": "Never snapshotted, staged, or edited by this task. Worktree was created directly from the exact requested commit. Only task34 evidence is mirrored to the parent evidence directory."
+  },
+  "review": {
+    "singleResponsibility": "Separate strict scalar parsing, route identity, entry references, pair boundary, metadata lifecycle and compiler access modules",
+    "boundaryPurity": "Existing strict hand parser and typed association APIs; no live-source or ID-text fallback",
+    "variantDiscrimination": "New kind dispatch is exhaustive; no new binding variant",
+    "escapeHatches": "No new any, casts, non-null assertions or suppression directives",
+    "resourcesAndErrors": "No background workers, sleeps, swallowed product errors or cross-map erasure authority",
+    "tests": "Permanent public red regressions precede implementation; domain, IO, consumer and real CLI/runtime witnesses remain reproducible",
+    "parameterBloat": "No new function has more than three parameters",
+    "destructiveVerification": "Cleanup relies on operation contracts, not delete-then-query code",
+    "negativeNaming": "No new negative-form domain names",
+    "logging": "Library checks remain silent; CLI emits structured JSON in the existing QA style",
+    "size": "source-loc.tsv records all code sizes. references.ts is in the warning band (226 pure LOC); extract frozen-library validation before further growth. The inherited 556-LOC v4 orchestration has a documented SIZE_OK exception for the narrow hook-only change; new validation lives outside it."
+  },
+  "independentReview": "Independent-author task10 witnesses were executed directly. No separate reviewer agent was available in this child session; parent review remains distinct from these verified results."
+}

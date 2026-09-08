@@ -10,6 +10,8 @@ import { compilePlaces } from "./compilePlaces";
 import { compileObjectEvents, requireSpaceOwnership, spatialRasterDigest, validateRasterAccess } from "./compilerValidation";
 import { SpatialCompileError, type SpatialRasterProposal } from "./compilerTypes";
 import { parseCompileRequest } from "./compileRequest";
+import { occurrenceSubtree } from "@/project/spatial/ownership";
+import { requireOverviewWriteSet } from "./overviewEntries";
 export { SpatialCompileError } from "./compilerTypes";
 export type { SpatialCompileRequest } from "./compilerTypes";
 
@@ -20,6 +22,7 @@ export function compileSpatialOccurrence(input: Project, value: unknown): Projec
   const document = checkedDocument(project.spatialAuthoring, project);
   const occurrence = requireOccurrenceAssociations(own(document.occurrences, request.occurrenceId));
   const context = { project, document, occurrence };
+  requireOverviewWriteSet(document, new Set(occurrenceSubtree(document, occurrence.id)));
   let raster: SpatialRasterProposal;
   switch (occurrence.kind) {
     case "object": {

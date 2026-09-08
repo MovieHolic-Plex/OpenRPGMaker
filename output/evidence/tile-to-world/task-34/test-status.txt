@@ -1,0 +1,3 @@
+related suite exit=0
+cache=/dev/shm/task34-vite.0EqV2s
+cleanup=EXIT trap

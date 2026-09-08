@@ -103,11 +103,13 @@ type SpatialBindingExtent = {
 export type SpatialOwnedBinding = SpatialBindingExtent & {
   readonly kind?: never; readonly eventIds: readonly string[];
   readonly connectionIds: readonly SpatialId[]; readonly contentDigest: string;
+  readonly overviewEntries?: readonly SpatialOverviewEntry[];
 };
 /** Non-owning placement/port extent, not proof of painted cells or passability. */
 export type SpatialProjectionBinding = SpatialBindingExtent & {
   readonly kind: "projection";
   readonly eventIds?: never; readonly connectionIds?: never; readonly contentDigest?: never;
+  readonly overviewEntries?: never;
 };
 export type SpatialCompiledBinding = SpatialOwnedBinding | SpatialProjectionBinding;
 type SpatialOccurrenceBase = {
@@ -130,11 +132,19 @@ export type SpatialLegacyOccurrence = SpatialOccurrenceBase & {
   readonly snapshot: SpatialCompositionSnapshot<SpatialPort & { readonly localPortId?: never }>;
 };
 export type SpatialOccurrence = SpatialLegacyOccurrence | SpatialAssociatedOccurrence;
+export type SpatialOverviewRoute = {
+  readonly occurrenceId: SpatialId; readonly localConnectionId: SpatialId;
+};
+export type SpatialOverviewEntry = SpatialPoint & {
+  readonly target: SpatialConnection["from"];
+  readonly eventId: string; readonly returnEventId: string;
+};
 export type SpatialConnection = {
   readonly id: SpatialId;
   readonly from: { readonly occurrenceId: SpatialId; readonly portId: SpatialId };
   readonly to: { readonly occurrenceId: SpatialId; readonly portId: SpatialId };
   readonly bidirectional: boolean;
+  readonly overviewRoute?: SpatialOverviewRoute;
 };
 export type LegacySpatialImportReceipt = {
   readonly version: 1; readonly sourceHash: string;

@@ -104,7 +104,7 @@ describe("projected endpoint connection ownership", () => {
     const impact = inspectSpatialOccurrenceDeletion(f.document, f.project, f.child.id);
     // Then
     expect(impact).toStrictEqual({ occurrenceIds: [f.child.id], connections: [f.link], externalConnectionIds: [f.link.id],
-      artifacts: [], projections: [{ occurrenceId: f.child.id, binding: f.projection }] });
+      artifacts: [], projections: [{ occurrenceId: f.child.id, binding: f.projection }], overviewEntries: [] });
   });
 
   it("prunes only affected owners when a real compiled stair is deleted and saved", () => {

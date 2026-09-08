@@ -1,6 +1,6 @@
 import { assertNever, checkedDocument, designNode, freezeSpatial, own, SpatialOperationError } from "./domain";
 import type * as S from "./types";
-import { hasProjectedSpatialPort, isOwnedSpatialBinding } from "./bindings";
+import { inspectOverviewEntryChanges, pruneOverviewMetadata, type SpatialOverviewEntryImpact } from "./overviewOwnership";
 
 export type SpatialReferenceImpact = {
   readonly strong: readonly { readonly owner: S.SpatialDesignReference; readonly path: string }[];
@@ -56,6 +56,7 @@ export function occurrenceSubtree(document: S.SpatialAuthoringDocument, id: S.Sp
 export type SpatialDeletionImpact = {
   readonly occurrenceIds: readonly S.SpatialId[]; readonly connections: readonly S.SpatialConnection[];
   readonly externalConnectionIds: readonly S.SpatialId[];
+  readonly overviewEntries: readonly SpatialOverviewEntryImpact[];
   readonly artifacts: readonly { readonly occurrenceId: S.SpatialId; readonly binding: S.SpatialOwnedBinding }[];
   readonly projections: readonly { readonly occurrenceId: S.SpatialId; readonly binding: S.SpatialProjectionBinding }[];
 };
@@ -63,7 +64,9 @@ export function inspectSpatialOccurrenceDeletion(input: unknown, assets: S.Spati
   const document = checkedDocument(input, assets);
   const occurrenceIds = occurrenceSubtree(document, id);
   const selected = new Set(occurrenceIds);
-  const connections = document.connections.filter(link => selected.has(link.from.occurrenceId) || selected.has(link.to.occurrenceId));
+  const after = occurrenceRemoval(document, selected);
+  const retainedConnections = new Set(after.connections.map(link => link.id));
+  const connections = document.connections.filter(link => !retainedConnections.has(link.id));
   const artifacts: SpatialDeletionImpact["artifacts"][number][] = [];
   const projections: SpatialDeletionImpact["projections"][number][] = [];
   for (const occurrenceId of occurrenceIds) for (const binding of own(document.occurrences, occurrenceId).bindings) {
@@ -73,7 +76,7 @@ export function inspectSpatialOccurrenceDeletion(input: unknown, assets: S.Spati
       default: return assertNever(binding);
     }
   }
-  return freezeSpatial({ occurrenceIds, connections, artifacts, projections,
+  return freezeSpatial({ occurrenceIds, connections, artifacts, projections, overviewEntries: inspectOverviewEntryChanges(document, after),
     externalConnectionIds: connections.filter(link => selected.has(link.from.occurrenceId) !== selected.has(link.to.occurrenceId)).map(link => link.id),
   });
 }
@@ -85,33 +88,29 @@ export function deleteSpatialOccurrence(input: unknown, assets: S.SpatialAssetCo
   const document = checkedDocument(input, assets);
   const impact = inspectSpatialOccurrenceDeletion(document, assets, request.occurrenceId);
   switch (request.externalConnections) {
-    case "reject": if (impact.externalConnectionIds.length > 0) throw new SpatialOperationError("external-connection", impact.externalConnectionIds.join(", ")); break;
+    case "reject": {
+      const incoming = impact.overviewEntries.filter(entry => !impact.occurrenceIds.includes(entry.occurrenceId));
+      if (impact.externalConnectionIds.length > 0 || incoming.length > 0) throw new SpatialOperationError("external-connection",
+        [...impact.externalConnectionIds, ...incoming.map(entry => entry.eventId)].join(", "));
+      break;
+    }
     case "remove": break;
     default: return assertNever(request.externalConnections);
   }
-  const removed = new Set(impact.occurrenceIds);
-  const removedConnections = new Set(impact.connections.map(link => link.id));
-  const occurrences = Object.fromEntries(Object.values(document.occurrences).filter(value => !removed.has(value.id)).map(value => [value.id, {
-    ...value, bindings: value.bindings.map(binding => isOwnedSpatialBinding(binding)
-      ? { ...binding, connectionIds: binding.connectionIds.filter(id => !removedConnections.has(id)) } : binding),
-  }]));
-  return freezeSpatial(checkedDocument({ ...document, occurrences,
-    rootOccurrenceIds: document.rootOccurrenceIds.filter(id => !removed.has(id)),
-    connections: document.connections.filter(link => !removedConnections.has(link.id)),
-  }, assets));
+  return freezeSpatial(checkedDocument(occurrenceRemoval(document, new Set(impact.occurrenceIds)), assets));
 }
 /** Detach compiled ownership, retaining source provenance, tree, snapshots and navigation. */
 export function detachSpatialOccurrence(input: unknown, assets: S.SpatialAssetContext, id: S.SpatialId): S.SpatialAuthoringDocument {
   const document = checkedDocument(input, assets);
   const selected = new Set(occurrenceSubtree(document, id));
   const occurrences = Object.fromEntries(Object.values(document.occurrences).map(value => [value.id, selected.has(value.id) ? { ...value, bindings: [] } : value]));
-  // Detaching a projection releases only the bookkeeping it supported, not navigation.
-  const retained = Object.fromEntries(Object.values(occurrences).map(value => [value.id, { ...value,
-    bindings: value.bindings.map(binding => !isOwnedSpatialBinding(binding) ? binding : { ...binding,
-      connectionIds: binding.connectionIds.filter(connectionId => document.connections.some(connection => connection.id === connectionId &&
-        [connection.from, connection.to].some(endpoint => endpoint.occurrenceId === value.id ||
-          hasProjectedSpatialPort(own(occurrences, endpoint.occurrenceId), binding, endpoint.portId)))),
-    }),
-  }]));
-  return freezeSpatial(checkedDocument({ ...document, occurrences: retained }, assets));
+  return freezeSpatial(checkedDocument(pruneOverviewMetadata({ ...document, occurrences }), assets));
+}
+function occurrenceRemoval(document: S.SpatialAuthoringDocument, removed: ReadonlySet<S.SpatialId>): S.SpatialAuthoringDocument {
+  return pruneOverviewMetadata({ ...document,
+    occurrences: Object.fromEntries(Object.entries(document.occurrences).filter(([, occurrence]) => !removed.has(occurrence.id))),
+    rootOccurrenceIds: document.rootOccurrenceIds.filter(id => !removed.has(id)),
+    connections: document.connections.filter(link => !removed.has(link.from.occurrenceId) && !removed.has(link.to.occurrenceId) &&
+      (link.overviewRoute === undefined || !removed.has(link.overviewRoute.occurrenceId))),
+  });
 }
