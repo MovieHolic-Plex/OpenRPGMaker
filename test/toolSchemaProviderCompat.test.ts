@@ -152,6 +152,16 @@ const criterionCases: AcceptanceCriterion[] = [
   { kind: "functionalUnresolved", reason: "Specify the requested price" },
   { kind: "functionalUnresolved", reason: "Specify the requested price", expectations: {
     kind: "shopPurchase", seller: { eventName: "Mira" }, item: { name: "Potion" }, count: 2 } },
+  { kind: "projectTitle", title: "Exact title" },
+  { kind: "itemValues", itemId: "item_potion", name: "Potion" },
+  { kind: "itemValues", itemId: "item_potion", price: 37.5 },
+  { kind: "projectPreserve", scope: "project", allowedChanges: [] },
+  { kind: "projectPreserve", scope: "authored", allowedChanges: [
+    { kind: "projectTitle" }, { kind: "itemName", itemId: "item_potion" },
+    { kind: "itemPrice", itemId: "item_potion" }, { kind: "itemAddition", itemId: "item_new" },
+  ] },
+  { kind: "wikiDeclaration", documentId: "w_combat_preference", combatMode: "contact",
+    sourceQuote: "Record my contact battle preference." },
 ];
 
 function expectRepresentable(schema: SchemaNode | undefined, value: unknown): void {
@@ -170,12 +180,13 @@ function expectRepresentable(schema: SchemaNode | undefined, value: unknown): vo
       if (child) expectRepresentable(child, entry);
       else expect(schema.additionalProperties).toBe(true);
     }
+  } else if (typeof value === "number") {
+    expect(["integer", "number"]).toContain(schema.type);
+    expect(Number.isFinite(value)).toBe(true);
+    if (schema.type === "integer") expect(Number.isSafeInteger(value)).toBe(true);
+    if (schema.minimum !== undefined) expect(value).toBeGreaterThanOrEqual(schema.minimum);
   } else {
-    expect(schema.type).toBe(typeof value === "number" ? "integer" : typeof value);
-    if (typeof value === "number") {
-      expect(Number.isSafeInteger(value)).toBe(true);
-      if (schema.minimum !== undefined) expect(value).toBeGreaterThanOrEqual(schema.minimum);
-    }
+    expect(schema.type).toBe(typeof value);
   }
 }
 
@@ -209,10 +220,12 @@ describe("acceptance and requirement schema/runtime contract", () => {
     expect(item?.properties?.kind).toEqual({ type: "string", enum: [
       "toolVerdict", "mapDimensions", "mapCount", "eventCount", "targetChange", "preserve", "imageReviewed", "reachability", "actionCombat",
       "shopPurchase", "mapRoundTrip", "npcReward", "functionalUnresolved",
+      "projectTitle", "itemValues", "projectPreserve", "wikiDeclaration",
     ] });
     expect(Object.keys(item?.properties ?? {}).sort()).toEqual([
-      "args", "count", "destination", "expectations", "from", "height", "item", "kind", "outgoing", "reason", "region", "requirement",
-      "returning", "seller", "start", "target", "targets", "to", "tool", "unitPrice", "width",
+      "allowedChanges", "args", "combatMode", "count", "destination", "documentId", "expectations", "from", "height", "item", "itemId",
+      "kind", "name", "outgoing", "price", "reason", "region", "requirement", "returning", "scope", "seller", "sourceQuote",
+      "start", "target", "targets", "title", "to", "tool", "unitPrice", "width",
     ]);
     expect(item?.properties?.args).toMatchObject({ type: "object", additionalProperties: true });
     expect(item?.properties?.target).toMatchObject({ type: "object", additionalProperties: false,
