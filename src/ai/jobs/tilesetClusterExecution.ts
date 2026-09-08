@@ -67,14 +67,19 @@ export async function executeTilesetCluster(input: AiJobInput & { family: "tiles
   } else state = { startedAt: new Date().toISOString(), tools: [], draft: structuredClone(baseline) };
   const imageRefs = () => renders.flatMap(r => r.images.map(i => i.ref));
   let sessionArtifacts: readonly BlobRef[] = checkpoint?.artifacts ?? [];
-  const namespacedHost: AiJobHost = { ...host, saveCheckpoint: checkpoint => {
-    sessionArtifacts = checkpoint.artifacts;
-    return host.saveCheckpoint({
-    stageKey: checkpoint.stageKey.replace(/^assistant\//, `tileset/${payload.operation}/`),
-    state: jsonObject(jsonValue({ version: 1, operation: payload.operation, session: checkpoint.state, renders })),
-    artifacts: uniqueTilesetArtifacts([...input.artwork, ...checkpoint.artifacts, ...imageRefs()]),
-  }); } };
-  const job = createSessionJobHost(namespacedHost, baseline, state, { domain: "tile", ...payload.context });
+  const job = createSessionJobHost(host, baseline, state, { domain: "tile", ...payload.context,
+    captureEnvelope: () => {
+      const capturedRenders = structuredClone(renders);
+      return checkpoint => {
+        sessionArtifacts = checkpoint.artifacts;
+        return {
+          stageKey: checkpoint.stageKey.replace(/^assistant\//, `tileset/${payload.operation}/`),
+          state: jsonObject(jsonValue({ version: 1, operation: payload.operation, session: checkpoint.state, renders: capturedRenders })),
+          artifacts: uniqueTilesetArtifacts([...input.artwork, ...checkpoint.artifacts, ...capturedRenders.flatMap(r => r.images.map(i => i.ref))]),
+        };
+      };
+    },
+  });
   if (!state.completed) {
     await job.flush("assistant/start");
     const config = resolveSurfaceAiConfig("cluster", { ...payload.config, apiKey: "", baseUrl: "" });
@@ -94,10 +99,12 @@ export async function executeTilesetCluster(input: AiJobInput & { family: "tiles
     };
     const session = new AssistantSession(baseline, { host: job.execution, config, chat, contextOptions: payload.context,
       priorTranscript: payload.priorTranscript, declareIntent: createLlmIntentDeclarer({ getConfig: () => config, chat }),
-      renderImages, yieldToUi: async () => {},
+      renderImages, yieldToUi: () => job.flush(),
     });
+    job.sampleUsage(() => session.getUsageTotals());
     const instruction = payload.instruction?.trim() ? `${kickoff}\n\n${payload.instruction}` : kickoff;
-    const turn = await session.sendUserMessage(instruction, () => {});
+    const turn = await session.sendUserMessage(instruction, job.observe);
+    await job.flush("assistant/terminal");
     state.draft = session.getProposedProject();
     const typedProposal: TilesetClusterProposal = { kind: "cluster", operation: payload.operation, ...turn, usage: session.getUsageTotals(), audit: session.getAuditEntries(),
       previews: renders.map((r, index) => ({ index, status: r.images.length ? "ready" : "missing", images: r.images })) };
@@ -106,7 +113,7 @@ export async function executeTilesetCluster(input: AiJobInput & { family: "tiles
     try { chat.assertHealthy(); } catch (error) { failure = error instanceof Error ? error.message : String(error); }
     if (failure) { state.partial = { reason: failure, turn: output }; await job.flush("assistant/partial"); throw new Error(`TILESET_INCOMPLETE: ${failure}`); }
     delete state.partial;
-    state.completed = { turn: { ...output, completion: "complete" }, generatedSnapshot: await host.putJson(jsonValue(state.draft)) };
+    state.completed = { turn: { ...output, completion: "complete" }, generatedSnapshot: await job.retainDraft() };
     await job.flush("assistant/completed");
   }
   const proposal: JsonObject = { ...state.completed.turn, persistence: "not-applicable", checkpoint: "private-draft" };

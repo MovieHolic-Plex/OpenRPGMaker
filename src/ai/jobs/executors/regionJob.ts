@@ -5,6 +5,7 @@ import type { AiJobCheckpoint, AiJobInput, AiJobResult, BlobRef, JsonObject } fr
 import { jsonObject, jsonValue, parseProject, parseSessionJobState } from "../checkpointState";
 import { parseRegionPayload, type RegionJobPayload, type RegionJobResultMetadata } from "../regionPayload";
 import { executeAssistantJob } from "./assistantJob";
+import { createSessionCheckpointWriter } from "../sessionHost";
 export type { RegionJobPayload, RegionJobResultMetadata } from "../regionPayload";
 
 type SessionCheckpoint = Pick<AiJobCheckpoint, "stageKey" | "state" | "artifacts">;
@@ -73,14 +74,20 @@ export async function executeRegionJob(input: AiJobInput & { family: "region" },
   const state: RegionCheckpoint = checkpoint ? await restore(checkpoint, host, payload)
     : { preparedSnapshot: await host.putJson(jsonValue(prepared.working)) };
   const artifacts = () => [state.preparedSnapshot, ...(state.session?.artifacts ?? []), ...(state.completed ? [state.completed.generatedSnapshot] : [])];
-  const flush = (stageKey: string) => host.saveCheckpoint({ stageKey, state: jsonObject(jsonValue({ version: 1, kind: "region", ...state })), artifacts: artifacts() });
+  const writer = createSessionCheckpointWriter();
+  const snapshot = (stageKey: string) => ({ stageKey, state: jsonObject(jsonValue({ version: 1, kind: "region", ...state })), artifacts: artifacts() });
+  const flush = (stageKey: string) => {
+    const next = snapshot(stageKey);
+    return writer.write(() => host.saveCheckpoint(next));
+  };
   if (!state.completed) {
     await flush("region/start");
     // Explicit adapter: neither assistant nor shared host code needs region knowledge.
     const sessionHost: AiJobHost = { ...host,
       loadCheckpoint: async () => state.session ? { ...state.session, version: 1, jobId: host.jobId,
         attemptId: host.attemptId, inputSha256: checkpoint?.inputSha256 ?? input.projectSnapshot.sha256 } : null,
-      saveCheckpoint: async next => { state.session = next; return flush(`region/session/${next.stageKey.replace(/^assistant\//, "")}`); },
+      // Already inside the shared writer: do not enqueue recursively.
+      saveCheckpoint: async next => { state.session = next; return host.saveCheckpoint(snapshot(`region/session/${next.stageKey.replace(/^assistant\//, "")}`)); },
       providerOperation: operation => host.providerOperation({ ...operation, key: regionStage(operation.key) }),
     };
     let stage = "session";
@@ -88,13 +95,16 @@ export async function executeRegionJob(input: AiJobInput & { family: "region" },
       const assistant = await executeAssistantJob({ ...input, family: "assistant", projectSnapshot: state.preparedSnapshot,
         payload: jsonObject(jsonValue({ instruction: prepared.message, config: payload.config, context: payload.context,
           domain: "map", selection: { mapId: payload.mapId, ...payload.region },
-          turn: { instruction: payload.instruction, scope: { mapId: payload.mapId, region: payload.region } } })) }, sessionHost);
+          turn: { instruction: payload.instruction, scope: { mapId: payload.mapId, region: payload.region } } })) }, sessionHost, writer);
       stage = "review";
       assert(assistant.generatedSnapshot !== null, "Missing region session output");
       const proposed = parseProject(await host.readJson(assistant.generatedSnapshot));
       const toolNames = requireArray("proposedCalls", assistant.payload.proposedCalls).map(call => requireString("tool name", requireRecord("tool call", call).name));
       const finalized = finalizeRegionGeneration(base, proposed, payload, toolNames);
       const { project, report, ...metadata } = finalized;
+      // The session writer has drained. Preparing the region review artifact is
+      // not checkpoint publication: its failure retains the completed session and
+      // records the existing review-partial stage, without recovering a failed writer.
       state.completed = { generatedSnapshot: await host.putJson(jsonValue(project)), payload: jsonObject(jsonValue({
         ...assistant.payload, ...metadata, mapId: payload.mapId, region: payload.region, mode: payload.mode,
         instruction: payload.instruction, review: report,

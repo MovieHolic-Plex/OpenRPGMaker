@@ -1,3 +1,33 @@
+## Durable session progress contract (2026-09-08)
+
+`test/aiJobLiveProgress.test.ts` exercises real assistant/region/cluster executors,
+AssistantSession, repository, scheduler and provider ledger with controlled external
+responses. Its 16 prepared cases cover held-provider live plans, durable pre-tool starts,
+planner-only output, canonical retry/allocated IDs/dispatch counts, cancellation during
+save and paid response, bounded activity, immutable write ordering, sticky write failure,
+strict backward-compatible parsing, actual numeric budgets and manifest-scoped HTTP/SSE.
+The HTTP case owns only an ephemeral loopback listener. Deferred storage/provider signals
+and subscribed durable events drive races; no fixed sleeps or polling are valid substitutes.
+
+`test/aiSessionProgressEdges.test.ts` adds nested verification tool identity, replay frontier
+and legitimate replan replacement, explicit oversized-plan omission, strict nested schema
+and usage checks, actual 0..48 driver exhaustion with independently reset turn rounds,
+in-place immutable draft capture/ref reuse, and original-error propagation across queued
+writer barriers. All eight edge cases are independent of timers or live provider services.
+These test sources do not establish a pass until their recorded run completes.
+Related contracts remain `test/aiJobCanonicalReplay.test.ts`, `test/aiSessionJobHost.test.ts`,
+`test/aiRegionJob.test.ts`, `test/aiTilesetJob.test.ts`, `test/aiJobApplication.test.ts` and
+`test/aiJobWorkerIsolation.test.ts`; progress must not change canonical request bytes or
+application authority. Full UI/image/Continue acceptance is separate.
+
+For this worktree's coordinated validation, run only after explicit parent slot release,
+through `scripts/qa/isolated-validation.py` with every changed source/test/doc path explicitly
+included, installed dependencies, an existing owned Chromium directory and one worker.
+The S0 boundary owns TMPDIR/cache/storage/cleanup and excludes live env/provider/DB access.
+The evidence handoff at `.omo/evidence/ai-job-queue/verification/LIVE-PROGRESS-HANDOFF.md`
+records the actual RED receipt, current verification status and exact authorized command;
+do not infer GREEN from prepared test source or run a bare test/build command.
+
 ## Explicit AI runtime setup contracts (2026-09-06)
 
 Focused Node 24 check:

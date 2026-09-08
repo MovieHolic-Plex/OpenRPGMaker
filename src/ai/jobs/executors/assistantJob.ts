@@ -4,20 +4,20 @@ import { renderToolImages } from "../../toolImageRenderer";
 import type { AiConfig } from "../../llmClient";
 import type { AiJobHost } from "../../../../scripts/lib/aiJobs/scheduler.mjs";
 import type { AiJobInput, AiJobResult } from "../contracts";
-import { createSessionJobHost, jsonValue, type SessionJobState } from "../sessionHost";
+import { createSessionJobHost, jsonValue, type SessionJobState, type SessionCheckpointWriter } from "../sessionHost";
 import { createJobChat } from "../providerBridge";
 
 import { parseAssistantPayload } from "../assistantPayload";
 export type { AssistantJobPayload } from "../assistantPayload";
 import { jsonObject, parseProject, parseSessionJobState } from "../checkpointState";
 
-export async function executeAssistantJob(input: AiJobInput & { family: "assistant" }, host: AiJobHost): Promise<AiJobResult> {
+export async function executeAssistantJob(input: AiJobInput & { family: "assistant" }, host: AiJobHost, writer?: SessionCheckpointWriter): Promise<AiJobResult> {
   const payload = parseAssistantPayload(input.payload);
   const baseline = parseProject(await host.readJson(input.projectSnapshot));
   const checkpoint = await host.loadCheckpoint();
   const state: SessionJobState = checkpoint ? await parseSessionJobState(checkpoint.state, host)
     : { startedAt: new Date().toISOString(), tools: [], draft: structuredClone(baseline) };
-  const job = createSessionJobHost(host, baseline, state, { domain: payload.domain, ...payload.context });
+  const job = createSessionJobHost(host, baseline, state, { domain: payload.domain, ...payload.context, writer });
   if (!state.completed) {
     await job.flush("assistant/start");
     const config: AiConfig = { ...payload.config, apiKey: "", baseUrl: "" };
@@ -27,9 +27,11 @@ export async function executeAssistantJob(input: AiJobInput & { family: "assista
       host: job.execution, config, chat, contextOptions: payload.context,
       getTurnSelection: () => payload.selection, priorTranscript: payload.priorTranscript,
       declareIntent: createLlmIntentDeclarer({ getConfig: () => config, chat }),
-      renderImages: renderToolImages, yieldToUi: async () => {},
+      renderImages: renderToolImages, yieldToUi: () => job.flush(),
     });
-    const turn = await session.sendUserMessage(payload.instruction, () => {}, undefined, payload.turn);
+    job.sampleUsage(() => session.getUsageTotals());
+    const turn = await session.sendUserMessage(payload.instruction, job.observe, undefined, payload.turn);
+    await job.flush("assistant/terminal");
     state.draft = session.getProposedProject();
     const output = jsonObject(jsonValue({ ...turn, usage: session.getUsageTotals(), audit: session.getAuditEntries() }));
     let failure: string | null = turn.stoppedReason === "final" ? session.getExecutionCompletionProblem() : turn.stoppedReason;
@@ -40,7 +42,7 @@ export async function executeAssistantJob(input: AiJobInput & { family: "assista
       throw new Error(`ASSISTANT_INCOMPLETE: ${failure}`);
     }
     delete state.partial;
-    state.completed = { turn: { ...output, completion: "complete" }, generatedSnapshot: await host.putJson(jsonValue(state.draft)) };
+    state.completed = { turn: { ...output, completion: "complete" }, generatedSnapshot: await job.retainDraft() };
     await job.flush("assistant/completed");
   }
   const generatedSnapshot = state.completed.generatedSnapshot;

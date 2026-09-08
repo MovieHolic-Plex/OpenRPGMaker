@@ -222,6 +222,9 @@ export type SessionEvent =
   // index는 이번 턴의 1-based 실행 서수.
   | { type: "tool_started"; name: string; index: number; args?: Record<string, unknown> }
   | { type: "phase"; value: "plan" | "execute" | "review" }
+  /** Actual rounds entered in this turn, distinct from automatic next-turn entries. */
+  | { type: "run_budget"; turnIndex: number; rounds: { used: number; total: number } | null;
+      driverContinuations: { used: number; total: number; exhausted: boolean } | null }
   | { type: "status"; text: string }
   | { type: "work_plan"; plan: WorkPlan }
   // ── 마일스톤 자동 적용(todo 4) ─────────────────────────────────────
@@ -882,6 +885,7 @@ export class AssistantSession {
   private readonly peekPendingUserMessage: (() => string | null) | undefined;
   /** 이 자율 런에서 자동 계속한 턴 수(예산 소비). 사용자의 수동 진입마다 0으로 재가동된다. */
   private autoRunSteps = 0;
+  private observedRounds: { used: number; total: number } | null = null;
   // ── 마일스톤 자동 적용(todo 4) ────────────────────────────────────────
   // 이번 sendUserMessage 진입이 opts.autonomous 인가 — 참일 때만 완료 항목을 자동 적용한다.
   private milestoneAutoApply = false;
@@ -1436,9 +1440,11 @@ export class AssistantSession {
     options: SessionTurnOptions = {},
   ): Promise<TurnResult> {
     this.autoRunSteps = 0;
+    this.emitRunBudget(onEvent);
     let last = first;
     while (this.shouldAutoContinue(last, onEvent, signal)) {
       this.autoRunSteps += 1;
+      this.emitRunBudget(onEvent);
       this.pushAudit({ kind: "status", text: `agent_run:auto-continue step=${this.autoRunSteps}/${AGENT_RUN_MAX_TOTAL_STEPS}` });
       onEvent({
         type: "status",
@@ -1467,6 +1473,7 @@ export class AssistantSession {
     const volumeOpen = this.volumeUnmetNow();
     if ((!this.workPlan || isWorkPlanComplete(this.workPlan)) && !volumeOpen) return false;
     if (this.autoRunSteps >= AGENT_RUN_MAX_TOTAL_STEPS) {
+      this.emitRunBudget(onEvent);
       this.pushAudit({
         kind: "status",
         text: `agent_run_budget_exhausted steps=${this.autoRunSteps}/${AGENT_RUN_MAX_TOTAL_STEPS} — 이어서 진행하려면 「계속」 이라고 보내세요`,
@@ -1573,6 +1580,8 @@ export class AssistantSession {
 
     // 스펙 게이트 턴 초기화: 사용자 선택 영역([컨텍스트])은 이 턴의 암묵적 명세가 된다.
     this.currentTurnIndex += 1;
+    this.observedRounds = null;
+    this.emitRunBudget(onEvent, options.driverContinue ? this.autoRunSteps : 0);
     this.turnImplicitSpec = implicitSpecFromContext(text)
       ?? implicitSpecFromScope(options.scope)
       ?? this.implicitSpecFromViewPhrase(instruction);
@@ -2411,6 +2420,13 @@ export class AssistantSession {
     return result;
   }
 
+  private emitRunBudget(onEvent: (event: SessionEvent) => void, continuations = this.autoRunSteps): void {
+    onEvent({ type: "run_budget", turnIndex: this.currentTurnIndex,
+      rounds: this.observedRounds ? { ...this.observedRounds } : null,
+      driverContinuations: this.milestoneAutoApply
+        ? { used: continuations, total: AGENT_RUN_MAX_TOTAL_STEPS, exhausted: continuations >= AGENT_RUN_MAX_TOTAL_STEPS } : null });
+  }
+
   /** 툴 실행 직전 신호를 알린다(1-based 서수). 실행 로직은 건드리지 않는다. */
   private emitToolStarted(onEvent: (event: SessionEvent) => void, name: string, args: Record<string, unknown>): void {
     this.turnToolStartedCount += 1;
@@ -2987,6 +3003,7 @@ export class AssistantSession {
         this.pushAudit({ kind: "status", text: `spec-npc:shop-stock-missing ${name} — 상점 재고는 set_shop_stock 으로 채워야 상점이 열린다` });
       }
       this.emitToolStarted(onEvent, "place_npc", args);
+      await this.yieldForUi();
       const reason = harnessToolReason("spec-npc", name);
       const result = this.readEvidence.beforeWrite(this.ctx.project, "place_npc", args)
         ?? await this.runHostedTool("place_npc", args, { dryRun: false });
@@ -3065,6 +3082,7 @@ export class AssistantSession {
       }
       const args: Record<string, unknown> = { mapId, residents: sheet.sheet.residents };
       this.emitToolStarted(onEvent, "author_npc_cast", args);
+      await this.yieldForUi(signal);
       const reason = harnessToolReason("npc-cast", `${ctx.mapName} 주민 ${residents.length}명`);
       const result = this.readEvidence.beforeWrite(this.ctx.project, "author_npc_cast", args)
         ?? await this.runHostedTool("author_npc_cast", args, { dryRun: false });
@@ -3284,12 +3302,16 @@ export class AssistantSession {
     const autonomyCap = this.autonomy()?.budgetCap;
     const roundCap = autonomyCap === undefined ? this.config.maxToolCalls : Math.min(this.config.maxToolCalls, autonomyCap);
     let spentOutputTokens = 0;
+    this.observedRounds = { used: 0, total: roundCap };
+    this.emitRunBudget(onEvent);
 
     for (let round = 0; round < roundCap; round += 1) {
       if (signal?.aborted) {
         this.pushAudit({ kind: "status", text: "턴 중단(aborted): 사용자가 중단했습니다" });
         return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "aborted", error: "사용자가 중단했습니다" };
       }
+      this.observedRounds = { used: round + 1, total: roundCap };
+      this.emitRunBudget(onEvent);
       let result: ChatResult;
       const baseTools = toOpenAiTools(undefined, { domains });
       // 이름 언급·선언 툴은 사용자 발화와 의도 선언에서만 온다. footer/가이드 같은 기계 텍스트는 보지 않는다.

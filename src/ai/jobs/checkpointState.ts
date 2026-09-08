@@ -5,6 +5,7 @@ import type { ToolResult } from "@/editor/tools/types";
 import type { AiJobHost } from "../../../scripts/lib/aiJobs/scheduler.mjs";
 import type { BlobRef, JsonObject, JsonValue } from "./contracts";
 import { enumValue } from "./assistantPayload";
+import { parseSessionProgress, type SessionProgress } from "./sessionProgress";
 
 export interface ProjectDelta { path: string[]; value?: JsonValue }
 export interface RecordedTool { name: string; args: string; delta: ProjectDelta[]; result: ToolResult }
@@ -13,6 +14,7 @@ export interface SessionJobState {
   tools: RecordedTool[];
   toolRefs?: BlobRef[];
   draft: Project;
+  progress?: SessionProgress;
   completed?: { turn: JsonObject; generatedSnapshot: BlobRef };
   partial?: { reason: string; turn: JsonObject };
 }
@@ -94,7 +96,8 @@ export async function parseSessionJobState(value: unknown, host: AiJobHost): Pro
   let partial: SessionJobState["partial"];
   if (r.partial !== undefined) { const p = requireRecord("partial checkpoint", r.partial); partial = { reason: requireString("reason", p.reason), turn: jsonObject(p.turn) }; }
   assert(!(completed && partial), "Checkpoint cannot be both complete and partial");
-  return { startedAt, tools, toolRefs, draft, completed, partial };
+  return { startedAt, tools, toolRefs, draft, completed, partial,
+    ...(r.progress === undefined ? {} : { progress: parseSessionProgress(r.progress) }) };
 }
 /** Objects recurse, changed arrays are atomic. Unchanged/read-only projects retain no draft copy. */
 export function projectDelta(before: Project, after: Project): ProjectDelta[] {
