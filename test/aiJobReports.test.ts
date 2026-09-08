@@ -197,6 +197,25 @@ it("uses real DB record artwork bindings and image proposals, not live records",
   expect((imageReport.sections[0].data.proposal as JsonObject).destination).toEqual({ kind: "database-field", recordId: "item-A" });
 });
 
+it("does not mark unchanged sibling actor ResourceId fields as missing image artwork", async () => {
+  const base = createBlankProject(), generated = structuredClone(base);
+  const actor = generated.database.actors[0];
+  expect(typeof actor.characterResourceId).toBe("string");
+  expect(actor.characterResourceId.length).toBeGreaterThan(0);
+  generated.assets.uploaded["captured-face"] = {
+    id: "captured-face", name: "Face", kind: "faceset",
+    dataUrl: "https://mutable.invalid/face.png", meta: {},
+  };
+  actor.faceResourceId = "captured-face";
+  const f = await completedFixture({ family: "image", base, generated });
+  const report = await f.run();
+  const change = report.sections.find(s => s.objectId === `actors/${actor.id}`);
+  expect(change, JSON.stringify(report.sections.map(s => ({ id: s.id, previews: s.previews.map(p => ({ id: p.id, status: p.status, error: p.error })) })))).toBeDefined();
+  if (!change) return;
+  expect(change.previews.map(p => p.id)).toEqual(["faceResourceId"]);
+  expect(change.previews[0]).toMatchObject({ id: "faceResourceId", role: "artwork", status: "unsupported" });
+});
+
 it("renders deterministic event/quest structure and canonical branches without treating conditions/routes as commands", async () => {
   const commands: JsonObject[] = [
     { kind: "fork", condition: { kind: "all", conditions: [{ kind: "switch", switchId: "s", value: true }] }, then: [{ kind: "text", body: "참" }], else: [] },

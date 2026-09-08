@@ -1,0 +1,5 @@
+
+Running 1 test using 1 worker
+
+[1/1] test/e2e/ai-job-families.spec.ts:581:3 › AI job families on the owned Task8 fixture › actor face image field admits an image job with the actor destination
+  1 passed (2.1m)

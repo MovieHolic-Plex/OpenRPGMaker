@@ -221,9 +221,11 @@ export async function renderJobReport(result: AiJobResult | null, host: AiReport
       const before = values((base.database as unknown as JsonObject)[table]);
       for (const entry of entries) {
         if (!record(entry) || !entry.id || stable(before.find(v => record(v) && v.id === entry.id)) === stable(entry)) continue;
+        const prior = before.find(v => record(v) && v.id === entry.id);
         const id = `${table}/${entry.id}`;
         const item = section("change", id, String(entry.name ?? entry.id), s.phase, s.snapshot, { table, record: entry });
         for (const field of Object.keys(entry).sort()) if (/ResourceId$/.test(field) && typeof entry[field] === "string" && entry[field]) {
+          if (record(prior) && prior[field] === entry[field]) continue;
           const resourceId = String(entry[field]);
           preview(item, field, "artwork", () => asset(s.project, resourceId).then(artwork));
         }
