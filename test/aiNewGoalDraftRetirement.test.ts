@@ -76,6 +76,19 @@ function runnerFor(session: AssistantSession) {
   }
   return { send, applyProposal, surface };
 }
+function expectCapturedNewGoal(session: AssistantSession, text: string,
+  spans = [{ start: 0, end: text.length, quote: text }]) {
+  const units = spans.map((source, index) => ({ id: `request-2:source:${index}`, source, coverage: 'uncovered', criteria: null }));
+  expect(session.getHarnessSnapshot().requests).toEqual([{ requestId: 'request-2', rawInstruction: text, authoring: true, units }]);
+  const snapshot = session.getAcceptanceSnapshot();
+  expect(snapshot?.status).toBe('blocked');
+  expect(snapshot?.items.map(item => ({ id: item.id, required: item.required, coverage: item.coverage,
+    status: item.status, source: item.source, sourceSpan: item.sourceSpan }))).toEqual(units.map(unit => ({
+    id: unit.id, required: true, coverage: 'uncovered', status: 'blocked',
+    source: { requestId: 'request-2', text, scope: null }, sourceSpan: unit.source,
+  })));
+}
+
 it.each(['wiki', 'intent'] as const)('new goal with %s entry failure must not apply the cancelled prior goal draft', async boundary => {
   let failing = false; let round = 0;
   const session = new AssistantSession(store.getCurrent(), { config,
@@ -97,7 +110,11 @@ it.each(['wiki', 'intent'] as const)('new goal with %s entry failure must not ap
   expect(second.result.stoppedReason).toBe('error');
   expect(f.applyProposal).not.toHaveBeenCalled();
   expect(store.getCurrent()).toEqual(before);
-  expect(second.result.runOutcome).toEqual({ execution: 'failed', goal: 'unassessed', delivery: 'no-change' });
+  expect(second.result.runOutcome).toEqual({ execution: 'failed', goal: 'incomplete', delivery: 'no-change' });
+  expectCapturedNewGoal(session, 'Start a completely different goal; inspect only', [
+    { start: 0, end: 33, quote: 'Start a completely different goal' },
+    { start: 35, end: 47, quote: 'inspect only' },
+  ]);
 });
 
 
@@ -163,7 +180,8 @@ it.each(['wiki', 'intent'] as const)('cancels the new owner at %s without retain
   });
   const cancelled = await f.send('Different goal', { goalAction: 'new-goal' });
   expect(cancelled.result.stoppedReason).toBe('aborted');
-  expect(cancelled.result.runOutcome).toEqual({ execution: 'cancelled', goal: 'unassessed', delivery: 'no-change' });
+  expect(cancelled.result.runOutcome).toEqual({ execution: 'cancelled', goal: 'incomplete', delivery: 'no-change' });
+  expectCapturedNewGoal(f.session, 'Different goal');
   expect(cancelled.result.proposedCalls).toEqual([]);
   expect(f.applyProposal).not.toHaveBeenCalled();
   expect(f.session.getProposedProject()).toEqual(before);
@@ -231,7 +249,8 @@ it('archives applied-plus-pending history before rebase, preserves applied conte
   const history = f.session.getAcceptanceHistory();
   expect(history).toEqual([assessment]); expect(history[0]).toBe(assessment);
   expect(Object.isFrozen(history)).toBe(true); expect(Object.isFrozen(assessment)).toBe(true);
-  expect(f.session.getAcceptanceSnapshot()).toBeNull();
+  expectCapturedNewGoal(f.session, 'Different goal');
+  expect(f.session.getAcceptanceSnapshot()).not.toBe(assessment);
   expect(f.session.getProposedProject().system.titleScreen?.title).toBe('APPLIED_FIRST');
   expect(actualApply).toHaveBeenCalledTimes(1);
   f.atBoundary(() => {}); f.respond(disjoint);
@@ -274,7 +293,8 @@ it('retires the old draft but preserves an actual current-owner wiki apply befor
   newOwner = true;
   const current = await f.send('Use contact combat', { composerMode: 'do', goalAction: 'new-goal' });
   expect(current.result.stoppedReason).toBe('error'); // Real unloaded checkpoint, after local wiki mutation.
-  expect(current.result.runOutcome).toEqual({ execution: 'failed', goal: 'unassessed', delivery: 'applied' });
+  expect(current.result.runOutcome).toEqual({ execution: 'failed', goal: 'incomplete', delivery: 'applied' });
+  expectCapturedNewGoal(session, 'Use contact combat');
   expect(current.result.proposedCalls).toEqual([]); expect(current.result.appliedCalls).toEqual([]);
   expect(f.applyProposal).not.toHaveBeenCalled();
   expect(store.getCurrent().world?.entities.find(entity => entity.id === 'w_new_owner')?.wiki?.combatMode).toBe('contact');

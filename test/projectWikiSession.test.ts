@@ -64,7 +64,13 @@ describe("project wiki session checkpoint", () => {
     const result = await session.sendUserMessage("Place a monster.", () => {}, abort.signal);
     expect(authored).toBe(false);
     expect(result.stoppedReason).toBe("aborted");
-    expect(result.runOutcome).toEqual({ execution: "cancelled", goal: "unassessed", delivery: "no-change" });
+    expect(result.runOutcome).toEqual({ execution: "cancelled", goal: "incomplete", delivery: "no-change" });
+    expect(session.getAcceptanceSnapshot()).toMatchObject({ status: "blocked", items: [{
+      id: "request-1:source:0", required: true, coverage: "uncovered", status: "blocked",
+      source: { requestId: "request-1", text: "Place a monster.", scope: null },
+      sourceSpan: { start: 0, end: 15, quote: "Place a monster" },
+    }] });
+    expect(session.getAcceptanceSnapshot()?.items).toHaveLength(1);
   });
 
   it("does not start authoring when its wiki persistence checkpoint fails", async () => {
@@ -87,7 +93,13 @@ describe("project wiki session checkpoint", () => {
     expect(calls).toEqual([]);
     expect(result.stoppedReason).toBe("error");
     expect(result.error).toContain("wiki-save-failed");
-    expect(result.runOutcome).toEqual({ execution: "failed", goal: "unassessed", delivery: "no-change" });
+    expect(result.runOutcome).toEqual({ execution: "failed", goal: "incomplete", delivery: "no-change" });
+    expect(session.getAcceptanceSnapshot()).toMatchObject({ status: "blocked", items: [{
+      id: "request-1:source:0", required: true, coverage: "uncovered", status: "blocked",
+      source: { requestId: "request-1", text: "Place a monster.", scope: null },
+      sourceSpan: { start: 0, end: 15, quote: "Place a monster" },
+    }] });
+    expect(session.getAcceptanceSnapshot()?.items).toHaveLength(1);
     expect(session.getRunOutcome()).toEqual(result.runOutcome);
   });
 });
