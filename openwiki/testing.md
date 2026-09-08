@@ -280,6 +280,20 @@ corrected QA's current/P2 calibration retains all 39 checks and the original 18 
 violations. No sleep, deadline increase or lucky retry establishes the correction.
 Screenshots exist, but pixel approval wasn't established by these producers.
 
+### Autosave status fixture ownership (2026-09-08)
+
+`test/autosaveStatus.test.ts` holds the exact projects POST, not the first global
+fetch (the 1500 ms edit-activity mirror arrives first). Subscribe to saved/error
+and request arrival before triggering work; start the original 1000 ms completion
+bound at response release. Preserve pending at 3999 ms, saving at 4000 ms, the
+exact state sequence, retry/backoff assertions and native save/receipt hashing.
+Join the actual in-flight save and call-through manual-history writer promises,
+flush telemetry, then detach listeners/editor/DOM before restoring globals/modules.
+The map-focused statusbar fixture isolates the unused database-modal entry point,
+not the real editor/dock/store subscriptions. Its original assertions and test/hook
+deadlines remain active. These fixture checks do not establish historical timeout
+attribution, native N1/N2/product coverage, or final P3 readiness.
+
 ### Project history transport isolation
 
 Disabling `ProjectStore` remote persistence does **not** disable `recordProjectCommit`.
