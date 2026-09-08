@@ -1,0 +1,94 @@
+{
+  "task": 37,
+  "taskId": "st_01a08216",
+  "branch": "fix/spatial-audit-append",
+  "base": "cbd880f2f3900ab1a85cd88f4cc9772e71c43f1b",
+  "result": "append-only audit request fixed with unchanged privileges",
+  "deploymentProven": false,
+  "productChange": {
+    "path": "src/project/supabaseProjectSync.ts",
+    "function": "insertRows",
+    "change": "Override inherited Prefer with return=minimal only for audit inserts",
+    "sha256": "6fda87dc4aac6544a22d9a94bd2d227a1a2cc085bdcb925d4d6921de62e5e01e",
+    "changedLines": 1,
+    "sqlGrantsAuthAndOrdinaryUpsertsChanged": false,
+    "unchangedMigrationTree": "117699794d51102932d91441203deff763a3be59"
+  },
+  "evidenceRoot": "output/evidence/tile-to-world/task-37",
+  "artifactIndex": {
+    "path": "artifact-sha256.txt",
+    "files": 43,
+    "sha256": "66cb16b11ae850095c6ec6dab9e66d5c9e09d0456daa8f95840ded0d695e46e3",
+    "rawHttp": "http.json and build.log are retained locally; byte-identical lossless gzip copies are committed for each run"
+  },
+  "sourceIndex": {
+    "path": "current-source-sha256.txt",
+    "sha256": "230bbd6db206fa3ee962e607ee89ac7eb67ed1994e0ebec4ffe49da00f3bb643"
+  },
+  "red": {
+    "monitor": "mon_0KSWTMHCHTKSVPG2",
+    "log": "red-monitor.log",
+    "run": "run.kKcP3b",
+    "unit": { "passed": 3, "failed": 2, "exit": 1 },
+    "liveExit": 1,
+    "actualPost": { "table": "project_commits", "http": 401, "sqlstate": "42501" },
+    "tip": null,
+    "monitorExitMeaning": "0 confirms both expected nonzero test exits, not a passing RED test"
+  },
+  "green": {
+    "monitor": "mon_EHXJ28RJV64K4K7Y",
+    "log": "green-monitor.log",
+    "run": "run.D8dnKS",
+    "unit": { "passed": 5, "failed": 0, "runs": 1 },
+    "liveExit": 0,
+    "monitorExit": 0,
+    "actualHttpExchanges": 33,
+    "successfulCommitChangePairs": 2,
+    "receiptPersistedAndTipAdvanced": true,
+    "secondParentReferencesFirstCommit": true,
+    "rawPatchDeleteBothTables": "401/42501",
+    "freshAndDuplicateMergeBothTables": "401/42501",
+    "plainDuplicatePrimaryKeysBothTables": "409/23505; original rows unchanged",
+    "missingProject": "409/23503; no tip advancement",
+    "ordinaryRootUpsertAndConversationPreferencePreserved": true
+  },
+  "verification": {
+    "diagnostics": "No LSP diagnostics on all three changed/new TS/MTS files",
+    "shell": "bash -n passed",
+    "diff": "git diff --check passed",
+    "focusedBuild": "Bun bundled 306 modules; exit 0",
+    "newFileRules": "No violations in 2 files",
+    "unitCommand": "node scripts/run-vitest.mjs run test/supabaseAuditAppend.test.ts --configLoader bundle --maxWorkers 1 --no-file-parallelism",
+    "liveCommand": "flock -w 60 /home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/validation.lock timeout 180 env SPATIAL_TEST_POSTGREST_BIN=<verified-parent-owned-executable> bash scripts/qa/spatial-audit-local.sh",
+    "fullQ7Q9Rerun": false,
+    "task20SourceAndEvidenceModified": false,
+    "review": "verification.md"
+  },
+  "prerequisite": {
+    "version": "PostgREST 13.0.7",
+    "executable": "/home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/prerequisites/task37.Di0RwQ/postgrest",
+    "sha256": "036738687f9814a9db5f3d78afa6e614bcf20c66add04455e34ea494784db7b3",
+    "archiveSha256": "4153f81ccc40e7b735edc89cd84b49da25ba27eb37d57c7f6a82c9005a0b762b",
+    "readyReceipt": "/home/main/z-project/rpg-zzu/.omo/ulw-execute/tile-to-world/postgrest-ready.json",
+    "sharedDownloadCount": 1,
+    "archiveRemoved": true,
+    "allTask37ConsumersFinished": true,
+    "binaryCleanupOwner": "parent; notified removal is now safe"
+  },
+  "cleanup": {
+    "receipt": "cleanup-final.md",
+    "bothOwnedClustersAndRolesRemoved": true,
+    "bothPostgrestAndMonitorProcessesExited": true,
+    "bothRecordersClosedWithoutErrors": true,
+    "adoptedEnvLinkAndJournalRemoved": true,
+    "rawHttpSourceAndCleanupEvidenceRetained": true,
+    "productionConnections": 0
+  },
+  "limitations": [
+    "Local PostgREST/JWT/ACL proof, not deployed Supabase gateway, credentials or migration rollout",
+    "Headless application recordProjectCommit entry point; no browser or Q7-Q9 race claim",
+    "Two separate audit requests remain non-atomic; request idempotency is not added",
+    "Unkeyed repeated project_changes input may append a new generated-key row, but cannot overwrite an existing row",
+    "Inherited 1390-pure-LOC product module retained at unchanged line count for the explicit one-line fix scope"
+  ]
+}

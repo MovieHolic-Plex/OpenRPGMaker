@@ -1,0 +1,21 @@
+{
+  "result": "passed",
+  "deploymentProven": false,
+  "appendPosts": [
+    {
+      "path": "/rest/v1/project_commits",
+      "status": 201
+    },
+    {
+      "path": "/rest/v1/project_changes",
+      "status": 201
+    }
+  ],
+  "receiptsAdvanced": true,
+  "parentLinked": true,
+  "immutableRowsPreserved": true,
+  "duplicatePrimaryKeys": "409/23505",
+  "rawUpdateDeleteAndMerge": "401/42501",
+  "missingProject": "409/23503; tip unchanged",
+  "ordinaryUpsertPreserved": true
+}

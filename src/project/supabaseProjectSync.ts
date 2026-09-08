@@ -964,7 +964,7 @@ async function insertRows(
   if (rows.length === 0) return;
   const response = await fetch(supabaseTableInsertUrl(config, table), {
     method: "POST",
-    headers: supabaseJsonHeaders(config, "write"),
+    headers: { ...supabaseJsonHeaders(config, "write"), Prefer: "return=minimal" },
     body: JSON.stringify(rows),
   });
   if (!response.ok) {

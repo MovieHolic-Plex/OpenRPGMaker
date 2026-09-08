@@ -1,0 +1,1 @@
+["{\"rolname\": \"anon\", \"rolsuper\": false, \"memberships\": 0, \"rolcanlogin\": false}","{\"rolname\": \"authenticator\", \"rolsuper\": false, \"memberships\": 3, \"rolcanlogin\": true}","{\"rolname\": \"spatial_project_writer\", \"rolsuper\": false, \"memberships\": 0, \"rolcanlogin\": false}"]
