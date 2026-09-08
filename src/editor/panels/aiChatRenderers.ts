@@ -101,6 +101,8 @@ export interface AutonomousRunBudget {
   readonly used: number;
   readonly total: number;
   readonly exhausted?: boolean;
+  readonly segment?: number;
+  readonly state?: string;
 }
 
 /**
@@ -202,8 +204,10 @@ export function renderWorkPlanChecklist(
         ? [
             el("span", {
               class: "ai-autonomous-budget",
-              dataset: { testid: "ai-autonomous-budget" },
-              text: `예산 ${budget.used}/${budget.total}${budget.exhausted ? " · 소진" : ""}`,
+              dataset: { testid: "ai-autonomous-budget", segment: String(budget.segment ?? 1), state: budget.state ?? "running", rounds: String(budget.used), roundCap: String(budget.total) },
+              text: budget.segment != null
+                ? `실행 구간 ${budget.segment} · ${budget.used}/${budget.total}${budget.state === "recovering" ? " · 복구 중" : ""}`
+                : `예산 ${budget.used}/${budget.total}${budget.exhausted ? " · 소진" : ""}`,
             }),
           ]
         : []),

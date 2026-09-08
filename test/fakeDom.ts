@@ -68,6 +68,29 @@ export class FakeNode {
     }
   }
 
+  insertBefore(node: FakeNode, ref: FakeNode | null): FakeNode {
+    if (ref !== null && ref.parentNode !== this) {
+      const error = new Error("Failed to execute 'insertBefore': The node before which the new node is to be inserted is not a child of this node.");
+      error.name = "NotFoundError";
+      throw error;
+    }
+    if (node === ref) return node;
+    if (node.parentNode) node.parentNode.removeChild(node);
+    node.parentNode = this;
+    if (ref === null) {
+      this.childNodes.push(node);
+      return node;
+    }
+    const index = this.childNodes.indexOf(ref);
+    if (index < 0) {
+      const error = new Error("Failed to execute 'insertBefore': The node before which the new node is to be inserted is not a child of this node.");
+      error.name = "NotFoundError";
+      throw error;
+    }
+    this.childNodes.splice(index, 0, node);
+    return node;
+  }
+
   removeChild(child: FakeNode): void {
     const index = this.childNodes.indexOf(child);
     if (index >= 0) this.childNodes.splice(index, 1);

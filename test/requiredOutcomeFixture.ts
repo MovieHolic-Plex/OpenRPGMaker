@@ -1,5 +1,5 @@
 import { AssistantSession, type SessionEvent, type SessionTurnOptions } from "@/ai/assistantSession";
-import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
+import { defaultAiConfig, type ChatRequest, type ChatResult } from "@/ai/llmClient";
 import { createBlankProject } from "@/project/defaults";
 import { fixedDeclarer } from "./intentFixture";
 import type { IntentDeclaration } from "@/ai/intentDeclaration";
@@ -23,10 +23,15 @@ export function fixture() {
   let round = 0;
   let intent: Partial<IntentDeclaration> = { mode: "other" };
   const events: SessionEvent[] = [];
+  let planner: ((req: ChatRequest) => ChatResult | null) | null = null;
   const session = new AssistantSession(createBlankProject(), {
     config: { ...defaultAiConfig(), agentMode: "chat", model: "test", liteModel: "test", apiKey: "test", maxToolCalls: 16 },
     declareIntent: facts => fixedDeclarer(intent)(facts),
-    chat: async (): Promise<ChatResult> => {
+    chat: async (_config, req: ChatRequest): Promise<ChatResult> => {
+      if (!req.tools?.length && planner) {
+        const scripted = planner(req);
+        if (scripted) return scripted;
+      }
       const batch = batches[round++];
       return batch ? { message: { role: "assistant", content: null, tool_calls: batch.map((call, i) => ({
         id: `call-${round}-${i}`, type: "function", function: { name: call.name, arguments: JSON.stringify(call.args) },
@@ -36,6 +41,7 @@ export function fixture() {
   return {
     session, events,
     setIntent(value: Partial<IntentDeclaration>) { intent = value; },
+    setPlanner(value: ((req: ChatRequest) => ChatResult | null) | null) { planner = value; },
     // Empty raw source deliberately exercises legacy tool-declared contracts. Provenance
     // cases pass their actual source explicitly and must account for its required rows.
     run(calls: readonly (readonly Call[])[], options: SessionTurnOptions = {}, text = "") {

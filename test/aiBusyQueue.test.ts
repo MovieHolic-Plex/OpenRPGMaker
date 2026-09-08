@@ -119,4 +119,36 @@ describe("AI busy 입력 큐", () => {
     expect(text).toContain("첫 번째 요청");
     expect(text).toContain("두 번째 요청");
   });
+
+  it("busy 중 입력칸 Enter 는 pendingSends 에 쌓이고 동시 턴을 시작하지 않는다", async () => {
+    const pendingResponses: Array<() => void> = [];
+    vi.stubGlobal("fetch", vi.fn(() => new Promise<Response>((resolve) => {
+      pendingResponses.push(() => resolve(new Response('data: {"choices":[{"delta":{"content":"완료"}}]}\n\ndata: [DONE]\n\n', {
+        status: 200,
+        headers: { "Content-Type": "text/event-stream" },
+      })));
+    })));
+    const panel = renderAiChatPanel({ getChatDock: () => "side" }) as unknown as FakeElement;
+    const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
+    const send = findByTestId(panel, "ai-send") as unknown as HTMLButtonElement;
+    const queue = findByTestId(panel, "ai-pending-queue") as unknown as FakeElement & { hidden: boolean };
+    const log = findByTestId(panel, "ai-chat-log") as unknown as FakeElement;
+
+    input.value = "첫 번째 요청";
+    send.click();
+    const afterFirst = log.textContent ?? "";
+    expect(afterFirst).toContain("첫 번째 요청");
+    expect(afterFirst).not.toContain("continue");
+
+    input.value = "continue";
+    const enter = new Event("keydown") as Event & { key: string; shiftKey: boolean; isComposing: boolean };
+    enter.key = "Enter";
+    enter.shiftKey = false;
+    enter.isComposing = false;
+    input.dispatchEvent(enter);
+
+    expect(queue.hidden).toBe(false);
+    expect(queue.textContent).toContain("기다리는 메시지 1개");
+    expect(log.textContent ?? "").not.toContain("continue");
+  });
 });

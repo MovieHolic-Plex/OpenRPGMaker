@@ -10,6 +10,7 @@ import { store } from "@/project/store";
 import { createBlankProject } from "@/project/defaults";
 import { installFakeDom } from "./fakeDom";
 import { fixture, plan, size, skip, target } from "./requiredOutcomeFixture";
+import type { TurnResult } from "@/ai/assistantSession";
 
 const activity = vi.hoisted(() => vi.fn<(input: AiActivityLogInput) => Promise<AiActivityLogRecord>>());
 vi.mock("@/ai/activityLog", async original => ({
@@ -103,19 +104,52 @@ it("publishes the resumed unfinished result instead of the preceding question ou
   // Given blocked requirements followed by a genuine question.
   const f = setup();
   const invalidResize = { name: "resize_map", args: { mapId: target.mapId, width: 1, height: 1 } };
-  await f.run([[plan([size])], [invalidResize], [invalidResize], [invalidResize], [invalidResize]]);
-  expect(f.session.getWorkPlan()?.layers[0]?.items[0]?.status).toBe("blocked");
+  const source = "Inspect this map";
+  await f.run([[plan([size])], [invalidResize], [invalidResize], [invalidResize], [invalidResize]], {}, source);
+  const workItemId = f.session.getWorkPlan()?.layers[0]?.items.find(item => item.status === "blocked")?.id;
+  if (!workItemId) throw new Error("Missing blocked work item");
+  const authoring = f.session.getAcceptanceSnapshot();
+  const sizeItem = authoring?.items.find(item => item.id === size.id);
+  const sourceItem = authoring?.items.find(item => item.id === "request-1:source:0");
+  expect(sourceItem).toMatchObject({ coverage: "uncovered", source: { text: source } });
+  expect(sizeItem?.source?.text).toBe(source);
+  const authoringRequestId = sizeItem?.source?.requestId;
+  if (!authoringRequestId) throw new Error("Missing authoring request id");
+  expect(f.session.getWorkPlan()?.layers[0]?.items.find(item => item.id === workItemId)?.status).toBe("blocked");
   const question = await f.run([], { composerMode: "ask" }, "What remains?");
   expect(question.runOutcome?.execution).toBe("response-final");
-  // When the normal user continuation token reaches the runner/session in Do mode.
-  // This is backend dispatch coverage, not a substitute for the pending UI mode-switch contract.
-  await f.runner.executeTurn(f.session, "계속", () => f.run([[{ name: "get_project_summary", args: {} }]], {}, "계속"));
+  expect(question.proposedCalls ?? []).toEqual([]);
+  expect(f.session.getWorkPlan()?.layers[0]?.items.find(item => item.id === workItemId)?.status).toBe("blocked");
+  const questionOutcome = question.runOutcome;
+  const raw = await f.run([], {}, "계속");
+  expect(raw.runOutcome?.execution).toBe("response-final");
+  expect(f.session.getWorkPlan()?.layers[0]?.items.find(item => item.id === workItemId)?.status).toBe("blocked");
+  expect(f.events.some(event => event.type === "work_plan" && event.plan.layers.some(layer =>
+    layer.items.some(item => item.id === workItemId && item.status === "in_progress")))).toBe(false);
+  let resumed: TurnResult | undefined;
+  f.setPlanner(req => req.tools?.length
+    ? null
+    : { message: { role: "assistant", content: JSON.stringify({ action: "resume" }) }, finishReason: "stop" });
+  await f.runner.executeTurn(f.session, "계속", async () => {
+    resumed = await f.run([[{ name: "get_project_summary", args: {} }]], { composerMode: "do", goalAction: "resume" }, "계속");
+    return resumed;
+  });
   // Then current result, harness, recap, final event and real activity builder agree.
   const expected = { execution: "blocked", goal: "incomplete", delivery: "no-change" };
-  expect(f.events.some(event => event.type === "work_plan" && event.plan.layers[0]?.items[0]?.status === "in_progress")).toBe(true);
+  expect(resumed?.execution?.requestId).toBe(authoringRequestId);
+  expect(f.events.some(event => event.type === "work_plan" && event.plan.layers.some(layer =>
+    layer.items.some(item => item.id === workItemId && item.status === "in_progress")))).toBe(true);
+  expect(f.session.getWorkPlan()?.goal).toBe("Map contract");
+  expect(f.session.getAcceptanceSnapshot()?.items.find(item => item.id === "request-1:source:0")).toMatchObject({
+    coverage: "uncovered", source: { text: source },
+  });
+  expect(f.session.getAcceptanceSnapshot()?.items.find(item => item.id === size.id)?.source?.text).toBe(source);
   expect(f.session.getRunOutcome()).toEqual(expected);
   expect(f.session.getHarnessSnapshot().runOutcome).toEqual(expected);
   expect(f.events.at(-1)).toEqual({ type: "run_outcome", runOutcome: expected });
+  expect(resumed?.runOutcome).toEqual(expected);
+  expect(resumed?.recap?.runOutcome).toEqual(expected);
+  expect(resumed?.runOutcome).not.toEqual(questionOutcome);
   const finalInput = activity.mock.calls.at(-1)?.[0];
   if (!finalInput) throw new Error("Missing actual runner publication");
   const record = buildAiActivityLogRecord(finalInput);

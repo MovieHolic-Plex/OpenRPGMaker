@@ -1299,7 +1299,17 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
   // 계획 도착 시마다 앞면과(열려 있으면) 책 모달을 갱신한다.
   const refreshWorkPlanSurface = (): void => {
-    if (!workPlanSurfaceState?.active || !workPlanSurfaceState.plan) return;
+    if (!workPlanSurfaceState?.active) return;
+    if (!workPlanSurfaceState.plan) {
+      const budget = workPlanSurfaceState.budget;
+      if (!budget) return;
+      ensureWorkPlanSurface().replaceChildren(el("span", { class: "ai-autonomous-budget",
+        dataset: { testid: "ai-autonomous-budget", segment: String(budget.segment ?? 1), state: budget.state ?? "running", rounds: String(budget.used), roundCap: String(budget.total) },
+        text: budget.segment != null
+          ? `실행 구간 ${budget.segment} · ${budget.used}/${budget.total}${budget.state === "recovering" ? " · 복구 중" : ""}`
+          : `예산 ${budget.used}/${budget.total}${budget.exhausted ? " · 소진" : ""}` }));
+      return;
+    }
     const surface = ensureWorkPlanSurface();
     const checklist = renderWorkPlanChecklist(workPlanSurfaceState.plan, {
       active: workPlanSurfaceState.active,
@@ -1501,7 +1511,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const sendText = async (
     text: string,
     displayAs?: string,
-    opts?: { readonly replay?: boolean },
+    opts?: { readonly replay?: boolean; readonly userResume?: boolean },
   ): Promise<void> => {
     const trimmed = text.trim();
     if (!trimmed) return;
@@ -1523,9 +1533,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (!opts?.replay && proposalApi.pendingProposalMessage === null) {
       session.syncBaselineFromStoreIfClean(store.getCurrent());
     }
-    // 자율 드라이버 진입: agentMode "auto" 에서만 켠다(전송 시점 설정 기준).
-    // "chat" 은 종전대로 턴 1개(수동 「계속」). opts.autonomous 는 세션 진입점의 명시 오버라이드(브리지/테스트).
-    const autonomous = loadAiConfig().agentMode === "auto";
+    // Do 요청은 agentMode 와 무관하게 자율 드라이버에 들어간다(C1 chat). Ask 는 켜지 않는다.
+    // Ask/Plan → Do 승격은 idle Continue 의 userResume 만 한다. 원시 텍스트 continue 는 승격하지 않는다.
+    const autonomous = composerMode !== "ask";
     // 계획 모드의 첫 턴은 계획만 세우고 멈춘다(세션이 강제). 활성 계획이 있는 채 「계속」이면 실행 턴이다.
     const activePlan = session.getWorkPlan();
     const planPreview = composerMode === "plan" && (!activePlan || isWorkPlanComplete(activePlan));
@@ -1536,7 +1546,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const payload = [trimmed, contextFooter(turnScope?.mapId)].filter((part) => part.length > 0).join("\n\n");
     await executeTurn(session, trimmed, (onEvent, signal) =>
       // instruction: 사용자 발화 원문 — 의도 선언·툴 이름 언급·능력 승격은 이것만 본다.
-      session.sendUserMessage(payload, onEvent, signal, { autonomous, instruction: trimmed, scope: turnScope, composerMode }),
+      session.sendUserMessage(payload, onEvent, signal, {
+        autonomous, instruction: trimmed, scope: turnScope, composerMode,
+        ...(opts?.userResume ? { goalAction: "resume" as const } : {}),
+      }),
       { autonomous: autonomous && !planPreview, composerMode }
     );
   };

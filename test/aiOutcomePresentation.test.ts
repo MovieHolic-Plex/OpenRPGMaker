@@ -44,21 +44,30 @@ it("withdraws the exact real requirement only on user activation, retaining sour
   const note = createAiStickyChecklist({ onWithdraw: withdraw }); notes.push(note);
   note.update(snapshot);
   expect(withdraw).not.toHaveBeenCalled();
-  expect(button().dataset.requirementId).toBe(size.id);
-  expect(button().closest("summary")).not.toBeNull();
-  button().focus(); button().click();
+  const rawRow = snapshot.items.find(item => item.id === "request-1:source:0");
+  expect(rawRow).toMatchObject({ coverage: "uncovered", source: { text: "SOURCE_FIXTURE" } });
+  const sizeButton = document.querySelector<HTMLButtonElement>(`[data-testid='ai-requirement-withdraw'][data-requirement-id='${size.id}']`);
+  if (!sizeButton) throw new Error("Missing size requirement action");
+  expect(sizeButton.dataset.requirementId).toBe(size.id);
+  expect(sizeButton.closest("summary")).not.toBeNull();
+  sizeButton.focus(); sizeButton.click();
   expect(withdraw).toHaveBeenCalledOnce();
   expect(withdraw).toHaveBeenCalledWith({ acceptanceId: snapshot.id, requirementId: size.id, reason: expect.any(String) });
-  const item = f.session.getAcceptanceSnapshot()?.items[0];
+  const after = f.session.getAcceptanceSnapshot();
+  expect(after?.items.find(item => item.id === "request-1:source:0")).toMatchObject({
+    coverage: "uncovered", source: { text: "SOURCE_FIXTURE" },
+  });
+  expect(after?.items.find(item => item.id === "request-1:source:0")?.withdrawal).toBeUndefined();
+  const item = after?.items.find(entry => entry.id === size.id);
   expect(item).toMatchObject({ id: size.id, source: { text: "SOURCE_FIXTURE" }, withdrawal: {
     acceptanceId: snapshot.id, requirementId: size.id, source: "user",
   }, evidence: [{ passed: false }] });
   expect(item?.withdrawal?.reason.trim().length).toBeGreaterThan(0);
   expect(item?.status).not.toBe("verified");
-  expect(f.session.getRunOutcome()?.goal).toBe("satisfied");
-  expect(button().disabled).toBe(true);
+  expect(f.session.getRunOutcome()?.goal).toBe("incomplete");
+  expect(sizeButton.disabled).toBe(true);
   expect(document.activeElement).not.toBe(document.body);
-  button().click(); expect(withdraw).toHaveBeenCalledOnce();
+  sizeButton.click(); expect(withdraw).toHaveBeenCalledOnce();
 });
 
 it("keeps rejected and busy actions from changing the canonical obligation", async () => {

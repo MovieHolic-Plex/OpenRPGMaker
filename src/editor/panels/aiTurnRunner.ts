@@ -407,6 +407,13 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
         }
         if (event.text.includes("예산 소진") || event.text.includes("agent_run_budget_exhausted")) offerContinuation();
         if (shouldShowStatusInChat(event.text)) deps.surface.appendBubble("system", event.text);
+      } else if (event.type === "run_state") {
+        const execution = event.execution;
+        if (deps.workPlanSurfaceState) {
+          deps.workPlanSurfaceState.budget = { used: execution.rounds, total: execution.roundCap, segment: execution.segment, state: execution.state };
+          deps.refreshWorkPlanSurface();
+        }
+        deps.surface.setStatus(`실행 구간 ${execution.segment} · ${execution.state}`);
       } else if (event.type === "work_plan") {
         const s = event.plan;
         const items = Array.isArray(s.layers)
@@ -457,11 +464,11 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
 
     try {
       const result = await exec(onEvent, abortController.signal);
+      turnResult = result;
       if (!ownsTurn(true)) {
         ghostPreviewUpdater.cancel();
         return;
       }
-      turnResult = result;
       appliedWriteCount = Math.max(appliedWriteCount, result.appliedCalls?.length ?? 0);
       deps.surface.endTurnProgress();
       if (abortController.signal.aborted || result.stoppedReason === "aborted") {
@@ -515,7 +522,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
       const currentMapId = editorState.get().currentMapId ?? beforeProject.startMapId ?? null;
       // 승인 카드는 없다 — 쓰기가 있으면 그대로 적용하고, 복구는 되돌리기다(approvalPolicy 머리말).
       const applyMode = resolveProposalApplyMode({ callCount: result.proposedCalls.length });
-      if (runOpts?.composerMode !== "ask" && applyMode === "apply-now") {
+      if (runOpts?.composerMode !== "ask" && applyMode === "apply-now" && (!result.execution || result.execution.state === "manual-segment")) {
         // 적용을 먼저 하고 그 결과를 기다린 다음에 로그를 붙인다 — 배치 검증·커밋 게이트가 적용을
         // 거부하면 store 는 그대로이므로 "적용됨 N건" 은 거짓이 된다(사유는 deps.applyProposal 이
         // 이미 ❌ 버블로 남긴다).
@@ -629,6 +636,9 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
             appliedCalls: appliedWriteCount,
             assistantText: turnResult?.assistantText,
             runOutcome: turnResult?.runOutcome,
+            execution: turnResult?.execution ?? session.getHarnessSnapshot().execution,
+            acceptance: session.getAcceptanceSnapshot() ?? null,
+            requests: session.getHarnessSnapshot().requests,
           },
           toolCalls: liveToolCalls.length > 0 ? liveToolCalls : toolCallsFromAudit(turnAudit),
           audit: turnAudit,
@@ -706,10 +716,14 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
           appliedCalls: appliedWriteCount,
           assistantText: turnResult?.assistantText,
           runOutcome: turnResult?.runOutcome,
+          execution: turnResult?.execution ?? session.getHarnessSnapshot().execution,
+          acceptance: session.getAcceptanceSnapshot() ?? null,
+          requests: session.getHarnessSnapshot().requests,
           ...(turnResult?.recap
             ? {
                 recap: {
                   runOutcome: turnResult.recap.runOutcome,
+                  execution: turnResult.recap.execution,
                   elapsedMs: turnResult.recap.elapsedMs,
                   promptTokens: turnResult.recap.usage.promptTokens,
                   completionTokens: turnResult.recap.usage.completionTokens,

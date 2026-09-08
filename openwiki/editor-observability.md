@@ -302,6 +302,15 @@ done
 - 편집 행위: `EditActivityEntry.reason` — AI 적용은 툴 reason, 사람 편집은 라벨에서 만든다.
 - 저장: 같은 값이 localStorage + Supabase `payload_json` / `entries_json` / 커밋 첨부 슬라이스에 실립니다. 중간 업서트는 `aiTurnRunner` 의 매 `tool_call`.
 
+## 채팅 턴 종료 행 — 소유권 상실이 execution 을 지우면 안 된다 (2026-09-07)
+
+`POST /__oprn/ai-activity` 의 턴 종료 행은 패널 `aiTurnRunner` 가 직렬화한다. 브라우저 스펙은 `record.result.execution.state` 를 옵셔널 체인 없이 읽는다. 같은 행의 `runOutcome` 은 유지한다. `RequestExecution.state` 를 `RunOutcome.execution` 으로 옮기거나 UI 가 독자 판정을 계산하지 않는다.
+
+- **U1a:** `exec` 가 반환한 `TurnResult` 는 `ownsTurn(true)` 조기 return **앞에서** `turnResult` 에 넣는다. `resetConversationState` 가 `activeAbortController` 를 비우면 소유권은 끊기지만 결과는 이미 있다.
+- **U1b:** orphaned `recordAiActivity` 는 owner 종료 행과 같이 `execution` / `acceptance` / `requests` **그리고** `runOutcome` 을 싣는다. `execution` 은 `turnResult.execution` 이고 없으면 in-scope `session.getHarnessSnapshot().execution` 이다. 세션 인스턴스는 `controller.session = null` 이후에도 인자로 남아 있다.
+- 기본 `stoppedReason: "ownership-lost"` 만 있고 `execution` 이 빠진 행은 관측 결함이다. 분류 `"project-switch"` vs `"aborted"` 는 세션 `userBoundary` (U1c, 이 레인 밖) 다.
+- 회귀: `npm test -- test/aiTurnRunnerRetirement.test.ts` (`record.result.execution.state` 직접 접근).
+
 ## 검증
 
 - 계측·라벨·병합 회귀: `npm test -- test/editActivityRecording.test.ts` (초크포인트 5메서드, 라벨 없는 집계, NPC 편집 세션 재현, 연속 병합, `EventDiff` 라벨).
