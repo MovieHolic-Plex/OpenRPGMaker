@@ -150,6 +150,28 @@ describe("이벤트 대상 카탈로그", () => {
     expect(moveTargetIssueMessage("ev_npc_far", catalog)).toContain("먼 마을");
   });
 
+  it.each(["self", "player", "문지기"])("does not reinterpret the foreign ID %s as a local alias or name", (id) => {
+    const project = projectWithEvents();
+    project.maps.map_far = {
+      ...project.maps[project.startMapId], id: "map_far", name: "Far map",
+      events: [eventNamed(id, "Foreign event", 2, 2)],
+    };
+    const catalog = buildEventTargetCatalog(project, project.startMapId);
+    expect(resolveMoveTarget(id, catalog)).toMatchObject({
+      kind: "unresolved", reason: "foreignMap", storedValue: id, foreign: { id, mapId: "map_far" },
+    });
+    expect(canonicalMoveTargetValue(id, catalog)).toBeNull();
+    const parsed = parseAndValidate(project, JSON.stringify([
+      { kind: "moveEvent", eventId: id, route: { moves: [], repeat: false } },
+    ]), { mapId: project.startMapId });
+    expect(parsed.ok).toBe(false);
+
+    project.maps[project.startMapId].events.push(eventNamed(id, "Local exact ID", 1, 2));
+    expect(resolveMoveTarget(id, buildEventTargetCatalog(project, project.startMapId))).toMatchObject({
+      kind: "event", storedValue: id, entry: { id, name: "Local exact ID" },
+    });
+  });
+
   it("모르는 값은 실행 가능한 진단 문구를 낸다 — 특수값 둘과 후보 id 를 함께 말한다", () => {
     const project = projectWithEvents();
     const catalog = buildEventTargetCatalog(project, project.startMapId);

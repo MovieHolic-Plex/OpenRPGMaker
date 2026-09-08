@@ -11,6 +11,7 @@
 
 import {
   getMapEditHistoryEntries,
+  getMapEditHistoryRevision,
   getMapEditHistoryState,
   getMapEditRedoEntries,
   redoMapEdit,
@@ -25,6 +26,7 @@ import type { SvgIconName } from "@/editor/panels/tileToolbarIcons";
 import { anchorMenuToViewport } from "@/editor/panels/tileToolbarMenus";
 import { hasOpenModalLayer } from "@/editor/ui/modalStack";
 import { showConfirm } from "@/editor/ui/modal";
+import { store } from "@/project/store";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 
@@ -213,7 +215,7 @@ function makeDisclosure(direction: HistoryDirection, spec: DirectionSpec, rerend
       click: () => {
         // 검사·기록 메뉴와 보조 표면이 이 이벤트로 스스로 닫힌다 — 팝오버 두 개가 겹치지 않는다.
         document.dispatchEvent(new CustomEvent(SIDEBAR_SURFACE_OPEN, { detail: HISTORY_MENU_SURFACE }));
-        openDirection = expanded ? null : direction;
+        openDirection = openDirection === direction ? null : direction;
         rerender();
         if (openDirection !== null) openAnchor?.menu.querySelector<HTMLElement>("button:not(:disabled)")?.focus();
       },
@@ -252,6 +254,8 @@ function makeDisclosure(direction: HistoryDirection, spec: DirectionSpec, rerend
  */
 function makeEntryRow(spec: DirectionSpec, entry: MapEditHistoryEntry, rerender: () => void): HTMLButtonElement {
   const multi = entry.steps >= 2;
+  const revision = getMapEditHistoryRevision();
+  const project = store.getCurrent();
   return el("button", {
     class: "oprn-option-item",
     attrs: { type: "button", role: "menuitem", title: multi ? `${entry.label} — ${entry.steps}단계` : entry.label },
@@ -277,6 +281,14 @@ function makeEntryRow(spec: DirectionSpec, entry: MapEditHistoryEntry, rerender:
           confirmLabel: `${entry.steps}단계 ${spec.label}`,
         }).then((confirmed) => {
           if (!confirmed) return;
+          // The promise belongs to the displayed stack and project object, not
+          // just an index or project ID (same-ID replacements are stale too).
+          if (getMapEditHistoryRevision() !== revision || store.getCurrent() !== project) {
+            toast("확인 중 작업 기록이 변경되었습니다. 기록을 다시 선택하세요.", "info");
+            closeHistoryMenu(false);
+            latestRerender?.();
+            return;
+          }
           if (!spec.traverse(entry.index)) return;
           toast(`${entry.steps}단계 ${spec.doneText} — ${entry.label}`, "ok");
           closeHistoryMenu(false);

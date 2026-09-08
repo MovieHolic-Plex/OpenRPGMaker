@@ -16,6 +16,7 @@
 // 유일한 자리이기도 하다. 대신 상자를 «이름 또는 ID 검색» 으로 바꿔 목록이 따라 열린다.
 import { store } from "@/project/store";
 import { editorState } from "@/editor/editorState";
+import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import {
   buildEventTargetCatalog,
   matchEventTargets,
@@ -23,9 +24,6 @@ import {
   type EventTargetCatalog,
 } from "@/project/eventTargetCatalog";
 import { clearChildren, el } from "@/util/dom";
-
-// 클릭이 등록되기 전에 blur 가 목록을 닫아 버리는 것을 막는 지연(characterIdAutocomplete 와 동일 값).
-const BLUR_CLOSE_DELAY_MS = 150;
 
 // aria-controls 는 id 로만 가리킨다. 폼이 여러 번 렌더돼도 id 가 겹치지 않게 세어 붙인다.
 let pickerSequence = 0;
@@ -86,6 +84,7 @@ export function createMoveRouteTargetPicker(options: {
   const close = (): void => {
     input.setAttribute("aria-expanded", "false");
     if (dropdown.hidden) return;
+    unregisterModal(dropdown);
     dropdown.hidden = true;
     clearChildren(dropdown);
     rows = [];
@@ -183,7 +182,12 @@ export function createMoveRouteTargetPicker(options: {
           title: `${entry.label} — ${entry.id}`,
         },
         dataset: { testid: `move-route-event-option-${entry.id}`, eventId: entry.id },
-        on: { click: () => choose(entry.id) },
+        on: {
+          // Keep focus on the input: native change/blur would remove this row
+          // before click. Selection still belongs to click, not a cancelled press.
+          mousedown: (event) => event.preventDefault(),
+          click: () => choose(entry.id),
+        },
         children: [
           el("span", { class: "move-route-target-option-name", text: entry.label }),
           el("span", { class: "move-route-target-option-id", text: entry.id }),
@@ -197,6 +201,9 @@ export function createMoveRouteTargetPicker(options: {
 
   const open = (): void => {
     if (!isEventTarget()) return;
+    // The parent's capture-phase Escape handler runs before input keydown.
+    // Participate in that same stack while open, rather than racing it.
+    if (dropdown.hidden) registerModal(dropdown, close);
     dropdown.hidden = false;
     input.setAttribute("aria-expanded", "true");
     render();
@@ -238,13 +245,10 @@ export function createMoveRouteTargetPicker(options: {
     sync();
   });
   input.addEventListener("focus", open);
-  // 값이 확정되면(blur·프로그램 dispatch) 목록을 즉시 접는다. 지연 close 만 두면 절대 위치
-  // 목록이 150ms 동안 아래 컨트롤을 덮어, 값을 채운 직후 그 아래를 누르는 자동화가 막힌다.
+  // Direct-ID commits and actual focus loss close immediately. Option presses
+  // retain input focus, so no delayed close can outlive a selection or reopen.
   input.addEventListener("change", close);
-  input.addEventListener("blur", () => {
-    // 목록 위 클릭이 먼저 등록돼야 한다.
-    globalThis.setTimeout?.(close, BLUR_CLOSE_DELAY_MS);
-  });
+  input.addEventListener("blur", close);
   input.addEventListener("keydown", (event) => {
     const key = (event as KeyboardEvent).key;
     if (dropdown.hidden) {

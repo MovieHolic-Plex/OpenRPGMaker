@@ -122,6 +122,13 @@ export function resolveMoveTarget(raw: string, catalog: EventTargetCatalog): Mov
   const exact = catalog.entries.find((entry) => entry.id === raw);
   if (exact) return { kind: "event", storedValue: exact.id, entry: exact };
 
+  // Exact foreign IDs also precede aliases/names: an event named by ID must
+  // never silently become the executing event, player, or a local namesake.
+  const foreign = catalog.foreign.find((entry) => entry.id === raw);
+  if (foreign) {
+    return { kind: "unresolved", storedValue: raw, reason: "foreignMap", candidates: [], foreign };
+  }
+
   // 2) 별칭(특수값의 사람 말). 조수가 실제로 냈던 `"this"` 가 여기서 잡힌다.
   const key = aliasKey(raw);
   if (THIS_ALIASES.has(key)) return { kind: "this", storedValue: THIS_EVENT_MOVE_TARGET };
@@ -135,11 +142,6 @@ export function resolveMoveTarget(raw: string, catalog: EventTargetCatalog): Mov
     return { kind: "unresolved", storedValue: raw, reason: "ambiguous", candidates: byName };
   }
 
-  // 4) 다른 맵의 이벤트. 문법은 맞지만 이 명령으로는 절대 움직이지 않는다.
-  const foreign = catalog.foreign.find((entry) => entry.id === raw);
-  if (foreign) {
-    return { kind: "unresolved", storedValue: raw, reason: "foreignMap", candidates: [], foreign };
-  }
   return { kind: "unresolved", storedValue: raw, reason: "unknown", candidates: [] };
 }
 

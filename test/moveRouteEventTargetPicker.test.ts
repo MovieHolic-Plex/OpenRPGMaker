@@ -9,6 +9,8 @@
 // 그리고 알 수 없는 레거시 값은 **조용히 덮어쓰지 않고** 경고 + 복구 경로로 남는다.
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { moveEventBody } from "@/editor/panels/eventEditor/commandBodyRoute";
+import { openEventCommandEditDialog } from "@/editor/panels/eventEditor/commandEditDialog";
+import { modalStackDepthForTest } from "@/editor/ui/modalStack";
 import { editorState } from "@/editor/editorState";
 import { createBlankProject } from "@/project/defaults";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
@@ -124,6 +126,156 @@ describe("이동 경로 대상 픽커", () => {
     expect(input.value).toBe("ev_npc_merchant");
     expect(picker.hidden).toBe(true);
     expect(byTestId(root, "move-route-event-name").textContent).toContain("상인");
+  });
+
+  it("keeps searched options alive through pointer focus/change ordering until click", () => {
+    const project = createBlankProject();
+    project.maps[project.startMapId].events = [
+      eventNamed("ev_sora_first", "소라", 3, 4),
+      eventNamed("ev_sora_second", "소라", 8, 2),
+    ];
+    store.replace(project);
+    editorState.set({ currentMapId: project.startMapId });
+    const { root, replaced } = renderRoute("this");
+    byTestId(root, "move-route-event-picker-open").click();
+    const input = byTestId(root, "move-route-event-id-input") as HTMLInputElement;
+    expect(document.activeElement).toBe(input);
+    input.value = "소라";
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    const picker = byTestId(root, "move-route-event-picker");
+    expect(optionIds(picker)).toEqual(["ev_sora_first", "ev_sora_second"]);
+    const option = byTestId(picker, "move-route-event-option-ev_sora_first");
+    const label = option.querySelector<HTMLElement>(".move-route-target-option-name")!;
+
+    label.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, cancelable: true, button: 0 }));
+    const press = new MouseEvent("mousedown", { bubbles: true, cancelable: true, button: 0 });
+    label.dispatchEvent(press);
+    // Happy DOM does not implement the mouse-press focus default or the text
+    // input's native change-on-focus-loss. Model that browser default only when
+    // the press permits it; a detached row must not receive a synthetic click.
+    if (!press.defaultPrevented) {
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+      option.focus();
+    }
+    expect(picker.hidden).toBe(false);
+    expect(option.isConnected).toBe(true);
+    expect(replaced).toEqual([]);
+    label.dispatchEvent(new PointerEvent("pointerup", { bubbles: true, button: 0 }));
+    label.dispatchEvent(new MouseEvent("mouseup", { bubbles: true, button: 0 }));
+    label.click();
+
+    expect(replaced).toHaveLength(1);
+    expect(lastEventId(replaced)).toBe("ev_sora_first");
+    expect(input.value).toBe("ev_sora_first");
+    expect(document.activeElement).toBe(input);
+    expect(byTestId(root, "move-route-event-name").dataset.state).toBe("resolved");
+    expect(picker.hidden).toBe(true);
+    expect(optionIds(picker)).toEqual([]);
+  });
+
+  it.each(["pointercancel", "pointerup"])("does not commit a press ending with %s outside, or retain it across blur/reopen", (endEvent) => {
+    const { root, replaced } = renderRoute("this");
+    byTestId(root, "move-route-event-picker-open").click();
+    const input = byTestId(root, "move-route-event-id-input") as HTMLInputElement;
+    input.value = "상인";
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    const picker = byTestId(root, "move-route-event-picker");
+    const option = byTestId(picker, "move-route-event-option-ev_npc_merchant");
+    option.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, cancelable: true, button: 0 }));
+    option.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, cancelable: true, button: 0 }));
+    document.body.dispatchEvent(new PointerEvent(endEvent, { bubbles: true, button: 0 }));
+    expect(replaced).toEqual([]);
+    expect(input.value).toBe("상인");
+
+    input.blur();
+    expect(picker.hidden).toBe(true);
+    expect(optionIds(picker)).toEqual([]);
+    input.focus();
+    expect(picker.hidden).toBe(false);
+    expect(optionIds(picker)).toEqual(["ev_npc_gate", "ev_npc_merchant"]);
+
+    // A cancelled press must not suppress the existing direct-ID change path.
+    input.value = "ev_npc_gate";
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+    expect(replaced).toHaveLength(1);
+    expect(lastEventId(replaced)).toBe("ev_npc_gate");
+    expect(picker.hidden).toBe(true);
+    expect(optionIds(picker)).toEqual([]);
+    expect(byTestId(root, "move-route-event-name").dataset.state).toBe("resolved");
+  });
+
+  it("preserves arrow selection, Enter, Escape and Tab with input focus", () => {
+    const { root, replaced } = renderRoute("this");
+    byTestId(root, "move-route-event-picker-open").click();
+    const input = byTestId(root, "move-route-event-id-input") as HTMLInputElement;
+    const picker = byTestId(root, "move-route-event-picker");
+    const key = (value: string): KeyboardEvent => {
+      const event = new KeyboardEvent("keydown", { key: value, bubbles: true, cancelable: true });
+      input.dispatchEvent(event);
+      return event;
+    };
+    key("ArrowDown");
+    key("ArrowDown");
+    key("ArrowUp");
+    expect(byTestId(picker, "move-route-event-option-ev_npc_gate").getAttribute("aria-selected")).toBe("true");
+    key("ArrowDown");
+    expect(key("Enter").defaultPrevented).toBe(true);
+    expect(lastEventId(replaced)).toBe("ev_npc_merchant");
+    expect(picker.hidden).toBe(true);
+    expect(document.activeElement).toBe(input);
+
+    key("ArrowDown");
+    expect(picker.hidden).toBe(false);
+    expect(key("Escape").defaultPrevented).toBe(true);
+    expect(picker.hidden).toBe(true);
+    key("ArrowDown");
+    expect(picker.hidden).toBe(false);
+    expect(key("Tab").defaultPrevented).toBe(false);
+    expect(picker.hidden).toBe(true);
+    expect(replaced).toHaveLength(1);
+  });
+
+  it("Escape dismisses the picker before its real parent command dialog, including after reopen", () => {
+    const applied: Command[] = [];
+    openEventCommandEditDialog({
+      initial: { kind: "moveEvent", eventId: "this", route: { moves: [], repeat: false } },
+      onApply: (command) => applied.push(command),
+    });
+    const dialog = byTestId(document, "event-command-edit-dialog");
+    const input = byTestId(dialog, "move-route-event-id-input");
+    const picker = byTestId(dialog, "move-route-event-picker");
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      byTestId(dialog, "move-route-event-picker-open").click();
+      expect(picker.hidden).toBe(false);
+      input.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true }));
+      expect(dialog.isConnected).toBe(true);
+      expect(picker.hidden).toBe(true);
+      expect(document.activeElement).toBe(input);
+      expect(modalStackDepthForTest()).toBe(1);
+    }
+    input.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true }));
+    expect(dialog.isConnected).toBe(false);
+    expect(modalStackDepthForTest()).toBe(0);
+    expect(applied).toEqual([]);
+  });
+
+  it.each(["click", "Tab", "blur", "outside pointer"])("releases picker Escape ownership after %s", (dismissal) => {
+    openEventCommandEditDialog({
+      initial: { kind: "moveEvent", eventId: "this", route: { moves: [], repeat: false } },
+      onApply: () => undefined,
+    });
+    const dialog = byTestId(document, "event-command-edit-dialog");
+    byTestId(dialog, "move-route-event-picker-open").click();
+    const input = byTestId(dialog, "move-route-event-id-input");
+    if (dismissal === "click") byTestId(dialog, "move-route-event-option-ev_npc_gate").click();
+    else if (dismissal === "Tab") input.dispatchEvent(new KeyboardEvent("keydown", { key: "Tab", bubbles: true }));
+    else if (dismissal === "blur") input.blur();
+    else document.body.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
+    expect(byTestId(dialog, "move-route-event-picker").hidden).toBe(true);
+    expect(modalStackDepthForTest()).toBe(1);
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true }));
+    expect(dialog.isConnected).toBe(false);
+    expect(modalStackDepthForTest()).toBe(0);
   });
 
   it("id 조각으로도 검색된다", () => {

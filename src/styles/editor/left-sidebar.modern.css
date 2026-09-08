@@ -1074,7 +1074,6 @@
   align-items: center;
   display: inline-flex;
   gap: 0;
-  margin-right: 2px;
 }
 
 /* 펼쳐보기는 행위 단추의 종속물이다. 높이는 도구와 맞추고 폭만 줄인다 — 같은 정사각형을

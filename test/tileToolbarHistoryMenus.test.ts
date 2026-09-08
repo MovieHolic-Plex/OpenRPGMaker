@@ -8,15 +8,17 @@
  * 체계를 만드는 게 아니라 있는 스택을 드러내는 문제다 — 그래서 이 시험은 도구막대와
  * 기록 창이 **같은 목록**을 본다는 것까지 잠근다.
  */
-import { readdirSync, readFileSync, statSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import {
   getMapEditHistoryEntries,
+  getMapEditRedoEntries,
   recordProjectSnapshot,
   resetMapEditHistory,
+  truncateMapEditHistoryFromMarker,
   undoMapEdit,
 } from "@/editor/mapEditHistory";
 import { renderMapHistoryPanel } from "@/editor/panels/mapHistoryPanel";
@@ -25,11 +27,33 @@ import { resetTileHistoryMenusForTests } from "@/editor/panels/tileHistoryMenu";
 import { resetTileToolbarMenusForTests } from "@/editor/panels/tileToolbarMenus";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
+import * as modal from "@/editor/ui/modal";
 
 const lintMock = vi.hoisted(() => ({ issues: [] as Array<{ code: string; message: string; severity: string }> }));
 vi.mock("@/project/lint/projectLint", () => ({ projectLint: vi.fn(() => lintMock.issues) }));
 
 let host: HTMLElement;
+let confirmation: Promise<boolean> | null = null;
+
+async function answerConfirmation(answer: "confirm" | "cancel"): Promise<void> {
+  if (!confirmation) throw new Error("no pending confirmation");
+  // Observe the real menu continuation, not an arbitrary number of microtasks.
+  // Both spies call through: the actual modal buttons still resolve the decision.
+  const continuation = vi.mocked(confirmation.then).mock.results[0];
+  if (continuation?.type !== "return") throw new Error("no confirmation continuation");
+  const button = document.querySelector<HTMLButtonElement>(`[data-testid="app-modal-${answer}"]`);
+  if (!button) throw new Error(`missing modal ${answer}`);
+  let timeout: ReturnType<typeof setTimeout>;
+  const deadline = new Promise<never>((_, reject) => {
+    timeout = setTimeout(() => reject(new Error("confirmation continuation did not settle")), 2000);
+  });
+  try {
+    button.click();
+    await Promise.race([continuation.value, deadline]);
+  } finally {
+    clearTimeout(timeout!);
+  }
+}
 
 function rerender(): void {
   const project = store.getCurrent();
@@ -71,6 +95,12 @@ function rowLabels(dropdown: string): string[] {
 }
 
 beforeEach(() => {
+  const showConfirm = modal.showConfirm;
+  vi.spyOn(modal, "showConfirm").mockImplementation((options) => {
+    confirmation = showConfirm(options);
+    vi.spyOn(confirmation, "then");
+    return confirmation;
+  });
   resetTileToolbarMenusForTests();
   resetTileHistoryMenusForTests();
   resetEditorUiModeForTests("standard");
@@ -86,6 +116,8 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  vi.restoreAllMocks();
+  confirmation = null;
   resetTileToolbarMenusForTests();
   resetTileHistoryMenusForTests();
   host.remove();
@@ -208,9 +240,7 @@ describe("도구막대 되돌리기/다시실행", () => {
     expect(confirmModal!.textContent).toContain("3단계");
     expect(tile()).toBe(33);
 
-    document.body.querySelector<HTMLButtonElement>('[data-testid="app-modal-confirm"]')?.click();
-    await Promise.resolve();
-    await Promise.resolve();
+    await answerConfirmation("confirm");
 
     expect(tile()).toBe(original);
     expect(getMapEditHistoryEntries()).toEqual([]);
@@ -223,12 +253,105 @@ describe("도구막대 되돌리기/다시실행", () => {
     control("oprn-tool-undo-history").click();
 
     control("history-undo-step-2").click();
-    document.body.querySelector<HTMLButtonElement>('[data-testid="app-modal-cancel"]')?.click();
-    await Promise.resolve();
-    await Promise.resolve();
+    await answerConfirmation("cancel");
 
     expect(tile()).toBe(22);
     expect(getMapEditHistoryEntries()).toHaveLength(2);
+  });
+
+  it.each(["new edit", "snapshot only", "truncate", "reset and repopulate"])("rejects undo confirmation after %s", async (mutation) => {
+    edit("first", 11);
+    edit("second", 22);
+    edit("third", 33);
+    rerender();
+    control("oprn-tool-undo-history").click();
+    control("history-undo-step-3").click();
+
+    const mapId = store.getCurrent().startMapId;
+    if (mutation === "new edit") edit("new edit", 44);
+    else if (mutation === "snapshot only") recordProjectSnapshot("new snapshot");
+    else if (mutation === "truncate") truncateMapEditHistoryFromMarker(2);
+    else {
+      // Same project object, stack depth and resettable entry sequence, but a
+      // different stack lifetime. A marker/length-only check would accept it.
+      resetMapEditHistory();
+      recordProjectSnapshot("replacement project");
+      recordProjectSnapshot("replacement map", mapId, { kind: "map", mapId });
+      recordProjectSnapshot("replacement tilesets", mapId, { kind: "map", mapId, includeTilesets: true });
+    }
+    const project = store.getCurrent();
+    const undo = getMapEditHistoryEntries();
+    const redo = getMapEditRedoEntries();
+    await answerConfirmation("confirm");
+
+    expect(store.getCurrent()).toBe(project);
+    expect(getMapEditHistoryEntries()).toEqual(undo);
+    expect(getMapEditRedoEntries()).toEqual(redo);
+    expect(find("oprn-undo-history-dropdown")).toBeNull();
+  });
+
+  it("rejects redo confirmation after another undo changes the promised depth", async () => {
+    edit("first", 11);
+    edit("second", 22);
+    edit("third", 33);
+    undoMapEdit();
+    undoMapEdit();
+    rerender();
+    control("oprn-tool-redo-history").click();
+    control("history-redo-step-2").click();
+    undoMapEdit();
+    const project = store.getCurrent();
+    const undo = getMapEditHistoryEntries();
+    const redo = getMapEditRedoEntries();
+    await answerConfirmation("confirm");
+
+    expect(store.getCurrent()).toBe(project);
+    expect(getMapEditHistoryEntries()).toEqual(undo);
+    expect(getMapEditRedoEntries()).toEqual(redo);
+  });
+
+  it.each(["undo", "redo"])("rejects %s confirmation after replacement with the same project identity", async (direction) => {
+    edit("first", 11);
+    edit("second", 22);
+    if (direction === "redo") {
+      undoMapEdit();
+      undoMapEdit();
+    }
+    rerender();
+    control(`oprn-tool-${direction}-history`).click();
+    control(`history-${direction}-step-2`).click();
+    const identity = store.getProjectIdentity();
+    const replacement = structuredClone(store.getCurrent());
+    replacement.maps[replacement.startMapId].lowerTiles[0] = 99;
+    store.replace(replacement);
+    expect(store.getProjectIdentity()).toEqual(identity);
+    const project = store.getCurrent();
+    const undo = getMapEditHistoryEntries();
+    const redo = getMapEditRedoEntries();
+    await answerConfirmation("confirm");
+
+    expect(store.getCurrent()).toBe(project);
+    expect(tile()).toBe(99);
+    expect(getMapEditHistoryEntries()).toEqual(undo);
+    expect(getMapEditRedoEntries()).toEqual(redo);
+  });
+
+  it.each(["outside pointer", "Escape"])("reopens on the first toggle click after %s dismissal", (dismissal) => {
+    edit("first", 11);
+    rerender();
+    control("oprn-tool-undo-history").click();
+    const toggle = control("oprn-tool-undo-history");
+    if (dismissal === "outside pointer") {
+      document.body.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
+    } else {
+      document.activeElement?.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true }));
+      expect(document.activeElement).toBe(toggle);
+    }
+    expect(find("oprn-undo-history-dropdown")).toBeNull();
+    expect(toggle.getAttribute("aria-expanded")).toBe("false");
+    toggle.click();
+    expect(find("oprn-undo-history-dropdown")).not.toBeNull();
+    expect(control("oprn-tool-undo-history").getAttribute("aria-expanded")).toBe("true");
   });
 
   it("한 걸음짜리 항목은 되묻지 않고 바로 지나간다", () => {
@@ -257,9 +380,7 @@ describe("도구막대 되돌리기/다시실행", () => {
     control("history-redo-step-3").click();
     const confirmModal = document.body.querySelector('[data-testid="app-confirm-modal"]');
     expect(confirmModal!.textContent).toContain("3단계");
-    document.body.querySelector<HTMLButtonElement>('[data-testid="app-modal-confirm"]')?.click();
-    await Promise.resolve();
-    await Promise.resolve();
+    await answerConfirmation("confirm");
 
     expect(tile()).toBe(33);
     // 한 번의 결정이므로 되돌리기 한 번이면 원위치다.

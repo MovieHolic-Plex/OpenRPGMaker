@@ -50,6 +50,12 @@ let undoStack: HistoryEntry[] = [];
 let redoStack: HistoryEntry[] = [];
 let historyEventQueued = false;
 let seq = 0;
+// Unlike entry markers, this revision never resets or waits for a UI event.
+let historyRevision = 0;
+
+export function getMapEditHistoryRevision(): number {
+  return historyRevision;
+}
 // 마지막으로 스냅샷을 밀어넣은 undo 스택 top 의 직렬화 서명(연속 중복 스냅샷 dedup 용).
 let topSignature: string | null = null;
 // 텍스트 입력처럼 커밋 단위로 1 스냅샷만 남기기 위한 병합 키.
@@ -446,6 +452,7 @@ export function getMapEditHistoryDebugEntries(): readonly {
 }
 
 function emitHistoryChange(): void {
+  historyRevision += 1;
   if (typeof window === "undefined" || historyEventQueued) return;
   // 히스토리 변경 이벤트는 UI 툴바 갱신용 알림일 뿐이다. 테스트/비브라우저 스텁처럼
   // 스케줄링/디스패치 API 가 없으면 조용히 건너뛴다(실제 브라우저에는 항상 존재).
