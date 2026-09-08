@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **50쪽 / 2029KB / 약 570,671 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **50쪽 / 2030KB / 약 571,059 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -598,13 +598,13 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L88` 2026-09-05 실측
   - `L103` 사용자 플레이 후 체험 QA 정정 (2026-09-05)
 
-### `openwiki/project-wiki.md` — 7KB · 128줄 · ~1,827 토큰
+### `openwiki/project-wiki.md` — 9KB · 149줄 · ~2,215 토큰
 
 - `L6` Data and evidence
 - `L19` Ownership and retrieval
-- `L45` Editor lifecycle
-- `L86` Combat acceptance slice
-- `L98` Verification
+- `L46` Editor lifecycle
+- `L101` Combat acceptance slice
+- `L113` Verification
 
 ### `openwiki/quickstart.md` — 16KB · 176줄 · ~4,637 토큰
 

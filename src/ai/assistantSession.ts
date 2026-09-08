@@ -57,7 +57,7 @@ import {
 import { buildIntentFacts, declareIntentCached, type IntentDeclarer } from "@/ai/intentDeclarationClient";
 import type { ComposerMode } from "@/ai/composerMode";
 import { store, type ProjectPersistenceReceipt, type ProjectPersistenceProof } from "@/project/store";
-import type { WikiTurnInput } from "@/editor/projectWikiCoordinator";
+import type { WikiPreparationOutcome, WikiTurnInput } from "@/editor/projectWikiCoordinator";
 import {
   PLAY_WALKTHROUGH_TOOL,
   EVALUATE_GAME_QUALITY_TOOL,
@@ -858,8 +858,8 @@ export interface AssistantSessionOptions {
    * 도메인을 문장 키워드로 추측하는 경로는 없다(2026-09-03 의도 라우터 감사).
    */
   declareIntent?: IntentDeclarer;
-  /** Editor-owned, awaited wiki save. The detached session never persists wiki writes itself. */
-  prepareProjectWiki?: (input: WikiTurnInput) => Promise<Project["world"]>;
+  /** Editor-owned checkpoint or explicit deferral. The detached session never persists wiki writes itself. */
+  prepareProjectWiki?: (input: WikiTurnInput) => Promise<WikiPreparationOutcome>;
   /**
    * 자율 실행 드라이버용 사용자-대기 조회 훅(peek-only). 패널의 pendingSends 큐에
    * 메시지가 있는지 "만" 보고한다 — 드라이버는 절대 dequeue 하지 않는다(패널의 기존
@@ -2125,14 +2125,20 @@ export class AssistantSession {
             this.publishRunOutcome();
           },
         });
-        if (world) {
-          this.baselineProject.world = structuredClone(world);
-          this.ctx.project.world = structuredClone(world);
+        if (world && "kind" in world) {
+          const text = `wiki:deferred ${world.reason} — 프로젝트 기록 갱신을 보류했습니다. 기존 기록으로 요청을 계속합니다.`;
+          this.pushAudit({ kind: "status", text });
+          onEvent({ type: "status", text });
         } else {
-          delete this.baselineProject.world;
-          delete this.ctx.project.world;
+          if (world) {
+            this.baselineProject.world = structuredClone(world);
+            this.ctx.project.world = structuredClone(world);
+          } else {
+            delete this.baselineProject.world;
+            delete this.ctx.project.world;
+          }
+          this.rebuildSystemPrompt();
         }
-        this.rebuildSystemPrompt();
       } catch (cause) {
         const error = cause instanceof Error ? cause.message : String(cause);
         const stoppedReason = signal?.aborted ? "aborted" : "error";

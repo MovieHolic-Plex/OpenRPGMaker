@@ -23,7 +23,8 @@ prove an explicit user request.
   authored, and manually edited pages are protected. Corrections retain old
   documents and supersede them using new IDs.
 - `src/ai/projectWikiClient.ts` uses the existing OAuth-aware LLM configuration.
-  Extraction errors and cancellation propagate; an empty patch means the model
+  Extraction errors and cancellation propagate; only its own 45-second abort is
+  typed as `ProjectWikiExtractionTimeoutError`. An empty patch means the model
   found no new facts, not that a failed call succeeded. The patch boundary accepts
   bare JSON or one JSON/unlabelled code fence with optional surrounding prose.
   Surrounding braces, brackets or backticks reject the envelope rather than
@@ -56,6 +57,20 @@ Extraction parsing runs in the browser, not the provider worker:
 therefore fail preparation before intent selection. A valid `{"upserts":[]}`
 preserves the whole project and completes preparation; existing wiki records
 still take the coordinator's normal awaited flush path.
+
+Only a current-turn extraction's own deadline may return the typed preparation
+outcome `{kind: "deferred", reason: "extraction-timeout"}`. This requires an
+existing wiki before preparation, unchanged world records, the same project
+identity, an extant requested map, and no caller cancellation. Backfill and
+initial extraction remain fatal on timeout. Unknown/provider/caller timeouts,
+parsing/provenance/protected/supersession conflicts, and save errors remain
+failures. Deferral applies no patch, records no history, emits no delivery or
+save milestone, and leaves both detached world copies intact (never an empty
+patch or `undefined` fallback). The session reports `wiki:deferred`, then the
+original user turn performs normal intent, acceptance, original-context,
+planning and authoring initialization. No retry/driver continuation is injected.
+The 45-second deadline and provider options are unchanged. This source repair
+is prospective: it does not resume P6 or establish effective provider settings.
 
 Integrate parser fixes into the editor source/bundle through normal deployment.
 A worker restart alone cannot update a loaded browser module. Existing sessions
@@ -108,6 +123,12 @@ including the captured Round11 wire100 response in
 values, complete-project preservation, valid record application and atomic
 rejection, not the explanatory prose or the user's continuation wording. These
 are offline tests, not renewed gameplay or acceptance evidence.
+`projectWikiTimeout.test.ts` uses controlled deadline scheduling and exact abort
+and transport-settlement signals through the real session/coordinator/parser
+and in-memory store/history path. It checks preserved records, normal planner
+and original-context initialization, real acceptance authority rejection,
+detached title authoring, no late writes, fatal non-exempt errors, and timely
+application with truthful local-save delivery. No live project is exercised.
 
 Live evidence uses a separate Supabase QA project and the user's existing OAuth
 provider. A successful model reply is not evidence of wiki persistence; require
